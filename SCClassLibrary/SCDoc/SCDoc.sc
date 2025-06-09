@@ -383,8 +383,8 @@ SCDocNode {
 
 SCDoc {
 
-	// Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-	classvar version = 74;
+	// Increment this whenever we make a change to the SCDoc system or its static files so that all help-files should be processed again
+	classvar version = 76;
 
 	classvar <helpTargetDir;
 	classvar <helpTargetUrl;
@@ -502,16 +502,6 @@ SCDoc {
 		undocClasses.do {|x|
 			doc = SCDocEntry.newUndocClass(x);
 			documents[doc.path] = doc;
-		};
-		this.postMsg("Copying"+nonHelpFiles.size+"non-help files...",1);
-		nonHelpFiles.do {|x|
-			var dest = SCDoc.helpTargetDir+/+x[1];
-			var folder = dest.dirname;
-			File.mkdir(folder);
-			if(File.exists(dest).not or: {File.mtime(x[0]) > File.mtime(dest)}) {
-				File.delete(dest);
-				File.copy(x[0],dest);
-			};
 		};
 		if(Help.respondsTo('tree')) {
 			this.postMsg("Indexing old helpfiles...");
@@ -706,6 +696,29 @@ SCDoc {
 		^#[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
 	}
 
+	*refreshStaticFiles {
+		var relativePath, destinationPath;
+		// remember to bump SCDoc.version if you modify static files!
+		this.postMsg("refresh static files");
+		this.helpSourceDirs.do({|dir|
+			// .filesDo performs a recursive iteration
+			PathName(dir).filesDo({|file|
+				if(file.fullPath.endsWith(".schelp").not, {
+					relativePath = file.asRelativePath(dir);
+					destinationPath = SCDoc.helpTargetDir +/+ relativePath;
+
+					// make sure that the folder we want to copy to actually exists
+					File.mkdir(PathName(destinationPath).pathOnly);
+
+					if(File.exists(destinationPath), {
+						File.delete(destinationPath);
+					});
+					File.copy(file.fullPath, destinationPath);
+				});
+			});
+		});
+	}
+
 	*checkVersion {|clearCache=false|
 		var f, path = this.helpTargetDir +/+ "scdoc_version";
 		if(clearCache or: {path.load != version}) {
@@ -715,6 +728,7 @@ SCDoc {
 			f = File.open(path,"w");
 			f.write(version.asCompileString);
 			f.close;
+			this.refreshStaticFiles();
 			^true;
 		};
 		^false;
@@ -722,6 +736,7 @@ SCDoc {
 
 	*renderAll {|includeExtensions=true|
 		this.postMsg("Rendering all documents");
+		this.refreshStaticFiles();
 		this.documents.do {|doc|
 			if(doc.oldHelp.isNil and: {includeExtensions or: {doc.isExtension.not}}) {
 				if(doc.isUndocumentedClass) {

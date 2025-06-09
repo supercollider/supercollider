@@ -143,7 +143,7 @@ void PV_JensenAndersen_Ctor(PV_JensenAndersen* unit) {
     unit->m_sf = 0.0;
     unit->m_sc = 0.0;
 
-    unit->m_fourkindex = (int)(4000.0 / (unit->mWorld->mSampleRate)) * (unit->m_numbins);
+    unit->m_fourkindex = (int)(4000.0 / FULLRATE) * (unit->m_numbins);
 
     SETCALC(PV_JensenAndersen_next);
 }
@@ -330,7 +330,7 @@ void PV_HainsworthFoote_next(PV_HainsworthFoote* unit, int inNumSamples) {
             outval = 1.0;
             unit->m_waiting = 1;
             unit->m_waitSamp = inNumSamples;
-            unit->m_waitLen = (int)(ZIN0(4) * (unit->mWorld->mSampleRate));
+            unit->m_waitLen = (int)(ZIN0(4) * FULLRATE);
         }
 
         // take copy of this frame's magnitudes as prevframe

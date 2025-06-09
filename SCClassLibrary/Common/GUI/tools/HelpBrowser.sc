@@ -278,9 +278,11 @@ HelpBrowser {
 
 		webView.enterInterpretsSelection = true;
 
+		webView.setAttribute(\javascriptCanAccessClipboard, true);
+
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
 			var keyPlus, keyZero, keyMinus, keyEquals, keySlash;
-			var keyD, keyU, keyF, keyG, keyH, keyJ, keyK, keyL;
+			var keyD, keyU, keyF, keyG, keyH, keyJ, keyK, keyL, keyT;
 			var keyF3, keyF5, keyLeftArrow, keyRightArrow;
 			var modifier, zoomIn;
 
@@ -291,7 +293,7 @@ HelpBrowser {
 			});
 
 			#keyPlus, keyZero, keyMinus, keyEquals, keySlash = [43, 48, 45, 61, 47];
-			#keyD, keyF, keyG, keyH, keyJ, keyK, keyL, keyU, keyF3, keyF5 = [68, 70, 71, 72, 74, 75, 76, 85];
+			#keyD, keyF, keyG, keyH, keyJ, keyK, keyL, keyT, keyU = [68, 70, 71, 72, 74, 75, 76, 84, 85];
 			#keyF3, keyF5 = [65472, 65474];
 			#keyLeftArrow, keyRightArrow = [65361, 65363];
 
@@ -346,6 +348,9 @@ HelpBrowser {
 				},
 				{ (key == keyL) || ((kcode == keyRightArrow) && mods.isAlt) }, {
 					this.goForward
+				},
+				{ key == keyT }, {
+					webView.runJavaScript("$(\"#toc\").toggle();$(\"#toc_search\").focus();");
 				},
 				{ kcode == keyF5 }, {
 					this.goTo(webView.url)

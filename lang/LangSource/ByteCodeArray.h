@@ -32,10 +32,10 @@ typedef struct {
 } ByteCodeArray, *ByteCodes;
 
 extern ByteCodes gCompilingByteCodes;
-extern long totalByteCodes;
+extern std::int64_t totalByteCodes;
 
 void initByteCodes();
-void compileByte(long byte);
+void compileByte(std::int64_t byte);
 void compileAndFreeByteCodes(ByteCodes byteCodes);
 void copyByteCodes(Byte* dest, ByteCodes byteCodes);
 ByteCodes getByteCodes();
@@ -46,7 +46,7 @@ void compileByteCodes(ByteCodes byteCodes);
 ByteCodes allocByteCodes();
 void reallocByteCodes(ByteCodes byteCodes);
 void freeByteCodes(ByteCodes byteCodes);
-int compileOpcode(long opcode, long operand1);
-void compileJump(long opcode, long jumplen);
-int compileNumber(unsigned long value);
-int compileNumber24(unsigned long value);
+int compileOpcode(std::int64_t opcode, std::int64_t operand1);
+void compileJump(std::int64_t opcode, std::int64_t jumplen);
+int compileNumber(std::uint64_t value);
+int compileNumber24(std::uint64_t value);

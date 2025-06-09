@@ -383,7 +383,7 @@ int prFilePos(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     PyrFile* pfile;
     FILE* file;
-    long length;
+    std::int64_t length;
 
     a = g->sp;
     pfile = (PyrFile*)slotRawObject(a);
@@ -1377,7 +1377,7 @@ int prPipeOpen(struct VMGlobals* g, int numArgsPushed) {
 
     pid_t pid;
     FILE* file;
-    std::tie(pid, file) = sc_popen(std::move(commandLine), mode);
+    std::tie(pid, file) = sc_popen_shell(std::move(commandLine), mode);
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);
         SetInt(callerSlot, pid);

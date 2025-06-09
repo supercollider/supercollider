@@ -27,31 +27,31 @@ struct PyrFile : public PyrObjectHdr {
 
 void initFilePrimitives();
 
-long prFileDelete(VMGlobals* g, long numArgsPushed);
-long prFileDeleteAll(VMGlobals* g, long numArgsPushed);
-long prFileOpen(VMGlobals* g, long numArgsPushed);
-long prFileClose(VMGlobals* g, long numArgsPushed);
-long prFileSeek(VMGlobals* g, long numArgsPushed);
-long prFilePos(VMGlobals* g, long numArgsPushed);
-long prFileLength(VMGlobals* g, long numArgsPushed);
-long prFileWrite(VMGlobals* g, long numArgsPushed);
-long prFileReadLine(VMGlobals* g, long numArgsPushed);
+std::int64_t prFileDelete(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileDeleteAll(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileOpen(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileClose(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileSeek(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFilePos(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileLength(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileWrite(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileReadLine(VMGlobals* g, std::int64_t numArgsPushed);
 
-long prFilePutRGB(VMGlobals* g, long numArgsPushed);
-long prFilePutInt32(VMGlobals* g, long numArgsPushed);
-long prFilePutInt16(VMGlobals* g, long numArgsPushed);
-long prFilePutInt8(VMGlobals* g, long numArgsPushed);
-long prFilePutChar(VMGlobals* g, long numArgsPushed);
-long prFilePutFloat(VMGlobals* g, long numArgsPushed);
-long prFilePutDouble(VMGlobals* g, long numArgsPushed);
+std::int64_t prFilePutRGB(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFilePutInt32(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFilePutInt16(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFilePutInt8(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFilePutChar(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFilePutFloat(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFilePutDouble(VMGlobals* g, std::int64_t numArgsPushed);
 
-long prFileGetRGB(VMGlobals* g, long numArgsPushed);
-long prFileGetInt32(VMGlobals* g, long numArgsPushed);
-long prFileGetInt16(VMGlobals* g, long numArgsPushed);
-long prFileGetInt8(VMGlobals* g, long numArgsPushed);
-long prFileGetChar(VMGlobals* g, long numArgsPushed);
-long prFileGetFloat(VMGlobals* g, long numArgsPushed);
-long prFileGetDouble(VMGlobals* g, long numArgsPushed);
+std::int64_t prFileGetRGB(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileGetInt32(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileGetInt16(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileGetInt8(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileGetChar(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileGetFloat(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileGetDouble(VMGlobals* g, std::int64_t numArgsPushed);
 
-long prFilePutString(VMGlobals* g, long numArgsPushed);
-long prFileRead(VMGlobals* g, long numArgsPushed);
+std::int64_t prFilePutString(VMGlobals* g, std::int64_t numArgsPushed);
+std::int64_t prFileRead(VMGlobals* g, std::int64_t numArgsPushed);

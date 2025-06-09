@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "arm64"
+          - job-name: "arm64  with ctest"
             os-version: "15"
             xcode-version: "16.0"
             qt-version: "6.7.3" # will use qt from aqtinstall
@@ -25,8 +25,9 @@ jobs:
             vcpkg-triplet: ""
             extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
             artifact-suffix: "macOS-arm64"
+            ctest: true
 
-          - job-name: "x64"
+          - job-name: "x64 with ctest"
             os-version: "13"
             xcode-version: "15.2"
             qt-version: "6.7.3" # will use qt from aqtinstall
@@ -38,6 +39,7 @@ jobs:
             vcpkg-triplet: ""
             extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
             artifact-suffix: "macOS-x64"
+            ctest: true
 
           - job-name: "x64 legacy"
             os-version: "13"
@@ -54,26 +56,31 @@ jobs:
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             extra-cmake-flags: ""
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
+            ctest: false
 
-          - job-name: "x64 use system libraries"
-            os-version: "13"
-            xcode-version: "15.2"
+          - job-name: "arm64 use system libraries with ctest"
+            os-version: "15"
+            xcode-version: "16.0"
             deployment-target: ""
-            cmake-architectures: x86_64
+            cmake-architectures: "arm64"
             homebrew-packages: "qt@6 libsndfile readline fftw portaudio yaml-cpp boost"
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
+            ctest: true
 
           - job-name: "x64 shared libscsynth"
             os-version: "13"
             xcode-version: "15.2"
+            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: ""
             cmake-architectures: x86_64
-            homebrew-packages: "qt@6 libsndfile readline fftw portaudio"
+            homebrew-packages: "libsndfile readline fftw portaudio"
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D LIBSCSYNTH=ON"
+            ctest: false
 
     name: macOS ${{ matrix.job-name }}
     env:
@@ -159,7 +166,7 @@ jobs:
           vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
 
       - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         if: matrix.qt-version
         env:
           DEVELOPER_DIR: "" # remove developer dir which causes installation to fail
@@ -173,7 +180,7 @@ jobs:
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          CMAKE_FLAGS="-G Xcode -D RULE_LAUNCH_COMPILE=ccache -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
+          CMAKE_FLAGS="-G Xcode -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
 
           if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
             export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
@@ -206,3 +213,8 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+
+      - name: Run CTests
+        continue-on-error: true
+        if: matrix.ctest
+        run: cmake --build $BUILD_PATH --config Release --target RUN_TESTS

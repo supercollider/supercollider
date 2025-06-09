@@ -65,6 +65,7 @@ set(sclang_sources
 	LangSource/PyrParseNode.cpp
 	LangSource/PyrSignal.cpp
 	LangSource/PyrSymbolTable.cpp
+    LangSource/SC_CLIOptions.cpp
 	LangSource/SC_LanguageClient.cpp
 	LangSource/SC_LanguageConfig.cpp
 	LangSource/SC_TerminalClient.cpp
@@ -164,10 +165,12 @@ endif()
 # This sets up the exe icon for windows.
 if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
+ if(MINGW OR MSYS)
  set(CMAKE_RC_COMPILER_INIT windres)
  ENABLE_LANGUAGE(RC)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+ endif(MINGW OR MSYS)
 endif(WIN32)
 
 if(SC_HIDAPI)
@@ -241,7 +244,7 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib)
+target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_program_options_lib)
 target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
 if (SCLANG_SERVER)

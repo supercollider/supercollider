@@ -88,8 +88,8 @@ public:
         return size;
     }
 
-    long prepareToWriteArchive(PyrSlot* objectSlot) {
-        long err = errNone;
+    std::int64_t prepareToWriteArchive(PyrSlot* objectSlot) {
+        std::int64_t err = errNone;
 
         try {
             slotCopy(&mTopSlot, objectSlot);
@@ -102,8 +102,8 @@ public:
         return err;
     }
 
-    long writeArchive() {
-        long err = errNone;
+    std::int64_t writeArchive() {
+        std::int64_t err = errNone;
 
         try {
             writeArchiveHeader();
@@ -125,9 +125,9 @@ public:
         return err;
     }
 
-    long readArchive(PyrSlot* objectSlot) {
+    std::int64_t readArchive(PyrSlot* objectSlot) {
         // postfl("->readArchive\n");
-        long err = errNone;
+        std::int64_t err = errNone;
 
 
         SetNil(objectSlot);

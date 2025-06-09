@@ -291,6 +291,57 @@ TestFunction : UnitTest {
 		this.assertEquals(result, [9, 4], "inEnvirWithArgs should bind function to environment and take keyword args")
 	}
 
+	test_unaryOpFunc_with_kwargs {
+		var f, g, result;
+		f = { |x, z, y| x + y };
+		g = f.neg;
+		result = g.(x:1, y:2);
+		this.assertEquals(result, -3, "unary op functions should pass on the correct keyword arguments");
+	}
+
+	test_binaryOpFunc_with_kwargs {
+		var f, g, result;
+		f = { |x, z, y| x + y };
+		g = f * 4;
+		result = g.(x:1, y:2);
+		this.assertEquals(result,  12, "binary op functions should pass on the correct keyword arguments");
+	}
+
+	test_naryOpFunc_with_kwargs {
+		var f, g, result;
+		f = { |x, z, y| x + y };
+		g = f.linlin(0, 10, 0, -10);
+		result = g.(x:1, y:2);
+		this.assertEquals(result, -3, "nary op functions should pass on the correct keyword arguments");
+	}
+
+	test_naryOpFunc_kwargs_with_kwargs {
+		var f, g, result;
+		f = { |x, z, y| x + y };
+		g = f.linlin(0, 10, outMin: 0, outMax: -10);
+		result = g.(x:1, y:2);
+		this.assertEquals(result, -3, "nary op functions built with keyword args should pass on the correct keyword arguments");
+	}
+
+	test_naryOpFunc_kwargs_valueArray {
+		var f, g, result;
+		f = { |x, z, y| x + y };
+		g = f.linlin(0, 10, outMin: 0, outMax: -10);
+		result = g.valueArray([1,0,2]);
+		this.assertEquals(result, -3, "nary op functions built with keyword args should work correctly with valueArray");
+	}
+
+	test_naryOpFunc_kwargs_valueArrayEnvir {
+		var f, g, result;
+		f = { |x, z, y| x + y };
+		g = f.linlin(0, 10, outMin: 0, outMax: -10);
+		result = Environment.use {
+			~y = 2;
+			g.valueArrayEnvir([1,0]);
+		};
+		this.assertEquals(result, -3, "nary op functions built with keyword args should work correctly with valueArrayEnvir");
+	}
+
 
 }
 

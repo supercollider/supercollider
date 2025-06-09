@@ -30,7 +30,7 @@ enum {
     kSignalNextNode
 };
 
-PyrObject* newPyrSignal(VMGlobals* g, long size);
+PyrObject* newPyrSignal(VMGlobals* g, std::int64_t size);
 
 #define UNROLL8_CODE(size, var, stmt)                                                                                  \
     {                                                                                                                  \
@@ -113,7 +113,7 @@ PyrObject* newPyrSignal(VMGlobals* g, long size);
 #    define BINOP_LOOP1(OP)                                                                                            \
         float *a, *b, *c, *endptr;                                                                                     \
         PyrObject* outc;                                                                                               \
-        long size;                                                                                                     \
+        std::int64_t size;                                                                                             \
         a = (float*)(ina->slots) - 1;                                                                                  \
         b = (float*)(inb->slots) - 1;                                                                                  \
         size = sc_min(ina->size, inb->size);                                                                           \
@@ -138,7 +138,7 @@ PyrObject* newPyrSignal(VMGlobals* g, long size);
 #    define BINOP_LOOP2(STMT1)                                                                                         \
         float *a, *b, *c, *endptr;                                                                                     \
         PyrObject* outc;                                                                                               \
-        long size;                                                                                                     \
+        std::int64_t size;                                                                                             \
         a = (float*)(ina->slots) - 1;                                                                                  \
         b = (float*)(inb->slots) - 1;                                                                                  \
         size = sc_min(ina->size, inb->size);                                                                           \
@@ -186,6 +186,8 @@ PyrObject* signal_mul_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
 PyrObject* signal_mul_ds_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
 PyrObject* signal_add_ds_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
 PyrObject* signal_sub_ds_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
+PyrObject* signal_pow_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
+PyrObject* signal_mod_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
 PyrObject* signal_ring1_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
 PyrObject* signal_ring2_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
 PyrObject* signal_ring3_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
@@ -200,6 +202,8 @@ PyrObject* signal_sqrdif_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
 PyrObject* signal_add_xf(VMGlobals* g, PyrObject* ina, float inb);
 PyrObject* signal_sub_xf(VMGlobals* g, PyrObject* ina, float inb);
 PyrObject* signal_mul_xf(VMGlobals* g, PyrObject* ina, float inb);
+PyrObject* signal_pow_xf(VMGlobals* g, PyrObject* ina, double inb);
+PyrObject* signal_mod_xf(VMGlobals* g, PyrObject* ina, double inb);
 PyrObject* signal_ring1_xf(VMGlobals* g, PyrObject* ina, float inb);
 PyrObject* signal_ring2_xf(VMGlobals* g, PyrObject* ina, float inb);
 PyrObject* signal_ring3_xf(VMGlobals* g, PyrObject* ina, float inb);
@@ -211,6 +215,8 @@ PyrObject* signal_difsqr_xf(VMGlobals* g, PyrObject* ina, float inb);
 PyrObject* signal_sumsqr_xf(VMGlobals* g, PyrObject* ina, float inb);
 PyrObject* signal_sqrsum_xf(VMGlobals* g, PyrObject* ina, float inb);
 PyrObject* signal_sqrdif_xf(VMGlobals* g, PyrObject* ina, float inb);
+PyrObject* signal_pow_fx(VMGlobals* g, double ina, PyrObject* inb);
+PyrObject* signal_mod_fx(VMGlobals* g, double ina, PyrObject* inb);
 PyrObject* signal_ring1_fx(VMGlobals* g, float ina, PyrObject* inb);
 PyrObject* signal_ring2_fx(VMGlobals* g, float ina, PyrObject* inb);
 PyrObject* signal_ring3_fx(VMGlobals* g, float ina, PyrObject* inb);
@@ -274,16 +280,16 @@ PyrObject* signal_differentiate(VMGlobals* g, PyrObject* inPyrSignal, float* ioP
 PyrObject* signal_rotate(VMGlobals* g, PyrObject* ina, int rot);
 PyrObject* signal_reverse_ds(PyrObject* ina);
 PyrObject* signal_cat(VMGlobals* g, PyrObject* ina, PyrObject* inb);
-PyrObject* signal_insert(VMGlobals* g, PyrObject* ina, PyrObject* inb, long index);
-PyrObject* signal_overdub(VMGlobals* g, PyrObject* ina, PyrObject* inb, long index);
-PyrObject* signal_overwrite(VMGlobals* g, PyrObject* ina, PyrObject* inb, long index);
+PyrObject* signal_insert(VMGlobals* g, PyrObject* ina, PyrObject* inb, std::int64_t index);
+PyrObject* signal_overdub(VMGlobals* g, PyrObject* ina, PyrObject* inb, std::int64_t index);
+PyrObject* signal_overwrite(VMGlobals* g, PyrObject* ina, PyrObject* inb, std::int64_t index);
 PyrObject* signal_cat3(VMGlobals* g, PyrObject* ina, PyrObject* inb, PyrObject* inc);
-PyrObject* signal_linen(VMGlobals* g, PyrObject* ina, long atk, long dcy, float amp);
-PyrObject* signal_linen2(VMGlobals* g, PyrObject* ina, long atk, long dcy, float amp, float midamp);
-PyrObject* signal_writesplice(VMGlobals* g, PyrObject* outc, PyrObject* ina, PyrObject* inb, long indexc, long indexa,
-                              long indexb, long fadelen, float midamp);
-PyrObject* signal_splice(VMGlobals* g, PyrObject* ina, PyrObject* inb, long indexa, long indexb, long fadelen,
-                         float midamp);
+PyrObject* signal_linen(VMGlobals* g, PyrObject* ina, std::int64_t atk, std::int64_t dcy, float amp);
+PyrObject* signal_linen2(VMGlobals* g, PyrObject* ina, std::int64_t atk, std::int64_t dcy, float amp, float midamp);
+PyrObject* signal_writesplice(VMGlobals* g, PyrObject* outc, PyrObject* ina, PyrObject* inb, std::int64_t indexc,
+                              std::int64_t indexa, std::int64_t indexb, std::int64_t fadelen, float midamp);
+PyrObject* signal_splice(VMGlobals* g, PyrObject* ina, PyrObject* inb, std::int64_t indexa, std::int64_t indexb,
+                         std::int64_t fadelen, float midamp);
 
 PyrObject* signal_invert_ds(PyrObject* inPyrSignal);
 PyrObject* signal_recip_ds(PyrObject* inPyrSignal);
@@ -322,12 +328,12 @@ float signal_findpeak(PyrObject* inPyrSignal);
 PyrObject* signal_normalize(PyrObject* inPyrSignal);
 PyrObject* signal_normalize_transfer_fn(PyrObject* inPyrSignal);
 float signal_integral(PyrObject* inPyrSignal);
-PyrObject* signal_combself(VMGlobals* g, PyrObject* ina, long rot);
-PyrObject* signal_bilinen(VMGlobals* g, PyrObject* ina, long atk, long dcy, float amp, float midamp);
+PyrObject* signal_combself(VMGlobals* g, PyrObject* ina, std::int64_t rot);
+PyrObject* signal_bilinen(VMGlobals* g, PyrObject* ina, std::int64_t atk, std::int64_t dcy, float amp, float midamp);
 PyrObject* signal_lace2(VMGlobals* g, PyrObject* ina, PyrObject* inb);
 void signal_unlace2(VMGlobals* g, PyrObject* ina, PyrObject** outb, PyrObject** outc);
-void signal_convolve(VMGlobals* g, PyrObject* ina, PyrObject* ir, PyrObject* previn, long* ppos);
-PyrObject* signal_thumbnail(VMGlobals* g, PyrObject* ina, long startpos, long length, int binsize);
+void signal_convolve(VMGlobals* g, PyrObject* ina, PyrObject* ir, PyrObject* previn, std::int64_t* ppos);
+PyrObject* signal_thumbnail(VMGlobals* g, PyrObject* ina, std::int64_t startpos, std::int64_t length, int binsize);
 
 PyrObject* signal_scaleneg_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb);
 PyrObject* signal_scaleneg_xf(VMGlobals* g, PyrObject* ina, float inb);
@@ -363,15 +369,15 @@ void signal_hanning_ds(PyrObject* inPyrSignal);
 void signal_welch_ds(PyrObject* inPyrSignal);
 void signal_parzen_ds(PyrObject* inPyrSignal);
 
-PyrObject* signal_normalize_range(PyrObject* ina, long start, long end);
-PyrObject* signal_zero_range(PyrObject* ina, long start, long end);
-PyrObject* signal_invert_range(PyrObject* ina, long start, long end);
-PyrObject* signal_reverse_range(PyrObject* ina, long start, long end);
-PyrObject* signal_fade_in(PyrObject* ina, long start, long end);
-PyrObject* signal_fade_out(PyrObject* ina, long start, long end);
-PyrObject* signal_abs_range(PyrObject* ina, long start, long end);
-PyrObject* signal_squared_range(PyrObject* ina, long start, long end);
-PyrObject* signal_cubed_range(PyrObject* ina, long start, long end);
-PyrObject* signal_distort_range(PyrObject* ina, long start, long end);
+PyrObject* signal_normalize_range(PyrObject* ina, std::int64_t start, std::int64_t end);
+PyrObject* signal_zero_range(PyrObject* ina, std::int64_t start, std::int64_t end);
+PyrObject* signal_invert_range(PyrObject* ina, std::int64_t start, std::int64_t end);
+PyrObject* signal_reverse_range(PyrObject* ina, std::int64_t start, std::int64_t end);
+PyrObject* signal_fade_in(PyrObject* ina, std::int64_t start, std::int64_t end);
+PyrObject* signal_fade_out(PyrObject* ina, std::int64_t start, std::int64_t end);
+PyrObject* signal_abs_range(PyrObject* ina, std::int64_t start, std::int64_t end);
+PyrObject* signal_squared_range(PyrObject* ina, std::int64_t start, std::int64_t end);
+PyrObject* signal_cubed_range(PyrObject* ina, std::int64_t start, std::int64_t end);
+PyrObject* signal_distort_range(PyrObject* ina, std::int64_t start, std::int64_t end);
 
-PyrObject* signal_fade_range(PyrObject* ina, long start, long end, float lvl0, float lvl1);
+PyrObject* signal_fade_range(PyrObject* ina, std::int64_t start, std::int64_t end, float lvl0, float lvl1);

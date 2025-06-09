@@ -5,6 +5,7 @@ ScIDE {
 	classvar serverController;
 	classvar volumeController, suppressAmpResponse = false;
 	classvar docRoutine;
+	classvar handshakeCondition;
 
 	*initClass {
 		subListSorter = { | a b | a[0].perform('<', b[0]) };
@@ -24,12 +25,25 @@ ScIDE {
 	}
 
 	*handshake {
-		this.send(\classLibraryRecompiled);
-		this.send(\requestDocumentList);
-		this.send(\requestCurrentPath);
+		fork{
+			handshakeCondition !? { "%: handshakeCondition is not nil!".format(thisMethod.asString).warn };
+			handshakeCondition = CondVar();
 
-		this.defaultServer = Server.default;
-		this.sendIntrospection;
+			this.send(\classLibraryRecompiled);
+			this.send(\requestDocumentList);
+			handshakeCondition.waitFor(5);
+			this.send(\requestCurrentPath);
+			handshakeCondition.waitFor(5);
+
+			this.defaultServer = Server.default;
+			this.sendIntrospection;
+
+			handshakeCondition = nil;
+		}
+	}
+
+	*prSignalHandshakeCond {
+		handshakeCondition !? { handshakeCondition.signalOne };
 	}
 
 	*defaultServer_ {|server|
@@ -394,6 +408,10 @@ ScIDE {
 		}
 	}
 
+	currentPath_ { |p|
+		currentPath = p.standardizePath;
+	}
+
 
 	// PRIVATE ///////////////////////////////////////////////////////////
 
@@ -487,8 +505,8 @@ Document {
 	*prCurrent_ {|newCurrent|
 		current = this.current;
 		if((newCurrent === current).not, {
-			if(current.notNil, {current.didResignKey});
-			newCurrent.didBecomeKey;
+			current !? { current.didResignKey };
+			newCurrent !? { newCurrent.didBecomeKey };
 		});
 	}
 
@@ -806,7 +824,7 @@ Document {
 		^this.rangeText(rangestart, rangesize);
 	}
 
-	string_ { | string, rangestart = -1, rangesize = 1 |
+	string_ { | string, rangestart = 0, rangesize = -1 |
 		this.prSetText(string, nil, rangestart, rangesize);
 	}
 

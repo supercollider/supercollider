@@ -1,0 +1,67 @@
+class:: NodeTreeView
+summary:: Show Server-side Node Tree
+categories:: GUI>Views
+related:: Classes/Server, Classes/ServerTree
+
+description::
+link::Classes/NodeTreeView:: shows the node tree on a server.
+
+
+classmethods::
+
+method:: new
+argument:: server
+The server to display its node tree.
+argument:: bounds
+A link::Classes/Rect::, or any object responding to the link::Search#asRect#.asRect:: method.
+argument:: parent
+The link::Classes/View:: or link::Classes/Window:: where a link::Classes/NodeTreeView:: placed.
+
+instancemethods::
+
+method::close
+Close the receiver.
+
+examples::
+
+code::
+// Boot the local server assigned to variable s:
+s.boot;
+
+// Play a repeating pattern that triggers a new synth every 0.4 seconds:
+x = Pn((dur: 0.4, midinote: 69, amp: 0.1)).play;
+
+// Create a NodeTreeView instance assigned to variable a:
+a = NodeTreeView(s)
+
+// Start plotting nodes for NodeTreeView instance assigned to variable a:
+a.start // plotting interval: 0.5 sec (default)
+
+// Create additional NodeTreeView instances:
+b = NodeTreeView(s)
+c = NodeTreeView(s, Rect(400, 50, 300, 400)) // This instance will be resized.
+
+// Create a NodeTreeView instance with instant plotting enabled:
+d = NodeTreeView(s, Rect(600, 50, 400, 400)).start(2) // The plotting interval of 2 seconds will not be applied while the NodeTreeView assigned to variable a is running.
+
+// Close the NodeTreeView instance assigned to variable b:
+b.close
+
+// Stop the plotting process for the NodeTreeView instance assigned to variable a:
+a.stop
+
+// Close multiple NodeTreeView instances (assigned to variables a and c):
+[a, c].do { |v| v.close }
+
+// Open a plotTree window:
+s.plotTree // This also changes the interval of the NodeTreeView instance assigned to variable d, since there is currently only one updater for this class.
+
+// Stop the plotting process for NodeTreeView instance assigned to variable d:
+d.stop
+
+// Stop the playback of the pattern:
+x.stop
+
+// Close the NodeTreeView instance assigned to variable d:
+d.close
+::

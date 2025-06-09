@@ -27,6 +27,11 @@ list::
 ## link::Classes/SymbolArray:: - symbols
 ::
 
+note::
+The overflow/underflow behavior of an element in a DoubleArray is undefined but usually code::inf::/code::-inf::, respectively. This occurs whenever the result of an operation does not fit in the range of values supported by the return type, in this case, a 64-bit floating point number. 
+See the note in link::Classes/Float::.
+::
+
 INSTANCEMETHODS::
 
 method::readFromStream

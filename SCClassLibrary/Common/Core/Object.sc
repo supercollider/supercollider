@@ -11,13 +11,9 @@ Object {
 		// to actually put things in the object you need to
 		// add them.
 	}
-	*newCopyArgs { arg ... args;
+	*newCopyArgs { | ... args, kwargs |
 		_BasicNewCopyArgsToInstVars
 		^this.primitiveFailed
-		// creates a new instance that can hold up to maxSize
-		// indexable slots. the indexed size will be zero.
-		// to actually put things in the object you need to
-		// add them.
 	}
 
 	// debugging and diagnostics
@@ -80,6 +76,10 @@ Object {
 		_ObjectPerformArgs;
 		^this.primitiveFailed
 	}
+	superPerformArgs { |selector, args, kwargs|
+		_ObjectSuperPerformArgs;
+		^this.primitiveFailed
+	}
 	performMsg { |msg|
 		_ObjectPerformMsg;
 		^this.primitiveFailed
@@ -95,6 +95,9 @@ Object {
 	functionPerformList { | ...args, kwargs|
 		// perform only if Function. see Function-functionPerformList
 		^this
+	}
+	valueArgs { | args, kwargs|
+		^this.performArgs(\value, args, kwargs)
 	}
 
 	// super.perform(selector,arg) doesn't do what you might think.

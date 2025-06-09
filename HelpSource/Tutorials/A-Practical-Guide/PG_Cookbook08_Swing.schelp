@@ -1,7 +1,7 @@
 title:: Pattern Guide Cookbook 08: Swing
 summary:: A filter pattern that turns equal rhythmic divisions into swung notes
 related:: Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations, Tutorials/A-Practical-Guide/PG_Ref01_Pattern_Internals
-categories:: Streams-Patterns-Events>A-Practical-Guide
+categories:: Streams-Patterns-Events>A-Practical-Guide, Tutorials>Pattern-Guide
 
 section:: Converting equal divisions into "swing"
 

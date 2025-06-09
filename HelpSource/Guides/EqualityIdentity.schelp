@@ -1,0 +1,171 @@
+title:: Identity and Equality in SuperCollider
+summary:: Distinction between reference equality ("identity", ===) and value equality ("equality", ==) in SuperCollider
+categories:: Tutorials
+related:: Classes/Event, Classes/Float, Guides/Intro-to-Objects
+
+The distinction between identity and equality connects to wider issues in philosophy, logic, and computer science.footnote::
+For philosophical background see link::https://plato.stanford.edu/archives/fall2022/entries/identity/##Noonan/Curtis 2022::.
+What SuperCollider calls Identity and Equality roughly correspond to what philosophy calls "numeric identity" and "relative identity," respectively; and more precisely, to what computer science calls "reference equality" and "value equality," respectively.
+(E.g., link::https://web.mit.edu/6.102/www/sp23/classes/10-equality/#reference_equality_vs_value_equality#Miller/Goldman 2023::, accessed May 2025.) ::
+
+The present discussion is more narrowly concerned with an overview of how the distinction is understood in SuperCollider.
+
+section:: Two objects that are equal to each other are not necessarily identical.
+
+Note:: The word "object" here refers to emphasis::instances:: of classes, not to the abstract class link::Classes/Object::.
+See link::Guides/Intro-to-Objects::.::
+
+A factory may produce thousands of screwdrivers each day that are all emphasis::equal:: to each other with respect to some specification; but each single screwdriver is emphasis::identical:: only to itself (because it occupies this particular location at this particular time, or has a particular serial number stamped on it).
+Thus we can say that identity, the relation of an object to itself, is a stronger relation than equality, the relation of an object so some other object with respect to a common property.
+
+Likewise, in SuperCollider, identity of objects created in sclang is accounted for through their location in memory.footnote::
+Exception: For primitives (such as numbers and symbols), an object's identity is tied directly to its value.
+::
+
+code::
+a = [1,2,3];
+b = [1,2,3];
+a === a // -> true: identity as relation of an object (a) to itself.
+a == a // -> true; identical objects are necessarily equal.
+a === b // -> false; because a and b are distinct objects by virtue of their memory locations.
+a == b // -> true; equal objects need not be identical.
+::
+
+In the above example, a and b were emphasis::different:: instances of the link::Classes/Array:: class, each with their own memory address.
+You can query said address through the code::.dump:: method:
+
+
+code::
+a.dump;
+b.dump;
+::
+
+For newcomers to programming, it may be sufficient to be aware of this difference:
+
+strong::The === (identity) and == (equality) methods are not interchangeable, and mean different things.::
+
+In most cases, code::==:: behaves as "naively" expected. For instance,  from high school math, we expect code::5 == 5.0:: to return code::true::; and it does.footnote::
+An important exception is floating-point arithmetics, where expressions like code::0.1 * 3 == 0.3:: may return false.
+However, this is not strictly speaking an issue with emphasis::equality::, but with floating-point representation (see link::Classes/Float::).
+::
+
+The behavior of code::===::, on the other hand, depends more on lower-level implementation, and in some cases may at first seem counter-intuitive.
+
+The following two examples illustrate the difference further with respect to two relevant use cases:
+Copying the contents of a variable rather than merely assigning it to another variable (a distinction fundamental to programming, not just in SuperCollider);
+and indexing into an instance of link::Classes/IdentityDictionary:: or link::Classes/Event:: (specific to SuperCollider).
+
+subsection:: Where the distinction matters: Creating multiple instances from an object given in one variable using the .copy method
+
+The above example assigned each variable to an instance of an array code::[1,2,3]::, and demonstrated that the variables now point do distinct memory locations, hence their contents are not identical.
+However, when a variable is assigned to another emphasis::variable:: rather than to an object instance, no new instance is created; instead, both variables will refer to the same object, at the same location in memory.
+This is relevant in practice when you want to modify a given list in multiple distinct ways, but that list only exists in one variable.
+The problem then becomes one of creating multiple equal but non-identical instances from just this one variable. The following example does not work as desired:
+
+code::
+x = ['C', 'E', 'G']; // C major
+y = x; // this will cause trouble in a moment.
+z = x; // this too.
+// x equals y and z at this point.
+// now change last note in y to get a minor:
+y[2] = 'A'; // -> ['C', 'E', 'A'] ... OK
+//change first note in z to get e minor;
+z[0] = 'B'; // -> ['B', 'E', 'A'] ... ; NOT what we wanted.
+//why this didn't work as hoped:
+x === y; // -> true: x and y point to the same List.
+y === z; // as does z.
+//We ended up modifying the original list twice,
+//even though we wanted to keep the original x and
+//get two distinct transformations from it...
+::
+
+Stacked fourths are nice, but we wanted to be boring here and just use triads.
+What we need to do is use the code::.copy:: method to create versions of the link::Classes/Array:: object referenced by code::x:: that are emphasis::equal but not identical to it::, so we can then modify them separately:
+
+code::
+x = ['C', 'E', 'G']; //C major
+y = x.copy;
+z = x.copy;
+x == y; // -> true
+x === y; // -> false
+// now change last note in y to get a minor:
+y[2] = 'A'; // -> ['C', 'E', 'A'] ... OK
+// change first note in z to get e minor;
+z[0] = 'B'; // -> ['B', 'E', 'G'] ... OK
+::
+
+Thus, the distinction between equality and identity is implicit in such simple instructions such as "paint this screwdriver green, and that one red." (Computers just need to be told these things in more formal terms.)
+
+subsection:: Where the distinction matters: Do not use Strings as keys for IdentityDictionary and Event.
+
+In link::Classes/Dictionary:: and its subclasses, the choice of lookup algorithm can impact performance.
+Using identity for this algorithm, as link::Classes/IdentityDictionary:: and link::Classes/Event:: do, is generally faster than usign equality, as link::Classes/Dictionary:: does.
+Therefore when using link::Classes/IdentityDictionary:: and link::Classes/Event:: keys should not be link::Classes/String::s, but link::Classes/Symbol::s.
+The following example demonstrates why:
+
+code::
+"String" == "String"; // -> true
+//what happens next may surprise you:
+"String" === "String"; // -> false
+//because each String object is a separate instance.
+
+//Dictionary with a String key (works):
+x = Dictionary.new();
+x.put("String",1234);
+x["String"] // -> 1234
+
+//IdentityDictionary with a String key (won't work):
+y = IdentityDictionary.new();
+y.put("String",1234);
+y["String"] // -> nil
+
+//Event with a String key (wont'work):
+z = (); //Shorthand for z = Event.new()
+z.put("String", 1234) // -> ("String":1234)
+z["String"] // -> nil
+//... because the String instances are not identical!
+
+//Symbols to the rescue:
+z.put('Symbol', 5678) // -> ('Symbol':5678)
+z['Symbol'] // -> 5678
+::
+
+section:: Implementation details
+
+subsection:: Values with unique representations: Symbol, SimpleNumber, and more.
+
+Why does link::Classes/Symbol:: work to index into an link::Classes/IdentityDictionary::, while link::Classes/String:: does not?
+Because each link::Classes/Symbol:: has a strong::unique representation:: such that code::'symbol':: and code::'symbol'::will always point to the same memory location, regardless of where they sit in the code.
+Thus, the instance that is passed to the argument of the code::.at:: method of the dictionary is emphasis::identical::, rather than just emphasis::equal::, to the instance that serves as the key argument to the dictionary.
+
+Other examples of classes with unique representations are link::Classes/SimpleNumber:: and its subclasses (link::Classes/Integer::, link::Classes/Float::):
+Each reference to a link::Classes/Float:: of a given value (say 1.234) points to one and the same instance.
+(Of course, this instance is not identical to floats of a different value, e.g. 1.23400001.)
+
+As we have seen, this was emphasis::not:: the case for link::Classes/String::,
+where each occurrence of a link::Classes/String:: in the code will create a emphasis::new:: instance rather than pointing to an exiting instance of the same value.
+It is also generally emphasis::not:: the case for link::Classes/Collection::s.
+We have already seen this for link::Classes/Array::s; here is a similar example for link::Classes/Set::s.
+
+code::
+Set[1,2,3] === Set[1,2,3] // -> false
+::
+
+subsection:: Unless overridden by a subclass, checking for equality defaults to checking for identity.
+Not all classes explicitly implement a code::==:: method.
+In that case, code::==:: simply defaults to code::===::.
+An instance of this is link::Classes/Function::,footnote::
+The reason for this, at least for functions, lies ultimately in the undecideability of the "Halting Problem."
+See link::https://plato.stanford.edu/archives/win2021/entries/computability/#HalPro#Immermann2021::.
+::
+where the following behavior may be surprising:
+
+code::
+{1} == {1} // -> false!
+::
+To understand this behavior, we must know two things:
+First, instances of link::Classes/Function:: do not have unique representations, that is, like link::Classes/String:: (mentioned above), each code::{1}:: expression in the code is assigned a separate instance.
+Thus code::{1} === {1}:: will return code::false::.
+Second, emphasis::unlike:: link::Classes/String::, link::Classes/Function:: does not implement a code::==:: method, and therefore its code::==:: defaults to code::===::. 
+code::{1} == {1}:: is thus really a question about whether the two functions designate the same object instance in memory, 
+i.e. whether code::{1} === {1}::---which, as we just learned, returns code::false::.

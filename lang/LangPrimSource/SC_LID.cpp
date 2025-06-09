@@ -54,6 +54,7 @@
 #    include <sys/types.h>
 #    include <unistd.h>
 
+
 #    define BITS_PER_LONG (sizeof(long) * 8)
 #    define NBITS(x) ((((x)-1) / BITS_PER_LONG) + 1)
 #    define OFF(x) ((x) % BITS_PER_LONG)
@@ -103,9 +104,9 @@ struct SC_LID {
     PyrObject* m_obj;
     int m_fd;
     int m_lastEventType;
-    unsigned long m_eventTypeCaps[NBITS(EV_MAX)];
-    unsigned long m_eventCodeCaps[NBITS(KEY_MAX)];
-    unsigned long m_keyState[NBITS(KEY_MAX)];
+    std::uint64_t m_eventTypeCaps[NBITS(EV_MAX)];
+    std::uint64_t m_eventCodeCaps[NBITS(KEY_MAX)];
+    std::uint64_t m_keyState[NBITS(KEY_MAX)];
 };
 
 // =====================================================================

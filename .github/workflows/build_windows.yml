@@ -13,23 +13,25 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "32-bit"
+          - job-name: "32-bit with ctest"
             fftw-arch: "x86"
             cmake-arch: "Win32"
-            os-version: "2019"
+            os-version: "2022"
             qt-version: "5.15.2"
             qt-arch: "win32_msvc2019"
             fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip"
-            cmake-generator: "Visual Studio 16 2019"
-            vcvars-script-path: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars32.bat"
+            cmake-generator: "Visual Studio 17 2022"
+            vcvars-script-path: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
             vcpkg-triplet: x86-windows-release
             use-qtwebengine: "ON" # might need to be turned off for MinGW
             qt-modules: "qtwebengine"
+            ctest: true
+            ctest-cmd: "RUN_TESTS"
             # artifact-suffix: "win32" # set if needed - will trigger artifact upload
             # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             # installer-suffix: "win32-installer"
 
-          - job-name: "64-bit MSVC 2022"
+          - job-name: "64-bit MSVC 2022 with ctest"
             fftw-arch: "x64"
             cmake-arch: "x64"
             os-version: "2022"
@@ -41,24 +43,13 @@ jobs:
             vcpkg-triplet: x64-windows-release
             use-qtwebengine: "ON" # might need to be turned off for MinGW
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            ctest: true
             artifact-suffix: "win64" # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: "win64-installer"
+            ctest-cmd: "RUN_TESTS"
 
-          - job-name: "64-bit MSVC 2019"
-            fftw-arch: "x64"
-            cmake-arch: "x64"
-            os-version: "2019"
-            qt-version: "6.7.3"
-            qt-arch: "win64_msvc2019_64"
-            fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip"
-            cmake-generator: "Visual Studio 16 2019"
-            vcvars-script-path: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-            vcpkg-triplet: x64-windows-release
-            use-qtwebengine: "ON" # might need to be turned off for MinGW
-            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
-
-          - job-name: "64-bit MinGW"
+          - job-name: "64-bit MinGW with ctest"
             fftw-arch: "x64"
             os-version: "2022"
             qt-version: "6.7.0"
@@ -69,6 +60,8 @@ jobs:
             use-qtwebengine: "OFF" # might need to be turned off for MinGW
             qt-modules: "qtpositioning"
             artifact-suffix: "win64-mingw" # set if needed - will trigger artifact upload
+            ctest: true
+            ctest-cmd: "test"
 
     name: Windows ${{ matrix.job-name }}
     env:
@@ -104,7 +97,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-
 
       - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           modules: ${{ matrix.qt-modules }}
           version: ${{ matrix.qt-version }}
@@ -197,3 +190,14 @@ jobs:
         with:
           name: ${{ env.INSTALLER_FILE }}
           path: ${{ env.INSTALL_PATH }}/*.exe
+
+      - name: Configure CTests
+        if: matrix.ctest
+        run: cd ${{ github.workspace }}
+
+      - name: Run CTests
+        continue-on-error: true
+        if: matrix.ctest
+        working-directory: ${{ env.BUILD_PATH }}
+        shell: cmd
+        run: cmake --build . --config Release --target ${{ matrix.ctest-cmd }}

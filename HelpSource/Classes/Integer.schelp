@@ -1,12 +1,14 @@
 class:: Integer
-summary:: Integer number
+summary:: 32-bit Integer number
 categories:: Math
 
 description::
-A 32 bit integer. Integer inherits most of its behaviour from its superclass.
+A 32-bit integer. Integer inherits most of its behaviour from its superclass, link::Classes/SimpleNumber::.
 
 note::
-A 32 bit signed integer can represent values in the range -2147483648 to 2147483647. Adding up further returns in a wrapped result, so that and 2147483647+1 = -2147483648. For a larger range, one can use link::Classes/Float::, which is 64 bit and supports many (but not all) numerical methods that int does.
+Integer can represent values in the range -2147483648 (code::-2^31::) to 2147483647 (code::2^31 - 1::).
+
+The overflow behavior of an Integer is undefined. This occurs whenever the result of an operation does not fit in the range of values supported by the return type, in this case, a 32-bit signed integer. Consider using the 64-bit link::Classes/Float:: for larger numbers (up to code::±2^53::).
 ::
 
 
@@ -225,6 +227,35 @@ Addition.
 
 method:: -
 Subtraction.
+
+method:: modSeaside
+
+Pre-3.14 modulo with unexpected behavior for negative integer modulus.
+
+For dividends smaller than a negative divisor, modSeaside pulls the resulting remainder below the divisor.
+It thereby leaves zero as peaks on the zero line. Like in the usual mod, all larger dividends result in remainders above zero.
+
+code::
+(..-9).mod(-3);
+// returns [0, -1, -2, 0, -1, -2, 0, -1, -2, 0]
+(..-9).modSeaside(-3);
+// returns [0, 2, 1, 0, -4, -5, 0, -4, -5, 0]
+
+// plot
+(-25..25).modSeaside(-5).plot.plotMode_(\steps);
+
+// modSeaside
+Pbind(\note, modSeaside(Pseries(-15, 1, 25), -5), \dur, 0.2).play;
+
+// modSeaside with different divisors
+Pbind(\note, modSeaside(Pseries(-15, 1, 25), [3, -4, -5]), \dur, 0.2).play;
+
+// mod
+Pbind(\note, mod(Pseries(-15, 1, 25), -5), \dur, 0.2).play;
+
+// mod with different divisors
+Pbind(\note, mod(Pseries(-15, 1, 25), [3, -4, -5]), \dur, 0.2).play;
+::
 
 method:: clip
 returns::
