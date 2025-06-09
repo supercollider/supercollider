@@ -331,6 +331,8 @@ Object {
 		OnError.run;
 		this.prHalt
 	}
+	// _Halt will exit the intrepreter, but isn't buy itself an error, see Integer.exit.
+	// Object.halt does trigger OnError.
 	prHalt {
 		_Halt
 		^this.primitiveFailed
