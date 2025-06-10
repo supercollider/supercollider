@@ -3,31 +3,41 @@ summary:: flow control
 categories:: Language
 related:: Classes/Boolean
 
-Control structures in SuperCollider are implemented via message sends. Here are a few of those available.
-See link::Reference/Syntax-Shortcuts:: for the various ways expressions can be written.
+Control structures in SuperCollider are implemented via message sends (written as methods called on a receiver). 
+Here are a few of those available. 
+Note that while the syntax can look C-like, code::if, while,:: etc. are emphasis::not:: keywords in SuperCollider but methods.
+See link::Reference/Syntax-Shortcuts:: for the various ways conditional expressions can be written.
 
 section:: Basic Control Structures
 
 method:: if
 
-Conditional execution is implemented via the code::if:: message. The code::if:: message is sent to an expression which must return a link::Classes/Boolean:: value.
+Conditional execution is implemented via the code::if:: message. 
+The code::if:: message is sent to an expression which must return a link::Classes/Boolean:: value.
 
-In addition it takes two arguments: a function to execute if the expression is true and another optional function to execute if the expression is false. The code::if:: message returns the value of the function which is executed. If the falseFunc is not present and the expression is false then the result of the if message is nil.
+In addition it takes two arguments: a function to execute if the expression is true, 
+and another optional function to execute if the expression is false. 
+The code::if:: message returns the value of the function which is executed. 
+If the falseFunc is not present and the expression is false, then the result of the if message is nil.
 
 discussion::
 Syntax
 code::
-if(expr) { true body } { false body };
+// receiver notation, reflects the above eplanation
+// but in practice is hard to read and rarely used
+expr.if (trueFunc, falseFunc);
 
-// alternate
+// function call notation
 if(expr, trueFunc, falseFunc);
 
-// possible but harder to read, so, not preferred
-expr.if (trueFunc, falseFunc);
+// function call notation with trailing argument block
+// looks like C. 
+if(expr) { trueBody } { falseBody };
 ::
 
 Examples
 code::
+// function call notation with trailing argument block
 (
 if([false, true].choose) {
 	"expression was true".postln  // true function
@@ -42,11 +52,20 @@ z = if(a < 5) { 100 } { 200 };
 z.postln;
 )
 
+// no falseBody, expr is true
 (
 var x;
 if(x.isNil) { x = 99 };
 x.postln;
 )
+
+// no falseBody, expr is false
+(
+var x = 1;
+if(x < 0) { x = 99 };
+x.postln;
+)
+
 ::
 
 
