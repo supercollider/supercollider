@@ -7,7 +7,7 @@ method:: if
 
 section::Basic examples
 
-This section focuses solely on the basic writing style. For various writing styles of code::if::, refer to link::Reference/Control-Structures::.
+This section uses the emphasis::function call syntax:: for code::if::. For various alternate syntaxes (e.g., the frequently used emphasis::function call with trailing arguments:: notation), see link::Reference/Control-Structures#if:: or link::Reference/Syntax-Shortcuts#Sending messages, calling functions, and instantiating objects::.
 
 code::
 if ( [false, true].choose,				// Boolean expression (chooses one at random)
