@@ -31,7 +31,7 @@ class QcButton : public QPushButton, QcHelper, QtCollider::Style::Client {
     Q_PROPERTY(int value READ getValue WRITE setValue);
     Q_PROPERTY(QColor focusColor READ focusColor WRITE setFocusColor);
     Q_PROPERTY(QcMenu* menu READ qcmenu WRITE setQcMenu);
-    Q_PROPERTY(const QtCollider::SharedImage& icon READ icon WRITE setIcon);
+    Q_PROPERTY(const QSharedPointer<QtCollider::Image>& icon READ icon WRITE setIcon);
 
 public:
     QcButton();
