@@ -29,6 +29,13 @@ list::
 ## mark code:: SetResetFF :: explicitly as unipolar, this changes output levels when using code:: range :: – e.g. if you have used code:: .range(0, 1) ::, it had assumed bipolar default so far and returned a range of code:: [0.5, 1] ::.) by @capital-G in https://github.com/supercollider/supercollider/pull/6023
 ## code:: Set.remove :: now returns the item removed by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6409
 ## fix Dictionary code:: trueAt :: by @telephon in https://github.com/supercollider/supercollider/pull/6001, and @mtmccrea in https://github.com/supercollider/supercollider/pull/6335 This changes behavior as follows:
+
+table::
+## strong::trueAt:: || strong::obj:: || strong::nil:: || strong::true:: || strong::false::
+## previous: || obj || false || true || false
+## new: || false || false || true || false
+::
+
 ::
 
 section:: New Contributors
