@@ -49,10 +49,12 @@ ScProcess::ScProcess(Settings::Manager* settings, QObject* parent):
     mCompiled(false) {
     prepareActions(settings);
 
-    connect(this, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    connect(this, SIGNAL(readyReadStandardOutput()), this, SLOT(onReadAllStandardOutput()));
+    connect(this, SIGNAL(readyReadStandardError()), this, SLOT(onReadAllStandardError()));
     connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
     connect(this, SIGNAL(stateChanged(QProcess::ProcessState)), this,
             SLOT(onProcessStateChanged(QProcess::ProcessState)));
+    this->setProcessChannelMode(QProcess::SeparateChannels);
 }
 
 void ScProcess::prepareActions(Settings::Manager* settings) {
@@ -197,16 +199,26 @@ void ScProcess::stopMain(void) { evaluateCode("thisProcess.stop", true); }
 void ScProcess::showQuarks(void) { evaluateCode("Quarks.gui", true); }
 
 
-void ScProcess::onReadyRead(void) {
+void ScProcess::onReadAllStandardOutput(void) {
     if (mTerminationRequested) {
         // when stopping the language, we don't want to post for longer than 200 ms to prevent the UI to freeze
         if (QDateTime::currentDateTimeUtc().toMSecsSinceEpoch() - mTerminationRequestTime.toMSecsSinceEpoch() > 200)
             return;
     }
 
-    QByteArray out = QProcess::readAll();
+    QByteArray out = readAllStandardOutput();
     QString postString = QString::fromUtf8(out);
     emit scPost(postString);
+}
+
+void ScProcess::onReadAllStandardError(void) {
+    if (mTerminationRequested) {
+        // when stopping the language, we don't want to post for longer than 200 ms to prevent the UI to freeze
+        if (QDateTime::currentDateTimeUtc().toMSecsSinceEpoch() - mTerminationRequestTime.toMSecsSinceEpoch() > 200)
+            return;
+    }
+    QByteArray out = readAllStandardError();
+    emit scPost("ERROR: " + QString::fromUtf8(out));
 }
 
 void ScProcess::evaluateCode(QString const& commandString, bool silent) {
