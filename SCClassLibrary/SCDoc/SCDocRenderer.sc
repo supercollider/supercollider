@@ -886,22 +886,22 @@ SCDocHTMLRenderer {
 			node.children.do {|n|
 				switch(n.id,
 					\DESCRIPTION, {
-						stream << "<li class='toc1'><a href='#description'>- Description</a></li>\n";
+						stream << "<li class='toc1'><a href='#description'>Description</a></li>\n";
 						this.renderTOC(stream, n);
 					},
 					\EXAMPLES, {
-						stream << "<li class='toc1'><a href='#examples'>- Examples</a></li>\n";
+						stream << "<li class='toc1'><a href='#examples'>Examples</a></li>\n";
 						this.renderTOC(stream, n);
 					},
 					\CLASSMETHODS, {
 						if(n.notPrivOnly) {
-							stream << "<li class='toc1'><a href='#classmethods'>- Class methods</a></li>\n";
+							stream << "<li class='toc1'><a href='#classmethods'>Class methods</a></li>\n";
 							this.renderTOC(stream, n);
 						};
 					},
 					\INSTANCEMETHODS, {
 						if(n.notPrivOnly) {
-							stream << "<li class='toc1'><a href='#instancemethods'>- Instance methods</a></li>\n";
+							stream << "<li class='toc1'><a href='#instancemethods'>Instance methods</a></li>\n";
 							this.renderTOC(stream, n);
 						};
 					},
@@ -928,17 +928,17 @@ SCDocHTMLRenderer {
 					},
 
 					\SECTION, {
-						stream << "<li class='toc1'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>- "
+						stream << "<li class='toc1'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
 						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
 						this.renderTOC(stream, n);
 					},
 					\SUBSECTION, {
-						stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>- "
+						stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
 						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
 						this.renderTOC(stream, n);
 					},
 					\SUBSUBSECTION, {
-						stream << "<li class='toc3'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>- "
+						stream << "<li class='toc3'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
 						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
 						this.renderTOC(stream, n);
 					}
