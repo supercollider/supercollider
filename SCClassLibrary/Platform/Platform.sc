@@ -262,6 +262,12 @@ Platform {
 
 		"#".dup(40).join.postln;
 	}
+
+	*exampleDir {
+		^(Platform.resourceDir +/+ "examples")
+		.replace("/SuperCollider.app/Contents/Resources", "")
+	}
+
 }
 
 UnixPlatform : Platform {

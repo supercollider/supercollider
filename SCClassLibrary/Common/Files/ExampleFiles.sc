@@ -10,4 +10,9 @@ ExampleFiles {
 	*child {
 		^Platform.resourceDir +/+ "sounds" +/+ "a11wlk01.wav";
 	}
+
+	*folder {
+		^(Platform.resourceDir +/+ "examples")
+		.replace("/SuperCollider.app/Contents/Resources", "")
+	}
 }
