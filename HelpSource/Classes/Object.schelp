@@ -607,8 +607,8 @@ method::superPerformArgs
 
 Like performLArgs, superPerformArgs calls a method, however it calls the method on the superclass.
 selector: A Symbol representing a method selector.
-args: Method arguments. If the last argument is a List or an Array, then its elements are unpacked and passed as arguments.
-kwargs: Keyword arguments, are passed as keyword arguments.
+args: Method arguments.
+kwargs: Keyword arguments, are passed as key value pairs.
 
 method::multiChannelPerform
 Perform selector with multichannel expansion. See also: link::Guides/Multichannel-Expansion::.
