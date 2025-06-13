@@ -13,9 +13,46 @@ The keys used in a Pbind are usually determined by link::Classes/Event::'s defau
 ClassMethods::
 
 method::new
-The arguments to Pbind are an alternating sequence of keys and patterns, this can alternatively be specified using keyword arguments.
+The arguments to Pbind are an alternating sequence of keys and patterns.
+
+code::
+Pbind(\note, Pseq([0, 4, 7]), \amp, 0.1, \dur, 0.2).play
+::
+
+The message code::new:: converts keyword arguments into key value pairs, so that we can write:
+
+code::
+Pbind(note: Pseq([0, 4, 7]), amp: 0.1, dur: 0.2).play
+::
+
+
 A pattern can also be bound to an array of keys.
 In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
+
+code::
+Pbind([\note, \amp], Pseq([[0, 0.05],  [4, 0.5],  [7, 0.1]]), dur: 0.2).play
+::
+
+InstanceMethods::
+
+method::patternpairs
+The defined key value pairs mapping symbols to value patterns.
+code::
+Pbind(x:7, y:Pseq([1, 2, 3])).patternpairs
+::
+
+method::embedInStream
+From within a link::Classes/Stream:: like e.g. link::Classes/Routine::, yield all events from this pattern before continuing. One pattern can be used to produce values for any number of independent streams.
+
+argument::inevent
+An event that is passed into all substreams and is used by them to produce the output events.
+
+code::
+a = Pbind(note: Pseq([0, 4, 7]), amp: 0.1, dur: 0.2);
+r = Routine { |inevent| (note:9, dur: 1).yield;  a.embedInStream(inevent);  };
+r.nextN(5, (x:7)); // passing in an event for the next 5 values from r, \x of 7 is passed through the Pbind stream
+::
+
 
 Examples::
 
