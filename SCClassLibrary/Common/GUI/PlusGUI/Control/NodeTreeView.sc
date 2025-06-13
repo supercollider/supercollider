@@ -17,7 +17,7 @@ NodeTreeView {
 		if(parent.isNil) {
 			window = Window(this.asString, bounds, scroll:true);
 		} {
-			window = if((parent.class.asString == "View")) {
+			window = if((parent.isKindOf(View))) {
 				parent.scroll(bounds: parent.bounds.moveTo(0, 0), hasVerticalScroller: true)
 			} {
 				window = parent
@@ -27,7 +27,7 @@ NodeTreeView {
 
 		view = UserView(
 			window,
-			if((parent.class.asString == "View"))
+			if((parent.isKindOf(View)))
 			{
 				window.bounds.resizeBy(-4)
 			} {
