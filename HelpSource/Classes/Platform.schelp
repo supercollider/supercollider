@@ -92,7 +92,7 @@ method::postBugReportInfo
 Post system information that is useful to attach to bug reports.
 
 method::exampleDir
-returns:: The full path of the example folder as a LINK::Classes/String::
+returns:: The full path of the code::examples:: folder as a LINK::Classes/String::
 
 subsection:: Features
 
