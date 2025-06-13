@@ -80,7 +80,7 @@ subsection:: New classes
 
 list::
 ## Add link::Classes/ExampleFiles:: class by @capital-G in https://github.com/supercollider/supercollider/pull/6685 and @tedmoore https://github.com/supercollider/supercollider/pull/6720
-## link::Classes/NodeTreeView:: class. Server.plotTree creates an  instance of it. by @prko and @dyfer in https://github.com/supercollider/supercollider/pull/6282, https://github.com/supercollider/supercollider/pull/6834, https://github.com/supercollider/supercollider/pull/6913, https://github.com/supercollider/supercollider/pull/6917, https://github.com/supercollider/supercollider/pull/6914
+## link::Classes/NodeTreeView:: class. Server.plotTree creates an  instance of it. by @prko, @telephon, and @dyfer in https://github.com/supercollider/supercollider/pull/6282, https://github.com/supercollider/supercollider/pull/6834, https://github.com/supercollider/supercollider/pull/6913, https://github.com/supercollider/supercollider/pull/6917, https://github.com/supercollider/supercollider/pull/6914
 ::
 
 subsection:: New methods
