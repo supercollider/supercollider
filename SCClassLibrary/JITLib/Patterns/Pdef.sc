@@ -709,8 +709,8 @@ Pdef : EventPatternProxy {
 PbindProxy : Pattern {
 	var <>pairs, <source;
 
-	*new { arg ... pairs;
-		^super.newCopyArgs(pairs).init
+	*new { | ... pairs, kwargs |
+		^super.newCopyArgs(pairs ++ kwargs).init
 	}
 	init {
 		forBy(0, pairs.size-1, 2) { arg i;
@@ -777,8 +777,9 @@ PbindProxy : Pattern {
 
 
 Pbindef : Pdef {
-	*new { arg key ... pairs;
+	*new { | key ... pairs, kwargs |
 		var pat, src;
+		pairs = pairs ++ kwargs;
 		pat = super.new(key);
 		if(pairs.isEmpty.not) {
 			src = pat.source;
