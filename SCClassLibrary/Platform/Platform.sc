@@ -265,7 +265,6 @@ Platform {
 
 	*exampleDir {
 		^(Platform.resourceDir +/+ "examples")
-		.replace("/SuperCollider.app/Contents/Resources", "")
 	}
 
 }

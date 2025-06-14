@@ -13,6 +13,5 @@ ExampleFiles {
 
 	*folder {
 		^(Platform.resourceDir +/+ "examples")
-		.replace("/SuperCollider.app/Contents/Resources", "")
 	}
 }
