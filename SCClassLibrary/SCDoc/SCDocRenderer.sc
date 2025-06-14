@@ -1040,6 +1040,12 @@ SCDocHTMLRenderer {
 
 		this.renderHeader(stream, doc, body);
 		this.renderChildren(stream, body);
+
+		if(doc.isClassDoc) {
+			var scCodeLink = "https://sccode.org/tag/class/%".format(doc.klass);
+			stream << ("<br><a href=\"%\">Community examples</a>".format(scCodeLink));
+		};
+
 		this.renderFootNotes(stream);
 		this.renderFooter(stream, doc);
 		currDoc = nil;
