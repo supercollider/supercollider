@@ -53,7 +53,7 @@ if(APPLE)
     endif()
 
     set(AdditionalStaticFiles ${Examples} ${Sounds})
-+   foreach(file ${AdditionalStaticFiles})
+    foreach(file ${AdditionalStaticFiles})
         string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
         get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
         set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
