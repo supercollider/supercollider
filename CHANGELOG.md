@@ -43,7 +43,7 @@ Release dates of 3.x versions:
 - 3.11: 2020-03-08
 - 3.12: 2021-08-02
 - 3.13: 2023-02-19
-- 3.14: 2024-06-06
+- 3.14: 2025-06-06
 
 3.14.0 (2025-06-06)
 ===================
@@ -384,11 +384,12 @@ This change makes a number of new things possible, e.g.
 - [Windows] switch system calls to UTF-16 by @dyfer in https://github.com/supercollider/supercollider/pull/6124
 - Fix for GCC 14 by @Spacechild1 in https://github.com/supercollider/supercollider/pull/6436
 - Removed beaglebone platform by @redFrik in https://github.com/supercollider/supercollider/pull/6751
+- Updated raspberry pi build instructions by @redFrik in https://github.com/supercollider/supercollider/pull/6906
 - Bump hidapi to cmake 3.12 by @capital-G in https://github.com/supercollider/supercollider/pull/6954
 
 ### Documentation changes
 
-@SimonDeplat, @prko, @JordanHendersonMusic, @martindupras, @jamshark70, @mlang, @tedmoore, @capital-G, @telephon, @HotwheelsSisyphus, @OzelotVanilla, @passyur, @mtmccrea, @cdbzb, @redFrik, @juergenrmayer, @paum3, @miczac, @madskjeldgaard, @carltesta, @redFrik, @Shu-AFK, @elifieldsteel, @alexyuwen @mxw
+@SimonDeplat, @prko, @JordanHendersonMusic, @martindupras, @jamshark70, @mlang, @tedmoore, @capital-G, @telephon, @HotwheelsSisyphus, @OzelotVanilla, @passyur, @mtmccrea, @cdbzb, @redFrik, @juergenrmayer, @paum3, @miczac, @madskjeldgaard, @carltesta, @Shu-AFK, @elifieldsteel, @alexyuwen @mxw
 
 ### Tests
 
