@@ -11,7 +11,7 @@ ExampleFiles {
 		^Platform.resourceDir +/+ "sounds" +/+ "a11wlk01.wav";
 	}
 
-	*folder {
+	*dir {
 		^(Platform.resourceDir +/+ "examples")
 	}
 }
