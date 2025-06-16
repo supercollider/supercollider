@@ -492,7 +492,7 @@ code::
 // Using Routine to set button states on the fly.
 (
 var update, w, b;
-w = Window.new("State Window", Rect(150, Window.screenBounds.height-140, 380, 60));
+w = Window.new("State Window", Rect(150, Window.screenBounds.height - 140, 380, 60));
 
 // a convenient way to set the button label
 update = {

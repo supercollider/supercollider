@@ -211,7 +211,6 @@ method:: hasFeature
 Return true if the feature aSymbol is present in the runtime system. aSymbol can refer to explicitly declared features as well as class and primitive names.
 code::
 thisProcess.platform.hasFeature(\Object);
-thisProcess.platform.hasFeature('_Window_BeginFullScreen');
 thisProcess.platform.hasFeature('_myFuncyPrimitive');
 
 thisProcess.platform.declareFeature('superCrazyCompositionSystem');
