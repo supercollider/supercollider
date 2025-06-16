@@ -9,7 +9,20 @@ keeps a reference to a link::Classes/Pbind:: in which single keys can be replace
 ClassMethods::
 
 method::new
-create a new instance of PbindProxy with the given patternpairs
+Return a new instance of PbindProxy with the given patternpairs. Unlike link::Classes/Pbindef::, it has no internal name.
+
+code::
+a = PbindProxy(\note, Pseq([0, 7, 9], inf), \dur, 0.2).play;
+a.set(\note, Pseq([0, 6, 10]));
+a.stop;
+::
+
+It also supports keyword argument syntax:
+
+code::
+a = PbindProxy(note: Pseq([0, 7, 9]), dur: 0.2).play;
+a.stop;
+::
 
 InstanceMethods::
 
@@ -32,12 +45,12 @@ Examples::
 
 code::
 (
-SynthDef("Pdefhelp", { |out, freq, sustain = 1, amp = 1, pan|
-	var env, u = 1;
-	env = EnvGen.kr(Env.perc(0.03, sustain), 1, doneAction: Done.freeSelf);
-	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1, 1.2) * d, 1) };
-	Out.ar(out, Pan2.ar(SinOsc.ar(u + 1 * freq, 0, amp * env), pan));
-}).add;
+	SynthDef(\Pdefhelp, { |out, freq, sustain = 1, amp = 1, pan|
+		var env, u = 1;
+		env = EnvGen.ar(Env.perc(0.03, sustain), 1, doneAction: Done.freeSelf);
+		5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1, 1.2) * d, 1) };
+		Out.ar(out, Pan2.ar(SinOsc.ar(u + 1 * freq, 0, amp * env), pan));
+	}).add;
 )
 s.boot;
 
@@ -60,16 +73,16 @@ x.set(\degree, Pseq([1, 2, 3, 4, 5, 6], 3), \dur, 0.02);
 x.play;
 
 x.set(\degree, Pseq([1, 2, 3, 4, 5, 6], 3), \dur, 0.1);
+x.set(\degree, Pseq([1b, 5, 3, 1b, 6, 2, 5, 0, 3, 0, 2], inf));
 x.play;
 
 
 // embed in other patterns:
 (
-x.set(\degree, Pseq([1b, 5, 3, 1b, 6, 2, 5, 0, 3, 0, 2], inf));
-Ppar([
-x,
-Pbindf(x, \ctranspose, 4)
-]).play;
+	Ppar([
+		x,
+		Pbindf(x, \ctranspose, 4)
+	]).play;
 )
 
 
