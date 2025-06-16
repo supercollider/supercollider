@@ -8,8 +8,7 @@ section:: Introduction
 A link::Classes/Function:: is an expression which defines operations to be performed when it is sent the code::value:: message. In functional languages, a function would be known as a lambda expression.
 Function definitions are enclosed in curly brackets code::{}::. Argument declarations, if any, follow the open bracket. Variable declarations follow argument declarations. An expression follows the declarations.
 code::
-{
-	|a, b, c|
+{ |a, b, c|
 	var d;
 	d = a * b;
 	c + d
@@ -30,7 +29,7 @@ f.(10, 200).postln;
 
 An empty function returns the value nil when evaluated.
 code::
-{}.().postln;
+{}.value.postln;
 ::
 
 Also the arguments can be called by name.
@@ -93,10 +92,11 @@ See link::Reference/Literals:: for more information.
 
 section:: Variable Arguments
 
-What happens if you don't know how many arguments a function should have?
-That is what variable arguments are for. There are two types.
+Variable arguments are how function catch an unknown number of arguments or keyword arguments. 
+There are two possible variable argument, the first for positional arguments and second for keyword arguments.
+They are marked by an ellipsis after any normal arguments.
 
-Written with an ellipsis at the end of the argument declaration, the first variable argument catches all remaining arguments in an link::Classes/Array::
+The first variable argument catches all remaining arguments in an link::Classes/Array::
 
 code::
 f = { |a ... args| "a: %, args: %".format(a, args) };
@@ -123,9 +123,16 @@ f.(1, 2, 3) // args: [1, 2, 3], kwargs: []
 f.(a: 10) // args: [], kwargs: [a, 10]
 
 f.(1, 2, 3, meow: 10, woof: 20) // args: [1, 2, 3], kwargs: [meow, 10, woof, 20]
+
 ::
 
 The use of keyword variable arguments is often paired with link::Classes/Object#-performArgs::.
+
+You cannot reassign the value of the variable arguments even if they share the same name.
+code::
+f = { |...args, kwargs| "args: %, kwargs: %".format(args, kwargs) };
+f.(args: 10, kwargs: 20) // args: [], kwargs: [args: 10, kwargs: 20]
+::
 
 
 anchor::[1]::
