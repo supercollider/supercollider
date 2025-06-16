@@ -86,19 +86,35 @@ PaDeviceIndex GetPaDeviceFromName(const char* device, bool isInput) {
     return paNoDevice;
 }
 
+PaDeviceIndex GetPaDefaultDevice(bool isInput) {
+#ifdef _WIN32
+    int hostApiCount = Pa_GetHostApiCount();
+    for (int i = 0; i < hostApiCount; ++i) {
+        const PaHostApiInfo* apiInfo = Pa_GetHostApiInfo(i);
+        if (apiInfo && apiInfo->type == paWASAPI) {
+            return isInput ? apiInfo->defaultInputDevice : apiInfo->defaultOutputDevice;
+            // while this may return noPaDevice, we don't fall back to Pa_GetDefault[Input|Output]Device here
+            // because this could lead to selecting devices with different APIs between input and output
+        }
+    }
+#endif
+    // use the default PortAudio devices if no WASAPI devices found or when not using Windows
+    return isInput ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice();
+}
+
 PaError TryGetDefaultPaDevices(PaDeviceIndex* inDevice, PaDeviceIndex* outDevice, int numIns, int numOuts,
                                double sampleRate) {
     if (numIns && !numOuts) {
         *outDevice = paNoDevice;
         auto maxChannels = (*inDevice != paNoDevice) ? Pa_GetDeviceInfo(*inDevice)->maxInputChannels : 0;
         return CheckDeviceSampleRateOrGetDefault(
-            inDevice, sampleRate, maxChannels, Pa_GetDefaultInputDevice(), "input",
+            inDevice, sampleRate, maxChannels, GetPaDefaultDevice(true), "input",
             [](PaStreamParameters& params, double sr) { return Pa_IsFormatSupported(&params, nullptr, sr); });
     } else if (!numIns && numOuts) {
         *inDevice = paNoDevice;
         auto maxChannels = (*outDevice != paNoDevice) ? Pa_GetDeviceInfo(*outDevice)->maxOutputChannels : 0;
         return CheckDeviceSampleRateOrGetDefault(
-            outDevice, sampleRate, maxChannels, Pa_GetDefaultOutputDevice(), "output",
+            outDevice, sampleRate, maxChannels, GetPaDefaultDevice(false), "output",
             [](PaStreamParameters& params, double sr) { return Pa_IsFormatSupported(nullptr, &params, sr); });
     } else if (numIns && numOuts) {
         // if one device is specified, let's try to open another one on matching api
@@ -148,8 +164,8 @@ PaError TryGetDefaultPaDevices(PaDeviceIndex* inDevice, PaDeviceIndex* outDevice
 
         // in case we still don't have a proper device, use default devices
         if (*inDevice == paNoDevice || *outDevice == paNoDevice) {
-            *inDevice = Pa_GetDefaultInputDevice();
-            *outDevice = Pa_GetDefaultOutputDevice();
+            *inDevice = GetPaDefaultDevice(true);
+            *outDevice = GetPaDefaultDevice(false);
             if (*inDevice != paNoDevice && *outDevice != paNoDevice)
                 fprintf(stdout, "Selecting default system input/output devices\n");
         }
