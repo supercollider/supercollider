@@ -9,7 +9,7 @@ section:: Version 3.14
 
 Summary of changes:
 list::
-## Decay and Decay2 accept new additional arguments;
+## Delay1 and Delay2 accept new additional arguments: predelay sample values can be set explicitly
 ## Added LevelComp pseudo-UGen, providing level compensation logic for
 multichannel mixing and panning
 ## GVerb teletype::roomsize:: modulation was fixed;
@@ -54,8 +54,8 @@ code::
 
 subsection:: Delay1
 list::
-## Added new argument teletype::x1:: for pre-delay (the value of first output sample,
-defaults to 0.0): teletype::Delay1.ar(in, mul, add, x1: 0.0)::.
+## Added new argument teletype::x1:: for pre-delay (the value of first output sample). New behavior:
+when running at audio rate, x1 defaults to 0.0, i.e. "silence" precedes the delayed input. At control rate, the default value is set to the first sample of in, i.e. the first input sample is held during the delay.
 ## Fixed initialization samples, changes first sample of output: a trigger on first sample wasn't delayed correctly, now it is.
 ## Initialization sample used to be the input's value, now is fixed to reflect first sample of output (0)
 ::
@@ -78,10 +78,10 @@ code::
 
 subsection:: Delay2
 list::
-## Added new arguments teletype::x1:: and teletype::x2:::
-teletype::Delay2.ar(in, mul, add, x1: 0.0, x2: 0.0)::. teletype::x2:: is second sample predelay (the value of first output sample,
-defaults to 0.0); teletype::x1:: is first sample predelay (the value of second output
-sample, defaults to 0.0).
+## Added new arguments teletype::x1:: and teletype::x2:: for explicitly setting
+predelay values. teletype::x2:: is second sample predelay (first
+output sample value); teletype::x1:: is first sample predelay (second output
+sample value). When running at audio rate, x1 and x2 default to 0.0, i.e. "silence" precedes the delayed input. At control rate, the default values are set to the first sample of in, i.e. the first input sample is held during the delay.
 ## Initialization samples. Changes first sample of output: a trigger on first sample wasn't delayed correctly, now it is.
 ::
 code::
