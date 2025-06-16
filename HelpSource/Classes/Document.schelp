@@ -580,14 +580,12 @@ loop {
 };
 
 Document.new("type some text")
-	.bounds_(Rect(100, SCWindow.screenBounds.height - 250, 400, 200))
 	.keyDownAction = { |doc, key| r.value(key) ; time = Main.elapsedTime };
 )
 
 // play back text in time
 (
-d = Document.new("type some text")
-	.bounds_(Rect(550, SCWindow.screenBounds.height-250, 400, 200));
+d = Document.new("type some text");
 fork({
 	a.do { |pair|
 		d.string = d.string ++ pair[0];

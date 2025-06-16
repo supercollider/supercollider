@@ -96,7 +96,7 @@ subsection:: Features
 method:: when
 Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
 code::
-Platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
+Platform.when(#[\Document, \Window], { "yeehah!".postln });
 ::
 
 instancemethods::
@@ -211,7 +211,6 @@ method:: hasFeature
 Return true if the feature aSymbol is present in the runtime system. aSymbol can refer to explicitly declared features as well as class and primitive names.
 code::
 thisProcess.platform.hasFeature(\Object);
-thisProcess.platform.hasFeature('_SCWindow_BeginFullScreen');
 thisProcess.platform.hasFeature('_myFuncyPrimitive');
 
 thisProcess.platform.declareFeature('superCrazyCompositionSystem');
@@ -221,5 +220,5 @@ thisProcess.platform.hasFeature('superCrazyCompositionSystem');
 method:: when
 Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
 code::
-thisProcess.platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
+thisProcess.platform.when(#[\Document, \Window], { "yeehah!".postln });
 ::
