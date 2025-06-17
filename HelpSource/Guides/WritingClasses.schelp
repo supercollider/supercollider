@@ -188,7 +188,7 @@ The former is recommend and discussed first.
 
 Rather than calling the method code::new:: a call to link::Classes/Object#*newCopyArgs:: can be used to initialise members.
 
-The code below allows the call sight to decide the initial value of code::c:: and defaults code::a:: to 10 and code::b:: to 20.
+The code below allows the call–site to decide the initial value of code::c:: and defaults code::a:: to 10 and code::b:: to 20.
 code::
 Foo {
 	var a, b, c;
