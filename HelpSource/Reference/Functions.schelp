@@ -15,11 +15,11 @@ code::
 }
 ::
 
-Functions are not evaluated immediately when they occur in code, but are themselves object that can be passed around.
+Functions are not evaluated immediately when they occur in code, but are themselves objects that can be passed around.
 
-A function may be evaluated by passing it the code::value:: message, or its shorthand code::.()::, and a list of arguments.
+A function object may be evaluated by passing it the code::value:: message, or its shorthand code::.()::, and a list of arguments.
 
-When evaluated, the function returns the final value of its expression.
+When evaluated, the function object returns the final value of its expression.
 code::
 f = { |a, b| a + b };
 f.value(4, 5).postln;
@@ -27,7 +27,7 @@ f.(4, 5).postln; // same as above
 f.(10, 200).postln;
 ::
 
-An empty function returns the value nil when evaluated.
+An empty function object returns the value nil when evaluated.
 code::
 {}.value.postln;
 ::
@@ -92,11 +92,11 @@ See link::Reference/Literals:: for more information.
 
 section:: Variable Arguments
 
-Variable arguments are how function catch an unknown number of arguments or keyword arguments. 
-There are two possible variable argument, the first for positional arguments and second for keyword arguments.
+Variable arguments are how functions catch an unknown number of arguments or keyword arguments. 
+There are two possible variable arguments, the first for positional arguments, and second for keyword arguments.
 They are marked by an ellipsis after any normal arguments.
 
-The first variable argument catches all remaining arguments in an link::Classes/Array::
+The first variable argument (positional) catches all remaining arguments in an link::Classes/Array::
 
 code::
 f = { |a ... args| "a: %, args: %".format(a, args) };
@@ -113,7 +113,7 @@ g.() // args: []
 ::
 
 The second variable argument catches all keyword arguments.
-It put them in an link::Classes/Array:: of key-value pairs.
+It puts them in an link::Classes/Array:: of key-value pairs.
 
 code::
 f = { |...args, kwargs| "args: %, kwargs: %".format(args, kwargs) };
@@ -126,7 +126,7 @@ f.(1, 2, 3, meow: 10, woof: 20) // args: [1, 2, 3], kwargs: [meow, 10, woof, 20]
 
 ::
 
-The use of keyword variable arguments is often paired with link::Classes/Object#-performArgs::.
+The use of variable keyword arguments is often paired with link::Classes/Object#-performArgs::.
 
 You cannot reassign the value of the variable arguments even if they share the same name.
 code::

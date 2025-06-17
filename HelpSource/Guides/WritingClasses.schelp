@@ -162,8 +162,7 @@ MyClass : SomeSuperclass {
 section:: Instances
 
 code::Object.new:: will return a new object.
-When overriding the class method code::.new:: you must call the
-superclass, which in turn calls its superclass, up until code::Object.new:: is called and an object is actually created and its memory allocated.
+When overriding the class method code::.new:: you must call the superclass, which in turn calls its superclass, up until code::Object.new:: is called and an object is actually created and its memory allocated.
 
 code::
 MyClass {
@@ -176,7 +175,7 @@ In this case note that code::super.new:: calls the method code::new:: on the sup
 
 subsection:: Instance Variables and Initialisation Logic
 
-Instance can have members (instance variables), where each instance of the class can have a different value for each member.
+Instance can have variables associated with them — known as members is other languages.
 code::
 Foo {
 	var a, b, c; // Instance variables.
@@ -202,9 +201,9 @@ ideally, it should go before the call to code::super.newCopyArgs::.
 This way the final object never exists in an invalid state — an alternative is the use of an code::init:: method and shall be shown shortly.
 
 
-However, when there is a hierarchy of classes, code::newCopyArgs:: requires all the base class arguments be passed in the order they are defined. 
-This makes changing the bass class difficult.
-Here is one way to mitigate this issue using variables keyword arguments link::Reference/Functions#Variable Arguments:: and link::Classes/Object#-superPerformArgs::.
+However, when there is a hierarchy of classes, code::newCopyArgs:: requires that all the base class arguments be passed in the order they are defined. 
+This makes changing the base class difficult.
+Here is one way to mitigate this issue using variable keyword arguments link::Reference/Functions#Variable Arguments:: and link::Classes/Object#-superPerformArgs::.
 
 code::
 Base {
@@ -233,8 +232,8 @@ Derived(d: 10) // If 'd' existed somewhere in the hierarchy, it would be assigne
 
 Although this approach might seem complex, the benefit is that the new instance variables can be added to either class and it will always be clear which one you meant to assign to.
 
-Should it be possible to remove instance members in the future,
-it is good to require only keyword argument be used.
+Should it be desirable to remove instance variables of the base class in the future,
+it is good to require that only keyword arguments be used.
 This can be achieved by removing the named arguments and throwing an error if code::args:: is not empty.
 One disadvantage here is that autocomplete in the IDE will not work.
 
@@ -247,7 +246,7 @@ Foo {
 }
 ::
 
-Another benefit is that the instance is never in an incomplete state, either all the instance members have been assigned to, or the object does not exist.
+Another benefit is that the instance is never in an incomplete state: either all the instance members have been assigned to, or the object does not exist.
 
 The disadvantages come when you have complex initialisation logic where the arguments in code::Derived:: require knowledge of the arguments in code::Base::.
 Traditionally in SuperCollider this has been solved with an code::init:: method as seen below, although a 'builder' pattern might be considered for complex cases.
@@ -290,7 +289,8 @@ Derived : Base {
 ::
 
 Warning:: 
-If both the parent and child class define an code::init:: method, the child class will override the parent, meaning it will no longer be possible to call that implementation.
+If both the code::Base:: and code::Derived:: class define an code::init:: method, the code::Derived:: class will override the code::Base::'s implementation, 
+meaning it will no longer be possible to call that implementation.
 In such cases, a unique method name like code::myclassInit:: should be used, or better yet, a specialised name that indicates what kind of initialization is performed.
 ::
 

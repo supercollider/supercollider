@@ -6,7 +6,7 @@ categories::Collections>Unordered
 DESCRIPTION::
 An IdentityDictionary is an associative collection mapping keys to values. Keys and values can be arbitrary objects, but for keys, often a link::Classes/Symbol:: is used.
 
-An IdentityDictionary can be used to implement prototype objects (link::Guides/ObjectPrototyping::). They behave like objects whose methods can be programmed at runtime.
+An IdentityDictionary can be used to implement prototype objects (link::Guides/ObjectPrototyping::), which behave like objects whose methods can be programmed at runtime.
 
 
 
