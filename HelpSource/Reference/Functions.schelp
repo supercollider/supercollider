@@ -32,7 +32,7 @@ code::
 {}.value.postln;
 ::
 
-Also the arguments can be called by name.
+Arguments can also be provided by name.
 code::
 f = { |a, b| a + b };
 f.(a: 10, b: 2) // 12
@@ -42,7 +42,7 @@ f.(3, b: 4) // 7, 'a' is always first argument
 
 f.(3, a: 4) // Error: Duplicate keyword 'a' at position 0.
 
-f.(a: 3) // Error: binary operator '+' failed, b is nil and you cannot add a number and 'nil'
+f.(a: 3) // Error: binary operator '+' failed, b is 'nil' and you cannot add a number and 'nil'
 ::
 
 A function can be thought as a machine able to perform a task on demand, e.g. a calculator. The calculator can receive input (args) and can output a value, the result of the performed operations. The function definition can then be thought as the building of the calculator: once built, the calculator does nothing until it is requested to work (by passing the value method to a function).
@@ -94,7 +94,7 @@ section:: Variable Arguments
 
 Variable arguments are how functions catch an unknown number of arguments or keyword arguments. 
 There are two possible variable arguments, the first for positional arguments, and second for keyword arguments.
-They are marked by an ellipsis after any normal arguments.
+They are marked by an ellipsis after any normal arguments and separated by a comma.
 
 The first variable argument (positional) catches all remaining arguments in an link::Classes/Array::
 
