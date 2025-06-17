@@ -72,7 +72,7 @@ Pipe style, default value is an expression:
 code::{ |x = (10.rand)| ... } :: link::#[2]::
 
 
-In general arguments may be initialized to literals or expressions, but in the case of Function:play or SynthDef:play, they may only be initialized to literals.
+In general arguments may be initialized to literals or expressions, but in the case of link::Classes/Function#-play:: or link::Classes/SynthDef#-play::, they may only be initialized to literals.
 code::
 // this is okay:
 
@@ -83,7 +83,7 @@ code::
 { arg freq = Array.geom(4, 100, 3); Mix(SinOsc.ar(freq, 0, 0.1)) }.play; // silence
 
 // but this is:
-{ arg freq =  #[ 100, 300, 900, 2700 ]; Mix(SinOsc.ar(freq, 0, 0.1)) }.play; // silence
+{ arg freq =  #[ 100, 300, 900, 2700 ]; Mix(SinOsc.ar(freq, 0, 0.1)) }.play; // produces sound!
 ::
 
 See link::Reference/Literals:: for more information.
@@ -128,17 +128,22 @@ f.(1, 2, 3, meow: 10, woof: 20) // args: [1, 2, 3], kwargs: [meow, 10, woof, 20]
 
 The use of variable keyword arguments is often paired with link::Classes/Object#-performArgs::.
 
-You cannot reassign the value of the variable arguments even if they share the same name.
+While you can name the variable arguments anything, they always refers to the unmatched positional and keyword arguments, so it is often best to name them code::args:: and code::kwargs::.
+
+You cannot reassign the value of the variable arguments at the call–site even if they share the same name (see below for example).
 code::
 f = { |...args, kwargs| "args: %, kwargs: %".format(args, kwargs) };
 f.(args: 10, kwargs: 20) // args: [], kwargs: [args: 10, kwargs: 20]
+
+f = { |...a, b| "a: %, b: %".format(a, b) };
+f.(a: 10, b: 20) // a: [], b: [a: 10, b: 20]
 ::
 
 
 anchor::[1]::
 subsection:: [1] Literal argument defaults
 
-Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::. Arguments passed at runtime -- including nil -- always override the defaults:
+Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::. Arguments passed at runtime — including nil — always override the defaults:
 
 code::
 f = { |x = 1| x };
