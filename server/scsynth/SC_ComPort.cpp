@@ -247,6 +247,7 @@ class SC_UdpInPort {
 
     static constexpr int receiveBufferSize = 4 * 1024 * 1024;
     static constexpr int sendBufferSize = 4 * 1024 * 1024;
+    static constexpr int fallbackBufferSize = 1 * 1024 * 1024;
 
 public:
     boost::asio::ip::udp::socket udpSocket;
@@ -267,12 +268,13 @@ public:
         try {
             boost::asio::socket_base::send_buffer_size sendBufferSize;
             udpSocket.get_option(sendBufferSize);
-            if (sendBufferSize.value() < SC_UdpInPort::sendBufferSize) {
+            int defaultBufferSize = sendBufferSize.value();
+            if (defaultBufferSize < SC_UdpInPort::sendBufferSize) {
                 sendBufferSize = SC_UdpInPort::sendBufferSize;
                 boost::system::error_code ec;
                 udpSocket.set_option(sendBufferSize, ec);
-                if (ec) {
-                    sendBufferSize = 1024 * 1024;
+                if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
+                    sendBufferSize = SC_UdpInPort::fallbackBufferSize;
                     udpSocket.set_option(sendBufferSize);
                 }
             }
@@ -281,12 +283,13 @@ public:
         try {
             boost::asio::socket_base::receive_buffer_size receiveBufferSize;
             udpSocket.get_option(receiveBufferSize);
-            if (receiveBufferSize.value() < SC_UdpInPort::receiveBufferSize) {
+            int defaultBufferSize = receiveBufferSize.value();
+            if (defaultBufferSize < SC_UdpInPort::receiveBufferSize) {
                 receiveBufferSize = SC_UdpInPort::receiveBufferSize;
                 boost::system::error_code ec;
                 udpSocket.set_option(receiveBufferSize, ec);
-                if (ec) {
-                    receiveBufferSize = 1024 * 1024;
+                if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
+                    receiveBufferSize = SC_UdpInPort::fallbackBufferSize;
                     udpSocket.set_option(receiveBufferSize);
                 }
             }

@@ -614,12 +614,13 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
     try {
         boost::asio::socket_base::send_buffer_size send_buffer_size;
         udp_socket.get_option(send_buffer_size);
-        if (send_buffer_size.value() < sc_osc_handler::udp_send_buffer_size) {
+        int default_buffer_size = send_buffer_size.value();
+        if (default_buffer_size < sc_osc_handler::udp_send_buffer_size) {
             send_buffer_size = sc_osc_handler::udp_send_buffer_size;
             boost::system::error_code ec;
             udp_socket.set_option(send_buffer_size, ec);
-            if (ec) {
-                send_buffer_size = 1024 * 1024;
+            if (ec && default_buffer_size < sc_osc_handler::udp_fallback_buffer_size) {
+                send_buffer_size = sc_osc_handler::udp_fallback_buffer_size;
                 udp_socket.set_option(send_buffer_size);
             }
         }
@@ -628,12 +629,13 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
     try {
         boost::asio::socket_base::receive_buffer_size receieve_buffer_size;
         udp_socket.get_option(receieve_buffer_size);
-        if (receieve_buffer_size.value() < sc_osc_handler::udp_receive_buffer_size) {
+        int default_buffer_size = receieve_buffer_size.value();
+        if (default_buffer_size < sc_osc_handler::udp_receive_buffer_size) {
             receieve_buffer_size = sc_osc_handler::udp_receive_buffer_size;
             boost::system::error_code ec;
             udp_socket.set_option(receieve_buffer_size, ec);
-            if (ec) {
-                receieve_buffer_size = 1024 * 1024;
+            if (ec && default_buffer_size < sc_osc_handler::udp_fallback_buffer_size) {
+                receieve_buffer_size = sc_osc_handler::udp_fallback_buffer_size;
                 udp_socket.set_option(receieve_buffer_size);
             }
         }

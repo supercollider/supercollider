@@ -84,6 +84,7 @@ private:
     HandleDataFunc mHandleFunc;
     static constexpr int receiveBufferSize = 4 * 1024 * 1024;
     static constexpr int sendBufferSize = 4 * 1024 * 1024;
+    static constexpr int fallbackBufferSize = 1 * 1024 * 1024;
     std::array<char, kTextBufSize> mRecvBuffer;
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
     boost::asio::ip::udp::socket mUdpSocket;

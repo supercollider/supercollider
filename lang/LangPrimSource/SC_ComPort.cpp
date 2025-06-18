@@ -208,12 +208,13 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
     try {
         boost::asio::socket_base::send_buffer_size sendBufferSize;
         mUdpSocket.get_option(sendBufferSize);
-        if (sendBufferSize.value() < UDP::sendBufferSize) {
+        int originalBufferSize = sendBufferSize.value();
+        if (originalBufferSize < UDP::sendBufferSize) {
             sendBufferSize = UDP::sendBufferSize;
             boost::system::error_code ec;
             mUdpSocket.set_option(sendBufferSize, ec);
-            if (ec) {
-                sendBufferSize = 1024 * 1024;
+            if (ec && originalBufferSize < UDP::fallbackBufferSize) {
+                sendBufferSize = UDP::fallbackBufferSize;
                 mUdpSocket.set_option(sendBufferSize);
             }
         }
@@ -224,12 +225,13 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
     try {
         boost::asio::socket_base::receive_buffer_size receiveBufferSize;
         mUdpSocket.get_option(receiveBufferSize);
-        if (receiveBufferSize.value() < UDP::receiveBufferSize) {
+        int originalBufferSize = receiveBufferSize.value();
+        if (originalBufferSize < UDP::receiveBufferSize) {
             receiveBufferSize = UDP::receiveBufferSize;
             boost::system::error_code ec;
             mUdpSocket.set_option(receiveBufferSize, ec);
-            if (ec) {
-                receiveBufferSize = 1024 * 1024;
+            if (ec && originalBufferSize < UDP::fallbackBufferSize) {
+                receiveBufferSize = UDP::fallbackBufferSize;
                 mUdpSocket.set_option(receiveBufferSize);
             }
         }
