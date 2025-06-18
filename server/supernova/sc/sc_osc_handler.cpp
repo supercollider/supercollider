@@ -624,7 +624,9 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
                 udp_socket.set_option(send_buffer_size);
             }
         }
-    } catch (boost::system::system_error& e) { std::cout << "WARNING: failed to set send buffer size\n"; }
+    } catch (boost::system::system_error& e) {
+        std::cout << "WARNING: failed to set send buffer size" << " (" << e.what() << ")\n";
+    }
 
     try {
         boost::asio::socket_base::receive_buffer_size receieve_buffer_size;
@@ -639,7 +641,9 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
                 udp_socket.set_option(receieve_buffer_size);
             }
         }
-    } catch (boost::system::system_error& e) { std::cout << "WARNING: failed to set receive buffer size\n"; }
+    } catch (boost::system::system_error& e) {
+        std::cout << "WARNING: failed to set receieve buffer size" << " (" << e.what() << ")\n";
+    }
 
     sc_notify_observers::udp_socket.bind(udp::endpoint(address, port));
 }

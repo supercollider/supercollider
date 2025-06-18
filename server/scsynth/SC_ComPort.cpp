@@ -278,7 +278,7 @@ public:
                     udpSocket.set_option(sendBufferSize);
                 }
             }
-        } catch (boost::system::system_error& e) { printf("WARNING: failed to set send buffer size\n"); }
+        } catch (boost::system::system_error& e) { printf("WARNING: failed to set send buffer size (%s)\n", e.what()); }
 
         try {
             boost::asio::socket_base::receive_buffer_size receiveBufferSize;
@@ -293,7 +293,9 @@ public:
                     udpSocket.set_option(receiveBufferSize);
                 }
             }
-        } catch (boost::system::system_error& e) { printf("WARNING: failed to set receive buffer size\n"); }
+        } catch (boost::system::system_error& e) {
+            printf("WARNING: failed to set receive buffer size (%s)\n", e.what());
+        }
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {

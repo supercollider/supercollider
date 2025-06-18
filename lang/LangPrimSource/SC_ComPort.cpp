@@ -219,7 +219,7 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
             }
         }
     } catch (boost::system::system_error& e) {
-        printf("(sclang) SC_UdpInPort: WARNING: failed to set send buffer size\n");
+        printf("(sclang) SC_UdpInPort: WARNING: failed to set send buffer size (%s)\n", e.what());
     }
 
     try {
@@ -236,7 +236,7 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
             }
         }
     } catch (boost::system::system_error& e) {
-        printf("(sclang) SC_UdpInPort: WARNING: failed to set receive buffer size\n");
+        printf("(sclang) SC_UdpInPort: WARNING: failed to set receive buffer size (%s)\n", e.what());
     }
 
     initHandler(handlerType);
