@@ -1,5 +1,6 @@
 NodeTreeView {
-	var <server, <bounds, <window, view, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
+	var <server, <bounds, <window, view, scrollView;
+	var resp, updateFunc, updater, tabSize = 25, treeViewStatus;
 	var runningFunc, stoppedFunc, serverController;
 	var globalAlpha = 1;
 
@@ -8,8 +9,7 @@ NodeTreeView {
 		^super.newCopyArgs(server).makeWindow(bounds, parent)
 	}
 
-	makeWindow 	{ |bounds, parent|
-		var scrollView;
+	makeWindow { |bounds, parent|
 		bounds = if(bounds.isNil) {
 			Rect(128, 64, 400, 400)
 		} {
