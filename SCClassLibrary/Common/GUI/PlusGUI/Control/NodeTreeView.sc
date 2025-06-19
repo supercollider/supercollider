@@ -8,32 +8,28 @@ NodeTreeView {
 		^super.newCopyArgs(server).makeWindow(bounds, parent)
 	}
 
-	makeWindow { |bounds, parent|
+	makeWindow 	{ |bounds, parent|
+		var scrollView;
 		bounds = if(bounds.isNil) {
 			Rect(128, 64, 400, 400)
 		} {
 			bounds.asRect.minSize(395@386)
 		};
 		if(parent.isNil) {
-			window = Window(this.asString, bounds, scroll:true);
+			window = Window(this.asString, bounds);
 		} {
-			window = if((parent.isKindOf(View))) {
-				parent.scroll(bounds: parent.bounds.moveTo(0, 0), hasVerticalScroller: true)
-			} {
-				window = parent
-			}
+			window = parent
 		}
 		.front;
 
-		view = UserView(
-			window,
-			if((parent.isKindOf(View)))
-			{
-				window.bounds.resizeBy(-4)
-			} {
-				window.view.bounds.resizeBy(-4)
-			}
-		);
+		scrollView = ScrollView(window, window.bounds.moveTo(0, 0));
+		scrollView.hasVerticalScroller_(true);
+		scrollView.hasHorizontalScroller_(false);
+		scrollView.hasBorder_(false);
+
+		window.asView.onResize_({scrollView.bounds_(window.bounds.moveTo(0, 0).resizeBy(-4))});
+
+		view = UserView(scrollView, scrollView.bounds.resizeBy(-4));
 		view.onClose_{
 			view = nil;
 			this.stop;
