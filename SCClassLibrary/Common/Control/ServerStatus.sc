@@ -330,14 +330,4 @@ ServerStatusWatcher {
 			"Switched off notification messages from server '%'\n".postf(server.name);
 		};
 	}
-	
-	warnIfNotRunning { |method|
-		if (this.serverRunning.not) { 	
-			"Server '%' not running.\nThe method '%' requires a running server.".format(this, method.name).warn;
-			^true
-		}
-		{
-			^false
-		}
-	}
 }

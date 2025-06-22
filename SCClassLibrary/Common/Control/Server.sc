@@ -812,7 +812,7 @@ Server {
 			"server '%' not responsive".format(this.name).postln;
 			failFunc.value(this)
 		} {
-			if(statusWatcher.warnIfNotRunning(thisMethod)) { ^failFunc.value(this) };
+			if(this.warnIfNotRunning(thisMethod)) { ^failFunc.value(this) };
 			func.value(this)
 		}
 	}
