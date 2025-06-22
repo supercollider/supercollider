@@ -50,8 +50,9 @@ Path {
 
 	// conversions
 	absolutePath { ^this.class.new(str.absolutePath) }
-	relativeTo { |path2| ^Path(str.asRelativePath(path2)) }
+	relativeTo { |path2| ^str.asRelativePath(path2) }
 	withName { |name| ^Path(str.dirname +/+ name) }
+
 	// call this to convert to string before read or write primitive
 	asPathString { ^str.standardizePath }
 	// call for OSC communication
@@ -92,7 +93,7 @@ Path {
 	nextName { |indexOfNumber, numExtToRemove=2|
 		var parent = str.dirname, basefile = str.basename;
 		var filename, extensions, nameParts, digitIndices;
-		var partIndex, endNumber = 0, nextFileName, nextName;
+		var partIndex, endNumber = 0, nextFileName, nextFullName;
 		filename = basefile;
 		numExtToRemove.do { filename = filename.splitext[0] };
 		extensions = basefile.drop(filename.size);
@@ -109,10 +110,10 @@ Path {
 			// no endNumber:
 			nextFileName = filename ++ 1;
 		};
-		nextName = parent +/+ nextFileName ++ extensions;
-		if (nextName.beginsWith("./")) { nextName = nextName.drop(2) };
+		nextFullName = parent +/+ nextFileName ++ extensions;
+		if (nextFullName.beginsWith("./")) { nextFullName = nextFullName.drop(2) };
 
-		^nextName
+		^nextFullName
 	}
 
 	/* concatenation */

@@ -5,21 +5,40 @@ TestPath.run;
 
 TestPath : UnitTest {
 
-	// all string manipulation methods
-	test_filePathMethods {
+	test_classMethods {
+		this.assertEquals(Path.scroot, File.getcwd, "scroot");
+		this.assertEquals(Path.tmp, Platform.defaultTempDir, "tmp");
+		this.assertEquals(Path.home, Platform.userHomeDir, "home");
+		this.assertEquals(Path.cwd, File.getcwd, "cwd");
+	}
 
-		var p = Path("/Users/adc/src/Sounds/FunkyChicken.abc.scd");
+	// all string manipulation methods
+	test_accessPathParts {
+
+		var p = Path("/Users/xyz/src/pathTest.abc.scd");
 
 		// path parts:
-		this.assertEquals(p.separatorIndices, List[0, 6, 10, 14, 21], "separatorIndices");
-		this.assertEquals(p.fileName, "FunkyChicken.abc.scd", "fileName");
-		this.assertEquals(p.fileNameWithoutExtension, "FunkyChicken.abc", "withoutExtension");
-		this.assertEquals(p.fileNameWithoutDoubleExtension, "FunkyChicken", "withoutDoubleExtension");
-		this.assertEquals(p.extension, "scd", "extension");
-		this.assertEquals(p.folderName, "Sounds", "folderName");
-		this.assertEquals(p.parts, ["Users", "adc", "src", "Sounds", "FunkyChicken.abc.scd"], "parts");
+		this.assertEquals(p.separatorIndices, List[0, 6, 10, 14], "separatorIndices");
+		this.assertEquals(p.name, "pathTest.abc.scd", "name");
+		this.assertEquals(p.parent, Path("/Users/xyz/src"), "parent");
+		this.assertEquals(p.parts, ["Users", "xyz", "src", "pathTest.abc.scd"], "parts");
+		this.assertEquals(p.fileName, "pathTest.abc.scd", "fileName");
 
-		// tests
+		this.assertEquals(p.fileName, "pathTest.abc.scd", "fileName");
+		this.assertEquals(p.fileNameWithoutExtension, "pathTest.abc", "withoutExtension");
+		this.assertEquals(p.fileNameWithoutDoubleExtension, "pathTest", "withoutDoubleExtension");
+		this.assertEquals(p.extension, "scd", "extension");
+
+		this.assertEquals(p.dirname, "/Users/xyz/src/", "folderName");
+		this.assertEquals(p.folderName, "src", "folderName");
+
+		this.assertEquals(p.fullPath, "/Users/xyz/src/pathTest.abc.scd", "folderName");
+	}
+
+	// tests
+	test_tests {
+		var p = Path("/Users/xyz/src/pathTest.abc.scd");
+
 		this.assert(p.isAbsolute, "isAbsolute");
 		this.assert(Path("relative.scd").isRelative, "isRelative");
 		this.assert(Path(TestPath.filenameSymbol.asString).exists, "file exists");
@@ -28,10 +47,13 @@ TestPath : UnitTest {
 		this.assert(Path(p.dirname).isFolder, "isFolder");
 		// this.assert(p.dirname.isDir, "isDir");
 		this.assert(p.isFile, "isFile");
+	}
 
+	test_conversions {
+		var p = Path("/Users/xyz/src/pathTest.abc.scd");
 		// conversions
-		this.assertEquals(p.relativeTo("/Users/adc/src"), Path("Sounds/FunkyChicken.abc.scd"), "relativeTo");
-		this.assertEquals(p.withName("newName.txt"), Path("/Users/adc/src/Sounds/newName.txt"), "withName");
+		this.assertEquals(p.relativeTo("/Users/xyz/"), Path("src/pathTest.abc.scd"), "relativeTo");
+		this.assertEquals(p.withName("newName.txt"), Path("/Users/xyz/src/newName.txt"), "withName");
 
 		this.assertEquals(Path("abc").nextName, "abc1", "nextName, no number, no extension");
 		this.assertEquals(Path("abc9").nextName, "abc10", "nextName with number, no extension");
@@ -43,7 +65,7 @@ TestPath : UnitTest {
 
 		this.assertEquals(Path("abc/") +/+ "def", Path("abc/def"), "concat with String");
 		this.assertEquals(Path("abc/") +/+ Path("/def"), Path("abc/def"),
-		"concat with 2 Paths");
+			"concat with 2 Paths");
 	}
 
 	test_fileAndFolderAccessMethods {

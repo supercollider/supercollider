@@ -1,7 +1,7 @@
 
 PathName : Path {
-	// these methods are only for backwards compatibility,
-	// to be deprecated at some point.
+	// all these methods are only for backwards compatibility,
+	// to be possible deprecated at some point.
 
 	*new { | path = "" |
 		^super.newCopyArgs(path.standardizePath)
@@ -13,7 +13,8 @@ PathName : Path {
 	colonIndices { ^this.separatorIndices }
 	lastColonIndex { ^this.lastSeparatorIndex }
 
-	// convenience to generate successive filenames
+	// convenience to generate successive filenames,
+	// old implementation, nextName in Path is new
 	nextName {
 		var name, ext;
 		if (str.last.isDecDigit) {
@@ -23,7 +24,7 @@ PathName : Path {
 		if (ext.isNil) {
 			^name ++ "1"
 		};
-		^Path(name).nextName ++ "." ++ ext
+		^PathName(name).nextName ++ "." ++ ext
 	}
 
 	noEndNumbers {
@@ -34,15 +35,10 @@ PathName : Path {
 	endNumber {
 		^str[this.endNumberIndex + 1..].asInteger
 	}
-
+	// only works for strings that end with a series of numbers
+	// it is badly named: it is the index of the last number before the endNumber begins.
 	endNumberIndex {
-		var index = str.lastIndex;
-		while({
-			index > 0 and: { str.at(index).isDecDigit }
-		}, {
-			index = index - 1
-		});
-		^index
+		^str.lastIndexForWhich { |char| char.isDecDigit.not }
 	}
 
 	// PathName:pathOnly ends with separator

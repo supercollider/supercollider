@@ -125,11 +125,14 @@ TestPathName : UnitTest {
 		this.assertEquals(p.asRelativePath("/Users/xyz/src"),
 			"PathNameTest.abc.scd", "asRelativePath");
 		this.assertEquals(p.asAbsolutePath, p.fullPath, "asAbsolutePath w absolute");
-		// this is a bug, but we prob must keep it:
+
 		this.assertEquals(PathName("relative.scd").asAbsolutePath,
-			"//relative.scd", "asAbsolutePath w relative filename");
+			// duplicate String:absolutePath behavior
+			File.getcwd ++ Platform.pathSeparator ++ "relative.scd",
+			"asAbsolutePath w relative filename");
 		this.assertEquals(PathName("relative.scd").absolutePath,
-			"//relative.scd", "absolutePath w relative filename");
+			File.getcwd ++ Platform.pathSeparator ++ "relative.scd",
+			"absolutePath w relative filename");
 	}
 
 	test_fileAndFolderAccessMethods {
