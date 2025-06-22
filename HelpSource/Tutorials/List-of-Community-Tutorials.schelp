@@ -1,0 +1,30 @@
+title:: Community Learning Resources (Tutorials & Publications)
+summary:: A curated list of tutorials for users, featuring both text-based guides and video content.
+categories:: Tutorials
+
+section:: Tutorials
+
+See strong::SuperCollider Tutorials Wiki::
+Community-curated tutorial index and learning resources.
+link::https://github.com/supercollider/supercollider/wiki/Tutorials::
+
+
+section:: Publications
+
+list::
+## strong::The SuperCollider Book, 2nd Edition::
+Nick Collins, David Cottle, Julio d'Escrivan, Scott Wilson (Eds.). MIT Press, 2024.
+link::https://mitpress.mit.edu/9780262049702/the-supercollider-book::
+
+## strong::The SuperCollider Book (1st Edition)::
+Nick Collins, David Cottle, Julio d'Escrivan, Scott Wilson (Eds.). MIT Press, 2011.
+link::https://mitpress.mit.edu/9780262232692/the-supercollider-book::
+
+## strong::Musical Composition with SuperCollider::
+by Dr. Frank Reinbold. Logos Verlag Berlin, 2013.
+link::https://www.logos-verlag.de/cgi-bin/engbuchmid?isbn=4017&lng=eng&id=::
+
+## strong::Programming digital music with SuperCollider::
+by Chandler Fitton. eBook.
+link::https://www.amazon.com/Programming-digital-music-SuperCollider-Fitton-ebook/dp/B00EA1USLG::
+::
