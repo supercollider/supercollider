@@ -183,6 +183,11 @@ ArrayedCollection : SequenceableCollection {
 		_ArrayInsert
 		^this.primitiveFailed;
 	}
+	boundedInsert { arg index, item;
+		if (this.size == 0) { ^this };
+		this.pop;
+		this.insert(index, item);
+	}
 	move { arg fromIndex, toIndex;
 		^this.insert(toIndex, this.removeAt(fromIndex))
 	}

@@ -80,6 +80,9 @@ See also: link::Guides/Randomness::
 method::xrand2
 returns::a random float from this.neg to this, excluding the value exclude.
 
+method::modSeaside
+returns::the same result as code::this.mod(aNumber, adverb)::; provided for compatibility with link::Classes/Integer#-modSeaside::.
+
 method:: isFloat
 returns:: code::true:: since this is a Float.
 

@@ -52,7 +52,7 @@ void closeAllGUIScreens();
 void initGUI();
 void initGUIPrimitives();
 
-extern PyrString* newPyrStringN(class PyrGC* gc, long length, long flags, long collect);
+extern PyrString* newPyrStringN(class PyrGC* gc, std::int64_t length, std::int64_t flags, std::int64_t collect);
 
 // =====================================================================
 // SC_LanguageClient
@@ -273,7 +273,7 @@ void postfl(const char* fmt, ...) {
     va_end(ap);
 }
 
-void postText(const char* str, long len) {
+void postText(const char* str, std::int64_t len) {
     SC_LanguageClient* client = SC_LanguageClient::lockedInstance();
     if (client)
         client->postFlush(str, len);
@@ -309,6 +309,6 @@ void initGUI() { SC_LanguageClient::instance()->onInterpStartup(); }
 
 void initGUIPrimitives() { SC_LanguageClient::instance()->onLibraryStartup(); }
 
-long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
-long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2) { return 0; }
+std::int64_t scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
+std::int64_t scMIDIout(int port, int len, int statushi, int chan, int data1, int data2) { return 0; }
 // EOF

@@ -164,7 +164,7 @@ LIST::
 LIST::
 ## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: Low
-## strong::Caveats: :: If the requested sample rate is different than the device's sample rate, the server will not boot
+## strong::Caveats: :: Resampling is enabled by default, so SuperCollider can run at a different sample rate than the hardware, and other applications can share the same device
 ## strong::More info: :: WASAPI stands for Windows Audio Session API and is the most modern Windows audio API
 ::
 ## WDM-KS

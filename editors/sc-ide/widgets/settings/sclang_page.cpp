@@ -29,6 +29,7 @@
 #include "ui_settings_sclang.h"
 #include "../../core/settings/manager.hpp"
 #include "../../core/util/standard_dirs.hpp"
+#include "../../core/main.hpp"
 
 #include <yaml-cpp/yaml.h>
 
@@ -305,8 +306,21 @@ void SclangPage::dialogDeleteCurrentConfigFile() {
 }
 
 void SclangPage::dialogConfigFileUpdated() {
-    QMessageBox::information(this, tr("Sclang configuration file updated"),
-                             tr("The SuperCollider language configuration has been updated. "
-                                "Reboot the interpreter to apply the changes."));
+    QMessageBox::StandardButton reply =
+        QMessageBox::question(this, tr("Sclang configuration file updated"),
+                              tr("The SuperCollider language configuration has been updated.\n"
+                                 "The interpreter needs to reboot to apply the changes.\n\n"
+                                 "Would you like to reboot now?\n"
+                                 "WARNING: all sound will stop."),
+                              QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        if (auto process = Main::instance()->scProcess()) {
+            process->restartLanguage();
+        } else {
+            qWarning() << "SclangPage::dialogConfigFileUpdated(): "
+                          "Main->scProcess pointer is null!";
+        }
+    }
 }
 }} // namespace ScIDE::Settings

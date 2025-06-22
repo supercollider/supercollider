@@ -100,6 +100,7 @@ AbstractFunction {
 	/ { arg function, adverb; ^this.composeBinaryOp('/', function, adverb) }
 	div { arg function, adverb; ^this.composeBinaryOp('div', function, adverb) }
 	mod { arg function, adverb; ^this.composeBinaryOp('mod', function, adverb) }
+	modSeaside { arg function, adverb; ^this.composeBinaryOp('modSeaside', function, adverb) }
 	pow { arg function, adverb; ^this.composeBinaryOp('pow', function, adverb) }
 	min { arg function, adverb; ^this.composeBinaryOp('min', function, adverb) }
 	max { arg function=0, adverb; ^this.composeBinaryOp('max', function, adverb) }

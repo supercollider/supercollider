@@ -7,3 +7,7 @@
 f806ace7bd8565dd174e7d47a1b32aaa4175a46e
 # single blank line as file ending in sc files https://github.com/supercollider/supercollider/pull/6346
 004109ed1d299a1baf14c1e8d0faca12ed14fd42
+# whitespace change
+d769495d25008dfd30b07a4128aa922d5e46dff6
+# source tree reorganization
+1afacd5b6d9f4f07ce9a9728cb23bf51194d4e62

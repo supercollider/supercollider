@@ -1,9 +1,23 @@
 CLASS::SequenceableCollection
-summary::Abstract superclass of integer indexable collections
+summary::Abstract superclass of indexable collections
 categories::Collections>Ordered
 
 DESCRIPTION::
-SequenceableCollection is a subclass of Collection whose elements can be indexed by an Integer. It has many useful subclasses; link::Classes/Array:: and link::Classes/List:: are amongst the most commonly used.
+link::Classes/SequenceableCollection:: is a subclass of link::Classes/Collection:: whose items can be indexed by a link::Classes/SimpleNumber::. It has many useful subclasses; link::Classes/Array:: and link::Classes/List:: are amongst the most commonly used.
+
+subsection::Indexing
+
+In SuperCollider, an strong::index:: is a number used to access items in the subclasses of link::Classes/SequenceableCollection:: such as arrays and lists. Indexing starts at code::0::, so the first element of a collection is at index code::0::, the second at index code::1::, and so on. The item at a specific index is accessed using code::.at(index):: method or its shortcut code::[index]::. If using an index that is outside the bounds of the collection (too low or too high), SuperCollider returns code::nil::.
+
+Example:
+
+code::
+a = [100, 200, 300];
+a.at(0); // Returns 100 (the first item)
+a[0]     // Same as above (syntactic sugar; shortcut)
+a[2];    // Returns 300 (the third item)
+a[5];    // Returns nil (the index is out of bounds)
+::
 
 CLASSMETHODS::
 
@@ -755,6 +769,9 @@ All of the following messages send the message link::#-performBinaryOp:: to the 
 method:: +, -, *, /, div, min, max, <, <=, >, >=, bitXor, lcm, gcd, round, trunc, atan2, hypot, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, rrand, exprand
 
 method:: %, **, &, |, >>, +>>, <!
+
+method:: modSeaside
+Pre-3.14 modulo with unexpected behavior for negative integer modulus; see link::Classes/Integer#-modSeaside::. Calling code::modSeaside:: on a non-integer operand will fall back to code::mod:: behavior; see link::Classes/Float#-modSeaside::.
 
 method::performBinaryOp
 Creates a new collection of the results of applying the selector with the operand to all elements in the receiver. If the operand is a collection then elements of that collection are paired with elements of the receiver.

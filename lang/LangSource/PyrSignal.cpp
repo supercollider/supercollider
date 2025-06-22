@@ -41,9 +41,9 @@
 #include "SCBase.h"
 #include "InitAlloc.h"
 
-PyrObject* newPyrSignal(VMGlobals* g, long size) {
+PyrObject* newPyrSignal(VMGlobals* g, std::int64_t size) {
     PyrObject* signal;
-    long numbytes = size * sizeof(float);
+    std::int64_t numbytes = size * sizeof(float);
     signal = (PyrObject*)g->gc->New(numbytes, 0, obj_float, true);
     if (signal) {
         signal->classptr = class_signal;
@@ -53,12 +53,12 @@ PyrObject* newPyrSignal(VMGlobals* g, long size) {
     return signal;
 }
 
-/*PyrObject* newPyrSignalFrom(VMGlobals *g, PyrObject* inSignal, long size)
+/*PyrObject* newPyrSignalFrom(VMGlobals *g, PyrObject* inSignal, std::int64_t size)
 {
     PyrObject *signal;
     double *pslot, *qslot, *endptr;
-    long set, m, mmax;
-    long numbytes = size * sizeof(float);
+    std::int64_t set, m, mmax;
+    std::int64_t numbytes = size * sizeof(float);
     signal = (PyrObject*)g->gc->New(numbytes, 0, obj_float, true);
     signal->classptr = inSignal->classptr;
     signal->size = size;
@@ -625,7 +625,7 @@ float signal_findpeak(PyrObject* inPyrSignal) {
 
 PyrObject* signal_normalize_transfer_fn(PyrObject* inPyrSignal) {
     float *out, scale, offset, x, maxval;
-    long length, halflength;
+    std::int64_t length, halflength;
 
     maxval = 0.0;
     out = (float*)(inPyrSignal->slots) - 1;
@@ -717,7 +717,7 @@ PyrObject* signal_clip_f(VMGlobals* g, PyrObject* inPyrSignal, float lo, float h
 PyrObject* signal_clip_x(VMGlobals* g, PyrObject* ina, PyrObject* inb, PyrObject* inc) {
     PyrObject* outd;
     float *a, *b, *c, *d, *endptr;
-    long minsize = sc_min(ina->size, inb->size);
+    std::int64_t minsize = sc_min(ina->size, inb->size);
     minsize = sc_min(minsize, inc->size);
     outd = newPyrSignal(g, minsize);
     a = (float*)(ina->slots) - 1;
@@ -745,7 +745,7 @@ PyrObject* signal_wrap_f(VMGlobals* g, PyrObject* inPyrSignal, float lo, float h
 PyrObject* signal_wrap_x(VMGlobals* g, PyrObject* ina, PyrObject* inb, PyrObject* inc) {
     PyrObject* outd;
     float *a, *b, *c, *d, *endptr;
-    long minsize = sc_min(ina->size, inb->size);
+    std::int64_t minsize = sc_min(ina->size, inb->size);
     minsize = sc_min(minsize, inc->size);
     outd = newPyrSignal(g, minsize);
     a = (float*)(ina->slots) - 1;
@@ -777,7 +777,7 @@ PyrObject* signal_fold_f(VMGlobals* g, PyrObject* inPyrSignal, float lo, float h
 PyrObject* signal_fold_x(VMGlobals* g, PyrObject* ina, PyrObject* inb, PyrObject* inc) {
     PyrObject* outd;
     float *a, *b, *c, *d, *endptr;
-    long minsize = sc_min(ina->size, inb->size);
+    std::int64_t minsize = sc_min(ina->size, inb->size);
     minsize = sc_min(minsize, inc->size);
     outd = newPyrSignal(g, minsize);
     a = (float*)(ina->slots) - 1;
@@ -948,14 +948,14 @@ PyrObject* signal_softclip(VMGlobals* g, PyrObject* inPyrSignal) {
 
 
 PyrObject* signal_rotate(VMGlobals* g, PyrObject* ina, int rot) {
-    long i, j;
+    std::int64_t i, j;
     PyrObject* outc = newPyrSignal(g, ina->size);
     float* a0 = (float*)(ina->slots) - 1;
     //	float *a = a0 + sc_mod(rot, ina->size);
     float* a = a0 + sc_mod(0 - rot, ina->size);
     float* aend = a0 + ina->size;
     float* c = (float*)(outc->slots) - 1;
-    long nsmps = outc->size;
+    std::int64_t nsmps = outc->size;
     for (i = 0, j = rot; i < nsmps; i++, j++) {
         *++c = *++a;
         if (a >= aend)
@@ -964,10 +964,10 @@ PyrObject* signal_rotate(VMGlobals* g, PyrObject* ina, int rot) {
     return outc;
 }
 
-PyrObject* signal_reverse_range(PyrObject* ina, long start, long end) {
-    long size = ina->size;
-    long size2;
-    long i;
+PyrObject* signal_reverse_range(PyrObject* ina, std::int64_t start, std::int64_t end) {
+    std::int64_t size = ina->size;
+    std::int64_t size2;
+    std::int64_t i;
     start = sc_max(0, start);
     end = sc_min(end + 1, size);
     size = end - start;
@@ -984,9 +984,9 @@ PyrObject* signal_reverse_range(PyrObject* ina, long start, long end) {
     return ina;
 }
 
-PyrObject* signal_normalize_range(PyrObject* ina, long start, long end) {
-    long size = ina->size;
-    long i;
+PyrObject* signal_normalize_range(PyrObject* ina, std::int64_t start, std::int64_t end) {
+    std::int64_t size = ina->size;
+    std::int64_t i;
     float z, scale, maxlevel;
     float *a0, *a;
     start = sc_max(0, start);
@@ -1011,9 +1011,9 @@ PyrObject* signal_normalize_range(PyrObject* ina, long start, long end) {
     return ina;
 }
 
-PyrObject* signal_invert_range(PyrObject* ina, long start, long end) {
-    long size = ina->size;
-    long i;
+PyrObject* signal_invert_range(PyrObject* ina, std::int64_t start, std::int64_t end) {
+    std::int64_t size = ina->size;
+    std::int64_t i;
     float z;
     start = sc_max(0, start);
     end = sc_min(end, size);
@@ -1028,9 +1028,9 @@ PyrObject* signal_invert_range(PyrObject* ina, long start, long end) {
 }
 
 
-PyrObject* signal_fade_range(PyrObject* ina, long start, long end, float lvl0, float lvl1) {
-    long size = ina->size;
-    long i;
+PyrObject* signal_fade_range(PyrObject* ina, std::int64_t start, std::int64_t end, float lvl0, float lvl1) {
+    std::int64_t size = ina->size;
+    std::int64_t i;
     float z, level, slope;
     start = sc_max(0, start);
     end = sc_min(end + 1, size);
@@ -1047,9 +1047,9 @@ PyrObject* signal_fade_range(PyrObject* ina, long start, long end, float lvl0, f
 }
 
 
-PyrObject* signal_overdub(VMGlobals* g, PyrObject* ina, PyrObject* inb, long index) {
+PyrObject* signal_overdub(VMGlobals* g, PyrObject* ina, PyrObject* inb, std::int64_t index) {
     float *a, *b;
-    long len;
+    std::int64_t len;
 
     if (index > 0) {
         a = (float*)(ina->slots) + index - 1;
@@ -1066,9 +1066,9 @@ PyrObject* signal_overdub(VMGlobals* g, PyrObject* ina, PyrObject* inb, long ind
     return ina;
 }
 
-PyrObject* signal_overwrite(VMGlobals* g, PyrObject* ina, PyrObject* inb, long index) {
+PyrObject* signal_overwrite(VMGlobals* g, PyrObject* ina, PyrObject* inb, std::int64_t index) {
     float *a, *b;
-    long len;
+    std::int64_t len;
     if (index > 0) {
         a = (float*)(ina->slots) + index - 1;
         b = (float*)(inb->slots) - 1;

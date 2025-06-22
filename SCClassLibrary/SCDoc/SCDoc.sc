@@ -697,14 +697,15 @@ SCDoc {
 	}
 
 	*refreshStaticFiles {
+		var relativePath, destinationPath;
 		// remember to bump SCDoc.version if you modify static files!
 		this.postMsg("refresh static files");
 		this.helpSourceDirs.do({|dir|
 			// .filesDo performs a recursive iteration
 			PathName(dir).filesDo({|file|
 				if(file.fullPath.endsWith(".schelp").not, {
-					var relativePath = file.asRelativePath(dir);
-					var destinationPath = SCDoc.helpTargetDir +/+ relativePath;
+					relativePath = file.asRelativePath(dir);
+					destinationPath = SCDoc.helpTargetDir +/+ relativePath;
 
 					// make sure that the folder we want to copy to actually exists
 					File.mkdir(PathName(destinationPath).pathOnly);
