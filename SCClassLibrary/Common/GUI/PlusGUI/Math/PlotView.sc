@@ -1431,7 +1431,7 @@ Plotter {
 	plot { |name, bounds, minval, maxval, separately = false, parent|
 		var plotter, action;
 
-		if(server.warnIfNotRunning(thisMethod)) { ^this };		
+		if(server.warnIfNotRunning(thisMethod)) { ^nil };		
 
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
 
