@@ -12,6 +12,9 @@ std::string GetPaDeviceName(const PaDeviceInfo* pdi);
 // get PaDeviceIndex from device name
 PaDeviceIndex GetPaDeviceFromName(const char* device, bool isInput);
 
+// get default input/output device index; on Windows it will try to use WASAPI default devices
+PaDeviceIndex GetPaDefaultDevice(bool isInput);
+
 // select default PA devices if they are not defined
 // it will also try to check for some configuration problems
 // numIns, numOuts and sampleRate are only the requested values, may change later
