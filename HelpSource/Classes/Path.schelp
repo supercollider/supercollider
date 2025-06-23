@@ -114,7 +114,7 @@ Path("/Users/xyz/sc/myfile.scd").folderName;
 ::
 
 METHOD:: parts
-an array of folder names in this path
+an array of the folder names in this path
 code::
 Path("/Users/xyz/sc/myfile.scd").parts.postcs;
 ::
@@ -139,6 +139,8 @@ concatenate 2 two paths
 code::
 Path("/Users/xyz") +/+ Path("sc/myfile.scd");
 Path("/Users/xyz") +/+ "sc/myfile.scd";
+// also works with String +/+ Path:
+"/Users/xyz" +/+ Path("sc/myfile.scd");
 ::
 
 METHOD:: relativeTo
@@ -157,17 +159,6 @@ Path("/Users/xyz/sc/myfile").nextName;
 Path("/Users/xyz/sc/myfile12").nextName;
 ::
 
-METHOD:: endNumber, endNumberIndex, noEndNumbers
-helper methods for nextName, need fixes!
-code::
-Path("/Users/xyz/sc/myfile123.scd").endNumber;
-Path("/Users/xyz/sc/myfile123.scd").endNumberIndex;
-Path("/Users/xyz/sc/myfile123.scd").noEndNumbers;
-Path("/Users/xyz/sc/myfile123").endNumber;
-Path("/Users/xyz/sc/myfile123").endNumberIndex;
-Path("/Users/xyz/sc/myfile123").noEndNumbers;
-::
-
 METHOD:: absolutePath
 code::
 Path("/xyz/sc/myfile.scd").absolutePath;
@@ -183,6 +174,8 @@ METHOD:: asPathString
 returns its string, to match code::String:asPathString::.
 code::
 Path("/Users/xyz/sc/myfile.scd").asPathString;
+// already a String:
+"/Users/xyz/sc/myfile.scd".asPathString;
 ::
 
 METHOD:: asOSCArgArray
@@ -199,8 +192,18 @@ code::
 Path("/Users/xyz/sc/myfile.scd").parts.postcs;
 ::
 
+METHOD:: exists
+check if a file or folder exists at this path
+code::
+Path(Main.filenameSymbol.asString).exists;
+Path("/Users/xyz/sc/myfile.scd").exists;
+Path(Main.filenameSymbol.asString.dirname).exists;
+::
+
 METHOD:: isFile, isFolder, isDir
-check whether a path is a file or a folder/dir
+check whether a path is a file or a folder/dir.
+This does not test if the file exists,
+and only distinguishes based on a trailing separator or not, as this is how pathMatch makes that distinction.
 code::
 Path("/Users/xyz/sc/myfile.scd").isFile;
 Path("/Users/xyz/sc/").isFile;
@@ -227,15 +230,6 @@ code::
 Path("/Users/xyz/sc") == Path("/Users/xyz/sc");
 ::
 
-METHOD:: exists
-check if a file or folder exists at this path
-code::
-Path(Main.filenameSymbol.asString).exists;
-Path("/Users/xyz/sc/myfile.scd").exists;
-Path(Main.filenameSymbol.asString.dirname).exists;
-::
-
-
 subsection:: Search
 
 METHOD:: match, pathMatch
@@ -259,7 +253,8 @@ METHOD:: files
 array of all files at path, as path objects
 code::
 Path(Platform.classLibraryDir +/+ "Common/Files").files.printAll.size;
-Path(Platform.classLibraryDir).files.printAll;  "";
+// no files in classLibraryDir
+Path(Platform.classLibraryDir).files.printAll;
 ::
 
 METHOD:: folders
@@ -271,6 +266,7 @@ Path(Platform.classLibraryDir).folders.printAll;  "";
 METHOD:: deepFiles
 array of all files at path, including files in subfolders.
 code::
+// many deep files in classLibraryDir
 Path(Platform.classLibraryDir +/+ "Common").deepFiles.printAll.size;
 ::
 
@@ -295,11 +291,15 @@ Path(Platform.classLibraryDir +/+ "Common").dumpTree
 METHOD:: dumpToDoc
 dump the hierarchical tree of entries to a Document
 code::
-Path("/Users/xyz/sc/myfile.scd").parts.postcs;
+
+Path(Platform.classLibraryDir +/+ "Common").dumpToDoc;
 ::
 
 EXAMPLES::
 
 code::
-(some example code)
+SoundFile.collect(
+	Path(Platform.resourceDir +/+ "sounds/*")
+);
+
 ::
