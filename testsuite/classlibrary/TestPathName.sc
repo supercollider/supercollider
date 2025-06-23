@@ -145,8 +145,8 @@ TestPathName : UnitTest {
 		// [ 'isFolder', 'isFile', 'entries', 'files', 'folders', 'deepFiles', 'parentPath',
 		// 'filesDo', 'streamTree', 'dumpTree', 'printOn', 'dumpToDoc']
 
-this.assert(PathName(defaultLibFolder).pathMatch.size > 0,
-"pathMatch finds defaultLibrary");
+		this.assert(PathName(defaultLibFolder).pathMatch.size > 0,
+			"pathMatch finds defaultLibrary");
 
 		this.assert(PathName(defaultLibFolder).entries.size > 0, "DefaultLibrary has entries");
 		this.assert(PathName(defaultLibFolder).entries[0].isKindOf(PathName),

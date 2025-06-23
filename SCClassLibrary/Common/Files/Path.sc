@@ -28,7 +28,7 @@ Path {
 
 	// access path parts - recommended new:
 	name { ^str.basename }
-	parent { ^Path(str.dirname) }
+	parent { ^this.class.new(str.dirname) }
 	// nested dirs as strings, drop initial empty string
 	parts { ^str.split(Platform.pathSeparator).select(_.notEmpty) }
 
@@ -51,7 +51,7 @@ Path {
 	// conversions
 	absolutePath { ^this.class.new(str.absolutePath) }
 	relativeTo { |path2| ^str.asRelativePath(path2) }
-	withName { |name| ^Path(str.dirname +/+ name) }
+	withName { |name| ^this.class.new(str.dirname +/+ name) }
 
 	// call this to convert to string before read or write primitive
 	asPathString { ^str.standardizePath }
@@ -130,19 +130,20 @@ Path {
 	files { ^this.entries.select({ | item |item.isFile }) }
 	folders { ^this.entries.select({ | item | item.isFolder }) }
 
-	deepFiles { ^this.entries.collect({ | item |
-		if(item.isFile, {
-			item
-		},{
-			Path(item).deepFiles
-		})
-	}).flatIf { |item| item.isKindOf(String).not }
+	deepFiles {
+		^this.entries.collect({ | item |
+			if(item.isFile, {
+				item
+			},{
+				item.deepFiles
+			})
+		}).flatIf { |item| item.isKindOf(String).not }
 	}
 
 	filesDo { | func |
 		this.files.do(func);
 		this.folders.do { | path |
-			Path(path).filesDo(func)
+			path.filesDo(func)
 		};
 	}
 

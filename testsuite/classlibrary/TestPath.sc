@@ -52,7 +52,7 @@ TestPath : UnitTest {
 	test_conversions {
 		var p = Path("/Users/xyz/src/pathTest.abc.scd");
 		// conversions
-		this.assertEquals(p.relativeTo("/Users/xyz/"), Path("src/pathTest.abc.scd"), "relativeTo");
+		this.assertEquals(p.relativeTo("/Users/xyz/"), "../src/pathTest.abc.scd", "relativeTo");
 		this.assertEquals(p.withName("newName.txt"), Path("/Users/xyz/src/newName.txt"), "withName");
 
 		this.assertEquals(Path("abc").nextName, "abc1", "nextName, no number, no extension");
