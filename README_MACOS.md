@@ -46,8 +46,8 @@ Prerequisites:
 - **git, cmake >= 3.12, libsndfile, readline, and qt6 >= 6.2**, installed via homebrew:
   `brew install git cmake libsndfile readline qt@6`
 
-- If you want to build with the *supernova* server, you need **portaudio** and **fftw** packages, which can also be installed via homebrew:
-  `brew install portaudio fftw`
+- If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
+  `brew install portaudio`
 
 Obtaining the source code
 -------------------------

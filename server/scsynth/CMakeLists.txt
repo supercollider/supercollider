@@ -1,7 +1,8 @@
 # here we choose who provides us with the FFT lib
 # this is done independently for scsynth and supernova
-# on macOS scsynth uses vDSP implementation for FFT
-# which is not thread-safe
+# for historical reasons, as the vDSP implementation
+# wasn't thread-safe in the past
+# and couldn't be used in supernova
 
 if (APPLE)
     add_definitions("-DSC_FFT_VDSP")

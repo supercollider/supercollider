@@ -518,7 +518,6 @@ if(APPLE OR WIN32)
             endif()
         endif()
         if(SUPERNOVA)
-            get_target_property(LINK_FFTW libsupernova SUPERNOVA_FFTW)
             string(APPEND DEPLOY_CMD "
                 -executable=${CONTENTS_DIR}/Resources/supernova
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx

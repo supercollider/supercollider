@@ -321,6 +321,9 @@ void thread_init_functor::operator()(int thread_index) {
         if (!result)
             std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
     }
+
+    // initialize thread local buffers
+    scfft_thread_init();
 }
 
 void io_thread_init_functor::operator()() const {
@@ -366,6 +369,9 @@ void realtime_engine_functor::init_thread(void) {
     }
 
     name_current_thread(0);
+
+    // initialize thread local buffers
+    scfft_thread_init();
 }
 
 void realtime_engine_functor::log_(const char* str) {
