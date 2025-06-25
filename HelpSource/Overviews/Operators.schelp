@@ -122,61 +122,17 @@ Convert cycles per second to decimal octaves.
 
 subsection:: Random operators
 
-See also link::Guides/Randomness::
+See also link::Guides/Randomness::.
 
-method::rand
-Returns an evenly distributed random value between this and zero.
+As with other operators, these work on a variety of receivers:
 code::
-10.rand;
-
-{ SinOsc.ar(110).rand }.plot;
-::
-
-method::rand2
-Returns an evenly distributed random value between [+this ... - this].
-code::
-10.rand2;
-
-{ SinOsc.ar(110).rand2 }.plot;
-::
-
-method::linrand
-Returns a linearly distributed random value between this and zero.
-code::
-10.linrand;
-
-{ SinOsc.ar(110).linrand }.plot;
-::
-
-
-method::bilinrand
-Returns a linearly distributed random value between [+this ... - this].
-code::
-10.bilinrand;
-
+42.rand;
+42.0.rand;
+8.do { [0, 1, 2, 3, 4].rrand(5).postln; };
 { SinOsc.ar(110).bilinrand }.plot;
-::
 
-method::sum3rand
-Returns a value from a gaussian-like random distribution between this and zero.
-This was suggested by Larry Polansky as a loose approximation of gaussian. Follows the formula:
-
-code::
-{ 1.0.rand }.dup(3).sum - 1.5 * (2/3)
-::
-
-code::
-10.sum3rand;
-
-{ SinOsc.ar(110).sum3rand }.plot;
-::
-
-method::coin
-Returns one or zero with the probability given by the argument.
-code::
-0.4.coin;
-
-{ SinOsc.ar(110).coin }.plot;
+{ 10.rand2 }.dup(30).plot.plotMode_(\steps)
+{ 10.0.rand2 }.dup(30).plot.plotMode_(\steps)
 ::
 
 

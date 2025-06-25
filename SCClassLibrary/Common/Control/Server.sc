@@ -812,14 +812,9 @@ Server {
 			"server '%' not responsive".format(this.name).postln;
 			failFunc.value(this)
 		} {
-			if(statusWatcher.serverRunning) {
-				func.value(this)
-			} {
-				"server '%' not running".format(this.name).postln;
-				failFunc.value(this)
-			}
+			if(this.warnIfNotRunning(thisMethod)) { ^failFunc.value(this) };
+			func.value(this)
 		}
-
 	}
 
 	ifNotRunning { |func|
@@ -841,7 +836,9 @@ Server {
 
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
-		if(statusWatcher.serverRunning.not) { "server not running".postln; ^this };
+
+		if(this.warnIfNotRunning(thisMethod)) { ^this };
+
 		pingFunc = {
 			Routine.run {
 				var t, dt;
@@ -1350,10 +1347,9 @@ Server {
 
 	rtMemoryStatus { |action|
 		var resp, freeKb, done = false;
-		if (this.serverRunning.not) {
-			"server '%' not running".format(this.name).warn;
-			^this
-		};
+
+		if(this.warnIfNotRunning(thisMethod)) { ^this };
+
 		resp = OSCFunc({ |msg| 
 			done = true;
 			if (action.notNil) { action.value(*msg.drop(1)) } {
@@ -1429,4 +1425,12 @@ Server {
 		this.program = this.program.replace("scsynth", "supernova")
 	}
 
+	warnIfNotRunning { |method|
+		if (this.serverRunning.not) {
+			"Server '%' not running.\nThe method '%' requires a running server.".format(this.name, method.name).warn;
+			^true
+  		} {
+        	^false
+    	}
+    }
 }

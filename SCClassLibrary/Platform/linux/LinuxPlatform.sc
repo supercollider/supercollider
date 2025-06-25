@@ -3,6 +3,8 @@ LinuxPlatform : UnixPlatform {
 	classvar <>runInTerminalCmd;
 
 	name { ^\linux }
+	version { ^". /etc/os-release && echo \"$NAME $VERSION\"".unixCmdGetStdOut.replace($\n, "") }
+
 	startupFiles {
 		var deprecated = #["~/.sclang.sc"];
 		Platform.deprecatedStartupFiles(deprecated);

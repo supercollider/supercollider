@@ -82,6 +82,8 @@ private:
 
     int mPortNum;
     HandleDataFunc mHandleFunc;
+    static constexpr int receiveBufferSize = 8 * 1024 * 1024;
+    static constexpr int sendBufferSize = 8 * 1024 * 1024;
     std::array<char, kTextBufSize> mRecvBuffer;
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
     boost::asio::ip::udp::socket mUdpSocket;
