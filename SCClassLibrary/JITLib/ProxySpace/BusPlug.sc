@@ -255,10 +255,9 @@ BusPlug : AbstractFunction {
 
 	play { | out, numChannels, group, multi=false, vol, fadeTime, addAction |
 		var bundle = MixedBundle.new;
-		if(this.homeServer.serverRunning.not) {
-			("server not running:" + this.homeServer).warn;
-			^this
-		};
+		
+		if(this.homeServer.warnIfNotRunning(thisMethod)) { ^this };
+
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		group = group ?? {this.homeServer.defaultGroup};
 		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
@@ -269,10 +268,9 @@ BusPlug : AbstractFunction {
 
 	playN { | outs, amps, ins, vol, fadeTime, group, addAction |
 		var bundle = MixedBundle.new;
-		if(this.homeServer.serverRunning.not) {
-			("server not running:" + this.homeServer).warn;
-			^this
-		};
+
+		if(this.homeServer.warnIfNotRunning(thisMethod)) { ^this };
+
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		group = group ?? {this.homeServer.defaultGroup};
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);
