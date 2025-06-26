@@ -483,8 +483,13 @@ SC_TcpConnection::~SC_TcpConnection() { mParent->connectionDestroyed(); }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void asioFunction() {
-    /* NB: on macOS we just keep the default thread priority */
-#ifdef NOVA_TT_PRIORITY_RT
+#ifdef __APPLE__
+    // on macOS, set the thread priority to user-interactive
+    int result = pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, -10);
+    if (result != 0) {
+        scprintf("SC_ComPort: could not set asioFunction thread priority to user-interactive: %s\n", strerror(result));
+    }
+#elif defined(NOVA_TT_PRIORITY_RT)
     int priority = nova::thread_priority_interval_rt().first;
     nova::thread_set_priority_rt(priority);
 #endif

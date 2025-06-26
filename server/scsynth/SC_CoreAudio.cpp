@@ -107,7 +107,15 @@ static void syncOSCOffsetWithTimeOfDay() {
 }
 
 static void resyncThreadFunc() {
-    /* keep the default thread priority */
+// on macOS, indicate that the thread is important
+// on other platforms, keep the default thread priority
+#    ifdef __APPLE__
+    // on macOS, set the thread priority to user-interactive
+    int result = pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, -10);
+    if (result != 0) {
+        scprintf("SC_AudioDriver: could not set resync thread priority to user-interactive: %s\n", strerror(result));
+    }
+#    endif
 
     while (true) {
         sleep(20);
@@ -339,8 +347,26 @@ SC_AudioDriver::~SC_AudioDriver() {
 }
 
 void SC_AudioDriver::RunThread() {
-    /* NB: on macOS we just keep the default thread priority */
-#ifdef NOVA_TT_PRIORITY_RT
+#ifdef __APPLE__
+    // on macOS, set the thread priority to user-interactive
+    int result = pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
+    if (result != 0) {
+        scprintf("SC_AudioDriver: could not set thread priority to user-interactive: %s\n", strerror(result));
+    }
+#    ifdef NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT
+    int blockSize = mWorld->mBufLength;
+    uint32_t ns_per_block = 1e9 / mSampleRate * blockSize;
+    uint32_t computation = ns_per_block * 0.4;
+    uint32_t constraint = ns_per_block * 0.8;
+    // printf("Verifying values: mSampleRate = %f, blockSize = %d, period = %d, computation = %d, constraint = %d\n",
+    // mSampleRate, blockSize, ns_per_block, computation, constraint);
+
+    bool success = nova::thread_set_priority_rt(ns_per_block, computation, constraint, true);
+    if (!success) {
+        scprintf("SC_AudioDriver: could not set thread priority with period computation constraint\n");
+    }
+#    endif // NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT
+#elif defined(NOVA_TT_PRIORITY_RT)
     int priority = nova::thread_priority_interval_rt().first;
     nova::thread_set_priority_rt(priority);
 #endif
@@ -408,10 +434,6 @@ void SC_ScheduledEvent::Perform() {
 }
 
 bool SC_AudioDriver::Setup() {
-    mRunThreadFlag = true;
-    SC_Thread thread(std::bind(&SC_AudioDriver::RunThread, this));
-    mThread = std::move(thread);
-
     int numSamples;
     double sampleRate;
 
@@ -431,6 +453,10 @@ bool SC_AudioDriver::Setup() {
     mSampleRate = mSmoothSampleRate = sampleRate;
     mBuffersPerSecond = sampleRate / mNumSamplesPerCallback;
     mMaxPeakCounter = (int)mBuffersPerSecond;
+
+    mRunThreadFlag = true;
+    SC_Thread thread(std::bind(&SC_AudioDriver::RunThread, this));
+    mThread = std::move(thread);
 
     if (mWorld->mVerbosity >= 0) {
         scprintf("SC_AudioDriver: sample rate = %f, driver's block size = %d\n", sampleRate, mNumSamplesPerCallback);
