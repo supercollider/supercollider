@@ -1,4 +1,4 @@
-title::Control Structures
+title::Conditional Execution
 summary:: conditional expressions in SuperCollider
 categories:: Language
 related:: Classes/Boolean,  Classes/Function, Classes/Exception, Reference/Syntax-Shortcuts 
@@ -7,7 +7,7 @@ This article gives an overview of the conditional expressions in SuperCollider a
 It starts with addressing the relevant syntactic generalities, then discusses the specific conditional expressions in question, 
 and finally touches on optimization issues, the (strongly discouraged) use of if-statements in Synths, and provides a table of classes implementing the methods discussed here.
 For discussions of specific expressions, skip ahead to their respective sections: 
-link::-if::, link::-while::,   link::-for::, link::-forBy::,link::-do::, link::-case::, link::-switch::, link::Exception handling::. 
+link::#if::, link::#while::, link::#switch::, link::#case::.
 
 section:: Syntax of conditional expressions
 
@@ -76,7 +76,7 @@ f = { falseFuncBody };
 if(condition, t, f);
 if (condition) { 
 	trueFuncBody
-} {  //no else keyword in SuperCollider!
+} { 
 	falseFuncBody
 }
 
@@ -102,14 +102,17 @@ Among the conditional expressions discussed here, this applies to .while, .case,
 
 Example:
 code::
+//function call notation with receiver block and trailing argument block
 while { testFuncBody } { loopFuncBody }; 
-// abbreviation of:
+// abbreviation of  function call notation with trailing argument block
 while ({ testFuncBody }) { loopFuncBody };
-// distinct from C-style while, which will not work in SuperCollider:
+// in receiver notation
+{ testFuncBody }.while({ loopFuncBody })
+// distinct from C-style, keyword-based while, which will not work in SuperCollider:
 while (testFuncBody) { loopFuncBody }; // -> Syntax Error
 ::
 
-section:: Overview of Basic Control Structures
+section:: Overview of Basic Conditional Expressions
 
 subsection:: if
 
@@ -118,13 +121,13 @@ The code::.if:: method is called on a receiver teletype::expr:: which must retur
 
 In addition the method call takes two arguments: 
 a link::Classes/Function:: teletype::trueFunc:: to execute if the expression is true, 
-and another optional Function teletype::talseFunc:: to execute if teletype::expr:: is false. 
+and another optional Function teletype::falseFunc:: to execute if teletype::expr:: is false. 
 The code::.if:: method returns the value of the function which is executed. 
 If teletype::falseFunc:: is not present and teletype::expr:: is false, then the
 result of the if message is code::nil::.
 
 
-subsubsection:: Syntax (if)
+subsubsection:: Syntax
 code::
 // receiver notation, reflects the above explanation
 // but is hard to read and rarely used in practice 
@@ -142,7 +145,7 @@ if(0 < 3) {"aha".postln} {"brb".postln};
 ::
 
 
-subsubsection:: Examples (if)
+subsubsection:: Examples
 code::
 // function call notation with trailing argument block
 // note the indentation and linebreaks,
@@ -195,7 +198,7 @@ Note the distinction to code::if:::
 teletype::testFunc:: is a Function (which returns itself), e.g., code::{x < 0}::, 
 whereas teletype::expr:: above was an expression, e.g., code::x < 0::, which returned a Boolean.
 
-subsubsection:: Syntax (while)
+subsubsection:: Syntax
 code::
 // function call with receiver and argument as trailing function block
 // this is _different_ from C!
@@ -213,7 +216,8 @@ while({ testFuncBody }, { loopFuncBody });
 { testFuncBody }.while({ loopFuncBody });
 ::
 
-subsubsectin:: Example (while)
+subsubsection:: Example 
+
 code::
 (
 i = 0;
@@ -221,60 +225,86 @@ while { i < 5 } { i = i + 1; "boing".postln };
 )
 ::
 
-code::while:: expressions are also optimized by the compiler if they do not contain variable declarations in the testFunc and the loopFunc.
+code::while:: expressions are also optimized by the compiler if they do not contain variable declarations in the teletype::testFunc:: and the teletype::loopFunc::.
 
 subsection:: switch
 
-Object implements a switch method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if true.
+Object implements a switch method which allows for conditional evaluation with multiple cases. 
+Each case is represented by a pair of two arguments: a teletype::testValue:: followed by a teletype::trueFunction::.
+The receiver is compared against the teletype::testValue::s, and if the comparison returns true, the corresponding teletype::trueFunction:: will be evaluated and its value returned.  If it is false, the next teletype::testValue:: is compared, and so on. 
+The return value of code::switch:: in case of emphasis::no:: matching teletype::testValue:: is dependent on whether the number of arguments passed to it is even or odd. 
+If the number of arguments is even, code::switch:: will return teletype::nil:: in such cases, whereas if it is odd, the last argument should be a teletype::defaultFunction:: whose code::.value:: will be returned.
 
-The switch statement will be inlined if the test objects are all Floats, Integers, Symbols, Chars, nil, false, true and if the functions have no variable or argument declarations. The inlined switch uses a hash lookup (which is faster than nested if statements), so it should be very fast and scale to any number of clauses.
+The comparison function used is equality, i.e., code::==::, unless the switch
+statement is inlined (see also link::#Optimization through inline expansion#below::), 
+in which case switch compares by identity, i.e., code::===::. (See link::Guides/EqualityIdentity::)
 
-note::Hash lookup by definition implies testing emphasis::identity:: rather than equality: a code::switch:: construction that is not inlined will test code::==::, while one that is inlined will test code::===::. See the examples. One implication is that strings should be avoided: code::switch(text) { "abc" } { ... }:: may not match, even if code::text == "abc"::. Symbols are preferred.::
+The switch statement will automatically be inlined if two conditions are met: 
+strong::First::, the test objects are all values with unique representations
+(Floats, Integers, Symbols, Chars, nil, false, or true) and strong::second::, functions used in the switch statement have no variable or argument declarations. 
+The inlined switch uses a hash lookup (which is faster than nested if statements), so it should be very fast and scale to any number of clauses. 
 
-note::Floating point numbers may sometimes appear to be equal while differing slightly in their binary representation: code::(2/3) == (1 - (1/3)):: is false. Therefore floats should be avoided in code::switch:: constructions.::
+note:: 
+strong::Avoid using String or Float as test objects for switch.:: 
+The former is simply less efficient than Symbol, as it will not inline; 
+the latter will inline, but may yield unexpected results due to floating-pointing representation,
+e.g., code::(2/3) == (1 - (1/3)):: returns code::false::.
+::
 
-discussion::
-Syntax
+subsubsection:: Syntax
+
 code::
+// function call syntax with trailing argument blocks
+// linebreaks are optional but recommended
 switch(value)
-{ testvalue1 } { truebody1 }
-{ testvalue2 } { truebody2 }
-{ testvalue3 } { truebody3 }
-{ testvalue4 } { truebody4 }
-...
-{ defaultbody }; // defaultbody can be omitted.
+	{ testValue1 } { trueFuncBody1 }
+	{ testValue2 } { trueFuncBody2 }
+	{ testValue3 } { trueFuncBody3 }
+	...
+	{ testValueN } { trueFunchBodyN }
+	{ defaultBody }; // defaultbody can be omitted.
 
+//function call syntax without trailing arguments 
 switch(value,
-        testvalue1, trueFunction1,
-        testvalue2, trueFunction2,
-        ...
-        testvalueN, trueFunctionN,
-        defaultFunction // defaultFunction can be omitted
+	testValue1, trueFunction1,
+	testValue2, trueFunction2,
+	...
+	testValueN, trueFunctionN,
+	defaultFunction // defaultFunction can be omitted
 );
 ::
 
-Examples
+subsubsection:: Examples
+
 code::
+//function call syntax without trailing arguments 
 (
 var x = 0; //also try 1
-switch(x, 0, { "hello" }, 1, { "goodbye" })
+switch(x, 
+   	0, { "hello" }, 
+	1, { "goodbye" }
+	)
 )
 
+
+// function call syntax with trailing argument blocks
 (
 var x = 0; //also try 1
-switch(x) { 0 } { "hello" } { 1 } { "goodbye" };
+switch(x) 
+	{ 0 } { "hello" } 
+	{ 1 } { "goodbye" };
 )
 
 (
 var x, z;
-z = [0, 1, 1.1, 1.3, 1.5, 2];
-switch (z.choose.postln,
-	1,   { \no },
-	1.1, { \wrong },
-	1.3, { \wrong },
-	1.5, { \wrong },
-	2,   { \wrong },
-	0,   { \true }
+z = [0, 7, 2, 329, 4, 5000].choose;
+switch (z.postln,
+	7,    { \no },
+	2,    { \wrong },
+	329,  { \worng },
+	4,    { \wrnog },
+	5000, { \wnorg },
+	0,    { \true }
 ).postln;
 )
 ::
@@ -282,107 +312,125 @@ or:
 code::
 (
 var x, z;
-z = [0, 1, 1.1, 1.3, 1.5, 2];
-x = switch(z.choose)
-	{1}   { \no }
-	{1.1} { \wrong }
-	{1.3} { \wrong }
-	{1.5} { \wrong }
-	{2}   { \wrong }
-	{0}   { \true };
+z = [0, 7, 2, 329, 4, 5000].choose;
+x = switch(z)
+	{7}    { \no }
+	{2}    { \wrong }
+	{329}  { \worng }
+	{4}    { \wrnog }
+	{5000} { \wnorg }
+	{0}    { \true };
 x.postln;
 )
 ::
 
-Inlined vs non-inlined comparison:
+subsubsection:: Inlined vs non-inlined comparison
 
+The following code will inline, but will compare by identity:
 code::
 (
-switch(1.0)
-	{ 1 } { "yes" }
+switch(1)
+	{ 1.0 } { "yes" }
 	{ "no" }
-)
-
--> no
+) // -> no
 ::
 
-The identity comparison code::1.0 === 1:: is false: while 1.0 and 1 represent the same numeric value, one is floating point and the other is an integer, so they cannot be identical.
+The identity comparison code::1 === 1.0:: returns false. 
+While 1.0 and 1 represent the same numeric value, one is a Float and the other is an Integer, so they cannot be identical.
+On the other hand, if we prevent inlining by declaring a variable within one of the functions, the code will compare by equality:
+code::1 == 1.0:: returns true. 
+
 
 code::
 (
 // 'var x' prevents inlining
-switch(1.0)
-	{ 1 } { var x; "yes" }
+switch(1)
+	{ 1.0 } { var x; "yes" }
 	{ "no" }
-)
-
-WARNING: Float:switch is unsafe, rounding via Float:asInteger:switch
--> yes
+)  // -> yes
 ::
 
 subsection:: case
 
-Function implements a case method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Case is inlined and is therefore just as efficient as nested if statements.
+Function also implements a code::case:: method which allows for conditional evaluation with multiple cases. 
+In distinction to link::#switch::, the receiver is emphasis::not:: an object that other teletype::testValues:: are all compared against, 
+but can be thought of as simply the zeroth argument. 
+Thus, the arguments including the receiver can be written as pairs of teletype::testFunction::s and corresponding teletype::trueFunction::s. 
+if a teletype::testFunction:: returns true, its corresponding teletype::trueFunction:: is evaluated and its code::.value:: returned.
+If no teletype::testFunction:: returns true, either teletype::nil:: is returned, or the code::.value:: of a teletype::defaultFunction:: supplied as the final argument.
+Case is inlined (under the conditions outlined link::#Optimization through inline expansion#below::), and is therefore just as efficient as nested if statements.
 
-discussion::
-Syntax
+subsubsection:: Syntax
+
 code::
+// { testFuncBody1 } is technically the receiver.
+// trailing receiver and argument block notation
+// (possible because receiver and all arguments are Functions):
 case
-	{ testFunction1 } { trueFunction1 }
-	{ testFunction2 } { trueFunction2 }
+	{ testFuncBody1 } { trueFuncBody1 }
+	{ testFuncBody2 } { trueFuncBody2 }
 	...
-	{ defaultFunction }; // defaultFunction can be omitted.
+	{ testFuncBodyN } { trueFuncBodyN }
+	{ defaultFuncBody }; // defaultFunction can be omitted.
 
-case(
-	{ testFunction1 }, { trueFunction1 },
-	{ testFunction2 }, { trueFunction2 },
-	...
-	{ defaultFunction } // defaultFunction can be omitted.
-);
+// function call notation:
+case(   
+		testFunction1, trueFunction1,
+    	testFunction2, trueFunction2,
+		...,
+		testFunctionN, trueFunctionN,
+		defaultFunction // defaultFunction can be omitted.
+	); 
 ::
 
-Example
+subsubsection:: Example
+
 code::
 (
-var i, x, z;
-z = [0, 1, 1.1, 1.3, 1.5, 2];
-i = z.choose;
+var i, x;
+i = [0, 7, 2, 329, 4, 5000].choose;
 x = case
-	{ i == 1 }   { \no }
-	{ i == 1.1 } { \wrong }
-	{ i == 1.3 } { \wrong }
-	{ i == 1.5 } { \wrong }
-	{ i == 2 }   { \wrong }
-	{ i == 0 }   { \true };
+	{ i == 0 }     { \no }   
+	{ i == 7 }     { \wrong }
+	{ i == 2 }     { \worng }
+	{ i == 329 }   { \wrnog }
+	{ i == 4 }     { \wnorg }
+	{ i == 5000 }  { \true };
 x.postln;
 )
 ::
 or
 code::
+// function call notation; 
 (
-var i, x, z;
-z = [0, 1, 2];
-i = z.choose;
-x = case(
-	{ i == 2 }, { \wrong },
-	{ i == 0 }, { \true },
-	{ \defaultFunction }
+var i, test1, test2, true1, true2, default;
+i = [true, false].choose;
+test1 = {i};
+test2 = {i.not};
+true1 = { "i is true" };
+true2 = { "i is false" };
+default = { "just in case"};
+case(
+	test1, true1,
+	test2, true2,
+	default //we don't really need this here.
 );
-[i, x].postln;
+i.postln;
 )
 ::
 
-section:: Other Conditional Expressions
+section:: Other Control Structures 
 
-Using Functions, many control structures can be defined like the ones above. 
-In the class link::Classes/Collection#Iteration:: there are many more messages defined for iterating over Collections.
+Conditional expressions are a type of control structures; another useful type are iterations such as code::.do:: and code::.for::. 
+These are discussed separately in the article on link::Reference/Iteration:: (also see link::Classes/Collection#Iteration::).
+Finally, the methods link::Classes/Function#-try:: and link::Classes/Function#-protect:: are technically conditional expressions, 
+but their intended use is in the handling of exceptions, which is why their are discussed in link::Classes/Exception:: rather than here.
 
-
-section:: Optimization through Inline expansion
+section:: Optimization through inline expansion
 
 code::if::, code::while::, code::switch::, and code::case:: expressions are optimized (i.e., inlined) by the compiler if they do not contain variable declarations in the functions. 
 We can see this if we dump the bytecodes of the receiver function definition. 
-(Bytecodes are a lower-lever representation of the code sent to the interpreter.) 
+(Bytecodes are a lower-level representation of the code sent to the interpreter.) 
 The optimization does not use function calls within the bytecodes and instead uses a jump statement, which is faster.
 
 subsection:: Failure to inline: Functions include variable declaration.
@@ -399,7 +447,8 @@ code::
 }.def.dumpByteCodes
 )
 ::
-This returns the following warning,::footnote
+
+This returns the following warning,footnote::
 You can switch on and off the above warning (see: link::Classes/LanguageConfig#*postInlineWarnings::):
 code::
 LanguageConfig.postInlineWarnings_(true) // warn
@@ -474,22 +523,23 @@ section:: Audio Control Structures: Do not use .if etc. in Synths!
 The control structures discussed here is intended for use in sclang (i.e., language/client), not in scsynth (i.e., server). 
 Use of .if in signal processing contexts may appear to work in simple cases but is strong::not advised::. 
 Intead, use link::Classes/Select:: or link::Classes/SelectX:: and related classes.
-Also see link::Guides/UserFAQ#SynthDef_Issues:: for more details.
+Also see link::Guides/UserFAQ#SynthDef Issues:: for more details.
 
 The following code runs (does not produce an error), but is strong::not good usage::,
 because it is not very obvious what is going on: 
 code::
 (
+	var freq = 100;
     {
         if(LFTri.kr(0.1).unipolar, //receiver is a UGen. 
-			SinOsc.ar(100, mul: 0.2), //as are arguments
-			Saw.ar(100, mul: 0.2)
-		)
-    }.scope(bufsize: s.sampleRate/100); //bufsize to match the period of the oscillators
+			SinOsc.ar(freq), //as are arguments
+			Saw.ar(freq)
+		) * 0.2;
+    }.scope(bufsize: s.sampleRate/freq; //bufsize to match the period of the oscillators
 )
 ::
 Here, the receiver LFTri is a UGen. 
-The UGen class in turn implements an .if method by translating it into a linear crossfade using binary operators:
+The UGen class in turn implements an link::Clsses/UGen#-if:: method by translating it into a linear crossfade using binary operators:
 
 code::
 	if { arg trueUGen, falseUGen;
@@ -497,47 +547,45 @@ code::
 	}
 ::
 
-The regular code::Boolean.if:: discussed above does emphasis::not:: crossfade. 
+The regular link::Boolean#-if:: discussed above does emphasis::not:: crossfade. 
 Hence, if the crossfade is desired, it is better practice to make this explicit by using link::Classes/LinSelectX::: 
 
 code::
 (
+	var freq = 100;
     {
         LinSelectX.ar(
 			LFTri.kr(0.1).unipolar, 
-			[SinOsc.ar(100), Saw.ar(100)] * 0.2
-		)
-    }.scope(bufsize: s.sampleRate/100); 
+			[SinOsc.ar(freq), Saw.ar(freq)]
+		) * 0.2;
+    }.scope(bufsize: s.sampleRate/freq); 
 )
 ::
 
-On ther other hand, in the case where not a crossfade but a simple either/or analoguous to language-side code::Boolean.if:: is desired, link::Classes/Select:: is preferable:
+On the other hand, in the case where not a crossfade but a simple either/or analoguous to language-side code::Boolean.if:: is desired, link::Classes/Select:: is preferable:
 
 code::
 (
+	var freq = 100;
     { Select.ar(
 		LFPulse.ar(1), 
-		[SinOsc.ar(100), Saw.ar(100)] * 0.2
-		) 
-	}.scope(bufsize: s.sampleRate/100);
+		[SinOsc.ar(freq), Saw.ar(freq)]
+		) * 0.2;
+	}.scope(bufsize: s.sampleRate/freq);
 )
 ::  
 
-section:: Table of conditional methods and classes that implement them.
+section:: Table of conditional expressions and classes that implement them.
 
-The following table gives an overview of the control structures discussed here, and which classes implement them as methods. 
+The following table gives an overview of the control structures discussed here, and shows which classes implement them as methods. 
 
 table::
 	## strong::subsection:: || strong::Class::
     ## if || Boolean
 	## while || Function
-	## for, forBy || Integer
-	## do || Integer (> 0), Collection, Object
 	## switch || Object
 	## case || Function
-	## try || Function
-	## protect || Function
 ::
 
-link::Classes/UGen-if:: is omitted from this table because it is strong::bad:: and you should not think about using it or you will be sent to SuperCollider jail.
+link::Classes/UGen#-if:: is omitted from this table because it is strong::bad:: and you should not think about using it or you will be sent to SuperCollider jail.
  
