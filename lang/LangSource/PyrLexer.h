@@ -67,8 +67,8 @@ struct FatalInterpreterError : public std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 
-// All exceptions are caught, except FataInterpreterErrors
-SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) noexcept(false);
+// All exceptions are caught, except FatalInterpreterErrors
+SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
 
 void interpretCmdLine(const char* textbuf, int textlen, char* methodname);
 

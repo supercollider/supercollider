@@ -2262,7 +2262,7 @@ void signal_init_globs();
 
 void dumpByteCodes(PyrBlock* theBlock);
 
-SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) noexcept(false) {
+SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
     VMGlobals* g = gMainVMGlobals;
     g->canCallOS = true;
     try {
