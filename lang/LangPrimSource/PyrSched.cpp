@@ -379,6 +379,14 @@ void resyncThread() {
 extern bool gTraceInterpreter;
 
 static void schedRunFunc() {
+#ifdef __APPLE__
+    // On macOS we use the modern Quality of Service (QoS) API
+    // to signal the nature and importance of this thread to the OS.
+    int err = pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
+    if (err != 0) {
+        post("Error: Couldn't set QoS class for sclang scheduler: %s\n", strerror(err));
+    }
+#endif // __APPLE__
     using namespace std::chrono;
     unique_lock<timed_mutex> lock(gLangMutex);
     // The scheduler may have already been stopped by the time we acquire this
@@ -462,82 +470,6 @@ leave:
     return;
 }
 
-#ifdef __APPLE__
-#    include <mach/mach.h>
-#    include <mach/thread_policy.h>
-
-// Polls a (non-realtime) thread to find out how it is scheduled
-// Results are undefined of an error is returned. Otherwise, the
-// priority is returned in the address pointed to by the priority
-// parameter, and whether or not the thread uses timeshare scheduling
-// is returned at the address pointed to by the isTimeShare parameter
-kern_return_t GetStdThreadSchedule(mach_port_t machThread, int* priority, boolean_t* isTimeshare) {
-    kern_return_t result = 0;
-    thread_extended_policy_data_t timeShareData;
-    thread_precedence_policy_data_t precedenceData;
-    mach_msg_type_number_t structItemCount;
-    boolean_t fetchDefaults = false;
-
-    memset(&timeShareData, 0, sizeof(thread_extended_policy_data_t));
-    memset(&precedenceData, 0, sizeof(thread_precedence_policy_data_t));
-
-    if (0 == machThread)
-        machThread = mach_thread_self();
-
-    if (NULL != isTimeshare) {
-        structItemCount = THREAD_EXTENDED_POLICY_COUNT;
-        result = thread_policy_get(machThread, THREAD_EXTENDED_POLICY, (integer_t*)&timeShareData, &structItemCount,
-                                   &fetchDefaults);
-        *isTimeshare = timeShareData.timeshare;
-        if (0 != result)
-            return result;
-    }
-
-    if (NULL != priority) {
-        fetchDefaults = false;
-        structItemCount = THREAD_PRECEDENCE_POLICY_COUNT;
-        result = thread_policy_get(machThread, THREAD_PRECEDENCE_POLICY, (integer_t*)&precedenceData, &structItemCount,
-                                   &fetchDefaults);
-        *priority = precedenceData.importance;
-    }
-
-    return result;
-}
-
-// Reschedules the indicated thread according to new parameters:
-//
-// machThread           The mach thread id. Pass 0 for the current thread.
-// newPriority          The desired priority.
-// isTimeShare          false for round robin (fixed) priority,
-//                      true for timeshare (normal) priority
-//
-// A standard new thread usually has a priority of 0 and uses the
-// timeshare scheduling scheme. Use pthread_mach_thread_np() to
-// to convert a pthread id to a mach thread id
-kern_return_t RescheduleStdThread(mach_port_t machThread, int newPriority, boolean_t isTimeshare) {
-    kern_return_t result = 0;
-    thread_extended_policy_data_t timeShareData;
-    thread_precedence_policy_data_t precedenceData;
-
-    // Set up some variables that we need for the task
-    precedenceData.importance = newPriority;
-    timeShareData.timeshare = isTimeshare;
-    if (0 == machThread)
-        machThread = mach_thread_self();
-
-    // Set the scheduling flavor. We want to do this first, since doing so
-    // can alter the priority
-    result =
-        thread_policy_set(machThread, THREAD_EXTENDED_POLICY, (integer_t*)&timeShareData, THREAD_EXTENDED_POLICY_COUNT);
-
-    if (0 != result)
-        return result;
-
-    // Now set the priority
-    return thread_policy_set(machThread, THREAD_PRECEDENCE_POLICY, (integer_t*)&precedenceData,
-                             THREAD_PRECEDENCE_POLICY_COUNT);
-}
-#endif // __APPLE__
 
 #ifdef __linux__
 #    include <string.h>
@@ -568,36 +500,7 @@ SCLANG_DLLEXPORT_C void schedRun() {
     SC_Thread thread(schedRunFunc);
     gSchedThread = std::move(thread);
 
-#ifdef __APPLE__
-    int policy;
-    struct sched_param param;
-
-    // pthread_t thread = pthread_self ();
-    pthread_getschedparam(gSchedThread.native_handle(), &policy, &param);
-    // post("param.sched_priority %d\n", param.sched_priority);
-
-    policy = SCHED_RR; // round-robin, AKA real-time scheduling
-
-    int machprio;
-    boolean_t timeshare;
-    GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread.native_handle()), &machprio, &timeshare);
-    // post("mach priority %d   timeshare %d\n", machprio, timeshare);
-
-    // what priority should gSchedThread use?
-
-    RescheduleStdThread(pthread_mach_thread_np(gSchedThread.native_handle()), 62, false);
-
-    GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread.native_handle()), &machprio, &timeshare);
-    // post("mach priority %d   timeshare %d\n", machprio, timeshare);
-
-    // param.sched_priority = 70; // you'll have to play with this to see what it does
-    // pthread_setschedparam (gSchedThread, policy, &param);
-
-    pthread_getschedparam(gSchedThread.native_handle(), &policy, &param);
-
-    // post("param.sched_priority %d\n", param.sched_priority);
-#endif // __APPLE__
-
+    // NOTE: on macOS, we set the thread priority in schedRunFunc using the QoS API.
 #ifdef __linux__
     SC_LinuxSetRealtimePriority(gSchedThread.native_handle(), 1);
 #endif // __linux__
@@ -664,23 +567,7 @@ TempoClock::TempoClock(VMGlobals* inVMGlobals, PyrObject* inTempoClockObj, doubl
     SC_Thread thread(std::bind(&TempoClock::Run, this));
     mThread = std::move(thread);
 
-#ifdef __APPLE__
-    int machprio;
-    boolean_t timeshare;
-    GetStdThreadSchedule(pthread_mach_thread_np(mThread.native_handle()), &machprio, &timeshare);
-    // post("mach priority %d   timeshare %d\n", machprio, timeshare);
-
-    // what priority should gSchedThread use?
-
-    RescheduleStdThread(pthread_mach_thread_np(mThread.native_handle()), 10, false);
-
-    GetStdThreadSchedule(pthread_mach_thread_np(mThread.native_handle()), &machprio, &timeshare);
-    // post("mach priority %d   timeshare %d\n", machprio, timeshare);
-
-    // param.sched_priority = 70; // you'll have to play with this to see what it does
-    // pthread_setschedparam (mThread, policy, &param);
-#endif // __APPLE__
-
+    // NOTE: on macOS, we set the thread priority in Run() using the QoS API.
 #ifdef __linux__
     SC_LinuxSetRealtimePriority(mThread.native_handle(), 1);
 #endif // __linux__
@@ -746,6 +633,14 @@ void TempoClock::SetTempoAtTime(double inTempo, double inSeconds) {
 double TempoClock::ElapsedBeats() { return SecsToBeats(elapsedTime()); }
 
 void* TempoClock::Run() {
+#ifdef __APPLE__
+    // On macOS we use the modern Quality of Service (QoS) API
+    // to signal the nature and importance of this thread to the OS.
+    int err = pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
+    if (err != 0) {
+        post("Error: Couldn't set QoS class for TempoClock: %s\n", strerror(err));
+    }
+#endif // __APPLE__
     using namespace std::chrono;
     // printf("->TempoClock::Run\n");
     unique_lock<timed_mutex> lock(gLangMutex);
