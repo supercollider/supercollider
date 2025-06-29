@@ -24,8 +24,7 @@
 /* GUTTER */
 
 .CodeMirror-gutters {
-  border-right: 1px solid #ddd;
-  background-color: #f7f7f7;
+  background-color: transparent;
   white-space: nowrap;
 }
 .CodeMirror-linenumbers {}
@@ -203,7 +202,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #a22;}
 .CodeMirror-gutters {
   position: absolute; left: 0; top: 0;
   min-height: 100%;
-  z-index: 3;
 }
 .CodeMirror-gutter {
   white-space: normal;
@@ -214,19 +212,16 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #a22;}
 }
 .CodeMirror-gutter-wrapper {
   position: absolute;
-  z-index: 4;
   background: none !important;
   border: none !important;
 }
 .CodeMirror-gutter-background {
   position: absolute;
   top: 0; bottom: 0;
-  z-index: 4;
 }
 .CodeMirror-gutter-elt {
   position: absolute;
   cursor: default;
-  z-index: 4;
 }
 .CodeMirror-gutter-wrapper ::selection { background-color: transparent }
 .CodeMirror-gutter-wrapper ::-moz-selection { background-color: transparent }

@@ -883,9 +883,9 @@ void sc_plugin_interface::allocate_buffer(SndBuf* buf, uint32_t frames, uint32_t
     buf->isLocal = false;
 }
 
-SndBuf* sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels) {
+SndBuf* sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels, double samplerate) {
     SndBuf* buf = World_GetNRTBuf(&world, index);
-    allocate_buffer(buf, frames, channels, world.mFullRate.mSampleRate);
+    allocate_buffer(buf, frames, channels, samplerate);
     return buf;
 }
 

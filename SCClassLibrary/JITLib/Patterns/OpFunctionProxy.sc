@@ -1,33 +1,33 @@
 UnaryOpFunctionProxy : UnaryOpFunction {
 
-	valueFuncProxy { arg args;
-		^this.reduceFuncProxy(args)
+	valueFuncProxy { | args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
-	reduceFuncProxy { arg args;
-		^a.reduceFuncProxy(args).perform(selector)
+	reduceFuncProxy { | args, protect=true, kwargs |
+		^a.reduceFuncProxy(args, protect, kwargs).perform(selector)
 	}
-	value { arg ... args;
-		^this.reduceFuncProxy(args)
+	value { | ... args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
-	valueArray { arg args;
+	valueArray { | args |
 		^this.reduceFuncProxy(args)
 	}
 
-	composeUnaryOp { arg aSelector;
+	composeUnaryOp { | aSelector |
 		^UnaryOpFunctionProxy.new(aSelector, this)
 	}
-	composeBinaryOp { arg aSelector, something, adverb;
+	composeBinaryOp { | aSelector, something, adverb |
 		^BinaryOpFunctionProxy.new(aSelector, this, something, adverb);
 	}
-	reverseComposeBinaryOp { arg aSelector, something, adverb;
+	reverseComposeBinaryOp { | aSelector, something, adverb |
 		^BinaryOpFunctionProxy.new(aSelector, something, this, adverb);
 	}
-	composeNAryOp { arg aSelector, anArgList;
+	composeNAryOp { | aSelector, anArgList |
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
 	}
 
 	// behave like a pattern
-	embedInStream { arg inval;
+	embedInStream { | inval |
 		^this.value.embedInStream(inval)
 	}
 
@@ -35,35 +35,34 @@ UnaryOpFunctionProxy : UnaryOpFunction {
 
 BinaryOpFunctionProxy : BinaryOpFunction {
 
-	valueFuncProxy { arg args;
-		^this.reduceFuncProxy(args)
+	valueFuncProxy { | args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
-	reduceFuncProxy { arg args;
-		^a.reduceFuncProxy(args)
-		.perform(selector, b.reduceFuncProxy(args), adverb)
+	reduceFuncProxy { | args, protect=true, kwargs |
+		^perform(a.reduceFuncProxy(args, protect, kwargs), selector, b.reduceFuncProxy(args, protect, kwargs), adverb)
 	}
-	value { arg ... args;
-		^this.reduceFuncProxy(args)
+	value { | ... args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
-	valueArray { arg args;
+	valueArray { | args |
 		^this.reduceFuncProxy(args)
 	}
 
-	composeUnaryOp { arg aSelector;
+	composeUnaryOp { | aSelector |
 		^UnaryOpFunctionProxy.new(aSelector, this)
 	}
-	composeBinaryOp { arg aSelector, something, adverb;
+	composeBinaryOp { | aSelector, something, adverb |
 		^BinaryOpFunctionProxy.new(aSelector, this, something, adverb);
 	}
-	reverseComposeBinaryOp { arg aSelector, something, adverb;
+	reverseComposeBinaryOp { | aSelector, something, adverb |
 		^BinaryOpFunctionProxy.new(aSelector, something, this, adverb);
 	}
-	composeNAryOp { arg aSelector, anArgList;
+	composeNAryOp { | aSelector, anArgList |
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
 	}
 
 	// behave like a pattern
-	embedInStream { arg inval;
+	embedInStream { | inval |
 		^this.value.embedInStream(inval)
 	}
 
@@ -71,49 +70,62 @@ BinaryOpFunctionProxy : BinaryOpFunction {
 
 NAryOpFunctionProxy : NAryOpFunction {
 
-	reduceFuncProxy { arg args;
-		^a.reduceFuncProxy(args).performList(selector, arglist.collect(_.reduceFuncProxy(args)))
+	reduceFuncProxy { | args, protect = true, kwargs |
+		^a.reduceFuncProxy(args, protect, kwargs).performArgs(
+			selector,
+			arglist.collect(_.reduceFuncProxy(args, protect, kwargs)),
+			kwarglist.collect(_.reduceFuncProxy(args, protect, kwargs))
+		)
 	}
-	valueFuncProxy { arg args;
+	valueFuncProxy { | args |
 		^this.reduceFuncProxy(args)
 	}
-	value { arg ... args;
-		^this.reduceFuncProxy(args)
+	value { | ... args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
-	valueArray { arg args;
+	valueArray { | args |
 		^this.reduceFuncProxy(args)
 	}
 
-	composeUnaryOp { arg aSelector;
+	composeUnaryOp { | aSelector |
 		^UnaryOpFunctionProxy.new(aSelector, this)
 	}
-	composeBinaryOp { arg aSelector, something, adverb;
+	composeBinaryOp { | aSelector, something, adverb |
 		^BinaryOpFunctionProxy.new(aSelector, this, something, adverb);
 	}
-	reverseComposeBinaryOp { arg aSelector, something, adverb;
+	reverseComposeBinaryOp { | aSelector, something, adverb |
 		^BinaryOpFunctionProxy.new(aSelector, something, this, adverb);
 	}
-	composeNAryOp { arg aSelector, anArgList;
-		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
+	composeNAryOp { | aSelector, anArgList, aKeywordArgList |
+		^NAryOpFunctionProxy.new(aSelector, this, anArgList, aKeywordArgList)
 	}
 
 	// behave like a pattern
-	embedInStream { arg inval;
+	embedInStream { | inval |
 		^this.value.embedInStream(inval)
 	}
 
 }
 
-// maybe make it an abstract function object.
+// this proxy is built on function proxy composition
+
 NAryValueProxy : NAryOpFunctionProxy {
 
-	*new { arg receiver, args;
+	*new { | receiver, args |
 		^super.new(nil, receiver, args ? [])
 	}
-	reduceFuncProxy { arg args;
-		^a.reduceFuncProxy(arglist.collect(_.reduceFuncProxy(args)))
+	reduceFuncProxy { | args, protect = true, kwargs |
+
+		// kwargs are only passed to each proxy individually:
+		// in function compositon we have no way to specify a keyword
+		// to which argument of the next function the output value
+		// of the previous function in the chain is passed
+
+		^a.reduceFuncProxy(
+			arglist.collect(_.reduceFuncProxy(args, protect, kwargs))
+		)
 	}
-	storeOn { arg stream;
-		stream << "o(" <<< a << "," <<<* arglist << ")" // is it always so?
+	storeOn { | stream |
+		stream << "o(" <<< a << "," <<<* arglist << ")"
 	}
 }

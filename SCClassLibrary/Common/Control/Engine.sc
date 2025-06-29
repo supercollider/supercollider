@@ -14,7 +14,7 @@ NodeIDAllocator {
 	reset {
 		mask = user << 26;
 		temp = initTemp;
-		perm = 2;
+		perm = 4;
 		permFreed = IdentitySet.new;
 	}
 	alloc {
@@ -165,17 +165,19 @@ ContiguousBlock {
 	*new { |start, size| ^super.newCopyArgs(start, size) }
 
 	address { ^start }
+	nextAddress { ^start + size }
+	lastAddress { ^start + size - 1 }
 
 	adjoins { |block|
 		^(start < block.start and: { start + size >= block.start })
-			or: { start > block.start and: { block.start + block.size >= start } }
+			or: { start > block.start and: { block.nextAddress >= start } }
 	}
 
 	join { |block|
 		var newstart;
 		if(this.adjoins(block)) {
 			^this.class.new(newstart = min(start, block.start),
-				max(start + size, block.start + block.size) - newstart)
+				max(start + size, block.nextAddress) - newstart)
 		} {
 			^nil
 		};
@@ -216,7 +218,7 @@ ContiguousBlockAllocator {
 
 	// For every ContiguousBlock in the array,
 	// there should ALWAYS be the next ContiguousBlock at
-	// block.start + block.size.
+	// block.nextAddress.
 	// E.g. block at 0 above --> 0+2 --> 2 and there's a block at index 2.
 	// If this is not true, the allocator is in an inconsistent state.
 	// This should never happen by following the public interface:
@@ -240,34 +242,43 @@ ContiguousBlockAllocator {
 	}
 
 	reserve { |address, size = 1, warn = true|
-		var block = array[address] ?? { this.prFindNext(address) };
-		var new;
-		if(block.notNil and:
-			{ block.used and:
-				{ address + size > block.start }
-		}) {
-			if(warn) {
-				"The block at (%, %) is already in use and cannot be reserved."
-				.format(address, size).warn;
-			};
-		} {
-			if(block.notNil and: { block.start == address }) {
-				new = this.prReserve(address, size, block);
-				^new
-			} {
-				block = this.prFindPrevious(address);
-				if(block.notNil and:
-					{ block.used and:
-						{ block.start + block.size > address }
-				}) {
-					if(warn) {
-						"The block at (%, %) is already in use and cannot be reserved."
-						.format(address, size).warn;
-					};
-				} {
-					new = this.prReserve(address, size, nil, block);
-					^new
+		var block = array[address - addrOffset];
+
+		// block exists: if unused and big enough, reserve, else nil
+		if(block.notNil) {
+			if(block.used or: { block.size < size }) {
+				if(warn) {
+					"The block at (%, %) is already in use and cannot be reserved."
+					.format(address, size).warn;
 				};
+				^nil
+			} {
+				^this.prReserve(address, size, block);
+			}
+		} {
+			// block didn't exist:
+			// search backward and validate 2 conditions
+			block = this.prFindPrevious(address);
+			if(block.isNil) {
+				if(warn) {
+					"Address % should be at least %".format(address, addrOffset).warn;
+				};
+				^nil
+			};
+			if(block.nextAddress < address) {
+				Error("ContiguousBlockAllocator:reserve previous block doesn't span requested address (should never happen)").throw;
+			};
+			// is it used, or too small?
+			if(block.used or: {
+				block.nextAddress < (address + size)
+			}) {
+				if(warn) {
+					"The block at (%, %) is already in use and cannot be reserved."
+					.format(address, size).warn;
+				};
+				^nil
+			} {
+				^this.prReserve(address, size, nil, block);
 			};
 		};
 		^nil
@@ -363,9 +374,9 @@ ContiguousBlockAllocator {
 		if(temp.notNil) {
 			// Yes.
 			// In that case (see comments at the top of the class),
-			// the next block is expected to be at temp.start + temp.size.
+			// the next block is expected to be at temp.nextAddress.
 			// So the 'else' block's search is redundant.
-			indexOfNextBlock = temp.start + temp.size;
+			indexOfNextBlock = temp.nextAddress;
 		} {
 			// No.
 			// We know there is no block at 'address',

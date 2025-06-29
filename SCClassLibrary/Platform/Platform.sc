@@ -198,11 +198,11 @@ Platform {
 	// hook for clients to write frontend.css
 	writeClientCSS {}
 
-	killProcessByID { |pid|
+	killProcessByID { |pid, force = true, subprocesses = true|
 		^this.subclassResponsibility(\killProcessByID)
 	}
 
-	killAll { |cmdLineArgs|
+	killAll { |cmdLineArgs, force = true|
 		^this.subclassResponsibility(\killAll)
 	}
 
@@ -212,6 +212,56 @@ Platform {
 		^this.subclassResponsibility
 	}
 
+	*systemInformation {
+		^(
+			version: Main.version,
+			buildString: Main.scBuildString,
+			qtVersion:  if(\QtGUI.asClass.isNil, { nil }, { QtGUI.version }),
+			platform: thisProcess.platform.name,
+			platformVersion: thisProcess.platform.version,
+			platformArchitecture: this.architecture,
+			argv: thisProcess.argv,
+			audioDevices: if(thisProcess.platform.name == \linux, {[]}, {ServerOptions.devices}),
+			server: case
+				{ Server.program.contains("scsynth") } { "scsynth" }
+				{ Server.program.contains("supernova") } { "supernova" }
+				{ "unknown" },
+			includes: LanguageConfig.includePaths.collect { |path|
+				PathName(path).fileName
+			},
+		)
+	}
+
+	*postBugReportInfo { |includePaths=true, includeDevices=false|
+		var info = this.systemInformation;
+
+		"Copy the content between the ### lines".postln;
+		"#".dup(40).join.postln;
+
+		"* SuperCollider version: % (%)".format(
+			info[\version],
+			info[\buildString],
+		).postln;
+		"* Operating system: % % (%)".format(
+			info[\platform],
+			info[\platformVersion],
+			info[\platformArchitecture],
+		).postln;
+		"* Other details".postln;
+		"	* Qt version: %".format(info[\qtVersion]).postln;
+		"	* argv: %".format(info[\argv].join(" ")).postln;
+		"	* server: %".format(info[\server]).postln;
+
+		if(includePaths, {
+			"	* includes: %".format(info[\includes].join(", ")).postln;
+		});
+
+		if(includeDevices, {
+			"	* devices: %".format(info[\audioDevices].join(", ")).postln;
+		});
+
+		"#".dup(40).join.postln;
+	}
 }
 
 UnixPlatform : Platform {
@@ -234,12 +284,10 @@ UnixPlatform : Platform {
 		^arch.asSymbol;
 	}
 
-	killProcessByID { |pid|
-		("kill -9 " ++ pid).unixCmd;
-	}
+	// killProcessByID moved to LinuxPlatform and OSXPlatform due to different implementations
 
-	killAll { |cmdLineArgs|
-		("killall -9 " ++ cmdLineArgs).unixCmd;
+	killAll { |cmdLineArgs, force = true|
+		"killall -% %".format(force.if({"KILL"}, {"TERM"}), cmdLineArgs).unixCmd;
 	}
 
 	defaultTempDir {

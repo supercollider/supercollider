@@ -29,6 +29,7 @@
 #include "ui_settings_sclang.h"
 #include "../../core/settings/manager.hpp"
 #include "../../core/util/standard_dirs.hpp"
+#include "../../core/main.hpp"
 
 #include <yaml-cpp/yaml.h>
 
@@ -49,8 +50,9 @@ SclangPage::SclangPage(QWidget* parent): QWidget(parent), ui(new Ui::SclangConfi
 
     ui->runtimeDir->setFileMode(QFileDialog::Directory);
 
-    connect(ui->activeConfigFileComboBox, SIGNAL(currentIndexChanged(const QString&)), this,
-            SLOT(changeSelectedLanguageConfig(const QString&)));
+    connect(ui->activeConfigFileComboBox, &QComboBox::currentTextChanged, this,
+            &SclangPage::changeSelectedLanguageConfig);
+
     connect(ui->sclang_add_configfile, SIGNAL(clicked()), this, SLOT(dialogCreateNewConfigFile()));
     connect(ui->sclang_remove_configfile, SIGNAL(clicked()), this, SLOT(dialogDeleteCurrentConfigFile()));
 
@@ -84,6 +86,8 @@ void SclangPage::load(Manager* s) {
                                                                    // the code triggers stateChanged event.
 
     s->endGroup();
+
+    sclangConfigChanged = false;
 
     readLanguageConfig();
 }
@@ -130,6 +134,7 @@ void SclangPage::removeExcludePath() {
 
 void SclangPage::changeSelectedLanguageConfig(const QString& configPath) {
     selectedLanguageConfigFile = configPath;
+    sclangConfigChanged = true;
     readLanguageConfig();
 }
 
@@ -195,8 +200,13 @@ void SclangPage::readLanguageConfig() {
 }
 
 void SclangPage::writeLanguageConfig() {
-    if (!sclangConfigDirty)
+    if (!sclangConfigDirty) {
+        if (sclangConfigChanged) {
+            dialogConfigFileUpdated();
+            sclangConfigChanged = false; // avoid double invocation
+        }
         return;
+    }
 
     using namespace YAML;
     using std::ofstream;
@@ -231,9 +241,7 @@ void SclangPage::writeLanguageConfig() {
     ofstream fout(languageConfigFile().toStdString().c_str());
     fout << out.c_str();
 
-    QMessageBox::information(this, tr("Sclang configuration file updated"),
-                             tr("The SuperCollider language configuration has been updated. "
-                                "Reboot the interpreter to apply the changes."));
+    dialogConfigFileUpdated();
 
     sclangConfigDirty = false;
 }
@@ -293,6 +301,25 @@ void SclangPage::dialogDeleteCurrentConfigFile() {
         ui->activeConfigFileComboBox->removeItem(ui->activeConfigFileComboBox->findText(pathBeingRemoved));
         if (ui->activeConfigFileComboBox->count() != 0) {
             ui->activeConfigFileComboBox->setCurrentIndex(0);
+        }
+    }
+}
+
+void SclangPage::dialogConfigFileUpdated() {
+    QMessageBox::StandardButton reply =
+        QMessageBox::question(this, tr("Sclang configuration file updated"),
+                              tr("The SuperCollider language configuration has been updated.\n"
+                                 "The interpreter needs to reboot to apply the changes.\n\n"
+                                 "Would you like to reboot now?\n"
+                                 "WARNING: all sound will stop."),
+                              QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        if (auto process = Main::instance()->scProcess()) {
+            process->restartLanguage();
+        } else {
+            qWarning() << "SclangPage::dialogConfigFileUpdated(): "
+                          "Main->scProcess pointer is null!";
         }
     }
 }

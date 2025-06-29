@@ -44,7 +44,7 @@ passing tests.
 Defaults to code::UnitTest.full:: so that all details are reported;
 however this behaviour may be too verbose for some, for whom it is
 sufficient to see that a test is passing without needing to see the
-detail.  If set to code::UnitTest.brief::, and link::#*reportPasses::
+detail.  If set to code::UnitTest.brief::, and link::#*reportPasses:: 
 is true, passes will be reported, but without any extra details which
 may be provided by assertions.
 

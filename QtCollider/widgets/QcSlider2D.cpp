@@ -113,7 +113,7 @@ void QcSlider2D::keyPressEvent(QKeyEvent* e) {
     }
 }
 
-void QcSlider2D::setBackgroundImage(const QtCollider::SharedImage& image, const QRectF& rect, int tileMode,
+void QcSlider2D::setBackgroundImage(const QSharedPointer<QtCollider::Image>& image, const QRectF& rect, int tileMode,
                                     double opacity) {
     _backgroundImage.setImage(image, rect, tileMode, opacity);
 }

@@ -11,13 +11,12 @@ jobs:
     runs-on: macos-15
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-macOS-arm64.dmg"
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-macOS-universal.dmg"
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
       TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
       TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/gha_result.scxtar
       SCRIPT_RUN_TESTS: ${{ github.workspace }}/testsuite/scripts/sclang_test_runner.scd
-      SCRIPT_ADD_PATH: ${{ github.workspace }}/testsuite/scripts/add_include_path.scd
       SCRIPT_PRINT_RESULTS: ${{ github.workspace }}/testsuite/scripts/print_results.scd
 
     steps:
@@ -55,10 +54,7 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          # add path
-          $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
-          # run tests
-          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+          timeout 20m $SCLANG --include-path $TESTS_PATH $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
 
       - name: Post test results
         shell: bash

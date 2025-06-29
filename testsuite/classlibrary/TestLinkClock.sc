@@ -195,7 +195,9 @@ TestLinkClock : UnitTest {
 			semaphore.signal;
 		});
 		routine = { loop{ 0.01.wait } }.fork(tempoClock);
-		streamplayer = Pbind(\dur, 0.02).play(tempoClock);
+		// the test here is about function/routine/pattern scheduling
+		// event activity shouldn't be a factor, so, \rest
+		streamplayer = Pbind(\type, \rest, \dur, 0.02).play(tempoClock);
 		0.1.wait;
 
 		linkClock = LinkClock.newFromTempoClock(tempoClock);

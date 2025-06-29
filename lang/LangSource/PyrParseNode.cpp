@@ -44,6 +44,7 @@
 namespace fs = std::filesystem;
 
 AdvancingAllocPool gParseNodePool;
+int gNumUninlinedFunctions = 0;
 
 PyrSymbol* gSpecialUnarySelectors[opNumUnarySelectors];
 PyrSymbol* gSpecialBinarySelectors[opNumBinarySelectors];
@@ -74,7 +75,7 @@ bool gGenerateTailCallByteCodes = true;
 bool gGenerateTailCallByteCodes = false;
 #endif
 
-long gInliningLevel;
+std::int64_t gInliningLevel;
 
 int compileErrors = 0;
 int numOverwrites = 0;
@@ -1113,7 +1114,7 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrC
 
 void installByteCodes(PyrBlock* block) {
     PyrInt8Array* byteArray;
-    long length, flags;
+    std::int64_t length, flags;
     ByteCodes byteCodes;
     byteCodes = getByteCodes();
     if (byteCodes) {
@@ -2230,6 +2231,7 @@ bool isAnInlineableBlock(PyrParseNode* node) {
         anode = (PyrPushLitNode*)node;
         if (IsPtr(&anode->mSlot) && (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
             if (bnode->mArglist || bnode->mVarlist) {
+                gNumUninlinedFunctions += 1;
                 if (SC_LanguageConfig::getPostInlineWarnings()) {
                     post("WARNING: FunctionDef contains variable declarations and so"
                          " will not be inlined.\n");
@@ -2253,6 +2255,7 @@ bool isAnInlineableAtomicLiteralBlock(PyrParseNode* node) {
         anode = (PyrPushLitNode*)node;
         if (IsPtr(&anode->mSlot) && (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
             if (bnode->mArglist || bnode->mVarlist) {
+                gNumUninlinedFunctions += 1;
                 if (SC_LanguageConfig::getPostInlineWarnings()) {
                     post("WARNING: FunctionDef contains variable declarations and so"
                          " will not be inlined.\n");
@@ -3833,6 +3836,12 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
         compileErrors++;
     }
 
+    if (numVars > 255) {
+        error("Too many variables in function definition (> 255)\n");
+        nodePostErrorLine((PyrParseNode*)mVarlist->mVarDefs);
+        compileErrors++;
+    }
+
     numSlots = numArgs + numVariableArgs + numKwArgs + numVars;
     methraw->frameSize = (numSlots + FRAMESIZE) * sizeof(PyrSlot);
     if (numSlots) {
@@ -4419,7 +4428,7 @@ void initSpecialClasses() {
 
 void initSpecialSelectors() {
     PyrSymbol** sel;
-    long i;
+    std::int64_t i;
 
     sel = gSpecialUnarySelectors;
     sel[opNeg] = getsym("neg");

@@ -96,6 +96,9 @@ Object {
 		// perform only if Function. see Function-functionPerformList
 		^this
 	}
+	valueArgs { | args, kwargs|
+		^this.performArgs(\value, args, kwargs)
+	}
 
 	// super.perform(selector,arg) doesn't do what you might think.
 	// \perform would be looked up in the superclass, not the selector you are interested in.

@@ -98,7 +98,7 @@ public:
 
     /* @{ */
     /* audio buffer handling */
-    SndBuf* allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels);
+    SndBuf* allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels, double samplerate);
     void allocate_buffer(SndBuf* buf, uint32_t frames, uint32_t channels, double samplerate);
     void buffer_read_alloc(uint32_t index, const char* filename, uint32_t start, uint32_t frames);
     void buffer_alloc_read_channels(uint32_t index, const char* filename, uint32_t start, uint32_t frames,

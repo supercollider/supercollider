@@ -29,7 +29,10 @@ class WebPage : public QWebEnginePage {
     Q_OBJECT
 
 public:
-    WebPage(QObject* parent): QWebEnginePage(parent), _delegateReload(false), _delegateNavigation(false) {}
+    WebPage(QObject* parent, QWebEngineProfile* profile):
+        QWebEnginePage(profile, parent),
+        _delegateReload(false),
+        _delegateNavigation(false) {}
 
     virtual void triggerAction(WebAction action, bool checked = false) override;
 

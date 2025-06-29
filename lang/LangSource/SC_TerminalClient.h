@@ -56,10 +56,10 @@ public:
 
     struct Options : public SC_LanguageClient::Options {
         std::string mLibraryConfigFile;
-        bool mDaemon;
-        bool mCallRun;
-        bool mCallStop;
-        bool mStandalone;
+        bool mDaemon = false;
+        bool mCallRun = false;
+        bool mCallStop = false;
+        bool mStandalone = false;
         std::vector<std::string> mArgs;
     };
 

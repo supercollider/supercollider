@@ -48,6 +48,7 @@ List : SequenceableCollection {
 	add { arg item; array = array.add(item); }
 	addFirst { arg item; array = array.addFirst(item); }
 	insert { arg index, item; array = array.insert(index, item); }
+	boundedInsert { arg index, item; array = array.boundedInsert(index, item); }
 	removeAt { arg index; ^array.removeAt(index); }
 	pop { ^array.pop }
 	first { if (this.size > 0, { ^array.at(0) }, { ^nil }) }

@@ -364,7 +364,7 @@ Server {
 	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
-	var <window, <>scopeWindow, <serverMeter, <emacsbuf;
+	var <window, <>scopeWindow, <serverMeter, <emacsbuf, <nodeTreeView;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
 	var pidReleaseCondition;
@@ -812,14 +812,9 @@ Server {
 			"server '%' not responsive".format(this.name).postln;
 			failFunc.value(this)
 		} {
-			if(statusWatcher.serverRunning) {
-				func.value(this)
-			} {
-				"server '%' not running".format(this.name).postln;
-				failFunc.value(this)
-			}
+			if(this.warnIfNotRunning(thisMethod)) { ^failFunc.value(this) };
+			func.value(this)
 		}
-
 	}
 
 	ifNotRunning { |func|
@@ -841,7 +836,9 @@ Server {
 
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
-		if(statusWatcher.serverRunning.not) { "server not running".postln; ^this };
+
+		if(this.warnIfNotRunning(thisMethod)) { ^this };
+
 		pingFunc = {
 			Routine.run {
 				var t, dt;
@@ -972,7 +969,8 @@ Server {
 		}, onFailure: onFailure ? false);
 
 		if(remoteControlled) {
-			"You will have to manually boot remote server.".postln;
+			"*** %: can't boot a remote server - "
+			"You will have to boot it on its machine.".postf(this);
 		} {
 			this.prPingApp({
 				this.quit;
@@ -1064,7 +1062,7 @@ Server {
 	}
 
 	reboot { |func, onFailure| // func is evaluated when server is off
-		if(isLocal.not) { "can't reboot a remote server".postln; ^this };
+		if(remoteControlled) { "*** %: can't reboot a remote server".postf(this); ^this };
 		if(statusWatcher.serverRunning and: { this.unresponsive.not }) {
 			this.quit({
 				func.value;
@@ -1115,6 +1113,10 @@ Server {
 	quit { |onComplete, onFailure, watchShutDown = true|
 		var func;
 
+		if (remoteControlled) {
+			"*** %: can't quit a remote server.\n\n".postf(this);
+			^this
+		};
 		addr.sendMsg("/quit");
 
 		if(this.unresponsive) {
@@ -1344,15 +1346,14 @@ Server {
 	}
 
 	rtMemoryStatus { |action|
-		var resp, done = false;
-		if (this.serverRunning.not) {
-			"server '%' not running".format(this.name).warn;
-			^this
-		};
+		var resp, freeKb, done = false;
+
+		if(this.warnIfNotRunning(thisMethod)) { ^this };
+
 		resp = OSCFunc({ |msg| 
 			done = true;
 			if (action.notNil) { action.value(*msg.drop(1)) } {
-				var freeKb = msg[1] / 1024;
+				freeKb = msg[1] / 1024;
 				"Used RT memory: % kb".format(options.memSize - freeKb).postln;
 				"Free RT memory: % kb".format(freeKb).postln;
 				"Largest free chunk: % kb".format(msg[2] / 1024).postln;
@@ -1424,4 +1425,12 @@ Server {
 		this.program = this.program.replace("scsynth", "supernova")
 	}
 
+	warnIfNotRunning { |method|
+		if (this.serverRunning.not) {
+			"Server '%' not running.\nThe method '%' requires a running server.".format(this.name, method.name).warn;
+			^true
+  		} {
+        	^false
+    	}
+    }
 }

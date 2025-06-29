@@ -91,6 +91,12 @@ t = Server.remote(\remote, NetAddr("192.168.0.130", 57110), o); // set to correc
 // info about returned client ID should be posted in the post window
 t.makeWindow; // make a window for monitoring
 )
+
+// if you want to use the remote server without the need to explicitly pass it to e.g. Synth or Function -play, set it to be the default server:
+//Server.default = t;
+
+//otherwise, make some sound on the remote server 
+{Resonz.ar(Saw.ar([100,101]), Line.kr(100,5000,10, doneAction: 2),mul: -12.dbamp)}.play(target: t); //use target to specify the remote server
 ::
 
 
@@ -629,13 +635,127 @@ method:: freqscope
 Show frequency analyzer window.
 
 method:: meter
-Show input/output level meters.
+Show input/output level meter by opening the singleton instance of link::Classes/ServerMeter::.
+code::
+// Create a singleton ServerMeter, or bring the window to the front if it has already been created.
+s.meter // -> a ServerMeter
+
+// Query the current position of the ServerMeter window:
+s.meter.position // -> Point(5.0, 277.0)
+
+// Query the current bounds of the ServerMeter window:
+s.meter.window.bounds // -> Rect(5.0, 277.0, 134.0, 230.0)
+
+// Move the open ServerMeter to the specified position:
+s.meter.position_(200@200) // -> a ServerMeter
+
+// Retrieve the new position of the ServerMeter window:
+s.meter.position // -> Point(200.0, 200.0)
+
+// Retrieve the current bounds of the ServerMeter window:
+s.meter.window.bounds // -> Rect(200.0, 200.0, 134.0, 230.0)
+::
+argument:: numIns
+the number of input channels. The default is nil and the number of input channels defined by code::Server.local.options.numInputBusChannels:: is used when using a local server.
+argument:: numOuts
+the number of output channels. The default is nil and the number of output channels defined by code::Server.local.options.numOutputBusChannels:: is used when using a local server.
+argument:: position
+the position of the meter window, i.e. the singleton instance of link::Classes/ServerMeter::.
+(See link::Classes/ServerMeter#-position::.)
+The default is `teletype::nil::`, and the scope window will appear near the bottom-left side of the display: left: 5; bottom: 277. 
 
 method:: plotTree
-Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
+Plot the node/group tree in a graphical format, similar to link::#-queryAllNodes::.
+This creates a singleton window containing link::Classes/NodeTreeView::.
 
+note::
+To use multiple instances of link::Classes/NodeTreeView:: per link::Classes/Server:: instance or workspace, refer to the link::Classes/NodeTreeView#examples#Examples in NodeTreeView Documentation::.
+::
+
+This method returns an instance of link::Classes/NodeTreeView::, which can also be accessed via link::#-nodeTreeView:: method. Before version 3.14, this method returned an instance of the Server itself.
+
+code::
+// start the SuperCollider server:
+s.boot;
+
+// Open a NodeTreeView window with a default refresh rate every 0.5 seconds:
+s.plotTree;
+
+// Close it:
+s.nodeTreeView.close;
+::
+
+code::
+s.plotTree;
+
+// Define and play a repeating pattern that generates a new synth every 0.4 seconds:
+x = Pn((dur: 0.4, midinote: 69, amp: 0.1)).play;
+
+/*
+The NodeTreeView window dynamically displays active synth nodes.
+Initially, it shows the first node, and upon each refresh, it retains the previous node while adding a new one.
+This results in the display of one or two subsequent nodes at each interval.
+*/
+
+// stop updating plotTree:
+s.nodeTreeView.stop;
+
+// start updating plotTree:
+s.nodeTreeView.start;
+
+// stop the playback of the pattern:
+x.stop;
+
+s.nodeTreeView.close;
+::
 argument:: interval
 Polling interval.
+code::
+(
+s.waitForBoot {
+	// Open a plotTree window with a refresh rate of 2 seconds:
+	s.plotTree(2);
+
+	// Define and play a repeating pattern that generates a new synth every 0.5 seconds:
+	x = Pn((dur: 0.5, midinote: 69, amp: 0.1)).play;
+
+	/*
+	Since the plotTree window refreshes every 2 seconds,
+	displaying only the most recent node,
+	the first node will appear after a 2-second delay (once four notes have played),
+	meaning only every fourth synth node is visible.
+	*/
+
+	5.wait; // wait for 5 seconds.
+
+	x.stop; // stop the playback of the pattern
+
+	2.wait; // wait for 2 seconds.
+
+	s.nodeTreeView.close; // close the plotTree window
+}
+)
+::
+argument:: bounds
+The bounds of the teletype::s.plotTree:: window.
+A Rect specifying position and size of the window.
+The size does not include the border and title bar.
+Position is measured from the bottom-left corner of the screen in the same manner as teletype::bounds:: argument for link::Classes/Window#*new::.
+The minimum size is 395 for width and 386 for height.
+Any values smaller than these will be automatically adjusted to the minimum values.
+code::
+// Create plotTree window at the default position with default size:
+s.plotTree;
+
+// Move plotTree window to the defined position with defined size:
+s.plotTree(2, Rect(200, 200, 100, 200));
+// <- The size (width: 100; height: 200) is smaller than the minimum size, so the size will be adjusted.
+
+s.plotTree; // brings the plotTree window to the front without changing its position or size.
+::
+
+method:: nodeTreeView
+An Instance of link::Classes/NodeTreeView:: that is created by the link::#-plotTree:: method.
 
 method:: plotTreeView
 Plot the node/group tree graphically on a given view.
@@ -649,7 +769,7 @@ Parent view.
 argument:: actionIfFail
 Function to be evaluated in case communication with the server cannot be established.
 
-returns:: Function to be evaluated in order to clean up all actions performed inside the method. To be called for instance by the onClose method of the enclosing window.
+returns:: An Instance of link::Classes/NodeTreeView::.
 
 subsection:: Recording Support
 

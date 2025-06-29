@@ -1,7 +1,7 @@
 class:: Splay
 summary:: Splay spreads an array of channels across the stereo field
 categories:: UGens>Multichannel>Panners
-related:: Classes/SplayAz, Classes/SplayZ
+related:: Classes/SplayAz, Classes/SplayZ, Classes/LevelComp, Guides/Level_Compensation
 
 description::
 Splay spreads an array of channels across the stereo field.
@@ -19,7 +19,18 @@ An amplitude multiplier for all channels
 argument:: center
 Shift the centre of the distribution.
 argument:: levelComp
+a flag or numeric value:
 
+list::
+##code::true:: :  maintain equal power, keeping overall loudness the same.
+##code::false:: : off / no level change,
+##float between code::0.0:: and code::1.0:: : smooth tuning of levelComp factor:
+list::
+##code::0.0:: is none -> factor 1
+##code::0.5:: is equal power -> factor (1/n).squared
+##code::1.0:: is equal amplitude -> factor (1/n)
+::
+::
 
 method:: arFill
 In analogy to Mix:arFill, this method takes a function that produces the channels. The counting index is passed to it.
@@ -34,34 +45,43 @@ An amplitude multiplier for all channels
 argument:: center
 Shift the centre of the distribution.
 argument:: levelComp
+see above
 
 examples::
 
+Basic usage:
 code::
+// splay 10 chans of sound into 2
 (
 x = { |spread = 1, level = 0.2, center = 0.0|
+	var numchans = 10;
 	Splay.ar(
-		SinOsc.ar({ |i| LFNoise2.kr(1).exprange(200, 4000) } ! 10),
+		SinOsc.ar({ |i| LFNoise2.kr(1).exprange(200, 4000) } ! numchans),
 		spread,
 		level,
 		center
+		// use levelComp default true
 	);
 }.play;
 )
 
-x.set(\spread, 1,   \center, 0);  // full stereo
-x.set(\spread, 0.5, \center, 0);  // less wide
-x.set(\spread, 0,   \center, 0);  // mono center
-x.set(\spread, 0.5, \center, 0.5);
-// spread from center to right
-x.set(\spread, 0,   \center, -1); // all left
-x.set(\spread, 1,   \center, 0);  // full stereo
+s.meter;
+s.scope;
 
+// change settings dynamically:
 
-// the a similar example written with arFill:
+x.set(\spread, 1,   \center, 0);   // full stereo
+x.set(\spread, 0.5, \center, 0);   // less wide
+x.set(\spread, 0,   \center, 0);   // mono center
+x.set(\spread, 0.5, \center, 0.5); // spread from center to right
+x.set(\spread, 0,   \center, -1);  // all left
+x.set(\spread, 1,   \center, 0);   // full stereo
+
+// A similar example written with arFill:
 (
 x = { |spread = 1, level = 0.2, center = 0.0|
-	Splay.arFill(10,
+	var numchans = 10;
+	Splay.arFill(numchans,
 		{ |i| SinOsc.ar(LFNoise2.kr(rrand(10, 20), 200, i + 3 * 100))  },
 		spread,
 		level,
@@ -70,12 +90,36 @@ x = { |spread = 1, level = 0.2, center = 0.0|
 }.play;
 )
 
+::
+NOTE:: levelComp new takes multiple input options:
+true, false as before for rough equal power level compensation,
+and newly added: a float between 0 and 1. This is to offer more choices for level compensation, such as equal maximum amplitude.
+::
 
-// with mouse control
-(
-x = { var src;
-	src = SinOsc.ar({ |i| LFNoise2.kr(rrand(10, 20), 200, i + 3 * 100) } ! 10);
-	Splay.ar(src, MouseY.kr(1, 0), 0.2, MouseX.kr(-1, 1));
-}.play;
-)
+For a full discussion, see link::Classes/LevelComp::;
+here is an overview of the levelComp variants:
+
+code::
+// default is equal power comp: level / (numchans.sqrt)
+Splay.ar(ins, spread, level, center); // true is default
+// write it explicitly for clarity
+Splay.ar(ins, spread, level, center, levelComp: true);
+// or do equal power as float levelComp
+Splay.ar(ins, spread, level, center, levelComp: 0.5); //
+
+// maximum peak safety by equal amplitude comp: level / numchans
+Splay.ar(ins, spread, level, center, levelComp: 1);
+// or calculate by hand:
+Splay.ar(ins, spread, level / ins.size, center, levelComp: false);
+
+// no compensation, just tune level by hand
+Splay.ar(ins, spread, level, center, levelComp: false);
+Splay.ar(ins, spread, level, center, levelComp: 0);
+
+// levelComp by float: level / numchans.pow(levelComp),
+// so 0.0 is no compensation: level / 1;
+//    0.5 is equal power : level / (numchans.sqrt)
+//    1.0 is equal amplitude : level / (numchans)
+// can be used to tune e.g. between equal power and equal amp:
+Splay.ar(ins, spread, level, center, levelComp: 0.75);
 ::

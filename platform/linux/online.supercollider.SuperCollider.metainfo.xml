@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>online.supercollider.SuperCollider</id>
+
+  <name>SuperCollider</name>
+  <summary>SuperCollider is a platform for audio synthesis and algorithmic composition</summary>
+
+  <metadata_license>CC-BY-SA-4.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer_name>SuperCollider Community</developer_name>
+  <url type="homepage">https://supercollider.github.io/</url>
+  <url type="bugtracker">https://github.com/supercollider/supercollider/issues/</url>
+  <url type="help">https://scsynth.org/</url>
+  <url type="contribute">https://github.com/supercollider/supercollider/blob/develop/CONTRIBUTING.md</url>
+  <launchable type="desktop-id">SuperColliderIDE.desktop</launchable>
+
+  <description>
+    <p>
+      SuperCollider is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It consists of:
+    </p>
+    <p>
+      - scsynth, a real-time audio server with hundreds of unit generators (&quot;UGens&quot;) for audio analysis, synthesis, and processing
+      - supernova, an alternative server to scsynth with support for parallel DSP on multi-core processors
+      - sclang, an interpreted programming language that controls the servers
+      - scide, an editing environment for sclang with an integrated help system
+    </p>
+    <p>
+      sclang comes with its own package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
+    </p>
+  </description>
+  <releases>
+    <release version="Version-3.14.0" date="2025-06-06"/>
+    <release version="Version-3.13.1" date="2025-03-15"/>
+    <release version="Version-3.13.0" date="2023-02-19"/>
+    <release version="Version-3.12.2" date="2022-01-08"/>
+    <release version="Version-3.12.1" date="2021-09-05"/>
+    <release version="Version-3.12.0" date="2021-08-02"/>
+    <release version="Version-3.11.2" date="2020-11-14"/>
+    <release version="Version-3.11.1" date="2020-08-21"/>
+    <release version="Version-3.11.0" date="2020-03-13"/>
+    <release version="Version-3.10.4" date="2020-01-16"/>
+    <release version="Version-3.10.3" date="2019-08-30"/>
+    <release version="Version-3.10.2" date="2019-02-08"/>
+    <release version="Version-3.10.1" date="2019-01-17"/>
+    <release version="Version-3.10.0" date="2018-11-24"/>
+    <release version="Version-3.9.2" date="2018-03-23"/>
+    <release version="Version-3.9.1" date="2018-02-05"/>
+    <release version="Version-3.9.0" date="2018-01-13"/>
+    <release version="Version-3.8.1" date="2017-12-30"/>
+    <release version="Version-3.8.0" date="2016-11-05"/>
+    <release version="Version-3.7.2" date="2016-06-03"/>
+    <release version="Version-3.7.1" date="2016-04-10"/>
+    <release version="Version-3.7.0" date="2016-03-13"/>
+    <release version="Version-3.6.6" date="2013-11-27"/>
+    <release version="Version-3.6.5" date="2013-04-30"/>
+    <release version="Version-3.6.4" date="2013-04-20"/>
+    <release version="Version-3.6.3" date="2013-02-18"/>
+    <release version="Version-3.6.2" date="2012-12-21"/>
+    <release version="Version-3.6.1" date="2012-11-29"/>
+    <release version="Version-3.6.0" date="2012-11-27"/>
+    <release version="Version-3.5.7" date="2012-11-27"/>
+    <release version="Version-3.5.6" date="2012-10-15"/>
+    <release version="Version-3.5.5" date="2012-09-02"/>
+    <release version="Version-3.5.4" date="2012-08-12"/>
+    <release version="Version-3.5.3" date="2012-06-23"/>
+    <release version="Version-3.5.2" date="2012-05-08"/>
+    <release version="Version-3.5.1" date="2012-04-01"/>
+    <release version="Version-3.5" date="2012-03-15"/>
+    <release version="Version-3.4.5" date="2012-01-15"/>
+    <release version="Version-3.4.4" date="2011-07-01"/>
+    <release version="Version-3.4.3" date="2011-04-10"/>
+    <release version="Version-3.4.2" date="2011-03-15"/>
+    <release version="Version-3.4.1" date="2010-10-20"/>
+    <release version="Version-3.4" date="2010-07-11"/>
+    <release version="Version-3.3.1" date="2009-06-27"/>
+    <release version="Version-3.3" date="2010-02-03"/>
+    <release version="Version-3.2" date="2008-02-20"/>
+    <release version="Version-3.1.1" date="2007-11-16"/>
+    <release version="Version-3.1" date="2007-11-01"/>
+  </releases>
+  <content_rating type="oars-1.0" />
+
+</component>

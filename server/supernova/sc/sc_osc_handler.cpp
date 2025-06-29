@@ -611,6 +611,42 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
     else
         sc_notify_observers::udp_socket.open(udp::v4());
 
+    try {
+        boost::asio::socket_base::send_buffer_size send_buffer_size;
+        udp_socket.get_option(send_buffer_size);
+        int default_buffer_size = send_buffer_size.value();
+        if (default_buffer_size < sc_osc_handler::udp_send_buffer_size) {
+            send_buffer_size = sc_osc_handler::udp_send_buffer_size;
+            boost::system::error_code ec;
+            udp_socket.set_option(send_buffer_size, ec);
+            if (ec && default_buffer_size < sc_osc_handler::udp_fallback_buffer_size) {
+                send_buffer_size = sc_osc_handler::udp_fallback_buffer_size;
+                udp_socket.set_option(send_buffer_size);
+            }
+        }
+    } catch (boost::system::system_error& e) {
+        std::cout << "WARNING: failed to set send buffer size"
+                  << " (" << e.what() << ")\n";
+    }
+
+    try {
+        boost::asio::socket_base::receive_buffer_size receieve_buffer_size;
+        udp_socket.get_option(receieve_buffer_size);
+        int default_buffer_size = receieve_buffer_size.value();
+        if (default_buffer_size < sc_osc_handler::udp_receive_buffer_size) {
+            receieve_buffer_size = sc_osc_handler::udp_receive_buffer_size;
+            boost::system::error_code ec;
+            udp_socket.set_option(receieve_buffer_size, ec);
+            if (ec && default_buffer_size < sc_osc_handler::udp_fallback_buffer_size) {
+                receieve_buffer_size = sc_osc_handler::udp_fallback_buffer_size;
+                udp_socket.set_option(receieve_buffer_size);
+            }
+        }
+    } catch (boost::system::system_error& e) {
+        std::cout << "WARNING: failed to set receieve buffer size"
+                  << " (" << e.what() << ")\n";
+    }
+
     sc_notify_observers::udp_socket.bind(udp::endpoint(address, port));
 }
 
@@ -1985,6 +2021,7 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 bufferIndex, frames, channels;
+    float sampleRate;
 
     args >> bufferIndex >> frames;
 
@@ -1995,11 +2032,18 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
 
     completion_message message = extract_completion_message(args);
 
+    if (!args.Eos()) {
+        args >> sampleRate;
+        if (sampleRate <= 0.0)
+            sampleRate = sc_factory->world.mSampleRate;
+    } else
+        sampleRate = sc_factory->world.mSampleRate;
+
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
         sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufferIndex));
         try {
             sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
-            sc_factory->allocate_buffer(bufferIndex, frames, channels);
+            sc_factory->allocate_buffer(bufferIndex, frames, channels, sampleRate);
 
             cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
                 sc_factory->buffer_sync(bufferIndex);
@@ -2491,6 +2535,26 @@ void handle_b_setn(ReceivedMessage const& msg) {
             data[index + i] = value;
         }
     }
+}
+
+void handle_b_setSampleRate(ReceivedMessage const& msg) {
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
+    verify_argument(it, end);
+    osc::int32 buffer_index = it->AsInt32();
+    ++it;
+
+    SndBuf* buf = sc_factory->get_buffer_struct(buffer_index);
+    SndBuf* nrtBuf = World_GetNRTBuf(&sc_factory->world, buffer_index);
+    if (!buf || !nrtBuf) {
+        log_printf("/b_setSampleRate called on unallocated buffer\n");
+        return;
+    }
+
+    auto proposedSampleRate = it->AsFloat();
+    buf->samplerate = nrtBuf->samplerate =
+        proposedSampleRate > 0.0 ? proposedSampleRate : sc_factory->world.mSampleRate;
+    buf->sampledur = nrtBuf->sampledur = 1.0 / buf->samplerate;
 }
 
 void handle_b_fill(ReceivedMessage const& msg) {
@@ -3162,6 +3226,10 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         handle_b_setn(message);
         break;
 
+    case cmd_b_setSampleRate:
+        handle_b_setSampleRate(message);
+        break;
+
     case cmd_b_fill:
         handle_b_fill(message);
         break;
@@ -3409,6 +3477,11 @@ void dispatch_buffer_commands(const char* address, ReceivedMessage const& messag
 
     if (strcmp(address + 3, "setn") == 0) {
         handle_b_setn(message);
+        return;
+    }
+
+    if (strcmp(address + 3, "setSampleRate") == 0) {
+        handle_b_setSampleRate(message);
         return;
     }
 

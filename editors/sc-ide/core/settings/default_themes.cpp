@@ -224,10 +224,10 @@ THE SOFTWARE.
 void Theme::fillMonokai() {
     add("text", QColor("#F8F8F2"), QColor("#272822"));
     add("currentLine", Qt::transparent, QColor("#3E3D32"));
-    add("searchResult", Qt::transparent, QColor("#FFE792"));
-    add("matchingBrackets", QColor("#A6E22E"), Qt::transparent, true, false, true);
+    add("searchResult", Qt::black, QColor("#FFE792"));
+    add("matchingBrackets", QColor("#66d9ef"), QColor("#1b1c18"), true, false, true);
     add("mismatchedBrackets", QColor("#F44747"), Qt::transparent, true);
-    add("evaluatedCode", Qt::transparent, QColor("595f6f"));
+    add("evaluatedCode", Qt::white, Qt::black);
     add("whitespace", QColor("#75715E"));
     add("keyword", QColor("#F92672"), Qt::transparent, true);
     add("built-in", QColor("#AE81FF"));

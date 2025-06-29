@@ -18,10 +18,13 @@ code::
 This allows an efficient use of resources, only growing the array when it needs to. The link::Classes/List:: class manages the Array internally, and in many cases is more suitable.
 ::
 
-Elements can be put into an existing slot with code::a.put(2, obj):: and accessed with
-code::a.at(2):: or code::a[2]::
+Items can be put into an existing slot with code::a.put(2, obj):: and accessed with code::a.at(2):: or code::a[2]::.
 
-See link::Classes/ArrayedCollection:: for the principal methods: at, put, clipAt, wrapAt, etc...
+note::
+Arrays use 0-based indexing, meaning the first item is accessed with index 0. Therefore, the index 2 in code::a.put(2, obj)::, code::a.at(2)::, and code::a[2]:: refers to the third item.
+::
+
+See link::Classes/ArrayedCollection:: for the principal methods: at, put, clipAt, wrapAt, etc.
 
 
 ClassMethods::
@@ -80,6 +83,8 @@ copymethod:: ArrayedCollection -at
 copymethod:: ArrayedCollection -put
 
 copymethod:: ArrayedCollection -insert
+
+copymethod:: ArrayedCollection -boundedInsert
 
 copymethod:: ArrayedCollection -clipAt
 

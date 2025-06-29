@@ -11,9 +11,9 @@ a trigger occurs at the  code::reset::  input, the maximum
 output value is reset to the current value.
 
 
-Internally, the absolute value of the signal is used, to prevent
-underreporting the peak value if there is a negative DC offset. To obtain
-the minimum and maximum values of the signal as is, use the
+The reported peak will always be positive, i.e. the absolute value 
+of the signal at its peak amplitude, even when that peak is negative.
+To obtain the minimum and maximum values of the signal as is, use the
 link::Classes/RunningMin::  and  link::Classes/RunningMax::  UGens.
 
 

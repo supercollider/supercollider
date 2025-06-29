@@ -457,7 +457,7 @@ int prSignal_FFT(struct VMGlobals* g, int numArgsPushed) {
     }
 
     M = LOG2CEIL(asize);
-    fftsize = 1L << M;
+    fftsize = 1LL << M;
 
     if (!(isKindOfSlot(c, class_floatarray))) {
         error("Signal::fft must be provided a table containing 1/4 cycle of a cosine.\n");
@@ -549,7 +549,7 @@ int prSignal_IFFT(struct VMGlobals* g, int numArgsPushed) {
     }
 
     M = LOG2CEIL(asize);
-    fftsize = 1L << M;
+    fftsize = 1LL << M;
 
     if (!(isKindOfSlot(c, class_floatarray))) {
         error("Signal::ifft must be provided a table containing 1/4 cycle of a cosine.\n");

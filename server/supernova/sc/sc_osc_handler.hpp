@@ -355,6 +355,10 @@ private:
     const char* tcp_password_; /* we are not owning this! */
 
     std::array<char, 1 << 15> recv_buffer_;
+
+    static constexpr int udp_receive_buffer_size = 4 * 1024 * 1024;
+    static constexpr int udp_send_buffer_size = 4 * 1024 * 1024;
+    static constexpr int udp_fallback_buffer_size = 1 * 1024 * 1024;
     /* @} */
 };
 

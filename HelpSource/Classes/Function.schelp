@@ -68,8 +68,10 @@ method::value
 Evaluates the FunctionDef referred to by the Function. The Function is passed the args given.
 
 code::
+ // different way of expressing the same:
 { |a, b| (a * b).postln }.value(3, 10);
-{ |a, b| (a * b).postln }.value(3, 10); // different way of expressing the same
+{ |a, b| (a * b).postln }.value(a: 3, b: 10); // keyword arguments
+{ |a, b| (a * b).postln }.(3, 10); // short syntax: "value" can be dropped.
 ::
 
 method::valueArray

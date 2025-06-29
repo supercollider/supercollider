@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "name": "Mac",
+      "cppStandard": "c++17",
+      "configurationProvider": "ms-vscode.cmake-tools"
+    }
+  ],
+  "version": 4
+}

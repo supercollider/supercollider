@@ -355,7 +355,8 @@ int supernova_main(int argc, char* argv[]) {
     cout << "compiled for debugging" << endl;
 #endif
 
-    startServerBootDelayWarningTimer();
+    ServerBootDelayWarningTimer bootDelayWarningTimer;
+    bootDelayWarningTimer.start();
 
     // FIXME should have more granular error handling
     try {
@@ -366,11 +367,11 @@ int supernova_main(int argc, char* argv[]) {
         set_plugin_paths(args, sc_factory.get());
         load_synthdefs(server, args);
 
-        stopServerBootDelayWarningTimer();
-
         if (!args.non_rt) {
             try {
                 start_audio_backend(args);
+                // Server is ready!
+                bootDelayWarningTimer.stop();
                 cout << "Supernova ready" << endl;
             } catch (exception const& e) {
                 cout << "\n*** ERROR: could not start audio backend: " << e.what() << endl;
@@ -378,6 +379,8 @@ int supernova_main(int argc, char* argv[]) {
             }
             EventLoop::run([&server]() { server.run(); });
         } else {
+            // Server is ready!
+            bootDelayWarningTimer.stop();
             try {
                 server.run_nonrt_synthesis(args);
             } catch (exception const& e) {

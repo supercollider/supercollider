@@ -24,6 +24,11 @@ QtGUI {
 		_QtGUI_SetDebugLevel
 		^this.primitiveFailed;
 	}
+    
+    *version { 
+        _Qt_Version
+        ^this.primitiveFailed;
+    }
 
 	///////////////////// redirection of GUI classes /////////////////////////////
 

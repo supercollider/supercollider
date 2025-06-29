@@ -23,6 +23,8 @@
 #include "util/status_box.hpp"
 #include <QProcess>
 
+#include "main.hpp"
+
 namespace ScIDE {
 
 class ScProcess;
@@ -33,9 +35,16 @@ public:
     LangStatusBox(ScProcess*, QWidget* parent = 0);
 private slots:
     void onInterpreterStateChanged(QProcess::ProcessState);
+    void applySettings(ScIDE::Settings::Manager* settings);
 
 private:
     StatusLabel* mLabel;
+
+    QColor backgroundColor;
+    QColor notRunningColor;
+    QColor startingColor;
+    QColor runningColor;
+    ScProcess* mLang;
 };
 
 } // namespace ScIDE

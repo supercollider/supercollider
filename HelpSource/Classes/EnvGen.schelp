@@ -290,6 +290,77 @@ code::
 )
 ::
 
+subsection::Filter cutoff modulation and initial envelope level
+
+When using an envelope to modulate a filter's cutoff/center frequency, at higher resonance settings, a short attack time can produce a spike in volume.
+If this effect is not desired, and the filter's attack is always at the beginning of the synth (as is usually the case when playing a pattern), the artifact can be avoided by setting the envelope's initial level closer to target level for shorter attack times (below about 0.05 sec).
+
+The following example shows how to do this in a SynthDef:
+Attack times between 0 and 0.05 seconds will produce initial envelope values between 1.0 (attack time = 0 means no attack) and 0.0.
+If the attack time is greater than 0.05 seconds, the envelope will start at 0.0.
+(The envelope is between 0.0 and 1.0 and mapped onto a valid frequency range.)
+
+To hear the (potentially strong::loud::) short-attack artifacts, edit the code::var envInit:: line to read code::var envInit = 0;::.
+
+code::
+(
+a = Bus.control(s, 1);
+
+Slider(nil, Rect(800, 200, 200, 25))
+.action_({ |view| a.set(view.value.lincurve(0, 1, 0, 0.12, 4)) })
+.front
+.onClose_({ p.stop; a.free });
+
+SynthDef(\test, { |out = 0, freq = 100, ffreq = 500, rq = 0.25, modFactor = 12, atk = 0, dcy = 0.12|
+	// change to 'envInit = 0' to hear the short-attack artifacts
+	// warning: envInit = 0 may be LOUD
+	var envInit = atk.linlin(0, 0.05, 1, 0);
+	var filtEg = EnvGen.kr(Env([envInit, 1, 0], [atk, dcy], -4));
+	var ampEg = EnvGen.ar(Env.linen(0.001, 0.2, 0.1), doneAction: 2);
+	var sig = Saw.ar(freq);
+	ffreq = ffreq * (1 + (filtEg * modFactor));
+	sig = BLowPass4.ar(sig, ffreq, rq) * ampEg;
+	Out.ar(out, (sig * 0.1).dup)
+}).add;
+
+p = Pbind(
+	\instrument, \test,
+	\freq, 100,
+	\atk, a.asMap
+).play;
+)
+::
+
+The above works only for initial values.
+If a short attack is retriggered in the middle of a synth, then the envelope cannot adjust the low value for reattack (because the envelope's initial value is used only once, at the beginning of the synth, and never touched again).
+In that case, open the amplitude envelope slightly later to avoid the artifact.
+
+code::
+(
+Slider(nil, Rect(800, 200, 200, 25))
+.action_({ |view| z.set(\atk, view.value.lincurve(0, 1, 0, 0.12, 4)) })
+.front
+.onClose_({ z.free });
+
+z = SynthDef(\test, { |out = 0, freq = 100, ffreq = 500, rq = 0.25, modFactor = 12, atk = 0, dcy = 0.12|
+	var trig = Impulse.kr(1);
+	var filtEg = EnvGen.kr(Env([0, 1, 0], [atk, dcy], -4), trig);
+	var ampEnvDelay = max(0, (0.05 - atk) * 0.1);
+	var ampEg = EnvGen.ar(Env.linen(0.001, 0.2, 0.1), TDelay.kr(trig, ampEnvDelay));
+	var sig = Saw.ar(freq);
+	ffreq = ffreq * (1 + (filtEg * modFactor));
+	sig = BLowPass4.ar(sig, ffreq, rq) * ampEg;
+	Out.ar(out, (sig * 0.1).dup)
+}).play;
+)
+::
+
+note::
+These artifacts are more prominent in SuperCollider versions after fall 2024 (3.14.x).
+In earlier versions, EnvGen's initial value was in the middle of the first segment, reducing the slope of the initial attack.
+Code migrated to newer SC versions may require one of the above adjustments.
+::
+
 subsection::More examples
 
 For more information about the emphasis::control bus mapping:: used in the line code::a = Synth(\sine, [freq: f.asMap]);::, see link::Classes/Node#-map:: and link::Classes/Bus#-asMap::.

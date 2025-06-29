@@ -154,7 +154,8 @@ void Usage() {
 
 
 int scsynth_main(int argc, char** argv) {
-    startServerBootDelayWarningTimer();
+    ServerBootDelayWarningTimer bootDelayWarningTimer;
+    bootDelayWarningTimer.start();
 
     setlinebuf(stdout);
 
@@ -419,6 +420,8 @@ int scsynth_main(int argc, char** argv) {
         return 1;
 
     if (!options.mRealTime) {
+        // Server is ready!
+        bootDelayWarningTimer.stop();
 #ifdef NO_LIBSNDFILE
         return 1;
 #else
@@ -446,7 +449,8 @@ int scsynth_main(int argc, char** argv) {
         }
     }
 
-    stopServerBootDelayWarningTimer();
+    // Server is ready!
+    bootDelayWarningTimer.stop();
 
     if (options.mVerbosity >= 0) {
 #ifdef NDEBUG

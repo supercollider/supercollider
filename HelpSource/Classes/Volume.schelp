@@ -4,6 +4,7 @@ categories:: Server
 
 description::
 Internally used by Server. When volume value != 0 dB or muted, a server's volume object will create a synth for controlling the volume on the main outputs for the number of channels given.
+For shared use of this volume synth with remote clients on this server, volume has its own group with fixed nodeID 2, and the synth (when present) uses the fixed nodeID 3.
 
 classmethods::
 method:: new

@@ -540,11 +540,13 @@ IdentityDictionary : Dictionary {
 	}
 
 	doesNotUnderstand { |selector... args, kwargs|
+		var sel, forward;
 		if (know.not) {
             ^this.superPerformArgs(\doesNotUnderstand, args, kwargs)
 		};
-        this[selector] !? { |func|
-			^func.performArgs(\functionPerformList, [\value, this, args], kwargs);
+        sel = this[selector];
+		sel !? {
+			^sel.performArgs(\functionPerformList, [\value, this, args], kwargs);
         };
 
         if (selector.isSetter) {
@@ -556,8 +558,9 @@ IdentityDictionary : Dictionary {
             ^this[selector] = args[0];
         };
 
-        this[\forward] !? { |func|
-			^func.performArgs(\functionPerformList, [\value, this, selector, args], kwargs);
+        forward = this[\forward];
+		forward !? {
+			^forward.performArgs(\functionPerformList, [\value, this, selector, args], kwargs);
         };
 
         ^nil

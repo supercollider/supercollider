@@ -3,7 +3,7 @@ TestSoundFile : UnitTest {
 	var soundFile, path;
 
 	setUp {
-		path = Platform.resourceDir +/+ "sounds/a11wlk01.wav";
+		path = ExampleFiles.child;
 		soundFile = SoundFile(path);
 	}
 

@@ -3,6 +3,8 @@ LinuxPlatform : UnixPlatform {
 	classvar <>runInTerminalCmd;
 
 	name { ^\linux }
+	version { ^". /etc/os-release && echo \"$NAME $VERSION\"".unixCmdGetStdOut.replace($\n, "") }
+
 	startupFiles {
 		var deprecated = #["~/.sclang.sc"];
 		Platform.deprecatedStartupFiles(deprecated);
@@ -39,6 +41,16 @@ LinuxPlatform : UnixPlatform {
 	initPlatform {
 		super.initPlatform;
 		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
+	}
+
+	killProcessByID { |pid, force = true, subprocesses = true|
+		var cmd = "kill ";
+		var sig = force.if({"KILL"}, {"TERM"});
+		cmd = "kill -% %".format(sig, pid);
+		if(subprocesses) {
+			cmd = "ps -o pid= --ppid % | while read -r subprocess; do kill -% \"$subprocess\"; done; %".format(pid, sig, cmd);
+		};
+		cmd.unixCmd;
 	}
 
 	*getTerminalEmulatorCmd {

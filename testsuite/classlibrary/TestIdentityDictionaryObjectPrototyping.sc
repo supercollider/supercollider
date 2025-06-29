@@ -4,10 +4,15 @@ TestIdentityDictionaryObjectPrototyping : UnitTest {
 		this.assertEquals(ev.a, 1);
 		this.assertEquals(ev.b, 2)
 	}
+	test_setters {
+		var e = ().know_(true);
+		e.a = 0.1;
+		this.assertEquals(e, (a: 0.1), "Setting through doesNotUnderstand should create an element in the event.");
+
+	}
 	test_known_function_call {
 		var ev = (\a: 1, \b: 2, \f: {|self, foo, bar|
-
-			[self, foo, bar].postln;
+			[self, foo, bar];
 		});
 		var result = ev.f(\foo, \bar);
 		this.assertEquals(result[0], ev, "'this' should be passed in first");

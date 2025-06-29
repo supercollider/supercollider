@@ -220,6 +220,15 @@ ServerStatusWatcher {
 	unresponsive_ { | val |
 		if (val != unresponsive) {
 			unresponsive = val;
+			// when remote server reboots, remote clients lose
+			// notification, so renew it when recovering
+			if (server.remoteControlled) {
+				if (unresponsive) {
+					notified = false
+				} {
+					this.prSendNotifyRequest
+				}
+			};
 			{ server.changed(\serverRunning) }.defer;
 		}
 	}
@@ -321,5 +330,4 @@ ServerStatusWatcher {
 			"Switched off notification messages from server '%'\n".postf(server.name);
 		};
 	}
-
 }

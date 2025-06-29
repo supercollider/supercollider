@@ -206,7 +206,7 @@ class SC_UdpInPort {
         if (error == boost::asio::error::operation_aborted)
             return; /* we're done */
 
-        if (error == boost::asio::error::connection_refused) {
+        if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset) {
             // avoid windows error message
             startReceiveUDP();
             return;
@@ -245,6 +245,10 @@ class SC_UdpInPort {
                                                  asio::placeholders::bytes_transferred));
     }
 
+    static constexpr int receiveBufferSize = 4 * 1024 * 1024;
+    static constexpr int sendBufferSize = 4 * 1024 * 1024;
+    static constexpr int fallbackBufferSize = 1 * 1024 * 1024;
+
 public:
     boost::asio::ip::udp::socket udpSocket;
 
@@ -261,8 +265,37 @@ public:
         if (inPortNum == 0)
             mPortNum = udpSocket.local_endpoint().port();
 
-        boost::asio::socket_base::send_buffer_size option(65536);
-        udpSocket.set_option(option);
+        try {
+            boost::asio::socket_base::send_buffer_size sendBufferSize;
+            udpSocket.get_option(sendBufferSize);
+            int defaultBufferSize = sendBufferSize.value();
+            if (defaultBufferSize < SC_UdpInPort::sendBufferSize) {
+                sendBufferSize = SC_UdpInPort::sendBufferSize;
+                boost::system::error_code ec;
+                udpSocket.set_option(sendBufferSize, ec);
+                if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
+                    sendBufferSize = SC_UdpInPort::fallbackBufferSize;
+                    udpSocket.set_option(sendBufferSize);
+                }
+            }
+        } catch (boost::system::system_error& e) { printf("WARNING: failed to set send buffer size (%s)\n", e.what()); }
+
+        try {
+            boost::asio::socket_base::receive_buffer_size receiveBufferSize;
+            udpSocket.get_option(receiveBufferSize);
+            int defaultBufferSize = receiveBufferSize.value();
+            if (defaultBufferSize < SC_UdpInPort::receiveBufferSize) {
+                receiveBufferSize = SC_UdpInPort::receiveBufferSize;
+                boost::system::error_code ec;
+                udpSocket.set_option(receiveBufferSize, ec);
+                if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
+                    receiveBufferSize = SC_UdpInPort::fallbackBufferSize;
+                    udpSocket.set_option(receiveBufferSize);
+                }
+            }
+        } catch (boost::system::system_error& e) {
+            printf("WARNING: failed to set receive buffer size (%s)\n", e.what());
+        }
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {

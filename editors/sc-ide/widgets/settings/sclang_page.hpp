@@ -57,10 +57,12 @@ private:
     void writeLanguageConfig();
     QString languageConfigFile();
     QStringList availableLanguageConfigFiles();
+    void dialogConfigFileUpdated();
 
     Ui::SclangConfigPage* ui;
 
     bool sclangConfigDirty;
+    bool sclangConfigChanged;
     QString selectedLanguageConfigFile;
 };
 

@@ -11,39 +11,45 @@ Buffer {
 	*initClass { serverCaches = IdentityDictionary.new }
 
 	// doesn't send
-	*new { arg server, numFrames, numChannels, bufnum;
+	*new { arg server, numFrames, numChannels, bufnum, sampleRate;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
+		if(sampleRate.isNil or: {sampleRate <= 0}) { sampleRate = server.sampleRate };
 		^super.newCopyArgs(
 			server,
 			bufnum,
 			numFrames,
-			numChannels
-		).sampleRate_(server.sampleRate).cache
+			numChannels,
+			sampleRate
+		).cache
 	}
 
-	*alloc { arg server, numFrames, numChannels = 1, completionMessage, bufnum;
+	*alloc { arg server, numFrames, numChannels = 1, completionMessage, bufnum, sampleRate;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
+		if(sampleRate.isNil or: {sampleRate <= 0}) { sampleRate = server.sampleRate };
 		^super.newCopyArgs(
 			server,
 			bufnum,
 			numFrames,
-			numChannels
-		).alloc(completionMessage).sampleRate_(server.sampleRate).cache
+			numChannels,
+			sampleRate
+		).alloc(completionMessage).cache
 	}
 
-	*allocConsecutive { arg numBufs = 1, server, numFrames, numChannels = 1, completionMessage, bufnum;
+	*allocConsecutive { arg numBufs = 1, server, numFrames, numChannels = 1, completionMessage, bufnum, sampleRate;
 		var	bufBase;
 		bufBase = bufnum ?? { server.nextBufferNumber(numBufs) };
 		numFrames = numFrames.asInteger;
 		numChannels = numChannels.asInteger;
+		if(sampleRate.isNil or: {sampleRate <= 0}) { sampleRate = server.sampleRate };
 		^Array.fill(numBufs, { |i|
 			// note, cannot use alloc or allocMsg here
 			// because those methods don't pass a buffer index for completion message
-			var newBuf = Buffer.new(server, numFrames, numChannels, i + bufBase);
+			var newBuf = Buffer.new(server, numFrames, numChannels, i + bufBase, sampleRate);
 			server.sendMsg(\b_alloc, i + bufBase, numFrames, numChannels,
-				completionMessage.value(newBuf, i));
+				completionMessage.value(newBuf, i),
+				sampleRate.asFloat);
 			newBuf.cache
 		})
 	}
@@ -67,7 +73,7 @@ Buffer {
 
 	allocMsg { arg completionMessage;
 		this.cache;
-		^["/b_alloc", bufnum, numFrames.asInteger, numChannels.asInteger, completionMessage.value(this)]
+		^["/b_alloc", bufnum, numFrames.asInteger, numChannels.asInteger, completionMessage.value(this), sampleRate !? _.asFloat ?? 0.0]
 	}
 
 	allocReadMsg { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
@@ -593,6 +599,17 @@ Buffer {
 	queryMsg {
 		if(bufnum.isNil) { Error("Cannot query a % that has been freed".format(this.class.name)).throw };
 		^[\b_query, bufnum]
+	}
+
+	setSampleRate { arg value;
+		if(value.isNil or: {value <= 0}) { value = server.sampleRate } {value = value.asFloat};
+		server.listSendMsg(this.setSampleRateMsg(value));
+        sampleRate = value; // update on success
+    }
+
+	setSampleRateMsg { arg value;
+		if(bufnum.isNil) { Error("Cannot change the sample rate of a % that has been freed".format(this.class.name)).throw };
+		^[\b_setSampleRate, bufnum, value !? _.asFloat ?? 0.0];
 	}
 
 	updateInfo { arg action;
