@@ -4,7 +4,7 @@ related::Classes/IdentitySet, Classes/List, Classes/Dictionary
 categories::Collections>Unordered
 
 DESCRIPTION::
-emphasis::An instance of the Set class:: (a set) is a collection of objects, no two of which are equal. Most of its methods are inherited from Collection. The contents of emphasis::a set:: are unordered; therefore, code must not rely on the order of elements in emphasis::a set::. For an ordered variant, see link::Classes/OrderedIdentitySet::.
+emphasis::An instance of the set class:: (a set) is a collection of objects, in which no two elements are equal. Most of its methods are inherited from Collection. The contents of emphasis::a set:: are unordered; therefore, code must not rely on the order of elements in emphasis::a set::. For an ordered variant, see link::Classes/OrderedIdentitySet::.
 
 note::
 Currently, emphasis::a set:: cannot contain code::nil:: as an element. Attempting to add code::nil:: will result in a runtime error: 
