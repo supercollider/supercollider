@@ -7,11 +7,11 @@ section:: Notable changes and additions
 These are the highlights of the changes in SC 3.14. See sections below for details.
 
 list::
-## Sclang functions now support collecting arbitrary keyword arguments via code:: **kwargs ::
-## The initialization sample of multiple UGens was fixed
-## Documentation can now also be themed like the IDE
-## Due to updated bundled boost libraries, FluCoMa UGens which were working under SuperCollider 3.13 are not compatible anymore with 3.14! Go to link::https://github.com/flucoma/flucoma-sc to check:: for compatible version.
-## Even though these are not as much of user-facing changes, there were countles structural upgrades: we migrated to qt6, added and improved tests, updated 3rd-party libraries, updated the build system for most recent build tools, and adapted a new organizational structure for development
+## Sclang functions now support collecting arbitrary keyword arguments via code:: { |...args, kwargs| kwargs }. ::
+## The initialization sample of multiple UGens was fixed.
+## Documentation can now also be themed like the IDE.
+## Due to updated bundled boost libraries, FluCoMa UGens which were working under SuperCollider 3.13 are not compatible anymore with 3.14! Go to link::https://github.com/flucoma/flucoma-sc to check:: for a compatible version.
+## Even though these are not as much of user-facing changes, there were countless structural upgrades: we migrated to qt6, added and improved tests, updated 3rd-party libraries, updated the build system for most recent build tools, and adapted a new organizational structure for development.
 ::
 
 section:: Known Issues
@@ -29,6 +29,13 @@ list::
 ## mark code:: SetResetFF :: explicitly as unipolar, this changes output levels when using code:: range :: – e.g. if you have used code:: .range(0, 1) ::, it had assumed bipolar default so far and returned a range of code:: [0.5, 1] ::.) by @capital-G in https://github.com/supercollider/supercollider/pull/6023
 ## code:: Set.remove :: now returns the item removed by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6409
 ## fix Dictionary code:: trueAt :: by @telephon in https://github.com/supercollider/supercollider/pull/6001, and @mtmccrea in https://github.com/supercollider/supercollider/pull/6335 This changes behavior as follows:
+
+table::
+## strong::trueAt:: || strong::obj:: || strong::nil:: || strong::true:: || strong::false::
+## previous: || obj || false || true || false
+## new: || false || false || true || false
+::
+
 ::
 
 section:: New Contributors
@@ -73,7 +80,7 @@ subsection:: New classes
 
 list::
 ## Add link::Classes/ExampleFiles:: class by @capital-G in https://github.com/supercollider/supercollider/pull/6685 and @tedmoore https://github.com/supercollider/supercollider/pull/6720
-## link::Classes/NodeTreeView:: class. Server.plotTree creates an  instance of it. by @prko and @dyfer in https://github.com/supercollider/supercollider/pull/6282, https://github.com/supercollider/supercollider/pull/6834, https://github.com/supercollider/supercollider/pull/6913, https://github.com/supercollider/supercollider/pull/6917, https://github.com/supercollider/supercollider/pull/6914
+## link::Classes/NodeTreeView:: class. Server.plotTree creates an  instance of it. by @prko, @telephon, and @dyfer in https://github.com/supercollider/supercollider/pull/6282, https://github.com/supercollider/supercollider/pull/6834, https://github.com/supercollider/supercollider/pull/6913, https://github.com/supercollider/supercollider/pull/6917, https://github.com/supercollider/supercollider/pull/6914
 ::
 
 subsection:: New methods
