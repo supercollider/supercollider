@@ -393,6 +393,7 @@ SCDoc {
 	classvar <>renderer;
 	classvar documents;
 	classvar helpSourceDirs;
+	classvar <>parseErrors;
 
 	*parseFileFull {|path|
 		^this.prParseFile(path, 0)
@@ -421,6 +422,11 @@ SCDoc {
 
 	*prParseFile {|path, mode|
 		_SCDoc_ParseFile
+		^this.primitiveFailed
+	}
+
+	*prGatherParseErrors {
+		_SCDoc_GatherErrors
 		^this.primitiveFailed
 	}
 
@@ -585,14 +591,19 @@ SCDoc {
 
 	*parseDoc {|doc|
 		var add, root;
-		(root = this.parseFileFull(doc.fullPath)) !? {
-			doc.additions.do {|f|
-				(add = this.parseFilePartial(f)) !? {
-					root.children[1].merge(add);
-				}
-			};
-			this.handleCopyMethods(root,doc);
+		root = this.parseFileFull(doc.fullPath);
+
+		if (root.isNil) {
+			this.parseErrors = this.parseErrors.add(this.prGatherParseErrors);
+			^nil
 		};
+
+		doc.additions.do {|f|
+			(add = this.parseFilePartial(f)) !? {
+				root.children[1].merge(add);
+			}
+		};
+
 		^root;
 	}
 
