@@ -4,12 +4,12 @@ related::Classes/IdentitySet, Classes/List, Classes/Dictionary
 categories::Collections>Unordered
 
 DESCRIPTION::
-A Set is a collection of objects, no two of which are equal. Most of its methods are inherited from Collection. The contents of a Set are unordered; therefore, code must not rely on the order of elements in a Set. For an ordered variant, see link::Classes/OrderedIdentitySet::.
+emphasis::An instance of the Set class:: (a set) is a collection of objects, no two of which are equal. Most of its methods are inherited from Collection. The contents of emphasis::a set:: are unordered; therefore, code must not rely on the order of elements in emphasis::a set::. For an ordered variant, see link::Classes/OrderedIdentitySet::.
 
 note::
-Currently, a Set cannot contain code::nil:: as an element. Attempting to add code::nil:: will result in a runtime error: 
+Currently, emphasis::a set:: cannot contain code::nil:: as an element. Attempting to add code::nil:: will result in a runtime error: 
 teletype::
-ERROR: A Set cannot contain nil.
+ERROR: A set cannot contain nil.
 ::
 This restriction exists because code::nil:: is internally used as a sentinel value to represent unoccupied slots in hash-based collections. As a result, this limitation also applies to Set’s subclasses.
 ::
