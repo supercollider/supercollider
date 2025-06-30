@@ -2239,6 +2239,10 @@ int prObjectRespondsTo(struct VMGlobals* g, int numArgsPushed) {
 
     if (IsSym(b)) {
         selector = slotRawSymbol(b);
+        if ((selector->flags & sym_Class) != 0) {
+            slotCopy(a, &o_false);
+            return errNone;
+        }
         index = slotRawInt(&classobj->classIndex) + selector->u.index;
         meth = gRowTable[index];
         if (slotRawSymbol(&meth->name) != selector) {
@@ -2254,6 +2258,10 @@ int prObjectRespondsTo(struct VMGlobals* g, int numArgsPushed) {
                 return errWrongType;
 
             selector = slotRawSymbol(slot);
+            if ((selector->flags & sym_Class) != 0) {
+                slotCopy(a, &o_false);
+                return errNone;
+            }
             index = slotRawInt(&classobj->classIndex) + selector->u.index;
             meth = gRowTable[index];
             if (slotRawSymbol(&meth->name) != selector) {
