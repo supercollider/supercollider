@@ -66,8 +66,8 @@ Build instructions
     cd SuperCollider
     mkdir -p build
     cd build
-    cmake -G Xcode  ..
-    # or, if you want to build with supernove:
+    cmake -G Xcode ..
+    # or, if you want to build with supernova:
     cmake -G Xcode -DSUPERNOVA=ON ..
     # then start the build
     cmake --build . --target install --config RelWithDebInfo
