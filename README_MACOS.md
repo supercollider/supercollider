@@ -66,10 +66,9 @@ Build instructions
     cd SuperCollider
     mkdir -p build
     cd build
-    # the default way is to build SC with supernova: 
-    cmake -G Xcode -DSUPERNOVA=ON ..
-    # or, if you want to build without it:
     cmake -G Xcode  ..
+    # or, if you want to build with supernove:
+    cmake -G Xcode -DSUPERNOVA=ON ..
     # then start the build
     cmake --build . --target install --config RelWithDebInfo
 
@@ -83,7 +82,7 @@ To install, you may move this to /Applications or use it in place from the build
 **Qt5 is outdated** and will soon be deprecated. It is strongly advised to build with Qt6. If your system also has Qt5 installed you may have to adjust your brew and shell config. In order to build with Qt5, Qt6 needs to be uninstalled or unlinked:
 
     brew unlink qt@6
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5` -DSUPERNOVA=ON ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5` ..
     cmake --build . --target install --config RelWithDebInfo
 
 More info on *supernova* can be found in the section **Frequently used cmake settings** below.
