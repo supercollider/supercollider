@@ -85,7 +85,7 @@ The results of functions composed with operators distribute the keyword argument
 
 code::
 f = { |a, b=1| a ** b } * { |a, c = 0| a + c };
-f.value(1); // default arguments for a and c
+f.value(1); // default arguments for b and c
 f.value(1, b:2); // explicitly specify a (the other function warns)
 (b:2.5).use { f.valueEnvir(2) } // to avoid the warnings, you can use valueEnvir (see below)
 ::
