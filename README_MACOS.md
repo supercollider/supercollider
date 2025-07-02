@@ -79,7 +79,7 @@ You can see the available build options with ```cmake -LH```.
 
 To install, you may move this to /Applications or use it in place from the build directory.
 
-**Qt 5.15 compatibility**: 
+**Qt 5.15 compatibility**:  
 **Qt5 is outdated** and will soon be deprecated. It is strongly advised to build with Qt6. If your system also has Qt5 installed you may have to adjust your brew and shell config. In order to build with Qt5, Qt6 needs to be uninstalled or unlinked:
 
     brew unlink qt@6
