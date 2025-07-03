@@ -8,23 +8,41 @@ section:: Introduction
 A link::Classes/Function:: is an expression which defines operations to be performed when it is sent the code::value:: message. In functional languages, a function would be known as a lambda expression.
 Function definitions are enclosed in curly brackets code::{}::. Argument declarations, if any, follow the open bracket. Variable declarations follow argument declarations. An expression follows the declarations.
 code::
-{ arg a, b, c;  var d;   d = a * b; c + d }
+{ |a, b, c|
+	var d;
+	d = a * b;
+	c + d
+}
 ::
 
-Functions are not evaluated immediately when they occur in code, but are passed as values just like integers or strings.
+Functions are not evaluated immediately when they occur in code, but are themselves objects that can be passed around.
 
-A function may be evaluated by passing it the code::value:: message and a list of arguments.
+A function object may be evaluated by passing it the code::value:: message, or its shorthand code::.()::, and a list of arguments.
 
-When evaluated, the function returns the value of its expression.
+When evaluated, the function object returns the final value of its expression.
 code::
-f = { arg a, b; a + b };
+f = { |a, b| a + b };
 f.value(4, 5).postln;
-f.value(10, 200).postln;
+f.(4, 5).postln; // same as above
+f.(10, 200).postln;
 ::
 
-An empty function returns the value nil when evaluated.
+An empty function object returns the value nil when evaluated.
 code::
 {}.value.postln;
+::
+
+Arguments can also be provided by name.
+code::
+f = { |a, b| a + b };
+f.(a: 10, b: 2) // 12
+
+f.(b: 3, a: 10) // 13, order does not matter for keywords
+f.(3, b: 4) // 7, 'a' is always first argument
+
+f.(3, a: 4) // Error: Duplicate keyword 'a' at position 0.
+
+f.(a: 3) // Error: binary operator '+' failed, b is 'nil' and you cannot add a number and 'nil'
 ::
 
 A function can be thought as a machine able to perform a task on demand, e.g. a calculator. The calculator can receive input (args) and can output a value, the result of the performed operations. The function definition can then be thought as the building of the calculator: once built, the calculator does nothing until it is requested to work (by passing the value method to a function).
@@ -53,25 +71,8 @@ code::{ |x = 1| ... } :: link::#[1]::
 Pipe style, default value is an expression:
 code::{ |x = (10.rand)| ... } :: link::#[2]::
 
-If the last argument in the list is preceded by three dots (an ellipsis), then all the remaining arguments that were passed will be assigned to that variable as an link::Classes/Array::. Arguments must be separated by commas.
 
-examples:
-code::
-{ arg a, b, c=3; } // is equivalent to:
-
-{ |a, b, c=3| }
-
-{ arg x='stop', y, z=0; } // these args are initialised
-
-{ arg a, b, c ... d; } // any arguments after the first 3 will be assigned to d as an Array
-::
-
-If you want all the arguments put in an Array
-code::
-arg ... z;
-::
-
-In general arguments may be initialized to literals or expressions, but in the case of Function:play or SynthDef:play, they may only be initialized to literals.
+In general arguments may be initialized to literals or expressions, but in the case of link::Classes/Function#-play:: or link::Classes/SynthDef#-play::, they may only be initialized to literals.
 code::
 // this is okay:
 
@@ -82,23 +83,73 @@ code::
 { arg freq = Array.geom(4, 100, 3); Mix(SinOsc.ar(freq, 0, 0.1)) }.play; // silence
 
 // but this is:
-{ arg freq =  #[ 100, 300, 900, 2700 ]; Mix(SinOsc.ar(freq, 0, 0.1)) }.play; // silence
+{ arg freq =  #[ 100, 300, 900, 2700 ]; Mix(SinOsc.ar(freq, 0, 0.1)) }.play; // produces sound!
 ::
 
 See link::Reference/Literals:: for more information.
 
+section:: Variable Arguments
+
+Variable arguments are how functions catch an unknown number of arguments or keyword arguments. 
+There are two possible variable arguments, the first for positional arguments, and second for keyword arguments.
+They are marked by an ellipsis after any normal arguments and separated by a comma.
+
+The first variable argument (positional) catches all remaining arguments in an link::Classes/Array::
+
+code::
+f = { |a ... args| "a: %, args: %".format(a, args) };
+
+f.(1, 2, 3) // a: 1, args: [2, 3]
+f.(1) // a: 1, args: []
+f.(a: 1) // a: 1, args: []
+
+// catches all arguments
+g = { |...args| "args: %".format(args) };
+
+g.(1, 2, 3) // args: [1, 2, 3]
+g.() // args: []
+::
+
+The second variable argument catches all keyword arguments.
+It puts them in an link::Classes/Array:: of key-value pairs.
+
+code::
+f = { |...args, kwargs| "args: %, kwargs: %".format(args, kwargs) };
+
+f.(1, 2, 3) // args: [1, 2, 3], kwargs: []
+
+f.(a: 10) // args: [], kwargs: [a, 10]
+
+f.(1, 2, 3, meow: 10, woof: 20) // args: [1, 2, 3], kwargs: [meow, 10, woof, 20]
+
+::
+
+The use of variable keyword arguments is often paired with link::Classes/Object#-performArgs::.
+
+While you can pick any name for the variable arguments, they always refer to the unmatched positional and keyword arguments, so it is often best to name them code::args:: and code::kwargs::.
+
+You cannot reassign the value of the variable arguments at the call–site even if they share the same name (see below for example).
+
+code::
+f = { |...args, kwargs| "args: %, kwargs: %".format(args, kwargs) };
+f.(args: 10, kwargs: 20) // args: [], kwargs: [args: 10, kwargs: 20]
+
+f = { |...a, b| "a: %, b: %".format(a, b) };
+f.(a: 10, b: 20) // a: [], b: [a: 10, b: 20]
+::
+
 anchor::[1]::
 subsection:: [1] Literal argument defaults
 
-Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::. Arguments passed at runtime -- including nil -- always override the defaults:
+Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::. Arguments passed at runtime — including nil — always override the defaults:
 
 code::
-f = { arg x = 1; x };
-f.value(2);  // prints 2
+f = { |x = 1| x };
+f.(2);  // prints 2
 
-f.value;   // prints 1
+f.();   // prints 1
 
-f.value(nil);  // prints nil
+f.(nil);  // prints nil
 ::
 
 anchor::[2]::
@@ -107,19 +158,19 @@ subsection:: [2] Expression argument defaults
 Since expressions are evaluated when the function is called, they cannot be stored in the link::Classes/FunctionDef::. They are executed only if the passed-in value is nil.
 
 code::
-f = { arg x = 10.rand; x };
+f = { |x = (10.rand)| x };
 f.value(100);  // prints 100
 
 f.value;   // prints a number 0-9
 
-f.value(nil);   // prints a number 0-9!
+f.(nil);   // prints a number 0-9!
 ::
 
 This means you can use expression-style to define a default that cannot be overridden by nil.
 
 code::
-f = { arg x = (3); x };
-f.value(nil);   // prints 3
+f = { |x = (3)| x };
+f.(nil);   // prints 3
 ::
 
 Note: Parentheses are required when initializing an argument to an expression, if the argument list is written inside code::||:: pipes.
