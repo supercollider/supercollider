@@ -3,13 +3,11 @@ categories:: Guides
 summary:: Writing runtime 'classes'
 related:: Classes/IdentityDictionary
 
-
 You cannot create nor edit a class without recompiling the language... but what if you need that?
 
 Object prototyping is a middle ground that lets you build class–like structures at runtime.
 It works by taking advantage of the class link::Classes/IdentityDictionary:: (often the subclass link::Classes/Event:: is used) and the special method link::Classes/Object#-doesNotUnderstand::.
 While there are some oddities with this approach, it is extremely powerful.
-
 
 section:: Instance Variables (Members)
 
@@ -33,7 +31,7 @@ a.meow // 10
 
 section:: Methods
 
-By assigning a function to a key, you can call it just as a normal instance method would be called.
+By assigning a function to a key, you can call that function as if it were a normal instance method.
 
 However, the link::Classes/IdentityDictionary:: is passed into the function as the first argument.
 Usually, we call this argument code::self:: as it performs a similar role to the keyword code::this::.
@@ -73,7 +71,6 @@ dog.speak("quietly").postln; // I say "woof" quietly.
 )
 ::
 
-
 section:: Private Instance Variables (Members)
 
 These can be implemented inside the constructor function as normal variables, however, you don't add them to the dictionary.
@@ -95,7 +92,6 @@ p1.assign_secret("I'm a dog");
 p1.speak_secrets().postln; // My secret is "I'm a dog".
 )
 ::
-
 
 section:: Dangers
 
