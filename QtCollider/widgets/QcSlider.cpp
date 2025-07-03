@@ -114,9 +114,10 @@ void QcSlider::mouseMoveEvent(QMouseEvent* e) {
 void QcSlider::wheelEvent(QWheelEvent* e) {
     double step = qMax(_step, pixelStep());
     modifyStep(&step);
-    const auto deltaX = e->pixelDelta().isNull() ? e->angleDelta().y() / 8.f : e->pixelDelta().y();
-    double dval = deltaX / 120.0 * step;
+    const double scrollSteps = e->pixelDelta().isNull() ? e->angleDelta().y() / 120.0 : e->pixelDelta().y();
+    double dval = scrollSteps * step;
     setValue(_value + dval);
+
     Q_EMIT(action());
 }
 
