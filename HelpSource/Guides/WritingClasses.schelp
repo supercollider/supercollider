@@ -3,7 +3,6 @@ summary:: Writing SuperCollider Classes
 categories:: Language>OOP
 related:: Reference/Classes, Classes/Class, Classes/Object
 
-
 SuperCollider follows a pure object-oriented paradigm. It is not built on data types, but on objects, which respond to messages. A class is an object that holds information about how its objects (instances) respond to such messages. Writing a class gives a definition of this behavior.
 
 This is an overview of idioms used in writing classes. It is not a tutorial on writing a system of interrelated classes. It gives an overview of some typical expressions. See also: link::Guides/Intro-to-Objects::, link::Reference/Messages::, and link::Reference/Classes::.
@@ -22,7 +21,6 @@ Platform.systemExtensionDir; // Extensions available to all users on the machine
 
 It is not possible to enter a class definition into an interpreter window and execute it.
 ::
-
 
 section:: Inheriting
 
@@ -43,8 +41,6 @@ MyClass { // : Object is implied
 ::
 
 This is why in the above example, the message code::new:: can be called without being explicitly defined in the class.
-
-
 
 section:: Methods
 
@@ -72,7 +68,6 @@ a = MyClass.new // returns a new instance
 a.instanceMethod // posts "hello instance"
 ::
 
-
 To return from the method use teletype::^:: (caret). Multiple exit points also possible. If no teletype::^:: is
 specified, the method will return the instance (and in the case of Class methods, will return the class). There is no
 such thing as returning void in SuperCollider.
@@ -94,12 +89,9 @@ MyClass {
 }
 ::
 
-
 subsection:: Class Methods
 
-
 An object's  strong::class methods:: are defined alongside its instance methods. They are specified with an asterisk (teletype::*::) before the method name.
-
 
 A link::Classes/Class:: is itself an object. It is what all instances of it have in common. Class methods are the instance methods of the object's class. That's why within class methods, the keyword code::this:: refers to the class.
 
@@ -121,7 +113,6 @@ This could then be used as follows:
 code::
 MyClass.classMethod // posts "hello class"
 ::
-
 
 subsection::Overriding methods (overloading)
 
@@ -156,8 +147,6 @@ MyClass : SomeSuperclass {
 	}
 }
 ::
-
-
 
 section:: Instances
 
@@ -199,7 +188,6 @@ Foo {
 If initialisation logic that prepares the arguments before assignment is required,
 ideally, it should go before the call to code::super.newCopyArgs::.
 This way the final object never exists in an invalid state — an alternative is the use of an code::init:: method and shall be shown shortly.
-
 
 However, when there is a hierarchy of classes, code::newCopyArgs:: requires that all the base class arguments be passed in the order they are defined. 
 This makes changing the base class difficult.
@@ -251,7 +239,6 @@ Another benefit is that the instance is never in an incomplete state: either all
 The disadvantages come when you have complex initialisation logic where the arguments in code::Derived:: require knowledge of the arguments in code::Base::.
 Traditionally in SuperCollider this has been solved with an code::init:: method as seen below, although a 'builder' pattern might be considered for complex cases.
 
-
 code::
 Base {
 	var a, b;
@@ -298,10 +285,7 @@ While the code::init:: pattern is the most flexible, care must be taken as insid
 the instance is in an incomplete state and other methods might not work as expected;
 for example, this may become confusing when combined with threads and asynchronous execution, for example, when interacting with the server.
 
-
-
 section:: Class instances
-
 
 Class variables are accessible within class methods and in any instance methods.
 
@@ -327,9 +311,6 @@ MyClass {
 }
 ::
 
-
-
-
 section::Alternatives to inheritance
 
 Overreliance on inheritance is usually a design flaw. Inheritance is mainly a way to organise code, and shouldn't be mistaken for a categorisation of objects. Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
@@ -351,7 +332,6 @@ MyClass {
 a = MyClass.new;
 a.value; // returns 1
 ::
-
 
 subsection::Object Composition
 Often, an object passes control to one of the objects it has in its instance variables. Because these objects can be of any kind, this is a very flexible way to achieve a wide range of functionalities. For example, a link::Classes/Button:: has an code::action:: instance variable, which may hold anything that responds to the message code::value::.
@@ -376,7 +356,6 @@ b.value(8);
 
 Often, variables like code::action:: above are filled with custom objects that belong to code::MyClass::. Thus, one will write many small classes that can be well combined in such a way. This is called "pluggable behavior".
 
-
 section::Variables
 
 subsection:: Initializing variables directly
@@ -390,7 +369,6 @@ MyClass {
 	var y = #[1, 2, 3];
 }
 ::
-
 
 subsection:: Variable Scope
 
@@ -426,7 +404,6 @@ MyClass : SomeSuperclass {
 // SomeSuperclass.returnXHere returns 0
 // MyClass.returnXHere returns 1
 // MyClass.returnX returns 0
-
 
 ::
 
@@ -474,7 +451,6 @@ someObject.getMeOrSetMe_(5);
 someObject.getMeOrSetMe;
 ::
 
-
 A getter or setter method created in this fashion may be overridden in a subclass by explicitly defining the method. Setter methods should take only one argument to support both ways of expression consistently.  eg.
 
 code::
@@ -488,7 +464,6 @@ MyClass {
 ::
 
 A setter method should always return the receiver. This allows us to be sure that several setters can chained up.
-
 
 subsection::Constants
 Constants are variables, that, well, don't vary. They can only be assigned initially.
