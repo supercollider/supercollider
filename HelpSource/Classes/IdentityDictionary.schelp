@@ -8,8 +8,6 @@ An IdentityDictionary is an associative collection mapping keys to values. Keys 
 
 An IdentityDictionary can be used to implement prototype objects (link::Guides/ObjectPrototyping::), which behave like objects whose methods can be programmed at runtime.
 
-
-
 Often, the subclass link::Classes/Event:: is used as an IdentityDictionary, because there is a syntactical shortcut:
 code::
 a = (); // return a new Event.
@@ -22,7 +20,6 @@ Keys match only if they are strong::identical objects::. (i.e. === returns true.
 
 The contents of a Dictionary are strong::unordered::. You must not depend on the order of items in a Dictionary.
 ::
-
 
 IdentityDictionary is often used to assign names to instances of a particular class. For example, the proxy classes (link::Classes/Pdef::, link::Classes/Pdefn::, link::Classes/Tdef::, link::Classes/Ndef::), and link::Classes/NodeWatcher:: all have class variables named all implemented as IdentityDictionaries.
 
@@ -72,7 +69,6 @@ e[\b]
 -> 20
 ::
 
-
 CLASSMETHODS::
 
 method::new
@@ -84,7 +80,6 @@ a = IdentityDictionary(know: true);
 a.put(\foo, { |x, y| "--".postln; ("x:" ++ x).postln;  ("y:" ++ y).postln; y.squared });
 a.foo(-10.01);
 ::
-
 
 warning::
 Only keys that are not already instance methods of IdentityDictionary (or its superclasses) can be used in such a way. E.g. the key "free" will not work, because it is implemented in Object. This means that class extensions (see: link::Guides/WritingClasses::) can break code. It is advisable to use underscores in method names to make this improbable.
@@ -100,7 +95,6 @@ a.fuzzy_plus(7, 4);
 ::
 
 INSTANCEMETHODS::
-
 
 method::know
 If set to true, the dictionary interprets method calls as look ups. This allows you to implement object prototypes (see above).
@@ -159,7 +153,6 @@ a.cs;
 
 image::IdentityDictionary_01.png#Example schema: order of overriding in proto and parent.::
 
-
 method::insertParent
 Inserts a dictionary into the chain of parents of the receiver (rather than replacing the parent).
 argument::newParent
@@ -168,7 +161,6 @@ argument::insertionDepth
 Level at which the new parent is inserted. Zero (default) means directly above, Inf means at the top of the parent chain.
 argument::reverseInsertionDepth
 If the new parent dictionary has parents itself, this parameter specifies where the original parents are placed in the new parent chain. Zero means directly above, Inf (default) means at the top of the chain.
-
 
 image::IdentityDictionary_03.png#Compare a.insertParent(b, 0) and a.insertParent(b, 1)::
 
