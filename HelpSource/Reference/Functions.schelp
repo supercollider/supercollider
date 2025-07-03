@@ -88,8 +88,6 @@ code::
 
 See link::Reference/Literals:: for more information.
 
-
-
 section:: Variable Arguments
 
 Variable arguments are how functions catch an unknown number of arguments or keyword arguments. 
@@ -128,9 +126,10 @@ f.(1, 2, 3, meow: 10, woof: 20) // args: [1, 2, 3], kwargs: [meow, 10, woof, 20]
 
 The use of variable keyword arguments is often paired with link::Classes/Object#-performArgs::.
 
-While you can name the variable arguments anything, they always refers to the unmatched positional and keyword arguments, so it is often best to name them code::args:: and code::kwargs::.
+While you can pick any name for the variable arguments, they always refer to the unmatched positional and keyword arguments, so it is often best to name them code::args:: and code::kwargs::.
 
 You cannot reassign the value of the variable arguments at the call–site even if they share the same name (see below for example).
+
 code::
 f = { |...args, kwargs| "args: %, kwargs: %".format(args, kwargs) };
 f.(args: 10, kwargs: 20) // args: [], kwargs: [args: 10, kwargs: 20]
@@ -138,7 +137,6 @@ f.(args: 10, kwargs: 20) // args: [], kwargs: [args: 10, kwargs: 20]
 f = { |...a, b| "a: %, b: %".format(a, b) };
 f.(a: 10, b: 20) // a: [], b: [a: 10, b: 20]
 ::
-
 
 anchor::[1]::
 subsection:: [1] Literal argument defaults
