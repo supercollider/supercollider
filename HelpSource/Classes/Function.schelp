@@ -3,7 +3,8 @@ summary::Implements a function
 categories::Core>Kernel
 related::Reference/Functions, Classes/AbstractFunction, Classes/FunctionDef
 
-This document deals with the usage of function objects, for a more general introduction and documentation of syntax, see link::Reference/Functions::.
+This document deals with the usage of Function objects. 
+For a more general introduction and documentation of syntax, see link::Reference/Functions::.
 
 description::
 A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method. See the Functions help file for a basic introduction.
