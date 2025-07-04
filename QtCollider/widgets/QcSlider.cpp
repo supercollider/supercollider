@@ -111,13 +111,25 @@ void QcSlider::mouseMoveEvent(QMouseEvent* e) {
     Q_EMIT(action());
 }
 
+
 void QcSlider::wheelEvent(QWheelEvent* e) {
     double step = qMax(_step, pixelStep());
-    modifyStep(&step);
-    const double scrollSteps = e->pixelDelta().isNull() ? e->angleDelta().y() / 120.0 : e->pixelDelta().y();
-    double dval = scrollSteps * step;
-    setValue(_value + dval);
+    // use angleDelta for X11 (advice from Qt docs)
+    const bool isX11 = QGuiApplication::platformName() == "xcb";
+    // angleDelta: relative to 360deg; pixelDelta: relative to widget size
+    double scrollRatio =
+        (e->pixelDelta().isNull() || isX11) ? e->angleDelta().y() / 8. / 360. : e->pixelDelta().y() * pixelStep();
 
+    // note: on some platforms (x11, wayland) "natural scrolling" is not detectable: inverted() returns always false
+    if (e->inverted())
+        scrollRatio *= -1;
+
+    // convert ratio to number of steps (totSteps = 1/step)
+    double numSteps = scrollRatio / step;
+    modifyStep(&step);
+    // accumulate fractional numSteps to help scrolling through big steps
+    scrollRemainder = std::modf(numSteps + scrollRemainder, &numSteps);
+    setValue(_value + numSteps * step);
     Q_EMIT(action());
 }
 
