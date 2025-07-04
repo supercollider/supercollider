@@ -2240,6 +2240,8 @@ int prObjectRespondsTo(struct VMGlobals* g, int numArgsPushed) {
     if (IsSym(b)) {
         selector = slotRawSymbol(b);
         if ((selector->flags & sym_Class) != 0) {
+            // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
+            // so here, we return false
             slotCopy(a, &o_false);
             return errNone;
         }
@@ -2259,6 +2261,8 @@ int prObjectRespondsTo(struct VMGlobals* g, int numArgsPushed) {
 
             selector = slotRawSymbol(slot);
             if ((selector->flags & sym_Class) != 0) {
+                // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
+                // so here, we return false
                 slotCopy(a, &o_false);
                 return errNone;
             }
