@@ -118,11 +118,12 @@ HOT void sendMessageImpl(VMGlobals* g, PyrSymbol* selector, PyrSlot* recvrSlot, 
     // In cases of redirect and super calls the function to be recursively call, this is implemented with a goto.
 
 lookup_again:
-    if ((selector->flags & sym_Class) != 0) {
-        post("A method selector can't be a class name\n");
-        return;
-    };
     // The variables classobj and selector are updated when the goto is triggered, causing these to change.
+    if ((selector->flags & sym_Class) != 0) {
+        // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
+        doesNotUnderstand(g, selector, numArgsPushed, numKeyArgsPushed);
+        return;
+    }
     auto method = gRowTable[slotRawInt(&classobj->classIndex) + selector->u.index];
     auto methodRaw = METHRAW(method);
 
