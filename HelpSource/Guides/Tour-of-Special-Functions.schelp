@@ -1,20 +1,20 @@
-TITLE:: Tour of Special Functions
+TITLE:: Tour of Special Mathematical Functions (Boost library)
 SUMMARY:: Examples and plots for Boost Special Functions
-CATEGORIES:: Guides
+CATEGORIES:: Math
 related:: Classes/SimpleNumber
 KEYWORD:: special functions, boost
 
+section:: Boost library Special Functions: usage, bounds and plots
 
-DESCRIPTION:: Special Functions supplied by the Boost library — usage, bounds and plots.
-
+Supercollider provides an array of special mathematical functions (e.g., Bessel, Chebyshev, etc.) as supplied by the Boost library. 
 The library's LINK::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
- serves as the primary reference for the following functions.
+serves as the primary reference for the following functions.
 
-Many of the functions are only valid in certain numerical ranges. The following tour will
-show you plots that illustrate the behavior of the functions, their ranges and asymptotes.
+Many of the functions are only valid in certain numerical ranges. 
+The following tour will show you plots that illustrate the behavior of the functions, their ranges and asymptotes.
 
-Define the plotting functions in the next section, then you can use the Table of Contents
-menu to jump between function families.
+Define the plotting functions in the next section, 
+then you can use the Table of Contents menu to jump between function families.
 
 SECTION:: Before you get started...
 
