@@ -1,12 +1,12 @@
 TITLE:: Tour of Special Mathematical Functions (Boost library)
-SUMMARY:: Examples and plots for Boost Special Functions
+SUMMARY:: Examples and plots for Special Functions.
 CATEGORIES:: Math
 related:: Classes/SimpleNumber
 KEYWORD:: special functions, boost
 
 section:: Boost library Special Functions: usage, bounds and plots
 
-Supercollider provides an array of special mathematical functions (e.g., Bessel, Chebyshev, etc.) as supplied by the Boost library. 
+Supercollider provides an array of special functions from mathematics (e.g., Bessel, Chebyshev, etc.) as supplied by the Boost library. 
 The library's LINK::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
 serves as the primary reference for the following functions.
 
