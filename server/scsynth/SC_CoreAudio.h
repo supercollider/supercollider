@@ -48,7 +48,7 @@
 #    else
 #        error SC_AUDIO_API undefined, cannot determine audio backend
 #    endif
-#endif // SC_AUDIO_API
+#endif // not SC_AUDIO_API
 
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO || SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
 #    include <CoreAudio/AudioHardware.h>

@@ -1857,7 +1857,7 @@ int prSFHeaderInfoString(struct VMGlobals* g, int numArgsPushed) {
     return errFailed;
 }
 
-#else // !NO_LIBSNDFILE
+#else // NO_LIBSNDFILE
 
 int prSFOpenRead(struct VMGlobals* g, int numArgsPushed) { return errFailed; }
 

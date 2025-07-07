@@ -45,7 +45,7 @@ int64 oscTimeNow() { return sc_PAOSCTime(); }
 
 void initializeScheduler() {}
 
-#else // SC_PA_USE_DLL
+#else // not SC_PA_USE_DLL
 
 int64 gOSCoffset = 0;
 

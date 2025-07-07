@@ -29,7 +29,7 @@
 #    include <XenomaiLock.h>
 using SC_Lock = XenomaiMutex;
 using condition_variable_any = XenomaiConditionVariable;
-#else // __COBALT__
+#else // not __COBALT__
 using SC_Lock = std::mutex;
 using condition_variable_any = std::condition_variable_any;
 #endif // __COBALT__

@@ -65,9 +65,9 @@ public:
             available.notify_one();
             mutex.unlock();
         }
-#else // CONDITION_VARIABLE_ANY_SHOULD_LOCK_BEFORE_NOTIFY
+#else // not SC_CONDITION_VARIABLE_ANY_SHOULD_LOCK_BEFORE_NOTIFY
         available.notify_one();
-#endif // CONDITION_VARIABLE_ANY_SHOULD_LOCK_BEFORE_NOTIFY
+#endif // SC_CONDITION_VARIABLE_ANY_SHOULD_LOCK_BEFORE_NOTIFY
     }
 
 private:

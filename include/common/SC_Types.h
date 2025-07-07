@@ -25,7 +25,7 @@
 
 #if !defined(__cplusplus)
 #    include <stdbool.h>
-#endif // __cplusplus
+#endif // !__cplusplus
 
 typedef int SCErr;
 
