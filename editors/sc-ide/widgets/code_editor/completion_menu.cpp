@@ -58,10 +58,7 @@ CompletionMenu::CompletionMenu(QWidget* parent): PopUpWidget(parent), mCompletio
 
 void CompletionMenu::addItem(QStandardItem* item) { mModel->appendRow(item); }
 
-void CompletionMenu::adapt() {
-    mListView->setFixedWidth(mListView->sizeHintForColumn(0));
-    resize(0, 0);
-}
+void CompletionMenu::adapt() { mListView->setFixedWidth(mListView->sizeHintForColumn(0)); }
 
 void CompletionMenu::addInfo(QString info) {
     mTextBrowser->setText(info);
