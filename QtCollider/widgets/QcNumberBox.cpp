@@ -27,6 +27,7 @@
 #include <QMouseEvent>
 #include <QApplication>
 
+#include <cmath>
 #include <math.h>
 #include <qmath.h>
 
@@ -310,10 +311,15 @@ void QcNumberBox::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void QcNumberBox::wheelEvent(QWheelEvent* event) {
-    const auto delta = event->angleDelta().y();
-    if (scroll && isReadOnly() && _valueType == Number && delta != 0) {
-        stepBy(delta > 0 ? 1 : -1, scrollStep);
-        Q_EMIT(action());
+    if (scroll && isReadOnly() && _valueType == Number) {
+        double delta = event->angleDelta().y() / 120.f;
+        if (event->inverted())
+            delta *= -1.;
+        scrollRemainder = std::modf(delta + scrollRemainder, &delta);
+        if (delta > 0. || delta < 0) {
+            stepBy(delta, scrollStep);
+            Q_EMIT(action());
+        }
     }
 }
 
