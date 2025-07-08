@@ -138,7 +138,7 @@ void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, b
 
 void AudioStatusBox::wheelEvent(QWheelEvent* event) {
     if (!event->angleDelta().isNull()) {
-        if (event->angleDelta().y() > 0)
+        if (event->angleDelta().y() > 0 || event->inverted())
             emit increaseVolume();
         else
             emit decreaseVolume();
