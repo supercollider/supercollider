@@ -14,6 +14,9 @@ list::
 ## Even though these are not as much of user-facing changes, there were countless structural upgrades: we migrated to qt6, added and improved tests, updated 3rd-party libraries, updated the build system for most recent build tools, and adapted a new organizational structure for development.
 ::
 
+Changes to UGens, potentially affecting their output values, are now documented
+in detail in a separate document: link::Guides/UGen-Changelog::.
+
 section:: Known Issues
 
 list::
@@ -205,6 +208,9 @@ list::
 ::
 
 section::  UGens
+
+See also link::Guides/UGen-Changelog#Version 3.14:: for a more detailed
+documentation of changes affecting UGens.
 
 subsection:: Added and Changed
 
