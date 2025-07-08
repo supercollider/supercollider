@@ -71,6 +71,31 @@ void QcKnob::mouseMoveEvent(QMouseEvent* e) {
     _prevPos = e->pos();
 }
 
+static const double PI = 3.14159265358979323846264338327950288419717;
+
+void QcKnob::wheelEvent(QWheelEvent* e) {
+    const double size = qMin(width(), height()) * PI;
+    const double pixelStep = size > 0. ? 1. / size : 0.;
+    double step = qMax(_step, pixelStep);
+    // use angleDelta for X11 (advice from Qt docs)
+    const bool isX11 = QGuiApplication::platformName() == "xcb";
+    // angleDelta: relative to 360deg; pixelDelta: relative to widget size
+    double scrollRatio =
+        (e->pixelDelta().isNull() || isX11) ? e->angleDelta().y() / 8. / 360. : e->pixelDelta().y() * pixelStep;
+
+    // note: on some platforms (x11, wayland) "natural scrolling" is not detectable: inverted() returns always false
+    if (e->inverted())
+        scrollRatio *= -1;
+
+    // convert ratio to number of steps (totSteps = 1/step)
+    double numSteps = scrollRatio / step;
+    modifyStep(&step);
+    // accumulate fractional numSteps to help scrolling through big steps
+    scrollRemainder = std::modf(numSteps + scrollRemainder, &numSteps);
+    setValue(_value + numSteps * step);
+    Q_EMIT(action());
+}
+
 void QcKnob::paintEvent(QPaintEvent*) {
     using namespace QtCollider::Style;
     using QtCollider::Style::Ellipse;
