@@ -77,6 +77,56 @@ void QcSlider2D::mousePressEvent(QMouseEvent* ev) {
     setValue(val);
 }
 
+QSizeF QcSlider2D::pixelStep() const {
+    using namespace QtCollider::Style;
+
+    QRect contRect(sunkenContentsRect(rect()));
+
+    QSizeF range(contRect.width(), contRect.height());
+    range -= _thumbSize;
+
+    return QSizeF(range.width() > 0 ? 1 / range.width() : 0, range.height() > 0 ? 1 / range.height() : 0);
+}
+
+void QcSlider2D::wheelEvent(QWheelEvent* e) {
+    const QSizeF pxStep = pixelStep();
+    double stepX = qMax(_step, pxStep.width());
+    double stepY = qMax(_step, pxStep.height());
+    // use angleDelta for X11 (advice from Qt docs)
+    const bool isX11 = QGuiApplication::platformName() == "xcb";
+    // angleDelta: relative to 360deg; pixelDelta: relative to widget size
+    double scrollRatioX, scrollRatioY;
+    if (e->pixelDelta().isNull() || isX11) {
+        const double fullRotation = 8. * 360.;
+        scrollRatioX = e->angleDelta().x() / fullRotation;
+        scrollRatioY = e->angleDelta().y() / fullRotation;
+    } else {
+        scrollRatioX = e->pixelDelta().x() * pxStep.width();
+        scrollRatioY = e->pixelDelta().y() * pxStep.height();
+    }
+
+    if (e->inverted()) {
+        scrollRatioY *= -1;
+    } else {
+        // Normally horiz scroll produces positive delta values if the wheel is moved to the left (Qt docs)
+        scrollRatioX *= -1.;
+    };
+
+    // convert ratio to number of steps (totSteps = 1/step)
+    QSizeF numSteps(scrollRatioX / stepX, scrollRatioY / stepY);
+    modifyStep(&stepX);
+    modifyStep(&stepY);
+    // accumulate fractional numSteps to help scrolling through big steps
+    numSteps += scrollRemainder;
+    double dx, dy;
+    scrollRemainder.setWidth(std::modf(numSteps.width(), &dx));
+    scrollRemainder.setHeight(std::modf(numSteps.height(), &dy));
+
+    QPointF newValue(_x + dx * stepX, _y + dy * stepY);
+    setValue(newValue);
+    Q_EMIT(action());
+}
+
 void QcSlider2D::keyPressEvent(QKeyEvent* e) {
     double step = _step;
     switch (e->key()) {
