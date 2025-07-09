@@ -21,6 +21,7 @@
 
 #include "QcSlider.h"
 #include "../QcWidgetFactory.h"
+#include "widgets/QcAbstractStepValue.h"
 
 #include <QMouseEvent>
 #include <QKeyEvent>
@@ -115,19 +116,8 @@ void QcSlider::mouseMoveEvent(QMouseEvent* e) {
 
 void QcSlider::wheelEvent(QWheelEvent* e) {
     double step = qMax(_step, pixelStep());
-    // use angleDelta for X11 (advice from Qt docs)
-    const bool isX11 = QGuiApplication::platformName() == "xcb";
-    // angleDelta: relative to 360deg; pixelDelta: relative to widget size
-    const QPointF scrollRatioXY = (e->pixelDelta().isNull() || isX11) ? e->angleDelta().toPointF() / 8. / 360.
-                                                                      : e->pixelDelta().toPointF() * pixelStep();
 
-    // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
-    double scrollRatio = e->modifiers().testFlag(Qt::AltModifier) ? scrollRatioXY.x() : scrollRatioXY.y();
-
-    // note: on some platforms (x11, wayland) "natural scrolling" is not detectable: inverted() returns always false
-    if (e->inverted())
-        scrollRatio *= -1;
-
+    const double scrollRatio = getNormalizedScrollRatio(e, pixelStep()).y();
     // convert ratio to number of steps (totSteps = 1/step)
     double numSteps = scrollRatio / step;
     modifyStep(&step);

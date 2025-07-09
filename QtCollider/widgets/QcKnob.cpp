@@ -22,6 +22,7 @@
 #include "QcKnob.hpp"
 #include "../QcWidgetFactory.h"
 #include "../style/routines.hpp"
+#include "widgets/QcAbstractStepValue.h"
 
 #include <QMouseEvent>
 #include <QPainter>
@@ -77,20 +78,9 @@ void QcKnob::wheelEvent(QWheelEvent* e) {
     const double size = qMin(width(), height()) * PI;
     const double pixelStep = size > 0. ? 1. / size : 0.;
     double step = qMax(_step, pixelStep);
-    // use angleDelta for X11 (advice from Qt docs)
-    const bool isX11 = QGuiApplication::platformName() == "xcb";
-    // angleDelta: relative to 360deg; pixelDelta: relative to widget size
-    const QPointF scrollRatioXY = (e->pixelDelta().isNull() || isX11) ? e->angleDelta().toPointF() / 8. / 360.
-                                                                      : e->pixelDelta().toPointF() * pixelStep;
 
-    // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
-    double scrollRatio = e->modifiers().testFlag(Qt::AltModifier) ? scrollRatioXY.x() : scrollRatioXY.y();
+    const double scrollRatio = getNormalizedScrollRatio(e, pixelStep).y();
 
-    // note: on some platforms (x11, wayland) "natural scrolling" is not detectable: inverted() returns always false
-    if (e->inverted())
-        scrollRatio *= -1;
-
-    // convert ratio to number of steps (totSteps = 1/step)
     double numSteps = scrollRatio / step;
     modifyStep(&step);
     // accumulate fractional numSteps to help scrolling through big steps

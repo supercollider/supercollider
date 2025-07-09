@@ -22,6 +22,7 @@
 #include "QcSlider2D.h"
 #include "../QcWidgetFactory.h"
 #include "../style/routines.hpp"
+#include "widgets/QcAbstractStepValue.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -92,35 +93,10 @@ void QcSlider2D::wheelEvent(QWheelEvent* e) {
     const QSizeF pxStep = pixelStep();
     double stepX = qMax(_step, pxStep.width());
     double stepY = qMax(_step, pxStep.height());
-    // use angleDelta for X11 (advice from Qt docs)
-    const bool isX11 = QGuiApplication::platformName() == "xcb";
-    // angleDelta: relative to 360deg; pixelDelta: relative to widget size
     double scrollRatioX, scrollRatioY;
-    if (e->pixelDelta().isNull() || isX11) {
-        const double fullRotation = 8. * 360.;
-        scrollRatioX = e->angleDelta().x() / fullRotation;
-        scrollRatioY = e->angleDelta().y() / fullRotation;
-    } else {
-        scrollRatioX = e->pixelDelta().x() * pxStep.width();
-        scrollRatioY = e->pixelDelta().y() * pxStep.height();
-    }
-
-    // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
-    if (e->modifiers().testFlag(Qt::AltModifier)) {
-        const auto tmp = scrollRatioX;
-        scrollRatioX = scrollRatioY;
-        scrollRatioY = tmp;
-    }
-
-    if (e->inverted()) {
-        scrollRatioY *= -1;
-    } else {
-        // Normally horiz scroll produces positive delta values if the wheel is moved to the left (Qt docs)
-        scrollRatioX *= -1.;
-    };
-
+    const auto scrollRatio = getNormalizedScrollRatio(e, pxStep);
     // convert ratio to number of steps (totSteps = 1/step)
-    QSizeF numSteps(scrollRatioX / stepX, scrollRatioY / stepY);
+    QSizeF numSteps(scrollRatio.x() / stepX, scrollRatio.y() / stepY);
     modifyStep(&stepX);
     modifyStep(&stepY);
     // accumulate fractional numSteps to help scrolling through big steps

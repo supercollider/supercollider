@@ -312,11 +312,7 @@ void QcNumberBox::mouseMoveEvent(QMouseEvent* event) {
 
 void QcNumberBox::wheelEvent(QWheelEvent* event) {
     if (scroll && isReadOnly() && _valueType == Number) {
-        // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
-        double delta = event->modifiers().testFlag(Qt::AltModifier) ? event->angleDelta().x() : event->angleDelta().y();
-        delta /= 120.;
-        if (event->inverted())
-            delta *= -1.;
+        double delta = getNormalizedScrollRatio(event, 0).y() * 3.;
         scrollRemainder = std::modf(delta + scrollRemainder, &delta);
         if (delta > 0. || delta < 0) {
             stepBy(delta, scrollStep);
