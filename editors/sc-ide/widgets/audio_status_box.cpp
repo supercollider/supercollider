@@ -137,8 +137,10 @@ void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, b
 }
 
 void AudioStatusBox::wheelEvent(QWheelEvent* event) {
-    if (!event->angleDelta().isNull()) {
-        if (event->angleDelta().y() > 0 || event->inverted())
+    // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
+    double delta = event->modifiers().testFlag(Qt::AltModifier) ? event->angleDelta().x() : event->angleDelta().y();
+    if (delta) {
+        if (delta > 0 || event->inverted())
             emit increaseVolume();
         else
             emit decreaseVolume();

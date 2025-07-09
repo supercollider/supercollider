@@ -105,6 +105,13 @@ void QcSlider2D::wheelEvent(QWheelEvent* e) {
         scrollRatioY = e->pixelDelta().y() * pxStep.height();
     }
 
+    // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
+    if (e->modifiers().testFlag(Qt::AltModifier)) {
+        const auto tmp = scrollRatioX;
+        scrollRatioX = scrollRatioY;
+        scrollRatioY = tmp;
+    }
+
     if (e->inverted()) {
         scrollRatioY *= -1;
     } else {
