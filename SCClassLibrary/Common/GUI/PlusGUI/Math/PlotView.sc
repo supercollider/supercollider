@@ -518,7 +518,47 @@ Plot {
 		this.dots(x, y, radius, fill: true);
 	}
 
+	dlevels { |x, y, radius|
+		this.levels(x, y);
+		this.dots(x, y, radius, fill: true);
+	}
+
+	plevels { |x, y, radius|
+		this.levels(x, y);
+		this.dots(x, y, radius, fill: false);
+	}
+
+	dlevelsCentered { |x, y, radius|
+		this.levelsCentered(x, y);
+		this.dots(x, y, radius, fill: true);
+	}
+
+	plevelsCentered { |x, y, radius|
+		this.levelsCentered(x, y);
+		this.dots(x, y, radius, fill: false);
+	}
+
 	levels { |x, y|
+		Pen.smoothing_(false);
+		y.size.do { |i|
+			Pen.moveTo(Point(x[i], y[i]));
+			Pen.lineTo(Point(x[i + 1] ?? { plotBounds.right }, y[i]));
+		};
+		Pen.stroke
+	}
+
+	psteps { |x, y, radius|
+		this.steps(x, y);
+		this.dots(x, y, radius, fill: false);
+	}
+
+	dsteps { |x, y, radius|
+		this.steps(x, y);
+		this.dots(x, y, radius, fill: true);
+	}
+
+
+	levelsCentered { |x, y|
 		Pen.smoothing_(false);
 		y.size.do { |i|
 			Pen.moveTo(Point(x[i] - binWidthPx, y[i]));
@@ -531,8 +571,8 @@ Plot {
 		Pen.smoothing_(false);
 		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
-			Pen.lineTo(x[i] @ y[i]);
-			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			Pen.lineTo(Point(x[i], y[i]));
+			Pen.lineTo(Point(x[i + 1] ?? { plotBounds.right }, y[i]));
 		};
 		Pen.stroke;
 	}
@@ -667,11 +707,11 @@ Plot {
 	}
 
 	hasSteplikeDisplay {
-		^#[\levels, \steps, \bars].includesAny(plotMode)
+		^#[\levels, \plevels, \dlevels, \steps, \psteps, \dsteps, \bars].includesAny(plotMode)
 	}
 
 	hasCenteredSteplikeDisplay {
-		^#[\levels, \bars].includesAny(plotMode)
+		^#[\levelsCentered, \plevelsCentered, \dlevelsCentered, \bars].includesAny(plotMode)
 	}
 
 	getIndex { |x|
@@ -743,14 +783,24 @@ Plot {
 
 
 Plotter {
+	classvar <modes = #[ // valid modes, order determines hotkey switching order
+		\points, \dots,
+		\lines, \linear, \plines, \dlines,
+		\levels, \dlevels, \plevels,
+		\levelsCentered, \dlevelsCentered, \plevelsCentered,
+		\stems, \pstems, \dstems,
+		\steps, \psteps, \dsteps,
+		\filled, \pfilled, \dfilled,
+		\bars
+	];
 
-	var <>name;
+	var <>name; // copyArgs
 	var <>bounds, <>parent;
 	var <value, <data, <domain;
 	var <plots, <specs, <domainSpecs, plotColor, <domainSpecsAreForSteplikeData = false;
 	var <cursorPos, plotMode, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
-	var modes, <interactionView;
+	var modeIterator, <interactionView;
 	var <editPlotIndex, <editPos;
 	var <>drawFunc, <>editFunc;
 	var <showUnits = true, <unitLocation = \axis; // \ticks or \axis
@@ -761,8 +811,15 @@ Plotter {
 	}
 
 	makeWindow { |argParent, argBounds|
+		var modesTmp, rmvIdx;
+
 		parent = argParent ? parent;
 		bounds = argBounds ? bounds;
+
+		modesTmp = modes.copy;
+		rmvIdx = modesTmp.indexOf(\lines); // don't need to iterate over synonyms
+		rmvIdx !? { modesTmp.removeAt(rmvIdx) };
+		modeIterator = modesTmp.iter.loop;
 
 		if(parent.isNil) {
 			parent = Window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
@@ -779,8 +836,6 @@ Plotter {
 			interactionView.drawFunc = { this.draw };
 		};
 		this.prSetUpInteractionView;
-
-		modes = [\points, \dots, \levels, \steps, \lines, \plines, \dlines, \stems, \pstems, \dstems, \filled, \pfilled, \dfilled, \bars].iter.loop;
 		this.plotMode = \linear;
 		this.plotColor = GUI.skins.plot.plotColor;
 		// at this point no values are set, so no Plots have been created
@@ -880,7 +935,7 @@ Plotter {
 					},
 					// toggle plot mode
 					$m, {
-						this.plotMode = modes.next;
+						this.plotMode = modeIterator.next;
 					},
 					// toggle editing
 					$e, {
@@ -1104,6 +1159,12 @@ Plotter {
 
 	plotMode_ { |modes|
 		plotMode = modes.asArray;
+		plotMode.do{ |mode|
+			if(this.class.modes.includes(mode).not, {
+				"% is not a valid plotMode, valid plot modes are: %".format(mode, this.class.modes).warn;
+				^this
+			})
+		};
 		plots.do { |plot, i|
 			// rotate to ensure proper behavior with superpose
 			plot.plotMode_(plotMode.rotate(i.neg))
@@ -1455,7 +1516,7 @@ Plotter {
 	plot { |name, bounds, minval, maxval, separately = false, parent|
 		var plotter, action;
 
-		if(server.warnIfNotRunning(thisMethod)) { ^nil };		
+		if(server.warnIfNotRunning(thisMethod)) { ^nil };
 
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
 
