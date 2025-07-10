@@ -61,12 +61,13 @@ static QPointF getNormalizedScrollRatio(const QWheelEvent* e, QSizeF pixelRatio)
     if (e->modifiers().testFlag(Qt::AltModifier) && (isX11 || platform == "wayland" || platform == "windows"))
         ratio = ratio.transposed();
 
-    // Normally horiz scroll produces positive delta values if the wheel is moved to the left (Qt docs)
-    ratio.setX(ratio.x() * -1);
-
     // Note: on some platforms (x11, wayland) "natural scrolling" is not detectable: inverted() returns always false
-    if (e->inverted())
+    if (e->inverted()) {
         ratio.setY(ratio.y() * -1);
+    } else {
+        // Normally horiz scroll produces positive delta values if the wheel is moved to the left (Qt docs)
+        ratio.setX(ratio.x() * -1);
+    };
 
     return ratio;
 }

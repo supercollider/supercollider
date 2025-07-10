@@ -95,6 +95,5 @@ private:
     QColor _knobColor;
     QtCollider::ImagePainter _backgroundImage;
 
-    QSizeF pixelStep() const;
     QSizeF scrollRemainder;
 };
