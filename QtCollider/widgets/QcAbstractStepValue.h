@@ -41,37 +41,34 @@ private:
     double _altScale;
 };
 
-static QPointF getNormalizedScrollRatio(const QWheelEvent* e, QSizeF pixelRatio) {
+static QPointF getScrollSteps(const QWheelEvent* e) {
+    // use pixelDelta on systems that support it, except x11 (Qt docs say it's unreliable)
     const auto platform = QGuiApplication::platformName();
-    const bool isX11 = platform == "xcb";
-    // angleDelta: relative to 360deg; pixelDelta: relative to widget size
-    QPointF ratio;
-    // Force using angleDelta on X11 (advice from Qt docs)
-    // the check for pixelRatio.isEmpty is to allow forcing angleDelta by passing pixelRatio = 0
-    if (e->pixelDelta().isNull() || pixelRatio.isEmpty() || isX11) {
-        ratio.setX(e->angleDelta().x() / 8. / 360.);
-        ratio.setY(e->angleDelta().y() / 8. / 360.);
-    } else {
-        ratio.setX(e->pixelDelta().x() * pixelRatio.width());
-        ratio.setY(e->pixelDelta().y() * pixelRatio.height());
-    }
+    const bool isX11 = platform == "x11";
+    // angleDelta: map 15deg/step, pixelDelta: map 10px/step (found empirically to match angleDelta)
+    QPointF steps =
+        (e->pixelDelta().isNull() || isX11) ? QPointF(e->angleDelta()) / 120. : QPointF(e->pixelDelta()) / 10.;
+
+    // Use angleDelta (and not pixelDelta) for consistency with SC versions before 3.14
+    // QPointF ratio(e->angleDelta().x() / 120., e->angleDelta().y() / 120.);
+
+    if (!e->pixelDelta().isNull())
+        printf("scroll: angleDelta/12(%d,%d) pxDelta(%d,%d) px/step(%f) steps(%f,%f)\n", (e->angleDelta() / 12.).x(),
+               (e->angleDelta() / 12.).y(), e->pixelDelta().x(), e->pixelDelta().y(),
+               (e->pixelDelta().y() != 0) ? e->pixelDelta().y() * 120. / e->angleDelta().y() : 0, steps.x(), steps.y());
 
     // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
     // only on linux (x11 and wayland) and Windows, not on macos
     if (e->modifiers().testFlag(Qt::AltModifier) && (isX11 || platform == "wayland" || platform == "windows"))
-        ratio = ratio.transposed();
+        steps = steps.transposed();
 
     // Note: on some platforms (x11, wayland) "natural scrolling" is not detectable: inverted() returns always false
     if (e->inverted()) {
-        ratio.setY(ratio.y() * -1);
+        steps.setY(steps.y() * -1);
     } else {
         // Normally horiz scroll produces positive delta values if the wheel is moved to the left (Qt docs)
-        ratio.setX(ratio.x() * -1);
+        steps.setX(steps.x() * -1);
     };
 
-    return ratio;
-}
-
-static QPointF getNormalizedScrollRatio(const QWheelEvent* e, double pixelRatio) {
-    return getNormalizedScrollRatio(e, QSizeF(pixelRatio, pixelRatio));
+    return steps;
 }

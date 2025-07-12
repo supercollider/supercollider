@@ -86,18 +86,14 @@ void QcSlider2D::wheelEvent(QWheelEvent* e) {
 
     double stepX = qMax(_step, pxStep.width());
     double stepY = qMax(_step, pxStep.height());
-
-    double scrollRatioX, scrollRatioY;
-    const auto scrollRatio = getNormalizedScrollRatio(e, pxStep);
-    // convert ratio to number of steps (totSteps = 1/step)
-    QSizeF numSteps(scrollRatio.x() / stepX, scrollRatio.y() / stepY);
+    QPointF numSteps = getScrollSteps(e);
     modifyStep(&stepX);
     modifyStep(&stepY);
+
     // accumulate fractional numSteps to help scrolling through big steps
-    numSteps += scrollRemainder;
-    double dx, dy;
-    scrollRemainder.setWidth(std::modf(numSteps.width(), &dx));
-    scrollRemainder.setHeight(std::modf(numSteps.height(), &dy));
+    double dx = numSteps.x(), dy = numSteps.y();
+    scrollRemainder.setWidth(std::modf(dx + scrollRemainder.width(), &dx));
+    scrollRemainder.setHeight(std::modf(dy + scrollRemainder.height(), &dy));
 
     QPointF newValue(_x + dx * stepX, _y + dy * stepY);
     setValue(newValue);

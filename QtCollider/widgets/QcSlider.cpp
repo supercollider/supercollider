@@ -116,10 +116,7 @@ void QcSlider::mouseMoveEvent(QMouseEvent* e) {
 
 void QcSlider::wheelEvent(QWheelEvent* e) {
     double step = qMax(_step, pixelStep());
-
-    const double scrollRatio = getNormalizedScrollRatio(e, pixelStep()).y();
-    // convert ratio to number of steps (totSteps = 1/step)
-    double numSteps = scrollRatio / step;
+    double numSteps = getScrollSteps(e).y();
     modifyStep(&step);
     // accumulate fractional numSteps to help scrolling through big steps
     scrollRemainder = std::modf(numSteps + scrollRemainder, &numSteps);

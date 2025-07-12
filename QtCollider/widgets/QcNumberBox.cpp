@@ -312,7 +312,7 @@ void QcNumberBox::mouseMoveEvent(QMouseEvent* event) {
 
 void QcNumberBox::wheelEvent(QWheelEvent* event) {
     if (scroll && isReadOnly() && _valueType == Number) {
-        double delta = getNormalizedScrollRatio(event, 0).y() * 3.;
+        double delta = getScrollSteps(event).y();
         scrollRemainder = std::modf(delta + scrollRemainder, &delta);
         if (delta > 0. || delta < 0) {
             stepBy(delta, scrollStep);
