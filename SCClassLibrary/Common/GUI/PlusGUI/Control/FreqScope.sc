@@ -376,7 +376,7 @@ FreqScope {
 			window = Window(
 				"Freq Analyzer",
 				rect.resizeBy(pad[0] + pad[1] + 4, pad[2] + pad[3] + 4)
-				.moveTo(5, Window.availableBottom)
+				.moveTo(5, Window.availableBottom + 20)
 				, false
 			);
 
