@@ -72,6 +72,40 @@ method::findRespondingMethodFor
 
 As above, but climb the class tree to see if the method is inherited from a superclass. If not found, return nil.
 
+method::respondingMethods
+
+Return a list of methods for the selectors that an object of this class responds to.
+
+method::instancesRespondTo
+
+Return true if the message selector or array of message selectors are understood by objects of this class.
+
+code::
+Collection.instancesRespondTo(\flop); // false
+Set.instancesRespondTo(\clear); // true
+Set.instancesRespondTo([\flop, \clear]) // false: not both
+::
+
+method::findRespondingSubclasses
+
+Return a list of all subclasses whose instances respond to the message selector or all message selector in an array.
+
+code::
+Collection.findRespondingSubclasses(\flop); // a long list
+Set.findRespondingSubclasses(\clear);
+Set.findRespondingSubclasses([\flop, \clear]); // not both
+::
+
+method::findRespondingUpperSubclasses
+
+Return a list of all classes down the class tree starting from the receiver, whose instances respond to the message selector or all message selector in an array.
+
+code::
+Collection.findRespondingUpperSubclasses(\flop);
+Set.findRespondingUpperSubclasses(\clear);
+Set.findRespondingUpperSubclasses([\flop, \clear]); // not both
+::
+
 method::dumpAllMethods
 
 Post all instance methods which instances of this class responds too, including inherited ones. code::this.class.dumpAllMethods:: will post all class methods which this class responds to.
@@ -91,6 +125,7 @@ Post all the methods defined by this Class and their arguments.
 method::dumpFullInterface
 
 Post all the class and instance methods that this class responds to (i.e. those defined in this class and those inherited by it).
+
 
 method::help
 
