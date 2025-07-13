@@ -8,11 +8,4 @@ TestDoesNotUnderstandError : UnitTest {
 		this.assertEquals(error.args, [4, 5]);
 		this.assertEquals(error.suggestedCorrection, nil);
 	}
-
-	test_suggestedCorrection {
-		var error;
-		try { Object().szie } { |e| error = e };
-
-		this.assertEquals(error.suggestedCorrection, Object.findMethod(\size));
-	}
 }

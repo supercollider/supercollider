@@ -129,8 +129,7 @@ SubclassResponsibilityError : MethodError {
 		^super.new(nil, receiver).method_(method).class_(class)
 	}
 	errorString {
-		^"ERROR: '" ++ method.name ++ "' should have been implemented by "
-			++ class.name ++ "."
+		^"ERROR: '" ++ method.name ++ "' should have been implemented by " ++ class.name ++ "."
 	}
 }
 
@@ -141,8 +140,7 @@ ShouldNotImplementError : MethodError {
 	}
 	errorString {
 		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name
-			++ "' Message not valid for this subclass: "
-			++ class.name ++ "."
+		++ "' Message not valid for this subclass: " ++ class.name ++ "."
 	}
 }
 
@@ -157,27 +155,39 @@ DoesNotUnderstandError : MethodError {
 	}
 
 	init {
-		var methods, methodNames, editDistances, minIndex, lowerCaseSelector;
-
-		if(receiver.notNil) {
-			methods = receiver.class.superclasses.add(receiver.class).collect(_.methods).reduce('++');
-			methodNames = methods.collect { |x| x.name.asString.toLower };
-			// we compare lower-case versions to prioritize capitalization mistakes
-			lowerCaseSelector = selector.asString.toLower;
-			editDistances = methodNames.collect(_.editDistance(lowerCaseSelector));
-			minIndex = editDistances.minIndex;
-			// Edit distance of 3 chosen arbitrarily; also, filter out completely dissimilar matches
-			// to avoid unhelpful suggestions.
-			if(editDistances[minIndex] <= 3 and: { methodNames[minIndex].similarity(lowerCaseSelector) > 0 }) {
-				suggestedCorrection = methods[minIndex];
-				suggestion = "\nPerhaps you misspelled '%', or meant to call '%' on another receiver?"
-				.format(suggestedCorrection.name, selector);
+		var methodSuggestions, classSuggestions, plural;
+		if(receiver.notNil and: { selector.notNil }) {
+			methodSuggestions = this.methodSuggestions.keep(4);
+			if(methodSuggestions.notEmpty) {
+				plural = if(methodSuggestions.size > 1) { "s" } { "" };
+				suggestedCorrection = methodSuggestions.first;
+				methodSuggestions = methodSuggestions.join(", ");
+				suggestion = suggestion ++
+				"\nClosest matching message% found for the receiver:\n\t%".format(plural, methodSuggestions);
+			};
+			classSuggestions = this.classSuggestions.keep(4);
+			if(classSuggestions.notEmpty) {
+				plural = if(classSuggestions.size > 1) { "es" } { "" };
+				classSuggestions = classSuggestions.join(", ");
+				suggestion = suggestion ++
+				"\nClosest matching class% found for the selector:\n\t%".format(plural, classSuggestions)
 			}
 		}
 	}
-	errorString {
-		^"ERROR: Message '" ++ selector ++ "' not understood." ++ suggestion
+
+	methodSuggestions {
+		var names = receiver.class.respondingMethods.collect(_.name);
+		^selector.asString.findSimilarIn(names, maxEditDistance: 2);
 	}
+	classSuggestions {
+		var names = Object.findRespondingSubclasses(selector).collect(_.name);
+		^receiver.class.name.asString.findSimilarIn(names, maxEditDistance: 5);
+	}
+
+	errorString {
+		^"ERROR: Message '" ++ selector ++ "' not understood."
+	}
+
 	reportError {
 		this.errorString.postln;
 		"RECEIVER:\n".post;
@@ -192,7 +202,9 @@ DoesNotUnderstandError : MethodError {
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		// this.adviceLink.postln;
-		"^^ %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
+		"\n^^ %\nRECEIVER: %\n".postf(this.errorString, receiver);
+		suggestion.postln;
+		"\n\n\n".post;
 	}
 	adviceLinkPage {
 		^"%#%".format(this.class.name, selector)
