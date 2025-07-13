@@ -21,12 +21,10 @@
 
 #include "QcSlider.h"
 #include "../QcWidgetFactory.h"
-#include "widgets/QcAbstractStepValue.h"
 
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QWheelEvent>
-#include <qnamespace.h>
 
 QC_DECLARE_QWIDGET_FACTORY(QcSlider);
 

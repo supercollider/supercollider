@@ -22,7 +22,6 @@
 #include "QcSlider2D.h"
 #include "../QcWidgetFactory.h"
 #include "../style/routines.hpp"
-#include "widgets/QcAbstractStepValue.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>

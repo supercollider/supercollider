@@ -22,7 +22,6 @@
 #include "QcKnob.hpp"
 #include "../QcWidgetFactory.h"
 #include "../style/routines.hpp"
-#include "widgets/QcAbstractStepValue.h"
 
 #include <QMouseEvent>
 #include <QPainter>

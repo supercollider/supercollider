@@ -49,14 +49,6 @@ static QPointF getScrollSteps(const QWheelEvent* e) {
     QPointF steps =
         (e->pixelDelta().isNull() || isX11) ? QPointF(e->angleDelta()) / 120. : QPointF(e->pixelDelta()) / 10.;
 
-    // Use angleDelta (and not pixelDelta) for consistency with SC versions before 3.14
-    // QPointF ratio(e->angleDelta().x() / 120., e->angleDelta().y() / 120.);
-
-    if (!e->pixelDelta().isNull())
-        printf("scroll: angleDelta/12(%d,%d) pxDelta(%d,%d) px/step(%f) steps(%f,%f)\n", (e->angleDelta() / 12.).x(),
-               (e->angleDelta() / 12.).y(), e->pixelDelta().x(), e->pixelDelta().y(),
-               (e->pixelDelta().y() != 0) ? e->pixelDelta().y() * 120. / e->angleDelta().y() : 0, steps.x(), steps.y());
-
     // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
     // only on linux (x11 and wayland) and Windows, not on macos
     if (e->modifiers().testFlag(Qt::AltModifier) && (isX11 || platform == "wayland" || platform == "windows"))
