@@ -297,7 +297,7 @@ code::
 7.exit; // this line stops the interpreter and returns 7 as exit code
 ::
 note::
-See the link::Classes/Process#examples#Examples:: section in the link::Classes/Process:: class documentation for information on how an SCD can be executed and exited in CLI environments such as terminal and command prompt windows.
+See the link::Classes/Process#examples#Examples:: section in the link::Classes/Process:: class documentation for information on how a supercollider file can be executed and exited in command line interfaces such as terminal and command prompt windows.
 ::
 
 method:: generate
