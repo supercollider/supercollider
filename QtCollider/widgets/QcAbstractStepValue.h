@@ -44,8 +44,9 @@ private:
 static QPointF getScrollSteps(const QWheelEvent* e) {
     // use pixelDelta on systems that support it, except x11 (Qt docs say it's unreliable)
     const auto platform = QGuiApplication::platformName();
-    const bool isX11 = platform == "x11";
-    // angleDelta: map 15deg/step, pixelDelta: map 10px/step (found empirically to match angleDelta)
+    const bool isX11 = platform == "xcb";
+    // angleDelta: map 15deg/step (conventional)
+    // pixelDelta: map 10px/step (found empirically to match angleDelta on wayland)
     QPointF steps =
         (e->pixelDelta().isNull() || isX11) ? QPointF(e->angleDelta()) / 120. : QPointF(e->pixelDelta()) / 10.;
 
