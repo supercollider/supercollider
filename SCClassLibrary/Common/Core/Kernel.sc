@@ -40,7 +40,7 @@ Class {
 			classesInited.add(aClass);
 
 			if(aClass.isMetaClass.not and: { aClass.class.findMethod(\initClass).notNil }, {
-					aClass.initClass;
+				aClass.initClass;
 			});
 
 			if(aClass.subclasses.notNil,{
@@ -73,6 +73,19 @@ Class {
 		};
 		^nil
 	}
+	respondingMethods {
+		var all = Array.new, selectors = IdentitySet.new;
+		this.superclassesDo { arg class;
+			class.methods.do { arg item;
+				var name = item.name;
+				if(selectors.includes(name).not) {
+					all = all.add(item);
+					selectors.add(name)
+				}
+			}
+		};
+		^all
+	}
 	superclassesDo { arg function;
 		var class = this;
 		while { class.notNil } {
@@ -88,7 +101,7 @@ Class {
 	}
 
 	dumpClassSubtree {
-		 _DumpClassSubtree
+		_DumpClassSubtree
 		^this.primitiveFailed
 	}
 	dumpInterface {
@@ -169,6 +182,32 @@ Class {
 			references = class.findReferences(aSymbol, references);
 		});
 		^references;
+	}
+	findRespondingSubclasses { arg selector;
+		var list = [];
+		subclasses.do { arg class;
+			if(class.instancesRespondTo(selector)) {
+				list = list.add(class);
+			};
+			list = list.addAll(class.findRespondingSubclasses(selector))
+		};
+		^list
+	}
+	findRespondingUpperSubclasses { arg selector;
+		var list = [];
+		if(this.instancesRespondTo(selector)) { ^list.add(this) };
+		subclasses.do { arg class;
+			if(class.instancesRespondTo(selector)) {
+				list = list.add(class);
+			} {
+				list = list.addAll(class.findRespondingUpperSubclasses(selector))
+			}
+		};
+		^list
+	}
+	instancesRespondTo { arg selector;
+		_InstancesOfClassRespondTo
+		^this.primitiveFailed
 	}
 	allSubclasses {
 		var list;
@@ -710,8 +749,8 @@ Interpreter {
 		protect {
 			result = this.compileFile(pathName).valueArray(args)
 		} { |exception|
-				exception !? { exception.path = pathName };
-				thisProcess.nowExecutingPath = saveExecutingPath
+			exception !? { exception.path = pathName };
+			thisProcess.nowExecutingPath = saveExecutingPath
 		};
 		^result
 	}
@@ -740,7 +779,7 @@ Interpreter {
 		// Do not edit this method!
 
 		{}	// this forces the compiler to generate a heap allocated frame rather than
-			// a frame on the stack
+		// a frame on the stack
 	}
 	shallowCopy { ^this }
 }
