@@ -114,7 +114,7 @@ This change makes a number of new things possible, e.g.
 #### New classes
 
 - Add `ExampleFiles` class by @capital-G in https://github.com/supercollider/supercollider/pull/6685 and @tedmoore https://github.com/supercollider/supercollider/pull/6720
-- `NodeTreeView` class. Server.plotTree creates an  instance of it. by @prko and @dyfer in https://github.com/supercollider/supercollider/pull/6282, https://github.com/supercollider/supercollider/pull/6834, https://github.com/supercollider/supercollider/pull/6913, https://github.com/supercollider/supercollider/pull/6917, https://github.com/supercollider/supercollider/pull/6914
+- `NodeTreeView` class. Server.plotTree creates an  instance of it. by @prko and @dyfer in https://github.com/supercollider/supercollider/pull/6282, https://github.com/supercollider/supercollider/pull/6834, https://github.com/supercollider/supercollider/pull/6913, https://github.com/supercollider/supercollider/pull/6917, https://github.com/supercollider/supercollider/pull/6914, https://github.com/supercollider/supercollider/pull/6948
 
 #### New methods
 
@@ -135,6 +135,7 @@ This change makes a number of new things possible, e.g.
 - `bounds` argument for `.plotTree` in https://github.com/supercollider/supercollider/pull/6294
 - `clock` argument (default: `AppClock`) for waitForBoot and doWhenDone by @prko in https://github.com/supercollider/supercollider/pull/6198
 - `position` argument for Server `meter` to set  position (width and height are automatically calculated) by @prko in https://github.com/supercollider/supercollider/pull/6283
+- Add kwargs for Pbindef and PbindProxy by @telephon in https://github.com/supercollider/supercollider/pull/6977
 
 ### Class library: Changed
 
@@ -195,7 +196,8 @@ This change makes a number of new things possible, e.g.
 - SCLang, UnitTests: standardise nan & inf printing across platforms by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6867
 - SCLang: tidy duplicated error message by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6299
 - Use std::string for set and get environment variables -  by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6216
-- Increase UDP socket buffer size by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564
+- Increase UDP socket buffer size and fallback to 1MB by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564 and https://github.com/supercollider/supercollider/pull/6989
+- Adjust touchpad and mouse wheel scrolling by @elgiano in https://github.com/supercollider/supercollider/pull/7030
 
 ### sclang: Fixed
 
@@ -220,6 +222,7 @@ This change makes a number of new things possible, e.g.
 - Update hidapi external library checkout to fix HID on Linux by @bgola in https://github.com/supercollider/supercollider/pull/6399
 - fix Windows pathname resolution by @sadguitarius in https://github.com/supercollider/supercollider/pull/6613
 - Don't try to free a Volume synth that doesn't exist by @jamshark70 in https://github.com/supercollider/supercollider/pull/6939
+- Fix View.setBackgroundImage by @elgiano in https://github.com/supercollider/supercollider/pull/6970
 
 ### UGens: Added and Changed
 
@@ -266,7 +269,8 @@ This change makes a number of new things possible, e.g.
 - InlineUnaryOp.h: increase precision of constants by @dyfer in https://github.com/supercollider/supercollider/pull/6711
 - CoreAudio backend: don't try to query input device when numInputBusChannels = 0 by @dyfer in https://github.com/supercollider/supercollider/pull/6716
 - portaudio/WASAPI: enable automatic sample rate conversion by @Spacechild1 in https://github.com/supercollider/supercollider/pull/6899 / fix PortAudio hostAPI stream info (Win32) by @dyfer in https://github.com/supercollider/supercollider/pull/6905
-- Increase UDP socket buffer size by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564
+- Increase UDP socket buffer size and fallback to 1MB by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564 and https://github.com/supercollider/supercollider/pull/6989
+- Select WASAPI as default device on Windows by @dyfer in https://github.com/supercollider/supercollider/pull/6994
 
 ### scsynth and supernova: Fixed
 
@@ -301,7 +305,7 @@ This change makes a number of new things possible, e.g.
 
 - Add monokai theme by @capital-G in https://github.com/supercollider/supercollider/pull/6561
 - CSS Themes for docs by @capital-G in https://github.com/supercollider/supercollider/pull/6095
-- Make status bar themed by @capital-G in https://github.com/supercollider/supercollider/pull/6838
+- Make status bar themed by @capital-G in https://github.com/supercollider/supercollider/pull/6838 and https://github.com/supercollider/supercollider/pull/7033
 - replace "Monospace" with system monospace font by @capital-G in https://github.com/supercollider/supercollider/pull/6329
 - Document.save method by @muellmusik in https://github.com/supercollider/supercollider/pull/4696
 - Use tab to switch between documents by @capital-G in https://github.com/supercollider/supercollider/pull/6554
@@ -343,6 +347,7 @@ This change makes a number of new things possible, e.g.
 - Fix doc icon position by @capital-G in https://github.com/supercollider/supercollider/pull/6348
 - QtCollider: Fix touchpad mousewheel event scaling by @jpburstrom in https://github.com/supercollider/supercollider/pull/6575
 - IDE Document should set path before autorun by @jamshark70 in https://github.com/supercollider/supercollider/pull/6137
+- Fix crash on some Wayland configurations by @dyfer in https://github.com/supercollider/supercollider/pull/7036
 
 ### Examples
 
@@ -386,6 +391,7 @@ This change makes a number of new things possible, e.g.
 - Removed beaglebone platform by @redFrik in https://github.com/supercollider/supercollider/pull/6751
 - Updated raspberry pi build instructions by @redFrik in https://github.com/supercollider/supercollider/pull/6906
 - Bump hidapi to cmake 3.12 by @capital-G in https://github.com/supercollider/supercollider/pull/6954
+- Add macOS universal build by @dyfer in https://github.com/supercollider/supercollider/pull/6996
 
 ### Documentation changes
 
