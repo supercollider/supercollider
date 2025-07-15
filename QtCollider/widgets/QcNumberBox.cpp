@@ -27,6 +27,7 @@
 #include <QMouseEvent>
 #include <QApplication>
 
+#include <cmath>
 #include <math.h>
 #include <qmath.h>
 
@@ -310,12 +311,13 @@ void QcNumberBox::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void QcNumberBox::wheelEvent(QWheelEvent* event) {
-    if (scroll && isReadOnly() && _valueType == Number && event->angleDelta().x()) {
-        const QPointF delta = event->pixelDelta().isNull()
-            ? event->angleDelta() / 8.f // scaled to return steps of 15
-            : event->pixelDelta() * 0.25f; // this matches old scaling of delta
-        stepBy(delta.x() > 0 ? 1 : -1, scrollStep);
-        Q_EMIT(action());
+    if (scroll && isReadOnly() && _valueType == Number) {
+        double delta = getScrollSteps(event).y();
+        scrollRemainder = std::modf(delta + scrollRemainder, &delta);
+        if (delta > 0. || delta < 0) {
+            stepBy(delta, scrollStep);
+            Q_EMIT(action());
+        }
     }
 }
 
