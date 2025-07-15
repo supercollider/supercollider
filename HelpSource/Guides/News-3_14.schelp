@@ -17,12 +17,6 @@ list::
 Changes to UGens, potentially affecting their output values, are now documented
 in detail in a separate document: link::Guides/UGen-Changelog::.
 
-section:: Known Issues
-
-list::
-## View.setBackgroundImage does not work https://github.com/supercollider/supercollider/issues/6936
-::
-
 section:: Breaking Changes
 
 list::

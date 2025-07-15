@@ -60,10 +60,6 @@ These are the highlights of the changes in SC 3.14. See sections below for detai
 
 **Full Changelog**: https://github.com/supercollider/supercollider/compare/Version-3.13.1...Version-3.14.0
 
-### Known Issues
-
-- View.setBackgroundImage does not work #6936
-
 ### Breaking Changes
 
 - Phasor: fix init sample: don't ignore trig on first sample. If code relied on this bug, it may change behavior. by @elgiano in https://github.com/supercollider/supercollider/pull/6833
