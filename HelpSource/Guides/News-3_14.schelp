@@ -17,12 +17,6 @@ list::
 Changes to UGens, potentially affecting their output values, are now documented
 in detail in a separate document: link::Guides/UGen-Changelog::.
 
-section:: Known Issues
-
-list::
-## View.setBackgroundImage does not work https://github.com/supercollider/supercollider/issues/6936
-::
-
 section:: Breaking Changes
 
 list::
@@ -45,7 +39,7 @@ section:: New Contributors
 
 Thanks to new contributors!
 
-@gorenje, @JordanHendersonMusic, @cdbzb, @Xeonacid, @Shu-AFK, @silvanocerza, @alexyuwen, @xunil-cloud, @sadguitarius, @sonata-chen, @frenchy64, @SimonDeplat, @martindupras, @unthingable, @HotwheelsSisyphus, @OzelotVanilla, @juergenrmayer, @lapnitnelav, @tedmoore, @passyur, @tremblap, @carltesta, @djiamnot
+@gorenje, @JordanHendersonMusic, @cdbzb, @Xeonacid, @Shu-AFK, @silvanocerza, @alexyuwen, @xunil-cloud, @sadguitarius, @sonata-chen, @frenchy64, @SimonDeplat, @martindupras, @unthingable, @HotwheelsSisyphus, @OzelotVanilla, @juergenrmayer, @lapnitnelav, @tedmoore, @passyur, @tremblap, @carltesta, @djiamnot, @wortsampler
 
 section:: General
 
@@ -83,7 +77,7 @@ subsection:: New classes
 
 list::
 ## Add link::Classes/ExampleFiles:: class by @capital-G in https://github.com/supercollider/supercollider/pull/6685 and @tedmoore https://github.com/supercollider/supercollider/pull/6720
-## link::Classes/NodeTreeView:: class. Server.plotTree creates an  instance of it. by @prko, @telephon, and @dyfer in https://github.com/supercollider/supercollider/pull/6282, https://github.com/supercollider/supercollider/pull/6834, https://github.com/supercollider/supercollider/pull/6913, https://github.com/supercollider/supercollider/pull/6917, https://github.com/supercollider/supercollider/pull/6914
+## link::Classes/NodeTreeView:: class. Server.plotTree creates an  instance of it. by @prko, @telephon, and @dyfer in https://github.com/supercollider/supercollider/pull/6282, https://github.com/supercollider/supercollider/pull/6834, https://github.com/supercollider/supercollider/pull/6913, https://github.com/supercollider/supercollider/pull/6917, https://github.com/supercollider/supercollider/pull/6914, https://github.com/supercollider/supercollider/pull/6948
 ::
 
 subsection:: New methods
@@ -108,6 +102,7 @@ list::
 ## code:: bounds :: argument for code:: .plotTree :: in https://github.com/supercollider/supercollider/pull/6294
 ## code:: clock :: argument (default: code:: AppClock ::) for waitForBoot and doWhenDone by @prko in https://github.com/supercollider/supercollider/pull/6198
 ## code:: position :: argument for Server code:: meter :: to set  position (width and height are automatically calculated) by @prko in https://github.com/supercollider/supercollider/pull/6283
+## Add kwargs for Pbindef and PbindProxy by @telephon in https://github.com/supercollider/supercollider/pull/6977
 ::
 
 subsection:: Changed
@@ -178,7 +173,8 @@ list::
 ## SCLang, UnitTests: standardise nan & inf printing across platforms by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6867
 ## SCLang: tidy duplicated error message by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6299
 ## Use std\::string for set and get environment variables -  by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6216
-## Increase UDP socket buffer size by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564
+## Increase UDP socket buffer size and fallback to 1MB by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564 and https://github.com/supercollider/supercollider/pull/6989
+## Adjust touchpad and mouse wheel scrolling by @elgiano in https://github.com/supercollider/supercollider/pull/7030
 ::
 
 subsection:: Fixed
@@ -205,6 +201,7 @@ list::
 ## Update hidapi external library checkout to fix HID on Linux by @bgola in https://github.com/supercollider/supercollider/pull/6399
 ## fix Windows pathname resolution by @sadguitarius in https://github.com/supercollider/supercollider/pull/6613
 ## Don't try to free a Volume synth that doesn't exist by @jamshark70 in https://github.com/supercollider/supercollider/pull/6939
+## Fix View.setBackgroundImage by @elgiano in https://github.com/supercollider/supercollider/pull/6970
 ::
 
 section::  UGens
@@ -268,7 +265,8 @@ list::
 ## InlineUnaryOp.h: increase precision of constants by @dyfer in https://github.com/supercollider/supercollider/pull/6711
 ## CoreAudio backend: don't try to query input device when numInputBusChannels = 0 by @dyfer in https://github.com/supercollider/supercollider/pull/6716
 ## portaudio/WASAPI: enable automatic sample rate conversion by @Spacechild1 in https://github.com/supercollider/supercollider/pull/6899 / fix PortAudio hostAPI stream info (Win32) by @dyfer in https://github.com/supercollider/supercollider/pull/6905
-## Increase UDP socket buffer size by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564
+## Increase UDP socket buffer size and fallback to 1MB by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564 and https://github.com/supercollider/supercollider/pull/6989
+## Use WASAPI as default backend on Windows by @dyfer in https://github.com/supercollider/supercollider/pull/6994
 ::
 
 subsection:: Fixed
@@ -315,7 +313,7 @@ subsection:: Added
 list::
 ## Add monokai theme by @capital-G in https://github.com/supercollider/supercollider/pull/6561
 ## CSS Themes for docs by @capital-G in https://github.com/supercollider/supercollider/pull/6095
-## Make status bar themed by @capital-G in https://github.com/supercollider/supercollider/pull/6838
+## Make status bar themed by @capital-G in https://github.com/supercollider/supercollider/pull/6838 and https://github.com/supercollider/supercollider/pull/7033
 ## replace "Monospace" with system monospace font by @capital-G in https://github.com/supercollider/supercollider/pull/6329
 ## Document.save method by @muellmusik in https://github.com/supercollider/supercollider/pull/4696
 ## Use tab to switch between documents by @capital-G in https://github.com/supercollider/supercollider/pull/6554
@@ -361,6 +359,7 @@ list::
 ## Fix doc icon position by @capital-G in https://github.com/supercollider/supercollider/pull/6348
 ## QtCollider: Fix touchpad mousewheel event scaling by @jpburstrom in https://github.com/supercollider/supercollider/pull/6575
 ## IDE Document should set path before autorun by @jamshark70 in https://github.com/supercollider/supercollider/pull/6137
+## Fix crash on some Wayland configurations by @dyfer in https://github.com/supercollider/supercollider/pull/7036
 ::
 
 section:: Examples
@@ -407,11 +406,12 @@ list::
 ## Fix for GCC 14 by @Spacechild1 in https://github.com/supercollider/supercollider/pull/6436
 ## Removed beaglebone platform by @redFrik in https://github.com/supercollider/supercollider/pull/6751
 ## Bump hidapi to cmake 3.12 by @capital-G in https://github.com/supercollider/supercollider/pull/6954
+## Add macOS universal build by @dyfer in https://github.com/supercollider/supercollider/pull/6996
 ::
 
 section::  Documentation changes
 
-@SimonDeplat, @prko, @JordanHendersonMusic, @martindupras, @jamshark70, @mlang, @tedmoore, @capital-G, @telephon, @HotwheelsSisyphus, @OzelotVanilla, @passyur, @mtmccrea, @cdbzb, @redFrik, @juergenrmayer, @paum3, @miczac, @madskjeldgaard, @carltesta, @redFrik, @Shu-AFK, @elifieldsteel, @alexyuwen @mxw
+@SimonDeplat, @prko, @JordanHendersonMusic, @martindupras, @jamshark70, @mlang, @tedmoore, @capital-G, @telephon, @HotwheelsSisyphus, @OzelotVanilla, @passyur, @mtmccrea, @cdbzb, @redFrik, @juergenrmayer, @paum3, @miczac, @madskjeldgaard, @carltesta, @redFrik, @Shu-AFK, @elifieldsteel, @alexyuwen, @mxw, @wortsampler
 
 section::  Tests
 
