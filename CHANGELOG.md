@@ -76,7 +76,7 @@ These are the highlights of the changes in SC 3.14. See sections below for detai
 
 ### New Contributors
 
-Thanks to new contributors: @gorenje, @JordanHendersonMusic, @cdbzb, @Xeonacid, @Shu-AFK, @silvanocerza, @alexyuwen, @xunil-cloud, @sadguitarius, @sonata-chen, @frenchy64, @SimonDeplat, @martindupras, @unthingable, @HotwheelsSisyphus, @OzelotVanilla, @juergenrmayer, @lapnitnelav, @tedmoore, @passyur, @tremblap, @carltesta, @djiamnot
+Thanks to new contributors: @gorenje, @JordanHendersonMusic, @cdbzb, @Xeonacid, @Shu-AFK, @silvanocerza, @alexyuwen, @xunil-cloud, @sadguitarius, @sonata-chen, @frenchy64, @SimonDeplat, @martindupras, @unthingable, @HotwheelsSisyphus, @OzelotVanilla, @juergenrmayer, @lapnitnelav, @tedmoore, @passyur, @tremblap, @carltesta, @djiamnot, @wortsampler
 
 #### Added: Capturing keyword arguments
 
