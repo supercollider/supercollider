@@ -266,7 +266,7 @@ This change makes a number of new things possible, e.g.
 - CoreAudio backend: don't try to query input device when numInputBusChannels = 0 by @dyfer in https://github.com/supercollider/supercollider/pull/6716
 - portaudio/WASAPI: enable automatic sample rate conversion by @Spacechild1 in https://github.com/supercollider/supercollider/pull/6899 / fix PortAudio hostAPI stream info (Win32) by @dyfer in https://github.com/supercollider/supercollider/pull/6905
 - Increase UDP socket buffer size and fallback to 1MB by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564 and https://github.com/supercollider/supercollider/pull/6989
-- Select WASAPI as default device on Windows by @dyfer in https://github.com/supercollider/supercollider/pull/6994
+- Use WASAPI as default backend on Windows by @dyfer in https://github.com/supercollider/supercollider/pull/6994
 
 ### scsynth and supernova: Fixed
 
