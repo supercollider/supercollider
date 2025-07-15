@@ -718,20 +718,39 @@ Plot {
 		^#[\levelsCentered, \plevelsCentered, \dlevelsCentered, \bars].includesAny(plotMode)
 	}
 
+	hasHoldlikeDisplay {
+		^#[\levels, \plevels, \dlevels, \steps, \psteps, \dsteps].includesAny(plotMode)
+	}
+
 	getIndex { |x|
 		var ycoord = this.dataCoordinates;
-		var xPosNorm;
+		var xPosNorm, idxPlusOne;
 
 		^if (plotter.domain.notNil) {
-			this.domainCoordinates(nil).indexIn(x);
+			if(this.hasHoldlikeDisplay) {
+				idxPlusOne = this.domainCoordinates(nil).indexOfGreaterThan(x);
+				if(idxPlusOne.isNil) {
+					value.size - 1
+				} {
+					max(idxPlusOne - 1, 0)
+				}
+			} {
+				this.domainCoordinates(nil).indexIn(x)
+			}
 		} {
 			// domain is nil, values are evenly distributed between either side of the plot
 			xPosNorm = (x - plotBounds.left) / plotBounds.width;
-			if (this.hasCenteredSteplikeDisplay, {
-					xPosNorm * value.size - 0.5
-			}, {
-					xPosNorm * (value.size - 1)
-			}).round.clip(0, value.size-1).asInteger;
+			case
+			{ this.hasCenteredSteplikeDisplay } {
+				xPosNorm * value.size - 0.5
+			}
+			{ this.hasHoldlikeDisplay } {
+				xPosNorm * (value.size - 1) - 0.5
+			}
+			{ // otherwise
+				xPosNorm * (value.size - 1)
+			}
+			.round.clip(0, value.size-1).asInteger;
 		}
 	}
 
