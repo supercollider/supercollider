@@ -12,7 +12,7 @@ Plot {
 	var <>labelMargin = 2;  // margin around tick or axis labels
 	var <>borderMargin = 3; // margin separating the edge of the view from its inner elements
 	var <>hideLabelsHeightRatio = 1.2, <>hideLabelsWidthRatio = 1.5; // hide labels below plot:labels ratio
-	var <domainPad = 0.0, <binWidthPx = 0.0; // TODO: remove getters
+	var domainPad = 0.0, halfBinWidthPx = 0.0; // for steplike data width
 	var valueCache, resolution;
 
 	*initClass {
@@ -224,10 +224,12 @@ Plot {
 	domainSpec_ { |sp|
 		domainSpec = sp;
 
-		// update private domain specs to give padding to the beginning and end of the data
+		// update private domain specs to give visual padding to the beginning and end of the data
 		if(value.size > 1) {
 			domainPad = if(this.hasCenteredSteplikeDisplay) {
-				plotter.domain.isNil.if({ 0.5 }, { plotter.domain.differentiate.minItem / 2 })
+				if(plotter.domain.isNil)
+				{ 0.5 } // domain step defaults to 1
+				{ plotter.domain.differentiate.drop(1).minItem / 2 }
 			} {
 				0.0
 			};
@@ -237,8 +239,8 @@ Plot {
 			.minval_(domainSpec.minval - domainPad)
 			.maxval_(domainSpec.maxval + domainPad);
 		} {
-			prDomainSpec = domainSpec; // TODO: review
-			domainPad = 0.0;
+			prDomainSpec = domainSpec;
+			domainPad = if(this.hasCenteredSteplikeDisplay) { 0.5 } { 0.0 };
 		};
 
 		if(gridOnX and: { prDomainSpec.notNil }) {
@@ -396,7 +398,7 @@ Plot {
 	}
 
 	domainCoordinates { |size|
-		var vals;
+		var vals, domainRange;
 
 		if (plotter.domain.notNil) {
 			vals = prDomainSpec.unmap(plotter.domain);
@@ -410,7 +412,9 @@ Plot {
 			}
 		};
 
-		binWidthPx = domainPad / prDomainSpec.range * plotBounds.width;
+		domainRange = prDomainSpec.range;
+		if(domainRange == 0) { domainRange = 1 };
+		halfBinWidthPx = domainPad / domainRange * plotBounds.width;
 
 		^plotBounds.left + (vals * plotBounds.width);
 	}
@@ -561,8 +565,8 @@ Plot {
 	levelsCentered { |x, y|
 		Pen.smoothing_(false);
 		y.size.do { |i|
-			Pen.moveTo(Point(x[i] - binWidthPx, y[i]));
-			Pen.lineTo(Point(x[i] + binWidthPx, y[i]));
+			Pen.moveTo(Point(x[i] - halfBinWidthPx, y[i]));
+			Pen.lineTo(Point(x[i] + halfBinWidthPx, y[i]));
 		};
 		Pen.stroke
 	}
@@ -578,9 +582,9 @@ Plot {
 	}
 
 	bars { |x, y|
-		var gap = binWidthPx * 0.1;
-		var xOffset = binWidthPx.neg + gap;
-		var barWidth = binWidthPx * 2 - (2 * gap);
+		var gap = halfBinWidthPx * 0.1;
+		var xOffset = halfBinWidthPx.neg + gap;
+		var barWidth = halfBinWidthPx * 2 - (2 * gap);
 		var centery = 0.linlin(this.spec.minval, this.spec.maxval, plotBounds.bottom, plotBounds.top, clip: nil);
 
 		Pen.smoothing_(false);
@@ -1005,7 +1009,9 @@ Plotter {
 			)).throw;
 		} {
 			domain = domainArray
-		}
+		};
+
+		this.refresh;
 	}
 
 	superpose_ { |flag|
