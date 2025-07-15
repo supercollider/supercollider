@@ -4,17 +4,23 @@ summary::Represents uninitialized data
 
 description::
 
-Nil has a single instance named nil and is used to represent uninitialized data,
+Nil has a single instance named code::nil:: and is used to represent uninitialized data,
 bad values, or terminal values such as end-of-stream.
+Internally, code::nil:: also serves as a sentinel value, used to mark empty or unoccupied slots
+in hash-based data structures such as code::Set::, and its subclasses.
+Because of this internal role, code::nil::—despite being a valid object—cannot be stored
+as an element in code::Set:: or any of its subclasses.
+Attempting to do so will result in a runtime error.
+See the link::Classes/Set:: for more information.
 
 note::
-Take note that Nil is a class and not the special value code::nil::. Comparing Nil and code::nil:: will return false.
-In normal use you should not need to use this class directly: use code::nil::
+Take note that code::Nil:: is a class and not the special value code::nil::. Comparing code::Nil:: and code::nil:: will return false.
+In normal use, you should not need to use this class directly; use code::nil::.
 
 code::
-Nil.isNil; // false
-Nil == nil; // false
-Nil === nil; // false
+Nil.isNil;    // false
+Nil == nil;   // false
+Nil === nil;  // false
 ::
 ::
 

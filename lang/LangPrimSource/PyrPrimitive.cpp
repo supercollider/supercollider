@@ -2063,8 +2063,6 @@ int prObjectCopySeries(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void switchToThread(struct VMGlobals* g, struct PyrThread* newthread, int oldstate, int* numArgsPushed);
-
 int haltInterpreter(struct VMGlobals* g, int numArgsPushed) {
     switchToThread(g, slotRawThread(&g->process->mainThread), tDone, &numArgsPushed);
     // return all the way out.
@@ -2239,6 +2237,12 @@ int prObjectRespondsTo(struct VMGlobals* g, int numArgsPushed) {
 
     if (IsSym(b)) {
         selector = slotRawSymbol(b);
+        if ((selector->flags & sym_Class) != 0) {
+            // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
+            // so here, we return false
+            slotCopy(a, &o_false);
+            return errNone;
+        }
         index = slotRawInt(&classobj->classIndex) + selector->u.index;
         meth = gRowTable[index];
         if (slotRawSymbol(&meth->name) != selector) {
@@ -2254,6 +2258,12 @@ int prObjectRespondsTo(struct VMGlobals* g, int numArgsPushed) {
                 return errWrongType;
 
             selector = slotRawSymbol(slot);
+            if ((selector->flags & sym_Class) != 0) {
+                // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
+                // so here, we return false
+                slotCopy(a, &o_false);
+                return errNone;
+            }
             index = slotRawInt(&classobj->classIndex) + selector->u.index;
             meth = gRowTable[index];
             if (slotRawSymbol(&meth->name) != selector) {
@@ -2536,7 +2546,6 @@ void threadSanity(VMGlobals *g, PyrThread *thread)
 PyrSymbol* s_prready;
 PyrSymbol* s_prrunnextthread;
 
-void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numArgsPushed);
 void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numArgsPushed) {
     PyrThread* oldthread;
     PyrGC* gc;
