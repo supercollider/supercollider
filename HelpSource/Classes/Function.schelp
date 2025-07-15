@@ -7,7 +7,7 @@ This document deals with the usage of Function objects.
 For a more general introduction and documentation of syntax, see link::Reference/Functions::.
 
 description::
-A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method. See the Functions help file for a basic introduction.
+A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method.
 
 Because it inherits from AbstractFunction, Functions respond to math operations by creating a new Function.
 
@@ -72,9 +72,25 @@ Evaluates the FunctionDef referred to by the Function. The Function is passed th
 
 code::
  // different way of expressing the same:
-{ |a, b| (a * b).postln }.value(3, 10);
-{ |a, b| (a * b).postln }.value(a: 3, b: 10); // keyword arguments
-{ |a, b| (a * b).postln }.(3, 10); // short syntax: "value" can be dropped.
+{ |a, b| a * b }.value(3, 10);
+{ |a, b| a * b }.value(a: 3, b: 10); // keyword arguments
+{ |a, b| a * b }.(3, 10); // short syntax: "value" can be dropped.
+::
+
+Default arguments can be omitted in the call:
+code::
+{ |a=3, b=10| a * b }.value; // use default arguments only
+{ |a=3, b=10| a * b }.value(2); // only set the first argument (a)
+{ |a=3, b=10| a * b }.value(b: 100); // set the second argument (b) without the first
+::
+
+The results of functions composed with operators distribute the keyword arguments to each of the operands.
+
+code::
+f = { |a, b=1| a ** b } * { |a, c = 0| a + c };
+f.value(1); // default arguments for b and c
+f.value(1, b:2); // explicitly specify a (the other function warns)
+(b:2.5).use { f.valueEnvir(2) } // to avoid the warnings, you can use valueEnvir (see below)
 ::
 
 method::valueArray
@@ -109,6 +125,10 @@ Environment.use({
 { |a, b| (a * b).postln }.valueEnvir;
 });
 )
+
+// or syntactically shorter using an Event:
+
+(a:3, b:10).use { { |a, b| (a * b).postln }.valueEnvir };
 ::
 
 method::valueArrayEnvir
