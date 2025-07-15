@@ -389,7 +389,7 @@ This change makes a number of new things possible, e.g.
 
 ### Documentation changes
 
-@SimonDeplat, @prko, @JordanHendersonMusic, @martindupras, @jamshark70, @mlang, @tedmoore, @capital-G, @telephon, @HotwheelsSisyphus, @OzelotVanilla, @passyur, @mtmccrea, @cdbzb, @redFrik, @juergenrmayer, @paum3, @miczac, @madskjeldgaard, @carltesta, @Shu-AFK, @elifieldsteel, @alexyuwen @mxw
+@SimonDeplat, @prko, @JordanHendersonMusic, @martindupras, @jamshark70, @mlang, @tedmoore, @capital-G, @telephon, @HotwheelsSisyphus, @OzelotVanilla, @passyur, @mtmccrea, @cdbzb, @redFrik, @juergenrmayer, @paum3, @miczac, @madskjeldgaard, @carltesta, @Shu-AFK, @elifieldsteel, @alexyuwen @mxw, @wortsampler
 
 ### Tests
 
