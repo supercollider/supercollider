@@ -116,7 +116,7 @@ PrimitiveFailedError : MethodError {
 
 	*new { arg receiver;
 		^super.new(Thread.primitiveErrorString, receiver)
-			.failedPrimitiveName_(thisThread.failedPrimitiveName)
+		.failedPrimitiveName_(thisThread.failedPrimitiveName)
 	}
 	errorString {
 		^"ERROR: Primitive '%' failed.\n%".format(failedPrimitiveName, what ? "")
@@ -157,30 +157,27 @@ DoesNotUnderstandError : MethodError {
 	init {
 		var methodSuggestions, classSuggestions, plural;
 		if(receiver.notNil and: { selector.notNil }) {
-
-			methodSuggestions = this.methodSuggestions;
+			methodSuggestions = receiver.class.findSimilarSelectors(selector, minSimilarity: 0.5, maxEditDistance: 2);
 			if(methodSuggestions.notEmpty) {
 				plural = if(methodSuggestions.size > 1) { "s" } { "" };
 				methodSuggestions = methodSuggestions.join("\n\t");
 				suggestion = suggestion ++
 				"\nMessage% with a similar name understood by the receiver:\n\t%\n".format(plural, methodSuggestions);
 			};
-			classSuggestions = this.classSuggestions.keep(4);
+			classSuggestions = Object.findRespondingUpperSubclasses(selector).collect(_.name);
 			if(classSuggestions.notEmpty) {
+				if(classSuggestions.size < 8) {
 				classSuggestions = classSuggestions.join("\n\t");
 				suggestion = suggestion ++
-				"\nObjects which understand the selector '%' derive from:\n\t%".format(selector, classSuggestions)
+					"\nObjects which understand the selector '%' derive from:\n\t%"
+					.format(selector, classSuggestions)
+				} {
+					suggestion = suggestion ++
+					"\nMany other objects understand the selector '%' (found % superclasses)."
+					.format(selector, classSuggestions.size)
+				}
 			}
 		}
-	}
-
-	methodSuggestions {
-		var names = receiver.class.respondingMethods.collect(_.name);
-		^selector.asString.findSimilarIn(names, minSimilarity: 0.5, maxEditDistance: 2)
-	}
-
-	classSuggestions {
-		^Object.findRespondingUpperSubclasses(selector).collect(_.name)
 	}
 
 	errorString {
@@ -227,7 +224,7 @@ OutOfContextReturnError : MethodError {
 	}
 	errorString {
 		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name
-			++ "' Out of context return of value: " ++ result
+		++ "' Out of context return of value: " ++ result
 	}
 }
 

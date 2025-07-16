@@ -106,6 +106,16 @@ Set.findRespondingUpperSubclasses(\clear);
 Set.findRespondingUpperSubclasses([\flop, \clear]); // not both
 ::
 
+method::findSimilarSelectors
+
+Returns a list of selectors similar to the argument passed. For other arguments and sorting, see link::Classes/String#-findSimilarIn::.
+
+code::
+Array.findSimilarSelectors(\skramle);
+Array.findSimilarSelectors(\flip);
+Array.findSimilarSelectors(\flip, maxEditDistance: 7);
+::
+
 method::dumpAllMethods
 
 Post all instance methods which instances of this class responds too, including inherited ones. code::this.class.dumpAllMethods:: will post all class methods which this class responds to.

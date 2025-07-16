@@ -205,6 +205,10 @@ Class {
 		};
 		^list
 	}
+	findSimilarSelectors { arg selector, maxEditDistance = 2, minSimilarity = 0.5, prioritizeCapitalization = true;
+		var names = this.respondingMethods.collect(_.name);
+		^selector.asString.findSimilarIn(names, maxEditDistance, minSimilarity, prioritizeCapitalization)
+	}
 	instancesRespondTo { arg selector;
 		_InstancesOfClassRespondTo
 		^this.primitiveFailed
