@@ -157,6 +157,7 @@ DoesNotUnderstandError : MethodError {
 	init {
 		var methodSuggestions, classSuggestions, plural;
 		if(receiver.notNil and: { selector.notNil }) {
+
 			methodSuggestions = this.methodSuggestions.keep(4);
 			if(methodSuggestions.notEmpty) {
 				plural = if(methodSuggestions.size > 1) { "s" } { "" };
@@ -177,7 +178,7 @@ DoesNotUnderstandError : MethodError {
 
 	methodSuggestions {
 		var names = receiver.class.respondingMethods.collect(_.name);
-		^selector.asString.findSimilarStringsIn(names, maxEditDistance: 2)
+		^selector.asString.findSimilarIn(names, maxEditDistance: 2)
 	}
 
 	classSuggestions {
