@@ -162,16 +162,16 @@ DoesNotUnderstandError : MethodError {
 			if(methodSuggestions.notEmpty) {
 				plural = if(methodSuggestions.size > 1) { "s" } { "" };
 				suggestedCorrection = methodSuggestions.first;
-				methodSuggestions = methodSuggestions.join(", ");
+				methodSuggestions = methodSuggestions.join("\n\t");
 				suggestion = suggestion ++
-				"\nClosest matching message% found for the receiver:\n\t%\n".format(plural, methodSuggestions);
+				"\nMessage% understood by the receiver with a similar name:\n\t%\n".format(plural, methodSuggestions);
 			};
 			classSuggestions = this.classSuggestions.keep(4);
 			if(classSuggestions.notEmpty) {
 				plural = if(classSuggestions.size > 1) { "s" } { "" };
-				classSuggestions = classSuggestions.join(", ");
+				classSuggestions = classSuggestions.join("\n\t");
 				suggestion = suggestion ++
-				"\nObject% which understand the selector % derive from:\n\t%\n".format(plural, selector, classSuggestions)
+				"\nObject% which understand the selector '%' derive from:\n\t%\n".format(plural, selector, classSuggestions)
 			}
 		}
 	}
