@@ -91,7 +91,8 @@ PaDeviceIndex GetPaDefaultDevice(bool isInput) {
     int hostApiCount = Pa_GetHostApiCount();
     for (int i = 0; i < hostApiCount; ++i) {
         const PaHostApiInfo* apiInfo = Pa_GetHostApiInfo(i);
-        if (apiInfo && apiInfo->type == paWASAPI) {
+        // prefer WASAPI, but only if at least one input or output device is present
+        if (apiInfo && apiInfo->type == paWASAPI && apiInfo->deviceCount > 0) {
             return isInput ? apiInfo->defaultInputDevice : apiInfo->defaultOutputDevice;
             // while this may return noPaDevice, we don't fall back to Pa_GetDefault[Input|Output]Device here
             // because this could lead to selecting devices with different APIs between input and output
@@ -168,6 +169,14 @@ PaError TryGetDefaultPaDevices(PaDeviceIndex* inDevice, PaDeviceIndex* outDevice
             *outDevice = GetPaDefaultDevice(false);
             if (*inDevice != paNoDevice && *outDevice != paNoDevice)
                 fprintf(stdout, "Selecting default system input/output devices\n");
+            else if (*inDevice != paNoDevice && *outDevice == paNoDevice)
+                fprintf(stdout,
+                        "Selecting default system input device\n"
+                        "WARNING: no output device selected, output is disabled.\n");
+            else if (*outDevice != paNoDevice && *inDevice == paNoDevice)
+                fprintf(stdout,
+                        "Selecting default system output device\n"
+                        "WARNING: no input device selected, input is disabled.\n");
         }
     } else {
         // no inputs nor outputs
