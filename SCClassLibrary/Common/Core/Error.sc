@@ -168,10 +168,9 @@ DoesNotUnderstandError : MethodError {
 			};
 			classSuggestions = this.classSuggestions.keep(4);
 			if(classSuggestions.notEmpty) {
-				plural = if(classSuggestions.size > 1) { "s" } { "" };
 				classSuggestions = classSuggestions.join("\n\t");
 				suggestion = suggestion ++
-				"\nObject% which understand the selector '%' derive from:\n\t%\n".format(plural, selector, classSuggestions)
+				"\nObjects which understand the selector '%' derive from:\n\t%\n".format(selector, classSuggestions)
 			}
 		}
 	}
@@ -182,7 +181,7 @@ DoesNotUnderstandError : MethodError {
 	}
 
 	classSuggestions {
-		^Object.findRespondingSubclasses(selector).collect(_.name)
+		^Object.findRespondingUpperSubclasses(selector).collect(_.name)
 	}
 
 	errorString {
