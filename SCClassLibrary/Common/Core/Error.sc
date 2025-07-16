@@ -145,7 +145,7 @@ ShouldNotImplementError : MethodError {
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector, <>args, <>keywordArgumentPairs, <suggestedCorrection, suggestion = "";
+	var <>selector, <>args, <>keywordArgumentPairs, suggestion = "";
 	*new { arg receiver, selector, args, keywordArgumentPairs;
 		^super.new(nil, receiver)
 		.selector_(selector)
@@ -158,26 +158,25 @@ DoesNotUnderstandError : MethodError {
 		var methodSuggestions, classSuggestions, plural;
 		if(receiver.notNil and: { selector.notNil }) {
 
-			methodSuggestions = this.methodSuggestions.keep(4);
+			methodSuggestions = this.methodSuggestions;
 			if(methodSuggestions.notEmpty) {
 				plural = if(methodSuggestions.size > 1) { "s" } { "" };
-				suggestedCorrection = methodSuggestions.first;
 				methodSuggestions = methodSuggestions.join("\n\t");
 				suggestion = suggestion ++
-				"\nMessage% understood by the receiver with a similar name:\n\t%\n".format(plural, methodSuggestions);
+				"\nMessage% with a similar name understood by the receiver:\n\t%\n".format(plural, methodSuggestions);
 			};
 			classSuggestions = this.classSuggestions.keep(4);
 			if(classSuggestions.notEmpty) {
 				classSuggestions = classSuggestions.join("\n\t");
 				suggestion = suggestion ++
-				"\nObjects which understand the selector '%' derive from:\n\t%\n".format(selector, classSuggestions)
+				"\nObjects which understand the selector '%' derive from:\n\t%".format(selector, classSuggestions)
 			}
 		}
 	}
 
 	methodSuggestions {
 		var names = receiver.class.respondingMethods.collect(_.name);
-		^selector.asString.findSimilarIn(names, maxEditDistance: 2)
+		^selector.asString.findSimilarIn(names, minSimilarity: 0.5, maxEditDistance: 2)
 	}
 
 	classSuggestions {
@@ -204,7 +203,7 @@ DoesNotUnderstandError : MethodError {
 		// this.adviceLink.postln;
 		"\n^^ %\nRECEIVER: %\n".postf(this.errorString, receiver);
 		suggestion.postln;
-		"\n\n\n".post;
+		"\n".post;
 	}
 	adviceLinkPage {
 		^"%#%".format(this.class.name, selector)
