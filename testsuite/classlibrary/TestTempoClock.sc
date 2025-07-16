@@ -83,17 +83,18 @@ TestTempoClock : UnitTest {
 	test_nextTimeOnGrid_okAfterMeterChange {
 		// formally you should change meter only on a barline
 		// at 1000 bps that is 0.004 sec later, so... ok.
-		var cond = Condition.new;
+		var cond = Condition.new, next;
 		{
 			clock.beatsPerBar.wait;
 			clock.beatsPerBar = 3;
-			0.1.wait;  // must tick past the barline
+			0.5.wait;  // must tick past the barline
 			cond.unhang;
 		}.fork(clock);
 		cond.hang;
+		next = clock.nextTimeOnGrid(-1);
 		this.assertEquals(
-			clock.nextTimeOnGrid(-1), 7.0,
-			"Set meter to 3/4, at beat 4, next barline should be 7.0"
+			next, 7.0,
+			"Set meter to 3/4, at beat 4, next barline should be 7.0 and it is %".format(next)
 		);
 	}
 
