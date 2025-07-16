@@ -163,25 +163,25 @@ DoesNotUnderstandError : MethodError {
 				suggestedCorrection = methodSuggestions.first;
 				methodSuggestions = methodSuggestions.join(", ");
 				suggestion = suggestion ++
-				"\nClosest matching message% found for the receiver:\n\t%".format(plural, methodSuggestions);
+				"\nClosest matching message% found for the receiver:\n\t%\n".format(plural, methodSuggestions);
 			};
 			classSuggestions = this.classSuggestions.keep(4);
 			if(classSuggestions.notEmpty) {
-				plural = if(classSuggestions.size > 1) { "es" } { "" };
+				plural = if(classSuggestions.size > 1) { "s" } { "" };
 				classSuggestions = classSuggestions.join(", ");
 				suggestion = suggestion ++
-				"\nClosest matching class% found for the selector:\n\t%".format(plural, classSuggestions)
+				"\nObject% which understand the selector % derive from:\n\t%\n".format(plural, selector, classSuggestions)
 			}
 		}
 	}
 
 	methodSuggestions {
 		var names = receiver.class.respondingMethods.collect(_.name);
-		^selector.asString.findSimilarIn(names, maxEditDistance: 2);
+		^selector.asString.findSimilarStringsIn(names, maxEditDistance: 2)
 	}
+
 	classSuggestions {
-		var names = Object.findRespondingSubclasses(selector).collect(_.name);
-		^receiver.class.name.asString.findSimilarIn(names, maxEditDistance: 5);
+		^Object.findRespondingSubclasses(selector).collect(_.name)
 	}
 
 	errorString {
