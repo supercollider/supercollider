@@ -156,7 +156,7 @@ DoesNotUnderstandError : MethodError {
 
 	init {
 		var methodSuggestions, classSuggestions, plural;
-		if(receiver.notNil and: { selector.notNil }) {
+		if(selector.notNil) {
 			methodSuggestions = receiver.class.findSimilarSelectors(selector, minSimilarity: 0.5, maxEditDistance: 2);
 			if(methodSuggestions.notEmpty) {
 				plural = if(methodSuggestions.size > 1) { "s" } { "" };
@@ -177,6 +177,8 @@ DoesNotUnderstandError : MethodError {
 					.format(selector, classSuggestions.size)
 				}
 			}
+		} {
+			"DoesNotUnderstandError selector for % was nil".format(receiver).warn;
 		}
 	}
 
