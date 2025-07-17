@@ -169,11 +169,11 @@ DoesNotUnderstandError : MethodError {
 				if(classSuggestions.size < 8) {
 					classSuggestions = classSuggestions.join("\n\t");
 					suggestion = suggestion ++
-					"\nObjects which understand the selector '%' derive from:\n\t%"
+					"\nObjects which respond to the selector '%' derive from:\n\t%"
 					.format(selector, classSuggestions)
 				} {
 					suggestion = suggestion ++
-					"\nMany other objects understand the selector '%' (found % superclasses)."
+					"\nMany other objects respond to the message '%' (found % superclasses)."
 					.format(selector, classSuggestions.size)
 				}
 			}
