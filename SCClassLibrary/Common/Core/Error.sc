@@ -167,8 +167,8 @@ DoesNotUnderstandError : MethodError {
 			classSuggestions = Object.findRespondingUpperSubclasses(selector).collect(_.name);
 			if(classSuggestions.notEmpty) {
 				if(classSuggestions.size < 8) {
-				classSuggestions = classSuggestions.join("\n\t");
-				suggestion = suggestion ++
+					classSuggestions = classSuggestions.join("\n\t");
+					suggestion = suggestion ++
 					"\nObjects which understand the selector '%' derive from:\n\t%"
 					.format(selector, classSuggestions)
 				} {
