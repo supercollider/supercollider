@@ -966,6 +966,7 @@ Server {
 		statusWatcher.doWhenBooted({
 			statusWatcher.serverBooting = false;
 			this.bootInit(recover);
+			"".postln;
 		}, onFailure: onFailure ? false);
 
 		if(remoteControlled) {
