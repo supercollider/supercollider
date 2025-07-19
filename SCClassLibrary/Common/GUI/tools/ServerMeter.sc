@@ -238,9 +238,12 @@ ServerMeter {
 		numIns = numIns ?? { server.options.numInputBusChannels };
 		numOuts = numOuts ?? { server.options.numOutputBusChannels };
 
-		window = Window.new(server.name ++ " levels (dBFS)",
-			Rect(5, 305, ServerMeterView.getWidth(numIns, numOuts), ServerMeterView.height),
-			false);
+		window = Window.new(server.name ++ " levels (dBFS)", resizable: false).bounds_(Rect(
+			5,
+			0,
+			ServerMeterView.getWidth(numIns, numOuts),
+			ServerMeterView.height
+		)).moveToBottom(356); // 356 is the height of FreqScope
 
 		meterView = ServerMeterView(server, window, 0@0, numIns, numOuts);
 		meterView.view.keyDownAction_( { arg view, char, modifiers;
