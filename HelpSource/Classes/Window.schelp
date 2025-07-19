@@ -47,13 +47,13 @@ y = (screenHeight - 400) / 2
 ::
 
 		note::
-			Default position may vary depending on platform, screen resolution, and whether the window argument `resizable` is set to `true` or `false`.
+			Default position may vary depending on platform, screen resolution, and whether the window argument code::resizable:: is set to code::true:: or code::false::.
 			::
 	argument:: resizable
 		A Boolean indicating whether the window is resizable by the user.
 		The default is code::true::.
 		On strong::all platforms::, disabling resizing (code::resizable: false::) can affect the position and layout of the window due to differences in how system-level window frames and decorations are computed.
-		Therefore, when code::resizable:: is set to `false`, it is recommended strong::not:: to set code::bounds:: via the constructor argument.
+		Therefore, when code::resizable:: is set to code::false::, it is recommended strong::not:: to set code::bounds:: via the constructor argument.
 		Instead, it is recommended to define the bounds using the code::bounds_:: method strong::after:: window creation, to ensure consistent positioning across platforms.
 
 		Examples:
