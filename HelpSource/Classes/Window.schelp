@@ -57,6 +57,11 @@ METHOD:: availableBounds
 
 	Returns a Rect describing the area of the screen that windows can actually occupy (i.e. excluding the Mac dock, the task bar, or similar).
 
+METHOD:: lowestPosition
+
+	Returns a floating-point value representing the lowest reasonable vertical position for a window on the screen.
+	This value is calculated to avoid overlap with system-reserved interface elements, such as the Windows taskbar, the macOS Dock, or the Linux dock (e.g. GNOME, KDE, etc.).
+	The result is not the absolute bottom edge of the screen, but rather the lowest position a window can occupy without interfering with areas reserved by the operating system.
 
 
 
@@ -174,6 +179,12 @@ METHOD:: addFlowLayout
 METHOD:: layout
 	Redirects to link::Classes/View#-layout:: of the link::#-view::.
 
+METHOD:: moveToBottom
+
+	Moves the window to the lowest usable screen position without overlapping system-reserved areas (e.g., taskbars, docks).
+
+	argument:: margin
+		Adds vertical offset from the bottom.
 
 
 SUBSECTION:: Appearance
