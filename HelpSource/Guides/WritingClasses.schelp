@@ -3,7 +3,6 @@ summary:: Writing SuperCollider Classes
 categories:: Language>OOP
 related:: Reference/Classes, Classes/Class, Classes/Object
 
-
 SuperCollider follows a pure object-oriented paradigm. It is not built on data types, but on objects, which respond to messages. A class is an object that holds information about how its objects (instances) respond to such messages. Writing a class gives a definition of this behavior.
 
 This is an overview of idioms used in writing classes. It is not a tutorial on writing a system of interrelated classes. It gives an overview of some typical expressions. See also: link::Guides/Intro-to-Objects::, link::Reference/Messages::, and link::Reference/Classes::.
@@ -22,7 +21,6 @@ Platform.systemExtensionDir; // Extensions available to all users on the machine
 
 It is not possible to enter a class definition into an interpreter window and execute it.
 ::
-
 
 section:: Inheriting
 
@@ -43,8 +41,6 @@ MyClass { // : Object is implied
 ::
 
 This is why in the above example, the message code::new:: can be called without being explicitly defined in the class.
-
-
 
 section:: Methods
 
@@ -72,7 +68,6 @@ a = MyClass.new // returns a new instance
 a.instanceMethod // posts "hello instance"
 ::
 
-
 To return from the method use teletype::^:: (caret). Multiple exit points also possible. If no teletype::^:: is
 specified, the method will return the instance (and in the case of Class methods, will return the class). There is no
 such thing as returning void in SuperCollider.
@@ -94,12 +89,9 @@ MyClass {
 }
 ::
 
-
 subsection:: Class Methods
 
-
 An object's  strong::class methods:: are defined alongside its instance methods. They are specified with an asterisk (teletype::*::) before the method name.
-
 
 A link::Classes/Class:: is itself an object. It is what all instances of it have in common. Class methods are the instance methods of the object's class. That's why within class methods, the keyword code::this:: refers to the class.
 
@@ -121,7 +113,6 @@ This could then be used as follows:
 code::
 MyClass.classMethod // posts "hello class"
 ::
-
 
 subsection::Overriding methods (overloading)
 
@@ -157,57 +148,144 @@ MyClass : SomeSuperclass {
 }
 ::
 
-
-
 section:: Instances
 
-code::Object.new:: will return a new object. When overriding the class method code::.new:: you must call the
-superclass, which in turn calls its superclass, up until code::Object.new:: is called and an object is actually created
-and its memory allocated.
+code::Object.new:: will return a new object.
+When overriding the class method code::.new:: you must call the superclass, which in turn calls its superclass, up until code::Object.new:: is called and an object is actually created and its memory allocated.
 
 code::
 MyClass {
-
-	// this is a normal constructor method
-	*new { | arga, argb, argc |
-		^super.new.init(arga, argb, argc)
-	}
-
-	init { | arga, argb, argc |
-		// do initiation here
-	}
+	// This is a normal constructor method.
+	*new { ^super.new }
 }
 ::
 
-In this case note that code::super.new:: called the method new on the superclass and returned a new object. Subsequently
-we are calling the code::.init:: method on that object, which is an instance method.
+In this case note that code::super.new:: calls the method code::new:: on the superclass and returns a new object.
 
-Warning:: If the superclass also happened to call super.new.init it will have expected to call the .init method defined
-in that class (the superclass), but instead the message .init will find the implementation of the class that the object
-actually is, which is our new subclass. In such cases, a unique method name like myclassInit should be used.
+subsection:: Instance Variables and Initialisation Logic
+
+Instance can have variables associated with them — known as members is other languages.
+code::
+Foo {
+	var a, b, c; // Instance variables.
+}
 ::
 
-One easy way to copy the arguments passed to the instance variables when creating a class is to use link::Classes/Object#*newCopyArgs::.  This
-method will copy the arguments to the instance variables in the order that the variables were defined in the class,
-starting from the parent classes and working it's way down to the current class.
+These can be assigned in two ways.
+Through code::newCopyArgs:: or through an code::init:: method.
+The former is recommend and discussed first.
+
+Rather than calling the method code::new:: a call to link::Classes/Object#*newCopyArgs:: can be used to initialise members.
+
+The code below allows the call–site to decide the initial value of code::c:: and defaults code::a:: to 10 and code::b:: to 20.
+code::
+Foo {
+	var a, b, c;
+	*new { |myC| ^super.newCopyArgs(a: 10, b: 20, c: myC) }
+}
+::
+
+If initialisation logic that prepares the arguments before assignment is required,
+ideally, it should go before the call to code::super.newCopyArgs::.
+This way the final object never exists in an invalid state — an alternative is the use of an code::init:: method and shall be shown shortly.
+
+However, when there is a hierarchy of classes, code::newCopyArgs:: requires that all the base class arguments be passed in the order they are defined. 
+This makes changing the base class difficult.
+Here is one way to mitigate this issue using variable keyword arguments link::Reference/Functions#Variable Arguments:: and link::Classes/Object#-superPerformArgs::.
 
 code::
-MyClass {
-	var a,b,c;
-
-	*new { | a, b, c |
-		^super.newCopyArgs(a, b, c)
+Base {
+	var <>a, <>b;
+	*new { |a, b ...args, kwargs|
+		^super.superPerformArgs(\newCopyArgs, [a, b] ++ args, kwargs);
 	}
 }
 
-MyChildClass : MyClass {
-	var d;
-
-	*new { | a, b, c, d |
-		^super.newCopyArgs(a, b, c, d)
+Derived : Base {
+	var <>c;
+	*new { |a, b, c ...args, kwargs|
+		^super.superPerformArgs(\new, [a, b, c] ++ args, kwargs)
 	}
 }
 ::
+
+Calling code::Derived(1, 2, 3):: will set code::a:: to code::1::, code::b:: to code::2::, and code::c:: to 3.
+Here are some more examples:
+code::
+Derived(c: 10) // a: nil, b: nil, c: 10
+Derived(1, 2, c: 10) // a: 1, b: 2, c: 10
+Derived(d: 10) // If 'd' existed somewhere in the hierarchy, it would be assigned the value 10.
+
+::
+
+Although this approach might seem complex, the benefit is that the new instance variables can be added to either class and it will always be clear which one you meant to assign to.
+
+Should it be desirable to remove instance variables of the base class in the future,
+it is good to require that only keyword arguments be used.
+This can be achieved by removing the named arguments and throwing an error if code::args:: is not empty.
+One disadvantage here is that autocomplete in the IDE will not work.
+
+code::
+Foo {
+	*new { |... args, kwargs| 
+		if(args.empty.not) { Error().throw };
+		^super.superPerformArgs(\newCopyArgs, #[], kwargs);
+	}
+}
+::
+
+Another benefit is that the instance is never in an incomplete state: either all the instance members have been assigned to, or the object does not exist.
+
+The disadvantages come when you have complex initialisation logic where the arguments in code::Derived:: require knowledge of the arguments in code::Base::.
+Traditionally in SuperCollider this has been solved with an code::init:: method as seen below, although a 'builder' pattern might be considered for complex cases.
+
+code::
+Base {
+	var a, b;
+	*new {|a, b| ^super.new.init(a, b) }
+	init {|newA, newB|
+		// Initialization logic goes here.
+		a = newA;
+		b = newB;
+	}
+}
+::
+
+This works but becomes more complex in inheritance chains.
+
+code::
+Base {
+	var a, b;
+	*new {|a, b| ^super.new.init(a, b) }
+	init {|newA, newB|
+		// Initialization logic goes here.
+		a = newA;
+		b = newB;
+	}
+}
+
+Derived : Base {
+	var c;
+	*new { |a, b, c| ^super.new.derivedInit(a, b, c) }
+	derivedInit { |newA, newB, newC|
+		// do initialisation with all the arguments
+		this.init(newA, newB) // call Base.init
+		c = newC; // assign to Derived's c
+	}
+}
+::
+
+Warning:: 
+If both the code::Base:: and code::Derived:: class define an code::init:: method, the code::Derived:: class will override the code::Base::'s implementation, 
+meaning it will no longer be possible to call that implementation.
+In such cases, a unique method name like code::myclassInit:: should be used, or better yet, a specialised name that indicates what kind of initialization is performed.
+::
+
+While the code::init:: pattern is the most flexible, care must be taken as inside the code::init:: functions,
+the instance is in an incomplete state and other methods might not work as expected;
+for example, this may become confusing when combined with threads and asynchronous execution, for example, when interacting with the server.
+
+section:: Class instances
 
 Class variables are accessible within class methods and in any instance methods.
 
@@ -233,9 +311,6 @@ MyClass {
 }
 ::
 
-
-
-
 section::Alternatives to inheritance
 
 Overreliance on inheritance is usually a design flaw. Inheritance is mainly a way to organise code, and shouldn't be mistaken for a categorisation of objects. Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
@@ -257,7 +332,6 @@ MyClass {
 a = MyClass.new;
 a.value; // returns 1
 ::
-
 
 subsection::Object Composition
 Often, an object passes control to one of the objects it has in its instance variables. Because these objects can be of any kind, this is a very flexible way to achieve a wide range of functionalities. For example, a link::Classes/Button:: has an code::action:: instance variable, which may hold anything that responds to the message code::value::.
@@ -282,7 +356,6 @@ b.value(8);
 
 Often, variables like code::action:: above are filled with custom objects that belong to code::MyClass::. Thus, one will write many small classes that can be well combined in such a way. This is called "pluggable behavior".
 
-
 section::Variables
 
 subsection:: Initializing variables directly
@@ -296,7 +369,6 @@ MyClass {
 	var y = #[1, 2, 3];
 }
 ::
-
 
 subsection:: Variable Scope
 
@@ -332,7 +404,6 @@ MyClass : SomeSuperclass {
 // SomeSuperclass.returnXHere returns 0
 // MyClass.returnXHere returns 1
 // MyClass.returnX returns 0
-
 
 ::
 
@@ -380,7 +451,6 @@ someObject.getMeOrSetMe_(5);
 someObject.getMeOrSetMe;
 ::
 
-
 A getter or setter method created in this fashion may be overridden in a subclass by explicitly defining the method. Setter methods should take only one argument to support both ways of expression consistently.  eg.
 
 code::
@@ -394,7 +464,6 @@ MyClass {
 ::
 
 A setter method should always return the receiver. This allows us to be sure that several setters can chained up.
-
 
 subsection::Constants
 Constants are variables, that, well, don't vary. They can only be assigned initially.
@@ -522,7 +591,7 @@ When a message is received that is undefined, the receiver calls the method code
 code::
 MyClass {
 
-	doesNotUnderstand { | selector...args |
+	doesNotUnderstand { | selector... args, kwargs |
 		(this.class ++ " does not understand method " ++ selector);
 
 		if(UGen.findRespondingMethodFor(selector).notNil) {

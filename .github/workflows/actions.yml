@@ -101,21 +101,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - artifact-suffix: macOS-x64
-            s3-os-name: macos-x64
-            s3-artifact-prefix: '-macOS-x64'
+          - artifact-suffix: macOS-universal
+            s3-os-name: macos-universal
+            s3-artifact-prefix: '-macOS-universal'
             s3-artifact-suffix: ''
             s3-artifact-extension: 'dmg'
             artifact-extension: '.dmg' # for download-artifacts action, for non-zip only, should include `.`
             s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name  
-        
-          - artifact-suffix: macOS-arm64
-            s3-os-name: macos-arm64
-            s3-artifact-prefix: '-macOS-arm64'
-            s3-artifact-suffix: ''
-            s3-artifact-extension: 'dmg'
-            artifact-extension: '.dmg'
-            s3-create-latest-link: true
 
           - artifact-suffix: win64
             s3-os-name: win64
