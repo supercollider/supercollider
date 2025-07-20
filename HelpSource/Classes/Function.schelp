@@ -37,7 +37,7 @@ The global pseudo-variable code::thisFunction:: always evaluates to the current
 enclosing Function.
 
 note::
-Be aware of link::Reference/Conditional-Execution#Optimization through inline expansion:: which will be reflected in the value of code::thisFunction::.
+Be aware that code::thisFunction:: may refer to different functions depending on function inlining. See link::Reference/Conditional-Execution#Optimization through inline expansion::.
 ::
 
 See also: link::Classes/FunctionDef#.thisFunctionDef#thisFunctionDef::
