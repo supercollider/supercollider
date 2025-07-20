@@ -581,7 +581,7 @@ but they are now no longer implemented as function calls, but as direct instruct
 
 section:: Audio Control Structures: Do not use .if etc. in Synths!
 
-The control structures discussed here is intended for use in sclang (i.e., language/client), not in scsynth (i.e., server). 
+The control structures discussed here are intended for use in sclang (i.e., language/client), not in scsynth (i.e., server). 
 Use of .if in signal processing contexts may appear to work in simple cases but is strong::not advised::. 
 Intead, use link::Classes/Select:: or link::Classes/SelectX:: and related classes.
 Also see link::Guides/UserFAQ#SynthDef Issues:: for more details.
