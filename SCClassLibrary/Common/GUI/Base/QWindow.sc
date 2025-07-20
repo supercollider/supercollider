@@ -173,15 +173,15 @@ Window {
 	onClose_ { arg func; view.onClose_(func) }
 
 	*lowestPosition {
- 		^this.screenBounds.bottom - this.availableBounds.bottom
- 	}
-
+		^this.screenBounds.bottom - this.availableBounds.bottom
+	}
+	
 	moveToBottom { |margin = 0|
 		this.bounds = this.bounds.moveTo(
 			this.bounds.left,
 			Window.lowestPosition + margin
 		)
-    	}
+	}
 
 	// TODO
 	addToOnClose{ arg function; }
