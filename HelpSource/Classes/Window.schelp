@@ -33,50 +33,17 @@ METHOD:: new
 		The size does strong::not:: include the window's border and title bar.
 
 		Position is measured from the strong::bottom-left:: corner of the screen (This differs from link::Classes/View#-bounds::, which uses the top-left corner).
-		This coordinate convention originates from SuperCollider’s early implementation on macOS using the Cocoa GUI, which adopts bottom-left as its origin.
+		This coordinate convention originates from SuperCollider’s original Cocoa GUI implementation on macOS, which uses a bottom-left origin.
 
 		The default size is 400x400.
-		When using the Qt GUI backend, if no position is specified, the window is centered on the screen at launch (In older backends such as Cocoa, the default position was 128x64).
-		Thus, the approximate default position can be described as:
-
-		teletype::
-x = (screenWidth - 400) / 2
-::
-		teletype::
-y = (screenHeight - 400) / 2
-::
+		If no position is specified, the window is centered on the screen by default.
 
 		note::
-			Default position may vary depending on platform, screen resolution, and whether the window argument code::resizable:: is set to code::true:: or code::false::.
+			The default position may vary depending on screen resolution, platform, and operating system settings.
 			::
 	argument:: resizable
 		A Boolean indicating whether the window is resizable by the user.
 		The default is code::true::.
-		On strong::all platforms::, disabling resizing (code::resizable: false::) can affect the position and layout of the window due to differences in how system-level window frames and decorations are computed.
-		Therefore, when code::resizable:: is set to code::false::, it is recommended strong::not:: to set code::bounds:: via the constructor argument.
-		Instead, it is recommended to define the bounds using the code::bounds_:: method strong::after:: window creation, to ensure consistent positioning across platforms.
-
-		Examples:
-		code::
-/* resizable: true */
-
-// Consistent vertical position on all platforms:
-a = Window("window 1", Rect(100, 100, 300, 300)).front;
-a.bounds
-
-b = Window("window 2").bounds_(Rect(100, 100, 300, 300)).front;
-b.bounds
-
-/* resizable: false */
-
-// Inconsistent vertical position across platforms:
-c = Window("window 3", Rect(100, 100, 300, 300), false).front;
-c.bounds
-
-// Consistent vertical position on all platforms:
-d = Window("window 4", resizable: false).bounds_(Rect(100, 100, 300, 300)).front;
-d.bounds
-::
 	argument:: border
 		A Boolean indicating whether this window has a border. Borderless windows have no title bar and thus can only be closed in code. The default is code::true::.
 	argument:: scroll
