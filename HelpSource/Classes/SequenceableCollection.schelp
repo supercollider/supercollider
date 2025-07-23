@@ -583,10 +583,6 @@ code::
 ::
 returns:
 teletype::
-(4: 4)
-("3": 3)
-('2': 2)
-('a': 1)
 -> [(4: 4), ("3": 3), ('2': 2), ('a': 1)]
 ::
 See also: link::Classes/Bag#-sortedCounts::.

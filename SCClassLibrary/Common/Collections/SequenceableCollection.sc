@@ -1659,8 +1659,7 @@ SequenceableCollection : Collection {
 		}.sortBy(\occurrence)
 		.reverse.collect { |item|
 			item.atAll([\uniqueItem, \occurrence]).asEvent
-		}
-		.do {|item| item.postcs };
+		};
 		^answer
 	}
 }
