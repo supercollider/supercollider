@@ -325,7 +325,7 @@ ServerStatusWatcher {
 		server.sendMsg("/notify", flag.binaryValue, server.clientID);
 
 		if(flag){
-			"Requested notification messages from server '%'\n".postf(server.name)
+			"\nRequested notification messages from server '%'\n".postf(server.name)
 		} {
 			"Switched off notification messages from server '%'\n".postf(server.name);
 		};
