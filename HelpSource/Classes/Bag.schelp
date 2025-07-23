@@ -34,7 +34,7 @@ Bag[1, 2, 2, 3, 300, 2].itemCount(2);
 method::sortedCounts
 Returns an array of Associations. In each Association, the key is the number of times an item appears in the receiver, and the value is the item.
 code::
-Bag[\a, \2, '2', "3", "3", "3", 4, 4, 4, 4, ].sortedCounts
+Bag[\a, \2, '2', "3", "3", "3", 4, 4, 4, 4, ].sortedCounts.postcs
 ::
 returns:
 teletype::

@@ -94,7 +94,7 @@ Bag : Collection {
 	
 	sortedCounts {
 		var answer = SortedList(8) { |x, y| x >= y };
-		this.contents.associationsDo { | anAssociation |
+		this.contents.associationsDo { |anAssociation|
 			answer.add(anAssociation.value -> anAssociation.key)
 		};
 		^answer.array
