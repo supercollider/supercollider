@@ -56,7 +56,9 @@ static void doLoadFactories() {
     QC_ADD_FACTORY(QcScrollArea);
     QC_ADD_FACTORY(QcSlider);
     QC_ADD_FACTORY(QcSlider2D);
+#ifndef NO_LIBSNDFILE
     QC_ADD_FACTORY(QcWaveform);
+#endif
     QC_ADD_FACTORY(QcTextEdit);
     QC_ADD_FACTORY(QcTreeWidget);
     QC_ADD_FACTORY(QcMenu);

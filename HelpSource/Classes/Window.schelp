@@ -29,9 +29,21 @@ METHOD:: new
 	argument:: name
 		A String for the text that will be displayed in the title bar. The default is 'panel'.
 	argument:: bounds
-		A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is size 400x400 at position 128x64, but in Qt the window is centered on the screen by default.
+		A link::Classes/Rect:: specifying the position and size of the window in screen coordinates.
+		The size does strong::not:: include the window's border and title bar.
+
+		Position is measured from the strong::bottom-left:: corner of the screen (This differs from link::Classes/View#-bounds::, which uses the top-left corner).
+		This coordinate convention originates from SuperCollider’s original Cocoa GUI implementation on macOS, which uses a bottom-left origin.
+
+		The default size is 400x400.
+		If no position is specified, the window is centered on the screen by default.
+
+		note::
+			The default position may vary depending on screen resolution, platform, and operating system settings.
+			::
 	argument:: resizable
-		A Boolean indicating whether this window is resizable by the user. The default is code::true::.
+		A Boolean indicating whether the window is resizable by the user.
+		The default is code::true::.
 	argument:: border
 		A Boolean indicating whether this window has a border. Borderless windows have no title bar and thus can only be closed in code. The default is code::true::.
 	argument:: scroll
@@ -57,6 +69,11 @@ METHOD:: availableBounds
 
 	Returns a Rect describing the area of the screen that windows can actually occupy (i.e. excluding the Mac dock, the task bar, or similar).
 
+METHOD:: lowestPosition
+
+	Returns a floating-point value representing the lowest reasonable vertical position for a window on the screen.
+	This value is calculated to avoid overlap with system-reserved interface elements, such as the Windows taskbar, the macOS Dock, or the Linux dock (e.g. GNOME, KDE, etc.).
+	The result is not the absolute bottom edge of the screen, but rather the lowest position a window can occupy without interfering with areas reserved by the operating system.
 
 
 
@@ -174,6 +191,11 @@ METHOD:: addFlowLayout
 METHOD:: layout
 	Redirects to link::Classes/View#-layout:: of the link::#-view::.
 
+METHOD:: moveToBottom
+	Moves the window to the lowest usable screen position without overlapping system-reserved areas (e.g., taskbars, docks).
+
+	argument:: margin
+		Adds vertical offset from the bottom.
 
 
 SUBSECTION:: Appearance

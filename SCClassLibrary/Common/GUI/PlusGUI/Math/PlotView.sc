@@ -1430,7 +1430,9 @@ Plotter {
 + Buffer {
 	plot { |name, bounds, minval, maxval, separately = false, parent|
 		var plotter, action;
-		if(server.serverRunning.not) { "Server % not running".format(server).warn; ^nil };
+
+		if(server.warnIfNotRunning(thisMethod)) { ^nil };		
+
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
 
 		plotter = [0].plot(
