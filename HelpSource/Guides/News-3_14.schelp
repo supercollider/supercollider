@@ -10,7 +10,7 @@ list::
 ## Sclang functions now support collecting arbitrary keyword arguments via code:: { |...args, kwargs| kwargs }. ::
 ## The initialization sample of multiple UGens was fixed.
 ## Documentation can now also be themed like the IDE.
-## Due to updated bundled boost libraries, FluCoMa UGens which were working under SuperCollider 3.13 are not compatible anymore with 3.14! Go to link::https://github.com/flucoma/flucoma-sc to check:: for a compatible version.
+## Due to updated bundled boost libraries, FluCoMa UGens which were working under SuperCollider 3.13 are not compatible anymore with 3.14! Go to link::https://github.com/flucoma/flucoma-sc:: to check for a compatible version.
 ## Even though these are not as much of user-facing changes, there were countless structural upgrades: we migrated to qt6, added and improved tests, updated 3rd-party libraries, updated the build system for most recent build tools, and adapted a new organizational structure for development.
 ::
 
@@ -192,7 +192,7 @@ list::
 ## Add helper for reallocstack and correct objectPerformArgsImpl by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6731
 ## Use fix width integers for code:: long :: and code:: long long :: by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6732
 ## PyrGC: Fix GC segfault caused by uncollected temporary function objects by placing an upper limit on un-scanned objects.  by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6261
-## Assert no uninlined functions in class lib. by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6916
+## Assert no uninlined functions in class lib. by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6916, https://github.com/supercollider/supercollider/pull/6935 and https://github.com/supercollider/supercollider/pull/7062
 ## Implement replace regex using boost by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6213
 ## code:: slotStrVal :: implementation is fixed by @Spacechild1 in https://github.com/supercollider/supercollider/pull/6156
 ## QtCollider: QcTreeWidget: fix instance methods by @sadguitarius in https://github.com/supercollider/supercollider/pull/6521
@@ -266,7 +266,7 @@ list::
 ## CoreAudio backend: don't try to query input device when numInputBusChannels = 0 by @dyfer in https://github.com/supercollider/supercollider/pull/6716
 ## portaudio/WASAPI: enable automatic sample rate conversion by @Spacechild1 in https://github.com/supercollider/supercollider/pull/6899 / fix PortAudio hostAPI stream info (Win32) by @dyfer in https://github.com/supercollider/supercollider/pull/6905
 ## Increase UDP socket buffer size and fallback to 1MB by @xunil-cloud in https://github.com/supercollider/supercollider/pull/6564 and https://github.com/supercollider/supercollider/pull/6989
-## Use WASAPI as default backend on Windows by @dyfer in https://github.com/supercollider/supercollider/pull/6994
+## Use WASAPI as default backend on Windows by @dyfer in https://github.com/supercollider/supercollider/pull/6994 and https://github.com/supercollider/supercollider/pull/7051
 ::
 
 subsection:: Fixed
