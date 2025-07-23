@@ -309,6 +309,13 @@ cmake -DCMAKE_INSTALL_PREFIX=~/usr/local ..
 
 Make sure `~/usr/local/bin` is in your `PATH` if you do this.
 You can do that by adding a line such as `PATH=$PATH:$HOME/usr/local/bin` to `~/.profile`.
+For users who are not accustomed to editing `~/.profile` via the terminal, the file can be opened using a GUI-based application. 
+To do this, enable the display of hidden files in the system’s default file manager, such as Files (GNOME), Dolphin (KDE), or Thunar (XFCE).
+After building SuperCollider on your machine, if you launch scide inside a terminal window, use the following command to apply modifications made to `~/.profile` without logging out or rebooting the system:
+```shell
+source ~/.profile
+```
+However, if you launch scide from the Files application, logging out of your user account and then logging back in will ensure that `~/.profile` is reloaded and its changes take effect.
 
 #### Speeding up repeated builds
 
