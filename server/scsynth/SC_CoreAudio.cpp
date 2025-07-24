@@ -433,7 +433,7 @@ bool SC_AudioDriver::Setup() {
     mMaxPeakCounter = (int)mBuffersPerSecond;
 
     if (mWorld->mVerbosity >= 0) {
-        scprintf("SC_AudioDriver: sample rate = %f, driver's block size = %d\n", sampleRate, mNumSamplesPerCallback);
+        scprintf("  Sample rate: %f\n  SC_AudioDriver's block size: %d\n", sampleRate, mNumSamplesPerCallback);
     }
 
     return true;
@@ -559,7 +559,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 
         int numdevices = count / sizeof(AudioDeviceID);
         if (mWorld->mVerbosity >= 0) {
-            scprintf("Number of Devices: %d\n", numdevices);
+            scprintf("\n*** Scsynth booting\n%d Available Audio Devices:\n", numdevices);
         }
         for (int i = 0; i < numdevices; ++i) {
             propertyAddress.mSelector = kAudioDevicePropertyDeviceName;
@@ -583,8 +583,33 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
                 free(name);
                 break;
             }
+            UInt32 propertySize;
+            AudioObjectPropertyAddress chPropAddr;
+            chPropAddr.mSelector = kAudioDevicePropertyStreamConfiguration;
+            chPropAddr.mElement = kAudioObjectPropertyElementMaster;
+
+            chPropAddr.mScope = kAudioDevicePropertyScopeInput;
+            AudioObjectGetPropertyDataSize(devices[i], &chPropAddr, 0, NULL, &propertySize);
+            AudioBufferList* inputBufList = (AudioBufferList*)malloc(propertySize);
+            AudioObjectGetPropertyData(devices[i], &chPropAddr, 0, NULL, &propertySize, inputBufList);
+
+            int inChs = 0;
+            for (UInt32 j = 0; j < inputBufList->mNumberBuffers; ++j)
+                inChs += inputBufList->mBuffers[j].mNumberChannels;
+            free(inputBufList);
+
+            chPropAddr.mScope = kAudioDevicePropertyScopeOutput;
+            AudioObjectGetPropertyDataSize(devices[i], &chPropAddr, 0, NULL, &propertySize);
+            AudioBufferList* outputBufList = (AudioBufferList*)malloc(propertySize);
+            AudioObjectGetPropertyData(devices[i], &chPropAddr, 0, NULL, &propertySize, outputBufList);
+
+            int outChs = 0;
+            for (UInt32 j = 0; j < outputBufList->mNumberBuffers; ++j)
+                outChs += outputBufList->mBuffers[j].mNumberChannels;
+            free(outputBufList);
+
             if (mWorld->mVerbosity >= 0) {
-                scprintf("   %d : \"%s\"\n", i, name);
+                scprintf("- \"%s\"\n  (%d ins, %d outs)\n", name, inChs, outChs);
             }
             free(name);
         }
@@ -965,7 +990,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
         }
 
         if (mWorld->mVerbosity >= 0) {
-            scprintf("\"%s\" Input Device\n", name);
+            scprintf("Booting with:\n  In: \"%s\"", name);
         }
         free(name);
 
@@ -1004,9 +1029,9 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
         }
 
         if (mWorld->mVerbosity >= 0) {
-            scprintf("   Streams: %d\n", bufList->mNumberBuffers);
+            scprintf(" (Streams: %d ", bufList->mNumberBuffers);
             for (unsigned int j = 0; j < bufList->mNumberBuffers; ++j) {
-                scprintf("      %d  channels %d\n", j, bufList->mBuffers[j].mNumberChannels);
+                scprintf(", %d), %d outs", j, bufList->mBuffers[j].mNumberChannels);
             }
         }
 
@@ -1034,7 +1059,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
         }
 
         if (mWorld->mVerbosity >= 0) {
-            scprintf("\"%s\" Output Device\n", name);
+            scprintf("  Out: \"%s\"", name);
         }
         free(name);
 
@@ -1072,9 +1097,9 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
             break;
         }
         if (mWorld->mVerbosity >= 0) {
-            scprintf("   Streams: %d\n", bufList->mNumberBuffers);
+            scprintf(" (Streams: %d ", bufList->mNumberBuffers);
             for (unsigned int j = 0; j < bufList->mNumberBuffers; ++j) {
-                scprintf("      %d  channels %d\n", j, bufList->mBuffers[j].mNumberChannels);
+                scprintf("%d), %d ins)", j, bufList->mBuffers[j].mNumberChannels);
             }
         }
         free(bufList);

@@ -269,10 +269,10 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
     PaDeviceIndex numDevices = Pa_GetDeviceCount();
 
     // print out all options:
-    fprintf(stdout, "\nDevice options:\n");
+    fprintf(stdout, "\n*** Scsynth booting\n%d Available Audio Devices:\n", numDevices);
     for (int i = 0; i < numDevices; i++) {
         pdi = Pa_GetDeviceInfo(i);
-        fprintf(stdout, "- %s\n  (%d ins, %d outs)\n", GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
+        fprintf(stdout, "- \"%s\"\n  (%d ins, %d outs)\n", GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
                 pdi->maxOutputChannels);
     }
 
@@ -338,7 +338,8 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
             // avoid to allocate the 128 virtual channels reported by the portaudio library for ALSA "default"
             mInputChannelCount =
                 std::min<size_t>(mWorld->mNumInputs, Pa_GetDeviceInfo(mDeviceInOut[0])->maxInputChannels);
-            fprintf(stdout, "  In: %s\n", GetPaDeviceName(mDeviceInOut[0]).c_str());
+            fprintf(stdout, "  In: \"%s\" %d in(s)\n", GetPaDeviceName(mDeviceInOut[0]).c_str(),
+                    Pa_GetDeviceInfo(mDeviceInOut[0])->maxInputChannels);
         } else {
             mInputChannelCount = 0;
         }
@@ -347,7 +348,8 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
             // avoid to allocate the 128 virtual channels reported by the portaudio library for ALSA "default"
             mOutputChannelCount =
                 std::min<size_t>(mWorld->mNumOutputs, Pa_GetDeviceInfo(mDeviceInOut[1])->maxOutputChannels);
-            fprintf(stdout, "  Out: %s\n", GetPaDeviceName(mDeviceInOut[1]).c_str());
+            fprintf(stdout, "  Out: \"%s\" %d out\n", GetPaDeviceName(mDeviceInOut[1]).c_str(),
+                    Pa_GetDeviceInfo(mDeviceInOut[1])->maxOutputChannels);
         } else {
             mOutputChannelCount = 0;
         }

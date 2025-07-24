@@ -1048,7 +1048,7 @@ Server {
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
 				this.prOnServerProcessExit(exitCode);
 			});
-			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
+			("\n\n*** Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
 			// in case the server takes more time to boot
 			// we increase the number of attempts for tcp connection
 			// in order to minimize the chance of timing out

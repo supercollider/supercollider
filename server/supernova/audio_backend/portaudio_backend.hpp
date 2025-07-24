@@ -92,10 +92,10 @@ public:
         if (device_number < 0)
             report_error(device_number);
 
-        printf("Available Audio Devices:\n");
+        printf("%d Available Audio Devices:\n", device_number);
         for (int i = 0; i < device_number; i++) {
             const PaDeviceInfo* pdi = Pa_GetDeviceInfo(i);
-            printf("- %s\n  (%d ins, %d outs)\n", GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
+            printf("- \"%s\"\n  (%d ins, %d outs)\n", GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
                    pdi->maxOutputChannels);
         }
         printf("\n");
@@ -128,11 +128,13 @@ public:
             TryGetDefaultPaDevices(&input_device_index, &output_device_index, inchans, outchans, samplerate);
         std::cout << std::endl;
 
-        std::cout << "Opening audio devices:" << std::endl;
+        std::cout << "Booting with:" << std::endl;
         if (inchans)
-            std::cout << "  In: " << GetPaDeviceName(input_device_index) << std::endl;
+            std::cout << "  In: \"" << GetPaDeviceName(input_device_index) << "\", " << inchans << " in(s)"
+                      << std::endl;
         if (outchans)
-            std::cout << "  Out: " << GetPaDeviceName(output_device_index) << std::endl;
+            std::cout << "  Out: \"" << GetPaDeviceName(output_device_index) << "\", " << outchans << " out(s)"
+                      << std::endl;
 
         // if we got an error from CheckPaDevices, stop here
         if (checked != paNoError) {
