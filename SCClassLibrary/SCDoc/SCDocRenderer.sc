@@ -911,21 +911,21 @@ SCDocHTMLRenderer {
 					\CMETHOD, {
 						stream << "<li class='toc3'>"
 						<< (n.children[0].children.collect{|m|
-							"<a href='#*"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
+							"<a href='#*"++m.text++"'>."++this.escapeSpecialChars(m.text)++"</a> ";
 						}.join(" "))
 						<< "</li>\n";
 					},
 					\IMETHOD, {
 						stream << "<li class='toc3'>"
 						<< (n.children[0].children.collect{|m|
-							"<a href='#-"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
+							"<a href='#-"++m.text++"'>."++this.escapeSpecialChars(m.text)++"</a> ";
 						}.join(" "))
 						<< "</li>\n";
 					},
 					\METHOD, {
 						stream << "<li class='toc3'>"
 						<< (n.children[0].children.collect{|m|
-							"<a href='#."++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
+							"<a href='#."++m.text++"'>."++this.escapeSpecialChars(m.text)++"</a> ";
 						}.join(" "))
 						<< "</li>\n";
 					},
