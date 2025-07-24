@@ -97,10 +97,6 @@ This change makes a number of new things possible, e.g.
 - `DoesNotUnderstandError` informs about keyword arguments.
 - Make `Pbind` work with kwargs (this syntax works now: `Pbind(note: Pseq([-3, -2, 0, 1, 6, 13]), dur: 0.05, amp: 0.1).play`) by @JordanHendersonMusic and @telephon in https://github.com/supercollider/supercollider/pull/6530 
 
-### General: Changed
-
-### General: Fixed
-
 ### Class library: Added
 
 - ScopeView: allow lissajou mode for more than two channels as overlaid pairs by @elgiano in https://github.com/supercollider/supercollider/pull/6212
