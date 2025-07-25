@@ -25,6 +25,8 @@ The method name that was not understood.
 argument:: args
 Arguments passed to the unknown method.
 
+argument:: keywordArgumentPairs
+
 instancemethods::
 
 method:: selector

@@ -992,14 +992,15 @@ Returns a random number from a uniform distribution with the range [-this, +this
 i.e. between -this and +this (including -this and +this).
 
 method:: rrand
-Returns a random number from a uniform distribution with the range between code::this:: and code::arg::.
-argument::arg
+Returns a random number from a uniform distribution with the range between code::this:: and code::aNumber::.
+argument::aNumber
 The other (upper or lower) limit of the range.
+argument::adverb
 
-discussion:: 
-code::arg:: can be lower than code::this::.
-If either code::this:: or code::arg:: is a link::Classes/Float::, the code::arg:: bound will be excluded from the range.
-If both code::this:: and code::arg:: are link::Classes/Integer::, both bounds are included.
+discussion::
+code::aNumber:: can be lower than code::this::.
+If either code::this:: or code::aNumber:: is a link::Classes/Float::, the code::aNumber:: bound will be excluded from the range.
+If both code::this:: and code::aNumber:: are link::Classes/Integer::, both bounds are included.
 
 
 method:: linrand
@@ -1037,18 +1038,19 @@ code::
 ::
 
 method:: exprand
-Returns a link::Classes/Float:: in the range [this, arg) drawn from a log-uniform distribution.
+Returns a link::Classes/Float:: in the range (this, aNumber) drawn from a log-uniform distribution.
 Receiver (i.e., code::this::) must not be zero.
 Note that the value is emphasis::not:: drawn from an exponential distribution.
-argument::arg
+argument::aNumber
 The other (upper or lower) limit of the range. Must be of same sign as code::this::, and must not be zero.
+argument::adverb
 returns:: Always returns a link::Classes/Float::.
 
 method:: gauss
-Returns a link::Classes/Float:: sampled from a Gaussian distribution with mean code::this:: and standard deviation code::stddev::.
+Returns a link::Classes/Float:: sampled from a Gaussian distribution with mean code::this:: and standard deviation code::standardDeviation::.
 The range of the gaussian distribution is unbounded and thus may return +/-inf;
 consider using link::Classes/SimpleNumber#-clip#clip::.
-argument::stddev
+argument::standardDeviation
 The standard deviation.
 returns:: Always returns a link::Classes/Float::.
 
