@@ -35,54 +35,6 @@ code::
 { |a = 9, b = 10, c| a + b }.def.sourceCode.postcs;
 ::
 
-method::numArgs
-Return the number of arguments (the arity) of the function.
-code::
-{ |a = 9, b = 10, c| a + b }.def.numArgs; // 3
-::
-
-method::numVars
-Return the number of variables in the function body.
-code::
-(
-{ |x|
-	var y, z;
-	x + y + z
-}.def.numVars; // 2
-)
-::
-
-method::varArgs
-Return whether function has ellipsis argument.
-code::
-{ |a, b ... c| a + b * c }.def.varArgs; // true
-{ |a, b, c| a + b * c }.def.varArgs; // false
-::
-
-method::hasKwArgs
-Returns whether the function has variable keyword arguments
-code::
-{ |a, b, c| a + b * c }.def.hasKwArgs; // false
-{ |a, b ... c| a + b * c }.def.hasKwArgs; // false
-{ |a ... b, c| a * b }.def.hasVarArgs; // true
-::
-
-method::varArgsValue
-Returns how many sets of variable arguments the function has. 0 for none, 1 for ellipsis arguments, 2 for keyword arguments.
-code::
-{ |a, b, c| a + b * c }.def.varArgsValue; // 0
-{ |a, b ... c| a + b * c }.def.varArgsValue; // 1
-{ |a ... b, c| a * b }.def.varArgsValue; // 1
-::
-
-method::hasVarArgs
-Returns whether the function has variable args of any kind
-code::
-{ |a, b, c| a + b * c }.def.hasVarArgs; // false
-{ |a, b ... c| a + b * c }.def.hasVarArgs; // true
-{ |a ... b, c| a * b }.def.hasVarArgs; // true
-::
-
 method::context
 
 Get the enclosing FunctionDef or Method.

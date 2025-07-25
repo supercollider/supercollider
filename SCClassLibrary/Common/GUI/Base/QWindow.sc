@@ -95,10 +95,6 @@ Window {
 		allWindows.copy.do { |win| win.close };
 	}
 
-	*lowestPosition {
-		^this.screenBounds.bottom - this.availableBounds.bottom
-	}
-
 	/* NOTE:
 	- all args have to be of correct type for Widget constructor to match!
 	*/
@@ -175,13 +171,6 @@ Window {
 
 	onClose { ^view.onClose }
 	onClose_ { arg func; view.onClose_(func) }
-
-	moveToBottom { |margin = 0|
-		this.bounds = this.bounds.moveTo(
-			this.bounds.left,
-			Window.lowestPosition + margin
-		)
-	}
 
 	// TODO
 	addToOnClose{ arg function; }

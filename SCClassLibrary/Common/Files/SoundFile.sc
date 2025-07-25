@@ -404,25 +404,25 @@ SoundFile {
 		^files;
 	}
 
-	*collectIntoBuffers { |path = "sounds/*", server|
+	*collectIntoBuffers { | path = "sounds/*", server |
 		server = server ?? { Server.default };
-		if(server.warnIfNotRunning(thisMethod)) { ^this };
-
-		^this.collect(path)
-		.collect { |sf|
-			Buffer(server, sf.numFrames, sf.numChannels)
-			.allocRead(sf.path)
-			.sampleRate_(sf.sampleRate);
+		if (server.serverRunning) {
+			^this.collect(path)
+				.collect { |  sf |
+					Buffer(server, sf.numFrames, sf.numChannels)
+					.allocRead(sf.path)
+					.sampleRate_(sf.sampleRate);
+				}
+		} {
+			"the server must be running to collect soundfiles into buffers".error
 		}
 	}
 
 
 	asBuffer { |server|
 		var buffer, rawData;
-
 		server = server ? Server.default;
-		if(server.warnIfNotRunning(thisMethod)) { ^this };
-
+		if(server.serverRunning.not) { Error("SoundFile:asBuffer - Server not running.").throw };
 		if(this.isOpen.not) { Error("SoundFile:asBuffer - SoundFile not open.").throw };
 		if(server.isLocal) {
 			buffer = Buffer.read(server, path)

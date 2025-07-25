@@ -60,7 +60,7 @@ void CompletionMenu::addItem(QStandardItem* item) { mModel->appendRow(item); }
 
 void CompletionMenu::adapt() {
     mListView->setFixedWidth(mListView->sizeHintForColumn(0));
-    adjustSize();
+    resize(0, 0);
 }
 
 void CompletionMenu::addInfo(QString info) {

@@ -231,7 +231,10 @@ code::
 Task({
 	var doc;
 	doc = Document("background", "closing in 2 seconds");
-	2.wait;
+	doc.stringColor_(Color.blue);
+	1.wait;
+	doc.background_(Color.blue(alpha: 0.8));
+	1.wait;
 	doc.close;
 }).play(AppClock);
 )
@@ -340,7 +343,7 @@ argument:: line
 An link::Classes/Integer::.
 discussion::
 code::
-Document.current.selectLine(343);
+Document.current.selectLine(390);
 ::
 
 method:: selectRange
@@ -352,7 +355,7 @@ The length of the selection.
 discussion::
 code::
 (
-Document.current.selectRange(Document.current.selectLine(355), 150);
+Document.current.selectRange(Document.current.selectedRangeLocation + 3, 150);
 )
 ::
 
@@ -425,7 +428,7 @@ code::
 // Select the following code in parentheses and execute it
 (
 Document.current.string_(": test test test test test ",
-	Document.current.selectionStart,
+	Document.current.selectedRangeLocation + 12,
 	18);
 )
 // Watch me change content
@@ -499,6 +502,7 @@ code::
 	selectedText
 	selectUnderlinedText (clickPos)
 	linkAtClickPos (clickPos)
+	selectedRangeLocation
 	selectedRangeSize
 	restoreCurrentEnvironment
 	saveCurrentEnvironment
@@ -515,19 +519,28 @@ code::
 examples::
 
 code::
+// unfocusedFront_
+(
+Document.allDocuments.at(0).unfocusedFront
+)
+
+
 (
 var doc;
 doc = Document("", "||");
+doc.background_(Color.blue(alpha: 1.0.rand));
 
 Task({
 	1000.do({
+		doc.setFont(rangeSize: [7, 8, 9, 24].choose);
 		0.08.wait;
 	})
 }).play(AppClock);
 
 Task({
 	100.do({
-		1.01.wait
+		1.01.wait;
+		doc.stringColor_([Color.red(alpha: 1.0.rand), Color.green(alpha: 1.0.rand)].choose);
 	})
 }).play(AppClock);
 
@@ -546,6 +559,7 @@ Task({
 		0.16.wait;
 		co = co * mul;
 		if(co > 0.99, { co = 0.1 });
+		doc.background_(Color.blue(alpha: co));
 	});
 	doc.close;
 }).play(AppClock)
@@ -566,17 +580,33 @@ loop {
 };
 
 Document.new("type some text")
+	.bounds_(Rect(100, SCWindow.screenBounds.height - 250, 400, 200))
 	.keyDownAction = { |doc, key| r.value(key) ; time = Main.elapsedTime };
 )
 
 // play back text in time
 (
-d = Document.new("type some text");
+d = Document.new("type some text")
+	.bounds_(Rect(550, SCWindow.screenBounds.height-250, 400, 200));
 fork({
 	a.do { |pair|
 		d.string = d.string ++ pair[0];
 		pair[1].wait;
 	}
 }, AppClock)
+)
+::
+
+Changing the default look of documents can be done with the help of the link::#*initAction:: method. Run the following example once. Afterwards all newly created documents will have a dark grey background. To make this change happen every time you start SuperCollider, put the code inside your startup.scd file (and optionally wrap it in a code::{ }.defer(0.1)::).
+code::
+(
+Document.listener.background = Color.red;	// a special color for post document
+Document.listener.bounds = Rect(1, 461, 620, 567);	// move and resize post document
+Document.initAction = { |doc|			// function to run for every new document
+	doc.background = Color.grey(0.1, 0.9);
+	doc.bounds = Rect(0, 119, 1280, 659);
+	doc.selectedBackground = Color(0.4, 0.05, 0.18);
+	doc.stringColor = Color.grey(0.9);
+};
 )
 ::

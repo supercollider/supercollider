@@ -68,7 +68,7 @@ void QcCanvas::setBackground(const QColor& c) {
         update();
 }
 
-void QcCanvas::setBackgroundImage(const QSharedPointer<QtCollider::Image>& image, const QRectF& rect, int tileMode,
+void QcCanvas::setBackgroundImage(const QtCollider::SharedImage& image, const QRectF& rect, int tileMode,
                                   double opacity) {
     _bkg_image.setImage(image, rect, tileMode, opacity);
 

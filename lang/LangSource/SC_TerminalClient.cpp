@@ -572,7 +572,7 @@ int SC_TerminalClient::prArgv(struct VMGlobals* g, int) {
     return errNone;
 }
 
-int SC_TerminalClient::prExit(struct VMGlobals* g, int numArgsPushed) {
+int SC_TerminalClient::prExit(struct VMGlobals* g, int) {
     int code;
 
     int err = slotIntVal(g->sp, &code);
@@ -580,20 +580,8 @@ int SC_TerminalClient::prExit(struct VMGlobals* g, int numArgsPushed) {
         return err;
 
     ((SC_TerminalClient*)SC_LanguageClient::instance())->onQuit(code);
-    switchToThread(g, slotRawThread(&g->process->mainThread), tDone, &numArgsPushed);
-    // return all the way out.
-    // PyrSlot *bottom = g->gc->Stack()->slots;
-    // slotCopy(bottom,g->sp);
-    // g->sp = bottom; // ??!! pop everybody
-    g->method = nullptr;
-    g->block = nullptr;
-    g->frame = nullptr;
-    SetNil(g->sp);
-    longjmp(g->escapeInterpreter, 3);
-    // hmm need to fix this to work only on main thread. //!!!
-    // g->sp = g->gc->Stack()->slots - 1;
 
-    return errReturn;
+    return errNone;
 }
 
 int SC_TerminalClient::prScheduleChanged(struct VMGlobals* g, int numArgsPushed) {

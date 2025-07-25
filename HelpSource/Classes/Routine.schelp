@@ -492,7 +492,7 @@ code::
 // Using Routine to set button states on the fly.
 (
 var update, w, b;
-w = Window.new("State Window", Rect(150, Window.screenBounds.height - 140, 380, 60));
+w = SCWindow.new("State Window", Rect(150, SCWindow.screenBounds.height-140, 380, 60));
 
 // a convenient way to set the button label
 update = {
@@ -500,7 +500,7 @@ update = {
 	but.refresh;
 };
 
-b = Button(w, Rect(10, 10, 360, 40));
+b = SCButton(w, Rect(10, 10, 360, 40));
 b.font_(Font("Impact", 24));
 
 update.value(b, "there is only one state");

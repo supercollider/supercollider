@@ -46,7 +46,7 @@ EZGui { // an abstract class
 	}
 
 	prSetViewParams {
-		^this.subclassResponsibility(thisMethod)
+		^this.subclassResponsibility
 	}
 
 	///////// private methods. You can still override these in subclasses

@@ -4,19 +4,7 @@ related::Classes/IdentitySet, Classes/List, Classes/Dictionary
 categories::Collections>Unordered
 
 DESCRIPTION::
-An instance of the class code::Set:: (a set) is a collection of objects, in which no two elements are equal. Most of its methods are inherited from code::Collection::.
-The contents of a set are unordered; therefore, code must not rely on the order of elements in a set.
-For an ordered variant, see link::Classes/OrderedIdentitySet::; for multisets (i.e., sets in which distinct elements can be equal, but that remain unordered), see link::Classes/Bag::.
-
-note::
-Currently, a set cannot contain code::nil:: as an element. Attempting to add code::nil:: will result in a runtime error: 
-teletype::
-ERROR: A set cannot contain nil.
-::
-This restriction exists because code::nil:: is internally used as a sentinel value to represent unoccupied slots in hash-based collections. As a result, this limitation also applies to Set’s subclasses.
-::
-
-
+A Set is s collection of objects, no two of which are equal. Most of its methods are inherited from Collection. The contents of a Set are unordered. You must not depend on the order of items in a set. For an ordered set, see link::Classes/OrderedIdentitySet::.
 
 INSTANCEMETHODS::
 

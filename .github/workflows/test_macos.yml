@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-15
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-macOS-universal.dmg"
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-macOS-arm64.dmg"
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
       TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd

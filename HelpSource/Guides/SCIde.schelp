@@ -161,7 +161,7 @@ The indentation can either use strong::tab characters or spaces::, which you can
 
 Subsection:: Automatic completion
 
-As you type, the editor will try to find possible continuations of your code, and pop up a list of suggestions, so you can quickly insert one instead of typing the whole text. This is called emphasis::autocompletion:: and is a great aid towards writing code faster and with fewer errors.
+As you type, the editor will try to find possible continuations of your code, and pop up a list of suggestions, so you can quickly insert one instead of typing the whole text. This is called emphasis::autocompletion:: and is a great aid towards writing code faster and with less errors.
 
 In general, this works for class and method names. These are the things that the editor can autocomplete:
 
@@ -264,7 +264,7 @@ Using the Go-To-Line tool, you can quickly jump to a line in the current documen
 
 
 
-subsection:: Command Line
+subsection:: Comand Line
 
 Shortcut: strong::Ctrl+E::
 

@@ -828,7 +828,6 @@ static inline size_t compute_remaining_samples(size_t frames_per_read, size_t al
     return remain;
 }
 
-#ifndef NO_LIBSNDFILE
 void read_channel(SndfileHandle& sf, uint32_t channel_count, const uint32_t* channel_data, uint32 total_frames,
                   sample* data) {
     const unsigned int frames_per_read = 1024;
@@ -861,7 +860,6 @@ void read_channel(SndfileHandle& sf, uint32_t channel_count, const uint32_t* cha
         }
     }
 }
-#endif
 
 } /* namespace */
 
@@ -892,7 +890,6 @@ SndBuf* sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, ui
 }
 
 void sc_plugin_interface::buffer_read_alloc(uint32_t index, const char* filename, uint32_t start, uint32_t frames) {
-#ifndef NO_LIBSNDFILE
     auto f = makeSndfileHandle(filename);
     if (f.rawHandle() == nullptr)
         throw std::runtime_error(f.strError());
@@ -910,16 +907,12 @@ void sc_plugin_interface::buffer_read_alloc(uint32_t index, const char* filename
 
     f.seek(start, SEEK_SET);
     f.readf(buf->data, frames);
-#else
-    throw std::runtime_error("cannot read buffer as supernova was compiled without libsndfile; buffer not allocated");
-#endif
 }
 
 
 void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char* filename, uint32_t start,
                                                      uint32_t frames, uint32_t channel_count,
                                                      const uint32_t* channel_data) {
-#ifndef NO_LIBSNDFILE
     // If no channel argument provided we read all channels.
     if (channel_count == 0) {
         buffer_read_alloc(index, filename, start, frames);
@@ -948,16 +941,11 @@ void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char*
 
     f.seek(start, SEEK_SET);
     read_channel(f, channel_count, channel_data, frames, buf->data);
-#else
-    throw std::runtime_error(
-        "cannot read channel(s) as supernova was compiled without libsndfile; buffer not allocated");
-#endif
 }
 
 
 void sc_plugin_interface::buffer_write(uint32_t index, const char* filename, const char* header_format,
                                        const char* sample_format, uint32_t start, uint32_t frames, bool leave_open) {
-#ifndef NO_LIBSNDFILE
     SndBuf* buf = World_GetNRTBuf(&world, index);
     int format = headerFormatFromString(header_format) | sampleFormatFromString(sample_format);
 
@@ -977,12 +965,8 @@ void sc_plugin_interface::buffer_write(uint32_t index, const char* filename, con
 
     if (leave_open && !buf->sndfile)
         buf->sndfile = sf.takeOwnership();
-#else
-    throw std::runtime_error("cannot write to buffer as supernova was compiled without libsndfile");
-#endif
 }
 
-#ifndef NO_LIBSNDFILE
 static void buffer_read_verify(SndfileHandle& sf, size_t min_length, size_t samplerate, bool check_samplerate) {
     if (sf.rawHandle() == nullptr)
         throw std::runtime_error(sf.strError());
@@ -992,11 +976,9 @@ static void buffer_read_verify(SndfileHandle& sf, size_t min_length, size_t samp
     if (check_samplerate && (sf.samplerate() != samplerate))
         throw std::runtime_error("sample rate mismatch");
 }
-#endif
 
 void sc_plugin_interface::buffer_read(uint32_t index, const char* filename, uint32_t start_file, uint32_t frames,
                                       uint32_t start_buffer, bool leave_open) {
-#ifndef NO_LIBSNDFILE
     SndBuf* buf = World_GetNRTBuf(&world, index);
 
     if (uint32_t(buf->frames) < start_buffer)
@@ -1017,15 +999,11 @@ void sc_plugin_interface::buffer_read(uint32_t index, const char* filename, uint
 
     if (leave_open)
         buf->sndfile = sf.takeOwnership();
-#else
-    throw std::runtime_error("cannot read buffer as supernova was compiled without libsndfile");
-#endif
 }
 
 void sc_plugin_interface::buffer_read_channel(uint32_t index, const char* filename, uint32_t start_file,
                                               uint32_t frames, uint32_t start_buffer, bool leave_open,
                                               uint32_t channel_count, const uint32_t* channel_data) {
-#ifndef NO_LIBSNDFILE
     SndBuf* buf = World_GetNRTBuf(&world, index);
 
     if (channel_count != uint32_t(buf->channels))
@@ -1052,18 +1030,14 @@ void sc_plugin_interface::buffer_read_channel(uint32_t index, const char* filena
 
     if (leave_open)
         buf->sndfile = sf.takeOwnership();
-#else
-    throw std::runtime_error("cannot read buffer channel as supernova was compiled without libsndfile");
-#endif
 }
 
 void sc_plugin_interface::buffer_close(uint32_t index) {
     SndBuf* buf = World_GetNRTBuf(&world, index);
-#ifndef NO_LIBSNDFILE
+
     if (buf->sndfile == nullptr)
         return;
     sf_close(GETSNDFILE(buf));
-#endif
     buf->sndfile = nullptr;
 }
 
@@ -1091,10 +1065,9 @@ void sc_plugin_interface::buffer_sync(uint32_t index) noexcept {
 
 void sc_plugin_interface::free_buffer(uint32_t index) {
     SndBuf* buf = world.mSndBufsNonRealTimeMirror + index;
-#ifndef NO_LIBSNDFILE
     if (buf->sndfile)
         sf_close(GETSNDFILE(buf));
-#endif
+
     sndbuf_init(buf);
 }
 

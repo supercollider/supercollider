@@ -223,6 +223,7 @@ Post {
 		];
 	}
 
+	//*flush { this.flushPostBuf }
 	* << { arg item;
 		item.printOn(this);
 	}
@@ -246,7 +247,7 @@ Post {
 	* nl { this.put(Char.nl); }
 	* ff { this.put(Char.ff); }
 	* tab { this.put(Char.tab); }
-	* close {}  // was this.flush but .flush was removed in 2007
+	* close { this.flush; }
 }
 
 

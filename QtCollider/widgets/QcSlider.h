@@ -95,5 +95,4 @@ private:
     int _hndLen;
 
     QColor _knobColor;
-    double scrollRemainder;
 };

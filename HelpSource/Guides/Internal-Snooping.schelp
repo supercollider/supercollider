@@ -159,7 +159,7 @@ code::
 }
 )
 
-Window.allWindows.dump;	// dump a list of all open Windows
+Window.allWindows.dump;	// dump a list of all open SCWindows
 
 // a little more helpful, dump their names
 Window.allWindows.collect { | w | w.name }.postln;

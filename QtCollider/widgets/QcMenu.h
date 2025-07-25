@@ -49,7 +49,7 @@ class QcAction : public QAction {
 public:
     QcAction();
 
-    Q_PROPERTY(const QSharedPointer<QtCollider::Image>& icon READ icon WRITE setIcon);
+    Q_PROPERTY(const QtCollider::SharedImage& icon READ icon WRITE setIcon);
     Q_PROPERTY(QMenu* menu READ menu WRITE setMenu);
     Q_PROPERTY(QString shortcut READ shortcut WRITE setShortcut);
     Q_PROPERTY(bool separator READ isSeparator WRITE setSeparator);

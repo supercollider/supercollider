@@ -52,12 +52,12 @@
 	}
 
 	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
-		var server, def, synth, bytes, synthMsg;
+		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
-		
-		if(server.warnIfNotRunning(thisMethod)) { ^this };
-
+		if(server.serverRunning.not) {
+			("server '" ++ server.name ++ "' not running.").warn; ^nil
+		};
 		def = this.asSynthDef(
 			fadeTime:fadeTime,
 			name: SystemSynthDefs.generateTempName

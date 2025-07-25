@@ -15,27 +15,6 @@ As you've probably already learned selecting any text and pressing Cmd-d will op
 code::
 Class // this is a class
 ::
-note::
-In help documents, a class name beginning with a lowercase letter typically refers to an instance of that class. For example:
-
-list::
-## The following refer to the class itself, in singular or plural form:
-list::
-## link::Classes/Set::
-## code::Set::
-## Set
-## link::Classes/Set::s
-## code::Set::s
-## Sets
-::
-
-## The following refer to one or more instances of the link::Classes/Set:: class:
-list::
-## a set
-## sets
-::
-::
-::
 Methods begin with lower-case letters, as do many other things in the language.
 code::
 play // Cmd-d on this will open a helpfile detailing different implementations of this method

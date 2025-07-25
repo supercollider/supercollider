@@ -36,7 +36,6 @@ void buffer_wrapper::allocate(size_t frames, uint channels, double samplerate) {
 
 namespace {
 
-#ifndef NO_LIBSNDFILE
 SndfileHandle open_file(const char* file, std::size_t start_frame) {
     auto sndfile = makeSndfileHandle(file);
     if (!sndfile)
@@ -48,13 +47,11 @@ SndfileHandle open_file(const char* file, std::size_t start_frame) {
 
     return sndfile;
 }
-#endif
 
 } /* namespace */
 
 void buffer_wrapper::read_file(const char* file, size_t start_frame, size_t frames) {
     free();
-#ifndef NO_LIBSNDFILE
     SndfileHandle sndfile = open_file(file, start_frame);
 
     sample_rate_ = sndfile.samplerate();
@@ -68,17 +65,12 @@ void buffer_wrapper::read_file(const char* file, size_t start_frame, size_t fram
     size_t read = sndfile.readf(data, frame_count);
     if (read != frame_count)
         throw std::runtime_error(std::string("could not read from file: ") + std::string(file));
-#else
-    throw std::runtime_error(std::string("could not read from file: ") + std::string(file)
-                             + std::string(" as supernova was compiled without libsndfile"));
-#endif
 }
 
 
 void buffer_wrapper::read_file_channels(const char* file, size_t start_frame, size_t frames, uint channel_count,
                                         uint* channels) {
     free();
-#ifndef NO_LIBSNDFILE
     SndfileHandle sndfile = open_file(file, start_frame);
 
     channels_ = channel_count;
@@ -105,15 +97,10 @@ void buffer_wrapper::read_file_channels(const char* file, size_t start_frame, si
         for (uint c = 0; c != channel_count; ++c)
             data_frame[c] = tmp_array[channels[c]];
     }
-#else
-    throw std::runtime_error(std::string("could not read from file: ") + std::string(file)
-                             + std::string(" as supernova was compiled without libsndfile"));
-#endif
 }
 
 void buffer_wrapper::write_file(const char* file, const char* header_format, const char* sample_format,
                                 size_t start_frame, size_t frames) {
-#ifndef NO_LIBSNDFILE
     int format = headerFormatFromString(header_format);
     if (format == 0)
         throw std::runtime_error("unknown header format requested");
@@ -133,10 +120,6 @@ void buffer_wrapper::write_file(const char* file, const char* header_format, con
     size_t written = sndfile.writef(data, frames_);
     if (written != frames_)
         throw std::runtime_error(std::string("could not write file: ") + std::string(file));
-#else
-    throw std::runtime_error(std::string("could not read from file: ") + std::string(file)
-                             + std::string(" as supernova was compiled without libsndfile"));
-#endif
 }
 
 } /* namespace nova */

@@ -61,9 +61,10 @@ static void qcInitWindow(QWidget* window, const QString& title, const QRectF& ge
         geom.setSize(window->sizeHint());
     }
 
-    window->setGeometry(geom);
-
-    if (!resizable) {
+    if (resizable) {
+        window->setGeometry(geom);
+    } else {
+        window->move(geom.topLeft());
         window->setFixedSize(geom.size());
     }
 

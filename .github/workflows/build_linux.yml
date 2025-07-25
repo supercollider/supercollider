@@ -157,7 +157,7 @@ jobs:
       - name: build
         run: |
           cd $BUILD_PATH
-          make install -j$(nproc)
+          make install -j2
 
 
       - name: create archive

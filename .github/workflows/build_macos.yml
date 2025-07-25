@@ -13,21 +13,32 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "universal arm64 x64 with ctest"
+          - job-name: "arm64  with ctest"
             os-version: "15"
             xcode-version: "16.0"
             qt-version: "6.7.3" # will use qt from aqtinstall
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: "11"
-            cmake-architectures: "x86_64;arm64"
-            homebrew-packages: ""
-            homebrew-uninstall: "readline"
-            vcpkg-packages: "readline libsndfile fftw3"
-            vcpkg-triplet: "arm64-osx-release-supercollider"
-            vcpkg-triplet-other: "x64-osx-release-supercollider"
-            vcpkg-triplet-universal: "universal" # we are not actually installing using this triplet, the packages will be manually copied there
-            extra-cmake-flags: "-D SYSTEM_PORTAUDIO=OFF" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
-            artifact-suffix: "macOS-universal"
+            cmake-architectures: "arm64"
+            homebrew-packages: "libsndfile readline fftw portaudio"
+            vcpkg-packages: ""
+            vcpkg-triplet: ""
+            extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
+            artifact-suffix: "macOS-arm64"
+            ctest: true
+
+          - job-name: "x64 with ctest"
+            os-version: "13"
+            xcode-version: "15.2"
+            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            deployment-target: "11"
+            cmake-architectures: "x86_64"
+            homebrew-packages: "libsndfile readline fftw portaudio"
+            vcpkg-packages: ""
+            vcpkg-triplet: ""
+            extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
+            artifact-suffix: "macOS-x64"
             ctest: true
 
           - job-name: "x64 legacy"
@@ -148,26 +159,11 @@ jobs:
         if: matrix.homebrew-packages
         run: brew install ${{ matrix.homebrew-packages }} --quiet
 
-      - name: uninstall homebrew packages
-        if: matrix.homebrew-uninstall
-        run: brew uninstall --ignore-dependencies ${{ matrix.homebrew-uninstall }}
-
       - name: install vcpkg packages
         if: matrix.vcpkg-packages && matrix.vcpkg-triplet
-        run: vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
-
-      - name: install combined architecture vcpkg packages
-        if: matrix.vcpkg-packages && matrix.vcpkg-triplet && matrix.vcpkg-triplet-other && matrix.vcpkg-triplet-universal
         run: |
-          echo -e "\nInstalling additional vcpkg packages for triplet: ${{ matrix.vcpkg-triplet-other }}"
-          vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet-other }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
-
-          echo "Creating universal libraries"
-          export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
-          export ARCH1="${{ matrix.vcpkg-triplet }}"
-          export ARCH2="${{ matrix.vcpkg-triplet-other }}"
-          export ARCH_UNIVERSAL="${{ matrix.vcpkg-triplet-universal }}" 
-          ${{ github.workspace }}/tools/vcpkg_combine_libs.sh
+          if [[ -n "${{ matrix.homebrew-uninstall }}" ]]; then brew uninstall --ignore-dependencies ${{ matrix.homebrew-uninstall }}; fi
+          vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
 
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v4
@@ -186,10 +182,7 @@ jobs:
 
           CMAKE_FLAGS="-G Xcode -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
 
-          if [[ -n "${{ matrix.vcpkg-triplet-universal }}" ]]; then
-            export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
-            CMAKE_FLAGS="-DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg-triplet-universal }} -DCMAKE_BUILD_TYPE=Release $CMAKE_FLAGS"
-          elif [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
+          if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
             export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
             CMAKE_FLAGS="-DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg-triplet }} -DCMAKE_BUILD_TYPE=Release $CMAKE_FLAGS"
           fi

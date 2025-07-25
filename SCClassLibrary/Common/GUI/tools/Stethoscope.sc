@@ -465,9 +465,12 @@ BusScopeSynth {
 	}
 
 	play { arg bufSize, bus, cycle;
-		var synthDef, synthArgs, bufIndex, busChannels;
+		var synthDef;
+		var synthArgs;
+		var bufIndex;
+		var busChannels;
 
-		if(server.warnIfNotRunning(thisMethod)) { ^this };
+		if(server.serverRunning.not) { ^this };
 
 		this.stop;
 

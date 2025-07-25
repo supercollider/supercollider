@@ -208,35 +208,23 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
     try {
         boost::asio::socket_base::send_buffer_size sendBufferSize;
         mUdpSocket.get_option(sendBufferSize);
-        int originalBufferSize = sendBufferSize.value();
-        if (originalBufferSize < UDP::sendBufferSize) {
+        if (sendBufferSize.value() < UDP::sendBufferSize) {
             sendBufferSize = UDP::sendBufferSize;
-            boost::system::error_code ec;
-            mUdpSocket.set_option(sendBufferSize, ec);
-            if (ec && originalBufferSize < UDP::fallbackBufferSize) {
-                sendBufferSize = UDP::fallbackBufferSize;
-                mUdpSocket.set_option(sendBufferSize);
-            }
+            mUdpSocket.set_option(sendBufferSize);
         }
     } catch (boost::system::system_error& e) {
-        printf("(sclang) SC_UdpInPort: WARNING: failed to set send buffer size (%s)\n", e.what());
+        printf("(sclang) SC_UdpInPort: WARNING: failed to set send buffer size\n");
     }
 
     try {
         boost::asio::socket_base::receive_buffer_size receiveBufferSize;
         mUdpSocket.get_option(receiveBufferSize);
-        int originalBufferSize = receiveBufferSize.value();
-        if (originalBufferSize < UDP::receiveBufferSize) {
+        if (receiveBufferSize.value() < UDP::receiveBufferSize) {
             receiveBufferSize = UDP::receiveBufferSize;
-            boost::system::error_code ec;
-            mUdpSocket.set_option(receiveBufferSize, ec);
-            if (ec && originalBufferSize < UDP::fallbackBufferSize) {
-                receiveBufferSize = UDP::fallbackBufferSize;
-                mUdpSocket.set_option(receiveBufferSize);
-            }
+            mUdpSocket.set_option(receiveBufferSize);
         }
     } catch (boost::system::system_error& e) {
-        printf("(sclang) SC_UdpInPort: WARNING: failed to set receive buffer size (%s)\n", e.what());
+        printf("(sclang) SC_UdpInPort: WARNING: failed to set receive buffer size\n");
     }
 
     initHandler(handlerType);

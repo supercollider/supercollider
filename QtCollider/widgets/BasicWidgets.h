@@ -37,8 +37,7 @@ public:
     const QColor& background() const { return _bkg; }
     void setBackground(const QColor& c);
     Q_INVOKABLE
-    void setBackgroundImage(const QSharedPointer<QtCollider::Image>& image, const QRectF& rect, int tileMode,
-                            double opacity);
+    void setBackgroundImage(const QtCollider::SharedImage& image, const QRectF& rect, int tileMode, double opacity);
     Q_INVOKABLE
     void removeBackgroundImage() {
         _bkg_image.clear();

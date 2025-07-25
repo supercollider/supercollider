@@ -122,7 +122,7 @@ code::
 
 section:: Windows
 
-By default the server will boot to your system's default audio devices using a teletype::WASAPI:: driver.
+By default the server will boot to your system's default audio devices using teletype::MME:: driver (which usually means higher latency).
 
 On Windows there are multiple audio driver APIs (e.g. teletype::MME::, teletype::WASAPI::, teletype::ASIO:: etc.) that can be used to communicate with audio devices. The API (listed before the device name) needs to match between the input and the output, for example:
 code::

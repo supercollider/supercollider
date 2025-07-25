@@ -30,7 +30,7 @@ using namespace QtCollider;
 
 QC_DECLARE_QWIDGET_FACTORY(QcKnob);
 
-QcKnob::QcKnob(): Style::Client(this), _value(0.f), _step(0.01), _mode(0), _centered(false), scrollRemainder(0.) {
+QcKnob::QcKnob(): Style::Client(this), _value(0.f), _step(0.01), _mode(0), _centered(false) {
     setFocusPolicy(Qt::StrongFocus);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setAttribute(Qt::WA_AcceptTouchEvents);
@@ -69,20 +69,6 @@ void QcKnob::mouseMoveEvent(QMouseEvent* e) {
         }
     }
     _prevPos = e->pos();
-}
-
-static const double PI = 3.14159265358979323846264338327950288419717;
-
-void QcKnob::wheelEvent(QWheelEvent* e) {
-    const double size = qMin(width(), height()) * PI;
-    const double pixelStep = size > 0. ? 1. / size : 0.;
-    double step = qMax(_step, pixelStep);
-    double numSteps = getScrollSteps(e).y();
-    modifyStep(&step);
-    // accumulate fractional numSteps to help scrolling through big steps
-    scrollRemainder = std::modf(numSteps + scrollRemainder, &numSteps);
-    setValue(_value + numSteps * step);
-    Q_EMIT(action());
 }
 
 void QcKnob::paintEvent(QPaintEvent*) {

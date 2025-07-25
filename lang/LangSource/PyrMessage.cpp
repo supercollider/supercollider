@@ -119,11 +119,6 @@ HOT void sendMessageImpl(VMGlobals* g, PyrSymbol* selector, PyrSlot* recvrSlot, 
 
 lookup_again:
     // The variables classobj and selector are updated when the goto is triggered, causing these to change.
-    if ((selector->flags & sym_Class) != 0) {
-        // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
-        doesNotUnderstand(g, selector, numArgsPushed, numKeyArgsPushed);
-        return;
-    }
     auto method = gRowTable[slotRawInt(&classobj->classIndex) + selector->u.index];
     auto methodRaw = METHRAW(method);
 
@@ -347,8 +342,8 @@ void doesNotUnderstand(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPu
         std::rotate(rargBegin, rargBegin + 1, rargEnd);
     }
     auto selectorSlot = g->sp - numArgsPushed + 1;
-    const auto callIndex = slotRawInt(&classObject->classIndex) + s_doesNotUnderstand->u.index;
 
+    const auto callIndex = slotRawInt(&classObject->classIndex) + s_doesNotUnderstand->u.index;
     auto method = gRowTable[callIndex];
 
     if (tryUniqueMethod(g, method, receiverSlot, selectorSlot, numArgsPushed, numKeyArgsPushed))

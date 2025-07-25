@@ -10,7 +10,7 @@ PatternProxy : Pattern {
 
 	classvar <>defaultQuant, defaultEnvir;
 
-	*new { |source|
+	*new { arg source;
 		^super.new.source_(source)
 	}
 
@@ -20,9 +20,9 @@ PatternProxy : Pattern {
 	clock { ^clock ? TempoClock.default }
 
 	quant { ^quant ??  { this.class.defaultQuant } }
-	quant_ { |val| quant = val }
+	quant_ { arg val; quant = val }
 
-	source_ { |obj|
+	source_ { arg obj;
 		var pat = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
 		if (obj.isNil) { pat = this.class.default };
 		pattern = pat;
@@ -30,61 +30,61 @@ PatternProxy : Pattern {
 		this.changed(\source, obj);
 	}
 
-	setSource { |obj|
+	setSource { arg obj;
 		pattern = obj;
 		source = obj; // keep original here.
 		this.changed(\source, obj);
 	}
 
-	count { |n=1|
+	count { arg n=1;
 		condition = { |val,i| i % n == 0 }
 	}
 
 	reset { reset = reset ? 0 + 1 }
 
-	sched { |func|
+	sched { arg func;
 		if(quant.isNil)
 		{ func.value }
 		{ this.clock.schedAbs(quant.nextTimeOnGrid(this.clock), { func.value; nil }) }
 	}
 
 
-	convertFunction { |func|
+	convertFunction { arg func;
 		^Prout {
 			var inval = func.def.prototypeFrame !? { inval = this.defaultEvent };
 			func.value( inval ).embedInStream(inval)
 		}
 	}
 
-	*parallelise { |list| ^Ptuple(list) }
+	*parallelise { arg list; ^Ptuple(list) }
 
-	pattern_ { |pat| this.source_(pat) }
+	pattern_ { arg pat; this.source_(pat) }
 
-	timingOffset_ { |val| quant = quant.instill(2, val) }
-	timingOffset { |val| ^quant.obtain(2) }
-	phase_ { |val| quant = quant.instill(1, val) }
-	phase { |val| ^quant.obtain(1) }
-	quantBeat_ { |val| quant = quant.instill(0, val) }
-	quantBeat { |val| ^quant.obtain(0) }
+	timingOffset_ { arg val; quant = quant.instill(2, val) }
+	timingOffset { arg val; ^quant.obtain(2) }
+	phase_ { arg val; quant = quant.instill(1, val) }
+	phase { arg val; ^quant.obtain(1) }
+	quantBeat_ { arg val; quant = quant.instill(0, val) }
+	quantBeat { arg val; ^quant.obtain(0) }
 
-	set { |...args|
+	set { arg ... args;
 		if(envir.isNil) { this.envir = this.class.event };
 		args.pairsDo { arg key, val; envir.put(key, val) };
 		this.changed(\set, args);
 	}
 
-	unset { |...args|
+	unset { arg ... args;
 		if(envir.notNil) {
-			args.do { |key| envir.removeAt(key) };
+			args.do { arg key; envir.removeAt(key) };
 			this.changed(\unset, args);
 		}
 	}
 
-	get { |key|
+	get { arg key;
 		^if(envir.notNil) { envir[key] } { nil };
 	}
 
-	place { |...args|
+	place { arg ... args;
 		if(envir.isNil) { this.envir = this.class.event };
 		args.pairsDo { arg key, val; envir.place(key, val) }; // place is defined in the event.
 	}
@@ -97,7 +97,7 @@ PatternProxy : Pattern {
 		^if(val.notNil) { Pchain(this, val) } { this }.embedInStream
 	}
 
-	embedInStream { |inval, embed = true, default|
+	embedInStream { arg inval, embed = true, default;
 
 		var outval, count = 0;
 		var pat = pattern;
@@ -133,13 +133,13 @@ PatternProxy : Pattern {
 		}
 	}
 
-	endless { |default|
+	endless { arg default;
 		^Prout { arg inval;
 			this.embedInStream(inval, true, default ? this.class.defaultValue)
 		}
 	}
 
-	constrainStream { |stream, newStream|
+	constrainStream { arg stream, newStream;
 		^if(this.quant.isNil) {
 			newStream
 		} {
@@ -174,7 +174,7 @@ PatternProxy : Pattern {
 	}
 
 	*clear {
-		this.all.do { |pat| pat.clear };
+		this.all.do { arg pat; pat.clear };
 		this.all.clear;
 	}
 
@@ -190,23 +190,23 @@ PatternProxy : Pattern {
 	}
 
 	// backward compatibility
-	*basicNew { |source|
+	*basicNew { arg source;
 		^super.new.init(source)
 	}
 
 	// global storage
 
-	*at { |key|
+	*at { arg key;
 		^if(this.hasGlobalDictionary) { this.all.at(key) } { nil }
 	}
 
 	repositoryArgs { ^[this.key, this.source] }
 
-	*postRepository { |keys, stream|
+	*postRepository { arg keys, stream;
 		if(this.hasGlobalDictionary.not) { Error("This class has no global repository.").throw };
 		keys = keys ?? { this.all.keys };
 		stream = stream ? Post;
-		keys.do { |key|
+		keys.do { arg key;
 			var item;
 			item = this.all[key];
 			if(item.notNil and: { item.source !== this.default }) {
@@ -220,7 +220,7 @@ PatternProxy : Pattern {
 		};
 	}
 
-	*event { |proxyClass = (PatternProxy)|
+	*event { arg proxyClass = PatternProxy;
 		var event, res;
 		if(defaultEnvir.isNil) {
 			defaultEnvir = Event.default;
@@ -257,7 +257,7 @@ Pdefn : PatternProxy {
 	*initClass {
 		all = IdentityDictionary.new;
 	}
-	*new { |key, item|
+	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
 			res = super.new(item).prAdd(key);
@@ -268,7 +268,7 @@ Pdefn : PatternProxy {
 
 	}
 
-	map { |...args|
+	map { arg ... args;
 		if(envir.isNil) { this.envir = () };
 		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) };
 		this.changed(\map, args);
@@ -283,7 +283,7 @@ Pdefn : PatternProxy {
 
 	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
-	prAdd { |argKey|
+	prAdd { arg argKey;
 		key = argKey;
 		all.put(argKey, this);
 	}
@@ -301,7 +301,7 @@ TaskProxy : PatternProxy {
 
 	storeArgs { ^[source] }
 
-	source_ { |obj|
+	source_ { arg obj;
 		pattern = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
 		if (obj.isNil) { pattern = this.class.default; source = obj; };
 		this.wakeUp;
@@ -309,7 +309,7 @@ TaskProxy : PatternProxy {
 		this.changed(\source, obj);
 	}
 
-	convertFunction { |func|
+	convertFunction { arg func;
 		^Prout { |inevent|
 			var inval = func.def.prototypeFrame !? { this.defaultEvent };
 			if(inevent.isNumber or: {inevent.isNil} or: { inval.isNil }) {
@@ -329,7 +329,7 @@ TaskProxy : PatternProxy {
 	// here, the streams return values which are used as durations
 	// for scheduling the stream itself
 
-	constrainStream { |stream, newStream|
+	constrainStream { arg stream, newStream;
 		^if(this.quant.isNil) {
 			newStream
 		} {
@@ -348,7 +348,7 @@ TaskProxy : PatternProxy {
 
 	////////// playing interface //////////
 
-	playOnce { |argClock, doReset = (false), quant|
+	playOnce { arg argClock, doReset = (false), quant;
 		var pauseStream = PauseStream(
 			Pprotect(this, { pauseStream.streamError }).asStream
 		);
@@ -413,7 +413,7 @@ Tdef : TaskProxy {
 		all = IdentityDictionary.new;
 	}
 
-	*new { |key, item|
+	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
 			res = super.new(item).prAdd(key);
@@ -433,7 +433,7 @@ Tdef : TaskProxy {
 
 	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
-	prAdd { |argKey|
+	prAdd { arg argKey;
 		key = argKey;
 		all.put(argKey, this);
 	}
@@ -450,7 +450,7 @@ EventPatternProxy : TaskProxy {
 
 	storeArgs { ^[source] }
 
-	source_ { |obj|
+	source_ { arg obj;
 		if(obj.isKindOf(Function)) // allow functions to be passed in
 		{ pattern = PlazyEnvirN(obj) }
 		{ if (obj.isNil)
@@ -470,7 +470,7 @@ EventPatternProxy : TaskProxy {
 
 	*defaultValue { ^Event.silent }
 
-	embedInStream { |inval, embed = true, default|
+	embedInStream { arg inval, embed = true, default;
 
 		var outval, count=0;
 		var pat = pattern;
@@ -552,10 +552,10 @@ EventPatternProxy : TaskProxy {
 		}
 	}
 
-	*parallelise { |list| ^Ppar(list) }
+	*parallelise { arg list; ^Ppar(list) }
 
-	outset_ { |val| quant = quant.instill(3, val) }
-	outset { |val| ^this.quant.obtain(3) }
+	outset_ { arg val; quant = quant.instill(3, val) }
+	outset { arg val; ^this.quant.obtain(3) }
 
 
 	// branching from another thread
@@ -602,7 +602,7 @@ Pdef : EventPatternProxy {
 
 	storeArgs { ^[key] }
 
-	*new { |key, item|
+	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
 			res = super.new(item).prAdd(key);
@@ -613,12 +613,12 @@ Pdef : EventPatternProxy {
 
 	}
 
-	map { |...args|
+	map { arg ... args;
 		if(envir.isNil) { this.envir = () };
 		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) }
 	}
 
-	prAdd { |argKey|
+	prAdd { arg argKey;
 		key = argKey;
 		all.put(argKey, this);
 	}
@@ -709,8 +709,8 @@ Pdef : EventPatternProxy {
 PbindProxy : Pattern {
 	var <>pairs, <source;
 
-	*new { | ... pairs, kwargs |
-		^super.newCopyArgs(pairs ++ kwargs).init
+	*new { arg ... pairs;
+		^super.newCopyArgs(pairs).init
 	}
 	init {
 		forBy(0, pairs.size-1, 2) { arg i;
@@ -728,20 +728,20 @@ PbindProxy : Pattern {
 	embedInStream { arg inval;
 		^source.embedInStream(inval)
 	}
-	find { |key|
+	find { arg key;
 		pairs.pairsDo { |u,x,i| if(u == key) { ^i } }; ^nil
 	}
-	quant_ { |val|
-		pairs.pairsDo { |key, item| item.quant = val }; // maybe use ref later
+	quant_ { arg val;
+		pairs.pairsDo { arg key, item; item.quant = val }; // maybe use ref later
 		source.quant = val;
 	}
 	quant { ^source.quant }
 	envir { ^source.envir }
 	envir_ { arg envir; source.envir_(envir) }
 
-	at { |key| var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } { nil } }
+	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } { nil } }
 
-	set { |...args| // key, val ...
+	set { arg ... args; // key, val ...
 		var changedPairs = false, quant;
 		quant = this.quant;
 		args.pairsDo { |key, val|
@@ -777,9 +777,8 @@ PbindProxy : Pattern {
 
 
 Pbindef : Pdef {
-	*new { | key ... pairs, kwargs |
+	*new { arg key ... pairs;
 		var pat, src;
-		pairs = pairs ++ kwargs;
 		pat = super.new(key);
 		if(pairs.isEmpty.not) {
 			src = pat.source;
@@ -800,7 +799,7 @@ Pbindef : Pdef {
 
 	storeArgs { ^[key]++pattern.storeArgs }
 	repositoryArgs { ^this.storeArgs }
-	quant_ { |val| super.quant = val; source.quant = val }
+	quant_ { arg val; super.quant = val; source.quant = val }
 
 	*hasGlobalDictionary { ^true }
 

@@ -117,8 +117,6 @@ private:
     ValueType _valueType;
     int _minDec;
     int _maxDec;
-
-    double scrollRemainder;
 };
 
 #if 0

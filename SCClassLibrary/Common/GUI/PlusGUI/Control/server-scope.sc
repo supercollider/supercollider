@@ -29,10 +29,13 @@
 
 + Function {
 	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds;
-		var server, synth, synthDef, bytes, synthMsg, outUGen;
+		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
 		server = Server.default;
-		if(server.warnIfNotRunning(thisMethod)) { ^this };
+		if(server.serverRunning.not) {
+			(server.name.asString ++ " server not running!").postln;
+			^nil
+		};
 
 		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };

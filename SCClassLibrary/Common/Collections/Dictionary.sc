@@ -542,7 +542,7 @@ IdentityDictionary : Dictionary {
 	doesNotUnderstand { |selector... args, kwargs|
 		var sel, forward;
 		if (know.not) {
-			^this.superPerformArgs(\doesNotUnderstand, [selector] ++ args, kwargs)
+            ^this.superPerformArgs(\doesNotUnderstand, args, kwargs)
 		};
         sel = this[selector];
 		sel !? {

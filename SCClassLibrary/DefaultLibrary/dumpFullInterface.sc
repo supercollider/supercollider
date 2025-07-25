@@ -130,8 +130,9 @@
 		});
 	}
 
-	helpFileForMethod { arg methodSymbol;
-		this.findRespondingMethodFor(methodSymbol).help;
+	helpFileForMethod {
+		arg methodSymbol;
+		this.findRespondingMethodFor(methodSymbol).ownerClass.help;
 	}
 
 		// show all subclasses of this class sorted in alpha order (not tree order)
