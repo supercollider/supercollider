@@ -55,6 +55,7 @@ definitionlist::
 ## link::Guides/More-On-Getting-Help:: || Using Help Files effectively and inspecting class definition files to build more understanding
 ## link::Browse.html#Tutorials#All tutorials:: || Index of all help files categorized under "Tutorials"
 ## link::Guides/UserFAQ:: || Common Errors and FAQ
+## link::https://github.com/supercollider/supercollider/wiki/Tutorials##Community Learning Resources (Tutorials & Publications):: || SuperCollider Tutorials Wiki: Community-curated tutorial index and learning resources
 ::
 
 subsection:: Getting Sound
@@ -194,38 +195,47 @@ numberedlist::
 
 subsection:: Sharing your work
 
-definitionList::
-## Share Music || list::
+subsubsection:: Share Music
+list::
 ## link::https://scsynth.org/c/music##Music on scsynth.org::
 ::
-## Share Code || list::
+subsubsection:: Share Code
+list::
 ## http://sccode.org/
 ## link::https://scsynth.org/c/questions/code-review##Code Review on scsynth.org::
 ## link::https://scsynth.org/c/music/code-tennis##Code Tennis on scsynth.org::
 ## link::https://github.com/supercollider/supercollider/wiki/Style-Guidelines:-SuperCollider##Style Guide: SuperCollider Code (for sclang)::
 ::
-::
 
 subsection:: Contributing to SC
 
-definitionList::
-## Discussing || list::
+subsubsection:: Discussing
+
+list::
 ## link::https://scsynth.org/c/development##Development on scsynth.org::
 ::
-## Help Documents || list::
+
+subsubsection:: Help Documents
+
+list::
 ## link::Guides/WritingHelp::
 ## link::Reference/SCDocSyntax::
 ## link::https://github.com/supercollider/supercollider/wiki/Style-Guidelines:-SCDocs##Style Guide: SuperCollider Help Files::
 ::
-## Developing || list::
+
+subsubsection:: Developing
+
+list::
 ## link::https://github.com/supercollider/supercollider##SuperCollider on GitHub::
 ## link::https://github.com/supercollider/supercollider/wiki/Style-Guidelines:-Cpp##Style Guide: SuperCollider C++ Code (for scsynth)::
-::
 ::
 
 subsection:: For more information
 
-link:: https://github.com/supercollider/supercollider/wiki##SuperCollider Wiki::
+list::
+##link::https://github.com/supercollider/supercollider/wiki##SuperCollider Wiki::
+##link::https://scsynth.org##SuoerCollider Forum::
+::
 
 SECTION::Licensing
 
