@@ -4073,7 +4073,7 @@ void initPrimitives() {
     initMIDIPrimitives();
 #endif
 
-#if defined __linux__
+#if defined __linux__ && defined(HAVE_LID)
     void initLIDPrimitives();
     initLIDPrimitives();
 #endif
