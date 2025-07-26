@@ -89,6 +89,7 @@ set ( ide_moc_hdr
     widgets/tool_box.hpp
     widgets/audio_status_box.hpp
     widgets/lang_status_box.hpp
+    widgets/file_tree.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/sc_editor.hpp
     widgets/code_editor/highlighter.hpp
@@ -141,6 +142,7 @@ set ( ide_src
     widgets/session_switch_dialog.cpp
     widgets/audio_status_box.cpp
     widgets/lang_status_box.cpp
+    widgets/file_tree.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/sc_editor.cpp
     widgets/code_editor/highlighter.cpp
