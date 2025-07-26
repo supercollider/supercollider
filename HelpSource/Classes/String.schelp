@@ -489,6 +489,33 @@ code::
 "These are several words which are fish".findAll("fish").postln;
 ::
 
+method::findSimilarIn
+
+From a list of strings, find similar strings, sorted by edit distance and limited by similarity.
+
+code::
+"hi".findSimilarIn(["ho", "hu?", "hugs", "Hola", "else"], 2); // [ho, hu?]
+"hi".findSimilarIn(["ho", "hu?", "hugs", "Hola", "else"], 3); // [ho, hu?, hugs, Hola]
+"hi".findSimilarIn(["ho", "Hi", "hugs", "Hola", "else"], 3, prioritizeCapitalization: false); // [ho, Hi, hugs]
+"hi".findSimilarIn(["ho", "Hi", "hugs", "Hola", "else"], 3, prioritizeCapitalization: true); // [Hi, ho, hugs, Hola]
+"hi".findSimilarIn(["ho", "Hi", "hugs", "Hola", "else"], 4, minSimilarity: nil); // [Hi, ho, hugs, Hola, else]
+"hi".findSimilarIn(["ho", "Hi", "hugs", "Hola", "else"], 4, minSimilarity: 0.01); // [Hi, ho, hugs, Hola]
+::
+
+argument::array
+An array of strings to find similar strings in.
+
+argument::maxEditDistance
+The largest link::Classes/SequenceableCollection#editDistance#edit distance:: that is accepted as a match.
+
+argument::minSimilarity
+Keep only results whose link::Classes/SequenceableCollection#similarity#similarity:: is larger than this value. If set to code::nil::, all values are accepted.
+
+argument::prioritizeCapitalization
+If true, calculated the edit distances on lower case versions.
+
+
+
 method::contains
 Returns a link::Classes/Boolean:: indicating if the String contains string.
 code::

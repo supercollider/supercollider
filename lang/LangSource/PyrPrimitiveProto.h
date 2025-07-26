@@ -63,6 +63,7 @@ int prObjectShallowCopy(VMGlobals* g, int numArgsPushed);
 int prObjectCopyRange(VMGlobals* g, int numArgsPushed);
 int prObjectPointsTo(VMGlobals* g, int numArgsPushed);
 int prObjectRespondsTo(VMGlobals* g, int numArgsPushed);
+int prInstancesOfClassRespondTo(VMGlobals* g, int numArgsPushed);
 
 int prCompileString(VMGlobals* g, int numArgsPushed);
 int prDumpBackTrace(VMGlobals* g, int numArgsPushed);

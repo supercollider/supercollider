@@ -181,11 +181,11 @@ Integer : SimpleNumber {
 		^super.factorial.asInteger
 	}
 
-	// exit the program and return the result code to unix shell
 	exit {
 		_Exit
 		^this.primitiveFailed
 	}
+
 	asStringToBase { | base=10, width=8 |
 		var rest = this, string, mask;
 		if (base.inclusivelyBetween(2, 36).not) {

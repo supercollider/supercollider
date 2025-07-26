@@ -158,7 +158,7 @@ p = Pbind(
 	\midicmd, \bend,
 
 	\chan, 0,
-	\bend, Pwhite(0, 8191, inf), // bend value
+	\val, Pwhite(0, 8191, inf), // bend value
 	\dur, Pseq([1,2,0.5], inf),
 
 ).play(quant: 1);

@@ -148,11 +148,13 @@ jobs:
         if: matrix.homebrew-packages
         run: brew install ${{ matrix.homebrew-packages }} --quiet
 
+      - name: uninstall homebrew packages
+        if: matrix.homebrew-uninstall
+        run: brew uninstall --ignore-dependencies ${{ matrix.homebrew-uninstall }}
+
       - name: install vcpkg packages
         if: matrix.vcpkg-packages && matrix.vcpkg-triplet
-        run: |
-          if [[ -n "${{ matrix.homebrew-uninstall }}" ]]; then brew uninstall --ignore-dependencies ${{ matrix.homebrew-uninstall }}; fi
-          vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
+        run: vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
 
       - name: install combined architecture vcpkg packages
         if: matrix.vcpkg-packages && matrix.vcpkg-triplet && matrix.vcpkg-triplet-other && matrix.vcpkg-triplet-universal
