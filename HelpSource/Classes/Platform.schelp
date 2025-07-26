@@ -91,6 +91,9 @@ Return a dictionary with system/context information like SuperCollider, QT, and 
 method::postBugReportInfo
 Post system information that is useful to attach to bug reports.
 
+method::exampleDir
+returns:: The full path of the code::sclang/scd examples:: folder as a LINK::Classes/String::
+
 subsection:: Features
 
 method:: when

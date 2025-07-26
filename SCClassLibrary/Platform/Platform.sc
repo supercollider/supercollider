@@ -262,6 +262,10 @@ Platform {
 
 		"#".dup(40).join.postln;
 	}
+
+	*exampleDir {
+ 		^(Platform.resourceDir +/+ "examples")
+ 	}
 }
 
 UnixPlatform : Platform {
