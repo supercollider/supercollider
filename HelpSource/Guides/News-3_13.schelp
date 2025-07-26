@@ -83,6 +83,8 @@ UdpInPort error reporting by @jamshark70 in https://github.com/supercollider/sup
 
 Parsing block arguments by @nilninull in https://github.com/supercollider/supercollider/pull/5522
 
+3.13.1 fixes an allocation bug when using an HID on Linux by @dyfer, @bgola and @xunil-cloud in https://github.com/supercollider/hidapi/pull/17 
+
 section::  Class library: Added
 
 Support for code:: kitty :: and code:: alacritty :: Linux terminals by @madskjeldgaard in https://github.com/supercollider/supercollider/pull/5548

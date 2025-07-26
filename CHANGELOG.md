@@ -397,6 +397,13 @@ This change makes a number of new things possible, e.g.
 
 @dyfer, @capital-G, @elgiano, @scztt, @silvanocerza
 
+3.13.1 (2025-03-15)
+===================
+
+### sclang: Fixed
+
+Linux only: Reverted memory allocation bug when using HID, see <https://github.com/supercollider/supercollider/issues/6016>
+
 3.13.0 (2023-02-19)
 ===================
 
