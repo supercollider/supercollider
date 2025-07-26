@@ -271,6 +271,10 @@ if (SC_ABLETON_LINK)
 	add_definitions(-DSC_ABLETON_LINK)
 endif()
 
+if (LINUX_APPIMAGE)
+	add_compile_definitions(LINUX_APPIMAGE)
+endif()
+
 ## external libraries
 if(READLINE_FOUND)
     message(STATUS "Compiling with Readline support")

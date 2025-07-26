@@ -214,3 +214,34 @@ jobs:
           draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  linux_appimage:
+    needs: [lint]
+    runs-on: ubuntu-20.04
+    name: 'Linux AppImage'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: cache ccache
+        uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-linux-appimage
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs ccache
+      - name: install system libraries
+        run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
+      - name: install qt from apt
+        run: sudo apt-get install qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+      - name: build appimage
+        run: |
+          mkdir build
+          cd build
+          bash ../AppImage/build.sh
+      - uses: actions/upload-artifact@v3
+        with:
+          name: SuperCollider.AppImage
+          path: build/SuperCollider.AppImage.tar.gz

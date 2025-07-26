@@ -216,6 +216,9 @@ if(WIN32)
     target_compile_definitions(libsupernova PUBLIC UNICODE _UNICODE)
 endif()
 
+if (LINUX_APPIMAGE)
+	add_compile_definitions(LINUX_APPIMAGE)
+endif()
 
 add_executable(supernova
     server/main.cpp
