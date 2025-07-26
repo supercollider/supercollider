@@ -26,6 +26,7 @@
 #include "InitAlloc.h"
 #include <string.h>
 #include <stdexcept>
+#include "PyrLexer.h"
 
 #define PAUSETIMES 0
 
@@ -139,8 +140,9 @@ void fatalerror(const char* str);
 void fatalerror(const char* str) {
     fputs(str, stderr);
     postfl(str);
-    throw std::runtime_error(str);
-    // exit(-1);
+    // This is the *only* exception that isn't caught by the main interpreter loop.
+    // This will be throw up and out of sclang to the surrounding call stack.
+    throw FatalInterpreterError(str);
 }
 
 inline int ScanSize(PyrObjectHdr* obj) { return obj->obj_format <= obj_slot ? obj->size : 0; }
