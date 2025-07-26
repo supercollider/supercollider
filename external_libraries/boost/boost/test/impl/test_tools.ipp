@@ -114,6 +114,22 @@ print_log_value<unsigned char>::operator()( std::ostream& ostr, unsigned char t 
 //____________________________________________________________________________//
 
 void
+print_log_value<wchar_t>::operator()( std::ostream& ostr, wchar_t r )
+{
+    std::mbstate_t state;
+    std::string mb(MB_CUR_MAX, '\0');
+    std::size_t ret = std::wcrtomb(&mb[0], r, &state);
+    if( ret > 0) {
+        ostr << mb;
+    }
+    else {
+        ostr << "(wchar_t unable to convert)";
+    }
+}
+
+//____________________________________________________________________________//
+
+void
 print_log_value<char const*>::operator()( std::ostream& ostr, char const* t )
 {
     ostr << ( t ? t : "null string" );
@@ -304,6 +320,11 @@ format_report( OutStream& os, assertion_result const& pr, unit_test::lazy_ostrea
 
 //____________________________________________________________________________//
 
+#ifdef BOOST_MSVC
+#pragma warning(push)
+#pragma warning(disable : 4702) // There is intentionally unreachable code
+#endif
+
 bool
 report_assertion( assertion_result const&   ar,
                   lazy_ostream const&       assertion_descr,
@@ -394,6 +415,10 @@ report_assertion( assertion_result const&   ar,
 
     return true;
 }
+
+#ifdef BOOST_MSVC
+#pragma warning(pop)
+#endif
 
 //____________________________________________________________________________//
 

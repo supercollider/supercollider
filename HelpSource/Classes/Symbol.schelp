@@ -165,7 +165,7 @@ Use the symbol as a method selector and perform the message on firstArg, with ar
 discussion::
 code::
 '%'.applyTo(2553, 345);
-['+', '-', '*', { |a, b| a.rand + b.rand } ].choose.applyTo(2, 3);
+['+', '-', '*', { |a, b| a.rand + b.rand }].choose.applyTo(2, 3);
 ::
 
 
@@ -207,4 +207,3 @@ a.set(\freq, 330, \trig, 1);
 a.set(\freq, 830, \trig, 1);
 a.release;
 ::
-

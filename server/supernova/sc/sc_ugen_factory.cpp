@@ -23,9 +23,10 @@
 #    include <dlfcn.h>
 #elif defined(_WIN32)
 #    include "SC_Win32Utils.h"
+#    include "SC_Codecvt.hpp"
 #endif
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include "sc_ugen_factory.hpp"
 
@@ -215,8 +216,8 @@ bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, struct 
 }
 
 
-void sc_ugen_factory::load_plugin_folder(boost::filesystem::path const& path) {
-    using namespace boost::filesystem;
+void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& path) {
+    using namespace std::filesystem;
 
     directory_iterator end;
 
@@ -249,7 +250,7 @@ static bool check_api_version(int (*api_version)(), std::string const& filename)
 }
 
 #ifdef DLOPEN
-void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
+void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
     using namespace std;
 
     // Ignore files that don't have the extension of an SC plugin
@@ -305,7 +306,7 @@ void sc_ugen_factory::close_handles(void) {
 
 #elif defined(_WIN32)
 
-void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
+void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
     // Ignore files that don't have the extension of an SC plugin
     if (path.extension() != SC_PLUGIN_EXT) {
         return;
@@ -313,14 +314,14 @@ void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
 
     // std::cout << "try open plugin: " << path << std::endl;
     const char* filename = path.string().c_str();
-    HINSTANCE hinstance = LoadLibrary(path.string().c_str());
+    HINSTANCE hinstance = LoadLibraryW(path.wstring().c_str());
     if (!hinstance) {
-        char* s;
+        wchar_t* s;
         DWORD lastErr = GetLastError();
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                      nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
+        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
 
-        std::cout << "Cannot open plugin: " << path << s << std::endl;
+        std::cout << "Cannot open plugin: " << path << SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str() << std::endl;
         LocalFree(s);
         return;
     }
@@ -347,11 +348,11 @@ void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
 
     void* ptr = (void*)GetProcAddress(hinstance, "load");
     if (!ptr) {
-        char* s;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                      nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
+        wchar_t* s;
+        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
 
-        std::cout << "*** ERROR: GetProcAddress err " << s << std::endl;
+        std::cout << "*** ERROR: GetProcAddress err " << SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str() << std::endl;
         LocalFree(s);
 
         FreeLibrary(hinstance);

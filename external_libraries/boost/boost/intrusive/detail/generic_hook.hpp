@@ -27,7 +27,6 @@
 #include <boost/intrusive/detail/assert.hpp>
 #include <boost/intrusive/detail/node_holder.hpp>
 #include <boost/intrusive/detail/algo_type.hpp>
-#include <boost/static_assert.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -41,7 +40,7 @@ struct link_dispatch
 {};
 
 template<class Hook>
-BOOST_INTRUSIVE_FORCEINLINE void destructor_impl(Hook &hook, detail::link_dispatch<safe_link>)
+inline void destructor_impl(Hook &hook, detail::link_dispatch<safe_link>)
 {  //If this assertion raises, you might have destroyed an object
    //while it was still inserted in a container that is alive.
    //If so, remove the object from the container before destroying it.
@@ -49,11 +48,11 @@ BOOST_INTRUSIVE_FORCEINLINE void destructor_impl(Hook &hook, detail::link_dispat
 }
 
 template<class Hook>
-BOOST_INTRUSIVE_FORCEINLINE void destructor_impl(Hook &hook, detail::link_dispatch<auto_unlink>)
+inline void destructor_impl(Hook &hook, detail::link_dispatch<auto_unlink>)
 {  hook.unlink();  }
 
 template<class Hook>
-BOOST_INTRUSIVE_FORCEINLINE void destructor_impl(Hook &, detail::link_dispatch<normal_link>)
+inline void destructor_impl(Hook &, detail::link_dispatch<normal_link>)
 {}
 
 }  //namespace detail {
@@ -161,54 +160,54 @@ class generic_hook
       < NodeTraits
       , Tag, LinkMode, BaseHookType>                  hooktags;
 
-   BOOST_INTRUSIVE_FORCEINLINE node_ptr this_ptr()
+   inline node_ptr this_ptr() BOOST_NOEXCEPT
    {  return pointer_traits<node_ptr>::pointer_to(static_cast<node&>(*this)); }
 
-   BOOST_INTRUSIVE_FORCEINLINE const_node_ptr this_ptr() const
+   inline const_node_ptr this_ptr() const BOOST_NOEXCEPT
    {  return pointer_traits<const_node_ptr>::pointer_to(static_cast<const node&>(*this)); }
 
    public:
    /// @endcond
 
-   BOOST_INTRUSIVE_FORCEINLINE generic_hook()
+   inline generic_hook() BOOST_NOEXCEPT
    {
       if(hooktags::safemode_or_autounlink){
          node_algorithms::init(this->this_ptr());
       }
    }
 
-   BOOST_INTRUSIVE_FORCEINLINE generic_hook(const generic_hook& )
+   inline generic_hook(const generic_hook& ) BOOST_NOEXCEPT
    {
       if(hooktags::safemode_or_autounlink){
          node_algorithms::init(this->this_ptr());
       }
    }
 
-   BOOST_INTRUSIVE_FORCEINLINE generic_hook& operator=(const generic_hook& )
+   inline generic_hook& operator=(const generic_hook& ) BOOST_NOEXCEPT
    {  return *this;  }
 
-   BOOST_INTRUSIVE_FORCEINLINE ~generic_hook()
+   inline ~generic_hook()
    {
       destructor_impl
          (*this, detail::link_dispatch<hooktags::link_mode>());
    }
 
-   BOOST_INTRUSIVE_FORCEINLINE void swap_nodes(generic_hook &other)
+   inline void swap_nodes(generic_hook &other) BOOST_NOEXCEPT
    {
       node_algorithms::swap_nodes
          (this->this_ptr(), other.this_ptr());
    }
 
-   BOOST_INTRUSIVE_FORCEINLINE bool is_linked() const
+   inline bool is_linked() const BOOST_NOEXCEPT
    {
       //is_linked() can be only used in safe-mode or auto-unlink
-      BOOST_STATIC_ASSERT(( hooktags::safemode_or_autounlink ));
+      BOOST_INTRUSIVE_STATIC_ASSERT(( hooktags::safemode_or_autounlink ));
       return !node_algorithms::unique(this->this_ptr());
    }
 
-   BOOST_INTRUSIVE_FORCEINLINE void unlink()
+   inline void unlink() BOOST_NOEXCEPT
    {
-      BOOST_STATIC_ASSERT(( (int)hooktags::link_mode == (int)auto_unlink ));
+      BOOST_INTRUSIVE_STATIC_ASSERT(( (int)hooktags::link_mode == (int)auto_unlink ));
       node_ptr n(this->this_ptr());
       if(!node_algorithms::inited(n)){
          node_algorithms::unlink(n);

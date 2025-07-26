@@ -11,6 +11,28 @@ There are two different help browsers in SuperCollider: the help browser built i
 
 Since the Qt WebEngine dependency is hefty and difficult to install on some systems, it is possible for sclang to have been built without WebView support (using the CMake flag code:: -DSC_USE_QTWEBENGINE=OFF :: at compile). If so, attempting to invoke this class will throw an error.
 
+subsection::Keyboard shortcuts
+Unlike the help browser built into SCIDE, the HelpBrowser offers vim-like keyboard shortcuts for navigation, along with several additional features that enhance workflow efficiency for those who prefer keyboard-based interaction.
+table::
+    ## strong::Shortcut:: || strong::Functionality::
+    ## soft::j:: || scroll down
+    ## soft::k:: || scroll up
+    ## soft::ctrl + d:: || scroll more lines down
+    ## soft::ctrl + u:: || scroll more lines up
+    ## soft::h:: or soft::alt + left arrow:: || go back
+    ## soft::l:: or soft::alt + right arrow:: || go forward
+    ## soft::G:: || go to bottom 
+    ## soft::g:: || go to top
+    ## soft::shift + j:: or soft::ctrl + minus:: || zoom out
+    ## soft::shift + k:: or soft::ctrl + plus:: || zoom in
+    ## soft::/:: or soft::ctrl + f:: || search in page
+    ## soft::F3:: || open Search page
+    ## soft::F5:: || reload page
+    ## soft::t:: || toggle TOC
+    ## soft::ctrl+{j,k}:: || scroll in TOC
+    ## soft::ESC:: || close TOC
+::
+
 classmethods::
 private:: getOldWrapUrl, initClass
 
@@ -71,4 +93,3 @@ Go back.
 
 method:: goForward
 Go forward.
-

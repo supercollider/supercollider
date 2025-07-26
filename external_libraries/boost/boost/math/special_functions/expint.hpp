@@ -37,19 +37,19 @@ namespace boost{ namespace math{
 template <class T, class Policy>
 inline typename tools::promote_args<T>::type
    expint(unsigned n, T z, const Policy& /*pol*/);
-   
+
 namespace detail{
 
 template <class T>
-inline T expint_1_rational(const T& z, const boost::integral_constant<int, 0>&)
+inline T expint_1_rational(const T& z, const std::integral_constant<int, 0>&)
 {
    // this function is never actually called
-   BOOST_ASSERT(0);
+   BOOST_MATH_ASSERT(0);
    return z;
 }
 
 template <class T>
-T expint_1_rational(const T& z, const boost::integral_constant<int, 53>&)
+T expint_1_rational(const T& z, const std::integral_constant<int, 53>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -59,7 +59,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 53>&)
       // Expected Error Term:                         2.006e-18
       // Max error found at double precision:         2.760e-17
       static const T Y = 0.66373538970947265625F;
-      static const T P[6] = {    
+      static const T P[6] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.0865197248079397976498),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.0320913665303559189999),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.245088216639761496153),
@@ -67,7 +67,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 53>&)
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.00399167106081113256961),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.000111507792921197858394)
       };
-      static const T Q[6] = {    
+      static const T Q[6] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.37091387659397013215),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.056770677104207528384),
@@ -75,7 +75,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 53>&)
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.000131049900798434683324),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.528611029520217142048e-6)
       };
-      result = tools::evaluate_polynomial(P, z) 
+      result = tools::evaluate_polynomial(P, z)
          / tools::evaluate_polynomial(Q, z);
       result += z - log(z) - Y;
    }
@@ -83,7 +83,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 53>&)
    {
       // Maximum Deviation Found (interpolated):      1.444e-17
       // Max error found at double precision:         3.119e-17
-      static const T P[11] = {    
+      static const T P[11] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.121013190657725568138e-18),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.999999999999998811143),
          BOOST_MATH_BIG_CONSTANT(T, 53, -43.3058660811817946037),
@@ -96,7 +96,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 53>&)
          BOOST_MATH_BIG_CONSTANT(T, 53, -14751.4895786128450662),
          BOOST_MATH_BIG_CONSTANT(T, 53, -1185.45720315201027667)
       };
-      static const T Q[12] = {    
+      static const T Q[12] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 53, 45.3058660811801465927),
          BOOST_MATH_BIG_CONSTANT(T, 53, 809.193214954550328455),
@@ -123,7 +123,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 53>&)
 }
 
 template <class T>
-T expint_1_rational(const T& z, const boost::integral_constant<int, 64>&)
+T expint_1_rational(const T& z, const std::integral_constant<int, 64>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -134,7 +134,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 64>&)
       // Max error found at long double precision:    6.249e-20
 
       static const T Y = 0.66373538970947265625F;
-      static const T P[6] = {    
+      static const T P[6] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0865197248079397956816),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0275114007037026844633),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.246594388074877139824),
@@ -142,7 +142,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 64>&)
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.00259113319641673986276),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.30853660894346057053e-4)
       };
-      static const T Q[7] = {    
+      static const T Q[7] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.317978365797784100273),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0393622602554758722511),
@@ -151,7 +151,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 64>&)
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.202872781770207871975e-5),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.52779248094603709945e-7)
       };
-      result = tools::evaluate_polynomial(P, z) 
+      result = tools::evaluate_polynomial(P, z)
          / tools::evaluate_polynomial(Q, z);
       result += z - log(z) - Y;
    }
@@ -159,7 +159,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 64>&)
    {
       // Maximum Deviation Found (interpolated):     2.220e-20
       // Max error found at long double precision:   1.346e-19
-      static const T P[14] = {    
+      static const T P[14] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.534401189080684443046e-23),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.999999999999999999905),
          BOOST_MATH_BIG_CONSTANT(T, 64, -62.1517806091379402505),
@@ -175,7 +175,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 64>&)
          BOOST_MATH_BIG_CONSTANT(T, 64, -65815.2605361889477244),
          BOOST_MATH_BIG_CONSTANT(T, 64, -2038.82870680427258038)
       };
-      static const T Q[14] = {    
+      static const T Q[14] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 64.1517806091379399478),
          BOOST_MATH_BIG_CONSTANT(T, 64, 1690.76044393722763785),
@@ -204,7 +204,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 64>&)
 }
 
 template <class T>
-T expint_1_rational(const T& z, const boost::integral_constant<int, 113>&)
+T expint_1_rational(const T& z, const std::integral_constant<int, 113>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -215,7 +215,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 113>&)
       // Max error found at long double precision:    6.810e-35
 
       static const T Y = 0.66373538970947265625F;
-      static const T P[10] = {    
+      static const T P[10] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0865197248079397956434879099175975937),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0369066175910795772830865304506087759),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.24272036838415474665971599314725545),
@@ -227,7 +227,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 113>&)
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.346839106212658259681029388908658618e-7),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.340500302777838063940402160594523429e-9)
       };
-      static const T Q[10] = {    
+      static const T Q[10] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.426568827778942588160423015589537302),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0841384046470893490592450881447510148),
@@ -239,7 +239,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 113>&)
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.369373328141051577845488477377890236e-9),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.274149801370933606409282434677600112e-12)
       };
-      result = tools::evaluate_polynomial(P, z) 
+      result = tools::evaluate_polynomial(P, z)
          / tools::evaluate_polynomial(Q, z);
       result += z - log(z) - Y;
    }
@@ -250,7 +250,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 113>&)
 
       static const T Y = 0.70190334320068359375F;
 
-      static const T P[16] = {    
+      static const T P[16] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.298096656795020369955077350585959794),
          BOOST_MATH_BIG_CONSTANT(T, 113, 12.9314045995266142913135497455971247),
          BOOST_MATH_BIG_CONSTANT(T, 113, 226.144334921582637462526628217345501),
@@ -268,7 +268,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 113>&)
          BOOST_MATH_BIG_CONSTANT(T, 113, -109.009437301400845902228611986479816),
          BOOST_MATH_BIG_CONSTANT(T, 113, -1.51492042209561411434644938098833499)
       };
-      static const T Q[16] = {    
+      static const T Q[16] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 46.734521442032505570517810766704587),
          BOOST_MATH_BIG_CONSTANT(T, 113, 908.694714348462269000247450058595655),
@@ -296,7 +296,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 113>&)
       // Max error in interpolated form:             4.413e-35
       // Max error found at long double precision:   8.928e-35
 
-      static const T P[19] = {    
+      static const T P[19] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.559148411832951463689610809550083986e-40),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.999999999999999999999999999999999997),
          BOOST_MATH_BIG_CONSTANT(T, 113, -166.542326331163836642960118190147367),
@@ -317,7 +317,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 113>&)
          BOOST_MATH_BIG_CONSTANT(T, 113, -1077042281708.42654526404581272546244),
          BOOST_MATH_BIG_CONSTANT(T, 113, -68028222642.1941480871395695677675137)
       };
-      static const T Q[20] = {    
+      static const T Q[20] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 168.542326331163836642960118190147311),
          BOOST_MATH_BIG_CONSTANT(T, 113, 12535.7237814586576783518249115343619),
@@ -374,10 +374,10 @@ inline T expint_as_fraction(unsigned n, T z, const Policy& pol)
 {
    BOOST_MATH_STD_USING
    BOOST_MATH_INSTRUMENT_VARIABLE(z)
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
    expint_fraction<T> f(n, z);
    T result = tools::continued_fraction_b(
-      f, 
+      f,
       boost::math::policies::get_epsilon<T, Policy>(),
       max_iter);
    policies::check_series_iterations<T>("boost::math::expint_continued_fraction<%1%>(unsigned,%1%)", max_iter, pol);
@@ -392,7 +392,7 @@ template <class T>
 struct expint_series
 {
    typedef T result_type;
-   expint_series(unsigned k_, T z_, T x_k_, T denom_, T fact_) 
+   expint_series(unsigned k_, T z_, T x_k_, T denom_, T fact_)
       : k(k_), z(z_), x_k(x_k_), denom(denom_), fact(fact_){}
    T operator()()
    {
@@ -413,7 +413,7 @@ template <class T, class Policy>
 inline T expint_as_series(unsigned n, T z, const Policy& pol)
 {
    BOOST_MATH_STD_USING
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
 
    BOOST_MATH_INSTRUMENT_VARIABLE(z)
 
@@ -430,8 +430,8 @@ inline T expint_as_series(unsigned n, T z, const Policy& pol)
       fact *= ++k;
    }
    BOOST_MATH_INSTRUMENT_VARIABLE(result)
-   result += pow(-z, static_cast<T>(n - 1)) 
-      * (boost::math::digamma(static_cast<T>(n)) - log(z)) / fact;
+   result += pow(-z, static_cast<T>(n - 1))
+      * (boost::math::digamma(static_cast<T>(n), pol) - log(z)) / fact;
    BOOST_MATH_INSTRUMENT_VARIABLE(result)
 
    expint_series<T> s(k, z, x_k, denom, fact);
@@ -450,20 +450,20 @@ T expint_imp(unsigned n, T z, const Policy& pol, const Tag& tag)
    if(z < 0)
       return policies::raise_domain_error<T>(function, "Function requires z >= 0 but got %1%.", z, pol);
    if(z == 0)
-      return n == 1 ? policies::raise_overflow_error<T>(function, 0, pol) : T(1 / (static_cast<T>(n - 1)));
+      return n == 1 ? policies::raise_overflow_error<T>(function, nullptr, pol) : T(1 / (static_cast<T>(n - 1)));
 
    T result;
 
    bool f;
    if(n < 3)
    {
-      f = z < 0.5;
+      f = z < T(0.5);
    }
    else
    {
       f = z < (static_cast<T>(n - 2) / static_cast<T>(n - 1));
    }
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #  pragma warning(push)
 #  pragma warning(disable:4127) // conditional expression is constant
 #endif
@@ -477,7 +477,7 @@ T expint_imp(unsigned n, T z, const Policy& pol, const Tag& tag)
       result = expint_as_series(n, z, pol);
    else
       result = expint_as_fraction(n, z, pol);
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #  pragma warning(pop)
 #endif
 
@@ -507,7 +507,7 @@ T expint_i_as_series(T z, const Policy& pol)
    T result = log(z); // (log(z) - log(1 / z)) / 2;
    result += constants::euler<T>();
    expint_i_series<T> s(z);
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
    result = tools::sum_series(s, policies::get_epsilon<T, Policy>(), max_iter, result);
    policies::check_series_iterations<T>("boost::math::expint_i_series<%1%>(%1%)", max_iter, pol);
    return result;
@@ -520,19 +520,19 @@ T expint_i_imp(T z, const Policy& pol, const Tag& tag)
    if(z < 0)
       return -expint_imp(1, T(-z), pol, tag);
    if(z == 0)
-      return -policies::raise_overflow_error<T>(function, 0, pol);
+      return -policies::raise_overflow_error<T>(function, nullptr, pol);
    return expint_i_as_series(z, pol);
 }
 
 template <class T, class Policy>
-T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& tag)
+T expint_i_imp(T z, const Policy& pol, const std::integral_constant<int, 53>& tag)
 {
    BOOST_MATH_STD_USING
    static const char* function = "boost::math::expint<%1%>(%1%)";
    if(z < 0)
       return -expint_imp(1, T(-z), pol, tag);
    if(z == 0)
-      return -policies::raise_overflow_error<T>(function, 0, pol);
+      return -policies::raise_overflow_error<T>(function, nullptr, pol);
 
    T result;
 
@@ -541,7 +541,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
       // Maximum Deviation Found:                     2.852e-18
       // Expected Error Term:                         2.852e-18
       // Max Error found at double precision =        Poly: 2.636335e-16   Cheb: 4.187027e-16
-      static const T P[10] = {    
+      static const T P[10] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 2.98677224343598593013),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.356343618769377415068),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.780836076283730801839),
@@ -553,7 +553,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.798296365679269702435e-5),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.2777056254402008721e-6)
       };
-      static const T Q[8] = {    
+      static const T Q[8] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 53, -1.17090412365413911947),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.62215109846016746276),
@@ -570,11 +570,11 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
       static const T r2 = BOOST_MATH_BIG_CONSTANT(T, 53, 0.131401834143860282009280387409357165515556574352422001206362e-16);
       static const T r = static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 53, 0.372507410781366634461991866580119133535689497771654051555657435242200120636201854384926049951548942392));
       T t = (z / 3) - 1;
-      result = tools::evaluate_polynomial(P, t) 
+      result = tools::evaluate_polynomial(P, t)
          / tools::evaluate_polynomial(Q, t);
       t = (z - r1) - r2;
       result *= t;
-      if(fabs(t) < 0.1)
+      if(fabs(t) < T(0.1))
       {
          result += boost::math::log1p(t / r, pol);
       }
@@ -589,7 +589,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
       // Expected Error Term:                         6.546e-17
       // Max Error found at double precision =        Poly: 6.890169e-17   Cheb: 6.772128e-17
       static const T Y = 1.158985137939453125F;
-      static const T P[8] = {    
+      static const T P[8] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.00139324086199402804173),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.0349921221823888744966),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.0264095520754134848538),
@@ -599,7 +599,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.554086272024881826253e-4),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.396487648924804510056e-5)
       };
-      static const T Q[8] = {    
+      static const T Q[8] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.744625566823272107711),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.329061095011767059236),
@@ -622,7 +622,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
       // Max Error found at double precision =        Poly: 4.375868e-17   Cheb: 5.860967e-17
 
       static const T Y = 1.0869731903076171875F;
-      static const T P[9] = {    
+      static const T P[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.00893891094356945667451),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.0484607730127134045806),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.0652810444222236895772),
@@ -633,7 +633,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.000209750022660200888349),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.138652200349182596186e-4)
       };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 53, 1.97017214039061194971),
          BOOST_MATH_BIG_CONSTANT(T, 53, 1.86232465043073157508),
@@ -658,7 +658,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
 
 
       static const T Y = 1.03937530517578125F;
-      static const T P[9] = {    
+      static const T P[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.00356165148914447597995),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.0229930320357982333406),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.0449814350482277917716),
@@ -669,7 +669,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.000192178045857733706044),
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.113161784705911400295e-9)
       };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 53, 2.84354408840148561131),
          BOOST_MATH_BIG_CONSTANT(T, 53, 3.6599610090072393012),
@@ -690,7 +690,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
       // Max Error found at double precision =        3.381886e-17
       static const T exp40 = static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 53, 2.35385266837019985407899910749034804508871617254555467236651e17));
       static const T Y= 1.013065338134765625F;
-      static const T P[6] = {    
+      static const T P[6] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, -0.0130653381347656243849),
          BOOST_MATH_BIG_CONSTANT(T, 53, 0.19029710559486576682),
          BOOST_MATH_BIG_CONSTANT(T, 53, 94.7365094537197236011),
@@ -698,7 +698,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
          BOOST_MATH_BIG_CONSTANT(T, 53, 18932.0850014925993025),
          BOOST_MATH_BIG_CONSTANT(T, 53, -38703.1431362056714134)
       };
-      static const T Q[7] = {    
+      static const T Q[7] = {
          BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 53, 61.9733592849439884145),
          BOOST_MATH_BIG_CONSTANT(T, 53, -2354.56211323420194283),
@@ -718,14 +718,14 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
          t = z - 40;
          if(t > tools::log_max_value<T>())
          {
-            result = policies::raise_overflow_error<T>(function, 0, pol);
+            result = policies::raise_overflow_error<T>(function, nullptr, pol);
          }
          else
          {
             result *= exp(z - 40) / z;
             if(result > tools::max_value<T>() / exp40)
             {
-               result = policies::raise_overflow_error<T>(function, 0, pol);
+               result = policies::raise_overflow_error<T>(function, nullptr, pol);
             }
             else
             {
@@ -739,14 +739,14 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
 }
 
 template <class T, class Policy>
-T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& tag)
+T expint_i_imp(T z, const Policy& pol, const std::integral_constant<int, 64>& tag)
 {
    BOOST_MATH_STD_USING
    static const char* function = "boost::math::expint<%1%>(%1%)";
    if(z < 0)
       return -expint_imp(1, T(-z), pol, tag);
    if(z == 0)
-      return -policies::raise_overflow_error<T>(function, 0, pol);
+      return -policies::raise_overflow_error<T>(function, nullptr, pol);
 
    T result;
 
@@ -756,7 +756,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
       // Expected Error Term:                         3.883e-21
       // Max Error found at long double precision =   Poly: 3.344801e-19   Cheb: 4.989937e-19
 
-      static const T P[11] = {    
+      static const T P[11] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 2.98677224343598593764),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.25891613550886736592),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.789323584998672832285),
@@ -769,7 +769,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.629499283139417444244e-6),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.177833045143692498221e-7)
       };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, -1.20352377969742325748),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.66707904942606479811),
@@ -787,11 +787,11 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
       static const T r2 = BOOST_MATH_BIG_CONSTANT(T, 64, 0.131401834143860282009280387409357165515556574352422001206362e-16);
       static const T r = static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 0.372507410781366634461991866580119133535689497771654051555657435242200120636201854384926049951548942392));
       T t = (z / 3) - 1;
-      result = tools::evaluate_polynomial(P, t) 
+      result = tools::evaluate_polynomial(P, t)
          / tools::evaluate_polynomial(Q, t);
       t = (z - r1) - r2;
       result *= t;
-      if(fabs(t) < 0.1)
+      if(fabs(t) < T(0.1))
       {
          result += boost::math::log1p(t / r, pol);
       }
@@ -807,7 +807,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
       // Max Error found at long double precision =   Poly: 1.208328e-20   Cheb: 1.073723e-20
 
       static const T Y = 1.158985137939453125F;
-      static const T P[9] = {    
+      static const T P[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.00139324086199409049399),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.0345238388952337563247),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.0382065278072592940767),
@@ -818,7 +818,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.623067256376494930067e-5),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.377246883283337141444e-6)
       };
-      static const T Q[10] = {    
+      static const T Q[10] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.08073635708902053767),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.553681133533942532909),
@@ -844,7 +844,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
 
 
       static const T Y = 1.0869731903076171875F;
-      static const T P[10] = {    
+      static const T P[10] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.00893891094356946995368),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.0487562980088748775943),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.0670568657950041926085),
@@ -856,7 +856,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.44424044184395578775e-4),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.252788029251437017959e-5)
       };
-      static const T Q[10] = {    
+      static const T Q[10] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 2.00323265503572414261),
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.94688958187256383178),
@@ -881,7 +881,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
       // Max Error found at long double precision =   Poly: 3.419893e-19   Cheb: 3.359874e-19
 
       static const T Y = 1.03937530517578125F;
-      static const T P[12] = {    
+      static const T P[12] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.00356165148914447278177),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.0240235006148610849678),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.0516699967278057976119),
@@ -895,7 +895,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.712662196671896837736e-10),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.533769629702262072175e-11)
       };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 3.13286733695729715455),
          BOOST_MATH_BIG_CONSTANT(T, 64, 4.49281223045653491929),
@@ -922,7 +922,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
 
       static const T exp40 = static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 2.35385266837019985407899910749034804508871617254555467236651e17));
       static const T Y= 1.013065338134765625F;
-      static const T P[9] = {    
+      static const T P[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.0130653381347656250004),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.644487780349757303739),
          BOOST_MATH_BIG_CONSTANT(T, 64, 143.995670348227433964),
@@ -933,7 +933,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
          BOOST_MATH_BIG_CONSTANT(T, 64, -160695051.957997452509),
          BOOST_MATH_BIG_CONSTANT(T, 64, 137839271.592778020028)
       };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 27.2103343964943718802),
          BOOST_MATH_BIG_CONSTANT(T, 64, -8785.48528692879413676),
@@ -955,14 +955,14 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& 
          t = z - 40;
          if(t > tools::log_max_value<T>())
          {
-            result = policies::raise_overflow_error<T>(function, 0, pol);
+            result = policies::raise_overflow_error<T>(function, nullptr, pol);
          }
          else
          {
             result *= exp(z - 40) / z;
             if(result > tools::max_value<T>() / exp40)
             {
-               result = policies::raise_overflow_error<T>(function, 0, pol);
+               result = policies::raise_overflow_error<T>(function, nullptr, pol);
             }
             else
             {
@@ -984,7 +984,7 @@ void expint_i_imp_113a(T& result, const T& z, const Policy& pol)
    // Max Error found at long double precision =   Poly: 4.355299e-34   Cheb: 7.512581e-34
 
 
-   static const T P[15] = {    
+   static const T P[15] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 2.98677224343598593765287235997328555),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.333256034674702967028780537349334037),
       BOOST_MATH_BIG_CONSTANT(T, 113, 0.851831522798101228384971644036708463),
@@ -1001,7 +1001,7 @@ void expint_i_imp_113a(T& result, const T& z, const Policy& pol)
       BOOST_MATH_BIG_CONSTANT(T, 113, 0.143971277122049197323415503594302307e-11),
       BOOST_MATH_BIG_CONSTANT(T, 113, 0.306243138978114692252817805327426657e-13)
    };
-   static const T Q[15] = {    
+   static const T Q[15] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 113, -1.40178870313943798705491944989231793),
       BOOST_MATH_BIG_CONSTANT(T, 113, 0.943810968269701047641218856758605284),
@@ -1029,7 +1029,7 @@ void expint_i_imp_113a(T& result, const T& z, const Policy& pol)
    static const T r3 = static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, 0.283806480836357377069325311780969887585024578164571984232357e-31));
    static const T r = static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, 0.372507410781366634461991866580119133535689497771654051555657435242200120636201854384926049951548942392));
    T t = (z / 3) - 1;
-   result = tools::evaluate_polynomial(P, t) 
+   result = tools::evaluate_polynomial(P, t)
       / tools::evaluate_polynomial(Q, t);
    t = ((z - r1) - r2) - r3;
    result *= t;
@@ -1052,7 +1052,7 @@ void expint_i_113b(T& result, const T& z)
    // Max Error found at long double precision =   Poly: 2.576723e-35   Cheb: 1.236001e-34
 
    static const T Y = 1.158985137939453125F;
-   static const T P[15] = {    
+   static const T P[15] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00139324086199409049282472239613554817),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.0338173111691991289178779840307998955),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.0555972290794371306259684845277620556),
@@ -1069,7 +1069,7 @@ void expint_i_113b(T& result, const T& z)
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.203015132965870311935118337194860863e-10),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.384276705503357655108096065452950822e-12)
    };
-   static const T Q[15] = {    
+   static const T Q[15] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.58784732785354597996617046880946257),
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.18550755302279446339364262338114098),
@@ -1103,7 +1103,7 @@ void expint_i_113c(T& result, const T& z)
 
 
    static const T Y = 1.091579437255859375F;
-   static const T P[17] = {    
+   static const T P[17] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00685089599550151282724924894258520532),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.0443313550253580053324487059748497467),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.071538561252424027443296958795814874),
@@ -1122,7 +1122,7 @@ void expint_i_113c(T& result, const T& z)
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.326283053716799774936661568391296584e-13),
       BOOST_MATH_BIG_CONSTANT(T, 113, 0.869226483473172853557775877908693647e-15)
    };
-   static const T Q[15] = {    
+   static const T Q[15] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 113, 2.23227220874479061894038229141871087),
       BOOST_MATH_BIG_CONSTANT(T, 113, 2.40221000361027971895657505660959863),
@@ -1155,7 +1155,7 @@ void expint_i_113d(T& result, const T& z)
    // Max Error found at long double precision =   Poly: 4.158110e-35   Cheb: 5.385532e-35
 
    static const T Y = 1.051731109619140625F;
-   static const T P[14] = {    
+   static const T P[14] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00144552494420652573815404828020593565),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.0126747451594545338365684731262912741),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.01757394877502366717526779263438073),
@@ -1171,7 +1171,7 @@ void expint_i_113d(T& result, const T& z)
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.595500337089495614285777067722823397e-9),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.133141358866324100955927979606981328e-10)
    };
-   static const T Q[14] = {    
+   static const T Q[14] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.72490783907582654629537013560044682),
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.44524329516800613088375685659759765),
@@ -1206,7 +1206,7 @@ void expint_i_113e(T& result, const T& z)
    // Max Error found at long double precision =   Poly: 1.711721e-34   Cheb: 3.100018e-34
 
    static const T Y = 1.032726287841796875F;
-   static const T P[15] = {    
+   static const T P[15] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00141056919297307534690895009969373233),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.0123384175302540291339020257071411437),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.0298127270706864057791526083667396115),
@@ -1223,7 +1223,7 @@ void expint_i_113e(T& result, const T& z)
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.350233957364028523971768887437839573e-7),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.105428907085424234504608142258423505e-8)
    };
-   static const T Q[16] = {    
+   static const T Q[16] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 113, 3.17261315255467581204685605414005525),
       BOOST_MATH_BIG_CONSTANT(T, 113, 4.85267952971640525245338392887217426),
@@ -1260,7 +1260,7 @@ void expint_i_113f(T& result, const T& z)
    // Max Error found at long double precision =   Poly: 1.288958e-35   Cheb: 2.304586e-35
 
    static const T Y = 1.0216197967529296875F;
-   static const T P[12] = {    
+   static const T P[12] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000322999116096627043476023926572650045),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00385606067447365187909164609294113346),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00686514524727568176735949971985244415),
@@ -1274,7 +1274,7 @@ void expint_i_113f(T& result, const T& z)
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.434084023639508143975983454830954835e-7),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.107839681938752337160494412638656696e-8)
    };
-   static const T Q[12] = {    
+   static const T Q[12] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 113, 2.09913805456661084097134805151524958),
       BOOST_MATH_BIG_CONSTANT(T, 113, 2.07041755535439919593503171320431849),
@@ -1307,7 +1307,7 @@ void expint_i_113g(T& result, const T& z)
    // Max Error found at long double precision =   Poly: 9.976345e-35   Cheb: 8.358865e-35
 
    static const T Y = 1.015148162841796875F;
-   static const T P[11] = {    
+   static const T P[11] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000435714784725086961464589957142615216),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00432114324353830636009453048419094314),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.0100740363285526177522819204820582424),
@@ -1320,7 +1320,7 @@ void expint_i_113g(T& result, const T& z)
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.21972450610957417963227028788460299e-5),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.720558173805289167524715527536874694e-7)
    };
-   static const T Q[11] = {    
+   static const T Q[11] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 113, 2.95918362458402597039366979529287095),
       BOOST_MATH_BIG_CONSTANT(T, 113, 3.96472247520659077944638411856748924),
@@ -1352,7 +1352,7 @@ void expint_i_113h(T& result, const T& z)
    // Max Error found at long double precision =   Poly: 2.058532e-35   Cheb: 2.165465e-27
 
    static const T Y= 1.00849151611328125F;
-   static const T P[9] = {    
+   static const T P[9] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.0084915161132812500000001440233607358),
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.84479378737716028341394223076147872),
       BOOST_MATH_BIG_CONSTANT(T, 113, -130.431146923726715674081563022115568),
@@ -1363,7 +1363,7 @@ void expint_i_113h(T& result, const T& z)
       BOOST_MATH_BIG_CONSTANT(T, 113, 8570600.041606912735872059184527855),
       BOOST_MATH_BIG_CONSTANT(T, 113, -6758379.93672362080947905580906028645)
    };
-   static const T Q[10] = {    
+   static const T Q[10] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 113, -99.4868026047611434569541483506091713),
       BOOST_MATH_BIG_CONSTANT(T, 113, 3879.67753690517114249705089803055473),
@@ -1383,14 +1383,14 @@ void expint_i_113h(T& result, const T& z)
 }
 
 template <class T, class Policy>
-T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 113>& tag)
+T expint_i_imp(T z, const Policy& pol, const std::integral_constant<int, 113>& tag)
 {
    BOOST_MATH_STD_USING
    static const char* function = "boost::math::expint<%1%>(%1%)";
    if(z < 0)
       return -expint_imp(1, T(-z), pol, tag);
    if(z == 0)
-      return -policies::raise_overflow_error<T>(function, 0, pol);
+      return -policies::raise_overflow_error<T>(function, nullptr, pol);
 
    T result;
 
@@ -1434,7 +1434,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 113>&
 
       static const T exp40 = static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, 2.35385266837019985407899910749034804508871617254555467236651e17));
       static const T Y= 1.00252532958984375F;
-      static const T P[8] = {    
+      static const T P[8] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.00252532958984375000000000000000000085),
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.16591386866059087390621952073890359),
          BOOST_MATH_BIG_CONSTANT(T, 113, -67.8483431314018462417456828499277579),
@@ -1444,7 +1444,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 113>&
          BOOST_MATH_BIG_CONSTANT(T, 113, -225025.189335919133214440347510936787),
          BOOST_MATH_BIG_CONSTANT(T, 113, 175864.614717440010942804684741336853)
       };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, -65.6998869881600212224652719706425129),
          BOOST_MATH_BIG_CONSTANT(T, 113, 1642.73850032324014781607859416890077),
@@ -1466,14 +1466,14 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 113>&
          t = z - 40;
          if(t > tools::log_max_value<T>())
          {
-            result = policies::raise_overflow_error<T>(function, 0, pol);
+            result = policies::raise_overflow_error<T>(function, nullptr, pol);
          }
          else
          {
             result *= exp(z - 40) / z;
             if(result > tools::max_value<T>() / exp40)
             {
-               result = policies::raise_overflow_error<T>(function, 0, pol);
+               result = policies::raise_overflow_error<T>(function, nullptr, pol);
             }
             else
             {
@@ -1495,34 +1495,34 @@ struct expint_i_initializer
       {
          do_init(tag());
       }
-      static void do_init(const boost::integral_constant<int, 0>&){}
-      static void do_init(const boost::integral_constant<int, 53>&)
+      static void do_init(const std::integral_constant<int, 0>&){}
+      static void do_init(const std::integral_constant<int, 53>&)
       {
-         boost::math::expint(T(5));
-         boost::math::expint(T(7));
-         boost::math::expint(T(18));
-         boost::math::expint(T(38));
-         boost::math::expint(T(45));
+         boost::math::expint(T(5), Policy());
+         boost::math::expint(T(7), Policy());
+         boost::math::expint(T(18), Policy());
+         boost::math::expint(T(38), Policy());
+         boost::math::expint(T(45), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 64>&)
+      static void do_init(const std::integral_constant<int, 64>&)
       {
-         boost::math::expint(T(5));
-         boost::math::expint(T(7));
-         boost::math::expint(T(18));
-         boost::math::expint(T(38));
-         boost::math::expint(T(45));
+         boost::math::expint(T(5), Policy());
+         boost::math::expint(T(7), Policy());
+         boost::math::expint(T(18), Policy());
+         boost::math::expint(T(38), Policy());
+         boost::math::expint(T(45), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 113>&)
+      static void do_init(const std::integral_constant<int, 113>&)
       {
-         boost::math::expint(T(5));
-         boost::math::expint(T(7));
-         boost::math::expint(T(17));
-         boost::math::expint(T(25));
-         boost::math::expint(T(40));
-         boost::math::expint(T(50));
-         boost::math::expint(T(80));
-         boost::math::expint(T(200));
-         boost::math::expint(T(220));
+         boost::math::expint(T(5), Policy());
+         boost::math::expint(T(7), Policy());
+         boost::math::expint(T(17), Policy());
+         boost::math::expint(T(25), Policy());
+         boost::math::expint(T(40), Policy());
+         boost::math::expint(T(50), Policy());
+         boost::math::expint(T(80), Policy());
+         boost::math::expint(T(200), Policy());
+         boost::math::expint(T(220), Policy());
       }
       void force_instantiate()const{}
    };
@@ -1545,22 +1545,22 @@ struct expint_1_initializer
       {
          do_init(tag());
       }
-      static void do_init(const boost::integral_constant<int, 0>&){}
-      static void do_init(const boost::integral_constant<int, 53>&)
+      static void do_init(const std::integral_constant<int, 0>&){}
+      static void do_init(const std::integral_constant<int, 53>&)
       {
-         boost::math::expint(1, T(0.5));
-         boost::math::expint(1, T(2));
+         boost::math::expint(1, T(0.5), Policy());
+         boost::math::expint(1, T(2), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 64>&)
+      static void do_init(const std::integral_constant<int, 64>&)
       {
-         boost::math::expint(1, T(0.5));
-         boost::math::expint(1, T(2));
+         boost::math::expint(1, T(0.5), Policy());
+         boost::math::expint(1, T(2), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 113>&)
+      static void do_init(const std::integral_constant<int, 113>&)
       {
-         boost::math::expint(1, T(0.5));
-         boost::math::expint(1, T(2));
-         boost::math::expint(1, T(6));
+         boost::math::expint(1, T(0.5), Policy());
+         boost::math::expint(1, T(2), Policy());
+         boost::math::expint(1, T(6), Policy());
       }
       void force_instantiate()const{}
    };
@@ -1576,18 +1576,18 @@ const typename expint_1_initializer<T, Policy, tag>::init expint_1_initializer<T
 
 template <class T, class Policy>
 inline typename tools::promote_args<T>::type
-   expint_forwarder(T z, const Policy& /*pol*/, boost::true_type const&)
+   expint_forwarder(T z, const Policy& /*pol*/, std::true_type const&)
 {
    typedef typename tools::promote_args<T>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::precision<result_type, Policy>::type precision_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 :
@@ -1604,7 +1604,7 @@ inline typename tools::promote_args<T>::type
 
 template <class T>
 inline typename tools::promote_args<T>::type
-expint_forwarder(unsigned n, T z, const boost::false_type&)
+expint_forwarder(unsigned n, T z, const std::false_type&)
 {
    return boost::math::expint(n, z, policies::policy<>());
 }
@@ -1619,12 +1619,12 @@ inline typename tools::promote_args<T>::type
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::precision<result_type, Policy>::type precision_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 :

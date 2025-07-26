@@ -12,7 +12,7 @@ code::
 var a, b;
 a = Paddpre(\x, 8, Pbind(\dur, 0.5));
 x = a.asStream;
-9.do({ x.next((\x:4)).postln; });
+9.do({ x.next((\x:4)).postln });
 )
 ::
 
@@ -22,7 +22,7 @@ code::
 var a, b;
 a = Paddpre(\freq, 302, Pset(\freq, 500, Pbind(\dur, 0.3)));
 x = a.asStream;
-9.do({ x.next(Event.default).postln; });
+9.do({ x.next(Event.default).postln });
 )
 ::
 
@@ -47,15 +47,15 @@ code::
 var a, b;
 a = Paddpre(\legato, Pseq([0.2, 0.4], 2), Pbind(\dur, 0.5));
 x = a.asStream;
-9.do({ x.next(Event.default).postln; });
+9.do({ x.next(Event.default).postln });
 )
 ::
 
 code::
-//sound example
+// sound example
 (
 SynthDef(\sinegrain,
-	{ arg out=0, freq=440, sustain=0.02;
+	{ |out = 0, freq = 440, sustain = 0.02|
 		var env;
 		env = EnvGen.kr(Env.perc(0.001, sustain), 1, doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env * 0.1))

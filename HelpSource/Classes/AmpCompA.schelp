@@ -11,10 +11,7 @@ compensates. Following the measurements by Fletcher and Munson, the
 ANSI standard describes a function for loudness vs. frequency.
 
 Note that this curve is only valid for standardized amplitude.
-footnote::
-Function freq → dB,
-derived from http://www.beis.de/Elektronik/AudioMeasure/WeightingFilters.html
-and modified to map freq → amp.
+footnote:: Function freq → dB, derived from http://www.beis.de/Elektronik/AudioMeasure/WeightingFilters.html and modified to map freq → amp.
 code::
 (
 var k =  3.5041384e16;
@@ -22,9 +19,9 @@ var c1 = 424.31867740601;
 var c2 = 11589.093052022;
 var c3 = 544440.67046057;
 var c4 = 148698928.24309;
-f = {|f|
+f = { |f|
 var r = squared(f);
-var m1 = pow(r,4);
+var m1 = pow(r, 4);
 var n1 = squared(c1 + r);
 var n2 = c2 + r;
 var n3 = c3 + r;
@@ -48,16 +45,14 @@ argument::freq
 Input frequency value. For freq == root, the output is rootAmp.
 
 argument::root
-Root freq relative to which the curve is calculated (usually lowest freq).
+Root freq relative to which the curve is calculated (usually lowest freq). Non-modulatable.
 
 argument::minAmp
-Amplitude at the minimum point of the curve (around 2512 Hz).
+Amplitude at the minimum point of the curve (around 2512 Hz). Non-modulatable.
 
 argument::rootAmp
-Amplitude at the root frequency.
+Amplitude at the root frequency. Non-modulatable.
 
-discussion::
-Apart from code::freq::, the values are not modulatable
 
 Examples::
 
@@ -136,32 +131,4 @@ code::
 	SinOsc.ar(freq) * 0.1
 }.play;
 )
-
-
-
-
-
-[1] Function freq -> dB,
-	derived from http://www.beis.de/Elektronik/AudioMeasure/WeightingFilters.html
-	and modified to map freq -> amp
-
-(
-var k =  3.5041384e16;
-var c1 = 424.31867740601;
-var c2 = 11589.093052022;
-var c3 = 544440.67046057;
-var c4 = 148698928.24309;
-f = {|f|
-  var r = squared(f);
-  var m1 = pow(r,4);
-  var n1 = squared(c1 + r);
-  var n2 = c2 + r;
-  var n3 = c3 + r;
-  var n4 = squared(c4 + r);
-  var level = k * m1 / (n1 * n2 * n3 * n4);
-  sqrt(level)
- };
-)
-
 ::
-

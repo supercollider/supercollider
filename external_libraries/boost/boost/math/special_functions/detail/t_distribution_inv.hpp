@@ -27,7 +27,7 @@ template <class T, class Policy>
 T inverse_students_t_hill(T ndf, T u, const Policy& pol)
 {
    BOOST_MATH_STD_USING
-   BOOST_ASSERT(u <= 0.5);
+   BOOST_MATH_ASSERT(u <= 0.5);
 
    T a, b, c, d, q, x, y;
 
@@ -146,37 +146,37 @@ T inverse_students_t_body_series(T df, T u, const Policy& pol)
    T in = 1 / df;
    c[2] = static_cast<T>(0.16666666666666666667 + 0.16666666666666666667 * in);
    c[3] = static_cast<T>((0.0083333333333333333333 * in
-      + 0.066666666666666666667) * in 
+      + 0.066666666666666666667) * in
       + 0.058333333333333333333);
    c[4] = static_cast<T>(((0.00019841269841269841270 * in
-      + 0.0017857142857142857143) * in 
-      + 0.026785714285714285714) * in 
+      + 0.0017857142857142857143) * in
+      + 0.026785714285714285714) * in
       + 0.025198412698412698413);
    c[5] = static_cast<T>((((2.7557319223985890653e-6 * in
-      + 0.00037477954144620811287) * in 
-      - 0.0011078042328042328042) * in 
-      + 0.010559964726631393298) * in 
+      + 0.00037477954144620811287) * in
+      - 0.0011078042328042328042) * in
+      + 0.010559964726631393298) * in
       + 0.012039792768959435626);
    c[6] = static_cast<T>(((((2.5052108385441718775e-8 * in
-      - 0.000062705427288760622094) * in 
-      + 0.00059458674042007375341) * in 
-      - 0.0016095979637646304313) * in 
-      + 0.0061039211560044893378) * in 
+      - 0.000062705427288760622094) * in
+      + 0.00059458674042007375341) * in
+      - 0.0016095979637646304313) * in
+      + 0.0061039211560044893378) * in
       + 0.0038370059724226390893);
    c[7] = static_cast<T>((((((1.6059043836821614599e-10 * in
-      + 0.000015401265401265401265) * in 
+      + 0.000015401265401265401265) * in
       - 0.00016376804137220803887) * in
-      + 0.00069084207973096861986) * in 
-      - 0.0012579159844784844785) * in 
-      + 0.0010898206731540064873) * in 
+      + 0.00069084207973096861986) * in
+      - 0.0012579159844784844785) * in
+      + 0.0010898206731540064873) * in
       + 0.0032177478835464946576);
    c[8] = static_cast<T>(((((((7.6471637318198164759e-13 * in
       - 3.9851014346715404916e-6) * in
       + 0.000049255746366361445727) * in
-      - 0.00024947258047043099953) * in 
+      - 0.00024947258047043099953) * in
       + 0.00064513046951456342991) * in
       - 0.00076245135440323932387) * in
-      + 0.000033530976880017885309) * in 
+      + 0.000033530976880017885309) * in
       + 0.0017438262298340009980);
    c[9] = static_cast<T>((((((((2.8114572543455207632e-15 * in
       + 1.0914179173496789432e-6) * in
@@ -185,7 +185,7 @@ T inverse_students_t_body_series(T df, T u, const Policy& pol)
       - 0.00029133414466938067350) * in
       + 0.00051406605788341121363) * in
       - 0.00036307660358786885787) * in
-      - 0.00031101086326318780412) * in 
+      - 0.00031101086326318780412) * in
       + 0.00096472747321388644237);
    c[10] = static_cast<T>(((((((((8.2206352466243297170e-18 * in
       - 3.1239569599829868045e-7) * in
@@ -204,7 +204,7 @@ T inverse_students_t_body_series(T df, T u, const Policy& pol)
 }
 
 template <class T, class Policy>
-T inverse_students_t(T df, T u, T v, const Policy& pol, bool* pexact = 0)
+T inverse_students_t(T df, T u, T v, const Policy& pol, bool* pexact = nullptr)
 {
    //
    // df = number of degrees of freedom.
@@ -284,7 +284,7 @@ T inverse_students_t(T df, T u, T v, const Policy& pol, bool* pexact = 0)
             // supplement:
             //
             T a = 4 * (u - u * u);//1 - 4 * (u - 0.5f) * (u - 0.5f);
-            T b = boost::math::cbrt(a);
+            T b = boost::math::cbrt(a, pol);
             static const T c = static_cast<T>(0.85498797333834849467655443627193);
             T p = 6 * (1 + c * (1 / b - 1));
             T p0;
@@ -427,7 +427,7 @@ inline T find_ibeta_inv_from_t_dist(T a, T p, T /*q*/, T* py, const Policy& pol)
 }
 
 template <class T, class Policy>
-inline T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const boost::false_type*)
+inline T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const std::false_type*)
 {
    BOOST_MATH_STD_USING
    //
@@ -438,7 +438,7 @@ inline T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const boost:
    T t, x, y(0);
    x = ibeta_inv(df / 2, T(0.5), 2 * probability, &y, pol);
    if(df * y > tools::max_value<T>() * x)
-      t = policies::raise_overflow_error<T>("boost::math::students_t_quantile<%1%>(%1%,%1%)", 0, pol);
+      t = policies::raise_overflow_error<T>("boost::math::students_t_quantile<%1%>(%1%,%1%)", nullptr, pol);
    else
       t = sqrt(df * y / x);
    //
@@ -450,12 +450,12 @@ inline T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const boost:
 }
 
 template <class T, class Policy>
-T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const boost::true_type*)
+T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const std::true_type*)
 {
    BOOST_MATH_STD_USING
    bool invert = false;
    if((df < 2) && (floor(df) != df))
-      return boost::math::detail::fast_students_t_quantile_imp(df, p, pol, static_cast<boost::false_type*>(0));
+      return boost::math::detail::fast_students_t_quantile_imp(df, p, pol, static_cast<std::false_type*>(nullptr));
    if(p > 0.5)
    {
       p = 1 - p;
@@ -525,20 +525,20 @@ inline T fast_students_t_quantile(T df, T p, const Policy& pol)
 {
    typedef typename policies::evaluation<T, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
-   typedef boost::integral_constant<bool,
+   typedef std::integral_constant<bool,
       (std::numeric_limits<T>::digits <= 53)
        &&
       (std::numeric_limits<T>::is_specialized)
        &&
       (std::numeric_limits<T>::radix == 2)
    > tag_type;
-   return policies::checked_narrowing_cast<T, forwarding_policy>(fast_students_t_quantile_imp(static_cast<value_type>(df), static_cast<value_type>(p), pol, static_cast<tag_type*>(0)), "boost::math::students_t_quantile<%1%>(%1%,%1%,%1%)");
+   return policies::checked_narrowing_cast<T, forwarding_policy>(fast_students_t_quantile_imp(static_cast<value_type>(df), static_cast<value_type>(p), pol, static_cast<tag_type*>(nullptr)), "boost::math::students_t_quantile<%1%>(%1%,%1%,%1%)");
 }
 
 }}} // namespaces

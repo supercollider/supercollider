@@ -25,7 +25,7 @@ Add a spec to the global spec dictionary. The item will be converted to a spec u
 Examples::
 
 code::
-Spec.add(\helpExp, ControlSpec( 0.01, 1.0, \exp) );
+Spec.add(\helpExp, ControlSpec(0.01, 1.0, \exp));
 
 // the array will be converted to a control spec
 Spec.add(\helpLin, [0, 1, \lin, 0.011, 0.01]);
@@ -58,7 +58,7 @@ Spec.add(\helpLin, ControlSpec(0.ampdb, 1.ampdb, \db, units: " dB"));
 
 \db -> ControlSpec(0.ampdb, 1.ampdb, \db, units: " dB"),
 \amp -> ControlSpec(0, 1, \amp, 0, 0),
-\boostcut -> ControlSpec(-20, 20, units: " dB",default: 0),
+\boostcut -> ControlSpec(-20, 20, units: " dB", default: 0),
 
 \pan -> ControlSpec(-1, 1, default: 0),
 \detune -> ControlSpec(-20, 20, default: 0, units: " Hz"),

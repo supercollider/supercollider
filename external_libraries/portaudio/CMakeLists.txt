@@ -13,6 +13,10 @@ set(PA_LIBNAME_ADD_SUFFIX OFF CACHE BOOL "PortAudio static library suffix" FORCE
 # disable install target
 set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable PortAudio install" FORCE)
 
+# bump up cmake version to fix compatibility with cmake 4
+# FIXME: remove this after the portaudio submodule is updated above v19.7.0
+set(CMAKE_POLICY_VERSION_MINIMUM 3.10)
+
 add_subdirectory(portaudio_submodule)
 
 if(WIN32 AND NOT PA_USE_ASIO)

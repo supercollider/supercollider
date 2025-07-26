@@ -1,0 +1,61 @@
+TITLE:: ExampleFiles
+summary:: A shortcut to example sounds bundled with SuperCollider
+categories:: Files
+related:: Classes/Buffer, Classes/SoundFile, Classes/File, Classes/PathName
+
+DESCRIPTION::
+Provides a shortcut to the paths of example files which are bundled with SuperCollider and are located in LINK::Classes/Platform#*resourceDir::.
+
+CODE::
+// instead of writing
+Platform.resourceDir +/+ "sounds" +/+ "a11wlk01-44_1.aiff";
+// one can write
+ExampleFiles.apollo11;
+::
+
+CLASSMETHODS::
+
+METHOD:: apollo11 
+A radio recording from the Apollo 11 moon landing program where Bruce McCandless says EMPHASIS::"Columbia, this is Houston. Over."::.
+For more information see LINK::https://www.nasa.gov/history/alsj/a11/a11.mobility.html:: at the mark TELETYPE::110:25:41:: (it seems to be the third repetition, though the pitch does not match).
+
+TABLE::
+## Filename || TELETYPE::a11wlk01-44_1.aiff::
+## Channels || 1
+## Samplerate || 44100 Hz
+## Format || pcm_s16be
+## Duration || 00:00:02.44
+::
+
+RETURNS:: The full path of TELETYPE::a11wlk01-44_1.aiff:: as a LINK::Classes/String::
+
+DISCUSSION::
+Trivia time: Although the file in its current form was introduced on 2004-07-11 by Scott Wilson via commit TELETYPE::bc9a4d4fd8cdccd2b1c787010c776176c7993d2c::, its original version as a 11025 Hz mono file dates back to at least 2002-09-28 via the commit TELETYPE::f30d769ab6b8eb1f36027ed3a400efd3b829f43a:: by James McCartney.
+
+This can be considered the "Hello world" audio sample of SuperCollider.
+
+METHOD:: sinedPink
+A very short stereo sample which has 10 cycles of a 440Hz LINK::Classes/SinOsc:: on its first channel and a LINK::Classes/PinkNoise:: on its second channel. 
+
+TABLE::
+## Filename || TELETYPE::SinedPink.aiff::
+## Channels || 2
+## Samplerate || 44100 Hz
+## Format || pcm_f32be
+## Duration || 00:00:00.02
+::
+
+returns:: The full path of TELETYPE::SinedPink.aiff:: as a LINK::Classes/String:: 
+
+METHOD:: child
+Allegedly a re-recording of Link::Classes/ExampleFiles#*apollo11:: performed by a child of a developer.
+
+TABLE::
+## Filename || TELETYPE::a11wlk01.wav::
+## Channels || 1
+## Samplerate || 44100 Hz
+## Format || pcm_s16le
+## Duration || 00:00:04.28
+::
+
+returns:: The full path of TELETYPE::a11wlk01.wav:: as a LINK::Classes/String::

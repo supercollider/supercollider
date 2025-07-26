@@ -97,7 +97,7 @@ namespace posix_time {
           throw; // rethrow original exception
         }
         else {
-          // if the user want's to fail quietly, we simply set the failbit
+          // if the user wants to fail quietly, we simply set the failbit
           is.setstate(std::ios_base::failbit);
         }
       }

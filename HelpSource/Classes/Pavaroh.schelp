@@ -24,9 +24,9 @@ Pbind(\note, Pavaroh(
 )
 
 
-//___indian video game (1)
+// ___indian video game (1)
 (
-SynthDef("ivg", { arg out, freq=900, pan;
+SynthDef("ivg", { |out, freq = 900, pan|
 	var trig, snd;
 	trig = Impulse.kr(LFClipNoise.kr(4, 3, LFClipNoise.kr(0.2, 2, 7)));
 	snd = RLPF.ar(
@@ -40,7 +40,7 @@ SynthDef("ivg", { arg out, freq=900, pan;
 (
 	var aroh, avaroh, synth, str, pat;
 
-	//gandhari raga.  vadi: dha (7) samvadi: ga (3)
+	// gandhari raga.  vadi: dha (7) samvadi: ga (3)
 
 	aroh = #[0, 2, 5, 7, 10];
 	avaroh =  #[0, 1, 3, 5, 7, 9, 10];
@@ -51,8 +51,8 @@ SynthDef("ivg", { arg out, freq=900, pan;
 	Routine({
 
 		loop({
-			synth.set(\freq, midicps(str.next + 60) );
-			rrand([0.1,1.0].choose, 0.5).wait;
+			synth.set(\freq, midicps(str.next + 60));
+			rrand([0.1, 1.0].choose, 0.5).wait;
 		});
 
 	}).play;

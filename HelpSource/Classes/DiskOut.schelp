@@ -1,6 +1,6 @@
 class:: DiskOut
 summary:: Record to a soundfile to disk.
-related:: Classes/RecordBuf, Classes/DiskIn
+related:: Classes/RecordBuf, Classes/DiskIn, Classes/VDiskIn
 categories::  UGens>InOut, UGens>Buffer
 
 Description::
@@ -56,14 +56,14 @@ s.boot; // start the server
 // something to record
 SynthDef("bubbles", { |out|
 	var f, zout;
-	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps; // glissando function
+	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8, 7.23], 0, 3, 80)).midicps; // glissando function
 	zout = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
 	Out.ar(out, zout)
 }).add;
 
 // this will record to the disk
 SynthDef("help-Diskout", { |bufnum|
-	DiskOut.ar(bufnum, In.ar(0,2));
+	DiskOut.ar(bufnum, In.ar(0, 2));
 }).add;
 
 // this will play it back
@@ -79,7 +79,7 @@ code::
 x = Synth("bubbles");
 
 // allocate a disk i/o buffer
-b= Buffer.alloc(s, 65536, 2);
+b = Buffer.alloc(s, 65536, 2);
 
 // create an output file for this buffer, leave it open
 b.write("~/diskouttest.wav".standardizePath, "wav", "int16", 0, 0, true);
@@ -97,9 +97,9 @@ b.free;
 // play it back
 (
 x = Synth.basicNew("help-Diskin-2chan");
-m = { |buf| x.addToHeadMsg(nil, [\bufnum,buf])};
+m = { |buf| x.addToHeadMsg(nil, [\bufnum, buf]) };
 
-b = Buffer.cueSoundFile(s,"~/diskouttest.wav".standardizePath, 0, 2, completionMessage: m);
+b = Buffer.cueSoundFile(s, "~/diskouttest.wav".standardizePath, 0, 2, completionMessage: m);
 )
 x.free; b.close; b.free; // cleanup
 ::
@@ -129,4 +129,3 @@ s.sendMsg("/n_free", 2003); // stop the bubbles
 s.sendMsg("/b_close", 0); // close the file.
 s.sendMsg("/b_free", 0);
 ::
-

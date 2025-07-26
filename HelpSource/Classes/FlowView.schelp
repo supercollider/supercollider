@@ -16,16 +16,16 @@ code::
 (
 f = FlowView.new;
 
-GUI.slider.new(f, Rect(0,0,100,100));
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 
 // the StartRow will be fixed at this point in the children array
 f.startRow;
 
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 f.startRow;
 
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 )
 ::
 
@@ -59,35 +59,35 @@ code::
 (
 f = FlowView.new;
 
-GUI.slider.new(f, Rect(0,0,100,100));
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 
 GUI.slider.new(f, f.indentedRemaining)
-	.background = Color.blue(alpha:0.2)
+	.background = Color.blue(alpha: 0.2)
 )
 
 (
 f = FlowView.new;
 
-GUI.slider.new(f, Rect(0,0,100,100));
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 
 f.startRow; // new row
 
 GUI.slider.new(f, f.indentedRemaining)
-	.background = Color.blue(alpha:0.2)
+	.background = Color.blue(alpha: 0.2)
 )
 
 (
 f = FlowView.new;
 
-GUI.slider.new(f, Rect(0,0,100,100));
-GUI.slider.new(f, Rect(0,0,100,100));
-GUI.slider.new(f, Rect(0,0,100,100));
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 
 GUI.slider.new(f, f.indentedRemaining)
-	.background = Color.blue(alpha:0.2)
+	.background = Color.blue(alpha: 0.2)
 )
 ::
 
@@ -98,15 +98,15 @@ code::
 w = GUI.window.new;
 w.front;
 f = FlowView.new(w);
-f.background = Color.blue(alpha:0.1);
+f.background = Color.blue(alpha: 0.1);
 
-GUI.slider.new(f, Rect(0,0,100,100));
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 
 f.used.postln;
 
 // overlaid
-GUI.compositeView.new(w,f.used)
+GUI.compositeView.new(w, f.used)
 	.background = Color.red(alpha: 0.1);
 )
 
@@ -114,19 +114,19 @@ GUI.compositeView.new(w,f.used)
 w = GUI.window.new;
 w.front;
 f = FlowView.new(w);
-f.background = Color.blue(alpha:0.1);
+f.background = Color.blue(alpha: 0.1);
 
-GUI.slider.new(f, Rect(0,0,100,100));
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 
 f.startRow; // new row
 
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 
 f.used.postln;
 
 // overlaid
-GUI.compositeView.new(w,f.used)
+GUI.compositeView.new(w, f.used)
 	.background = Color.red(alpha: 0.1);
 )
 ::
@@ -137,12 +137,12 @@ code::
 (
 f = FlowView.new;
 
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 
 // flow within a flow
-g = f.flow({ arg g;
-	ActionButton(g,"a");
-	GUI.slider.new(g,Rect(0,0,100,100)).background_(Color.rand);
+g = f.flow({ |g|
+	ActionButton(g, "a");
+	GUI.slider.new(g, Rect(0, 0, 100, 100)).background_(Color.rand);
 }).background_(Color.black); // shrinks to fit the contents afterwards
 )
 ::
@@ -159,13 +159,13 @@ code::
 (
 f = FlowView.new;
 
-GUI.slider.new(f, Rect(0,0,100,100));
+GUI.slider.new(f, Rect(0, 0, 100, 100));
 
 // SuperCollider composite view
-g = f.comp({ arg g;
-	GUI.slider.new(g, Rect(50,30,50,100)).background_(Color.rand);
-	GUI.slider.new(g, Rect(120,30,50,100)).background_(Color.rand);
-},Rect(0, 0, 200, 200)).background_(Color.black);
+g = f.comp({ |g|
+	GUI.slider.new(g, Rect(50, 30, 50, 100)).background_(Color.rand);
+	GUI.slider.new(g, Rect(120, 30, 50, 100)).background_(Color.rand);
+}, Rect(0, 0, 200, 200)).background_(Color.black);
 
 f.startRow;
 "Back to flowing".gui(f);
@@ -186,91 +186,91 @@ code::
 
 // tests
 (
-FlowView.new.flow({ arg f;
-//	b = ActionButton(f,"hi",minWidth:140)
+FlowView.new.flow({ |f|
+//	b = ActionButton(f, "hi", minWidth: 140)
 }).background_(Color.grey)
 )
 
 
 (
-FlowView.new.flow({ arg f;
-	b = ActionButton(f,"hi",minWidth:140);
+FlowView.new.flow({ |f|
+	b = ActionButton(f, "hi", minWidth: 140);
 }).background_(Color.grey)
 )
 
 
 (
-FlowView.new.flow({ arg f;
-	b = GUI.slider.new(f,Rect(0,0,100,100));
+FlowView.new.flow({ |f|
+	b = GUI.slider.new(f, Rect(0, 0, 100, 100));
 }).background_(Color.grey)
 )
 
 
 (
-FlowView.new.flow({ arg f;
+FlowView.new.flow({ |f|
 	g = f;
-	f.flow({ arg f;
-		//b = ActionButton(f,"hi",minWidth:140)
+	f.flow({ |f|
+		// b = ActionButton(f, "hi", minWidth: 140)
 	}).background_(Color.white)
 }).background_(Color.grey)
 )
 
 
 (
-FlowView.new.flow({ arg f;
+FlowView.new.flow({ |f|
 	g = f;
-	f.flow({ arg f;
-		b = ActionButton(f,"hi",minWidth:140)
+	f.flow({ |f|
+		b = ActionButton(f, "hi", minWidth: 140)
 	}).background_(Color.white)
 }).background_(Color.grey)
 )
 
 
 (
-FlowView.new.flow({ arg f;
+FlowView.new.flow({ |f|
 	g = f;
-	f.flow({ arg f;
-		f.flow({ arg f;
-			ActionButton(f,"hello",minWidth:100);
+	f.flow({ |f|
+		f.flow({ |f|
+			ActionButton(f, "hello", minWidth: 100);
 		}).background_(Color.blue);
-		b = ActionButton(f,"hi",minWidth:140);
+		b = ActionButton(f, "hi", minWidth: 140);
 	}).background_(Color.white)
 }).background_(Color.grey)
 )
 
 
 (
-FlowView.new.flow({ arg f;
+FlowView.new.flow({ |f|
 	g = f;
-	f.flow({ arg f;
-		f.flow({ arg f;
-			ActionButton(f,"hello",minWidth:100);
+	f.flow({ |f|
+		f.flow({ |f|
+			ActionButton(f, "hello", minWidth: 100);
 		}).background_(Color.blue);
-		b = ActionButton(f,"hi",minWidth:140);
+		b = ActionButton(f, "hi", minWidth: 140);
 	}).background_(Color.white)
 }).background_(Color.grey)
 )
 
 
 (
-FlowView.new.flow({ arg f;
+FlowView.new.flow({ |f|
 	g = f;
-	f.flow({ arg f;
-		b = ActionButton(f,"hi",minWidth:140);
-		f.flow({ arg f;
-			ActionButton(f,"hello",minWidth:100);
+	f.flow({ |f|
+		b = ActionButton(f, "hi", minWidth: 140);
+		f.flow({ |f|
+			ActionButton(f, "hello", minWidth: 100);
 		}).background_(Color.blue);
 	}).background_(Color.white)
 }).background_(Color.grey)
 )
 
 (
-FlowView.new.flow({ arg f;
+FlowView.new.flow({ |f|
 	g = f;
-	f.flow({ arg f;
-		b = GUI.slider.new(f,Rect(0,0,140,20));
-		f.flow({ arg f;
-			ActionButton(f,"hello",minWidth:100);
+	f.flow({ |f|
+		b = GUI.slider.new(f, Rect(0, 0, 140, 20));
+		f.flow({ |f|
+			ActionButton(f, "hello", minWidth: 100);
 		}).background_(Color.blue);
 	}).background_(Color.white)
 }).background_(Color.grey)
@@ -278,34 +278,34 @@ FlowView.new.flow({ arg f;
 
 
 (
-FlowView.new.flow({ arg f;
-		b = GUI.slider.new(f,Rect(0,0,140,20));
-		f.flow({ arg f;
-			ActionButton(f,"hello",minWidth:100);
+FlowView.new.flow({ |f|
+		b = GUI.slider.new(f, Rect(0, 0, 140, 20));
+		f.flow({ |f|
+			ActionButton(f, "hello", minWidth: 100);
 		}).background_(Color.blue);
 }).background_(Color.grey)
 )
 
 
 (
-a = FlowView.new.flow({ arg f;
+a = FlowView.new.flow({ |f|
 	g = f;
-	w = f.flow({ arg f;
-		b = f.flow({ arg f;
-			ActionButton(f,"hello",minWidth:100);
+	w = f.flow({ |f|
+		b = f.flow({ |f|
+			ActionButton(f, "hello", minWidth: 100);
 		}).background_(Color.blue);
-		ActionButton(f,"hi",minWidth:140);
+		ActionButton(f, "hi", minWidth: 140);
 	}).background_(Color.white)
 }).background_(Color.grey)
 
 )
 
 b.remove(true);
-w.resizeToFit(true,true);
+w.resizeToFit(true, true);
 
 
 // add something big back in
-ActionButton(w,"i'm back",minWidth: 200);
-w.resizeToFit(true,true);
+ActionButton(w, "i'm back", minWidth: 200);
+w.resizeToFit(true, true);
 // slightly wrong size at the bottom
 ::

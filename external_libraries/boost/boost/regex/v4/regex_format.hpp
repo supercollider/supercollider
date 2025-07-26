@@ -251,7 +251,7 @@ void basic_regex_formatter<OutputIterator, Results, traits, ForwardIter>::format
             m_have_conditional = have_conditional;
             if(m_position == m_end)
                return;
-            BOOST_ASSERT(*m_position == static_cast<char_type>(')'));
+            BOOST_REGEX_ASSERT(*m_position == static_cast<char_type>(')'));
             ++m_position;  // skip the closing ')'
             break;
          }
@@ -307,7 +307,7 @@ void basic_regex_formatter<OutputIterator, Results, traits, ForwardIter>::format
    // On entry *m_position points to a '$' character
    // output the information that goes with it:
    //
-   BOOST_ASSERT(*m_position == '$');
+   BOOST_REGEX_ASSERT(*m_position == '$');
    //
    // see if this is a trailing '$':
    //
@@ -656,7 +656,7 @@ void basic_regex_formatter<OutputIterator, Results, traits, ForwardIter>::format
          len = ::boost::BOOST_REGEX_DETAIL_NS::distance(m_position, m_end);
          len = (std::min)(static_cast<std::ptrdiff_t>(4), len);
          v = this->toi(m_position, m_position + len, 8);
-         BOOST_ASSERT(v >= 0);
+         BOOST_REGEX_ASSERT(v >= 0);
          put(static_cast<char_type>(v));
          break;
       }

@@ -90,13 +90,13 @@ struct SpecCentroid : FFTAnalyser_Unit
 // Copied from FFT_UGens.cpp
 #define GET_BINTOFREQ                                                                                                  \
     if (unit->m_bintofreq == 0.f) {                                                                                    \
-        unit->m_bintofreq = world->mFullRate.mSampleRate / buf->samples;                                               \
+        unit->m_bintofreq = FULLRATE / buf->samples;                                                                   \
     }                                                                                                                  \
     float bintofreq = unit->m_bintofreq;
 /*
 #define GET_FREQTOBIN \
     if(unit->m_freqtobin==0.f){ \
-        unit->m_freqtobin = buf->samples / world->mFullRate.mSampleRate; \
+        unit->m_freqtobin = buf->samples / FULLRATE; \
     } \
     float freqtobin = unit->m_freqtobin;
 */
@@ -209,9 +209,12 @@ void SpecPcile_next(SpecPcile* unit, int inNumSamples) {
         // Used to be MAKE_TEMP_BUF but we can handle it more cleanly in this specific case:
         if (!unit->m_tempbuf) {
         unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
-        ClearUnitIfMemFailed(unit->m_tempbuf);
+        if (!unit->m_tempbuf) {
+            ClearUnitOutputs(unit, inNumSamples);
+            ClearUnitOnMemFailed;
+        }
         unit->m_numbins = numbins;
-        unit->m_halfnyq_over_numbinsp2 = ((float)unit->mWorld->mSampleRate) * 0.5f / (float)(numbins + 2);
+        unit->m_halfnyq_over_numbinsp2 = ((float)FULLRATE) * 0.5f / (float)(numbins + 2);
     }
     else if (numbins != unit->m_numbins) return;
 

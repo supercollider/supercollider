@@ -74,7 +74,7 @@ static void doLoadFactories() {
 #ifdef SC_USE_QTWEBENGINE
     QC_ADD_FACTORY(WebView);
 #endif
-#ifdef __APPLE__
+#if defined(__APPLE__) && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QC_ADD_FACTORY(QcQuartzComposerView);
 #endif
 }

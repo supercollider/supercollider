@@ -44,7 +44,7 @@ Call stack size (an Integer).
 
 discussion::
 code::
-a = Routine.new({ 1.yield; 2.yield; });
+a = Routine.new({ 1.yield; 2.yield });
 a.next.postln;
 a.next.postln;
 a.next.postln;
@@ -94,7 +94,7 @@ When a Routine is started by a call to this method (or one of its synonyms), the
 argument is passed on as the argument to the Routine Function:
 
 code::
-Routine { arg inval;
+Routine { |inval|
 	inval.postln;
 }.value("hello routine");
 ::
@@ -107,7 +107,7 @@ variable - typically, the argument of the Function is reused:
 
 code::
 (
-r = Routine { arg inval;
+r = Routine { |inval|
 	inval.postln;
 	inval = 123.yield;
 	inval.postln;
@@ -123,9 +123,9 @@ reassigning to the argument of its Function.
 
 code::
 (
-r = Routine { arg inval;
+r = Routine { |inval|
 	inval.postln; // Post the value passed in when started.
-	5.do { arg i;
+	5.do { |i|
 		inval = (i + 10).yield;
 		inval.postln; // Post the value passed in when resumed.
 	}
@@ -352,17 +352,17 @@ The Routine method code::p:: is mostly useful in the context of using the result
 code::
 (
 r = (:2..5); // a seriesIter Routine
-Ptuple([r, r]).asStream.all.postln; // posts [ [ 2, 3 ], [ 4, 5 ] ]
+Ptuple([r, r]).asStream.all.postln; // posts [[2, 3], [4, 5]]
 r.next.postln; // nil
 
 p = r.p; // make a Pattern from r; it doesn't matter that r has ended
 Ptuple([p, p]).asStream.all.postln;
-// posts [ [ 2, 2 ], [ 3, 3 ], [ 4, 4 ], [ 5, 5 ] ]
+// posts [[2, 2], [3, 3], [4, 4], [5, 5]]
 
 // Obviously, explicitly writing the same Routine-valued subexpression twice
 // also creates separate Routines.
 Ptuple([(:2..5), (:2..5)]).asStream.all.postln;
-// posts [ [ 2, 2 ], [ 3, 3 ], [ 4, 4 ], [ 5, 5 ] ]
+// posts [[2, 2], [3, 3], [4, 4], [5, 5]]
 )
 ::
 
@@ -372,14 +372,14 @@ code::
 (
 r = (:2..6);
 Pseq([r, r]).asStream.all.postln;
-// [ 2, 3, 4, 5, 6 ]
+// [2, 3, 4, 5, 6]
 
 p = r.p;
 Pseq([p, p]).asStream.all.postln;
-// [ 2, 3, 4, 5, 6, 2, 3, 4, 5, 6 ]
+// [2, 3, 4, 5, 6, 2, 3, 4, 5, 6]
 
 Pseq([(:2..6), (:2..6)]).asStream.all.postln;
-// [ 2, 3, 4, 5, 6, 2, 3, 4, 5, 6 ]
+// [2, 3, 4, 5, 6, 2, 3, 4, 5, 6]
 )
 ::
 
@@ -390,7 +390,7 @@ Routine inherits from link::Classes/Thread::, which allows access to some of its
 
 code::
 (
-r = Routine { arg inval;
+r = Routine { |inval|
 	loop {
 		// thisThread refers to the routine.
 		postf("beats: % seconds: % time: % \n",
@@ -425,7 +425,7 @@ examples::
 code::
 (
 var r, outval;
-r = Routine.new({ arg inval;
+r = Routine.new({ |inval|
 	("->inval was " ++ inval).postln;
 	inval = 1.yield;
 	("->inval was " ++ inval).postln;
@@ -456,7 +456,7 @@ code::
 (
 var r;
 r = Routine {
-	10.do({ arg a;
+	10.do({ |a|
 		a.postln;
 		// Often you might see Wait being used to pause a routine
 		// This waits for one second between each number
@@ -477,7 +477,7 @@ var r;
 r = Routine {
 	var times = { rrand(1.0, 10.0) }.dup(10) + thisThread.beats;
 	times = times.sort;
-	times.do({ arg a;
+	times.do({ |a|
 		waitUntil(a);
 		a.postln;
 	});
@@ -492,7 +492,7 @@ code::
 // Using Routine to set button states on the fly.
 (
 var update, w, b;
-w = SCWindow.new("State Window", Rect(150,SCWindow.screenBounds.height-140,380,60));
+w = Window.new("State Window", Rect(150, Window.screenBounds.height - 140, 380, 60));
 
 // a convenient way to set the button label
 update = {
@@ -500,7 +500,7 @@ update = {
 	but.refresh;
 };
 
-b = SCButton(w, Rect(10,10,360,40));
+b = Button(w, Rect(10, 10, 360, 40));
 b.font_(Font("Impact", 24));
 
 update.value(b, "there is only one state");
@@ -553,10 +553,9 @@ w.drawFunc = Routine {
 	}
 };
 
-fork { while { w.isClosed.not } { defer { w.refresh }; 0.04.wait; } };
+fork { while { w.isClosed.not } { defer { w.refresh }; 0.04.wait } };
 
 w.front;
 
 )
 ::
-

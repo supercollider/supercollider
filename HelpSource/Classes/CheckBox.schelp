@@ -56,3 +56,14 @@ METHOD:: defaultCanReceiveDrag
 
 METHOD:: defaultReceiveDrag
 	Sets link::#-valueAction:: to the current drag data.
+
+
+EXAMPLES::
+
+CODE::
+(
+var w = Window().front;
+var c = CheckBox(w, Rect(10, 10, 50, 50), "test");
+c.action_{ |v| v.value.postln };
+)
+::

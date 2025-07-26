@@ -34,9 +34,9 @@ EXAMPLES::
 code::
 LID.findAvailable;
 LID.postAvailable; // pick one that you want to open, and fill in the vendor and product id in the next line:
-d = LID.open( 2, 10 ); // trackpoint
+d = LID.open(2, 10); // trackpoint
 
-g = LIDGui.new( d );
+g = LIDGui.new(d);
 
 // or the shortcut method:
 g = d.makeGui;

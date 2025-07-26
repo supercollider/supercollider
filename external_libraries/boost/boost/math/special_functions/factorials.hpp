@@ -13,15 +13,16 @@
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/detail/unchecked_factorial.hpp>
-#include <boost/array.hpp>
-#ifdef BOOST_MSVC
+#include <array>
+#ifdef _MSC_VER
 #pragma warning(push) // Temporary until lexical cast fixed.
 #pragma warning(disable: 4127 4701)
 #endif
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
-#include <boost/config/no_tr1/cmath.hpp>
+#include <type_traits>
+#include <cmath>
 
 namespace boost { namespace math
 {
@@ -29,7 +30,7 @@ namespace boost { namespace math
 template <class T, class Policy>
 inline T factorial(unsigned i, const Policy& pol)
 {
-   BOOST_STATIC_ASSERT(!boost::is_integral<T>::value);
+   static_assert(!std::is_integral<T>::value, "Type T must not be an integral type");
    // factorial<unsigned int>(n) is not implemented
    // because it would overflow integral type T for too small n
    // to be useful. Use instead a floating-point type,
@@ -73,7 +74,7 @@ inline double factorial<double>(unsigned i)
 template <class T, class Policy>
 T double_factorial(unsigned i, const Policy& pol)
 {
-   BOOST_STATIC_ASSERT(!boost::is_integral<T>::value);
+   static_assert(!std::is_integral<T>::value, "Type T must not be an integral type");
    BOOST_MATH_STD_USING  // ADL lookup of std names
    if(i & 1)
    {
@@ -116,7 +117,7 @@ namespace detail{
 template <class T, class Policy>
 T rising_factorial_imp(T x, int n, const Policy& pol)
 {
-   BOOST_STATIC_ASSERT(!boost::is_integral<T>::value);
+   static_assert(!std::is_integral<T>::value, "Type T must not be an integral type");
    if(x < 0)
    {
       //
@@ -144,13 +145,13 @@ T rising_factorial_imp(T x, int n, const Policy& pol)
    if(x == 0)
    {
       if(n < 0)
-         return -boost::math::tgamma_delta_ratio(x + 1, static_cast<T>(-n), pol);
+         return static_cast<T>(-boost::math::tgamma_delta_ratio(x + 1, static_cast<T>(-n), pol));
       else
          return 0;
    }
    if((x < 1) && (x + n < 0))
    {
-      T val = boost::math::tgamma_delta_ratio(1 - x, static_cast<T>(-n), pol);
+      const auto val = static_cast<T>(boost::math::tgamma_delta_ratio(1 - x, static_cast<T>(-n), pol));
       return (n & 1) ? T(-val) : val;
    }
    //
@@ -158,13 +159,13 @@ T rising_factorial_imp(T x, int n, const Policy& pol)
    // tgamma_delta_ratio is already optimised for that
    // use case:
    //
-   return 1 / boost::math::tgamma_delta_ratio(x, static_cast<T>(n), pol);
+   return 1 / static_cast<T>(boost::math::tgamma_delta_ratio(x, static_cast<T>(n), pol));
 }
 
 template <class T, class Policy>
 inline T falling_factorial_imp(T x, unsigned n, const Policy& pol)
 {
-   BOOST_STATIC_ASSERT(!boost::is_integral<T>::value);
+   static_assert(!std::is_integral<T>::value, "Type T must not be an integral type");
    BOOST_MATH_STD_USING // ADL of std names
    if(x == 0)
       return 0;
@@ -187,13 +188,13 @@ inline T falling_factorial_imp(T x, unsigned n, const Policy& pol)
       {
          // If the two end of the range are far apart we have a ratio of two very large
          // numbers, split the calculation up into two blocks:
-         T t1 = x * boost::math::falling_factorial(x - 1, max_factorial<T>::value - 2);
-         T t2 = boost::math::falling_factorial(x - max_factorial<T>::value + 1, n - max_factorial<T>::value + 1);
+         T t1 = x * boost::math::falling_factorial(x - 1, max_factorial<T>::value - 2, pol);
+         T t2 = boost::math::falling_factorial(x - max_factorial<T>::value + 1, n - max_factorial<T>::value + 1, pol);
          if(tools::max_value<T>() / fabs(t1) < fabs(t2))
             return boost::math::sign(t1) * boost::math::sign(t2) * policies::raise_overflow_error<T>("boost::math::falling_factorial<%1%>", 0, pol);
          return t1 * t2;
       }
-      return x * boost::math::falling_factorial(x - 1, n - 1);
+      return x * boost::math::falling_factorial(x - 1, n - 1, pol);
    }
    if(x <= n - 1)
    {
@@ -205,7 +206,7 @@ inline T falling_factorial_imp(T x, unsigned n, const Policy& pol)
       unsigned n2 = itrunc((T)floor(xp1), pol);
       if(n2 == xp1)
          return 0;
-      T result = boost::math::tgamma_delta_ratio(xp1, -static_cast<T>(n2), pol);
+      auto result = static_cast<T>(boost::math::tgamma_delta_ratio(xp1, -static_cast<T>(n2), pol));
       x -= n2;
       result *= x;
       ++n2;
@@ -220,7 +221,7 @@ inline T falling_factorial_imp(T x, unsigned n, const Policy& pol)
    // because tgamma_delta_ratio is already optimised
    // for that use case:
    //
-   return boost::math::tgamma_delta_ratio(x + 1, -static_cast<T>(n), pol);
+   return static_cast<T>(boost::math::tgamma_delta_ratio(x + 1, -static_cast<T>(n), pol));
 }
 
 } // namespace detail

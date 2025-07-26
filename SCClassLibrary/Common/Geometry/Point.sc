@@ -85,14 +85,20 @@ Point {
 		^Point(x.trunc(quant.x), y.trunc(quant.y))
 	}
 
-	mod {|that|
+	mod { |that|
 		var thatPoint;
 		thatPoint = that.asPoint;
 		^Point(this.x mod: thatPoint.x, this.y mod: thatPoint.y)
 	}
+	
+	modSeaside { |that|
+		var thatPoint;
+		thatPoint = that.asPoint;
+		^Point(this.x modSeaside: thatPoint.x, this.y modSeaside: thatPoint.y)
+	}
 
 	printOn { arg stream;
-		stream << this.class.name << "( " << x << ", " << y << " )";
+		stream << this.class.name << "(" << x << ", " << y << ")";
 	}
 	storeArgs { ^[x,y] }
 }

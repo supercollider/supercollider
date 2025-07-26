@@ -17,7 +17,7 @@ Examples::
 code::
 
 (
-p = Pdrop(2, Pseq([1,2,3,4],6));
+p = Pdrop(2, Pseq([1, 2, 3, 4], 6));
 q = p.asStream.nextN(20).postln;
 )
 

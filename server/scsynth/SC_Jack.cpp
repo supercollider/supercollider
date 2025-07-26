@@ -486,9 +486,7 @@ void SC_JackDriver::Run() {
         }
     } catch (std::exception& exc) {
         scprintf("%s: exception in real time: %s\n", kJackDriverIdent, exc.what());
-    } catch (...) {
-        scprintf("%s: unknown exception in real time\n", kJackDriverIdent);
-    }
+    } catch (...) { scprintf("%s: unknown exception in real time\n", kJackDriverIdent); }
 
     double cpuUsage = (double)jack_cpu_load(mClient);
     mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);

@@ -126,4 +126,3 @@ get the object's current state
 
 method::checkUpdate
 compare previous state with current state, and update gui elements.
-

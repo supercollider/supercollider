@@ -50,4 +50,3 @@ code::
 { OnePole.ar(WhiteNoise.ar(0.5), Line.kr(-0.99, 0.99, 10)) }.play
 
 ::
-

@@ -29,7 +29,7 @@ i = SCImage.new(400);		// Create a 400x400 pixels SCimage.
 i.dump;
 i.free;
 
-i = SCImage.new(400,200);	// Create a 400x200 pixels SCimage.
+i = SCImage.new(400, 200);	// Create a 400x200 pixels SCimage.
 i.dump;
 i.free;
 ::
@@ -57,8 +57,8 @@ i.free;
 METHOD::color
 Creates a new SCImage instance filled with the specified color.
 code::
-i = SCImage.color(400, 200, Color.blue(0.9,0.1));
-i.plot(freeOnClose:true);
+i = SCImage.color(400, 200, Color.blue(0.9, 0.1));
+i.plot(freeOnClose: true);
 ::
 
 ARGUMENT::args
@@ -69,7 +69,7 @@ Creates a new SCImage instance from the local file at strong::path::.
 code::
 (
 i = SCImage.open("/Library/Desktop Pictures/Ripples Blue.jpg");
-i.plot(freeOnClose:true);
+i.plot(freeOnClose: true);
 i.url.postln;
 )
 ::
@@ -79,7 +79,7 @@ Creates a new SCImage instance from a valid image at the specified URL strong::p
 code::
 i = SCImage.openURL("file:///Library/Desktop%20Pictures/Ripples%20Blue.jpg");
 i.url;
-w = i.plot(freeOnClose:true);
+w = i.plot(freeOnClose: true);
 ::
 
 METHOD::fromImage
@@ -119,7 +119,7 @@ code::
 (
 	i = SCImage.fromWindow(w);
 	w.close;
-	i.plot(freeOnClose:true);
+	i.plot(freeOnClose: true);
 )
 
 // VIEW Capture Example:
@@ -129,7 +129,7 @@ code::
 	b = [10, 80].asSpec;
 	c = SCNumberBox(w, Rect(20, 20, 60, 40));
 	a = SCSlider(w, Rect(20, 80, 100, 40))
-		.focusColor_(Color.red(alpha:0.2))
+		.focusColor_(Color.red(alpha: 0.2))
 		.action_({
 			c.value_(b.map(a.value).round(0.01))
 	// round the float so it will fit in the SCNumberBox
@@ -140,7 +140,7 @@ code::
 (
 	i = SCImage.fromWindow(w, a.bounds);
 	w.close;
-	i.plot(freeOnClose:true);
+	i.plot(freeOnClose: true);
 )
 ::
 
@@ -206,14 +206,14 @@ code::
 (
 	i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
 	i.bounds.postln; // getting the dimensions
-	w =i.plot;
+	w = i.plot;
 )
 
 // changing the size of an image
 (
 	i.scalesWhenResized_(true);
 	i.setSize(400, 400 / (i.width / i.height));
-	a =i.plot;
+	a = i.plot;
 )
 (
 a.close; w.close; i.free;
@@ -319,12 +319,12 @@ i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
 w = i.plot;
 w.close;
 
-w = i.plot(showInfo:false);
+w = i.plot(showInfo: false);
 w.close;
 i.free;
 
 // other option - image will be automatically freed when closed
-SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg").plot("Hello", freeOnClose:true);
+SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg").plot("Hello", freeOnClose: true);
 ::
 
 ARGUMENT::name
@@ -349,7 +349,7 @@ METHOD::unlockFocus
 restore the graphic context state. the receiver is not anymore the current graphic context.
 code::
 (
-	j = SCImage.new(400,300);
+	j = SCImage.new(400, 300);
 
 	j.lockFocus;
 
@@ -384,8 +384,8 @@ list::
 ::
 code::
 (
-	j = SCImage.new(400,300);
-	j.draw({ arg image;
+	j = SCImage.new(400, 300);
+	j.draw({ |image|
 
 		SCPen.translate(100, 100);
 		1000.do {
@@ -400,14 +400,14 @@ code::
 			);
 			SCPen.perform([\stroke, \fill].choose);
 		};
-	}).plot(freeOnClose:true);
+	}).plot(freeOnClose: true);
 )
 
 //	String drawing support on the image
 //	drawStringAtPoint(string, point, font, color);
 (
-	j = SCImage.new(150,50);
-	j.draw({ arg bounds;
+	j = SCImage.new(150, 50);
+	j.draw({ |bounds|
 		j.drawStringAtPoint("Hello, world!", 10@10, Font("Lucida Grande", 24), Color.black);
 	});
 )
@@ -421,7 +421,7 @@ METHOD::drawStringAtPoint
 renders *correctly* a String inside an SCImage :) code::// to fix to have a compliant interface::
 code::
 (
-	var width, height, tgHeight, ratio, str, font, color, strb, targetWidth=400, shadowColor, run = true;
+	var width, height, tgHeight, ratio, str, font, color, strb, targetWidth = 400, shadowColor, run = true;
 	shadowColor = Color.black;
 
 	color = Color.gray(0.8);
@@ -432,19 +432,19 @@ code::
 	height = strb.height;
 	ratio = height / width;
 	i = SCImage(width@(height));
-	i.draw({|bb|
+	i.draw({ |bb|
 		SCPen.smoothing_(false);
 		i.drawStringAtPoint(str, 0@0, font, color);
 	});
 	i.interpolation_(\none);
 	tgHeight = targetWidth * ratio;
-	w = SCWindow.new("", Rect(400,400, 450, 150)).drawFunc_({
-		SCPen.setShadow(2@2, 0.4, color:Color.red);
-		i.drawInRect(Rect(5,5,targetWidth, tgHeight));
+	w = SCWindow.new("", Rect(400, 400, 450, 150)).drawFunc_({
+		SCPen.setShadow(2@2, 0.4, color: Color.red);
+		i.drawInRect(Rect(5, 5, targetWidth, tgHeight));
 	});
 
 	w.view.background_(Color.white);
-	w.onClose_({run = false; i.free;});
+	w.onClose_({ run = false; i.free });
 	w.front;
 )
 ::
@@ -453,7 +453,7 @@ METHOD::drawAtPoint
 render the image or a portion of it in the current graphic context.
 code::
 (
-	var operation='sourceOver', fraction=1.0, i, w;
+	var operation = 'sourceOver', fraction = 1.0, i, w;
 
 	i = SCImage.new(
 	//	"http://supercollider.sourceforge.net/theme/sc01/icon.supercollider.gif"
@@ -465,15 +465,15 @@ code::
 
 	SCSlider.new(w, Rect(10, 150, 150, 16))
 		.value_(1.0)
-		.action_({ arg sl;
+		.action_({ |sl|
 			fraction = sl.value;
 			w.refresh;
 		});
 
 	SCPopUpMenu.new(w, Rect(170, 150, 100, 16))
-		.items_( SCImage.compositingOperations.collect({ arg i; i.asString }) )
+		.items_(SCImage.compositingOperations.collect({ |i| i.asString }))
 		.value_(2)
-		.action_({ arg pm;
+		.action_({ |pm|
 			operation = SCImage.compositingOperations.at(pm.value);
 			w.refresh;
 		});
@@ -512,7 +512,7 @@ code::
 	w = SCWindow.new("SCImage", Rect(120, 400, 360, 180)).front;
 	w.onClose_({ i.free }); // free the image when the window is closed
 	w.drawFunc_({
-		i.drawInRect(Rect(10,10,50,50), Rect(10,10,50,50), 2, 1.0); // only a section
+		i.drawInRect(Rect(10, 10, 50, 50), Rect(10, 10, 50, 50), 2, 1.0); // only a section
 	});
 )
 ::
@@ -566,11 +566,11 @@ SUBSECTION::Instance Methods / accessing and setting pixels
 METHOD::setPixel
 fill a pixel located at x @ y.
 code::
-i = SCImage.color(60, 60, Color.blue(0.1,0.1));
+i = SCImage.color(60, 60, Color.blue(0.1, 0.1));
 w = i.plot;
-i.setPixel([255,0,0,255].asRGBA, 0, 0); // setting red
+i.setPixel([255, 0, 0, 255].asRGBA, 0, 0); // setting red
 w.refresh;
-("pixel at 0 @ 0:"+i.getPixel(0,0).rgbaArray).postln;
+("pixel at 0 @ 0:"+i.getPixel(0, 0).rgbaArray).postln;
 i.free;
 ::
 
@@ -582,10 +582,10 @@ retrieve the pixel value at x @ y as a RGBA integer
 code::
 // A simple example on how to manipulate pixels with SCImage
 b = Int32Array[
-	Integer.fromRGBA(255,0,0,255), // red
-	Integer.fromRGBA(0,255,0,255), // green
-	Integer.fromRGBA(0,0,255,255), // blue
-	Integer.fromRGBA(255,0,255,255) // purple
+	Integer.fromRGBA(255, 0, 0, 255), // red
+	Integer.fromRGBA(0, 255, 0, 255), // green
+	Integer.fromRGBA(0, 0, 255, 255), // blue
+	Integer.fromRGBA(255, 0, 255, 255) // purple
 ];
 
 b[0].red; // 255 see Integer.red
@@ -599,7 +599,7 @@ a.plot;
 
 // Set + Get
 a.setPixel([255, 0, 255, 128].asRGBA /* create an Integer from 0-255 integer rgba value */, 0, 0).plot;
-p = a.getPixel(0,0);
+p = a.getPixel(0, 0);
 
 p.red; // 255
 p.green; // 0
@@ -608,7 +608,7 @@ p.alpha; // 128
 
 // now another important example
 a.setPixel([255, 0, 255, 0].asRGBA, 1, 0).plot; // clear color -> alpha is 0
-p = a.getPixel(1,0);
+p = a.getPixel(1, 0);
 
 p.red; // you expect 255 but you get 0 ??? Why = because SCImage uses premultiplied color component value internally
 // meaning all Red, Green, and Blue component are premultiplied by the alpha
@@ -618,7 +618,7 @@ p.green; // 0
 p.blue; // 0
 p.alpha; // 0
 
-p = a.getColor(1,0); // more explicit - but same here
+p = a.getColor(1, 0); // more explicit - but same here
 ::
 
 METHOD::setColor
@@ -673,22 +673,22 @@ code::
 	i = SCImage.new(20@20);
 	i.pixels_(
 		Int32Array.fill(i.width * i.height, {
-			Integer.fromRGBA(255.rand,127.rand,255.rand,255)
+			Integer.fromRGBA(255.rand, 127.rand, 255.rand, 255)
 		})
 	);
-	//i.interpolation_(\none); // uncomment to see the difference
-	w = i.plot(freeOnClose:true);
+	// i.interpolation_(\none); // uncomment to see the difference
+	w = i.plot(freeOnClose: true);
 	i.pixels.postln;
 )
 
 (
 	i = SCImage.color(50@50, Color.white);
 	i.setPixels(
-		Int32Array.fill(20*20,{Integer.fromRGBA(255.rand, 127.rand, 255.rand, 255)}),
-		Rect(10,10,20,20)
+		Int32Array.fill(20*20, { Integer.fromRGBA(255.rand, 127.rand, 255.rand, 255) }),
+		Rect(10, 10, 20, 20)
 	);
 	i.interpolation_(\none); // uncomment to see the difference
-	w = i.plot(freeOnClose:true);
+	w = i.plot(freeOnClose: true);
 	i.pixels.postln;
 )
 ::
@@ -717,15 +717,15 @@ code::
 f = SCImageFilter.new(\CIRandomGenerator);
 a = SCImage.new(500@500);
 a.applyFilters(f);
-w = a.plot(freeOnClose:true, background:Color.black);
+w = a.plot(freeOnClose: true, background: Color.black);
 a.bounds.postln;
 )
 
 // ** The StarShine example **
 (
-var width=500, height=500, centerVector;
+var width = 500, height = 500, centerVector;
 
-centerVector = [ width*0.5, height*0.5 ];
+centerVector = [width*0.5, height*0.5];
 a = SCImage.new(500@500);
 f = SCImageFilter.new(\CIStarShineGenerator);
 
@@ -737,15 +737,15 @@ f.crossAngle_(0.0);
 f.crossOpacity_(-4.0);
 
 a.applyFilters(f);
-w = a.plot(freeOnClose:true, background:Color.gray); // change background to see
+w = a.plot(freeOnClose: true, background: Color.gray); // change background to see
 )
 
 
 // ** Starshine + Pixellate + ZoomBlur **
 (
-var width=500, height=500, centerVector;
+var width = 500, height = 500, centerVector;
 
-centerVector = [ width*0.5, height*0.5 ];
+centerVector = [width*0.5, height*0.5];
 a = SCImage.new(500@500);
 
 f = SCImageFilter.new(\CIStarShineGenerator);
@@ -763,7 +763,7 @@ h.center_(centerVector);
 h.amount_(50);
 
 a.applyFilters([f, g, h]);
-w = a.plot(freeOnClose:true, background:Color.black);
+w = a.plot(freeOnClose: true, background: Color.black);
 )
 ::
 
@@ -811,7 +811,7 @@ code::
 (
 i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
 i.invert;
-i.plot(freeOnClose:true);
+i.plot(freeOnClose: true);
 )
 ::
 
@@ -820,8 +820,8 @@ crop the receiver
 code::
 (
 i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
-i.crop( Rect(10,10,120,100) );
-i.plot(freeOnClose:true);
+i.crop(Rect(10, 10, 120, 100));
+i.plot(freeOnClose: true);
 )
 ::
 
@@ -858,14 +858,14 @@ table::
 ## 9 || fixed to right, fixed to bottom
 ## 10 || fit
 ## 11 || center, center (scale)
-## 12 || center , fixed to top
-## 13 || center , fixed to bottom
+## 12 || center, fixed to top
+## 13 || center, fixed to bottom
 ## 14 || fixed to left, center
 ## 15 || fixed to right, center
 ## 16 || center, center (no scale)
 ::
 
-## SCView:backgroundImage_ ||
+## SCView: backgroundImage_ ||
 
 strong::image:: - the SCImage to use
 
@@ -879,8 +879,8 @@ code::
 (
 	b = 1.0;
 	a = SCImage.new(SCDoc.helpSourceDir +/+ "images/vduck2.jpg");
-	r = Rect(20,3,40,40);
-	w = SCWindow.new("SCImage background" /*, textured:false*/ );
+	r = Rect(20, 3, 40, 40);
+	w = SCWindow.new("SCImage background" /*, textured: false*/);
 	w.view.background_(Color.gray);
 	w.view.backgroundImage_(a, 5, b, r);
 	w.front;
@@ -913,14 +913,14 @@ w.close;
 (
 	a = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
 	w = SCWindow.new("SCImage background");
-	l = SC2DSlider.new(w, Rect(10,10,200,200))
-		.backgroundImage_( a, 5, 1, Rect(0,0,10,10) );
+	l = SC2DSlider.new(w, Rect(10, 10, 200, 200))
+		.backgroundImage_(a, 5, 1, Rect(0, 0, 10, 10));
 	w.front;
 	a.free; // safe
 )
 
 (
-	var bounds = Rect(10,10,150,18);
+	var bounds = Rect(10, 10, 150, 18);
 	a = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
 	w = SCWindow.new("SCImage background");
 	l = SCSlider.new(w, bounds)

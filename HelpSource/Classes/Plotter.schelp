@@ -45,14 +45,14 @@ code::
 { SinOsc.ar([700, 357]) * SinOsc.ar([400, 476]) * 0.2 }.plot;
 
 // Buffer
-{ var b = Buffer.read(s, Platform.resourceDir +/+ "sounds/SinedPink.aiff"); s.sync; b.plot }.fork(AppClock);
+{ var b = Buffer.read(s, ExampleFiles.sinedPink); s.sync; b.plot }.fork(AppClock);
 
 // Env
 Env.perc(0.4, 0.6).plot;
 ::
 
 
-method:: plotGraph (n,from,to,...)
+method:: plotGraph (n, from, to, ...)
 
 code::
 { |x| sin(x) }.plotGraph(300, 0, 2*pi);
@@ -104,11 +104,19 @@ Get/Set the style of data display. This can be an array of different modes for
 multi-channel data.
 Available modes:
 table::
-## code::\linear:: || connecting data points with linear interpolation
-## code::\points:: || draw data points only
-## code::\plines:: || combination of lines and points
-## code::\levels:: || horizontal lines
-## code::\steps:: || connecting data points with step interpolation
+## code::\points:: || draw data points as circles with a dot in the middle
+## code::\dots:: || draw data points as filled circles
+## code::\lines, \linear:: || lines connect data points
+## code::\plines:: || lines connect data points, marked also by code::\points::
+## code::\dlines:: || lines connect data points, marked also by code::\dots::
+## code::\stems:: || PCM-style vertical lines from zero to the data point
+## code::\pstems:: || vertical lines from zero to the data points, marked also by code::\points::
+## code::\dstems:: || vertical lines from zero to the data points, marked also by code::\dots::
+## code::\filled:: || fills the area under a waveform, and assumes a bipolar signal (filled to the zero-crossing)
+## code::\pfilled:: || code::\filled::, marked also by code::\points::
+## code::\dfilled:: || code::\filled::, marked also by code::\dots::
+## code::\levels:: || sample-and-hold style horizontal lines from the data point extending over the sample interval
+## code::\steps:: || "step interpolation": code::\levels:: connected by vertical lines
 ## code::\bars:: || bar graph with filled bars
 ::
 
@@ -125,21 +133,42 @@ are the same, in which case a single link::Classes/Symbol:: is returned.
 
 discussion::
 code::
-a = (0..20).scramble.plot;
-a.plotMode = \points; a.refresh;
-a.plotMode = \plines; a.refresh;
-a.plotMode = \levels; a.refresh;
-a.plotMode = \steps; a.refresh;
-a.plotMode = \linear; a.refresh;
-a.plotMode = \bars; a.refresh;
 
-/* mixed modes */
+p = (0..20).scramble.plot;
+p.plotMode = \points;
+p.plotMode = \plines;
+p.plotMode = \steps;
+
+/* Preview the available modes */
 (
-d = 4.collect({ |i| 100.collect({ |j| sinPi(1+i.squared*j * 50.reciprocal) })});
+s.waitForBoot{
+    var modeList = [
+        \points, \dots, \levels, \steps,
+        \lines, \plines, \dlines,
+        \stems, \pstems, \dstems,
+        \filled, \dfilled, \pfilled, \bars,
+    ];
+    modeList.clump((modeList.size/2).ceil).do{ |modes, i|
+        var frq = 1000, w = 600, h = 800;
+        p = {
+            LFSaw.ar(frq) ! modes.size
+        }.plot(2.25 * frq.reciprocal);
+
+        0.25.wait; // let Plotter update with data
+        p.plotMode_(modes);
+        p.axisLabelX_(modes.collect(_.asString));
+        p.setProperties(\labelFont, (Font().size_(15)));
+        p.parent.bounds_(Rect(0, 0, w, h).left_(w*i));
+    };
+}
+)
+
+/* Mixed modes */
+(
+d = 4.collect({ |i| 100.collect({ |j| sinPi(1+i.squared*j * 50.reciprocal) }) });
 p = d.plot;
 p.plotColor_([Color.red, Color.cyan, Color.green, Color.blue]);
 p.plotMode_([\steps, \linear, \plines, \points]);
-// superpose will trigger a refresh to update colors/modes
 p.superpose_(true);
 )
 ::
@@ -159,12 +188,38 @@ An link::Classes/Array:: of link::Classes/Color::s, unless there is only one
 color specified or if all colors of a multi-channel plot are the same, in which
 case a link::Classes/Color:: is returned.
 
+discussion::
+code::
+// Colorize channels
+(
+d = 4.collect({ |i|
+    100.collect({ |j|
+        sinPi(1+i.squared*j * 50.reciprocal)
+    })
+});
+d.plot.plotColor_([Color.red, Color.cyan, Color.green, Color.blue]);
+)
+
+// Use 'filled' plotMode to show phase relationships
+(
+var freq = 100;
+{ LFPar.ar(freq * [1, 1.5, 2.25]) }.plot
+.plotMode_(\filled)
+.plotColor_(
+    [\red, \green, \blue].collect{ |col|
+        Color.perform(col).alpha_(0.2)
+    }
+).superpose_(true);
+)
+::
+
+
 
 method:: superpose
 If code::true::, plotter displays channels overlaid on a single plot. (keyboard shortcut: s)
 code::
 a = { (0..30).scramble }.dup(2).plot;
-a.superpose = true; a.refresh;
+a.superpose = true;
 ::
 
 
@@ -209,7 +264,7 @@ to set Plot properties to ensure proper behavior when using link::#-superpose::.
 ::
 
 argument:: ... pairs
-A list of symbol,value pairs. Supported properties:
+A list of symbol, value pairs. Supported properties:
 list::
 ## font
 ## fontColor
@@ -218,11 +273,11 @@ list::
 ## plotColor (an link::Classes/Array::)
 ## backgroundColor
 ## gridLinePattern
-## gridLineSmoothing ( link::Classes/Boolean:: )
+## gridLineSmoothing (link::Classes/Boolean::)
 ## labelX
 ## labelY
-## gridOnX ( link::Classes/Boolean:: )
-## gridOnY ( link::Classes/Boolean:: )
+## gridOnX (link::Classes/Boolean::)
+## gridOnY (link::Classes/Boolean::)
 ::
 
 discussion::
@@ -239,7 +294,6 @@ a.setProperties(
   \labelX, "Frames",
   \labelFontColor, Color.magenta
 );
-a.refresh;
 );
 
 GUI.skins.at(\plot); // defaults
@@ -279,7 +333,7 @@ table::
 ## code::\gridColor:: || The link::Classes/Color:: of the axis grid lines.
 ::
 
-The properties code::\drawBaseLine::,  code::\drawBoundingLines::, or code::\drawBoundingRect:: are mutually exlusive — setting any of them to true will set the others two to code::false::. In the context of code::Plotter::, setting code::\drawBoundingRect:: on one axis to code::true:: has the same appearance of setting code::\drawBoundingLines:: on emphasis::both:: axes to code::true::.
+The properties code::\drawBaseLine::, code::\drawBoundingLines::, or code::\drawBoundingRect:: are mutually exlusive — setting any of them to true will set the others two to code::false::. In the context of code::Plotter::, setting code::\drawBoundingRect:: on one axis to code::true:: has the same appearance of setting code::\drawBoundingLines:: on emphasis::both:: axes to code::true::.
 
 discussion::
 This is a convenience method to set the grid properties for emphasis::all:: code::Plot::s to the same values.
@@ -287,7 +341,7 @@ An Example:
 code::
 (
 var plotter = [10, 34, 167].collect({ |freq|
-	101.collect{|i| sin((i/1000) * 2pi * freq)}
+	101.collect{ |i| sin((i/1000) * 2pi * freq) }
 }).plot;
 plotter.setGridProperties(\x,
 	\labelAnchor, \topLeft,
@@ -308,7 +362,7 @@ code::
 (
 var plotter, labelAnchors;
 plotter = [10, 34, 167].collect({ |freq|
-	101.collect{|i| sin((i/1000) * 2pi * freq)}
+	101.collect{ |i| sin((i/1000) * 2pi * freq) }
 }).plot;
 
 labelAnchors = [\topLeft, \top, \bottomLeft];
@@ -337,7 +391,7 @@ As a convenience method, code::getGridProperty:: assumes that properties across 
 code::
 ( // inspect the \labelAnchor of each DrawGridX
 var plotter  = [10, 34, 167].collect({ |freq|
-	101.collect{|i| sin((i/1000) * 2pi * freq)}
+	101.collect{ |i| sin((i/1000) * 2pi * freq) }
 }).plot;
 
 plotter.plots.collect({ |plot|
@@ -398,7 +452,7 @@ Set/get the x-axis positions of your data points. The size of the code::domainAr
 code::
 (
 var data, domain, plot;
-domain = 25.collect({rrand(0, 50)}).sort;
+domain = 25.collect({ rrand(0, 50) }).sort;
 data = domain.linlin(0, 50, 0, 1);
 
 plot = data.plot.plotMode_(\points);
@@ -539,19 +593,19 @@ a = Plotter("the plot", Rect(600, 30, 600, 400));
 a.value = (0..100).normalize(0, 8pi).sin;
 )
 
-a.value = { |i| (0..90) % (i + 12) + ( (0..90) % (i + 2 * 1) ) }.dup(3);
+a.value = { |i| (0..90) % (i + 12) + ((0..90) % (i + 2 * 1)) }.dup(3);
 a.value = (0..12).squared;
-a.plotMode = \points; a.refresh;
-a.plotMode = \levels; a.refresh;
-a.plotMode = \plines; a.refresh;
+a.plotMode = \points;
+a.plotMode = \levels;
+a.plotMode = \plines;
 
-a.domainSpecs = [[0, 115, \lin, 1]]; a.refresh;
+a.domainSpecs = [[0, 115, \lin, 1]];
 
 a.parent.close; // close window
 a.makeWindow; a.updatePlotBounds; // open it again
 
 a.value = { (0..70).scramble }.dup(3);
-a.plotMode = \linear; a.refresh;
+a.plotMode = \linear;
 a.value = { |i| (0..2000).normalize(0, 4pi + i).sin } ! 4; // lots of values, test efficiency
 a.value = { |i| (0..10000).normalize(0, 8pi + i).sin } ! 3; // lots of values, test efficiency
 a.value = { (0..140).scramble } ! 7;
@@ -579,18 +633,18 @@ code::
 // Array:plot
 (
 a = (4 ** (-5..0)).postln.plot;
-a.specs = \delay; a.refresh;
-a.domainSpecs = [0, 10, \lin, 0, 0, " Kg"].asSpec; a.refresh;
+a.specs = \delay;
+a.domainSpecs = [0, 10, \lin, 0, 0, " Kg"].asSpec;
 );
 
-a.domainSpecs = [0.1, 10, \exponential, 0, 0, " Kg"].asSpec; a.refresh;
-a.domainSpecs = [-10, 10, \lin, 0, 0, " Kg"].asSpec; a.refresh;
+a.domainSpecs = [0.1, 10, \exponential, 0, 0, " Kg"].asSpec;
+a.domainSpecs = [-10, 10, \lin, 0, 0, " Kg"].asSpec;
 
 a = [(0..100) * 9, (200..1300) * 2, (200..1000)/ 5].plot;
 a.superpose = true;
 
 a = [[0, 1.2, 1.5], [0, 1.3, 1.5, 1.6], [0, 1.5, 1.8, 2, 6]].midiratio.plot;
-a.plotMode = \levels; a.refresh;
+a.plotMode = \levels;
 a.superpose = false;
 
 // Function:plot
@@ -605,7 +659,7 @@ Env.new({ 1.0.rand2 }! 8, { 1.0.rand } ! 7, \sin).plot;
 (
 s.waitForBoot({
 	var b = Buffer.read(s,
-		Platform.resourceDir +/+ "sounds/SinedPink.aiff"
+		ExampleFiles.sinedPink
 	);
 	s.sync;
 	b.plot;
@@ -620,15 +674,15 @@ code::
 // data
 a = (50..90).midicps.scramble.plot;
 // specs (y-axis)
-a.specs = ControlSpec(100, 2000, units: "Hz"); a.refresh;
+a.specs = ControlSpec(100, 2000, units: "Hz");
 
 a.value = 50.collect{ exprand(1e4, 1e7) };
-a.specs = [1e4, 1e7, \exp].asSpec; a.refresh;
+a.specs = [1e4, 1e7, \exp].asSpec;
 
 // domainSpecs (x-axis)
 // If domain is unassigned, values are
 // distributed evenly within the spec range
-a.domainSpecs = [-10, 70].asSpec; a.refresh;
+a.domainSpecs = [-10, 70].asSpec;
 
 
 // Setting the domain, run the full block:
@@ -639,8 +693,8 @@ var rs = 0, plt2;
 // xs are the sample points over a 2pi range
 
 // sample locations, normalized
-xs = 50.collect({rrand(0.05, 1)}).normalizeSum;
-xs.do{ |me, i| xs[i] = me + rs; rs = rs + me; };
+xs = 50.collect({ rrand(0.05, 1) }).normalizeSum;
+xs.do{ |me, i| xs[i] = me + rs; rs = rs + me };
 
 // force beginning/end to land on 0/2pi
 xs[0] = 0;
@@ -673,11 +727,11 @@ plt2.domainSpecs_(([-0.5pi, 2.5pi]).asSpec);
 
 // Non-linear scaling of axes.
 // plot 1000 values, linearly distributed on X and Y
-p = (1, 2 .. 1000).plot.domainSpecs_([1, 1000, \lin].asSpec).refresh;
+p = (1, 2 .. 1000).plot.domainSpecs_([1, 1000, \lin].asSpec);
 // scale y axis exponentially
-p.specs_([[1, 1000, \exp].asSpec]).refresh;
+p.specs_([[1, 1000, \exp].asSpec]);
 // then scale x axis exponentially
-p.domainSpecs_([1, 1000, \exp].asSpec).refresh;
+p.domainSpecs_([1, 1000, \exp].asSpec);
 ::
 
 
@@ -686,8 +740,8 @@ subsection:: Axis labels
 code::
 (
 p = 4.collect({
-	100.collect({ rrand(0,1.0) })
-}).plot(bounds: Rect(50,50,500,650));
+	100.collect({ rrand(0, 1.0) })
+}).plot(bounds: Rect(50, 50, 500, 650));
 p.plotColor_([Color.red, Color.blue, Color.green, Color.cyan]);
 )
 

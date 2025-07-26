@@ -127,6 +127,7 @@ PulseDivider : UGen {
 }
 
 SetResetFF : PulseCount {
+	signalRange { ^\unipolar }
 }
 
 ToggleFF : UGen {
@@ -137,6 +138,8 @@ ToggleFF : UGen {
 	*kr { arg trig = 0.0;
 		^this.multiNew('control', trig)
 	}
+
+	signalRange { ^\unipolar }
 }
 
 
@@ -206,7 +209,7 @@ Pitch : MultiOutUGen {
 }
 
 InRange : UGen {
-	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+	*ar { arg in, lo = 0.0, hi = 1.0;
 		^this.multiNew('audio', in, lo, hi)
 	}
 	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
@@ -215,10 +218,14 @@ InRange : UGen {
 	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
 		^this.multiNew('scalar', in, lo, hi)
 	}
+	checkInputs {
+		if(rate == \audio) { ^this.checkSameRateAsFirstInput };
+		^this.checkValidInputs
+	}
 }
 
 InRect : UGen {
-	*ar { arg x = 0.0, y = 0.0, rect;
+	*ar { arg x, y, rect;
 		^this.multiNew('audio', x, y, rect.left, rect.top,
 			rect.right, rect.bottom)
 	}
@@ -226,18 +233,11 @@ InRect : UGen {
 		^this.multiNew('control', x, y, rect.left, rect.top,
 			rect.right, rect.bottom)
 	}
+	checkInputs {
+		if(rate == \audio) { ^this.checkNInputs(2) };
+		^this.checkValidInputs
+	}
 }
-
-
-//Trapezoid : UGen
-//{
-//	*ar { arg in = 0.0, a = 0.2, b = 0.4, c = 0.6, d = 0.8;
-//		^this.multiNew('audio', in, a, b, c, d)
-//	}
-//	*kr { arg in = 0.0, a = 0.2, b = 0.4, c = 0.6, d = 0.8;
-//		^this.multiNew('control', in, a, b, c, d)
-//	}
-//}
 
 Fold : InRange {}
 Clip : InRange {}

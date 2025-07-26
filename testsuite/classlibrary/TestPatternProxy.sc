@@ -129,7 +129,7 @@ TestPatternProxy : UnitTest {
 
 	test_update {
 		var assert = { |what, which|
-			this.assert(what, "testing '%' failed.".format(which), false)
+			this.assert(what, "Test named '%' failed.".format(which), false)
 		};
 
 		Pdefn.clear;
@@ -190,7 +190,7 @@ TestPatternProxy : UnitTest {
 		var assert = { |a, b, which|
 			//a = a.collect(removeCleanup);
 			//b = b.collect(removeCleanup);
-			this.assert(a == b, "testing '%' failed.".format(which), false)
+			this.assertEquals(a, b, "Test named '%' failed. The following two should be equal:\n%\n%".format(which, a, b), false)
 		};
 
 
@@ -315,6 +315,25 @@ TestPatternProxy : UnitTest {
 		);
 
 		Pdefn.clear;
+
+		Pdef.clear;
+		Pdef(\p, Pbind(\a, 4, \b, Pkey(\c)));
+		Pbindef(\p, \b, Pkey(\a));
+		assert.(
+			Pbindef(\p).asStream.nextN(1, ()),
+			[(a:4, b: 4)],
+			5.5
+		);
+
+		Pdef.clear;
+		Pbindef(\p, \a, 4, \b, Pkey(\c));
+		Pbindef(\p, \b, Pkey(\a));
+		assert.(
+			Pbindef(\p).asStream.nextN(1, ()),
+			[(a:4, b: 4)],
+			5.6
+		);
+
 
 		Pdefn(\x, 9);
 		Pdefn(\y, Pseq([1, 2, 3]));

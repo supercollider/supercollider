@@ -155,7 +155,7 @@ struct and_op_not
 {};
 
 template<class T>
-BOOST_MOVE_FORCEINLINE void swap_proxy(T& x, T& y, typename boost::move_detail::enable_if_c<!boost::move_detail::has_move_emulation_enabled_impl<T>::value>::type* = 0)
+inline void swap_proxy(T& x, T& y, typename boost::move_detail::enable_if_c<!boost::move_detail::has_move_emulation_enabled_impl<T>::value>::type* = 0)
 {
    //use std::swap if argument dependent lookup fails
    //Use using directive ("using namespace xxx;") instead as some older compilers
@@ -165,14 +165,14 @@ BOOST_MOVE_FORCEINLINE void swap_proxy(T& x, T& y, typename boost::move_detail::
 }
 
 template<class T>
-BOOST_MOVE_FORCEINLINE void swap_proxy(T& x, T& y
+void swap_proxy(T& x, T& y
                , typename boost::move_detail::enable_if< and_op_not_impl<boost::move_detail::has_move_emulation_enabled_impl<T>
                                                                         , boost_move_member_swap::has_member_swap<T> >
                                                        >::type* = 0)
 {  T t(::boost::move(x)); x = ::boost::move(y); y = ::boost::move(t);  }
 
 template<class T>
-BOOST_MOVE_FORCEINLINE void swap_proxy(T& x, T& y
+inline void swap_proxy(T& x, T& y
                , typename boost::move_detail::enable_if< and_op_impl< boost::move_detail::has_move_emulation_enabled_impl<T>
                                                                     , boost_move_member_swap::has_member_swap<T> >
                                                        >::type* = 0)
@@ -185,7 +185,7 @@ BOOST_MOVE_FORCEINLINE void swap_proxy(T& x, T& y
 namespace boost_move_adl_swap{
 
 template<class T>
-BOOST_MOVE_FORCEINLINE void swap_proxy(T& x, T& y)
+inline void swap_proxy(T& x, T& y)
 {
    using std::swap;
    swap(x, y);
@@ -222,7 +222,7 @@ namespace boost{
 //!   -  Otherwise a move-based swap is called, equivalent to: 
 //!      <code>T t(::boost::move(x)); x = ::boost::move(y); y = ::boost::move(t);</code>.
 template<class T>
-BOOST_MOVE_FORCEINLINE void adl_move_swap(T& x, T& y)
+inline void adl_move_swap(T& x, T& y)
 {
    ::boost_move_adl_swap::swap_proxy(x, y);
 }

@@ -26,8 +26,8 @@ Array.with(4, 2, 1);
 method::fill
 Creates a Collection of the given size, the elements of which are determined by evaluation the given function. The function is passed the index as an argument.
 code::
-Array.fill(4, { arg i; i * 2 });
-Bag.fill(14, { arg i; i.rand });
+Array.fill(4, { |i| i * 2 });
+Bag.fill(14, { |i| i.rand });
 ::
 
 argument::size
@@ -35,14 +35,14 @@ The size of the collection which is returned. If nil, it returns an empty collec
 ::
 
 code::
-Array.fill([2, 2, 3], { arg i, j, k;  i * 100 + (j * 10) + k });
+Array.fill([2, 2, 3], { |i, j, k|  i * 100 + (j * 10) + k });
 ::
 
 argument::function
 The function which is called for each new element - the index is passed in as a first argument. The function be anything that responds to the message "value".
 
 code::
-Array.fill(10, { arg i; 2 ** i });
+Array.fill(10, { |i| 2 ** i });
 Array.fill(10, Pxrand([0, 1, 2], inf).iter);
 Array.fill(10, 7); // an object that doesn't respond with a new value is just repeatedly added.
 ::
@@ -51,21 +51,21 @@ method::fill2D
 Creates a 2 dimensional Collection of the given sizes. The items are determined by evaluation of the supplied function. The function is passed row and column indexes as arguments. See link::Guides/J-concepts-in-SC::
 code::
 Array.fill2D(2, 4, 0);
-Array.fill2D(3, 4, { arg r, c; r*c+c; });
+Array.fill2D(3, 4, { |r, c| r*c+c });
 ::
 
 method::fill3D
 Creates a 3 dimensional Collection of the given sizes. The items are determined by evaluation of the supplied function. The function is passed plane, row and column indexes as arguments. See link::Guides/J-concepts-in-SC::
 code::
-Array.fill3D(2, 3, 4, { arg p, r, c; p; });
+Array.fill3D(2, 3, 4, { |p, r, c| p });
 ::
 
 method::fillND
 Creates a N dimensional Collection where N is the size of the array strong::dimensions::. The items are determined by evaluation of the supplied function. The function is passed N number of indexes as arguments. See link::Guides/J-concepts-in-SC::
 code::
-Array.fillND([4, 4], { arg a, b; a+b; });				// 2D
-Array.fillND([4, 4, 4], { arg a, b, c; a+b*c; });		// 3D
-Array.fillND([1, 2, 3, 4], { arg a, b, c, d; b+d; });	// 4D
+Array.fillND([4, 4], { |a, b| a+b });				// 2D
+Array.fillND([4, 4, 4], { |a, b, c| a+b*c });		// 3D
+Array.fillND([1, 2, 3, 4], { |a, b, c, d| b+d });	// 4D
 ::
 
 INSTANCEMETHODS::
@@ -135,7 +135,7 @@ code::
 (
 var a;
 a = List[1, 2, 3, 4];
-a.removeAllSuchThat({ arg item, i; item < 3 });
+a.removeAllSuchThat({ |item, i| item < 3 });
 a;
 )
 ::
@@ -166,10 +166,10 @@ List[1, 2, 3, 4].includes(3);
 method::includesEqual
 Answer whether anObject is contained in the receiver. In contrast to link::#-includes:: this tests for equality - not identity.
 code::
-List["a", "b", "c"].includesEqual("c");  //true
-List["a", "b", "c"].includes("c");       //false
-List[ List[1, 2], List[3, 4] ].includesEqual(List[3, 4]);  //true
-List[ List[1, 2], List[3, 4] ].includes(List[3, 4]);       //false
+List["a", "b", "c"].includesEqual("c");  // true
+List["a", "b", "c"].includes("c");       // false
+List[List[1, 2], List[3, 4]].includesEqual(List[3, 4]);  // true
+List[List[1, 2], List[3, 4]].includes(List[3, 4]);       // false
 ::
 
 method::includesAny
@@ -195,64 +195,84 @@ subsection::Iteration
 method::do
 Evaluates strong::function:: for each item in the collection. The function is passed two arguments, the item and an integer index.
 code::
-List[1, 2, 3, 4].do({ arg item, i; item.postln });
+List[1, 2, 3, 4].do({ |item, i| item.postln });
 ::
 
 method::collect
 Answer a new collection which consists of the results of strong::function:: evaluated for each item in the collection. The function is passed two arguments, the item and an integer index.
 code::
-List[1, 2, 3, 4].collect({ arg item, i; item + 10 });
+List[1, 2, 3, 4].collect({ |item, i| item + 10 });
 ::
 If you want to control what type of collection is returned, use link::#-collectAs::(function, class).
 
 method::select
 Answer a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
 code::
-List[1, 2, 3, 4].select({ arg item, i; item.even });
+List[1, 2, 3, 4].select({ |item, i| item.even });
 ::
 If you want to control what type of collection is returned, use link::#-selectAs::(function, class).
 
 method::reject
 Answer a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/False::. The function is passed two arguments, the item and an integer index.
 code::
-List[1, 2, 3, 4].reject({ arg item, i; item.even });
+List[1, 2, 3, 4].reject({ |item, i| item.even });
 ::
 If you want to control what type of collection is returned, use link::#-rejectAs::(function, class).
 
 method::detect
 Answer the first item in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
 code::
-List[1, 2, 3, 4].detect({ arg item, i; item.even });
+List[1, 2, 3, 4].detect({ |item, i| item.even });
+::
+
+method::detectLast
+Similar to link::#-detect::, but performed in reverse order.
+code::
+[2, 3, 4, 6, 8, 9, 10].detectLast({ arg item; item.odd }); // 9
+["a", "b", "c"].detectLast({ arg item; item == "d" }); // nil
 ::
 
 method::detectIndex
 Similar to link::#-detect:: but returns the index instead of the item itself.
 code::
-List[1, 2, 3, 4].detectIndex({ arg item, i; item.even });
+List[1, 2, 3, 4].detectIndex({ |item, i| item.even });
 ::
+
+method::detectLastIndex
+Similar to link::#-detectIndex::, but performed in reverse order.
+code::
+[0, 1, 2, 3, 4].detectLastIndex({ arg item; item.odd }); // 3
+["a", "b", "c"].detectLastIndex({ arg item; item == 0 }); // nil
+::
+
+method::lastForWhich
+Returns the last element of the collection for which the function is true. Synonym to link::#-detectLast::.
+
+method::lastIndexForWhich
+Returns the index of the last element of the collection for which the function is true. Synonym to link::#-detectLastIndex::.
 
 method::inject
 In functional programming, the operation known as a left fold.
 inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the first element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialized to strong::initialValue::.
 code::
-[1,2,3,4,5].inject(0, _+_); // 15
+[1, 2, 3, 4, 5].inject(0, _+_); // 15
 
-[1,2,3,4,5].inject(1, _*_); // 120
+[1, 2, 3, 4, 5].inject(1, _*_); // 120
 
 // same as .collect(_.squared)
-[1,2,3,4,5].inject([], {|a,b| a ++ b.squared }); // [ 1, 4, 9, 16, 25 ]
-[1,2,3,4,5].inject([], {|a,b| [b] ++ a ++ [b]}); // [ 5, 4, 3, 2, 1, 1, 2, 3, 4, 5 ]
-[1,2,3,4,5].inject([], {|a,b| a ++ b ++ a});
-[1,2,3,4,5].inject([], {|a,b| a ++ a ++ b});
+[1, 2, 3, 4, 5].inject([], { |a, b| a ++ b.squared }); // [1, 4, 9, 16, 25]
+[1, 2, 3, 4, 5].inject([], { |a, b| [b] ++ a ++ [b] }); // [5, 4, 3, 2, 1, 1, 2, 3, 4, 5]
+[1, 2, 3, 4, 5].inject([], { |a, b| a ++ b ++ a });
+[1, 2, 3, 4, 5].inject([], { |a, b| a ++ a ++ b });
 ::
 
 method::injectr
 In functional programming, the operation known as a right fold.
 inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the last element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialized to strong::initialValue::.
 code::
-[1,2,3,4,5].injectr([], _++_); // [ 5, 4, 3, 2, 1 ]
+[1, 2, 3, 4, 5].injectr([], _++_); // [5, 4, 3, 2, 1]
 
-[1,2,3,4,5].inject([], _++_); // [ 1, 2, 3, 4, 5 ]
+[1, 2, 3, 4, 5].inject([], _++_); // [1, 2, 3, 4, 5]
 ::
 
 method::collectInPlace
@@ -274,7 +294,7 @@ Like link::#-collect::, but the collection is copied before iteration. This is r
 
 code::
 a = [1, 5, 2, 3, 4];
-b = a.collectCopy { |x| if(x.even) { a.remove(x); "removed" } { x }  };
+b = a.collectCopy { |x| if(x.even) { a.remove(x); "removed" } { x } };
 a;
 b;
 ::
@@ -282,19 +302,19 @@ b;
 method::any
 Answer whether strong::function:: answers link::Classes/True:: for any item in the receiver. The function is passed two arguments, the item and an integer index.
 code::
-List[1, 2, 3, 4].any({ arg item, i; item.even });
+List[1, 2, 3, 4].any({ |item, i| item.even });
 ::
 
 method::every
 Answer whether strong::function:: answers link::Classes/True:: for every item in the receiver. The function is passed two arguments, the item and an integer index.
 code::
-List[1, 2, 3, 4].every({ arg item, i; item.even });
+List[1, 2, 3, 4].every({ |item, i| item.even });
 ::
 
 method::count
 Answer the number of items for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
 code::
-List[1, 2, 3, 4].count({ arg item, i; item.even });
+List[1, 2, 3, 4].count({ |item, i| item.even });
 ::
 
 method::occurrencesOf
@@ -304,31 +324,103 @@ List[1, 2, 3, 3, 4, 3, 4, 3].occurrencesOf(3);
 ::
 
 method::sum
-Answer the sum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
+Answer the sum of the items in the collection.
 code::
-List[1, 2, 3, 4].sum;
-(0..8).sum { |i| 1 / (2 ** i) };
+[3, 6, 12, 24].sum // -> 45
 ::
+
+This can be represented as:
+math::
+\sum_{i=0}^{n} x_i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+
+Optionally, a link::Classes/Function:: can be provided to be applied to each item in the collection before summing.
+
+argument:: function
+If provided, the link::Classes/Function:: is passed two arguments: the item and the iteration index.
+
+code::
+[3, 6, 12, 24].sum { |item, i| i / (2 ** item) } // -> 0.016113460063934
+::
+
+The above code can be represented as:
+math::
+\sum_{i=0}^{n} f(x_i,i) = \sum_{i=0}^{n} \frac{i}{2^{x_i}} \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+where math::x_i:: is the function argument teletype::item::.
+
+
+method::product
+Answer the product of the items in the collection.
+code::
+[3, 6, 12, 24].product // -> 5184
+::
+
+This can be represented as:
+math::
+\prod_{i=0}^{n} x_i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+
+Optionally, a link::Classes/Function:: can be provided to be applied to each item in the collection before multiplication.
+
+argument:: function
+If provided, the link::Classes/Function:: is passed two arguments: the item and the iteration index.
+
+code::
+[3, 6, 12, 24].product { |item, i| item.sqrt ** i } // -> 3456.0
+::
+
+The above code can be represented as:
+math::
+\prod_{i=0}^{n} f(x_i,i) = \prod_{i=0}^{n} \left( \sqrt{x_i} \right) ^ i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+where math::x_i:: is the function argument teletype::item::.
+
+method::mean
+Answer the arithmetic mean of the items in the collection.
+code::
+[3, 6, 12, 24].mean // -> 11.25
+::
+
+This can be represented as:
+math::
+\frac{1}{n+1} \sum_{i=0}^{n} x_i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+
+Optionally, a link::Classes/Function:: can be provided to be applied to each item in the collection before multiplication.
+
+argument:: function
+If provided, the link::Classes/Function:: is passed two arguments: the item and the iteration index.
+
+code::
+[3, 6, 12, 24].mean { |item, i| i / (item ** 2) } // -> 0.01171875
+::
+
+The above code can be represented as:
+math::
+\frac{1}{n+1} \sum_{i=0}^{n} f(x_i,i) = \frac{1}{n+1} \sum_{i=0}^{n} \frac{i}{{x_i}^2} \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+where math::x_i:: is the function argument teletype::item::.
 
 method::maxItem
 Answer the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is nil, then answer the maximum of all items in the receiver.
 code::
-List[1, 2, 3, 4].maxItem({ arg item, i; item + 10 });
+List[1, 2, 3, 4].maxItem({ |item, i| item + 10 });
 ::
 
 method::minItem
 Answer the minimum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is nil, then answer the minimum of all items in the receiver.
 code::
-List[1, 2, 3, 4].minItem({ arg item, i; item + 10 });
+List[1, 2, 3, 4].minItem({ |item, i| item + 10 });
 ::
 
 method::maxIndex
 Answer the index of the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is nil, then answer the maximum of all items in the receiver.
 code::
-List[1, 2, 3, 4].maxIndex({ arg item, i; item + 10 });
+List[1, 2, 3, 4].maxIndex({ |item, i| item + 10 });
 [3.2, 12.2, 13, 0.4].maxIndex;
 ::
 
@@ -336,7 +428,7 @@ method::minIndex
 Answer the index of the minimum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is nil, then answer the minimum of all items in the receiver.
 code::
-List[1, 2, 3, 4].minIndex({ arg item, i; item + 10 });
+List[1, 2, 3, 4].minIndex({ |item, i| item + 10 });
 List[3.2, 12.2, 13, 0.4].minIndex;
 ::
 
@@ -492,9 +584,9 @@ It can be used to invert a pitch list about a given axis.
 code::
 [0, 1, 4, 7].invert(0);
 [0, 1, 2, 3].invert(1);
-[3, 2, 9, 7].invert(11); // becomes [ 19, 20, 13, 15 ]
+[3, 2, 9, 7].invert(11); // becomes [19, 20, 13, 15]
 // if axis is nil, invert uses the registral center
-[3, 2, 9, 7].invert; // becomes [ 8, 9, 2, 4 ]
+[3, 2, 9, 7].invert; // becomes [8, 9, 2, 4]
 // invert chords
 [[0, 5, 7], [5, 7, 11], [6, 7, 9]].invert(5);
 ::
@@ -547,7 +639,18 @@ symmetricDifference(a, b);
 method::isSubsetOf
 Returns link::Classes/True:: if all elements of this are also elements of strong::that::
 code::
-a = Set[1, 2, 3, 4];
-Set[1, 2].isSubsetOf(a); // true
-Set[1, 5].isSubsetOf(a); // false
+a = [1, 2, 3, 4];
+// a = List[1, 2, 3, 4];
+// a = Set[1, 2, 3, 4];
+// a = Interval(1, 4, 1);
+// a = Bag[1, 2, 3, 4];
+[1, 3].isSubsetOf(a); // true
+[1, 5].isSubsetOf(a); // false
+::
+In mathematical notation, the last two lines of the above code are the equivalent to
+math::
+[1, 3] \subseteq [1, 2, 3, 4] \Rightarrow \text{True}
+::
+math::
+[1, 5] \subseteq [1, 2, 3, 4] \Rightarrow \text{False}
 ::

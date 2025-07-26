@@ -67,7 +67,7 @@ void SCIpcClient::readIDEData() {
             avail -= mReadSize;
 
             QDataStream in(baReceived);
-            in.setVersion(QDataStream::Qt_4_6);
+            in.setVersion(QDataStream::Qt_5_6);
             QString selector;
             QVariantList argList;
             in >> selector;
@@ -128,8 +128,7 @@ QString SCIpcClient::getTextMirrorForDocument(QByteArray& id, int pos, int range
             QString existingText = mDocumentTextMirrors[id];
             if (range == -1)
                 range = existingText.size() - pos;
-            QStringRef returnTextRef = QStringRef(&existingText, pos, range);
-            returnText = returnTextRef.toString();
+            returnText = existingText.mid(pos, range);
             mTextMirrorHashMutex.unlock();
         }
     } else {

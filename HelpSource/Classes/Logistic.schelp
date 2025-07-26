@@ -45,4 +45,3 @@ code::
 // explore via Mouse
 { Logistic.ar(MouseX.kr(3, 3.99), MouseY.kr(10, 10000, 'exponential'), 0.25, 0.5) }.play
 ::
-

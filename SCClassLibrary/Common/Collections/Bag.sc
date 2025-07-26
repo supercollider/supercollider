@@ -25,7 +25,9 @@ Bag : Collection {
 			},{
 				contents.put(item, newCount);
 			});
+			^item
 		});
+		^nil
 	}
 
 	// accessing

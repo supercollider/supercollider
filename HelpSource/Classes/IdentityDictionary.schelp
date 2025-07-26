@@ -1,10 +1,13 @@
 CLASS::IdentityDictionary
 summary::associative collection mapping keys to values
-related::Classes/Environment, Classes/Event
+related::Classes/Environment, Classes/Event, Guides/ObjectPrototyping
 categories::Collections>Unordered
 
 DESCRIPTION::
-An IdentityDictionary is an associative collection mapping keys to values. Keys and values can be arbitrary objects, but for keys, often a link::Classes/Symbol:: is used.
+An IdentityDictionary is an associative collection mapping keys to values. 
+Keys and values can be arbitrary objects, but for keys, often a link::Classes/Symbol:: is used.
+
+An IdentityDictionary can be used to implement prototype objects (link::Guides/ObjectPrototyping::), which behave like objects whose methods can be programmed at runtime.
 
 Often, the subclass link::Classes/Event:: is used as an IdentityDictionary, because there is a syntactical shortcut:
 code::
@@ -19,8 +22,7 @@ Keys match only if they are strong::identical objects::. (i.e. === returns true.
 The contents of a Dictionary are strong::unordered::. You must not depend on the order of items in a Dictionary.
 ::
 
-
-IdentityDictionary is often used to assign names to instances of a particular class. For example, the proxy classes ( link::Classes/Pdef::, link::Classes/Pdefn::, link::Classes/Tdef::, link::Classes/Ndef:: ), and link::Classes/NodeWatcher:: all have class variables named all implemented as IdentityDictionaries.
+IdentityDictionary is often used to assign names to instances of a particular class. For example, the proxy classes (link::Classes/Pdef::, link::Classes/Pdefn::, link::Classes/Tdef::, link::Classes/Ndef::), and link::Classes/NodeWatcher:: all have class variables named all implemented as IdentityDictionaries.
 
 Subsection:: 'parent' and 'proto' variables
 
@@ -42,7 +44,7 @@ code::
 e = IdentityDictionary(8,
 	parent: IdentityDictionary[\b -> 10]
 ).put(\a, 5);
--> IdentityDictionary[ (a -> 5) ]
+-> IdentityDictionary[(a -> 5)]
 
 // But 'b' is still there
 e[\a] + e[\b]
@@ -50,11 +52,11 @@ e[\a] + e[\b]
 
 // Iteration touches 'a' only
 e.keysValuesDo { |key, value| [key, value].postln };
--> [ a, 5 ]
+-> [a, 5]
 
 // 'collect' is also an iteration, and doesn't touch the parent
 g = e.collect { |x| x * 5 };
--> IdentityDictionary[ (a -> 25) ]
+-> IdentityDictionary[(a -> 25)]
 g[\b]
 -> 10
 
@@ -68,7 +70,6 @@ e[\b]
 -> 20
 ::
 
-
 CLASSMETHODS::
 
 method::new
@@ -77,10 +78,9 @@ The link::#-parent:: and link::#-proto:: instance variables allow additional Ide
 When the instance variable link::#-know:: is link::Classes/True::, the IdentityDictionary responds to unknown messages by looking up the selector and evaluating the result with the dictionary as an argument. For example:
 code::
 a = IdentityDictionary(know: true);
-a.put(\foo, { | x, y | "--".postln; ("x:" ++ x).postln;  ("y:" ++ y).postln; y.squared });
+a.put(\foo, { |x, y| "--".postln; ("x:" ++ x).postln;  ("y:" ++ y).postln; y.squared });
 a.foo(-10.01);
 ::
-
 
 warning::
 Only keys that are not already instance methods of IdentityDictionary (or its superclasses) can be used in such a way. E.g. the key "free" will not work, because it is implemented in Object. This means that class extensions (see: link::Guides/WritingClasses::) can break code. It is advisable to use underscores in method names to make this improbable.
@@ -96,7 +96,6 @@ a.fuzzy_plus(7, 4);
 ::
 
 INSTANCEMETHODS::
-
 
 method::know
 If set to true, the dictionary interprets method calls as look ups. This allows you to implement object prototypes (see above).
@@ -155,7 +154,6 @@ a.cs;
 
 image::IdentityDictionary_01.png#Example schema: order of overriding in proto and parent.::
 
-
 method::insertParent
 Inserts a dictionary into the chain of parents of the receiver (rather than replacing the parent).
 argument::newParent
@@ -164,7 +162,6 @@ argument::insertionDepth
 Level at which the new parent is inserted. Zero (default) means directly above, Inf means at the top of the parent chain.
 argument::reverseInsertionDepth
 If the new parent dictionary has parents itself, this parameter specifies where the original parents are placed in the new parent chain. Zero means directly above, Inf (default) means at the top of the chain.
-
 
 image::IdentityDictionary_03.png#Compare a.insertParent(b, 0) and a.insertParent(b, 1)::
 
@@ -178,17 +175,16 @@ Use a dictionary to represent timing information.
 
 code::
 (
-SynthDef(\help_sinegrain,
-    { arg out=0, freq=440, sustain=0.05;
-        var env;
-        env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
-        Out.ar(out, SinOsc.ar(freq, 0.5pi, env))
-    }).add;
+SynthDef(\help_sinegrain, { |out = 0, freq = 440, sustain = 0.05|
+	var env;
+	env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
+	Out.ar(out, SinOsc.ar(freq, 0.5pi, env))
+}).add;
 
 a = Pbind(\instrument, \help_sinegrain, \note, Pseq([0, 7, 2, 9, 11, 10, 9, 8], inf), \dur, 1);
-a.play(quant:(quant: 1, phase: 0));
-a.play(quant:(quant: 1, phase: 1/3));
-a.play(quant:(quant: 1, phase: 1.0.rand));
+a.play(quant: (quant: 1, phase: 0));
+a.play(quant: (quant: 1, phase: 1/3));
+a.play(quant: (quant: 1, phase: 1.0.rand));
 )
 ::
 
@@ -196,4 +192,3 @@ subsection::Garbage collection
 
 method::freezeAsParent
 For optimizing the garbage collector load, objects can be frozen and become immutable. This method creates a new dictionary with the frozen instance as a parent so that all contents can be overwritten without losing this optimization.
-

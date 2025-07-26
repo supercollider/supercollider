@@ -30,11 +30,11 @@
 // Elliptic integrals (complete and incomplete) of the second kind
 // Carlson, Numerische Mathematik, vol 33, 1 (1979)
 
-namespace boost { namespace math { 
-   
+namespace boost { namespace math {
+
 template <class T1, class T2, class Policy>
 typename tools::promote_args<T1, T2>::type ellint_d(T1 k, T2 phi, const Policy& pol);
-   
+
 namespace detail{
 
 template <typename T, typename Policy>
@@ -60,7 +60,7 @@ T ellint_d_imp(T phi, T k, const Policy& pol)
     if(phi >= tools::max_value<T>())
     {
        // Need to handle infinity as a special case:
-       result = policies::raise_overflow_error<T>("boost::math::ellint_d<%1%>(%1%,%1%)", 0, pol);
+       result = policies::raise_overflow_error<T>("boost::math::ellint_d<%1%>(%1%,%1%)", nullptr, pol);
     }
     else if(phi > 1 / tools::epsilon<T>())
     {
@@ -76,7 +76,7 @@ T ellint_d_imp(T phi, T k, const Policy& pol)
        T rphi = boost::math::tools::fmod_workaround(phi, T(constants::half_pi<T>()));
        T m = boost::math::round((phi - rphi) / constants::half_pi<T>());
        int s = 1;
-       if(boost::math::tools::fmod_workaround(m, T(2)) > 0.5)
+       if(boost::math::tools::fmod_workaround(m, T(2)) > T(0.5))
        {
           m += 1;
           s = -1;
@@ -120,8 +120,7 @@ T ellint_d_imp(T k, const Policy& pol)
 
     if (abs(k) >= 1)
     {
-       return policies::raise_domain_error<T>("boost::math::ellint_d<%1%>(%1%)",
-            "Got k = %1%, function requires |k| <= 1", k, pol);
+       return policies::raise_domain_error<T>("boost::math::ellint_d<%1%>(%1%)", "Got k = %1%, function requires |k| <= 1", k, pol);
     }
     if(fabs(k) <= tools::root_epsilon<T>())
        return constants::pi<T>() / 4;
@@ -136,7 +135,7 @@ T ellint_d_imp(T k, const Policy& pol)
 }
 
 template <typename T, typename Policy>
-inline typename tools::promote_args<T>::type ellint_d(T k, const Policy& pol, const boost::true_type&)
+inline typename tools::promote_args<T>::type ellint_d(T k, const Policy& pol, const std::true_type&)
 {
    typedef typename tools::promote_args<T>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
@@ -145,7 +144,7 @@ inline typename tools::promote_args<T>::type ellint_d(T k, const Policy& pol, co
 
 // Elliptic integral (Legendre form) of the second kind
 template <class T1, class T2>
-inline typename tools::promote_args<T1, T2>::type ellint_d(T1 k, T2 phi, const boost::false_type&)
+inline typename tools::promote_args<T1, T2>::type ellint_d(T1 k, T2 phi, const std::false_type&)
 {
    return boost::math::ellint_d(k, phi, policies::policy<>());
 }

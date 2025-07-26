@@ -173,7 +173,11 @@ bool Main::eventFilter(QObject* object, QEvent* event) {
     return QObject::eventFilter(object, event);
 }
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 bool Main::nativeEventFilter(const QByteArray&, void* message, long*) {
+#else
+bool Main::nativeEventFilter(const QByteArray&, void* message, qintptr*) {
+#endif
     bool result = false;
 
 #ifdef Q_OS_MAC

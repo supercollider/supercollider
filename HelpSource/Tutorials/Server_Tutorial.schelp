@@ -361,7 +361,7 @@ Tempo.bpm = 120;
 timer = BeatSched.new;
 offset = Tempo.tempo.reciprocal;
 
-space = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+space = Buffer.read(s, ExampleFiles.child);
 
 saw = Synth("saw");
 delay = Synth.after(saw,"delay", [\decay, 20]);

@@ -190,7 +190,7 @@ SUBSECTION:: Basic use in a UserView
 code::
 (
 w = Window.new.front;
-u = UserView(w,w.bounds.size.asRect);
+u = UserView(w, w.bounds.size.asRect);
 
 // The spec defines its preferred grid system
 x = \lofreq.asSpec.grid; // x grid lines

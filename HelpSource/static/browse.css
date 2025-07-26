@@ -1,0 +1,72 @@
+.browser {
+    margin: 0em;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+.result {
+    padding: 2px;
+}
+.browser td {
+    vertical-align: top;
+    border: none;
+}
+.result_doc {
+    border-bottom: 1px solid var(--color-fg-200);
+    margin-top: 0.5em;
+}
+.result_summary {
+    color: var(--color-fg-300);
+    font-size: 9pt;
+    max-width: 18em;
+    margin-bottom: 0.6em;
+}
+.category, .cat_selected {
+    margin-bottom: 0.25em;
+    border-bottom: 1px solid transparent;
+}
+.cat_selected {
+    border-bottom: 1px solid var(--color-fg-100);
+}
+.cat_header {
+    border-bottom: 2px solid var(--color-fg);
+    color: var(--color-fg-200);
+    margin-bottom: 0.25em;
+    padding: 2px;
+}
+.category a {
+    color: var(--color-fg-300);
+    font-weight: bold;
+}
+.cat_selected a {
+    color: var(--color-fg);
+    font-weight: bold;
+}
+.cat_arrow {
+    float: right;
+    padding-left: 1ex;
+    color: var(--color-fg-300);
+}
+
+#search_checks {
+    font-size: 9pt;
+    color: var(--color-fg-300);
+    border-bottom: 1px solid var(--color-fg-200);
+    margin-top: 1em;
+    padding-bottom: 1em;
+}
+.cat_count {
+    color: var(--color-fg-200);
+    font-size: 9pt;
+}
+#total_count {
+    font-size: 9pt;
+    color: var(--color-fg-200);;
+}
+.doc_kind {
+    color: var(--color-fg-200);
+    float: right;
+    font-size: 8pt;
+    padding: 0 2px;
+    margin-left: 0.5ex;
+    font-weight: bold;
+}

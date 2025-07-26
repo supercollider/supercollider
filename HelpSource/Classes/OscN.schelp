@@ -43,14 +43,14 @@ code::
 
 (
 s = Server.local;
-b = Buffer.alloc(s,512,1);
-b.sine1(1.0/[1,2,3,4,5,6],true,false,true);
+b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, false, true);
+b = Buffer.alloc(s, 512, 1);
 
-SynthDef("help-OscN",{ arg out=0,bufnum=0;
+SynthDef("help-OscN", { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum, 500, 0, 0.5)
 	)
-}).play(s,[0,0,1,b.bufnum]);
+}).play(s, [0, 0, 1, b.bufnum]);
 
 )
 b.free;
@@ -62,14 +62,14 @@ b.free;
 // modulate freq
 
 s = Server.local;
-b = Buffer.alloc(s,512,1);
-b.sine1(1.0/[1,2,3,4,5,6].squared,true,false,true);
+b.sine1(1.0/[1, 2, 3, 4, 5, 6].squared, true, false, true);
+b = Buffer.alloc(s, 512, 1);
 
-SynthDef("help-OscN",{ arg out=0,bufnum=0;
+SynthDef("help-OscN", { |out = 0, bufnum = 0|
 	Out.ar(out,
-		OscN.ar(bufnum, XLine.kr(2000,200), 0, 0.5)
+		OscN.ar(bufnum, XLine.kr(2000, 200), 0, 0.5)
 	)
-}).play(s,[\out,0,\bufnum,b.bufnum]);
+}).play(s, [\out, 0, \bufnum, b.bufnum]);
 
 )
 b.free;
@@ -80,18 +80,18 @@ s = Server.local;
 b = Buffer.alloc(s, 512, 1);
 b.sine1([1.0], true, true, true);
 
-SynthDef("help-OscN",{ arg out=0,bufnum=0;
+SynthDef("help-OscN", { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum,
 			OscN.ar(bufnum,
-				XLine.kr(1,1000,9),
+				XLine.kr(1, 1000, 9),
 				0,
 				200,
 				800),
 			0,
 			0.25)
 	)
-}).play(s,[\out, 0, \bufnum, b.bufnum]);
+}).play(s, [\out, 0, \bufnum, b.bufnum]);
 
 )
 b.free;
@@ -102,17 +102,17 @@ s = Server.local;
 b = Buffer.alloc(s, 512, 1);
 b.sine1([1.0], true, true, true);
 
-SynthDef("help-OscN",{ arg out=0,bufnum=0;
+SynthDef("help-OscN", { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum,
 				800,
 				OscN.ar(bufnum,
-						XLine.kr(20,8000,10),
+						XLine.kr(20, 8000, 10),
 						0,
 						2pi),
 				0.25)
 	)
-}).play(s,[\out, 0, \bufnum, b.bufnum]);
+}).play(s, [\out, 0, \bufnum, b.bufnum]);
 )
 b.free;
 
@@ -121,20 +121,20 @@ b.free;
 // change the buffer while its playing
 s = Server.local;
 b = Buffer.alloc(s, 4096, 1);
-b.sine1(1.0/[1,2,3,4,5,6], true, true, true);
+b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, true, true);
 
-SynthDef("help-OscN",{ arg out=0,bufnum=0;
+SynthDef("help-OscN", { |out = 0, bufnum = 0|
 	Out.ar(out,
-		OscN.ar(bufnum, [80,80.2], 0, 0.2)
+		OscN.ar(bufnum, [80, 80.2], 0, 0.2)
 	)
-}).play(s,[\out, 0, \bufnum, b.bufnum]);
+}).play(s, [\out, 0, \bufnum, b.bufnum]);
 )
 
 (
 Routine({
 	var n = 32;
 	50.do({
-		b.sine1(Array.rand(n,0,1).cubed, true, true, true);
+		b.sine1(Array.rand(n, 0, 1).cubed, true, true, true);
 		0.25.wait;
 	});
 }).play;
@@ -142,4 +142,3 @@ Routine({
 b.free;
 
 ::
-

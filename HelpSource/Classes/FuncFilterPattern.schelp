@@ -7,4 +7,3 @@ description::
 This is an abstract class that filters a pattern using a function. See subclasses below:
 
 classtree::FuncFilterPattern
-

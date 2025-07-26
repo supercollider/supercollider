@@ -46,7 +46,7 @@ Resonz.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5)
 
 // reset the seed at a variable rate
 (
-x = { arg seed=1956;
+x = { |seed = 1956|
 		RandSeed.kr(Impulse.kr(MouseX.kr(0.1, 100)), seed);
 }.play;
 )
@@ -65,7 +65,7 @@ x.set(\seed, 1902);
 // a solution is to start a new synth:
 
 (
-SynthDef("pseudorandom", { arg out, sustain=1, seed=1967, id=0;
+SynthDef("pseudorandom", { |out, sustain = 1, seed = 1967, id = 0|
 	var noise, filterfreq;
 	RandID.ir(id);
 	RandSeed.ir(1, seed);
@@ -112,7 +112,7 @@ fork {
 fork {
 	(1902..2005).do { |seed|
 		seed.postln;
-		rrand(4,10).do {
+		rrand(4, 10).do {
 			Synth("pseudorandom", [\seed, seed, \sustain, 0.05]);
 			0.06.wait;
 		}
@@ -136,7 +136,7 @@ fork {
 
 (
 fork {
-	var id=0;
+	var id = 0;
 	(1902..2005).do { |seed|
 		seed.postln;
 		3.do {
@@ -149,4 +149,3 @@ fork {
 )
 
 ::
-

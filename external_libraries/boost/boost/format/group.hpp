@@ -55,8 +55,8 @@ struct group1
     group1(T1 a1)
       : a1_(a1)
       {}
-private:
-   group1& operator=(const group1&);
+    group1(const group1&) = default;
+    group1& operator=(const group1&) = delete;
 };
 
 template <class Ch, class Tr, class T1>
@@ -80,8 +80,8 @@ struct group2
     group2(T1 a1,T2 a2)
       : a1_(a1),a2_(a2)
       {}
-private:
-   group2& operator=(const group2&);
+    group2(const group2&) = default;
+    group2& operator=(const group2&) = delete;
 };
 
 template <class Ch, class Tr, class T1,class T2>
@@ -103,8 +103,8 @@ struct group3
     group3(T1 a1,T2 a2,T3 a3)
       : a1_(a1),a2_(a2),a3_(a3)
       {}
-private:
-   group3& operator=(const group3&);
+    group3(const group3&) = default;
+    group3& operator=(const group3&) = delete;
 };
 
 template <class Ch, class Tr, class T1,class T2,class T3>
@@ -127,8 +127,8 @@ struct group4
     group4(T1 a1,T2 a2,T3 a3,T4 a4)
       : a1_(a1),a2_(a2),a3_(a3),a4_(a4)
       {}
-private:
-   group4& operator=(const group4&);
+    group4(const group4&) = default;
+    group4& operator=(const group4&) = delete;
 };
 
 template <class Ch, class Tr, class T1,class T2,class T3,class T4>
@@ -152,6 +152,8 @@ struct group5
     group5(T1 a1,T2 a2,T3 a3,T4 a4,T5 a5)
       : a1_(a1),a2_(a2),a3_(a3),a4_(a4),a5_(a5)
       {}
+    group5(const group5&) = default;
+    group5& operator=(const group5&) = delete;
 };
 
 template <class Ch, class Tr, class T1,class T2,class T3,class T4,class T5>
@@ -176,6 +178,8 @@ struct group6
     group6(T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6)
       : a1_(a1),a2_(a2),a3_(a3),a4_(a4),a5_(a5),a6_(a6)
       {}
+    group6(const group6&) = default;
+    group6& operator=(const group6&) = delete;
 };
 
 template <class Ch, class Tr, class T1,class T2,class T3,class T4,class T5,class T6>
@@ -201,6 +205,8 @@ struct group7
     group7(T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6,T7 a7)
       : a1_(a1),a2_(a2),a3_(a3),a4_(a4),a5_(a5),a6_(a6),a7_(a7)
       {}
+    group7(const group7&) = default;
+    group7& operator=(const group7&) = delete;
 };
 
 template <class Ch, class Tr, class T1,class T2,class T3,class T4,class T5,class T6,class T7>
@@ -227,6 +233,8 @@ struct group8
     group8(T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6,T7 a7,T8 a8)
       : a1_(a1),a2_(a2),a3_(a3),a4_(a4),a5_(a5),a6_(a6),a7_(a7),a8_(a8)
       {}
+    group8(const group8&) = default;
+    group8& operator=(const group8&) = delete;
 };
 
 template <class Ch, class Tr, class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
@@ -254,6 +262,8 @@ struct group9
     group9(T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6,T7 a7,T8 a8,T9 a9)
       : a1_(a1),a2_(a2),a3_(a3),a4_(a4),a5_(a5),a6_(a6),a7_(a7),a8_(a8),a9_(a9)
       {}
+    group9(const group9&) = default;
+    group9& operator=(const group9&) = delete;
 };
 
 template <class Ch, class Tr, class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8,class T9>
@@ -282,6 +292,8 @@ struct group10
     group10(T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6,T7 a7,T8 a8,T9 a9,T10 a10)
       : a1_(a1),a2_(a2),a3_(a3),a4_(a4),a5_(a5),a6_(a6),a7_(a7),a8_(a8),a9_(a9),a10_(a10)
       {}
+    group10(const group10&) = default;
+    group10& operator=(const group10&) = delete;
 };
 
 template <class Ch, class Tr, class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8,class T9,class T10>

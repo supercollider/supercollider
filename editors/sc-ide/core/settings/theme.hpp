@@ -52,11 +52,12 @@ private:
     void fillClassic();
     void fillDark();
     void fillDracula();
+    void fillMonokai();
     void fillSolarizedLight();
     void fillSolarizedDark();
 
     void add(const char* key, const QColor& fg, const QColor& bg = QColor(Qt::transparent), bool bold = false,
-             bool italic = false);
+             bool italic = false, bool underline = false);
 
     bool mLocked;
     QMap<QString, QTextCharFormat*> mFormats;

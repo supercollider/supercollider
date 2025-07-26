@@ -91,6 +91,7 @@ void PyrArgListNode::dump(int level) {
     postfl("%2d ArgList\n", level);
     DUMPNODE(mVarDefs, level + 1);
     DUMPNODE(mRest, level + 1);
+    DUMPNODE(mKeywordArgs, level + 1);
     DUMPNODE(mNext, level);
 }
 
@@ -387,6 +388,28 @@ static void printObject(PyrSlot* slot, PyrObject* obj, char* str) {
 
 // Assumed: str has enough space to hold the representation of d
 static void prettyFormatFloat(char* str, double d) {
+    if (std::isnan(d)) {
+        // Do this manually as different implementations disagree on how to format nan.
+        str[0] = 'n';
+        str[1] = 'a';
+        str[2] = 'n';
+        str[3] = '\0';
+        return;
+    } else if (std::isinf(d)) {
+        if (d > 0.0) {
+            str[0] = 'i';
+            str[1] = 'n';
+            str[2] = 'f';
+            str[3] = '\0';
+        } else {
+            str[0] = '-';
+            str[1] = 'i';
+            str[2] = 'n';
+            str[3] = 'f';
+            str[4] = '\0';
+        }
+        return;
+    }
     sprintf(str, "%.14g", d);
 
     // append a trailing '.0' if the number would look like an integer.

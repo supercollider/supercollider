@@ -47,8 +47,7 @@ inline int str4len(const char* src) {
 // returns length in words of a int32 *
 inline int str4len(const int32* src) {
     const int32* src0 = src;
-    while (*src++ & kLASTCHAR) {
-    }
+    while (*src++ & kLASTCHAR) {}
     int wordlen = src - src0;
     return wordlen;
 }

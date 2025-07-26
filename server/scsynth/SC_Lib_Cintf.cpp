@@ -38,14 +38,14 @@
 
 #ifdef _WIN32
 #    include "SC_Win32Utils.h"
+#    include "SC_Codecvt.hpp"
 #else
 #    include <dlfcn.h>
 #    include <libgen.h>
 #    include <sys/param.h>
 #endif // _WIN32
 
-#include <boost/filesystem/path.hpp> // path
-#include <boost/filesystem/operations.hpp> // is_directory
+#include <filesystem>
 
 #ifdef __APPLE__
 extern "C" {
@@ -55,7 +55,7 @@ extern "C" {
 char gTempVal;
 #endif // __APPLE__
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 Malloc gMalloc;
 HashTable<SC_LibCmd, Malloc>* gCmdLib;
@@ -66,7 +66,7 @@ extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 void initMiscCommands();
-static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError);
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError);
 std::vector<void*> open_handles;
 #ifdef __APPLE__
 void read_section(const struct mach_header* mhp, unsigned long slide, const char* segname, const char* sectname) {
@@ -85,6 +85,7 @@ void read_section(const struct mach_header* mhp, unsigned long slide, const char
 }
 #endif
 
+#ifdef STATIC_PLUGINS
 extern void IO_Load(InterfaceTable* table);
 extern void Osc_Load(InterfaceTable* table);
 extern void Delay_Load(InterfaceTable* table);
@@ -107,8 +108,16 @@ extern void DynNoise_Load(InterfaceTable* table);
 extern void FFT_UGens_Load(InterfaceTable* table);
 extern void iPhone_Load(InterfaceTable* table);
 
+extern void DiskIO_Unload(void);
+extern void UIUGens_Unload(void);
+#endif // STATIC_PLUGINS
 
 void deinitialize_library() {
+#ifdef STATIC_PLUGINS
+    DiskIO_Unload();
+    UIUGens_Unload();
+#endif // STATIC_PLUGINS
+
 #ifdef _WIN32
     for (void* ptrhinstance : open_handles) {
         HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
@@ -117,8 +126,8 @@ void deinitialize_library() {
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
+        FreeLibrary(hinstance);
     }
-    // FreeLibrary dlclose(handle);
 #else
     for (void* handle : open_handles) {
         void* ptr = dlsym(handle, "unload");
@@ -126,10 +135,12 @@ void deinitialize_library() {
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
+        dlclose(handle);
     }
 #endif
     open_handles.clear();
 }
+
 void initialize_library(const char* uGensPluginPath) {
     gCmdLib = new HashTable<SC_LibCmd, Malloc>(&gMalloc, 64, true);
     gUnitDefLib = new HashTable<UnitDef, Malloc>(&gMalloc, 512, true);
@@ -180,14 +191,14 @@ void initialize_library(const char* uGensPluginPath) {
     if (loadUGensExtDirs) {
 #ifdef SC_PLUGIN_DIR
         // load globally installed plugins
-        if (bfs::is_directory(SC_PLUGIN_DIR)) {
+        if (fs::is_directory(SC_PLUGIN_DIR)) {
             PlugIn_LoadDir(SC_PLUGIN_DIR, true);
         }
 #endif // SC_PLUGIN_DIR
        // load default plugin directory
-        const bfs::path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
+        const fs::path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
 
-        if (bfs::is_directory(pluginDir)) {
+        if (fs::is_directory(pluginDir)) {
             PlugIn_LoadDir(pluginDir, true);
         }
     }
@@ -195,11 +206,11 @@ void initialize_library(const char* uGensPluginPath) {
     // get extension directories
     if (loadUGensExtDirs) {
         // load system extension plugins
-        const bfs::path sysExtDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
+        const fs::path sysExtDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
         PlugIn_LoadDir(sysExtDir, false);
 
         // load user extension plugins
-        const bfs::path userExtDir = SC_Filesystem::instance().getDirectory(DirName::UserExtension);
+        const fs::path userExtDir = SC_Filesystem::instance().getDirectory(DirName::UserExtension);
         PlugIn_LoadDir(userExtDir, false);
 
         // load user plugin directories
@@ -275,24 +286,25 @@ bool checkAPIVersion(void* f, const char* filename) {
 bool checkServerVersion(void* f, const char* filename) {
     if (f) {
         InfoFunction fn = (InfoFunction)f;
-        if ((*fn)() == 1)
+        if ((*fn)() != sc_server_scsynth)
             return false;
     }
     return true;
 }
 
-static bool PlugIn_Load(const bfs::path& filename) {
+static bool PlugIn_Load(const fs::path& filename) {
 #ifdef _WIN32
     HINSTANCE hinstance = LoadLibraryW(filename.wstring().c_str());
     // here, we have to use a utf-8 version of the string for printing
     // because the native encoding on Windows is utf-16.
     const std::string filename_utf8_str = SC_Codecvt::path_to_utf8_str(filename);
     if (!hinstance) {
-        char* s;
+        wchar_t* s;
         DWORD lastErr = GetLastError();
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-                      lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
-        scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename_utf8_str.c_str(), s);
+        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
+        scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename_utf8_str.c_str(),
+                 SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str());
         LocalFree(s);
         return false;
     }
@@ -311,10 +323,10 @@ static bool PlugIn_Load(const bfs::path& filename) {
 
     void* ptr = (void*)GetProcAddress(hinstance, "load");
     if (!ptr) {
-        char* s;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-                      GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
-        scprintf("*** ERROR: GetProcAddress err '%s'\n", s);
+        wchar_t* s;
+        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
+        scprintf("*** ERROR: GetProcAddress err '%s'\n", SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str());
         LocalFree(s);
 
         FreeLibrary(hinstance);
@@ -324,7 +336,6 @@ static bool PlugIn_Load(const bfs::path& filename) {
     LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
     (*loadFunc)(&gInterfaceTable);
 
-    // FIXME: at the moment we never call FreeLibrary() on a loaded plugin
     open_handles.push_back(hinstance);
     return true;
 
@@ -365,9 +376,9 @@ static bool PlugIn_Load(const bfs::path& filename) {
 #endif // _WIN32
 }
 
-static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError) {
-    boost::system::error_code ec;
-    bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError) {
+    std::error_code ec;
+    fs::recursive_directory_iterator rditer(dir, fs::directory_options::follow_directory_symlink, ec);
 
     if (ec) {
         if (reportError) {
@@ -378,12 +389,12 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError) {
         return false;
     }
 
-    while (rditer != bfs::end(rditer)) {
-        const bfs::path path = *rditer;
+    while (rditer != fs::end(rditer)) {
+        const fs::path path = *rditer;
 
-        if (bfs::is_directory(path)) {
+        if (fs::is_directory(path)) {
             if (SC_Filesystem::instance().shouldNotCompileDirectory(path))
-                rditer.no_push();
+                rditer.disable_recursion_pending();
             else
                 ; // do nothing; recursion for free
         } else if (path.extension() == SC_PLUGIN_EXT) {

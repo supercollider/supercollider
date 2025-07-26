@@ -29,8 +29,8 @@
 #include <algorithm> // std::find
 #include <functional> // std::function
 
-#include <boost/filesystem/operations.hpp> // exists (, canonical?)
-#include <boost/filesystem/fstream.hpp> // ofstream
+#include <filesystem>
+#include <fstream>
 #include <yaml-cpp/yaml.h> // YAML
 
 SC_LanguageConfig::Path SC_LanguageConfig::gConfigFile;
@@ -38,15 +38,15 @@ bool SC_LanguageConfig::gPostInlineWarnings = false;
 
 SC_LanguageConfig* gLanguageConfig;
 
-static const char* INCLUDE_PATHS = "includePaths";
-static const char* EXCLUDE_PATHS = "excludePaths";
-static const char* POST_INLINE_WARNINGS = "postInlineWarnings";
-static const char* CLASS_LIB_DIR_NAME = "SCClassLibrary";
-const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
-static const char* EXCLUDE_DEFAULT_PATHS = "excludeDefaultPaths";
+static const std::string INCLUDE_PATHS = "includePaths";
+static const std::string EXCLUDE_PATHS = "excludePaths";
+static const std::string POST_INLINE_WARNINGS = "postInlineWarnings";
+static const std::string CLASS_LIB_DIR_NAME = "SCClassLibrary";
+const std::string SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
+static std::string EXCLUDE_DEFAULT_PATHS = "excludeDefaultPaths";
 
 using DirName = SC_Filesystem::DirName;
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 void SC_LanguageConfig::setExcludeDefaultPaths(bool value) {
     if (mExcludeDefaultPaths != value) {
@@ -103,28 +103,28 @@ bool SC_LanguageConfig::removeIncludedDirectory(const Path& path) { return remov
 
 bool SC_LanguageConfig::removeExcludedDirectory(const Path& path) { return removePath(mExcludedDirectories, path); }
 
-static void processPathList(const char* nodeName, YAML::Node& doc,
-                            const std::function<void(const boost::filesystem::path&)>& func) {
+static void processPathList(const std::string& nodeName, YAML::Node& doc,
+                            const std::function<void(const std::filesystem::path&)>& func) {
     const YAML::Node& items = doc[nodeName];
     if (items && items.IsSequence()) {
         for (auto const& item : items) {
             const std::string& path = item.as<std::string>("");
             if (!path.empty()) {
-                const boost::filesystem::path& native_path = SC_Codecvt::utf8_str_to_path(path);
+                const std::filesystem::path& native_path = SC_Codecvt::utf8_str_to_path(path);
                 func(native_path);
             }
         }
     }
 }
 
-static void processBool(const char* nodeName, YAML::Node& doc, const std::function<void(bool)>& successFunc,
+static void processBool(const std::string& nodeName, YAML::Node& doc, const std::function<void(bool)>& successFunc,
                         const std::function<void()>& failFunc) {
     const YAML::Node& item = doc[nodeName];
     if (item) {
         try {
             successFunc(item.as<bool>());
         } catch (...) {
-            postfl("WARNING: Cannot parse config file entry \"%s\"\n", nodeName);
+            postfl("WARNING: Cannot parse config file entry \"%s\"\n", nodeName.c_str());
             failFunc();
         }
     } else {
@@ -138,7 +138,7 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const Path& fileName, bool standal
 
     using namespace YAML;
     try {
-        bfs::ifstream fin(fileName);
+        std::ifstream fin(fileName);
         Node doc = Load(fin);
         if (doc) {
             processBool(
@@ -160,7 +160,7 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const Path& fileName, bool standal
 }
 
 bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName) {
-    if (!bfs::exists(fileName.parent_path()))
+    if (!fs::exists(fileName.parent_path()))
         return false;
 
     using namespace YAML;
@@ -174,13 +174,13 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName) {
 
     out << Key << INCLUDE_PATHS;
     out << Value << BeginSeq;
-    for (const bfs::path& it : gLanguageConfig->mIncludedDirectories)
+    for (const fs::path& it : gLanguageConfig->mIncludedDirectories)
         out << SC_Codecvt::path_to_utf8_str(it);
     out << EndSeq;
 
     out << Key << EXCLUDE_PATHS;
     out << Value << BeginSeq;
-    for (const bfs::path& it : gLanguageConfig->mExcludedDirectories)
+    for (const fs::path& it : gLanguageConfig->mExcludedDirectories)
         out << SC_Codecvt::path_to_utf8_str(it);
     out << EndSeq;
 
@@ -192,7 +192,7 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName) {
 
     out << EndMap;
 
-    bfs::ofstream fout(fileName);
+    std::ofstream fout(fileName);
     fout << out.c_str();
     return fout.good();
 }
@@ -207,20 +207,20 @@ bool SC_LanguageConfig::defaultLibraryConfig(bool standalone) {
 bool SC_LanguageConfig::readLibraryConfig(bool standalone) {
     bool configured = false;
 
-    if (bfs::exists(gConfigFile))
+    if (fs::exists(gConfigFile))
         configured = readLibraryConfigYAML(gConfigFile, standalone);
 
     if (!configured && !standalone) {
         const Path userYamlConfigFile =
             SC_Filesystem::instance().getDirectory(DirName::UserConfig) / SCLANG_YAML_CONFIG_FILENAME;
 
-        if (bfs::exists(userYamlConfigFile))
+        if (fs::exists(userYamlConfigFile))
             configured = readLibraryConfigYAML(userYamlConfigFile, standalone);
 
         if (!configured) {
             const Path globalYamlConfigFile = Path("/etc") / SCLANG_YAML_CONFIG_FILENAME;
 
-            if (bfs::exists(globalYamlConfigFile))
+            if (fs::exists(globalYamlConfigFile))
                 configured = readLibraryConfigYAML(globalYamlConfigFile, standalone);
         }
     }

@@ -2,7 +2,7 @@
 // detail/win_iocp_handle_read_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -24,7 +24,6 @@
 #include <boost/asio/detail/buffer_sequence_adapter.hpp>
 #include <boost/asio/detail/fenced_block.hpp>
 #include <boost/asio/detail/handler_alloc_helpers.hpp>
-#include <boost/asio/detail/handler_invoke_helpers.hpp>
 #include <boost/asio/detail/handler_work.hpp>
 #include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/operation.hpp>
@@ -46,7 +45,7 @@ public:
       Handler& handler, const IoExecutor& io_ex)
     : operation(&win_iocp_handle_read_op::do_complete),
       buffers_(buffers),
-      handler_(BOOST_ASIO_MOVE_CAST(Handler)(handler)),
+      handler_(static_cast<Handler&&>(handler)),
       work_(handler_, io_ex)
   {
   }
@@ -58,6 +57,7 @@ public:
     boost::system::error_code ec(result_ec);
 
     // Take ownership of the operation object.
+    BOOST_ASIO_ASSUME(base != 0);
     win_iocp_handle_read_op* o(static_cast<win_iocp_handle_read_op*>(base));
     ptr p = { boost::asio::detail::addressof(o->handler_), o, o };
 
@@ -65,7 +65,7 @@ public:
 
     // Take ownership of the operation's outstanding work.
     handler_work<Handler, IoExecutor> w(
-        BOOST_ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+        static_cast<handler_work<Handler, IoExecutor>&&>(
           o->work_));
 
 #if defined(BOOST_ASIO_ENABLE_BUFFER_DEBUGGING)
@@ -80,6 +80,8 @@ public:
     // Map non-portable errors to their portable counterparts.
     if (ec.value() == ERROR_HANDLE_EOF)
       ec = boost::asio::error::eof;
+
+    BOOST_ASIO_ERROR_LOCATION(ec);
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a

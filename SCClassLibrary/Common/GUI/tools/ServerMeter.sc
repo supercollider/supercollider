@@ -263,4 +263,13 @@ ServerMeter {
 	isClosed {
 		^window.isClosed
 	}
+
+	position_ { |point|
+		point = point.asPoint;
+		window.bounds_(window.bounds.left_(point.x).top_(point.y)).front
+	}
+
+	position {
+		^Point(window.bounds.left, window.bounds.bottom - window.bounds.height)
+	}
 }

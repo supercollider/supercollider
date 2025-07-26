@@ -8,7 +8,7 @@ In order to make sure a method works correctly, a test can be implemented that a
 
 It is a common practice to write tests to clarify how an object should respond, and it may avoid inconsistencies on the long run. A test is always a subclass of code::UnitTest::, implementing at least one method starting with code::test_::.
 
-When running all tests of one class (see link::#run::), each test method is called in a separate instance of this class. Test methods, therefore, do not interfere with each other.
+When running all tests of one class (see link::#*run::), each test method is called in a separate instance of this class. Test methods, therefore, do not interfere with each other.
 
 note::
 UnitTests for the Common library classes are kept in the code::testsuite/classlibrary:: directory of the SuperCollider sources.
@@ -396,28 +396,29 @@ TestYourClass : UnitTest {
 
 	test_yourMethod {
 		// every method whose name begins with "test_" will be run
+		var synth;
 
-		this.assert( 6 == 6, "6 should equal 6");
+		this.assert(6 == 6, "6 should equal 6");
 
-		this.assertEquals( 9, 9, "9 should equal 9");
+		this.assertEquals(9, 9, "9 should equal 9");
 
-		this.assertFloatEquals( 4.0 , 1.0 * 4.0 / 4.0  4.0,
+		this.assertFloatEquals(4.0, 1.0 * 4.0 / 4.0 * 4.0,
 			"floating point math should be close to equal");
 
 		// we are inside a Routine, you may wait
 		1.0.wait;
 
 		// this will wait until the server is booted
-		this.bootServer;
-
 		// if the server is already booted it will free all nodes
 		// and create new allocators, giving you a clean slate
-		p = { SinOsc.ar };
-		p.play;
-		p.register;
+		this.bootServer;
+
+		synth = { SinOsc.ar / 10 }.play;
+		synth.register; 
+
 		// will wait until the condition is true
 		// will be considered a failure after 10 seconds
-		this.wait( { p.isPlaying }, "waiting for synth to play", 10);
+		this.wait({ synth.isPlaying }, "waiting for synth to play", 10);
 	}
 }
 ::

@@ -237,7 +237,7 @@
 			server = proxy.server;
 			out = {
 				var n = proxy.numChannels;
-				if(n.isNil) { -1 } {
+				if(n.isNil) { \rest } {
 					(~channelOffset ? channelOffset) % n + index
 				}
 			};

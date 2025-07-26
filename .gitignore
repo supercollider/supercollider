@@ -35,3 +35,13 @@ __pycache__
 *.orig
 #vim swap files
 .*.sw?
+
+# clangd
+.cache/*
+
+# vs code files
+.vscode/*
+!.vscode/tasks.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/c_cpp_properties.json

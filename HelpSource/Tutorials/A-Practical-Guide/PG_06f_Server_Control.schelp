@@ -1,7 +1,7 @@
 title:: Pattern Guide 06f: Server Control
 summary:: Patterns that manage server-side resources
 related:: Tutorials/A-Practical-Guide/PG_06e_Language_Control, Tutorials/A-Practical-Guide/PG_06g_Data_Sharing
-categories:: Streams-Patterns-Events>A-Practical-Guide
+categories:: Streams-Patterns-Events>A-Practical-Guide, Tutorials>Pattern-Guide
 
 section::Server control methods
 
@@ -92,7 +92,7 @@ It's also possible to load sound file or wavetable buffers or play synths as par
 
 The mechanism to do this is a bit unlike most of the other protocols to use the server in SuperCollider. To create the resources, Pproto takes a function in which one or more Event objects contain the instructions to create them. These events should use specific event types, described in Pproto's help file. The pattern is able to clean up the resources because each event has an associated cleanup action (see the event types with cleanup class). Thus, Pproto needs only to remember the events representing the resources, and execute their cleanup actions at the end.
 
-The Pproto help file has several complex examples that are worth reading. Here is just one simple case that loads the standard a11wlk01.wav sound file and plays fragments from it.
+The Pproto help file has several complex examples that are worth reading. Here is just one simple case that loads the standard code::ExampleFiles.child:: sound file and plays fragments from it.
 
 code::
 (
@@ -106,7 +106,7 @@ SynthDef(\playbuf, { |bufnum, start, dur = 1, amp = 0.2, out|
 (
 TempoClock.default.tempo = 1;
 p = Pproto({
-	~buf = (type: \allocRead, path: Platform.resourceDir +/+ "sounds/a11wlk01.wav").yield;
+	~buf = (type: \allocRead, path: ExampleFiles.child).yield;
 }, Pbind(
 	\instrument, \playbuf,
 		// access resources in the protoevent by Pkey

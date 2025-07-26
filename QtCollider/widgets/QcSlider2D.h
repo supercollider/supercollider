@@ -36,6 +36,7 @@ class QcSlider2D : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::St
     Q_PROPERTY(double ctrlScale READ dummyFloat WRITE setCtrlScale);
     Q_PROPERTY(double altScale READ dummyFloat WRITE setAltScale);
     Q_PROPERTY(double step READ dummyFloat WRITE setStep)
+    Q_PROPERTY(int thumbSize READ thumbSize WRITE setThumbSize);
     Q_PROPERTY(QColor grooveColor READ grooveColor WRITE setGrooveColor);
     Q_PROPERTY(QColor focusColor READ focusColor WRITE setFocusColor);
     Q_PROPERTY(QColor knobColor READ knobColor WRITE setKnobColor);
@@ -57,8 +58,17 @@ public:
     QSize sizeHint() const { return QSize(150, 150); }
     QSize minimumSizeHint() const { return QSize(30, 30); }
 
+    int thumbSize() const { return _thumbSize.width(); }
+    void setThumbSize(int i) {
+        const auto clamped = std::clamp(i, 0, std::numeric_limits<int>::max());
+        _thumbSize = QSize(clamped, clamped);
+        updateGeometry();
+        update();
+    }
+
     Q_INVOKABLE
-    void setBackgroundImage(const QtCollider::SharedImage& image, const QRectF& rect, int tileMode, double opacity);
+    void setBackgroundImage(const QSharedPointer<QtCollider::Image>& image, const QRectF& rect, int tileMode,
+                            double opacity);
 public Q_SLOTS:
     void incrementX(double factor = 1.f);
     void decrementX(double factor = 1.f);
@@ -73,6 +83,7 @@ private:
     void setValue(const QPointF val, bool doAction = true);
     void mouseMoveEvent(QMouseEvent*);
     void mousePressEvent(QMouseEvent*);
+    void wheelEvent(QWheelEvent*);
     void keyPressEvent(QKeyEvent*);
     void paintEvent(QPaintEvent*);
 
@@ -83,4 +94,6 @@ private:
 
     QColor _knobColor;
     QtCollider::ImagePainter _backgroundImage;
+
+    QSizeF scrollRemainder;
 };

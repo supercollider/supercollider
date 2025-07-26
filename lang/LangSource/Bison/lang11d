@@ -344,6 +344,7 @@ msgsend : name blocklist1
 					(PyrParseNode*)$4);
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, (PyrParseNode*)$7);
 			}
+
 		| expr '.' '(' arglistv1 optkeyarglist ')'
 			{
 				PyrSlotNode *selectornode;
@@ -364,6 +365,8 @@ msgsend : name blocklist1
 				args = linkNextNode(args, (PyrParseNode*)$4);
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, 0);
 			}
+
+
 		| expr '.' name '(' ')' blocklist
 			{
 				$$ = (intptr_t)newPyrCallNode((PyrSlotNode*)$3, (PyrParseNode*)$1, NULL, (PyrParseNode*)$6);
@@ -451,7 +454,7 @@ qual	: name LEFTARROW exprseq nextqual
 						SetSymbol(&callnode->mSelector->mSlot, getsym("forSeries"));
 
 						PyrVarDefNode* var = newPyrVarDefNode((PyrSlotNode*)$1, NULL, 0);
-						PyrArgListNode* args = newPyrArgListNode(var, NULL);
+						PyrArgListNode* args = newPyrArgListNode(var, NULL, NULL);
 						PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)$4, false);
 						PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
 
@@ -466,7 +469,7 @@ qual	: name LEFTARROW exprseq nextqual
 					PyrSlotNode* selectornode = newPyrSlotNode(&slot);
 
 					PyrVarDefNode* var = newPyrVarDefNode((PyrSlotNode*)$1, NULL, 0);
-					PyrArgListNode* args = newPyrArgListNode(var, NULL);
+					PyrArgListNode* args = newPyrArgListNode(var, NULL, NULL);
 					PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)$4, false);
 					PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
 
@@ -487,7 +490,7 @@ qual	: name LEFTARROW exprseq nextqual
 						PyrVarDefNode* var1 = newPyrVarDefNode((PyrSlotNode*)$1, NULL, 0);
 						PyrVarDefNode* var2 = newPyrVarDefNode((PyrSlotNode*)$2, NULL, 0);
 						PyrVarDefNode* vars = (PyrVarDefNode*)linkNextNode(var1, var2);
-						PyrArgListNode* args = newPyrArgListNode(vars, NULL);
+						PyrArgListNode* args = newPyrArgListNode(vars, NULL, NULL);
 						PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)$5, false);
 						PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
 
@@ -504,7 +507,7 @@ qual	: name LEFTARROW exprseq nextqual
 					PyrVarDefNode* var1 = newPyrVarDefNode((PyrSlotNode*)$1, NULL, 0);
 					PyrVarDefNode* var2 = newPyrVarDefNode((PyrSlotNode*)$2, NULL, 0);
 					PyrVarDefNode* vars = (PyrVarDefNode*)linkNextNode(var1, var2);
-					PyrArgListNode* args = newPyrArgListNode(vars, NULL);
+					PyrArgListNode* args = newPyrArgListNode(vars, NULL, NULL);
 					PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)$5, false);
 					PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
 
@@ -519,7 +522,7 @@ qual	: name LEFTARROW exprseq nextqual
 				PyrSlotNode* selectornode = newPyrSlotNode(&slot);
 
 				PyrVarDefNode* var = newPyrVarDefNode((PyrSlotNode*)$2, NULL, 0);
-				PyrArgListNode* args = newPyrArgListNode(var, NULL);
+				PyrArgListNode* args = newPyrArgListNode(var, NULL, NULL);
 				PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)$5, false);
 				PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
 				PyrParseNode* args2 = (PyrParseNode*)linkNextNode(blocklit, (PyrParseNode*)$4);
@@ -1331,38 +1334,46 @@ funcvardecl	: VAR vardeflist ';'
 argdecls	: { $$ = 0; }
 			| ARG vardeflist ';'
 				{
-					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL);
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL, NULL);
 				}
 			| ARG vardeflist0 ELLIPSIS name ';'
 				{
-					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4);
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4, NULL);
 				}
 			| '|' slotdeflist '|'
 				{
-					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL);
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL, NULL);
 				}
 			| '|' slotdeflist0 ELLIPSIS name '|'
 				{
-					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4);
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4, NULL);
 				}
+			| '|' slotdeflist0 ELLIPSIS name ',' name '|'
+			    {
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4, (PyrSlotNode*)$6);
+			    }
 			;
 
 argdecls1	: ARG vardeflist ';'
 				{
-					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL);
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL, NULL);
 				}
 			| ARG vardeflist0 ELLIPSIS name ';'
 				{
-					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4);
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4, NULL);
 				}
 			| '|' slotdeflist '|'
 				{
-					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL);
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL, NULL);
 				}
 			| '|' slotdeflist0 ELLIPSIS name '|'
 				{
-					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4);
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4, NULL);
 				}
+			| '|' slotdeflist0 ELLIPSIS name ',' name '|'
+			    {
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4, (PyrSlotNode*)$6);
+			    }
 			;
 
 

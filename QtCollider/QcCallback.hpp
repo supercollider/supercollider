@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <QObject>
 #include <QPointer>
 
 namespace QtCollider {

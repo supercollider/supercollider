@@ -7,4 +7,3 @@ code::
 max( b = a * 2; b + 5,  10);	// computes the maximum of b+5 and 10
 ::
 In the above example, the sequence: code:: b = a * 2; b + 5 :: acts as a single expression for the first argument to code::max()::.
-

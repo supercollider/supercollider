@@ -17,7 +17,7 @@ f = SCImageFilter.new(\CIStarShineGenerator);
 f.attributes;
 
 // or you can do also Synth like style if you already know the attributes of this synth
-f = SCImageFilter.new(\CIStarShineGenerator, [\center, [200,200], \radius, 200*0.05]);
+f = SCImageFilter.new(\CIStarShineGenerator, [\center, [200, 200], \radius, 200*0.05]);
 f.values; //
 ::
 
@@ -32,7 +32,7 @@ Returns a Dictionary containing all the filters associated by categories.
 code::
 // getting filter categories (dictionary)
 (
-	SCImageFilter.filterCategories.keysDo({|cat|
+	SCImageFilter.filterCategories.keysDo({ |cat|
 		cat.postln;
 	});
 	"ok".postln;
@@ -49,7 +49,7 @@ SCImageFilter.filterCategories.at(\CICategoryGenerator);
 var n = 0;
 SCImageFilter.filterCategories.do ({
 	|symbolArray|
-	symbolArray.do ({|pluginName|
+	symbolArray.do ({ |pluginName|
 		if(pluginName.asString.beginsWith("CI").not, {
 			("External Filter Found: " ++ pluginName).postln;
 			n = n+1;
@@ -75,17 +75,17 @@ Once you know the attributes you can set them like using normal instance setters
 code::
 (
 f = SCImageFilter.new(\CIStarShineGenerator);
-f.attributes.keysValuesDo({|k, v|
+f.attributes.keysValuesDo({ |k, v|
 	("CIStarShineGenerator responds to "++k.asString++"_("++v.asString++")").postln;
 });
 )
 
-f.center_([200,200]);
+f.center_([200, 200]);
 f.radius_(200*0.05);
 ::
 
 METHOD::attributeRange
-get the numerical range and the default Value for an attribute. returns an Array as code::[ min, max, default ]::. min, max, or default may be a link::Classes/Float::, a link::Classes/Color::, an link::Classes/Array:: or link::Classes/Nil::.
+get the numerical range and the default Value for an attribute. returns an Array as code::[min, max, default]::. min, max, or default may be a link::Classes/Float::, a link::Classes/Color::, an link::Classes/Array:: or link::Classes/Nil::.
 code::
 // a SCImageFilter
 f = SCImageFilter.new(\CIFlashTransition);
@@ -98,7 +98,7 @@ f.attributeRange(\time);
 
 // getting all attributes MIN - MAX possible values
 (
-f.attributes.keysDo({|attr|
+f.attributes.keysDo({ |attr|
 	(attr ++ " = " + f.attributeRange(attr)).postln; // nil results means there is no min max for those attributes
 });
 )
@@ -109,7 +109,7 @@ returns all the values you set for each attributes. If a value is not explicitly
 code::
 (
 	f = SCImageFilter.new(\CIStarShineGenerator);
-	f.center_([200,200]);
+	f.center_([200, 200]);
 	f.radius_(200*0.05);
 	f.color_(Color.blue);
 	f.crossWidth_(2.0);
@@ -124,7 +124,7 @@ set the attributes for this SCImageFilter
 code::
 (
 	f = SCImageFilter.new(\CIStarShineGenerator);
-	f.set(\center, [200,200], \radius, 200*0.05, \color, Color.blue, \crossWidth, 2.0);
+	f.set(\center, [200, 200], \radius, 200*0.05, \color, Color.blue, \crossWidth, 2.0);
 	f.values.postln;
 )
 ::
@@ -176,7 +176,7 @@ a.plot;
 
 (
 a.removeAllFilters;
-a.plot(freeOnClose:true);
+a.plot(freeOnClose: true);
 )
 
 
@@ -193,7 +193,7 @@ a.applyFilters([f, SCImageFilter(\CIColorInvert), SCImageFilter(\CIMaskToAlpha)]
 g.backgroundImage_(a); // set up background image
 b.applyFilters(g); // create masked image
 a.free;
-w = b.plot(freeOnClose:true, background:Color.clear); // set to clear color to see plainly the image
+w = b.plot(freeOnClose: true, background: Color.clear); // set to clear color to see plainly the image
 )
 
 
@@ -205,7 +205,7 @@ w = b.plot(freeOnClose:true, background:Color.clear); // set to clear color to s
 // so this is convenient but not optimal
 // SCPhotoshop :)
 (
-var width=500, height=500, centerVector;
+var width = 500, height = 500, centerVector;
 var controller, specs;
 
 centerVector = [width*0.5, height*0.5];
@@ -233,11 +233,11 @@ specs = [
 
 ]; // CIStarShine opacity, CIZoomBlur
 
-controller = SCWindow.new("Close Me First !!!", Rect(400,400,300,specs.size * 40));
+controller = SCWindow.new("Close Me First !!!", Rect(400, 400, 300, specs.size * 40));
 controller.view.decorator = FlowLayout(controller.view.bounds.insetBy(10), 10@10);
-specs.size.do {|i|
-	SCSlider.new(controller, Rect(0,0,150,20))
-	.action_({|obj|
+specs.size.do { |i|
+	SCSlider.new(controller, Rect(0, 0, 150, 20))
+	.action_({ |obj|
 		specs[i][0].perform(specs[i][1], specs[i][2].map(obj.value));
 		w.refresh;
 	})
@@ -250,10 +250,10 @@ a.addFilter(f);
 a.addFilter(g);
 a.addFilter(h);
 
-a.filters.do {|filt, i|
+a.filters.do { |filt, i|
 	if(i != 0, {
-		SCButton.new(controller, Rect(0,0,20,20))
-		.action_({|obj|
+		SCButton.new(controller, Rect(0, 0, 20, 20))
+		.action_({ |obj|
 			filt.enable_(obj.value != 1);
 			w.refresh;
 		})
@@ -262,7 +262,7 @@ a.filters.do {|filt, i|
 };
 
 // plotting
-w = a.plot(background:Color.black);
+w = a.plot(background: Color.black);
 controller.front;
 controller.onClose_({
 	{
@@ -284,7 +284,7 @@ f.width_(500); f.height_(500);
 f.grayscale_(true);
 a = SCImage.new(500@500);
 a.applyFilters(f);
-w = a.plot(freeOnClose:true, background:Color.black);
+w = a.plot(freeOnClose: true, background: Color.black);
 )
 
 
@@ -296,7 +296,7 @@ f.radius_(30);
 f.shadowColor_(Color.red);
 a = SCImage.new("vduck2.jpg");
 a.applyFilters(f, a.bounds.outsetBy(500));
-w = a.plot(freeOnClose:true, background:Color.clear);
+w = a.plot(freeOnClose: true, background: Color.clear);
 a.bounds;
 )
 
@@ -305,14 +305,14 @@ f = SCImageFilter.new(\NIDotsGenerator);
 f.softness_(1);
 a = SCImage.new(500@500);
 a.applyFilters(f);
-w = a.plot(freeOnClose:true, background:Color.black);
+w = a.plot(freeOnClose: true, background: Color.black);
 )
 
 (
 f = SCImageFilter.new(\NICircle);
 a = SCImage.new(500@500);
 a.applyFilters(f);
-w = a.plot(freeOnClose:true);
+w = a.plot(freeOnClose: true);
 )
 */
 ::

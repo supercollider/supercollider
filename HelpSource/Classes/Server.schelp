@@ -91,6 +91,12 @@ t = Server.remote(\remote, NetAddr("192.168.0.130", 57110), o); // set to correc
 // info about returned client ID should be posted in the post window
 t.makeWindow; // make a window for monitoring
 )
+
+// if you want to use the remote server without the need to explicitly pass it to e.g. Synth or Function -play, set it to be the default server:
+//Server.default = t;
+
+//otherwise, make some sound on the remote server 
+{Resonz.ar(Saw.ar([100,101]), Line.kr(100,5000,10, doneAction: 2),mul: -12.dbamp)}.play(target: t); //use target to specify the remote server
 ::
 
 
@@ -235,6 +241,11 @@ argument:: limit
 The number of times to check for a successful boot. (5 times/sec)
 argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.waitForBoot(onFailure: { ... custom action...; false })::.
+argument:: clock
+The default link::Classes/Clock:: is link::Classes/AppClock::. Use link::Classes/SystemClock:: or link::Classes/TempoClock:: if time accuracy is important.
+
+discussion::
+Refer to the discussion of link::#-doWhenBooted::.
 
 method:: doWhenBooted
 Evaluate "onComplete" as soon as the server has booted. This method assumes the server is being booted explicitly through a separate code::boot:: call. If the server is already running, "onComplete" is executed immediately.
@@ -244,6 +255,40 @@ argument:: limit
 The number of times to check for a successful boot.
 argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.doWhenBooted(onFailure: { ... custom action...; false })::.
+argument:: clock
+The default link::Classes/Clock:: is link::Classes/AppClock::. Use link::Classes/SystemClock:: or link::Classes/TempoClock:: if time accuracy is important.
+
+discussion::
+
+To play with precise time control, the fourth argument clock should be set to a precise clock (see above), and then link::Overviews/GUI-Classes##GUI classes:: should be wrapped in a code::defer { ... }::.
+
+code::
+(
+t = TempoClock;
+t.tempo = 1;
+
+s.waitForBoot({
+	var win, routine;
+	defer {
+		win = Window();
+		win.background_(Color.grey(0, 0)).onClose_{ routine.stop }.front;
+	};
+	routine = fork {
+		9.do { |i|
+			1.wait;
+			{ win.background_(Color.rand) }.defer;
+			i = if (i % 4 == 0) { 93 } { 81 };
+			x = {
+				SinOsc.ar(i.midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1]
+			}.play
+		};
+		defer { win.close }
+	}
+}, clock: t)
+)
+
+t.tempo = 30/60
+::
 
 method:: boot
 boot the remote server, create new allocators.
@@ -319,7 +364,7 @@ discussion::
 Any nodes which have already been freed will be skipped. Passing nil for target and addAction will result in the location being the head of the default group.
 code::
 g = Group.new;
-x = Array.fill(5, {Synth(\default)});
+x = Array.fill(5, { Synth(\default) });
 s.queryAllNodes;
 s.reorder(x, g, \addToTail);
 s.queryAllNodes;
@@ -354,6 +399,13 @@ s.boot;
 s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
 s.quit;
 ::
+
+method:: rtMemoryStatus
+Queries the server for the amount of currently free real-time memory
+argument:: action
+a Function that will be evaluated when the server responds, with the current
+amount of free RT memory and the size of largest continuous block (both in bytes) passed as
+arguments. The default action prints a message.
 
 method:: peakCPU, avgCPU
 Get peak and average CPU usage.
@@ -443,8 +495,8 @@ code::
 s.boot;
 (
 // send a synth def to server
-SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
-	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
+SynthDef("tpulse", { |out = 0, freq = 700, sawFreq = 440.0|
+	Out.ar(out, SyncSaw.ar(freq, sawFreq, 0.1))
 }).add;
 )
 
@@ -462,7 +514,7 @@ x.free;
 // don't send
 (
 b = s.makeBundle(false, {
-	x = { PinkNoise.ar(0.1) * In.kr(0, 1); }.play;
+	x = { PinkNoise.ar(0.1) * In.kr(0, 1) }.play;
 });
 )
 // now pass b as a pre-existing bundle, and start both synths synchronously
@@ -489,7 +541,7 @@ x.free;
 // use sync
 (
 s.makeBundle(nil, {
-	b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+	b = Buffer.read(s, ExampleFiles.child);
 	s.sync; // wait until load is done and then send the rest of the bundle
 	x = { PlayBuf.ar(1, b) * 0.5 }.play;
 });
@@ -503,7 +555,7 @@ discussion::
 code::
 (
 s.bind {
-	a = { |freq=100| SinOsc.ar(freq, LFTri.ar(freq)) * 0.2 }.play;
+	a = { |freq = 100| SinOsc.ar(freq, LFTri.ar(freq)) * 0.2 }.play;
 	s.sync;
 	a.set(\freq, 400);
 }
@@ -534,7 +586,7 @@ discussion::
 This method is called automatically when you boot a Server from the language. N.B. If you started a server app from the command line you will have to call initTree manually if you need this functionality.
 code::
 s.quit;
-f = {Group.new(s.defaultGroup); "Other code can be evaluated too".postln;};
+f = { Group.new(s.defaultGroup); "Other code can be evaluated too".postln };
 ServerTree.add(f);
 s.boot;
 s.queryAllNodes; // note the group within the default group
@@ -583,13 +635,127 @@ method:: freqscope
 Show frequency analyzer window.
 
 method:: meter
-Show input/output level meters.
+Show input/output level meter by opening the singleton instance of link::Classes/ServerMeter::.
+code::
+// Create a singleton ServerMeter, or bring the window to the front if it has already been created.
+s.meter // -> a ServerMeter
+
+// Query the current position of the ServerMeter window:
+s.meter.position // -> Point(5.0, 277.0)
+
+// Query the current bounds of the ServerMeter window:
+s.meter.window.bounds // -> Rect(5.0, 277.0, 134.0, 230.0)
+
+// Move the open ServerMeter to the specified position:
+s.meter.position_(200@200) // -> a ServerMeter
+
+// Retrieve the new position of the ServerMeter window:
+s.meter.position // -> Point(200.0, 200.0)
+
+// Retrieve the current bounds of the ServerMeter window:
+s.meter.window.bounds // -> Rect(200.0, 200.0, 134.0, 230.0)
+::
+argument:: numIns
+the number of input channels. The default is nil and the number of input channels defined by code::Server.local.options.numInputBusChannels:: is used when using a local server.
+argument:: numOuts
+the number of output channels. The default is nil and the number of output channels defined by code::Server.local.options.numOutputBusChannels:: is used when using a local server.
+argument:: position
+the position of the meter window, i.e. the singleton instance of link::Classes/ServerMeter::.
+(See link::Classes/ServerMeter#-position::.)
+The default is `teletype::nil::`, and the scope window will appear near the bottom-left side of the display: left: 5; bottom: 277. 
 
 method:: plotTree
-Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
+Plot the node/group tree in a graphical format, similar to link::#-queryAllNodes::.
+This creates a singleton window containing link::Classes/NodeTreeView::.
 
+note::
+To use multiple instances of link::Classes/NodeTreeView:: per link::Classes/Server:: instance or workspace, refer to the link::Classes/NodeTreeView#examples#Examples in NodeTreeView Documentation::.
+::
+
+This method returns an instance of link::Classes/NodeTreeView::, which can also be accessed via link::#-nodeTreeView:: method. Before version 3.14, this method returned an instance of the Server itself.
+
+code::
+// start the SuperCollider server:
+s.boot;
+
+// Open a NodeTreeView window with a default refresh rate every 0.5 seconds:
+s.plotTree;
+
+// Close it:
+s.nodeTreeView.close;
+::
+
+code::
+s.plotTree;
+
+// Define and play a repeating pattern that generates a new synth every 0.4 seconds:
+x = Pn((dur: 0.4, midinote: 69, amp: 0.1)).play;
+
+/*
+The NodeTreeView window dynamically displays active synth nodes.
+Initially, it shows the first node, and upon each refresh, it retains the previous node while adding a new one.
+This results in the display of one or two subsequent nodes at each interval.
+*/
+
+// stop updating plotTree:
+s.nodeTreeView.stop;
+
+// start updating plotTree:
+s.nodeTreeView.start;
+
+// stop the playback of the pattern:
+x.stop;
+
+s.nodeTreeView.close;
+::
 argument:: interval
 Polling interval.
+code::
+(
+s.waitForBoot {
+	// Open a plotTree window with a refresh rate of 2 seconds:
+	s.plotTree(2);
+
+	// Define and play a repeating pattern that generates a new synth every 0.5 seconds:
+	x = Pn((dur: 0.5, midinote: 69, amp: 0.1)).play;
+
+	/*
+	Since the plotTree window refreshes every 2 seconds,
+	displaying only the most recent node,
+	the first node will appear after a 2-second delay (once four notes have played),
+	meaning only every fourth synth node is visible.
+	*/
+
+	5.wait; // wait for 5 seconds.
+
+	x.stop; // stop the playback of the pattern
+
+	2.wait; // wait for 2 seconds.
+
+	s.nodeTreeView.close; // close the plotTree window
+}
+)
+::
+argument:: bounds
+The bounds of the teletype::s.plotTree:: window.
+A Rect specifying position and size of the window.
+The size does not include the border and title bar.
+Position is measured from the bottom-left corner of the screen in the same manner as teletype::bounds:: argument for link::Classes/Window#*new::.
+The minimum size is 395 for width and 386 for height.
+Any values smaller than these will be automatically adjusted to the minimum values.
+code::
+// Create plotTree window at the default position with default size:
+s.plotTree;
+
+// Move plotTree window to the defined position with defined size:
+s.plotTree(2, Rect(200, 200, 100, 200));
+// <- The size (width: 100; height: 200) is smaller than the minimum size, so the size will be adjusted.
+
+s.plotTree; // brings the plotTree window to the front without changing its position or size.
+::
+
+method:: nodeTreeView
+An Instance of link::Classes/NodeTreeView:: that is created by the link::#-plotTree:: method.
 
 method:: plotTreeView
 Plot the node/group tree graphically on a given view.
@@ -603,7 +769,7 @@ Parent view.
 argument:: actionIfFail
 Function to be evaluated in case communication with the server cannot be established.
 
-returns:: Function to be evaluated in order to clean up all actions performed inside the method. To be called for instance by the onClose method of the enclosing window.
+returns:: An Instance of link::Classes/NodeTreeView::.
 
 subsection:: Recording Support
 
@@ -617,7 +783,7 @@ NOTE::
 record creates the recording synth after the Server's default group and uses In.ar. Thus if you add nodes after the recording synth their output will not be captured.
 To avoid this, either use Node objects (which use the default node as their target) or (when using messaging style) use a target nodeID of 1.
 code::
-s.sendMsg("/s_new", "default", s.nextNodeID, 1,1);
+s.sendMsg("/s_new", "default", s.nextNodeID, 1, 1);
 ::
 ::
 
@@ -634,7 +800,7 @@ s.boot; // start the server
 (
 SynthDef("bubbles", { |out|
 	var f, sound;
-	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps; // glissando function
+	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8, 7.23], 0, 3, 80)).midicps; // glissando function
 	sound = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
 	Out.ar(out, sound);
 }).add;
@@ -716,7 +882,7 @@ argument:: condition
 an optional instance of link::Classes/Condition:: used for evaluating this.
 
 method:: sendMsgSync
-Send the following message to the wait until it has completed before resuming the thread.
+Send the following message to the server and wait until it has completed before resuming the thread.
 argument:: condition
 an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: ... args

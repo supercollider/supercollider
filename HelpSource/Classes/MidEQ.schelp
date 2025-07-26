@@ -48,7 +48,7 @@ Examples::
 code::
 
 // mixer parametric eq as wahwah
-{ MidEQ.ar(Saw.ar(200,0.2), FSinOsc.kr(1, 0, 24, 84).midicps, 0.3, 12) }.play
+{ MidEQ.ar(Saw.ar(200, 0.2), FSinOsc.kr(1, 0, 24, 84).midicps, 0.3, 12) }.play
 
 
 // notch filter
@@ -62,9 +62,9 @@ code::
 /////
 // first start the synth
 (
-x = {| freq=400, db=0, rq=0.1 |
+x = { |freq = 400, db = 0, rq = 0.1|
 	 var in;
-	 in =  SinOsc.ar([ 400, 420 ], 0, 0.4);
+	 in =  SinOsc.ar([400, 420], 0, 0.4);
 	 MidEQ.ar(in, freq, Lag.kr(rq, 0.3), db)
 	}.play
 )

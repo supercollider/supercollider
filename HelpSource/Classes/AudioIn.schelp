@@ -41,4 +41,3 @@ SynthDef(\helpAudioIn, { |out|
 }).play
 )
 ::
-

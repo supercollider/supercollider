@@ -38,7 +38,7 @@ public:
     bool HasData() { return mReadHead != mWriteHead; }
 
     bool Put(T data) {
-        long next = NextPos(mWriteHead);
+        std::int64_t next = NextPos(mWriteHead);
         if (next == mReadHead)
             return false; // fifo is full
         mItems[next] = data;
@@ -56,7 +56,7 @@ public:
 
     T Get() {
         // assert(HasData());
-        long next = NextPos(mReadHead);
+        std::int64_t next = NextPos(mReadHead);
         T out = mItems[next];
 #ifdef __APPLE__
         // we don't really need a compare and swap, but this happens to call
@@ -75,7 +75,7 @@ public:
 private:
     int NextPos(int inPos) { return (inPos + 1) & mMask; }
 
-    long mMask;
+    std::int64_t mMask;
 
 #ifdef __APPLE__
     int32_t mReadHead, mWriteHead;

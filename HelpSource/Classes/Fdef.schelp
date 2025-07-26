@@ -1,7 +1,7 @@
 class:: Fdef
-summary:: lazy function proxy
+summary:: Lazy function proxy
 categories:: JITLib>Patterns, Live Coding
-related:: Classes/Pdef, Classes/Tdef, Classes/Pdefn, Classes/Ndef
+related:: Classes/Maybe, Classes/LazyEnvir, Classes/Pdef, Classes/Tdef, Classes/Pdefn, Classes/Ndef
 
 description::
 Fdef is a placeholder for functions. Fdef allows dynamically replacing functions while they are being used.
@@ -33,7 +33,7 @@ Fdef(\x, 3);
 
 Fdef(\y).value;
 
-Fdef(\x, { |x=0| x });
+Fdef(\x, { |x = 0| x });
 
 
 Fdef(\x).value(8);
@@ -52,7 +52,7 @@ code::
 (
 s.boot;
 SynthDef("gpdef",
-	{ arg out=0, freq=440, sustain=0.05, amp=0.1;
+	{ |out = 0, freq = 440, sustain = 0.05, amp = 0.1|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf) * amp;
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -66,7 +66,7 @@ Fdef(\dur, 0.2);
 
 fork {
 	loop {
-		s.sendMsg("/s_new", "gpdef", -1, 1,1, \freq, Fdef(\freq).value);
+		s.sendMsg("/s_new", "gpdef", -1, 1, 1, \freq, Fdef(\freq).value);
 		Fdef(\dur).value.wait;
 	}
 };

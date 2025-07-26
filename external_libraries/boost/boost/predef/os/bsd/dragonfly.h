@@ -29,6 +29,7 @@ http://en.wikipedia.org/wiki/DragonFly_BSD[DragonFly BSD] operating system.
     defined(__DragonFly__) \
     )
 #   ifndef BOOST_OS_BSD_AVAILABLE
+#       undef BOOST_OS_BSD
 #       define BOOST_OS_BSD BOOST_VERSION_NUMBER_AVAILABLE
 #       define BOOST_OS_BSD_AVAILABLE
 #   endif

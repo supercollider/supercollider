@@ -87,6 +87,7 @@ AbstractFunction {
 	isPositive { ^this.composeUnaryOp('isPositive') }
 	isNegative { ^this.composeUnaryOp('isNegative') }
 	isStrictlyPositive { ^this.composeUnaryOp('isStrictlyPositive') }
+	binaryValue { ^this.composeUnaryOp('binaryValue') }
 
 	rho {  ^this.composeUnaryOp('rho') }
 	theta {  ^this.composeUnaryOp('theta') }
@@ -99,6 +100,7 @@ AbstractFunction {
 	/ { arg function, adverb; ^this.composeBinaryOp('/', function, adverb) }
 	div { arg function, adverb; ^this.composeBinaryOp('div', function, adverb) }
 	mod { arg function, adverb; ^this.composeBinaryOp('mod', function, adverb) }
+	modSeaside { arg function, adverb; ^this.composeBinaryOp('modSeaside', function, adverb) }
 	pow { arg function, adverb; ^this.composeBinaryOp('pow', function, adverb) }
 	min { arg function, adverb; ^this.composeBinaryOp('min', function, adverb) }
 	max { arg function=0, adverb; ^this.composeBinaryOp('max', function, adverb) }
@@ -240,8 +242,8 @@ UnaryOpFunction : AbstractFunction {
 	*new { arg selector, a;
 		^super.newCopyArgs(selector, a)
 	}
-	value { arg ... args;
-		^a.valueArray(args).perform(selector)
+	value { | ... args, kwargs |
+		^a.valueArgs(args, kwargs).perform(selector)
 	}
 	valueArray { arg args;
 		^a.valueArray(args).perform(selector)
@@ -268,8 +270,8 @@ BinaryOpFunction : AbstractFunction {
 	*new { arg selector, a, b, adverb;
 		^super.newCopyArgs(selector, a, b, adverb)
 	}
-	value { arg ... args;
-		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
+	value { | ... args, kwargs |
+		^a.valueArgs(args, kwargs).perform(selector, b.valueArgs(args, kwargs), adverb)
 	}
 	valueArray { arg args;
 		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
@@ -292,25 +294,41 @@ BinaryOpFunction : AbstractFunction {
 }
 
 NAryOpFunction : AbstractFunction {
-	var selector, a, arglist;
+	var selector, a, arglist, kwarglist;
 
-	*new { arg selector, a, arglist;
-		^super.newCopyArgs(selector, a, arglist)
+	*new { arg selector, a, arglist, kwarglist;
+		^super.newCopyArgs(selector, a, arglist, kwarglist)
 	}
-	value { arg ... args;
-		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
+	value { | ... args, kwargs |
+		^a.valueArgs(args, kwargs).performArgs(
+			selector,
+			arglist.collect(_.valueArgs(args, kwargs)),
+			kwarglist.collect(_.valueArgs(args, kwargs))
+		)
 	}
 	valueArray { arg args;
-		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
+		^a.valueArray(args).performArgs(
+			selector,
+			arglist.collect(_.valueArray(args)),
+			kwarglist.collect(_.valueArray(args))
+		)
 	}
 	valueEnvir { arg ... args;
-		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
+		^a.valueArrayEnvir(args).performArgs(
+			selector,
+			arglist.collect(_.valueArrayEnvir(args)),
+			kwarglist.collect(_.valueArrayEnvir(args))
+		)
 	}
-	valueArrayEnvir { arg ... args;
-		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
+	valueArrayEnvir { arg args;
+		^a.valueArrayEnvir(args).performArgs(
+			selector,
+			arglist.collect(_.valueArrayEnvir(args)),
+			kwarglist.collect(_.valueArrayEnvir(args))
+		)
 	}
 	functionPerformList { arg selector, arglist;
-		^this.performList(selector, arglist)
+		^this.performArgs(selector, arglist, kwarglist)
 	}
 	storeOn { arg stream;
 		stream <<< a << "." << selector << "(" <<<* arglist << ")"
@@ -323,7 +341,7 @@ FunctionList : AbstractFunction {
 	var <>array, <flopped=false;
 
 	*new { arg functions;
-		^super.newCopyArgs(functions)
+		^super.newCopyArgs(functions ?? { Array.new })
 	}
 	addFunc { arg ... functions;
 		if(flopped) { Error("cannot add a function to a flopped FunctionList").throw };
@@ -338,8 +356,8 @@ FunctionList : AbstractFunction {
 		array = array.replace(find, replace);
 	}
 
-	value { arg ... args;
-		var res = array.collectCopy(_.valueArray(args));
+	value { | ... args, kwargs |
+		var res = array.collectCopy(_.valueArgs(args, kwargs));
 		^if(flopped) { res.flop } { res }
 	}
 	valueArray { arg args;
@@ -366,6 +384,3 @@ FunctionList : AbstractFunction {
 	storeArgs { ^[array] }
 	copy { ^super.copy.array_(array.copy) }
 }
-
-
-

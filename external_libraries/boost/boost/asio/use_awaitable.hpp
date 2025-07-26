@@ -2,7 +2,7 @@
 // use_awaitable.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -33,7 +33,7 @@
 namespace boost {
 namespace asio {
 
-/// A completion token that represents the currently executing coroutine.
+/// A @ref completion_token that represents the currently executing coroutine.
 /**
  * The @c use_awaitable_t class, with its value @c use_awaitable, is used to
  * represent the currently executing coroutine. This completion token may be
@@ -54,7 +54,7 @@ template <typename Executor = any_io_executor>
 struct use_awaitable_t
 {
   /// Default constructor.
-  BOOST_ASIO_CONSTEXPR use_awaitable_t(
+  constexpr use_awaitable_t(
 #if defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
 # if defined(BOOST_ASIO_HAS_SOURCE_LOCATION)
       detail::source_location location = detail::source_location::current()
@@ -76,7 +76,7 @@ struct use_awaitable_t
   }
 
   /// Constructor used to specify file name, line, and function name.
-  BOOST_ASIO_CONSTEXPR use_awaitable_t(const char* file_name,
+  constexpr use_awaitable_t(const char* file_name,
       int line, const char* function_name)
 #if defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
     : file_name_(file_name),
@@ -100,18 +100,15 @@ struct use_awaitable_t
     typedef use_awaitable_t default_completion_token_type;
 
     /// Construct the adapted executor from the inner executor type.
-    executor_with_default(const InnerExecutor& ex) BOOST_ASIO_NOEXCEPT
-      : InnerExecutor(ex)
-    {
-    }
-
-    /// Convert the specified executor to the inner executor type, then use
-    /// that to construct the adapted executor.
-    template <typename OtherExecutor>
-    executor_with_default(const OtherExecutor& ex,
-        typename enable_if<
-          is_convertible<OtherExecutor, InnerExecutor>::value
-        >::type* = 0) BOOST_ASIO_NOEXCEPT
+    template <typename InnerExecutor1>
+    executor_with_default(const InnerExecutor1& ex,
+        constraint_t<
+          conditional_t<
+            !is_same<InnerExecutor1, executor_with_default>::value,
+            is_convertible<InnerExecutor1, InnerExecutor>,
+            false_type
+          >::value
+        > = 0) noexcept
       : InnerExecutor(ex)
     {
     }
@@ -119,25 +116,21 @@ struct use_awaitable_t
 
   /// Type alias to adapt an I/O object to use @c use_awaitable_t as its
   /// default completion token type.
-#if defined(BOOST_ASIO_HAS_ALIAS_TEMPLATES) \
-  || defined(GENERATING_DOCUMENTATION)
   template <typename T>
   using as_default_on_t = typename T::template rebind_executor<
-      executor_with_default<typename T::executor_type> >::other;
-#endif // defined(BOOST_ASIO_HAS_ALIAS_TEMPLATES)
-       //   || defined(GENERATING_DOCUMENTATION)
+      executor_with_default<typename T::executor_type>>::other;
 
   /// Function helper to adapt an I/O object to use @c use_awaitable_t as its
   /// default completion token type.
   template <typename T>
-  static typename decay<T>::type::template rebind_executor<
-      executor_with_default<typename decay<T>::type::executor_type>
+  static typename decay_t<T>::template rebind_executor<
+      executor_with_default<typename decay_t<T>::executor_type>
     >::other
-  as_default_on(BOOST_ASIO_MOVE_ARG(T) object)
+  as_default_on(T&& object)
   {
-    return typename decay<T>::type::template rebind_executor<
-        executor_with_default<typename decay<T>::type::executor_type>
-      >::other(BOOST_ASIO_MOVE_CAST(T)(object));
+    return typename decay_t<T>::template rebind_executor<
+        executor_with_default<typename decay_t<T>::executor_type>
+      >::other(static_cast<T&&>(object));
   }
 
 #if defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
@@ -147,16 +140,15 @@ struct use_awaitable_t
 #endif // defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
 };
 
-/// A completion token object that represents the currently executing coroutine.
+/// A @ref completion_token object that represents the currently executing
+/// coroutine.
 /**
  * See the documentation for boost::asio::use_awaitable_t for a usage example.
  */
 #if defined(GENERATING_DOCUMENTATION)
-constexpr use_awaitable_t<> use_awaitable;
-#elif defined(BOOST_ASIO_HAS_CONSTEXPR)
-constexpr use_awaitable_t<> use_awaitable(0, 0, 0);
-#elif defined(BOOST_ASIO_MSVC)
-__declspec(selectany) use_awaitable_t<> use_awaitable(0, 0, 0);
+BOOST_ASIO_INLINE_VARIABLE constexpr use_awaitable_t<> use_awaitable;
+#else
+BOOST_ASIO_INLINE_VARIABLE constexpr use_awaitable_t<> use_awaitable(0, 0, 0);
 #endif
 
 } // namespace asio

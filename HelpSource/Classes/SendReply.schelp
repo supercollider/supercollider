@@ -55,7 +55,7 @@ o.free;
 // Since SendReply can only respond to the host, this shows how
 // to send data to a separate target through sclang.
 (
-SynthDef(\amplitudeAnalysis, {|in=0, rate=60|
+SynthDef(\amplitudeAnalysis, { |in = 0, rate = 60|
 	var input = SoundIn.ar(in);
 	var amp = Amplitude.kr(input);
 	var freq = Pitch.kr(input);
@@ -69,7 +69,7 @@ SynthDef(\amplitudeAnalysis, {|in=0, rate=60|
 ~mySynth = Synth(\amplitudeAnalysis);
 
 (
-OSCdef(\listener, {|msg|
+OSCdef(\listener, { |msg|
 	var data = msg[3..];
 	data.postln;
 	~testNetAddr.sendMsg("data", data);
@@ -94,12 +94,3 @@ OSCdef(\x, { |msg|
 }, "/reply");
 )
 ::
-
-
-
-
-
-
-
-
-

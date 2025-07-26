@@ -17,7 +17,7 @@
 #include <boost/chrono/io/duration_put.hpp>
 #include <boost/chrono/io/duration_get.hpp>
 #include <boost/chrono/io/utility/manip_base.hpp>
-#include <boost/detail/no_exceptions_support.hpp>
+#include <boost/core/no_exceptions_support.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <locale>
@@ -166,7 +166,7 @@ namespace boost
           {
             os.setstate(std::ios_base::failbit);
           }
-          BOOST_CATCH (std::ios_base::failure )
+          BOOST_CATCH (const std::ios_base::failure& )
           {
             flag = true;
           }
@@ -221,7 +221,7 @@ namespace boost
           {
             os.setstate(std::ios_base::failbit);
           }
-          BOOST_CATCH (std::ios_base::failure )
+          BOOST_CATCH (const std::ios_base::failure& )
           {
             flag = true;
           }
@@ -276,7 +276,7 @@ namespace boost
         {
           is.setstate(std::ios_base::failbit);
         }
-        BOOST_CATCH (std::ios_base::failure )
+        BOOST_CATCH (const std::ios_base::failure& )
         {
           flag = true;
         }

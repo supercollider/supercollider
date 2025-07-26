@@ -81,8 +81,8 @@ Integrator.scopeResponse
 Median.scopeResponse // nonlinear, and therefore interesting
 
 // customize the parameters for more informative scoping
-{|in| MoogFF.ar(in, freq: MouseX.kr(10, 10000, 1),
-gain:MouseY.kr(4, 0))}.scopeResponse
+{ |in| MoogFF.ar(in, freq: MouseX.kr(10, 10000, 1),
+gain: MouseY.kr(4, 0)) }.scopeResponse
 ::
 
 subsection:: Subclassing and Internal Methods

@@ -23,7 +23,7 @@ code::
 var a, b;
 a = Pmul(\freq, 801, Pbind(\freq, 100));
 x = a.asStream;
-9.do({ x.next(Event.new).postln; });
+9.do({ x.next(Event.new).postln });
 )
 ::
 
@@ -32,15 +32,15 @@ code::
 var a, b;
 a = Pmul(\freq, Pseq([3, 4, 6], 2), Pbind(\freq, 100));
 x = a.asStream;
-9.do({ x.next(Event.new).postln; });
+9.do({ x.next(Event.new).postln });
 )
 ::
 
 code::
-//sound example
+// sound example
 (
 SynthDef(\sinegrain,
-	{ arg out=0, freq=440, gate=1;
+	{ |out = 0, freq = 440, gate = 1|
 		var env;
 		env = EnvGen.kr(Env.asr(0.001, 1, 0.2), gate, doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env * 0.1))

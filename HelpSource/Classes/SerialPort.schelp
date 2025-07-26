@@ -140,14 +140,14 @@ fork { p.read.postln }; // may suspend thisThread - should be called within a ro
 
 // write a byte to the device
 
-fork {p.put(42) }; // may suspend thisThread - should be called within a routine
+fork { p.put(42) }; // may suspend thisThread - should be called within a routine
 
 // write multiple bytes to the device
 
 fork { p.putAll("whaddayawant") };
 fork { p.putAll(Int8Array[13, 10]) };
 
-p.doneAction = { "my serial port got closed".postln; }
+p.doneAction = { "my serial port got closed".postln }
 
 p.close; // close the port
 
@@ -166,15 +166,15 @@ Always make sure the serial monitor is closed in the Arduino application before 
 code::
 (
 p = SerialPort(
-	"/dev/tty.usbserial-A800crTT",	//edit to match your port. SerialPort.listDevices
-	baudrate: 9600,	//check that baudrate is the same as in arduino sketch
+	"/dev/tty.usbserial-A800crTT",	// edit to match your port. SerialPort.listDevices
+	baudrate: 9600,	// check that baudrate is the same as in arduino sketch
 	crtscts: true);
 )
 
-//send serial data - slow pulsating
+// send serial data - slow pulsating
 (
 r = Routine({
-	inf.do{|i|
+	inf.do{ |i|
 		p.put(i.fold(0, 100).linexp(0, 100, 1, 255).asInteger.postln);
 		0.02.wait;
 	};
@@ -197,22 +197,22 @@ Always make sure the serial monitor is closed in the Arduino application before 
 code::
 (
 p = SerialPort(
-	"/dev/tty.usbserial-A800crTT",	//edit to match your port. SerialPort.listDevices
-	baudrate: 9600,	//check that baudrate is the same as in arduino sketch
+	"/dev/tty.usbserial-A800crTT",	// edit to match your port. SerialPort.listDevices
+	baudrate: 9600,	// check that baudrate is the same as in arduino sketch
 	crtscts: true);
 )
 
-//read 10bit serial data sent from Arduino's Serial.println
+// read 10bit serial data sent from Arduino's Serial.println
 (
-r= Routine({
+r = Routine({
 	var byte, str, res;
-	99999.do{|i|
-		if(p.read==10, {
+	99999.do{ |i|
+		if(p.read == 10, {
 			str = "";
-			while({byte = p.read; byte !=13 }, {
-				str= str++byte.asAscii;
+			while({ byte = p.read; byte != 13 }, {
+				str = str++byte.asAscii;
 			});
-			res= str.asInteger;
+			res = str.asInteger;
 			("read value:"+res).postln;
 		});
 	};

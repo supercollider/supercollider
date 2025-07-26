@@ -93,7 +93,7 @@ If you have not called prepareForRecord first (see above) then it will be invoke
 code::
 r = Recorder(s);
 { GVerb.ar(Dust.ar(4)) }.play; // play on bus 64
-r.record(numChannels:2);
+r.record(numChannels: 2);
 r.stopRecording;
 ::
 

@@ -25,7 +25,7 @@
 
 namespace nova {
 
-void buffer_wrapper::allocate(size_t frames, uint channels) {
+void buffer_wrapper::allocate(size_t frames, uint channels, double samplerate) {
     if (data)
         free_aligned(data);
     data = calloc_aligned<sample_t>(frames * channels);

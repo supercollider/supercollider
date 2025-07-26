@@ -26,15 +26,15 @@ namespace intrusive {
 
 struct algo_pred_equal
 {
-   template<class T>
-   bool operator()(const T &x, const T &y) const
+   template<class T, class T2>
+   bool operator()(const T &x, const T2 &y) const
    {  return x == y;  }
 };
 
 struct algo_pred_less
 {
-   template<class T>
-   bool operator()(const T &x, const T &y) const
+   template<class T, class T2>
+   bool operator()(const T &x, const T2 &y) const
    {  return x < y;  }
 };
 
@@ -49,10 +49,6 @@ bool algo_equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, BinaryPredicat
     return true;
 }
 
-template<class InputIt1, class InputIt2>
-bool algo_equal(InputIt1 first1, InputIt1 last1, InputIt2 first2)
-{  return (algo_equal)(first1, last1, first2, algo_pred_equal());  }
-
 template<class InputIt1, class InputIt2, class BinaryPredicate>
 bool algo_equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2, BinaryPredicate pred)
 {
@@ -61,6 +57,10 @@ bool algo_equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2
             return false;
     return first1 == last1 && first2 == last2;
 }
+
+template<class InputIt1, class InputIt2>
+bool algo_equal(InputIt1 first1, InputIt1 last1, InputIt2 first2)
+{  return (algo_equal)(first1, last1, first2, algo_pred_equal());  }
 
 template<class InputIt1, class InputIt2>
 bool algo_equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2)

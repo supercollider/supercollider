@@ -45,10 +45,10 @@
 #include <stdexcept>
 #include <string>
 
-#include <boost/filesystem/operations.hpp> // recursive_directory_iterator
-#include <boost/filesystem/string_file.hpp> // load_string_file
+#include <filesystem>
+#include <fstream>
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 extern Malloc gMalloc;
 
@@ -589,9 +589,7 @@ SCErr GraphDef_DeleteMsg(World* inWorld, GraphDef* inDef) {
 GraphDef* GraphDef_Recv(World* inWorld, char* buffer, GraphDef* inList) {
     try {
         inList = GraphDefLib_Read(inWorld, buffer, inList);
-    } catch (std::exception& exc) {
-        scprintf("exception in GraphDef_Recv: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("exception in GraphDef_Recv: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in GraphDef_Recv\n");
     }
 
@@ -603,7 +601,7 @@ GraphDef* GraphDef_LoadGlob(World* inWorld, const char* pattern, GraphDef* inLis
     if (!glob)
         return inList;
 
-    bfs::path path;
+    fs::path path;
     while (!(path = SC_Filesystem::globNext(glob)).empty()) {
         if (path.extension() == ".scsyndef") {
             inList = GraphDef_Load(inWorld, path, inList);
@@ -616,15 +614,24 @@ GraphDef* GraphDef_LoadGlob(World* inWorld, const char* pattern, GraphDef* inLis
     return inList;
 }
 
-GraphDef* GraphDef_Load(World* inWorld, const bfs::path& path, GraphDef* inList) {
+std::string load_file(const std::filesystem::path& file_path) {
+    std::ifstream file(file_path, std::ifstream::binary);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file: " + file_path.string());
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+GraphDef* GraphDef_Load(World* inWorld, const fs::path& path, GraphDef* inList) {
     try {
-        std::string file_contents;
-        bfs::load_string_file(path, file_contents);
+        std::string file_contents = load_file(path);
         inList = GraphDefLib_Read(inWorld, &file_contents[0], inList);
     } catch (const std::exception& e) {
         scprintf("exception in GraphDef_Load: %s\n", e.what());
         const std::string path_utf8_str = SC_Codecvt::path_to_utf8_str(path);
-        scprintf("while reading file: '%s'", path_utf8_str.c_str());
+        scprintf("while reading file: '%s'\n", path_utf8_str.c_str());
     } catch (...) {
         scprintf("unknown exception in GrafDef_Load\n");
         const std::string path_utf8_str = SC_Codecvt::path_to_utf8_str(path);
@@ -634,21 +641,21 @@ GraphDef* GraphDef_Load(World* inWorld, const bfs::path& path, GraphDef* inList)
     return inList;
 }
 
-GraphDef* GraphDef_LoadDir(World* inWorld, const bfs::path& dirname, GraphDef* inList) {
-    boost::system::error_code ec;
-    bfs::recursive_directory_iterator rditer(dirname, bfs::symlink_option::recurse, ec);
+GraphDef* GraphDef_LoadDir(World* inWorld, const fs::path& dirname, GraphDef* inList) {
+    std::error_code ec;
+    fs::recursive_directory_iterator rditer(dirname, fs::directory_options::follow_directory_symlink, ec);
 
     if (ec) {
         scprintf("*** ERROR: open directory failed '%s'\n", SC_Codecvt::path_to_utf8_str(dirname).c_str());
         return inList;
     }
 
-    while (rditer != bfs::end(rditer)) {
-        const bfs::path path = *rditer;
+    while (rditer != fs::end(rditer)) {
+        const fs::path path = *rditer;
 
-        if (bfs::is_directory(path)) {
+        if (fs::is_directory(path)) {
             if (SC_Filesystem::instance().shouldNotCompileDirectory(path))
-                rditer.no_push();
+                rditer.disable_recursion_pending();
             else
                 ; // do nothing; recursion will happen automatically
         } else if (path.extension() == ".scsyndef") { // ordinary file

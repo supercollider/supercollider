@@ -67,15 +67,15 @@ code::
 
 // another noise reduction application:
 
-Synth.play({ WhiteNoise.ar(0.1) + SinOsc.ar(800,0,0.1) });
+Synth.play({ WhiteNoise.ar(0.1) + SinOsc.ar(800, 0, 0.1) });
 
 // use Median filter for high frequency noise
-Synth.play({ Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800,0,0.1)) });
+Synth.play({ Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800, 0, 0.1)) });
 
 (
 // use LeakDC for low frequency noise
 Synth.play({
-	LeakDC.ar(Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800,0,0.1)), 0.9)
+	LeakDC.ar(Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800, 0, 0.1)), 0.9)
 });
 )
 

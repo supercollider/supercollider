@@ -264,8 +264,8 @@ code::
 var w;
 w = Window("my name is... panel", Rect(128, 64, 340, 360));
 
-32.do({ arg i;
-    b = Button(w, Rect(rrand(20,300),rrand(20,300), 75, 24));
+32.do({ |i|
+    b = Button(w, Rect(rrand(20, 300), rrand(20, 300), 75, 24));
     b.states = [["Start "++i, Color.black, Color.rand],
         ["Stop "++i, Color.white, Color.red]];
 });
@@ -284,9 +284,9 @@ w = Window("my name is... panel", Rect(128, 64, 340, 360));
 w.view.decorator = FlowLayout(w.view.bounds);
 // w.addFlowLayout; // you can als write this instead of the line above
 
-w.view.background = Color(0.6,0.8,0.8);
-32.do({ arg i;
-    b = Button(w, Rect(rrand(20,300),rrand(20,300), 75, 24));
+w.view.background = Color(0.6, 0.8, 0.8);
+32.do({ |i|
+    b = Button(w, Rect(rrand(20, 300), rrand(20, 300), 75, 24));
     b.states = [["Start "++i, Color.black, Color.rand],
         ["Stop "++i, Color.white, Color.red]];
 });
@@ -301,19 +301,19 @@ subsection:: Setting Bounds
 code::
 // use screenbounds for precise placement from the top
 (
-x = Window.new("test", Rect(100,Window.screenBounds.height-180,300,100));x.front;
+x = Window.new("test", Rect(100, Window.screenBounds.height-180, 300, 100)); x.front;
 )
 
 // bounds.top refers to the bottom edge of the window,
 // measured from the bottom of the screen. Different than in View.
-x.bounds_(Rect(100,400,300,300));
+x.bounds_(Rect(100, 400, 300, 300));
 ::
 
 
 subsection:: Borderless Window
 
 code::
-w = Window.new(border:false).front; // can't be manually closed
+w = Window.new(border: false).front; // can't be manually closed
 w.close; // so close it in code
 ::
 
@@ -338,7 +338,7 @@ code::
 (
 x = Window.new.front;
 x.alpha = 0.8;
-x.onClose_({ y = Synth.new(\default) }); //close the window and the synth plays
+x.onClose_({ y = Synth.new(\default) }); // close the window and the synth plays
 )
 x.close;
 y.free;
@@ -353,7 +353,7 @@ note:: Only in Cocoa GUI ::
 code::
 // make a window and a layout
 (
-w = Window(bounds:Rect(700,200,200,200));
+w = Window(bounds: Rect(700, 200, 200, 200));
 h = HLayout();
 v = VLayout(h);
 w.layout =  v;
@@ -418,10 +418,10 @@ w.drawFunc = Routine {
             );
         };
         0.yield // stop here, return something unimportant
-    }
+   }
 };
 
-{ while { w.isClosed.not } { w.refresh; 0.04.wait; } }.fork(AppClock);
+{ while { w.isClosed.not } { w.refresh; 0.04.wait } }.fork(AppClock);
 
 w.front;
 

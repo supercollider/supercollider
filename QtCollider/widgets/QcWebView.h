@@ -22,12 +22,16 @@
 #pragma once
 
 #include "../QcCallback.hpp"
+#include <QtGlobal>
 #include <QWebEngineView>
 #include <QWebEnginePage>
-#include <QWebEngineCallback>
 #include <QPointer>
 #include <QUrl>
 #include <QException>
+#include <QWebEngineProfile>
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#    include <QWebEngineCallback>
+#endif
 
 const static int kWebEngineTimeout = 10000;
 
@@ -79,7 +83,7 @@ Q_SIGNALS:
     void recentlyAudibleChanged(bool recentlyAudible);
 
 public:
-    WebView(QWidget* parent = 0);
+    WebView(QWidget* parent = nullptr, QWebEngineProfile* profile = nullptr);
 
     Q_PROPERTY(qreal zoom READ zoomFactor WRITE setZoomFactor);
     Q_PROPERTY(bool hasSelection READ hasSelection);

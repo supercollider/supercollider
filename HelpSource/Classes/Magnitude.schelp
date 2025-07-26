@@ -32,4 +32,3 @@ returns:: whether the receiver is greater than or equal to minVal and less than 
 
 method:: exclusivelyBetween
 returns:: whether the receiver is greater than minVal and less than maxVal.
-

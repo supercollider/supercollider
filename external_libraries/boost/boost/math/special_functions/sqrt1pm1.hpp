@@ -26,7 +26,7 @@ inline typename tools::promote_args<T>::type sqrt1pm1(const T& val, const Policy
    typedef typename tools::promote_args<T>::type result_type;
    BOOST_MATH_STD_USING
 
-   if(fabs(result_type(val)) > 0.75)
+   if(fabs(result_type(val)) > result_type(0.75))
       return sqrt(1 + result_type(val)) - 1;
    return boost::math::expm1(boost::math::log1p(val, pol) / 2, pol);
 }

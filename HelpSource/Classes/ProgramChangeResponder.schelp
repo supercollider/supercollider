@@ -28,8 +28,8 @@ Examples::
 
 code::
 (
-	c = ProgramChangeResponder({ |src,chan,val|
-		[src,chan,val].postln;
+	c = ProgramChangeResponder({ |src, chan, val|
+		[src, chan, val].postln;
 		},
 		nil, // any source
 		nil, // any channel
@@ -42,8 +42,8 @@ c.remove
 
 code::
 (
-	c = ProgramChangeResponder({ |src,chan,val|
-		[src,chan,val].postln;
+	c = ProgramChangeResponder({ |src, chan, val|
+		[src, chan, val].postln;
 		},
 		nil, // any source
 		nil, // any channel

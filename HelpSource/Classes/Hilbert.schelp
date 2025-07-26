@@ -33,6 +33,6 @@ Examples::
 code::
 s.boot;
 s.scope;
-a = {Hilbert.ar(SinOsc.ar(100)) * -20.dbamp}.play;
+a = { Hilbert.ar(SinOsc.ar(100)) * -20.dbamp }.play;
 a.release;
 ::

@@ -27,6 +27,11 @@ TestEnvGen_server : UnitTest {
 			EnvGen.kr(Env([0, 1], [0.1]), doneAction: 2);
 		}.play(server);
 
+		// EnvGen is initialized by setting the state to the end of the Env,
+		// which fires the doneAction on initialization. So make sure that
+		// initialization has happened before adding these reponders.
+		server.sync;
+
 		n_off_resp = OSCFunc({
 			cleanup.value;
 			passed = false;
@@ -172,10 +177,11 @@ TestEnvGen_server : UnitTest {
 		var env = Env(curve: [\hold, \lin]);
 		var condvar = CondVar();
 		var result = [];
+		var timeScale = 0.01;
 
 		server.bootSync;
 
-		{ EnvGen.kr(env, timeScale: 0.01, doneAction:2) }.loadToFloatArray(0.01, server){ |values|
+		{ EnvGen.kr(env, timeScale: timeScale, doneAction:2) }.loadToFloatArray(env.duration * timeScale, server){ |values|
 			result = values;
 			condvar.signalOne;
 		};

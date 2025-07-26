@@ -60,7 +60,8 @@ l = LazyEnvir.push;
 method::copy
 Copies the environment into a new one, with each placeholder being copied as well.
 
-method::localPut
+
+method::localPut, localRemoveAt
 Sets the value of the key directly. This method is mainly used internally.
 
 method::proxyClass
@@ -71,7 +72,7 @@ code::
 // making a pattern space using LazyEnvir
 
 a = LazyEnvir.new;
-a.proxyClass=\PatternProxy;
+a.proxyClass = \PatternProxy;
 
 a.push;
 

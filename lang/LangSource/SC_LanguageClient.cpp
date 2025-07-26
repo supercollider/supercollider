@@ -52,7 +52,7 @@ void closeAllGUIScreens();
 void initGUI();
 void initGUIPrimitives();
 
-extern PyrString* newPyrStringN(class PyrGC* gc, long length, long flags, long collect);
+extern PyrString* newPyrStringN(class PyrGC* gc, std::int64_t length, std::int64_t flags, std::int64_t collect);
 
 // =====================================================================
 // SC_LanguageClient
@@ -71,7 +71,7 @@ public:
     bool mRunning;
 };
 
-SC_LanguageClient::SC_LanguageClient(const char* name) {
+SC_LanguageClient::SC_LanguageClient(const std::string& name) {
     mHiddenClient = new HiddenLanguageClient;
 
     lockInstance();
@@ -99,9 +99,8 @@ void SC_LanguageClient::initRuntime(const Options& opt) {
     // start virtual machine
     if (!mHiddenClient->mRunning) {
         mHiddenClient->mRunning = true;
-        if (opt.mRuntimeDir) {
-            int err = chdir(opt.mRuntimeDir);
-            if (err)
+        if (!opt.mRuntimeDir.empty()) {
+            if (chdir(opt.mRuntimeDir.c_str()) != 0)
                 error("Cannot change to runtime directory: %s", strerror(errno));
         }
         pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
@@ -167,7 +166,7 @@ void SC_LanguageClient::runLibrary(const char* methodName) {
     unlock();
 }
 
-void SC_LanguageClient::executeFile(const char* fileName) {
+void SC_LanguageClient::executeFile(const std::string& fileName) {
     std::string escaped_file_name(fileName);
     int i = 0;
     while (i < escaped_file_name.size()) {
@@ -178,88 +177,6 @@ void SC_LanguageClient::executeFile(const char* fileName) {
 
     setCmdLinef("thisProcess.interpreter.executeFile(\"%s\")", escaped_file_name.c_str());
     runLibrary(s_interpretCmdLine);
-}
-
-void SC_LanguageClient::snprintMemArg(char* dst, size_t size, int arg) {
-    int rem = arg;
-    int mod = 0;
-    const char* modstr = "";
-
-    while (((rem % 1024) == 0) && (mod < 4)) {
-        rem /= 1024;
-        mod++;
-    }
-
-    switch (mod) {
-    case 0:
-        modstr = "";
-        break;
-    case 1:
-        modstr = "k";
-        break;
-    case 2:
-        modstr = "m";
-        break;
-    case 3:
-        modstr = "g";
-        break;
-    default:
-        rem = arg;
-        modstr = "";
-        break;
-    }
-
-    snprintf(dst, size, "%d%s", rem, modstr);
-}
-
-bool SC_LanguageClient::parseMemArg(const char* arg, int* res) {
-    long value, factor = 1;
-    char* endPtr = nullptr;
-
-    if (*arg == '\0')
-        return false;
-
-    value = strtol(arg, &endPtr, 0);
-
-    char spec = *endPtr++;
-    if (spec != '\0') {
-        if (*endPtr != '\0')
-            // trailing characters
-            return false;
-
-        switch (spec) {
-        case 'k':
-            factor = 1024;
-            break;
-        case 'm':
-            factor = 1024 * 1024;
-            break;
-        default:
-            // invalid mem spec
-            return false;
-        }
-    }
-
-    *res = value * factor;
-
-    return true;
-}
-
-bool SC_LanguageClient::parsePortArg(const char* arg, int* res) {
-    long value;
-    char* endPtr;
-
-    if (*arg == '\0')
-        return false;
-
-    value = strtol(arg, &endPtr, 0);
-
-    if ((*endPtr != '\0') || (value < 0) || (value > 65535))
-        return false;
-
-    *res = value;
-
-    return true;
 }
 
 void SC_LanguageClient::tick() {
@@ -356,7 +273,7 @@ void postfl(const char* fmt, ...) {
     va_end(ap);
 }
 
-void postText(const char* str, long len) {
+void postText(const char* str, std::int64_t len) {
     SC_LanguageClient* client = SC_LanguageClient::lockedInstance();
     if (client)
         client->postFlush(str, len);
@@ -392,6 +309,6 @@ void initGUI() { SC_LanguageClient::instance()->onInterpStartup(); }
 
 void initGUIPrimitives() { SC_LanguageClient::instance()->onLibraryStartup(); }
 
-long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
-long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2) { return 0; }
+std::int64_t scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
+std::int64_t scMIDIout(int port, int len, int statushi, int chan, int data1, int data2) { return 0; }
 // EOF

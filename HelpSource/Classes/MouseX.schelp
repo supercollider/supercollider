@@ -8,6 +8,11 @@ Description::
 
 Cursor tracking UGen.
 
+WARNING::
+This UGen will not work for Linux users using Wayland, as the Wayland protocol does not allow a global keyboard or mouse state to be captured.
+The UGen will return a constant random value between MATH::0.0:: and MATH::1.0::.
+For more information see https://github.com/supercollider/supercollider/issues/4544
+::
 
 classmethods::
 
@@ -42,4 +47,3 @@ code::
 { SinOsc.ar(MouseX.kr(500, 10000, 1).poll, 0, 0.1) }.play;
 
 ::
-

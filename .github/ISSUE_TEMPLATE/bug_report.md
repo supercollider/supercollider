@@ -7,7 +7,8 @@ assignees: ''
 
 ---
 
-<!-- Please see CONTRIBUTING.md for guidelines. -->
+<!-- For information about contributing see: https://github.com/supercollider/supercollider/wiki/Contributing-directory -->
+<!-- Please check there isn't already an issue on this topic. -->
 
 ## Environment
 
@@ -18,10 +19,12 @@ assignees: ''
 ## Steps to reproduce
 
 ```supercollider
-Paste code here. Use a minimal example please.
+
+Using as little code as possible, please provide an example that can be run and reproduces the bug.
+Paste code here between the tick marks. 
+
 ```
 
 ## Expected vs. actual behavior
 
 <!-- Paste error messages in entirety. Use gist if very long. -->
-<!-- If SC crashed, see CONTRIBUTING.md for how to make a crash report. -->

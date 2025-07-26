@@ -40,7 +40,7 @@ c.histo(500).plot(bounds: Rect(10, 410, 520, 380), parent: w);
 (
 var a;
 a = Pbrown(0.0, 1.0, 0.2, inf);
-a.asStream.nextN(1000).plot2;
+a.asStream.nextN(1000).plot;
 )
 ::
 
@@ -48,7 +48,7 @@ code::
 // sound example
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -74,7 +74,7 @@ a = Pbrown(0.0, 1.0, 0.1, inf).asStream;
 var a, x, f;
 a = Pbrown(0.0, 1.0, 0.1, inf);
 
-f = { |pattern, dt=0.02, min=300, max=900|
+f = { |pattern, dt = 0.02, min = 300, max = 900|
 	{
 		var x = pattern.asStream;
 		loop {

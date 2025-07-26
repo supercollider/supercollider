@@ -1,7 +1,7 @@
 CLASS:: HLayout
 summary:: A layout that distributes views in a horizontal line
 categories:: GUI>Layout
-related:: Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
+related:: Classes/LineLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
 DESCRIPTION::
 See documentation of superclass link::Classes/LineLayout:: for details.
@@ -9,11 +9,28 @@ See documentation of superclass link::Classes/LineLayout:: for details.
 
 EXAMPLES::
 code::
+
+// simple example
 (
 w = Window().front;
 a = { Button(w) } ! 10;
 w.layout = HLayout(*a);
 );
+
+// for a scroll view we need to set its canvas to a View with the desired layout
+(
+var view = ScrollView();
+view.canvas = View().layout_(HLayout(
+	*(
+		100.collect {
+			Slider().orientation_(\vertical).background_(Color.rand)
+		}
+	)
+));
+view.front;
+)
+
+// combining HLayout and VLayout
 
 (
 w = Window().front;
@@ -23,7 +40,7 @@ w.layout = HLayout(*a.collect { |x| VLayout(*x) });
 
 (
 w = Window().front;
-a = { { PopUpMenu(w, Rect(0, 0, 50, 20)).items_({"abcdefghijklmno".scramble.keep(3)} ! 7) } ! 10 } ! 10;
+a = { { PopUpMenu(w, Rect(0, 0, 50, 20)).items_({ "abcdefghijklmno".scramble.keep(3) } ! 7) } ! 10 } ! 10;
 w.layout = HLayout(*a.collect { |x| VLayout(*x) });
 )
 
@@ -36,7 +53,7 @@ w.layout = HLayout(VLayout(*a), VLayout(*b));
 
 (
 w = Window().front;
-f = { SoundFileView(w).load(Platform.resourceDir +/+ "sounds/a11wlk01.wav", 1e5.rand, 1e4) };
+f = { SoundFileView(w).load(ExampleFiles.child, 1e5.rand, 1e4) };
 a = { HLayout(VLayout(*{ Slider(w, Rect(0, 0, 230, 20)).minSize_(Size(130, 20)) } ! 3), f.value) } ! 4;
 w.layout = HLayout(VLayout(*a));
 )

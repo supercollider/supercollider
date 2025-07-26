@@ -26,7 +26,7 @@ namespace posix_time {
   inline
   ptime from_time_t(std::time_t t)
   {
-    return ptime(gregorian::date(1970,1,1)) + seconds(static_cast<long>(t));
+    return ptime(gregorian::date(1970,1,1)) + seconds(t);
   }
 
   //! Function that converts a ptime into a time_t

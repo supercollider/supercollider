@@ -17,15 +17,15 @@ method::sched
 The float you return specifies the delta to resched the function for. Returning nil will stop the task from being rescheduled.
 code::
 (
-SystemClock.sched(0.0,{ arg time;
+SystemClock.sched(0.0, { |time|
 	time.postln;
-	rrand(0.1,0.9);
+	rrand(0.1, 0.9);
 });
 )
 ::
 code::
 (
-SystemClock.sched(2.0,{
+SystemClock.sched(2.0, {
 	"2.0 seconds later".postln;
 	nil;
 });
@@ -41,7 +41,7 @@ SystemClock.clear;
 method::schedAbs
 code::
 (
-SystemClock.schedAbs( (thisThread.seconds + 4.0).round(1.0),{ arg time;
+SystemClock.schedAbs((thisThread.seconds + 4.0).round(1.0), { |time|
 	("the time is exactly " ++ time.asString
 		++ " seconds since starting SuperCollider").postln;
 });
@@ -58,8 +58,8 @@ code::
 var w, r;
 w = Window.new("trem", Rect(512, 256, 360, 130));
 w.front;
-r = Routine({ arg time;
-	60.do({ arg i;
+r = Routine({ |time|
+	60.do({ |i|
 		0.05.yield;
 		{
 			w.bounds = w.bounds.moveBy(10.rand2, 10.rand2);

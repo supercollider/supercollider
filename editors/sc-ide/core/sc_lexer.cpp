@@ -28,51 +28,48 @@ QVector<ScLexer::LexicalRule> ScLexer::mLexicalRules;
 void ScLexer::initLexicalRules() {
     /* NOTE:
 
-    The lexical analysis algorithm demands that all regexps
-    start with a caret "^", to only match at beginning of string.
-
     Order is important:
     -- floatRegexp is subset of radixFloatRegex -> must come later
     -- classRegexp and primitiveRegexp are subsets of symbolArgRegexp -> must come later
 
     */
 
-    mLexicalRules << LexicalRule(Token::WhiteSpace, "^\\s+");
+    mLexicalRules << LexicalRule(Token::WhiteSpace, "\\s+");
 
     initKeywordsRules();
     initBuiltinsRules();
 
-    mLexicalRules << LexicalRule(Token::RadixFloat, "^\\b\\d+r[0-9a-zA-Z]*(\\.[0-9A-Z]*)?");
+    mLexicalRules << LexicalRule(Token::RadixFloat, "\\b\\d+r[0-9a-zA-Z]*(\\.[0-9A-Z]*)?");
 
     // Never heard of this one? Check the "Literals" help file :)
-    mLexicalRules << LexicalRule(Token::ScaleDegreeFloat, "^\\b\\d+(s+|b+|[sb]\\d+)\\b");
+    mLexicalRules << LexicalRule(Token::ScaleDegreeFloat, "\\b\\d+(s+|b+|[sb]\\d+)\\b");
 
     // do not include leading "-" in Float, as left-to-right algorithm does
     // not know whether it is not rather a binary operator
-    mLexicalRules << LexicalRule(Token::Float, "^\\b((\\d+(\\.\\d+)?([eE][-+]?\\d+)?(pi)?)|pi)\\b");
+    mLexicalRules << LexicalRule(Token::Float, "\\b((\\d+(\\.\\d+)?([eE][-+]?\\d+)?(pi)?)|pi)\\b");
 
-    mLexicalRules << LexicalRule(Token::HexInt, "^\\b0x(\\d|[a-f]|[A-F])+");
+    mLexicalRules << LexicalRule(Token::HexInt, "\\b0x(\\d|[a-f]|[A-F])+");
 
-    mLexicalRules << LexicalRule(Token::SymbolArg, "^\\b[A-Za-z_]\\w*\\:");
+    mLexicalRules << LexicalRule(Token::SymbolArg, "\\b[A-Za-z_]\\w*\\:");
 
-    mLexicalRules << LexicalRule(Token::Name, "^[a-z]\\w*");
+    mLexicalRules << LexicalRule(Token::Name, "[a-z]\\w*");
 
-    mLexicalRules << LexicalRule(Token::Class, "^\\b[A-Z]\\w*");
+    mLexicalRules << LexicalRule(Token::Class, "\\b[A-Z]\\w*");
 
-    mLexicalRules << LexicalRule(Token::Primitive, "^\\b_\\w+");
+    mLexicalRules << LexicalRule(Token::Primitive, "\\b_\\w+");
 
-    mLexicalRules << LexicalRule(Token::Symbol, "^\\\\\\w*");
+    mLexicalRules << LexicalRule(Token::Symbol, "\\\\\\w*");
 
-    mLexicalRules << LexicalRule(Token::Char, "^\\$\\\\?.");
+    mLexicalRules << LexicalRule(Token::Char, "\\$\\\\?.");
 
-    mLexicalRules << LexicalRule(Token::EnvVar, "^~\\w+");
+    mLexicalRules << LexicalRule(Token::EnvVar, "~\\w+");
 
 
-    mLexicalRules << LexicalRule(Token::SingleLineComment, "^//[^\r\n]*");
+    mLexicalRules << LexicalRule(Token::SingleLineComment, "//[^\r\n]*");
 
-    mLexicalRules << LexicalRule(Token::MultiLineCommentStart, "^/\\*");
+    mLexicalRules << LexicalRule(Token::MultiLineCommentStart, "/\\*");
 
-    mLexicalRules << LexicalRule(Token::Operator, "^[\\+-\\*/&\\|\\^%<>=]+");
+    mLexicalRules << LexicalRule(Token::Operator, "[+\\-*/&|\\^%<>=]+");
 }
 
 void ScLexer::initKeywordsRules() {
@@ -84,7 +81,7 @@ void ScLexer::initKeywordsRules() {
              << "this"
              << "var";
 
-    QString keywordPattern = QStringLiteral("^\\b(%1)\\b").arg(keywords.join("|"));
+    QString keywordPattern = QStringLiteral("\\b(%1)\\b").arg(keywords.join("|"));
     mLexicalRules << LexicalRule(Token::Keyword, keywordPattern);
 }
 
@@ -102,7 +99,7 @@ void ScLexer::initBuiltinsRules() {
              << "currentEnvironment"
              << "topEnvironment";
 
-    QString builtinsPattern = QStringLiteral("^\\b(%1)\\b").arg(builtins.join("|"));
+    QString builtinsPattern = QStringLiteral("\\b(%1)\\b").arg(builtins.join("|"));
     mLexicalRules << LexicalRule(Token::Builtin, builtinsPattern);
 }
 
@@ -153,12 +150,14 @@ Token::Type ScLexer::nextTokenInCode(int& lengthResult) {
 
         for (; it != end; ++it) {
             LexicalRule const& rule = *it;
-            int matchIndex = rule.expr.indexIn(mText, mOffset, QRegExp::CaretAtOffset);
-            // a guard to ensure all regexps match only at beginning of string:
-            Q_ASSERT(matchIndex <= mOffset);
-            if (matchIndex != -1) {
+            QRegularExpressionMatch match = rule.expr.match(mText, mOffset, QRegularExpression::NormalMatch,
+                                                            QRegularExpression::AnchoredMatchOption);
+            if (match.hasMatch()) {
+                // a guard to ensure all regexps match only at the beginning of the string:
+                Q_ASSERT(match.capturedStart() == mOffset);
+
                 type = rule.type;
-                length = rule.expr.matchedLength();
+                length = match.capturedLength();
                 break;
             }
         }

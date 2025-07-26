@@ -204,4 +204,10 @@ TestString : UnitTest {
 		var result = "the quick brown fox".findRegexp("moo");
 		this.assertEquals(result, Array.new, "Non-matching findRegexp should return empty array");
 	}
+
+	test_largeStringCompileString {
+		var large = String.fill(9000, { |i| "0123456789".wrapAt(i) });
+		var reconstructed = large.asCompileString.interpret;
+		this.assert(large == reconstructed, "A large string's compileString should interpret back to itself");
+	}
 }

@@ -37,18 +37,20 @@ namespace ScIDE { namespace Settings {
 
 EditorPage::EditorPage(QWidget* parent):
     QWidget(parent),
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     fontDatabase(new QFontDatabase),
+#endif()
     ui(new Ui::EditorConfigPage) {
     ui->setupUi(this);
 
     connect(ui->tabs, SIGNAL(currentChanged(int)), this, SLOT(onCurrentTabChanged(int)));
 
     connect(ui->onlyMonoFonts, SIGNAL(toggled(bool)), this, SLOT(onMonospaceToggle(bool)));
-    connect(ui->fontCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateFontPreview()));
+    connect(ui->fontCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateFontPreview);
     connect(ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()));
     connect(ui->fontAntialias, SIGNAL(stateChanged(int)), this, SLOT(updateFontPreview()));
 
-    connect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateTheme(QString)));
+    connect(ui->themeCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateTheme);
     connect(ui->themeCopyBtn, SIGNAL(clicked()), this, SLOT(dialogCopyTheme()));
     connect(ui->themeDeleteBtn, SIGNAL(clicked()), this, SLOT(deleteTheme()));
     connect(ui->textFormats, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this,
@@ -67,7 +69,9 @@ EditorPage::EditorPage(QWidget* parent):
 
 EditorPage::~EditorPage() {
     delete ui;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     delete fontDatabase;
+#endif
     qDeleteAll(mThemes);
 }
 
@@ -204,9 +208,17 @@ void EditorPage::loadThemeFormats(Theme& theme) {
 
 void EditorPage::populateFontList(bool onlyMonospaced) {
     ui->fontCombo->clear();
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QStringList fontFamilies = fontDatabase->families();
+#else
+    QStringList fontFamilies = QFontDatabase::families();
+#endif
     foreach (QString family, fontFamilies) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         if (onlyMonospaced && !fontDatabase->isFixedPitch(family))
+#else
+        if (onlyMonospaced && !QFontDatabase::isFixedPitch(family))
+#endif
             continue;
 
         ui->fontCombo->addItem(family);
@@ -215,7 +227,7 @@ void EditorPage::populateFontList(bool onlyMonospaced) {
 
 void EditorPage::populateThemeList(const QString& sel) {
     /* managing the combo box send parasite signals */
-    disconnect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateTheme(QString)));
+    disconnect(ui->themeCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateTheme);
 
     QMap<QString, Theme*>::const_iterator itr = mThemes.begin();
     QList<QString> list = itr.value()->availableThemes();
@@ -235,7 +247,7 @@ void EditorPage::populateThemeList(const QString& sel) {
             i++;
     }
 
-    connect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateTheme(QString)));
+    connect(ui->themeCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateTheme);
 }
 
 void EditorPage::store(Manager* s) {
@@ -358,7 +370,7 @@ void EditorPage::updateTextFormatDisplay(QTreeWidgetItem* item) {
     if (format.hasProperty(QTextFormat::FontItalic))
         f.setItalic(format.fontItalic());
     if (format.hasProperty(QTextFormat::FontWeight))
-        f.setWeight(format.fontWeight());
+        f.setWeight(static_cast<QFont::Weight>(format.fontWeight()));
 
     item->setFont(0, f);
 }

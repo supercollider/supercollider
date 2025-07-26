@@ -122,7 +122,7 @@ This is equivalent to calling link::#*setDefault:: with this Font and the given 
 
 method:: storeArgs
 (?)
-Returns:: an link::Classes/Array::, code:: [ name, size ] ::.
+Returns:: an link::Classes/Array::, code:: [name, size] ::.
 
 method:: boldVariant
 
@@ -139,13 +139,13 @@ code::
 (
 w = Window.new.front;
 t = StaticText(w, w.view.bounds).align_(\center);
-t.string=" SUPERCOLLIDER";
+t.string = " SUPERCOLLIDER";
 )
 t.font = Font("Monaco", 24);
 
 
 (
-var updateFont;
+var updateFont, w, m, y, t, a, b, c;
 w = Window("Fonts", Rect(150, Window.screenBounds.height - 500, 400, 400)).front;
 w.view.decorator = FlowLayout(w.view.bounds);
 StaticText.new(w, Rect(5, 0, 30, 20)).string_("Font").align_(\right);
@@ -165,7 +165,7 @@ c = PopUpMenu(w, 200@20).items_(["The quick drowned fox"]).background_(Color.ran
 
 y.action = {
 	var font;
-	font = Font(m.items[m.value],y.items[y.value].asInteger);
+	font = Font(m.items[m.value], y.items[y.value].asInteger);
 	a.font_(font).refresh;
 	b.font_(font).refresh;
 	c.font_(font).refresh;
@@ -183,7 +183,7 @@ y.valueAction = 5;
 var w, f;
 
 w = Window("Fonts", Rect(128, 64, 340, 360));
-w.view.decorator = f = FlowLayout(w.view.bounds,Point(4, 4),Point(4, 2));
+w.view.decorator = f = FlowLayout(w.view.bounds, Point(4, 4), Point(4, 2));
 
 [
 "Helvetica-Bold",
@@ -192,8 +192,8 @@ w.view.decorator = f = FlowLayout(w.view.bounds,Point(4, 4),Point(4, 2));
 "Arial",
 "Gadget",
 "MarkerFelt-Thin"
-].do({ arg name;
-	var v, s, n, spec, p, height = 16;
+].do({ |name|
+	var v, s, n, height = 16;
 
 		v = StaticText(w, Rect(0, 0, 110, height + 20));
 		v.font = Font(name, 13);
@@ -215,16 +215,16 @@ w.front;
 
 
 (
-var w, f, i = 0;
+var w, b, f, i = 0;
 
 w = Window("Fonts", Rect(128, 64, 1024, 768));
 b = ScrollView(w, w.view.bounds);
 
-b.decorator = f = FlowLayout(b.bounds, Point(4,4), Point(4,2));
+b.decorator = f = FlowLayout(b.bounds, Point(4, 4), Point(4, 2));
 
-Font.availableFonts.do({ arg name;
-	var v, s, n, spec, p, height = 16, font;
-	font = Font(name,13);
+Font.availableFonts.do({ |name|
+	var v, s, n, height = 16, font;
+	font = Font(name, 13);
 
 		v = StaticText(b, Rect(0, 0, 120, height + 20));
 		v.font = font;
@@ -233,12 +233,12 @@ Font.availableFonts.do({ arg name;
 		s = Button(b, Rect(0, 0, 140, height + 20));
 		s.font = font;
 		s.states = [[name]];
-		s.action = { font.asCompileString.postln; };
+		s.action = { font.asCompileString.postln };
 
 		n = NumberBox(b, Rect(0, 0, 56, height + 20));
 		n.font = font;
 		n.object = pi;
-	if( (i = i + 1) % 3 == 0,{
+	if((i = i + 1) % 3 == 0, {
 		f.nextLine;
 	});
 });

@@ -26,7 +26,7 @@ a = Pseq([1, 2, 3], inf);
 b = Pseq([65, 76], inf);
 c = Ptuple([a, a, b], inf);
 x = c.asStream;
-8.do({ x.next.postln; });
+8.do({ x.next.postln });
 )
 
 
@@ -36,15 +36,15 @@ a = Pseq([1, 2, 3], inf);
 b = Pseq([65, 76], 3); // stops after 3 cycles
 c = Ptuple([a, a, b], 4); // stops after 4 cycles
 x = c.asStream;
-8.do({ x.next.postln; });
+8.do({ x.next.postln });
 )
 
 
-//Ptuple used as a sequence of pitches (chords)
+// Ptuple used as a sequence of pitches (chords)
 
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))

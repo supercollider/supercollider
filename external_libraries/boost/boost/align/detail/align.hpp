@@ -1,5 +1,5 @@
 /*
-Copyright 2014-2016 Glen Joseph Fernandes
+Copyright 2014-2020 Glen Joseph Fernandes
 (glenjofe@gmail.com)
 
 Distributed under the Boost Software License, Version 1.0.
@@ -19,13 +19,15 @@ align(std::size_t alignment, std::size_t size, void*& ptr,
     std::size_t& space)
 {
     BOOST_ASSERT(boost::alignment::detail::is_alignment(alignment));
-    char* p = reinterpret_cast<char*>(~(alignment - 1) &
-        (reinterpret_cast<std::size_t>(ptr) + alignment - 1));
-    std::size_t n = p - static_cast<char*>(ptr);
-    if (size + n <= space) {
-        ptr = p;
-        space -= n;
-        return p;
+    if (size <= space) {
+        char* p = reinterpret_cast<char*>(~(alignment - 1) &
+            (reinterpret_cast<std::size_t>(ptr) + alignment - 1));
+        std::size_t n = p - static_cast<char*>(ptr);
+        if (n <= space - size) {
+            ptr = p;
+            space -= n;
+            return p;
+        }
     }
     return 0;
 }

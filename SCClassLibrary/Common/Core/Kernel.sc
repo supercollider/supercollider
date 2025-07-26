@@ -440,6 +440,16 @@ FunctionDef {
 		_FunDef_VarArgs
 		^this.primitiveFailed
 	}
+	varArgsValue {
+		_FunDef_VarArgsValue
+		^this.primitiveFailed
+	}
+	hasVarArgs {
+		^this.varArgsValue > 0
+	}
+	hasKwArgs {
+		^this.varArgsValue > 1
+	}
 	shallowCopy { ^this }
 
 	asFunction {

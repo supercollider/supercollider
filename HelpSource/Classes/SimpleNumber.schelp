@@ -71,7 +71,7 @@ method:: round
 Round to multiple of aNumber
 
 method:: roundUp
-Round up to a multiple of aNumber. For roundDown use Link::Classes/SimpleNumber#-trunc#trunc::.
+Round up to a multiple of aNumber. For roundDown use link::Classes/SimpleNumber#-trunc#trunc::.
 
 method:: smallButNotZero
 Check if the value is closer to zero than a threshold, but not zero.
@@ -338,7 +338,7 @@ method:: excess
 Returns the difference of the receiver and its clipped form.
 discussion::
 code::
-(a - clip2(a,b))
+(a - clip2(a, b))
 ::
 
 method:: madd
@@ -357,7 +357,7 @@ method:: isStrictlyPositive
 Answer if the number is > 0.
 
 method:: booleanValue
-returns:: true, if strictly positive ( > 0), otherwise false (see link::Classes/Boolean::)
+returns:: true, if strictly positive (> 0), otherwise false (see link::Classes/Boolean::)
 
 method:: isNaN
 method:: ==
@@ -579,18 +579,18 @@ code::
 ::
 
 method:: scurve
-Map receiver in the onto an S-curve bound to [0,1].
+Map receiver in the onto an S-curve bound to [0, 1].
 Implements:
 teletype::
 this * this * (3.0 - (2.0 * this))
 ::
-with teletype::this:: clipped to [0,1].
+with teletype::this:: clipped to [0, 1].
 code::
-((-100..200) / 100 ).collect(_.scurve).plot
+((-100..200) / 100).collect(_.scurve).plot
 ::
 
 method:: ramp
-Map the receiver onto a ramp starting at code::0.0::, ending at code::1.0::, effectively clipping the receiver at [0,1].
+Map the receiver onto a ramp starting at code::0.0::, ending at code::1.0::, effectively clipping the receiver at [0, 1].
 discussion::
 code::
 (
@@ -623,7 +623,7 @@ the value is truncated to an integer and used as an index into an octave repeati
 code::
 (
 l = [0, 1, 5, 9, 11]; // pentatonic scale
-(1, 2..15).collect{|i|
+(1, 2..15).collect{ |i|
 	i.degreeToKey(l, 12)
 };
 )
@@ -974,51 +974,83 @@ stores this on the given stream
 method:: printOn
 prints this on the given stream
 
+
 subsection:: random
+Unless noted otherwise, the return value of all these methods will be an link::Classes/Integer:: only when the receiver and all arguments are Integers as well.
 
 method:: coin
-Let emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, return true. With probability 1 - emphasis::x::, return false.
+Let emphasis::x:: be the receiver clipped to the range [0, 1].
+With probability emphasis::x::, return true.
+With probability 1 - emphasis::x::, return false.
 
 method:: rand
-returns:: Random number from zero up to the receiver, exclusive.
+Returns a random number from a uniform distribution with the range [0,this),
+i.e., between 0 and this (including 0, not including this).
 
 method:: rand2
-returns:: a random number from -this to +this.
+Returns a random number from a uniform distribution with the range [-this, +this],
+i.e. between -this and +this (including -this and +this).
 
 method:: rrand
-argument::aNumber
-the upper limit
-argument::adverb
-returns:: a random number in the interval ]a, b[.
-discussion::
-If both a and b are link::Classes/Integer:: then the result will be an link::Classes/Integer::.
+Returns a random number from a uniform distribution with the range between code::this:: and code::arg::.
+argument::arg
+The other (upper or lower) limit of the range.
+
+discussion:: 
+code::arg:: can be lower than code::this::.
+If either code::this:: or code::arg:: is a link::Classes/Float::, the code::arg:: bound will be excluded from the range.
+If both code::this:: and code::arg:: are link::Classes/Integer::, both bounds are included.
+
 
 method:: linrand
-returns:: a linearly distributed random number from zero to this.
+Returns a random number from a linear distribution with the range [0, this).
+Histogram will approximate a diagonal line, hence the name.
+More formally, code::.linrand:: samples from a distribution over [0, 1) with a probability density function of 2(1 - x) and multiplies by code::this::.
+
+discussion::
+Best explained visually:
+code::
+{1.0.linrand}.dup(10000).plotHisto;
+::
 
 method:: bilinrand
-returns:: Bilateral linearly distributed random number from -this to +this.
+Bilateral linearly distributed random number in the range (-this, +this).
+Like linrand, but adds a second straight line from code::-this:: to 0.
+Histogram will approach an isosceles triangle with its apex at x = 0.
+Formally like code::.linrand::, but the probability density function is emphasis::also:: supported in the range (-x, 0] by 2(1 + x).
+
+discussion::
+Best explained visually:
+code::
+{1.0.bilinrand}.dup(10000).plotHisto;
+::
 
 method:: sum3rand
-This was suggested by Larry Polansky as a loose approximation of gaussian.
-returns:: A random number from -this to +this that is the result of summing three uniform random generators to yield a bell-like distribution.
+Returns a link::Classes/Float:: from the range [-this, this), distribution approximates a bell-like (Gaussian or normal) distribution.
+returns:: Always returns a link::Classes/Float::.
+
+discussion::
+Loosely approximates a Gaussian distribution by summing three uniform random generators.
+Equivalent to:
+code::
+({ 1.0.rand }.dup(3).sum - 1.5) * 2/3 * this
+::
 
 method:: exprand
-an exponentially distributed random number in the interval ]a, b[. This is always a link::Classes/Float::.
-(Note that the distribution of numbers is not exactly an EMPHASIS::exponential distribution::, since that would be unbounded: we might call it a EMPHASIS::logarithmic uniform distribution::.)
-argument::aNumber
-the upper limit
-argument::adverb
+Returns a link::Classes/Float:: in the range [this, arg) drawn from a log-uniform distribution.
+Receiver (i.e., code::this::) must not be zero.
+Note that the value is emphasis::not:: drawn from an exponential distribution.
+argument::arg
+The other (upper or lower) limit of the range. Must be of same sign as code::this::, and must not be zero.
+returns:: Always returns a link::Classes/Float::.
 
 method:: gauss
-a gaussian distributed random number.
-argument::standardDeviation
-the upper limit
-discussion::
-Always returns a link::Classes/Float::.
-code::
-(0..1000).collect { |num| gauss(0.0, num) }.plot;
-::
+Returns a link::Classes/Float:: sampled from a Gaussian distribution with mean code::this:: and standard deviation code::stddev::.
+The range of the gaussian distribution is unbounded and thus may return +/-inf;
+consider using link::Classes/SimpleNumber#-clip#clip::.
+argument::stddev
+The standard deviation.
+returns:: Always returns a link::Classes/Float::.
 
 method:: partition
 randomly partition a number into parts of at least min size.
@@ -1032,7 +1064,6 @@ code::
 75.partition(8, 3);
 75.partition(75, 1);
 ::
-
 
 subsection:: UGen Compatibility Methods
 
@@ -1251,7 +1282,7 @@ Requires code::a:: > 0, 0 < code::x:: < 1, and 0 <= code::q:: <= 1.
 
 method:: ibetaDerivative
 Returns the partial derivative with respect to code::x:: of the incomplete
-beta function code::ibeta(a,b,x)::.
+beta function code::ibeta(a, b, x)::.
 
 
 subsection:: Error Functions
@@ -1327,7 +1358,7 @@ method:: sphericalHarmonic
 Returns the (code::Complex::) value of the Spherical Harmonic.
 
 code::theta:: is taken as the polar (colatitudinal) coordinate within code::[0, pi]::,
-and code::phi:: as the azimuthal (longitudinal) coordinate within code::[0,2pi]::.
+and code::phi:: as the azimuthal (longitudinal) coordinate within code::[0, 2pi]::.
 
 See boost documentation for further information, including a note about the
 Condon-Shortley phase term of code::(-1)^m::.
@@ -1588,7 +1619,7 @@ Take a tour of link::Guides/Tour-of-Special-Functions#Exponential Integrals#Expo
 method:: expintEn
 Returns the exponential integral En of code::z::.
 
-Requires that when code::n == 1::, code::z !=0::.
+Requires that when code::n == 1::, code::z != 0::.
 
 method:: expintEi
 Returns the exponential integral of code::z::.

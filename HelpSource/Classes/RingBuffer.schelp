@@ -1,0 +1,98 @@
+CLASS:: RingBuffer
+SUMMARY:: Fixed size ringbuffer
+CATEGORIES:: Collections>Ordered
+RELATED:: Classes/LinkedList
+
+DESCRIPTION::
+A circular buffer that holds a fixed-size collection. Can be used as a queue.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new buffer.
+
+ARGUMENT:: size
+Initial size. The collection will be able to hold one minus this number of values.
+
+ARGUMENT:: collectionClass
+Defaults to the LINK::Classes/Array:: class.
+
+
+INSTANCEMETHODS::
+
+METHOD:: array
+The collection.
+
+METHOD:: readPos
+Current read position.
+
+METHOD:: writePos
+Current write position.
+
+METHOD:: maxSize
+Maximum capacity.
+
+METHOD:: size
+Alias of LINK::#-readable::.
+
+METHOD:: readable
+Number of readble items.
+
+METHOD:: writable
+Number of writable items.
+
+METHOD:: add
+Add value and increase LINK::#-writePos::. Do nothing if no items can be written.
+
+METHOD:: pop
+Return next readable item and increase LINK::#-readPos::. Return CODE::nil:: if no items can be read.
+
+METHOD:: overwrite
+Add value and increase LINK::#-writePos:: by overwriting oldest readable item.
+
+METHOD:: do
+Iterate over the currently readable items.
+
+
+EXAMPLES::
+
+CODE::
+
+r = RingBuffer(4);
+r.add(\one);
+r.add(\two);
+r.add(\three);
+r.readable;
+r.do{ |x| x.postln };
+
+
+r = RingBuffer(12, Int16Array);
+r.writable.do{ |i| r.add(i + 1 * 100) };
+r.array;
+r.readable;  // 11
+r.writable;  // 0 = full
+r.pop;
+r.pop;
+r.pop;
+r.readable;  // 8
+r.writable;  // 3
+
+
+(
+var num = 100;
+var m = MultiSliderView().elasticMode_(1).size_(num).front;
+var r = RingBuffer(num + 1, DoubleArray);
+Routine({
+	while { m.isClosed.not } {
+		if(r.writable == 0, { r.pop });
+		r.add(sin(thisThread.seconds).abs);
+		r.do{ |v, i|
+			m.index = i;
+			m.currentvalue = v;
+		};
+		(1/60).wait;
+	}
+}).play(AppClock);
+)
+::

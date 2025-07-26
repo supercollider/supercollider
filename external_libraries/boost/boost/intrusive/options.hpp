@@ -212,12 +212,21 @@ BOOST_INTRUSIVE_OPTION_CONSTANT(store_hash, bool, Enabled, store_hash)
 //!with the same key.
 BOOST_INTRUSIVE_OPTION_CONSTANT(optimize_multikey, bool, Enabled, optimize_multikey)
 
-//!This option setter specifies if the bucket array will be always power of two.
+//!This option setter specifies if the length of the bucket array provided by
+//!the user will always be power of two.
 //!This allows using masks instead of the default modulo operation to determine
 //!the bucket number from the hash value, leading to better performance.
-//!In debug mode, if power of two buckets mode is activated, the bucket length
-//!will be checked with assertions.
+//!In debug mode, the provided bucket array length will be checked with assertions.
 BOOST_INTRUSIVE_OPTION_CONSTANT(power_2_buckets, bool, Enabled, power_2_buckets)
+
+//!WARNING: this option is EXPERIMENTAL, don't use it in production code
+//!This option setter specifies if the length of the bucket array provided by
+//!the user will always be a value specified by the
+//!suggested_upper|lower_bucket_count call. This allows the use of some
+//!precomputed values and speeds hash to bucket index operations, leading
+//!to better performance.
+//!In debug mode, the provided bucket array length will be checked with assertions.
+BOOST_INTRUSIVE_OPTION_CONSTANT(fastmod_buckets, bool, Enabled, fastmod_buckets)
 
 //!This option setter specifies if the container will cache a pointer to the first
 //!non-empty bucket so that begin() is always constant-time.
@@ -240,6 +249,11 @@ BOOST_INTRUSIVE_OPTION_CONSTANT(compare_hash, bool, Enabled, compare_hash)
 //!appplications where the worst-case insertion time of non-incremental hash containers
 //!(rehashing the whole bucket array) is not admisible.
 BOOST_INTRUSIVE_OPTION_CONSTANT(incremental, bool, Enabled, incremental)
+
+//!This option setter specifies if the buckets (which form a singly linked lists of nodes)
+//!are linear (true) or circular (false, default value). Linear buckets can improve performance
+//!in some cases, but the container loses some features like obtaining an iterator from a value.
+BOOST_INTRUSIVE_OPTION_CONSTANT(linear_buckets, bool, Enabled, linear_buckets)
 
 /// @cond
 

@@ -41,4 +41,3 @@ code::
 
 { LinPan2.ar(FSinOsc.ar(800, 0, 0.1), FSinOsc.kr(3)) }.play;
 ::
-

@@ -26,7 +26,7 @@
 AllocPool* pyr_pool_compile = nullptr;
 AllocPool* pyr_pool_runtime = nullptr;
 
-#define AREASIZE 65536L
+#define AREASIZE 65536LL
 
 static void* pyr_new_area(size_t size) { return nova::malloc_aligned(size); }
 
@@ -45,7 +45,7 @@ SCLANG_DLLEXPORT_C bool pyr_init_mem_pools(int runtime_space, int runtime_grow) 
     if (!pyr_pool_runtime)
         return false;
 
-    pyr_pool_compile = new AllocPool(pyr_new_area_from_runtime, pyr_free_area_from_runtime, 0L, AREASIZE);
+    pyr_pool_compile = new AllocPool(pyr_new_area_from_runtime, pyr_free_area_from_runtime, 0LL, AREASIZE);
     if (!pyr_pool_compile)
         return false;
 

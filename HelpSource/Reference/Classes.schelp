@@ -73,4 +73,3 @@ To determine if an object is specifically of type aClass, but not one of its sub
 code::
 anObject.class === aClass
 ::
-

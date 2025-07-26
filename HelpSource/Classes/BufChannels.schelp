@@ -21,4 +21,3 @@ The  code::.ir::  method is not the safest choice.
 Since a buffer can be reallocated at any time, using
 code::.ir::  will not track the changes. Use code::.kr:: instead.
 ::
-

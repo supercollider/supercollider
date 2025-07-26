@@ -30,7 +30,7 @@ Creates a Dictionary with an initial capacity for strong::n:: key value mappings
 method::newFrom
 Creates a new Dictionary from another collection.
 code::
-d= Dictionary.newFrom([\a, 1, \b, 2, \c, 4]);
+d = Dictionary.newFrom([\a, 1, \b, 2, \c, 4]);
 ::
 argument::aCollection
 any Object that responds to keysValuesDo (usually a List or an Array).
@@ -38,7 +38,7 @@ any Object that responds to keysValuesDo (usually a List or an Array).
 discussion::
 A new Dictionary can also be created from an array of link::Classes/Association::s:
 code::
-Dictionary.with(*[\a->1,\b->2,\c->3])
+Dictionary.with(*[\a->1, \b->2, \c->3])
 ::
 Or from a single Association like:
 code::
@@ -193,12 +193,31 @@ d.matchAt(\abc)
 ::
 
 method::trueAt
-Returns link::Classes/True:: if the item at the key is true, otherwise false. This method is also valid in link::Classes/Object::.
+Returns link::Classes/True:: if the item's teletype::booleanValue:: at the key is teletype::true::, otherwise teletype::false::.
+
+code::
+// using binary value equivalents
+d = (x:1, y:0);
+d.trueAt(\x)   // true
+d.trueAt(\y)   // false
+d.trueAt(\foo) // false
+
+// other kinds of objects
+d = (num: 23.7, yes:true, no:false, sym:\foo);
+d.trueAt(\num) // true
+d.trueAt(\yes) // true
+d.trueAt(\no)  // false
+d.trueAt(\sym) // false
+d.trueAt(\bar) // false (d[\bar] is nil)
+::
 
 method::falseAt
-Returns link::Classes/False:: if the item at the key is not true, otherwise true. This method is inherited from link::Classes/Object::.
+Returns link::Classes/True:: if the item's teletype::booleanValue:: at the key is teletype::false::, otherwise teletype::true::.
+See link::#-trueAt:: for examples.
+
 
 subsection::Testing
+
 method::includes
 Returns true if the specified item is stored in the Dictionary as a value. Element is checked for equality (not for identity). For identity matching see subclasses: link::Classes/IdentityDictionary:: or link::Classes/Event::.
 code::
@@ -408,8 +427,8 @@ d = (
 )
 
 // draw new values
-d.rout.((z:999));
-d.rout.((z:1, a:0));
+d.rout.((z: 999));
+d.rout.((z: 1, a: 0));
 d.rout.(());
 ::
 
@@ -433,11 +452,11 @@ code::
 \hello === \hello;	// true
 
 // compare: Dictionary will only store one "hello"
-Dictionary["hello" -> 0, "hello" -> 1]; // Dictionary[ (hello -> 1) ]
+Dictionary["hello" -> 0, "hello" -> 1]; // Dictionary[(hello -> 1)]
 // while Event will store both "hello" because they are not identical
-("hello": 0, "hello": 1); // ( "hello": 1, "hello": 0 )
+("hello": 0, "hello": 1); // ("hello": 1, "hello": 0)
 
 // for symbols as keys, Dictionary and Event show the same behaviour:
-Dictionary[\hello -> 1, \hello -> 0]; // Dictionary[ (hello -> 0) ]
-( \hello: 1, \hello: 0 ); // ( 'hello': 0 )
+Dictionary[\hello -> 1, \hello -> 0]; // Dictionary[(hello -> 0)]
+(\hello: 1, \hello: 0); // ('hello': 0)
 ::

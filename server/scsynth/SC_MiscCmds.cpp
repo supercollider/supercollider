@@ -1300,6 +1300,12 @@ SCErr meth_status(World* inWorld, int inSize, char* inData, ReplyAddress* inRepl
     return kSCErr_None;
 }
 
+SCErr meth_rtMemoryStatus(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
+SCErr meth_rtMemoryStatus(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+    CallSequencedCommand(RTMemStatusCmd, inWorld, inSize, inData, inReply);
+    return kSCErr_None;
+}
+
 SCErr meth_quit(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
 SCErr meth_quit(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
     CallSequencedCommand(AudioQuitCmd, inWorld, inSize, inData, inReply);
@@ -1396,6 +1402,23 @@ SCErr meth_b_setn(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRe
             data[i] = value;
         }
     }
+
+    return kSCErr_None;
+}
+
+SCErr meth_b_setSampleRate(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
+SCErr meth_b_setSampleRate(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+    sc_msg_iter msg(inSize, inData);
+    int bufindex = msg.geti();
+    SndBuf* buf = World_GetBuf(inWorld, bufindex);
+    SndBuf* nrtBuf = World_GetNRTBuf(inWorld, bufindex);
+    if (!buf || !nrtBuf)
+        return kSCErr_Failed;
+
+    auto proposedSampleRate = msg.getf();
+    double newSampleRate = proposedSampleRate > 0.0 ? proposedSampleRate : inWorld->mSampleRate;
+    buf->samplerate = nrtBuf->samplerate = newSampleRate;
+    buf->sampledur = nrtBuf->sampledur = 1.0 / newSampleRate;
 
     return kSCErr_None;
 }
@@ -1871,6 +1894,7 @@ void initMiscCommands() {
     NEW_COMMAND(quit);
     NEW_COMMAND(clearSched);
     NEW_COMMAND(version);
+    NEW_COMMAND(rtMemoryStatus);
 
     NEW_COMMAND(d_recv);
     NEW_COMMAND(d_load);
@@ -1923,6 +1947,7 @@ void initMiscCommands() {
     NEW_COMMAND(b_zero);
     NEW_COMMAND(b_set);
     NEW_COMMAND(b_setn);
+    NEW_COMMAND(b_setSampleRate);
     NEW_COMMAND(b_fill);
     NEW_COMMAND(b_gen);
 

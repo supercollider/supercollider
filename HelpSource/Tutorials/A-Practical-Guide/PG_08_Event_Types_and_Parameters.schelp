@@ -1,7 +1,7 @@
 title:: Pattern Guide 08: Event Types and Parameters
 summary:: Describes the event types defined in the default event, and the parameters they expect
 related:: Tutorials/A-Practical-Guide/PG_07_Value_Conversions, Tutorials/A-Practical-Guide/PG_Cookbook01_Basic_Sequencing
-categories:: Streams-Patterns-Events>A-Practical-Guide
+categories:: Streams-Patterns-Events>A-Practical-Guide, Tutorials>Pattern-Guide
 
 section::Event types
 
@@ -252,7 +252,7 @@ These event types uniquely have automatic cleanup event types associated with th
 
 code::
 // create a buffer
-b = (type: \allocRead, path: Platform.resourceDir +/+ "sounds/a11wlk01.wav").play;
+b = (type: \allocRead, path: ExampleFiles.child).play;
 
 a = { PlayBuf.ar(1, b, doneAction: Done.freeSelf) }.play;
 

@@ -41,9 +41,8 @@ Examples::
 
 code::
 // modulate frequency
-{ Blip.ar(XLine.kr(20000,200,6),100,0.2) }.play;
+{ Blip.ar(XLine.kr(20000, 200, 6), 100, 0.2) }.play;
 
 // modulate numharmonics
-{ Blip.ar(200,Line.kr(1,100,20),0.2) }.play;
+{ Blip.ar(200, Line.kr(1, 100, 20), 0.2) }.play;
 ::
-

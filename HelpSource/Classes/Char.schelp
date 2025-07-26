@@ -54,6 +54,10 @@ private:: archiveAsCompileString
 
 subsection::conversion
 
+method::hash
+
+returns:: the hash value of the receiver.
+
 method::ascii
 
 returns:: the integer ASCII value of a Char.
@@ -62,6 +66,14 @@ method::digit
 
 returns:: an integer value from 0 to 9 for chars $0 to $9, and values 10 to 35 for chars $a to $z
 or $A to $Z.
+
+method::asAscii
+
+returns:: the object itself.
+
+method::asUnicode
+
+returns:: the object itself.
 
 method::toUpper
 
@@ -89,6 +101,10 @@ method::isPunct
 
 returns:: whether the char is a punctuation character.
 
+method::isControl
+
+returns:: true if the char is a control character.
+
 method::isSpace
 
 returns:: true if the char is white space: any of code::[$ , $\f, $\n, $\r, $\t, $\v]::.
@@ -103,8 +119,36 @@ returns:: true if the char is safe for use in a filename.
 Excludes the path separators / and :
 discussion::
 code::
- for(0,255,{ arg i;
+ for(0, 255, { |i|
 	var a;
-	[i,a = i.asAscii,a.isAlphaNum,a.isPrint,a.isPunct,a.isControl].postln;
+	[i, a = i.asAscii, a.isAlphaNum, a.isPrint, a.isPunct, a.isControl].postln;
 });
 ::
+
+method::isLower
+
+returns:: true if the char is a lowercase letter.
+
+method::isUpper
+
+returns:: true if the char is a uppercase letter.
+
+method::isPathSeparator
+
+returns:: true if the char is one of the platform specific path separators.
+
+method::isVowel
+
+returns:: true if the char is a vowel.
+
+method::++
+
+returns:: teletype::this.asString ++ that::
+
+method::<
+
+returns:: TELETYPE::this.ascii < aChar.ascii::
+
+method::==
+
+returns:: True if the receiver equals the argument.

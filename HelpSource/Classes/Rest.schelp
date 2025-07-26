@@ -8,7 +8,7 @@ A Rest may be used in event patterns to indicate that the resulting event should
 
 code::
 // do nothing for 2 seconds
-(note:Rest(), dur:2).play;
+(note: Rest(), dur: 2).play;
 
 // intersperse pauses in pattern
 Pbind(\note, Pseq([0, 4, 7, 11], inf), \dur, Pseq([2, 1, Rest(1)], inf) / 5).play;

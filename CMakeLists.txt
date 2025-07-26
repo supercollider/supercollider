@@ -46,32 +46,6 @@ CONFIGURE_FILE(
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
 
-# workaround for using ccache with Xcode generator
-# thanks to Craig Scott: https://crascit.com/2016/04/09/using-ccache-with-cmake/
-get_property(RULE_LAUNCH_COMPILE GLOBAL PROPERTY RULE_LAUNCH_COMPILE)
-if(RULE_LAUNCH_COMPILE AND CMAKE_GENERATOR STREQUAL "Xcode")
-
-    # find ccache
-    find_program(CCACHE_PROGRAM ccache)
-
-    message(STATUS "Xcode and ccache detected: using ccache to speed up build process")
-
-    # Set up wrapper scripts
-    set(SC_LAUNCH_C_SCRIPT   "${CMAKE_BINARY_DIR}/launch-c")
-    set(SC_LAUNCH_CXX_SCRIPT "${CMAKE_BINARY_DIR}/launch-cxx")
-
-    configure_file("cmake_modules/launch-c.in"   launch-c)
-    configure_file("cmake_modules/launch-cxx.in" launch-cxx)
-    execute_process(COMMAND chmod a+rx "${SC_LAUNCH_C_SCRIPT}" "${SC_LAUNCH_CXX_SCRIPT}")
-
-    # Set Xcode project attributes to route compilation and linking
-    # through our scripts
-    set(CMAKE_XCODE_ATTRIBUTE_CC         "${SC_LAUNCH_C_SCRIPT}")
-    set(CMAKE_XCODE_ATTRIBUTE_CXX        "${SC_LAUNCH_CXX_SCRIPT}")
-    set(CMAKE_XCODE_ATTRIBUTE_LD         "${SC_LAUNCH_C_SCRIPT}")
-    set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS "${SC_LAUNCH_CXX_SCRIPT}")
-endif()
-
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
@@ -96,20 +70,32 @@ endif(WIN32)
 # Compiler flags etc
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
-	exec_program(${CMAKE_CXX_COMPILER} ARGS -dumpversion OUTPUT_VARIABLE _gcc_version)
+    execute_process(
+            COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
+            OUTPUT_VARIABLE _gcc_version
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 
-	add_definitions("-fschedule-insns2" "-fomit-frame-pointer")
-
-	add_definitions("-Wreturn-type")
+    add_compile_options(
+        -Werror=return-type      # Error out if function definitions lack a return type
+        -fschedule-insns2        # Optimize instruction scheduling
+        -fomit-frame-pointer     # Optimize by omitting the frame pointer where possible
+        -fno-math-errno          # Optimize math functions by not setting errno
+        -fno-signaling-nans      # Assume no signaling NaNs for better optimization
+        -fsigned-zeros           # Maintain distinction between -0.0 and +0.0
+        -fno-associative-math    # Prevent reordering of floating-point operations
+    )
 
 	if(${_gcc_version} VERSION_LESS 4.8)
 		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
 	endif()
 
-	add_definitions("-fno-math-errno -fno-signaling-nans -fsigned-zeros -fno-associative-math")
-
 	if(APPLE)
-		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
+        execute_process(
+                COMMAND ${CMAKE_CXX_COMPILER} --version
+                OUTPUT_VARIABLE _gcc_version_info
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
 		if ("${_gcc_version_info}" MATCHES "Apple")
 			add_definitions("-fpascal-strings")
 		endif()
@@ -149,49 +135,17 @@ add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESS
 
 
 #############################################
-# Detect CCache
-
-find_program(CCacheExectuable ccache)
-if( CCacheExectuable )
-  # only used with >=cmake-3.4
-  set( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
-  set( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
-  if(NOT CMAKE_GENERATOR MATCHES "Xcode" AND (NOT CMAKE_GENERATOR MATCHES "Visual Studio")) # we already post a message when using Xcode or MSVC
-    message(STATUS "Found ccache at ${CCacheExectuable}: using ccache to speed up build process")
-  endif()
-
-  # fix for Visual Studio adapted from https://github.com/ccache/ccache/wiki/MS-Visual-Studio#usage
-  # NOTE: there is an issue with ccache installed from chocolatey
-  # since chocolatey puts a "shim" as opposed to the actual executable in the PATH
-  # the solution is to add the path to the actual ccache executable earlier in the path
-  # e.g. in bash: export PATH=`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`:$PATH
-  if (MSVC)
-    message(STATUS "Found ccache at ${CCacheExectuable}: using ccache with MSVC to speed up build process")
-    file(COPY_FILE
-      ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
-      ONLY_IF_DIFFERENT)
-
-    set(CMAKE_VS_GLOBALS
-      "CLToolExe=cl.exe"
-      "CLToolPath=${CMAKE_BINARY_DIR}"
-      "TrackFileAccess=false"
-      "UseMultiToolTask=true"
-      "DebugInformationFormat=OldStyle"
-    )
-  endif()
-endif()
-
-#############################################
 # Options
 option(NOVA_SIMD "Build with nova-simd support." ON)
 option(FINAL_BUILD "Build as single source file." OFF)
+option(USE_CCACHE "Use ccache if available." ON)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm|aarch64")
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^AMD64|EM64T|x86_64|X86|i386|i686")
     option(SSE "Compile with support for SSE instructions." ON)
     option(SSE2 "Compile with support for SSE2 instructions." ON)
-else() # ARM platforms do not have SSE
+else() # non-x86 platforms do not have SSE
     set(SSE OFF)
     set(SSE2 OFF)
 endif()
@@ -253,7 +207,11 @@ endif()
 
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 
-option(SC_CLANG_USES_LIBSTDCPP "Use libstdc++ with clang instead of libc++" OFF)
+if(LINUX)
+    option(SC_CLANG_USES_LIBSTDCPP "Use libstdc++ with clang instead of libc++" ON)
+else()
+    option(SC_CLANG_USES_LIBSTDCPP "Use libstdc++ with clang instead of libc++" OFF)
+endif()
 
 option(SYSTEM_ABLETON_LINK "Use link from system" OFF)
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
@@ -286,6 +244,65 @@ if(APPLE)
 endif()
 
 #############################################
+# Detect CCache
+
+if(USE_CCACHE)
+
+  # find ccache
+  find_program(CCACHE_PROGRAM ccache)
+
+  if(CCACHE_PROGRAM)
+
+    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+
+    if (MSVC)
+      # workaround for Visual Studio adapted from https://github.com/ccache/ccache/wiki/MS-Visual-Studio#usage
+      # NOTE: there is an issue with ccache installed from chocolatey
+      # since chocolatey puts a "shim" as opposed to the actual executable in the PATH
+      # the solution is to add the path to the actual ccache executable earlier in the path
+      # e.g. in bash: export PATH=`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`:$PATH
+      message(STATUS "Found ccache at ${CCACHE_PROGRAM}: using ccache with MSVC to speed up build process")
+
+      file(COPY_FILE
+        ${CCACHE_PROGRAM} ${CMAKE_BINARY_DIR}/cl.exe
+        ONLY_IF_DIFFERENT)
+
+      set(CMAKE_VS_GLOBALS
+        "CLToolExe=cl.exe"
+        "CLToolPath=${CMAKE_BINARY_DIR}"
+        "TrackFileAccess=false"
+        "UseMultiToolTask=true"
+        "DebugInformationFormat=OldStyle"
+      )
+    else()
+      if(CMAKE_GENERATOR STREQUAL "Xcode")
+        message(STATUS "Found ccache at ${CCACHE_PROGRAM}: using ccache with Xcode to speed up build process")
+
+        # workaround for using ccache with Xcode generator
+        # thanks to Craig Scott: https://crascit.com/2016/04/09/using-ccache-with-cmake/
+
+        # Set up wrapper scripts
+        set(SC_LAUNCH_C_SCRIPT   "${CMAKE_BINARY_DIR}/launch-c")
+        set(SC_LAUNCH_CXX_SCRIPT "${CMAKE_BINARY_DIR}/launch-cxx")
+        configure_file("cmake_modules/launch-c.in"   launch-c)
+        configure_file("cmake_modules/launch-cxx.in" launch-cxx)
+        execute_process(COMMAND chmod a+rx "${SC_LAUNCH_C_SCRIPT}" "${SC_LAUNCH_CXX_SCRIPT}")
+
+        # Set Xcode project attributes to route compilation and linking
+        # through our scripts
+        set(CMAKE_XCODE_ATTRIBUTE_CC         "${SC_LAUNCH_C_SCRIPT}")
+        set(CMAKE_XCODE_ATTRIBUTE_CXX        "${SC_LAUNCH_CXX_SCRIPT}")
+        set(CMAKE_XCODE_ATTRIBUTE_LD         "${SC_LAUNCH_C_SCRIPT}")
+        set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS "${SC_LAUNCH_CXX_SCRIPT}")
+      else()
+        message(STATUS "Found ccache at ${CCACHE_PROGRAM}: using ccache to speed up build process")
+      endif() # Xcode
+    endif() # MSVC
+  endif() # ccache found
+endif()
+
+#############################################
 # some default libraries
 
 if (NOT WIN32)
@@ -312,9 +329,6 @@ if(SYSTEM_BOOST)
         add_library(boost_system_lib SHARED IMPORTED)
         set_property(TARGET boost_system_lib PROPERTY IMPORTED_LOCATION
           ${Boost_SYSTEM_LIBRARY})
-        add_library(boost_filesystem_lib SHARED IMPORTED)
-        set_property(TARGET boost_filesystem_lib PROPERTY IMPORTED_LOCATION
-          ${Boost_FILESYSTEM_LIBRARY})
         add_library(boost_program_options_lib SHARED IMPORTED)
         set_property(TARGET boost_program_options_lib PROPERTY
           IMPORTED_LOCATION ${Boost_PROGRAM_OPTIONS_LIBRARY})
@@ -396,8 +410,8 @@ if(MSVC)
     set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
   endforeach()
 
-# this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error 
-# caused by some versions of libsndfile's C++ header redefining nullptr as NULL. 
+# this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error
+# caused by some versions of libsndfile's C++ header redefining nullptr as NULL.
 # See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
   add_compile_options("/Zc:__cplusplus")
 

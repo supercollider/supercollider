@@ -48,10 +48,15 @@ code::
 s.boot // Boot the server, if you need to
 
 // read a whole sound into memory
-// note: not *that* columbia, the first one
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav"); // remember to free the buffer later.
 
-SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
+// peek at the path to see location and the format of a path
+p.postln;
+// read the file into a buffer
+b = Buffer.read(s, p); // remember to free the buffer later.
+
+SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum), doneAction: Done.freeSelf)
 	)
@@ -64,7 +69,7 @@ Note again that the number of channels must be fixed for the SynthDef. It cannot
 
 code::
 // loop is true
-SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
+SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum), loop: 1.0)
 	)
@@ -72,7 +77,7 @@ SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 
 
 // trigger one shot on each pulse
-SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
+SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	var trig;
 	trig = Impulse.kr(2.0);
 	Out.ar(out,
@@ -82,7 +87,7 @@ SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 
 
 // trigger one shot on each pulse
-SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
+SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	var trig;
 	trig = Impulse.kr(XLine.kr(0.1, 100, 30));
 	Out.ar(out,
@@ -92,7 +97,7 @@ SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 
 
 // mouse control of trigger rate and startpos
-SynthDef(\help_PlayBuf, { arg out=0, bufnum=0;
+SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	var trig;
 	trig = Impulse.kr(MouseY.kr(0.5, 200, 1));
 	Out.ar(out,
@@ -102,7 +107,7 @@ SynthDef(\help_PlayBuf, { arg out=0, bufnum=0;
 
 
 // accelerating pitch
-SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
+SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	var rate;
 	rate = XLine.kr(0.1, 100, 60);
 	Out.ar(out,
@@ -112,7 +117,7 @@ SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 
 
 // sine wave control of playback rate. negative rate plays backwards
-SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
+SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	var rate;
 	rate = FSinOsc.kr(XLine.kr(0.2, 8, 30), 0, 3, 0.6);
 	Out.ar(out,
@@ -122,7 +127,7 @@ SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 
 
 // zig zag around sound
-SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
+SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	var rate;
 	rate = LFNoise2.kr(XLine.kr(1, 20, 60), 2);
 	Out.ar(out,
@@ -132,4 +137,3 @@ SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 
 b.free;
 ::
-

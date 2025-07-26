@@ -1,189 +1,226 @@
-Building SuperCollider on Raspberry Pi
-======================================
+# Building SuperCollider on Raspberry Pi
 
-SuperCollider can be built with the IDE and Qt GUI components on Raspbian Desktop, or without them on Raspbian
-Desktop or Raspbian Lite. However, the project cannot be compiled with the QtWebEngine library, which means that the
-help browser in the IDE, and the HelpBrowser and WebView classes in sclang, are unavailable.
+SuperCollider can be built with the IDE and Qt GUI components or without them to run GUI-less (headless).
+This README covers both options as well as options for building under a 64-bit or 32-bit OS.
+Generally, all newer Raspberry Pi models can run a 64-bit OS, while the older models are 32-bit only.
 
-Build requirements
-------------------
+These notes assume the official [Raspberry Pi OS](https://www.raspberrypi.com/software/operating-systems/)
+but should also be useful if your Raspberry Pi is running, for example, [DietPi](https://dietpi.com).
 
-* Raspberry Pi 2, 3 or 4 (Raspberry Pi 0 and 1 will also work, but note that compiling will take a _long_ time)
-* SD card with [Raspbian Desktop](https://www.raspberrypi.org/downloads/raspbian) Stretch or Buster, or Raspbian Lite for a GUI-less build
-* Router with Ethernet internet connection for the RPi
-* For a GUI build: screen, mouse and keyboard
-* For a GUI-less build: an empty dummy file called `ssh` on the root level of the SD card, to enable ssh, and a laptop connected to the same network as the RPi
-* Optional: USB soundcard with headphones or speakers connected
+**Note**: the project can only compile the QtWebEngine library under a 64-bit OS, which means that the help
+browser in the IDE, and the HelpBrowser and WebView classes in sclang, are unavailable for a 32-bit OS.
 
-Building
---------
+## Build requirements
+
+- Raspberry Pi 2, 3, 4 or 5 (Raspberry Pi 0 and 1 will also work, but note that compiling will take a _long_ time).
+- microSD card with a 64-bit or 32-bit Raspberry Pi OS with desktop or Raspberry Pi OS Lite.
+  Lite is the recommended OS for GUI-less builds.
+- Internet connection for the Raspberry Pi.
+- Screen, mouse and keyboard. Or SSH enabled to perform the build from another computer.
+- Optional: USB sound card with headphones or speakers connected.
+
+## Building
 
 ### Step 1: Hardware setup
 
-1. Connect an ethernet cable from the network router to the RPi
-2. Insert the SD card and USB soundcard. For a GUI build, connect screen, mouse and keyboard
-3. Connect USB power from a power supply
+1. Connect an ethernet cable from the network router to the RPi.
+2. Insert the microSD card and USB sound card. Connect screen, mouse and keyboard.
+3. Connect USB power from a power supply.
 
-### Step 2: Update the system, install required libraries
-
-For a GUI-less build, first ssh into the RPi from your laptop by opening a terminal and typing:
-
-    ssh pi@raspberrypi # default password is 'raspberry'
+### Step 2: Update the system, install packages and dependencies
 
 In a terminal, type (or copy-and-paste):
 
-    sudo raspi-config # change password and optionally edit hostname and enable ssh and/or vnc
-    sudo apt-get update
-    sudo apt-get upgrade
-    sudo apt-get dist-upgrade
+```shell
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+```
 
-Install required libraries:
+Install required libraries and dependencies:
 
-    # For GUI builds:
-    sudo apt-get install libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev \
-        libreadline-dev libfftw3-dev libxt-dev libudev-dev libncurses5-dev cmake git qttools5-dev qttools5-dev-tools \
-        qtbase5-dev libqt5svg5-dev qjackctl
-    # For GUI-less builds:
-    sudo apt-get install libsamplerate0-dev libsndfile1-dev libasound2-dev libavahi-client-dev \
-        libreadline-dev libfftw3-dev libudev-dev libncurses5-dev cmake git
+```shell
+sudo apt-get install \
+  build-essential \
+  cmake \
+  libjack-jackd2-dev \
+  libsndfile1-dev \
+  libfftw3-dev \
+  libxt-dev \
+  libavahi-client-dev \
+  libudev-dev \
+  libasound2-dev \
+  libreadline-dev \
+  libxkbcommon-dev \
+  git \
+  jackd2 # Accept realtime permissions for jackd when asked
+  ```
 
-### Step 3: GUI-less builds only: compile and install jackd (no d-bus)
+For GUI builds also install Qt - skip for GUI-less (Lite):
 
-    cd ~ # or cd into the directory where you'd like to build jack2
-    git clone https://github.com/jackaudio/jack2 --depth 1
-    cd jack2
-    ./waf configure --alsa --libdir=/usr/lib/arm-linux-gnueabihf/
-    ./waf build
-    sudo ./waf install
-    sudo ldconfig
-    cd ..
-    rm -rf jack2
-    sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"
-    sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"
-    exit # and ssh in again to make the limits.conf settings work
+```shell
+sudo apt-get install \
+  qt6-base-dev \
+  qt6-svg-dev \
+  qt6-tools-dev \
+  qt6-wayland \
+  qt6-websockets-dev
+```
 
-### Step 4: Compile and install SuperCollider
+For 64-bit OS GUI build - skip for GUI-less (Lite) and 32-bit OS:
 
-    cd ~ # or cd into the directory where you'd like to clone and build supercollider
-    git clone --recurse-submodules https://github.com/supercollider/supercollider.git
-    cd supercollider
-    mkdir build && cd build
+```shell
+sudo apt-get install qt6-webengine-dev
+```
 
-    # For a GUI-less build:
-    cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_ED=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON \
-        -DSC_IDE=OFF -DNO_X11=ON -DSC_QT=OFF ..
+### Step 3: Obtain the source code
 
-    # For a GUI build:
-    cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_ED=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON \
-        -DSC_USE_QTWEBENGINE:BOOL=OFF ..
+```shell
+cd ~ # Or cd into the directory where you'd like to clone and build supercollider
+git clone --branch main --recurse-submodules https://github.com/supercollider/supercollider.git
+cd supercollider
+mkdir build && cd build
+```
 
-    cmake --build . --config Release --target all -- -j3 # use -j3 flag only on RPi3 or newer
-    sudo cmake --build . --config Release --target install
-    sudo ldconfig
+### Step 4: Configure the build via CMake
 
-### Step 5: Set up JACK
+**Note**: below are some configuration options. Pick the one that suits your OS and build type.
 
-    # `-dhw:0` is the internal soundcard. Use `-dhw:1` for USB soundcards. `aplay -l` will list available devices.
-    # Use `nano ~/.jackdrc` to edit jack settings.
+For a 64-bit GUI build:
 
-    # For GUI builds:
-    echo /usr/bin/jackd -P75 -p16 -dalsa -dhw:0 -r44100 -p1024 -n3 > ~/.jackdrc
+```shell
+cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON ..
+```
 
-    # For GUI-less builds:
-    echo /usr/local/bin/jackd -P75 -p16 -dalsa -dhw:0 -r44100 -p1024 -n3 > ~/.jackdrc
+For a 32-bit GUI build:
+
+```shell
+cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON \
+  -DNOVA_SIMD:BOOL=OFF -DSC_USE_QTWEBENGINE:BOOL=OFF ..
+```
+
+For a 64-bit GUI-less build:
+
+```shell
+cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON \
+  -DSC_IDE=OFF -DNO_X11=ON -DSC_QT=OFF ..
+```
+
+For a 32-bit GUI-less build:
+
+```shell
+cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON \
+  -DSC_IDE=OFF -DNO_X11=ON -DSC_QT=OFF -DNOVA_SIMD:BOOL=OFF ..
+```
+
+### Step 5: Build and install
+
+```shell
+make # May add -j3 flag on newer RPis to speed up compilation
+sudo make install
+sudo ldconfig
+```
+
+### Step 6: Set up JACK
+
+```shell
+echo /usr/bin/jackd -P75 -p16 -dalsa -dhw:0 -p1024 -n3 > ~/.jackdrc
+sudo usermod -aG audio $USER
+sudo reboot
+```
+
+Change to `-dhw:1` or `-dhw:2` for USB sound cards. `aplay -l` will list available devices.
 
 For GUI builds, another way to set up and start jack is to open a terminal and type `qjackctl`. Click 'setup' to
-select soundcard and set periods to 3 (recommended). Then start jack before the SC IDE by clicking the play icon.
+select a sound card and set periods to 3 (recommended). Then start jack before the SC IDE by clicking the play icon.
 
-Usage
------
+## Usage
 
-To use SuperCollider, just open a terminal and execute `scide` (GUI) or `sclang` (GUI-less).
+To use SuperCollider (GUI), open SuperCollider IDE from the Applications Menu or open a terminal and execute `scide`.  
+For GUI-less execute `sclang` from a terminal.
 
 When you boot the server jack should start automatically with the settings in `~/.jackdrc`.
 
 **Done!** See below for other usage notes and tips.
 
-Running a GUI build headless
-----------------------------
-
-If you want to ssh in and start SuperCollider headless, run:
-
-    export DISPLAY=:0.0
-    sclang
-
-sc3-plugins
------------
+## sc3-plugins
 
 To compile and install sc3-plugins, follow the instructions in the [sc3-plugins README](https://github.com/supercollider/sc3-plugins).
 
-Autostart
----------
+## Autostart
 
 To automatically run SuperCollider code at system boot:
 
-    cat >~/autostart.sh <<EOF
-    #!/bin/bash
-    export PATH=/usr/local/bin:$PATH
-    export DISPLAY=:0.0
-    sleep 10 # can be lower (5) for rpi3
-    sclang ~/mycode.scd
-    EOF
+```shell
+cat >~/autostart.sh <<EOF
+#!/bin/bash
+export PATH=/usr/local/bin:\$PATH
+export QT_QPA_PLATFORM=offscreen
+export JACK_NO_AUDIO_RESERVATION=1
+sleep 10 # can be lower (5) for newer RPi models, or higher (30) for older
+sclang ~/mycode.scd
+EOF
 
-    chmod +x ~/autostart.sh
-    crontab -e # and add the following line to the end:
-        @reboot cd /home/pi && ./autostart.sh
+chmod +x ~/autostart.sh
 
-    nano ~/mycode.scd # And add your code inside a waitForBoot. For example:
-        s.waitForBoot{ {SinOsc.ar([400, 404])}.play }
+crontab -e # And add the following line to the end:
+  @reboot ./autostart.sh
 
-    sudo reboot # the sound should start after a few seconds
+nano ~/mycode.scd # And add your code inside a waitForBoot. For example:
+  s.waitForBoot{ {SinOsc.ar([400, 404])}.play }
 
-Login with ssh and run `killall jackd sclang scsynth` to stop the sound.
+sudo reboot # The sound should start after a few seconds
+```
 
-Benchmarks
-----------
+Login with SSH and run `killall jackd sclang scsynth` to stop the sound.
 
-These are rough benchmark tests. The server should be booted and jackd running with settings: `-P75 -p1024 -n3 -r44100`
+## Benchmarks
 
-Also for comparison it is important to set CPU scaling to 'performance', by running:
+These are rough benchmark tests. The server should be booted and jackd running with settings:
+`-P75 -p1024 -n3 -r44100`
 
-    echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+Also for comparison, it is important to set CPU scaling to 'performance', by running:
 
-Start sclang or scide and run:
+```shell
+sudo apt-get install cpufrequtils
+sudo cpufreq-set -g performance
+```
 
-    s.boot
-    {1000000.do{2.5.sqrt}}.bench // ~0.56 for rpi3 headless, ~0.7 for rpi3 scide, ~1.7 for rpi0 headless, ~3.8 for rpi0 scide
-    a= {Mix(50.collect{RLPF.ar(SinOsc.ar)});DC.ar(0)}.play
-    s.avgCPU // run a few times. ~12% for rpi3, ~18% for rpi2, ~79% for rpi1, ~50% for rpi0
-    a.free
+Start sclang or SC IDE and run:
 
-With the default cpu scaling (ondemand) these benchmarks perform much worse, but 'ondemand' also saves battery life so
+```supercollider
+s.boot
+{1000000.do{2.5.sqrt}}.bench // ~0.56 for RPi3, ~0.84 for RPi2, ~1.7 for RPi0 headless, ~2.7 for RPi0 scide
+a= {Mix(50.collect{RLPF.ar(SinOsc.ar)});DC.ar(0)}.play
+s.avgCPU // run a few times. ~11% for RPi3, ~18% for RPi2, ~37% for RPi0
+a.free
+```
+
+With the default CPU scaling (ondemand) these benchmarks perform worse, but 'ondemand' also saves battery life so
 depending on your application, this might be the preferred mode.
 
-To set 'performance' scaling mode permanently see the "Gotcha..." section of [this StackExchange
-post](https://raspberrypi.stackexchange.com/questions/9034/how-to-change-the-default-governor#9048).
+To set 'performance' scaling mode permanently...
+```shell
+sudo crontab -e # And add the following line to the end:
+  @reboot sleep 10 && cpufreq-set -g performance
+```
 
-Notes and Troubleshooting
--------------------------
+## Notes and Troubleshooting
 
 This applies to both GUI and GUI-less builds above:
 
-* An easy way to burn the zip file (no need to unpack) to an SD card is to use [etcher](http://etcher.io).
-* The internal soundcard volume is by default set low (40). Type `alsamixer` in terminal and adjust the pcm volume to
+- An easy way to install Raspberry Pi OS to a microSD card is to use the official
+  [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
+- If the make step stops with an error you might have run out of RAM. Reboot and rerun the make command - possibly with a lower `-j` setting.
+- The internal sound card volume is by default set low (40). Type `alsamixer` in the terminal and adjust the PCM volume to
   85 with the arrow keys. Press escape to exit.
-* The audio quality of rpi's built-in sound is terrible. Dithering helps a bit so add `-zs` to the jackd command if
+- The audio quality of RPi's built-in sound is terrible. Dithering helps a bit so add `-zs` to the jackd command if
   you are using the built-in sound.
-* If building with `-j 3` stops or returns an error the compiler might just have run out of memory. Try to reboot and
-  run the make command again without `-j 3` or decrease the gpu memory in raspi-config under advanced (set it to 16).
-* If you get `WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!` when trying to ssh in, type `ssh-keygen -R
-  raspberrypi` to reset.
-* For lower latency, set a lower blocksize for jackd. Try, for example `-p512` or `-p128`. Tune downwards until you
-  get dropouts and xruns (also watch cpu%).
-* To avoid SD card corruption one should always shut down the system properly and not just pull out the power. When
-  running headless you can either ssh in and type `sudo halt -p`, use a GPIO pin with a button and Python script, or
+- For lower latency, set a lower blocksize for jackd. Try, for example `-p512` or `-p128`. Tune downwards until you
+  get dropouts and xruns (also watch CPU %).
+- If you get errors starting sclang from the terminal try `export QT_QPA_PLATFORM=offscreen && sclang`
+- To avoid microSD card corruption one should always shut down the system properly and not just pull out the power. When
+  running headless you can either SSH in and type `sudo halt -p`, use a GPIO pin with a button and Python script, or
   set up an OSC command from within SC that turns off the RPi. See
-  [here](https://github.com/blacksound/VTM/wiki/Raspberry-Pi-Instructions#shutdown-for-raspberry-pi).
-* For the older Raspbian Jessie system use a [previous](https://github.com/supercollider/supercollider.github.io/blob/1f578b5fa71e1acae0ce40d14bc0ef116062093d/development/building-raspberrypi.md)
-  version of these instructions.
-* To quit sclang after starting via the commandline use `0.exit`.
+  [shutdown for raspberry pi](https://github.com/blacksound/VTM/wiki/Raspberry-Pi-Instructions#shutdown-for-raspberry-pi).
+- To quit sclang after starting via the command line use `0.exit`

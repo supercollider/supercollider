@@ -59,7 +59,7 @@ code::
 
 // comparison of array indexing and identity set lookup
 (
-f = { |n=4|
+f = { |n = 4|
 	var x, y, i;
 	x = (0..n);
 	y = x.as(IdentitySet);
@@ -87,7 +87,7 @@ a.as(IdentitySet);	// convert to set
 a.as(Set).as(Array);	// and convert back
 
 // note that the following behaves differently:
-a = [ "such", "such", "fallacy", "is", "such", "common", "such" ]
+a = ["such", "such", "fallacy", "is", "such", "common", "such"]
 a.as(IdentitySet);	// convert to set. All elements are still here.
 			// Different strings may look the same, but be different objects.
 

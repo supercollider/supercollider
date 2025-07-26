@@ -68,11 +68,11 @@ s.waitForBoot({
 		Wavetable.chebyFill(256+1, amplitudes, normalize: true, zeroOffset: true),
 		Wavetable.chebyFill(256+1, amplitudes, normalize: true, zeroOffset: false)
 	];
-	b = wavs.collect{ arg wav; Buffer.loadCollection(s, wav) };
+	b = wavs.collect{ |wav| Buffer.loadCollection(s, wav) };
 	s.sync;
 	x = {
 		var in = SinOsc.ar(100, 0, SinOsc.kr(0.1, 0, 0.5, 0.5));
-		Shaper.ar(b, in ) ++ LeakDC.ar(Shaper.ar(b[1], in))
+		Shaper.ar(b, in) ++ LeakDC.ar(Shaper.ar(b[1], in))
 	}.scope;
 })
 )
@@ -95,6 +95,15 @@ argument::minval
 the minimum value in the plot. Defaults to the highest value in the data.
 argument::maxval
 the maximum value in the plot. Defaults to the lowest value in the data.
+argument:: parent
+Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
+code::
+(
+var w = Window("parent");
+Wavetable.sineFill(512, 1.0/[1, 2, 3, 4, 5, 6]).plot(parent: w);
+w.front
+)
+::
 
 method::asSignal
 Convert the Wavetable into a Signal.
@@ -110,7 +119,3 @@ Signal: [a0, a1, a2...]
 Wavetable: [2*a0-a1, a1-a0, 2*a1-a2, a2-a1, 2*a2-a3, a3-a2...]
 ::
 This strange format is not a standard linear interpolation (integer + frac), but for (integer part -1) and (1+frac))  due to some efficient maths for integer to float conversion in the underlying C code.
-
-
-
-

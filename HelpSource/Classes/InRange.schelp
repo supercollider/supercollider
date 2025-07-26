@@ -6,39 +6,36 @@ categories::  UGens>Maths
 
 Description::
 
-If  code::in::  is ≥  code::lo::  and ≤
-code::hi::  output 1.0, otherwise output 0.0. Output is
-initially zero.
+If teletype::lo ≤ in ≤ hi::, output 1.0, otherwise output 0.0.
 
 
 classmethods::
 
-method::ar, kr, ir
+method:: ar, kr, ir
 
-argument::in
+argument:: in
 
-Signal to be tested.
-
-
-argument::lo
-
-Low threshold.
+Signal to be tested. If teletype::InRange:: is running at audio rate, strong::in:: must also be audio rate.
 
 
-argument::hi
+argument:: lo
 
-High threshold.
+Low threshold. Updated at control rate.
+
+
+argument:: hi
+
+High threshold. Updated at control rate.
 
 
 Examples::
 
 code::
 
-s.boot;
+// See the trigger
+{ InRange.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15) }.scope;
 
-{ InRange.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15)}.scope; // see the trigger
-
-{ InRange.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15) * BrownNoise.ar(0.1)}.scope; // trigger noise Burst
+// Trigger noise burst
+{ InRange.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15) * BrownNoise.ar(0.1) }.scope;
 
 ::
-

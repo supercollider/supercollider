@@ -69,6 +69,12 @@ struct mem_block_cache
      }
      ::operator delete(ptr);
    }
+
+   static mem_block_cache& instance()
+   {
+      static mem_block_cache block_cache = { { {nullptr} } };
+      return block_cache;
+   }
 };
 
 
@@ -129,11 +135,43 @@ struct mem_block_cache
          ++cached_blocks;
       }
    }
+   static mem_block_cache& instance()
+   {
+#ifdef BOOST_HAS_THREADS
+      static mem_block_cache block_cache = { 0, 0, BOOST_STATIC_MUTEX_INIT, };
+#else
+      static mem_block_cache block_cache = { 0, 0, };
+#endif
+      return block_cache;
+   }
 };
 #endif
 
-extern mem_block_cache block_cache;
+#if BOOST_REGEX_MAX_CACHE_BLOCKS == 0
 
+inline void* BOOST_REGEX_CALL get_mem_block()
+{
+   return ::operator new(BOOST_REGEX_BLOCKSIZE);
+}
+
+inline void BOOST_REGEX_CALL put_mem_block(void* p)
+{
+   ::operator delete(p);
+}
+
+#else
+
+inline void* BOOST_REGEX_CALL get_mem_block()
+{
+   return mem_block_cache::instance().get();
+}
+
+inline void BOOST_REGEX_CALL put_mem_block(void* p)
+{
+   mem_block_cache::instance().put(p);
+}
+
+#endif
 }
 } // namespace boost
 

@@ -26,7 +26,7 @@ Examples::
 
 code::
 
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 // indexing with a phasor
 { BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b), 0, BufFrames.kr(b))) }.play;
@@ -37,4 +37,3 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 b.free
 
 ::
-

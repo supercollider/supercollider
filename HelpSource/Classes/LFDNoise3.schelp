@@ -6,13 +6,13 @@ categories::  UGens>Generators>Stochastic
 
 Description::
 
-Similar to  link::Classes/LFNoise2:: , it generates polynomially
+Similar to  link::Classes/LFNoise2::, it generates polynomially
 interpolated random values at a rate given by the
 code::freq::  argument, with 3 differences:
 list::
 ## no time quantization
 ## fast recovery from low freq values footnote::
-link::Classes/LFNoise0:: ,  link::Classes/LFNoise1::  and
+link::Classes/LFNoise0::, link::Classes/LFNoise1::  and
 link::Classes/LFNoise2::  quantize to the nearest integer division
 of the samplerate, and they poll the  code::freq::
 argument only when scheduled; thus they often seem to hang
@@ -44,9 +44,9 @@ code::
 // try wiggling mouse quickly:
 // LFNoise2 overshoots when going from high to low freqs, LFDNoise changes smoothly.
 
-{  SinOsc.ar(LFNoise2.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2)  }.play
+{  SinOsc.ar(LFNoise2.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2) }.play
 
-{  SinOsc.ar(LFDNoise3.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2)  }.play
+{  SinOsc.ar(LFDNoise3.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2) }.play
 
 
 // LFNoise quantizes time steps at high freqs, LFDNoise does not:
@@ -65,4 +65,3 @@ code::
 }.play;
 )
 ::
-

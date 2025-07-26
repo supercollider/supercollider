@@ -46,11 +46,11 @@ a = DragBoth(w, Rect(10, 10, 150, 20)).align_(\center).background_(Color.rand);
 a.object = "drag us around";
 
 a = DragBoth(w, Rect(10, 10, 150, 20)).align_(\center).background_(Color.rand);
-a.object="SUPERCOLLIDER";
+a.object = "SUPERCOLLIDER";
 
 8.do{
 a = DragBoth(w, Rect(10, 10, 150, 20)).align_(\center).background_(Color.rand);
-a.receiveDragHandler = { arg obj; obj.object = View.currentDrag.scramble };
+a.receiveDragHandler = { |obj| obj.object = View.currentDrag.scramble };
 }
 )
 ::

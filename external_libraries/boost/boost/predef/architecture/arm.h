@@ -126,6 +126,16 @@ http://en.wikipedia.org/wiki/ARM_architecture[ARM] architecture.
 #   define BOOST_ARCH_ARM_AVAILABLE
 #endif
 
+#if BOOST_ARCH_ARM
+#   if BOOST_ARCH_ARM >= BOOST_VERSION_NUMBER(8,0,0)
+#       undef BOOST_ARCH_WORD_BITS_64
+#       define BOOST_ARCH_WORD_BITS_64 BOOST_VERSION_NUMBER_AVAILABLE
+#   else
+#       undef BOOST_ARCH_WORD_BITS_32
+#       define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#   endif
+#endif
+
 #define BOOST_ARCH_ARM_NAME "ARM"
 
 #endif

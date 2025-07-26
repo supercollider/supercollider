@@ -1,10 +1,13 @@
 class::Function
 summary::Implements a function
 categories::Core>Kernel
-related::Classes/FunctionDef
+related::Reference/Functions, Classes/AbstractFunction, Classes/FunctionDef
+
+This document deals with the usage of Function objects. 
+For a more general introduction and documentation of syntax, see link::Reference/Functions::.
 
 description::
-A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method. See the Functions help file for a basic introduction.
+A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method.
 
 Because it inherits from AbstractFunction, Functions respond to math operations by creating a new Function.
 
@@ -55,7 +58,7 @@ subsection::Access
 
 method::def
 
-Get the definition ( FunctionDef ) of the Function.
+Get the definition (FunctionDef) of the Function.
 
 method::isClosed
 
@@ -68,8 +71,26 @@ method::value
 Evaluates the FunctionDef referred to by the Function. The Function is passed the args given.
 
 code::
-{ |a, b| (a * b).postln }.value(3, 10);
-{ arg a, b; (a * b).postln }.value(3, 10); // different way of expressing the same
+ // different way of expressing the same:
+{ |a, b| a * b }.value(3, 10);
+{ |a, b| a * b }.value(a: 3, b: 10); // keyword arguments
+{ |a, b| a * b }.(3, 10); // short syntax: "value" can be dropped.
+::
+
+Default arguments can be omitted in the call:
+code::
+{ |a=3, b=10| a * b }.value; // use default arguments only
+{ |a=3, b=10| a * b }.value(2); // only set the first argument (a)
+{ |a=3, b=10| a * b }.value(b: 100); // set the second argument (b) without the first
+::
+
+The results of functions composed with operators distribute the keyword arguments to each of the operands.
+
+code::
+f = { |a, b=1| a ** b } * { |a, c = 0| a + c };
+f.value(1); // default arguments for b and c
+f.value(1, b:2); // explicitly specify a (the other function warns)
+(b:2.5).use { f.valueEnvir(2) } // to avoid the warnings, you can use valueEnvir (see below)
 ::
 
 method::valueArray
@@ -104,6 +125,10 @@ Environment.use({
 { |a, b| (a * b).postln }.valueEnvir;
 });
 )
+
+// or syntactically shorter using an Event:
+
+(a:3, b:10).use { { |a, b| (a * b).postln }.valueEnvir };
 ::
 
 method::valueArrayEnvir
@@ -157,7 +182,7 @@ method::loop
 Repeat this function. Useful with Task and Clocks.
 
 code::
-t = Task({ { "I'm loopy".postln; 1.wait;}.loop });
+t = Task({ { "I'm loopy".postln; 1.wait }.loop });
 t.start;
 t.stop;
 ::
@@ -169,7 +194,7 @@ Delay the evaluation of this Function by code::delta:: in seconds on AppClock.
 This is equivalent to code::AppClock.sched(0, function):: unless code::delta:: is code::nil::. In that case the function is only scheduled if current code is not running on AppClock, otherwise the function is evaluated immediately.
 
 code::
-{ "2 seconds have passed.".postln; }.defer(2);
+{ "2 seconds have passed.".postln }.defer(2);
 
 (
 { "chicken".postln }.defer(0); // schedules on the AppClock
@@ -189,7 +214,7 @@ method::dup
 Return an Array consisting of the results of n evaluations of this Function.
 
 code::
-x = { 4.rand; }.dup(4);
+x = { 4.rand }.dup(4);
 x.postln;
 ::
 
@@ -223,7 +248,7 @@ method::bench
 Returns the amount of time this function takes to evaluate. print is a boolean indicating whether the result is posted. The default is true.
 
 code::
-{ 1000000.do({ 1.0.rand }); }.bench;
+{ 1000000.do({ 1.0.rand }) }.bench;
 ::
 
 method::fork
@@ -231,7 +256,7 @@ method::fork
 Returns a Routine using the receiver as it's function, and plays it in a TempoClock.
 
 code::
-{ 4.do({ "Threading...".postln; 1.wait;}) }.fork;
+{ 4.do({ "Threading...".postln; 1.wait }) }.fork;
 ::
 
 method::forkIfNeeded
@@ -239,7 +264,7 @@ method::forkIfNeeded
 If needed, creates a new Routine to evaluate the function in, if the message is called within a routine already, it simply evaluates it.
 
 code::
-f = { 4.do({ "Threading...".postln; 1.wait;}) };
+f = { 4.do({ "Threading...".postln; 1.wait }) };
 f.forkIfNeeded;
 { "we are now in a routine".postln; 1.wait; f.forkIfNeeded }.fork;
 ::
@@ -249,8 +274,8 @@ method::block
 Break from a loop. Calls the receiver with an argument which is a function that returns from the method block. To exit the loop, call .value on the function passed in. You can pass a value to this function and that value will be returned from the block method.
 
 code::
-block {|break|
-	100.do {|i|
+block { |break|
+	100.do { |i|
 		i.postln;
 		if (i == 7) { break.value(999) }
 	};
@@ -274,13 +299,13 @@ Return a function that, when evaluated with nested arguments, does multichannel 
 code::
 // multichannel expansion for if, here to protect from division by zero:
 f = { |a, b| if(b != 0) { a / b } { 0 } }.flop;
-f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
-f.value(2, 4); // [ 0.5 ] (always returns an array)
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [0, 0.2, 0.003, 0]
+f.value(2, 4); // [0.5] (always returns an array)
 
 // strings don't expand
 f = { |a, b| a + b }.flop;
-f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
-f.("hello", "world"); // -> [ hello world ]
+f.("hello", ["world", "algorithm"]); // -> [hello world, hello algorithm]
+f.("hello", "world"); // -> [hello world]
 
 ::
 
@@ -291,13 +316,13 @@ Same as link::#flop::, return only an array if the arguments also contains an ar
 code::
 // multichannel expansion for if, here to protect from division by zero:
 f = { |a, b| if(b != 0) { a / b } { 0 } }.flop1;
-f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [0, 0.2, 0.003, 0]
 f.value([2], 4); // -> [0.5]
 f.value(2, 4); // -> 0.5
 
 // strings don't expand, like in flop
 f = { |a, b| a + b }.flop1;
-f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
+f.("hello", ["world", "algorithm"]); // -> [hello world, hello algorithm]
 f.("hello", "world"); // -> hello world
 
 ::
@@ -386,7 +411,7 @@ use a function as a conversion from scale degree to note number. See also Sequen
 code::
 // a strange mapping
 (
-var f = {|degree, stepsPerOctave, acc|
+var f = { |degree, stepsPerOctave, acc|
 	(1.8 ** (degree % stepsPerOctave) + acc).postln
 };
 Pbind(
@@ -486,7 +511,7 @@ Note that reusing such code in a SynthDef requires the addition of an Out ugen.
 code::
 // the following two lines produce equivalent results
 { SinOsc.ar(440, 0, 0.3) }.play(fadeTime: 0.0);
-SynthDef(\help_FuncPlay, { Out.ar(0, SinOsc.ar(440, 0, 0.3))}).play;
+SynthDef(\help_FuncPlay, { Out.ar(0, SinOsc.ar(440, 0, 0.3)) }).play;
 ::
 
 Function.play is often more convenient than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice.
@@ -510,18 +535,19 @@ argument::bufsize
 The size of the buffer for the ScopeView. The default is 4096.
 argument::zoom
 A zoom value for the scope's X axis. Larger values show more. The default is 1.
-
+argument:: bounds
+The bounds of the code::Window:: in which the scope is embedded. A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is nil and the scope window will be in the centre of the display.
 method::plot
 
 note::See link::Reference/plot:: for a general reference on plotting::
 
 
-Calculates duration in seconds worth of the output of this function asynchronously, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out Ugens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
+Calculates duration in seconds worth of the output of this function asynchronously, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out UGens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
 
 code::
 { SinOsc.ar(440) }.plot(0.01, bounds: Window.screenBounds);
 
-{ {|i| SinOsc.ar(1 + i)}.dup(7) }.plot(1);
+{ { |i| SinOsc.ar(1 + i) }.dup(7) }.plot(1);
 ::
 
 
@@ -545,7 +571,14 @@ argument::maxval
 the maximum value in the plot. If not specified, the signal's maximum is used.
 argument:: separately
 If set to code::true::, for multichannel signals use separate value display ranges, unless minval or maxval is specified already.
-
+argument:: parent
+Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
+code::
+(
+var w = Window("The parent of a plotter").front;
+{ SinOsc.ar }.plot(0.01, parent: w)
+)
+::
 
 method::asBuffer
 Calculates duration in seconds worth of the output of this function asynchronously, and returns it in a link::Classes/Buffer:: of the number of channels. This method immediately returns a buffer, which takes code::duration:: seconds to become filled with data asynchronously. Then the action function is called.
@@ -565,10 +598,10 @@ A fade in and out time in seconds. Only when greater than zero, an envelope is a
 discussion::
 code::
 // record a buffer
-b = { Blip.ar(XLine.kr(10000, 4, 3) * [1, 1.2], 20) * 0.1 }.asBuffer(3, fadeTime:0.1)
+b = { Blip.ar(XLine.kr(10000, 4, 3) * [1, 1.2], 20) * 0.1 }.asBuffer(3, fadeTime: 0.1)
 b.plot; // after 3 seconds, you can see it.
 // play the soundfile back
-{ PlayBuf.ar(b.numChannels, b, LFNoise2.kr(2 ! 8).exprange(0.15, 1), loop:1).sum }.play;
+{ PlayBuf.ar(b.numChannels, b, LFNoise2.kr(2 ! 8).exprange(0.15, 1), loop: 1).sum }.play;
 ::
 
 
@@ -586,13 +619,13 @@ A function to call when writing is finished.
 
 code::
 // get some data from the synth audio
-{ SinOsc.ar + GrayNoise.ar(0.1) }.loadToFloatArray(0.01, action: { arg array; a = array });
+{ SinOsc.ar + GrayNoise.ar(0.1) }.loadToFloatArray(0.01, action: { |array| a = array });
 a.postln;
 a.plot;
 
 // place it after some other node:
 z = { WhiteNoise.ar * 0.1 }.play; // play some noise
-{ BPF.ar(In.ar(0), 7000, 0.01) * 10 }.loadToFloatArray(0.01, z, action: { arg array; a = array });
+{ BPF.ar(In.ar(0), 7000, 0.01) * 10 }.loadToFloatArray(0.01, z, action: { |array| a = array });
 a.postln;
 ::
 
@@ -621,7 +654,7 @@ For a discussion of the difference between getToFloatArray and loadToFloatArray,
 code::
 // get some data from the synth audio
 
-{ SinOsc.ar + GrayNoise.ar(0.1) }.getToFloatArray(0.01, action: { arg array; a = array });
+{ SinOsc.ar + GrayNoise.ar(0.1) }.getToFloatArray(0.01, action: { |array| a = array });
 a.postln;
 a.plot;
 ::
@@ -679,7 +712,7 @@ x.nextN(8);
 This is useful for using ListComprehensions in Patterns:
 
 code::
-Pbind(\degree, p {:[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
+Pbind(\degree, p { :[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
 ::
 
 subsection:: Bela
@@ -712,28 +745,28 @@ subsection::Exception Handling Examples
 
 code::
 // no exception handler
-value { 8.zorg; \didnt_continue.postln; }
+value { 8.zorg; \didnt_continue.postln }
 
-try { 8.zorg } {|error| error.postln; \cleanup.postln; }; \continued.postln;
+try { 8.zorg } { |error| error.postln; \cleanup.postln }; \continued.postln;
 
-protect { 8.zorg } {|error| error.postln; }; \didnt_continue.postln;
+protect { 8.zorg } { |error| error.postln }; \didnt_continue.postln;
 ::
 
 code::
-try { 123.postln; 456.throw; 789.postln } {|error| [\catch, error].postln };
+try { 123.postln; 456.throw; 789.postln } { |error| [\catch, error].postln };
 
-try { 123.postln; 789.postln } {|error| [\catch, error].postln };
+try { 123.postln; 789.postln } { |error| [\catch, error].postln };
 
-try { 123.postln; nil.throw; 789.postln } {|error| [\catch, error].postln };
+try { 123.postln; nil.throw; 789.postln } { |error| [\catch, error].postln };
 
-protect { 123.postln; 456.throw; 789.postln } {|error| [\onExit, error].postln };
+protect { 123.postln; 456.throw; 789.postln } { |error| [\onExit, error].postln };
 
-protect { 123.postln; 789.postln } {|error| [\onExit, error].postln };
+protect { 123.postln; 789.postln } { |error| [\onExit, error].postln };
 
 (
 try {
-	protect { 123.postln; 456.throw; 789.postln } {|error| [\onExit, error].postln };
-} {|error| [\catch, error].postln };
+	protect { 123.postln; 456.throw; 789.postln } { |error| [\onExit, error].postln };
+} { |error| [\catch, error].postln };
 )
 
 value { 123.postln; 456.throw; 789.postln }
@@ -755,7 +788,7 @@ try {
 	a[1].postln;
 	a[\x].postln;
 	a[2].postln;
-} {|error| \caught.postln; error.dump }
+} { |error| \caught.postln; error.dump }
 )
 
 (
@@ -764,7 +797,7 @@ try {
 	a[1].postln;
 	a[\x].postln;
 	a[2].postln;
-} {|error| \caught.postln; error.dump; error.throw }
+} { |error| \caught.postln; error.dump; error.throw }
 )
 
 (
@@ -773,9 +806,6 @@ protect {
 	a[1].postln;
 	a[\x].postln;
 	a[2].postln;
-} {|error| \caught.postln; error.dump }
+} { |error| \caught.postln; error.dump }
 )
 ::
-
-
-

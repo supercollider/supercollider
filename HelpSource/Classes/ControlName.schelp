@@ -10,7 +10,7 @@ examples::
 code::
 a = SynthDescLib.global; // the global library of SynthDescs
 x = a.synthDescs.at(\default); // get the default SynthDesc
-x.controls.do { |ctl| [\name, ctl.name, \defaultValue, ctl.defaultValue].postln };"";
+x.controls.do { |ctl| [\name, ctl.name, \defaultValue, ctl.defaultValue].postln }; "";
 ::
 
 instancemethods::

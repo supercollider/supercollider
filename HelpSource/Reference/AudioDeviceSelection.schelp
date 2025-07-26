@@ -92,7 +92,11 @@ teletype::SC_JACK_DEFAULT_OUTPUTS::. These allow SuperCollider to detect system 
 
 These variables are written as a string that specifies another jack client or a comma-separated list of jack ports formatted as a string.
 
-If these are not set, SuperCollider will default to connecting SuperCollider's inputs and outputs to your system's inputs and outputs. This is the recommended way of changing the Jack environment variables for SuperCollider from within a SuperCollider script:
+The SuperCollider language client sets these environment variables to "system" by default, so that a server booted from SC language will connect by default.
+
+If these are not set, the server will not connect to any JACK ports automatically. You may connect them manually, or by issuing teletype::jack_connect:: / teletype::jack_disconnect:: shell commands (link::Classes/String#-unixCmd::). A server booted from the command line will thus not auto-connect, unless you set the variables in the same terminal session or shell profile (below).
+
+This is the recommended way of changing the Jack environment variables for SuperCollider from within a SuperCollider script:
 
 code::
 // connect first to input channels with system
@@ -105,13 +109,20 @@ code::
 As an alternative, these may be also be changed by setting the following environment variables in your STRONG::.bash_profile::, STRONG::.zsh_profile:: or similar startup file for your shell:
 
 code::
-export SC_JACK_DEFAULT_INPUTS = "system"
-export SC_JACK_DEFAULT_OUTPUTS = "system"
+export SC_JACK_DEFAULT_INPUTS="system"
+export SC_JACK_DEFAULT_OUTPUTS="system"
+::
+
+To disable autoconnect from the language:
+
+code::
+"SC_JACK_DEFAULT_INPUTS".unsetenv;
+"SC_JACK_DEFAULT_OUTPUTS".unsetenv;
 ::
 
 section:: Windows
 
-By default the server will boot to your system's default audio devices using teletype::MME:: driver (which usually means higher latency).
+By default the server will boot to your system's default audio devices using a teletype::WASAPI:: driver.
 
 On Windows there are multiple audio driver APIs (e.g. teletype::MME::, teletype::WASAPI::, teletype::ASIO:: etc.) that can be used to communicate with audio devices. The API (listed before the device name) needs to match between the input and the output, for example:
 code::
@@ -153,7 +164,7 @@ LIST::
 LIST::
 ## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: Low
-## strong::Caveats: :: If the requested sample rate is different than the device's sample rate, the server will not boot
+## strong::Caveats: :: Resampling is enabled by default, so SuperCollider can run at a different sample rate than the hardware, and other applications can share the same device
 ## strong::More info: :: WASAPI stands for Windows Audio Session API and is the most modern Windows audio API
 ::
 ## WDM-KS

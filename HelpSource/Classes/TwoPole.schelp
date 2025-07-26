@@ -45,9 +45,8 @@ code::
 
 { TwoPole.ar(WhiteNoise.ar(0.005), 2000, 0.95) }.play
 
-{ TwoPole.ar(WhiteNoise.ar(0.005), XLine.kr(800,8000,8), 0.95) }.play
+{ TwoPole.ar(WhiteNoise.ar(0.005), XLine.kr(800, 8000, 8), 0.95) }.play
 
-{ TwoPole.ar(WhiteNoise.ar(0.005), MouseX.kr(800,8000,1), 0.95) }.play
+{ TwoPole.ar(WhiteNoise.ar(0.005), MouseX.kr(800, 8000, 1), 0.95) }.play
 
 ::
-

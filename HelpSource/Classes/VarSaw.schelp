@@ -12,33 +12,45 @@ Sawtooth-triangle oscillator with variable duty.
 classmethods::
 private:: categories
 
-method::ar, kr
+method:: ar, kr
 
-argument::freq
-frequency in Hertz
+argument:: freq
+Frequency in Hertz. Positive frequencies only.
+warning:: teletype::VarSaw:: will go out of range if the frequency exceeds the sampling rate (which for control rate is code::s.sampleRate / s.options.blockSize::).::
 
-argument::iphase
-initial phase offset in cycles ( 0..1 )
 
-argument::width
-duty cycle from zero to one.
+argument:: iphase
+Initial phase offset in cycles. [0..1]
 
-argument::mul
+argument:: width
+Duty cycle, denoting where in the cycle the waveform peaks.
+E.g. for widths of teletype::0, 0.5,:: or teletype::1.0::, the waveform will peak at the beginning, middle, or end of the cycle, respectively.
+[0..1] (clipped internally to [0.001..0.999])
 
-argument::add
+argument:: mul
+The output will be multiplied by this value.
+
+argument:: add
+This value will be added to the output.
+
+
 
 Examples::
 
 code::
 
+// observe different duty widths
+{ VarSaw.ar(1000, 0, [0, 0.5, 1]) }.plot
+
+(
 play({
 	VarSaw.ar(
 		LFPulse.kr(3, 0, 0.3, 200, 200),
 		0,
-		LFTri.kr(1.0).range(0,1), //width
+		LFTri.kr(1.0).range(0, 1), // width
 		0.1)
 });
-
+)
 
 play({ VarSaw.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) });
 
@@ -47,4 +59,3 @@ play({ VarSaw.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) });
 play({ LFPulse.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) });
 
 ::
-

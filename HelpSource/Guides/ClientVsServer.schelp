@@ -96,4 +96,3 @@ list::
 ## the language is explicitly fitted to the server's needs (and, more importantly, to musician's ones)
 ## it allows one to create and load SynthDefs onto the server (see link::Classes/SynthDef::), which not all client apps are able to do
 ::
-

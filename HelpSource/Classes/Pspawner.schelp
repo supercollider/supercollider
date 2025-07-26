@@ -43,33 +43,33 @@ code::
 // example 1: a simple Pspawner
 
 (
-Pspawner({ | sp |
+Pspawner({ |sp|
 
 // parallel in-c'ish pulses will run throughout the example
-	sp.par(Pbind(*[ degree: [0,7], octave: 7, dur: 0.2, db: Pseq([-20, -24, -22, -24], inf)]) );
+	sp.par(Pbind(*[degree: [0, 7], octave: 7, dur: 0.2, db: Pseq([-20, -24, -22, -24], inf)]));
 
 // scales in sequence with pauses
 	sp.seq(
-		Pbind(*[ degree: Pseq((0..7).mirror), dur: 0.2])
+		Pbind(*[degree: Pseq((0..7).mirror), dur: 0.2])
 	);
 	sp.wait(0.4);
 	sp.seq(
 		Ppar([
-			Pbind(*[ degree: Pseq((0..7).mirror), dur: 0.2, octave: 4]),
-			Pbind(*[ degree: Pseq((0..7).reverse.mirror), dur: 0.2])
+			Pbind(*[degree: Pseq((0..7).mirror), dur: 0.2, octave: 4]),
+			Pbind(*[degree: Pseq((0..7).reverse.mirror), dur: 0.2])
 		])
 
 	);
 	sp.wait(3);
 	sp.seq(
-		Pbind(*[ degree: Pseq((0..7).mirror), dur: 0.2, mtranspose: (0,2..14)])
+		Pbind(*[degree: Pseq((0..7).mirror), dur: 0.2, mtranspose: (0, 2..14)])
 	);
 
 // scales overlaped at 0.4 second intervals
 
 	10.do {
 		sp.par(
-			Pbind(*[ degree: Pseq((0..7).mirror), dur: 0.2])
+			Pbind(*[degree: Pseq((0..7).mirror), dur: 0.2])
 		);
 
 		sp.wait(0.4)
@@ -84,36 +84,36 @@ Pspawner({ | sp |
 // example 2: create 6 streams at 4 second intervals
 // then delete them in the order they were created
 
-Pspawner({ | sp |
+Pspawner({ |sp|
 	var streams, stream;
 	// start patterns, collect the resultant event streams
-	streams = [2, 3, 4, 6, 7, 8].collect { | i |
+	streams = [2, 3, 4, 6, 7, 8].collect { |i|
 		stream = sp.par(Pbind(*[
 			harmonic: i,
 			ctranspose: 	[0, 1, 3]/40,
-			octave:	Pbrown(2,8,2), dur: 1/i, db: -30
-		]) );
+			octave:	Pbrown(2, 8, 2), dur: 1/i, db: -30
+		]));
 		sp.wait(4);
 		stream;
 	};
 
 	// now stop those streams one by one
-	streams.do { | s | sp.suspend(s); sp.wait(4) };
+	streams.do { |s| sp.suspend(s); sp.wait(4) };
 }).play
 )
 
 (
 // example 3: define a Pspawner and use Pattern manipulations
-p = Pspawner({ | sp |
-	var pat = Pbrown( -7, 7, 3);
+p = Pspawner({ |sp|
+	var pat = Pbrown(-7, 7, 3);
 
-	sp.par(Pbind(*[octave: 5, degree: pat, dur: 1/4]) );
+	sp.par(Pbind(*[octave: 5, degree: pat, dur: 1/4]));
 	sp.wait(2);
-	sp.par(Pbind(*[octave: 6, degree: pat, dur: 1/8]) );
+	sp.par(Pbind(*[octave: 6, degree: pat, dur: 1/8]));
 	sp.wait(3);
-	sp.par(Pbind(*[octave: 7, degree: pat, dur: 1/6, db: -20]) );
+	sp.par(Pbind(*[octave: 7, degree: pat, dur: 1/6, db: -20]));
 	sp.wait(4);
-	sp.par(Pbind(*[octave: 4, degree: pat, dur: 1/4]) );
+	sp.par(Pbind(*[octave: 4, degree: pat, dur: 1/4]));
 
 	sp.wait(8);
 	sp.suspendAll;
@@ -126,13 +126,13 @@ p.play;
 (
 // manipulate basic pattern with Pchain
 Pchain(
-	Pbind(*[mtranspose: Pkey(\mtranspose) + Pdup(8, Prand([0,[0,3,-2],[0,2,4]], inf)) ] ), //make some notes into triads
-	Pbind(*[ctranspose: Pwhite(-0.1, 0.1)]), //add random detuning to notes
-	Pbind(*[\scale, Scale.minor]), //alter the scale
-	Pn(Pseq([p, (type:\rest, dur: 1.0)]) ), //repeat the pattern after a 1 second pause
+	Pbind(*[mtranspose: Pkey(\mtranspose) + Pdup(8, Prand([0, [0, 3, -2], [0, 2, 4]], inf))]), // make some notes into triads
+	Pbind(*[ctranspose: Pwhite(-0.1, 0.1)]), // add random detuning to notes
+	Pbind(*[\scale, Scale.minor]), // alter the scale
+	Pn(Pseq([p, (type: \rest, dur: 1.0)])), // repeat the pattern after a 1 second pause
 	Pbind(*[
 		db: Pstep(Pseq([-10, -13, -13, -11, -13, -13], inf), 0.1) - 10,
-		mtranspose: Pstep(Pwhite(-7,7), Prand([5,4,2],inf) ) //random modal transposition
+		mtranspose: Pstep(Pwhite(-7, 7), Prand([5, 4, 2], inf)) // random modal transposition
 	])
 ).play(protoEvent: Event.default)
 )
@@ -140,7 +140,7 @@ Pchain(
 // example 4: altering the contents of the Pspawner from separate code
 
 (
-a = Pspawner({ |sp |
+a = Pspawner({ |sp|
 	c = sp; 			// store the Spawner in a global variable
 	100.do{ sp.wait(1) }
 });
@@ -164,7 +164,7 @@ b = c.par(				// or just start up a new pattern
 // example 5: Spawner can be used directly in the manner of Pspawner.
 // This allows external code to access to the spawner whether or not it has run
 (
-c = Spawner({ |sp |
+c = Spawner({ |sp|
 	100.do{ sp.wait(1) }
 });
 b = c.par(				// now start a pattern in spawner
@@ -182,12 +182,12 @@ b = c.par(				// or just start up a new pattern
 )
 
 (
-Pspawner({ | sp |
-	(1..5).do { | i |
+Pspawner({ |sp|
+	(1..5).do { |i|
 		sp.par(Pbind(*[
 			octave: i + 2,
-			degree:	Pwhite(0,7), dur: 1/i, db: -30
-		]) );
+			degree:	Pwhite(0, 7), dur: 1/i, db: -30
+		]));
 		sp.wait(4);
 	};
 	sp.suspendAll;

@@ -1,0 +1,203 @@
+name: Build Windows
+on:
+  workflow_call:
+    inputs:
+      sc-version:
+        required: true
+        type: string
+
+jobs:
+  build-windows:
+    runs-on: windows-${{ matrix.os-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - job-name: "32-bit with ctest"
+            fftw-arch: "x86"
+            cmake-arch: "Win32"
+            os-version: "2022"
+            qt-version: "5.15.2"
+            qt-arch: "win32_msvc2019"
+            fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip"
+            cmake-generator: "Visual Studio 17 2022"
+            vcvars-script-path: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+            vcpkg-triplet: x86-windows-release
+            use-qtwebengine: "ON" # might need to be turned off for MinGW
+            qt-modules: "qtwebengine"
+            ctest: true
+            ctest-cmd: "RUN_TESTS"
+            # artifact-suffix: "win32" # set if needed - will trigger artifact upload
+            # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
+            # installer-suffix: "win32-installer"
+
+          - job-name: "64-bit MSVC 2022 with ctest"
+            fftw-arch: "x64"
+            cmake-arch: "x64"
+            os-version: "2022"
+            qt-version: "6.7.3"
+            qt-arch: "win64_msvc2019_64"
+            fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip"
+            cmake-generator: "Visual Studio 17 2022"
+            vcvars-script-path: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+            vcpkg-triplet: x64-windows-release
+            use-qtwebengine: "ON" # might need to be turned off for MinGW
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            ctest: true
+            artifact-suffix: "win64" # set if needed - will trigger artifact upload
+            create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
+            installer-suffix: "win64-installer"
+            ctest-cmd: "RUN_TESTS"
+
+          - job-name: "64-bit MinGW with ctest"
+            fftw-arch: "x64"
+            os-version: "2022"
+            qt-version: "6.7.0"
+            qt-arch: "win64_mingw"
+            fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip"
+            cmake-generator: "MinGW Makefiles"
+            chocolatey-options: "" # '--forcex86' for 32-bit build
+            use-qtwebengine: "OFF" # might need to be turned off for MinGW
+            qt-modules: "qtpositioning"
+            artifact-suffix: "win64-mingw" # set if needed - will trigger artifact upload
+            ctest: true
+            ctest-cmd: "test"
+
+    name: Windows ${{ matrix.job-name }}
+    env:
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      LIBS_DOWNLOAD_PATH: ${{ github.workspace }}/../3rd-party
+      FFTW_INSTALL_DIR: "C:/Program Files/fftw"
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}"
+      INSTALLER_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.installer-suffix }}"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: prepare timestamp for cache
+        id: current-date
+        shell: bash
+        run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: cache vcpkg
+        if: matrix.vcpkg-triplet
+        uses: actions/cache@v4
+        with:
+          path: ~/AppData/Local/vcpkg/archives
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-
+
+      - name: cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/AppData/Local/ccache # updated in ccache 4.7, see https://github.com/ccache/ccache/issues/1023
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-
+
+      - name: install qt using aqtinstall
+        uses: jurplel/install-qt-action@v4
+        with:
+          modules: ${{ matrix.qt-modules }}
+          version: ${{ matrix.qt-version }}
+          arch: ${{ matrix.qt-arch }}
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}-${{ matrix.qt-modules }}
+
+      - name: install ccache
+        shell: bash
+        run: |
+          choco install ccache --no-progress
+          echo "`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`" >> $GITHUB_PATH # put the direct path before the path of the choco's "shim" (link subsitute)
+
+      - name: install libsndfile
+        shell: bash
+        run: |
+          if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
+            vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
+          else
+            choco install libsndfile --no-progress ${{ matrix.chocolatey-options }}
+          fi
+
+      - name: download fftw
+        shell: bash
+        run: |
+          mkdir -p "$FFTW_INSTALL_DIR" && cd "$FFTW_INSTALL_DIR"
+          curl -L ${{ matrix.fftw-url }} -o fftw.zip
+          7z x fftw.zip -y
+
+      - name: create fftw msvc library
+        if: matrix.vcvars-script-path
+        shell: cmd
+        working-directory: ${{ env.FFTW_INSTALL_DIR }}
+        run: |
+          call "${{ matrix.vcvars-script-path }}"
+          lib.exe /machine:${{ matrix.fftw-arch }} /def:libfftw3f-3.def
+
+      - name: install asio sdk
+        shell: bash
+        env:
+          ASIO_PATH: ${{ env.LIBS_DOWNLOAD_PATH }}/asio_sdk
+        run: |
+          mkdir -p $ASIO_PATH && cd $ASIO_PATH
+          curl -L https://www.steinberg.net/asiosdk -o asio.zip
+          7z x asio.zip -y
+          mv asiosdk_* $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
+
+      - name: install readline
+        if: matrix.vcpkg-triplet
+        shell: bash
+        run: |
+          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
+
+      - name: configure
+        shell: bash
+        run: |
+          export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
+
+          mkdir $BUILD_PATH && cd $BUILD_PATH
+
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
+
+      - name: build
+        shell: bash
+        run: |
+          cmake --build $BUILD_PATH --config Release --target install --parallel 2
+
+      - name: create archive
+        if: matrix.artifact-suffix
+        shell: bash
+        run: cd $INSTALL_PATH && 7z a $ARTIFACT_FILE.zip -tzip SuperCollider # this assumes that we end up with the build in the folder SuperCollider
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.artifact-suffix
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
+
+      - name: create installer
+        if: matrix.create-installer == true
+        shell: bash
+        run: |
+          export PATH="C:\Program Files (x86)\NSIS":$PATH
+          cmake --build $BUILD_PATH --config Release --target installer
+
+      - name: upload installer
+        uses: actions/upload-artifact@v4
+        if: matrix.create-installer == true
+        with:
+          name: ${{ env.INSTALLER_FILE }}
+          path: ${{ env.INSTALL_PATH }}/*.exe
+
+      - name: Configure CTests
+        if: matrix.ctest
+        run: cd ${{ github.workspace }}
+
+      - name: Run CTests
+        continue-on-error: true
+        if: matrix.ctest
+        working-directory: ${{ env.BUILD_PATH }}
+        shell: cmd
+        run: cmake --build . --config Release --target ${{ matrix.ctest-cmd }}

@@ -39,16 +39,12 @@ Prerequisites:
 -------------
 
 - **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com.
-  Xcode >= 10 is recommended; use earlier versions at your own risk.
 - If you do not have the **Xcode command line tools** installed already, install them with:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake >= 3.12, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
-  `brew install git cmake libsndfile readline qt5`
-- If you are building with Qt libraries, you will also need the [requirements for
-  QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
-  10.9 and the macOS SDK for 10.10 or later.
+- **git, cmake >= 3.12, libsndfile, readline, and qt6 >= 6.2**, installed via homebrew:
+  `brew install git cmake libsndfile readline qt@6`
 
 - If you want to build with the *supernova* server, you need **portaudio** and **fftw** packages, which can also be installed via homebrew:
   `brew install portaudio fftw`
@@ -70,9 +66,9 @@ Build instructions
     cd SuperCollider
     mkdir -p build
     cd build
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
+    cmake -G Xcode ..
     # or, if you want to build with supernova:
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSUPERNOVA=ON ..
+    cmake -G Xcode -DSUPERNOVA=ON ..
     # then start the build
     cmake --build . --target install --config RelWithDebInfo
 
@@ -81,6 +77,13 @@ If successful this will build the application into `build/Install/SuperCollider/
 You can see the available build options with ```cmake -LH```.
 
 To install, you may move this to /Applications or use it in place from the build directory.
+
+**Qt 5.15 compatibility**:  
+**Qt5 is outdated** and will soon be deprecated. It is strongly advised to build with Qt6. If your system also has Qt5 installed you may have to adjust your brew and shell config. In order to build with Qt5, Qt6 needs to be uninstalled or unlinked:
+
+    brew unlink qt@6
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5` ..
+    cmake --build . --target install --config RelWithDebInfo
 
 More info on *supernova* can be found in the section **Frequently used cmake settings** below.
 
@@ -95,15 +98,11 @@ More info on *supernova* can be found in the section **Frequently used cmake set
 
 ##### Prepare for building by making a configuration file:
 
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
+    cmake -G Xcode ..
 
 (The `..` at the end is easy to miss. Don't forget it!)
 
-This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it.
-Use `brew info` to confirm you are referring to the correct version of Qt.
-
-If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that
-Qt tree.
+This specifies to cmake that we will be using Xcode to build. 
 
 ##### Build
 
@@ -136,7 +135,7 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
+**cmake, qt, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt@6` should show you the Qt6 version information.
 
 `brew upgrade ____` will update the dependency to a newer version.
 
@@ -268,16 +267,18 @@ of an Xcode.app package.
 You can build without using XCode using `make`, by omitting the `-G Xcode` - in this case, your build command
 is `make` rather than `xcodebuild`
 
-Qt Creator has very good `cmake` integration and can build `cmake` projects without requiring a `cmake` generated project file. If you have Qt5 via homebrew installed, you can install Qt Creator by running:
+Qt Creator has very good `cmake` integration and can build `cmake` projects without requiring a `cmake` generated project file. If you have Qt6 via homebrew installed, you can install Qt Creator by running:
 
-    brew linkapps qt5
+    brew install qt-creator
 
 Using ccache with Xcode
 -----------------------
 
 Although cmake does not support using `ccache` with Xcode out of the box, this project is set up to
-allow it with the option `-DRULE_LAUNCH_COMPILE=ccache`. This can speed up build times
+support it. By default, ccache will be used if it's present on your system. This can speed up build times
 significantly, even when the build directory has been cleared.
+
+Using `ccache` can be disabled by setting cmake option `-D USE_CCACHE=OFF`.
 
 Building without Qt or the IDE
 ------------------------------

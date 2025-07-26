@@ -1,4 +1,23 @@
 TestAbstractFunction : UnitTest {
+    test_function_list_remove_before_add {
+        var fl = FunctionList.new;
+
+        this.assertEquals( fl.removeFunc(nil),
+            nil,
+            "Remove before add should return nil");
+    }
+
+    test_function_list_add_before_remove {
+        var fl = FunctionList.new;
+
+        var f = {};
+
+        fl.addFunc(f);
+
+        this.assertEquals( fl.removeFunc(f),
+            nil,
+            "Removing function should return nil if only one");
+    }
 
 	test_rest_binop_return {
 		var args = [[1, Rest(1)], [Rest(1), 1], [Rest(1), Rest(1)], [1, Rest()], [Rest(), Rest()]];
@@ -186,4 +205,3 @@ TestAbstractFunction : UnitTest {
 		};
 	}
 }
-

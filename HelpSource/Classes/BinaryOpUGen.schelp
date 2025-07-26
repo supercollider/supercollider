@@ -65,14 +65,14 @@ code::
 {
     var trig;
     trig = SinOsc.ar(1) > 0.1;
-    EnvGen.kr(Env.perc, trig, doneAction: Done.none) * SinOsc.ar(440,0,0.1)
+    EnvGen.kr(Env.perc, trig, doneAction: Done.none) * SinOsc.ar(440, 0, 0.1)
 }.play
 ) // > outputs 0 or 1
 ::
 
 See link::Overviews/Operators:: or the implementation of these in link::Classes/AbstractFunction:: for more detail.
 
-Since the equality operator ( code::==:: ) is used to distinguish objects including UGens, it cannot be used to create a BinaryOpUGen by application. Instead, to get a trigger value each time two signals are the same (instead of just finding out whether two UGens are the same), one can instantiate a BinaryOpUGen directly:
+Since the equality operator (code::==::) is used to distinguish objects including UGens, it cannot be used to create a BinaryOpUGen by application. Instead, to get a trigger value each time two signals are the same (instead of just finding out whether two UGens are the same), one can instantiate a BinaryOpUGen directly:
 
 code::
 (
@@ -83,4 +83,3 @@ code::
 }.play;
 )
 ::
-

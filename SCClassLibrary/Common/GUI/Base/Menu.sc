@@ -529,4 +529,3 @@ ToolBar : AbstractActionView {
 		^MenuAction().string_(this)
 	}
 }
-

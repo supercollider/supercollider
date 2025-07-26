@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include "sc/sc_ugen_factory.hpp"
 #include "server/memory_pool.hpp"
@@ -11,7 +11,7 @@
 using namespace nova;
 using namespace std;
 
-boost::filesystem::path base_path("/home/tim/workspace/nova-server/debug_plugins/");
+std::filesystem::path base_path("/home/tim/workspace/nova-server/debug_plugins/");
 
 BOOST_AUTO_TEST_CASE(ugen_factory_test_1) {
     server_arguments::initialize(0, 0);

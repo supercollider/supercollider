@@ -1,0 +1,225 @@
+name: Build Mac OS
+on:
+  workflow_call:
+    inputs:
+      sc-version:
+        required: true
+        type: string
+
+jobs:
+  build-macos:
+    runs-on: macos-${{ matrix.os-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - job-name: "universal arm64 x64 with ctest"
+            os-version: "15"
+            xcode-version: "16.0"
+            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            deployment-target: "11"
+            cmake-architectures: "x86_64;arm64"
+            homebrew-packages: ""
+            homebrew-uninstall: "readline"
+            vcpkg-packages: "readline libsndfile fftw3"
+            vcpkg-triplet: "arm64-osx-release-supercollider"
+            vcpkg-triplet-other: "x64-osx-release-supercollider"
+            vcpkg-triplet-universal: "universal" # we are not actually installing using this triplet, the packages will be manually copied there
+            extra-cmake-flags: "-D SYSTEM_PORTAUDIO=OFF" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
+            artifact-suffix: "macOS-universal"
+            ctest: true
+
+          - job-name: "x64 legacy"
+            os-version: "13"
+            xcode-version: "14.1"
+            qt-version: "5.15.2" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine'
+            deployment-target: "10.15"
+            cmake-architectures: x86_64
+            homebrew-packages: "readline portaudio"
+            vcpkg-packages: "libsndfile fftw3"
+            # homebrew-packages: "" # use this instead when cross-compiling for x86_64 on arm64
+            # homebrew-uninstall: "readline" # use this instead when cross-compiling for x86_64 on arm64
+            # vcpkg-packages: "readline portaudio libsndfile fftw3" # use this instead when cross-compiling for x86_64 on arm64
+            vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
+            extra-cmake-flags: ""
+            artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
+            ctest: false
+
+          - job-name: "arm64 use system libraries with ctest"
+            os-version: "15"
+            xcode-version: "16.0"
+            deployment-target: ""
+            cmake-architectures: "arm64"
+            homebrew-packages: "qt@6 libsndfile readline fftw portaudio yaml-cpp boost"
+            vcpkg-packages: ""
+            vcpkg-triplet: ""
+            extra-cmake-flags: "-D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
+            ctest: true
+
+          - job-name: "x64 shared libscsynth"
+            os-version: "13"
+            xcode-version: "15.2"
+            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            deployment-target: ""
+            cmake-architectures: x86_64
+            homebrew-packages: "libsndfile readline fftw portaudio"
+            vcpkg-packages: ""
+            vcpkg-triplet: ""
+            extra-cmake-flags: "-D LIBSCSYNTH=ON"
+            ctest: false
+
+    name: macOS ${{ matrix.job-name }}
+    env:
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_ENV_HINTS: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      USE_SYSLIBS: ${{ matrix.use-syslibs }}
+      SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg"
+      DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer"
+      MACOSX_DEPLOYMENT_TARGET: "${{ matrix.deployment-target }}"
+      CMAKE_OSX_ARCHITECTURES: "${{ matrix.cmake-architectures }}"
+      BREW_UNIVERSAL_WORKDIR: ${{ github.workspace }}/brew-universal
+      SKIP_SIGNING: 1 # for brew-install-universal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: prepare timestamp for cache
+        id: current-date
+        run: |
+          echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "week=$(date '+%U')" >> $GITHUB_OUTPUT
+
+      - name: cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/ccache
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-
+
+      - name: cleanup homebrew downloads # always remove existing downloads first, as we bring back relevant downloads from cache
+        run: rm -rf $(brew --cache)/downloads
+
+      - name: cache homebrew downloads
+        uses: actions/cache@v4
+        id: cache-homebrew
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-architectures }}-homebrew-
+
+      - name: cache vcpkg
+        if: matrix.vcpkg-triplet
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/vcpkg/archives
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-
+
+      - name: setup ccache
+        run: |
+          brew install ccache --quiet
+          # add ccache to PATH
+          echo "`brew --prefix ccache`/libexec" >> $GITHUB_PATH
+
+      - name: setup vcpkg # vcpkg is not automatically installed in newer macOS runner images
+        if: matrix.vcpkg-packages && matrix.vcpkg-triplet
+        run: |
+          if [[ -z "${VCPKG_INSTALLATION_ROOT}" ]]; then
+            cd ${{ github.workspace }}/..
+            echo "setting up vcpkg in `pwd`"
+            git clone https://github.com/microsoft/vcpkg.git
+            cd vcpkg
+            ls -a
+            ./bootstrap-vcpkg.sh
+            echo "VCPKG_INSTALLATION_ROOT=`pwd`" >> $GITHUB_ENV # use the same env var that was used for VCPKG in older runner images
+            echo "`pwd`" >> $GITHUB_PATH
+          fi
+
+      - name: install homebrew packages
+        if: matrix.homebrew-packages
+        run: brew install ${{ matrix.homebrew-packages }} --quiet
+
+      - name: install vcpkg packages
+        if: matrix.vcpkg-packages && matrix.vcpkg-triplet
+        run: |
+          if [[ -n "${{ matrix.homebrew-uninstall }}" ]]; then brew uninstall --ignore-dependencies ${{ matrix.homebrew-uninstall }}; fi
+          vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
+
+      - name: install combined architecture vcpkg packages
+        if: matrix.vcpkg-packages && matrix.vcpkg-triplet && matrix.vcpkg-triplet-other && matrix.vcpkg-triplet-universal
+        run: |
+          echo -e "\nInstalling additional vcpkg packages for triplet: ${{ matrix.vcpkg-triplet-other }}"
+          vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet-other }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
+
+          echo "Creating universal libraries"
+          export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
+          export ARCH1="${{ matrix.vcpkg-triplet }}"
+          export ARCH2="${{ matrix.vcpkg-triplet-other }}"
+          export ARCH_UNIVERSAL="${{ matrix.vcpkg-triplet-universal }}" 
+          ${{ github.workspace }}/tools/vcpkg_combine_libs.sh
+
+      - name: install qt using aqtinstall
+        uses: jurplel/install-qt-action@v4
+        if: matrix.qt-version
+        env:
+          DEVELOPER_DIR: "" # remove developer dir which causes installation to fail
+        with:
+          modules: ${{ matrix.qt-modules }}
+          version: ${{ matrix.qt-version }}
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-qt${{ matrix.qt-version }}-${{ matrix.qt-modules }}
+
+      - name: configure
+        run: |
+          mkdir $BUILD_PATH && cd $BUILD_PATH
+
+          CMAKE_FLAGS="-G Xcode -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
+
+          if [[ -n "${{ matrix.vcpkg-triplet-universal }}" ]]; then
+            export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
+            CMAKE_FLAGS="-DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg-triplet-universal }} -DCMAKE_BUILD_TYPE=Release $CMAKE_FLAGS"
+          elif [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
+            export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
+            CMAKE_FLAGS="-DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg-triplet }} -DCMAKE_BUILD_TYPE=Release $CMAKE_FLAGS"
+          fi
+
+          echo "CMAKE_FLAGS:" $CMAKE_FLAGS
+
+          cmake $CMAKE_FLAGS ..
+
+      - name: build
+        run: cmake --build $BUILD_PATH --config Release --target install
+
+      - name: create archive
+        if: matrix.artifact-suffix
+        run: |
+          cd $INSTALL_PATH
+          ln -s /Applications SuperCollider/Applications
+          mkdir -p SuperCollider/.background
+          cp ../../package/background_2_arrow.png SuperCollider/.background/background_2_arrow.png
+          cp ../../package/ds_store SuperCollider/.DS_Store
+          # the following assumes that we end up with the build in the folder SuperCollider
+          # hdiutil sometimes fails with "create failed - Resource busy"
+          # when that happens, we run it again
+          hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE || hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.artifact-suffix
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+
+      - name: Run CTests
+        continue-on-error: true
+        if: matrix.ctest
+        run: cmake --build $BUILD_PATH --config Release --target RUN_TESTS

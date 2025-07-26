@@ -30,9 +30,9 @@ code::
 
 	p = Pseq(a);					// make the Pattern
 	q = p.asStream;					// have the Pattern make a Stream
-	r = Routine({ a.do({ arg v; v.yield}) }) ;	// make the Stream directly
+	r = Routine({ a.do({ |v| v.yield }) }) ;	// make the Stream directly
 
-	5.do({ Post << Char.tab << r.next << " " << q.next << Char.nl; });
+	5.do({ Post << Char.tab << r.next << " " << q.next << Char.nl });
 )
 ::
 
@@ -43,17 +43,17 @@ In example 1, there is little difference between using link::Classes/Pseq:: and 
 code::
 (
 	var routinesA;
-	a = [3, Pseq([-100, 00, 300, 400]), Pseq([-100, 00, 300, 400].reverse) ];
+	a = [3, Pseq([-100, 00, 300, 400]), Pseq([-100, 00, 300, 400].reverse)];
 	routinesA = [[3], [-100, 00, 300, 400], [-100, 00, 300, 400].reverse];
 	p = Pseq(a);
 	q = p.asStream;
 
 	r = Routine({
-		routinesA.do({ arg v;
-			v.do({ arg i; i.yield})
+		routinesA.do({ |v|
+			v.do({ |i| i.yield })
 		}) ;
 	});
-	10.do({ Post << Char.tab << r.next << " " << q.next << Char.nl; });
+	10.do({ Post << Char.tab << r.next << " " << q.next << Char.nl });
 )
 ::
 
@@ -65,12 +65,12 @@ The message code::embedInStream:: is what allows Patterns to do this kind of nes
 A Routine can perform a pattern simply by replacing calls to code::yield:: with calls to code::embedInStream::.
 code::
 (
-	a = [3, Pseq([-100, 00, 300, 400]), Pseq([-100, 00, 300, 400].reverse) ];
+	a = [3, Pseq([-100, 00, 300, 400]), Pseq([-100, 00, 300, 400].reverse)];
 
-	r = Routine({ a.do({ arg v; v.embedInStream}) }) ;
+	r = Routine({ a.do({ |v| v.embedInStream }) }) ;
 	p = Pseq(a);
 	q = p.asStream;
-	10.do({ Post << Char.tab << r.next << " " << q.next << Char.nl; });
+	10.do({ Post << Char.tab << r.next << " " << q.next << Char.nl });
 )
 ::
 
@@ -130,7 +130,7 @@ The inval is passed into all substreams and can be used to control how they beha
 
 code::
 a = Pgeom(1, Pwhite(1.01, 1.2), 5);
-r = Routine { 2.yield; 3.yield; a.embedInStream; 7.yield; };
+r = Routine { 2.yield; 3.yield; a.embedInStream; 7.yield };
 r.nextN(12); // the next 12 values from r
 ::
 
@@ -190,10 +190,10 @@ code::
 s.boot;
 
 (
-SynthDef(\cfstring1, { arg i_out, freq = 360, gate = 1, pan, amp=0.1;
+SynthDef(\cfstring1, { |i_out, freq = 360, gate = 1, pan, amp = 0.1|
 	var out, eg, fc, osc, a, b, w;
 	fc = LinExp.kr(LFNoise1.kr(Rand(0.25, 0.4)), -1, 1, 500, 2000);
-	osc = Mix.fill(8, {LFSaw.ar(freq * [Rand(0.99, 1.01), Rand(0.99, 1.01)], 0, amp) }).distort * 0.2;
+	osc = Mix.fill(8, { LFSaw.ar(freq * [Rand(0.99, 1.01), Rand(0.99, 1.01)], 0, amp) }).distort * 0.2;
 	eg = EnvGen.kr(Env.asr(1, 1, 1), gate, doneAction: Done.freeSelf);
 	out = eg * RLPF.ar(osc, fc, 0.1);
 	#a, b = out;
@@ -201,7 +201,7 @@ SynthDef(\cfstring1, { arg i_out, freq = 360, gate = 1, pan, amp=0.1;
 }).add;
 
 SynthDef("sinegrain2",
-	{ arg out=0, freq=440, sustain=0.05, pan;
+	{ |out = 0, freq = 440, sustain = 0.05, pan|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction: Done.freeSelf);
 		Out.ar(out, Pan2.ar(SinOsc.ar(freq, 0, env), pan))
@@ -211,7 +211,7 @@ p = Pbind(
 	[\degree, \dur], Pseq([[0, 0.1], [2, 0.1], [3, 0.1], [4, 0.1], [5, 0.8]], 1),
 	\amp, 0.05, \octave, 6, \instrument, \cfstring1, \mtranspose, 0);
 
-q = Pbindf(p, \instrument, \default );
+q = Pbindf(p, \instrument, \default);
 
 r = Pset(\freq, Pseq([500, 600, 700], 2), q);
 
@@ -221,7 +221,7 @@ r = Pset(\freq, Pseq([500, 600, 700], 2), q);
 subsection::EVENT PATTERNS - patterns that generate or require event streams
 
 code::
-// Pbind( ArrayOfPatternPairs )
+// Pbind(ArrayOfPatternPairs)
 
 p = Pbind(
 	[\degree, \dur], Pseq([[0, 0.1], [2, 0.1], [3, 0.1], [4, 0.1], [5, 0.8]], 1),
@@ -229,70 +229,70 @@ p = Pbind(
 
 p.play;
 
-//Ppar(arrayOfPatterns, repeats) - play in parallel
+// Ppar(arrayOfPatterns, repeats) - play in parallel
 
 Ppar([Pseq([p], 4), Pseq([Pbindf(q, \ctranspose, -24)], 5)]).play
 
-//Ptpar(arrayOfTimePatternPairs, repeats) - play in parallel at different times
+// Ptpar(arrayOfTimePatternPairs, repeats) - play in parallel at different times
 
 Ptpar([1, Pseq([p], 4), 0, Pseq([Pbindf(q, \ctranspose, -24)], 5)]).play
 
-// Pbindf( pattern, ArrayOfNamePatternPairs )
+// Pbindf(pattern, ArrayOfNamePatternPairs)
 
-q = Pbindf(p, \instrument, \default );
+q = Pbindf(p, \instrument, \default);
 q.play;
 
-//Pfset(function, pattern)
+// Pfset(function, pattern)
 // function constructs an event that is passed to the pattern.asStream
 
 Pfset({ ~freq = Pseq([500, 600, 700], 2).asStream }, q).play;
 
-//Pset(name, valPattern, pattern)
+// Pset(name, valPattern, pattern)
 // set one field of the event on an event by event basis (Pmul, Padd are similar)
 
 Pset(\freq, Pseq([500, 600, 700], 2), q).play;
 
-//Psetp(name, valPattern, pattern)
+// Psetp(name, valPattern, pattern)
 // set once for each iteration of the pattern (Pmulp, Paddp are similar)
 
 r = Pset(\freq, Pseq([500, 600, 700], 2), q);
 
 Psetp(\legato, Pseq([0.01, 1.1], inf), r).play;
 
-//Psetpre(name, valPattern, pattern)
+// Psetpre(name, valPattern, pattern)
 // set before passing the event to the pattern (Pmulpre, Paddpre are similar)
 
 r = Psetpre(\freq, Pseq([500, 600, 700], 2), q);
 
 Psetp(\legato, Pseq([0.01, 1.1], inf), r).play;
 
-//Pstretch(valPattern, pattern)
+// Pstretch(valPattern, pattern)
 // stretches durations after
 
 r = Psetpre(\freq, Pseq([500, 600, 700], 2), q);
 
 Pstretch(Pn(Env([0.5, 2, 0.5], [10, 10])), Pn(r)).play;
 
-Pset(\stretch, Pn(Env([0.5, 2, 0.5], [10, 10]) ), Pn(r)).play
+Pset(\stretch, Pn(Env([0.5, 2, 0.5], [10, 10])), Pn(r)).play
 
-//Pstretchp(valPattern, pattern)
+// Pstretchp(valPattern, pattern)
 // stretches durations after
 
 r = Psetpre(\freq, Pseq([500, 600, 700], 2), q);
 
 Pstretchp(Pn(Env([0.5, 2, 0.5], [10, 10])), r).play;
 
-// Pfindur( duration, pattern ) - play pattern for duration
+// Pfindur(duration, pattern) - play pattern for duration
 
 Pfindur(2, Pn(q, inf)).play;
 
-// PfadeIn( pattern, fadeTime, holdTime, tolerance )
+// PfadeIn(pattern, fadeTime, holdTime, tolerance)
 PfadeIn(Pn(q), 3, 0).play(quant: 0);
 
-// PfadeOut( pattern, fadeTime, holdTime, tolerance )
+// PfadeOut(pattern, fadeTime, holdTime, tolerance)
 PfadeOut(Pn(q), 3, 0).play(quant: 0);
 
-// Psync( pattern, quantization, dur, tolerance )
+// Psync(pattern, quantization, dur, tolerance)
 // pattern is played for dur seconds (within tolerance), then a rest is played so the next pattern
 
 Pn(Psync(
@@ -301,7 +301,7 @@ Pn(Psync(
 	), 2, 3
 )).play
 
-//Plag(duration, pattern)
+// Plag(duration, pattern)
 
 Ppar([Plag(1.2, Pn(p, 4)), Pn(Pbindf(q, \ctranspose, -24), 5)]).play
 ::
@@ -309,7 +309,7 @@ Ppar([Plag(1.2, Pn(p, 4)), Pn(Pbindf(q, \ctranspose, -24), 5)]).play
 subsection::GENERAL PATTERNS that work with both event and value streams
 
 code::
-//Ptrace(pattern, key, printStream) - print the contents of a pattern
+// Ptrace(pattern, key, printStream) - print the contents of a pattern
 
 r = Psetpre(\freq, Pseq([500, 600, 700], 2), q);
 
@@ -319,19 +319,19 @@ Ptrace(r, \freq).play;
 (
 { var printStream;
 	printStream = CollStream.new;
-	Pseq([Ptrace(r, \freq, printStream), Pfunc({printStream.collection.dump; nil }) ]).play;
+	Pseq([Ptrace(r, \freq, printStream), Pfunc({ printStream.collection.dump; nil })]).play;
 }.value;
 )
 
-//Pseed(seed, pattern) - set the seed of the random number generator
+// Pseed(seed, pattern) - set the seed of the random number generator
 // to force repetion of pseudo-random patterns
 
-Pn(Pseed(44, Pbindf(q, \ctranspose, Pbrown(-3.0, 3.0, 10) ) ) ).play;
+Pn(Pseed(44, Pbindf(q, \ctranspose, Pbrown(-3.0, 3.0, 10)))).play;
 
-//Prout(function) - on exit, the function must return the last value returned by yield
+// Prout(function) - on exit, the function must return the last value returned by yield
 // (otherwise, the pattern cannot be reliably manipulated by other patterns)
 
-Prout({ arg inval;
+Prout({ |inval|
 	inval = p.embedInStream(inval);
 	inval = Event.silent(4).yield;
 	inval = q.embedInStream(inval);
@@ -339,62 +339,62 @@ Prout({ arg inval;
 	inval;
 }).play
 
-//Pfunc(function) - the function should not have calls to embedInStream, use Prout instead.
+// Pfunc(function) - the function should not have calls to embedInStream, use Prout instead.
 
-Pn(Pbindf(q, \legato, Pfunc({ arg inval; if (inval.at(\degree)== 5) {4} {0.2}; })) ).play
+Pn(Pbindf(q, \legato, Pfunc({ |inval| if (inval.at(\degree) == 5) { 4 } { 0.2 } }))).play
 
 
 
 // the following patterns control the sequencing and repetition of other patterns
 
-//Pseq(arrayOfPatterns, repeats) - play as a sequence
+// Pseq(arrayOfPatterns, repeats) - play as a sequence
 
 Pseq([Pseq([p], 4), Pseq([Pbindf(q, \ctranspose, -24)], 5)]).play
 
-//Pser(arrayOfPatterns, num) - play num patterns from the arrayOfPatterns
+// Pser(arrayOfPatterns, num) - play num patterns from the arrayOfPatterns
 
 Pser([p, q, r], 5).play
 
-//Place(arrayOfPatterns, repeats) - similar to Pseq
+// Place(arrayOfPatterns, repeats) - similar to Pseq
 // but array elements that are themselves arrays are iterated
 // embedding the first element on the first repetition, second on the second, etc
 
 Place([[p, q, r], q, r], 5).play
 
-// Pn( pattern, patternRepetitions ) - repeat the pattern n times
+// Pn(pattern, patternRepetitions) - repeat the pattern n times
 
 Pn(p, 2).play;
 
-// Pfin( eventcount, pattern ) - play n events from the pattern
+// Pfin(eventcount, pattern) - play n events from the pattern
 
 Pfin(12, Pn(p, inf)).play;
 
-// Pdup( eventRepetitions, pattern ) - repeat each event from the pattern n times
+// Pdup(eventRepetitions, pattern) - repeat each event from the pattern n times
 
 Pdup(4, q).play
 
-//Pwhile(function, pattern)
+// Pwhile(function, pattern)
 
-Pwhile({coin(0.5).postln;}, q).play
+Pwhile({ coin(0.5).postln }, q).play
 
-// Pswitch( patternList, selectPattern ) - when a pattern ends, switch according to select
+// Pswitch(patternList, selectPattern) - when a pattern ends, switch according to select
 
 Pswitch([p, q, r], Pwhite(0, 100)).play
 
-// Pswitch1( patternList, selectPattern ) - on each event switch according to select
+// Pswitch1(patternList, selectPattern) - on each event switch according to select
 
 Pn(Pswitch1([p, q, r], Pwhite(0, 2))).play
 
-// Prand( patternList, repeats ) - random selection from list
+// Prand(patternList, repeats) - random selection from list
 Prand([p, q, r], inf).play
 
-// Pxrand( patternList, repeats ) - random selection from list without repeats
+// Pxrand(patternList, repeats) - random selection from list without repeats
 Pxrand([p, q, r], inf).play
 
-// Pwrand( patternList, weights, repeats ) - weighted random selection from list
+// Pwrand(patternList, weights, repeats) - weighted random selection from list
 Pwrand([p, q, r], #[1, 3, 5].normalizeSum, inf).play
 
-// Pwalk( patternList, stepPattern, directionPattern ) - walk through a list of patterns
+// Pwalk(patternList, stepPattern, directionPattern) - walk through a list of patterns
 
 Pwalk([p, q, r], 1, Pseq([-1, 1], inf)).play
 
@@ -402,36 +402,36 @@ Pwalk([p, q, r], 1, Pseq([-1, 1], inf)).play
 
 Pbind(\degree, Pslide(#[1, 2, 3, 4, 5], inf, 3, 1, 0), \dur, 0.2).play
 
-// Pshuf( patternList, repeats ) - random selection from list
+// Pshuf(patternList, repeats) - random selection from list
 Pn(Pshuf([p, q, r, r, p])).play
 
 // Ptuple(list, repeats)
 
 Pbind(\degree, Ptuple([Pwhite(1, -6), Pbrown(8, 15, 2)]),
-	\dur, Pfunc({ arg ev; ev.at(\degree).last/80 round: 0.1}),
-	\db, Pfunc({ if (coin(0.8)) {-25} {-20} })
+	\dur, Pfunc({ |ev| ev.at(\degree).last/80 round: 0.1 }),
+	\db, Pfunc({ if (coin(0.8)) { -25 } { -20 } })
 ).play
 
 
 
 // the following patterns can alter the values returned by other patterns
 
-//Pcollect(function, pattern)
+// Pcollect(function, pattern)
 
-Pcollect({ arg inval; inval.use({ ~freq = 1000.rand }); inval}, q).play
+Pcollect({ |inval| inval.use({ ~freq = 1000.rand }); inval }, q).play
 
-//Pselect(function, pattern)
+// Pselect(function, pattern)
 
-Pselect({ arg inval; inval.at(\degree) != 0 }, q).play(quant: 0)
+Pselect({ |inval| inval.at(\degree) != 0 }, q).play(quant: 0)
 
-//Preject(function, pattern)
+// Preject(function, pattern)
 
-Preject({ arg inval; inval.at(\degree) != 0 }, q).play(quant: 0)
+Preject({ |inval| inval.at(\degree) != 0 }, q).play(quant: 0)
 
-//Ppatmod(pattern, function, repeats) -
+// Ppatmod(pattern, function, repeats) -
 // function receives the current pattern as an argument and returns the next pattern to be played
 
-Ppatmod(p, { arg oldPat; [p, q, r].choose }, inf).play
+Ppatmod(p, { |oldPat| [p, q, r].choose }, inf).play
 ::
 
 subsection::VALUE PATTERNS: these patterns define or act on streams of numbers
@@ -439,23 +439,23 @@ subsection::VALUE PATTERNS: these patterns define or act on streams of numbers
 code::
 // Env as a pattern
 
-Pbindf(Pn(q, inf), \ctranspose, Pn(Env.linen(3, 0, 0.3, 20), inf) ).play;
+Pbindf(Pn(q, inf), \ctranspose, Pn(Env.linen(3, 0, 0.3, 20), inf)).play;
 
 // Pwhite(lo, hi, length)
 
-Pbindf(Pn(q, inf), \ctranspose, Pwhite(-3.0, 3.0) ).play;
+Pbindf(Pn(q, inf), \ctranspose, Pwhite(-3.0, 3.0)).play;
 
 // Pbrown(lo, hi, step, length)
 
-Pbindf(Pn(q, inf), \ctranspose, Pbrown(-3.0, 3.0, 2) ).play;
+Pbindf(Pn(q, inf), \ctranspose, Pbrown(-3.0, 3.0, 2)).play;
 
 // Pseries(start, step, length)
 
-Pbindf(Pn(q, inf), \ctranspose, Pseries(0, 0.1, 10) ).play;
+Pbindf(Pn(q, inf), \ctranspose, Pseries(0, 0.1, 10)).play;
 
 // Pgeom(start, step, length)
 
-Pbindf(Pn(q, inf), \ctranspose, Pgeom(1, 1.2, 20) ).play;
+Pbindf(Pn(q, inf), \ctranspose, Pgeom(1, 1.2, 20)).play;
 
 // Pwrap(pattern, lo, hi)
 
@@ -464,20 +464,21 @@ Pbind(\note, Pwrap(Pwhite(0, 128), 10, 20).round(2), \dur, 0.05).play;
 // PdegreeToKey(pattern, scale, stepsPerOctave)
 // this reimplements part of pitchEvent (see Event)
 
-Pbindf(Pn(q, inf), \note, PdegreeToKey(Pbrown(-8, 8, 2), [0, 2, 4, 5, 7, 9, 11]) ).play;
+Pbindf(Pn(q, inf), \note, PdegreeToKey(Pbrown(-8, 8, 2), [0, 2, 4, 5, 7, 9, 11])).play;
 
 // Prewrite(pattern, dict, levels) - see help page for details.
 // (notice use of Env to define a chord progression of sorts...
 
 Pbind(\degree,
-	Prewrite(0, ( 0: #[2, 0],
+	Prewrite(0, (
+			0: #[2, 0],
 			1: #[0, 0, 1],
 			2: #[1, 0, 1]
 		), 4
 	) + Pn(Env([4, 0, 1, 4, 3, 4], [6.4, 6.4, 6.4, 6.4, 6.4], 'step')),
 	\dur, 0.2).play
 
-// Psubdivide( repetitionPattern, patternOfDurations ) -
+// Psubdivide(repetitionPattern, patternOfDurations) -
 Pbindf(Pn(q), \dur, Psubdivide(
 	Pseq(#[1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 4, 5, 7, 15], inf),
 	Pseq(#[0.5], inf)
@@ -485,10 +486,10 @@ Pbindf(Pn(q), \dur, Psubdivide(
 ).play;
 
 
-// Pstep2add( pat1, pat2 )
-// Pstep3add( pat1, pat2, pat3 )
+// Pstep2add(pat1, pat2)
+// Pstep3add(pat1, pat2, pat3)
 // PstepNadd(pat1, pat2, ...)
-// PstepNfunc(function, patternArray )
+// PstepNfunc(function, patternArray)
 // combine multiple patterns with depth first traversal
 
 Pbind(

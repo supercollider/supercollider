@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <type_traits>
 #include "SC_Types.h"
 #include "SC_SndBuf.h"
 
@@ -82,17 +83,26 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
 
 #define ClearUnitOnMemFailed                                                                                           \
     Print("%s: alloc failed, increase server's RT memory (e.g. via ServerOptions)\n", __func__);                       \
-    SETCALC(*ClearUnitOutputs);                                                                                        \
+    SETCALC(ClearUnitOutputs);                                                                                         \
+    ClearUnitOutputs(unit, 1);                                                                                         \
     unit->mDone = true;                                                                                                \
     return;
 
+// macro for handling RT allocation failures. Example usage:
+//     unit->mBuf = RTAlloc(mWorld, numBytes);
+//     ClearUnitIfMemFailed(unit->mBuf);
 #define ClearUnitIfMemFailed(condition)                                                                                \
     if (!(condition)) {                                                                                                \
         ClearUnitOnMemFailed                                                                                           \
     }
 
+template <typename ToType, typename Value>
+[[nodiscard]] inline constexpr auto copyAndCastToTypeOfFirstArg(const ToType&, const Value& value) noexcept {
+    using TargetT = std::remove_cv_t<std::remove_reference_t<ToType>>;
+    return static_cast<TargetT>(value);
+}
 // calculate a slope for control rate interpolation to audio rate.
-#define CALCSLOPE(next, prev) ((next - prev) * sc_typeof_cast(next) unit->mRate->mSlopeFactor)
+#define CALCSLOPE(next, prev) ((next - prev) * copyAndCastToTypeOfFirstArg(next, unit->mRate->mSlopeFactor))
 
 // get useful values
 #define SAMPLERATE (unit->mRate->mSampleRate)
@@ -102,6 +112,7 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
 #define BUFDUR (unit->mRate->mBufDuration)
 #define FULLRATE (unit->mWorld->mFullRate.mSampleRate)
 #define FULLBUFLENGTH (unit->mWorld->mFullRate.mBufLength)
+#define FULLSAMPLEDUR (unit->mWorld->mFullRate.mSampleDur)
 
 #ifdef SUPERNOVA
 

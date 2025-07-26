@@ -1,6 +1,6 @@
 /* Multiply indexed container.
  *
- * Copyright 2003-2020 Joaquin M Lopez Munoz.
+ * Copyright 2003-2023 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -38,6 +38,7 @@
 #include <boost/multi_index/detail/converter.hpp>
 #include <boost/multi_index/detail/header_holder.hpp>
 #include <boost/multi_index/detail/has_tag.hpp>
+#include <boost/multi_index/detail/invalidate_iterators.hpp>
 #include <boost/multi_index/detail/no_duplicate_tags.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
@@ -52,13 +53,18 @@
 #endif
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
+#include <boost/core/serialization.hpp>
 #include <boost/multi_index/detail/archive_constructed.hpp>
+#include <boost/multi_index/detail/bad_archive_exception.hpp>
 #include <boost/multi_index/detail/serialization_version.hpp>
-#include <boost/serialization/collection_size_type.hpp>
-#include <boost/serialization/nvp.hpp>
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/version.hpp>
 #include <boost/throw_exception.hpp> 
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SERIALIZATION_COMPATIBILITY_V2)
+#define BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER \
+  <boost/serialization/collection_size_type.hpp>
+#include BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
+#undef BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
+#endif
 #endif
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)
@@ -489,9 +495,7 @@ public:
 #endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(
-      it,static_cast<typename IteratorType::container_type&>(*this));
-
+    BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
@@ -508,8 +512,7 @@ public:
 #endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(
-      it,static_cast<const typename IteratorType::container_type&>(*this));
+    BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
@@ -541,8 +544,7 @@ public:
 #endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(
-      it,static_cast<typename IteratorType::container_type&>(*this));
+    BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
@@ -559,8 +561,7 @@ public:
 #endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(
-      it,static_cast<const typename IteratorType::container_type&>(*this));
+    BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
@@ -767,6 +768,19 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     }
   }
 
+  template<typename Index>
+  std::pair<final_node_type*,bool> transfer_(Index& x,final_node_type* n)
+  {
+    final_node_type* res=super::insert_(n->value(),n,&super::final(x));
+    if(res==n){
+      ++node_count;
+      return std::pair<final_node_type*,bool>(res,true);
+    }
+    else{
+      return std::pair<final_node_type*,bool>(res,false);
+    }
+  }
+
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> emplace_(
     BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
@@ -923,14 +937,21 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   final_node_handle_type extract_(final_node_type* x)
   {
     --node_count;
-    super::extract_(x);
+    super::extract_(x,detail::invalidate_iterators());
     return final_node_handle_type(x,get_allocator());
+  }
+
+  template<typename Dst>
+  void extract_for_transfer_(final_node_type* x,Dst dst)
+  {
+    --node_count;
+    super::extract_(x,dst);
   }
 
   void erase_(final_node_type* x)
   {
     --node_count;
-    super::extract_(x);
+    super::extract_(x,detail::invalidate_iterators());
     delete_node_(x);
   }
 
@@ -950,6 +971,17 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     delete_all_nodes_();
     super::clear_();
     node_count=0;
+  }
+
+  template<typename Index>
+  void transfer_range_(
+    Index& x,
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last)
+  {
+    while(first!=last){
+      transfer_(x,static_cast<final_node_type*>((first++).get_node()));
+    }
   }
 
   void swap_(multi_index_container<Value,IndexSpecifierList,Allocator>& x)
@@ -1075,7 +1107,11 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
   friend class boost::serialization::access;
 
-  BOOST_SERIALIZATION_SPLIT_MEMBER()
+  template<class Archive>
+  void serialize(Archive& ar,const unsigned int version)
+  {
+    core::split_member(ar,*this,version);
+  }
 
   typedef typename super::index_saver_type        index_saver_type;
   typedef typename super::index_loader_type       index_loader_type;
@@ -1083,15 +1119,15 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   template<class Archive>
   void save(Archive& ar,const unsigned int version)const
   {
-    const serialization::collection_size_type       s(size_());
+    const std::size_t                               s(size_());
     const detail::serialization_version<value_type> value_version;
-    ar<<serialization::make_nvp("count",s);
-    ar<<serialization::make_nvp("value_version",value_version);
+    ar<<core::make_nvp("count",s);
+    ar<<core::make_nvp("value_version",value_version);
 
     index_saver_type sm(bfm_allocator::member,s);
 
     for(iterator it=super::begin(),it_end=super::end();it!=it_end;++it){
-      serialization::save_construct_data_adl(
+      core::save_construct_data_adl(
         ar,boost::addressof(*it),value_version);
       ar<<serialization::make_nvp("item",*it);
       sm.add(it.get_node(),ar,version);
@@ -1107,21 +1143,36 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
 
     clear_(); 
-    serialization::collection_size_type       s;
+    std::size_t                               s;
     detail::serialization_version<value_type> value_version;
     if(version<1){
       std::size_t sz;
-      ar>>serialization::make_nvp("count",sz);
-      s=static_cast<serialization::collection_size_type>(sz);
+      ar>>core::make_nvp("count",sz);
+      s=static_cast<std::size_t>(sz);
+    }
+    else if(version<3){
+#if defined(BOOST_MULTI_INDEX_ENABLE_SERIALIZATION_COMPATIBILITY_V2)
+      serialization::collection_size_type csz;
+      ar>>core::make_nvp("count",csz);
+      s=static_cast<std::size_t>(csz);
+#else
+      ar>>core::make_nvp("count",s);
+#endif
+    }
+    else if(version<4){
+      unsigned long ul;
+      ar>>core::make_nvp("count",ul);
+      s=static_cast<std::size_t>(ul);
     }
     else{
-      ar>>serialization::make_nvp("count",s);
+      ar>>core::make_nvp("count",s);
     }
+
     if(version<2){
       value_version=0;
     }
     else{
-      ar>>serialization::make_nvp("value_version",value_version);
+      ar>>core::make_nvp("value_version",value_version);
     }
 
     index_loader_type lm(bfm_allocator::member,s);
@@ -1130,9 +1181,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       detail::archive_constructed<Value> value("item",ar,value_version);
       std::pair<final_node_type*,bool> p=insert_rv_(
         value.get(),super::end().get_node());
-      if(!p.second)throw_exception(
-        archive::archive_exception(
-          archive::archive_exception::other_exception));
+      if(!p.second)throw_exception(detail::bad_archive_exception());
       ar.reset_object_address(
         boost::addressof(p.first->value()),boost::addressof(value.get()));
       lm.add(p.first,ar,version);
@@ -1332,14 +1381,7 @@ project(
 #endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef detail::converter<
-    multi_index_type,
-    BOOST_DEDUCED_TYPENAME IteratorType::container_type> converter;
-  BOOST_MULTI_INDEX_CHECK_IS_OWNER(it,converter::index(m));
-#endif
-
+  BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
   return detail::converter<multi_index_type,index_type>::iterator(
     m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
@@ -1368,14 +1410,7 @@ project(
 #endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef detail::converter<
-    multi_index_type,
-    BOOST_DEDUCED_TYPENAME IteratorType::container_type> converter;
-  BOOST_MULTI_INDEX_CHECK_IS_OWNER(it,converter::index(m));
-#endif
-
+  BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
   return detail::converter<multi_index_type,index_type>::const_iterator(
     m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
@@ -1418,14 +1453,7 @@ project(
 #endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef detail::converter<
-    multi_index_type,
-    BOOST_DEDUCED_TYPENAME IteratorType::container_type> converter;
-  BOOST_MULTI_INDEX_CHECK_IS_OWNER(it,converter::index(m));
-#endif
-
+  BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
   return detail::converter<multi_index_type,index_type>::iterator(
     m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
@@ -1455,14 +1483,7 @@ project(
 #endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef detail::converter<
-    multi_index_type,
-    BOOST_DEDUCED_TYPENAME IteratorType::container_type> converter;
-  BOOST_MULTI_INDEX_CHECK_IS_OWNER(it,converter::index(m));
-#endif
-
+  BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
   return detail::converter<multi_index_type,index_type>::const_iterator(
     m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
@@ -1551,6 +1572,11 @@ void swap(
 /* class version = 1 : we now serialize the size through
  * boost::serialization::collection_size_type.
  * class version = 2 : proper use of {save|load}_construct_data.
+ * class version = 3 : dropped boost::serialization::collection_size_type
+ * in favor of unsigned long --this allows us to provide serialization
+ * support without including any header from Boost.Serialization.
+ * class version = 4 : uses std::size_t rather than unsigned long (which
+ * is smaller in LLP64 data models).
  */
 
 namespace serialization {
@@ -1559,7 +1585,7 @@ struct version<
   boost::multi_index_container<Value,IndexSpecifierList,Allocator>
 >
 {
-  BOOST_STATIC_CONSTANT(int,value=2);
+  BOOST_STATIC_CONSTANT(int,value=4);
 };
 } /* namespace serialization */
 #endif

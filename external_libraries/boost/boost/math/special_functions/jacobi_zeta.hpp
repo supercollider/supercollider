@@ -14,6 +14,7 @@
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/ellint_1.hpp>
 #include <boost/math/special_functions/ellint_rj.hpp>
+#include <boost/math/special_functions/sign.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/policies/error_handling.hpp>
 #include <boost/math/tools/workaround.hpp>
@@ -26,7 +27,7 @@ namespace detail{
 
 // Elliptic integral - Jacobi Zeta
 template <typename T, typename Policy>
-T jacobi_zeta_imp(T phi, T k, const Policy& pol)
+T jacobi_zeta_imp(T phi, T k, const Policy& pol, T kp)
 {
     BOOST_MATH_STD_USING
     using namespace boost::math::tools;
@@ -42,16 +43,22 @@ T jacobi_zeta_imp(T phi, T k, const Policy& pol)
     T result;
     T sinp = sin(phi);
     T cosp = cos(phi);
-    T s2 = sinp * sinp;
+    T c2 = cosp * cosp;
+    T one_minus_ks2 = kp + c2 - kp * c2;
     T k2 = k * k;
-    T kp = 1 - k2;
     if(k == 1)
        result = sinp * (boost::math::sign)(cosp);  // We get here by simplifying JacobiZeta[w, 1] in Mathematica, and the fact that 0 <= phi.
     else
-       result = k2 * sinp * cosp * sqrt(1 - k2 * s2) * ellint_rj_imp(T(0), kp, T(1), T(1 - k2 * s2), pol) / (3 * ellint_k_imp(k, pol));
+    {
+       result = k2 * sinp * cosp * sqrt(one_minus_ks2) * ellint_rj_imp(T(0), kp, T(1), one_minus_ks2, pol) / (3 * ellint_k_imp(k, pol, kp));
+    }
     return invert ? T(-result) : result;
 }
-
+template <typename T, typename Policy>
+inline T jacobi_zeta_imp(T phi, T k, const Policy& pol)
+{
+   return jacobi_zeta_imp(phi, k, pol, T(1 - k * k));
+}
 } // detail
 
 template <class T1, class T2, class Policy>

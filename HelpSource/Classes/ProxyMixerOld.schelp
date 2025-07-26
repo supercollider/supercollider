@@ -37,7 +37,7 @@ Examples::
 
 code::
 p = ProxySpace.push(s.boot, \p);
-m = ProxyMixer(p, 8, \p, Rect(20, 500, 0,0));
+m = ProxyMixer(p, 8, \p, Rect(20, 500, 0, 0));
 
 m = ProxyMixer(p, 8)
 
@@ -47,9 +47,9 @@ m = ProxyMixer(p, 8)
 ~test.ar;
 
 (		// activeProxies: proxy appears when it is alive
-~test = { |freq=250, intv=19, timescale=1, curve=0, loopnode=0|
+~test = { |freq = 250, intv = 19, timescale = 1, curve = 0, loopnode = 0|
 	var env = EnvGen.kr(
-		Env({ 1.0.rand2 }!11, {1.0.rand}!10, curve, releaseNode: 9, loopNode: loopnode),
+		Env({ 1.0.rand2 }!11, { 1.0.rand }!10, curve, releaseNode: 9, loopNode: loopnode),
 		timeScale: timescale);
 	var pitch = (env * [1, 0.33, -1] * intv).midiratio * freq;
 	Splay.ar(Formant.ar(pitch, pitch.scramble * 2, pitch.scramble)) * 0.1;
@@ -64,7 +64,7 @@ m = ProxyMixer(p, 8)
 
 		// the reduce button removes all proxies that are not playing
 		// and that are not used as sources in other proxies:
-~otto = { |dens=12| Dust.ar(dens) };
+~otto = { |dens = 12| Dust.ar(dens) };
 
 ~otto.clear;		// remove it
 p.reduce;
@@ -118,7 +118,7 @@ s.scope(8);
 
 		// kr proxies show up in the middle
 ~lfo = { SinOsc.kr(2) };
-~lfnoyz0 = { |lofreq, mul=1, add| LFDNoise0.kr(lofreq, mul, add) };
+~lfnoyz0 = { |lofreq, mul = 1, add| LFDNoise0.kr(lofreq, mul, add) };
 
 		// the editor zone is a NodeProxyEditor
 		// open it and set some params
@@ -154,7 +154,7 @@ m.editor.proxy_(~test);
 10.do { |i| p[("test" ++ i).asSymbol].playN(vol: linrand(1.0), fadeTime: exprand(0.01, 5)) };
 
 	// and the same for kr proxies
-10.do { |i| p[("kr" ++ i).asSymbol] = { LFNoise0.kr(exprand(5, 50)) }; };
+10.do { |i| p[("kr" ++ i).asSymbol] = { LFNoise0.kr(exprand(5, 50)) } };
 
 p.krProxyNames.do { |key| p.removeAt(key) };
 

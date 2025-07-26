@@ -405,7 +405,7 @@
 #define BOOST_THREAD_FUTURE_USES_OPTIONAL
 #endif
 
-#if BOOST_WORKAROUND(__BORLANDC__, < 0x600)
+#if BOOST_WORKAROUND(BOOST_BORLANDC, < 0x600)
 #  pragma warn -8008 // Condition always true/false
 #  pragma warn -8080 // Identifier declared but never used
 #  pragma warn -8057 // Parameter never used

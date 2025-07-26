@@ -32,7 +32,7 @@ argument::pattern
 Examples::
 
 code::
-a = Pseed(1972, Prand([1,2,3], inf));
+a = Pseed(1972, Prand([1, 2, 3], inf));
 
 b = a.asStream;
 10.do({ b.next.post });
@@ -43,13 +43,13 @@ c = a.asStream;
 
 // using a seed pattern as input:
 
-a = Pseed(Pseq([1812, 1912], inf), Prand([1,2,3], 5));
+a = Pseed(Pseq([1812, 1912], inf), Prand([1, 2, 3], 5));
 
 b = a.asStream;
-2.do({ 5.do({ b.next.post });"".postln;  });
+2.do({ 5.do({ b.next.post }); "".postln });
 
 c = a.asStream;
-2.do({ 5.do({ c.next.post });"".postln;  });
+2.do({ 5.do({ c.next.post }); "".postln });
 
 
 // outer thread is independant:
@@ -58,22 +58,22 @@ a = Pseed(Prand([1534, 1600, 1798, 1986, 2005], inf), Pshuf([1, Prand([7, 9], 2)
 
 // returns random streams
 b = a.asStream;
-2.do({ 5.do({ b.next.post });"".postln;  });
+2.do({ 5.do({ b.next.post }); "".postln });
 
 c = a.asStream;
-2.do({ 5.do({ c.next.post });"".postln;  });
+2.do({ 5.do({ c.next.post }); "".postln });
 
 
 // Some examples of how Pseed can be used in music.
 (
 SynthDef.new(\varsaw, {
-	arg dur, attack=0.01, release=1.0,
-	t_gate=1, out, freq=442, cutoff=5500,
-	rq=1, pan=0.0, amp=0.5, width=0.1;
+	arg dur, attack = 0.01, release = 1.0,
+	t_gate = 1, out, freq = 442, cutoff = 5500,
+	rq = 1, pan = 0.0, amp = 0.5, width = 0.1;
 
 	var env = EnvGen.kr(Env.perc(attack, release), t_gate, timeScale: dur, doneAction: 2);
 	var sig = VarSaw.ar(freq: freq, mul: env, width: width);
-	sig = RLPF.ar(sig, cutoff.clip(20.0, 20000.0), rq.clip(0.0,1.0));
+	sig = RLPF.ar(sig, cutoff.clip(20.0, 20000.0), rq.clip(0.0, 1.0));
 	sig = Pan2.ar(sig, pan);
 	Out.ar(out, sig * amp);
 }).add;
@@ -101,11 +101,11 @@ Pdef(\varsawPat,
 
 
 (
-SynthDef(\drum, {|out, dur, t_gate =1, pew=1, sustain=1, pan, fed=0, tun, amp = 1 |
+SynthDef(\drum, { |out, dur, t_gate = 1, pew = 1, sustain = 1, pan, fed = 0, tun, amp = 1|
 	var env, freq, sig;
 	tun = ((tun>0)*tun) + ((tun<1)*3);
 	freq = (tun*10).midicps;
-	env = EnvGen.ar(Env.linen(0.01, 0, 1, 1, -3), t_gate, timeScale: dur , doneAction: 2);
+	env = EnvGen.ar(Env.linen(0.01, 0, 1, 1, -3), t_gate, timeScale: dur, doneAction: 2);
 	sig = LPF.ar(SinOscFB.ar(XLine.ar(freq.expexp(10, 2000, 1000, 8000), freq, 0.025/pew), fed), 9000);
 	sig = Pan2.ar(sig, pan);
 	Out.ar(out, sig * amp);
@@ -123,12 +123,12 @@ Pdef(\drumPat,
 				dur: 1 / Pstutter(Phprand(5, 11), Pwhite(5, 11)),
 				legato: Plprand(0.75, 4.0),
 				pan: Prand([Phprand(0.0, 0.5, 1), Plprand(0.5, 1.0, 1)], inf),
-				//pew: 0.4,
-				//pew: Phprand(0.4, 10.0),
+				// pew: 0.4,
+				// pew: Phprand(0.4, 10.0),
 			]), 1, 2.0, // Loop length is the second number here.
 		)
 	)
-).play(quant:1);
+).play(quant: 1);
 )
 
 /*
@@ -163,7 +163,7 @@ Pdef(\drumPat,
 		legato: Plprand(0.75, 4.0),
 		pan: 1,
 	])
-).play(quant:1);
+).play(quant: 1);
 )
 
 /*

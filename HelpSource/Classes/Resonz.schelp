@@ -6,7 +6,7 @@ categories::  UGens>Filters>Linear
 
 Description::
 
-This is the same as  link::Classes/Ringz:: , except that it has a constant gain at 0 dB instead of being constant skirt.
+This is the same as  link::Classes/Ringz::, except that it has a constant gain at 0 dB instead of being constant skirt.
 
 It is a two pole resonant filter with zeroes at
 
@@ -15,7 +15,7 @@ z = ±1
 ::
 
 
-Based on  emphasis::K. Steiglitz,  "A Note on Constant-Gain Digital Resonators", Computer Music Journal, vol 18, no. 4, pp. 8-10, Winter 1994::.
+Based on  emphasis::K. Steiglitz, "A Note on Constant-Gain Digital Resonators", Computer Music Journal, vol 18, no. 4, pp. 8-10, Winter 1994::.
 
 
 classmethods::
@@ -58,7 +58,7 @@ code::
 { Resonz.ar(WhiteNoise.ar(0.5), 2000, 0.1) }.play
 
 // modulate frequency
-{ Resonz.ar(WhiteNoise.ar(0.5), XLine.kr(1000,8000,10), 0.05) }.play
+{ Resonz.ar(WhiteNoise.ar(0.5), XLine.kr(1000, 8000, 10), 0.05) }.play
 
 // modulate bandwidth
 { Resonz.ar(WhiteNoise.ar(0.5), 2000, XLine.kr(1, 0.001, 8)) }.play
@@ -67,4 +67,3 @@ code::
 { Resonz.ar(WhiteNoise.ar(0.5), 2000, XLine.kr(0.001, 1, 8)) }.play
 
 ::
-

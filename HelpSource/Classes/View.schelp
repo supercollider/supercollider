@@ -396,8 +396,8 @@ table::
 ## 9 || fixed to right, fixed to bottom
 ## 10 || fit
 ## 11 || center, center (scale)
-## 12 || center , fixed to top
-## 13 || center , fixed to bottom
+## 12 || center, fixed to top
+## 13 || center, fixed to bottom
 ## 14 || fixed to left, center
 ## 15 || fixed to right, center
 ## 16 || center, center (no scale)
@@ -449,7 +449,7 @@ code::
 	~image = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 	~window = Window.new("Image background");
 	~slider = Slider2D.new(~window, Rect(10, 10, 200, 200))
-		.setBackgroundImage(~image, 5, 1, Rect(0, 0, 100, 100) );
+		.setBackgroundImage(~image, 5, 1, Rect(0, 0, 100, 100));
 	~window.front;
 )
 ::
@@ -469,9 +469,9 @@ METHOD:: palette
 	When getting a palette, it will return a new copy of the view's palette every time. Therefore, if you wish to change the view's palette, you have to set the changed palette back on the view:
 
 code::
-	w = Window().front.layout_( HLayout( a = Slider() ) );
+	w = Window().front.layout_(HLayout(a = Slider()));
 	a.action = { |a|
-		a.palette = a.palette.buttonText_( if(a.value > 0.5){Color.red}{Color.green} );
+		a.palette = a.palette.buttonText_(if(a.value > 0.5){ Color.red }{ Color.green });
 	};
 	a.valueAction = 0.0;
 ::
@@ -479,10 +479,10 @@ code::
 	To dynamically modify the view's palette, it is thus more efficient, if possible, to keep a palette instance to operate on. Note that this is also more efficient than using methods like link::Classes/Slider#-knobColor::, since internally they use the above approach:
 
 code::
-	w = Window().front.layout_( HLayout( a = Slider() ) );
+	w = Window().front.layout_(HLayout(a = Slider()));
 	p = QPalette();
 	a.action = { |a|
-		a.palette = p.buttonText_( if(a.value > 0.5){Color.red}{Color.green} );
+		a.palette = p.buttonText_(if(a.value > 0.5){ Color.red }{ Color.green });
 	};
 	a.valueAction = 0.0;
 ::
@@ -675,7 +675,7 @@ When the key action object is evaluated, it is passed one or more arguments from
 list::
 ## strong::view:: - The view.
 
-## strong::char:: - The character (link::Classes/Char::) associated with the key, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to.
+## strong::char:: - The character (link::Classes/Char::) associated with the key, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank (), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to.
 note:: Only characters with an ASCII code are passed. Non-ASCII keys (Ctrl/Alt/Cmd/Shift modifiers, arrow keys and other control sequences) will pass a link::Classes/Char:: with ASCII code 0. (Ctrl-characters emphasis::do:: have ASCII codes, and are passed as a Char. The Ctrl key by itself also triggers the key action, but with ASCII code 0.) A useful test is link::Classes/Char#-isPrint::.::
 
 ## strong::modifiers:: - A bitwise or of integers indicating the modifier keys in effect. You can examine individual flag settings using the C bitwise AND operator. For a list of these, see link::Reference/Modifiers::.

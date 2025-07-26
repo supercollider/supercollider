@@ -54,7 +54,7 @@ elseif(AUDIOAPI STREQUAL portaudio AND SYSTEM_PORTAUDIO)
       message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
     endif()
 elseif(AUDIOAPI STREQUAL bela)
-    # The Bela lib will have its own set of libraries and includes
+    # The Bela lib will have its own set of libraries and includes
     # However, the Bela audio backend for SC has some direct calls to Xenomai
     # Therefore we need to get flags for those as well
     find_package(Xenomai REQUIRED)
@@ -231,11 +231,11 @@ elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
 
-target_link_libraries(libscsynth boost_system_lib boost_filesystem_lib)
 target_include_directories(libscsynth PUBLIC ${boost_include_dirs})
 
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
+	target_compile_definitions(libscsynth PUBLIC UNICODE _UNICODE)
 endif()
 
 if(NOT WIN32)

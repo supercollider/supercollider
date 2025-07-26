@@ -18,12 +18,12 @@ The .gui method is called on your model:
 
 code::
 // standard usage
-theModel.gui( parent, bounds )
+theModel.gui(parent, bounds)
 
 // this results in these steps:
 guiClass = theModel.guiClass;
-gui = guiClass.new( theModel );
-gui.gui( parent, bounds );
+gui = guiClass.new(theModel);
+gui.gui(parent, bounds);
 ::
 
 In addition to those steps the model/gui dependencies are managed, defaults (nil parent or nil bounds) are managed and when the window or parent view is closed then dependencies are safely managed.
@@ -67,7 +67,7 @@ Depends on the conventions of how .changed was called.  If an object called some
 
 
 METHOD:: gui
-The standard method to create a view / window.  Usually you call yourModel.gui(parent,bounds) and this creates the gui (of the related ObjectGui subclass) and then theObjectGui.gui(parent,bounds) is called, forwarding the arguments.  So this method is what receives the forwarded (parent,bounds) from the initial call to theModel.gui(parent,bounds). Usually you do not call this manually and would avoid reimplementing it.
+The standard method to create a view / window.  Usually you call yourModel.gui(parent, bounds) and this creates the gui (of the related ObjectGui subclass) and then theObjectGui.gui(parent, bounds) is called, forwarding the arguments.  So this method is what receives the forwarded (parent, bounds) from the initial call to theModel.gui(parent, bounds). Usually you do not call this manually and would avoid reimplementing it.
 
 argument:: parent
 parent view : nil, a Window, a FlowView or any other usable container view.
@@ -76,7 +76,7 @@ argument:: bounds
 nil or a Rect.  The default of nil will offer the entire bounds to the guiBody method and then shrink the view size afterwards to the exact size of the contents that were actually added.
 
 argument::  ... args
-More args may be passed into theModel.gui(parent,bounds,anArg,moreArg) and will be forwarded to guiBody.
+More args may be passed into theModel.gui(parent, bounds, anArg, moreArg) and will be forwarded to guiBody.
 
 returns:: this
 
@@ -140,7 +140,7 @@ code::
 
 YourSimpleGuiClass : ObjectGui {
 
-	guiBody { arg layout;
+	guiBody { |layout|
 	
 		// we refer to the model and
 		// access its variable howFast.
@@ -157,8 +157,8 @@ YourGuiClass : ObjectGui {
 	
 	var numberEditor;
 	
-	//for example
-	guiBody { arg layout;
+	// for example
+	guiBody { |layout|
 		var r;
 		// the object you are making a gui for is referred to as the model
 		
@@ -169,19 +169,19 @@ YourGuiClass : ObjectGui {
 		model.someParam.gui(layout);
 		
 		// using non 'gui' objects
-		r = layout.layRight(300,300); // allocate yourself some space
-		Button(layout.win,r)
-			.action_({ arg butt;
+		r = layout.layRight(300, 300); // allocate yourself some space
+		Button(layout.win, r)
+			.action_({ |butt|
 				model.goApeShit;
 			});
 		
 		// note: NumberEditor is a cruciallib class
 		// which is itself a model (its an editor of a value)
 		// and has its own gui class that creates and manages the NumberBox view
-		numberEditor = NumberEditor(model.howFast,[0,100])
-			.action_({ arg val; 
-				model.howFast = val; 
-				model.changed(this); 
+		numberEditor = NumberEditor(model.howFast, [0, 100])
+			.action_({ |val|
+				model.howFast = val;
+				model.changed(this);
 				// tell the model that this gui changed it
 			});
 		numberEditor.gui(layout);
@@ -189,9 +189,9 @@ YourGuiClass : ObjectGui {
 	
 	// your gui object will have update called any time the .changed message
 	// is sent to your model
-	update { arg changed,changer;
+	update { |changed, changer|
 	
-		if(changer !== this,{ 
+		if(changer !== this, {
 			/* if it is this gui object that changed the value
 				using the numberEditor, then we already have a correct
 				display and don't need to waste cpu to update it.

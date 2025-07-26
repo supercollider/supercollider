@@ -30,6 +30,7 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 #include "SC_RGen.h"
 #include <setjmp.h>
 #include <map>
+#include <cstdint>
 
 #define TAILCALLOPTIMIZE 1
 
@@ -42,7 +43,7 @@ struct FifoMsg {
 
     FifoMsgFunc func;
     void* dataPtr;
-    long dataWord[2];
+    std::int64_t dataWord[2];
 };
 
 struct VMGlobals {
@@ -71,12 +72,12 @@ struct VMGlobals {
     PyrSlot receiver; // the receiver
     PyrSlot result;
     int numpop; // number of args to pop for primitive
-    long primitiveIndex;
+    std::int64_t primitiveIndex;
     RGen* rgen;
     jmp_buf escapeInterpreter;
 
     // scratch context
-    long execMethod;
+    std::int64_t execMethod;
 
     // primitive exceptions
     std::map<PyrThread*, std::pair<std::exception_ptr, PyrMethod*>> lastExceptions;

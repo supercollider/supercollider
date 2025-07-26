@@ -6,17 +6,61 @@ categories::Collections>Ordered
 DESCRIPTION::
 List is a subclass of SequenceableCollection with unlimited growth in size. Although not a subclass of link::Classes/Array:: or its superclass link::Classes/ArrayedCollection:: it uses an Array in its implementation and is in many cases interchangeable with one. (List implements many of the same methods as Array.)
 
-Arrays have a fixed maximum size. If you add beyond that size a new Array is created and returned, but you must use an assignment statement or the new array will be lost. (See the link::Classes/Array:: helpfile.) List has no size limitation and is thus more flexible, but has slightly more overhead.
+Many of List's methods are inherited from link::Classes/SequenceableCollection:: or link::Classes/Collection:: and are documented in those helpfiles.
+
+subsection::Size limitations of arrays and flexibility of lists in SuperCollider
+
+Arrays have a fixed maximum size. Adding beyond that size, a new link::Classes/Array:: is created and returned. In order to be able to use it, the variable holding the old array can be reassigned to the new one. Threfore, the idiomatic way to add new item in link::Classes/Array:: is:
+
 code::
-(
-x = Array.new(3);
-y = List.new(3);
-5.do({ arg i; z = x.add(i); y.add(i); });
-x.postln; z.postln; y.postln;
-)
+x = x.add(i);
 ::
 
-Many of List's methods are inherited from link::Classes/SequenceableCollection:: or link::Classes/Collection:: and are documented in those helpfiles.
+Example:
+
+code::
+// Create a new empty collections with size 3:
+x = Array.new(3); 
+y = Array.new(3); 
+z = List.new(3);
+
+// Try to add 7 items to the array and list.
+// If the array exceeds maxSize, it will only
+// grow to an internally specified max size.
+( 
+7.do { |i|
+	x.add(i);
+	y = y.add(i); // reassign array y on each add
+	z.add(i);
+};
+)
+
+// Attempt to access the 5th item:
+x.at(4); // -> nil (out of bounds)
+y.at(4); // -> 4
+z.at(4); // -> 4
+
+// x grew only to size 4
+x.postln; // -> [ 0, 1, 2, 3 ]
+y.postln; // -> [ 0, 1, 2, 3, 4, 5, 6 ]
+z.postln; // -> List[ 0, 1, 2, 3, 4, 5, 6 ]
+::
+
+List has no size limitation and is thus more flexible, but has slightly more overhead:
+code::
+(
+// Create a new empty List with size: 3
+x = List.new(3);
+
+x.postln; // -> List[ ]
+
+// Add numbers 0 to 4 to the List
+5.do({ |i| x.add(i) });
+
+// The list has been modified in-place with each added item
+x.postln; // -> List[ 0, 1, 2, 3, 4 ]
+)
+::
 
 CLASSMETHODS::
 
@@ -52,45 +96,118 @@ Sets the List's Array.
 
 method::at
 Return the item at strong::index::.
+See link::Classes/SequenceableCollection#Indexing::..
+Accepts either a single index or an array of indices, in which case an Array of elements is returned.
+link::Classes/Array:: is its syntactic shortcut.
 code::
-List[ 1, 2, 3 ].at(0).postln;
+x = List[1, 2, 3] //-> [1, 2, 3]
+
+// Retrieve the value at index 1:
+x.at(1) //-> 2
+// Equivalent shorthand syntax:
+x[1] //-> 2
+
+// An index can also be retrieved from an array (returns not a list, but an array):
+y = [0, 0, 2, 2, 1] //-> [0, 0, 2, 2, 1]
+x[y]; //-> [1, 1, 3, 3, 2]
+
+(
+var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
+fork {
+	pitches.size.do{ |i|
+		{
+			var freq = pitches[i].midicps;
+			var env = Env.perc.ar(Done.freeSelf);
+			SinOsc.ar(freq) * 0.1 * env
+		}.play;
+		0.2.wait
+	}
+}
+)
 ::
 
 method::clipAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the List will be clipped to the last index.
+Similar to link::#-at::, but guarantees that any value for index is valid by clipping values outside the collection's bounds.
+Values greater than code::size - 1:: are clipped to that last index, and values below code::0:: (negative) are clipped to 0.
+When passed an array of indices, returns a new Array containing the elements at the specified positions.
+link::Classes/SequenceableCollection#-|@|:: is its syntactic shortcut.
 code::
-y = List[ 1, 2, 3 ];
-y.clipAt(13).postln;
+a = List[1, 2, 3]
+a.clipAt(2) // same as at
+a.clipAt(3) // clips
+a.clipAt([-1, 3, 1]) // array of indices (returns not a list, but an array)
+a|@|3 //syntactic shortcut
 ::
 
 method::wrapAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the List will be wrapped around to 0.
+Similar to link::#-at::, but guarantees that any value for index is valid by wrapping values outside the collection's bounds.
+If the index exceeds code::size - 1::, it wraps back around to code::0::.
+Similarly, if the index is below code::0:: (negative), it wraps to access elements from the end of the collection.
+code::this.wrapAt(index):: is equivalent to code::this.at(index mod: size)::, ensuring the index is always within the valid range of the collection.
+The index can also be an array of indices to extract the specified elements.
+link::Classes/SequenceableCollection#-@@:: is its syntactic shortcut.
 code::
-y = List[ 1, 2, 3 ];
-y.wrapAt(3).postln; // this returns the value at index 0
-y.wrapAt(4).postln; // this returns the value at index 1
+a = List[1, 2, 3]
+a.wrapAt(2) // same as at
+a.wrapAt(3) // wraps
+a.wrapAt([-1, 3, 1]) // array of indices (returns not a list, but an array)
+a@@3 //syntactic shortcut
+
+(
+var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
+fork {
+	32.do{ |i|
+		{
+			var freq = pitches.wrapAt(i).midicps;
+			var env = Env.perc.ar(Done.freeSelf);
+			SinOsc.ar(freq) * 0.1 * env
+		}.play;
+		0.2.wait
+	}
+}
+)
 ::
 
 method::foldAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the List will be folded back.
+Similar to link::#-at::, but guarantees that any value for index is valid by reflecting values outside the collection's bounds.
+Values greater than code::size - 1:: are reflected back toward lower indices.
+Similarly, if the index is below code::0:: (negative), it folds in the opposite direction.
+This creates a symmetrical mapping of any index within the collection's boundaries.
+The index can also be an array of indices to extract the specified elements.
+link::Classes/SequenceableCollection#-@|@:: is its syntactic shortcut.
 code::
-y = List[ 1, 2, 3 ];
-y.foldAt(3).postln; // this returns the value at index 1
-y.foldAt(4).postln; // this returns the value at index 0
-y.foldAt(5).postln; // this returns the value at index 1
+a = List[1, 2, 3]
+a.foldAt(2) // same as at
+a.foldAt(3) // folds back
+a.foldAt([-1, 3, 1]) // array of indices (returns not a list, but an array)
+a@|@3 //syntactic shortcut
+
+(
+var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
+fork {
+	32.do{ |i|
+		{
+			var freq = pitches.foldAt(i).midicps;
+			var env = Env.perc.ar(Done.freeSelf);
+			SinOsc.ar(freq) * 0.1 * env
+		}.play;
+		0.2.wait
+	}
+}
+)
 ::
 
 method::put
-Put strong::item:: at strong::index::, replacing what is there.
+Put strong::item:: at strong::index::, replacing what is there. See link::Classes/SequenceableCollection#Indexing::..
 
 method::clipPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the List will be clipped to the last index.
+Same as link::#-put::, but values for strong::index:: greater than the link::Classes/List:: instance size minus one will be clipped to code::size - 1::, which is the last index.
 
 method::wrapPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the List will be wrapped around to 0.
+Same as link::#-put::, but values for strong::index:: greater than the link::Classes/List:: instance size minus one will be wrapped around to 0.
 
 method::foldPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the List will be folded back.
+Same as link::#-put::, but values for strong::index:: greater than the link::Classes/List:: instance size minus one will be folded back.
 
 method::add
 Adds an strong::item:: to the end of the List.
@@ -99,7 +216,24 @@ method::addFirst
 Inserts the strong::item:: at the beginning of the List.
 
 method::insert
-Inserts the strong::item:: into the contents of the List at the indicated strong::index::.
+Inserts the strong::item:: into the contents of the link::Classes/List:: at the indicated strong::index::.
+code::
+x = List[1, 2, 3, 4]; // -> List[1, 2, 3, 4]
+x.insert(0, 999); // -> List[999, 1, 2, 3, 4]
+x; // -> List[999, 1, 2, 3, 4]
+::
+
+method::boundedInsert
+Same as link::#-insert::, but removes the receiver's last element before inserting strong::item::.
+This changes the receiver but maintains its size.
+
+code::
+x = List[1, 2, 3, 4]; // -> List[1, 2, 3, 4]
+x.boundedInsert(1, 999); // -> List[1, 999, 2, 3]
+x; // -> List[1, 999, 2, 3]
+x.boundedInsert(20, \a); // -> List[1, 999, 2, a]
+x.boundedInsert(-2, \b); // -> List[b, 1, 999, 2]
+::
 
 method::pop
 Remove and return the last element of the List.
@@ -108,9 +242,9 @@ method::grow
 Increase the size of the List by strong::sizeIncrease:: number of slots.
 
 method::removeAt
-Remove and return the element at strong::index::, shrinking the size of the List.
+Remove and return the item at strong::index::, shrinking the size of the List. See link::Classes/SequenceableCollection#Indexing::..
 code::
-y = List[ 1, 2, 3 ];
+y = List[1, 2, 3];
 y.removeAt(1);
 y.postln;
 ::
@@ -122,42 +256,42 @@ code::
 var z;
 z = List[1, 2, 3, 4];
 z.fill(4).postln;
-z.fill([1,2,3,4]).postln;
+z.fill([1, 2, 3, 4]).postln;
 )
 ::
 
 method::do
 Iterate over the elements in order, calling the function for each element. The function is passed two arguments, the element and an index.
 code::
-List['a', 'b', 'c'].do({ arg item, i; [i, item].postln; });
+List['a', 'b', 'c'].do({ |item, i| [i, item].postln });
 ::
 
 method::reverseDo
 Iterate over the elements in reverse order, calling the function for each element. The function is passed two arguments, the element and an index.
 code::
-List['a', 'b', 'c'].reverseDo({ arg item, i; [i, item].postln; });
+List['a', 'b', 'c'].reverseDo({ |item, i| [i, item].postln });
 ::
 
 method::pairsDo
 Calls function for each subsequent pair of elements in the List. The function is passed the two elements and an index.
 code::
-List[1, 2, 3, 4, 5, 6].pairsDo({ arg a, b; [a, b].postln; });
+List[1, 2, 3, 4, 5, 6].pairsDo({ |a, b| [a, b].postln });
 ::
 
 method::copyRange
-Return a new List which is a copy of the indexed slots of the receiver from start to end.
+Return a new List which is a copy of the indexed slots of the receiver from start to end. See link::Classes/SequenceableCollection#Indexing::..
 code::
 (
 var y, z;
 z = List[1, 2, 3, 4, 5];
-y = z.copyRange(1,3);
+y = z.copyRange(1, 3);
 z.postln;
 y.postln;
 )
 ::
 
 method::copySeries
-Return a new List consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
+Return a new List consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::Classes/SequenceableCollection#Indexing::..
 code::
 (
 var y, z;
@@ -168,7 +302,7 @@ y.postln;
 ::
 
 method::putSeries
-Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
+Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::Classes/SequenceableCollection#Indexing::..
 code::
 (
 var y, z;
@@ -241,7 +375,7 @@ code::
 List[1, 2, 3, 4].pyramid(1).postln;
 
 (
-10.do({ arg i;
+10.do({ |i|
 	List[1, 2, 3, 4].pyramid(i + 1).postcs;
 });
 )
@@ -251,7 +385,7 @@ method::lace
 Returns a new List whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size strong::length::. The receiver is unchanged.
 code::
 (
-x = List[ [1, 2, 3], 6, List["foo", 'bar']];
+x = List[[1, 2, 3], 6, List["foo", 'bar']];
 y = x.lace(12);
 x.postln;
 y.postln;
@@ -262,8 +396,8 @@ method::permute
 Returns a new List whose elements are the strong::nthPermutation:: of the elements of the receiver. The receiver is unchanged.
 code::
 (
-x = List[ 1, 2, 3];
-6.do({|i| x.permute(i).postln;});
+x = List[1, 2, 3];
+6.do({ |i| x.permute(i).postln });
 )
 ::
 
@@ -271,7 +405,7 @@ method::wrapExtend
 Returns a new List whose elements are repeated sequences of the receiver, up to size strong::length::. The receiver is unchanged.
 code::
 (
-x = List[ 1, 2, 3, "foo", 'bar' ];
+x = List[1, 2, 3, "foo", 'bar'];
 y = x.wrapExtend(9);
 x.postln;
 y.postln;
@@ -282,7 +416,7 @@ method::foldExtend
 Same as link::#-wrapExtend:: but the sequences fold back on the list elements.
 code::
 (
-x = List[ 1, 2, "foo"];
+x = List[1, 2, "foo"];
 y = x.foldExtend(9);
 x.postln;
 y.postln;

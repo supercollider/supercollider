@@ -38,4 +38,3 @@ out = Pan2.ar(WhiteNoise.ar, 0.0);
 out.postln;
 out.source.postln;
 ::
-

@@ -131,135 +131,161 @@ if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lo
 ::
 
 code::
-//LOUD! defaults like a rougher Gendy1
-{Pan2.ar(Gendy2.ar)}.play
+// LOUD! defaults like a rougher Gendy1
+{ Pan2.ar(Gendy2.ar) }.play
 
-//advantages of messing with the random number generation- causes periodicities
-{Pan2.ar(Gendy2.ar(a:MouseX.kr(0.0,1.0),c:MouseY.kr(0.0,1.0)))}.play
+// advantages of messing with the random number generation- causes periodicities
+{ Pan2.ar(Gendy2.ar(a: MouseX.kr(0.0, 1.0), c: MouseY.kr(0.0, 1.0))) }.play
 
 (
-{Pan2.ar(
-Normalizer.ar(
-RLPF.ar(
-RLPF.ar(Gendy2.ar(a:SinOsc.kr(0.4,0,0.05,0.05),c:SinOsc.kr(0.3,0,0.1,0.5)),
-MouseX.kr(10,10000,'exponential'),0.05),
-MouseY.kr(10,10000,'exponential'),0.05)
-,0.9)
-,Lag.kr(LFNoise0.kr(1),0.5))}.play
-)
-
-
-
-{Pan2.ar(Gendy2.ar(3,5,1.0,1.0,50,1000,MouseX.kr(0.05,1),MouseY.kr(0.05,1),15, 0.05,0.51,mul:0.5))}.play
-
-
-//play me
-{Pan2.ar(RLPF.ar(Gendy2.ar(1,3,minfreq:20,maxfreq:MouseX.kr(100,1000),durscale:0.0,initCPs:4),500,0.3, 0.2),0.0)}.play
-
-
-//1 CP = random noise effect
-{Pan2.ar(Gendy2.ar(initCPs:1))}.play
-
-//2 CPs = suddenly an oscillator (though a fast modulating one here)
-{Pan2.ar(Gendy2.ar(initCPs:2))}.play
-
-
-//used as an LFO
-(
-{Pan2.ar(SinOsc.ar(Gendy2.kr(2,1,SinOsc.kr(0.1,0,0.49,0.51),SinOsc.kr(0.13,0,0.49,0.51),
-3.4,3.5, SinOsc.kr(0.17,0,0.49,0.51), SinOsc.kr(0.19,0,0.49,0.51),10,10,mul:50, add:350), 0, 0.3), 0.0)}.play
-)
-
-//very angry wasp
-{Pan2.ar(Gendy2.ar(0, 0, SinOsc.kr(0.1, 0, 0.1, 0.9),1.0, 50,1000, 1,0.005, 12, 12, 0.2,0.2,0.2), 0.0)}.play
-
-
-//modulate distributions
-//change of pitch as distributions change the duration structure and spectrum
-{Pan2.ar(Gendy2.ar(MouseX.kr(0,7),MouseY.kr(0,7),mul:0.2), 0.0)}.play
-
-
-//modulate num of CPs
-{Pan2.ar(Gendy2.ar(knum:MouseX.kr(1,13),mul:0.2), 0.0)}.play
-
-
-(//Gendy1 into Gendy2...with cartoon side effects
-{Pan2.ar(Gendy2.ar(maxfreq:Gendy1.kr(5,4,0.3, 0.7, 0.1, MouseY.kr(0.1,10),
-    1.0, 1.0, 5,5, 500, 600), knum:MouseX.kr(1,13),mul:0.2), 0.0)}.play
-)
-
-//use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample
-{Pan2.ar(Gendy2.ar(6,6,LFPulse.kr(100, 0, 0.4, 1.0), SinOsc.kr(30, 0, 0.5),mul:0.2), 0.0)}.play
-
-
-(//try out near the corners especially
-{Pan2.ar(Gendy2.ar(6,6,LFPulse.kr(MouseX.kr(0,200), 0, 0.4, 1.0),
-    SinOsc.kr(MouseY.kr(0,200), 0, 0.5),mul:0.2), 0.0)}.play
-)
-
-//texture- the howling wind?
-(
-{
-    Mix.fill(10,{
-    var freq;
-
-    freq= rrand(130,160.3);
-    Pan2.ar(SinOsc.ar(Gendy2.ar(6.rand,6.rand,SinOsc.kr(0.1,0,0.49,0.51),SinOsc.kr(0.13,0,0.49,0.51),
-        freq ,freq, SinOsc.kr(0.17,0,0.49,0.51), SinOsc.kr(0.19,0,0.49,0.51),
-        12, 12, 0.4.rand, 0.4.rand, 200, 400), 0, 0.1), 1.0.rand2)
-    });
+{ 
+	Pan2.ar(
+		Normalizer.ar(
+			RLPF.ar(
+				RLPF.ar(
+					Gendy2.ar(
+						a: SinOsc.kr(0.4, 0, 0.05, 0.05), 
+						c: SinOsc.kr(0.3, 0, 0.1, 0.5)
+					), MouseX.kr(10, 10000, 'exponential'), 0.05
+				), MouseY.kr(10, 10000, 'exponential'), 0.05
+			), 0.9
+		), Lag.kr(LFNoise0.kr(1), 0.5)
+	)
 }.play
 )
 
-//CAREFUL! mouse to far right causes explosion of sound
+
+
+{ Pan2.ar(Gendy2.ar(3, 5, 1.0, 1.0, 50, 1000, MouseX.kr(0.05, 1), MouseY.kr(0.05, 1), 15, 0.05, 0.51, mul: 0.5)) }.play
+
+
+// play me
+{ Pan2.ar(RLPF.ar(Gendy2.ar(1, 3, minfreq: 20, maxfreq: MouseX.kr(100, 1000), durscale: 0.0, initCPs: 4), 500, 0.3, 0.2), 0.0) }.play
+
+
+// 1 CP = random noise effect
+{ Pan2.ar(Gendy2.ar(initCPs: 1)) }.play
+
+// 2 CPs = suddenly an oscillator (though a fast modulating one here)
+{ Pan2.ar(Gendy2.ar(initCPs: 2)) }.play
+
+
+// used as an LFO
 (
-{Pan2.ar(
-CombN.ar(
-Resonz.ar(
-Gendy2.ar(2,3,minfreq:1, maxfreq:MouseX.kr(10,700), initCPs:100),
-MouseY.kr(50,1000), 0.1)
-,0.1,0.1,5, 0.16
-)
-, 0.0)}.play
+{ Pan2.ar(SinOsc.ar(Gendy2.kr(2, 1, SinOsc.kr(0.1, 0, 0.49, 0.51), SinOsc.kr(0.13, 0, 0.49, 0.51),
+3.4, 3.5, SinOsc.kr(0.17, 0, 0.49, 0.51), SinOsc.kr(0.19, 0, 0.49, 0.51), 10, 10, mul: 50, add: 350), 0, 0.3), 0.0) }.play
 )
 
-//storm
+// very angry wasp
+{ Pan2.ar(Gendy2.ar(0, 0, SinOsc.kr(0.1, 0, 0.1, 0.9), 1.0, 50, 1000, 1, 0.005, 12, 12, 0.2, 0.2, 0.2), 0.0) }.play
+
+
+// modulate distributions
+// change of pitch as distributions change the duration structure and spectrum
+{ Pan2.ar(Gendy2.ar(MouseX.kr(0, 7), MouseY.kr(0, 7), mul: 0.2), 0.0) }.play
+
+
+// modulate num of CPs
+{ Pan2.ar(Gendy2.ar(knum: MouseX.kr(1, 13), mul: 0.2), 0.0) }.play
+
+
+( // Gendy1 into Gendy2...with cartoon side effects
+{ Pan2.ar(Gendy2.ar(maxfreq: Gendy1.kr(5, 4, 0.3, 0.7, 0.1, MouseY.kr(0.1, 10),
+    1.0, 1.0, 5, 5, 500, 600), knum: MouseX.kr(1, 13), mul: 0.2), 0.0) }.play
+)
+
+// use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample
+{ Pan2.ar(Gendy2.ar(6, 6, LFPulse.kr(100, 0, 0.4, 1.0), SinOsc.kr(30, 0, 0.5), mul: 0.2), 0.0) }.play
+
+
+( // try out near the corners especially
+{ Pan2.ar(Gendy2.ar(6, 6, LFPulse.kr(MouseX.kr(0, 200), 0, 0.4, 1.0),
+    SinOsc.kr(MouseY.kr(0, 200), 0, 0.5), mul: 0.2), 0.0) }.play
+)
+
+// texture- the howling wind?
 (
 {
-    var n;
-    n=15;
-
-    0.5*Mix.fill(n,{
-    var freq, numcps;
-
-    freq= rrand(130,160.3);
-    numcps= rrand(2,20);
-    Pan2.ar(Gendy2.ar(6.rand,6.rand,10.0.rand,10.0.rand,freq,freq*exprand(1.0,2.0),
-        10.0.rand, 10.0.rand, numcps, SinOsc.kr(exprand(0.02,0.2), 0, numcps/2, numcps/2),
-        10.0.rand, 10.0.rand, 0.5/(n.sqrt)), 1.0.rand2)
-    });
+	Mix.fill(10, {
+		var freq = rrand(130, 160.3);
+		
+		Pan2.ar(
+			SinOsc.ar(
+				Gendy2.ar(
+					6.rand, 6.rand, SinOsc.kr(0.1, 0, 0.49, 0.51), SinOsc.kr(0.13, 0, 0.49, 0.51),
+					freq, freq, SinOsc.kr(0.17, 0, 0.49, 0.51), SinOsc.kr(0.19, 0, 0.49, 0.51),
+					12, 12, 0.4.rand, 0.4.rand, 200, 400
+				), 0, 0.1
+			), 1.0.rand2
+		)
+	});
 }.play
 )
 
-//another traffic moment
+// CAREFUL! mouse to far right causes explosion of sound
+(
+{ 
+	Pan2.ar(
+		CombN.ar(
+			Resonz.ar(
+				Gendy2.ar(2, 3, minfreq: 1, maxfreq: MouseX.kr(10, 700), initCPs: 100),
+				MouseY.kr(50, 1000), 0.1
+			),		
+			0.1, 0.1, 5, 0.16
+		),
+		0.0
+	)
+}.play
+)
+
+// storm
 (
 {
-    var n;
-    n=10;
+	var n;
+	n = 15;
+	
+	0.5 * Mix.fill(n, {
+		var freq, numcps;
+		
+		freq = rrand(130, 160.3);
+		numcps = rrand(2, 20);
+		Pan2.ar(
+			Gendy2.ar(
+				6.rand, 6.rand, 10.0.rand, 10.0.rand, freq, freq*exprand(1.0, 2.0),
+				10.0.rand, 10.0.rand, numcps, 
+				SinOsc.kr(exprand(0.02, 0.2), 0, numcps/2, numcps/2),
+				10.0.rand, 10.0.rand, 0.5/(n.sqrt)
+			), 
+			1.0.rand2
+		)
+	})
+}.play
+)
 
-    Resonz.ar(
-    Mix.fill(n,{
-    var freq, numcps;
-
-    freq= rrand(50,560.3);
-    numcps= rrand(2,20);
-    Pan2.ar(Gendy2.ar(6.rand,6.rand,1.0.rand,1.0.rand,freq ,freq,
-        1.0.rand, 1.0.rand, numcps, SinOsc.kr(exprand(0.02,0.2), 0,
-        numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)
-    })
-    ,MouseX.kr(100,2000), MouseY.kr(0.01,1.0), 0.3)
-    ;
-    }.play
+// another traffic moment
+(
+{
+	var n;
+	n = 10;
+	
+	Resonz.ar(
+		Mix.fill(n, {
+			var freq, numcps;
+			
+			freq = rrand(50, 560.3);
+			numcps = rrand(2, 20);
+			Pan2.ar(
+				Gendy2.ar(
+					6.rand, 6.rand, 1.0.rand, 1.0.rand, freq, freq,
+					1.0.rand, 1.0.rand, numcps, 
+					SinOsc.kr(exprand(0.02, 0.2), 0, numcps/2, numcps/2), 
+					0.5/(n.sqrt)
+				), 
+				1.0.rand2
+			)
+		}), 
+		MouseX.kr(100, 2000), MouseY.kr(0.01, 1.0), 0.3
+	)
+}.play
 )
 ::
-

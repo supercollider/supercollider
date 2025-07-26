@@ -53,7 +53,7 @@
                   BOOST_IOSTREAMS_PUSH_ARGS() ); \
     /**/
 
-#if !BOOST_WORKAROUND(__BORLANDC__, < 0x600) \
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, < 0x600) \
     /**/
 # ifndef BOOST_IOSTREAMS_NO_STREAM_TEMPLATES
 #  define BOOST_IOSTREAMS_DEFINE_PUSH_IMPL(name, mode, ch, helper, has_return, result) \

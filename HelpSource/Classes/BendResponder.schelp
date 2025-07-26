@@ -34,8 +34,8 @@ method::learn
 Wait for the next pitch bend message, reset self to match src, chan.
 code::
 (
-c = BendResponder({ |src,chan,value|
-		[src,chan,value].postln;
+c = BendResponder({ |src, chan, value|
+		[src, chan, value].postln;
 	});
 	c.learn; // wait for the first bend message
 )
@@ -47,8 +47,8 @@ Examples::
 
 code::
 (
-	c = BendResponder({ |src,chan,val|
-		[src,chan,val].postln;
+	c = BendResponder({ |src, chan, val|
+		[src, chan, val].postln;
 		},
 		nil, // any source
 		nil, // any channel
@@ -61,8 +61,8 @@ c.remove
 
 code::
 (
-	c = BendResponder({ |src,chan,val|
-		[src,chan,val].postln;
+	c = BendResponder({ |src, chan, val|
+		[src, chan, val].postln;
 		},
 		nil, // any source
 		(3..6), // only channels 3 - 6

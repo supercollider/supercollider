@@ -64,12 +64,12 @@ namespace gregorian {
     return date_time::parse_date<date>(s, date_time::ymd_order_dmy);
   }
   
-  //! From iso type date string where with order year-month-day eg: 20020125
+  //! From ISO 8601 type date string where with order year-month-day eg: 20020125
   inline date from_undelimited_string(const std::string& s) {
     return date_time::parse_undelimited_date<date>(s);
   }
 
-  //! From iso type date string where with order year-month-day eg: 20020125
+  //! From ISO 8601 type date string where with order year-month-day eg: 20020125
   inline date date_from_iso_string(const std::string& s) {
     return date_time::parse_undelimited_date<date>(s);
   }

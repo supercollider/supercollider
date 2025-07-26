@@ -67,7 +67,7 @@ code::
 {
     SinOsc.ar(                              // sine wave
         VarLag.kr(                            // lag the modulator
-            LFPulse.kr(1).range(100,400),   // frequency modulator
+            LFPulse.kr(1).range(100, 400),   // frequency modulator
             0.2,                            // lag time
             Line.kr(-8, 8, 15, doneAction: Done.freeSelf) // modulate shape
         ),
@@ -80,7 +80,7 @@ code::
 
 code::
 (
-x = play { |amp=0, time=0, curve=0, warp=5|
+x = play { |amp = 0, time = 0, curve = 0, warp = 5|
     PinkNoise.ar(VarLag.kr(amp, time, curve, warp) ! 2)
 }
 )
@@ -96,4 +96,3 @@ x.set(\amp, 0, \time, 0);
 
 x.free;
 ::
-

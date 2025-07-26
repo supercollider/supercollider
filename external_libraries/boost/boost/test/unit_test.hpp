@@ -25,6 +25,7 @@
 // ************************************************************************** //
 
 #if !defined(BOOST_ALL_NO_LIB) && !defined(BOOST_TEST_NO_LIB) && \
+    !defined(BOOST_UNIT_TEST_FRAMEWORK_NO_LIB) && \
     !defined(BOOST_TEST_SOURCE) && !defined(BOOST_TEST_INCLUDED) && \
     defined(BOOST_TEST_MAIN)
 #  define BOOST_LIB_NAME boost_unit_test_framework

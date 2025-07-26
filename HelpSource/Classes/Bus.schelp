@@ -13,7 +13,7 @@ Note that using the Bus class to allocate a multichannel bus does not 'create' a
 Bus objects should not be created or modified within a link::Classes/SynthDef::.
 
 Note::
-The lowest code::n:: bus indices are reserved for hardware output and input, where
+The lowest code::n:: bus indices are reserved for hardware output and input, where anchor::note::
 code::
 n = server.options.numOutputBusChannels + server.options.numInputBusChannels
 ::
@@ -36,7 +36,7 @@ argument:: numChannels
 Number of channels to allocate
 
 method:: audio
-Allocate an audio bus on the server.
+Allocate a private audio bus on the server.
 
 argument:: server
 The link::Classes/Server::. Defaults to Server.default.
@@ -56,6 +56,19 @@ method:: new
 This method does not allocate a bus index, but assumes that you
 already have allocated the appropriate bus index and can supply it
 yourself.
+discussion::
+The hardware I/O buses can be accessed via the lowest indices (see link::#note#Note:: in the link::#description#Description:: section):
+list::
+##The first two channels of the hardware output buses:
+code::
+a = Bus(\audio, 0, 2)
+::
+##The first channel of the hardware input bus, if hardware output channels are set to 2:
+code::
+b = Bus(\audio, 2, 1)
+::
+::
+
 
 method:: newFrom
 This method creates a new Bus that is a subset of the bus. The bus will be at the same rate as the input bus.
@@ -204,12 +217,34 @@ method:: scope
 Displays a bus in a link::Classes/Stethoscope::, using the Bus' link::#-numChannels::, link::#-index::, and link::#-rate:: properties.
 code::
 s.boot
-b=Bus.audio(s, 2);
-a={SinOsc.ar([330,440], 0, 0.4)}.play(s, b) //you won't hear this if you only have two channels
+b = Bus.audio(s, 2);
+a = { SinOsc.ar([330, 440], 0, 0.4) }.play(s, b) // you won't hear this if you only have two channels
 b.scope
 
 a.free;
 b.free;
+::
+
+subsection:: Plotting
+
+method:: plot
+See link::#-plotAudio::
+
+method:: plotAudio
+example:
+code::
+(
+b = Bus(\audio, 0, 2);
+s.bind {
+	SynthDef(\sinPerc, { |out = 0|
+		var signal = SinOsc.ar * Env.sine(0.1).ar(gate: Impulse.ar(2));
+		OffsetOut.ar(out, signal ! 2) }
+	).add;
+	s.sync;
+	Synth(\sinPerc, [\out, b]);
+	b.plot(1);
+}
+)
 ::
 
 subsection:: Bela
@@ -229,9 +264,9 @@ s.boot;
 
 (
 // something to play with
-SynthDef(\help_Bus, { arg out=0,ffreq=100;
+SynthDef(\help_Bus, { |out = 0, ffreq = 100|
 	var x;
-	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1),
+	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0, 0.1], 0.1),
 			ffreq, 0.1)
 			.clip2(0.4);
 	Out.ar(out, x);
@@ -258,11 +293,11 @@ b.value = 30;
 b.set(300);
 b.numChannels.postln;
 
-// multi-channel:  b.set(300,350);
+// multi-channel:  b.set(300, 350);
 // Get the current value. This is asynchronous so you can't rely on it happening immediately.
 (
 a = "waiting";
-b.get({arg value; a = value; ("after the server responds a is set to:" + a).postln;});
+b.get({ |value| a = value; ("after the server responds a is set to:" + a).postln });
 ("a is now:" + a).postln;
 )
 
@@ -275,7 +310,7 @@ SynthDef(\help_Bus, { |out|
 	var ffreq = b.kr;
 	Out.ar(out,
 		RLPF.ar(
-			LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1),
+			LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0, 0.1], 0.1),
 			ffreq, 0.1
 		).clip2(0.4)
 	);

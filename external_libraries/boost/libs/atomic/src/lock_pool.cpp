@@ -18,6 +18,8 @@
 #include <boost/winapi/config.hpp>
 #include <boost/predef/platform.h>
 #endif
+#include <boost/predef/architecture/x86.h>
+#include <boost/predef/hardware/simd/x86.h>
 
 #include <cstddef>
 #include <cstring>
@@ -26,11 +28,11 @@
 #include <limits>
 #include <boost/config.hpp>
 #include <boost/assert.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/memory_order.hpp>
 #include <boost/atomic/capabilities.hpp>
 #include <boost/atomic/detail/config.hpp>
 #include <boost/atomic/detail/intptr.hpp>
+#include <boost/atomic/detail/int_sizes.hpp>
 #include <boost/atomic/detail/aligned_variable.hpp>
 #include <boost/atomic/detail/core_operations.hpp>
 #include <boost/atomic/detail/extra_operations.hpp>
@@ -39,6 +41,8 @@
 #include <boost/atomic/detail/pause.hpp>
 #include <boost/atomic/detail/once_flag.hpp>
 #include <boost/atomic/detail/type_traits/alignment_of.hpp>
+
+#include <boost/align/aligned_alloc.hpp>
 
 #include <boost/preprocessor/config/limits.hpp>
 #include <boost/preprocessor/iteration/iterate.hpp>
@@ -68,6 +72,17 @@
 #include <cerrno>
 #endif // BOOST_OS_WINDOWS
 
+#include "find_address.hpp"
+
+#if BOOST_ARCH_X86 && (defined(BOOST_ATOMIC_USE_SSE2) || defined(BOOST_ATOMIC_USE_SSE41)) && defined(BOOST_ATOMIC_DETAIL_SIZEOF_POINTER) && \
+    (\
+        (BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 8 && BOOST_HW_SIMD_X86 < BOOST_HW_SIMD_X86_SSE4_1_VERSION) || \
+        (BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 4 && BOOST_HW_SIMD_X86 < BOOST_HW_SIMD_X86_SSE2_VERSION) \
+    )
+#include "cpuid.hpp"
+#define BOOST_ATOMIC_DETAIL_X86_USE_RUNTIME_DISPATCH
+#endif
+
 #include <boost/atomic/detail/header.hpp>
 
 // Cache line size, in bytes
@@ -83,9 +98,101 @@
 namespace boost {
 namespace atomics {
 namespace detail {
+
+//! \c find_address generic implementation
+std::size_t find_address_generic(const volatile void* addr, const volatile void* const* addrs, std::size_t size)
+{
+    for (std::size_t i = 0u; i < size; ++i)
+    {
+        if (addrs[i] == addr)
+            return i;
+    }
+
+    return size;
+}
+
 namespace lock_pool {
 
 namespace {
+
+#if BOOST_ARCH_X86 && (defined(BOOST_ATOMIC_USE_SSE2) || defined(BOOST_ATOMIC_USE_SSE41)) && defined(BOOST_ATOMIC_DETAIL_SIZEOF_POINTER) && (BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 8 || BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 4)
+
+typedef atomics::detail::core_operations< sizeof(find_address_t*), false, false > func_ptr_operations;
+static_assert(func_ptr_operations::is_always_lock_free, "Boost.Atomic unsupported target platform: native atomic operations not implemented for function pointers");
+
+#if defined(BOOST_ATOMIC_DETAIL_X86_USE_RUNTIME_DISPATCH)
+std::size_t find_address_dispatch(const volatile void* addr, const volatile void* const* addrs, std::size_t size);
+#endif
+
+union find_address_ptr
+{
+    find_address_t* as_ptr;
+    func_ptr_operations::storage_type as_storage;
+}
+g_find_address =
+{
+#if defined(BOOST_ATOMIC_USE_SSE41) && BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 8 && BOOST_HW_SIMD_X86 >= BOOST_HW_SIMD_X86_SSE4_1_VERSION
+    &find_address_sse41
+#elif defined(BOOST_ATOMIC_USE_SSE2) && BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 4 && BOOST_HW_SIMD_X86 >= BOOST_HW_SIMD_X86_SSE2_VERSION
+    &find_address_sse2
+#else
+    &find_address_dispatch
+#endif
+};
+
+#if defined(BOOST_ATOMIC_DETAIL_X86_USE_RUNTIME_DISPATCH)
+
+std::size_t find_address_dispatch(const volatile void* addr, const volatile void* const* addrs, std::size_t size)
+{
+    find_address_t* find_addr = &find_address_generic;
+
+#if defined(BOOST_ATOMIC_USE_SSE2)
+    // First, check the max available cpuid function
+    uint32_t eax = 0u, ebx = 0u, ecx = 0u, edx = 0u;
+    atomics::detail::cpuid(eax, ebx, ecx, edx);
+
+    const uint32_t max_cpuid_function = eax;
+    if (max_cpuid_function >= 1u)
+    {
+        // Obtain CPU features
+        eax = 1u;
+        ebx = ecx = edx = 0u;
+        atomics::detail::cpuid(eax, ebx, ecx, edx);
+
+        if ((edx & (1u << 26)) != 0u)
+            find_addr = &find_address_sse2;
+
+#if defined(BOOST_ATOMIC_USE_SSE41) && BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 8
+        if ((ecx & (1u << 19)) != 0u)
+            find_addr = &find_address_sse41;
+#endif
+    }
+#endif // defined(BOOST_ATOMIC_USE_SSE2)
+
+    find_address_ptr ptr = {};
+    ptr.as_ptr = find_addr;
+    func_ptr_operations::store(g_find_address.as_storage, ptr.as_storage, boost::memory_order_relaxed);
+
+    return find_addr(addr, addrs, size);
+}
+
+#endif // defined(BOOST_ATOMIC_DETAIL_X86_USE_RUNTIME_DISPATCH)
+
+inline std::size_t find_address(const volatile void* addr, const volatile void* const* addrs, std::size_t size)
+{
+    find_address_ptr ptr;
+    ptr.as_storage = func_ptr_operations::load(g_find_address.as_storage, boost::memory_order_relaxed);
+    return ptr.as_ptr(addr, addrs, size);
+}
+
+#else // BOOST_ARCH_X86 && defined(BOOST_ATOMIC_DETAIL_SIZEOF_POINTER) && (BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 8 || BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 4)
+
+inline std::size_t find_address(const volatile void* addr, const volatile void* const* addrs, std::size_t size)
+{
+    return atomics::detail::find_address_generic(addr, addrs, size);
+}
+
+#endif // BOOST_ARCH_X86 && defined(BOOST_ATOMIC_DETAIL_SIZEOF_POINTER) && (BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 8 || BOOST_ATOMIC_DETAIL_SIZEOF_POINTER == 4)
 
 struct wait_state;
 struct lock_state;
@@ -134,10 +241,14 @@ struct wait_state_list
     //! The flag indicates that memory pooling is disabled. Set on process cleanup.
     bool m_free_memory;
 
-    //! Alignment of pointer arrays in the buffer
-    static BOOST_CONSTEXPR_OR_CONST std::size_t entries_alignment = atomics::detail::alignment_of< void* >::value < 16u ? atomics::detail::alignment_of< void* >::value : 16u;
-    //! Offset from the list header to the beginning of the array of atomic pointers in the buffer
+    //! Buffer alignment, in bytes
+    static BOOST_CONSTEXPR_OR_CONST std::size_t buffer_alignment = 16u;
+    //! Alignment of pointer arrays in the buffer, in bytes. This should align atomic pointers to the vector size used in \c find_address implementation.
+    static BOOST_CONSTEXPR_OR_CONST std::size_t entries_alignment = atomics::detail::alignment_of< void* >::value < 16u ? 16u : atomics::detail::alignment_of< void* >::value;
+    //! Offset from the list header to the beginning of the array of atomic pointers in the buffer, in bytes
     static BOOST_CONSTEXPR_OR_CONST std::size_t entries_offset = (sizeof(header) + entries_alignment - 1u) & ~static_cast< std::size_t >(entries_alignment - 1u);
+    //! Initial buffer capacity, in elements. This should be at least as large as a vector size used in \c find_address implementation.
+    static BOOST_CONSTEXPR_OR_CONST std::size_t initial_capacity = (16u / sizeof(void*)) < 2u ? 2u : (16u / sizeof(void*));
 
     //! Returns a pointer to the array of atomic pointers
     static const volatile void** get_atomic_pointers(header* p) BOOST_NOEXCEPT
@@ -176,15 +287,11 @@ struct wait_state_list
         wait_state* ws = NULL;
         if (BOOST_LIKELY(m_header != NULL))
         {
-            const volatile void** addrs = get_atomic_pointers();
-            for (std::size_t i = 0u, n = m_header->size; i < n; ++i)
-            {
-                if (addrs[i] == addr)
-                {
-                    ws = get_wait_states()[i];
-                    break;
-                }
-            }
+            const volatile void* const* addrs = get_atomic_pointers();
+            const std::size_t size = m_header->size;
+            std::size_t pos = find_address(addr, addrs, size);
+            if (pos < size)
+                ws = get_wait_states()[pos];
         }
 
         return ws;
@@ -287,7 +394,7 @@ inline void wait_state::wait(lock_state& state) BOOST_NOEXCEPT
 
 typedef atomics::detail::core_operations< 4u, false, false > futex_operations;
 // The storage type must be a 32-bit object, as required by futex API
-BOOST_STATIC_ASSERT_MSG(futex_operations::is_always_lock_free && sizeof(futex_operations::storage_type) == 4u, "Boost.Atomic unsupported target platform: native atomic operations not implemented for 32-bit integers");
+static_assert(futex_operations::is_always_lock_free && sizeof(futex_operations::storage_type) == 4u, "Boost.Atomic unsupported target platform: native atomic operations not implemented for 32-bit integers");
 typedef atomics::detail::extra_operations< futex_operations, futex_operations::storage_size, futex_operations::is_signed > futex_extra_operations;
 
 namespace mutex_bits {
@@ -531,7 +638,7 @@ inline void wait_state::wait(lock_state& state) BOOST_NOEXCEPT
 #else // BOOST_USE_WINAPI_VERSION >= BOOST_WINAPI_VERSION_WIN6
 
 typedef atomics::detail::core_operations< 4u, false, false > mutex_operations;
-BOOST_STATIC_ASSERT_MSG(mutex_operations::is_always_lock_free, "Boost.Atomic unsupported target platform: native atomic operations not implemented for 32-bit integers");
+static_assert(mutex_operations::is_always_lock_free, "Boost.Atomic unsupported target platform: native atomic operations not implemented for 32-bit integers");
 
 namespace fallback_mutex_bits {
 
@@ -1026,7 +1133,7 @@ void cleanup_lock_pool()
     }
 }
 
-BOOST_STATIC_ASSERT_MSG(once_flag_operations::is_always_lock_free, "Boost.Atomic unsupported target platform: native atomic operations not implemented for bytes");
+static_assert(once_flag_operations::is_always_lock_free, "Boost.Atomic unsupported target platform: native atomic operations not implemented for bytes");
 static once_flag g_pool_cleanup_registered = {};
 
 //! Returns index of the lock pool entry for the given pointer value
@@ -1040,7 +1147,6 @@ inline wait_state* wait_state_list::find_or_create(const volatile void* addr) BO
 {
     if (BOOST_UNLIKELY(m_header == NULL))
     {
-        BOOST_CONSTEXPR_OR_CONST std::size_t initial_capacity = (16u / sizeof(void*)) < 2u ? 2u : (16u / sizeof(void*));
         m_header = allocate_buffer(initial_capacity);
         if (BOOST_UNLIKELY(m_header == NULL))
             return NULL;
@@ -1056,7 +1162,7 @@ inline wait_state* wait_state_list::find_or_create(const volatile void* addr) BO
             header* new_header = allocate_buffer(m_header->capacity * 2u, m_header);
             if (BOOST_UNLIKELY(new_header == NULL))
                 return NULL;
-            std::free(static_cast< void* >(m_header));
+            boost::alignment::aligned_free(static_cast< void* >(m_header));
             m_header = new_header;
         }
     }
@@ -1130,7 +1236,7 @@ wait_state_list::header* wait_state_list::allocate_buffer(std::size_t new_capaci
 
     const std::size_t new_buffer_size = entries_offset + new_capacity * sizeof(void*) * 2u;
 
-    void* p = std::malloc(new_buffer_size);
+    void* p = boost::alignment::aligned_alloc(buffer_alignment, new_buffer_size);
     if (BOOST_UNLIKELY(p == NULL))
         return NULL;
 
@@ -1180,7 +1286,7 @@ void wait_state_list::free_spare() BOOST_NOEXCEPT
 
         if (m_header->size == 0u)
         {
-            std::free(static_cast< void* >(m_header));
+            boost::alignment::aligned_free(static_cast< void* >(m_header));
             m_header = NULL;
         }
     }

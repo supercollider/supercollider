@@ -40,15 +40,24 @@ TestNodeProxy : UnitTest {
 		this.assertEquals(proxy.isPlaying, false, "Setting the proxy's source should not set isPlaying = true");
 	}
 
+	test_source_neutral_proxy_elastic {
+		var otherProxy = NodeProxy.new(server);
+		proxy.reshaping = \elastic;
+		proxy.initBus(\audio, 2);
+		proxy.source = otherProxy;
+		this.assert(proxy.rate == otherProxy.rate, "proxy as source should initialise receiver");
+		otherProxy.clear;
+	}
+
 	test_asCode_basic {
-		var codeString = "a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n";
+		var codeString = "a = NodeProxy.new(Server.fromName('TestNodeProxy'));\n";
 
 		this.assertEquals(proxy.asCode, codeString,
 			"asCode-posting basic nodeproxy should post valid source code.");
 	}
 
 	test_asCode_single {
-		var codeString = "a = NodeProxy.new(Server.fromName( 'TestNodeProxy' )).source_({ DC.ar });\n";
+		var codeString = "a = NodeProxy.new(Server.fromName('TestNodeProxy')).source_({ DC.ar });\n";
 		proxy.source = { DC.ar };
 
 		this.assertEquals(proxy.asCode, codeString,
@@ -72,7 +81,7 @@ TestNodeProxy : UnitTest {
 	test_asCode_settings {
 		var codeString =
 		"(\n"
-		"a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n"
+		"a = NodeProxy.new(Server.fromName('TestNodeProxy'));\n"
 		"a.set('freq', 440);\n"
 		");\n";
 		proxy.set('freq', 440);
@@ -86,7 +95,7 @@ TestNodeProxy : UnitTest {
 	test_asCode_playState {
 		var codeString =
 		"(\n"
-		"a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n"
+		"a = NodeProxy.new(Server.fromName('TestNodeProxy'));\n"
 		"a.play(\n"
 		"	out: 8, \n"
 		"	vol: 0.25\n"
@@ -287,6 +296,17 @@ TestNodeProxy : UnitTest {
 
 		p.clear;
 
+	}
+
+	test_buildProxy_inside {
+		var buildProxyFromInside;
+		proxy.source = { buildProxyFromInside = NodeProxy.buildProxy };
+		this.assertEquals(buildProxyFromInside, proxy, "From inside the source, buildProxy should be the current proxy");
+	}
+	test_buildProxy_outside {
+		var buildProxyFromOutside;
+		proxy.source = { 0.0 };
+		this.assert(buildProxyFromOutside.isNil, "From theoutside, buildProxy should be nil");
 	}
 
 }

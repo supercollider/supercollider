@@ -1090,11 +1090,14 @@ Ndef : NodeProxy {
 		if(res.isNil) {
 			res = super.new(server).key_(key);
 			dict.initProxy(res);
-			dict.envir.put(key, res)
+			dict.envir.put(key, res);
+		};
+		object !? {
+			res.source = object;
+			dict.dispatch.value(key, object)
 		};
 
-		object !? { res.source = object };
-		^res;
+		^res
 	}
 
 	*ar { | key, numChannels, offset = 0 |
@@ -1106,6 +1109,10 @@ Ndef : NodeProxy {
 	}
 
 	*clear { | fadeTime |
+		all.do(_.clear(fadeTime))
+	}
+
+	*clearDict { | fadeTime |
 		all.do(_.clear(fadeTime));
 		all.clear;
 	}

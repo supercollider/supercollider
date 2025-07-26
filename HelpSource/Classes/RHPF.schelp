@@ -42,13 +42,12 @@ Examples::
 
 code::
 
-{ RHPF.ar(Saw.ar(200,0.1), FSinOsc.kr(XLine.kr(0.7,300,20), 0, 3600, 4000), 0.2) }.play;
+{ RHPF.ar(Saw.ar(200, 0.1), FSinOsc.kr(XLine.kr(0.7, 300, 20), 0, 3600, 4000), 0.2) }.play;
 
 (
-{ 	var ctl = RHPF.kr(LFSaw.kr(2), SinOsc.kr(XLine.kr(0.07,30,20), 0, 35, 40), 0.05);
+{ 	var ctl = RHPF.kr(LFSaw.kr(2), SinOsc.kr(XLine.kr(0.07, 30, 20), 0, 35, 40), 0.05);
 	SinOsc.ar(ctl * 200 + 500);
 }.play;
 )
 
 ::
-

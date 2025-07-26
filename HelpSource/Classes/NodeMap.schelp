@@ -66,18 +66,18 @@ s.boot;
 
 (
 SynthDef("modsine",
-	{ | out, freq=320, amp=0.2 |
+	{ |out, freq = 320, amp = 0.2|
 		Out.ar(out, SinOsc.ar(freq, 0, amp));
 	}).add;
 SynthDef("lfo",
-	{ | out, rate=2 |
+	{ |out, rate = 2|
 		Out.kr(out, LFPulse.kr(rate, 0, 0.1, 0.2))
 	}).add;
 )
 
 // start nodes
 (
-b = Bus.control(s,1);
+b = Bus.control(s, 1);
 x = Synth("modsine");
 y = Synth.before(x, "lfo", [\out, b]);
 )
@@ -93,7 +93,7 @@ k.set(\freq, 400);
 k.unmap(\amp);
 )
 
-//apply the maps
+// apply the maps
 
 h.sendToNode(x); // the first time a new bundle is made
 k.sendToNode(x);
@@ -105,6 +105,6 @@ h.set(\freq, 600);
 
 h.sendToNode(x); // when a value was changed, a new bundle is made
 
-//free all
+// free all
 x.free; b.free; y.free;
 ::

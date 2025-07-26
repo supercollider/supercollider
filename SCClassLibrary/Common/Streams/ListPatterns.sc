@@ -391,7 +391,7 @@ Pwalk : ListPattern {
 
 
 	embedInStream { arg inval;
-		var	step;
+		var	step, directedStep;
 		var index = startPos.value(inval);
 		var stepStream = stepPattern.asStream;
 		var directionStream = directionPattern.asStream;
@@ -403,13 +403,13 @@ Pwalk : ListPattern {
 			(step = stepStream.next(inval)).notNil
 		},{
 			inval = list[index].embedInStream(inval);  // get value/stream out
-			step = step * direction;	// apply direction
+			directedStep = step * direction;	// apply direction
 				// if next thing will be out of bounds
-			if(((index + step) < 0) or: { (index + step) >= list.size }, {
+			if(((index + directedStep) < 0) or: { (index + directedStep) >= list.size }, {
 				direction = directionStream.next(inval) ? 1;  // next direction, or 1
-				step = step.abs * direction.sign;  // apply to this step
+				directedStep = step * direction;  // apply to this step
 			});
-			index = (index + step) % list.size;
+			index = (index + directedStep) % list.size;
 		});
 
 		^inval;

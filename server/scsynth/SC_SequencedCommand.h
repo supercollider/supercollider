@@ -144,6 +144,7 @@ protected:
     int mBufIndex;
     SndBuf mSndBuf;
     int mNumChannels, mNumFrames;
+    float mSampleRate;
     float* mFreeData;
 
     virtual void CallDestructor();
@@ -368,6 +369,17 @@ protected:
     virtual void CallDestructor();
 };
 
+///////////////////////////////////////////////////////////////////////////
+
+class RTMemStatusCmd : public SC_SequencedCommand {
+public:
+    RTMemStatusCmd(World* inWorld, ReplyAddress* inReplyAddress);
+
+    virtual bool Stage2(); // non real time
+
+protected:
+    virtual void CallDestructor();
+};
 ///////////////////////////////////////////////////////////////////////////
 
 class NotifyCmd : public SC_SequencedCommand {

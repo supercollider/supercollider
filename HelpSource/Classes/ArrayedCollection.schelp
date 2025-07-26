@@ -3,7 +3,7 @@ categories::Collections>Ordered
 summary:: Abstract superclass of Collections of fixed maximum size
 
 DESCRIPTION::
-ArrayedCollection is an abstract class, a subclass of SequenceableCollections whose elements are held in a vector of slots. Instances of ArrayedCollection have a fixed maximum size beyond which they may not grow.
+code::ArrayedCollection:: is an abstract class, a subclass of link::Classes/SequenceableCollection:: whose items are held in a vector of slots, indexable by a link::Classes/SimpleNumber:: starting from 0. If a float is used as index, it will be truncated. Instances of code::ArrayedCollection:: have a fixed maximum size beyond which they may not grow.
 
 Its principal subclasses are link::Classes/Array:: (for holding objects), and link::Classes/RawArray::, from which link::Classes/Int8Array::, link::Classes/FloatArray::, link::Classes/Signal:: etc. inherit.
 
@@ -18,7 +18,7 @@ Array.newClear(4).postln;
 method::with
 Create a new ArrayedCollection whose slots are filled with the given arguments.
 code::
-Array.with(7, 'eight',  9).postln;
+Array.with(7, 'eight', 9).postln;
 ::
 
 method::series
@@ -52,61 +52,176 @@ code::
 [4, 5, 6].maxSize; // gosh
 ::
 
-method::at
-Return the item at strong::index::.
+method::isRectangular
+Returns true if all nested sub arrays are the same size and all elements have the same depth.
+This is a requirement of several nested array algorithms and formats, notably multichannel audio files.
 
-The index can also be an Array of indices to extract specified elements. Example:
+Example:
 code::
-x = [10,20,30];
-y = [0,0,2,2,1];
-x[y]; // returns [ 10, 10, 30, 30, 20 ]
+[1, 2, 3].isRectangular // true
+[[1, 2], [3, 4]].isRectangular // true
+
+[1, 2, [3]].isRectangular // false
+[[1, 2], [3]].isRectangular // false
+[[1, 2], [3, [4, 5]]].isRectangular // false
+::
+
+method::at
+Returns the item at code::index::, specified as an integer (or float) starting from code::0::.
+
+code::
+x = [1, 2, 3];
+x.at(2); // returns 3
+x[2];    // equivalent shorthand syntax
+::
+
+The code::index:: can also be an link::Classes/Array:: of indices to extract specified elements:
+code::
+x = [10, 20, 30];
+
+x.at([-1, 0, 1, 2, 3]); // returns [nil, 10, 20, 30, nil]
+x.at((-1..3));          // same, as a range
+x[(-1..3)];             // same as above
+
+y = [0, 0, 2, 2, 1];
+x[y];                   // returns [10, 10, 30, 30, 20]
+::
+
+Float indices are also supported with the following behavior:
+list::
+	## Positive float indices are floored to the nearest lower integer.
+	## Negative float indices in the range (-1, 0) return the first item, code::this.at(0)::.
+	## Out-of-range indices, code::<= -1:: or code::>= this.size::, return code::nil::.
+::
+
+code::
+x = [10, 20];
+
+x.at(-1);   // returns nil
+x.at(-0.9); // returns 10
+x.at(-0.1); // returns 10
+x.at(-0);   // returns 10
+x.at(0);    // returns 10
+x.at(1.1);  // returns 20
+x.at(1.9);  // returns 20
+x.at(2);    // returns nil
+::
+
+A sound example:
+code::
+(
+var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
+fork {
+	pitches.size.do{ |i|
+		{
+			var freq = pitches[i].midicps;
+			var env = Env.perc.ar(Done.freeSelf);
+			SinOsc.ar(freq) * 0.1 * env
+		}.play;
+		0.2.wait
+	}
+}
+)
 ::
 
 method::clipAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+Similar to link::#-at::, but guarantees that any value for index is valid by clipping values outside the collection's bounds.
+Values greater than code::size - 1:: are clipped to that last index, and values below code::0:: (negative) are clipped to 0.
+The index can also be an array of indices to extract the specified elements.
+link::Classes/SequenceableCollection#-|@|:: is its syntactic shortcut.
 code::
-y = [ 1, 2, 3 ];
-y.clipAt(13).postln;
+a = [1, 2, 3]
+a.clipAt(2) // same as at
+a.clipAt(3) // clips
+a.clipAt([-1, 3, 1]) // array of indices
+a|@|3 //syntactic shortcut
 ::
 
 method::wrapAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+Similar to link::#-at::, but guarantees that any value for index is valid by wrapping values outside the collection's bounds.
+If the index exceeds code::size - 1::, it wraps back around to code::0::.
+Similarly, if the index is below code::0:: (negative), it wraps to access elements from the end of the collection.
+code::this.wrapAt(index):: is equivalent to code::this.at(index mod: size)::, ensuring the index is always within the valid range of the collection.
+The index can also be an array of indices to extract the specified elements.
+link::Classes/SequenceableCollection#-@@:: is its syntactic shortcut.
 code::
-y = [ 1, 2, 3 ];
-y.wrapAt(3).postln; // this returns the value at index 0
-y.wrapAt(4).postln; // this returns the value at index 1
-y.wrapAt([-2, 1])   // index can also be a collection or negative numbers
+a = [1, 2, 3]
+a.wrapAt(2) // same as at
+a.wrapAt(3) // wraps
+a.wrapAt([-1, 3, 1]) // array of indices
+a@@3 //syntactic shortcut
+
+(
+var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
+fork {
+	32.do{ |i|
+		{
+			var freq = pitches.wrapAt(i).midicps;
+			var env = Env.perc.ar(Done.freeSelf);
+			SinOsc.ar(freq) * 0.1 * env
+		}.play;
+		0.2.wait
+	}
+}
+)
 ::
 
 method::foldAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+Similar to link::#-at::, but guarantees that any value for index is valid by reflecting values outside the collection's bounds.
+Values greater than code::size - 1:: are reflected back toward lower indices.
+Similarly, if the index is below code::0:: (negative), it folds in the opposite direction.
+This creates a symmetrical mapping of any index within the collection's boundaries.
+The index can also be an array of indices to extract the specified elements.
+link::Classes/SequenceableCollection#-@|@:: is its syntactic shortcut.
 code::
-y = [ 1, 2, 3 ];
-y.foldAt(3).postln; // this returns the value at index 1
-y.foldAt(4).postln; // this returns the value at index 0
-y.foldAt(5).postln; // this returns the value at index 1
+a = [1, 2, 3]
+a.foldAt(2) // same as at
+a.foldAt(3) // folds back
+a.foldAt([-1, 3, 1]) // array of indices
+a@|@3 //syntactic shortcut
+
+(
+var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
+fork {
+	32.do{ |i|
+		{
+			var freq = pitches.foldAt(i).midicps;
+			var env = Env.perc.ar(Done.freeSelf);
+			SinOsc.ar(freq) * 0.1 * env
+		}.play;
+		0.2.wait
+	}
+}
+)
 ::
 
 method::plot
 Plot values in a GUI window.  See link::Reference/plot:: for more details. When the receiver contains code::nil:: items, the plot fails with an error.
 
 method::swap
-Swap the values at indices i and j.
+Swap the values at indices i and j, both specified as integers starting from 0.
 code::
-[ 1, 2, 3 ].swap(0, 2).postln;
+[1, 2, 3].swap(0, 2).postln;
 ::
 
 method::put
-Put strong::item:: at strong::index::, replacing what is there.
+Put strong::item:: at strong::index:: starting from 0, replacing what is there. strong::index:: can be an array of indices. If a float is used as index, it will be truncated.
+
+Example:
+code::
+x = [1, 2, 3];
+y = x.put(0, 150); // -> [150, 2, 3]
+z = x.put([0, 1], 150); // [150, 150, 3]
+::
 
 method::clipPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+Same as link::#-put::, but values for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be clipped to code::size - 1::, which is the last index.
 
 method::wrapPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+Same as link::#-put::, but values for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be wrapped around to 0.
 
 method::foldPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+Same as link::#-put::, but values for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be folded back.
 
 method::putEach
 Put the strong::values:: in the corresponding indices given by strong::keys::. If one of the two argument arrays is longer then it will wrap.
@@ -119,14 +234,14 @@ y.putEach([2, 3, 5, 6], \wotsits);
 method::indexOf
 Return the first index containing an item which matches strong::item::. Elements are checked for identity (not for equality).
 code::
-y = [ \the, \symbol, \collection, \contains, \my, \symbol ];
+y = [\the, \symbol, \collection, \contains, \my, \symbol];
 y.indexOf(\symbol);
 ::
 
 method::includes
 Return a boolean indicating whether the collection contains anything matching strong::item::. Elements are checked for identity (not for equality).
 code::
-y = [ \the, \symbol, \collection, \contains, \my, \symbol ];
+y = [\the, \symbol, \collection, \contains, \my, \symbol];
 y.includes(\symbol);
 y.includes(\solipsism);
 ::
@@ -134,22 +249,26 @@ y.includes(\solipsism);
 method::indexOfGreaterThan
 Return the first index containing an item which is greater than strong::item::.
 code::
-y = [ 10, 5, 77, 55, 12, 123];
+y = [10, 5, 77, 55, 12, 123];
 y.indexOfGreaterThan(70);
 ::
 
 method::removeAt
-Remove and return the element at strong::index::, shrinking the size of the ArrayedCollection.
+Remove and return the item at strong::index::, specified as an integer or a float starting from 0, shrinking the size of the ArrayedCollection.
 code::
-y = [ 1, 2, 3 ];
+y = [1, 2, 3, 4];
+
 y.removeAt(1);
-y.postln;
+y.postln; // returns [1, 3, 4]
+
+y.removeAt(0.5)
+y.postln; // returns [3, 4]
 ::
 
 method::takeAt
 Similar to link::#-removeAt::, but does not maintain the order of the items following the one that was removed. Instead, the last item is placed into the position of the removed item and the array's size decreases by one.
 code::
-y = [ 1, 2, 3, 4, 5 ];
+y = [1, 2, 3, 4, 5];
 y.takeAt(1);
 y.postln;
 ::
@@ -157,8 +276,8 @@ y.postln;
 method::takeThese
 Removes all items in the receiver for which the strong::func:: answers true. The function is passed two arguments, the item and an integer index. Note that order is not preserved. See link::#-takeAt::.
 code::
-y = [ 1, 2, 3, 4 ];
-y.takeThese({ arg item, index; item.odd; });	//remove odd items
+y = [1, 2, 3, 4];
+y.takeThese({ |item, index| item.odd });	// remove odd items
 y.postln;
 ::
 
@@ -203,7 +322,7 @@ code::
 (
 var y, z;
 z = [1, 2, 3, 4];
-y = z.extend(10, 9);		//fill up with 9 until the size equals 10
+y = z.extend(10, 9);		// fill up with 9 until the size equals 10
 z.postln;
 y.postln;
 )
@@ -216,25 +335,58 @@ code::
 var z;
 z = [1, 2, 3, 4];
 z.fill(4).postln;
-z.fill([1,2,3,4]).postln;
+z.fill([1, 2, 3, 4]).postln;
 )
 ::
 
 method::insert
-Inserts the item into the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on add changing the receiver.
+Inserts the item into the contents of the receiver at the specified index, which is an integer starting from 0. 
+This method may return a new ArrayedCollection. 
+For this reason, you should always assign the result of code::insert:: to a variable - never depend on add changing the receiver.
+
 code::
-(
-// in this case a new object is returned
-var y, z;
-z = [1, 2, 3, 4];
-y = z.insert(1, 999);
-z.postln;
-y.postln;
-)
+// In this case, a new object is returned  
+// because adding a new item would exceed the fixed maximum size of 4, 
+// which is set at the instantiation of the array z and 
+// cannot be changed at a later stage.
+// (By default, an array initialized with a size between 1 and 4 
+// retains a maximum size of 4):
+z = [1, 2, 3, 4]; // -> [1, 2, 3, 4]
+y = z.insert(1, 999); // -> [1, 999, 2, 3, 4]
+z // -> [1, 2, 3, 4]
+y // -> [1, 999, 2, 3, 4]
+(z == y) // -> false
+(z === y) // -> false
+
+// In this case, the same object is returned 
+// because the new number of elements does not exceed 
+// the number of elements at instantiation:
+z = [1, 2, 3]; // -> [1, 2, 3]
+y = z.insert(1, 999); // -> [1, 999, 2, 3]
+z; // -> [1, 999, 2, 3]
+y; // -> [1, 999, 2, 3]
+(z == y); // -> true
+(z === y); // -> true
+::
+
+method::boundedInsert
+Changes the receiver but maintains its size, therefore unlike code::.insert:: it is not necessary to reassign the result of code::.boundedInsert::.
+
+code::
+// .boundedInsert never returns a new object  
+// because inserting a new item never exceeds the maxSize.  
+z = [1, 2, 3, 4];            // -> [1, 2, 3, 4]
+y = z.boundedInsert(1, 999); // -> [1, 999, 2, 3]
+z;                           // -> [1, 999, 2, 3]
+y;                           // -> [1, 999, 2, 3]
+z == y;                      // -> true
+(z === y);                   // -> true
+y = y.boundedInsert(20, \a); // -> [1, 999, 2, a]
+z = z.boundedInsert(-2, \b); // -> [b, 1, 999, 2]
 ::
 
 method::move
-Moves an item from one position to another.
+Moves an item from one position to another. – Both code::fromIndex:: and code::toIndex:: arguments are specified as integers starting from 0.
 
 code::
 [10, 20, 1000, 40, 50].move(2, 0) // move 1000 to index 0
@@ -279,43 +431,61 @@ method::growClear
 Increase the size of the ArrayedCollection by strong::sizeIncrease:: number of slots, returning a new collection with link::Classes/Nil::s in the added slots.
 code::
 // Compare:
-[4,5,6].grow(5);
-[4,5,6].growClear(5);
+[4, 5, 6].grow(5);
+[4, 5, 6].growClear(5);
 ::
 
 method::copyRange
-Return a new ArrayedCollection which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty ArrayedCollection is returned.
+Return a new link::Classes/ArrayedCollection:: which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. – Both start and end are specified as integers starting from 0. If strong::end:: < strong::start::, an empty ArrayedCollection is returned.
 code::
 (
-var y, z;
-z = [1, 2, 3, 4, 5];
-y = z.copyRange(1,3);
-z.postln;
+var x, y;
+x = [1, 2, 3, 4, 5];
+y = x.copyRange(1, 3);
+x.postln;
 y.postln;
 )
 ::
-warning:: code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::. The latter compiles to link::#-copySeries::, which has different behavior when strong::end:: < strong::start::. ::
+warning::
+code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::.
+The latter compiles to link::#-copySeries::, which has different behavior when strong::end:: < strong::start::.
+See link::#copyRange_copySeries#NOTE:: in link::#-copySeries::.
+::
 
 method::copySeries
-Return a new ArrayedCollection consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
+Return a new link::Classes/ArrayedCollection:: consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. – All indices (first, second, last) are specified as integers starting from 0. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
 
-code::x.copySeries(a, nil, c):: is equivalent to code::x[a..c]::, and code::x.copySeries(a, b, c):: is equivalent to code::x[a,b..c]::
+code::x.copySeries(a, nil, c):: is equivalent to code::x[a..c]::, and code::x.copySeries(a, b, c):: is equivalent to code::x[a, b..c]::
 
 code::
 (
-var y, z;
-z = [1, 2, 3, 4, 5, 6];
-y = z.copySeries(0, 2, 5);
+var x, y;
+x = [1, 2, 3, 4, 5, 6];
+y = x.copySeries(0, 2, 5);
+x.postln;
 y.postln;
 )
 ::
 
-note::If the intent is to copy emphasis::forward:: in an array, and you are calculating start and end indices such that code::end:: may be less than code::start::, it is not safe to use code::copySeries:: or the shortcut syntax code::x[a..b]:: because it will adapt to use a positive or negative step as needed. In this case, code::copyRange:: is recommended.
+note::
+anchor::copyRange_copySeries::
+If the intent is to copy emphasis::forward::, and you are calculating start and end indices such that code::end:: may be less than code::start::, code::copyRange:: is not recommended.
+In this case, code::copySeries:: or the shortcut syntax code::x[a..b]:: is recommended because it will adapt to use a positive or negative step as needed.
 
 code::
 a = Array.series(10, 0, 1);
-a[2..0];  // [ 2, 1, 0 ]
-a.copyRange(2, 0);  // [  ]
+
+/* case 1 */
+a[0..2];  // [0, 1, 2]
+a.copySeries(0, 1, 2);  // [0, 1, 2]
+a.copySeries(0, nil, 2);  // [0, 1, 2]
+a.copyRange(0, 2);  // [0, 1, 2]
+
+/* case 2 */
+a[2..0];  // [2, 1, 0]
+a.copySeries(2, 1, 0);  // [2, 1, 0]
+a.copySeries(2, nil, 0);  // [2, 1, 0]
+a.copyRange(2, 0);  // []
 ::
 ::
 
@@ -331,7 +501,7 @@ y.postln;
 ::
 
 method::putSeries
-Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
+Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. – All indices (first, second, last) are specified as integers starting from 0.
 code::x.putSeries(a, b, c, val):: can also be written as code::x[a, b..c] = val::
 code::
 (
@@ -369,13 +539,13 @@ y.postln;
 method::do
 Iterate over the elements in order, calling the function for each element. The function is passed two arguments, the element and an index.
 code::
-['a', 'b', 'c'].do({ arg item, i; [i, item].postln; });
+['a', 'b', 'c'].do({ |item, i| [i, item].postln });
 ::
 
 method::reverseDo
 Iterate over the elements in reverse order, calling the function for each element. The function is passed two arguments, the element and an index.
 code::
-['a', 'b', 'c'].reverseDo({ arg item, i; [i, item].postln; });
+['a', 'b', 'c'].reverseDo({ |item, i| [i, item].postln });
 ::
 
 method::collect
@@ -384,14 +554,14 @@ Answer a new collection which consists of the results of function evaluated for 
 method::deepCollect
 The same as link::#-collect::, but can look inside sub-arrays up to the specified strong::depth::.
 code::
-a = [99, [4,6,5], [[32]]];
-a.deepCollect(1, {|item| item.isArray}).postln;
-a.deepCollect(2, {|item| item.isArray}).postln;
-a.deepCollect(3, {|item| item.isArray}).postln;
+a = [99, [4, 6, 5], [[32]]];
+a.deepCollect(1, { |item| item.isArray }).postln;
+a.deepCollect(2, { |item| item.isArray }).postln;
+a.deepCollect(3, { |item| item.isArray }).postln;
 ::
 
 method::windex
-Interprets the array as a list of probabilities which should sum to 1.0 and returns a random index value based on those probabilities.
+Interprets the array as a list of probabilities which should sum to 1.0 and returns a random index value based on those probabilities. The random index is taken from the receiver's index, starting from 0.
 code::
 (
 Array.fill(10, {
@@ -415,16 +585,16 @@ code::
 method::normalize
 Returns a new Array with the receiver items normalized between strong::min:: and strong::max::.
 code::
-[1, 2, 3].normalize;			//default min=0, max= 1
+[1, 2, 3].normalize;			// default min = 0, max = 1
 [1, 2, 3].normalize(-20, 10);
 ::
 
 method::perfectShuffle
-Returns a copy of the receiver with its items split into two equal halves, then reconstructed by interleaving the two halves. note::use an even number of item pairs in order to not loose any items in the shuffle.::
+Returns a copy of the receiver with its items split into two equal halves, then reconstructed by interleaving the two halves. note::the size of the collection should be even, otherwise the item directly in the middle of the collection will be lost in the shuffle.::
 code::
 (
 var y, z;
-z = [ 1, 2, 3, 4, 5, 6 ];
+z = [1, 2, 3, 4, 5, 6];
 y = z.perfectShuffle;
 z.postln;
 y.postln;
@@ -439,29 +609,40 @@ a.performInPlace(\normalizeSum, 3, 6);
 ::
 
 method::rank
-Rank is the number of dimensions in a multidimensional array.
+Returns the number of dimensions of the collection.
+code::rank:: inspects the size of the left-most elements of sub-arrays only,
+i.e. it's assumed that the collection link::#-isRectangular::,
+so subarrays of mismatched sizes may not return an expected result.
+A single value has a rank of code::0::.
+An empty array has a rank of code::1::.
+
 code::
-a = [4,7,6,8];
-a.rank;
-a = [[4,7],[6,8]];
-a.rank;
+0.rank // 0
+[].rank // 1
+[4, 7, 6, 8].rank // 1
+[[4, 7], [6, 8]].rank // 2
+[1 ,2, [3, 4]].rank // 1, this array is not rectangular and returns a meaningless value.
 ::
 
 method::shape
-For a multidimensional array, returns the number of elements along each dimension.
+Returns an array describing the dimension of each nested array.
+Requires link::#-isRectangular:: as a precondition.
+
 code::
-a = [4,7,6,8];
-a.shape;
-a = [[4,7],[6,8]];
-a.shape;
+[4, 7, 6, 8].shape // [4]
+[[4, 7], [6, 8]].shape // [2, 2]
+[[[4, 7]], [[6, 8]]].shape // [2, 1, 2]
+[1, 2, [3, 4]].shape // [3], this array is not rectangular and returns a meaningless value.
 ::
 
 method::reshape
-For a multidimensional array, rearranges the data using the desired number of elements along each dimension. The data may be extended using wrapExtend if needed.
+For a multidimensional array, rearranges the data using the desired number of elements along each dimension.
+The data may be extended using link::Classes/Array#-wrapExtend:: if needed.
+This will always return a rectangular array, see link::#-isRectangular::.
 code::
-a = [4,7,6,8];
-a.reshape(2,2);
-a.reshape(2,3);
+a = [4, 7, 6, 8];
+a.reshape(2, 2);
+a.reshape(2, 3);
 ::
 
 method::find
@@ -522,6 +703,6 @@ a.bundleSize;
 method::asciiPlot
 For an ArrayedCollection containing numbers (e.g. audio data) this renders a plot in the post window using asterisks and spaces (works best if you use a monospace font in your post window).
 code::
-a = (0, pi/10 .. 5pi).collect{|val| val.sin};
+a = (0, pi/10 .. 5pi).collect{ |val| val.sin };
 a.asciiPlot;
 ::

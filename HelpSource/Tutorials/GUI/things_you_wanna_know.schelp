@@ -1,0 +1,64 @@
+title:: GUI: Things you probably want to know
+summary:: Miscellaneous things you probably want to know about SuperCollider's GUI system.
+categories:: Tutorials>GUI
+
+section:: GUI Tutorial
+This helpfile is part of a link::Tutorials/GUI/tutorial_intro##GUI tutorial::.
+
+section:: Rendering isn't always available
+
+SuperCollider provides some useful classes to automate processes. Some of them are associated to a link::Classes/Clock::: mainly link::Classes/Routine:: and link::Classes/Task::.
+
+strong::Qt rendering system is unavailable within the context of clock associated threads::. In other words, you cannot 'directly' modify a widget within a link::Classes/Routine:: or a link::Classes/Task::.
+
+Instead, you need to defer the modification by strong::encapsulating it in a deferred function::, that will be executed once SuperCollider resume its main context, see link::Classes/Function#-defer::. Doing otherwise will crash the program:
+
+code::
+(
+var win = Window();
+var slider= Slider();
+var value = 0;
+
+var routine = Routine({
+	loop {
+		value = 101.rand / 100;
+		// Interacting with a widget from within a routine:
+		// instructions must be nested in a function, and deferred
+		{ slider.value_(value); }.defer;
+		0.5.wait;
+	};
+}).play;
+
+win.layout_(
+	VLayout()
+	.add(slider)
+);
+
+CmdPeriod.doOnce({
+	routine.stop;
+	win.close;
+});
+
+win.front;
+)
+::
+
+section:: Qt limitations
+
+This remark mostly concerns debugging and understanding issues. Since strong::Qt is a third-party library integrated within SuperCollider::, some of its limitations are unrelated to SuperCollider itself.
+
+As an example, at the time of writing this, Qt link::Classes/QImage:: has a strict pixel limit and cannot exceed 32767x32767 pixels. This 'issue' being only related to Qt, it is documented on Qt sources/forums, but not on SuperCollider sources/forums. In other words, working with Qt within the context of SuperCollider might also include using Qts documentation directly.
+
+section:: Pen usage and resource management
+
+The link::Classes/Pen:: class allows the user to define a custom code::drawFunc:: to a link::Classes/View::.
+
+link::Classes/Pen:: usage is a strong::two-steps process::: the user strong::first 'describes' the shape:: they want to draw (using methods such as code::fillRect:: or code::lineTo::), strong::then renders the shape::, using either code::fill::, code::stroke::, or code::fillStroke::.
+
+Depending on the hardware, strong::when drawing very complex shapes:: (for a example a million lines), strong::some issues might arise:::
+
+Drawing instructions are cached until they are drawn. This means that calling code::lineTo:: a million times before calling code::stroke:: might saturate the computers RAM before the code::stroke:: instruction effectively takes place and frees the cached instructions.
+
+On the other hand, calling successively code::lineTo:: then code::stroke:: a million time might be time inefficient as several code::lineTo:: could have been grouped together before being drawn on screen.
+
+The best solution in this case would be to test several configurations to balance RAM/CPU usage in the most efficient way.

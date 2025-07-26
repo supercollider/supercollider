@@ -24,9 +24,9 @@ examples::
 code::
 (
 var a, b;
-a = Pselect({ arg item; item != 2 }, Pseq(#[1, 2, 3],inf));
+a = Pselect({ |item| item != 2 }, Pseq(#[1, 2, 3], inf));
 x = a.asStream;
-9.do({ x.next.postln; });
+9.do({ x.next.postln });
 )
 ::
 
@@ -34,9 +34,9 @@ The message code::select:: returns a Pselect when passed to a pattern.
 code::
 (
 var a, b;
-a = Pseq(#[1, 2, 3],inf).select({ arg item; item != 2 });
+a = Pseq(#[1, 2, 3], inf).select({ |item| item != 2 });
 a.postln;
 x = a.asStream;
-9.do({ x.next.postln; });
+9.do({ x.next.postln });
 )
 ::

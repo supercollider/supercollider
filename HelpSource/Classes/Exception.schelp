@@ -37,7 +37,7 @@ With "try", "if" the error cannot be handled, you have to re-throw the error exp
 
 code::
 try { ...code... } { |error|
-	if( test: can I handle the error? ) {
+	if(test: can I handle the error?) {
 		handle gracefully
 	} { error.throw }
 };
@@ -61,13 +61,13 @@ In Java, you can catch specific classes of exception. You can simulate this usag
 code::
 // Java-style
 
-try {  }
+try { }
 catch { FileNotFoundException e } { console.printLine("File not found: " + e.path) }
 catch { EmptyFileException e } { console.printLine("File is empty: " + e.path) };
 
 // SuperCollider-style (hypothetical; these specific exceptions do not exist in the main library
 
-try {  } { |error|
+try { } { |error|
 	switch(error.species.name)
 		{ 'FileNotFoundException' } { postln("File not found:" + e.path) }
 		{ 'EmptyFileException' } { postln("File is empty:" + e.path) }
@@ -94,10 +94,10 @@ code::
 				if(error.what.find("immutable").notNil) {
 					"caught ImmutableError".postln;
 					~inPlaceSub.(array.copy, find, replace)
-				} { "unknown primitive exception".postln; error.throw; }
+				} { "unknown primitive exception".postln; error.throw }
 			}
 				// default case: unhandled exception, should die so re-throw error
-			{ "unknown exception".postln; error.throw; }
+			{ "unknown exception".postln; error.throw }
 	};
 };
 )

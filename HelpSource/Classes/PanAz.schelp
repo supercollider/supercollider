@@ -15,7 +15,7 @@ method::ar, kr
 
 argument::numChans
 
-Number of output channels.
+Number of output channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 
 argument::in
@@ -38,9 +38,11 @@ A control rate level input.
 
 argument::width
 
-The width of the panning envelope. Nominally this is code::2.0:: which pans between pairs of adjacent speakers.
+The width of the panning envelope.
+Nominally this is code::2.0:: which pans between pairs of adjacent speakers.
 Values greater than code::2:: will spread the pan over greater numbers of speakers.
 Values less than code::1:: will leave silent gaps between speakers.
+The absolute of this value is taken as negative values have no meaning (a width of code::-1:: is the same as a width of code::1::).
 
 
 argument::orientation
@@ -118,4 +120,3 @@ code::
 )
 
 ::
-

@@ -27,13 +27,13 @@ p.nextN(20);
 
 // 7 of the 20 values, or roughly 30%, are in the 0-9 range:
 
-[ 105, 107, 107, 8, 100, 3, 105, 5, 107, 106, 1, 104, 8, 102, 102, 4, 108, 8, 109, 101 ]
+[105, 107, 107, 8, 100, 3, 105, 5, 107, 106, 1, 104, 8, 102, 102, 4, 108, 8, 109, 101]
 
 
 // sound example
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))

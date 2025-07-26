@@ -33,24 +33,26 @@
 #include "SC_ReplyImpl.hpp"
 
 #include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/typeof/typeof.hpp>
 
 #define scprintf printf
 #include "SC_OscUtils.hpp"
 #undef scprintf
 
-void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum, double time);
+void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time);
+void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddress& replyAddress, int inPortNum,
+                       double time);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_Thread gAsioThread;
-boost::asio::io_service ioService;
+boost::asio::io_context ioContext;
 
 
 static void asioFunction() {
-    boost::asio::io_service::work work(ioService);
-    ioService.run();
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
+        boost::asio::make_work_guard(ioContext);
+    ioContext.run();
 }
 
 void startAsioThread() {
@@ -59,22 +61,142 @@ void startAsioThread() {
 }
 
 void stopAsioThread() {
-    ioService.stop();
+    ioContext.stop();
     gAsioThread.join();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck): mPortNum(inPortNum), udpSocket(ioService) {
+// One MessageHandler<> class for each HandlerType.
+// The signature of handleMessage can differ between handler types, so templatizing the class
+// allows us to specify a message handler func using e.g. MessageHandler<HandlerType::OSC>::handleMessage
+template <HandlerType H> struct MessageHandler {};
+
+template <> struct MessageHandler<HandlerType::OSC> {
+    static void handleMessage(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress,
+                              int replyPort, std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
+        const double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+
+        auto packet = std::make_unique<OSC_Packet>(OSC_Packet { std::move(data),
+                                                                dataSize,
+                                                                {
+                                                                    replyAddress, protocol, replyPort, replySocket,
+                                                                    nullptr, // mReplyFunc
+                                                                    nullptr // mReplyData
+                                                                } });
+
+        ProcessOSCPacket(std::move(packet), localPort, timeReceived);
+    }
+};
+
+template <> struct MessageHandler<HandlerType::Raw> {
+    static void handleMessage(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress,
+                              int replyPort, std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
+        const double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+
+        ReplyAddress addrObject;
+        addrObject.mProtocol = protocol;
+        addrObject.mAddress = replyAddress;
+        addrObject.mSocket = replySocket;
+        addrObject.mPort = replyPort;
+        addrObject.mReplyFunc = nullptr;
+        addrObject.mReplyData = nullptr;
+
+        ProcessRawMessage(std::move(data), dataSize, addrObject, localPort, timeReceived);
+    }
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace Detail {
+
+TCPConnection::TCPConnection(boost::asio::io_context& ioContext, int portNum, HandlerType handlerType):
+    mSocket(ioContext),
+    mOSCMsgLength(0),
+    mPortNum(portNum) {
+    initHandler(handlerType);
+}
+
+void TCPConnection::initHandler(HandlerType handlerType) {
+    switch (handlerType) {
+    case HandlerType::OSC: {
+        using Handler = MessageHandler<HandlerType::OSC>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            const int replyPort = 0;
+            const boost::asio::ip::address replyAddress;
+            Handler::handleMessage(kTCP, mSocket.native_handle(), replyAddress, replyPort, std::move(data), dataSize,
+                                   mPortNum);
+        };
+        return;
+    }
+    case HandlerType::Raw: {
+        using Handler = MessageHandler<HandlerType::Raw>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            const int replyPort = 0;
+            const boost::asio::ip::address replyAddress;
+            Handler::handleMessage(kTCP, mSocket.native_handle(), replyAddress, replyPort, std::move(data), dataSize,
+                                   mPortNum);
+        };
+        return;
+    }
+    }
+}
+
+void TCPConnection::start() {
+    namespace ba = boost::asio;
+    ba::async_read(mSocket, ba::buffer(&mOSCMsgLength, sizeof(mOSCMsgLength)),
+                   [receiver = shared_from_this()](auto error, auto bytesTransferred) {
+                       receiver->handleLengthReceived(error, bytesTransferred);
+                   });
+}
+
+void TCPConnection::handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
+    if (error) {
+        return;
+    }
+
+    namespace ba = boost::asio;
+    // msglen is in network byte order
+    mOSCMsgLength = sc_ntohl(mOSCMsgLength);
+
+    mData = std::make_unique<char[]>(mOSCMsgLength);
+
+    ba::async_read(mSocket, ba::buffer(mData.get(), mOSCMsgLength),
+                   [receiver = shared_from_this()](auto error, auto bytesReceived) {
+                       receiver->handleMsgReceived(error, bytesReceived);
+                   });
+}
+
+void TCPConnection::handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
+    if (error) {
+        mData.reset();
+        return;
+    }
+
+    assert(bytes_transferred == mOSCMsgLength);
+
+    mHandleFunc(std::move(mData), mOSCMsgLength);
+
+    start();
+}
+
+} // namespace Detail
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace InPort {
+
+UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inPortNum), mUdpSocket(ioContext) {
     using namespace boost::asio;
 
     BOOST_AUTO(protocol, ip::udp::v4());
 
-    udpSocket.open(protocol);
+    mUdpSocket.open(protocol);
 
     for (int offset = 0; offset != portsToCheck; ++offset) {
         try {
-            udpSocket.bind(ip::udp::endpoint(protocol, inPortNum + offset));
+            mUdpSocket.bind(ip::udp::endpoint(protocol, inPortNum + offset));
             mPortNum = inPortNum + offset;
             break;
         } catch (std::exception const&) {
@@ -83,28 +205,78 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck): mPortNum(inPortNum)
         }
     }
 
-    boost::asio::socket_base::send_buffer_size option(65536);
-    udpSocket.set_option(option);
+    try {
+        boost::asio::socket_base::send_buffer_size sendBufferSize;
+        mUdpSocket.get_option(sendBufferSize);
+        int originalBufferSize = sendBufferSize.value();
+        if (originalBufferSize < UDP::sendBufferSize) {
+            sendBufferSize = UDP::sendBufferSize;
+            boost::system::error_code ec;
+            mUdpSocket.set_option(sendBufferSize, ec);
+            if (ec && originalBufferSize < UDP::fallbackBufferSize) {
+                sendBufferSize = UDP::fallbackBufferSize;
+                mUdpSocket.set_option(sendBufferSize);
+            }
+        }
+    } catch (boost::system::system_error& e) {
+        printf("(sclang) SC_UdpInPort: WARNING: failed to set send buffer size (%s)\n", e.what());
+    }
+
+    try {
+        boost::asio::socket_base::receive_buffer_size receiveBufferSize;
+        mUdpSocket.get_option(receiveBufferSize);
+        int originalBufferSize = receiveBufferSize.value();
+        if (originalBufferSize < UDP::receiveBufferSize) {
+            receiveBufferSize = UDP::receiveBufferSize;
+            boost::system::error_code ec;
+            mUdpSocket.set_option(receiveBufferSize, ec);
+            if (ec && originalBufferSize < UDP::fallbackBufferSize) {
+                receiveBufferSize = UDP::fallbackBufferSize;
+                mUdpSocket.set_option(receiveBufferSize);
+            }
+        }
+    } catch (boost::system::system_error& e) {
+        printf("(sclang) SC_UdpInPort: WARNING: failed to set receive buffer size (%s)\n", e.what());
+    }
+
+    initHandler(handlerType);
 
     startReceiveUDP();
 }
 
-SC_UdpInPort::~SC_UdpInPort() {}
-
-
-void SC_UdpInPort::startReceiveUDP() {
-    using namespace boost;
-    udpSocket.async_receive_from(asio::buffer(recvBuffer), remoteEndpoint,
-                                 boost::bind(&SC_UdpInPort::handleReceivedUDP, this, asio::placeholders::error,
-                                             asio::placeholders::bytes_transferred));
+void UDP::initHandler(HandlerType handlerType) {
+    switch (handlerType) {
+    case HandlerType::OSC: {
+        using Handler = MessageHandler<HandlerType::OSC>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            Handler::handleMessage(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(),
+                                   std::move(data), dataSize, mPortNum);
+        };
+        return;
+    }
+    case HandlerType::Raw: {
+        using Handler = MessageHandler<HandlerType::Raw>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            Handler::handleMessage(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(),
+                                   std::move(data), dataSize, mPortNum);
+        };
+        return;
+    }
+    }
 }
 
-void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error, std::size_t bytesTransferred) {
-    double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+void UDP::startReceiveUDP() {
+    using namespace boost;
+    mUdpSocket.async_receive_from(
+        asio::buffer(mRecvBuffer), mRemoteEndpoint,
+        [this](auto error, auto bytesTransferred) { handleReceivedUDP(error, bytesTransferred); });
+}
+
+void UDP::handleReceivedUDP(const boost::system::error_code& error, std::size_t bytesTransferred) {
     if (error == boost::asio::error::operation_aborted)
         return; /* we're done */
 
-    if (error == boost::asio::error::connection_refused) {
+    if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset) {
         // avoid windows error message
         startReceiveUDP();
         return;
@@ -116,122 +288,86 @@ void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error, std
         return;
     }
 
-    OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+    std::unique_ptr<char[]> data(new char[bytesTransferred]);
+    memcpy(data.get(), mRecvBuffer.data(), bytesTransferred);
 
-    packet->mReplyAddr.mProtocol = kUDP;
-    packet->mReplyAddr.mAddress = remoteEndpoint.address();
-    packet->mReplyAddr.mPort = remoteEndpoint.port();
-    packet->mReplyAddr.mSocket = udpSocket.native_handle();
+    mHandleFunc(std::move(data), bytesTransferred);
 
-    char* data = (char*)malloc(bytesTransferred);
-    packet->mSize = bytesTransferred;
-    packet->mData = data;
-    memcpy(data, recvBuffer.data(), bytesTransferred);
-
-    ProcessOSCPacket(packet, mPortNum, timeReceived);
     startReceiveUDP();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum): SC_UdpInPort(inPortNum, 1) {}
-
-SC_UdpCustomInPort::~SC_UdpCustomInPort() {}
+UDPCustom::UDPCustom(int inPortNum, HandlerType handlerType): UDP(inPortNum, handlerType, 1) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog):
-    acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
-    mPortNum(inPortNum) {
+TCP::TCP(int inPortNum, int inMaxConnections, int inBacklog, HandlerType handlerType):
+    mAcceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
+    mPortNum(inPortNum),
+    mHandlerType(handlerType) {
     // FIXME: handle max connections
     // FIXME: backlog???
 
     startAccept();
 }
 
-void SC_TcpInPort::startAccept() {
-    SC_TcpConnection::pointer newConnection(new SC_TcpConnection(ioService, this));
+void TCP::startAccept() {
+    const auto newConnection = std::make_shared<Detail::TCPConnection>(ioContext, mPortNum, mHandlerType);
 
-    acceptor.async_accept(
-        newConnection->socket,
-        boost::bind(&SC_TcpInPort::handleAccept, this, newConnection, boost::asio::placeholders::error));
+    mAcceptor.async_accept(newConnection->getSocket(),
+                           [this, newConnection](auto error) { handleAccept(newConnection, error); });
 }
 
-void SC_TcpInPort::handleAccept(SC_TcpConnection::pointer newConnection, const boost::system::error_code& error) {
+void TCP::handleAccept(Detail::TCPConnection::pointer newConnection, const boost::system::error_code& error) {
     if (!error)
         newConnection->start();
     startAccept();
 }
 
-void SC_TcpConnection::start() {
-    namespace ba = boost::asio;
-    ba::async_read(socket, ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
-                   boost::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(), ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
-}
-
-void SC_TcpConnection::handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
-    if (error)
-        return;
-
-    namespace ba = boost::asio;
-    // msglen is in network byte order
-    OSCMsgLength = sc_ntohl(OSCMsgLength);
-
-    data = (char*)malloc(OSCMsgLength);
-
-    ba::async_read(socket, ba::buffer(data, OSCMsgLength),
-                   boost::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(), ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
-}
-
-void SC_TcpConnection::handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
-    double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
-    if (error) {
-        free(data);
-        return;
-    }
-
-    assert(bytes_transferred == OSCMsgLength);
-
-    OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-
-    packet->mReplyAddr.mProtocol = kTCP;
-    packet->mReplyAddr.mSocket = socket.native_handle();
-    packet->mSize = OSCMsgLength;
-    packet->mData = data;
-
-    ProcessOSCPacket(packet, mParent->mPortNum, timeReceived);
-
-    start();
-}
+} // namespace InPort
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_TcpClientPort::SC_TcpClientPort(unsigned long inAddress, int inPort, ClientNotifyFunc notifyFunc, void* clientData):
-    socket(ioService),
-    endpoint(boost::asio::ip::address_v4(inAddress), inPort),
+namespace OutPort {
+
+TCP::TCP(std::uint64_t inAddress, int inPort, HandlerType handlerType, ClientNotifyFunc notifyFunc, void* clientData):
+    mSocket(ioContext),
+    mEndpoint(boost::asio::ip::address_v4(inAddress), inPort),
     mClientNotifyFunc(notifyFunc),
     mClientData(clientData) {
     using namespace boost::asio;
 
     boost::system::error_code error;
     ip::tcp::no_delay noDelayOption(true);
-    socket.set_option(noDelayOption, error);
+    mSocket.set_option(noDelayOption, error);
 
-    socket.connect(endpoint);
+    mSocket.connect(mEndpoint);
+
+    initHandler(handlerType);
 
     startReceive();
 }
 
-void SC_TcpClientPort::startReceive() {
-    namespace ba = boost::asio;
-    ba::async_read(socket, ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
-                   boost::bind(&SC_TcpClientPort::handleLengthReceived, this, ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
+void TCP::initHandler(HandlerType handlerType) {
+    switch (handlerType) {
+    case HandlerType::OSC:
+        using Handler = MessageHandler<HandlerType::OSC>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            Handler::handleMessage(kTCP, mSocket.native_handle(), mSocket.remote_endpoint().address(),
+                                   mSocket.remote_endpoint().port(), std::move(data), dataSize,
+                                   mSocket.local_endpoint().port());
+        };
+    }
 }
 
-void SC_TcpClientPort::handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
+void TCP::startReceive() {
+    namespace ba = boost::asio;
+    ba::async_read(mSocket, ba::buffer(&mOSCMsgLength, sizeof(mOSCMsgLength)),
+                   [this](auto error, auto bytesTransferred) { handleLengthReceived(error, bytesTransferred); });
+}
+
+void TCP::handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
     if (error == boost::asio::error::connection_aborted) {
         if (mClientNotifyFunc)
             (*mClientNotifyFunc)(mClientData);
@@ -241,16 +377,15 @@ void SC_TcpClientPort::handleLengthReceived(const boost::system::error_code& err
         return;
 
     // msglen is in network byte order
-    OSCMsgLength = sc_ntohl(OSCMsgLength);
-    data = (char*)malloc(OSCMsgLength);
+    mOSCMsgLength = sc_ntohl(mOSCMsgLength);
+    mData = std::make_unique<char[]>(mOSCMsgLength);
 
     namespace ba = boost::asio;
-    ba::async_read(socket, ba::buffer(data, OSCMsgLength),
-                   boost::bind(&SC_TcpClientPort::handleMsgReceived, this, ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
+    ba::async_read(mSocket, ba::buffer(mData.get(), mOSCMsgLength),
+                   [this](auto error, auto bytesTransferred) { handleMsgReceived(error, bytesTransferred); });
 }
 
-void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
+void TCP::handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
     double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
     if (error == boost::asio::error::connection_aborted) {
         if (mClientNotifyFunc)
@@ -258,32 +393,23 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code& error,
     }
 
     if (error) {
-        free(data);
+        mData.reset();
         return;
     }
 
-    assert(bytes_transferred == OSCMsgLength);
+    // The mOSCMsgLength read from the message header should match the actual number of bytes available.
+    assert(bytes_transferred == mOSCMsgLength);
 
-    OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-
-    packet->mReplyAddr.mProtocol = kTCP;
-    packet->mReplyAddr.mSocket = socket.native_handle();
-    packet->mReplyAddr.mAddress = socket.remote_endpoint().address();
-    packet->mReplyAddr.mPort = socket.remote_endpoint().port();
-
-    packet->mSize = OSCMsgLength;
-    packet->mData = data;
-
-    ProcessOSCPacket(packet, socket.local_endpoint().port(), timeReceived);
+    mHandleFunc(std::move(mData), mOSCMsgLength);
 
     startReceive();
 }
 
-int SC_TcpClientPort::Close() {
+int TCP::Close() {
     boost::system::error_code error;
 
-    socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
-    socket.close();
+    mSocket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
+    mSocket.close();
 
     if (error) {
         if (error != boost::asio::error::not_connected) {
@@ -294,3 +420,5 @@ int SC_TcpClientPort::Close() {
 
     return errNone;
 }
+
+} // namespace OutPort

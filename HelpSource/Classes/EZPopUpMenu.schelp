@@ -22,10 +22,10 @@ argument:: label
 The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
 
 argument:: items
-Default value is code::nil::. An link::Classes/Array:: of link::Classes/Association::s code:: ['label' -> { arg menuObj; value }, ] ::. Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::).
+Default value is code::nil::. An link::Classes/Array:: of link::Classes/Association::s code:: ['label' -> { |menuObj| value }, ] ::. Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::).
 
 argument:: globalAction
-A global function to be performed in addition to the item functions code:: { arg menuObj; value } ::.
+A global function to be performed in addition to the item functions code:: { |menuObj| value } ::.
 
 argument:: initVal
 Initial value of the menu, i.e. the index selected. Default value is 0.
@@ -58,11 +58,11 @@ g = EZPopUpMenu.new(
 	230@22,
 	"A PopUpMenu: ",
 	[
-		\item0 ->{|a| ("this is item 0 of " ++ a).postln},
-		\item1 ->{|a| ("this is item 1 of " ++ a).postln},
-		\item2 ->{|a| ("this is item 2 of " ++ a).postln},
+		\item0 ->{ |a| ("this is item 0 of " ++ a).postln },
+		\item1 ->{ |a| ("this is item 1 of " ++ a).postln },
+		\item2 ->{ |a| ("this is item 2 of " ++ a).postln },
 	],
-	globalAction: {|a| ("this is a global action of "++a.asString ).postln},
+	globalAction: { |a| ("this is a global action of "++a.asString).postln },
 	initVal: 1,
 	initAction: true,
 	labelWidth: 120,
@@ -114,80 +114,80 @@ code::
 // inherits the parent's decorator gap
 
 (
-w=Window.new("oscillators", Rect(200,500,200,160)).front;
+w = Window.new("oscillators", Rect(200, 500, 200, 160)).front;
 w.view.decorator = FlowLayout(w.view.bounds).gap_(2@2);
-5.do{|i|
-	g = EZPopUpMenu.new(w,190@22, "Oscillator % : ".format(i+1));
-	g.addItem(\off, {"off". postln});
-	g.addItem(\sine, {"sine". postln});
-	g.addItem(\saw, {"saw". postln});
-	g.addItem(\pulse, {"pulse". postln});
-	g.setColors(Color.grey,Color.white);
-	g.value=0;
+5.do{ |i|
+	g = EZPopUpMenu.new(w, 190@22, "Oscillator % : ".format(i+1));
+	g.addItem(\off, { "off".postln });
+	g.addItem(\sine, { "sine".postln });
+	g.addItem(\saw, { "saw".postln });
+	g.addItem(\pulse, { "pulse".postln });
+	g.setColors(Color.grey, Color.white);
+	g.value = 0;
 };
-w.bounds=w.bounds.moveBy(300,60);
+w.bounds = w.bounds.moveBy(300, 60);
 );
 
 
 // Creates its own window if parentView is nil:
 (
-g = EZPopUpMenu.new(nil,250@22 ," Select : ");
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.setColors(Color.grey,Color.white);
-g.value=0;
+g = EZPopUpMenu.new(nil, 250@22, " Select : ");
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.setColors(Color.grey, Color.white);
+g.value = 0;
 
 );
 
 // layout vertical:
 (
-g = EZPopUpMenu.new(nil,200@42, " Choose",layout:\vert);
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.setColors(Color.grey,Color.white);
-g.window.bounds=g.window.bounds.moveBy(300,-200);
-g.value=0;
+g = EZPopUpMenu.new(nil, 200@42, " Choose", layout: \vert);
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.setColors(Color.grey, Color.white);
+g.window.bounds = g.window.bounds.moveBy(300, -200);
+g.value = 0;
 );
 
 // No labelView created, so set the window title;
 (
-g = EZPopUpMenu.new(bounds:180@22); // no label
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.value=0;
-g.window.name=" choose item";
-g.window.bounds=g.window.bounds.moveBy(0,-200);
+g = EZPopUpMenu.new(bounds: 180@22); // no label
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.value = 0;
+g.window.name = " choose item";
+g.window.bounds = g.window.bounds.moveBy(0, -200);
 );
 )
 // insertItem;
 
 (
-g = EZPopUpMenu.new(nil,200@22, "Menu:");
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.addItem(\item4, {"this is item 4". postln});
-g.value=0;
+g = EZPopUpMenu.new(nil, 200@22, "Menu:");
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.addItem(\item4, { "this is item 4".postln });
+g.value = 0;
 );
 
-g.insertItem(3, \item3, {"this is item 3". postln});
+g.insertItem(3, \item3, { "this is item 3".postln });
 
 
 // remove Item ;
 
 (
-w=Window.new.front;
+w = Window.new.front;
 w.view.decorator = FlowLayout(w.view.bounds);
-g = EZPopUpMenu.new(w,200@22, "Menu:");
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.addItem(\item4, {"this is item 4". postln});
-g.insertItem(3, \item3, {"this is item 3". postln});
-g.value=0;
+g = EZPopUpMenu.new(w, 200@22, "Menu:");
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.addItem(\item4, { "this is item 4".postln });
+g.insertItem(3, \item3, { "this is item 3".postln });
+g.value = 0;
 )
 
 g. removeItemAt(0);
@@ -196,12 +196,12 @@ g. removeItemAt(0);
 
 // replace item;
 (
-g = EZPopUpMenu.new(nil,200@22, "List:");
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.addItem(\item3, {"this is item 3". postln});
+g = EZPopUpMenu.new(nil, 200@22, "List:");
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.addItem(\item3, { "this is item 3".postln });
 )
 
-g.replaceItemAt(2, \item2_replaced, {"this is item 2 replaced". postln});
+g.replaceItemAt(2, \item2_replaced, { "this is item 2 replaced".postln });
 ::

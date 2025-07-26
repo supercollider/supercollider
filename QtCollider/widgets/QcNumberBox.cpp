@@ -27,6 +27,7 @@
 #include <QMouseEvent>
 #include <QApplication>
 
+#include <cmath>
 #include <math.h>
 #include <qmath.h>
 
@@ -281,7 +282,11 @@ void QcNumberBox::mouseDoubleClickEvent(QMouseEvent* event) {
 }
 
 void QcNumberBox::mousePressEvent(QMouseEvent* event) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     lastPos = event->globalY();
+#else
+    lastPos = event->globalPosition().y();
+#endif
     // If locked, prevent cursor position change. Cursor has to stay at 0
     // so most significant digits are shown if widget size too small.
     if (isReadOnly())
@@ -291,7 +296,11 @@ void QcNumberBox::mousePressEvent(QMouseEvent* event) {
 
 void QcNumberBox::mouseMoveEvent(QMouseEvent* event) {
     if (scroll && isReadOnly() && _valueType == Number && (event->buttons() & Qt::LeftButton)) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         int steps = (event->globalY() - lastPos) / dragDist;
+#else
+        int steps = (event->globalPosition().y() - lastPos) / dragDist;
+#endif
         if (steps != 0) {
             lastPos = lastPos + (steps * dragDist);
             stepBy(-steps, scrollStep);
@@ -302,9 +311,13 @@ void QcNumberBox::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void QcNumberBox::wheelEvent(QWheelEvent* event) {
-    if (scroll && isReadOnly() && _valueType == Number && event->orientation() == Qt::Vertical) {
-        stepBy(event->delta() > 0 ? 1 : -1, scrollStep);
-        Q_EMIT(action());
+    if (scroll && isReadOnly() && _valueType == Number) {
+        double delta = getScrollSteps(event).y();
+        scrollRemainder = std::modf(delta + scrollRemainder, &delta);
+        if (delta > 0. || delta < 0) {
+            stepBy(delta, scrollStep);
+            Q_EMIT(action());
+        }
     }
 }
 

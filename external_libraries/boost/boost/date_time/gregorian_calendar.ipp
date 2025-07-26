@@ -25,8 +25,8 @@ namespace date_time {
     return d;
   }
 
-  //!Return the iso week number for the date
-  /*!Implements the rules associated with the iso 8601 week number.
+  //!Return the ISO 8601 week number for the date
+  /*!Implements the rules associated with the ISO 8601 week number.
     Basically the rule is that Week 1 of the year is the week that contains
     January 4th or the week that contains the first Thursday in January.
     Reference for this algorithm is the Calendar FAQ by Claus Tondering, April 2000.
@@ -77,7 +77,7 @@ namespace date_time {
     unsigned short a = static_cast<unsigned short>((14-ymd.month)/12);
     unsigned short y = static_cast<unsigned short>(ymd.year + 4800 - a);
     unsigned short m = static_cast<unsigned short>(ymd.month + 12*a - 3);
-    unsigned long  d = ymd.day + ((153*m + 2)/5) + 365*y + (y/4) - (y/100) + (y/400) - 32045;
+    unsigned long  d = static_cast<unsigned long>(ymd.day) + ((153*m + 2)/5) + 365*y + (y/4) - (y/100) + (y/400) - 32045;
     return static_cast<date_int_type>(d);
   }
 

@@ -29,7 +29,6 @@
 #include <boost/intrusive/detail/node_cloner_disposer.hpp>
 #include <boost/intrusive/detail/key_nodeptr_comp.hpp>
 
-#include <boost/static_assert.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/move/adl_move_swap.hpp>
 
@@ -232,22 +231,22 @@ class treap_impl
    ~treap_impl();
 
    //! @copydoc ::boost::intrusive::bstree::begin()
-   iterator begin();
+   iterator begin() BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::begin()const
-   const_iterator begin() const;
+   const_iterator begin() const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::cbegin()const
-   const_iterator cbegin() const;
+   const_iterator cbegin() const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::end()
-   iterator end();
+   iterator end() BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::end()const
-   const_iterator end() const;
+   const_iterator end() const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::cend()const
-   const_iterator cend() const;
+   const_iterator cend() const BOOST_NOEXCEPT;
    #endif
 
    //! <b>Effects</b>: Returns an iterator pointing to the highest priority object of the treap.
@@ -255,7 +254,7 @@ class treap_impl
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: Nothing.
-   iterator top()
+   inline iterator top() BOOST_NOEXCEPT
    {  return this->tree_type::root();   }
 
    //! <b>Effects</b>: Returns a const_iterator pointing to the highest priority object of the treap..
@@ -263,7 +262,7 @@ class treap_impl
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: Nothing.
-   const_iterator top() const
+   inline const_iterator top() const BOOST_NOEXCEPT
    {  return this->ctop();   }
 
    //! <b>Effects</b>: Returns a const_iterator pointing to the highest priority object of the treap..
@@ -271,36 +270,36 @@ class treap_impl
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: Nothing.
-   const_iterator ctop() const
+   inline const_iterator ctop() const BOOST_NOEXCEPT
    {  return this->tree_type::root();   }
 
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! @copydoc ::boost::intrusive::bstree::rbegin()
-   reverse_iterator rbegin();
+   reverse_iterator rbegin() BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::rbegin()const
-   const_reverse_iterator rbegin() const;
+   const_reverse_iterator rbegin() const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::crbegin()const
-   const_reverse_iterator crbegin() const;
+   const_reverse_iterator crbegin() const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::rend()
-   reverse_iterator rend();
+   reverse_iterator rend() BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::rend()const
-   const_reverse_iterator rend() const;
+   const_reverse_iterator rend() const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::crend()const
-   const_reverse_iterator crend() const;
+   const_reverse_iterator crend() const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::root()
-   iterator root();
+   iterator root() BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::root()const
-   const_iterator root() const;
+   const_iterator root() const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::croot()const
-   const_iterator croot() const;
+   const_iterator croot() const BOOST_NOEXCEPT;
 
    #endif
 
@@ -310,7 +309,7 @@ class treap_impl
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: Nothing.
-   reverse_iterator rtop()
+   inline reverse_iterator rtop() BOOST_NOEXCEPT
    {  return reverse_iterator(this->top());  }
 
    //! <b>Effects</b>: Returns a const_reverse_iterator pointing to the highest priority objec
@@ -319,7 +318,7 @@ class treap_impl
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: Nothing.
-   const_reverse_iterator rtop() const
+   inline const_reverse_iterator rtop() const BOOST_NOEXCEPT
    {  return const_reverse_iterator(this->top());  }
 
    //! <b>Effects</b>: Returns a const_reverse_iterator pointing to the highest priority object
@@ -328,21 +327,21 @@ class treap_impl
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: Nothing.
-   const_reverse_iterator crtop() const
+   inline const_reverse_iterator crtop() const BOOST_NOEXCEPT
    {  return const_reverse_iterator(this->top());  }
 
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! @copydoc ::boost::intrusive::bstree::container_from_end_iterator(iterator)
-   static treap_impl &container_from_end_iterator(iterator end_iterator);
+   static treap_impl &container_from_end_iterator(iterator end_iterator) BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::container_from_end_iterator(const_iterator)
-   static const treap_impl &container_from_end_iterator(const_iterator end_iterator);
+   static const treap_impl &container_from_end_iterator(const_iterator end_iterator) BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::container_from_iterator(iterator)
-   static treap_impl &container_from_iterator(iterator it);
+   static treap_impl &container_from_iterator(iterator it) BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::container_from_iterator(const_iterator)
-   static const treap_impl &container_from_iterator(const_iterator it);
+   static const treap_impl &container_from_iterator(const_iterator it) BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::key_comp()const
    key_compare key_comp() const;
@@ -351,10 +350,10 @@ class treap_impl
    value_compare value_comp() const;
 
    //! @copydoc ::boost::intrusive::bstree::empty()const
-   bool empty() const;
+   bool empty() const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::size()const
-   size_type size() const;
+   size_type size() const BOOST_NOEXCEPT;
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
    //! <b>Effects</b>: Returns the priority_compare object used by the container.
@@ -755,7 +754,7 @@ class treap_impl
    //! <b>Notes</b>: This function has only sense if a "insert_check" has been
    //!   previously executed to fill "commit_data". No value should be inserted or
    //!   erased between the "insert_check" and "insert_commit" calls.
-   iterator insert_unique_commit(reference value, const insert_commit_data &commit_data)
+   iterator insert_unique_commit(reference value, const insert_commit_data &commit_data) BOOST_NOEXCEPT
    {
       node_ptr to_insert(this->get_value_traits().to_node_ptr(value));
       BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::unique(to_insert));
@@ -778,7 +777,7 @@ class treap_impl
    //! the successor of "value" container ordering invariant will be broken.
    //! This is a low-level function to be used only for performance reasons
    //! by advanced users.
-   iterator insert_before(const_iterator pos, reference value)
+   iterator insert_before(const_iterator pos, reference value) BOOST_NOEXCEPT
    {
       node_ptr to_insert(this->get_value_traits().to_node_ptr(value));
       BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::unique(to_insert));
@@ -808,7 +807,7 @@ class treap_impl
    //!   This function is slightly more efficient than using "insert_before".
    //!   This is a low-level function to be used only for performance reasons
    //!   by advanced users.
-   void push_back(reference value)
+   void push_back(reference value) BOOST_NOEXCEPT
    {
       node_ptr to_insert(this->get_value_traits().to_node_ptr(value));
       BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::unique(to_insert));
@@ -831,7 +830,7 @@ class treap_impl
    //!   This function is slightly more efficient than using "insert_before".
    //!   This is a low-level function to be used only for performance reasons
    //!   by advanced users.
-   void push_front(reference value)
+   void push_front(reference value) BOOST_NOEXCEPT
    {
       node_ptr to_insert(this->get_value_traits().to_node_ptr(value));
       BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::unique(to_insert));
@@ -848,7 +847,7 @@ class treap_impl
    //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. No destructors are called.
-   iterator erase(const_iterator i)
+   iterator erase(const_iterator i) BOOST_NOEXCEPT
    {
       const_iterator ret(i);
       ++ret;
@@ -857,7 +856,7 @@ class treap_impl
       node_algorithms::erase
          (this->tree_type::header_ptr(), to_erase, this->prio_node_prio_comp(this->priv_pcomp()));
       this->tree_type::sz_traits().decrement();
-      if(safemode_or_autounlink)
+      BOOST_IF_CONSTEXPR(safemode_or_autounlink)
          node_algorithms::init(to_erase);
       return ret.unconst();
    }
@@ -871,7 +870,7 @@ class treap_impl
    //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. No destructors are called.
-   iterator erase(const_iterator b, const_iterator e)
+   iterator erase(const_iterator b, const_iterator e) BOOST_NOEXCEPT
    {  size_type n;   return private_erase(b, e, n);   }
 
    //! <b>Effects</b>: Erases all the elements with the given value.
@@ -922,7 +921,7 @@ class treap_impl
    //! <b>Note</b>: Invalidates the iterators
    //!    to the erased elements.
    template<class Disposer>
-   iterator erase_and_dispose(const_iterator i, Disposer disposer)
+   iterator erase_and_dispose(const_iterator i, Disposer disposer) BOOST_NOEXCEPT
    {
       node_ptr to_erase(i.pointed_node());
       iterator ret(this->erase(i));
@@ -932,7 +931,7 @@ class treap_impl
 
    #if !defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
    template<class Disposer>
-   iterator erase_and_dispose(iterator i, Disposer disposer)
+   iterator erase_and_dispose(iterator i, Disposer disposer) BOOST_NOEXCEPT
    {  return this->erase_and_dispose(const_iterator(i), disposer);   }
    #endif
 
@@ -949,7 +948,7 @@ class treap_impl
    //! <b>Note</b>: Invalidates the iterators
    //!    to the erased elements.
    template<class Disposer>
-   iterator erase_and_dispose(const_iterator b, const_iterator e, Disposer disposer)
+   iterator erase_and_dispose(const_iterator b, const_iterator e, Disposer disposer) BOOST_NOEXCEPT
    {  size_type n;   return private_erase(b, e, n, disposer);   }
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
@@ -1010,7 +1009,7 @@ class treap_impl
    //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. No destructors are called.
-   void clear()
+   void clear() BOOST_NOEXCEPT
    {  tree_type::clear(); }
 
    //! <b>Effects</b>: Erases all of the elements calling disposer(p) for
@@ -1023,7 +1022,7 @@ class treap_impl
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. Calls N times to disposer functor.
    template<class Disposer>
-   void clear_and_dispose(Disposer disposer)
+   void clear_and_dispose(Disposer disposer) BOOST_NOEXCEPT
    {
       node_algorithms::clear_and_dispose(this->tree_type::header_ptr()
          , detail::node_disposer<Disposer, value_traits, TreapAlgorithms>(disposer, &this->get_value_traits()));
@@ -1180,28 +1179,28 @@ class treap_impl
          (const KeyType& lower_key, const KeyType& upper_key, KeyTypeKeyCompare comp, bool left_closed, bool right_closed) const;
 
    //! @copydoc ::boost::intrusive::bstree::s_iterator_to(reference)
-   static iterator s_iterator_to(reference value);
+   static iterator s_iterator_to(reference value) BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::s_iterator_to(const_reference)
-   static const_iterator s_iterator_to(const_reference value);
+   static const_iterator s_iterator_to(const_reference value) BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::iterator_to(reference)
-   iterator iterator_to(reference value);
+   iterator iterator_to(reference value) BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::iterator_to(const_reference)const
-   const_iterator iterator_to(const_reference value) const;
+   const_iterator iterator_to(const_reference value) const BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::init_node(reference)
-   static void init_node(reference value);
+   static void init_node(reference value) BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::unlink_leftmost_without_rebalance
-   pointer unlink_leftmost_without_rebalance();
+   pointer unlink_leftmost_without_rebalance() BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::replace_node
-   void replace_node(iterator replace_this, reference with_this);
+   void replace_node(iterator replace_this, reference with_this) BOOST_NOEXCEPT;
 
    //! @copydoc ::boost::intrusive::bstree::remove_node
-   void remove_node(reference value);
+   void remove_node(reference value) BOOST_NOEXCEPT;
 
    friend bool operator< (const treap_impl &x, const treap_impl &y);
 
@@ -1313,51 +1312,51 @@ class treap
    typedef typename Base::const_reverse_iterator     const_reverse_iterator;
 
    //Assert if passed value traits are compatible with the type
-   BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
+   BOOST_INTRUSIVE_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   BOOST_INTRUSIVE_FORCEINLINE treap()
+   inline treap()
       :  Base()
    {}
 
-   BOOST_INTRUSIVE_FORCEINLINE explicit treap( const key_compare &cmp
+   inline explicit treap( const key_compare &cmp
                  , const priority_compare &pcmp = priority_compare()
                  , const value_traits &v_traits = value_traits())
       :  Base(cmp, pcmp, v_traits)
    {}
 
    template<class Iterator>
-   BOOST_INTRUSIVE_FORCEINLINE treap( bool unique, Iterator b, Iterator e
+   inline treap( bool unique, Iterator b, Iterator e
        , const key_compare &cmp = key_compare()
        , const priority_compare &pcmp = priority_compare()
        , const value_traits &v_traits = value_traits())
       :  Base(unique, b, e, cmp, pcmp, v_traits)
    {}
 
-   BOOST_INTRUSIVE_FORCEINLINE treap(BOOST_RV_REF(treap) x)
+   inline treap(BOOST_RV_REF(treap) x)
       :  Base(BOOST_MOVE_BASE(Base, x))
    {}
 
-   BOOST_INTRUSIVE_FORCEINLINE treap& operator=(BOOST_RV_REF(treap) x)
+   inline treap& operator=(BOOST_RV_REF(treap) x)
    {  return static_cast<treap&>(this->Base::operator=(BOOST_MOVE_BASE(Base, x)));  }
 
    template <class Cloner, class Disposer>
-   BOOST_INTRUSIVE_FORCEINLINE void clone_from(const treap &src, Cloner cloner, Disposer disposer)
+   inline void clone_from(const treap &src, Cloner cloner, Disposer disposer)
    {  Base::clone_from(src, cloner, disposer);  }
 
    template <class Cloner, class Disposer>
-   BOOST_INTRUSIVE_FORCEINLINE void clone_from(BOOST_RV_REF(treap) src, Cloner cloner, Disposer disposer)
+   inline void clone_from(BOOST_RV_REF(treap) src, Cloner cloner, Disposer disposer)
    {  Base::clone_from(BOOST_MOVE_BASE(Base, src), cloner, disposer);  }
 
-   BOOST_INTRUSIVE_FORCEINLINE static treap &container_from_end_iterator(iterator end_iterator)
+   inline static treap &container_from_end_iterator(iterator end_iterator) BOOST_NOEXCEPT
    {  return static_cast<treap &>(Base::container_from_end_iterator(end_iterator));   }
 
-   BOOST_INTRUSIVE_FORCEINLINE static const treap &container_from_end_iterator(const_iterator end_iterator)
+   inline static const treap &container_from_end_iterator(const_iterator end_iterator) BOOST_NOEXCEPT
    {  return static_cast<const treap &>(Base::container_from_end_iterator(end_iterator));   }
 
-   BOOST_INTRUSIVE_FORCEINLINE static treap &container_from_iterator(iterator it)
+   inline static treap &container_from_iterator(iterator it) BOOST_NOEXCEPT
    {  return static_cast<treap &>(Base::container_from_iterator(it));   }
 
-   BOOST_INTRUSIVE_FORCEINLINE static const treap &container_from_iterator(const_iterator it)
+   inline static const treap &container_from_iterator(const_iterator it) BOOST_NOEXCEPT
    {  return static_cast<const treap &>(Base::container_from_iterator(it));   }
 };
 

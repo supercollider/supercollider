@@ -32,25 +32,24 @@ code::
 // trig with MouseY crossing center of screen
 {
 	var in, chain;
-	in = Mix.ar(SinOsc.ar(200 * (1..10), 0, Array.fill(10, { rrand(0.1, 0.2) }) ));
+	in = Mix.ar(SinOsc.ar(200 * (1..10), 0, Array.fill(10, { rrand(0.1, 0.2) })));
 	chain = FFT(LocalBuf(2048), in);
-	chain = PV_Diffuser(chain, MouseY.kr > 0.5 );
+	chain = PV_Diffuser(chain, MouseY.kr > 0.5);
 	0.5 * IFFT(chain).dup;
 }.play
 );
 
 (
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 // trig with MouseY crossing center of screen
 {
 	var in, chain;
 	in = PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1);
 	chain = FFT(LocalBuf(2048), in);
-	chain = PV_Diffuser(chain, MouseY.kr > 0.5 );
+	chain = PV_Diffuser(chain, MouseY.kr > 0.5);
 	0.5 * IFFT(chain).dup;
 }.play
 );
 
 ::
-

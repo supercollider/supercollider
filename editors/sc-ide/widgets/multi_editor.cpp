@@ -560,28 +560,23 @@ void MultiEditor::createActions() {
 
     mActions[NextDocument] = action = new QAction(tr("Next Document"), this);
 #ifndef Q_OS_MAC
-    action->setShortcut(tr("Alt+Right", "Next Document"));
+    action->setShortcut(tr("Ctrl+Tab", "Next Document"));
 #else
-    action->setShortcut(tr("Ctrl+Alt+Right", "Next Document"));
+    action->setShortcut(tr("Meta+Tab", "Next Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showNextDocument()));
     settings->addAction(action, "editor-document-next", editorCategory);
 
     mActions[PreviousDocument] = action = new QAction(tr("Previous Document"), this);
 #ifndef Q_OS_MAC
-    action->setShortcut(tr("Alt+Left", "Previous Document"));
+    action->setShortcut(tr("Ctrl+Shift+Tab", "Previous Document"));
 #else
-    action->setShortcut(tr("Ctrl+Alt+Left", "Previous Document"));
+    action->setShortcut(tr("Meta+Shift+Tab", "Previous Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
     settings->addAction(action, "editor-document-previous", editorCategory);
 
     mActions[SwitchDocument] = action = new QAction(tr("Switch Document"), this);
-#ifndef Q_OS_MAC
-    action->setShortcut(tr("Ctrl+Tab", "Switch Document"));
-#else
-    action->setShortcut(tr("Alt+Tab", "Switch Document"));
-#endif
     connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
     settings->addAction(action, "editor-document-switch", editorCategory);
 
@@ -973,12 +968,16 @@ void MultiEditor::updateTabsOrder(QList<Document*> docOrder) {
 
 void MultiEditor::showNextDocument() {
     int currentIndex = mTabs->currentIndex();
-    mTabs->setCurrentIndex(qMin(currentIndex + 1, mTabs->count() - 1));
+    mTabs->setCurrentIndex((currentIndex + 1) % mTabs->count());
 }
 
 void MultiEditor::showPreviousDocument() {
     int currentIndex = mTabs->currentIndex();
-    mTabs->setCurrentIndex(qMax(0, currentIndex - 1));
+    if (currentIndex == 0) {
+        mTabs->setCurrentIndex(mTabs->count() - 1);
+    } else {
+        mTabs->setCurrentIndex(currentIndex - 1);
+    }
 }
 
 void MultiEditor::switchDocument() {
@@ -1025,7 +1024,9 @@ void MultiEditor::onDocModified(Document* doc) {
         icon = mDocModifiedIcon;
 
     Main::evaluateCodeIfCompiled(
-        QStringLiteral("Document.findByQUuid(\'%1\').prSetEdited(%2)").arg(doc->id().constData()).arg(isModified),
+        QStringLiteral("var doc = Document.findByQUuid(\'%1\'); doc !? { doc.prSetEdited(%2) };")
+            .arg(doc->id().constData())
+            .arg(isModified),
         true);
 
     mTabs->setTabIcon(tabIdx, icon);

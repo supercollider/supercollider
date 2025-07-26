@@ -23,8 +23,8 @@ subsection::Command paths
 
 OSC commands sometimes include additional parameters to specify the right responder.
 
-For example code::/tr:: commands, which are generated on the server by the link::Classes/SendTrig:: Ugen create an OSC packet consisting of: code:: [ /tr, nodeID, triggerID, value] ::.
-This array actually specifies the source of value: code:: [ /tr, nodeID, triggerID] ::.
+For example code::/tr:: commands, which are generated on the server by the link::Classes/SendTrig:: UGen create an OSC packet consisting of: code:: [/tr, nodeID, triggerID, value] ::.
+This array actually specifies the source of value: code:: [/tr, nodeID, triggerID] ::.
 We will refer to that array as a command path.
 
 To create an OSCpathResponder for a specific trigger, the strong::cmdName:: parameter is simply replaced by the complete command path.
@@ -48,7 +48,7 @@ A command path, such as ['\c_set', bus index].
 argument::action
 A link::Classes/Function:: that will be evaluated when a cmd of that name is received from addr. arguments: time, theResponder, message
 note::
-OSCresponderNode evaluates its function in the system process. In order to access the application process (e.g. for GUI access ) use { ... }.defer; within the action function, e.g., code:: { |time, resp, msg| { gui.value_(msg[3]) }.defer } ::
+OSCresponderNode evaluates its function in the system process. In order to access the application process (e.g. for GUI access) use { ... }.defer; within the action function, e.g., code:: { |time, resp, msg| { gui.value_(msg[3]) }.defer } ::
 ::
 
 Examples::
@@ -59,12 +59,12 @@ s.boot;
 (
 	var commandpath, response, aSynth, nodeID, triggerID;
 	triggerID = 1;
-	aSynth = { arg freq = 1, triggerID = 1;
+	aSynth = { |freq = 1, triggerID = 1|
 		SendTrig.kr(SinOsc.kr(freq), triggerID, 666)
 	}.play;
 	nodeID = aSynth.nodeID;
 	commandpath = ['/tr', nodeID, triggerID];
-	response = { arg time, responder, message; message.postln };
+	response = { |time, responder, message| message.postln };
 
 	o = OSCpathResponder(s.addr, commandpath, response);
 	o.add;
@@ -80,12 +80,12 @@ o.add;
 (
 	var commandpath, response, aSynth, nodeID, triggerID;
 	triggerID = 1;
-	aSynth = { arg freq = 1, triggerID = 1;
+	aSynth = { |freq = 1, triggerID = 1|
 		SendTrig.kr(SinOsc.kr(freq), triggerID, 666)
 	}.play;
 	nodeID = aSynth.nodeID;
 	commandpath = [nodeID, triggerID];
-	response = { arg message; message.postln };
+	response = { |message| message.postln };
 
 	o = OSCFunc(response, '/tr', s.addr, argTemplate: commandpath);
 

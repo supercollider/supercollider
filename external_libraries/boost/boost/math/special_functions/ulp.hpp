@@ -18,7 +18,7 @@
 namespace boost{ namespace math{ namespace detail{
 
 template <class T, class Policy>
-T ulp_imp(const T& val, const boost::true_type&, const Policy& pol)
+T ulp_imp(const T& val, const std::true_type&, const Policy& pol)
 {
    BOOST_MATH_STD_USING
    int expon;
@@ -26,7 +26,7 @@ T ulp_imp(const T& val, const boost::true_type&, const Policy& pol)
 
    int fpclass = (boost::math::fpclassify)(val);
 
-   if(fpclass == (int)FP_NAN)
+   if(fpclass == FP_NAN)
    {
       return policies::raise_domain_error<T>(
          function,
@@ -34,7 +34,7 @@ T ulp_imp(const T& val, const boost::true_type&, const Policy& pol)
    }
    else if((fpclass == (int)FP_INFINITE) || (fabs(val) >= tools::max_value<T>()))
    {
-      return (val < 0 ? -1 : 1) * policies::raise_overflow_error<T>(function, 0, pol);
+      return (val < 0 ? -1 : 1) * policies::raise_overflow_error<T>(function, nullptr, pol);
    }
    else if(fpclass == FP_ZERO)
       return detail::get_smallest_value<T>();
@@ -50,25 +50,25 @@ T ulp_imp(const T& val, const boost::true_type&, const Policy& pol)
 }
 // non-binary version:
 template <class T, class Policy>
-T ulp_imp(const T& val, const boost::false_type&, const Policy& pol)
+T ulp_imp(const T& val, const std::false_type&, const Policy& pol)
 {
-   BOOST_STATIC_ASSERT(std::numeric_limits<T>::is_specialized);
-   BOOST_STATIC_ASSERT(std::numeric_limits<T>::radix != 2);
+   static_assert(std::numeric_limits<T>::is_specialized, "Type T must be specialized.");
+   static_assert(std::numeric_limits<T>::radix != 2, "Type T must be specialized.");
    BOOST_MATH_STD_USING
    int expon;
    static const char* function = "ulp<%1%>(%1%)";
 
    int fpclass = (boost::math::fpclassify)(val);
 
-   if(fpclass == (int)FP_NAN)
+   if(fpclass == FP_NAN)
    {
       return policies::raise_domain_error<T>(
          function,
          "Argument must be finite, but got %1%", val, pol);
    }
-   else if((fpclass == (int)FP_INFINITE) || (fabs(val) >= tools::max_value<T>()))
+   else if((fpclass == FP_INFINITE) || (fabs(val) >= tools::max_value<T>()))
    {
-      return (val < 0 ? -1 : 1) * policies::raise_overflow_error<T>(function, 0, pol);
+      return (val < 0 ? -1 : 1) * policies::raise_overflow_error<T>(function, nullptr, pol);
    }
    else if(fpclass == FP_ZERO)
       return detail::get_smallest_value<T>();
@@ -89,7 +89,7 @@ template <class T, class Policy>
 inline typename tools::promote_args<T>::type ulp(const T& val, const Policy& pol)
 {
    typedef typename tools::promote_args<T>::type result_type;
-   return detail::ulp_imp(static_cast<result_type>(val), boost::integral_constant<bool, !std::numeric_limits<result_type>::is_specialized || (std::numeric_limits<result_type>::radix == 2)>(), pol);
+   return detail::ulp_imp(static_cast<result_type>(val), std::integral_constant<bool, !std::numeric_limits<result_type>::is_specialized || (std::numeric_limits<result_type>::radix == 2)>(), pol);
 }
 
 template <class T>

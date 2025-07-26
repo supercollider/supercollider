@@ -124,10 +124,9 @@ static int FFTBase_Ctor(FFTBase* unit, int frmsizinput) {
         Print("FFTBase_Ctor error: audio frame size (%i) not a power of two.\n", unit->m_audiosize);
         return 0;
     } else if (unit->m_audiosize < SC_FFT_MINSIZE
-               || (((int)(unit->m_audiosize / unit->mWorld->mFullRate.mBufLength)) * unit->mWorld->mFullRate.mBufLength
-                   != unit->m_audiosize)) {
+               || (((int)(unit->m_audiosize / FULLBUFLENGTH)) * FULLBUFLENGTH != unit->m_audiosize)) {
         Print("FFTBase_Ctor error: audio frame size (%i) not a multiple of the block size (%i).\n", unit->m_audiosize,
-              unit->mWorld->mFullRate.mBufLength);
+              FULLBUFLENGTH);
         return 0;
     }
 
@@ -153,14 +152,14 @@ void FFT_Ctor(FFT* unit) {
     int audiosize = unit->m_audiosize * sizeof(float);
 
     int hopsize = (int)(sc_max(sc_min(ZIN0(2), 1.f), 0.f) * unit->m_audiosize);
-    if (hopsize < unit->mWorld->mFullRate.mBufLength) {
+    if (hopsize < FULLBUFLENGTH) {
         Print("FFT_Ctor: hopsize smaller than SC's block size (%i) - automatically corrected.\n", hopsize,
-              unit->mWorld->mFullRate.mBufLength);
-        hopsize = unit->mWorld->mFullRate.mBufLength;
-    } else if (((int)(hopsize / unit->mWorld->mFullRate.mBufLength)) * unit->mWorld->mFullRate.mBufLength != hopsize) {
+              FULLBUFLENGTH);
+        hopsize = FULLBUFLENGTH;
+    } else if (((int)(hopsize / FULLBUFLENGTH)) * FULLBUFLENGTH != hopsize) {
         Print("FFT_Ctor: hopsize (%i) not an exact multiple of SC's block size (%i) - automatically corrected.\n",
-              hopsize, unit->mWorld->mFullRate.mBufLength);
-        hopsize = ((int)(hopsize / unit->mWorld->mFullRate.mBufLength)) * unit->mWorld->mFullRate.mBufLength;
+              hopsize, FULLBUFLENGTH);
+        hopsize = ((int)(hopsize / FULLBUFLENGTH)) * FULLBUFLENGTH;
     }
     unit->m_hopsize = hopsize;
     unit->m_shuntsize = unit->m_audiosize - hopsize;
@@ -179,7 +178,7 @@ void FFT_Ctor(FFT* unit) {
     //	unit->m_hopsize, unit->m_shuntsize, unit->m_bufsize, unit->m_wintype);
 
     if (INRATE(1) == calc_FullRate) {
-        unit->m_numSamples = unit->mWorld->mFullRate.mBufLength;
+        unit->m_numSamples = FULLBUFLENGTH;
     } else {
         unit->m_numSamples = 1;
     }
@@ -257,7 +256,7 @@ void IFFT_Ctor(IFFT* unit) {
     unit->m_pos = 0; // unit->m_audiosize;
 
     if (unit->mCalcRate == calc_FullRate) {
-        unit->m_numSamples = unit->mWorld->mFullRate.mBufLength;
+        unit->m_numSamples = FULLBUFLENGTH;
     } else {
         unit->m_numSamples = 1;
     }
@@ -366,7 +365,7 @@ void FFTTrigger_Ctor(FFTTrigger* unit) {
     unit->m_fftbufnum = bufnum;
     unit->m_fullbufsize = buf->samples;
 
-    int numSamples = unit->mWorld->mFullRate.mBufLength;
+    int numSamples = FULLBUFLENGTH;
     float dataHopSize = IN0(1);
     unit->m_numPeriods = unit->m_periodsRemain = (int)(((float)unit->m_fullbufsize * dataHopSize) / numSamples) - 1;
 

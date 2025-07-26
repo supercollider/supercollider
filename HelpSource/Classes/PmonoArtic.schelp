@@ -20,7 +20,7 @@ code::
 (
 SynthDef(\sawpulse, { |out, freq = 440, gate = 0.5, plfofreq = 6, mw = 0, ffreq = 2000, rq = 0.3, freqlag = 0.05, amp = 1|
 	var sig, plfo, fcurve;
-	plfo = SinOsc.kr(plfofreq, mul:mw, add:1);
+	plfo = SinOsc.kr(plfofreq, mul: mw, add: 1);
 	freq = Lag.kr(freq, freqlag) * plfo;
 	fcurve = EnvGen.kr(Env.adsr(0, 0.3, 0.1, 20), gate);
 	fcurve = (fcurve - 1).madd(0.7, 1) * ffreq;
@@ -32,7 +32,7 @@ SynthDef(\sawpulse, { |out, freq = 440, gate = 0.5, plfofreq = 6, mw = 0, ffreq 
 }).add;
 )
 
-p = PmonoArtic(\sawpulse, \dur, 0.2, \freq, Pwhite(1,8) * 100, \legato, Pwrand(#[0.5, 1.0], #[0.1, 0.9], inf) ).play;
+p = PmonoArtic(\sawpulse, \dur, 0.2, \freq, Pwhite(1, 8) * 100, \legato, Pwrand(#[0.5, 1.0], #[0.1, 0.9], inf)).play;
 
 p.stop;
 ::

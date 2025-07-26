@@ -1491,7 +1491,7 @@ struct core_arch_operations< 8u, Signed, Interprocess > :
             "st" st_mo "xr %w[tmp], %x[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [result] "=&r" (result), [storage] "+Q" (storage), [original] "=&r" (original)\
-            : [value] "Kr" (v)\
+            : [value] "Lr" (v)\
             : "memory"\
         );
 #endif
@@ -1527,7 +1527,7 @@ struct core_arch_operations< 8u, Signed, Interprocess > :
             "st" st_mo "xr %w[tmp], %x[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [result] "=&r" (result), [storage] "+Q" (storage), [original] "=&r" (original)\
-            : [value] "Kr" (v)\
+            : [value] "Lr" (v)\
             : "memory"\
         );
 #endif
@@ -1563,7 +1563,7 @@ struct core_arch_operations< 8u, Signed, Interprocess > :
             "st" st_mo "xr %w[tmp], %x[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [result] "=&r" (result), [storage] "+Q" (storage), [original] "=&r" (original)\
-            : [value] "Kr" (v)\
+            : [value] "Lr" (v)\
             : "memory"\
         );
 #endif
@@ -1821,7 +1821,7 @@ struct core_arch_operations< 16u, Signed, Interprocess > :
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage),\
               [original_0] "=&r" (original.as_uint64[0u]), [original_1] "=&r" (original.as_uint64[1u]),\
               [result_0] "=&r" (result.as_uint64[0u]), [result_1] "=&r" (result.as_uint64[1u])\
-            : [value_0] "r" (value.as_uint64[0u]), [value_1] "r" (value.as_uint64[1u])\
+            : [value_0] "Lr" (value.as_uint64[0u]), [value_1] "Lr" (value.as_uint64[1u])\
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC_COMMA "memory"\
         );
 
@@ -1850,7 +1850,7 @@ struct core_arch_operations< 16u, Signed, Interprocess > :
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage),\
               [original_0] "=&r" (original.as_uint64[0u]), [original_1] "=&r" (original.as_uint64[1u]),\
               [result_0] "=&r" (result.as_uint64[0u]), [result_1] "=&r" (result.as_uint64[1u])\
-            : [value_0] "r" (value.as_uint64[0u]), [value_1] "r" (value.as_uint64[1u])\
+            : [value_0] "Lr" (value.as_uint64[0u]), [value_1] "Lr" (value.as_uint64[1u])\
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC_COMMA "memory"\
         );
 
@@ -1879,7 +1879,7 @@ struct core_arch_operations< 16u, Signed, Interprocess > :
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage),\
               [original_0] "=&r" (original.as_uint64[0u]), [original_1] "=&r" (original.as_uint64[1u]),\
               [result_0] "=&r" (result.as_uint64[0u]), [result_1] "=&r" (result.as_uint64[1u])\
-            : [value_0] "r" (value.as_uint64[0u]), [value_1] "r" (value.as_uint64[1u])\
+            : [value_0] "Lr" (value.as_uint64[0u]), [value_1] "Lr" (value.as_uint64[1u])\
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC_COMMA "memory"\
         );
 

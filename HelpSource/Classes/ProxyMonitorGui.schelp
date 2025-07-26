@@ -17,7 +17,7 @@ s.boot;
 s.scope(8);
 p = ProxySpace.push;
 
-~test = { |freq=1000, dens=5, amp=1, lev=3|
+~test = { |freq = 1000, dens = 5, amp = 1, lev = 3|
 	var freqline = { exprand(0.3, 3) } ! 3 * XLine.kr(0.125, 1, 2);
 	Ringz.ar(Dust.ar(dens ! 3, dens.reciprocal.sqrt), freq * freqline, 0.1)
 };

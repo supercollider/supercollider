@@ -24,6 +24,8 @@
 #include "SC_Export.h"
 #include "SC_Lock.h"
 #include <cerrno>
+#include <atomic>
+#include <chrono>
 
 extern timed_mutex gLangMutex;
 
@@ -49,17 +51,18 @@ const double kOSCtoNanos = 0.2328306436538696; // 1e9/pow(2,32)
 // lock language,
 // if shouldBeRunning == false, return EINTR
 // if language has been locked, return 0
-inline int lockLanguageOrQuit(bool shouldBeRunning) {
+inline int lockLanguageOrQuit(std::atomic<bool> const& shouldBeRunning) {
     bool locked = gLangMutex.try_lock();
     if (locked) {
-        if (shouldBeRunning == false) {
+        if (!shouldBeRunning.load()) {
             gLangMutex.unlock();
             return EINTR;
         }
     } else {
         for (;;) {
-            locked = gLangMutex.try_lock_for(std::chrono::seconds(1));
-            if (shouldBeRunning == false) {
+            using namespace std::chrono_literals;
+            locked = gLangMutex.try_lock_for(1s);
+            if (!shouldBeRunning.load()) {
                 if (locked)
                     gLangMutex.unlock();
                 return EINTR;

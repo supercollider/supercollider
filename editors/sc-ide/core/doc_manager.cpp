@@ -126,15 +126,11 @@ void Document::setIndentWidth(int numSpaces) {
     mIndentWidth = numSpaces;
 
     QFontMetricsF fontMetrics(mDoc->defaultFont());
-    qreal tabStop = fontMetrics.width(' ') * numSpaces;
+    qreal tabStop = fontMetrics.horizontalAdvance(' ') * numSpaces;
 
     QTextOption options = mDoc->defaultTextOption();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     options.setTabStopDistance(tabStop);
-#else
-    options.setTabStop(tabStop);
-#endif
 
     mDoc->setDefaultTextOption(options);
 }
@@ -434,7 +430,11 @@ Document* DocumentManager::documentForId(const QByteArray docID) {
 
 QString DocumentManager::decodeDocument(const QByteArray& bytes) {
     QTextStream stream(bytes);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     stream.setCodec("UTF-8");
+#else
+    stream.setEncoding(QStringConverter::Utf8);
+#endif
     stream.setAutoDetectUnicode(true);
     return stream.readAll();
 }
@@ -610,6 +610,7 @@ void DocumentManager::handleScLangMessage(const QString& selector, const QString
     static QString setCurrentDocSelector("setCurrentDocument");
     static QString removeDocUndoSelector("removeDocUndo");
     static QString closeDocSelector("closeDocument");
+    static QString saveDocSelector("saveDocument");
     static QString setDocTitleSelector("setDocumentTitle");
     static QString enableGlobalKeyDownSelector("enableDocumentGlobalKeyDownAction");
     static QString enableGlobalKeyUpSelector("enableDocumentGlobalKeyUpAction");
@@ -652,6 +653,9 @@ void DocumentManager::handleScLangMessage(const QString& selector, const QString
 
     if (selector == closeDocSelector)
         handleCloseDocScRequest(data);
+
+    if (selector == saveDocSelector)
+        handleSaveDocScRequest(data);
 
     if (selector == setDocTitleSelector)
         handleSetDocTitleScRequest(data);
@@ -707,6 +711,7 @@ void DocumentManager::handleDocListScRequest() {
         command = command.append(docData);
     }
     command = command.append("]);");
+    command = command.append(QStringLiteral("ScIDE.prSignalHandshakeCond;"));
     Main::evaluateCode(command, true);
 }
 
@@ -748,7 +753,7 @@ void DocumentManager::handleOpenFileScRequest(const QString& data) {
             open(QString(path.c_str()), position, selectionLength, true, id.c_str(), false);
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << endl;
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << "\n";
         return;
     }
 }
@@ -776,7 +781,7 @@ void DocumentManager::handleGetDocTextScRequest(const QString& data) {
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << endl;
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << "\n";
         return;
     }
 }
@@ -944,6 +949,26 @@ void DocumentManager::handleCloseDocScRequest(const QString& data) {
             Document* document = documentForId(id.c_str());
             if (document) {
                 close(document);
+            }
+        }
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
+        return;
+    }
+}
+
+void DocumentManager::handleSaveDocScRequest(const QString& data) {
+    try {
+        YAML::Node doc = YAML::Load(data.toStdString());
+        if (doc) {
+            if (!doc.IsSequence())
+                return;
+
+            std::string id = doc[0].as<std::string>();
+            std::string path = doc[1].as<std::string>();
+            Document* document = documentForId(id.c_str());
+            if (document) {
+                saveAs(document, QString::fromUtf8(path.c_str()));
             }
         }
     } catch (std::exception const& e) {
@@ -1163,9 +1188,11 @@ void DocumentManager::sendActiveDocument() {
         } else {
             command = command.append(QStringLiteral("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
         }
+        command = command.append(QStringLiteral("ScIDE.prSignalHandshakeCond;"));
         Main::evaluateCodeIfCompiled(command, true);
     } else
-        Main::evaluateCodeIfCompiled(QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil;"), true);
+        Main::evaluateCodeIfCompiled(
+            QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil; ScIDE.prSignalHandshakeCond;"), true);
 }
 
 void DocumentManager::updateCurrentDocContents(int position, int charsRemoved, int charsAdded) {

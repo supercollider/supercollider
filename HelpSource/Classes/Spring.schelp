@@ -28,7 +28,7 @@ code::
 (
 {
 	var inforce, outforce, freq, k, d;
-	inforce = K2A.ar(MouseButton.kr(0,1,0)) > 0;
+	inforce = K2A.ar(MouseButton.kr(0, 1, 0)) > 0;
 	k = MouseY.kr(0.1, 20, 1);
 	d = MouseX.kr(0.00001, 0.1, 1);
 	outforce = Spring.ar(inforce, k, d);
@@ -46,7 +46,7 @@ code::
 { 	var m0, m1, m2, m3, d, k, inforce;
 	d = MouseY.kr(0.00001, 0.01, 1);
 	k = MouseX.kr(0.1, 20, 1);
-	inforce = K2A.ar(MouseButton.kr(0,1,0)) > 0;
+	inforce = K2A.ar(MouseButton.kr(0, 1, 0)) > 0;
 	m0 = Spring.ar(inforce, k, 0.01);
 	m1 = Spring.ar(m0, 0.5 * k, d);
 	m2 = Spring.ar(m0, 0.6 * k + 0.2, d);
@@ -67,7 +67,7 @@ code::
 	m0 = Spring.ar(ToggleFF.ar(t), 1 * k, 0.01);
 	m1 = Spring.ar(m0, 0.5 * k, d);
 	m2 = Spring.ar(m0, 0.6 * k, d);
-	m3 = Spring.ar([m1,m2], 0.4 * k, d);
+	m3 = Spring.ar([m1, m2], 0.4 * k, d);
 	m4 = Spring.ar(m3 - m1 + m2, 0.1 * k, d);
 	CombL.ar(t, 0.1, LinLin.ar(m4, -10, 10, 1/8000, 1/100), 12)
 

@@ -52,4 +52,3 @@ A link::Classes/Symbol:: which contains the name of the primitive function that 
 method:: filenameSymbol
 returns::
 A link::Classes/Symbol:: which is the full path of the source file that this method is defined in.
-

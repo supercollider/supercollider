@@ -22,9 +22,9 @@ examples::
 code::
 (
 var a, b;
-a = Preject({ arg item; item == 1 }, Pseq(#[1, 2, 3],inf));
+a = Preject({ |item| item == 1 }, Pseq(#[1, 2, 3], inf));
 x = a.asStream;
-9.do({ x.next.postln; });
+9.do({ x.next.postln });
 )
 ::
 
@@ -32,10 +32,9 @@ The message reject returns a Preject when passed to a pattern
 code::
 (
 var a, b;
-a = Pseq(#[1, 2, 3],inf).reject({ arg item; item == 1 });
+a = Pseq(#[1, 2, 3], inf).reject({ |item| item == 1 });
 a.postln;
 x = a.asStream;
-9.do({ x.next.postln; });
+9.do({ x.next.postln });
 )
 ::
-

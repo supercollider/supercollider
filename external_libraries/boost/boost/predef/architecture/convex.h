@@ -58,6 +58,11 @@ http://en.wikipedia.org/wiki/Convex_Computer[Convex Computer] architecture.
 #   define BOOST_ARCH_CONVEX_AVAILABLE
 #endif
 
+#if BOOST_ARCH_CONVEX
+#   undef BOOST_ARCH_WORD_BITS_32
+#   define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_CONVEX_NAME "Convex Computer"
 
 #endif

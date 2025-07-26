@@ -37,8 +37,8 @@ Wait for the next CC message, reset to match src, chan, cc num.
 code::
 (
 
-c = CCResponder({ |src,chan,num,value|
-		[src,chan,num,value].postln;
+c = CCResponder({ |src, chan, num, value|
+		[src, chan, num, value].postln;
 	});
 	c.learn; // wait for the first controller
 )
@@ -50,8 +50,8 @@ Examples::
 
 code::
 (
-	c = CCResponder({ |src,chan,num,value|
-		[src,chan,num,value].postln;
+	c = CCResponder({ |src, chan, num, value|
+		[src, chan, num, value].postln;
 		},
 		nil, // any source
 		nil, // any channel
@@ -65,8 +65,8 @@ c.remove
 
 code::
 (
-	c = CCResponder({ |src,chan,num,value|
-		[src,chan,num,value].postln;
+	c = CCResponder({ |src, chan, num, value|
+		[src, chan, num, value].postln;
 		},
 		nil, // any source
 		nil, // any channel

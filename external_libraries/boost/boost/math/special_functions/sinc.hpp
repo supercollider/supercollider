@@ -19,14 +19,11 @@
 #include <boost/math/tools/precision.hpp>
 #include <boost/math/policies/policy.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
-#include <boost/config/no_tr1/cmath.hpp>
-#include <boost/limits.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
+#include <limits>
 #include <string>
 #include <stdexcept>
-
-
-#include <boost/config.hpp>
-
+#include <cmath>
 
 // These are the the "Sinus Cardinal" functions.
 
@@ -43,7 +40,11 @@ namespace boost
         {
             BOOST_MATH_STD_USING
 
-            if    (abs(x) >= 3.3 * tools::forth_root_epsilon<T>())
+            if ((boost::math::isinf)(x))
+            {
+               return 0;
+            }
+            else if (abs(x) >= 3.3 * tools::forth_root_epsilon<T>())
             {
                 return(sin(x)/x);
             }
@@ -70,7 +71,6 @@ namespace boost
           return detail::sinc_pi_imp(static_cast<result_type>(x));
        }
 
-#ifndef    BOOST_NO_TEMPLATE_TEMPLATES
         template<typename T, template<typename> class U>
         inline U<T>    sinc_pi(const U<T> x)
         {
@@ -117,7 +117,6 @@ namespace boost
         {
            return sinc_pi(x);
         }
-#endif    /* BOOST_NO_TEMPLATE_TEMPLATES */
     }
 }
 

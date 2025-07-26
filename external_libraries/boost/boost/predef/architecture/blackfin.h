@@ -39,6 +39,11 @@ Blackfin Processors from Analog Devices.
 #   define BOOST_ARCH_BLACKFIN_AVAILABLE
 #endif
 
+#if BOOST_ARCH_BLACKFIN
+#   undef BOOST_ARCH_WORD_BITS_16
+#   define BOOST_ARCH_WORD_BITS_16 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_BLACKFIN_NAME "Blackfin"
 
 #endif

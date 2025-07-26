@@ -23,6 +23,7 @@ METHOD:: new
 
 INSTANCEMETHODS::
 
+PRIVATE:: initSlider
 
 
 SUBSECTION:: Data
@@ -64,6 +65,12 @@ METHOD:: thumbSize
 
 	argument::
 		An Integer amount of pixels.
+
+METHOD:: background
+	The color of the background.
+
+	argument::
+		A Color.
 
 METHOD:: knobColor
 	The color of the handle.
@@ -177,7 +184,7 @@ w = Window.new.front;
 b = ControlSpec(-50, 50, \linear, 0.01); // min, max, mapping, step
 c = StaticText(w, Rect(20, 20, 150, 20)).align_(\center).background_(Color.rand);
 a = Slider(w, Rect(20, 50, 150, 20))
-	.focusColor_(Color.red(alpha:0.2))
+	.focusColor_(Color.red(alpha: 0.2))
 	.background_(Color.rand)
 	.value_(0.5)
 	.action_({
@@ -211,7 +218,7 @@ subsection:: Use the slider view to accept key actions
 code::
 ( // select the slider, type something and watch the post window
 w = Window.new;
-c = Slider(w, Rect(0,0,100,30));
+c = Slider(w, Rect(0, 0, 100, 30));
 c.keyDownAction = { |view, char, modifiers, unicode, keycode|
 	[char, modifiers, unicode, keycode].postln
 };
@@ -234,7 +241,7 @@ a.addAction({ |sl| w.view.background = Color.green(sl.value) });
 a.addAction({ |sl| sl.background = Color.red(1 - sl.value) });
 
 // adding and removing an action:
-f = { |sl| "--------*******-------".postln; };
+f = { |sl| "--------*******-------".postln };
 a.addAction(f);
 a.removeAction(f);
 
@@ -248,14 +255,14 @@ code::
 (
 s.waitForBoot({
 
-	SynthDef(\pluck, { |out, freq=55|
+	SynthDef(\pluck, { |out, freq = 55|
 		Out.ar(out,
 			Pluck.ar(WhiteNoise.ar(0.06),
-				EnvGen.kr(Env.perc(0,4), 1.0, doneAction: Done.freeSelf),
+				EnvGen.kr(Env.perc(0, 4), 1.0, doneAction: Done.freeSelf),
 				freq.reciprocal,
 				freq.reciprocal,
 				10,
-				coef:0.1)
+				coef: 0.1)
 		);
 	}).add;
 
@@ -266,7 +273,7 @@ s.waitForBoot({
 	.action_({
 		// trigger a synth with varying frequencies
 		Synth(\pluck, [\freq, 55 + (1100 * a.value)]);
-		w.view.background_(Gradient(Color.rand,Color.rand));
+		w.view.background_(Gradient(Color.rand, Color.rand));
 	})
 });
 )

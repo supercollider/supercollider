@@ -157,7 +157,7 @@ struct extra_operations_gcc_aarch32< Base, 1u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exb %[result], %[storage]\n\t"\
-            "rsb %[result], %[result], #0\n\t"\
+            "rsb %[result], #0\n\t"\
             "st" st_mo "exb %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -181,7 +181,7 @@ struct extra_operations_gcc_aarch32< Base, 1u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exb %[result], %[storage]\n\t"\
-            "add %[result], %[result], %[value]\n\t"\
+            "add %[result], %[value]\n\t"\
             "st" st_mo "exb %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -205,7 +205,7 @@ struct extra_operations_gcc_aarch32< Base, 1u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exb %[result], %[storage]\n\t"\
-            "sub %[result], %[result], %[value]\n\t"\
+            "sub %[result], %[value]\n\t"\
             "st" st_mo "exb %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -229,7 +229,7 @@ struct extra_operations_gcc_aarch32< Base, 1u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exb %[result], %[storage]\n\t"\
-            "and %[result], %[result], %[value]\n\t"\
+            "and %[result], %[value]\n\t"\
             "st" st_mo "exb %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -253,7 +253,7 @@ struct extra_operations_gcc_aarch32< Base, 1u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exb %[result], %[storage]\n\t"\
-            "orr %[result], %[result], %[value]\n\t"\
+            "orr %[result], %[value]\n\t"\
             "st" st_mo "exb %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -277,7 +277,7 @@ struct extra_operations_gcc_aarch32< Base, 1u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exb %[result], %[storage]\n\t"\
-            "eor %[result], %[result], %[value]\n\t"\
+            "eor %[result], %[value]\n\t"\
             "st" st_mo "exb %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -388,7 +388,7 @@ struct extra_operations_gcc_aarch32< Base, 2u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exh %[result], %[storage]\n\t"\
-            "rsb %[result], %[result], #0\n\t"\
+            "rsb %[result], #0\n\t"\
             "st" st_mo "exh %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -412,7 +412,7 @@ struct extra_operations_gcc_aarch32< Base, 2u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exh %[result], %[storage]\n\t"\
-            "add %[result], %[result], %[value]\n\t"\
+            "add %[result], %[value]\n\t"\
             "st" st_mo "exh %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -436,7 +436,7 @@ struct extra_operations_gcc_aarch32< Base, 2u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exh %[result], %[storage]\n\t"\
-            "sub %[result], %[result], %[value]\n\t"\
+            "sub %[result], %[value]\n\t"\
             "st" st_mo "exh %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -460,7 +460,7 @@ struct extra_operations_gcc_aarch32< Base, 2u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exh %[result], %[storage]\n\t"\
-            "and %[result], %[result], %[value]\n\t"\
+            "and %[result], %[value]\n\t"\
             "st" st_mo "exh %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -484,7 +484,7 @@ struct extra_operations_gcc_aarch32< Base, 2u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exh %[result], %[storage]\n\t"\
-            "orr %[result], %[result], %[value]\n\t"\
+            "orr %[result], %[value]\n\t"\
             "st" st_mo "exh %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -508,7 +508,7 @@ struct extra_operations_gcc_aarch32< Base, 2u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exh %[result], %[storage]\n\t"\
-            "eor %[result], %[result], %[value]\n\t"\
+            "eor %[result], %[value]\n\t"\
             "st" st_mo "exh %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -618,7 +618,7 @@ struct extra_operations_gcc_aarch32< Base, 4u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "ex %[result], %[storage]\n\t"\
-            "rsb %[result], %[result], #0\n\t"\
+            "rsb %[result], #0\n\t"\
             "st" st_mo "ex %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -642,7 +642,7 @@ struct extra_operations_gcc_aarch32< Base, 4u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "ex %[result], %[storage]\n\t"\
-            "add %[result], %[result], %[value]\n\t"\
+            "add %[result], %[value]\n\t"\
             "st" st_mo "ex %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -666,7 +666,7 @@ struct extra_operations_gcc_aarch32< Base, 4u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "ex %[result], %[storage]\n\t"\
-            "sub %[result], %[result], %[value]\n\t"\
+            "sub %[result], %[value]\n\t"\
             "st" st_mo "ex %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -690,7 +690,7 @@ struct extra_operations_gcc_aarch32< Base, 4u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "ex %[result], %[storage]\n\t"\
-            "and %[result], %[result], %[value]\n\t"\
+            "and %[result], %[value]\n\t"\
             "st" st_mo "ex %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -714,7 +714,7 @@ struct extra_operations_gcc_aarch32< Base, 4u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "ex %[result], %[storage]\n\t"\
-            "orr %[result], %[result], %[value]\n\t"\
+            "orr %[result], %[value]\n\t"\
             "st" st_mo "ex %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -738,7 +738,7 @@ struct extra_operations_gcc_aarch32< Base, 4u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "ex %[result], %[storage]\n\t"\
-            "eor %[result], %[result], %[value]\n\t"\
+            "eor %[result], %[value]\n\t"\
             "st" st_mo "ex %[tmp], %[result], %[storage]\n\t"\
             "teq %[tmp], #0\n\t"\
             "bne 1b\n\t"\
@@ -826,8 +826,8 @@ struct extra_operations_gcc_aarch32< Base, 8u, Signed > :
             "ld" ld_mo "exd %0, %H0, %2\n\t"\
             "mvn %3, %0\n\t"\
             "mvn %H3, %H0\n\t"\
-            "adds " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(3) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(3) ", #1\n\t"\
-            "adc " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(3) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(3) ", #0\n\t"\
+            "adds " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(3) ", #1\n\t"\
+            "adc " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(3) ", #0\n\t"\
             "st" st_mo "exd %1, %3, %H3, %2\n\t"\
             "teq %1, #0\n\t"\
             "bne 1b\n\t"\
@@ -853,8 +853,8 @@ struct extra_operations_gcc_aarch32< Base, 8u, Signed > :
             "ld" ld_mo "exd %0, %H0, %2\n\t"\
             "mvn %0, %0\n\t"\
             "mvn %H0, %H0\n\t"\
-            "adds " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(0) ", #1\n\t"\
-            "adc " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(0) ", #0\n\t"\
+            "adds " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(0) ", #1\n\t"\
+            "adc " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(0) ", #0\n\t"\
             "st" st_mo "exd %1, %0, %H0, %2\n\t"\
             "teq %1, #0\n\t"\
             "bne 1b\n\t"\
@@ -878,8 +878,8 @@ struct extra_operations_gcc_aarch32< Base, 8u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exd %0, %H0, %2\n\t"\
-            "adds " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(3) "\n\t"\
-            "adc " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(3) "\n\t"\
+            "adds " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(3) "\n\t"\
+            "adc " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(3) "\n\t"\
             "st" st_mo "exd %1, %0, %H0, %2\n\t"\
             "teq %1, #0\n\t"\
             "bne 1b\n\t"\
@@ -903,8 +903,8 @@ struct extra_operations_gcc_aarch32< Base, 8u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exd %0, %H0, %2\n\t"\
-            "subs " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(3) "\n\t"\
-            "sbc " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(3) "\n\t"\
+            "subs " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_LO(3) "\n\t"\
+            "sbc " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(0) ", " BOOST_ATOMIC_DETAIL_AARCH32_ASM_ARG_HI(3) "\n\t"\
             "st" st_mo "exd %1, %0, %H0, %2\n\t"\
             "teq %1, #0\n\t"\
             "bne 1b\n\t"\
@@ -928,8 +928,8 @@ struct extra_operations_gcc_aarch32< Base, 8u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exd %0, %H0, %2\n\t"\
-            "and %0, %0, %3\n\t"\
-            "and %H0, %H0, %H3\n\t"\
+            "and %0, %3\n\t"\
+            "and %H0, %H3\n\t"\
             "st" st_mo "exd %1, %0, %H0, %2\n\t"\
             "teq %1, #0\n\t"\
             "bne 1b\n\t"\
@@ -953,8 +953,8 @@ struct extra_operations_gcc_aarch32< Base, 8u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exd %0, %H0, %2\n\t"\
-            "orr %0, %0, %3\n\t"\
-            "orr %H0, %H0, %H3\n\t"\
+            "orr %0, %3\n\t"\
+            "orr %H0, %H3\n\t"\
             "st" st_mo "exd %1, %0, %H0, %2\n\t"\
             "teq %1, #0\n\t"\
             "bne 1b\n\t"\
@@ -978,8 +978,8 @@ struct extra_operations_gcc_aarch32< Base, 8u, Signed > :
         (\
             "1:\n\t"\
             "ld" ld_mo "exd %0, %H0, %2\n\t"\
-            "eor %0, %0, %3\n\t"\
-            "eor %H0, %H0, %H3\n\t"\
+            "eor %0, %3\n\t"\
+            "eor %H0, %H3\n\t"\
             "st" st_mo "exd %1, %0, %H0, %2\n\t"\
             "teq %1, #0\n\t"\
             "bne 1b\n\t"\

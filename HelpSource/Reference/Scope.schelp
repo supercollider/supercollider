@@ -42,4 +42,3 @@ z.value.postln; // posts 399
 
 Note that even though the function which defines curVal and stepVal has completed execution, its variables are still accessible to those functions that were defined within its context.
 This is known as lexical closure, the capturing and availability of variables defined in outer contexts by inner contexts even when the outer contexts may have completed execution.
-

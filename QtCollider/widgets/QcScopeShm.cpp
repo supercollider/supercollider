@@ -307,23 +307,28 @@ void QcScopeShm::paint2D(int chanCount, int maxFrames, int frameCount, const QRe
     painter.translate(center.x(), center.y());
     painter.scale(xRatio, yRatio);
 
-    QPainterPath path;
-
     if (chanCount >= 2) {
-        float* data1 = _data;
-        float* data2 = _data + maxFrames;
+        for (int i = 0; i + 1 < chanCount; i += 2) {
+            float* data1 = _data + maxFrames * i;
+            float* data2 = _data + maxFrames * (i + 1);
 
-        path.moveTo(data1[0], data2[0]);
-        for (int f = 1; f < frameCount; ++f)
-            path.lineTo(data1[f], data2[f]);
+            QPainterPath path;
+            path.moveTo(data1[0], data2[0]);
+            for (int f = 1; f < frameCount; ++f)
+                path.lineTo(data1[f], data2[f]);
+
+            pen.setColor(i < colors.count() ? colors[i] : QColor(255, 255, 255));
+            painter.setPen(pen);
+            painter.drawPath(path);
+        }
     } else {
         float* data1 = _data;
+        QPainterPath path;
         path.moveTo(data1[0], 0.f);
         for (int f = 1; f < frameCount; ++f)
             path.lineTo(data1[f], 0.f);
+        painter.drawPath(path);
     }
-
-    painter.drawPath(path);
 }
 
 void QcScopeShm::connectSharedMemory(int port) {

@@ -32,7 +32,7 @@ code::
 // Example 2: the reset function
 (
 	f = { 33.rand };
-	x = FuncStream(f, {thisThread.randSeed_(345)});
+	x = FuncStream(f, { thisThread.randSeed_(345) });
 	x.reset;
 	10.do({ [f.next, x.next].postln });
 	x.reset;
@@ -63,7 +63,7 @@ code::
 (
 	x = Routine({
 		4.do({
-			[1,2,3,4].do({ arg i; i.yield; });
+			[1, 2, 3, 4].do({ |i| i.yield });
 		});
 	});
 	17.do({ x.next.postln });
@@ -112,7 +112,7 @@ code::
 Routine({ loop {
 	"***".postln; 0.5.wait;
 	"_*_".postln; 0.1.wait;
-} }).play(quant:[1, 0.4]);
+} }).play(quant: [1, 0.4]);
 )
 ::
 
@@ -122,7 +122,7 @@ code::
 // play at the next beat, with offset 0.4
 (
 Routine({ loop {
-	"///".postln; (delta:0.5).yield;
+	"///".postln; (delta: 0.5).yield;
 	"_/_".postln; (delta: 0.1).wait;
 } }).asEventStreamPlayer.play;
 )
@@ -143,7 +143,7 @@ code::
 (
 x = Routine({
 	2.do({
-		[1,2,3,4].do({ arg i; i.yield; });
+		[1, 2, 3, 4].do({ |i| i.yield });
 	});
 });
 y = Routine({
@@ -163,7 +163,7 @@ code::
 (
 x = Routine({
 	2.do({
-		[1,2,3,4].do({ arg i; i.yield; });
+		[1, 2, 3, 4].do({ |i| i.yield });
 	});
 });
 y = Routine({
@@ -179,9 +179,9 @@ Routines can be strong::combined:: with the composition operator <>
 
 code::
 (
-x = Routine({ arg inval;
+x = Routine({ |inval|
 	2.do({
-		[1,2,3,4].do({ arg i;
+		[1, 2, 3, 4].do({ |i|
 			if(inval.isNil) { nil.alwaysYield };
 			inval = (i * inval).yield;
 		});
@@ -206,7 +206,7 @@ Streams support most of the unary messages defined in link::Classes/AbstractFunc
 code::
 (
 a = Routine({ 20.do({ 33.rand.yield }) });
-b = Routine({ [-100,00,300,400].do({ arg v; v.yield}) });
+b = Routine({ [-100, 00, 300, 400].do({ |v| v.yield }) });
 
 c = b.neg; // define a composite stream
 
@@ -220,9 +220,9 @@ c = b.neg; // define a composite stream
 	\distort, \softclip, \coin, \even, \odd, \isPositive, \isNegative,
 	\isStrictlyPositive
 ]
-.do({ arg msg;
+.do({ |msg|
 	postf("\n msg: % \n", msg);
-	b.reset.perform(msg).do({arg v; v.post; " ".post;});
+	b.reset.perform(msg).do({ |v| v.post; " ".post });
 });
 nil;
 )
@@ -235,17 +235,18 @@ Streams support the following binary messages defined in link::Classes/AbstractF
 code::
 (
 a = Routine({ 20.do({ 33.rand.yield }) });
-b = Routine({ [-100,00,300,400].do({ arg v; v.yield}) });
+b = Routine({ [-100, 00, 300, 400].do({ |v| v.yield }) });
 [
-	'+' , '-' , '*', '/', \div, '%', '**', \min, \max, '<', '<=', '>', '>=', '&', '|',
+	'+', '-', '*', '/', \div, '%', '**', 
+	'<', '<=', '>', '>=', '&', '|', \min, \max,
 	\bitXor, \lcm, \gcd, \round, \trunc, \atan2,
 	\hypot, '>>', '+>>', \ring1, \ring2, \ring3, \ring4,
 	\difsqr, \sumsqr, \sqrdif, \absdif, \amclip,
 	\scaleneg, \clip2, \excess, '<!', \rrand, \exprand
 ]
-.do({ arg msg;
+.do({ |msg|
 	postf("\n msg: % \n", msg);
-	b.reset.perform(msg).do({ arg v; v.post; " ".post; });
+	b.reset.perform(msg).do({ |v| v.post; " ".post });
 });
 nil;
 )

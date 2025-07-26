@@ -51,4 +51,3 @@ code::
 { Pan4.ar(PinkNoise.ar,  0,  0, 0.3) }.play; // center
 
 ::
-

@@ -13,7 +13,7 @@ link::Classes/Diwhite::  returns integer values.
 The arguments can be a number or any other UGen.
 
 
-See link::Classes/Pwhite::,  link::Classes/WhiteNoise::  for structurally related
+See link::Classes/Pwhite::, link::Classes/WhiteNoise::  for structurally related
 equivalents.
 
 
@@ -52,4 +52,3 @@ code::
 )
 
 ::
-

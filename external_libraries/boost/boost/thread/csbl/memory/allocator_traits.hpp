@@ -12,17 +12,7 @@
 #include <boost/thread/csbl/memory/config.hpp>
 
 // 20.7.8, allocator traits
-#if defined BOOST_NO_CXX11_ALLOCATOR
-#include <boost/container/allocator_traits.hpp>
 
-namespace boost
-{
-  namespace csbl
-  {
-    using ::boost::container::allocator_traits;
-  }
-}
-#else
 namespace boost
 {
   namespace csbl
@@ -30,6 +20,5 @@ namespace boost
     using ::std::allocator_traits;
   }
 }
-#endif // BOOST_NO_CXX11_POINTER_TRAITS
 
 #endif // header

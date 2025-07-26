@@ -275,7 +275,7 @@ PluginLoad(UIUGens) {
 }
 
 
-C_LINKAGE SC_API_EXPORT void unload(InterfaceTable* inTable) {
+PluginUnload(UIUGens) {
     inputThreadRunning = false;
     uiListenThread.join();
 

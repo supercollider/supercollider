@@ -4,7 +4,7 @@ categories:: Streams-Patterns-Events>Patterns>Function
 related:: Classes/Pfuncn, Classes/FuncStream
 
 description::
-Returns a link::Classes/Stream:: that returns values from the code::nextFunc::.
+Returns a link::Classes/Stream:: that returns values from the code::nextFunc::. To return a pattern, see link::Classes/Plazy::.
 
 
 classmethods::
@@ -42,7 +42,7 @@ Event stream (sound) examples:
 code::
 (
 SynthDef(\help_sinegrain,
-	{ arg out = 0, freq = 440, sustain = 0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -76,7 +76,7 @@ p = Pbind(\degree, 6) <> Pfunc { |ev| ev.freq = nil } <> q;
 p.trace.play;
 
 // Alternatively
-p = Pbind(\degree, Pfunc { |ev| ev.freq = nil; 6 } ) <> q;
+p = Pbind(\degree, Pfunc { |ev| ev.freq = nil; 6 }) <> q;
 p.trace.play;
 
 // Just setting a key to nil from a Pbind pair will end the stream

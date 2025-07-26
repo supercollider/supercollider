@@ -2,7 +2,7 @@
 // ip/impl/address_v6.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -32,14 +32,14 @@ namespace boost {
 namespace asio {
 namespace ip {
 
-address_v6::address_v6() BOOST_ASIO_NOEXCEPT
+address_v6::address_v6() noexcept
   : addr_(),
     scope_id_(0)
 {
 }
 
 address_v6::address_v6(const address_v6::bytes_type& bytes,
-    unsigned long scope)
+    scope_id_type scope)
   : scope_id_(scope)
 {
 #if UCHAR_MAX > 0xFF
@@ -57,45 +57,37 @@ address_v6::address_v6(const address_v6::bytes_type& bytes,
   memcpy(addr_.s6_addr, bytes.data(), 16);
 }
 
-address_v6::address_v6(const address_v6& other) BOOST_ASIO_NOEXCEPT
+address_v6::address_v6(const address_v6& other) noexcept
   : addr_(other.addr_),
     scope_id_(other.scope_id_)
 {
 }
 
-#if defined(BOOST_ASIO_HAS_MOVE)
-address_v6::address_v6(address_v6&& other) BOOST_ASIO_NOEXCEPT
+address_v6::address_v6(address_v6&& other) noexcept
   : addr_(other.addr_),
     scope_id_(other.scope_id_)
 {
 }
-#endif // defined(BOOST_ASIO_HAS_MOVE)
 
-address_v6& address_v6::operator=(const address_v6& other) BOOST_ASIO_NOEXCEPT
+address_v6& address_v6::operator=(const address_v6& other) noexcept
 {
   addr_ = other.addr_;
   scope_id_ = other.scope_id_;
   return *this;
 }
 
-#if defined(BOOST_ASIO_HAS_MOVE)
-address_v6& address_v6::operator=(address_v6&& other) BOOST_ASIO_NOEXCEPT
+address_v6& address_v6::operator=(address_v6&& other) noexcept
 {
   addr_ = other.addr_;
   scope_id_ = other.scope_id_;
   return *this;
 }
-#endif // defined(BOOST_ASIO_HAS_MOVE)
 
-address_v6::bytes_type address_v6::to_bytes() const BOOST_ASIO_NOEXCEPT
+address_v6::bytes_type address_v6::to_bytes() const noexcept
 {
   using namespace std; // For memcpy.
   bytes_type bytes;
-#if defined(BOOST_ASIO_HAS_STD_ARRAY)
   memcpy(bytes.data(), addr_.s6_addr, 16);
-#else // defined(BOOST_ASIO_HAS_STD_ARRAY)
-  memcpy(bytes.elems, addr_.s6_addr, 16);
-#endif // defined(BOOST_ASIO_HAS_STD_ARRAY)
   return bytes;
 }
 
@@ -139,7 +131,7 @@ address_v4 address_v6::to_v4() const
 }
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
-bool address_v6::is_loopback() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_loopback() const noexcept
 {
   return ((addr_.s6_addr[0] == 0) && (addr_.s6_addr[1] == 0)
       && (addr_.s6_addr[2] == 0) && (addr_.s6_addr[3] == 0)
@@ -151,7 +143,7 @@ bool address_v6::is_loopback() const BOOST_ASIO_NOEXCEPT
       && (addr_.s6_addr[14] == 0) && (addr_.s6_addr[15] == 1));
 }
 
-bool address_v6::is_unspecified() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_unspecified() const noexcept
 {
   return ((addr_.s6_addr[0] == 0) && (addr_.s6_addr[1] == 0)
       && (addr_.s6_addr[2] == 0) && (addr_.s6_addr[3] == 0)
@@ -163,17 +155,17 @@ bool address_v6::is_unspecified() const BOOST_ASIO_NOEXCEPT
       && (addr_.s6_addr[14] == 0) && (addr_.s6_addr[15] == 0));
 }
 
-bool address_v6::is_link_local() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_link_local() const noexcept
 {
   return ((addr_.s6_addr[0] == 0xfe) && ((addr_.s6_addr[1] & 0xc0) == 0x80));
 }
 
-bool address_v6::is_site_local() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_site_local() const noexcept
 {
   return ((addr_.s6_addr[0] == 0xfe) && ((addr_.s6_addr[1] & 0xc0) == 0xc0));
 }
 
-bool address_v6::is_v4_mapped() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_v4_mapped() const noexcept
 {
   return ((addr_.s6_addr[0] == 0) && (addr_.s6_addr[1] == 0)
       && (addr_.s6_addr[2] == 0) && (addr_.s6_addr[3] == 0)
@@ -199,37 +191,37 @@ bool address_v6::is_v4_compatible() const
 }
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
-bool address_v6::is_multicast() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_multicast() const noexcept
 {
   return (addr_.s6_addr[0] == 0xff);
 }
 
-bool address_v6::is_multicast_global() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_multicast_global() const noexcept
 {
   return ((addr_.s6_addr[0] == 0xff) && ((addr_.s6_addr[1] & 0x0f) == 0x0e));
 }
 
-bool address_v6::is_multicast_link_local() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_multicast_link_local() const noexcept
 {
   return ((addr_.s6_addr[0] == 0xff) && ((addr_.s6_addr[1] & 0x0f) == 0x02));
 }
 
-bool address_v6::is_multicast_node_local() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_multicast_node_local() const noexcept
 {
   return ((addr_.s6_addr[0] == 0xff) && ((addr_.s6_addr[1] & 0x0f) == 0x01));
 }
 
-bool address_v6::is_multicast_org_local() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_multicast_org_local() const noexcept
 {
   return ((addr_.s6_addr[0] == 0xff) && ((addr_.s6_addr[1] & 0x0f) == 0x08));
 }
 
-bool address_v6::is_multicast_site_local() const BOOST_ASIO_NOEXCEPT
+bool address_v6::is_multicast_site_local() const noexcept
 {
   return ((addr_.s6_addr[0] == 0xff) && ((addr_.s6_addr[1] & 0x0f) == 0x05));
 }
 
-bool operator==(const address_v6& a1, const address_v6& a2) BOOST_ASIO_NOEXCEPT
+bool operator==(const address_v6& a1, const address_v6& a2) noexcept
 {
   using namespace std; // For memcmp.
   return memcmp(&a1.addr_, &a2.addr_,
@@ -237,7 +229,7 @@ bool operator==(const address_v6& a1, const address_v6& a2) BOOST_ASIO_NOEXCEPT
     && a1.scope_id_ == a2.scope_id_;
 }
 
-bool operator<(const address_v6& a1, const address_v6& a2) BOOST_ASIO_NOEXCEPT
+bool operator<(const address_v6& a1, const address_v6& a2) noexcept
 {
   using namespace std; // For memcmp.
   int memcmp_result = memcmp(&a1.addr_, &a2.addr_,
@@ -249,7 +241,7 @@ bool operator<(const address_v6& a1, const address_v6& a2) BOOST_ASIO_NOEXCEPT
   return a1.scope_id_ < a2.scope_id_;
 }
 
-address_v6 address_v6::loopback() BOOST_ASIO_NOEXCEPT
+address_v6 address_v6::loopback() noexcept
 {
   address_v6 tmp;
   tmp.addr_.s6_addr[15] = 1;
@@ -283,14 +275,14 @@ address_v6 make_address_v6(const char* str)
 }
 
 address_v6 make_address_v6(const char* str,
-    boost::system::error_code& ec) BOOST_ASIO_NOEXCEPT
+    boost::system::error_code& ec) noexcept
 {
   address_v6::bytes_type bytes;
   unsigned long scope_id = 0;
   if (boost::asio::detail::socket_ops::inet_pton(
         BOOST_ASIO_OS_DEF(AF_INET6), str, &bytes[0], &scope_id, ec) <= 0)
     return address_v6();
-  return address_v6(bytes, scope_id);
+  return address_v6(bytes, static_cast<scope_id_type>(scope_id));
 }
 
 address_v6 make_address_v6(const std::string& str)
@@ -299,7 +291,7 @@ address_v6 make_address_v6(const std::string& str)
 }
 
 address_v6 make_address_v6(const std::string& str,
-    boost::system::error_code& ec) BOOST_ASIO_NOEXCEPT
+    boost::system::error_code& ec) noexcept
 {
   return make_address_v6(str.c_str(), ec);
 }
@@ -312,7 +304,7 @@ address_v6 make_address_v6(string_view str)
 }
 
 address_v6 make_address_v6(string_view str,
-    boost::system::error_code& ec) BOOST_ASIO_NOEXCEPT
+    boost::system::error_code& ec) noexcept
 {
   return make_address_v6(static_cast<std::string>(str), ec);
 }

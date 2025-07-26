@@ -48,10 +48,11 @@ ServerStatusWatcher {
 		this.prSendNotifyRequest(flag, false);
 	}
 
-	doWhenBooted { |onComplete, limit = 100, onFailure|
+	doWhenBooted { |onComplete, limit = 100, onFailure, clock|
 		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
 
+		clock = clock ?? { AppClock };
 		^Routine {
 			while {
 				server.serverRunning.not
@@ -81,7 +82,7 @@ ServerStatusWatcher {
 				onComplete.value;
 			});
 
-		}.play(AppClock)
+		}.play(clock)
 	}
 
 
@@ -219,6 +220,15 @@ ServerStatusWatcher {
 	unresponsive_ { | val |
 		if (val != unresponsive) {
 			unresponsive = val;
+			// when remote server reboots, remote clients lose
+			// notification, so renew it when recovering
+			if (server.remoteControlled) {
+				if (unresponsive) {
+					notified = false
+				} {
+					this.prSendNotifyRequest
+				}
+			};
 			{ server.changed(\serverRunning) }.defer;
 		}
 	}

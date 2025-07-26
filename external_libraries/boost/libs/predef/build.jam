@@ -1,38 +1,32 @@
-# Copyright Rene Rivera 2014-2019
+# Copyright René Ferdinand Rivera Morell 2014-2023
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
 #|
 This B2 project provides support for using the Predef library externally as
-a standalone project or by embedding in your B2 project tree. To use
-externally you would need a `use-project` declaration and to use the
-project as a dependency where needed:
+a standalone project. To use externally you would need a `use-project`
+declaration and to use the project as a dependency where needed:
 
 ----
-use-project /hash-predef : /path/to/hash-predef/root ;
+use-project /boost/predef : /path/to/boost/predef/root ;
 
-exe my_thing : main.cpp : <dependency>/hash-predef ;
-----
-
-To use in your project tree you would only need to place the Predef tree
-in a subdirectory and reference the project location as a dependency where
-needed.
-
-----
-exe my_thin : main.cpp : <dependency>libs/hash-predef ;
+exe my_thing : main.cpp : <dependency>/boost/predef ;
 ----
 |#
 
 import project ;
+import modules ;
 
-path-constant BOOST_PREDEF_ROOT : . ;
-path-constant BOOST_PREDEF_INCLUDE : include ;
-constant PREDEF_DIST : boost ;
+path-constant PREDEF_ROOT : . ;
+
+modules.poke : BOOST_BUILD_PATH
+    : $(PREDEF_ROOT)/tools/check [ modules.peek : BOOST_BUILD_PATH ] ;
 
 project /boost/predef
-    : usage-requirements
-        <include>$(BOOST_PREDEF_INCLUDE) ;
+    : common-requirements
+        <include>include
+    ;
 
 if [ project.is-jamroot-module $(__name__) ]
 {
@@ -40,4 +34,19 @@ if [ project.is-jamroot-module $(__name__) ]
     $(attributes).set "build-dir" : .bin ;
 }
 
-alias libs ;
+explicit
+    [ alias boost_predef ]
+    [ alias all : boost_predef test//all tools/check ]
+    [ install install-global-headers
+        : [ glob-tree-ex include : *.h ]
+        : <install-source-root>include <location>(includedir) ]
+    [ install install-data
+        : build.jam [ glob-tree-ex tools/check : * ] [ glob-tree-ex include : *.h ]
+        : <install-source-root>. <location>(datadir)/boost_predef ]
+    [ alias install :
+        install-global-headers install-data ]
+    ;
+
+call-if
+    : boost-library predef
+    ;

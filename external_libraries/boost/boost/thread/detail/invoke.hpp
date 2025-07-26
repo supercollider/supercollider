@@ -32,6 +32,7 @@
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/type_traits/is_pointer.hpp>
 #include <boost/type_traits/is_member_function_pointer.hpp>
+#include <boost/type_traits/is_member_object_pointer.hpp>
 #include <boost/type_traits/remove_reference.hpp>
 #ifndef BOOST_NO_CXX11_HDR_FUNCTIONAL
 #include <functional>
@@ -85,7 +86,13 @@ namespace boost
 
     // bullets 3 and 4
 
-    template <class Fp, class A0>
+    // enable_if avoids
+    //
+    // ./boost/thread/detail/invoke.hpp:101:43: internal compiler error: in gimplify_expr, at gimplify.c:12039
+    // https://sourceforge.net/p/mingw-w64/bugs/694/
+    // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83756
+
+    template <class Fp, class A0, class En = typename boost::enable_if<boost::is_member_object_pointer<Fp> >::type>
     inline auto
     invoke(BOOST_THREAD_RV_REF(Fp) f, BOOST_THREAD_RV_REF(A0) a0)
         -> decltype(boost::forward<A0>(a0).*f)
@@ -93,7 +100,7 @@ namespace boost
         return boost::forward<A0>(a0).*f;
     }
 
-    template <class Fp, class A0>
+    template <class Fp, class A0, class En = typename boost::enable_if<boost::is_member_object_pointer<Fp> >::type>
     inline auto
     invoke(BOOST_THREAD_RV_REF(Fp) f, BOOST_THREAD_RV_REF(A0) a0)
         -> decltype((*boost::forward<A0>(a0)).*f)
@@ -101,7 +108,7 @@ namespace boost
         return (*boost::forward<A0>(a0)).*f;
     }
 
-    template <class R, class Fp, class A0>
+    template <class R, class Fp, class A0, class En = typename boost::enable_if<boost::is_member_object_pointer<Fp> >::type>
     inline auto
     invoke(BOOST_THREAD_RV_REF(Fp) f, BOOST_THREAD_RV_REF(A0) a0)
         -> decltype(boost::forward<A0>(a0).*f)
@@ -109,7 +116,7 @@ namespace boost
         return boost::forward<A0>(a0).*f;
     }
 
-    template <class R, class Fp, class A0>
+    template <class R, class Fp, class A0, class En = typename boost::enable_if<boost::is_member_object_pointer<Fp> >::type>
     inline auto
     invoke(BOOST_THREAD_RV_REF(Fp) f, BOOST_THREAD_RV_REF(A0) a0)
         -> decltype((*boost::forward<A0>(a0)).*f)

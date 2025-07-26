@@ -1,0 +1,66 @@
+name: Test Linux
+on:
+  workflow_call:
+    inputs:
+      sc-version:
+        required: true
+        type: string
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-22.04
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-ubuntu-22.04-gcc12"
+      TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
+      SCLANG: ${{ github.workspace }}/build/Install/bin/sclang
+      TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
+      TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/gha_result.scxtar
+      SCRIPT_RUN_TESTS: ${{ github.workspace }}/testsuite/scripts/sclang_test_runner.scd
+      SCRIPT_PRINT_RESULTS: ${{ github.workspace }}/testsuite/scripts/print_results.scd
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false # don't need submodules for testing
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}
+
+      - name: Extract artifact
+        run: |
+          cd "$INSTALL_PATH"
+          echo Contents of `pwd`:
+          ls
+          unzip $ARTIFACT_FILE.zip
+
+      - name: Setup environment
+        run: |
+          # install dependencies
+          sudo apt-get update
+          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qt6-base-dev libqt6svg6-dev qt6-webengine-dev libqt6webenginecore6-bin jackd1 socat
+
+          # add bin to PATH so that scsynth can be found
+          echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
+
+          # start jack
+          jackd --no-realtime --silent -d dummy &
+
+          # start virtual display server
+          export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
+          Xvfb $DISPLAY -screen 0 1024x768x16 &
+
+      - name: Run tests
+        shell: bash
+        continue-on-error: true
+        run: |
+          timeout 20m $SCLANG --include-path $TESTS_PATH $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+
+      - name: Post test results
+        shell: bash
+        run: |
+          timeout 1m $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT

@@ -45,25 +45,25 @@ Dialog::Dialog(Manager* settings, QWidget* parent): QDialog(parent), mManager(se
 
     w = new GeneralPage;
     ui->configPageStack->addWidget(w);
-    ui->configPageList->addItem(new QListWidgetItem(QIcon::fromTheme("preferences-system"), tr("General")));
+    ui->configPageList->addItem(new QListWidgetItem(tr("General")));
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 
     w = new SclangPage;
     ui->configPageStack->addWidget(w);
-    ui->configPageList->addItem(new QListWidgetItem(QIcon::fromTheme("applications-system"), tr("Interpreter")));
+    ui->configPageList->addItem(new QListWidgetItem(tr("Interpreter")));
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 
     w = new EditorPage;
     ui->configPageStack->addWidget(w);
-    ui->configPageList->addItem(new QListWidgetItem(QIcon::fromTheme("accessories-text-editor"), tr("Editor")));
+    ui->configPageList->addItem(new QListWidgetItem(tr("Editor")));
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 
     w = new ShortcutsPage;
     ui->configPageStack->addWidget(w);
-    ui->configPageList->addItem(new QListWidgetItem(QIcon::fromTheme("input-keyboard"), tr("Shortcuts")));
+    ui->configPageList->addItem(new QListWidgetItem(tr("Shortcuts")));
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 

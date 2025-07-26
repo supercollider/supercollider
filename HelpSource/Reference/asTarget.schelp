@@ -72,4 +72,3 @@ z = Synth.head(Group.basicNew(s, x), "default");
 y.free; z.free; x.asTarget.free;
 ::
 ::
-

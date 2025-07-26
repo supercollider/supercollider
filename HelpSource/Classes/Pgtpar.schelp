@@ -12,7 +12,7 @@ ClassMethods::
 method::new
 
 argument::list
-list of pairs of times and patterns or streams: [time, pat, time, pat .. ].
+list of pairs of times and patterns or streams: [time, pat, time, pat ..].
 
 note:: times are in beats and depend on the tempo of the link::Classes/TempoClock:: in use.::
 
@@ -25,7 +25,7 @@ code::
 // synthdef
 (
 SynthDef(\help_sinegrain,
-    { arg out=0, freq=440, sustain=0.05;
+    { |out = 0, freq = 440, sustain = 0.05|
         var env;
         env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
         Out.ar(out, SinOsc.ar(freq, 0, env))

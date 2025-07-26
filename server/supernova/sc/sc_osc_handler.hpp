@@ -95,7 +95,7 @@ class sc_notify_observers {
 public:
     typedef enum { no_error = 0, already_registered = -1, not_registered = -2 } error_code;
 
-    sc_notify_observers(boost::asio::io_service& io_service): udp_socket(io_service) {}
+    sc_notify_observers(boost::asio::io_context& io_context): udp_socket(io_context) {}
 
     int add_observer(endpoint_ptr const& ep);
     int remove_observer(endpoint_ptr const& ep);
@@ -186,8 +186,8 @@ class sc_osc_handler : private detail::network_thread, public sc_notify_observer
 
 public:
     sc_osc_handler(server_arguments const& args):
-        sc_notify_observers(detail::network_thread::io_service_),
-        tcp_acceptor_(detail::network_thread::io_service_),
+        sc_notify_observers(detail::network_thread::io_context_),
+        tcp_acceptor_(detail::network_thread::io_context_),
         tcp_password_(args.server_password.size() ? args.server_password.c_str() : nullptr) {
         if (!args.non_rt) {
             if (args.tcp_port && !open_socket(IPPROTO_TCP, args.socket_address, args.tcp_port))
@@ -355,6 +355,10 @@ private:
     const char* tcp_password_; /* we are not owning this! */
 
     std::array<char, 1 << 15> recv_buffer_;
+
+    static constexpr int udp_receive_buffer_size = 4 * 1024 * 1024;
+    static constexpr int udp_send_buffer_size = 4 * 1024 * 1024;
+    static constexpr int udp_fallback_buffer_size = 1 * 1024 * 1024;
     /* @} */
 };
 

@@ -112,7 +112,7 @@ this interpreter variable can be set to evaluate a function with any successfull
 see e.g. the class History.
 
 code::
-a = [ ]; // store all the code evaluated in a
+a = []; // store all the code evaluated in a
 this.codeDump = { |code| a = a.add(code) };
 1 + 3;
 f = { "hallo" };

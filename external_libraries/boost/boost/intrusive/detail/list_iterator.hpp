@@ -60,81 +60,81 @@ class list_iterator
    typedef typename types_t::iterator_type::reference          reference;
    typedef typename types_t::iterator_type::iterator_category  iterator_category;
 
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator()
+   inline list_iterator()
    {}
 
-   BOOST_INTRUSIVE_FORCEINLINE explicit list_iterator(const node_ptr & nodeptr, const const_value_traits_ptr &traits_ptr)
+   inline explicit list_iterator(node_ptr nodeptr, const_value_traits_ptr traits_ptr)
       : members_(nodeptr, traits_ptr)
    {}
 
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator(const list_iterator &other)
+   inline list_iterator(const list_iterator &other)
       :  members_(other.pointed_node(), other.get_value_traits())
    {}
 
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator(const nonconst_iterator &other)
+   inline list_iterator(const nonconst_iterator &other)
       :  members_(other.pointed_node(), other.get_value_traits())
    {}
 
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator &operator=(const list_iterator &other)
+   inline list_iterator &operator=(const list_iterator &other)
    {  members_.nodeptr_ = other.members_.nodeptr_;  return *this;  }
 
-   BOOST_INTRUSIVE_FORCEINLINE node_ptr pointed_node() const
+   inline node_ptr pointed_node() const
    { return members_.nodeptr_; }
 
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator &operator=(const node_ptr &node)
-   {  members_.nodeptr_ = node;  return *this;  }
+   inline list_iterator &operator=(node_ptr nodeptr)
+   {  members_.nodeptr_ = nodeptr;  return *this;  }
 
-   BOOST_INTRUSIVE_FORCEINLINE const_value_traits_ptr get_value_traits() const
+   inline const_value_traits_ptr get_value_traits() const
    {  return members_.get_ptr(); }
 
    public:
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator& operator++()
+   inline list_iterator& operator++()
    {
       node_ptr p = node_traits::get_next(members_.nodeptr_);
       members_.nodeptr_ = p;
       return static_cast<list_iterator&> (*this);
    }
 
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator operator++(int)
+   inline list_iterator operator++(int)
    {
       list_iterator result (*this);
       members_.nodeptr_ = node_traits::get_next(members_.nodeptr_);
       return result;
    }
 
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator& operator--()
+   inline list_iterator& operator--()
    {
       members_.nodeptr_ = node_traits::get_previous(members_.nodeptr_);
       return static_cast<list_iterator&> (*this);
    }
 
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator operator--(int)
+   inline list_iterator operator--(int)
    {
       list_iterator result (*this);
       members_.nodeptr_ = node_traits::get_previous(members_.nodeptr_);
       return result;
    }
 
-   BOOST_INTRUSIVE_FORCEINLINE friend bool operator== (const list_iterator& l, const list_iterator& r)
+   inline friend bool operator== (const list_iterator& l, const list_iterator& r)
    {  return l.pointed_node() == r.pointed_node();   }
 
-   BOOST_INTRUSIVE_FORCEINLINE friend bool operator!= (const list_iterator& l, const list_iterator& r)
+   inline friend bool operator!= (const list_iterator& l, const list_iterator& r)
    {  return !(l == r); }
 
-   BOOST_INTRUSIVE_FORCEINLINE reference operator*() const
+   inline reference operator*() const
    {  return *operator->();   }
 
-   BOOST_INTRUSIVE_FORCEINLINE pointer operator->() const
+   inline pointer operator->() const
    { return this->operator_arrow(detail::bool_<stateful_value_traits>()); }
 
-   BOOST_INTRUSIVE_FORCEINLINE list_iterator<ValueTraits, false> unconst() const
+   inline list_iterator<ValueTraits, false> unconst() const
    {  return list_iterator<ValueTraits, false>(this->pointed_node(), this->get_value_traits());   }
 
    private:
-   BOOST_INTRUSIVE_FORCEINLINE pointer operator_arrow(detail::false_) const
+   inline pointer operator_arrow(detail::false_) const
    { return ValueTraits::to_value_ptr(members_.nodeptr_); }
 
-   BOOST_INTRUSIVE_FORCEINLINE pointer operator_arrow(detail::true_) const
+   inline pointer operator_arrow(detail::true_) const
    { return this->get_value_traits()->to_value_ptr(members_.nodeptr_); }
 
    iiterator_members<node_ptr, const_value_traits_ptr, stateful_value_traits> members_;

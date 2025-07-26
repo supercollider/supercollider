@@ -12,21 +12,15 @@
 #include <boost/math/policies/policy.hpp>
 #include <boost/math/tools/precision.hpp>
 #include <boost/math/tools/convert_from_string.hpp>
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4127 4701)
 #endif
-#ifndef BOOST_MATH_NO_LEXICAL_CAST
-#include <boost/lexical_cast.hpp>
-#endif
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
-#include <boost/mpl/if.hpp>
-#include <boost/mpl/and.hpp>
-#include <boost/mpl/int.hpp>
-#include <boost/type_traits/is_convertible.hpp>
-#include <boost/utility/declval.hpp>
+#include <utility>
+#include <type_traits>
 
 #if defined(__GNUC__) && defined(BOOST_MATH_USE_FLOAT128)
 //
@@ -77,33 +71,33 @@ namespace boost{ namespace math
    //
    // Max number of binary digits in the string representations of our constants:
    //
-   BOOST_STATIC_CONSTANT(int, max_string_digits = (101 * 1000L) / 301L);
+   static constexpr int max_string_digits = (101 * 1000L) / 301L;
 
-   template <class Real, class Policy>
+   template <typename Real, typename Policy>
    struct construction_traits
    {
    private:
-      typedef typename policies::precision<Real, Policy>::type real_precision;
-      typedef typename policies::precision<float, Policy>::type float_precision;
-      typedef typename policies::precision<double, Policy>::type double_precision;
-      typedef typename policies::precision<long double, Policy>::type long_double_precision;
+      using real_precision = typename policies::precision<Real, Policy>::type;
+      using float_precision = typename policies::precision<float, Policy>::type;
+      using double_precision = typename policies::precision<double, Policy>::type;
+      using long_double_precision = typename policies::precision<long double, Policy>::type;
    public:
-      typedef boost::integral_constant<int,
+      using type = std::integral_constant<int,
          (0 == real_precision::value) ? 0 :
-         boost::is_convertible<float, Real>::value && (real_precision::value <= float_precision::value)? construct_from_float :
-         boost::is_convertible<double, Real>::value && (real_precision::value <= double_precision::value)? construct_from_double :
-         boost::is_convertible<long double, Real>::value && (real_precision::value <= long_double_precision::value)? construct_from_long_double :
+         std::is_convertible<float, Real>::value && (real_precision::value <= float_precision::value)? construct_from_float :
+         std::is_convertible<double, Real>::value && (real_precision::value <= double_precision::value)? construct_from_double :
+         std::is_convertible<long double, Real>::value && (real_precision::value <= long_double_precision::value)? construct_from_long_double :
 #ifdef BOOST_MATH_USE_FLOAT128
-         boost::is_convertible<BOOST_MATH_FLOAT128_TYPE, Real>::value && (real_precision::value <= 113) ? construct_from_float128 :
+         std::is_convertible<BOOST_MATH_FLOAT128_TYPE, Real>::value && (real_precision::value <= 113) ? construct_from_float128 :
 #endif
          (real_precision::value <= max_string_digits) ? construct_from_string : real_precision::value
-      > type;
+      >;
    };
 
-#ifdef BOOST_HAS_THREADS
+#ifdef BOOST_MATH_HAS_THREADS
 #define BOOST_MATH_CONSTANT_THREAD_HELPER(name, prefix) \
       boost::once_flag f = BOOST_ONCE_INIT;\
-      boost::call_once(f, &BOOST_JOIN(BOOST_JOIN(string_, get_), name)<T>);
+      boost::call_once(f, &BOOST_MATH_JOIN(BOOST_MATH_JOIN(string_, get_), name)<T>);
 #else
 #define BOOST_MATH_CONSTANT_THREAD_HELPER(name, prefix)
 #endif
@@ -113,13 +107,13 @@ namespace boost{ namespace math
       template <class Real, class Policy = boost::math::policies::policy<> >
       struct constant_return
       {
-         typedef typename construction_traits<Real, Policy>::type construct_type;
-         typedef typename mpl::if_c<
+         using construct_type = typename construction_traits<Real, Policy>::type;
+         using type = typename std::conditional<
             (construct_type::value == construct_from_string) || (construct_type::value > construct_max),
-            const Real&, Real>::type type;
+            const Real&, Real>::type;
       };
 
-      template <class T, const T& (*F)()>
+      template <typename T, const T& (*F)()>
       struct constant_initializer
       {
          static void force_instantiate()
@@ -138,10 +132,10 @@ namespace boost{ namespace math
          static const initializer init;
       };
 
-      template <class T, const T& (*F)()>
+      template <typename T, const T& (*F)()>
       typename constant_initializer<T, F>::initializer const constant_initializer<T, F>::init;
 
-      template <class T, int N, const T& (*F)(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((boost::integral_constant<int, N>)) BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(T))>
+      template <typename T, int N, const T& (*F)(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((std::integral_constant<int, N>)) BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(T))>
       struct constant_initializer2
       {
          static void force_instantiate()
@@ -160,28 +154,28 @@ namespace boost{ namespace math
          static const initializer init;
       };
 
-      template <class T, int N, const T& (*F)(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((boost::integral_constant<int, N>)) BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(T))>
+      template <typename T, int N, const T& (*F)(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((std::integral_constant<int, N>)) BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(T))>
       typename constant_initializer2<T, N, F>::initializer const constant_initializer2<T, N, F>::init;
 
    }
 
 #ifdef BOOST_MATH_USE_FLOAT128
 #  define BOOST_MATH_FLOAT128_CONSTANT_OVERLOAD(x) \
-   static inline BOOST_CONSTEXPR T get(const boost::integral_constant<int, construct_from_float128>&) BOOST_NOEXCEPT\
-   { return BOOST_JOIN(x, Q); }
+   static inline constexpr T get(const std::integral_constant<int, construct_from_float128>&) noexcept\
+   { return BOOST_MATH_JOIN(x, Q); }
 #else
 #  define BOOST_MATH_FLOAT128_CONSTANT_OVERLOAD(x)
 #endif
 
-#ifdef BOOST_NO_CXX11_THREAD_LOCAL
-#  define BOOST_MATH_PRECOMPUTE_IF_NOT_LOCAL(constant_, name)       constant_initializer<T, & BOOST_JOIN(constant_, name)<T>::get_from_variable_precision>::force_instantiate();
+#ifdef BOOST_MATH_NO_CXX11_THREAD_LOCAL
+#  define BOOST_MATH_PRECOMPUTE_IF_NOT_LOCAL(constant_, name)       constant_initializer<T, & BOOST_MATH_JOIN(constant_, name)<T>::get_from_variable_precision>::force_instantiate();
 #else
 #  define BOOST_MATH_PRECOMPUTE_IF_NOT_LOCAL(constant_, name)
 #endif
 
 #define BOOST_DEFINE_MATH_CONSTANT(name, x, y)\
    namespace detail{\
-   template <class T> struct BOOST_JOIN(constant_, name){\
+   template <typename T> struct BOOST_MATH_JOIN(constant_, name){\
    private:\
    /* The default implementations come next: */ \
    static inline const T& get_from_string()\
@@ -190,8 +184,8 @@ namespace boost{ namespace math
       return result;\
    }\
    /* This one is for very high precision that is none the less known at compile time: */ \
-   template <int N> static T compute(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((boost::integral_constant<int, N>)));\
-   template <int N> static inline const T& get_from_compute(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((boost::integral_constant<int, N>)))\
+   template <int N> static T compute(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((std::integral_constant<int, N>)));\
+   template <int N> static inline const T& get_from_compute(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((std::integral_constant<int, N>)))\
    {\
       static const T result = compute<N>();\
       return result;\
@@ -210,25 +204,25 @@ namespace boost{ namespace math
    }\
    /* public getters come next */\
    public:\
-   static inline const T& get(const boost::integral_constant<int, construct_from_string>&)\
+   static inline const T& get(const std::integral_constant<int, construct_from_string>&)\
    {\
-      constant_initializer<T, & BOOST_JOIN(constant_, name)<T>::get_from_string >::force_instantiate();\
+      constant_initializer<T, & BOOST_MATH_JOIN(constant_, name)<T>::get_from_string >::force_instantiate();\
       return get_from_string();\
    }\
-   static inline BOOST_CONSTEXPR T get(const boost::integral_constant<int, construct_from_float>) BOOST_NOEXCEPT\
-   { return BOOST_JOIN(x, F); }\
-   static inline BOOST_CONSTEXPR T get(const boost::integral_constant<int, construct_from_double>&) BOOST_NOEXCEPT\
+   static inline constexpr T get(const std::integral_constant<int, construct_from_float>) noexcept\
+   { return BOOST_MATH_JOIN(x, F); }\
+   static inline constexpr T get(const std::integral_constant<int, construct_from_double>&) noexcept\
    { return x; }\
-   static inline BOOST_CONSTEXPR T get(const boost::integral_constant<int, construct_from_long_double>&) BOOST_NOEXCEPT\
-   { return BOOST_JOIN(x, L); }\
+   static inline constexpr T get(const std::integral_constant<int, construct_from_long_double>&) noexcept\
+   { return BOOST_MATH_JOIN(x, L); }\
    BOOST_MATH_FLOAT128_CONSTANT_OVERLOAD(x) \
-   template <int N> static inline const T& get(const boost::integral_constant<int, N>&)\
+   template <int N> static inline const T& get(const std::integral_constant<int, N>&)\
    {\
-      constant_initializer2<T, N, & BOOST_JOIN(constant_, name)<T>::template get_from_compute<N> >::force_instantiate();\
+      constant_initializer2<T, N, & BOOST_MATH_JOIN(constant_, name)<T>::template get_from_compute<N> >::force_instantiate();\
       return get_from_compute<N>(); \
    }\
    /* This one is for true arbitrary precision, which may well vary at runtime: */ \
-   static inline T get(const boost::integral_constant<int, 0>&)\
+   static inline T get(const std::integral_constant<int, 0>&)\
    {\
       BOOST_MATH_PRECOMPUTE_IF_NOT_LOCAL(constant_, name)\
       return get_from_variable_precision(); }\
@@ -237,16 +231,16 @@ namespace boost{ namespace math
    \
    \
    /* The actual forwarding function: */ \
-   template <class T, class Policy> inline BOOST_CONSTEXPR typename detail::constant_return<T, Policy>::type name(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(T) BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(Policy)) BOOST_MATH_NOEXCEPT(T)\
-   { return detail:: BOOST_JOIN(constant_, name)<T>::get(typename construction_traits<T, Policy>::type()); }\
-   template <class T> inline BOOST_CONSTEXPR typename detail::constant_return<T>::type name(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(T)) BOOST_MATH_NOEXCEPT(T)\
+   template <typename T, typename Policy> inline constexpr typename detail::constant_return<T, Policy>::type name(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(T) BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(Policy)) BOOST_MATH_NOEXCEPT(T)\
+   { return detail:: BOOST_MATH_JOIN(constant_, name)<T>::get(typename construction_traits<T, Policy>::type()); }\
+   template <typename T> inline constexpr typename detail::constant_return<T>::type name(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(T)) BOOST_MATH_NOEXCEPT(T)\
    { return name<T, boost::math::policies::policy<> >(); }\
    \
    \
    /* Now the namespace specific versions: */ \
-   } namespace float_constants{ BOOST_STATIC_CONSTEXPR float name = BOOST_JOIN(x, F); }\
-   namespace double_constants{ BOOST_STATIC_CONSTEXPR double name = x; } \
-   namespace long_double_constants{ BOOST_STATIC_CONSTEXPR long double name = BOOST_JOIN(x, L); }\
+   } namespace float_constants{ static constexpr float name = BOOST_MATH_JOIN(x, F); }\
+   namespace double_constants{ static constexpr double name = x; } \
+   namespace long_double_constants{ static constexpr long double name = BOOST_MATH_JOIN(x, L); }\
    namespace constants{
 
   BOOST_DEFINE_MATH_CONSTANT(half, 5.000000000000000000000000000000000000e-01, "5.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e-01")
@@ -324,6 +318,17 @@ namespace boost{ namespace math
   BOOST_DEFINE_MATH_CONSTANT(one_div_pi, 0.3183098861837906715377675267450287240689192, "0.31830988618379067153776752674502872406891929148091289749533468811779359526845307018022760553250617191214568545351")
   BOOST_DEFINE_MATH_CONSTANT(two_div_root_pi, 1.12837916709551257389615890312154517168810125, "1.12837916709551257389615890312154517168810125865799771368817144342128493688298682897348732040421472688605669581272")
 
+#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+  BOOST_DEFINE_MATH_CONSTANT(first_feigenbaum, 4.66920160910299067185320382046620161725818557747576863274,  "4.6692016091029906718532038204662016172581855774757686327456513430041343302113147371386897440239480138171")
+  BOOST_DEFINE_MATH_CONSTANT(plastic, 1.324717957244746025960908854478097340734404056901733364534, "1.32471795724474602596090885447809734073440405690173336453401505030282785124554759405469934798178728032991")
+  BOOST_DEFINE_MATH_CONSTANT(gauss, 0.834626841674073186281429732799046808993993013490347002449, "0.83462684167407318628142973279904680899399301349034700244982737010368199270952641186969116035127532412906785")
+  BOOST_DEFINE_MATH_CONSTANT(dottie, 0.739085133215160641655312087673873404013411758900757464965, "0.739085133215160641655312087673873404013411758900757464965680635773284654883547594599376106931766531849801246")
+  BOOST_DEFINE_MATH_CONSTANT(reciprocal_fibonacci, 3.35988566624317755317201130291892717968890513, "3.35988566624317755317201130291892717968890513373196848649555381532513031899668338361541621645679008729704")
+  BOOST_DEFINE_MATH_CONSTANT(laplace_limit, 0.662743419349181580974742097109252907056233549115022417, "0.66274341934918158097474209710925290705623354911502241752039253499097185308651127724965480259895818168")
+#endif
+
+template <typename T>
+inline constexpr T tau() {  return two_pi<T>(); }
 
 } // namespace constants
 } // namespace math

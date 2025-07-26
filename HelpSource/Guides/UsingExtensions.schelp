@@ -17,14 +17,16 @@ code::Platform.userExtensionDir:: and code::Platform.systemExtensionDir::.
 
 Typical user-specific extensions directories:
 table::
-## macOS     || ~/Library/Application Support/SuperCollider/Extensions/
+## macOS   || ~/Library/Application Support/SuperCollider/Extensions/
 ## Linux   || ~/.local/share/SuperCollider/Extensions/
+## Windows || %LOCALAPPDATA%/SuperCollider/Extensions/
 ::
 
 Typical system-wide extension directories:
 table::
-## macOS     || /Library/Application Support/SuperCollider/Extensions/
+## macOS   || /Library/Application Support/SuperCollider/Extensions/
 ## Linux   || /usr/share/SuperCollider/Extensions/
+## Windows || %PROGRAMDATA%/SuperCollider/Extensions/
 ::
 
 section:: How Extensions Folders Should be Organised
@@ -59,4 +61,3 @@ tree::
         ::
     ::
 ::
-

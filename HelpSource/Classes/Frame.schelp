@@ -17,5 +17,3 @@ For error handling routines, the relevant information from a Frame can be transf
 code::
 	this.getBackTrace.inspect
 ::
-
-

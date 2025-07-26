@@ -39,7 +39,7 @@ code::
 
 
 // using sweep to index into a buffer
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 (
 { var trig;
@@ -74,7 +74,7 @@ b.free
 Sweep can be used as a resettable link::Classes/Phasor:: or link::Classes/Line:: - one that can start, pause, resume and stop. To get a resettable link::Classes/XLine:: behavior change the code::linlin:: to code::linexp:: in the SynthDef below.
 code::
 (
-SynthDef(\lineReset, { |out, start= 0, end= 1, dur= 1, t_trig= 1, run= 1|
+SynthDef(\lineReset, { |out, start = 0, end = 1, dur = 1, t_trig = 1, run = 1|
 	var phasor = Sweep.ar(t_trig, run / dur).linlin(0, 1, start, end, \minmax);
 	phasor.poll;
 	Out.ar(out, SinOsc.ar(phasor, 0, 0.2));
@@ -87,8 +87,8 @@ a.set(\run, 1)
 a.set(\t_trig, 1)
 a.free
 
-//shorter duration and downwards...
-a= Synth(\lineReset, [\start, 1000, \end, 500, \dur, 0.5])
+// shorter duration and downwards...
+a = Synth(\lineReset, [\start, 1000, \end, 500, \dur, 0.5])
 a.set(\t_trig, 1)
 a.set(\run, 0)
 a.set(\run, 1)

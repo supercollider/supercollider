@@ -74,6 +74,11 @@ METHOD:: knobColor
 	argument::
 		A Color.
 
+METHOD:: thumbSize
+	The size of the handle.
+
+	argument::
+		An Integer amount of pixels.
 
 
 SUBSECTION:: Interaction
@@ -163,7 +168,7 @@ w = Window("Slider2D", Rect(100, 100, 140, 140));
 t = Slider2D(w, Rect(20, 20, 80, 80))
 		.x_(0.5) // initial location of x
 		.y_(1)   // initial location of y
-		.action_({|sl|
+		.action_({ |sl|
 			[\sliderX, sl.x, \sliderY, sl.y].postln;
 		});
 w.front;
@@ -182,7 +187,7 @@ t = Slider2D(w, Rect(20, 20, 280, 280))
 		.x_(0.5) // initial location of x
 		.y_(1)   // initial location of y
 		.background_(Color.rand)
-		.action_({|sl|
+		.action_({ |sl|
 			[\sliderX, sl.x, \sliderY, sl.y].postln;
 		});
 t.step_(0.01);
@@ -202,28 +207,28 @@ Shape a Sound
 code::
 (
 s.waitForBoot({
-	a = {arg mod = 0.05, index = 0.05;
-			var r,out, out2;
+	a = { |mod = 0.05, index = 0.05|
+			var r, out, out2;
 			r = Saw.ar(8, 0.03);
 			out = PMOsc.ar(
 				440,
 				660 * mod, 3 * index, 0,
-				Lag.ar(r,0.01,1));
-			[out,Delay1.ar(out)];
+				Lag.ar(r, 0.01, 1));
+			[out, Delay1.ar(out)];
 	}.play;
 
-	w = Window("Slider2D", Rect(100,Window.screenBounds.height - 400, 300, 300));
+	w = Window("Slider2D", Rect(100, Window.screenBounds.height - 400, 300, 300));
 	w.view.decorator = FlowLayout(w.view.bounds);
-	t = Slider2D(w, Rect(0, 0,292, 292))
+	t = Slider2D(w, Rect(0, 0, 292, 292))
 			.y_(0.05)
 			.x_(0.05)
 			.background_(Color.rand)
 			.knobColor_(Color.rand)
-			.action_({|sl|
-				a.set(\mod,sl.x,\index,sl.y);
+			.action_({ |sl|
+				a.set(\mod, sl.x, \index, sl.y);
 			});
 	w.front;
-	CmdPeriod.doOnce({w.close});
+	CmdPeriod.doOnce({ w.close });
 })
 )
 ::

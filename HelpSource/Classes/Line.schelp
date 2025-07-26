@@ -50,7 +50,6 @@ Examples::
 code::
 
 // XLine is usually better than Line for frequency
-play({ SinOsc.ar(Line.kr(200,17000,10),0,0.1) });
+play({ SinOsc.ar(Line.kr(200, 17000, 10), 0, 0.1) });
 
 ::
-

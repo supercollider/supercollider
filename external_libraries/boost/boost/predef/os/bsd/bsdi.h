@@ -29,6 +29,7 @@ http://en.wikipedia.org/wiki/BSD/OS[BSDi BSD/OS] operating system.
     defined(__bsdi__) \
     )
 #   ifndef BOOST_OS_BSD_AVAILABLE
+#       undef BOOST_OS_BSD
 #       define BOOST_OS_BSD BOOST_VERSION_NUMBER_AVAILABLE
 #       define BOOST_OS_BSD_AVAILABLE
 #   endif

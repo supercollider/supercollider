@@ -2,7 +2,7 @@
 // ip/impl/address_v4.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -58,19 +58,15 @@ address_v4::address_v4(address_v4::uint_type addr)
       static_cast<boost::asio::detail::u_long_type>(addr));
 }
 
-address_v4::bytes_type address_v4::to_bytes() const BOOST_ASIO_NOEXCEPT
+address_v4::bytes_type address_v4::to_bytes() const noexcept
 {
   using namespace std; // For memcpy.
   bytes_type bytes;
-#if defined(BOOST_ASIO_HAS_STD_ARRAY)
   memcpy(bytes.data(), &addr_.s_addr, 4);
-#else // defined(BOOST_ASIO_HAS_STD_ARRAY)
-  memcpy(bytes.elems, &addr_.s_addr, 4);
-#endif // defined(BOOST_ASIO_HAS_STD_ARRAY)
   return bytes;
 }
 
-address_v4::uint_type address_v4::to_uint() const BOOST_ASIO_NOEXCEPT
+address_v4::uint_type address_v4::to_uint() const noexcept
 {
   return boost::asio::detail::socket_ops::network_to_host_long(addr_.s_addr);
 }
@@ -109,12 +105,12 @@ std::string address_v4::to_string(boost::system::error_code& ec) const
 }
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
-bool address_v4::is_loopback() const BOOST_ASIO_NOEXCEPT
+bool address_v4::is_loopback() const noexcept
 {
   return (to_uint() & 0xFF000000) == 0x7F000000;
 }
 
-bool address_v4::is_unspecified() const BOOST_ASIO_NOEXCEPT
+bool address_v4::is_unspecified() const noexcept
 {
   return to_uint() == 0;
 }
@@ -136,7 +132,7 @@ bool address_v4::is_class_c() const
 }
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
-bool address_v4::is_multicast() const BOOST_ASIO_NOEXCEPT
+bool address_v4::is_multicast() const noexcept
 {
   return (to_uint() & 0xF0000000) == 0xE0000000;
 }
@@ -168,7 +164,7 @@ address_v4 make_address_v4(const char* str)
 }
 
 address_v4 make_address_v4(const char* str,
-    boost::system::error_code& ec) BOOST_ASIO_NOEXCEPT
+    boost::system::error_code& ec) noexcept
 {
   address_v4::bytes_type bytes;
   if (boost::asio::detail::socket_ops::inet_pton(
@@ -183,7 +179,7 @@ address_v4 make_address_v4(const std::string& str)
 }
 
 address_v4 make_address_v4(const std::string& str,
-    boost::system::error_code& ec) BOOST_ASIO_NOEXCEPT
+    boost::system::error_code& ec) noexcept
 {
   return make_address_v4(str.c_str(), ec);
 }
@@ -196,7 +192,7 @@ address_v4 make_address_v4(string_view str)
 }
 
 address_v4 make_address_v4(string_view str,
-    boost::system::error_code& ec) BOOST_ASIO_NOEXCEPT
+    boost::system::error_code& ec) noexcept
 {
   return make_address_v4(static_cast<std::string>(str), ec);
 }

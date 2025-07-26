@@ -879,7 +879,9 @@ void QcGraph::paintEvent(QPaintEvent*) {
         QList<QcGraphModel::Connection> conns = _model.connections();
 
         if (conns.count()) {
-            Q_FOREACH (QcGraphModel::Connection c, conns) { addCurve(lines, c.a, c.b); }
+            Q_FOREACH (QcGraphModel::Connection c, conns) {
+                addCurve(lines, c.a, c.b);
+            }
 
         } else {
             QcGraphElement* e1 = elems[0];

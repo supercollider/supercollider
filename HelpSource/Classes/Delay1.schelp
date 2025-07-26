@@ -1,12 +1,12 @@
 class:: Delay1
 summary:: Single sample delay.
-related:: Classes/Delay2
+related:: Classes/Delay2, Classes/TDelay
 categories::  UGens>Delays
 
 
 Description::
 
-Delays the input by 1 audio frame or control period.
+Delays the input by one audio frame or control period.
 
 
 classmethods::
@@ -14,28 +14,63 @@ classmethods::
 method::ar, kr
 
 argument::in
-Input signal.
+The input signal.
 
 argument::mul
-Output will be multiplied by this value.
+The output will be multiplied by this value.
 
 argument::add
 This value will be added to the output.
 
+argument::x1
+The sample value preceding the delayed input, which is the value of the first output sample.
+This can be a numeric value or a code::UGen::.
+
+note::
+When running at audio rate, strong::x1:: defaults to code::0.0::, i.e. "silence" precedes the delayed input.
+At control rate, the default value is set to the first sample of strong::in::, i.e. the first input sample is held during the delay.
+::
+
 discussion::
-For audio-rate signals the delay is 1 audio frame, and for control-rate signals the delay is 1 control period.
+The output sequence is:
+teletype::
+out[0] = in[-1] = x1
+out[1] = in[0]
+::
+
+For audio-rate signals the delay is one audio frame, and for control-rate signals the delay is one control period.
+
+Why is the default value of strong::x1:: different depending on the code::UGen::'s rate?
+
+At audio-rate, an analog delay model is followed—the input signal is preceded by silence (zero).
+At control-rate, leading with a zero is less appropriate because control signals are often DC or other non zero-mean signals (e.g. a frequency or gain control signal).
 
 
 Examples::
 
 code::
-
+// Create bipolar Dust
 (
-plot({
-	var z;
-	z = Dust.ar(1000);
-	[z, z - Delay1.ar(z)] 	// [ original, subtract delayed from original ]
-}))
+{
+    var z = Dust.ar(1500);
+    // [original, subtract delayed from original]
+    [z, z - Delay1.ar(z)]
+}.plot(0.01)
+)
+
+// Make a delayed sine wave continuous using the x1 argument
+(
+{
+    var freq = 1000;
+    var phaseStep = 2pi * freq / s.sampleRate;
+    var sine = SinOsc.ar(freq);
+    [
+        // default: silence before delay
+        Delay1.ar(sine),
+        // reconstruct predelay sample
+        Delay1.ar(sine, x1: phaseStep.sin.neg)
+    ]
+}.plot(0.001).plotMode_(\points)
+)
 
 ::
-

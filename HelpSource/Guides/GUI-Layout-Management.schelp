@@ -1,7 +1,7 @@
 title:: Layout Management
 summary:: Using layout classes to manage distribution of child views within parents
 categories:: GUI>Layout
-related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout
+related:: Classes/LineLayout, Classes/HLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout
 
 The purpose of layouts is to distribute the amount of space given to the view on which they are installed among the children of that view. Each subclass of Layout has a specific pattern of space distribution (a line, a 2D grid, etc.). See their documentation for details.
 

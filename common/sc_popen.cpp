@@ -24,7 +24,7 @@
 #    include <array>
 #    include <string>
 
-std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
+std::tuple<pid_t, FILE*> sc_popen_shell(std::string command, const std::string& type) {
     std::vector<std::string> argv;
     argv.emplace_back("/bin/sh");
     argv.emplace_back("-c");
@@ -156,17 +156,60 @@ static SC_Lock processlist_mutex;
 #    define THREAD_LOCK() processlist_mutex.lock()
 #    define THREAD_UNLOCK() processlist_mutex.unlock()
 
+// see https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-commandlinetoargvw
+// for details on how Windows expects command line arguments to be quoted.
+// implementation suggested in https://stackoverflow.com/a/47469792/6063908
+std::string quoteWindowsArg(const std::string& arg) {
+    if (arg.empty())
+        return "\"\"";
+
+    bool needQuotes = arg.find_first_of(" \t\"") != std::string::npos;
+
+    // If already quoted properly and contains no inner quotes
+    if (needQuotes && arg.size() >= 2 && arg.front() == '"' && arg.back() == '"') {
+        if (arg.find('"', 1) == arg.size() - 1) {
+            return arg;
+        }
+    }
+
+    if (!needQuotes)
+        return arg;
+
+    std::string result = "\"";
+    size_t backslashes = 0;
+    for (char c : arg) {
+        if (c == '\\') {
+            backslashes++;
+        } else if (c == '"') {
+            // Escape all backslashes before the quote
+            result.append(backslashes * 2 + 1, '\\');
+            result += '"';
+            backslashes = 0;
+        } else {
+            result.append(backslashes, '\\');
+            result += c;
+            backslashes = 0;
+        }
+    }
+    // Escape all trailing backslashes
+    result.append(backslashes * 2, '\\');
+    result += '"';
+    return result;
+}
+
 
 std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, const std::string& type) {
     // joins strings using space as delimeter
-    std::string commandLine = std::accumulate(
-        strings.begin(), strings.end(), std::string(),
-        [](const std::string& a, const std::string& b) -> std::string { return a + (a.length() > 0 ? " " : "") + b; });
+    std::string commandLine = std::accumulate(strings.begin(), strings.end(), std::string(),
+                                              [](const std::string& acc, const std::string& s) {
+                                                  return acc + (acc.empty() ? "" : " ") + quoteWindowsArg(s);
+                                              });
 
-    return sc_popen(std::move(commandLine), type);
+    return sc_popen_c(commandLine.data(), type.data());
 }
 
-std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
+std::tuple<pid_t, FILE*> sc_popen_shell(std::string command, const std::string& type) {
+    command = "cmd /c \"" + command + "\"";
     return sc_popen_c(command.data(), type.data());
 }
 
@@ -187,7 +230,7 @@ std::tuple<pid_t, FILE*> sc_popen_c(const char* utf8_cmd, const char* mode) {
         return error_result;
     }
 
-    std::wstring cmd = L"cmd /c " + SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8_cmd);
+    std::wstring cmd = SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8_cmd);
 
     current_pid = GetCurrentProcess();
 

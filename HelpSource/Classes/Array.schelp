@@ -18,10 +18,13 @@ code::
 This allows an efficient use of resources, only growing the array when it needs to. The link::Classes/List:: class manages the Array internally, and in many cases is more suitable.
 ::
 
-Elements can be put into an existing slot with code::a.put(2,obj):: and accessed with
-code::a.at(2):: or code::a[2]::
+Items can be put into an existing slot with code::a.put(2, obj):: and accessed with code::a.at(2):: or code::a[2]::.
 
-See link::Classes/ArrayedCollection:: for the principal methods: at, put, clipAt, wrapAt, etc...
+note::
+Arrays use 0-based indexing, meaning the first item is accessed with index 0. Therefore, the index 2 in code::a.put(2, obj)::, code::a.at(2)::, and code::a[2]:: refers to the third item.
+::
+
+See link::Classes/ArrayedCollection:: for the principal methods: at, put, clipAt, wrapAt, etc.
 
 
 ClassMethods::
@@ -40,7 +43,7 @@ method::with
 Create a new Array whose slots are filled with the given arguments.
 This is the same as the method in ArrayedCollection, but is reimplemented here to be more efficient.
 code::
-Array.with(7, 'eight',  9).postln;
+Array.with(7, 'eight', 9).postln;
 ::
 
 copymethod:: Collection *fill
@@ -80,6 +83,8 @@ copymethod:: ArrayedCollection -at
 copymethod:: ArrayedCollection -put
 
 copymethod:: ArrayedCollection -insert
+
+copymethod:: ArrayedCollection -boundedInsert
 
 copymethod:: ArrayedCollection -clipAt
 
@@ -197,7 +202,7 @@ method::pyramid
 Return a new Array whose elements have been reordered via one of 10 "counting" algorithms.
 Run the examples to see the algorithms.
 code::
-10.do({ arg i;
+10.do({ |i|
 	[1, 2, 3, 4].pyramid(i + 1).postcs;
 });
 ::
@@ -227,7 +232,7 @@ The length of the new Array.
 method::lace
 Returns a new Array whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size length. The receiver is unchanged.
 code::
-x = [ [1, 2, 3], 6, List["foo", 'bar']];
+x = [[1, 2, 3], 6, List["foo", 'bar']];
 y = x.lace(12);
 x.postln;
 y.postln;
@@ -236,8 +241,8 @@ y.postln;
 method::permute
 Returns a new Array whose elements are the nthPermutation of the elements of the receiver. The receiver is unchanged.
 code::
-x = [ 1, 2, 3];
-6.do({|i| x.permute(i).postln;});
+x = [1, 2, 3];
+6.do({ |i| x.permute(i).postln });
 ::
 
 method::allTuples
@@ -250,7 +255,7 @@ code::
 method::wrapExtend
 Returns a new Array whose elements are repeated sequences of the receiver, up to size length. The receiver is unchanged.
 code::
-x = [ 1, 2, 3, "foo", 'bar' ];
+x = [1, 2, 3, "foo", 'bar'];
 y = x.wrapExtend(9);
 x.postln;
 y.postln;
@@ -259,7 +264,7 @@ y.postln;
 method::foldExtend
 Same as wrapExtend but the sequences fold back on the list elements.
 code::
-x = [ 1, 2, "foo"];
+x = [1, 2, "foo"];
 y = x.foldExtend(9);
 x.postln;
 y.postln;
@@ -268,7 +273,7 @@ y.postln;
 method::clipExtend
 Same as wrapExtend but the sequences "clip" (return their last element) rather than wrapping.
 code::
-x = [ 1, 2, "foo"];
+x = [1, 2, "foo"];
 y = x.clipExtend(9);
 x.postln;
 y.postln;
@@ -408,9 +413,10 @@ method::isValidUGenInput
 Returns true. Arrays are valid UGen inputs.
 
 method::asRawOSC
-Returns the OSC message as an Int8Array. Receiver must be a bundle.
+Returns the OSC message as an Int8Array. Receiver can be a message or a bundle. See also link::Classes/Int8Array#-parseOSC::.
 code::
-[0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC;
+[\s_new, \default, -1, 1, 1, \freq, 1961].asRawOSC; // message
+[0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC; // bundle
 ::
 
 subsection:: Bela

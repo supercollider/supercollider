@@ -30,7 +30,7 @@ argument:: val
 A link::Classes/Float::.
 
 code::
-a = LevelIndicator(bounds:Rect(10, 10, 20, 160)).front;
+a = LevelIndicator(bounds: Rect(10, 10, 20, 160)).front;
 a.value = 0.5;
 a.warning = 0.6; a.critical = 0.9;
 a.value = 0.7;
@@ -79,7 +79,7 @@ An positive link::Classes/Integer::.
 
 code::
 (
-a = LevelIndicator(bounds:Rect(10, 10, 80, 400)).front();
+a = LevelIndicator(bounds: Rect(10, 10, 80, 400)).front();
 a.value = 1;
 a.style = \led;
 a.numSteps = 4;
@@ -100,7 +100,7 @@ An link::Classes/Integer:: >= 0.
 
 code::
 (
-w = Window(bounds:100@400).front().background_(Color.black);
+w = Window(bounds: 100@400).front().background_(Color.black);
 w.layout_(HLayout(
 	LevelIndicator()
 		.numTicks_(16)
@@ -117,7 +117,7 @@ An link::Classes/Integer:: >= 0.
 
 code::
 (
-w = Window(bounds:100@400).front().background_(Color.black);
+w = Window(bounds: 100@400).front().background_(Color.black);
 w.layout_(HLayout(
 	LevelIndicator()
 		.numMajorTicks_(16)
@@ -169,7 +169,7 @@ A link::Classes/Color::.
 
 code::
 (
-l = LevelIndicator(bounds:Rect(100, 100, 100, 400)).front().value_(1).style_(\led);
+l = LevelIndicator(bounds: Rect(100, 100, 100, 400)).front().value_(1).style_(\led);
 l.meterColor = Color.blue(0.9);
 l.warningColor = Color.blue(0.7);
 l.criticalColor = Color.blue(0.5);
@@ -192,7 +192,7 @@ code::
 (
 // something to meter
 s.waitForBoot({
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 	x = {
 		var colum, noise, imp, delimp, mul = 1;
@@ -204,9 +204,9 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	colum;
 }.play;
 
-	a = LevelIndicator(bounds:Rect(100, 100, 100, 400)).front;
-	a.onClose_({ x.free; o.free; });
-o = OSCFunc({arg msg;
+	a = LevelIndicator(bounds: Rect(100, 100, 100, 400)).front;
+	a.onClose_({ x.free; o.free });
+o = OSCFunc({ |msg|
 	{
 		a.value = msg[3].ampdb.linlin(-40, 0, 0, 1);
 		a.peakLevel = msg[4].ampdb.linlin(-40, 0, 0, 1);

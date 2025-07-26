@@ -20,8 +20,8 @@ code::
 // math operations
 a = Operand(2);
 b = Operand([1, 2, 3]);
-c = a + b * a; // Operand([ 6, 8, 10 ])
-c.value; // [ 6, 8, 10 ]
+c = a + b * a; // Operand([6, 8, 10])
+c.value; // [6, 8, 10]
 ::
 
 CLASSMETHODS::
@@ -86,6 +86,3 @@ IntegerOperand : Operand {
 // then you would get:
 IntegerOperand(1) + pi == IntegerOperand(4)
 ::
-
-
-

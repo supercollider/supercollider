@@ -14,7 +14,7 @@ In some cases this can be an invaluable service. The use of an independant objec
 Note that server notification should be on. (this is default. see: aServer.notify)
 
 code::
-//the most common use:
+// the most common use:
 NodeWatcher.register(aNode);
 ::
 
@@ -52,17 +52,17 @@ Examples::
 code::
 (
 b = s.makeBundle(false, {
-	a = Group.new(s);	//create a node object
+	a = Group.new(s);	// create a node object
 	NodeWatcher.register(a); // register before creating on the server
 });
 )
 a.isPlaying;
-s.listSendBundle(nil, b);	//start the node on the server
+s.listSendBundle(nil, b);	// start the node on the server
 a.isPlaying;
 a.isRunning;
 a.run(false);
 a.isRunning;
-s.freeAll;	//free all nodes
+s.freeAll;	// free all nodes
 a.isPlaying;
 a.isRunning;
 ::

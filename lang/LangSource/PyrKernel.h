@@ -58,13 +58,13 @@ struct PyrClass : public PyrObjectHdr {
 };
 
 
-inline bool isKindOf(PyrObjectHdr* obj, struct PyrClass* testclass) {
+inline bool isKindOf(const PyrObjectHdr* obj, const struct PyrClass* testclass) {
     int objClassIndex = slotRawInt(&obj->classptr->classIndex);
     return objClassIndex >= slotRawInt(&testclass->classIndex)
         && objClassIndex <= slotRawInt(&testclass->maxSubclassIndex);
 }
 
-inline bool isKindOfSlot(PyrSlot* slot, struct PyrClass* testclass) {
+inline bool isKindOfSlot(const PyrSlot* slot, const struct PyrClass* testclass) {
     return IsObj(slot) && isKindOf(slotRawObject(slot), testclass);
 }
 
@@ -119,7 +119,7 @@ struct PyrThread : public PyrObjectHdr {
 
 struct PyrMethodRaw {
 #ifdef PYR_SLOTS_GENERIC
-    long padding; // used for the tag in the generic pyrslot implementation
+    std::int64_t padding; // used for the tag in the generic pyrslot implementation
 #endif
     unsigned short unused1;
     unsigned short specialIndex;
@@ -127,7 +127,7 @@ struct PyrMethodRaw {
     unsigned short frameSize;
 
 #ifdef PYR_SLOTS_GENERIC
-    long padding2; // used for the tag in generic pyrslot implementation, second slot
+    std::int64_t padding2; // used for the tag in generic pyrslot implementation, second slot
 #endif
 
     unsigned char unused2;
@@ -147,7 +147,7 @@ struct PyrBlock : public PyrObjectHdr {
     PyrSlot rawData1;
     PyrSlot rawData2;
     PyrSlot code; // byte codes, nil if inlined
-    PyrSlot selectors; // method selectors, class names, closures table
+    PyrSlot selectors; // method selectors, class names, closures table, stores literals in methReturnLiteral methods.
     PyrSlot constants; // floating point constants table (to alleviate the literal table problem)
     PyrSlot prototypeFrame; // prototype of an activation frame
     PyrSlot contextDef; // ***defining block context

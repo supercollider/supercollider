@@ -52,22 +52,17 @@ Examples::
 
 code::
 
-//vibrato at 1 Hz, note the use of DC.ar UGen; a constant of 400.0 doesn't work
-{SinOsc.ar(Vibrato.ar(DC.ar(400.0),1,0.02) )}.play
+// vibrato at 1 Hz, note the use of DC.ar UGen; a constant of 400.0 doesn't work
+{ SinOsc.ar(Vibrato.ar(DC.ar(400.0), 1, 0.02)) }.play
 
-//compare: k-rate freq input can be a constant
-{SinOsc.ar(Vibrato.kr(400.0,1,0.02))}.play
+// compare: k-rate freq input can be a constant
+{ SinOsc.ar(Vibrato.kr(400.0, 1, 0.02)) }.play
 
-//control rate and rateVariation
-{SinOsc.ar(Vibrato.ar(DC.ar(400.0),MouseX.kr(2.0,100.0),0.1,1.0,1.0,MouseY.kr(0.0,1.0),0.1) )}.play
+// control rate and rateVariation
+{ SinOsc.ar(Vibrato.ar(DC.ar(400.0), MouseX.kr(2.0, 100.0), 0.1, 1.0, 1.0, MouseY.kr(0.0, 1.0), 0.1)) }.play
 
-//control depth and depthVariation
-{SinOsc.ar(Vibrato.ar(DC.ar(400.0),LFNoise1.kr(1,3,7),MouseX.kr(0.0,1.0),1.0,1.0,MouseY.kr(0.0,1.0),0.1) )}.play
+// control depth and depthVariation
+{ SinOsc.ar(Vibrato.ar(DC.ar(400.0), LFNoise1.kr(1, 3, 7), MouseX.kr(0.0, 1.0), 1.0, 1.0, MouseY.kr(0.0, 1.0), 0.1)) }.play
 
 
 ::
-
-
-
-
-

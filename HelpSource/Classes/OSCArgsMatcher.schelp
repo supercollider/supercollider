@@ -41,6 +41,6 @@ EXAMPLES::
 
 code::
 // Basic example (standalone use)
-m = OSCArgsMatcher([1, nil, 2], {'matches!'.postln});
+m = OSCArgsMatcher([1, nil, 2], { 'matches!'.postln });
 m.value(['/myAddress', 1, 3, 2], 0.0, NetAddr.localAddr, NetAddr.langPort); // matches!
 ::

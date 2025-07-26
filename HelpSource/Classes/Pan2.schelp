@@ -39,4 +39,3 @@ code::
 // other examples
 { Pan2.ar(PinkNoise.ar(0.4), FSinOsc.kr(2), 0.3) }.play;
 ::
-

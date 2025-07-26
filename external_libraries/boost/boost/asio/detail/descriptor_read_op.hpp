@@ -2,7 +2,7 @@
 // detail/descriptor_read_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -26,6 +26,7 @@
 #include <boost/asio/detail/handler_work.hpp>
 #include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/reactor_op.hpp>
+#include <boost/asio/dispatch.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -49,6 +50,7 @@ public:
 
   static status do_perform(reactor_op* base)
   {
+    BOOST_ASIO_ASSUME(base != 0);
     descriptor_read_op_base* o(static_cast<descriptor_read_op_base*>(base));
 
     typedef buffer_sequence_adapter<boost::asio::mutable_buffer,
@@ -86,6 +88,9 @@ class descriptor_read_op
   : public descriptor_read_op_base<MutableBufferSequence>
 {
 public:
+  typedef Handler handler_type;
+  typedef IoExecutor io_executor_type;
+
   BOOST_ASIO_DEFINE_HANDLER_PTR(descriptor_read_op);
 
   descriptor_read_op(const boost::system::error_code& success_ec,
@@ -93,7 +98,7 @@ public:
       Handler& handler, const IoExecutor& io_ex)
     : descriptor_read_op_base<MutableBufferSequence>(success_ec,
         descriptor, buffers, &descriptor_read_op::do_complete),
-      handler_(BOOST_ASIO_MOVE_CAST(Handler)(handler)),
+      handler_(static_cast<Handler&&>(handler)),
       work_(handler_, io_ex)
   {
   }
@@ -103,6 +108,7 @@ public:
       std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
+    BOOST_ASIO_ASSUME(base != 0);
     descriptor_read_op* o(static_cast<descriptor_read_op*>(base));
     ptr p = { boost::asio::detail::addressof(o->handler_), o, o };
 
@@ -110,8 +116,10 @@ public:
 
     // Take ownership of the operation's outstanding work.
     handler_work<Handler, IoExecutor> w(
-        BOOST_ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+        static_cast<handler_work<Handler, IoExecutor>&&>(
           o->work_));
+
+    BOOST_ASIO_ERROR_LOCATION(o->ec_);
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a
@@ -132,6 +140,38 @@ public:
       w.complete(handler, handler.handler_);
       BOOST_ASIO_HANDLER_INVOCATION_END;
     }
+  }
+
+  static void do_immediate(operation* base, bool, const void* io_ex)
+  {
+    // Take ownership of the handler object.
+    BOOST_ASIO_ASSUME(base != 0);
+    descriptor_read_op* o(static_cast<descriptor_read_op*>(base));
+    ptr p = { boost::asio::detail::addressof(o->handler_), o, o };
+
+    BOOST_ASIO_HANDLER_COMPLETION((*o));
+
+    // Take ownership of the operation's outstanding work.
+    immediate_handler_work<Handler, IoExecutor> w(
+        static_cast<handler_work<Handler, IoExecutor>&&>(
+          o->work_));
+
+    BOOST_ASIO_ERROR_LOCATION(o->ec_);
+
+    // Make a copy of the handler so that the memory can be deallocated before
+    // the upcall is made. Even if we're not about to make an upcall, a
+    // sub-object of the handler may be the true owner of the memory associated
+    // with the handler. Consequently, a local copy of the handler is required
+    // to ensure that any owning sub-object remains valid until after we have
+    // deallocated the memory here.
+    detail::binder2<Handler, boost::system::error_code, std::size_t>
+      handler(o->handler_, o->ec_, o->bytes_transferred_);
+    p.h = boost::asio::detail::addressof(handler.handler_);
+    p.reset();
+
+    BOOST_ASIO_HANDLER_INVOCATION_BEGIN((handler.arg1_, handler.arg2_));
+    w.complete(handler, handler.handler_, io_ex);
+    BOOST_ASIO_HANDLER_INVOCATION_END;
   }
 
 private:

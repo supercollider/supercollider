@@ -223,7 +223,7 @@ void DiskIn_Ctor(DiskIn* unit) {
 
 void DiskIn_next(DiskIn* unit, int inNumSamples) {
     GET_BUF_SHARED
-    if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength << 1) - 1)) != 0)) {
+    if (!bufData || ((bufFrames & ((FULLBUFLENGTH << 1) - 1)) != 0)) {
         unit->m_framepos = 0;
         ClearUnitOutputs(unit, inNumSamples);
         return;
@@ -320,7 +320,7 @@ void DiskOut_Ctor(DiskOut* unit) {
 void DiskOut_next(DiskOut* unit, int inNumSamples) {
     GET_BUF
 
-    if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength << 1) - 1)) != 0)) {
+    if (!bufData || ((bufFrames & ((FULLBUFLENGTH << 1) - 1)) != 0)) {
         unit->m_framepos = 0;
         //		unit->m_framewritten = 0;
         return;
@@ -492,7 +492,7 @@ template <bool First> static inline void VDiskIn_next_(VDiskIn* unit, int inNumS
     bool test = false;
 
     GET_BUF_SHARED
-    if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength << 1) - 1)) != 0)) {
+    if (!bufData || ((bufFrames & ((FULLBUFLENGTH << 1) - 1)) != 0)) {
         unit->m_framePos = 0.;
         unit->m_count = 0;
         ClearUnitOutputs(unit, inNumSamples);
@@ -584,7 +584,7 @@ void VDiskIn_next_rate1(VDiskIn* unit, int inNumSamples) {
     bool test = false;
 
     GET_BUF_SHARED
-    if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength << 1) - 1)) != 0)) {
+    if (!bufData || ((bufFrames & ((FULLBUFLENGTH << 1) - 1)) != 0)) {
         unit->m_iFramePos = 0.;
         unit->m_count = 0;
         ClearUnitOutputs(unit, inNumSamples);
@@ -627,7 +627,6 @@ void VDiskIn_next_rate1(VDiskIn* unit, int inNumSamples) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-C_LINKAGE SC_API_EXPORT void unload(InterfaceTable* inTable) { delete gDiskIO; }
 
 PluginLoad(DiskIO) {
     ft = inTable;
@@ -638,5 +637,7 @@ PluginLoad(DiskIO) {
     DefineDtorUnit(DiskOut);
     DefineSimpleUnit(VDiskIn);
 }
+
+PluginUnload(DiskIO) { delete gDiskIO; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

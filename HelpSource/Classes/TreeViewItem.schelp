@@ -124,7 +124,7 @@ t.addItem(["Bob", "Beatrice", "Benny"]);
 t.addItem(["Cleo", "Conrad", "Cecilia"]);
 )
 
-i = t.itemAt(1);  //get an item
+i = t.itemAt(1);  // get an item
 
 i.setString(1, "Hans");
 i.setColor(1, Color.red);

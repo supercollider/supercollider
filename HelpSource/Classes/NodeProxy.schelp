@@ -121,7 +121,7 @@ b.source = { PinkNoise.ar(0.2.dup) };
 // now I want to filter b through a new proxy.
 a = NodeProxy.new;
 a <-- b; a.source = { HPF.ar(b.ar, 7000) };
-a.source = { HPF.ar(b.ar, 3000) };// changing the source
+a.source = { HPF.ar(b.ar, 3000) }; // changing the source
 a.clear; b.clear;
 ::
 
@@ -237,7 +237,7 @@ a.playN([0, 1, 3], [0.04, 0.3, 0.1], vol: 1); // some complicated routing
 a.set(\freq, 123);
 
 b = NodeProxy(s);
-b.source = { |freq = 1000| SinOsc.ar(freq * 3 * {{ rrand(0.9, 1.1) }.dup(8) }.dup(2)).mean * 0.5 };
+b.source = { |freq = 1000| SinOsc.ar(freq * 3 * { { rrand(0.9, 1.1) }.dup(8) }.dup(2)).mean * 0.5 };
 b.monitor = a.monitor.copy;
 b.nodeMap = a.nodeMap.copy;
 b.play;
@@ -508,7 +508,7 @@ Ndef(\sin).seti(\freq, [0, 2], [310, 207])
 // exceeding indices, argument arrays of different length
 // 34 % 5 => 4, 12 % 5 => 2, 56 % 5 => 1
 Ndef(\sin).seti(\freq, [34, 12, 56], [376, 199])
-Ndef(\sin).getKeysValues // -> [ [ freq, [ 310, 376, 199, 137, 376 ] ] ]
+Ndef(\sin).getKeysValues // -> [[freq, [310, 376, 199, 137, 376]]]
 
 Ndef.clear(10)
 ::
@@ -526,7 +526,7 @@ method::setRates
 set the default rate (\tr, \ir, numerical) for synthDef arg. A rate of nil removes setting.
 
 method::controlNames
-Returns the link::Classes/ControlName:: objects of all slots, strong::except:: the names of this list (default: code::[\out, \i_out, \gate, \fadeTime]:: , which are used internally). When the node proxy received a code::set:: for a given key, the code::defaultValue:: of the corresponding code::ControlName:: contains the object that was passed, which might be any object whatsoever.
+Returns the link::Classes/ControlName:: objects of all slots, strong::except:: the names of this list (default: code::[\out, \i_out, \gate, \fadeTime]::, which are used internally). When the node proxy received a code::set:: for a given key, the code::defaultValue:: of the corresponding code::ControlName:: contains the object that was passed, which might be any object whatsoever.
 
 method::controlKeys
 Returns the keys (symbols) of all control names objects of all slots, strong::except:: the names of this list. (default: none).
@@ -550,8 +550,8 @@ method::specs
 Get the specs array from SynthDef metadata. Note that, for a NodeProxy with multiple sources, result will be a dictionary containing specs of ALL source SynthDefs.
 code::
 ~p = NodeProxy.audio(Server.default, 2);
-~p.put(0, { SinOsc.ar(\freq.kr(100, spec:[50, 400])) });
-~p.put(1, { WhiteNoise.ar(\noiseAmp.kr(0.1, spec:[0, 1])) });
+~p.put(0, { SinOsc.ar(\freq.kr(100, spec: [50, 400])) });
+~p.put(1, { WhiteNoise.ar(\noiseAmp.kr(0.1, spec: [0, 1])) });
 ~p.specs.postln;
 ::
 
@@ -584,7 +584,7 @@ method::sendEach
 Like send, just iterating separately over the objects.
 
 method::wakeUp
-Until the proxy is not used by any output ( either .play or .ar/.kr ) it is not running on the server. you can wake it up to force it playing. Normally this is not needed.
+Until the proxy is not used by any output (either .play or .ar/.kr) it is not running on the server. you can wake it up to force it playing. Normally this is not needed.
 
 subsection::Storing as code
 method::asCode
@@ -608,6 +608,7 @@ x = NodeProxy.new.source = { DC.ar };
 x.asCode;
 
 x.free;
+::
 
 subsection::GUI
 
@@ -686,10 +687,10 @@ a.source = { SinOsc.ar([390, 286] * 1.2, 0, 0.2) };
 a.source = { SinOsc.ar([390, 286, 400, 420, 300] * 1.2, 0, 0.2) };
 
 // other inputs
-a.source = { WhiteNoise.ar([0.01,0.01]) };
+a.source = { WhiteNoise.ar([0.01, 0.01]) };
 a.source = 0;
 a.source = \default; // synthDef on server
-a.source = SynthDef("w", { arg out=0; Out.ar(out,SinOsc.ar([Rand(430, 600), 600], 0, 0.2)) });
+a.source = SynthDef("w", { |out = 0| Out.ar(out, SinOsc.ar([Rand(430, 600), 600], 0, 0.2)) });
 a.source = nil; // removes any object
 
 // feedback
@@ -703,29 +704,29 @@ a.source = { SinOsc.ar([390, 286] * ExpRand(1, 3), 0, 0.2) };
 
 // adding nodes
 a.add({ SinOsc.ar([50, 390]*1.25, 0, 0.1) });
-a.add({ BrownNoise.ar([0.02,0.02]) });
+a.add({ BrownNoise.ar([0.02, 0.02]) });
 
 // setting nodes at indices:
-a[0] = { SinOsc.ar( 700 * LFNoise1.kr(1, 0.3, 0.6) + 200, 0, 0.1) };
+a[0] = { SinOsc.ar(700 * LFNoise1.kr(1, 0.3, 0.6) + 200, 0, 0.1) };
 a[1] = { LFPulse.kr(3, 0.3) * SinOsc.ar(500, 0, 0.1) };
 a[2] = { LFPulse.kr(3.5, 0.3) * SinOsc.ar(600, 0, 0.1) };
-a[3] = { SinOsc.ar([1,1.25] * 840, 0, 0.1) };
+a[3] = { SinOsc.ar([1, 1.25] * 840, 0, 0.1) };
 
 // filtering: the first argument is the previous bus content. more args can be used as usual.
-a[3] = \filter -> { arg in; in * SinOsc.ar(Rand(100,1000)) };
-a[2] = \filter -> { arg in; in * MouseY.kr(0,1) };
-a[8] = \filter -> { arg in; in * MouseX.kr(0,1) };
-a[4] = \filter -> { arg in; in * SinOsc.ar(ExpRand(1,5)).max(0) };
+a[3] = \filter -> { |in| in * SinOsc.ar(Rand(100, 1000)) };
+a[2] = \filter -> { |in| in * MouseY.kr(0, 1) };
+a[8] = \filter -> { |in| in * MouseX.kr(0, 1) };
+a[4] = \filter -> { |in| in * SinOsc.ar(ExpRand(1, 5)).max(0) };
 
 
 
 // setting controls
 a.fadeTime = 2.0;
-a.source = { arg f=400; SinOsc.ar(f * [1,1.2] * rrand(0.9, 1.1), 0, 0.1) };
+a.source = { |f = 400| SinOsc.ar(f * [1, 1.2] * rrand(0.9, 1.1), 0, 0.1) };
 a.set(\f, rrand(900, 300));
 a.set(\f, rrand(1500, 700));
 a.xset(\f, rrand(1500, 700)); // crossfaded setting
-a.source = { arg f=400; RLPF.ar(Pulse.ar(f * [1,1.02] * 0.05, 0.5, 0.2), f * 0.58, 0.2) };
+a.source = { |f = 400| RLPF.ar(Pulse.ar(f * [1, 1.02] * 0.05, 0.5, 0.2), f * 0.58, 0.2) };
 
 // control lags
 a.lag(\f, 0.5); // the objects are built again internally and sent to the server.
@@ -738,20 +739,20 @@ a.fadeTime = 1.0;
 // mapping controls to other node proxies
 
 c = NodeProxy.control(s, 2);
-c.source = { SinOsc.kr([10,20] * 0.1, 0, 150, 1300) };
+c.source = { SinOsc.kr([10, 20] * 0.1, 0, 150, 1300) };
 a.map(\f, c);
-a[0] = { arg f=400; RHPF.ar(Pulse.ar(f * [1,1.2] * 0.05, 0.5, 0.2), f * 0.58, 0.2) };
-c.source = { SinOsc.kr([10,16] * 0.02, 0, 50, 700) };
-c.source = { Line.kr(300, 1500, 10) + SinOsc.kr(20 * [1,2], 0, 100) };
-a[1] = { arg f; LFPar.ar(f % MouseX.kr(1, 40, 1) * 4 + 360, 0, 0.2) };
+a[0] = { |f = 400| RHPF.ar(Pulse.ar(f * [1, 1.2] * 0.05, 0.5, 0.2), f * 0.58, 0.2) };
+c.source = { SinOsc.kr([10, 16] * 0.02, 0, 50, 700) };
+c.source = { Line.kr(300, 1500, 10) + SinOsc.kr(20 * [1, 2], 0, 100) };
+a[1] = { |f| LFPar.ar(f % MouseX.kr(1, 40, 1) * 4 + 360, 0, 0.2) };
 
 // map multiple channels of one proxy to multiple controls of another
 // recently changed behaviour!
 
-a.source = { arg f=#[400, 400]; LPF.ar(Pulse.ar(f[0] * [0.4,1], 0.2, 0.2), f[1] * 3) };
+a.source = { |f = #[400, 400]| LPF.ar(Pulse.ar(f[0] * [0.4, 1], 0.2, 0.2), f[1] * 3) };
 a.map(\f, c); // multichannel proxy c is mapped to multichannel control of a
-a.source = { arg f=#[400, 400]; LPF.ar(Pulse.ar(f, 0.2, 0.2), f[1]) };
-a.source = { arg f=#[400, 400]; Formant.ar(140, f * 1.5, 100, 0.1) };
+a.source = { |f = #[400, 400]| LPF.ar(Pulse.ar(f, 0.2, 0.2), f[1]) };
+a.source = { |f = #[400, 400]| Formant.ar(140, f * 1.5, 100, 0.1) };
 c.source = { SinOsc.kr([Line.kr(1, 30, 10), 1], 0, [100, 700], [300, 700]) };
 c.source = 400;
 
@@ -786,10 +787,10 @@ a.map(\f, c); // restore mapping
 
 
 // sending envelopes (up to 8 levels)
-w = Env.new(Array.rand(3, 400, 1000),Array.rand(2, 0.3, 0.001), -4);
+w = Env.new(Array.rand(3, 400, 1000), Array.rand(2, 0.3, 0.001), -4);
 c.env(w);
 c.env(w);
-w = Env.new(Array.rand(8, 400, 1000),Array.rand(7, 0.03, 0.1));
+w = Env.new(Array.rand(8, 400, 1000), Array.rand(7, 0.03, 0.1));
 c.env(w);
 c.env(w);
 
@@ -806,11 +807,11 @@ code::
 ///////////////////// channel offset/object index /////////////////////
 
 
-a = NodeProxy.audio(s,2);
+a = NodeProxy.audio(s, 2);
 a.play;
 a[0] = { Ringz.ar(Impulse.ar(5, 0, 0.1), 1260) };
 a.put(1, { Ringz.ar(Impulse.ar(5.3, 0, 0.1), 420) }, 1);
-a.put(0, { Ringz.ar(Dust.ar([1,1]*15.3, 0.1), 720) }, 1);
+a.put(0, { Ringz.ar(Dust.ar([1, 1]*15.3, 0.1), 720) }, 1);
 a.put(1, { Ringz.ar(Impulse.ar(5.3, 0, 0.1), 420) }, 1);
 a.end;
 ::
@@ -822,7 +823,7 @@ code::
 
 
 
-a = NodeProxy.audio(s,2);
+a = NodeProxy.audio(s, 2);
 a.play;
 
 a.quant = 2.0; // quantize changes to the next 2.0-beat multiple
@@ -844,7 +845,7 @@ code::
 
 (
 // must have 'out' or 'i_out' argument to work properly
-SynthDef("who", { arg freq, gate=1, out=0, ffreq=800, amp=0.1;
+SynthDef("who", { |freq, gate = 1, out = 0, ffreq = 800, amp = 0.1|
 	var env;
 	env = Env.asr(0.01, amp, 0.5);
 	Out.ar(out, Pan2.ar(
@@ -859,7 +860,7 @@ SynthDef("who", { arg freq, gate=1, out=0, ffreq=800, amp=0.1;
 s.boot;
 a = NodeProxy.audio(s, 2);
 a.fadeTime = 2;
-b = NodeProxy.audio(s,2);
+b = NodeProxy.audio(s, 2);
 b.fadeTime = 3;
 )
 
@@ -897,7 +898,7 @@ c.source = { MouseX.kr(100, 5500, 1) };
 (
 b.source = Pbind(
 			\instrument, \who,
-			\freq, Pseq([600, 350, 300],inf),
+			\freq, Pseq([600, 350, 300], inf),
 			\legato, 0.1,
 			\ffreq, Pseq([c, 100, c, 100, 300, 600], inf), // use proxy in a pattern
 			\dur, Pseq([1, 0.5, 0.75, 0.25] * 0.4, inf),
@@ -907,11 +908,11 @@ b.source = Pbind(
 
 
 
-b[2] = Pbind(\instrument, \who, \freq, 620, \ffreq, Prand([500,c],inf), \legato, 0.1, \dur, 0.1);
-b[3] = Pbind(\instrument, \who, \ffreq, 5000, \freq, Pseq([720, 800],inf), \legato, 0.1, \dur, 0.1, \amp, 0.01);
-b[4] = Pbind(\instrument, \who, \freq, Pseq([700, 400],inf), \legato, 0.1, \ffreq, 200);
-b[1] = { WhiteNoise.ar([0.01,0.01]) };
-b[4] = { arg ffreq=800; Resonz.ar(WhiteNoise.ar([1,1]), ffreq, 0.05) };
+b[2] = Pbind(\instrument, \who, \freq, 620, \ffreq, Prand([500, c], inf), \legato, 0.1, \dur, 0.1);
+b[3] = Pbind(\instrument, \who, \ffreq, 5000, \freq, Pseq([720, 800], inf), \legato, 0.1, \dur, 0.1, \amp, 0.01);
+b[4] = Pbind(\instrument, \who, \freq, Pseq([700, 400], inf), \legato, 0.1, \ffreq, 200);
+b[1] = { WhiteNoise.ar([0.01, 0.01]) };
+b[4] = { |ffreq = 800| Resonz.ar(WhiteNoise.ar([1, 1]), ffreq, 0.05) };
 
 
 b.map(\ffreq, c); // map the control to the proxy

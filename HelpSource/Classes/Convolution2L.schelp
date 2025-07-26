@@ -27,7 +27,7 @@ argument::framesize
 size of FFT frame, must be a power of two (512, 1024, 2048, 4096 are standard choices).
 Convolution uses twice this number internally.
 Note that the convolution gets progressively more expensive to run for higher powers!
-The maximum value you can use is 2^16=16384.
+The maximum value you can use is 2^16 = 16384.
 (This upper limit is half of "SC_FFT_MAXSIZE" defined in the SC source code.)
 Larger convolutions than this can be done using link::Classes/PartConv::.
 
@@ -61,7 +61,7 @@ d.zero;
 ::
 code::
 (
-SynthDef(\conv_test, { |out, kernel, t_trig=0|
+SynthDef(\conv_test, { |out, kernel, t_trig = 0|
 	var input = Impulse.ar(1);
 	var framesize = 2048; // must have power of two
 	var result = Convolution2L.ar(input, kernel, t_trig, framesize, 1, 0.5);
@@ -78,7 +78,7 @@ x.set(\kernel, d);
 x.set(\t_trig, 1); // after this trigger, the change will take effect.
 
 d.zero;
-40.do { |it| d.set(20 * it + 10, 1) };// changing the buffers' contents
+40.do { |it| d.set(20 * it + 10, 1) }; // changing the buffers' contents
 x.set(\t_trig, 1); // after this trigger, the change will take effect.
 
 x.set(\kernel, b);
@@ -90,7 +90,7 @@ x.free;
 code::
 // longer crossfade
 (
-SynthDef(\conv_test2, { |out, kernel, t_trig=0|
+SynthDef(\conv_test2, { |out, kernel, t_trig = 0|
 	var input = Impulse.ar(1);
 	var framesize = 2048; // must have power of two
 	var result = Convolution2L.ar(input, kernel, t_trig, 2048, 5, 0.5);
@@ -108,7 +108,7 @@ x.set(\t_trig, 1); // after this trigger, the change will take effect.
 
 d.zero;
 
-40.do { |it| d.set(20 * it + 10, 1) };// changing the buffers' contents
+40.do { |it| d.set(20 * it + 10, 1) }; // changing the buffers' contents
 
 x.set(\t_trig, 1); // after this trigger, the change will take effect.
 
@@ -121,7 +121,7 @@ x.free;
 code::
 // next example
 
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 (
 {
@@ -137,7 +137,7 @@ code::
 
 (
 // must have power of two framesize- FFT size will be sorted by Convolution2 to be double this
-// maximum is currently a=8192 for FFT of size 16384
+// maximum is currently a = 8192 for FFT of size 16384
 a = 2048;
 // kernel buffer
 g = Buffer.alloc(s, a, 1);
@@ -184,4 +184,3 @@ b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, true, true);
 b.free;
 
 ::
-

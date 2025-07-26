@@ -56,14 +56,14 @@ Example:
 code::
 (
 w = Window("EZText", Rect(300, 300, 260, 60)).front;
-g = EZText( w,          // parent
+g = EZText(w,          // parent
             250@50,     // bounds
             "testing",  // label
             { |ez| (ez.value.asString ++" is the value of " ++ ez).postln }, // action
             [1, 2, 3],  // initValue
             true        // initAction
 );
-g.setColors(Color.grey,Color.white);
+g.setColors(Color.grey, Color.white);
 );
 
 // Simplest version, no parent view, so a window is created
@@ -73,7 +73,7 @@ g.setColors(Color.grey,Color.white);
 );
 
 (
-	g = EZText(bounds: Rect( 100, 200, 150, 50), label:" test ", layout: \vert);
+	g = EZText(bounds: Rect(100, 200, 150, 50), label:" test ", layout: \vert);
 	g.action_({ |ez| (ez.value.asString ++" is the value of " ++ ez).postln });
 );
 ::
@@ -133,20 +133,20 @@ examples::
 code::
 // Simplest version
 (		// basic use
-		w=Window("ez", Rect(300, 300, 300, 50)).front;
-		g=EZText(w, 290@40," test  ", textWidth: 220,layout:\horz);
-		g.setColors(Color.grey,Color.white);
+		w = Window("ez", Rect(300, 300, 300, 50)).front;
+		g = EZText(w, 290@40, " test  ", textWidth: 220, layout: \horz);
+		g.setColors(Color.grey, Color.white);
 );
 
 
 // lots of textFields on one window
 (
-w=Window.new.front;
-w.view.decorator=FlowLayout(w.view.bounds);
-w.view.decorator.gap=2@2;
+w = Window.new.front;
+w.view.decorator = FlowLayout(w.view.bounds);
+w.view.decorator.gap = 2@2;
 
 40.do{
-		g=EZText(w, 170@16," test  ", textWidth: 120,layout:\horz);
+		g = EZText(w, 170@16, " test  ", textWidth: 120, layout: \horz);
 		g.setColors(Color.grey, Color.white, Color.grey(0.8));
 };
 );
@@ -155,32 +155,32 @@ w.view.decorator.gap=2@2;
 // click these parentheses to see three variants
 (
 
-m=nil;
-m=2@2;		//comment for no margin
+m = nil;
+m = 2@2;		// comment for no margin
 
 /////////////////
 /// Layout \horz
 
 (		// with label
-		g=EZText(nil, 170@20," freq  ", textWidth:120,layout:\horz,margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
-		g.window.bounds = g.window.bounds.moveBy(-180,50);
+		g = EZText(nil, 170@20, " freq  ", textWidth: 120, layout: \horz, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
+		g.window.bounds = g.window.bounds.moveBy(-180, 50);
 );
 
 (		// no label. use window name as label
-		g=EZText(nil, 120@20, layout:\horz,margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
+		g = EZText(nil, 120@20, layout: \horz, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180, -90);
-		g.window.name="Freq";
+		g.window.name = "Freq";
 );
 
 /////////////////
 /// Layout \vert
 
 (		// all features
-		g=EZText(nil, 120@60," freq  ", textWidth: 120,layout: \vert, margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
-		g.window.bounds = g.window.bounds.moveBy(100,50);
+		g = EZText(nil, 120@60, " freq  ", textWidth: 120, layout: \vert, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
+		g.window.bounds = g.window.bounds.moveBy(100, 50);
 );
 
 )
@@ -196,7 +196,7 @@ w.addFlowLayout;
 
 TdefGui(Tdef(\text), 0, w);
 Tdef(\text).envir.keysValuesDo { |k, v|
-	EZText(w, Rect(0,0,300,40), k, { |ez|
+	EZText(w, Rect(0, 0, 300, 40), k, { |ez|
 		Tdef(\text).envir.put(*[k, ez.value].postcs);
 	}, v);
 };
@@ -214,5 +214,5 @@ Tdef(\text, { |ev|
 // type these or similar functions into dur and note fields and evaluate:
 
 { [0.1, 0.2, 0.3].choose }
-{ [ 0, 2, 7, 10 ].scramble.keep(rrand(0, 4)) }
+{ [0, 2, 7, 10].scramble.keep(rrand(0, 4)) }
 ::

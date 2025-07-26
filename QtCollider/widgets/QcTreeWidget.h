@@ -56,28 +56,30 @@ public:
 
     Q_OBJECT
     Q_PROPERTY(QVariantList columns READ columns WRITE setColumns)
-    Q_PROPERTY(QcTreeWidget::ItemPtr currentItem READ currentItem WRITE setCurrentItem);
+    Q_PROPERTY(QtCollider::SafePtr<QcTreeWidget::Item> currentItem READ currentItem WRITE setCurrentItem);
 
 public:
-    Q_INVOKABLE QcTreeWidget::ItemPtr item(const QcTreeWidget::ItemPtr& parent, int index);
-    Q_INVOKABLE QcTreeWidget::ItemPtr parentItem(const QcTreeWidget::ItemPtr&);
-    Q_INVOKABLE int indexOfItem(const QcTreeWidget::ItemPtr&);
+    Q_INVOKABLE QtCollider::SafePtr<QcTreeWidget::Item> item(const QtCollider::SafePtr<QcTreeWidget::Item>& parent,
+                                                             int index);
+    Q_INVOKABLE QtCollider::SafePtr<QcTreeWidget::Item> parentItem(const QtCollider::SafePtr<QcTreeWidget::Item>&);
+    Q_INVOKABLE int indexOfItem(const QtCollider::SafePtr<QcTreeWidget::Item>&);
 
-    Q_INVOKABLE QcTreeWidget::ItemPtr addItem(const QcTreeWidget::ItemPtr& parent, const QVariantList& data);
+    Q_INVOKABLE QtCollider::SafePtr<QcTreeWidget::Item> addItem(const QtCollider::SafePtr<QcTreeWidget::Item>& parent,
+                                                                const QVariantList& data);
 
-    Q_INVOKABLE QcTreeWidget::ItemPtr insertItem(const QcTreeWidget::ItemPtr& parent, int index,
-                                                 const QVariantList& data);
+    Q_INVOKABLE QtCollider::SafePtr<QcTreeWidget::Item>
+    insertItem(const QtCollider::SafePtr<QcTreeWidget::Item>& parent, int index, const QVariantList& data);
 
-    Q_INVOKABLE void removeItem(const QcTreeWidget::ItemPtr&);
+    Q_INVOKABLE void removeItem(const QtCollider::SafePtr<QcTreeWidget::Item>&);
 
-    Q_INVOKABLE QVariantList strings(const QcTreeWidget::ItemPtr&);
-    Q_INVOKABLE void setText(const QcTreeWidget::ItemPtr&, int column, const QString&);
-    Q_INVOKABLE void setColor(const QcTreeWidget::ItemPtr&, int column, const QColor&);
-    Q_INVOKABLE void setTextColor(const QcTreeWidget::ItemPtr&, int column, const QColor&);
+    Q_INVOKABLE QVariantList strings(const QtCollider::SafePtr<QcTreeWidget::Item>&);
+    Q_INVOKABLE void setText(const QtCollider::SafePtr<QcTreeWidget::Item>&, int column, const QString&);
+    Q_INVOKABLE void setColor(const QtCollider::SafePtr<QcTreeWidget::Item>&, int column, const QColor&);
+    Q_INVOKABLE void setTextColor(const QtCollider::SafePtr<QcTreeWidget::Item>&, int column, const QColor&);
 
-    Q_INVOKABLE QWidget* itemWidget(const QcTreeWidget::ItemPtr&, int column);
-    Q_INVOKABLE void setItemWidget(const QcTreeWidget::ItemPtr&, int column, QWidget*);
-    Q_INVOKABLE void removeItemWidget(const QcTreeWidget::ItemPtr&, int column);
+    Q_INVOKABLE QWidget* itemWidget(const QtCollider::SafePtr<QcTreeWidget::Item>&, int column);
+    Q_INVOKABLE void setItemWidget(const QtCollider::SafePtr<QcTreeWidget::Item>&, int column, QWidget*);
+    Q_INVOKABLE void removeItemWidget(const QtCollider::SafePtr<QcTreeWidget::Item>&, int column);
 
     Q_INVOKABLE void sort(int column, bool descending);
 
@@ -113,4 +115,4 @@ private:
     bool _emitAction;
 };
 
-Q_DECLARE_METATYPE(QcTreeWidget::ItemPtr);
+Q_DECLARE_METATYPE(QtCollider::SafePtr<QcTreeWidget::Item>);

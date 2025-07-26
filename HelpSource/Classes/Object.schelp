@@ -48,19 +48,40 @@ Create a new instance. The creation of new instances of any Object actually happ
 
 method::newCopyArgs
 
-Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined. If the superclass's code::new:: method requires arguments, the first arguments passed to code::newCopyArgs:: will be passed on to that method, and the following arguments will be copied to this class's instance variables. Class variables are ignored.
+Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined.
+
+Importantly, superclass constructors are NOT called, but the values are directly placed in the superclass's instance variables.
 
 code::
 MyClass {
 	var a, b, c;
-
-	*new {
-		arg arg1, arg2, arg3;
-		// will copy arg1, arg2, arg3 to variables a, b, c
-		^super.newCopyArgs(arg1, arg2, arg3);
-	}
+    // Will copy arg1, arg2, arg3 to variables a, b, c.
+	*new { |arg1, arg2, arg3| ^super.newCopyArgs(arg1, arg2, arg3) }
+	*newKw { |arg1| ^super.newCopyArgs(arg1, c: 10) }
+	value { ^[a, b, c] }
 }
+MyClass.new(1, 2, 3).value() == [1, 2, 3];
+MyClass.newKw(1).value() == [1, nil, 10];
 ::
+
+Example of inheritance.
+code::
+Base {
+	var a, b, c;
+	*new { ^\didNotCallBase } // This is NEVER called
+}
+
+Derived : Base {
+    var d, e, f;
+    *new { |d, e, f| ^super.newCopyArgs(1, 2, 3, d, e, f) }
+    *newKw { |d, e, f| ^super.newCopyArgs(c: 3, d: d, e: e, f: f) }
+	value { ^[a, b, c, d, e, f] }
+}
+
+Derived.new(10, 11, 12).value() == [1, 2, 3, 10, 11, 12];
+Derived.newKw(10, 11, 12).value() == [nil, nil, 3, 10, 11, 12];
+::
+
 
 instancemethods::
 private::addFunc, addFuncTo, removeFunc, removeFuncFrom
@@ -111,6 +132,17 @@ subsection::Accessing
 method::size
 
 Different classes respond to this message differently. Object always returns 0.
+
+method::rank
+Returns the number of dimensions the value has.
+A single value (scalar) has rank of zero.
+See link::Classes/ArrayedCollection#-rank:: for cases where this is useful.
+
+method::shape
+For a multidimensional array,
+returns an array of the number of elements along each consecutive dimension,
+see link::Classes/ArrayedCollection#-shape::.
+For a scalar value (most objects) returns nil.
 
 subsection::Copying
 
@@ -368,33 +400,33 @@ This method allow building up chains of actions to be performed on an object (po
 
 Examples:
 code::
-x !? ( _ * 3 ) ?? { "It was a nil, so I give a default value".postln; Point(1,1) }
+x !? (_ * 3) ?? { "It was a nil, so I give a default value".postln; Point(1, 1) }
 ::
 With code::x = nil::, this will result in:
 teletype::
 It was a nil, so I give a default value
-Point( 1, 1 )
+Point(1, 1)
 ::
-But if code::x = Point(3,4)::, the result will be:
+But if code::x = Point(3, 4)::, the result will be:
 teletype::
-Point( 9, 12 )
+Point(9, 12)
 ::
 
 Nested nil checks:
 code::
 (
 x = nil;
-y = Point(3,4);
-z = Point(5,6);
+y = Point(3, 4);
+z = Point(5, 6);
 x !? { |x| y !? { |y| z !? { |z|  x.rho * y.rho * z.rho } } }
 )
 ::
 Results in teletype::nil::
 code::
 (
-x = Point(1,2);
-y = Point(3,4);
-z = Point(5,6);
+x = Point(1, 2);
+y = Point(3, 4);
+z = Point(5, 6);
 x !? { |x| y !? { |y| z !? {  |z| x.rho * y.rho * z.rho } } }
 )
 ::
@@ -453,19 +485,19 @@ code::
 var x, z;
 z = [0, 1, 1.1, 1.3, 1.5, 2];
 x = switch (z.choose)
-	{1}   { \no }
-	{1.1} { \wrong }
-	{1.3} { \wrong }
-	{1.5} { \wrong }
-	{2}   { \wrong }
-	{0}   { \true };
+	{ 1 }   { \no }
+	{ 1.1 } { \wrong }
+	{ 1.3 } { \wrong }
+	{ 1.5 } { \wrong }
+	{ 2 }   { \wrong }
+	{ 0 }   { \true };
 x.postln;
 )
 ::
 
 subsection::Messaging
 
-Instead of directly sending a method to an object, a method may be invoked given a method selector only (a Symbol). The other arguments may be provided by passing them directly, from an environment. If it is not known whether the receiver implements the method, tryPerform only sends if it does, and superPerform invokes the method of the superclass.
+Instead of directly sending a method to an object, a method may be invoked given a method selector only (a Symbol). The other arguments may be provided by passing them directly, from an environment. If it is not known whether the receiver implements the method, tryPerform only sends if it does. The messages code::superPerform::, code::superPerformList::; and code::superPerformArgs:: invoke the method of the superclass.
 
 
 method::perform
@@ -482,6 +514,29 @@ code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performList(\value, [1, 2, 3]);
 ::
+
+method::performArgs
+Like link::#-perform::, but allows you to pass a key-value array of keyword arguments.
+Useful in link::#-doesNotUnderstand:: and other places where you might accept a variety of keyword arguments.
+
+argument::selector
+A link::Classes/Symbol:: of the method name.
+
+argument::args
+An link::Classes/Array:: of the arguments.
+
+argument::kwargs
+An link::Classes/Array:: of keyword-argument pairs.
+
+Example
+code::
+x.performArgs(\foo, [1, 2], [\bar, 10]);
+// is equivalent to...
+x.foo(1, 2, bar: 10);
+::
+
+method::functionPerformList
+Call the function with the selector and argument list. This method is there for a uniform interface between link::Classes/Method::s and link::Classes/Function::s.
 
 method::performMsg
 
@@ -521,6 +576,7 @@ method::tryPerform
 Like 'perform', but tryPerform passes the method to the receiver only if the receiver understands the method name. If the receiver doesn't implement that method, the result is nil. Note that this does not catch errors like 'try' does (see Exception). If the receiver does have a matching method but that method throws an error, execution will halt. But, 'tryPerform' is faster than 'try'.
 
 code::
+
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
 // Set does not understand keysValuesDo -- result is nil
@@ -528,6 +584,10 @@ Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
 // Error occurs within keysValuesDo -- error is thrown back to halt execution
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].flippityblargh });
+
+// keyword arguments are passed on
+[1, 2, 3, 4].tryPerform(\pyramid, patternType: 1)
+
 ::
 
 method::superPerform
@@ -543,6 +603,13 @@ Like performList, superPerformList calls a method, however it calls the method o
 selector: A Symbol representing a method selector.
 args: Method arguments. If the last argument is a List or an Array, then its elements are unpacked and passed as arguments.
 
+method::superPerformArgs
+
+Like performLArgs, superPerformArgs calls a method, however it calls the method on the superclass.
+selector: A Symbol representing a method selector.
+args: Method arguments.
+kwargs: Keyword arguments, are passed as key value pairs.
+
 method::multiChannelPerform
 Perform selector with multichannel expansion. See also: link::Guides/Multichannel-Expansion::.
 
@@ -552,10 +619,10 @@ argument:: ... args
 Method arguments which, if they contain an array, will call the method multiple times for each sub-element.
 discussion::
 code::
-a = { |a, b, c| format("% plus % times % is %", a, b, c, a + b * c).quote; };
+a = { |a, b, c| format("% plus % times % is %", a, b, c, a + b * c).quote };
 a.multiChannelPerform(\value, [1, 10, 100, 1000], [2, 7, 9], [3, 7]);
 
-["foo","bar"].multiChannelPerform('++',["l","bro","t"]);
+["foo", "bar"].multiChannelPerform('++', ["l", "bro", "t"]);
 ::
 
 subsection::Unique Methods
@@ -614,6 +681,17 @@ Remove all dependants of the receiver. Any object that has had dependants added 
 subsection::Error Support
 
 Object implements a number of methods which throw instances of Error. A number of methods (e.g. doesNotUnderstand) are 'private' and do not normally need to be called directly in user code. Others, such as those documented below can be useful for purposes such as object oriented design (e.g. to define an abstract interface which will be implemented in subclasses) and deprecation of methods. The reserved keyword thisMethod can be used to refer to the enclosing method. See also Method and Function (for exception handling).
+
+method::doesNotUnderstand
+
+argument::selector
+The method that was called.
+
+argument::... args
+An link::Classes/Array:: of arguments.
+
+argument::kwargs
+An link::Classes/Array:: of keyword argument pairs.
 
 method::throw
 
@@ -692,8 +770,120 @@ code::
 method::dump
 
 Print a detailed low level representation of the receiver to the post window.
+Any object understands this method (this means metaclasses, classes and their instances). Note that in link::Classes/List:: class, this method dumps the list's internal array.
+
 code::
-List[1, 2, 3].dump;
+Meta_Object.dump // the meta class of the class Object
+::
+code::
+Object.dump      // the class called Object
+::
+code::
+Object.new.dump  // an istance of the class Object
+::
+
+discussion::
+
+list::
+## The detailed low level information varies depending on the receiver.
+## Some instance objects, especially unique objects, return the class name and value (also more data if necessary) of the dumped object:
+
+definitionlist::
+## link::Classes/Float::
+||
+code::
+1.0.dump
+::
+64-bit version of SuperCollider returns:
+teletype::
+   Float 1.000000   00000000 3FF00000
+-> 1.0
+::
+For the detals, see link::Classes/Float#-dump::
+
+## link::Classes/Integer::
+||
+code::
+1.dump
+::
+teletype::
+   Integer 1
+-> 1
+::
+## link::Classes/Char::
+	||
+code::
+$1.dump
+::
+teletype::
+   Character 49 '1'
+-> 1
+::
+The integer between emphasis::Character:: and emphasis::'1':: is the ASCII value of that character.
+## link::Classes/Symbol::
+||
+code::
+\1.dump
+::
+teletype::
+   Symbol '1'
+-> 1
+::
+::
+
+## Some instances return more detailed information, such as
+list::
+## address in virtual memory (the hexadecimal number prefixed with 0x),
+## emphasis::garbage collector color:: (gc),
+## emphasis::data format type:: (fmt),
+## emphasis::flags for immutablity, finalization and sanity information from the garbage collector:: (flg),
+## emphasis::size class:: (set),
+## and so on (the information on the second and subsequent lines varies depending on the class to which the instance belongs)
+::
+with the class name of the instance:
+
+definitionlist::
+## link::Classes/Array::
+||
+code::
+[1, 2].dump;
+::
+teletype::
+Instance of Array {    (0x1552c9558, gc=78, fmt=01, flg=00, set=02)
+  indexed slots [2]
+      0 : Integer 1
+      1 : Integer 2
+}
+-> [1, 2]
+::
+## link::Classes/List::
+||
+code::
+List[1, 2].dump;
+::
+teletype::
+List's array:
+Instance of Array {    (0x13b3cb5b8, gc=6C, fmt=01, flg=00, set=02)
+  indexed slots [2]
+      0 : Integer 1
+      1 : Integer 2
+}
+-> List[1, 2]
+::
+## link::Classes/Set::
+||
+code::
+Set[1, 2].dump;
+::
+teletype::
+Instance of Set {    (0x1489e2068, gc=A4, fmt=00, flg=00, set=02)
+  instance variables [2]
+    array : instance of Array (0x13b458838, size=4, set=2)
+    size : Integer 2
+}
+-> Set[2, 1]
+::
+::
 ::
 
 subsection::System Information
@@ -742,7 +932,7 @@ method::do
 Object evaluates the function with itself as an argument, returning the result. Different classes respond to this message differently.
 discussion::
 code::
-f = { |x, i| [x, i].postln; };
+f = { |x, i| [x, i].postln };
 [1, 2, 3].do(f); // Array.do
 10.do(f); // Integer.do
 ($Q).do(f); // Object.do

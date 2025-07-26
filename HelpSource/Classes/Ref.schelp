@@ -67,7 +67,7 @@ this method is used to return values from within a Routine definition
 
 discussion::
 code::
-{ this.value = output.embedInStream(this.value); }
+{ this.value = output.embedInStream(this.value) }
 ::
 
 method::asUGenInput
@@ -95,7 +95,7 @@ Instead, it is necessary to enclose the array of values in another array:
 
 code::
 (
-	SynthDef(\multi, { | out, freq = #[100,200,300], amp = 0.1, pan = 0, sustain = 1|
+	SynthDef(\multi, { |out, freq = #[100, 200, 300], amp = 0.1, pan = 0, sustain = 1|
 		var audio, env;
 		env = EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf);
 		audio = Mix(Saw.ar(freq));
@@ -103,7 +103,7 @@ code::
 		OffsetOut.ar(out, audio)
 	}).add;
 
-	( instrument: \multi, freq: [ [500, 501, 700] ], sustain: 2).play
+	(instrument: \multi, freq: [[500, 501, 700]], sustain: 2).play
 
 )
 ::
@@ -113,9 +113,9 @@ code::
 	Pbind(*[
 		instrument: \multi,
 		freq: 	Prand([
-						[[100, 141, 103] ],
-						[[100, 310, 190] ],
-						[[100, 100.1, 110] ],
+						[[100, 141, 103]],
+						[[100, 310, 190]],
+						[[100, 100.1, 110]],
 				], inf),
 		dur: 0.2,
 		sustain: 0.3

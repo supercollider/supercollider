@@ -2,7 +2,7 @@
 // detail/std_event.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,9 +16,6 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
-
-#if defined(BOOST_ASIO_HAS_STD_MUTEX_AND_CONDVAR)
-
 #include <chrono>
 #include <condition_variable>
 #include <boost/asio/detail/assert.hpp>
@@ -76,7 +73,7 @@ public:
 
   // Unlock the mutex and signal one waiter who may destroy us.
   template <typename Lock>
-  void unlock_and_signal_one(Lock& lock)
+  void unlock_and_signal_one_for_destruction(Lock& lock)
   {
     BOOST_ASIO_ASSERT(lock.locked());
     state_ |= 1;
@@ -184,7 +181,5 @@ private:
 } // namespace boost
 
 #include <boost/asio/detail/pop_options.hpp>
-
-#endif // defined(BOOST_ASIO_HAS_STD_MUTEX_AND_CONDVAR)
 
 #endif // BOOST_ASIO_DETAIL_STD_EVENT_HPP

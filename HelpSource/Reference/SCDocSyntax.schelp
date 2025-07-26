@@ -122,6 +122,16 @@ subsection:: Some more info
 ::
 ::
 
+Level 3:
+definitionlist::
+## keyword:: subsubsection\::
+teletype:: SUBSUBSECTION\:: :: name
+|| A named subsubsection. The name should be plain text and can not contain any tags. Example:
+teletype::
+subsubsection:: Some more detailed info
+::
+::
+
 subsection:: Method tags
 These are level 3 subsections:
 definitionlist::
@@ -249,9 +259,17 @@ image::foo.png#click this image#Classes/SinOsc::
 
 Just leave the caption empty if you want a link but no caption.
 
+## keyword:: math\::
+teletype:: MATH\:: ::
+|| Converts LaTeX code into an inline formula. E.g.
+teletype::
+math::\frac{\pi}{2}::
+::
+becomes math::\frac{\pi}{2}:: embedded within a line of text.
 ::
 
-The following tags (CODE and TELETYPE) can be written in two forms, either inline or block.
+
+The following tags (CODE, TELETYPE and MATH) can be written in two forms, either inline or block.
 strong::Inline:: form has the end-tag on the same line, and need any enclosed double-colons that should be part of the text to be escaped with backslash (teletype:: \ ::).
 strong::Block:: form has the tag and end-tag on lines by themselves, and can take multi-line text. In block form, only a single end-tag on its own line counts and any end-tags inside the text should not be escaped (except if it's on a single line).
 
@@ -271,6 +289,20 @@ teletype:: CODE\:: ::
 ## keyword:: teletype\::
 teletype:: TELETYPE\:: ::
 || Render monospace text.
+## keyword:: math\::
+teletype:: MATH\:: ::
+|| Renders LaTeX code in display style. E.g.
+teletype::
+math::
+\int_0^{2\pi}\sin(x)~dx = 0
+\::
+::
+becomes
+math::
+\int_0^{2\pi}\sin(x)~dx = 0
+::
+which is separated from the text through a block.
+For specifics check out the used rendering engine kaTeX at https://katex.org
 ::
 
 subsection:: Lists and tables
@@ -380,7 +412,7 @@ sectiontag        ::= "CLASSMETHODS::"
 optsections       ::= [ sections ]
 sections          ::= sections section
                     | section
-                    | subsubsections
+                    | subsections
 section           ::= ( "SECTION::" words2 eol | sectiontag ) optsubsections
 optsubsections    ::= [ subsections ]
 subsections       ::= subsections subsection
@@ -391,7 +423,8 @@ optsubsubsections ::= [ subsubsections ]
 subsubsections    ::= subsubsections subsubsection
                     | subsubsection
                     | body
-subsubsection     ::= "METHOD::" methnames optMETHODARGS eol methodbody
+subsubsection     ::= "SUBSUBSECTION::" words2 eol optbody
+                    | "METHOD::" methnames optMETHODARGS eol methodbody
                     | "COPYMETHOD::" words eol
                     | "PRIVATE::" commalist eol
 optMETHODARGS     ::= [ METHODARGS ]
@@ -428,9 +461,11 @@ inlinetag         ::= "LINK::"
                     | "EMPHASIS::"
                     | "CODE::"
                     | "TELETYPE::"
+                    | "MATH::"
                     | "ANCHOR::"
 blocktag          ::= CODEBLOCK
                     | TELETYPEBLOCK
+                    | MATHBLOCK
 listtag           ::= "LIST::"
                     | "TREE::"
                     | "NUMBEREDLIST::"
@@ -460,4 +495,3 @@ nocommawords      ::= nocommawords TEXT
                     | URL
 commalist         ::= { nocommawords COMMA } nocommawords
 ::
-

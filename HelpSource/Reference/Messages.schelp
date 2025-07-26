@@ -148,4 +148,3 @@ SinOsc.perform('ar', phase: pi, mul: 0.2, freq: 800);
 subsection:: Cost of using keyword arguments
 
 When using keyword arguments there is a runtime cost to do the matching that you should be aware of. The cost can be worth the convenience when speed is not critical.
-

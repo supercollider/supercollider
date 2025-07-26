@@ -16,7 +16,7 @@
 namespace boost {
 
 // optional's relational operators ( ==, !=, <, >, <=, >= ) have deep-semantics (compare values).
-// WARNING: This is UNLIKE pointers. Use equal_pointees()/less_pointess() in generic code instead.
+// WARNING: This is UNLIKE pointers. Use equal_pointees()/less_pointees() in generic code instead.
 
 
 //

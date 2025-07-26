@@ -90,19 +90,19 @@ x = TaskProxy.new;
 x.play;
 
 
-x.source = { loop { "ggggggggggggggggg9999ggg999ggg999gg".scramble.postln; 0.5.wait; } };
+x.source = { loop { "ggggggggggggggggg9999ggg999ggg999gg".scramble.postln; 0.5.wait } };
 
 
-x.source = { loop { "---------////----------------------".scramble.postln; 0.25.wait; } };
-x.source = { loop { thisThread.seconds.postln; 1.wait; } };
-x.source = { loop { thisThread.seconds.postln; 1.01.wait; } };
+x.source = { loop { "---------////----------------------".scramble.postln; 0.25.wait } };
+x.source = { loop { thisThread.seconds.postln; 1.wait } };
+x.source = { loop { thisThread.seconds.postln; 1.01.wait } };
 
 TempoClock.default.tempo = 2;
 
 x.source = { "the end".postln };
 x.source = { "one more".postln };
-x.source = { 10.do { "ten more".scramble.postln; 0.25.wait; } };
-x.source = { loop { "many more".scramble.postln; 0.25.wait; } };
+x.source = { 10.do { "ten more".scramble.postln; 0.25.wait } };
+x.source = { loop { "many more".scramble.postln; 0.25.wait } };
 
 TempoClock.default.tempo = 1;
 
@@ -119,7 +119,7 @@ code::
 // load a synthdef
 s.boot;
 SynthDef("pdef_grainlet",
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -130,7 +130,7 @@ x.play;
 (
 x.source = {
 	loop {
-		s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, rrand(600, 640));
+		s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, rrand(600, 640));
 		0.1.wait;
 	}
 }
@@ -141,7 +141,7 @@ x.source = {
 	var x;
 	x = Pseries(300, 20, 100).loop.asStream;
 	loop {
-		s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, x.next);
+		s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, x.next);
 		0.05.wait;
 	}
 }
@@ -152,7 +152,7 @@ x.source = {
 	var x;
 	x = Plazy { Pseries(300 + 300.rand, 10 + 30.rand, 10 + 30.rand) }.loop.asStream;
 	loop {
-		s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, x.next);
+		s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, x.next);
 		0.05.wait;
 	}
 }
@@ -161,7 +161,7 @@ x.source = {
 // metronome
 (
 y = TaskProxy {
-	loop { s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, 1500); 1.wait; }
+	loop { s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, 1500); 1.wait }
 };
 y.play;
 )
@@ -172,8 +172,8 @@ x.source = {
 	var x, dt;
 	dt = [0.1, 0.125, 0.05].choose;
 	x = Plazy { Pseries(1300 + 300.rand, 110 + 130.rand, 16) }.asStream;
-	x.do { arg item;
-		s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, item);
+	x.do { |item|
+		s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, item);
 		dt.wait;
 	}
 }

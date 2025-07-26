@@ -53,9 +53,9 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
-	functionPerformList { arg selector, arglist;
-		_ObjectPerformList;
-		^this.primitiveFailed
+	functionPerformList { |... args, kwargs|
+        _ObjectPerformList;
+        this.primitiveFailed
 	}
 
 	valueWithEnvir { arg envir;
@@ -282,48 +282,66 @@ Function : AbstractFunction {
 		^"{ |func, envir| % }".format(code).interpret.value(this, envir)
 	}
 
+	asBuffer { |duration = 0.01, target, action, fadeTime = 0|
+		var buffer, def, synth, name, numOutputs, defRate, server;
 
-	asBuffer { |duration = 0.01, target, action, fadeTime = (0)|
-		var buffer, def, synth, name, numChannels, rate, server;
 		target = target.asTarget;
 		server = target.server;
-
-
 		name = this.hash.asString;
+
 		def = SynthDef(name, { |bufnum|
-			var	val = SynthDef.wrap(this);
-			if(val.isValidUGenInput.not) {
-				val.dump;
-				Error("Reading signal failed: % is not a valid UGen input.".format(val)).throw
+			var outputs;
+
+			outputs = SynthDef.wrap(this);
+
+			if(outputs.isValidUGenInput.not) {
+				outputs.dump;
+				Error("Reading signal failed: % is not a valid UGen input.".format(outputs)).throw
 			};
-			val = UGen.replaceZeroesWithSilence(val.asArray);
-			rate = val.rate;
-			if(rate == \audio) { // convert mixed rate outputs:
-				val = val.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
+			outputs = UGen.replaceZeroesWithSilence(outputs.asArray);
+			numOutputs = outputs.size.max(1);
+
+			defRate = outputs.rate; // answers with the highest rate of the UGens in the list
+			if(defRate == \audio) { // convert mixed rate outputs:
+				outputs = outputs.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
 			};
-			numChannels = val.size.max(1);
+
 			if(fadeTime > 0) {
-				val = val * EnvGen.kr(Env.linen(fadeTime, duration - (2 * fadeTime), fadeTime))
+				outputs = outputs * EnvGen.kr(Env.linen(fadeTime, duration - (2 * fadeTime), fadeTime))
 			};
-			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop: 0);
-			Line.perform(Line.methodSelectorForRate(rate), dur: duration, doneAction: 2);
+
+			RecordBuf.perform(
+				RecordBuf.methodSelectorForRate(defRate),
+				outputs, bufnum, loop: 0, doneAction: 2
+			);
 		});
 
 		buffer = Buffer.new(server);
 
 		Routine.run {
-			var numFrames, running;
-			running = server.serverRunning;
-			if(running.not) { server.bootSync; 1.wait };
-			numFrames = duration * server.sampleRate;
-			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
-			buffer.numFrames = numFrames.asInteger;
-			buffer.numChannels = numChannels;
-			buffer = buffer.alloc(numFrames, numChannels);
-			server.sync;
+			var frameRate;
+
+			if(server.serverRunning.not) { server.bootSync };
+
+			// Setting the buffer's sampleRate affects only the language-side state of the Buffer object.
+			// This allows inferring whether audio or control rate data has been written to the buffer.
+			frameRate = if(defRate == \control) {
+				server.sampleRate / server.options.blockSize
+			} {
+				server.sampleRate
+			};
+			buffer.sampleRate = frameRate;
+
+			// Unlike sampleRate, numChannels and numFrames will be sent to the server with the alloc message
+			buffer.numChannels = numOutputs;
+			buffer.numFrames = (duration * frameRate).asInteger;
+			buffer.alloc;
+
 			def.send(server);
 			server.sync;
+
 			synth = Synth(name, [\bufnum, buffer], target, \addAfter);
+
 			OSCFunc({
 				action.value(buffer);
 				server.sendMsg("/d_free", name);
@@ -334,20 +352,25 @@ Function : AbstractFunction {
 	}
 
 	loadToFloatArray { |duration = 0.01, target, action|
-		this.asBuffer(duration, target, { |buffer|
-			buffer.loadToFloatArray(action: { |array|
-				action.value(array, buffer);
-				buffer.free
-			})
+		this.asBuffer(duration, target,
+			action: { |buffer|
+				buffer.loadToFloatArray(
+					action: { |array|
+						action.value(array, buffer);
+						buffer.free
+				})
 		})
 	}
 
 	getToFloatArray { |duration = 0.01, target, action, wait = 0.01, timeout = 3|
-		this.asBuffer(duration, target, { |buffer|
-			buffer.getToFloatArray(0, wait: wait, action: { |array|
-				action.value(array, buffer);
-				buffer.free
-			})
+		this.asBuffer(duration, target,
+			action: { |buffer|
+				buffer.getToFloatArray(0,
+					wait: wait,
+					action: { |array|
+						action.value(array, buffer);
+						buffer.free
+				})
 		})
 	}
 

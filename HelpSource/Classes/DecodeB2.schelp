@@ -17,7 +17,7 @@ method::ar, kr
 
 argument::numChans
 
-Number of output speakers. Typically 4 to 8.
+Number of output speakers. Typically 4 to 8. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 
 argument::w
@@ -56,7 +56,7 @@ code::
 	p = PinkNoise.ar; // source
 
 	// B-format encode
-	#w, x, y = PanB2.ar(p, MouseX.kr(-1,1), 0.1);
+	#w, x, y = PanB2.ar(p, MouseX.kr(-1, 1), 0.1);
 
 	// B-format decode to quad
 	#a, b, c, d = DecodeB2.ar(4, w, x, y);
@@ -66,4 +66,3 @@ code::
 )
 
 ::
-

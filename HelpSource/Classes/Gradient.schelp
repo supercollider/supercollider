@@ -30,19 +30,19 @@ code::
 // basic usage
 (
 w = Window.new.front;
-w.view.background = Gradient(Color.yellow,Color.white);
+w.view.background = Gradient(Color.yellow, Color.white);
 )
 
 // change direction and resolution
 (
 w = Window.new.front;
-w.view.background = Gradient(Color.red,Color.white,\v, 5);
+w.view.background = Gradient(Color.red, Color.white, \v, 5);
 )
 
 // almost unnoticeable variations can be pleasant
 (
 w = Window.new.front;
-v = CompositeView(w, Rect(50,50,300,300));
+v = CompositeView(w, Rect(50, 50, 300, 300));
 c = Color.rand;
 d = c.vary(0.15);
 v.background = Gradient(c, d, \v);
@@ -52,7 +52,7 @@ v.background = Gradient(c, d, \v);
 (
 var w, k, c, d, e, c1, c2, f, g;
 w = Window.new.front;
-k = Slider2D(w, Rect(50,50,300,300));
+k = Slider2D(w, Rect(50, 50, 300, 300));
 f = {
 	c = Color.rand;
 	d = c.vary(0.5);
@@ -71,10 +71,10 @@ k.keyDownAction = f; // hit any key for new color
 
 // an example using gradient indirectly to update window colour
 (
-w=Window.new.front;
-g = Gradient(Color.red,Color.green);
+w = Window.new.front;
+g = Gradient(Color.red, Color.green);
 Task{
-	(0, 0.01 .. 1).do{|pos|
+	(0, 0.01 .. 1).do{ |pos|
 		w.view.background = g.at(pos);
 		0.01.wait;
 	};

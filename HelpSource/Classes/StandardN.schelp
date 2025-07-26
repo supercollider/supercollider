@@ -43,10 +43,10 @@ code::
 
 code::
 // mouse-controlled param
-{ StandardN.ar(SampleRate.ir/2, MouseX.kr(0.9,4)) * 0.3 }.play(s);
+{ StandardN.ar(SampleRate.ir/2, MouseX.kr(0.9, 4)) * 0.3 }.play(s);
 ::
 
 code::
 // as a frequency control
-{ SinOsc.ar(StandardN.ar(40, MouseX.kr(0.9,4))*800+900)*0.4 }.play(s);
+{ SinOsc.ar(StandardN.ar(40, MouseX.kr(0.9, 4))*800+900)*0.4 }.play(s);
 ::

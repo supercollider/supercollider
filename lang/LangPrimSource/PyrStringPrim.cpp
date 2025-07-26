@@ -45,13 +45,14 @@ Primitives for String.
 #include <boost/regex.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/unordered_set.hpp>
-#include <boost/filesystem/fstream.hpp> // ifstream
-#include <boost/filesystem/path.hpp> // path
+
+#include <fstream>
+#include <filesystem>
 
 #include <yaml-cpp/yaml.h>
 
 using namespace std;
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
@@ -267,6 +268,64 @@ public:
     }
 };
 
+}
+
+
+int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
+    // caches the last 64 boost:regex instances.
+    static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
+
+
+    PyrSlot* slot_this = g->sp - 2; // source string
+    PyrSlot* slot_regex = g->sp - 1; // find
+    PyrSlot* slot_replace = g->sp; // replace with
+
+    // slot one does not need to be checked as this method should only be called from methods in String,
+    //    or children thereof.
+    if (!isKindOfSlot(slot_regex, class_string)) {
+        SetNil(slot_this);
+        return errWrongType;
+    }
+    if (!isKindOfSlot(slot_replace, class_string)) {
+        SetNil(slot_this);
+        return errWrongType;
+    }
+
+    try {
+        const auto& pattern = regex_lru_cache.get_regex(slotRawString(slot_regex)->s, slotRawString(slot_regex)->size);
+
+        const char* source_start = slotRawString(slot_this)->s;
+        const int source_size = slotRawString(slot_this)->size;
+
+        if (source_size < 0) { // size is signed
+            SetNil(slot_this);
+            error("String has negative size\n");
+            return errFailed;
+        }
+
+        std::string out {};
+        // PyrStrings are not null terminated so a copy is needed.
+        const auto [replaceError, replace] = slotStrStdStrVal(slot_replace);
+        if (replaceError != errNone) {
+            SetNil(slot_this);
+            return replaceError;
+        }
+
+        boost::regex_replace(std::back_inserter(out), source_start, source_start + source_size, pattern, replace);
+
+        if (out.size() > std::numeric_limits<decltype(PyrObjectHdr {}.size)>::max()) {
+            SetNil(slot_this);
+            error("String too big\n");
+            return errNone;
+        }
+        SetObject(slot_this, newPyrStringN(g->gc, static_cast<int>(out.size()), 0, true));
+        std::copy(out.begin(), out.end(), slotRawString(slot_this)->s);
+        return errNone;
+    } catch (const std::exception& e) {
+        postfl("Warning: Exception in _String_ReplaceRegex -%s\n", e.what());
+        SetNil(slot_this);
+        return errFailed;
+    };
 }
 
 int prString_Regexp(struct VMGlobals* g, int numArgsPushed) {
@@ -531,9 +590,9 @@ int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
     }
 
     // read all paths into a vector
-    std::vector<bfs::path> paths;
+    std::vector<fs::path> paths;
     while (true) {
-        const bfs::path& matched_path = SC_Filesystem::globNext(glob);
+        const fs::path& matched_path = SC_Filesystem::globNext(glob);
         if (matched_path.empty())
             break;
         else
@@ -558,62 +617,64 @@ int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
 }
 
 int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
-    PyrSlot* arg = g->sp;
-    char key[256];
-    char* value;
-    int err;
-
-    err = slotStrVal(arg, key, 256);
-    if (err)
-        return err;
+    PyrSlot* slot_this = g->sp;
+    const auto [this_err, this_str] = slotStdStrVal(slot_this);
+    if (this_err != errNone)
+        return this_err;
 
 #ifdef _WIN32
-    char buf[1024];
-    DWORD size = GetEnvironmentVariable(key, buf, 1024);
-    if (size == 0 || size > 1024)
-        value = 0;
-    else
-        value = buf;
+    const auto this_str_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(this_str.c_str());
+    const auto count = GetEnvironmentVariableW(this_str_w.c_str(), nullptr, 0);
+    std::string buf;
+    if (count != 0) {
+        std::wstring wbuf(count, 0);
+        GetEnvironmentVariableW(this_str_w.c_str(), wbuf.data(), count);
+        buf = SC_Codecvt::utf16_wcstr_to_utf8_string(wbuf.c_str());
+    }
+    char* value = count != 0 ? buf.data() : nullptr;
 #else
-    value = getenv(key);
+    char* value = getenv(this_str.c_str());
 #endif
 
-    if (value) {
-        PyrString* pyrString = newPyrString(g->gc, value, 0, true);
-        if (!pyrString)
-            return errFailed;
-        SetObject(arg, pyrString);
-    } else {
-        SetNil(arg);
+    if (value == nullptr) {
+        SetNil(slot_this);
+        return errNone; // returns nil if not present
     }
+
+    PyrString* pyrString = newPyrString(g->gc, value, 0, true);
+    if (pyrString == nullptr)
+        return errFailed;
+
+    SetObject(slot_this, pyrString);
 
     return errNone;
 }
 
-int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
-    PyrSlot* args = g->sp - 1;
-    char key[256];
-    int err;
+int prString_Setenv(struct VMGlobals* g, int numArgsPushed) {
+    assert(numArgsPushed == 2);
+    // String::setEnv {|value| ... }
+    PyrSlot* slot_this_name = g->sp - 1;
+    PyrSlot* slot_value = g->sp;
 
-    err = slotStrVal(args + 0, key, 256);
-    if (err)
-        return err;
+    const auto [this_name_err, this_name_str] = slotStdStrVal(slot_this_name);
+    if (this_name_err != errNone)
+        return this_name_err;
 
-    if (IsNil(args + 1)) {
+    if (IsNil(slot_value)) {
 #ifdef _WIN32
-        SetEnvironmentVariable(key, NULL);
+        SetEnvironmentVariableW(SC_Codecvt::utf8_cstr_to_utf16_wstring(this_name_str.c_str()).c_str(), nullptr);
 #else
-        unsetenv(key);
+        unsetenv(this_name_str.c_str());
 #endif
     } else {
-        char value[1024];
-        err = slotStrVal(args + 1, value, 1024);
-        if (err)
-            return err;
+        const auto [value_err, value_str] = slotStdStrVal(slot_value);
+        if (value_err != errNone)
+            return value_err;
 #ifdef _WIN32
-        SetEnvironmentVariable(key, value);
+        SetEnvironmentVariableW(SC_Codecvt::utf8_cstr_to_utf16_wstring(this_name_str.c_str()).c_str(),
+                                SC_Codecvt::utf8_cstr_to_utf16_wstring(value_str.c_str()).c_str());
 #else
-        setenv(key, value, 1);
+        setenv(this_name_str.c_str(), value_str.c_str(), 1);
 #endif
     }
 
@@ -827,7 +888,7 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */) {
     if (err != errNone)
         return err;
 
-    bfs::path p = SC_Codecvt::utf8_str_to_path(ipath);
+    fs::path p = SC_Codecvt::utf8_str_to_path(ipath);
     p = SC_Filesystem::instance().expandTilde(p);
     bool isAlias;
     p = SC_Filesystem::resolveIfAlias(p, isAlias);
@@ -968,8 +1029,8 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed) {
 
     string str((const char*)slotRawString(arg)->s, slotRawString(arg)->size);
 
-    const bfs::path& path = SC_Codecvt::utf8_str_to_path(str);
-    bfs::ifstream fin(path);
+    const fs::path& path = SC_Codecvt::utf8_str_to_path(str);
+    std::ifstream fin(path);
     YAML::Node doc = YAML::Load(fin);
     yaml_traverse(g, doc, nullptr, arg);
 
@@ -1002,4 +1063,5 @@ void initStringPrimitives() {
     definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
     definePrimitive(base, index++, "_String_ParseYAML", prString_ParseYAML, 1, 0);
     definePrimitive(base, index++, "_String_ParseYAMLFile", prString_ParseYAMLFile, 1, 0);
+    definePrimitive(base, index++, "_String_ReplaceRegex", prString_ReplaceRegex, 3, 0);
 }

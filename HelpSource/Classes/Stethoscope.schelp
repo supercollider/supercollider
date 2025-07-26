@@ -61,8 +61,8 @@ METHOD:: new
     Example:
 code::
 s.boot
-{SinOsc.ar([330,440], 0, 0.4)}.play;
-Stethoscope(s,2);
+{ SinOsc.ar([330, 440], 0, 0.4) }.play;
+Stethoscope(s, 2);
 ::
 
 
@@ -81,7 +81,7 @@ METHOD:: ugenScopes
 
 code::
 s.boot
-{[SinOsc.ar.scope,WhiteNoise.ar(0.5).scope]*0.1}.scope(2);
+{ [SinOsc.ar.scope, WhiteNoise.ar(0.5).scope]*0.1 }.scope(2);
 Stethoscope.ugenScopes; // returns the ugen scopes
 ::
 
@@ -134,6 +134,22 @@ SUBSECTION:: Display
 METHOD:: window
     The (parent) Window of the scope.
 
+METHOD:: bounds
+    The position and size of the window. The position is relative to the bottom-left corner of the screen.
+    argument::
+        A link::Classes/Rect::, or any object responding to the link::Search#asRect#.asRect:: method. The width less than 264 will be changed to 264, the minimum width.
+    returns::
+        A Rect.
+code::
+s.scope.bounds_(Rect(100, 200, 500, 600));
+s.scope.bounds_([100, 200, 500, 600]);
+s.scope.bounds_(Size(500, 600));
+::
+code::
+s.scope.bounds_(Rect(0, 0, 500, 600));
+s.scope.bounds_(500@600);
+::
+
 METHOD:: size
     Sets the width and the height of the scope window.
     argument::
@@ -165,7 +181,7 @@ METHOD:: style
     list::
     ## 0 = the channels are vertically spaced
     ## 1 = the channels are overlaid
-    ## 2 = lissajou; the first two channels are used for 2D plotting (as streams of x and y coordinates).
+    ## 2 = lissajou; each pair of channels is used for 2D plotting (as streams of x and y coordinates).
     ::
 
     argument::
@@ -199,7 +215,7 @@ s.boot;
 {
     SinOsc.ar([225, 450, 900], 0, 0.2)
     + LPF.ar(
-        LFPulse.ar(226 * [1, 2, 5],[0,0.1,0.1],0.2, 0.2),
+        LFPulse.ar(226 * [1, 2, 5], [0, 0.1, 0.1], 0.2, 0.2),
         MouseX.kr(20, 10000, 1)
         )
 }.scope;
@@ -207,10 +223,10 @@ s.boot;
 
 // server.scope only changes the properies explicitly given:
 
-s.scope(numChannels:5);
-s.scope(index:12);
-s.scope(zoom:4);
-s.scope(index:0);
+s.scope(numChannels: 5);
+s.scope(index: 12);
+s.scope(zoom: 4);
+s.scope(index: 0);
 
 s.scopeWindow.size = 600;
 s.scopeWindow.size = 222;
@@ -231,13 +247,28 @@ c.scope;
 // fact that ScopeOut.kr doesn't work yet.)
 ::
 
+SUBSECTION:: Multi-channel Lissajou plots
+code::
+(
+{ 
+	var f = { |l,h| SinOsc.kr(0.1, {pi.rand}).range(l, h) } ;
+	Pulse.ar({ f.(20, 1000) }!6, { f.(0.0, 1) }!6, { f.(0.0, 1.0) }!6) 
+}.play;
+)
+
+c = s.scope;
+c.numChannels = 6;
+c.scopeView.waveColors = [Color.red, Color.red, Color.cyan, Color.cyan, Color.white, Color.white];
+c.style = 2;
+::
+
 SUBSECTION:: Embedded use
 You can pass your own view in to add a stethoscope to it:
 
 code::
 w = Window.new("my own scope", Rect(20, 20, 400, 500));
 w.view.decorator = FlowLayout(w.view.bounds);
-c = Stethoscope.new(s, view:w.view);
+c = Stethoscope.new(s, view: w.view);
 w.onClose = { c.free }; // don't forget this
 w.front;
 ::

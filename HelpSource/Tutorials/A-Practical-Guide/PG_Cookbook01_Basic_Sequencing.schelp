@@ -1,7 +1,7 @@
 title:: Pattern Guide Cookbook 01: Basic Sequencing
 summary:: Sequencing basics
 related:: Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters, Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns
-categories:: Streams-Patterns-Events>A-Practical-Guide
+categories:: Streams-Patterns-Events>A-Practical-Guide, Tutorials>Pattern-Guide
 
 section::Cookbook: Sequencing basics
 
@@ -79,7 +79,7 @@ code::
 
 code::
 (
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 SynthDef(\stretchedFragments, { |out, bufnum, start, time = 1, stretch = 1, amp = 1, attack = 0.01, decay = 0.05|
 	var sig = PlayBuf.ar(1, bufnum, rate: stretch.reciprocal, startPos: start), eg;

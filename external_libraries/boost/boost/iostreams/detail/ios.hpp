@@ -32,7 +32,7 @@ namespace boost { namespace iostreams { namespace detail {
 #ifndef BOOST_IOSTREAMS_NO_STREAM_TEMPLATES //--------------------------------//
 # define BOOST_IOSTREAMS_BASIC_IOS(ch, tr)  std::basic_ios< ch, tr >
 # if !BOOST_WORKAROUND(__MWERKS__, <= 0x3003) && \
-     !BOOST_WORKAROUND(__BORLANDC__, < 0x600) \
+     !BOOST_WORKAROUND(BOOST_BORLANDC, < 0x600) \
      /**/
 
 #define BOOST_IOS                std::ios

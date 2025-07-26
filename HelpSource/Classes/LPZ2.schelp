@@ -34,10 +34,9 @@ This value will be added to the output.
 Examples::
 
 code::
-//Compare:
+// Compare:
 
 { WhiteNoise.ar(0.25) }.play;
 
 { LPZ2.ar(WhiteNoise.ar(0.25)) }.play;
 ::
-

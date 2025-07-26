@@ -1,0 +1,158 @@
+title:: Level Compensation when Mixing and Panning
+categories:: Multichannel, Mixing, Panning
+summary:: Balancing Levels when Mixing and Panning in SC
+related:: Classes/Pan2, Classes/PanAz, Classes/Splay, Classes/SplayAz, Classes/LevelComp
+
+section::Considerations
+
+link::Guides/Multichannel-Expansion:: is one of the key features in SuperCollider, making it easy to explore complex polyphonic synthesis and spatialisation. Mixing and panning these signals usually involves going from a number of input channels to a different number of output channels, and for adapting the signal amplitude levels meaningfully, there are two aspects to consider:
+
+strong::
+1. Technical safety: What will be the maximum amplitude of the new signals? In the worst case, can they clip the audio hardware (by going above +-1.0)?::
+
+strong::
+2. Perceived loudness: How loud should the new signals it be, relative to others present?
+::
+
+To balance these aspects, it helps to know more about the signals to be mixed/panned. Most UGens in SC produce a signal amplitude of 1.0, so we will use that value for the discussion here.
+
+strong::Degree of Phase Correlation: :: How likely is it that the momentary peaks of the individual signals will line up in time? The two border cases are fully strong::in-phase: :: the same signal on all channels, so the peaks will always line up, and fully strong::random phase: :: different noise signals on all channels, where the peaks will be statistically very unlikely to ever line up. Most musical signals are somewhere between these extremes, i.e. phase-correlated to some degree.
+
+strong::Equal Amplitude Compensation:: is the safe bet for highly correlated signals: divide the sum of the number of channels; strong::Equal Power Compensation:: is commonly used for weakly correlated signals, as it keeps the acoustic energy constant by dividing the sum through the square root of the number of channels. As most musical signals are somewhere between the extremes, it makes sense to consider and test for the specific case whenever in doubt.
+
+In the acoustics literature, this level compensation factor is called the p-value [1], and it can be generalized as follows:
+
+code::
+
+~levelCompFactor = { |numChans=2, p_value=1|
+	numChans ** p_value.clip(0, 1).neg
+};
+~levelCompFactor.value(2, 1); // equal amplitude, multiply by 1/n
+~levelCompFactor.value(2, 0.5); // equal power, mul by square root of 1/n
+~levelCompFactor.value(2, 0); // keep full level, no level scaling
+::
+
+Here are some examples for the common cases of Mixing and Panning.
+
+subsection:: Mixing M channels to 1
+Mixing down to mono is the simplest case to show the different approaches to level compensation. UGens or functions for this are link::Classes/Mix::, code::sum::, code::mean::.
+
+code::
+s.meter; s.scope;
+
+n = 10;
+// 10 chans to 1, fully coherent in-phase signals:
+{ (SinOsc.ar ! n) }.plot;
+{ (SinOsc.ar ! n).sum }.plot;       // sum : +-10
+// equal amplitude: divide by number of channels -> peak 1
+{ (SinOsc.ar ! n).sum / n }.plot;   // sum
+{ Mix.ar(SinOsc.ar ! n) / n }.plot; // same with Mix.ar
+{ (SinOsc.ar ! n).mean }.plot;      // mean directly divides by n!
+
+// 10 chans to 1, quasi coherent with 100Hz shared root:
+{ SinOsc.ar((1..n) * 100, 0.5pi) }.plot(0.05);
+
+// because peaks coincide exactly (with 0.5pi phase shift),
+// we have to divide by n to stay within +-1:
+{ SinOsc.ar((1..n) * 100, 0.5pi).sum / n }.plot(0.05);
+{ SinOsc.ar((1..n) * 100, 0.5pi).sum / n }.play;
+
+// signals are less coherent with random freqs in the same range
+{ SinOsc.ar({ rrand(100.0, 1000.0).postln }! n, 0.5pi).sum / n }.play;
+
+// very random-phase signals
+{ PinkNoise.ar(1 ! n) }.play;
+
+// compare single channel ...
+{ PinkNoise.ar }.play;
+
+// with mixdown of n to 1 with equal power compensation:
+// volume is quite similar, can peak, but will very rarely
+{ PinkNoise.ar({ 1 } ! n).sum / n.sqrt }.play;
+::
+
+subsection:: Panning 1 channel to 2
+
+link::Classes/Pan2:: uses equal power panning:
+when panned to the center, both signals are at 0.7, or -3 dB
+code::
+{ Pan2.ar(DC.ar(1), Line.kr(-1, 1, 0.1)) }.plot(0.1);
+// loudness seems constant when panning
+{ Pan2.ar(PinkNoise.ar(0.2), SinOsc.kr(0.3)) }.play;
+
+::
+link::Classes/LinPan2:: uses equal amplitude panning:
+in the center, both signals are at 0.5.
+code::
+{ LinPan2.ar(DC.ar(1), Line.kr(-1, 1, 0.1)) }.plot(0.1);
+// loudness seems to drop slightly when in the center
+{ LinPan2.ar(PinkNoise.ar(0.2), SinOsc.kr(0.3)) }.play;
+
+::
+
+subsection:: Panning 1 channel to N
+link::Classes/PanAz:: uses equal power panning, so with a default width of 2,
+it keeps the energy constant, like link::Classes/Pan2::.
+code::
+{ PanAz.ar(4, DC.ar(1), Line.kr(-1, 1, 0.1), orientation: 0) }.plot(0.1);
+
+// with larger width, the overlaps get bigger, and the overall energy rises,
+// so one may want to compensate amplitude for larger width
+{ PanAz.ar(4, DC.ar(1), Line.kr(-1, 1, 0.1), width: 4, orientation: 0) }.plot(0.1);
+::
+
+subsection:: Mix/Panning M to 2 channels
+link::Classes/Splay:: mixes an array of input channels down to stereo using link::Classes/Pan2::, and it has 3 options for level compensation:
+code::
+s.meter; s.scope;
+
+// levelComp defaults to true, which is equal power -
+// this is kept this way for backwards compatibility.
+{ Splay.ar(Saw.ar([20, 30, 50]), 1, levelComp: true) }.scope;
+// levelComp can be turned off to set level otherwise:
+{ Splay.ar(Saw.ar([20, 30, 50]), level: 0.6, levelComp: false) }.scope;
+
+// levelComp can be a number between 0.0 -> no comp,
+// and 1.0 -> equal amplitude comp, with 0.5 being equal power,
+// which allows fine/tuning by hand via the exponent:
+{ Splay.ar(Saw.ar([100, 150, 250]), levelComp: 0.5) }.scope;
+
+// When setting spread low, levels and peaks will go up;
+// the worst case is panning all inputs to a single channel:
+{ Splay.ar(Saw.ar([100, 150, 250]), spread: 0, center: 1, levelComp: 0.5) }.scope;
+
+::
+Note that this levelComp factor scales with the number of channels,
+so tuning to somewhere between 0.5 and 1.0 should work well when experimenting with changing numbers of channels.
+
+subsection:: Mix/Panning M channels to N
+link::Classes/SplayAz:: mixes an array of M input channels to N outputs using link::Classes/PanAz::;
+it has 3 options for level compensation:
+code::
+s.meter; s.scope;
+
+n = 10;
+// levelComp defaults to true, which is equal power:
+{ SplayAz.ar(4, Saw.ar({ exprand(100, 500) }! n), 1, levelComp: true) }.scope;
+// levelComp can be off to compensate by hand/ear:
+{ SplayAz.ar(4, Saw.ar({ exprand(100, 500) }! n), level: (1/n).sqrt, levelComp: false) }.scope;
+
+// as in Splay, levelComp can be a number between 0.0 -> no comp,
+// and 1.0 -> equal amplitude comp, with 0.5 being equal power.
+// This allows fine-tuning by hand via the levelComp exponent:
+// requires PR on SplayAz
+{ SplayAz.ar(4, Saw.ar({ exprand(100, 500) }! n), level: 0.5, levelComp: 0.7) }.scope;
+
+// When setting spread low, levels on single channel(s) go up:
+{ SplayAz.ar(4, Saw.ar({ exprand(100, 500) }! n), level: 0.5, spread: 0, orientation: 0) }.scope;
+
+// Worst case: all panned to same out channel go up:
+{ SplayAz.ar(4, Saw.ar({ exprand(100, 500) }! n), level: 0.5) }.scope;
+
+// When width values are high, the overall output level also rises,
+// because each channel is directed to more channels:
+{ SplayAz.ar(4, Saw.ar({ exprand(100, 500) }! n), level: 0.5, width: 4) }.scope;
+
+::
+
+[1] Laitinen, Mikko-Ville, et al. "Gain normalization in amplitude panning as a function of frequency and room reverberance." Audio Engineering Society Conference: 55th International Conference: Spatial Audio. Audio Engineering Society, 2014.

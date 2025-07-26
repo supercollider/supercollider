@@ -26,12 +26,13 @@ Primitives for Arrays.
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
+#include "SCBase.h"
 #include "SC_InlineBinaryOp.h"
 #include "SC_Constants.h"
 #include "SC_Levenshtein.h"
 
 #include <cstring>
-#include <algorithm>
+#include <vector>
 
 // Primitives that work with Arrays. Most of these are used in ArrayedCollection and Array.
 
@@ -2503,6 +2504,118 @@ int prArrayLevenshteinDistance(struct VMGlobals* g, int numArgsPushed) {
     return arrayLevenshteinDistance(slotThisArray, objThisArray, objThatArray);
 }
 
+struct IsRectangularResult {
+    // an int with three special values
+    // -1: depth first searching the array has reached something isn't an array (nesting terminator),
+    //      this is a 'truthy' result.
+    // -2: the array is not rectangular, a valid false result.
+    // -3: one of the children was a Collection, but not an arrayed collection. An error.
+    [[nodiscard]] static constexpr IsRectangularResult make_size(int sz) {
+        assert(sz >= 0);
+        return IsRectangularResult(sz);
+    }
+    [[nodiscard]] static constexpr IsRectangularResult make_nesting_terminator() { return IsRectangularResult(-1); }
+    [[nodiscard]] static constexpr IsRectangularResult make_false_result() { return IsRectangularResult(-2); }
+    [[nodiscard]] static constexpr IsRectangularResult make_type_error() { return IsRectangularResult(-3); }
+    [[nodiscard]] constexpr bool is_valid() const noexcept {
+        return m_value >= 0 || m_value == make_nesting_terminator();
+    }
+    [[nodiscard]] constexpr bool is_type_error() const noexcept { return m_value == make_type_error(); }
+
+    // implicitly converts to int.
+    constexpr operator int() const noexcept { return m_value; }
+
+private:
+    constexpr explicit IsRectangularResult(int i) noexcept: m_value(i) {}
+    int m_value;
+};
+
+// Does a depth first check of the size and shape.
+// On left most path, inserts the size.
+inline IsRectangularResult is_rectangular(const PyrSlot* a, std::vector<IsRectangularResult>& expected_size,
+                                          uint32_t depth, bool is_left_most) {
+    // no Lists, only derived classes of ArrayedCollection!
+    if (isKindOfSlot(a, class_sequenceable_collection) && !isKindOfSlot(a, class_arrayed_collection)) {
+        return IsRectangularResult::make_type_error();
+    }
+
+    // 'a' is not an array
+    if (!IsObj(a) || !isKindOfSlot(a, class_arrayed_collection)) {
+        // has not reached this depth before
+        if (expected_size.size() < depth + 1) {
+            if (!is_left_most)
+                return IsRectangularResult::make_false_result(); // did not match
+            // ensure other nested array always terminates at this depth
+            expected_size.push_back(IsRectangularResult::make_nesting_terminator());
+        }
+        return expected_size[depth] != IsRectangularResult::make_nesting_terminator()
+            ? IsRectangularResult::make_false_result()
+            : IsRectangularResult::make_nesting_terminator();
+    }
+
+    // 'a' is an array.
+
+    const PyrObject* obj = slotRawObject(a);
+    const int size = obj->size;
+
+    if (expected_size.size() < depth + 1) {
+        if (!is_left_most)
+            return IsRectangularResult::make_false_result();
+        expected_size.push_back(IsRectangularResult::make_size(size));
+    }
+
+    // mismatch
+    if (size != expected_size[depth])
+        return IsRectangularResult::make_false_result();
+
+
+    // raw arrays are functors over exactly one type, which is always a c++ scalar type
+    // (https://en.cppreference.com/w/cpp/types/is_scalar)
+    // therefore the size can be returned without checking
+    if (isKindOf(obj, class_rawarray))
+        return IsRectangularResult::make_size(size);
+
+    // early return for no children
+    if (size <= 0)
+        return IsRectangularResult::make_size(0);
+    // iterator over the children
+    const PyrSlot* item_at_index = obj->slots;
+
+    // left most path, inserts expected_size
+    const auto first_sz = is_rectangular(item_at_index, expected_size, depth + 1, is_left_most);
+    if (!first_sz.is_valid())
+        return first_sz;
+
+    for (int i = 1; i < size; ++i) {
+        const auto this_sz = is_rectangular(item_at_index + i, expected_size, depth + 1, false);
+        if (!this_sz.is_valid())
+            return this_sz;
+        else if (this_sz != first_sz)
+            return IsRectangularResult::make_false_result();
+        else
+            continue;
+    }
+    return IsRectangularResult::make_size(size);
+}
+
+int prArrayIsRectangular(struct VMGlobals* g, int numArgsPushed) {
+    // checks array's sub arrays all have the same size, recurs on those sub arrays to check them
+    PyrSlot* array = g->sp;
+    if (!isKindOfSlot(array, class_arrayed_collection))
+        return errWrongType;
+
+    std::vector<IsRectangularResult> expected_shape;
+    const auto r = is_rectangular(array, expected_shape, 0, true);
+    if (r.is_type_error()) {
+        post("Subarray was not an instance of ArrayedCollection.\n");
+        SetNil(array);
+        return errWrongType;
+    } else {
+        SetBool(array, r.is_valid());
+        return errNone;
+    }
+}
+
 void initArrayPrimitives() {
     int base, index;
 
@@ -2563,4 +2676,5 @@ void initArrayPrimitives() {
     definePrimitive(base, index++, "_ArrayUnlace", prArrayUnlace, 3, 0);
 
     definePrimitive(base, index++, "_ArrayLevenshteinDistance", prArrayLevenshteinDistance, 2, 0);
+    definePrimitive(base, index++, "_ArrayIsRectangular", prArrayIsRectangular, 1, 0);
 }

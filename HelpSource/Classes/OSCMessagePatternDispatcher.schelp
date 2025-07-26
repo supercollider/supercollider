@@ -31,4 +31,3 @@ METHOD:: typeKey
 Returns code::'OSC unmatched'::.
 
 returns:: A link::Classes/Symbol::.
-

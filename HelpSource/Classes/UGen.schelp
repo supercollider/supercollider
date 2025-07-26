@@ -10,14 +10,14 @@ UGens represent calculations with signals. They are the basic building blocks of
 subsection:: Interface
 All UGens respond to one or more of the following class methods:
 list::
-## code:: ar(arg1, arg2, ... ) ::
-## code:: kr(arg1, arg2, ... ) ::
-## code:: ir(arg1, arg2, ... ) ::
+## code:: ar(arg1, arg2, ...) ::
+## code:: kr(arg1, arg2, ...) ::
+## code:: ir(arg1, arg2, ...) ::
 ::
 
 They return a new instance of UGen that calculates at audio/control rate or at initialization only (ir). Some UGens, like link::Classes/Rand::, use the code::*new:: method instead. These methods are implemented in subclasses, where argument names and their meaning depend on the case.
 
-If any argument is an array, they return an array of UGens ( see: link::Guides/Multichannel-Expansion:: ). If the combination of rates between arguments and ugen are not allowed, calling the methods will throw an error. This method adds the UGen to the current SynthDef, so it only fully works inside a UGen function.
+If any argument is an array, they return an array of UGens (see: link::Guides/Multichannel-Expansion::). If the combination of rates between arguments and ugen are not allowed, calling the methods will throw an error. This method adds the UGen to the current SynthDef, so it only fully works inside a UGen function.
 code::
 { Blip.ar(Blip.kr(4, 5, 500, 60), 59, 0.1) }.play;
 ::
@@ -41,7 +41,7 @@ code::
 subsection:: Internally used class methods
 
 method:: multiNew
-These methods are responsible for multichannel expansion. They call code::*new1(rate, ...args):: for each parallel combination. Most code::*ar/*kr:: methods delegate to link::#*multiNewList::.
+These methods are responsible for multichannel expansion. They call code::*new1(rate, ...args):: for each parallel combination. Most code::*ar / *kr:: methods delegate to link::#*multiNewList::.
 argument:: ... args
 The first argument is rate, then the rest of the arguments. code::(rate, ...args)::
 
@@ -57,7 +57,7 @@ method:: methodSelectorForRate
 argument:: rate
 A link::Classes/Symbol::, code:: \audio, \control, \scalar ::
 Returns::
-An appropriate message selector ( link::Classes/Symbol:: like code:: \ar, \kr, \ir :: ) for the given rate.
+An appropriate message selector (link::Classes/Symbol:: like code:: \ar, \kr, \ir ::) for the given rate.
 
 method:: replaceZeroesWithSilence
 Returns::
@@ -223,7 +223,7 @@ Wraps the receiver so that its values are rounded within code::margin:: distance
 This can be used to make control signals (e.g. from sensors) "snap" to defined resolution. Example:
 code::
 s.boot;
-x = {SinOsc.ar((Line.kr(0, 10, 10).snap(1, 0.3, 1) + 60).poll.midicps, 0, -24.dbamp)}.play
+x = { SinOsc.ar((Line.kr(0, 10, 10).snap(1, 0.3, 1) + 60).poll.midicps, 0, -24.dbamp) }.play
 ::
 
 method:: softRound
@@ -254,7 +254,7 @@ code::
 
 method:: linexp
 
-Wraps the receiver so that a linear inputrange is mapped to an exponential output range.
+Wraps the receiver so that a linear input range is mapped to an exponential output range.
 discussion::
 outMin and outMax must be nonzero and of the same sign. For clip argument, see code::linlin:: above.
 code::
@@ -263,7 +263,7 @@ code::
 
 method:: explin
 
-Wraps the receiver so that an exponential inputrange is mapped to a linear output range.
+Wraps the receiver so that an exponential input range is mapped to a linear output range.
 discussion::
 inMin and inMax must be nonzero and of the same sign. For clip argument, see code::linlin:: above.
 code::
@@ -272,7 +272,7 @@ code::
 
 method:: expexp
 
-Wraps the receiver so that an exponential inputrange is mapped to an exponential output range.
+Wraps the receiver so that an exponential input range is mapped to an exponential output range.
 discussion::
 outMin, outMax, inMin and inMax must be nonzero and of the same sign. For clip argument, see code::linlin:: above.
 code::
@@ -281,7 +281,7 @@ code::
 
 method:: lincurve
 
-Wraps the receiver so that a linear inputrange is mapped to a curve-like exponential output range.
+Wraps the receiver so that a linear input range is mapped to a curve-like exponential output range.
 discussion::
 outMin and outMax may be zero and of the different sign. For clip argument, see code::linlin:: above.
 code::
@@ -293,7 +293,7 @@ code::
 ::
 
 method:: curvelin
-Wraps the receiver so that a  curve-like exponential inputrange is mapped to a linear output range.
+Wraps the receiver so that a curve-like exponential input range is mapped to a linear output range.
 discussion::
 inMin and inMax may be zero and of the different sign. For clip argument, see code::linlin:: above.
 code::
@@ -320,7 +320,7 @@ nil (don't clip)
 \minmax (clip both - this is default).
 discussion::
 code::
-{Line.kr(0, 10, 0.1).bilin(1, 0, 10, 0.6, 0, 1)}.plot(0.1)
+{ Line.kr(0, 10, 0.1).bilin(1, 0, 10, 0.6, 0, 1) }.plot(0.1)
 ::
 
 
@@ -338,9 +338,39 @@ This is implemented as: code::(this * (trueUGen - falseUGen)) + falseUGen)::
 Note that both trueUGen and falseUGen will be calculated regardless of whether they are output, so this may not be the most efficient approach.
 code::
 // note different syntax in these two examples
-{ if( LFNoise1.kr(1.0, 0.5, 0.5) , SinOsc.ar, Saw.ar ) * 0.1 }.play;
+{ if(LFNoise1.kr(1.0, 0.5, 0.5), SinOsc.ar, Saw.ar) * 0.1 }.play;
 
 { Trig1.ar(Dust.ar(3), 0.2).lag(0.1).if(FSinOsc.ar(440), FSinOsc.ar(880)) * 0.1 }.play;
+::
+
+method::binaryValue
+Outputs 1, representing true for positive, 0 representing false for negative or zero input values.
+
+
+method::isPositive
+Outputs 1, representing true for positive or zero, 0 representing false for negative input values.
+
+method::isStrictlyPositive
+Outputs 1, representing true for positive, 0 representing false for negative or zero input values.
+
+method::isNegative
+Outputs 1, representing true for negative, 0 representing false for positive or zero input values.
+
+
+method::|==|
+Outputs 1, representing true, when the receiver and argument signal coincide. Note that this may be ambivalent in many cases, because of floating point arithmetic. A special sign is needed, because code::==:: compares the UGen objects, and not the signal they produce.
+
+code::
+// an example of floating point relevance for the |==| operator.
+// the rounded signal will match at some point, but not the direct signal
+(
+{
+	var a = Line.ar(0, 1, 0.008);
+	var b = a |==| 0.5;
+	var c = a.round(0.01) |==| 0.5;
+	[a, Trig1.ar(b, 0.001), Trig1.ar(c, 0.001)]
+}.plot
+)
 ::
 
 method:: @
@@ -428,7 +458,7 @@ subsection:: Bela
 
 method:: belaScope
 Send this UGen's output to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup)
-argument:: channelOffset
+argument:: scopeChannel
 Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
 
 argument:: server

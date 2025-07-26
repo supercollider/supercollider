@@ -41,24 +41,24 @@ template <class T, class Policy>
 struct zeta_series_cache_size
 {
    //
-   // Work how large to make our cache size when evaluating the series 
+   // Work how large to make our cache size when evaluating the series
    // evaluation:  normally this is just large enough for the series
-   // to have converged, but for arbitrary precision types we need a 
-   // really large cache to achieve reasonable precision in a reasonable 
+   // to have converged, but for arbitrary precision types we need a
+   // really large cache to achieve reasonable precision in a reasonable
    // time.  This is important when constructing rational approximations
    // to zeta for example.
    //
    typedef typename boost::math::policies::precision<T,Policy>::type precision_type;
    typedef typename mpl::if_<
-      mpl::less_equal<precision_type, boost::integral_constant<int, 0> >,
-      boost::integral_constant<int, 5000>,
+      mpl::less_equal<precision_type, std::integral_constant<int, 0> >,
+      std::integral_constant<int, 5000>,
       typename mpl::if_<
-         mpl::less_equal<precision_type, boost::integral_constant<int, 64> >,
-         boost::integral_constant<int, 70>,
+         mpl::less_equal<precision_type, std::integral_constant<int, 64> >,
+         std::integral_constant<int, 70>,
          typename mpl::if_<
-            mpl::less_equal<precision_type, boost::integral_constant<int, 113> >,
-            boost::integral_constant<int, 100>,
-            boost::integral_constant<int, 5000>
+            mpl::less_equal<precision_type, std::integral_constant<int, 113> >,
+            std::integral_constant<int, 100>,
+            std::integral_constant<int, 5000>
          >::type
       >::type
    >::type type;
@@ -69,7 +69,7 @@ T zeta_series_imp(T s, T sc, const Policy&)
 {
    //
    // Series evaluation from:
-   // Havil, J. Gamma: Exploring Euler's Constant. 
+   // Havil, J. Gamma: Exploring Euler's Constant.
    // Princeton, NJ: Princeton University Press, 2003.
    //
    // See also http://mathworld.wolfram.com/RiemannZetaFunction.html
@@ -129,10 +129,10 @@ private:
 template <class T, class Policy>
 inline T zeta_series2_imp(T s, const Policy& pol)
 {
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();;
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();;
    zeta_series2<T> f(s);
    T result = tools::sum_series(
-      f, 
+      f,
       policies::get_epsilon<T, Policy>(),
       max_iter);
    policies::check_series_iterations<T>("boost::math::zeta_series2<%1%>(%1%)", max_iter, pol);
@@ -145,8 +145,8 @@ T zeta_polynomial_series(T s, T sc, Policy const &)
 {
    //
    // This is algorithm 3 from:
-   // 
-   // "An Efficient Algorithm for the Riemann Zeta Function", P. Borwein, 
+   //
+   // "An Efficient Algorithm for the Riemann Zeta Function", P. Borwein,
    // Canadian Mathematical Society, Conference Proceedings.
    // See: http://www.cecm.sfu.ca/personal/pborwein/PAPERS/P155.pdf
    //
@@ -158,7 +158,7 @@ T zeta_polynomial_series(T s, T sc, Policy const &)
    for(int j = 0; j < n; ++j)
    {
       sum += ej_sign * -two_n / pow(T(j + 1), s);
-      ej_sign = -ej_sign; 
+      ej_sign = -ej_sign;
    }
    T ej_sum = 1;
    T ej_term = 1;
@@ -174,20 +174,20 @@ T zeta_polynomial_series(T s, T sc, Policy const &)
 }
 
 template <class T, class Policy>
-T zeta_imp_prec(T s, T sc, const Policy& pol, const boost::integral_constant<int, 0>&)
+T zeta_imp_prec(T s, T sc, const Policy& pol, const std::integral_constant<int, 0>&)
 {
    BOOST_MATH_STD_USING
    T result;
    if(s >= policies::digits<T, Policy>())
       return 1;
-   result = zeta_polynomial_series(s, sc, pol); 
+   result = zeta_polynomial_series(s, sc, pol);
 #if 0
    // Old code archived for future reference:
 
    //
-   // Only use power series if it will converge in 100 
+   // Only use power series if it will converge in 100
    // iterations or less: the more iterations it consumes
-   // the slower convergence becomes so we have to be very 
+   // the slower convergence becomes so we have to be very
    // careful in it's usage.
    //
    if (s > -log(tools::epsilon<T>()) / 4.5)
@@ -199,7 +199,7 @@ T zeta_imp_prec(T s, T sc, const Policy& pol, const boost::integral_constant<int
 }
 
 template <class T, class Policy>
-inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 53>&)
+inline T zeta_imp_prec(T s, T sc, const Policy&, const std::integral_constant<int, 53>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -209,7 +209,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
       // Maximum Deviation Found:                     2.020e-18
       // Expected Error Term:                         -2.020e-18
       // Max error found at double precision:         3.994987e-17
-      static const T P[6] = {    
+      static const T P[6] = {
          static_cast<T>(0.24339294433593750202L),
          static_cast<T>(-0.49092470516353571651L),
          static_cast<T>(0.0557616214776046784287L),
@@ -217,7 +217,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
          static_cast<T>(0.000451534528645796438704L),
          static_cast<T>(-0.933241270357061460782e-5L),
         };
-      static const T Q[6] = {    
+      static const T Q[6] = {
          static_cast<T>(1L),
          static_cast<T>(-0.279960334310344432495L),
          static_cast<T>(0.0419676223309986037706L),
@@ -234,7 +234,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
    {
       // Maximum Deviation Found:        9.007e-20
       // Expected Error Term:            9.007e-20
-      static const T P[6] = {    
+      static const T P[6] = {
          static_cast<T>(0.577215664901532860516L),
          static_cast<T>(0.243210646940107164097L),
          static_cast<T>(0.0417364673988216497593L),
@@ -242,7 +242,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
          static_cast<T>(0.000249606367151877175456L),
          static_cast<T>(0.110108440976732897969e-4L),
       };
-      static const T Q[6] = {    
+      static const T Q[6] = {
          static_cast<T>(1.0),
          static_cast<T>(0.295201277126631761737L),
          static_cast<T>(0.043460910607305495864L),
@@ -258,7 +258,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
       // Maximum Deviation Found:          5.946e-22
       // Expected Error Term:              -5.946e-22
       static const float Y = 0.6986598968505859375;
-      static const T P[6] = {    
+      static const T P[6] = {
          static_cast<T>(-0.0537258300023595030676L),
          static_cast<T>(0.0445163473292365591906L),
          static_cast<T>(0.0128677673534519952905L),
@@ -266,7 +266,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
          static_cast<T>(0.769875101573654070925e-4L),
          static_cast<T>(0.328032510000383084155e-5L),
       };
-      static const T Q[7] = {    
+      static const T Q[7] = {
          1.0f,
          static_cast<T>(0.33383194553034051422L),
          static_cast<T>(0.0487798431291407621462L),
@@ -284,7 +284,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
       // Expected Error Term:                         2.955e-17
       // Max error found at double precision:         2.009135e-16
 
-      static const T P[6] = {    
+      static const T P[6] = {
          static_cast<T>(-2.49710190602259410021L),
          static_cast<T>(-2.60013301809475665334L),
          static_cast<T>(-0.939260435377109939261L),
@@ -292,7 +292,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
          static_cast<T>(-0.00701721240549802377623L),
          static_cast<T>(-0.229257310594893932383e-4L),
       };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          1.0f,
          static_cast<T>(0.706039025937745133628L),
          static_cast<T>(0.15739599649558626358L),
@@ -311,7 +311,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
       // Maximum Deviation Found:                     7.117e-16
       // Expected Error Term:                         7.117e-16
       // Max error found at double precision:         9.387771e-16
-      static const T P[7] = {    
+      static const T P[7] = {
          static_cast<T>(-4.78558028495135619286L),
          static_cast<T>(-1.89197364881972536382L),
          static_cast<T>(-0.211407134874412820099L),
@@ -320,7 +320,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
          static_cast<T>(0.639949204213164496988e-4L),
          static_cast<T>(0.139348932445324888343e-5L),
         };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          1.0f,
          static_cast<T>(0.244345337378188557777L),
          static_cast<T>(0.00873370754492288653669L),
@@ -338,7 +338,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
    {
       // Max error in interpolated form:             1.668e-17
       // Max error found at long double precision:   1.669714e-17
-      static const T P[8] = {    
+      static const T P[8] = {
          static_cast<T>(-10.3948950573308896825L),
          static_cast<T>(-2.85827219671106697179L),
          static_cast<T>(-0.347728266539245787271L),
@@ -348,7 +348,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
          static_cast<T>(-0.785523633796723466968e-6L),
          static_cast<T>(-0.821465709095465524192e-8L),
       };
-      static const T Q[10] = {    
+      static const T Q[10] = {
          1.0f,
          static_cast<T>(0.208196333572671890965L),
          static_cast<T>(0.0195687657317205033485L),
@@ -373,7 +373,7 @@ inline T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<
 }
 
 template <class T, class Policy>
-T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64>&)
+T zeta_imp_prec(T s, T sc, const Policy&, const std::integral_constant<int, 64>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -383,7 +383,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
       // Maximum Deviation Found:                     3.099e-20
       // Expected Error Term:                         3.099e-20
       // Max error found at long double precision:    5.890498e-20
-      static const T P[6] = {    
+      static const T P[6] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.243392944335937499969),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.496837806864865688082),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0680008039723709987107),
@@ -391,7 +391,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.000455369899250053003335),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.279496685273033761927e-4),
         };
-      static const T Q[7] = {    
+      static const T Q[7] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.30425480068225790522),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.050052748580371598736),
@@ -411,7 +411,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
       // Expected Error Term:                         1.059e-21
       // Max error found at long double precision:    1.626303e-19
 
-      static const T P[6] = {    
+      static const T P[6] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.577215664901532860605),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.222537368917162139445),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0356286324033215682729),
@@ -419,7 +419,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.000178102511649069421904),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.700867470265983665042e-5),
       };
-      static const T Q[7] = {    
+      static const T Q[7] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.259385759149531030085),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0373974962106091316854),
@@ -436,7 +436,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
       // Maximum Deviation Found:          5.946e-22
       // Expected Error Term:              -5.946e-22
       static const float Y = 0.6986598968505859375;
-      static const T P[7] = {    
+      static const T P[7] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.053725830002359501027),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0470551187571475844778),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0101339410415759517471),
@@ -445,7 +445,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.390972820219765942117e-5),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.540319769113543934483e-7),
       };
-      static const T Q[8] = {    
+      static const T Q[8] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.286577739726542730421),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0447355811517733225843),
@@ -461,7 +461,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
    else if(s <= 7)
    {
       // Max error found at long double precision: 8.132216e-19
-      static const T P[8] = {    
+      static const T P[8] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, -2.49710190602259407065),
          BOOST_MATH_BIG_CONSTANT(T, 64, -3.36664913245960625334),
          BOOST_MATH_BIG_CONSTANT(T, 64, -1.77180020623777595452),
@@ -471,7 +471,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.000165556579779704340166),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.252884970740994069582e-5),
       };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.01300131390690459085),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.387898115758643503827),
@@ -489,7 +489,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
    {
       // Max error in interpolated form:              1.133e-18
       // Max error found at long double precision:    2.183198e-18
-      static const T P[9] = {    
+      static const T P[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, -4.78558028495135548083),
          BOOST_MATH_BIG_CONSTANT(T, 64, -3.23873322238609358947),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.892338582881021799922),
@@ -500,7 +500,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.626503445372641798925e-6),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.815696314790853893484e-8),
         };
-      static const T Q[9] = {    
+      static const T Q[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.525765665400123515036),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.10852641753657122787),
@@ -518,7 +518,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
    {
       // Max error in interpolated form:             1.668e-17
       // Max error found at long double precision:   1.669714e-17
-      static const T P[9] = {    
+      static const T P[9] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, -10.3948950573308861781),
          BOOST_MATH_BIG_CONSTANT(T, 64, -2.82646012777913950108),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.342144362739570333665),
@@ -529,7 +529,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.165096762663509467061e-7),
          BOOST_MATH_BIG_CONSTANT(T, 64, -0.145392555873022044329e-9),
       };
-      static const T Q[10] = {    
+      static const T Q[10] = {
          BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.205135978585281988052),
          BOOST_MATH_BIG_CONSTANT(T, 64, 0.0192359357875879453602),
@@ -556,7 +556,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 64
 }
 
 template <class T, class Policy>
-T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 113>&)
+T zeta_imp_prec(T s, T sc, const Policy&, const std::integral_constant<int, 113>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -567,7 +567,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
       // Expected Error Term:                         9.492e-37
       // Max error found at long double precision:    7.281332e-31
 
-      static const T P[10] = {    
+      static const T P[10] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, -1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.0353008629988648122808504280990313668),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0107795651204927743049369868548706909),
@@ -579,7 +579,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.660690993901506912123512551294239036e-9),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.113103113698388531428914333768142527e-10),
         };
-      static const T Q[11] = {    
+      static const T Q[11] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.387483472099602327112637481818565459),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0802265315091063135271497708694776875),
@@ -601,7 +601,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
       // Maximum Deviation Found:                     1.616e-37
       // Expected Error Term:                         -1.615e-37
 
-      static const T P[10] = {    
+      static const T P[10] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.577215664901532860606512090082402431),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.255597968739771510415479842335906308),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0494056503552807274142218876983542205),
@@ -613,7 +613,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.583103205551702720149237384027795038e-9),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.835774625259919268768735944711219256e-11),
       };
-      static const T Q[11] = {    
+      static const T Q[11] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.316661751179735502065583176348292881),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0540401806533507064453851182728635272),
@@ -636,7 +636,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
       // Max error found: 2.171527e-35
 
       static const float Y = 0.6986598968505859375;
-      static const T P[11] = {    
+      static const T P[11] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.0537258300023595010275848333539748089),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0429086930802630159457448174466342553),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0136148228754303412510213395034056857),
@@ -649,7 +649,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.231904754577648077579913403645767214e-10),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.340169592866058506675897646629036044e-12),
       };
-      static const T Q[12] = {    
+      static const T Q[12] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.363755247765087100018556983050520554),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0696581979014242539385695131258321598),
@@ -673,7 +673,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
 
       static const T Y = 3.28348541259765625F;
 
-      static const T P[13] = {    
+      static const T P[13] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.786383506575062179339611614117697622),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.495766593395271370974685959652073976),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.409116737851754766422360889037532228),
@@ -688,7 +688,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.214539416789686920918063075528797059e-8),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.15090220092460596872172844424267351e-10),
       };
-      static const T Q[14] = {    
+      static const T Q[14] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.69490865837142338462982225731926485),
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.22697696630994080733321401255942464),
@@ -713,7 +713,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
       // Max error in interpolated form:             1.999e-34
       // Max error found at long double precision:   2.156186e-33
 
-      static const T P[13] = {    
+      static const T P[13] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, -4.0545627381873738086704293881227365),
          BOOST_MATH_BIG_CONSTANT(T, 113, -4.70088348734699134347906176097717782),
          BOOST_MATH_BIG_CONSTANT(T, 113, -2.36921550900925512951976617607678789),
@@ -728,7 +728,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.500334720512030826996373077844707164e-10),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.420204769185233365849253969097184005e-12),
         };
-      static const T Q[14] = {    
+      static const T Q[14] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.97663511666410096104783358493318814),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.40878780231201806504987368939673249),
@@ -751,7 +751,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
    {
       // Max error in interpolated form:             1.641e-32
       // Max error found at long double precision:   1.696121e-32
-      static const T P[13] = {    
+      static const T P[13] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, -6.91319491921722925920883787894829678),
          BOOST_MATH_BIG_CONSTANT(T, 113, -3.65491257639481960248690596951049048),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.813557553449954526442644544105257881),
@@ -766,7 +766,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.347873737198164757035457841688594788e-13),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.289187187441625868404494665572279364e-15),
         };
-      static const T Q[14] = {    
+      static const T Q[14] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.427310044448071818775721584949868806),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.074602514873055756201435421385243062),
@@ -790,7 +790,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
       // Max error in interpolated form:             1.563e-31
       // Max error found at long double precision:   1.562725e-31
 
-      static const T P[13] = {    
+      static const T P[13] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, -11.7824798233959252791987402769438322),
          BOOST_MATH_BIG_CONSTANT(T, 113, -4.36131215284987731928174218354118102),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.732260980060982349410898496846972204),
@@ -805,7 +805,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.102397936697965977221267881716672084e-13),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.402663128248642002351627980255756363e-16),
       };
-      static const T Q[14] = {    
+      static const T Q[14] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.311288325355705609096155335186466508),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0438318468940415543546769437752132748),
@@ -828,7 +828,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
    {
       // Max error in interpolated form:             2.311e-27
       // Max error found at long double precision:   2.297544e-27
-      static const T P[14] = {    
+      static const T P[14] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, -20.7944102007844314586649688802236072),
          BOOST_MATH_BIG_CONSTANT(T, 113, -4.95759941987499442499908748130192187),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.563290752832461751889194629200298688),
@@ -844,7 +844,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.116313253429564048145641663778121898e-16),
          BOOST_MATH_BIG_CONSTANT(T, 113, -0.376708747782400769427057630528578187e-19),
       };
-      static const T Q[16] = {    
+      static const T Q[16] = {
          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.205076752981410805177554569784219717),
          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0202526722696670378999575738524540269),
@@ -877,7 +877,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const boost::integral_constant<int, 11
 }
 
 template <class T, class Policy>
-T zeta_imp_odd_integer(int s, const T&, const Policy&, const true_type&)
+T zeta_imp_odd_integer(int s, const T&, const Policy&, const std::true_type&)
 {
    static const T results[] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.2020569031595942853997381615114500), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0369277551433699263313654864570342), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0083492773819228268397975498497968), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0020083928260822144178527692324121), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0004941886041194645587022825264699), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0001227133475784891467518365263574), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000305882363070204935517285106451), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000076371976378997622736002935630), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000019082127165539389256569577951), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000004769329867878064631167196044), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000001192199259653110730677887189), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000298035035146522801860637051), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000074507117898354294919810042), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000018626597235130490064039099), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000004656629065033784072989233), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000001164155017270051977592974), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000291038504449709968692943), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000072759598350574810145209), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000018189896503070659475848), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000004547473783042154026799), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000001136868407680227849349), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000284217097688930185546), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000071054273952108527129), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000017763568435791203275), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000004440892103143813364), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000001110223025141066134), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000277555756213612417), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000069388939045441537), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000017347234760475766), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000004336808690020650), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000001084202172494241), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000271050543122347), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000067762635780452), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000016940658945098), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000004235164736273), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000001058791184068), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000264697796017), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000066174449004), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000016543612251), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000004135903063), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000001033975766), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000258493941), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000064623485), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000016155871), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000004038968), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000001009742), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000252435), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000063109), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000015777), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000003944), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000000986), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000000247), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000000062), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000000015), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000000004), BOOST_MATH_BIG_CONSTANT(T, 113, 1.0000000000000000000000000000000001),
@@ -886,8 +886,11 @@ T zeta_imp_odd_integer(int s, const T&, const Policy&, const true_type&)
 }
 
 template <class T, class Policy>
-T zeta_imp_odd_integer(int s, const T& sc, const Policy& pol, const false_type&)
+T zeta_imp_odd_integer(int s, const T& sc, const Policy& pol, const std::false_type&)
 {
+#ifdef BOOST_MATH_NO_THREAD_LOCAL_WITH_NON_TRIVIAL_TYPES
+   static_assert(std::is_trivially_destructible<T>::value, "Your platform does not support thread_local with non-trivial types, last checked with Mingw-x64-8.1, Jan 2021.  Please try a Mingw build with the POSIX threading model, see https://sourceforge.net/p/mingw-w64/bugs/527/");
+#endif
    static BOOST_MATH_THREAD_LOCAL bool is_init = false;
    static BOOST_MATH_THREAD_LOCAL T results[50] = {};
    static BOOST_MATH_THREAD_LOCAL int digits = tools::digits<T>();
@@ -919,8 +922,8 @@ T zeta_imp(T s, T sc, const Policy& pol, const Tag& tag)
    static const char* function = "boost::math::zeta<%1%>";
    if(sc == 0)
       return policies::raise_pole_error<T>(
-         function, 
-         "Evaluation of zeta function at pole %1%", 
+         function,
+         "Evaluation of zeta function at pole %1%",
          s, pol);
    T result;
    //
@@ -933,7 +936,7 @@ T zeta_imp(T s, T sc, const Policy& pol, const Tag& tag)
    //
    if(floor(s) == s)
    {
-#ifndef BOOST_NO_EXCEPTIONS
+#ifndef BOOST_MATH_NO_EXCEPTIONS
       // Without exceptions we expect itrunc to return INT_MAX on overflow
       // and we fall through anyway.
       try
@@ -953,15 +956,15 @@ T zeta_imp(T s, T sc, const Policy& pol, const Tag& tag)
             else if((v & 1) == 0)
             {
                if(((v / 2) <= (int)boost::math::max_bernoulli_b2n<T>::value) && (v <= (int)boost::math::max_factorial<T>::value))
-                  return T(((v / 2 - 1) & 1) ? -1 : 1) * ldexp(T(1), v - 1) * pow(constants::pi<T, Policy>(), v) *
+                  return T(((v / 2 - 1) & 1) ? -1 : 1) * ldexp(T(1), v - 1) * static_cast<T>(pow(constants::pi<T, Policy>(), T(v))) *
                      boost::math::unchecked_bernoulli_b2n<T>(v / 2) / boost::math::unchecked_factorial<T>(v);
-               return T(((v / 2 - 1) & 1) ? -1 : 1) * ldexp(T(1), v - 1) * pow(constants::pi<T, Policy>(), v) *
-                  boost::math::bernoulli_b2n<T>(v / 2) / boost::math::factorial<T>(v);
+               return T(((v / 2 - 1) & 1) ? -1 : 1) * ldexp(T(1), v - 1) * static_cast<T>(pow(constants::pi<T, Policy>(), T(v))) *
+                  boost::math::bernoulli_b2n<T>(v / 2) / boost::math::factorial<T>(v, pol);
             }
             else
-               return zeta_imp_odd_integer(v, sc, pol, boost::integral_constant<bool, (Tag::value <= 113) && Tag::value>());
+               return zeta_imp_odd_integer(v, sc, pol, std::integral_constant<bool, (Tag::value <= 113) && Tag::value>());
          }
-#ifndef BOOST_NO_EXCEPTIONS
+#ifndef BOOST_MATH_NO_EXCEPTIONS
       }
       catch(const boost::math::rounding_error&){} // Just fall through, s is too large to round
       catch(const std::overflow_error&){}
@@ -985,17 +988,17 @@ T zeta_imp(T s, T sc, const Policy& pol, const Tag& tag)
             result = boost::math::lgamma(s, pol);
             result -= s * log(2 * constants::pi<T>());
             if(result > tools::log_max_value<T>())
-               return sign(mult) * policies::raise_overflow_error<T>(function, 0, pol);
+               return sign(mult) * policies::raise_overflow_error<T>(function, nullptr, pol);
             result = exp(result);
             if(tools::max_value<T>() / fabs(mult) < result)
-               return boost::math::sign(mult) * policies::raise_overflow_error<T>(function, 0, pol);
+               return boost::math::sign(mult) * policies::raise_overflow_error<T>(function, nullptr, pol);
             result *= mult;
          }
          else
          {
             result = boost::math::sin_pi(0.5f * sc, pol)
-               * 2 * pow(2 * constants::pi<T>(), -s) 
-               * boost::math::tgamma(s, pol) 
+               * 2 * pow(2 * constants::pi<T>(), -s)
+               * boost::math::tgamma(s, pol)
                * zeta_imp(s, sc, pol, tag);
          }
       }
@@ -1016,9 +1019,9 @@ struct zeta_initializer
       {
          do_init(tag());
       }
-      static void do_init(const boost::integral_constant<int, 0>&){ boost::math::zeta(static_cast<T>(5), Policy()); }
-      static void do_init(const boost::integral_constant<int, 53>&){ boost::math::zeta(static_cast<T>(5), Policy()); }
-      static void do_init(const boost::integral_constant<int, 64>&)
+      static void do_init(const std::integral_constant<int, 0>&){ boost::math::zeta(static_cast<T>(5), Policy()); }
+      static void do_init(const std::integral_constant<int, 53>&){ boost::math::zeta(static_cast<T>(5), Policy()); }
+      static void do_init(const std::integral_constant<int, 64>&)
       {
          boost::math::zeta(static_cast<T>(0.5), Policy());
          boost::math::zeta(static_cast<T>(1.5), Policy());
@@ -1029,7 +1032,7 @@ struct zeta_initializer
 
          boost::math::zeta(static_cast<T>(5), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 113>&)
+      static void do_init(const std::integral_constant<int, 113>&)
       {
          boost::math::zeta(static_cast<T>(0.5), Policy());
          boost::math::zeta(static_cast<T>(1.5), Policy());
@@ -1063,12 +1066,12 @@ inline typename tools::promote_args<T>::type zeta(T s, const Policy&)
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::precision<result_type, Policy>::type precision_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 :

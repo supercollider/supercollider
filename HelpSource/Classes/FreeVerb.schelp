@@ -48,7 +48,7 @@ z.free
 
 // it expands as any ugen does
 (
-z = SynthDef(\src, {|out, mix = 0.25, room = 0.15, damp = 0.5|
+z = SynthDef(\src, { |out, mix = 0.25, room = 0.15, damp = 0.5|
 	Out.ar(out,
 		FreeVerb.ar(
 			Pan2.ar(

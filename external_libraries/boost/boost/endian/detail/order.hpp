@@ -6,8 +6,6 @@
 // Distributed under the Boost Software License, Version 1.0.
 // http://www.boost.org/LICENSE_1_0.txt
 
-#include <boost/core/scoped_enum.hpp>
-
 #if defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
 # define BOOST_ENDIAN_NATIVE_ORDER_INITIALIZER little
@@ -43,13 +41,12 @@ namespace boost
 namespace endian
 {
 
-BOOST_SCOPED_ENUM_START(order)
+enum class order
 {
     big,
     little,
     native = BOOST_ENDIAN_NATIVE_ORDER_INITIALIZER
-
-}; BOOST_SCOPED_ENUM_END
+};
 
 } // namespace endian
 } // namespace boost

@@ -22,7 +22,7 @@ Examples::
 
 code::
 (
-a = { |tempo=1| Ringz.ar(Impulse.ar(tempo), [501, 500], 1/tempo) }.play;
+a = { |tempo = 1| Ringz.ar(Impulse.ar(tempo), [501, 500], 1/tempo) }.play;
 t = TempoBusClock(a);
 Task { loop { "klink".postln; 1.wait } }.play(t);
 );

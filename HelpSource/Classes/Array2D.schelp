@@ -13,16 +13,16 @@ CLASSMETHODS::
 method::new
 Create an array of the specified size.
 code::
-a = Array2D.new(3,4);
-a[2,2] = 1;
+a = Array2D.new(3, 4);
+a[2, 2] = 1;
 a.postln
 ::
 
 method::fromArray
 Build an Array2D from the supplied array.
 code::
-a = Array2D.fromArray(3,4, [9,8,7,6,5,4,3,2,1,2,3,4]);
-a[2,2] = 1;
+a = Array2D.fromArray(3, 4, [9, 8, 7, 6, 5, 4, 3, 2, 1, 2, 3, 4]);
+a[2, 2] = 1;
 a.postln
 ::
 
@@ -33,15 +33,15 @@ private::printOn, storeOn
 method::at
 Get a value from the array.
 code::
-a.at(2,3);
-a[2,3];
+a.at(2, 3);
+a[2, 3];
 ::
 
 method::put
 Put a value into the array.
 code::
-a.put(2,3, 72);
-a[2,3] = 72;
+a.put(2, 3, 72);
+a[2, 3] = 72;
 ::
 
 method::colsDo
@@ -82,7 +82,7 @@ code::
 // "a" is an array-of-arrays
 a = { { 100.0.rand }.dup(100) }.dup(100);
 // "b" is an equivalent Array2D, made using the "fromArray" class method
-b = Array2D.fromArray(100,100, a.flat);
+b = Array2D.fromArray(100, 100, a.flat);
 
 // Accessing
 a[15][22]

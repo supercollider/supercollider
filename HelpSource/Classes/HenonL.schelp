@@ -40,7 +40,7 @@ code::
 { HenonL.ar(MouseX.kr(20, SampleRate.ir)) * 0.2 }.play(s);
 
 // mouse-control of params
-{ HenonL.ar(SampleRate.ir/4, MouseX.kr(1,1.4), MouseY.kr(0,0.3)) * 0.2 }.play(s);
+{ HenonL.ar(SampleRate.ir/4, MouseX.kr(1, 1.4), MouseY.kr(1, 0.3)) * 0.2 }.play(s);
 
 // randomly modulate params
 (
@@ -52,5 +52,5 @@ code::
 )
 
 // as a frequency control
-{ SinOsc.ar(HenonL.ar(40, MouseX.kr(1,1.4), MouseY.kr(0,0.3))*800+900)*0.4 }.play(s);
+{ SinOsc.ar(HenonL.ar(40, MouseX.kr(1, 1.4), MouseY.kr(1, 0.3))*800+900)*0.4 }.play(s);
 ::

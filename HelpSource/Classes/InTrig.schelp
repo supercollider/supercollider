@@ -29,15 +29,15 @@ Examples::
 
 code::
 s = Server.local;
-b = Bus.control(s,1);
+b = Bus.control(s, 1);
 
-SynthDef("help-InTrig",{arg out=0,busnum=0;
+SynthDef("help-InTrig", { |out = 0, busnum = 0|
 	var inTrig;
-	inTrig = InTrig.kr( busnum );
+	inTrig = InTrig.kr(busnum);
 	Out.ar(out,
-		EnvGen.kr(Env.perc,gate: inTrig,levelScale: inTrig ) * SinOsc.ar
+		EnvGen.kr(Env.perc, gate: inTrig, levelScale: inTrig) * SinOsc.ar
 	)
-}).play(s,[\out, 0, \busnum, b.index]);
+}).play(s, [\out, 0, \busnum, b.index]);
 
 
 b.set(1.0);
@@ -50,4 +50,3 @@ b.value = 0.1;
 ::
 
 compare with link::Classes/In:: example.
-

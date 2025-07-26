@@ -3,7 +3,7 @@ categories:: Language, Common methods
 summary:: common unary and binary operators
 related:: Reference/Adverbs
 
-SuperCollider supports operator overloading. Operators can thus be applied to a variety of different objects; Numbers, Ugens, Collections, and so on. When operators are applied to ugens they result in link::Classes/BinaryOpUGen::s or link::Classes/UnaryOpUGen::s, through the methods of link::Classes/AbstractFunction::.
+SuperCollider supports operator overloading. Operators can thus be applied to a variety of different objects; Numbers, UGens, Collections, and so on. When operators are applied to UGens they result in link::Classes/BinaryOpUGen::s or link::Classes/UnaryOpUGen::s, through the methods of link::Classes/AbstractFunction::.
 
 This is a list of some of the common unary and binary operators that are implemented by several classes.
 See the specific classes for details and other operators.
@@ -122,61 +122,17 @@ Convert cycles per second to decimal octaves.
 
 subsection:: Random operators
 
-See also link::Guides/Randomness::
+See also link::Guides/Randomness::.
 
-method::rand
-Returns an evenly distributed random value between this and zero.
+As with other operators, these work on a variety of receivers:
 code::
-10.rand;
-
-{ SinOsc.ar(110).rand }.plot;
-::
-
-method::rand2
-Returns an evenly distributed random value between [+this ... - this].
-code::
-10.rand2;
-
-{ SinOsc.ar(110).rand2 }.plot;
-::
-
-method::linrand
-Returns a linearly distributed random value between this and zero.
-code::
-10.linrand;
-
-{ SinOsc.ar(110).linrand }.plot;
-::
-
-
-method::bilinrand
-Returns a linearly distributed random value between [+this ... - this].
-code::
-10.bilinrand;
-
+42.rand;
+42.0.rand;
+8.do { [0, 1, 2, 3, 4].rrand(5).postln; };
 { SinOsc.ar(110).bilinrand }.plot;
-::
 
-method::sum3rand
-Returns a value from a gaussian-like random distribution between this and zero.
-This was suggested by Larry Polansky as a loose approximation of gaussian. Follows the formula:
-
-code::
-{ 1.0.rand }.dup(3).sum - 1.5 * (2/3)
-::
-
-code::
-10.sum3rand;
-
-{ SinOsc.ar(110).sum3rand }.plot;
-::
-
-method::coin
-Returns one or zero with the probability given by the argument.
-code::
-0.4.coin;
-
-{ SinOsc.ar(110).coin }.plot;
+{ 10.rand2 }.dup(30).plot.plotMode_(\steps)
+{ 10.0.rand2 }.dup(30).plot.plotMode_(\steps)
 ::
 
 
@@ -303,7 +259,8 @@ method:: /
 Division.
 
 method:: %
-Floating point modulo.
+Modulo.
+NOTE:: Uses floored division. Prior to SC 3.14, integer modulo would exhibit unexpected behavior for negative modulus; see link::Classes/Integer#-modSeaside::.::
 
 method:: **
 Exponentiation. Same as pow.
@@ -437,7 +394,7 @@ method:: <!
 Return first argument.
 
 code::
-// this is useful when two ugens need to be called, but only one of their outputs is needed
+// this is useful when two UGens need to be called, but only one of their outputs is needed
 (
 {
 	var a, b, c;
@@ -791,7 +748,7 @@ code::
 	var a;
 	a = Line.ar(-2, 2, 0.01);
 	a.clip2
-}.plot2
+}.plot
 )
 
 { FSinOsc.ar(400).clip2(0.2) }.scope; // clipping distortion

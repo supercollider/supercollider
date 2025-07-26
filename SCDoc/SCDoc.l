@@ -69,6 +69,7 @@ if (scdoc_start_token) {
 (?i:[ \t]*private::[ \t]*)       return PRIVATE;
 (?i:[ \t]*section::[ \t]*)       return SECTION;
 (?i:[ \t]*subsection::[ \t]*)    return SUBSECTION;
+(?i:[ \t]*subsubsection::[ \t]*) return SUBSUBSECTION;
 (?i:[ \t]*copymethod::[ \t]*)    return COPYMETHOD;
 (?i:[ \t]*method::[ \t]*)        method_caller = YY_START; BEGIN(method); return METHOD;
 (?i:[ \t]*argument::[ \t]*)      return ARGUMENT;
@@ -98,9 +99,11 @@ if (scdoc_start_token) {
 (?i:emphasis::[ \t\n\r]*)     BEGIN(verbatim); return EMPHASIS;
 (?i:code::[ \t]*)           BEGIN(verbatim); return CODE;
 (?i:teletype::[ \t]*)       BEGIN(verbatim); return TELETYPE;
+(?i:math::[ \t]*) BEGIN(verbatim); return MATH;
 
 (?i:[ \t]*code::[ \t]*\n+)      BEGIN(verbatim2); return CODEBLOCK;
 (?i:[ \t]*teletype::[ \t]*\n+)  BEGIN(verbatim2); return TELETYPEBLOCK;
+(?i:[ \t]*math::[ \t]*\n+) BEGIN(verbatim2); return MATHBLOCK;
 
 <INITIAL,verbatim>[ \t\n\r]*::    BEGIN(0); return TAGSYM;
 <verbatim2>\n[ \t\n\r]*::         BEGIN(0); return TAGSYM;
@@ -147,6 +150,7 @@ if (scdoc_start_token) {
 <metadata,eat>(?i:[ \t]*private::[ \t]*)       BEGIN(metadata); return PRIVATE;
 <metadata,eat>(?i:[ \t]*section::[ \t]*)       BEGIN(metadata); return SECTION;
 <metadata,eat>(?i:[ \t]*subsection::[ \t]*)    BEGIN(metadata); return SUBSECTION;
+<metadata,eat>(?i:[ \t]*subsubsection::[ \t]*) BEGIN(metadata); return SUBSUBSECTION;
 <metadata,eat>(?i:[ \t]*copymethod::[ \t]*)    BEGIN(metadata); return COPYMETHOD;
 <metadata,eat>(?i:[ \t]*method::[ \t]*)        method_caller = YY_START; BEGIN(method); return METHOD;
 <metadata,eat>(?i:[ \t]*description::[ \t\n\r]*)   BEGIN(eat); return DESCRIPTION;
@@ -168,8 +172,10 @@ if (scdoc_start_token) {
 <eat>(?i:emphasis::[ \t\n\r]*)     BEGIN(eat2);
 <eat>(?i:code::[ \t]*)           BEGIN(eat2);
 <eat>(?i:teletype::[ \t]*)       BEGIN(eat2);
+<eat>(?i:math::[ \t]*) BEGIN(eat2);
 <eat>(?i:[ \t]*code::[ \t]*\n+)      BEGIN(eat3);
 <eat>(?i:[ \t]*teletype::[ \t]*\n+)  BEGIN(eat3);
+<eat>(?i:[ \t]*math::[ \t]*\n+) BEGIN(eat3);
 <eat2>[ \t\n\r]*::            BEGIN(eat);
 <eat3>\n[ \t\n\r]*::         BEGIN(eat);
 <eat,eat2,eat3>.|\n          /* empty */

@@ -6,7 +6,86 @@ categories:: Control
 ClassMethods::
 
 method::new
-Create a new date with the given properties (all numerical values). These arguments are also the names of instance variables of the date object.
+Create a new Date with the given properties (all are Integer values, except teletype::rawSeconds::, which is a Float). These arguments are also the names of instance variables of the Date object.
+
+The constructor initializes the instance in one of the following ways (in order of priority):
+
+numberedlist::
+## If teletype::Date.new:: is called without any arguments, it will return the strong::current time::, the same as calling link::#*localtime::.
+
+code::
+// The following are equivalent, they return "now" (at the time of call):
+Date.new;
+Date.localtime;
+::
+
+## If a teletype::rawSeconds:: argument is specified, it is used to set (overwrite) all the other properties (teletype::year::, teletype::month::, teletype::day::, teletype::hour::, teletype::minute::, teletype::second::, teletype::dayOfWeek::), regardless of whether they are nil or not.
+
+code::
+(
+var d = Date.new.postln;
+var e = Date(rawSeconds: d.rawSeconds); // create a new Date with the same time
+d == e; // true
+)
+::
+
+## The most typical usage is to create a Date from a year/month/day and possibly hour/minute/second.  All of these properties (except teletype::year::) have default values (teletype::month = 1::, teletype::day = 1::, teletype::hour = 0::, teletype::minute = 0::, teletype::second = 0::). teletype::rawSeconds:: is computed based on the other properties. There is no default year -- if no teletype::year:: is provided, an error is thrown.
+
+code::
+Date(1969, 7, 20, 20, 18); // -> Sun Jul 20 20:18:00 1969
+Date(2016); // -> Fri Jan  1 00:00:00 2016
+d = Date(2010, day: 15, minute: 30); // -> Fri Jan 15 00:30:00 2010
+[d.asString, d.dayOfWeek, d.rawSeconds]; // dayOfWeek and rawSeconds were computed
+::
+
+Note::
+On Windows, code::Date:: creation fails for dates before Unix epoch, i.e. before January 1st, 1970.
+::
+::
+
+It is possible to specify dates with "out of range" values that will be resolved into a valid range -- this allows simple date offset calculations to be performed (see example below).
+
+code::
+(
+// Simple date/time offsetting can be performed:
+("One hundred days before Christmas:" + Date(2010, 12, 25 - 100).format("%B %d")).postln;
+
+// Invalid dates are "corrected"
+Date(2017, 2, 29).postln; // March 1: 2017 was not a leap year!
+)
+::
+
+note::The teletype::dayOfWeek:: argument is strong::always calculated::.  If it is specified, the value will be overwritten (it only remains a constructor argument for reasons of backward compatibility).
+
+code::
+// There is no point (but no harm) in specifying the dayOfWeek argument,
+// as it will always be calculated:
+Date(2017, 10, 31, dayOfWeek: 0).dayOfWeek; // calculated to be 2 (Tuesday), not 0 (Sunday)
+::
+::
+
+method::fromString
+Create a new Date object from a date/time string, which is parsed according to the provided format string.
+
+code::
+Date.fromString("2017-10-25 [13:25:55]", "%Y-%m-%d [%H:%M:%S]");
+Date.fromString("1981.9.30 @ 17:33", "%Y.%m.%d @ %H:%M");
+
+(
+// Round-trip via string, using "stamp"
+var stampString = Date(2013, 5, 25, 10, 9, 8).stamp;
+var d = Date.fromString(stampString, "%y%m%d_%H%M%S");
+(stampString + "-->" + d).postln;
+)
+::
+
+argument:: string
+The date/time string to parse, for example teletype::"2017-10-25 13:25:55"::.
+
+argument:: format
+The format to use to parse the date string. Note that the supported input formats are slightly different from those of the link::#-format:: (output) method. In particular, some of the "combined" formats (such as teletype::%F:: or teletype::%T::) are not supported for input, you must expand them out (teletype::"%F":: -> teletype::"%Y-%m-%d":: and teletype::"%T":: -> teletype::"%H:%M:%S"::).  The full list of supported input format flags may be found link::http://www.boost.org/doc/libs/1_63_0/doc/html/date_time/date_time_io.html##here::.
+
+To parse the above example string, you would use teletype::"%Y-%m-%d %H:%M:%S"::.
 
 method::getDate
 Get current date from system and create a date object from it.
@@ -31,13 +110,29 @@ code::
 (
 var a = Date.seed;
 thisThread.randSeed = a;
-20.do { [1,0].choose.post }; "".postln;
+20.do { [1, 0].choose.post }; "".postln;
 thisThread.randSeed = a;
-25.do { [1,0].choose.post }; "".postln;
+25.do { [1, 0].choose.post }; "".postln;
 )
 ::
 
 InstanceMethods::
+
+method::rawSeconds
+Get or set the receiver's raw time in seconds (relative to the "epoch" of January 1, 1970).
+
+If you modify this property, the other properties will not update. See note at link::#-resolve:: -- there is no "resolveFromRawSeconds" method, but you can generate a new self-consistent Date instance by passing the teletype::rawSeconds:: as an argument to link::#*new::.
+
+note::
+This value is not portable between machines, because of differences in the way the underlying time functions are implemented, and because of time zone differences.  To save/restore Date values between runs and on different platforms, it is recommended strong::not:: to use the rawSeconds value.  Instead, you should serialize the Date to a string, for example:
+::
+
+code::
+(
+var savedDateStr = Date.localtime.format("%Y%m%d_%H%M%S").postcs;
+var loadedDate = Date.fromString(savedDateStr, "%Y%m%d_%H%M%S").postln;
+)
+::
 
 method::localtime
 Set the receiver's time to current localtime.
@@ -65,6 +160,45 @@ Obtain a string in the format WeekdayName MonthName Time Year.
 
 method::asString
 Returns asctime.
+
+method::resolve
+Resolve any inconsistencies in the Date object, updating all the fields (in particular teletype::dayOfWeek:: and teletype::rawSeconds::) as necessary.
+
+If the instance properties (teletype::year::, teletype::month::, teletype::day::, teletype::hour::, teletype::minute::, teletype::second::) are modified, the Date will be in an inconsistent state -- its teletype::rawSeconds:: won't reflect the modifications, and the properties may fall outside of "normal" ranges (teletype::month: 1-12, day:1-31, hour: 0-23, minute/second: 0-59::).  Also, using the string conversion methods may give strange results. Calling the teletype::resolve:: method will put things back into a consistent state.
+
+code::
+// Simple date/time offsetting can be performed:
+d = Date(2017, 9, 30, 10, 30); // -> Sat Sep 30 10:30:00 2017
+[d.dayOfWeek, d.rawSeconds]; // -> [6, 1506760200]
+d.hour = d.hour - 13; // -> Sat Sep 30 -03:30:00 2017
+d.month = d.month + 4; // -> Sat ??? 30 -03:30:00 2017
+d.minute = d.minute + 200; // -> Sat ??? 30 -03:230:00 2017
+d.rawSeconds; // hasn't changed: still 1506760200
+
+// Now resolve everything back into reasonable ranges, applying the offsets:
+d.resolve; // -> Tue Jan 30 00:50:00 2018
+[d.dayOfWeek, d.rawSeconds]; // -> [2, 1517269800]
+::
+
+note::
+There is no "resolveFromRawSeconds" method.  If you modify the teletype::rawSeconds:: property, the other properties strong::won't:: change to reflect it.  If you want to "resolve" in the other direction, simply create a new Date object using the teletype::rawSeconds:::
+
+code::
+d = Date(1999, 12, 31); // -> Fri Dec 31 00:00:00 1999
+d.rawSeconds; // -> 946594800
+
+// Add 1 million seconds (~11.6 days)
+d.rawSeconds = d.rawSeconds + 1e6; // still shows -> Fri Dec 31 00:00:00 1999
+d.rawSeconds; // -> 947594800
+// rawSeconds different but the other properties haven't changed
+
+// If we were to call d.resolve, then rawSeconds would be reset to match all
+// the other properties.  So in this case, where we want to "resolve" from the
+// rawSeconds, just create a new Date object:
+d = Date(rawSeconds: d.rawSeconds);
+// -> Tue Jan 11 13:46:40 2000
+::
+::
 
 method::format
 Obtain a date string with a given format. The character % is replaced by the appropriate value, which is derived from the letter that follows.
@@ -141,10 +275,10 @@ definitionList::
 || Replaced by the locale's equivalent of either a.m. or p.m. [ tm_hour]
 
 ## %r
-|| Replaced by the time in a.m. and p.m. notation;  in the POSIX locale this shall be equivalent to %I :%M :%S%p. [ tm_hour, tm_min, tm_sec]
+|| Replaced by the time in a.m. and p.m. notation; in the POSIX locale this shall be equivalent to %I :%M :%S%p. [ tm_hour, tm_min, tm_sec]
 
 ## %R
-|| Replaced by the time in 24-hour notation (%H : %M ). [ tm_hour, tm_min]
+|| Replaced by the time in 24-hour notation (%H : %M). [ tm_hour, tm_min]
 
 ## %S
 || Replaced by the second as a decimal number [00,60]. [ tm_sec]
@@ -153,7 +287,7 @@ definitionList::
 || Replaced by a <tab>.
 
 ## %T
-|| Replaced by the time ( %H : %M : %S ). [ tm_hour, tm_min, tm_sec]
+|| Replaced by the time ( %H : %M : %S). [ tm_hour, tm_min, tm_sec]
 
 ## %u
 || Replaced by the weekday as a decimal number [1,7], with 1 representing Monday. [ tm_wday]
@@ -183,7 +317,7 @@ definitionList::
 || Replaced by the year as a decimal number (for example, 1997). [ tm_year]
 
 ## %z
-|| Replaced by the offset from UTC in the ISO 8601:2000 standard format ( +hhmm or -hhmm ), or by no characters if no timezone is determinable. For example, "-0430" means 4 hours 30 minutes behind UTC (west of Greenwich). If tm_isdst is zero, the standard time offset is used. If tm_isdst is greater than zero, the daylight savings time offset is used. If tm_isdst is negative, no characters are returned. [ tm_isdst]
+|| Replaced by the offset from UTC in the ISO 8601:2000 standard format ( +hhmm or -hhmm), or by no characters if no timezone is determinable. For example, "-0430" means 4 hours 30 minutes behind UTC (west of Greenwich). If tm_isdst is zero, the standard time offset is used. If tm_isdst is greater than zero, the daylight savings time offset is used. If tm_isdst is negative, no characters are returned. [ tm_isdst]
 
 ## %Z
 || Replaced by the timezone name or abbreviation, or by no bytes if no timezone information exists. [ tm_isdst]
@@ -193,3 +327,23 @@ definitionList::
 ::
 
 If a conversion specification does not correspond to any of the above, the behavior is undefined.
+
+method::<
+method::<=
+method::>
+method::>=
+Compare two Dates based on their rawSeconds.
+code::
+Date(1999, 12, 31, 23, 59, 59) < Date(2000, 1, 1, 0, 0, 0);
+Date(1999, 12, 31, 23, 59, 59) <= Date(2000, 1, 1, 0, 0, -1);
+Date(2005, 1, 1) > Date(2004, 1, 2);
+Date(2005, 2, 13) >= Date(2005, 2, 13);
+::
+
+method::==
+method::!=
+Test whether two Dates are equal/unequal, based on their rawSeconds.
+code::
+Date(2016, 11, 4) == Date(2016, 10, 4 + 31);
+Date(2016) != Date(2017);
+::

@@ -204,6 +204,7 @@ typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 
 #ifdef STATIC_PLUGINS
 #    define PluginLoad(name) void name##_Load(InterfaceTable* inTable)
+#    define PluginUnload(name) void name##_Unload(void)
 #else
 #    ifdef SUPERNOVA
 #        define SUPERNOVA_CHECK                                                                                        \
@@ -217,6 +218,8 @@ typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
         C_LINKAGE SC_API_EXPORT int api_version(void) { return sc_api_version; }                                       \
         SUPERNOVA_CHECK                                                                                                \
         C_LINKAGE SC_API_EXPORT void load(InterfaceTable* inTable)
+
+#    define PluginUnload(name) C_LINKAGE SC_API_EXPORT void unload(void)
 #endif
 
 #define scfft_create (*ft->fSCfftCreate)

@@ -83,7 +83,7 @@ public:
     void reset() 
     {
         if (initialized_) { 
-        #if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564)) || \
+        #if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564)) || \
             BOOST_WORKAROUND(__IBMCPP__, BOOST_TESTED_AT(600)) \
             /**/
             T* t = static_cast<T*>(address());

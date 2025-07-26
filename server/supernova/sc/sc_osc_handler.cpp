@@ -16,6 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
+#include "server/memory_pool.hpp"
 #include <iostream>
 
 // AppleClang workaround
@@ -502,8 +503,7 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
             p << osc::EndMessage;
 
             instance->send_notification(p.Data(), p.Size());
-        } catch (...) {
-        }
+        } catch (...) {}
 
         cmd_dispatcher<true>::free_in_rt_thread(std::move(value_array), std::move(cmd));
 
@@ -611,6 +611,42 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
     else
         sc_notify_observers::udp_socket.open(udp::v4());
 
+    try {
+        boost::asio::socket_base::send_buffer_size send_buffer_size;
+        udp_socket.get_option(send_buffer_size);
+        int default_buffer_size = send_buffer_size.value();
+        if (default_buffer_size < sc_osc_handler::udp_send_buffer_size) {
+            send_buffer_size = sc_osc_handler::udp_send_buffer_size;
+            boost::system::error_code ec;
+            udp_socket.set_option(send_buffer_size, ec);
+            if (ec && default_buffer_size < sc_osc_handler::udp_fallback_buffer_size) {
+                send_buffer_size = sc_osc_handler::udp_fallback_buffer_size;
+                udp_socket.set_option(send_buffer_size);
+            }
+        }
+    } catch (boost::system::system_error& e) {
+        std::cout << "WARNING: failed to set send buffer size"
+                  << " (" << e.what() << ")\n";
+    }
+
+    try {
+        boost::asio::socket_base::receive_buffer_size receieve_buffer_size;
+        udp_socket.get_option(receieve_buffer_size);
+        int default_buffer_size = receieve_buffer_size.value();
+        if (default_buffer_size < sc_osc_handler::udp_receive_buffer_size) {
+            receieve_buffer_size = sc_osc_handler::udp_receive_buffer_size;
+            boost::system::error_code ec;
+            udp_socket.set_option(receieve_buffer_size, ec);
+            if (ec && default_buffer_size < sc_osc_handler::udp_fallback_buffer_size) {
+                receieve_buffer_size = sc_osc_handler::udp_fallback_buffer_size;
+                udp_socket.set_option(receieve_buffer_size);
+            }
+        }
+    } catch (boost::system::system_error& e) {
+        std::cout << "WARNING: failed to set receieve buffer size"
+                  << " (" << e.what() << ")\n";
+    }
+
     sc_notify_observers::udp_socket.bind(udp::endpoint(address, port));
 }
 
@@ -711,9 +747,7 @@ void sc_osc_handler::tcp_connection::send(const char* data, size_t length) {
         socket_.send(boost::asio::buffer(&len, sizeof(len)));
         size_t written = socket_.send(boost::asio::buffer(data, length));
         assert(length == written);
-    } catch (std::exception const& err) {
-        std::cout << "Exception when sending message over TCP: " << err.what();
-    }
+    } catch (std::exception const& err) { std::cout << "Exception when sending message over TCP: " << err.what(); }
 }
 
 
@@ -879,9 +913,7 @@ void sc_osc_handler::handle_message(ReceivedMessage const& message, size_t msg_s
             handle_message_int_address<realtime>(message, msg_size, endpoint);
         else
             handle_message_sym_address<realtime>(message, msg_size, endpoint);
-    } catch (std::exception const& e) {
-        log_printf("exception in handle_message: %s\n", e.what());
-    }
+    } catch (std::exception const& e) { log_printf("exception in handle_message: %s\n", e.what()); }
 }
 
 namespace {
@@ -1014,6 +1046,23 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
 }
 
 template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) {}
+
+template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint_ref) {
+    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
+        if (unlikely(instance->quit_received))
+            return;
+
+        char buffer[4096];
+        typedef osc::int32 i32;
+
+        osc::OutboundPacketStream p(buffer, 4096);
+        p << osc::BeginMessage("/rtMemoryStatus.reply") << (i32)(rt_pool.get_pool_size() - rt_pool.get_used_size())
+          << (i32)rt_pool.get_max_size() << osc::EndMessage;
+        endpoint->send(p.Data(), p.Size());
+    });
+}
+
+template <> void handle_rtMemoryStatus<false>(endpoint_ptr const& endpoint_ref) {}
 
 void handle_unhandled_message(ReceivedMessage const& msg) {
     log_printf("unhandled message: %s\n", msg.AddressPattern());
@@ -1213,9 +1262,7 @@ void handle_s_new(ReceivedMessage const& msg) {
     try {
         while (args != end)
             set_control(synth, args, end);
-    } catch (std::exception& e) {
-        log_printf("exception in /s_new: %s\n", e.what());
-    }
+    } catch (std::exception& e) { log_printf("exception in /s_new: %s\n", e.what()); }
 }
 
 
@@ -1336,9 +1383,7 @@ template <bool realtime> void g_query_tree(int node_id, bool flag, endpoint_ptr 
             movable_array<char> message(p.Size(), data.c_array());
             cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
             return;
-        } catch (...) {
-            max_msg_size *= 2; /* if we run out of memory, retry with doubled memory resources */
-        }
+        } catch (...) { max_msg_size *= 2; /* if we run out of memory, retry with doubled memory resources */ }
     }
 }
 
@@ -1350,9 +1395,7 @@ template <bool realtime> void handle_g_queryTree(ReceivedMessage const& msg, end
             osc::int32 id, flag;
             args >> id >> flag;
             g_query_tree<realtime>(id, flag, endpoint);
-        } catch (std::exception& e) {
-            log_printf("exception in handle_g_queryTree: %s\n", e.what());
-        }
+        } catch (std::exception& e) { log_printf("exception in handle_g_queryTree: %s\n", e.what()); }
     }
 }
 
@@ -1441,9 +1484,7 @@ void handle_g_dumpTree(ReceivedMessage const& msg) {
             osc::int32 id, flag;
             args >> id >> flag;
             g_dump_tree(id, flag);
-        } catch (std::exception& e) {
-            log_printf("exception in /g_dumpTree: %s\n", e.what());
-        }
+        } catch (std::exception& e) { log_printf("exception in /g_dumpTree: %s\n", e.what()); }
     }
 }
 
@@ -1460,9 +1501,7 @@ void handle_n_free(ReceivedMessage const& msg) {
                 continue;
 
             instance->free_node(node);
-        } catch (std::exception& e) {
-            log_printf("exception in /n_free: %s\n", e.what());
-        }
+        } catch (std::exception& e) { log_printf("exception in /n_free: %s\n", e.what()); }
     }
 }
 
@@ -1483,9 +1522,7 @@ void handle_n_free(ReceivedMessage const& msg) {
         try {                                                                                                          \
             while (it != msg.ArgumentsEnd())                                                                           \
                 function(node, it);                                                                                    \
-        } catch (std::exception & e) {                                                                                 \
-            log_printf("Exception during /n_" #cmd "handler: %s\n", e.what());                                         \
-        }                                                                                                              \
+        } catch (std::exception & e) { log_printf("Exception during /n_" #cmd "handler: %s\n", e.what()); }            \
     }
 
 void set_control(server_node* node, osc::ReceivedMessageArgumentIterator& it) {
@@ -1957,8 +1994,7 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentStream
     if (!args.Eos()) {
         try {
             args >> blob;
-        } catch (osc::WrongArgumentTypeException& e) {
-        }
+        } catch (osc::WrongArgumentTypeException& e) {}
     }
 
     return completion_message(blob.size, blob.data);
@@ -1985,6 +2021,7 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 bufferIndex, frames, channels;
+    float sampleRate;
 
     args >> bufferIndex >> frames;
 
@@ -1995,11 +2032,18 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
 
     completion_message message = extract_completion_message(args);
 
+    if (!args.Eos()) {
+        args >> sampleRate;
+        if (sampleRate <= 0.0)
+            sampleRate = sc_factory->world.mSampleRate;
+    } else
+        sampleRate = sc_factory->world.mSampleRate;
+
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
         sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufferIndex));
         try {
             sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
-            sc_factory->allocate_buffer(bufferIndex, frames, channels);
+            sc_factory->allocate_buffer(bufferIndex, frames, channels, sampleRate);
 
             cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
                 sc_factory->buffer_sync(bufferIndex);
@@ -2491,6 +2535,26 @@ void handle_b_setn(ReceivedMessage const& msg) {
             data[index + i] = value;
         }
     }
+}
+
+void handle_b_setSampleRate(ReceivedMessage const& msg) {
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
+    verify_argument(it, end);
+    osc::int32 buffer_index = it->AsInt32();
+    ++it;
+
+    SndBuf* buf = sc_factory->get_buffer_struct(buffer_index);
+    SndBuf* nrtBuf = World_GetNRTBuf(&sc_factory->world, buffer_index);
+    if (!buf || !nrtBuf) {
+        log_printf("/b_setSampleRate called on unallocated buffer\n");
+        return;
+    }
+
+    auto proposedSampleRate = it->AsFloat();
+    buf->samplerate = nrtBuf->samplerate =
+        proposedSampleRate > 0.0 ? proposedSampleRate : sc_factory->world.mSampleRate;
+    buf->sampledur = nrtBuf->sampledur = 1.0 / buf->samplerate;
 }
 
 void handle_b_fill(ReceivedMessage const& msg) {
@@ -3162,6 +3226,10 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         handle_b_setn(message);
         break;
 
+    case cmd_b_setSampleRate:
+        handle_b_setSampleRate(message);
+        break;
+
     case cmd_b_fill:
         handle_b_fill(message);
         break;
@@ -3232,6 +3300,10 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
 
     case cmd_version:
         handle_version<realtime>(endpoint);
+        break;
+
+    case cmd_rtMemoryStatus:
+        handle_rtMemoryStatus<realtime>(endpoint);
         break;
 
     default:
@@ -3405,6 +3477,11 @@ void dispatch_buffer_commands(const char* address, ReceivedMessage const& messag
 
     if (strcmp(address + 3, "setn") == 0) {
         handle_b_setn(message);
+        return;
+    }
+
+    if (strcmp(address + 3, "setSampleRate") == 0) {
+        handle_b_setSampleRate(message);
         return;
     }
 
@@ -3618,6 +3695,11 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
 
     if (strcmp(address + 1, "version") == 0) {
         handle_version<realtime>(endpoint);
+        return;
+    }
+
+    if (strcmp(address + 1, "rtMemoryStatus") == 0) {
+        handle_rtMemoryStatus<realtime>(endpoint);
         return;
     }
 

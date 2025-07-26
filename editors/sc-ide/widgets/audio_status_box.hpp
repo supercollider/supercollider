@@ -20,6 +20,9 @@
 
 #pragma once
 
+#include <QtWidgets/QHBoxLayout>
+
+#include "manager.hpp"
 #include "util/status_box.hpp"
 
 namespace ScIDE {
@@ -30,6 +33,7 @@ class AudioStatusBox : public StatusBox {
     Q_OBJECT
 public:
     AudioStatusBox(ScServer*, QWidget* parent = 0);
+    void applySettings(Settings::Manager* settings);
 
 private slots:
     void onServerRunningChanged(bool running, QString const& hostName, int port, bool unresponsive);
@@ -51,6 +55,14 @@ private:
     StatusLabel* mVolumeLabel;
     StatusLabel* mMuteLabel;
     StatusLabel* mRecordLabel;
+
+    QColor unresponsiveColor;
+    QColor runningColor;
+    QColor notRunningColor;
+    QColor errorColor;
+    QColor noActionColor;
+
+    ScServer* mServer;
 };
 
 } // namespace ScIDE

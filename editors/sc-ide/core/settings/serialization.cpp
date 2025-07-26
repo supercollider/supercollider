@@ -28,6 +28,7 @@
 #include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <iostream>
+#include <QIODevice>
 
 namespace ScIDE { namespace Settings {
 

@@ -13,13 +13,56 @@ The keys used in a Pbind are usually determined by link::Classes/Event::'s defau
 ClassMethods::
 
 method::new
-The arguments to Pbind are an alternating sequence of keys and patterns. A pattern can also be bount to an array of keys. In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
+The arguments to Pbind are an alternating sequence of keys and patterns.
+
+code::
+Pbind(\note, Pseq([0, 4, 7]), \amp, 0.1, \dur, 0.2).play
+::
+
+The message code::new:: converts keyword arguments into key value pairs, so that we can write:
+
+code::
+Pbind(note: Pseq([0, 4, 7]), amp: 0.1, dur: 0.2).play
+::
+
+
+A pattern can also be bound to an array of keys.
+In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
+
+code::
+Pbind([\note, \amp], Pseq([[0, 0.05],  [4, 0.5],  [7, 0.1]]), dur: 0.2).play
+::
+
+InstanceMethods::
+
+method::patternpairs
+The defined key value pairs mapping symbols to value patterns.
+code::
+Pbind(x:7, y:Pseq([1, 2, 3])).patternpairs
+::
+
+method::embedInStream
+From within a link::Classes/Stream:: like e.g. link::Classes/Routine::, yield all events from this pattern before continuing. One pattern can be used to produce values for any number of independent streams.
+
+argument::inevent
+An event that is passed into all substreams and is used by them to produce the output events.
+
+code::
+a = Pbind(note: Pseq([0, 4, 7]), amp: 0.1, dur: 0.2);
+r = Routine { |inevent| (note:9, dur: 1).yield;  a.embedInStream(inevent);  };
+r.nextN(5, (x:7)); // passing in an event for the next 5 values from r, \x of 7 is passed through the Pbind stream
+::
+
 
 Examples::
 
 code::
 (
-a = Pbind(\x, Pseq([1, 2, 3]), \y, Prand([100, 300, 200], inf), \zzz, 99);
+a = Pbind(
+	x:    Pseq([1, 2, 3]),
+	y:    Prand([100, 300, 200], inf),
+	zzz:  99
+);
 x = a.asStream;
 )
 
@@ -33,61 +76,56 @@ code::
 // sound examples
 
 // using the default synth def
-Pbind(\freq, Prand([300, 500, 231.2, 399.2], inf), \dur, 0.1).play;
-Pbind(\freq, Prand([300, 500, 231.2, 399.2], inf), \dur, Prand([0.1, 0.3], inf)).play;
+Pbind(
+	freq: Prand([300, 500, 231.2, 399.2], inf),
+	dur:  0.1
+).play;
 
-Pbind(\freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200, \dur, 0.1).play;
+Pbind(
+	freq: Prand([300, 500, 231.2, 399.2], inf),
+	dur:  Prand([0.1, 0.3], inf)
+).play;
+
+Pbind(
+	freq: Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200,
+	dur:  0.1
+).play;
 ::
 
+The keys can be specified as keyword arguments, as above, or as a sequence of keys to patterns provided as arguments.
+Additionally, when an array of keys is provided, the pattern with be unpacked into two streams (see following example).
+However, this does not work when using keyword arguments, and therefore must go before them.
+For historical reasons, you are more likely to see the sequence of keys to patterns rather than keyword arguments.
+
 code::
+// Both of these do the same thing.
+Pbind(a: Pseq([1, 2, 3]), dur: 1).trace.play
+Pbind(\a, Pseq([1, 2, 3]), \dur, 1).trace.play
+
+
 (
 // a SynthDef
-SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
+SynthDef(\test, {
+	|out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1|
 	var audio = Blip.ar(freq, nharms, amp);
 	var env = Linen.kr(gate, doneAction: Done.freeSelf);
-	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
+	OffsetOut.ar(out, Pan2.ar(audio, pan, env));
 }).add;
 )
 
-Pbind(\instrument, \test, \freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200, \dur, 0.1).play;
-
-
-
-// standard syntax, arguments alternate symbols and patterns
-(
+// Assignment to multiple keys using an Array.
+// Must come before any keyword arguments.
 Pbind(
-	\instrument,		\test,
-	\nharms,	     	Pseq([4, 10, 40], inf),
-	\dur,			    Pseq([1, 1, 2, 1]/10, inf),
-	#[freq, sustain],	Ptuple([ // assignment to multiple keys
-					        Pseq( (1..16) * 50, 4),
-				     	    Pseq([1/10, 0.5, 1, 2], inf)
-				        ])
-).play;
-)
+	[\freq, \sustain], Ptuple([
+                          Pseq((1..16) * 50, 4),
+                          Pseq([1/10, 0.5, 1, 2], inf)
+				       ]),
+	instrument:        \test,
+	nharms:            Pseq([4, 10, 40], inf),
+	dur:			   Pseq([1, 1, 2, 1]/10, inf),
+).play
 ::
 
-It is possible to specify a Pbind with an link::Classes/Array:: preceded by *. This takes advantage of a special
-syntactic shortcut in SC where using * expands an Array into a list of method arguments. You can see more information
-about this and other syntactic shortcuts in link::Reference/Syntax-Shortcuts:: and
-link::Overviews/SymbolicNotations::.  Another useful shortcut is that Arrays treat identifiers ending with a colon as
-link::Classes/Symbol::s. Both of these shortcuts together help make the syntax of the Pbind specification a bit more
-concise:
-
-code::
-(
-// Alternative syntax, using a key/pattern array:
-Pbind(*[
-	instrument:			\test,
-	nharms:				Pseq([4, 10, 40], inf),
-	dur:				Pseq([1, 1, 2, 1]/10, inf),
-	#[freq, sustain]:	Ptuple([
-							Pseq( (1..16) * 50, 4),
-							Pseq([1/10, 0.5, 1, 2], inf)
-						])
-]).play;
-)
-::
 
 subsection::SynthDef and Event
 
@@ -96,10 +134,10 @@ The keys used in a Pbind are determined by the link::Classes/SynthDef:: used and
 A link::Classes/SynthDef:: assigns a name to an interconnection of unit generators to be run as a synth on a server. It also assigns strong::control names:: to the synth's control inputs. In the following example the SynthDef \test has control inputs strong::out::, strong::freq::, strong::amp::, strong::nharms::, strong::pan::, and strong::gate::.
 
 code::
-SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
+SynthDef(\test, { |out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1|
 	var audio = Blip.ar(freq, nharms, amp);
 	var env = Linen.kr(gate, doneAction: Done.freeSelf);
-	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
+	OffsetOut.ar(out, Pan2.ar(audio, pan, env));
 }).add;
 ::
 
@@ -128,7 +166,7 @@ When the Event is played, it creates an OSC command to play a synth. It uses the
 
 Playing a synth is the normal action taken by an Event. The default event structure defines several other event types that can perform a wide variety of server actions. See the link::Classes/Event:: help file for a list of event types.
 
-There are a number of coventional names typically used to identify controls in a synth.
+There are a number of conventional names typically used to identify controls in a synth.
 
 definitionList::
 ## out || output bus index
@@ -176,10 +214,10 @@ definitionList::
 code::
 (
 // the SynthDef
-SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
+SynthDef(\test, { |out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1|
 	var audio = Blip.ar(freq, nharms, amp);
 	var env = Linen.kr(gate, doneAction: Done.freeSelf);
-	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
+	OffsetOut.ar(out, Pan2.ar(audio, pan, env));
 }).add;
 
 // Events are written as parantheses enclosing key/value pairs
@@ -209,10 +247,10 @@ The link::Classes/EventStreamPlayer:: provides realtime control through strong::
 
 code::
 (
-SynthDef(\cfstring1, { arg i_out, freq = 360, gate = 1, pan, amp=0.1;
+SynthDef(\cfstring1, { |i_out, freq = 360, gate = 1, pan, amp = 0.1|
 	var out, eg, fc, osc, a, b, w;
 	fc = LinExp.kr(LFNoise1.kr(Rand(0.25, 0.4)), -1, 1, 500, 2000);
-	osc = Mix.fill(8, {LFSaw.ar(freq * [Rand(0.99, 1.01), Rand(0.99, 1.01)], 0, amp) }).distort * 0.2;
+	osc = Mix.fill(8, { LFSaw.ar(freq * [Rand(0.99, 1.01), Rand(0.99, 1.01)], 0, amp) }).distort * 0.2;
 	eg = EnvGen.kr(Env.asr(1, 1, 1), gate, doneAction: Done.freeSelf);
 	out = eg * RLPF.ar(osc, fc, 0.1);
 	#a, b = out;
@@ -290,7 +328,7 @@ synthdef and re-read the synthdesclib.
 
 code::
 (
-SynthDef(\acid, { arg out, freq = 1000, gate = 1, pan = 1, cut = 4000, rez = 0.8, amp = 1;
+SynthDef(\acid, { |out, freq = 1000, gate = 1, pan = 1, cut = 4000, rez = 0.8, amp = 1|
 	Out.ar(out,
 		Pan2.ar(
 			RLPF.ar(
@@ -303,8 +341,8 @@ SynthDef(\acid, { arg out, freq = 1000, gate = 1, pan = 1, cut = 4000, rez = 0.8
 
 (
 Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, -12,
-	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({1.0.rand2}),
-	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, 0.2).play;
+	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({ 1.0.rand2 }),
+	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({ 0.7.rand +0.3 }), \amp, 0.2).play;
 )
 ::
 
@@ -314,11 +352,11 @@ code::
 (
 Pseq([
 	Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], 4), \root, -24,
-		\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({1.0.rand2}),
-		\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, 0.2),
+		\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({ 1.0.rand2 }),
+		\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({ 0.7.rand +0.3 }), \amp, 0.2),
 
 	Pbind(\instrument, \acid, \dur, Pseq([0.25], 6), \root, -24, \degree, Pseq([18, 17, 11, 9], inf),
-		\pan, Pfunc({1.0.rand2}), \cut, 1500, \rez, Pfunc({0.7.rand +0.3}), \amp, 0.16)
+		\pan, Pfunc({ 1.0.rand2 }), \cut, 1500, \rez, Pfunc({ 0.7.rand +0.3 }), \amp, 0.16)
 
 ], inf).play;
 )
@@ -330,12 +368,12 @@ code::
 (
 Prand([
 	Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], 4), \root, -24,
-		\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({1.0.rand2}),
-		\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}),
+		\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({ 1.0.rand2 }),
+		\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({ 0.7.rand +0.3 }),
 		\amp, 0.2),
 
 	Pbind(\instrument, \acid, \dur, Pseq([0.25], 6), \root, -24, \degree, Pseq([18, 17, 11, 9], inf),
-		\pan, Pfunc({1.0.rand2}), \cut, 1500, \rez, Pfunc({0.7.rand +0.3}), \amp, 0.16)
+		\pan, Pfunc({ 1.0.rand2 }), \cut, 1500, \rez, Pfunc({ 0.7.rand +0.3 }), \amp, 0.16)
 
 ], inf).play;
 )
@@ -353,7 +391,7 @@ code::
 (
 Pbind(
 	\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], inf),
-	\root, [-24, -17],  // expand root
+	\root, [-24, -17], // expand root
 	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf),
 	\pan, Pfunc { 1.0.rand2 },
 	\cut, Pxrand([1000, 500, 2000, 300], inf),
@@ -382,7 +420,7 @@ code::
 Pbind(\degree, [Pseq([0, 2, 3], inf), Pseq([2, 4, 5, 6], inf)]).play;
 
 // but this does:
-Pbind(\degree, Pseq([ [ 0, 2 ], [ 2, 4 ], [ 3, 5 ], [ 0, 6 ] ], inf)]).play;
+Pbind(\degree, Pseq([[0, 2], [2, 4], [3, 5], [0, 6]], inf)).play;
 ::
 
 
@@ -404,7 +442,7 @@ Pdef(\x,
 	Pbind(
 		\instrument, \test,
 		\legato, 0.2,
-		\degree, Ptuple([0, Pwalk(Scale.hijaz.degrees, Prand([1, -1], inf))],
+		\degree, Ptuple([0, Pwalk(Scale.hijaz.degrees, Prand([1, -1], inf))]),
 		\scale, Scale.hijaz,
 		\strum, 0.05
 	)
@@ -424,22 +462,22 @@ Pdef(\buckyball).play;
 
 (
 Pdef(\buckyball, Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, [-24, -17],
-	\degree, Pseq([0, 3, 5, 7, 9, 11, [5, 17], 1], inf), \pan, Pfunc({[1.0.rand2, 1.0.rand2]}),
-	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, [0.15, 0.22]));
+	\degree, Pseq([0, 3, 5, 7, 9, 11, [5, 17], 1], inf), \pan, Pfunc({ [1.0.rand2, 1.0.rand2] }),
+	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({ 0.7.rand +0.3 }), \amp, [0.15, 0.22]));
 )
 (
 Pdef(\buckyball, Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, [-24, -17],
-	\degree, Pseq([0b, 3b, 5b, 7b, 9b, 11b, 5b, 0b], inf), \pan, Pfunc({1.0.rand2}), //notice the flats
-	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, 0.2));
+	\degree, Pseq([0b, 3b, 5b, 7b, 9b, 11b, 5b, 0b], inf), \pan, Pfunc({ 1.0.rand2 }), // notice the flats
+	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({ 0.7.rand +0.3 }), \amp, 0.2));
 )
 
-//stop the Pdef
+// stop the Pdef
 Pdef(\buckyball).stop;
 
-//start the Pdef
+// start the Pdef
 Pdef(\buckyball).resume;
 
-//removing the Pdef
+// removing the Pdef
 Pdef.remove(\buckyball);
 ::
 
@@ -450,10 +488,10 @@ Assignment to effect processors can be achieved by setting the 'out' argument to
 code::
 (
 // efx synthdef- dig the timing on the delay and the pbind. :-P
-SynthDef(\pbindefx, { arg out, in, time1=0.25, time2=0.5;
+SynthDef(\pbindefx, { |out, in, time1 = 0.25, time2 = 0.5|
 	var audio, efx;
 	audio = In.ar([20, 21], 2);
-	efx=CombN.ar(audio, 0.5, [time1, time2], 10, 1, audio);
+	efx = CombN.ar(audio, 0.5, [time1, time2], 10, 1, audio);
 	Out.ar(out, efx);
 }).add;
 
@@ -463,7 +501,7 @@ a = Synth.after(1, \pbindefx);
 // if you don't like the beats change to 0.4, 0.24
 // a.set(\time1, 0.4, \time2, 0.24);
 
-SynthDef(\acid, { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;
+SynthDef(\acid, { |out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1|
 	Out.ar(out,
 		Pan2.ar(
 			RLPF.ar(
@@ -476,8 +514,8 @@ SynthDef(\acid, { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8
 
 (
 Pbind(\instrument, \acid, \out, 20, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, [-24, -17],
-	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({1.0.rand2}),
-	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, 0.12).play;
+	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({ 1.0.rand2 }),
+	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({ 0.7.rand +0.3 }), \amp, 0.12).play;
 )
 ::
 
@@ -485,7 +523,7 @@ subsection::Additional examples
 
 code::
 (
-SynthDef(\berlinb, { arg out=0, freq = 80, amp = 0.01, pan=0, gate=1;
+SynthDef(\berlinb, { |out = 0, freq = 80, amp = 0.01, pan = 0, gate = 1|
 	var synth, env;
 	env = Decay2.kr(gate, 0.05, 8, 0.0003);
 	synth = RLPF.ar(
@@ -511,7 +549,7 @@ f.stream = Pbind(
 	\degree, Pseq([0, 1, 2, 4, 6, 3, 4, 8], inf),
 	\dur, 0.5, \octave, [2, 1],
 	\instrument, \berlinb,
-	\pan, Pfunc({1.0.rand2})
+	\pan, Pfunc({ 1.0.rand2 })
 ).asStream;
 )
 ::

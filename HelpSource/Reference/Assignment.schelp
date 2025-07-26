@@ -102,4 +102,3 @@ a[12..] = 1;  // from n to the end of the array
 a = (0,10..200);
 a[1,3..] = 1;  // a series to the end of the array
 ::
-

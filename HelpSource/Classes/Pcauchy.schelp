@@ -44,7 +44,7 @@ c.histo(500).plot(bounds: Rect(10, 410, 520, 380), parent: w);
 // sound example
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -54,7 +54,7 @@ SynthDef(\help_sinegrain,
 
 (
 var a;
-a = Pcauchy(0.0, 1.0,inf).asStream;
+a = Pcauchy(0.0, 1.0, inf).asStream;
 {
 	loop {
 		Synth(\help_sinegrain, [\freq, a.next * 600 + 300]);

@@ -26,10 +26,10 @@ argument:: label
 The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
 
 argument:: items
-Default value is code::nil::. An link::Classes/Array:: of link::Classes/Association::s code:: ['label' -> { arg listObj; value }, ] ::. Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::).
+Default value is code::nil::. An link::Classes/Array:: of link::Classes/Association::s code:: ['label' -> { |listObj| value }, ] ::. Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::).
 
 argument:: globalAction
-A global function to be performed in addition to the item functions code:: { arg listObj; value } ::.
+A global function to be performed in addition to the item functions code:: { |listObj| value } ::.
 
 argument:: initVal
 Initial value of the List, i.e. the index selected. Default value is 0.
@@ -67,7 +67,7 @@ g = EZListView.new(w,
 		\item1 ->{ |a| ("this is item 1 of " ++ a).postln },
 		\item2 ->{ |a| ("this is item 2 of " ++ a).postln },
 	],
-	globalAction: { |a| ("this is a global action of "++a.asString ).postln },
+	globalAction: { |a| ("this is a global action of "++a.asString).postln },
 	initVal: 2,
 	initAction: true,
 	labelWidth: 120,
@@ -82,7 +82,7 @@ g = EZListView.new(w,
 (
 w = Window.new.front;
 w.view.decorator = FlowLayout(w.view.bounds);
-g = EZListView.new(w,200@230, " List:");
+g = EZListView.new(w, 200@230, " List:");
 g.addItem(\item0, { |a| ("this is item 0 of " ++ a).postln });
 g.addItem(\item1, { |a| ("this is item 1 of " ++ a).postln });
 g.addItem(\item2, { |a| ("this is item 2 of " ++ a).postln });
@@ -120,49 +120,49 @@ Creates its own window if parent is nil:
 code::
 (
 g = EZListView.new(label: " My PopUp List: ");
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.setColors(Color.grey,Color.white);
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.setColors(Color.grey, Color.white);
 )
 ::
 Layout horizontal:
 code::
 (
-g = EZListView.new(nil,205@180, "Choose One: ", layout:\horz);
-10.do{|i| g.addItem("item"++i.asString, {("this is item" ++i.asString). postln})};
-g.setColors(Color.grey,Color.white);
+g = EZListView.new(nil, 205@180, "Choose One: ", layout: \horz);
+10.do{ |i| g.addItem("item"++i.asString, { ("this is item" ++i.asString).postln }) };
+g.setColors(Color.grey, Color.white);
 )
 ::
 No labelView created, so set the window title:
 code::
 (
-g = EZListView.new(bounds:200@230); // no label
-12.do{|i| g.addItem("item"++i.asString, {("this is item" ++i.asString). postln})};
-g.view.parent.findWindow.name=" choose item";
+g = EZListView.new(bounds: 200@230); // no label
+12.do{ |i| g.addItem("item"++i.asString, { ("this is item" ++i.asString).postln }) };
+g.view.parent.findWindow.name = " choose item";
 )
 ::
 insert item:
 code::
 (
-g = EZListView.new(nil,200@200, "List:");
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.addItem(\item4, {"this is item 4". postln});
+g = EZListView.new(nil, 200@200, "List:");
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.addItem(\item4, { "this is item 4".postln });
 )
 
-g.insertItem(3, \item3, {"this is item 3". postln});
+g.insertItem(3, \item3, { "this is item 3".postln });
 ::
 remove item:
 code::
 (
-g = EZListView.new(nil,200@200, "List:");
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.addItem(\item4, {"this is item 4". postln});
-g.insertItem(3, \item3, {"this is item 3". postln});
+g = EZListView.new(nil, 200@200, "List:");
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.addItem(\item4, { "this is item 4".postln });
+g.insertItem(3, \item3, { "this is item 3".postln });
 )
 
 g.removeItemAt(1);
@@ -170,13 +170,12 @@ g.removeItemAt(1);
 replace item:
 code::
 (
-g = EZListView.new(nil,200@200, "List:");
-g.addItem(\item0, {"this is item 0". postln});
-g.addItem(\item1, {"this is item 1". postln});
-g.addItem(\item2, {"this is item 2". postln});
-g.addItem(\item3, {"this is item 3". postln});
+g = EZListView.new(nil, 200@200, "List:");
+g.addItem(\item0, { "this is item 0".postln });
+g.addItem(\item1, { "this is item 1".postln });
+g.addItem(\item2, { "this is item 2".postln });
+g.addItem(\item3, { "this is item 3".postln });
 )
 
-g.replaceItemAt(2, \item2_replaced, {"this is item 2 replaced". postln});
+g.replaceItemAt(2, \item2_replaced, { "this is item 2 replaced".postln });
 ::
-

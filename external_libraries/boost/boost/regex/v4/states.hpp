@@ -161,7 +161,7 @@ A marked parenthesis.
 struct re_brace : public re_syntax_base
 {
    // The index to match, can be zero (don't mark the sub-expression)
-   // or negative (for perl style (?...) extentions):
+   // or negative (for perl style (?...) extensions):
    int index;
    bool icase;
 };

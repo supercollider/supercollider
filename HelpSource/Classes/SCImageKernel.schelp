@@ -86,7 +86,7 @@ k.values_([a]);
 k.isValid.postln; // is it ok
 a.applyKernel(k);
 
-w = a.plot(freeOnClose:true);
+w = a.plot(freeOnClose: true);
 )
 
 
@@ -100,7 +100,7 @@ vec2 testVec(float x, float y)
 	return vec2(x, y);
 }
 
-kernel vec4 testKernelFromApple( sampler src, __color color, float distance, float slope )
+kernel vec4 testKernelFromApple(sampler src, __color color, float distance, float slope)
 {
 	vec4 	t;
 	float	d;
@@ -125,7 +125,7 @@ k.values_(
 
 a.applyKernel(k);
 
-w = a.plot(freeOnClose:true);
+w = a.plot(freeOnClose: true);
 )
 
 
@@ -158,7 +158,7 @@ kernel vec4 _heightMap(sampler image, vec3 scale)
 	spherical.g = (spherical.g * 0.5 + 0.5) * scale.y;
 	spherical.b = (spherical.b * 0.5 + 0.5) * scale.z;
 
-	return vec4(spherical,1.0);
+	return vec4(spherical, 1.0);
 }
 ");
 
@@ -166,8 +166,8 @@ k.values_([a, [1.0, 1.0, 1.0]]);
 
 // k.isValid; // is it ok
 a.applyKernel(k);
-//.flatten; // ensure a bitmap rep so the kernel is not applied at each rendering call - uncomment that and rescale the plot window to see the difference.
+// .flatten; // ensure a bitmap rep so the kernel is not applied at each rendering call - uncomment that and rescale the plot window to see the difference.
 
-w = a.plot(freeOnClose:true);
+w = a.plot(freeOnClose: true);
 )
 ::

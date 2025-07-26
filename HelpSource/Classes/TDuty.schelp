@@ -97,7 +97,7 @@ s.boot;
 
 (
 	{
-		var a, trig, n=5, m=64;
+		var a, trig, n = 5, m = 64;
 		a = {
 			var x;
 			x = { 0.2.rand2 } ! m;
@@ -118,7 +118,7 @@ s.boot;
 // single impulses
 
 (
-SynthDef("delta_demand", { arg amp=0.5, out;
+SynthDef("delta_demand", { |amp = 0.5, out|
 	OffsetOut.ar(out,
 		TDuty.ar(Dseq([0]), 0, amp, 2)
 	)
@@ -157,4 +157,3 @@ fork { 10.do { s.sendBundle(0.2, ["/s_new", "delta_demand2", -1]); 1.0.rand.wait
 )
 
 ::
-

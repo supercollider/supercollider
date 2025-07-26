@@ -27,18 +27,17 @@ code::.ir::  will not track the changes.
 Examples::
 
 code::
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 // compares a 1102.5 Hz sine tone (11025 * 0.1, left) with a 1100 Hz tone (right)
 // the apollo sample has a sample rate of 11.025 kHz
 (
 {
 	var freq;
-	freq = [ BufSampleRate.kr(b) * 0.1, 1100];
+	freq = [BufSampleRate.kr(b) * 0.1, 1100];
 	SinOsc.ar(freq, 0, 0.1)
 }.play;
 )
 
 b.free;
 ::
-

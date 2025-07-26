@@ -24,7 +24,7 @@ m.object_(nil);
 m.object_(p);
 
 // if you have JITLibExtensions installed, try ProxyMeter to see the proxy levels:
-if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(m); };
+if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(m) };
 
 
 "abcdefghijk".do { |k| p[k.asSymbol].ar };
@@ -32,7 +32,7 @@ if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(m); };
 "lmnopqrtuvw".do { |k| p[k.asSymbol].kr };
 
 "abcdefghijk".do { |k, i|
-	p[k.asSymbol].playN(vol: 0.8 - (0.1 * i) );
+	p[k.asSymbol].playN(vol: 0.8 - (0.1 * i));
 	p[k.asSymbol].source = {
 		VarSaw.ar((i + 1 * 100) + [-1, 1])
 		* LFSaw.ar((i + 1 * 0.25));
@@ -132,7 +132,7 @@ m.object_(nil); // no object
 m.object_(p);   // the proxyspace
 
 // if you have JITLibExtensions installed, try ProxyMeter to see the proxy levels:
-if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(m); };
+if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(m) };
 
     // make too many ar proxies, get a scroller
 "abcdefghijk".do { |k| p[k.asSymbol].ar };
@@ -150,9 +150,9 @@ m.arNames.scramble.keep(5).do { |k| p[k.asSymbol].playN };
 ~test.ar;
 
 (        // activeProxies: proxy appears when it is alive
-~test = { |freq=250, intv=19, timescale=1, curve=0, loopnode=0|
+~test = { |freq = 250, intv = 19, timescale = 1, curve = 0, loopnode = 0|
     var env = EnvGen.kr(
-        Env({ 1.0.rand2 }!11, {1.0.rand}!10, curve, releaseNode: 9, loopNode: loopnode),
+        Env({ 1.0.rand2 }!11, { 1.0.rand }!10, curve, releaseNode: 9, loopNode: loopnode),
         timeScale: timescale);
     var pitch = (env * [1, 0.33, -1] * intv).midiratio * freq;
     Splay.ar(Formant.ar(pitch, pitch.scramble * 2, pitch.scramble)) * 0.1;
@@ -166,7 +166,7 @@ m.arNames.scramble.keep(5).do { |k| p[k.asSymbol].playN };
 // switch back to active proxies...
         // the reduce button removes all proxies that are not playing
         // and that are not used as sources in other proxies:
-~otto = { |dens=12| Dust.ar(dens) };
+~otto = { |dens = 12| Dust.ar(dens) };
 
 ~otto.clear;        // remove it
 p.reduce;
@@ -231,7 +231,7 @@ n.setNameLeftBorder(200);   // or set by code
 
         // kr proxies show up in the middle
 ~lfo = { SinOsc.kr(2) };
-~lfnoyz0 = { |lofreq = 0.5, mul=1, add| LFDNoise0.kr(lofreq, mul, add) };
+~lfnoyz0 = { |lofreq = 0.5, mul = 1, add| LFDNoise0.kr(lofreq, mul, add) };
 
         // the editor zone is a NodeProxyEditor
         // open it and set some params

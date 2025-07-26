@@ -140,4 +140,3 @@ x.free;
 See link::Classes/SynthDef#-play::
 
 note:: code::Synth.play(function):: is synonymous, for backwards compatibility with sc2 ::
-

@@ -132,7 +132,7 @@ int Unit_DoCmd(World* inWorld, int inSize, char* inData) {
         return kSCErr_Failed;
     UnitCmd* cmd = unitDef->mCmds->Get(cmdName);
     if (!cmd)
-        return kSCErr_Failed;
+        throw std::runtime_error(std::string((char*)cmdName) + " not found");
 
     // only run unit command if the ctor has been called!
     if (graph->mNode.mCalcFunc == (NodeCalcFunc)&Graph_FirstCalc
@@ -154,7 +154,7 @@ int PlugIn_DoCmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply
 
     PlugInCmd* cmd = GetPlugInCmd(cmdName);
     if (!cmd)
-        return kSCErr_Failed;
+        throw std::runtime_error(std::string((char*)cmdName) + " not found");
 
     (cmd->mFunc)(inWorld, cmd->mUserData, &msg, (void*)inReply);
 

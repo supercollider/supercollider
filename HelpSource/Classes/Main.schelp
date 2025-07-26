@@ -137,7 +137,7 @@ code::
 (
 f = { |msg, time, replyAddr, recvPort|
 	if(msg[0] != '/status.reply') {
-		"At time %s received message % from % on port%\n".postf( time, msg, replyAddr, recvPort )
+		"At time %s received message % from % on port%\n".postf(time, msg, replyAddr, recvPort)
 	}
 };
 thisProcess.addOSCRecvFunc(f);
@@ -172,6 +172,9 @@ If the port was already opened by SC it will return true directly without trying
 argument::portNum
 An link::Classes/Integer:: indicating the port to attempt to bind.
 
+argument::type
+An link::Classes/Symbol:: \osc or \raw, indicating which type of messages to expect. \osc will receive callbacks at code::Main:recvOSCmessage::, \raw will receive callbacks at code::Main:recvRawMessage::.
+
 returns::A link::Classes/Boolean:: indicating whether the attempt was successful.
 
 code::
@@ -197,4 +200,3 @@ Get the current link::Classes/Platform::
 
 method::argv
 Get the command-line arguments passed to sclang.
-

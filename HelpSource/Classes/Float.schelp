@@ -3,7 +3,7 @@ summary:: 64-bit Floating point number
 categories:: Math
 
 description::
-A 64-bit double precision floating point number. Float inherits most of its behaviour from its superclass.
+A 64-bit double precision floating point number. Float inherits most of its behaviour from its superclass, link::Classes/SimpleNumber::.
 
 code::
 // generate 10 random floats between 0 and 1
@@ -22,6 +22,10 @@ apotome / limma
 Note that despite its name, link::Classes/FloatArray:: only holds 32-bit (single precision) floats.
 For a raw array of 64-bit floats, use link::Classes/DoubleArray::.
 
+note::
+The overflow/underflow behavior of a Float is undefined but usually code::inf::/code::-inf::, respectively, since most CPUs comply well enough IEEE-754 floating point. However, the overflow/underflow behavior is still usually handed to the hardware and thus can vary per system. This (overflow/underflow) occurs whenever the result of an operation does not fit in the range of values supported by the return type, in this case, a 64-bit floating point number.
+::
+
 ClassMethods::
 
 method:: from32Bits
@@ -33,12 +37,12 @@ returns:: a new Float from a 64-bit word.
 InstanceMethods::
 
 method:: do
-iterates a link::Classes/Function:: from code::0:: to code::this-1::. See also: link::Classes/Integer#-do::, link::Classes/Collection#-do::
+iterates a link::Classes/Function:: from code::0:: to code::this - 1::. See also: link::Classes/Integer#-do::, link::Classes/Collection#-do::
 argument:: function
 The function to iterate.
 
 method:: reverseDo
-iterates function from this-1 to 0
+iterates function from code::this - 1:: to 0
 argument:: function
 The function to iterate.
 
@@ -76,6 +80,9 @@ See also: link::Guides/Randomness::
 method::xrand2
 returns::a random float from this.neg to this, excluding the value exclude.
 
+method::modSeaside
+returns::the same result as code::this.mod(aNumber, adverb)::; provided for compatibility with link::Classes/Integer#-modSeaside::.
+
 method:: isFloat
 returns:: code::true:: since this is a Float.
 
@@ -112,11 +119,36 @@ pi.asStringPrec(6)
 7.4.asStringPrec(50)
 ::
 
+method:: dump
+
+code::
+-1.0.dump
+::
+
+returns
+
+teletype::
+   Float -1.000000   00000000 BFF00000
+-> -1.0
+::
+
+The last two groups of an 8-digit integer are the raw hexadecimal representation of the 64-bit double value according to link::https://ieeexplore.ieee.org/document/8766229##IEEE 754 Floating Point:: (link::https://ieeexplore.ieee.org/document/8766229::). Each part is represented as follows:
+
+teletype::
+                         raw hexadecimal representation
+                           of the 64-bit double value
+                         ––––––––––––––––––––––––––––––
+Float   -1.000000        00000000              3FF00000
+|       |                |                     |
+class   decmial          significant part      exponent part
+        representation   (mantissa)            with sign bit
+::
+
 subsection::Using Floats as replacement for Integers
 
-In SuperCollider, Floats are 64-bit wide. Because  an link::Classes/Integer::  is 32-bit, it can only capture integers in the range code::-2147483648 .. +2147483647::, or about code:: 2 x 10^9 ::.
+In SuperCollider, Floats are 64 bits wide. Because an link::Classes/Integer:: is 32-bit, it can only capture integers in the range -2147483648 (code::-2^31::) to 2147483647 (code::2^31 - 1::).
 
-Therefore, in some situations it can be useful to calculate with floats also when only whole numbers are needed. You can use 64-bit floats for integer calculations up to code::± 9007199254740992:: (code::2^53::, or about code::9 x 10^15::). Sometimes one can go even further (see example below).
+Therefore, in some situations it can be useful to calculate with floats also when only whole numbers are needed. You can use 64-bit floats for integer calculations in the range code::± 9007199254740992::, or about code::±2^53::. Sometimes one can go even further (see example below).
 
 
 code::
@@ -128,7 +160,7 @@ f.(18.0) // float is ok.
 // check the ratio between adjacent factorials:
 f.(18.0) / f.(17.0) == 18 // true
 // 18 is already the largest possible factorial representable in 64-bit float (< 2^53)
-{:x, x<-(1.0..40), f.(x) < (2 ** 53) }.all.last
+{ :x, x<-(1.0..40), f.(x) < (2 ** 53) }.all.last
 ::
 
 
@@ -175,6 +207,6 @@ c - a // incorrect (also 1)
 // here we divide two numbers that follow each other
 // and it is correct up to f.(170), about 7.25e+306.
 f = { |x| if(x < 2) { x } { x * f.(x - 1) } };
-{:x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
+{ :x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
 
 ::

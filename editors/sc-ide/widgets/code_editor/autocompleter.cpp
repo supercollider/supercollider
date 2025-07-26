@@ -40,8 +40,10 @@
 #include <QLabel>
 #include <QScrollBar>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QWindow>
 #include <QProxyStyle>
+#include <QFile>
 
 namespace ScIDE {
 
@@ -157,7 +159,7 @@ private:
         QWidget* parentWid = parentWidget();
         QWidget* referenceWidget = parentWid ? parentWid : this;
 
-        QRect screen = QApplication::desktop()->availableGeometry(referenceWidget);
+        QRect screen = referenceWidget->screen()->availableGeometry();
         if (!screen.contains(rect)) {
             if (rect.right() > screen.right())
                 rect.moveRight(screen.right());
@@ -702,9 +704,9 @@ void AutoCompleter::updateCompletionMenu(bool forceShow) {
     if (!mCompletion.text.isEmpty()) {
         QString pattern = mCompletion.text;
         pattern.prepend("^");
-        menu->model()->setFilterRegExp(pattern);
+        menu->model()->setFilterRegularExpression(pattern);
     } else
-        menu->model()->setFilterRegExp(QString());
+        menu->model()->setFilterRegularExpression(QString());
 
     if (menu->model()->hasChildren()) {
         menu->view()->setCurrentIndex(menu->model()->index(0, 0));

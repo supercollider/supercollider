@@ -37,4 +37,3 @@ Called internally to wrap functions in message matcher objects, if needed.
 
 argument:: funcProxy
 An instance of link::Classes/MIDIFunc:: or link::Classes/MIDIdef:: whose function(s) are to be wrapped.
-

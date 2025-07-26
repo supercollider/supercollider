@@ -330,18 +330,14 @@ bool define_unit(const char* inUnitClassName, size_t inAllocSize, UnitCtorFunc i
     try {
         nova::sc_factory->register_ugen(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
         return true;
-    } catch (...) {
-        return false;
-    }
+    } catch (...) { return false; }
 }
 
 bool define_bufgen(const char* name, BufGenFunc func) {
     try {
         nova::sc_factory->register_bufgen(name, func);
         return true;
-    } catch (...) {
-        return false;
-    }
+    } catch (...) { return false; }
 }
 
 bool define_unitcmd(const char* unitClassName, const char* cmdName, UnitCmdFunc inFunc) {
@@ -887,9 +883,9 @@ void sc_plugin_interface::allocate_buffer(SndBuf* buf, uint32_t frames, uint32_t
     buf->isLocal = false;
 }
 
-SndBuf* sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels) {
+SndBuf* sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels, double samplerate) {
     SndBuf* buf = World_GetNRTBuf(&world, index);
-    allocate_buffer(buf, frames, channels, world.mFullRate.mSampleRate);
+    allocate_buffer(buf, frames, channels, samplerate);
     return buf;
 }
 

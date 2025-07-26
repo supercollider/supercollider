@@ -21,7 +21,7 @@ code::
 s.boot;
 
 (
-SynthDef("help-magMul", { arg out=0;
+SynthDef("help-magMul", { |out = 0|
 	var inA, chainA, inB, chainB, chain;
 	inA = WhiteNoise.ar(0.2);
 	inB = LFSaw.ar(100, 0, 0.2);
@@ -33,20 +33,19 @@ SynthDef("help-magMul", { arg out=0;
 )
 
 
-c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, ExampleFiles.child);
 
 (
-SynthDef("help-magMul2", { arg out=0, soundBufnum=0;
+SynthDef("help-magMul2", { |out = 0, soundBufnum = 0|
 	var inA, chainA, inB, chainB, chain;
 	inA = LFSaw.ar([100, 150], 0, 0.2);
 	inB = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chainA = FFT(LocalBuf(2048), inA);
 	chainB = FFT(LocalBuf(2048), inB);
 	chain = PV_MagDiv(chainA, chainB);
-	Out.ar(out,  0.1 * IFFT(chain));
-}).play(s,[\out, 0, \soundBufnum, c]);
+	Out.ar(out, 0.1 * IFFT(chain));
+}).play(s, [\out, 0, \soundBufnum, c]);
 )
 
 c.free;
 ::
-

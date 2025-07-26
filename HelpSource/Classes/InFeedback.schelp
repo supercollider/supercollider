@@ -6,10 +6,10 @@ categories::  UGens>InOut
 
 Description::
 
-When the various output UGens ( link::Classes/Out:: ,
-link::Classes/OffsetOut:: ,  link::Classes/XOut:: ) write data to a bus,
+When the various output UGens (link::Classes/Out::,
+link::Classes/OffsetOut::, link::Classes/XOut::) write data to a bus,
 they mix it with any data from the current cycle, but overwrite any data
-from the previous cycle. ( link::Classes/ReplaceOut::  overwrites all
+from the previous cycle. (link::Classes/ReplaceOut::  overwrites all
 data regardless.) Thus depending on node order and what synths are
 writing to the bus, the data on a given bus may be from the current cycle
 or be one cycle old at the time of reading. In.ar checks the timestamp of
@@ -76,7 +76,7 @@ Examples::
 audio feedback modulation:
 code::
 (
-SynthDef("help-InFeedback", { arg out=0, in=0;
+SynthDef("help-InFeedback", { |out = 0, in = 0|
 	var input, sound;
 		input = InFeedback.ar(in, 1);
 		sound = SinOsc.ar(input * 1300 + 300, 0, 0.4);
@@ -88,12 +88,12 @@ SynthDef("help-InFeedback", { arg out=0, in=0;
 this shows how a node can read audio from a bus that is being written to by a synth following it:
 code::
 (
-SynthDef("help-InFeedback", { arg out=0, in=0;
+SynthDef("help-InFeedback", { |out = 0, in = 0|
 	Out.ar(out,
 		InFeedback.ar(in, 1)
 	);
 }).add;
-SynthDef("help-SinOsc", { arg out=0, freq=440;
+SynthDef("help-SinOsc", { |out = 0, freq = 440|
 	Out.ar(out, SinOsc.ar(freq, 0, 0.1))
 }).add;
 )
@@ -101,7 +101,7 @@ SynthDef("help-SinOsc", { arg out=0, freq=440;
 x = Bus.audio(s, 1);
 
 // read from bus n play to bus 0 (silent)
-a = Synth("help-InFeedback",[\in, x.index, \out, 0]);
+a = Synth("help-InFeedback", [\in, x.index, \out, 0]);
 
 // now play a synth after this one, playing to bus x
 b = Synth.after(a, "help-SinOsc", [\out, x.index]);
@@ -138,4 +138,3 @@ OffsetOut.ar(0, play);
 { SinOsc.ar(440, 0, 0.2) }.play(s, 1);
 )
 ::
-

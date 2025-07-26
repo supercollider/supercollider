@@ -1,6 +1,7 @@
 Main : Process {
 	var <platform, argv;
 	var recvOSCfunc, prRecvOSCFunc;
+	var recvRawFunc, prRecvRawFunc;
 	var openPorts;
 
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
@@ -52,7 +53,6 @@ Main : Process {
 			+ (Platform.ideName.switch(
 				"scvim", {"For help type :SChelp."},
 				"scel",  {"For help type C-c C-y."},
-				"sced",  {"For help type ctrl-U."},
 				"scapp", {"For help type cmd-d."},
 				"scqt", {
 					if (Platform.hasQtWebEngine) {
@@ -63,7 +63,7 @@ Main : Process {
 			}) ?? {
 				(
 					osx: "For help type cmd-d.",
-					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit).",
+					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim).",
 					windows: "For help press F1.",
 					iphone: ""
 				).at(platform.name);
@@ -90,11 +90,16 @@ Main : Process {
 		CmdPeriod.hardRun;
 	}
 
-	recvOSCmessage { arg time, replyAddr, recvPort, msg;
-		// this method is called when an OSC message is received.
+	// recvOSCmessage, recvRawMessage are invoked from C++ when OSC or raw UDP messages are recieved
+	recvOSCmessage { |time, replyAddr, recvPort, msg|
 		recvOSCfunc.value(time, replyAddr, msg);
 		prRecvOSCFunc.value(msg, time, replyAddr, recvPort); // same order as OSCFunc
 		OSCresponder.respond(time, replyAddr, msg);
+	}
+
+	recvRawMessage { |time, replyAddr, recvPort, msg|
+		recvRawFunc.value(time, replyAddr, msg);
+		prRecvRawFunc.value(msg, time, replyAddr, recvPort);
 	}
 
 	addOSCRecvFunc { |func| prRecvOSCFunc = prRecvOSCFunc.addFunc(func) }
@@ -103,18 +108,43 @@ Main : Process {
 
 	replaceOSCRecvFunc { |func, newFunc| prRecvOSCFunc = prRecvOSCFunc.replaceFunc(func, newFunc) }
 
+	addRawRecvFunc { |func| prRecvRawFunc = prRecvRawFunc.addFunc(func) }
+
+	removeRawRecvFunc { |func| prRecvRawFunc = prRecvRawFunc.removeFunc(func) }
+
+	replaceRawRecvFunc { |func, newFunc| prRecvRawFunc = prRecvRawFunc.replaceFunc(func, newFunc) }
+
 	openPorts { ^openPorts.copy } // don't allow the Set to be modified from the outside
 
-	openUDPPort {|portNum|
+	openUDPPort { |portNum, type=\osc|
+
 		var result;
 		if(openPorts.includes(portNum), {^true});
-		result = this.prOpenUDPPort(portNum);
+
+		switch (type,
+			\osc, {
+				result = this.prOpenOSCUDPPort(portNum)
+
+			},
+			\raw, {
+				result = this.prOpenRawUDPPort(portNum)
+			},
+			{
+				Exception("Cannot open UDP port with type '%' because it doesn't exist (types are \\osc, \\raw).".format(type)).throw
+			}
+		);
+
 		if(result, { openPorts = openPorts.add(portNum); });
 		^result;
 	}
 
-	prOpenUDPPort {|portNum|
-		_OpenUDPPort
+	prOpenOSCUDPPort {|portNum|
+		_OpenOSCUDPPort
+		^this.primitiveFailed;
+	}
+
+	prOpenRawUDPPort {|portNum|
+		_OpenRawUDPPort
 		^this.primitiveFailed;
 	}
 
@@ -151,6 +181,7 @@ Main : Process {
 	*scVersionMinor { _SC_VersionMinor ^this.primitiveFailed }
 	*scVersionPatch { _SC_VersionPatch ^this.primitiveFailed }
 	*scVersionTweak { _SC_VersionTweak ^this.primitiveFailed }
+	*scBuildString { _SC_BuildString ^this.primitiveFailed }
 
 	*versionAtLeast { |maj, min, patch|
 		^if((maj == this.scVersionMajor) and: { min.notNil }) {

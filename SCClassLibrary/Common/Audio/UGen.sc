@@ -283,6 +283,12 @@ UGen : AbstractFunction {
 		^ModDif.multiNew(this.rate, this, that, mod)
 	}
 
+	binaryValue { ^this.sign.max(0) }
+
+	isPositive { ^this >= 0 }
+	isNegative { ^this < 0 }
+	isStrictlyPositive { ^this > 0 }
+
 	// Note that this differs from |==| for other AbstractFunctions
 	// Other AbstractFunctions write '|==|' into the compound function
 	// for the sake of their 'storeOn' (compile string) representation.
@@ -337,7 +343,6 @@ UGen : AbstractFunction {
 		if (rate == 'audio') {
 			n.do {| i |
 				if (inputs.at(i).rate != 'audio') {
-					//"failed".postln;
 					^("input " ++ i ++ " is not audio rate: " + inputs.at(i) + inputs.at(0).rate);
 				};
 			};
@@ -576,8 +581,9 @@ MultiOutUGen : UGen {
 	}
 
 	initOutputs { arg numChannels, rate;
-		if(numChannels.isNil or: { numChannels < 1 }, {
-			Error("%: wrong number of channels (%)".format(this, numChannels)).throw
+		if(numChannels.isInteger.not or: { numChannels < 1 }, {
+			Error("%: numChannels must be a nonzero positive integer, but received (%)."
+              .format(this, numChannels)).throw
 		});
 		channels = Array.fill(numChannels, { arg i;
 			OutputProxy(rate, this, i);

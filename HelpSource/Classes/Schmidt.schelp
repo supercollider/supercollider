@@ -16,9 +16,9 @@ out[i] = if(in[i] < lo[i]) {
 } {
     if(in[i] > hi[i]) {
         1
-    } {
+   } {
         out[i-1]
-    }
+   }
 };
 ::
 
@@ -47,9 +47,9 @@ code::
 
 s.boot;
 
-{ Schmidt.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15)}.scope; // see the trigger
+{ Schmidt.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15) }.scope; // see the trigger
 
-{ Schmidt.kr(MouseX.kr(0, 1), 0.2, 0.8)}.scope; // try it with the cursor
+{ Schmidt.kr(MouseX.kr(0, 1), 0.2, 0.8) }.scope; // try it with the cursor
 
 // threshold octave jumps
 (
@@ -61,4 +61,3 @@ s.boot;
 )
 
 ::
-

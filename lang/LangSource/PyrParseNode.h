@@ -77,6 +77,10 @@ enum {
 
 extern AdvancingAllocPool gParseNodePool;
 
+// This value count the un-inlined functions, these are not desirable in the class library because they are slow.
+// There is a primitive that returns this value so it can be checked in sclang's unit tests.
+extern int gNumUninlinedFunctions;
+
 #define ALLOCNODE(type) (new (gParseNodePool.Alloc(sizeof(type))) type())
 #define ALLOCSLOTNODE(type, classno) (new (gParseNodePool.Alloc(sizeof(type))) type(classno))
 #define COMPILENODE(node, result, onTailBranch) (compileNode((node), (result), (onTailBranch)))
@@ -363,6 +367,7 @@ struct PyrArgListNode : public PyrParseNode {
 
     struct PyrVarDefNode* mVarDefs;
     struct PyrSlotNode* mRest;
+    struct PyrSlotNode* mKeywordArgs = nullptr;
 };
 
 struct PyrLitListNode : public PyrParseNode {
@@ -434,7 +439,7 @@ PyrClassNode* newPyrClassNode(PyrSlotNode* className, PyrSlotNode* superClassNam
 PyrClassExtNode* newPyrClassExtNode(PyrSlotNode* className, PyrMethodNode* methods);
 PyrMethodNode* newPyrMethodNode(PyrSlotNode* methodName, PyrSlotNode* primitiveName, PyrArgListNode* arglist,
                                 PyrVarListNode* varlist, PyrParseNode* body, int isClassMethod);
-PyrArgListNode* newPyrArgListNode(PyrVarDefNode* varDefs, PyrSlotNode* rest);
+PyrArgListNode* newPyrArgListNode(PyrVarDefNode* varDefs, PyrSlotNode* rest, PyrSlotNode* kwArgs);
 PyrVarListNode* newPyrVarListNode(PyrVarDefNode* vardefs, int flags);
 PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrParseNode* defVal, int flags);
 PyrCallNode* newPyrCallNode(PyrSlotNode* selector, PyrParseNode* arglist, PyrParseNode* keyarglist,

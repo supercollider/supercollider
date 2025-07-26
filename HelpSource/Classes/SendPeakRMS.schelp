@@ -19,7 +19,7 @@ method::ar, kr
 
 Unlike with other unit generators, the code::ar:: and code::kr:: methods do not
 specify the rate of the computation, but the granularity. When the SendPeakRMS ugen
-is instantiated with code::kr::, the reply rate id quantized to control-rate
+is instantiated with code::kr::, the reply rate is quantized to control-rate
 blocks.
 
 argument::sig
@@ -64,4 +64,3 @@ o = OSCFunc({ |msg|
 )
 o.free;
 ::
-

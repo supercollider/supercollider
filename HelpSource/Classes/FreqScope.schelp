@@ -41,7 +41,7 @@ FreqScope.new(400, 200, 0, server: s);
 { SinOsc.ar(2000, 0, 0.25) }.play(s);
 
 // random saw
-{ RLPF.ar(Saw.ar(110, 0.2), LFNoise2.kr(1,1e4,1e4), LFNoise2.kr(1, 0.2, 0.22)) }.play(s);
+{ RLPF.ar(Saw.ar(110, 0.2), LFNoise2.kr(1, 1e4, 1e4), LFNoise2.kr(1, 0.2, 0.22)) }.play(s);
 
 // modulate phase
 { SinOsc.ar(800, SinOsc.ar(XLine.kr(20, 8000, 10), 0, 2pi), 0.25) }.play(s);

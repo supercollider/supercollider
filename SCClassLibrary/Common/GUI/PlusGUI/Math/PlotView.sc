@@ -411,25 +411,15 @@ Plot {
 				ycoord.flop.do { |y, i|
 					var mode = plotMode.wrapAt(i);
 					Pen.beginPath;
+					Pen.fillColor = plotColor.wrapAt(i);
+					Pen.strokeColor = plotColor.wrapAt(i);
 					this.perform(mode, xcoord, y);
-					if (this.needsPenFill(mode)) {
-						Pen.fillColor = plotColor.wrapAt(i);
-						Pen.fill
-					} {
-						Pen.strokeColor = plotColor.wrapAt(i);
-						Pen.stroke
-					}
 				}
 			} {
 				Pen.beginPath;
 				Pen.strokeColor = plotColor.at(0);
-				Pen.fillColor= plotColor.at(0);
+				Pen.fillColor = plotColor.at(0);
 				this.perform(plotMode.at(0), xcoord, ycoord);
-				if (this.needsPenFill(plotMode.at(0))) {
-					Pen.fill
-				} {
-					Pen.stroke
-				}
 			};
 			Pen.joinStyle = 0;
 		};
@@ -441,26 +431,68 @@ Plot {
 		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
 			Pen.lineTo(x[i] @ y[i]);
-		}
+		};
+		Pen.stroke;
 	}
 
-	points { |x, y|
-		var size = min(bounds.width / value.size * 0.25, 4);
+	lines { |x, y| this.linear(x, y) } // synonym for linear
+
+	stems { |x, y|
+		var ycoord0 = plotBounds.bottom - (spec.warp.unmap(0) * plotBounds.height);
+
 		y.size.do { |i|
-			Pen.addArc(x[i] @ y[i], 0.5, 0, 2pi);
-			if(size > 2) { Pen.addArc(x[i] @ y[i], size, 0, 2pi); };
-		}
+			Pen.moveTo(x[i] @ y[i]);
+			Pen.lineTo(x[i] @ ycoord0);
+		};
+		Pen.stroke;
 	}
 
-	plines { |x, y|
-		var size = min(bounds.width / value.size * 0.25, 3);
-		Pen.moveTo(x.first @ y.first);
+	dots { |x, y, radius, fill = true|
+		var rect;
+
+		radius = radius ?? max(1, min(2, bounds.width / value.size * 0.25));
+		rect = Rect(0, 0, radius * 2, radius * 2);
+
 		y.size.do { |i|
-			var p = x[i] @ y[i];
-			Pen.lineTo(p);
-			Pen.addArc(p, size, 0, 2pi);
-			Pen.moveTo(p);
-		}
+			Pen.addOval(rect.left_(x[i] - radius).top_(y[i] - radius));
+		};
+		if(fill) { Pen.fill } { Pen.stroke };
+	}
+
+	// points is a special case: unfilled -dots with a dot at the center
+	points { |x, y, radius|
+		radius = radius ?? max(1, min(3, bounds.width / value.size * 0.25));
+
+		this.dots(x, y, radius, fill: false);
+
+		// only draw center point if circle is large enough
+		if(radius > 1.5) {
+			this.dots(x, y, radius: 0.5, fill: true);
+		};
+	}
+
+	plines { |x, y, radius|
+		this.lines(x, y);
+		// call dots not points because we don't need the center dot
+		this.dots(x, y, radius, fill: false);
+	}
+
+	pstems { |x, y, radius|
+		var ycoord0 = plotBounds.bottom - (spec.warp.unmap(0) * plotBounds.height);
+
+		radius = radius ?? min(2, bounds.width / value.size * 0.25);
+		this.stems(x, y + (radius * (ycoord0-y).sign));
+		this.dots(x, y, radius, fill: false);
+	}
+
+	dlines { |x, y, radius|
+		this.lines(x, y);
+		this.dots(x, y, radius, fill: true);
+	}
+
+	dstems { |x, y, radius|
+		this.stems(x, y);
+		this.dots(x, y, radius, fill: true);
 	}
 
 	levels { |x, y|
@@ -468,7 +500,8 @@ Plot {
 		y.size.do { |i|
 			Pen.moveTo(x[i] @ y[i]);
 			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
-		}
+		};
+		Pen.stroke
 	}
 
 	steps { |x, y|
@@ -477,10 +510,11 @@ Plot {
 		y.size.do { |i|
 			Pen.lineTo(x[i] @ y[i]);
 			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
-		}
+		};
+		Pen.stroke;
 	}
 
-	bars { |x, y |
+	bars { |x, y|
 		Pen.smoothing_(false);
 		y.size.do { |i|
 			var p = x[i] @ y[i];
@@ -493,7 +527,31 @@ Plot {
 			} {
 				Pen.addRect(Rect(x[i] + gap, centery, nextx - x[i] - ( 2 * gap), rely))
 			}
-		}
+		};
+		Pen.fill
+	}
+
+	filled { |x, y|
+		var ycoord0 = plotBounds.bottom - (spec.warp.unmap(0) * plotBounds.height);
+
+		Pen.moveTo(x.last @ ycoord0);
+		Pen.lineTo(x.first @ ycoord0);
+		y.size.do { |i|
+			Pen.lineTo(x[i] @ y[i]);
+		};
+		Pen.lineTo(x.last @ ycoord0);
+		Pen.fill;
+	}
+
+	pfilled { |x, y, radius|
+		this.filled(x, y);
+		// call dots not points because we don't need the center dot
+		this.dots(x, y, radius, fill: false);
+	}
+
+	dfilled { |x, y, radius|
+		this.filled(x, y);
+		this.dots(x, y, radius, fill: true);
 	}
 
 	// editing
@@ -582,10 +640,6 @@ Plot {
 
 	hasSteplikeDisplay {
 		^#[\levels, \steps, \bars].includesAny(plotMode)
-	}
-
-	needsPenFill { |pMode|
-		^#[\bars].includes(pMode)
 	}
 
 	getIndex { |x|
@@ -703,7 +757,7 @@ Plotter {
 		};
 		this.prSetUpInteractionView;
 
-		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
+		modes = [\points, \dots, \levels, \steps, \lines, \plines, \dlines, \stems, \pstems, \dstems, \filled, \pfilled, \dfilled, \bars].iter.loop;
 		this.plotMode = \linear;
 		this.plotColor = GUI.skins.plot.plotColor;
 		// at this point no values are set, so no Plots have been created
@@ -878,11 +932,16 @@ Plotter {
 
 	superpose_ { |flag|
 		var dom, domSpecs;
+		if(flag and: { value.isRectangular.not }) {
+			"Plotter can't superpose unequally sized arrays.".warn;
+			^this
+		};
+
 		dom = domain.copy;
 		domSpecs = domainSpecs.copy;
 
 		superpose = flag;
-		if ( value.notNil ){
+		if(value.notNil) {
 			this.setValue(value, false, false);
 		};
 
@@ -1011,7 +1070,8 @@ Plotter {
 			// rotate colors to ensure proper behavior with superpose
 			// (so this Plot's color is first in its color array)
 			plot.plotColor_(plotColor.rotate(i.neg))
-		}
+		};
+		this.refresh;
 	}
 
 	plotColor {
@@ -1024,7 +1084,8 @@ Plotter {
 		plots.do { |plot, i|
 			// rotate to ensure proper behavior with superpose
 			plot.plotMode_(plotMode.rotate(i.neg))
-		}
+		};
+		this.refresh;
 	}
 
 	plotMode {
@@ -1227,27 +1288,35 @@ Plotter {
 
 
 + ArrayedCollection {
-	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true|
-		var array, plotter;
+	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true, parent|
+		var array, plotter, depth, hasSubArrays;
 		array = this.as(Array);
 
-		if(array.maxDepth > 3) {
-			"Cannot currently plot an array with more than 3 dimensions".warn;
+		depth = array.maxDepth;
+		hasSubArrays = depth > 1;
+
+		if(depth > 2) {
+			"Cannot currently plot an array with more than 2 dimensions".warn;
 			^nil
 		};
-		plotter = Plotter(name, bounds);
-		if(discrete) { plotter.plotMode = \points };
+
+		plotter = Plotter(name, bounds, parent);
+		if(discrete) {
+			plotter.plotMode = \points
+		} {
+			// if lines, show discrete values with dots if data density is low enough
+			if(array.size < (Window.screenBounds.width / 2.5)) {
+				plotter.plotMode = \dlines;
+			}
+		};
 
 		numChannels !? { array = array.unlace(numChannels) };
 		array = array.collect {|elem, i|
-			if (elem.isKindOf(Env)) {
-				elem.asMultichannelSignal.flop
-			} {
-				if(elem.isNil) {
-					Error("Cannot plot array: non-numeric value at index %".format(i)).throw
-				};
-				elem
-			}
+			case {elem.isKindOf(Env)}		{elem.asMultichannelSignal.flop}
+				 {elem.isKindOf(Wavetable)} {elem.asSignal}
+				 {elem.isNil}				{Error("Cannot plot array: non-numeric value at index %".format(i)).throw}
+  				 {hasSubArrays}				{elem.asArray} 
+			  	 {elem};
 		};
 
 		plotter.setValue(
@@ -1283,14 +1352,15 @@ Plotter {
 
 
 + Function {
-	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
+	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false, parent|
 		var server, plotter, action;
 		var name = this.asCompileString;
 
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "Function" };
 
-		plotter = Plotter(name, bounds);
-		// init data in case function data is delayed (e.g. server booting)
+		plotter = Plotter(name, bounds, parent);
+
+		// init plot data in case function data is delayed (e.g. server booting)
 		plotter.value = [0.0];
 
 		target = target.asTarget;
@@ -1298,7 +1368,7 @@ Plotter {
 		action = { |array, buf|
 			var numChan = buf.numChannels;
 			var numFrames = buf.numFrames;
-			var frameDur;
+			var frameDur = buf.sampleRate.reciprocal;
 
 			defer {
 				plotter.setValue(
@@ -1316,11 +1386,6 @@ Plotter {
 				// (based on a plot at full screen width), set the x values (domain)
 				// explicitly for accurate time alignment with grid lines.
 				if(numFrames < (Window.screenBounds.width / 2.5)) {
-					frameDur = if(this.value.rate == \control) {
-						server.options.blockSize / server.sampleRate
-					} {
-						1 / server.sampleRate
-					};
 					plotter.domain = numFrames.collect(_ * frameDur);
 				};
 				// save vertical space with highly multichannel plots
@@ -1337,40 +1402,40 @@ Plotter {
 		^plotter
 	}
 
-	plotAudio { |duration = 0.01, minval = -1, maxval = 1, server, bounds|
-		^this.plot(duration, server, bounds, minval, maxval)
+	plotAudio { |duration = 0.01, minval = -1, maxval = 1, server, bounds, parent|
+		^this.plot(duration, server, bounds, minval, maxval, parent: parent)
 	}
 }
 
 + Bus {
-	plot { |duration = 0.01, bounds, minval, maxval, separately = false|
+	plot { |duration = 0.01, bounds, minval, maxval, separately = false, parent|
 		if (this.rate == \audio, {
-			^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
+			^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately, parent);
 		},{
-			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
+			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately, parent);
 		});
 	}
 
-	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds|
-		^this.plot(duration, bounds, minval, maxval)
+	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds, parent|
+		^this.plot(duration, bounds, minval, maxval, parent: parent)
 	}
 }
 
 + Wavetable {
-	plot { |name, bounds, minval, maxval|
-		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval)
+	plot { |name, bounds, minval, maxval, parent|
+		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval, parent: parent)
 	}
 }
 
 + Buffer {
-	plot { |name, bounds, minval, maxval, separately = false|
+	plot { |name, bounds, minval, maxval, separately = false, parent|
 		var plotter, action;
 		if(server.serverRunning.not) { "Server % not running".format(server).warn; ^nil };
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
 
 		plotter = [0].plot(
 			name ? "Buffer plot (bufnum: %)".format(this.bufnum),
-			bounds, minval: minval, maxval: maxval
+			bounds, minval: minval, maxval: maxval, parent: parent
 		);
 
 		action = { |array, buf|
@@ -1402,10 +1467,10 @@ Plotter {
 
 
 + Env {
-	plot { |size = 400, bounds, minval, maxval, name|
+	plot { |size = 400, bounds, minval, maxval, name, parent|
 		var plotLabel = if (name.isNil) { "Envelope" } { name };
-		var plotter = [this.asMultichannelSignal(size).flop]
-		.plot(name, bounds, minval: minval, maxval: maxval);
+		var plotter = this.asMultichannelSignal(size)
+		.plot(name, bounds, minval: minval, maxval: maxval, parent: parent);
 
 		var duration = this.duration.asArray;
 		var channelCount = duration.size;
@@ -1420,9 +1485,9 @@ Plotter {
 
 + AbstractFunction {
 	plotGraph { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false,
-		numChannels, minval, maxval, separately = true;
+		numChannels, minval, maxval, separately = true, parent;
 		var array = Array.interpolation(n, from, to);
 		var res = array.collect { |x| this.value(x) };
-		^res.plot(name, bounds, discrete, numChannels, minval, maxval, separately)
+		^res.plot(name, bounds, discrete, numChannels, minval, maxval, separately, parent)
 	}
 }

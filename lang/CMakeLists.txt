@@ -65,6 +65,7 @@ set(sclang_sources
 	LangSource/PyrParseNode.cpp
 	LangSource/PyrSignal.cpp
 	LangSource/PyrSymbolTable.cpp
+    LangSource/SC_CLIOptions.cpp
 	LangSource/SC_LanguageClient.cpp
 	LangSource/SC_LanguageConfig.cpp
 	LangSource/SC_TerminalClient.cpp
@@ -164,10 +165,12 @@ endif()
 # This sets up the exe icon for windows.
 if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
+ if(MINGW OR MSYS)
  set(CMAKE_RC_COMPILER_INIT windres)
  ENABLE_LANGUAGE(RC)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+ endif(MINGW OR MSYS)
 endif(WIN32)
 
 if(SC_HIDAPI)
@@ -188,7 +191,7 @@ endif()
 if(SC_IDE)
 	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
 
-	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
+	qt_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
 	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
 endif()
@@ -207,8 +210,8 @@ target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 if(SC_QT OR SC_IDE)
-	get_target_property(QtCore_location Qt5::Core LOCATION)
-	message(STATUS "Found Qt: " ${QtCore_location} )
+    get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
+    message(STATUS "Found Qt ${QT_VERSION}: " ${QtCore_location} )
     get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
 
     if(SC_USE_QTWEBENGINE)
@@ -241,7 +244,7 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_filesystem_lib)
+target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_program_options_lib)
 target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
 if (SCLANG_SERVER)
@@ -335,6 +338,10 @@ if (GC_SANITYCHECK)
 	target_compile_definitions(libsclang PUBLIC GC_SANITYCHECK)
 endif()
 
+if(MSVC)
+    target_compile_definitions(libsclang PUBLIC HAVE_ISXDIGIT) # needed for MSVC 2022
+endif()
+
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
@@ -369,6 +376,8 @@ elseif(WIN32)
     if(NOT MSVC)
         set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
+
+    target_compile_definitions(sclang PUBLIC UNICODE _UNICODE)
 
     set(SC_WIN_DLL_DIRS)
     if(SNDFILE_LIBRARY_DIR)
@@ -418,12 +427,12 @@ elseif(WIN32)
         SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
         include(InstallRequiredSystemLibraries)
         if(MSYS)
-            SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../share/qt5/plugins" CACHE PATH "Location of qt plugins for windows as provided by MSYS2")
+            SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../share/Qt${QT_VERSION_MAJOR}/plugins" CACHE PATH "Location of qt plugins for windows as provided by MSYS2") # note: not tested with Qt6
         else()
             SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../plugins" CACHE PATH "Location of qt plugins for windows")
         endif()
 
-        foreach(plugin ${Qt5Network_PLUGINS} ${Qt5Gui_PLUGINS} ${Qt5Sql_PLUGINS} ${Qt5PrintSupport_PLUGINS})
+        foreach(plugin ${Qt${QT_VERSION_MAJOR}Network_PLUGINS} ${Qt${QT_VERSION_MAJOR}Gui_PLUGINS} ${Qt${QT_VERSION_MAJOR}Sql_PLUGINS} ${Qt${QT_VERSION_MAJOR}PrintSupport_PLUGINS})
             get_target_property(_loc ${plugin} LOCATION)
             get_filename_component(_parent_dir ${_loc} DIRECTORY)
             get_filename_component(_name_we ${_loc} NAME_WE)

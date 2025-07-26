@@ -55,7 +55,6 @@
 #include <QApplication>
 #include <QDesktopServices>
 #include <QStandardPaths>
-#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QGridLayout>
@@ -245,7 +244,7 @@ void MainWindow::createActions() {
     // (such as cmd+q or window closing)
     action->setMenuRole(QAction::QuitRole);
 
-    QObject::connect(action, SIGNAL(triggered()), this, SLOT(onQuit()));
+    QObject::connect(action, &QAction::triggered, this, &QWidget::close, Qt::QueuedConnection);
     settings->addAction(action, "ide-quit", ideCategory);
 
     mActions[DocNew] = action = new QAction(QIcon::fromTheme("document-new"), tr("&New"), this);
@@ -509,6 +508,9 @@ void MainWindow::createMenus() {
     // On Mac, create a parent-less menu bar to be shared by all windows:
 #ifdef Q_OS_MAC
     menuBar = new QMenuBar(0);
+    // icons in menu bars impacts the performance on (intel) macs considerably
+    // while switching windows, therefore we de-activate those. (#6523)
+    QApplication::instance()->setAttribute(Qt::AA_DontShowIconsInMenus, true);
 #else
     menuBar = this->menuBar();
 #endif
@@ -850,8 +852,10 @@ void MainWindow::updateRecentDocsMenu() {
 
     const QStringList& recent = mMain->documentManager()->recents();
 
-    foreach (const QString& path, recent)
-        mRecentDocsMenu->addAction(path);
+    foreach (const QString& path, recent) {
+        QAction* action = mRecentDocsMenu->addAction(path);
+        action->setData(QVariant(path));
+    }
 
     if (!recent.isEmpty()) {
         mRecentDocsMenu->addSeparator();
@@ -859,7 +863,9 @@ void MainWindow::updateRecentDocsMenu() {
     }
 }
 
-void MainWindow::onOpenRecentDocument(QAction* action) { mMain->documentManager()->open(action->text()); }
+void MainWindow::onOpenRecentDocument(QAction* action) {
+    mMain->documentManager()->open(action->data().value<QString>());
+}
 
 void MainWindow::onInterpreterStateChanged(QProcess::ProcessState state) {
     switch (state) {
@@ -1440,9 +1446,7 @@ void MainWindow::showSettings() {
         int result = dialog.exec();
         if (result == QDialog::Accepted)
             mMain->applySettings();
-    } catch (std::exception const& e) {
-        qWarning() << "Error while executing settings dialog:" << e.what();
-    }
+    } catch (std::exception const& e) { qWarning() << "Error while executing settings dialog:" << e.what(); }
     showingSettings = false;
 }
 

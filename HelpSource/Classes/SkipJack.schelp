@@ -63,7 +63,7 @@ method:: name
 The name of this skipjack.
 
 method:: stopTest
-The current stopTest. (see argument in link::#*new:: )
+The current stopTest. (see argument in link::#*new::)
 
 method:: start
 Start this skipjack.
@@ -83,7 +83,7 @@ The updateFunc set by the argument to link::#*new::
 Examples::
 Simple example:
 code::
-w = SkipJack({ "watch...".postln; }, 0.5, name: "test");
+w = SkipJack({ "watch...".postln }, 0.5, name: "test");
 SkipJack.verbose = true;    // post stop/wakeup logs
 
 w.stop;
@@ -98,7 +98,7 @@ w.stop;
 Using stopTest:
 code::
 a = 5;
-w = SkipJack({ "watch...".postln; }, 0.5, { a == 10 }, "test");
+w = SkipJack({ "watch...".postln }, 0.5, { a == 10 }, "test");
 a = 10;	// fulfill stopTest
 ::
 
@@ -106,9 +106,9 @@ Typical use: SkipJack updates a window displaying the state of some objects ever
 code::
 (
 d = (a: 12, b: 24);
-d.win = Window("dict", Rect(0,0,200,60)).front;
+d.win = Window("dict", Rect(0, 0, 200, 60)).front;
 d.views = [\a, \b].collect { |name, i|
-    StaticText(d.win, Rect(i * 100,0,96,20))
+    StaticText(d.win, Rect(i * 100, 0, 96, 20))
         .background_(Color.yellow).align_(0).string_(name);
 };
 w = SkipJack({
@@ -136,4 +136,3 @@ SkipJack.stopAll        // do this to stop all;
 
 SkipJack.stop("jack");  // reach it by name and stop
 ::
-

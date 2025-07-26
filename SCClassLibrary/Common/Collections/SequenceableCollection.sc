@@ -118,6 +118,16 @@ SequenceableCollection : Collection {
 	wchoose { arg weights;
 		^this.at(weights.windex)
 	}
+	// select an element at random using an array of weights that is determined at call and normalized
+	wchoosen { |weights|
+		weights = weights.value(this);
+		^if(weights.isNil) {
+			this.choose
+		} {
+			weights = weights.keep(this.size).collect { |x| x.value(this) };
+			this.at(weights.normalizeSum.windex)
+		}
+	}
 
 	== { | aCollection |
 		if (this === aCollection) { ^true };
@@ -350,10 +360,12 @@ SequenceableCollection : Collection {
 		^this.species.fill(newSize, { |i| this.blendAt(i * factor) })
 	}
 
-	remove { arg item;
+	removeAt { |index| this.subclassResponsibility(thisMethod) }
+	remove { |item|
 		var index = this.indexOf(item);
 		^if ( index.notNil, {
 			this.removeAt(index);
+			item
 		},{
 			nil
 		});
@@ -850,6 +862,7 @@ SequenceableCollection : Collection {
 	/ { arg aNumber, adverb; ^this.performBinaryOp('/', aNumber, adverb) }
 	div { arg aNumber, adverb; ^this.performBinaryOp('div', aNumber, adverb) }
 	mod { arg aNumber, adverb; ^this.performBinaryOp('mod', aNumber, adverb) }
+	modSeaside { arg aNumber, adverb; ^this.performBinaryOp('modSeaside', aNumber, adverb) }
 	pow { arg aNumber, adverb; ^this.performBinaryOp('pow', aNumber, adverb) }
 	min { arg aNumber, adverb; ^this.performBinaryOp('min', aNumber, adverb) }
 	max { arg aNumber=0, adverb; ^this.performBinaryOp('max', aNumber, adverb) }

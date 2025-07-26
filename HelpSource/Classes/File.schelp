@@ -197,21 +197,21 @@ code::
 // write some string to a file:
 (
 var f, g;
-f = File("~/test.txt".standardizePath,"w");
+f = File("~/test.txt".standardizePath, "w");
 f.write("Does this work?\n is this thing on ?\n");
 f.close;
 )
 
 // read it again:
 (
-g = File("~/test.txt".standardizePath,"r");
+g = File("~/test.txt".standardizePath, "r");
 g.readAllString.postln;
 g.close;
 )
 
 // try the above with File.use:
 
-File.use("~/test.txt".standardizePath, "w", { |f| f.write("Doesn't this work?\n is this thing really on ?\n"); });
+File.use("~/test.txt".standardizePath, "w", { |f| f.write("Doesn't this work?\n is this thing really on ?\n") });
 File.use("~/test.txt".standardizePath, "r", { |f| f.readAllString.postln });
 
 
@@ -220,26 +220,26 @@ File.use("~/test.txt".standardizePath, "r", { |f| f.readAllString.postln });
 var h, k;
 h = File("~/test.dat".standardizePath, "wb");
 h.inspect;
-h.write( FloatArray[1.1, 2.2, 3.3, pi, 3.sqrt] );
+h.write(FloatArray[1.1, 2.2, 3.3, pi, 3.sqrt]);
 h.close;
 
 k = File("~/test.dat".standardizePath, "rb");
-(k.length div: 4).do({ k.getFloat.postln; });
+(k.length div: 4).do({ k.getFloat.postln });
 k.close;
 )
 
 
 (
 var f, g;
-f = File("~/test.txt".standardizePath,"w");
-100.do({ f.putChar([$a, $b, $c, $d, $e, $\n].choose); });
+f = File("~/test.txt".standardizePath, "w");
+100.do({ f.putChar([$a, $b, $c, $d, $e, $\n].choose) });
 f.close;
 
-g = File("~/test.txt".standardizePath,"r");
+g = File("~/test.txt".standardizePath, "r");
 g.readAllString.postln;
 g.close;
 
-g = File("~/test.txt".standardizePath,"r");
+g = File("~/test.txt".standardizePath, "r");
 g.getLine(1024).postln;
 "*".postln;
 g.getLine(1024).postln;
@@ -252,15 +252,15 @@ g.close;
 )
 
 (
-//var f, g;
-f = File("~/test.dat".standardizePath,"wb");
+// var f, g;
+f = File("~/test.dat".standardizePath, "wb");
 f.inspect;
-100.do({ f.putFloat(1.0.rand); });
+100.do({ f.putFloat(1.0.rand) });
 
 f.inspect;
 f.close;
 
-g = File("~/test.dat".standardizePath,"rb");
+g = File("~/test.dat".standardizePath, "rb");
 100.do({
 	g.getFloat.postln;
 });
@@ -269,8 +269,8 @@ g.close;
 )
 
 (
-//var f, g;
-f = File("~/test.dat".standardizePath,"r");
+// var f, g;
+f = File("~/test.dat".standardizePath, "r");
 f.inspect;
 f.close;
 )

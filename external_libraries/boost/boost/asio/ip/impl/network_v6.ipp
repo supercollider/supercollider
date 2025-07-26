@@ -2,7 +2,7 @@
 // ip/impl/network_v6.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2014 Oliver Kowalke (oliver dot kowalke at gmail dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -43,7 +43,7 @@ network_v6::network_v6(const address_v6& addr, unsigned short prefix_len)
   }
 }
 
-BOOST_ASIO_DECL address_v6 network_v6::network() const BOOST_ASIO_NOEXCEPT
+BOOST_ASIO_DECL address_v6 network_v6::network() const noexcept
 {
   address_v6::bytes_type bytes(address_.to_bytes());
   for (std::size_t i = 0; i < 16; ++i)
@@ -56,7 +56,7 @@ BOOST_ASIO_DECL address_v6 network_v6::network() const BOOST_ASIO_NOEXCEPT
   return address_v6(bytes, address_.scope_id());
 }
 
-address_v6_range network_v6::hosts() const BOOST_ASIO_NOEXCEPT
+address_v6_range network_v6::hosts() const noexcept
 {
   address_v6::bytes_type begin_bytes(address_.to_bytes());
   address_v6::bytes_type end_bytes(address_.to_bytes());
@@ -99,7 +99,9 @@ std::string network_v6::to_string(boost::system::error_code& ec) const
   using namespace std; // For sprintf.
   ec = boost::system::error_code();
   char prefix_len[16];
-#if defined(BOOST_ASIO_HAS_SECURE_RTL)
+#if defined(BOOST_ASIO_HAS_SNPRINTF)
+  snprintf(prefix_len, sizeof(prefix_len), "/%u", prefix_length_);
+#elif defined(BOOST_ASIO_HAS_SECURE_RTL)
   sprintf_s(prefix_len, sizeof(prefix_len), "/%u", prefix_length_);
 #else // defined(BOOST_ASIO_HAS_SECURE_RTL)
   sprintf(prefix_len, "/%u", prefix_length_);

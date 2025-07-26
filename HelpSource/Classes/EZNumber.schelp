@@ -69,13 +69,13 @@ g = EZNumber(w,        // parent
              330,      // initValue
              true      // initAction
 );
-g.setColors(Color.grey,Color.white);
+g.setColors(Color.grey, Color.white);
 );
 
 
 // Simplest version, no parent view, so a window is created
 (
-	g = EZNumber(label:" test ", controlSpec: \amp.asSpec.step_(0.01) );
+	g = EZNumber(label:" test ", controlSpec: \amp.asSpec.step_(0.01));
 	g.action_({ |ez| (ez.value.asString ++" is the value of " ++ ez).postln });
 );
 ::
@@ -106,7 +106,7 @@ Gets/sets the list/menu to the index at value. Does not perform the action.
 argument:: val
 An link::Classes/Integer::.
 
-valueAction
+method:: valueAction
 Sets the value and performs the action at the index value and the global action.
 argument:: val
 An link::Classes/Integer::.
@@ -151,21 +151,21 @@ examples::
 code::
 // Simplest version
 (		// basic use
-		w=Window.new.front;
-		g=EZNumber(w, 170@16," test  ", \freq,unitWidth:30, numberWidth:60,layout:\horz);
-		g.setColors(Color.grey,Color.white);
+		w = Window.new.front;
+		g = EZNumber(w, 170@16, " test  ", \freq, unitWidth: 30, numberWidth: 60, layout: \horz);
+		g.setColors(Color.grey, Color.white);
 );
 
 
 // lots of numberviews on on view
 (
-w=Window.new.front;
-w.view.decorator=FlowLayout(w.view.bounds);
-w.view.decorator.gap=2@2;
+w = Window.new.front;
+w.view.decorator = FlowLayout(w.view.bounds);
+w.view.decorator.gap = 2@2;
 
 40.do{
-		g=EZNumber(w, 170@16," test  ", \freq,unitWidth:30, numberWidth:60,layout:\horz);
-		g.setColors(Color.grey,Color.white, Color.grey(0.8));
+		g = EZNumber(w, 170@16, " test  ", \freq, unitWidth: 30, numberWidth: 60, layout: \horz);
+		g.setColors(Color.grey, Color.white, Color.grey(0.8));
 };
 );
 
@@ -173,58 +173,58 @@ w.view.decorator.gap=2@2;
 // click these parentheses to see all features and layouts
 (
 
-m=nil;
-m=2@2;		//comment for no margin
+m = nil;
+m = 2@2;		// comment for no margin
 
 /////////////////
 /// Layout \horz
 
 (		// all features
-		g=EZNumber(nil, 170@20," freq  ", \freq,unitWidth:30, numberWidth:60,layout:\horz,margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
-		g.window.bounds = g.window.bounds.moveBy(-180,50);
+		g = EZNumber(nil, 170@20, " freq  ", \freq, unitWidth: 30, numberWidth: 60, layout: \horz, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
+		g.window.bounds = g.window.bounds.moveBy(-180, 50);
 );
 
 (		// no unitView
-		g=EZNumber(nil, 170@20," freq  ", \freq,unitWidth:0, numberWidth:60,layout:\horz,margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
+		g = EZNumber(nil, 170@20, " freq  ", \freq, unitWidth: 0, numberWidth: 60, layout: \horz, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180, -20);
 );
 
 (		// no label, with unit. use window name as label
-		g=EZNumber(nil, 120@20,nil, \freq,unitWidth:30, numberWidth:60,layout:\horz,margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
+		g = EZNumber(nil, 120@20, nil, \freq, unitWidth: 30, numberWidth: 60, layout: \horz, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180, -90);
-		g.window.name="Freq";
+		g.window.name = "Freq";
 );
 
 
 (		// no units, no label; use window name as label;
-		g=EZNumber(nil, 120@20, nil, \freq,unitWidth:0, numberWidth:60,layout:\horz,margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
+		g = EZNumber(nil, 120@20, nil, \freq, unitWidth: 0, numberWidth: 60, layout: \horz, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180, -160);
-		g.window.name="Freq";
+		g.window.name = "Freq";
 );
 
 /////////////////
 /// Layout \line2
 
 (		// all features
-		g=EZNumber(nil, 120@42," freq  ", \freq,unitWidth:30, numberWidth:60,layout:\line2,margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
-		g.window.bounds = g.window.bounds.moveBy(100,50);
+		g = EZNumber(nil, 120@42, " freq  ", \freq, unitWidth: 30, numberWidth: 60, layout: \line2, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
+		g.window.bounds = g.window.bounds.moveBy(100, 50);
 );
 
 (		// no unitView, with label
-		g=EZNumber(nil, 170@42," freq  ", \freq,unitWidth:0, numberWidth:60,layout:\line2,margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
+		g = EZNumber(nil, 170@42, " freq  ", \freq, unitWidth: 0, numberWidth: 60, layout: \line2, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(100, -50);
 );
 (		// no unitView, no label; use window name as label
-		g=EZNumber(nil, 170@20,nil, \freq,unitWidth:0, numberWidth:60,layout:\line2,margin:m);
-		g.setColors(Color.grey,Color.white,background: Color.grey(0.7));
-		g.window.bounds = g.window.bounds.moveBy(100,-150);
-		g.window.name="Freq";
+		g = EZNumber(nil, 170@20, nil, \freq, unitWidth: 0, numberWidth: 60, layout: \line2, margin: m);
+		g.setColors(Color.grey, Color.white, background: Color.grey(0.7));
+		g.window.bounds = g.window.bounds.moveBy(100, -150);
+		g.window.name = "Freq";
 );
 
 
@@ -242,10 +242,10 @@ s.waitForBoot({
 	var node, cmdPeriodFunc;
 
 	// define a synth
-	SynthDef("window-test", { |out, note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, gate = 1|
+	SynthDef("window-test", { |out, note = 36, fc = 1000, rq = 0.25, bal = 0, amp = 0.4, gate = 1|
 			var x;
 			x = Mix.fill(4, {
-				LFSaw.ar((note + {0.1.rand2}.dup).midicps, 0, 0.02)
+				LFSaw.ar((note + { 0.1.rand2 }.dup).midicps, 0, 0.02)
 			});
 			x = RLPF.ar(x, fc, rq).softclip;
 			x = RLPF.ar(x, fc, rq, amp).softclip;
@@ -270,15 +270,15 @@ s.waitForBoot({
 		["Start", Color.black, Color.green],
 		["Stop", Color.white, Color.red]
 	];
-	startButton.action = {|view|
+	startButton.action = { |view|
 			if (view.value == 1) {
 				// start sound
-				node = Synth( "window-test", [
+				node = Synth("window-test", [
 					"note", noteControl.value,
 					"fc", cutoffControl.value,
 					"rq", resonControl.value,
 					"bal", balanceControl.value,
-					"amp", ampControl.value.dbamp ]);
+					"amp", ampControl.value.dbamp]);
 			} {
 				// set gate to zero to cause envelope to release
 				node.release; node = nil;
@@ -288,27 +288,27 @@ s.waitForBoot({
 	// create controls for all parameters
 	w.view.decorator.nextLine;
 	noteControl = EZNumber(w, 160 @ 20, "Note ", ControlSpec(24, 60, \lin, 1),
-		{|ez| node.set( "note", ez.value )}, 36);
+		{ |ez| node.set("note", ez.value) }, 36);
 
 	w.view.decorator.nextLine;
 	cutoffControl = EZNumber(w, 160 @ 20, "Cutoff ", ControlSpec(200, 5000, \exp),
-		{|ez| node.set( "fc", ez.value )}, 1000);
+		{ |ez| node.set("fc", ez.value) }, 1000);
 
 	w.view.decorator.nextLine;
 	resonControl = EZNumber(w, 160 @ 20, "Reson", ControlSpec(0.1, 0.7),
-		{|ez| node.set( "rq", ez.value )}, 0.2);
+		{ |ez| node.set("rq", ez.value) }, 0.2);
 
 	w.view.decorator.nextLine;
 	balanceControl = EZNumber(w, 160 @ 20, "Balance ", \bipolar,
-		{|ez| node.set( "bal", ez.value )}, 0);
+		{ |ez| node.set("bal", ez.value) }, 0);
 
 	w.view.decorator.nextLine;
 	ampControl = EZNumber(w, 160 @ 20, "Amp ", \db,
-		{|ez| node.set( "amp", ez.value.dbamp )}, -6);
+		{ |ez| node.set("amp", ez.value.dbamp) }, -6);
 
 
 	// set start button to zero upon a cmd-period
-	cmdPeriodFunc = { startButton.value = 0; };
+	cmdPeriodFunc = { startButton.value = 0 };
 	CmdPeriod.add(cmdPeriodFunc);
 
 	// stop the sound when window closes and remove cmdPeriodFunc.

@@ -32,30 +32,29 @@ code::
 s.boot;
 
 (
-SynthDef("help-mul", { arg out=0;
+SynthDef("help-mul", { |out = 0|
 	var inA, chainA, inB, chainB, chain ;
 	inA = SinOsc.ar(500, 0, 0.5);
 	inB =  SinOsc.ar(Line.kr(100, 400, 5), 0, 0.5);
 	chainA = FFT(LocalBuf(2048), inA);
 	chainB = FFT(LocalBuf(2048), inB);
 	chain = PV_Mul(chainA, chainB);
-	Out.ar(out,  0.1 * IFFT(chain).dup);
+	Out.ar(out, 0.1 * IFFT(chain).dup);
 }).play(s);
 s.scope;
 )
 
 (
-SynthDef("help-mul2", { arg out=0;
+SynthDef("help-mul2", { |out = 0|
 	var inA, chainA, inB, chainB, chain ;
 	inA = SinOsc.ar(500, 0, 0.5) * Line.kr;
 	inB = LFNoise1.ar(20);
 	chainA = FFT(LocalBuf(2048), inA);
 	chainB = FFT(LocalBuf(2048), inB);
 	chain = PV_Mul(chainA, chainB);
-	Out.ar(out,  0.1 * IFFT(chain).dup);
+	Out.ar(out, 0.1 * IFFT(chain).dup);
 }).play(s);
 s.scope;
 )
 
 ::
-

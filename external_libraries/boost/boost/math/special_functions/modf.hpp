@@ -52,19 +52,17 @@ inline T modf(const T& v, long* ipart)
    return modf(v, ipart, policies::policy<>());
 }
 
-#ifdef BOOST_HAS_LONG_LONG
 template <class T, class Policy>
-inline T modf(const T& v, boost::long_long_type* ipart, const Policy& pol)
+inline T modf(const T& v, long long* ipart, const Policy& pol)
 {
    *ipart = lltrunc(v, pol);
    return v - *ipart;
 }
 template <class T>
-inline T modf(const T& v, boost::long_long_type* ipart)
+inline T modf(const T& v, long long* ipart)
 {
    return modf(v, ipart, policies::policy<>());
 }
-#endif
 
 }} // namespaces
 

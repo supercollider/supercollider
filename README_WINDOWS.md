@@ -244,8 +244,8 @@ Required components:
 - **[Git][Git]** for Windows
 - **[CMake][cmake]** >= 3.12.
 - **[Visual Studio 15 2017][VS2017]** or later.
-- **[Qt][Qt]** >= 5.7. We recommend using the latest version. Make sure that the
-  version you select matches the architecture (32-bit or 64-bit) and compiler ABI
+- **[Qt][Qt]** >= 6.2. We recommend using the latest version. Make sure that the
+  version you select matches the architecture (e.g. x64 vs arm64) and compiler ABI
   you are building with. This varies per Qt version.
 - **[libsndfile][libsndfile]** >= 1.0.25.
 - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
@@ -344,20 +344,11 @@ may need to modify them if you installed Qt somewhere else. The following
 commands should be executed starting from the root directory of the
 SuperCollider repository.
 
-    SET PATH=C:\Qt\5.5\msvc2017_64\bin;%PATH%
-    SET CMAKE_PREFIX_PATH=C:\Qt\5.11.0\msvc2017_64
+    SET PATH=C:\Qt\6.2\msvc2017_64\bin;%PATH%
+    SET CMAKE_PREFIX_PATH=C:\Qt\6.2.0\msvc2017_64
     mkdir build
     cd build
     cmake -G "Visual Studio 15 2017 Win64" ..
-    cmake --build . --config Release
-
-For a 32-bit build, you will use a different generator and Qt directory:
-
-    SET PATH=C:\Qt\5.5\msvc2015\bin;%PATH%
-    SET CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2015
-    mkdir build
-    cd build
-    cmake -G "Visual Studio 15 2017" ..
     cmake --build . --config Release
 
 For the final step, you can also build from within Visual Studio:
@@ -405,7 +396,7 @@ If you want to build supernova, add `-D SUPERNOVA=ON`
 If you used the basic instructions above, you will end up with three target
 folders (four if supernova is built). You can run these executables to develop
 SuperCollider, but, as the Qt libraries are not copied to the target folders,
-you *must* keep Qt5 in your environment PATH when running sclang or sc-ide.
+you *must* keep Qt6 in your environment PATH when running sclang or sc-ide.
 The target folders are:
 
     sc-ide:    build-folder\editors\scide\<build configuration>
@@ -548,7 +539,7 @@ The aspects relating to environment settings are relevant for other use cases
 as well)
 - study the file CMakeCache.txt in the root build folder. The quickest way to
 find the relevant entries is by searching for the library names (sndfile,
-fftw and Qt5). Look for paths pointing to headers (include_dir),
+fftw and Qt6). Look for paths pointing to headers (include_dir),
 (import-) libraries, dll's and dll-directories.
 
 You can change build settings both in CMake-Gui and by editing CMakeCache.txt.
@@ -788,7 +779,7 @@ the environment defined by the overall system set during login. This means you
 cannot set the path on the command line (in a *shell*), but have to make the
 path adjustments on system level (using Control Panel/System/Advanced System
 Settings/Environment Variables). Setting the PATH on system level brings along
-some risks that need to be managed carefully, most importantly: adding Qt5 (or a
+some risks that need to be managed carefully, most importantly: adding Qt6 (or a
 toolchain) at the head of the system PATH can cause other applications that may
 depend on similar path settings, to malfunction. This can be easily corrected by
 removing the offending entry when done with SC development (and avoiding the
@@ -813,11 +804,11 @@ Once CMake-Gui is running it will need to know (just like on the command line):
     must fit the build system, in this case Microsoft Visual Studio 2013, 64-bit.
     In a standard install, the path is likely to be:
 
-        C:\Qt\5.5\msvc2013_64
+        C:\Qt\6.2\msvc2017_64
 
     You can modify the Windows environment variables by hitting Win-key-x,
     choosing `System` -> `Advanced System Settings` -> `Environment Variables`.
-    Apply the `SET CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2013_64` logic to this
+    Apply the `SET CMAKE_PREFIX_PATH=C:\Qt\6.2\msvc2017_64` logic to this
     dialog. Note that there is no `bin` in the CMAKE_PREFIX_PATH, this is *not*
     a binaries search path, but an anchor path for CMake to work out all
     relevant Qt locations.
@@ -851,7 +842,7 @@ long list of cmake variables alongside with the values assigned to them as
 stored in the cache. In the box at the bottom you can scroll through the output
 CMake produced during configuration and analyse it. At this stage it is good to
 scroll through the central pane and check for the paths related to the
-"smaller" libraries (libsndfile, fftw) and the Qt5 related paths. Do they fit
+"smaller" libraries (libsndfile, fftw) and the Qt6 related paths. Do they fit
 the locations we expect? If not, you may try to correct it in the window
 presented. On the other hand, errors in this stage are more likely to be caused
 by conflicts with your system settings, typos in paths or the like. In that
@@ -917,7 +908,7 @@ working directory for the respective target. This can be done in the "Debug"
 pane of the target properties dialog.
 
 *Important Note*: provided the build environment is set up properly (the main
-setting is the requirement to have the Qt5/bin folder in the PATH of the current
+setting is the requirement to have the Qt6/bin folder in the PATH of the current
 environment), the various SC components can be run directly in the target
 folders. If you want to run SC outside of the build environment, or copy the
 build to a different computer, you need to build the target "install". This step
@@ -941,7 +932,7 @@ toolchain and Qt are handled as part of defining "kits", and controlled via
 comfortable selection dialogs. You can open a CMake project directly, and run
 `cmake` from within the IDE, quite similar to how you would work with CMake-Gui.
 QtC automatically creates environment variables adjusted to the kit used (i.e.
-Qt5 and the toolchain are found and added to the PATH as required), without
+Qt6 and the toolchain are found and added to the PATH as required), without
 interfering with the overall system. You can "run" the SC targets containing
 executables directly from within QtC. In order to start the server from the
 SC-IDE or sclang, you will have to set the "working directory" to the target

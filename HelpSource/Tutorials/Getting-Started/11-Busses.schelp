@@ -19,7 +19,7 @@ section::Writing to or Reading from Busses
 
 We've already seen Out.ar, which allows you to write (i.e. play out) audio to a bus. Recall that it has two arguments – an index, and an output – which can be an array of UGens (i.e. a multichannel output) or a single UGen.
 
-To read in from a bus you use another UGen: In. In's 'ar' method also takes two arguments: an index, and the number of channels to read in. If the number of channels is greater than one, than In's output will be an Array. Execute the following examples, and watch the post window:
+To read in from a bus you use another UGen: In. In's 'ar' method also takes two arguments: an index, and the number of channels to read in. If the number of channels is greater than one, then In's output will be an Array. Execute the following examples, and watch the post window:
 
 code::
 In.ar(0, 1); // this will return 'an OutputProxy'

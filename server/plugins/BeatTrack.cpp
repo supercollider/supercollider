@@ -122,7 +122,7 @@ void BeatTrack_Ctor(BeatTrack* unit) {
     // check sampling rate and establish multipliers on estimates and FFT window size
     // down sampling by factor of two automatic
 
-    unit->m_srate = unit->mWorld->mFullRate.mSampleRate;
+    unit->m_srate = FULLRATE;
 
     // if sample rate is 88200 or 96000, assume taking double size FFT to start with
     if (unit->m_srate > (44100.0 * 1.5))
@@ -169,7 +169,7 @@ void BeatTrack_Ctor(BeatTrack* unit) {
     unit->m_phase = 0.0;
 
     // default of 2bps
-    unit->m_phaseperblock = ((float)unit->mWorld->mFullRate.mBufLength * 2) / ((float)unit->mWorld->mSampleRate);
+    unit->m_phaseperblock = ((float)FULLBUFLENGTH * 2) / ((float)FULLRATE);
 
     unit->m_outputphase = unit->m_phase;
     unit->m_outputtempo = unit->m_currtempo;
@@ -206,7 +206,7 @@ void BeatTrack_next(BeatTrack* unit, int wrongNumSamples) {
     // float *in = IN(0);
 
     // printf("%d \n",wrongNumSamples);
-    // int numSamples = unit->mWorld->mFullRate.mBufLength;
+    // int numSamples = FULLBUFLENGTH;
 
     // conditions in reverse order to avoid immediate spillover
     // printf("state %d \n",unit->m_amortisationstate);
@@ -756,17 +756,15 @@ void finaldecision(BeatTrack* unit) {
 
     unit->m_currtempo = 1.0 / (unit->m_tor * unit->m_frameperiod);
 
-    unit->m_phaseperblock =
-        ((float)unit->mWorld->mFullRate.mBufLength * (unit->m_currtempo)) / ((float)unit->mWorld->mSampleRate);
+    unit->m_phaseperblock = ((float)FULLBUFLENGTH * (unit->m_currtempo)) / ((float)FULLRATE);
 
-    // printf("SAMPLErate %f %f %f", unit->mWorld->mSampleRate,unit->m_phaseperblock,unit->m_currtempo);
+    // printf("SAMPLErate %f %f %f", FULLRATE, unit->m_phaseperblock, unit->m_currtempo);
 
     // unit->m_amortisationstate control periods worth = 512/64 = 8
     // float frameselapsed= 0.125*unit->m_amortisationstate;
     // float timeelapsed= frameselapsed*unit->m_frameperiod;
 
-    float timeelapsed = ((float)(unit->m_amortisationsteps) * (unit->mWorld->mFullRate.mBufLength)
-                         / ((float)unit->mWorld->mSampleRate));
+    float timeelapsed = ((float)(unit->m_amortisationsteps) * FULLBUFLENGTH / ((float)FULLRATE));
 
     timeelapsed += 7 * unit->m_frameperiod; // compensation for detection function being delayed by 7 frames
 

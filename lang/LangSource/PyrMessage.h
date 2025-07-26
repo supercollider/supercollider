@@ -23,21 +23,25 @@
 
 #include "PyrKernel.h"
 
-#define MAXKEYSLOTS 128
-extern PyrSlot keywordstack[MAXKEYSLOTS];
+static constexpr size_t temporaryKeywordStackCapacity = 128;
+extern PyrSlot temporaryKeywordStack[temporaryKeywordStackCapacity];
 extern bool gKeywordError;
 extern PyrMethod** gRowTable;
 
 void initUniqueMethods();
 
-void sendMessageWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed);
-void sendMessage(VMGlobals* g, PyrSymbol* selector, long numArgsPushed);
-void sendSuperMessageWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed);
-void sendSuperMessage(VMGlobals* g, PyrSymbol* selector, long numArgsPushed);
-void doesNotUnderstandWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed);
-void doesNotUnderstand(VMGlobals* g, PyrSymbol* selector, long numArgsPushed);
+void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, std::int64_t totalSuppliedArgs,
+                           std::int64_t numKwArgsSupplied, bool isMethod, PyrObject* optionalEnvirLookup = nullptr);
+
+void executeMethod(VMGlobals* g, PyrBlock* meth, std::int64_t totalNumArgsPushed, std::int64_t numKwArgsPushed);
+
+void sendMessage(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed);
+void sendSuperMessage(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed);
+
+void doesNotUnderstand(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed);
+
 void returnFromBlock(VMGlobals* g);
 void returnFromMethod(VMGlobals* g);
-void executeMethod(VMGlobals* g, PyrMethod* meth, long numArgsPushed);
-void executeMethodWithKeys(VMGlobals* g, PyrMethod* meth, long allArgsPushed, long numKeyArgsPushed);
-int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, long allArgsPushed, long numKeyArgsPushed);
+
+int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::int64_t allArgsPushed,
+                    std::int64_t numKeyArgsPushed);

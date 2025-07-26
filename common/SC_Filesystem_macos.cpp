@@ -29,9 +29,8 @@
 
 #    include "SC_Filesystem.hpp"
 
-// boost
-#    include <boost/filesystem/path.hpp> // path, parent_path()
-#    include <boost/filesystem/operations.hpp> // canonical, current_path()
+#    include <filesystem> // path, parent_path(), canonical, current_path()
+#    include <cassert>
 
 // system includes
 #    include <Foundation/NSAutoreleasePool.h>
@@ -98,7 +97,7 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias) {
 
         // #4252 - URLByResolvingAliasFileAtURL will remove last trailing slash ('/Users/' ->
         // '/Users', '/Users///' -> '/Users//'). Protect against this case.
-        auto* pEnd = p.c_str() + p.size();
+        auto* pEnd = p.c_str() + p.string().size();
         const auto* mismatchPos = std::mismatch(p.c_str(), pEnd, resolvedNsPath).first;
         // note that p.size() >= 1 because empty string would fail 'fileExistsAtPath'
         if (mismatchPos == pEnd || (mismatchPos == pEnd - 1 && *mismatchPos == '/')) {
@@ -211,14 +210,14 @@ Path SC_Filesystem::defaultResourceDirectory() {
         uint32_t bufsize = PATH_MAX;
         char relDir[PATH_MAX];
         if (_NSGetExecutablePath(relDir, &bufsize) == 0) {
-            ret = boost::filesystem::canonical(relDir); // resolve symlink
+            ret = std::filesystem::canonical(relDir); // resolve symlink
             ret = ret.parent_path();
         } else {
             // in case it failed, fall back to current directory
-            ret = boost::filesystem::current_path();
+            ret = std::filesystem::current_path();
         }
     }
-    ret = boost::filesystem::canonical(ret); // resolve lingering symlink
+    ret = std::filesystem::canonical(ret); // resolve lingering symlink
     return ret;
 }
 

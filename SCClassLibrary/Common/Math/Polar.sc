@@ -54,7 +54,7 @@ Polar : Number {
 	}
 
 	printOn { arg stream;
-		stream << "Polar( " << rho << ", " << theta << " )";
+		stream << "Polar(" << rho << ", " << theta << ")";
 	}
 	storeArgs { ^[rho,theta] }
 }

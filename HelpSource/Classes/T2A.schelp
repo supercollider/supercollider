@@ -10,9 +10,9 @@ classmethods::
 method:: ar
 
 argument:: in
-input signal.
+A control rate input signal.
 argument:: offset
-sample offset within control period.
+A sample offset within a control period. Internally clipped to an code::int:: in the range code::[0..blockSize-1]::.
 
 examples::
 code::
@@ -29,7 +29,7 @@ code::
 {
 	var trig = Impulse.kr(200);
 	[T2A.ar(trig), K2A.ar(trig)].lag(0.001)
-}.plot2(10/200);
+}.plot(10/200);
 )
 
 // removing jitter by randomising offset

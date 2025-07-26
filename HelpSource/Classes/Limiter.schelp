@@ -24,11 +24,11 @@ argument::level
 The peak output amplitude level to which to normalize the input.
 
 argument::dur
-aka lookAheadTime.
+Also called lookAheadTime.
 The buffer delay time. Shorter times will produce smaller delays
 and quicker transient response times, but may introduce amplitude
 modulation artifacts.
-
+This parameter cannot be modulated.
 
 Examples::
 
@@ -53,4 +53,3 @@ Synth.play({
 }, 0.5)
 )
 ::
-

@@ -6,6 +6,10 @@ categories:: Files
 description::
 PathName is a utility class for manipulating file names and paths. It expects a path to a file, and lets you access parts of that file path.
 
+note::
+Most classes in SC that operate on files generally expect paths to be link::Classes/String::s, not an instance of link::Classes/PathName::. Use code::.fullPath:: to convert link::Classes/PathName:: to a link::Classes/String:: expected in most cases.
+::
+
 ClassMethods::
 
 private::initClass
@@ -19,7 +23,7 @@ PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
 ::
 
 method::tmp
-Get or set the global temp directory as a link::Classes/String::. This is used by link::Classes/Buffer::, etc. By default this is "/tmp/" for Linux and macOS, and "/WINDOWS/TEMP/" for Windows.
+Get or set the global temp directory as a link::Classes/String::. This is used by link::Classes/Buffer::, etc. By default this is code::Platform.defaultTempDir::.
 
 InstanceMethods::
 
@@ -129,7 +133,7 @@ code::
 (
 var myPath;
 myPath = PathName.new("./");
-myPath.filesDo{|afile| afile.postln};
+myPath.filesDo{ |afile| afile.postln };
 )
 ::
 
@@ -195,7 +199,7 @@ Here is an example that uses many instance methods. Just pick any file to see al
 code::
 (
 FileDialog.new(
-	{ arg ok, path;
+	{ |ok, path|
 	var myPathName;
 	if (ok,
 		{
@@ -224,7 +228,7 @@ Choose a soundfile to put into the library, using its foldername and filename.
 code::
 (
 FileDialog.new(
-	{ arg ok, path;
+	{ |ok, path|
 	var myPathName, myFile;
 	if (ok,
 		{
@@ -236,11 +240,11 @@ FileDialog.new(
 			if (myFile.openRead(path),
 				{
 					Library.put(
-						[ myPathName.folderName.asSymbol, myPathName.fileName.asSymbol ],
+						[myPathName.folderName.asSymbol, myPathName.fileName.asSymbol],
 						myFile);
 					("Check Library.global" + myPathName.folderName + "please.").postln;
 				},
-				{ ("Could not read soundfile" + path ++ ".").postln; }
+				{ ("Could not read soundfile" + path ++ ".").postln }
 			);
 			myFile.close;
 		}
@@ -256,12 +260,12 @@ code::
 (
 var table1, table2, table3;
 
-table1 = Wavetable.sineFill(1024, [1,2,3]);
+table1 = Wavetable.sineFill(1024, [1, 2, 3]);
 table2 = Signal.newClear.asWavetable;
 table3 = Wavetable.sineFill(1024, Array.rand(64, 0.0, 1.0));
 
 FileDialog.new(
-	{ arg ok, path;
+	{ |ok, path|
 	var myPathName, myPathOnly;
 	if (ok,
 		{

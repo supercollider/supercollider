@@ -35,7 +35,7 @@ argument::commandLine
 A command line link::Classes/String:: passed to popen.
 
 argument::mode
-A link::Classes/String:: passed to popen, so should be one of: "r","w"
+A link::Classes/String:: passed to popen, so should be one of: "r", "w"
 
 method::openArgv
 Open the file.
@@ -44,7 +44,7 @@ argument::args
 A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 
 argument::mode
-A link::Classes/String:: passed to popen, so should be one of: "r","w"
+A link::Classes/String:: passed to popen, so should be one of: "r", "w"
 
 method::close
 Closes the pipe, waiting for the command to finish. You must do this explicitly before the Pipe object is garbage collected.
@@ -59,7 +59,7 @@ code::
 var p, l;
 p = Pipe.new("ls -l", "r");			// list directory contents in long format
 l = p.getLine;					// get the first line
-while({l.notNil}, {l.postln; l = p.getLine; });	// post until l = nil
+while({ l.notNil }, { l.postln; l = p.getLine });	// post until l = nil
 p.close;					// close the pipe to avoid that nasty buildup
 )
 ::
@@ -70,9 +70,9 @@ code::
 // this pipes in stdout from ls
 (
 var p, l;
-p = Pipe.argv(["ls","-l"], "r");			// list directory contents in long format
+p = Pipe.argv(["ls", "-l"], "r");			// list directory contents in long format
 l = p.getLine;					// get the first line
-while({l.notNil}, {l.postln; l = p.getLine; });	// post until l = nil
+while({ l.notNil }, { l.postln; l = p.getLine });	// post until l = nil
 p.close;					// close the pipe to avoid that nasty buildup
 )
 ::
@@ -83,7 +83,7 @@ code::
 var p, l;
 p = Pipe.new("ping -c10 sourceforge.net", "r");	// list directory contents in long format
 l = p.getLine;					// get the first line
-while({l.notNil}, {l.postln; l = p.getLine; });	// post until l = nil
+while({ l.notNil }, { l.postln; l = p.getLine });	// post until l = nil
 p.close;					// close the pipe to avoid that nasty buildup
 )
 ::

@@ -287,4 +287,3 @@ table::
 ## instead of writing: || you can write:
 ## code:: Ref.new(thing) :: || code:: `thing ::
 ::
-

@@ -44,16 +44,20 @@ TestFloat : UnitTest {
 
 	test_asString_nan {
 		var zeroDivString = (0/0).asString;
-		if(zeroDivString == "-nan") {
-			this.assertEquals(zeroDivString, "-nan")
-		} {
-			this.assertEquals(zeroDivString, "nan")
-		}
+		this.assertEquals(zeroDivString, "nan");
 	}
 
 	test_asString_largeNumberUsesExp {
 		this.assertEquals((1e26).asString, "1e+26")
 	}
 
-}
+	test_asCompileString {
+		this.assertEquals(1.0.asCompileString.compile.(), 1.0, "1.0 as compile string");
+		this.assertEquals(inf.asCompileString.compile.(), inf, "inf as compile string");
+		this.assertEquals(-inf.asCompileString.compile.(), -inf, "-inf as compile string");
 
+		// Since 'nan' isn't a keyword in sc, there is no way to perform this check.
+		// This means the conversion from value to string to value isn't complete over the float type.
+	}
+
+}

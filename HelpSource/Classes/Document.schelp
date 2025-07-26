@@ -44,8 +44,9 @@ The length of the cursor selection of the file content.
 argument:: envir
 An instance of link::Classes/Environment::. The Environment to be used by the interpreter of the document window. By default, it is set to the current link::Classes/Environment::.
 discussion::
+See also link::Classes/Document#save:: below.
 code::
-Document.open("README", 292,253); // notice the selected text in the open document
+Document.open("README", 292, 253); // notice the selected text in the open document
 ::
 
 method:: openDocuments
@@ -230,13 +231,24 @@ code::
 Task({
 	var doc;
 	doc = Document("background", "closing in 2 seconds");
-	doc.stringColor_(Color.blue);
-	1.wait;
-	doc.background_(Color.blue(alpha:0.8));
-	1.wait;
+	2.wait;
 	doc.close;
 }).play(AppClock);
 )
+::
+
+method:: save
+Save this Document.
+argument:: path
+An optional instance of link::Classes/String:: indicating the path to save the Document. If a path is not provided, the current path (if it has been previously saved or read) is used. After a successful save, this Document's path will be updated if needed. See also link::Classes/Document#*open:: above.
+code::
+d = Document.new("testSave", "foo");
+d.save(Platform.defaultTempDir ++ "foo.scd"); // saved in the temp dir
+d.string_("foobar", 0, 3);
+d.save; // save at previous path
+d.string_("save as now", 0, 6);
+d.save(Platform.defaultTempDir ++ "savedAs.scd");
+d.path;
 ::
 
 method:: front
@@ -275,18 +287,18 @@ discussion::
 code::
 (
 
-//add a mouse action to this document:
-//example: easy button:
-//when you click in front of a 17 a SinOsc will start up;
+// add a mouse action to this document:
+// example: easy button:
+// when you click in front of a 17 a SinOsc will start up;
 s.waitForBoot({
-	Document.current.mouseUpAction_({arg doc;
+	Document.current.mouseUpAction_({ |doc|
 		var char;
 		char = doc.rangeText(doc.selectionStart, 2);
-		if(char == "17",{
-			{EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * SinOsc.ar([600,720,300].choose, 0, 0.5)}.play;
+		if(char == "17", {
+			{ EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * SinOsc.ar([600, 720, 300].choose, 0, 0.5) }.play;
 		});
-		if(char == "23",{
-			{EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * PinkNoise.ar(0.2)}.play;
+		if(char == "23", {
+			{ EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * PinkNoise.ar(0.2) }.play;
 		});
 	})
 });
@@ -304,7 +316,7 @@ argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
 code::
-Document.current.keyDownAction = { arg ...args; args.postln };
+Document.current.keyDownAction = { |...args| args.postln };
 // now type some text
 Document.current.keyDownAction = nil;
 ::
@@ -315,7 +327,7 @@ argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
 code::
-Document.current.keyUpAction = { arg ...args; args.postln };
+Document.current.keyUpAction = { |...args| args.postln };
 // now type some text
 Document.current.keyUpAction = nil;
 ::
@@ -328,7 +340,7 @@ argument:: line
 An link::Classes/Integer::.
 discussion::
 code::
-Document.current.selectLine(390);
+Document.current.selectLine(343);
 ::
 
 method:: selectRange
@@ -340,7 +352,7 @@ The length of the selection.
 discussion::
 code::
 (
-Document.current.selectRange(Document.current.selectedRangeLocation + 3, 150);
+Document.current.selectRange(Document.current.selectLine(355), 150);
 )
 ::
 
@@ -413,7 +425,7 @@ code::
 // Select the following code in parentheses and execute it
 (
 Document.current.string_(": test test test test test ",
-	Document.current.selectedRangeLocation + 12,
+	Document.current.selectionStart,
 	18);
 )
 // Watch me change content
@@ -487,7 +499,6 @@ code::
 	selectedText
 	selectUnderlinedText (clickPos)
 	linkAtClickPos (clickPos)
-	selectedRangeLocation
 	selectedRangeSize
 	restoreCurrentEnvironment
 	saveCurrentEnvironment
@@ -504,28 +515,19 @@ code::
 examples::
 
 code::
-//unfocusedFront_
-(
-Document.allDocuments.at(0).unfocusedFront
-)
-
-
 (
 var doc;
 doc = Document("", "||");
-doc.background_(Color.blue(alpha: 1.0.rand));
 
 Task({
 	1000.do({
-		doc.setFont(rangeSize: [7, 8, 9, 24].choose);
 		0.08.wait;
 	})
 }).play(AppClock);
 
 Task({
 	100.do({
-		1.01.wait;
-		doc.stringColor_([Color.red(alpha: 1.0.rand), Color.green(alpha: 1.0.rand)].choose);
+		1.01.wait
 	})
 }).play(AppClock);
 
@@ -544,7 +546,6 @@ Task({
 		0.16.wait;
 		co = co * mul;
 		if(co > 0.99, { co = 0.1 });
-		doc.background_(Color.blue(alpha: co));
 	});
 	doc.close;
 }).play(AppClock)
@@ -565,33 +566,17 @@ loop {
 };
 
 Document.new("type some text")
-	.bounds_(Rect(100,SCWindow.screenBounds.height - 250, 400, 200))
-	.keyDownAction = { |doc, key| r.value(key) ; time = Main.elapsedTime};
+	.keyDownAction = { |doc, key| r.value(key) ; time = Main.elapsedTime };
 )
 
 // play back text in time
 (
-d = Document.new("type some text")
-	.bounds_(Rect(550,SCWindow.screenBounds.height-250,400,200));
+d = Document.new("type some text");
 fork({
 	a.do { |pair|
 		d.string = d.string ++ pair[0];
 		pair[1].wait;
 	}
 }, AppClock)
-)
-::
-
-Changing the default look of documents can be done with the help of the link::#*initAction:: method. Run the following example once. Afterwards all newly created documents will have a dark grey background. To make this change happen every time you start SuperCollider, put the code inside your startup.scd file (and optionally wrap it in a code::{}.defer(0.1):: ).
-code::
-(
-Document.listener.background = Color.red;	//a special color for post document
-Document.listener.bounds = Rect(1, 461, 620, 567);	//move and resize post document
-Document.initAction = {|doc|			//function to run for every new document
-	doc.background = Color.grey(0.1, 0.9);
-	doc.bounds = Rect(0, 119, 1280, 659);
-	doc.selectedBackground = Color(0.4, 0.05, 0.18);
-	doc.stringColor = Color.grey(0.9);
-};
 )
 ::

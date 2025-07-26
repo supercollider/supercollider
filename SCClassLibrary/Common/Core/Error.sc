@@ -147,9 +147,13 @@ ShouldNotImplementError : MethodError {
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector, <>args, <suggestedCorrection, suggestion = "";
-	*new { arg receiver, selector, args;
-		^super.new(nil, receiver).selector_(selector).args_(args).init
+	var <>selector, <>args, <>keywordArgumentPairs, <suggestedCorrection, suggestion = "";
+	*new { arg receiver, selector, args, keywordArgumentPairs;
+		^super.new(nil, receiver)
+		.selector_(selector)
+		.args_(args)
+		.keywordArgumentPairs_(keywordArgumentPairs)
+		.init
 	}
 
 	init {
@@ -180,6 +184,10 @@ DoesNotUnderstandError : MethodError {
 		receiver.dump;
 		"ARGS:\n".post;
 		args.dumpAll;
+		keywordArgumentPairs !? {
+			"KEYWORD ARGUMENTS:".postln;
+			keywordArgumentPairs.dumpAll;
+		};
 		this.errorPathString.post;
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;

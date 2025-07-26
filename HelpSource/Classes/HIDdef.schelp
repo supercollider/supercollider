@@ -220,82 +220,82 @@ For all the examples below here, you will need to have initialized an HID device
 code::
 HID.findAvailable; // check which devices are attached
 HID.postAvailable; // post the available devices
-~myhid = HID.open( 1103, 53251 ); // adapt this line for  the device that you want to open!
+~myhid = HID.open(1103, 53251); // adapt this line for  the device that you want to open!
 ::
 
 SUBSECTION:: Filtering based on usage
 
 code::
 // filter all events coming from the x-axis of a mouse
-HIDdef.usage( \example, { |...args| args.postln; }, \X, \Mouse );
+HIDdef.usage(\example, { |...args| args.postln }, \X, \Mouse);
 
 // filter all events coming from a mouse
-HIDdef.usage( \example, { |...args| args.postln; }, nil, \Mouse );
+HIDdef.usage(\example, { |...args| args.postln }, nil, \Mouse);
 
 // filter all events coming from an X-axis (could be from a mouse or a joystick or a gamepad)
-HIDdef.usage( \example, { |...args| args.postln; }, \X );
+HIDdef.usage(\example, { |...args| args.postln }, \X);
 
 // filter all events coming from an X-axis or an Y-axis (could be from a mouse or a joystick or a gamepad)
-HIDdef.usage( \example, { |...args| args.postln; }, [\X,\Y] );
+HIDdef.usage(\example, { |...args| args.postln }, [\X, \Y]);
 
 // usage of argTemplate: matching the rawValue (is the default behaviour)
 
 // only react when the values are below zero:
-HIDdef.usage( \example, { |...args| args.postln; }, [\X,\Y], argTemplate: { |val| val < 0 } );
+HIDdef.usage(\example, { |...args| args.postln }, [\X, \Y], argTemplate: { |val| val < 0 });
 
 // only match when rawvalue == -1
-HIDdef.usage( \example, { |...args| args.postln; }, [\X,\Y], argTemplate: -1 );
+HIDdef.usage(\example, { |...args| args.postln }, [\X, \Y], argTemplate: -1);
 
-// only match when rawvalue is one of [-3,-2,-1]
-HIDdef.usage( \example, { |...args| args.postln; }, [\X,\Y], argTemplate: [-3,-2,-1] );
+// only match when rawvalue is one of [-3, -2, -1]
+HIDdef.usage(\example, { |...args| args.postln }, [\X, \Y], argTemplate: [-3, -2, -1]);
 
 // usage of argTemplate: matching the scaled value when smaller than 0.5
-HIDdef.usage( \example, { |...args| args.postln; }, [\X,\Y], argTemplate: { |val| val < 0.5 }, argTemplateType: \value );
+HIDdef.usage(\example, { |...args| args.postln }, [\X, \Y], argTemplate: { |val| val < 0.5 }, argTemplateType: \value);
 
 // using deviceInfo rather than deviceUsage (you can add more device specifications to match)
-HIDdef.usage( \example, { |...args| args.postln; }, \X, deviceInfo: ( usageName: \Mouse ) );
+HIDdef.usage(\example, { |...args| args.postln }, \X, deviceInfo: (usageName: \Mouse));
 
-HIDdef.usage( \example, { |...args| args.postln; }, nil, deviceInfo: ( usageName: \Mouse ) );
+HIDdef.usage(\example, { |...args| args.postln }, nil, deviceInfo: (usageName: \Mouse));
 
-HIDdef( \example ).free;
+HIDdef(\example).free;
 ::
 
 SUBSECTION:: Filtering based on usage ID
 
 code::
 // filter by usage ID 48 on usage page 1
-HIDdef.usageID( \example2, { |...args| args.postln; }, 48, 1 );
+HIDdef.usageID(\example2, { |...args| args.postln }, 48, 1);
 
 // filter by usage ID 48 or 49 on usage page 1
-HIDdef.usageID( \example2, { |...args| args.postln; }, [48,49], 1 );
+HIDdef.usageID(\example2, { |...args| args.postln }, [48, 49], 1);
 
 // filter by any usage ID on usage page 1
-HIDdef.usageID( \example2, { |...args| args.postln; }, nil, 1 );
+HIDdef.usageID(\example2, { |...args| args.postln }, nil, 1);
 
 // filter by usage ID 48 on usage page 1, of a device with an empty string as a name (fill in the name of your mouse there).
-HIDdef.usageID( \example2, { |...args| args.postln; }, 48, 1, "" );
+HIDdef.usageID(\example2, { |...args| args.postln }, 48, 1, "");
 
 // filter by usage ID 48 on usage page 1, of a device with path "/dev/hidraw2" (adapt this path to the device you want to match)
-HIDdef.usageID( \example2, { |...args| args.postln; }, 48, 1, deviceInfo: ( path: "/dev/hidraw2" )  );
+HIDdef.usageID(\example2, { |...args| args.postln }, 48, 1, deviceInfo: (path: "/dev/hidraw2")  );
 
-HIDdef( \example2 ).free;
+HIDdef(\example2).free;
 ::
 
 SUBSECTION:: Filtering based on a device
 
 code::
 // filter for device with name "", and element with usage \X.
-HIDdef.device( \example3, { |...args| args.postln; }, \X, "" );
-HIDdef( \example3 ).free;
+HIDdef.device(\example3, { |...args| args.postln }, \X, "");
+HIDdef(\example3).free;
 ::
 
 SUBSECTION:: Filtering based on a prototype element
 
 code::
 // create an prototype element with usageName \X
-c = HIDElementProto.new.usageName_( \X );
-HIDdef.proto( \example4, { |...args| args.postln; }, c );
-HIDdef( \example4 ).free;
+c = HIDElementProto.new.usageName_(\X);
+HIDdef.proto(\example4, { |...args| args.postln }, c);
+HIDdef(\example4).free;
 ::
 
 
@@ -303,6 +303,6 @@ SUBSECTION:: Filtering based on an element ID
 
 code::
 // filter for elements with element id 6:
-HIDdef.element( \example5, { |...args| args.postln; }, 6 );
-HIDdef( \example5 ).free;
+HIDdef.element(\example5, { |...args| args.postln }, 6);
+HIDdef(\example5).free;
 ::

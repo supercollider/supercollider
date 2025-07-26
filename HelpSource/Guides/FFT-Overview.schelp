@@ -109,7 +109,7 @@ A similar example using a soundfile:
 
 code::
 // read the soundfile into a buffer
-d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+d = Buffer.read(s, ExampleFiles.child);
 
 (
 {
@@ -210,7 +210,7 @@ subsection::UGen access to FFT data
 It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods pvcalc, pvcalc2, pvcollect. Here's an example which uses the  methods link::Classes/SequenceableCollection#-clump:: and link::Classes/SequenceableCollection#-flop:: to rearrange the order of the spectral bins:
 
 code::
-c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, ExampleFiles.child);
 
 (
 x = {
@@ -325,4 +325,3 @@ definitionlist::
 ## link::Classes/UnpackFFT::, link::Classes/PackFFT::, link::Classes/Unpack1FFT:: || "unpacking" components used in pvcalc, pvcalc2, pvcollect (can also be used on their own)
 ::
 For a full list of FFT UGens, see strong::UGens>FFT:: in the link::Browse#UGens>FFT:: page.
-

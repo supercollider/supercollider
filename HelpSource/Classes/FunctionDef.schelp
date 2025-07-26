@@ -35,6 +35,54 @@ code::
 { |a = 9, b = 10, c| a + b }.def.sourceCode.postcs;
 ::
 
+method::numArgs
+Return the number of arguments (the arity) of the function.
+code::
+{ |a = 9, b = 10, c| a + b }.def.numArgs; // 3
+::
+
+method::numVars
+Return the number of variables in the function body.
+code::
+(
+{ |x|
+	var y, z;
+	x + y + z
+}.def.numVars; // 2
+)
+::
+
+method::varArgs
+Return whether function has ellipsis argument.
+code::
+{ |a, b ... c| a + b * c }.def.varArgs; // true
+{ |a, b, c| a + b * c }.def.varArgs; // false
+::
+
+method::hasKwArgs
+Returns whether the function has variable keyword arguments
+code::
+{ |a, b, c| a + b * c }.def.hasKwArgs; // false
+{ |a, b ... c| a + b * c }.def.hasKwArgs; // false
+{ |a ... b, c| a * b }.def.hasVarArgs; // true
+::
+
+method::varArgsValue
+Returns how many sets of variable arguments the function has. 0 for none, 1 for ellipsis arguments, 2 for keyword arguments.
+code::
+{ |a, b, c| a + b * c }.def.varArgsValue; // 0
+{ |a, b ... c| a + b * c }.def.varArgsValue; // 1
+{ |a ... b, c| a * b }.def.varArgsValue; // 1
+::
+
+method::hasVarArgs
+Returns whether the function has variable args of any kind
+code::
+{ |a, b, c| a + b * c }.def.hasVarArgs; // false
+{ |a, b ... c| a + b * c }.def.hasVarArgs; // true
+{ |a ... b, c| a * b }.def.hasVarArgs; // true
+::
+
 method::context
 
 Get the enclosing FunctionDef or Method.
@@ -112,7 +160,7 @@ code::
 
 subsection::Generating Strings
 
-method::makeFuncArgModifierString
+method::makeFuncModifierString
 
 Return a string that can be interpreted as code for a new function which extracts the arguments from the receiver. This can be used to build a hygienic macro which returns a function with valid keyword arguments, instead of just anonymously forwarding the arguments, like in code::{ |...args| func.valueArray(args) }::.
 
@@ -131,11 +179,11 @@ a.interpret.value(4, 5)
 // use as a macro: multichannel expansion like in flop
 f = { |x, y = 1| if(x > 0) { 1 } { 0 } * y }; // some function
 // generate the body of a function that has a free and yet undefined variable "func"
-// -> "{ arg x, y = 1; ([x, y]).flop.collect { |x| func.valueArray(x) } }"
+// -> "{ |x, y = 1| ([x, y]).flop.collect { |x| func.valueArray(x) } }"
 a = f.def.makeFuncModifierString({ |str| str ++ ".flop.collect { |x| func.valueArray(x) }" });
 // wrap that body into a function that takes "func" as argument and returns the function above
 // now we have a valid code for a function:
-// -> "{ |func| { arg x, y = 1; [x, y].flop.collect { |x| func.valueArray(x) } } }"
+// -> "{ |func| { |x, y = 1| [x, y].flop.collect { |x| func.valueArray(x) } } }"
 b = "{ |func| % }".format(a);
 // interpret the code to a function
 g = b.interpret;
@@ -145,7 +193,7 @@ h = g.value(f);
 f.([1, 0], [6, 7]); // does not work
 h.([1, 0], [6, 7]); // [6, 0]
 // and the new function supports the same keywords arguments:
-h.(x:(-2..2), y:(-2..2));
+h.(x: (-2..2), y: (-2..2));
 
 // this functionality is implemented for function in the method "flop"
 h = f.flop;

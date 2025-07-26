@@ -2,7 +2,7 @@
 // detail/win_iocp_overlapped_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,7 +22,6 @@
 #include <boost/asio/detail/bind_handler.hpp>
 #include <boost/asio/detail/fenced_block.hpp>
 #include <boost/asio/detail/handler_alloc_helpers.hpp>
-#include <boost/asio/detail/handler_invoke_helpers.hpp>
 #include <boost/asio/detail/handler_work.hpp>
 #include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/operation.hpp>
@@ -42,15 +41,18 @@ public:
 
   win_iocp_overlapped_op(Handler& handler, const IoExecutor& io_ex)
     : operation(&win_iocp_overlapped_op::do_complete),
-      handler_(BOOST_ASIO_MOVE_CAST(Handler)(handler)),
+      handler_(static_cast<Handler&&>(handler)),
       work_(handler_, io_ex)
   {
   }
 
   static void do_complete(void* owner, operation* base,
-      const boost::system::error_code& ec, std::size_t bytes_transferred)
+      const boost::system::error_code& result_ec, std::size_t bytes_transferred)
   {
+    boost::system::error_code ec(result_ec);
+
     // Take ownership of the operation object.
+    BOOST_ASIO_ASSUME(base != 0);
     win_iocp_overlapped_op* o(static_cast<win_iocp_overlapped_op*>(base));
     ptr p = { boost::asio::detail::addressof(o->handler_), o, o };
 
@@ -58,8 +60,10 @@ public:
 
     // Take ownership of the operation's outstanding work.
     handler_work<Handler, IoExecutor> w(
-        BOOST_ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+        static_cast<handler_work<Handler, IoExecutor>&&>(
           o->work_));
+
+    BOOST_ASIO_ERROR_LOCATION(ec);
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a

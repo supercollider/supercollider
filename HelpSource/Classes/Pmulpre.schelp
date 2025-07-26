@@ -12,7 +12,7 @@ code::
 var a, b;
 a = Pmulpre(\note, 2, Pbind(\note, Pseq([1, 2, 3])));
 x = a.asStream;
-9.do({ x.next(Event.default).postln; });
+9.do({ x.next(Event.default).postln });
 )
 ::
 
@@ -22,7 +22,7 @@ code::
 var a, b;
 a = Pmulpre(\freq, 801, Pset(\freq, 500, Pbind(\dur, 0.2)));
 x = a.asStream;
-9.do({ x.next(Event.default).postln; });
+9.do({ x.next(Event.default).postln });
 )
 ::
 
@@ -44,15 +44,15 @@ code::
 var a, b;
 a = Pmulpre(\freq, Pseq([401, 801], 2), Pbind(\dur, 0.5));
 x = a.asStream;
-9.do({ x.next(Event.new).postln; });
+9.do({ x.next(Event.new).postln });
 )
 ::
 
 code::
-//sound example
+// sound example
 (
 SynthDef(\sinegrain,
-	{ arg out=0, freq=440, sustain=0.02;
+	{ |out = 0, freq = 440, sustain = 0.02|
 		var env;
 		env = EnvGen.kr(Env.perc(0.001, sustain), 1, doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env * 0.1))

@@ -1,12 +1,14 @@
 class:: Integer
-summary:: Integer number
+summary:: 32-bit Integer number
 categories:: Math
 
 description::
-A 32 bit integer. Integer inherits most of its behaviour from its superclass.
+A 32-bit integer. Integer inherits most of its behaviour from its superclass, link::Classes/SimpleNumber::.
 
 note::
-A 32 bit signed integer can represent values in the range -2147483648 to 2147483647. Adding up further returns in a wrapped result, so that and 2147483647+1= -2147483648. For a larger range, one can use link::Classes/Float::, which is 64 bit and supports many (but not all) numerical methods that int does.
+Integer can represent values in the range -2147483648 (code::-2^31::) to 2147483647 (code::2^31 - 1::).
+
+The overflow behavior of an Integer is undefined. This occurs whenever the result of an operation does not fit in the range of values supported by the return type, in this case, a 32-bit signed integer. Consider using the 64-bit link::Classes/Float:: for larger numbers (up to code::±2^53::).
 ::
 
 
@@ -108,7 +110,7 @@ method:: asStringToBase
 returns:: a string with code::width::-rightmost digits in base code::base::.
 discussion::
 code::
-15.asStringToBase(3,5); // returns 00120
+15.asStringToBase(3, 5); // returns 00120
 ::
 
 method:: asUnicode
@@ -180,7 +182,7 @@ method:: nthPrime
 returns:: the nth prime number. The receiver must be from 0 to 6541.
 discussion::
 code::
-[0,1,2,3,4,5].collect({ arg i; i.nthPrime; }).postln;
+[0, 1, 2, 3, 4, 5].collect({ |i| i.nthPrime }).postln;
 ::
 
 method:: prevPrime
@@ -226,6 +228,35 @@ Addition.
 method:: -
 Subtraction.
 
+method:: modSeaside
+
+Pre-3.14 modulo with unexpected behavior for negative integer modulus.
+
+For dividends smaller than a negative divisor, modSeaside pulls the resulting remainder below the divisor.
+It thereby leaves zero as peaks on the zero line. Like in the usual mod, all larger dividends result in remainders above zero.
+
+code::
+(..-9).mod(-3);
+// returns [0, -1, -2, 0, -1, -2, 0, -1, -2, 0]
+(..-9).modSeaside(-3);
+// returns [0, 2, 1, 0, -4, -5, 0, -4, -5, 0]
+
+// plot
+(-25..25).modSeaside(-5).plot.plotMode_(\steps);
+
+// modSeaside
+Pbind(\note, modSeaside(Pseries(-15, 1, 25), -5), \dur, 0.2).play;
+
+// modSeaside with different divisors
+Pbind(\note, modSeaside(Pseries(-15, 1, 25), [3, -4, -5]), \dur, 0.2).play;
+
+// mod
+Pbind(\note, mod(Pseries(-15, 1, 25), -5), \dur, 0.2).play;
+
+// mod with different divisors
+Pbind(\note, mod(Pseries(-15, 1, 25), [3, -4, -5]), \dur, 0.2).play;
+::
+
 method:: clip
 returns::
 LIST::
@@ -236,9 +267,9 @@ LIST::
 The result is an Integer only if both code::lo:: and code::hi:: are Integers.
 discussion::
 code::
-4.clip(2,5); // returns 4
-0.clip(2,5); // returns 2
-7.clip(2,5); // returns 5
+4.clip(2, 5); // returns 4
+0.clip(2, 5); // returns 2
+7.clip(2, 5); // returns 5
 ::
 
 method:: factorial
@@ -255,7 +286,7 @@ Folds in to a value between code::lo:: and code::hi::.
 returns:: an Integer between code::lo:: and code::hi::.
 discussion::
 code::
-(0..12).fold(0,3); // returns [ 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0 ]
+(0..12).fold(0, 3); // returns [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0]
 ::
 
 method:: log2Ceil
@@ -272,7 +303,7 @@ Wraps in to a value between code::lo:: and code::hi::.
 returns:: an Integer between code::lo:: and code::hi::.
 discussion::
 code::
-(0..12).wrap(0,3); // returns [ 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0 ]
+(0..12).wrap(0, 3); // returns [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0]
 ::
 
 subsection:: Range Limiting
@@ -301,7 +332,7 @@ method:: generate
 returns:: calls code::function.value(receiver):: but returns the receiver.
 discussion::
 code::
-f = { arg i; "foo".postln; i*2 }
+f = { |i| "foo".postln; i*2 }
 3.generate(f) // returns 3 but the function f is executed
 f.value(3) // returns 6
 ::

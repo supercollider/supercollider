@@ -54,7 +54,7 @@ b = Prand([
 	Pbind(\mtranspose, Pn(2, 7))
 ], inf);
 c = Prand([
-	Pbind(\detune, Pfuncn( { [0, 10.0].rand }, 5), \legato, 0.2, \dur, 0.2),
+	Pbind(\detune, Pfuncn({ [0, 10.0].rand }, 5), \legato, 0.2, \dur, 0.2),
 	Pbind(\legato, Pseq([0.2, 0.5, 1.5], 2), \dur, 0.3)
 ], inf);
 Pchain(a, b, c).trace.play;

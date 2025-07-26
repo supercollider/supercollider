@@ -32,6 +32,8 @@
 #include <QTextDocument>
 #include <QSplitter>
 
+#include "../doc_manager.hpp"
+
 namespace ScIDE {
 
 class CodeEditorBox;

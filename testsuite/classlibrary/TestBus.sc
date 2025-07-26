@@ -28,6 +28,7 @@ TestBus : UnitTest {
 	test_controlFree {
 		var s,busses;
 		s = Server(thisMethod.name);
+		s.options.numControlBusChannels = 10;
 		s.newAllocators;
 
 		busses = Array.fill( s.options.numControlBusChannels,{

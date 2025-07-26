@@ -21,7 +21,7 @@ For example, you can display any view without embedding it in a Window or anothe
 code::
 (
 x = SoundFileView().front;
-x.load(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+x.load(ExampleFiles.child);
 )
 ::
 
@@ -212,7 +212,7 @@ list::
 code::
 (
 var x = SoundFileView().front;
-x.load(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+x.load(ExampleFiles.child);
 )
 ::
 

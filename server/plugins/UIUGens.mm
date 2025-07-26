@@ -205,7 +205,7 @@ PluginLoad(UIUGens) {
     DefineUnit("MouseButton", sizeof(MouseInputUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
 }
 
-C_LINKAGE SC_API_EXPORT void unload(InterfaceTable* inTable) {
+PluginUnload(UIUGens) {
     inputThreadRunning = false;
     uiListenThread.join();
 }

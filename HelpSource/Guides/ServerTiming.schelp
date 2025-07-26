@@ -104,4 +104,3 @@ s.sendBundle(latency, synth.newMsg(target, arguments, addAction));
 // like the previous example, when this finishes you'll have the Synth object in the synth variable
 s.makeBundle(latency, { synth = Synth(defName, arguments, target, addAction); });
 ::
-

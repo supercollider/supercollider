@@ -140,4 +140,3 @@ TestCurveWarp :UnitTest {
 		this.assert( c != "rabbits", "CurveWarp should not equal rabbits");
 	}
 }
-

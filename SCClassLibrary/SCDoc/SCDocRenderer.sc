@@ -82,6 +82,9 @@ SCDocHTMLRenderer {
 			};
 		};
 
+		// use only forward slash as path separator
+		result = result.replace(Platform.pathSeparator, "/");
+
 		if(linkAnchor.isEmpty) {
 			^result
 		} {
@@ -174,11 +177,18 @@ SCDocHTMLRenderer {
 		var res = "";
 		var value;
 		var l = m.argNames;
-		var last = l.size-1;
+		var last = l.size - m.varArgsValue;
 		l.do {|a,i|
-			if (i>0) { //skip 'this' (first arg)
-				if(i==last and: {m.varArgs}) {
-					res = res ++ " <span class='argstr'>" ++ "... " ++ a;
+			if (i > 0) { //skip 'this' (first arg)
+				if(i >= last and: {m.hasVarArgs}) {
+					if(i == last){
+						if(i != 0){
+							res = res ++ " "
+						};
+						res = res ++ "<span class='argstr'>" ++ "... " ++ a
+					} {
+						res = res ++ ", <span class='argstr'>" ++ "... " ++ a
+					}
 				} {
 					if (i>1) { res = res ++ ", " };
 					res = res ++ "<span class='argstr'>" ++ a;
@@ -230,23 +240,27 @@ SCDocHTMLRenderer {
 		// (Search.html, Browse.html, etc.) if necessary.
 		stream
 		<< "</title>\n"
-		<< "<link rel='stylesheet' href='" << baseDir << "/scdoc.css' type='text/css' />\n"
-		<< "<link rel='stylesheet' href='" << baseDir << "/codemirror.css' type='text/css' />\n"
-		<< "<link rel='stylesheet' href='" << baseDir << "/editor.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/static/scdoc.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/static/codemirror.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/static/editor.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' id='scdoc-theme' href='" << baseDir << "/static/themes/default.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/static/lib/katex/katex.min.css' />\n"
 		<< "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
-		<< "<script src='" << baseDir << "/lib/jquery.min.js'></script>\n"
-		<< "<script src='" << baseDir << "/lib/codemirror-5.39.2.min.js' type='text/javascript'></script>\n"
-		<< "<script src='" << baseDir << "/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/static/lib/jquery.min.js'></script>\n"
+		<< "<script src='" << baseDir << "/static/lib/codemirror-5.39.2.min.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/static/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
+		<< "<script defer src='" << baseDir << "/static/lib/katex/katex.min.js' type='text/javascript'></script>\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
 		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
 		<< "var scdoc_sc_version = '" << Main.version << "';\n"
 		<< "</script>\n"
-		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/static/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
+		<< "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n"
 		// QWebChannel access
 		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
 		<< "</head>\n"
@@ -398,7 +412,7 @@ SCDocHTMLRenderer {
 			methodType,
 			\classMethod, { "*" },
 			\instanceMethod, { "-" },
-			\genericMethod, { "" }
+			\genericMethod, { "." }
 		);
 
 		minArgs = inf;
@@ -558,9 +572,12 @@ SCDocHTMLRenderer {
 				stream << this.htmlForLink(node.text);
 			},
 			\CODEBLOCK, {
-				stream << "<textarea class='editor'>"
+				stream << "<div class='codeMirrorContainer'>"
+                << "<textarea class='editor'>"
 				<< this.escapeSpecialChars(node.text)
-				<< "</textarea>\n";
+				<< "</textarea>\n"
+				<< "<button class='copy-button' aria-label='Copy code'><span class='copy-ico'>⧉</span><span class='check-ico'>✔</span></button>"
+                << "</div>\n";
 			},
 			\CODE, {
 				stream << "<code>"
@@ -589,6 +606,16 @@ SCDocHTMLRenderer {
 				node.children.do {|child|
 					stream << "<a class='anchor' name='kw_" << this.escapeSpacesInAnchor(child.text) << "'>&nbsp;</a>";
 				}
+			},
+			\MATHBLOCK, { // uses temml to convert tex to MathML
+				stream << "<span class='math block'>\n"
+				<< this.escapeSpecialChars(node.text)
+				<< "\n</span>";
+			},
+			\MATH, {
+				stream << "<span class='math'>"
+				<< this.escapeSpecialChars(node.text)
+				<< "</span>";
 			},
 			\IMAGE, {
 				f = node.text.split($#);
@@ -735,7 +762,11 @@ SCDocHTMLRenderer {
 				stream << "<tr><td class='argumentname'>";
 				if(node.text.isNil) {
 					currentMethod !? {
-						if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)}) {
+						if(currentMethod.hasVarArgs
+							and: {
+								currArg == (currentMethod.argNames.size - (currentMethod.hasKwArgs.if({2}, {1})))
+							}
+						) {
 							stream << "... ";
 						};
 						stream << if(currArg < currentMethod.argNames.size) {
@@ -752,11 +783,12 @@ SCDocHTMLRenderer {
 					stream << if(currentMethod.isNil or: {currArg < currentMethod.argNames.size}) {
 						currentMethod !? {
 							f = currentMethod.argNames[currArg].asString;
-							if(
-								(z = if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)})
-										{"... "++f} {f}
-								) != node.text;
-							) {
+							z = if(currentMethod.hasVarArgs and: {currArg == ( currentMethod.argNames.size - currentMethod.varArgsValue)}) {
+								"... " ++ f
+							} {
+								f
+							};
+							if(z != node.text) {
 								"SCDoc: In %\n"
 								"  Method %% has arg named '%', but doc has 'argument:: %'.".format(
 									currDoc.fullPath,
@@ -832,6 +864,17 @@ SCDocHTMLRenderer {
 					stream << "</div>";
 				};
 			},
+			\SUBSUBSECTION, {
+				stream << "<h4><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
+				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h4>\n";
+				if(node.makeDiv.isNil) {
+					this.renderChildren(stream, node);
+				} {
+					stream << "<div id='" << node.makeDiv << "'>";
+					this.renderChildren(stream, node);
+					stream << "</div>";
+				};
+			},
 			{
 				"SCDoc: In %\n"
 				"  Unknown SCDocNode id: %".format(currDoc.fullPath, node.id).warn;
@@ -894,6 +937,11 @@ SCDocHTMLRenderer {
 					},
 					\SUBSECTION, {
 						stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
+						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
+						this.renderTOC(stream, n);
+					},
+					\SUBSUBSECTION, {
+						stream << "<li class='toc3'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
 						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
 						this.renderTOC(stream, n);
 					}
@@ -964,7 +1012,7 @@ SCDocHTMLRenderer {
 		stream << "link::" << doc.path << "::<br>"
 		<< "</div>"
 		<< "</div>"
-		<< "<script src='" << baseDir << "/editor.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/static/editor.js' type='text/javascript'></script>\n"
 		<< "</body></html>";
 	}
 

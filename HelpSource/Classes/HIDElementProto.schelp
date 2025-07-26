@@ -145,7 +145,7 @@ EXAMPLES::
 
 code::
 // create an prototype element with usageName \X
-c = HIDElementProto.new.usageName_( \X );
-a = HIDFunc.proto( { |...args| args.postln; }, c );
+c = HIDElementProto.new.usageName_(\X);
+a = HIDFunc.proto({ |...args| args.postln }, c);
 a.free;
 ::
