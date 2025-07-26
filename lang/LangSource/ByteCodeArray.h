@@ -19,11 +19,15 @@
 */
 
 #pragma once
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
 
 
 typedef unsigned char Byte;
 
 #define BYTE_CODE_CHUNK_SIZE 64
+
 
 typedef struct {
     Byte* bytes;
@@ -35,18 +39,14 @@ extern ByteCodes gCompilingByteCodes;
 extern std::int64_t totalByteCodes;
 
 void initByteCodes();
-void compileByte(std::int64_t byte);
+void emitByte(Byte byte);
 void compileAndFreeByteCodes(ByteCodes byteCodes);
 void copyByteCodes(Byte* dest, ByteCodes byteCodes);
 ByteCodes getByteCodes();
 ByteCodes saveByteCodeArray();
 void restoreByteCodeArray(ByteCodes byteCodes);
 size_t byteCodeLength(ByteCodes byteCodes);
-void compileByteCodes(ByteCodes byteCodes);
+void emitByteCodes(ByteCodes byteCodes);
 ByteCodes allocByteCodes();
 void reallocByteCodes(ByteCodes byteCodes);
 void freeByteCodes(ByteCodes byteCodes);
-int compileOpcode(std::int64_t opcode, std::int64_t operand1);
-void compileJump(std::int64_t opcode, std::int64_t jumplen);
-int compileNumber(std::uint64_t value);
-int compileNumber24(std::uint64_t value);
