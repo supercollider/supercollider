@@ -999,8 +999,8 @@ argument::adverb
 
 discussion::
 code::aNumber:: can be lower than code::this::.
-If either code::this:: or code::aNumber:: is a link::Classes/Float::, the code::aNumber:: bound will be excluded from the range.
-If both code::this:: and code::aNumber:: are link::Classes/Integer::, both bounds are included.
+If either code::this:: or code::aNumber:: is a link::Classes/Float::, the code::aNumber:: bound will be excluded from the range, and sclang returns a link::Classes/Float##float::.
+If both code::this:: and code::aNumber:: are link::Classes/Integer::, both bounds are included, and sclang returns an link::Classes/Integer##integer::.
 
 
 method:: linrand
