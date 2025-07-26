@@ -43,9 +43,9 @@ Release dates of 3.x versions:
 - 3.11: 2020-03-08
 - 3.12: 2021-08-02
 - 3.13: 2023-02-19
-- 3.14: 2025-06-06
+- 3.14: 2025-07-26
 
-3.14.0 (2025-06-06)
+3.14.0 (2025-07-26)
 ===================
 
 ### Notable changes and additions
@@ -96,10 +96,6 @@ This change makes a number of new things possible, e.g.
 - Object prototyping: pseudo-methods in `IdentityDictionary` take keyword arguments and pass them on correctly. So you can write now: `u = (dive:{|self, speed, depth| ... }); u.dive(depth: -5)`
 - `DoesNotUnderstandError` informs about keyword arguments.
 - Make `Pbind` work with kwargs (this syntax works now: `Pbind(note: Pseq([-3, -2, 0, 1, 6, 13]), dur: 0.05, amp: 0.1).play`) by @JordanHendersonMusic and @telephon in https://github.com/supercollider/supercollider/pull/6530 
-
-### General: Changed
-
-### General: Fixed
 
 ### Class library: Added
 
@@ -400,6 +396,13 @@ This change makes a number of new things possible, e.g.
 ### CI changes by
 
 @dyfer, @capital-G, @elgiano, @scztt, @silvanocerza
+
+3.13.1 (2025-03-15)
+===================
+
+### sclang: Fixed
+
+Linux only: Reverted memory allocation bug when using HID, see <https://github.com/supercollider/supercollider/issues/6016>
 
 3.13.0 (2023-02-19)
 ===================
