@@ -33,7 +33,7 @@ int prToLower(struct VMGlobals* g, int numArgsPushed) {
 
     a = g->sp;
 
-    SetRawChar(a, tolower(slotRawChar(a)));
+    SetChar(a, tolower(slotRawChar(a)));
 
     return errNone;
 }
@@ -43,7 +43,7 @@ int prToUpper(struct VMGlobals* g, int numArgsPushed) {
 
     a = g->sp;
 
-    SetRawChar(a, toupper(slotRawChar(a)));
+    SetChar(a, toupper(slotRawChar(a)));
 
     return errNone;
 }
@@ -171,12 +171,7 @@ int prIsSpace(struct VMGlobals* g, int numArgsPushed) {
 }
 
 int prAsciiValue(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-
-    a = g->sp;
-
-    SetTagRaw(a, tagInt);
-
+    SetInt(g->sp, g->sp->getChar());
     return errNone;
 }
 

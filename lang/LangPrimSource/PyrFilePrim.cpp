@@ -959,7 +959,7 @@ int prFileGetDouble(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readDouble_be());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readDouble_be());
     }
     return errNone;
 }
@@ -980,7 +980,7 @@ int prFileGetFloat(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readFloat_be());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readFloat_be());
     }
     return errNone;
 }
@@ -1002,7 +1002,7 @@ int prFileGetDoubleLE(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readDouble_le());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readDouble_le());
     }
     return errNone;
 }
@@ -1023,7 +1023,7 @@ int prFileGetFloatLE(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readFloat_le());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readFloat_le());
     }
     return errNone;
 }
@@ -1773,12 +1773,20 @@ int prSFRead(struct VMGlobals* g, int numArgsPushed) {
     case obj_int32:
         slotRawObject(b)->size = sf_read_int(file, (int*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
         break;
-    case obj_float:
-        slotRawObject(b)->size = sf_read_float(file, (float*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
+    case obj_float: {
+        PyrFloatArray* floatArray = slotRawFloatArray(b);
+        floatArray->size = sf_read_float(file, floatArray->f, floatArray->size);
+        for (size_t i { 0 }; i < floatArray->size; ++i)
+            floatArray->f[i] = removeBadNans(floatArray->f[i]);
         break;
-    case obj_double:
-        slotRawObject(b)->size = sf_read_double(file, (double*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
+    }
+    case obj_double: {
+        PyrDoubleArray* doubleArray = slotRawDoubleArray(b);
+        doubleArray->size = sf_read_double(file, doubleArray->d, doubleArray->size);
+        for (size_t i { 0 }; i < doubleArray->size; ++i)
+            doubleArray->d[i] = removeBadNans(doubleArray->d[i]);
         break;
+    }
     default:
         error("sample format not supported.\n");
         return errFailed;
