@@ -49,13 +49,22 @@ SECTION::Getting started
 
 These are useful starting points for getting help on SuperCollider:
 
-definitionlist::
-## link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started tutorial series:: || Get started with SuperCollider
-## link::Guides/Glossary:: || Glossary
-## link::Guides/More-On-Getting-Help:: || Using Help Files effectively and inspecting class definition files to build more understanding
-## link::Browse.html#Tutorials#All tutorials:: || Index of all help files categorized under "Tutorials"
-## link::Guides/UserFAQ:: || Common Errors and FAQ
-## link::https://github.com/supercollider/supercollider/wiki/Tutorials##Community Learning Resources (Tutorials & Publications):: || SuperCollider Tutorials Wiki: Community-curated tutorial index and learning resources
+subsection:: Introduction & Reference Materials
+
+list::
+## teletype::sclang/scd:: example folder
+code::
+ExampleFiles.dir.openOS // Hold down the Shift key and press the Enter key to open the "sclang/scd example folder".
+::
+## link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started tutorial series::
+## link::Guides/Glossary::
+## link::Guides/More-On-Getting-Help##More On Getting Help:::
+
+Using Help Files effectively and inspecting class definition files to build more understanding
+## link::Browse.html#Tutorials#All tutorials:::
+
+Index of all help files categorized under emphasis::Tutorials::
+## link::Guides/UserFAQ##Common Errors and FAQ::
 ::
 
 subsection:: Getting Sound
