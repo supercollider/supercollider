@@ -3943,6 +3943,37 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
         for (i = 0; i < numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
             PyrSlot* varslot;
             varslot = &vardef->mVarName->mSlot;
+            const PyrSymbol* name = slotRawSymbol(varslot);
+            if (name == s_this) {
+                error("Cannot redefine 'this'\n");
+                nodePostErrorLine((PyrParseNode*)vardef);
+                compileErrors++;
+            } else if (name == s_curProcess) {
+                error("Cannot redefine 'thisProcess'\n");
+                nodePostErrorLine((PyrParseNode*)vardef);
+                compileErrors++;
+            } else if (name == s_curMethod) {
+                error("Cannot redefine 'thisMethod'\n");
+                nodePostErrorLine((PyrParseNode*)vardef);
+                compileErrors++;
+            } else if (name == s_curBlock) {
+                error("Cannot redefine 'thisFunctionDef'\n");
+                nodePostErrorLine((PyrParseNode*)vardef);
+                compileErrors++;
+            } else if (name == s_curClosure) {
+                error("Cannot redefine 'thisFunction'\n");
+                nodePostErrorLine((PyrParseNode*)vardef);
+                compileErrors++;
+            } else if (name == s_curThread) {
+                error("Cannot redefine 'thisThread'\n");
+                nodePostErrorLine((PyrParseNode*)vardef);
+                compileErrors++;
+            } else if (name == s_super) {
+                error("Cannot redefine 'super'\n");
+                nodePostErrorLine((PyrParseNode*)vardef);
+                compileErrors++;
+            }
+
             // already declared as arg?
             for (j = 0; j < numArgNames; ++j) {
                 if (blockargs[j] == slotRawSymbol(varslot)) {
