@@ -223,6 +223,10 @@ inline void* slotRawPtr(PyrSlot* slot) {
     assert(IsPtr(slot) || (slot->u.ptr == NULL && IsNil(slot)));
     return slot->u.ptr;
 }
+inline const void* slotRawPtr(const PyrSlot* slot) {
+    assert(IsPtr(slot) || (slot->u.ptr == NULL && IsNil(slot)));
+    return slot->u.ptr;
+}
 
 inline PyrBlock* slotRawBlock(PyrSlot* slot) { return slot->u.oblk; }
 

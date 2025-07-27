@@ -91,6 +91,11 @@ ArrayedCollection : SequenceableCollection {
 		}
 	}
 
+	removeIdenticalDuplicates {
+        _ArrayRemoveIdenticalDuplicates
+		^this.primitiveFailed;
+	}
+
 	replace { arg find, replace;
 		var index, out = [], array = this;
 		find = find.asArray;

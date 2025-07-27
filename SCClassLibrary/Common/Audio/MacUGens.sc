@@ -1,4 +1,10 @@
 MouseX : UGen {
+    // Although these touch shared state, it isn't possible to mutate the mouse nor keyboard,
+    //   so this isn't considered true 'resource'.
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	// warp 0 = linear
 	// warp 1 = exponential
 	*kr {
@@ -14,6 +20,10 @@ MouseX : UGen {
 MouseY : MouseX {}
 
 MouseButton : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr {
 		arg minval=0, maxval=1, lag=0.2;
 		^this.multiNew('control', minval, maxval, lag)
@@ -22,6 +32,10 @@ MouseButton : UGen {
 }
 
 KeyState : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr {
 		arg keycode=0, minval=0, maxval=1, lag=0.2;
 		^this.multiNew('control', keycode, minval, maxval, lag)

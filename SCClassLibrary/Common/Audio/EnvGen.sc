@@ -17,12 +17,21 @@ Done : UGen {
 	const <freeGroup = 14;
 	const <freeSelfResumeNext = 15;
 
+	// Assuming the user hasn't called this with 'none' as that would be pointless.
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
+	hasObservableEffect { ^true } // While this might not always be true, it simplifies things.
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr { arg src;
 		^this.multiNew('control', src)
 	}
 }
 
 FreeSelf : UGen {
+	resourceManagers { ^[DoneConnectionStrategy] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr { arg in;
 		this.multiNew('control', in);
 		^in
@@ -30,6 +39,10 @@ FreeSelf : UGen {
 }
 
 PauseSelf : UGen {
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr { arg in;
 		this.multiNew('control', in);
 		^in
@@ -37,30 +50,50 @@ PauseSelf : UGen {
 }
 
 FreeSelfWhenDone : UGen {
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr { arg src;
 		^this.multiNew('control', src)
 	}
 }
 
 PauseSelfWhenDone : UGen {
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr { arg src;
 		^this.multiNew('control', src)
 	}
 }
 
 Pause : UGen {
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr { arg gate, id;
 		^this.multiNew('control', gate, id)
 	}
 }
 
 Free : UGen {
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr { arg trig, id;
 		^this.multiNew('control', trig, id)
 	}
 }
 
 EnvGen : UGen { // envelope generator
+	implicitResourceConnectionStrategies {^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
 		envelope = this.convertEnv(envelope);
 		^this.multiNewList(['audio', gate, levelScale, levelBias, timeScale, doneAction, envelope])
@@ -81,8 +114,7 @@ EnvGen : UGen { // envelope generator
 		^env.asMultichannelArray.collect(_.reference).unbubble
 	}
 	*new1 { arg rate, gate, levelScale, levelBias, timeScale, doneAction, envArray;
-		^super.new.rate_(rate).addToSynth.init([gate, levelScale, levelBias, timeScale, doneAction]
-			++ envArray.dereference);
+		^super.new.rate_(rate).inputs_([gate, levelScale, levelBias, timeScale, doneAction] ++ envArray.dereference).addToSynth
 	}
 	init { arg theInputs;
 		// store the inputs as an array
@@ -92,6 +124,10 @@ EnvGen : UGen { // envelope generator
 }
 
 Linen : UGen {
+	implicitResourceConnectionStrategies {^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*kr { arg gate = 1.0, attackTime = 0.01, susLevel = 1.0, releaseTime = 1.0, doneAction = 0;
 		^this.multiNew('control', gate, attackTime, susLevel, releaseTime, doneAction)
 	}

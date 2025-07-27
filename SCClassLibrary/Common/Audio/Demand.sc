@@ -1,4 +1,8 @@
 Demand : MultiOutUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*ar { arg trig, reset, demandUGens;
 		^this.multiNewList(['audio', trig, reset] ++ demandUGens.asArray)
 	}
@@ -13,6 +17,9 @@ Demand : MultiOutUGen {
 }
 
 Duty : UGen {
+	implicitResourceConnectionStrategies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(2) }
+	canBeReplacedByIdenticalCall { ^false }
 
 	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
 		^this.multiNew('audio', dur, reset, doneAction, level)
@@ -42,24 +49,29 @@ TDuty : Duty {
 }
 
 DemandEnvGen : UGen {
+	implicitResourceConnectionStrategies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(9) }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0,
-				levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
+		levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
 		^this.multiNew('control', level, dur, shape, curve, gate, reset,
-				levelScale, levelBias, timeScale, doneAction)
+			levelScale, levelBias, timeScale, doneAction)
 	}
 	*ar { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0,
-				levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
-					if(gate.rate === 'audio' or: { reset.rate === 'audio' }) {
-						if(gate.rate !== 'audio') { gate = K2A.ar(gate) };
-						if(reset.rate !== 'audio') { reset = K2A.ar(reset) };
-					};
+		levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
+		if(gate.rate === 'audio' or: { reset.rate === 'audio' }) {
+			if(gate.rate !== 'audio') { gate = K2A.ar(gate) };
+			if(reset.rate !== 'audio') { reset = K2A.ar(reset) };
+		};
 		^this.multiNew('audio', level, dur, shape, curve, gate, reset,
-				levelScale, levelBias, timeScale, doneAction)
+			levelScale, levelBias, timeScale, doneAction)
 	}
 }
 
 DUGen : UGen {
+
+
 	// some n-ary op special cases
 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		^((this.prune(inMin, inMax, clip)-inMin)/(inMax-inMin) * (outMax-outMin) + outMin);
@@ -81,42 +93,81 @@ DUGen : UGen {
 }
 
 Dseries : DUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { arg start = 1, step = 1, length = inf;
 		^this.multiNew('demand', length, start, step)
 	}
 }
 
 Dgeom : DUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { arg start = 1, grow = 2, length = inf;
 		^this.multiNew('demand', length, start, grow)
 	}
 }
 
 Dbufrd : DUGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
+	canBeReplacedByIdenticalCall { ^true }
+	hasObservableEffect { ^false }
+
+
 	*new { arg bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, loop)
 	}
 }
 
 Dbufwr : DUGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*new { arg input = 0.0, bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, input, loop)
 	}
 }
 
 ListDUGen : DUGen {
+
 	*new { arg list, repeats = 1;
 		^this.multiNewList(['demand', repeats] ++ list)
 	}
 }
 
-Dseq : ListDUGen {}
-Dser : ListDUGen {}
-Dshuf : ListDUGen {}
-Drand : ListDUGen {}
-Dxrand : ListDUGen {}
+Dseq : ListDUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+}
+Dser : ListDUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+}
+Dshuf : ListDUGen {
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
+Drand : ListDUGen {
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
+Dxrand : ListDUGen {
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
 
 Dwrand : DUGen {
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
 	*new { arg list, weights, repeats = 1;
 		var size = list.size;
 		weights = weights.extend(size, 0.0);
@@ -125,31 +176,58 @@ Dwrand : DUGen {
 }
 
 Dswitch1 : DUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { arg list, index;
 		^this.multiNewList(['demand', index] ++ list)
 	}
 }
 
-Dswitch : Dswitch1 {}
+Dswitch : Dswitch1 {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+}
 
 Dwhite : DUGen {
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*new { arg lo = 0.0, hi = 1.0, length = inf;
 		^this.multiNew('demand', length, lo, hi)
 	}
 }
 
-Diwhite : Dwhite {}
+Diwhite : Dwhite {
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
 
 Dbrown : DUGen {
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*new { arg lo = 0.0, hi = 1.0, step = 0.01, length = inf;
 		^this.multiNew('demand', length, lo, hi, step)
 	}
 }
 
-Dibrown : Dbrown {}
+Dibrown : Dbrown {
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
 
 Dstutter : DUGen {
 	classvar suggestNew;
+
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*initClass {
 		suggestNew = { |n, in|
@@ -165,24 +243,38 @@ Dstutter : DUGen {
 }
 
 Ddup : DUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { |n, in|
 		^this.multiNew('demand', n, in)
 	}
 }
 
 Dconst : DUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { arg sum, in, tolerance = 0.001;
 		^this.multiNew('demand', sum, in, tolerance);
 	}
 }
 
 Dreset : DUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*new { arg in, reset = 0.0;
 		^this.multiNew('demand', in, reset)
 	}
 }
 
 Dpoll : DUGen {
+	implicitResourceConnectionStrategies { ^[[MessageConnectionStrategy]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false } // This will just print the thing twice.
+
 	*new { arg in, label, run = 1, trigid = -1;
 		^this.multiNew('demand', in, label, run, trigid)
 	}
@@ -194,10 +286,18 @@ Dpoll : DUGen {
 	}
 }
 
+// TODO: what does this comment refer to?
 // behave as identical in multiple uses
 
 Dunique : UGen {
+	// TODO: This class needs revisiting and should call createWeakConnectionTo as needed.
+
 	var <protected, buffer, writer, iwr;
+
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false } // TODO: maybe?
+	canBeReplacedByIdenticalCall { ^false } // This will just print the thing twice.
+
 
 	*new { arg source, maxBufferSize = 1024, protected = true;
 		^super.new.init(source, maxBufferSize, protected)

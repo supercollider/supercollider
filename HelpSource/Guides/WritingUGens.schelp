@@ -7,52 +7,210 @@ SuperCollider has a vast library of unit generators that can be assembled in unl
 aren't sufficient. You may have a need for an unusual signal processing algorithm, or you're running into efficiency
 problems that can be solved by condensing parts of your SynthDef into a single UGen.
 
-UGens are defined in server plugins written in C++. Server plugins are not to be confused with quarks, which extend the
-SuperCollider language. UGens exist more or less independently of the interpreter and you don't need much familiarity
+UGens have two parts, a server side which is contained in a server plugin, and a client side.
+In SuperCollider language, this is implemented by inheriting from link::Classes/UGen::.
+
+Server plugins are not to be confused with quarks.
+Sever plugins exist more or less independently of the interpreter and you don't need much familiarity
 with SC to write them.
 
-Writing UGens is not too difficult, but it's arguably far less convenient and intuitive than the high-level tools that
-SuperCollider provides. You'll need a build system and a good amount of boilerplate code — even fairly basic signal
+Writing server plugins is not too difficult, but it's arguably far less convenient and intuitive than the high-level tools that
+SuperCollider provides. You'll need a build system and a good amount of boilerplate code -- even fairly basic signal
 processing operations can require a lot of code. You don't have an instant live coding environment, and mistakes can
-easily crash the server. SuperCollider's UGens are stable and well-tested, and custom UGens are best viewed as a last
+easily crash the server. SuperCollider's UGens are stable and well-tested, and custom server plugins are best viewed as a last
 resort for when the limitations of SC are impassable.
 
-section:: Pseudo-UGens
+This document will discuss the following
+list::
+## SC Client–side link::Classes/UGen::s.
+## Sever side UGens in sever plugins.
+## Pseudo–UGens — things that look like but are not UGens.
+::
 
-Before we proceed to the real UGens, we'll take a quick detour for the sake of completeness. A pseudo-UGen is a bit of
-SuperCollider code that abbreviates a certain configuration of UGens that gets used repeatedly. A pseudo-UGen is a class
-that superficially resembles a UGen class, but it only returns a composition of existing UGens. It has no efficiency
-savings, but it does save typing.
+A (real) UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary
+code::*.sc:: file, and defines the interface for your UGen in the language.
 
 The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr:: 
 methods.
+section:: Basics of Client–side UGen
+
+All UGen's must inherit from link::Classes/UGen:: and be named exactly the same as they are in the server plugin (see the subsequent section).
+
+The UGen should implement the code::*.ar:: and code::*.kr:: methods as necessary, calling code::super.multiNew(rate, arg1, arg2 ...)::.
+
+Please note, if the server side implementation is set to only accepts audio rate inputs then a conversion from scalar numbers to audio rate DC must be provided, see link::#optimize::.
+
+Here is a basic example.
 
 code::
-BoringMixer {
-    *ar { arg left, right;
-        ^(left + right) * 0.5;
-    }
+MyUGen : UGen {
+    *ar { |arg1, arg2| ^super.multiNew(\audio, arg1, arg2) }
+    *kr { |arg1, arg2| ^super.multiNew(\control, arg1, arg2) }
 }
 ::
 
-Examples of pseudo-UGens found in SC include link::Classes/BLowPass4:: and link::Classes/BHiPass4::, which break down
-into link::Classes/SOS:: UGens.
 
-There are very few restrictions on what these classes can contain, but you should keep the following in mind:
 
-list::
-## It is courteous to leave a note in your class's help file that identifies it as a pseudo-UGen.
-## To avoid confusion, pseudo-UGens should not inherit from the base class link::Classes/UGen::.
-## A SynthDef can only have two link::Classes/LocalIn::/link::Classes/LocalOut:: pairings — one for control rate and one
-for audio rate. Putting LocalIn and LocalOut in a pseudo-UGen is a bad idea, as it could interfere with other feedback
-loops in the SynthDef.
+However, this implementation does not participate in any of the optimisation link::Classes/SynthDef:: offers,
+of which there are three.
+While all these methods can be omitted for backwards compatibility, there will be a serious performance hit.
+It is best to find a UGen in the class library that is close to your UGen and see how it implements these three methods.
+
+It is also possible to implement custom optimizations, this is discussed after.
+
+
+subsection:: Has Observable Effect
+
+code::
+MyUGen : UGen {
+    hasObservableEffect { ^true }
+    *ar { |arg1, arg2| ^super.multiNew(\audio, arg1, arg2) }
+    *kr { |arg1, arg2| ^super.multiNew(\control, arg1, arg2) }
+}
 ::
 
-section:: Basics of UGens
+The method code::hasObservableEffect:: must return code::true:: or code::false:: depending on whether the UGen alters global state, which could mean:
+list::
+## outputting to a bus,
+## writing to a buffer,
+## sending an OSC message,
+## freeing the synth (done action).
+::
 
-A (real) UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary
-code::*.sc:: file, and defines the interface for your UGen in the language. This class is generally just a few lines of
-code that ultimately call the class method link::Classes/UGen#-multiNew::.
+Generally, if you would describe the UGen as 'setting' or 'writing' to something, this should be true.
+
+If a UGen does not indicate that it has an observable effect and is not connected to another UGen which does, it may be removed from the synthdef.
+This is called 'dead code elimination'.
+
+For UGens that have a done action, a helper method is provided which takes the index of the 'done action' input.
+
+code::
+MyUGen : UGen {
+    hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(2) }
+    *ar { |arg1, arg2, doneAction| ^super.multiNew(\audio, arg1, arg2, doneAction) }
+//index:   0     1     2
+}
+::
+
+
+The default if no method is supplied is true to maintain backwards compatibility, despite most UGens actually not having observable effects.
+
+subsection:: Can Be Replaced By Identical Call
+
+code::
+MyUGen : UGen {
+    canBeReplacedByIdenticalCall { ^true }
+    *ar { |arg1, arg2| ^super.multiNew(\audio, arg1, arg2) }
+    *kr { |arg1, arg2| ^super.multiNew(\control, arg1, arg2) }
+}
+::
+
+The method code::canBeReplacedByIdenticalCall:: must return true of false depending on whether the UGen can be replaced by calls with identical inputs.
+
+Most UGens fall into this category, exceptions include:
+list::
+## noise ugens, as each instance should create unique noise,
+## and ugens that add to some shared state, link::Classes/Out:: is an example of this as it sums into the bus.
+::
+
+UGens that read from something are also replaceable with identical inputs as their position respective to other UGens that might write to the resource are considered.
+
+The default if no method is supplied is false to maintain backwards compatibility, despite most UGens being able to opt into this.
+
+subsection:: UGen Resource Manager
+
+code::
+MyBufRd : MultiOutUGen {
+	resourceManagers { ^[BufferConnectionStrategy] }
+	bufferAccessType { ^\read }
+
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
+		^this.multiNew('audio', numChannels, bufnum, phase, loop, interpolation)
+	}
+	*kr { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
+		^this.multiNew('control', numChannels, bufnum, phase, loop, interpolation)
+	}
+}
+::
+
+The method code::resourceManager:: return an link::Classes/Array:: of link::Classes/UGenResourceManager::s that describe which resource
+the UGen interacts with.
+
+The purpose of this is to preserve the ordering the user has written for certain operations.
+As an example, the order in which you read and write to buffers matters, so any UGen that interacts with a buffer should return the class link::Classes/BufferConnectionStrategy::.
+
+These resource managers may require extra methods be added to the class, one should check the manager's documentation.
+In the case of link::Classes/BufferConnectionStrategy:: the method code::bufferAccessType:: is required and specifies what UGen does with the resource.
+
+If no resource is interacted with, the method should return an empty link::Classes/Array::.
+code::
+resourceManagers { ^[] }
+::
+
+UGens with a 'done action' should return the link::Classes/UGenDoneResourceManager:: if it is enabled. Here is an example from link::Classes/Line::
+code::
+    hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(2) }
+	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+::
+
+Here is a (non-exhaustive) list of resource managers and some examples of what classes use them:
+list::
+## link::Classes/DiskStateConnectionStrategy:: — link::Classes/DiskIn::
+## link::Classes/UGenDoneResourceManager:: — link::Classes/Line::
+## link::Classes/UGenMessageResourceManager:: — link::Classes/SendReply::
+## link::Classes/BufferConnectionStrategy:: — link::Classes/BufRd::
+## link::Classes/AnalogStateConnectionStrategy:: — link::Classes/DigitalIn::
+## link::Classes/BusConnectionStrategy:: — link::Classes/In::
+## link::Classes/RandomStateConnectionStrategy:: — link::Classes/LFNoise2::
+::
+
+The default for this method is to return code::nil::, which causes all resource managers to enter 'panic' mode, preserving the order.
+This is done for backwards compatibility.
+
+
+subsection:: Optimization and Combinations of Rates
+
+The method code::optimize:: is used to make substitution in the link::Classes/SynthDef:: graph.
+Most of the time this is not needed by UGen authors — see link::Classes/SynthDef#optimize:: for more information —
+however, there is one exception.
+
+If your UGen doesn't provide a way to handle control rate inputs it is necessary to perform a conversion from scalar number to audio rate link::Classes/DC::.
+An example of a UGen in the class library that does this is link::Classes/RecordBuf:: by using the convenience method code::this.coerceInputFromScalarToDC::.
+
+code::
+MyRecorder : UGen {
+    resourceManagers { ^[BufferConnectionStrategy] }
+	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { |inputArray, bufnum = 0| ^this.multiNewList(['audio', bufnum] ++ inputArray ) }
+
+	optimize {
+        var result = SynthDefOptimizationResult();
+        this.coerceInputFromScalarToDC(1, result);
+        ^result.returnNilIfEmpty;
+	}
+}
+::
+
+This allows the user to write 'code::MyRecorder.ar(0, \buf.kr)::', but more importantly,
+it allows other optimizations to be applied uniformly.
+An example of where this would unexpectedly fail is when multiplying by zero,
+as the optimizer known that the result is always zero as makes a substitution on the users behalf.
+Therefore, it is necessary to implement this if your UGen does not support control rate inputs, even in the audio rate path.
+
+While it is possible to perform other types of optimizations on the rate, please refrain from doing so without good reason,
+as it can make things confusing for the user. Prefer only converting scalar inputs to link::Classes/DC:: inputs.
+
+To avoid having to write this method, it is best to check each input's rate inside the server side code during construction.
+
+If there are certain combinations of rates that are not allowed, then a link::Classes/UGen#checkInputs:: method is provided where this can be implemented.
+
+section:: Basics of Server–side UGens
 
 The server plugin is where the actual UGen behavior is defined. It is given by a dynamically loaded library written in
 C++, whose format is platform-dependent:
@@ -72,7 +230,7 @@ class files in the same location, the class file and the library file can go in 
 Plug-ins are loaded during the startup of the server, so it will have to be restarted after (re-)compiling a
 plugin. If you modify the plugin file but not the class file, you don't need to reboot the interpreter.
 
-section:: FAUST
+subsection:: FAUST
 
 FAUST footnote::https://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. It can
 compile to SuperCollider plugins, providing an easy way to create UGens in SuperCollider.
@@ -86,7 +244,7 @@ featuring very complex logic are difficult or impossible to write in FAUST. Furt
 intelligent but it might not always offer the best efficiency in its results. If a UGen you are developing hits these
 limitations, it is time to move on to handwritten C++.
 
-section:: Example Plugins
+subsection:: Example Plugins
 
 To get an idea of the necessary ingredients for writing UGens, it's often best to poke around at complete examples.
 We've set up a GitHub repository at https://github.com/supercollider/example-plugins, which contains some example
@@ -100,12 +258,12 @@ audio rate.
 MySaw introduces states and multiple calculation functions. AnalogEcho introduces real-time memory management through
 internal buffers, and demonstrates how to do cubic interpolation from an array of samples.
 
-section:: Anatomy of a UGen
+subsection:: Anatomy of a UGen
 
 The SC source code has a header file, code::include/plugin_interface/SC_PlugIn.h::, that gives you your interface to the server
 architecture as well as a bunch of helper functions. These are documented at link::Reference/ServerPluginAPI::.
 
-subsection:: The Entry Point
+subsubsection:: The Entry Point
 
 When the library is loaded the server calls a function in the library, which is defined by the code::PluginLoad():: 
 macro. This entry point has two responsibilities:
@@ -155,7 +313,7 @@ Phasor_next_aa, Phasor_next_ak, Phasor_next_ka, and Phasor_next_kk. You don't ne
 UGens, however. For example, link::Classes/FreeVerb:: has only one calculation function. Who would want a control-rate
 reverb?
 
-subsection:: Building Unit Generator Plugins
+subsubsection:: Building Unit Generator Plugins
 
 The most portable way to build plugins is using cmake footnote::https://www.cmake.org::, a cross-platform build
 system.
@@ -176,7 +334,7 @@ definitionList::
                          done in a lock-free manner.
 ::
 
-subsection:: Memory Allocation
+subsubsection:: Memory Allocation
 Do not allocate memory from the OS via code::malloc:: / code::free:: or code::new::/ code::delete::. Instead you should use the real-time memory allocator via code::RTAlloc:: / code::RTFree::.
 
 definitionList::
@@ -252,7 +410,7 @@ namespace MyUnit {
 }
 ::
 
-subsection:: Thread Safety
+subsubsection:: Thread Safety
 
 There are two different implementations of the SuperCollider server. strong::scsynth:: is the traditional server and
 strong::supernova:: is a new implementation with support for multi-processor audio synthesis. Since the plugins in
@@ -270,7 +428,7 @@ definitionList::
     locked.
 ::
 
-subsection:: Deadlock Prevention
+subsubsection:: Deadlock Prevention
 
 In order to prevent deadlocks, a simple deadlock prevention scheme is implemented, based on the following constraints.
 
@@ -282,4 +440,35 @@ list::
    use reduces contention.
 ## Resources have to be acquired in a well-defined order: busses should be acquired before buffers and resources with a high index
    should be acquired before resources with a low index.
+::
+
+
+section:: Pseudo-UGens
+
+A pseudo-UGen is a bit of SuperCollider code that abbreviates a certain configuration of UGens that gets used repeatedly.
+A pseudo-UGen is a class that superficially resembles a UGen class, but it only returns a composition of existing UGens.
+It has no efficiency savings, but it does save typing and help group code together.
+
+The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr::
+methods.
+
+code::
+BoringMixer {
+    *ar { arg left, right;
+        ^(left + right) * 0.5;
+    }
+}
+::
+
+Examples of pseudo-UGens found in SC include link::Classes/BLowPass4:: and link::Classes/BHiPass4::, which break down
+into link::Classes/SOS:: UGens.
+
+There are very few restrictions on what these classes can contain, but you should keep the following in mind:
+
+list::
+## It is courteous to leave a note in your class's help file that identifies it as a pseudo-UGen.
+## To avoid confusion, pseudo-UGens should not inherit from the base class link::Classes/UGen::.
+## A SynthDef can only have two link::Classes/LocalIn::/link::Classes/LocalOut:: pairings — one for control rate and one
+for audio rate. Putting LocalIn and LocalOut in a pseudo-UGen is a bad idea, as it could interfere with other feedback
+loops in the SynthDef.
 ::

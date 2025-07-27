@@ -1,4 +1,7 @@
 Trig1 : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in = 0.0, dur = 0.1;
 		^this.multiNew('audio', in, dur)
@@ -9,11 +12,14 @@ Trig1 : UGen {
 	signalRange { ^\unipolar }
 }
 
-Trig : Trig1 {
-}
+Trig : Trig1 { }
 
 
 SendTrig : UGen {
+	implicitResourceConnectionStrategies { ^[[MessageConnectionStrategy]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*ar { arg in = 0.0, id = 0, value = 0.0;
 		this.multiNew('audio', in, id, value);
 		^0.0		// SendTrig has no output
@@ -28,6 +34,10 @@ SendTrig : UGen {
 }
 
 SendReply : SendTrig {
+	implicitResourceConnectionStrategies { ^[[MessageConnectionStrategy]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*kr { arg trig = 0.0, cmdName = '/reply', values, replyID = -1;
 		if(values.containsSeqColl.not) { values = values.bubble };
 		[trig, cmdName, values, replyID].flop.do { |args|
@@ -50,11 +60,24 @@ SendReply : SendTrig {
 	}
 }
 
-TDelay : Trig1 {
-	checkInputs { ^this.checkSameRateAsFirstInput }
+TDelay : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg in = 0.0, dur = 0.1;
+		^this.multiNew('audio', in, dur)
+	}
+	*kr { arg in = 0.0, dur = 0.1;
+		^this.multiNew('control', in, dur)
+	}
+	signalRange { ^\unipolar }
 }
 
 Latch : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in = 0.0, trig = 0.0;
 		^this.multiNew('audio', in, trig)
@@ -65,10 +88,24 @@ Latch : UGen {
 
 }
 
-Gate : Latch {
+Gate : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg in = 0.0, trig = 0.0;
+		^this.multiNew('audio', in, trig)
+	}
+	*kr { arg in = 0.0, trig = 0.0;
+		^this.multiNew('control', in, trig)
+	}
+
 }
 
 PulseCount : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg trig = 0.0, reset = 0.0;
 		^this.multiNew('audio', trig, reset)
@@ -80,6 +117,50 @@ PulseCount : UGen {
 }
 
 Peak : UGen {
+    implicitResourceConnectionStrategies { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg in = 0.0, trig = 0.0;
+		^this.multiNew('audio', in, trig)
+	}
+	*kr { arg in = 0.0, trig = 0.0;
+		^this.multiNew('control', in, trig)
+	}
+	checkInputs {
+		if (rate == 'control' && inputs.at(0).rate == 'audio', {
+			^this.checkValidInputs
+		}, {
+			^this.checkSameRateAsFirstInput
+		});
+	}
+}
+
+RunningMin : UGen {
+    implicitResourceConnectionStrategies { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg in = 0.0, trig = 0.0;
+		^this.multiNew('audio', in, trig)
+	}
+	*kr { arg in = 0.0, trig = 0.0;
+		^this.multiNew('control', in, trig)
+	}
+	checkInputs {
+		if (rate == 'control' && inputs.at(0).rate == 'audio', {
+			^this.checkValidInputs
+		}, {
+			^this.checkSameRateAsFirstInput
+		});
+	}
+}
+
+RunningMax : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg in = 0.0, trig = 0.0;
 		^this.multiNew('audio', in, trig)
 	}
@@ -96,14 +177,10 @@ Peak : UGen {
 }
 
 
-RunningMin : Peak {
-}
-
-RunningMax : Peak {
-}
-
-
 Stepper : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
 		^this.multiNew('audio', trig, reset, min, max, step, resetval ? min)
@@ -116,6 +193,9 @@ Stepper : UGen {
 
 
 PulseDivider : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg trig = 0.0, div = 2.0, start = 0.0;
 		^this.multiNew('audio', trig, div, start)
@@ -126,11 +206,26 @@ PulseDivider : UGen {
 
 }
 
-SetResetFF : PulseCount {
+SetResetFF : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
+		^this.multiNew('audio', trig, reset, min, max, step, resetval ? min)
+	}
+	*kr { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
+		^this.multiNew('control', trig, reset, min, max, step, resetval ? min)
+	}
+	checkInputs { ^this.checkSameRateAsFirstInput }
 	signalRange { ^\unipolar }
 }
 
+
 ToggleFF : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg trig = 0.0;
 		^this.multiNew('audio', trig)
@@ -138,12 +233,15 @@ ToggleFF : UGen {
 	*kr { arg trig = 0.0;
 		^this.multiNew('control', trig)
 	}
-
 	signalRange { ^\unipolar }
 }
 
 
 ZeroCrossing : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg in = 0.0;
 		^this.multiNew('audio', in)
 	}
@@ -154,6 +252,10 @@ ZeroCrossing : UGen {
 }
 
 Timer : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	// output is the time between two triggers
 	*ar { arg trig = 0.0;
 		^this.multiNew('audio', trig)
@@ -165,6 +267,10 @@ Timer : UGen {
 }
 
 Sweep : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	// output sweeps up in value at rate per second
 	// the trigger resets to zero
 	*ar { arg trig = 0.0, rate = 1.0;
@@ -176,6 +282,10 @@ Sweep : UGen {
 }
 
 Phasor : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg trig = 0.0, rate = 1.0, start = 0.0, end = 1.0, resetPos = 0.0;
 		^this.multiNew('audio', trig, rate, start, end, resetPos)
 	}
@@ -185,6 +295,9 @@ Phasor : UGen {
 }
 
 PeakFollower : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in = 0.0, decay = 0.999;
 		^this.multiNew('audio', in, decay)
@@ -195,10 +308,13 @@ PeakFollower : UGen {
 }
 
 Pitch : MultiOutUGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg in = 0.0, initFreq = 440.0, minFreq = 60.0, maxFreq = 4000.0,
-			execFreq = 100.0, maxBinsPerOctave = 16, median = 1,
-			ampThreshold = 0.01, peakThreshold = 0.5, downSample = 1, clar=0;
+		execFreq = 100.0, maxBinsPerOctave = 16, median = 1,
+		ampThreshold = 0.01, peakThreshold = 0.5, downSample = 1, clar=0;
 		^this.multiNew('control', in, initFreq, minFreq, maxFreq, execFreq,
 			maxBinsPerOctave, median, ampThreshold, peakThreshold, downSample, clar)
 	}
@@ -209,6 +325,10 @@ Pitch : MultiOutUGen {
 }
 
 InRange : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg in, lo = 0.0, hi = 1.0;
 		^this.multiNew('audio', in, lo, hi)
 	}
@@ -225,7 +345,11 @@ InRange : UGen {
 }
 
 InRect : UGen {
-	*ar { arg x, y, rect;
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg x = 0.0, y = 0.0, rect;
 		^this.multiNew('audio', x, y, rect.left, rect.top,
 			rect.right, rect.bottom)
 	}
@@ -239,12 +363,86 @@ InRect : UGen {
 	}
 }
 
-Fold : InRange {}
-Clip : InRange {}
-Wrap : InRange {}
-Schmidt : InRange {}
+
+//Trapezoid : UGen
+//{
+//	*ar { arg in = 0.0, a = 0.2, b = 0.4, c = 0.6, d = 0.8;
+//		^this.multiNew('audio', in, a, b, c, d)
+//	}
+//	*kr { arg in = 0.0, a = 0.2, b = 0.4, c = 0.6, d = 0.8;
+//		^this.multiNew('control', in, a, b, c, d)
+//	}
+//}
+
+Fold : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('audio', in, lo, hi)
+	}
+	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('control', in, lo, hi)
+	}
+	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('scalar', in, lo, hi)
+	}
+}
+
+Clip : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('audio', in, lo, hi)
+	}
+	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('control', in, lo, hi)
+	}
+	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('scalar', in, lo, hi)
+	}
+}
+
+Wrap : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('audio', in, lo, hi)
+	}
+	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('control', in, lo, hi)
+	}
+	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('scalar', in, lo, hi)
+	}
+}
+
+Schmidt : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('audio', in, lo, hi)
+	}
+	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('control', in, lo, hi)
+	}
+	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('scalar', in, lo, hi)
+	}
+}
 
 ModDif : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg x = 0.0, y = 0.0, mod = 1.0;
 		^this.multiNew('audio', x, y, mod)
 	}
@@ -257,6 +455,10 @@ ModDif : UGen {
 }
 
 MostChange : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg a = 0.0, b = 0.0;
 		^this.multiNew('audio', a, b)
 	}
@@ -265,9 +467,23 @@ MostChange : UGen {
 	}
 }
 
-LeastChange : MostChange {}
+LeastChange : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { arg a = 0.0, b = 0.0;
+		^this.multiNew('audio', a, b)
+	}
+	*kr { arg a = 0.0, b = 0.0;
+		^this.multiNew('control', a, b)
+	}
+}
 
 LastValue : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in=0.0, diff=0.01;
 		^this.multiNew('audio', in, diff)
@@ -278,6 +494,9 @@ LastValue : UGen {
 }
 
 SendPeakRMS : UGen {
+	implicitResourceConnectionStrategies { ^[[MessageConnectionStrategy]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
 
 	*kr { arg sig, replyRate = 20.0, peakLag = 3, cmdName = '/reply', replyID = -1;
 		this.new1('control', sig.asArray, replyRate, peakLag, cmdName, replyID);
@@ -292,9 +511,9 @@ SendPeakRMS : UGen {
 	*new1 { arg rate, sig, replyRate, peakLag, cmdName, replyID;
 		var ascii = cmdName.ascii;
 		var args = [rate, replyRate, peakLag, replyID, sig.size]
-			.addAll(sig.flatten)
-			.add(ascii.size)
-			.addAll(ascii);
+		.addAll(sig.flatten)
+		.add(ascii.size)
+		.addAll(ascii);
 		^super.new1(*args);
 	}
 

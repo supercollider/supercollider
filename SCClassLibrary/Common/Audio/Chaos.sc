@@ -16,6 +16,9 @@ represent the interpolation method used between function iterations.
 */
 
 ChaosGen : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 }
 
 // General Quadratic Map

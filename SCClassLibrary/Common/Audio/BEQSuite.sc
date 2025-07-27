@@ -67,7 +67,7 @@ BBandPass : BEQSuite {
 		sr  = SampleRate.ir;
 		w0 = pi * 2 * freq * SampleDur.ir;
 		sin_w0 = w0.sin;
-	//	alpha = w0.sin * 0.5 * rq;
+		//	alpha = w0.sin * 0.5 * rq;
 		alpha = sin_w0 * sinh(0.34657359027997 * bw * w0 / sin_w0);
 		b0rz = (1 + alpha).reciprocal;
 		a0 = alpha * b0rz;
@@ -87,7 +87,7 @@ BBandStop : BEQSuite {
 		sr  = SampleRate.ir;
 		w0 = pi * 2 * freq * SampleDur.ir;
 		sin_w0 = w0.sin;
-	//	alpha = w0.sin * 0.5 * rq;
+		//	alpha = w0.sin * 0.5 * rq;
 		alpha = sin_w0 * sinh(0.34657359027997 * bw * w0 / sin_w0);
 		b0rz = (1 + alpha).reciprocal;
 		b1 = 2.0 * w0.cos * b0rz;

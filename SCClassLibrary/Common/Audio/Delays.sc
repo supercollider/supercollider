@@ -1,32 +1,33 @@
 Delay1 : Filter {
+	*ar { arg in = 0.0, mul = 1.0, add = 0.0, x1 = 0.0;
+		^this.multiNew('audio', in, x1).madd(mul, add)
+	}
 
-    *ar { arg in = 0.0, mul = 1.0, add = 0.0, x1 = 0.0;
-        ^this.multiNew('audio', in, x1).madd(mul, add)
-    }
-
-    // Unlike *ar, x1 defaults to the first sample of the input value
-    *kr { arg in = 0.0, mul = 1.0, add = 0.0, x1 = (in);
-        ^this.multiNew('control', in, x1).madd(mul, add)
-    }
+	// Unlike *ar, x1 defaults to the first sample of the input value
+	*kr { arg in = 0.0, mul = 1.0, add = 0.0, x1 = (in);
+		^this.multiNew('control', in, x1).madd(mul, add)
+	}
 }
 
 Delay2 : Filter {
+	*ar { arg in = 0.0, mul = 1.0, add = 0.0, x1 = 0.0, x2 = 0.0;
+		^this.multiNew('audio', in, x1, x2).madd(mul, add)
+	}
 
-    *ar { arg in = 0.0, mul = 1.0, add = 0.0, x1 = 0.0, x2 = 0.0;
-        ^this.multiNew('audio', in, x1, x2).madd(mul, add)
-    }
-
-    // Unlike *ar, x1 and x2 default to first sample of the input value
-    *kr { arg in = 0.0, mul = 1.0, add = 0.0, x1 = (in), x2 = (in);
-        ^this.multiNew('control', in, x1, x2).madd(mul, add)
-    }
+	// Unlike *ar, x1 and x2 default to first sample of the input value
+	*kr { arg in = 0.0, mul = 1.0, add = 0.0, x1 = (in), x2 = (in);
+		^this.multiNew('control', in, x1, x2).madd(mul, add)
+	}
 }
 
 ///////////////////////////////////////
-
 // these delays use real time allocated memory.
 
-DelayN : PureUGen {
+DelayN : UGen {
+	// No resource, becasuse the internal buffer is owned by the ugen.
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in.asAudioRateInput, maxdelaytime, delaytime).madd(mul, add)
@@ -40,7 +41,10 @@ DelayL : DelayN { }
 DelayC : DelayN { }
 
 
-CombN : PureUGen {
+CombN : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, decaytime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in.asAudioRateInput(this), maxdelaytime, delaytime, decaytime).madd(mul, add)
@@ -62,6 +66,9 @@ AllpassC : CombN { }
 // these delays use shared buffers.
 
 BufDelayN : UGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg buf = 0, in = 0.0, delaytime = 0.2, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', buf, in.asAudioRateInput(this), delaytime).madd(mul, add)
@@ -76,6 +83,9 @@ BufDelayC : BufDelayN { }
 
 
 BufCombN : UGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg buf = 0, in = 0.0, delaytime = 0.2, decaytime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', buf, in.asAudioRateInput(this), delaytime, decaytime).madd(mul, add)
@@ -89,21 +99,11 @@ BufAllpassN : BufCombN { }
 BufAllpassL : BufCombN { }
 BufAllpassC : BufCombN { }
 
-///////////////////////////////////////
-
-/*
-GrainTap : MultiOutUGen {
-	*ar { arg grainDur = 0.2, pchRatio = 1.0,
-			pchDispersion = 0.0, timeDispersion = 0.0, overlap = 2.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', grainDur, pchRatio,
-			pchDispersion, timeDispersion, overlap).madd(mul, add)
-	}
-}
-*/
-
-///////////////////////////////////////
-
 DelTapWr : UGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg buffer, in;
 		^this.multiNew('audio', buffer, in.asAudioRateInput(this))
 	}
@@ -114,6 +114,10 @@ DelTapWr : UGen {
 }
 
 DelTapRd : UGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg buffer, phase, delTime, interp = 1, mul = 1, add = 0;
 		^this.multiNew('audio', buffer, phase, delTime, interp).madd(mul, add)
 	}

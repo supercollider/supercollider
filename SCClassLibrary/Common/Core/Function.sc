@@ -282,14 +282,14 @@ Function : AbstractFunction {
 		^"{ |func, envir| % }".format(code).interpret.value(this, envir)
 	}
 
-	asBuffer { |duration = 0.01, target, action, fadeTime = 0|
+	asBuffer { |duration = 0.01, target, action, fadeTime = 0, optimisations|
 		var buffer, def, synth, name, numOutputs, defRate, server;
 
 		target = target.asTarget;
 		server = target.server;
 		name = this.hash.asString;
 
-		def = SynthDef(name, { |bufnum|
+		def = SynthDef.newWithOptimizations(optimisations ?? {SynthDefOptimizationFlags.all}, name, { |bufnum|
 			var outputs;
 
 			outputs = SynthDef.wrap(this);
@@ -351,15 +351,18 @@ Function : AbstractFunction {
 		^buffer
 	}
 
-	loadToFloatArray { |duration = 0.01, target, action|
+	loadToFloatArray { |duration = 0.01, target, action, optimisations|
 		this.asBuffer(duration, target,
 			action: { |buffer|
 				buffer.loadToFloatArray(
 					action: { |array|
 						action.value(array, buffer);
 						buffer.free
-				})
-		})
+					}
+				)
+			},
+			optimisations: optimisations
+		)
 	}
 
 	getToFloatArray { |duration = 0.01, target, action, wait = 0.01, timeout = 3|

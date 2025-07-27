@@ -1,4 +1,8 @@
 Poll : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*ar { arg trig, in, label, trigid = -1;
 		this.multiNewList(['audio', trig, in, label, trigid]);
 		^in;

@@ -1,8 +1,15 @@
-/*
-	PlayBuf - sample player
-*/
-
 PlayBuf : MultiOutUGen {
+	implicitResourceConnectionStrategies {
+		^if(this.hasObservableEffect){
+			[[BufferConnectionStrategy, \read], [DoneConnectionStrategy]]
+		}  {
+			[[BufferConnectionStrategy, \read]]
+		}
+	}
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(6) }
+	canBeReplacedByIdenticalCall { ^true }
+
+
 	*ar { arg numChannels, bufnum=0, rate=1.0, trigger=1.0, startPos=0.0, loop = 0.0, doneAction=0;
 		^this.multiNew('audio', numChannels, bufnum, rate, trigger, startPos, loop, doneAction)
 	}
@@ -19,35 +26,28 @@ PlayBuf : MultiOutUGen {
 }
 
 TGrains : MultiOutUGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg numChannels, trigger=0, bufnum=0, rate=1, centerPos=0,
-			dur=0.1, pan=0, amp=0.1, interp=4;
+		dur=0.1, pan=0, amp=0.1, interp=4;
 		^this.multiNew('audio', numChannels, trigger, bufnum, rate, centerPos,
-				dur, pan, amp, interp)
+			dur, pan, amp, interp)
 	}
 	init { arg argNumChannels ... theInputs;
 		inputs = theInputs;
 		^this.initOutputs(argNumChannels, rate);
 	}
 	argNamesInputsOffset { ^2 }
+
 }
-
-
-/*
-// exception in GrafDef_Load: UGen 'SimpleLoopBuf' not installed.
-
-SimpleLoopBuf : MultiOutUGen {
-	*ar { arg numChannels, bufnum=0, loopStart=0.0, loopEnd=99999.0, trigger=0.0;
-		^this.multiNew('audio', numChannels, bufnum, loopStart, loopEnd, trigger)
-	}
-
-	init { arg argNumChannels ... theInputs;
-		inputs = theInputs;
-		^this.initOutputs(argNumChannels, rate);
-	}
-}
-*/
 
 BufRd : MultiOutUGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
 		^this.multiNew('audio', numChannels, bufnum, phase, loop, interpolation)
 	}
@@ -59,6 +59,13 @@ BufRd : MultiOutUGen {
 		inputs = theInputs;
 		^this.initOutputs(argNumChannels, rate);
 	}
+
+	optimizeRequired {
+		var result = SynthDefOptimizationResult();
+		this.coerceInputFromScalarToDC(2, result); // phase
+		^result.returnNilIfEmpty;
+	}
+
 	argNamesInputsOffset { ^2 }
 	checkInputs {
 		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, {
@@ -69,15 +76,30 @@ BufRd : MultiOutUGen {
 }
 
 BufWr : UGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg inputArray, bufnum=0, phase=0.0, loop=1.0;
 		^this.multiNewList(['audio', bufnum, phase,
 			loop] ++ inputArray.asArray)
 
 	}
+
 	*kr { arg inputArray, bufnum=0, phase=0.0, loop=1.0;
 		^this.multiNewList(['control', bufnum, phase,
 			loop] ++ inputArray.asArray)
 	}
+
+	optimizeRequired {
+		var result = SynthDefOptimizationResult();
+		if (this.rate == \audio){
+			this.coerceInputFromScalarToDC(1, result); // phase
+			(inputs.size - 2).do { |i| this.coerceInputFromScalarToDC(3 + i, result) }; // audio array
+		};
+		^result.returnNilIfEmpty;
+	}
+
 	checkInputs {
 		if (rate == 'audio') {
 			if(inputs.at(1).rate != 'audio') {
@@ -92,26 +114,50 @@ BufWr : UGen {
 	}
 }
 
-
 RecordBuf : UGen {
+	implicitResourceConnectionStrategies {
+		^if(this.hasObservableEffect){
+			[[BufferConnectionStrategy, \write], [DoneConnectionStrategy]]
+		}  {
+			[[BufferConnectionStrategy, \write]]
+		}
+	}
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0,
-			run=1.0, loop=1.0, trigger=1.0, doneAction=0;
+		run=1.0, loop=1.0, trigger=1.0, doneAction=0;
 		^this.multiNewList(
 			['audio', bufnum, offset, recLevel, preLevel, run, loop, trigger, doneAction ]
 			++ inputArray.asArray
 		)
 	}
 	*kr { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0,
-			run=1.0, loop=1.0, trigger=1.0, doneAction=0;
+		run=1.0, loop=1.0, trigger=1.0, doneAction=0;
 		^this.multiNewList(
 			['control', bufnum, offset, recLevel, preLevel, run, loop, trigger, doneAction ]
 			++ inputArray.asArray
 		)
 	}
+
+	optimizeRequired {
+		var result;
+		// For each inputs, turn it into a DC if it is a number
+		if (this.rate == \audio){
+			result = SynthDefOptimizationResult();
+			(inputs.size - 7).do { |i|
+				this.coerceInputFromScalarToDC(8 + i, result)
+			}
+		};
+		^nil;
+	}
 }
 
-
 ScopeOut : UGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \writeReplace]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg inputArray , bufnum=0;
 		this.multiNewList(['audio', bufnum] ++ inputArray.asArray);
 		^0.0
@@ -123,6 +169,10 @@ ScopeOut : UGen {
 }
 
 ScopeOut2 : UGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \writeReplace]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg inputArray, scopeNum=0, maxFrames = 4096, scopeFrames;
 		this.multiNewList(['audio', scopeNum, maxFrames, scopeFrames ? maxFrames] ++ inputArray.asArray);
 		^0.0
@@ -134,6 +184,10 @@ ScopeOut2 : UGen {
 }
 
 Tap : UGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg bufnum = 0, numChannels = 1, delaytime = 0.2;
 		var scale = BufRateScale.kr(bufnum);
 		var n = delaytime * (SampleRate.ir.neg * scale);
@@ -142,6 +196,12 @@ Tap : UGen {
 }
 
 LocalBuf : WidthFirstUGen {
+	// This depends on nothing, and returns an instance which is passed explicitly
+	//    to the input of the UGen where it is used, therefore nothing is needed.
+	implicitResourceConnectionStrategies { ^[] }
+
+	hasObservableEffect { ^false } // If you don't use the buffer, it can be deleted.
+	canBeReplacedByIdenticalCall { ^false } // Each call should produce a unqiue buffer.
 
 	*new { arg numFrames = 1, numChannels = 1;
 		^this.multiNew('scalar', numChannels, numFrames)
@@ -180,6 +240,10 @@ LocalBuf : WidthFirstUGen {
 }
 
 MaxLocalBufs : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*new {
 		^this.multiNew('scalar', 0);
 	}
@@ -189,6 +253,10 @@ MaxLocalBufs : UGen {
 }
 
 SetBuf : WidthFirstUGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*new { arg buf, values, offset = 0;
 		values = values.asArray;
 		^this.multiNewList(['scalar', buf, offset, values.size] ++ values)
@@ -196,6 +264,10 @@ SetBuf : WidthFirstUGen {
 }
 
 ClearBuf : WidthFirstUGen {
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*new { arg buf;
 		^this.multiNew('scalar', buf)
 	}

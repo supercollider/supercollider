@@ -40,6 +40,10 @@ ControlName {
 Control : MultiOutUGen {
 	var <values;
 
+    implicitResourceConnectionStrategies { ^[[BusConnectionStrategy, \readKr]] }
+	hasObservableEffect { ^true } // controls alter the synthdef, lets not automatically remove unused ones.
+	canBeReplacedByIdenticalCall { ^false }
+
 	*names { arg names;
 		var synthDef, index;
 		synthDef = UGen.buildSynthDef;
@@ -81,11 +85,14 @@ Control : MultiOutUGen {
 		^this.initOutputs(values.size, rate)
 	}
 	*isControlUGen { ^true }
-
 }
 
 AudioControl : MultiOutUGen {
 	var <values;
+
+    implicitResourceConnectionStrategies { ^[[BusConnectionStrategy, \readAr]] }
+	hasObservableEffect { ^true } // controls alter the synthdef, lets not automatically remove unused ones.
+	canBeReplacedByIdenticalCall { ^false }
 
 	*names { arg names;
 		var synthDef, index;
@@ -163,7 +170,11 @@ LagControl : Control {
 }
 
 AbstractIn : MultiOutUGen {
-	*isInputUGen { ^true }
+    implicitResourceConnectionStrategies { ^if (rate == \audio) { [[BusConnectionStrategy, \readAr]] } { [[BusConnectionStrategy, \readKr]] } }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*isInputUGen { ^true } // TODO: this is only used in SynthDesc - it is unnecessary for this to be in Object as well.
 }
 
 In : AbstractIn {
@@ -180,6 +191,10 @@ In : AbstractIn {
 }
 
 LocalIn : AbstractIn {
+    implicitResourceConnectionStrategies { ^[[LocalBusConnectionStrategy]]  }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg numChannels = 1, default = 0.0;
 		^this.multiNew('audio', numChannels, *default)
 	}
@@ -224,30 +239,31 @@ InTrig : AbstractIn {
 }
 
 AbstractOut : UGen {
+    implicitResourceConnectionStrategies { ^if (rate == \audio) { [[BusConnectionStrategy, \writeAr]] } { [[BusConnectionStrategy, \writeKr]] } }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
+
 	numOutputs { ^0 }
-	writeOutputSpecs {}
+	writeOutputSpecs { }
 	checkInputs {
-		if (rate == 'audio', {
-			for(this.class.numFixedArgs, inputs.size - 1, { arg i;
-				if (inputs.at(i).rate != 'audio', {
-					^(" input at index " + i +
-						"(" + inputs.at(i) + ") is not audio rate");
-				});
-			});
-		}, {
-			if(inputs.size <= this.class.numFixedArgs, {
+		if (rate == 'audio') {
+			for(this.class.numFixedArgs, inputs.size - 1) { arg i;
+				if (inputs.at(i).rate != 'audio') {
+					^(" input at index " + i + "(" + inputs.at(i) + ") is not audio rate");
+				};
+			};
+		} {
+			if(inputs.size <= this.class.numFixedArgs) {
 				^"missing input at index 1"
-			})
-		});
+			}
+		};
 		^this.checkValidInputs
 	}
 
-	*isOutputUGen { ^true }
+	*isOutputUGen { ^true } // TODO: what does this do? Who uses it?
 	*numFixedArgs { ^this.subclassResponsibility(thisMethod) }
 
-	numAudioChannels {
-		^inputs.size - this.class.numFixedArgs
-	}
+	numAudioChannels { ^inputs.size - this.class.numFixedArgs }
 
 	writesToBus { ^this.subclassResponsibility(thisMethod) }
 }
@@ -263,15 +279,32 @@ Out : AbstractOut {
 		^0.0		// Out has no output
 	}
 	*numFixedArgs { ^1 }
+
+	optimizeRequired {
+		var result = SynthDefOptimizationResult();
+		(inputs.size - 1).do({ |i|
+			this.coerceInputFromScalarToDC(i + 1, result);
+		});
+		^result.returnNilIfEmpty;
+	}
+
 	writesToBus { ^true }
 }
 
-ReplaceOut : Out {}
+ReplaceOut : Out {
+    implicitResourceConnectionStrategies { ^[[BusConnectionStrategy, \replace]]  }
+	canBeReplacedByIdenticalCall { ^true }
+}
+
 OffsetOut : Out {
 	*kr { ^this.shouldNotImplement(thisMethod) }
 }
 
 LocalOut : AbstractOut {
+    implicitResourceConnectionStrategies { ^[[LocalBusConnectionStrategy]]  }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
 		this.multiNewList(['audio'] ++ channelsArray)
@@ -281,12 +314,19 @@ LocalOut : AbstractOut {
 		this.multiNewList(['control'] ++ channelsArray.asArray)
 		^0.0		// LocalOut has no output
 	}
+	optimizeRequired {
+		var result = SynthDefOptimizationResult();
+		this.coerceInputFromScalarToDC(0, result);
+		^result.returnNilIfEmpty;
+	}
 	*numFixedArgs { ^0 }
 	writesToBus { ^false }
 }
 
 
 XOut : AbstractOut {
+    implicitResourceConnectionStrategies { ^if (rate == \audio) { [[BusConnectionStrategy, \blendAr]] } { [[BusConnectionStrategy, \blendKr]] } }
+
 	*ar { arg bus, xfade, channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
 		this.multiNewList(['audio', bus, xfade] ++ channelsArray)
@@ -295,6 +335,13 @@ XOut : AbstractOut {
 	*kr { arg bus, xfade, channelsArray;
 		this.multiNewList(['control', bus, xfade] ++ channelsArray.asArray)
 		^0.0		// Out has no output
+	}
+	optimizeRequired {
+		var result = SynthDefOptimizationResult();
+		(inputs.size - 2).do({ |i|
+			this.coerceInputFromScalarToDC(i + 2, result);
+		});
+		^result.returnNilIfEmpty;
 	}
 	*numFixedArgs { ^2 }
 	writesToBus { ^true }

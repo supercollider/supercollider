@@ -10,6 +10,10 @@
 */
 
 FSinOsc : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg freq=440.0, iphase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase).madd(mul, add)
 	}
@@ -20,18 +24,22 @@ FSinOsc : UGen {
 
 
 Klang : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
-			^this.multiNewList(['audio', freqscale,
-						freqoffset, specificationsArrayRef] )
+		^this.multiNewList(['audio', freqscale,
+			freqoffset, specificationsArrayRef] )
 	}
 	*new1 { arg rate, freqscale, freqoffset, arrayRef;
 		var specs, freqs, amps, phases;
 		# freqs, amps, phases = arrayRef.dereference;
 		specs = [freqs,
-				amps ?? {Array.fill(freqs.size,1.0)},
-				phases ?? {Array.fill(freqs.size,0.0)}
-				].flop.flat;
+			amps ?? {Array.fill(freqs.size,1.0)},
+			phases ?? {Array.fill(freqs.size,0.0)}
+		].flop.flat;
 
 		^super.new.rate_(rate).addToSynth.init([freqscale,freqoffset] ++ specs);
 	}
@@ -43,18 +51,22 @@ Klang : UGen {
 }
 
 Klank : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
-			specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
-			^this.multiNewList(['audio',  input, freqscale,
-						freqoffset, decayscale, specificationsArrayRef] )
+		specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
+		^this.multiNewList(['audio',  input, freqscale,
+			freqoffset, decayscale, specificationsArrayRef] )
 	}
 	*new1 { arg rate, input, freqscale, freqoffset, decayscale, arrayRef;
 		var specs, freqs, amps, times;
 		# freqs, amps, times = arrayRef.dereference;
 		specs = [freqs,
-				amps ?? {Array.fill(freqs.size,1.0)},
-				times ?? {Array.fill(freqs.size,1.0)}
-				].flop.flat;
+			amps ?? {Array.fill(freqs.size,1.0)},
+			times ?? {Array.fill(freqs.size,1.0)}
+		].flop.flat;
 
 		^super.new.rate_(rate).addToSynth.init([input,freqscale,freqoffset,decayscale] ++ specs);
 	}
@@ -66,6 +78,9 @@ Klank : UGen {
 }
 
 DynKlank : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 		^this.multiNew(\audio, specificationsArrayRef, input, freqscale, freqoffset, decayscale)
@@ -79,15 +94,18 @@ DynKlank : UGen {
 		var spec = specificationsArrayRef.value;
 		var selector = this.methodSelectorForRate(rate);
 		^Ringz.perform(selector,
-				input,
-				spec[0] ? #[440.0] * freqscale + freqoffset,
-				spec[2] ? #[1.0] * decayscale,
-				spec[1] ? #[1.0]
+			input,
+			spec[0] ? #[440.0] * freqscale + freqoffset,
+			spec[2] ? #[1.0] * decayscale,
+			spec[1] ? #[1.0]
 		).sum
 	}
 }
 
 DynKlang : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		^this.multiNew(\audio, specificationsArrayRef, freqscale, freqoffset);
@@ -101,15 +119,19 @@ DynKlang : UGen {
 		var spec = specificationsArrayRef.value;
 		var selector = this.methodSelectorForRate(rate);
 		^SinOsc.perform(selector,
-				spec[0] ? #[440.0] * freqscale + freqoffset,
-				spec[2] ? #[0.0],
-				spec[1] ? #[1.0]
+			spec[0] ? #[440.0] * freqscale + freqoffset,
+			spec[2] ? #[0.0],
+			spec[1] ? #[1.0]
 		).sum
 	}
 }
 
 
 Blip : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg freq=440.0, numharm = 200.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, numharm).madd(mul, add)
 	}
@@ -119,6 +141,10 @@ Blip : UGen {
 }
 
 Saw : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg freq=440.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq).madd(mul, add)
 	}
@@ -128,6 +154,10 @@ Saw : UGen {
 }
 
 Pulse : UGen {
+	implicitResourceConnectionStrategies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg freq=440.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, width).madd(mul, add)
 	}
