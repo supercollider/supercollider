@@ -237,4 +237,7 @@ OrderedIdentitySet : IdentitySet {
 		super.putCheck(index, item);
 		items = items.add(item);
 	}
+
+	// TODO: since it is ordered, it could be considered associative.
+	isAssociationArray { ^this.notYetImplemented(thisMethod) }
 }

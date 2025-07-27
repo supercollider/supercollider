@@ -143,6 +143,10 @@ Complex : Number {
 	abs { ^hypot(real, imag) }
 	rho { ^hypot(real, imag) }
 
+	// TODO: can these be implemented?
+	mod { ^this.notYetImplemented(thisMethod) }
+	div { ^this.notYetImplemented(thisMethod) }
+
 	magnitudeApx { ^hypotApx(real, imag) }
 
 	angle { ^atan2(imag, real) }

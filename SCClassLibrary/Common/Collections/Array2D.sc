@@ -22,6 +22,12 @@ Array2D : Collection {
 	}
 	with { arg aarray;	array = aarray; }
 
+	isAssociationArray { ^false }
+
+	// Array2D is always rectangular so this means creating nils entries or removing other data.
+	add { this.shouldNotImplement(thisMethod) }
+	remove { this.shouldNotImplement(thisMethod) }
+
 	do { arg func;
 		array.do(func)
 	}
@@ -42,9 +48,6 @@ Array2D : Collection {
 	rowAt { arg ri;
 		^array.copyRange(ri * cols, ri * cols + cols - 1)
 	}
-
-	add { ^this.shouldNotImplement(thisMethod)  }
-	remove { ^this.shouldNotImplement(thisMethod) }
 
 	printOn { arg stream;
 		// not a compileable string

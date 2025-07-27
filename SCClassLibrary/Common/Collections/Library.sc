@@ -390,6 +390,8 @@ LibraryBase : MultiLevelIdentityDictionary {
 		this.global.postTree
 	}
 
+	isAssociationArray { ^false }
+
 }
 
 Library : LibraryBase {

@@ -262,6 +262,10 @@ Pretty : IOStream {
 		state.put(char);
 	}
 	close { out.close; }
+	// TODO: can this be implemented?
+	pos_ { ^this.notYetImplemented(thisMethod) }
+	// TODO: can this be implemented?
+	next { ^this.notYetImplemented(thisMethod) }
 }
 
 

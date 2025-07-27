@@ -144,4 +144,8 @@ PmonoArticStream : PmonoStream {
 			}
 		}
 	}
+	// TODO: can this be implemented?
+	next { ^this.notYetImplemented(thisMethod) }
+	// TODO: can this write to the stream? If not, maybe PMonoStream should have this method.
+	put { ^this.notYetImplemented(thisMethod) }
 }

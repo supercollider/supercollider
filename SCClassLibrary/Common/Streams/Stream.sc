@@ -235,6 +235,9 @@ OneShotStream : Stream {
 	next { ^if (once) {once = false; value} }
 	reset { once = true }
 	storeArgs { ^[value] }
+
+	// TODO: can it write to the stream?
+	put { this.notYetImplemented(thisMethod) }
 }
 
 EmbedOnce : Stream  {
@@ -257,6 +260,9 @@ EmbedOnce : Stream  {
 		stream.reset
 	}
 	storeArgs { ^[stream] }
+
+	// TODO: can it write to the stream?
+	put { this.notYetImplemented(thisMethod) }
 }
 
 
@@ -274,6 +280,8 @@ FuncStream : Stream {
 		^envir.use({ resetFunc.value })
 	}
 	storeArgs { ^[nextFunc, resetFunc] }
+	// TODO: can it write to the stream?
+	put { this.notYetImplemented(thisMethod) }
 }
 
 StreamClutch : Stream {
@@ -303,6 +311,9 @@ StreamClutch : Stream {
 		value = stream.next(inval ?? { Event.default })
 	}
 
+	// TODO: can it write to the stream?
+	put { this.notYetImplemented(thisMethod) }
+
 }
 
 CleanupStream : Stream {
@@ -322,6 +333,9 @@ CleanupStream : Stream {
 	reset {
 		stream.reset
 	}
+
+	// TODO: this class has no documentation, can it write to the stream?
+	put { this.notYetImplemented(thisMethod) }
 }
 
 // PauseStream is a stream wrapper that can be started and stopped.
@@ -457,6 +471,9 @@ PauseStream : Stream {
 		}
 	}
 	threadPlayer { ^this }
+
+	// TODO: is it possible to write to this stream?
+	put { this.notYetImplemented(thisMethod) }
 }
 
 // Task is a PauseStream for wrapping a Routine
