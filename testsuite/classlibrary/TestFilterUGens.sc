@@ -3,6 +3,7 @@ TestFilterUGens : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
+		server.options.protocol = \tcp;
 		server.bootSync;
 	}
 
@@ -114,7 +115,6 @@ TestFilterUGens : UnitTest {
 					condvar.signalOne;
 				});
 
-				rrand(0.012,0.035).wait;
 			}
 		};
 
@@ -194,7 +194,6 @@ TestFilterUGens : UnitTest {
 				completed = completed + 1;
 				condvar.signalOne;
 			});
-			20.reciprocal.wait;
 		};
 
 		condvar.waitFor(1, { completed == tests.size });
