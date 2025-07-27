@@ -28,6 +28,7 @@ Primitives for String.
 #include "PyrKernel.h"
 #include "GC.h"
 #include "Hash.h"
+#include "PyrSymbol.h"
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -55,22 +56,8 @@ using namespace std;
 namespace fs = std::filesystem;
 
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-    char str[1024], *strp = nullptr;
-    int len;
-
-    a = g->sp;
-    len = slotRawObject(a)->size;
-    strp = len > 1023 ? (char*)malloc(len + 1) : str;
-
-    memcpy(strp, slotRawString(a)->s, len);
-    strp[len] = 0;
-
-    SetSymbol(a, getsym(strp));
-
-    if (len > 1023)
-        free(strp);
-
+    PyrSlot* a = g->sp;
+    SetSymbol(a, stringToSymbol(slotRawString(a)));
     return errNone;
 }
 

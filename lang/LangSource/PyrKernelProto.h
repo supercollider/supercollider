@@ -47,7 +47,7 @@ void addMethod(PyrClass* classobj, PyrMethod* method);
 
 PyrMethod* classFindDirectMethod(PyrClass* classobj, PyrSymbol* name);
 
-PyrBlock* newPyrBlock(int flags);
+PyrBlock* newPyrBlock(int flags, struct PyrSymbol* optional_filename, int lineNumber, int charNumber);
 PyrMethod* newPyrMethod();
 PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, int numInstVars, int numClassVars);
 void addIntrinsicVar(PyrClass* classobj, const char* varName, PyrSlot* slot);

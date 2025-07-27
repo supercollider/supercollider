@@ -1,9 +1,22 @@
 class::FunctionDef
-summary:: FunctionDefs contain code which can be executed from a Function.
+summary:: FunctionDefs contain information about functions.
 categories::Core>Kernel
 related::Classes/Function
 
 description::
+
+code::FunctionDef:: is primarily used by the interpreter and most users shouldn't use it,
+with the one exception of finding the path of the current file,
+a useful approach when loading resources located relative to files.
+
+When executed inside of a saved file, this is acheived as follows:
+
+code::
+thisFunctionDef.filename // returns path to saved file, if executed inside the help browser, it returns "../SuperCollider/HelpSource/Classes/FunctionDef.schelp"
+::
+
+See link::Classes/FunctionDef#-filename:: for an example.
+
 
 subsection:: Related Keywords
 
@@ -12,6 +25,7 @@ The global pseudo-variable code::thisFunctionDef:: always evaluates to the
 current enclosing FunctionDef.
 
 See also: link::Classes/Function#.thisFunction#thisFunction::
+
 
 instanceMethods::
 
@@ -148,7 +162,45 @@ code::
 { |a = 9, b = 10 ... c| a + b }.def.argumentString(asArray: true);
 ::
 
+method::filenameSymbol
 
+Return the file path (as a link::Classes/Symbol::) where the function was defined, if the file has not been saved (or you are using a terminal interface) returns nil.
+
+
+
+method::filename
+
+Same as link::Classes/FunctionDef#-filenameSymbol:: but returns a link::Classes/String:: for ease of use with paths.
+
+This method is particularly useful when loading multiple files or resources and you need a path relative to the current file.
+
+An example of how to load relative file for a given directory structure is as follows.
+
+Given the directory structure:
+teletype::
+main.scd
+subDir/
+   bang.wav
+   banger.scd
+::
+Inside the file teletype::banger.scd:: you can load the audio like so:
+code::
+var buf = Buffer.read(s, path: thisFunctionDef.filename +/+ "bang.wav");
+::
+
+From any other file, you can load teletype::banger.scd:: and it will always load the correct audio file.
+code::
+// from main.scd
+"subDir/banger.scd".load;
+::
+
+method::lineNumber
+
+Returns an link::Classes/Integer:: representing the line number of the final curly brace of the function.
+
+method::charPos
+
+Returns an link::Classes/Integer:: representing the character position in the file of the final curly brace of the function.
 
 method::makeEnvirFromArgs
 
