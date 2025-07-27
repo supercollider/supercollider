@@ -5,7 +5,10 @@ summary:: conditional execution
 
 method:: if
 
-section::example
+section::Basic examples
+
+This section uses the emphasis::function call syntax:: for code::if::. For various alternate syntaxes (e.g., the frequently used emphasis::function call with trailing arguments:: notation), see link::Reference/Control-Structures#if:: or link::Reference/Syntax-Shortcuts#Sending messages, calling functions, and instantiating objects::.
+
 code::
 if ( [false, true].choose,				// Boolean expression (chooses one at random)
 	{ "expression was true".postln },	// true function
@@ -19,21 +22,43 @@ z.postln;
 )
 ::
 
-UGens can also use if
-
-the condition ugen is 0 / 1
+Any subclass of link::Classes/UGen:: can also utilize code::if::. An output value of code::0:: is interpreted as code::false::, while code::1:: is code::true::; values between code::0:: and code::1:: are interpolated accordingly. At code::0::, code::if:: outputs only the sound from the code::false:: UGen. Between code::0:: and code::0.5::, the sound from the code::true:: UGen gradually mixes in. At code::0.5::, code::if:: outputs the sound from both UGens in equal proportion. If both UGens are identical, their output levels match. Between code::0.5:: and code::1::, the sound from the code::false:: UGen diminishes, and at code::1::, code::if:: outputs only the sound from the code::true:: UGen.
 
 code::
+// Experience how if controls sound using MouseX:
+(
+{
+	if(
+		MouseX.kr(1, 0).poll, // left: true; right: false
+		SinOsc.ar * [0.1, 0], // or: SinOsc.ar * 0.1,
+		SinOsc.ar * [0, 0.1]  // or: SinOsc.ar * 0.1
+	)
+}.play
+)
+
+// Automatically mix two sound sources using the random generator LFNoise1:
 (
 	{
-		if( LFNoise1.kr(1.0,0.5,0.5) , SinOsc.ar, Saw.ar )
+		if(
+		LFNoise1.kr(1.0).range(0, 1).poll,
+		SinOsc.ar,
+		Saw.ar ) * 0.1
 	}.play
 )
 ::
 
-section:: optimization
+Further explanations can be found in the following parts of the link::Guides/UserFAQ:::
+list::
+## 'If' statements inside a SynthDef
+## link::Guides/UserFAQ#What is a Boolean in the server?::
+## Why is x ＞ 0 'non-Boolean' in the 'test'?
+## link::Guides/UserFAQ#If you can't branch, what good is a comparison in the server?::
+## link::Guides/UserFAQ#Logical operators: And, Or, Not, Xor::
+::
 
-the functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.
+section:: Optimization
+
+The functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.
 
 code::
 {
