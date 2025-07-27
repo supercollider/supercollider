@@ -29,8 +29,9 @@
 
 namespace nova {
 
-sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstract_synth(node_id, prototype) {
-    World const& world = sc_factory->world;
+sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype, int block_size, double upsample):
+    abstract_synth(node_id, prototype) {
+    World& world = sc_factory->world;
     const bool rt_synthesis = world.mRealTime;
 
     mNode.mWorld = &sc_factory->world;
@@ -45,6 +46,50 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
 
     localBufNum = 0;
     localMaxBufNum = 0;
+
+    if (block_size == 0 && upsample == 0) {
+        // no reblocking or resampling
+        mNumTicks = 1;
+        mTickCounter = 0;
+        block_size = world.mBufLength;
+    } else {
+        // reblocking and/or upsampling
+        if (upsample > 1.0) {
+            // make sure that 'upsample' is a power of two!
+            if (ispoweroftwo((int)upsample)) {
+                upsample = (int)upsample;
+                mFlags |= kGraph_Resample; // ok
+            } else {
+                log_printf("WARNING: Synth: upsample factor (%f) not a power of two\n", upsample);
+                upsample = 1.0;
+            }
+        } else if (upsample < 1.0) {
+            if (upsample > 0.0) {
+                log_printf("WARNING: Synth: downsampling (%f) not supported (yet)\n", upsample);
+            }
+            upsample = 1.0;
+        }
+
+        if (block_size > 0) {
+            // block size cannot be larger than wire buffer size (yet)!
+            if (block_size > world.mBufLength) {
+                log_printf("WARNING: Synth: block size (%d) cannot be larger than Server "
+                           "block size (%d)\n",
+                           block_size, world.mBufLength);
+                block_size = world.mBufLength;
+            } else if (!ispoweroftwo(block_size)) {
+                log_printf("WARNING: Synth: block size (%d) not a power of two\n", block_size);
+                block_size = world.mBufLength;
+            } else {
+                mFlags |= kGraph_Reblock; // ok
+            }
+        } else {
+            block_size = world.mBufLength;
+        }
+
+        mNumTicks = (world.mBufLength / block_size) * upsample;
+        mTickCounter = 0;
+    }
 
     // so far mPrivate is only used for queued unit commands,
     // i.e. it just points to the head of the list.
@@ -61,10 +106,11 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     const size_t wire_buffer_alignment = 64 * 8; // align to cache line boundaries
     const size_t alloc_size = prototype->memory_requirement();
 
-    const size_t sample_alloc_size =
-        world.mBufLength * synthdef.buffer_count + wire_buffer_alignment /* for alignment */;
+    const size_t rate_alloc_size = mFlags & kGraph_ReblockOrResample ? sizeof(Rate) * 2 : 0;
 
-    const size_t total_alloc_size = alloc_size + sample_alloc_size * sizeof(sample);
+    const size_t sample_alloc_size = block_size * synthdef.buffer_count + wire_buffer_alignment; /* for alignment */
+
+    const size_t total_alloc_size = alloc_size + rate_alloc_size + sample_alloc_size * sizeof(sample);
 
     char* raw_chunk = rt_synthesis ? (char*)rt_pool.malloc(total_alloc_size) : (char*)malloc(total_alloc_size);
 
@@ -74,6 +120,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     linear_allocator allocator(raw_chunk);
 
     /* prepare controls */
+    /* NB: mControls must be allocated first, see sc_synth::finalize()! */
     mNumControls = parameter_count;
     mControls = allocator.alloc<float>(parameter_count);
     mControlRates = allocator.alloc<int>(parameter_count);
@@ -86,6 +133,21 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
         mMapControls[i] = &mControls[i]; /* map to control values */
         mControlRates[i] = 0; /* init to 0*/
         mAudioBusOffsets[i] = -1; /* init to -1: not mapped to an audio bus yet */
+    }
+
+    /* allocate and init Rates */
+    if (rate_alloc_size > 0) {
+        /* reblocking and/or resampling */
+        mFullRate = allocator.alloc<Rate>();
+        mBufRate = allocator.alloc<Rate>();
+
+        double sampleRate = world.mSampleRate * upsample;
+        initialize_rate(*mFullRate, sampleRate, block_size);
+        initialize_rate(*mBufRate, sampleRate / block_size, 1);
+    } else {
+        /* use Server block size and sample rate */
+        mFullRate = &world.mFullRate;
+        mBufRate = &world.mBufRate;
     }
 
     /* allocate constant wires */

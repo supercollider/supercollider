@@ -123,8 +123,9 @@ void nova_server::perform_node_add(server_node* node, node_position_constraint c
     notification_node_started(node);
 }
 
-abstract_synth* nova_server::add_synth(const char* name, int id, node_position_constraint const& constraints) {
-    abstract_synth* ret = synth_factory::create_instance(name, id);
+abstract_synth* nova_server::add_synth(const char* name, int id, node_position_constraint const& constraints,
+                                       int block_size, double upsample) {
+    abstract_synth* ret = synth_factory::create_instance(name, id, block_size, upsample);
     if (ret == nullptr)
         return nullptr;
 

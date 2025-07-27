@@ -104,8 +104,8 @@ sc_synth_definition::sc_synth_definition(sc_synthdef&& sd):
 }
 
 
-abstract_synth* sc_synth_definition::create_instance(int node_id) {
-    sc_synth* synth = new sc_synth(node_id, this);
+abstract_synth* sc_synth_definition::create_instance(int node_id, int block_size, double upsample) {
+    sc_synth* synth = new sc_synth(node_id, this, block_size, upsample);
     return synth;
 }
 

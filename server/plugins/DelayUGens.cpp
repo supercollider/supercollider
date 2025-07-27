@@ -439,7 +439,7 @@ void SampleDur_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = FULLSAMPLEDUR; }
 
 void ControlDur_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = BUFDUR; }
 
-void RadiansPerSample_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mFullRate.mRadiansPerSample; }
+void RadiansPerSample_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mParent->mFullRate->mRadiansPerSample; }
 
 void BlockSize_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = FULLBUFLENGTH; }
 

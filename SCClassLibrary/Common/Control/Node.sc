@@ -425,46 +425,24 @@ Synth : Node {
 	var <>defName;
 
 	/** immediately sends **/
-	*new { arg defName, args, target, addAction=\addToHead;
-		var synth, server, addActionID;
+	*new { arg defName, args, target, addAction=\addToHead, blockSize, upsample;
+		var synth, server;
 		target = target.asTarget;
 		server = target.server;
-		addActionID = addActions[addAction];
 		synth = this.basicNew(defName, server);
-
-		synth.group = if(addActionID < 2) { target } { target.group };
-		server.sendMsg(9, //"s_new"
-			defName, synth.nodeID, addActionID, target.nodeID,
-			*(args.asOSCArgArray)
-		);
+		synth.prSend(target, addAction, blockSize, upsample, args);
 		^synth
 	}
 
-	*newPaused { arg defName, args, target, addAction=\addToHead;
-		var synth, server, addActionID;
+	*newPaused { arg defName, args, target, addAction=\addToHead, blockSize, upsample;
+		var synth, server;
 		target = target.asTarget;
 		server = target.server;
-		addActionID = addActions[addAction];
 		synth = this.basicNew(defName, server);
-		synth.group = if(addActionID < 2) { target } { target.group };
-		server.sendBundle(nil, [9, defName, synth.nodeID, addActionID, target.nodeID] ++
-			args.asOSCArgArray, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
-		^synth
-	}
-
-	*replace { arg nodeToReplace, defName, args, sameID=false;
-		var synth, server, newNodeID;
-		if(sameID) { newNodeID = nodeToReplace.nodeID };
-		server = nodeToReplace.server;
-		synth = this.basicNew(defName, server, newNodeID);
-
-		server.sendMsg(9, //"s_new"
-			defName,
-			synth.nodeID,
-			4, // addReplace
-			nodeToReplace.nodeID,
-			*(args.asOSCArgArray)
-		);
+		server.sendBundle(nil,
+			synth.newMsg(target, args, addAction, blockSize, upsample),
+			[12, synth.nodeID, 0]
+		); // "s_new" + "/n_run"
 		^synth
 	}
 
@@ -473,68 +451,106 @@ Synth : Node {
 		^super.basicNew(server, nodeID).defName_(defName.asDefName)
 	}
 
-	newMsg { arg target, args, addAction = \addToHead;
+	prSend { arg targetNode, addAction, blockSize, upsample, args;
 		var addActionID = addActions[addAction];
-		target = target.asTarget;
-		group = if(addActionID < 2) { target } { target.group };
-		^[9, defName, nodeID, addActionID, target.nodeID] ++ args.asOSCArgArray //"/s_new"
+		group = if(addActionID < 2) { targetNode } { targetNode.group };
+		if (blockSize.notNil or: { upsample.notNil }) {
+			server.sendMsg(67, //"s_newEx"
+				defName, nodeID, addActionID, targetNode.nodeID,
+				blockSize ? 0, upsample ? 0.0, *(args.asOSCArgArray)
+			);
+		} {
+			server.sendMsg(9, //"s_new"
+				defName, nodeID, addActionID, targetNode.nodeID,
+				*(args.asOSCArgArray)
+			);
+		}
 	}
 
-	*after { arg aNode, defName, args;
-		^this.new(defName, args, aNode, \addAfter)
+	*after { arg aNode, defName, args, blockSize, upsample;
+		^this.new(defName, args, aNode, \addAfter, blockSize, upsample)
 	}
 
-	*before { arg aNode, defName, args;
-		^this.new(defName, args, aNode, \addBefore)
+	*before { arg aNode, defName, args, blockSize, upsample;
+		^this.new(defName, args, aNode, \addBefore, blockSize, upsample)
 	}
 
-	*head { arg aGroup, defName, args;
-		^this.new(defName, args, aGroup, \addToHead)
+	*head { arg aGroup, defName, args, blockSize, upsample;
+		^this.new(defName, args, aGroup, \addToHead, blockSize, upsample)
 	}
 
-	*tail { arg aGroup, defName, args;
-		^this.new(defName, args, aGroup, \addToTail)
+	*tail { arg aGroup, defName, args, blockSize, upsample;
+		^this.new(defName, args, aGroup, \addToTail, blockSize, upsample)
 	}
 
-	replace { arg defName, args, sameID;
-		^this.class.replace(this, defName, args, sameID)
+	*replace { arg nodeToReplace, defName, args, sameID=false, blockSize, upsample;
+		var synth, server, newNodeID;
+		if(sameID) { newNodeID = nodeToReplace.nodeID };
+		server = nodeToReplace.server;
+		synth = this.basicNew(defName, server, newNodeID);
+		synth.prSend(nodeToReplace, \addReplace, blockSize, upsample, args);
+		^synth
+	}
+
+	replace { arg defName, args, sameID, blockSize, upsample;
+		^this.class.replace(this, defName, args, sameID, blockSize, upsample)
 	}
 
 	// for bundling
-	addToHeadMsg { arg aGroup, args;
+	newMsg { arg target, args, addAction = \addToHead, blockSize, upsample;
+		var addActionID = addActions[addAction];
 		// if aGroup is nil set to default group of server specified when basicNew was called
-		group = (aGroup ? server.defaultGroup);
-		^[9, defName, nodeID, 0, group.nodeID] ++ args.asOSCArgArray	// "/s_new"
+		target = (target ? server.defaultGroup);
+		group = if(addActionID < 2) { target } { target.group };
+		if (blockSize.notNil or: { upsample.notNil }) {
+			^[67, defName, nodeID, addActionID, target.nodeID, blockSize ? 0, upsample ? 0.0 ] ++
+			args.asOSCArgArray // "/s_newEx"
+		} {
+			^[9, defName, nodeID, addActionID, target.nodeID] ++
+			args.asOSCArgArray //"/s_new"
+		}
 	}
 
-	addToTailMsg { arg aGroup, args;
-		// if aGroup is nil set to default group of server specified when basicNew was called
-		group = (aGroup ? server.defaultGroup);
-		^[9, defName, nodeID, 1, group.nodeID] ++ args.asOSCArgArray // "/s_new"
+	addToHeadMsg { arg aGroup, args, blockSize, upsample;
+		^this.newMsg(aGroup, args, \addToHead, blockSize, upsample);
 	}
 
-	addAfterMsg { arg aNode, args;
-		group = aNode.group;
-		^[9, defName, nodeID, 3, aNode.nodeID] ++ args.asOSCArgArray // "/s_new"
+	addToTailMsg { arg aGroup, args, blockSize, upsample;
+		^this.newMsg(aGroup, args, \addToTail, blockSize, upsample);
 	}
 
-	addBeforeMsg { arg aNode, args;
-		group = aNode.group;
-		^[9, defName, nodeID, 2, aNode.nodeID] ++ args.asOSCArgArray // "/s_new"
+	addAfterMsg { arg aNode, args, blockSize, upsample;
+		^this.newMsg(aNode, args, \addAfter, blockSize, upsample);
 	}
 
-	addReplaceMsg { arg nodeToReplace, args;
-		group = nodeToReplace.group;
-		^[9, defName, nodeID, 4, nodeToReplace.nodeID] ++ args.asOSCArgArray // "/s_new"
+	addBeforeMsg { arg aNode, args, blockSize, upsample;
+		^this.newMsg(aNode, args, \addBefore, blockSize, upsample);
+	}
+
+	addReplaceMsg { arg nodeToReplace, args, sameID=false, blockSize, upsample;
+		var msg = this.newMsg(nodeToReplace, args, \addReplace,
+			blockSize, upsample);
+		if (sameID) {
+			// bash node ID
+			msg[2] = nodeToReplace.nodeID;
+		};
+		^msg;
 	}
 
 	// nodeID -1
-	*grain { arg defName, args, target, addAction=\addToHead;
-		var server;
+	*grain { arg defName, args, target, addAction=\addToHead, blockSize, upsample;
+		var server, addActionID;
 		target = target.asTarget;
 		server = target.server;
-		server.sendMsg(9, defName.asDefName, -1, addActions[addAction], target.nodeID,
-			*(args.asOSCArgArray)); //"/s_new"
+		addActionID = addActions[addAction];
+		if (blockSize.notNil or: { upsample.notNil }) {
+			server.sendMsg(67, defName.asDefName, -1, addActionID,
+				target.nodeID, blockSize ? 0, upsample ? 0.0,
+				*(args.asOSCArgArray)) //"/s_newEx"
+		} {
+			server.sendMsg(9, defName.asDefName, -1, addActionID,
+				target.nodeID, *(args.asOSCArgArray)); //"/s_new"
+		};
 		^nil
 	}
 

@@ -1089,7 +1089,8 @@ static bool node_position_sanity_check(node_position_constraint const& constrain
     return true;
 }
 
-sc_synth* add_synth(const char* name, int node_id, int action, int target_id) {
+sc_synth* add_synth(const char* name, int node_id, int action, int target_id, int block_size = 0,
+                    double upsample = 0.0) {
     if (!check_node_id(node_id))
         return nullptr;
 
@@ -1101,7 +1102,7 @@ sc_synth* add_synth(const char* name, int node_id, int action, int target_id) {
     if (!node_position_sanity_check(pos))
         return nullptr;
 
-    abstract_synth* synth = instance->add_synth(name, node_id, pos);
+    abstract_synth* synth = instance->add_synth(name, node_id, pos, block_size, upsample);
     if (!synth)
         log_printf("Cannot create synth (synthdef: %s, node id: %d)\n", name, node_id);
 
@@ -1255,6 +1256,58 @@ void handle_s_new(ReceivedMessage const& msg) {
         target = 0;
 
     sc_synth* synth = add_synth(def_name, id, action, target);
+
+    if (synth == nullptr)
+        return;
+
+    try {
+        while (args != end)
+            set_control(synth, args, end);
+    } catch (std::exception& e) { log_printf("exception in /s_new: %s\n", e.what()); }
+}
+
+void handle_s_newEx(ReceivedMessage const& msg) {
+    osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin(), end = msg.ArgumentsEnd();
+
+    const char* def_name = args->AsString();
+    ++args;
+    int32_t id = args->AsInt32();
+    ++args;
+
+    if (id == -1)
+        id = instance->generate_node_id();
+
+    int32_t action, target;
+
+    if (args != end) {
+        action = args->AsInt32();
+        ++args;
+    } else
+        action = 0;
+
+    if (args != end) {
+        target = args->AsInt32();
+        ++args;
+    } else
+        target = 0;
+
+    int32_t block_size;
+    if (args != end) {
+        block_size = args->AsInt32();
+        ++args;
+    } else {
+        block_size = 0;
+    }
+
+    double upsample;
+    if (args != end) {
+        upsample = args->AsFloat();
+        ++args;
+    } else {
+        upsample = 0.0;
+    }
+
+    sc_synth* synth = add_synth(def_name, id, action, target, block_size, upsample);
 
     if (synth == nullptr)
         return;
@@ -3062,6 +3115,10 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         handle_s_new(message);
         break;
 
+    case cmd_s_newEx:
+        handle_s_newEx(message);
+        break;
+
     case cmd_s_noid:
         handle_s_noid(message);
         break;
@@ -3581,6 +3638,11 @@ void dispatch_synth_commands(const char* address, ReceivedMessage const& message
 
     if (strcmp(address + 3, "new") == 0) {
         handle_s_new(message);
+        return;
+    }
+
+    if (strcmp(address + 3, "newEx") == 0) {
+        handle_s_newEx(message);
         return;
     }
 

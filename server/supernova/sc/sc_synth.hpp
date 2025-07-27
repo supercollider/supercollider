@@ -45,7 +45,7 @@ class sc_synth : public abstract_synth, public Graph {
     friend class sc_synth_definition;
 
 public:
-    sc_synth(int node_id, sc_synth_definition_ptr const& prototype);
+    sc_synth(int node_id, sc_synth_definition_ptr const& prototype, int block_size, double upsample);
 
     ~sc_synth(void);
 
@@ -61,60 +61,67 @@ public:
         if (unlikely(!initialized))
             prepare();
 
+        size_t tick_count = mNumTicks;
+
         if (likely(trace == 0)) {
-            const size_t count = calc_unit_count;
-            Unit** units = calc_units;
+            const size_t preroll = calc_unit_count & 7;
+            const size_t unroll = calc_unit_count / 8;
 
-            const size_t preroll = count & 7;
+            for (size_t k = 0; k != tick_count; ++k) {
+                mTickCounter = k;
 
-            for (size_t i = 0; i != preroll; ++i) {
-                Unit* unit = units[i];
-                prefetch(units[i + 1]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
+                Unit** units = calc_units;
+
+                for (size_t i = 0; i != preroll; ++i) {
+                    Unit* unit = units[i];
+                    prefetch(units[i + 1]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+                }
+
+                units += preroll;
+
+                for (size_t i = 0; i != unroll; ++i) {
+                    Unit* unit = units[0];
+                    prefetch(units[1]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[1];
+                    prefetch(units[2]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[2];
+                    prefetch(units[3]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[3];
+                    prefetch(units[4]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[4];
+                    prefetch(units[5]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[5];
+                    prefetch(units[6]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[6];
+                    prefetch(units[7]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[7];
+                    prefetch(units[8]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    units += 8;
+                }
             }
-
-            units += preroll;
-
-            const size_t unroll = count / 8;
-            if (unroll == 0)
-                return;
-
-            for (size_t i = 0; i != unroll; ++i) {
-                Unit* unit = units[0];
-                prefetch(units[1]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[1];
-                prefetch(units[2]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[2];
-                prefetch(units[3]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[3];
-                prefetch(units[4]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[4];
-                prefetch(units[5]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[5];
-                prefetch(units[6]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[6];
-                prefetch(units[7]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[7];
-                prefetch(units[8]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-                units += 8;
+        } else {
+            for (size_t k = 0; k != tick_count; ++k) {
+                mTickCounter = k;
+                run_traced();
             }
-        } else
-            run_traced();
+        }
     }
 
     void prefetch(Unit* unit) {

@@ -166,7 +166,8 @@ public:
 public:
     /* @{ */
     /** node control */
-    abstract_synth* add_synth(const char* name, int id, node_position_constraint const& constraints);
+    abstract_synth* add_synth(const char* name, int id, node_position_constraint const& constraints, int block_size,
+                              double upsample);
     group* add_group(int id, node_position_constraint const& constraints);
     parallel_group* add_parallel_group(int id, node_position_constraint const& constraints);
 
