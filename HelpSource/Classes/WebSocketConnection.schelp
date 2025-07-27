@@ -1,0 +1,51 @@
+TITLE:: WebSocketConnection
+summary:: A connection from a WebSocketServer
+categories:: Control, External Control>WebSocket
+related:: Classes/WebSocketServer
+
+DESCRIPTION::
+
+This manages the connection of a LINK::Classes/WebSocketServer::.
+This should never be created directly but only accessed via CODE::WebSocketServer.connections::.
+
+CLASSMETHODS::
+
+PRIVATE:: prReceiveMessage
+PRIVATE:: prDisconnect
+PRIVATE:: initClass
+
+METHOD:: all
+Stores an LINK::Classes/List:: with connections across all LINK::Classes/WebSocketServer::.
+This also includes already closed connections.
+
+INSTANCEMETHODS::
+
+PRIVATE:: prSendStringMessage
+PRIVATE:: prSendRawMessage
+PRIVATE:: beastSessionPtr
+PRIVATE:: prClose
+
+METHOD:: onDisconnect
+This memeber variable will be invkoked upon disconnect - either from client or server side.
+
+METHOD:: close
+This will close the connection.
+
+METHOD:: connected
+A boolean flag which indicates if the connection is open (code::true::) or closed (code::false::).
+
+METHOD:: onMessage
+This memeber variable will be invkoked when a client sends a new message with the received message as its sole parameter.
+This message can either be a LINK::Classes/String:: or a LINK::Classes/Int8Array::.
+
+CODE::
+// access an open connection from a websocket server
+~connection = ~webSocketServer.connections[0];
+// print and echo the received message
+~connection.onMessage = {|m| m.cs.postln; ~connection.sendMessage(m);}
+::
+
+METHOD:: sendMessage
+Sends a message to the client.
+argument:: message
+The message can either be a LINK::Classes/String:: or a byte array via LINK::Classes/Int8Array::. These are the only two dataytes that WebSocket standard allows. If applicable, please do any implicit conversion yourself before calling this method because otherwise a warning will be displayed and no message will be send. Consider using JSON.

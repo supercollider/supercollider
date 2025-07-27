@@ -4041,6 +4041,9 @@ void initPrimitives() {
     void init_OSC_primitives();
     init_OSC_primitives();
 
+    void init_WebSocket_primitives();
+    init_WebSocket_primitives();
+
     void initGUIPrimitives();
     initGUIPrimitives();
 
