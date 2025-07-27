@@ -162,6 +162,8 @@ AbstractFunction {
 
 	|| { arg function, adverb; ^this.composeBinaryOp('||', function, adverb) }
 	&& { arg function, adverb; ^this.composeBinaryOp('&&', function, adverb) }
+	or { arg function, adverb; ^this.composeBinaryOp('or', function, adverb) }
+	and { arg function, adverb; ^this.composeBinaryOp('and', function, adverb) }
 	xor { arg function, adverb; ^this.composeBinaryOp('xor', function, adverb) }
 	nand { arg function, adverb; ^this.composeBinaryOp('nand', function, adverb) }
 	not { ^this.composeUnaryOp('not') }
