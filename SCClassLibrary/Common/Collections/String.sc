@@ -111,13 +111,14 @@ String[char] : RawArray {
 	asString { ^this }
 	asCompileString {
 		var out;
-		// empirically, the compiler limits `"literals"` to 8188 characters
-		// 8180 leaves a little headroom
-		^if(this.size <= 8180) {
+		// The compiler limits literals (pertinently string literals) to 81920 characters,
+		//	 as defined in PyrLexer.h - MAXYYLEN
+		// 81910 leaves a little headroom
+		^if(this.size <= 81910) {
 			this.prAsCompileString
 		} {
 			out = "[";
-			this.clump(8180).do { |substr, i|
+			this.clump(81910).do { |substr, i|
 				if(i > 0) { out = out ++ ", " };
 				out = out ++ substr.prAsCompileString;
 			};
