@@ -26,6 +26,7 @@ namespace ScIDE {
 
 enum StandardDirectory {
     ScResourceDir,
+    ScExamplesDir,
 
     ScAppDataSystemDir,
     ScAppDataUserDir,

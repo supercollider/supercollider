@@ -270,6 +270,12 @@ void MainWindow::createActions() {
     connect(action, SIGNAL(triggered()), this, SLOT(openUserSupportDirectory()));
     settings->addAction(action, "ide-document-open-support-directory", ideCategory);
 
+    mActions[DocOpenExamplesDir] = action =
+        new QAction(QIcon::fromTheme("document-example"), tr("Open examples directory"), this);
+    action->setStatusTip(tr("Open examples directory"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openExamplesDirectory()));
+    settings->addAction(action, "ide-document-open-examples-directory", ideCategory);
+
     mActions[DocSave] = action = new QAction(QIcon::fromTheme("document-save"), tr("&Save"), this);
     action->setShortcut(tr("Ctrl+S", "Save document"));
     action->setStatusTip(tr("Save the current document"));
@@ -522,6 +528,7 @@ void MainWindow::createMenus() {
     connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenRecentDocument(QAction*)));
     menu->addAction(mActions[DocOpenStartup]);
     menu->addAction(mActions[DocOpenSupportDir]);
+    menu->addAction(mActions[DocOpenExamplesDir]);
     menu->addAction(mActions[DocSave]);
     menu->addAction(mActions[DocSaveAs]);
     menu->addAction(mActions[DocSaveAsExtension]);
@@ -1140,6 +1147,11 @@ void MainWindow::openStartupFile() {
 
 void MainWindow::openUserSupportDirectory() {
     QUrl dirUrl = QUrl::fromLocalFile(standardDirectory(ScAppDataUserDir));
+    QDesktopServices::openUrl(dirUrl);
+}
+
+void MainWindow::openExamplesDirectory() {
+    QUrl dirUrl = QUrl::fromLocalFile(standardDirectory(ScExamplesDir));
     QDesktopServices::openUrl(dirUrl);
 }
 
