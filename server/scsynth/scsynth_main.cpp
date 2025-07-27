@@ -186,7 +186,7 @@ int scsynth_main(int argc, char** argv) {
     for (int i = 1; i < argc;) {
 #if defined(SC_BELA)
 #    define SC_EXTRA_OPTIONS "JKGQXYAxygTE"
-#else // SC_BELA
+#else // not SC_BELA
 #    define SC_EXTRA_OPTIONS ""
 #endif // SC_BELA
         if (argv[i][0] != '-' || argv[i][1] == 0

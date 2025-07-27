@@ -1327,7 +1327,7 @@ int prQuitInProcessServer(VMGlobals* g, int numArgsPushed) {
     // no-op. Better to have this than to overwrite in lang.
     return errNone;
 }
-#endif // NO_INTERNAL_SERVER
+#endif // not NO_INTERNAL_SERVER
 
 inline int32 BUFMASK(int32 x) { return (1 << (31 - CLZ(x))) - 1; }
 

@@ -255,7 +255,7 @@ void SerialPort::setFlowControl(serial_port::flow_control::type control) {
     if (::tcsetattr(fd, TCSAFLUSH, &toptions) < 0) {
         throw std::system_error(std::error_code(errno, std::system_category()));
     }
-#else // !_WIN32 && ( !_POSIX_C_SOURCE || __USE_MISC )
+#else // _WIN32 || ( _POSIX_C_SOURCE && !__USE_MISC )
     m_port.set_option(serial_port::flow_control(control));
 #endif // !_WIN32 && ( !_POSIX_C_SOURCE || __USE_MISC )
 }

@@ -21,7 +21,7 @@
 #ifdef PRINT_XENO_LOCK
 #    define xprintf printf
 #    define xfprintf fprintf
-#else // PRINT_XENO_LOCK
+#else // not PRINT_XENO_LOCK
 #    define xprintf(...)
 #    define xfprintf(...)
 #endif // PRINT_XENO_LOCK
@@ -41,7 +41,7 @@ static void initializeXenomai() {
     char blankOpt[] = "";
 #ifdef PRINT_XENO_LOCK
     char traceOpt[] = "--trace";
-#else // PRINT_XENO_LOCK
+#else // not PRINT_XENO_LOCK
     char traceOpt[] = "";
 #endif // PRINT_XENO_LOCK
 

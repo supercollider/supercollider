@@ -1003,7 +1003,7 @@ void initHIDAPIPrimitives() {
 
 void deinitHIDAPIPrimitives() { SC_HID_APIManager::instance().closeAll(); }
 
-#else // no HID API
+#else // not HAVE_HIDAPI
 
 void initHIDAPIPrimitives() {
     // other platforms?
@@ -1011,7 +1011,4 @@ void initHIDAPIPrimitives() {
 
 void deinitHIDAPIPrimitives() {}
 
-#endif /// HAVE_API_HID
-
-
-// EOF
+#endif // HAVE_HIDAPI

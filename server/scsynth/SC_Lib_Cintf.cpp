@@ -34,7 +34,7 @@
 
 #ifndef _MSC_VER
 #    include <dirent.h>
-#endif // _MSC_VER
+#endif // not _MSC_VER
 
 #ifdef _WIN32
 #    include "SC_Win32Utils.h"
@@ -260,7 +260,7 @@ void initialize_library(const char* uGensPluginPath) {
     }
 #    endif // __x86_64__
 
-#endif // ifdef __APPLE__
+#endif // __APPLE__
 }
 
 typedef int (*InfoFunction)();
@@ -339,7 +339,7 @@ static bool PlugIn_Load(const fs::path& filename) {
     open_handles.push_back(hinstance);
     return true;
 
-#else // (ifndef _WIN32)
+#else // not _WIN32
     void* handle = dlopen(filename.c_str(), RTLD_NOW);
 
     if (!handle) {

@@ -156,7 +156,7 @@ extern int getopt_long_only(int ___argc, char* const* ___argv, const char* __sho
 extern int _getopt_internal(int ___argc, char* const* ___argv, const char* __shortopts, const struct option* __longopts,
                             int* __longind, int __long_only);
 #    endif
-#else /* not __STDC__ */
+#else /* not __STDC__  || not __cplusplus */
 extern int getopt();
 #    ifndef __need_getopt
 extern int getopt_long();
@@ -164,7 +164,7 @@ extern int getopt_long_only();
 
 extern int _getopt_internal();
 #    endif
-#endif /* __STDC__ */
+#endif /* __STDC__ || __cplusplus */
 
 #ifdef __cplusplus
 }

@@ -204,7 +204,7 @@ bool Main::openDocumentation(const QString& string) {
     helpDock->browser()->gotoHelpFor(symbol);
     helpDock->focus();
     return true;
-#else // SC_USE_QTWEBENGINE
+#else // not SC_USE_QTWEBENGINE
     return false;
 #endif // SC_USE_QTWEBENGINE
 }
@@ -215,7 +215,7 @@ bool Main::openDocumentationForMethod(const QString& className, const QString& m
     helpDock->browser()->gotoHelpForMethod(className, methodName);
     helpDock->focus();
     return true;
-#else // SC_USE_QTWEBENGINE
+#else // not SC_USE_QTWEBENGINE
     return false;
 #endif // SC_USE_QTWEBENGINE
 }

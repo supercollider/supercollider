@@ -206,11 +206,11 @@ inline SndfileHandle makeSndfileHandle(const char* path, int mode = SFM_READ, in
 
 #    endif // _WIN32
 
-#else // not NO_LIBSNDFILE
+#else // NO_LIBSNDFILE
 
 static inline int sndfileFormatInfoFromStrings(struct SF_INFO* info, const char* headerFormatString,
                                                const char* sampleFormatString) {
     return kSCErr_Failed;
 }
 
-#endif /* NO_LIBSNDFILE */
+#endif // not NO_LIBSNDFILE

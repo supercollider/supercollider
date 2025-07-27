@@ -121,7 +121,7 @@ void initializeScheduler() {
     SC_Thread resyncThread(resyncThreadFunc);
     resyncThread.detach();
 }
-#endif // SC_AUDIO_API_COREAUDIO
+#endif // SC_AUDIO_API_COREAUDIO || SC_AUDIO_API_AUDIOUNITS
 
 
 // =====================================================================
@@ -155,7 +155,7 @@ int32 server_timeseed() {
 int64 oscTimeNow() { return GetCurrentOSCTime(); }
 
 void initializeScheduler() { gOSCoffset = GetCurrentOSCTime(); }
-#endif // SC_AUDIO_API_COREAUDIO
+#endif // SC_AUDIO_API_COREAUDIOIPHONE
 
 
 // =====================================================================
@@ -313,9 +313,9 @@ void FreeOSCPacket(FifoMsg* inMsg) {
 #    pragma message("$$$todo fixme hack for the 'uninitialized packet->mData ptr when using MSVC 7.1 debug")
         if (packet->mData != reinterpret_cast<char*>(0xcdcdcdcd))
             free(packet->mData);
-#else //#ifdef _MSC_VER
+#else // _MSC_VER != 1310
         free(packet->mData);
-#endif //#ifdef _MSC_VER
+#endif // _MSC_VER == 1310
         free(packet);
     }
 }
@@ -1910,7 +1910,7 @@ OSStatus AddDeviceListeners(AudioDeviceID inDevice, void* inClientData) {
     return (err);
 }
 
-#endif // SC_AUDIO_API_COREAUDIO
+#endif // SC_AUDIO_API_COREAUDIO || SC_AUDIO_API_AUDIOUNITS
 
 
 // =====================================================================
