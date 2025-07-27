@@ -4,7 +4,11 @@ related:: Classes/File, Classes/String
 categories:: Files
 
 description::
-PathName is a utility class for manipulating file names and paths. It expects a path to a file, and lets you access parts of that file path.
+NOTE:: PathName is a very old utility for file and folder access. Its recommended successor, link::Classes/Path::, has a simpler and more consistent interface.
+Since many old projects and works may rely on PathName, it will be kept for backwards compatibility. This includes this help file.
+
+For new projects, please use Path!
+::
 
 note::
 Most classes in SC that operate on files generally expect paths to be link::Classes/String::s, not an instance of link::Classes/PathName::. Use code::.fullPath:: to convert link::Classes/PathName:: to a link::Classes/String:: expected in most cases.
@@ -17,8 +21,9 @@ private::initClass
 method::new
 
 argument::path
-a link::Classes/String:: which likely contains one or more / as typical for folder separation. ~ will be converted to your fully addressed home directory, as per link::Classes/String#-standardizePath::.
+a link::Classes/String:: which contains one or more pathSeparators, commonly written as a code::/::. The shortcut for the home directory, code::~::, will be converted to the home directory, as per link::Classes/String#-standardizePath::.
 code::
+// This example file path dates back to 2000/2001 or so ...
 PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
 ::
 

@@ -1,0 +1,305 @@
+TITLE:: Path
+summary:: handling file paths
+categories:: Files, Folders
+related:: Classes/PathName, Classes/String, Classes/File
+
+DESCRIPTION::
+Path is an update/replacement for the link::Classes/PathName:: class, modeled on Python Path/pathlib.
+It collects path-related methods in one consistent interface.
+For backwards compatibility, PathName is kept as a subclass with its
+old interface; PathName and its suboptimal methods may be deprecated later on.
+
+code::Path:: may later also add path-related functionality from link::Classes/String:: and link::Classes/File::. All path-accessing primitives expect a code::String:: as input,
+so any methods calling them should call code::obj.asPathString(path);:: this converts code::Path:: objects to strings, and leaves strings untouched.
+
+
+CLASSMETHODS::
+
+METHOD:: tmp
+get and set the system directory for temporary files.
+
+code::
+Path.tmp;
+::
+
+METHOD:: cwd
+get the current working directory.
+
+code::
+Path.cwd;
+::
+
+
+METHOD:: scroot
+get and set the root dir of the file system.
+This is for PathName compatibility.
+
+code::
+Path.scroot;
+::
+
+METHOD:: home
+the user home directory
+code::
+Path.home;
+::
+
+METHOD:: new
+make a new Path instance
+ARGUMENT:: str
+a String.
+code::
+Path("/Users/xyz/sc/myfile.scd");
+::
+
+returns:: the new Path instance
+
+INSTANCEMETHODS::
+
+subsection:: Accessing Path parts
+
+METHOD:: str, fullPath
+the string contained in the path
+code::
+Path("/Users/xyz/sc/myfile.scd").str;
+// backwards compatibility with PathName
+Path("/Users/xyz/sc/myfile.scd").fullPath;
+::
+
+METHOD:: name, fileName
+the filename of the path
+code::
+Path("/Users/xyz/sc/myfile.scd").name;
+// backwards compatibility with PathName
+Path("/Users/xyz/sc/myfile.scd").fileName;
+::
+
+METHOD:: extension
+the extension of the filename or a blank string if none.
+code::
+Path("/Users/xyz/sc/myfile.scd").extension.postcs;
+Path("/Users/xyz/sc").extension.postcs;
+::
+
+
+METHOD:: fileNameWithoutExtension
+the filename of the path without extension
+code::
+Path("/Users/xyz/sc/myfile.scd").fileNameWithoutExtension;
+::
+
+METHOD:: fileNameWithoutDoubleExtension
+the filename of the path without up to two extensions
+code::
+Path("/Users/xyz/sc/myfile.preset.scd").fileNameWithoutDoubleExtension;
+::
+
+METHOD:: parent
+the parent folder as a Path
+code::
+Path("/Users/xyz/sc/myfile.scd").parent;
+::
+
+METHOD:: dirname
+the parent folder as a String with trailing slash
+code::
+// as String
+Path("/Users/xyz/sc/myfile.scd").dirname;
+::
+
+METHOD:: folderName
+the name of the folder above the filename as String
+code::
+Path("/Users/xyz/sc/myfile.scd").folderName;
+::
+
+METHOD:: parts
+an array of the folder names in this path
+code::
+Path("/Users/xyz/sc/myfile.scd").parts.postcs;
+::
+
+METHOD:: separatorIndices
+find the indices of the pathSeparators in a Path
+code::
+Path("/Users/xyz/sc/myfile.scd").separatorIndices;
+::
+
+
+subsection:: Conversions
+
+METHOD:: withName
+create Path object with a new (file)-name
+code::
+Path("/Users/xyz/sc/myfile.scd").withName("other.txt");
+::
+
+METHOD:: +/+
+concatenate 2 two paths
+code::
+Path("/Users/xyz") +/+ Path("sc/myfile.scd");
+Path("/Users/xyz") +/+ "sc/myfile.scd";
+// also works with String +/+ Path:
+"/Users/xyz" +/+ Path("sc/myfile.scd");
+::
+
+METHOD:: relativeTo
+convert a path to a relative path
+code::
+Path("/Users/xyz/sc/myfile.scd").relativeTo("/Users/xyz");
+::
+
+
+METHOD:: nextName
+create string with a consecutive file number
+code::
+Path("/Users/xyz/sc/myfile.scd").nextName;
+Path("/Users/xyz/sc/myfile12.scd").nextName;
+Path("/Users/xyz/sc/myfile").nextName;
+Path("/Users/xyz/sc/myfile12").nextName;
+::
+
+METHOD:: absolutePath
+code::
+Path("/xyz/sc/myfile.scd").absolutePath;
+::
+
+METHOD:: asPath
+returns Path as is, to match code::String:asPath::.
+code::
+Path("/Users/xyz/sc/myfile.scd").asPath;
+::
+
+METHOD:: asPathString
+returns its string, to match code::String:asPathString::.
+code::
+Path("/Users/xyz/sc/myfile.scd").asPathString;
+// already a String:
+"/Users/xyz/sc/myfile.scd".asPathString;
+::
+
+METHOD:: asOSCArgArray
+returns its string, for sending via OSC.
+code::
+Path("/Users/xyz/sc/myfile.scd").asOSCArgArray;
+::
+
+
+subsection:: Tests and Information
+
+METHOD:: type
+code::
+Path("/Users/xyz/sc/myfile.scd").parts.postcs;
+::
+
+METHOD:: exists
+check if a file or folder exists at this path
+code::
+Path(Main.filenameSymbol.asString).exists;
+Path("/Users/xyz/sc/myfile.scd").exists;
+Path(Main.filenameSymbol.asString.dirname).exists;
+::
+
+METHOD:: isFile, isFolder, isDir
+check whether a path is a file or a folder/dir.
+This does not test if the file exists,
+and only distinguishes based on a trailing separator or not, as this is how pathMatch makes that distinction.
+code::
+Path("/Users/xyz/sc/myfile.scd").isFile;
+Path("/Users/xyz/sc/").isFile;
+Path("/Users/xyz/sc/myfile.scd").isFolder;
+Path("/Users/xyz/sc/").isFolder;
+Path("/Users/xyz/sc/myfile.scd").isDir;
+Path("/Users/xyz/sc/").isDir;
+::
+
+METHOD:: isAbsolute, isRelative
+check whether a path is relative or absolute
+code::
+Path("/Users/xyz/sc/myfile.scd").isRelative;
+Path("xyz/sc/myfile.scd").isRelative;
+Path("/Users/xyz/sc/myfile.scd").isAbsolute;
+Path("xyz/sc/myfile.scd").isAbsolute;
+::
+
+
+
+METHOD:: ==
+check if two Paths have equal strings:
+code::
+Path("/Users/xyz/sc") == Path("/Users/xyz/sc");
+::
+
+subsection:: Search
+
+METHOD:: match, pathMatch
+find all matching filenames as strings,
+like code::String.pathMatch::.
+
+code::
+Path(Platform.classLibraryDir).match;
+Path(Platform.classLibraryDir).pathMatch;
+Path(Platform.classLibraryDir +/+ "*").match.printAll; "";
+::
+
+METHOD:: entries
+array of all entries at path, as path objects
+code::
+Path(Platform.classLibraryDir).entries.printAll;  "";
+Path(Quarks.folder).entries.postln.size;
+::
+
+METHOD:: files
+array of all files at path, as path objects
+code::
+Path(Platform.classLibraryDir +/+ "Common/Files").files.printAll.size;
+// no files in classLibraryDir
+Path(Platform.classLibraryDir).files.printAll;
+::
+
+METHOD:: folders
+array of all folders at path, as path objects
+code::
+Path(Platform.classLibraryDir).folders.printAll;  "";
+::
+
+METHOD:: deepFiles
+array of all files at path, including files in subfolders.
+code::
+// many deep files in classLibraryDir
+Path(Platform.classLibraryDir +/+ "Common").deepFiles.printAll.size;
+::
+
+METHOD:: filesDo
+do something with all deepFiles at path
+code::
+Path(Platform.classLibraryDir +/+ "Common").filesDo { |path| path.name.postcs };
+::
+
+METHOD:: lastSeparatorIndex
+code::
+Path("/Users/xyz/sc/myfile.scd").parts.postcs;
+::
+
+subsection:: Posting Path Information
+
+METHOD:: dumpTree
+dump the hierarchical tree of entries
+code::
+Path(Platform.classLibraryDir +/+ "Common").dumpTree
+::
+METHOD:: dumpToDoc
+dump the hierarchical tree of entries to a Document
+code::
+
+Path(Platform.classLibraryDir +/+ "Common").dumpToDoc;
+::
+
+EXAMPLES::
+
+code::
+SoundFile.collect(
+	Path(Platform.resourceDir +/+ "sounds/*")
+);
+
+::

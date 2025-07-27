@@ -481,7 +481,8 @@ String[char] : RawArray {
 		var sep = thisProcess.platform.pathSeparator;
 		var hasLeftSep, hasRightSep;
 
-		if (path.respondsTo(\fullPath)) {
+		// if second arg is PathName, make it a PathName
+		if (path.isKindOf(PathName)) {
 			^PathName(this +/+ path.fullPath)
 		};
 
@@ -502,7 +503,19 @@ String[char] : RawArray {
 	}
 
 	asRelativePath { |relativeTo|
-		^PathName(this).asRelativePath(relativeTo)
+		var r, a, b, i, mePath;
+		mePath = this.absolutePath;
+		relativeTo = (relativeTo ? PathName.scroot ).absolutePath;
+		r = Platform.pathSeparator;
+
+		a = mePath.split(r);
+		b = relativeTo.split(r);
+
+		i = 0;
+		while { a[i] == b[i] and: { i < a.size } } {
+			i = i + 1;
+		};
+		^(".." ++ r).dup(b.size - i).join ++ a[i..].join(r)
 	}
 	asAbsolutePath {
 			// changed because there is no need to create a separate object
