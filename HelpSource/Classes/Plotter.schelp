@@ -141,7 +141,7 @@ are the same, in which case a single link::Classes/Symbol:: is returned.
 discussion::
 code::
 
-p = (0..20).scramble.plot;
+p = (0..20).scramble.plot;  p.parent.alwaysOnTop = true;
 p.plotMode = \points;
 p.plotMode = \plines;
 p.plotMode = \steps;
@@ -173,6 +173,29 @@ p.plotColor_([Color.red, Color.cyan, Color.green, Color.blue]);
 p.plotMode_([\steps, \linear, \plines, \points]);
 p.superpose_(true);
 )
+::
+
+warning::
+Plot modes  code::\levels::, code::\steps::, and their variants display data in a sample-and-hold manner, so unless the link::#-domainSpecs:: has be set explicitly to extend beyond the last data point, the "step" of the last data point may not be visible.
+code::
+( // Can't see the last data point
+p = 4.collect({ 2.5.rrand(3.0) }).plot.plotMode_(\levels);
+p.parent.alwaysOnTop = true;
+)
+
+// Adding the "point" makes it visible
+p.plotMode_(\plevels);
+
+// Adjusting the domainSpec makes the "step" visible
+p.domain_((2..5)).domainSpecs_([2,6].asSpec);
+
+p.parent.close;
+::
+
+This is not an issue for plot modes that center the levels on the data points, e.g. code::\levelsCentered::, code::\bars::, and their variants.
+code::
+p = 4.collect({ 2.5.rrand(3.0) }).plot.plotMode_(\bars);
+::
 ::
 
 
@@ -214,7 +237,6 @@ var freq = 100;
 ).superpose_(true);
 )
 ::
-
 
 
 method:: superpose
