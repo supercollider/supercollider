@@ -52,10 +52,6 @@ These are useful starting points for getting help on SuperCollider:
 subsection:: Introduction & Reference Materials
 
 list::
-## teletype::sclang/scd:: example folder
-code::
-ExampleFiles.dir.openOS // Hold down the Shift key and press the Enter key to open the "sclang/scd example folder".
-::
 ## link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started tutorial series::
 ## link::Guides/Glossary::
 ## link::Guides/More-On-Getting-Help##More On Getting Help:::
@@ -65,6 +61,11 @@ Using Help Files effectively and inspecting class definition files to build more
 
 Index of all help files categorized under emphasis::Tutorials::
 ## link::Guides/UserFAQ##Common Errors and FAQ::
+## SuperCollider examples folder:
+code::
+Platform.exampleDir.openOS 
+// Hold down the Shift key and press the Enter key to open the "SuperCollider examples folder".
+::
 ::
 
 subsection:: Getting Sound
