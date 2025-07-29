@@ -7,7 +7,7 @@ TestSCDoc : UnitTest {
         LanguageConfig.excludeDefaultPaths = true;
         result = SCDoc.prRescanHelpSourceDirs.any { |p| extensionPaths.any { |ep| ("^"++ep.escapeChar($\\)).matchRegexp(p) } };
         LanguageConfig.excludeDefaultPaths = prevSetting;
-        this.assert(result.not, "should not search for extensions' HelpSource when LanguageConfig.excludeDefaultPaths = true");
+        this.assert(result.not, "should not search for extensions' HelpSource when LanguageConfig.excludeDefaultPaths = true, extensionPaths: %, helpSourcePaths: %".format(extensionPaths, SCDoc.helpSourceDirs));
     }
 
     test_helpSourceDirs_includedExtensions {
@@ -17,7 +17,7 @@ TestSCDoc : UnitTest {
         LanguageConfig.excludeDefaultPaths = false;
         result = SCDoc.prRescanHelpSourceDirs.any { |p| extensionPaths.any { |ep| ("^"++ep.escapeChar($\\)).matchRegexp(p) } };
         LanguageConfig.excludeDefaultPaths = prevSetting;
-        this.assert(result, "should search for extensions' HelpSource when LanguageConfig.excludeDefaultPaths = false");
+        this.assert(result, "should search for extensions' HelpSource when LanguageConfig.excludeDefaultPaths = false, extensionPaths: %, helpSourcePaths: %".format(extensionPaths, SCDoc.helpSourceDirs));
     }
 
 }

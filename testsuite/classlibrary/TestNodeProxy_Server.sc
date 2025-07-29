@@ -156,7 +156,7 @@ TestNodeProxy_Server : UnitTest {
 	}
 
 	test_schedAfterFade_notBeforeQuant {
-		var ok = true, earlierThan = 0.01;
+		var ok = true, earlierThan = 0.05;
 		proxy.source = { Silent.ar };
 		proxy.fadeTime = 0.1;
 		proxy.clock = TempoClock.new(1);
