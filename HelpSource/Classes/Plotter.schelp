@@ -115,8 +115,15 @@ table::
 ## code::\filled:: || fills the area under a waveform, and assumes a bipolar signal (filled to the zero-crossing)
 ## code::\pfilled:: || code::\filled::, marked also by code::\points::
 ## code::\dfilled:: || code::\filled::, marked also by code::\dots::
-## code::\levels:: || sample-and-hold style horizontal lines from the data point extending over the sample interval
-## code::\steps:: || "step interpolation": code::\levels:: connected by vertical lines
+## code::\levels:: || horizontal lines, sample-and-hold style
+## code::\plevels:: || code::\levels::, with a code::\points:: data markers
+## code::\dlevels:: || code::\levels::, with a code::\dots:: data markers
+## code::\levelsCentered:: || horizontal lines, centered on the data point
+## code::\plevelsCentered:: || code::\levelsCentered::, with a code::\points:: data markers
+## code::\dlevelsCentered:: || code::\levelsCentered::, with a code::\dots:: data markers
+## code::\steps:: || "step interpolation", sample-and-hold style, connected by vertical lines
+## code::\psteps:: || code::\steps::, with a code::\points:: data markers
+## code::\dsteps:: || code::\steps::, with a code::\dots:: data markers
 ## code::\bars:: || bar graph with filled bars
 ::
 
@@ -134,7 +141,7 @@ are the same, in which case a single link::Classes/Symbol:: is returned.
 discussion::
 code::
 
-p = (0..20).scramble.plot;
+p = (0..20).scramble.plot;  p.parent.alwaysOnTop = true;
 p.plotMode = \points;
 p.plotMode = \plines;
 p.plotMode = \steps;
@@ -142,17 +149,12 @@ p.plotMode = \steps;
 /* Preview the available modes */
 (
 s.waitForBoot{
-    var modeList = [
-        \points, \dots, \levels, \steps,
-        \lines, \plines, \dlines,
-        \stems, \pstems, \dstems,
-        \filled, \dfilled, \pfilled, \bars,
-    ];
-    modeList.clump((modeList.size/2).ceil).do{ |modes, i|
-        var frq = 1000, w = 600, h = 800;
+    var modeList = Plotter.modes;
+    modeList.clump((modeList.size/3).ceil).do{ |modes, i|
+        var frq = 3000, w = 500, h = 800;
         p = {
-            LFSaw.ar(frq) ! modes.size
-        }.plot(2.25 * frq.reciprocal);
+            SinOsc.ar(frq) ! modes.size
+        }.plot(0.75 * frq.reciprocal);
 
         0.25.wait; // let Plotter update with data
         p.plotMode_(modes);
@@ -171,6 +173,29 @@ p.plotColor_([Color.red, Color.cyan, Color.green, Color.blue]);
 p.plotMode_([\steps, \linear, \plines, \points]);
 p.superpose_(true);
 )
+::
+
+warning::
+Plot modes  code::\levels::, code::\steps::, and their variants display data in a sample-and-hold manner, so unless the link::#-domainSpecs:: has be set explicitly to extend beyond the last data point, the "step" of the last data point may not be visible.
+code::
+( // Can't see the last data point
+p = 4.collect({ 2.5.rrand(3.0) }).plot.plotMode_(\levels);
+p.parent.alwaysOnTop = true;
+)
+
+// Adding the "point" makes it visible
+p.plotMode_(\plevels);
+
+// Adjusting the domainSpec makes the "step" visible
+p.domain_((2..5)).domainSpecs_([2,6].asSpec);
+
+p.parent.close;
+::
+
+This is not an issue for plot modes that center the levels on the data points, e.g. code::\levelsCentered::, code::\bars::, and their variants.
+code::
+p = 4.collect({ 2.5.rrand(3.0) }).plot.plotMode_(\bars);
+::
 ::
 
 
@@ -212,7 +237,6 @@ var freq = 100;
 ).superpose_(true);
 )
 ::
-
 
 
 method:: superpose
