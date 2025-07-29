@@ -59,6 +59,3 @@ TABLE::
 ::
 
 returns:: The full path of TELETYPE::a11wlk01.wav:: as a LINK::Classes/String::
-
-METHOD:: dir
-returns:: The full path of code::sclang/scd examples:: folder as a LINK::Classes/String::

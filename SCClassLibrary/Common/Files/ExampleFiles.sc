@@ -10,8 +10,4 @@ ExampleFiles {
 	*child {
 		^Platform.resourceDir +/+ "sounds" +/+ "a11wlk01.wav";
 	}
-
-	*dir {
- 		^(Platform.resourceDir +/+ "examples")
- 	}
 }
