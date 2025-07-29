@@ -1473,6 +1473,7 @@ void g_dump_tree(int id, bool flag) {
     stream << "NODE TREE Group " << id << std::endl;
 
     g_dump_node(stream, *node, flag, 1);
+    stream << "END NODE TREE Group " << id << std::endl;
     log(stream.str().c_str(), stream.str().size());
 }
 
