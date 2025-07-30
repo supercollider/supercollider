@@ -36,7 +36,7 @@ Document.new("this is the title", "this is the text");
 method:: open
 Open a document from a path.
 argument:: path
-The file system path to the document. An instance of link::Classes/String::.
+An instance of link::Classes/String:: indicating the files system path to the document. For path handling and management, see link::Classes/File:: and link::Classes/PathName::.
 argument:: selectionStart
 The beginning of the cursor selection of the file content.
 argument:: selectionLength
@@ -114,7 +114,7 @@ Utilities and settings for dealing with documents such as SuperCollider code fil
 method:: dir
 Get/set the default document directory. The default is dependent on link::#*implementationClass::.
 argument:: path
-The file system path to the directory. An instance of link::Classes/String::.
+An instance of link::Classes/String:: indicating the file system path to the directory.  For path handling and management, see link::Classes/File:: and link::Classes/PathName::.
 discussion::
 In Main-startUp you can set this to a more practical directory:
 code::
@@ -123,7 +123,7 @@ Document.dir = "~/Documents/SuperCollider";
 
 method:: standardizePath
 argument:: p
-The file system path to the directory. An instance of link::Classes/String::.
+An instance of link::Classes/String:: indicating the file system path to the directory.
 discussion::
 If it is a relative path, expand it to an absolute path relative to your document directory. Expand tildes in path (your home directory), resolve symbolic links (but not aliases). Also converts from Mac OS 9 path format. See PathName for more complex needs.
 code::
@@ -142,7 +142,7 @@ Document.standardizePath("Patches/newfoots/fastRuckAndTuck")
 method:: abrevPath
 Returns a path relative to Document.dir, if the path is inside Document.dir.
 argument:: path
-The file system path to the directory. An instance of link::Classes/String::.
+An instance of link::Classes/String:: indicating the file system path to the directory.
 
 
 

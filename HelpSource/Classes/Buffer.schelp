@@ -121,7 +121,7 @@ Allocate a buffer and immediately read a soundfile into it. This method sends a 
 argument:: server
 The server on which to allocate the buffer.
 argument:: path
-A String representing the path of the soundfile to be read.
+An instance of link::Classes/String:: representing the path of the soundfile to be read. For path handling and management, see link::Classes/File:: and link::Classes/PathName::
 argument:: startFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file.
 argument:: numFrames
@@ -169,7 +169,7 @@ As link::#*read:: above, but takes an link::Classes/Array:: of channel indices t
 argument:: server
 The server on which to allocate the buffer.
 argument:: path
-A String representing the path of the soundfile to be read.
+An instance of link::Classes/String:: representing the path of the soundfile to be read. For path handling and management, see link::Classes/File:: and link::Classes/PathName::.
 argument:: startFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file.
 argument:: numFrames
@@ -491,7 +491,7 @@ method:: duration
 Returns code::this.numFrames / this.sampleRate:: (language-side instance variables).
 
 method:: path
-Returns a string containing the path of a soundfile that has been loaded into the corresponding server-side buffer.
+Returns a link::Classes/String:: containing the path of a soundfile that has been loaded into the corresponding server-side buffer.
 
 
 subsection:: Explicit allocation
@@ -505,7 +505,7 @@ A valid OSC message or a Function which will return one. A Function will be pass
 method:: allocRead, allocReadMsg
 Read a soundfile into a buffer on the server for a Buffer previously created with link::#*new::. Note that this will not autoupdate instance variables. Call code::updateInfo:: in order to do this.
 argument:: argpath
-A String representing the path of the soundfile to be read.
+A link::Classes/String:: representing the path of the soundfile to be read.
 argument:: startFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file. (A floating-point value is truncated to integer.)
 argument:: numFrames
@@ -524,7 +524,7 @@ x.free; b.free;
 method:: allocReadChannel, allocReadChannelMsg
 As link::#-allocRead:: above, but allows you to specify which channels to read.
 argument:: argpath
-A String representing the path of the soundfile to be read.
+A link::Classes/String:: representing the path of the soundfile to be read.
 argument:: startFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file. (A floating-point value is truncated to integer.)
 argument:: numFrames
@@ -548,7 +548,7 @@ subsection:: Other methods
 method:: read
 Read a soundfile into an already allocated buffer.
 argument:: argpath
-A String representing the path of the soundfile to be read.
+A link::Classes/String:: representing the path of the soundfile to be read.
 argument:: fileStartFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file. (A floating-point value is truncated to integer.)
 argument:: numFrames
@@ -572,7 +572,7 @@ Note that if the number of frames in the file is greater than the number of fram
 method:: readChannel
 As link::#-read:: above, but allows you to specify which channels to read.
 argument:: argpath
-A String representing the path of the soundfile to be read.
+A link::Classes/String:: representing the path of the soundfile to be read.
 argument:: fileStartFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file. (A floating-point value is truncated to integer.)
 argument:: numFrames
@@ -595,7 +595,7 @@ method:: readChannelMsg
 method:: cueSoundFile, cueSoundFileMsg
 A convenience method to cue a soundfile into the buffer for use with a link::Classes/DiskIn::. The buffer must have been allocated with a multiple of (2 * the server's block size) frames.  A common size is 32768 frames.
 argument:: path
-A String representing the path of the soundfile to be read.
+An instance of link::Classes/String:: representing the path of the soundfile to be read. For path handling and management, see link::Classes/File:: and link::Classes/PathName::
 argument:: startFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file. (A floating-point value is truncated to integer.)
 argument:: completionMessage
@@ -619,12 +619,12 @@ x.free; b.close; b.free;
 method:: write, writeMsg
 Write the contents of the buffer to a file. See link::Classes/SoundFile:: for information on valid values for headerFormat and sampleFormat.
 argument:: path
-A String representing the path of the soundfile to be written.
+An instance of link::Classes/String:: representing the path of the soundfile to be written. For path handling and management, see link::Classes/File:: and link::Classes/PathName::
 If no path is given, Buffer writes into the default recording directory with a generic name.
 argument:: headerFormat
-A String.
+A link::Classes/String::.
 argument:: sampleFormat
-A String.
+A link::Classes/String::.
 argument:: numFrames
 The number of frames to write. The default is -1, which will write the whole buffer. (A floating-point value is truncated to integer.)
 argument:: startFrame
@@ -930,7 +930,7 @@ These correspond to the various b_gen OSC Commands, which fill the buffer with v
 method:: gen, genMsg
 This is a generalized version of the commands below.
 argument:: genCommand
-A String indicating the name of the command to use. See Server-Command-Reference for a list of valid command names.
+A link::Classes/String:: indicating the name of the command to use. See Server-Command-Reference for a list of valid command names.
 argument:: genArgs
 An Array containing the corresponding arguments to the command.
 argument:: normalize
