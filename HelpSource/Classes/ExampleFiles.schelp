@@ -15,7 +15,7 @@ ExampleFiles.apollo11;
 
 CLASSMETHODS::
 
-METHOD:: apollo11 
+METHOD:: apollo11
 A radio recording from the Apollo 11 moon landing program where Bruce McCandless says EMPHASIS::"Columbia, this is Houston. Over."::.
 For more information see LINK::https://www.nasa.gov/history/alsj/a11/a11.mobility.html:: at the mark TELETYPE::110:25:41:: (it seems to be the third repetition, though the pitch does not match).
 
@@ -35,7 +35,7 @@ Trivia time: Although the file in its current form was introduced on 2004-07-11 
 This can be considered the "Hello world" audio sample of SuperCollider.
 
 METHOD:: sinedPink
-A very short stereo sample which has 10 cycles of a 440Hz LINK::Classes/SinOsc:: on its first channel and a LINK::Classes/PinkNoise:: on its second channel. 
+A very short stereo sample which has 10 cycles of a 440Hz LINK::Classes/SinOsc:: on its first channel and a LINK::Classes/PinkNoise:: on its second channel.
 
 TABLE::
 ## Filename || TELETYPE::SinedPink.aiff::
@@ -45,7 +45,7 @@ TABLE::
 ## Duration || 00:00:00.02
 ::
 
-returns:: The full path of TELETYPE::SinedPink.aiff:: as a LINK::Classes/String:: 
+returns:: The full path of TELETYPE::SinedPink.aiff:: as a LINK::Classes/String::
 
 METHOD:: child
 Allegedly a re-recording of Link::Classes/ExampleFiles#*apollo11:: performed by a child of a developer.
