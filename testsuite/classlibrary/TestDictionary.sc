@@ -38,4 +38,18 @@ TestDictionary : UnitTest {
 		this.assertEquals(dict.trueAt(\k), true, "dictionary trueAt should respond true if its booleanValue is true.");
 	}
 
+	test_Dictionary_disallows_nil_as_key {
+		var dict = Dictionary[1 -> 2];
+		var err;
+		try {
+			dict.put(nil, 3);
+		} { |error|
+			err = error
+		};
+		this.assert(
+			err.notNil and: { err.errorString.contains("'nil' is not valid") },
+			"Dictionary should throw an error when trying to 'put' at nil as a key"
+		)
+	}
+
 }
