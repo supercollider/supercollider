@@ -224,6 +224,7 @@ Object {
 	basicHash { _ObjectHash; ^this.primitiveFailed }
 	hash { _ObjectHash; ^this.primitiveFailed }
 	identityHash { _ObjectHash; ^this.primitiveFailed }
+	keyHash { _ObjectHash; ^this.primitiveFailed }
 
 	// lazy equality: same as == for objects
 	// "composed" for lazy operands (patterns, UGens)
