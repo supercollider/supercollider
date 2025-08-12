@@ -79,8 +79,7 @@ code::
 
   in = Blip.ar(freq:SinOsc.kr(freq:5, mul:20, add:300), numharm:100, mul:0.1);
 
-  Formlet.ar
-  (
+  Formlet.ar(
     in: in,
     freq: MouseY.kr(minval: 700, maxval: 2000, warp: 1),
     attacktime: 0.005,
