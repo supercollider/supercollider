@@ -96,8 +96,7 @@ code::
 {
   var freq;
 
-  freq = Formlet.kr
-  (
+  freq = Formlet.kr(
     in: Dust.kr(10 ! 2),
     freq: MouseY.kr(minval:7, maxval:200, warp:1),
     attacktime: MouseX.kr(minval:0.1, maxval:2, warp:1),
