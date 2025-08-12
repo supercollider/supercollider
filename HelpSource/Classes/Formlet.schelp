@@ -75,17 +75,16 @@ code::
 (
 // mouse control of frequency and decay time.
 {
-  var in;
+	var in;
 
-  in = Blip.ar(freq:SinOsc.kr(freq:5, mul:20, add:300), numharm:100, mul:0.1);
+	in = Blip.ar(freq:SinOsc.kr(freq:5, mul:20, add:300), numharm:100, mul:0.1);
 
-  Formlet.ar
-  (
-    in: in,
-    freq: MouseY.kr(minval: 700, maxval: 2000, warp: 1),
-    attacktime: 0.005,
-    decaytime: MouseX.kr(minval: 0.01, maxval: 0.2, warp: 1),
-  );
+	Formlet.ar(
+		in: in,
+		freq: MouseY.kr(minval: 700, maxval: 2000, warp: 1),
+		attacktime: 0.005,
+		decaytime: MouseX.kr(minval: 0.01, maxval: 0.2, warp: 1),
+	);
 
 }.play;
 )
@@ -94,17 +93,16 @@ code::
 (
 // mouse control of frequency and attack time.
 {
-  var freq;
+	var freq;
 
-  freq = Formlet.kr
-  (
-    in: Dust.kr(10 ! 2),
-    freq: MouseY.kr(minval:7, maxval:200, warp:1),
-    attacktime: MouseX.kr(minval:0.1, maxval:2, warp:1),
-    decaytime: 0.005,
-  );
+	freq = Formlet.kr(
+		in: Dust.kr(10 ! 2),
+		freq: MouseY.kr(minval:7, maxval:200, warp:1),
+		attacktime: MouseX.kr(minval:0.1, maxval:2, warp:1),
+		decaytime: 0.005,
+	);
 
-  SinOsc.ar(freq * 200 + [500, 600] - 100) * 0.2
+	SinOsc.ar(freq * 200 + [500, 600] - 100) * 0.2;
 
 }.play;
 )
