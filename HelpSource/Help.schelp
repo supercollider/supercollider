@@ -4,6 +4,18 @@ categories::Help
 
 NOTE:: link::Guides/News-3_14##News in SuperCollider version 3.14:: ::
 
+note::
+The most up-to-date online help documentation for SuperCollider is built weekly from the development branch and is available at:
+
+link::https://dev.docs.supercollider.online/::.
+This version reflects the latest changes and contributions from active development.
+
+For stable release documentation, refer to the main site:
+
+link::https://docs.supercollider.online/::.
+This site corresponds to the latest official release and is recommended for most users.
+::
+
 SECTION:: An introductory overview
 
 emphasis::SuperCollider:: is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound.
