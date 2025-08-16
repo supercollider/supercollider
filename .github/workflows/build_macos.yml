@@ -58,14 +58,13 @@ jobs:
             extra-cmake-flags: "-D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
             ctest: true
 
-          - job-name: "x64 shared libscsynth"
-            os-version: "13"
-            xcode-version: "15.2"
-            qt-version: "6.7.3" # will use qt from aqtinstall
+          - job-name: "arm64 shared libscsynth"
+            os-version: "15"
+            xcode-version: "16.0"
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: ""
-            cmake-architectures: x86_64
-            homebrew-packages: "libsndfile readline fftw portaudio"
+            cmake-architectures: "arm64"
+            homebrew-packages: "qt@6 libsndfile readline fftw portaudio"
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D LIBSCSYNTH=ON"
