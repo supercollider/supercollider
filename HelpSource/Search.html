@@ -45,6 +45,27 @@
             <input type="checkbox" id="check_extensions" checked="true">Include extensions</input>
         </div>
 
+        <div class="note">
+            <span class="notelabel">NOTE:</span>
+            
+            <p>To run a full‑text search, use Google Search with:</p>
+            <pre>site:https://dev.docs.supercollider.online</pre>
+            
+            <p>For example, to find all documentation containing “MME”:</p>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a href="https://www.google.com/search?q=MME+site%3A+https%3A%2F%2Fdev.docs.supercollider.online">
+                                MME site: https://dev.docs.supercollider.online
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p><i>You can click the link above and replace “MME” with your own search terms.</i></p>
+        </div>
+
         <div id="search_box">
             Search text:
             <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)" />
