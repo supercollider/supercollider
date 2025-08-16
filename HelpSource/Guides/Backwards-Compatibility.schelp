@@ -5,14 +5,16 @@ categories:: Language>SC3 vs SC2
 There are a number of classes and methods that have been added to allow for backwards compatibility with SC2 code. The most notable of these is code::Synth.play::, which is basically a wrapper for code::Function.play::.
 
 code::
+Synth.play({ SinOsc.ar(440, 0, 0.5) }); // not compatible in SC3
+
 { SinOsc.ar(440, 0, 0.5) }.play; // creates an arbitrarily named SynthDef and a Synth to play it
-Synth.play({ SinOsc.ar(440, 0, 0.5) }); // in SC3 just a wrapper for Function.play with fewer args
+// in SC3 just a wrapper for Function.play with fewer args
 ::
 
 Both of these will create synth nodes on the default server. Note that neither requires the use of an code::Out.ar:: link::Classes/UGen::; they simply output to the first audio bus. One can however add an link::Classes/Out:: to Function.play in order to specify.
 
 code::
-Synth.play({ Out.ar(1, SinOsc.ar(440, 0, 0.5)) });
+({ Out.ar(1, SinOsc.ar(440, 0, 0.5)) }).play;
 ::
 
 In general, one should be aware of this distinction when using this code. When copying such code for reuse with other SC3 classes (for example in a reusable link::Classes/SynthDef::), it will usually be necessary to add an code::Out.ar::. Although useful for quick testing these methods are generally inferior to code::SynthDef.play::, as the latter is more direct, requires no modifications for general reuse, has greater general flexibility and has slightly less overhead. (Although this is insignificant in most cases, it could be relevant when large numbers of defs or nodes are being created.)
