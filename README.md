@@ -12,6 +12,8 @@ sclang comes with its own package manager, called Quarks. scsynth and supernova 
 
 SuperCollider is written in C++17 using several third-party libraries, including Qt and Boost. It can be used on Windows, macOS, a variety of Linux and BSD distributions, Raspberry Pi, and the Bela platform.
 
+The online documentation of the development version is available via [dev.docs.supercollider.online](https://dev.docs.supercollider.online).
+
 Install
 -------
 
