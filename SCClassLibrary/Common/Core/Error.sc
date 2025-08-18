@@ -151,7 +151,6 @@ DoesNotUnderstandError : MethodError {
 		.selector_(selector)
 		.args_(args)
 		.keywordArgumentPairs_(keywordArgumentPairs)
-		.init
 	}
 
 	init {
@@ -201,6 +200,7 @@ DoesNotUnderstandError : MethodError {
 		this.dumpBackTrace;
 		// this.adviceLink.postln;
 		"\n^^ %\nRECEIVER: %\n".postf(this.errorString, receiver);
+		if(suggestion.isEmpty) { this.init };
 		suggestion.postln;
 		"\n".post;
 	}
