@@ -4,8 +4,8 @@ categories:: JITLib>Environments, Collections>Unordered, Live Coding
 related:: Classes/Environment
 
 description::
-EnvironmentRedirect behaves like an link::Classes/Environment:: that redirects access (code::put(key, val)::, or code::~key::) and assignment (code::at(key)::, or code::~key = val::). It is used as a base class for redirecting Environments. For example uses, see link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
-
+EnvironmentRedirect behaves like an link::Classes/Environment:: that redirects access (code::put(key, val)::, or code::~key::) and assignment (code::at(key)::, or code::~key = val::).
+It is used as a basis for classes like link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
 ClassMethods::
 
 method::new
@@ -41,7 +41,9 @@ method::put
 
 method::add
 
-method::linkDoc, unlinkDoc
+copymethod::Environment -linkDoc
+
+copymethod::Environment -unlinkDoc
 
 method::dispatch
 A function or object that is called when the environment is modified. The key

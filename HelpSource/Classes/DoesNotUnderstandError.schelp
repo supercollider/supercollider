@@ -26,6 +26,7 @@ argument:: args
 Arguments passed to the unknown method.
 
 argument:: keywordArgumentPairs
+The keyword arguments that were passed to the link::Classes/DoesNotUnderstandError::.
 
 instancemethods::
 
