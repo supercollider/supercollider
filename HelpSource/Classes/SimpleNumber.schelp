@@ -993,9 +993,6 @@ i.e. between -this and +this (including -this and +this).
 
 method:: rrand
 Returns a random number from a uniform distribution with the range between code::this:: and code::aNumber::.
-argument::aNumber
-The other (upper or lower) limit of the range.
-argument::adverb
 
 discussion::
 code::aNumber:: can be lower than code::this::.
@@ -1041,10 +1038,6 @@ method:: exprand
 Returns a link::Classes/Float:: in the range (this, aNumber) drawn from a log-uniform distribution.
 Receiver (i.e., code::this::) must not be zero.
 Note that the value is emphasis::not:: drawn from an exponential distribution.
-argument::aNumber
-The other (upper or lower) limit of the range. Must be of same sign as code::this::, and must not be zero.
-argument::adverb
-
 returns:: Always returns a link::Classes/Float::.
 
 method:: gauss
