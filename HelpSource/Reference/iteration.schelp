@@ -1,0 +1,80 @@
+title:: Iteration
+summary:: for, do, loop, repeat
+categories:: Core,Common methods, Streams-Patterns-Events
+related::  Object, Function, Routine, Stream, Pattern
+
+(This page combines material formerly in the Control Structures and loop/repeat
+helpfiles.)
+
+There are a number of ways to implement iteration in SuperCollider.
+The most familiar ones will be the link::Classes/Number#-for:: and link::Classes/Collection#-do:: methods.
+The link::Clases/Function#-while:: method is discussed link::Reference/Conditional-Execution#while#here::.
+For Routines, Streams, and Patterns, special methods exist: link::Classes/Function#-loop:: and link::Classes/Object#-repeat::.
+
+table::
+	## strong::Thing you want to do:: ||  strong::method to use:: || strong:: returns::
+	## iterate over a collection  	|| link::#do:: 	|| code::loopFunc.value(x):: for each element code::x:: of collection ::
+	## iterate over a numeric range  || link::#for::, link::#forBy:: || code::loopFunc.value(n):: for each number code::n:: in range
+	## iterate while some condition is true || link::Reference/Conditional-Execution#while:: || code::loopFunc.value:: for each iteration.
+	## embed in a stream an infinite number of times || link::#loop::|| a link::Classes/Routine::
+	## embed in a stream n times || link::#repeat::(n) (with argument) || a link::Classes/Routine::
+	## link::#Breaking from a loop#break from a loop:: || link::Classes/Function#-block:: || nil unless
+	specified; see
+	link::#Breaking from a loop#below::
+::
+
+section:: loop, repeat
+
+Create an object that behaves like a stream that returns values for a limited (or infinite) number of times.
+
+For a full list of implementing classes, see link::Overviews/Methods#loop:: and link::Overviews/Methods#repeat::
+
+definitionlist::
+## link::Classes/Function#-loop:: ||
+	repeats the function forever.
+code::
+	f = { 3.yield };
+	x = Routine({ f.loop });
+	10.do({ x.next.postln })
+::
+
+## link::Classes/Object#-repeat:: (n) ||
+	repeat to yield the object
+code::
+	x = 5;
+	y = x.repeat(6);
+	y.nextN(8);
+::
+
+## link::Classes/Pattern#-repeat:: (n) ||
+
+code::
+	x = Prand([1, 2]).repeat(6).asStream;
+	x.nextN(8);
+::
+
+## link::Classes/Pattern#-loop:: ||
+
+code::
+	x = Prand([1, 2]).loop.asStream;
+	x.nextN(8);
+::
+
+## link::Classes/Stream#-repeat:: (n) ||
+
+	embeds the stream repeatedly
+
+code::
+	x = Routine({ 3.do({ arg i; i.yield }) }).repeat(6);
+	x.nextN(8);
+::
+
+## link::Classes/Stream#-loop:: ||
+
+	embeds the stream repeatedly
+
+code::
+	x = Routine({ 3.do({ arg i; i.yield }) }).loop;
+	x.nextN(8);
+::
+::
