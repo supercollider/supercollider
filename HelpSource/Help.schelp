@@ -35,7 +35,7 @@ table::
 ::
 
 ## • soft:: ::link::Classes/ScIDE:: — A dedicated editor for SuperCollider with an integrated help system.||
-The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs. The full list of support editors is available at  link::https://github.com/supercollider/supercollider/wiki/Systems-interfacing-with-SC#editors::
+The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs. The full list of support editors is available at link::https://github.com/supercollider/supercollider/wiki/Systems-interfacing-with-SC#editors::
 ::
 
 The server and client link::Guides/ClientVsServer##communicate:: via Open Sound Control (link::http://opensoundcontrol.org/##OSC::
@@ -234,7 +234,7 @@ subsection:: For more information
 
 list::
 ##link::https://github.com/supercollider/supercollider/wiki##SuperCollider Wiki::
-##link::https://scsynth.org##SuoerCollider Forum::
+##link::https://scsynth.org##SuperCollider Forum::
 ::
 
 SECTION::Licensing
