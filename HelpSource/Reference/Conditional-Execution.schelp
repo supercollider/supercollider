@@ -5,177 +5,84 @@ related:: Classes/Boolean, Classes/Function, Classes/Exception, Reference/Syntax
 
 This page gives an overview of the conditional expressions in SuperCollider and the many ways to write them.
 
-Overview of recommended syntax (more variants exist, see link::#Syntax of conditional expressions#below::):
+section:: Quick Overview
+subsection:: Recommended syntax
+
 table:: 
 ## link::#if:: || code:: if(expr) { trueFuncBody } { falseFuncBody } ::
 ## link::#case:: || code:: case { testFuncBody1 } { trueFuncBody1 } ... { testFuncBodyN } { trueFuncBodyN } ::
 ## link::#switch:: || code:: switch(value) { testValue1 } { trueFuncBody1 } ... { testValueN } { trueFuncBodyN } ::
 ## link::#while:: || code:: while { testFuncBody } { loopFuncBody } ::
 ::
+More syntax variants exist, see link::#Syntax of conditional expressions#below::.
 
-note::
-To distinguish already instantiated code::Function:: object from the expressions that define them (their "bodies"), the present file adopts the following convention:
+note:: 
+Throughout this file, the placeholder code::someFuncBody:: is distinct from code::someFunc:: 
+(e.g., code::trueFunc:: vs. code::trueFuncBody::, code::testFunc:: vs. code::testFuncBody::, etc.).
+In distinction from code::someFunc::, code::someFuncBody:: does emphasis::not:: stand for an already instantiated Function object (a lambda function),
+but rather for an expression that can serve as a Function definition. 
 
-code:: someFunc :: emphasis::is equivalent to:: code:: { someFuncBody }:: 
+In other words, if code:: { "doThis".postln }:: is your code:: someFunc ::,
+then code:: "doThis".postln; ::---without the curly Brackets---is your code:: someFuncBody::.
+
+Consequently, strong::do not:: write
+code:: if([false,true].choose) { { "doThis".postln; } } ::, 
+
+but strong::do:: write
+code:: if([false,true].choose) { "doThis".postln; } ::. 
+::
+
+subsection:: Examples
+table::
+
+## code::
+x = 6.rand;
+if(x < 3) {
+	"oh"
+}  {
+    "weh"
+}
+:: || code::
+x = 0;
+while { x < 6 } { x.postln; x = x + 1}
+:: ## code::
+x = 6.rand;
+case 
+	{ x <= 1 } 	{ "oh" } 
+	{ x == 2 } 	{ "weh" } 
+	{ x == 3 } 	{ "oi" } 
+	{ x < 5 } 	{ "moi" }
+	{ "default" }
+:: || code::
+x = 6.rand;
+switch(x)
+	{ 0 } 	{ "oh" }
+	{ 1 } 	{ "weh" } 
+	{ 2 } 	{ "oi" } 
+	{ 3 } 	{ "moi" }
+	{ "default" }
+::
 ::
 
 Quick links to sections:
 
 numberedlist:: 
-## link::#Syntax of conditional expressions#syntactic generalities::,
 ## link::#if::,  link::#case::, link::#switch::, link::#while:: (specifics),
 ## link::#Optimization through inline expansion#optimization/inlining::, 
 ## link::#Audio Control Structures: Do not use .if etc. in Synths!#if-statements in Synths:: (strongly discouraged).
+## link::#Syntax of conditional expressions::,
 ::
 
 For other control structures, see link::Reference/loop:: and link::Classes/Exception::.
 
-section:: Syntax of conditional expressions
-
-Conditional Expressions in SuperCollider are implemented as strong::methods that are called on a receiver and which return a value::.
-This is distinct from many other languages where, e.g., code::if:: is a reserved identifier (keyword) independent of a particular receiver. 
-For instance, in C or in python, you cannot create a variable called code::if::, whereas in SuperCollider, you can (which does not mean that you should...).
-In SuperCollider, it is also possible to implement an code::.if:: method for a particular class that does something rather different
-(see link::#Audio Control Structures: Do not use .if etc. in Synths!#below::);
-despite these differences, SuperCollider's flexible syntax can make it emphasis::look:: as if code::if:: were just such a reserved identifier, 
-whereas it is in fact a method of link::Classes/Boolean::.
-
-Thus, SuperCollider's link::Reference/Syntax-Shortcuts##flexibility with respect to syntax:: is a potentially confusing factor when it comes to conditional expressions. 
-For instance, there are four equivalent ways to write a simple if-expression:
-
-table::
-	##                           || Receiver notation || Function call notation
-    ## Regular argument notation ||  code:: condition.if(trueFunc, falseFunc):: || code::if(condition, trueFunc, falseFunc)::
-    ## Argument(s) as trailing blocks || code:: condition.if { trueFuncBody } { falseFuncBody }:: || code::if(condition) { trueFuncBody } { falseFuncBody }::
-::
-
-While the receiver notation reflects the implementation in SuperCollider most closely, it is hard to read and rarely used in practice. 
-The two function call notations are the most commonly used. 
-The version with trailing argument blocks superficially resembles conditional syntax familiar from C or javascript:
-
-teletype::
-//if-statement in C or javascript:
-if (condition) { 
-	trueFuncBody
-} else { 
-	falseFuncBody
-}
-::
-
-code::
-//if-statement in SuperCollider, function call notation with trailing argument block 
-if (condition) { 
-	trueFuncBody
-} {  //no "else" in SuperCollider!
-	falseFuncBody
-}
-::
-
-subsection:: Trailing argument blocks
-
-The above C-like syntax is enabled in SuperCollider by a syntactic mechanism called "trailing argument blocks". 
-A strong::block:: is any expression enclosed in curly brackets, e.g. code:: { trueFuncBody } ::. 
-The syntax code::receiver.method { expr1 } { expr2 }:: is equivalent to code::receiver.method({ expr1 }, { expr2 })::. 
-That is, the round brackets and comma are omitted. 
-This can be combined with the function call syntax such that we can write code::method(receiver) { expr1 } { expr2 }::; 
-this in turn gives the above form of the if-statement in function call notation with trailing argument block. 
-
-However, the curly brackets also continue to indicate that their contents should serve as the expression of a link::Classes/Function:: instance. 
-This means, strong::first::, that use of trailing argument syntax will automatically instantiate Functions from teletype::expr1:: and teletype::expr2::; 
-strong::second::, that teletype::expr1:: and teletype::expr2:: should not already be Functions in their own right (unless you intend them to be). 
-
-In examples:
-code::
-//
-if(condition, trueFunc, falseFunc) 
-// is NOT equivalent to 
-if(condition) {
-	trueFunc //trueFunc is distinct from trueFuncBody above!
-} {
-	falseFunc //similarly here
-}
-// however, when we write
-t = { trueFuncBody };
-f = { falseFuncBody };
-// then indeed the following two expressions are equivalent 
-// (though only the latter will inline):
-if(condition, t, f);
-if (condition) { 
-	trueFuncBody
-} { 
-	falseFuncBody
-}
-
-// On the other hand, the following cases are either wrong 
-// or do different things than if(condition, t, f)
-
-if(condition) t f; //Syntax Error: 
-//	there are no curly brackets here that could indicate that t and f are arguments to if;
-
-if(condition) {t} {f}; //permissible but it may not be what you want to do.
-// equivalent to if(condition, {t}, {f}); 
-// i.e.will return t rather than t.value as usually intended.
-
-if(condition, trueFuncBody, falseFuncBody); // the bodies are expressions, not Function objects;
-// whether this works depends on how those expressions respond to the .value method.
-::
-
-subsubsection:: Receiver blocks (.case, .while)
-
-If the receiver is itself an expression surrounded by curly brackets, a special version of the trailing argument block syntax can be used:
-Here, not only the arguments can be written as trailing {}-enclosed blocks, but also the receiver itself.
-For instance, code::{ funcBody }.fork:: is often written as code::fork { funcBody }::.
-
-When the method takes arguments, these arguments must also be written as {}-enclosed blocks, and follow the receiver:
-
-code:: method { receiverFuncBody } { arg1FuncBody }  { arg2FuncBody }::
-
-Among the conditional expressions discussed here, this applies to .while and .case (because they are methods of link::Classes/Function::.)
-
-Example:
-code::
-//function call notation with receiver block and trailing argument block
-while { testFuncBody } { loopFuncBody }; 
-// abbreviation of  function call notation with trailing argument block
-while ({ testFuncBody }) { loopFuncBody };
-// in receiver notation
-{ testFuncBody }.while({ loopFuncBody })
-// distinct from C-style while, which will not work in SuperCollider:
-while (testFuncBody) { loopFuncBody }; // -> Syntax Error
-::
-
-subsubsection:: Return values (.if, .case, .switch)
-
-Unlike other common programming languages, conditional expressions (code::.if::, code::.case::, and code::.switch::) in SuperCollider have return values by default;
-these in turn can be assigned to variables. 
-For instance, in python, the following will produce an error:
-teletype::
-a = if True: "gobbledeegook"
-:: 
-and for conditional assignment, one has to write
-teletype::
-if True: a = "gobbledeegook" 
-::
-Whereas in SuperCollider, both analogous cases work:
-code::
-(
-var a = "oink"
-a = if([true,false].choose, {"gobbledeegook"});
-a.postln;
-)
-
-( 
-var a = "oink";
-    if([true,false].choose, {a = "gobbledeegook"});
-a.postln;
-)
-::
-
-Note however that assignment statements, when they are arguments to conditional expressions, 
-need to be Function instances (or at least respond to .value).
-(Most commonly this is done by enclosing them in curly brackets.)
-
 section:: Overview of Basic Conditional Expressions
+
+note:: 
+Reminder: code:: falseFunc == { falseFuncBody }::. 
+
+For instance, when code:: falseFunc == { "aaa" } ::, 
+then code:: falseFuncBody == "aaa".  ::
+::	
 
 subsection:: if
 
@@ -183,28 +90,30 @@ The code::.if:: method is called on a receiver teletype::expr:: which must retur
 (In other words, code::if:: is a method of Boolean.)
 
 In addition the method call takes two arguments: 
-a link::Classes/Function:: teletype::trueFunc:: to execute if the expression is true, 
-and another optional Function teletype::falseFunc:: to execute if teletype::expr:: is false. 
+a link::Classes/Function:: teletype::trueFunc:: to execute (call .value on) if the expression is true, 
+and another optional Function teletype::falseFunc:: to execute (call .value on) if teletype::expr:: is false. 
 
-The code::.if:: method returns the value of the function which is executed. 
-If teletype::falseFunc:: is not present and teletype::expr:: is false, then the result of the if message is code::nil::.
+The code::.if:: method returns the value of the function which is executed
+(i.e., code:: trueFunc.value :: if receiver is code::true::, 
+code:: falseFunc.value :: if receiver is code::false::).
 
+If teletype::falseFunc:: is not present and teletype::expr:: is false, then the code::.if:: method returns code::nil::.
 
 subsubsection:: Syntax
 code::
-// receiver notation, reflects the above explanation
-// but is hard to read and rarely used in practice 
-expr.if(trueFunc, falseFunc);
-
 // function call notation
 if(expr, trueFunc, falseFunc);
+if(0 < 3, {"aha"} {"brb"}); 
 
 // function call notation with trailing argument block
 // looks almost like C (without the "else").
 if(expr) { trueFuncBody } { falseFuncBody };
+if(0 < 3) {"aha"} {"brb"}; 
 
-// example:
-if(0 < 3) {"aha".postln} {"brb".postln}; 
+// not recommended: receiver notation, 
+// reflects the fact that .if is a method like any other;
+// but is hard to read and rarely used in practice 
+expr.if(trueFunc, falseFunc);
 ::
 
 subsubsection:: Examples
@@ -252,9 +161,9 @@ subsection:: case
 
 Function also implements a code::case:: method which allows for conditional evaluation with multiple cases. 
 The receiver here but can be thought of as simply the zeroth argument, representing the first of multiple "cases".
-Thus, the arguments including the receiver can be written as pairs of teletype::testFunction::s and corresponding teletype::trueFunction::s. 
-if a teletype::testFunction:: returns true, its corresponding teletype::trueFunction:: is evaluated and its code::.value:: returned.
-If no teletype::testFunction:: returns true, either teletype::nil:: is returned, or the code::.value:: of a teletype::defaultFunction:: supplied as the final argument.
+Thus, the arguments including the receiver can be written as pairs of teletype::testFunc::s and corresponding teletype::trueFunc::s. 
+if a teletype::testFunc:: returns true, its corresponding teletype::trueFunc:: is evaluated and its code::.value:: returned.
+If no teletype::testFunc:: returns true, either teletype::nil:: is returned, or the code::.value:: of a teletype::defaultFunc:: supplied as the final argument.
 Case is inlined (under the conditions outlined link::#Optimization through inline expansion#below::), and is therefore just as efficient as nested if statements.
 
 subsubsection:: Syntax
@@ -268,15 +177,15 @@ case
 	{ testFuncBody2 } { trueFuncBody2 }
 	...
 	{ testFuncBodyN } { trueFuncBodyN }
-	{ defaultFuncBody }; // defaultFunction can be omitted.
+	{ defaultFuncBody }; // defaultFunc can be omitted.
 
 // function call notation:
 case(   
-		testFunction1, trueFunction1,
-    	testFunction2, trueFunction2,
+		testFunc1, trueFunc1,
+    	testFunc2, trueFunc2,
 		...,
-		testFunctionN, trueFunctionN,
-		defaultFunction // defaultFunction can be omitted.
+		testFuncN, trueFuncN,
+		defaultFunc // defaultFunc can be omitted.
 	); 
 // in some cases the function call notation will appear to work even if 
 // arguments are not Function objects, as long as they respond to .value;
@@ -315,9 +224,9 @@ case(
 subsection:: switch
 
 Object implements a switch method which allows for conditional evaluation with multiple cases. 
-Each case is represented by a pair of two arguments: a teletype::testValue:: followed by a teletype::trueFunction::.
+Each case is represented by a pair of two arguments: a teletype::testValue:: followed by a teletype::trueFunc::.
 In distinction to link::#case::, the receiver is emphasis::not:: the first test function, but rather an object that other teletype::testValues:: are all compared to. 
-The receiver is compared against the teletype::testValue::s, and if the comparison returns true, the corresponding teletype::trueFunction:: will be evaluated and its value returned.
+The receiver is compared against the teletype::testValue::s, and if the comparison returns true, the corresponding teletype::trueFunc:: will be evaluated and its value returned.
 If it is false, the next teletype::testValue:: is compared, and so on. 
 The return value of code::switch:: in case of emphasis::no:: matching teletype::testValue:: is dependent on whether the number of arguments passed to it is even or odd. 
 If the number of arguments is even, code::switch:: will return teletype::nil:: in such cases, whereas if it is odd, the last argument should be a teletype::defaultFunction:: whose code::.value:: will be returned.
@@ -354,11 +263,11 @@ switch(value)
 
 //function call syntax without trailing arguments 
 switch(value,
-	testValue1, trueFunction1,
-	testValue2, trueFunction2,
+	testValue1, trueFunc1,
+	testValue2, trueFunc2,
 	...
-	testValueN, trueFunctionN,
-	defaultFunction // defaultFunction can be omitted
+	testValueN, trueFuncN,
+	defaultFunc // defaultFunc can be omitted
 );
 ::
 
@@ -459,7 +368,7 @@ while { testFuncBody } { loopFuncBody };
 // abbreviation of:
 while ({testFuncBody}) { loopFuncBody };
 // but the following (C syntax) will not work in SuperCollider:
-while (testFuncBody) { loopFuncBody } ; 
+while (testFuncBody) { loopFuncBody } ; // Syntax Error
 
 // function call without trailing argument.
 while({ testFuncBody }, { loopFuncBody });
@@ -581,7 +490,7 @@ but they are now no longer implemented as function calls, but as direct instruct
 
 section:: Audio Control Structures: Do not use .if etc. in Synths!
 
-The control structures discussed here are intended for use in sclang (i.e., language/client), not in scsynth (i.e., server). 
+The control structures discussed here is intended for use in sclang (i.e., language/client), not in scsynth (i.e., server). 
 Use of .if in signal processing contexts may appear to work in simple cases but is strong::not advised::. 
 Intead, use link::Classes/Select:: or link::Classes/SelectX:: and related classes.
 Also see link::Guides/UserFAQ#SynthDef Issues:: for more details.
@@ -634,4 +543,130 @@ code::
 		) * 0.2;
 	}.scope(bufsize: s.sampleRate/freq);
 )
+::  
+
+section:: Syntax of conditional expressions
+
+In SuperCollider, control structures implemented as strong::methods to be called on a receiver and which return a value::.
+This is distinct from many other languages where, e.g., code::if:: is a reserved
+identifier (keyword) independent of a particular receiver, and does not return a value. 
+For instance, in C or in python, you cannot create a variable called code::if::, whereas in SuperCollider, you can (which does not mean that you should...).
+In SuperCollider, it is also possible to implement an code::.if:: method for a particular class that does something rather different
+(see link::#Audio Control Structures: Do not use .if etc. in Synths!#below::);
+despite these differences, SuperCollider's flexible syntax can make it emphasis::look:: as if code::if:: were just such a reserved identifier, 
+whereas it is in fact a method of link::Classes/Boolean::.
+
+Thus, SuperCollider's link::Reference/Syntax-Shortcuts##flexibility with respect to syntax:: is a potentially confusing factor when it comes to conditional expressions. 
+For instance, there are four equivalent ways to write a simple if-expression:
+
+table::
+	##                           || Receiver notation || Function call notation
+    ## Regular argument notation ||  code:: condition.if(trueFunc, falseFunc):: || code::if(condition, trueFunc, falseFunc)::
+    ## Argument(s) as trailing blocks || code:: condition.if { trueFuncBody } { falseFuncBody }:: || code::if(condition) { trueFuncBody } { falseFuncBody }::
 ::
+
+While the receiver notation reflects the implementation in SuperCollider most closely, it is hard to read and rarely used in practice. 
+The two function call notations are the most commonly used. 
+The version with trailing argument blocks superficially resembles conditional syntax familiar from C or javascript:
+
+teletype::
+//if-statement in C or javascript:
+if (condition) { 
+	trueFuncBody
+} else { 
+	falseFuncBody
+}
+::
+
+code::
+//if-statement in SuperCollider, function call notation with trailing argument block 
+if (condition) { 
+	trueFuncBody
+} {  //no "else" in SuperCollider!
+	falseFuncBody
+}
+::
+
+subsection:: Trailing argument blocks
+
+The above C-like syntax is enabled in SuperCollider by a syntactic mechanism called "trailing argument blocks". 
+A strong::block:: is any expression enclosed in curly brackets, e.g. code:: { trueFuncBody } ::. 
+The syntax code::receiver.method { expr1 } { expr2 }:: is equivalent to code::receiver.method({ expr1 }, { expr2 })::. 
+That is, the round brackets and comma are omitted. 
+This can be combined with the function call syntax such that we can write code::method(receiver) { expr1 } { expr2 }::; 
+this in turn gives the above form of the if-statement in function call notation with trailing argument block. 
+
+However, even if the curly brackets now indicate where one argument ends and where the next one starts, 
+they also retain their usual role of showing that the enclosed expression should serve as the definition of a link::Classes/Function:: instance.  
+
+This means, strong::first::, that the use of trailing argument syntax implies that teletype::expr1:: and teletype::expr2:: emphasis::define:: Functions;
+strong::second::, that teletype::expr1:: and teletype::expr2:: should not
+already emphasis::be:: Functions in their own right (unless you intend them to be). 
+
+In examples:
+code::
+
+::
+
+subsubsection:: Receiver blocks (.case, .while)
+
+If the receiver is itself an expression surrounded by curly brackets, a special version of the trailing argument block syntax can be used:
+Here, not only the arguments can be written as trailing {}-enclosed blocks, but also the receiver itself.
+For instance, code::{ funcBody }.fork:: is often written as code::fork { funcBody }::.
+
+When the method takes arguments, these arguments must also be written as {}-enclosed blocks, and follow the receiver:
+
+code:: method { receiverFuncBody } { arg1FuncBody }  { arg2FuncBody }::
+
+Among the conditional expressions discussed here, this applies to .while and .case (because they are methods of link::Classes/Function::.)
+
+Example:
+code::
+//function call notation with receiver block and trailing argument block
+while { testFuncBody } { loopFuncBody }; 
+// abbreviation of  function call notation with trailing argument block
+while ({ testFuncBody }) { loopFuncBody };
+// in receiver notation
+{ testFuncBody }.while({ loopFuncBody })
+// distinct from C-style while, which will not work in SuperCollider:
+while (testFuncBody) { loopFuncBody }; // -> Syntax Error
+::
+
+subsubsection:: Return values (.if, .case, .switch)
+
+Unlike other common programming languages, conditional expressions (code::.if::, code::.case::, and code::.switch::) in SuperCollider have return values by default;
+these in turn can be assigned to variables. 
+For instance, in python, the following will produce an error:
+teletype::
+a = if True: "gobbledeegook"
+:: 
+and for conditional assignment, one has to write
+teletype::
+if True: a = "gobbledeegook" 
+::
+Whereas in SuperCollider, both analogous cases work:
+code::
+(
+var a = "oink"
+a = if([true,false].choose, {"gobbledeegook"});
+a.postln;
+)
+
+( 
+var a = "oink";
+    if([true,false].choose, {a = "gobbledeegook"});
+a.postln;
+)
+::
+
+However, this does not change the syntactic requirement that the assignment
+statement, when it is an argument to a conditional expression, must be a
+Function. In other words, the following is wrong:
+code::
+ ( 
+var a = "oink";
+    if([true,false].choose, a = "gobbledeegook"); //syntax error
+a.postln;
+)
+::
+This is because a Function is expected after the comma in code::if(expr, arg)::.
