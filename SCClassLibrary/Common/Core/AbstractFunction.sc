@@ -151,8 +151,8 @@ AbstractFunction {
 	wrap2 { arg function=1, adverb; ^this.composeBinaryOp('wrap2', function, adverb) }
 	excess { arg function=1, adverb; ^this.composeBinaryOp('excess', function, adverb) }
 	firstArg { arg function, adverb; ^this.composeBinaryOp('firstArg', function, adverb) }
-	rrand { arg function, adverb; ^this.composeBinaryOp('rrand', function, adverb) }
-	exprand { arg function, adverb; ^this.composeBinaryOp('exprand', function, adverb) }
+	rrand { arg function; ^this.composeBinaryOp('rrand', function) }
+	exprand { arg function; ^this.composeBinaryOp('exprand', function) }
 	@ { arg function, adverb; ^this.composeBinaryOp('@', function, adverb) }
 
 	// complex support
