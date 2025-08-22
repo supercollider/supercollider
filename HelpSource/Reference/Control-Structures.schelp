@@ -1,0 +1,14 @@
+title::Control Structures
+summary:: see conditional expressions, loop/repeat, Exception
+categories:: Language
+related:: Reference/Conditional-Execution, Reference/loop, Reference/Exception
+
+As of September 2025, the Control Structures helpfile has been reorganized/merged into separate files:
+
+list::
+ ##link::Reference/Conditional-Execution::
+ ##link::Reference/loop::
+ ##link::Reference/Exception::
+::
+
+
