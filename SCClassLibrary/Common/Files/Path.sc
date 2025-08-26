@@ -27,18 +27,17 @@ Path {
 	}
 
 	// access path parts - recommended new:
-	name { ^str.basename }
+	fileName { ^str.basename }
 	parent { ^this.class.new(str.dirname) }
 	// nested dirs as strings, drop initial empty string
 	parts { ^str.split(Platform.pathSeparator).select(_.notEmpty) }
 
 	// from PathName
-	fileName { ^str.basename }
 	fileNameWithoutExtension { ^str.basename.splitext[0] }
 	fileNameWithoutDoubleExtension { ^str.basename.splitext[0].splitext[0] }
 	extension { ^str.splitext.last ? "" }
 
-	// needed for PathName isFile, isFolder distinction
+	// pathSeparator needed for PathName isFile, isFolder distinction
 	dirname { ^str.dirname 	+/+ Platform.pathSeparator }
 	// also from PathName - need to keep this one here?
 	folderName { ^str.dirname.basename }
@@ -118,8 +117,7 @@ Path {
 
 	/* concatenation */
 	+/+ { | path |
-		var otherstr = path.respondsTo(\str).if({ path.str }, { path.asString });
-		^this.class.new(str +/+ otherstr)
+		^this.class.new(str +/+ path.asPathString)
 	}
 
 	// search
@@ -127,17 +125,17 @@ Path {
 	pathMatch { ^str.pathMatch } // compatibility
 
 	entries { ^pathMatch(str +/+ "*").collect { |str| this.class.new(str) } }
-	files { ^this.entries.select({ | item |item.isFile }) }
-	folders { ^this.entries.select({ | item | item.isFolder }) }
+	files { ^this.entries.select { | item |item.isFile } }
+	folders { ^this.entries.select { | item | item.isFolder } }
 
 	deepFiles {
-		^this.entries.collect({ | item |
+		^this.entries.collect { | item |
 			if(item.isFile, {
 				item
 			},{
 				item.deepFiles
 			})
-		}).flatIf { |item| item.isKindOf(String).not }
+		}.flatIf { |item| item.isKindOf(String).not }
 	}
 
 	filesDo { | func |
@@ -150,13 +148,13 @@ Path {
 	// text output
 	streamTree { | str, tabs = 0 |
 		str << this << Char.nl;
-		this.files.do({ | item |
-			tabs.do({ str << Char.tab });
+		this.files.do { | item |
+			tabs.do { str << Char.tab };
 			str << item.fileNameWithoutExtension  << Char.nl
-		});
-		this.folders.do({ | item |
+		};
+		this.folders.do { | item |
 			item.streamTree(str, tabs + 1);
-		});
+		};
 	}
 
 	dumpTree {
