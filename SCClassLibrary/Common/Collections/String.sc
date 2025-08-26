@@ -448,8 +448,8 @@ String[char] : RawArray {
 		var hasLeftSep, hasRightSep;
 
 		// if second arg is PathName, make it a PathName
-		if (path.isKindOf(PathName)) {
-			^PathName(this +/+ path.fullPath)
+		if (path.isKindOf(Path)) {
+			^path.class.new(this +/+ path.fullPath)
 		};
 
 		// convert to string before concatenation.
