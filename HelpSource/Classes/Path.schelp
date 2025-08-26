@@ -1,13 +1,13 @@
 TITLE:: Path
 summary:: handling file paths
-categories:: Files, Folders
+categories:: Files, Directories, Folders
 related:: Classes/PathName, Classes/String, Classes/File
 
 DESCRIPTION::
-Path is an update/replacement for the link::Classes/PathName:: class, modeled on Python Path/pathlib.
+Path is an update/replacement for the link::Classes/PathName:: class, loosely modeled on Python Path/pathlib.
 It collects path-related methods in one consistent interface.
-For backwards compatibility, PathName is kept as a subclass with its
-old interface; PathName and its suboptimal methods may be deprecated later on.
+For backwards compatibility, PathName is kept as a subclass with its old interface;
+PathName and its suboptimal methods may be deprecated later on.
 
 code::Path:: may later also add path-related functionality from link::Classes/String:: and link::Classes/File::. All path-accessing primitives expect a code::String:: as input,
 so any methods calling them should call code::obj.asPathString(path);:: this converts code::Path:: objects to strings, and leaves strings untouched.
@@ -95,26 +95,26 @@ Path("/Users/xyz/sc/myfile.preset.scd").fileNameWithoutDoubleExtension;
 ::
 
 METHOD:: parent
-the parent folder as a Path
+the parent directory as a Path
 code::
 Path("/Users/xyz/sc/myfile.scd").parent;
 ::
 
 METHOD:: dirname
-the parent folder as a String with trailing slash
+the parent directory as a String with trailing slash
 code::
 // as String
 Path("/Users/xyz/sc/myfile.scd").dirname;
 ::
 
 METHOD:: folderName
-the name of the folder above the filename as String
+the name of the directory above the filename as String
 code::
 Path("/Users/xyz/sc/myfile.scd").folderName;
 ::
 
 METHOD:: parts
-an array of the folder names in this path
+an array of the directory names in this path
 code::
 Path("/Users/xyz/sc/myfile.scd").parts.postcs;
 ::
@@ -193,7 +193,7 @@ Path("/Users/xyz/sc/myfile.scd").parts.postcs;
 ::
 
 METHOD:: exists
-check if a file or folder exists at this path
+check if a file or directory exists at this path
 code::
 Path(Main.filenameSymbol.asString).exists;
 Path("/Users/xyz/sc/myfile.scd").exists;
@@ -201,7 +201,7 @@ Path(Main.filenameSymbol.asString.dirname).exists;
 ::
 
 METHOD:: isFile, isFolder, isDir
-check whether a path is a file or a folder/dir.
+check whether a path is a file or a folder/directory.
 This does not test if the file exists,
 and only distinguishes based on a trailing separator or not, as this is how pathMatch makes that distinction.
 code::
@@ -258,13 +258,13 @@ Path(Platform.classLibraryDir).files.printAll;
 ::
 
 METHOD:: folders
-array of all folders at path, as path objects
+array of all folders/directories found at path, as Path objects
 code::
 Path(Platform.classLibraryDir).folders.printAll;  "";
 ::
 
 METHOD:: deepFiles
-array of all files at path, including files in subfolders.
+array of all files at path, including files in subfolders/directories.
 code::
 // many deep files in classLibraryDir
 Path(Platform.classLibraryDir +/+ "Common").deepFiles.printAll.size;
