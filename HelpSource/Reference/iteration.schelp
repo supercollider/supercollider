@@ -1,7 +1,7 @@
 title:: Iteration
 summary:: for, do, loop, repeat
 categories:: Core,Common methods, Streams-Patterns-Events
-related::  Object, Function, Routine, Stream, Pattern
+related::  Classes/Object, Classes/Function, Classes/Routine, Classes/Stream, Classes/Pattern
 
 (This page combines material formerly in the Control Structures and loop/repeat
 helpfiles.)
