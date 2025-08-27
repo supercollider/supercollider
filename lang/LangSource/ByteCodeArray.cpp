@@ -24,9 +24,10 @@
 #include "InitAlloc.h"
 #include "ByteCodeArray.h"
 #include "Opcodes.h"
+#include <cstdint>
 
 ByteCodes gCompilingByteCodes;
-long totalByteCodes = 0;
+std::int64_t totalByteCodes = 0;
 
 void initByteCodes() {
     if (gCompilingByteCodes) {
@@ -35,7 +36,7 @@ void initByteCodes() {
     }
 }
 
-int compileOpcode(long opcode, long operand1) {
+int compileOpcode(std::int64_t opcode, std::int64_t operand1) {
     int retc;
     if (operand1 <= 15) {
         compileByte((opcode << 4) | operand1);
@@ -52,13 +53,13 @@ int compileOpcode(long opcode, long operand1) {
     return retc;
 }
 
-void compileJump(long opcode, long jumplen) {
+void compileJump(std::int64_t opcode, std::int64_t jumplen) {
     compileByte((opSpecialOpcode << 4) | opcode);
     compileByte((jumplen >> 8) & 0xFF);
     compileByte(jumplen & 0xFF);
 }
 
-void compileByte(long byte) {
+void compileByte(std::int64_t byte) {
     if (gCompilingByteCodes == nullptr) {
         gCompilingByteCodes = allocByteCodes();
     }
@@ -70,7 +71,7 @@ void compileByte(long byte) {
     *gCompilingByteCodes->ptr++ = byte;
 }
 
-int compileNumber(unsigned long value) {
+int compileNumber(std::uint64_t value) {
     compileByte((value >> 24) & 0xFF);
     compileByte((value >> 16) & 0xFF);
     compileByte((value >> 8) & 0xFF);
@@ -78,7 +79,7 @@ int compileNumber(unsigned long value) {
     return 4;
 }
 
-int compileNumber24(unsigned long value) {
+int compileNumber24(std::uint64_t value) {
     compileByte((value >> 16) & 0xFF);
     compileByte((value >> 8) & 0xFF);
     compileByte(value & 0xFF);

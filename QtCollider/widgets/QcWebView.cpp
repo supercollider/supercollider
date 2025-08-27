@@ -31,6 +31,8 @@
 #    include <QKeyEvent>
 #    include <QApplication>
 #    include <QStyle>
+#    include <QStandardPaths>
+#    include <QWebEngineProfile>
 
 #    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
 #        include <QWebEngineCallback>
@@ -43,8 +45,8 @@
 
 namespace QtCollider {
 
-WebView::WebView(QWidget* parent): QWebEngineView(parent), _editable(false) {
-    QtCollider::WebPage* page = new WebPage(this);
+WebView::WebView(QWidget* parent, QWebEngineProfile* profile): QWebEngineView(parent), _editable(false) {
+    QtCollider::WebPage* page = new WebPage(this, profile);
     setPage(page);
     connectPage(page);
 
@@ -57,6 +59,8 @@ WebView::WebView(QWidget* parent): QWebEngineView(parent), _editable(false) {
     page->action(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
     page->action(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
     page->action(QWebEnginePage::Reload)->setShortcut(QKeySequence::Refresh);
+    page->action(QWebEnginePage::Back)->setShortcut(QKeySequence::Back);
+    page->action(QWebEnginePage::Forward)->setShortcut(QKeySequence::Forward);
 
     connect(this, SIGNAL(loadFinished(bool)), this, SLOT(pageLoaded(bool)));
 }

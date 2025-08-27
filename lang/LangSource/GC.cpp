@@ -145,7 +145,7 @@ void fatalerror(const char* str) {
 
 inline int ScanSize(PyrObjectHdr* obj) { return obj->obj_format <= obj_slot ? obj->size : 0; }
 
-HOT void PyrGC::ScanSlots(PyrSlot* inSlots, long inNumToScan) {
+HOT void PyrGC::ScanSlots(PyrSlot* inSlots, std::int64_t inNumToScan) {
     if (inNumToScan == 0)
         return;
 
@@ -234,7 +234,7 @@ void GCSet::MinorFlip() {
 
 PyrProcess* newPyrProcess(VMGlobals* g, PyrClass* procclassobj);
 
-PyrGC::PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, long poolSize) {
+PyrGC::PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize) {
     mVMGlobals = g;
     mPool = inPool;
     // mCurSet = 0;
@@ -294,7 +294,7 @@ PyrGC::PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, long p
     // assert(SanityCheck());
 }
 
-PyrObject* PyrGC::NewPermanent(size_t inNumBytes, long inFlags, long inFormat) {
+PyrObject* PyrGC::NewPermanent(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat) {
     // obtain size info
     int32 alignedSize = (inNumBytes + kAlignMask) & ~kAlignMask; // 16 byte align
     int32 numSlots = alignedSize / sizeof(PyrSlot);
@@ -331,7 +331,7 @@ void PyrGC::BecomeImmutable(PyrObject* inObject) { inObject->obj_flags |= obj_im
 
 void DumpBackTrace(VMGlobals* g);
 
-HOT PyrObject* PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inRunCollection) {
+HOT PyrObject* PyrGC::New(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inRunCollection) {
     PyrObject* obj = nullptr;
 
     if (inFlags & obj_permanent) {
@@ -350,7 +350,7 @@ HOT PyrObject* PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool i
     int32 sizeclass = LOG2CEIL(numSlots);
     sizeclass = sc_min(sizeclass, kNumGCSizeClasses - 1);
 
-    int32 credit = 1L << sizeclass;
+    int32 credit = 1LL << sizeclass;
     mAllocTotal += credit;
     mNumAllocs++;
 
@@ -370,7 +370,7 @@ HOT PyrObject* PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool i
 }
 
 
-HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool inAccount) {
+HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inAccount) {
     PyrObject* obj = nullptr;
 
 #ifdef GC_SANITYCHECK
@@ -385,7 +385,7 @@ HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, b
     int32 sizeclass = LOG2CEIL(numSlots);
     sizeclass = sc_min(sizeclass, kNumGCSizeClasses - 1);
 
-    int32 credit = 1L << sizeclass;
+    int32 credit = 1LL << sizeclass;
     mAllocTotal += credit;
     mNumAllocs++;
     mNumToScan += credit;
@@ -415,7 +415,7 @@ PyrObject* PyrGC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject* inObject, boo
 
     int32 sizeclass = 1;
 
-    int32 credit = 1L << sizeclass;
+    int32 credit = 1LL << sizeclass;
     mNumToScan += credit;
     mAllocTotal += credit;
     mNumAllocs++;
@@ -552,11 +552,11 @@ HOT bool PyrGC::ScanOneObj() {
         DoPartialScan(size);
     } else if (size > 0) {
         ScanSlots(obj->slots, size);
-        mNumToScan -= 1L << obj->obj_sizeclass;
+        mNumToScan -= 1LL << obj->obj_sizeclass;
         if (mNumToScan < 0)
             mNumToScan = 0;
     } else {
-        mNumToScan -= 1L << obj->obj_sizeclass;
+        mNumToScan -= 1LL << obj->obj_sizeclass;
         if (mNumToScan < 0)
             mNumToScan = 0;
     }

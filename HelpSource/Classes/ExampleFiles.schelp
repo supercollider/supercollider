@@ -1,7 +1,7 @@
 TITLE:: ExampleFiles
 summary:: A shortcut to example sounds bundled with SuperCollider
 categories:: Files
-related:: Classes/Buffer, Classes/Soundfile, Classes/File, Classes/PathName
+related:: Classes/Buffer, Classes/SoundFile, Classes/File, Classes/PathName
 
 DESCRIPTION::
 Provides a shortcut to the paths of example files which are bundled with SuperCollider and are located in LINK::Classes/Platform#*resourceDir::.

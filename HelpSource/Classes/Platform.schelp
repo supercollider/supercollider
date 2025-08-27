@@ -85,12 +85,18 @@ A link::Classes/Symbol:: naming the architecture for which this version of Super
 Returns one of 'AArch32' (32-bit ARM), 'AArch64' (64-bit ARM, introduced in ARMv8), 'Itanium64', 'i386', 'x86_64',
 'PowerPC', or 'unknown' if the architecture is unidentifiable.
 
+method::systemInformation
+Return a dictionary with system/context information like SuperCollider, QT, and OS versions.
+
+method::postBugReportInfo
+Post system information that is useful to attach to bug reports.
+
 subsection:: Features
 
 method:: when
 Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
 code::
-Platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
+Platform.when(#[\Document, \Window], { "yeehah!".postln });
 ::
 
 instancemethods::
@@ -170,6 +176,9 @@ method:: killAll
 kill all processes as defined by cmdLineArgs.
 argument:: cmdLineArgs
 a string containing one or several process names.
+argument:: force
+if true (default), the process will be closed forcefully, using code::killall -KILL:: on *nix and code::taskkill /f:: on Windows.
+
 code::
 // e.g. kill all possibly running servers (scsynth or supernova)
 thisProcess.platform.killAll("scsynth supernova");
@@ -179,6 +188,11 @@ method:: killProcessByID
 kill a single process as identified by its process ID.
 argument:: pid
 an Integer which is the pid of the process to kill.
+argument:: force
+if true (default), the process will be closed forcefully, using code::kill -KILL:: on *nix and code::taskkill /f:: on Windows.
+argument:: subprocesses
+if true (default), the subprocesses (children) of the process will be closed as well; this is useful if the process is a shell that started a subprocess, e.g. when using code::String -unixCmd::
+
 code::
 // start a server program from the cmdLine for testing
 ~pid = unixCmd(Server.program + s.options.asOptionsString(57100));
@@ -197,7 +211,6 @@ method:: hasFeature
 Return true if the feature aSymbol is present in the runtime system. aSymbol can refer to explicitly declared features as well as class and primitive names.
 code::
 thisProcess.platform.hasFeature(\Object);
-thisProcess.platform.hasFeature('_SCWindow_BeginFullScreen');
 thisProcess.platform.hasFeature('_myFuncyPrimitive');
 
 thisProcess.platform.declareFeature('superCrazyCompositionSystem');
@@ -207,5 +220,5 @@ thisProcess.platform.hasFeature('superCrazyCompositionSystem');
 method:: when
 Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
 code::
-thisProcess.platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
+thisProcess.platform.when(#[\Document, \Window], { "yeehah!".postln });
 ::

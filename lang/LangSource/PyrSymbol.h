@@ -30,7 +30,7 @@ A PyrSymbol is a unique string that resides in a global hash table.
 
 struct PyrSymbol {
     char* name;
-    long hash;
+    std::int64_t hash;
     short specialIndex;
     uint8 flags;
     uint8 length;

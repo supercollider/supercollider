@@ -233,14 +233,14 @@ ServerMeter {
 
 	*new { |server, numIns, numOuts|
 
-		var window, meterView;
+		var window, meterView, freqScopeHeight = 356;
 
 		numIns = numIns ?? { server.options.numInputBusChannels };
 		numOuts = numOuts ?? { server.options.numOutputBusChannels };
 
-		window = Window.new(server.name ++ " levels (dBFS)",
-			Rect(5, 305, ServerMeterView.getWidth(numIns, numOuts), ServerMeterView.height),
-			false);
+		window = Window.new(server.name ++ " levels (dBFS)", resizable: false)
+		.bounds_(Rect(0, 0, ServerMeterView.getWidth(numIns, numOuts), ServerMeterView.height))
+		.moveToBottom(freqScopeHeight);
 
 		meterView = ServerMeterView(server, window, 0@0, numIns, numOuts);
 		meterView.view.keyDownAction_( { arg view, char, modifiers;
@@ -262,5 +262,14 @@ ServerMeter {
 
 	isClosed {
 		^window.isClosed
+	}
+
+	position_ { |point|
+		point = point.asPoint;
+		window.bounds_(window.bounds.left_(point.x).top_(point.y)).front
+	}
+
+	position {
+		^Point(window.bounds.left, window.bounds.bottom - window.bounds.height)
 	}
 }

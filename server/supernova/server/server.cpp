@@ -27,7 +27,9 @@
 #include "server.hpp"
 #include "sync_commands.hpp"
 
-#include "nrt_synthesis.hpp"
+#ifndef NO_LIBSNDFILE
+#    include "nrt_synthesis.hpp"
+#endif
 
 #include "sc/sc_synth_definition.hpp"
 #include "sc/sc_ugen_factory.hpp"
@@ -199,9 +201,13 @@ void nova_server::group_free_deep(abstract_group* group) {
 
 
 void nova_server::run_nonrt_synthesis(server_arguments const& args) {
+#ifndef NO_LIBSNDFILE
     start_dsp_threads();
     non_realtime_synthesis_engine engine(args);
     engine.run();
+#else
+    std::cout << "Warning: Non-RT synthesis not supported as supernova was compiled without libsndfile" << std::endl;
+#endif
 }
 
 void nova_server::rebuild_dsp_queue(void) {

@@ -9,7 +9,7 @@ An AbstractFunction is an object which responds to a set of messages that repres
 mathematical functions. Subclasses override a smaller set of messages to respond
 to the mathematical functions.
 
-The intent is to provide a mechanism for functions that do not calculate values directly but instead compose structures for calculating (lazy evaluation).
+It provides a mechanism for functions that do not calculate values directly but instead compose structures for calculating (lazy evaluation).
 
 Function, Pattern, Stream and UGen are subclasses of AbstractFunction.
 For example, if you multiply two UGens together the receiver responds by returning a new
@@ -118,6 +118,7 @@ a = Pseries(220, 220, inf).cpsmidi; a.asStream.nextN(12); // overtone series as 
 // follow but round to next midinote
 { a = Pitch.kr(SoundIn.ar).at(1); Pulse.ar(a.cpsmidi.round.midicps) * 0.1 }.play;
 ::
+
 method::midiratio
 method::ratiomidi
 method::ampdb
@@ -163,33 +164,35 @@ See: link::Classes/BinaryOpFunction::.
 
 Examples:
 code::
-(
+
 // Add two functions:
-var x = { |x| x + 1000 } + { |x| x * 100 };
-// Evaluate the result, passing in one argument:
+x = { |x| x + 1000 } + { |x| x * 100 };
+// Evaluate the result, passing in one argument
 x.value(2); // posts 1202
-)
-// either operand can be another object:
-(
-// Add two functions:
-var x = 1871 + { |x| x * 12 };
+
+// Either operand can be another object
+// Add a number and a function:
+x = 1871 + { |x| x * 12 };
 x.value(12);
-)
+
+// keywords args are passed to each operand:
+x = { |t, u| t + 1 } * { |t, u| u - 1 };
+x.(t:2, u: 10) // 3 * 9
 ::
+
 code::
-(
 // Add two UGens
-{
- SinOsc.ar(440, 0, 0.2) + PinkNoise.ar(0.1);
-}.play
-)
+{ SinOsc.ar(440, 0, 0.2) + PinkNoise.ar(0.1); }.play
 ::
-// Add two Patterns
+
 code::
+// Add two Patterns
 (Pseq([1, 2, 3, 4]) + Prand([0, 0.1, -0.1], inf)).asStream.nextN(5);
 ::
-// Add two NodeProxies
+
+
 code::
+// Add two NodeProxies
 Ndef(\x, { SinOsc.ar(440, 0, 0.2) });
 Ndef(\y, { PinkNoise.ar(0.1) });
 Ndef(\z, Ndef(\x) + Ndef(\y)).play;
@@ -456,6 +459,7 @@ All of the following messages send the message code::composeNAryOp:: to the rece
 binary message selector and the other operands as arguments.
 See link::Classes/NAryOpFunction::.
 
+
 method::clip
 method::wrap
 method::fold
@@ -549,7 +553,7 @@ returns:: a link::Classes/Plotter::
 discussion::
 code::
 // plot x.squared transfer function with x between -1 and 1.
-// here the x-axis shows n, the number of points 
+// here the x-axis shows n, the number of points
 { |x| x.squared }.plotGraph(n: 200, from: -1, to: 1);
 
 // as plotGraph returns a Plotter, you can apply a domain spec to show x value on the x-axis
@@ -558,22 +562,23 @@ code::
 
 subsection::Function Composition
 
-When unary, binary or n-ary operators are applied to an abstract function, it returns an object that represents
-this operation, without evaluating the function: link::Classes/UnaryOpFunction::, link::Classes/BinaryOpFunction::, link::Classes/NAryOpFunction::.
-Note that different subclasses like link::Classes/Pattern:: or link::Classes/UGen:: have their own composition scheme analogous to the one of AbstractFunction itself. For more about functions, see link::Classes/Function::.
+The composition operator code::<>:: is used to perform function chaining (function composition), whereby math::f \cdot g = f(g(x))::.
+Note that different subclasses like link::Classes/Pattern:: or link::Classes/UGen:: have their own composition scheme analogous to the one of AbstractFunction itself.
 
 code::
 // compose a function that will return an array of random length
-a = { |n| { 16.rand } ! n } <> { |x, y| rrand(4, 8) };
+a = { |n| { 16.rand } ! n } <> { rrand(4, 8) };
 a.value;
 // compose a function from a that selects only odd values
 b = { |x| x.select(_.odd) } <> a;
 b.value;
 
-// operator composition
-// compose a function that multiplies a random integer by 2
-{ rrand(1, 5) } * 2
+// call arguments are passed to the first (rightmost) function:
+a = { |n| { 16.rand } ! n } <> { |n| n + 2 };
+a.value(3);
 ::
+
+
 
 note::
 The comparison operators code::<::, code::<=::, code::>:: and code::>=:: automatically perform function composition, as does code::*:: in the example above.

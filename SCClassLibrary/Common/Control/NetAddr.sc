@@ -22,12 +22,22 @@ NetAddr {
 	}
 
 	*matchLangIP {|ipstring|
-		_MatchLangIP
+		ipstring = ipstring.asString;
+		^this.localIPs.includesEqual(ipstring);
+	}
+
+	*localIP { arg network;
+		_LocalIP
 		^this.primitiveFailed;
 	}
 
-	*localEndPoint {
-		^this.new(this.langIP, this.langPort)
+	*localIPs { arg family = \all;
+		_LocalIPs
+		^this.primitiveFailed;
+	}
+
+	*localEndPoint { arg port, network;
+		^this.new(this.localIP(network), port ?? { this.langPort })
 	}
 
 	*localAddr {
@@ -56,7 +66,7 @@ NetAddr {
 			}
 		}
 	}
-	
+
 	*connections {
 		^connections.copy;
 	}

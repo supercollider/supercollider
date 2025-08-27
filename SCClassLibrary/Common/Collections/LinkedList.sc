@@ -64,14 +64,16 @@ LinkedList : SequenceableCollection {
 		});
 		size = size + 1;
 	}
-	remove { arg obj;
+	remove { |obj|
 		var node = this.findNodeOfObj(obj);
 		if ( node.notNil, {
 			if (head == node, { head = node.next; });
 			if (tail == node, { tail = node.prev; });
 			node.remove;
 			size = size - 1;
+			^obj
 		});
+		^nil
 	}
 	pop {
 		var node;

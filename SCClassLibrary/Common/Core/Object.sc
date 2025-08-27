@@ -96,6 +96,9 @@ Object {
 		// perform only if Function. see Function-functionPerformList
 		^this
 	}
+	valueArgs { | args, kwargs|
+		^this.performArgs(\value, args, kwargs)
+	}
 
 	// super.perform(selector,arg) doesn't do what you might think.
 	// \perform would be looked up in the superclass, not the selector you are interested in.
@@ -328,6 +331,8 @@ Object {
 		OnError.run;
 		this.prHalt
 	}
+	// _Halt will exit the interpreter, but isn't by itself an error, see Integer.exit.
+	// Object.halt does trigger OnError.
 	prHalt {
 		_Halt
 		^this.primitiveFailed

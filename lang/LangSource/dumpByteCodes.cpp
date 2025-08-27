@@ -23,9 +23,9 @@
 #include "PyrSymbol.h"
 #include "SCBase.h"
 
-void numBlockTemps(PyrBlock* block, long level, long* numArgNames, long* numVarNames);
-void numBlockTemps(PyrBlock* block, long level, long* numArgNames, long* numVarNames) {
-    long i;
+void numBlockTemps(PyrBlock* block, std::int64_t level, std::int64_t* numArgNames, std::int64_t* numVarNames);
+void numBlockTemps(PyrBlock* block, std::int64_t level, std::int64_t* numArgNames, std::int64_t* numVarNames) {
+    std::int64_t i;
     for (i = 0; i < level; ++i) {
         block = slotRawBlock(&block->contextDef);
     }
@@ -40,9 +40,9 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
     PyrSlot* slot;
     PyrSymbol* selector;
     char str[256];
-    long op1, op2, op3, op4, op5;
-    long i, n, ival, jmplen;
-    long numArgNames, numVarNames, numTemps;
+    std::int64_t op1, op2, op3, op4, op5;
+    std::int64_t i, n, ival, jmplen;
+    std::int64_t numArgNames, numVarNames, numTemps;
     unsigned char* ipbeg;
 
     if (theClass == nullptr) {
@@ -760,7 +760,7 @@ bool detectSendSelector(PyrBlock* theBlock, PyrClass* theClass, unsigned char** 
 bool detectSendSelector(PyrBlock* theBlock, PyrClass* theClass, unsigned char** ipp, PyrSymbol* testSelector) {
     PyrBlock* block;
     PyrSymbol* selector = nullptr;
-    long op1, op2, op3, op4, op5, op6;
+    std::int64_t op1, op2, op3, op4, op5, op6;
     unsigned char* ip = *ipp;
     if (theClass == nullptr) {
         block = theBlock;
@@ -1193,7 +1193,7 @@ void dumpByteCodes(PyrBlock* theBlock);
 void dumpByteCodes(PyrBlock* theBlock) {
     PyrClass* theClass;
     PyrBlock* block;
-    long size;
+    std::int64_t size;
     unsigned char *ip, *ipbeg, *ipend;
 
     if (slotRawInt8Array(&theBlock->code) == nullptr) {
@@ -1227,7 +1227,7 @@ bool detectSendSelectorIn(PyrBlock* theBlock, PyrSymbol* testSelector) {
     PyrClass* theClass;
     PyrBlock* block;
     PyrSymbol* selector;
-    long size;
+    std::int64_t size;
     unsigned char *ip, *ipbeg, *ipend;
 
     if (slotRawInt8Array(&theBlock->code) == nullptr) {

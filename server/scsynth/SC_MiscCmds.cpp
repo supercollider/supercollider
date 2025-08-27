@@ -1406,6 +1406,23 @@ SCErr meth_b_setn(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRe
     return kSCErr_None;
 }
 
+SCErr meth_b_setSampleRate(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
+SCErr meth_b_setSampleRate(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+    sc_msg_iter msg(inSize, inData);
+    int bufindex = msg.geti();
+    SndBuf* buf = World_GetBuf(inWorld, bufindex);
+    SndBuf* nrtBuf = World_GetNRTBuf(inWorld, bufindex);
+    if (!buf || !nrtBuf)
+        return kSCErr_Failed;
+
+    auto proposedSampleRate = msg.getf();
+    double newSampleRate = proposedSampleRate > 0.0 ? proposedSampleRate : inWorld->mSampleRate;
+    buf->samplerate = nrtBuf->samplerate = newSampleRate;
+    buf->sampledur = nrtBuf->sampledur = 1.0 / newSampleRate;
+
+    return kSCErr_None;
+}
+
 
 SCErr meth_b_fill(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
 SCErr meth_b_fill(World* inWorld, int inSize, char* inData, ReplyAddress* /*inReply*/) {
@@ -1930,6 +1947,7 @@ void initMiscCommands() {
     NEW_COMMAND(b_zero);
     NEW_COMMAND(b_set);
     NEW_COMMAND(b_setn);
+    NEW_COMMAND(b_setSampleRate);
     NEW_COMMAND(b_fill);
     NEW_COMMAND(b_gen);
 

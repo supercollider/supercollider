@@ -14,6 +14,10 @@ list::
 ## SymbolArray - symbols
 ::
 
+note::
+The overflow behavior of an element in an Int8Array is undefined. This occurs whenever the result of an operation does not fit in the range of values supported by the return type, in this case, an 8-bit signed integer.
+::
+
 INSTANCEMETHODS::
 
 method::readFromStream

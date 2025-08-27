@@ -52,10 +52,16 @@ attacktime > decaytime then the impulse response is inverted.
 Examples::
 
 code::
+// A reminder of the order of args and their default values:
+// Formlet.ar(in: 0.0, freq: 440.0, attacktime: 1.0, decaytime: 1.0, mul: 1.0, add: 0.0)
+
+// **Example #1:
 { Formlet.ar(Impulse.ar(20, 0.5), 1000, 0.01, 0.1) }.play;
 
+// **Example #2:
 { Formlet.ar(Blip.ar(XLine.kr(10, 400, 8), 1000, 0.1), 1000, 0.01, 0.1) }.play;
 
+// **Example #3:
 (
 // modulating formant frequency
 {
@@ -65,27 +71,40 @@ code::
 }.play;
 )
 
+// **Example #4:
 (
 // mouse control of frequency and decay time.
 {
 	var in;
-	in = Blip.ar(SinOsc.kr(5, 0, 20, 300), 1000, 0.1);
-	Formlet.ar(in,
-		0.005, MouseX.kr(0.01, 0.2, 1));
-		MouseY.kr(700, 2000, 1),
+
+	in = Blip.ar(freq:SinOsc.kr(freq:5, mul:20, add:300), numharm:100, mul:0.1);
+
+	Formlet.ar(
+		in: in,
+		freq: MouseY.kr(minval: 700, maxval: 2000, warp: 1),
+		attacktime: 0.005,
+		decaytime: MouseX.kr(minval: 0.01, maxval: 0.2, warp: 1),
+	);
+
 }.play;
 )
 
+// **Example #5:
 (
-// mouse control of frequency and decay time.
+// mouse control of frequency and attack time.
 {
 	var freq;
+
 	freq = Formlet.kr(
-		Dust.kr(10 ! 2),
-		MouseY.kr(7, 200, 1),
-		0.005, MouseX.kr(0.1, 2, 1)
+		in: Dust.kr(10 ! 2),
+		freq: MouseY.kr(minval:7, maxval:200, warp:1),
+		attacktime: MouseX.kr(minval:0.1, maxval:2, warp:1),
+		decaytime: 0.005,
 	);
-	SinOsc.ar(freq * 200 + [500, 600] - 100) * 0.2
+
+	SinOsc.ar(freq * 200 + [500, 600] - 100) * 0.2;
+
 }.play;
 )
+
 ::

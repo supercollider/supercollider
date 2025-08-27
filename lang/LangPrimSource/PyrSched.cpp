@@ -184,7 +184,7 @@ bool getheap(VMGlobals* g, PyrObject* heapArg, double* schedtime, PyrSlot* task)
 }
 
 void offsetheap(VMGlobals* g, PyrObject* heap, double offset) {
-    long i;
+    std::int64_t i;
     for (i = 0; i < heap->size; i += 2) {
         SetRaw(&heap->slots[i], slotRawFloat(&heap->slots[i]) + offset);
         // post("%3d %9.2f %9.2f\n", i>>1, heap->slots[i].uf, offset);
@@ -220,7 +220,7 @@ int64 gHostStartNanos = 0;
 
 int64 gElapsedOSCoffset = 0;
 
-const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
+const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800ULL; /* 17 leap years */
 
 static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
@@ -447,7 +447,7 @@ static void schedRunFunc() {
             SetObject(g->sp, s_systemclock->u.classobj);
 
             runAwakeMessage(g);
-            long err = slotDoubleVal(&g->result, &delta);
+            std::int64_t err = slotDoubleVal(&g->result, &delta);
             if (!err) {
                 // add delta time and reschedule
                 double time = schedtime + delta;
@@ -809,7 +809,7 @@ void* TempoClock::Run() {
             SetObject(g->sp, mTempoClockObj);
 
             runAwakeMessage(g);
-            long err = slotDoubleVal(&g->result, &delta);
+            std::int64_t err = slotDoubleVal(&g->result, &delta);
             if (!err) {
                 // add delta time and reschedule
                 double beats = mBeats + delta;
@@ -839,7 +839,7 @@ void TempoClock::Flush()
         ++g->sp;	SetObject(g->sp, mTempoClockObj);
 
         runAwakeMessage(g);
-        long err = slotDoubleVal(&g->result, &delta);
+        std::int64_t err = slotDoubleVal(&g->result, &delta);
         if (!err) {
             // add delta time and reschedule
             double beats = mBeats + delta;

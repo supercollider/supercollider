@@ -29,7 +29,7 @@
 
 class SC_LanguageConfig;
 extern SC_LanguageConfig* gLanguageConfig;
-extern const char* SCLANG_YAML_CONFIG_FILENAME;
+extern const std::string SCLANG_YAML_CONFIG_FILENAME;
 
 /**
  * \brief Language configuration settings.

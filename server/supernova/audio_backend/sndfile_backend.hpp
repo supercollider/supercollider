@@ -56,6 +56,11 @@ class sndfile_backend : public detail::audio_backend_base<sample_type, float, bl
 public:
     sndfile_backend(void): read_frames(queue_size), write_frames(queue_size) {}
 
+    ~sndfile_backend() {
+        if (audio_is_active())
+            deactivate_audio();
+    }
+
     size_t get_audio_blocksize(void) const { return block_size_; }
 
     std::vector<sample_type> const& get_peaks() const { return max_peaks; }
@@ -103,6 +108,8 @@ public:
     bool audio_is_active(void) { return running.load(std::memory_order_acquire); }
 
     void activate_audio(void) {
+        assert(running.load() == false);
+
         running.store(true);
 
         if (input_file) {
@@ -110,12 +117,13 @@ public:
             reader_thread = std::thread(std::bind(&sndfile_backend::sndfile_read_thread, this));
         }
 
-
         writer_running.store(true);
         writer_thread = std::thread(std::bind(&sndfile_backend::sndfile_write_thread, this));
     }
 
     void deactivate_audio(void) {
+        assert(running.load() == true);
+
         running.store(false);
 
         if (input_file) {
@@ -298,7 +306,7 @@ private:
     std::thread reader_thread, writer_thread;
     boost::lockfree::spsc_queue<sample_type> read_frames, write_frames;
     boost::sync::semaphore read_semaphore, write_semaphore;
-    std::atomic<bool> running = { false }, reader_running = { false }, writer_running = { false };
+    std::atomic<bool> running { false }, reader_running { false }, writer_running { false };
     std::vector<sample_type> max_peaks;
 };
 

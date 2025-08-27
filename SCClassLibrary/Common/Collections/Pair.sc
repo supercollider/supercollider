@@ -45,6 +45,9 @@ Pair : Collection {
 		^res
 	}
 
+	remove { ^this.shouldNotImplement(thisMethod) }
+	add { ^this.shouldNotImplement(thisMethod) }
+
 	traverse { arg function;
 		// the default traversal order
 		^this.depthFirstPreOrderTraversal(function)

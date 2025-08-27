@@ -58,6 +58,21 @@ Examples::
 
 code::
 
+// basic: ramp between 'start' and 'end'
+// note that the ramp ends at 9, not 10
+{ Phasor.kr(0, 1, start: 0, end: 10) }.plot(0.03).plotMode_(\dlines)
+
+// on trigger: ramp jumps to 'resetPos', goes until 'end' and wraps back to 'start'
+// note that the ramp starts from 'resetPos', since it receives a trigger immediately on its first sample
+(
+{
+	var trig = Impulse.kr(ControlRate.ir/5);
+	var ramp = Phasor.kr(trig, 1, start: 0, end: 10, resetPos: 7);
+	[ramp, trig * 10]
+}.plot(0.03).plotMode_([\dlines, \dstems])
+)
+
+
 // phasor controls sine frequency: end frequency matches a second sine wave.
 
 (

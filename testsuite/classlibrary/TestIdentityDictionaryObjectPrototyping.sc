@@ -4,10 +4,15 @@ TestIdentityDictionaryObjectPrototyping : UnitTest {
 		this.assertEquals(ev.a, 1);
 		this.assertEquals(ev.b, 2)
 	}
+	test_setters {
+		var e = ().know_(true);
+		e.a = 0.1;
+		this.assertEquals(e, (a: 0.1), "Setting through doesNotUnderstand should create an element in the event.");
+
+	}
 	test_known_function_call {
 		var ev = (\a: 1, \b: 2, \f: {|self, foo, bar|
-
-			[self, foo, bar].postln;
+			[self, foo, bar];
 		});
 		var result = ev.f(\foo, \bar);
 		this.assertEquals(result[0], ev, "'this' should be passed in first");
@@ -65,5 +70,15 @@ TestIdentityDictionaryObjectPrototyping : UnitTest {
 		var ev = (x: { |self, data| data });
 		var result = ev.x([1, 2, 3, 4]);
 		this.assertEquals(result, [1, 2, 3, 4], "Arrays should not be expanded by functionPerformList");
+	}
+	test_doesNotUnderstand_when_know_is_off {
+		var selector = \qwertyquertz;
+		var errorSelector;
+		try {
+			IdentityDictionary.new(know:false).perform(selector)
+		} { |error|
+			errorSelector = error.selector;
+		};
+		this.assertEquals(errorSelector, selector, "The selector should be passed to the DoesNotUnderstandError when a message is not understood in an IdentityDictionary for which know is false.");
 	}
 }

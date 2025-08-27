@@ -631,7 +631,7 @@ GraphDef* GraphDef_Load(World* inWorld, const fs::path& path, GraphDef* inList) 
     } catch (const std::exception& e) {
         scprintf("exception in GraphDef_Load: %s\n", e.what());
         const std::string path_utf8_str = SC_Codecvt::path_to_utf8_str(path);
-        scprintf("while reading file: '%s'", path_utf8_str.c_str());
+        scprintf("while reading file: '%s'\n", path_utf8_str.c_str());
     } catch (...) {
         scprintf("unknown exception in GrafDef_Load\n");
         const std::string path_utf8_str = SC_Codecvt::path_to_utf8_str(path);

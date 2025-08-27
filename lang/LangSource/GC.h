@@ -30,6 +30,7 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 #include "VMGlobals.h"
 #include "AdvancingAllocPool.h"
 #include "function_attributes.h"
+#include <cstdint>
 
 void DumpSimpleBackTrace(VMGlobals* g);
 
@@ -37,7 +38,7 @@ const int kMaxPoolSet = 7;
 const int kNumGCSizeClasses = 28;
 const int kFinalizerSet = kNumGCSizeClasses;
 const int kNumGCSets = kNumGCSizeClasses + 1;
-const int kScanThreshold = 256;
+const std::int64_t kScanThreshold = 256LL;
 
 
 class GCSet {
@@ -69,12 +70,12 @@ class PyrGC {
     static const int kLazyCollectThreshold = 1024;
 
 public:
-    PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, long poolSize);
+    PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize);
 
-    MALLOC PyrObject* New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect);
-    MALLOC PyrObject* NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool inAccount);
+    MALLOC PyrObject* New(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inCollect);
+    MALLOC PyrObject* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inAccount);
 
-    MALLOC static PyrObject* NewPermanent(size_t inNumBytes, long inFlags, long inFormat);
+    MALLOC static PyrObject* NewPermanent(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat);
 
     MALLOC PyrObject* NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject* inObject, bool inCollect);
 
@@ -144,7 +145,7 @@ public:
     void Free(PyrObjectHdr* inObj);
 
 
-    long StackDepth() { return mVMGlobals->sp - mStack->slots + 1; }
+    std::int64_t StackDepth() { return mVMGlobals->sp - mStack->slots + 1; }
     PyrObject* Stack() { return mStack; }
     void SetStack(PyrObject* inStack) { mStack = inStack; }
 
@@ -169,7 +170,7 @@ private:
     inline PyrObject* Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);
     static void throwMemfailed(size_t inNumBytes);
 
-    void ScanSlots(PyrSlot* inSlots, long inNumToScan);
+    void ScanSlots(PyrSlot* inSlots, std::int64_t inNumToScan);
     void SweepBigObjects();
     void DoPartialScan(int32 inObjSize);
     bool ScanOneObj();
@@ -197,7 +198,7 @@ private:
     PyrObjectHdr mGrey;
 
     int32 mPartialScanSlot;
-    int32 mNumToScan;
+    std::int64_t mNumToScan;
     int32 mNumGrey;
 
     int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned,
@@ -286,7 +287,7 @@ inline void PyrGC::ToGrey(PyrObjectHdr* obj) {
     /* set grey list pointer to obj */
     obj->gc_color = mGreyColor;
     mNumGrey++;
-    mNumToScan += 1L << obj->obj_sizeclass;
+    mNumToScan += 1LL << obj->obj_sizeclass;
 }
 
 inline void PyrGC::ToGrey2(PyrObjectHdr* obj) {
@@ -303,9 +304,9 @@ inline void PyrGC::ToGrey2(PyrObjectHdr* obj) {
 }
 
 inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRunCollection) {
-    if (inRunCollection && mNumToScan >= kScanThreshold)
+    if (inRunCollection && mNumToScan >= kScanThreshold) {
         Collect();
-    else {
+    } else {
         if (inRunCollection)
             mUncollectedAllocations = 0;
         else

@@ -31,6 +31,7 @@
 #include <cstddef>
 #include <cassert>
 #include <vector>
+#include <cstdint>
 
 struct PyrSymbol;
 
@@ -50,7 +51,7 @@ enum {
 };
 
 typedef struct pyrslot {
-    long tag;
+    std::int64_t tag;
 
     union {
         int64 c; /* char */
@@ -166,7 +167,7 @@ inline void SetRaw(PyrSlot* slot, int val) {
     assert(IsInt(slot));
     slot->u.i = val;
 }
-inline void SetRaw(PyrSlot* slot, long val) {
+inline void SetRaw(PyrSlot* slot, std::int64_t val) {
     assert(IsInt(slot));
     slot->u.i = val;
 }

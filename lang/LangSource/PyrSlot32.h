@@ -33,6 +33,7 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 
 struct PyrSymbol;
 
@@ -236,7 +237,7 @@ inline void SetRaw(PyrSlot* slot, int val) {
     assert(IsInt(slot));
     slot->ui = val;
 }
-inline void SetRaw(PyrSlot* slot, long val) {
+inline void SetRaw(PyrSlot* slot, std::int64_t val) {
     assert(IsInt(slot));
     slot->ui = val;
 }

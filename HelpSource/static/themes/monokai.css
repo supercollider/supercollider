@@ -2,7 +2,7 @@
     /* editor colors */
     --color-cm-background: #272822;
     --color-cm-border: #e1e1e1;
-    --color-cm-evaluated: #595f6f;
+    --color-cm-evaluated: #000;
     --color-cm-keyword: #F92672;
     --color-cm-built-in: #AE81FF;
     --color-cm-number: #AE81FF;

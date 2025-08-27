@@ -37,6 +37,10 @@ const init = () => {
             value: code,
             lineWrapping: true,
             viewportMargin: Infinity,
+            // keep this in sync w/ getLineNumberStorageValue in scdoc.js
+            // we do not use the function here b/c both files may not be loaded
+            // on every doc page.
+            lineNumbers: window.localStorage.getItem("showLineNumbers") === "true",
             extraKeys: {
                 // noop: prevent both codemirror and the browser to handle Shift-Enter
                 'Shift-Enter': ()=>{}, 

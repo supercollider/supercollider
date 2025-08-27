@@ -345,21 +345,6 @@ msgsend : name blocklist1
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, (PyrParseNode*)$7);
 			}
 
-		| expr '.' '*' '(' exprseq ',' exprseq ')'
-		    {
-		        PyrSlot slot, slot2;
-		        SetSymbol(&slot, s_performArgs);
-		        SetSymbol(&slot2, s_value);
-				PyrSlotNode* selectornode = newPyrSlotNode(&slot);
-				PyrParseNode* args = linkNextNode(
-					(PyrParseNode*)$1,
-					newPyrPushLitNode(newPyrSlotNode(&slot2), NULL)
-                );
-				args = linkNextNode(args, (PyrParseNode*)$5);
-				args = linkNextNode(args, (PyrParseNode*)$7);
-				$$ = (intptr_t)newPyrCallNode(selectornode, args, NULL, 0);
-            }
-
 		| expr '.' '(' arglistv1 optkeyarglist ')'
 			{
 				PyrSlotNode *selectornode;

@@ -205,8 +205,39 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
         }
     }
 
-    boost::asio::socket_base::send_buffer_size option(65536);
-    mUdpSocket.set_option(option);
+    try {
+        boost::asio::socket_base::send_buffer_size sendBufferSize;
+        mUdpSocket.get_option(sendBufferSize);
+        int originalBufferSize = sendBufferSize.value();
+        if (originalBufferSize < UDP::sendBufferSize) {
+            sendBufferSize = UDP::sendBufferSize;
+            boost::system::error_code ec;
+            mUdpSocket.set_option(sendBufferSize, ec);
+            if (ec && originalBufferSize < UDP::fallbackBufferSize) {
+                sendBufferSize = UDP::fallbackBufferSize;
+                mUdpSocket.set_option(sendBufferSize);
+            }
+        }
+    } catch (boost::system::system_error& e) {
+        printf("(sclang) SC_UdpInPort: WARNING: failed to set send buffer size (%s)\n", e.what());
+    }
+
+    try {
+        boost::asio::socket_base::receive_buffer_size receiveBufferSize;
+        mUdpSocket.get_option(receiveBufferSize);
+        int originalBufferSize = receiveBufferSize.value();
+        if (originalBufferSize < UDP::receiveBufferSize) {
+            receiveBufferSize = UDP::receiveBufferSize;
+            boost::system::error_code ec;
+            mUdpSocket.set_option(receiveBufferSize, ec);
+            if (ec && originalBufferSize < UDP::fallbackBufferSize) {
+                receiveBufferSize = UDP::fallbackBufferSize;
+                mUdpSocket.set_option(receiveBufferSize);
+            }
+        }
+    } catch (boost::system::system_error& e) {
+        printf("(sclang) SC_UdpInPort: WARNING: failed to set receive buffer size (%s)\n", e.what());
+    }
 
     initHandler(handlerType);
 
@@ -245,7 +276,7 @@ void UDP::handleReceivedUDP(const boost::system::error_code& error, std::size_t 
     if (error == boost::asio::error::operation_aborted)
         return; /* we're done */
 
-    if (error == boost::asio::error::connection_refused) {
+    if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset) {
         // avoid windows error message
         startReceiveUDP();
         return;
@@ -300,7 +331,7 @@ void TCP::handleAccept(Detail::TCPConnection::pointer newConnection, const boost
 
 namespace OutPort {
 
-TCP::TCP(unsigned long inAddress, int inPort, HandlerType handlerType, ClientNotifyFunc notifyFunc, void* clientData):
+TCP::TCP(std::uint64_t inAddress, int inPort, HandlerType handlerType, ClientNotifyFunc notifyFunc, void* clientData):
     mSocket(ioContext),
     mEndpoint(boost::asio::ip::address_v4(inAddress), inPort),
     mClientNotifyFunc(notifyFunc),

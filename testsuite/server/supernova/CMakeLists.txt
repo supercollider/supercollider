@@ -9,10 +9,16 @@ set(simple_tests
     server_synth_factory_test.cpp
     simple_pool_test.cpp
     sized_array_test.cpp
-    sndfile_backend_test.cpp
     static_pool_test.cpp
     timetag_test.cpp
 )
+if(NOT NO_LIBSNDFILE)
+	list(APPEND simple_tests
+		sndfile_backend_test.cpp
+	)
+else()
+	add_definitions("-DNO_LIBSNDFILE")
+endif()
 
 if(!APPLE)
     set(simple_tests

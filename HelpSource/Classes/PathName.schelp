@@ -10,6 +10,10 @@ Since many old projects and works may rely on PathName, it will be kept for back
 For new projects, please use Path!
 ::
 
+note::
+Most classes in SC that operate on files generally expect paths to be link::Classes/String::s, not an instance of link::Classes/PathName::. Use code::.fullPath:: to convert link::Classes/PathName:: to a link::Classes/String:: expected in most cases.
+::
+
 ClassMethods::
 
 private::initClass
@@ -24,7 +28,7 @@ PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
 ::
 
 method::tmp
-Get or set the global temp directory as a link::Classes/String::. This is used by link::Classes/Buffer::, etc. By default this is "/tmp/" for Linux and macOS, and "/WINDOWS/TEMP/" for Windows.
+Get or set the global temp directory as a link::Classes/String::. This is used by link::Classes/Buffer::, etc. By default this is code::Platform.defaultTempDir::.
 
 InstanceMethods::
 

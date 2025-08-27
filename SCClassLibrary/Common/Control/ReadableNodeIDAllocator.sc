@@ -31,7 +31,7 @@ ReadableNodeIDAllocator {
 		permFreed = IdentitySet.new;
 		maxPermID = idOffset + lowestTempID - 1;
 		tempCount = -1;
-		permCount = 1;
+		permCount = 3;
 	}
 
 	alloc {

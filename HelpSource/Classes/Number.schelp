@@ -27,6 +27,9 @@ Integer division.
 method:: %
 Modulo.
 
+method:: modSeaside
+Pre-3.14 modulo with unexpected behavior for negative integer modulus; see link::Classes/Integer#-modSeaside::. Calling code::modSeaside:: on a floating-point operand will fall back to code::mod:: behavior.
+
 method:: **
 Exponentiation.
 

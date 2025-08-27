@@ -23,6 +23,7 @@
 #include "SC_BoundsMacros.h"
 #include "SC_InlineUnaryOp.h"
 #include <cmath>
+#include <cstdint>
 
 /// Modulo
 inline float sc_mod(float in, float hi) {
@@ -324,16 +325,6 @@ inline int sc_div(int a, int b) {
     return c;
 }
 
-/*
-inline int sc_mod(int a, int b)
-{
-    long c;
-    c = a % b;
-    if (c<0) c += b;
-    return c;
-}
-*/
-
 /// Modulo
 inline int sc_mod(int in, int hi) {
     // avoid the divide if possible
@@ -351,6 +342,28 @@ inline int sc_mod(int in, int hi) {
 
     if (hi == lo)
         return lo;
+    return in - hi * sc_floor((float64)in / hi);
+}
+
+/**
+ * Modulo with old behavior;
+ * gives unexpected results for all values with negative integer modulus,
+ *  i.e., affected cases: for a, b both integers: a mod -b.
+ */
+inline int sc_mod_seaside(int in, int hi) {
+    // avoid the divide if possible
+    const int lo = 0;
+    if (in >= hi) {
+        in -= hi;
+        if (in < hi)
+            return in;
+    } else if (in < lo) {
+        in += hi;
+        if (in >= lo)
+            return in;
+    } else
+        return in;
+
 
     int c;
     c = in % hi;
@@ -422,7 +435,7 @@ inline int sc_lcm(int a, int b) {
 
 
 /// Greatest common divisor
-inline long sc_gcd(long a, long b) {
+inline std::int64_t sc_gcd(std::int64_t a, std::int64_t b) {
     if (a == 0)
         return b;
 
@@ -436,20 +449,20 @@ inline long sc_gcd(long a, long b) {
 
     if (a == 1 || b == 1) {
         if (negative) {
-            return (long)-1;
+            return -1LL;
         } else {
-            return (long)1;
+            return 1LL;
         }
     }
 
     if (a < b) {
-        long t = a;
+        std::int64_t t = a;
         a = b;
         b = t;
     }
 
     while (b > 0) {
-        long t = a % b;
+        std::int64_t t = a % b;
         a = b;
         b = t;
     }
@@ -462,18 +475,22 @@ inline long sc_gcd(long a, long b) {
 }
 
 /// Least common multiple
-inline long sc_lcm(long a, long b) {
+inline std::int64_t sc_lcm(std::int64_t a, std::int64_t b) {
     if (a == 0 || b == 0)
-        return (long)0;
+        return 0LL;
     else
         return (a * b) / sc_gcd(a, b);
 }
 
 /// Greatest common divisor
-inline float sc_gcd(float u, float v) { return (float)sc_gcd((long)std::trunc(u), (long)std::trunc(v)); }
+inline float sc_gcd(float u, float v) {
+    return (float)sc_gcd((std::int64_t)std::trunc(u), (std::int64_t)std::trunc(v));
+}
 
 /// Least common multiple
-inline float sc_lcm(float u, float v) { return (float)sc_lcm((long)std::trunc(u), (long)std::trunc(v)); }
+inline float sc_lcm(float u, float v) {
+    return (float)sc_lcm((std::int64_t)std::trunc(u), (std::int64_t)std::trunc(v));
+}
 
 /// Performs a bitwise and with the number b
 inline int sc_bitAnd(int a, int b) { return a & b; }
@@ -651,7 +668,7 @@ template <typename T> inline T sc_sqrdif(T a, T b) {
 
 #if 0
 
-inline long sc_div(long a, long b)
+inline std::int64_t sc_div(std::int64_t a, std::int64_t b)
 {
 	int c;
 	if (b) {
@@ -662,53 +679,53 @@ inline long sc_div(long a, long b)
 }
 
 
-inline long sc_wrap(long in, long lo, long hi)
+inline std::int64_t sc_wrap(std::int64_t in, std::int64_t lo, std::int64_t hi)
 {
 	return sc_mod(in - lo, hi - lo + 1) + lo;
 }
 
 /// Folds in to value between lo and hi
-inline long sc_fold(long in, long lo, long hi)
+inline std::int64_t sc_fold(std::int64_t in, std::int64_t lo, std::int64_t hi)
 {
-	long b = hi - lo;
+	std::int64_t b = hi - lo;
 	int b2 = b+b;
-	long c = sc_mod(in - lo, b2);
+	std::int64_t c = sc_mod(in - lo, b2);
 	if (c>b) c = b2-c;
 	return c + lo;
 }
 
 /// Performs a bitwise and with the number b
-inline long sc_bitAnd(long a, long b)
+inline std::int64_t sc_bitAnd(std::int64_t a, std::int64_t b)
 {
 	return a & b;
 }
 
 /// Performs a bitwise or with the number b
-inline long sc_bitOr(long a, long b)
+inline std::int64_t sc_bitOr(std::int64_t a, std::int64_t b)
 {
 	return a | b;
 }
 
 /// Performs a binary leftshift with the number b
-inline long sc_leftShift(long a, long b)
+inline std::int64_t sc_leftShift(std::int64_t a, std::int64_t b)
 {
 	return a << b;
 }
 
 /// Performs a binary rightshift with the number b
-inline long sc_rightShift(long a, long b)
+inline std::int64_t sc_rightShift(std::int64_t a, std::int64_t b)
 {
 	return a >> b;
 }
 
 /// Recasts a as unsigned and performs a binary rightshift with the number b
-inline long sc_unsignedRightShift(long a, long b)
+inline std::int64_t sc_unsignedRightShift(std::int64_t a, std::int64_t b)
 {
-	return (unsigned long)a >> b;
+	return (std::uint64_t)a >> b;
 }
 
 /// Quantization by rounding. Rounds x to the nearest multiple of quant
-inline long sc_round(long x, long quant)
+inline std::int64_t sc_round(std::int64_t x, std::int64_t quant)
 {
 	return quant==0 ? x : sc_div(x + quant/2, quant) * quant;
 }

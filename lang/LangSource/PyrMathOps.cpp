@@ -648,10 +648,10 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetRaw(a, slotRawInt(a) ^ slotRawInt(b));
                 break;
             case opLCM:
-                SetRaw(a, sc_lcm((long)slotRawInt(a), (long)slotRawInt(b)));
+                SetRaw(a, sc_lcm((std::int64_t)slotRawInt(a), (std::int64_t)slotRawInt(b)));
                 break;
             case opGCD:
-                SetRaw(a, sc_gcd((long)slotRawInt(a), (long)slotRawInt(b)));
+                SetRaw(a, sc_gcd((std::int64_t)slotRawInt(a), (std::int64_t)slotRawInt(b)));
                 break;
             case opRound:
                 SetRaw(a, sc_round((int)slotRawInt(a), (int)slotRawInt(b)));
@@ -675,8 +675,8 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetFloat(a, pow((double)slotRawInt(a), (double)slotRawInt(b)));
                 break;
             case opShiftLeft: {
-                long ia = slotRawInt(a);
-                long ib = slotRawInt(b);
+                std::int64_t ia = slotRawInt(a);
+                std::int64_t ib = slotRawInt(b);
                 if (ib > 0)
                     ia <<= ib;
                 else if (ib < 0)
@@ -684,8 +684,8 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetRaw(a, ia);
             } break;
             case opShiftRight: {
-                long ia = slotRawInt(a);
-                long ib = slotRawInt(b);
+                std::int64_t ia = slotRawInt(a);
+                std::int64_t ib = slotRawInt(b);
                 if (ib > 0)
                     ia >>= ib;
                 else if (ib < 0)
@@ -693,13 +693,13 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetRaw(a, ia);
             } break;
             case opUnsignedShift: {
-                unsigned long ia = slotRawInt(a);
-                long ib = slotRawInt(b);
+                std::uint64_t ia = slotRawInt(a);
+                std::int64_t ib = slotRawInt(b);
                 if (ib > 0)
                     ia >>= ib;
                 else if (ib < 0)
                     ia <<= -ib;
-                SetRaw(a, (long)ia);
+                SetRaw(a, (std::int64_t)ia);
             } break;
             case opRing1:
                 SetRaw(a, sc_ring1(slotRawInt(a), slotRawInt(b)));
@@ -877,7 +877,7 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetFloat(a, slotRawInt(a) * slotRawFloat(b));
                 break;
             case opIDiv:
-                SetRaw(a, (long)floor(slotRawInt(a) / slotRawFloat(b)));
+                SetRaw(a, (std::int64_t)floor(slotRawInt(a) / slotRawFloat(b)));
                 break;
             case opFDiv:
                 SetFloat(a, slotRawInt(a) / slotRawFloat(b));
@@ -1099,6 +1099,12 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 case opFill:
                     SetRaw(a, signal_fill(slotRawObject(a), slotRawInt(b)));
                     break;
+                case opPow:
+                    SetRaw(a, signal_pow_xf(g, slotRawObject(a), slotRawInt(b)));
+                    break;
+                case opMod:
+                    SetRaw(a, signal_mod_xf(g, slotRawObject(a), slotRawInt(b)));
+                    break;
                 case opRing1:
                     SetRaw(a, signal_ring1_xf(g, slotRawObject(a), slotRawInt(b)));
                     break;
@@ -1196,6 +1202,12 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                     case opMax:
                         SetRaw(a, signal_max_xx(g, slotRawObject(a), slotRawObject(b)));
                         break;
+                    case opPow:
+                        SetRaw(a, signal_pow_xx(g, slotRawObject(a), slotRawObject(b)));
+                        break;
+                    case opMod:
+                        SetRaw(a, signal_mod_xx(g, slotRawObject(a), slotRawObject(b)));
+                        break;
                     case opRing1:
                         SetRaw(a, signal_ring1_xx(g, slotRawObject(a), slotRawObject(b)));
                         break;
@@ -1285,6 +1297,12 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 case opFill:
                     SetRaw(a, signal_fill(slotRawObject(a), slotRawFloat(b)));
                     break;
+                case opPow:
+                    SetRaw(a, signal_pow_xf(g, slotRawObject(a), slotRawFloat(b)));
+                    break;
+                case opMod:
+                    SetRaw(a, signal_mod_xf(g, slotRawObject(a), slotRawFloat(b)));
+                    break;
                 case opRing1:
                     SetRaw(a, signal_ring1_xf(g, slotRawObject(a), slotRawFloat(b)));
                     break;
@@ -1359,7 +1377,7 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetRaw(a, slotRawFloat(a) * slotRawInt(b));
                 break;
             case opIDiv:
-                SetInt(a, (long)floor(slotRawFloat(a) / slotRawInt(b)));
+                SetInt(a, (std::int64_t)floor(slotRawFloat(a) / slotRawInt(b)));
                 break;
             case opFDiv:
                 SetRaw(a, slotRawFloat(a) / slotRawInt(b));
@@ -1517,6 +1535,12 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 case opMax:
                     SetObject(a, signal_max_xf(g, slotRawObject(b), slotRawFloat(a)));
                     break;
+                case opPow:
+                    SetObject(a, signal_pow_fx(g, slotRawFloat(a), slotRawObject(b)));
+                    break;
+                case opMod:
+                    SetObject(a, signal_mod_fx(g, slotRawFloat(a), slotRawObject(b)));
+                    break;
                 case opRing1:
                     SetObject(a, signal_ring1_fx(g, slotRawFloat(a), slotRawObject(b)));
                     break;
@@ -1586,7 +1610,7 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetRaw(a, slotRawFloat(a) * slotRawFloat(b));
                 break;
             case opIDiv:
-                SetInt(a, (long)floor(slotRawFloat(a) / slotRawFloat(b)));
+                SetInt(a, (std::int64_t)floor(slotRawFloat(a) / slotRawFloat(b)));
                 break;
             case opFDiv:
                 SetRaw(a, slotRawFloat(a) / slotRawFloat(b));

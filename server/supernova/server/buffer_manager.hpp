@@ -43,7 +43,7 @@ struct buffer_wrapper {
             free_aligned(data);
     }
 
-    void allocate(size_t frames, unsigned int channels);
+    void allocate(size_t frames, unsigned int channels, double samplerate);
 
     void free(void) {
         if (data) {
@@ -128,9 +128,9 @@ public:
             throw std::runtime_error("buffer is not in use");
     }
 
-    void allocate_buffer(int index, unsigned int frames, unsigned int channels) {
+    void allocate_buffer(int index, unsigned int frames, unsigned int channels, double samplerate) {
         check_buffer_unused(index);
-        buffers[index].allocate(frames, channels);
+        buffers[index].allocate(frames, channels, samplerate);
     }
 
     void read_buffer_allocate(int index, const char* file, size_t start_frame, size_t frames) {

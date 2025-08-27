@@ -43,8 +43,9 @@ Array2D : Collection {
 		^array.copyRange(ri * cols, ri * cols + cols - 1)
 	}
 
-	// overide Array
-	// add { ^thisMethod.shouldNotImplement }
+	add { ^this.shouldNotImplement(thisMethod)  }
+	remove { ^this.shouldNotImplement(thisMethod) }
+
 	printOn { arg stream;
 		// not a compileable string
 		stream << this.class.name << "[" ;

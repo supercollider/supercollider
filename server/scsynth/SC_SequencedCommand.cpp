@@ -48,6 +48,8 @@ const size_t ERR_BUF_SIZE(512);
         mMsgData = (char*)World_Alloc(mWorld, mMsgSize);                                                               \
         ReturnSCErrIfNil(mMsgData);                                                                                    \
         msg.getb(mMsgData, mMsgSize);                                                                                  \
+    } else if (msg.nextTag() == 'i') {                                                                                 \
+        msg.geti(0);                                                                                                   \
     }
 
 void PerformCompletionMsg(World* inWorld, OSC_Packet* inPacket);
@@ -279,6 +281,9 @@ int BufAllocCmd::Init(char* inData, int inSize) {
 
     GET_COMPLETION_MSG(msg);
 
+    auto sampleRate = msg.getf(0);
+    mSampleRate = sampleRate > 0.0 ? sampleRate : mWorld->mSampleRate;
+
     return kSCErr_None;
 }
 
@@ -287,7 +292,7 @@ void BufAllocCmd::CallDestructor() { this->~BufAllocCmd(); }
 bool BufAllocCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
     mFreeData = buf->data;
-    SCErr err = bufAlloc(buf, mNumChannels, mNumFrames, mWorld->mSampleRate);
+    SCErr err = bufAlloc(buf, mNumChannels, mNumFrames, mSampleRate);
     if (err) {
         scprintf("/b_alloc: memory allocation failed\n");
         return false;

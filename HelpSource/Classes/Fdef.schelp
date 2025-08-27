@@ -1,7 +1,7 @@
 class:: Fdef
-summary:: lazy function proxy
+summary:: Lazy function proxy
 categories:: JITLib>Patterns, Live Coding
-related:: Classes/Pdef, Classes/Tdef, Classes/Pdefn, Classes/Ndef
+related:: Classes/Maybe, Classes/LazyEnvir, Classes/Pdef, Classes/Tdef, Classes/Pdefn, Classes/Ndef
 
 description::
 Fdef is a placeholder for functions. Fdef allows dynamically replacing functions while they are being used.

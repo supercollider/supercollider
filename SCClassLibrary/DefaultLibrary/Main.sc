@@ -181,6 +181,7 @@ Main : Process {
 	*scVersionMinor { _SC_VersionMinor ^this.primitiveFailed }
 	*scVersionPatch { _SC_VersionPatch ^this.primitiveFailed }
 	*scVersionTweak { _SC_VersionTweak ^this.primitiveFailed }
+	*scBuildString { _SC_BuildString ^this.primitiveFailed }
 
 	*versionAtLeast { |maj, min, patch|
 		^if((maj == this.scVersionMajor) and: { min.notNil }) {

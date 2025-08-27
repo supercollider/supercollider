@@ -82,6 +82,9 @@ SCDocHTMLRenderer {
 			};
 		};
 
+		// use only forward slash as path separator
+		result = result.replace(Platform.pathSeparator, "/");
+
 		if(linkAnchor.isEmpty) {
 			^result
 		} {
@@ -237,25 +240,25 @@ SCDocHTMLRenderer {
 		// (Search.html, Browse.html, etc.) if necessary.
 		stream
 		<< "</title>\n"
-		<< "<link rel='stylesheet' href='" << baseDir << "/scdoc.css' type='text/css' />\n"
-		<< "<link rel='stylesheet' href='" << baseDir << "/codemirror.css' type='text/css' />\n"
-		<< "<link rel='stylesheet' href='" << baseDir << "/editor.css' type='text/css' />\n"
-		<< "<link rel='stylesheet' id='scdoc-theme' href='" << baseDir << "/themes/default.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/static/scdoc.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/static/codemirror.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/static/editor.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' id='scdoc-theme' href='" << baseDir << "/static/themes/default.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
-		<< "<link rel='stylesheet' href='" << baseDir << "/lib/katex/katex.min.css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/static/lib/katex/katex.min.css' />\n"
 		<< "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
-		<< "<script src='" << baseDir << "/lib/jquery.min.js'></script>\n"
-		<< "<script src='" << baseDir << "/lib/codemirror-5.39.2.min.js' type='text/javascript'></script>\n"
-		<< "<script src='" << baseDir << "/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
-		<< "<script defer src='" << baseDir << "/lib/katex/katex.min.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/static/lib/jquery.min.js'></script>\n"
+		<< "<script src='" << baseDir << "/static/lib/codemirror-5.39.2.min.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/static/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
+		<< "<script defer src='" << baseDir << "/static/lib/katex/katex.min.js' type='text/javascript'></script>\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
 		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
 		<< "var scdoc_sc_version = '" << Main.version << "';\n"
 		<< "</script>\n"
-		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/static/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
 		<< "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n"
 		// QWebChannel access
@@ -569,9 +572,12 @@ SCDocHTMLRenderer {
 				stream << this.htmlForLink(node.text);
 			},
 			\CODEBLOCK, {
-				stream << "<textarea class='editor'>"
+				stream << "<div class='codeMirrorContainer'>"
+                << "<textarea class='editor'>"
 				<< this.escapeSpecialChars(node.text)
-				<< "</textarea>\n";
+				<< "</textarea>\n"
+				<< "<button class='copy-button' aria-label='Copy code'><span class='copy-ico'>⧉</span><span class='check-ico'>✔</span></button>"
+                << "</div>\n";
 			},
 			\CODE, {
 				stream << "<code>"
@@ -1006,7 +1012,7 @@ SCDocHTMLRenderer {
 		stream << "link::" << doc.path << "::<br>"
 		<< "</div>"
 		<< "</div>"
-		<< "<script src='" << baseDir << "/editor.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/static/editor.js' type='text/javascript'></script>\n"
 		<< "</body></html>";
 	}
 

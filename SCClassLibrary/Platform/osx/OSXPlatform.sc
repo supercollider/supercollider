@@ -9,6 +9,9 @@ OSXPlatform : UnixPlatform {
 	}
 
 	name { ^\osx }
+	version { 
+		^"sw_vers -productVersion".unixCmdGetStdOut.replace($\n, "");
+	}
 
 	startupFiles {
 		var filename = "startup.rtf";
@@ -75,6 +78,16 @@ OSXPlatform : UnixPlatform {
 		);
 		file.putString(string);
 		file.close;
+	}
+
+	killProcessByID { |pid, force = true, subprocesses = true|
+		var cmd;
+		var sig = force.if({"KILL"}, {"TERM"});
+		cmd = "kill -% %".format(sig, pid);
+		if(subprocesses) {
+			cmd = "pkill -% -P %; %".format(sig, pid, cmd);
+		};
+		cmd.unixCmd;
 	}
 
 	defaultTempDir {

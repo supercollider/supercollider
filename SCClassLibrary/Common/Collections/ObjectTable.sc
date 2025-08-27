@@ -14,10 +14,11 @@ TwoWayIdentityDictionary : Collection {
 	}
 
 	remove { arg obj;
-		var key;
+		var key, out;
 		key = this.getID(obj);
-		idToObj.removeAt(key);
+		out = idToObj.removeAt(key);
 		objToID.removeAt(obj);
+		^out
 	}
 
 	removeAt { arg key;

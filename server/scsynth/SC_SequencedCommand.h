@@ -144,6 +144,7 @@ protected:
     int mBufIndex;
     SndBuf mSndBuf;
     int mNumChannels, mNumFrames;
+    float mSampleRate;
     float* mFreeData;
 
     virtual void CallDestructor();

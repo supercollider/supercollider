@@ -46,11 +46,11 @@ EditorPage::EditorPage(QWidget* parent):
     connect(ui->tabs, SIGNAL(currentChanged(int)), this, SLOT(onCurrentTabChanged(int)));
 
     connect(ui->onlyMonoFonts, SIGNAL(toggled(bool)), this, SLOT(onMonospaceToggle(bool)));
-    connect(ui->fontCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateFontPreview()));
+    connect(ui->fontCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateFontPreview);
     connect(ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()));
     connect(ui->fontAntialias, SIGNAL(stateChanged(int)), this, SLOT(updateFontPreview()));
 
-    connect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateTheme(QString)));
+    connect(ui->themeCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateTheme);
     connect(ui->themeCopyBtn, SIGNAL(clicked()), this, SLOT(dialogCopyTheme()));
     connect(ui->themeDeleteBtn, SIGNAL(clicked()), this, SLOT(deleteTheme()));
     connect(ui->textFormats, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this,
@@ -227,7 +227,7 @@ void EditorPage::populateFontList(bool onlyMonospaced) {
 
 void EditorPage::populateThemeList(const QString& sel) {
     /* managing the combo box send parasite signals */
-    disconnect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateTheme(QString)));
+    disconnect(ui->themeCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateTheme);
 
     QMap<QString, Theme*>::const_iterator itr = mThemes.begin();
     QList<QString> list = itr.value()->availableThemes();
@@ -247,7 +247,7 @@ void EditorPage::populateThemeList(const QString& sel) {
             i++;
     }
 
-    connect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateTheme(QString)));
+    connect(ui->themeCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateTheme);
 }
 
 void EditorPage::store(Manager* s) {

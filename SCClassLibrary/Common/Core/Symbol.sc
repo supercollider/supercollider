@@ -166,6 +166,7 @@ Symbol {
 	* { ^this }
 	/ { ^this }
 	mod { ^this }
+	modSeaside { ^this }
 	min { ^this }
 	max { ^this }
 	bitAnd { ^this }

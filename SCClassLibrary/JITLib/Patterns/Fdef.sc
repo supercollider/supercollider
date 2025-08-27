@@ -7,66 +7,66 @@ Maybe : Ref {
 	classvar <>protected = false, <>verbose = false;
 
 	source { ^value }
-	source_ { arg obj;
+	source_ { |obj|
 		this.value = obj;
 		this.changed(\source, obj)
 	}
 
 	clear { value = nil }
 
-	value { arg ... args;
+	value { |... args, kwargs|
+		^this.reduceFuncProxy(args, true, kwargs)
+	}
+	valueArray { |args|
 		^this.reduceFuncProxy(args)
 	}
-	valueArray { arg args;
-		^this.reduceFuncProxy(args)
-	}
-	valueEnvir { arg ... args;
+	valueEnvir { |... args|
 		^this.notYetImplemented(thisMethod)
 		//^value.valueEnvir(*args) ? defaultValue
 	}
-	valueArrayEnvir {  arg ... args;
+	valueArrayEnvir { |... args|
 		^this.notYetImplemented(thisMethod)
 		//^value.valueArrayEnvir(args) ? defaultValue
 	}
-	functionPerformList { arg selector, arglist;
+	functionPerformList { |selector, arglist|
 		^this.performList(selector, arglist)
 	}
 
 	// this allows recursion
-	apply { arg ... args;
-		^this.reduceFuncProxy(args, false)
+	apply { |... args, kwargs|
+		^this.reduceFuncProxy(args, false, kwargs)
 	}
 	// function composition
-	o { arg ... args;
+	o { |... args|
 		^NAryValueProxy(this, args)
 	}
-	<> { arg that;
+	<> { |that|
 		^o (this, that)
 	}
 
 	// override some collection methods
 
-	at { arg ... args;
+	at { |... args|
 		^this.composeNAryOp(\at, args)
 	}
 
-	atAll { arg ... args;
+	atAll { |... args|
 		^this.composeNAryOp(\atAll, args)
 	}
 
-	put { arg ... args;
+	put { |... args|
 		^this.composeNAryOp(\put, args)
 	}
 
-	putAll { arg ... args;
+	putAll { |... args|
 		^this.composeNAryOp(\putAll, args)
 	}
 
-	add { arg ... args;
+	add { |... args|
 		^this.composeNAryOp(\add, args)
 	}
 
-	addAll { arg ... args;
+	addAll { |... args|
 		^this.composeNAryOp(\addAll, args)
 	}
 
@@ -74,18 +74,18 @@ Maybe : Ref {
 	all {
 		^this.source.all
 	}
-	do { arg function;
+	do { |function|
 		this.source.do(function) // problem: on the fly change is not picked up in this case.
 	}
 
-	doesNotUnderstand { arg selector ... args;
-		^this.composeNAryOp(selector, args)
+	doesNotUnderstand { |selector ... args, kwargs|
+		^this.composeNAryOp(selector, args, kwargs)
 	}
 
 	// streams and patterns
 
-	embedInStream { arg inval;
-		^Prout { arg inval;
+	embedInStream { |inval|
+		^Prout { |inval|
 			var curVal, str;
 			var outval;
 			while {
@@ -99,46 +99,46 @@ Maybe : Ref {
 	}
 
 	// math
-	composeUnaryOp { arg aSelector;
+	composeUnaryOp { |aSelector|
 		^UnaryOpFunctionProxy.new(aSelector, this)
 	}
-	composeBinaryOp { arg aSelector, something, adverb;
+	composeBinaryOp { |aSelector, something, adverb|
 		^BinaryOpFunctionProxy.new(aSelector, this, something, adverb);
 	}
-	reverseComposeBinaryOp { arg aSelector, something, adverb;
+	reverseComposeBinaryOp { |aSelector, something, adverb|
 		^BinaryOpFunctionProxy.new(aSelector, something, this, adverb);
 	}
-	composeNAryOp { arg aSelector, anArgList;
-		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
+	composeNAryOp { |aSelector, anArgList, aKeywordArgList|
+		^NAryOpFunctionProxy.new(aSelector, this, anArgList, aKeywordArgList)
 	}
 
 
 	// used by AbstractFunction:reduceFuncProxy
 	// to prevent reduction of enclosed functions
-	valueFuncProxy { arg args;
+	valueFuncProxy { |args, kwargs|
 		if(verbose and: { value.isNil }) {
 			("Maybe: incomplete definition: %\n").postf(this.infoString(args))
 		};
 		^this.catchRecursion {
-			(value ? defaultValue).valueFuncProxy(args)
+			(value ? defaultValue).valueFuncProxy(args, kwargs)
 		}
 	}
 
-	reduceFuncProxy { arg args, protect=true;
+	reduceFuncProxy { |args, protect=true, kwargs|
 		if(verbose and: { value.isNil }) {
 			("Maybe: incomplete definition: %\n").postf(this.infoString(args))
 		};
 
 		^if(protect.not) {
-			(value ? defaultValue).reduceFuncProxy(args)
+			(value ? defaultValue).reduceFuncProxy(args, protect, kwargs)
 		} {
 			this.catchRecursion {
-				(value ? defaultValue).reduceFuncProxy(args)
+				(value ? defaultValue).reduceFuncProxy(args, protect, kwargs)
 			}
 		}
 	}
 
-	catchRecursion { arg func;
+	catchRecursion { |func|
 		var val, previous;
 		try {
 			protect {
@@ -184,7 +184,7 @@ Maybe : Ref {
 		^if(res.notNil) { "~" ++ res } { this.asString }
 	}
 
-	infoString { arg args;
+	infoString { |args|
 		var who, str="", src;
 		who = this.findKey;
 		if(who.isNil) { ^this.asString };
@@ -201,7 +201,7 @@ Maybe : Ref {
 		^currentEnvironment.findKeyForValue(this)
 	}
 
-	storeOn { arg stream;
+	storeOn { |stream|
 		// maybe should try to catch a recursion here:
 		stream << this.class.name << "(" <<< value << ")" }
 
@@ -214,7 +214,7 @@ Fdef : Maybe {
 		all = IdentityDictionary.new
 	}
 
-	*new { arg key, val;
+	*new { |key, val|
 		var res;
 		res = all[key];
 		if(res.isNil) {

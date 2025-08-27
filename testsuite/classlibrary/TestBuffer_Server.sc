@@ -87,7 +87,7 @@ TestBuffer_Server : UnitTest {
 		server.sendMsg(
 			'/b_allocRead',
 			buffer_number,
-			Platform.resourceDir +/+ "sounds/a11wlk01.wav",
+			ExampleFiles.child,
 			0, // starting frame
 			num_frames
 		);
@@ -294,6 +294,50 @@ TestBuffer_Server : UnitTest {
 				"getToFloatArray should get count number of values starting at index"
 			);
 		};
+	}
+
+	assertBufSampleRate { |buf, expectedSampleRate, msg, path(PathName.tmp +/+ "test_setSampleRate.aiff") |
+		var fileSampleRate = nil;
+		server.sync; // this sync is for alloc
+		buf.query({});
+		server.sync; // this sync is for query
+		this.assertFloatEquals(buf.sampleRate, expectedSampleRate,
+			"sclang should cache the requested sample rate %".format(msg));
+
+		// test if expectedSampleRate is respected when writing buf to a file
+		buf.write(path);
+		server.sync;
+		fileSampleRate = SoundFile.use(path, _.sampleRate);
+		File.delete(path);
+		this.assertFloatEquals(fileSampleRate, expectedSampleRate,
+			"server should write a file with the requested sample rate %".format(msg));
+
+	}
+
+	test_setSampleRate {
+		var buf = Buffer.alloc(server, 1);
+		this.assertBufSampleRate(buf, server.sampleRate, "(default: server sampleRate)");
+
+		buf = Buffer.alloc(server, 1, sampleRate: 1234);
+		this.assertBufSampleRate(buf, 1234, "(custom, set on alloc by keyword arg)");
+
+		buf = Buffer.alloc(server, 1, 1, {|x| x.setMsg(0,1) }, nil, 1234);
+		this.assertBufSampleRate(buf, 1234, "(custom, set by positional arg)");
+
+		buf = Buffer.alloc(server, 1);
+		server.sync;
+		buf.setSampleRate(1234);
+		this.assertBufSampleRate(buf, 1234, "(custom, set by setSampleRate)");
+
+		buf = Buffer.alloc(server, 1, sampleRate: 1234);
+		server.sync;
+		buf.setSampleRate(0);
+		this.assertBufSampleRate(buf, server.sampleRate, "(default to server sampleRate, after setSampleRate(0))");
+
+		buf = Buffer.alloc(server, 1, sampleRate: 1234);
+		server.sync;
+		buf.setSampleRate();
+		this.assertBufSampleRate(buf, server.sampleRate, "(default to server sampleRate, after setSampleRate())");
 	}
 
 }

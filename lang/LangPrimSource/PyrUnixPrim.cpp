@@ -158,7 +158,7 @@ int prString_POpen(struct VMGlobals* g, int numArgsPushed) {
 
     pid_t pid;
     FILE* stream;
-    std::tie(pid, stream) = sc_popen(std::move(cmdline), "r");
+    std::tie(pid, stream) = sc_popen_shell(std::move(cmdline), "r");
     if (stream != nullptr) {
         SC_Thread thread(std::bind(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot)));
         thread.detach();

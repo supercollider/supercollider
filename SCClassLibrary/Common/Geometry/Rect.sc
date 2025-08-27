@@ -204,4 +204,17 @@ Rect {
 			this.height - thatRect.height
 		)
 	}
+	minSize { |minSize|
+		var width, height;
+		minSize = minSize.asSize;
+		width = if (this.width < minSize.width) {
+			minSize.width } {
+			this.width
+		};
+		height = if (this.height < minSize.height) {
+			minSize.height } {
+			this.height
+		};
+		^Rect(this.left, this.top, width, height)
+	}
 }
