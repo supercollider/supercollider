@@ -8,7 +8,7 @@ helpfiles.)
 
 There are a number of ways to implement iteration in SuperCollider.
 The most familiar ones will be the link::Classes/Number#-for:: and link::Classes/Collection#-do:: methods.
-The link::Clases/Function#-while:: method is discussed link::Reference/Conditional-Execution#while#here::.
+The link::Classes/Function#-while:: method is discussed link::Reference/Conditional-Execution#while#here::.
 For Routines, Streams, and Patterns, special methods exist: link::Classes/Function#-loop:: and link::Classes/Object#-repeat::.
 
 table::
