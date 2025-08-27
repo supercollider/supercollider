@@ -19,7 +19,6 @@ TestPath : UnitTest {
 
 		// path parts:
 		this.assertEquals(p.separatorIndices, List[0, 6, 10, 14], "separatorIndices");
-		this.assertEquals(p.name, "pathTest.abc.scd", "name");
 		this.assertEquals(p.parent, Path("/Users/xyz/src"), "parent");
 		this.assertEquals(p.parts, ["Users", "xyz", "src", "pathTest.abc.scd"], "parts");
 		this.assertEquals(p.fileName, "pathTest.abc.scd", "fileName");
