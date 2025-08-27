@@ -18,9 +18,6 @@ table::
 	## iterate while some condition is true || link::Reference/Conditional-Execution#while:: || code::loopFunc.value:: for each iteration.
 	## embed in a stream an infinite number of times || link::#loop::|| a link::Classes/Routine::
 	## embed in a stream n times || link::#repeat::(n) (with argument) || a link::Classes/Routine::
-	## link::#Breaking from a loop#break from a loop:: || link::Classes/Function#-block:: || nil unless
-	specified; see
-	link::#Breaking from a loop#below::
 ::
 
 section:: for
@@ -154,66 +151,6 @@ r.next;
 ERROR: Primitive '_SimpleNumberSeries' failed.
 Wrong type.
 ::
-::
-
-section:: Breaking from loops: Function.block
-
-The syntax for breaking from an iteration in SuperCollider is unusual.
-Breaks are achieved by using the Function.block method.
-
-Consider the following loop:
-code::100.do { |i| i.postln; } ::
-Suppose we want the loop to stop after code::i == 7::.
-In C, one would write:
-teletype::
-for (int i = 0; i < 100; ++i) {
-	std::cout << i;
-	if (i == 7) {
-		break;
-	}
-}
-::
-In python, one would write:
-teletype::
-for i in range(100):
-	print(i)
-	if i == 7:
-		break;
-::
-
-In sclang, however, there is no break keyword;
-instead, we have to do three things.
-1. enclose the looping expression in another Function that takes an argument
-(which we call "break" here, but which can be called anything);
-code:: { |break|  100.do { |i| i.postln; } } ::
-2. inside the looped Function, call .value on that argument when the relevant condition is true;
-code:: { |break|  100.do { |i| i.postln; if (i == 7) {break.value} } } ::
-3. on the enclosing Function, call  .block.
-code:: block { |break|  100.do { |i| i.postln; if (i == 7) {break.value} } } ::
-
-This will return code::nil:: once the break condition is reached,
-but if a specific return value is desired, this can be provided to the .value call:
-code:: block { |break|  100.do { |i| i.postln; if (i == 7) {break.value("broken")} } } ::
-
-section:: There is no continue keyword in SuperCollider
-
-Some languages permit "skipping" individual iterations of a loop by means of a "continue" keyword.
-For instance, in python, the following will print teletype::0,1,2,4,5,6,7,8,9::,
-skipping over the teletype::3:::
-teletype::
-for i in range(10):
-	if i == 3:
-		continue
-	print(i)
-::
-
-In sclang, the body of the loop must be moved inside a conditional statement:
-code::
-10.do { |i|
-	if (i != 3) {
-		i.postln;
-	}
-}
 ::
 
 
