@@ -13,7 +13,7 @@ For Routines, Streams, and Patterns, special methods exist: link::Classes/Functi
 
 table::
 	## strong::Thing you want to do:: ||  strong::method to use:: || strong:: returns::
-	## iterate over a collection  	|| link::#do:: 	|| code::loopFunc.value(x):: for each element code::x:: of collection ::
+	## iterate over a collection  	|| link::#do:: 	|| code::loopFunc.value(x):: for each element code::x:: of collection
 	## iterate over a numeric range  || link::#for::, link::#forBy:: || code::loopFunc.value(n):: for each number code::n:: in range
 	## iterate while some condition is true || link::Reference/Conditional-Execution#while:: || code::loopFunc.value:: for each iteration.
 	## embed in a stream an infinite number of times || link::#loop::|| a link::Classes/Routine::
