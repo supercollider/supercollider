@@ -24,6 +24,8 @@
 #include "nova-tt/thread_priority.hpp"
 #include "nova-tt/name_thread.hpp"
 
+#include <tuple>
+
 #include "server.hpp"
 #include "sync_commands.hpp"
 
@@ -280,8 +282,7 @@ static bool set_realtime_priority(int thread_index) {
 #    elif defined(_WIN32)
         int priority = thread_priority_interval_rt().second;
 #    else
-        int min, max;
-        boost::tie(min, max) = thread_priority_interval_rt();
+        auto [min, max] = thread_priority_interval_rt();
         int priority = max - 3;
         priority = std::max(min, priority);
 #    endif
