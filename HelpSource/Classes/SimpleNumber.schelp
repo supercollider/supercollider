@@ -980,11 +980,11 @@ Unless noted otherwise, the return value of all these methods will be an link::C
 
 note::Interval Notation Guide for this part:
 table::
-## Notation || Name || Inclusion || Example meaning (numeric range)
-## teletype::[a, b]:: || Closed interval || Includes both a and b || a ≤ x ≤ b → e.g. [1, 5] = 1 ≤ x ≤ 5
-## teletype::(a, b):: || Open interval || Excludes both a and b || a < x < b → e.g. (1, 5) = 1 < x < 5
-## teletype::[a, b):: || Half‑open interval (left‑closed) || Includes a, excludes b || a ≤ x < b → e.g. [1, 5) = 1 ≤ x < 5
-## teletype::(a, b]:: || Half‑open interval (right‑closed) || Excludes a, includes b || a < x ≤ b → e.g. (1, 5] = 1 < x ≤ 5
+## Notation || Name || Inclusion || Meaning (Range)
+## teletype::[a, b]:: || Closed interval || Includes both a and b || math::a \leqq x \leqq b::
+## teletype::(a, b):: || Open interval || Excludes both a and b ||  math::a \lt x \lt b::
+## teletype::[a, b):: || Half‑open interval (left‑closed) || Includes a, excludes b || math::a \leqq x \lt b::
+## teletype::(a, b]:: || Half‑open interval (right‑closed) || Excludes a, includes b ||  math::a \lt x \leqq b::
 ::
 ::
 
