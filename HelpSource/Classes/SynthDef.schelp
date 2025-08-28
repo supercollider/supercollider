@@ -224,41 +224,33 @@ This method sends the code::SynthDef:: to the server and registers it in the lin
 
 code::
 (
-SynthDef(\send, { |freq=440|
-	Out.ar(0, SinOsc.ar(freq) * Env.perc.ar(2) * 0.1)
+SynthDef(\send, { |filterFreq=440|
+	Out.ar(0, RLPF.ar(Saw.ar(50), filterFreq, 0.1) * Env.perc.ar(2) * 0.1)
 }).send;
 
-SynthDef(\add, { |freq=440|
-	Out.ar(0, SinOsc.ar(freq) * Env.perc.ar(2) * 0.1)
+SynthDef(\add, { |filterFreq=440|
+	Out.ar(0,  RLPF.ar(Saw.ar(50), filterFreq, 0.1) * Env.perc.ar(2) * 0.1)
 }).add;
 )
 
-SynthDescLib.at(\send).controlDict[\freq].defaultValue; // returns:
-//ERROR: Message 'controlDict' not understood.
+(instrument:\send, filterFreq: 1000).play; // plays with 440 (default)
+(instrument:\add, filterFreq: 1000).play; // plays with 1000 Hz
 
-SynthDescLib.at(\add).controlDict[\freq].defaultValue; // returns::
-//-> 440.0
-
+// The instrument \send does not accept \filterFreq in Pbind
+// while the instrument \add accepts \filterFreq in Pbind:
 (
 Pbind(
-	\dur, SynthDescLib.at(\send).controlDict[\freq].defaultValue / 880,
 	\instrument, \send,
-	\freq, Pwhite(200, 800),
-	\dur, Pkey(\dur)
+	\filterFreq, Pwhite(200, 800)
 ).play;
-) // returns:
-//ERROR: Message 'controlDict' not understood.
+)
 
 (
 Pbind(
-	\dur, SynthDescLib.at(\add).controlDict[\freq].defaultValue / 2000,
 	\instrument, \add,
-	\freq, Pwhite(200, 800),
-	\dur, Pkey(\dur)
+	\filterFreq, Pwhite(200, 800)
 ).play;
-) // returns:
-//-> EventStreamPlayer.new
-// and produces sound.
+)
 ::
 
 method:: store
