@@ -202,10 +202,64 @@ method:: writeDefFile
 Writes the def as a file called name.scsyndef in a form readable by a server. Default for dir is synthdefs/. Defs stored in the default directory will be automatically loaded by the local and internal Servers when they are booted.
 
 method:: load
-Write the defFile and send a message to server to load this file. When this asynchronous command is completed, the completionMessage (a valid OSC message) is immediately executed by the server. Default for dir is synthdefs/.
+Writes the code::SynthDef:: to disk and sends a message to the server to load the file.
+When this asynchronous command is completed, code::completionMsg::—a valid OSC message indicating completion— is immediately executed by the server.
+Default for dir is synthdefs/.
+
+discussion::
+This method does not register the SynthDef in the SynthDescLib, which may cause issues when using patterns or event-based systems.
+Prefer link::#-store:: over code::.load:: when descriptor registration is required.
 
 method:: send
-Compile the def and send it to server without writing to disk (thus avoiding that annoying SynthDef buildup). When this asynchronous command is completed, the completionMessage (a valid OSC message) is immediately executed by the server.
+Compiles the SynthDef and sends it directly to the server without writing to disk, thereby avoiding accumulation of teletype::.scsyndef:: files.
+Once the asynchronous command completes, code::completionMsg::—a valid OSC message indicating completion— is immediately executed by the server.
+
+discussion::
+code::SynthDef::s sent using code::.send:: are not registered in the link::Classes/SynthDescLib::.
+As a result, they will not be accessible via code::SynthDescLib.at(...)::, and constructs such as link::Classes/Pbind:: that rely on parameter metadata will fail unless msgArgs are manually supplied.
+Additionally, code::.send:: only affects the current server session; the code::SynthDef:: will be lost upon server reboot unless re-sent.
+
+To ensure proper integration with the link::Classes/Event:: system and persistent availability across server reboots (within the same sclang session), use link::#-add::.
+This method sends the code::SynthDef:: to the server and registers it in the link::Classes/SynthDescLib::, enabling features such as automatic parameter lookup in patterns.
+
+code::
+(
+SynthDef(\send, { |freq=440|
+	Out.ar(0, SinOsc.ar(freq) * Env.perc.ar(2) * 0.1)
+}).send;
+
+SynthDef(\add, { |freq=440|
+	Out.ar(0, SinOsc.ar(freq) * Env.perc.ar(2) * 0.1)
+}).add;
+)
+
+SynthDescLib.at(\send).controlDict[\freq].defaultValue; // returns:
+//ERROR: Message 'controlDict' not understood.
+
+SynthDescLib.at(\add).controlDict[\freq].defaultValue; // returns::
+//-> 440.0
+
+(
+Pbind(
+	\dur, SynthDescLib.at(\send).controlDict[\freq].defaultValue / 880,
+	\instrument, \send,
+	\freq, Pwhite(200, 800),
+	\dur, Pkey(\dur)
+).play;
+) // returns:
+//ERROR: Message 'controlDict' not understood.
+
+(
+Pbind(
+	\dur, SynthDescLib.at(\add).controlDict[\freq].defaultValue / 2000,
+	\instrument, \add,
+	\freq, Pwhite(200, 800),
+	\dur, Pkey(\dur)
+).play;
+) // returns:
+//-> EventStreamPlayer.new
+// and produces sound.
+::
 
 method:: store
 Write the defFile and store it in the SynthDescLib specified by libname, and send a message to the library's server to load this file. When this asynchronous command is completed, the completionMessage (a valid OSC  message) is immediately executed by the server. Default for libname is \global, for dir is synthdefs/. This is needed to use defs with the event stream system. See Streams and Pattern.
