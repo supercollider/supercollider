@@ -30,12 +30,10 @@
 
 #include <sstream>
 #include <iomanip>
-#include <boost/chrono/chrono_io.hpp>
 #include <osc/OscReceivedElements.h>
 #include <osc/OscOutboundPacketStream.h>
 
 using namespace std;
-using namespace boost::chrono;
 
 namespace ScIDE {
 

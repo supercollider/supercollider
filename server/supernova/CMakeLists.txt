@@ -93,7 +93,7 @@ if(NOT WIN32)
                PROPERTY OUTPUT_NAME supernova)
 endif()
 
-target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES} boost_thread_lib)
+target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES} Boost::thread Boost::sync)
 
 target_compile_definitions(libsupernova PUBLIC SUPERNOVA)
 target_include_directories(libsupernova PUBLIC
@@ -102,8 +102,6 @@ target_include_directories(libsupernova PUBLIC
                     ${CMAKE_SOURCE_DIR}/common
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/server/scsynth
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     .
                     )
@@ -204,8 +202,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     target_link_libraries(libsupernova rt)
 endif()
 
-target_link_libraries(libsupernova boost_system_lib boost_program_options_lib)
-target_include_directories(libsupernova PUBLIC ${boost_include_dirs})
+target_link_libraries(libsupernova Boost::program_options)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     if( ${_gcc_version} VERSION_GREATER 5 )

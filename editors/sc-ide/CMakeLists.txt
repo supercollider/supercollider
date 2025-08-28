@@ -338,9 +338,6 @@ target_link_libraries( libscide PUBLIC
 
 target_link_libraries( SuperCollider libscide)
 
-target_link_libraries( libscide PUBLIC boost_system_lib)
-include_directories(${boost_include_dirs})
-
 # This makes sclang/scide work with a Qt installation at a fixed location.
 set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
 
