@@ -18,6 +18,8 @@
 
 #include <stdexcept>
 
+#include <boost/tuple/tuple.hpp>
+
 #include "SC_Win32Utils.h"
 
 #include "nova-tt/thread_affinity.hpp"
