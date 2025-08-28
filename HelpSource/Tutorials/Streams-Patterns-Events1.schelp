@@ -177,7 +177,7 @@ code::
 		// out = [out, DelayN.ar(out, 0.04, 0.04) ];
 		4.do({ out = AllpassN.ar(out, 0.05, [0.05.rand, 0.05.rand], 4) });
 		Out.ar( i_out, out );
-	}).send(s);
+	}).add;
 )
 (
 // streams as a sequence of pitches

@@ -100,7 +100,7 @@ code::
 (
 SynthDef("test", { arg gate=1, out;
 	Out.ar(out, Formant.ar(300, 200, 10) * EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf))
-}).send(s);
+}).add;
 )
 
 // you can also provide a fadeTime arg, which is set by the proxy:
@@ -110,7 +110,7 @@ SynthDef("test", { arg gate=1, out, fadeTime=1;
 		Formant.ar(Rand(20,40), 600, 10, 0.2)
 		* EnvGen.kr(Env.asr(fadeTime,1,fadeTime), gate, doneAction: Done.freeSelf)
 	)
-}).send(s);
+}).add;
 )
 
 ~out = \test;
@@ -129,7 +129,7 @@ SynthDef("test", { arg gate=1, out;
 		Formant.ar(Rand(20,40), 600, 10, 0.6)
 		* EnvGen.kr(Env.perc, gate, doneAction: Done.freeSelf)
 	)
-}).send(s);
+}).add;
 )
 
 ~out = \test;

@@ -39,7 +39,7 @@ SynthDef("Help-SynthDef", { arg out = 0;
 (
 SynthDef("Help-SynthDef", { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
-}).send(s);
+}).add;
 )
 
 // Create a Synth with it
