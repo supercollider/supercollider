@@ -981,10 +981,10 @@ Unless noted otherwise, the return value of all these methods will be an link::C
 note::Interval Notation Guide for this part:
 table::
 ## Notation || Name || Inclusion || Meaning (Range)
-## teletype::[a, b]:: || Closed interval || Includes both teletype::a:: and teletype::b:: || math::a \leqq x \leqq b::
+## teletype::[a, b]:: || Closed interval || Includes both teletype::a:: and teletype::b:: || math::a \leq x \leq b::
 ## teletype::(a, b):: || Open interval || Excludes both teletype::a:: and teletype::b:: ||  math::a \lt x \lt b::
-## teletype::[a, b):: || Half‑open interval (left‑closed) || Includes teletype::a::, excludes teletype::b:: || math::a \leqq x \lt b::
-## teletype::(a, b]:: || Half‑open interval (right‑closed) || Excludes teletype::a::, includes teletype::b:: ||  math::a \lt x \leqq b::
+## teletype::[a, b):: || Half‑open interval (left‑closed) || Includes teletype::a::, excludes teletype::b:: || math::a \leq x \lt b::
+## teletype::(a, b]:: || Half‑open interval (right‑closed) || Excludes teletype::a::, includes teletype::b:: ||  math::a \lt x \leq b::
 ::
 ::
 
