@@ -34,7 +34,7 @@ s.sendMsg("/n_set", 1731, \t_trig, 1);
 // a single impulse SynthDef:
 
 (
-SynthDef("dirac", { |out, amp = 0.1|
+SynthDef(\dirac, { |out, amp = 0.1|
 	var u;
 	u = Impulse.ar(1);
 	FreeSelf.kr(u);

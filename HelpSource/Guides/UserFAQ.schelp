@@ -43,7 +43,7 @@ For example if you might use between 1 and 5 channels:
 code::
 (
 (1..5).do{ |n|
-SynthDef("simplepink_%".format(n).asSymbol, { |out=0|
+SynthDef(\simplepink_%.format(n).asSymbol, { |out=0|
     Out.ar(out, {PinkNoise.ar}.dup(n))
 }).add
 }

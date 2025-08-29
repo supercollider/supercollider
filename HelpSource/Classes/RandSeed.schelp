@@ -65,7 +65,7 @@ x.set(\seed, 1902);
 // a solution is to start a new synth:
 
 (
-SynthDef("pseudorandom", { |out, sustain = 1, seed = 1967, id = 0|
+SynthDef(\pseudorandom, { |out, sustain = 1, seed = 1967, id = 0|
 	var noise, filterfreq;
 	RandID.ir(id);
 	RandSeed.ir(1, seed);
@@ -87,7 +87,7 @@ SynthDef("pseudorandom", { |out, sustain = 1, seed = 1967, id = 0|
 (
 fork {
 	loop {
-		Synth("pseudorandom");
+		Synth(\pseudorandom);
 		1.1.wait; // wait a bit longer than sustain, so sounds don't overlap
 	}
 }
@@ -100,7 +100,7 @@ fork {
 	(1902..2005).do { |seed|
 		seed.postln;
 		3.do {
-			Synth("pseudorandom", [\seed, seed]);
+			Synth(\pseudorandom, [\seed, seed]);
 			1.1.wait;
 		}
 	}
@@ -113,7 +113,7 @@ fork {
 	(1902..2005).do { |seed|
 		seed.postln;
 		rrand(4, 10).do {
-			Synth("pseudorandom", [\seed, seed, \sustain, 0.05]);
+			Synth(\pseudorandom, [\seed, seed, \sustain, 0.05]);
 			0.06.wait;
 		}
 	}
@@ -126,7 +126,7 @@ fork {
 (
 fork {
 	loop {
-		Synth("pseudorandom");
+		Synth(\pseudorandom);
 		0.8.wait; // instead of 1.1
 	}
 }
@@ -140,7 +140,7 @@ fork {
 	(1902..2005).do { |seed|
 		seed.postln;
 		3.do {
-			Synth("pseudorandom", [\seed, seed, \id, id]);
+			Synth(\pseudorandom, [\seed, seed, \id, id]);
 			id = id + 1 % 16; // there is 16 different random generators
 			0.8.wait;
 		}

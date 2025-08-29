@@ -49,7 +49,7 @@ s.sendMsg("/n_free", n);            // release the synth n
 ::
 ## indirectly || the language app provides you with convenient OOP functionality to keep track of and manipulate things on the server. The high-level syntax is translated into low-level OSC messages by sclang and sent to the server (language wrapping).
 code::
-x = Synth("default");   // create a synth on the default server (s) and allocate an ID for it
+x = Synth(\default);   // create a synth on the default server (s) and allocate an ID for it
 x.free;                 // free the synth, its ID and resources
 ::
 ::

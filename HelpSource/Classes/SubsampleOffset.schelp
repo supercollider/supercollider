@@ -68,7 +68,7 @@ s.scope(1, 40, zoom: 0.2);
 // someone could add an example that shows the effect)
 
 (
-SynthDef("Help_Subsample_Grain",
+SynthDef(\Help_Subsample_Grain,
 	{ |out = 0, freq = 440, sustain = 0.005, attack = 0.001|
 		var env, offset, sig, sd;
 

@@ -29,7 +29,7 @@ Here, a control rate SinOsc modulates the frequency of the audio rate Pulse wave
 
 code::
 (
-SynthDef("anExample", {
+SynthDef(\anExample, {
 	Out.ar(
 		0,
 		Pulse.ar(
@@ -41,7 +41,7 @@ SynthDef("anExample", {
 }).add;
 )
 
-Synth("anExample")
+Synth(\anExample)
 ::
 
 Type command-period (cmd-.) to stop synthesis.

@@ -121,7 +121,7 @@ The example below implements a resonator. Note that you must subtract the blockS
 code::
 (
 var play, imp, initial;
-SynthDef("testRes", {
+SynthDef(\testRes, {
 
 play = InFeedback.ar(10, 1); // 10 is feedback channel
 imp = Impulse.ar(1);

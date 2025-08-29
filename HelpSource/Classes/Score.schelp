@@ -154,7 +154,7 @@ code::
 // Here we use store instead of add to store the compiled synthdef in Platform.defaultTempDir +/+ "synthdefs/"
 // and make it available to the NRT server
 (
-SynthDef("helpscore", { |out, freq = 440|
+SynthDef(\helpscore, { |out, freq = 440|
 	Out.ar(out,
 		SinOsc.ar(freq, 0, 0.2) * Line.kr(1, 0, 0.5, doneAction: Done.freeSelf)
 	)
@@ -210,7 +210,7 @@ s.boot; // boot the default server
 
 // A sample synthDef
 (
-SynthDef("helpscore", { |out, freq = 440|
+SynthDef(\helpscore, { |out, freq = 440|
 	Out.ar(out,
 		SinOsc.ar(freq, 0, 0.2) * Line.kr(1, 0, 0.5, doneAction: Done.freeSelf)
 	)
@@ -281,7 +281,7 @@ subsection::creating Score from a pattern
 
 code::
 (
-SynthDef("helpscore", { |out, freq = 440|
+SynthDef(\helpscore, { |out, freq = 440|
     Out.ar(out,
         SinOsc.ar(freq, 0, 0.2) * Line.kr(1, 0, 0.5, doneAction: Done.freeSelf)
     )

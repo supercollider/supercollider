@@ -51,7 +51,7 @@ code::
 // sound example
 (
 s.boot;
-SynthDef("gpdef",
+SynthDef(\gpdef,
 	{ |out = 0, freq = 440, sustain = 0.05, amp = 0.1|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf) * amp;

@@ -69,8 +69,8 @@ subsection::recording from some bus
 code::
 a = Bus.audio(s, 2);
 
-SynthDef("test", { |out| Out.ar(out, { WhiteNoise.ar(0.1) }.dup(2)) }).add;
-x = Synth("test", [\out, a]);
+SynthDef(\test, { |out| Out.ar(out, { WhiteNoise.ar(0.1) }.dup(2)) }).add;
+x = Synth(\test, [\out, a]);
 
 
 n = RecNodeProxy.audio(s, 2);

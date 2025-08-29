@@ -104,8 +104,8 @@ code::
 ::
 If you need to change the order of execution after synths and groups have been created, you can do this using move messages.
 code::
-    ~fx = Synth.tail(s, "fx");
-    ~src = Synth.tail(s, "src");  // effect will not be heard b/c it's earlier
+    ~fx = Synth.tail(s, \fx);
+    ~src = Synth.tail(s, \src);  // effect will not be heard b/c it's earlier
     ~src.moveBefore(~fx);   // place the source before the effect
 ::
 
@@ -180,14 +180,14 @@ SynthDef("order-of-ex-pulse", { arg freq, bus, ffreq, pan, lfobus;
 		* EnvGen.kr(Env.perc(0.1, 1), timeScale: noteLen, doneAction: Done.freeSelf));
 }).add;
 
-SynthDef("LFNoise1", { arg freq, mul, add, bus;
+SynthDef(\LFNoise1, { arg freq, mul, add, bus;
 	Out.kr(bus, LFNoise1.kr(freq, mul:mul, add:add));
 }).add;
 )
 
 // Place LFO:
 
-~lfo = Synth.head(s, "LFNoise1", [\freq, 0.3, \mul, 0.68, \add, 0.7, \bus, l]);
+~lfo = Synth.head(s, \LFNoise1, [\freq, 0.3, \mul, 0.68, \add, 0.7, \bus, l]);
 
 // Then place your effect:
 

@@ -690,7 +690,7 @@ a.source = { SinOsc.ar([390, 286, 400, 420, 300] * 1.2, 0, 0.2) };
 a.source = { WhiteNoise.ar([0.01, 0.01]) };
 a.source = 0;
 a.source = \default; // synthDef on server
-a.source = SynthDef("w", { |out = 0| Out.ar(out, SinOsc.ar([Rand(430, 600), 600], 0, 0.2)) });
+a.source = SynthDef(\w, { |out = 0| Out.ar(out, SinOsc.ar([Rand(430, 600), 600], 0, 0.2)) });
 a.source = nil; // removes any object
 
 // feedback
@@ -845,7 +845,7 @@ code::
 
 (
 // must have 'out' or 'i_out' argument to work properly
-SynthDef("who", { |freq, gate = 1, out = 0, ffreq = 800, amp = 0.1|
+SynthDef(\who, { |freq, gate = 1, out = 0, ffreq = 800, amp = 0.1|
 	var env;
 	env = Env.asr(0.01, amp, 0.5);
 	Out.ar(out, Pan2.ar(

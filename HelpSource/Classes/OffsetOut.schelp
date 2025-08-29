@@ -87,7 +87,7 @@ Routine({
 
 
 
-SynthDef("trig1", {
+SynthDef(\trig1, {
 	var gate, tone;
 	gate = Trig1.ar(1.0, t);
 	tone = In.ar(10, 1); // tone comes in normally

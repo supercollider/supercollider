@@ -266,9 +266,9 @@ This is a complicated topic, and there are some exceptions to this, but you shou
 Synth-new has two arguments which allow you to specify where in the order a synth is added. The first is a emphasis:: target::, and the second is an emphasis:: addAction::. The latter specifies the new synth's position in relation to the target.
 
 code::
-x = Synth("default", [\freq, 300]);
+x = Synth(\default, [\freq, 300]);
 // add a second synth immediately after x
-y = Synth("default", [\freq, 450], x, \addAfter);
+y = Synth(\default, [\freq, 450], x, \addAfter);
 x.free; y.free;
 ::
 
@@ -279,7 +279,7 @@ Methods like Synth-after are simply convenient ways of doing the same thing, the
 code::
 // These two lines of code are equivalent
 y = Synth.new("default", [\freq, 450], x, \addAfter);
-y = Synth.after(x, "default", [\freq, 450]);
+y = Synth.after(x, \default, [\freq, 450]);
 ::
 
 For more information see:

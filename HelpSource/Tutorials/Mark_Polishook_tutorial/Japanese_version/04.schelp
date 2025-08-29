@@ -48,7 +48,7 @@ SinOsc.kr(440, 0, 1);
 
 code::
 (
-SynthDef("anExample", {
+SynthDef(\anExample, {
 	Out.ar(
 		0,
 		SinOsc.ar(
@@ -60,7 +60,7 @@ SynthDef("anExample", {
 }).add;
 )
 
-Synth("anExample")
+Synth(\anExample)
 ::
 
 コントロール・レートで動作するこのSinOscーSinOsc.kr([7, 8], 0, 7)ーのインスタンスは、オーディオ・レートで聞くSinOscの周波数を変調します。

@@ -27,7 +27,7 @@ Use LPF, a low-pass filter to subtract high-frequency content from an input sour
 
 code::
 (
-SynthDef("subtractive", { arg out;
+SynthDef(\subtractive, { arg out;
 	Out.ar(
 		out,
 		LPF.ar(
@@ -38,7 +38,7 @@ SynthDef("subtractive", { arg out;
 }).add;
 )
 
-Synth("subtractive")
+Synth(\subtractive)
 ::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ RLPF, a resonant low-pass filter, removes high-frequency content and emphasizes 
 
 code::
 (
-SynthDef("passLowFreqs2", { arg out;
+SynthDef(\passLowFreqs2, { arg out;
 	Out.ar(
 		out,
 		RLPF.ar(
@@ -59,7 +59,7 @@ SynthDef("passLowFreqs2", { arg out;
 }).add;
 )
 
-Synth("passLowFreqs2")
+Synth(\passLowFreqs2)
 ::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ Transform noise into pitch with a sharp cutoff.
 
 code::
 (
-SynthDef("noiseToPitch", { arg out = 0, mul = 1;
+SynthDef(\noiseToPitch, { arg out = 0, mul = 1;
 	Out.ar(
 		out,
 		Resonz.ar(
@@ -84,8 +84,8 @@ SynthDef("noiseToPitch", { arg out = 0, mul = 1;
 
 (
 // activate left and right channels
-Synth("noiseToPitch", [\out, 0, \mul, 1]);
-Synth("noiseToPitch", [\out, 1, \mul, 1]);
+Synth(\noiseToPitch, [\out, 0, \mul, 1]);
+Synth(\noiseToPitch, [\out, 1, \mul, 1]);
 )
 ::
 

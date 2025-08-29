@@ -112,7 +112,7 @@ Keywords make code easier to read and they allow arguments to be presented in an
 
 code::
 (
-SynthDef("timeScale", { arg ts = 1;
+SynthDef(\timeScale, { arg ts = 1;
 	Out.ar(
 		0,
 		SinOsc.ar(440, 0, 0.4)
@@ -126,7 +126,7 @@ SynthDef("timeScale", { arg ts = 1;
 }).add;
 )
 
-Synth("timeScale", [\ts, 0.1]); // timeScale controls the duration of the envelope
+Synth(\timeScale, [\ts, 0.1]); // timeScale controls the duration of the envelope
 ::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,7 +136,7 @@ code::
 (
 r = Routine({
 	loop({
-		Synth("timeScale", [\ts, 0.01.rrand(0.3)]);
+		Synth(\timeScale, [\ts, 0.01.rrand(0.3)]);
 		0.5.wait;
 	})
 });

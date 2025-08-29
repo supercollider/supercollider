@@ -62,7 +62,7 @@ code::
 // explore the effect
 
 (
-SynthDef("conformer2", { |out|
+SynthDef(\conformer2, { |out|
 	var in, chain, sound;
 	in = Mix.ar(LFSaw.ar(SinOsc.kr(Array.rand(3, 0.1, 0.5), 0, 10, [1, 1.1, 1.5, 1.78, 2.45, 6.7]*220), 0, 0.3));
 	chain = FFT(LocalBuf(2048), in);
@@ -73,12 +73,12 @@ SynthDef("conformer2", { |out|
 }).add;
 )
 
-a = Synth("conformer2")
+a = Synth(\conformer2)
 a.free
 
 // sound input: use headphones to prevent feedback
 (
-SynthDef("conformer1", { |out|
+SynthDef(\conformer1, { |out|
 	var in, chain;
 	in = SoundIn.ar(0, 0.5);
 	chain = FFT(LocalBuf(1024), in);
@@ -87,7 +87,7 @@ SynthDef("conformer1", { |out|
 }).add;
 )
 
-a = Synth("conformer1")
+a = Synth(\conformer1)
 a.free
 
 

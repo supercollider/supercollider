@@ -69,7 +69,7 @@ New synths are attached by default to the head of the default_group.
 code::
 // 1st, evaluate a synthdef
 (
-SynthDef("ringModulation", {
+SynthDef(\ringModulation, {
 	Out.ar(
 		0,
 		Mix.ar(
@@ -83,7 +83,7 @@ SynthDef("ringModulation", {
 
 // 2nd, make a synth
 (
-Synth("ringModulation");
+Synth(\ringModulation);
 )
 
 // 3rd, tell the server to list its nodes
@@ -117,7 +117,7 @@ An example with two synths.
 code::
 // 1st, evaluate a synthdef
 (
-SynthDef("pitchFromNoise", { arg out = 0;
+SynthDef(\pitchFromNoise, { arg out = 0;
 	Out.ar(
 		out,
 		Resonz.ar(
@@ -131,8 +131,8 @@ SynthDef("pitchFromNoise", { arg out = 0;
 
 // 2nd, make 2 synths
 (
-Synth("ringModulation");
-Synth("pitchFromNoise", [\out, 1]);
+Synth(\ringModulation);
+Synth(\pitchFromNoise, [\out, 1]);
 )
 
 // 3rd, tell the server to list its nodes
@@ -266,19 +266,19 @@ code::
 // each of the synthdefs below has a control for amplitude (mul)
 (
 // build 3 synthdefs and a group
-SynthDef("synthNumber1", { arg mul = 0.2;
+SynthDef(\synthNumber1, { arg mul = 0.2;
 	Out.ar(
 		0,
 		BrownNoise.ar(mul) * LFNoise0.kr([1, 1.01])
 	)
 	}, [0.1]).add;
-SynthDef("synthNumber2", { arg mul = 0.2;
+SynthDef(\synthNumber2, { arg mul = 0.2;
 	Out.ar(
 		0,
 		WhiteNoise.ar(mul) * LFNoise1.kr([2.99, 3])
 	)
 	}, [0.1]).add;
-SynthDef("synthNumber3", { arg mul = 0.2;
+SynthDef(\synthNumber3, { arg mul = 0.2;
 	Out.ar(
 		0,
 		PinkNoise.ar(mul) * LFNoise2.kr([0.79, 0.67])

@@ -27,7 +27,7 @@ section::コントロールは（大抵は）アーギュメントである
 code::
 (
 // デフォルト値を持つ2つのアーギュメント
-SynthDef("withControls", { arg freq = 440, mul = 0.22;
+SynthDef(\withControls, { arg freq = 440, mul = 0.22;
 	Out.ar(
 		0,
 		SinOsc.ar([freq, freq+1], 0, mul)
@@ -35,7 +35,7 @@ SynthDef("withControls", { arg freq = 440, mul = 0.22;
 }).add;
 )
 
-Synth("withControls", [\freq, 440, \mul, 0.1]);
+Synth(\withControls, [\freq, 440, \mul, 0.1]);
 ::
 
 配列の中のアイテムはSynthDefのコントロールに渡される値です。
@@ -45,13 +45,13 @@ Synth("withControls", [\freq, 440, \mul, 0.1]);
 配列の中にそれぞれのコントロールを書く場合には、次の様にシンボル（バックスラッシュの後に名前が続く）を用いることもできますし、
 
 code::
-Synth("withControls", [\freq, 440, \mul, 0.1]);
+Synth(\withControls, [\freq, 440, \mul, 0.1]);
 ::
 
 または、次の様に文字列（引用符の中に名前）を用いることもでき、
 
 code::
-Synth("withControls", ["freq", 440, "mul", 0.1]);
+Synth(\withControls, ["freq", 440, "mul", 0.1]);
 ::
 
 その後に値が続きます。
@@ -69,7 +69,7 @@ Synth("withControls", ["freq", 440, "mul", 0.1]);
 シンセにコントロールを渡す第３の方法もあります。前の例のシンセは次の様に書くこともできます。
 
 code::
-Synth("withControls", [0, 440, 1, 0.1]);
+Synth(\withControls, [0, 440, 1, 0.1]);
 ::
 
 このパターンは次の様になります。
@@ -86,7 +86,7 @@ section::コントロールはリセットすることもできる
 
 code::
 (
-SynthDef("resetMyControls", { arg freq = 440, mul = 0.22;
+SynthDef(\resetMyControls, { arg freq = 440, mul = 0.22;
 	Out.ar(
 		0,
 		SinOsc.ar([freq, freq+1], 0, mul)
@@ -94,7 +94,7 @@ SynthDef("resetMyControls", { arg freq = 440, mul = 0.22;
 }).add;
 )
 
-~aSynth = Synth("resetMyControls", [\freq, 440, \mul, 0.06]);
+~aSynth = Synth(\resetMyControls, [\freq, 440, \mul, 0.06]);
 ~aSynth.set(\freq, 600, \mul, 0.25);
 ::
 
@@ -112,7 +112,7 @@ SynthDefはコントロールのそれぞれにラグ・タイムを定義する
 
 code::
 (
-SynthDef("controlsWithLags", { arg freq = 440, mul = 0.22;
+SynthDef(\controlsWithLags, { arg freq = 440, mul = 0.22;
 	Out.ar(
 		0,
 		SinOsc.ar([freq, freq+1], 0, mul)
@@ -120,7 +120,7 @@ SynthDef("controlsWithLags", { arg freq = 440, mul = 0.22;
 }, [1, 1]).add;
 )
 
-~aSynth = Synth("controlsWithLags", [\freq, 550, \mul, 0.1]);
+~aSynth = Synth(\controlsWithLags, [\freq, 550, \mul, 0.1]);
 ~aSynth.set(\freq, 600, \mul, 0.5);
 ::
 

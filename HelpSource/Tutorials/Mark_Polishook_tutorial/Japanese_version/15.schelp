@@ -134,7 +134,7 @@ section::ルーチンを用いたシンセシスのスケジューリング
 
 code::
 (
-SynthDef("fm2", {
+SynthDef(\fm2, {
 	arg bus = 0, freq = 440, carPartial = 1, modPartial = 1, index = 3, mul = 0.2, ts = 1;
 
 	// インデックスの値は通常0から24まで
@@ -166,7 +166,7 @@ SynthDef("fm2", {
 r = Routine({
 
 	12.do({
-		Synth("fm2", [\freq, 400.0.rrand(1200), \carPartial, 0.5.rrand(2), \ts, 0.1.rrand(4)]);
+		Synth(\fm2, [\freq, 400.0.rrand(1200), \carPartial, 0.5.rrand(2), \ts, 0.1.rrand(4)]);
 		2.wait;
 	})
 });
@@ -180,7 +180,7 @@ r.reset.play;
 
 code::
 (
-SynthDef("echoplex", {
+SynthDef(\echoplex, {
 	ReplaceOut.ar(
 		0,
 		CombN.ar(

@@ -299,7 +299,7 @@ code::
 // inlined, optimized, but you'll get stuck notes
 Routine({
   var synth;
-  { synth = Synth("someSynth", [...args...]);
+  { synth = Synth(\someSynth, [...args...]);
     thisThread.clock.sched(10, {
       synth.free;
     });
@@ -310,7 +310,7 @@ Routine({
 // not inlined, but no stuck notes
 Routine({
   { var synth;
-    synth = Synth("someSynth", [...args...]);
+    synth = Synth(\someSynth, [...args...]);
     thisThread.clock.sched(10, {
       synth.free;
     });
@@ -330,7 +330,7 @@ Routine({
     var func;
     func = {
         var synth; // this variable is local to the function
-        synth = Synth("default");
+        synth = Synth(\default);
         [\play, synth].postln;
         thisThread.clock.sched(4.5, {
             synth.free;

@@ -36,7 +36,7 @@ Examples::
 code::
 
 (
-SynthDef("ReplaceOutHelp", { |out = 0, freq = 440|
+SynthDef(\ReplaceOutHelp, { |out = 0, freq = 440|
 	var source;
 		source = SinOsc.ar(freq, 0, 0.1);
 
@@ -47,9 +47,9 @@ SynthDef("ReplaceOutHelp", { |out = 0, freq = 440|
 )
 
 // each Synth replaces the output of the previous one
-x = Synth.tail(s, "ReplaceOutHelp", [\freq, 500]);
-y = Synth.tail(s, "ReplaceOutHelp", [\freq, 600]);
-z = Synth.tail(s, "ReplaceOutHelp", [\freq, 700]);
+x = Synth.tail(s, \ReplaceOutHelp, [\freq, 500]);
+y = Synth.tail(s, \ReplaceOutHelp, [\freq, 600]);
+z = Synth.tail(s, \ReplaceOutHelp, [\freq, 700]);
 
 // release them in reverse order; the older Synths are still there.
 z.free;

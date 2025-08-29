@@ -250,7 +250,7 @@ code::
 s.boot;
 (
 // send a synth def to server
-SynthDef("tpulse", { |out = 0, freq = 700, sawFreq = 440.0|
+SynthDef(\tpulse, { |out = 0, freq = 700, sawFreq = 440.0|
 	Out.ar(out, SyncSaw.ar(freq, sawFreq, 0.1));
 }).add;
 )
@@ -269,7 +269,7 @@ y = Synth.new("tpulse", [\freq, 350, \sawFreq, 220]);
 y.free;
 
 // make a new synth
-y = Synth("tpulse");
+y = Synth(\tpulse);
 
 // pause
 y.run(false);
@@ -303,7 +303,7 @@ SynthDef("moto-rev", { |out = 0|
 	Out.ar(out, x);
 }).add;
 
-SynthDef("bubbles", { |out = 0|
+SynthDef(\bubbles, { |out = 0|
 	var f, zout;
 	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8, 7.23], 0, 3, 80)).midicps;
 	zout = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
@@ -311,12 +311,12 @@ SynthDef("bubbles", { |out = 0|
 }).add;
 
 
-SynthDef("rlpf", { |out = 0, ffreq = 600, rq = 0.1|
+SynthDef(\rlpf, { |out = 0, ffreq = 600, rq = 0.1|
 	ReplaceOut.ar(out, RLPF.ar(In.ar(out), ffreq, rq))
 }).add;
 
 
-SynthDef("wah", { |out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq = 0.1|
+SynthDef(\wah, { |out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq = 0.1|
 	var zin, zout;
 
 	zin = In.ar(out, 2);
@@ -331,7 +331,7 @@ SynthDef("wah", { |out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq = 0.1|
 
 }).add;
 
-SynthDef("modulate", { |out = 0, freq = 1, center = 440, plusMinus = 110|
+SynthDef(\modulate, { |out = 0, freq = 1, center = 440, plusMinus = 110|
 	Out.kr(out, SinOsc.kr(freq, 0, plusMinus, center));
 }).add;
 )
@@ -342,7 +342,7 @@ SynthDef("modulate", { |out = 0, freq = 1, center = 440, plusMinus = 110|
 y = Synth("moto-rev", ["out", 0]);
 
 // z is reading from bus 0 and replacing that; It must be *after* y
-z = Synth.after(y, "wah", ["out", 0]);
+z = Synth.after(y, \wah, ["out", 0]);
 
 // stop the wah-ing
 z.run(false);
@@ -351,10 +351,10 @@ z.run(false);
 z.run(true);
 
 // add a rlpf after that, reading and writing to the same buss
-x = Synth.after(z, "rlpf", ["out", 0]);
+x = Synth.after(z, \rlpf, ["out", 0]);
 
 // create another rlpf after x
-t = Synth.after(x, "rlpf", ["out", 0]);
+t = Synth.after(x, \rlpf, ["out", 0]);
 
 x.set("ffreq", 400);
 
@@ -365,7 +365,7 @@ x.set(\ffreq, 800); // Symbols work for control names too
 b = Bus.control(s, 1);
 
 // now the modulator, *before* x
-m = Synth.before(x, "modulate", [\out, b]);
+m = Synth.before(x, \modulate, [\out, b]);
 
 // now map x's ffreq to b
 x.map("ffreq", b);
@@ -378,7 +378,7 @@ m.free;
 
 // now place another synth after y, on the same bus
 // they both write to the buss, adding their outputs
-r = Synth.after(y, "bubbles", ["out", 0]);
+r = Synth.after(y, \bubbles, ["out", 0]);
 
 y.free;
 

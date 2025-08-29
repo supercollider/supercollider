@@ -387,7 +387,7 @@ code::
 
 s.boot;
 (
-SynthDef("funk", { |out, freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed = 0|
+SynthDef(\funk, { |out, freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed = 0|
 	var e, x, env, range, filterfreq;
 	e = Env.new([0, 0.1, 0.1, 0], [0, 0.1, 0.1], 'linear', 2);
 	env = Env.adsr(0.3, 1, 1, 1);
@@ -402,7 +402,7 @@ SynthDef("funk", { |out, freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 
 	Out.ar(out, x * EnvGen.kr(e, gate, doneAction: Done.freeSelf))
 }).add;
 
-SynthDef("strings", { |out, freq = 700, amp = 0.2, gate = 1|
+SynthDef(\strings, { |out, freq = 700, amp = 0.2, gate = 1|
 	var x, enve;
 	enve = Env.new([0, 0.1, 0.1, 0], [2, 0.1, 1], 'linear', 2);
 	x = RLPF.ar(Mix.ar([
@@ -452,7 +452,7 @@ MIDIIn.addFuncTo(\bend, ~bend);
 ~noteOn = { |src, chan, num, vel|
 	var node;
 	if(num < 60, {
-		node = Synth.tail(g, "funk", [\freq, num.midicps, \amp, vel/255]);
+		node = Synth.tail(g, \funk, [\freq, num.midicps, \amp, vel/255]);
 		node.map("cutoff", 1, "rez", 2, "lfospeed", 3);
 //		node = Synth.basicNew("funk", s);
 //		s.sendBundle(nil,
@@ -461,7 +461,7 @@ MIDIIn.addFuncTo(\bend, ~bend);
 //		);
 		keys.put(num, node)
 	}, {
-		node = Synth.tail(g, "strings", [\freq, num.midicps, \amp, vel/255]);
+		node = Synth.tail(g, \strings, [\freq, num.midicps, \amp, vel/255]);
 		keys.put(num, node)
 	});
 };

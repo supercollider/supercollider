@@ -24,7 +24,7 @@ definitionlist::
 ::
 code::
 (
-SynthDef("test", { |out, freq, xFade|
+SynthDef(\test, { |out, freq, xFade|
 	XOut.ar(out, xFade, SinOsc.ar(freq))
 }).store
 );

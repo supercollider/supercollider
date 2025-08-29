@@ -108,7 +108,7 @@ c.server = s; // Important: one must assign the ScopeView to a server
 
 (
 // listening to the bus, using ScopeOut2 to write it to the buffer
-a = SynthDef("monoscope", { |bus, bufnum|
+a = SynthDef(\monoscope, { |bus, bufnum|
     var z;
     z = In.ar(bus, 2);
 
@@ -121,7 +121,7 @@ a = SynthDef("monoscope", { |bus, bufnum|
 );
 
 // making noise onto the buffer
-d = SynthDef("noise", { |bus|
+d = SynthDef(\noise, { |bus|
     var z;
     z = LFSaw.ar(SinOsc.kr(0.1).range(300, 1000), [0, 1]*pi) * 0.1;
     Out.ar(bus, z);
@@ -196,7 +196,7 @@ s.waitForBoot({
 
     startButton.action_{
         (startButton.value == 1).if{
-            syn1 = SynthDef("test1", { |bus, bufnum|
+            syn1 = SynthDef(\test1, { |bus, bufnum|
                 var z;
                 z = In.ar(bus, 2);
                 // ScopeOut2 writes the audio to the buffer
@@ -210,7 +210,7 @@ s.waitForBoot({
             );
 
             // making noise onto the buffer
-            syn2 = SynthDef("test2", { |bus|
+            syn2 = SynthDef(\test2, { |bus|
                 var z;
                 z = PMOsc.ar([300, 250], *SinOsc.ar([0.027, 0.017])*pi) * 0.1;
                 Out.ar(bus, z);

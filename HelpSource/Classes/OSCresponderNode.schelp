@@ -137,7 +137,7 @@ f = OSCresponderNode(s.addr, '/fail', { |time, responder, msg|
 f.add;
 
 // cause a failure
-Synth("gthhhhppppppp!");
+Synth(\gthhhhppppppp!);
 
 f.remove
 ::

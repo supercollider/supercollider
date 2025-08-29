@@ -26,7 +26,7 @@ Pbind(\note, Pavaroh(
 
 // ___indian video game (1)
 (
-SynthDef("ivg", { |out, freq = 900, pan|
+SynthDef(\ivg, { |out, freq = 900, pan|
 	var trig, snd;
 	trig = Impulse.kr(LFClipNoise.kr(4, 3, LFClipNoise.kr(0.2, 2, 7)));
 	snd = RLPF.ar(

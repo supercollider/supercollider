@@ -71,7 +71,7 @@ discussion::
 If this Node is a link::Classes/Group:: this will free all Nodes within the Group.
 code::
 s.boot;
-x = Synth("default");
+x = Synth(\default);
 x.free;
 ::
 
@@ -203,7 +203,7 @@ discussion::
 This information will be printed to the post window. (See also the queryAllNodes method of Server.) "parent" indicates the Node's enclosing group. If "prev" or "next" are equal to -1 that indicates that there are no other nodes in the enclosing group before or after this one, respectively.
 code::
 g = Group.new;
-x = Synth.head(g, "default");
+x = Synth.head(g, \default);
 x.query;
 g.query;
 s.queryAllNodes; // Note the RootNode (ID 0) and the default Group (ID 1)

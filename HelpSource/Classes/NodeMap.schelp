@@ -65,11 +65,11 @@ code::
 s.boot;
 
 (
-SynthDef("modsine",
+SynthDef(\modsine,
 	{ |out, freq = 320, amp = 0.2|
 		Out.ar(out, SinOsc.ar(freq, 0, amp));
 	}).add;
-SynthDef("lfo",
+SynthDef(\lfo,
 	{ |out, rate = 2|
 		Out.kr(out, LFPulse.kr(rate, 0, 0.1, 0.2))
 	}).add;
@@ -78,8 +78,8 @@ SynthDef("lfo",
 // start nodes
 (
 b = Bus.control(s, 1);
-x = Synth("modsine");
-y = Synth.before(x, "lfo", [\out, b]);
+x = Synth(\modsine);
+y = Synth.before(x, \lfo, [\out, b]);
 )
 
 // create some node maps

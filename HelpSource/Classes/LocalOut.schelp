@@ -58,7 +58,7 @@ code::
 
 
 (
-z = SynthDef("tank", { |out|
+z = SynthDef(\tank, { |out|
 	var local, in;
 
 	in = Mix.fill(12, {
@@ -92,7 +92,7 @@ z = SynthDef("tank", { |out|
 
 
 (
-z = SynthDef("tape", { |out|
+z = SynthDef(\tape, { |out|
 	var local, in, amp;
 
 	in = SoundIn.ar([0, 1]);
