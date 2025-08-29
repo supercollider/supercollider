@@ -35,7 +35,7 @@ Examples::
 
 code::
 (
-SynthDef("help-GrayNoise", { |out = 0|
+SynthDef(\help_GrayNoise, { |out = 0|
 	Out.ar(out,
 		GrayNoise.ar(-20.dbamp)
 	)

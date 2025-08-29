@@ -31,7 +31,7 @@ x = a.asStream;
 // Place used as a sequence of pitches
 
 (
-SynthDef("help-sinegrain",
+SynthDef(\help_sinegrain,
 	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
@@ -45,7 +45,7 @@ c = Place(#[0, 0, [0, 4, 7], [1, 5, 8], [2, 6, 9]], inf) + 67;
 x = c.asStream;
 Routine({
 	loop({
-		Synth("help-sinegrain", [\freq, x.next.midicps]);
+		Synth(\help_sinegrain, [\freq, x.next.midicps]);
 		0.17.wait;
 	})
 }).play;

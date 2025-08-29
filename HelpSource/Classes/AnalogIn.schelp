@@ -40,7 +40,7 @@ code::
 // modulate frequency of a sine oscillator
 
 (
-SynthDef("help-AnalogIn", { |out = 0|
+SynthDef(\help_AnalogIn, { |out = 0|
 	Out.ar(out,
 	  SinOsc.ar(AnalogIn.ar(0).exprange(200, 5000), 0, 0.1)
 	)

@@ -46,7 +46,7 @@ s.boot; // start the server
 
 // examples below will use this synthdef
 (
-SynthDef("help-Diskin", { |out, bufnum = 0|
+SynthDef(\help_Diskin, { |out, bufnum = 0|
 	Out.ar(out, DiskIn.ar(1, bufnum));
 }).add
 )
@@ -87,7 +87,7 @@ r.stop; x.free; b.close; b.free; // you need to do all these to properly cleanup
 
 // cue and play right away
 (
-SynthDef("help-Diskin", { |out, bufnum = 0|
+SynthDef(\help_Diskin, { |out, bufnum = 0|
 	Out.ar(out, DiskIn.ar(1, bufnum));
 }).add;
 )

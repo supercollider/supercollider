@@ -285,7 +285,7 @@ var balanceControl, ampControl;
 var node, cmdPeriodFunc;
 
 // define a synth
-SynthDef("window-test", { |out, note = 36, fc = 1000, rq = 0.25, bal = 0, amp = 0.4, gate = 1|
+SynthDef(\window_test, { |out, note = 36, fc = 1000, rq = 0.25, bal = 0, amp = 0.4, gate = 1|
 		var x;
 		x = Mix.fill(4, {
 			LFSaw.ar((note + { 0.1.rand2 }.dup).midicps, 0, 0.02)
@@ -316,7 +316,7 @@ startButton.states = [
 startButton.action = { |view|
 		if (view.value == 1) {
 			// start sound
-			node = Synth("window-test", [
+			node = Synth(\window_test, [
 				"note", noteControl.value,
 				"fc", cutoffControl.value,
 				"rq", resonControl.value,
@@ -382,7 +382,7 @@ var node, cmdPeriodFunc;
 var params, specs;
 
 // define a synth
-SynthDef("window-test", { |out, note = 36, fc = 1000, rq = 0.25, bal = 0, amp = 0.4, width = 0, gate = 1|
+SynthDef(\window_test, { |out, note = 36, fc = 1000, rq = 0.25, bal = 0, amp = 0.4, width = 0, gate = 1|
 		var x;
 		x = Mix.fill(4, {
 			VarSaw.ar((note + { 0.1.rand2 }.dup).midicps, 0, width, 0.02)
@@ -427,7 +427,7 @@ startButton.action = { |view|
 				args = args.add(param);
 				args = args.add(sliders[i].value)
 			};
-			node = Synth("window-test", args.postcs);
+			node = Synth(\window_test, args.postcs);
 		} {
 			// set gate to zero to cause envelope to release
 			node.release; node = nil;

@@ -62,12 +62,12 @@ SynthDef(\bubbles, { |out|
 }).add;
 
 // this will record to the disk
-SynthDef("help-Diskout", { |bufnum|
+SynthDef(\help_Diskout, { |bufnum|
 	DiskOut.ar(bufnum, In.ar(0, 2));
 }).add;
 
 // this will play it back
-SynthDef("help-Diskin-2chan", { |out, bufnum = 0|
+SynthDef(\help-Diskin_2chan, { |out, bufnum = 0|
 	Out.ar(out, DiskIn.ar(2, bufnum))
 }).add;
 )

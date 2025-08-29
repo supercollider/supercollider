@@ -46,7 +46,7 @@ s = Server.local;
 b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, false, true);
 b = Buffer.alloc(s, 512, 1);
 
-SynthDef("help-OscN", { |out = 0, bufnum = 0|
+SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum, 500, 0, 0.5)
 	)
@@ -65,7 +65,7 @@ s = Server.local;
 b.sine1(1.0/[1, 2, 3, 4, 5, 6].squared, true, false, true);
 b = Buffer.alloc(s, 512, 1);
 
-SynthDef("help-OscN", { |out = 0, bufnum = 0|
+SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum, XLine.kr(2000, 200), 0, 0.5)
 	)
@@ -80,7 +80,7 @@ s = Server.local;
 b = Buffer.alloc(s, 512, 1);
 b.sine1([1.0], true, true, true);
 
-SynthDef("help-OscN", { |out = 0, bufnum = 0|
+SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum,
 			OscN.ar(bufnum,
@@ -102,7 +102,7 @@ s = Server.local;
 b = Buffer.alloc(s, 512, 1);
 b.sine1([1.0], true, true, true);
 
-SynthDef("help-OscN", { |out = 0, bufnum = 0|
+SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum,
 				800,
@@ -123,7 +123,7 @@ s = Server.local;
 b = Buffer.alloc(s, 4096, 1);
 b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, true, true);
 
-SynthDef("help-OscN", { |out = 0, bufnum = 0|
+SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum, [80, 80.2], 0, 0.2)
 	)

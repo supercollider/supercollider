@@ -48,7 +48,7 @@ b = Buffer.read(s, p);
 
 // now play it
 (
-x = SynthDef("tutorial-PlayBuf",{ arg out = 0, bufnum;
+x = SynthDef(\tutorial_PlayBuf,{ arg out = 0, bufnum;
 	Out.ar( out,
 		PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum))
 	)
@@ -79,7 +79,7 @@ In some cases, for instance when working with very large files, you might not wa
 
 code::
 (
-SynthDef("tutorial-Buffer-cue",{ arg out=0,bufnum;
+SynthDef(\tutorial-Buffer_cue,{ arg out=0,bufnum;
 	Out.ar(out,
 		DiskIn.ar( 1, bufnum )
 	)
@@ -138,7 +138,7 @@ b = Buffer.alloc(s, s.sampleRate * 5, 1); // a 5 second 1 channel Buffer
 
 // record for four seconds
 (
-x = SynthDef("tutorial-RecordBuf",{ arg out=0,bufnum=0;
+x = SynthDef(\tutorial_RecordBuf,{ arg out=0,bufnum=0;
 	var noise;
 	noise = PinkNoise.ar(0.3);	// record some PinkNoise
 	RecordBuf.ar(noise, bufnum); 	// by default this loops
@@ -150,7 +150,7 @@ x.free;
 
 // play it back
 (
-SynthDef("tutorial-playback",{ arg out=0,bufnum=0;
+SynthDef(\tutorial_playback,{ arg out=0,bufnum=0;
 	var playbuf;
 	playbuf = PlayBuf.ar(1,bufnum);
 	FreeSelfWhenDone.kr(playbuf); // frees the synth when the PlayBuf has played through once

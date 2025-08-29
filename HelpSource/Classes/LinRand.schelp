@@ -29,7 +29,7 @@ Examples::
 code::
 
 (
-SynthDef("help-LinRand", { |out = 0, minmax = 1|
+SynthDef(\help_LinRand, { |out = 0, minmax = 1|
 	Out.ar(out,
 		FSinOsc.ar(
 			LinRand(200.0, 10000.0, minmax),

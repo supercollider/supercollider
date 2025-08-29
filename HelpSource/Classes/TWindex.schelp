@@ -33,7 +33,7 @@ code::
 
 // assuming normalized values
 (
-a = SynthDef("help-TWindex", { |out, w1 = 0.0, w2 = 0.5, w3 = 0.5|
+a = SynthDef(\help_TWindex, { |out, w1 = 0.0, w2 = 0.5, w3 = 0.5|
 	var trig = Impulse.kr(6);
 	var index = TWindex.kr(trig, [w1, w2, w3]);
 	Out.ar(out,
@@ -53,7 +53,7 @@ a.setn(0, [1, 0, 1].normalizeSum);
 // modulating probability values
 (
 
-a = SynthDef("help-TWindex", { |out, w1 = 0.0, w2 = 0.5|
+a = SynthDef(\help_TWindex, { |out, w1 = 0.0, w2 = 0.5|
 	var trig = Impulse.kr(6);
 	var index = TWindex.kr(
 		trig,

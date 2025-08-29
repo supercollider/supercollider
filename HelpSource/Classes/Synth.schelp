@@ -68,15 +68,15 @@ x.free;
 // Using an arrayed control
 // run this block first to make the SynthDef
 (
-SynthDef("help-synth", { |freq = #[440, 450, 460], out = 0|
+SynthDef(\help_synth, { |freq = #[440, 450, 460], out = 0|
 	Out.ar(out, Mix(SinOsc.ar(freq, 0, 0.1)));
 }).add;
 )
 
 // then this a short while later
-x = Synth("help-synth", [freq: [500, 501, 510]]);
+x = Synth(\help_synth, [freq: [500, 501, 510]]);
 
-x = Synth("help-synth", [freq: [500, 501, 510]]);
+x = Synth(\help_synth, [freq: [500, 501, 510]]);
 x.set(\freq, [1, 2, 3] * 400 + [1, 2, 3], \out, 1);
 x.set(\freq, [3] * 400 + [1, 2, 3], \out, 1);
 x.free;
@@ -187,11 +187,11 @@ discussion::
 code::
 s.boot;
 (
-SynthDef("help-Synth-get", { |out, freq = 440|
+SynthDef(\help-Synth_get, { |out, freq = 440|
 	Out.ar(out, SinOsc.ar(freq, 0, 0.1));
 }).add;
 )
-x = Synth("help-Synth-get");
+x = Synth(\help-Synth_get);
 x.set(\freq, 220 + 440.rand);
 x.get(\freq, { |value| ("freq is now:" + value + "Hz").postln });
 x.free;
@@ -296,7 +296,7 @@ subsection:: Filtering
 code::
 (
 // first collect some things to play with
-SynthDef("moto-rev", { |out = 0|
+SynthDef(\moto_rev, { |out = 0|
 	var x;
 	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0, 0.1], 0.1),
 		100, 0.1).clip2(0.4);
@@ -339,7 +339,7 @@ SynthDef(\modulate, { |out = 0, freq = 1, center = 440, plusMinus = 110|
 // execute these one at a time
 
 // y is playing on bus 0
-y = Synth("moto-rev", ["out", 0]);
+y = Synth(\moto_rev, ["out", 0]);
 
 // z is reading from bus 0 and replacing that; It must be *after* y
 z = Synth.after(y, \wah, ["out", 0]);

@@ -26,7 +26,7 @@ Examples::
 code::
 
 (
-a = SynthDef("help-TCoin", { |out = 0, prob = 0.5|
+a = SynthDef(\help_TCoin, { |out = 0, prob = 0.5|
 	var trig;
 	trig = CoinGate.kr(prob, Impulse.kr(10));
 	Out.ar(out,
@@ -43,7 +43,7 @@ a.set(\prob, 0.1);
 
 
 (
-a = SynthDef("help-TCoin", { |out = 0, prob = 0.5|
+a = SynthDef(\help_TCoin, { |out = 0, prob = 0.5|
 	var trig;
 	trig = Impulse.ar(20, 0, SinOsc.kr(0.5, 0, 1, 1));
 	Out.ar(out,

@@ -29,7 +29,7 @@ b = Buffer.read(s, ExampleFiles.child);
 var exBuf;
 Dialog.getPaths({ |paths| // get a second soundfile;
 	paths.do({ |p| exBuf = Buffer.read(s, p);
-		SynthDef("help-max", { |out = 0, soundBufnum1 = 2, soundBufnum2 = 3|
+		SynthDef(\help_max, { |out = 0, soundBufnum1 = 2, soundBufnum2 = 3|
 			var inA, chainA, inB, chainB, chain ;
 			inA = PlayBuf.ar(1, soundBufnum1, BufRateScale.kr(soundBufnum1), loop: 1);
 			inB =  PlayBuf.ar(1, soundBufnum2, BufRateScale.kr(soundBufnum2), loop: 1);

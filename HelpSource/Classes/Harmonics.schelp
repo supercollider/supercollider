@@ -23,7 +23,7 @@ b = Buffer.alloc(s, 512, 1);
 // harmonic series for freqs, ramp down for amps
 b.sine2(a.ramp(1.0, 1.0).postln, a.ramp(0.5, -0.025).postln, true, true, true);
 (
-z = SynthDef("help-Osc", { |out = 0, bufnum = 0|
+z = SynthDef(\help_Osc, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		Osc.ar(bufnum, 200, 0, 0.5)
 	)

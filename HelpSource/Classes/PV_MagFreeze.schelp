@@ -30,7 +30,7 @@ b = Buffer.read(s, ExampleFiles.child);
 
 
 (
-SynthDef("help-magFreeze", { |out = 0|
+SynthDef(\help_magFreeze, { |out = 0|
 	var in, chain;
 	in = SinOsc.ar(LFNoise1.kr(5.2, 250, 400));
 	chain = FFT(LocalBuf(2048), in);
@@ -43,7 +43,7 @@ SynthDef("help-magFreeze", { |out = 0|
 
 (
 // trig with MouseY
-SynthDef("help-magFreeze2", { |out = 0, soundBufnum = 2|
+SynthDef(\help_magFreeze2, { |out = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(LocalBuf(2048), in);

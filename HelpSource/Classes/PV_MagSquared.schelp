@@ -30,7 +30,7 @@ c = Buffer.read(s, ExampleFiles.child);
 )
 
 (
-SynthDef("help-magSquared", { |out = 0, bufnum = 0, soundBufnum = 2|
+SynthDef(\help_magSquared, { |out = 0, bufnum = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(bufnum, in);

@@ -43,7 +43,7 @@ c = Buffer.read(s, ExampleFiles.child);
 )
 
 (
-SynthDef("help-binStretch", { |out = 0|
+SynthDef(\help_binStretch, { |out = 0|
 	var in, chain;
 	in = LFSaw.ar(200, 0, 0.2);
 	chain = FFT(LocalBuf(2048), in);
@@ -53,7 +53,7 @@ SynthDef("help-binStretch", { |out = 0|
 )
 
 (
-SynthDef("help-binStretch2", { |out = 0, soundBufnum = 2|
+SynthDef(\help_binStretch2, { |out = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(LocalBuf(2048), in);
@@ -63,7 +63,7 @@ SynthDef("help-binStretch2", { |out = 0, soundBufnum = 2|
 )
 
 (
-SynthDef("help-binShift", { |out = 0, bufnum = 0|
+SynthDef(\help_binShift, { |out = 0, bufnum = 0|
 	var in, chain;
 	in = LFSaw.ar(200, 0, 0.2);
 	chain = FFT(LocalBuf(2048), in);
@@ -73,7 +73,7 @@ SynthDef("help-binShift", { |out = 0, bufnum = 0|
 )
 
 (
-SynthDef("help-binShift2", { |out = 0, soundBufnum = 2|
+SynthDef(\help_binShift2, { |out = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(LocalBuf(2048), in);

@@ -25,7 +25,7 @@ Examples::
 
 code::
 (
-SynthDef("help-IRand", {
+SynthDef(\help_IRand, {
 	Out.ar(
 		IRand(0, 1), // play on random channel between 0 and 1
 		FSinOsc.ar(500,

@@ -100,14 +100,14 @@ Synth(\pitchFromNoise, [\out, 1]);
 
 code::
 (
-SynthDef("firstNode-source", {
+SynthDef(\firstNode_source, {
 	Out.ar(
 		0,
 		Saw.ar([200, 201], 0.05)
 	)
 }).add;
 
-SynthDef("secondNode-filter", {
+SynthDef(\secondNode_filter, {
 	ReplaceOut.ar(
 		0,
 		LPF.ar(
@@ -124,8 +124,8 @@ SynthDef("secondNode-filter", {
 // "firstNode-source"は最初に実行されなければならない
 //  もし "secondNode-filter"が先に評価されれば、"firstNode-source"はそれを通して処理されなくなってしまう
 (
-Synth("firstNode-source");
-Synth("secondNode-filter")
+Synth(\firstNode_source);
+Synth(\secondNode_filter)
 )
 ::
 
@@ -135,8 +135,8 @@ Synth("secondNode-filter")
 
 code::
 (
-Synth.head(s, "firstNode-source");
-Synth.tail(s, "secondNode-filter");
+Synth.head(s, \firstNode_source);
+Synth.tail(s, \secondNode_filter);
 )
 ::
 
@@ -146,8 +146,8 @@ Synth.tail(s, "secondNode-filter");
 
 code::
 (
-Synth.tail(s, "secondNode-filter");
-Synth.head(s, "firstNode-source");
+Synth.tail(s, \secondNode_filter);
+Synth.head(s, \firstNode_source);
 )
 ::
 

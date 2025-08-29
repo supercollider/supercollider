@@ -72,7 +72,7 @@ d.zero;
 
 
 (
-SynthDef("conv-test", { |out, kernel, trig = 0|
+SynthDef(\conv_test, { |out, kernel, trig = 0|
 	var input;
 
 	input = Impulse.ar(1);

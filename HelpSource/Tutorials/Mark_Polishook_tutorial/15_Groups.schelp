@@ -171,14 +171,14 @@ It's the responsibility of the user to make sure that nodes on the server are or
 
 code::
 (
-SynthDef("firstNode-source", {
+SynthDef(\firstNode_source, {
 	Out.ar(
 		0,
 		Saw.ar([200, 201], 0.05)
 	)
 }).add;
 
-SynthDef("secondNode-filter", {
+SynthDef(\secondNode_filter, {
 	ReplaceOut.ar(
 		0,
 		LPF.ar(
@@ -195,8 +195,8 @@ SynthDef("secondNode-filter", {
 // evaluate "secondNode-filter" first
 // "firstNode-source" will go at the head of default_node
 (
-Synth("secondNode-filter");
-Synth("firstNode-source");
+Synth(\secondNode_filter);
+Synth(\firstNode_source);
 )
 
 (
@@ -210,8 +210,8 @@ Or, use .head and .tail messages to attach the nodes to the default_group).
 
 code::
 (
-Synth.head(s, "firstNode-source");
-Synth.tail(s, "secondNode-filter");
+Synth.head(s, \firstNode_source);
+Synth.tail(s, \secondNode_filter);
 )
 
 (

@@ -48,14 +48,14 @@ Examples::
 code::
 
 (
-SynthDef("help-OffsetOut",
+SynthDef(\help_OffsetOut,
 	{ |out = 0, freq = 440, dur = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);
 		OffsetOut.ar(out, SinOsc.ar(freq, 0, env))
 }).send(s);
 
-SynthDef("help-Out",
+SynthDef(\help_Out,
 	{ |out = 0, freq = 440, dur = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);

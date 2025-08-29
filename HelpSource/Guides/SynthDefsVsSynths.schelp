@@ -23,21 +23,21 @@ s.boot;
 
 // Compile a SynthDef and write it to disk
 (
-SynthDef("Help-SynthDef", { arg out = 0;
+SynthDef(\Help_SynthDef, { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).writeDefFile;
 )
 
 // Compile, write, and load it to the server
 (
-SynthDef("Help-SynthDef", { arg out = 0;
+SynthDef(\Help_SynthDef, { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).load(s);
 )
 
 // Load it to the server without writing to disk
 (
-SynthDef("Help-SynthDef", { arg out = 0;
+SynthDef(\Help_SynthDef, { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).send(s);
 )
@@ -49,7 +49,7 @@ x.free;
 // Shorthand method to compile and write a SynthDef, and then play it in a Synth when done.
 // Look familiar?
 (
-x = SynthDef("Help-SynthDef", { arg out = 0;
+x = SynthDef(\Help_SynthDef, { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).play(s);
 )
@@ -62,7 +62,7 @@ x.free;
 // SynthDef with a parameter that will be randomly determined each time a new Synth is created
 // (try it several times to hear the differences)
 (
-SynthDef("help-RandFreq", { arg out = 0;
+SynthDef(\help_RandFreq, { arg out = 0;
 	Out.ar(
 		out,
 		FSinOsc.ar(

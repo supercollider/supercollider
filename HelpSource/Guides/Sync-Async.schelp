@@ -20,13 +20,13 @@ s.boot;
 
 // Compile a SynthDef and write it to disk
 (
-SynthDef("Help-SynthDef", { arg out = 0;
+SynthDef(\Help_SynthDef, { arg out = 0;
 	 Out.ar(out, PinkNoise.ar(0.1))
 }).writeDefFile;
 )
 
 // Load it into the server
-s.loadSynthDef("Help-SynthDef");
+s.loadSynthDef(\Help_SynthDef);
 
 // Create a Synth with it
 x = Synth.new("Help-SynthDef", s);
@@ -44,7 +44,7 @@ This style of working, executing lines or blocks of code one at a time, can be v
 
 code::
 (
-SynthDef("Help-SynthDef", { arg out = 0;
+SynthDef(\Help_SynthDef, { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).send(s);
 )
@@ -101,7 +101,7 @@ You may have realized that first example above was needlessly complex. SynthDef-
 code::
 // All at once
 (
-SynthDef("Help-SynthDef", { arg out = 0;
+SynthDef(\Help_SynthDef, { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).play(s);
 )
@@ -128,7 +128,7 @@ Many methods in SC have the option to include completion messages. Here we can u
 code::
 // Compile, send, and start playing
 (
-SynthDef("Help-SynthDef", { arg out=0;
+SynthDef(\Help_SynthDef, { arg out=0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).send(s, ["s_new", "Help-SynthDef", x = s.nextNodeID]);
 // this is 'messaging' style, see below
@@ -142,7 +142,7 @@ code::
 // Interpret some code to return a completion message. The .value is needed.
 // This and the preceding example are essentially the same as SynthDef.play
 (
-SynthDef("Help-SynthDef", { arg out=0;
+SynthDef(\Help_SynthDef, { arg out=0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).send(s, {x = Synth.basicNew("Help-SynthDef"); x.newMsg; }.value); // 'object' style
 )
@@ -155,7 +155,7 @@ In the case of link::Classes/Buffer:: objects a function can be used as a comple
 
 code::
 (
-SynthDef("help-Buffer",{ arg out=0, bufnum;
+SynthDef(\help_Buffer,{ arg out=0, bufnum;
 	Out.ar(
 		out,
 		PlayBuf.ar(1,bufnum,BufRateScale.kr(bufnum))
@@ -197,7 +197,7 @@ One can also evaluate a function in response to a 'done' message, or indeed any 
 
 code::
 (
-SynthDef("help-SendTrig",{
+SynthDef(\help_SendTrig,{
     SendTrig.kr(Dust.kr(1.0), 0, 0.9);
 }).send(s);
 

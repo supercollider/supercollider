@@ -42,7 +42,7 @@ Examples::
 code::
 
 (
-SynthDef("help-NRand", { |out = 0, n = 0|
+SynthDef(\help_NRand, { |out = 0, n = 0|
 	Out.ar(out,
 		FSinOsc.ar(
 			NRand(1200.0, 4000.0, n),

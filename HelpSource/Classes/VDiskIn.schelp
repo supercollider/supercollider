@@ -54,7 +54,7 @@ x.free; b.close; b.free;
 
 // cue and play right away
 (
-SynthDef("help-VDiskin", { |out, bufnum = 0|
+SynthDef(\help_VDiskin, { |out, bufnum = 0|
 	Out.ar(out, VDiskIn.ar(1, bufnum, MouseX.kr(0.5, 2.0)));
 }).add;
 )

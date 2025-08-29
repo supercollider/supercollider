@@ -37,11 +37,11 @@ Examples::
 code::
 
 (
-SynthDef("help-SinOsc", { |freq = 440, out|
+SynthDef(\help_SinOsc, { |freq = 440, out|
 	Out.ar(out, SinOsc.ar(freq, 0, 0.1))
 }).add;
 
-SynthDef("help-XOut", { |out = 0, xFade = 1|
+SynthDef(\help_XOut, { |out = 0, xFade = 1|
 	var source;
 		source = PinkNoise.ar(0.05);
 
@@ -51,8 +51,8 @@ SynthDef("help-XOut", { |out = 0, xFade = 1|
 }).add;
 )
 
-Synth("help-SinOsc", [\freq, 500]);
-a = Synth.tail(s, "help-XOut");
+Synth(\help_SinOsc, [\freq, 500]);
+a = Synth.tail(s, \help_XOut);
 
 
 a.set(\xFade, 0.7);

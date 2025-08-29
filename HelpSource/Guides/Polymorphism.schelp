@@ -129,7 +129,7 @@ AppClock.play(r);
 subsection:: SynthDef
 code::
 (
-x = SynthDef("Help-SynthDef", { arg out=0;
+x = SynthDef(\Help_SynthDef, { arg out=0;
     Out.ar(out, PinkNoise.ar(0.1))
 }).play;
 )

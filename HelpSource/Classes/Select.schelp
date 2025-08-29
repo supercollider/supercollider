@@ -32,7 +32,7 @@ Examples::
 
 code::
 (
-SynthDef("help-Select", { |out = 0|
+SynthDef(\help_Select, { |out = 0|
 
 	var a, cycle;
 	a = [
@@ -50,7 +50,7 @@ SynthDef("help-Select", { |out = 0|
 
 // Here used as a sequencer:
 (
-SynthDef("help-Select-2", { |out = 0|
+SynthDef(\help-Select_2, { |out = 0|
 
 	var a, s, cycle;
 	a = Array.fill(32, { rrand(30, 80) }).midicps;

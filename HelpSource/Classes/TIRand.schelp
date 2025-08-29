@@ -32,7 +32,7 @@ Examples::
 code::
 
 (
-SynthDef("help-TIRand", {
+SynthDef(\help_TIRand, {
 	var trig, outBus;
 	trig = Dust.kr(10);
 	outBus = TIRand.kr(0, 1, trig); // play on random channel between 0 and 1

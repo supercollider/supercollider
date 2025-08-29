@@ -76,7 +76,7 @@ s.notify;
 )
 
 (
-SynthDef("help-SendTrig", {
+SynthDef(\help_SendTrig, {
 	SendTrig.kr(Dust.kr(1.0), 0, 0.9);
 }).add;
 

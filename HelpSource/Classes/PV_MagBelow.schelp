@@ -34,7 +34,7 @@ c = Buffer.read(s, ExampleFiles.child);
 )
 
 (
-SynthDef("help-magBelow", { |out = 0, bufnum = 0|
+SynthDef(\help_magBelow, { |out = 0, bufnum = 0|
 	var in, chain;
 	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08, 0, 6, 6.2).squared, 0, 100, 800));
 	chain = FFT(bufnum, in);
@@ -44,7 +44,7 @@ SynthDef("help-magBelow", { |out = 0, bufnum = 0|
 )
 
 (
-SynthDef("help-magBelow2", { |out = 0, bufnum = 0|
+SynthDef(\help_magBelow2, { |out = 0, bufnum = 0|
 	var in, chain;
 	in = WhiteNoise.ar(0.2);
 	chain = FFT(bufnum, in);
@@ -54,7 +54,7 @@ SynthDef("help-magBelow2", { |out = 0, bufnum = 0|
 )
 
 (
-SynthDef("help-magBelow3", { |out = 0, bufnum = 0, soundBufnum = 2|
+SynthDef(\help_magBelow3, { |out = 0, bufnum = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(bufnum, in);

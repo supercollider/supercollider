@@ -9,14 +9,14 @@ In SC3 one can create Synths at any time simply by executing blocks of code.
 code::
 // do this
 (
-x = SynthDef("Help-SynthDef", { arg out = 0;
+x = SynthDef(\Help_SynthDef, { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).play; // SynthDef-play returns a Synth object.
 )
 
 // then do this
 (
-SynthDef("help-Rand", { arg out = 0;
+SynthDef(\help_Rand, { arg out = 0;
 	Out.ar(
 		out,
 		FSinOsc.ar(
@@ -87,7 +87,7 @@ Synth.play({
 // The same example in SC3 (will execute)
 s.boot;
 (
-SynthDef("help-EnvGen",{ arg out = 0;
+SynthDef(\help_EnvGen,{ arg out = 0;
 	Out.ar(
 		out,
 		EnvGen.kr(Env.perc,1.0,doneAction: Done.freeSelf) * SinOsc.ar(440,0,0.1)
@@ -111,7 +111,7 @@ t = TempoClock.new;
 r = Routine.new({
 	10.do({
 		// could be done with an argument instead of a new def, but proves the point
-		SynthDef("help-EnvGen" ++ i, { arg out = 0;
+		SynthDef(\help_EnvGen ++ i, { arg out = 0;
 			Out.ar(
 				out,
 				EnvGen.kr(Env.perc, 1.0, doneAction: Done.freeSelf)
@@ -185,7 +185,7 @@ code::
 s.boot;
 (
 // this Synth will send a trigger to the client app
-SynthDef("help-SendTrig", {
+SynthDef(\help_SendTrig, {
 	SendTrig.kr(
 		Dust.kr(1.0), // trigger could be anything, e.g. Amplitude.kr(SoundIn.ar(0) > 0.5)
 		0, 0.9
@@ -196,7 +196,7 @@ SynthDef("help-SendTrig", {
 (
 // this receives the trigger on the client side and 'Spawns' a new Synth on the server
 OSCFunc({
-	SynthDef("help-EnvGen", { arg out = 0;
+	SynthDef(\help_EnvGen, { arg out = 0;
 		Out.ar(
 			out,
 			EnvGen.kr(Env.perc, 1.0, doneAction: Done.freeSelf)
@@ -206,6 +206,6 @@ OSCFunc({
 }, '/tr', s.addr);
 
 // Start 'spawning'
-Synth("help-SendTrig");
+Synth(\help_SendTrig);
 )
 ::
