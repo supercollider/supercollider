@@ -156,7 +156,7 @@ Task({
 				Env.sine, doneAction: Done.freeSelf, timeScale: 1.0 + 6.0.rand, levelScale: 0.3
 			);
 			Out.ar(out, sound);
-		}).add;
+		}).send(s);
 		0.02.wait;
 	});
 	loop({
