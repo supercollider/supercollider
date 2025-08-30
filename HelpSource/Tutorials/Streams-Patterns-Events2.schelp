@@ -189,9 +189,9 @@ code::
 	];
 	Routine({
 		loop({
-			Synth( \help_SPE2, [ \freq, streams.at(0).next, \sustain, dur * durDiff ] );
+			Synth(\help_SPE2, [ \freq, streams.at(0).next, \sustain, dur * durDiff ] );
 			durDiff.do({
-				Synth( \help_SPE2, [ \freq, streams.at(1).next, \sustain, dur ] );
+				Synth(\help_SPE2, [ \freq, streams.at(1).next, \sustain, dur ] );
 				dur.wait;
 			});
 		})

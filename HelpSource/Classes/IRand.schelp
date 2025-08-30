@@ -37,7 +37,7 @@ SynthDef(\help_IRand, {
 (
 Routine({
 	16.do({
-		Synth.new("help-IRand"); 0.5.wait;
+		Synth(\help_IRand); 0.5.wait;
 	})
 }).play;
 )

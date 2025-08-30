@@ -43,7 +43,7 @@ SynthDef(\Help_SynthDef, { arg out = 0;
 )
 
 // Create a Synth with it
-x = Synth.new("Help-SynthDef", s);
+x = Synth(\Help_SynthDef, s);
 x.free;
 
 // Shorthand method to compile and write a SynthDef, and then play it in a Synth when done.

@@ -139,7 +139,7 @@ c = { arg pan, freq, amp;
 
 Task({
 	n.do({ arg i;
-		SynthDef(\Help_SPE4_EnvirDef_ ++ i.asString, { |out|
+		SynthDef(\Help_SPE4_EnvirDef_ ++ i, { |out|
 			var sound;
 			Environment.use({
 					// set values in the environment
@@ -160,7 +160,7 @@ Task({
 		0.02.wait;
 	});
 	loop({
-		Synth( "Help-SPE4-EnvirDef-" ++ n.rand.asString );
+		Synth(\Help_SPE4_EnvirDef_ ++ n.rand );
 		(0.5 + 2.0.rand).wait;
 	});
 }).play;

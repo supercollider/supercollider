@@ -96,7 +96,7 @@ b.free;
 
 // play it back
 (
-x = Synth.basicNew("help-Diskin-2chan");
+x = Synth.basicNew(\help_Diskin_2chan);
 m = { |buf| x.addToHeadMsg(nil, [\bufnum, buf]) };
 
 b = Buffer.cueSoundFile(s, "~/diskouttest.wav".standardizePath, 0, 2, completionMessage: m);

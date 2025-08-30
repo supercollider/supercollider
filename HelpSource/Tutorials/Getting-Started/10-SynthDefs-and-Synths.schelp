@@ -77,8 +77,8 @@ code::
 SynthDef.new("tutorial-PinkNoise", { |out| Out.ar(out, PinkNoise.ar(0.3)) }).add;
 
 // then:
-x = Synth.new("tutorial-PinkNoise");
-y = Synth.new("tutorial-PinkNoise");
+x = Synth(\tutorial_PinkNoise);
+y = Synth(\tutorial_PinkNoise);
 x.free; y.free;
 ::
 
@@ -147,9 +147,9 @@ SynthDef.new("tutorial-args", { arg freq = 440, out = 0;
 }).add;
 )
 s.scope; // scope so you can see the effect
-x = Synth.new("tutorial-args");
-x.set("freq", 660);
-x.set("freq", 880, "out", 1);
+x = Synth(\tutorial_args);
+x.set(\freq, 660);
+x.set(\freq, 880, \out, 1);
 x.free;
 ::
 

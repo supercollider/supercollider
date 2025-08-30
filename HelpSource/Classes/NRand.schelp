@@ -55,7 +55,7 @@ SynthDef(\help_NRand, { |out = 0, n = 0|
 n = 0;
 Routine({
 	inf.do({ |i|
-		Synth.new("help-NRand", [\n, n]); 0.05.wait;
+		Synth(\help_NRand, [\n, n]); 0.05.wait;
 	})
 }).play;
 )

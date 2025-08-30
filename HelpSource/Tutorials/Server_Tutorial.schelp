@@ -374,7 +374,7 @@ timer.sched(0,{
 		cutoff = Pfunc({500.rand2+1000}).asStream;
 		rezz = 0.5;
 		inf.do({
-			saw.set("freq", freq.next.midicps, "cutoff", cutoff.next, "rezz", rezz, "amp", 0.1, "out", 0);
+			saw.set(\freq, freq.next.midicps, "cutoff", cutoff.next, "rezz", rezz, "amp", 0.1, "out", 0);
 			(wait.next*offset).wait
 		});
 	});
@@ -408,7 +408,7 @@ SynthDef(\patternefx_Ex, { arg out, in;
 	Out.ar([0,1], audio+efx);
 	}).add;
 
-Synth.new("patternefx_Ex");
+Synth(\patternefx_Ex);
 
 SynthDef(\pattern_Ex, { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;
 	Out.ar(out,

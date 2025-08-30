@@ -87,7 +87,7 @@ SynthDef(\tutorial_Buffer_cue,{ arg out=0,bufnum;
 )
 
 b = Buffer.cueSoundFile(s,ExampleFiles.apollo11, 0, 1);
-y = Synth.new("tutorial-Buffer-cue", [\bufnum,b], s);
+y = Synth.new(\tutorial_Buffer_cue, [\bufnum,b], s);
 
 b.free; y.free;
 ::

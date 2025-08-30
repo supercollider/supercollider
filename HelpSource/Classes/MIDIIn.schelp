@@ -453,11 +453,11 @@ MIDIIn.addFuncTo(\bend, ~bend);
 	var node;
 	if(num < 60, {
 		node = Synth.tail(g, \funk, [\freq, num.midicps, \amp, vel/255]);
-		node.map("cutoff", 1, "rez", 2, "lfospeed", 3);
-//		node = Synth.basicNew("funk", s);
+		node.map(\cutoff, 1, \rez, 2, \lfospeed, 3);
+//		node = Synth.basicNew(\funk, s);
 //		s.sendBundle(nil,
 //			node.addToTailMsg(g, [\freq, num.midicps, \amp, vel/255]),
-//			node.mapMsg("cutoff", 1, "rez", 2, "lfospeed", 3)
+//			node.mapMsg(\cutoff, 1, \rez, 2, \lfospeed, 3)
 //		);
 		keys.put(num, node)
 	}, {

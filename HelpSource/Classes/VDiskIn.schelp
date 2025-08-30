@@ -59,7 +59,7 @@ SynthDef(\help_VDiskin, { |out, bufnum = 0|
 }).add;
 )
 (
-x = Synth.basicNew("help-VDiskin");
+x = Synth.basicNew(\help_VDiskin);
 m = { |buf| x.addToHeadMsg(nil, [\bufnum, buf]) };
 
 b = Buffer.cueSoundFile(s, ExampleFiles.apollo11, 0, 1, completionMessage: m);

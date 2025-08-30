@@ -96,7 +96,7 @@ SynthDef(\help_EnvGen,{ arg out = 0;
 )
 
 (
-r = Routine.new({ { Synth.new("help-EnvGen"); 1.yield; }.loop }); // loop every one second
+r = Routine.new({ { Synth(\help_EnvGen); 1.yield; }.loop }); // loop every one second
 SystemClock.play(r);
 )
 ::

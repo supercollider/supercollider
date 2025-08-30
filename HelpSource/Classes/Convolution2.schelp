@@ -84,7 +84,7 @@ SynthDef(\conv_test, { |out, kernel, trig = 0|
 )
 
 
-x = Synth.new("conv-test", [\kernel, b.bufnum]);
+x = Synth.new(\conv_test, [\kernel, b.bufnum]);
 
 // changing the buffer number:
 x.set(\kernel, c.bufnum);

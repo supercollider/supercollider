@@ -504,7 +504,7 @@ SynthDef(\tpulse, { |out = 0, freq = 700, sawFreq = 440.0|
 // and executed simultaneously after 2 seconds.
 (
 s.makeBundle(2.0, {
-	x = Synth.new("tpulse");
+	x = Synth(\tpulse);
 	a = Bus.control.set(440);
 	x.map(\freq, a);
 });
@@ -806,7 +806,7 @@ SynthDef(\bubbles, { |out|
 }).add;
 )
 
-x = Synth.new("bubbles");
+x = Synth(\bubbles);
 
 s.prepareForRecord; // if you want to start recording at a precise moment in time, you have to call this first.
 

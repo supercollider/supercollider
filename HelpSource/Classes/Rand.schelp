@@ -38,7 +38,7 @@ SynthDef(\help_Rand, { |out = 0|
 (
 Routine({
 	8.do({
-		Synth.new("help-Rand"); 1.0.wait;
+		Synth(\help_Rand); 1.0.wait;
 	})
 }).play;
 )

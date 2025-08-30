@@ -29,7 +29,7 @@ SynthDef(\Help_SynthDef, { arg out = 0;
 s.loadSynthDef(\Help_SynthDef);
 
 // Create a Synth with it
-x = Synth.new("Help-SynthDef", s);
+x = Synth(\Help_SynthDef, s);
 
 // Free the node on the server
 x.free;
@@ -50,7 +50,7 @@ SynthDef(\Help_SynthDef, { arg out = 0;
 )
 
 // make a Synth and assign it to an environment variable
-~mysynth = Synth.new("Help-SynthDef", s);
+~mysynth = Synth(\Help_SynthDef, s);
 
 // free the synth
 ~mysynth.free;
@@ -130,7 +130,7 @@ code::
 (
 SynthDef(\Help_SynthDef, { arg out=0;
 	Out.ar(out, PinkNoise.ar(0.1))
-}).send(s, ["s_new", "Help-SynthDef", x = s.nextNodeID]);
+}).send(s, ["s_new", \Help_SynthDef, x = s.nextNodeID]);
 // this is 'messaging' style, see below
 )
 s.sendMsg("n_free", x);
@@ -144,7 +144,7 @@ code::
 (
 SynthDef(\Help_SynthDef, { arg out=0;
 	Out.ar(out, PinkNoise.ar(0.1))
-}).send(s, {x = Synth.basicNew("Help-SynthDef"); x.newMsg; }.value); // 'object' style
+}).send(s, {x = Synth.basicNew(\Help_SynthDef); x.newMsg; }.value); // 'object' style
 )
 x.free;
 ::
@@ -162,7 +162,7 @@ SynthDef(\help_Buffer,{ arg out=0, bufnum;
 	)
 }).load(s);
 
-y = Synth.basicNew("help-Buffer"); // not sent yet
+y = Synth.basicNew(\help_Buffer); // not sent yet
 
 b = Buffer.read(s, ExampleFiles.child, action: { arg buffer;
        // synth send its s_new msg to follow
@@ -214,7 +214,7 @@ c = OSCFunc({ arg msg;
 }, '/tr');
 )
 
-x = Synth.new("help-SendTrig");
+x = Synth(\help_SendTrig);
 b.free;
 c.free;
 a.free;

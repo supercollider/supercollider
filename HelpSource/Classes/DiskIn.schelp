@@ -93,7 +93,7 @@ SynthDef(\help_Diskin, { |out, bufnum = 0|
 )
 
 (
-x = Synth.basicNew("help-Diskin");
+x = Synth.basicNew(\help_Diskin);
 m = { |buf| x.addToHeadMsg(nil, [\bufnum, buf.bufnum]) };
 
 b = Buffer.cueSoundFile(s, ExampleFiles.apollo11, 0, 1, completionMessage: m);

@@ -19,7 +19,7 @@ SynthDef(\tpulse, { arg out=0,freq=700,sawFreq=440.0;
 // and executed simultaneously after 2 seconds.
 (
 s.makeBundle(2.0, {
-	x = Synth.new("tpulse");
+	x = Synth(\tpulse);
 	a = Bus.control.set(440);
 	x.map(\freq, a);
 });
@@ -49,7 +49,7 @@ s.bind {
 		Out.ar(out, Pan2.ar(SyncSaw.ar(freq,  sawFreq, 0.1), SinOsc.kr(8)) )
 	}).send(s);
 	s.sync; // wait until synthdef is loaded
-	x = Synth.new("tpulse2");
+	x = Synth(\tpulse2);
 	a = Bus.control.set(440);
 	x.map(\freq, a);
 };
@@ -63,7 +63,7 @@ code::
 s.boot;
 b = List.new;
 c = Bus.control(s, 1).set(660);
-x = Synth.basicNew("default", s); // Create without sending
+x = Synth.basicNew(\default, s); // Create without sending
 b.add(x.newMsg);
 b.add(x.mapMsg(\freq, c));
 b.postln; // here's what it looks like

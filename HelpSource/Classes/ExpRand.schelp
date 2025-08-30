@@ -38,7 +38,7 @@ SynthDef(\help_ExpRand, { |out = 0|
 (
 Routine({
 	inf.do({ |i|
-		Synth.new("help-ExpRand"); 0.05.wait;
+		Synth(\help_ExpRand); 0.05.wait;
 	})
 }).play;
 )

@@ -125,7 +125,7 @@ b = Bus.control(s,1);
 )
 
 (
-x = Synth.new("tutorial-Outfreq", [\bus, b]);
+x = Synth(\tutorial_Outfreq, [\bus, b]);
 y = Synth.after(x, \tutorial_Infreq, [\bus, b]);
 z = Synth.after(x, \tutorial_Infreq, [\bus, b, \freqOffset, 200]);
 )
@@ -178,7 +178,7 @@ b = Bus.audio(s,1); // this will be our effects bus
 )
 
 (
-x = Synth.new("tutorial-Reverb", [\inBus, b]);
+x = Synth(\tutorial_Reverb, [\inBus, b]);
 y = Synth.before(x, \tutorial_DecayPink, [\effectBus, b]);
 z = Synth.before(x, \tutorial_DecaySin, [\effectBus, b, \outBus, 1]);
 )
@@ -278,7 +278,7 @@ Methods like Synth-after are simply convenient ways of doing the same thing, the
 
 code::
 // These two lines of code are equivalent
-y = Synth.new("default", [\freq, 450], x, \addAfter);
+y = Synth(\default, [\freq, 450], x, \addAfter);
 y = Synth.after(x, \default, [\freq, 450]);
 ::
 

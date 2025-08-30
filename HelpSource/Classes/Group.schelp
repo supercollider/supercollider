@@ -184,16 +184,16 @@ l = Array.fill(3, {
 )
 
 // set all controls that match "ffreq" in all nodes in g to 90
-g.set("ffreq", 300);
+g.set(\ffreq, 300);
 
-g.set("freq", 80);
+g.set(\freq, 80);
 
 // since we stored the Synths in an Array, we can also control them individually
 (
 r = Routine({
 	inf.do({
 		l.do({ |node|
-			node.set("freq", rrand(10, 120));
+			node.set(\freq, rrand(10, 120));
 			1.0.wait;
 		});
 	})
