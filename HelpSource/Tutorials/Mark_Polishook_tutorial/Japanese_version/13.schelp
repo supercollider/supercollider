@@ -219,11 +219,11 @@ code::
 // 以下のノードは、上で並べた通りに、グループにアサインされる
 // それゆえ、これらは正しい順序で実行される
 (
-Synth.head(~final, "theMixer");
-Synth.head(~proc3, "allpass");
-Synth.head(~proc2, "combs");
-Synth.head(~proc1, "preDelay");
-Synth.head(~source, "filteredDust");
+Synth.head(~final, \theMixer);
+Synth.head(~proc3, \allpass);
+Synth.head(~proc2, \combs);
+Synth.head(~proc1, \preDelay);
+Synth.head(~source, \filteredDust);
 )
 ::
 

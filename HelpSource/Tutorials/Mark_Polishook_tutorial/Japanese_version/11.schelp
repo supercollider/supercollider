@@ -215,9 +215,9 @@ SynthDef(\synthNumber3, { arg mul = 0.2;
 
 (
 // 3つのシンセを加える
-Synth.head(~myGroup, "synthNumber1");
-Synth.head(~myGroup, "synthNumber2");
-Synth.head(~myGroup, "synthNumber3");
+Synth.head(~myGroup, \synthNumber1);
+Synth.head(~myGroup, \synthNumber2);
+Synth.head(~myGroup, \synthNumber3);
 )
 
 // 3つのシンセのそれぞれの\mulコントロール、新しい（そして同じ）値にセットする

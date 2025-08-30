@@ -229,11 +229,11 @@ code::
 
 // the nodes, below, are assigned to the groups, as ordered above,
 (
-Synth.head(~final, "theMixer");
-Synth.head(~proc3, "allpass");
-Synth.head(~proc2, "combs");
-Synth.head(~proc1, "preDelay");
-Synth.head(~source, "filteredDust");
+Synth.head(~final, \theMixer);
+Synth.head(~proc3, \allpass);
+Synth.head(~proc2, \combs);
+Synth.head(~proc1, \preDelay);
+Synth.head(~source, \filteredDust);
 )
 
 (

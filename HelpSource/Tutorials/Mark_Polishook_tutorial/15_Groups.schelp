@@ -293,9 +293,9 @@ SynthDef(\synthNumber3, { arg mul = 0.2;
 
 (
 // attach 3 synths
-Synth.head(~myGroup, "synthNumber1");
-Synth.head(~myGroup, "synthNumber2");
-Synth.head(~myGroup, "synthNumber3");
+Synth.head(~myGroup, \synthNumber1);
+Synth.head(~myGroup, \synthNumber2);
+Synth.head(~myGroup, \synthNumber3);
 )
 
 // set the \mul control of each of the 3 synths in the group
