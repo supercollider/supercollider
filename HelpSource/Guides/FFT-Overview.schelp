@@ -244,7 +244,7 @@ When using multichannel expansion with FFT UGens it is necessary to ensure that 
 
 	code::
 (
-SynthDef(\help_multichannel FFT, { |out=0| // bufnum is an array
+SynthDef(\help_multichannel_FFT, { |out=0| // bufnum is an array
 	var in, chain;
 	in = [SinOsc.ar(200, 0, 0.2), WhiteNoise.ar(0.2)];
 	chain = FFT(LocalBuf([2048, 2048]), in); // each FFT has a different buffer
@@ -260,7 +260,7 @@ SynthDef(\help_multichannel FFT, { |out=0| // bufnum is an array
 b = { Buffer.alloc(s, 2048, 1) }.dup;
 
 (
-SynthDef(\help_multichannel FFT, { |out=0, bufnum= #[0, 1]| // bufnum is an array
+SynthDef(\help_multichannel_FFT, { |out=0, bufnum= #[0, 1]| // bufnum is an array
 	var in, chain;
 	in = [SinOsc.ar(200, 0, 0.2), WhiteNoise.ar(0.2)];
 	chain = FFT(bufnum, in); // each FFT has a different buffer

@@ -170,7 +170,7 @@ SynthDef(\tpulse, { |out = 0, freq = 700, sawFreq = 440.0|
 
 )
 
-x = Synth.new("bubbles");
+x = Synth(\bubbles);
 
 s.prepareForRecord; // if you want to start recording on a precise moment in time, you have to call this first.
 
