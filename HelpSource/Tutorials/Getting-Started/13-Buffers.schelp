@@ -79,7 +79,7 @@ In some cases, for instance when working with very large files, you might not wa
 
 code::
 (
-SynthDef(\tutorial-Buffer_cue,{ arg out=0,bufnum;
+SynthDef(\tutorial_Buffer_cue,{ arg out=0,bufnum;
 	Out.ar(out,
 		DiskIn.ar( 1, bufnum )
 	)

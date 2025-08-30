@@ -187,11 +187,11 @@ discussion::
 code::
 s.boot;
 (
-SynthDef(\help-Synth_get, { |out, freq = 440|
+SynthDef(\help_Synth_get, { |out, freq = 440|
 	Out.ar(out, SinOsc.ar(freq, 0, 0.1));
 }).add;
 )
-x = Synth(\help-Synth_get);
+x = Synth(\help_Synth_get);
 x.set(\freq, 220 + 440.rand);
 x.get(\freq, { |value| ("freq is now:" + value + "Hz").postln });
 x.free;

@@ -139,7 +139,7 @@ c = { arg pan, freq, amp;
 
 Task({
 	n.do({ arg i;
-		SynthDef(\Help-SPE4-EnvirDef_ ++ i.asString, { |out|
+		SynthDef(\Help_SPE4_EnvirDef_ ++ i.asString, { |out|
 			var sound;
 			Environment.use({
 					// set values in the environment

@@ -150,7 +150,7 @@ code::
 s.boot;
 
 (
-SynthDef(\help-Group-moto_rev, { |out = 0, freq = 100, ffreq = 120|
+SynthDef(\help_Group_moto_rev, { |out = 0, freq = 100, ffreq = 120|
 	var x;
 	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, freq), [0, 0.1], 0.1),
 		ffreq, 0.1).clip2(0.4);
@@ -158,7 +158,7 @@ SynthDef(\help-Group-moto_rev, { |out = 0, freq = 100, ffreq = 120|
 }).add;
 
 
-SynthDef(\help-Group_wah, { |out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq = 0.1|
+SynthDef(\help_Group_wah, { |out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq = 0.1|
 	var zin, zout, q;
 
 	zin = In.ar(out, 2);
@@ -206,7 +206,7 @@ r.play;
 g.group.inspect;
 
 // asking a wah to go order-of-execution after g, in the same group as g.
-x = Synth.after(g, \help-Group_wah, ["out", 0]);
+x = Synth.after(g, \help_Group_wah, ["out", 0]);
 
 // now dump my tree to confirm
 g.dumpTree;

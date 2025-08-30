@@ -67,7 +67,7 @@ SynthDef(\help_Diskout, { |bufnum|
 }).add;
 
 // this will play it back
-SynthDef(\help-Diskin_2chan, { |out, bufnum = 0|
+SynthDef(\help_Diskin_2chan, { |out, bufnum = 0|
 	Out.ar(out, DiskIn.ar(2, bufnum))
 }).add;
 )

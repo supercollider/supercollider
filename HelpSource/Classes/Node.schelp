@@ -82,7 +82,7 @@ If this Node is a Group this will set the running state of all Nodes within the 
 code::
 s.boot;
 (
-x = SynthDef(\help-node_set, { |freq = 440, out = 0|
+x = SynthDef(\help_node_set, { |freq = 440, out = 0|
 	Out.ar(out, SinOsc.ar(freq, 0, 0.1))
 }).play
 )
@@ -98,7 +98,7 @@ Controls are defined in a SynthDef as args or instances of link::Classes/Control
 code::
 s.boot;
 (
-x = SynthDef(\help-node_set, { |freq = 440, out = 0|
+x = SynthDef(\help_node_set, { |freq = 440, out = 0|
 	Out.ar(out, SinOsc.ar(freq, 0, 0.1))
 }).play
 )
@@ -110,7 +110,7 @@ Values that are arrays are sent using the OSC array type-tags ($[ and $]).  Thes
 code::
 s.boot;
 (
-x = SynthDef(\help-node_set, { |freq = #[440, 450, 460], out = 0|
+x = SynthDef(\help_node_set, { |freq = #[440, 450, 460], out = 0|
 	Out.ar(out, Mix(SinOsc.ar(freq, 0, 0.1)))
 }).play
 )
@@ -127,7 +127,7 @@ Controls are defined in a SynthDef as args or instances of link::Classes/Control
 code::
 s.boot;
 (
-x = SynthDef(\help-node_setn, {
+x = SynthDef(\help_node_setn, {
 	arg out, freq1 = 440, freq2 = 440, freq3 = 440, amp1 = 0.05, amp2 = 0.05, amp3 = 0.05;
 	Out.ar(out, Mix(SinOsc.ar([freq1, freq2, freq3], 0, [amp1, amp2, amp3])))
 }).play;
@@ -155,7 +155,7 @@ s.boot;
 (
 b = Bus.control(s, 1); b.set(880);
 c = Bus.control(s, 1);	c.set(884);
-x = SynthDef(\help-Node_map, { |out, freq1 = 440, freq2 = 440|
+x = SynthDef(\help_Node_map, { |out, freq1 = 440, freq2 = 440|
 	Out.ar(out, SinOsc.ar([freq1, freq2], 0, 0.1));
 }).play
 )
@@ -166,7 +166,7 @@ x.free; b.free; c.free;
 (
 b = Bus.control(s, 2);
 b.set(880, 884);
-x = SynthDef(\help-Node_map2, { |out, freqs = #[440, 440]|
+x = SynthDef(\help_Node_map2, { |out, freqs = #[440, 440]|
 	Out.ar(out, SinOsc.ar(freqs, 0, 0.1));
 }).play
 )

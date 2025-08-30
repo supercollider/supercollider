@@ -165,14 +165,14 @@ b = Bus.audio(s, 2);	// assuming stereo--this is to keep the src->fx chain separ
 // now you have synthgroup --> fxgroup within the default group of s
 
 // make some synthdefs to play with
-SynthDef(\order-of-ex_dist, { arg bus, preGain, postGain;
+SynthDef(\order_of_ex_dist, { arg bus, preGain, postGain;
 	var sig;
 	sig = In.ar(bus, 2);
 	sig = (sig * preGain).distort;
 	ReplaceOut.ar(bus, sig * postGain);
 }).add;
 
-SynthDef(\order-of-ex_pulse, { arg freq, bus, ffreq, pan, lfobus;
+SynthDef(\order_of_ex_pulse, { arg freq, bus, ffreq, pan, lfobus;
 	var sig, noteLen;
 	noteLen = In.kr(lfobus, 1);
 	sig = RLPF.ar(Pulse.ar(freq, 0.2, 0.5), ffreq, 0.3);
