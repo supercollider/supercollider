@@ -36,7 +36,11 @@ method:: new
 Create and return a new Synth object, and immediately start the corresponding synth node on the server.
 
 argument:: defName
-A String or Symbol specifying the name of the SynthDef to use in creating the Synth.
+A link::Classes/String:: or link::Classes/Symbol:: specifying the name of the SynthDef to use in creating the Synth.
+
+note::
+It is recommended to use link::Classes/Symbol::, as the teletype::defName:: argument of link::Classes/SynthDef::, when provided as a link::Classes/String::, is internally converted to link::Classes/Symbol::.
+::
 
 argument:: args
 An optional link::Classes/Array:: specifying initial values for the link::Classes/SynthDef::'s arguments (controls). These are specified in pairs of control name or index and value. If names are used they can be specified with either link::Classes/String::s or link::Classes/Symbol::s. e.g. code:: [\frequency, 440, \amplitude, 1, ...] ::.

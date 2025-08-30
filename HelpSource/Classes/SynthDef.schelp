@@ -97,6 +97,10 @@ method:: new
 Create a SynthDef instance, evaluate the ugenGraphFunc and build the ugenGraph.
 argument:: name
 A link::Classes/String:: or link::Classes/Symbol:: (i.e. "name" or \name). This name will be used to refer to the SynthDef when creating a Synth based upon it, and should be unique.
+
+note::
+It is recommended to use link::Classes/Symbol::, as teletype::defName:: is internally converted to link::Classes/Symbol::.
+::
 argument:: ugenGraphFunc
 An instance of Function specifying how the def's UGens are interconnected. See the discussion above for information on how the Function's arguments are specified.
 argument:: rates
