@@ -7,10 +7,8 @@ Description::
 
 Applies the conformal mapping
 
-code::
-
-z → (z - a) / (1 - za*)
-
+math::
+z \;\mapsto\; \frac{z - a}{1 - z a^*}
 ::
 
 to the phase vocoder bins z with a given by the real and imag inputs to
@@ -33,7 +31,7 @@ should
 give back the input mostly unperturbed.
 
 
-See  link::http://mathworld.wolfram.com/ConformalMapping.html:: .
+See link::http://mathworld.wolfram.com/ConformalMapping.html:: .
 
 
 classmethods::
@@ -58,7 +56,6 @@ Imaginary part of a.
 Examples::
 
 code::
-
 // explore the effect
 
 (
@@ -72,10 +69,11 @@ SynthDef(\conformer2, { |out|
 	Out.ar(out, Pan2.ar(CombN.ar(sound, 0.1, 0.1, 10, 0.5, sound), 0, 0.3));
 }).add;
 )
-
 a = Synth(\conformer2)
 a.free
+::
 
+code::
 // sound input: use headphones to prevent feedback
 (
 SynthDef(\conformer1, { |out|
@@ -86,9 +84,6 @@ SynthDef(\conformer1, { |out|
 	Out.ar(out, Pan2.ar(IFFT(chain), 0));
 }).add;
 )
-
 a = Synth(\conformer1)
 a.free
-
-
 ::
