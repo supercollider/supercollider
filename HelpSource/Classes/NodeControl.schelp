@@ -19,11 +19,14 @@ set the value
 
 examples::
 code::
+(
 d = SynthDef(\help_NodeControl, { |out = 0, freq = 400|
 	Out.ar(out,
 		 SinOsc.ar(freq, 0, 0.5)
 	)
 });
+)
+
 y = d.play; // the synth
 
 c = NodeControl(y, 1);

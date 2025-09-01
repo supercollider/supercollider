@@ -16,7 +16,6 @@ method::ir
 Examples::
 
 code::
-
 // example: frequency is derived from the number of synths running
 (
 SynthDef(\numRunning, { |out|
@@ -24,9 +23,8 @@ SynthDef(\numRunning, { |out|
 }).add;
 )
 
-s.sendMsg("/s_new", "numRunning", -1, 0, 0);
-s.sendMsg("/s_new", "numRunning", -1, 0, 0);
-s.sendMsg("/s_new", "numRunning", -1, 0, 0);
-s.sendMsg("/s_new", "numRunning", -1, 0, 0);
-
+s.sendMsg(\s_new, \numRunning, -1, 0, 0);
+s.sendMsg(\s_new, \numRunning, -1, 0, 0);
+s.sendMsg(\s_new, \numRunning, -1, 0, 0);
+s.sendMsg(\s_new, \numRunning, -1, 0, 0);
 ::

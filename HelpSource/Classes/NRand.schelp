@@ -40,7 +40,6 @@ towards gaussian.
 Examples::
 
 code::
-
 (
 SynthDef(\help_NRand, { |out = 0, n = 0|
 	Out.ar(out,
@@ -63,5 +62,4 @@ Routine({
 n = 1;
 n = 2;
 n = 4;
-
 ::

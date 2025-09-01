@@ -26,7 +26,6 @@ Input signal B.
 Examples::
 
 code::
-
 (
 d = SynthDef(\help_MostChange, { |out, amp = 1.0|
 	var sound, in1, in2;
@@ -59,5 +58,4 @@ d.set(\freq, 800);
 d.set(\freq, 800); // nothing changed
 d.set(\freq, 900);
 d.free;
-
 ::

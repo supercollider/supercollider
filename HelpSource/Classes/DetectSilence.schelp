@@ -53,7 +53,6 @@ This UGen outputs 1 if silence is detected, otherwise 0.
 Examples::
 
 code::
-
 (
 SynthDef(\detectSilence_help, { |out|
 	var z;
@@ -76,7 +75,6 @@ Task({
 	})
 }).play;
 )
-
 ::
 
 section::DetectSilence and multiple inputs

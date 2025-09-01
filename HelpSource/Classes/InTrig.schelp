@@ -31,6 +31,7 @@ code::
 s = Server.local;
 b = Bus.control(s, 1);
 
+(
 SynthDef(\help_InTrig, { |out = 0, busnum = 0|
 	var inTrig;
 	inTrig = InTrig.kr(busnum);
@@ -38,7 +39,7 @@ SynthDef(\help_InTrig, { |out = 0, busnum = 0|
 		EnvGen.kr(Env.perc, gate: inTrig, levelScale: inTrig) * SinOsc.ar
 	)
 }).play(s, [\out, 0, \busnum, b.index]);
-
+)
 
 b.set(1.0);
 

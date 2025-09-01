@@ -69,5 +69,4 @@ SynthDef(\help_DigitalIO, { |out = 0|
     DigitalIO.ar(0, SinOsc.ar(10), LFPulse.kr(0.1)).poll;
 }).play;
 )
-
 ::

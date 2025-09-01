@@ -484,5 +484,4 @@ MIDIIn.addFuncTo(\noteOff, ~noteOff);
 MIDIIn.removeFuncFrom(\noteOn, ~noteOn);
 MIDIIn.removeFuncFrom(\control, ~control);
 MIDIIn.removeFuncFrom(\bend, ~bend);
-
 ::

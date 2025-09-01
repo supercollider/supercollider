@@ -47,7 +47,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 (
 s = Server.local;
 b = Buffer.alloc(s, 512, 1);
@@ -136,5 +135,4 @@ fork {
 	};
 };
 )
-
 ::

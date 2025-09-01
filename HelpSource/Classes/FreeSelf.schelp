@@ -28,8 +28,8 @@ SynthDef(\freeSelf_help, { |out, t_trig|
 }).add;
 )
 
-s.sendMsg("/s_new", "freeSelf-help", 1731);
-s.sendMsg("/n_set", 1731, \t_trig, 1);
+s.sendMsg(\s_new, \freeSelf_help, 1731);
+s.sendMsg(\n_set, 1731, \t_trig, 1);
 
 // a single impulse SynthDef:
 
@@ -50,7 +50,7 @@ Task {
 		fork {
 			exprand(34, 156).do { |i|
 				i = i + 1;
-				s.sendMsg("/s_new", "dirac", -1, 0, 0, \amp, 1 / i);
+				s.sendMsg(\s_new, \dirac, -1, 0, 0, \amp, 1 / i);
 				(0.006 * i).wait;
 			};
 		};

@@ -37,50 +37,55 @@ This value will be added to the output.
 
 Examples::
 
-code::
+Compare examples below with interpolating Osc examples:
 
-// compare examples below with interpolating Osc examples.
+code::
+(
+b = Buffer.alloc(s, 512, 1);
+b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, false, true);
+)
 
 (
-s = Server.local;
-b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, false, true);
-b = Buffer.alloc(s, 512, 1);
-
-SynthDef(\help_OscN, { |out = 0, bufnum = 0|
+x = SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum, 500, 0, 0.5)
 	)
 }).play(s, [0, 0, 1, b.bufnum]);
-
 )
-b.free;
 
+x.free; b.free;
+::
 
-
-(
+code::
 // noninterpolating - there are noticeable artifacts
 // modulate freq
 
-s = Server.local;
-b.sine1(1.0/[1, 2, 3, 4, 5, 6].squared, true, false, true);
+(
 b = Buffer.alloc(s, 512, 1);
+b.sine1(1.0/[1, 2, 3, 4, 5, 6].squared, true, false, true);
+)
 
-SynthDef(\help_OscN, { |out = 0, bufnum = 0|
+(
+x = SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum, XLine.kr(2000, 200), 0, 0.5)
 	)
 }).play(s, [\out, 0, \bufnum, b.bufnum]);
-
 )
-b.free;
+
+x.free; b.free;
+::
+
+code::
+// sounds very different than the Osc example
 
 (
-// sounds very different than the Osc example
-s = Server.local;
 b = Buffer.alloc(s, 512, 1);
 b.sine1([1.0], true, true, true);
+)
 
-SynthDef(\help_OscN, { |out = 0, bufnum = 0|
+(
+x = SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum,
 			OscN.ar(bufnum,
@@ -92,17 +97,21 @@ SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 			0.25)
 	)
 }).play(s, [\out, 0, \bufnum, b.bufnum]);
-
 )
-b.free;
+
+x.free; b.free;
+::
+
+code::
+// modulate phase
 
 (
-// modulate phase
-s = Server.local;
 b = Buffer.alloc(s, 512, 1);
 b.sine1([1.0], true, true, true);
+)
 
-SynthDef(\help_OscN, { |out = 0, bufnum = 0|
+(
+x = SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum,
 				800,
@@ -114,15 +123,19 @@ SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	)
 }).play(s, [\out, 0, \bufnum, b.bufnum]);
 )
-b.free;
 
+x.free; b.free;
+::
+
+code::
+// change the buffer while its playing
 
 (
-// change the buffer while its playing
-s = Server.local;
 b = Buffer.alloc(s, 4096, 1);
 b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, true, true);
+)
 
+(
 SynthDef(\help_OscN, { |out = 0, bufnum = 0|
 	Out.ar(out,
 		OscN.ar(bufnum, [80, 80.2], 0, 0.2)
@@ -139,6 +152,6 @@ Routine({
 	});
 }).play;
 )
-b.free;
 
+x.free; b.free;
 ::

@@ -179,11 +179,11 @@ g = Group.new;
 (
 l = Array.fill(3, {
 	// random freq for each synth, added to g at the head
-	Synth(\help_Group_moto_rev, ["out", 0, "freq", rrand(10, 120)], g, \addToHead);
+	Synth(\help_Group_moto_rev, [\out, 0, \freq, rrand(10, 120)], g, \addToHead);
 });
 )
 
-// set all controls that match "ffreq" in all nodes in g to 90
+// set all controls that match \ffreq in all nodes in g to 90
 g.set(\ffreq, 300);
 
 g.set(\freq, 80);
@@ -206,7 +206,7 @@ r.play;
 g.group.inspect;
 
 // asking a wah to go order-of-execution after g, in the same group as g.
-x = Synth.after(g, \help_Group_wah, ["out", 0]);
+x = Synth.after(g, \help_Group_wah, [\out, 0]);
 
 // now dump my tree to confirm
 g.dumpTree;
@@ -229,7 +229,7 @@ g.query;
 (
 3.do({
 	// random freq for each synth, added to g at the head
-	Synth(help_Group_moto_rev, ["out", 0, "freq", rrand(10, 1200)], g, \addToHead);
+	Synth(\help_Group_moto_rev, [\out, 0, \freq, rrand(10, 1200)], g, \addToHead);
 });
 )
 

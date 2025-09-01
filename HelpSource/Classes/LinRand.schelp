@@ -27,7 +27,6 @@ The output is skewed towards code::lo:: if code::minmax:: < 0, otherwise skewed 
 Examples::
 
 code::
-
 (
 SynthDef(\help_LinRand, { |out = 0, minmax = 1|
 	Out.ar(out,
@@ -55,5 +54,4 @@ Routine({
 	})
 }).play;
 )
-
 ::

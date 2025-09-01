@@ -39,7 +39,6 @@ change the size of this once a SynthDef has been built.
 Examples::
 
 code::
-
 (
 {
 	var source, local;
@@ -119,7 +118,6 @@ z = SynthDef(\tape, { |out|
 
 // Resonator, must subtract blockSize for correct tuning
 (
-
 {
 	var imp, local;
 	local = LocalIn.ar(1);
@@ -134,5 +132,4 @@ z = SynthDef(\tape, { |out|
 
 { SinOsc.ar(440, 0, 0.2) }.play; // compare pitch
 )
-
 ::

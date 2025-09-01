@@ -803,7 +803,6 @@ c.free;	// free the control proxy c
 ::
 
 code::
-
 ///////////////////// channel offset/object index /////////////////////
 
 
@@ -817,7 +816,6 @@ a.end;
 ::
 
 code::
-
 ///////////////////// beat accurate playing /////////////////////
 
 
@@ -839,7 +837,6 @@ a.clear;
 ::
 
 code::
-
 ///////////////////// using patterns - event streams /////////////////////
 
 
@@ -852,7 +849,6 @@ SynthDef(\who, { |freq, gate = 1, out = 0, ffreq = 800, amp = 0.1|
 		Formant.ar(freq, ffreq, 300, EnvGen.kr(env, gate, doneAction: Done.freeSelf)), Rand(-1.0, 1.0))
 	)
 }).add;
-
 )
 
 

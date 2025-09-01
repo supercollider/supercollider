@@ -25,7 +25,6 @@ Magnitude threshold.
 Examples::
 
 code::
-
 s.boot;
 
 (
@@ -34,7 +33,7 @@ c = Buffer.read(s, ExampleFiles.child);
 )
 
 (
-SynthDef(\help_magBelow, { |out = 0, bufnum = 0|
+x = SynthDef(\help_magBelow, { |out = 0, bufnum = 0|
 	var in, chain;
 	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08, 0, 6, 6.2).squared, 0, 100, 800));
 	chain = FFT(bufnum, in);
@@ -42,9 +41,10 @@ SynthDef(\help_magBelow, { |out = 0, bufnum = 0|
 	Out.ar(out, 0.5 * IFFT(chain).dup);
 }).play(s, [\out, 0, \bufnum, b.bufnum]);
 )
+x.free
 
 (
-SynthDef(\help_magBelow2, { |out = 0, bufnum = 0|
+x = SynthDef(\help_magBelow2, { |out = 0, bufnum = 0|
 	var in, chain;
 	in = WhiteNoise.ar(0.2);
 	chain = FFT(bufnum, in);
@@ -52,9 +52,10 @@ SynthDef(\help_magBelow2, { |out = 0, bufnum = 0|
 	Out.ar(out, 0.5 * IFFT(chain).dup);
 }).play(s, [\out, 0, \bufnum, b.bufnum]);
 )
+x.free
 
 (
-SynthDef(\help_magBelow3, { |out = 0, bufnum = 0, soundBufnum = 2|
+x = SynthDef(\help_magBelow3, { |out = 0, bufnum = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(bufnum, in);
@@ -62,5 +63,5 @@ SynthDef(\help_magBelow3, { |out = 0, bufnum = 0, soundBufnum = 2|
 	Out.ar(out, 0.5 * IFFT(chain).dup);
 }).play(s, [\out, 0, \bufnum, b.bufnum, \soundBufnum, c.bufnum]);
 )
-
+x.free
 ::

@@ -46,7 +46,6 @@ Examples::
 
 code::
 // modulate frequency of a sine oscillator
-
 (
 SynthDef(\help_MultiplexAnalogIn, { |out = 0|
 	Out.ar(out,

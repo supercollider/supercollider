@@ -26,7 +26,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 (
 SynthDef(\help_LFClipNoise, { |out = 0|
 	Out.ar(out,
@@ -55,5 +54,4 @@ SynthDef(\help_LFClipNoise, { |out = 0|
 	)
 }).play;
 )
-
 ::

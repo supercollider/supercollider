@@ -783,7 +783,7 @@ NOTE::
 record creates the recording synth after the Server's default group and uses In.ar. Thus if you add nodes after the recording synth their output will not be captured.
 To avoid this, either use Node objects (which use the default node as their target) or (when using messaging style) use a target nodeID of 1.
 code::
-s.sendMsg("/s_new", "default", s.nextNodeID, 1, 1);
+s.sendMsg(\s_new, \default, s.nextNodeID, 1, 1);
 ::
 ::
 

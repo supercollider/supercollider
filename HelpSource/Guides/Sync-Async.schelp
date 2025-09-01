@@ -130,10 +130,10 @@ code::
 (
 SynthDef(\Help_SynthDef, { arg out=0;
 	Out.ar(out, PinkNoise.ar(0.1))
-}).send(s, ["s_new", \Help_SynthDef, x = s.nextNodeID]);
+}).send(s, [\s_new, \Help_SynthDef, x = s.nextNodeID]);
 // this is 'messaging' style, see below
 )
-s.sendMsg("n_free", x);
+s.sendMsg(\n_free, x);
 ::
 
 The completion message needs to be an OSC message, but it can also be some code which when evaluated returns one:

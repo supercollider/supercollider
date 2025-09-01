@@ -78,14 +78,19 @@ SynthDef(\Done_help, { |out, t_trig|
 }).add;
 )
 
-Synth(\Done_help); // note that this synth doesn't have it's own doneAction, so you'll need to manually deallocate it
+x = Synth(\Done_help);
+// note that this synth doesn't have it's own doneAction, so you'll need to manually deallocate it
+
+x.free
 ::
 The 'done' flag can be used to trigger a delayed freeing of the current synth, which is not possible by using doneActions alone:
 code::
+(
 play {
     var env = Line.kr(1, 0, 2);
     var sig = PinkNoise.ar(env);
     FreeSelf.kr(TDelay.kr(Done.kr(env), 3));
     GVerb.ar(sig, 70, 7);
 }
+)
 ::

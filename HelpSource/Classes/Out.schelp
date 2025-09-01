@@ -48,7 +48,6 @@ change the size of this once a SynthDef has been built.
 Examples::
 
 code::
-
 (
 SynthDef(\help_out, { |out = 0, freq = 440|
 	var source;
@@ -64,5 +63,4 @@ SynthDef(\help_out, { |out = 0, freq = 440|
 Synth(\help_out, [\freq, 500]);
 Synth(\help_out, [\freq, 600]);
 Synth(\help_out, [\freq, 700]);
-
 ::

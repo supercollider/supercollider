@@ -8,9 +8,7 @@ Description::
 Complex addition:
 
 code::
-
 RealA + RealB, ImagA + ImagB
-
 ::
 
 
@@ -27,12 +25,11 @@ FFT buffer B.
 Examples::
 
 code::
-
 s.boot;
 b = Buffer.read(s, ExampleFiles.child);
 
 (
-SynthDef(\help_add, { |out = 0, soundBufnum|
+x = SynthDef(\help_add, { |out = 0, soundBufnum|
 	var inA, chainA, inB, chainB, chain ;
 	inA = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	inB =  PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum) * 0.5, loop: 1);
@@ -42,7 +39,5 @@ SynthDef(\help_add, { |out = 0, soundBufnum|
 	Out.ar(out, 0.1 * IFFT(chain).dup);
 }).play(s, [\soundBufnum, b.bufnum]);
 )
-
-b.free
-
+x.free; b.free
 ::

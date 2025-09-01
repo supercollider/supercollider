@@ -24,7 +24,6 @@ The trigger input.
 Examples::
 
 code::
-
 (
 a = SynthDef(\help_TCoin, { |out = 0, prob = 0.5|
 	var trig;
@@ -55,5 +54,4 @@ a = SynthDef(\help_TCoin, { |out = 0, prob = 0.5|
 a.set(\prob, 1.0);
 a.set(\prob, 0.0);
 a.set(\prob, 0.1);
-
 ::
