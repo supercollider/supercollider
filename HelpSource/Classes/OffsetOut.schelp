@@ -46,14 +46,13 @@ change the size of this once a SynthDef has been built.
 Examples::
 
 code::
-
 (
 SynthDef(\help_OffsetOut,
 	{ |out = 0, freq = 440, dur = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);
 		OffsetOut.ar(out, SinOsc.ar(freq, 0, env))
-}).send(s);
+}).add;
 
 SynthDef(\help_Out,
 	{ |out = 0, freq = 440, dur = 0.05|
@@ -61,7 +60,7 @@ SynthDef(\help_Out,
 		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);
 		// compare to Out:
 		Out.ar(out, SinOsc.ar(freq, 0, env))
-}).send(s);
+}).add;
 )
 
 
@@ -69,7 +68,7 @@ SynthDef(\help_Out,
 (
 Routine({
 	loop {
-		s.sendBundle(0.2, ["/s_new", "help-OffsetOut", -1]);
+		s.sendBundle(0.2, [\s_new, \help_OffsetOut, -1]);
 		0.01.wait;
 	}
 }).play;
@@ -79,25 +78,32 @@ Routine({
 (
 Routine({
 	loop {
-		s.sendBundle(0.2, ["/s_new", "help-Out", -1]);
+		s.sendBundle(0.2, [\s_new, \help_Out, -1]);
 		0.01.wait;
 	}
 }).play;
 )
+::
 
+note::
+If you have an input to the synth, it will be coming in at its normal time, then mixed in your synth, and then delayed with the output. So you shouldn't use OffsetOut for effects or gating. The incomplete code below is to show this problem:
 
-
-SynthDef(\trig1, {
+code::
+SynthDef("trig1", {
 	var gate, tone;
 	gate = Trig1.ar(1.0, t);
-	tone = In.ar(10, 1); // tone comes in normally
-	// but is then delayed when by the OffsetOut
+
+	// tone comes in normally:
+	tone = In.ar(10, 1);
+
+	// but is then delayed when by the OffsetOut:
 	OffsetOut.ar(0,
 		tone * EnvGen.ar(
-				Env([0, 0.1, 0.1, 0], [0.01, 1.0, 0.01], [-4, 4], 2),
-				gate, doneAction: Done.freeSelf
-			)
+			Env([0, 0.1, 0.1, 0], [0.01, 1.0, 0.01], [-4, 4], 2),
+			gate,
+			doneAction: Done.freeSelf
+		)
 	)
 })
-
+::
 ::
