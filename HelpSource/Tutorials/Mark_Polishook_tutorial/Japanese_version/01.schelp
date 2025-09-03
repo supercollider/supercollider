@@ -33,7 +33,7 @@ code::
 s = Server("thisMachine", NetAddr("localhost", 57110));	// "localhost"は"127.0.0.1"というIPと同義
 
 // 第2に、シンセシスのエンジンを定義する
-SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).add;
+SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).send(s);
 
 // 第3に、シンセシスをスケジューリング（実行）する
 s.sendMsg("s_new", "sine", 1000, 1, 0);

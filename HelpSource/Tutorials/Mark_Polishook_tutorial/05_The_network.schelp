@@ -25,7 +25,7 @@ s = Server("aServer", NetAddr("127.0.0.1", 56789));		// "localhost" is a synonym
 s.boot;
 
 // define a synthesis engine
-SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).add;
+SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).send(s);
 
 // schedule (run) synthesis
 s.sendMsg("s_new", "sine", n = s.nextNodeID, 0, 1);
