@@ -240,12 +240,12 @@ TaskProxyGui : JITGui {
 	}
 
 	openDoc { |strings, bounds|
-        var doc = Document.new("edit" + super.getName, strings.join, false);
+		var doc = Document.new("edit" + super.getName, strings.join, false);
 		try {
-            doc.front;
-            doc.promptToSave = false;
-            doc.bounds_(bounds ?? { Rect(0, 400, 400, 200) })
-        };
+			doc.front;
+			doc.promptToSave = false;
+			doc.bounds_(bounds ?? { Rect(0, 400, 400, 200) })
+		};
 	}
 
 }
