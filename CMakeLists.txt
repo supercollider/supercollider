@@ -307,11 +307,18 @@ if (NOT WIN32)
 endif()
 
 if(SYSTEM_BOOST)
+    # policy CMP0167 is only available from CMake 3.30 on
     if(POLICY CMP0167)
+        # CMP0167 NEW policy: use Boost-provided BoostConfig.cmake config file
+        # instead of the old FindBoost module
         cmake_policy(SET CMP0167 NEW)
     endif()
     set(Boost_USE_MULTITHREADED ON)
-    find_package(Boost 1.70.0 REQUIRED COMPONENTS thread program_options regex unit_test_framework)
+    set(BOOST_COMPONENTS thread program_options regex)
+    if(ENABLE_TESTSUITE)
+        list(APPEND BOOST_COMPONENTS unit_test_framework)
+    endif()
+    find_package(Boost 1.70.0 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
     if (Boost_FOUND)
         message(STATUS "Found system Boost in ${Boost_INCLUDE_DIRS}")
     endif()

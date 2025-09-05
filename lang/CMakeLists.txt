@@ -242,7 +242,13 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-target_link_libraries(libsclang Boost::thread Boost::program_options Boost::regex Boost::sync)
+target_link_libraries(
+  libsclang 
+  Boost::thread
+  Boost::program_options
+  Boost::regex
+  Boost::sync
+)
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
