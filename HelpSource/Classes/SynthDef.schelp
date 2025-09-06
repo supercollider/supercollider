@@ -148,7 +148,7 @@ method:: removeAt
 Remove the synthdef code::name:: from the SynthDescLib named code::libname:: and from its servers.
 
 method:: writeOnce
-Create a new SynthDef. It is written to disk only if a def file with this name does not already exist. Note that this will not check for differences, so you will need to delete the defFile to get it to rebuild. Default for dir is to use the path specified by code::SynthDef.synthDefDir::.
+Create a new SynthDef. It is written to disk only if a def file with this name does not already exist. Note that this will not check for differences, so you will need to delete the defFile to get it to rebuild. Default for code::dir:: is to use the path specified by code::SynthDef.synthDefDir::.
 
 warning:: code::SynthDef.writeOnce:: is a legacy method. Its main use was to improve the efficiency of SynthDefs in quarks, but this is superseded by link::Classes/SynthDescLib::. Being completely impervious to changes, it can cause difficult-to-diagnose bugs (such as having version 1.1 of a quark but with a SynthDef stuck in version 1.0). Quark developers should now use link::#-add:: instead.
 
@@ -161,14 +161,14 @@ When a SynthDef is too large to be sent to a local server in a standard OSC mess
 InstanceMethods::
 
 method:: add
-Adds the synthdef to the link::Classes/SynthDescLib:: specified by libname, and sends it to the library's servers. No defFile is written; all operations take place in memory.
+Adds the synthdef to the link::Classes/SynthDescLib:: specified by code::libname::, and sends it to the library's servers. No defFile is written; all operations take place in memory.
 
 discussion::
 After using this method, the synthdef can be used with event streams as in code::store()::, but without the permanent artifact of a file on disk. Calling this method triggers an update message with the key code::\synthDescAdded:: for any dependants the library may have. This can be used to trigger additional behaviour every time a def/desc is added. See link::Classes/Object#Dependancy::.
 
 A server can be added by code:: SynthDescLib.global.addServer(server) ::.
 
-Note that the "dir" and "mdPlugin" arguments do not exist for this method. Because no file is written, there is no need to specify a directory or write a metadata file.
+Note that the code::dir::and code::mdPlugin:: arguments do not exist for this method. Because no file is written, there is no need to specify a directory or write a metadata file.
 
 code::
 (
@@ -199,12 +199,12 @@ subsection:: Special purpose methods
 (for most purposes, the method add is recommended)
 
 method:: writeDefFile
-Writes the def as a file called name.scsyndef in a form readable by a server. Default for dir is synthdefs/. Defs stored in the default directory will be automatically loaded by the local and internal Servers when they are booted.
+Writes the def as a file called name.scsyndef in a form readable by a server. Default for code::dir:: is code::(Platform.userAppSupportDir +/+ "synthdefs")::. Defs stored in the default directory will be automatically loaded by the local and internal Servers when they are booted.
 
 method:: load
 Writes the code::SynthDef:: to disk and sends a message to the server to load the file.
 When this asynchronous command is completed, code::completionMsg::—a valid OSC message indicating completion— is immediately executed by the server.
-Default for dir is synthdefs/.
+Default for code::dir:: is code::(Platform.userAppSupportDir +/+ "synthdefs")::.
 
 discussion::
 This method does not register the SynthDef in the SynthDescLib, which may cause issues when using patterns or event-based systems.
@@ -254,7 +254,7 @@ Pbind(
 ::
 
 method:: store
-Write the defFile and store it in the SynthDescLib specified by libname, and send a message to the library's server to load this file. When this asynchronous command is completed, the completionMessage (a valid OSC  message) is immediately executed by the server. Default for libname is \global, for dir is synthdefs/. This is needed to use defs with the event stream system. See Streams and Pattern.
+Write the defFile and store it in the SynthDescLib specified by code::libname::, and send a message to the library's server to load this file. When this asynchronous command is completed, the completionMessage (a valid OSC  message) is immediately executed by the server. Default for code::libname:: is code::\global::, for code::dir:: is code::(Platform.userAppSupportDir +/+ "synthdefs")::. This is needed to use defs with the event stream system. See Streams and Pattern.
 argument:: libname
 name of the link::Classes/SynthDescLib::
 argument:: dir
