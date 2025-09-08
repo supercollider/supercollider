@@ -1,68 +1,72 @@
 TestServer_dumpTree : UnitTest {
 
-	var addr, pipe;
+    var pipe;
 
-	setUp {
-	}
+    setUp {
+    }
 
-	tearDown {
-		if (pipe.notNil) {
-			pipe.close;
-		};
-	}
+    tearDown {
+        if (pipe.notNil) {
+            pipe.close;
+        };
+    }
 
-	test_dumpTree {
-		var actualOutput, line;
-		var programAndExpectedOutput = Dictionary.new;
+    getOutput { |program, expectedOutput|
+        var actualOutput = List[],
+            addr = NetAddr("127.0.0.1", 57110),
+            executable = Server.program.replace("scsynth", program),
+            line;
+        // need to get the full path as not all testing environments put
+        // scsynth or supernova onto the shell path
+        executable = Server.program.replace("scsynth", program);
+        pipe = Pipe.new(executable ++ ServerOptions.new.asOptionsString, "r");
+        // consume lines until the server is ready
+        line = pipe.getLine;
+        while ({ line.notNil && line.contains("ready").not }) {
+            line = pipe.getLine;
+        };
+        // connect OSC, dump the tree, quit the server
+        addr.sendMsg("/g_dumpTree", 0, 0);
+        addr.sendMsg("/quit");
+        // consume lines until no more remain
+        line = pipe.getLine;
+        while ({ line.notNil }) {
+            // This warning can appear in GitHub Actions runs for supernova
+            if (
+                line != "Warning: cannot raise thread priority",
+                { actualOutput.add(line); }
+            );
+            line = pipe.getLine;
+        };
+        pipe.close;
+        ^ actualOutput;
+    }	
 
-		programAndExpectedOutput.put(
-			"scsynth",
-			List[
-				"NODE TREE Group 0",
-				"END NODE TREE Group 0",
-			],
-		);
+    test_scsynth_dumpTree {
+        var program = "scsynth";
+        var expectedOutput = List[
+            "NODE TREE Group 0",
+            "END NODE TREE Group 0",
+        ];
+        this.assertEquals(
+            this.getOutput(program), 
+            expectedOutput,
+            program ++ " /g_dumpTree output should match expected",
+        );
+    }
 
-		if(
-			thisProcess.platform.name != "windows"
-			and: { "which supernova".unixCmdGetStdOut.size > 0 }
-		) {
-			// supernova's /g_dumpTree output is different
-			programAndExpectedOutput.put(
-				"supernova",
-				List[
-					"NODE TREE Group 0",
-					"   0 group",
-					"END NODE TREE Group 0",
-				]
-			);
-		};
-
-		programAndExpectedOutput.keysValuesDo({ |program, expectedOutput|
-			actualOutput = List[];
-			pipe = Pipe.new(program ++ ServerOptions.new.asOptionsString, "r");
-			// consume lines until the server is ready
-			line = pipe.getLine;
-			while ({ line.notNil && line.contains("ready").not }) {
-				line = pipe.getLine;
-			};
-			// connect OSC, dump the tree, quit the server
-			addr = NetAddr("127.0.0.1", 57110);
-			addr.sendMsg("/g_dumpTree", 0, 0);
-			addr.sendMsg("/quit");
-			// consume lines until no more remain
-			line = pipe.getLine;
-			while ({ line.notNil }) {
-				actualOutput.add(line);
-				line = pipe.getLine;
-			};
-			pipe.close;
-			this.assertEquals(
-				actualOutput,
-				expectedOutput,
-				program ++ " /g_dumpTree output should match expected",
-			);
-		});
-	}
+    test_supernova_dumpTree {
+        var program = "supernova";
+        var expectedOutput = List[
+            "NODE TREE Group 0",
+            "   0 group",
+            "END NODE TREE Group 0",
+        ];
+        this.assertEquals(
+            this.getOutput(program),
+            expectedOutput,
+            program ++ " /g_dumpTree output should match expected",
+        );
+    }
 
 }
