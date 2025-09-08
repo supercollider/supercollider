@@ -122,11 +122,11 @@ a = Pbind(midicmd: \noteOn, degree: Prand([1, 2, 3, [0, 5]], inf));
 
 //other selected midicmds:
 // for bend messages: 
-b = Pbind(midicmd: \bend, val: Pwhite(0,16383))
+b = Pbind(midicmd: \bend, val: Pwhite(0,16383));
 (b <> (type: \midi, midiout: m)).play;
 
 // for CC messages: 
-c = Pbind(midicmd: \control, control: Pwhite(0,127), ctlNum: 0)
+c = Pbind(midicmd: \control, control: Pwhite(0,127), ctlNum: 0);
 (c <> (type: \midi, midiout: m)).play;
 ::
 
