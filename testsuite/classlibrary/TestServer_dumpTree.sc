@@ -14,11 +14,8 @@ TestServer_dumpTree : UnitTest {
     getOutput { |program, expectedOutput|
         var actualOutput = List[],
             addr = NetAddr("127.0.0.1", 57110),
-            // need to get the full path as not all testing environments put
-            // scsynth or supernova onto the shell path
-            executable = Server.program.replace("scsynth", program),
             line;
-        pipe = Pipe.new(executable ++ ServerOptions.new.asOptionsString, "r");
+        pipe = Pipe.new(program ++ ServerOptions.new.asOptionsString, "r");
         // consume lines until the server is ready
         line = pipe.getLine;
         while ({ line.notNil && line.contains("ready").not }) {
@@ -41,30 +38,26 @@ TestServer_dumpTree : UnitTest {
         ^ actualOutput;
     }	
 
-    test_scsynth_dumpTree {
-        var program = "scsynth";
-        var expectedOutput = List[
-            "NODE TREE Group 0",
-            "END NODE TREE Group 0",
-        ];
+    test_dumpTree_scsynth {
         this.assertEquals(
-            this.getOutput(program), 
-            expectedOutput,
-            program ++ " /g_dumpTree output should match expected",
+            this.getOutput(Server.program),
+            List[
+                "NODE TREE Group 0",
+                "END NODE TREE Group 0",
+            ],
+            "scsynth /g_dumpTree output should match expected",
         );
     }
 
-    test_supernova_dumpTree {
-        var program = "supernova";
-        var expectedOutput = List[
-            "NODE TREE Group 0",
-            "   0 group",
-            "END NODE TREE Group 0",
-        ];
+    test_dumpTree_supernova {
         this.assertEquals(
-            this.getOutput(program),
-            expectedOutput,
-            program ++ " /g_dumpTree output should match expected",
+            this.getOutput(Server.program.replace("scsynth", "supernova")),
+            List[
+                "NODE TREE Group 0",
+                "   0 group",
+                "END NODE TREE Group 0",
+            ],
+            "supernova /g_dumpTree output should match expected",
         );
     }
 
