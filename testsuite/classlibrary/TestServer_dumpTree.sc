@@ -14,18 +14,17 @@ TestServer_dumpTree : UnitTest {
     getOutput { |program, expectedOutput|
         var actualOutput = List[],
             addr = NetAddr("127.0.0.1", 57110),
+            // need to get the full path as not all testing environments put
+            // scsynth or supernova onto the shell path
             executable = Server.program.replace("scsynth", program),
             line;
-        // need to get the full path as not all testing environments put
-        // scsynth or supernova onto the shell path
-        executable = Server.program.replace("scsynth", program);
         pipe = Pipe.new(executable ++ ServerOptions.new.asOptionsString, "r");
         // consume lines until the server is ready
         line = pipe.getLine;
         while ({ line.notNil && line.contains("ready").not }) {
             line = pipe.getLine;
         };
-        // connect OSC, dump the tree, quit the server
+        // dump the tree, quit the server
         addr.sendMsg("/g_dumpTree", 0, 0);
         addr.sendMsg("/quit");
         // consume lines until no more remain
