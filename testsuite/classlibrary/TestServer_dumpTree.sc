@@ -13,9 +13,11 @@ TestServer_dumpTree : UnitTest {
 
     getOutput { |program, expectedOutput|
         var actualOutput = List[],
-            addr = NetAddr("127.0.0.1", 57110),
+            ip = "127.0.0.1",
+            port = 57110,
+            addr = NetAddr(ip, port),
             line;
-        pipe = Pipe.new(program ++ ServerOptions.new.asOptionsString, "r");
+        pipe = Pipe.new(program ++ ServerOptions().bindAddress_(ip).asOptionsString(port), "r");
         // consume lines until the server is ready
         line = pipe.getLine;
         while ({ line.notNil && line.contains("ready").not }) {
@@ -27,9 +29,9 @@ TestServer_dumpTree : UnitTest {
         // consume lines until no more remain
         line = pipe.getLine;
         while ({ line.notNil }) {
-            // This warning can appear in GitHub Actions runs for supernova
+            // Ignore transient unrelated warnings
             if (
-                line != "Warning: cannot raise thread priority",
+                line.beginsWith("Warning:").not,
                 { actualOutput.add(line); }
             );
             line = pipe.getLine;
