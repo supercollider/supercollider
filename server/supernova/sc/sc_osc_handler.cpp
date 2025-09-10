@@ -1474,7 +1474,8 @@ void g_dump_tree(int id, bool flag) {
 
     g_dump_node(stream, *node, flag, 1);
     stream << "END NODE TREE Group " << id << std::endl;
-    log(stream.str().c_str(), stream.str().size());
+    auto msg = stream.str();
+    log(msg.c_str(), msg.size());
 }
 
 void handle_g_dumpTree(ReceivedMessage const& msg) {
