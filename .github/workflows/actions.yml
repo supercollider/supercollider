@@ -89,12 +89,12 @@ jobs:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
-  # test-windows:
-  #   needs: [version-getter, build-windows]
-  #   uses: ./.github/workflows/test_windows.yml
-  #   with:
-  #     sc-version: ${{ needs.version-getter.outputs.sc-version }}
-  #   secrets: inherit
+  test-windows:
+    needs: [version-getter, build-windows]
+    uses: ./.github/workflows/test_windows.yml
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
 
   deploy_s3:
     strategy:

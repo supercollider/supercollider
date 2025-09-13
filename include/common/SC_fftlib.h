@@ -64,3 +64,6 @@ void scfft_doifft(scfft* f);
 
 // destroy any resources held internally.
 void scfft_destroy(scfft* f, SCFFT_Allocator& alloc);
+
+// initialize thread local buffers
+void scfft_thread_init();

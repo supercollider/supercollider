@@ -71,4 +71,14 @@ TestIdentityDictionaryObjectPrototyping : UnitTest {
 		var result = ev.x([1, 2, 3, 4]);
 		this.assertEquals(result, [1, 2, 3, 4], "Arrays should not be expanded by functionPerformList");
 	}
+	test_doesNotUnderstand_when_know_is_off {
+		var selector = \qwertyquertz;
+		var errorSelector;
+		try {
+			IdentityDictionary.new(know:false).perform(selector)
+		} { |error|
+			errorSelector = error.selector;
+		};
+		this.assertEquals(errorSelector, selector, "The selector should be passed to the DoesNotUnderstandError when a message is not understood in an IdentityDictionary for which know is false.");
+	}
 }

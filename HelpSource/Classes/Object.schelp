@@ -98,11 +98,13 @@ code::
 
 method::respondsTo
 
-Answer a link::Classes/Boolean:: whether the receiver understands the message selector.
+Answer a link::Classes/Boolean:: whether the receiver understands the message selector or array of message selectors.
 
 code::
 5.respondsTo('+'); // true
 5.respondsTo('indexOf'); // false
+5.respondsTo(['+', '-']); // true
+5.respondsTo(['+', 'indexOf']); // false
 ::
 
 

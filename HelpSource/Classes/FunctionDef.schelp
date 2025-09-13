@@ -83,18 +83,6 @@ code::
 { |a ... b, c| a * b }.def.hasVarArgs; // true
 ::
 
-
-
-
-
-
-
-
-
-
-
-
-
 method::context
 
 Get the enclosing FunctionDef or Method.

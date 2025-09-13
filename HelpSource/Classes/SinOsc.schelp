@@ -9,7 +9,7 @@ Description::
 Generates a sine wave.
 Uses a wavetable lookup oscillator with linear interpolation.
 Frequency and phase modulation are provided for audio-rate modulation.
-Technically, code:SinOsc:: uses the same implementation as  link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
+Technically, code::SinOsc:: uses the same implementation as  link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
 
 subsection:: Other sinewaves oscillators
 

@@ -39,7 +39,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 // a signal with impulse noise.
 { Saw.ar(500, 0.1) + Dust2.ar(100, 0.9) }.play;
 
@@ -67,16 +66,15 @@ code::
 
 // another noise reduction application:
 
-Synth.play({ WhiteNoise.ar(0.1) + SinOsc.ar(800, 0, 0.1) });
+{ WhiteNoise.ar(0.1) + SinOsc.ar(800, 0, 0.1) }.play;
 
 // use Median filter for high frequency noise
-Synth.play({ Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800, 0, 0.1)) });
+{ Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800, 0, 0.1)) }.play;
 
 (
 // use LeakDC for low frequency noise
-Synth.play({
+{
 	LeakDC.ar(Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800, 0, 0.1)), 0.9)
-});
+}.play
 )
-
 ::

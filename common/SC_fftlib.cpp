@@ -23,6 +23,9 @@ NOTE:
 vDSP uses a "SplitBuf" as an intermediate representation of the data.
 For speed we keep this global, although this makes the code non-thread-safe.
 (This is not new to this refactoring. Just worth noting.)
+NEW ADDITION:
+Additional logic was used when adapting this for Supernova,
+ensuring that each thread has its own SplitBuf.
 */
 
 #include "clz.h"
@@ -98,7 +101,11 @@ static float* fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 
 #if SC_FFT_VDSP
 static FFTSetup fftSetup[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1]; // vDSP setups, one per FFT size
+#    ifdef SUPERNOVA
+thread_local static COMPLEX_SPLIT splitBuf;
+#    else
 static COMPLEX_SPLIT splitBuf; // Temp buf for holding rearranged data
+#    endif
 #endif
 
 #if SC_FFT_GREEN
@@ -167,6 +174,23 @@ static inline float* scfft_create_fftwindow(int wintype, int log2n) {
 
 static void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype);
 
+#if SC_FFT_VDSP
+// initialize splitbuf memory
+void scfft_init_splitbuf() {
+    // vDSP prepares its memory-aligned buffer for rearranging input data.
+    // Note max size here - meaning max input buffer size is these two sizes added together.
+    // vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
+    splitBuf.realp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
+    splitBuf.imagp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
+}
+#endif
+
+void scfft_thread_init() {
+#if SC_FFT_VDSP
+    scfft_init_splitbuf();
+#endif
+}
+
 static bool scfft_global_initialization(void) {
     for (int wintype = 0; wintype < 2; ++wintype) {
         for (int i = 0; i < SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
@@ -192,11 +216,12 @@ static bool scfft_global_initialization(void) {
             printf("FFT ERROR: Mac vDSP library could not allocate FFT setup for size %i\n", 1 << i);
         }
     }
-    // vDSP prepares its memory-aligned buffer for rearranging input data.
-    // Note max size here - meaning max input buffer size is these two sizes added together.
-    // vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
-    splitBuf.realp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
-    splitBuf.imagp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
+#    ifndef SUPERNOVA
+    // allocate splitBuf memory
+    // on supernova we do that by calling scfft_thread_init() from
+    // realtime_engine_functor::init_thread() and thread_init_functor::operator()
+    scfft_init_splitbuf();
+#    endif
     // printf("SC FFT global init: vDSP initialised.\n");
 #elif SC_FFT_FFTW
     size_t maxSize = 1 << SC_FFT_LOG2_MAXSIZE;

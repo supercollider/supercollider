@@ -116,7 +116,7 @@ PrimitiveFailedError : MethodError {
 
 	*new { arg receiver;
 		^super.new(Thread.primitiveErrorString, receiver)
-			.failedPrimitiveName_(thisThread.failedPrimitiveName)
+		.failedPrimitiveName_(thisThread.failedPrimitiveName)
 	}
 	errorString {
 		^"ERROR: Primitive '%' failed.\n%".format(failedPrimitiveName, what ? "")
@@ -129,8 +129,7 @@ SubclassResponsibilityError : MethodError {
 		^super.new(nil, receiver).method_(method).class_(class)
 	}
 	errorString {
-		^"ERROR: '" ++ method.name ++ "' should have been implemented by "
-			++ class.name ++ "."
+		^"ERROR: '" ++ method.name ++ "' should have been implemented by " ++ class.name ++ "."
 	}
 }
 
@@ -141,13 +140,12 @@ ShouldNotImplementError : MethodError {
 	}
 	errorString {
 		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name
-			++ "' Message not valid for this subclass: "
-			++ class.name ++ "."
+		++ "' Message not valid for this subclass: " ++ class.name ++ "."
 	}
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector, <>args, <>keywordArgumentPairs, <suggestedCorrection, suggestion = "";
+	var <>selector, <>args, <>keywordArgumentPairs, suggestion = "";
 	*new { arg receiver, selector, args, keywordArgumentPairs;
 		^super.new(nil, receiver)
 		.selector_(selector)
@@ -157,27 +155,37 @@ DoesNotUnderstandError : MethodError {
 	}
 
 	init {
-		var methods, methodNames, editDistances, minIndex, lowerCaseSelector;
-
-		if(receiver.notNil) {
-			methods = receiver.class.superclasses.add(receiver.class).collect(_.methods).reduce('++');
-			methodNames = methods.collect { |x| x.name.asString.toLower };
-			// we compare lower-case versions to prioritize capitalization mistakes
-			lowerCaseSelector = selector.asString.toLower;
-			editDistances = methodNames.collect(_.editDistance(lowerCaseSelector));
-			minIndex = editDistances.minIndex;
-			// Edit distance of 3 chosen arbitrarily; also, filter out completely dissimilar matches
-			// to avoid unhelpful suggestions.
-			if(editDistances[minIndex] <= 3 and: { methodNames[minIndex].similarity(lowerCaseSelector) > 0 }) {
-				suggestedCorrection = methods[minIndex];
-				suggestion = "\nPerhaps you misspelled '%', or meant to call '%' on another receiver?"
-				.format(suggestedCorrection.name, selector);
+		var methodSuggestions, classSuggestions, plural;
+		if(selector.notNil) {
+			methodSuggestions = receiver.class.findSimilarSelectors(selector, minSimilarity: 0.5, maxEditDistance: 2);
+			if(methodSuggestions.notEmpty) {
+				plural = if(methodSuggestions.size > 1) { "s" } { "" };
+				methodSuggestions = methodSuggestions.join("\n\t");
+				suggestion = suggestion ++
+				"\nMessage% with a similar name understood by the receiver:\n\t%\n".format(plural, methodSuggestions);
+			};
+			classSuggestions = Object.findRespondingUpperSubclasses(selector).collect(_.name);
+			if(classSuggestions.notEmpty) {
+				if(classSuggestions.size < 8) {
+					classSuggestions = classSuggestions.join("\n\t");
+					suggestion = suggestion ++
+					"\nObjects which respond to the selector '%' derive from:\n\t%"
+					.format(selector, classSuggestions)
+				} {
+					suggestion = suggestion ++
+					"\nMany other objects respond to the message '%' (found % superclasses)."
+					.format(selector, classSuggestions.size)
+				}
 			}
+		} {
+			"DoesNotUnderstandError selector for % was nil".format(receiver).warn;
 		}
 	}
+
 	errorString {
-		^"ERROR: Message '" ++ selector ++ "' not understood." ++ suggestion
+		^"ERROR: Message '" ++ selector ++ "' not understood."
 	}
+
 	reportError {
 		this.errorString.postln;
 		"RECEIVER:\n".post;
@@ -192,7 +200,9 @@ DoesNotUnderstandError : MethodError {
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		// this.adviceLink.postln;
-		"^^ %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
+		"\n^^ %\nRECEIVER: %\n".postf(this.errorString, receiver);
+		suggestion.postln;
+		"\n".post;
 	}
 	adviceLinkPage {
 		^"%#%".format(this.class.name, selector)
@@ -216,7 +226,7 @@ OutOfContextReturnError : MethodError {
 	}
 	errorString {
 		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name
-			++ "' Out of context return of value: " ++ result
+		++ "' Out of context return of value: " ++ result
 	}
 }
 

@@ -1362,22 +1362,15 @@ int prPipeOpen(struct VMGlobals* g, int numArgsPushed) {
 
     PyrFile* pfile = reinterpret_cast<PyrFile*>(slotRawObject(callerSlot));
 
-    // c++17 structured binding declarations will make this into a single line
-    // auto [error, string] = ...
-    int error;
-    std::string commandLine;
-    std::tie(error, commandLine) = slotStrStdStrVal(commandLineSlot);
-    if (error != errNone)
-        return error;
+    auto [errorCmd, commandLine] = slotStrStdStrVal(commandLineSlot);
+    if (errorCmd != errNone)
+        return errorCmd;
 
-    std::string mode;
-    std::tie(error, mode) = slotStrStdStrVal(modeSlot);
-    if (error != errNone)
-        return error;
+    auto [errorMode, mode] = slotStrStdStrVal(modeSlot);
+    if (errorMode != errNone)
+        return errorMode;
 
-    pid_t pid;
-    FILE* file;
-    std::tie(pid, file) = sc_popen_shell(std::move(commandLine), mode);
+    auto [pid, file] = sc_popen_shell(std::move(commandLine), mode);
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);
         SetInt(callerSlot, pid);
@@ -1413,22 +1406,15 @@ int prPipeOpenArgv(struct VMGlobals* g, int numArgsPushed) {
     if (argsColl->size < 1)
         return errFailed;
 
-    // c++17 structured binding declarations will make this into a single line
-    // auto [error, mode] = ...;
-    int error;
-    std::string mode;
-    std::tie(error, mode) = slotStrStdStrVal(modeSlot);
-    if (error != errNone)
-        return error;
+    auto [errorMode, mode] = slotStrStdStrVal(modeSlot);
+    if (errorMode != errNone)
+        return errorMode;
 
-    std::vector<std::string> strings;
-    std::tie(error, strings) = PyrCollToVectorStdString(argsColl);
-    if (error != errNone)
-        return error;
+    auto [errorStr, strings] = PyrCollToVectorStdString(argsColl);
+    if (errorStr != errNone)
+        return errorStr;
 
-    pid_t pid;
-    FILE* file;
-    std::tie(pid, file) = sc_popen_argv(strings, mode);
+    auto [pid, file] = sc_popen_argv(strings, mode);
 
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);

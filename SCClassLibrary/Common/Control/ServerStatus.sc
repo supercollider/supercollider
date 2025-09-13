@@ -330,5 +330,4 @@ ServerStatusWatcher {
 			"Switched off notification messages from server '%'\n".postf(server.name);
 		};
 	}
-
 }

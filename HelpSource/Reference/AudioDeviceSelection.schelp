@@ -124,7 +124,7 @@ section:: Windows
 
 By default the server will boot to your system's default audio devices using a teletype::WASAPI:: driver.
 
-On Windows there are multiple audio driver APIs (e.g. teletype::MME::, teletype::WASAPI::, teletype::ASIO:: etc.) that can be used to communicate with audio devices. The API (listed before the device name) needs to match between the input and the output, for example:
+On Windows there are multiple audio driver APIs (e.g. teletype::WASAPI::, teletype::ASIO:: etc.) that can be used to communicate with audio devices. The API (listed before the device name) needs to match between the input and the output, for example:
 code::
 o = Server.default.options;
 o.inDevice_("Windows WASAPI : Microphone");
@@ -144,12 +144,14 @@ note:: Leaving the code::sampleRate:: (e.g. code::Server.default.options.sampleR
 subsection:: Choosing the device and the API
 list::
 ##If you need to specify the device, you will need to do so for both input and output (setting both code::.inDevice::, as well as code::.outDevice::), unless you use ASIO
-##Both input and output device needs to use the same API (listed before the name, for example teletype::MME::, teletype::WDM-KS:: etc.).
+##Both input and output device needs to use the same API (listed before the name, for example teletype::WASAPI::, teletype::ASIO:: etc.).
 ##Both input and output device should use the same sample rate (although some APIs might provide resampling). This can be set in Windows's Audio Control Panel.
 ::
 The following list provides basic reference for different APIs. The most recommended APIs are listed first.
 
 subsection:: List of available APIs
+As of SuperCollider 3.15, only teletype::WASAPI:: and teletype::ASIO:: APIs are enabled in the official releases.
+
 definitionlist::
 ## ASIO
 ||

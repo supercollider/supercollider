@@ -5,8 +5,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/common
 
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
-
                     LangSource
                     LangPrimSource
 
@@ -244,8 +242,13 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_program_options_lib)
-target_include_directories(libsclang PUBLIC ${boost_include_dirs})
+target_link_libraries(
+  libsclang 
+  Boost::thread
+  Boost::program_options
+  Boost::regex
+  Boost::sync
+)
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)

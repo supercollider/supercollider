@@ -25,7 +25,6 @@
 #include <QAction>
 #include <QProcess>
 #include <QTimer>
-#include <boost/chrono/system_clocks.hpp>
 #include <osc/OscReceivedElements.h>
 
 namespace ScIDE {

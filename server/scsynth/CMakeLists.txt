@@ -1,9 +1,8 @@
-find_package(Sndfile)
-
 # here we choose who provides us with the FFT lib
 # this is done independently for scsynth and supernova
-# on macOS scsynth uses vDSP implementation for FFT
-# which is not thread-safe
+# for historical reasons, as the vDSP implementation
+# wasn't thread-safe in the past
+# and couldn't be used in supernova
 
 if (APPLE)
     add_definitions("-DSC_FFT_VDSP")
@@ -135,8 +134,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     .
 )
 
-include_directories (${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include)
-
 if (AUDIOAPI STREQUAL jack)
 	list(APPEND scsynth_sources SC_Jack.cpp)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_JACK")
@@ -176,7 +173,7 @@ endif()
 
 target_compile_definitions(libscsynth PUBLIC  SC_MEMORY_ALIGNMENT=32)
 
-target_link_libraries(libscsynth tlsf)
+target_link_libraries(libscsynth tlsf Boost::sync)
 
 find_library(DL NAMES dl)
 if(DL)
@@ -187,21 +184,26 @@ if(NOVA_SIMD)
 	target_compile_definitions(libscsynth PUBLIC NOVA_SIMD)
 endif()
 
-if(SNDFILE_FOUND)
-	if(SNDFILE_HAS_VORBIS)
-		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_VORBIS)
+if(NOT NO_LIBSNDFILE)
+	find_package(Sndfile)
+	if(SNDFILE_FOUND)
+		if(SNDFILE_HAS_VORBIS)
+			target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_VORBIS)
+		endif()
+		if(SNDFILE_HAS_OPUS)
+			target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_OPUS)
+		endif()
+		if(SNDFILE_HAS_MPEG)
+			target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_MPEG)
+		endif()
+		target_link_libraries(libscsynth ${SNDFILE_LIBRARIES})
+		target_include_directories(libscsynth PUBLIC ${SNDFILE_INCLUDE_DIR})
+	else()
+		message(SEND_ERROR "Cannot find libsndfile")
 	endif()
-	if(SNDFILE_HAS_OPUS)
-		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_OPUS)
-	endif()
-	if(SNDFILE_HAS_MPEG)
-		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_MPEG)
-	endif()
-	target_link_libraries(libscsynth ${SNDFILE_LIBRARIES})
-	target_include_directories(libscsynth PUBLIC ${SNDFILE_INCLUDE_DIR})
-elseif(NOT NO_LIBSNDFILE)
-	message(SEND_ERROR "Cannot find libsndfile")
-endif(SNDFILE_FOUND)
+else()
+	add_definitions("-DNO_LIBSNDFILE")
+endif()
 
 if(UNIX AND NOT APPLE)
 	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${LINUX_SC_PLUGIN_DIR}\"")
@@ -231,7 +233,6 @@ elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
 
-target_include_directories(libscsynth PUBLIC ${boost_include_dirs})
 
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)

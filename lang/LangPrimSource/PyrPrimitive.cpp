@@ -1774,10 +1774,15 @@ int prDumpBackTrace(struct VMGlobals* g, int numArgsPushed) {
 
 /* the DebugFrameConstructor uses a work queue in order to avoid recursions, which could lead to stack overflows */
 struct DebugFrameConstructor {
-    void makeDebugFrame(VMGlobals* g, PyrFrame* frame, PyrSlot* outSlot) {
+    DebugFrameConstructor(VMGlobals* g, PyrFrame* frame, PyrSlot* outSlot) {
         workQueue.push_back(std::make_pair(frame, outSlot));
         run_queue(g);
     }
+    DebugFrameConstructor() = delete;
+    DebugFrameConstructor(DebugFrameConstructor&&) = delete;
+    DebugFrameConstructor(const DebugFrameConstructor&) = delete;
+    DebugFrameConstructor& operator=(DebugFrameConstructor&&) = delete;
+    DebugFrameConstructor& operator=(const DebugFrameConstructor&) = delete;
 
 private:
     void run_queue(VMGlobals* g) {
@@ -1789,6 +1794,17 @@ private:
     }
 
     void fillDebugFrame(VMGlobals* g, PyrFrame* frame, PyrSlot* outSlot) {
+        // If a frame (which represents a specific **invocation** of a method/block) has been seen before, just copy it
+        // in.
+        // Because the number of unique frames is relatively small (less than a thousand) linear search should be
+        // faster than a hash map, assuming the compiler vectorises this in a sane way.
+        for (std::size_t i { 0 }; i < visited_frames.size(); ++i) {
+            if (visited_frames[i] == frame) {
+                slotCopy(outSlot, visited_frames_final_location[i]);
+                return;
+            }
+        }
+
         PyrMethod* meth = slotRawMethod(&frame->method);
         PyrMethodRaw* methraw = METHRAW(meth);
 
@@ -1798,8 +1814,8 @@ private:
         SetObject(debugFrameObj->slots + 0, meth);
         SetPtr(debugFrameObj->slots + 5, meth);
 
-        int numargs = methraw->numargs;
-        int numvars = methraw->numvars;
+        const int numargs = methraw->numargs;
+        const int numvars = methraw->numvars;
         if (numargs) {
             PyrObject* argArray = (PyrObject*)newPyrArray(g->gc, numargs, 0, false);
             SetObject(debugFrameObj->slots + 1, argArray);
@@ -1833,25 +1849,21 @@ private:
             workQueue.push_back(newWork);
         } else
             SetNil(debugFrameObj->slots + 4);
+
+        visited_frames.push_back(frame);
+        visited_frames_final_location.push_back(outSlot);
     }
 
     typedef std::pair<PyrFrame*, PyrSlot*> WorkQueueItem;
     typedef std::vector<WorkQueueItem> WorkQueueType;
-    WorkQueueType workQueue;
+    WorkQueueType workQueue {};
+
+    std::vector<PyrFrame*> visited_frames {};
+    std::vector<PyrSlot*> visited_frames_final_location {};
 };
 
-static void MakeDebugFrame(VMGlobals* g, PyrFrame* frame, PyrSlot* outSlot) {
-    DebugFrameConstructor constructor;
-    constructor.makeDebugFrame(g, frame, outSlot);
-}
-
-int prGetBackTrace(VMGlobals* g, int numArgsPushed);
 int prGetBackTrace(VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-
-    a = g->sp;
-    MakeDebugFrame(g, g->frame, a);
-
+    DebugFrameConstructor(g, g->frame, g->sp);
     return errNone;
 }
 
@@ -2063,8 +2075,6 @@ int prObjectCopySeries(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void switchToThread(struct VMGlobals* g, struct PyrThread* newthread, int oldstate, int* numArgsPushed);
-
 int haltInterpreter(struct VMGlobals* g, int numArgsPushed) {
     switchToThread(g, slotRawThread(&g->process->mainThread), tDone, &numArgsPushed);
     // return all the way out.
@@ -2227,20 +2237,22 @@ int prObjectPointsTo(struct VMGlobals* g, int numArgsPushed) {
 
 int prObjectRespondsTo(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
-    PyrClass* classobj;
-    PyrMethod* meth;
-    PyrSymbol* selector;
-    int index;
 
     a = g->sp - 1;
     b = g->sp;
 
-    classobj = classOfSlot(a);
+    PyrClass* classobj = classOfSlot(a);
 
     if (IsSym(b)) {
-        selector = slotRawSymbol(b);
-        index = slotRawInt(&classobj->classIndex) + selector->u.index;
-        meth = gRowTable[index];
+        PyrSymbol* selector = slotRawSymbol(b);
+        if ((selector->flags & sym_Class) != 0) {
+            // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
+            // so here, we return false
+            slotCopy(a, &o_false);
+            return errNone;
+        }
+        int index = slotRawInt(&classobj->classIndex) + selector->u.index;
+        PyrMethod* meth = gRowTable[index];
         if (slotRawSymbol(&meth->name) != selector) {
             slotCopy(a, &o_false);
         } else {
@@ -2253,9 +2265,15 @@ int prObjectRespondsTo(struct VMGlobals* g, int numArgsPushed) {
             if (NotSym(slot))
                 return errWrongType;
 
-            selector = slotRawSymbol(slot);
-            index = slotRawInt(&classobj->classIndex) + selector->u.index;
-            meth = gRowTable[index];
+            PyrSymbol* selector = slotRawSymbol(slot);
+            if ((selector->flags & sym_Class) != 0) {
+                // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
+                // so here, we return false
+                slotCopy(a, &o_false);
+                return errNone;
+            }
+            int index = slotRawInt(&classobj->classIndex) + selector->u.index;
+            PyrMethod* meth = gRowTable[index];
             if (slotRawSymbol(&meth->name) != selector) {
                 slotCopy(a, &o_false);
                 return errNone;
@@ -2266,6 +2284,57 @@ int prObjectRespondsTo(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
     return errNone;
 }
+
+int prInstancesOfClassRespondTo(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot *a, *b;
+
+    a = g->sp - 1;
+    b = g->sp;
+
+    PyrClass* classobj = slotRawClass(a);
+
+    if (IsSym(b)) {
+        PyrSymbol* selector = slotRawSymbol(b);
+        if ((selector->flags & sym_Class) != 0) {
+            // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
+            // so here, we return false
+            slotCopy(a, &o_false);
+            return errNone;
+        }
+        int index = slotRawInt(&classobj->classIndex) + selector->u.index;
+        PyrMethod* meth = gRowTable[index];
+        if (slotRawSymbol(&meth->name) != selector) {
+            slotCopy(a, &o_false);
+        } else {
+            slotCopy(a, &o_true);
+        }
+    } else if (isKindOfSlot(b, class_array)) {
+        int size = slotRawObject(b)->size;
+        PyrSlot* slot = slotRawObject(b)->slots;
+        for (int i = 0; i < size; ++i, ++slot) {
+            if (NotSym(slot))
+                return errWrongType;
+
+            PyrSymbol* selector = slotRawSymbol(slot);
+            if ((selector->flags & sym_Class) != 0) {
+                // if selector is a class name, a lookup in gRowTable would be indexed out of bounds
+                // so here, we return false
+                slotCopy(a, &o_false);
+                return errNone;
+            }
+            int index = slotRawInt(&classobj->classIndex) + selector->u.index;
+            PyrMethod* meth = gRowTable[index];
+            if (slotRawSymbol(&meth->name) != selector) {
+                slotCopy(a, &o_false);
+                return errNone;
+            }
+        }
+        slotCopy(a, &o_true);
+    } else
+        return errWrongType;
+    return errNone;
+}
+
 
 PyrMethod* GetFunctionCompileContext(VMGlobals* g);
 PyrMethod* GetFunctionCompileContext(VMGlobals* g) {
@@ -2536,7 +2605,6 @@ void threadSanity(VMGlobals *g, PyrThread *thread)
 PyrSymbol* s_prready;
 PyrSymbol* s_prrunnextthread;
 
-void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numArgsPushed);
 void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numArgsPushed) {
     PyrThread* oldthread;
     PyrGC* gc;
@@ -3876,6 +3944,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_ObjectCopySeries", prObjectCopySeries, 4, 0);
     definePrimitive(base, index++, "_ObjectPointsTo", prObjectPointsTo, 2, 0);
     definePrimitive(base, index++, "_ObjectRespondsTo", prObjectRespondsTo, 2, 0);
+    definePrimitive(base, index++, "_InstancesOfClassRespondTo", prInstancesOfClassRespondTo, 2, 0);
     definePrimitive(base, index++, "_ObjectIsMutable", prObjectIsMutable, 1, 0);
     definePrimitive(base, index++, "_ObjectIsPermanent", prObjectIsPermanent, 1, 0);
     definePrimitive(base, index++, "_ObjectDeepFreeze", prDeepFreeze, 1, 0);
