@@ -151,7 +151,9 @@ DoesNotUnderstandError : MethodError {
 		.selector_(selector)
 		.args_(args)
 		.keywordArgumentPairs_(keywordArgumentPairs)
-		.init
+		// note: deliberately not calling '.init'
+		// until a method suggestion is needed;
+		// see 'suggestion' below
 	}
 
 	init {
@@ -186,6 +188,13 @@ DoesNotUnderstandError : MethodError {
 		^"ERROR: Message '" ++ selector ++ "' not understood."
 	}
 
+	suggestion {
+		if(suggestion.size == 0) {  // size == 0 for both "" and nil
+			this.init;
+		};
+		^suggestion
+	}
+
 	reportError {
 		this.errorString.postln;
 		"RECEIVER:\n".post;
@@ -201,7 +210,7 @@ DoesNotUnderstandError : MethodError {
 		this.dumpBackTrace;
 		// this.adviceLink.postln;
 		"\n^^ %\nRECEIVER: %\n".postf(this.errorString, receiver);
-		suggestion.postln;
+		this.suggestion.postln;
 		"\n".post;
 	}
 	adviceLinkPage {
