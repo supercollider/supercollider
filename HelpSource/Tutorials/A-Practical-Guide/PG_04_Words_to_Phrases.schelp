@@ -121,7 +121,9 @@ The Pfsm help file includes very good examples of organizing single values and p
 
 The name link::Classes/Pdfsm:: stands for "deterministic finite state machine," where there is no random selection.
 
-- strong::Third-party extension alert:: : A good Markov chain implementation for SuperCollider exists in the MathLib quark.
+note::
+strong::Third-party extension alert:: : A good Markov chain implementation for SuperCollider exists in the MathLib quark.
+::
 ::
 
 subsection::Library of named sub-patterns

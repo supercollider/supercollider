@@ -135,15 +135,17 @@ The first thing to notice is how short, concise and clean the syntax is. Nothing
 
 The link::Overviews/Streams:: documentation explains how all of this works in detail. The high-level overview goes like this:
 
-- The Pbind pattern generates Event objects, which contain names and values describing how the note is supposed to sound.
+list::
+## The Pbind pattern generates Event objects, which contain names and values describing how the note is supposed to sound.
 
-- It does this by reading through the 'name, pattern' pairs, getting values from each pattern stream in turn and adding the values to the result Event.
+## It does this by reading through the 'name, pattern' pairs, getting values from each pattern stream in turn and adding the values to the result Event.
 
-- Then the event is played. It interprets the values according to a set of defaults and rules encoded within the event prototype and performs an action in response. The default action is to play a new synth on the server. You can choose from several other actions defined in the default event prototype, which are documented in the Streams series of help files.
+## Then the event is played. It interprets the values according to a set of defaults and rules encoded within the event prototype and performs an action in response. The default action is to play a new synth on the server. You can choose from several other actions defined in the default event prototype, which are documented in the Streams series of help files.
 
-- To play the synth, the event needs to know which values to pass as arguments to the server. SuperCollider can store information about a synthdef into a library of synthdef descriptions using the strong::add:: method.
+## To play the synth, the event needs to know which values to pass as arguments to the server. SuperCollider can store information about a synthdef into a library of synthdef descriptions using the strong::add:: method.
 
-- The delta value in the event tells SuperCollider how long to wait until playing the next event.
+## The delta value in the event tells SuperCollider how long to wait until playing the next event.
+::
 
 An introductory tutorial cannot cover all the possibilities. Learning a set of core pattern classes is important; the link::Tutorials/A-Practical-Guide/PG_01_Introduction##Practical Guide to Patterns:: help file series is a more comprehensive introduction. Pattern manipulations, and ways to combine or nest patterns, open up the field to nearly every compositional need.
 

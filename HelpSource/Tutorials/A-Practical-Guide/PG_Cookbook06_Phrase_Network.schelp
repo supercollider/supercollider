@@ -14,7 +14,8 @@ The example uses link::Classes/Pfsm:: (finite state machine) to arrange a set of
 
 This is a long example, but it's only because there are lots of phrases. The structure is very simple: just a set of phrases chosen in succession by Pfsm.
 
-- strong::Third-party extension alert:: : In this example, the selection of the next phrase is explicitly weighted by repeating array elements, such as code::#[1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5]::. A more elegant way to do this is using the strong::WeighBag:: class in the strong::MathLib:: quark.
+note::
+strong::Third-party extension alert:: : In this example, the selection of the next phrase is explicitly weighted by repeating array elements, such as code::#[1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5]::. A more elegant way to do this is using the strong::WeighBag:: class in the strong::MathLib:: quark.
 
 code::
 // the following are equivalent:
@@ -23,6 +24,7 @@ a = #[1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5];
 
 a = WeighBag.with((1..5), #[4, 2, 2, 2, 1]);
 ({ a.wchoose } ! 100).histo(5, 1, 5);
+::
 ::
 
 subsection::Example

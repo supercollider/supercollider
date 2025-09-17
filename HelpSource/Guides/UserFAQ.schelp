@@ -138,8 +138,10 @@ In fact, there is no such thing. The server handles floating-point numbers. It d
 
 Since everything in the server is a number, the result of the comparison must also be a number. The server follows the same convention as other DSP environments (Max/MSP, pd etc.):
 
-- code::True:: is represented by 1.0
-- code::False:: is represented by 0.0
+list::
+## code::True:: is represented by 1.0
+## code::False:: is represented by 0.0
+::
 
 subsection:: Why is x > 0 "non-Boolean" in the "test"?
 
@@ -179,16 +181,17 @@ So, SuperCollider throws an error.
 
 subsection:: If you can't branch, what good is a comparison in the server?
 
-Comparisons have a lot of uses, actually.
+Comparisons have a lot of uses, actually:
 
-- strong::Choosing one of two signals::: This is the closest we can get to strong::if-then-else:: in the server. Both strong::then:: and strong::else:: must be running continuously. That's a requirement of how the server works: the number and arrangement of unit generators within a single Synth cannot change. Instead, you can choose strong::which of those signals makes it downstream::. One will be used and the other ignored.
+list::
+## strong::Choosing one of two signals::: This is the closest we can get to strong::if-then-else:: in the server. Both strong::then:: and strong::else:: must be running continuously. That's a requirement of how the server works: the number and arrangement of unit generators within a single Synth cannot change. Instead, you can choose strong::which of those signals makes it downstream::. One will be used and the other ignored.
 Since true is 1 and false is 0, you can use a conditional to index into an array using Select.
 
 code::
 Select.kr(aKrSignal > anotherKrSignal, [false_signal, true_signal]);
 ::
 
-- strong::Generating triggers::: A trigger occurs whenever a signal is <= 0, and then becomes > 0. Extending this to comparisons, it means that strong::a trigger occurs when a comparison is false for a while, and then becomes true::. Comparing a signal to a threshold may then be used anywhere that a trigger is valid.
+## strong::Generating triggers::: A trigger occurs whenever a signal is <= 0, and then becomes > 0. Extending this to comparisons, it means that strong::a trigger occurs when a comparison is false for a while, and then becomes true::. Comparing a signal to a threshold may then be used anywhere that a trigger is valid.
 For a simple example, take the case of sending a message to the language when the microphone input's amplitude crosses a threshold.
 
 code::
@@ -196,7 +199,7 @@ var mic = In.ar(8, 1), amplitude = Amplitude.kr(mic);
 SendTrig.kr(amplitude > 0.2, 0, amplitude);
 ::
 
-- strong::Passing or suppressing triggers::: You might need to generate triggers continuously, but permit the triggers to take effect only when a condition is met. Multiplication handles this nicely:
+## strong::Passing or suppressing triggers::: You might need to generate triggers continuously, but permit the triggers to take effect only when a condition is met. Multiplication handles this nicely:
 strong::condition * trigger::. Since the condition evaluates as 0 when false, the trigger will be replaced by 0 and nothing happens, as desired.
 
 For a simple case, let's refine the mic amplitude example by suppressing triggers that occur within 1/4 second after the previous.
@@ -210,28 +213,31 @@ var mic = In.ar(8, 1),
 
 SendTrig.kr(filteredTrig, 0, amplitude);
 ::
+::
 
 subsection:: Logical operators: And, Or, Not, Xor
 
 Logical operators have simple arithmetic equivalents.
 
-- strong::And = multiplication::: strong::(x > 0) * (y > 0):: means both conditions must be true (nonzero) for the result to be nonzero.
+list::
+## strong::And = multiplication::: strong::(x > 0) * (y > 0):: means both conditions must be true (nonzero) for the result to be nonzero.
 
-- strong::Or = addition::: strong::(x > 0) + (y > 0):: means nonzero in either condition is enough to make the result nonzero.
+## strong::Or = addition::: strong::(x > 0) + (y > 0):: means nonzero in either condition is enough to make the result nonzero.
 
 NOTE::
 If both are true, then the result will be 2, not 1. In some cases, the 2 may not be acceptable. That can be fixed by wrapping the Or in another comparison -- strong::((x > 0) + (y > 0)) > 0:: -- because 2 > 0 evaluates to 1!
 ::
 
--  strong::Not::: I prefer to negate a condition by comparing it to zero:
+## strong::Not::: I prefer to negate a condition by comparing it to zero:
 strong::condition <= 0::. 0 <= 0 is 1 (i.e., not 0), and 1 <= 0 is 0 (not 1).
 If you're certain the logical expression will only ever be 0 or 1 exactly, you can also negate by subtraction: strong::1 - condition::.
 
-- strong::Xor::: Exclusive-or is true if one or the other condition is true, but not both. We can add the two conditions and compare it to 1. The syntax is a little bit tricky because code::==:: doesn't turn into a BinaryOpUGen automatically.
+## strong::Xor::: Exclusive-or is true if one or the other condition is true, but not both. We can add the two conditions and compare it to 1. The syntax is a little bit tricky because code::==:: doesn't turn into a BinaryOpUGen automatically.
 We have to create the BinaryOpUGen by hand.
 
 code::
 BinaryOpUGen('==', (x > 0) + (y > 0), 1)
+::
 ::
 
 
@@ -298,7 +304,8 @@ Synth(\xyz, [freqs: [300, 400, 500]]);
 
 There are two primary ways to do this:
 
-- Supply a literal array -- code::\#[1, 2, 3]:: -- as the default for the argument name in the function.
+list::
+## Supply a literal array -- code::\#[1, 2, 3]:: -- as the default for the argument name in the function.
 This is discussed in link::Classes/SynthDef::'s help file.
 
 code::
@@ -307,7 +314,7 @@ SynthDef(\xyz, { |freqs = #[1, 2, 3]|
 })
 ::
 
-- Or, use code::NamedControl::.
+## Or, use code::NamedControl::.
 This is the only way to do it if you want to construct the array's size dynamically, or based on a variable. See link::Classes/NamedControl::.
 
 code::
@@ -315,6 +322,7 @@ SynthDef(\xyz, {
     var freqs = NamedControl.kr(\freqs, #[1, 2, 3]);
     // ...
 });
+::
 ::
 
 subsection:: Why does it have to be a literal array?
@@ -386,9 +394,11 @@ a.free; o.remove;
 
 subsection:: Helpfile references:
 
-- link::Classes/SendTrig::, link::Classes/SendReply::
+list::
+## link::Classes/SendTrig::, link::Classes/SendReply::
 
-- link::Classes/OSCresponderNode::, link::Classes/OSCpathResponder::, link::Classes/OSCresponder::, link::Guides/OSC_communication::
+## link::Classes/OSCresponderNode::, link::Classes/OSCpathResponder::, link::Classes/OSCresponder::, link::Guides/OSC_communication::
+::
 
 
 subsection:: Error: failed to open UDP socket: address in use
