@@ -138,11 +138,8 @@ TestFilterUGens : UnitTest {
 		var synth;
 		var testResp;
 		var result;
-		var cond = Condition.new;
-		var server = Server.default;
+		var cond = CondVar.new;
 
-		this.bootServer(server);
-		server.sync;
 		buffer = Buffer.alloc(server, 500, 1, { |buf| buf.zeroMsg });
 		server.sync;
 		buffer.set(0, 1);
@@ -155,16 +152,15 @@ TestFilterUGens : UnitTest {
 			var sig = Integrator.ar(BufRd.ar(1, buffer, phasor, loop: 0, interpolation: 1));
 			SendReply.kr(Done.kr(stop), '/testIntegrator', A2K.kr(sig));
 			Silent.ar(1)
-		}.play;
+		}.play(target: server);
 
 		testResp = OSCFunc({ |msg|
 			result = msg[3];
-			cond.unhang;
+			cond.signalOne;
 		}, '/testIntegrator', server.addr, argTemplate: [synth.nodeID]);
 
-		synth.onFree { cond.unhang };
-
-		cond.hang;
+		cond.waitFor(0.5);
+		testResp.free;
 		buffer.free;
 
 		this.assertEquals(result, 1, "Integral of a single 1 should be 1");

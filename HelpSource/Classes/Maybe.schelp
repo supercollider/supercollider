@@ -18,8 +18,8 @@ You can extend Maybe as you need for your purpose, by the following schema:
 code::
 // replace "myMethod" with your method name
 + Maybe {
-	myMethod { |...args|
-		^this.composeNAryOp(\myMethod, args)
+	myMethod { |...args, kwargs|
+		^this.composeNAryOp(\myMethod, args, kwargs)
 	}
 }
 ::
@@ -44,12 +44,38 @@ InstanceMethods::
 
 method::source
 return or set the contained object
+code::
+a = Maybe.new;
+a.source = 5;
+a.source // 5
+::
 
 method::value
 set the contained object or return the source, or the value of the contained object, if it is a Maybe. If there is a recursion, return nil.
 
+code::
+a = Maybe.new;
+a.source = 5;
+a.value; // 5
+a.source = { [1, 2, 3].rotate };
+a.value; // [3, 2, 1]
+a.source = a; // deliberately make recursion
+a.value; // nil
+Maybe.verbose = true;
+a.value; // posts a warning and returns nil
+::
+
 method::apply
 return the value, or the value of the contained object, if it is a Maybe. This method allows recursion, so that recursive calculations can be made.
+
+code::
+a = Maybe({ |a, b| a + b });
+[1, 2, 3, 4].reduce(a); // returns 10. reduce calls apply on the first argument and passes the receiver
+::
+
+method::clear
+Set the source to code::nil::
+
 
 method::doesNotUnderstand
 (called by any message that Maybe doesn't understand.)
@@ -63,6 +89,29 @@ b.value; // => nil
 a.value = [1, 2, [2, 3]];
 b.value;	// => [[1, 2, 2], [1, 2, 3]]
 ::
+
+method::<>
+Compose receiver with first argument.
+code::
+a = Maybe({ |x| x + 1 });
+b = Maybe();
+c = a <> b;
+c.value(1); // nil, not yet specified
+b.source = { |x| x * 2 };
+c.value(1);  // 1 * 2 + 1 = 3
+::
+
+method::o
+Compose receiver together with all arguments
+code::
+a = Array.fill(8, { |i| var k = (1/(i+1)).rand; Maybe({ |x| x * k }) });
+b = o(Maybe({ |x| x }), *a);
+b.value(1);
+
+method::do
+Calls the source, like in link::Classes/Function::.
+
+
 
 Examples::
 

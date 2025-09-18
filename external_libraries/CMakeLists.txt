@@ -13,43 +13,30 @@ endif()
 
 if(NOT SYSTEM_BOOST) # we compile boost ourselves
 	message(STATUS "Using bundled boost")
-	# boost thread
-	aux_source_directory(boost/libs/thread/src/ boost_thread_src )
+	set(BOOST_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/boost)
+
+	# thread
+	aux_source_directory(boost/libs/thread/src/ boost_thread_src)
 
 	if(WIN32)
-		aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
+		aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform)
 	elseif(PTHREADS_FOUND)
-		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
+		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform)
 	else()
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
 
-	aux_source_directory(boost/libs/system/src/ boost_system_src )
-	add_library(boost_system_lib STATIC EXCLUDE_FROM_ALL ${boost_system_src})
-	target_include_directories(boost_system_lib PUBLIC boost)
-
-	aux_source_directory(boost/libs/program_options/src/ boost_program_options_src )
-	add_library(boost_program_options_lib STATIC EXCLUDE_FROM_ALL ${boost_program_options_src})
-	target_include_directories(boost_program_options_lib PUBLIC boost)
-
-
-	aux_source_directory(boost/libs/regex/src boost_regex_src)
-	add_library(boost_regex_lib STATIC EXCLUDE_FROM_ALL ${boost_regex_src})
-	target_include_directories(boost_regex_lib PUBLIC boost)
-
 	add_library(boost_thread_lib STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
-	target_link_libraries(boost_thread_lib boost_system_lib)
-#	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
-	target_include_directories(boost_thread_lib PUBLIC boost)
-	target_compile_definitions(boost_thread_lib PUBLIC BOOST_THREAD_USE_LIB) # for win32
+	target_include_directories(boost_thread_lib PUBLIC ${BOOST_INCLUDE_DIR})
 
 	if(PTHREADS_FOUND)
 		target_include_directories(boost_thread_lib PUBLIC ${PTHREADS_INCLUDE_DIR})
 	endif()
-	if(WIN32)
-		target_compile_definitions( boost_thread_lib PRIVATE BOOST_THREAD_BUILD_LIB)
-	endif()
 
+	if(WIN32)
+		target_compile_definitions(boost_thread_lib PUBLIC BOOST_THREAD_USE_LIB)
+		target_compile_definitions(boost_thread_lib PRIVATE BOOST_THREAD_BUILD_LIB)
+	endif()
 
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		target_compile_options(boost_thread_lib PRIVATE -fPIC)
@@ -64,14 +51,50 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
+	# program_options
+	aux_source_directory(boost/libs/program_options/src/ boost_program_options_src )
+	add_library(boost_program_options_lib STATIC EXCLUDE_FROM_ALL ${boost_program_options_src})
+	target_include_directories(boost_program_options_lib PUBLIC ${BOOST_INCLUDE_DIR})
+
+	# regex
+	aux_source_directory(boost/libs/regex/src boost_regex_src)
+	add_library(boost_regex_lib STATIC EXCLUDE_FROM_ALL ${boost_regex_src})
+	target_include_directories(boost_regex_lib PUBLIC ${BOOST_INCLUDE_DIR})
+
+	# unit_test_framework
+	aux_source_directory(boost/libs/test/src boost_unit_test_framework_src)
+	add_library(boost_unit_test_framework_lib STATIC EXCLUDE_FROM_ALL ${boost_unit_test_framework_src})
+	target_include_directories(boost_unit_test_framework_lib PUBLIC ${BOOST_INCLUDE_DIR})
+
+	# headers
+	add_library(boost_headers INTERFACE)
+	target_include_directories(boost_headers INTERFACE ${BOOST_INCLUDE_DIR})
+
 	set_property( TARGET
         boost_regex_lib
         boost_thread_lib
         boost_program_options_lib
-        boost_system_lib
+        boost_unit_test_framework_lib
         PROPERTY FOLDER 3rdparty
     )
+
+    # add aliases for compliance with system boost
+    add_library(Boost::thread ALIAS boost_thread_lib)
+    add_library(Boost::program_options ALIAS boost_program_options_lib)
+    add_library(Boost::regex ALIAS boost_regex_lib)
+    add_library(Boost::unit_test_framework ALIAS boost_unit_test_framework_lib)
+    add_library(Boost::headers ALIAS boost_headers)
+
 endif()
+
+# add a custom target for boost_sync
+add_library(boost_sync INTERFACE)
+target_include_directories(boost_sync INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/boost_sync/include
+)
+# Boost::headers comes from either system or bundled boost
+target_link_libraries(boost_sync INTERFACE Boost::headers)
+add_library(Boost::sync ALIAS boost_sync)
 
 # tlsf
 add_library(tlsf STATIC EXCLUDE_FROM_ALL "TLSF-2.4.6/src/tlsf.c")
@@ -81,7 +104,7 @@ set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 
 #oscpack
 add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
-target_include_directories(oscpack PRIVATE ${boost_include_dirs})
+target_link_libraries(oscpack PUBLIC Boost::headers)
 target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
 if(LTO)

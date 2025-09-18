@@ -4,6 +4,8 @@ Bag : Collection {
 	*new { arg n=4;
 		^super.new.setDictionary(n)
 	}
+
+	copy { ^this.class.newCopyArgs(contents.copy) }
 	// testing
 	includes { arg item;
 		^contents.includesKey(item)

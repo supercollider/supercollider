@@ -1,7 +1,8 @@
 # here we choose who provides us with the FFT lib
 # this is done independently for scsynth and supernova
-# on macOS scsynth uses vDSP implementation for FFT
-# which is not thread-safe
+# for historical reasons, as the vDSP implementation
+# wasn't thread-safe in the past
+# and couldn't be used in supernova
 
 if (APPLE)
     add_definitions("-DSC_FFT_VDSP")
@@ -133,8 +134,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     .
 )
 
-include_directories (${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include)
-
 if (AUDIOAPI STREQUAL jack)
 	list(APPEND scsynth_sources SC_Jack.cpp)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_JACK")
@@ -174,7 +173,7 @@ endif()
 
 target_compile_definitions(libscsynth PUBLIC  SC_MEMORY_ALIGNMENT=32)
 
-target_link_libraries(libscsynth tlsf)
+target_link_libraries(libscsynth tlsf Boost::sync)
 
 find_library(DL NAMES dl)
 if(DL)
@@ -234,7 +233,6 @@ elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
 
-target_include_directories(libscsynth PUBLIC ${boost_include_dirs})
 
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)

@@ -338,9 +338,6 @@ target_link_libraries( libscide PUBLIC
 
 target_link_libraries( SuperCollider libscide)
 
-target_link_libraries( libscide PUBLIC boost_system_lib)
-include_directories(${boost_include_dirs})
-
 # This makes sclang/scide work with a Qt installation at a fixed location.
 set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
 
@@ -518,7 +515,6 @@ if(APPLE OR WIN32)
             endif()
         endif()
         if(SUPERNOVA)
-            get_target_property(LINK_FFTW libsupernova SUPERNOVA_FFTW)
             string(APPEND DEPLOY_CMD "
                 -executable=${CONTENTS_DIR}/Resources/supernova
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx

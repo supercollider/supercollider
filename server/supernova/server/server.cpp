@@ -24,6 +24,8 @@
 #include "nova-tt/thread_priority.hpp"
 #include "nova-tt/name_thread.hpp"
 
+#include <tuple>
+
 #include "server.hpp"
 #include "sync_commands.hpp"
 
@@ -280,8 +282,7 @@ static bool set_realtime_priority(int thread_index) {
 #    elif defined(_WIN32)
         int priority = thread_priority_interval_rt().second;
 #    else
-        int min, max;
-        boost::tie(min, max) = thread_priority_interval_rt();
+        auto [min, max] = thread_priority_interval_rt();
         int priority = max - 3;
         priority = std::max(min, priority);
 #    endif
@@ -321,6 +322,9 @@ void thread_init_functor::operator()(int thread_index) {
         if (!result)
             std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
     }
+
+    // initialize thread local buffers
+    scfft_thread_init();
 }
 
 void io_thread_init_functor::operator()() const {
@@ -366,6 +370,9 @@ void realtime_engine_functor::init_thread(void) {
     }
 
     name_current_thread(0);
+
+    // initialize thread local buffers
+    scfft_thread_init();
 }
 
 void realtime_engine_functor::log_(const char* str) {

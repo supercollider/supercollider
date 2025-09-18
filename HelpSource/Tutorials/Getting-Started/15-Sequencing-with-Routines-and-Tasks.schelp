@@ -191,7 +191,11 @@ r = Task({
 )
 ::
 
-Note that routines are used for the data, but task is used for play. Also, unlike the previous infinite sequences, this one stops when it runs out of data. That's the purpose of the while loop -- it continues only as long as the 'dur' data stream keeps pumping out values. (See the link::Reference/Control-Structures:: helpfile for more on strong::while::.)
+Note that routines are used for the data, but task is used for play. Also,
+unlike the previous infinite sequences, this one stops when it runs out of data.
+That's the purpose of the while loop -- it continues only as long as the 'dur'
+data stream keeps pumping out values. (See the
+link::Reference/Conditional-Execution:: helpfile for more on strong::while::.)
 
 There must be an easier way to write the data streams -- repeatedly writing the same do loop is certainly inconvenient. In fact, there is such a way, covered in the next tutorial: sequencing with patterns.
 

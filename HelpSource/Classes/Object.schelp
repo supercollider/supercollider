@@ -499,7 +499,7 @@ x.postln;
 
 subsection::Messaging
 
-Instead of directly sending a method to an object, a method may be invoked given a method selector only (a Symbol). The other arguments may be provided by passing them directly, from an environment. If it is not known whether the receiver implements the method, tryPerform only sends if it does, and superPerform invokes the method of the superclass.
+Instead of directly sending a method to an object, a method may be invoked given a method selector only (a Symbol). The other arguments may be provided by passing them directly, from an environment. If it is not known whether the receiver implements the method, tryPerform only sends if it does. The messages code::superPerform::, code::superPerformList::; and code::superPerformArgs:: invoke the method of the superclass.
 
 
 method::perform
@@ -537,6 +537,8 @@ x.performArgs(\foo, [1, 2], [\bar, 10]);
 x.foo(1, 2, bar: 10);
 ::
 
+method::functionPerformList
+Call the function with the selector and argument list. This method is there for a uniform interface between link::Classes/Method::s and link::Classes/Function::s.
 
 method::performMsg
 
@@ -576,6 +578,7 @@ method::tryPerform
 Like 'perform', but tryPerform passes the method to the receiver only if the receiver understands the method name. If the receiver doesn't implement that method, the result is nil. Note that this does not catch errors like 'try' does (see Exception). If the receiver does have a matching method but that method throws an error, execution will halt. But, 'tryPerform' is faster than 'try'.
 
 code::
+
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
 // Set does not understand keysValuesDo -- result is nil
@@ -583,6 +586,10 @@ Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
 // Error occurs within keysValuesDo -- error is thrown back to halt execution
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].flippityblargh });
+
+// keyword arguments are passed on
+[1, 2, 3, 4].tryPerform(\pyramid, patternType: 1)
+
 ::
 
 method::superPerform
@@ -597,6 +604,13 @@ method::superPerformList
 Like performList, superPerformList calls a method, however it calls the method on the superclass.
 selector: A Symbol representing a method selector.
 args: Method arguments. If the last argument is a List or an Array, then its elements are unpacked and passed as arguments.
+
+method::superPerformArgs
+
+Like performLArgs, superPerformArgs calls a method, however it calls the method on the superclass.
+selector: A Symbol representing a method selector.
+args: Method arguments.
+kwargs: Keyword arguments, are passed as key value pairs.
 
 method::multiChannelPerform
 Perform selector with multichannel expansion. See also: link::Guides/Multichannel-Expansion::.

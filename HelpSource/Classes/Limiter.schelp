@@ -35,21 +35,22 @@ Examples::
 code::
 (
 // example signal to process
-Synth.play({
+{
 	var z;
 	z = Decay2.ar(
 		Impulse.ar(8, LFSaw.kr(0.25, -0.6, 0.7)),
 		0.001, 0.3, FSinOsc.ar(500));
-}, 0.8)
+	z * 0.8
+}.play
 )
 
 (
-Synth.play({
+{
 	var z;
 	z = Decay2.ar(
 		Impulse.ar(8, LFSaw.kr(0.25, -0.6, 0.7)),
 		0.001, 0.3, FSinOsc.ar(500));
-	[z, Limiter.ar(z, 0.4, 0.01)]
-}, 0.5)
+	[z, Limiter.ar(z, 0.4, 0.01)] * 0.5
+}.play
 )
 ::

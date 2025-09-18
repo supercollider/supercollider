@@ -1,59 +1,6 @@
 title:: loop / repeat
-summary:: Repeat stuff
+summary:: see Iteration
 categories::Core,Common methods
 
-method:: loop, repeat
-
-Create an object that behaves like a stream that returns values for a limited (or infinite) number of times.
-
-For a full list of implementing classes, see link::Overviews/Methods#loop:: and link::Overviews/Methods#repeat::
-
-definitionlist::
-## link::Classes/Function#-loop:: ||
-	repeats the function forever.
-code::
-	f = { 3.yield };
-	x = Routine({ f.loop });
-	10.do({ x.next.postln })
-::
-
-## link::Classes/Object#-repeat:: (n) ||
-	repeat to yield the object
-code::
-	x = 5;
-	y = x.repeat(6);
-	y.nextN(8);
-::
-
-## link::Classes/Pattern#-repeat:: (n) ||
-
-code::
-	x = Prand([1, 2]).repeat(6).asStream;
-	x.nextN(8);
-::
-
-## link::Classes/Pattern#-loop:: ||
-
-code::
-	x = Prand([1, 2]).loop.asStream;
-	x.nextN(8);
-::
-
-## link::Classes/Stream#-repeat:: (n) ||
-
-	embeds the stream repeatedly
-
-code::
-	x = Routine({ 3.do({ arg i; i.yield }) }).repeat(6);
-	x.nextN(8);
-::
-
-## link::Classes/Stream#-loop:: ||
-
-	embeds the stream repeatedly
-
-code::
-	x = Routine({ 3.do({ arg i; i.yield }) }).loop;
-	x.nextN(8);
-::
-::
+This file has been deleted as of September 2025, as its contents have been moved
+to link::Reference/Iteration::.

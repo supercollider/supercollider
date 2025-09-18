@@ -1774,10 +1774,15 @@ int prDumpBackTrace(struct VMGlobals* g, int numArgsPushed) {
 
 /* the DebugFrameConstructor uses a work queue in order to avoid recursions, which could lead to stack overflows */
 struct DebugFrameConstructor {
-    void makeDebugFrame(VMGlobals* g, PyrFrame* frame, PyrSlot* outSlot) {
+    DebugFrameConstructor(VMGlobals* g, PyrFrame* frame, PyrSlot* outSlot) {
         workQueue.push_back(std::make_pair(frame, outSlot));
         run_queue(g);
     }
+    DebugFrameConstructor() = delete;
+    DebugFrameConstructor(DebugFrameConstructor&&) = delete;
+    DebugFrameConstructor(const DebugFrameConstructor&) = delete;
+    DebugFrameConstructor& operator=(DebugFrameConstructor&&) = delete;
+    DebugFrameConstructor& operator=(const DebugFrameConstructor&) = delete;
 
 private:
     void run_queue(VMGlobals* g) {
@@ -1789,6 +1794,17 @@ private:
     }
 
     void fillDebugFrame(VMGlobals* g, PyrFrame* frame, PyrSlot* outSlot) {
+        // If a frame (which represents a specific **invocation** of a method/block) has been seen before, just copy it
+        // in.
+        // Because the number of unique frames is relatively small (less than a thousand) linear search should be
+        // faster than a hash map, assuming the compiler vectorises this in a sane way.
+        for (std::size_t i { 0 }; i < visited_frames.size(); ++i) {
+            if (visited_frames[i] == frame) {
+                slotCopy(outSlot, visited_frames_final_location[i]);
+                return;
+            }
+        }
+
         PyrMethod* meth = slotRawMethod(&frame->method);
         PyrMethodRaw* methraw = METHRAW(meth);
 
@@ -1798,8 +1814,8 @@ private:
         SetObject(debugFrameObj->slots + 0, meth);
         SetPtr(debugFrameObj->slots + 5, meth);
 
-        int numargs = methraw->numargs;
-        int numvars = methraw->numvars;
+        const int numargs = methraw->numargs;
+        const int numvars = methraw->numvars;
         if (numargs) {
             PyrObject* argArray = (PyrObject*)newPyrArray(g->gc, numargs, 0, false);
             SetObject(debugFrameObj->slots + 1, argArray);
@@ -1833,25 +1849,21 @@ private:
             workQueue.push_back(newWork);
         } else
             SetNil(debugFrameObj->slots + 4);
+
+        visited_frames.push_back(frame);
+        visited_frames_final_location.push_back(outSlot);
     }
 
     typedef std::pair<PyrFrame*, PyrSlot*> WorkQueueItem;
     typedef std::vector<WorkQueueItem> WorkQueueType;
-    WorkQueueType workQueue;
+    WorkQueueType workQueue {};
+
+    std::vector<PyrFrame*> visited_frames {};
+    std::vector<PyrSlot*> visited_frames_final_location {};
 };
 
-static void MakeDebugFrame(VMGlobals* g, PyrFrame* frame, PyrSlot* outSlot) {
-    DebugFrameConstructor constructor;
-    constructor.makeDebugFrame(g, frame, outSlot);
-}
-
-int prGetBackTrace(VMGlobals* g, int numArgsPushed);
 int prGetBackTrace(VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-
-    a = g->sp;
-    MakeDebugFrame(g, g->frame, a);
-
+    DebugFrameConstructor(g, g->frame, g->sp);
     return errNone;
 }
 

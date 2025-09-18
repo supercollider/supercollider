@@ -2780,9 +2780,7 @@ std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject* co
     for (int i = 0; i < coll->size; ++i) {
         PyrSlot argSlot;
         getIndexedSlot(coll, &argSlot, i);
-        int error;
-        std::string string;
-        std::tie(error, string) = slotStrStdStrVal(&argSlot);
+        auto [error, string] = slotStrStdStrVal(&argSlot);
         if (error != errNone) {
             strings.clear();
             return std::make_tuple(error, strings);

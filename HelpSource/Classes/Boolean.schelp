@@ -1,7 +1,7 @@
 class::Boolean
 summary:: abstract class whose instances represent a logical value
 categories::Core
-related:: Reference/Control-Structures
+related:: Reference/Conditional-Execution
 
 description::
 Boolean is the superclass of link::Classes/True:: and link::Classes/False:: which are the concrete realizations.

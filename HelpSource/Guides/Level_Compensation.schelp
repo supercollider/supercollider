@@ -7,11 +7,9 @@ section::Considerations
 
 link::Guides/Multichannel-Expansion:: is one of the key features in SuperCollider, making it easy to explore complex polyphonic synthesis and spatialisation. Mixing and panning these signals usually involves going from a number of input channels to a different number of output channels, and for adapting the signal amplitude levels meaningfully, there are two aspects to consider:
 
-strong::
-1. Technical safety: What will be the maximum amplitude of the new signals? In the worst case, can they clip the audio hardware (by going above +-1.0)?::
-
-strong::
-2. Perceived loudness: How loud should the new signals it be, relative to others present?
+numberedlist::
+## strong::Technical safety: What will be the maximum amplitude of the new signals? In the worst case, can they clip the audio hardware (by going above +-1.0)?::
+## strong::Perceived loudness: How loud should the new signals it be, relative to others present?::
 ::
 
 To balance these aspects, it helps to know more about the signals to be mixed/panned. Most UGens in SC produce a signal amplitude of 1.0, so we will use that value for the discussion here.
