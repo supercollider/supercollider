@@ -242,17 +242,30 @@ z.class.postln;
 )
 ::
 
-method::asInteger
-Return an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0.
+ method::asInteger 
+ Returns an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0. 
+ code:: 
+ "4".asInteger
+ :: 
+discussion::
+The method code::.asInteger:: does not regard the exponent represented as emphasis::e::, thus the following code returns code::2:::
 code::
-"4".asInteger.postln;
+"2e3".asIntager
 ::
 
-method::asFloat
-Return a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0.
+The method code::.asFloat:: regards the exponent represented as emphasis::e::. See link::#-asFloat::.
+
+method::asFloat 
+Returns a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0. 
+ code:: 
+ "4.3".asFloat
+ :: 
+discussion::
+The method code::.asFloat:: regards the exponent represented as emphasis::e::.  Thus the following code returns code::2000:::
 code::
-"4.3".asFloat.postln;
+"2e3".asFloat
 ::
+The method code::.asInteger:: does not regard the exponent represented as emphasis::e::. See link::#-asInteger::.
 
 method::asSecs
 Return a link::Classes/Float:: based on converting a time string in format code::(ddd:)hh:mm:ss(.z)::, where code::z:: is any sequence of digits. This is the inverse method to link::Classes/SimpleNumber#-asTimeString::.
