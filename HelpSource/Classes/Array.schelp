@@ -419,6 +419,18 @@ code::
 [0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC; // bundle
 ::
 
+method::hungarianSolve
+Returns the solution to the Linear Assignment problem, using the Hungarian Algorithm, also known as Munkres, in the format [lowest_cost, [assignments]]. Receiver must be a 2-dimensional Array of arrays, but it need not be square, and may contain negative numbers. Implementation is in C++, so it's fast!
+code::
+//example from Wikipedia ("https://en.wikipedia.org/wiki/Hungarian_algorithm")
+[
+   [8, 4, 7],
+   [5, 2, 3],
+   [9, 4, 8]
+].hungarianSolve;
+//returns [15.0, [0, 2, 1]]
+::
+
 subsection:: Bela
 
 method:: belaScope
