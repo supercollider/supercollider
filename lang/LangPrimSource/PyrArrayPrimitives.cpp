@@ -30,6 +30,7 @@ Primitives for Arrays.
 #include "SC_InlineBinaryOp.h"
 #include "SC_Constants.h"
 #include "SC_Levenshtein.h"
+#include "SC_Hungarian.h" // header-only; namespace schungarian::solve<T>(matrix)
 
 #include <cstring>
 #include <vector>
@@ -2616,6 +2617,79 @@ int prArrayIsRectangular(struct VMGlobals* g, int numArgsPushed) {
     }
 }
 
+// Convert Array-of-Arrays (receiver) -> std::vector<std::vector<double>>
+static int readDoubleMatrixFromReceiver(VMGlobals* g, PyrSlot* recv, std::vector<std::vector<double>>& out) {
+    if (!isKindOfSlot(recv, class_array)) return errWrongType;
+    PyrObject* rows = slotRawObject(recv);
+    const int J = rows->size;
+    if (J <= 0) { out.clear(); return errNone; }
+
+    // ensure rectangular & numeric
+    int Wref = -1;
+    out.assign(J, {});
+    for (int i = 0; i < J; ++i) {
+        PyrSlot* rowSlot = rows->slots + i;
+        if (!isKindOfSlot(rowSlot, class_array)) return errWrongType;
+        PyrObject* rowObj = slotRawObject(rowSlot);
+        const int W = rowObj->size;
+        if (Wref < 0) Wref = W; else if (W != Wref) return errIndexOutOfRange;
+
+        out[i].resize(W);
+        for (int j = 0; j < W; ++j) {
+            double v;
+            if (slotDoubleVal(rowObj->slots + j, &v)) return errWrongType;
+            out[i][j] = v;
+        }
+    }
+    return errNone;
+}
+
+// _ArrayHungarianSolve(receiver = 2D matrix) -> [ cost: Float, assignment: IntArray ]
+static int prArrayHungarianSolve(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp; // receiver (Array of Arrays), same convention as other Array prims
+
+    std::vector<std::vector<double>> C;
+    int err = readDoubleMatrixFromReceiver(g, a, C);
+    if (err) return err;
+
+    // Empty -> return [0, []]
+    if (C.empty() || C[0].empty()) {
+        PyrObject* out = newPyrArray(g->gc, 2, 0, true);
+        SetObject(a, out);
+        SetFloat(out->slots + 0, 0.0);
+        out->size = 1;
+
+        PyrObject* asg = newPyrArray(g->gc, 0, 0, true);
+        SetObject(out->slots + 1, asg);
+        out->size = 2;
+        g->gc->GCWriteNew(out, asg);
+        asg->size = 0;
+        return errNone;
+    }
+
+    auto res = schungarian::solve<double>(C);
+    const double cost = (double)res.first;
+    const std::vector<int>& match = res.second;
+
+    // Build result: [ cost, assignment ]
+    PyrObject* out = newPyrArray(g->gc, 2, 0, true);
+    SetObject(a, out);                 // put return value on the receiver slot
+    SetFloat(out->slots + 0, cost);
+    out->size = 1;
+
+    PyrObject* asg = newPyrArray(g->gc, (int)match.size(), 0, true);
+    SetObject(out->slots + 1, asg);
+    out->size = 2;
+    g->gc->GCWriteNew(out, asg);
+
+    for (int i = 0; i < (int)match.size(); ++i) {
+        SetInt(asg->slots + i, match[i]);
+    }
+    asg->size = (int)match.size();
+
+    return errNone;
+}
+
 void initArrayPrimitives() {
     int base, index;
 
@@ -2677,4 +2751,8 @@ void initArrayPrimitives() {
 
     definePrimitive(base, index++, "_ArrayLevenshteinDistance", prArrayLevenshteinDistance, 2, 0);
     definePrimitive(base, index++, "_ArrayIsRectangular", prArrayIsRectangular, 1, 0);
+
+    definePrimitive(base, index++, "_ArrayHungarianSolve", prArrayHungarianSolve, 1, 0);
+
+
 }
