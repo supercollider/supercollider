@@ -167,9 +167,8 @@ message(STATUS "Audio API (supernova): ${AUDIOAPI}")
 
 if(AUDIOAPI STREQUAL portaudio)
     target_sources(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
-    target_include_directories(libsupernova PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
-    target_compile_definitions(libsupernova PUBLIC PORTAUDIO_BACKEND ${PORTAUDIO_DEFINITIONS})
-    target_link_libraries(libsupernova ${PORTAUDIO_LIBRARIES})
+    target_compile_definitions(libsupernova PUBLIC PORTAUDIO_BACKEND)
+    target_link_libraries(libsupernova PortAudio::PortAudio)
 endif()
 
 if(NOT NO_LIBSNDFILE)

@@ -30,6 +30,6 @@ if(WIN32 AND NOT PA_USE_ASIO)
     message(STATUS "Building PortAudio WITHOUT support for ASIO")
 endif()
 
-# when building PA ourselves, we need to specify PORTAUDIO_INCLUDE_DIRS and PORTAUDIO_LIBRARIES
-set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/portaudio_submodule/include" CACHE PATH "Portaudio include directory" FORCE)
-set(PORTAUDIO_LIBRARIES portaudio_static CACHE PATH "PORTAUDIO_LIBRARIES" FORCE)
+# when building PA ourselves, we create an ALIAS target
+add_library(PortAudio::PortAudio ALIAS portaudio_static)
+
