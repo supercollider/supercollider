@@ -420,15 +420,40 @@ code::
 ::
 
 method::hungarianSolve
-Returns the solution to the Linear Assignment problem, using the Hungarian Algorithm, also known as Munkres, in the format [lowest_cost, [assignments]]. Receiver must be a 2-dimensional Array of arrays, but it need not be square, and may contain negative numbers. Implementation is in C++, so it's fast!
+Returns the solution to the Linear Assignment problem, using the Hungarian Algorithm, also known as Munkres, in the format [lowest_cost, [assignments]]. Receiver must be a 2-dimensional Array of arrays, but it need not be square (zeroes will be added when necessary), and may contain negative numbers and floats.
+This algorithm is useful in music for voice-leading and other applications, such as assigning notes to instruments.
+
 code::
-//example from Wikipedia ("https://en.wikipedia.org/wiki/Hungarian_algorithm")
+// Basic example from Wikipedia ("https://en.wikipedia.org/wiki/Hungarian_algorithm")
 [
    [8, 4, 7],
    [5, 2, 3],
    [9, 4, 8]
 ].hungarianSolve;
 //returns [15.0, [0, 2, 1]]
+
+// Voice leading between two chords
+(
+~voiceLead = { |src, trg|
+    var cm = src.collect { |n1| trg.collect { |n2| (n1 - n2).abs } };
+	var asn = cm.hungarianSolve[1];
+    asn.collect { |t, s| [src[s], trg[t]] }
+};
+
+~chC = [60, 64, 67];
+~chD = [62, 65, 69];
+
+~cMat = ~chC.collect { |n1| ~chD.collect { |n2| (n1 - n2).abs } };
+
+~cMat.do { |r| r.postln };
+
+~vLead = ~voiceLead.(~chC, ~chD);
+
+~vLead.do { |p|
+    var src = p[0], trg = p[1], int = trg - src;
+    ("Note " ++ src ++ " → " ++ trg ++ " (interval: " ++ int ++ ")").postln;
+};
+)
 ::
 
 subsection:: Bela
