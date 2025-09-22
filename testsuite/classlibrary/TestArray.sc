@@ -363,6 +363,69 @@ TestArray : UnitTest {
 	    this.assert([FloatArray[1,2], Signal[3,4,5]].isRectangular.not, "isRectangular: should work on RawArrays (false case)");
 	}
 
+	// ----- hungarianSolve --------------------------------------------
+
+	test_hungarianSolve_basic {
+		//wikipedia example ("https://en.wikipedia.org/wiki/Hungarian_algorithm")
+		var costMatrix = [
+			[8, 4, 7],
+			[5, 2, 3],
+			[9, 4, 8]
+		];
+		var expected = [15.0, [0, 2, 1]];
+		this.assertEquals(costMatrix.hungarianSolve, expected);
+	}
+	test_hungarianSolve_rectangular {
+		var costMatrix = [
+			[ 90,  76,  75,  70 ],
+			[ 35,  85,  55,  65 ],
+			[125,  95,  90, 105 ]
+		];
+		var expected = [195.0, [3, 0, 2]];
+		this.assertEquals(costMatrix.hungarianSolve, expected);
+	}
+	test_hungarianSolve_negative_float {
+		var costMatrixSolved = [
+			[ -1.34,  2.46772,  3.2361,  4.87654 ],
+			[  5.345987, -6.12567,  7,  8.346 ],
+			[  -3.5679, 346.239,  -1.233,  0.34646 ],
+		].hungarianSolve;
+		var expected = [-8.69867, [0, 1, 2]];
+		this.assert(costMatrixSolved[0].equalWithPrecision(expected[0]) && costMatrixSolved[1] == expected[1]);
+	}
+	test_hungarianSolve_empty {
+		var costMatrix = [
+		];
+		var expected = [0.0, []];
+		this.assertEquals(costMatrix.hungarianSolve, expected);
+	}
+	test_hungarianSolve_inf {
+		var costMatrix = [
+			[inf, 4, 7],
+			[5, 2, 3],
+			[9, 4, 8]
+		];
+		var expected = [16.0, [1, 2, 0]];
+		this.assertEquals(costMatrix.hungarianSolve, expected);
+	}
+	test_hungarianSolve_zero {
+		var costMatrix = [
+			[8, 4, 7],
+			[5, 2, 3],
+			[9, 4, 0]
+		];
+		var expected = [9.0, [1, 0, 2]];
+		this.assertEquals(costMatrix.hungarianSolve, expected);
+	}
+	test_hungarianSolve_notANumber {
+		try {[
+			["hey", 4, 7],
+			[5, 2, 3],
+			[9, 4, \there]
+		].hungarianSolve}
+		{|error| this.assert(error.isKindOf(PrimitiveFailedError)) }
+	}
+
 } // End class
 
 TestArrayLace : UnitTest {
