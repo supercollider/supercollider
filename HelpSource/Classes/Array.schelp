@@ -440,8 +440,8 @@ code::
     asn.collect { |t, s| [src[s], trg[t]] }
 };
 
-~chC = [60, 64, 67, 72]; //C
-~chG = [59, 65, 67, 74]; //G7
+~chC = [72, 60, 64, 67]; //C
+~chG = [67, 74, 65, 59]; //G7
 
 ~cMat = ~chG.collect { |n1| ~chG.collect { |n2| (n1 - n2).abs } };
 
