@@ -440,14 +440,14 @@ code::
     asn.collect { |t, s| [src[s], trg[t]] }
 };
 
-~chC = [60, 64, 67];
-~chD = [62, 65, 69];
+~chC = [60, 64, 67, 72]; //C
+~chG = [59, 65, 67, 74]; //G7
 
-~cMat = ~chC.collect { |n1| ~chD.collect { |n2| (n1 - n2).abs } };
+~cMat = ~chG.collect { |n1| ~chG.collect { |n2| (n1 - n2).abs } };
 
 ~cMat.do { |r| r.postln };
 
-~vLead = ~voiceLead.(~chC, ~chD);
+~vLead = ~voiceLead.(~chC, ~chG);
 
 ~vLead.do { |p|
     var src = p[0], trg = p[1], int = trg - src;
