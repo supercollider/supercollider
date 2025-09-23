@@ -420,7 +420,8 @@ code::
 ::
 
 method::hungarianSolve
-Returns the solution to the Linear Assignment problem, using the Hungarian Algorithm, also known as Munkres, in the format [lowest_cost, [assignments]]. Receiver must be a 2-dimensional Array of arrays, but it need not be square (zeroes will be added when necessary), and may contain negative numbers and floats.
+Returns the solution to the Linear Assignment problem, using the Hungarian Algorithm, also known as Munkres, in the format code::[lowest_cost, [assignments]]::.
+Receiver must be a 2-dimensional Array of arrays, but it need not be square (zeroes will be added when necessary), and may contain negative numbers and floats.
 This algorithm is useful in music for voice-leading and other applications, such as assigning notes to instruments.
 
 code::
