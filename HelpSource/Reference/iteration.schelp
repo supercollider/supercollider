@@ -1,101 +1,87 @@
 title:: Iteration
 summary:: for, do, loop, repeat
-categories:: Core,Common methods, Streams-Patterns-Events
+categories:: Core,Common methods
 related::  Classes/Object, Classes/Function, Classes/Routine, Classes/Stream, Classes/Pattern
 
-(This page combines material formerly in the Control Structures and loop/repeat
-helpfiles.)
+
+(This page combines material formerly in the Control Structures and loop/repeat helpfiles.)
 
 There are a number of ways to implement iteration in SuperCollider.
 The most familiar ones will be the link::Classes/Number#-for:: and link::Classes/Collection#-do:: methods.
 The link::Classes/Function#-while:: method is discussed link::Reference/Conditional-Execution#while#here::.
-For Routines, Streams, and Patterns, special methods exist: link::Classes/Function#-loop:: and link::Classes/Object#-repeat::.
+
+For Routines (Streams) and Patterns, special methods exist: link::#Patterns and Routines: repeat and loop#repeat and loop::
 
 table::
 	## strong::Thing you want to do:: ||  strong::method to use:: || strong:: returns::
-	## iterate over a collection  	|| link::#do:: 	|| code::loopFunc.value(x):: for each element code::x:: of collection
 	## iterate over a numeric range  || link::#for::, link::#forBy:: || code::loopFunc.value(n):: for each number code::n:: in range
+	## iterate over integers from math::0:: to math::n-1:: || link::#do#n.do:: || code::loopFunc.value(i):: for each integer code::i:: between math::0 ::and math::n-1:: inclusive.
+	## iterate over a collection  	|| link::#do#collection.do:: 	|| code::loopFunc.value(x):: for each element code::x:: of collection
 	## iterate while some condition is true || link::Reference/Conditional-Execution#while:: || code::loopFunc.value:: for each iteration.
-	## embed in a stream an infinite number of times || link::#loop::|| a link::Classes/Routine::
-	## embed in a stream n times || link::#repeat::(n) (with argument) || a link::Classes/Routine::
+	## embed in a stream n times || link::#.repeat::(n) (with argument) || link::Classes/Routine:: or link::Classes/Pn::
+	## embed in a stream an infinite number of times || link::#Apart from Function.loop, the .loop method is an alias for .repeat(inf)#.loop::|| a link::Classes/Routine:: or link::Classes/Pn::
+	## link::#Breaking from a loop#break from a loop:: || link::Classes/Function#-block:: || teletype::nil:: unless specified; see link::#Breaking from a loop#below::
 ::
 
-section:: for
+section:: for, forBy, do
 
-The code::.for:: method implements iteration over an integer series from a starting value to an end value, stepping by one each time.
-In each iteration, a teletype::loopFunc:: is evaluated with the integer counter value as an argument.
-In distinction from the teletype::testFunc:: in code::while::,
-the teletype::loopFunc:: in code::for:: usually takes an argument.
+subsection:: for
 
-subsection:: Syntax (for)
+The for message implements iteration over an integer series from a starting value to an end value stepping by one each time.
+A function is evaluated each iteration and is passed the iterated numeric value as an argument.
+
+Syntax
+
 code::
-// function call with trailing argument block
-// reminiscent of C
-for(startValue, endValue) { loopFuncBody };
+for(startValue, endValue) { loopFuncBody }
 
-// function call without trailing argument
-for(startValue, endValue, loopFunc);
+// alternate
+for(startValue, endValue, loopFunc)
 
-// receiver notation
-// hard to read and rarely used in practice
-startValue.for(endValue, loopFunc);
+Example
+code::
+for(3, 7) { arg i; i.postln };  // prints values 3 through 7
 ::
 
-subsection:: Example (for)
+subsection:: forBy
+
+The forBy selector implements iteration over an integer series with a variable step size.
+A function is evaluated each iteration and is passed the iterated numeric value as an argument.
+
+Syntax
 code::
-for(3, 7) { |i| i.postln };  // prints values 3 through 7
-::
-
-section:: forBy
-
-The forBy method works like code::.for::, but takes an additional stepValue argument that defines the increment of the counter.
-
-
-subsection:: Syntax (forBy)
-
-code::
-// Function call with trailing argument block
-// reminiscent of C
 forBy(startValue, endValue, stepValue) { loopFuncBody };
 
 forBy(startValue, endValue, stepValue, loopFunc);
-
-// receiver notation
-// hard to read and rarely used in practice
-startValue.forBy(endValue, stepValue, loopFunc);
 ::
 
-subsection:: Example (forBy)
-
+Example
 code::
-forBy(0, 8, 2) { arg i; i.postln };  // prints values 0 through 8, incrementing by 2
+forBy(0, 8, 2) { arg i; i.postln };  // prints values 0 through 8 by 2's
 ::
 
 
-section:: do
+subsection:: do
 
 Do is used to iterate over a link::Classes/Collection::.
-Positive Integers also respond to code::do:: by iterating from zero up to their value.
+Positive Integers also respond to code::do:: by iterating from zero up to their value (excluding that value).
 Collections iterate, calling the function for each object they contain.
 Other kinds of Objects respond to do by passing themselves to the function one time.
 The function is called with two arguments, the item, and an iteration counter.
 
-
-subsection:: Syntax (do)
-
+Syntax
 code::
-collection.do { loopBody };
+collection.do { loopFuncBody };
 
 // alternate
-collection.do(function)
+collection.do(loopFunc)
 
 // alternates, rarely seen
-do(collection, function)
-do(collection) { loopBody };
+do(collection, loopFunc)
+do(collection) { loopFuncBody };
 ::
 
-subsection:: Examples (do)
-
+Example
 code::
 [ 1, 2, "abc", (3@4) ].do { arg item, i; [i, item].postln; };
 
@@ -118,12 +104,10 @@ Routine {
 }.do { arg item; item.postln };  // 'do' applies to the Routine
 ::
 
-Note::
-The syntax code::(8..20).do:: uses an optimization to avoid generating an array that is used only for iteration (but which would be discarded thereafter).
+Note:: The syntax code::(8..20).do:: uses an optimization to avoid generating an array that is used only for iteration (but which would be discarded thereafter).
 The return value of code:: (8..20).do { |item| item.postln } :: is 8, the starting value.
 
-However, if code::do:: is written as an infix binary operator, as in code::(8..20) do: { |item| item.postln }::,
-then it will generate the series as an array first, before calling Array:do.
+However, if code::do:: is written as an infix binary operator, as in code::(8..20) do: { |item| item.postln }::, then it will generate the series as an array first, before calling Array:do.
 One side effect of this is that it is valid to code::do:: over an infinite series within a routine only if code::do:: is written as a method call.
 If it is written as a binary operator, you will get a "wrong type" error because the array must be finite.
 
@@ -153,59 +137,193 @@ Wrong type.
 ::
 ::
 
+section:: Breaking from a loop
 
-section:: loop, repeat
+To break from a loop, use the link:: Classes/Function#-block:: method.
 
-Create an object that behaves like a stream that returns values for a limited (or infinite) number of times.
+The syntax is somewhat unusual.
+Consider the following loop:
+code::
+100.do { |i| i.postln; }
+::
+Suppose we want the loop to stop after code:: i == 7::.
+Ohther languages (e.g. javascript or python) would allow us to write expressions analogous to the following:
 
-For a full list of implementing classes, see link::Overviews/Methods#loop:: and link::Overviews/Methods#repeat::
+code::
+// this won't work in SC
+100.do { |i| if(i == 7) {break}; i.postln; } // syntax error;
+::
+However, there is no break keyword in sclang;
+instead, we have to do three things (not in order, but simultaneously):
+
+numberedlist::
+## enclose the looping expression (code::100.do { ... }:: here) in another Function block that takes an argument
+(which we call teletype::break:: here, but which can be called anything);
+
+code:: 
+{ |break|   
+	100.do { |i|  // the original expression
+	i.postln;     // from which we 
+	}             // want to break.
+} 
+::
+
+## inside the looped Function, call code::.value:: on that argument when the relevant condition is true;
+
+code:: 
+{ |break|  
+	100.do { |i| 
+	i.postln; 
+	if (i == 7) {   // added lines
+		break.value // ...
+		}           // ...
+	} 
+} 
+::
+
+##  on the enclosing Function, call  code::.block.::
+
+code:: 
+block { |break| // block goes at the beginning of this line
+		100.do { |i| 
+				i.postln; 
+				if (i == 7) {
+					break.value
+					} 
+		} 
+} 
+// this is the complete expression, at last
+::
+::
+
+This will return nil once the break condition is reached,
+but if a specific return value is desired, this can be provided to the code::.value:: call:
+
+code:: 
+block { |break| 
+		100.do { |i| 
+				i.postln; 
+				if (i == 7) {
+					break.value("return this")
+					} 
+		} 
+} 
+//phew
+::
+
+section:: There is no continue keyword in SuperCollider
+
+Some languages permit "skipping" individual iterations of a loop by means of a "continue" keyword.
+For instance, in python, the following will print teletype::0,1,2,  4,5,6,7,8,9::,
+skipping over the teletype::3:::
+
+teletype::
+# this is python, not sclang
+for i in range(10):
+	if i == 3:
+		continue
+	print(i)
+::
+
+Note that the remainder of the body of the loop, teletype::print(i)::, is fully skipped over when the continue keyword is reached.
+For the same result in sclang, the body of the loop must be moved emphasis::inside:: the conditional statement:
+code::
+10.do { |i|
+	if (i == 3) {
+		//no code here.
+	} {
+		i.postln; // the equivalent to print(i) above
+	}
+}
+// the above code is awkward, it merely serves an explanatory purpose.
+// more elegant in pratice is to negate the continue condition:
+10.do { |i|
+	if (i != 3) {
+		i.postln;
+	}
+}
+::
+
+section:: Patterns and Routines: repeat and loop
+
+The method code::.repeat(n):: can be used to create a Routine or a Pattern which repeats values for a specific number of times.
+To repeat indefinitely, use either code::.loop::, or use code::.repeat:: without supplying an argument.
+
+Concisely, code::pat.repeat(n)::, where teletype::pat:: is some Pattern, will return code::Pn(pat, n)::.
+For most other classes, code::object.repeat(n):: will return a Routine equivalent to code::Pn(object, n).asStream::.
+
+
+
+subsection:: .repeat
 
 definitionlist::
+## link::Classes/Object#-repeat::(n) ||
+	Returns a Routine.
+
+ 	Embeds the receiver n times by wrapping it in a link::Classes/Pn:: and calling link::Classes/Pattern#-.asStream:: on it.
+	If no argument is provided, the stream will repeat indefinitely.
+
+	Implementation:
+	code:: repeat { arg n = inf; ^Pn(this, n).asStream } ::
+
+	Example:
+
+code::
+	x = [0,1,2]; // an Array
+	y = x.repeat(4); // a Routine that repeats the array 4 times
+	y.nextN(15); // -> [[0,1,2],[0,1,2],[0,1,2],[0,1,2],nil,nil,nil,nil,nil,nil,nil]
+::
+
+## link::Classes/Pattern#-repeat::(n) ||
+	Returns a link::Classes/Pn::.
+
+	Embeds the receiver n times by wrapping it in a link::Classes/Pn::, but doesn't call code::.asStream:: on it.
+	link::Classes/Pattern#-repeat#pattern.repeat(n)::) is thus effectively a synonym for link::Classes/Pn##Pn(pattern, n)::
+	If no argument is provided, the Pattern will repeat indefinitely.
+
+Example:
+code::
+	// x is a pattern that counts from 0 to 2
+	x = Pseq([0,1,2]); // -> a Pseq
+	// y is a pattern that does this 4 times in a row
+	y = x.repeat(4); // -> a Pn
+	y.asStream.nextN(15); // -> [0,1,2,0,1,2,0,1,2,0,1,2,nil,nil,nil]
+::
+
+## link::Classes/Routine#-repeat::(n) ||
+
+	Embeds the receiver in another Routine that repeats it n times.
+	For instance:
+
+code::
+	// x is a a Routine that counts from 0 to 2
+	x = Routine({ 3.do({ arg i; i.yield }) }); // -> a Routine
+	// y a Routine that does x four times
+	y = x.repeat(4); // -> a Routine
+	y.nextN(15); // -> [0,1,2,0,1,2,0,1,2,0,1,2,nil,nil,nil]
+::
+::
+
+subsection:: Apart from Function.loop, the .loop method is an alias for .repeat(inf)
+
+code::.loop:: is simply an alias for code::.repeat(inf).::
+An important exception to this is link::Classes/Function#-.loop::,
+which should be treated with care:
+
+definitionlist::
+
 ## link::Classes/Function#-loop:: ||
-	repeats the function forever.
+	Used on a function Emphasis::inside:: a link::Classes/Routine::,
+	it will result in a Routine that repeats the receiver function an infinite number of times.
+	Used on a Function emphasis::outside:: a Routine, it will crash the interpreter.
+
+	Example:
 code::
-	f = { 3.yield };
-	x = Routine({ f.loop });
-	10.do({ x.next.postln })
-::
-
-## link::Classes/Object#-repeat:: (n) ||
-	repeat to yield the object
-code::
-	x = 5;
-	y = x.repeat(6);
-	y.nextN(8);
-::
-
-## link::Classes/Pattern#-repeat:: (n) ||
-
-code::
-	x = Prand([1, 2]).repeat(6).asStream;
-	x.nextN(8);
-::
-
-## link::Classes/Pattern#-loop:: ||
-
-code::
-	x = Prand([1, 2]).loop.asStream;
-	x.nextN(8);
-::
-
-## link::Classes/Stream#-repeat:: (n) ||
-
-	embeds the stream repeatedly
-
-code::
-	x = Routine({ 3.do({ arg i; i.yield }) }).repeat(6);
-	x.nextN(8);
-::
-
-## link::Classes/Stream#-loop:: ||
-
-	embeds the stream repeatedly
-
-code::
-	x = Routine({ 3.do({ arg i; i.yield }) }).loop;
-	x.nextN(8);
+	f = { 3.yield; }; // -> a Function
+	x = Routine({ f.loop }); // -> a Routine
+	10.do({ x.next.postln }); // -> [3,3,3,3,3,3,3,3,3,3]
+	// Similar outcome:
+	x = Routine(f).loop; // -> a Routine
+	10.do({ x.next.postln }); // -> [3,3,3,3,3,3,3,3,3,3]
 ::
 ::
