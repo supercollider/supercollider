@@ -15,7 +15,7 @@ For Routines (Streams) and Patterns, special methods exist: link::#Patterns and 
 table::
 	## strong::Thing you want to do:: ||  strong::method to use:: || strong:: returns::
 	## iterate over a numeric range  || link::#for::, link::#forBy:: || code::loopFunc.value(n):: for each number code::n:: in range
-	## iterate over integers from math::0:: to math::n-1:: || link::#do#n.do:: || code::loopFunc.value(i):: for each integer code::i:: between math::0 ::and math::n-1:: inclusive.
+	## iterate over integers from math::0:: to math::n-1:: || link::#do#n.do:: || code::loopFunc.value(i):: for each integer code::i:: between math::0:: and math::n-1:: inclusive.
 	## iterate over a collection  	|| link::#do#collection.do:: 	|| code::loopFunc.value(x):: for each element code::x:: of collection
 	## iterate while some condition is true || link::Reference/Conditional-Execution#while:: || code::loopFunc.value:: for each iteration.
 	## embed in a stream n times || link::#.repeat::(n) (with argument) || link::Classes/Routine:: or link::Classes/Pn::
@@ -249,10 +249,11 @@ section:: Patterns and Routines: repeat and loop
 The method code::.repeat(n):: can be used to create a Routine or a Pattern which repeats values for a specific number of times.
 To repeat indefinitely, use either code::.loop::, or use code::.repeat:: without supplying an argument.
 
-Concisely, code::pat.repeat(n)::, where teletype::pat:: is some Pattern, will return code::Pn(pat, n)::.
+Roughly, if teletype::pat:: is some Pattern, then code::pat.repeat(n):: will return code::Pn(pat, n)::.
 For most other classes, code::object.repeat(n):: will return a Routine equivalent to code::Pn(object, n).asStream::.
 
-
+Regarding code::Function.loop::, which should only be used strong::inside:: a Routine, 
+see link::#Apart from Function.loop, the .loop method is an alias for .repeat(inf)#below::.
 
 subsection:: .repeat
 
@@ -278,7 +279,7 @@ code::
 	Returns a link::Classes/Pn::.
 
 	Embeds the receiver n times by wrapping it in a link::Classes/Pn::, but doesn't call code::.asStream:: on it.
-	link::Classes/Pattern#-repeat#pattern.repeat(n)::) is thus effectively a synonym for link::Classes/Pn##Pn(pattern, n)::
+	link::Classes/Pattern#-repeat#pattern.repeat(n)::) is thus effectively a synonym for link::Classes/Pn##Pn(pattern, n)::.
 	If no argument is provided, the Pattern will repeat indefinitely.
 
 Example:
@@ -292,7 +293,7 @@ code::
 
 ## link::Classes/Routine#-repeat::(n) ||
 
-	Embeds the receiver in another Routine that repeats it n times.
+	Embeds the receiver in another Routine that repeats it n times, and returns that.
 	For instance:
 
 code::
