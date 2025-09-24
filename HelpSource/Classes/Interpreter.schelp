@@ -40,7 +40,7 @@ g.stop; a.free;
 this.inspect;
 ::
 
-note::Use these variables with a bit of extra care— as they are global, they remain in memory and one piece of code may happen to interfere with another one. The variable code::s:: is by convention bound to the default server (link::Classes/Server::) and should not be changed.::
+note::Use these variables with a bit of extra care — as they are global, they remain in memory and one piece of code may happen to interfere with another one. The variable code::s:: is by convention bound to the default server (link::Classes/Server::) and should not be changed.::
 
 
 

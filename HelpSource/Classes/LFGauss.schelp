@@ -177,7 +177,7 @@ code::
 subsection:: Gabor Grain
 
 note::
-The gaussian function doesn't start with teletype::0::— it asymptotically approaches it at teletype::-inf:: and teletype::inf::. When using it as an envelope, it has to start at some smaller value, and it has an offset for this value. You can remove this offset by explicitly setting the link::#-range::, e.g. to teletype::[0, 1]:: (this is the default).
+The gaussian function doesn't start with teletype::0:: — it asymptotically approaches it at teletype::-inf:: and teletype::inf::. When using it as an envelope, it has to start at some smaller value, and it has an offset for this value. You can remove this offset by explicitly setting the link::#-range::, e.g. to teletype::[0, 1]:: (this is the default).
 ::
 
 
