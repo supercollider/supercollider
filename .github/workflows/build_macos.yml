@@ -31,8 +31,8 @@ jobs:
             ctest: true
 
           - job-name: "x64 legacy"
-            os-version: "13"
-            xcode-version: "14.1"
+            os-version: "15-intel"
+            xcode-version: "16.0"
             qt-version: "5.15.2" # will use qt from aqtinstall
             qt-modules: 'qtwebengine'
             deployment-target: "10.15"
