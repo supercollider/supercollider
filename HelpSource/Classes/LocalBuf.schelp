@@ -12,7 +12,7 @@ argument:: numFrames
 number of frames (default: 1)
 argument:: numChannels
 number of channels for multiple channel buffers (default: 1)
-returns:: a new buffer – the ugen outputs its buffer number and can thus be used in any other ugen that requires a buffer number input.
+returns:: a new buffer— the ugen outputs its buffer number and can thus be used in any other ugen that requires a buffer number input.
 
 method:: newFrom
 Allocates a new buffer from a given list of values
