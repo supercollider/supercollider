@@ -128,7 +128,7 @@ The use of variable keyword arguments is often paired with link::Classes/Object#
 
 While you can pick any name for the variable arguments, they always refer to the unmatched positional and keyword arguments, so it is often best to name them code::args:: and code::kwargs::.
 
-You cannot reassign the value of the variable arguments at the call–site even if they share the same name (see below for example).
+You cannot reassign the value of the variable arguments at the call-site even if they share the same name (see below for example).
 
 code::
 f = { |...args, kwargs| "args: %, kwargs: %".format(args, kwargs) };
