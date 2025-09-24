@@ -7,7 +7,7 @@ section::Math on patterns
 
 Often, there is not a pattern that delivers exactly the desired result by itself. But, other operations can be applied to patterns, to manipulate one pattern's output and turn it into something else.
 
-Some of these operations look like things you would do to an array, but there is a critical difference. Doing math on an array performs the operation on every array item all at once. By contrast, patterns are "lazy" -- they evaluate one value at the time, only when asked, and they only do as much as they need to do to deliver the next value. An operation on a pattern produces another pattern that remembers the work that is to be done. Making a stream out of the composite pattern creates the structure to perform the operation upon request.
+Some of these operations look like things you would do to an array, but there is a critical difference. Doing math on an array performs the operation on every array item all at once. By contrast, patterns are "lazy" — they evaluate one value at the time, only when asked, and they only do as much as they need to do to deliver the next value. An operation on a pattern produces another pattern that remembers the work that is to be done. Making a stream out of the composite pattern creates the structure to perform the operation upon request.
 
 For example, multiplying a pattern by a number produces a "binary operator pattern": link::Classes/Pbinop::. Looking at the Pbinop's variables reveals everything that is needed to reconstruct the operation on demand.
 

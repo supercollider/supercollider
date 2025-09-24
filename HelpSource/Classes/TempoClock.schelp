@@ -222,7 +222,7 @@ Gets or sets the number of beats per bar. The default is 4. Setting the meter mu
 
 Setting beatsPerBar also updates the barline reference (baseBarBeat). Be careful to call code::beatsPerBar_:: emphasis::only:: on a barline (link::#-nextBar:: below).
 
-code::thisThread.clock:: is always the current clock -- so, writing code::thisThread.clock.beatsPerBar = /* number */:: as a matter of habit will guarantee that the meter change only ever applies to the current clock.
+code::thisThread.clock:: is always the current clock — so, writing code::thisThread.clock.beatsPerBar = /* number */:: as a matter of habit will guarantee that the meter change only ever applies to the current clock.
 
 code::
 t = TempoClock.new;

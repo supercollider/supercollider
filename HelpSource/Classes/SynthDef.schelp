@@ -45,7 +45,7 @@ In some cases, it is useful to send a group of values to a single control name, 
 There are two ways to define arrayed controls:
 
 numberedlist::
-## link::Classes/NamedControl:: -- recommended for flexibility and clarity.
+## link::Classes/NamedControl:: — recommended for flexibility and clarity.
 ## Literal arrays (as noted above).
 ::
 
@@ -152,7 +152,7 @@ Create a new SynthDef. It is written to disk only if a def file with this name d
 
 warning:: code::SynthDef.writeOnce:: is a legacy method. Its main use was to improve the efficiency of SynthDefs in quarks, but this is superseded by link::Classes/SynthDescLib::. Being completely impervious to changes, it can cause difficult-to-diagnose bugs (such as having version 1.1 of a quark but with a SynthDef stuck in version 1.0). Quark developers should now use link::#-add:: instead.
 
-The exception is very large SynthDefs, where you have a choice between link::#-writeDefFile:: and this method. Even then, the efficiency savings of code::writeOnce:: are only in disk I/O -- both methods build the SynthDef every time they run. ::
+The exception is very large SynthDefs, where you have a choice between link::#-writeDefFile:: and this method. Even then, the efficiency savings of code::writeOnce:: are only in disk I/O — both methods build the SynthDef every time they run. ::
 
 
 method::warnAboutLargeSynthDefs
@@ -366,7 +366,7 @@ SynthDef(\arrayarg, { |out, amp = 0.1, gate = 1|
 x = Synth(\arrayarg);
 x.setn(\freqs, [440, 441, 442, 443]);
 
-// Values outside of the array bounds are ignored --
+// Values outside of the array bounds are ignored —
 // 0 is dropped
 x.setn(\freqs, [300, 400, 500, 600, 0]);
 

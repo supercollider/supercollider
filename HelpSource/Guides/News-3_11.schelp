@@ -129,7 +129,7 @@ section:: Class library: Fixed
 
 STRONG:: Breaking change::: Fixed an issue with code:: Signal:hammingWindow :: using incorrect coefficients. code:: Signal:hammingWindow_old :: can be used for previous behaviour (#4324)
 
-STRONG:: Breaking change::: code:: Color:asHSV :: could sometimes return NaN -- grayscale colors returned NaN hue, and black returned NaN hue and saturation. Zero values are now returned in these cases, as is the standard (#4369)
+STRONG:: Breaking change::: code:: Color:asHSV :: could sometimes return NaN — grayscale colors returned NaN hue, and black returned NaN hue and saturation. Zero values are now returned in these cases, as is the standard (#4369)
 
 Fixed an issue where NamedControl would erroneously convert code:: name :: to a String in some cases (#4761).
 

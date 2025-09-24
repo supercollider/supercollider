@@ -38,7 +38,7 @@ method::ar
 argument::bufnum
 The number of the buffer to write to (prepared with /b-write or
 Buffer.write)
-Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
+Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 — preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
 
 argument::channelsArray
 The Array of channels to write to the file.

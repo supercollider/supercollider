@@ -131,9 +131,9 @@ method:: useSystemClock
 Tells supernova whether to sync to the driver's sample clock, or to the system clock.
 note:: scsynth always uses system clock and this value is ignored.::
 list::
-## code::true:: (default) -- Use the system clock. Timestamped messages will maintain consistent
+## code::true:: (default) — Use the system clock. Timestamped messages will maintain consistent
 latency over long sessions, but may not be perfectly sample-accurate.
-## code::false:: -- Use the sample clock. This helps to
+## code::false:: — Use the sample clock. This helps to
 support sample-accurate scheduling; however, messaging latency from
 the SuperCollider language will drift over long periods of time.
 ::

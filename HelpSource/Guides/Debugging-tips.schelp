@@ -404,10 +404,10 @@ One useful approach is to insert statements that will cause execution to halt. T
 code::
 Error("myFunction-halt").throw;
 ::
-When debugging code that crashes, place a line like this somewhere in the code. If you get the error output, you know that the infinite loop is happening after the error--so move the error.throw later and try again.
+When debugging code that crashes, place a line like this somewhere in the code. If you get the error output, you know that the infinite loop is happening after the error — so move the error.throw later and try again.
 If it crashes, you know the infinite loop is earlier. Eventually, after a lot of heartache, you can zero in on the location.
 
-Here is a rogues' gallery of infinite loop gotchas--things that don't look like infinite loops, but they will kill your code quicker than you can wish you hadn't just pushed the enter key:
+Here is a rogues' gallery of infinite loop gotchas — things that don't look like infinite loops, but they will kill your code quicker than you can wish you hadn't just pushed the enter key:
 code::
 i = 0;
 while (i < 10) { i.postln; i = i+1 }; 	// crash
@@ -429,11 +429,11 @@ r.next;	// crash
 ::
 This looks pretty innocent: iterate repeatedly over an array and yield each item successively. But, if the array is empty, the do loop never executes and yield never gets called. So, the outer loop{} runs forever, doing nothing.
 
-Recursion is often used to walk through a tree structure. Tree structures are usually finite--no matter which branch you go down, eventually you will reach the end. If you have a data structure that is self-referential, you can easily get infinite recursion:
+Recursion is often used to walk through a tree structure. Tree structures are usually finite — no matter which branch you go down, eventually you will reach the end. If you have a data structure that is self-referential, you can easily get infinite recursion:
 code::
 a = (1..10);
 a.put(5, a);	// now one of the items of a is a itself
-a.postcs;		// crash--postcs has to walk through the entire collection, which loops on itself
+a.postcs;		// crash — postcs has to walk through the entire collection, which loops on itself
 ::
 Self-referential data structures are sometimes an indication of poor design. If this is the case, avoid them.
 code::

@@ -38,7 +38,7 @@ a = { |t_trig, t_reset|
 	0.0;
 }.play
 )
-a.set(\t_trig, 1); // do this a few times -- the demand value should increase by 1 each time
+a.set(\t_trig, 1); // do this a few times — the demand value should increase by 1 each time
 a.set(\t_reset, 1);	// goes immediately back to 0
 ::
 

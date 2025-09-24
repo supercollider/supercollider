@@ -18,7 +18,7 @@ argument::thresh
 Usually between 0 and 1. Amplitude threshold of the control signal, which determines the break point between slopeBelow and slopeAbove. The control signal amplitude is calculated using RMS.
 
 argument::slopeBelow
-Slope of applied amplitude curve if control signal amplitude is below code::thresh::. If > 1.0, the amplitude drops off more quickly the softer the control signal gets; when the control signal is close to 0 amplitude, the output should be exactly zero -- hence, noise gating. Values < 1.0 are possible, but it means that a very low-level control signal will cause the input signal to be amplified, which would raise the noise floor.
+Slope of applied amplitude curve if control signal amplitude is below code::thresh::. If > 1.0, the amplitude drops off more quickly the softer the control signal gets; when the control signal is close to 0 amplitude, the output should be exactly zero — hence, noise gating. Values < 1.0 are possible, but it means that a very low-level control signal will cause the input signal to be amplified, which would raise the noise floor.
 
 argument::slopeAbove
 Slope of applied amplitude curve if control signal amplitude is above code::thresh::.
