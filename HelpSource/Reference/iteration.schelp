@@ -10,7 +10,8 @@ There are a number of ways to implement iteration in SuperCollider.
 The most familiar ones will be the link::Classes/Number#-for:: and link::Classes/Collection#-do:: methods.
 The link::Classes/Function#-while:: method is discussed link::Reference/Conditional-Execution#while#here::.
 
-For Routines (Streams) and Patterns, special methods exist: link::#Patterns and Routines: repeat and loop#repeat and loop::
+For Routines (Streams) and Patterns, special methods exist: link::#Patterns and
+Routines: repeat and loop#.repeat and .loop::
 
 table::
 	## strong::Thing you want to do:: ||  strong::method to use:: || strong:: returns::
@@ -279,7 +280,7 @@ code::
 	Returns a link::Classes/Pn::.
 
 	Embeds the receiver n times by wrapping it in a link::Classes/Pn::, but doesn't call code::.asStream:: on it.
-	link::Classes/Pattern#-repeat#pattern.repeat(n)::) is thus effectively a synonym for link::Classes/Pn##Pn(pattern, n)::.
+	link::Classes/Pattern#-repeat#pattern.repeat(n):: is thus effectively a synonym for link::Classes/Pn##Pn(pattern, n)::.
 	If no argument is provided, the Pattern will repeat indefinitely.
 
 Example:
@@ -299,7 +300,7 @@ code::
 code::
 	// x is a a Routine that counts from 0 to 2
 	x = Routine({ 3.do({ arg i; i.yield }) }); // -> a Routine
-	// y a Routine that does x four times
+	// y is a Routine that does x four times
 	y = x.repeat(4); // -> a Routine
 	y.nextN(15); // -> [0,1,2,0,1,2,0,1,2,0,1,2,nil,nil,nil]
 ::
@@ -307,7 +308,7 @@ code::
 
 subsection:: Apart from Function.loop, the .loop method is an alias for .repeat(inf)
 
-code::.loop:: is simply an alias for code::.repeat(inf).::
+code::.loop:: is simply an alias for code::.repeat(inf)::.
 An important exception to this is link::Classes/Function#-.loop::,
 which should be treated with care:
 
