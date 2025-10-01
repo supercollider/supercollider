@@ -5,8 +5,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/common
 
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
-
                     LangSource
                     LangPrimSource
 
@@ -122,14 +120,10 @@ if (AUDIOAPI STREQUAL coreaudio)
     add_definitions("-DSC_AUDIO_API_COREAUDIO")
 elseif (AUDIOAPI STREQUAL portaudio)
     if (SYSTEM_PORTAUDIO)
-        find_package(Portaudio)
-        if(NOT PORTAUDIO_FOUND)
-            message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
-        endif()
+        find_package(Portaudio REQUIRED)
     endif()
     add_definitions("-DSC_AUDIO_API_PORTAUDIO")
     list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
-    include_directories(${PORTAUDIO_INCLUDE_DIRS})
 elseif(AUDIOAPI STREQUAL bela)
     add_definitions("-DSC_AUDIO_API_BELA")
 endif()
@@ -244,8 +238,13 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_program_options_lib)
-target_include_directories(libsclang PUBLIC ${boost_include_dirs})
+target_link_libraries(
+  libsclang 
+  Boost::thread
+  Boost::program_options
+  Boost::regex
+  Boost::sync
+)
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
@@ -304,7 +303,7 @@ if(ALSA_FOUND)
 endif(ALSA_FOUND)
 
 if (AUDIOAPI STREQUAL portaudio)
-    target_link_libraries(libsclang ${PORTAUDIO_LIBRARIES})
+    target_link_libraries(libsclang PortAudio::PortAudio)
 endif()
 
 if(SNDFILE_FOUND)

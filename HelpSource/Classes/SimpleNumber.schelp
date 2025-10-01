@@ -978,6 +978,16 @@ prints this on the given stream
 subsection:: random
 Unless noted otherwise, the return value of all these methods will be an link::Classes/Integer:: only when the receiver and all arguments are Integers as well.
 
+note::Interval Notation Guide for this part:
+table::
+## Notation || Name || Inclusion || Meaning (Range)
+## teletype::[a, b]:: || Closed interval || Includes both teletype::a:: and teletype::b:: || math::a \leq x \leq b::
+## teletype::(a, b):: || Open interval || Excludes both teletype::a:: and teletype::b:: ||  math::a \lt x \lt b::
+## teletype::[a, b):: || Half‑open interval (left‑closed) || Includes teletype::a::, excludes teletype::b:: || math::a \leq x \lt b::
+## teletype::(a, b]:: || Half‑open interval (right‑closed) || Excludes teletype::a::, includes teletype::b:: ||  math::a \lt x \leq b::
+::
+::
+
 method:: coin
 Let emphasis::x:: be the receiver clipped to the range [0, 1].
 With probability emphasis::x::, return true.

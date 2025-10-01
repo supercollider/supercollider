@@ -995,22 +995,9 @@ bool MainWindow::save(Document* doc, bool forceChoose, bool saveInExtensionFolde
             // filepath with added suffix already exists!
         }
 
-#ifdef Q_OS_MAC
-        QWidget* last_active_window = QApplication::activeWindow();
-#endif
-
-        int result = dialog.exec();
-
-        // FIXME: workaround for Qt bug 25295
-        // See SC issue #678
-#ifdef Q_OS_MAC
-        if (last_active_window)
-            last_active_window->activateWindow();
-#endif
-
         QString save_path;
 
-        if (result == QDialog::Accepted) {
+        if (dialog.exec() == QDialog::Accepted) {
             save_path = dialog.selectedFiles()[0];
 
             if (save_path.indexOf('.') == -1 && !QFile::exists(save_path)) {
@@ -1079,22 +1066,11 @@ void MainWindow::openDocument() {
     filters << tr("All Files (*)") << tr("SuperCollider (*.scd *.sc)") << tr("SuperCollider Help Source (*.schelp)");
     dialog.setNameFilters(filters);
 
-#ifdef Q_OS_MAC
-    QWidget* last_active_window = QApplication::activeWindow();
-#endif
-
     if (dialog.exec()) {
         QStringList filenames = dialog.selectedFiles();
         foreach (QString filename, filenames)
             mMain->documentManager()->open(filename);
     }
-
-    // FIXME: workaround for Qt bug 25295
-    // See SC issue #678
-#ifdef Q_OS_MAC
-    if (last_active_window)
-        last_active_window->activateWindow();
-#endif
 }
 
 void MainWindow::restoreDocuments() {

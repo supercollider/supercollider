@@ -1,5 +1,5 @@
 add_library(boost_test STATIC boost_test.cpp)
-target_include_directories(boost_test PUBLIC ${boost_include_dirs})
+target_link_libraries(boost_test PUBLIC Boost::unit_test_framework)
 
 add_subdirectory(scsynth)
 if (SUPERNOVA)

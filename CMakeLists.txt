@@ -123,15 +123,7 @@ endif()
 
 if(WIN32)
     add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0600)
-
-    #avoid unnecesary autolink
-    add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
-
-    # use session manager to set shared memory location, see issue 2409
-    add_definitions(-DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
 endif()
-
-add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
 
 
 #############################################
@@ -315,36 +307,32 @@ if (NOT WIN32)
 endif()
 
 if(SYSTEM_BOOST)
-    # https://github.com/supercollider/supercollider/issues/4576#issuecomment-531499017
-    # Boost >= 1.71 ships with its own Boost config file, we ignore it for now.
-    set(Boost_NO_BOOST_CMAKE ON)
+    # policy CMP0167 is only available from CMake 3.30 on
+    if(POLICY CMP0167)
+        # CMP0167 NEW policy: use Boost-provided BoostConfig.cmake config file
+        # instead of the old FindBoost module
+        cmake_policy(SET CMP0167 NEW)
+    endif()
     set(Boost_USE_MULTITHREADED ON)
-    find_package( Boost 1.50.0 COMPONENTS  thread system filesystem program_options regex test_exec_monitor )
+    set(BOOST_COMPONENTS thread program_options regex)
+    if(ENABLE_TESTSUITE)
+        list(APPEND BOOST_COMPONENTS unit_test_framework)
+    endif()
+    find_package(Boost 1.70.0 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
     if (Boost_FOUND)
-        # we're specifically setting up the boost libraries here, so we can
-        # name them
-        add_library(boost_thread_lib SHARED IMPORTED)
-        set_property(TARGET boost_thread_lib PROPERTY IMPORTED_LOCATION
-          ${Boost_THREAD_LIBRARY})
-        add_library(boost_system_lib SHARED IMPORTED)
-        set_property(TARGET boost_system_lib PROPERTY IMPORTED_LOCATION
-          ${Boost_SYSTEM_LIBRARY})
-        add_library(boost_program_options_lib SHARED IMPORTED)
-        set_property(TARGET boost_program_options_lib PROPERTY
-          IMPORTED_LOCATION ${Boost_PROGRAM_OPTIONS_LIBRARY})
-        add_library(boost_regex_lib SHARED IMPORTED)
-        set_property(TARGET boost_regex_lib PROPERTY IMPORTED_LOCATION
-          ${Boost_REGEX_LIBRARY})
-        add_library(boost_test_exec_monitor_lib SHARED IMPORTED)
-        set_property(TARGET boost_test_exec_monitor_lib PROPERTY
-          IMPORTED_LOCATION ${Boost_TEST_EXEC_MONITOR_LIBRARY})
-        set(boost_include_dirs ${Boost_INCLUDE_DIRS})
-    else()
-        message(FATAL_ERROR "Not able to use system boost because none was found.")
+        message(STATUS "Found system Boost in ${Boost_INCLUDE_DIRS}")
     endif()
 else()
-    set(boost_include_dirs ${CMAKE_SOURCE_DIR}/external_libraries/boost)
-endif()
+	# bundled boost is set up in external_libraries/CMakeLists.txt
+	# here we just set some global definitions
+	if(WIN32)    
+		#avoid unnecesary autolink
+		add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
+		# use session manager to set shared memory location, see issue 2409
+		add_definitions(-DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
+	endif()
+	add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
+endif() 
 
 if(SYSTEM_YAMLCPP)
   find_package(YamlCpp)

@@ -1,9 +1,8 @@
-find_package(Sndfile)
-
 # here we choose who provides us with the FFT lib
 # this is done independently for scsynth and supernova
-# on macOS scsynth uses vDSP implementation for FFT
-# which is not thread-safe
+# for historical reasons, as the vDSP implementation
+# wasn't thread-safe in the past
+# and couldn't be used in supernova
 
 if (APPLE)
     add_definitions("-DSC_FFT_VDSP")
@@ -49,10 +48,7 @@ if(AUDIOAPI STREQUAL jack)
   message(STATUS "Using JACK_LINK_LIBRARIES: ${JACK_LINK_LIBRARIES}")
   message(STATUS "Using JACK_INCLUDE_DIRS: ${JACK_INCLUDE_DIRS}")
 elseif(AUDIOAPI STREQUAL portaudio AND SYSTEM_PORTAUDIO)
-    find_package(Portaudio)
-    if(NOT PORTAUDIO_FOUND)
-      message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
-    endif()
+    find_package(Portaudio REQUIRED)
 elseif(AUDIOAPI STREQUAL bela)
     # The Bela lib will have its own set of libraries and includes
     # However, the Bela audio backend for SC has some direct calls to Xenomai
@@ -135,16 +131,13 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     .
 )
 
-include_directories (${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include)
-
 if (AUDIOAPI STREQUAL jack)
 	list(APPEND scsynth_sources SC_Jack.cpp)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_JACK")
 	include_directories(${JACK_INCLUDE_DIRS})
 elseif (AUDIOAPI STREQUAL portaudio)
 	list(APPEND scsynth_sources SC_PortAudio.cpp ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
-	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_PORTAUDIO" ${PORTAUDIO_DEFINITIONS})
-	include_directories(${PORTAUDIO_INCLUDE_DIRS})
+	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_PORTAUDIO")
 elseif (AUDIOAPI STREQUAL bela)
     list(APPEND scsynth_sources SC_Bela.cpp)
     add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_BELA" "-DSC_BELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
@@ -176,7 +169,7 @@ endif()
 
 target_compile_definitions(libscsynth PUBLIC  SC_MEMORY_ALIGNMENT=32)
 
-target_link_libraries(libscsynth tlsf)
+target_link_libraries(libscsynth tlsf Boost::sync)
 
 find_library(DL NAMES dl)
 if(DL)
@@ -187,21 +180,26 @@ if(NOVA_SIMD)
 	target_compile_definitions(libscsynth PUBLIC NOVA_SIMD)
 endif()
 
-if(SNDFILE_FOUND)
-	if(SNDFILE_HAS_VORBIS)
-		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_VORBIS)
+if(NOT NO_LIBSNDFILE)
+	find_package(Sndfile)
+	if(SNDFILE_FOUND)
+		if(SNDFILE_HAS_VORBIS)
+			target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_VORBIS)
+		endif()
+		if(SNDFILE_HAS_OPUS)
+			target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_OPUS)
+		endif()
+		if(SNDFILE_HAS_MPEG)
+			target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_MPEG)
+		endif()
+		target_link_libraries(libscsynth ${SNDFILE_LIBRARIES})
+		target_include_directories(libscsynth PUBLIC ${SNDFILE_INCLUDE_DIR})
+	else()
+		message(SEND_ERROR "Cannot find libsndfile")
 	endif()
-	if(SNDFILE_HAS_OPUS)
-		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_OPUS)
-	endif()
-	if(SNDFILE_HAS_MPEG)
-		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_MPEG)
-	endif()
-	target_link_libraries(libscsynth ${SNDFILE_LIBRARIES})
-	target_include_directories(libscsynth PUBLIC ${SNDFILE_INCLUDE_DIR})
-elseif(NOT NO_LIBSNDFILE)
-	message(SEND_ERROR "Cannot find libsndfile")
-endif(SNDFILE_FOUND)
+else()
+	add_definitions("-DNO_LIBSNDFILE")
+endif()
 
 if(UNIX AND NOT APPLE)
 	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${LINUX_SC_PLUGIN_DIR}\"")
@@ -224,14 +222,13 @@ endif()
 if (AUDIOAPI STREQUAL jack)
 	target_link_libraries(libscsynth ${JACK_LINK_LIBRARIES})
 elseif(AUDIOAPI STREQUAL portaudio)
-	target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
+	target_link_libraries(libscsynth PortAudio::PortAudio)
 elseif(AUDIOAPI STREQUAL bela)
     target_link_libraries(libscsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
 elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
 
-target_include_directories(libscsynth PUBLIC ${boost_include_dirs})
 
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)

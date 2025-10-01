@@ -24,10 +24,14 @@
 #include "nova-tt/thread_priority.hpp"
 #include "nova-tt/name_thread.hpp"
 
+#include <tuple>
+
 #include "server.hpp"
 #include "sync_commands.hpp"
 
-#include "nrt_synthesis.hpp"
+#ifndef NO_LIBSNDFILE
+#    include "nrt_synthesis.hpp"
+#endif
 
 #include "sc/sc_synth_definition.hpp"
 #include "sc/sc_ugen_factory.hpp"
@@ -199,9 +203,13 @@ void nova_server::group_free_deep(abstract_group* group) {
 
 
 void nova_server::run_nonrt_synthesis(server_arguments const& args) {
+#ifndef NO_LIBSNDFILE
     start_dsp_threads();
     non_realtime_synthesis_engine engine(args);
     engine.run();
+#else
+    std::cout << "Warning: Non-RT synthesis not supported as supernova was compiled without libsndfile" << std::endl;
+#endif
 }
 
 void nova_server::rebuild_dsp_queue(void) {
@@ -274,8 +282,7 @@ static bool set_realtime_priority(int thread_index) {
 #    elif defined(_WIN32)
         int priority = thread_priority_interval_rt().second;
 #    else
-        int min, max;
-        boost::tie(min, max) = thread_priority_interval_rt();
+        auto [min, max] = thread_priority_interval_rt();
         int priority = max - 3;
         priority = std::max(min, priority);
 #    endif
@@ -315,6 +322,9 @@ void thread_init_functor::operator()(int thread_index) {
         if (!result)
             std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
     }
+
+    // initialize thread local buffers
+    scfft_thread_init();
 }
 
 void io_thread_init_functor::operator()() const {
@@ -360,6 +370,9 @@ void realtime_engine_functor::init_thread(void) {
     }
 
     name_current_thread(0);
+
+    // initialize thread local buffers
+    scfft_thread_init();
 }
 
 void realtime_engine_functor::log_(const char* str) {

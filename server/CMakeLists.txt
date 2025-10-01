@@ -13,7 +13,6 @@ include_directories(${CMAKE_SOURCE_DIR}/external_libraries
 					${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
 					)
 
-include_directories(${boost_include_dirs})
 
 add_subdirectory(plugins)
 add_subdirectory(scsynth)
