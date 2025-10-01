@@ -147,8 +147,6 @@ TestUGen_initSample : UnitTest {
 		this.assertInitEqualsFirstSample({ RunningMin.ar(DC.ar(1), DC.kr(1)) });
 		this.assertInitEqualsFirstSample({ RunningMax.ar(DC.ar(1), DC.ar(1)) });
 		this.assertInitEqualsFirstSample({ RunningMax.ar(DC.ar(1), DC.kr(1)) });
-		// need to test reset on trig
-		// note: trigger is resetting on "next" sample: ask james harkins
 
 		testFirstInput.(MostChange);
 		testFirstInput.(LeastChange);
@@ -236,10 +234,41 @@ TestUGen_initSample : UnitTest {
 		this.assertSynthOutput({ Phasor.ar(DC.ar(0), DC.ar(1), 1, 10, 5) }, [1]);
 		// test start on reset when triggered at init
 		this.assertSynthOutput({ Phasor.ar(1, 1, 0, 10, 5) }, [5]);
-		// AK and AA subsample interpolation causes unexpected out: starts at 6
+		// AK and AA subsample interpolation of the trigger causes unexpected out:
+		// see https://github.com/supercollider/supercollider/issues/6883
 		this.assertSynthOutput({ Phasor.kr(1, 1, 0, 10, 5) }, [6]);
 		this.assertSynthOutput({ Phasor.ar(DC.ar(1), 1, 0, 10, 5) }, [6]);
 		this.assertSynthOutput({ Phasor.ar(DC.ar(1), DC.ar(1), 0, 10, 5) }, [6]);
+
+		// RunningMin/RunningMax: test reset on trig
+		// note: trigger is resetting on "next" sample
+		this.assertSynthOutput(
+			{ RunningMax.ar(7 - Phasor.ar(end:7), Impulse.ar(SampleRate.ir/2, 0.5)) },
+			[7, 7, 6, 6, 4, 4, 2]
+		);
+		this.assertSynthOutput(
+			{ RunningMax.kr(7-Phasor.kr(end:7), Impulse.kr(ControlRate.ir/2, 0.5)) },
+			[7, 7, 6, 6, 4, 4, 2]
+		);
+		this.assertSynthOutput({
+			var bs = BlockSize.ir;
+			var sig = RunningMax.ar(7 - Phasor.ar(rate:1/bs, end:7).floor, Impulse.kr(ControlRate.ir/2, 0.5));
+			A2K.kr(sig);
+		}, [7, 7, 6, 6, 4, 4, 2]);
+
+		this.assertSynthOutput(
+			{ RunningMin.ar(Phasor.ar(end:7), Impulse.ar(SampleRate.ir/2, 0.5)) },
+			[0, 0, 1, 1, 3, 3, 5]
+		);
+		this.assertSynthOutput(
+			{ RunningMin.kr(Phasor.kr(end:7), Impulse.kr(ControlRate.ir/2, 0.5)) },
+			[0, 0 , 1 , 1 , 3, 3, 5]
+		);
+		this.assertSynthOutput({
+			var bs = BlockSize.ir;
+			var sig = RunningMin.ar(Phasor.ar(rate:1/bs, end:7).floor, Impulse.kr(ControlRate.ir/2, 0.5));
+			A2K.kr(sig);
+		}, [0, 0, 1, 1, 3, 3, 5]);
 
 		// MostChange: test initial choice: largest abs, b if abs(a) == abs(b)
 		this.assertSynthOutput({ MostChange.ar([-1, 1], 0) }, [-1, 1]);
