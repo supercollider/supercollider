@@ -250,7 +250,7 @@ z.class.postln;
 discussion::
 The method code::.asInteger:: does not regard the exponent represented as emphasis::e::, thus the following code returns code::2:::
 code::
-"2e3".asIntager
+"2e3".asInteger
 ::
 
 The method code::.asFloat:: regards the exponent represented as emphasis::e::. See link::#-asFloat::.
