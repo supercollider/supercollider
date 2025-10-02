@@ -76,6 +76,12 @@
 		'skipReason': "UnitTest fails when run in GHA on Linux (FIXME)",
 	),
 	(
+		'suite': "TestProcessCreation",
+		'test': "test_string_unixCmd_quoteCmdAndArg",
+		'skip': if(thisProcess.platform.name == \windows, {"true"}, {"false"}),
+		'skipReason': "Windows process creation has unresolved issues (FIXME)",
+	),
+	(
 		'suite': "TestSCDoc",
 		'test': "test_helpSourceDirs_includedExtensions",
 		'skipReason': "UnitTest fails (FIXME)",
