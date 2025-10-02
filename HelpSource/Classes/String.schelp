@@ -265,7 +265,7 @@ The method code::.asFloat:: understands scientific notation (e.g., teletype::2e3
 and accepts uppercase teletype::E:: and lowercase teletype::e::.
 By contrast, the method link::#-asInteger:: does emphasis::not:: accept scientific notation.
 code::
-"2e3".asFloat // -> 2000
+"2e3".asFloat // -> 2000.0
 ::
 
 method::asSecs
