@@ -148,7 +148,7 @@ code::
 100.do { |i| i.postln; }
 ::
 Suppose we want the loop to stop after code:: i == 7::.
-Ohther languages (e.g. javascript or python) would allow us to write expressions analogous to the following:
+Other languages (e.g. javascript or python) would allow us to write expressions analogous to the following:
 
 code::
 // this won't work in SC
