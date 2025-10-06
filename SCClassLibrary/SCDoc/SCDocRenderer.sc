@@ -563,7 +563,7 @@ SCDocHTMLRenderer {
 				};
 				this.renderChildren(stream, node);
 			},
-			\NL, { }, // these shouldn't be here..
+			\NL, { stream << " "; }, // these shouldn't be here..
 // Plain text and modal tags
 			\TEXT, {
 				stream << this.escapeSpecialChars(node.text);
