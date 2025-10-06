@@ -87,7 +87,7 @@ jobs:
       BREW_UNIVERSAL_WORKDIR: ${{ github.workspace }}/brew-universal
       SKIP_SIGNING: 1 # for brew-install-universal
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
