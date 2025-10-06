@@ -111,6 +111,23 @@ RecordBuf : UGen {
 }
 
 
+BufIn : MultiOutUGen {
+	*kr { arg numChannels, bufnum=0, offset=0;
+		^this.multiNew('control', numChannels, bufnum, offset)
+	}
+
+	init { arg argNumChannels ... theInputs;
+		inputs = theInputs;
+		^this.initOutputs(argNumChannels, rate);
+	}
+	argNamesInputsOffset { ^2 }
+
+	checkInputs {
+		^this.checkValidInputs;
+	}
+}
+
+
 ScopeOut : UGen {
 	*ar { arg inputArray , bufnum=0;
 		this.multiNewList(['audio', bufnum] ++ inputArray.asArray);

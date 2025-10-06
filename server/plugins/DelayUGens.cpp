@@ -99,6 +99,12 @@ struct RecordBuf : public Unit {
     float** mIn;
 };
 
+struct BufIn : public Unit {
+    float m_fbufnum;
+    float m_failedBufNum;
+    SndBuf* m_buf;
+};
+
 struct Pitch : public Unit {
     float m_values[kMAXMEDIANSIZE];
     int m_ages[kMAXMEDIANSIZE];
@@ -278,6 +284,9 @@ void RecordBuf_Ctor(RecordBuf* unit);
 void RecordBuf_Dtor(RecordBuf* unit);
 void RecordBuf_next(RecordBuf* unit, int inNumSamples);
 void RecordBuf_next_10(RecordBuf* unit, int inNumSamples);
+
+void BufIn_Ctor(BufIn* unit);
+void BufIn_next(BufIn* unit, int inNumSamples);
 
 void Pitch_Ctor(Pitch* unit);
 void Pitch_next_a(Pitch* unit, int inNumSamples);
@@ -1599,6 +1608,37 @@ void RecordBuf_next_10(RecordBuf* unit, int inNumSamples) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void BufIn_Ctor(BufIn* unit) {
+    unit->m_fbufnum = -1e9f;
+    unit->m_failedBufNum = -1e9f;
+
+    SETCALC(BufIn_next);
+    BufIn_next(unit, 1);
+}
+
+void BufIn_next(BufIn* unit, int inNumSamples) {
+    GET_BUF_SHARED
+    uint32 numOutputs = unit->mNumOutputs;
+    uint32 offset = static_cast<uint32>(ZIN0(1));
+
+    if (!bufData) {
+        if (unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) {
+            Print("Buffer UGen: no buffer data\n");
+            unit->m_failedBufNum = fbufnum;
+        }
+        ClearUnitOutputs(unit, inNumSamples);
+        return;
+    }
+
+    // we could wrap around buf samples, but no other ugen does it
+    if (offset < 0)
+        offset = 0;
+
+    for (size_t ch = offset; ch < numOutputs; ch++) {
+        OUT(ch)[0] = bufData[ch];
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -6928,6 +6968,7 @@ PluginLoad(Delay) {
     DefineDtorUnit(RecordBuf);
     DefineSimpleUnit(BufRd);
     DefineSimpleUnit(BufWr);
+    DefineSimpleUnit(BufIn);
     DefineDtorUnit(Pitch);
 
     DefineSimpleUnit(BufDelayN);

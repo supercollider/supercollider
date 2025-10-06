@@ -1,0 +1,62 @@
+class:: BufIn
+summary:: Reads Buffer samples as flat array
+related:: Classes/BufRd
+categories:: UGens>Buffer
+
+Description::
+
+Outputs the contents of a buffer as a control signal, reading adjacent samples
+as separate channels.
+
+In comparison to link::Classes/BufRd:: :
+BufRd has a single reading head that moves through buffer samples, BufIn has
+multiple heads, each staying still on a sample.
+
+classmethods::
+private:: categories
+method:: kr
+
+argument::numChannels
+Number of output channels, i.e. number of consecutive samples to read from the
+buffer.
+note::
+It doesn't have to match the Buffer's number of samples. If the
+buffer has less samples, the remaining output channels will return 0.::
+
+argument::bufnum
+The index of the buffer to use.
+
+argument::offset
+The sample index to start reading from.
+
+instancemethods::
+private:: init, argNamesInputsOffset, checkInputs
+
+Examples::
+
+code::
+
+(
+// load some numbers on a buffer
+b = Buffer.loadCollection(s, [34, 61, 104.3, 50]);
+)
+
+// print those numbers
+x = { BufIn.kr(4, b).poll }.play;
+
+x.free;
+
+// use as control signals for other UGens
+(
+{ 
+	var notes = BufIn.kr(4, b);
+	Splay.ar(SinOsc.ar(notes.midicps) * 0.2)
+}.play;
+)
+
+// change buffer contents, sound updates automatically
+b.loadCollection({rrand(40,100)}!4);
+
+b.free
+
+::
