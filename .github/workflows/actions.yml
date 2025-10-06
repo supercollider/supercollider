@@ -131,7 +131,7 @@ jobs:
       S3_ROOT_URL: 'https://supercollider.s3.amazonaws.com'
     steps:
       - name: download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         if: env.UPLOAD_TO_S3 == 'true'
         with:
           name: ${{ env.ARTIFACT_FILE }}
@@ -198,7 +198,7 @@ jobs:
       ARTIFACT_FILE_PREFIX: 'SuperCollider-${{ needs.version-getter.outputs.sc-version }}'
     steps:
       - name: download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: ${{ env.INSTALL_PATH }} # no "name" paramter - download all artifacts
       - name: upload to the release page
