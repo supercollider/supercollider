@@ -104,8 +104,11 @@ Scale {
 	}
 
 	degreeToRatio { |degree, octave = 0|
-		octave = octave + (degree div: degrees.size);
-		^this.ratios.wrapAt(degree) * (this.octaveRatio ** octave);
+		// extra steps to make scale degree literals like 2b == 1.9 work.
+		var degDiatonic = degree.round(1);
+        var centOffset = (degree - degDiatonic) * 10;
+		octave = octave + (degDiatonic div: degrees.size);
+		^this.ratios.wrapAt(degDiatonic) * (this.octaveRatio ** octave) * centOffset.midiratio;
 	}
 
 	degreeToFreq { |degree, rootFreq, octave|
