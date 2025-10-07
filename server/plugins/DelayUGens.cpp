@@ -1620,22 +1620,22 @@ void BufIn_Ctor(BufIn* unit) {
 void BufIn_next(BufIn* unit, int inNumSamples) {
     GET_BUF_SHARED
     const uint32 numOutputs = unit->mNumOutputs;
+    const uint32 bufSize = buf->frames;
     int offset = static_cast<int>(ZIN0(1));
+    if (offset < 0)
+        offset = 0;
 
     if (!bufData) {
         if (unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) {
-            Print("Buffer UGen: no buffer data\n");
+            Print("BufIn: no buffer data\n");
             unit->m_failedBufNum = fbufnum;
         }
         ClearUnitOutputs(unit, inNumSamples);
         return;
     }
 
-    if (offset < 0)
-        offset = 0;
-
     uint32 outCh = 0, bufCh = offset;
-    for (; outCh < numOutputs && bufCh < bufFrames; outCh++) {
+    for (; outCh < numOutputs && bufCh < bufSize; outCh++) {
         const float val = bufData[bufCh++];
         for (uint32 outSamp = 0; outSamp < inNumSamples; ++outSamp)
             OUT(outCh)[outSamp] = val;
