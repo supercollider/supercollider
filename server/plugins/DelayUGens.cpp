@@ -1619,9 +1619,8 @@ void BufIn_Ctor(BufIn* unit) {
 
 void BufIn_next(BufIn* unit, int inNumSamples) {
     GET_BUF_SHARED
-    uint32 numOutputs = unit->mNumOutputs;
+    const uint32 numOutputs = unit->mNumOutputs;
     int offset = static_cast<int>(ZIN0(1));
-    bool loop = ZIN0(2) > 0;
 
     if (!bufData) {
         if (unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) {
@@ -1637,12 +1636,15 @@ void BufIn_next(BufIn* unit, int inNumSamples) {
 
     uint32 outCh = 0, bufCh = offset;
     for (; outCh < numOutputs && bufCh < bufFrames; outCh++) {
-        OUT(outCh)[0] = bufData[bufCh++];
+        const float val = bufData[bufCh++];
+        for (uint32 outSamp = 0; outSamp < inNumSamples; ++outSamp)
+            OUT(outCh)[outSamp] = val;
     }
 
     // zero eventual extra channels
     for (; outCh < numOutputs; outCh++) {
-        OUT(outCh)[0] = 0;
+        for (uint32 outSamp = 0; outSamp < inNumSamples; ++outSamp)
+            OUT(outCh)[outSamp] = 0;
     }
 }
 
