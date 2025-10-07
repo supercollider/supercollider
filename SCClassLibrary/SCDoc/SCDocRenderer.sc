@@ -259,6 +259,7 @@ SCDocHTMLRenderer {
 		<< "var scdoc_sc_version = '" << Main.version << "';\n"
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/static/scdoc.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/static/indexmanager.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
 		<< "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n"
 		// QWebChannel access
