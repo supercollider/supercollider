@@ -179,7 +179,7 @@ If the degree argument is not integer,
 the difference to the nearest integer is interpreted as an offset in cent,
 where 0.001 represents 1 cent (the ratio code::0.01.midiratio::, or code::2.pow(1/1200)::); 
 e.g., 2.1 is scale degree 3 according to tuning, plus one 12TET-semitone. 
-Maximum offset is 499 cent down, 500 cent up.
+Maximum offset is 499 cent.
 code::
 Scale.major.degreeToRatio(2, 1).round(0.001);		// 2.52
 Scale.major(\just).degreeToRatio(2, 1).round(0.001);	// 2.5
