@@ -1,16 +1,24 @@
 class:: BufIn
 summary:: Reads Buffer samples as flat array
-related:: Classes/BufRd
+related:: Classes/BufRd, Classes/Index
 categories:: UGens>Buffer
 
 Description::
+Outputs the contents of a buffer as a control signal, reading a number of
+consecutive samples as separate channels. Like link::Classes/Index::, but
+for multiple indices as the same time, saving the overhead of making multiple UGens.
 
-Outputs the contents of a buffer as a control signal, reading adjacent samples
-as separate channels.
-
-In comparison to link::Classes/BufRd:: :
+In comparison to link::Classes/BufRd:::
 BufRd has a single reading head that moves through buffer samples, BufIn has
-multiple heads, each staying still on a sample.
+multiple heads, each staying still on a different sample.
+
+BufIn treats multi-channel buffers as a flat, interleaved sequence of values.
+This means that reading for instance 2 samples of a 2-channels buffer will
+output only the first value for each channel. See link::#examples:: below, and
+link::Classes/Buffer#Multichannel Buffers:: for more info.
+
+Only the link::#*kr:: method is implemented, because the value at a single buffer index can't
+change between control periods.
 
 classmethods::
 private:: categories
@@ -21,13 +29,16 @@ Number of output channels, i.e. number of consecutive samples to read from the
 buffer.
 note::
 It doesn't have to match the Buffer's number of samples. If the
-buffer has less samples, the remaining output channels will return 0.::
+buffer has less samples than requested, the exceeding output channels will return 0.::
 
 argument::bufnum
 The index of the buffer to use.
 
 argument::offset
 The sample index to start reading from.
+
+returns::
+An array of output channels, corresponding to the requested buffer samples.
 
 instancemethods::
 private:: init, argNamesInputsOffset, checkInputs
@@ -36,10 +47,8 @@ Examples::
 
 code::
 
-(
 // load some numbers on a buffer
 b = Buffer.loadCollection(s, [34, 61, 104.3, 50]);
-)
 
 // print those numbers
 x = { BufIn.kr(4, b).poll }.play;
@@ -58,5 +67,21 @@ x.free;
 b.loadCollection({rrand(40,100)}!4);
 
 b.free
+::
 
+Values from multi-channel buffers are interleaved. Note that they need to be
+interleaved manually when using link::Classes/Buffer#*loadCollection::
+
+code::
+b = Buffer.loadCollection(s, [[1,2,3], [4,5,6]].lace);
+
+x = { BufIn.kr(6, b).poll }.play;
+// outputs [1, 4, 2, 5, 3, 6]
+// i.e. [ch0_0, ch1_0, ch0_1, ch1_1, ch0_2, ch1_2]
+
+x.free;
+
+// user can de-interleave manually afterwards
+x = { BufIn.kr(6, b).unlace(2).poll }.play;
+// outputs [1, 2, 3, 4, 5, 6]
 ::

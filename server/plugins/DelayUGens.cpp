@@ -1620,7 +1620,8 @@ void BufIn_Ctor(BufIn* unit) {
 void BufIn_next(BufIn* unit, int inNumSamples) {
     GET_BUF_SHARED
     uint32 numOutputs = unit->mNumOutputs;
-    uint32 offset = static_cast<uint32>(ZIN0(1));
+    int offset = static_cast<int>(ZIN0(1));
+    bool loop = ZIN0(2) > 0;
 
     if (!bufData) {
         if (unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) {
@@ -1631,12 +1632,17 @@ void BufIn_next(BufIn* unit, int inNumSamples) {
         return;
     }
 
-    // we could wrap around buf samples, but no other ugen does it
     if (offset < 0)
         offset = 0;
 
-    for (size_t ch = offset; ch < numOutputs; ch++) {
-        OUT(ch)[0] = bufData[ch];
+    uint32 outCh = 0, bufCh = offset;
+    for (; outCh < numOutputs && bufCh < bufFrames; outCh++) {
+        OUT(outCh)[0] = bufData[bufCh++];
+    }
+
+    // zero eventual extra channels
+    for (; outCh < numOutputs; outCh++) {
+        OUT(outCh)[0] = 0;
     }
 }
 
