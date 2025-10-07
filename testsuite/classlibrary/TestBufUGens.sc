@@ -14,9 +14,9 @@ TestBufUGens : UnitTest {
 	}
 
   assertBufInOuptut { |data, message, numSamples(data.size), offset=0, expected(data), timeout=1|
-		var buffer = Buffer.sendCollection(server, data);
 		var cond = CondVar();
 		var out = nil;
+		var buffer = Buffer.sendCollection(server, data);
 		server.sync;
 		[\ar, \kr].do { |method|
 				var period = if (method === \ar) { 1 } { server.options.blockSize } / server.sampleRate;
@@ -35,8 +35,9 @@ TestBufUGens : UnitTest {
 				};
 		};
 
+		server.sync; // make sure synths are freed before freeing buffer
 		buffer.free;
-		server.sync;
+		server.sync; // make sure buf is freed before moving on
   }
 
 	test_BufIn_readCorrectValues {
