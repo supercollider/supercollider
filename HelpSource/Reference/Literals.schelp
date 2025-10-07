@@ -94,7 +94,11 @@ code::
 Hexidecimal numbers notated with code::0x:: may only be expressed as integers.
 
 subsection::Scale Degrees
-Integer numbers as scale degrees supports accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
+Integer numbers as scale degrees supports accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. 
+Accidentals are represented as floating point values, 
+where each 0.1 of difference to the nearest integer corresponds to 100 cents (i.e., a semitone in 12TET).
+While the digit to the left of the decimal separator is a degree, and thus is affected by tuning and scale, 
+the digits to the right are not, and are always in cents. (See link::Classes/Scale#-degreeToRatio::)
 
 code::
 2s == 2.1  // scale degree two, sharp
