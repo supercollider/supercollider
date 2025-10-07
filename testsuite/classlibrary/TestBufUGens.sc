@@ -15,24 +15,28 @@ TestBufUGens : UnitTest {
 
   assertBufInOuptut { |data, message, numSamples(data.size), offset=0, expected(data), timeout=1|
 		var buffer = Buffer.sendCollection(server, data);
-		var period = server.options.blockSize / server.sampleRate;
 		var cond = CondVar();
 		var out = nil;
 		server.sync;
-		{ BufIn.kr(numSamples, buffer, offset) }.loadToFloatArray(period, server) { |v|
-				out = v;
-				cond.signalOne;
-		};
-		cond.waitFor(1){ out.notNil };
+		[\ar, \kr].do { |method|
+				var period = if (method === \ar) { 1 } { server.options.blockSize } / server.sampleRate;
+				{ BufIn.perform(method, numSamples, buffer, offset) }
+				.loadToFloatArray(period, server) { |v|
+						out = v;
+						cond.signalOne;
+				};
+				cond.waitFor(1){ out.notNil };
 
-		if (out.isNil) {
-				this.assert(false,
-						"timeout while expecting values from server")
-		} {
-				this.assertArrayFloatEquals(out, expected, message, 1e-5)
+				if (out.isNil) {
+						this.assert(false,
+								"timeout while expecting values from server")
+				} {
+						this.assertArrayFloatEquals(out, expected, message + " (%)".format(method), 1e-5)
+				};
 		};
 
 		buffer.free;
+		server.sync;
   }
 
 	test_BufIn_readCorrectValues {

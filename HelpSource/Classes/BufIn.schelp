@@ -17,12 +17,9 @@ This means that reading for instance 2 samples of a 2-channels buffer will
 output only the first value for each channel. See link::#examples:: below, and
 link::Classes/Buffer#Multichannel Buffers:: for more info.
 
-Only the link::#*kr:: method is implemented, because the value at a single buffer index can't
-change between control periods.
-
 classmethods::
 private:: categories
-method:: kr
+method:: ar, kr
 
 argument::numChannels
 Number of output channels, i.e. number of consecutive samples to read from the
