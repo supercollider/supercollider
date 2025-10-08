@@ -2,7 +2,7 @@ title:: Client vs Server
 summary:: Client versus Server Architecture and Operations
 categories:: Server>Architecture, External Control>OSC
 
-The name "SuperCollider" is in fact used to indicate five different things (Figure 1):
+The name "SuperCollider" is in fact used to indicate five different things (strong::Figure 1::):
 numberedlist::
 ## an audio server
 ## an audio programming language
@@ -27,7 +27,7 @@ table::
 strong::Figure.::Client/Server architecture
 ::
 
-In Figure 2 a generic network architecture is depicted: A number of clients communicating with a server by exchanging messages through a network. In SuperCollider the client and the server make use of a specific subset of CNMAT's Open Sound Control (OSC) protocol in order to communicate (over TCP or UDP). As a consequence, you will see many references to "OSC messages" in the help files.
+In strong::Figure 2:: a generic network architecture is depicted: A number of clients communicating with a server by exchanging messages through a network. In SuperCollider the client and the server make use of a specific subset of CNMAT's Open Sound Control (OSC) protocol in order to communicate (over TCP or UDP). As a consequence, you will see many references to "OSC messages" in the help files.
 
 To avoid any possible confusion: The network is defined at an abstract level. This means that the client(s) and the server(s) can be in execution on the same physical machine. This is what normally happens when you use the SuperCollider application: two programs will run on your machine, scsynth (or supernova) and sclang.
 
@@ -82,7 +82,7 @@ table::
 strong::Figure.::Sclang as a high-level client
 ::
 
-Language wrapping allows the user to access complex behaviours from very little code. Figure 3 (ignore for the moment that sclang is represented as a client among other possible ones, see later) schematically represents what happens when you evaluate an audio function as in strong::Code Snippet 4: ::
+Language wrapping allows the user to access complex behaviours from very little code. strong::Figure 3:: (ignore for the moment that sclang is represented as a client among other possible ones, see later) schematically represents what happens when you evaluate an audio function as in strong::Code Snippet 4: ::
 
 table::
 ##code::
