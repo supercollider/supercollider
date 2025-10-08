@@ -13,14 +13,18 @@ TestBufUGens : UnitTest {
 		server.remove;
 	}
 
-  assertBufInOuptut { |data, message, numSamples(data.size), offset=0, expected(data), timeout=1|
+  assertBufInOuptut { |data, message, numSamples(data.size), channel=0, offset=0, expected(data), timeout=1|
 		var cond = CondVar();
 		var out = nil;
-		var buffer = Buffer.sendCollection(server, data);
+		var buffer = if (data.rank > 1) {
+				Buffer.sendCollection(server, data.lace, data.shape[0])
+		} {
+				Buffer.sendCollection(server, data, 1)
+		};
 		server.sync;
 		[\ar, \kr].do { |method|
 				var period = if (method === \ar) { 1 } { server.options.blockSize } / server.sampleRate;
-				{ BufIn.perform(method, numSamples, buffer, offset) }
+				{ BufIn.perform(method, numSamples, buffer, channel, offset) }
 				.loadToFloatArray(period, server) { |v|
 						out = v;
 						cond.signalOne;
@@ -45,10 +49,38 @@ TestBufUGens : UnitTest {
 		this.assertBufInOuptut(data,  "should output correct buffer values");
 
 		data = [[19, -4.0], [1234678, -0.5]].lace;
-		this.assertBufInOuptut(data,  "should output interleaved buffer values for a multi-channel buffer");
+		this.assertBufInOuptut(data,
+				"should output interleaved buffer values for a multi-channel buffer",
+				channel: -1,
+				expected: data.lace
+		);
+
+		data = [[19, -4.0], [1234678, -0.5]];
+		this.assertBufInOuptut(data,
+				"should read correct channel of a multi-channel buffer",
+				channel: 1,
+				numSamples: data[1].size,
+				expected: data[1]
+		);
+
+		this.assertBufInOuptut(data,
+				"should output zeros when reading an exceeding channel of a multi-channel buffer",
+				channel: 10,
+				expected: data.lace.collect(0)
+		);
+
+		// TODO: refactor assertBufInOuptut for this to make sense
+		// data = [[19, -4.0], [1234678, -0.5]];
+		// this.assertBufInOuptut(data,
+		// 		"should default to reading channel 0 of a multi-channel buffer",
+		// 		expected: data[0],
+		// );
+
+		// TODO: test for multi-channel expansion of channels?
+
 	}
 
-	test_BufIn_readCorrectValues_tooManyOutChannels {
+	test_BufIn_readCorrectValues_numOutputs {
 		var data = [123, -456];
 		this.assertBufInOuptut(data,
 				"should output correct buffer values followed by zeros for extra channels",
@@ -92,5 +124,4 @@ TestBufUGens : UnitTest {
 				expected: [46, -23]
 		);
 	}
-
 }

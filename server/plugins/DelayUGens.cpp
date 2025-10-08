@@ -1620,8 +1620,9 @@ void BufIn_Ctor(BufIn* unit) {
 void BufIn_next(BufIn* unit, int inNumSamples) {
     GET_BUF_SHARED
     const uint32 numOutputs = unit->mNumOutputs;
-    const uint32 bufSize = buf->frames;
-    int offset = static_cast<int>(ZIN0(1));
+    const uint32 bufSize = buf->samples;
+    int channel = static_cast<int>(ZIN0(1));
+    int offset = static_cast<int>(ZIN0(2));
     if (offset < 0)
         offset = 0;
 
@@ -1634,11 +1635,24 @@ void BufIn_next(BufIn* unit, int inNumSamples) {
         return;
     }
 
-    uint32 outCh = 0, bufCh = offset;
-    for (; outCh < numOutputs && bufCh < bufSize; outCh++) {
-        const float val = bufData[bufCh++];
+    if (channel > buf->channels) {
+        Print("BufIn: requested channel %d, but buffer %d has only %d channels\n", channel, static_cast<int>(fbufnum),
+              buf->channels);
+        ClearUnitOutputs(unit, inNumSamples);
+        return;
+    }
+
+    // channels < 0: output all channels interleaved
+    // channels >= 0: output only selected channel
+    const uint32 channelHop = channel < 0 ? 1 : buf->channels;
+
+    uint32 bufSamp = (offset * buf->channels) + (channel < 0 ? 0 : channel);
+    uint32 outCh = 0;
+    for (; outCh < numOutputs && bufSamp < bufSize; outCh++) {
+        const float val = bufData[bufSamp];
         for (uint32 outSamp = 0; outSamp < inNumSamples; ++outSamp)
             OUT(outCh)[outSamp] = val;
+        bufSamp += channelHop;
     }
 
     // zero eventual extra channels
