@@ -112,12 +112,12 @@ RecordBuf : UGen {
 
 
 BufIn : MultiOutUGen {
-	*ar { arg numChannels, bufnum=0, offset=0;
-		^this.multiNew('audio', numChannels, bufnum, offset)
+	*ar { arg numOutputs, bufnum=0, channel=0, offset=0;
+		^this.multiNew('audio', numOutputs, bufnum, channel, offset)
 	}
 
-	*kr { arg numChannels, bufnum=0, offset=0;
-		^this.multiNew('control', numChannels, bufnum, offset)
+	*kr { arg numOutputs, bufnum=0, channel=0, offset=0;
+		^this.multiNew('control', numOutputs, bufnum, channel, offset)
 	}
 
 	init { arg argNumChannels ... theInputs;
