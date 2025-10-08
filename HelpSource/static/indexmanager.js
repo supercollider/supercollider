@@ -19,23 +19,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const cells = table.querySelectorAll('th, td');
         
         cells.forEach(cell => {
-            // Process table captions (any cell)
-            processCaption(cell, 'Table', counters);
-            
-            // Process figure captions (any cell)
-            processCaption(cell, 'Figure', counters);
-            
-            // Process code snippet captions (any cell)
-            processCaption(cell, 'Code Snippet', counters);
-            
-            // Process post window captions (any cell)
-            processCaption(cell, 'Post Window', counters);
-            
-            // Process formula captions (any cell)
-            processCaption(cell, 'Formula', counters);
-            
-            // Process formula captions (any cell)
-            processCaption(cell, 'Score', counters);
+            // Process all caption types
+            const types = ['Table', 'Figure', 'Code Snippet', 'Post Window', 'Formula', 'Score'];
+            types.forEach(type => {
+                processCaption(cell, type, counters);
+            });
         });
     });
     
@@ -45,23 +33,41 @@ document.addEventListener('DOMContentLoaded', function() {
         
         strongElements.forEach(strongElement => {
             const text = strongElement.textContent;
-            // Match pattern like "Table 1." or "Figure 2."
-            const match = text.match(new RegExp(`^${type}\\s+(\\d+)\\.`));
+            
+            // Match various patterns:
+            // - "Figure." (no numbers)
+            // - "Figure 1." (single number)
+            // - "Figure 1.1." (multiple numbers)
+            // - "Figure 1.1.1." etc.
+            const pattern = new RegExp(`^${type}(?:\\s+(\\d+(?:\\.\\d+)*))?\\.$`);
+            const match = text.match(pattern);
             
             if (match) {
-                const mainNumber = match[1];
+                let numberString = match[1] || ''; // Get the number part if exists
                 
-                // Initialize or increment counter for this main number
-                if (!counters[type][mainNumber]) {
-                    counters[type][mainNumber] = 0;
+                if (numberString === '') {
+                    // Case: "Figure." - treat as "Figure 0."
+                    numberString = '0';
                 }
-                counters[type][mainNumber]++;
+                
+                // Initialize or increment counter for this number string
+                if (!counters[type][numberString]) {
+                    counters[type][numberString] = 0;
+                }
+                counters[type][numberString]++;
+                
+                // Create the new numbering
+                let newNumberString;
+                if (numberString === '0') {
+                    // For "Figure." case, just use the counter
+                    newNumberString = `${counters[type][numberString]}`;
+                } else {
+                    // For numbered cases, append the counter
+                    newNumberString = `${numberString}.${counters[type][numberString]}`;
+                }
                 
                 // Update the text with new numbering and add space after the last dot
-                const newText = text.replace(
-                    new RegExp(`^${type}\\s+\\d+\\.`), 
-                    `${type} ${mainNumber}.${counters[type][mainNumber]}. `
-                );
+                const newText = `${type} ${newNumberString}. `;
                 strongElement.textContent = newText;
                 
                 // Add visual feedback
