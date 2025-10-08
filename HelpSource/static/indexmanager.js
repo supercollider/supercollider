@@ -1,4 +1,5 @@
 // autoNumbering.js - Automatically numbers tables, figures, code snippets, post windows, and formulas
+// and replaces link texts with corresponding figure/table numbers
 
 document.addEventListener('DOMContentLoaded', function() {
     // Track counters for each numbering type
@@ -11,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'Score': {}
     };
     
-    // Process all tables
+    // Process all tables for automatic numbering
     const tables = document.querySelectorAll('table');
     
     tables.forEach(table => {
@@ -80,4 +81,53 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Log counters for debugging
     console.log('Final numbering counters:', counters);
+    
+    // Now replace link texts with corresponding figure/table numbers
+    replaceLinkTexts();
+    
+    function replaceLinkTexts() {
+        // Find all links with href starting with #
+        const links = document.querySelectorAll('a[href^="#"]');
+        
+        links.forEach(link => {
+            const href = link.getAttribute('href');
+            const anchorName = href.substring(1); // Remove the # symbol
+            
+            // Find the anchor element with the matching name
+            const anchor = document.querySelector(`a.anchor[name="${anchorName}"]`);
+            
+            if (anchor) {
+                // Find the strong element that precedes the anchor
+                let previousElement = anchor.previousElementSibling;
+                let strongElement = null;
+                
+                // Traverse previous siblings to find the closest strong element
+                while (previousElement) {
+                    if (previousElement.tagName === 'STRONG') {
+                        strongElement = previousElement;
+                        break;
+                    }
+                    previousElement = previousElement.previousElementSibling;
+                }
+                
+                // If we found a strong element, replace the link text
+                if (strongElement) {
+                    const strongText = strongElement.textContent.trim();
+                    
+                    // Extract just the numbering part (e.g., "Figure 2." from "Figure 2. Client/Server architecture")
+                    const match = strongText.match(/^(Table|Figure|Code Snippet|Post Window|Formula|Score)\s+[\d.]+\./);
+                    
+                    if (match) {
+                        // Remove the trailing dot from the matched text
+                        let linkText = match[0].trim();
+                        if (linkText.endsWith('.')) {
+                            linkText = linkText.slice(0, -1);
+                        }
+                        link.textContent = linkText;
+                        console.log(`Replaced link text: ${link.textContent}`);
+                    }
+                }
+            }
+        });
+    }
 });
