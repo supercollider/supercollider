@@ -114,16 +114,10 @@ if(File.exists(~testProto).not) {
 	// Ensure excluded tests are not run
 	toExclude = tests.select({|t|
 		if(t.isKindOf(Set)) { // sometimes we don't get a dictionary here... it shouldn't be the case, but ?
-			if (t[\skip].notNil) {
-				t[\skip] = (t[\skip].asString.toLower == "true")
-			};
-
-			t[\skip] == true
+			t[\skip].() ? false;
 		} {
 			"detected a non-dictionary entry: %. Skipping...".format(t.asCompileString).warn;
-			Dictionary.newFrom([
-				\test: \error
-			])[\skip] == true;
+			true;
 		}
 	});
 
