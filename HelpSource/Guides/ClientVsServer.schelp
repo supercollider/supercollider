@@ -11,7 +11,10 @@ numberedlist::
 ## the application including the two programs and providing mentioned functionalities
 ::
 
-image::structureEn.png#Figure 1. Structure of the SuperCollider application::
+table::
+## image::structureEn.png#::
+strong::Figure.::Structure of the SuperCollider application
+::
 
 The SuperCollider application is thus made up of two distinct, autonomous, components, a server and a client. For the first we have a choice between scsynth (SC-synthesizer) and supernova, and for the second we have sclang (SC-language).
 
@@ -19,7 +22,10 @@ section:: Description
 
 The SuperCollider application makes use of client/server architecture which separates two functions, respectively one providing and the other requesting services. The client and the server communicate through a network.
 
-image::s8kfFC-clientServerEn.png#Figure 2. Client/Server architecture::
+table::
+## image::s8kfFC-clientServerEn.png::
+strong::Figure.::Client/Server architecture
+::
 
 In Figure 2 a generic network architecture is depicted: A number of clients communicating with a server by exchanging messages through a network. In SuperCollider the client and the server make use of a specific subset of CNMAT's Open Sound Control (OSC) protocol in order to communicate (over TCP or UDP). As a consequence, you will see many references to "OSC messages" in the help files.
 
@@ -34,33 +40,56 @@ In order to write a letter to server, you need a paper sheet and a mailer: sclan
 ## Interpreter || it is the emphasis::interpreter:: for the SuperCollider programming language, i.e. it allows to the user to write code in the aforementioned language and interactively execute the resulting commands, e.g. to control the audio server. In particular OSC messages can be cumbersome to write, as they share with the server its low-level perspective. The SuperCollider language is a high-level, fully featured object oriented language, allowing the user to gain a much more expressive power than OSC messages. Typically, the interpreter translates the code in SuperCollider language in OSC messages for the server. The user writes poetry (so to speak) in the SuperCollider language which is then paraphrased in OSC prose by the sclang interpreter, to be sent to the server.
 ::
 
-From inside sclang, starting a server app can be accomplished by:
-code::
+From inside sclang, starting a server app can be accomplished as shown in strong::Code Snippet 1::.
+
+table::
+## code::
 s = Server.default; // create a new Server object and assign it to variable s
 s.boot;             // boot the server app, i.e. tell the server to be ready to work
 ::
+strong::Code Snippet.::Defining the interpreter variable code::s:: and booting the server.
+::
 The sclang interpreter can send OSC messages to the server in two fashions:
 definitionList::
-## directly || in this case, sclang offers a thin syntax layer which allows one to deal with raw OSC messages. All the server's functionality is in this case available "by hand" using the .sendMsg method of link::Classes/Server::, and other similar messages.
-code::
+## directly ||
+In this case, sclang offers a thin syntax layer that allows one to deal directly with raw OSC messages.
+As shown in strong::Code Snippet 2::, all of the server’s functionality is available “by hand” using the code::.sendMsg:: method of link::Classes/Server:: and other similar messages.
+table::
+##code::
 n = s.nextNodeID;                   // get an available nodeID from the server and assign it to n
 s.sendMsg("/s_new", "default", n);  // use the SynthDef "default" to create a synth with ID n
 s.sendMsg("/n_free", n);            // release the synth n
 ::
-## indirectly || the language app provides you with convenient OOP functionality to keep track of and manipulate things on the server. The high-level syntax is translated into low-level OSC messages by sclang and sent to the server (language wrapping).
-code::
+strong::Code Snippet.::Sending OSC messages directly to the server.
+::
+## indirectly
+||
+the language app provides you with convenient OOP functionality to keep track of and manipulate things on the server.
+As can be seen in strong::Code Snippet 3::, the high‑level syntax is translated into low‑level OSC messages by sclang and sent to the server (language wrapping).
+
+table::
+## code::
 x = Synth("default");   // create a synth on the default server (s) and allocate an ID for it
 x.free;                 // free the synth, its ID and resources
+::
+strong::Code Snippet.::Sending OSC messages indirectly to the server.
 ::
 ::
 Working this way you have gained certain functionality. It provides a node ID for you automatically, it allows you to control the Synth in syntactically elegant and efficient ways (see the link::Classes/Synth:: and link::Classes/Node:: helpfiles), and to access all the advantages of object oriented programming while doing so.  Encapsulating the complexities and bookkeeping greatly reduces the chance of bugs in your own code.
 
-image::scEn.png#Figure 3. Sclang as a high-level client::
+table::
+## image::scEn.png::
+strong::Figure.::Sclang as a high-level client
+::
 
-Language wrapping allows the user to access complex behaviours from very little code. Figure 3 (ignore for the moment that sclang is represented as a client among other possible ones, see later) schematically represents what happens when you evaluate an audio function like this:
-code::
+Language wrapping allows the user to access complex behaviours from very little code. Figure 3 (ignore for the moment that sclang is represented as a client among other possible ones, see later) schematically represents what happens when you evaluate an audio function as in strong::Code Snippet 4: ::
+
+table::
+##code::
 // assuming the server is already booted
-{SinOsc.ar}.play ;
+{ SinOsc.ar }.play;
+::
+strong::Code Snippet.::Evaluating a simple audio function.
 ::
 In this case many server operations are hidden. To understand the  passages involved in the evaluation of this code see link::Tutorials/Getting-Started/04-Functions-and-Other-Functionality:: and link::Tutorials/Getting-Started/10-SynthDefs-and-Synths:: (part of Scott Wilson's tutorial).
 
