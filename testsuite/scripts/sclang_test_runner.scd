@@ -67,6 +67,7 @@ if(File.exists(~testProto).not) {
 	var tests = ~getTestRecord.(protoFile);
 	var skipped, toExpand, toExclude;
 	var currentSuite = "";
+	var newTests = List();
 
 	// try {
 
@@ -80,7 +81,7 @@ if(File.exists(~testProto).not) {
 	toExpand = tests.select({|t| (t[\test] == "*") && (t[\completed] != true) });
 	~verboseSetup.if({"Expanding %\n".postf(toExpand)});
 	toExpand.do {|wildcardTest|
-		var allTests, newTest, class;
+		var class;
 
 		class = wildcardTest[\suite].asSymbol.asClass;
 
@@ -91,25 +92,23 @@ if(File.exists(~testProto).not) {
 		if (class.isNil) {
 			wildcardTest[\error] = "Class % not found".format(class);
 			wildcardTest[\completed] = true;
-			// ~writeResult.(test_record, file);
 		} {
 			~verboseSetup.if({"class: %".format(class).postln});
 			class.tryPerform(\findTestMethods).do {|testMethod|
 				~verboseSetup.if({"method: %".format(testMethod.name).postln});
-				newTest = Dictionary.newFrom((
+				newTests.add(Dictionary.newFrom((
 					\suite: class.name.asString,
 					\test: testMethod.name,
 					\skip: wildcardTest[\skip],
 					\skipReason: wildcardTest[\skipReason],
-				));
-
-				tests.add(newTest);
-				~verboseSetup.if({"tests.size: %".format(tests.size).postln});
+				)));
 			};
-			tests.remove(wildcardTest);
-			// ~writeResult.(test_record, file);
-		}
+		};
 	};
+
+	tests.removeAll(toExpand);
+	tests.addAll(newTests);
+	~verboseSetup.if({"tests.size after expansion: %".format(tests.size).postln});
 
 	// Ensure excluded tests are not run
 	toExclude = tests.select({|t|
