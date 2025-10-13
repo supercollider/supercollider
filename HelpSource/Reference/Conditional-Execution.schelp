@@ -605,33 +605,33 @@ already emphasis::be:: Functions in their own right (unless you intend them to b
 
 In examples:
 code::
-  if(condition, trueFunc, falseFunc)
-  // is NOT equivalent to
-  if(condition) {
-      trueFunc //trueFunc is distinct from trueFuncBody above!
-}{
-      falseFunc //similarly here
-  }
-  // however, when we write
-  t = { trueFuncBody };
-  f = { falseFuncBody };
-  // then indeed the following two expressions are equivalent
-  // (though only the latter will inline):
-  if(condition, t, f);
-  if (condition) {
-	trueFuncBody 
-  } {
-      falseFuncBody
-  }
-  // On the other hand, the following cases are either wrong
-  // or do different things than if(condition, t, f)
-  if(condition) t f; //Syntax Error:
-  //    there are no curly brackets here that could indicate that t and f are arguments to if;
-  if(condition) {t} {f}; //permissible but it may not be what you want to do.
-  // equivalent to if(condition, {t}, {f});
-  // i.e.will return t rather than t.value as usually intended.
-  if(condition, trueFuncBody, falseFuncBody); // the bodies are expressions, not Function objects;
-  // whether this works depends on how those expressions respond to the .value method.
+if(condition, trueFunc, falseFunc)
+// is NOT equivalent to
+if (condition) {
+    trueFunc //trueFunc is distinct from trueFuncBody above!
+} {
+    falseFunc //similarly here
+}
+// however, when we write
+t = { trueFuncBody };
+f = { falseFuncBody };
+// then indeed the following two expressions are equivalent
+// (though only the latter will inline):
+if(condition, t, f);
+if (condition) {
+    trueFuncBody 
+} {
+    falseFuncBody
+}
+// On the other hand, the following cases are either wrong
+// or do different things than if(condition, t, f)
+if(condition) t f; //Syntax Error:
+//    there are no curly brackets here that could indicate that t and f are arguments to if;
+if(condition) {t} {f}; //permissible but it may not be what you want to do.
+// equivalent to if(condition, {t}, {f});
+// i.e.will return t rather than t.value as usually intended.
+if(condition, trueFuncBody, falseFuncBody); // the bodies are expressions, not Function objects;
+// whether this works depends on how those expressions respond to the .value method.
 ::
 
 subsubsection:: Receiver blocks (.case, .while)
