@@ -1,5 +1,6 @@
 NodeTreeView {
-	var <server, <bounds, <window, view, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
+	var <server, <bounds, <window, view, scrollView;
+	var resp, updateFunc, updater, tabSize = 25, treeViewStatus;
 	var runningFunc, stoppedFunc, serverController;
 	var globalAlpha = 1;
 
@@ -15,13 +16,20 @@ NodeTreeView {
 			bounds.asRect.minSize(395@386)
 		};
 		if(parent.isNil) {
-			window = Window(this.asString, bounds, scroll:true);
+			window = Window(this.asString, bounds);
 		} {
 			window = parent
 		}
 		.front;
 
-		view = UserView(window, window.view.bounds.resizeBy(-4));
+		scrollView = ScrollView(window, window.bounds.moveTo(0, 0));
+		scrollView.hasVerticalScroller_(true);
+		scrollView.hasHorizontalScroller_(false);
+		scrollView.hasBorder_(false);
+
+		window.asView.onResize_({scrollView.bounds_(window.bounds.moveTo(0, 0).resizeBy(-4))});
+
+		view = UserView(scrollView, scrollView.bounds.resizeBy(-4));
 		view.onClose_{
 			view = nil;
 			this.stop;
@@ -164,7 +172,7 @@ NodeTreeView {
 						size = size + (countSize.value(elem.value) * sizeFactor) + 2.5
 					} {
 						size = size + 1
-				};
+					};
 				});
 				size
 			};

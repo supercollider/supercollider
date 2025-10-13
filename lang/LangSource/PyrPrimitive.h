@@ -36,3 +36,5 @@ int definePrimitiveWithKeys(int base, int index, const char* name, PrimitiveHand
                             PrimitiveWithKeysHandler keyhandler, int numArgs, int varArgs);
 int getPrimitiveNumArgs(int index);
 PyrSymbol* getPrimitiveName(int index);
+
+void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numArgsPushed);

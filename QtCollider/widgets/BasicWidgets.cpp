@@ -38,8 +38,8 @@ void QcSimpleWidget::setBackground(const QColor& c) {
     update();
 }
 
-void QcSimpleWidget::setBackgroundImage(const QtCollider::SharedImage& image, const QRectF& rect, int tileMode,
-                                        double opacity) {
+void QcSimpleWidget::setBackgroundImage(const QSharedPointer<QtCollider::Image>& image, const QRectF& rect,
+                                        int tileMode, double opacity) {
     _bkg_image.setImage(image, rect, tileMode, opacity);
     update();
 }

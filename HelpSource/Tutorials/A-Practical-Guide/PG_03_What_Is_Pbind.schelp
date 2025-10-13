@@ -84,7 +84,9 @@ Pbind doesn't do much without an event prototype. Fortunately, you don't have to
 
 When a pattern is played, an object called link::Classes/EventStreamPlayer:: is created. This object reads out the events one by one from the pattern's stream (using a given event prototype as the base), and calls code::play:: on each. The code::'delta':: value in the event determines how many beats to wait until the next event. Play continues until the pattern stops producing events, or you call .stop on the EventStreamPlayer. (Note that calling code::.stop:: on the pattern does nothing. Patterns are stateless and cannot play or stop by themselves.)
 
-- strong::To sum up so far:: : A Pbind's stream generates Events. When an Event is played, it does some work that usually makes noise on the server. This work is defined in an event prototype. The Event class provides a default event prototype that includes powerful options to create and manipulate objects on the server.
+note::
+strong::To sum up so far:: : A Pbind's stream generates Events. When an Event is played, it does some work that usually makes noise on the server. This work is defined in an event prototype. The Event class provides a default event prototype that includes powerful options to create and manipulate objects on the server.
+::
 
 subsection::Rests
 

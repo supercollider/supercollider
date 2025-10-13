@@ -285,6 +285,10 @@ private:
 
 public:
     void audio_fn_noinput(size_t frames_per_tick) {
+        if (unlikely(!engine_initialized)) {
+            engine_functor::init_thread();
+            engine_initialized = true;
+        }
         engine_functor::run_tick();
         write_output_buffers(frames_per_tick);
     }
@@ -292,14 +296,14 @@ public:
     void audio_fn(size_t frames_per_tick) {
         super::clear_outputs(frames_per_tick);
         read_input_buffers(frames_per_tick);
-        engine_functor::run_tick();
-        write_output_buffers(frames_per_tick);
+        audio_fn_noinput(frames_per_tick);
     }
 
 private:
     SndfileHandle input_file, output_file;
     std::size_t read_position;
     int block_size_;
+    bool engine_initialized = false;
 
     aligned_storage_ptr<sample_type> temp_buffer;
 

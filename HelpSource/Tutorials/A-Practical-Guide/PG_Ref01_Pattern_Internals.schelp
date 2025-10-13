@@ -192,7 +192,8 @@ Pn : FilterPattern {
 
 Consider carefully whether a parameter can change in each code::next:: call. If so, make a stream from that parameter and call code::.next(inval):: on it for each iteration. Parameters that should not change, such as number of repeats, should call code::.value(inval):: so that a function may be given. link::Classes/Pwhite:: demonstrates both of these features.
 
-- strong::Exercise for the reader:: : Why does code::Pwhite(0.0, 1.0, inf):: work, even with the code::asStream:: and next calls?
+note::
+strong::Exercise for the reader:: : Why does code::Pwhite(0.0, 1.0, inf):: work, even with the code::asStream:: and next calls?
 
 code::
 Pwhite : Pattern {
@@ -220,6 +221,7 @@ Pwhite : Pattern {
 
 // the plot rises b/c the lo and hi values increase on every 'next' value
 Pwhite(Pseries(0.0, 0.01, inf), Pseries(0.2, 0.01, inf), inf).asStream.nextN(200).plot;
+::
 ::
 
 subsection::Cleaning up event pattern resources

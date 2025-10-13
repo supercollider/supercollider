@@ -113,6 +113,7 @@ public:
         UserExtension,
         UserConfig,
         Resource,
+        Examples,
         MyDocuments // only on Windows, used for Platform.myDocumentsDir in sclang
     };
 
@@ -255,6 +256,8 @@ private:
             return defaultUserConfigDirectory();
         case DirName::Resource:
             return defaultResourceDirectory();
+        case DirName::Examples:
+            return defaultResourceDirectory() / "examples";
 #ifdef _WIN32
         case DirName::MyDocuments:
             return defaultMyDocumentsDirectory();

@@ -106,7 +106,7 @@ jobs:
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -157,7 +157,7 @@ jobs:
       - name: build
         run: |
           cd $BUILD_PATH
-          make install -j2
+          make install -j$(nproc)
 
 
       - name: create archive

@@ -145,9 +145,7 @@ int prString_POpen(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* callerSlot = g->sp - 1;
     PyrSlot* postOutputSlot = g->sp;
 
-    int error;
-    std::string cmdline;
-    std::tie(error, cmdline) = slotStrStdStrVal(callerSlot);
+    auto [error, cmdline] = slotStrStdStrVal(callerSlot);
     if (error != errNone)
         return error;
 
@@ -156,9 +154,7 @@ int prString_POpen(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 #endif
 
-    pid_t pid;
-    FILE* stream;
-    std::tie(pid, stream) = sc_popen_shell(std::move(cmdline), "r");
+    auto [pid, stream] = sc_popen_shell(std::move(cmdline), "r");
     if (stream != nullptr) {
         SC_Thread thread(std::bind(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot)));
         thread.detach();
@@ -189,15 +185,11 @@ int prArrayPOpen(struct VMGlobals* g, int numArgsPushed) {
     if (argsColl->size < 1)
         return errFailed;
 
-    int error;
-    std::vector<std::string> strings;
-    std::tie(error, strings) = PyrCollToVectorStdString(argsColl);
+    auto [error, strings] = PyrCollToVectorStdString(argsColl);
     if (error != errNone)
         return error;
 
-    pid_t pid;
-    FILE* stream;
-    std::tie(pid, stream) = sc_popen_argv(strings, "r");
+    auto [pid, stream] = sc_popen_argv(strings, "r");
     if (stream != nullptr) {
         SC_Thread thread(std::bind(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot)));
         thread.detach();

@@ -4,8 +4,8 @@ categories:: JITLib>Environments, Collections>Unordered, Live Coding
 related:: Classes/Environment
 
 description::
-EnvironmentRedirect behaves like an link::Classes/Environment:: that redirects access (code::put(key, val)::, or code::~key::) and assignment (code::at(key)::, or code::~key = val::). It is used as a base class for redirecting Environments. For example uses, see link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
-
+EnvironmentRedirect behaves like an link::Classes/Environment:: that redirects access (code::put(key, val)::, or code::~key::) and assignment (code::at(key)::, or code::~key = val::).
+It is used as a basis for classes like link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
 ClassMethods::
 
 method::new
@@ -15,7 +15,11 @@ subsection:: replacing Environment class methods
 
 EnvironmentRedirect implements some of the interface of link::Classes/Environment::
 
-method::push, pop, make, use, newFrom
+method::push, pop
+
+method::make, use
+
+method::newFrom
 
 InstanceMethods::
 
@@ -31,7 +35,15 @@ subsection::redirecting objects
 
 Overriding these methods, one can redirect where objects go when they are assigned to the space. This is done for example in link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
 
-method::at, put, removeAt, add, linkDoc, unlinkDoc
+method::at, removeAt
+
+method::put
+
+method::add
+
+copymethod::Environment -linkDoc
+
+copymethod::Environment -unlinkDoc
 
 method::dispatch
 A function or object that is called when the environment is modified. The key
@@ -53,8 +65,10 @@ EnvironmentRedirect implements some of the interface of link::Classes/Environmen
 
 method:: push, pop, clear, choose
 method:: make, use
-method:: do, keysValuesDo, sortedKeysValuesDo, putAll
-method:: keysValuesArrayDo, doFunctionPerform
+method:: do, keysValuesDo, sortedKeysValuesDo
+method:: putAll
+method:: keysValuesArrayDo
+method:: doFunctionPerform
 method:: keys, values, findKeyForValue
 method:: know
 method:: doesNotUnderstand

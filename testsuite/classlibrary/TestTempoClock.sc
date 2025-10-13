@@ -1,8 +1,9 @@
 TestTempoClock : UnitTest {
 	var clock;
+	var tempo = 1000;
 
 	setUp {
-		clock = TempoClock.new(1000);
+		clock = TempoClock.new(tempo);
 	}
 
 	// called after each test
@@ -34,7 +35,7 @@ TestTempoClock : UnitTest {
 		cond.hang;
 		// note: floating point math, == is not safe
 		this.assertFloatEquals(
-			timeAfter - timeBefore, 0.001,
+			timeAfter - timeBefore, tempo.reciprocal,
 			"TempoClock 1000 beats/sec, 1 beat should be 0.001 seconds",
 			within: 1e-10
 		)
@@ -42,7 +43,7 @@ TestTempoClock : UnitTest {
 
 	test_beats2secs_validConversion {
 		this.assertFloatEquals(
-			clock.beats2secs(clock.beats + 1) - SystemClock.seconds, 0.001,
+			clock.beats2secs(clock.beats + 1) - SystemClock.seconds, tempo.reciprocal,
 			"TempoClock 1000 beats/sec, 'beats2secs' for now + 1 beat should be 0.001 seconds later",
 			within: 1e-10
 		)
@@ -50,7 +51,7 @@ TestTempoClock : UnitTest {
 
 	test_secs2beats_validConversion {
 		this.assertFloatEquals(
-			clock.secs2beats(SystemClock.seconds + 1) - clock.beats, 1000.0,
+			clock.secs2beats(SystemClock.seconds + 1) - clock.beats, tempo,
 			"TempoClock 1000 beats/sec, 'secs2beats' for now + 1 second should be 1000 beats later",
 			within: 1e-10
 		)
@@ -84,16 +85,21 @@ TestTempoClock : UnitTest {
 		// formally you should change meter only on a barline
 		// at 1000 bps that is 0.004 sec later, so... ok.
 		var cond = Condition.new;
+		var next;
+		var oldBeatsPerBar = clock.beatsPerBar;
+		var newBeatsPerBar = 3;
 		{
 			clock.beatsPerBar.wait;
-			clock.beatsPerBar = 3;
+			clock.beatsPerBar = newBeatsPerBar;
 			0.1.wait;  // must tick past the barline
+			next = clock.nextTimeOnGrid(-1);
 			cond.unhang;
 		}.fork(clock);
 		cond.hang;
-		this.assertEquals(
-			clock.nextTimeOnGrid(-1), 7.0,
-			"Set meter to 3/4, at beat 4, next barline should be 7.0"
+		this.assertFloatEquals(
+			next, oldBeatsPerBar + newBeatsPerBar,
+			"Set meter to 3/4, at beat 4, next barline should be 7.0 and it is %".format(next),
+			within: 0.001
 		);
 	}
 

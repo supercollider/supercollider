@@ -107,6 +107,8 @@ void Group_DumpNodeTree(Group* inGroup) {
         child = next;
     }
     tabCount--;
+    if (tabCount == 0)
+        scprintf("END NODE TREE Group %d\n", inGroup->mNode.mID);
 }
 
 void Group_DumpNodeTreeAndControls(Group* inGroup) {
@@ -179,6 +181,8 @@ void Group_DumpNodeTreeAndControls(Group* inGroup) {
         child = next;
     }
     tabCount--;
+    if (tabCount == 0)
+        scprintf("END NODE TREE Group %d\n", inGroup->mNode.mID);
 }
 
 void Group_CalcDumpTree(Group* inGroup) {

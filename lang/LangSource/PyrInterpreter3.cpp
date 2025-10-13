@@ -39,8 +39,6 @@
 #include <string.h>
 #include <signal.h>
 
-#include <boost/chrono.hpp>
-
 #include <float.h>
 #define kBigBigFloat DBL_MAX
 #define kSmallSmallFloat DBL_MIN

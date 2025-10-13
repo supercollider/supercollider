@@ -270,6 +270,12 @@ void MainWindow::createActions() {
     connect(action, SIGNAL(triggered()), this, SLOT(openUserSupportDirectory()));
     settings->addAction(action, "ide-document-open-support-directory", ideCategory);
 
+    mActions[DocOpenExamplesDir] = action =
+        new QAction(QIcon::fromTheme("document-example"), tr("Open examples directory"), this);
+    action->setStatusTip(tr("Open examples directory"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openExamplesDirectory()));
+    settings->addAction(action, "ide-document-open-examples-directory", ideCategory);
+
     mActions[DocSave] = action = new QAction(QIcon::fromTheme("document-save"), tr("&Save"), this);
     action->setShortcut(tr("Ctrl+S", "Save document"));
     action->setStatusTip(tr("Save the current document"));
@@ -522,6 +528,7 @@ void MainWindow::createMenus() {
     connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenRecentDocument(QAction*)));
     menu->addAction(mActions[DocOpenStartup]);
     menu->addAction(mActions[DocOpenSupportDir]);
+    menu->addAction(mActions[DocOpenExamplesDir]);
     menu->addAction(mActions[DocSave]);
     menu->addAction(mActions[DocSaveAs]);
     menu->addAction(mActions[DocSaveAsExtension]);
@@ -995,22 +1002,9 @@ bool MainWindow::save(Document* doc, bool forceChoose, bool saveInExtensionFolde
             // filepath with added suffix already exists!
         }
 
-#ifdef Q_OS_MAC
-        QWidget* last_active_window = QApplication::activeWindow();
-#endif
-
-        int result = dialog.exec();
-
-        // FIXME: workaround for Qt bug 25295
-        // See SC issue #678
-#ifdef Q_OS_MAC
-        if (last_active_window)
-            last_active_window->activateWindow();
-#endif
-
         QString save_path;
 
-        if (result == QDialog::Accepted) {
+        if (dialog.exec() == QDialog::Accepted) {
             save_path = dialog.selectedFiles()[0];
 
             if (save_path.indexOf('.') == -1 && !QFile::exists(save_path)) {
@@ -1079,22 +1073,11 @@ void MainWindow::openDocument() {
     filters << tr("All Files (*)") << tr("SuperCollider (*.scd *.sc)") << tr("SuperCollider Help Source (*.schelp)");
     dialog.setNameFilters(filters);
 
-#ifdef Q_OS_MAC
-    QWidget* last_active_window = QApplication::activeWindow();
-#endif
-
     if (dialog.exec()) {
         QStringList filenames = dialog.selectedFiles();
         foreach (QString filename, filenames)
             mMain->documentManager()->open(filename);
     }
-
-    // FIXME: workaround for Qt bug 25295
-    // See SC issue #678
-#ifdef Q_OS_MAC
-    if (last_active_window)
-        last_active_window->activateWindow();
-#endif
 }
 
 void MainWindow::restoreDocuments() {
@@ -1140,6 +1123,11 @@ void MainWindow::openStartupFile() {
 
 void MainWindow::openUserSupportDirectory() {
     QUrl dirUrl = QUrl::fromLocalFile(standardDirectory(ScAppDataUserDir));
+    QDesktopServices::openUrl(dirUrl);
+}
+
+void MainWindow::openExamplesDirectory() {
+    QUrl dirUrl = QUrl::fromLocalFile(standardDirectory(ScExamplesDir));
     QDesktopServices::openUrl(dirUrl);
 }
 

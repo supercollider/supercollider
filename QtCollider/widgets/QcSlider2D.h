@@ -67,7 +67,8 @@ public:
     }
 
     Q_INVOKABLE
-    void setBackgroundImage(const QtCollider::SharedImage& image, const QRectF& rect, int tileMode, double opacity);
+    void setBackgroundImage(const QSharedPointer<QtCollider::Image>& image, const QRectF& rect, int tileMode,
+                            double opacity);
 public Q_SLOTS:
     void incrementX(double factor = 1.f);
     void decrementX(double factor = 1.f);
@@ -82,6 +83,7 @@ private:
     void setValue(const QPointF val, bool doAction = true);
     void mouseMoveEvent(QMouseEvent*);
     void mousePressEvent(QMouseEvent*);
+    void wheelEvent(QWheelEvent*);
     void keyPressEvent(QKeyEvent*);
     void paintEvent(QPaintEvent*);
 
@@ -92,4 +94,6 @@ private:
 
     QColor _knobColor;
     QtCollider::ImagePainter _backgroundImage;
+
+    QSizeF scrollRemainder;
 };

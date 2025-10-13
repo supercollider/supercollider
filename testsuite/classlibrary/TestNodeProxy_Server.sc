@@ -156,14 +156,22 @@ TestNodeProxy_Server : UnitTest {
 	}
 
 	test_schedAfterFade_notBeforeQuant {
-		var ok = true, earlierThan = 0.01;
+		var ok = true, earlierThan = 0.05, cond = Condition();
+		var betweenFadeAndQuant;
 		proxy.source = { Silent.ar };
 		proxy.fadeTime = 0.1;
 		proxy.clock = TempoClock.new(1);
 		proxy.quant = 1.0;
-		0.2.wait;
-		proxy.schedAfterFade { ok = false };
-		(proxy.fadeTime + proxy.server.latency + 1.0 - 0.2 - earlierThan).wait;
+		betweenFadeAndQuant = 0.2; // fadeTime < betweenFadeAndQuant < quant
+		{
+			var schedOk = true;
+			betweenFadeAndQuant.wait;
+			proxy.schedAfterFade { schedOk = false };
+			(proxy.fadeTime + proxy.server.latency + proxy.quant - betweenFadeAndQuant - earlierThan).wait;
+			ok = schedOk;
+			cond.unhang;
+		}.fork(proxy.clock);
+		cond.hang;
 		this.assert(ok, "schedAfterFade should not happened before quant and fadeTime");
 	}
 

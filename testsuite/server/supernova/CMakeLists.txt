@@ -9,10 +9,16 @@ set(simple_tests
     server_synth_factory_test.cpp
     simple_pool_test.cpp
     sized_array_test.cpp
-    sndfile_backend_test.cpp
     static_pool_test.cpp
     timetag_test.cpp
 )
+if(NOT NO_LIBSNDFILE)
+	list(APPEND simple_tests
+		sndfile_backend_test.cpp
+	)
+else()
+	add_definitions("-DNO_LIBSNDFILE")
+endif()
 
 if(!APPLE)
     set(simple_tests
@@ -27,7 +33,7 @@ foreach(test ${simple_tests})
   string(REPLACE .cpp "" test_name ${test} )
   add_executable(${test_name} ${test})
 
-  target_link_libraries(${test_name} boost_test libsupernova boost_thread_lib)
+  target_link_libraries(${test_name} boost_test libsupernova Boost::thread)
 
   if(LINUX AND CMAKE_COMPILER_IS_CLANG)
     target_link_libraries(${test_name} atomic)

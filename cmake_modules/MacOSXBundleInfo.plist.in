@@ -151,6 +151,8 @@
 	<string>NSApplication</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>SuperCollider wants to use your microphone or sound input.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>SuperCollider wants to use your airpods to use spatial audio.</string>
 	<key>NSServices</key>
 	<array>
 		<dict>

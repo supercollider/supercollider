@@ -24,6 +24,7 @@
 #include <QHBoxLayout>
 #include <QWheelEvent>
 
+#include "QtCollider/widgets/QcAbstractStepValue.h"
 #include "main.hpp"
 
 namespace ScIDE {
@@ -137,8 +138,10 @@ void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, b
 }
 
 void AudioStatusBox::wheelEvent(QWheelEvent* event) {
-    if (!event->angleDelta().isNull()) {
-        if (event->angleDelta().x() > 0)
+    // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
+    const double delta = getScrollSteps(event).y();
+    if (delta) {
+        if (delta > 0)
             emit increaseVolume();
         else
             emit decreaseVolume();

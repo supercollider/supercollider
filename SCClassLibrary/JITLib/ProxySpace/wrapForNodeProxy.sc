@@ -296,9 +296,11 @@
 			filter: #{ | func, proxy, channelOffset = 0, index |
 				var ok, ugen;
 				if(proxy.isNeutral) {
-					ugen = func.value(Silent.ar);
-					ok = proxy.initBus(ugen.rate, ugen.numChannels + channelOffset);
-					if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
+					asSynthDef {
+						ugen = func.value(Silent.ar);
+						ok = proxy.initBus(ugen.rate, ugen.numChannels + channelOffset);
+						if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
+					}
 				};
 
 				{ | out |
@@ -309,7 +311,7 @@
 					} {
 						env = ctl * EnvGate(i_level: 0, doneAction:2, curve:\lin);
 						XOut.kr(out, env, SynthDef.wrap(func, nil, [In.kr(out, proxy.numChannels)]))
-                    };
+					};
 				}.buildForProxy( proxy, channelOffset, index )
 
 			},
@@ -357,9 +359,11 @@
 			filterIn: #{ | func, proxy, channelOffset = 0, index |
 				var ok, ugen;
 				if(proxy.isNeutral) {
-					ugen = func.value(Silent.ar);
-					ok = proxy.initBus(ugen.rate, ugen.numChannels + channelOffset);
-					if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
+					asSynthDef {
+						ugen = func.value(Silent.ar);
+						ok = proxy.initBus(ugen.rate, ugen.numChannels + channelOffset);
+						if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
+					}
 				};
 
 				{ | out |
