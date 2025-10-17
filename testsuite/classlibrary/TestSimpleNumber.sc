@@ -241,19 +241,42 @@ TestSimpleNumber : UnitTest {
 	}
 
 	test_series {
-		var first = 0;
-		var step = 2.0001;
-		var last = 8;
-		var arr = first.series(step, last);
-		this.assert(arr.last <= last, "SimpleNumber:series should not produce an array whose last value is greater than the specified 'last' argument.");
-
-		first = 1;
-		arr = first.series(first, first);
-		this.assert(arr.size == 1, "SimpleNumber:series Int types with first == last and step == 0 should return an array of [ first ]");
-
-		first = 1.1;
-		arr = first.series(first, first);
-		this.assert(arr.size == 1, "SimpleNumber:series Float types with first == last and step == 0 should return an array of [ first ]");
+		var tolerance = 1e-6;
+		// higher/greater in the following descriptions is with respect to step direction. (I.e., if step is negative, -3 counts as "higher" than -2.)
+		// still lots of redundancy in there I think. 
+		// 1
+        this.assert(series(0, 1 + tolerance,      4).size == 4, "SimpleNumber:series should not produce an array whose last value is greater than the 'last' argument plus a tolerance");
+		// 2
+        this.assert(series(0,-1 - tolerance,     -4).size == 4, "SimpleNumber:series should not produce an array whose last value is greater than the 'last' argument plus a tolerance");
+		// 3
+        this.assert(series(0, 1 + (tolerance/10), 4).size == 5,  "SimpleNumber:series should be able to produce an array whose last value is _slightly_ greater than the 'last' argument");
+		// 4
+        this.assert(series(0,-1 - (tolerance/10),-4).size == 5,  "SimpleNumber:series should be able to produce an array whose last value is _slightly_ greater than the 'last' argument");
+		// 5
+        this.assert(series(-29/7,-27/7, 29/7 ).last >= (29/7),     "SimpleNumber:series should be able to include the last value of an arithmetic series even if its float representation is slightly higher than the 'last' argument");
+		// 6
+        this.assert(series(1.5, 1.45, -1.5 ).last <= -1.5,     "SimpleNumber:series should be able to include the last value of an arithmetic series even if its float representation is slightly higher than the 'last' argument");
+		// 7
+        this.assert(series(1.5, 1.45, -1.5 ).last <= -1.5,     "SimpleNumber:series should be able to include the last value of an arithmetic series even if its float representation is slightly higher than the 'last' argument");
+		// 8
+        this.assertException({series(1.5, 2, -1.5)}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when (second-first) and (last-first) are of different sign");
+		// 9
+        this.assertException({series(-1.5, -2, 1.5)}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when (second-first) and (last-first) are of different sign");
+		// 10
+        this.assertException({series(1,1,3)}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when (second-first) is 0 and (last-first) is not");
+		// 11
+        this.assertException({series(1,1,-3)}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when (second-first) is 0 and (last-first) is not");
+		// 12
+        this.assertException({series(1.5, 4, -3)}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when size calculation resulted in size < 1");
+		// 13
+        this.assertException({series(0, 1, 2.pow(27))}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when size calculation resulted in size > INT_MAX_BY_PyrSlot");
+		// 14
+		this.assert(series(1,1,1).size == 1, "SimpleNumber:series Int types with first == last and step == 0 should return an array of [ first ]");
+		// 15
+		this.assert(series(1.1,1.1,1.1).size == 1, "SimpleNumber:series Int types with first == last and step == 0 should return an array of [ first ]");
+        // the next one will slow down testing, not sure if this is necessary. Just don't make arrays this big!
+		// 16
+        this.assertNoException({series(0, 1, 2.pow(26.9))}, "SimpleNumber:series should not throw an Error when size calculation resulted in size <= INT_MAX_BY_PyrSlot");
 	}
 
 	test_midiratio {
