@@ -885,7 +885,16 @@ int prSimpleNumberSeries(struct VMGlobals* g, int numArgsPushed) {
         if (step == 0.f) {
             size = 1;
         } else {
-            size = (int)((last - first) / step) + 1;
+            double range = last - first;
+            double tolerance = 0.000001; // 1e-6; pretty arbitrary choice. Discuss?
+            size = static_cast<int>(round(range / step)); // this will often be 1 too few
+            // size * step represents the value of a hypothetical additional element;
+            // but we only add it if it is within the allowed tolerance.
+            if (fabs(size * step) <= fabs(range + step * tolerance)) {
+                ++size;
+            }
+            // step and range will be of same sign (if not, error below);
+            // fabs() is only to not have to change comparison operator for positive and negative step/range.
         }
 
         if ((size < 1) || ((step >= 0) && (last < first)) || ((step <= 0) && (last > first))) {

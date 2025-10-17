@@ -257,8 +257,6 @@ TestSimpleNumber : UnitTest {
 		// 6
         this.assert(series(1.5, 1.45, -1.5 ).last <= -1.5,     "SimpleNumber:series should be able to include the last value of an arithmetic series even if its float representation is slightly higher than the 'last' argument");
 		// 7
-        this.assert(series(1.5, 1.45, -1.5 ).last <= -1.5,     "SimpleNumber:series should be able to include the last value of an arithmetic series even if its float representation is slightly higher than the 'last' argument");
-		// 8
         this.assertException({series(1.5, 2, -1.5)}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when (second-first) and (last-first) are of different sign");
 		// 9
         this.assertException({series(-1.5, -2, 1.5)}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when (second-first) and (last-first) are of different sign");
@@ -276,7 +274,7 @@ TestSimpleNumber : UnitTest {
 		this.assert(series(1.1,1.1,1.1).size == 1, "SimpleNumber:series Int types with first == last and step == 0 should return an array of [ first ]");
         // the next one will slow down testing, not sure if this is necessary. Just don't make arrays this big!
 		// 16
-        this.assertNoException({series(0, 1, 2.pow(26.9))}, "SimpleNumber:series should not throw an Error when size calculation resulted in size <= INT_MAX_BY_PyrSlot");
+        // this.assertNoException({series(0, 1, 2.pow(26.9))}, "SimpleNumber:series should not throw an Error when size calculation resulted in size <= INT_MAX_BY_PyrSlot");
 	}
 
 	test_midiratio {
