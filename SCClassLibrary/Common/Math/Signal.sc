@@ -17,7 +17,7 @@ Signal[float] : FloatArray {
 		if (pad == 0, {
 			^this.newClear(size).fill(0.53836).addSine(1, 0.46164, -0.5pi);
 		},{
-			^this.newClear(size).fill(0.53836).addSine(1, 0.46164, -0.5pi) ++ this.newClear(pad);
+			^this.newClear(size-pad).fill(0.53836).addSine(1, 0.46164, -0.5pi) ++ this.newClear(pad);
 		});
 	}
 	*hanningWindow { arg size, pad=0;
