@@ -143,7 +143,8 @@ jobs:
           mkdir -p $ASIO_PATH && cd $ASIO_PATH
           curl -L https://www.steinberg.net/asiosdk -o asio.zip
           7z x asio.zip -y
-          mv asiosdk_* $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
+          shopt -s nocaseglob
+          mv asiosdk* $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
 
       - name: install readline
         if: matrix.vcpkg-triplet
