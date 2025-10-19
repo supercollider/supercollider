@@ -494,7 +494,7 @@ if(APPLE OR WIN32)
             ")
         endif()
         set(VERIFY_CMD "include(BundleUtilities)")
-        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6 AND SC_USE_QTWEBENGINE)
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6 AND "${Qt6_VERSION}" VERSION_LESS "6.9.3" AND SC_USE_QTWEBENGINE)
             # Fix deployment with qt from homebrew
             execute_process(COMMAND brew --prefix OUTPUT_VARIABLE BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
             get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
