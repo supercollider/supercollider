@@ -440,24 +440,23 @@ code::
 // Musical example: Voice-leading between two chords
 (
 //You have two chords, and you wish to know which note in the first chord should move to which note in the second chord for optimal voice-leading.
-~sourceChord = [72, 60, 64, 67]; //C
-~targetChord = [67, 74, 65, 59]; //G7
+~sourceChord = [60, 64, 67]; //C in root position
+~targetChord = [55, 59, 62]; //G in root position
 
 //Build a cost matrix with interval distance from one note to the next as the cost. In other words, the farther the target note from the source note, the more 'expensive' it is for the source note to go to the target note. Other, more sophisticated cost functions are possible; for example, one could build in an extra penalty for leaps.
 ~costMatrix = ~sourceChord.collect { |n1| ~targetChord.collect { |n2| (n1 - n2).abs } };
 
 //Take a look at the resulting cost matrix
 "Cost Matrix:".postln; ~costMatrix.do { |r| r.postln };
-// —> [5, 2, 7, 13]
-//    [7, 14, 5, 1]
-//    [3, 10, 1, 5]
-//    [0,  7, 2, 8]
+// —> [5, 1, 2]
+//    [9, 5, 2]
+//    [12, 8, 5]
 
 //Solve the cost matrix, i.e. find the assignments of source note to target note that has the lowest overall cost
 ~assignments = ~costMatrix.hungarianSolve[1];
-// —> [1, 3, 2, 0]
+// —> [1, 2, 0]
 
-//Associate each source note with its optimal target note, following the assignments
+//Associate each source note with its optimal target note, following the given assignments
 ~voiceLeading = ~assignments.collect { |targetIndex, sourceIndex| [~sourceChord[sourceIndex], ~targetChord[targetIndex]] };
 
 //Print the results!
@@ -465,10 +464,9 @@ code::
     var sourceNote = assignment[0], targetNote = assignment[1], interval = targetNote - sourceNote;
     ("Note " ++ sourceNote ++ " → " ++ targetNote ++ " (interval: " ++ interval ++ ")").postln;
 };
-// —> Note 72 → 74 (interval: 2)
-//    Note 60 → 59 (interval: -1)
-//    Note 64 → 65 (interval: 1)
-//    Note 67 → 67 (interval: 0)
+// —> Note 60 → 59 (interval: -1)
+//    Note 64 → 62 (interval: -2)
+//    Note 67 → 55 (interval: -12)
 )
 ::
 
