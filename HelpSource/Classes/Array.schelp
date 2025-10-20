@@ -420,40 +420,55 @@ code::
 ::
 
 method::hungarianSolve
-Returns the solution to the Linear Assignment problem, using the Hungarian Algorithm, also known as Munkres, in the format code::[lowest_cost, [assignments]]::.
+Given a two-dimensional array, in which rows represent workers, columns represent tasks, and values represent the cost for each worker to do each job, this returns the assignment of workers to tasks which has the lowest total cost.
+This is known as the Linear Assignment Problem, and here it is solved using the Hungarian Algorithm, also known as Munkres, which is enormously faster than solving it by brute force.
+The result is given in the format code::[lowest_cost, [assignments]]::, where the code::[assignments]:: array maps each row to its assigned optimal column. For example, assignments code::[0, 2, 1]:: means that for the lowest overall cost, worker 0 should do job 0, worker 1 should do job 2, and worker 2 should do job 1.
 Receiver must be a 2-dimensional Array of arrays, but it need not be square (zeroes will be added when necessary), and may contain negative numbers and floats.
-This algorithm is useful in music for voice-leading and other applications, such as assigning notes to instruments.
+This algorithm is useful in music for voice-leading and any other problem, such as assigning notes to instruments, which can be framed as a cost-minimization task.
 
 code::
-// Basic example from Wikipedia ("https://en.wikipedia.org/wiki/Hungarian_algorithm")
+// Basic example from Wikipedia (https://en.wikipedia.org/wiki/Hungarian_algorithm)
+(
 [
    [8, 4, 7],
    [5, 2, 3],
    [9, 4, 8]
 ].hungarianSolve;
-//returns [15.0, [0, 2, 1]]
+//—> [15.0, [0, 2, 1]]
+)
 
-// Voice leading between two chords
+// Musical example: Voice-leading between two chords
 (
-~voiceLead = { |src, trg|
-    var cm = src.collect { |n1| trg.collect { |n2| (n1 - n2).abs } };
-	var asn = cm.hungarianSolve[1];
-    asn.collect { |t, s| [src[s], trg[t]] }
+//You have two chords, and you wish to know which note in the first chord should move to which note in the second chord for optimal voice-leading.
+~sourceChord = [72, 60, 64, 67]; //C
+~targetChord = [67, 74, 65, 59]; //G7
+
+//Build a cost matrix with interval distance from one note to the next as the cost. In other words, the farther the target note from the source note, the more 'expensive' it is for the source note to go to the target note. Other, more sophisticated cost functions are possible; for example, one could build in an extra penalty for leaps.
+~costMatrix = ~sourceChord.collect { |n1| ~targetChord.collect { |n2| (n1 - n2).abs } };
+
+//Take a look at the resulting cost matrix
+"Cost Matrix:".postln; ~costMatrix.do { |r| r.postln };
+// —> [5, 2, 7, 13]
+//    [7, 14, 5, 1]
+//    [3, 10, 1, 5]
+//    [0,  7, 2, 8]
+
+//Solve the cost matrix, i.e. find the assignments of source note to target note that has the lowest overall cost
+~assignments = ~costMatrix.hungarianSolve[1];
+// —> [1, 3, 2, 0]
+
+//Associate each source note with its optimal target note, following the assignments
+~voiceLeading = ~assignments.collect { |targetIndex, sourceIndex| [~sourceChord[sourceIndex], ~targetChord[targetIndex]] };
+
+//Print the results!
+"Best Voice-Leading:".postln; ~voiceLeading.do { |assignment|
+    var sourceNote = assignment[0], targetNote = assignment[1], interval = targetNote - sourceNote;
+    ("Note " ++ sourceNote ++ " → " ++ targetNote ++ " (interval: " ++ interval ++ ")").postln;
 };
-
-~chC = [72, 60, 64, 67]; //C
-~chG = [67, 74, 65, 59]; //G7
-
-~cMat = ~chG.collect { |n1| ~chG.collect { |n2| (n1 - n2).abs } };
-
-~cMat.do { |r| r.postln };
-
-~vLead = ~voiceLead.(~chC, ~chG);
-
-~vLead.do { |p|
-    var src = p[0], trg = p[1], int = trg - src;
-    ("Note " ++ src ++ " → " ++ trg ++ " (interval: " ++ int ++ ")").postln;
-};
+// —> Note 72 → 74 (interval: 2)
+//    Note 60 → 59 (interval: -1)
+//    Note 64 → 65 (interval: 1)
+//    Note 67 → 67 (interval: 0)
 )
 ::
 
