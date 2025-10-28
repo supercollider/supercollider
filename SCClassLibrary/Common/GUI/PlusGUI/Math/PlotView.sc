@@ -373,14 +373,17 @@ Plot {
 		};
 	}
 
-	domainCoordinates { |size|
+	domainCoordinates { |size, mode|
 		var range, vals;
+		// step-like displays need one more x coordinate
+		var isSteplike = this.hasSteplikeDisplay(mode);
+		if (isSteplike) { size = size + 1 };
 
 		vals = if (plotter.domain.notNil) {
 			domainSpec.unmap(plotter.domain);
 		} {
 			range = domainSpec.range;
-			if (range == 0.0 or: { size == 1 }) {
+			if (range == 0.0 or: { size == 1 } and: {isSteplike.not}) {
 				0.5.dup(size) // put the values in the middle of the plot
 			} {
 				domainSpec.unmap(
@@ -399,7 +402,6 @@ Plot {
 
 	drawData {
 		var ycoord = this.dataCoordinates;
-		var xcoord = this.domainCoordinates(ycoord.size);
 
 		Pen.use {
 			Pen.width = 1.0;
@@ -410,16 +412,24 @@ Plot {
 			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion when superposed
 				ycoord.flop.do { |y, i|
 					var mode = plotMode.wrapAt(i);
+					var xcoord = this.domainCoordinates(ycoord.size, mode);
 					Pen.beginPath;
 					Pen.fillColor = plotColor.wrapAt(i);
 					Pen.strokeColor = plotColor.wrapAt(i);
 					this.perform(mode, xcoord, y);
 				}
 			} {
+				var mode = plotMode.at(0);
+				var xcoord = this.domainCoordinates(ycoord.size, mode);
 				Pen.beginPath;
 				Pen.strokeColor = plotColor.at(0);
 				Pen.fillColor = plotColor.at(0);
 				this.perform(plotMode.at(0), xcoord, ycoord);
+				if (this.needsPenFill(mode)) {
+					Pen.fill
+				} {
+					Pen.stroke
+				}
 			};
 			Pen.joinStyle = 0;
 		};
@@ -565,7 +575,7 @@ Plot {
 	}
 
 	editData { |x, y, plotIndex|
-		var index = this.getIndex(x);
+		var index = this.getIndex(x, plotIndex);
 		this.editDataIndex( index, x, y, plotIndex );
 	}
 
@@ -576,8 +586,8 @@ Plot {
 		var val;
 
 		// get indexes related to ends of the line
-		i1 = this.getIndex(pt1.x);
-		i2 = this.getIndex(pt2.x);
+		i1 = this.getIndex(pt1.x, plotIndex);
+		i2 = this.getIndex(pt2.x, plotIndex);
 
 		// if both ends at same index, simplify
 		if( i1 == i2 ) {
@@ -638,18 +648,20 @@ Plot {
 		^spec.map((plotBounds.bottom - y) / plotBounds.height)
 	}
 
-	hasSteplikeDisplay {
-		^#[\levels, \steps, \bars].includesAny(plotMode)
+	hasSteplikeDisplay { |pMode|
+		^#[\levels, \steps, \bars].includes(pMode)
 	}
 
-	getIndex { |x|
+	needsPenFill { |pMode|
+		^#[\bars].includes(pMode)
+	}
+
+	getIndex { |x, plotIndex|
+		var mode = this.plotMode.asArray.wrapAt(plotIndex);
 		var ycoord = this.dataCoordinates;
-		var xcoord = this.domainCoordinates(ycoord.size);
-		var binwidth = 0;
-		var offset;
 
 		if (plotter.domain.notNil) {
-			if (this.hasSteplikeDisplay) {
+			if (this.hasSteplikeDisplay(mode)) {
 				// round down to index
 				^plotter.domain.indexInBetween(this.getRelativePositionX(x)).floor.asInteger
 			} {
@@ -657,13 +669,9 @@ Plot {
 				^plotter.domain.indexIn(this.getRelativePositionX(x))
 			};
 		} {
-			if (xcoord.size > 0) {
-				binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0]
-			};
-			offset = if(this.hasSteplikeDisplay) { binwidth * 0.5 } { 0.0 };
-
-			^(  // domain unspecified, values are evenly distributed between either side of the plot
-				((x - offset - plotBounds.left) / plotBounds.width) * (value.size - 1)
+			// domain unspecified, values are evenly distributed between either side of the plot
+			^(
+				((x - plotBounds.left) / plotBounds.width) * (value.size - 1)
 			).round.clip(0, value.size-1).asInteger
 		}
 	}
