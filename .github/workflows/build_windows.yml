@@ -172,7 +172,7 @@ jobs:
         run: cd $INSTALL_PATH && 7z a $ARTIFACT_FILE.zip -tzip SuperCollider # this assumes that we end up with the build in the folder SuperCollider
 
       - name: upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
@@ -186,7 +186,7 @@ jobs:
           cmake --build $BUILD_PATH --config Release --target installer
 
       - name: upload installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: matrix.create-installer == true
         with:
           name: ${{ env.INSTALLER_FILE }}
