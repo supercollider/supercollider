@@ -18,7 +18,7 @@ const init = () => {
             { regex: /^\$\\?./, token: 'char' },
             { regex: /^~\w+/, token: 'env-var' },
             { regex: /^\/\/[^\r\n]*/, token: 'comment single-line-comment' },
-            { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: 'string' },
+            { regex: /"(?:[^\\]|\\.)*?"/, token: 'string' },
             { regex: /^[-.,;#()\[\]{}]/, token: 'text punctuation' },
             { regex: /\/\*/, push: 'comment', token: 'comment multi-line-comment' },
             { regex: /^[+\-*/&\|\^%<>=!?]+/, token: 'text operator' },
