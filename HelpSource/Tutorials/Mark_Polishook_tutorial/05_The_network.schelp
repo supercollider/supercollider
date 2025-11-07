@@ -80,8 +80,8 @@ s.sendMsg("/n_free", n);
 vs.
 
 // on two computers ... the server has to have a valid ip address
-s = Server("aServer", NetAddr("... an ip number ...", 56789));
-SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).add;
+s = Server.remote("aServer", NetAddr("... an ip number ...", 56789));
+SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).send(s);
 s.sendMsg("s_new", "sine", n = s.nextNodeID, 0, 1);
 s.sendMsg("/n_free", n);
 ::
