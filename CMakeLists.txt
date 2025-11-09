@@ -302,6 +302,8 @@ else()
 		add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 		# use session manager to set shared memory location, see issue 2409
 		add_definitions(-DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
+	else()
+		add_definitions(-DBOOST_ASIO_DISABLE_VISIBILITY -DBOOST_DISABLE_EXPLICIT_SYMBOL_VISIBILITY)
 	endif()
 	add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
 endif() 
@@ -338,6 +340,11 @@ endif()
 #############################################
 # other compiler settings
 
+# set default symbol visibility
+SET(CMAKE_CXX_VISIBILITY_PRESET hidden)
+SET(CMAKE_C_VISIBILITY_PRESET hidden)
+SET(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	add_compile_options(
 		-Werror=return-type      # Error out if function definitions lack a return type
@@ -367,7 +374,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 		add_compile_definitions("_FORTIFY_SOURCE=2")
 	endif()
 
-	add_definitions(-fvisibility=hidden)
 endif()
 
 if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
