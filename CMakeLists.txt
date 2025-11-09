@@ -372,7 +372,10 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		add_definitions( -D_FORTIFY_SOURCE=2 )
 	endif()
 
-	add_definitions(-fvisibility=hidden)
+	add_compile_options(
+		"$<$<COMPILE_LANGUAGE:C,CXX>:-fvisibility=hidden>"
+		"$<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>"
+	)
 endif()
 
 if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
