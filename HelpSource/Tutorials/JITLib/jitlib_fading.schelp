@@ -29,7 +29,7 @@ p = ProxySpace.push(s.boot);
 
 // note that you can use this functionality also when using ProxySynthDef directly:
 
-d = ProxySynthDef("test", { arg freq=440; SinOsc.ar(freq) }).send(s);
+d = ProxySynthDef("test", { arg freq=440; SinOsc.ar(freq) }).add;
 s.sendMsg("/s_new", "test", 1980, 1, 1, \freq, 340);
 s.sendMsg("/n_set", 1980, \freq, 240);
 s.sendMsg("/n_set", 1980, \fadeTime, 4);
@@ -144,7 +144,7 @@ code::
 )
 ~out.group.set(\t_trig, 1); //end it
 
-~out.send; //start a new synth
+~out.add; //start a new synth
 ~out.group.set(\t_trig, 1); //end it again
 
 
