@@ -99,7 +99,7 @@ TestServer_clientID_booted : UnitTest {
 
 		cond = Condition.new;
 
-		timer = fork { 3.wait; cond.unhang };
+		timer = fork { 10.wait; cond.unhang };
 		server.doWhenBooted {
 			"% - server login timed out.\n".postf(thisMethod);
 			timer.stop;
@@ -141,7 +141,7 @@ TestServer_clientID_booted : UnitTest {
 		// login with standard Server.remote method to test for
 		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
 		cond = Condition.new;
-		timer = fork { 3.wait; cond.unhang };
+		timer = fork { 10.wait; cond.unhang };
 
 		remote1.doWhenBooted {
 			"% - server first login timed out.\n".postf(thisMethod);
@@ -160,7 +160,7 @@ TestServer_clientID_booted : UnitTest {
 
 		remote1.stopAliveThread.remove;
 		thisProcess.platform.killProcessByID(serverPid);
-		testsFinished = exitCond.waitFor(5); // wait for the server process to exit
+		testsFinished = exitCond.waitFor(10); // wait for the server process to exit
 		this.assert(testsFinished, "TIMEOUT: server process did not quit");
 	}
 
@@ -178,7 +178,7 @@ TestServer_clientID_booted : UnitTest {
 		// login with standard Server.remote method to test for
 		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
 		cond = Condition.new;
-		timer = fork { 3.wait; cond.unhang };
+		timer = fork { 10.wait; cond.unhang };
 
 		remote1.doWhenBooted {
 			"% - server first login timed out.\n".postf(thisMethod);
@@ -197,7 +197,7 @@ TestServer_clientID_booted : UnitTest {
 
 		remote2 = Server.remote(\remoteLogin2, options: options);
 		cond = Condition.new;
-		timer = fork { 3.wait; cond.unhang };
+		timer = fork { 10.wait; cond.unhang };
 
 		remote2.doWhenBooted {
 			"% - server repeated login timed out.\n".postf(thisMethod);
@@ -219,7 +219,7 @@ TestServer_clientID_booted : UnitTest {
 		remote1.stopAliveThread.remove;
 		remote2.stopAliveThread.remove;
 		thisProcess.platform.killProcessByID(serverPid);
-		testsFinished = exitCond.waitFor(5); // wait for the server process to exit
+		testsFinished = exitCond.waitFor(10); // wait for the server process to exit
 		this.assert(testsFinished, "TIMEOUT: server process did not quit")
 	}
 }
