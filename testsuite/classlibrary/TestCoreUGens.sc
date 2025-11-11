@@ -1092,6 +1092,7 @@ TestCoreUGens : UnitTest {
 				{
 					VarSaw.perform(rate, freq, iPhase, 0.5) // width must be 0.5 for this test
 				}.loadToFloatArray(freq.reciprocal,         // must be one period only
+					server,
 					action: { |data|
 						this.assertEquals(data.indexOf(data.maxItem), maxIdx,
 							"VarSaw.% should start correct phase (initPhase: %, maxIdx: %)".format(rate, iPhase, maxIdx)
