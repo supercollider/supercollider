@@ -45,6 +45,13 @@ Release dates of 3.x versions:
 - 3.13: 2023-02-19
 - 3.14: 2025-07-26
 
+3.14.1 (2025-11-23)
+===================
+
+### sclang: Fixed
+
+- Fix a possible crash due to a bug when setting args as keyword arguments in https://github.com/supercollider/supercollider/pull/7206
+
 3.14.0 (2025-07-26)
 ===================
 

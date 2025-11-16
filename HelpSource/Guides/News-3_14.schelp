@@ -202,6 +202,7 @@ list::
 ## fix Windows pathname resolution by @sadguitarius in https://github.com/supercollider/supercollider/pull/6613
 ## Don't try to free a Volume synth that doesn't exist by @jamshark70 in https://github.com/supercollider/supercollider/pull/6939
 ## Fix View.setBackgroundImage by @elgiano in https://github.com/supercollider/supercollider/pull/6970
+## Fix a possible crash due to a bug when setting args as keyword arguments in https://github.com/supercollider/supercollider/pull/7206
 ::
 
 section::  UGens
