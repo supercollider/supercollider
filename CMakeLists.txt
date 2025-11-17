@@ -80,11 +80,6 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
 	endif()
 
-elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
-	set(CMAKE_COMPILER_IS_INTEL 1)
-	add_definitions(-Wno-unknown-pragmas)
-	add_definitions(-simd)
-
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
@@ -368,17 +363,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 	endif()
 
 	add_definitions(-fvisibility=hidden)
-endif()
-
-if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
-	if (SSE)
-		add_definitions(-mia32)
-	endif()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
-	# disable warnings
-	add_definitions(-diag-disable 170) # pointer points outside of underlying object ... used heavily in sclang
-	add_definitions(-diag-disable 279) # controlling expression is constant
 endif()
 
 if(WIN32)
