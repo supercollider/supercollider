@@ -10,7 +10,8 @@ code::
 (
 { SinOsc.ar(
 	SinOsc.ar(
-		XLine.kr(1, 100, 5)).exprange(*XLine.kr([20, 800], [7000, 200], 10)
+		XLine.kr(1, 100, 5)
+		).exprange(*XLine.kr([20, 800], [7000, 200], 10)
     )
    ) * 0.1
 
@@ -80,7 +81,10 @@ argument:: numChannels
 The number of output channels to record.
 
 argument:: node
-The link::Classes/Node:: to record immediately after. By default, this is the default group 1.
+The link::Classes/Node:: to record immediately after.
+By default, this is the default group 1.
+While the node ID can be represented by an link::Classes/Integer::, 
+this should avoided when using more than one server simultaneously (see link::Reference/asTarget::). 
 
 argument:: duration
 If set, this limits recording to a given time in seconds.
@@ -157,20 +161,15 @@ section::Examples
 code::
 // something to record
 (
-SynthDef("bubbles", { |out|
+SynthDef(\bubbles, { |out|
 	var f, sound;
 	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8, 7.23], 0, 3, 80)).midicps; // glissando function
 	sound = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
 	Out.ar(out, sound);
 }).add;
-
-SynthDef("tpulse", { |out = 0, freq = 700, sawFreq = 440.0|
-	Out.ar(out, SyncSaw.ar(freq, sawFreq, 0.1))
-}).add;
-
 )
 
-x = Synth.new("bubbles");
+x = Synth(\bubbles);
 
 s.prepareForRecord; // if you want to start recording on a precise moment in time, you have to call this first.
 
@@ -192,7 +191,7 @@ code::
 thisProcess.platform.recordingsDir = "/home/user/";
 
 // instantiate the Recorder
-r = Recorder.new(s);
+r = Recorder(s);
 
 // record into a flac file
 r.recHeaderFormat = "flac";
