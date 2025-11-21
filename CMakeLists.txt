@@ -106,14 +106,6 @@ option(USE_CCACHE "Use ccache if available." ON)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^AMD64|EM64T|x86_64|X86|i386|i686")
-    option(SSE "Compile with support for SSE instructions." ON)
-    option(SSE2 "Compile with support for SSE2 instructions." ON)
-else() # non-x86 platforms do not have SSE
-    set(SSE OFF)
-    set(SSE2 OFF)
-endif()
-
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela})")
 
 if (AUDIOAPI STREQUAL jack)
@@ -317,24 +309,66 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 
 #############################################
-# some preprocessor flags
-if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
-	if (SSE)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse")
-		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
-			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse")
+# compiler settings - hardware
+
+set(SC_COMPILER_ARCH_FLAGS "" CACHE STRING "Architecture specific compiler flags")
+
+if("${SC_COMPILER_ARCH_FLAGS}" STREQUAL "")
+
+	set(_detected_flags "")
+
+	if(APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		if (NATIVE)
+			list(APPEND _detected_flags "-march=native")
+		else()
+			if("x86_64" IN_LIST CMAKE_OSX_ARCHITECTURES AND "arm64" IN_LIST CMAKE_OSX_ARCHITECTURES) # universal binary
+				list(APPEND _detected_flags "-Xarch_x86_64" "-march=haswell" "-Xarch_arm64" "-mcpu=apple-m1")
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+				list(APPEND _detected_flags "-march=haswell")
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+				list(APPEND _detected_flags "-mcpu=apple-m1")
+			endif()
+		endif()
+
+	elseif(MSVC)
+		if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES "x64" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.40")
+			list(APPEND _detected_flags "/arch:SSE4.2")
+		elseif(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES "ARM64" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.40")
+			list(APPEND _detected_flags "/arch:armv8.0")
+		endif()
+
+	elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+		if (NATIVE)
+			list(APPEND _detected_flags "-march=native")
+		else()
+			if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
+				if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12.0" OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "11.0"))
+					list(APPEND _detected_flags "-march=x86-64-v2")
+				else() # fallback for older compilers
+					list(APPEND _detected_flags "-msse4.2")
+				endif()
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
+				list(APPEND _detected_flags "-march=armv8-a")
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "armv7")
+				list(APPEND _detected_flags "-march=armv7-a" "-mfpu=neon" "-mfloat-abi=hard")
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "armv6")
+				list(APPEND _detected_flags "-march=armv6" "-mtune=arm1176jzf-s" "-mfpu=vfp" "-mfloat-abi=hard")
+			else()
+				message(STATUS "${CMAKE_CXX_COMPILER_ID}: No hardware optimization flags set for ${CMAKE_SYSTEM_PROCESSOR}")
+			endif()
 		endif()
 	endif()
-	if (SSE2)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2")
+
+	if(NOT "${_detected_flags}" STREQUAL "")
+		set(SC_COMPILER_ARCH_FLAGS "${_detected_flags}" CACHE STRING "Architecture specific compiler flags" FORCE)
 	endif()
-	if (NATIVE)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-	endif()
+
+endif()
+
+if(NOT "${SC_COMPILER_ARCH_FLAGS}" STREQUAL "")
+	separate_arguments(SC_COMPILER_ARCH_FLAGS)
+	message(STATUS "Compiler architecture flags: ${SC_COMPILER_ARCH_FLAGS}")
+	add_compile_options(${SC_COMPILER_ARCH_FLAGS})
 endif()
 
 #############################################
@@ -420,21 +454,6 @@ endif()
 
 if(MINGW)
 	add_compile_options(-mstackrealign)
-endif()
-
-# support for building on Raspberry Pi 1/2/3 and BBB
-if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l")
-  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} -mfloat-abi=hard")
-    set(${flag} "${${flag}} -mfpu=neon")
-  endforeach()
-elseif(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l")
-  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} -march=armv6")
-    set(${flag} "${${flag}} -mtune=arm1176jzf-s")
-    set(${flag} "${${flag}} -mfloat-abi=hard")
-    set(${flag} "${${flag}} -mfpu=vfp")
-  endforeach()
 endif()
 
 if (NO_GPL3)

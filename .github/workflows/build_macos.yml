@@ -43,7 +43,7 @@ jobs:
             # homebrew-uninstall: "readline" # use this instead when cross-compiling for x86_64 on arm64
             # vcpkg-packages: "readline portaudio libsndfile fftw3" # use this instead when cross-compiling for x86_64 on arm64
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
-            extra-cmake-flags: ""
+            extra-cmake-flags: "-D SC_COMPILER_ARCH_FLAGS='-march=ivybridge'"
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
             ctest: false
 

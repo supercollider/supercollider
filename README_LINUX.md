@@ -296,6 +296,15 @@ If you're compiling SC only for use on your own machine (that is, you aren't cro
 cmake -DNATIVE=ON ..
 ```
 
+If the Native option is OFF, the binary is still optimized to run on certain hardware.
+The `SC_COMPILER_ARCH_FLAGS` option can set the architecture or architecture level for the resulting binary.
+See https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels for more information.
+
+```shell
+cmake -D SC_COMPILER_ARCH_FLAGS="-march=x86-64-v2" .. # default on x86_64
+cmake -D SC_COMPILER_ARCH_FLAGS="-march=armv8-a" .. # default on arm64
+```
+
 #### Install location
 
 By default, SuperCollider installs in `/usr/local`, a system-wide install.

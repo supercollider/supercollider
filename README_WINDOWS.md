@@ -1212,6 +1212,14 @@ Note:
 - For 32-bit builds use `x86-windows` instead of `x64-windows` triplet when installing `readline`
 - At the time of writing this, `readline` would not build using a triplet for MinGW
 
+### CPU optimizations
+
+The `SC_COMPILER_ARCH_FLAGS` option can be used to set the optimizations for advanced CPU instructions, like SSE4.2, AVX, AVX2 etc. Newer versions of MSVC 2022 allow to set this to `SSE4.2`, which SC uses by default if available. If not set, MSVC compiles with `SSE2`. 
+If you don't need to support older and/or lower-end processors, you can set this to `AVX` or higher. 
+See https://learn.microsoft.com/en-us/cpp/build/reference/arch-x64 for more information.
+
+      -D SC_COMPILER_ARCH_FLAGS="/arch:SSE4.2" ..
+
 Known issues
 ============
 

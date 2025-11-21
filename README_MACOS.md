@@ -211,6 +211,14 @@ Common arguments to control the build configuration are:
 
     `-DNATIVE=ON`
 
+  * Set architecture level (`-march`) and/or cpu type (`-mcpu`) when Native is OFF
+
+    ```shell
+    -D SC_COMPILER_ARCH_FLAGS="-march=haswell" # default for x86_64
+    -D SC_COMPILER_ARCH_FLAGS="-mcpu=apple-m1" # default for arm64
+    -D SC_COMPILER_ARCH_FLAGS="-Xarch_x86_64 -march=haswell -Xarch_arm64 -mcpu=apple-m1" # default for universal builds
+    ```
+
   * Build the *supernova* server:
 
     `-DSUPERNOVA=ON`
