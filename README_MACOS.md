@@ -211,6 +211,14 @@ Common arguments to control the build configuration are:
 
     `-DNATIVE=ON`
 
+  * Set `x86_64` architecture level (`-march`) when Native is OFF
+
+    `-D CLANG_X86_64_ARCH=haswell`
+
+  * Set `arm64` cpu type (`-mcpu`) when Native is OFF
+
+    `-D CLANG_ARM64_CPU=apple-m1`
+
   * Build the *supernova* server:
 
     `-DSUPERNOVA=ON`

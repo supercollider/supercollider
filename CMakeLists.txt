@@ -106,14 +106,6 @@ option(USE_CCACHE "Use ccache if available." ON)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^AMD64|EM64T|x86_64|X86|i386|i686")
-    option(SSE "Compile with support for SSE instructions." ON)
-    option(SSE2 "Compile with support for SSE2 instructions." ON)
-else() # non-x86 platforms do not have SSE
-    set(SSE OFF)
-    set(SSE2 OFF)
-endif()
-
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela})")
 
 if (AUDIOAPI STREQUAL jack)
@@ -317,24 +309,78 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 
 #############################################
-# some preprocessor flags
-if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
-	if (SSE)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse")
-		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
-			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse")
+# compiler settings - hardware
+
+if(APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	if (NATIVE)
+		add_compile_options("-march=native")
+	else()
+		if(CMAKE_OSX_ARCHITECTURES MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+			set(CLANG_X86_64_ARCH "haswell" CACHE STRING "Clang CPU/architecture type for x86_64")
+			message(STATUS "Clang x86_64 architecture level: ${CLANG_X86_64_ARCH}")
+			add_compile_options("-Xarch_x86_64" "-march=${CLANG_X86_64_ARCH}")
+		endif()
+		if(CMAKE_OSX_ARCHITECTURES MATCHES "arm64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+			set(CLANG_ARM64_CPU "apple-m1" CACHE STRING "Clang CPU type for arm64")
+			message(STATUS "Clang arm64 CPU type: ${CLANG_ARM64_CPU}")
+			add_compile_options("-Xarch_arm64" "-mcpu=${CLANG_ARM64_CPU}")
 		endif()
 	endif()
-	if (SSE2)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2")
+elseif(MSVC)
+	set(MSVC_ARCH_DEFAULT "")
+	set(MSVC_ARCH_KNOWN FALSE)
+	if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES "x64")
+		set(MSVC_ARCH_KNOWN TRUE)
+		# Default is SSE2; on newer MSVC we set it to SSE4.2
+		# consider AVX or later when targetting newer CPUs
+		if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.40")
+			set(MSVC_ARCH_DEFAULT "SSE4.2")
+		else()
+			set(MSVC_ARCH_DEFAULT "SSE2")
+		endif()
+	elseif(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES "ARM64")
+		set(MSVC_ARCH_KNOWN TRUE)
+		if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.40")
+			set(MSVC_ARCH_DEFAULT "armv8.0")
+		endif()
 	endif()
+	set(MSVC_ARCH "${MSVC_ARCH_DEFAULT}" CACHE STRING "MSVC /arch setting (SSE2, AVX, AVX2, SSE4.2, armv8.0 etc.)")
+	if(NOT MSVC_ARCH_KNOWN AND "${MSVC_ARCH}" STREQUAL "")
+		message(STATUS "MSVC: no hardware optimization flags set for architecture ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
+	endif()
+	if(NOT "${MSVC_ARCH}" STREQUAL "SSE2" AND NOT "${MSVC_ARCH}" STREQUAL "armv8.0" AND NOT "${MSVC_ARCH}" STREQUAL "") # filter out default arch settings
+		message(STATUS "MSVC architecture optimizations: ${MSVC_ARCH}")
+		add_compile_options("/arch:${MSVC_ARCH}")
+	endif()
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 	if (NATIVE)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+		add_compile_options("-march=native")
+	else()
+		if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
+			if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12.0") # arch levels are available in GCC 11+ and Clang 12+, for simplicity we just check for version 12 here
+				set(GCC_CLANG_ARCH "x86-64-v2" CACHE STRING "Architecture level for GCC/Clang (x86-64-v2, x86-64-v3, x86-64-v4)") # consider x86-64-v3 or later for newer CPUs
+				message(STATUS "${CMAKE_CXX_COMPILER_ID} x86_64 architecture level: ${GCC_CLANG_ARCH}")
+				add_compile_options("-march=${GCC_CLANG_ARCH}")
+			else()
+				message(STATUS "${CMAKE_CXX_COMPILER_ID} x86_64: enabling SSE4.2 optimizations (fallback)")
+				add_compile_options("-msse4.2") # for older compilers fall back to SSE4.2
+			endif()
+		elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
+			set(GCC_CLANG_ARCH "armv8-a" CACHE STRING "Architecture level for GCC/Clang (armv8-a, armv8.2-a+fp16)") # consider armv8.2-a+fp16 for newer CPUs
+			message(STATUS "${CMAKE_CXX_COMPILER_ID} arm64 architecture level: ${GCC_CLANG_ARCH}")
+			add_compile_options("-march=${GCC_CLANG_ARCH}")
+		elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "armv7") # RPI 2 / 3
+			message(STATUS "Armv7 detected, setting compiler options -march=armv7-a -mfpu=neon -mfloat-abi=hard")
+ 			add_compile_options("-march=armv7-a" "-mfpu=neon" "-mfloat-abi=hard")
+		elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "armv6") # RPI 1 / Zero
+			message(STATUS "Armv6 detected, setting compiler options -march=armv6 -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard")
+			add_compile_options("-march=armv6" "-mtune=arm1176jzf-s" "-mfpu=vfp" "-mfloat-abi=hard")
+		else()
+			message(STATUS "${CMAKE_CXX_COMPILER_ID} compiler: no hardware optimization flags set for architecture ${CMAKE_SYSTEM_PROCESSOR}")
+		endif()
 	endif()
+else()
+	message(WARNING "Unknown compiler: ${CMAKE_CXX_COMPILER_ID} - no hardware optimization flags set")
 endif()
 
 #############################################
@@ -420,21 +466,6 @@ endif()
 
 if(MINGW)
 	add_compile_options(-mstackrealign)
-endif()
-
-# support for building on Raspberry Pi 1/2/3 and BBB
-if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l")
-  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} -mfloat-abi=hard")
-    set(${flag} "${${flag}} -mfpu=neon")
-  endforeach()
-elseif(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l")
-  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} -march=armv6")
-    set(${flag} "${${flag}} -mtune=arm1176jzf-s")
-    set(${flag} "${${flag}} -mfloat-abi=hard")
-    set(${flag} "${${flag}} -mfpu=vfp")
-  endforeach()
 endif()
 
 if (NO_GPL3)
