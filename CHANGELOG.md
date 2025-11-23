@@ -50,7 +50,7 @@ Release dates of 3.x versions:
 
 ### sclang: Fixed
 
-- Fix a possible crash due to a bug when setting args as keyword arguments in https://github.com/supercollider/supercollider/pull/7206
+- Fix a bug when setting args as keyword arguments in class methods in https://github.com/supercollider/supercollider/pull/7206
 
 3.14.0 (2025-07-26)
 ===================
