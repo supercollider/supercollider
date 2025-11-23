@@ -52,6 +52,10 @@ Release dates of 3.x versions:
 
 - Fix a bug when setting args as keyword arguments in class methods in https://github.com/supercollider/supercollider/pull/7206
 
+### General: Changed
+
+- Update boost integration in CMake in https://github.com/supercollider/supercollider/pull/7116
+
 3.14.0 (2025-07-26)
 ===================
 

@@ -64,6 +64,12 @@ list::
 ## Make code:: Pbind :: work with kwargs (this syntax works now: code:: Pbind(note: Pseq([-3, -2, 0, 1, 6, 13]), dur: 0.05, amp: 0.1).play ::) by @JordanHendersonMusic and @telephon in https://github.com/supercollider/supercollider/pull/6530
 ::
 
+subsection:: Changed
+
+list::
+## In 3.14.1 change CMake's boost integration in https://github.com/supercollider/supercollider/pull/7116
+::
+
 section:: Class library
 
 subsection:: Added
@@ -202,7 +208,7 @@ list::
 ## fix Windows pathname resolution by @sadguitarius in https://github.com/supercollider/supercollider/pull/6613
 ## Don't try to free a Volume synth that doesn't exist by @jamshark70 in https://github.com/supercollider/supercollider/pull/6939
 ## Fix View.setBackgroundImage by @elgiano in https://github.com/supercollider/supercollider/pull/6970
-## Fix a bug when setting args as keyword arguments in class methods in https://github.com/supercollider/supercollider/pull/7206
+## In 3.14.1 fix a bug when setting args as keyword arguments in class methods in https://github.com/supercollider/supercollider/pull/7206
 ::
 
 section::  UGens
