@@ -84,8 +84,7 @@ else()
   add_library (libsupernova STATIC ${libsupernova_src})
 endif()
 
-if(LINUX AND CMAKE_COMPILER_IS_CLANG)
-    message(STATUS "Clang on Linux detected, linking to libatomic")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR (LINUX AND CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     target_link_libraries(libsupernova atomic)
 endif()
 if(NOT WIN32)
@@ -202,12 +201,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 target_link_libraries(libsupernova Boost::program_options)
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-    if( ${_gcc_version} VERSION_GREATER 5 )
-      target_link_libraries( libsupernova atomic )
-    endif()
-endif()
 
 if(WIN32)
     target_link_libraries(libsupernova wsock32 ws2_32 winmm)
