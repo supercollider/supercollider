@@ -76,32 +76,8 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
             OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    add_compile_options(
-        -Werror=return-type      # Error out if function definitions lack a return type
-        -fschedule-insns2        # Optimize instruction scheduling
-        -fomit-frame-pointer     # Optimize by omitting the frame pointer where possible
-        -fno-math-errno          # Optimize math functions by not setting errno
-        -fno-signaling-nans      # Assume no signaling NaNs for better optimization
-        -fsigned-zeros           # Maintain distinction between -0.0 and +0.0
-        -fno-associative-math    # Prevent reordering of floating-point operations
-    )
-
 	if(${_gcc_version} VERSION_LESS 4.8)
 		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
-	endif()
-
-	if(APPLE)
-        execute_process(
-                COMMAND ${CMAKE_CXX_COMPILER} --version
-                OUTPUT_VARIABLE _gcc_version_info
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-		if ("${_gcc_version_info}" MATCHES "Apple")
-			add_definitions("-fpascal-strings")
-		endif()
-		add_definitions("-D_REENTRANT")
-	elseif(NOT (WIN32 AND NOT CYGWIN))
-		add_definitions("-pthread")
 	endif()
 
 elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
@@ -119,10 +95,6 @@ if(APPLE)
 	endif()
 elseif(UNIX)
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
-endif()
-
-if(WIN32)
-    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0600)
 endif()
 
 
@@ -361,15 +333,40 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	endif()
+endif()
 
-    if(CMAKE_COMPILER_IS_CLANG AND NOT SC_CLANG_USES_LIBSTDCPP)
-        # the default
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
-    endif()
+#############################################
+# other compiler settings
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+	add_compile_options(
+		-Werror=return-type      # Error out if function definitions lack a return type
+		-fschedule-insns2        # Optimize instruction scheduling
+		-fomit-frame-pointer     # Optimize by omitting the frame pointer where possible
+		-fno-math-errno          # Optimize math functions by not setting errno
+		-fno-signaling-nans      # Assume no signaling NaNs for better optimization
+		-fsigned-zeros           # Maintain distinction between -0.0 and +0.0
+		-fno-associative-math    # Prevent reordering of floating-point operations
+	)
+
+	if(APPLE)
+		add_compile_definitions("_REENTRANT")
+	elseif(NOT WIN32)
+		add_compile_options("-pthread")
+	endif()
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	if(NOT SC_CLANG_USES_LIBSTDCPP)
+		# the default
+		add_compile_options("-stdlib=libc++")
+		add_link_options("-stdlib=libc++")
+	endif()
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 	if(FORTIFY)
-		add_definitions( -D_FORTIFY_SOURCE=2 )
+		add_compile_definitions("_FORTIFY_SOURCE=2")
 	endif()
 
 	add_definitions(-fvisibility=hidden)
@@ -384,6 +381,10 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	# disable warnings
 	add_definitions(-diag-disable 170) # pointer points outside of underlying object ... used heavily in sclang
 	add_definitions(-diag-disable 279) # controlling expression is constant
+endif()
+
+if(WIN32)
+	add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX _WIN32_WINNT=0x0600)
 endif()
 
 if(MSVC)
@@ -413,13 +414,8 @@ if (SC_MEMORY_DEBUGGING)
 	add_definitions(-DENABLE_MEMORY_CHECKS)
 endif()
 
-if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER 4.8.5) AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
-# no-strict-aliasing was introduced because of problems with MinGW/GCC 4.9.2
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign -fno-strict-aliasing")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign -fno-strict-aliasing")
-elseif(MINGW)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
+if(MINGW)
+	add_compile_options("$<$<COMPILE_LANGUAGE:C,CXX>:-mstackrealign>")
 endif()
 
 # support for building on Raspberry Pi 1/2/3 and BBB
