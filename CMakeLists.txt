@@ -413,7 +413,7 @@ if (SC_MEMORY_DEBUGGING)
 endif()
 
 if(MINGW)
-	add_compile_options("$<$<COMPILE_LANGUAGE:C,CXX>:-mstackrealign>")
+	add_compile_options(-mstackrealign)
 endif()
 
 # support for building on Raspberry Pi 1/2/3 and BBB
