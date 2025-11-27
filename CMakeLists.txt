@@ -341,8 +341,6 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	add_compile_options(
 		-Werror=return-type      # Error out if function definitions lack a return type
-		-fschedule-insns2        # Optimize instruction scheduling
-		-fomit-frame-pointer     # Optimize by omitting the frame pointer where possible
 		-fno-math-errno          # Optimize math functions by not setting errno
 		-fno-signaling-nans      # Assume no signaling NaNs for better optimization
 		-fsigned-zeros           # Maintain distinction between -0.0 and +0.0
