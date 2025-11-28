@@ -899,14 +899,14 @@ Server {
 
 	/* recording formats */
 
-	recHeaderFormat { ^options.recHeaderFormat }
-	recHeaderFormat_ { |string| options.recHeaderFormat_(string) }
-	recSampleFormat { ^options.recSampleFormat }
-	recSampleFormat_ { |string| options.recSampleFormat_(string) }
-	recChannels { ^options.recChannels }
-	recChannels_ { |n| options.recChannels_(n) }
-	recBufSize { ^options.recBufSize }
-	recBufSize_ { |n| options.recBufSize_(n) }
+	recHeaderFormat { ^recorder.recHeaderFormat }
+	recHeaderFormat_ { |string| recorder.recHeaderFormat_(string) }
+	recSampleFormat { ^recorder.recSampleFormat }
+	recSampleFormat_ { |string| recorder.recSampleFormat_(string) }
+	recChannels { ^recorder.recChannels }
+	recChannels_ { |n| recorder.recChannels_(n) }
+	recBufSize { ^recorder.recBufSize }
+	recBufSize_ { |n| recorder.recBufSize_(n) }
 
 	/* server status */
 
