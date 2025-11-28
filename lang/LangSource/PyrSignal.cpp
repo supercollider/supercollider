@@ -41,10 +41,10 @@
 #include "SCBase.h"
 #include "InitAlloc.h"
 
-PyrObject* newPyrSignal(VMGlobals* g, std::int64_t size) {
+PyrObject* newPyrSignal(VMGlobals* g, std::int64_t size, bool collect) {
     PyrObject* signal;
     std::int64_t numbytes = size * sizeof(float);
-    signal = (PyrObject*)g->gc->New(numbytes, 0, obj_float, true);
+    signal = (PyrObject*)g->gc->New(numbytes, 0, obj_float, collect);
     if (signal) {
         signal->classptr = class_signal;
         signal->size = size;

@@ -128,7 +128,7 @@ scan phase:
         when a non local object is reached, mark it, and put it on the list if not retained.
 sweep phase:
     send any new retained objects to other system
-    send any no longer reatined objects to the other system.
+    send any no longer retained objects to the other system.
     send this list to
     enqueue finalization messages
         finalize: call finalize method, move from sweep area to free area
@@ -282,12 +282,21 @@ PyrGC::PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::i
     g->process = nullptr; // initPyrThread checks to see if process has been started
     mProcess = newPyrProcess(g, mainProcessClass);
 
+    // don't call gc, as gc doesn't exist yet!
+    mStackOfExternalObjects = newPyrArray(g->gc, 32, 0, false);
+    mStackOfExternalObjects->size = 32;
+    for (size_t i { 0 }; i < 32; ++i) {
+        SetNil(mStackOfExternalObjects->slots + i);
+    }
+    mStackOfExternalObjects->classptr = class_array;
+
     mStack = slotRawObject(&slotRawThread(&mProcess->mainThread)->stack);
     ToBlack(mStack);
     SetNil(&slotRawThread(&mProcess->mainThread)->stack);
 
     mNumGrey = 0;
     ToGrey2(mProcess);
+    ToGrey(mStackOfExternalObjects);
     g->sp = mStack->slots - 1;
     g->process = mProcess;
     mRunning = true;
@@ -465,6 +474,43 @@ PyrObject* PyrGC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject* inObject, boo
     return obj;
 }
 
+void PyrGC::StoreExternalObject(PyrObject* obj) {
+    for (size_t i { 0 }; i < mStackOfExternalObjects->size; ++i) {
+        if (IsNil(mStackOfExternalObjects->slots + i)) {
+            SetObject(mStackOfExternalObjects->slots + i, obj);
+            return;
+        }
+    }
+
+    // No free slots
+    const auto old_size = mStackOfExternalObjects->size;
+    assert(old_size != 0);
+    PyrObject* new_array = newPyrArray(this, old_size * 2, 0, true);
+    new_array->size = old_size * 2;
+    memcpy(new_array->slots, mStackOfExternalObjects->slots, sizeof(PyrSlot) * old_size);
+
+    // Here, we know mStackOfExternalObjects can't be referenced anywhere else, therefore it is safe to make it white.
+    // ToWhite(mStackOfExternalObjects);
+
+    mStackOfExternalObjects = new_array;
+    for (int i { old_size }; i < old_size * 2; ++i) {
+        SetNil(mStackOfExternalObjects->slots + i);
+    }
+    ToGrey(mStackOfExternalObjects);
+    SetObject(&mStackOfExternalObjects->slots[old_size], obj);
+}
+
+void PyrGC::RemoveExternalObject(PyrObject* obj) {
+    for (size_t i { 0 }; i < mStackOfExternalObjects->size; ++i) {
+        if (IsObj(&mStackOfExternalObjects->slots[i]) && slotRawObject(&mStackOfExternalObjects->slots[i]) == obj) {
+            SetNil(&mStackOfExternalObjects->slots[i]);
+            return;
+        }
+    }
+
+    throw std::runtime_error { "Could not find object in external object list" };
+}
+
 
 void PyrGC::SweepBigObjects() {
     if (!mCanSweep)
@@ -627,6 +673,7 @@ void PyrGC::Flip() {
     // move root to grey area
     mNumGrey = 0;
     ToGrey2(mProcess);
+    ToGrey(mStackOfExternalObjects);
 
     ToBlack(mStack);
 

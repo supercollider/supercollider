@@ -41,6 +41,8 @@ const int kNumGCSets = kNumGCSizeClasses + 1;
 const std::int64_t kScanThreshold = 256LL;
 
 
+void fatalerror(const char* str);
+
 class GCSet {
 public:
     GCSet() {}
@@ -91,6 +93,10 @@ public:
     bool ObjIsGrey(PyrObjectHdr* inObj) { return IsGrey(inObj); }
     bool ObjIsFree(PyrObjectHdr* inObj) { return IsFree(inObj); }
 
+    // External objects provide a mechanism for other threads to 'own' PyrObjects
+    // This is useful, for example, when storing a callback which will be called at a later date.
+    void StoreExternalObject(PyrObject* obj);
+    void RemoveExternalObject(PyrObject* obj);
 
     // general purpose write barriers:
     void GCWrite(PyrObjectHdr* inParent, PyrSlot* inSlot) {
@@ -216,6 +222,7 @@ private:
     GCSet mSets[kNumGCSets];
     PyrProcess* mProcess; // the root is the pyrprocess which contains this struct
     PyrObject* mStack;
+    PyrObject* mStackOfExternalObjects;
     PyrObject* mPartialScanObj;
     PyrObjectHdr mGrey;
 

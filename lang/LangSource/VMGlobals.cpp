@@ -21,22 +21,7 @@
 
 #include "VMGlobals.h"
 
-VMGlobals::VMGlobals():
-    allocPool(nullptr),
-    process(nullptr),
-    gc(nullptr),
-    classvars(nullptr),
-    canCallOS(false),
-    thread(nullptr),
-    method(nullptr),
-    block(nullptr),
-    frame(nullptr),
-    primitiveMethod(nullptr),
-    ip(nullptr),
-    sp(nullptr),
-    numpop(0),
-    primitiveIndex(0),
-    execMethod(0) {
+VMGlobals::VMGlobals() {
     SetNil(&receiver);
     SetNil(&result);
 }

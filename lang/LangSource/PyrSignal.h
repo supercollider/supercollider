@@ -30,7 +30,7 @@ enum {
     kSignalNextNode
 };
 
-PyrObject* newPyrSignal(VMGlobals* g, std::int64_t size);
+PyrObject* newPyrSignal(VMGlobals* g, std::int64_t size, bool collect = true);
 
 #define UNROLL8_CODE(size, var, stmt)                                                                                  \
     {                                                                                                                  \

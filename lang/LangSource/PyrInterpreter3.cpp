@@ -347,6 +347,9 @@ bool initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {
     // initialize process random number generator
     g->rgen = (RGen*)(slotRawObject(&g->thread->randData)->slots);
 
+    g->gluonManager.reset_or_prep_for_close();
+    g->gluonManager.create_testing_library();
+
     initThreads();
     initPatterns();
     initUniqueMethods();

@@ -472,7 +472,7 @@ add_subdirectory(platform)
 add_subdirectory(editors)
 
 if(UNIX AND NOT APPLE)
-    install(DIRECTORY include/common include/plugin_interface include/server include/lang
+    install(DIRECTORY include/common include/plugin_interface include/server include/lang include/gluon_ffi_interface
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
 	FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
     )

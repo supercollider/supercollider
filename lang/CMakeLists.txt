@@ -4,6 +4,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/common
+                    ${CMAKE_SOURCE_DIR}/include/gluon_ffi_interface
 
                     LangSource
                     LangPrimSource
@@ -30,11 +31,14 @@ else ()
 endif ()
 
 set(sclang_sources
+	LangSource/GluonFFIV1.cpp
+	LangSource/GluonFFI.cpp
     LangPrimSource/SC_LinkClock.cpp
     LangPrimSource/SC_AudioDevicePrim.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
 	LangPrimSource/PyrPrimitive.cpp
+	LangPrimSource/PyrFFIPrimitives.cpp
 	LangPrimSource/PyrMathPrim.cpp
 	LangPrimSource/SC_ComPort.cpp
 	LangPrimSource/OSCData.cpp

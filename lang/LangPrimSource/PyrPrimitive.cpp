@@ -4023,6 +4023,10 @@ void initPrimitives() {
     definePrimitive(base, index++, "_NumUninlinedFunctionInClassLib", numUninlinedFunctionsInClassLib, 1, 0);
     definePrimitive(base, index++, "_SC_BuildString", prBuildString, 1, 0);
 
+
+    void initFFIPrimitives();
+    initFFIPrimitives();
+
     // void initOscilPrimitives();
     // void initControllerPrimitives();
 

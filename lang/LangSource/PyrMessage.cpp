@@ -576,13 +576,11 @@ HOT void returnFromBlock(VMGlobals* g) {
         }
 
     } else {
-        ////// this should never happen .
-        error("return from Function at top of call stack.\n");
-        g->method = nullptr;
-        g->block = nullptr;
-        g->frame = nullptr;
-        g->sp = g->gc->Stack()->slots - 1;
-        longjmp(g->escapeInterpreter, 1);
+        fatalerror(
+            "Returned from a Function at top of call stack. This has probably occurred when a thread tried to run "
+            "'runInterpreter' with a 'Function' object at the top of the stack. Instead, wrap the function "
+            "object in a class so a method can be called and return. This is a fatal error because it corrupts the "
+            "stack in subtle ways.\n");
     }
     // if (gTraceInterpreter) postfl("<-returnFromBlock\n");
 #ifdef GC_SANITYCHECK
