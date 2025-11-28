@@ -1,6 +1,6 @@
 Recorder {
 
-	var <server, <>numChannels;
+	var <server, <>recChannels;
 	var >recHeaderFormat, >recSampleFormat, >recBufSize;
 	var recordBuf, recordNode, synthDef;
 	var <paused = false, <duration = 0, <>notifyServer = false;
@@ -10,6 +10,9 @@ Recorder {
 	*new { |server|
 		^super.newCopyArgs(server)
 	}
+
+	numChannels { ^recChannels }
+	numChannels_ { |n| recChannels = n }
 
 	record { |path, bus, numChannels, node, duration|
 
@@ -23,7 +26,7 @@ Recorder {
 				this.record(path, bus, numChannels, node, duration) // now we are ready
 			}
 		} {
-			if(numChannels.notNil and: { numChannels != this.numChannels }) {
+			if(numChannels.notNil and: { numChannels != this.recChannels }) {
 				"Cannot change recording number of channels while running".warn;
 				^this
 			};
@@ -36,7 +39,7 @@ Recorder {
 				this.prRecord(bus, node, duration);
 				this.changedServer(\recording, true);
 				"Recording channels % ... \npath: '%'\n"
-				.postf(bus + (0..this.numChannels - 1), recordBuf.path);
+				.postf(bus + (0..this.recChannels - 1), recordBuf.path);
 			} {
 				if(paused) {
 					this.resumeRecording
@@ -120,7 +123,7 @@ Recorder {
 		);
 		if(recordBuf.isNil) { Error("could not allocate buffer").throw };
 		recordBuf.path = path;
-		this.numChannels = numChannels;
+		this.recChannels = numChannels;
 		id = UniqueID.next;
 
 		synthDef = SynthDef(SystemSynthDefs.generateTempName, { |in, bufnum, duration|
