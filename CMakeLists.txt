@@ -401,14 +401,10 @@ endif()
 
 if(MSVC)
   add_compile_options(
-    /wd4018 # signed/unsigned mismatch
+    /wd4100 # unreferenced parameter
+    /wd4101 # unreferenced local variable
     /wd4102 # unreferenced label
-    /wd4267 # conversion from 'size_t' to 'int', possible loss of data
-    /wd4244 # conversion from '__int64' to 'int', possible loss of data
-    /wd4305 # '=' : truncation from 'double' to 'float'
-    /wd4309 # '=' : truncation of constant value
-    /wd4800 # forcing value to bool 'true' or 'false' (performance warning)
-    /wd4996 # The POSIX name for this item is deprecated.
+    /wd4200 # nonstandard extension used: zero-sized array in struct/union
   )
 
 # this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error
@@ -418,9 +414,6 @@ if(MSVC)
 
 # for math operations, we expect the default /fp:precise flag to be used, so that we match settings for gcc/clang
 
-# _ENABLE_ATOMIC_ALIGNMENT_FIX prevents the build from breaking when VS2015 update 2 upwards are used
-# see http://boost.2283326.n4.nabble.com/lockfree-ENABLE-ATOMIC-ALIGNMENT-FIX-for-VS-2015-Update-2-td4685955.html
-  add_compile_definitions(_CRT_SECURE_NO_WARNINGS _SCL_SECURE_NO_WARNINGS _ENABLE_ATOMIC_ALIGNMENT_FIX)
 endif(MSVC)
 
 if(MINGW)
