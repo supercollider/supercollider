@@ -54,6 +54,14 @@
 #    include <parallel/algorithm>
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#    define PRAGMA_IVDEP _Pragma("GCC ivdep")
+#elif defined(_MSC_VER)
+#    define PRAGMA_IVDEP __pragma(loop(ivdep))
+#else
+#    define PRAGMA_IVDEP
+#endif
+
 
 PyrClass* gClassList = nullptr;
 int gNumSelectors = 0;
@@ -1053,7 +1061,7 @@ static void binsortClassRows(PyrMethod const** bigTable, const ColumnDescriptor*
         PyrMethod const** row = bigTable + j * numSelectors;
         memcpy(temprow, row, numSelectors * sizeof(PyrMethod*));
 
-#pragma GCC ivdep
+        PRAGMA_IVDEP
         for (int i = 0; i < numSelectors; ++i)
             row[i] = temprow[sels[i].selectorIndex];
     }
@@ -1347,7 +1355,7 @@ static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable, boost
     if (superclassobj) {
         PyrMethod** superrow = bigTable + slotRawInt(&superclassobj->classIndex) * gNumSelectors;
 
-#pragma GCC ivdep
+        PRAGMA_IVDEP
         for (int i = 0; i != gNumSelectors; ++i) {
             myrow[i] = superrow[i];
             if (superrow[i])
