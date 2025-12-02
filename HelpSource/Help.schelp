@@ -164,6 +164,7 @@ numberedlist::
 ## link::Guides/GUI-Layout-Management::
 ## link::Guides/FFT-Overview::
 ## link::Guides/Non-Realtime-Synthesis::
+## link::Guides/Startup_AutoRun_Execution_Load::
 ::
 
 subsection:: Architecture

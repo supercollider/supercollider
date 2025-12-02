@@ -1,0 +1,312 @@
+title:: Evaluating and Executing .scd Files (SC-IDE & CLI)
+summary:: Guide for startup, evaluating, loading, and executing .scd files in SC-IDE and from the command line
+categories:: Tutorials
+related:: Classes/Document, Classes/Main#thisProcess, Classes/PathName, Classes/Platform, Classes/File, Classes/Interpreter
+
+DESCRIPTION::
+This guide summarizes methods for starting, evaluating, loading, and executing teletype::.SCD:: files within SC-IDE and from the command line.
+It also covers techniques for modularizing code with relative paths and for automatic execution upon file opening or SuperCollider startup.
+
+table::
+## Method||Use Case||Returns||Notes
+## startup.scd|| Global Boot||Depends on the file|| Runs every time SuperCollider starts
+## code::/*RUN*/::
+at the first line of an SCD||Auto-Run on Open||Depends on the file|| IDE specific:
+
+runs code when file opens
+## code::.load::|| Execute File|| Result of last line|| Standard way to run external code
+## code::.loadRelative::|| Execute File|| Result of last line|| Best for portable projects
+## Document.open|| Open Editor|| Document Object|| Opens file in IDE
+
+(does not run code)
+## sclang (CLI)|| Batch/Headless|| Exit Code|| Runs outside of SC-IDE
+
+(terminal or prompt)
+::
+
+strong::Common Pitfalls::
+
+list::
+## strong::Document Path:::
+
+code::resolveRelative:: and code::loadRelative:: will return code::nil:: or code::WARNING:: if the current document has not been saved, as it does not yet have a path on disk.
+
+## strong::Infinite Loops:::
+
+Be cautious when using code::.load:: in a way that the loaded file references itself, which can lead to infinite loops.
+::
+
+
+section:: Startup File (Global Auto-Run)
+
+To make code execute automatically whenever SuperCollider launches (regardless of which file is opened), use the teletype::startup.scd:: file in code::Platform.userAppSupportDir::.
+In SC-IDE, you can also open it directly from the menu bar by selecting teletype::File:: → teletype::Open startup file::.
+If you are not using SC-IDE, follow these steps instead:
+
+numberedlist::
+## Find where your startup file is located:
+code::
+Platform.userAppSupportDir.openOS
+::
+
+## Open the startup file for editing (create the file if it doesn't exist):
+
+code::
+(
+var path = Platform.userAppSupportDir +/+ "startup.scd";
+if(File.exists(path).not) { File.use(path, "w") };
+path.openDocument
+)
+::
+::
+
+Examples of useful startup code (inside teletype::startup.scd::):
+list::
+## To load other files:
+code::
+"~/Documents/SuperColliderProject1/main.scd".standardizePath.load;
+"~/Documents/SuperColliderProject2/main.scd".standardizePath.load;
+::
+## To set in/out number of audio bus channels:
+code::
+s.options.numInputBusChannels = ~nI = 8;
+s.options.numOutputBusChannels = ~nO = 8;
+::
+## To set memory size:
+code::
+s.options.memSize = 2.pow(21);
+::
+## To set audio device:
+code::
+s.options.device = "Fireface 800 (3F0)";
+::
+::
+
+
+section:: Auto-Run on Document Open (SC-IDE)
+
+In the SuperCollider IDE, you can make a specific file execute automatically when it is opened.
+
+strong::How to use:::
+Place the string code::/*RUN*/:: on the very first line of the document.
+
+code::
+/*RUN*/
+"Hello, this SCD file runs automatocally when opened".postln;
+s.boot;
+::
+
+note::
+list::
+## This feature is specific to the SuperCollider IDE editor.
+It is useful for performance patches or tools that should start immediately when the file is opened.
+
+## If this does not work, follow these steps to resolve the issue:
+numberedlist::
+## (Optional) Check the value of code::Document.autoRun:::
+code::
+Document.autoRun
+::
+The default value is teletype::true::, but it may have been changed to teletype::false:: by code evaluation.
+## Set the value of code::Document.autoRun:: to teletype::true:::
+code::
+Document.autoRun_(true)
+::
+## (Optional) Verify the value of code::Document.autoRun:: again:
+code::
+Document.autoRun
+::
+::
+::
+::
+
+section:: Loading Files (Evaluating entire code blocks in specific SCDs without opening them)
+
+This is the most common way to execute code stored in other files from within a running program.
+warning:: The file must be saved to disk for relative paths to work.::
+
+list::
+##Load using absolute path
+code::
+"/full/path/to/filename.scd".load;
+::
+##Load using relative paths (Recommended for projects)
+code::
+"filename.scd".loadRelative;            // Search in the same directory
+"../lib/utils.scd".loadRelative;        // Search in parent/lib directory
+::
+##Alternative relative path construction (Manual)
+code::
+(
+var path = thisProcess.nowExecutingPath.dirname;
+(path ++ "modules/synthdefs.scd").load;
+)
+::
+::
+
+subsection:: Variable Scope in Loaded Files
+
+When working across multiple teletype::SCD:: documents, it is helpful to properly use the following variable types according to the appropriate scopes:
+
+list::
+## strong::Environment variables:: (e.g., ~myVar) and strong::interpreter variables:: (e.g., a) persist and are shared between the main document and any loaded file.
+## strong::Local variables:: (e.g., var myVar) are scoped only to the file being loaded and are not visible to the main document.
+::
+
+code::
+// in main.scd
+~globalSetting = 100;
+"config.scd".loadRelative;
+~loadedSetting.postln; // Works if defined in config.scd
+
+// in config.scd
+var localCalc = 10 * ~globalSetting; // uses ~globalSetting defined in main.scd for calculation
+~loadedSetting = localCalc;          // exports result to environment
+::
+
+section:: Opening SCD Files in SC-IDE
+
+Use these methods to open a file in the text editor without evaluating its code immediately.
+list::
+## Open using absolute path:
+code::
+Document.open("/full/path/to/filename.scd")
+::
+or
+code::
+"/full/path/to/filename.scd".openDocument
+::
+
+## Open using a relative path (the file must be saved first):
+code::
+// Opens a document located in the same folder as the file containing the evaluated code:
+"filename.scd".resolveRelative.openDocument;
+
+// Opens a document located in the parent folder of the file containing the evaluated code:
+"../other.scd".resolveRelative.openDocument;
+::
+::
+
+section:: Command Line Execution
+
+SuperCollider (sclang) can be run from a terminal or command prompt.
+This is useful for installation art, headless systems (e.g., Raspberry Pi), or batch processing.
+
+list::
+## Basic usage:
+code::
+sclang filename.scd        // on Linux and macOS
+sclang.exe filename.scd    // on Windows
+::
+warning::
+list::
+## To run code::sclang:: or code::sclang.exe:: directly, the path to code::sclang:: must be included in the system PATH environment variable.
+## To run a file by its filename only (without specifying the full path), the CLI command must be executed from the same folder as the file.
+::
+::
+## With configuration file:
+code::
+sclang -l sclang_conf.yaml filename.scd     // on Linux and macOS
+sclang.exe -l sclang_conf.yaml filename.scd // on Windows
+::
+warning::
+The path to teletype::sclang_conf.yaml:: must be explicitly specified if the command is executed outside of code::Platform.userConfigDir::.
+::
+::
+
+subsection::Setting up 'sclang' in PATH
+
+list::
+## strong::macOS:::
+
+Add this to your shell config (~/.zshrc or ~/.bash_profile):
+code::
+export PATH="/Applications/SuperCollider.app/Contents/MacOS:$PATH"
+::
+
+## strong::Windows:::
+Add the installation folder to your System PATH environment variable:
+code::
+C:\Program Files\SuperCollider-3.x.x\
+::
+
+## strong::Linux:::
+Usually installed in code::/usr/bin/:: or code::/usr/local/bin/:: by default.
+::
+
+section:: Advanced: Compile String or File
+
+For advanced use cases where you need to read code as data or compile it into a function without immediately running it.
+
+code::
+// Read file as a String
+d = File.readAllString("data.txt".resolveRelative);
+
+// Compile file into a Function (does not execute yet)
+f = thisProcess.interpreter.compileFile("script.scd".resolveRelative);
+f.value; // Execute now
+::
+
+section::Examples
+
+subsection:: Example 1: Auto-running installation file
+
+numberedlist::
+## Save an teletype::SCD:: file with the following example code:
+code::
+/*RUN*/
+s.waitForBoot({
+    "Installation Started".postln;
+    { SinOsc.ar(440, 0, 0.1) }.play;
+});
+::
+## Open the file using SC-IDE.
+## The entire code in the opened file is immediately evaluated upon opening.
+::
+
+subsection:: Example 2: Project Loader Script (main.scd)
+
+code::
+(
+// Load modules relative to this file
+"audio/synths.scd".loadRelative;
+"music/patterns.scd".loadRelative;
+"interface/gui.scd".loadRelative;
+)
+::
+
+subsection:: Example 3: Headless execution (Shell Script)
+
+warning::
+The path to sclang must be registered in the operating system’s terminal/command‑line environment so that it is recognized as a valid command.
+::
+
+subsubsection:: Linux and macOS
+
+If the filename is teletype::run.sh::, open a terminal in the same folder and type:
+
+code::
+./run.sh
+::
+Contents of teletype::run.sh:: should be:
+code::
+#!/bin/bash
+cd "$(dirname "$0")"
+sclang installation.scd
+::
+
+subsubsection:: Windows
+
+If the filename is teletype::run.bat::, open a Command Prompt in the same folder and type:
+
+code::
+run.bat
+::
+
+Contents of teletype::run.bat:: should be:
+
+code::
+@echo off
+cd /d %~dp0
+sclang installation.scd
+::
