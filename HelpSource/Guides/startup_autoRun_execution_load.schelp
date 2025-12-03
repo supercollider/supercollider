@@ -195,43 +195,66 @@ This is useful for installation art, headless systems (e.g., Raspberry Pi), or b
 list::
 ## Basic usage:
 code::
-sclang filename.scd        // on Linux and macOS
-sclang.exe filename.scd    // on Windows
+sclang filename.scd        // Linux and macOS
+sclang.exe filename.scd    // Windows: press CTRL + SHIFT + 2 after launching the terminal
 ::
-warning::
+To stop execution, use the following keyboard shortcuts:
+table::
+## OS||Linux||macOS||Windows
+## Keyboard shortcuts||teletype::CTRL + C::||teletype::COMMAND + .::||teletype::CTRL + C::
+::
+
+table::
+## ℹ️ Information:
 list::
 ## To run code::sclang:: or code::sclang.exe:: directly, the path to code::sclang:: must be included in the system PATH environment variable.
+
+list::
+## strong::macOS:::
+
+Add the following line to your shell configuration file (teletype::~/.zshrc::):
+code::
+export PATH="/Applications/SuperCollider.app/Contents/MacOS:$PATH"
+::
+After adding the line above, save teletype::~/.zshrc::.
+Close any open terminal windows and launch a new one to apply the modification.
+
+table::
+## 💡 Tip:
+
+The file teletype::~/.zshrc:: does not appear in Finder on macOS by default because it is a hidden system file.
+On macOS, pressing teletype::COMMAND + SHIFT + .:: in a Finder window toggles the visibility of all hidden files.
+You can open the file by double‑clicking it with the system’s default application, or by choosing your preferred application via the teletype::Open With:: option in the context menu (which appears when you right‑click the file).
+Advanced users familiar with terminal commands and the nano editor can edit the file directly by running teletype::nano ~/.zshrc::.
+::
+
+## strong::Windows:::
+
+On Windows, the installation folder does not appear in your PATH environment variable by default.
+To add it, open a Command Prompt and run:
+code::
+setx PATH "%PATH%;C:\Program Files\SuperCollider-3.x.x\"
+::
+After running this command, restart your Command Prompt window or open a new tab by pressing teletype::CTRL + SHIFT + 2::.
+The folder will now be included in your PATH, and you can run SuperCollider from any terminal location.
+
+## strong::Linux:::
+On Linux, SuperCollider is usually installed in /usr/bin/ or /usr/local/bin/ by default, and the path is automatically registered.
+::
+
 ## To run a file by its filename only (without specifying the full path), the CLI command must be executed from the same folder as the file.
 ::
 ::
 ## With configuration file:
 code::
-sclang -l sclang_conf.yaml filename.scd     // on Linux and macOS
-sclang.exe -l sclang_conf.yaml filename.scd // on Windows
+sclang -l sclang_conf.yaml filename.scd     // Linux and macOS
+sclang.exe -l sclang_conf.yaml filename.scd // Windows
 ::
-warning::
+
+table::
+## ℹ️ Information:
 The path to teletype::sclang_conf.yaml:: must be explicitly specified if the command is executed outside of code::Platform.userConfigDir::.
 ::
-::
-
-subsection::Setting up 'sclang' in PATH
-
-list::
-## strong::macOS:::
-
-Add this to your shell config (~/.zshrc or ~/.bash_profile):
-code::
-export PATH="/Applications/SuperCollider.app/Contents/MacOS:$PATH"
-::
-
-## strong::Windows:::
-Add the installation folder to your System PATH environment variable:
-code::
-C:\Program Files\SuperCollider-3.x.x\
-::
-
-## strong::Linux:::
-Usually installed in code::/usr/bin/:: or code::/usr/local/bin/:: by default.
 ::
 
 section:: Advanced: Compile String or File
@@ -293,6 +316,14 @@ code::
 #!/bin/bash
 cd "$(dirname "$0")"
 sclang installation.scd
+::
+
+table::
+## ℹ️ Information:
+In a terminal window, the following command should be run from the folder where the file teletype::run.sh:: is located after creating the file teletype::run.sh:::
+code::
+chmod +x ./run.sh
+::
 ::
 
 subsubsection:: Windows
