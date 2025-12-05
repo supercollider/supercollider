@@ -1,17 +1,17 @@
-title:: Evaluating and Executing .scd Files (SC-IDE & CLI)
-summary:: Guide for startup, evaluating, loading, and executing .scd files in SC-IDE and from the command line
+title:: Evaluating and Executing scd Files (SC-IDE & CLI)
+summary:: Guide for startup, evaluating, loading, and executing scd files in SC-IDE and from the command line
 categories:: Tutorials
 related:: Classes/Document, Classes/Main#thisProcess, Classes/PathName, Classes/Platform, Classes/File, Classes/Interpreter
 
 DESCRIPTION::
-This guide summarizes methods for starting, evaluating, loading, and executing teletype::.SCD:: files within SC-IDE and from the command line.
+This guide summarizes methods for starting, evaluating, loading, and executing teletype::.scd:: files within SC-IDE and from the command line.
 It also covers techniques for modularizing code with relative paths and for automatic execution upon file opening or SuperCollider startup.
 
 table::
 ## Method||Use Case||Returns||Notes
 ## startup.scd|| Global Boot||Depends on the file|| Runs every time SuperCollider starts
 ## code::/*RUN*/::
-at the first line of an SCD||Auto-Run on Open||Depends on the file|| IDE specific:
+at the first line of an scd||Auto-Run on Open||Depends on the file|| IDE specific:
 
 runs code when file opens
 ## code::.load::|| Execute File|| Result of last line|| Standard way to run external code
@@ -92,7 +92,7 @@ Place the string code::/*RUN*/:: on the very first line of the document.
 
 code::
 /*RUN*/
-"Hello, this SCD file runs automatocally when opened".postln;
+"Hello, this scd file runs automatocally when opened".postln;
 s.boot;
 ::
 
@@ -120,7 +120,7 @@ Document.autoRun
 ::
 ::
 
-section:: Loading Files (Evaluating entire code blocks in specific SCDs without opening them)
+section:: Loading Files (Evaluating entire code blocks in specific scd files without opening them)
 
 This is the most common way to execute code stored in other files from within a running program.
 warning:: The file must be saved to disk for relative paths to work.::
@@ -146,7 +146,7 @@ var path = thisProcess.nowExecutingPath.dirname;
 
 subsection:: Variable Scope in Loaded Files
 
-When working across multiple teletype::SCD:: documents, it is helpful to properly use the following variable types according to the appropriate scopes:
+When working across multiple teletype::scd:: documents, it is helpful to properly use the following variable types according to the appropriate scopes:
 
 list::
 ## strong::Environment variables:: (e.g., ~myVar) and strong::interpreter variables:: (e.g., a) persist and are shared between the main document and any loaded file.
@@ -164,7 +164,7 @@ var localCalc = 10 * ~globalSetting; // uses ~globalSetting defined in main.scd 
 ~loadedSetting = localCalc;          // exports result to environment
 ::
 
-section:: Opening SCD Files in SC-IDE
+section:: Opening scd Files in SC-IDE
 
 Use these methods to open a file in the text editor without evaluating its code immediately.
 list::
@@ -275,7 +275,7 @@ section::Examples
 subsection:: Example 1: Auto-running installation file
 
 numberedlist::
-## Save an teletype::SCD:: file with the following example code:
+## Save an teletype::scd:: file with the following example code:
 code::
 /*RUN*/
 s.waitForBoot({
