@@ -216,6 +216,11 @@ Add the following line to your shell configuration file (teletype::~/.zshrc::):
 code::
 export PATH="/Applications/SuperCollider.app/Contents/MacOS:$PATH"
 ::
+
+note::
+The placeholder teletype::/Applications/ :: should be replaced with the actual installation path.
+::
+
 After adding the line above, save teletype::~/.zshrc::.
 Close any open terminal windows and launch a new one to apply the modification.
 
