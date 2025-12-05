@@ -92,7 +92,7 @@ Place the string code::/*RUN*/:: on the very first line of the document.
 
 code::
 /*RUN*/
-"Hello, this scd file runs automatocally when opened".postln;
+"Hello, this scd file runs automatically when opened".postln;
 s.boot;
 ::
 
@@ -235,11 +235,16 @@ To add it, open a Command Prompt and run:
 code::
 setx PATH "%PATH%;C:\Program Files\SuperCollider-3.x.x\"
 ::
+
+note::
+The placeholder teletype::C:\Program Files\SuperCollider-3.x.x\ :: should be replaced with the actual installation path.
+::
+
 After running this command, restart your Command Prompt window or open a new tab by pressing teletype::CTRL + SHIFT + 2::.
 The folder will now be included in your PATH, and you can run SuperCollider from any terminal location.
 
 ## strong::Linux:::
-On Linux, SuperCollider is usually installed in /usr/bin/ or /usr/local/bin/ by default, and the path is automatically registered.
+On Linux, SuperCollider is usually installed in teletype::/usr/bin/:: or teletype::/usr/local/bin/:: by default, and the path is automatically registered.
 ::
 
 ## To run a file by its filename only (without specifying the full path), the CLI command must be executed from the same folder as the file.
@@ -294,7 +299,7 @@ code::
 // Load modules relative to this file
 "audio/synths.scd".loadRelative;
 "music/patterns.scd".loadRelative;
-"interface/gui.scd".loadRelative;
+"interface/gui.scd".loadRelative
 )
 ::
 
@@ -302,6 +307,10 @@ subsection:: Example 3: Headless execution (Shell Script)
 
 warning::
 The path to sclang must be registered in the operating system’s terminal/command‑line environment so that it is recognized as a valid command.
+::
+
+note::
+The directive code::/*RUN*/:: in the first line of scd files does not work in the CLI environment.
 ::
 
 subsubsection:: Linux and macOS
