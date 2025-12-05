@@ -304,16 +304,33 @@
 				};
 
 				{ | out |
-					var env, ctl = NamedControl.kr("wet" ++ (index ? 0), 1.0);
-					if(proxy.rate === 'audio') {
-						env = ctl * EnvGate(i_level: 0, doneAction:2, curve:\sin);
-						XOut.ar(out, env, SynthDef.wrap(func, nil, [In.ar(out, proxy.numChannels)]))
-					} {
-						env = ctl * EnvGate(i_level: 0, doneAction:2, curve:\lin);
-						XOut.kr(out, env, SynthDef.wrap(func, nil, [In.kr(out, proxy.numChannels)]))
-					};
-				}.buildForProxy( proxy, channelOffset, index )
+					var isAudioRate = (proxy.rate === 'audio');
+					var rateArg = isAudioRate.if(\ar, \kr);
+					var wetAmp = NamedControl.kr("wet" ++ (index ? 0), 1.0, spec: ControlSpec(0, 1, 'linear'));
+					var env = EnvGate(
+						i_level: 0,
+						doneAction:2,
+						curve: isAudioRate.if(\sin, \lin)
+					);
+					var in;
 
+					(index == 0).if({
+						// we're at the top of the nopdeproxy sources, i.e. there is nothing on the bus yet to listen to.
+						// instead, we use \in.kr to listen to external signals
+						in = NamedControl(\in, 0!proxy.numChannels, proxy.rate);
+						XOut.perform(rateArg, out, env, SelectX.perform(rateArg, wetAmp, [
+							in,
+							SynthDef.wrap(func, nil, [in]).postln
+						]))
+					}, {
+						// there are other sources that send a signal to the internal bus 'out',
+						// i.e. we use In.ar/kr(out) as input
+						in = In.perform(rateArg, out, proxy.numChannels);
+						XOut.perform(rateArg, out, wetAmp * env, SynthDef.wrap(func, nil, [in]))
+					});
+
+
+				}.buildForProxy( proxy, channelOffset, index )
 			},
 			set: #{ | pattern, proxy, channelOffset = 0, index |
 				var args = proxy.controlNames.collect(_.name);
@@ -367,20 +384,43 @@
 				};
 
 				{ | out |
-					var in, env;
-					var wetamp = NamedControl.kr("wet" ++ (index ? 0), 1.0);
-					var dryamp = 1 - wetamp;
-					var sig = { |in| SynthDef.wrap(func, nil, [in * wetamp]) + (dryamp * in) };
+					var isAudioRate = (proxy.rate === 'audio');
+					var rateArg = isAudioRate.if(\ar, \kr);
+					var env = EnvGate(
+						i_level: 0,
+						doneAction:2,
+						curve: isAudioRate.if(\sin, \lin)
+					);
+					var in;
 
-					if(proxy.rate === 'audio') {
-						in = In.ar(out, proxy.numChannels);
-						env = EnvGate(i_level: 0, doneAction:2, curve:\sin);
-						XOut.ar(out, env, sig.(in))
-					} {
-						in = In.kr(out, proxy.numChannels);
-						env = EnvGate(i_level: 0, doneAction:2, curve:\lin);
-						XOut.kr(out, env, sig.(in))
-					};
+
+					var wetamp = NamedControl.kr("wet" ++ (index ? 0), 1.0, spec: ControlSpec(0, 1, 'linear'));
+					var dryamp = 1 - wetamp;
+					var sig = { |in|  SynthDef.wrap(func, nil, [in * wetamp]) + (dryamp * in)};
+
+
+					(index == 0).if({
+						// we're at the top of the nopdeproxy sources, i.e. there is nothing on the bus yet to listen to.
+						// instead, we use \in.kr to listen to external signals
+						in = NamedControl(\in, 0!proxy.numChannels, proxy.rate);
+						XOut.perform(rateArg,
+							out,
+							env,
+							SelectX.perform(rateArg, wetamp, [
+								in,
+								sig.(in)
+							])
+						)
+					}, {
+						// there are other sources that send a signal to the internal bus 'out',
+						// i.e. we use In.ar/kr(out) as input
+						in = In.perform(rateArg, out, proxy.numChannels);
+						XOut.perform(rateArg,
+							out,
+							wetamp * env,
+							sig.(in)
+						)
+					});
 				}.buildForProxy( proxy, channelOffset, index )
 			},
 
