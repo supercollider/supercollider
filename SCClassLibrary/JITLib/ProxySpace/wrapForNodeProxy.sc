@@ -305,16 +305,16 @@
 
 				{ | out |
 					var isAudioRate = (proxy.rate === 'audio');
-					var rateArg = isAudioRate.if(\ar, \kr);
+					var rateArg = if(isAudioRate, \ar, \kr);
 					var wetAmp = NamedControl.kr("wet" ++ (index ? 0), 1.0, spec: ControlSpec(0, 1, 'linear'));
 					var env = EnvGate(
 						i_level: 0,
 						doneAction:2,
-						curve: isAudioRate.if(\sin, \lin)
+						curve: if(isAudioRate, \sin, \lin)
 					);
 					var in;
 
-					(index == 0).if({
+					if(index == 0) {
 						// we're at the top of the nopdeproxy sources, i.e. there is nothing on the bus yet to listen to.
 						// instead, we use \in.kr to listen to external signals
 						in = NamedControl(\in, 0!proxy.numChannels, proxy.rate);
@@ -322,12 +322,12 @@
 							in,
 							SynthDef.wrap(func, nil, [in]).postln
 						]))
-					}, {
+					} {
 						// there are other sources that send a signal to the internal bus 'out',
 						// i.e. we use In.ar/kr(out) as input
 						in = In.perform(rateArg, out, proxy.numChannels);
 						XOut.perform(rateArg, out, wetAmp * env, SynthDef.wrap(func, nil, [in]))
-					});
+					};
 
 
 				}.buildForProxy( proxy, channelOffset, index )
@@ -385,11 +385,11 @@
 
 				{ | out |
 					var isAudioRate = (proxy.rate === 'audio');
-					var rateArg = isAudioRate.if(\ar, \kr);
+					var rateArg = if(isAudioRate, \ar, \kr);
 					var env = EnvGate(
 						i_level: 0,
 						doneAction:2,
-						curve: isAudioRate.if(\sin, \lin)
+						curve: if(isAudioRate, \sin, \lin)
 					);
 					var in;
 
@@ -399,7 +399,7 @@
 					var sig = { |in|  SynthDef.wrap(func, nil, [in * wetamp]) + (dryamp * in)};
 
 
-					(index == 0).if({
+					if(index == 0) {
 						// we're at the top of the nopdeproxy sources, i.e. there is nothing on the bus yet to listen to.
 						// instead, we use \in.kr to listen to external signals
 						in = NamedControl(\in, 0!proxy.numChannels, proxy.rate);
@@ -411,7 +411,7 @@
 								sig.(in)
 							])
 						)
-					}, {
+					} {
 						// there are other sources that send a signal to the internal bus 'out',
 						// i.e. we use In.ar/kr(out) as input
 						in = In.perform(rateArg, out, proxy.numChannels);
@@ -420,7 +420,7 @@
 							wetamp * env,
 							sig.(in)
 						)
-					});
+					};
 				}.buildForProxy( proxy, channelOffset, index )
 			},
 
