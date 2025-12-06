@@ -116,7 +116,7 @@ Recorder {
 	prepareForRecord { | path, numChannels |
 		var dir;
 
-		numChannels = numChannels ?? { this.recChannels; }
+		numChannels = numChannels ?? { this.recChannels; };
 
 		path = if(path.isNil) { this.makePath } { path.standardizePath };
 		dir = path.dirname;
