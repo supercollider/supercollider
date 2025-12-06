@@ -80,6 +80,33 @@ s.options.memSize = 2.pow(21);
 code::
 s.options.device = "Fireface 800 (3F0)";
 ::
+The placeholder teletype::Fireface 800 (3F0):: should be replaced with the actual audio interface name recognized by sclang.
+
+table::
+## 💡 Tip:
+
+Listing audio interface names:
+
+list::
+## Listing all audio interface names
+code::
+ServerOptions.devices        // Enumerates all input and output devices
+ServerOptions.devices.do { |device| device.postln } // Prints each name on a separate line
+::
+
+## Listing audio input interface names
+code::
+ServerOptions.inDevices      // Enumerates input devices only
+ServerOptions.inDevices.do { |device| device.postln } // Prints each name on a separate line
+::
+
+## Listing audio output interface names
+code::
+ServerOptions.outDevices     // Enumerates output devices only
+ServerOptions.outDevices.do { |device| device.postln } // Prints each name on a separate line
+::
+::
+::
 ::
 
 
@@ -205,7 +232,8 @@ table::
 ::
 
 table::
-## ℹ️ Information:
+## 💡 Tip:
+
 list::
 ## To run code::sclang:: or code::sclang.exe:: directly, the path to code::sclang:: must be included in the system PATH environment variable.
 
@@ -225,9 +253,7 @@ After adding the line above, save teletype::~/.zshrc::.
 Close any open terminal windows and launch a new one to apply the modification.
 
 table::
-## 💡 Tip:
-
-The file teletype::~/.zshrc:: does not appear in Finder on macOS by default because it is a hidden system file.
+## The file teletype::~/.zshrc:: does not appear in Finder on macOS by default because it is a hidden system file.
 On macOS, pressing teletype::COMMAND + SHIFT + .:: in a Finder window toggles the visibility of all hidden files.
 You can open the file by double‑clicking it with the system’s default application, or by choosing your preferred application via the teletype::Open With:: option in the context menu (which appears when you right‑click the file).
 Advanced users familiar with terminal commands and the nano editor can edit the file directly by running teletype::nano ~/.zshrc::.
@@ -262,7 +288,8 @@ sclang.exe -l sclang_conf.yaml filename.scd // Windows
 ::
 
 table::
-## ℹ️ Information:
+## 💡 Tip:
+
 The path to teletype::sclang_conf.yaml:: must be explicitly specified if the command is executed outside of code::Platform.userConfigDir::.
 ::
 ::
@@ -333,7 +360,8 @@ sclang installation.scd
 ::
 
 table::
-## ℹ️ Information:
+## 💡 Tip:
+
 In a terminal window, the following command should be run from the folder where the file teletype::run.sh:: is located after creating the file teletype::run.sh:::
 code::
 chmod +x ./run.sh
