@@ -9,19 +9,24 @@ It also covers techniques for modularizing code with relative paths and for auto
 
 table::
 ## Method||Use Case||Returns||Notes
-## startup.scd|| Global Boot||Depends on the file|| Runs every time SuperCollider starts
+## startup.scd|| Global Boot||Result of last line|| Runs every time SuperCollider starts
 ## code::/*RUN*/::
-at the first line of an scd||Auto-Run on Open||Depends on the file|| IDE specific:
+
+at the first line of an scd||Auto-Run on Open||Result of last line|| SC-IDE specific:
 
 runs code when file opens
-## code::.load::|| Execute File|| Result of last line|| Standard way to run external code
+## code::.load::|| Execute File|| Result of last line|| Standard way to execute a full .scd file
+
+without opening it
 ## code::.loadRelative::|| Execute File|| Result of last line|| Best for portable projects
 ## Document.open|| Open Editor|| Document Object|| Opens file in IDE
 
 (does not run code)
-## sclang (CLI)|| Batch/Headless|| Exit Code|| Runs outside of SC-IDE
+## CLI (Command Line Interface)|| Batch/Headless|| Exit Code|| Runs
 
-(terminal or prompt)
+in the terminal (macOS/Linux) or
+
+in the Command Prompt (Windows)
 ::
 
 strong::Common Pitfalls::
@@ -80,6 +85,7 @@ s.options.memSize = 2.pow(21);
 code::
 s.options.device = "Fireface 800 (3F0)";
 ::
+note::
 The placeholder teletype::Fireface 800 (3F0):: should be replaced with the actual audio interface name recognized by sclang.
 
 table::
@@ -90,20 +96,27 @@ Listing audio interface names:
 list::
 ## Listing all audio interface names
 code::
-ServerOptions.devices        // Enumerates all input and output devices
-ServerOptions.devices.do { |device| device.postln } // Prints each name on a separate line
+ServerOptions.devices        // Enumerates all audio devices
+
+// Prints each name on a separate line:
+ServerOptions.devices.do { |device| device.postln }
 ::
 
 ## Listing audio input interface names
 code::
 ServerOptions.inDevices      // Enumerates input devices only
-ServerOptions.inDevices.do { |device| device.postln } // Prints each name on a separate line
+
+// Prints each name on a separate line:
+ServerOptions.inDevices.do { |device| device.postln }
 ::
 
 ## Listing audio output interface names
 code::
 ServerOptions.outDevices     // Enumerates output devices only
-ServerOptions.outDevices.do { |device| device.postln } // Prints each name on a separate line
+
+// Prints each name on a separate line:
+ServerOptions.outDevices.do { |device| device.postln }
+::
 ::
 ::
 ::
