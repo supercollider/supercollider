@@ -8,17 +8,19 @@ Recorder {
 	var responder, id;
 
 	*new { |server|
-		^super.newCopyArgs(server).initOptions
-	}
-
-	initOptions {
-		recHeaderFormat = server.options.recHeaderFormat;
-		recSampleFormat = server.options.recSampleFormat;
-		recChannels = server.options.recChannels;
-		recBufSize = server.options.recBufSize; //nil in most cases if server not booted
-		if (recBufSize == nil) { 
-			server.doWhenBooted { recBufSize = server.sampleRate.nextPowerOfTwo }; 
-		}
+		var self = super.newCopyArgs(
+			server: server,
+			recChannels: server.options.recChannels,
+			recSampleFormat: server.options.recSampleFormat,
+			recHeaderFormat: server.options.recHeaderFormat,
+			recBufSize: server.options.recBufSize
+		);
+		if(self.recBufSize.isNil) {
+			server.doWhenBooted { 
+				self.recBufSize = server.options.recBufSize
+			};
+		};	
+		^self
 	}
 
 	numChannels { ^recChannels }
@@ -111,14 +113,10 @@ Recorder {
 		}
 	}
 
-	// recHeaderFormat { ^recHeaderFormat ? server.recHeaderFormat }
-	// recSampleFormat { ^recSampleFormat ? server.recSampleFormat }
-	// recBufSize { ^recBufSize ?? { server.recBufSize } ?? { server.sampleRate.nextPowerOfTwo } }
-
 	prepareForRecord { | path, numChannels |
 		var dir;
 
-		numChannels = numChannels ? this.recChannels;
+		numChannels = numChannels ?? { this.recChannels; }
 
 		path = if(path.isNil) { this.makePath } { path.standardizePath };
 		dir = path.dirname;
