@@ -17,7 +17,7 @@ Recorder {
 		);
 		if(self.recBufSize.isNil) {
 			server.doWhenBooted { 
-				self.recBufSize = server.options.recBufSize
+				self.recBufSize = server.sampleRate.nextPowerOfTwo
 			};
 		};	
 		^self
@@ -115,6 +115,11 @@ Recorder {
 
 	prepareForRecord { | path, numChannels |
 		var dir;
+
+		if (not(server.serverRunning)) { 
+			"Server % not running: unable to prepare for recording".format(server).warn; 
+			^this
+		};
 
 		numChannels = numChannels ?? { this.recChannels; };
 
