@@ -4,11 +4,11 @@ categories:: Tutorials
 related:: Classes/Document, Classes/Main#thisProcess, Classes/PathName, Classes/Platform, Classes/File, Classes/Interpreter
 
 DESCRIPTION::
-This guide summarizes methods for starting, evaluating, loading, and executing teletype::.scd:: files within SC-IDE and from the command line.
+This guide summarizes options for starting, evaluating, loading, and executing teletype::.scd:: files within SC-IDE and from the command line.
 It also covers techniques for modularizing code with relative paths and for automatic execution upon file opening or SuperCollider startup.
 
 table::
-## Method||Use Case||Returns||Notes
+## Option||Use Case||Returns||Notes
 ## startup.scd|| Global Boot||Result of last line|| Runs every time SuperCollider starts
 ## code::/*RUN*/::
 
@@ -206,7 +206,7 @@ var localCalc = 10 * ~globalSetting; // uses ~globalSetting defined in main.scd 
 
 section:: Opening scd Files in SC-IDE
 
-Use these methods to open a file in the text editor without evaluating its code immediately.
+Use these ways to open a file in the text editor without evaluating its code immediately.
 list::
 ## Open using absolute path:
 code::
