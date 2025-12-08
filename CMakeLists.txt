@@ -121,7 +121,6 @@ if(WIN32)
 else(WIN32)
     option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
 endif(WIN32)
-option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
@@ -425,10 +424,6 @@ endif(MSVC)
 
 if(MINGW)
 	add_compile_options(-mstackrealign)
-endif()
-
-if (NO_GPL3)
-	add_compile_definitions(NO_GPL3)
 endif()
 
 if (SC_MEMORY_DEBUGGING)
