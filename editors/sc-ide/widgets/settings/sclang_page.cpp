@@ -53,17 +53,17 @@ SclangPage::SclangPage(QWidget* parent): QWidget(parent), ui(new Ui::SclangConfi
     connect(ui->activeConfigFileComboBox, &QComboBox::currentTextChanged, this,
             &SclangPage::changeSelectedLanguageConfig);
 
-    connect(ui->sclang_add_configfile, SIGNAL(clicked()), this, SLOT(dialogCreateNewConfigFile()));
-    connect(ui->sclang_remove_configfile, SIGNAL(clicked()), this, SLOT(dialogDeleteCurrentConfigFile()));
+    connect(ui->sclang_add_configfile, &QToolButton::clicked, this, &SclangPage::dialogCreateNewConfigFile);
+    connect(ui->sclang_remove_configfile, &QToolButton::clicked, this, &SclangPage::dialogDeleteCurrentConfigFile);
 
-    connect(ui->sclang_add_include, SIGNAL(clicked()), this, SLOT(addIncludePath()));
-    connect(ui->sclang_add_exclude, SIGNAL(clicked()), this, SLOT(addExcludePath()));
+    connect(ui->sclang_add_include, &QToolButton::clicked, this, &SclangPage::addIncludePath);
+    connect(ui->sclang_add_exclude, &QToolButton::clicked, this, &SclangPage::addExcludePath);
 
-    connect(ui->sclang_remove_include, SIGNAL(clicked()), this, SLOT(removeIncludePath()));
-    connect(ui->sclang_remove_exclude, SIGNAL(clicked()), this, SLOT(removeExcludePath()));
+    connect(ui->sclang_remove_include, &QToolButton::clicked, this, &SclangPage::removeIncludePath);
+    connect(ui->sclang_remove_exclude, &QToolButton::clicked, this, &SclangPage::removeExcludePath);
 
-    connect(ui->sclang_post_inline_warnings, SIGNAL(stateChanged(int)), this, SLOT(sclangConfigChanged()));
-    connect(ui->sclang_exclude_default_paths, SIGNAL(stateChanged(int)), this, SLOT(sclangConfigChanged()));
+    connect(ui->sclang_post_inline_warnings, &QCheckBox::stateChanged, this, &SclangPage::markSclangConfigDirty);
+    connect(ui->sclang_exclude_default_paths, &QCheckBox::stateChanged, this, &SclangPage::markSclangConfigDirty);
 
     connect(ui->sclang_port, SIGNAL(valueChanged(int)), this, SLOT(showLanguageRestartDialogOnSave()));
 }

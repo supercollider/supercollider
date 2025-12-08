@@ -49,8 +49,8 @@ public:
 public Q_SLOTS:
     void onNewIpcConnection() {
         mIpcSocket = mIpcServer->nextPendingConnection();
-        connect(mIpcSocket, SIGNAL(disconnected()), mIpcSocket, SLOT(deleteLater()));
-        connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
+        connect(mIpcSocket, &QLocalSocket::disconnected, mIpcSocket, &QLocalSocket::deleteLater);
+        connect(mIpcSocket, &QLocalSocket::readyRead, this, &SingleInstanceGuard::onIpcData);
     }
 
     void onIpcData();

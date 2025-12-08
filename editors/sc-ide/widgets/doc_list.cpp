@@ -31,10 +31,10 @@ DocumentListWidget::DocumentListWidget(DocumentManager* manager, QWidget* parent
     mDocModifiedIcon(QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton)) {
     setFrameShape(QFrame::NoFrame);
 
-    connect(manager, SIGNAL(opened(Document*, int, int)), this, SLOT(onOpen(Document*, int, int)));
-    connect(manager, SIGNAL(closed(Document*)), this, SLOT(onClose(Document*)));
-    connect(manager, SIGNAL(saved(Document*)), this, SLOT(onSaved(Document*)));
-    connect(this, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
+    connect(manager, &DocumentManager::opened, this, &DocumentListWidget::onOpen);
+    connect(manager, &DocumentManager::closed, this, &DocumentListWidget::onClose);
+    connect(manager, &DocumentManager::saved, this, &DocumentListWidget::onSaved);
+    connect(this, &DocumentListWidget::itemPressed, this, &DocumentListWidget::onItemClicked);
 
     setDragDropMode(QAbstractItemView::InternalMove);
 }

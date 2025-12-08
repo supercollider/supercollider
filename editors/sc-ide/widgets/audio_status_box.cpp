@@ -75,13 +75,11 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     addAction(server->action(ScServer::Volume));
 
     // server -> box
-    connect(server, SIGNAL(runningStateChanged(bool, QString, int, bool)), this,
-            SLOT(onServerRunningChanged(bool, QString, int, bool)));
-    connect(server, SIGNAL(updateServerStatus(int, int, int, int, float, float)), this,
-            SLOT(updateStatistics(int, int, int, int, float, float)));
-    connect(server, SIGNAL(volumeChanged(float)), this, SLOT(updateVolumeLabel(float)));
-    connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
-    connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
+    connect(server, &ScServer::runningStateChanged, this, &AudioStatusBox::onServerRunningChanged);
+    connect(server, &ScServer::updateServerStatus, this, &AudioStatusBox::updateStatistics);
+    connect(server, &ScServer::volumeChanged, this, &AudioStatusBox::updateVolumeLabel);
+    connect(server, &ScServer::mutedChanged, this, &AudioStatusBox::updateMuteLabel);
+    connect(server, &ScServer::recordingChanged, this, &AudioStatusBox::updateRecordLabel);
 
     auto const main = Main::instance();
     applySettings(main->settings());

@@ -38,8 +38,7 @@ LangStatusBox::LangStatusBox(ScProcess* lang, QWidget* parent): StatusBox(parent
     addAction(lang->action(ScProcess::Restart));
     addAction(lang->action(ScProcess::RecompileClassLibrary));
 
-    connect(lang, SIGNAL(stateChanged(QProcess::ProcessState)), this,
-            SLOT(onInterpreterStateChanged(QProcess::ProcessState)));
+    connect(lang, &ScProcess::stateChanged, this, &LangStatusBox::onInterpreterStateChanged);
 
     // initialize formats from settings:
     auto const main = Main::instance();

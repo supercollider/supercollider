@@ -58,6 +58,8 @@
 
 namespace ScIDE {
 
+using namespace QtCollider;
+
 HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     QRect availableScreenRect = qApp->primaryScreen()->availableGeometry();
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.7);
@@ -69,7 +71,7 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
 
     // setPage does not take ownership of webPage; it must be deleted manually later (see below)
-    mWebView = new QtCollider::WebView(this, profile);
+    mWebView = new WebView(this, profile);
     mWebView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     // Set the style's standard palette to avoid system's palette incoherencies
@@ -93,22 +95,22 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     layout->addWidget(mWebView);
     setLayout(layout);
 
-    connect(mWebView, SIGNAL(loadStarted()), mLoadProgressIndicator, SLOT(start()));
-    connect(mWebView, SIGNAL(loadFinished(bool)), this, SLOT(onPageLoad()));
-    connect(mWebView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextMenuRequest(QPoint)));
+    connect(mWebView, &WebView::loadStarted, mLoadProgressIndicator, [=]() { mLoadProgressIndicator->start(); });
+    connect(mWebView, &WebView::loadFinished, this, &HelpBrowser::onPageLoad);
+    connect(mWebView, &WebView::customContextMenuRequested, this, &HelpBrowser::onContextMenuRequest);
 
     mWebView->setOverrideNavigation(true);
     connect(mWebView->page(), SIGNAL(navigationRequested(const QUrl&, QWebEnginePage::NavigationType, bool)), this,
             SLOT(onLinkClicked(const QUrl&, QWebEnginePage::NavigationType, bool)));
     mWebView->setDelegateReload(true);
-    connect(mWebView->page()->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()));
-    connect(mWebView, SIGNAL(jsConsoleMsg(QString, int, QString)), this, SLOT(onJsConsoleMsg(QString, int, QString)));
+    connect(mWebView->page()->action(QWebEnginePage::Reload), &QAction::triggered, this, &HelpBrowser::onReload);
+    connect(mWebView, &WebView::jsConsoleMsg, this, &HelpBrowser::onJsConsoleMsg);
 
     ScProcess* scProcess = Main::scProcess();
-    connect(scProcess, SIGNAL(response(QString, QString)), this, SLOT(onScResponse(QString, QString)));
-    connect(scProcess, SIGNAL(finished(int)), mLoadProgressIndicator, SLOT(stop()));
+    connect(scProcess, &ScProcess::response, this, &HelpBrowser::onScResponse);
+    connect(scProcess, &ScProcess::finished, mLoadProgressIndicator, &LoadProgressIndicator::stop);
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
-    connect(scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()));
+    connect(scProcess, &ScProcess::classLibraryRecompiled, mLoadProgressIndicator, &LoadProgressIndicator::stop);
 
     // Legacy mac build support -- with Qt 5.9.3 this causes a segfault on application exit.
 #    if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
@@ -138,27 +140,27 @@ void HelpBrowser::createActions() {
     OverridingAction* ovrAction;
 
     mActions[GoHome] = action = new QAction(tr("Home"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(goHome()));
+    connect(action, &QAction::triggered, this, &HelpBrowser::goHome);
 
     mActions[DocClose] = ovrAction = new OverridingAction(tr("Close"), this);
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()));
+    connect(ovrAction, &QAction::triggered, this, &HelpBrowser::closeDocument);
     ovrAction->addToWidget(this);
 
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Zoom In"), this);
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
+    connect(ovrAction, &QAction::triggered, this, &HelpBrowser::zoomIn);
     ovrAction->addToWidget(this);
 
     mActions[ZoomOut] = ovrAction = new OverridingAction(tr("Zoom Out"), this);
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
+    connect(ovrAction, &QAction::triggered, this, &HelpBrowser::zoomOut);
     ovrAction->addToWidget(this);
 
     mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Zoom"), this);
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
+    connect(ovrAction, &QAction::triggered, this, &HelpBrowser::zoomOut);
     ovrAction->addToWidget(this);
 
     // eval actions are added to mWebView->focusProxy() in onPageLoad()
     mActions[Evaluate] = ovrAction = new OverridingAction(tr("Evaluate as Code"), this);
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
+    connect(ovrAction, &QAction::triggered, this, &HelpBrowser::evaluateSelection);
     mActions[EvaluateRegion] = new OverridingAction(tr("Evaluate as Code Region"), this);
     connect(mActions[EvaluateRegion], &OverridingAction::triggered, this, [=]() { this->evaluateSelection(true); });
     // For the sake of display:
@@ -170,7 +172,7 @@ void HelpBrowser::createActions() {
     auto proxyPageAction = [this](QAction* pageAction) {
         // OverridingAction limits shortcut context to this widget
         auto ovrAction = new OverridingAction(pageAction->icon(), pageAction->text(), this);
-        connect(ovrAction, SIGNAL(triggered()), pageAction, SLOT(trigger()));
+        connect(ovrAction, &OverridingAction::triggered, pageAction, &QAction::trigger);
         // disable pageAction shortcut and assign it to ovrAction instead
         ovrAction->setShortcut(pageAction->shortcut());
         pageAction->setShortcut(QKeySequence());
@@ -510,17 +512,17 @@ HelpBrowserDocklet::HelpBrowserDocklet(QWidget* parent): Docklet(tr("Help browse
     toolBar()->addAction(mHelpBrowser->mActions[HelpBrowser::Reload]);
     toolBar()->addWidget(mFindBox);
 
-    connect(mFindBox, SIGNAL(query(QString, bool)), mHelpBrowser, SLOT(findText(QString, bool)));
+    connect(mFindBox, &HelpBrowserFindBox::query, mHelpBrowser, &HelpBrowser::findText);
 
-    connect(Main::scProcess(), SIGNAL(started()), this, SLOT(onInterpreterStart()));
+    connect(Main::scProcess(), &ScProcess::started, this, &HelpBrowserDocklet::onInterpreterStart);
 
     OverridingAction* action;
     action = new OverridingAction(this);
     action->setShortcut(QKeySequence::Find);
     action->addToWidget(mHelpBrowser);
     action->addToWidget(toolBar());
-    connect(action, SIGNAL(triggered(bool)), mFindBox, SLOT(setFocus()));
-    connect(action, SIGNAL(triggered(bool)), mFindBox, SLOT(selectAll()));
+    connect(action, &QAction::triggered, mFindBox, [=]() { mFindBox->setFocus(); });
+    connect(action, &QAction::triggered, mFindBox, &HelpBrowserFindBox::selectAll);
 }
 
 } // namespace ScIDE

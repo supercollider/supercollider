@@ -60,8 +60,8 @@ public:
 
         setFocusProxy(mSpinBox);
 
-        connect(goBtn, SIGNAL(clicked()), this, SLOT(go()));
-        connect(mSpinBox, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
+        connect(goBtn, &QToolButton::clicked, this, &GoToLineTool::go);
+        connect(mSpinBox, &QSpinBox::editingFinished, this, &GoToLineTool::onEditingFinished);
     }
 
     void setEditor(GenericCodeEditor* editor) {
@@ -71,7 +71,7 @@ public:
         mEditor = editor;
 
         if (mEditor) {
-            connect(mEditor, SIGNAL(blockCountChanged(int)), this, SLOT(setMaximum(int)));
+            connect(mEditor, &GenericCodeEditor::blockCountChanged, this, &GoToLineTool::setMaximum);
             setMaximum(mEditor->blockCount());
         } else
             setMaximum(0);

@@ -19,6 +19,9 @@
 */
 
 #include "dialog.hpp"
+
+#include <QButtonGroup>
+
 #include "ui_settings_dialog.h"
 #include "general_page.hpp"
 #include "sclang_page.hpp"
@@ -41,36 +44,35 @@ namespace ScIDE { namespace Settings {
 Dialog::Dialog(Manager* settings, QWidget* parent): QDialog(parent), mManager(settings), ui(new Ui::ConfigDialog) {
     ui->setupUi(this);
 
-    QWidget* w;
+    auto* general_page = new GeneralPage;
 
-    w = new GeneralPage;
-    ui->configPageStack->addWidget(w);
+    ui->configPageStack->addWidget(general_page);
     ui->configPageList->addItem(new QListWidgetItem(tr("General")));
-    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
-    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+    connect(this, &Dialog::storeRequest, general_page, &GeneralPage::store);
+    connect(this, &Dialog::loadRequest, general_page, &GeneralPage::load);
 
-    w = new SclangPage;
-    ui->configPageStack->addWidget(w);
+    auto* sclang_page = new SclangPage;
+    ui->configPageStack->addWidget(sclang_page);
     ui->configPageList->addItem(new QListWidgetItem(tr("Interpreter")));
-    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
-    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+    connect(this, &Dialog::storeRequest, sclang_page, &SclangPage::store);
+    connect(this, &Dialog::loadRequest, sclang_page, &SclangPage::load);
 
-    w = new EditorPage;
-    ui->configPageStack->addWidget(w);
+    auto* editor_page = new EditorPage;
+    ui->configPageStack->addWidget(editor_page);
     ui->configPageList->addItem(new QListWidgetItem(tr("Editor")));
-    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
-    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+    connect(this, &Dialog::storeRequest, editor_page, &EditorPage::store);
+    connect(this, &Dialog::loadRequest, editor_page, &EditorPage::load);
 
-    w = new ShortcutsPage;
-    ui->configPageStack->addWidget(w);
+    auto* shortcut_page = new ShortcutsPage;
+    ui->configPageStack->addWidget(shortcut_page);
     ui->configPageList->addItem(new QListWidgetItem(tr("Shortcuts")));
-    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
-    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+    connect(this, &Dialog::storeRequest, shortcut_page, &ShortcutsPage::store);
+    connect(this, &Dialog::loadRequest, shortcut_page, &ShortcutsPage::load);
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(apply()));
-    connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(reset()));
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &Dialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &Dialog::reject);
+    connect(ui->buttonBox->button(QDialogButtonBox::Apply), &QPushButton::clicked, this, &Dialog::apply);
+    connect(ui->buttonBox->button(QDialogButtonBox::Reset), &QPushButton::clicked, this, &Dialog::reset);
 
 
     ui->configPageList->setMinimumWidth(ui->configPageList->sizeHintForColumn(0));

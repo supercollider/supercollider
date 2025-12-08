@@ -132,23 +132,22 @@ Docklet::Docklet(const QString& title, QWidget* parent): QObject(parent), mWindo
 
     mDockAction = action = optionsMenu->addAction(tr("Undock"));
     action->setEnabled(features & QDockWidget::DockWidgetFloatable);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(toggleFloating()));
+    connect(action, &QAction::triggered, this, &Docklet::toggleFloating);
 
     mDetachAction = action = optionsMenu->addAction(tr("Detach"));
     action->setEnabled(features & QDockWidget::DockWidgetFloatable);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(toggleDetached()));
+    connect(action, &QAction::triggered, this, &Docklet::toggleDetached);
 
     action = optionsMenu->addAction(tr("Close"));
     action->setEnabled(features & QDockWidget::DockWidgetClosable);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(close()));
+    connect(action, &QAction::triggered, this, &Docklet::close);
 
     mVisibilityAction = action = new QAction(title, this);
     action->setCheckable(true);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(setVisible(bool)));
+    connect(action, &QAction::triggered, this, &Docklet::setVisible);
 
-    connect(mDockWidget, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockAction()));
-    connect(mDockWidget, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), this,
-            SLOT(onFeaturesChanged(QDockWidget::DockWidgetFeatures)));
+    connect(mDockWidget, &QDockWidget::topLevelChanged, this, &Docklet::updateDockAction);
+    connect(mDockWidget, &QDockWidget::featuresChanged, this, &Docklet::onFeaturesChanged);
 }
 
 void Docklet::toggleFloating() {

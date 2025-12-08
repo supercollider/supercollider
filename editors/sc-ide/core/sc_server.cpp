@@ -47,10 +47,9 @@ ScServer::ScServer(ScProcess* scLang, Settings::Manager* settings, QObject* pare
     mUdpSocket = new QUdpSocket(this);
     startTimer(333);
 
-    connect(scLang, SIGNAL(stateChanged(QProcess::ProcessState)), this,
-            SLOT(onScLangStateChanged(QProcess::ProcessState)));
-    connect(scLang, SIGNAL(response(QString, QString)), this, SLOT(onScLangReponse(QString, QString)));
-    connect(mUdpSocket, SIGNAL(readyRead()), this, SLOT(onServerDataArrived()));
+    connect(scLang, &ScProcess::stateChanged, this, &ScServer::onScLangStateChanged);
+    connect(scLang, &ScProcess::response, this, &ScServer::onScLangReponse);
+    connect(mUdpSocket, &QUdpSocket::readyRead, this, &ScServer::onServerDataArrived);
 }
 
 void ScServer::createActions(Settings::Manager* settings) {
@@ -61,66 +60,66 @@ void ScServer::createActions(Settings::Manager* settings) {
     mActions[ToggleRunning] = action = new QAction(tr("Boot or quit default server"), this);
     // the default QAction::TextHeuristicRole incorrectly detects a quit role on macOS
     action->setMenuRole(QAction::NoRole);
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
+    connect(action, &QAction::triggered, this, &ScServer::toggleRunning);
     // settings->addAction( action, "synth-server-toggle-running", synthServerCategory);
 
     mActions[Boot] = action = new QAction(QIcon::fromTheme("system-run"), tr("&Boot Server"), this);
     action->setShortcut(tr("Ctrl+B", "Boot default server"));
-    connect(action, SIGNAL(triggered()), this, SLOT(boot()));
+    connect(action, &QAction::triggered, this, &ScServer::boot);
     settings->addAction(action, "synth-server-boot", synthServerCategory);
 
     mActions[Quit] = action = new QAction(QIcon::fromTheme("system-shutdown"), tr("&Quit Server"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(quit()));
+    connect(action, &QAction::triggered, this, &ScServer::quit);
     settings->addAction(action, "synth-server-quit", synthServerCategory);
 
     mActions[KillAll] = action = new QAction(QIcon::fromTheme("system-killall"), tr("&Kill All Servers"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(killAll()));
+    connect(action, &QAction::triggered, this, &ScServer::killAll);
     settings->addAction(action, "synth-server-killall", synthServerCategory);
 
     mActions[Reboot] = action = new QAction(QIcon::fromTheme("system-reboot"), tr("&Reboot Server"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(reboot()));
+    connect(action, &QAction::triggered, this, &ScServer::reboot);
     settings->addAction(action, "synth-server-reboot", synthServerCategory);
 
     mActions[ShowMeters] = action = new QAction(tr("Show Server Meter"), this);
     action->setShortcut(tr("Ctrl+M", "Show server meter"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showMeters()));
+    connect(action, &QAction::triggered, this, &ScServer::showMeters);
     settings->addAction(action, "synth-server-meter", synthServerCategory);
 
     mActions[ShowScope] = action = new QAction(tr("Show Scope"), this);
     action->setShortcut(tr("Ctrl+Shift+M", "Show scope"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showScope()));
+    connect(action, &QAction::triggered, this, &ScServer::showScope);
     settings->addAction(action, "synth-server-scope", synthServerCategory);
 
     mActions[ShowFreqScope] = action = new QAction(tr("Show Freqscope"), this);
     action->setShortcut(tr("Ctrl+Alt+M", "Show freqscope"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showFreqScope()));
+    connect(action, &QAction::triggered, this, &ScServer::showFreqScope);
     settings->addAction(action, "synth-server-freqscope", synthServerCategory);
 
     mActions[DumpNodeTree] = action = new QAction(tr("Dump Node Tree"), this);
     action->setShortcut(tr("Ctrl+T", "Dump node tree"));
-    connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTree()));
+    connect(action, &QAction::triggered, this, &ScServer::dumpNodeTree);
     settings->addAction(action, "synth-server-dump-nodes", synthServerCategory);
 
     mActions[DumpNodeTreeWithControls] = action = new QAction(tr("Dump Node Tree with Controls"), this);
     action->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
-    connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
+    connect(action, &QAction::triggered, this, &ScServer::dumpNodeTreeWithControls);
     settings->addAction(action, "synth-server-dump-nodes-with-controls", synthServerCategory);
 
     mActions[PlotTree] = action = new QAction(tr("Show Node Tree"), this);
     action->setShortcut(tr("Ctrl+Alt+T", "Show node tree"));
-    connect(action, SIGNAL(triggered()), this, SLOT(plotTree()));
+    connect(action, &QAction::triggered, this, &ScServer::plotTree);
     settings->addAction(action, "synth-server-plot-tree", synthServerCategory);
 
     mActions[DumpOSC] = action = new QAction(tr("Server Dump OSC"), this);
     action->setCheckable(true);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(sendDumpingOSC(bool)));
+    connect(action, &QAction::triggered, this, &ScServer::sendDumpingOSC);
     settings->addAction(action, "synth-server-dumpOSC", synthServerCategory);
 
     mActions[Mute] = action = new QAction(tr("Mute"), this);
     action->setShortcut(tr("Ctrl+Alt+End", "Mute sound output."));
     action->setCheckable(true);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(sendMuted(bool)));
-    connect(action, SIGNAL(toggled(bool)), this, SIGNAL(mutedChanged(bool)));
+    connect(action, &QAction::triggered, this, &ScServer::sendMuted);
+    connect(action, &QAction::toggled, this, &ScServer::mutedChanged);
     settings->addAction(action, "synth-server-mute", synthServerCategory);
 
     mVolumeWidget = new VolumeWidget;
@@ -129,41 +128,41 @@ void ScServer::createActions(Settings::Manager* settings) {
     widgetAction->setDefaultWidget(mVolumeWidget);
 
     connect(mVolumeWidget, &VolumeWidget::volumeChangeRequested, [this](float newValue) { setVolume(newValue); });
-    connect(this, SIGNAL(volumeChanged(float)), mVolumeWidget, SLOT(setVolume(float)));
-    connect(this, SIGNAL(volumeRangeChanged(float, float)), mVolumeWidget, SLOT(setVolumeRange(float, float)));
+    connect(this, &ScServer::volumeChanged, mVolumeWidget, &VolumeWidget::setVolume);
+    connect(this, &ScServer::volumeRangeChanged, mVolumeWidget, &VolumeWidget::setVolumeRange);
     emit volumeChanged(mVolume);
     emit volumeRangeChanged(mVolumeMin, mVolumeMax);
 
     mActions[VolumeUp] = action = new QAction(tr("Increase Volume"), this);
     action->setShortcut(tr("Ctrl+Alt+PgUp", "Increase volume"));
-    connect(action, SIGNAL(triggered()), this, SLOT(increaseVolume()));
+    connect(action, &QAction::triggered, this, &ScServer::increaseVolume);
     settings->addAction(action, "synth-server-volume-up", synthServerCategory);
 
     mActions[VolumeDown] = action = new QAction(tr("Decrease Volume"), this);
     action->setShortcut(tr("Ctrl+Alt+PgDown", "Decrease volume"));
-    connect(action, SIGNAL(triggered()), this, SLOT(decreaseVolume()));
+    connect(action, &QAction::triggered, this, &ScServer::decreaseVolume);
     settings->addAction(action, "synth-server-volume-down", synthServerCategory);
 
     mActions[VolumeRestore] = action = new QAction(tr("Restore Volume to 0 dB"), this);
     action->setShortcut(tr("Ctrl+Alt+Home", "Restore volume"));
-    connect(action, SIGNAL(triggered()), this, SLOT(restoreVolume()));
+    connect(action, &QAction::triggered, this, &ScServer::restoreVolume);
     settings->addAction(action, "synth-server-volume-restore", synthServerCategory);
 
     mActions[Record] = action = new QAction(tr("Recording"), this);
     action->setCheckable(true);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(sendRecording(bool)));
-    connect(action, SIGNAL(toggled(bool)), this, SIGNAL(recordingChanged(bool)));
+    connect(action, &QAction::triggered, this, &ScServer::sendRecording);
+    connect(action, &QAction::toggled, this, &ScServer::recordingChanged);
     settings->addAction(action, "synth-server-record", synthServerCategory);
 
     mActions[PauseRecord] = action = new QAction(tr("Pause Recording"), this);
     action->setCheckable(true);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(pauseRecording(bool)));
-    connect(action, SIGNAL(toggled(bool)), this, SIGNAL(pauseChanged(bool)));
+    connect(action, &QAction::triggered, this, &ScServer::pauseRecording);
+    connect(action, &QAction::toggled, this, &ScServer::pauseChanged);
     settings->addAction(action, "synth-server-pause-recording", synthServerCategory);
 
 
-    connect(mActions[Boot], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()));
-    connect(mActions[Quit], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()));
+    connect(mActions[Boot], &QAction::changed, this, &ScServer::updateToggleRunningAction);
+    connect(mActions[Quit], &QAction::changed, this, &ScServer::updateToggleRunningAction);
 
     updateToggleRunningAction();
     updateRecordingAction();

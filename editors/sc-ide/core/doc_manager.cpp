@@ -57,7 +57,7 @@ Document::Document(bool isPlainText, const QByteArray& id, const QString& title,
     mTmpCoalCount = 0;
     mTmpCoalTimer.setInterval(RESTORE_COAL_MSECS);
     mTmpCoalTimer.setSingleShot(true);
-    connect(&mTmpCoalTimer, SIGNAL(timeout()), this, SLOT(onTmpCoalUsecs()));
+    connect(&mTmpCoalTimer, &QTimer::timeout, this, &Document::onTmpCoalUsecs);
 
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
@@ -69,8 +69,7 @@ Document::Document(bool isPlainText, const QByteArray& id, const QString& title,
     if (!isPlainText)
         mHighlighter = new SyntaxHighlighter(mDoc);
 
-    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)), this,
-            SLOT(applySettings(Settings::Manager*)));
+    connect(Main::instance(), &Main::applySettingsRequest, this, &Document::applySettings);
 
     applySettings(Main::settings());
 }
@@ -257,9 +256,9 @@ DocumentManager::DocumentManager(Main* main, Settings::Manager* settings):
     mGlobalKeyDownEnabled(false),
     mGlobalKeyUpEnabled(false) {
     mDocumentModel = new QStandardItemModel(this);
-    connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
+    connect(&mFsWatcher, &QFileSystemWatcher::fileChanged, this, &DocumentManager::onFileChanged);
 
-    connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)), this, SLOT(storeSettings(Settings::Manager*)));
+    connect(main, &Main::storeSettingsRequest, this, &DocumentManager::storeSettings);
 
     loadRecentDocuments(settings);
 }
@@ -274,14 +273,14 @@ Document* DocumentManager::createDocument(bool isPlainText, const QByteArray& id
     item->setData(QVariant::fromValue(doc));
     mDocumentModel->appendRow(item);
     QTextDocument* tdoc = doc->textDocument();
-    connect(tdoc, SIGNAL(modificationChanged(bool)), doc, SLOT(onModificationChanged(bool)));
+    connect(tdoc, &QTextDocument::modificationChanged, doc, &Document::onModificationChanged);
     return doc;
 }
 
 void DocumentManager::create() {
     Document* doc = createDocument();
 
-    connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
+    connect(doc->textDocument(), &QTextDocument::contentsChanged, doc, &Document::storeTmpFile);
     syncLangDocument(doc);
     Q_EMIT(opened(doc, 0, 0));
 }
@@ -343,7 +342,7 @@ Document* DocumentManager::open(const QString& path, int initialCursorPosition, 
     doc->setTitle(fileTitle);
     doc->mSaveTime = info.lastModified();
     doc->setInitialSelection(initialCursorPosition, selectionLength);
-    connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
+    connect(doc->textDocument(), &QTextDocument::contentsChanged, doc, &Document::storeTmpFile);
 
     if (!isRTF)
         mFsWatcher.addPath(cpath);
@@ -411,7 +410,7 @@ void DocumentManager::restore() {
         doc->mTmpFilePath = path;
         syncLangDocument(doc);
         Q_EMIT(opened(doc, 0, 0));
-        connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
+        connect(doc->textDocument(), &QTextDocument::contentsChanged, doc, &Document::storeTmpFile);
     }
 }
 
@@ -803,15 +802,15 @@ void DocumentManager::handleSetDocTextScRequest(const QString& data) {
             if (document) {
                 // avoid a loop
                 if (document == mCurrentDocument) {
-                    disconnect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this,
-                               SLOT(updateCurrentDocContents(int, int, int)));
+                    disconnect(document->textDocument(), &QTextDocument::contentsChange, this,
+                               &DocumentManager::updateCurrentDocContents);
                 }
 
                 document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
 
                 if (document == mCurrentDocument) {
-                    connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this,
-                            SLOT(updateCurrentDocContents(int, int, int)));
+                    connect(document->textDocument(), &QTextDocument::contentsChange, this,
+                            &DocumentManager::updateCurrentDocContents);
                 }
 
                 // Only execute a call if a function name was passed.
@@ -1162,12 +1161,12 @@ void DocumentManager::syncLangDocument(Document* doc) {
 
 void DocumentManager::setActiveDocument(Document* document) {
     if (mCurrentDocument)
-        disconnect(mCurrentDocument->textDocument(), SIGNAL(contentsChange(int, int, int)), this,
-                   SLOT(updateCurrentDocContents(int, int, int)));
+        disconnect(mCurrentDocument->textDocument(), &QTextDocument::contentsChange, this,
+                   &DocumentManager::updateCurrentDocContents);
     if (document) {
         mCurrentDocumentPath = document->filePath();
-        connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this,
-                SLOT(updateCurrentDocContents(int, int, int)));
+        connect(document->textDocument(), &QTextDocument::contentsChange, this,
+                &DocumentManager::updateCurrentDocContents);
         mCurrentDocument = document;
     } else {
         mCurrentDocumentPath.clear();

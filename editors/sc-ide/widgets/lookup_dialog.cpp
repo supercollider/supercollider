@@ -65,9 +65,9 @@ GenericLookupDialog::GenericLookupDialog(QWidget* parent): QDialog(parent) {
 
     setLayout(layout);
 
-    connect(mQueryEdit, SIGNAL(returnPressed()), this, SLOT(performQuery()));
-    connect(mResult, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onAccepted(QModelIndex)));
-    connect(mResult, SIGNAL(activated(QModelIndex)), this, SLOT(onAccepted(QModelIndex)));
+    connect(mQueryEdit, &QLineEdit::returnPressed, this, &GenericLookupDialog::performQuery);
+    connect(mResult, &QTreeView::doubleClicked, this, &GenericLookupDialog::onAccepted);
+    connect(mResult, &QTreeView::activated, this, &GenericLookupDialog::onAccepted);
 
     mResult->installEventFilter(this);
 
@@ -95,8 +95,8 @@ void GenericLookupDialog::setModel(QStandardItemModel* model) {
 
     if (mResult->selectionModel()) {
         mPreviewEditor->setActiveAppearance(true);
-        connect(mResult->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this,
-                SLOT(currentChanged(const QModelIndex&, const QModelIndex&)));
+        connect(mResult->selectionModel(), &QItemSelectionModel::currentChanged, this,
+                &GenericLookupDialog::currentChanged);
     } else {
         mPreviewEditor->setActiveAppearance(false);
     }
@@ -466,8 +466,8 @@ bool LookupDialog::performPartialQuery(const QString& queryString) {
 
 ReferencesDialog::ReferencesDialog(QWidget* parent): LookupDialog(parent) {
     mRequest = new SymbolReferenceRequest(Main::scProcess(), this);
-    connect(mRequest, SIGNAL(response(QString, QString)), this, SLOT(onResposeFromLanguage(QString, QString)));
-    connect(mRequest, SIGNAL(cancelled()), this, SLOT(requestCancelled()));
+    connect(mRequest, &SymbolReferenceRequest::response, this, &ReferencesDialog::onResposeFromLanguage);
+    connect(mRequest, &SymbolReferenceRequest::cancelled, this, &ReferencesDialog::requestCancelled);
 
     setWindowTitle(tr("Look Up References"));
 

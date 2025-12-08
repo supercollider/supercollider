@@ -48,8 +48,8 @@ CompletionMenu::CompletionMenu(QWidget* parent): PopUpWidget(parent), mCompletio
     mLayout->addWidget(mTextBrowser);
     mLayout->setContentsMargins(1, 1, 1, 1);
 
-    connect(mListView, SIGNAL(clicked(QModelIndex)), this, SLOT(accept()));
-    connect(mTextBrowser, SIGNAL(anchorClicked(const QUrl)), this, SLOT(onAnchorClicked(const QUrl)));
+    connect(mListView, &QListView::clicked, this, &CompletionMenu::accept);
+    connect(mTextBrowser, &CompletionTextBrowser::anchorClicked, this, &CompletionMenu::onAnchorClicked);
 
     mListView->setFocus(Qt::OtherFocusReason);
 

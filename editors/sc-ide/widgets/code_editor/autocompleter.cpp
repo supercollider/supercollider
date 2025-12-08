@@ -182,14 +182,14 @@ AutoCompleter::AutoCompleter(ScCodeEditor* editor): QObject(editor), mEditor(edi
     mCompletion.on = false;
     mEditor->installEventFilter(this);
 
-    connect(editor, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorChanged()));
-    connect(editor->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(hideWidgets()));
-    connect(editor->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(hideWidgets()));
-    connect(Main::scProcess(), SIGNAL(introspectionChanged()), this, SLOT(clearMethodCallStack()));
+    connect(editor, &ScCodeEditor::cursorPositionChanged, this, &AutoCompleter::onCursorChanged);
+    connect(editor->horizontalScrollBar(), &QScrollBar::valueChanged, this, &AutoCompleter::hideWidgets);
+    connect(editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &AutoCompleter::hideWidgets);
+    connect(Main::scProcess(), &ScProcess::introspectionChanged, this, &AutoCompleter::clearMethodCallStack);
 }
 
 void AutoCompleter::documentChanged(QTextDocument* doc) {
-    connect(doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(onContentsChange(int, int, int)));
+    connect(doc, &QTextDocument::contentsChange, this, &AutoCompleter::onContentsChange);
 }
 
 inline QTextDocument* AutoCompleter::document() { return static_cast<QPlainTextEdit*>(mEditor)->document(); }
@@ -471,7 +471,7 @@ void AutoCompleter::showCompletionMenu(bool forceShow) {
 
     mCompletion.menu = menu;
 
-    connect(menu, SIGNAL(finished(int)), this, SLOT(onCompletionMenuFinished(int)));
+    connect(menu, &CompletionMenu::finished, this, &AutoCompleter::onCompletionMenuFinished);
 
     QRect popupTargetRect = globalCursorRect(mCompletion.pos).adjusted(0, -5, 0, 5);
 
@@ -480,8 +480,8 @@ void AutoCompleter::showCompletionMenu(bool forceShow) {
     updateCompletionMenu(forceShow);
 
     if (mCompletion.type == ClassCompletion && Main::settings()->value("IDE/editor/showAutocompleteHelp").toBool()) {
-        connect(menu, SIGNAL(itemChanged(int)), this, SLOT(updateCompletionMenuInfo()));
-        connect(menu, SIGNAL(infoClicked(QString)), this, SLOT(gotoHelp(QString)));
+        connect(menu, &CompletionMenu::itemChanged, this, &AutoCompleter::updateCompletionMenuInfo);
+        connect(menu, &CompletionMenu::infoClicked, this, &AutoCompleter::gotoHelp);
         updateCompletionMenuInfo();
     }
 }

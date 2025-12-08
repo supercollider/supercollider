@@ -117,12 +117,12 @@ MainWindow::MainWindow(Main* main): mMain(main), mClockLabel(0), mDocDialog(0) {
     // Tools
 
     mCmdLine = new CmdLine(tr("Command Line:"));
-    connect(mCmdLine, SIGNAL(invoked(QString, bool)), main->scProcess(), SLOT(evaluateCode(QString, bool)));
+    connect(mCmdLine, &CmdLine::invoked, main->scProcess(), &ScProcess::evaluateCode);
 
     mFindReplaceTool = new TextFindReplacePanel;
 
     mGoToLineTool = new GoToLineTool();
-    connect(mGoToLineTool, SIGNAL(activated(int)), this, SLOT(hideToolBox()));
+    connect(mGoToLineTool, &GoToLineTool::activated, this, &MainWindow::hideToolBox);
 
     mToolBox = new ToolBox;
     mToolBox->addWidget(mCmdLine);
@@ -159,42 +159,40 @@ MainWindow::MainWindow(Main* main): mMain(main), mClockLabel(0), mDocDialog(0) {
     setCentralWidget(central);
 
     // Session management
-    connect(main->sessionManager(), SIGNAL(saveSessionRequest(Session*)), this, SLOT(saveSession(Session*)));
-    connect(main->sessionManager(), SIGNAL(switchSessionRequest(Session*)), this, SLOT(switchSession(Session*)));
+    connect(main->sessionManager(), &SessionManager::saveSessionRequest, this, &MainWindow::saveSession);
+    connect(main->sessionManager(), &SessionManager::switchSessionRequest, this, &MainWindow::switchSession);
     connect(main->sessionManager(), SIGNAL(currentSessionNameChanged()), this, SLOT(updateWindowTitle()));
     // A system for easy evaluation of pre-defined code:
-    connect(this, SIGNAL(evaluateCode(QString, bool)), main->scProcess(), SLOT(evaluateCode(QString, bool)));
+    connect(this, &MainWindow::evaluateCode, main->scProcess(), &ScProcess::evaluateCode);
     // Interpreter: post output
-    connect(main->scProcess(), SIGNAL(scPost(QString)), mPostDocklet->mPostWindow, SLOT(post(QString)));
+    connect(main->scProcess(), &ScProcess::scPost, mPostDocklet->mPostWindow, &PostWindow::post);
     // Interpreter: monitor running state
-    connect(main->scProcess(), SIGNAL(stateChanged(QProcess::ProcessState)), this,
-            SLOT(onInterpreterStateChanged(QProcess::ProcessState)));
+    connect(main->scProcess(), &ScProcess::stateChanged, this, &MainWindow::onInterpreterStateChanged);
     // Interpreter: forward status messages
-    connect(main->scProcess(), SIGNAL(statusMessage(const QString&)), this, SLOT(showStatusMessage(const QString&)));
+    connect(main->scProcess(), &ScProcess::statusMessage, this, &MainWindow::showStatusMessage);
 
     // Document list interaction
-    connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)), mEditors, SLOT(setCurrent(Document*)));
-    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)), mDocumentsDocklet->list(), SLOT(setCurrent(Document*)),
+    connect(mDocumentsDocklet->list(), &DocumentListWidget::clicked, mEditors, &MultiEditor::setCurrent);
+    connect(mEditors, &MultiEditor::currentDocumentChanged, mDocumentsDocklet->list(), &DocumentListWidget::setCurrent,
             Qt::QueuedConnection);
-    connect(mDocumentsDocklet->list(), SIGNAL(updateTabsOrder(QList<Document*>)), mEditors,
-            SLOT(updateTabsOrder(QList<Document*>)));
-    connect(mEditors, SIGNAL(updateDockletOrder(int, int)), mDocumentsDocklet->list(),
-            SLOT(updateDockletOrder(int, int)), Qt::QueuedConnection);
+    connect(mDocumentsDocklet->list(), &DocumentListWidget::updateTabsOrder, mEditors, &MultiEditor::updateTabsOrder);
+    connect(mEditors, &MultiEditor::updateDockletOrder, mDocumentsDocklet->list(),
+            &DocumentListWidget::updateDockletOrder, Qt::QueuedConnection);
 
     // Update actions on document change
-    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)), this, SLOT(onCurrentDocumentChanged(Document*)));
+    connect(mEditors, &MultiEditor::currentDocumentChanged, this, &MainWindow::onCurrentDocumentChanged);
     // Document management
     DocumentManager* docMng = main->documentManager();
-    connect(docMng, SIGNAL(changedExternally(Document*)), this, SLOT(onDocumentChangedExternally(Document*)));
-    connect(docMng, SIGNAL(recentsChanged()), this, SLOT(updateRecentDocsMenu()));
-    connect(docMng, SIGNAL(saved(Document*)), this, SLOT(updateWindowTitle()));
-    connect(docMng, SIGNAL(titleChanged(Document*)), this, SLOT(updateWindowTitle()));
+    connect(docMng, &DocumentManager::changedExternally, this, &MainWindow::onDocumentChangedExternally);
+    connect(docMng, &DocumentManager::recentsChanged, this, &MainWindow::updateRecentDocsMenu);
+    connect(docMng, &DocumentManager::saved, this, &MainWindow::updateWindowTitle);
+    connect(docMng, &DocumentManager::titleChanged, this, &MainWindow::updateWindowTitle);
 
-    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)), this, SLOT(applySettings(Settings::Manager*)));
-    connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)), this, SLOT(storeSettings(Settings::Manager*)));
+    connect(main, &Main::applySettingsRequest, this, &MainWindow::applySettings);
+    connect(main, &Main::storeSettingsRequest, this, &MainWindow::storeSettings);
 
     // ToolBox
-    connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
+    connect(mToolBox->closeButton(), &QAbstractButton::clicked, this, &MainWindow::hideToolBox);
 
     createActions();
     createMenus();
@@ -250,91 +248,91 @@ void MainWindow::createActions() {
     mActions[DocNew] = action = new QAction(QIcon::fromTheme("document-new"), tr("&New"), this);
     action->setShortcut(tr("Ctrl+N", "New document"));
     action->setStatusTip(tr("Create a new document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(newDocument()));
+    connect(action, &QAction::triggered, this, &MainWindow::newDocument);
     settings->addAction(action, "ide-document-new", ideCategory);
 
     mActions[DocOpen] = action = new QAction(QIcon::fromTheme("document-open"), tr("&Open..."), this);
     action->setShortcut(tr("Ctrl+O", "Open document"));
     action->setStatusTip(tr("Open an existing file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openDocument()));
+    connect(action, &QAction::triggered, this, &MainWindow::openDocument);
     settings->addAction(action, "ide-document-open", ideCategory);
 
     mActions[DocOpenStartup] = action = new QAction(QIcon::fromTheme("document-open"), tr("Open startup file"), this);
     action->setStatusTip(tr("Open startup file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openStartupFile()));
+    connect(action, &QAction::triggered, this, &MainWindow::openStartupFile);
     settings->addAction(action, "ide-document-open-startup", ideCategory);
 
     mActions[DocOpenSupportDir] = action =
         new QAction(QIcon::fromTheme("document-open"), tr("Open user support directory"), this);
     action->setStatusTip(tr("Open user support directory"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openUserSupportDirectory()));
+    connect(action, &QAction::triggered, this, &MainWindow::openUserSupportDirectory);
     settings->addAction(action, "ide-document-open-support-directory", ideCategory);
 
     mActions[DocOpenExamplesDir] = action =
         new QAction(QIcon::fromTheme("document-example"), tr("Open examples directory"), this);
     action->setStatusTip(tr("Open examples directory"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openExamplesDirectory()));
+    connect(action, &QAction::triggered, this, &MainWindow::openExamplesDirectory);
     settings->addAction(action, "ide-document-open-examples-directory", ideCategory);
 
     mActions[DocSave] = action = new QAction(QIcon::fromTheme("document-save"), tr("&Save"), this);
     action->setShortcut(tr("Ctrl+S", "Save document"));
     action->setStatusTip(tr("Save the current document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveDocument()));
+    connect(action, &QAction::triggered, this, &MainWindow::saveDocument);
     settings->addAction(action, "ide-document-save", ideCategory);
 
     mActions[DocSaveAs] = action = new QAction(QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
     action->setShortcut(tr("Ctrl+Shift+S", "Save &As..."));
     action->setStatusTip(tr("Save the current document into a different file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
+    connect(action, &QAction::triggered, this, &MainWindow::saveDocumentAs);
     settings->addAction(action, "ide-document-save-as", ideCategory);
 
     mActions[DocSaveAsExtension] = action =
         new QAction(QIcon::fromTheme("document-save-as"), tr("Save As Extension..."), this);
     action->setStatusTip(tr("Save the current document into a different file in the extensions folder"));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveDocumentAsExtension()));
+    connect(action, &QAction::triggered, this, &MainWindow::saveDocumentAsExtension);
     settings->addAction(action, "ide-document-save-as-extension", ideCategory);
 
     mActions[DocSaveAll] = action = new QAction(QIcon::fromTheme("document-save"), tr("Save All..."), this);
     action->setShortcut(tr("Ctrl+Alt+S", "Save all documents"));
     action->setStatusTip(tr("Save all open documents"));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveAllDocuments()));
+    connect(action, &QAction::triggered, this, &MainWindow::saveAllDocuments);
     settings->addAction(action, "ide-document-save-all", ideCategory);
 
     mActions[DocCloseAll] = action = new QAction(QIcon::fromTheme("window-close"), tr("Close All..."), this);
     action->setShortcut(tr("Ctrl+Shift+W", "Close all documents"));
     action->setStatusTip(tr("Close all documents"));
-    connect(action, SIGNAL(triggered()), this, SLOT(closeAllDocuments()));
+    connect(action, &QAction::triggered, this, &MainWindow::closeAllDocuments);
     settings->addAction(action, "ide-document-close-all", ideCategory);
 
     mActions[DocReload] = action = new QAction(QIcon::fromTheme("view-refresh"), tr("&Reload"), this);
     action->setShortcut(tr("F5", "Reload document"));
     action->setStatusTip(tr("Reload the current document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(reloadDocument()));
+    connect(action, &QAction::triggered, this, &MainWindow::reloadDocument);
     settings->addAction(action, "ide-document-reload", ideCategory);
 
     mActions[ClearRecentDocs] = action = new QAction(tr("Clear", "Clear recent documents"), this);
     action->setStatusTip(tr("Clear list of recent documents"));
-    connect(action, SIGNAL(triggered()), Main::instance()->documentManager(), SLOT(clearRecents()));
+    connect(action, &QAction::triggered, Main::instance()->documentManager(), &DocumentManager::clearRecents);
     settings->addAction(action, "ide-clear-recent-documents", ideCategory);
 
     // Sessions
     mActions[NewSession] = action = new QAction(QIcon::fromTheme("document-new"), tr("&New Session"), this);
     action->setStatusTip(tr("Open a new session"));
-    connect(action, SIGNAL(triggered()), this, SLOT(newSession()));
+    connect(action, &QAction::triggered, this, &MainWindow::newSession);
     settings->addAction(action, "ide-session-new", ideCategory);
 
     mActions[SaveSessionAs] = action =
         new QAction(QIcon::fromTheme("document-save-as"), tr("Save Session &As..."), this);
     action->setStatusTip(tr("Save the current session with a different name"));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveCurrentSessionAs()));
+    connect(action, &QAction::triggered, this, &MainWindow::saveCurrentSessionAs);
     settings->addAction(action, "ide-session-save-as", ideCategory);
 
     mActions[ManageSessions] = action = new QAction(tr("&Manage Sessions..."), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(openSessionsDialog()));
+    connect(action, &QAction::triggered, this, &MainWindow::openSessionsDialog);
     settings->addAction(action, "ide-session-manage", ideCategory);
 
     mActions[OpenSessionSwitchDialog] = action = new QAction(tr("&Switch Session..."), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(showSwitchSessionDialog()));
+    connect(action, &QAction::triggered, this, &MainWindow::showSwitchSessionDialog);
     action->setShortcut(tr("Ctrl+Shift+Q", "Switch Session"));
     settings->addAction(action, "ide-session-switch", ideCategory);
 
@@ -342,50 +340,50 @@ void MainWindow::createActions() {
     mActions[Find] = action = new QAction(QIcon::fromTheme("edit-find"), tr("&Find..."), this);
     action->setShortcut(tr("Ctrl+F", "Find"));
     action->setStatusTip(tr("Find text in document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showFindTool()));
+    connect(action, &QAction::triggered, this, &MainWindow::showFindTool);
     settings->addAction(action, "editor-find", editorCategory);
 
     mActions[Replace] = action = new QAction(QIcon::fromTheme("edit-replace"), tr("&Replace..."), this);
     action->setShortcut(tr("Ctrl+R", "Replace"));
     action->setStatusTip(tr("Find and replace text in document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showReplaceTool()));
+    connect(action, &QAction::triggered, this, &MainWindow::showReplaceTool);
     settings->addAction(action, "editor-replace", editorCategory);
 
     // View
     mActions[ShowCmdLine] = action = new QAction(tr("&Command Line"), this);
     action->setStatusTip(tr("Command line for quick code evaluation"));
     action->setShortcut(tr("Ctrl+E", "Show command line"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showCmdLine()));
+    connect(action, &QAction::triggered, this, [=]() { this->showCmdLine(); });
     settings->addAction(action, "ide-command-line-show", ideCategory);
 
     mActions[CmdLineForCursor] = action = new QAction(tr("&Command Line from selection"), this);
     action->setShortcut(tr("Ctrl+Shift+E", "Fill command line with current selection"));
-    connect(action, SIGNAL(triggered()), this, SLOT(cmdLineForCursor()));
+    connect(action, &QAction::triggered, this, &MainWindow::cmdLineForCursor);
     settings->addAction(action, "ide-command-line-fill", ideCategory);
 
 
     mActions[ShowGoToLineTool] = action = new QAction(tr("&Go To Line"), this);
     action->setStatusTip(tr("Tool to jump to a line by number"));
     action->setShortcut(tr("Ctrl+L", "Show go-to-line tool"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showGoToLineTool()));
+    connect(action, &QAction::triggered, this, &MainWindow::showGoToLineTool);
     settings->addAction(action, "editor-go-to-line", editorCategory);
 
     mActions[CloseToolBox] = action = new QAction(QIcon::fromTheme("window-close"), tr("&Close Tool Panel"), this);
     action->setStatusTip(tr("Close any open tool panel"));
     action->setShortcut(tr("Esc", "Close tool box"));
-    connect(action, SIGNAL(triggered()), this, SLOT(hideToolBox()));
+    connect(action, &QAction::triggered, this, &MainWindow::hideToolBox);
     settings->addAction(action, "ide-tool-panel-hide", ideCategory);
 
     mActions[ShowFullScreen] = action = new QAction(tr("&Full Screen"), this);
     action->setCheckable(false);
     action->setShortcut(tr("Ctrl+Shift+F", "Show ScIDE in Full Screen"));
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
+    connect(action, &QAction::triggered, this, &MainWindow::toggleFullScreen);
     settings->addAction(action, "ide-show-fullscreen", ideCategory);
 
     mActions[FocusPostWindow] = action = new QAction(tr("Focus Post Window"), this);
     action->setStatusTip(tr("Focus post window"));
     action->setShortcut(tr("Ctrl+P", "Focus post window"));
-    connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(focus()));
+    connect(action, &QAction::triggered, mPostDocklet, &PostDocklet::focus);
     settings->addAction(action, "post-focus", ideCategory);
 
     // Language
@@ -393,26 +391,26 @@ void MainWindow::createActions() {
         new QAction(QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Implementations..."), this);
     action->setShortcut(tr("Ctrl+Shift+I", "Look Up Implementations"));
     action->setStatusTip(tr("Open dialog to look up implementations of a class or a method"));
-    connect(action, SIGNAL(triggered()), this, SLOT(lookupImplementation()));
+    connect(action, &QAction::triggered, this, &MainWindow::lookupImplementation);
     settings->addAction(action, "ide-lookup-implementation", ideCategory);
 
     mActions[LookupImplementationForCursor] = action = new QAction(tr("Look Up Implementations for Cursor"), this);
     action->setShortcut(tr("Ctrl+I", "Look Up Implementations for Cursor"));
     action->setStatusTip(tr("Look up implementations of class or method under cursor"));
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(lookupImplementationForCursor()));
+    connect(action, &QAction::triggered, this, &MainWindow::lookupImplementationForCursor);
     settings->addAction(action, "ide-lookup-implementation-for-cursor", ideCategory);
 
     mActions[LookupReferences] = action =
         new QAction(QIcon::fromTheme("window-lookupreferences"), tr("Look Up References..."), this);
     action->setShortcut(tr("Ctrl+Shift+U", "Look Up References"));
     action->setStatusTip(tr("Open dialog to look up references to a class or a method"));
-    connect(action, SIGNAL(triggered()), this, SLOT(lookupReferences()));
+    connect(action, &QAction::triggered, this, &MainWindow::lookupReferences);
     settings->addAction(action, "ide-lookup-references", ideCategory);
 
     mActions[LookupReferencesForCursor] = action = new QAction(tr("Look Up References for Cursor"), this);
     action->setShortcut(tr("Ctrl+U", "Look Up References For Selection"));
     action->setStatusTip(tr("Look up references to class or method under cursor"));
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(lookupReferencesForCursor()));
+    connect(action, &QAction::triggered, this, &MainWindow::lookupReferencesForCursor);
     settings->addAction(action, "ide-lookup-references-for-cursor", ideCategory);
 
     // Settings
@@ -421,44 +419,44 @@ void MainWindow::createActions() {
     action->setShortcut(tr("Ctrl+,", "Show configuration dialog"));
 #endif
     action->setStatusTip(tr("Show configuration dialog"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showSettings()));
+    connect(action, &QAction::triggered, this, &MainWindow::showSettings);
     settings->addAction(action, "ide-settings-dialog", ideCategory);
 
     // Help
     mActions[ReportABug] = action = new QAction(QIcon::fromTheme("system-help"), tr("Report a bug..."), this);
     action->setStatusTip(tr("Report a bug"));
-    connect(action, SIGNAL(triggered()), this, SLOT(doBugReport()));
+    connect(action, &QAction::triggered, this, &MainWindow::doBugReport);
 
 #ifdef SC_USE_QTWEBENGINE
     mActions[Help] = action = new QAction(tr("Show &Help Browser"), this);
     action->setStatusTip(tr("Show and focus the Help Browser"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openHelp()));
+    connect(action, &QAction::triggered, this, &MainWindow::openHelp);
     settings->addAction(action, "help-browser", helpCategory);
 
     mActions[HelpAboutIDE] = action =
         new QAction(QIcon::fromTheme("system-help"), tr("How to Use SuperCollider IDE"), this);
     action->setStatusTip(tr("Open the SuperCollider IDE guide"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openHelpAboutIDE()));
+    connect(action, &QAction::triggered, this, &MainWindow::openHelpAboutIDE);
 
     mActions[LookupDocumentationForCursor] = action = new QAction(tr("Look Up Documentation for Cursor"), this);
     action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
     action->setStatusTip(tr("Look up documentation for text under cursor"));
-    connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentationForCursor()));
+    connect(action, &QAction::triggered, this, &MainWindow::lookupDocumentationForCursor);
     settings->addAction(action, "help-lookup-for-cursor", helpCategory);
 
     mActions[LookupDocumentation] = action = new QAction(tr("Look Up Documentation..."), this);
     action->setShortcut(tr("Ctrl+Shift+D", "Look Up Documentation"));
     action->setStatusTip(tr("Enter text to look up in documentation"));
-    connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
+    connect(action, &QAction::triggered, this, &MainWindow::lookupDocumentation);
     settings->addAction(action, "help-lookup", helpCategory);
 #endif // SC_USE_QTWEBENGINE
 
     mActions[ShowAbout] = action = new QAction(QIcon::fromTheme("help-about"), tr("&About SuperCollider"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(showAbout()));
+    connect(action, &QAction::triggered, this, &MainWindow::showAbout);
     settings->addAction(action, "ide-about", ideCategory);
 
     mActions[ShowAboutQT] = action = new QAction(QIcon::fromTheme("show-about-qt"), tr("About &Qt"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(showAboutQT()));
+    connect(action, &QAction::triggered, this, &MainWindow::showAboutQT);
     settings->addAction(action, "ide-about-qt", ideCategory);
 
     // Add external actions to settings:
@@ -525,7 +523,7 @@ void MainWindow::createMenus() {
     menu->addAction(mActions[DocNew]);
     menu->addAction(mActions[DocOpen]);
     mRecentDocsMenu = menu->addMenu(tr("Open Recent", "Open a recent document"));
-    connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenRecentDocument(QAction*)));
+    connect(mRecentDocsMenu, &QMenu::triggered, this, &MainWindow::onOpenRecentDocument);
     menu->addAction(mActions[DocOpenStartup]);
     menu->addAction(mActions[DocOpenSupportDir]);
     menu->addAction(mActions[DocOpenExamplesDir]);
@@ -547,7 +545,7 @@ void MainWindow::createMenus() {
     menu->addAction(mActions[NewSession]);
     menu->addAction(mActions[SaveSessionAs]);
     submenu = menu->addMenu(tr("&Open Session"));
-    connect(submenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenSessionAction(QAction*)));
+    connect(submenu, &QMenu::triggered, this, &MainWindow::onOpenSessionAction);
     mSessionsMenu = submenu;
     updateSessionsMenu();
     menu->addSeparator();
@@ -845,7 +843,7 @@ void MainWindow::onDocumentChangedExternally(Document* doc) {
 
     mDocDialog = new DocumentsDialog(DocumentsDialog::ExternalChange, this);
     mDocDialog->addDocument(doc);
-    connect(mDocDialog, SIGNAL(finished(int)), this, SLOT(onDocDialogFinished()));
+    connect(mDocDialog, &DocumentsDialog::finished, this, &MainWindow::onDocDialogFinished);
     mDocDialog->open();
 }
 

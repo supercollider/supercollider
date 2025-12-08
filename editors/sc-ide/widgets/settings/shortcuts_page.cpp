@@ -39,21 +39,20 @@ ShortcutsPage::ShortcutsPage(QWidget* parent): QWidget(parent), ui(new Ui::Short
 
     ui->clearSeq->setIcon(style()->standardIcon(QStyle::SP_DockWidgetCloseButton));
 
-    connect(ui->filter, SIGNAL(textChanged(QString)), this, SLOT(filterBy(QString)));
-    connect(ui->actionTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this,
-            SLOT(showItem(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(ui->filter, &QLineEdit::textChanged, this, &ShortcutsPage::filterBy);
+    connect(ui->actionTree, &QTreeWidget::currentItemChanged, this, &ShortcutsPage::showItem);
 
     // automation
-    connect(ui->defaultOpt, SIGNAL(clicked()), ui->customSeq, SLOT(reset()));
-    connect(ui->customOpt, SIGNAL(clicked()), ui->customSeq, SLOT(setFocus()));
-    connect(ui->customSeq, SIGNAL(editingStarted()), ui->customOpt, SLOT(toggle()));
-    connect(ui->clearSeq, SIGNAL(clicked()), ui->customSeq, SLOT(reset()));
-    connect(ui->clearSeq, SIGNAL(clicked()), ui->customOpt, SLOT(click()));
+    connect(ui->defaultOpt, &QRadioButton::clicked, ui->customSeq, &KeySequenceEdit::reset);
+    connect(ui->customOpt, &QRadioButton::clicked, ui->customSeq, [=]() { ui->customSeq->setFocus(); });
+    connect(ui->customSeq, &KeySequenceEdit::editingStarted, ui->customOpt, &QRadioButton::toggle);
+    connect(ui->clearSeq, &QToolButton::clicked, ui->customSeq, &KeySequenceEdit::reset);
+    connect(ui->clearSeq, &QToolButton::clicked, ui->customOpt, &QRadioButton::click);
 
     // value application
-    connect(ui->defaultOpt, SIGNAL(clicked()), this, SLOT(apply()));
-    connect(ui->customOpt, SIGNAL(clicked()), this, SLOT(apply()));
-    connect(ui->customSeq, SIGNAL(editingFinished()), this, SLOT(apply()));
+    connect(ui->defaultOpt, &QRadioButton::clicked, this, &ShortcutsPage::apply);
+    connect(ui->customOpt, &QRadioButton::clicked, this, &ShortcutsPage::apply);
+    connect(ui->customSeq, &KeySequenceEdit::editingFinished, this, &ShortcutsPage::apply);
 }
 
 ShortcutsPage::~ShortcutsPage() { delete ui; }

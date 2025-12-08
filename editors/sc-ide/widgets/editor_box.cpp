@@ -52,16 +52,15 @@ CodeEditorBox::CodeEditorBox(MultiSplitter* splitter, QWidget* parent): QWidget(
     mProxyModel->sort(0);
     mDocComboBox->setModel(mProxyModel);
 
-    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)),
+    connect(mDocComboBox, &QComboBox::currentIndexChanged, this, &CodeEditorBox::onComboSelectionChanged,
             Qt::QueuedConnection);
 
-    connect(Main::documentManager(), SIGNAL(closed(Document*)), this, SLOT(onDocumentClosed(Document*)));
-    connect(Main::documentManager(), SIGNAL(saved(Document*)), this, SLOT(onDocumentSaved(Document*)));
-    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)), this,
-            SLOT(applySettings(Settings::Manager*)));
+    connect(Main::documentManager(), &DocumentManager::closed, this, &CodeEditorBox::onDocumentClosed);
+    connect(Main::documentManager(), &DocumentManager::saved, this, &CodeEditorBox::onDocumentSaved);
+    connect(Main::instance(), &Main::applySettingsRequest, this, &CodeEditorBox::applySettings);
 
-    connect(mSplitter->editor(), SIGNAL(splitViewActivated()), this, SLOT(comboBoxWhenSplitting()));
-    connect(mSplitter->editor(), SIGNAL(splitViewDeactivated()), this, SLOT(tabsWhenRemovingSplits()));
+    connect(mSplitter->editor(), &MultiEditor::splitViewActivated, this, &CodeEditorBox::comboBoxWhenSplitting);
+    connect(mSplitter->editor(), &MultiEditor::splitViewDeactivated, this, &CodeEditorBox::tabsWhenRemovingSplits);
 
     applySettings(Main::settings());
 }
@@ -121,7 +120,7 @@ void CodeEditorBox::setDocument(Document* doc, int pos, int selectionLength) {
             editor->installEventFilter(this);
             mHistory.prepend(editor);
             mLayout->addWidget(editor);
-            connect(this, SIGNAL(activeChanged(bool)), editor, SLOT(setActiveAppearance(bool)));
+            connect(this, &CodeEditorBox::activeChanged, editor, &GenericCodeEditor::setActiveAppearance);
         } else {
             mHistory.removeOne(editor);
             mHistory.prepend(editor);

@@ -49,11 +49,10 @@ ScProcess::ScProcess(Settings::Manager* settings, QObject* parent):
     mCompiled(false) {
     prepareActions(settings);
 
-    connect(this, SIGNAL(readyReadStandardOutput()), this, SLOT(onReadAllStandardOutput()));
-    connect(this, SIGNAL(readyReadStandardError()), this, SLOT(onReadAllStandardError()));
-    connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
-    connect(this, SIGNAL(stateChanged(QProcess::ProcessState)), this,
-            SLOT(onProcessStateChanged(QProcess::ProcessState)));
+    connect(this, &ScProcess::readyReadStandardOutput, this, &ScProcess::onReadAllStandardOutput);
+    connect(this, &ScProcess::readyReadStandardError, this, &ScProcess::onReadAllStandardError);
+    connect(mIpcServer, &QLocalServer::newConnection, this, &ScProcess::onNewIpcConnection);
+    connect(this, &ScProcess::stateChanged, this, &ScProcess::onProcessStateChanged);
     this->setProcessChannelMode(QProcess::SeparateChannels);
 }
 
@@ -65,39 +64,39 @@ void ScProcess::prepareActions(Settings::Manager* settings) {
     mActions[ToggleRunning] = action = new QAction(tr("Boot or Quit Interpreter"), this);
     // the default QAction::TextHeuristicRole incorrectly detects a quit role on macOS
     action->setMenuRole(QAction::NoRole);
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
+    connect(action, &QAction::triggered, this, &ScProcess::toggleRunning);
     // settings->addAction( action, "interpreter-toggle-running", interpreterCategory);
 
     mActions[Start] = action = new QAction(QIcon::fromTheme("system-run"), tr("Boot Interpreter"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(startLanguage()));
+    connect(action, &QAction::triggered, this, &ScProcess::startLanguage);
     settings->addAction(action, "interpreter-start", interpreterCategory);
 
     mActions[Stop] = action = new QAction(QIcon::fromTheme("system-shutdown"), tr("Quit Interpreter"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()));
+    connect(action, &QAction::triggered, this, &ScProcess::stopLanguage);
     settings->addAction(action, "interpreter-stop", interpreterCategory);
 
     mActions[Restart] = action = new QAction(QIcon::fromTheme("system-reboot"), tr("Reboot Interpreter"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(restartLanguage()));
+    connect(action, &QAction::triggered, this, &ScProcess::restartLanguage);
     settings->addAction(action, "interpreter-restart", interpreterCategory);
 
     mActions[RecompileClassLibrary] = action =
         new QAction(QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
     action->setShortcut(tr("Ctrl+Shift+l", "Recompile Class Library)"));
-    connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()));
+    connect(action, &QAction::triggered, this, &ScProcess::recompileClassLibrary);
     settings->addAction(action, "interpreter-recompile-lib", interpreterCategory);
 
     mActions[StopMain] = action = new QAction(QIcon::fromTheme("media-playback-stop"), tr("Stop"), this);
     action->setShortcut(tr("Ctrl+.", "Stop (a.k.a. cmd-period)"));
     action->setShortcutContext(Qt::ApplicationShortcut);
-    connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
+    connect(action, &QAction::triggered, this, &ScProcess::stopMain);
     settings->addAction(action, "interpreter-main-stop", interpreterCategory);
 
     mActions[ShowQuarks] = action = new QAction(tr("Quarks"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(showQuarks()));
+    connect(action, &QAction::triggered, this, &ScProcess::showQuarks);
     settings->addAction(action, "interpreter-show-quarks-gui", interpreterCategory);
 
-    connect(mActions[Start], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()));
-    connect(mActions[Stop], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()));
+    connect(mActions[Start], &QAction::triggered, this, &ScProcess::updateToggleRunningAction);
+    connect(mActions[Stop], &QAction::triggered, this, &ScProcess::updateToggleRunningAction);
 
     onProcessStateChanged(QProcess::NotRunning);
 }
@@ -250,8 +249,8 @@ void ScProcess::onNewIpcConnection() {
         mIpcSocket->disconnect();
 
     mIpcSocket = mIpcServer->nextPendingConnection();
-    connect(mIpcSocket, SIGNAL(disconnected()), this, SLOT(finalizeConnection()));
-    connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
+    connect(mIpcSocket, &QLocalSocket::disconnected, this, &ScProcess::finalizeConnection);
+    connect(mIpcSocket, &QLocalSocket::readyRead, this, &ScProcess::onIpcData);
 }
 
 void ScProcess::finalizeConnection() {

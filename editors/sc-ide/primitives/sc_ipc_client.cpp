@@ -41,7 +41,7 @@
 SCIpcClient::SCIpcClient(const char* ideName): mSocket(NULL) {
     mSocket = new QLocalSocket();
     mSocket->connectToServer(QString(ideName));
-    connect(mSocket, SIGNAL(readyRead()), this, SLOT(readIDEData()));
+    connect(mSocket, &QLocalSocket::readyRead, this, &SCIpcClient::readIDEData);
 }
 
 void SCIpcClient::send(const char* data, size_t length) { mSocket->write(data, length); }
