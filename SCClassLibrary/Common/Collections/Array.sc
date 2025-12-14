@@ -309,4 +309,36 @@ Array[slot] : ArrayedCollection {
 		this.do {|obj| obj.initFromArchive };
 		^this.first
 	}
+	{ arg slotArray;
+		slotArray.pairsDo {|index, slots| this[index].setSlots(slots) };
+		this.do {|obj| obj.initFromArchive };
+		^this.first
+	}
+	isValidFraction {
+		^(this.size == 2) && this[0].isNumber && this[1].isNumber && (this[1] != 0)
+	}
+	getRational {
+		if (this.isValidFraction) {
+			^(numerator: this[0], denominator: this[1])
+		} {
+			"Two numbers required: first = numerator, second = denominator (not 0).".warn;
+			^nil
+		}
+	}
+	getQuotient {
+		^if(this.isValidFraction) {
+			(this[0] / this[1])
+		} {
+			"Two numbers required: first = numerator, second = denominator (not 0).".warn;
+			nil
+		}
+	}
+	getModulus {
+		^if(this.isValidFraction) {
+			(this[0] % this[1])
+		} {
+			"Two numbers required: first = numerator, second = denominator (not 0).".warn;
+			nil
+		}
+	}
 }
