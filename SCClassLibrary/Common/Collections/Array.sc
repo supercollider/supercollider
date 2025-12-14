@@ -309,11 +309,6 @@ Array[slot] : ArrayedCollection {
 		this.do {|obj| obj.initFromArchive };
 		^this.first
 	}
-	{ arg slotArray;
-		slotArray.pairsDo {|index, slots| this[index].setSlots(slots) };
-		this.do {|obj| obj.initFromArchive };
-		^this.first
-	}
 	isValidFraction {
 		^(this.size == 2) && this[0].isNumber && this[1].isNumber && (this[1] != 0)
 	}
