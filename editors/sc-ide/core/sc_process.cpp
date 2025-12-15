@@ -131,6 +131,7 @@ void ScProcess::startLanguage(void) {
 
     QString workingDirectory = settings->value("runtimeDir").toString();
     QString configFile = settings->value("configFile").toString();
+    QString languagePort = settings->value("sclangPort").toString();
 
     settings->endGroup();
 
@@ -146,6 +147,10 @@ void ScProcess::startLanguage(void) {
         sclangArguments << "-l" << configFile;
     sclangArguments << "-i"
                     << "scqt";
+
+    if (!languagePort.isEmpty()) {
+        sclangArguments << "--port" << languagePort;
+    }
 
     if (!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);

@@ -73,6 +73,11 @@ void SclangPage::load(Manager* s) {
 
     ui->autoStart->setChecked(s->value("autoStart").toBool());
     ui->runtimeDir->setText(s->value("runtimeDir").toString());
+    if (s->value("sclangPort").isNull()) {
+        ui->sclang_port->setValue(57120);
+    } else {
+        ui->sclang_port->setValue(s->value("sclangPort").toInt());
+    }
 
     QStringList availConfigFiles = availableLanguageConfigFiles();
     QString configSelectedLanguageConfigFile = s->value("configFile").toString();
@@ -96,6 +101,7 @@ void SclangPage::store(Manager* s) {
     s->beginGroup("IDE/interpreter");
     s->setValue("autoStart", ui->autoStart->isChecked());
     s->setValue("runtimeDir", ui->runtimeDir->text());
+    s->setValue("sclangPort", ui->sclang_port->value());
     s->setValue("configFile", ui->activeConfigFileComboBox->currentText());
     s->endGroup();
 
