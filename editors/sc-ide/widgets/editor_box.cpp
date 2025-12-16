@@ -51,10 +51,14 @@ CodeEditorBox::CodeEditorBox(MultiSplitter* splitter, QWidget* parent): QWidget(
     mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
     mProxyModel->sort(0);
     mDocComboBox->setModel(mProxyModel);
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // overload can not be resolved, so we use a lambda function
+    connect(mDocComboBox, &QComboBox::currentIndexChanged, this,
+            [=](int index) { this->onComboSelectionChanged(index); });
+#else
     connect(mDocComboBox, &QComboBox::currentIndexChanged, this, &CodeEditorBox::onComboSelectionChanged,
             Qt::QueuedConnection);
-
+#endif
     connect(Main::documentManager(), &DocumentManager::closed, this, &CodeEditorBox::onDocumentClosed);
     connect(Main::documentManager(), &DocumentManager::saved, this, &CodeEditorBox::onDocumentSaved);
     connect(Main::instance(), &Main::applySettingsRequest, this, &CodeEditorBox::applySettings);
