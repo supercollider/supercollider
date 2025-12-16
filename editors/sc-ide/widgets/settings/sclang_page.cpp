@@ -64,6 +64,8 @@ SclangPage::SclangPage(QWidget* parent): QWidget(parent), ui(new Ui::SclangConfi
 
     connect(ui->sclang_post_inline_warnings, SIGNAL(stateChanged(int)), this, SLOT(markSclangConfigDirty()));
     connect(ui->sclang_exclude_default_paths, SIGNAL(stateChanged(int)), this, SLOT(markSclangConfigDirty()));
+
+    connect(ui->sclang_port, SIGNAL(valueChanged(int)), this, SLOT(markSclangConfigDirty()));
 }
 
 SclangPage::~SclangPage() { delete ui; }
