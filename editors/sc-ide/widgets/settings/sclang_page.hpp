@@ -47,8 +47,8 @@ private Q_SLOTS:
 
     void addExcludePath();
     void removeExcludePath();
-    void markSclangConfigDirty() { sclangConfigDirty = true; }
-    void markSclangConfigChanged() { sclangConfigChanged = true; }
+    void sclangConfigChanged() { mSclangConfigChanged = true; }
+    void showLanguageRestartDialogOnSave() { mShowLanguageRestartDialogOnSave = true; }
     void changeSelectedLanguageConfig(const QString& configPath);
     void dialogCreateNewConfigFile();
     void dialogDeleteCurrentConfigFile();
@@ -62,9 +62,9 @@ private:
 
     Ui::SclangConfigPage* ui;
 
-    bool sclangConfigDirty;
-    bool sclangConfigChanged;
-    QString selectedLanguageConfigFile;
+    bool mSclangConfigChanged = false;
+    bool mShowLanguageRestartDialogOnSave = false;
+    QString mSelectedLanguageConfigFile;
 };
 
 }} // namespace ScIDE::Settings
