@@ -75,9 +75,8 @@ void SclangPage::load(Manager* s) {
 
     ui->autoStart->setChecked(s->value("autoStart").toBool());
     ui->runtimeDir->setText(s->value("runtimeDir").toString());
-    if (s->value("sclangPort").isNull()) {
-        ui->sclang_port->setValue(57120);
-    } else {
+    // Qt UI definition holds default value implicitly - no need to repeat it here again
+    if (!s->value("sclangPort").isNull()) {
         ui->sclang_port->setValue(s->value("sclangPort").toInt());
     }
 
