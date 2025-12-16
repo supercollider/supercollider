@@ -52,9 +52,9 @@ CodeEditorBox::CodeEditorBox(MultiSplitter* splitter, QWidget* parent): QWidget(
     mProxyModel->sort(0);
     mDocComboBox->setModel(mProxyModel);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // overload can not be resolved, so we use a lambda function
-    connect(mDocComboBox, &QComboBox::currentIndexChanged, this,
-            [=](int index) { this->onComboSelectionChanged(index); });
+    // use old connect style b/c of problems regarding overloaded signal which is resolved in Qt6
+    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)),
+            Qt::QueuedConnection);
 #else
     connect(mDocComboBox, &QComboBox::currentIndexChanged, this, &CodeEditorBox::onComboSelectionChanged,
             Qt::QueuedConnection);

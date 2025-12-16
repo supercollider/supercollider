@@ -109,8 +109,8 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     ScProcess* scProcess = Main::scProcess();
     connect(scProcess, &ScProcess::response, this, &HelpBrowser::onScResponse);
 #    if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // use lambda function b/c argument mismatch is not resolved within Qt5 and creates an error
-    connect(scProcess, &ScProcess::finished, mLoadProgressIndicator, [=]() { mLoadProgressIndicator->stop(); });
+    // use old connect style b/c of problems regarding overloaded signal which is resolved in Qt6
+    connect(scProcess, SIGNAL(finished(int)), mLoadProgressIndicator, SLOT(stop()));
 #    else
     connect(scProcess, &ScProcess::finished, mLoadProgressIndicator, &LoadProgressIndicator::stop);
 #    endif
