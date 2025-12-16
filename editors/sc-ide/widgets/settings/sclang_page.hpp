@@ -48,6 +48,7 @@ private Q_SLOTS:
     void addExcludePath();
     void removeExcludePath();
     void markSclangConfigDirty() { sclangConfigDirty = true; }
+    void markSclangConfigChanged() { sclangConfigChanged = true; }
     void changeSelectedLanguageConfig(const QString& configPath);
     void dialogCreateNewConfigFile();
     void dialogDeleteCurrentConfigFile();
