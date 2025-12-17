@@ -743,7 +743,7 @@ Interpreter {
 		n = o = p = q = r = s = t = u = v = w = x = y = z = nil;
 	}
 
-	executeFile { arg pathName ... args;
+	executeFile { | pathName ...args, kwargs |
 		var	result, saveExecutingPath = thisProcess.nowExecutingPath;
 		if (File.exists(pathName).not) {
 			"file \"%\" does not exist.\n".postf(pathName);
@@ -751,7 +751,7 @@ Interpreter {
 		};
 		thisProcess.nowExecutingPath = pathName;
 		protect {
-			result = this.compileFile(pathName).valueArray(args)
+			result = this.compileFile(pathName).valueArgs(args, kwargs)
 		} { |exception|
 			exception !? { exception.path = pathName };
 			thisProcess.nowExecutingPath = saveExecutingPath
