@@ -1,4 +1,4 @@
-title:: Evaluating and Executing .scd Files (SC-IDE & CLI)
+title:: Executing and Loading .scd Files and SystemAction Hooks (SC-IDE & CLI)
 summary:: Guide to startup scripts, event hooks, evaluating, loading, and executing .scd files in SC-IDE and from the command line.
 categories:: Tutorials
 related:: Classes/Document, Classes/Main#thisProcess, Classes/PathName, Classes/Platform, Classes/File, Classes/Interpreter
