@@ -63,7 +63,7 @@ Index of all help files categorized under emphasis::Tutorials::
 ## link::Guides/UserFAQ##Common Errors and FAQ::
 ## SuperCollider examples folder:
 code::
-Platform.exampleDir.openOS 
+Platform.exampleDir.openOS
 // Hold down the Shift key and press the Enter key to open the "SuperCollider examples folder".
 ::
 ::
@@ -164,7 +164,7 @@ numberedlist::
 ## link::Guides/GUI-Layout-Management::
 ## link::Guides/FFT-Overview::
 ## link::Guides/Non-Realtime-Synthesis::
-## link::Guides/Startup_AutoRun_Execution_Load::
+## link::Guides/startup_eventHook_autoRun_execution_load::
 ::
 
 subsection:: Architecture
