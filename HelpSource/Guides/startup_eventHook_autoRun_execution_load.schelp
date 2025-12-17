@@ -1,0 +1,729 @@
+title:: Evaluating and Executing .scd Files (SC-IDE & CLI)
+summary:: Guide to startup scripts, event hooks, evaluating, loading, and executing .scd files in SC-IDE and from the command line.
+categories:: Tutorials
+related:: Classes/Document, Classes/Main#thisProcess, Classes/PathName, Classes/Platform, Classes/File, Classes/Interpreter
+
+DESCRIPTION::
+This guide summarizes options for starting SuperCollider, evaluating and loading code, installing event hooks, and executing teletype::.scd:: files in link::Guides/SCIde##SuperCollider-IDE (SC-IDE):: and from the command line.
+It also covers techniques for modularizing code with relative paths and automatic execution when a file is opened or when SuperCollider starts.
+
+section:: Quick Start
+
+table::
+## Option || Use Case || Notes
+
+## teletype::startup.scd:: || Run code at startup || Runs every time SuperCollider starts
+
+## code::
+f = { ... };
+CmdPeriod.add(f)
+:: || CmdPeriod hook || Remove:
+code::
+CmdPeriod.remove(f)
+::
+code::
+CmdPeriod.removeAll
+::
+
+## code::
+f = { ... };
+ShutDown.add(f)
+:: || Interpreter shutdown hook || Remove: code::
+ShutDown.remove(f)
+::
+code::
+ShutDown.removeAll
+::
+
+## code::
+f = { ... };
+ServerBoot.add(f)
+:: || Server boot hook || Remove:
+code::
+ServerBoot.remove(f)
+::
+code::
+ServerBoot.removeAll
+::
+
+## code::
+f = { ... };
+ServerTree.add(f)
+:: || Server tree rebuild hook || Remove:
+code::
+ServerTree.remove(f)
+::
+code::
+ServerTree.removeAll
+::
+
+## code::
+f = { ... };
+ServerQuit.add(f, s)
+// by default:
+// s = Server.local
+// (Server.default).
+
+:: || Server quit hook || Remove:
+code::
+ServerQuit.remove(f, s)
+::
+code::
+ServerQuit.removeAll
+::
+
+## code::
+/*RUN*/
+::
+at the first line of a teletype::.scd:: file || Run a file when opened in SC-IDE || link::Guides/SCIde##SC-IDE:: specific: runs code when file opens
+## code::
+.load
+:: || Execute File || Execute a full teletype::.scd:: file without opening it
+## code::
+.loadRelative
+:: || Execute File || Best for portable projects
+## code::
+thisProcess
+.interpreter
+.executeFile
+(path ... args)
+:: || Execute File with Arguments || Execute a full teletype::.scd:: file
+
+without opening it with arguments
+
+## Document.open || Open in Editor || Opens file in IDE (does not run code)
+
+## CLI (Command-Line Interface) || Run headless from a terminal || Runs in the terminal (macOS/Linux) or
+
+in the Command Prompt (Windows)
+::
+
+strong::Common Pitfalls::
+
+
+list::
+## strong::Document Path::
+
+link::Classes/String#-resolveRelative:: and link::Classes/String#-loadRelative:: will return teletype::nil:: or print code::WARNING:: if the current document has not been saved, as it does not yet have a path on disk.
+
+## strong::Infinite Loops::
+
+Be cautious when using link::Classes/String#-load:: in a way that causes a file to load itself (directly or indirectly), which can lead to infinite loops.
+::
+
+
+section:: Startup File (Global Auto-Run)
+
+To run code automatically whenever SuperCollider launches (regardless of which file is opened), you can use the teletype::startup.scd:: file in code::Platform.userAppSupportDir::.
+In link::Guides/SCIde##SC-IDE::, you can also open it directly from the menu bar by selecting teletype::File:: → teletype::Open startup file::.
+If you are not using link::Guides/SCIde##SC-IDE::, follow these steps instead:
+
+numberedlist::
+## Find where your startup file is located:
+
+code::
+Platform.userAppSupportDir.openOS
+::
+
+## Open the startup file for editing (create the file if it doesn't exist):
+
+code::
+(
+var path = Platform.userAppSupportDir +/+ "startup.scd";
+if(File.exists(path).not) { File.use(path, "w") };
+path.openDocument
+)
+::
+::
+
+Examples of useful startup code (inside teletype::startup.scd::):
+
+list::
+## To load other files:
+
+code::
+"~/Documents/SuperColliderProject1/main.scd".standardizePath.load;
+"~/Documents/SuperColliderProject2/main.scd".standardizePath.load;
+::
+## To set the number of input/output bus channels:
+
+code::
+s.options.numInputBusChannels = ~nI = 8;
+s.options.numOutputBusChannels = ~nO = 8;
+::
+## To set memory size:
+
+code::
+s.options.memSize = 2.pow(21);
+::
+## To set audio device:
+
+code::
+s.options.device = "Fireface 800 (3F0)";
+::
+
+note::
+Replace teletype::Fireface 800 (3F0):: with the exact audio interface name reported by sclang.
+
+table::
+## 💡 Tip:
+
+List available audio interface names:
+
+
+list::
+## List all audio interface names:
+
+code::
+ServerOptions.devices        // Enumerates all audio devices
+
+// Prints each name on a separate line:
+ServerOptions.devices.do { |device| device.postln }
+::
+
+## List audio input device names:
+
+code::
+// Enumerates input devices only:
+ServerOptions.inDevices
+
+// Prints each name on a separate line:
+ServerOptions.inDevices.do { |device| device.postln }
+::
+
+## List audio output device names:
+
+code::
+// Enumerates output devices only:
+ServerOptions.outDevices
+
+// Prints each name on a separate line:
+ServerOptions.outDevices.do { |device| device.postln }
+::
+::
+::
+::
+::
+
+section:: Event hooks (CmdPeriod, ShutDown, ServerBoot, ServerTree, ServerQuit)
+
+The subclasses of link::Classes/AbstractSystemAction:: provide an link::Classes/AbstractSystemAction#add:: method that lets you register a link::Classes/Function:: to run when a specific event occurs.
+
+This is useful when you want to run code when the server boots, rebuilds its node tree, or quits, and when you press link::Classes/CmdPeriod:: or quit the link::Classes/Interpreter::.
+
+note::
+These event hooks must be re-added each time sclang starts, because they are not persisted across restarts or recompiles.
+::
+
+list::
+## link::Classes/AbstractSystemAction::
+
+These classes are subclasses of link::Classes/AbstractSystemAction:: and provide an link::Classes/AbstractSystemAction#add:: method for registering actions:
+
+list::
+## link::Classes/CmdPeriod::
+
+Global stop hook.
+Runs registered actions when link::Classes/CmdPeriod:: (the global “stop” action; typically teletype::Ctrl+.:: / teletype::Cmd+.::) is triggered.
+Use this for emergency cleanup (freeing resources, resetting state, etc.).
+
+## link::Classes/ShutDown::
+
+Shutdown hook.
+Runs registered actions when the interpreter is shutting down.
+Use this when you need to run final cleanup or persistence tasks right before the interpreter exits (for example, freeing resources, saving state/settings, or writing logs).
+
+## link::Classes/AbstractServerAction::
+
+These classes are server-specific action hooks tied to the server lifecycle and node tree events.
+
+list::
+## link::Classes/ServerBoot:: anchor::ServerBoot.add::
+
+Server boot hook.
+Runs registered actions after a server boots successfully.
+Use this for actions that require an active server (allocating buffers, starting synths, etc.).
+
+## link::Classes/ServerTree:: anchor::ServerTree.add::
+
+Server tree hook.
+Runs registered actions when the server rebuilds its node tree.
+Use this when you need to automatically re-create essential link::Classes/Group::s/link::Classes/Synth::s after the server’s node tree is rebuilt (for example, after link::Classes/CmdPeriod:: or other events that clear/rebuild the node tree).
+
+## link::Classes/ServerQuit:: anchor::ServerQuit.add::
+
+Server quit hook.
+Runs registered actions when a server quits.
+Use this for server-specific cleanup that should happen when the server stops.
+::
+::
+They also inherit removal utilities such as code::.remove:: and code::.removeAll:: (availability in help files may vary, but the methods are available via inheritance).
+::
+
+subsection:: Registering actions
+
+To register an action, pass a link::Classes/Function:: to code::.add::.
+If you plan to remove it later, store the Function in a variable so you can pass the same reference to code::.remove::.
+
+note::
+If you add a link::Classes/Function:: inline (without storing it in a variable), it is difficult to remove later because you no longer have the same link::Classes/Function:: reference. For removable hooks, it is best to assign the link::Classes/Function:: to a variable first.
+::
+list::
+## Run code when the default server boots:
+code::
+(
+~serverBootAction = {
+    "Server booted.".postln;
+    // Your code. e.g. load/execute scd files, allocate buffers, start synths ...
+	"~serverBootAction is finished.".postln
+};
+
+ServerBoot.add(~serverBootAction)
+)
+::
+
+## Rebuild essential nodes when the server tree is rebuilt:
+code::
+(
+~serverTreeAction = {
+    "Server tree rebuilt.".postln;
+    // Your code. e.g. re-create groups/synths that must exist
+	"~serverTreeAction is finished.".postln
+};
+
+ServerTree.add(~serverTreeAction)
+)
+::
+
+## Cleanup when the server quits:
+code::
+(
+~serverQuitAction = { |which|
+	(which.asString + "Server quit.").postln
+};
+ServerQuit.add(~serverQuitAction, s) // s is by default Server.local and Server.default.
+)
+::
+
+## Cleanup when link::Classes/CmdPeriod:: is pressed
+code::
+~cmdPeriodAction = { "CmdPeriod triggered.".postln }; CmdPeriod.add(~cmdPeriodAction)
+::
+
+## link::Classes/Interpreter:: shutdown cleanup
+code::
+(
+~shutdownAction = {
+    "Interpreter shutting down.".postln;
+    // e.g. free resources, save state...
+};
+
+ShutDown.add(~shutdownAction)
+)
+::
+::
+
+subsection:: Removing (unregistering) actions
+
+To remove an action, call code::.remove:: with the same Function object that you added.
+
+code::
+(
+// Remove individual actions
+// (only works if you kept the functions defined in the previous sectioin.):
+ServerBoot.remove(~serverBootAction);
+ServerTree.remove(~serverTreeAction);
+ServerQuit.remove(~serverQuitAction, s);
+CmdPeriod.remove(~cmdPeriodAction);
+ShutDown.remove(~shutdownAction);
+
+// Optional: clear your variables after removing:
+~serverBootAction = nil;
+~serverTreeAction = nil;
+~serverQuitAction = nil;
+~cmdPeriodAction = nil;
+~shutdownAction = nil
+)
+::
+
+note::
+code::.removeAll:: is a class method on link::Classes/AbstractSystemAction#*removeAll::.
+Therefore, its subclasses support code::.removeAll::
+(for example code::CmdPeriod.removeAll::, code::ShutDown.removeAll::, code::ServerBoot.removeAll::, code::ServerTree.removeAll::, and code::ServerQuit.removeAll::).
+Some class help files may not list it explicitly, but it is available via inheritance.
+
+This is useful when multiple function call is registered as event hooks to a specific class.
+
+code::
+// Remove all registered actions for selected hooks:
+CmdPeriod.removeAll;
+ShutDown.removeAll;
+ServerBoot.removeAll;
+ServerTree.removeAll;
+ServerQuit.removeAll;
+::
+::
+
+section:: Auto-run when a document is opened (SC-IDE)
+
+In link::Guides/SCIde##SC-IDE::, you can make a specific file execute automatically when it is opened.
+To enable this, you can place the string code::/*RUN*/:: on the first line of the document.
+
+code::
+/*RUN*/
+"Hello, this .scd file runs automatically when opened".postln;
+s.boot
+::
+
+note::
+
+list::
+## This feature is specific to the link::Guides/SCIde##SC-IDE:: editor.
+It is useful for performance patches or tools that should start immediately when the file is opened.
+
+## If this does not work, follow these steps to resolve the issue:
+
+numberedlist::
+## (Optional) Check the value of code::Document.autoRun:::
+
+code::
+Document.autoRun
+::
+The default value is teletype::true::, but it may have been changed to teletype::false:: by evaluating code.
+## Set the value of code::Document.autoRun:: to teletype::true:::
+
+code::
+Document.autoRun_(true)
+::
+## (Optional) Verify the value of code::Document.autoRun:: again:
+
+code::
+Document.autoRun
+::
+::
+::
+::
+
+section:: .load and .loadRelative (Executing .scd files without arguments)
+
+This is the most common way to execute code stored in other files within a running program, while avoiding hard‑coded paths.
+
+warning::
+Relative paths work only after the current document has been saved (so it has a filesystem path).
+::
+
+list::
+## Load using absolute path
+
+code::
+"/full/path/to/filename.scd".load
+::
+## Load using relative paths (Recommended for projects)
+
+code::
+"filename.scd".loadRelative // Searches in the same directory
+::
+
+code::
+"../lib/utils.scd".loadRelative // Searches in the parent/lib directory
+::
+## Alternative relative path construction (Manual)
+
+code::
+(
+var path = thisProcess.nowExecutingPath.dirname;
+(path ++ "modules/synthdefs.scd").load
+)
+::
+::
+
+note:: Variable Scope in Loaded Files
+
+When working across multiple teletype::.scd:: files, it helps to use these variable types with the correct scope:
+
+
+list::
+## strong::Environment variables:: (e.g., ~myVar) and strong::interpreter variables:: (e.g., a) persist and are shared between the main file and any files it loads.
+## strong::Local variables:: (e.g., var myVar) are scoped only to the file being loaded and are not visible to the main document.
+::
+
+code::
+// in main.scd
+~globalSetting = 100;
+"config.scd".loadRelative;
+~loadedSetting.postln      // Works if defined in config.scd
+
+// in config.scd
+var localCalc = 10 * ~globalSetting; // uses ~globalSetting defined in main.scd for calculation
+~loadedSetting = localCalc           // exports result to environment
+::
+::
+
+section:: thisProcess.interpreter.executeFile (Execution with Arguments)
+
+You can use this to execute a file with arguments.
+Note that the teletype::.scd:: file is treated like a function body—do not wrap the file in curly braces.
+For example, to generate sound with a variable channel count, save the following as teletype::sound.scd:::
+
+code::
+|numchans = 0|
+x = { |spread = 1, level = 0.2, center = 0.0|
+	Splay.ar(
+		SinOsc.ar({ |i| LFNoise2.kr(1).exprange(200, 4000) } ! numchans),
+		spread,
+		level,
+		center
+	)
+}.play
+::
+
+Then, from another teletype::.scd:: file in the same folder, you can run:
+
+code::
+x = thisProcess.interpreter.executeFile("sound.scd".resolveRelative, 10)
+x.free
+
+x = thisProcess.interpreter.executeFile("sound.scd".resolveRelative, 100)
+x.free
+::
+
+section:: Opening .scd Files in SC-IDE
+
+You can use any of the following methods to open a file in the text editor without evaluating its code immediately.
+
+
+list::
+## Open using absolute path:
+
+code::
+Document.open("/full/path/to/filename.scd")
+::
+or
+
+code::
+"/full/path/to/filename.scd".openDocument
+::
+
+## Opening with a relative path works if the current file has been saved first, and the file to be loaded is located in the same folder:
+
+code::
+// Opens a document located in the same folder as the file containing the evaluated code:
+"filename.scd".resolveRelative.openDocument
+::
+
+code::
+// Opens a document located in the parent folder of the file containing the evaluated code:
+"../other.scd".resolveRelative.openDocument
+::
+::
+
+section:: Execution from the Command Line
+
+SuperCollider (sclang) can be run from a terminal or command prompt.
+This is useful for installations, headless systems (e.g., Raspberry Pi), or batch processing.
+
+subsection:: Add sclang to PATH
+
+To run code::sclang:: or code::sclang.exe:: directly, the path to code::sclang:: must be added to your system PATH environment variable.
+
+subsubsection:: Linux
+
+On Linux, SuperCollider is usually installed in teletype::/usr/bin/:: or teletype::/usr/local/bin/:: by default, and it is usually available on your PATH automatically.
+
+To run a file by name only (without specifying the full path), the CLI command must be executed from the same folder as the file.
+
+subsubsection:: macOS
+
+Add the following line to the shell configuration file of the operating system (teletype::~/.zshrc::):
+
+teletype::
+export PATH="/Applications/SuperCollider.app/Contents/MacOS:$PATH"
+::
+
+note::
+If SuperCollider is installed elsewhere, replace teletype::/Applications/SuperCollider.app:: with your actual installation path.
+::
+
+Make sure you save the teletype::~/.zshrc:: file after adding the line above.
+Close any open terminal windows, then open a new one to apply the change.
+
+note::
+The file teletype::~/.zshrc:: does not appear in Finder on macOS by default because it is a hidden system file.
+On macOS, pressing teletype::COMMAND + SHIFT + .:: in a Finder window toggles the visibility of all hidden files.
+You can open the file by double‑clicking it with the system’s default application, or by choosing your preferred application via the teletype::Open With:: option in the context menu (which appears when you right‑click the file).
+Advanced users familiar with terminal commands and the nano editor can edit the file directly by running teletype::nano ~/.zshrc::.
+::
+
+subsubsection:: Windows
+
+On Windows, the installation folder does not appear in your PATH environment variable by default.
+To add it, you can open a Command Prompt and run:
+
+teletype::
+setx PATH "%PATH%;C:\Program Files\SuperCollider-3.x.x\"
+::
+
+note::
+Replace teletype::C:\Program Files\SuperCollider-3.x.x\ :: with your actual SuperCollider installation path.
+::
+
+Close and reopen Command Prompt (or if needed, open a new terminal window or open a new tab by pressing teletype::CTRL + SHIFT + 2::).
+The folder will now be included in your PATH, and you can run SuperCollider from any terminal location.
+
+subsection:: Basic usage
+
+code::
+sclang filename.scd        // Linux and macOS
+sclang.exe filename.scd    // Windows: press CTRL + SHIFT + 2 after launching the terminal
+::
+
+subsection:: Run with configuration file
+
+code::
+sclang -l sclang_conf.yaml filename.scd     // Linux and macOS
+sclang.exe -l sclang_conf.yaml filename.scd // Windows
+::
+
+table::
+## 💡 Tip:
+
+The path to teletype::sclang_conf.yaml:: must be explicitly specified if the command is executed outside of code::Platform.userConfigDir::.
+::
+
+subsection:: Stop execution
+To stop a running sclang process in the terminal, you can use the following keyboard shortcuts:
+
+table::
+## OS || Linux || macOS || Windows
+## Keyboard shortcuts || teletype::CTRL + C:: || teletype::COMMAND + .:: || teletype::CTRL + C::
+::
+
+section:: Examples
+
+subsection:: Example 1: Auto-run installation script
+
+numberedlist::
+## Save a teletype::.scd:: file containing the following code:
+
+code::
+/*RUN*/
+s.waitForBoot({
+    "Installation Started".postln;
+    { SinOsc.ar(440, 0, 0.1) }.play
+})
+::
+## Open the file using link::Guides/SCIde##SC-IDE::.
+## All code in the file is evaluated as soon as it opens.
+::
+
+subsection:: Example 2: Project Loader Script without arguments (main.scd)
+
+Assume the referenced files are in the same folder as this teletype::.scd:: file:
+
+code::
+(
+// Load modules relative to this file
+"audio/synths.scd".loadRelative;
+"music/patterns.scd".loadRelative;
+"interface/gui.scd".loadRelative
+)
+::
+
+subsection:: Example 3: Project Loader Script with arguments (main.scd and the .scd file being executed)
+
+numberedlist::
+## Save the following code as teletype::monitorGUI.scd:: in the teletype::~/Downloads/:: folder:
+
+code::
+|numIns=2, numOuts=2|
+var height = Window.availableBounds.height;
+var serverMeterViewWidth = ServerMeterView.getWidth(numIns, numOuts);
+var rect = Rect(0, 0, 255 + serverMeterViewWidth, height);
+var window = Window("server tools", rect);
+var bounds = window.bounds;
+var serverMeterView = View(window, bounds.width @ (ServerMeterView.height * 2));
+var plotTreeViewView = View(window,
+	Rect(
+		0,
+		ServerMeterView.height * 2,
+		bounds.width,
+		bounds.height - (ServerMeterView.height * 2)
+	)
+);
+ServerMeterView(s, serverMeterView, 0@0, numIns, numOuts);
+Stethoscope(s, numOuts, view: UserView(serverMeterView,
+	Rect(
+		serverMeterViewWidth,
+		0,
+		bounds.bounds.width - serverMeterViewWidth,
+		serverMeterView.bounds.height
+	)
+));
+FreqScopeView(serverMeterView, Rect(
+	3,
+	25 + ServerMeterView.height,
+	bounds.bounds.width - 6,
+	ServerMeterView.height - 10
+)).active_(true).freqMode_(1);
+s.plotTreeView(0.5, plotTreeViewView);
+window.front
+::
+
+## Add the following code to your teletype::startup.scd:: file:
+
+code::
+thisProcess.interpreter.executeFile("~/Downloads/monitorGUI.scd".standardizePath, 2, 4);
+::
+## Recompile the class library or restart SuperCollider.
+::
+
+subsection:: Example 4: Headless execution (Shell Script)
+
+warning::
+The path to sclang must be registered in the operating system’s terminal/command‑line environment so that it is recognized as a valid command.
+::
+
+note::
+The directive code::/*RUN*/:: in the first line of each teletype::.scd:: file does not work in the CLI environment.
+::
+
+subsubsection:: Linux and macOS
+
+If the filename is teletype::run.sh::, open a terminal in the same folder and run:
+
+code::
+./run.sh
+::
+teletype::run.sh:: should contain:
+
+teletype::
+#!/bin/bash
+cd "$(dirname "$0")"
+sclang installation.scd
+::
+
+table::
+## 💡 Tip:
+
+After creating the teletype::run.sh:: file, run the following command from the same folder in a terminal window:
+
+teletype::
+chmod +x ./run.sh
+::
+::
+
+subsubsection:: Windows
+
+If the filename is teletype::run.bat::, open a Command Prompt in the same folder and run:
+
+teletype::
+run.bat
+::
+
+teletype::run.bat:: should contain:
+
+teletype::
+@echo off
+cd /d %~dp0
+sclang installation.scd
+::
