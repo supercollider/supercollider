@@ -305,12 +305,12 @@ ServerQuit.add(~serverQuitAction, s) // s is by default Server.local and Server.
 )
 ::
 
-## Cleanup when link::Classes/CmdPeriod:: is pressed
+## Cleanup when link::Classes/CmdPeriod:: is pressed:
 code::
 ~cmdPeriodAction = { "CmdPeriod triggered.".postln }; CmdPeriod.add(~cmdPeriodAction)
 ::
 
-## link::Classes/Interpreter:: shutdown cleanup
+## link::Classes/Interpreter:: shutdown cleanup:
 code::
 (
 ~shutdownAction = {
@@ -413,12 +413,12 @@ Relative paths work only after the current document has been saved (so it has a 
 ::
 
 list::
-## Load using absolute path
+## Load using absolute path:
 
 code::
 "/full/path/to/filename.scd".load
 ::
-## Load using relative paths (Recommended for projects)
+## Load using relative paths (Recommended for projects):
 
 code::
 "filename.scd".loadRelative // Searches in the same directory
@@ -427,7 +427,7 @@ code::
 code::
 "../lib/utils.scd".loadRelative // Searches in the parent/lib directory
 ::
-## Alternative relative path construction (Manual)
+## Alternative relative path construction (Manual):
 
 code::
 (
