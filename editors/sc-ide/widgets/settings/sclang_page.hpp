@@ -47,8 +47,11 @@ private Q_SLOTS:
 
     void addExcludePath();
     void removeExcludePath();
-    void sclangConfigChanged() { mSclangConfigChanged = true; }
-    void showLanguageRestartDialogOnSave() { mShowLanguageRestartDialogOnSave = true; }
+    void sclangConfigChanged() {
+        mSclangConfigChanged = true;
+        mShowDialogRestartLanguageOnSave = true;
+    }
+    void showLanguageRestartDialogOnSave() { mShowDialogRestartLanguageOnSave = true; }
     void changeSelectedLanguageConfig(const QString& configPath);
     void dialogCreateNewConfigFile();
     void dialogDeleteCurrentConfigFile();
@@ -58,12 +61,12 @@ private:
     void writeLanguageConfig();
     QString languageConfigFile();
     QStringList availableLanguageConfigFiles();
-    void dialogConfigFileUpdated();
+    void dialogRestartLanguage();
 
     Ui::SclangConfigPage* ui;
 
     bool mSclangConfigChanged = false;
-    bool mShowLanguageRestartDialogOnSave = false;
+    bool mShowDialogRestartLanguageOnSave = false;
     QString mSelectedLanguageConfigFile;
 };
 

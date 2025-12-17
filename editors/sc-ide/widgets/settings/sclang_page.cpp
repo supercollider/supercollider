@@ -107,8 +107,8 @@ void SclangPage::store(Manager* s) {
     if (mSclangConfigChanged) {
         writeLanguageConfig();
     }
-    if (mShowLanguageRestartDialogOnSave) {
-        dialogConfigFileUpdated();
+    if (mShowDialogRestartLanguageOnSave) {
+        dialogRestartLanguage();
     }
 }
 
@@ -144,7 +144,6 @@ void SclangPage::removeExcludePath() {
 
 void SclangPage::changeSelectedLanguageConfig(const QString& configPath) {
     mSelectedLanguageConfigFile = configPath;
-    mShowLanguageRestartDialogOnSave = true;
     readLanguageConfig();
 }
 
@@ -208,6 +207,8 @@ void SclangPage::readLanguageConfig() {
 }
 
 void SclangPage::writeLanguageConfig() {
+    mShowDialogRestartLanguageOnSave = true;
+
     using namespace YAML;
     using std::ofstream;
     Emitter out;
@@ -303,8 +304,8 @@ void SclangPage::dialogDeleteCurrentConfigFile() {
     }
 }
 
-void SclangPage::dialogConfigFileUpdated() {
-    mShowLanguageRestartDialogOnSave = false;
+void SclangPage::dialogRestartLanguage() {
+    mShowDialogRestartLanguageOnSave = false;
     QMessageBox::StandardButton reply =
         QMessageBox::question(this, tr("Sclang configuration file updated"),
                               tr("The SuperCollider language configuration has been updated.\n"
