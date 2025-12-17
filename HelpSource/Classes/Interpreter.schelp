@@ -93,7 +93,8 @@ This will not compile class definitions, only expressions.
 
 method::executeFile
 
-Reads the file at pathName, compiles it and executes it, returning the result.
+Reads the file at pathName, compiles it and executes it, returning the result,
+and passing it positional and keyword arguments if supplied. 
 The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
 

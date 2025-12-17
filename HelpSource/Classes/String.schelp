@@ -798,10 +798,11 @@ Post << "Help/*".pathMatch;
 ::
 
 method::load
-Load and execute the file at the path represented by the receiver.
+Load and link::Classes/Interpreter#-executeFile#execute:: the file at the path represented by the receiver, and (optionally) pass positional and keyword arguments to the result. 
 
 method::loadPaths
-Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
+Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::. 
+Additional positional and keyword arguments can also be supplied, which will be passed to each resulting object, as with code::.load::.
 
 
 code::
@@ -824,6 +825,11 @@ Post a warning if path doesn't point to any file.
 argument::action
 If a function is passed, it is called with each path as argument.
 
+argument::args
+Optional positonal arguments that can be passed to the resulting object.
+
+argument::kwargs
+Optional keyword arguments that can be passed to the resulting object.
 
 
 method::loadRelative
@@ -834,6 +840,14 @@ Warn if a file is not found.
 
 argument::action
 A function that is called for each file path that is found.
+
+argument::args
+Optional positonal arguments that can be passed to the resulting object.
+
+argument::kwargs
+Optional keyword arguments that can be passed to the resulting object.
+
+
 
 method::resolveRelative
 Convert the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.
