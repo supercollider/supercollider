@@ -47,7 +47,11 @@ EditorPage::EditorPage(QWidget* parent):
 
     connect(ui->onlyMonoFonts, &QCheckBox::toggled, this, &EditorPage::onMonospaceToggle);
     connect(ui->fontCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateFontPreview);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()));
+#else
     connect(ui->fontSize, &QSpinBox::valueChanged, this, &EditorPage::updateFontPreview);
+#endif
     connect(ui->fontAntialias, &QCheckBox::stateChanged, this, &EditorPage::updateFontPreview);
 
     connect(ui->themeCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateTheme);
