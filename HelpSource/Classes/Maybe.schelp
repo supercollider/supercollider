@@ -107,6 +107,7 @@ code::
 a = Array.fill(8, { |i| var k = (1/(i+1)).rand; Maybe({ |x| x * k }) });
 b = o(Maybe({ |x| x }), *a);
 b.value(1);
+::
 
 method::do
 Calls the source, like in link::Classes/Function::.
