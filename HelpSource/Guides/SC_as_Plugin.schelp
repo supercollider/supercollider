@@ -1,0 +1,393 @@
+title:: SuperCollider as Plugin in Host
+categories:: Guide
+summary:: How to use SuperCollider inside VST‑enabled environments such as DAWs and sound file editors.
+
+Description::
+
+DAWs and sound editors include built‑in instruments and effects, which may have limited control over synthesis structure or exhibit aliasing at high frequencies.
+SuperCollider provides an alternative workflow via the link::https://github.com/asb2m10/plugincollider##PluginCollider:: VST3 plug‑in:
+design link::Classes/SynthDef::s in SuperCollider, then load and play them within link::https://github.com/asb2m10/plugincollider##PluginCollider:: in your DAW.
+
+section:: How to Do
+
+numberedlist::
+
+## Install SuperCollider and link::https://github.com/asb2m10/plugincollider##PluginCollider::
+
+list::
+## Verify that SuperCollider is installed and functioning correctly (ensure you can boot the server and run link::Classes/SynthDef:: examples).
+## Install PluginCollider from link::https://github.com/asb2m10/plugincollider#PluginCollider:: to ensure it appears in your DAW or audio editor's VST plug‑in list.
+To install, place the teletype::PluginCollider.vst3:: into either the system default VST3 directory or a user‑defined folder scanned by your host application. The standard installation directories are:
+
+
+list::
+## Linux:
+
+teletype::
+~/.vst3/
+::
+
+
+After copying the file, launch your DAW to rescan for VST3 plug‑ins.
+If the host application is already running, perform a manual plug‑in rescan or restart the application.
+
+
+## macOS:
+
+teletype::
+/Library/Audio/Plug‑Ins/VST3/
+::
+
+(or a custom folder configured in your DAW)
+
+note::
+On macOS, the following command is required to authorize link::https://github.com/asb2m10/plugincollider##PluginCollider:: after installation:
+
+teletype::
+sudo xattr -r -d com.apple.quarantine /Library/Audio/Plug‑Ins/VST3/PluginCollider.vst3
+::
+
+This command modifies macOS security attributes to bypass Gatekeeper restrictions and requires administrator privileges.
+(Execute this command only for software you trust.)
+::
+
+## Windows:
+
+teletype::
+C:\Program Files\Common Files\VST3
+::
+
+(or a custom folder configured in your DAW)
+::
+::
+
+## Design and Test link::Classes/SynthDef::s
+
+list::
+## Write your instrument or effect as a link::Classes/SynthDef:: in SuperCollider.
+## Test it interactively in teletype::sclang:: to verify sound quality, parameter ranges, and general behavior.
+## Decide which arguments you want to control from the DAW (e.g., teletype::amp::, teletype::freq::, teletype::attackTime::) and which ones to keep fixed internally.
+
+## For effects processing in link::https://github.com/asb2m10/plugincollider##PluginCollider::, link::Classes/SynthDef::s use teletype::SoundIn:: to receive audio directly from the DAW's FX input. No link::Classes/Bus:: setup within the SuperCollider server is required.
+::
+
+## Export link::Classes/SynthDef::s
+
+list::
+## Use link::Classes/SynthDef#-writeDefFile:: to export the definition into a directory that link::https://github.com/asb2m10/plugincollider##PluginCollider:: scans for teletype::.scsyndef:: files.
+
+note::
+While you can use SuperCollider's default synthdef folder at
+code::(Platform.userAppSupportDir +/+ "synthdefs")::, this location contains all teletype::.scsyndef:: files ever created by sclang.
+For better organization with link::https://github.com/asb2m10/plugincollider##PluginCollider::, we recommend using a dedicated folder.
+::
+::
+
+## Load in DAW or Sound Editor
+
+list::
+## Open your DAW or sound editor and insert link::https://github.com/asb2m10/plugincollider##PluginCollider:: as an instrument on a track (in a DAW) or as an effect from the processing menu (in a sound editor or a DAW).
+
+note::
+When using link::https://github.com/asb2m10/plugincollider##PluginCollider:: for the first time, set the directory containing your teletype::.scsyndef:: files.
+::
+
+## Within link::https://github.com/asb2m10/plugincollider##PluginCollider::'s interface, select the exported link::Classes/SynthDef:: you want to use.
+
+## Save this as part of your DAW project or as a plug‑in preset for use in other projects.
+::
+
+## Integrate into Your Workflow
+
+list::
+## Use MIDI tracks in your DAW to trigger SuperCollider instruments hosted by link::https://github.com/asb2m10/plugincollider##PluginCollider::.
+## If the loaded link::Classes/SynthDef:: is an audio effect, check the teletype::FX mode:::
+image::SC_as_Plugin_-_FX_mode.png::
+## Automate or control exposed parameters to create dynamic changes over time.
+## Apply link::https://github.com/asb2m10/plugincollider##PluginCollider::‑based effects to audio tracks for additional DSP processing alongside other plugins, and bounce or freeze tracks as needed.
+::
+
+::
+
+
+section:: Examples
+
+subsection:: Using a SynthDef as a VSTi
+
+subsubsection:: Step 1: Design SynthDef and Test in SuperCollider
+
+code::
+(
+[\sine, \saw, \triangle, \pulse, \additive].do { |name|
+	SynthDef(name, { |out = 0, freq = 440, amp = 0.1, pan = 0, phaseR = 1, gate = 1,
+		attackTime = 0.07, decayTime = 0.08, sustainLevel = 0.1, releaseTime = 0.3,
+		beatByPitchDetune = 0.041666666666667,
+		vibDelayFromAttack = 0.2, vibDelayPostTransient = 0,
+		vibStartFreq = 3, vibPeakFreq = 7, vibEndFreq = 4, vibAccelTime = 0.4,
+		vibAmp = 0.02, vibPitch = 0.0625, randomPercent = 6.25|
+
+		var rand = 2 ** (Rand(randomPercent / -2, randomPercent / 2) / 1200);
+
+		var conflictDetector = (vibDelayFromAttack > 0) * (vibDelayPostTransient > 0);
+		var warnTrig = Trig1.kr(conflictDetector, 0.001);
+
+		var transientAtBeginning = attackTime + (decayTime * 1.1);
+
+		var vibStartingAfterTransient = transientAtBeginning + vibDelayPostTransient;
+		var delayStartingFromAttack = vibDelayFromAttack;
+
+		var selVibDelayFromAttack = (vibDelayFromAttack > 0) * (vibDelayPostTransient |==| 0);
+		var selVibDelayPostTransient = (vibDelayFromAttack |==| 0) * (vibDelayPostTransient > 0);
+
+		var vibDelaySelector = (selVibDelayFromAttack * 1) + (selVibDelayPostTransient * 2);
+
+		var vibDelaySelected = Select.kr(
+			vibDelaySelector.poll(0, \vibDelaySelector),
+			[
+				DC.kr(0).(0, \noVibDelay),
+				delayStartingFromAttack.poll(0, \delayStartingFromAttack),
+				vibStartingAfterTransient.poll(0, \vibStartingAfterTransient)
+			]
+		).poll(0, \vibDelaySelected);
+		var vibDelayAdapted = vibDelaySelected * rand * amp.max(0).linlin(1, 0, 1, 1.5);
+
+		var vibEnvTimes = [vibDelayAdapted, vibAccelTime, releaseTime / 2.5] * rand;
+		var vibSpeedEnv = Env([0, vibStartFreq, vibPeakFreq, vibEndFreq] * rand, vibEnvTimes, \cubed, 2);
+		var vibDepthEnv = Env([0, 0, 1, 0],	vibEnvTimes, \cubed, 2);
+		var vibDepthEnvGen = EnvGen.kr(vibDepthEnv, gate);
+
+		var lfo = (SinOsc.kr(EnvGen.kr(vibSpeedEnv, gate), -pi/2, 1.557407724655)).atan;
+
+		var vibPitchDepth = vibPitch * vibDepthEnvGen * rand;
+		var modulatorPitch = lfo.linlin(-1, 1, 0, 1) * vibPitchDepth;
+		var freqModulated = freq * modulatorPitch.midiratio;
+
+		var vibAmpDepth = (vibAmp * vibDepthEnvGen).clip(0, 1);
+		var modulatorAmp = lfo.linlin(-1, 1, 0, vibAmpDepth);
+		var ampModulated = (1 - modulatorAmp).clip(0, 1);
+
+		var env = Env.adsr(attackTime * rand, decayTime * rand, sustainLevel * rand,
+			releaseTime, curve: -4).kr(Done.freeSelf, gate);
+
+		var sig = switch(name,
+			\sine, { SinOsc.ar(freqModulated * [1, beatByPitchDetune.midiratio * rand]) },
+			\saw, { Saw.ar(freqModulated * [1, beatByPitchDetune.midiratio * rand]) },
+			\triangle, { LFTri.ar(freqModulated * [1, beatByPitchDetune.midiratio * rand]) },
+			\pulse, { Pulse.ar(freqModulated * [1, beatByPitchDetune.midiratio * rand], \width.kr(0.5)) },
+			\additive, {
+				var numHarmonics = 16;
+				var synth = { |channelFreqs|
+					var frequencies = freqModulated * channelFreqs *.t (1..numHarmonics);
+					var amplitudes = \amplitudes.kr(1 ! numHarmonics / numHarmonics);
+					var amplitudesModifiedByFreqs = frequencies.size.collect { |i|
+						Select.kr(frequencies[i] > (SampleRate.ir / 2), [amplitudes[i], 0])
+					};
+					DynKlang.ar(
+						`[
+							frequencies,
+							amplitudesModifiedByFreqs,
+							\phases.kr(0 ! numHarmonics)
+					])
+				};
+				[synth.(1), synth.(beatByPitchDetune.midiratio * rand)]
+			}
+		);
+
+		Poll.kr(
+			warnTrig,
+			0,
+			"WARN: vibDelayFromAttack & vibDelayPostTransient both non-zero.\n" ++
+			" No sound is poduced. Set one to"
+		);
+
+		sig = sig * ampModulated * env * (1 - conflictDetector);
+		sig = LeakDC.ar(sig);
+
+		Out.ar(out, Balance2.ar(sig[0], sig[1] * phaseR, pan, amp));
+	}).add
+}
+)
+::
+
+subsubsection:: Step 2: Test in SuperCollider
+
+code::
+(
+Pbind(
+	// \instrument, \sine,               \amp, 0.1,
+	// \instrument, \triangle,           \amp, 0.05,
+	// \instrument, \saw,                \amp, 0.05,
+	// \instrument, \pulse, \width, 0.7, \amp, 0.05,
+	\instrument, \additive, \phases, [0!16], \amplitudes, [16.collect ((_ + 1).pow(-0.8) * (_ * 0.15).neg.exp)], \amp, 0.1,
+	// \out, 0,
+	\freq, Pseq([69, 72, 71, 67, Prand([64, 76])].midicps, inf),
+	\pan, 0,		\phaseR, -1,
+	// \gate, 1,
+	\attackTime, 0.03,     \decayTime, 0.3,     \sustainLevel, 0.25,   \releaseTime, 0.8,
+	\beatByPitchDetune, 1/20, \randomPercent, 3,
+	\vibDelayFromAttack, 0.2, \vibDelayPostTransient, 0,
+	\vibStartFreq, 3,   \vibPeakFreq, 7,   \vibEndFreq, 4,     \vibAccelTime, 0.4,
+	\vibAmp, 0.05,   \vibPitch, 0.05
+).play;
+)
+::
+
+
+subsubsection:: Step 3: Exporting for PluginCollider
+
+After testing, export the link::Classes/SynthDef:: to a directory that link::https://github.com/asb2m10/plugincollider##PluginCollider:: scans.
+Adjust the path to match your own link::https://github.com/asb2m10/plugincollider##PluginCollider:: SynthDef folder.
+
+note::
+Note: In the code snippet below, each code::poll(0, …):: call has been commented out.
+These calls are intended solely for debugging in SuperCollider.
+::
+
+code::
+(
+[\sine, \saw, \triangle, \pulse, \additive].do { |name|
+	SynthDef(name, { |out = 0, freq = 440, amp = 0.1, pan = 0, phaseR = 1, gate = 1,
+		attackTime = 0.07, decayTime = 0.08, sustainLevel = 0.1, releaseTime = 0.3,
+		beatByPitchDetune = 0.041666666666667,
+		vibDelayFromAttack = 0.2, vibDelayPostTransient = 0,
+		vibStartFreq = 3, vibPeakFreq = 7, vibEndFreq = 4, vibAccelTime = 0.4,
+		vibAmp = 0.02, vibPitch = 0.0625, randomPercent = 6.25|
+
+		var rand = 2 ** (Rand(randomPercent / -2, randomPercent / 2) / 1200);
+
+		var conflictDetector = (vibDelayFromAttack > 0) * (vibDelayPostTransient > 0);
+		var warnTrig = Trig1.kr(conflictDetector, 0.001);
+
+		var transientAtBeginning = attackTime + (decayTime * 1.1);
+
+		var vibStartingAfterTransient = transientAtBeginning + vibDelayPostTransient;
+		var delayStartingFromAttack = vibDelayFromAttack;
+
+		var selVibDelayFromAttack = (vibDelayFromAttack > 0) * (vibDelayPostTransient |==| 0);
+		var selVibDelayPostTransient = (vibDelayFromAttack |==| 0) * (vibDelayPostTransient > 0);
+
+		var vibDelaySelector = (selVibDelayFromAttack * 1) + (selVibDelayPostTransient * 2);
+
+		var vibDelaySelected = Select.kr(
+			vibDelaySelector/*.poll(0, \vibDelaySelector)*/,
+			[
+				DC.kr(0)/*.(0, \noVibDelay)*/,
+				delayStartingFromAttack/*.poll(0, \delayStartingFromAttack)*/,
+				vibStartingAfterTransient/*.poll(0, \vibStartingAfterTransient)*/
+			]
+		)/*.poll(0, \vibDelaySelected)*/;
+		var vibDelayAdapted = vibDelaySelected * rand * amp.max(0).linlin(1, 0, 1, 1.5);
+
+		var vibEnvTimes = [vibDelayAdapted, vibAccelTime, releaseTime / 2.5] * rand;
+		var vibSpeedEnv = Env([0, vibStartFreq, vibPeakFreq, vibEndFreq] * rand, vibEnvTimes, \cubed, 2);
+		var vibDepthEnv = Env([0, 0, 1, 0],	vibEnvTimes, \cubed, 2);
+		var vibDepthEnvGen = EnvGen.kr(vibDepthEnv, gate);
+
+		var lfo = (SinOsc.kr(EnvGen.kr(vibSpeedEnv, gate), -pi/2, 1.557407724655)).atan;
+
+		var vibPitchDepth = vibPitch * vibDepthEnvGen * rand;
+		var modulatorPitch = lfo.linlin(-1, 1, 0, 1) * vibPitchDepth;
+		var freqModulated = freq * modulatorPitch.midiratio;
+
+		var vibAmpDepth = (vibAmp * vibDepthEnvGen).clip(0, 1);
+		var modulatorAmp = lfo.linlin(-1, 1, 0, vibAmpDepth);
+		var ampModulated = (1 - modulatorAmp).clip(0, 1);
+
+		var env = Env.adsr(attackTime * rand, decayTime * rand, sustainLevel * rand,
+			releaseTime, curve: -4).kr(Done.freeSelf, gate);
+
+		var sig = switch(name,
+			\sine, { SinOsc.ar(freqModulated * [1, beatByPitchDetune.midiratio * rand]) },
+			\saw, { Saw.ar(freqModulated * [1, beatByPitchDetune.midiratio * rand]) },
+			\triangle, { LFTri.ar(freqModulated * [1, beatByPitchDetune.midiratio * rand]) },
+			\pulse, { Pulse.ar(freqModulated * [1, beatByPitchDetune.midiratio * rand], \width.kr(0.5)) },
+			\additive, {
+				var numHarmonics = 16;
+				var synth = { |channelFreqs|
+					var frequencies = freqModulated * channelFreqs *.t (1..numHarmonics);
+					var amplitudes = \amplitudes.kr(1 ! numHarmonics / numHarmonics);
+					var amplitudesModifiedByFreqs = frequencies.size.collect { |i|
+						Select.kr(frequencies[i] > (SampleRate.ir / 2), [amplitudes[i], 0])
+					};
+					DynKlang.ar(
+						`[
+							frequencies,
+							amplitudesModifiedByFreqs,
+							\phases.kr(0 ! numHarmonics)
+					])
+				};
+				[synth.(1), synth.(beatByPitchDetune.midiratio * rand)]
+			}
+		);
+
+		Poll.kr(
+			warnTrig,
+			0,
+			"WARN: vibDelayFromAttack & vibDelayPostTransient both non-zero.\n" ++
+			" No sound is poduced. Set one to"
+		);
+
+		sig = sig * ampModulated * env * (1 - conflictDetector);
+		sig = LeakDC.ar(sig);
+
+		Out.ar(out, Balance2.ar(sig[0], sig[1] * phaseR, pan, amp));
+	}).writeDefFile("~/Downloads/PlugInColliderSynthDefs/".standardizePath)
+}
+)
+::
+
+
+subsection:: Using an Effect
+
+You can also define DSP effects as link::Classes/SynthDef::s for use as insert or send effects in your DAW.
+This example shows a delay effect with dynamically varying delay time using link::Classes/DelayC:: that processes incoming host audio.
+
+subsubsection:: Step 1: Design SynthDef and Test in SuperCollider
+
+code::
+(
+SynthDef(\dynamicdelays, { |varyingDelayTime = 10, mix = 0, amp = 1|
+	var dry, delayTime, wet, mixed, panned;
+	dry = SoundIn.ar([0, 1]).sum / 2;
+	delayTime = SinOsc.ar(varyingDelayTime.reciprocal).range(0.5, 10);
+	wet = DelayC.ar(dry, 10, delayTime, amp);
+	wet = Limiter.ar(wet, 0.9, 0.01);
+	mixed = XFade2.ar(dry, wet, mix);
+	panned = Pan2.ar(mixed, SinOsc.ar(varyingDelayTime), amp);
+	Out.ar(0, panned);
+}).add
+)
+::
+
+subsubsection:: Step 2: Test in SuperCollider
+
+code::
+x = Synth(\dynamicdelays) // Warning: The sound could be very loud!
+
+x.free
+::
+
+subsubsection:: Step 3: Exporting for PluginCollider
+
+code::
+(
+SynthDef(\dynamicdelays, { |varyingDelayTime = 10, mix = 0, amp = 1|
+	var dry, delayTime, wet, mixed, panned;
+	dry = SoundIn.ar([0, 1]).sum / 2;
+	delayTime = SinOsc.ar(varyingDelayTime.reciprocal).range(0.5, 10);
+	wet = DelayC.ar(dry, 10, delayTime, amp);
+	wet = Limiter.ar(wet, 0.9, 0.01);
+	mixed = XFade2.ar(dry, wet, mix);
+	panned = Pan2.ar(mixed, SinOsc.ar(varyingDelayTime), amp);
+	Out.ar(0, panned);
+}).writeDefFile("~/Downloads/PlugInColliderSynthDefs/".standardizePath);
+)
+::
+
+subsection:: In a DAW (Reaper Example)
+
+Refer to steps 4 and 5 in link::#How to Do:: to experiment with the following link::https://www.reaper.fm/##Reaper:: project, which includes the two examples above:
+
+code::
+(Platform.userAppSupportDir +/+ "Help" +/+ "Guides" +/+ "SC_as_Plugin.RPP").openOS
+::
