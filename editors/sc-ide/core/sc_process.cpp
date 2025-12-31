@@ -154,6 +154,12 @@ void ScProcess::startLanguage(void) {
     if (!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);
 
+    QString startMessageContent = sclangCommand;
+    for (auto& argument : sclangArguments) {
+        startMessageContent = startMessageContent + " " + argument;
+    };
+    emit scPost(tr("Starting interpreter with \"") + startMessageContent + "\"\n");
+
     QProcess::start(sclangCommand, sclangArguments);
     bool processStarted = QProcess::waitForStarted();
     if (!processStarted)
