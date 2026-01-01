@@ -98,7 +98,7 @@ jobs:
           echo "week=$(date '+%U')" >> $GITHUB_OUTPUT
 
       - name: cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/Library/Caches/ccache
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-${{ steps.current-date.outputs.stamp }}
@@ -108,7 +108,7 @@ jobs:
         run: rm -rf $(brew --cache)/downloads
 
       - name: cache homebrew downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
@@ -117,7 +117,7 @@ jobs:
 
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
