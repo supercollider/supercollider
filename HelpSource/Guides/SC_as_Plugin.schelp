@@ -101,8 +101,7 @@ When using link::https://github.com/asb2m10/plugincollider##PluginCollider:: for
 
 list::
 ## Use MIDI tracks in your DAW to trigger SuperCollider instruments hosted by link::https://github.com/asb2m10/plugincollider##PluginCollider::.
-## If the loaded link::Classes/SynthDef:: is an audio effect, check the teletype::FX mode:::
-image::SC_as_Plugin_-_FX_mode.png::
+## To apply audio effects, insert PluginCollider after the instrument on a MIDI track that supports virtual instruments, or place it on an audio track.
 ## Automate or control exposed parameters to create dynamic changes over time.
 ## Apply link::https://github.com/asb2m10/plugincollider##PluginCollider::‑based effects to audio tracks for additional DSP processing alongside other plugins, and bounce or freeze tracks as needed.
 ::
@@ -331,7 +330,7 @@ code::
 		sig = LeakDC.ar(sig);
 
 		Out.ar(out, Balance2.ar(sig[0], sig[1] * phaseR, pan, amp));
-	}).writeDefFile("~/Downloads/PlugInColliderSynthDefs/".standardizePath)
+	}).writeDefFile(Platform.userAppSupportDir +/+ "Help" +/+ "Guides")
 }
 )
 ::
@@ -380,7 +379,7 @@ SynthDef(\dynamicdelays, { |varyingDelayTime = 10, mix = 0, amp = 1|
 	mixed = XFade2.ar(dry, wet, mix);
 	panned = Pan2.ar(mixed, SinOsc.ar(varyingDelayTime), amp);
 	Out.ar(0, panned);
-}).writeDefFile("~/Downloads/PlugInColliderSynthDefs/".standardizePath);
+}).writeDefFile(Platform.userAppSupportDir +/+ "Help" +/+ "Guides");
 )
 ::
 
