@@ -4,7 +4,7 @@ summary:: How to use SuperCollider inside VST‑enabled environments such as DAW
 
 note::
 SuperColliderAU, an older Audio Unit wrapper, is deprecated and may not be compatible with modern DAWs.
-We recommend using PluginCollider for current workflows.
+As of early 2026, or around the release of SuperCollider 3.14, we recommend using PluginCollider for current workflows.
 ::
 
 Description::
@@ -398,8 +398,4 @@ SynthDef(\dynamicdelays, { |varyingDelayTime = 10, mix = 0, amp = 1|
 
 subsection:: In a DAW (Reaper Example)
 
-Refer to steps 4 and 5 in link::#How to Do:: to experiment with the following link::https://www.reaper.fm/##Reaper:: project, which includes the two examples above:
-
-code::
-(Platform.userAppSupportDir +/+ "Help" +/+ "Guides" +/+ "SC_as_Plugin.RPP").openOS
-::
+Refer to steps 4 and 5 in link::#How to Do:: to experiment.
