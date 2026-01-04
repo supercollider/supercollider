@@ -2,6 +2,11 @@ title:: SuperCollider as Plugin in Host
 categories:: Guide
 summary:: How to use SuperCollider inside VST‑enabled environments such as DAWs and sound file editors.
 
+note::
+SuperColliderAU, an older Audio Unit wrapper, is deprecated and may not be compatible with modern DAWs.
+We recommend using PluginCollider for current workflows.
+::
+
 Description::
 
 DAWs and sound editors include built‑in instruments and effects, which may have limited control over synthesis structure or exhibit aliasing at high frequencies.
@@ -106,10 +111,18 @@ list::
 ## Apply link::https://github.com/asb2m10/plugincollider##PluginCollider::‑based effects to audio tracks for additional DSP processing alongside other plugins, and bounce or freeze tracks as needed.
 ::
 
+note::
+list::
+## Latency may vary depending on your DAW and routing configuration.
+## When exporting SynthDefs, keep file organisation clear to prevent confusion between multiple projects.
+::
+::
 ::
 
 
 section:: Examples
+
+The following examples demonstrate how to design custom synthesis and effects in SuperCollider and integrate them seamlessly into DAW projects.
 
 subsection:: Using a SynthDef as a VSTi
 
