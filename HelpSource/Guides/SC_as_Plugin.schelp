@@ -1,5 +1,5 @@
 title:: SuperCollider as Plugin in Host
-categories:: Guide
+categories:: Guides
 summary:: How to use SuperCollider inside VST‑enabled environments such as DAWs and sound file editors.
 
 note::
