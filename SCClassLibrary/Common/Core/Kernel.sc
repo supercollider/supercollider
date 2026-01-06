@@ -743,7 +743,7 @@ Interpreter {
 		n = o = p = q = r = s = t = u = v = w = x = y = z = nil;
 	}
 
-	executeFile { | pathName ...args, kwargs |
+	executeFile { | pathName ... args, kwargs |
 		var	result, saveExecutingPath = thisProcess.nowExecutingPath;
 		if (File.exists(pathName).not) {
 			"file \"%\" does not exist.\n".postf(pathName);
