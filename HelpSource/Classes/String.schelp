@@ -838,7 +838,7 @@ A function that is called for each file path that is found.
 argument:: ... args
 Optional positonal arguments that can be passed to the resulting object.
 
-argument:: kwargs
+argument:: ... kwargs
 Optional keyword arguments that can be passed to the resulting object.
 
 discussion:: .loadPaths example
