@@ -415,10 +415,10 @@ String[char] : RawArray {
 
 	pathMatch { _StringPathMatch ^this.primitiveFailed } // glob
 
-	load { |...args, kwargs|
+	load { |... args, kwargs|
 		^thisProcess.interpreter.performArgs(\executeFile, [this] ++ args, kwargs);
 	}
-	loadPaths { | warn = true, action ...args, kwargs | 
+	loadPaths { | warn = true, action ... args, kwargs | 
 		var paths = this.pathMatch;
 		if(warn and:{paths.isEmpty}) { ("no files found for this path:" + this.quote).warn };
 		^paths.collect({ arg path;
