@@ -1,0 +1,798 @@
+title:: Buffer Playback: Reverse, Channels, Buffer Bank
+summary:: Comprehensive guide covering reverse playback, channel management, and buffer bank organization for PlayBuf and BufRd UGens.
+categories:: Guides
+related:: Classes/PlayBuf, Classes/BufRd, Classes/Buffer, Classes/Balance2, Classes/EnvGen, Classes/Done, Classes/SoundFile
+
+description::
+When working with sound files, you often encounter buffers with varying channel counts (mono, stereo, or multichannel).
+This guide outlines recommended practices for:
+
+list::
+
+## Handling channel count mismatches between buffers and playback link::Classes/UGen::s (link::Classes/PlayBuf:: and link::Classes/BufRd::).
+
+
+## Preparing buffers with specific channel layouts (selecting, duplicating, or reordering channels).
+## Choosing the correct playback primitive (link::Classes/PlayBuf:: vs. link::Classes/BufRd::).
+## Applying stereo panning and balancing efficiently.
+## Reliably freeing Synths upon playback completion.
+::
+
+section:: Buffer Playback Basics
+
+subsection:: PlayBuf vs. BufRd
+
+link::Classes/PlayBuf:: is a high-level playback link::Classes/UGen::.
+It handles triggers and looping internally and includes a code::doneAction:: argument.
+Use it for standard one-shot or looped playback.
+
+link::Classes/BufRd:: is a low-level link::Classes/UGen:: that requires an explicit phase (read index) signal (e.g., from link::Classes/Phasor::, link::Classes/LFSaw::, or link::Classes/Line::).
+While it requires manual lifetime management, it offers precise control over playback position, making it ideal for granular synthesis, scrubbing, and phase modulation.
+
+subsection:: Buffer.read vs. Buffer.readChannel
+
+link::Classes/Buffer#*read:: loads the entire file, preserving its native channel count and order.
+Use this method when you want to load audio as-is.
+
+link::Classes/Buffer#*readChannel:: allows you to read specific channels, reorder them, or duplicate them into a new buffer.
+This is useful for mono-to-stereo conversion at the buffer level (e.g., reading channel 0 into both channels of a stereo buffer).
+
+note::
+code::*readChannel:: creates a new buffer in memory.
+Duplicating a mono channel into a stereo buffer consumes twice the memory of the original mono file.
+::
+
+section:: Preparing and Querying Buffers
+
+code::
+(
+// Standard read
+~b_ch1 = Buffer.read(s, ExampleFiles.apollo11);
+~b_ch2s = Buffer.read(s, ExampleFiles.sinedPink);
+
+// Read only channel 0 (Mono)
+~b_mono = Buffer.readChannel(s, ExampleFiles.child, channels: [0]);
+
+// Read channel 0 into both channels (Stereo)
+~b_stereo_duped = Buffer.readChannel(s, ExampleFiles.child, channels: [0, 0]);
+)
+
+// Querying information
+~b_ch1.query;       // Full report
+
+~b_ch1.bufnum      // Buffer number
+~b_ch1.numFrames   // Number of frames
+~b_ch1.numChannels; // Number of channels
+~b_ch1.sampleRate  // Sample rate
+
+~b_ch1.duration;    // Duration in seconds
+::
+
+note::
+list::
+## In teletype::sclang::: code::seconds = frames / buffer.sampleRate::
+## On the link::Classes/Server::: code::seconds = BufFrames.kr(bufnum) / BufSampleRate.kr(bufnum)::
+::
+::
+
+section:: Strategies for Reverse Playback
+
+subsection:: Using PlayBuf
+
+
+To play in reverse, use a negative code::rate::.
+To avoid stopping immediately when looping is off (code::loop: 0::), you must set the code::startPos:: near the end of the buffer.
+
+link::Classes/PlayBuf::'s auguments code::loop:: and code::doneAction:: also affect buffer-boundary behavior and how the synth is released:
+
+list::
+## When code::doneAction:: is set to code::Done.none:: (teletype::doneAction:: number: code::0::), the synth does not free itself automatically when playback reaches a boundary.
+## If code::loop:: is code::1:: (on), playback wraps at buffer boundaries and reverse playback continues indefinitely.
+## If code::loop:: is code::0:: (off), code::startPos:: must be set near the end of the buffer;
+otherwise, playback may stop immediately as it hits the "start" of the file.
+::
+
+list::
+## If using code::Done.freeSelf:: (code::doneAction:: number: code::2::) you should choose a start position before the final frame so there is data to read when code::rate < 0::.
+code::
+(
+{
+	var buf = ~b_ch1;
+	PlayBuf.ar(
+		buf.numChannels,
+		buf.bufnum,
+		-1 * BufRateScale.kr(buf), // rate (reverse)
+		1,                         // trigger
+		BufFrames.kr(buf) - 2,     // start position (safe offset).
+		0,                         // loop (off)
+		Done.freeSelf              // doneAction: automatic freeing
+	) ! 2
+}.play;
+)
+::
+
+note::
+link::Classes/BufFrames#*kr:: is used to compute positions inside link::Classes/SynthDef::s at control rate. Its sclang-side equivalent is code::~b_ch1.numFrames - 2::.
+::
+
+## If you use code::Done.none::, you can start at the last frame without forcing an immediate doneAction:
+code::
+(
+x = { PlayBuf.ar(
+	~b_ch1.numChannels,
+	~b_ch1.bufnum,
+	-1 * BufRateScale.kr(~b_ch1), // rate (reverse)
+	1,                            // trigger
+	~b_ch1.numFrames - 1,         // startPos (or BufFrames.kr(~b_ch1) - 1)
+	0,                            // loop
+	Done.none                     // doneAction: no automatic freeing
+) ! 2 }.play
+)
+
+x.free
+::
+::
+
+subsection:: Using BufRd
+
+With link::Classes/BufRd::, the code::phase:: argument directly controls the playback direction and speed.
+
+list::
+## Using link::Classes/Line:: (One-shot Reverse):
+
+A simple way to play a buffer once in reverse:
+
+code::
+(
+{
+	var frames = BufFrames.kr(~b_ch1);
+	var duration = frames / BufSampleRate.kr(~b_ch1);
+	var phase = Line.ar(frames - 1, 0, duration, doneAction: Done.freeSelf);
+	BufRd.ar(~b_ch1.numChannels, ~b_ch1, phase) ! 2
+}.play;
+)
+::
+
+## Using link::Classes/Phasor:: (Continuous Looping):
+
+When the rate is negative, link::Classes/Phasor:: moves from code::end:: to code::start::. To start at the end immediately, set code::resetPos:: to the end value.
+
+code::
+(
+x = {
+	var rate = -1;
+	var frames = BufFrames.kr(~b_ch1);
+	var phase = Phasor.ar(
+		0,                              // trig
+		rate * BufRateScale.kr(~b_ch1), // rate
+		0,                              // start
+		frames - 1,                     // end
+		frames - 1                      // resetPos
+	);
+	BufRd.ar(~b_ch1.numChannels, ~b_ch1, phase) ! 2
+}.play;
+)
+
+x.free
+::
+
+With link::Classes/Line::, changing playback direction is complicated:
+
+code::
+(
+{
+	var rate = -1;
+	var frames = BufFrames.kr(~b_ch1);
+	var start = if(rate >= 0) { 0 } { frames - 1 };
+	var end = if(rate >= 0) { frames - 1 } { 0 };
+	var duration = (frames - 1) / (SampleRate.ir * rate.abs * BufRateScale.kr(~b_ch1));
+	var phase = Line.ar(start, end, duration, 1, 0, Done.freeSelf);
+	BufRd.ar(
+		~b_ch1.numChannels,
+		~b_ch1.bufnum,
+		phase,
+		0
+	) ! 2
+}.play;
+)
+::
+
+table::
+## One-shot playback using link::Classes/Phasor:::
+code::
+(
+{
+	var rate = -1;
+	var frames = BufFrames.kr(~b_ch1);
+	var duration = (frames - 1) / (SampleRate.ir * rate.abs * BufRateScale.kr(~b_ch1));
+	var phase = Phasor.ar(
+		0,
+		rate * BufRateScale.kr(~b_ch1),
+		0,
+		BufFrames.kr(~b_ch1) - 1
+	);
+	FreeSelfWhenDone.kr(Line.kr(0, 1, duration));
+	BufRd.ar(~b_ch1.numChannels, ~b_ch1, phase,	0) ! 2
+}.play;
+)
+::
+::
+::
+
+section:: Handling Channel Count Mismatches
+
+If the number of channels specified in code::PlayBuf.ar(numChannels, ...):: and code::BufRd.ar(numChannels, ...):: does not match the actual buffer, the server will post a message:
+teletype::
+Buffer link::Classes/UGen:: channel mismatch: expected 2, yet buffer has 1 channels
+::
+
+subsection:: Strategy 1: Dynamic SynthDef Generation
+
+A common way is to create separate link::Classes/SynthDef::s for mono and stereo playback.
+This approach is effective when you have a collection of both mono and stereo files and want to handle them with specific link::Classes/SynthDef::s, knowing the channel count of each file in advance.
+
+subsubsection:: Using PlayBuf
+
+numberedlist::
+## Write link::Classes/SynthDef:: with iteration:
+code::
+(
+[1, 2].do { |numCh|
+	var name = (\playBuf_ ++ numCh ++ \chBuf).asSymbol;
+	SynthDef(name, { |out = 0, buf, rate = 1, trig = 1, start = 0, loop = 0, pos = 0, amp = 1|
+		var sig = PlayBuf.ar(
+			numCh,
+			buf,
+			rate * BufRateScale.kr(buf),
+			trig,
+			start,
+			loop,
+			Done.freeSelf
+		);
+		sig = if(numCh == 1) { sig ! 2 } { sig };
+		sig = Balance2.ar(sig[0], sig[1], pos, amp);
+		Out.ar(out, sig);
+	}).add
+};
+)
+::
+## Playback
+code::
+Synth(\playBuf_1chBuf, [buf:~b_ch1]);
+
+Synth(\playBuf_1chBuf, [buf:~b_mono]);
+
+Synth(\playBuf_1chBuf, [buf:~b_ch1, rate:2, pos:-1]);
+
+x = Synth(\playBuf_1chBuf, [\buf, ~b_ch2s, \rate, -1/2, \start, ~b_ch2s.numFrames - 2, \loop, 1, \pos, 1]);
+x.free
+
+x = Synth(\playBuf_2chBuf, [buf:~b_stereo_duped])
+::
+::
+
+subsubsection:: Using BufRd
+
+numberedlist::
+## Write link::Classes/SynthDef:: with iteration:
+
+code::
+(
+2.do { |i|
+	var numCh = i + 1;
+	var name = (\bufrd_ ++ numCh ++ \chBuf).asSymbol;
+	SynthDef(name, { |out = 0, buf, rate = 1, dur = 2, pos = 0, amp = 1|
+		var frames = BufFrames.kr(buf);
+		var step = BufRateScale.kr(buf) * rate;
+		var ph = Phasor.ar(0, step, 0, frames);
+		var sig = BufRd.ar(numCh, buf, ph, 2, 0);
+		Line.kr(0, 1, dur, 1, 0, Done.freeSelf);
+		sig = if(numCh == 1) { sig ! 2 } { sig };
+		sig = Balance2.ar(sig[0], sig[1], pos, amp);
+		Out.ar(out, sig);
+	}).add
+};
+)
+::
+
+## Playback
+code::
+Synth(\bufrd_1chBuf, [\buf, ~b_ch1, \rate, 1, \dur, 4, \amp, 0.6]);
+
+Synth(\bufrd_1chBuf, [\buf, ~b_mono, \rate, 1, \dur, 4, \amp, 0.6, \pos, -1]);
+
+Synth(\bufrd_2chBuf, [\buf, ~b_ch2s, \rate, 1, \dur, 2, \amp, 0.8]);
+
+Synth(\bufrd_2chBuf, [buf:~b_stereo_duped, rate:-2, dur:3, amp:0.2, \pos, 1]);
+::
+::
+
+subsection:: Strategy 2: Using a Function Handling Synthdefs
+
+subsubsection:: Using PlayBuf
+
+code::
+(
+~playBuf = { |out = 0, buf, rate = 1, trig = 1, start = 0, loop = 0, pos = 0, amp = 1|
+	var args = [
+		out:out, buf:buf, rate:rate, trig:trig, start:start, loop:loop, pos:pos, amp:amp
+	];
+	if(buf.numChannels == 1) {
+		Synth(\playBuf_1chBuf, args)
+	} {
+		Synth(\playBuf_2chBuf, args)
+	}
+}
+)
+
+~playBuf.(buf:~b_ch1, rate:1)
+
+~playBuf.(buf:~b_mono, rate:-1/2, start:~b_ch1.numFrames - 2, pos:-1)
+
+~playBuf.(buf:~b_ch1, rate:-2, start:~b_ch1.numFrames - 2, pos:1)
+
+x = Synth(\playBuf_2chBuf, [buf:~b_ch2s, loop:1])
+x.free
+::
+
+subsubsection:: Using BufRd
+
+code::
+(
+~bufRd = { |out = 0, buf, rate = 1, dur = 2, pos = 0, amp = 1|
+	var args = [
+		out:out, buf:buf, rate:rate, dur:dur, pos:pos, amp:amp
+	];
+	if(buf.numChannels == 1) {
+		Synth(\bufrd_1chBuf, args)
+	} {
+		Synth(\bufrd_2chBuf, args)
+	}
+}
+)
+
+~bufRd.(buf:~b_ch1, rate:1, dur:4, amp:0.5)
+
+~bufRd.(buf:~b_mono, rate:-2, dur:3, amp:0.2, pos:-1)
+
+~bufRd.(buf:~b_ch2s, rate:-2, dur:3, amp:0.2)
+
+~bufRd.(buf:~b_stereo_duped, rate:-2, dur:3, amp:0.2, pos:1)
+::
+
+subsection:: Strategy 3: Stereo balancing with Buffer.readChannel and Balance2
+
+When the channel count of sound files is unknown,
+you can force all buffers to stereo at load time using link::Classes/Buffer#*readChannel:: (by duplicating, selecting, or reordering channels as needed).
+Instead of creating multiple SynthDefs, you can load buffers as stereo and use link::Classes/Balance2:: for consistent balancing.
+
+list::
+## For mono files:
+
+duplicate the mono channel to create a two-channel (stereo) buffer.
+## For stereo files:
+
+use the buffer as-is (or convert only if a different mapping is required).
+## For multichannel files (more than 2 channels):
+
+read the first two channels, or explicitly select which two channels you need.
+::
+
+subsubsection:: Using PlayBuf
+
+numberedlist::
+## Write link::Classes/SynthDef:::
+code::
+(
+SynthDef(\playbuf_balance2, { |out = 0, buf, rate = 1, start = 0, loop = 0, pos = 0, amp = 1|
+	var sig = PlayBuf.ar(2, buf, rate * BufRateScale.kr(buf), 1, start, loop, Done.freeSelf);
+	sig = Balance2.ar(sig[0], sig[1], pos, amp);
+	Out.ar(out, sig);
+}).add
+);
+::
+## Playback
+code::
+Synth(\playbuf_balance2, [\buf, ~b_mono, \rate, 2, \pos, -0.5]); // warning
+
+Synth(\playbuf_balance2, [\buf, ~b_stereo_duped, \rate, 2, \pos, -0.5]); // no warning
+
+Synth(\playbuf_balance2, [\buf, ~b_ch2s, \rate, 2, \pos, -0.5]); // no warning
+
+(
+Synth(\playbuf_balance2, [
+	buf:~b_stereo_duped, // no warning
+	rate:-1,
+	start:~b_stereo_duped.numFrames - 2,
+	// loop:1,
+	pos: 0.5
+]
+);
+)
+::
+::
+
+subsubsection:: Using BufRd
+
+numberedlist::
+## Write link::Classes/SynthDef:::
+
+code::
+(
+SynthDef(\bufRd_balance2, { |out = 0, buf, rate = 1, dur = 2, pos = 0, amp = 1|
+	var frames = BufFrames.kr(buf);
+	var step = BufRateScale.kr(buf) * rate;
+	var ph = Phasor.ar(0, step, 0, frames);
+	var sig = BufRd.ar(2, buf, ph, 2, 0);
+	Line.kr(0, 1, dur, 1, 0, Done.freeSelf);
+	sig = Balance2.ar(sig[0], sig[1], pos, amp);
+	Out.ar(out, sig);
+}).add
+)
+::
+
+## Playback
+code::
+Synth(\bufRd_balance2, [\buf, ~b_ch1, \rate, 1, \dur, 4, \amp, 0.6]); // warning
+
+Synth(\bufRd_balance2, [\buf, ~b_stereo_duped, \rate, 2, \dur, 3, \amp, 0.2]); // no warning
+
+Synth(\bufRd_balance2, [\buf, ~b_ch2s, \rate, 1, \dur, 3, \amp, 0.8]); // no warning
+
+Synth(\bufRd_balance2, [\buf, ~b_stereo_duped, \rate, -2, \dur, ~b_stereo_duped.duration / 2, \amp, 0.2]); // no warning
+::
+::
+
+subsection:: Strategy 4: Downmixing Multichannel Buffers (Splay)
+
+
+For buffers with more than 2 channels, use link::Classes/Splay:: to create a stereo downmix.
+
+numberedlist::
+## Preparing 8-channel sound file:
+
+code::
+(
+var score;
+~path = Platform.userHomeDir +/+ "Downloads" +/+ "test.wav";
+
+score = Score([
+	[0.0, [\d_recv, SynthDef(\test, { |out = 0, amp=0.1|
+		var freqs = Array.geom(16, 55, 1.48).scramble.reshape(8, 2);
+		var env = Env.sine(5).kr(Done.freeSelf);
+		var amps = { ExpRand(amp / 4 , amp) / 4 } ! 8;
+		Out.ar(out, SinOsc.ar(freqs, 0, amps) * env);
+	}).asBytes]],
+	[0.0, [\s_new, \test, 1000, 0, 0]],
+	[5.1, [\c_set, 0, 0]]
+]);
+
+score.recordNRT(
+	outputFilePath: ~path,
+	sampleRate: 44100,
+	headerFormat: "WAV",
+	sampleFormat: "int16",
+	options: ServerOptions.new.numOutputBusChannels_(8)
+);
+)
+::
+
+## Allocating a 8-channel buffer from created file:
+
+code::
+~b_8chs = Buffer.read(s, ~path)
+::
+
+## Using link::Classes/PlayBuf:::
+
+code::
+(
+{
+	var sig = PlayBuf.ar(
+		~b_8chs.numChannels,
+		~b_8chs.bufnum,
+		1 * BufRateScale.kr(~b_8chs),
+		doneAction: Done.freeSelf
+	);
+	Splay.ar(sig) // Downmix 8 channels to stereo
+}.play
+)
+::
+
+## Using link::Classes/BufRd:::
+
+code::
+(
+x = {
+	var phase = Phasor.ar(
+		0,
+		1 * BufRateScale.kr(~b_8chs),
+		0,
+		BufFrames.kr(~b_8chs) - 1
+	);
+	var sig = BufRd.ar(~b_8chs.numChannels, ~b_8chs.bufnum, phase, 0);
+	Splay.ar(sig) // Automatically spreads channels across stereo field
+}.play;
+)
+
+x.free
+::
+::
+
+section:: Managing Buffer Banks
+
+To load entire directories of sounds into an link::Classes/Array:: instance, link::Classes/SoundFile#*collectIntoBuffers:: is highly efficient.
+To load entire directories of sounds into an link::Classes/IdentityDictionary:: instance, there is currently no equivalent method, so the user must write code to achieve this.
+
+To load hierarchical directories of sounds, recursive functions are effective.
+This approach helps you load directories and subdirectories into an organized structure.
+
+subsection:: Create buffer arrays in a directory
+
+subsubsection:: Create buffer arrays with supported sound files in a directory
+
+code::
+(
+var path    = Platform.resourceDir +/+ "sounds";
+~bufsSnd    = SoundFile.collectIntoBuffers(path +/+ "*", s);
+)
+
+~bufsSnd.size // -> 3
+
+~bufsSnd[0].play
+
+~bufsSnd[1].play
+
+~bufsSnd[2].play
+::
+
+subsubsection:: Create buffer arrays with specific sound file format in a directory
+
+code::
+(
+var path    = Platform.resourceDir +/+ "sounds";
+~bufsAIF    = SoundFile.collectIntoBuffers(path +/+ "*.aiff", s);
+)
+
+~bufsAIF.size // -> 2
+
+~bufsAIF[0].play
+
+~bufsAIF[1].play
+::
+
+code::
+(
+var path    = Platform.resourceDir +/+ "sounds";
+~bufsWAV    = SoundFile.collectIntoBuffers(path +/+ "*.wav", s);
+)
+
+~bufsWAV.size // -> 1
+
+~bufsWAV[0].play
+::
+
+subsection:: Create buffer bank in a directory and its subdirectories
+
+subsubsection:: Prepare Files
+
+code::
+(
+var baseDir = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+var sineDir = baseDir +/+ "sine";
+var sawDir  = baseDir +/+ "triangle";
+var renderNRT = { |defName, defFunc, outPath, dur, freq|
+	var score;
+
+	score = Score([
+		[0.0, [\d_recv, SynthDef(defName, defFunc).asBytes]],
+		[0.0, [\s_new, defName, 1000, 0, 0, \freq, freq, \dur, dur]],
+		[dur + 0.1, [\c_set, 0, 0]]
+	]);
+
+	score.recordNRT(
+		outputFilePath: outPath,
+		sampleRate: 44100,
+		headerFormat: "WAV",
+		sampleFormat: "int16",
+		options: ServerOptions.new.numOutputBusChannels_(2)
+	);
+};
+
+[baseDir, sineDir, sawDir].do { |path|
+	var file;
+	path.mkdir;
+	file = File((path +/+ "readme.txt").standardizePath, "w");
+	file.write("test text file to see if errors occur due to non sound files.\n");
+	file.close;
+};
+
+(60..71).do { |m|
+	var freq = m.midicps;
+
+	// 1) sine/percussive, 1 second
+	renderNRT.(
+		\sinPerc,
+		{ |out = 0, amp=0.1, freq=440, dur=1|
+			var env = EnvGen.kr(Env.perc(0.001, dur - 0.001, 1, curve: -4), doneAction: Done.freeSelf);
+			var sig = SinOsc.ar(freq) * amp * env;
+			Out.ar(out, sig ! 2);
+		},
+		sineDir +/+ ("sPerc" ++ m ++ ".wav"),
+		1.0,
+		freq
+	);
+
+	// 2) saw/pad (sine envelope), 2 seconds
+	renderNRT.(
+		\triPad,
+		{ |out = 0, amp=0.1, freq=440, dur=2|
+			var env = EnvGen.kr(Env.sine(dur), doneAction: Done.freeSelf);
+			var sig = LFTri.ar(freq) * amp * env;
+			Out.ar(out, sig ! 2);
+		},
+		sawDir +/+ ("tPad" ++ m ++ ".wav"),
+		2.0,
+		freq
+	);
+}
+)
+::
+
+subsection:: Create buffer arrays
+
+subsubsection:: Create buffer arrays using Recursive Loading (Hierarchy)
+
+code::
+(
+~loadBuffersToArray = { |path|
+	var array = [];
+	var files = SoundFile.collectIntoBuffers(path +/+ "*", s);
+	if(files.notEmpty) {
+		array = array.add(files)
+	};
+
+	(path +/+ "*").pathMatch.do { |subpath|
+		if(File.type(subpath) == \directory) {
+			array = array ++ ~loadBuffersToArray.(subpath);
+		};
+	};
+	array
+};
+)
+
+~bufferArrayHierarchy = ~loadBuffersToArray.(Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples")
+
+~bufferArrayHierarchy[0] // -> [Buffer(...
+~bufferArrayHierarchy[1] // -> [Buffer(...
+
+fork { ~bufferArrayHierarchy[0].do {|buffer| buffer.play; 0.2.wait } }
+
+fork { ~bufferArrayHierarchy[1].do {|buffer| buffer.play; 0.1.wait } }
+::
+
+subsubsection:: Create buffer arrays using Recursive Loading (without Hierarchy)
+
+code::
+(
+~makeBufferArray = { |path, array|
+	if(array.isNil) { array = [] };
+
+	array = array ++ SoundFile.collectIntoBuffers(path +/+ "*", s);
+
+	(path +/+ "*").pathMatch.do { |subpath|
+		if(File.type(subpath) == \directory) {
+			array = ~makeBufferArray.(subpath, array);
+		};
+	};
+
+	array
+};
+)
+
+~bufferArray = ~makeBufferArray.(Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples")
+
+~bufferArray.size // -> 24
+
+fork { ~bufferArray[0..11].do {|buffer| buffer.play; 0.2.wait } } // a chromatic ascending scale
+
+fork { ~bufferArray[12..23].do {|buffer| buffer.play; 0.2.wait } } // a chromatic ascending scale
+::
+
+subsection:: Recursive Loading into Dictionaries
+
+Organizing buffers into an link::Classes/IdentityDictionary:: allows for descriptive access (e.g., code::~bufferDic[\sine][\note60]::).
+
+This function loads sound files into link::Classes/Buffer::s and organizes them into an link::Classes/Event:: or link::Classes/IdentityDictionary:: matching the directory structure.
+
+code::
+(
+~loadBuffersToDict = { |path|
+	var dict = IdentityDictionary.new;
+	var entries = (path +/+ "*").pathMatch;
+
+	entries.do { |subPath|
+		var symName = subPath.basename.splitext[0].asSymbol;
+
+		if (File.type(subPath) == \directory) {
+			// If it's a directory: recursive call
+			var subDict = ~loadBuffersToDict.(subPath);
+			if (subDict.notEmpty) {
+				dict[symName] = subDict;
+			};
+		} {
+			// Filter by common audio extensions:
+			if (["wav", "aif", "aiff", "flac"].includesEqual(subPath.extension.toLower)) {
+				dict[symName] = Buffer.read(s, subPath);
+			};
+		};
+	};
+	dict
+};
+)
+
+(
+~rootPath = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+~bufferDic = ~loadBuffersToDict.(~rootPath);
+)
+
+~bufferDic.keys
+
+~bufferDic[\sine].keys
+~bufferDic[\sine][\sPerc60].play
+
+~bufferDic[\triangle].keys
+~bufferDic[\triangle][\tPad60].play
+
+fork { ~bufferDic[\sine].do {|buffer| buffer.play; 0.2.wait } } // not a chromatic ascending scale
+
+fork { ~bufferDic[\triangle].do {|buffer| buffer.play; 0.2.wait } } // not a chromatic ascending scale
+::
+
+subsection:: Accessing Buffers: Array vs. IdentityDictionary
+
+list::
+
+## link::Classes/Array:: instances are best for sequential access or when filenames follow a strict numerical order (e.g., a chromatic scale).
+
+## link::Classes/IdentityDictionary:: instances are best for descriptive naming and organizing by category (e.g., teletype::\kick::, teletype::\snare::, teletype::\lead::).
+::
+
+code::
+~invention_4_BWV775_motif = [0, 2, 3, 5, 7, 8, -1, 8, 7, 5, 3, 2, 3]
+::
+
+code::
+(
+fork {
+	~invention_4_BWV775_motif.do { |n|
+		var offset = 1;
+		~bufferArrayHierarchy[0][n + offset].play;
+		~bufferArrayHierarchy[1][n + offset].play;
+		0.2.wait
+	}
+}
+)
+::
+
+link::Classes/IdentityDictionary:: could be also convenient if the buffer names include MIDI note pitch number.
+However, it is useful to access buffer with human-memorable names or example:
+
+code::
+(
+fork {
+	~invention_4_BWV775_motif.do { |pitch, index|
+		var offset = 61;
+		Synth(\playBuf_2chBuf, [
+			buf: ~bufferDic[\sine][(\sPerc ++ (pitch + offset)).asSymbol],
+			amp: 0.2
+		]);
+		Synth(\playBuf_2chBuf, [
+			buf: ~bufferDic[\triangle][(\tPad ++ (pitch + offset)).asSymbol],
+			amp: 0.1 / (index + 1)
+		]);
+		0.2.wait
+	}
+}
+)
+::
