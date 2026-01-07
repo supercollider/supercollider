@@ -1,7 +1,7 @@
 title:: Buffer Playback: Reverse, Channels, Buffer Bank
 summary:: Comprehensive guide covering reverse playback, channel management, and buffer bank organization for PlayBuf and BufRd UGens.
 categories:: Guides
-related:: Classes/PlayBuf, Classes/BufRd, Classes/Buffer, Classes/Balance2, Classes/EnvGen, Classes/Done, Classes/SoundFile
+related:: Classes/PlayBuf, Classes/BufRd, Classes/Buffer, Classes/Balance2, Classes/Env, Classes/EnvGen, Classes/Done, Classes/SoundFile
 
 description::
 When working with sound files, you often encounter buffers with varying channel counts (mono, stereo, or multichannel).
