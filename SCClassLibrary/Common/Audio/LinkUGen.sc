@@ -28,19 +28,19 @@ LinkPhase : UGen {
 	}
 
 	*kr {|quantum=4|
-		^this.new1('control', quantum);
+		^this.multiNew('control', quantum);
 	}
 }
 
 LinkBPM : UGen {
 	*kr {|change=0.0, bpm=60.0|
-		^this.new1('control', change, bpm);
+		^this.multiNew('control', change, bpm);
 	}
 }
 
 LinkJump : UGen {
 	*kr {|trigger=0.0, beat=0.0, quantum=4.0, force=0.0|
-		^this.new1('control', trigger, beat, quantum, force);
+		^this.multiNew('control', trigger, beat, quantum, force);
 	}
 }
 
