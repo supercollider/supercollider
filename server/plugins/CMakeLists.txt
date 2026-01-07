@@ -140,6 +140,10 @@ if(SC_ABLETON_LINK)
 	add_library(Link_UGen MODULE
 		LinkUGen.cpp
 	)
+	# bug-fix for undefined reference to `GetAdaptersAddresses'
+	if (MINGW)
+		target_link_libraries(Link_UGen PRIVATE iphlpapi)
+	endif()
 	include(../../external_libraries/link/AbletonLinkConfig.cmake)
 	target_link_libraries(Link_UGen PRIVATE Ableton::Link)
 	list(APPEND plugins Link_UGen)
