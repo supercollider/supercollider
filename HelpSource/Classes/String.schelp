@@ -859,14 +859,16 @@ code::
 )
 // then load all five files using .loadPaths. 
 // notice the wildcard * at the end of the string, which permits all files in the folder to match: 
-(~dir +/+ "*").loadPaths;
+(~dir +/+ "*").loadPaths
 // ... each file posts some text;  
 // the return value of loadPaths is an array of the return values of each file.
 
 // loadPaths can also used to load only a single file:
 (~dir +/+ "example_1.scd").loadPaths
-// in which case it does the same thing as .load
+// in which case it does nearly the same thing as .load:
 (~dir +/+ "example_1.scd").load
+// the difference is that loadPaths always returns an Array of return values,
+// even if there is only one return value.
 ::
 
 
