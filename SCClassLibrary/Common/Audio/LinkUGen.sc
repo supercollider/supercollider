@@ -16,23 +16,30 @@ LinkPhase : UGen {
 			^this;
 		});
 		{FreeSelf.kr(LinkDisabler.kr)}.play(server);
-		enabled = false;
 	}
 
-	*enabled_ {|newEnabled|
-		newEnabled = newEnabled.asBoolean;
-		if(newEnabled, {
-			LinkUGen.enable;
-		}, {
-			LinkUGen.disable;
+	*setTempo {|bpm, lag=0.0, curve=\exp, server=nil|
+		server = server ? Server.default;
+		if(server.hasBooted.not, {
+			"Server % is not running - can not set tempo".format(server).warn;
+			^this;
 		});
-	}
-
-	*setTempo {|bpm|
-		{
-			LinkTempo.kr(1.0, bpm);
-			FreeSelf.kr(1.0);
-		}.play(server);
+		if(lag > 0.0, {
+			{
+				var startBpm = Latch.kr(in: LinkBPM.kr, trig: 1.0);
+				LinkBPM.kr(
+					change: 1.0,
+					bpm: Env([startBpm, bpm], [lag], curve).kr(
+						doneAction: Done.freeSelf,
+					).poll;
+				);
+			}
+		}, {
+			{
+				LinkBPM.kr(1.0, bpm);
+				FreeSelf.kr(1.0);
+			}
+		}).play(server);
 	}
 
 	*kr {|quantum=4|
