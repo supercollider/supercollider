@@ -133,7 +133,7 @@ private:
         if (LINK_CLOCK->isEnabled()) {
             if (in0(0) > 0.0f) {
                 auto state = LINK_CLOCK->captureAudioSessionState();
-                if (in0(3) >= 0.0f) {
+                if (in0(3) > 0.0f) {
                     state.forceBeatAtTime(in0(1), LINK_CLOCK->clock().micros(), in0(2));
                 } else {
                     state.requestBeatAtTime(in0(1), LINK_CLOCK->clock().micros(), in0(2));
