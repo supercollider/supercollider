@@ -66,10 +66,7 @@ private:
  */
 class LinkBPM : public SCUnit {
 public:
-    LinkBPM() {
-        mCalcFunc = make_calc_function<LinkBPM, &LinkBPM::next_k>();
-        next_k(1);
-    }
+    LinkBPM() { set_calc_function<LinkBPM, &LinkBPM::next_k>(); }
 
 private:
     bool mWarned = false;
@@ -99,7 +96,7 @@ private:
  */
 class LinkPhase : public SCUnit {
 public:
-    LinkPhase() { mCalcFunc = make_calc_function<LinkPhase, &LinkPhase::next_k>(); }
+    LinkPhase() { set_calc_function<LinkPhase, &LinkPhase::next_k>(); }
 
 private:
     bool mWarned = false;
@@ -126,7 +123,7 @@ private:
  */
 class LinkJump : public SCUnit {
 public:
-    LinkJump() { mCalcFunc = make_calc_function<LinkJump, &LinkJump::next_k>(); }
+    LinkJump() { set_calc_function<LinkJump, &LinkJump::next_k>(); }
 
 private:
     bool mWarned = false;
