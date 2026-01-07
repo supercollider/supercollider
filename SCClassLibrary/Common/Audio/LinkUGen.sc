@@ -1,34 +1,18 @@
-LinkUGen : UGen {
-	classvar <enabled;
-	classvar <>server;
-
-	*initClass {
-		Class.initClassTree(Server);
-		enabled = false;
-		server = Server.default;
-	}
-
-	*enable {
+LinkPhase : UGen {
+	*start {|server=nil|
+		server = server ? Server.default;
 		if(server.hasBooted.not, {
 			"Server % is not running - can not enable LinkUGen".format(server).warn;
 			^this;
 		});
-		if(enabled, {
-			"LinkUGen is already enabled".warn;
-			^this;
-		});
-		{FreeSelf.kr(LinkEnabler.kr())}.play(server);
-		enabled = true;
+		{FreeSelf.kr(LinkEnabler.kr)}.play(server);
 	}
 
-	*disable {
+	*stop {|server=nil|
+		server = server ? Server.default;
 		if(server.hasBooted.not, {
 			// this should not happen...
 			"Server % is not running - can not disable LinkUGen".format(server).warn;
-			^this;
-		});
-		if(enabled.not, {
-			"LinkUGen is already disabled".warn;
 			^this;
 		});
 		{FreeSelf.kr(LinkDisabler.kr)}.play(server);
@@ -68,7 +52,7 @@ LinkDisabler : UGen {
 	}
 }
 
-LinkTempo : UGen {
+LinkBPM : UGen {
 	*kr {|change=0.0, bpm=60.0|
 		^this.new1('control', change, bpm);
 	}

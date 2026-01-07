@@ -59,14 +59,17 @@ private:
 };
 
 /*!
- * @class LinkTempo
+ * @class LinkBPM
  * @brief Allows to get and set the tempo of the Link clock of the server.
- * Tempo will only happen if in0 > 0.0f - be nice to others!
+ * Tempo will only be set if in0 > 0.0f - be nice to others!
  * If no Link clock is enabled on the server it will return -1.0f.
  */
-class LinkTempo : public SCUnit {
+class LinkBPM : public SCUnit {
 public:
-    LinkTempo() { mCalcFunc = make_calc_function<LinkTempo, &LinkTempo::next_k>(); }
+    LinkBPM() {
+        mCalcFunc = make_calc_function<LinkBPM, &LinkBPM::next_k>();
+        next_k(1);
+    }
 
 private:
     bool mWarned = false;
@@ -156,8 +159,8 @@ PluginLoad(LinkUGen) {
     LINK_CLOCK = new ableton::Link(60.0f);
     registerUnit<LinkControl<true>>(ft, "LinkEnabler", false);
     registerUnit<LinkControl<false>>(ft, "LinkDisabler", false);
-    registerUnit<LinkTempo>(ft, "LinkTempo", false);
-    registerUnit<LinkPhase>(ft, "LinkUGen", false);
+    registerUnit<LinkBPM>(ft, "LinkBPM", false);
+    registerUnit<LinkPhase>(ft, "LinkPhase", false);
     registerUnit<LinkJump>(ft, "LinkJump", false);
 }
 
