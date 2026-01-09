@@ -6,14 +6,22 @@ TestString : UnitTest {
 	test_load_scd_file_w_args_and_kwargs {
 		var expected = "interior crocodile alligator got chevrolet theatre";
         var path = PathName(thisMethod.filenameSymbol.asString).pathOnly +/+ "assets" +/+ "TestString.scd";
-		this.assertEquals(path.load("interior", "crocodile", "alligator", i: "got", a: "chevrolet", movie: "theatre"), expected);
+        if(File.exists(path)) {
+            this.assertEquals(path.load("interior", "crocodile", "alligator", i: "got", a: "chevrolet", movie: "theatre"), expected);
+        } {
+            Error(path ++ "doesn't exist").throw
+        }
 	}
 
     // load w/o arguments
     test_load_scd_file_wo_args_or_kwargs {
 		var expected = 21; // result from defaults
         var path = PathName(thisMethod.filenameSymbol.asString).pathOnly +/+ "assets" +/+ "TestString.scd";
-		this.assertEquals(path.load, expected);
+        if(File.exists(path)) {
+            this.assertEquals(path.load, expected);
+        } {
+            Error(path ++ "doesn't exist").throw
+        }
 	}
 
 	// ------- path-like operations ---------------------------------------------

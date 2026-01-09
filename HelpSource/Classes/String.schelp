@@ -817,17 +817,18 @@ Platform.userConfigDir.openOS;
 subsection:: Loading and executing .scd files
 
 method::load
-Load and link::Classes/Interpreter#-executeFile#execute:: the file at the path represented by the receiver, and (optionally) pass positional and keyword arguments to the result. 
+Load and link::Classes/Interpreter#-executeFile#execute:: the file at the path represented by the receiver, 
+and (optionally) pass positional and keyword arguments to the result. 
 
 method::loadRelative
 Load and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. 
 Requires that the file has been saved. 
 This can be used e.g. to load initialization code from files in the same folder.
-Additional positional and keyword arguments can also be supplied, which will be passed to the resulting object, as with code::.load::.
+Additional positional and keyword arguments can also be supplied (but must be in arrays, as with link::Classes/Object.performArgs::). 
 
 method::loadPaths
 Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::. 
-Additional positional and keyword arguments can also be supplied, which will be passed to each resulting object, as with code::.load::.
+Additional positional and keyword arguments can also be supplied (but must be in arrays, as with link::Classes/Object.performArgs::).
 
 argument::warn
 Warn if a file is not found.
@@ -835,11 +836,11 @@ Warn if a file is not found.
 argument::action
 A function that is called for each file path that is found.
 
-argument:: ... args
-Optional positonal arguments that can be passed to the resulting object.
+argument:: args
+An array of positonal arguments that can be passed to the resulting object.
 
-argument:: ... kwargs
-Optional keyword arguments that can be passed to the resulting object.
+argument:: kwargs
+An array of keyword arguments that can be passed to the resulting object.
 
 discussion:: .loadPaths example
 code::
@@ -847,7 +848,7 @@ code::
 (
 ~dir = (Platform.defaultTempDir +/+ "loadPaths_exampleDir").mkdir;
 5.do { |i| 
-	var filename = "example_%.scd".format(i);
+	var filename = "example_0%.scd".format(i);
     var lo = i * 5;
     var hi = lo + 4;
 	File.use(~dir +/+ filename, "w", { |file|
@@ -864,14 +865,12 @@ code::
 // the return value of loadPaths is an array of the return values of each file.
 
 // loadPaths can also used to load only a single file:
-(~dir +/+ "example_1.scd").loadPaths
+(~dir +/+ "example_01.scd").loadPaths
 // in which case it does nearly the same thing as .load:
-(~dir +/+ "example_1.scd").load
+(~dir +/+ "example_01.scd").load
 // the difference is that loadPaths always returns an Array of return values,
 // even if there is only one return value.
 ::
-
-
 
 subsection::Pathname Support
 

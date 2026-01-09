@@ -416,22 +416,22 @@ String[char] : RawArray {
 	pathMatch { _StringPathMatch ^this.primitiveFailed } // glob
 
 	load { |... args, kwargs|
-		^thisProcess.interpreter.performArgs(\executeFile, [this] ++ args, kwargs);
+		^thisProcess.interpreter.performArgs(\prExecuteFile, [this] ++ args, kwargs)
 	}
-	loadPaths { | warn = true, action ... args, kwargs | 
+	loadPaths { | warn = true, action, args, kwargs | 
 		var paths = this.pathMatch;
 		if(warn and:{paths.isEmpty}) { ("no files found for this path:" + this.quote).warn };
 		^paths.collect({ arg path;
-			var result = thisProcess.interpreter.performArgs(\executeFile, [path] ++ args, kwargs);
+			var result = thisProcess.interpreter.performArgs(\prExecuteFile, [path] ++ args, kwargs);
 			action.value(path, result);
 			result
 		});
 	}
-	loadRelative { | warn = true, action ... args, kwargs |
+	loadRelative { | warn = true, action, args, kwargs |
 		var path = thisProcess.nowExecutingPath;
 		if(path.isNil) { Error("can't load relative to an unsaved file.\nPath to resolve: \"%\"\n".format(this)).throw };
 		if(path.basename == this) { Error("should not load a file from itself").throw };
-		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this).loadPaths([warn, action] ++ args, kwargs)
+		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this).loadPaths(warn, action, args, kwargs)
 	}
 	resolveRelative {
 		var path, caller;

@@ -744,14 +744,19 @@ Interpreter {
 	}
 
 	executeFile { | pathName ... args, kwargs |
+		^this.performArgs(\prExecuteFile, [pathName] ++ args, kwargs)
+	}
+
+	prExecuteFile { |... args, kwargs |
 		var	result, saveExecutingPath = thisProcess.nowExecutingPath;
+		var pathName = args[0];
 		if (File.exists(pathName).not) {
 			"file \"%\" does not exist.\n".postf(pathName);
 			^nil
 		};
 		thisProcess.nowExecutingPath = pathName;
 		protect {
-			result = this.compileFile(pathName).valueArgs(args, kwargs)
+			result = this.compileFile(pathName).valueArgs(args[1..], kwargs)
 		} { |exception|
 			exception !? { exception.path = pathName };
 			thisProcess.nowExecutingPath = saveExecutingPath
