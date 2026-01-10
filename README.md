@@ -51,7 +51,7 @@ SuperCollider has guaranteed support for:
 - clang >= 11
 - Qt >= 6.2
 
-There is still limited support for Qt 5.15. Further details are described in [README_MACOS.md](README_MACOS.md).
+There is still limited support for Qt 5.15. Further details are actually described in [README_MACOS.md](README_MACOS.md).
 
 For more information on platform support guarantees, see the [project
 Wiki](https://github.com/supercollider/supercollider/wiki/Platform-Support).
@@ -61,7 +61,7 @@ Learn
 
 The official docs can be viewed in the SuperCollider IDE's built-in documentation browser. You can also view them online at [doc.sccode.org](http://doc.sccode.org/).
 
-We recommend the following resources for learning SC:
+We recommend the following resources in order to learn SC:
 
 - [A Gentle Introduction to SuperCollider](https://ccrma.stanford.edu/~ruviaro/texts/A_Gentle_Introduction_To_SuperCollider.pdf), a free ebook by Bruno Ruviaro
 - [Eli Fieldsteel's video tutorials](https://www.youtube.com/playlist?list=PLPYzvS8A_rTaNDweXe6PX4CXSGq4iEWYC)
@@ -85,7 +85,7 @@ Please read our adopted [code of conduct](CODE_OF_CONDUCT.md), which applies to 
 Contribute
 ----------
 
-Development of SuperCollider happens here on GitHub, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving SuperCollider.
+The development of SuperCollider happens here on GitHub, and we are grateful to the actual community for contributing bugfixes and improvements. Read below to learn how you can take part in improving SuperCollider.
 
 ### [Code of Conduct](CODE_OF_CONDUCT.md)
 
