@@ -1,7 +1,7 @@
 [SuperCollider](https://supercollider.github.io/) [![Build Status](https://github.com/supercollider/supercollider/actions/workflows/actions.yml/badge.svg?branch=develop)](https://github.com/supercollider/supercollider/actions/workflows/actions.yml)
 =========================
 
-**SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It consists of:
+**SuperCollider** consists of a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers all over the world. It consists of:
 
 - **scsynth**, a real-time audio server with hundreds of unit generators ("UGens") for audio analysis, synthesis, and processing
 - **supernova**, an alternative server to scsynth with support for parallel DSP on multi-core processors
