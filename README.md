@@ -102,4 +102,4 @@ To help you get your feet wet and get you familiar with our contribution process
 License
 -------
 
-SuperCollider is free software available under Version 3 the GNU General Public License. See [COPYING](COPYING) for details.
+SuperCollider is a free software package available under Version 3 the GNU General Public License. See [COPYING](COPYING) for more details.
