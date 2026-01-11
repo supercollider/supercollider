@@ -28,6 +28,7 @@
 #include "lookup_dialog.hpp"
 #include "main_window.hpp"
 #include "multi_editor.hpp"
+#include "editor_box.hpp"
 #include "popup_text_input.hpp"
 #include "post_window.hpp"
 #include "session_switch_dialog.hpp"
@@ -250,6 +251,12 @@ void MainWindow::createActions() {
     action->setStatusTip(tr("Create a new document"));
     connect(action, &QAction::triggered, this, &MainWindow::newDocument);
     settings->addAction(action, "ide-document-new", ideCategory);
+
+    mActions[DocNewRich] = action = new QAction(QIcon::fromTheme("document-new"), tr("New &Rich Document"), this);
+    action->setShortcut(tr("Ctrl+Shift+N", "New rich text document"));
+    action->setStatusTip(tr("Create a new rich text document"));
+    connect(action, &QAction::triggered, this, &MainWindow::newRichDocument);
+    settings->addAction(action, "ide-document-new-rich", ideCategory);
 
     mActions[DocOpen] = action = new QAction(QIcon::fromTheme("document-open"), tr("&Open..."), this);
     action->setShortcut(tr("Ctrl+O", "Open document"));
@@ -521,6 +528,7 @@ void MainWindow::createMenus() {
 
     menu = new QMenu(tr("&File"), this);
     menu->addAction(mActions[DocNew]);
+    menu->addAction(mActions[DocNewRich]);
     menu->addAction(mActions[DocOpen]);
     mRecentDocsMenu = menu->addMenu(tr("Open Recent", "Open a recent document"));
     connect(mRecentDocsMenu, &QMenu::triggered, this, &MainWindow::onOpenRecentDocument);
@@ -573,6 +581,8 @@ void MainWindow::createMenus() {
     menu->addAction(mEditors->action(MultiEditor::ToggleOverwriteMode));
     menu->addAction(mEditors->action(MultiEditor::SelectRegion));
     menu->addAction(mEditors->action(MultiEditor::SelectEnclosingBlock));
+    menu->addSeparator();
+    menu->addAction(mEditors->action(MultiEditor::ApplyCodeFormat));
 
     menu->addSeparator();
     menu->addAction(mActions[ShowSettings]);
@@ -832,7 +842,7 @@ void MainWindow::onCurrentDocumentChanged(Document* doc) {
     mActions[DocSaveAs]->setEnabled(doc);
     mActions[DocSaveAsExtension]->setEnabled(doc);
 
-    GenericCodeEditor* editor = mEditors->currentEditor();
+    GenericCodeEditor* editor = mEditors->currentGenericEditor();
     mFindReplaceTool->setEditor(editor);
     mGoToLineTool->setEditor(editor);
 }
@@ -978,7 +988,7 @@ bool MainWindow::save(Document* doc, bool forceChoose, bool saveInExtensionFolde
 
         QStringList filters = QStringList()
             << tr("All Files (*)") << tr("SuperCollider Document (*.scd)") << tr("SuperCollider Class File (*.sc)")
-            << tr("SuperCollider Help Source (*.schelp)");
+            << tr("SuperCollider Help Source (*.schelp)") << tr("SuperCollider Rich Text (*.scr)");
 
         dialog.setNameFilters(filters);
 
@@ -1034,10 +1044,12 @@ bool MainWindow::save(Document* doc, bool forceChoose, bool saveInExtensionFolde
 
 void MainWindow::newDocument() { mMain->documentManager()->create(); }
 
+void MainWindow::newRichDocument() { mMain->documentManager()->createRichDocument(); }
+
 QString MainWindow::documentOpenPath() const {
-    GenericCodeEditor* currentEditor = mEditors->currentEditor();
-    if (currentEditor) {
-        QString currentEditorPath = currentEditor->document()->filePath();
+    Document* currentDoc = mEditors->currentBox() ? mEditors->currentBox()->currentDocument() : nullptr;
+    if (currentDoc) {
+        QString currentEditorPath = currentDoc->filePath();
         if (!currentEditorPath.isEmpty())
             return currentEditorPath;
     }
@@ -1068,7 +1080,8 @@ void MainWindow::openDocument() {
         dialog.setDirectory(path_info.dir());
 
     QStringList filters;
-    filters << tr("All Files (*)") << tr("SuperCollider (*.scd *.sc)") << tr("SuperCollider Help Source (*.schelp)");
+    filters << tr("All Files (*)") << tr("SuperCollider (*.scd *.sc)") << tr("SuperCollider Help Source (*.schelp)")
+            << tr("SuperCollider Rich Text (*.scr)");
     dialog.setNameFilters(filters);
 
     if (dialog.exec()) {
@@ -1130,34 +1143,25 @@ void MainWindow::openExamplesDirectory() {
 }
 
 void MainWindow::saveDocument() {
-    GenericCodeEditor* editor = mEditors->currentEditor();
-    if (!editor)
+    Document* doc = mEditors->currentBox() ? mEditors->currentBox()->currentDocument() : nullptr;
+    if (!doc)
         return;
-
-    Document* doc = editor->document();
-    Q_ASSERT(doc);
 
     MainWindow::save(doc);
 }
 
 void MainWindow::saveDocumentAs() {
-    GenericCodeEditor* editor = mEditors->currentEditor();
-    if (!editor)
+    Document* doc = mEditors->currentBox() ? mEditors->currentBox()->currentDocument() : nullptr;
+    if (!doc)
         return;
-
-    Document* doc = editor->document();
-    Q_ASSERT(doc);
 
     MainWindow::save(doc, true);
 }
 
 void MainWindow::saveDocumentAsExtension() {
-    GenericCodeEditor* editor = mEditors->currentEditor();
-    if (!editor)
+    Document* doc = mEditors->currentBox() ? mEditors->currentBox()->currentDocument() : nullptr;
+    if (!doc)
         return;
-
-    Document* doc = editor->document();
-    Q_ASSERT(doc);
 
     MainWindow::save(doc, true, true);
 }
@@ -1170,21 +1174,19 @@ void MainWindow::saveAllDocuments() {
 }
 
 void MainWindow::reloadDocument() {
-    GenericCodeEditor* editor = mEditors->currentEditor();
-    if (!editor)
+    Document* doc = mEditors->currentBox() ? mEditors->currentBox()->currentDocument() : nullptr;
+    if (!doc)
         return;
 
-    Q_ASSERT(editor->document());
-    MainWindow::reload(editor->document());
+    MainWindow::reload(doc);
 }
 
 void MainWindow::closeDocument() {
-    GenericCodeEditor* editor = mEditors->currentEditor();
-    if (!editor)
+    Document* doc = mEditors->currentBox() ? mEditors->currentBox()->currentDocument() : nullptr;
+    if (!doc)
         return;
 
-    Q_ASSERT(editor->document());
-    MainWindow::close(editor->document());
+    MainWindow::close(doc);
 }
 
 void MainWindow::closeAllDocuments() {
@@ -1216,8 +1218,7 @@ bool MainWindow::promptSaveDocs() {
 
 void MainWindow::updateWindowTitle() {
     Session* session = mMain->sessionManager()->currentSession();
-    GenericCodeEditor* editor = mEditors->currentEditor();
-    Document* doc = editor ? editor->document() : 0;
+    Document* doc = mEditors->currentBox() ? mEditors->currentBox()->currentDocument() : nullptr;
 
     QString title;
 
@@ -1377,7 +1378,7 @@ void MainWindow::cmdLineForCursor() {
 }
 
 void MainWindow::showGoToLineTool() {
-    GenericCodeEditor* editor = mEditors->currentEditor();
+    GenericCodeEditor* editor = mEditors->currentGenericEditor();
     mGoToLineTool->setValue(editor ? editor->textCursor().blockNumber() + 1 : 0);
 
     mToolBox->setCurrentWidget(mGoToLineTool);
@@ -1407,13 +1408,17 @@ void MainWindow::showReplaceTool() {
 }
 
 void MainWindow::hideToolBox() {
-    GenericCodeEditor* editor = mEditors->currentEditor();
+    GenericCodeEditor* editor = mEditors->currentGenericEditor();
     if (editor) {
         // This slot is mapped to Escape, so also clear highlighting
         // whenever invoked:
         editor->clearSearchHighlighting();
         if (!editor->hasFocus())
             editor->setFocus(Qt::OtherFocusReason);
+    } else if (mEditors->currentEditor()) {
+        // For non-code editors (like RichTextEditor), just focus
+        if (!mEditors->currentEditor()->hasFocus())
+            mEditors->currentEditor()->setFocus(Qt::OtherFocusReason);
     }
 
     mToolBox->hide();
@@ -1529,7 +1534,8 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 bool MainWindow::checkFileExtension(const QString& fpath) {
-    if (fpath.endsWith(".sc") || fpath.endsWith(".scd") || fpath.endsWith(".txt") || fpath.endsWith(".schelp")) {
+    if (fpath.endsWith(".sc") || fpath.endsWith(".scd") || fpath.endsWith(".txt") || fpath.endsWith(".schelp")
+        || fpath.endsWith(".scr")) {
         return true;
     }
     int ret = QMessageBox::question(this, tr("Open binary file?"),
