@@ -23,6 +23,7 @@
 #include "main_window.hpp"
 #include "lookup_dialog.hpp"
 #include "code_editor/sc_editor.hpp"
+#include "code_editor/rich_editor.hpp"
 #include "util/multi_splitter.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
@@ -165,8 +166,15 @@ private:
 
     void populateModel(const CodeEditorBox::History& history) {
         QList<Document*> displayDocuments;
-        foreach (GenericCodeEditor* editor, history)
-            displayDocuments << editor->document();
+        foreach (QWidget* editorWidget, history) {
+            Document* doc = nullptr;
+            if (GenericCodeEditor* editor = qobject_cast<GenericCodeEditor*>(editorWidget))
+                doc = editor->document();
+            else if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(editorWidget))
+                doc = richEditor->document();
+            if (doc)
+                displayDocuments << doc;
+        }
 
         QList<Document*> managerDocuments = Main::documentManager()->documents();
         foreach (Document* document, managerDocuments)
@@ -315,8 +323,7 @@ void MultiEditor::makeSignalConnections() {
     connect(mTabs, &QTabBar::tabCloseRequested, this, &MultiEditor::onCloseRequest);
     connect(mTabs, &QTabBar::tabMoved, this, &MultiEditor::updateDocOrder);
 
-    mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)), this,
-                        SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
+    mBoxSigMux->connect(SIGNAL(currentChanged(QWidget*)), this, SLOT(onCurrentEditorChanged(QWidget*)));
 }
 
 void MultiEditor::updateDocOrder(int from, int to) { Q_EMIT(updateDockletOrder(from, to)); }
@@ -626,6 +633,14 @@ void MultiEditor::createActions() {
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(evaluateLine()), SignalMultiplexer::ConnectionOptional);
     settings->addAction(action, "editor-eval-line", editorCategory);
 
+    // Rich Text
+    mActions[ApplyCodeFormat] = action = new QAction(tr("Apply Code Format"), this);
+    action->setShortcut(tr("Ctrl+Shift+C", "Apply Code Format"));
+    action->setStatusTip(tr("Apply code formatting to selection"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(applyCodeFormat()), SignalMultiplexer::ConnectionOptional);
+    settings->addAction(action, "editor-apply-code-format", editorCategory);
+
     // These actions are not added to any menu, so they have to be added
     // at least to this widget, in order for the shortcuts to always respond:
     addAction(mActions[TriggerAutoCompletion]);
@@ -661,47 +676,66 @@ void MultiEditor::createActions() {
     addAction(mActions[GotoPreviousEmptyLine]);
     addAction(mActions[GotoNextEmptyLine]);
     addAction(mActions[SelectRegion]);
+    addAction(mActions[ApplyCodeFormat]);
 }
 
 void MultiEditor::updateActions() {
-    GenericCodeEditor* editor = currentEditor();
-    ScCodeEditor* scEditor = qobject_cast<ScCodeEditor*>(editor);
-    QTextDocument* doc = editor ? editor->textDocument() : 0;
+    QWidget* editorWidget = currentEditor();
+    GenericCodeEditor* genericEditor = qobject_cast<GenericCodeEditor*>(editorWidget);
+    ScCodeEditor* scEditor = qobject_cast<ScCodeEditor*>(editorWidget);
+    RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(editorWidget);
+
+    QTextDocument* doc = nullptr;
+    bool hasSelection = false;
+    if (genericEditor) {
+        doc = genericEditor->textDocument();
+        hasSelection = genericEditor->textCursor().hasSelection();
+    } else if (richEditor) {
+        doc = richEditor->textDocument();
+        hasSelection = richEditor->textCursor().hasSelection();
+    }
+
+    bool hasEditor = (editorWidget != nullptr);
 
     mActions[Undo]->setEnabled(doc && doc->isUndoAvailable());
     mActions[Redo]->setEnabled(doc && doc->isRedoAvailable());
-    mActions[Copy]->setEnabled(editor && editor->textCursor().hasSelection());
+    mActions[Copy]->setEnabled(hasEditor && hasSelection);
     mActions[Cut]->setEnabled(mActions[Copy]->isEnabled());
-    mActions[Paste]->setEnabled(editor);
-    mActions[ToggleOverwriteMode]->setEnabled(editor);
-    mActions[CopyLineUp]->setEnabled(editor);
-    mActions[CopyLineDown]->setEnabled(editor);
-    mActions[MoveLineUp]->setEnabled(editor);
-    mActions[MoveLineDown]->setEnabled(editor);
-    mActions[DeleteWord]->setEnabled(editor);
-    mActions[GotoPreviousEmptyLine]->setEnabled(editor);
-    mActions[GotoNextEmptyLine]->setEnabled(editor);
-    mActions[DocClose]->setEnabled(editor);
-    mActions[EnlargeFont]->setEnabled(editor);
-    mActions[ShrinkFont]->setEnabled(editor);
-    mActions[ResetFontSize]->setEnabled(editor);
-    mActions[IndentWithSpaces]->setEnabled(scEditor);
+    mActions[Paste]->setEnabled(hasEditor);
+    mActions[ToggleOverwriteMode]->setEnabled(genericEditor != nullptr);
+    mActions[CopyLineUp]->setEnabled(genericEditor != nullptr);
+    mActions[CopyLineDown]->setEnabled(genericEditor != nullptr);
+    mActions[MoveLineUp]->setEnabled(genericEditor != nullptr);
+    mActions[MoveLineDown]->setEnabled(genericEditor != nullptr);
+    mActions[DeleteWord]->setEnabled(genericEditor != nullptr);
+    mActions[GotoPreviousEmptyLine]->setEnabled(genericEditor != nullptr);
+    mActions[GotoNextEmptyLine]->setEnabled(genericEditor != nullptr);
+    mActions[DocClose]->setEnabled(hasEditor);
+    mActions[EnlargeFont]->setEnabled(hasEditor);
+    mActions[ShrinkFont]->setEnabled(hasEditor);
+    mActions[ResetFontSize]->setEnabled(hasEditor);
+    mActions[IndentWithSpaces]->setEnabled(scEditor != nullptr);
     mActions[IndentWithSpaces]->setChecked(scEditor && scEditor->spaceIndent());
 
     // ScLang-specific actions
-    bool editorIsScCodeEditor = qobject_cast<ScCodeEditor*>(editor); // NOOP at the moment, but
-    mActions[ToggleComment]->setEnabled(editor && editorIsScCodeEditor);
-    mActions[GotoPreviousBlock]->setEnabled(editor && editorIsScCodeEditor);
-    mActions[GotoNextBlock]->setEnabled(editor && editorIsScCodeEditor);
-    mActions[SelectEnclosingBlock]->setEnabled(editor && editorIsScCodeEditor);
-    mActions[GotoPreviousRegion]->setEnabled(editor && editorIsScCodeEditor);
-    mActions[GotoNextRegion]->setEnabled(editor && editorIsScCodeEditor);
-    mActions[SelectRegion]->setEnabled(editor && editorIsScCodeEditor);
-    mActions[IndentLineOrRegion]->setEnabled(editor && editorIsScCodeEditor);
+    bool editorIsScCodeEditor = (scEditor != nullptr);
+    mActions[ToggleComment]->setEnabled(editorIsScCodeEditor);
+    mActions[GotoPreviousBlock]->setEnabled(editorIsScCodeEditor);
+    mActions[GotoNextBlock]->setEnabled(editorIsScCodeEditor);
+    mActions[SelectEnclosingBlock]->setEnabled(editorIsScCodeEditor);
+    mActions[GotoPreviousRegion]->setEnabled(editorIsScCodeEditor);
+    mActions[GotoNextRegion]->setEnabled(editorIsScCodeEditor);
+    mActions[SelectRegion]->setEnabled(editorIsScCodeEditor);
+    mActions[IndentLineOrRegion]->setEnabled(editorIsScCodeEditor);
 
-    mActions[EvaluateCurrentDocument]->setEnabled(editor && editorIsScCodeEditor);
-    mActions[EvaluateRegion]->setEnabled(editor && editorIsScCodeEditor);
-    mActions[EvaluateLine]->setEnabled(editor && editorIsScCodeEditor);
+    // Evaluation actions - available for both ScCodeEditor and RichTextEditor
+    bool canEvaluate = (scEditor != nullptr) || (richEditor != nullptr);
+    mActions[EvaluateCurrentDocument]->setEnabled(canEvaluate);
+    mActions[EvaluateRegion]->setEnabled(canEvaluate);
+    mActions[EvaluateLine]->setEnabled(canEvaluate);
+
+    // Rich text specific actions
+    mActions[ApplyCodeFormat]->setEnabled(richEditor != nullptr);
 }
 
 void MultiEditor::applySettings(Settings::Manager* settings) {
@@ -746,13 +780,24 @@ static QVariantList saveBoxState(CodeEditorBox* box, const QList<Document*>& doc
     QVariantList boxData;
     int idx = box->history().count();
     while (idx--) {
-        GenericCodeEditor* editor = box->history()[idx];
-        if (!editor->document()->filePath().isEmpty()) {
-            int documentIndex = documentList.indexOf(editor->document());
+        QWidget* editorWidget = box->history()[idx];
+        Document* doc = nullptr;
+        int cursorPosition = 0;
+
+        if (GenericCodeEditor* editor = qobject_cast<GenericCodeEditor*>(editorWidget)) {
+            doc = editor->document();
+            cursorPosition = editor->textCursor().position();
+        } else if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(editorWidget)) {
+            doc = richEditor->document();
+            cursorPosition = richEditor->textCursor().position();
+        }
+
+        if (doc && !doc->filePath().isEmpty()) {
+            int documentIndex = documentList.indexOf(doc);
             Q_ASSERT(documentIndex >= 0);
             QVariantMap editorData;
             editorData.insert("documentIndex", documentIndex);
-            editorData.insert("position", editor->textCursor().position());
+            editorData.insert("position", cursorPosition);
             boxData.append(editorData);
         }
     }
@@ -1043,8 +1088,14 @@ void MultiEditor::update(Document* doc) {
         mTabs->setTabText(tabIdx, doc->title());
 
     // update thisProcess.nowExecutingPath
-    GenericCodeEditor* editor = currentEditor();
-    if (editor->document() == doc)
+    QWidget* editorWidget = currentEditor();
+    Document* currentDoc = nullptr;
+    if (GenericCodeEditor* editor = qobject_cast<GenericCodeEditor*>(editorWidget))
+        currentDoc = editor->document();
+    else if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(editorWidget))
+        currentDoc = richEditor->document();
+
+    if (currentDoc == doc)
         Main::documentManager()->setActiveDocument(doc);
 }
 
@@ -1067,7 +1118,7 @@ void MultiEditor::onCurrentTabChanged(int index) {
     curBox->setFocus(Qt::OtherFocusReason);
 }
 
-void MultiEditor::onCurrentEditorChanged(GenericCodeEditor* editor) { setCurrentEditor(editor); }
+void MultiEditor::onCurrentEditorChanged(QWidget* editor) { setCurrentEditor(editor); }
 
 void MultiEditor::onBoxActivated(CodeEditorBox* box) { setCurrentBox(box); }
 
@@ -1108,30 +1159,51 @@ void MultiEditor::setCurrentBox(CodeEditorBox* box) {
     mCurrentEditorBox->setActive();
 }
 
-void MultiEditor::setCurrentEditor(GenericCodeEditor* editor) {
-    if (editor) {
-        int tabIndex = tabForDocument(editor->document());
-        if (tabIndex != -1)
-            mTabs->setCurrentIndex(tabIndex);
+void MultiEditor::setCurrentEditor(QWidget* editorWidget) {
+    Document* currentDocument = nullptr;
+
+    if (editorWidget) {
+        if (GenericCodeEditor* editor = qobject_cast<GenericCodeEditor*>(editorWidget))
+            currentDocument = editor->document();
+        else if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(editorWidget))
+            currentDocument = richEditor->document();
+
+        if (currentDocument) {
+            int tabIndex = tabForDocument(currentDocument);
+            if (tabIndex != -1)
+                mTabs->setCurrentIndex(tabIndex);
+        }
     }
 
-    mEditorSigMux->setCurrentObject(editor);
+    mEditorSigMux->setCurrentObject(editorWidget);
     updateActions();
 
-    Document* currentDocument = editor ? editor->document() : 0;
     Main::documentManager()->setActiveDocument(currentDocument);
     emit currentDocumentChanged(currentDocument);
 }
 
-GenericCodeEditor* MultiEditor::currentEditor() { return currentBox()->currentEditor(); }
+QWidget* MultiEditor::currentEditor() { return currentBox()->currentEditor(); }
+
+GenericCodeEditor* MultiEditor::currentGenericEditor() { return currentBox()->currentGenericEditor(); }
 
 void MultiEditor::split(Qt::Orientation splitDirection) {
     CodeEditorBox* box = newBox(mSplitter);
     CodeEditorBox* curBox = currentBox();
-    GenericCodeEditor* curEditor = curBox->currentEditor();
+    QWidget* curEditorWidget = curBox->currentEditor();
 
-    if (curEditor)
-        box->setDocument(curEditor->document(), curEditor->textCursor().position());
+    if (curEditorWidget) {
+        Document* doc = nullptr;
+        int cursorPosition = 0;
+        if (GenericCodeEditor* editor = qobject_cast<GenericCodeEditor*>(curEditorWidget)) {
+            doc = editor->document();
+            cursorPosition = editor->textCursor().position();
+        } else if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(curEditorWidget)) {
+            doc = richEditor->document();
+            cursorPosition = richEditor->textCursor().position();
+        }
+        if (doc)
+            box->setDocument(doc, cursorPosition);
+    }
 
     mSplitter->insertWidget(box, curBox, splitDirection);
     box->setFocus(Qt::OtherFocusReason);
@@ -1178,9 +1250,20 @@ void MultiEditor::removeAllSplits() {
     CodeEditorBox* nBox = newBox(newSplitter);
     newSplitter->addWidget(nBox);
 
-    GenericCodeEditor* curEditor = box->currentEditor();
-    if (curEditor)
-        nBox->setDocument(curEditor->document(), curEditor->textCursor().position());
+    QWidget* curEditorWidget = box->currentEditor();
+    if (curEditorWidget) {
+        Document* doc = nullptr;
+        int cursorPosition = 0;
+        if (GenericCodeEditor* editor = qobject_cast<GenericCodeEditor*>(curEditorWidget)) {
+            doc = editor->document();
+            cursorPosition = editor->textCursor().position();
+        } else if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(curEditorWidget)) {
+            doc = richEditor->document();
+            cursorPosition = richEditor->textCursor().position();
+        }
+        if (doc)
+            nBox->setDocument(doc, cursorPosition);
+    }
 
     delete mSplitter;
     mSplitter = newSplitter;
