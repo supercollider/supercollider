@@ -55,7 +55,9 @@ class Document : public QObject {
     friend class DocumentManager;
 
 public:
-    Document(bool isPlainText, const QByteArray& id = QByteArray(), const QString& title = QString(),
+    enum DocumentType { PlainText, SuperCollider, RichText };
+
+    Document(DocumentType docType, const QByteArray& id = QByteArray(), const QString& title = QString(),
              const QString& text = QString());
 
     QTextDocument* textDocument() { return mDoc; }
@@ -75,7 +77,10 @@ public:
 
     void deleteTrailingSpaces();
 
-    bool isPlainText() const { return mHighlighter == NULL; }
+    DocumentType documentType() const { return mDocType; }
+    bool isPlainText() const { return mDocType == PlainText; }
+    bool isRichText() const { return mDocType == RichText; }
+    bool isSuperCollider() const { return mDocType == SuperCollider; }
     bool isModified() const { return mDoc->isModified(); }
 
     QStandardItem* modelItem() { return mModelItem; }
@@ -131,9 +136,10 @@ signals:
     void defaultFontChanged();
 
 private:
-    void setPlainText(bool flag);
+    void setDocumentType(DocumentType docType);
 
     QByteArray mId;
+    DocumentType mDocType;
     QTextDocument* mDoc;
     QString mFilePath;
     QString mTitle;
@@ -169,6 +175,7 @@ public:
     void close(Document*);
     bool save(Document*);
     bool saveAs(Document*, const QString& path);
+    static Document::DocumentType getDocumentTypeFromFileSuffix(QString suffix);
     bool reload(Document*);
     bool needRestore();
     void restore();
@@ -204,9 +211,13 @@ private slots:
     void onFileChanged(const QString& path);
     void updateCurrentDocContents(int position, int charsRemoved, int charsAdded);
 
+public slots:
+    void createRichDocument();
+
 private:
-    Document* createDocument(bool isPlainText = false, const QByteArray& id = QByteArray(),
-                             const QString& title = QString(), const QString& text = QString());
+    Document* createDocument(Document::DocumentType docType = Document::SuperCollider,
+                             const QByteArray& id = QByteArray(), const QString& title = QString(),
+                             const QString& text = QString());
     bool doSaveAs(Document*, const QString& path);
     void addToRecent(Document*);
     void loadRecentDocuments(Settings::Manager*);
