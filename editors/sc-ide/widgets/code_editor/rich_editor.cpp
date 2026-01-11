@@ -17,9 +17,11 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-#include "help_browser.hpp"
 #include "main_window.hpp"
 #include "sc_editor.hpp"
+#ifdef SC_USE_QTWEBENGINE
+#    include "help_browser.hpp"
+#endif
 
 namespace ScIDE {
 
