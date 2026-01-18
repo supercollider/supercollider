@@ -60,7 +60,7 @@ TestLinkUGens : UnitTest {
 		var condition = Condition();
 
 		// 40/3 cps = 800 bpm
-		LinkPhase.setBPM(40/3, server: server);
+		LinkPhase.setCPS(40/3, server: server);
 		server.sync;
 		0.2.wait;
 
