@@ -26,12 +26,12 @@ TestLinkUGens : UnitTest {
 	test_getAndSetTempo {
 		var condition = Condition();
 
-		LinkPhase.setBPM(180.0, server: server);
+		LinkPhase.setCPS(3.0, server: server);
 		server.sync;
 
-		{LinkBPM.kr()}.loadToFloatArray(0.2, server, {|sig|
-			var success = sig.any(_==180.0);
-			this.assert(success, "LinkBPM should be able to get the correct tempo", report: true);
+		{LinkCPS.kr()}.loadToFloatArray(0.2, server, {|sig|
+			var success = sig.any(_==3.0);
+			this.assert(success, "LinkCPS should be able to get the correct tempo", report: true);
 			condition.unhang;
 		});
 
@@ -47,9 +47,9 @@ TestLinkUGens : UnitTest {
 		clock.tempo_(4.0);
 		0.2.wait;
 
-		{LinkBPM.kr()}.loadToFloatArray(0.2, server, {|sig|
-			var success = sig.any({|x| (x-240.0).abs < 0.1});
-			this.assert(success, "LinkBPM should be able to follow LinkClock", report: true);
+		{LinkCPS.kr()}.loadToFloatArray(0.2, server, {|sig|
+			var success = sig.any({|x| (x-4.0).abs < 0.01});
+			this.assert(success, "LinkCPS should be able to follow LinkClock", report: true);
 			condition.unhang;
 		});
 
@@ -59,7 +59,8 @@ TestLinkUGens : UnitTest {
 	test_phase {
 		var condition = Condition();
 
-		LinkPhase.setBPM(800, server: server);
+		// 40/3 cps = 800 bpm
+		LinkPhase.setBPM(40/3, server: server);
 		server.sync;
 		0.2.wait;
 
@@ -73,7 +74,7 @@ TestLinkUGens : UnitTest {
 			// 800 bpm / 60sec = 13.3 bps
 			// numCrossings should therefore be either 13 or 14, based on when we start
 			var success = (numCrossings == 13).or(numCrossings == 14);
-			this.assert(success, "LinkPhase should be usable to count phase wraps according to bpm", report: true);
+			this.assert(success, "LinkPhase should be usable to count phase wraps according to cps", report: true);
 			condition.unhang;
 		});
 

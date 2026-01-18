@@ -1,7 +1,7 @@
 TITLE:: LinkPhase
 summary:: Represents the phase of a Link clock on the server.
 categories:: UGens>Clock, Streams-Patterns-Events
-related:: Classes/LinkClock, Classes/LinkBPM, Classes/LinkJump
+related:: Classes/LinkClock, Classes/LinkCPS, Classes/LinkJump
 
 DESCRIPTION::
 LinkPhase allows to access the phase of a shared Link clock.
@@ -12,10 +12,10 @@ code::
 // LinkPhase runs on the server, so the server needs to be started
 s.boot;
 
-// start participating in a Link session - default is 60bpm if no Link session is available
+// start participating in a Link session - default is 1.0cps / 60bpm if no Link session is available
 LinkPhase.start;
 
-// a Link phase runs from [0, quantum) with the given bpm
+// a Link phase runs from [0, quantum) with the given cps
 (
 Ndef(\l, {
 	var env = Env.perc(0.0, 0.1).kr(gate: LinkPhase.kr(quantum: 2) < 0.5);
@@ -24,7 +24,7 @@ Ndef(\l, {
 )
 
 // change the tempo of the clock - lag will introduce a gradient change
-LinkPhase.setBPM(bpm: 180, lag: 4.0);
+LinkPhase.setCPS(cps: 3.0, lag: 4.0);
 
 // spawn a clock on sclang side
 l = LinkClock(1.0).latency_(Server.default.latency);
@@ -39,12 +39,12 @@ Pdef(\p, Pbind(
 )).clock_(l).play;
 )
 
-// now fluctuate the tempo using LinkBPM
+// now fluctuate the tempo using LinkCPS
 (
 Ndef(\f, {
-	LinkBPM.kr(
+	LinkCPS.kr(
 		change: 1.0, // always update
-		bpm: SinOsc.kr(0.1).exprange(140.0, 200.0),
+		cps: SinOsc.kr(0.1).exprange(130/60, 230/60),
 	);
 });
 )
@@ -71,15 +71,15 @@ All informations from the Link session will be set to MATH::-1.0::.
 argument:: server
 A LINK::Classes/Server::, defaults to LINK::Classes/Server#-default::.
 
-METHOD:: setBPM
-Helper method to set the BPM of a Link clock.
+METHOD:: setCPS
+Helper method to set the CPS of a Link clock.
 NOTE::
-See also LINK::Classes/LinkBPM::.
+See also LINK::Classes/LinkCPS::.
 ::
-argument:: bpm
-New bpm of the Link session
+argument:: cps
+New cps of the Link session
 argument:: lag
-If a value is set and MATH::>0.0::, the current bpm will be cross-faded into the target bpm over this time in seconds.
+If a value is set and MATH::>0.0::, the current cps will be cross-faded into the target cps over this time in seconds.
 NOTE::
 Having multiple overlapping cross-fade processes can result in undefined behavior since they publish conflicting values.
 ::

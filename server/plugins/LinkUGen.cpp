@@ -59,14 +59,16 @@ private:
 };
 
 /*!
- * @class LinkBPM
+ * @class LinkCPS
  * @brief Allows to get and set the tempo of the Link clock of the server.
  * Tempo will only be set if in0 > 0.0f - be nice to others!
  * If no Link clock is enabled on the server it will return -1.0f.
+ * Link internally uses BPM, but SuperCollider uses CPS (cycles per second),
+ * so the values will be multiplied/divided by 60.
  */
-class LinkBPM : public SCUnit {
+class LinkCPS : public SCUnit {
 public:
-    LinkBPM() { set_calc_function<LinkBPM, &LinkBPM::next_k>(); }
+    LinkCPS() { set_calc_function<LinkCPS, &LinkCPS::next_k>(); }
 
 private:
     bool mWarned = false;
@@ -75,10 +77,10 @@ private:
         if (LINK_CLOCK->isEnabled()) {
             auto state = LINK_CLOCK->captureAudioSessionState();
             if (in0(0) > 0.0f) {
-                state.setTempo(in0(1), LINK_CLOCK->clock().micros());
+                state.setTempo(in0(1) * 60.0f, LINK_CLOCK->clock().micros());
                 LINK_CLOCK->commitAudioSessionState(state);
             }
-            *out = static_cast<float>(state.tempo());
+            *out = static_cast<float>(state.tempo()) / 60.0f;
         } else {
             if (!mWarned) {
                 Print("Error: Link clock has not been enabled, can not access tempo\n");
@@ -156,7 +158,7 @@ PluginLoad(LinkUGen) {
     LINK_CLOCK = new ableton::Link(60.0f);
     registerUnit<LinkControl<true>>(ft, "LinkEnabler", false);
     registerUnit<LinkControl<false>>(ft, "LinkDisabler", false);
-    registerUnit<LinkBPM>(ft, "LinkBPM", false);
+    registerUnit<LinkCPS>(ft, "LinkCPS", false);
     registerUnit<LinkPhase>(ft, "LinkPhase", false);
     registerUnit<LinkJump>(ft, "LinkJump", false);
 }

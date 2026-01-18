@@ -1,0 +1,25 @@
+TITLE:: LinkCPS
+summary:: Gets and sets the cycles per second of the Link clock of the server
+categories:: UGens>Clock, Streams-Patterns-Events
+related:: Classes/LinkPhase, Classes/LinkClock, Classes/LinkJump
+
+DESCRIPTION::
+
+Allows to get and set the CPS (cycles per second) of the servers Link clock, such that the CPS can be modulated through a signal.
+Ableton Link internally uses BPM which gets converted by the server to CPS by dividing the BPM value by 60.
+See LINK::Classes/LinkPhase:: for examples.
+
+CLASSMETHODS::
+
+METHOD:: kr
+Returns the current CPS of the Link clock of the server.
+If the server clock has not been enabled via LINK::Classes/LinkPhase#*start::, it will return MATH::-1.0::.
+argument:: change
+If this value is MATH::>0.0::, the CPS (second argument) will be used to set for the Link clock and published to the other clients.
+argument:: cps
+The CPS to be set.
+Ableton Link uses BPM internally and only allows bpm values between MATH::[20, 999]::, which translates to MATH::[\frac{1}{3}, 16.65]:: cps.
+
+NOTE::
+See also LINK::Classes/LinkPhase#*setCPS::
+::
