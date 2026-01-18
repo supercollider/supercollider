@@ -16,7 +16,7 @@ LinkPhase : UGen {
 					change: 1.0,
 					cps: Env([startCps, cps], [lag], curve).kr(
 						doneAction: Done.freeSelf,
-					).poll;
+					);
 				);
 			}
 		}, {
