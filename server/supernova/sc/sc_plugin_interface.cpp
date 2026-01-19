@@ -37,9 +37,8 @@
 
 #include "SC_Prototypes.h"
 #include "SC_Unit.h"
-#include "SC_Lock.h"
 #include "clz.h"
-#include "SC_fftlib.h"
+#include "SC_fftlib.hpp"
 #include "SC_Lock.h"
 #include "../../common/Samp.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"

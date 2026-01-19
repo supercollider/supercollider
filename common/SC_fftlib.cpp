@@ -35,7 +35,7 @@ ensuring that each thread has its own SplitBuf.
 #include <cstring>
 #include <cassert>
 
-#include "SC_fftlib.h"
+#include "SC_fftlib.hpp"
 #include "malloc_aligned.hpp"
 
 #ifdef NOVA_SIMD

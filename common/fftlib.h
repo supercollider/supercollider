@@ -1,3 +1,5 @@
+#pragma once
+
 long FFTInit(long* fftMptr, long fftN, float* Utbl);
 /* Compute cosine table and check size for complex ffts	*/
 /* INPUTS */

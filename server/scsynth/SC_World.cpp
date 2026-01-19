@@ -47,6 +47,7 @@
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "../../common/Samp.hpp"
 #include "SC_StringParser.h"
+#include "SC_fftlib.hpp"
 #ifdef _WIN32
 #    include <direct.h>
 #else
