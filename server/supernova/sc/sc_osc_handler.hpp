@@ -60,7 +60,7 @@ struct FifoMsg;
 
 namespace nova {
 
-typedef bool (*AsyncStageFn)(World* inWorld, void* cmdData);
+typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
 typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
 
 namespace detail {

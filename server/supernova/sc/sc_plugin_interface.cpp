@@ -293,29 +293,29 @@ void free_parent_group(Unit* unit) {
     sc_factory->add_done_node(group);
 }
 
-bool get_scope_buffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd& hnd) {
+SCBool get_scope_buffer(World* inWorld, int32 index, int32 channels, int32 maxFrames, ScopeBufferHnd* hnd) {
     scope_buffer_writer writer = instance->get_scope_buffer_writer(index, channels, maxFrames);
 
     if (writer.valid()) {
-        hnd.internalData = writer.buffer;
-        hnd.data = writer.data();
-        hnd.channels = channels;
-        hnd.maxFrames = maxFrames;
+        hnd->internalData = writer.buffer;
+        hnd->data = writer.data();
+        hnd->channels = channels;
+        hnd->maxFrames = maxFrames;
         return true;
     } else {
-        hnd.internalData = nullptr;
+        hnd->internalData = nullptr;
         return false;
     }
 }
 
-void push_scope_buffer(World* inWorld, ScopeBufferHnd& hnd, int frames) {
-    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+void push_scope_buffer(World* inWorld, ScopeBufferHnd* hnd, int frames) {
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd->internalData));
     writer.push(frames);
-    hnd.data = writer.data();
+    hnd->data = writer.data();
 }
 
-void release_scope_buffer(World* inWorld, ScopeBufferHnd& hnd) {
-    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+void release_scope_buffer(World* inWorld, ScopeBufferHnd* hnd) {
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd->internalData));
     instance->release_scope_buffer_writer(writer);
 }
 
@@ -324,26 +324,26 @@ void release_scope_buffer(World* inWorld, ScopeBufferHnd& hnd) {
 
 extern "C" {
 
-bool define_unit(const char* inUnitClassName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor,
-                 uint32 inFlags) {
+SCBool define_unit(const char* inUnitClassName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor,
+                   uint32 inFlags) {
     try {
         nova::sc_factory->register_ugen(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
         return true;
     } catch (...) { return false; }
 }
 
-bool define_bufgen(const char* name, BufGenFunc func) {
+SCBool define_bufgen(const char* name, BufGenFunc func) {
     try {
         nova::sc_factory->register_bufgen(name, func);
         return true;
     } catch (...) { return false; }
 }
 
-bool define_unitcmd(const char* unitClassName, const char* cmdName, UnitCmdFunc inFunc) {
+SCBool define_unitcmd(const char* unitClassName, const char* cmdName, UnitCmdFunc inFunc) {
     return nova::sc_factory->register_ugen_command_function(unitClassName, cmdName, inFunc);
 }
 
-bool define_plugincmd(const char* name, PlugInCmdFunc func, void* user_data) {
+SCBool define_plugincmd(const char* name, PlugInCmdFunc func, void* user_data) {
     return nova::sc_factory->register_cmd_plugin(name, func, user_data);
 }
 
@@ -549,7 +549,7 @@ void send_node_reply(Node* node, int reply_id, const char* command_name, int arg
     nova::instance->send_node_reply(node->mID, reply_id, command_name, argument_count, values);
 }
 
-int do_asynchronous_command(
+SCErr do_asynchronous_command(
     World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncStageFn stage2, // stage2 is non real time
     AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
@@ -560,13 +560,13 @@ int do_asynchronous_command(
     return 0;
 }
 
-bool send_message_from_RT(World* world, struct FifoMsg& msg) {
-    nova::instance->send_message_from_RT(world, msg);
+SCBool send_message_from_RT(World* world, struct FifoMsg* msg) {
+    nova::instance->send_message_from_RT(world, *msg);
     return true;
 }
 
-bool send_message_to_RT(World* world, struct FifoMsg& msg) {
-    nova::instance->send_message_to_RT(world, msg);
+SCBool send_message_to_RT(World* world, struct FifoMsg* msg) {
+    nova::instance->send_message_to_RT(world, *msg);
     return true;
 }
 

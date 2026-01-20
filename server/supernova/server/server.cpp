@@ -19,6 +19,7 @@
 #include <stdexcept>
 
 #include "SC_Win32Utils.h"
+#include "SC_fftlib.hpp"
 
 #include "nova-tt/thread_affinity.hpp"
 #include "nova-tt/thread_priority.hpp"
