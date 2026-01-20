@@ -34,7 +34,8 @@
 
 extern int gMissingNodeID;
 
-SCBool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags) {
+SCBool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor,
+                      uint32 inFlags) {
     if (strlen(inName) >= kSCNameByteLen)
         return false;
 

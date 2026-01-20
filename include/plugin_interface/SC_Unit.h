@@ -90,7 +90,7 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
     Print("%s: alloc failed, increase server's RT memory (e.g. via ServerOptions)\n", __func__);                       \
     SETCALC(ClearUnitOutputs);                                                                                         \
     ClearUnitOutputs(unit, 1);                                                                                         \
-    unit->mDone = kSCTrue;                                                                                                \
+    unit->mDone = kSCTrue;                                                                                             \
     return;
 
 // macro for handling RT allocation failures. Example usage:
@@ -102,11 +102,11 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
     }
 
 #ifdef __cplusplus
-    template <typename ToType, typename Value>
-    [[nodiscard]] inline constexpr auto copyAndCastToTypeOfFirstArg(const ToType&, const Value& value) noexcept {
-        using TargetT = std::remove_cv_t<std::remove_reference_t<ToType>>;
-        return static_cast<TargetT>(value);
-    }
+template <typename ToType, typename Value>
+[[nodiscard]] inline constexpr auto copyAndCastToTypeOfFirstArg(const ToType&, const Value& value) noexcept {
+    using TargetT = std::remove_cv_t<std::remove_reference_t<ToType>>;
+    return static_cast<TargetT>(value);
+}
 #else
 #    define copyAndCastToTypeOfFirstArg(ToType, value) (value)
 #endif

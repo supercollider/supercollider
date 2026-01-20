@@ -58,9 +58,9 @@ SC_INLINE float64 OSCdouble(const char* inData) {
 }
 
 struct sc_msg_iter {
-    const char *data;
-    const char *rdpos;
-    const char *endpos;
+    const char* data;
+    const char* rdpos;
+    const char* endpos;
     const char* tags;
     int32 size;
     int32 count;

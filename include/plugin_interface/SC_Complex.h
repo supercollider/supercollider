@@ -23,16 +23,16 @@
 
 #ifdef __cplusplus
 
-#include <cmath>
+#    include <cmath>
 
-#include "SC_Types.h"
-#include "SC_Constants.h"
-#include "float.h"
+#    include "SC_Types.h"
+#    include "SC_Constants.h"
+#    include "float.h"
 
-#ifdef _MSC_VER
+#    ifdef _MSC_VER
 // hypotf is c99, but not c++
-#    define hypotf _hypotf
-#endif
+#        define hypotf _hypotf
+#    endif
 
 #endif // __cplusplus
 

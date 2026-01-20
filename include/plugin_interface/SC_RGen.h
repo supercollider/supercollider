@@ -127,21 +127,21 @@ inline uint32 RGen::trand() { return ::trand(s1, s2, s3); }
 
 /// Generate a double from 0.0 to 0.999...
 inline double RGen::drand() {
-#if BYTE_ORDER == BIG_ENDIAN
+#    if BYTE_ORDER == BIG_ENDIAN
     union {
         struct {
             uint32 hi, lo;
         } i;
         double f;
     } du;
-#else
+#    else
     union {
         struct {
             uint32 lo, hi;
         } i;
         double f;
     } du;
-#endif
+#    endif
     du.i.hi = 0x41300000;
     du.i.lo = trand();
     return du.f - 1048576.;

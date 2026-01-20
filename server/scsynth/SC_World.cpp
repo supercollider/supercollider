@@ -1179,7 +1179,9 @@ void NotifyNoArgs(World* inWorld, char* inString) {
 
 SCBool SendMsgToEngine(World* inWorld, FifoMsg* inMsg) { return inWorld->hw->mAudioDriver->SendMsgToEngine(*inMsg); }
 
-SCBool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg) { return inWorld->hw->mAudioDriver->SendMsgFromEngine(*inMsg); }
+SCBool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg) {
+    return inWorld->hw->mAudioDriver->SendMsgFromEngine(*inMsg);
+}
 
 void SetPrintFunc(PrintFunc func) { gPrint = func; }
 

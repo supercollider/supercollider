@@ -107,8 +107,8 @@ void Rate_Init(struct Rate* inRate, double inSampleRate, int inBufLength);
 #define GRAPHDEF(inGraph) ((GraphDef*)((inGraph)->mNode.mDef))
 #define GRAPH_PARAM_TABLE(inGraph) (GRAPHDEF(inGraph)->mParamSpecTable)
 
-SCErr Graph_New(World* inWorld, struct GraphDef* def, int32 inID, struct sc_msg_iter* args,
-                struct Graph** outGraph, bool argtype = true);
+SCErr Graph_New(World* inWorld, struct GraphDef* def, int32 inID, struct sc_msg_iter* args, struct Graph** outGraph,
+                bool argtype = true);
 void Graph_Ctor(World* inWorld, struct GraphDef* inGraphDef, struct Graph* graph, struct sc_msg_iter* msg,
                 bool argtype);
 void Graph_Dtor(struct Graph* inGraph);

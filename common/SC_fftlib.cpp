@@ -469,6 +469,4 @@ void scfft_doifft(scfft* f) {
     scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nwin, f->wintype, f->scalefac);
 }
 
-void scfft_destroy(scfft* f, SCFFT_Allocator* alloc) {
-    alloc->mFree(alloc->mUser, f);
-}
+void scfft_destroy(scfft* f, SCFFT_Allocator* alloc) { alloc->mFree(alloc->mUser, f); }

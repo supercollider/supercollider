@@ -71,8 +71,8 @@ typedef union {
 } elem64;
 
 #ifdef __cplusplus
-    const unsigned int kSCNameLen = 8;
-    const unsigned int kSCNameByteLen = 8 * sizeof(int32);
+const unsigned int kSCNameLen = 8;
+const unsigned int kSCNameByteLen = 8 * sizeof(int32);
 #else
 #    define kSCNameLen 8
 #    define kSCNameByteLen (8 * sizeof(int32))

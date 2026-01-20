@@ -227,7 +227,7 @@ typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 #endif
 
 #ifdef __cplusplus
-#    define scfft_create(fullsize, winsize, wintype, indata, outdata, forward, alloc) \
+#    define scfft_create(fullsize, winsize, wintype, indata, outdata, forward, alloc)                                  \
         (*ft->fSCfftCreate)(fullsize, winsize, wintype, indata, outdata, forward, &alloc.mBase)
 
 #    define scfft_destroy(fft, alloc) (*ft->fSCfftDestroy)(fft, &alloc.mBase)
@@ -240,7 +240,7 @@ typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 #define scfft_doifft (*ft->fSCfftDoIFFT)
 
 SC_INLINE void* SCWorld_Allocator_alloc(void* user, size_t size);
-SC_INLINE void SCWorld_Allocator_free(void *user, void* ptr);
+SC_INLINE void SCWorld_Allocator_free(void* user, void* ptr);
 
 struct SCWorld_Allocator {
     struct SCFFT_Allocator mBase;
@@ -249,10 +249,9 @@ struct SCWorld_Allocator {
 public:
     // Note: this constructor guarantees source compatibility
     // with plugins written before SC 3.15
-    SCWorld_Allocator(InterfaceTable* ft, World* world)
-        : SCWorld_Allocator(world) {}
+    SCWorld_Allocator(InterfaceTable* ft, World* world): SCWorld_Allocator(world) {}
 
-    SCWorld_Allocator(World *world) {
+    SCWorld_Allocator(World* world) {
         mBase.mUser = world;
         mBase.mAlloc = SCWorld_Allocator_alloc;
         mBase.mFree = SCWorld_Allocator_free;
@@ -265,7 +264,7 @@ SC_INLINE void* SCWorld_Allocator_alloc(void* user, size_t size) {
     return world->ft->fRTAlloc(world, size);
 }
 
-SC_INLINE void SCWorld_Allocator_free(void *user, void* ptr) {
+SC_INLINE void SCWorld_Allocator_free(void* user, void* ptr) {
     World* world = (World*)user;
     world->ft->fRTFree(world, ptr);
 }

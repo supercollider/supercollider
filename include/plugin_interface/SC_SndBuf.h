@@ -195,9 +195,7 @@ SC_INLINE float PhaseFrac1(uint32_t inPhase) {
     return u.ftemp;
 }
 
-SC_INLINE float lookup(const float* table, int32_t phase, int32_t mask) {
-    return table[(phase >> 16) & mask];
-}
+SC_INLINE float lookup(const float* table, int32_t phase, int32_t mask) { return table[(phase >> 16) & mask]; }
 
 
 #define xlobits 14

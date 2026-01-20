@@ -89,8 +89,8 @@ void Graph_Dtor(Graph* inGraph) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-SCErr Graph_New(World* inWorld, struct GraphDef* inGraphDef, int32 inID, struct sc_msg_iter* args,
-                Graph** outGraph, bool argtype) // true for normal args , false for setn type args
+SCErr Graph_New(World* inWorld, struct GraphDef* inGraphDef, int32 inID, struct sc_msg_iter* args, Graph** outGraph,
+                bool argtype) // true for normal args , false for setn type args
 {
     Graph* graph;
     int err = Node_New(inWorld, &inGraphDef->mNodeDef, inID, (Node**)&graph);

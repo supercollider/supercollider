@@ -33,9 +33,7 @@ void CPlugin_Ctor(CPlugin* x) {
     SETCALC(CPlugin_next);
 }
 
-void CPlugin_Dtor(CPlugin* x) {
-    RTFree(x->unit.mWorld, x->buffer);
-}
+void CPlugin_Dtor(CPlugin* x) { RTFree(x->unit.mWorld, x->buffer); }
 
 PluginLoad(ML_UGens) {
     ft = inTable;
