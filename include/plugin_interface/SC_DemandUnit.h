@@ -26,7 +26,7 @@
 
 // demand rate unit support.
 
-SC_INLINE bool IsDemandInput(Unit* unit, int index) {
+SC_INLINE SCBool IsDemandInput(Unit* unit, int index) {
     Unit* fromUnit = unit->mInput[index]->mFromUnit;
     return fromUnit && fromUnit->mCalcRate == calc_DemandRate;
 }

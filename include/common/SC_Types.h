@@ -29,12 +29,11 @@
 #    define SC_INLINE static inline
 #endif
 
-#ifndef __cplusplus
-#    include <stdbool.h>
-#endif // __cplusplus
+typedef int32_t SCErr;
 
+typedef uint8_t SCBool;
 
-typedef int SCErr;
+enum { kSCTrue = 1, kSCFalse = 0 };
 
 typedef int64_t int64;
 typedef uint64_t uint64;

@@ -36,7 +36,7 @@ static const int sc_api_version = 3;
 
 typedef struct SF_INFO SF_INFO;
 
-typedef bool (*AsyncStageFn)(World* inWorld, void* cmdData);
+typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
 typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
 
 struct ScopeBufferHnd {
@@ -53,32 +53,32 @@ struct ScopeBufferHnd {
 };
 
 struct InterfaceTable {
-    unsigned int mSineSize;
+    uint32 mSineSize;
     float32* mSineWavetable;
     float32* mSine;
     float32* mCosecant;
 
     // call printf for debugging. should not use in finished code.
-    int (*fPrint)(const char* fmt, ...);
+    int32 (*fPrint)(const char* fmt, ...);
 
     // get a seed for a random number generator
     int32 (*fRanSeed)();
 
     // define a unit def
-    bool (*fDefineUnit)(const char* inUnitClassName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor,
-                        uint32 inFlags);
+    SCBool (*fDefineUnit)(const char* inUnitClassName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor,
+                          uint32 inFlags);
 
     // define a command  /cmd
-    bool (*fDefinePlugInCmd)(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData);
+    SCBool (*fDefinePlugInCmd)(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData);
 
     // define a command for a unit generator  /u_cmd
-    bool (*fDefineUnitCmd)(const char* inUnitClassName, const char* inCmdName, UnitCmdFunc inFunc);
+    SCBool (*fDefineUnitCmd)(const char* inUnitClassName, const char* inCmdName, UnitCmdFunc inFunc);
 
     // define a buf gen
-    bool (*fDefineBufGen)(const char* inName, BufGenFunc inFunc);
+    SCBool (*fDefineBufGen)(const char* inName, BufGenFunc inFunc);
 
     // clear all of the unit's outputs.
-    void (*fClearUnitOutputs)(Unit* inUnit, int inNumSamples);
+    void (*fClearUnitOutputs)(Unit* inUnit, int32 inNumSamples);
 
     // non real time memory allocation
     void* (*fNRTAlloc)(size_t inSize);
@@ -91,46 +91,44 @@ struct InterfaceTable {
     void (*fRTFree)(World* inWorld, void* inPtr);
 
     // call to set a Node to run or not.
-    void (*fNodeRun)(struct Node* node, int run);
+    void (*fNodeRun)(struct Node* node, int32 run);
 
     // call to stop a Graph after the next buffer.
     void (*fNodeEnd)(struct Node* graph);
 
     // send a trigger from a Node to clients
-    void (*fSendTrigger)(struct Node* inNode, int triggerID, float value);
+    void (*fSendTrigger)(struct Node* inNode, int32 triggerID, float value);
 
     // send a reply message from a Node to clients
-    void (*fSendNodeReply)(struct Node* inNode, int replyID, const char* cmdName, int numArgs, const float* values);
+    void (*fSendNodeReply)(struct Node* inNode, int32 replyID, const char* cmdName, int numArgs, const float* values);
 
     // sending messages between real time and non real time levels.
-    bool (*fSendMsgFromRT)(World* inWorld, struct FifoMsg* inMsg);
-    bool (*fSendMsgToRT)(World* inWorld, struct FifoMsg* inMsg);
+    SCBool (*fSendMsgFromRT)(World* inWorld, struct FifoMsg* inMsg);
+    SCBool (*fSendMsgToRT)(World* inWorld, struct FifoMsg* inMsg);
 
     // libsndfile support
     int (*fSndFileFormatInfoFromStrings)(SF_INFO* info, const char* headerFormatString, const char* sampleFormatString);
 
     // get nodes by id
-    struct Node* (*fGetNode)(World* inWorld, int inID);
-    struct Graph* (*fGetGraph)(World* inWorld, int inID);
+    struct Node* (*fGetNode)(World* inWorld, int32 inID);
+    struct Graph* (*fGetGraph)(World* inWorld, int32 inID);
 
     void (*fNRTLock)(World* inWorld);
     void (*fNRTUnlock)(World* inWorld);
 
-    bool mUnused0;
-
     void (*fGroup_DeleteAll)(struct Group* group);
-    void (*fDoneAction)(int doneAction, struct Unit* unit);
+    void (*fDoneAction)(int32 doneAction, struct Unit* unit);
 
-    int (*fDoAsynchronousCommand)(
+    SCErr (*fDoAsynchronousCommand)(
         World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
         AsyncStageFn stage2, // stage2 is non real time
         AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
         AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
-        AsyncFreeFn cleanup, int completionMsgSize, void* completionMsgData);
+        AsyncFreeFn cleanup, int32 completionMsgSize, void* completionMsgData);
 
 
     // fBufAlloc should only be called within a BufGenFunc
-    int (*fBufAlloc)(SndBuf* inBuf, int inChannels, int inFrames, double inSampleRate);
+    SCErr (*fBufAlloc)(SndBuf* inBuf, int32 inChannels, int32 inFrames, double inSampleRate);
 
     // To initialise a specific FFT, ensure your input and output buffers exist. Internal data structures
     // will be allocated using the alloc object,
@@ -145,7 +143,7 @@ struct InterfaceTable {
     void (*fSCfftDestroy)(struct scfft* f, struct SCFFT_Allocator* alloc);
 
     // Get scope buffer. Returns the maximum number of possile frames.
-    bool (*fGetScopeBuffer)(World* inWorld, int index, int channels, int maxFrames, struct ScopeBufferHnd*);
+    SCBool (*fGetScopeBuffer)(World* inWorld, int32 index, int32 channels, int32 maxFrames, struct ScopeBufferHnd*);
     void (*fPushScopeBuffer)(World* inWorld, struct ScopeBufferHnd*, int frames);
     void (*fReleaseScopeBuffer)(World* inWorld, struct ScopeBufferHnd*);
 };

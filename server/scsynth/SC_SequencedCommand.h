@@ -509,7 +509,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////
 
 
-typedef bool (*AsyncStageFn)(World* inWorld, void* cmdData);
+typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
 typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
 
 class AsyncPlugInCmd : public SC_SequencedCommand {

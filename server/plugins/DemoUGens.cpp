@@ -38,7 +38,7 @@ struct MyCmdData // data for each command
 
 MyPluginData gMyPlugin; // global
 
-bool cmdStage2(World* world, void* inUserData) {
+SCBool cmdStage2(World* world, void* inUserData) {
     // user data is the command.
     MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
@@ -49,7 +49,7 @@ bool cmdStage2(World* world, void* inUserData) {
     return true;
 }
 
-bool cmdStage3(World* world, void* inUserData) {
+SCBool cmdStage3(World* world, void* inUserData) {
     // user data is the command.
     MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
@@ -61,7 +61,7 @@ bool cmdStage3(World* world, void* inUserData) {
     return true;
 }
 
-bool cmdStage4(World* world, void* inUserData) {
+SCBool cmdStage4(World* world, void* inUserData) {
     // user data is the command.
     MyCmdData* myCmdData = (MyCmdData*)inUserData;
 

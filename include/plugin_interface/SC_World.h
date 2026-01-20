@@ -47,8 +47,8 @@ struct World {
 
     // data accessible to plug-ins :
     double mSampleRate;
-    int mBufLength;
-    int mBufCounter;
+    int32 mBufLength;
+    int32 mBufCounter;
 
     uint32 mNumAudioBusChannels;
     uint32 mNumControlBusChannels;
@@ -80,26 +80,26 @@ struct World {
     struct RGen* mRGen;
 
     uint32 mNumUnits, mNumGraphs, mNumGroups;
-    int mSampleOffset; // offset in the buffer of current event time.
+    int32 mSampleOffset; // offset in the buffer of current event time.
 
     void* mNRTLock;
 
     uint32 mNumSharedControls;
     float* mSharedControls;
 
-    bool mRealTime;
-    bool mRunning;
-    int mDumpOSC;
+    SCBool mRealTime;
+    SCBool mRunning;
+    int32 mDumpOSC;
 
     void* mDriverLock;
 
     float mSubsampleOffset; // subsample accurate offset in the buffer of current event time.
 
-    int mVerbosity;
-    int mErrorNotification;
-    int mLocalErrorNotification;
+    int32 mVerbosity;
+    int32 mErrorNotification;
+    int32 mLocalErrorNotification;
 
-    bool mRendezvous; // Allow user to disable Rendezvous
+    SCBool mRendezvous; // Allow user to disable Rendezvous
 
     const char* mRestrictedPath; // OSC commands to read/write data can only do it within this path, if specified
 

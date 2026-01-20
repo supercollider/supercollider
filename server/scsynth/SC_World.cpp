@@ -91,8 +91,8 @@ extern HashTable<PlugInCmd, Malloc>* gPlugInCmds;
 struct SF_INFO {};
 #endif
 
-bool SendMsgToEngine(World* inWorld, FifoMsg* inMsg);
-bool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg);
+SCBool SendMsgToEngine(World* inWorld, FifoMsg* inMsg);
+SCBool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -181,9 +181,9 @@ void sc_SetDenormalFlags() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool BufGen_Create(const char* inName, BufGenFunc inFunc);
+SCBool BufGen_Create(const char* inName, BufGenFunc inFunc);
 
-static bool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd* hnd);
+static SCBool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd* hnd);
 static void pushScopeBuffer(World* inWorld, ScopeBufferHnd* hnd, int frames);
 static void releaseScopeBuffer(World* inWorld, ScopeBufferHnd* hnd);
 
@@ -218,7 +218,6 @@ void InterfaceTable_Init() {
     ft->fSendTrigger = &Node_SendTrigger;
     ft->fSendNodeReply = &Node_SendReply;
 
-
     ft->fDefineUnitCmd = &UnitDef_AddCmd;
     ft->fDefinePlugInCmd = &PlugIn_DefineCmd;
 
@@ -234,8 +233,6 @@ void InterfaceTable_Init() {
 
     ft->fNRTLock = &World_NRTLock;
     ft->fNRTUnlock = &World_NRTUnlock;
-
-    ft->mUnused0 = false;
 
     ft->fGroup_DeleteAll = &Group_DeleteAll;
     ft->fDoneAction = &Unit_DoneAction;
@@ -1010,7 +1007,7 @@ void World_NRTUnlock(World* world) { reinterpret_cast<SC_Lock*>(world->mNRTLock)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd* hnd) {
+SCBool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd* hnd) {
     server_shared_memory_creator* shm = inWorld->hw->mShmem;
 
     scope_buffer_writer writer = shm->get_scope_buffer_writer(index, channels, maxFrames);
@@ -1180,9 +1177,9 @@ void NotifyNoArgs(World* inWorld, char* inString) {
 }
 
 
-bool SendMsgToEngine(World* inWorld, FifoMsg* inMsg) { return inWorld->hw->mAudioDriver->SendMsgToEngine(*inMsg); }
+SCBool SendMsgToEngine(World* inWorld, FifoMsg* inMsg) { return inWorld->hw->mAudioDriver->SendMsgToEngine(*inMsg); }
 
-bool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg) { return inWorld->hw->mAudioDriver->SendMsgFromEngine(*inMsg); }
+SCBool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg) { return inWorld->hw->mAudioDriver->SendMsgFromEngine(*inMsg); }
 
 void SetPrintFunc(PrintFunc func) { gPrint = func; }
 

@@ -1488,7 +1488,7 @@ bool SendReplyCmd::Stage2() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-int PerformAsynchronousCommand(
+SCErr PerformAsynchronousCommand(
     World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncStageFn stage2, // stage2 is non real time
     AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true

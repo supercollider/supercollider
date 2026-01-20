@@ -89,8 +89,8 @@ void Graph_Dtor(Graph* inGraph) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int Graph_New(World* inWorld, struct GraphDef* inGraphDef, int32 inID, struct sc_msg_iter* args,
-              Graph** outGraph, bool argtype) // true for normal args , false for setn type args
+SCErr Graph_New(World* inWorld, struct GraphDef* inGraphDef, int32 inID, struct sc_msg_iter* args,
+                Graph** outGraph, bool argtype) // true for normal args , false for setn type args
 {
     Graph* graph;
     int err = Node_New(inWorld, &inGraphDef->mNodeDef, inID, (Node**)&graph);
@@ -607,14 +607,14 @@ void Graph_Trace(Graph* inGraph) {
 }
 
 
-int Graph_GetControl(Graph* inGraph, uint32 inIndex, float& outValue) {
+SCErr Graph_GetControl(Graph* inGraph, uint32 inIndex, float& outValue) {
     if (inIndex >= GRAPHDEF(inGraph)->mNumControls)
         return kSCErr_IndexOutOfRange;
     outValue = inGraph->mControls[inIndex];
     return kSCErr_None;
 }
 
-int Graph_GetControl(Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, float& outValue) {
+SCErr Graph_GetControl(Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, float& outValue) {
     ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
     ParamSpec* spec = table->Get(inHash, inName);
     if (!spec || inIndex >= spec->mNumChannels)

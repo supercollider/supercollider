@@ -156,8 +156,8 @@ static inline int sampleFormatFromString(const char* name) {
     return 0;
 }
 
-static inline int sndfileFormatInfoFromStrings(struct SF_INFO* info, const char* headerFormatString,
-                                               const char* sampleFormatString) {
+static inline SCErr sndfileFormatInfoFromStrings(struct SF_INFO* info, const char* headerFormatString,
+                                                 const char* sampleFormatString) {
     int headerFormat = headerFormatFromString(headerFormatString);
     if (!headerFormat)
         return kSCErr_Failed;

@@ -34,7 +34,7 @@
 void Node_StateMsg(Node* inNode, int inState);
 
 // create a new node
-int Node_New(World* inWorld, NodeDef* def, int32 inID, Node** outNode) {
+SCErr Node_New(World* inWorld, NodeDef* def, int32 inID, Node** outNode) {
     if (inID < 0) {
         if (inID == -1) { // -1 means generate an id for the event
             HiddenWorld* hw = inWorld->hw;

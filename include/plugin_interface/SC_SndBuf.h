@@ -153,16 +153,16 @@ struct SndBuf {
     double samplerate;
     double sampledur; // = 1/ samplerate
     float* data;
-    int channels;
-    int samples;
-    int frames;
-    int mask; // for delay lines
-    int mask1; // for interpolating oscillators.
-    int coord; // used by fft ugens
+    int32 channels;
+    int32 samples;
+    int32 frames;
+    int32 mask; // for delay lines
+    int32 mask1; // for interpolating oscillators.
+    int32 coord; // used by fft ugens
     void* sndfile; // used by disk i/o
     // SF_INFO fileinfo; // used by disk i/o
 #ifdef SUPERNOVA
-    bool isLocal;
+    SCBool isLocal;
     mutable rw_spinlock lock;
 #endif
 };
@@ -170,8 +170,8 @@ struct SndBuf {
 typedef struct SndBuf SndBuf;
 
 struct SndBufUpdates {
-    int reads;
-    int writes;
+    int32 reads;
+    int32 writes;
 };
 typedef struct SndBufUpdates SndBufUpdates;
 

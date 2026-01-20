@@ -34,7 +34,7 @@
 
 extern int gMissingNodeID;
 
-bool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags) {
+SCBool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags) {
     if (strlen(inName) >= kSCNameByteLen)
         return false;
 
@@ -60,7 +60,7 @@ bool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor,
 }
 
 
-bool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFunc inFunc) {
+SCBool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFunc inFunc) {
     if (strlen(inUnitDefName) >= kSCNameByteLen)
         return false;
     int32 unitDefName[kSCNameLen];
@@ -88,7 +88,7 @@ bool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFun
     return true;
 }
 
-bool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData) {
+SCBool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData) {
     if (strlen(inCmdName) >= kSCNameByteLen)
         return false;
 
@@ -108,7 +108,7 @@ void Graph_FirstCalc(Graph* inGraph);
 void Graph_NullFirstCalc(Graph* inGraph);
 void Graph_QueueUnitCmd(Graph* inGraph, int inSize, const char* inData);
 
-int Unit_DoCmd(World* inWorld, int inSize, char* inData) {
+SCErr Unit_DoCmd(World* inWorld, int inSize, char* inData) {
     sc_msg_iter msg(inSize, inData);
     int nodeID = msg.geti();
     gMissingNodeID = nodeID;
@@ -145,7 +145,7 @@ int Unit_DoCmd(World* inWorld, int inSize, char* inData) {
     return kSCErr_None;
 }
 
-int PlugIn_DoCmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+SCErr PlugIn_DoCmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
     sc_msg_iter msg(inSize, inData);
 
     int32* cmdName = msg.gets4();

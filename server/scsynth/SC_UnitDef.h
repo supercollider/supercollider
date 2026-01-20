@@ -49,13 +49,11 @@ struct UnitDef {
     uint32 mFlags;
 };
 
-extern "C" {
-bool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
-bool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFunc inFunc);
-bool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData);
-}
+SCBool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
+SCBool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFunc inFunc);
+SCBool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData);
 
-int Unit_DoCmd(struct World* inWorld, int inSize, char* inData);
+SCErr Unit_DoCmd(struct World* inWorld, int inSize, char* inData);
 
 inline int32* GetKey(UnitCmd* inCmd) { return inCmd->mCmdName; }
 inline int32 GetHash(UnitCmd* inCmd) { return inCmd->mHash; }

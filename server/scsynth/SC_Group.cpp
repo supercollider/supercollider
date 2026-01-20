@@ -46,7 +46,7 @@ void GroupNodeDef_Init() {
     gGroupNodeDef.mAllocSize = sizeof(Group);
 }
 
-int Group_New(World* inWorld, int32 inID, Group** outGroup) {
+SCErr Group_New(World* inWorld, int32 inID, Group** outGroup) {
     Group* group;
     int err = Node_New(inWorld, &gGroupNodeDef, inID, (Node**)&group);
     if (err)

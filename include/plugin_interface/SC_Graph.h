@@ -41,7 +41,7 @@ struct Graph {
     int32* mAudioBusOffsets;
 
     // try this for setting the rate of a control
-    int* mControlRates;
+    int32* mControlRates;
 
     uint32 mNumUnits;
     struct Unit** mUnits;
@@ -49,7 +49,7 @@ struct Graph {
     uint32 mNumCalcUnits;
     struct Unit** mCalcUnits; // excludes i-rate units.
 
-    int mSampleOffset;
+    int32 mSampleOffset;
     struct RGen* mRGen;
 
     struct Unit* mLocalAudioBusUnit;
@@ -58,8 +58,8 @@ struct Graph {
     float mSubsampleOffset;
 
     SndBuf* mLocalSndBufs;
-    int localBufNum;
-    int localMaxBufNum;
+    int32 localBufNum;
+    int32 localMaxBufNum;
 
     void* mPrivate;
 };

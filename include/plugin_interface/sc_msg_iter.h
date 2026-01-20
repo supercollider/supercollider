@@ -62,8 +62,8 @@ struct sc_msg_iter {
     const char *rdpos;
     const char *endpos;
     const char* tags;
-    int size;
-    int count;
+    int32 size;
+    int32 count;
 
 #ifdef __cplusplus
     sc_msg_iter();

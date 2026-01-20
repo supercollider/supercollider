@@ -33,7 +33,7 @@ struct World;
 typedef void (*UnitCtorFunc)(struct Unit* inUnit);
 typedef void (*UnitDtorFunc)(struct Unit* inUnit);
 
-typedef void (*UnitCalcFunc)(struct Unit* inUnit, int inNumSamples);
+typedef void (*UnitCalcFunc)(struct Unit* inUnit, int32 inNumSamples);
 
 struct SC_Unit_Extensions {
     float* todo;
@@ -55,7 +55,7 @@ struct Unit {
     float **mInBuf, **mOutBuf;
 
     UnitCalcFunc mCalcFunc;
-    int mBufLength;
+    int32 mBufLength;
 };
 
 typedef struct Unit Unit;
@@ -90,7 +90,7 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
     Print("%s: alloc failed, increase server's RT memory (e.g. via ServerOptions)\n", __func__);                       \
     SETCALC(ClearUnitOutputs);                                                                                         \
     ClearUnitOutputs(unit, 1);                                                                                         \
-    unit->mDone = true;                                                                                                \
+    unit->mDone = kSCTrue;                                                                                                \
     return;
 
 // macro for handling RT allocation failures. Example usage:

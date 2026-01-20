@@ -84,7 +84,7 @@ int32 GetHash(struct PlugInCmd* inPlugInCmd);
 bool AddPlugInCmd(struct PlugInCmd* inPlugInCmd);
 bool RemovePlugInCmd(struct PlugInCmd* inPlugInCmd);
 struct PlugInCmd* GetPlugInCmd(int32* inKey);
-int PlugIn_DoCmd(World* inWorld, int inSize, char* inArgs, struct ReplyAddress* inReply);
+SCErr PlugIn_DoCmd(World* inWorld, int inSize, char* inArgs, struct ReplyAddress* inReply);
 
 int32* GetKey(struct GraphDef* inGraphDef);
 int32 GetHash(struct GraphDef* inGraphDef);
@@ -107,13 +107,13 @@ void Rate_Init(struct Rate* inRate, double inSampleRate, int inBufLength);
 #define GRAPHDEF(inGraph) ((GraphDef*)((inGraph)->mNode.mDef))
 #define GRAPH_PARAM_TABLE(inGraph) (GRAPHDEF(inGraph)->mParamSpecTable)
 
-int Graph_New(World* inWorld, struct GraphDef* def, int32 inID, struct sc_msg_iter* args,
-              struct Graph** outGraph, bool argtype = true);
+SCErr Graph_New(World* inWorld, struct GraphDef* def, int32 inID, struct sc_msg_iter* args,
+                struct Graph** outGraph, bool argtype = true);
 void Graph_Ctor(World* inWorld, struct GraphDef* inGraphDef, struct Graph* graph, struct sc_msg_iter* msg,
                 bool argtype);
 void Graph_Dtor(struct Graph* inGraph);
-int Graph_GetControl(struct Graph* inGraph, uint32 inIndex, float& outValue);
-int Graph_GetControl(struct Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, float& outValue);
+SCErr Graph_GetControl(struct Graph* inGraph, uint32 inIndex, float& outValue);
+SCErr Graph_GetControl(struct Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, float& outValue);
 void Graph_SetControl(struct Graph* inGraph, uint32 inIndex, float inValue);
 void Graph_SetControl(struct Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, float inValue);
 void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus);
@@ -124,7 +124,7 @@ void Graph_Trace(Graph* inGraph);
 
 ////////////////////////////////////////////////////////////////////////
 
-int Node_New(World* inWorld, struct NodeDef* def, int32 inID, struct Node** outNode);
+SCErr Node_New(World* inWorld, struct NodeDef* def, int32 inID, struct Node** outNode);
 void Node_Dtor(struct Node* inNode);
 void Node_Remove(struct Node* s);
 void Node_RemoveID(Node* inNode);
@@ -158,7 +158,7 @@ void Group_Calc(Group* inGroup);
 void Graph_Calc(struct Graph* inGraph);
 }
 
-int Group_New(World* inWorld, int32 inID, Group** outGroup);
+SCErr Group_New(World* inWorld, int32 inID, Group** outGroup);
 void Group_Dtor(Group* inGroup);
 void Group_DeleteAll(Group* inGroup);
 void Group_DeepFreeGraphs(Group* inGroup);
@@ -212,10 +212,10 @@ int32 server_timeseed();
 
 ////////////////////////////////////////////////////////////////////////
 
-typedef bool (*AsyncStageFn)(World* inWorld, void* cmdData);
+typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
 typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
 
-int PerformAsynchronousCommand(
+SCErr PerformAsynchronousCommand(
     World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncStageFn stage2, // stage2 is non real time
     AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true

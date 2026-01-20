@@ -23,7 +23,7 @@
 #include "SC_Prototypes.h"
 #include "SC_Str4.h"
 
-bool BufGen_Create(const char* inName, BufGenFunc inFunc) {
+SCBool BufGen_Create(const char* inName, BufGenFunc inFunc) {
     BufGen* bufGen = (BufGen*)malloc(sizeof(BufGen));
     str4cpy(bufGen->mBufGenName, inName);
     bufGen->mHash = Hash(bufGen->mBufGenName);
