@@ -1,6 +1,7 @@
 #include "SC_PlugIn.h"
+#include "FFT_UGens.h"
 
-static InterfaceTable* ft;
+InterfaceTable* ft;
 
 typedef struct CPlugin {
     Unit unit;
