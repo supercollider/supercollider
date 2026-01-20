@@ -228,9 +228,9 @@ typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 
 #ifdef __cplusplus
 #    define scfft_create(fullsize, winsize, wintype, indata, outdata, forward, alloc)                                  \
-        (*ft->fSCfftCreate)(fullsize, winsize, wintype, indata, outdata, forward, &alloc.mBase)
+        (*ft->fSCfftCreate)(fullsize, winsize, wintype, indata, outdata, forward, &alloc)
 
-#    define scfft_destroy(fft, alloc) (*ft->fSCfftDestroy)(fft, &alloc.mBase)
+#    define scfft_destroy(fft, alloc) (*ft->fSCfftDestroy)(fft, &alloc)
 #else
 #    define scfft_create (*ft->fSCfftCreate)
 #    define scfft_destroy (*ft->fSCfftDestroy)
@@ -238,26 +238,6 @@ typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 
 #define scfft_dofft (*ft->fSCfftDoFFT)
 #define scfft_doifft (*ft->fSCfftDoIFFT)
-
-SC_INLINE void* SCWorld_Allocator_alloc(void* user, size_t size);
-SC_INLINE void SCWorld_Allocator_free(void* user, void* ptr);
-
-struct SCWorld_Allocator {
-    struct SCFFT_Allocator mBase;
-
-#ifdef __cplusplus
-public:
-    // Note: this constructor guarantees source compatibility
-    // with plugins written before SC 3.15
-    SCWorld_Allocator(InterfaceTable* ft, World* world): SCWorld_Allocator(world) {}
-
-    SCWorld_Allocator(World* world) {
-        mBase.mUser = world;
-        mBase.mAlloc = SCWorld_Allocator_alloc;
-        mBase.mFree = SCWorld_Allocator_free;
-    }
-#endif
-};
 
 SC_INLINE void* SCWorld_Allocator_alloc(void* user, size_t size) {
     World* world = (World*)user;
@@ -268,3 +248,16 @@ SC_INLINE void SCWorld_Allocator_free(void* user, void* ptr) {
     World* world = (World*)user;
     world->ft->fRTFree(world, ptr);
 }
+
+#ifdef __cplusplus
+struct SCWorld_Allocator : SCFFT_Allocator {
+    // Note: this constructor ensures source compatibility with plugins written before SC 3.15
+    SCWorld_Allocator(InterfaceTable* ft, World* world): SCWorld_Allocator(world) {}
+
+    SCWorld_Allocator(World* world) {
+        mAlloc = SCWorld_Allocator_alloc;
+        mFree = SCWorld_Allocator_free;
+        mUser = world;
+    }
+};
+#endif
