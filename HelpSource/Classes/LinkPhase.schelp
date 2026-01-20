@@ -1,5 +1,5 @@
 TITLE:: LinkPhase
-summary:: Represents the phase of a Link clock on the server.
+summary:: UGen to access the phase of the server's Link clock
 categories:: UGens>Clock, Streams-Patterns-Events
 related:: Classes/LinkClock, Classes/LinkCPS, Classes/LinkJump
 

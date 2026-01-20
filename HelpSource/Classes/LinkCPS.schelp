@@ -1,5 +1,5 @@
 TITLE:: LinkCPS
-summary:: Gets and sets the cycles per second of the Link clock of the server
+summary:: UGen that gets and sets the cycles per second of the server's Link clock
 categories:: UGens>Clock, Streams-Patterns-Events
 related:: Classes/LinkPhase, Classes/LinkClock, Classes/LinkJump
 
