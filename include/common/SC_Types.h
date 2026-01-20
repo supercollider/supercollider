@@ -29,11 +29,22 @@
 #    define SC_INLINE static inline
 #endif
 
-typedef int32_t SCErr;
+#ifdef __cplusplus
+// unfortunately, we have to use 'bool' for source compatibility with
+// existing  C++ plugins, but we make sure that it is indeed 1 byte long.
+typedef bool SCBool;
 
+static_assert(sizeof(SCBool) == 1, "unexpected size of 'bool'");
+
+#else
+// let's take the chance and use a well-defined type for SCBool.
 typedef uint8_t SCBool;
 
+#endif // __cplusplus
+
 enum { kSCTrue = 1, kSCFalse = 0 };
+
+typedef int32_t SCErr;
 
 typedef int64_t int64;
 typedef uint64_t uint64;
