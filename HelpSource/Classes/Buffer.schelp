@@ -560,8 +560,7 @@ A boolean indicating whether or not the Buffer should be left 'open'. For use wi
 A common number is 32768 frames. cueSoundFile below, provides a simpler way of doing this.) The default is false which is the correct value for all other cases.
 argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
-argument:: completionMessage
-A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
+
 method:: readMsg
 	construct the message for a read command. args are like those for read,
 	except that last arg is completionMessage.
@@ -586,8 +585,6 @@ argument:: channels
 An Array of channels to be read from the soundfile. Indices start from zero. These will be read in the order provided. The number of channels requested must match this Buffer's numChannels.
 argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
-argument:: completionMessage
-A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 
 method:: readChannelMsg
 	as above for single channel, with last arg being completionMessage.
