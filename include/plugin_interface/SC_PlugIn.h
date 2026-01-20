@@ -31,15 +31,15 @@
 #include "SC_Wire.h"
 #include "SC_InterfaceTable.h"
 #include "SC_DemandUnit.h"
-#include "SC_BoundsMacros.h"
-#include "clz.h"
 #include "SC_Alloca.h"
 #include "sc_msg_iter.h"
 
 #ifdef __cplusplus
+#    include "clz.h"
+#    include "SC_BoundsMacros.h"
 #    include "SC_InlineUnaryOp.h"
 #    include "SC_InlineBinaryOp.h"
-#    include "Unroll.h" // legacy
+#    include "Unroll.h"
 #endif
 
 #include <stdlib.h>

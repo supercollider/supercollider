@@ -20,27 +20,14 @@
 
 #pragma once
 
-#ifdef __cplusplus
+#include <cstdlib> /* std::abs */
+#include <cmath> /* std::abs */
+#include <algorithm>
 
-#    include <cstdlib> /* std::abs */
-#    include <cmath> /* std::abs */
-#    include <algorithm>
-
-#    define sc_abs(a) std::abs(a)
-#    define sc_max(a, b) (((a) > (b)) ? (a) : (b))
-#    define sc_min(a, b) (((a) < (b)) ? (a) : (b))
+#define sc_abs(a) std::abs(a)
+#define sc_max(a, b) (((a) > (b)) ? (a) : (b))
+#define sc_min(a, b) (((a) < (b)) ? (a) : (b))
 
 template <typename T, typename U, typename V> inline T sc_clip(T x, U lo, V hi) {
     return std::max(std::min(x, (T)hi), (T)lo);
 }
-
-#else
-
-#    include <math.h>
-
-#    define sc_abs(a) abs(a)
-#    define sc_max(a, b) (((a) > (b)) ? (a) : (b))
-#    define sc_min(a, b) (((a) < (b)) ? (a) : (b))
-#    define sc_clip(x, lo, hi) sc_max(lo, sc_min(hi, x))
-
-#endif
