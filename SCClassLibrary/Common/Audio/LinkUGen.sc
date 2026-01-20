@@ -1,9 +1,9 @@
 LinkPhase : UGen {
-	*start {|server=nil|
+	*start {|server|
 		{FreeSelf.kr(LinkEnabler.kr)}.play(server ? Server.default);
 	}
 
-	*stop {|server=nil|
+	*stop {|server|
 		{FreeSelf.kr(LinkDisabler.kr)}.play(server ? Server.default);
 	}
 
