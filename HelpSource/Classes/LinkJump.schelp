@@ -13,7 +13,7 @@ s.boot;
 // start participating in a Link session - default is 1.0cps / 60bpm if no Link session is available
 LinkPhase.start;
 
-LinkPhase.setCPS(3.0);
+LinkPhase.setTempo(3.0);
 
 // a Link phase runs from [0, quantum) with the given cps
 (

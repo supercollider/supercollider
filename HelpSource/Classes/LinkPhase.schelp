@@ -28,7 +28,7 @@ Ndef(\l, {
 )
 
 // change the tempo of the clock - lag will introduce a gradient change
-LinkPhase.setCPS(cps: 3.0, lag: 4.0);
+LinkPhase.setTempo(cps: 3.0, lag: 4.0);
 
 // spawn a clock on sclang side
 l = LinkClock(1.0).latency_(Server.default.latency);
@@ -75,7 +75,7 @@ All informations from the Link session will be set to MATH::-1.0::.
 argument:: server
 A LINK::Classes/Server::, defaults to LINK::Classes/Server#-default::.
 
-METHOD:: setCPS
+METHOD:: setTempo
 Helper method to set the CPS of a Link clock.
 NOTE::
 See also LINK::Classes/LinkCPS::.

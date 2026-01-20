@@ -21,5 +21,5 @@ The CPS to be set.
 Ableton Link uses BPM internally and only allows bpm values between MATH::[20, 999]::, which translates to MATH::[\frac{1}{3}, 16.65]:: cps.
 
 NOTE::
-See also LINK::Classes/LinkPhase#*setCPS::
+See also LINK::Classes/LinkPhase#*setTempo::
 ::

@@ -7,7 +7,7 @@ LinkPhase : UGen {
 		{FreeSelf.kr(LinkDisabler.kr)}.play(server ? Server.default);
 	}
 
-	*setCPS {|cps, lag=0.0, curve=\exp, server=nil|
+	*setTempo {|cps, lag=0.0, curve=\exp, server=nil|
 		lag = lag.max(0.0);
 		if(lag > 0.0, {
 			{

@@ -26,7 +26,7 @@ TestLinkUGens : UnitTest {
 	test_getAndSetTempo {
 		var condition = Condition();
 
-		LinkPhase.setCPS(3.0, server: server);
+		LinkPhase.setTempo(3.0, server: server);
 		server.sync;
 
 		{LinkCPS.kr()}.loadToFloatArray(0.2, server, {|sig|
@@ -60,7 +60,7 @@ TestLinkUGens : UnitTest {
 		var condition = Condition();
 
 		// 40/3 cps = 800 bpm
-		LinkPhase.setCPS(40/3, server: server);
+		LinkPhase.setTempo(40/3, server: server);
 		server.sync;
 		0.2.wait;
 
