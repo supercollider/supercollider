@@ -7,6 +7,10 @@ DESCRIPTION::
 LinkPhase allows to access the phase of a shared Link clock.
 Such a Link clock can be e.g. LINK::Classes/LinkClock:: of sclang, allowing to synchronize an sclang pattern with sequencing on the server.
 
+NOTE::
+Each SuperCollider server only uses one Link clock internally.
+Multiple units of LinkPhase and other Link clock UGens will use the same shared clock.
+::
 
 code::
 // LinkPhase runs on the server, so the server needs to be started
