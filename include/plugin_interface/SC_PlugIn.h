@@ -51,12 +51,6 @@
 #        define __attribute__(x)
 #    endif
 
-
-#    ifndef NAN // NAN is c99
-#        include <limits>
-#        define NAN std::numeric_limits<float>::quiet_NaN()
-#    endif
-
 // windows.h defines min() and max() macros which break things such as
 // std::numeric_limits<int32>::max() - so let's undefine them
 #    undef max
