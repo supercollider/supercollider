@@ -38,8 +38,8 @@ table::
 The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs. The full list of support editors is available at link::https://github.com/supercollider/supercollider/wiki/Systems-interfacing-with-SC#editors::
 ::
 
-The server and client link::Guides/ClientVsServer##communicate:: via Open Sound Control (link::http://opensoundcontrol.org/##OSC::
-), allowing SuperCollider to run on a single machine or on multiple machines over a network.
+The server and client link::Guides/ClientVsServer##communicate:: via Open Sound Control (link::http://opensoundcontrol.org/#
+	#OSC::), allowing SuperCollider to run on a single machine or on multiple machines over a network.
 Thanks to this client/server architecture, it is possible for link::Guides/MultiClient_Setups##multiple clients:: to connect and control what is happening on the server.
 Users can also control the audio server directly with any OSC-enabled program by using the link::Guides/NodeMessaging:: protocol.
 
