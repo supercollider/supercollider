@@ -1,10 +1,10 @@
 LinkPhase : UGen {
 	*start {|server|
-		{FreeSelf.kr(LinkEnabler.kr)}.play(server ? Server.default);
+		{FreeSelf.kr(LinkEnabler.kr)}.play(server);
 	}
 
 	*stop {|server|
-		{FreeSelf.kr(LinkDisabler.kr)}.play(server ? Server.default);
+		{FreeSelf.kr(LinkDisabler.kr)}.play(server);
 	}
 
 	*setTempo {|cps, lag=0.0, curve=\exp, server=nil|
@@ -24,7 +24,7 @@ LinkPhase : UGen {
 				LinkCPS.kr(1.0, cps);
 				FreeSelf.kr(1.0);
 			}
-		}).play(server ? Server.default);
+		}).play(server);
 	}
 
 	*kr {|quantum=4|
