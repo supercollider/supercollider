@@ -5,7 +5,7 @@ related:: Classes/LinkPhase, Classes/LinkClock, Classes/LinkJump
 
 DESCRIPTION::
 
-Allows to get and set the CPS (cycles per second) of the servers Link clock, such that the CPS can be modulated through a signal.
+An UGen that gets and sets the CPS (cycles per second) of the server's Link clock, such that the CPS can be modulated through a signal.
 Ableton Link internally uses BPM which gets converted by the server to CPS by dividing the BPM value by 60.
 See LINK::Classes/LinkPhase:: for examples.
 
