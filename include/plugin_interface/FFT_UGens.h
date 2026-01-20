@@ -35,7 +35,7 @@ struct SCPolarBuf {
     SCPolar bin[1];
 };
 
-static inline SCPolarBuf* ToPolarApx(SndBuf* buf) {
+SC_INLINE SCPolarBuf* ToPolarApx(SndBuf* buf) {
     if (buf->coord == coord_Complex) {
         SCComplexBuf* p = (SCComplexBuf*)buf->data;
         int numbins = (buf->samples - 2) >> 1;
@@ -48,7 +48,7 @@ static inline SCPolarBuf* ToPolarApx(SndBuf* buf) {
     return (SCPolarBuf*)buf->data;
 }
 
-static inline SCComplexBuf* ToComplexApx(SndBuf* buf) {
+SC_INLINE SCComplexBuf* ToComplexApx(SndBuf* buf) {
     if (buf->coord == coord_Polar) {
         SCPolarBuf* p = (SCPolarBuf*)buf->data;
         int numbins = (buf->samples - 2) >> 1;
@@ -64,7 +64,7 @@ struct PV_Unit : Unit {};
 
 // Ordinary ClearUnitOutputs outputs zero, potentially telling the IFFT (+ PV UGens) to act on buffer zero, so let's
 // skip that:
-static inline void FFT_ClearUnitOutputs(Unit* unit, int wrongNumSamples) { ZOUT0(0) = -1; }
+SC_INLINE void FFT_ClearUnitOutputs(Unit* unit, int wrongNumSamples) { ZOUT0(0) = -1; }
 
 #define ClearFFTUnitIfMemFailed(condition)                                                                             \
     if (!(condition)) {                                                                                                \

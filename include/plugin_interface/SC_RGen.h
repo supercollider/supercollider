@@ -48,13 +48,17 @@
 
 #pragma once
 
-#include "SC_Endian.h"
 #include "SC_Types.h"
-#include "SC_BoundsMacros.h"
-#include "Hash.h"
-#include <math.h>
+
+#ifdef __cplusplus
+#    include "SC_Endian.h"
+#    include "Hash.h"
+#    include <math.h>
+#    include "SC_BoundsMacros.h"
+#endif
 
 struct RGen {
+#ifdef __cplusplus
     void init(uint32 seed);
 
     uint32 trand();
@@ -80,9 +84,14 @@ struct RGen {
     double exprand(double scale);
     double biexprand(double scale);
     double sum3rand(double scale);
+#endif
 
     uint32 s1, s2, s3; // random generator state
 };
+
+typedef struct RGen RGen;
+
+#ifdef __cplusplus
 
 inline void RGen::init(uint32 seed) {
     // humans tend to use small seeds - mess up the bits
@@ -336,3 +345,5 @@ inline float fcoin(uint32& s1, uint32& s2, uint32& s3) {
     u.i = 0x3F800000 | (0x80000000 & trand(s1, s2, s3));
     return u.f;
 }
+
+#endif // __cplusplus

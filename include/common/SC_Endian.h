@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include "SC_Types.h"
+
 #if defined(__APPLE__)
 
 #    include <machine/endian.h>
@@ -60,17 +62,17 @@
 
 #ifndef SC_NO_ENDIAN_FUNCTIONS
 
-static inline unsigned int sc_htonl(unsigned int arg) { return htonl(arg); }
+SC_INLINE unsigned int sc_htonl(unsigned int arg) { return htonl(arg); }
 
-static inline unsigned short sc_htons(unsigned short arg) { return htons(arg); }
+SC_INLINE unsigned short sc_htons(unsigned short arg) { return htons(arg); }
 
-static inline unsigned int sc_ntohl(unsigned int arg) { return ntohl(arg); }
+SC_INLINE unsigned int sc_ntohl(unsigned int arg) { return ntohl(arg); }
 
-static inline unsigned short sc_ntohs(unsigned short arg) { return ntohs(arg); }
+SC_INLINE unsigned short sc_ntohs(unsigned short arg) { return ntohs(arg); }
 
 #else
 
-static inline unsigned int sc_htonl(unsigned int x) {
+SC_INLINE unsigned int sc_htonl(unsigned int x) {
 #    if BYTE_ORDER == LITTLE_ENDIAN
     unsigned char* s = (unsigned char*)&x;
     return (unsigned int)(s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3]);
@@ -79,7 +81,7 @@ static inline unsigned int sc_htonl(unsigned int x) {
 #    endif
 }
 
-static inline unsigned short sc_htons(unsigned short x) {
+SC_INLINE unsigned short sc_htons(unsigned short x) {
 #    if BYTE_ORDER == LITTLE_ENDIAN
     unsigned char* s = (unsigned char*)&x;
     return (unsigned short)(s[0] << 8 | s[1]);
@@ -88,9 +90,9 @@ static inline unsigned short sc_htons(unsigned short x) {
 #    endif
 }
 
-static inline unsigned int sc_ntohl(unsigned int x) { return sc_htonl(x); }
+SC_INLINE unsigned int sc_ntohl(unsigned int x) { return sc_htonl(x); }
 
-static inline unsigned short sc_ntohs(unsigned short x) { return sc_htons(x); }
+SC_INLINE unsigned short sc_ntohs(unsigned short x) { return sc_htons(x); }
 
 #endif
 

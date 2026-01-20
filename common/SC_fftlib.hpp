@@ -12,14 +12,14 @@
 // will be allocated using the alloc object,
 // Both "fullsize" and "winsize" should be powers of two (this is not checked internally).
 scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype, float* indata, float* outdata,
-                    SCFFT_Direction forward, SCFFT_Allocator& alloc);
+                    SCFFT_Direction forward, SCFFT_Allocator* alloc);
 
 // These two will take data from indata, use trbuf to process it, and put their results in outdata.
 void scfft_dofft(scfft* f);
 void scfft_doifft(scfft* f);
 
 // destroy any resources held internally.
-void scfft_destroy(scfft* f, SCFFT_Allocator& alloc);
+void scfft_destroy(scfft* f, SCFFT_Allocator* alloc);
 
 // initialize thread local buffers
 void scfft_thread_init();

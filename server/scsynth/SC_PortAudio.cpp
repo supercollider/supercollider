@@ -81,19 +81,19 @@ protected:
     virtual bool DriverStop();
 
 public:
-    SC_PortAudioDriver(struct World* inWorld);
+    SC_PortAudioDriver(World* inWorld);
     virtual ~SC_PortAudioDriver();
 
     int PortAudioCallback(const void* input, void* output, unsigned long frameCount,
                           const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
 };
 
-SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_PortAudioDriver(inWorld); }
+SC_AudioDriver* SC_NewAudioDriver(World* inWorld) { return new SC_PortAudioDriver(inWorld); }
 
 #define PRINT_PORTAUDIO_ERROR(function, errorcode)                                                                     \
     scprintf("SC_PortAudioDriver: PortAudio failed at %s with error: '%s'\n", #function, Pa_GetErrorText(errorcode))
 
-SC_PortAudioDriver::SC_PortAudioDriver(struct World* inWorld):
+SC_PortAudioDriver::SC_PortAudioDriver(World* inWorld):
     SC_AudioDriver(inWorld),
     mStream(0)
 #ifdef SC_PA_USE_DLL

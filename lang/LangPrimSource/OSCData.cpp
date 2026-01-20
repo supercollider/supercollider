@@ -56,7 +56,7 @@
 #endif
 
 struct InternalSynthServerGlobals {
-    struct World* mWorld;
+    World* mWorld;
     int mNumSharedControls;
     float* mSharedControls;
 };

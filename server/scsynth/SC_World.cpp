@@ -87,15 +87,12 @@ extern HashTable<struct UnitDef, Malloc>* gUnitDefLib;
 extern HashTable<struct BufGen, Malloc>* gBufGenLib;
 extern HashTable<PlugInCmd, Malloc>* gPlugInCmds;
 
-extern "C" {
-
 #ifdef NO_LIBSNDFILE
 struct SF_INFO {};
 #endif
 
-bool SendMsgToEngine(World* inWorld, FifoMsg& inMsg);
-bool SendMsgFromEngine(World* inWorld, FifoMsg& inMsg);
-}
+bool SendMsgToEngine(World* inWorld, FifoMsg* inMsg);
+bool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -184,9 +181,11 @@ void sc_SetDenormalFlags() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd& hnd);
-static void pushScopeBuffer(World* inWorld, ScopeBufferHnd& hnd, int frames);
-static void releaseScopeBuffer(World* inWorld, ScopeBufferHnd& hnd);
+bool BufGen_Create(const char* inName, BufGenFunc inFunc);
+
+static bool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd* hnd);
+static void pushScopeBuffer(World* inWorld, ScopeBufferHnd* hnd, int frames);
+static void releaseScopeBuffer(World* inWorld, ScopeBufferHnd* hnd);
 
 void InterfaceTable_Init() {
     InterfaceTable* ft = &gInterfaceTable;
@@ -561,7 +560,7 @@ bool nextOSCPacket(FILE* file, OSC_Packet* packet, int64& outTime) {
 void PerformOSCBundle(World* inWorld, OSC_Packet* inPacket);
 
 #ifndef NO_LIBSNDFILE
-void World_NonRealTimeSynthesis(struct World* world, WorldOptions* inOptions) {
+void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
     if (inOptions->mLoadGraphDefs) {
         World_LoadGraphDefs(world);
     }
@@ -761,7 +760,7 @@ void World_NonRealTimeSynthesis(struct World* world, WorldOptions* inOptions) {
 }
 #endif // !NO_LIBSNDFILE
 
-void World_WaitForQuit(struct World* inWorld, bool unload_plugins) {
+void World_WaitForQuit(World* inWorld, bool unload_plugins) {
     try {
         inWorld->hw->mQuitProgram->wait();
         World_Cleanup(inWorld, unload_plugins);
@@ -1011,31 +1010,31 @@ void World_NRTUnlock(World* world) { reinterpret_cast<SC_Lock*>(world->mNRTLock)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd& hnd) {
+bool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd* hnd) {
     server_shared_memory_creator* shm = inWorld->hw->mShmem;
 
     scope_buffer_writer writer = shm->get_scope_buffer_writer(index, channels, maxFrames);
 
     if (writer.valid()) {
-        hnd.internalData = writer.buffer;
-        hnd.data = writer.data();
-        hnd.channels = channels;
-        hnd.maxFrames = maxFrames;
+        hnd->internalData = writer.buffer;
+        hnd->data = writer.data();
+        hnd->channels = channels;
+        hnd->maxFrames = maxFrames;
         return true;
     } else {
-        hnd.internalData = nullptr;
+        hnd->internalData = nullptr;
         return false;
     }
 }
 
-void pushScopeBuffer(World* inWorld, ScopeBufferHnd& hnd, int frames) {
-    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+void pushScopeBuffer(World* inWorld, ScopeBufferHnd* hnd, int frames) {
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd->internalData));
     writer.push(frames);
-    hnd.data = writer.data();
+    hnd->data = writer.data();
 }
 
-void releaseScopeBuffer(World* inWorld, ScopeBufferHnd& hnd) {
-    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+void releaseScopeBuffer(World* inWorld, ScopeBufferHnd* hnd) {
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd->internalData));
     server_shared_memory_creator* shm = inWorld->hw->mShmem;
     shm->release_scope_buffer_writer(writer);
 }
@@ -1181,9 +1180,9 @@ void NotifyNoArgs(World* inWorld, char* inString) {
 }
 
 
-bool SendMsgToEngine(World* inWorld, FifoMsg& inMsg) { return inWorld->hw->mAudioDriver->SendMsgToEngine(inMsg); }
+bool SendMsgToEngine(World* inWorld, FifoMsg* inMsg) { return inWorld->hw->mAudioDriver->SendMsgToEngine(*inMsg); }
 
-bool SendMsgFromEngine(World* inWorld, FifoMsg& inMsg) { return inWorld->hw->mAudioDriver->SendMsgFromEngine(inMsg); }
+bool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg) { return inWorld->hw->mAudioDriver->SendMsgFromEngine(*inMsg); }
 
 void SetPrintFunc(PrintFunc func) { gPrint = func; }
 

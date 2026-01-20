@@ -21,21 +21,26 @@
 
 #pragma once
 
-#include <type_traits>
 #include "SC_Types.h"
 #include "SC_SndBuf.h"
+
+#ifdef __cplusplus
+#    include <type_traits>
+#endif
+
+struct World;
 
 typedef void (*UnitCtorFunc)(struct Unit* inUnit);
 typedef void (*UnitDtorFunc)(struct Unit* inUnit);
 
-typedef void (*UnitCalcFunc)(struct Unit* inThing, int inNumSamples);
+typedef void (*UnitCalcFunc)(struct Unit* inUnit, int inNumSamples);
 
 struct SC_Unit_Extensions {
     float* todo;
 };
 
 struct Unit {
-    struct World* mWorld;
+    World* mWorld;
     struct UnitDef* mUnitDef;
     struct Graph* mParent;
     uint32 mNumInputs, mNumOutputs; // changed from uint16 for synthdef ver 2
@@ -45,7 +50,7 @@ struct Unit {
     int16 mDone;
     struct Wire **mInput, **mOutput;
     struct Rate* mRate;
-    SC_Unit_Extensions*
+    struct SC_Unit_Extensions*
         mExtensions; // future proofing and backwards compatibility; used to be SC_Dimension struct pointer
     float **mInBuf, **mOutBuf;
 
@@ -96,11 +101,16 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
         ClearUnitOnMemFailed                                                                                           \
     }
 
-template <typename ToType, typename Value>
-[[nodiscard]] inline constexpr auto copyAndCastToTypeOfFirstArg(const ToType&, const Value& value) noexcept {
-    using TargetT = std::remove_cv_t<std::remove_reference_t<ToType>>;
-    return static_cast<TargetT>(value);
-}
+#ifdef __cplusplus
+    template <typename ToType, typename Value>
+    [[nodiscard]] inline constexpr auto copyAndCastToTypeOfFirstArg(const ToType&, const Value& value) noexcept {
+        using TargetT = std::remove_cv_t<std::remove_reference_t<ToType>>;
+        return static_cast<TargetT>(value);
+    }
+#else
+#    define copyAndCastToTypeOfFirstArg(ToType, value) (value)
+#endif
+
 // calculate a slope for control rate interpolation to audio rate.
 #define CALCSLOPE(next, prev) ((next - prev) * copyAndCastToTypeOfFirstArg(next, unit->mRate->mSlopeFactor))
 
@@ -371,6 +381,9 @@ template <bool shared> struct buffer_lock {
     rgen.s1 = s1;                                                                                                      \
     rgen.s2 = s2;                                                                                                      \
     rgen.s3 = s3;
+
+
+struct sc_msg_iter;
 
 typedef void (*UnitCmdFunc)(struct Unit* unit, struct sc_msg_iter* args);
 typedef void (*PlugInCmdFunc)(World* inWorld, void* inUserData, struct sc_msg_iter* args, void* replyAddr);

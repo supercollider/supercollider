@@ -55,7 +55,7 @@ bool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFun
 bool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData);
 }
 
-int Unit_DoCmd(World* inWorld, int inSize, char* inData);
+int Unit_DoCmd(struct World* inWorld, int inSize, char* inData);
 
 inline int32* GetKey(UnitCmd* inCmd) { return inCmd->mCmdName; }
 inline int32 GetHash(UnitCmd* inCmd) { return inCmd->mHash; }

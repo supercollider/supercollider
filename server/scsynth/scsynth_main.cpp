@@ -415,7 +415,7 @@ int scsynth_main(int argc, char** argv) {
     } else
         options.mSharedMemoryID = 0;
 
-    struct World* world = World_New(&options);
+    World* world = World_New(&options);
     if (!world)
         return 1;
 

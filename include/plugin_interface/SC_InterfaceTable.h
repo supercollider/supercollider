@@ -26,6 +26,7 @@
 static const int sc_api_version = 3;
 
 #include "SC_Types.h"
+#include "SC_World.h"
 #include "SC_SndBuf.h"
 #include "SC_Unit.h"
 #include "SC_BufGen.h"
@@ -34,8 +35,6 @@ static const int sc_api_version = 3;
 #include "SC_Export.h"
 
 typedef struct SF_INFO SF_INFO;
-
-struct World;
 
 typedef bool (*AsyncStageFn)(World* inWorld, void* cmdData);
 typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
@@ -46,9 +45,11 @@ struct ScopeBufferHnd {
     uint32 channels;
     uint32 maxFrames;
 
+#ifdef __cplusplus
     float* channel_data(uint32 channel) { return data + (channel * maxFrames); }
 
     operator bool() { return internalData != 0; }
+#endif
 };
 
 struct InterfaceTable {
@@ -102,8 +103,8 @@ struct InterfaceTable {
     void (*fSendNodeReply)(struct Node* inNode, int replyID, const char* cmdName, int numArgs, const float* values);
 
     // sending messages between real time and non real time levels.
-    bool (*fSendMsgFromRT)(World* inWorld, struct FifoMsg& inMsg);
-    bool (*fSendMsgToRT)(World* inWorld, struct FifoMsg& inMsg);
+    bool (*fSendMsgFromRT)(World* inWorld, struct FifoMsg* inMsg);
+    bool (*fSendMsgToRT)(World* inWorld, struct FifoMsg* inMsg);
 
     // libsndfile support
     int (*fSndFileFormatInfoFromStrings)(SF_INFO* info, const char* headerFormatString, const char* sampleFormatString);
@@ -134,19 +135,19 @@ struct InterfaceTable {
     // To initialise a specific FFT, ensure your input and output buffers exist. Internal data structures
     // will be allocated using the alloc object,
     // Both "fullsize" and "winsize" should be powers of two (this is not checked internally).
-    struct scfft* (*fSCfftCreate)(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype, float* indata,
-                                  float* outdata, SCFFT_Direction forward, SCFFT_Allocator& alloc);
+    struct scfft* (*fSCfftCreate)(size_t fullsize, size_t winsize, enum SCFFT_WindowFunction wintype, float* indata,
+                                  float* outdata, enum SCFFT_Direction forward, struct SCFFT_Allocator* alloc);
 
-    void (*fSCfftDoFFT)(scfft* f);
-    void (*fSCfftDoIFFT)(scfft* f);
+    void (*fSCfftDoFFT)(struct scfft* f);
+    void (*fSCfftDoIFFT)(struct scfft* f);
 
     // destroy any resources held internally.
-    void (*fSCfftDestroy)(scfft* f, SCFFT_Allocator& alloc);
+    void (*fSCfftDestroy)(struct scfft* f, struct SCFFT_Allocator* alloc);
 
     // Get scope buffer. Returns the maximum number of possile frames.
-    bool (*fGetScopeBuffer)(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd&);
-    void (*fPushScopeBuffer)(World* inWorld, ScopeBufferHnd&, int frames);
-    void (*fReleaseScopeBuffer)(World* inWorld, ScopeBufferHnd&);
+    bool (*fGetScopeBuffer)(World* inWorld, int index, int channels, int maxFrames, struct ScopeBufferHnd*);
+    void (*fPushScopeBuffer)(World* inWorld, struct ScopeBufferHnd*, int frames);
+    void (*fReleaseScopeBuffer)(World* inWorld, struct ScopeBufferHnd*);
 };
 
 typedef struct InterfaceTable InterfaceTable;
@@ -162,8 +163,13 @@ typedef struct InterfaceTable InterfaceTable;
 #define ClearUnitOutputs (*ft->fClearUnitOutputs)
 #define SendTrigger (*ft->fSendTrigger)
 #define SendNodeReply (*ft->fSendNodeReply)
-#define SendMsgFromRT (*ft->fSendMsgFromRT)
-#define SendMsgToRT (*ft->fSendMsgToRT)
+#ifdef __cplusplus
+#    define SendMsgFromRT(world, msg) (*ft->fSendMsgFromRT)(world, &msg)
+#    define SendMsgToRT(world, msg) (*ft->fSendMsgToRT)(world, &msg)
+#else
+#    define SendMsgFromRT (*ft->fSendMsgFromRT)
+#    define SendMsgToRT (*ft->fSendMsgToRT)
+#endif
 #define DoneAction (*ft->fDoneAction)
 
 #define NRTAlloc (*ft->fNRTAlloc)
@@ -222,20 +228,46 @@ typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 #    define PluginUnload(name) C_LINKAGE SC_API_EXPORT void unload(void)
 #endif
 
-#define scfft_create (*ft->fSCfftCreate)
+#ifdef __cplusplus
+#    define scfft_create(fullsize, winsize, wintype, indata, outdata, forward, alloc) \
+        (*ft->fSCfftCreate)(fullsize, winsize, wintype, indata, outdata, forward, &alloc.mBase)
+
+#    define scfft_destroy(fft, alloc) (*ft->fSCfftDestroy)(fft, &alloc.mBase)
+#else
+#    define scfft_create (*ft->fSCfftCreate)
+#    define scfft_destroy (*ft->fSCfftDestroy)
+#endif
+
 #define scfft_dofft (*ft->fSCfftDoFFT)
 #define scfft_doifft (*ft->fSCfftDoIFFT)
-#define scfft_destroy (*ft->fSCfftDestroy)
 
+SC_INLINE void* SCWorld_Allocator_alloc(void* user, size_t size);
+SC_INLINE void SCWorld_Allocator_free(void *user, void* ptr);
 
-class SCWorld_Allocator : public SCFFT_Allocator {
-    InterfaceTable* ft;
-    World* world;
+struct SCWorld_Allocator {
+    struct SCFFT_Allocator mBase;
 
+#ifdef __cplusplus
 public:
-    SCWorld_Allocator(InterfaceTable* ft, World* world): ft(ft), world(world) {}
+    // Note: this constructor guarantees source compatibility
+    // with plugins written before SC 3.15
+    SCWorld_Allocator(InterfaceTable* ft, World* world)
+        : SCWorld_Allocator(world) {}
 
-    virtual void* alloc(size_t size) { return RTAlloc(world, size); }
-
-    virtual void free(void* ptr) { RTFree(world, ptr); }
+    SCWorld_Allocator(World *world) {
+        mBase.mUser = world;
+        mBase.mAlloc = SCWorld_Allocator_alloc;
+        mBase.mFree = SCWorld_Allocator_free;
+    }
+#endif
 };
+
+SC_INLINE void* SCWorld_Allocator_alloc(void* user, size_t size) {
+    World* world = (World*)user;
+    return world->ft->fRTAlloc(world, size);
+}
+
+SC_INLINE void SCWorld_Allocator_free(void *user, void* ptr) {
+    World* world = (World*)user;
+    world->ft->fRTFree(world, ptr);
+}

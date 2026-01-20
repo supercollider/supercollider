@@ -37,33 +37,35 @@ void zfree(void* ptr);
 
 ////////////////////////////////////////////////////////////////////////
 
-void World_Run(struct World* inWorld);
+struct World;
+
+void World_Run(World* inWorld);
 void World_Start(World* inWorld);
-void World_SetSampleRate(struct World* inWorld, double inSampleRate);
+void World_SetSampleRate(World* inWorld, double inSampleRate);
 
 extern "C" {
-void* World_Alloc(struct World* inWorld, size_t inByteSize);
-void* World_Realloc(struct World* inWorld, void* inPtr, size_t inByteSize);
-void World_Free(struct World* inWorld, void* inPtr);
+void* World_Alloc(World* inWorld, size_t inByteSize);
+void* World_Realloc(World* inWorld, void* inPtr, size_t inByteSize);
+void World_Free(World* inWorld, void* inPtr);
 void World_NRTLock(World* world);
 void World_NRTUnlock(World* world);
 }
 
-size_t World_TotalFree(struct World* inWorld);
-size_t World_LargestFreeChunk(struct World* inWorld);
+size_t World_TotalFree(World* inWorld);
+size_t World_LargestFreeChunk(World* inWorld);
 
 
 int32 GetKey(struct Node* inNode);
 int32 GetHash(struct Node* inNode);
-bool World_AddNode(struct World* inWorld, struct Node* inNode);
-bool World_RemoveNode(struct World* inWorld, struct Node* inNode);
+bool World_AddNode(World* inWorld, struct Node* inNode);
+bool World_RemoveNode(World* inWorld, struct Node* inNode);
 
 extern "C" {
-struct Node* World_GetNode(struct World* inWorld, int32 inID);
-struct Graph* World_GetGraph(struct World* inWorld, int32 inID);
+struct Node* World_GetNode(World* inWorld, int32 inID);
+struct Graph* World_GetGraph(World* inWorld, int32 inID);
 }
 
-struct Group* World_GetGroup(struct World* inWorld, int32 inID);
+struct Group* World_GetGroup(World* inWorld, int32 inID);
 
 int32* GetKey(struct UnitDef* inUnitDef);
 int32 GetHash(struct UnitDef* inUnitDef);
@@ -82,13 +84,13 @@ int32 GetHash(struct PlugInCmd* inPlugInCmd);
 bool AddPlugInCmd(struct PlugInCmd* inPlugInCmd);
 bool RemovePlugInCmd(struct PlugInCmd* inPlugInCmd);
 struct PlugInCmd* GetPlugInCmd(int32* inKey);
-int PlugIn_DoCmd(struct World* inWorld, int inSize, char* inArgs, struct ReplyAddress* inReply);
+int PlugIn_DoCmd(World* inWorld, int inSize, char* inArgs, struct ReplyAddress* inReply);
 
 int32* GetKey(struct GraphDef* inGraphDef);
 int32 GetHash(struct GraphDef* inGraphDef);
-void World_AddGraphDef(struct World* inWorld, struct GraphDef* inGraphDef);
-void World_RemoveGraphDef(struct World* inWorld, struct GraphDef* inGraphDef);
-struct GraphDef* World_GetGraphDef(struct World* inWorld, int32* inKey);
+void World_AddGraphDef(World* inWorld, struct GraphDef* inGraphDef);
+void World_RemoveGraphDef(World* inWorld, struct GraphDef* inGraphDef);
+struct GraphDef* World_GetGraphDef(World* inWorld, int32* inKey);
 void World_FreeAllGraphDefs(World* inWorld);
 void GraphDef_Free(GraphDef* inGraphDef);
 void GraphDef_Define(World* inWorld, GraphDef* inList);
@@ -105,9 +107,9 @@ void Rate_Init(struct Rate* inRate, double inSampleRate, int inBufLength);
 #define GRAPHDEF(inGraph) ((GraphDef*)((inGraph)->mNode.mDef))
 #define GRAPH_PARAM_TABLE(inGraph) (GRAPHDEF(inGraph)->mParamSpecTable)
 
-int Graph_New(struct World* inWorld, struct GraphDef* def, int32 inID, struct sc_msg_iter* args,
+int Graph_New(World* inWorld, struct GraphDef* def, int32 inID, struct sc_msg_iter* args,
               struct Graph** outGraph, bool argtype = true);
-void Graph_Ctor(struct World* inWorld, struct GraphDef* inGraphDef, struct Graph* graph, struct sc_msg_iter* msg,
+void Graph_Ctor(World* inWorld, struct GraphDef* inGraphDef, struct Graph* graph, struct sc_msg_iter* msg,
                 bool argtype);
 void Graph_Dtor(struct Graph* inGraph);
 int Graph_GetControl(struct Graph* inGraph, uint32 inIndex, float& outValue);
@@ -122,7 +124,7 @@ void Graph_Trace(Graph* inGraph);
 
 ////////////////////////////////////////////////////////////////////////
 
-int Node_New(struct World* inWorld, struct NodeDef* def, int32 inID, struct Node** outNode);
+int Node_New(World* inWorld, struct NodeDef* def, int32 inID, struct Node** outNode);
 void Node_Dtor(struct Node* inNode);
 void Node_Remove(struct Node* s);
 void Node_RemoveID(Node* inNode);
@@ -179,7 +181,7 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket* packet);
 
 ////////////////////////////////////////////////////////////////////////
 
-struct Unit* Unit_New(struct World* inWorld, struct UnitSpec* inUnitSpec, char*& memory);
+struct Unit* Unit_New(World* inWorld, struct UnitSpec* inUnitSpec, char*& memory);
 void Unit_EndCalc(struct Unit* inUnit, int inNumSamples);
 void Unit_End(struct Unit* inUnit);
 

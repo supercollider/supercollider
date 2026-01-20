@@ -88,13 +88,13 @@ extern "C" {
 
 // This struct is a bit like FFTW's idea of a "plan": it represents an FFT operation that may be applied once or
 // repeatedly. It should be possible for indata and outdata to be the same, for quasi-in-place operation.
-typedef struct scfft {
+struct scfft {
     unsigned int nfull, nwin, log2nfull,
         log2nwin; // Lengths of full FFT frame, and the (possibly shorter) windowed data frame
     short wintype;
     float *indata, *outdata, *trbuf;
     float scalefac; // Used to rescale the data to unity gain
-} scfft;
+};
 
 
 static float* fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
@@ -269,12 +269,13 @@ static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
 static int largest_fftsize = 1 << largest_log2n;
 
 scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype, float* indata, float* outdata,
-                    SCFFT_Direction forward, SCFFT_Allocator& alloc) {
+                    SCFFT_Direction forward, SCFFT_Allocator* alloc) {
     if ((fullsize > SC_FFT_ABSOLUTE_MAXSIZE) || (fullsize < SC_FFT_MINSIZE))
         return NULL;
 
     const int alignment = 128; // in bytes
-    char* chunk = (char*)alloc.alloc(sizeof(scfft) + scfft_trbufsize(fullsize) + alignment);
+    size_t allocSize = sizeof(scfft) + scfft_trbufsize(fullsize) + alignment;
+    char* chunk = (char*)alloc->mAlloc(alloc->mUser, allocSize);
     if (!chunk)
         return NULL;
 
@@ -468,4 +469,6 @@ void scfft_doifft(scfft* f) {
     scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nwin, f->wintype, f->scalefac);
 }
 
-void scfft_destroy(scfft* f, SCFFT_Allocator& alloc) { alloc.free(f); }
+void scfft_destroy(scfft* f, SCFFT_Allocator* alloc) {
+    alloc->mFree(alloc->mUser, f);
+}

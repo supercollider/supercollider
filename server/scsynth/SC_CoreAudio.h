@@ -65,15 +65,15 @@
 
 struct SC_ScheduledEvent {
     /// Callback function responsible for freeing the OSC packet in the correct thread.
-    typedef void (*PacketFreeFunc)(struct World* world, OSC_Packet* packet);
+    typedef void (*PacketFreeFunc)(World* world, OSC_Packet* packet);
 
     /// Frees an OSC packet in the realtime thread (to be used as a PacketFreeFunc).
-    static void FreeInRT(struct World* world, OSC_Packet* packet);
+    static void FreeInRT(World* world, OSC_Packet* packet);
     /// Frees an OSC packet in the non-realtime thread (to be used as a PacketFreeFunc).
-    static void FreeInNRT(struct World* world, OSC_Packet* packet);
+    static void FreeInNRT(World* world, OSC_Packet* packet);
 
     SC_ScheduledEvent(): mTime(0), mPacket(0) {}
-    SC_ScheduledEvent(struct World* inWorld, int64 inTime, OSC_Packet* inPacket, PacketFreeFunc freeFunc):
+    SC_ScheduledEvent(World* inWorld, int64 inTime, OSC_Packet* inPacket, PacketFreeFunc freeFunc):
         mTime(inTime),
         mPacket(inPacket),
         mPacketFreeFunc(freeFunc),
@@ -115,7 +115,7 @@ struct SC_ScheduledEvent {
     int64 mStabilityCount;
     OSC_Packet* mPacket;
     PacketFreeFunc mPacketFreeFunc;
-    struct World* mWorld;
+    World* mWorld;
 };
 
 typedef MsgFifo<FifoMsg, 65536> EngineFifo;
@@ -143,7 +143,7 @@ PacketStatus PerformCompletionMsg(World* world, const OSC_Packet& packet);
 class SC_AudioDriver {
 protected:
     int64 mOSCincrement;
-    struct World* mWorld;
+    World* mWorld;
     double mOSCtoSamples;
     int mSampleTime;
     float mSafetyClipThreshold;
@@ -194,7 +194,7 @@ protected:
 
 public:
     // Common methods
-    SC_AudioDriver(struct World* inWorld);
+    SC_AudioDriver(World* inWorld);
     virtual ~SC_AudioDriver();
 
     int64 mOSCbuftime;
@@ -227,7 +227,7 @@ public:
     double GetActualSampleRate() const { return mSmoothSampleRate; }
 };
 
-extern SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld);
+extern SC_AudioDriver* SC_NewAudioDriver(World* inWorld);
 
 
 // the following classes should be split out into separate source files.
@@ -264,7 +264,7 @@ protected:
 public:
     int builtinoutputflag_;
 
-    SC_CoreAudioDriver(struct World* inWorld);
+    SC_CoreAudioDriver(World* inWorld);
     virtual ~SC_CoreAudioDriver();
 
     bool StopStart();
@@ -297,7 +297,7 @@ protected:
     virtual bool DriverStop();
 
 public:
-    SC_iCoreAudioDriver(struct World* inWorld);
+    SC_iCoreAudioDriver(World* inWorld);
     virtual ~SC_iCoreAudioDriver();
 
     void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
@@ -314,5 +314,5 @@ public:
     AudioUnit inputUnit;
 };
 
-inline SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_iCoreAudioDriver(inWorld); }
+inline SC_AudioDriver* SC_NewAudioDriver(World* inWorld) { return new SC_iCoreAudioDriver(inWorld); }
 #endif // SC_AUDIO_API_COREAUDIOIPHONE

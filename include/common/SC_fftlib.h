@@ -37,11 +37,13 @@ Copyright (c) 2008 Dan Stowell. All rights reserved.
 
 struct scfft;
 
-class SCFFT_Allocator {
-public:
-    virtual void* alloc(size_t size) = 0;
-    virtual void free(void* ptr) = 0;
-    virtual ~SCFFT_Allocator() {}
+typedef void* (*SCFFT_AllocFunc)(void* user, size_t size);
+typedef void (*SCFFT_FreeFunc)(void* user, void* ptr);
+
+struct SCFFT_Allocator {
+    SCFFT_AllocFunc mAlloc;
+    SCFFT_FreeFunc mFree;
+    void* mUser;
 };
 
 enum SCFFT_Direction { kForward = 1, kBackward = 0 };

@@ -23,9 +23,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if !defined(__cplusplus)
+#if __cplusplus
+#    define SC_INLINE inline
+#else
+#    define SC_INLINE static inline
+#endif
+
+#ifndef __cplusplus
 #    include <stdbool.h>
 #endif // __cplusplus
+
 
 typedef int SCErr;
 
@@ -56,5 +63,10 @@ typedef union {
     float64 f;
 } elem64;
 
-const unsigned int kSCNameLen = 8;
-const unsigned int kSCNameByteLen = 8 * sizeof(int32);
+#ifdef __cplusplus
+    const unsigned int kSCNameLen = 8;
+    const unsigned int kSCNameByteLen = 8 * sizeof(int32);
+#else
+#    define kSCNameLen 8
+#    define kSCNameByteLen (8 * sizeof(int32))
+#endif

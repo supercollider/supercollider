@@ -4525,7 +4525,7 @@ void ScopeOut2_next(ScopeOut2* unit, int inNumSamples) {
     }
 
     if (framepos + inNumSamples >= period)
-        (*ft->fPushScopeBuffer)(unit->mWorld, unit->m_buffer, period);
+        (*ft->fPushScopeBuffer)(unit->mWorld, &unit->m_buffer, period);
 
     if (wrap) {
         for (int i = 0; i != numChannels; ++i) {
@@ -4547,7 +4547,7 @@ void ScopeOut2_Ctor(ScopeOut2* unit) {
     uint32 scopeNum = (uint32)ZIN0(0);
     uint32 maxFrames = (uint32)ZIN0(1);
 
-    bool ok = (*ft->fGetScopeBuffer)(unit->mWorld, scopeNum, numChannels, maxFrames, unit->m_buffer);
+    bool ok = (*ft->fGetScopeBuffer)(unit->mWorld, scopeNum, numChannels, maxFrames, &unit->m_buffer);
 
     if (!ok) {
         if (unit->mWorld->mVerbosity > -1 && !unit->mDone)
@@ -4562,7 +4562,7 @@ void ScopeOut2_Ctor(ScopeOut2* unit) {
 
 void ScopeOut2_Dtor(ScopeOut2* unit) {
     if (unit->m_buffer)
-        (*ft->fReleaseScopeBuffer)(unit->mWorld, unit->m_buffer);
+        (*ft->fReleaseScopeBuffer)(unit->mWorld, &unit->m_buffer);
 }
 
 

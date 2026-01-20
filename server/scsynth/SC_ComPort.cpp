@@ -191,7 +191,7 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
 
 
 class SC_UdpInPort {
-    struct World* mWorld;
+    World* mWorld;
     int mPortNum;
     std::string mbindTo;
     boost::array<char, kTextBufSize> recvBuffer;
@@ -252,7 +252,7 @@ class SC_UdpInPort {
 public:
     boost::asio::ip::udp::socket udpSocket;
 
-    SC_UdpInPort(struct World* world, std::string bindTo, int inPortNum):
+    SC_UdpInPort(World* world, std::string bindTo, int inPortNum):
         mWorld(world),
         mPortNum(inPortNum),
         mbindTo(bindTo),
@@ -311,11 +311,11 @@ public:
 
 class SC_TcpConnection : public boost::enable_shared_from_this<SC_TcpConnection> {
 public:
-    struct World* mWorld;
+    World* mWorld;
     typedef boost::shared_ptr<SC_TcpConnection> pointer;
     boost::asio::ip::tcp::socket socket;
 
-    SC_TcpConnection(struct World* world, boost::asio::io_context& ioContext, class SC_TcpInPort* parent):
+    SC_TcpConnection(World* world, boost::asio::io_context& ioContext, class SC_TcpInPort* parent):
         mWorld(world),
         socket(ioContext),
         mParent(parent) {}
@@ -423,7 +423,7 @@ private:
 };
 
 class SC_TcpInPort {
-    struct World* mWorld;
+    World* mWorld;
     boost::asio::ip::tcp::acceptor acceptor;
 
 #ifdef USE_RENDEZVOUS
@@ -434,7 +434,7 @@ class SC_TcpInPort {
     friend class SC_TcpConnection;
 
 public:
-    SC_TcpInPort(struct World* world, const std::string& bindTo, int inPortNum, int inMaxConnections, int inBacklog):
+    SC_TcpInPort(World* world, const std::string& bindTo, int inPortNum, int inMaxConnections, int inBacklog):
         mWorld(world),
         acceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum)),
         mAvailableConnections(inMaxConnections) {
@@ -561,11 +561,11 @@ template <typename T, typename... Args> static bool protectedOpenPort(const char
     return false;
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World* inWorld, const char* bindTo, int inPort) {
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(World* inWorld, const char* bindTo, int inPort) {
     return protectedOpenPort<SC_UdpInPort>("UDP", inWorld, bindTo, inPort);
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
+SCSYNTH_DLLEXPORT_C int World_OpenTCP(World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
                                       int inBacklog) {
     return protectedOpenPort<SC_TcpInPort>("TCP", inWorld, bindTo, inPort, inMaxConnections, inBacklog);
 }

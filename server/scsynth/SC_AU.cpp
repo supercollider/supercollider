@@ -33,9 +33,9 @@ void AUCallback(SC_AUAudioDriver* driver, AudioBufferList* in, AudioBufferList* 
 
 void sc_SetDenormalFlags();
 
-SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_AUAudioDriver(inWorld); }
+SC_AudioDriver* SC_NewAudioDriver(World* inWorld) { return new SC_AUAudioDriver(inWorld); }
 
-SC_AUAudioDriver::SC_AUAudioDriver(struct World* inWorld): SC_CoreAudioDriver(inWorld) {}
+SC_AUAudioDriver::SC_AUAudioDriver(World* inWorld): SC_CoreAudioDriver(inWorld) {}
 
 SC_AUAudioDriver::~SC_AUAudioDriver() {}
 
