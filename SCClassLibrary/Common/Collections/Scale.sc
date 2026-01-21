@@ -163,7 +163,9 @@ Scale {
 	}
 
 	*directory {
-		^this.names.collect({ |k| "\\%: %".format(k, all.at(k).name) }).join("\n")
+		var columnHeaders = ["key / method selector   name of scale"];
+		var spaces = {|symbol| String.fill(25 - symbol.asString.size, $ )};
+		^(columnHeaders ++ this.names.collect({ |k| "%% %%".format($\\, k, spaces.(k), all.at(k).name) })).join("\n")
 	}
 
 	storeArgs { ^[degrees, pitchesPerOctave, tuning, name] }
@@ -290,7 +292,9 @@ Tuning {
 	}
 
 	*directory {
-		^this.names.collect({ |k| "\\%: %".format(k, all.at(k).name) }).join("\n")
+		var columnHeaders = ["key / method selector   name of tuning"];
+		var spaces = {|symbol| String.fill(25 - symbol.asString.size, $ )};
+		^(columnHeaders ++ this.names.collect({ |k| "%% %%".format($\\, k, spaces.(k), all.at(k).name) })).join("\n")
 	}
 }
 
