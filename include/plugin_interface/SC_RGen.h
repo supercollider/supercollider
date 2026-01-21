@@ -58,6 +58,8 @@
 #endif
 
 struct RGen {
+    uint32 s1, s2, s3; // random generator state
+
 #ifdef __cplusplus
     void init(uint32 seed);
 
@@ -85,8 +87,6 @@ struct RGen {
     double biexprand(double scale);
     double sum3rand(double scale);
 #endif
-
-    uint32 s1, s2, s3; // random generator state
 };
 
 typedef struct RGen RGen;
