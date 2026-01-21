@@ -2,17 +2,29 @@ title:: Sclang Startup File
 summary:: The sclang startup file
 categories:: Language
 
-Once the class library is finished compiling the interpreter looks for a file at code::Platform.userConfigDir +/+ "startup.scd":: and if such a
-file exists, executes any code within it (this happens within link::Classes/Main#-startup::). By creating a file in this location you can make user
-specific customizations.
+Once the class library is finished compiling, the interpreter looks for a file at code::Platform.userConfigDir +/+ "startup.scd"::, 
+and if such a file exists, executes any code within it (this happens within link::Classes/Main#-startup::). 
+By creating a file in this location you can make user specific customizations.
 
 definitionList::
-## Linux   || teletype::~/.config/SuperCollider/startup.scd::, according to the xdg base directory specification
-## macOS   || teletype::~/Library/Application Support/SuperCollider/startup.scd::
-## Windows || teletype::C:\\SuperCollider\\startup.scd:: (or similar, depending on the location of the SuperCollider installation)
+## Linux   || teletype::/Users/YourUserName/.config/SuperCollider/startup.scd::, 
+				i.e. in teletype::$XDG_CONFIG_HOME:: according to the link::https://specifications.freedesktop.org/basedir/latest/#basics#xdg base directory specification::
+## macOS   || teletype::/Users/YourUserName/Library/Application Support/SuperCollider/startup.scd:: for the link::Guides/SuperCollider IDE::.
+
+				More precisely, this location is checked only when teletype::$XDG_CONFIG_HOME:: is not defined. 
+				This means that if you run sclang in a terminal or in a different IDE,
+				the location might be set to teletype::/Users/YourUserName/.config/SuperCollider/startup.scd::, as in Linux.
+## Windows || teletype::C:\Users\YourUserName\AppData\Local\SuperCollider\startup.scd::
+			(or similar, depending on the location of the SuperCollider installation)
 ::
 
+Make SCIDE's editor show your startup file programmatically:
+code::
+Document.open(Platform.userConfigDir +/+ "startup.scd")
+// this may not work outside of SCIDE
+::
 
+section:: An example startup file
 A common example would be to alter the options of the local and internal Servers:
 code::
 // placing the following code in the file will cause these modifications to be made
@@ -39,9 +51,45 @@ Server.internal.options.sampleRate = nil;	// use the currently selected samplera
 // change the standard archive path to a custom one:
 Archive.archiveDir = "~/scwork".standardizePath;
 
-// hook up jack ports to audio channels
-"SC_JACK_DEFAULT_INPUTS".setenv("system");
-"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+// Platform specific options: 
+// E.g., on linux, hook up jack ports to audio channels
+// and feel superior to other operatings systems
+Platform.case(
+	\linux, { 
+		"SC_JACK_DEFAULT_INPUTS".setenv("system");
+		"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+	},
+	\osx, { "shoulda got a phone".postln },
+	\windows, { "shoulda got a console".postln },
+)
 
+
+// load more files from here, so you don't have to put everything in one file:
+"/path/to/more/scd/files/containing/more/customization.scd".load 
 ::
 Naturally the file must contain only valid SC expressions.
+
+
+section:: Order of execution when sclang starts:
+When sclang starts, the order of execution is as follows:
+numberedlist::
+## Initialization of class library
+## Startup file (and whatever code is loaded from within that file)
+## StartUp system actions
+::
+
+Note that the startup strong::file:: described here is distinct from the StartUp link::Classes/AbstractSystemAction::: 
+the StartUp sytem action is intended for use in the class library, 
+and is not usually used for personal setup.
+(e.g. certain utility Classes such as link::Classes/FreqScope:: might need to add their own SynthDefs, 
+or prepare GUI related variables).
+
+
+section:: Additional links that might help you put together your own startup file:
+list::
+## link::Reference/AudioDeviceSelection:: - find out what devices are available, 
+and what they are called: (code::ServerOptions.devices::)
+## link::Classes/ServerOptions:: - what do all these options mean?
+## link::Guides/Server-Guide#Local vs. Internal:: - What are the default, local, internal servers?
+::
+
