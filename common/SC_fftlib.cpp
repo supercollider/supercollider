@@ -268,8 +268,8 @@ static size_t scfft_trbufsize(unsigned int fullsize) {
 static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
 static int largest_fftsize = 1 << largest_log2n;
 
-scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype, float* indata, float* outdata,
-                    SCFFT_Direction forward, SCFFT_Allocator* alloc) {
+scfft* scfft_create(size_t fullsize, size_t winsize, int32 wintype, float* indata, float* outdata, int32 direction,
+                    SCFFT_Allocator* alloc) {
     if ((fullsize > SC_FFT_ABSOLUTE_MAXSIZE) || (fullsize < SC_FFT_MINSIZE))
         return NULL;
 
@@ -281,8 +281,7 @@ scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintyp
 
     scfft* f = (scfft*)chunk;
     float* trbuf = (float*)(chunk + sizeof(scfft));
-    trbuf = (float*)((size_t)((char*)trbuf + (alignment - 1))
-                     & -alignment); // FIXME: should be intptr_t instead of size_t once we use c++11
+    trbuf = (float*)((uintptr_t)((char*)trbuf + (alignment - 1)) & -alignment);
 
 #ifdef NOVA_SIMD
     assert(nova::vec<float>::is_aligned(trbuf));
@@ -304,13 +303,14 @@ scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintyp
 
     // The scale factors rescale the data to unity gain. The old Green lib did this itself, meaning scalefacs would here
     // be 1...
-    if (forward) {
+    if (direction == kForward) {
 #if SC_FFT_VDSP
         f->scalefac = 0.5f;
 #else // forward FFTW and Green factor
         f->scalefac = 1.f;
 #endif
     } else { // backward FFTW and VDSP factor
+        assert(direction == kBackward);
 #if SC_FFT_GREEN
         f->scalefac = 1.f;
 #else // fftw, vdsp

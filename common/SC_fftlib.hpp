@@ -11,8 +11,8 @@
 // To initialise a specific FFT, ensure your input and output buffers exist. Internal data structures
 // will be allocated using the alloc object,
 // Both "fullsize" and "winsize" should be powers of two (this is not checked internally).
-scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype, float* indata, float* outdata,
-                    SCFFT_Direction forward, SCFFT_Allocator* alloc);
+scfft* scfft_create(size_t fullsize, size_t winsize, int32 wintype, float* indata, float* outdata, int32 direction,
+                    SCFFT_Allocator* alloc);
 
 // These two will take data from indata, use trbuf to process it, and put their results in outdata.
 void scfft_dofft(scfft* f);

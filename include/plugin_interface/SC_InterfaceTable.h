@@ -133,8 +133,9 @@ struct InterfaceTable {
     // To initialise a specific FFT, ensure your input and output buffers exist. Internal data structures
     // will be allocated using the alloc object,
     // Both "fullsize" and "winsize" should be powers of two (this is not checked internally).
-    struct scfft* (*fSCfftCreate)(size_t fullsize, size_t winsize, enum SCFFT_WindowFunction wintype, float* indata,
-                                  float* outdata, enum SCFFT_Direction forward, struct SCFFT_Allocator* alloc);
+    // "wintype" must be a SCFFT_WindowFunction, "direction" must be kForward or kBackward. See SC_fftlib.h.
+    struct scfft* (*fSCfftCreate)(size_t fullsize, size_t winsize, int32 wintype, float* indata, float* outdata,
+                                  int32 direction, struct SCFFT_Allocator* alloc);
 
     void (*fSCfftDoFFT)(struct scfft* f);
     void (*fSCfftDoIFFT)(struct scfft* f);
@@ -227,8 +228,8 @@ typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 #endif
 
 #ifdef __cplusplus
-#    define scfft_create(fullsize, winsize, wintype, indata, outdata, forward, alloc)                                  \
-        (*ft->fSCfftCreate)(fullsize, winsize, wintype, indata, outdata, forward, &alloc)
+#    define scfft_create(fullsize, winsize, wintype, indata, outdata, direction, alloc)                                \
+        (*ft->fSCfftCreate)(fullsize, winsize, wintype, indata, outdata, direction, &alloc)
 
 #    define scfft_destroy(fft, alloc) (*ft->fSCfftDestroy)(fft, &alloc)
 #else

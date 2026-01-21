@@ -21,7 +21,7 @@ Copyright (c) 2008 Dan Stowell. All rights reserved.
 
 #pragma once
 
-#include <stddef.h>
+#include "SC_Types.h"
 
 // These specify the min & max FFT sizes expected (used when creating windows, also allocating some other arrays).
 #define SC_FFT_MINSIZE 8
