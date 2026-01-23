@@ -4,10 +4,16 @@ related:: Classes/File, Classes/String
 categories:: Files
 
 description::
-PathName is a utility class for manipulating file names and paths. It expects a path to a file, and lets you access parts of that file path.
+NOTE:: PathName is a very old utility for file and folder/directory access.
+Its recommended successor, link::Classes/Path::, has a simpler and more consistent interface.
+Since many old projects and works may rely on PathName, it will be kept for backwards compatibility.
+This includes this help file.
+
+For new projects, please use Path!
+::
 
 note::
-Most classes in SC that operate on files generally expect paths to be link::Classes/String::s, not an instance of link::Classes/PathName::. Use code::.fullPath:: to convert link::Classes/PathName:: to a link::Classes/String:: expected in most cases.
+Most classes in SC that operate on files generally expect paths to be link::Classes/String::s, not an instance of link::Classes/PathName::. Use code::.asPathString:: to convert a link::Classes/PathName:: to a link::Classes/String:: object, as is expected in most cases.
 ::
 
 ClassMethods::
@@ -17,8 +23,9 @@ private::initClass
 method::new
 
 argument::path
-a link::Classes/String:: which likely contains one or more / as typical for folder separation. ~ will be converted to your fully addressed home directory, as per link::Classes/String#-standardizePath::.
+a link::Classes/String:: which contains one or more pathSeparators, commonly written as a code::/::. The shortcut for the home directory, code::~::, will be converted to the home directory, as per link::Classes/String#-standardizePath::.
 code::
+// This example file path dates back to 2000/2001 or so ...
 PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
 ::
 
@@ -55,10 +62,10 @@ myPath.pathOnly.postln;
 ::
 
 method::isAbsolutePath, asAbsolutePath, isRelativePath, asRelativePath
-you MUST have correctly initialized the scroot classvar for this to know what it is relative to !
+note::you MUST have correctly initialized the scroot classvar for this to know what it is relative to!::
 
 method::folderName
-returns only the name of the folder that the file is in; i.e. everything in between the last but one and the last slash.
+returns only the name of the folder/directory that the file is in; i.e. everything between the last but one and the last slash.
 code::
 (
 var myPath;
@@ -78,7 +85,7 @@ myPath.fullPath.postln;
 ::
 
 method::entries
-returns a list of all the files+folders inside the folder represented by this path.
+returns a list of all the files and folders/dirs inside the folder/directory represented by this path.
 code::
 (
 var myPath;
@@ -88,7 +95,7 @@ myPath.entries.postln;
 ::
 
 method::files
-returns a list of all the files in the folder represented by this path.
+returns a list of all the files in the folder/directory represented by this path.
 code::
 (
 var myPath;
@@ -98,7 +105,7 @@ myPath.files.postln;
 ::
 
 method::folders
-returns a list of all the subfolders of the folder represented by this path.
+returns a list of all the subfolders of the folder/directory represented by this path.
 code::
 (
 var myPath;
@@ -108,7 +115,7 @@ myPath.folders.postln;
 ::
 
 method::isFile
-returns a link::Classes/Boolean:: indicating whether or not the path represents a file (not a folder).
+returns a link::Classes/Boolean:: indicating whether or not the path represents a file.
 code::
 (
 var myPath;
@@ -118,7 +125,7 @@ myPath.isFile.postln;
 ::
 
 method::isFolder
-returns a link::Classes/Boolean:: indicating whether or not the path represents a folder (not a file).
+returns a link::Classes/Boolean:: indicating whether or not the path represents a folder/directory.
 code::
 (
 var myPath;
@@ -128,7 +135,7 @@ myPath.isFolder.postln;
 ::
 
 method::filesDo
-Iterates over all files found in the pathname, including ones in subfolders.
+Iterates over all the files found in this pathname, including ones in subfolders.
 code::
 (
 var myPath;
@@ -138,7 +145,7 @@ myPath.filesDo{ |afile| afile.postln };
 ::
 
 method::allFolders
-returns a list of all the folder names contained in the pathname itself.
+returns a list of all the folder/directory names contained in the pathname itself.
 code::
 (
 var myPath;
@@ -199,85 +206,46 @@ Here is an example that uses many instance methods. Just pick any file to see al
 code::
 (
 FileDialog.new(
-	{ |ok, path|
-	var myPathName;
-	if (ok,
-		{
-			myPathName = PathName.new(path);
+	{ |paths|
+		var myPathName = PathName.new(paths[0]);
 
-			"New PathName object:  ".postc;
-			myPathName.postln;
+		"New PathName object:  ".postc;
+		myPathName.postln;
 
-			"fileName only:        ".postc;
-			myPathName.fileName.postln;
+		"fileName only:        ".postc;
+		myPathName.fileName.postln;
 
-			"path up to file only: ".postc;
-			myPathName.pathOnly.postln;
+		"path up to file only: ".postc;
+		myPathName.pathOnly.postln;
 
-			"folder Name:          ".postc;
-			myPathName.folderName.postln;
-		}
-	)
+		"folderName:          ".postc;
+		myPathName.folderName.postln;
 	}
 )
 )
 ::
 
-Choose a soundfile to put into the library, using its foldername and filename.
-
-code::
-(
-FileDialog.new(
-	{ |ok, path|
-	var myPathName, myFile;
-	if (ok,
-		{
-			myPathName = PathName.new(path);
-
-			// read your file from disk, e.g. a soundFile/
-
-			myFile = SoundFile.new;
-			if (myFile.openRead(path),
-				{
-					Library.put(
-						[myPathName.folderName.asSymbol, myPathName.fileName.asSymbol],
-						myFile);
-					("Check Library.global" + myPathName.folderName + "please.").postln;
-				},
-				{ ("Could not read soundfile" + path ++ ".").postln }
-			);
-			myFile.close;
-		}
-	)
-	}
-)
-)
-::
-
-Save three tables in the same folder. Note: The file name chosen in the dialog is ignored! The files are always named table1, table2, table3.
-
+Save 3 tables in the selected folder/directory.
+Note: The files are always named table1, table2, table3.
 code::
 (
 var table1, table2, table3;
-
 table1 = Wavetable.sineFill(1024, [1, 2, 3]);
-table2 = Signal.newClear.asWavetable;
+table2 = Signal.newClear(1024).asWavetable;
 table3 = Wavetable.sineFill(1024, Array.rand(64, 0.0, 1.0));
 
+// select one directory:
 FileDialog.new(
-	{ |ok, path|
-	var myPathName, myPathOnly;
-	if (ok,
-		{
-			myPathName = PathName.new(path);
-			myPathOnly = myPathName.pathOnly;
-			("writing files tables1-3 to"+myPathOnly).postln;
-			table1.write(myPathOnly ++ "table1");
-			table2.write(myPathOnly ++ "table2");
-			table3.write(myPathOnly ++ "table3");
+	{ |paths| // ok func
+		// take first entry
+		var myPath = paths[0].postcs;
+		if (File.type(myPath) == 'directory') {
+			("writing files for tables1-3 to" + myPath.cs).postln;
+			table1.write(myPath +/+ "table1.wt");
+			table2.write(myPath +/+ "table2.wt");
+			table3.write(myPath +/+ "table3.wt");
 		}
-	)
-	}
+	}, fileMode: 2 // directory
 )
 )
 ::

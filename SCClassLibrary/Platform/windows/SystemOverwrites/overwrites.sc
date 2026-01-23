@@ -24,6 +24,7 @@
 + PathName {
 	isAbsolutePath {
 		var	sep = thisProcess.platform.pathSeparator;
+		var fullPath = this.fullPath;
 		^(fullPath[0].isAlpha and: { fullPath[1] == $: and: { fullPath[2] == sep } })
 				or: { fullPath[0] == sep and: { fullPath[1] == sep } }
 				or: { fullPath[0] == $/ and: { fullPath[1] != $/ } }
