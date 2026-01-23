@@ -510,7 +510,10 @@ returns::
 An link::Classes/Array::.
 
 discussion::
-The last value may not be included in the result if the step size does not divide evenly into the range of the series.
+The last value will not be included in the result if the step size does not divide evenly into the range of the series. 
+(E.g., code:: series(5, 7, 10):: returns code::[5, 7, 9]::.)
+While this method internally compensates for floating point error in its size calculation,
+consider using link::Classes/Array#*series:: if stability of size is very important.
 
 method:: seriesIter
 Create a link::Classes/Routine:: that iterates over an arithmetic series from teletype::this:: over strong::second:: to strong::last::.
