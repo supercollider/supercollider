@@ -24,8 +24,10 @@ public:
     LinkControl() {
         mCalcFunc = make_calc_function<LinkControl, &LinkControl::next_k>();
         if (IsEnabler ? !LINK_CLOCK->isEnabled() : LINK_CLOCK->isEnabled()) {
-            ft->fDoAsynchronousCommand(mWorld, nullptr, nullptr, nullptr, &LinkControl::set_clock_status, nullptr,
-                                       nullptr, &LinkControl::do_nothing, 0, nullptr);
+            // do nothing on cleanup
+            ft->fDoAsynchronousCommand(
+                mWorld, nullptr, nullptr, nullptr, &LinkControl::set_clock_status, nullptr, nullptr,
+                [](World*, void*) {}, 0, nullptr);
         }
     }
 
@@ -53,9 +55,6 @@ private:
         }
         return false;
     }
-
-    /*! necessary b/c async commands require a cleanup function */
-    static void do_nothing(World* inWorld, void* cmdData) {}
 };
 
 /*!
