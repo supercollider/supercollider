@@ -242,25 +242,25 @@ z.class.postln;
 )
 ::
 
-method::asInteger 
-Returns an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0. 
-code:: 
+method::asInteger
+Returns an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0.
+code::
 "4".asInteger
-:: 
-The method code::.asInteger:: does not understand scientific notation (e.g., teletype::2e3:: for teletype::2000::), 
-and simply ignores all characters in the string after its first nonnumeric character 
-(excepting signs teletype::+,-:: at the beginning of the string). 
+::
+The method code::.asInteger:: does not understand scientific notation (e.g., teletype::2e3:: for teletype::2000::),
+and simply ignores all characters in the string after its first nonnumeric character
+(excepting signs teletype::+,-:: at the beginning of the string).
 If you use scientific notation, use link::#-asFloat:: instead.
 
 code::
 "2e3".asInteger // -> 2
 ::
 
-method::asFloat 
-Returns a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0. 
-code:: 
+method::asFloat
+Returns a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0.
+code::
 "4.3".asFloat
-:: 
+::
 The method code::.asFloat:: understands scientific notation (e.g., teletype::2e3:: for teletype::2000::, teletype::2e-3:: for teletype::0.002::),
 and accepts uppercase teletype::E:: and lowercase teletype::e::.
 By contrast, the method link::#-asInteger:: does emphasis::not:: accept scientific notation.
@@ -433,8 +433,7 @@ strong::Greedy vs. Non-Greedy Matching::: anchor::Greedy_vs_Non-Greedy::
 
 To use non-greedy (or lazy) matching, append a code::?:: to the quantifier. For example, code::*?:: will match zero or more occurrences, but as few as possible.
 
-table::
-## strong::Examples::
+strong::Examples::
 
 code::
 (
@@ -511,7 +510,6 @@ teletype::
 ->
 Line 2: remove _EoL
 
-::
 ::
 
 method::findRegexp
