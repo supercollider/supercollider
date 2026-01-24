@@ -554,7 +554,7 @@ SCErr do_asynchronous_command(
     AsyncStageFn stage2, // stage2 is non real time
     AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
     AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
-    AsyncFreeFn cleanup, int completionMsgSize, void* completionMsgData) {
+    AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData) {
     nova::instance->do_asynchronous_command(inWorld, replyAddr, cmdName, cmdData, stage2, stage3, stage4, cleanup,
                                             completionMsgSize, completionMsgData);
     return 0;

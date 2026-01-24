@@ -339,7 +339,7 @@ public:
 
     void do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData, AsyncStageFn stage2,
                                  AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
-                                 void* completionMsgData) const;
+                                 const void* completionMsgData) const;
 
     void send_message_from_RT(const World* world, FifoMsg& msg) const;
 
