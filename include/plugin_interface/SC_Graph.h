@@ -41,10 +41,13 @@ struct Graph {
 
     uint32 mFlags;
 
-    uint32 mNumWires;
-    struct Wire* mWire;
+    Rate* mFullRate;
+    Rate* mBufRate;
 
+    uint32 mNumWires;
     uint32 mNumControls;
+
+    struct Wire* mWire;
     float* mControls;
     float** mMapControls;
     int32* mAudioBusOffsets;
@@ -53,25 +56,22 @@ struct Graph {
     int32* mControlRates;
 
     uint32 mNumUnits;
-    struct Unit** mUnits;
-
     uint32 mNumCalcUnits;
+
+    struct Unit** mUnits;
     struct Unit** mCalcUnits; // excludes i-rate units.
 
     int32 mSampleOffset;
+    float mSubsampleOffset;
+
     struct RGen* mRGen;
 
     struct Unit* mLocalAudioBusUnit;
     struct Unit* mLocalControlBusUnit;
 
-    float mSubsampleOffset;
-
     SndBuf* mLocalSndBufs;
     int32 localBufNum;
     int32 localMaxBufNum;
-
-    Rate* mFullRate;
-    Rate* mBufRate;
 
     void* mPrivate;
 };
