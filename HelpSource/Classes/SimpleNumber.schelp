@@ -509,11 +509,46 @@ code::
 returns::
 An link::Classes/Array::.
 
-discussion::
-The last value will not be included in the result if the step size does not divide evenly into the range of the series. 
-(E.g., code:: series(5, 7, 10):: returns code::[5, 7, 9]::.)
-While this method internally compensates for floating point error in its size calculation,
-consider using link::Classes/Array#*series:: if stability of size is very important.
+note::
+strong::Size of resultant Array:::
+If all arguments are link::Classes/Integer::s and the step size (teletype::second - this::) does not evenly subdivide the range (teletype::last - this::) of the series, 
+the teletype::last:: argument will not be included in the result.
+
+code:: series(5, 7, 10) // -> [5, 7, 9]::
+
+If arguments include link::Classes/Float::s, the behavior will be the same: 
+
+code::series(1.0, 2.0, 3.999999999) // -> [1.0, 2.0, 3.0]::
+
+In previous versions of SuperCollider (up to 3.14), cases could be encountered where floating point error resulted in omission of the final element:
+
+code::(1.5, 1.45..1.35).last // (SC 3.14) -> [1.5, 1.45, 1.4]; 1.35 omitted!:: 
+
+This is no longer the case as of version 3.15, as the method now compensates for its own floating point error in its calculation of the size.
+footnote:: 
+Note that the link::#-series:: method cannot possibly compensate for the floating point error that might have arisen in the calculations of the arguments themselves. 
+Therefore, in numerically extreme cases, it might be better to use an integer series with a multiplier, or  link::Classes/Array#*series::, where the size of the array can be directly given as an argument.
+code::
+( 
+//extremely contrived example of the kind of arguments
+// that contain enough floating point error to affect .series's size calculation:
+var one = (exp(log(17/11) + log(13/7)) * 7 * 11 / 13 /17).pow(2);
+var one_thousandths = 1/(one * 1000);
+var two_thousandths = (one + one) * one/1000;
+var size = (one_thousandths, two_thousandths, 1000/one).size;
+[one, one_thousandths, two_thousandths].collect (_.asStringPrec(20)).postln;
+size.postln;
+) // -> 999999; but algebraically, size should be 1000000
+
+(
+//for numerically complicated cases where size of the array is important, use Array.series 
+Array.series(1000000, one_thousandths, one_thousandths);
+// or an  integer series with a multiplier:
+(1..1000000) * one_thousandths
+)
+::
+::
+::
 
 method:: seriesIter
 Create a link::Classes/Routine:: that iterates over an arithmetic series from teletype::this:: over strong::second:: to strong::last::.
