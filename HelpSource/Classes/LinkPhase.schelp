@@ -47,7 +47,8 @@ Pdef(\p, Pbind(
 (
 Ndef(\f, {
 	LinkCPS.kr(
-		change: 1.0, // always update
+		// trigger as fast as possible
+		trigger: ToggleFF.kr(Impulse.kr(ControlDur.ir.reciprocal/2.0)),
 		cps: SinOsc.kr(0.1).exprange(130/60, 230/60),
 	);
 });

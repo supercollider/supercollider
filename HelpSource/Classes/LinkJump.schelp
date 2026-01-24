@@ -49,11 +49,11 @@ CLASSMETHODS::
 METHOD:: kr
 If the server clock has not been enabled via CODE::LinkPhase.start::, it will return MATH::-1.0::, otherwise it will return MATH::0.0::.
 argument:: trigger
-A value of MATH::>0.0:: will invoke a jump using the following arguments.
+A trigger will invoke a jump using the following arguments.
 argument:: beat
 This value MATH::b:: should be within MATH::0 \leq b < q::, where MATH::q:: is the provided quantum.
 argument:: quantum
 The quantum value for to identify the beat within the induced grid.
 argument:: force
-If force is MATH::\geq 0::, it will "rudely re-map the beat/time relationship for all peers in a session".
+If force is MATH::> 0::, it will "rudely re-map the beat/time relationship for all peers in a session".
 Otherwise it will "attempt to map the given beat to the given time in the context of the given quantum", which behaves depending on if there are other clients within the network or not.
