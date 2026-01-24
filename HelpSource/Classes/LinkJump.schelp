@@ -1,5 +1,5 @@
 TITLE:: LinkJump
-summary:: Ugen that jumps to a position within a quantum of the server's Link clock
+summary:: UGen that jumps to a position within a quantum of the server's Link clock
 categories:: UGens>Clock, Streams-Patterns-Events
 related:: Classes/LinkClock, Classes/LinkCPS, Classes/LinkPhase
 
