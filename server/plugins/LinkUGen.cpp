@@ -147,19 +147,20 @@ PluginLoad(LinkUGen) {
 
             // these callbacks need to run in a NRT thread b/c enabling/disabling the link clock blocks.
             // we use the stage2 (NRT) of fDoAsynchronousCommand to delegate these lambda functions to the NRT thread.
-            auto activateClock = [](World*, void*) {
+            auto activateClock = [](World*, void*) -> bool {
                 LINK_CLOCK->enable(true);
                 // do not continue to stage 3
                 return false;
             };
-            auto disableClock = [](World*, void*) {
+            auto disableClock = [](World*, void*) -> bool {
                 LINK_CLOCK->enable(false);
                 return false;
             };
 
+            AsyncStageFn callback = start ? +activateClock : +disableClock;
+
             ft->fDoAsynchronousCommand(
-                inWorld, nullptr, nullptr, nullptr, start ? activateClock : disableClock, nullptr, nullptr,
-                [](World*, void*) {}, 0, nullptr);
+                inWorld, nullptr, nullptr, nullptr, callback, nullptr, nullptr, [](World*, void*) {}, 0, nullptr);
         },
         nullptr);
 }
