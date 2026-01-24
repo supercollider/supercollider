@@ -1,10 +1,20 @@
 LinkPhase : UGen {
 	*start {|server|
-		{FreeSelf.kr(LinkEnabler.kr)}.play(server);
+		server = server ? Server.default;
+		server.sendRaw(LinkPhase.startMsg(true).asRawOSC);
 	}
 
 	*stop {|server|
-		{FreeSelf.kr(LinkDisabler.kr)}.play(server);
+		server = server ? Server.default;
+		server.sendRaw(LinkPhase.startMsg(false).asRawOSC);
+	}
+
+	*startMsg {|enable=true|
+		^[
+			\cmd,
+			\linkclock,
+			if(enable, 1, 0),
+		];
 	}
 
 	*setTempo {|cps, lag=0.0, curve=\exp, server=nil|
@@ -41,19 +51,5 @@ LinkCPS : UGen {
 LinkJump : UGen {
 	*kr {|trigger=0.0, beat=0.0, quantum=4.0, force=0.0|
 		^this.multiNew('control', trigger, beat, quantum, force);
-	}
-}
-
-// Use LinkPhase.start
-LinkEnabler : UGen {
-	*kr {
-		^this.new1('control');
-	}
-}
-
-// Use LinkPhase.stop
-LinkDisabler : UGen {
-	*kr {
-		^this.new1('control');
 	}
 }

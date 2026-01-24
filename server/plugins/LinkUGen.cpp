@@ -14,48 +14,6 @@ static InterfaceTable* ft;
  */
 static ableton::Link* LINK_CLOCK = nullptr;
 
-/*!
- * @class LinkControl
- * @brief Enables or disables a Link clock, which needs to be deferred to
- * a non-RT thread.
- */
-template <bool IsEnabler> class LinkControl : public SCUnit {
-public:
-    LinkControl() {
-        mCalcFunc = make_calc_function<LinkControl, &LinkControl::next_k>();
-        if (IsEnabler ? !LINK_CLOCK->isEnabled() : LINK_CLOCK->isEnabled()) {
-            // do nothing on cleanup
-            ft->fDoAsynchronousCommand(
-                mWorld, nullptr, nullptr, nullptr, &LinkControl::set_clock_status, nullptr, nullptr,
-                [](World*, void*) {}, 0, nullptr);
-        }
-    }
-
-private:
-    /*!
-     * Returns 1.0 the moment the clock has been enabled or disabled.
-     * This signal can therefore be used to free the synth where
-     * we enable the clock.
-     */
-    void next_k(int numSamples) {
-        float* out = mOutBuf[0];
-        if (IsEnabler) {
-            *out = LINK_CLOCK->isEnabled() ? 1.0f : 0.0f;
-        } else {
-            *out = LINK_CLOCK->isEnabled() ? 0.0f : 1.0f;
-        }
-    }
-    /*! Not thread safe - therefore runs in a NRT thread in stage 2 */
-    static bool set_clock_status(World* inWorld, void* cmdData) {
-        LINK_CLOCK->enable(IsEnabler);
-        if (IsEnabler) {
-            Print("Enabled Link clock\n");
-        } else {
-            Print("Disabled Link clock\n");
-        }
-        return false;
-    }
-};
 
 /*!
  * @class LinkCPS
@@ -155,11 +113,48 @@ private:
 PluginLoad(LinkUGen) {
     ft = inTable;
     LINK_CLOCK = new ableton::Link(60.0f);
-    registerUnit<LinkControl<true>>(ft, "LinkEnabler", false);
-    registerUnit<LinkControl<false>>(ft, "LinkDisabler", false);
     registerUnit<LinkCPS>(ft, "LinkCPS", false);
     registerUnit<LinkPhase>(ft, "LinkPhase", false);
     registerUnit<LinkJump>(ft, "LinkJump", false);
+
+    ft->fDefinePlugInCmd(
+        "linkclock",
+        [](World* inWorld, void*, sc_msg_iter* args, void*) {
+            auto startRaw = args->geti(-1);
+            bool start = false;
+
+            switch (startRaw) {
+            case -1:
+                Print("ERROR: Invalid linkclock message - requires integer parameter\n");
+                return;
+            case 0:
+                start = false;
+                break;
+            case 1:
+                start = true;
+                break;
+            default:
+                Print("ERROR: Invalid linkclock message - integer parameter should be either 0 or 1\n");
+                return;
+            }
+
+            // these callbacks need to run in a NRT thread b/c enabling/disabling the link clock blocks.
+            // we use the stage2 (NRT) of fDoAsynchronousCommand to delegate these lambda functions to the NRT thread.
+            auto activateClock = [](World*, void*) {
+                LINK_CLOCK->enable(true);
+                // do not continue to stage 3
+                return false;
+            };
+            auto disableClock = [](World*, void*) {
+                LINK_CLOCK->enable(false);
+                return false;
+            };
+
+            ft->fDoAsynchronousCommand(
+                inWorld, nullptr, nullptr, nullptr, start ? activateClock : disableClock, nullptr, nullptr,
+                [](World*, void*) {}, 0, nullptr);
+        },
+        nullptr);
 }
 
 PluginUnload(LinkUGen) { delete LINK_CLOCK; }
