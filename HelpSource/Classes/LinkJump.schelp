@@ -28,7 +28,7 @@ Ndef(\l, {
 // the moment Dust triggers, which creates a jittery clock
 Ndef(\j, {
 	LinkJump.kr(
-		trigger: Dust.kr(1.0),
+		gate: Dust.kr(1.0),
 		beat: 1.0,
 		quantum: 4.0,
 		// all other clients need to follow us as well
@@ -48,8 +48,8 @@ CLASSMETHODS::
 
 METHOD:: kr
 If the server clock has not been enabled via CODE::LinkPhase.start::, it will return MATH::-1.0::, otherwise it will return MATH::0.0::.
-argument:: trigger
-A trigger will invoke a jump using the following arguments.
+argument:: gate
+A gate signal MATH::>0:: will invoke a jump using the following arguments.
 argument:: beat
 This value MATH::b:: should be within MATH::0 \leq b < q::, where MATH::q:: is the provided quantum.
 argument:: quantum

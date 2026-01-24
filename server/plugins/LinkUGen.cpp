@@ -29,18 +29,15 @@ public:
 
 private:
     bool mWarned = false;
-    float mPreviousTrigger = 0.0f;
 
     void next_k(int numSamples) {
         float* out = mOutBuf[0];
         if (LINK_CLOCK->isEnabled()) {
             auto state = LINK_CLOCK->captureAudioSessionState();
-            float trigger = in0(0);
-            if (trigger > 0.0f && mPreviousTrigger <= 0.0f) {
+            if (in0(0) > 0.0f) {
                 state.setTempo(in0(1) * 60.0f, LINK_CLOCK->clock().micros());
                 LINK_CLOCK->commitAudioSessionState(state);
             }
-            mPreviousTrigger = trigger;
             *out = static_cast<float>(state.tempo()) / 60.0f;
         } else {
             if (!mWarned) {
@@ -90,13 +87,11 @@ public:
 
 private:
     bool mWarned = false;
-    float mPreviousTrigger = 0.0f;
 
     void next_k(int numSamples) {
         float* out = mOutBuf[0];
         if (LINK_CLOCK->isEnabled()) {
-            float trigger = in0(0);
-            if (trigger > 0.0f && mPreviousTrigger <= 0.0f) {
+            if (in0(0) > 0.0f) {
                 auto state = LINK_CLOCK->captureAudioSessionState();
                 if (in0(3) > 0.0f) {
                     state.forceBeatAtTime(in0(1), LINK_CLOCK->clock().micros(), in0(2));
@@ -105,7 +100,6 @@ private:
                 }
                 LINK_CLOCK->commitAudioSessionState(state);
             }
-            mPreviousTrigger = trigger;
             *out = 0.0f;
         } else {
             if (!mWarned) {

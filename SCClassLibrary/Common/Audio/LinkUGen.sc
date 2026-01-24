@@ -23,8 +23,7 @@ LinkPhase : UGen {
 			{
 				var startCps = Latch.kr(in: LinkCPS.kr, trig: 1.0);
 				LinkCPS.kr(
-					// create alternating signals to trigger as fast as possible
-					trigger: ToggleFF.kr(Impulse.kr(ControlDur.ir.reciprocal/2.0)),
+					gate: 1.0,
 					cps: Env([startCps, cps], [lag], curve).kr(
 						doneAction: Done.freeSelf,
 					);
@@ -44,13 +43,13 @@ LinkPhase : UGen {
 }
 
 LinkCPS : UGen {
-	*kr {|trigger=0.0, cps=1.0|
-		^this.multiNew('control', trigger, cps);
+	*kr {|gate=0.0, cps=1.0|
+		^this.multiNew('control', gate, cps);
 	}
 }
 
 LinkJump : UGen {
-	*kr {|trigger=0.0, beat=0.0, quantum=4.0, force=0.0|
-		^this.multiNew('control', trigger, beat, quantum, force);
+	*kr {|gate=0.0, beat=0.0, quantum=4.0, force=0.0|
+		^this.multiNew('control', gate, beat, quantum, force);
 	}
 }
