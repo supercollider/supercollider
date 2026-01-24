@@ -6,14 +6,8 @@ TestLinkUGens : UnitTest {
 		server = Server(this.class.name);
 		server.bootSync;
 
-		{FreeSelf.kr(LinkEnabler.kr)}.loadToFloatArray(0.5, server, {|sig|
-			var success = sig.any(_==1.0);
-			if(success.not, {
-				"ERROR: Could not enable Link clock on server!".warn;
-			});
-			condition.unhang;
-		});
-		condition.hang;
+		LinkPhase.start(server);
+		server.sync;
 	}
 
 	tearDown {
