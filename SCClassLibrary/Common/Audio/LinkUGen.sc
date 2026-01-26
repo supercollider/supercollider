@@ -1,12 +1,12 @@
 LinkPhase : UGen {
 	*start {|server|
 		server = server ? Server.default;
-		server.sendRaw(LinkPhase.startMsg(true).asRawOSC);
+		server.sendMsg(*this.startMsg(true));
 	}
 
 	*stop {|server|
 		server = server ? Server.default;
-		server.sendRaw(LinkPhase.startMsg(false).asRawOSC);
+		server.sendMsg(*this.startMsg(false));
 	}
 
 	*startMsg {|enable=true|
