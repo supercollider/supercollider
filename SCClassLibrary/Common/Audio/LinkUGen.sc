@@ -1,4 +1,8 @@
 LinkPhase : UGen {
+	*kr {|quantum=4|
+		^this.multiNew('control', quantum);
+	}
+
 	*start {|server|
 		server = server ? Server.default;
 		server.sendMsg(*this.startMsg(true));
@@ -35,10 +39,6 @@ LinkPhase : UGen {
 				FreeSelf.kr(1.0);
 			}
 		}).play(server);
-	}
-
-	*kr {|quantum=4|
-		^this.multiNew('control', quantum);
 	}
 }
 
