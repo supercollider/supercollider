@@ -1,7 +1,7 @@
 TITLE:: LinkPhase
 summary:: UGen to access the phase of the server's Link clock
 categories:: UGens>Clock, Streams-Patterns-Events
-related:: Classes/LinkClock, Classes/LinkCPS, Classes/LinkJump
+related:: Classes/LinkClock, Classes/LinkTempo, Classes/LinkJump
 
 DESCRIPTION::
 LinkPhase allows to access the phase of a shared Link clock.
@@ -28,7 +28,7 @@ Ndef(\l, {
 )
 
 // change the tempo of the clock - lag will introduce a gradient change
-LinkPhase.setTempo(cps: 3.0, lag: 4.0);
+LinkPhase.setTempo(tempo: 3.0, lag: 4.0);
 
 // spawn a clock on sclang side
 l = LinkClock(1.0).latency_(Server.default.latency);
@@ -43,12 +43,13 @@ Pdef(\p, Pbind(
 )).clock_(l).play;
 )
 
-// now fluctuate the tempo using LinkCPS
+// now fluctuate the tempo using LinkTempo
 (
 Ndef(\f, {
-	LinkCPS.kr(
+	LinkTempo.kr(
 		gate: 1.0,
-		cps: SinOsc.kr(0.1).exprange(130/60, 230/60),
+		// tempo is in cycles per second (cps) - not bpm!
+		tempo: SinOsc.kr(0.1).exprange(130/60, 230/60),
 	);
 });
 )
@@ -76,14 +77,14 @@ argument:: server
 A LINK::Classes/Server::, defaults to LINK::Classes/Server#-default::.
 
 METHOD:: setTempo
-Helper method to set the CPS of a Link clock.
+Helper method to set the tempo of the server's Link clock in cps (cycles per second).
 NOTE::
-See also LINK::Classes/LinkCPS::.
+See also LINK::Classes/LinkTempo::.
 ::
-argument:: cps
-New cps of the Link session
+argument:: tempo
+New tempo of the Link session in cycles per second.
 argument:: lag
-If a value is set and MATH::>0.0::, the current cps will be cross-faded into the target cps over this time in seconds.
+If a value is set and MATH::>0.0::, the current tempo will be cross-faded into the target tempo over this time in seconds.
 NOTE::
 Having multiple overlapping cross-fade processes can result in undefined behavior since they publish conflicting values.
 ::

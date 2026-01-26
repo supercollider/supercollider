@@ -1159,7 +1159,7 @@ NOTE::
 Added in 3.15.0
 ::
 
-Enables or disables the Link clock of the server - see LINK::Classes/LinkCPS::.
+Enables or disables the Link clock of the server - see LINK::Classes/LinkPhase::.
 
 table::
 ## strong::int:: || 0 for disabling, 1 for enabling.

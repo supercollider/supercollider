@@ -17,21 +17,21 @@ LinkPhase : UGen {
 		];
 	}
 
-	*setTempo {|cps, lag=0.0, curve=\exp, server=nil|
+	*setTempo {|tempo, lag=0.0, curve=\exp, server=nil|
 		lag = lag.max(0.0);
 		if(lag > 0.0, {
 			{
-				var startCps = Latch.kr(in: LinkCPS.kr, trig: 1.0);
-				LinkCPS.kr(
+				var startTempo = Latch.kr(in: LinkTempo.kr, trig: 1.0);
+				LinkTempo.kr(
 					gate: 1.0,
-					cps: Env([startCps, cps], [lag], curve).kr(
+					tempo: Env([startTempo, tempo], [lag], curve).kr(
 						doneAction: Done.freeSelf,
 					);
 				);
 			}
 		}, {
 			{
-				LinkCPS.kr(1.0, cps);
+				LinkTempo.kr(1.0, tempo);
 				FreeSelf.kr(1.0);
 			}
 		}).play(server);
@@ -42,9 +42,9 @@ LinkPhase : UGen {
 	}
 }
 
-LinkCPS : UGen {
-	*kr {|gate=0.0, cps=1.0|
-		^this.multiNew('control', gate, cps);
+LinkTempo : UGen {
+	*kr {|gate=0.0, tempo=1.0|
+		^this.multiNew('control', gate, tempo);
 	}
 }
 

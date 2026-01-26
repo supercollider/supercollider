@@ -23,9 +23,9 @@ TestLinkUGens : UnitTest {
 		LinkPhase.setTempo(3.0, server: server);
 		server.sync;
 
-		{LinkCPS.kr()}.loadToFloatArray(0.2, server, {|sig|
+		{LinkTempo.kr()}.loadToFloatArray(0.2, server, {|sig|
 			var success = sig.any(_==3.0);
-			this.assert(success, "LinkCPS should be able to get the correct tempo", report: true);
+			this.assert(success, "LinkTempo should be able to get the correct tempo", report: true);
 			condition.unhang;
 		});
 
@@ -41,9 +41,9 @@ TestLinkUGens : UnitTest {
 		clock.tempo_(4.0);
 		0.2.wait;
 
-		{LinkCPS.kr()}.loadToFloatArray(0.2, server, {|sig|
+		{LinkTempo.kr()}.loadToFloatArray(0.2, server, {|sig|
 			var success = sig.any({|x| (x-4.0).abs < 0.01});
-			this.assert(success, "LinkCPS should be able to follow LinkClock", report: true);
+			this.assert(success, "LinkTempo should be able to follow LinkClock", report: true);
 			condition.unhang;
 		});
 

@@ -16,16 +16,16 @@ static ableton::Link* LINK_CLOCK = nullptr;
 
 
 /*!
- * @class LinkCPS
+ * @class LinkTempo
  * @brief Allows to get and set the tempo of the Link clock of the server.
  * Tempo will only be set if in0 > 0.0f - be nice to others!
  * If no Link clock is enabled on the server it will return -1.0f.
  * Link internally uses BPM, but SuperCollider uses CPS (cycles per second),
  * so the values will be multiplied/divided by 60.
  */
-class LinkCPS : public SCUnit {
+class LinkTempo : public SCUnit {
 public:
-    LinkCPS() { set_calc_function<LinkCPS, &LinkCPS::next_k>(); }
+    LinkTempo() { set_calc_function<LinkTempo, &LinkTempo::next_k>(); }
 
 private:
     bool mWarned = false;
@@ -114,7 +114,7 @@ private:
 PluginLoad(LinkUGen) {
     ft = inTable;
     LINK_CLOCK = new ableton::Link(60.0f);
-    registerUnit<LinkCPS>(ft, "LinkCPS", false);
+    registerUnit<LinkTempo>(ft, "LinkTempo", false);
     registerUnit<LinkPhase>(ft, "LinkPhase", false);
     registerUnit<LinkJump>(ft, "LinkJump", false);
 
