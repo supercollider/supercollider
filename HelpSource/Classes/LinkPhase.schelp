@@ -84,7 +84,8 @@ See also LINK::Classes/LinkTempo::.
 argument:: tempo
 New tempo of the Link session in cycles per second.
 argument:: lag
-If a value is set and MATH::>0.0::, the current tempo will be cross-faded into the target tempo over this time in seconds.
+If MATH::>0.0::, the current tempo will be faded into the target tempo over this value in seconds using an LINK::Classes/Envelope::.
+If this value is CODE::0.0::, the clock will jump immediately to the new tempo.
 NOTE::
 Having multiple overlapping cross-fade processes can result in undefined behavior since they publish conflicting values.
 ::
