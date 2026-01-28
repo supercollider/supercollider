@@ -7,14 +7,6 @@ set(SC_VERSION_PATCH 0)
 set(SC_VERSION_TWEAK "-dev")
 set(SC_VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH}${SC_VERSION_TWEAK})
 
-# Note: these are provided for backwards compatibility only. In the main project, PROJECT_VERSION_PATCH
-# will be stripped of anything after the patch number (e.g., "-beta1", "-rc2" will be removed).
-# Historically, the _PATCH version also included a leading period. New code and project should use the
-# SC_ variables above instead of these.
-set(PROJECT_VERSION_MAJOR ${SC_VERSION_MAJOR})
-set(PROJECT_VERSION_MINOR ${SC_VERSION_MINOR})
-set(PROJECT_VERSION_PATCH .${SC_VERSION_PATCH}${SC_VERSION_TWEAK})
-
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
 
   execute_process(
