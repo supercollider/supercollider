@@ -36,7 +36,7 @@ method:: blockSize
 The number of samples in one control period. The default is 64.
 
 method:: device
-A String that allows you to choose a sound device to use as input and output. The default, code::nil::, will use the system's default input and output device(s). See link::Reference/AudioDeviceSelection:: for more details.
+A String or a 2-element Array of Strings that allows you to choose a sound device to use as input and output. The default, code::nil::, will use the system's default input and output device(s). See link::Reference/AudioDeviceSelection:: for more details.
 
 method:: inDevice
 A String that allows you to choose an input sound device. The default, code::nil::, will use the system's default input device. See link::Reference/AudioDeviceSelection:: for more details.
@@ -182,6 +182,7 @@ o.numOutputBusChannels = 6; // The next time it boots, this will take effect
 
 o.device = "MOTU Traveler"; 	// use a specific soundcard
 o.device = nil;			// use the system default soundcard
+o.device = ["MOTU Traveler", "Backhole 16ch"]; 	// use a specific soundcard of input and another output
 
 // finally, boot the server
 
