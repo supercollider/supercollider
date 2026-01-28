@@ -124,7 +124,14 @@ ServerOptions {
 	}
 
 	device_ { |dev|
-		inDevice = outDevice = dev;
+		if (dev.isKindOf(String)) {
+			inDevice = outDevice = dev;
+		};
+
+		if (dev.isKindOf(Array)) {
+			inDevice = dev.wrapAt[0];
+			outDevice = dev.wrapAt[1];
+		}
 	}
 
 	asOptionsString { | port = 57110 |
