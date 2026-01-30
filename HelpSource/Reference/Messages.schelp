@@ -109,6 +109,18 @@ z = x.value(10, 5);     // z is set to 15. (a is 10, b is 5)
 z = x.value(10, 5, 9);  // z is set to 15. (a is 10, b is 5, 9 is ignored)
 ::
 
+note::
+Specific to link::Classes/UGen::s:
+
+You may see argument defaults displayed as floats (e.g., code::0.0::) in the help documentation or the
+link::Guides/SCide#Method call assistance#SuperCollider-IDE code editor's method call assistance::,
+even when the argument is intended as an integer (e.g., code::0::).
+This is because the audio server processes these strong::arguments::
+as 32-bit floating-point strong::inputs::.
+For a detailed explanation,
+see link::Classes/UGen#Default argument values: Floats vs. Integers::.
+::
+
 section:: Keyword Arguments
 
 Arguments to Methods may be specified by the name by which they are declared in a method's definition. Such arguments are called keyword arguments.
