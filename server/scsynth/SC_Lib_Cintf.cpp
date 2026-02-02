@@ -37,6 +37,7 @@
 #endif // _MSC_VER
 
 #ifdef _WIN32
+#    include <windows.h>
 #    include "SC_Win32Utils.h"
 #    include "SC_Codecvt.hpp"
 #else
@@ -294,12 +295,16 @@ bool checkServerVersion(void* f, const char* filename) {
 
 static bool PlugIn_Load(const fs::path& filename) {
 #ifdef _WIN32
-    HINSTANCE hinstance = LoadLibraryW(filename.wstring().c_str());
+    // This allows plugins to place DLL dependencies in the same directory.
+    SetDllDirectoryW(filename.parent_path().c_str());
+    HINSTANCE hinstance = LoadLibraryW(filename.c_str());
+    // Reset DLL directory
+    SetDllDirectoryW(nullptr);
     // here, we have to use a utf-8 version of the string for printing
     // because the native encoding on Windows is utf-16.
     const std::string filename_utf8_str = SC_Codecvt::path_to_utf8_str(filename);
     if (!hinstance) {
-        wchar_t* s;
+        wchar_t* s = nullptr;
         DWORD lastErr = GetLastError();
         FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                        NULL, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);

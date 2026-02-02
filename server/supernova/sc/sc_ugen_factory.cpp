@@ -317,8 +317,13 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
         return;
     }
 
+    // This allows plugins to place DLL dependencies in the same directory.
+    SetDllDirectoryW(path.parent_path().c_str());
     // std::cout << "try open plugin: " << path << std::endl;
     HINSTANCE hinstance = LoadLibraryW(path.wstring().c_str());
+    // Reset DLL directory
+    SetDllDirectoryW(nullptr);
+
     if (!hinstance) {
         wchar_t* s;
         DWORD lastErr = GetLastError();
