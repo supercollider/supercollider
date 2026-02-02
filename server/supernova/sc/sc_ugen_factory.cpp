@@ -318,7 +318,6 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
     }
 
     // std::cout << "try open plugin: " << path << std::endl;
-    const char* filename = path.string().c_str();
     HINSTANCE hinstance = LoadLibraryW(path.wstring().c_str());
     if (!hinstance) {
         wchar_t* s;
@@ -334,7 +333,7 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
     typedef int (*info_function)();
     info_function api_version = reinterpret_cast<info_function>(GetProcAddress(hinstance, "api_version"));
 
-    if (!check_api_version(api_version, filename)) {
+    if (!check_api_version(api_version, path.string())) {
         FreeLibrary(hinstance);
         return;
     }
@@ -357,7 +356,7 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
         FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                        nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
 
-        std::cout << "*** ERROR: GetProcAddress err " << SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str() << std::endl;
+        std::cout << "*** ERROR: GetProcAddress err " << SC_Codecvt::utf16_wcstr_to_utf8_string(s) << std::endl;
         LocalFree(s);
 
         FreeLibrary(hinstance);
