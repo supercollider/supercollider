@@ -18,7 +18,7 @@ g(x) = x * 2
 g · f = g(f(x)) = (x + 1) * 2
 ::
 
-code::g · f:: means to evaluate code::f:: first, then pass its result to code::g::. The code::·:: operator is written as code::<>:: in SuperCollider.
+code::g · f:: means to evaluate code::f:: first, then pass its result to code::g::. The code::·:: operator is written as code::<>:: in SuperCollider.
 
 code::
 f = { |x| x + 1 };
