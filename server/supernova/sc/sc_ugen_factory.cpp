@@ -224,7 +224,12 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& path) {
     if (!is_directory(path))
         return;
 
-    for (directory_iterator it(path); it != end; ++it) {
+    if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
+        return;
+    }
+
+    auto options = std::filesystem::directory_options::follow_directory_symlink;
+    for (directory_iterator it(path, options); it != end; ++it) {
         if (is_regular_file(it->status()))
             load_plugin(it->path());
         if (is_directory(it->status()))
