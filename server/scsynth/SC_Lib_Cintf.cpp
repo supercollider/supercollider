@@ -349,7 +349,6 @@ static bool PlugIn_Load(const fs::path& filename) {
 
     if (!handle) {
         scprintf("*** ERROR: dlopen '%s' err '%s'\n", filename.c_str(), dlerror());
-        dlclose(handle);
         return false;
     }
 
