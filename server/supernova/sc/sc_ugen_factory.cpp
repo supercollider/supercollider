@@ -289,10 +289,10 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool 
 
             static bool didWarn = false;
             if (!didWarn) {
-                std::cout << "*** Please try to upgrade any SC extension where the UGen plugin still has the .so extension. "
-                          << "If you already have the latest version, please ask the developer to update the extension. "
-                          << "To suppress this warning in the meantime, you can manually change the extension to .scx."
-                          << std::endl;
+                std::cout << "*** Please try to upgrade any SC extension where the UGen plugin still has the .so "
+                          << "extension. If you already have the latest version, please ask the developer to update "
+                          << "the extension. To suppress this warning in the meantime, you can manually change the "
+                          << "extension to .scx." << std::endl;
                 didWarn = true;
             }
         }

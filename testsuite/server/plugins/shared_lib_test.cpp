@@ -6,7 +6,7 @@ static InterfaceTable* ft;
 #ifdef _WIN32
 __declspec(dllimport)
 #endif
-void printGreeting(const char* who);
+    void printGreeting(const char* who);
 
 PluginLoad(ML_UGens) {
     ft = inTable;

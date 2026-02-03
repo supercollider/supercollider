@@ -457,15 +457,18 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool didFindPl
             if (fs::is_directory(path)) {
                 PlugIn_LoadDir(path, reportError, didFindPlugin);
             } else if (!didFindPlugin && path.extension() == ".so") {
-                // No .scx plugins were found in this directory or any parent directory -> assume the .so file is a plugin.
+                // No .scx plugins were found in this directory or any parent directory -> assume the .so file is a
+                // plugin.
                 if (PlugIn_Load(path)) {
-                    scprintf("*** WARNING: '%s': the .so extension has been deprecated!\n", SC_Codecvt::path_to_utf8_str(path).c_str());
+                    scprintf("*** WARNING: '%s': the .so extension has been deprecated!\n",
+                             SC_Codecvt::path_to_utf8_str(path).c_str());
 
                     static bool didWarn = false;
                     if (!didWarn) {
-                        scprintf("*** Please try to upgrade any SC extension where the UGen plugin still has the .so extension. "
-                                 "If you already have the latest version, please ask the developer to update the extension. "
-                                 "To suppress this warning in the meantime, you can manually change the extension to .scx.\n");
+                        scprintf("*** Please try to upgrade any SC extension where the UGen plugin still has the .so "
+                                 "extension. If you already have the latest version, please ask the developer to "
+                                 "update the extension. To suppress this warning in the meantime, you can manually "
+                                 "change the extension to .scx.\n");
                         didWarn = true;
                     }
                 }
