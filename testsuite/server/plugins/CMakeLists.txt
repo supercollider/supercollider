@@ -9,7 +9,7 @@ if (APPLE OR WIN32)
 endif()
 
 # let plugins find their dependencies in the same folder
-set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
+set(CMAKE_INSTALL_RPATH $ORIGIN)
 
 foreach(test_file ${plugin_tests})
     get_filename_component(test_name ${test_file} NAME_WE)
@@ -35,5 +35,9 @@ endforeach()
 
 # DLL for shared_lib_test(_supernova)
 add_library(testlib SHARED testlib.cpp)
+# export symbols!
+set_target_properties(testlib PROPERTIES
+  CXX_VISIBILITY_PRESET default
+)
 target_link_libraries(shared_lib_test PRIVATE testlib)
 target_link_libraries(shared_lib_test_supernova PRIVATE testlib)
