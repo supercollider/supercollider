@@ -35,6 +35,16 @@
 #include "ErrorMessage.hpp"
 #include "SC_Filesystem.hpp" // SC_PLUGIN_EXT
 
+// The generic .so extension has been deprecated in SC 3.15 so developers can ship shared libraries
+// along their plugins. We do the following to provide a smooth upgrade path:
+// If there has been a plugin with the SC_PLUGIN_EXT extension in the same folder or one of its
+// parent folders we simply ignore the .so file because we can assume it is a dependency.
+// Otherwise we load the .so file and post a warning.
+// NOTE: we should remove this workaround in the future!
+#ifdef __linux__
+#    define LINUX_PLUGIN_WORKAROUND
+#endif
+
 namespace nova {
 
 std::unique_ptr<sc_ugen_factory> sc_factory;
@@ -215,27 +225,80 @@ bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, struct 
     return true;
 }
 
+void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir) {
+#ifdef LINUX_PLUGIN_WORKAROUND
+    load_plugin_folder(dir, false);
+#else
+    namespace fs = std::filesystem;
 
-void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& path) {
-    using namespace std::filesystem;
+    fs::directory_iterator end;
 
-    directory_iterator end;
-
-    if (!is_directory(path))
+    if (!fs::is_directory(dir))
         return;
 
-    if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
+    if (SC_Filesystem::instance().shouldNotCompileDirectory(dir)) {
         return;
     }
 
-    auto options = std::filesystem::directory_options::follow_directory_symlink;
-    for (directory_iterator it(path, options); it != end; ++it) {
-        if (is_regular_file(it->status()))
-            load_plugin(it->path());
-        if (is_directory(it->status()))
-            load_plugin_folder(it->path());
+    fs::directory_iterator iter(dir, fs::directory_options::follow_directory_symlink);
+    for (const auto& entry : iter) {
+        if (fs::is_regular_file(entry.status())) {
+            // Ignore files that don't have the extension of an SC plugin
+            if (entry.path().extension() == SC_PLUGIN_EXT) {
+                load_plugin(entry.path());
+            }
+        } else if (fs::is_directory(entry.status())) {
+            load_plugin_folder(entry.path());
+        }
+    }
+#endif
+}
+
+#ifdef LINUX_PLUGIN_WORKAROUND
+void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool did_find_plugin) {
+    namespace fs = std::filesystem;
+
+    fs::directory_iterator end;
+
+    if (!is_directory(dir))
+        return;
+
+    if (SC_Filesystem::instance().shouldNotCompileDirectory(dir)) {
+        return;
+    }
+
+    auto options = fs::directory_options::follow_directory_symlink;
+
+    // first only iterate over .scx files
+    for (const auto& entry : fs::directory_iterator(dir, options)) {
+        if (fs::is_regular_file(entry.status()) && entry.path().extension() == SC_PLUGIN_EXT) {
+            load_plugin(entry.path());
+            did_find_plugin = true;
+        }
+    }
+
+    // then iterate over subdirectories and .so files
+    for (const auto& entry : fs::directory_iterator(dir, options)) {
+        if (fs::is_directory(entry.path())) {
+            load_plugin_folder(entry.path(), did_find_plugin);
+        } else if (!did_find_plugin && entry.path().extension() == ".so") {
+            // No .scx plugins were found in this directory or any parent directory -> assume the .so file is a plugin.
+            load_plugin(entry.path());
+            std::cout << "*** WARNING: '" << SC_Codecvt::path_to_utf8_str(entry.path()).c_str()
+                      << "': the .so extension has been deprecated!" << std::endl;
+
+            static bool didWarn = false;
+            if (!didWarn) {
+                std::cout << "*** Please try to upgrade any SC extension where the UGen plugin still has the .so extension. "
+                          << "If you already have the latest version, please ask the developer to update the extension. "
+                          << "To suppress this warning in the meantime, you can manually change the extension to .scx."
+                          << std::endl;
+                didWarn = true;
+            }
+        }
     }
 }
+#endif // LINUX_PLUGIN_WORKAROUND
 
 static bool check_api_version(int (*api_version)(), std::string const& filename) {
     using namespace std;
@@ -256,13 +319,6 @@ static bool check_api_version(int (*api_version)(), std::string const& filename)
 
 #ifdef DLOPEN
 void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
-    using namespace std;
-
-    // Ignore files that don't have the extension of an SC plugin
-    if (path.extension() != SC_PLUGIN_EXT) {
-        return;
-    }
-
     void* handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
     if (handle == nullptr)
         return;
@@ -285,7 +341,7 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
 
     void* load_symbol = dlsym(handle, "load");
     if (!load_symbol) {
-        cout << "Problem when loading plugin: \"load\" function undefined" << path << endl;
+        std::cout << "Problem when loading plugin: \"load\" function undefined" << path << std::endl;
         dlclose(handle);
         return;
     }
@@ -312,11 +368,6 @@ void sc_ugen_factory::close_handles(void) {
 #elif defined(_WIN32)
 
 void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
-    // Ignore files that don't have the extension of an SC plugin
-    if (path.extension() != SC_PLUGIN_EXT) {
-        return;
-    }
-
     // This allows plugins to place DLL dependencies in the same directory.
     SetDllDirectoryW(path.parent_path().c_str());
     // std::cout << "try open plugin: " << path << std::endl;

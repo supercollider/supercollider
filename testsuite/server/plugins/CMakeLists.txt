@@ -4,9 +4,7 @@ set(plugin_tests
 )
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
-if (APPLE OR WIN32)
-    set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
-endif()
+set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
 
 # let plugins find their dependencies in the same folder
 set(CMAKE_INSTALL_RPATH $ORIGIN)

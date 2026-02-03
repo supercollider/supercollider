@@ -66,8 +66,18 @@ HashTable<struct PlugInCmd, Malloc>* gPlugInCmds = nullptr;
 extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
+// The generic .so extension has been deprecated in SC 3.15 so developers can ship shared libraries
+// along their plugins. We do the following to provide a smooth upgrade path:
+// If there has been a plugin with the SC_PLUGIN_EXT extension in the same folder or one of its
+// parent folders we simply ignore the .so file because we can assume it is a dependency.
+// Otherwise we load the .so file and post a warning.
+// NOTE: we should remove this workaround in the future!
+#ifdef __linux__
+#    define LINUX_PLUGIN_WORKAROUND
+#endif
+
 void initMiscCommands();
-static bool PlugIn_LoadDir(const fs::path& dir, bool reportError);
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool didFindPlugin = false);
 std::vector<void*> open_handles;
 #ifdef __APPLE__
 void read_section(const struct mach_header* mhp, unsigned long slide, const char* segname, const char* sectname) {
@@ -380,9 +390,10 @@ static bool PlugIn_Load(const fs::path& filename) {
 #endif // _WIN32
 }
 
-static bool PlugIn_LoadDir(const fs::path& dir, bool reportError) {
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool didFindPlugin) {
     std::error_code ec;
-    fs::recursive_directory_iterator rditer(dir, fs::directory_options::follow_directory_symlink, ec);
+    fs::directory_iterator iter(dir, fs::directory_options::follow_directory_symlink, ec);
+    fs::directory_iterator end;
 
     if (ec) {
         if (reportError) {
@@ -393,30 +404,75 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError) {
         return false;
     }
 
-    while (rditer != fs::end(rditer)) {
-        const fs::path path = *rditer;
+    if (SC_Filesystem::instance().shouldNotCompileDirectory(dir)) {
+        return true;
+    }
 
-        if (fs::is_directory(path)) {
-            if (SC_Filesystem::instance().shouldNotCompileDirectory(path))
-                rditer.disable_recursion_pending();
-            else
-                ; // do nothing; recursion for free
+#ifndef LINUX_PLUGIN_WORKAROUND
+    while (iter != end) {
+        const fs::path path = *iter;
+
+        if (fs::is_directory(iter->status())) {
+            PlugIn_LoadDir(path, reportError);
         } else if (path.extension() == SC_PLUGIN_EXT) {
             // don't need to check result: PlugIn_Load does its own error handling and printing.
             // A `false` return value here just means that loading didn't occur, which is not
             // an error condition for us.
             PlugIn_Load(path);
-        } else {
-            // not a plugin, do nothing
         }
 
-        rditer.increment(ec);
+        iter.increment(ec);
         if (ec) {
             scprintf("*** ERROR: Could not iterate on directory '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(),
                      ec.message().c_str());
             return false;
         }
     }
+#else
+    // first only iterate over .scx files
+    while (iter != end) {
+        const fs::path path = *iter; // copy!
+
+        if (fs::is_regular_file(iter->status()) && path.extension() == SC_PLUGIN_EXT) {
+            PlugIn_Load(path);
+            didFindPlugin = true;
+        }
+
+        iter.increment(ec);
+        if (ec) {
+            scprintf("*** ERROR: Could not iterate on directory '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(),
+                     ec.message().c_str());
+            return false;
+        }
+    }
+
+    // then iterate over subdirectories and .so files. Since we have already iterated over all files,
+    // we don't necessarily have to check for errors again.
+    try {
+        fs::directory_iterator iter(dir, fs::directory_options::follow_directory_symlink);
+
+        for (const auto& entry : iter) {
+            const fs::path& path = entry.path();
+
+            if (fs::is_directory(path)) {
+                PlugIn_LoadDir(path, reportError, didFindPlugin);
+            } else if (!didFindPlugin && path.extension() == ".so") {
+                // No .scx plugins were found in this directory or any parent directory -> assume the .so file is a plugin.
+                if (PlugIn_Load(path)) {
+                    scprintf("*** WARNING: '%s': the .so extension has been deprecated!\n", SC_Codecvt::path_to_utf8_str(path).c_str());
+
+                    static bool didWarn = false;
+                    if (!didWarn) {
+                        scprintf("*** Please try to upgrade any SC extension where the UGen plugin still has the .so extension. "
+                                 "If you already have the latest version, please ask the developer to update the extension. "
+                                 "To suppress this warning in the meantime, you can manually change the extension to .scx.\n");
+                        didWarn = true;
+                    }
+                }
+            }
+        }
+    } catch (...) {}
+#endif
 
     return true;
 }
