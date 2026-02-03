@@ -927,9 +927,6 @@ void World_Cleanup(World* world, bool unload_plugins) {
         scsynth::stopAsioThread();
     }
 
-    if (unload_plugins)
-        deinitialize_library();
-
     HiddenWorld* hw = world->hw;
 
     if (hw && world->mRealTime)
@@ -939,6 +936,11 @@ void World_Cleanup(World* world, bool unload_plugins) {
 
     if (world->mTopGroup)
         Group_DeleteAll(world->mTopGroup);
+
+    // NOTE: only unload plugins after all Nodes have been destroyed,
+    // but before the World is cleaned up!
+    if (unload_plugins)
+        deinitialize_library();
 
     reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock();
     if (hw) {
