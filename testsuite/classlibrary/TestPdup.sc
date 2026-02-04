@@ -9,8 +9,8 @@ TestPdup : UnitTest {
 
 		stream = pat.asStream;
 
-		// If this crashes, the test fails automatically
-		result = stream.next(());
+		// Use a proper event to avoid hanging the interpreter
+		result = stream.next(Event.default);
 
 		this.assert(result.notNil);
 	}
