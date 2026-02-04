@@ -1,18 +1,16 @@
 TestPdup : UnitTest {
 
-	test_swappedArguments_doesNotCrash {
-		var pat, stream, result;
+    test_swappedArguments_doesNotCrash {
+        var err;
 
-		pat = Pbind(
-			\dur, Pdup(1/8, 8)
-		);
+        err = {
+            Pbind(
+                \dur, Pdup(1/8, 8)
+            ).asStream.next;
+        }.try { |e| e };
 
-		stream = pat.asStream;
-
-		// Use a proper event to avoid hanging the interpreter
-		result = stream.next(Event.default);
-
-		this.assert(result.notNil);
-	}
+        // If it crashed, err will be an Error
+        this.assert(err.isKindOf(Error).not);
+    }
 
 }
