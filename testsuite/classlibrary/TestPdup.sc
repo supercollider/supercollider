@@ -1,16 +1,20 @@
 TestPdup : UnitTest {
 
     test_swappedArguments_doesNotCrash {
-        var err;
+        var err = nil;
 
-        err = {
+        {
             Pbind(
                 \dur, Pdup(1/8, 8)
             ).asStream.next;
-        }.try { |e| e };
+        }.try { |e|
+            err = e;
+        };
 
-        // If it crashed, err will be an Error
-        this.assert(err.isKindOf(Error).not, "Pdup should not crash if the first argument is < 1");
+        this.assert(
+            err.isNil,
+            "Pdup should not crash if the first argument is < 1"
+        );
     }
 
 }
