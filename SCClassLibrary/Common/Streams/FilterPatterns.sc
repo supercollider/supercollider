@@ -622,7 +622,7 @@ Pdup : FilterPattern {
 		} {
 			nn = nstream.next(event);
 			if(nn.notNil and: { nn >= 1 }) {
-				nn.abs.do {
+				nn.do {
 					event = inevent.copy.yield;
 				};
 			} { ^event };
