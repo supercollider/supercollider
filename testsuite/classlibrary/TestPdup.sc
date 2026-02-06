@@ -10,7 +10,7 @@ TestPdup : UnitTest {
         }.try { |e| e };
 
         // If it crashed, err will be an Error
-        this.assert(err.isKindOf(Error).not);
+        this.assert(err.isKindOf(Error).not, "Pdup should not crash if the first argument is < 1");
     }
 
 }
