@@ -14,6 +14,7 @@ SimpleNumber : Number {
 	abs { _Abs; ^this.primitiveFailed }
 	ceil { _Ceil; ^this.primitiveFailed }
 	floor { _Floor; ^this.primitiveFailed }
+	truncate { _Truncate; ^this.primitiveFailed }
 	frac { _Frac; ^this.primitiveFailed }
 	sign { _Sign; ^this.primitiveFailed }
 	squared { _Squared; ^this.primitiveFailed }
@@ -72,6 +73,7 @@ SimpleNumber : Number {
 	/ { |aNumber, adverb| _FDiv; ^aNumber.performBinaryOpOnSimpleNumber('/', this, adverb) }
 	mod { |aNumber, adverb| _Mod; ^aNumber.performBinaryOpOnSimpleNumber('mod', this, adverb) }
 	div { |aNumber, adverb| _IDiv; ^aNumber.performBinaryOpOnSimpleNumber('div', this, adverb) }
+	divide { |aNumber, adverb| _IDiv; ^aNumber.performBinaryOpOnSimpleNumber('divide', this, adverb) }
 	pow { |aNumber, adverb| _Pow; ^aNumber.performBinaryOpOnSimpleNumber('pow', this, adverb) }
 	min { |aNumber, adverb| _Min; ^aNumber.performBinaryOpOnSimpleNumber('min', this, adverb) }
 	max { |aNumber=0.0, adverb| _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this, adverb) }
@@ -84,7 +86,9 @@ SimpleNumber : Number {
 	gcd { |aNumber, adverb| _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this, adverb) }
 	round { |aNumber=1.0, adverb| _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
 	roundUp { |aNumber=1.0, adverb| _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this, adverb) }
+	roundDown { |aNumber=1.0, adverb| _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
 	smallButNotZero { |thresh=1e-12| ^this != 0 and: {  this.abs < thresh  } }
+	// this is sc_trunc, equivalent to floor(receiver/aNumber) * aNumber
 	trunc { |aNumber=1.0, adverb| _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
 	atan2 { |aNumber, adverb| _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this, adverb) }
 	hypot { |aNumber, adverb| _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this, adverb) }

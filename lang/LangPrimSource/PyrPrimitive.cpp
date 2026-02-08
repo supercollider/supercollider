@@ -3758,6 +3758,7 @@ void initPrimitives() {
     definePrimitive(base, opAsInteger, "_AsInteger", doSpecialUnaryArithMsg, 1, 0);
     definePrimitive(base, opCeil, "_Ceil", doSpecialUnaryArithMsg, 1, 0); // 5
     definePrimitive(base, opFloor, "_Floor", doSpecialUnaryArithMsg, 1, 0);
+    definePrimitive(base, opTruncate, "_Truncate", doSpecialUnaryArithMsg, 1, 0);
     definePrimitive(base, opFrac, "_Frac", doSpecialUnaryArithMsg, 1, 0);
     definePrimitive(base, opSign, "_Sign", doSpecialUnaryArithMsg, 1, 0);
     definePrimitive(base, opSquared, "_Squared", doSpecialUnaryArithMsg, 1, 0);
@@ -3819,6 +3820,7 @@ void initPrimitives() {
     definePrimitive(base, opSub, "_Sub", prSubNum, 2, 0);
     definePrimitive(base, opMul, "_Mul", prMulNum, 2, 0);
 
+    definePrimitive(base, opIDivide, "_IDivide", prSpecialBinaryArithMsg, 3, 0);
     definePrimitive(base, opIDiv, "_IDiv", prSpecialBinaryArithMsg, 3, 0);
     definePrimitive(base, opFDiv, "_FDiv", prSpecialBinaryArithMsg, 3, 0);
     definePrimitive(base, opMod, "_Mod", prSpecialBinaryArithMsg, 3, 0);

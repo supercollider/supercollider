@@ -15,7 +15,7 @@ enum {
     opAsFloat,
     opAsInteger,
     opCeil, // 5
-    opFloor,
+    opFloor, // opTruncate is at the bottom. erroneous opTrunc is in binops
     opFrac,
     opSign,
     opSquared,
@@ -70,6 +70,7 @@ enum {
 
     opRamp,
     opSCurve,
+    opTruncate,
 
     opNumUnarySelectors
 };
@@ -83,7 +84,7 @@ enum {
     opAdd,
     opSub,
     opMul,
-    opIDiv,
+    opIDiv, // opIdivide is at the bottom
     opFDiv,
     opMod,
     opEQ,
@@ -132,6 +133,7 @@ enum {
     opFirstArg,
     opRandRange,
     opExpRandRange,
+    opIDivide,
 
     opNumBinarySelectors
 };
