@@ -211,7 +211,7 @@ enum {
     opAdd,
     opSub,
     opMul,
-    opIDiv,
+    opIDiv, // IDivide at bottom
     opFDiv,
     opMod,
     opEQ,
@@ -260,6 +260,7 @@ enum {
     opFirstArg,
     opRandRange,
     opExpRandRange,
+    opIDivide,
 
     opNumBinarySelectors
 };
@@ -707,6 +708,19 @@ void idiv_d(BinaryOpUGen* unit, int inNumSamples) {
         RESETINPUT(1);
     }
 }
+
+
+void idivide_d(BinaryOpUGen* unit, int inNumSamples) {
+    if (inNumSamples) {
+        float a = DEMANDINPUT_A(0, inNumSamples);
+        float b = DEMANDINPUT_A(1, inNumSamples);
+        OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : trunc(a / b);
+    } else {
+        RESETINPUT(0);
+        RESETINPUT(1);
+    }
+}
+
 
 void mod_d(BinaryOpUGen* unit, int inNumSamples) {
     if (inNumSamples) {
@@ -1182,6 +1196,8 @@ void mul_1(BinaryOpUGen* unit, int inNumSamples) { ZOUT0(0) = ZIN0(0) * ZIN0(1);
 void div_1(BinaryOpUGen* unit, int inNumSamples) { ZOUT0(0) = ZIN0(0) / ZIN0(1); }
 
 void idiv_1(BinaryOpUGen* unit, int inNumSamples) { ZOUT0(0) = floor(ZIN0(0) / ZIN0(1)); }
+
+void idivide_1(BinaryOpUGen* unit, int inNumSamples) { ZOUT0(0) = trunc(ZIN0(0) / ZIN0(1)); }
 
 void mod_1(BinaryOpUGen* unit, int inNumSamples) {
     float xa = ZIN0(0);
@@ -2070,6 +2086,66 @@ void idiv_ai(BinaryOpUGen* unit, int inNumSamples) {
     float xb = ZIN0(1);
 
     LOOP1(inNumSamples, ZXP(out) = floor(ZXP(a) / xb););
+}
+
+
+void idivide_aa(BinaryOpUGen* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float* a = ZIN(0);
+    float* b = ZIN(1);
+
+    LOOP1(inNumSamples, ZXP(out) = trunc(ZXP(a) / ZXP(b)););
+}
+
+void idivide_ak(BinaryOpUGen* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float* a = ZIN(0);
+    float xb = unit->mPrevB;
+    float next_b = ZIN0(1);
+
+    if (xb == next_b) {
+        ZXP(out) = trunc(ZXP(a) / xb);
+    } else {
+        float slope = CALCSLOPE(next_b, xb);
+        LOOP1(inNumSamples, ZXP(out) = trunc(ZXP(a) / xb); xb += slope;);
+        unit->mPrevB = xb;
+    }
+}
+
+void idivide_ka(BinaryOpUGen* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float xa = unit->mPrevA;
+    float* b = ZIN(1);
+    float next_a = ZIN0(0);
+
+    if (xa == next_a) {
+        if (xa == 0.f) {
+            ZClear(inNumSamples, out);
+        } else {
+            LOOP1(inNumSamples, ZXP(out) = trunc(xa / ZXP(b)););
+        }
+    } else {
+        float slope = CALCSLOPE(next_a, xa);
+        LOOP1(inNumSamples, ZXP(out) = trunc(xa / ZXP(b)); xa += slope;);
+        unit->mPrevA = xa;
+    }
+}
+
+void idivide_ia(BinaryOpUGen* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float xa = ZIN0(0);
+    float* b = ZIN(1);
+
+    LOOP1(inNumSamples, ZXP(out) = trunc(xa / ZXP(b)););
+}
+
+
+void idivide_ai(BinaryOpUGen* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float* a = ZIN(0);
+    float xb = ZIN0(1);
+
+    LOOP1(inNumSamples, ZXP(out) = trunc(ZXP(a) / xb););
 }
 
 
@@ -4684,6 +4760,9 @@ static BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen* unit) {
     case opIDiv:
         func = &idiv_1;
         break;
+    case opIDivide:
+        func = &idivide_1;
+        break;
     case opMod:
         func = &mod_1;
         break;
@@ -4838,6 +4917,9 @@ static BinaryOpFunc ChooseDemandFunc(BinaryOpUGen* unit) {
         break;
     case opIDiv:
         func = &idiv_d;
+        break;
+    case opIDivide:
+        func = &idivide_d;
         break;
     case opMod:
         func = &mod_d;
@@ -5002,6 +5084,9 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen* unit) {
             case opIDiv:
                 func = &idiv_aa;
                 break;
+            case opIDivide:
+                func = &idivide_aa;
+                break;
             case opMod:
                 func = &mod_aa;
                 break;
@@ -5154,6 +5239,9 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen* unit) {
             case opIDiv:
                 func = &idiv_ak;
                 break;
+            case opIDivide:
+                func = &idivide_ak;
+                break;
             case opMod:
                 func = &mod_ak;
                 break;
@@ -5304,6 +5392,9 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen* unit) {
                 func = &div_ai;
                 break;
             case opIDiv:
+                func = &idiv_ai;
+                break;
+            case opIDivide:
                 func = &idiv_ai;
                 break;
             case opMod:
@@ -5458,6 +5549,9 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen* unit) {
             case opIDiv:
                 func = &idiv_ka;
                 break;
+            case opIDivide:
+                func = &idivide_ka;
+                break;
             case opMod:
                 func = &mod_ka;
                 break;
@@ -5610,6 +5704,9 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen* unit) {
                 break;
             case opIDiv:
                 func = &idiv_ia;
+                break;
+            case opIDivide:
+                func = &idivide_ia;
                 break;
             case opMod:
                 func = &mod_ia;
@@ -5778,6 +5875,9 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen* unit) {
             case opIDiv:
                 func = &idiv_aa;
                 break;
+            case opIDivide:
+                func = &idivide_aa;
+                break;
             case opMod:
                 func = &mod_aa;
                 break;
@@ -5928,6 +6028,9 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen* unit) {
             case opIDiv:
                 func = &idiv_ak;
                 break;
+            case opIDivide:
+                func = &idivide_ak;
+                break;
             case opMod:
                 func = &mod_ak;
                 break;
@@ -6077,6 +6180,9 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen* unit) {
                 break;
             case opIDiv:
                 func = &idiv_ai;
+                break;
+            case opIDivide:
+                func = &idivide_ai;
                 break;
             case opMod:
                 func = &mod_ai;
@@ -6230,6 +6336,9 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen* unit) {
             case opIDiv:
                 func = &idiv_ka;
                 break;
+            case opIDivide:
+                func = &idivide_ka;
+                break;
             case opMod:
                 func = &mod_ka;
                 break;
@@ -6382,6 +6491,9 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen* unit) {
                 break;
             case opIDiv:
                 func = &idiv_ia;
+                break;
+            case opIDivide:
+                func = &idivide_ia;
                 break;
             case opMod:
                 func = &mod_ia;
@@ -6553,6 +6665,9 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen* unit) {
             case opIDiv:
                 func = &idiv_aa;
                 break;
+            case opIDivide:
+                func = &idivide_aa;
+                break;
             case opMod:
                 func = &mod_aa;
                 break;
@@ -6703,6 +6818,9 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen* unit) {
             case opIDiv:
                 func = &idiv_ak;
                 break;
+            case opIDivide:
+                func = &idivide_ak;
+                break;
             case opMod:
                 func = &mod_ak;
                 break;
@@ -6852,6 +6970,9 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen* unit) {
                 break;
             case opIDiv:
                 func = &idiv_ai;
+                break;
+            case opIDivide:
+                func = &idivide_ai;
                 break;
             case opMod:
                 func = &mod_ai;
@@ -7005,6 +7126,9 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen* unit) {
             case opIDiv:
                 func = &idiv_ka;
                 break;
+            case opIDivide:
+                func = &idivide_ka;
+                break;
             case opMod:
                 func = &mod_ka;
                 break;
@@ -7157,6 +7281,9 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen* unit) {
                 break;
             case opIDiv:
                 func = &idiv_ia;
+                break;
+            case opIDivide:
+                func = &idivide_ia;
                 break;
             case opMod:
                 func = &mod_ia;
