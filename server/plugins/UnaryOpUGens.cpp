@@ -122,7 +122,7 @@ enum {
     opAsFloat,
     opAsInteger,
     opCeil,
-    opFloor,
+    opFloor, // truncate is at bottom
     opFrac,
     opSign,
     opSquared,
@@ -172,6 +172,7 @@ enum {
 
     opRamp,
     opSCurve,
+    opTruncate,
 
     opNumUnarySelectors
 };
@@ -275,10 +276,12 @@ FLATTEN void recip_nova_64(UnaryOpUGen* unit, int inNumSamples) { nova::reciproc
 
 DEFINE_UNARY_OP_FUNCS(floor, floor)
 DEFINE_UNARY_OP_FUNCS(ceil, ceil)
+DEFINE_UNARY_OP_FUNCS(truncate, trunc)
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(floor, floor)
 NOVA_WRAPPER_CT_UNROLL(ceil, ceil)
+NOVA_WRAPPER_CT_UNROLL(truncate, trunc)
 #endif
 
 DEFINE_UNARY_OP_FUNCS(sin, sin)
@@ -484,7 +487,7 @@ void coin_d(UnaryOpUGen* unit, int inNumSamples) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static UnaryOpFunc ChooseNormalFunc(UnaryOpUGen* unit) {
-    void (*func)(UnaryOpUGen * unit, int inNumSamples);
+    void (*func)(UnaryOpUGen* unit, int inNumSamples);
 
     switch (unit->mSpecialIndex) {
     case opSilence:
@@ -510,6 +513,9 @@ static UnaryOpFunc ChooseNormalFunc(UnaryOpUGen* unit) {
         break;
     case opFloor:
         func = &floor_a;
+        break;
+    case opTruncate:
+        func = &truncate_a;
         break;
     case opFrac:
         func = &frac_a;
@@ -648,7 +654,7 @@ static UnaryOpFunc ChooseNormalFunc(UnaryOpUGen* unit) {
 }
 
 static UnaryOpFunc ChooseOneFunc(UnaryOpUGen* unit) {
-    void (*func)(UnaryOpUGen * unit, int inNumSamples);
+    void (*func)(UnaryOpUGen* unit, int inNumSamples);
 
     switch (unit->mSpecialIndex) {
     case opSilence:
@@ -674,6 +680,9 @@ static UnaryOpFunc ChooseOneFunc(UnaryOpUGen* unit) {
         break;
     case opFloor:
         func = &floor_1;
+        break;
+    case opTruncate:
+        func = &truncate_1;
         break;
     case opFrac:
         func = &frac_1;
@@ -813,7 +822,7 @@ static UnaryOpFunc ChooseOneFunc(UnaryOpUGen* unit) {
 
 
 static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen* unit) {
-    void (*func)(UnaryOpUGen * unit, int inNumSamples);
+    void (*func)(UnaryOpUGen* unit, int inNumSamples);
 
     switch (unit->mSpecialIndex) {
     case opSilence:
@@ -839,6 +848,9 @@ static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen* unit) {
         break;
     case opFloor:
         func = &floor_d;
+        break;
+    case opTruncate:
+        func = &truncate_d;
         break;
     case opFrac:
         func = &frac_d;
@@ -980,7 +992,7 @@ static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen* unit) {
 #ifdef NOVA_SIMD
 
 static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen* unit) {
-    void (*func)(UnaryOpUGen * unit, int inNumSamples);
+    void (*func)(UnaryOpUGen* unit, int inNumSamples);
 
     if (BUFLENGTH == 64) {
         switch (unit->mSpecialIndex) {
@@ -1004,6 +1016,9 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen* unit) {
             break;
         case opFloor:
             func = &floor_nova_64;
+            break;
+        case opTruncate:
+            func = &trunc_nova_64;
             break;
         case opFrac:
             func = &frac_nova_64;
@@ -1165,6 +1180,9 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen* unit) {
         break;
     case opFloor:
         func = &floor_nova;
+        break;
+    case opTruncate:
+        func = &trunc_nova;
         break;
     case opFrac:
         func = &frac_nova;
