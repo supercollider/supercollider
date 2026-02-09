@@ -66,6 +66,7 @@ Point {
 	}
 
 	abs { ^Point(x.abs, y.abs) }
+	truncate { ^Point(x.truncate, y.truncate) }
 
 	rho { ^hypot(x, y) }
 	theta { ^atan2(y, x) }

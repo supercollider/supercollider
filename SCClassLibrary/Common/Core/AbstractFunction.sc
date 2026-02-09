@@ -127,7 +127,9 @@ AbstractFunction {
 	gcd { arg function, adverb; ^this.composeBinaryOp('gcd', function, adverb) }
 	round { arg function=1, adverb; ^this.composeBinaryOp('round', function, adverb) }
 	roundUp { arg function=1, adverb; ^this.composeBinaryOp('roundUp', function, adverb) }
+	roundDown { arg function=1, adverb; ^this.composeBinaryOp('trunc', function, adverb) }
 	trunc { arg function=1, adverb; ^this.composeBinaryOp('trunc', function, adverb) }
+	truncate { arg function=1, adverb; ^this.composeBinaryOp('truncate', function, adverb) }
 	atan2 { arg function, adverb; ^this.composeBinaryOp('atan2', function, adverb) }
 	hypot { arg function, adverb; ^this.composeBinaryOp('hypot', function, adverb) }
 	hypotApx { arg function, adverb; ^this.composeBinaryOp('hypotApx', function, adverb) }

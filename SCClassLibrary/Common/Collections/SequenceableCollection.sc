@@ -884,7 +884,9 @@ SequenceableCollection : Collection {
 	gcd { arg aNumber, adverb; ^this.performBinaryOp('gcd', aNumber, adverb) }
 	round { arg aNumber=1, adverb; ^this.performBinaryOp('round', aNumber, adverb) }
 	roundUp { arg aNumber=1, adverb; ^this.performBinaryOp('roundUp', aNumber, adverb) }
+	roundDown { arg aNumber=1, adverb; ^this.performBinaryOp('trunc', aNumber, adverb) }
 	trunc { arg aNumber=1, adverb; ^this.performBinaryOp('trunc', aNumber, adverb) }
+	truncate { arg aNumber=1, adverb; ^this.performBinaryOp('truncate', aNumber, adverb) }
 	atan2 { arg aNumber, adverb; ^this.performBinaryOp('atan2', aNumber, adverb) }
 	hypot { arg aNumber, adverb; ^this.performBinaryOp('hypot', aNumber, adverb) }
 	hypotApx { arg aNumber, adverb; ^this.performBinaryOp('hypotApx', aNumber, adverb) }
