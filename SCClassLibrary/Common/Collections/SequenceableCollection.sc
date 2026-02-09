@@ -861,6 +861,7 @@ SequenceableCollection : Collection {
 	* { arg aNumber, adverb; ^this.performBinaryOp('*', aNumber, adverb) }
 	/ { arg aNumber, adverb; ^this.performBinaryOp('/', aNumber, adverb) }
 	div { arg aNumber, adverb; ^this.performBinaryOp('div', aNumber, adverb) }
+	divide { arg aNumber, adverb; ^this.performBinaryOp('divide', aNumber, adverb) }
 	mod { arg aNumber, adverb; ^this.performBinaryOp('mod', aNumber, adverb) }
 	modSeaside { arg aNumber, adverb; ^this.performBinaryOp('modSeaside', aNumber, adverb) }
 	pow { arg aNumber, adverb; ^this.performBinaryOp('pow', aNumber, adverb) }

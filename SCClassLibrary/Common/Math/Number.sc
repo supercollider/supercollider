@@ -8,6 +8,7 @@ Number : Magnitude {
 	mod { arg aNumber; ^this.subclassResponsibility(thisMethod) }
 	modSeaside { arg aNumber; ^this.subclassResponsibility(thisMethod) }
 	div { arg aNumber; ^this.subclassResponsibility(thisMethod) }
+	divide { arg aNumber; ^this.subclassResponsibility(thisMethod) }
 	pow { arg aNumber; ^this.subclassResponsibility(thisMethod) }
 
 	performBinaryOpOnSeqColl { arg aSelector, aSeqColl, adverb;

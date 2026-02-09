@@ -52,6 +52,13 @@ Point {
 		scalePoint = scale.asPoint;
 		^Point(this.x div: scalePoint.x, this.y div: scalePoint.y)
 	}
+
+	divide { arg scale;
+		var scalePoint;
+		scalePoint = scale.asPoint;
+		^Point(this.x divide: scalePoint.x, this.y divide: scalePoint.y)
+	}
+
 	translate { arg delta;
 		^Point(this.x + delta.x, this.y + delta.y)
 	}
