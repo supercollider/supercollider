@@ -487,7 +487,7 @@ void coin_d(UnaryOpUGen* unit, int inNumSamples) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static UnaryOpFunc ChooseNormalFunc(UnaryOpUGen* unit) {
-    void (*func)(UnaryOpUGen* unit, int inNumSamples);
+    void (*func)(UnaryOpUGen * unit, int inNumSamples);
 
     switch (unit->mSpecialIndex) {
     case opSilence:
@@ -654,7 +654,7 @@ static UnaryOpFunc ChooseNormalFunc(UnaryOpUGen* unit) {
 }
 
 static UnaryOpFunc ChooseOneFunc(UnaryOpUGen* unit) {
-    void (*func)(UnaryOpUGen* unit, int inNumSamples);
+    void (*func)(UnaryOpUGen * unit, int inNumSamples);
 
     switch (unit->mSpecialIndex) {
     case opSilence:
@@ -822,7 +822,7 @@ static UnaryOpFunc ChooseOneFunc(UnaryOpUGen* unit) {
 
 
 static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen* unit) {
-    void (*func)(UnaryOpUGen* unit, int inNumSamples);
+    void (*func)(UnaryOpUGen * unit, int inNumSamples);
 
     switch (unit->mSpecialIndex) {
     case opSilence:
@@ -992,7 +992,7 @@ static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen* unit) {
 #ifdef NOVA_SIMD
 
 static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen* unit) {
-    void (*func)(UnaryOpUGen* unit, int inNumSamples);
+    void (*func)(UnaryOpUGen * unit, int inNumSamples);
 
     if (BUFLENGTH == 64) {
         switch (unit->mSpecialIndex) {
