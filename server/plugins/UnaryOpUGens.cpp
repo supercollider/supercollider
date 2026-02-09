@@ -1018,7 +1018,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen* unit) {
             func = &floor_nova_64;
             break;
         case opTruncate:
-            func = &trunc_nova_64;
+            func = &truncate_nova_64;
             break;
         case opFrac:
             func = &frac_nova_64;
@@ -1182,7 +1182,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen* unit) {
         func = &floor_nova;
         break;
     case opTruncate:
-        func = &trunc_nova;
+        func = &truncate_nova;
         break;
     case opFrac:
         func = &frac_nova;
