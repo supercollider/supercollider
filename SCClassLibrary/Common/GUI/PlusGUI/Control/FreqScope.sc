@@ -313,7 +313,8 @@ FreqScopeView {
 }
 
 FreqScope {
-	classvar <scopeOpen;
+	classvar <scopeOpen = false;
+	classvar singleInstance;
 
 	var <scope, <window;
 
@@ -322,7 +323,9 @@ FreqScope {
 		var setFreqLabelVals, setDBLabelVals;
 		var nyquistKHz;
 		busNum = busNum.asControlInput;
-		if(scopeOpen != true, { // block the stacking up of scope windows
+		if(scopeOpen) {
+			^singleInstance 
+		} { 
 			//make scope
 
 			scopeColor = scopeColor ?? { Color.new255(255, 218, 000) };
@@ -476,7 +479,8 @@ FreqScope {
 				scope.kill;
 				scopeOpen = false;
 			}).front;
-			^super.newCopyArgs(scope, window)
-		});
+			singleInstance = super.newCopyArgs(scope, window);
+			^singleInstance
+		};
 	}
 }
