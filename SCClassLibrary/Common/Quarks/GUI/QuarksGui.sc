@@ -628,10 +628,7 @@ QuarkRowView {
 		isInstalled = quark.isInstalled;
 		btn.value = isInstalled.binaryValue;
 
-		// this column has invisible text
-		// its used to sort the rows so that installed quarks are at the top
 		treeItem.setString(0, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
-		// 1 is the install button. its not possible to sort by this column
 		treeItem.setString(2, quark.name ? "");
 		treeItem.setString(3, (quark.version ? "").asString);
 		treeItem.setString(4, (quark.summary ? "").replace(Char.nl.asString," ").replace(Char.tab.asString, ""));
