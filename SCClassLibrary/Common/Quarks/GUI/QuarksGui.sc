@@ -49,7 +49,7 @@ QuarksGui {
 				this.checkForUpdates({
 					treeView.enabled = true;
 					btnUpdateDirectory.value = 0;
-					this.update;
+					this.refreshDirectoryView;
 					this.setMsg("Directory has been updated.", \success);
 				}, {
 					treeView.enabled = true;
@@ -636,4 +636,30 @@ QuarkRowView {
 		treeItem.setString(3, (quark.version ? "").asString);
 		treeItem.setString(4, (quark.summary ? "").replace(Char.nl.asString," ").replace(Char.tab.asString, ""));
 	}
+
+	refreshDirectoryView {
+	var selectedPath, newQuark;
+
+	// remember what is selected in detail view (if any)
+	selectedPath = detailView.model.notNil.if({ detailView.model.localPath }, { nil });
+
+	// hard reset like closing + reopening the window
+	treeView.clear;
+	quarkRows = Dictionary.new;
+	initialized = false;
+
+	// rebuild rows from the updated model directory
+	this.update;
+
+	// restore selection so detail view + Versions tree rebuilds too
+	if(selectedPath.notNil) {
+		newQuark = model.all.detect({ |q| q.localPath == selectedPath });
+		if(newQuark.notNil) {
+			detailView.model = newQuark; // triggers detailView.update via model_
+		} {
+			detailView.model = nil;
+		};
+	};
+}
+
 }
