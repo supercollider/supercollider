@@ -314,17 +314,38 @@ FreqScopeView {
 
 FreqScope {
 	classvar <scopeOpen = false;
-	classvar singleInstance;
+	classvar instance; //singleton
 
 	var <scope, <window;
 
+	*getInstance {
+		^instance
+	}
+
+	*newReplace { arg width=522, height=300, busNum=0, scopeColor, bgColor, server;
+		if (scopeOpen) { 
+			instance.window.close; 
+			instance.scope.kill;
+			scopeOpen = false 
+		};
+		instance = this.new(width, height, busNum, scopeColor, bgColor, server);
+		^instance
+	}
+	
 	*new { arg width=522, height=300, busNum=0, scopeColor, bgColor, server;
 		var rect, scope, window, pad, font, freqLabel, freqLabelDist, dbLabel, dbLabelDist;
 		var setFreqLabelVals, setDBLabelVals;
 		var nyquistKHz;
 		busNum = busNum.asControlInput;
-		if(scopeOpen) {
-			^singleInstance 
+		if(scopeOpen) { 
+			warn(
+				"FreqScope is already open.\n"
+				"Only one instance of FreqScope can exist simultenously.\n"
+				"To access the current instance, use:\n\n"
+				"FreqScope.getInstance\n\n"
+				"To replace the current instance, use\n\n"
+				"Freqscope.newReplace\n"
+			)
 		} { 
 			//make scope
 
@@ -479,8 +500,8 @@ FreqScope {
 				scope.kill;
 				scopeOpen = false;
 			}).front;
-			singleInstance = super.newCopyArgs(scope, window);
-			^singleInstance
+			instance = super.newCopyArgs(scope, window);
+			^instance
 		};
 	}
 }
