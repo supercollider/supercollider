@@ -321,16 +321,6 @@ FreqScope {
 	*getInstance {
 		^instance
 	}
-
-	*newReplace { arg width=522, height=300, busNum=0, scopeColor, bgColor, server;
-		if (scopeOpen) { 
-			instance.window.close; 
-			instance.scope.kill;
-			scopeOpen = false 
-		};
-		instance = this.new(width, height, busNum, scopeColor, bgColor, server);
-		^instance
-	}
 	
 	*new { arg width=522, height=300, busNum=0, scopeColor, bgColor, server;
 		var rect, scope, window, pad, font, freqLabel, freqLabelDist, dbLabel, dbLabelDist;
@@ -343,10 +333,8 @@ FreqScope {
 				"Only one instance of FreqScope can exist simultenously.\n"
 				"To access the current instance, use:\n\n"
 				"FreqScope.getInstance\n\n"
-				"To replace the current instance, use\n\n"
-				"Freqscope.newReplace\n"
 			)
-		} { 
+		} {
 			//make scope
 
 			scopeColor = scopeColor ?? { Color.new255(255, 218, 000) };
