@@ -74,6 +74,7 @@ QcApplication::QcApplication(int& argc, char** argv): QApplication(argc, argv, Q
     _mutex.lock();
     _instance = this;
     _mutex.unlock();
+    // The following line of code only has effect on qt5, when we drop support for qt5, remove this line.
     this->setAttribute(Qt::AA_UseHighDpiPixmaps);
 
 #ifdef Q_OS_MAC
