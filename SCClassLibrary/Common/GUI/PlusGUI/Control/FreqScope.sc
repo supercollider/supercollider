@@ -335,7 +335,7 @@ FreqScope {
 				"FreqScope.getInstance\n\n"
 			);
 			^nil
-		}
+		};
 		//make scope
 
 		scopeColor = scopeColor ?? { Color.new255(255, 218, 000) };
