@@ -181,7 +181,7 @@ public:
     void load_plugin(std::filesystem::path const& path);
 
 private:
-    void load_plugin_folder(std::filesystem::path const& dir, bool did_find_plugin);
+    void load_plugin_folder(std::filesystem::path const& dir, bool found_scx_file);
 
     void close_handles(void);
 

@@ -255,7 +255,9 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir) {
 }
 
 #ifdef LINUX_PLUGIN_WORKAROUND
-void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool did_find_plugin) {
+// if 'found_scx_file' is true, it means that we have alredy found a .scx file in one of the parent
+// directories. In this case, we treat all .so files as shared libraries and ignore them.
+void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool found_scx_file) {
     namespace fs = std::filesystem;
 
     fs::directory_iterator end;
@@ -273,15 +275,15 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool 
     for (const auto& entry : fs::directory_iterator(dir, options)) {
         if (fs::is_regular_file(entry.status()) && entry.path().extension() == SC_PLUGIN_EXT) {
             load_plugin(entry.path());
-            did_find_plugin = true;
+            found_scx_file = true;
         }
     }
 
     // then iterate over subdirectories and .so files
     for (const auto& entry : fs::directory_iterator(dir, options)) {
         if (fs::is_directory(entry.path())) {
-            load_plugin_folder(entry.path(), did_find_plugin);
-        } else if (!did_find_plugin && entry.path().extension() == ".so") {
+            load_plugin_folder(entry.path(), found_scx_file);
+        } else if (!found_scx_file && entry.path().extension() == ".so") {
             // No .scx plugins were found in this directory or any parent directory -> assume the .so file is a plugin.
             load_plugin(entry.path());
             std::cout << "*** WARNING: '" << SC_Codecvt::path_to_utf8_str(entry.path()).c_str()

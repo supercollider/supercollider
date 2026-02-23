@@ -77,7 +77,11 @@ SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 #endif
 
 void initMiscCommands();
-static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool didFindPlugin = false);
+#ifdef LINUX_PLUGIN_WORKAROUND
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool foundScxFile = false);
+#else
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError);
+#endif
 std::vector<void*> open_handles;
 #ifdef __APPLE__
 void read_section(const struct mach_header* mhp, unsigned long slide, const char* segname, const char* sectname) {
@@ -390,7 +394,13 @@ static bool PlugIn_Load(const fs::path& filename) {
 #endif // _WIN32
 }
 
-static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool didFindPlugin) {
+#ifndef LINUX_PLUGIN_WORKAROUND
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError) {
+#else
+// if 'foundScxFile' is true, it means that we have alredy found a .scx file in one of the parent
+// directories. In this case, we treat all .so files as shared libraries and ignore them.
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool foundScxFile) {
+#endif
     std::error_code ec;
     fs::directory_iterator iter(dir, fs::directory_options::follow_directory_symlink, ec);
     fs::directory_iterator end;
@@ -435,7 +445,7 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool didFindPl
 
         if (fs::is_regular_file(iter->status()) && path.extension() == SC_PLUGIN_EXT) {
             PlugIn_Load(path);
-            didFindPlugin = true;
+            foundScxFile = true;
         }
 
         iter.increment(ec);
@@ -455,8 +465,8 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool didFindPl
             const fs::path& path = entry.path();
 
             if (fs::is_directory(path)) {
-                PlugIn_LoadDir(path, reportError, didFindPlugin);
-            } else if (!didFindPlugin && path.extension() == ".so") {
+                PlugIn_LoadDir(path, reportError, foundScxFile);
+            } else if (!foundScxFile && path.extension() == ".so") {
                 // No .scx plugins were found in this directory or any parent directory -> assume the .so file is a
                 // plugin.
                 if (PlugIn_Load(path)) {
