@@ -1160,7 +1160,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 
     *outNumSamplesPerCallback = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
     if (mExplicitSampleRate) {
-        *outSampleRate = mExplicitSampleRate.get();
+        *outSampleRate = mExplicitSampleRate.value();
     } else {
         *outSampleRate = outputStreamDesc.mSampleRate;
     }
