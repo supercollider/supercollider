@@ -53,9 +53,7 @@ set(plugins "")
 set(supernova_plugins "")
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
-if(APPLE OR WIN32)
-	set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
-endif()
+set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
 
 foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
