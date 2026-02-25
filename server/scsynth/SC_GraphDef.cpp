@@ -347,6 +347,20 @@ GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, const char* end, Gr
         }
     }
 
+    if (inVersion > 2) {
+        // reblock
+        graphDef->mBlockSize = readInt32_be(buffer, end);
+        graphDef->mBlockSizeIndex = readInt32_be(buffer, end);
+        // resample
+        graphDef->mResampleFactor = readFloat_be(buffer, end);
+        graphDef->mResampleIndex = readInt32_be(buffer, end);
+    } else {
+        graphDef->mBlockSize = 0;
+        graphDef->mBlockSizeIndex = 0;
+        graphDef->mResampleFactor = 1.0;
+        graphDef->mResampleIndex = 0;
+    }
+
     // finally add to list
     graphDef->mNext = inList;
     graphDef->mRefCount = 1;

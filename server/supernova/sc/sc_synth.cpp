@@ -47,6 +47,61 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     localBufNum = 0;
     localMaxBufNum = 0;
 
+    int block_size = prototype->block_size;
+    float upsample = prototype->resample_factor;
+    // For now Supernova only supports fixed reblocking and resampling arguments.
+    // This is enforced in sc_synthdef::read_synthdef().
+    assert(block_size >= 0 && upsample >= 0.0);
+    // 0.0 means no resampling
+    if (upsample == 0.0) {
+        upsample = 1.0;
+    }
+
+    if (block_size == 0 && upsample == 1.0) {
+        // no reblocking or resampling
+        mNumTicks = 1;
+        mTickCounter = 0;
+        block_size = world.mBufLength;
+    } else {
+        // reblocking and/or upsampling
+        if (upsample > 1.0) {
+            // make sure that 'upsample' is a power of two!
+            if (ispoweroftwo((int)upsample)) {
+                upsample = (int)upsample;
+                mFlags |= kGraph_Resample; // ok
+            } else {
+                log_printf("WARNING: Synth: upsample factor (%f) not a power of two\n", upsample);
+                upsample = 1.0;
+            }
+        } else if (upsample < 1.0) {
+            log_printf("WARNING: Synth: downsampling (%f) not supported (yet)\n", upsample);
+            upsample = 1.0;
+        }
+
+        if (block_size != 0) {
+            // block size cannot be larger than wire buffer size (yet)!
+            if (block_size > world.mBufLength) {
+                log_printf("WARNING: Synth: block size (%d) cannot be larger than Server "
+                           "block size (%d)\n",
+                           block_size, world.mBufLength);
+                // use Server block size
+                block_size = world.mBufLength;
+            } else if (!ispoweroftwo(block_size)) {
+                log_printf("WARNING: Synth: block size (%d) not a power of two\n", block_size);
+                // use Server block size
+                block_size = world.mBufLength;
+            } else {
+                mFlags |= kGraph_Reblock; // ok
+            }
+        } else {
+            // use Server block size
+            block_size = world.mBufLength;
+        }
+
+        mNumTicks = (world.mBufLength / block_size) * upsample;
+        mTickCounter = 0;
+    }
+
     // so far mPrivate is only used for queued unit commands,
     // i.e. it just points to the head of the list.
     mPrivate = nullptr;
@@ -60,10 +115,11 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     const size_t wire_buffer_alignment = 64 * 8; // align to cache line boundaries
     const size_t alloc_size = prototype->memory_requirement();
 
-    const size_t sample_alloc_size =
-        world.mBufLength * synthdef.buffer_count + wire_buffer_alignment /* for alignment */;
+    const size_t rate_alloc_size = mFlags & kGraph_ReblockOrResample ? sizeof(Rate) * 2 : 0;
 
-    const size_t total_alloc_size = alloc_size + sample_alloc_size * sizeof(sample);
+    const size_t sample_alloc_size = block_size * synthdef.buffer_count + wire_buffer_alignment; /* for alignment */
+
+    const size_t total_alloc_size = alloc_size + rate_alloc_size + sample_alloc_size * sizeof(sample);
 
     char* raw_chunk = rt_synthesis ? (char*)rt_pool.malloc(total_alloc_size) : (char*)malloc(total_alloc_size);
 
@@ -73,6 +129,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     linear_allocator allocator(raw_chunk);
 
     /* prepare controls */
+    /* NB: mControls must be allocated first, see sc_synth::finalize()! */
     mNumControls = parameter_count;
     mControls = allocator.alloc<float>(parameter_count);
     mControlRates = allocator.alloc<int>(parameter_count);
@@ -85,6 +142,21 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
         mMapControls[i] = &mControls[i]; /* map to control values */
         mControlRates[i] = 0; /* init to 0*/
         mAudioBusOffsets[i] = -1; /* init to -1: not mapped to an audio bus yet */
+    }
+
+    /* allocate and init Rates */
+    if (rate_alloc_size > 0) {
+        /* reblocking and/or resampling */
+        mFullRate = allocator.alloc<Rate>();
+        mBufRate = allocator.alloc<Rate>();
+
+        double sample_rate = world.mSampleRate * upsample;
+        initialize_rate(*mFullRate, sample_rate, block_size);
+        initialize_rate(*mBufRate, sample_rate / block_size, 1);
+    } else {
+        /* use Server block size and sample rate */
+        mFullRate = &world.mFullRate;
+        mBufRate = &world.mBufRate;
     }
 
     /* allocate constant wires */
@@ -331,15 +403,7 @@ void sc_synth::run(void) { perform(); }
 
 extern spin_lock log_guard;
 
-#if defined(__GNUC__) && !defined(__APPLE__)
-#    define thread_local __thread
-#endif
-
-#ifdef thread_local
 static thread_local std::array<char, 262144> trace_scratchpad;
-#else
-static std::array<char, 262144> trace_scratchpad;
-#endif
 
 struct scratchpad_printer {
     scratchpad_printer(char* str): string(str), position(0) { clear(); }
@@ -370,52 +434,54 @@ private:
 void sc_synth::run_traced(void) {
     trace = 0;
 
-#ifndef thread_local
-    spin_lock::scoped_lock lock(log_guard);
-#endif
-
     scratchpad_printer printer(trace_scratchpad.data());
 
-    printer.printf("\nTRACE %d  %s    #units: %d\n", id(), this->definition_name(), calc_unit_count);
+    if (mFlags & kGraph_ReblockOrResample)
+        printer.printf("\nTRACE %d  %s    #units: %d, block size: %d, sr: %d\n", id(), this->definition_name(),
+                       calc_unit_count, mFullRate->mBufLength, (int)mFullRate->mSampleRate);
+    else
+        printer.printf("\nTRACE %d  %s    #units: %d\n", id(), this->definition_name(), calc_unit_count);
 
-    for (size_t calc_unit_index = 0; calc_unit_index != calc_unit_count; ++calc_unit_index) {
-        Unit* unit = calc_units[calc_unit_index];
+    size_t tick_count = mNumTicks;
 
-        sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-        printer.printf("  unit %zd %s\n    in ", calc_unit_index, def->name());
-        for (uint16_t j = 0; j != unit->mNumInputs; ++j) {
-            printer.printf(" %g", unit->mInBuf[j][0]);
-            if (printer.shouldFlush()) {
-#ifdef thread_local
-                spin_lock::scoped_lock lock(log_guard);
-#endif
-                log(printer.data());
-                printer.clear();
+    for (size_t k = 0; k != tick_count; ++k) {
+        if (tick_count > 1)
+            printer.printf("tick %d of %d:\n", k + 1, tick_count);
+
+        mTickCounter = k;
+
+        for (size_t calc_unit_index = 0; calc_unit_index != calc_unit_count; ++calc_unit_index) {
+            Unit* unit = calc_units[calc_unit_index];
+
+            sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+            printer.printf("  unit %zd %s\n    in ", calc_unit_index, def->name());
+            for (uint16_t j = 0; j != unit->mNumInputs; ++j) {
+                printer.printf(" %g", unit->mInBuf[j][0]);
+                if (printer.shouldFlush()) {
+                    spin_lock::scoped_lock lock(log_guard);
+                    log(printer.data());
+                    printer.clear();
+                }
             }
-        }
 
-        printer.printf("\n");
+            printer.printf("\n");
 
-        (unit->mCalcFunc)(unit, unit->mBufLength);
+            (unit->mCalcFunc)(unit, unit->mBufLength);
 
-        printer.printf("    out");
-        for (int j = 0; j < unit->mNumOutputs; ++j) {
-            printer.printf(" %g", unit->mOutBuf[j][0]);
-            if (printer.shouldFlush()) {
-#ifdef thread_local
-                spin_lock::scoped_lock lock(log_guard);
-#endif
-                log(printer.data());
-                printer.clear();
+            printer.printf("    out");
+            for (int j = 0; j < unit->mNumOutputs; ++j) {
+                printer.printf(" %g", unit->mOutBuf[j][0]);
+                if (printer.shouldFlush()) {
+                    spin_lock::scoped_lock lock(log_guard);
+                    log(printer.data());
+                    printer.clear();
+                }
             }
+            printer.printf("\n");
         }
         printer.printf("\n");
     }
-    printer.printf("\n");
-
-#ifdef thread_local
     spin_lock::scoped_lock lock(log_guard);
-#endif
     log(printer.data());
 }
 

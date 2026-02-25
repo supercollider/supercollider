@@ -1,0 +1,51 @@
+TITLE:: Resample
+summary:: Change the sample rate of a SynthDef/Synth
+categories:: Server>Abstractions
+related:: Classes/Reblock, Classes/SynthDef
+
+DESCRIPTION::
+For certain applications it is beneficial to run a link::Classes/Synth:: at a higher sample rate. Instead of increasing the sample rate of the whole Server, which could be very wasteful, you can use the Resample object inside a link::Classes/SynthDef:: to only change the sample rate of specific Synths.
+
+For example, with a factor of 4.0, the Synth will run at four times the Server's sample rate. Keep in mind that upsampling increases the CPU usage roughly proportionally to the upsampling factor.
+
+The resample factor can be a fixed number, or it can be set dynamically at runtime via a Synth argument/control.
+
+note::For technical reasons, Supernova only supports fixed resample factors.::
+
+For example, this can be used to implement anti-aliasing via oversampling + filtering:
+
+code::
+// reduce aliasing with upsampling + filtering
+(
+SynthDef(\hardsync, { |out, upsample=1.0|
+	var sig, cutoff = 18000;
+
+	Resample(upsample);
+
+	sig = SyncSaw.ar(MouseY.kr(1, 1000, 2), MouseX.kr(100, 4000, 2));
+
+	// crude anti-alisaing filter
+	sig = LPF.ar(sig, cutoff);
+	sig = LPF.ar(sig, cutoff);
+	Out.ar(out, sig * 0.05 ! 2);
+}).add;
+)
+
+// lots of aliasing
+Synth(\hardsync);
+// watch aliasing disappear with increasing upsample factors
+Synth(\hardsync, [ upsample: 2.0 ]);
+Synth(\hardsync, [ upsample: 4.0 ]);
+Synth(\hardsync, [ upsample: 8.0 ]);
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+
+Specify the resample factor of the Synth. You should only create this once per SynthDef. Duplicate instances generate a warning and are ignored.
+
+ARGUMENT:: factor
+the resample factor, either as a constant number or as a Synth argument resp. link::Classes/NamedControl::. A value of 0.0 means no resampling (= a factor of 1.0).
+
+Currently, only upsampling is supported, i.e. the factor must be greater than or equal to 1.0 (= no resampling). Otherwise you get a warning.

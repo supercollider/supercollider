@@ -630,17 +630,14 @@ OutputProxy : UGen {
 	}
 
 	controlName {
-		var counter = 0, index = 0;
-
-		this.synthDef.children.do({
-			arg ugen;
-			if(this.source.synthIndex == ugen.synthIndex,
-				{ index = counter + this.outputIndex; });
-			if(ugen.isKindOf(Control),
-				{ counter = counter + ugen.channels.size; });
-		});
-
+		var index = this.controlIndex;
+		if (index.isNil) { ^nil };
 		^synthDef.controlNames.detect({ |c| c.index == index });
+	}
+
+	controlIndex {
+		if (source.isKindOf(Control).not) { ^nil };
+		^source.specialIndex + outputIndex
 	}
 
 	spec_{ arg spec;

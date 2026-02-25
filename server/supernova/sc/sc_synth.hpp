@@ -58,56 +58,59 @@ public:
             prepare();
 
         if (likely(trace == 0)) {
-            const size_t count = calc_unit_count;
-            Unit** units = calc_units;
+            const size_t preroll = calc_unit_count & 7;
+            const size_t unroll = calc_unit_count / 8;
 
-            const size_t preroll = count & 7;
+            size_t tick_count = mNumTicks;
 
-            for (size_t i = 0; i != preroll; ++i) {
-                Unit* unit = units[i];
-                prefetch(units[i + 1]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-            }
+            for (size_t k = 0; k != tick_count; ++k) {
+                mTickCounter = k;
 
-            units += preroll;
+                Unit** units = calc_units;
 
-            const size_t unroll = count / 8;
-            if (unroll == 0)
-                return;
+                for (size_t i = 0; i != preroll; ++i) {
+                    Unit* unit = units[i];
+                    prefetch(units[i + 1]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+                }
 
-            for (size_t i = 0; i != unroll; ++i) {
-                Unit* unit = units[0];
-                prefetch(units[1]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
+                units += preroll;
 
-                unit = units[1];
-                prefetch(units[2]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
+                for (size_t i = 0; i != unroll; ++i) {
+                    Unit* unit = units[0];
+                    prefetch(units[1]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
 
-                unit = units[2];
-                prefetch(units[3]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
+                    unit = units[1];
+                    prefetch(units[2]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
 
-                unit = units[3];
-                prefetch(units[4]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
+                    unit = units[2];
+                    prefetch(units[3]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
 
-                unit = units[4];
-                prefetch(units[5]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
+                    unit = units[3];
+                    prefetch(units[4]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
 
-                unit = units[5];
-                prefetch(units[6]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
+                    unit = units[4];
+                    prefetch(units[5]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
 
-                unit = units[6];
-                prefetch(units[7]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
+                    unit = units[5];
+                    prefetch(units[6]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
 
-                unit = units[7];
-                prefetch(units[8]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-                units += 8;
+                    unit = units[6];
+                    prefetch(units[7]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[7];
+                    prefetch(units[8]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    units += 8;
+                }
             }
         } else
             run_traced();

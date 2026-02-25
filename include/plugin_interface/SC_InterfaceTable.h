@@ -23,7 +23,10 @@
 // TODO next time this is updated, change SC_PlugIn.hpp `in`, `zin`, etc. to take uint32s
 // TODO next time this is updated, change SC_PlugIn.hpp `numInputs`, `numOutputs` to have correct
 // return type
-static const int sc_api_version = 5;
+// NOTE: The plugin API version has been temporarily bumped to avoid potential crashes
+// with existing plugins on the develop branch. After all plugin API changes have been
+// made for SC 3.15, the API version should be restored to 4.
+static const int sc_api_version = 6;
 
 #include "SC_Types.h"
 #include "SC_World.h"

@@ -244,6 +244,16 @@ SynthDesc {
 			stream.read(variantValues);
 		};
 
+		if (version > 2) {
+			// read reblock and resample fields, just to detect corrupt SynthDef files.
+			stream.getInt32; // block size value
+			stream.getInt32; // block size control index
+			stream.getFloat; // resample factor
+			stream.getInt32; // resample control index
+			// just ignore all remaining (optional) fields.
+			// these will be skipped in the readSynthDef3 method.
+		};
+
 		def.constants = Dictionary.new;
 		constants.do {|k,i| def.constants.put(k,i) };
 		if (keepDef.not) {

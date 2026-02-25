@@ -9,6 +9,8 @@ SynthDef {
 	var <>constants;
 	var <>constantSet;
 	var <>maxLocalBufs;
+	var <reblock;
+	var <resample;
 
 	// topo sort
 	var <>available;
@@ -79,6 +81,8 @@ SynthDef {
 		controls = nil;
 		controlIndex = 0;
 		maxLocalBufs = nil;
+		reblock = nil;
+		resample = nil;
 	}
 	buildUgenGraph { arg func, rates, prependArgs;
 		var result;
@@ -405,6 +409,12 @@ SynthDef {
 			};
 
 			if (version > 2) {
+				// reblock
+				(this.reblock ?? { Reblock() }).writeDef(file);
+
+				// resample
+				(this.resample ?? { Resample() }).writeDef(file);
+
 				// calculate total size in bytes
 				endPos = file.pos;
 				byteSize = endPos - startPos;
@@ -449,6 +459,27 @@ SynthDef {
 		^true
 	}
 
+	reblock_ { arg obj;
+		if (obj.isKindOf(Reblock).not) {
+			Error("wrong argument to reblock_").throw;
+		};
+		if (reblock.isNil) {
+			reblock = obj;
+		} {
+			"ignore duplicate Reblock object".warn;
+		};
+	}
+
+	resample_ { arg obj;
+		if (obj.isKindOf(Resample).not) {
+			Error("wrong argument to resample_").throw;
+		};
+		if (resample.isNil) {
+			resample = obj;
+		} {
+			"ignore duplicate Resample object".warn;
+		};
+	}
 
 	// UGens do these
 	addUGen { arg ugen;
@@ -739,4 +770,95 @@ SynthDef {
 		^synth
 	}
 
+}
+
+Reblock {
+	var <>synthDef;
+	var <>blockSize;
+	var <>controlIndex;
+
+	*new { arg blockSize=0;
+		^super.new.init(blockSize);
+	}
+
+	init { arg blockSize;
+		synthDef = UGen.buildSynthDef;
+		if (blockSize.isKindOf(SimpleNumber)) {
+			blockSize = blockSize.asInteger;
+			// 0 means no reblocking
+			if ((blockSize != 0) and: { blockSize.isPowerOfTwo.not }) {
+				Error("block size % is not a power of two".format(blockSize)).throw;
+			};
+			this.blockSize = blockSize;
+		} {
+			if (blockSize.isKindOf(OutputProxy)) {
+				controlIndex = blockSize.controlIndex
+			};
+			if (controlIndex.isNil) {
+				Error("Reblock requires a number or Synth Control").throw;
+			}
+		};
+		if (synthDef.notNil) {
+			synthDef.reblock = this;
+		}
+	}
+
+	writeDef { arg stream;
+		if (controlIndex.notNil) {
+			// use control index
+			stream.putInt32(-1);
+			stream.putInt32(controlIndex);
+		} {
+			// constant block size
+			stream.putInt32(blockSize);
+			stream.putInt32(0);
+		}
+	}
+}
+
+Resample {
+	var <>synthDef;
+	var <>factor;
+	var <>controlIndex;
+
+	*new { arg factor=1.0;
+		^super.new.init(factor);
+	}
+
+	init { arg factor;
+		synthDef = UGen.buildSynthDef;
+		if (factor.isKindOf(SimpleNumber)) {
+			factor = factor.asFloat;
+			// 0.0 means no resampling
+			if (factor == 0.0) { factor = 1.0 };
+			// make sure that 'factor' is a power of two (with positive or negative exponent)
+			if ((factor.asInteger.isPowerOfTwo.not) and:
+				{ factor.reciprocal.asInteger.isPowerOfTwo.not }) {
+				Error("resample factor % is not a power of two".format(factor)).throw;
+			};
+			this.factor = factor;
+		} {
+			if (factor.isKindOf(OutputProxy)) {
+				controlIndex = factor.controlIndex
+			};
+			if (controlIndex.isNil) {
+				Error("Resample requires a number or Synth Control").throw;
+			}
+		};
+		if (synthDef.notNil) {
+			synthDef.resample = this;
+		}
+	}
+
+	writeDef { arg stream;
+		if (controlIndex.notNil) {
+			// control index
+			stream.putFloat(-1.0);
+			stream.putInt32(controlIndex);
+		} {
+			// constant factor
+			stream.putFloat(factor);
+			stream.putInt32(0);
+		}
+	}
 }

@@ -262,6 +262,40 @@ void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int
         }
     }
 
+    if (version > 2) {
+        /* Unfortunately, we cannot set the block size or resample factor via a Control
+         * because of the way that Supernova constructs Synths. (The Synth arguments are
+         * only parsed and set after the Synth has been fully constructed. At this point
+         * it is already too late.) If we detect that the user wants to use Controls,
+         * we just post a warning and bash the value to the default.
+         */
+
+        /* reblock */
+        block_size = read_int32(buffer, buffer_end);
+        block_size_index = read_int32(buffer, buffer_end);
+        if (block_size < 0) {
+            /* get block size from Synth Control - not supported yet */
+            std::cout << "WARNING: SynthDef: block size must be a constant (Controls are not supported yet)"
+                      << std::endl;
+            block_size = 0; /* no reblocking */
+        }
+
+        /* resample */
+        resample_factor = read_float(buffer, buffer_end);
+        resample_index = read_int32(buffer, buffer_end);
+        if (resample_factor < 0.0) {
+            /* get resample factor from Synth Control - not supported yet */
+            std::cout << "WARNING: SynthDef: resample factor must be a constant (Controls are not supported yet)"
+                      << std::endl;
+            resample_factor = 1.0; /* no resampling */
+        }
+    } else {
+        block_size = 0;
+        block_size_index = 0;
+        resample_factor = 1.0;
+        resample_index = 0;
+    }
+
     prepare();
 }
 

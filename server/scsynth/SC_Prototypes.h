@@ -182,7 +182,7 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket* packet);
 
 ////////////////////////////////////////////////////////////////////////
 
-struct Unit* Unit_New(World* inWorld, struct UnitSpec* inUnitSpec, char*& memory);
+struct Unit* Unit_New(World* inWorld, struct Graph* graph, struct UnitSpec* inUnitSpec, char*& memory);
 void Unit_EndCalc(struct Unit* inUnit, int inNumSamples);
 void Unit_End(struct Unit* inUnit);
 

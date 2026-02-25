@@ -601,7 +601,7 @@ SCBool send_message_to_RT(World* world, struct FifoMsg* msg) {
 namespace nova {
 
 
-inline void initialize_rate(Rate& rate, double sample_rate, int blocksize) {
+void initialize_rate(Rate& rate, double sample_rate, int blocksize) {
     rate.mSampleRate = sample_rate;
     rate.mSampleDur = 1. / sample_rate;
     rate.mRadiansPerSample = 2 * boost::math::constants::pi<double>() / sample_rate;

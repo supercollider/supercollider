@@ -35,6 +35,7 @@
 #include "SC_Errors.h"
 #include "Unroll.h"
 #include "SC_ReplyImpl.hpp"
+#include "clz.h"
 
 void Unit_ChooseMulAddFunc(Unit* unit);
 
@@ -65,6 +66,11 @@ static void Graph_Dtor(Graph* inGraph) {
                 (dtor)(unit);
         }
     }
+
+    // NOTE: mBufRate is allocated as part of mFullRate, see Graph_Ctor()!
+    if (inGraph->mFullRate != &world->mFullRate)
+        World_Free(world, inGraph->mFullRate);
+
     // free queued Unit commands
     // AFAICT this can only happen if a Graph is created, Unit commands are sent and
     // the Graph is deleted all at in the same control block.
@@ -133,9 +139,8 @@ bool Graph_HasParent(const Graph* inGraph) { return inGraph->mNode.mParent != nu
 
 static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter* msg, bool argtype);
 
-SCErr Graph_New(World* inWorld, GraphDef* inGraphDef, int32 inID, sc_msg_iter* args, Graph** outGraph,
-                bool argtype) // true for normal args , false for setn type args
-{
+// 'argtype' is true for normal args, false for setn type args
+SCErr Graph_New(World* inWorld, GraphDef* inGraphDef, int32 inID, sc_msg_iter* args, Graph** outGraph, bool argtype) {
     Graph* graph;
     int err = Node_New(inWorld, &inGraphDef->mNodeDef, inID, (Node**)&graph);
     if (err)
@@ -145,9 +150,8 @@ SCErr Graph_New(World* inWorld, GraphDef* inGraphDef, int32 inID, sc_msg_iter* a
     return err;
 }
 
-static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter* msg,
-                       bool argtype) // true for normal args , false for setn type args
-{
+// 'argtype' is true for normal args, false for setn type args
+static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter* msg, bool argtype) {
     // scprintf("->Graph_Ctor\n");
 
     // hit the memory allocator only once.
@@ -420,6 +424,102 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
     graph->localBufNum = 0;
     graph->localMaxBufNum = 0; // this is set from synth
 
+    graph->mFlags = 0;
+
+    int32 blockSize = inGraphDef->mBlockSize;
+    if (blockSize < 0) {
+        // get block size from Synth Control
+        uint32 index = inGraphDef->mBlockSizeIndex;
+        if (index < graph->mNumControls) {
+            blockSize = graph->mMapControls[index][0];
+        } else {
+            scprintf("ERROR: block size control index %d out of range!\n", index);
+            blockSize = 0;
+        }
+    }
+    // note: 0 means no reblocking.
+
+    float upsample = inGraphDef->mResampleFactor;
+    if (upsample < 0.0) {
+        // get resample factor from Synth Control
+        uint32 index = inGraphDef->mResampleIndex;
+        if (index < graph->mNumControls) {
+            upsample = graph->mMapControls[index][0];
+        } else {
+            scprintf("ERROR: resample control index %d out of range!\n", index);
+            upsample = 1.0;
+        }
+    }
+    // treat 0.0 as no resampling
+    if (upsample == 0.0) {
+        upsample = 1.0;
+    }
+
+    if (blockSize == 0 && upsample == 1.0) {
+        // no reblocking and no upsampling -> use the global rates
+        graph->mNumTicks = 1;
+        graph->mTickCounter = 0;
+        graph->mFullRate = &inWorld->mFullRate;
+        graph->mBufRate = &inWorld->mBufRate;
+    } else {
+        // reblocking or upsampling
+        if (upsample > 1.0) {
+            // make sure that 'upsample' is a power of two!
+            if (ISPOWEROFTWO((int)upsample)) {
+                upsample = (int)upsample;
+                graph->mFlags |= kGraph_Resample; // ok
+            } else {
+                scprintf("WARNING: Synth: upsample factor (%f) not a power of two\n", upsample);
+                upsample = 1.0;
+            }
+        } else if (upsample < 0.0) {
+            scprintf("WARNING: Synth: bad resample factor (%f)\n", upsample);
+            upsample = 1.0;
+        } else if (upsample < 1.0) {
+            scprintf("WARNING: Synth: downsampling (%f) not supported (yet)\n", upsample);
+            upsample = 1.0;
+        }
+
+        if (blockSize != 0) {
+            // block size cannot be larger than wire buffer size (yet)!
+            if (blockSize > inWorld->mBufLength) {
+                scprintf("WARNING: Synth: block size (%d) cannot be larger than Server "
+                         "block size (%d)\n",
+                         blockSize, inWorld->mBufLength);
+                // use Server block size
+                blockSize = inWorld->mBufLength;
+            } else if (!ISPOWEROFTWO(blockSize)) {
+                scprintf("WARNING: Synth: block size (%d) not a power of two\n", blockSize);
+                // use Server block size
+                blockSize = inWorld->mBufLength;
+            } else {
+                graph->mFlags |= kGraph_Reblock; // ok
+            }
+        } else {
+            // use Server block size
+            blockSize = inWorld->mBufLength;
+        }
+
+        graph->mNumTicks = (inWorld->mBufLength / blockSize) * upsample;
+        graph->mTickCounter = 0;
+        double sampleRate = inWorld->mSampleRate * upsample;
+
+        // Hit allocator only once, see Graph_Dtor().
+        // (Ideally the rates should be allocated as part of the Synth itself.
+        // This means we would have to detect potential reblocking/resampling
+        // already in the SynthDef and increase mAllocSize accordingly.)
+        Rate* chunk = (Rate*)World_Alloc(inWorld, sizeof(Rate) * 2);
+
+        graph->mFullRate = chunk;
+        Rate_Init(graph->mFullRate, sampleRate, blockSize);
+
+        graph->mBufRate = chunk + 1;
+        Rate_Init(graph->mBufRate, sampleRate / blockSize, 1);
+    }
+
+    //  scprintf("Graph_Ctor: block size: %d, upsample: %f, ticks: %d\n",
+    //           blockSize, upsample, graph->mNumTicks);
+
     // so far mPrivate is only used for queued unit commands,
     // i.e. it just points to the head of the list.
     graph->mPrivate = nullptr;
@@ -435,7 +535,7 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
     UnitSpec* unitSpec = inGraphDef->mUnitSpecs;
     for (uint32 i = 0; i < numUnits; ++i, ++unitSpec) {
         // construct unit from spec
-        Unit* unit = Unit_New(inWorld, unitSpec, memory);
+        Unit* unit = Unit_New(inWorld, graph, unitSpec, memory);
 
         // set parent
         unit->mParent = graph;
@@ -591,39 +691,47 @@ void Graph_Calc(Graph* inGraph) {
 
     int unroll8 = numCalcUnits / 8;
     int remain8 = numCalcUnits % 8;
-    int i = 0;
-
-    for (int j = 0; j != unroll8; i += 8, ++j) {
-        Graph_Calc_unit(calcUnits[i]);
-        Graph_Calc_unit(calcUnits[i + 1]);
-        Graph_Calc_unit(calcUnits[i + 2]);
-        Graph_Calc_unit(calcUnits[i + 3]);
-        Graph_Calc_unit(calcUnits[i + 4]);
-        Graph_Calc_unit(calcUnits[i + 5]);
-        Graph_Calc_unit(calcUnits[i + 6]);
-        Graph_Calc_unit(calcUnits[i + 7]);
-    }
-
     int unroll4 = remain8 / 4;
     int remain4 = remain8 % 4;
-    if (unroll4) {
-        Graph_Calc_unit(calcUnits[i]);
-        Graph_Calc_unit(calcUnits[i + 1]);
-        Graph_Calc_unit(calcUnits[i + 2]);
-        Graph_Calc_unit(calcUnits[i + 3]);
-        i += 4;
-    }
-
     int unroll2 = remain4 / 2;
     int remain2 = remain4 % 2;
-    if (unroll2) {
-        Graph_Calc_unit(calcUnits[i]);
-        Graph_Calc_unit(calcUnits[i + 1]);
-        i += 2;
-    }
 
-    if (remain2)
-        Graph_Calc_unit(calcUnits[i]);
+    int numTicks = inGraph->mNumTicks;
+
+    for (int k = 0; k < numTicks; ++k) {
+        // set before calling Graph_Calc_unit()!
+        inGraph->mTickCounter = k;
+
+        int i = 0;
+
+        for (int j = 0; j != unroll8; i += 8, ++j) {
+            Graph_Calc_unit(calcUnits[i]);
+            Graph_Calc_unit(calcUnits[i + 1]);
+            Graph_Calc_unit(calcUnits[i + 2]);
+            Graph_Calc_unit(calcUnits[i + 3]);
+            Graph_Calc_unit(calcUnits[i + 4]);
+            Graph_Calc_unit(calcUnits[i + 5]);
+            Graph_Calc_unit(calcUnits[i + 6]);
+            Graph_Calc_unit(calcUnits[i + 7]);
+        }
+
+        if (unroll4) {
+            Graph_Calc_unit(calcUnits[i]);
+            Graph_Calc_unit(calcUnits[i + 1]);
+            Graph_Calc_unit(calcUnits[i + 2]);
+            Graph_Calc_unit(calcUnits[i + 3]);
+            i += 4;
+        }
+
+        if (unroll2) {
+            Graph_Calc_unit(calcUnits[i]);
+            Graph_Calc_unit(calcUnits[i + 1]);
+            i += 2;
+        }
+
+        if (remain2)
+            Graph_Calc_unit(calcUnits[i]);
+    }
 
     // scprintf("<-Graph_Calc\n");
 }
@@ -632,21 +740,39 @@ void Graph_CalcTrace(Graph* inGraph);
 void Graph_CalcTrace(Graph* inGraph) {
     uint32 numCalcUnits = inGraph->mNumCalcUnits;
     Unit** calcUnits = inGraph->mCalcUnits;
-    scprintf("\nTRACE %d  %s    #units: %d\n", inGraph->mNode.mID, inGraph->mNode.mDef->mName, numCalcUnits);
-    for (uint32 i = 0; i < numCalcUnits; ++i) {
-        Unit* unit = calcUnits[i];
-        scprintf("  unit %d %s\n    in ", i, (char*)unit->mUnitDef->mUnitDefName);
-        for (uint32 j = 0; j < unit->mNumInputs; ++j) {
-            scprintf(" %g", ZIN0(j));
-        }
-        scprintf("\n");
-        (unit->mCalcFunc)(unit, unit->mBufLength);
-        scprintf("    out");
-        for (uint32 j = 0; j < unit->mNumOutputs; ++j) {
-            scprintf(" %g", ZOUT0(j));
-        }
-        scprintf("\n");
+
+    if (inGraph->mFlags & kGraph_ReblockOrResample) {
+        scprintf("\nTRACE %d  %s    #units: %d, block size: %d, sr: %d\n", inGraph->mNode.mID,
+                 inGraph->mNode.mDef->mName, numCalcUnits, inGraph->mFullRate->mBufLength,
+                 (int)inGraph->mFullRate->mSampleRate);
+    } else {
+        scprintf("\nTRACE %d  %s    #units: %d\n", inGraph->mNode.mID, inGraph->mNode.mDef->mName, numCalcUnits);
     }
+
+    int numTicks = inGraph->mNumTicks;
+
+    for (int k = 0; k < numTicks; ++k) {
+        if (numTicks > 1)
+            scprintf("tick %d of %d:\n", k + 1, numTicks);
+
+        inGraph->mTickCounter = k;
+
+        for (uint32 i = 0; i < numCalcUnits; ++i) {
+            Unit* unit = calcUnits[i];
+            scprintf("  unit %d %s\n    in ", i, (char*)unit->mUnitDef->mUnitDefName);
+            for (uint32 j = 0; j < unit->mNumInputs; ++j) {
+                scprintf(" %g", ZIN0(j));
+            }
+            scprintf("\n");
+            (unit->mCalcFunc)(unit, unit->mBufLength);
+            scprintf("    out");
+            for (uint32 j = 0; j < unit->mNumOutputs; ++j) {
+                scprintf(" %g", ZOUT0(j));
+            }
+            scprintf("\n");
+        }
+    }
+
     inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
 }
 

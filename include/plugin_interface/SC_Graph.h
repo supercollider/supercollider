@@ -24,6 +24,10 @@
 #include "SC_Rate.h"
 #include "SC_SndBuf.h"
 
+enum { kGraph_Reblock = 0x1, kGraph_Resample = 0x2 };
+
+#define kGraph_ReblockOrResample (kGraph_Reblock | kGraph_Resample)
+
 /*
  changes to this struct likely also mean that a change is needed for
     static const int sc_api_version = x;
@@ -33,10 +37,18 @@ struct Graph {
     Node mNode;
     int32 mRefCount;
 
-    uint32 mNumWires;
-    struct Wire* mWire;
+    uint16 mNumTicks;
+    uint16 mTickCounter;
 
+    uint32 mFlags;
+
+    Rate* mFullRate;
+    Rate* mBufRate;
+
+    uint32 mNumWires;
     uint32 mNumControls;
+
+    struct Wire* mWire;
     float* mControls;
     float** mMapControls;
     int32* mAudioBusOffsets;
@@ -45,18 +57,18 @@ struct Graph {
     int32* mControlRates;
 
     uint32 mNumUnits;
-    struct Unit** mUnits;
-
     uint32 mNumCalcUnits;
+
+    struct Unit** mUnits;
     struct Unit** mCalcUnits; // excludes i-rate units.
 
     int32 mSampleOffset;
+    float mSubsampleOffset;
+
     struct RGen* mRGen;
 
     struct Unit* mLocalAudioBusUnit;
     struct Unit* mLocalControlBusUnit;
-
-    float mSubsampleOffset;
 
     SndBuf* mLocalSndBufs;
     int32 localBufNum;
