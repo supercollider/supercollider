@@ -628,14 +628,14 @@ SynthDef {
 			// should remember what dir synthDef was written to
 			dir = dir ? synthDefDir;
 			this.writeDefFile(dir);
-			server.sendMsg("/d_load", dir ++ name ++ ".scsyndef", completionMsg)
+			server.sendMsg("/d_load", dir +/+ name ++ ".scsyndef", completionMsg)
 		};
 	}
 
 	// write to file and make synth description
 	store { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
 		var lib = SynthDescLib.getLib(libname);
-		var file, path = dir ++ name ++ ".scsyndef";
+		var file, path = dir +/+ name ++ ".scsyndef";
 		if(metadata.falseAt(\shouldNotSend)) {
 			protect {
 				var bytes, desc;
