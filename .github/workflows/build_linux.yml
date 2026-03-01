@@ -173,7 +173,7 @@ jobs:
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE.zip .
 
       - name: upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
