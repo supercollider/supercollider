@@ -540,76 +540,44 @@ void GraphDef_Dump(GraphDef* inGraphDef) {
     }
 }
 
-struct BufColorAllocator {
-    int16* refs;
-    int16* stack;
-    int16 stackPtr;
-    int16 nextIndex;
-    int16 refsMaxSize;
-    int16 stackMaxSize;
-
+class BufColorAllocator {
+public:
     BufColorAllocator();
-    ~BufColorAllocator();
 
     uint32 alloc(uint32 count);
     bool release(int inIndex);
-    int NumBufs() { return nextIndex; }
+    int NumBufs() { return mRefs.size(); }
+
+private:
+    std::vector<int16> mRefs;
+    std::vector<int16> mStack;
 };
 
 inline BufColorAllocator::BufColorAllocator() {
-    refsMaxSize = 32;
-    stackMaxSize = 32;
-    refs = (int16*)calloc(refsMaxSize, sizeof(int16));
-    stack = (int16*)calloc(stackMaxSize, sizeof(int16));
-    stackPtr = 0;
-    nextIndex = 0;
-}
-
-inline BufColorAllocator::~BufColorAllocator() {
-    free(refs);
-    free(stack);
+    mRefs.reserve(32);
+    mStack.reserve(32);
 }
 
 inline uint32 BufColorAllocator::alloc(uint32 count) {
     uint32 outIndex;
-    if (stackPtr) {
-        outIndex = stack[--stackPtr];
+    if (!mStack.empty()) {
+        // pop index from stack
+        outIndex = mStack.back();
+        mStack.pop_back();
+        mRefs[outIndex] = count;
     } else {
-        outIndex = nextIndex++;
+        // make new index
+        outIndex = mRefs.size();
+        mRefs.push_back(count);
     }
-    if (outIndex >= refsMaxSize) {
-        int16* tmprefs = (int16*)realloc(refs, refsMaxSize * 2 * sizeof(int16));
-        if (tmprefs == nullptr) {
-            free(refs);
-            refs = nullptr;
-            throw std::runtime_error("buffer coloring error: reallocation failed.");
-        } else {
-            refs = tmprefs;
-        }
-        memset(refs + refsMaxSize, 0, refsMaxSize * sizeof(int16));
-        refsMaxSize *= 2;
-    }
-    refs[outIndex] = count;
     return outIndex;
 }
 
 inline bool BufColorAllocator::release(int inIndex) {
-    if (refs[inIndex] == 0)
+    if (mRefs[inIndex] == 0)
         return false;
-    if (--refs[inIndex] == 0) {
-        if (stackPtr >= stackMaxSize) {
-            int16* tmpstack = (int16*)realloc(stack, stackMaxSize * 2 * sizeof(int16));
-            if (tmpstack == nullptr) {
-                free(stack);
-                stack = nullptr;
-                throw std::runtime_error("buffer coloring error: reallocation during release failed.");
-            } else {
-                stack = tmpstack;
-            }
-            memset(stack + stackMaxSize, 0, stackMaxSize * sizeof(int16));
-            stackMaxSize *= 2;
-        }
-        stack[stackPtr++] = inIndex;
+    if (--mRefs[inIndex] == 0) {
+        mStack.push_back(inIndex);
     }
     return true;
 }
