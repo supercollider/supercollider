@@ -41,6 +41,7 @@ METHOD:: new
 		note::
 			The default position may vary depending on screen resolution, platform, and operating system settings.
 			::
+		See link::#Setting Bounds::.
 	argument:: resizable
 		A Boolean indicating whether the window is resizable by the user.
 		The default is code::true::.
