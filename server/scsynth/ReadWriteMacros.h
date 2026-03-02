@@ -82,11 +82,11 @@ inline uint32 readUInt8(char*& buf) {
 }
 
 inline int32 readInt16_be(char*& buf) {
-    int32 c = readInt8(buf);
-    int32 d = readInt8(buf);
+    uint16 c = readInt8(buf);
+    uint16 d = readInt8(buf);
 
-    int32 res = ((c & 255) << 8) | (d & 255);
-    return res;
+    uint16 res = ((c & 255) << 8) | (d & 255);
+    return (int16)res;
 }
 
 inline int32 readInt32_be(char*& buf) {
