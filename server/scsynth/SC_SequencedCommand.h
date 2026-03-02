@@ -467,6 +467,7 @@ public:
 
 protected:
     char* mBuffer;
+    size_t mSize;
     GraphDef* mDefs;
 
     virtual void CallDestructor();

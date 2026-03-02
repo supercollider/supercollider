@@ -138,7 +138,7 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, const char*& buffer, int version) {
 
 GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, GraphDef* inList, int32 inVersion);
 
-GraphDef* GraphDefLib_Read(World* inWorld, const char* buffer, GraphDef* inList) {
+GraphDef* GraphDefLib_Read(World* inWorld, const char* buffer, size_t size, GraphDef* inList) {
     int32 magic = readInt32_be(buffer);
     if (magic != (('S' << 24) | ('C' << 16) | ('g' << 8) | 'f') /*'SCgf'*/)
         return inList;
@@ -400,9 +400,9 @@ SCErr GraphDef_DeleteMsg(World* inWorld, GraphDef* inDef) {
     return kSCErr_None;
 }
 
-GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, GraphDef* inList) {
+GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, size_t size, GraphDef* inList) {
     try {
-        inList = GraphDefLib_Read(inWorld, buffer, inList);
+        inList = GraphDefLib_Read(inWorld, buffer, size, inList);
     } catch (std::exception& exc) { scprintf("exception in GraphDef_Recv: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in GraphDef_Recv\n");
     }
@@ -441,7 +441,7 @@ std::string load_file(const std::filesystem::path& file_path) {
 GraphDef* GraphDef_Load(World* inWorld, const fs::path& path, GraphDef* inList) {
     try {
         std::string file_contents = load_file(path);
-        inList = GraphDefLib_Read(inWorld, &file_contents[0], inList);
+        inList = GraphDefLib_Read(inWorld, file_contents.data(), file_contents.size(), inList);
     } catch (const std::exception& e) {
         scprintf("exception in GraphDef_Load: %s\n", e.what());
         const std::string path_utf8_str = SC_Codecvt::path_to_utf8_str(path);

@@ -1315,18 +1315,19 @@ bool SendFailureCmd::Stage2() {
 
 RecvSynthDefCmd::RecvSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress),
-    mBuffer(nullptr) {}
+    mBuffer(nullptr),
+    mSize(0) {}
 
 int RecvSynthDefCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
 
-    int size = msg.getbsize();
-    if (!size)
+    mSize = msg.getbsize();
+    if (!mSize)
         throw kSCErr_WrongArgType;
 
-    mBuffer = (char*)World_Alloc(mWorld, size);
+    mBuffer = (char*)World_Alloc(mWorld, mSize);
     ReturnSCErrIfNil(mBuffer);
-    msg.getb(mBuffer, size);
+    msg.getb(mBuffer, mSize);
 
     GET_COMPLETION_MSG(msg);
 
@@ -1339,7 +1340,7 @@ RecvSynthDefCmd::~RecvSynthDefCmd() { World_Free(mWorld, mBuffer); }
 void RecvSynthDefCmd::CallDestructor() { this->~RecvSynthDefCmd(); }
 
 bool RecvSynthDefCmd::Stage2() {
-    mDefs = GraphDef_Recv(mWorld, mBuffer, mDefs);
+    mDefs = GraphDef_Recv(mWorld, mBuffer, mSize, mDefs);
 
     return true;
 }

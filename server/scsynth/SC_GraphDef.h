@@ -72,7 +72,7 @@ struct GraphDef {
 };
 typedef struct GraphDef GraphDef;
 
-GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, GraphDef* inList);
+GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, size_t size, GraphDef* inList);
 GraphDef* GraphDef_Load(World* inWorld, const std::filesystem::path& path, GraphDef* inList);
 GraphDef* GraphDef_LoadDir(World* inWorld, const std::filesystem::path& path, GraphDef* inList);
 GraphDef* GraphDef_LoadGlob(World* inWorld, const char* pattern, GraphDef* inList);
