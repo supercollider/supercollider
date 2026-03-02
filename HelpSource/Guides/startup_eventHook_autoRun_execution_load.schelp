@@ -443,7 +443,13 @@ When working across multiple teletype::.scd:: files, it helps to use these varia
 
 
 list::
-## strong::Environment variables:: (e.g., ~myVar) and strong::interpreter variables:: (e.g., a) persist and are shared between the main file and any files it loads.
+## strong::Interpreter variables:: (e.g., a) persist and are shared between the main file and any files it loads.
+strong::Environment variables:: (e.g., ~myVar) are scoped to the current link::Classes/Environment::; if
+the active environment changes (e.g., via code::Environment.make:: or code::push::/code::pop::), they will
+no longer be accessible, but in the same environment they behave as global variables. 
+See link::Classes/Environment#PseudoVariables (global variables)::.
+
+
 ## strong::Local variables:: (e.g., var myVar) are scoped only to the file being loaded and are not visible to the main document.
 ::
 
