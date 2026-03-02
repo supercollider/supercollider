@@ -66,7 +66,8 @@ std::string read_pstring(const char*& buffer, const char* buffer_end) {
 float read_float(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int32_t data = *(big_int32_t*)buffer;
+    big_int32_t data;
+    std::memcpy(&data, buffer, 4);
     buffer += 4;
 
     union {
@@ -81,7 +82,7 @@ float read_float(const char*& buffer, const char* buffer_end) {
 int8_t read_int8(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int8_t data = *(big_int8_t*)buffer;
+    int8_t data = buffer[0];
     buffer += 1;
     return data;
 }
@@ -90,7 +91,8 @@ int8_t read_int8(const char*& buffer, const char* buffer_end) {
 int16_t read_int16(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int16_t data = *(big_int16_t*)buffer;
+    big_int16_t data;
+    std::memcpy(&data, buffer, 2);
     buffer += 2;
     return data;
 }
@@ -98,7 +100,8 @@ int16_t read_int16(const char*& buffer, const char* buffer_end) {
 int32_t read_int32(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int32_t data = *(big_int32_t*)buffer;
+    big_int32_t data;
+    std::memcpy(&data, buffer, 4);
     buffer += 4;
     return data;
 }
