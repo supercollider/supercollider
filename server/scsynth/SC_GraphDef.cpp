@@ -59,14 +59,14 @@ int32 GetHash(ParamSpec* inParamSpec) { return inParamSpec->mHash; }
 int32* GetKey(ParamSpec* inParamSpec) { return inParamSpec->mName; }
 
 // this is used for reading count fields that have been changed from int16 to int32 in SynthDef v2.
-inline int32 readCount(char*& buffer, int version) {
+inline int32 readCount(const char*& buffer, int version) {
     if (version >= 2)
         return readInt32_be(buffer);
     else
         return readInt16_be(buffer);
 }
 
-void ReadName(char*& buffer, int32* name) {
+void ReadName(const char*& buffer, int32* name) {
     uint32 namelen = readUInt8(buffer);
     if (namelen >= kSCNameByteLen) {
         std::ostringstream os;
@@ -77,7 +77,7 @@ void ReadName(char*& buffer, int32* name) {
     readData(buffer, (char*)name, namelen);
 }
 
-void ReadNodeDefName(char*& buffer, int32* name) {
+void ReadNodeDefName(const char*& buffer, int32* name) {
     uint32 namelen = readUInt8(buffer);
     if (namelen >= kSCNodeDefNameByteLen) {
         std::ostringstream os;
@@ -89,27 +89,27 @@ void ReadNodeDefName(char*& buffer, int32* name) {
     readData(buffer, (char*)name, namelen);
 }
 
-void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer, int version) {
+void ParamSpec_Read(ParamSpec* inParamSpec, const char*& buffer, int version) {
     ReadName(buffer, inParamSpec->mName);
     inParamSpec->mIndex = readCount(buffer, version);
     inParamSpec->mHash = Hash(inParamSpec->mName);
 }
 
-void InputSpec_Read(InputSpec* inInputSpec, char*& buffer, int version) {
+void InputSpec_Read(InputSpec* inInputSpec, const char*& buffer, int version) {
     inInputSpec->mFromUnitIndex = readCount(buffer, version);
     inInputSpec->mFromOutputIndex = readCount(buffer, version);
 
     inInputSpec->mWireIndex = -1;
 }
 
-void OutputSpec_Read(OutputSpec* inOutputSpec, char*& buffer) {
+void OutputSpec_Read(OutputSpec* inOutputSpec, const char*& buffer) {
     inOutputSpec->mCalcRate = readInt8(buffer);
     inOutputSpec->mWireIndex = -1;
     inOutputSpec->mBufferIndex = -1;
     inOutputSpec->mNumConsumers = 0;
 }
 
-void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer, int version) {
+void UnitSpec_Read(UnitSpec* inUnitSpec, const char*& buffer, int version) {
     int32 name[kSCNameLen];
     ReadName(buffer, name);
 
@@ -136,9 +136,9 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer, int version) {
     inUnitSpec->mAllocSize = inUnitSpec->mUnitDef->mAllocSize + numPorts * (sizeof(Wire*) + sizeof(float*));
 }
 
-GraphDef* GraphDef_Read(World* inWorld, char*& buffer, GraphDef* inList, int32 inVersion);
+GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, GraphDef* inList, int32 inVersion);
 
-GraphDef* GraphDefLib_Read(World* inWorld, char* buffer, GraphDef* inList) {
+GraphDef* GraphDefLib_Read(World* inWorld, const char* buffer, GraphDef* inList) {
     int32 magic = readInt32_be(buffer);
     if (magic != (('S' << 24) | ('C' << 16) | ('g' << 8) | 'f') /*'SCgf'*/)
         return inList;
@@ -156,7 +156,7 @@ GraphDef* GraphDefLib_Read(World* inWorld, char* buffer, GraphDef* inList) {
 void ChooseMulAddFunc(GraphDef* graphDef, UnitSpec* unitSpec);
 void DoBufferColoring(World* inWorld, GraphDef* inGraphDef);
 
-void GraphDef_ReadVariant(World* inWorld, char*& buffer, GraphDef* inGraphDef, GraphDef* inVariant) {
+void GraphDef_ReadVariant(World* inWorld, const char*& buffer, GraphDef* inGraphDef, GraphDef* inVariant) {
     memcpy(inVariant, inGraphDef, sizeof(GraphDef));
 
     inVariant->mNumVariants = 0;
@@ -178,7 +178,7 @@ typedef struct IndexMap {
 } IndexMap;
 
 // ver 2
-inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer, int version) {
+inline static void calcParamSpecs(GraphDef* graphDef, const char*& buffer, int version) {
     if (uint32 numSpecs = graphDef->mNumParamSpecs; numSpecs > 0) {
         int hashTableSize = NEXTPOWEROFTWO(numSpecs);
         graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
@@ -244,7 +244,7 @@ static void GraphDef_SetAllocSizes(GraphDef* graphDef) {
 
 
 /** \note Relevant supernova code: \c sc_synthdef::sc_synthdef() */
-GraphDef* GraphDef_Read(World* inWorld, char*& buffer, GraphDef* inList, int32 inVersion) {
+GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, GraphDef* inList, int32 inVersion) {
     int32 name[kSCNodeDefNameLen];
     ReadNodeDefName(buffer, name);
 
@@ -400,7 +400,7 @@ SCErr GraphDef_DeleteMsg(World* inWorld, GraphDef* inDef) {
     return kSCErr_None;
 }
 
-GraphDef* GraphDef_Recv(World* inWorld, char* buffer, GraphDef* inList) {
+GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, GraphDef* inList) {
     try {
         inList = GraphDefLib_Read(inWorld, buffer, inList);
     } catch (std::exception& exc) { scprintf("exception in GraphDef_Recv: %s\n", exc.what()); } catch (...) {

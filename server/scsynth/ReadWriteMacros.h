@@ -71,17 +71,17 @@ inline void readData(FILE* file, char* outData, size_t inLength) {
         throw std::runtime_error("readData: read != inLength");
 }
 
-inline int32 readInt8(char*& buf) {
+inline int32 readInt8(const char*& buf) {
     int32 res = *buf++;
     return res;
 }
 
-inline uint32 readUInt8(char*& buf) {
+inline uint32 readUInt8(const char*& buf) {
     uint8 res = (uint8)*buf++;
     return (uint32)res;
 }
 
-inline int32 readInt16_be(char*& buf) {
+inline int32 readInt16_be(const char*& buf) {
     uint16 c = readInt8(buf);
     uint16 d = readInt8(buf);
 
@@ -89,7 +89,7 @@ inline int32 readInt16_be(char*& buf) {
     return (int16)res;
 }
 
-inline int32 readInt32_be(char*& buf) {
+inline int32 readInt32_be(const char*& buf) {
     int32 a = readInt8(buf);
     int32 b = readInt8(buf);
     int32 c = readInt8(buf);
@@ -99,7 +99,7 @@ inline int32 readInt32_be(char*& buf) {
     return res;
 }
 
-inline float readFloat_be(char*& buf) {
+inline float readFloat_be(const char*& buf) {
     union {
         float f;
         int32 i;
@@ -109,7 +109,7 @@ inline float readFloat_be(char*& buf) {
     return u.f;
 }
 
-inline void readData(char*& buf, char* outData, size_t inLength) {
+inline void readData(const char*& buf, char* outData, size_t inLength) {
     memcpy(outData, buf, inLength);
     buf += inLength;
 }
