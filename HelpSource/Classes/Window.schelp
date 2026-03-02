@@ -320,15 +320,90 @@ w.front;
 
 subsection:: Setting Bounds
 
-code::
-// use screenbounds for precise placement from the top
-(
-x = Window.new("test", Rect(100, Window.screenBounds.height-180, 300, 100)); x.front;
-)
+subsubsection:: Hard code examples
 
-// bounds.top refers to the bottom edge of the window,
-// measured from the bottom of the screen. Different than in View.
-x.bounds_(Rect(100, 400, 300, 300));
+The following examples show how to set a window's position relative to the top of
+the display, but these hard-coded values may not be appropriate across various
+screen resolutions. (To get a safer result, see link::#Flexible code examples::.)
+Note also the difference between code::Window.screenBounds:: and
+code::Window.availableBounds:::
+
+code::
+/* Use screenBounds to place a window relative to the top of the display */
+(
+x = Window.new("test", Rect(100, Window.screenBounds.height - 300, 300, 100));
+x.front;
+)
+// Window positions use screen coordinates measured from a bottom-left origin.
+// To place a window near the top, subtract an offset from Window.screenBounds.height
+// (300 is chosen arbitrarily here to illustrate the concept).
+
+/* Using availableBounds instead accounts for taskbars/menu bars */
+(
+y = Window.new("test", Rect(100, Window.availableBounds.height - 300, 300, 100));
+y.front;
+)
+// Window.availableBounds.height may differ from Window.screenBounds.height
+// depending on the OS (e.g., macOS menu bar, Windows taskbar).
+// This makes the top margin more accurate in practice.
+::
+
+code::
+/* Changing bounds after window creation */
+x.bounds_(Rect(100, 300, 300, 100));
+// The second argument of Rect is named 'top', but for Window it represents
+// the distance from the screen's bottom-left origin — not from the top.
+// Note: this value (300) is the complement of the calculation above
+// (screenBounds.height - 300), placing the window at the same vertical position.
+
+// This bottom-left origin differs from the coordinate system used within a View and a
+// Window, where the origin is at the top-left:
+(
+b = Button(x, Rect(90, 0, 50, 25));
+v = View(x, Rect(0, 0, 100, 50));
+v.background = Color.gray;
+t = TextView(v, Rect(10, 10, 80, 30));
+c = StaticText(x, Rect(90, 30, 50, 25));
+c.string = "test";
+)
+::
+
+subsubsection:: Flexible code examples
+
+code::
+/* Centering a window using Rect.aboutPoint */
+(
+w = Window("centered window using screenBounds",
+    Rect.aboutPoint(Window.screenBounds.center, 200, 100));
+w.front;
+)
+// Rect.aboutPoint takes a center point and half-extents (width/2, height/2),
+// expanding outward to produce a Rect — an intuitive way to center a window.
+
+// However, Window.availableBounds is often safer as it excludes taskbars/menu bars:
+(
+w = Window("centered window using availableBounds",
+    Rect.aboutPoint(Window.availableBounds.center, 200, 100));
+w.front;
+)
+::
+
+code::
+/* Using insetBy for padding-based window positioning */
+(
+w = Window("window with margins using screenBounds",
+    Window.screenBounds.insetBy(300, 100));
+w.front;
+)
+// insetBy shrinks a Rect by the given amounts on each side,
+// creating consistent margins from the screen edges regardless of resolution.
+
+// Using availableBounds instead avoids overlap with taskbars/menu bars:
+(
+w = Window("window with margins using availableBounds",
+    Window.availableBounds.insetBy(300, 100));
+w.front;
+)
 ::
 
 
