@@ -236,6 +236,15 @@ void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int
         graph.push_back(data);
     }
 
+    /* variants are currently not implemented, so we just skip the data. */
+    int16_t variant_count = read_int16(buffer, buffer_end);
+    for (int i = 0; i != variant_count; ++i) {
+        read_pstring(buffer, buffer_end);
+        for (int j = 0; j != par_count; ++j) {
+            read_float(buffer, buffer_end);
+        }
+    }
+
     prepare();
 }
 
