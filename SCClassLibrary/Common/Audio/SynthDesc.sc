@@ -14,6 +14,8 @@ IODesc {
 SynthDesc {
 	classvar <>mdPlugin, <>populateMetadataFunc;
 
+	const <headerMagic = 0x53436766; // 'SCgf'
+
 	var <>name, <>controlNames, <>controlDict;
 	var <>controls, <>inputs, <>outputs;
 	var <>metadata;
@@ -58,10 +60,17 @@ SynthDesc {
 		// path is for metadata -- only this method has direct access to the new SynthDesc
 		// really this should be a private method -- use *read instead
 	*readFile { arg stream, keepDefs=false, dict, path;
-		var numDefs, version;
+		var numDefs, magic, version;
 		dict = dict ?? { IdentityDictionary.new };
-		stream.getInt32; // 'SCgf'
+		magic = stream.getInt32; // 'SCgf'
+		if (magic != headerMagic) {
+			Error("not a SynthDef").throw;
+		};
 		version = stream.getInt32; // version
+		if (version > 2) {
+			"SynthDef version % not supported".format(version).warn;
+			^dict;
+		};
 		numDefs = stream.getInt16;
 		numDefs.do {
 			var desc;
@@ -608,9 +617,16 @@ SynthDescLib {
 	}
 
 	readStream { arg stream, keepDefs=true, path;
-		var numDefs, version, resultSet;
-		stream.getInt32; // 'SCgf'
+		var numDefs, magic, version, resultSet;
+		magic = stream.getInt32; // 'SCgf'
+		if (magic != SynthDesc.headerMagic) {
+			Error("not a SynthDef").throw;
+		};
 		version = stream.getInt32; // version
+		if (version > 2) {
+			"SynthDef version % not supported".format(version).warn;
+			^Set.new;
+		};
 		numDefs = stream.getInt16;
 		resultSet = Set.new(numDefs);
 		numDefs.do {
@@ -642,9 +658,15 @@ SynthDescLib {
 	}
 
 	readDescFromDef {arg stream, keepDef=true, def, metadata;
-		var desc, numDefs, version;
-		stream.getInt32; // 'SCgf'
+		var desc, numDefs, magic, version;
+		magic = stream.getInt32; // 'SCgf'
+		if (magic != SynthDesc.headerMagic) {
+			Error("not a SynthDef").throw;
+		};
 		version = stream.getInt32; // version
+		if (version > 2) {
+			Error("SynthDef version % not supported".format(version)).throw;
+		};
 		numDefs = stream.getInt16; // should be 1
 		if(version >= 2, {
 			desc = SynthDesc.new.readSynthDef2(stream, keepDef);
