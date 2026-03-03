@@ -139,11 +139,18 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, const char*& buffer, int version) {
 GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, GraphDef* inList, int32 inVersion);
 
 GraphDef* GraphDefLib_Read(World* inWorld, const char* buffer, size_t size, GraphDef* inList) {
+    // we need at least 10 bytes for the header (int32), version (int32) and synthdef count (int16)
+    if (size < 10)
+        throw std::runtime_error("too little data");
+
+    // check header ('SCgf')
     int32 magic = readInt32_be(buffer);
-    if (magic != (('S' << 24) | ('C' << 16) | ('g' << 8) | 'f') /*'SCgf'*/)
-        return inList;
+    if (magic != (('S' << 24) | ('C' << 16) | ('g' << 8) | 'f'))
+        throw std::runtime_error("not a synthdef");
 
     int32 version = readInt32_be(buffer);
+    if (version > 2)
+        throw std::runtime_error("version " + std::to_string(version) + " not supported");
 
     uint32 numDefs = readInt16_be(buffer);
     for (int i = 0; i < numDefs; ++i) {

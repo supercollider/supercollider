@@ -119,25 +119,29 @@ int32_t read_int(const char*& buffer, const char* buffer_end, int size) {
 } /* namespace */
 
 std::vector<sc_synthdef> read_synthdefs(const char* buffer, const char* buffer_end) {
-    /* int32 header = */ read_int32(buffer, buffer_end);
-    int32 version = read_int32(buffer, buffer_end);
+    try {
+        std::vector<sc_synthdef> result;
 
-    int16 definition_count = read_int16(buffer, buffer_end);
+        // check header ('SCgf')
+        int32 magic = read_int32(buffer, buffer_end);
+        if (magic != (('S' << 24) | ('C' << 16) | ('g' << 8) | 'f'))
+            throw std::runtime_error("not a synthdef");
 
-    std::vector<sc_synthdef> ret;
+        int32 version = read_int32(buffer, buffer_end);
+        if (version > 2)
+            throw std::runtime_error("version " + std::to_string(version) + " not supported");
 
-    for (int i = 0; i != definition_count; ++i) {
-        try {
-#ifdef __clang__
-            // clang does not like to emplace_back
-            sc_synthdef def(buffer, buffer_end, version);
-            ret.push_back(def);
-#else
-            ret.emplace_back(buffer, buffer_end, version);
-#endif
-        } catch (std::exception const& e) { std::cout << "Exception when reading synthdef: " << e.what() << std::endl; }
+        int16 definition_count = read_int16(buffer, buffer_end);
+
+        for (int i = 0; i != definition_count; ++i) {
+            result.emplace_back(buffer, buffer_end, version);
+        }
+
+        return result;
+    } catch (std::exception const& e) {
+        std::cout << "Exception when reading synthdef: " << e.what() << std::endl;
+        return {};
     }
-    return ret;
 }
 
 std::vector<sc_synthdef> read_synthdef_file(std::filesystem::path const& filename) {
@@ -191,7 +195,7 @@ sc_synthdef::sc_synthdef(const char*& buffer, const char* buffer_end, int versio
 
 void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int version) {
     using namespace std;
-    const int short_int_size = (version == 1) ? 16 : 32;
+    const int short_int_size = (version < 2) ? 16 : 32;
 
     /* read name */
     name_ = symbol(read_pstring(buffer, buffer_end));
