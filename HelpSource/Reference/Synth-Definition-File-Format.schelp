@@ -6,14 +6,15 @@ related:: Classes/SynthDef
 Synth definition files are read by the synth server and define collections of unit generators and their connections. These files are currently written by  the SuperCollider language application, but theoretically could be written by any program.
 Such a program would need knowledge of the SC unit generators and their characteristics, such as number of inputs and outputs and available calculation rates. The code to write these files is open and available in the SuperCollider language app.
 
-In the current SuperCollider 3.6 development version, there are two versions of SynthDef:
+In the current SuperCollider 3.15 development version, there are three versions of SynthDef:
 
 list::
 ## strong::SynthDef:: - The original SynthDef file format, backward compatible with .scsyndef files saved using earlier versions of SuperCollider.
 ## strong::SynthDef2:: - A revised version that extends SynthDef's capacity.
+## strong::SynthDef3:: - A another revision that adds new fields and makes the SynthDef format extendable.
 ::
 
-This document describes SynthDef2's format. See link::#Original SynthDef format:: for the differences between SynthDef and SynthDef2.
+This document describes SynthDef3's format. See link::#SynthDef2 format:: and link::#Original SynthDef format:: for the differences to the SynthDef2 resp. SynthDef1 format.
 
 section:: Basic types
 All data is stored big endian. All integers, unless otherwise noted, are signed. All data is packed, not padded or aligned.
@@ -37,6 +38,7 @@ list::
 
 a strong::synth-definition:: is :
 list::
+## int32 - the size of the synth definition in bytes (including this field)
 ## pstring - the name of the synth definition
 ## int32 - number of constants (K)
 ## [float32] * K - constant values
@@ -91,6 +93,8 @@ list::
 ## [float32] * P - variant initial parameter values
 ::
 
+note::Developers can extend the SynthDef3 format by adding new field to the emphasis::end:: of the synth definition. Parsers can use the size field to determine how many of these new fields are present.::
+
 section:: File Format as Tree
 
 soft::added by Jonatan Liljedahl::
@@ -102,6 +106,7 @@ tree::
 ## int16 - number of synth definitions in this file (D).
 ## [ strong::synth-definition:: ] * D
     tree::
+    ## int32 - the size of the synth definition in bytes (including this field)
     ## pstring - the name of the synth definition
     ## int32 - number of constants (K)
     ## [float32] * K - constant values
@@ -146,6 +151,10 @@ tree::
         ::
     ::
 ::
+
+section:: SynthDef2 format
+
+The SynthDef2 format omits the size field at the beginning of a synth definition as well as any fields after the variant specs.
 
 section:: Original SynthDef format
 

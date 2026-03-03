@@ -302,6 +302,7 @@ SynthDef {
 		this.asArray.writeDef(stream);
 		^stream.collection;
 	}
+
 	writeDefFile { arg dir, overwrite(true), mdPlugin;
 		var desc, defFileExistedBefore;
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
@@ -323,11 +324,22 @@ SynthDef {
 		}
 	}
 
-	writeDef { arg file;
+	writeDef { arg file, version=3;
 		// This describes the file format for the synthdef files.
-		var allControlNamesTemp, allControlNamesMap;
+		var allControlNamesTemp, allControlNamesMap, byteSize, startPos, endPos;
 
 		try {
+			if (version < 2 or: { version > 3 }) {
+				Error("version number out of range").throw
+			};
+
+			if (version > 2) {
+				// save current stream position so we can calculate the SynthDef size.
+				startPos = file.pos;
+				// the SynthDef size in bytes. This will be set at the very end.
+				file.putInt32(0);
+			};
+
 			file.putPascalString(name.asString);
 
 			this.writeConstants(file);
@@ -394,6 +406,17 @@ SynthDef {
 					};
 				};
 			};
+
+			if (version > 2) {
+				// calculate total size in bytes
+				endPos = file.pos;
+				byteSize = endPos - startPos;
+				// overwrite the size field in the beginning
+				file.pos = startPos;
+				file.putInt32(byteSize);
+				// restore stream position
+				file.pos = endPos;
+			}
 		} { // catch
 			arg e;
 			Error("SynthDef: could not write def: %".format(e.what())).throw;

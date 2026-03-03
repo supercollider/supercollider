@@ -67,18 +67,21 @@ SynthDesc {
 			Error("not a SynthDef").throw;
 		};
 		version = stream.getInt32; // version
-		if (version > 2) {
+		if (version > 3) {
 			"SynthDef version % not supported".format(version).warn;
 			^dict;
 		};
 		numDefs = stream.getInt16;
 		numDefs.do {
 			var desc;
-			if(version >= 2, {
+			case { version == 3 } {
+				desc = SynthDesc.new.readSynthDef3(stream, keepDefs);
+			} { version == 2} {
 				desc = SynthDesc.new.readSynthDef2(stream, keepDefs);
-			},{
+			} {
 				desc = SynthDesc.new.readSynthDef(stream, keepDefs);
-			});
+			};
+
 			dict.put(desc.name.asSymbol, desc);
 				// AbstractMDPlugin dynamically determines the md archive type
 				// from the file extension
@@ -97,6 +100,8 @@ SynthDesc {
 		}
 		^dict
 	}
+
+	// synthdef version 1
 	readSynthDef { arg stream, keepDef=false;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
 
@@ -167,8 +172,8 @@ SynthDesc {
 
 	}
 
-	// synthdef ver 2
-	readSynthDef2 { arg stream, keepDef=false;
+	// common method for readSynthDef2 and readSynthDef3
+	prReadSynthDef { arg stream, version, keepDef;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
 
 		protect {
@@ -235,7 +240,26 @@ SynthDesc {
 		} {
 			UGen.buildSynthDef = nil;
 		}
+	}
 
+	// synthdef version 2
+	readSynthDef2 { arg stream, keepDef=false;
+		this.prReadSynthDef(stream, 2, keepDef);
+	}
+
+	// synthdef version 3
+	readSynthDef3 { arg stream, keepDef=false;
+		var byteSize, startPos, remaining;
+
+		// every synth definition starts with the byte size (including the field itself)
+		startPos = stream.pos;
+		byteSize = stream.getInt32;
+		this.prReadSynthDef(stream, 3, keepDef);
+		// NB: prReadSynthDef may not read all fields, so we must skip all remaining bytes before we read the next synth definition.
+		remaining = byteSize - (stream.pos - startPos);
+		if (remaining > 0) {
+			stream.skip(remaining);
+		};
 	}
 
 	readUGenSpec { arg stream;
@@ -623,7 +647,7 @@ SynthDescLib {
 			Error("not a SynthDef").throw;
 		};
 		version = stream.getInt32; // version
-		if (version > 2) {
+		if (version > 3) {
 			"SynthDef version % not supported".format(version).warn;
 			^Set.new;
 		};
@@ -631,11 +655,13 @@ SynthDescLib {
 		resultSet = Set.new(numDefs);
 		numDefs.do {
 			var desc;
-			if(version >= 2, {
+			case { version == 3 } {
+				desc = SynthDesc.new.readSynthDef3(stream, keepDefs);
+			} { version == 2} {
 				desc = SynthDesc.new.readSynthDef2(stream, keepDefs);
-			},{
+			} {
 				desc = SynthDesc.new.readSynthDef(stream, keepDefs);
-			});
+			};
 			synthDescs.put(desc.name.asSymbol, desc);
 			resultSet.add(desc);
 				// AbstractMDPlugin dynamically determines the md archive type
@@ -664,15 +690,17 @@ SynthDescLib {
 			Error("not a SynthDef").throw;
 		};
 		version = stream.getInt32; // version
-		if (version > 2) {
+		if (version > 3) {
 			Error("SynthDef version % not supported".format(version)).throw;
 		};
 		numDefs = stream.getInt16; // should be 1
-		if(version >= 2, {
+		case { version == 3 } {
+			desc = SynthDesc.new.readSynthDef3(stream, keepDef);
+		} { version == 2} {
 			desc = SynthDesc.new.readSynthDef2(stream, keepDef);
-		},{
+		} {
 			desc = SynthDesc.new.readSynthDef(stream, keepDef);
-		});
+		};
 		if(keepDef) { desc.def = def };
 		if(metadata.notNil) { desc.metadata = metadata };
 		synthDescs.put(desc.name.asSymbol, desc);

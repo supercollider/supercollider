@@ -128,13 +128,30 @@ std::vector<sc_synthdef> read_synthdefs(const char* buffer, const char* buffer_e
             throw std::runtime_error("not a synthdef");
 
         int32 version = read_int32(buffer, buffer_end);
-        if (version > 2)
+        if (version > 3)
             throw std::runtime_error("version " + std::to_string(version) + " not supported");
 
         int16 definition_count = read_int16(buffer, buffer_end);
 
-        for (int i = 0; i != definition_count; ++i) {
-            result.emplace_back(buffer, buffer_end, version);
+        if (version > 2) {
+            // in version 3, every synth definition starts with a size field (int32) that tells
+            // the size of the entire definition in bytes (including the size field itself).
+            // NB: sc_synthdef() might not read all the fields so we must explicitly set
+            // the begin and end on each iteration!
+            for (int i = 0; i != definition_count; ++i) {
+                size_t synthdef_size = read_int32(buffer, buffer_end);
+                const char* synthdef_end = buffer + synthdef_size - 4;
+                if (synthdef_end > buffer_end)
+                    throw std::runtime_error("wrong synthdef size");
+
+                result.emplace_back(buffer, synthdef_end, version);
+
+                buffer = synthdef_end;
+            }
+        } else {
+            for (int i = 0; i != definition_count; ++i) {
+                result.emplace_back(buffer, buffer_end, version);
+            }
         }
 
         return result;

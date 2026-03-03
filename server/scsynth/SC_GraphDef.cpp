@@ -147,13 +147,31 @@ GraphDef* GraphDefLib_Read(World* inWorld, const char* buffer, size_t size, Grap
         throw std::runtime_error("not a synthdef");
 
     int32 version = readInt32_be(buffer, end);
-    if (version > 2)
+    if (version > 3)
         throw std::runtime_error("version " + std::to_string(version) + " not supported");
 
     uint32 numDefs = readInt16_be(buffer, end);
-    for (int i = 0; i < numDefs; ++i) {
-        inList = GraphDef_Read(inWorld, buffer, end, inList, version);
+    if (version > 2) {
+        // in version 3, every synth definition starts with a size field (int32) that tells
+        // the size of the entire definition in bytes (including the size field itself).
+        // NB: GraphDef_Read() might not read all the fields so we must explicitly set
+        // the begin and end on each iteration!
+        for (int i = 0; i < numDefs; ++i) {
+            size_t synthDefSize = readInt32_be(buffer, end);
+            const char* synthDefEnd = buffer + synthDefSize - 4;
+            if (synthDefEnd > end)
+                throw std::runtime_error("wrong synthdef size");
+
+            inList = GraphDef_Read(inWorld, buffer, synthDefEnd, inList, version);
+
+            buffer = synthDefEnd;
+        }
+    } else {
+        for (int i = 0; i < numDefs; ++i) {
+            inList = GraphDef_Read(inWorld, buffer, end, inList, version);
+        }
     }
+
     return inList;
 }
 
