@@ -71,45 +71,57 @@ inline void readData(FILE* file, char* outData, size_t inLength) {
         throw std::runtime_error("readData: read != inLength");
 }
 
-inline int32 readInt8(const char*& buf) {
+inline void checkBufferSpace(const char* buffer, const char* buffer_end, size_t wantBytes) {
+    if (buffer + wantBytes > buffer_end)
+        throw std::runtime_error("too little data");
+}
+
+inline int32 readInt8(const char*& buf, const char* end) {
+    checkBufferSpace(buf, end, 1);
     int32 res = *buf++;
     return res;
 }
 
-inline uint32 readUInt8(const char*& buf) {
+inline uint32 readUInt8(const char*& buf, const char* end) {
+    checkBufferSpace(buf, end, 1);
     uint8 res = (uint8)*buf++;
-    return (uint32)res;
+    return res;
 }
 
-inline int32 readInt16_be(const char*& buf) {
-    uint16 c = readInt8(buf);
-    uint16 d = readInt8(buf);
+inline int32 readInt16_be(const char*& buf, const char* end) {
+    checkBufferSpace(buf, end, 2);
+    uint16 c = buf[0];
+    uint16 d = buf[1];
+    buf += 2;
 
     uint16 res = ((c & 255) << 8) | (d & 255);
     return (int16)res;
 }
 
-inline int32 readInt32_be(const char*& buf) {
-    int32 a = readInt8(buf);
-    int32 b = readInt8(buf);
-    int32 c = readInt8(buf);
-    int32 d = readInt8(buf);
+inline int32 readInt32_be(const char*& buf, const char* end) {
+    checkBufferSpace(buf, end, 4);
+    uint32 a = buf[0];
+    uint32 b = buf[1];
+    uint32 c = buf[2];
+    uint32 d = buf[3];
+    buf += 4;
 
-    int32 res = ((a & 255) << 24) | ((b & 255) << 16) | ((c & 255) << 8) | (d & 255);
-    return res;
+    uint32 res = ((a & 255) << 24) | ((b & 255) << 16) | ((c & 255) << 8) | (d & 255);
+    return (int32_t)res;
 }
 
-inline float readFloat_be(const char*& buf) {
+inline float readFloat_be(const char*& buf, const char* end) {
     union {
         float f;
         int32 i;
     } u;
-    u.i = readInt32_be(buf);
+    u.i = readInt32_be(buf, end);
     // post("readFloat %g\n", u.f);
     return u.f;
 }
 
-inline void readData(const char*& buf, char* outData, size_t inLength) {
+inline void readData(const char*& buf, const char* end, char* outData, size_t inLength) {
+    checkBufferSpace(buf, end, inLength);
     memcpy(outData, buf, inLength);
     buf += inLength;
 }
