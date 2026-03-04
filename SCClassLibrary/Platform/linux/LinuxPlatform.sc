@@ -15,7 +15,7 @@ LinuxPlatform : UnixPlatform {
 		helpDir = this.systemAppSupportDir++"/Help";
 
 		// Server setup
-		Server.program = "exec scsynth";
+		Server.program = "exec $(dirname $(readlink /proc/%/exe))/scsynth".format(thisProcess.pid);
 
 		// Score setup
 		Score.program = Server.program;
