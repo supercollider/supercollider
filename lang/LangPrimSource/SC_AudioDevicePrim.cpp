@@ -18,7 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "PyrErrors.h"
 #if defined(SC_AUDIO_API_COREAUDIO)
 #    include <CoreAudio/AudioHardware.h>
 #elif defined(SC_AUDIO_API_PORTAUDIO)
