@@ -330,7 +330,7 @@ SynthDef {
 
 		try {
 			if (version < 2 or: { version > 3 }) {
-				Error("version number out of range").throw
+				Error("version number" + version + "out of range").throw
 			};
 
 			if (version > 2) {
