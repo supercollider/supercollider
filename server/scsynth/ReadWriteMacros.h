@@ -26,33 +26,26 @@
 #include <string.h>
 #include <stdexcept>
 
-inline int32 readInt8(FILE* file) {
-    int32 res = fgetc(file);
+inline int8 readInt8(FILE* file) { return (int8)fgetc(file); }
 
-    return res;
-}
+inline uint8 readUInt8(FILE* file) { return (uint8)fgetc(file); }
 
-inline uint32 readUInt8(FILE* file) {
-    uint8 res = (uint8)fgetc(file);
-    return (uint32)res;
-}
+inline int16 readInt16_be(FILE* file) {
+    uint16 c = (uint16)fgetc(file);
+    uint16 d = (uint16)fgetc(file);
 
-inline int32 readInt16_be(FILE* file) {
-    int32 c = fgetc(file);
-    int32 d = fgetc(file);
-
-    int32 res = ((c & 255) << 8) | (d & 255);
-    return res;
+    uint16 res = ((c & 255) << 8) | (d & 255);
+    return (int16)res;
 }
 
 inline int32 readInt32_be(FILE* file) {
-    int32 a = fgetc(file);
-    int32 b = fgetc(file);
-    int32 c = fgetc(file);
-    int32 d = fgetc(file);
+    uint32 a = fgetc(file);
+    uint32 b = fgetc(file);
+    uint32 c = fgetc(file);
+    uint32 d = fgetc(file);
 
-    int32 res = ((a & 255) << 24) | ((b & 255) << 16) | ((c & 255) << 8) | (d & 255);
-    return res;
+    uint32 res = ((a & 255) << 24) | ((b & 255) << 16) | ((c & 255) << 8) | (d & 255);
+    return (int32)res;
 }
 
 inline float readFloat_be(FILE* file) {
@@ -76,19 +69,17 @@ inline void checkBufferSpace(const char* buffer, const char* buffer_end, size_t 
         throw std::runtime_error("too little data");
 }
 
-inline int32 readInt8(const char*& buf, const char* end) {
+inline int8 readInt8(const char*& buf, const char* end) {
     checkBufferSpace(buf, end, 1);
-    int32 res = *buf++;
-    return res;
+    return (int8)*buf++;
 }
 
-inline uint32 readUInt8(const char*& buf, const char* end) {
+inline uint8 readUInt8(const char*& buf, const char* end) {
     checkBufferSpace(buf, end, 1);
-    uint8 res = (uint8)*buf++;
-    return res;
+    return (uint8)*buf++;
 }
 
-inline int32 readInt16_be(const char*& buf, const char* end) {
+inline int16 readInt16_be(const char*& buf, const char* end) {
     checkBufferSpace(buf, end, 2);
     uint16 c = buf[0];
     uint16 d = buf[1];
@@ -107,7 +98,7 @@ inline int32 readInt32_be(const char*& buf, const char* end) {
     buf += 4;
 
     uint32 res = ((a & 255) << 24) | ((b & 255) << 16) | ((c & 255) << 8) | (d & 255);
-    return (int32_t)res;
+    return (int32)res;
 }
 
 inline float readFloat_be(const char*& buf, const char* end) {
