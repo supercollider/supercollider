@@ -375,8 +375,7 @@ SynthDef {
 
 					varname = name ++ "." ++ varname;
 					if (varname.size > 32) {
-						Post << "variant '" << varname << "' name too long.\n";
-						^nil
+						Error("variant '%' name too long".format(varname)).throw;
 					};
 					varcontrols = controls.copy;
 					pairs.pairsDo { |cname, values|
@@ -385,9 +384,8 @@ SynthDef {
 						if (cn.notNil) {
 							values = values.asArray;
 							if (values.size > cn.defaultValue.asArray.size) {
-								postf("variant: '%' control: '%' size mismatch.\n",
-									varname, cname);
-								^nil
+								Error("variant: '%' control: '%' size mismatch"
+									.format(varname, cname)).throw;
 							}{
 								index = cn.index;
 								values.do {|val, i|
@@ -395,9 +393,8 @@ SynthDef {
 								}
 							}
 						}{
-							postf("variant: '%' control: '%' not found.\n",
-								varname, cname);
-							^nil
+							Error("variant: '%' control: '%' not found"
+								.format(varname, cname)).throw;
 						}
 					};
 					file.putPascalString(varname);
@@ -417,8 +414,7 @@ SynthDef {
 				// restore stream position
 				file.pos = endPos;
 			}
-		} { // catch
-			arg e;
+		} { arg e; // catch
 			Error("SynthDef: could not write def: %".format(e.what())).throw;
 		}
 	}
