@@ -154,8 +154,13 @@ SynthDesc {
 
 		numVariants = stream.getInt16;
 		hasVariants = numVariants > 0;
-			// maybe later, read in variant names and values
-			// this is harder than it might seem at first
+		// maybe later, read in variant names and values.
+		// this is harder than it might seem at first.
+		// for now just skip the data.
+		numVariants.do {
+			stream.getPascalString;
+			stream.skip(numControls * 4);
+		};
 
 		def.constants = Dictionary.new;
 		constants.do {|k,i| def.constants.put(k,i) };
@@ -225,8 +230,13 @@ SynthDesc {
 
 		numVariants = stream.getInt16;
 		hasVariants = numVariants > 0;
-			// maybe later, read in variant names and values
-			// this is harder than it might seem at first
+		// maybe later, read in variant names and values.
+		// this is harder than it might seem at first.
+		// for now just skip the data.
+		numVariants.do {
+			stream.getPascalString;
+			stream.skip(numControls * 4);
+		};
 
 		def.constants = Dictionary.new;
 		constants.do {|k,i| def.constants.put(k,i) };
@@ -657,7 +667,7 @@ SynthDescLib {
 			var desc;
 			case { version == 3 } {
 				desc = SynthDesc.new.readSynthDef3(stream, keepDefs);
-			} { version == 2} {
+			} { version == 2 } {
 				desc = SynthDesc.new.readSynthDef2(stream, keepDefs);
 			} {
 				desc = SynthDesc.new.readSynthDef(stream, keepDefs);
