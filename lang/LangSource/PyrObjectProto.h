@@ -29,9 +29,9 @@ void buildClassTree();
 void freePyrSlot(PyrSlot* slot);
 void freePyrObject(PyrObject* obj);
 
-bool objAddIndexedSlot(PyrObject* obj, PyrSlot* slot);
-bool objAddIndexedSymbol(PyrSymbolArray* obj, PyrSymbol* symbol);
-bool objAddIndexedObject(PyrObject* obj, PyrObject* obj2);
+[[nodiscard]] bool objAddIndexedSlot(PyrObject* obj, PyrSlot* slot);
+[[nodiscard]] bool objAddIndexedSymbol(PyrSymbolArray* obj, PyrSymbol* symbol);
+[[nodiscard]] bool objAddIndexedObject(PyrObject* obj, PyrObject* obj2);
 
 void CallStackSanity(struct VMGlobals* g, const char* tagstr);
 bool FrameSanity(struct PyrFrame* frame, const char* tagstr);

@@ -311,7 +311,7 @@ Buffer {
 
 		pos = index = index.asInteger;
 		// treat -1 and nil the same
-		if(count == -1 || count.isNil) {
+		if(count == -1 or: {count.isNil}) {
 			count = (numFrames * numChannels).asInteger - index;
 		};
 		array = FloatArray.newClear(count);

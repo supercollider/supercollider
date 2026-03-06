@@ -26,8 +26,11 @@ This file contains the definitions of the core objects that implement the class 
 #pragma once
 
 #include "PyrObject.h"
+#include "PyrSlot.h"
+#include "SC_Types.h"
 #include "VMGlobals.h"
 #include "Opcodes.h"
+#include <cstring>
 
 #define classClassNumInstVars 19
 
@@ -132,19 +135,20 @@ struct PyrMethodRaw {
 #endif
 
     unsigned char unused2;
-    unsigned char numargs;
-    unsigned char varargs;
-    unsigned char numvars;
+    unsigned char numNormalArguments;
+    unsigned char numVariableArguments;
+    unsigned char numVariables;
     unsigned char numtemps;
     unsigned char needsHeapContext;
     unsigned char popSize;
-    unsigned char posargs;
+    unsigned char totalNumArguments;
 };
 
 
-#define METHRAW(obj) ((PyrMethodRaw*)&(((PyrBlock*)obj)->rawData1))
+#define METHRAW(obj) ((PyrMethodRaw*)&(((PyrFunctionDef*)obj)->rawData1))
 
-struct PyrBlock : public PyrObjectHdr {
+
+struct PyrFunctionDef : public PyrObjectHdr {
     PyrSlot rawData1;
     PyrSlot rawData2;
     PyrSlot code; // byte codes, nil if inlined
@@ -154,10 +158,17 @@ struct PyrBlock : public PyrObjectHdr {
     PyrSlot contextDef; // ***defining block context
     PyrSlot argNames; // ***arguments to block
     PyrSlot varNames; // ***variables in block
-    PyrSlot sourceCode; // source code if it is a closed function.
+    PyrSlot sourceCode; // source code of the file, not the function scope.
+                        // Location of each byte code (entry in 'code') in the 'sourceCode'.
+    // PyrInt32Array[startChar0, endChar0, startChar1, endChar1 ... startCharN, endCharN]
+    PyrSlot codeCharacterLocations;
+    PyrSlot codeSizes; // PyrInt8Array - Size of each bytecode in bytes.
+    PyrSlot isClosed; // bool
+    PyrSlot sourceCodeStartIndex;
+    PyrSlot sourceCodeEndIndex;
 };
 
-struct PyrMethod : public PyrBlock {
+struct PyrMethod : public PyrFunctionDef {
     PyrSlot ownerclass;
     PyrSlot name;
     PyrSlot primitiveName;

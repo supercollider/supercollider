@@ -33,6 +33,7 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 #include <cstdint>
 
 void DumpSimpleBackTrace(VMGlobals* g);
+void DumpDetailedBackTrace(VMGlobals* g);
 
 const int kMaxPoolSet = 7;
 const int kNumGCSizeClasses = 28;

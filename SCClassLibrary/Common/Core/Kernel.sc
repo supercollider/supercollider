@@ -457,11 +457,26 @@ Process {
 
 FunctionDef {
 	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
-	var <sourceCode;
+	var <fullSourceCode; // this is the complete file! Use codeCharacterLocations to index into it
+	var <codeCharacterLocations; // array of ints, twice as many as in code, used to represent the start of the byte code in and the end.
+	var <codeSizes; // size in bytes of each byte code.
+	var <isClosed;
+	var <sourceCodeStartIndex;
+	var <sourceCodeEndIndex;
 
-	// a FunctionDef is defined by a code within curly braces {}
-	// When you use a FunctionDef in your code it gets pushed on the stack
-	// as an instance of Function
+	sourceCode { ^fullSourceCode[sourceCodeStartIndex..sourceCodeEndIndex - 1] }
+
+	indexOfSourceCodeStartingLine {
+		var l = max(sourceCodeStartIndex, 0);
+		if (fullSourceCode[l] === $\n) { ^l };
+		loop {
+			if (l <= 0) { ^l };
+			if (fullSourceCode[l - 1] === $\n) { ^l };
+			l = l - 1;
+		};
+	}
+
+	lineNumberInFileOfSourceCodeStart {	^fullSourceCode[0..sourceCodeStartIndex].occurrencesOf($\n)	}
 
 	dumpByteCodes {
 		_DumpByteCodes
@@ -604,6 +619,7 @@ FunctionDef {
 
 }
 
+
 Method : FunctionDef {
 	var <ownerClass, <name, <primitiveName;
 	var <filenameSymbol, <charPos;
@@ -651,6 +667,68 @@ Method : FunctionDef {
 
 }
 
+// Note the lack of a constructor, these are made in the interpreter.
+BytecodeOperand {
+	var <name;
+	var <value;
+	asString { ^name ++ " " ++ value }
+	storeOn {|stream| stream << name <<" " << value }
+	printOn { |stream| this.storeOn(stream) }
+}
+
+// Note the lack of a constructor, these are made in the interpreter.
+Bytecode {
+	var <name;
+	var <extraNameInfo;
+	var <operands;
+	var <index;
+
+	asString { ^(CollStream() << this).collection }
+	printOn { |stream| this.storeOn(stream) }
+
+	storeOn { |stream|
+		stream << name << " ";
+		extraNameInfo !? {
+			switch (extraNameInfo.size)
+			{ 0 } { }
+			{ 1 } { stream << extraNameInfo[0] << " " }
+			{ stream << extraNameInfo << " " }
+		};
+		operands !? {
+			switch (operands.size)
+			{ 0 } { }
+			{ stream << operands << " " }
+		};
+	}
+
+
+}
+
+// This is mutated by the primitive, don't edit the instance variables unless you also edit the C++ code.
+BytecodeIterator {
+	var <bytecodes;
+	var <currentIpOffset;
+	var <bytecodeIndex;
+	var <currentResult;
+
+	*new { |bytecodes|
+		^super.newCopyArgs(
+			bytecodes: bytecodes,
+			currentIpOffset: 0,
+			bytecodeIndex: 0,
+			currentResult: 0
+		)
+	}
+
+	next {
+		if(currentResult.isNil) { ^nil };
+		this.prNext;
+		^currentResult
+	}
+
+	prNext { _BytecodeIteratorNext ^this.primitiveFailed }
+}
+
 Frame {
 	// frames contain the local variables, context and continuation of a function or method invocation.
 	// since some Frames are deleted instead of garbage collected, it is too
@@ -663,16 +741,369 @@ Frame {
 	checkCanArchive { "cannot archive Frames".warn }
 }
 
+// Object.getBackTrace returns one of these.
 DebugFrame {
-	var <functionDef, <args, <vars, <caller, <context, <address;
-	// Object.getBackTrace returns one of these.
+	// Do not edit these instances variables unless you also update all the C++ code that touches them.
+	var <functionDef, <args, <vars, <caller, <context, <address, <currentInstructionOffset;
 	// 'functionDef' is the FunctionDef for this function or method.
 	// 'args' the values of the arguments to the function call.
 	// 'vars' the values of the local variables.
 	// 'caller' points to another DebugFrame for the caller to this function.
 	// 'context' points to another DebugFrame for the frame lexically enclosing this one.
 	// 'address' memory address of the actual frame object.
+	// 'currentInstructionOffset' is the index into the functionDef's 'code' array marking the current location of execution.
+
 	asString { ^"DebugFrame of " ++ functionDef.asString }
+
+	currentInstructionIndex {
+		var rolling = 0;
+		functionDef.codeSizes.do { |val, i|
+			rolling = rolling + val;
+			if (rolling > currentInstructionOffset) {
+				^i
+			}
+		};
+		^functionDef.codeSizes.size - 1;
+	}
+
+}
+
+ErrorSourceCodePrinterOptions {
+	classvar prDefault;
+	var <>linesBefore = 3, <>linesAfter = 0;
+
+	*initClass { prDefault = ErrorSourceCodePrinterOptions() }
+
+	*default_ { |d|
+		if (d.isKindOf(this).not) {
+			Error("Expected an object of class %".foramt(this.class)).throw
+		};
+		prDefault = d;
+	}
+
+	*default { ^prDefault }
+	*defaultCopy { ^prDefault.copy }
+	*defaultImmutable { ^prDefault }
+}
+
+ErrorByteCodePrinterOptions {
+	classvar prDefault;
+	var <>codesBefore = 3, <>codesAfter = 0;
+
+	*initClass { prDefault = ErrorByteCodePrinterOptions()	}
+
+	*default_ { |d|
+		if (d.isKindOf(this).not) {
+			Error("Expected an object of class %".foramt(this.class)).throw
+		};
+		prDefault = d;
+	}
+
+	*default { ^prDefault }
+	*defaultCopy { ^prDefault.copy }
+	*defaultImmutable { ^prDefault }
+}
+
+ErrorPrinterOptions {
+	classvar prDefault;
+	var <>shouldReverse = true, <>numDetailedToPrint = 10, <>showArgsAndVars = true;
+	var <>defToBeginAt = nil, <>defToStopAt = nil;
+	var <>sourceCodeOptions, <>bytecodeOptions;
+
+	*initClass {
+		Class.initClassTree(ErrorByteCodePrinterOptions);
+		Class.initClassTree(ErrorSourceCodePrinterOptions);
+		prDefault = ErrorPrinterOptions();
+	}
+
+	*default_ { |d|
+		if (d.isKindOf(this).not) {
+			Error("Expected an object of class %".foramt(this.class)).throw
+		};
+		prDefault = d;
+	}
+
+	*defaultCopy { ^prDefault.copy }
+	*default { ^prDefault }
+	*new { ^super.newCopyArgs(sourceCodeOptions: ErrorSourceCodePrinterOptions.default, bytecodeOptions: ErrorByteCodePrinterOptions.default) }
+}
+
+ErrorPrinter {
+
+	*printDebugStack {
+		arg
+		debugFrame,
+		out=(CollStream()),
+		indentString=("  "),
+		opts=(ErrorPrinterOptions.default);
+		var frameIt;
+
+		var startingFrame = opts.defToBeginAt !? {
+			frameIt = debugFrame;
+
+			while { frameIt.notNil and: {frameIt.functionDef !== opts.defToBeginAt}} {
+				frameIt = frameIt.caller;
+			};
+			frameIt !? { frameIt.caller } ?? { debugFrame }
+		} ?? {debugFrame};
+
+
+		var stack = [];
+
+		frameIt = startingFrame;
+		while {frameIt.notNil and: {frameIt.functionDef !== opts.defToStopAt}} {
+			stack = stack.add(frameIt);
+			frameIt = frameIt.caller;
+		};
+
+		// This logic is a bit complex, only print the detailed stuff when within numDetailedToPrint, or the first top or bottom frame
+		// This is done twice because we can reverse the stack and the indicies change.
+		if (opts.shouldReverse) {
+			stack.reverseDo { |frame, i|
+				ErrorPrinter.printDebugFrame(
+					frame,
+					out,
+					indentString,
+					index: i + 1,
+					printArgsAndVars: opts.showArgsAndVars,
+					sourceOptsOrFalse: (
+						case
+						{(stack.size - i) <= opts.numDetailedToPrint} { opts.sourceCodeOptions }
+						{ i === 0 } { opts.sourceCodeOptions }
+						{ false }
+					),
+					bytecodeOptsOrFalse: (
+						case
+						{(stack.size - i) <= opts.numDetailedToPrint} { opts.bytecodeOptions }
+						{ i === 0 } { opts.bytecodeOptions }
+						{ false }
+					)
+				)
+			}
+		} {
+			stack.do { |frame, i|
+				ErrorPrinter.printDebugFrame(
+					frame,
+					out,
+					indentString,
+					index: stack.size - i,
+					printArgsAndVars: opts.showArgsAndVars,
+					sourceOptsOrFalse: (
+						case
+						{ i < opts.numDetailedToPrint } { opts.sourceCodeOptions }
+						{ i + 1 === stack.size } { opts.sourceCodeOptions }
+						{ false }
+					),
+					bytecodeOptsOrFalse: (
+						case
+						{ i < opts.numDetailedToPrint } { opts.bytecodeOptions }
+						{ i + 1 === stack.size } { opts.bytecodeOptions }
+						{ false }
+					)
+				)
+			}
+		}
+		^out;
+	}
+
+	*printDebugFrame {
+		arg
+		    frame,
+		    onto,
+		    indentString=("  "),
+		    index=0,
+		    printArgsAndVars=true,
+		    sourceOptsOrFalse=(ErrorSourceCodePrinterOptions.default),
+		    bytecodeOptsOrFalse=(false);
+
+		var fdef = frame.functionDef;
+		var start = "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓";
+		var header = if(fdef.isKindOf(Method)) {
+			" %%:%".format(index !? { index.asString ++ ": "} ?? { "" }, fdef.ownerClass, fdef.name)
+		} {
+			" %Function".format(index !? { index.asString ++ ": "} ?? { "" })
+		};
+		onto << indentString << start << "\n";
+		onto << indentString <<  "┃" << header << (" ".dup(( (start.size /  "━".size) - header.size).max(0) - 2).join) << "┃\n";
+		onto << indentString <<  "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
+
+		indentString = indentString ++ "   ";
+		if(printArgsAndVars and: {frame.args.notNil}) {
+			onto << indentString << "Arguments: ";
+			fdef.argNames.do { |name, i|
+				onto << name << "=" << ErrorPrinter.prArgOrVarValueAsString(frame.args[i]);
+
+				case
+				{ (i + 1) == (fdef.argNames.size - fdef.varArgsValue) and: {fdef.varArgsValue != 0} } { onto << " ..." } // var arg sep
+				{ (i + 1) != fdef.argNames.size } { onto << ", " };
+
+				// new line every 10 args.
+				if ((i % 10) === 0 and: {i != 0}) {
+					onto << "\n" << indentString << "           "
+				};
+			};
+			onto << "\n";
+		};
+
+		if(printArgsAndVars and: {frame.vars.notNil}) {
+			onto << indentString << "Variables: ";
+			fdef.varNames.do { |name, i|
+				onto << name << "=" << ErrorPrinter.prArgOrVarValueAsString(frame.vars[i]);
+				if ((i + 1) != fdef.varNames.size) { onto << ", " };
+
+				if ((i % 10) === 0 and: {i != 0}) {
+					onto << "\n" << indentString << "           "
+				};
+			};
+			onto << "\n";
+		};
+
+
+		if (bytecodeOptsOrFalse !== false) {
+			this.printBytecodes(onto, frame, indentString ++ "  ", bytecodeOptsOrFalse)
+		};
+
+		if (sourceOptsOrFalse !== false) {
+			this.printSourceCode(onto, frame, indentString, sourceOptsOrFalse)
+		};
+	}
+
+	*printSourceCode { |onto, frame, indentString, opts=(ErrorSourceCodePrinterOptions.default)|
+		var fdef = frame.functionDef;
+		var lineStartIndex = fdef.indexOfSourceCodeStartingLine;
+		var lineNumberOfStart = fdef.fullSourceCode[0..lineStartIndex].occurrencesOf($\n);
+		var offestToStartOfLine = lineStartIndex - fdef.sourceCodeStartIndex;
+
+		var sourceIncludingLineStart = fdef.fullSourceCode[lineStartIndex.. fdef.sourceCodeEndIndex - 1];
+
+		var instructionIndex = frame.currentInstructionIndex;
+		// character location in sourceIncludingLineStart
+		var instructionStartInFull = fdef.codeCharacterLocations[instructionIndex * 2] ;
+		var instructionEndInFull = fdef.codeCharacterLocations[(instructionIndex * 2) + 1];
+		var instructionStart = instructionStartInFull - lineStartIndex;
+		var instructionEnd = instructionEndInFull - lineStartIndex;
+
+		var startLineOfHighlight = fdef.fullSourceCode[lineStartIndex..instructionStartInFull].occurrencesOf($\n);
+		var highlightPeice = fdef.fullSourceCode[instructionStartInFull..instructionEndInFull - 1];
+		var highlightLineCount = highlightPeice.occurrencesOf($\n);
+		var endLineOfHighlight = startLineOfHighlight + highlightLineCount;
+
+		var lines = sourceIncludingLineStart.split($\n);
+
+		var widthOfLinecountMargin = (lineNumberOfStart + highlightLineCount + 2).max(1).log10.ceil + 1;
+		var spacer = " ".dup(widthOfLinecountMargin + 1).join;
+		var padLineNumberAsString = { |n, postfix|
+			"%%%".format(
+				n,
+				String.fill(widthOfLinecountMargin - (n+1).log10.ceil, $ ),
+				postfix ?? {" "},
+			)
+		};
+
+		// used when highlighting the line.
+		var startIndexOfLine, str, tabCount, spaceCount;
+
+		onto << indentString << "SourceCode:\n";
+		onto << indentString << "─".dup(2 + widthOfLinecountMargin).join << "─┬───────────────────────────────────────────────────────\n";
+		indentString = indentString ++ "  ";
+		if (startLineOfHighlight !== endLineOfHighlight){
+			lines.do { |line, i|
+				case { i > endLineOfHighlight } {}
+				{ startLineOfHighlight <= i } {
+					onto << indentString << padLineNumberAsString.(lineNumberOfStart + i + 1, "→") << "│ " << line << "\n";
+				} { i > startLineOfHighlight } {
+					onto << indentString << padLineNumberAsString.(lineNumberOfStart + i + 1) << "│ " << line << "\n";
+				} {
+					// default is before the startLineOfHighlight
+				}
+			}
+		} {
+			lines.do { |line, i|
+				case
+				// Exact match, this is the line.
+				{ startLineOfHighlight === i } {
+					// If findBackwards returns nil, make it negative one, which becomes 0, the start of the text.
+					startIndexOfLine = (fdef.fullSourceCode.findBackwards("\n", false, instructionStartInFull - 1) ?? { -1 }) + 1;
+					str = if(startIndexOfLine >= instructionStartInFull) { nil } { fdef.fullSourceCode[startIndexOfLine.. instructionStartInFull - 1] };
+					tabCount = str !? { str.occurrencesOf($\t) } ?? { 0 };
+					spaceCount = str !? { str.size - tabCount } ?? { 0 } ;
+
+					onto << indentString << padLineNumberAsString.(lineNumberOfStart + i + 1, "→") << "│ " << line << "\n";
+					onto << indentString << spacer << "│ ";
+					tabCount.do { onto << $\t };
+					spaceCount.do { onto << $ };
+					highlightPeice.size.do { onto << $^ 	};
+					onto << "\n";
+				}
+				{ startLineOfHighlight <= (i + opts.linesBefore) and: { i <= (endLineOfHighlight + opts.linesAfter)}  } {
+					onto << indentString << padLineNumberAsString.(lineNumberOfStart + i + 1) << "│ " << line << "\n";
+				}
+			}
+		}
+	}
+
+	*printBytecodes { |onto, frame, indentString, opts=(ErrorByteCodePrinterOptions.default)|
+		var fdef = frame.functionDef;
+		var bytecodeIt, currentBytecode;
+		var instructionIndex = frame.currentInstructionIndex;
+
+		// Assume no more than 999 bytecodes.
+		// We can't easily count how many there are without iterating throught them.
+		// We could do something heuristically though, by assuming the average size of a bytecode.
+		var padLineNumberAsString = { |n, postfix|
+			"%%%".format(
+				n,
+				String.fill(3 - (n+1).log10.ceil, $ ),
+				postfix ?? {" "},
+			)
+		};
+
+		var targetBytecodeIndex = nil;
+
+		onto << indentString << "FunctionDef:\n";
+		onto << indentString << "─────────────────────────────────────────────────────────\n";
+		indentString = indentString ++ "  ";
+		fdef.selectors !? { onto << indentString << "Selectors: " << fdef.selectors << "\n" };
+		fdef.constants !? { onto << indentString << "Constants: " << fdef.constants << "\n" };
+		onto << indentString << "Bytecodes:\n";
+		onto << indentString << "─".dup(5).join << "─┬───────────────────────────────────────────────────────\n";
+
+		bytecodeIt = BytecodeIterator(fdef.code);
+		// set targetBytecodeIndex so we know what index the current bytecode is.
+		while {currentBytecode = bytecodeIt.next; currentBytecode.notNil and: {targetBytecodeIndex.isNil}} {
+			if (bytecodeIt.currentIpOffset >= frame.currentInstructionOffset){
+				targetBytecodeIndex = currentBytecode.index // exits loop;
+			}
+		};
+
+		targetBytecodeIndex = targetBytecodeIndex ?? { inf }; // will just print all.
+
+		bytecodeIt = BytecodeIterator(fdef.code);
+		indentString = indentString ++ "  ";
+
+		while {currentBytecode = bytecodeIt.next; currentBytecode.notNil and: {
+			currentBytecode.index <= (targetBytecodeIndex + opts.codesAfter)
+		}} {
+			case { currentBytecode.index < (targetBytecodeIndex - opts.codesBefore) } {
+				// print nothing, before target
+			} { currentBytecode.index == targetBytecodeIndex } {
+				// line to highlight
+				onto << indentString << padLineNumberAsString.(currentBytecode.index + 1, "→") << "│ " << currentBytecode << "\n";
+			} {
+				// normal line
+				onto << indentString << padLineNumberAsString.(currentBytecode.index + 1) << "│ " << currentBytecode << "\n";
+			}
+		};
+		onto << "\n";
+	}
+
+	*prArgOrVarValueAsString { |val|
+		var s = val.asString;
+		var tooBig = s.size >= 32;
+		s = s[0..32].collect{ |c| switch(c) { $\n } {$ } { $\t } {$ } {c} };
+		^if (tooBig.not) { s } { s ++ "..." }
+	}
+
 }
 
 RawPointer {

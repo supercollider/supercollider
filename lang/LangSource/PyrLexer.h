@@ -21,13 +21,14 @@
 
 #pragma once
 
+#include "PyrObject.h"
 #include "PyrSlot.h"
 #include "PyrSymbol.h"
 #include "SC_Export.h"
 #include "SCBase.h"
 #include <filesystem>
 
-extern int charno, lineno, linepos;
+extern int characterIndexInCurrentLine, currentLineCount, startOfCurrentLineCharacterIndex;
 extern int* linestarts;
 
 struct ClassExtFile {
@@ -46,7 +47,7 @@ typedef struct classdep {
     int startPos, endPos, lineOffset;
 } ClassDependancy;
 
-extern PyrSymbol* gCompilingFileSym;
+extern PyrSymbol* gCompilingFilenameSym;
 
 ClassDependancy* newClassDependancy(PyrSymbol* className, PyrSymbol* superClassName, PyrSymbol* fileSym, int startPos,
                                     int endPos, int lineOffset);
@@ -73,6 +74,40 @@ SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
 void interpretCmdLine(const char* textbuf, int textlen, char* methodname);
 
 
+struct EmptyLexerResult {};
+
+// This is used in the parser and will become the type of yyloc, the location data for each token.
+struct LocationType {
+    // TODO: consider making these small types.
+    // absolute must be large, but the other two could be smaller, perhaps uint16_t?
+    struct Part {
+        int absolute, lineNumber, offsetInLine;
+    };
+    using Begin = Part;
+    using End = Part;
+
+    Begin begin;
+    End end;
+
+    [[nodiscard]] constexpr static LocationType range(LocationType left, LocationType right) {
+        return {
+            left.begin,
+            right.end,
+        };
+    }
+};
+
+// This macro defines the default rule for how to combine location types. It is used in the parser.
+#define YYLLOC_DEFAULT(Current, Rhs, N)                                                                                \
+    do                                                                                                                 \
+        if ((N) == 0) {                                                                                                \
+            (Current) = YYRHSLOC(Rhs, 0);                                                                              \
+        } else {                                                                                                       \
+            (Current) = LocationType::range(YYRHSLOC(Rhs, 1), YYRHSLOC(Rhs, N));                                       \
+        }                                                                                                              \
+    while (0)
+
+
 int input();
 int input0();
 void unput(int c);
@@ -91,17 +126,9 @@ std::filesystem::path relativeToCompileDir(const std::filesystem::path&);
 
 void initLexer();
 
-int processbinop(char* token);
-int processident(char* token);
 int processfloat(char* token, int sawpi);
 int processint(char* token);
 int processchar(int c);
-int processintradix(char* s, int n, int radix);
-int processfloatradix(char* s, int n, int radix);
-int processhex(char* s);
-int processsymbol(char* token);
-int processstring(char* token);
-int processkeywordbinop(char* token);
 
 void postErrorLine(int linenum, int start, int charpos);
 bool scanForClosingBracket();
@@ -129,19 +156,23 @@ extern int yylen;
 extern int lexCmdLine;
 extern bool compilingCmdLine;
 extern bool compilingCmdLineErrorWindow;
-extern intptr_t zzval;
 extern intptr_t gParserResult;
 
-extern int lineno, charno, linepos;
+extern int currentLineCount, characterIndexInCurrentLine, startOfCurrentLineCharacterIndex;
 extern int* linestarts;
 extern int maxlinestarts;
 
 extern char* text;
+
+struct PyrString;
+extern PyrString* gCurrentCompilingTextAsSCString;
+
 extern int textlen;
 extern int textpos;
 extern int parseFailed;
 extern bool compiledOK;
 extern int radixcharpos, decptpos;
+
 
 int rtf2txt(char* txt);
 int html2txt(char* txt);

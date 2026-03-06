@@ -336,8 +336,8 @@ public:
     [[nodiscard]] inline static PyrSlot make(struct PyrObjectHdr* o) {
         return { PrivateTag(), Tags::objHdrTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
     }
-    [[nodiscard]] inline static PyrSlot make(struct PyrSymbol* o) {
-        return { PrivateTag(), Tags::symTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
+    [[nodiscard]] inline static PyrSlot make(struct PyrSymbol* symbol) {
+        return { PrivateTag(), Tags::symTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(symbol)) };
     }
     [[nodiscard]] inline static PyrSlot make(int32_t i) {
         return { PrivateTag(), Tags::intTag, static_cast<uint64_t>(details::bit_cast<uint32_t>(i)) };
@@ -348,6 +348,10 @@ public:
     [[nodiscard]] inline static PyrSlot make(PyrNil) noexcept { return {}; }
     [[nodiscard]] inline static PyrSlot make(bool b) noexcept {
         return { PrivateTag(), b ? Tags::trueTag : Tags::falseTag };
+    }
+
+    template <typename T, typename G> [[nodiscard]] inline static PyrSlot make(G g) noexcept {
+        return PyrSlot::make(static_cast<T>(g));
     }
 
     [[nodiscard]] bool inline isDouble() const noexcept { return !isBoxed(); }
@@ -459,6 +463,7 @@ public:
 
 static_assert(sizeof(PyrSlot) == sizeof(double));
 
+
 [[nodiscard]] inline int GetTag(const PyrSlot* slot) noexcept { return slot->getTag(); }
 
 [[nodiscard]] inline bool IsObj(const PyrSlot* slot) noexcept { return slot->isObjectHdr(); }
@@ -522,8 +527,8 @@ template <typename numeric_type> [[nodiscard]] inline int slotVal(PyrSlot* slot,
 
 [[nodiscard]] inline void* slotRawPtr(PyrSlot* slot) noexcept { return slot->getPtr(); }
 
-[[nodiscard]] inline struct PyrBlock* slotRawBlock(const PyrSlot* slot) noexcept {
-    return slot->getPyrObjType<PyrBlock>();
+[[nodiscard]] inline struct PyrFunctionDef* slotRawBlock(const PyrSlot* slot) noexcept {
+    return slot->getPyrObjType<PyrFunctionDef>();
 }
 [[nodiscard]] inline struct PyrSymbolArray* slotRawSymbolArray(const PyrSlot* slot) noexcept {
     return slot->getPyrObjType<PyrSymbolArray>();

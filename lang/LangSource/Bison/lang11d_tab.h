@@ -61,26 +61,26 @@ extern int yydebug;
     SYMBOL = 262,                  /* SYMBOL  */
     STRING = 263,                  /* STRING  */
     ASCII = 264,                   /* ASCII  */
-    PRIMITIVENAME = 265,           /* PRIMITIVENAME  */
-    CLASSNAME = 266,               /* CLASSNAME  */
-    CURRYARG = 267,                /* CURRYARG  */
-    VAR = 268,                     /* VAR  */
-    ARG = 269,                     /* ARG  */
-    CLASSVAR = 270,                /* CLASSVAR  */
-    SC_CONST = 271,                /* SC_CONST  */
+    CLASSNAME = 265,               /* CLASSNAME  */
+    PIE = 266,                     /* PIE  */
+    WHILE = 267,                   /* WHILE  */
+    PRIMITIVENAME = 268,           /* PRIMITIVENAME  */
+    LEFTARROW = 269,               /* LEFTARROW  */
+    TRUEOBJ = 270,                 /* TRUEOBJ  */
+    FALSEOBJ = 271,                /* FALSEOBJ  */
     NILOBJ = 272,                  /* NILOBJ  */
-    TRUEOBJ = 273,                 /* TRUEOBJ  */
-    FALSEOBJ = 274,                /* FALSEOBJ  */
-    PSEUDOVAR = 275,               /* PSEUDOVAR  */
-    ELLIPSIS = 276,                /* ELLIPSIS  */
-    DOTDOT = 277,                  /* DOTDOT  */
-    PIE = 278,                     /* PIE  */
-    BEGINCLOSEDFUNC = 279,         /* BEGINCLOSEDFUNC  */
-    BADTOKEN = 280,                /* BADTOKEN  */
-    INTERPRET = 281,               /* INTERPRET  */
-    BEGINGENERATOR = 282,          /* BEGINGENERATOR  */
-    LEFTARROW = 283,               /* LEFTARROW  */
-    WHILE = 284,                   /* WHILE  */
+    PSEUDOVAR = 273,               /* PSEUDOVAR  */
+    VAR = 274,                     /* VAR  */
+    ARG = 275,                     /* ARG  */
+    CLASSVAR = 276,                /* CLASSVAR  */
+    SC_CONST = 277,                /* SC_CONST  */
+    ELLIPSIS = 278,                /* ELLIPSIS  */
+    DOTDOT = 279,                  /* DOTDOT  */
+    BEGINCLOSEDFUNC = 280,         /* BEGINCLOSEDFUNC  */
+    BADTOKEN = 281,                /* BADTOKEN  */
+    INTERPRET = 282,               /* INTERPRET  */
+    BEGINGENERATOR = 283,          /* BEGINGENERATOR  */
+    CURRYARG = 284,                /* CURRYARG  */
     BINOP = 285,                   /* BINOP  */
     KEYBINOP = 286,                /* KEYBINOP  */
     READWRITEVAR = 287,            /* READWRITEVAR  */
@@ -91,14 +91,34 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 114 "lang11d"
+ 
+	PyrParseNode* node;  // Base class.
+	PyrSlotNode* slotNode; // For some literal value
+	PyrVarListNode* varListNode;
+	PyrVarDefNode* varDefNode;
+	PyrMethodNode* methodNode;
+	PyrArgListNode* argListNode;
+	PyrMultiAssignVarListNode* multiAssignListNode;
+	ReadWriteAccessor rwAccessor;
+	EmptyLexerResult empty;
+
+#line 109 "lang11d_tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+typedef LocationType YYLTYPE;
+
 
 extern YYSTYPE yylval;
-
+extern YYLTYPE yylloc;
 
 int yyparse (void);
 

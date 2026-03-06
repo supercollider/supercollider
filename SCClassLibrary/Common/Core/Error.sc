@@ -8,7 +8,7 @@ Exception {
 	*new { arg what;
 		var protectedBacktrace, instance;
 		if (debug || inProtectedFunction, {
-			protectedBacktrace = this.getBackTrace.caller;
+			protectedBacktrace = this.getBackTrace;
 			inProtectedFunction = false;
 		});
 		^super.newCopyArgs(what ? this.name, protectedBacktrace, thisProcess.nowExecutingPath);
@@ -19,7 +19,7 @@ Exception {
 	reportError {
 		this.errorString.postln;
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
-		this.dumpBackTrace;
+		DebugFramePrinter(this.getBackTrace, "  ").postln;
 		// this.adviceLink.postln;
 		"^^ The preceding error dump is for %\n".postf(this.errorString);
 	}
@@ -30,51 +30,10 @@ Exception {
 	adviceLinkPage {
 		^this.errorString.tr($ , $_).tr($\n, $_);
 	}
+
 	postProtectedBacktrace {
-		var out, currentFrame, def, ownerClass, methodName, pos, tempStr;
-		out = CollStream.new;
 		"\nPROTECTED CALL STACK:".postln;
-		currentFrame = protectedBacktrace;
-		while({currentFrame.notNil}, {
-			def = currentFrame.functionDef;
-			if(def.isKindOf(Method), {
-				ownerClass = def.ownerClass;
-				methodName = def.name;
-				if(ownerClass == Function && { #['protect', 'try'].includes(methodName) }, {
-					pos = out.pos;
-				});
-				out << "\t%:%\t%\n".format(ownerClass, methodName, currentFrame.address);
-			}, {
-				out << "\ta FunctionDef\t%\n".format(currentFrame.address);
-				// sourceCode may be ridiculously huge,
-				// so steal the technique from Object:asString to reduce the printed size
-				tempStr = String.streamContentsLimit({ |stream|
-					stream << "\t\tsourceCode = " <<< (def.sourceCode ? "<an open Function>");
-				}, 512);
-				out << tempStr;
-				if(tempStr.size >= 512) { out << "...etc..." << $" };
-				out << Char.nl;
-			});
-			def.argNames.do({|name, i|
-				out << "\t\targ % = %\n".format(name, currentFrame.args[i]);
-			});
-			def.varNames.do({|name, i|
-				out << "\t\tvar % = %\n".format(name, currentFrame.vars[i]);
-			});
-			currentFrame = currentFrame.caller;
-		});
-		// lose everything after the last Function:protect
-		// it just duplicates the normal stack with less info
-		// but, an Error in a routine in a Scheduler
-		// may not have a try/protect in the protectedBacktrace
-		// then, pos is nil and we should print everything
-		postln(
-			if(pos.notNil) {
-				out.collection.copyFromStart(pos)
-			} {
-				out.collection
-			}
-		);
+		DebugFramePrinter(protectedBacktrace, "  ").postln;
 	}
 
 	isException { ^true }
@@ -90,10 +49,12 @@ Error : Exception {
 }
 
 MethodError : Error {
-	var <>receiver;
+	var <>receiver, <>realBackTrace;
 
 	*new { arg what, receiver;
-		^super.new(what).receiver_(receiver)
+		^super.new(what)
+		.receiver_(receiver)
+		.realBackTrace_(this.getBackTrace) // skip this frame and this call sight.
 	}
 	reportError {
 		this.errorString.postln;
@@ -101,7 +62,7 @@ MethodError : Error {
 		receiver.dump;
 		this.errorPathString.post;
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
-		this.dumpBackTrace;
+		ErrorPrinter.printDebugStack(realBackTrace).postln;
 		// this.adviceLink.postln;
 		"^^ The preceding error dump is for %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
 	}
@@ -145,74 +106,66 @@ ShouldNotImplementError : MethodError {
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector, <>args, <>keywordArgumentPairs, suggestion = "";
-	*new { arg receiver, selector, args, keywordArgumentPairs;
+	var <>selector, <>args, <>keywordArgumentPairs;
+	*new { |receiver, selector, args, keywordArgumentPairs|
 		^super.new(nil, receiver)
 		.selector_(selector)
 		.args_(args)
 		.keywordArgumentPairs_(keywordArgumentPairs)
-		// note: deliberately not calling '.init'
-		// until a method suggestion is needed;
-		// see 'suggestion' below
 	}
 
-	init {
-		var methodSuggestions, classSuggestions, plural;
-		if(selector.notNil) {
-			methodSuggestions = receiver.class.findSimilarSelectors(selector, minSimilarity: 0.5, maxEditDistance: 2);
-			if(methodSuggestions.notEmpty) {
-				plural = if(methodSuggestions.size > 1) { "s" } { "" };
-				methodSuggestions = methodSuggestions.join("\n\t");
-				suggestion = suggestion ++
-				"\nMessage% with a similar name understood by the receiver:\n\t%\n".format(plural, methodSuggestions);
-			};
-			classSuggestions = Object.findRespondingUpperSubclasses(selector).collect(_.name);
-			if(classSuggestions.notEmpty) {
-				if(classSuggestions.size < 8) {
-					classSuggestions = classSuggestions.join("\n\t");
-					suggestion = suggestion ++
-					"\nObjects which respond to the selector '%' derive from:\n\t%"
-					.format(selector, classSuggestions)
-				} {
-					suggestion = suggestion ++
-					"\nMany other objects respond to the message '%' (found % superclasses)."
-					.format(selector, classSuggestions.size)
-				}
-			}
-		} {
+	errorString { ^"ERROR: '%' did not understand the message '%'".format(receiver, selector) }
+
+	reportError {
+		"ERROR: a DoesNotUnderstand error has occurred.".postln;
+		"% did not understand the message '%'".format(receiver, selector).postln;
+		"\nCall Stack".postln;
+		"────────────".postln;
+		// skip the creation of the error
+		ErrorPrinter.printDebugStack(
+			realBackTrace,
+			indentString: "  ",
+			opts: ErrorPrinterOptions.defaultCopy
+			    .defToBeginAt_(Meta_DoesNotUnderstandError.findMethod(\new))
+			    .defToStopAt_(Interpreter.findMethod(\interpretPrintCmdLine))
+		).collection.postln;
+
+		this.errorString.postln;
+		this.prSuggestion.postln;
+
+		"\n".post;
+	}
+
+	prSuggestion {
+		var methodSuggestions, classSuggestions, plural, suggestion = "";
+		if(selector.isNil){
 			"DoesNotUnderstandError selector for % was nil".format(receiver).warn;
-		}
-	}
+			^suggestion
+		};
 
-	errorString {
-		^"ERROR: Message '" ++ selector ++ "' not understood."
-	}
-
-	suggestion {
-		if(suggestion.size == 0) {  // size == 0 for both "" and nil
-			this.init;
+		methodSuggestions = receiver.class.findSimilarSelectors(selector, minSimilarity: 0.5, maxEditDistance: 2);
+		if(methodSuggestions.notEmpty) {
+			plural = if(methodSuggestions.size > 1) { "s" } { "" };
+			methodSuggestions = methodSuggestions.join("\n\t");
+			suggestion = suggestion ++
+			"\nMessage% with a similar name understood by the receiver:\n\t%\n".format(plural, methodSuggestions);
+		};
+		classSuggestions = Object.findRespondingUpperSubclasses(selector).collect(_.name);
+		if(classSuggestions.notEmpty) {
+			if(classSuggestions.size < 8) {
+				classSuggestions = classSuggestions.join("\n\t");
+				suggestion = suggestion ++
+				"\nObjects which respond to the selector '%' derive from:\n\t%"
+				.format(selector, classSuggestions)
+			} {
+				suggestion = suggestion ++
+				"\nMany other objects respond to the message '%' (found % superclasses)."
+				.format(selector, classSuggestions.size)
+			}
 		};
 		^suggestion
 	}
 
-	reportError {
-		this.errorString.postln;
-		"RECEIVER:\n".post;
-		receiver.dump;
-		"ARGS:\n".post;
-		args.dumpAll;
-		keywordArgumentPairs !? {
-			"KEYWORD ARGUMENTS:".postln;
-			keywordArgumentPairs.dumpAll;
-		};
-		this.errorPathString.post;
-		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
-		this.dumpBackTrace;
-		// this.adviceLink.postln;
-		"\n^^ %\nRECEIVER: %\n".postf(this.errorString, receiver);
-		this.suggestion.postln;
-		"\n".post;
-	}
 	adviceLinkPage {
 		^"%#%".format(this.class.name, selector)
 	}
@@ -325,7 +278,7 @@ DeprecatedError : MethodError {
 		this.reportError;
 		if (Error.debug) {
 			if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
-			this.dumpBackTrace;
+			this.getBackTrace.createBacktraceString.postln;
 			Error.handling = false;
 			this.halt;
 		} {

@@ -90,8 +90,8 @@ void PyrMethodNode::dump(int level) {
 void PyrArgListNode::dump(int level) {
     postfl("%2d ArgList\n", level);
     DUMPNODE(mVarDefs, level + 1);
-    DUMPNODE(mRest, level + 1);
-    DUMPNODE(mKeywordArgs, level + 1);
+    DUMPNODE(mVariableArgumentName, level + 1);
+    DUMPNODE(mVariableKeywordArgumentName, level + 1);
     DUMPNODE(mNext, level);
 }
 

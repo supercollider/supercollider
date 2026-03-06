@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <cstdint>
 typedef struct {
     intptr_t* stak;
     short num, maxsize;

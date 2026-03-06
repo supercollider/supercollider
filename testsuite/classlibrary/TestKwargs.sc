@@ -179,4 +179,35 @@ TestKwargs : UnitTest {
 		while({ i < 10 }, body: { i = i + 1 });
 		this.assertEquals(i, 10);
 	}
+
+	test_args_and_vars_function {
+		var f = { 
+			|a = 5, b = 6 ... args, kwargs|
+			var foo = 10;
+			var bar = foo + 1;
+			this.assertEquals(foo, 10);
+			this.assertEquals(bar, 11);
+			this.assertEquals(args, []);
+			this.assertEquals(kwargs, []);
+			this.assertEquals(a, 5);
+			this.assertEquals(b, 6);
+		};
+
+		f.();
+	}
+
+	args_and_vars_method { |a = 5, b = 6 ... args, kwargs|
+		var foo = 10;
+		var bar = foo + 1;
+		this.assertEquals(foo, 10);
+		this.assertEquals(bar, 11);
+		this.assertEquals(args, []);
+		this.assertEquals(kwargs, []);
+		this.assertEquals(a, 5);
+		this.assertEquals(b, 6);
+	}
+
+	test_args_and_vars_method {
+		this.args_and_vars_method;
+	}
 }

@@ -30,10 +30,11 @@ extern PyrMethod** gRowTable;
 
 void initUniqueMethods();
 
-void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, std::int64_t totalSuppliedArgs,
+void prepareArgsForExecute(VMGlobals* g, PyrFunctionDef* block, PyrFrame* callFrame, std::int64_t totalSuppliedArgs,
                            std::int64_t numKwArgsSupplied, bool isMethod, PyrObject* optionalEnvirLookup = nullptr);
 
-void executeMethod(VMGlobals* g, PyrBlock* meth, std::int64_t totalNumArgsPushed, std::int64_t numKwArgsPushed);
+void executeMethod(VMGlobals* g, PyrFunctionDef* meth, std::int64_t totalNumArgsPushed, std::int64_t numKwArgsPushed,
+                   bool allowReturn = true);
 
 void sendMessage(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed);
 void sendSuperMessage(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed);

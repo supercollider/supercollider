@@ -6,8 +6,8 @@ Function : AbstractFunction {
 	*new { ^this.shouldNotImplement(thisMethod) }
 
 	isFunction { ^true }
-	isClosed { ^def.sourceCode.notNil }
 
+	isClosed { ^def.isClosed }
 
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
@@ -104,19 +104,6 @@ Function : AbstractFunction {
 	block {
 		^this.value {|val| ^val };
 	}
-	//	block {
-	//		var result;
-	//		try {
-	//			result = this.value #{|val| Break(val).throw };
-	//		}{|error|
-	//			if (error.class == Break) {
-	//				^error.value
-	//			}{
-	//				error.throw
-	//			}
-	//		}
-	//		^result
-	//	}
 
 	asRoutine {
 		^Routine.new(this)

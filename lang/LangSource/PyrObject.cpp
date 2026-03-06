@@ -22,9 +22,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <climits>
+#include "ByteCodeArray.h"
 #include "GC.h"
 #include "PyrMessage.h"
 #include "PyrInterpreter.h"
+#include "PyrSlot.h"
 #include "PyrSymbolTable.h"
 #include "PyrObjectProto.h"
 #include "PyrKernelProto.h"
@@ -871,7 +873,8 @@ void buildClassTree() {
         // postfl("  %s\n", slotRawSymbol(&classobj->name)->name);
         PyrClass* superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
         if (superclassobj) {
-            objAddIndexedObject(slotRawObject(&superclassobj->subclasses), (PyrObject*)classobj);
+            const auto r = objAddIndexedObject(slotRawObject(&superclassobj->subclasses), (PyrObject*)classobj);
+            assert(r);
             // postfl("     superclassobj %s %d\n", slotRawSymbol(&superclassobj->name)->name,
             //	slotRawObject(&superclassobj->subclasses)->size);
         }
@@ -1446,7 +1449,7 @@ static size_t fillClassRows(const PyrClass* classobj, PyrMethod** bigTable, boos
 }
 #endif
 
-bool funcFindArg(PyrBlock* func, PyrSymbol* name, int* index) {
+bool funcFindArg(PyrFunctionDef* func, PyrSymbol* name, int* index) {
     int i;
     for (i = 0; i < slotRawSymbolArray(&func->argNames)->size; ++i) {
         if (slotRawSymbolArray(&func->argNames)->symbols[i] == name) {
@@ -1457,7 +1460,7 @@ bool funcFindArg(PyrBlock* func, PyrSymbol* name, int* index) {
     return false;
 }
 
-bool funcFindVar(PyrBlock* func, PyrSymbol* name, int* index) {
+bool funcFindVar(PyrFunctionDef* func, PyrSymbol* name, int* index) {
     int i;
     for (i = 0; i < slotRawSymbolArray(&func->varNames)->size; ++i) {
         if (slotRawSymbolArray(&func->varNames)->symbols[i] == name) {
@@ -1531,16 +1534,20 @@ PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, in
 void addIntrinsicVar(PyrClass* classobj, const char* varName, PyrSlot* slot) {
     // postfl("%s  %s  %d\n", slotRawSymbol(&classobj->name)->name, varName,
     //	slotRawObject(&classobj->instVarNames)->size);
-    objAddIndexedSymbol(slotRawSymbolArray(&classobj->instVarNames), getsym(varName));
-    objAddIndexedSlot(slotRawObject(&classobj->iprototype), slot);
+    const auto r1 = objAddIndexedSymbol(slotRawSymbolArray(&classobj->instVarNames), getsym(varName));
+    assert(r1);
+    const auto r2 = objAddIndexedSlot(slotRawObject(&classobj->iprototype), slot);
+    assert(r2);
 }
 
 void addIntrinsicClassVar(PyrClass* classobj, const char* varName, PyrSlot* slot);
 void addIntrinsicClassVar(PyrClass* classobj, const char* varName, PyrSlot* slot) {
     // postfl("%s  %s  %d\n", slotRawSymbol(&classobj->name)->name, varName,
     //	slotRawObject(&classobj->instVarNames)->size);
-    objAddIndexedSymbol(slotRawSymbolArray(&classobj->classVarNames), getsym(varName));
-    objAddIndexedSlot(slotRawObject(&classobj->cprototype), slot);
+    const auto r1 = objAddIndexedSymbol(slotRawSymbolArray(&classobj->classVarNames), getsym(varName));
+    assert(r1);
+    const auto r2 = objAddIndexedSlot(slotRawObject(&classobj->cprototype), slot);
+    assert(r2);
 }
 
 void initClasses() {
@@ -1551,7 +1558,7 @@ void initClasses() {
 
     gNumClassVars = 0;
     gClassList = nullptr;
-    gNullMethod = newPyrMethod();
+    gNullMethod = newPyrMethod({ -1, -1 });
     SetSymbol(&gNullMethod->name, (PyrSymbol*)nullptr);
     methraw = METHRAW(gNullMethod);
     methraw->methType = methNormal;
@@ -1630,20 +1637,22 @@ void initClasses() {
     fixClassArrays(class_arrayed_collection);
     fixClassArrays(class_array);
 
-    class_fundef = makeIntrinsicClass(s_fundef, s_object, 10, 0);
-    // declare varNames for Block
-
+    class_fundef = makeIntrinsicClass(s_fundef, s_object, 15, 0);
     addIntrinsicVar(class_fundef, "raw1", &o_nil);
     addIntrinsicVar(class_fundef, "raw2", &o_nil);
     addIntrinsicVar(class_fundef, "code", &o_nil);
     addIntrinsicVar(class_fundef, "selectors", &o_nil);
     addIntrinsicVar(class_fundef, "constants", &o_nil);
-
     addIntrinsicVar(class_fundef, "prototypeFrame", &o_nil);
     addIntrinsicVar(class_fundef, "context", &o_nil);
     addIntrinsicVar(class_fundef, "argNames", &o_nil);
     addIntrinsicVar(class_fundef, "varNames", &o_nil);
-    addIntrinsicVar(class_fundef, "sourceCode", &o_nil);
+    addIntrinsicVar(class_fundef, "fullSourceCode", &o_nil);
+    addIntrinsicVar(class_fundef, "codeCharacterLocations", &o_nil);
+    addIntrinsicVar(class_fundef, "codeSizes", &o_nil);
+    addIntrinsicVar(class_fundef, "isClosed", &o_false);
+    addIntrinsicVar(class_fundef, "sourceCodeStartIndex", &o_nil);
+    addIntrinsicVar(class_fundef, "sourceCodeEndIndex", &o_nil);
 
     class_method = makeIntrinsicClass(s_method, s_fundef, 5, 0);
     addIntrinsicVar(class_method, "ownerClass", &o_nil);
@@ -2225,7 +2234,7 @@ void DumpFrame(PyrFrame* frame) {
     methraw = METHRAW(meth);
     if (methraw->numtemps) {
         post("\t%s\n", str);
-        numargs = methraw->numargs + methraw->varargs;
+        numargs = methraw->numNormalArguments + methraw->numVariableArguments;
         for (i = 0; i < methraw->numtemps; ++i) {
             slotOneWord(frame->vars + i, str);
             // slotString(frame->vars + i, str);
@@ -2240,7 +2249,7 @@ void DumpFrame(PyrFrame* frame) {
     }
 }
 
-void dumpByteCodes(PyrBlock* theBlock);
+void dumpByteCodes(PyrFunctionDef* theBlock);
 
 void DumpDetailedFrame(PyrFrame* frame);
 void DumpDetailedFrame(PyrFrame* frame) {
@@ -2262,7 +2271,7 @@ void DumpDetailedFrame(PyrFrame* frame) {
 
     if (methraw->numtemps) {
         post("\t%s\n", mstr);
-        numargs = methraw->numargs + methraw->varargs;
+        numargs = methraw->numNormalArguments + methraw->numVariableArguments;
         for (i = 0; i < methraw->numtemps; ++i) {
             slotOneWord(frame->vars + i, str);
             // slotString(frame->vars + i, str);
@@ -2472,59 +2481,76 @@ PyrString* newPyrStringN(class PyrGC* gc, int length, int flags, bool runGC) {
     return string;
 }
 
-PyrBlock* newPyrBlock(int flags) {
-    PyrBlock* block;
-    PyrMethodRaw* methraw;
+PyrFunctionDef* newPyrFunctionDef(int flags, LocationInSourceCode loc) {
+    const int32 numbytes = sizeof(PyrFunctionDef) - sizeof(PyrObjectHdr);
+    const int32 numSlots = numbytes / sizeof(PyrSlot);
 
-
-    int32 numbytes = sizeof(PyrBlock) - sizeof(PyrObjectHdr);
-    int32 numSlots = numbytes / sizeof(PyrSlot);
-
+    PyrFunctionDef* fdef;
     if (!compilingCmdLine)
-        block = (PyrBlock*)PyrGC::NewPermanent(numbytes, flags, obj_notindexed);
+        fdef = (PyrFunctionDef*)PyrGC::NewPermanent(numbytes, flags, obj_notindexed);
     else
-        block = (PyrBlock*)gMainVMGlobals->gc->New(numbytes, flags, obj_notindexed, false);
-    block->classptr = class_fundef;
-    block->size = numSlots;
+        fdef = (PyrFunctionDef*)gMainVMGlobals->gc->New(numbytes, flags, obj_notindexed, false);
+    fdef->classptr = class_fundef;
+    fdef->size = numSlots;
+
+    // Nil all slots, THEN set the data.
+    nilSlots(&fdef->rawData1, numSlots);
 
     // clear out raw area
-    methraw = METHRAW(block);
+    PyrMethodRaw* methraw = METHRAW(fdef);
     methraw->specialIndex = 0;
     methraw->methType = methBlock;
     methraw->needsHeapContext = 0;
     methraw->frameSize = 0;
-    methraw->varargs = 0;
-    methraw->numargs = 0;
-    methraw->numvars = 0;
+    methraw->numVariableArguments = 0;
+    methraw->numNormalArguments = 0;
+    methraw->numVariables = 0;
     methraw->numtemps = 0;
     methraw->popSize = 0;
 
-    nilSlots(&block->rawData1, numSlots);
-    return block;
+    assert(fdef->sourceCodeStartIndex.isNil());
+    assert(fdef->sourceCodeEndIndex.isNil());
+
+    fdef->sourceCodeStartIndex = PyrSlot::make<int>(loc.start());
+    fdef->sourceCodeEndIndex = PyrSlot::make<int>(loc.end());
+
+    assert(fdef->sourceCodeStartIndex.isInt());
+    assert(fdef->sourceCodeEndIndex.isInt());
+
+    return fdef;
 }
 
 SCLANG_DLLEXPORT_C struct VMGlobals* scGlobals() { return gMainVMGlobals; }
 
-PyrMethod* initPyrMethod(PyrMethod* method) {
+PyrMethod* initPyrMethod(PyrMethod* method, LocationInSourceCode loc) {
     int32 numbytes = sizeof(PyrMethod) - sizeof(PyrObjectHdr);
     int32 numSlots = numbytes / sizeof(PyrSlot);
 
     method->classptr = class_method;
-    method->size = 0;
     method->size = numSlots;
     SetFloat(&method->rawData1, 0.0);
     SetFloat(&method->rawData2, 0.0);
     nilSlots(&method->code, numSlots - 2);
+
+    assert(method->sourceCodeStartIndex.isNil());
+    assert(method->sourceCodeEndIndex.isNil());
+
+    method->sourceCodeStartIndex = PyrSlot::make<int>(loc.start());
+    method->sourceCodeEndIndex = PyrSlot::make<int>(loc.end());
+
+    assert(method->sourceCodeStartIndex.isInt());
+    assert(method->sourceCodeEndIndex.isInt());
+
     // slotCopy(&method->byteMeter, &o_zero);
     // slotCopy(&method->callMeter, &o_zero);
     // post("<- newPyrMethod %p %p\n", method, methraw);
     return method;
 }
 
-PyrMethod* newPyrMethod() {
+PyrMethod* newPyrMethod(LocationInSourceCode loc) {
     int32 numbytes = sizeof(PyrMethod) - sizeof(PyrObjectHdr);
     PyrMethod* method = (PyrMethod*)PyrGC::NewPermanent(numbytes, obj_permanent | obj_immutable, obj_notindexed);
-    return initPyrMethod(method);
+    return initPyrMethod(method, loc);
 }
 
 void freePyrSlot(PyrSlot* slot) {

@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "ByteCodeArray.h"
+#include "PyrKernel.h"
 PyrClass* newClassObj(PyrClass* classObjSuperClass, PyrSymbol* className, PyrSymbol* superClassName, int numInstVars,
                       int numClassVars, int numConsts, int numInstMethods, int instFormat, int instFlags);
 
@@ -40,14 +42,14 @@ void postClassTree(PyrClass* classobj, int level);
 void setSelectorFlags();
 void buildBigMethodMatrix();
 
-bool funcFindArg(PyrBlock* func, PyrSymbol* name, int* index);
-bool funcFindVar(PyrBlock* func, PyrSymbol* name, int* index);
+bool funcFindArg(PyrFunctionDef* func, PyrSymbol* name, int* index);
+bool funcFindVar(PyrFunctionDef* func, PyrSymbol* name, int* index);
 void addMethod(PyrClass* classobj, PyrMethod* method);
 
 
 PyrMethod* classFindDirectMethod(PyrClass* classobj, PyrSymbol* name);
 
-PyrBlock* newPyrBlock(int flags);
-PyrMethod* newPyrMethod();
+PyrFunctionDef* newPyrFunctionDef(int flags, LocationInSourceCode loc);
+PyrMethod* newPyrMethod(LocationInSourceCode loc);
 PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, int numInstVars, int numClassVars);
 void addIntrinsicVar(PyrClass* classobj, const char* varName, PyrSlot* slot);

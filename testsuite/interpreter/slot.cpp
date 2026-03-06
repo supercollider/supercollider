@@ -58,7 +58,7 @@ BOOST_TEST_REQUIRE(i.getInt() == 32);
     BOOST_TEST_REQUIRE(s.getObjectHdr() == &o);
 }
 {
-    PyrBlock b;
+    PyrFunctionDef b;
     PyrSlot s = PyrSlot::make(&b);
     BOOST_TEST_REQUIRE(s.isObjectHdr());
     BOOST_TEST_REQUIRE(!s.isPtr());
@@ -70,7 +70,7 @@ BOOST_TEST_REQUIRE(i.getInt() == 32);
     BOOST_TEST_REQUIRE(s.getObjectHdr() == &b);
 }
 {
-    PyrSlot s = PyrSlot::make((PyrBlock*)nullptr);
+    PyrSlot s = PyrSlot::make((PyrFunctionDef*)nullptr);
     BOOST_TEST_REQUIRE(s.isObjectHdr());
     BOOST_TEST_REQUIRE(!s.isPtr());
     BOOST_TEST_REQUIRE(!s.isInt());

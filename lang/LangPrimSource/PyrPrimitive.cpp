@@ -18,6 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "OpcodeIterator.h"
+#include "PyrErrors.h"
 #include "PyrKernel.h"
 #include "PyrObject.h"
 #include "PyrPrimitive.h"
@@ -27,6 +29,8 @@
 #include "PyrMathPrim.h"
 #include "PyrListPrim.h"
 #include "Opcodes.h"
+#include "PyrSlot.h"
+#include "PyrSymbolTable.h"
 #include "SC_InlineBinaryOp.h"
 #include "PyrMessage.h"
 #include "PyrParseNode.h"
@@ -40,7 +44,12 @@
 #include "SC_AudioDevicePrim.hpp"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
+#include "SC_Version.hpp"
+#include "VMGlobals.h"
+#include "PyrSlot.h"
+#include "OpcodeIterator.h"
 
+#include <iostream>
 #include <map>
 #include <cstdlib>
 #include <cstring>
@@ -761,11 +770,11 @@ int basicNew(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-bool isClosed(PyrBlock* fundef);
-bool isClosed(PyrBlock* fundef) { return IsNil(&fundef->contextDef) && fundef->classptr == class_fundef; }
+bool isClosed(PyrFunctionDef* fundef);
+bool isClosed(PyrFunctionDef* fundef) { return IsNil(&fundef->contextDef) && fundef->classptr == class_fundef; }
 
-bool isWithinClosed(PyrBlock* fundef);
-bool isWithinClosed(PyrBlock* fundef) {
+bool isWithinClosed(PyrFunctionDef* fundef);
+bool isWithinClosed(PyrFunctionDef* fundef) {
     while (fundef) {
         if (isClosed(fundef))
             return true;
@@ -811,7 +820,7 @@ int prFunctionDefDumpContexts(struct VMGlobals* g, int numArgsPushed) {
 int prFunctionDefIsClosed(struct VMGlobals* g, int numArgsPushed);
 int prFunctionDefIsClosed(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
-    PyrBlock* block = slotRawBlock(a);
+    PyrFunctionDef* block = slotRawBlock(a);
 
     SetBool(a, isClosed(block));
     return errNone;
@@ -820,7 +829,7 @@ int prFunctionDefIsClosed(struct VMGlobals* g, int numArgsPushed) {
 int prFunctionDefIsWithinClosed(struct VMGlobals* g, int numArgsPushed);
 int prFunctionDefIsWithinClosed(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
-    PyrBlock* block = slotRawBlock(a);
+    PyrFunctionDef* block = slotRawBlock(a);
 
     SetBool(a, isWithinClosed(block));
     return errNone;
@@ -956,7 +965,7 @@ int blockValueArrayEnvir(struct VMGlobals* g, int numArgsPushed) {
     }
 }
 
-HOT std::tuple<PyrFrame*, PyrBlock*> buildFrameForBlockPrims(VMGlobals* g, PyrSlot* args) {
+HOT std::tuple<PyrFrame*, PyrFunctionDef*> buildFrameForBlockPrims(VMGlobals* g, PyrSlot* args) {
     auto closure = (PyrClosure*)slotRawObject(args);
     auto block = slotRawBlock(&closure->block);
     auto methraw = METHRAW(block);
@@ -1771,6 +1780,16 @@ int prDumpBackTrace(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+struct DebugFrameLayout {
+    static constexpr size_t functionDef { 0 };
+    static constexpr size_t args { 1 };
+    static constexpr size_t vars { 2 };
+    static constexpr size_t caller { 3 };
+    static constexpr size_t context { 4 };
+    static constexpr size_t address { 5 };
+    static constexpr size_t currentInstructionOffset { 6 };
+};
+
 /* the DebugFrameConstructor uses a work queue in order to avoid recursions, which could lead to stack overflows */
 struct DebugFrameConstructor {
     DebugFrameConstructor(VMGlobals* g, PyrFrame* frame, PyrSlot* outSlot) {
@@ -1804,50 +1823,60 @@ private:
             }
         }
 
-        PyrMethod* meth = slotRawMethod(&frame->method);
-        PyrMethodRaw* methraw = METHRAW(meth);
+        PyrFunctionDef* fdef = slotRawBlock(&frame->method);
+
+        assert(fdef->sourceCodeStartIndex.isInt());
+        assert(fdef->sourceCodeEndIndex.isInt());
+
+        PyrMethodRaw* methraw = METHRAW(fdef);
 
         PyrObject* debugFrameObj = instantiateObject(g->gc, getsym("DebugFrame")->u.classobj, 0, false, false);
         SetObject(outSlot, debugFrameObj);
 
-        SetObject(debugFrameObj->slots + 0, meth);
-        SetPtr(debugFrameObj->slots + 5, meth);
+        debugFrameObj->slots[DebugFrameLayout::functionDef] = PyrSlot::make(fdef);
+        debugFrameObj->slots[DebugFrameLayout::address] = PyrSlot::make<void*>(fdef);
 
-        const int numargs = methraw->numargs;
-        const int numvars = methraw->numvars;
+        const int numargs = methraw->totalNumArguments;
+        const int numvars = methraw->numVariables;
         if (numargs) {
             PyrObject* argArray = (PyrObject*)newPyrArray(g->gc, numargs, 0, false);
-            SetObject(debugFrameObj->slots + 1, argArray);
+            debugFrameObj->slots[DebugFrameLayout::args] = PyrSlot::make(argArray);
             for (int i = 0; i < numargs; ++i)
                 slotCopy(&argArray->slots[i], &frame->vars[i]);
 
             argArray->size = numargs;
         } else
-            SetNil(debugFrameObj->slots + 1);
+            debugFrameObj->slots[DebugFrameLayout::args] = PyrSlot::make(PyrNil {});
 
         if (numvars) {
             PyrObject* varArray = (PyrObject*)newPyrArray(g->gc, numvars, 0, false);
-            SetObject(debugFrameObj->slots + 2, varArray);
+            debugFrameObj->slots[DebugFrameLayout::vars] = PyrSlot::make(varArray);
             for (int i = 0, j = numargs; i < numvars; ++i, ++j)
                 slotCopy(&varArray->slots[i], &frame->vars[j]);
 
             varArray->size = numvars;
         } else
-            SetNil(debugFrameObj->slots + 2);
+            debugFrameObj->slots[DebugFrameLayout::vars] = PyrSlot::make(PyrNil {});
 
-        if (slotRawFrame(&frame->caller)) {
-            WorkQueueItem newWork = std::make_pair(slotRawFrame(&frame->caller), debugFrameObj->slots + 3);
+        if (auto caller = slotRawFrame(&frame->caller)) {
+            WorkQueueItem newWork = std::make_pair(caller, &debugFrameObj->slots[DebugFrameLayout::caller]);
             workQueue.push_back(newWork);
         } else
-            SetNil(debugFrameObj->slots + 3);
+            debugFrameObj->slots[DebugFrameLayout::caller] = PyrSlot::make(PyrNil {});
 
         if (IsObj(&frame->context) && slotRawFrame(&frame->context) == frame)
-            SetObject(debugFrameObj->slots + 4, debugFrameObj);
+            debugFrameObj->slots[DebugFrameLayout::context] = PyrSlot::make(debugFrameObj);
         else if (NotNil(&frame->context)) {
             WorkQueueItem newWork = std::make_pair(slotRawFrame(&frame->context), debugFrameObj->slots + 4);
             workQueue.push_back(newWork);
         } else
-            SetNil(debugFrameObj->slots + 4);
+            debugFrameObj->slots[DebugFrameLayout::context] = PyrSlot::make(PyrNil {});
+
+        const auto ip_ptr = reinterpret_cast<Byte*>(frame->ip.getPtr());
+        const auto codes = frame->method.getPyrObjType<PyrFunctionDef>()->code.getPyrObjType<PyrInt8Array>();
+        const auto instruction_offset = std::distance(codes->b, ip_ptr);
+
+        debugFrameObj->slots[DebugFrameLayout::currentInstructionOffset] = PyrSlot::make<int>(instruction_offset);
 
         visited_frames.push_back(frame);
         visited_frames_final_location.push_back(outSlot);
@@ -1865,6 +1894,128 @@ int prGetBackTrace(VMGlobals* g, int numArgsPushed) {
     DebugFrameConstructor(g, g->frame, g->sp);
     return errNone;
 }
+
+
+struct BytecodeToSCLangBytecodeConverter {
+    BytecodeToSCLangBytecodeConverter(VMGlobals& g, int index):
+        g(g),
+        currentBytecode(instantiateObject(g.gc, getsym("Bytecode")->u.classobj, 4, true, false)),
+        index(index) {}
+
+
+    template <typename... Operands> void operator()(const char* name, Operands&&... operands) {
+        this->operator()(std::tuple { name }, operands...);
+    }
+
+    template <typename... ExtraInfo, typename... Operands>
+    void operator()(std::tuple<const char*, ExtraInfo...> codeInfo, Operands&&... operands) {
+        currentBytecode->slots[0] = PyrSlot::make(getsym(std::get<0>(codeInfo)));
+
+        auto* extraInfo = newPyrArray(g.gc, sizeof...(ExtraInfo), 0, false);
+        extraInfo->size = sizeof...(ExtraInfo);
+        currentBytecode->slots[1] = PyrSlot::make(extraInfo);
+
+        if constexpr (sizeof...(ExtraInfo) > 0) {
+            std::apply(
+                [&](auto... args) {
+                    size_t i { 0 };
+                    const auto putInfoIntoArray = [&](auto op) {
+                        if (i != 0) { // don't write the name here (its the first argument).
+                            extraInfo->slots[i - 1] = convertToSC(op);
+                        }
+                        i += 1;
+                    };
+
+                    (putInfoIntoArray(args), ...);
+                },
+                codeInfo);
+        }
+
+        std::apply(
+            [&](auto... ops) {
+                currentBytecode->slots[2] = PyrSlot::make(newPyrArray(g.gc, sizeof...(Operands), 0, false));
+                size_t operand_counter { 0 };
+                auto* operand_array = currentBytecode->slots[2].getPyrObjType<PyrObject>();
+                operand_array->size = sizeof...(Operands);
+                // yes this is an apply and a fold expresion...
+                (std::apply(
+                     [&](const char* operand_name, auto... operandValues) {
+                         auto* bytecode_operand =
+                             instantiateObject(g.gc, getsym("BytecodeOperand")->u.classobj, 2, true, false);
+                         operand_array->slots[operand_counter] = PyrSlot::make(bytecode_operand);
+
+                         bytecode_operand->slots[0] = convertToSC(operand_name);
+
+                         if (sizeof...(operandValues) == 0) {
+                             bytecode_operand->slots[1] = PyrSlot::make(PyrNil {});
+                         } else if (sizeof...(operandValues) == 1) {
+                             bytecode_operand->slots[1] = (convertToSC(operandValues), ...);
+                         } else {
+                             auto* values_array = newPyrArray(g.gc, sizeof...(operandValues), 0, false);
+                             values_array->size = sizeof...(operandValues);
+                             bytecode_operand->slots[1] = PyrSlot::make(values_array);
+                             size_t operand_value_counter { 0 };
+                             ((values_array->slots[operand_value_counter++] = convertToSC(operandValues)), ...);
+                         }
+
+                         operand_counter += 1;
+                     },
+                     ops.asTuple()),
+                 ...);
+            },
+            std::tuple { std::forward<Operands>(operands)... });
+
+        currentBytecode->slots[3] = PyrSlot::make(index);
+    }
+
+    PyrSlot getResult() && { return PyrSlot::make(currentBytecode); }
+
+private:
+    VMGlobals& g;
+    PyrObject* currentBytecode;
+    int index;
+
+    PyrSlot convertToSC(const char* s) { return PyrSlot::make(getsym(s)); }
+
+    PyrSlot convertToSC(int i) { return PyrSlot::make(i); }
+    PyrSlot convertToSC(unsigned int i) { return PyrSlot::make(static_cast<int>(i)); }
+
+    PyrSlot convertToSC(Byte i) { return PyrSlot::make(static_cast<int>(i)); }
+};
+
+int bytecodeIteratorNext(VMGlobals* g, int numArgsPushed) {
+    PyrObject* bytecodeiterator = g->sp->getPyrObjType<PyrObject>();
+    //
+    PyrInt8Array* bytecodes = bytecodeiterator->slots[0].getPyrObjType<PyrInt8Array>();
+    const int currentIpOffset = bytecodeiterator->slots[1].getInt();
+    const int currentBytecodeIndex = bytecodeiterator->slots[2].getInt();
+    PyrSlot* resultSlot = &bytecodeiterator->slots[3];
+
+
+    if (currentIpOffset >= bytecodes->size) {
+        // end of bytecodes.
+        *resultSlot = PyrSlot::make(PyrNil {});
+        return errNone;
+    }
+
+    unsigned char* ip = bytecodes->b + currentIpOffset;
+
+    assert(ip < (bytecodes->b + bytecodes->size));
+
+    BytecodeToSCLangBytecodeConverter converter { *g, currentBytecodeIndex };
+
+    Opcode::forSingleBytecode(converter, ip);
+
+
+    const int nextIpIndex = std::distance(bytecodes->b, ip);
+    bytecodeiterator->slots[1] = PyrSlot::make(nextIpIndex);
+    bytecodeiterator->slots[2] = PyrSlot::make(currentBytecodeIndex + 1);
+
+    *resultSlot = std::move(converter).getResult();
+
+    return errNone;
+}
+
 
 int prObjectShallowCopy(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
@@ -2155,7 +2306,7 @@ int prFunDef_NumArgs(struct VMGlobals* g, int numArgsPushed) {
 
     a = g->sp;
     methraw = METHRAW(slotRawBlock(a));
-    SetInt(a, methraw->numargs);
+    SetInt(a, methraw->numNormalArguments);
     return errNone;
 }
 
@@ -2166,7 +2317,7 @@ int prFunDef_NumVars(struct VMGlobals* g, int numArgsPushed) {
 
     a = g->sp;
     methraw = METHRAW(slotRawBlock(a));
-    SetInt(a, methraw->numvars);
+    SetInt(a, methraw->numVariables);
     return errNone;
 }
 
@@ -2177,7 +2328,7 @@ int prFunDef_VarArgs(struct VMGlobals* g, int numArgsPushed) {
 
     a = g->sp;
     methraw = METHRAW(slotRawBlock(a));
-    if (methraw->varargs) {
+    if (methraw->numVariableArguments) {
         SetTrue(a);
     } else {
         SetFalse(a);
@@ -2188,7 +2339,7 @@ int prFunDef_VarArgs(struct VMGlobals* g, int numArgsPushed) {
 int prFunDef_VarArgsValue(struct VMGlobals* g, int numArgsPushed) {
     auto a = g->sp;
     auto methodRaw = METHRAW(slotRawBlock(a));
-    SetInt(a, methodRaw->varargs);
+    SetInt(a, methodRaw->numVariableArguments);
     return errNone;
 }
 
@@ -2199,7 +2350,7 @@ int undefinedPrimitive(struct VMGlobals* g, int numArgsPushed) {
     return errFailed;
 }
 
-void dumpByteCodes(PyrBlock* theBlock);
+void dumpByteCodes(PyrFunctionDef* theBlock);
 
 int prDumpByteCodes(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
@@ -2357,7 +2508,7 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g) {
     }
     gCompilingClass = classobj;
     gCompilingMethod = meth;
-    gCompilingBlock = (PyrBlock*)meth;
+    gCompilingBlock = (PyrFunctionDef*)meth;
     return meth;
 }
 
@@ -2380,11 +2531,11 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
     gRootParseNode = nullptr;
     initParserPool();
     // assert(g->gc->SanityCheck());
-    startLexerCmdLine(string->s, string->size);
     compileErrors = 0;
     compilingCmdLine = true;
     gCompilingVMGlobals = g;
     compilingCmdLineErrorWindow = false;
+    startLexerCmdLine(string->s, string->size);
     // assert(g->gc->SanityCheck());
     parseFailed = yyparse();
     // assert(g->gc->SanityCheck());
@@ -2398,7 +2549,7 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         ((PyrBlockNode*)gRootParseNode)->mIsTopLevel = true;
 
         SetNil(&slotResult);
-        COMPILENODE(gRootParseNode, &slotResult, true);
+        compileNode(gRootParseNode, &slotResult, true);
 
         if (NotObj(&slotResult) || slotRawObject(&slotResult)->classptr != class_fundef) {
             compileErrors++;
@@ -2407,7 +2558,7 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         if (compileErrors) {
             SetNil(a);
         } else {
-            PyrBlock* block;
+            PyrFunctionDef* block;
             PyrClosure* closure;
 
             block = slotRawBlock(&slotResult);
@@ -3695,7 +3846,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
     }
 
     // do keyword lookup:
-    if (numKeyArgsPushed && methraw->posargs) {
+    if (numKeyArgsPushed && methraw->totalNumArguments) {
         PyrSymbol **name0, **name;
         PyrSlot *key, *vars;
         name0 = slotRawSymbolArray(&meth->argNames)->symbols + 1;
@@ -3703,7 +3854,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
         vars = g->sp - numArgsNeeded + 1;
         for (i = 0; i < numKeyArgsPushed; ++i, key += 2) {
             name = name0;
-            for (j = 1; j < methraw->posargs; ++j, ++name) {
+            for (j = 1; j < methraw->totalNumArguments; ++j, ++name) {
                 if (*name == slotRawSymbol(key)) {
                     slotCopy(&vars[j], &key[1]);
                     goto found;
@@ -3961,6 +4112,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_ObjectIsPermanent", prObjectIsPermanent, 1, 0);
     definePrimitive(base, index++, "_ObjectDeepFreeze", prDeepFreeze, 1, 0);
     definePrimitive(base, index++, "_ObjectDeepCopy", prDeepCopy, 1, 0);
+    definePrimitive(base, index++, "_BytecodeIteratorNext", bytecodeIteratorNext, 1, 0);
 
 #if !SCPLAYER
     definePrimitive(base, index++, "_CompileExpression", prCompileString, 2, 0);
@@ -3971,8 +4123,6 @@ void initPrimitives() {
 
     definePrimitive(base, index++, "_AllClasses", prAllClasses, 1, 0);
     definePrimitive(base, index++, "_DumpClassSubtree", prPostClassTree, 1, 0);
-
-    //	definePrimitive(base, index++, "_TabletTracking", prTabletTracking, 1, 0);
 
     definePrimitive(base, index++, "_FunDef_NumArgs", prFunDef_NumArgs, 1, 0);
     definePrimitive(base, index++, "_FunDef_NumVars", prFunDef_NumVars, 1, 0);
@@ -3992,7 +4142,6 @@ void initPrimitives() {
     definePrimitive(base, index++, "_RoutineYieldAndReset", prRoutineYieldAndReset, 2, 0);
     definePrimitive(base, index++, "_RoutineStop", prRoutineStop, 1, 0);
 
-    //	definePrimitive(base, index++, "_IsDemo", prIsDemo, 1, 0);
     definePrimitive(base, index++, "_Blork", prBlork, 1, 0);
     definePrimitive(base, index++, "_UGenCodeString", prUGenCodeString, 5, 0);
     definePrimitive(base, index++, "_MainOverwriteMsg", prOverwriteMsg, 1, 0);

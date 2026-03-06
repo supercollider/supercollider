@@ -134,9 +134,9 @@ lookup_again:
 
     const auto pushDefaultArgsIfNotEnoughSupplied = [&]() {
         auto defaultArgs = slotRawObject(&method->prototypeFrame)->slots;
-        std::copy(defaultArgs + numArgsPushed, defaultArgs + methodRaw->numargs, g->sp + 1);
-        g->sp += methodRaw->numargs - numArgsPushed; // fix stack pointer to point to last arg pushed.
-        numArgsPushed = methodRaw->numargs;
+        std::copy(defaultArgs + numArgsPushed, defaultArgs + methodRaw->numNormalArguments, g->sp + 1);
+        g->sp += methodRaw->numNormalArguments - numArgsPushed; // fix stack pointer to point to last arg pushed.
+        numArgsPushed = methodRaw->numNormalArguments;
     };
 
     const auto applyKeywords = [&]() {
@@ -217,7 +217,7 @@ lookup_again:
     }
 
     case methRedirect: { // Send a different selector to this, e.g. this.subclassResponsibility.
-        if (numArgsPushed < methodRaw->numargs)
+        if (numArgsPushed < methodRaw->numNormalArguments)
             pushDefaultArgsIfNotEnoughSupplied();
         if (numKeyArgsPushed > 0)
             applyKeywords();
@@ -226,7 +226,7 @@ lookup_again:
     }
 
     case methRedirectSuper: { // Send a different selector to super, e.g. super.subclassResponsibility.
-        if (numArgsPushed < methodRaw->numargs)
+        if (numArgsPushed < methodRaw->numNormalArguments)
             pushDefaultArgsIfNotEnoughSupplied();
         if (numKeyArgsPushed > 0)
             applyKeywords();
@@ -238,7 +238,7 @@ lookup_again:
     case methForwardInstVar: { // Forward to an object instance variable, e.g., ^foo.bar.
         if (numKeyArgsPushed > 0)
             applyKeywords();
-        else if (numArgsPushed < methodRaw->numargs)
+        else if (numArgsPushed < methodRaw->numNormalArguments)
             pushDefaultArgsIfNotEnoughSupplied();
         selector = slotRawSymbol(&method->selectors);
         slotCopy(recvrSlot, &slotRawObject(recvrSlot)->slots[methodRaw->specialIndex]);
@@ -249,7 +249,7 @@ lookup_again:
     case methForwardClassVar: { // Forward to a class variable, e.g., ^Class.foo.bar.
         if (numKeyArgsPushed > 0)
             applyKeywords();
-        else if (numArgsPushed < methodRaw->numargs)
+        else if (numArgsPushed < methodRaw->numNormalArguments)
             pushDefaultArgsIfNotEnoughSupplied();
         selector = slotRawSymbol(&method->selectors);
         slotCopy(recvrSlot, &g->classvars->slots[methodRaw->specialIndex]);
@@ -354,7 +354,7 @@ void doesNotUnderstand(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPu
     if (tryUniqueMethod(g, method, receiverSlot, selectorSlot, numArgsPushed, numKeyArgsPushed))
         return;
 
-    executeMethod(g, method, numArgsPushed + 1, numKeyArgsPushed);
+    executeMethod(g, method, numArgsPushed + 1, numKeyArgsPushed, false);
 }
 
 
@@ -369,7 +369,7 @@ void kwArgMismatchErrorBlock(const char* argName, void*) {
 
 // This function puts the arguments into the passed in callFrame ready to be called.
 // It will also lookup arguments in the environment if one is passed in.
-void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, std::int64_t totalSuppliedArgs,
+void prepareArgsForExecute(VMGlobals* g, PyrFunctionDef* block, PyrFrame* callFrame, std::int64_t totalSuppliedArgs,
                            std::int64_t numKwArgsSupplied, bool isMethod, PyrObject* optionalEnvirLookup) {
     // There are some instances where the proto is a nullptr.
     // There is nothing this function can do in that case.
@@ -378,12 +378,12 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, s
     PyrObject* proto = slotRawObject(&block->prototypeFrame);
 
     const PyrMethodRaw* methodRaw = METHRAW(block);
-    const auto methNumActualArgs = methodRaw->posargs;
+    const auto methNumActualArgs = methodRaw->totalNumArguments;
     const auto numNormalSuppliedArgs = totalSuppliedArgs - (numKwArgsSupplied * 2);
-    const bool methHasVarArg = methodRaw->varargs > 0;
-    const bool methHasKwArg = methodRaw->varargs > 1;
-    const auto methNumNormArgs = methodRaw->numargs;
-    const auto methNumVariables = methodRaw->numvars;
+    const bool methHasVarArg = methodRaw->numVariableArguments > 0;
+    const bool methHasKwArg = methodRaw->numVariableArguments > 1;
+    const auto methNumNormArgs = methodRaw->numNormalArguments;
+    const auto methNumVariables = methodRaw->numVariables;
     const auto methArgNames = slotRawSymbolArray(&block->argNames)->symbols;
 
     PyrSlot* outCallFrameStack = callFrame->vars;
@@ -498,17 +498,17 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, s
               outCallFrameStack + methNumActualArgs);
 }
 
-inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrBlock* block) {
-    const PyrMethodRaw* methraw = METHRAW(block);
-    const PyrObject* proto = slotRawObject(&block->prototypeFrame);
+inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrFunctionDef* fdef) {
+    const PyrMethodRaw* methraw = METHRAW(fdef);
+    const PyrObject* proto = slotRawObject(&fdef->prototypeFrame);
     auto frame =
         reinterpret_cast<PyrFrame*>(g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext));
     frame->classptr = class_frame;
     frame->size = FRAMESIZE + proto->size;
-    SetObject(&frame->method, block);
+    SetObject(&frame->method, fdef);
     SetObject(&frame->homeContext, frame);
     SetObject(&frame->context, frame);
-    if (PyrFrame* caller = g->frame; caller != nullptr) {
+    if (PyrFrame* caller = g->frame) {
         SetPtr(&caller->ip, g->ip);
         SetObject(&frame->caller, caller);
     } else {
@@ -518,18 +518,21 @@ inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrBlock* block) {
     return frame;
 }
 
-HOT void executeMethod(VMGlobals* g, PyrBlock* meth, std::int64_t totalNumArgsPushed, std::int64_t numKwArgsPushed) {
-    prepForTailCall(g);
+HOT void executeMethod(VMGlobals* g, PyrFunctionDef* fdef, std::int64_t totalNumArgsPushed,
+                       std::int64_t numKwArgsPushed, bool allowReturn) {
+    // When doing doesNotUnderstand, we want to disable the tail call return.
+    if (allowReturn)
+        prepForTailCall(g);
     const GCSanityChecker gc_sanity_checker(g, "executeMethod");
 
-    auto callFrame = createFrameForExecuteMethod(g, meth);
-    prepareArgsForExecute(g, meth, callFrame, totalNumArgsPushed, numKwArgsPushed, true);
+    auto callFrame = createFrameForExecuteMethod(g, fdef);
+    prepareArgsForExecute(g, fdef, callFrame, totalNumArgsPushed, numKwArgsPushed, true);
 
     g->execMethod = numKwArgsPushed == 0 ? 20 : 10;
-    g->method = (PyrMethod*)meth;
-    g->ip = slotRawInt8Array(&meth->code)->b - 1;
+    g->method = (PyrMethod*)fdef;
+    g->ip = slotRawInt8Array(&fdef->code)->b - 1;
     g->frame = callFrame;
-    g->block = (PyrBlock*)meth;
+    g->block = (PyrFunctionDef*)fdef;
     g->sp -= totalNumArgsPushed;
     slotCopy(&g->receiver, callFrame->vars);
 }
@@ -541,7 +544,7 @@ HOT void returnFromBlock(VMGlobals* g) {
     PyrFrame* curframe;
     PyrFrame* returnFrame;
     PyrFrame* homeContext;
-    PyrBlock* block;
+    PyrFunctionDef* block;
     PyrMethod* meth;
     PyrMethodRaw* methraw;
 
@@ -729,7 +732,7 @@ int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::i
     PyrSlot* vars = g->sp - allArgsPushed + 1;
 
     numArgsPushed = allArgsPushed - (numKeyArgsPushed << 1);
-    numArgsNeeded = methraw->numargs;
+    numArgsNeeded = methraw->numNormalArguments;
     diff = numArgsNeeded - numArgsPushed;
     if (diff > 0) { // not enough args
         pslot = vars + numArgsPushed - 1;
@@ -740,12 +743,12 @@ int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::i
     }
 
     // do keyword lookup:
-    if (numKeyArgsPushed && methraw->posargs) {
+    if (numKeyArgsPushed && methraw->totalNumArguments) {
         PyrSymbol** name0 = slotRawSymbolArray(&meth->argNames)->symbols + 1;
         PyrSlot* key = temporaryKeywordStack;
         for (i = 0; i < numKeyArgsPushed; ++i, key += 2) {
             PyrSymbol** name = name0;
-            for (j = 1; j < methraw->posargs; ++j, ++name) {
+            for (j = 1; j < methraw->totalNumArguments; ++j, ++name) {
                 if (*name == slotRawSymbol(key)) {
                     slotCopy(&vars[j], &key[1]);
                     goto found;

@@ -61,7 +61,7 @@ struct VMGlobals {
     // thread context
     struct PyrThread* thread;
     struct PyrMethod* method;
-    struct PyrBlock* block;
+    struct PyrFunctionDef* block;
     struct PyrFrame* frame;
     struct PyrMethod* primitiveMethod;
     unsigned char* ip; // current instruction pointer

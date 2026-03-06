@@ -23,8 +23,8 @@
 #include "PyrSymbol.h"
 #include "SCBase.h"
 
-void numBlockTemps(PyrBlock* block, std::int64_t level, std::int64_t* numArgNames, std::int64_t* numVarNames);
-void numBlockTemps(PyrBlock* block, std::int64_t level, std::int64_t* numArgNames, std::int64_t* numVarNames) {
+void numBlockTemps(PyrFunctionDef* block, std::int64_t level, std::int64_t* numArgNames, std::int64_t* numVarNames);
+void numBlockTemps(PyrFunctionDef* block, std::int64_t level, std::int64_t* numArgNames, std::int64_t* numVarNames) {
     std::int64_t i;
     for (i = 0; i < level; ++i) {
         block = slotRawBlock(&block->contextDef);
@@ -33,10 +33,10 @@ void numBlockTemps(PyrBlock* block, std::int64_t level, std::int64_t* numArgName
     *numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 }
 
-unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned char* ip);
-unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned char* ip) {
+unsigned char* dumpOneByteCode(PyrFunctionDef* theBlock, PyrClass* theClass, unsigned char* ip);
+unsigned char* dumpOneByteCode(PyrFunctionDef* theBlock, PyrClass* theClass, unsigned char* ip) {
     PyrClass* classobj;
-    PyrBlock* block;
+    PyrFunctionDef* block;
     PyrSlot* slot;
     PyrSymbol* selector;
     char str[256];
@@ -756,9 +756,9 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
 }
 
 
-bool detectSendSelector(PyrBlock* theBlock, PyrClass* theClass, unsigned char** ipp, PyrSymbol* testSelector);
-bool detectSendSelector(PyrBlock* theBlock, PyrClass* theClass, unsigned char** ipp, PyrSymbol* testSelector) {
-    PyrBlock* block;
+bool detectSendSelector(PyrFunctionDef* theBlock, PyrClass* theClass, unsigned char** ipp, PyrSymbol* testSelector);
+bool detectSendSelector(PyrFunctionDef* theBlock, PyrClass* theClass, unsigned char** ipp, PyrSymbol* testSelector) {
+    PyrFunctionDef* block;
     PyrSymbol* selector = nullptr;
     std::int64_t op1, op2, op3, op4, op5, op6;
     unsigned char* ip = *ipp;
@@ -1189,10 +1189,10 @@ bool detectSendSelector(PyrBlock* theBlock, PyrClass* theClass, unsigned char** 
 }
 
 
-void dumpByteCodes(PyrBlock* theBlock);
-void dumpByteCodes(PyrBlock* theBlock) {
+void dumpByteCodes(PyrFunctionDef* theBlock);
+void dumpByteCodes(PyrFunctionDef* theBlock) {
     PyrClass* theClass;
-    PyrBlock* block;
+    PyrFunctionDef* block;
     std::int64_t size;
     unsigned char *ip, *ipbeg, *ipend;
 
@@ -1222,10 +1222,10 @@ void dumpByteCodes(PyrBlock* theBlock) {
     }
 }
 
-bool detectSendSelectorIn(PyrBlock* theBlock, PyrSymbol* testSelector);
-bool detectSendSelectorIn(PyrBlock* theBlock, PyrSymbol* testSelector) {
+bool detectSendSelectorIn(PyrFunctionDef* theBlock, PyrSymbol* testSelector);
+bool detectSendSelectorIn(PyrFunctionDef* theBlock, PyrSymbol* testSelector) {
     PyrClass* theClass;
-    PyrBlock* block;
+    PyrFunctionDef* block;
     PyrSymbol* selector;
     std::int64_t size;
     unsigned char *ip, *ipbeg, *ipend;
