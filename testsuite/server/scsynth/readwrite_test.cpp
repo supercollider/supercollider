@@ -7,7 +7,7 @@
 BOOST_AUTO_TEST_CASE(readInt8_test) {
     int8 a = -120;
 
-    char buffer[1] = { a };
+    char buffer[1] = { (char)a };
     const char* ptr = buffer;
     const char* end = buffer + 1;
 
