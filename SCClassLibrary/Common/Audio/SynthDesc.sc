@@ -104,6 +104,7 @@ SynthDesc {
 	// synthdef version 1
 	readSynthDef { arg stream, keepDef=false;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
+		var variantValues;
 
 		protect {
 
@@ -156,10 +157,12 @@ SynthDesc {
 		hasVariants = numVariants > 0;
 		// maybe later, read in variant names and values.
 		// this is harder than it might seem at first.
-		// for now just skip the data.
+		// we could just skip the data, but instead we read it
+		// so we can detect corrupt SynthDef files.
+		variantValues = FloatArray.newClear(numControls);
 		numVariants.do {
 			stream.getPascalString;
-			stream.skip(numControls * 4);
+			stream.read(variantValues);
 		};
 
 		def.constants = Dictionary.new;
@@ -180,6 +183,7 @@ SynthDesc {
 	// common method for readSynthDef2 and readSynthDef3
 	prReadSynthDef { arg stream, version, keepDef;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
+		var variantValues;
 
 		protect {
 
@@ -232,10 +236,12 @@ SynthDesc {
 		hasVariants = numVariants > 0;
 		// maybe later, read in variant names and values.
 		// this is harder than it might seem at first.
-		// for now just skip the data.
+		// we could just skip the data, but instead we read it
+		// so we can detect corrupt SynthDef files.
+		variantValues = FloatArray.newClear(numControls);
 		numVariants.do {
 			stream.getPascalString;
-			stream.skip(numControls * 4);
+			stream.read(variantValues);
 		};
 
 		def.constants = Dictionary.new;
