@@ -2,7 +2,7 @@ TestServer_SynthDefVersions : UnitTest {
 	var compiledDefs;
 
 	setUp {
-		var defArray1, defArray2, stream, graphFunc, variants;
+		var defArray1, defArray2, defArray3, stream, graphFunc, variants;
 
 		graphFunc = { |out, value=1| Out.kr(out, value) };
 		variants = (a: [ value: 2 ], b: [ value: 3 ], c: [ value: 4 ]);
@@ -18,6 +18,11 @@ TestServer_SynthDefVersions : UnitTest {
 			SynthDef(\test_v2_2, graphFunc, variants: variants)
 		];
 
+		defArray3 = [
+			SynthDef(\test_v3_1, graphFunc, variants: variants),
+			SynthDef(\test_v3_2, graphFunc, variants: variants)
+		];
+
 		compiledDefs = [];
 		// write version 1
 		stream = CollStream.on(Int8Array.new(256));
@@ -27,10 +32,14 @@ TestServer_SynthDefVersions : UnitTest {
 		stream = CollStream.on(Int8Array.new(256));
 		defArray2.writeDef(stream, 2);
 		compiledDefs = compiledDefs.add(2).add(stream.collection);
+		// write version 3
+		stream = CollStream.on(Int8Array.new(256));
+		defArray3.writeDef(stream, 3);
+		compiledDefs = compiledDefs.add(3).add(stream.collection);
 	}
 
 	// helper method
-	serverLoadsOldSynthDefVersions { arg serverName;
+	serverLoadsAllSynthDefVersions { arg serverName;
 		var server = Server(thisMethod.name ++ "_" ++ serverName);
 
 		this.bootServer(server);
@@ -68,18 +77,66 @@ TestServer_SynthDefVersions : UnitTest {
 
 		if (server.serverRunning) {
 			server.quit;
+			// avoid UDP address in use errors when restarting the Server.
+			// Unfortunately, there is no way to wait for the Server to quit...
+			1.wait;
 		};
 
 		server.remove;
 	}
 
-	test_scsynthLoadsOldSynthDefVersions {
-		this.serverLoadsOldSynthDefVersions("scsynth");
+	test_scsynthLoadsAllSynthDefVersions {
+		this.serverLoadsAllSynthDefVersions("scsynth");
 	}
 
-	test_supernovaLoadsOldSynthDefVersions {
+	test_supernovaLoadsAllSynthDefVersions {
 		Server.supernova;
-		this.serverLoadsOldSynthDefVersions("supernova");
+		this.serverLoadsAllSynthDefVersions("supernova");
+		// restore scsynth
+		Server.scsynth;
+	}
+
+	// helper method
+	serverHandlesCorruptSynthDefs { arg serverName;
+		var server = Server(thisMethod.name ++ "_" ++ serverName);
+
+		this.bootServer(server);
+
+		compiledDefs.pairsDo { |version, data|
+			var stream, cond = Condition();
+			data = data.copy; // !
+			// remove the last 4 bytes
+			data = data.extend(data.size - 4);
+			// now try to read the corrupted SynthDef.
+			// on every iteration, slice off half of the data.
+			while { data.size > 1 } {
+				server.sendMsg('/d_recv', data);
+				data = data.extend(data.size div: 2);
+			};
+			// sync with timeout
+			fork { 3.wait; cond.test_(true).signal };
+			server.sync(cond);
+
+			this.assert(server.serverRunning, "corrupted synthdef v% should not crash %".format(version, serverName));
+		};
+
+		if (server.serverRunning) {
+			server.quit;
+			// avoid UDP address in use errors when restarting the Server.
+			// Unfortunately, there is no way to wait for the Server to quit...
+			1.wait;
+		};
+
+		server.remove;
+	}
+
+	test_scsynthHandlesCorruptSynthDefs {
+		this.serverHandlesCorruptSynthDefs("scsynth");
+	}
+
+	test_supernovaHandlesCorruptSynthDefs {
+		Server.supernova;
+		this.serverHandlesCorruptSynthDefs("supernova");
 		// restore scsynth
 		Server.scsynth;
 	}
