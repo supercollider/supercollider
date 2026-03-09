@@ -351,7 +351,7 @@ y.front;
 
 code::
 /* Changing bounds after window creation */
-x.bounds_(Rect(100, 300, 300, 100));
+x.bounds_(Rect(100, 300, 300, 100)).front;
 // The second argument of Rect is named 'top', but for Window it represents
 // the distance from the screen's bottom-left origin — not from the top.
 // Note: this value (300) is the complement of the calculation above
