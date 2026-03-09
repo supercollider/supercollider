@@ -366,6 +366,7 @@ v.background = Color.gray;
 t = TextView(v, Rect(10, 10, 80, 30));
 c = StaticText(x, Rect(90, 30, 50, 25));
 c.string = "test";
+x.front;
 )
 ::
 
