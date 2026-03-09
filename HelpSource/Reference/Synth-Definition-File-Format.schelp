@@ -31,7 +31,7 @@ section:: File Format
 a strong::synth-definition-file:: is :
 list::
 ## int32 - four byte file type id containing the ASCII characters: "SCgf"
-## int32 - file version, currently 2.
+## int32 - file version, currently 3.
 ## int16 - number of synth definitions in this file (D).
 ## [ strong::synth-definition:: ] * D
 ::
@@ -102,7 +102,7 @@ soft::added by Jonatan Liljedahl::
 subsection::synth-definition-file
 tree::
 ## int32 - four byte file type id containing the ASCII characters: "SCgf"
-## int32 - file version, currently 2.
+## int32 - file version, currently 3.
 ## int16 - number of synth definitions in this file (D).
 ## [ strong::synth-definition:: ] * D
     tree::
