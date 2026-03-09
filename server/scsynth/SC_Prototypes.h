@@ -26,6 +26,7 @@
 #include <cstring>
 
 #include "SC_Types.h"
+#include "SC_Command.h"
 #include "scsynthsend.h"
 
 ////////////////////////////////////////////////////////////////////////
@@ -211,9 +212,6 @@ int32 server_timeseed();
 }
 
 ////////////////////////////////////////////////////////////////////////
-
-typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
-typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
 
 SCErr PerformAsynchronousCommand(
     World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,

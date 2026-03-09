@@ -381,9 +381,3 @@ template <bool shared> struct buffer_lock {
     rgen.s1 = s1;                                                                                                      \
     rgen.s2 = s2;                                                                                                      \
     rgen.s3 = s3;
-
-
-struct sc_msg_iter;
-
-typedef void (*UnitCmdFunc)(struct Unit* unit, struct sc_msg_iter* args);
-typedef void (*PlugInCmdFunc)(World* inWorld, void* inUserData, struct sc_msg_iter* args, void* replyAddr);

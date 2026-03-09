@@ -30,6 +30,7 @@
 
 #include "OSC_Packet.h"
 #include "SC_World.h"
+#include "SC_Command.h"
 #include "SC_BufGen.h"
 #include "sc_msg_iter.h"
 #include "SC_SndFileHelpers.hpp"

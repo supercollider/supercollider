@@ -48,6 +48,8 @@
 
 #include "osc/OscReceivedElements.h"
 
+#include "SC_Command.h"
+
 #include "../server/memory_pool.hpp"
 #include "../server/server_args.hpp"
 #include "../server/server_scheduler.hpp"
@@ -59,9 +61,6 @@
 struct FifoMsg;
 
 namespace nova {
-
-typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
-typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
 
 namespace detail {
 

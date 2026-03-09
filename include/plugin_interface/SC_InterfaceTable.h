@@ -33,11 +33,9 @@ static const int sc_api_version = 4;
 #include "SC_FifoMsg.h"
 #include "SC_fftlib.h"
 #include "SC_Export.h"
+#include "SC_Command.h"
 
 typedef struct SF_INFO SF_INFO;
-
-typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
-typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
 
 struct ScopeBufferHnd {
     void* internalData;

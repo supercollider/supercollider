@@ -22,6 +22,7 @@
 
 #include "SC_Types.h"
 #include "SC_Unit.h"
+#include "SC_Command.h"
 #include "HashTable.h"
 
 struct PlugInCmd {
