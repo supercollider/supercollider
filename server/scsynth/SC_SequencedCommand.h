@@ -534,3 +534,30 @@ protected:
 
 using AsyncPlugInCmd = AsyncPlugInCmd_<AsyncStageFn>;
 using AsyncPlugInCmdEx = AsyncPlugInCmd_<AsyncStageFnEx>;
+
+///////////////////////////////////////////////////////////////////////////
+
+class AsyncUnitCmd : public SC_SequencedCommand {
+public:
+    AsyncUnitCmd(Unit* inUnit, ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
+                 AsyncUnitStageFn stage2, // stage2 is non real time
+                 AsyncUnitStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+                 AsyncUnitStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+                 AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
+
+    virtual ~AsyncUnitCmd();
+
+    virtual bool Stage2(); // non real time
+    virtual bool Stage3(); //     real time
+    virtual void Stage4(); // non real time
+
+protected:
+    Unit* mUnit;
+    const char* mCmdName;
+    void* mCmdData;
+    AsyncUnitStageFn mStage2, mStage3, mStage4;
+    AsyncFreeFn mCleanup;
+    bool mAlive;
+
+    virtual void CallDestructor();
+};

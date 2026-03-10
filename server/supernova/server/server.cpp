@@ -167,14 +167,7 @@ void nova_server::set_node_slot(int node_id, const char* slot, float value) {
         node->set(slot, value);
 }
 
-void nova_server::finalize_node(server_node& node) {
-    if (node.is_synth()) {
-        sc_synth& synth = static_cast<sc_synth&>(node);
-        synth.finalize();
-    }
-    notification_node_ended(&node);
-}
-
+void nova_server::finalize_node(server_node& node) { notification_node_ended(&node); }
 
 void nova_server::free_node(server_node* node) {
     if (node->get_parent() == nullptr)

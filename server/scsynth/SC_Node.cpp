@@ -85,6 +85,8 @@ void Node_Dtor(Node* inNode) {
 // remove a node from a group
 void Node_Remove(Node* s) {
     Group* group = s->mParent;
+    if (group == nullptr)
+        return;
 
     if (s->mPrev)
         s->mPrev->mNext = s->mNext;
@@ -132,7 +134,7 @@ void Node_Delete(Node* inNode) {
     if (inNode->mIsGroup)
         Group_Dtor((Group*)inNode);
     else
-        Graph_Dtor((Graph*)inNode);
+        Graph_Delete((Graph*)inNode);
 }
 
 // add a node after another one

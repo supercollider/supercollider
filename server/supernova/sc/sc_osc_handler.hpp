@@ -336,6 +336,10 @@ public:
                                  StageFn stage3, StageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
                                  const void* completionMsgData) const;
 
+    void do_async_unit_command(Unit* unit, void* replyAddr, const char* cmdName, void* cmdData, AsyncUnitStageFn stage2,
+                               AsyncUnitStageFn stage3, AsyncUnitStageFn stage4, AsyncFreeFn cleanup,
+                               int completionMsgSize, const void* completionMsgData) const;
+
     void send_message_from_RT(const World* world, FifoMsg& msg) const;
 
     void send_message_to_RT(const World* world, FifoMsg& msg) const;

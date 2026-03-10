@@ -575,6 +575,17 @@ SCErr do_asynchronous_command_ex(
     return 0;
 }
 
+SCErr do_async_unit_command(
+    Unit* inUnit, void* replyAddr, const char* cmdName, void* cmdData,
+    AsyncUnitStageFn stage2, // stage2 is non real time
+    AsyncUnitStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+    AsyncUnitStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+    AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData) {
+    nova::instance->do_async_unit_command(inUnit, replyAddr, cmdName, cmdData, stage2, stage3, stage4, cleanup,
+                                          completionMsgSize, completionMsgData);
+    return 0;
+}
+
 SCBool send_message_from_RT(World* world, struct FifoMsg* msg) {
     nova::instance->send_message_from_RT(world, *msg);
     return true;
@@ -692,6 +703,7 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     /* osc plugins */
     sc_interface.fDoAsynchronousCommand = &do_asynchronous_command;
     sc_interface.fDoAsynchronousCommandEx = &do_asynchronous_command_ex;
+    sc_interface.fDoAsyncUnitCommand = &do_async_unit_command;
 
     /* initialize world */
     /* control busses */

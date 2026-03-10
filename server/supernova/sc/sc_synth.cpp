@@ -120,7 +120,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     assert((char*)mControls + alloc_size <= allocator.alloc<char>()); // ensure the memory boundaries
 }
 
-sc_synth::~sc_synth(void) { assert(!initialized); }
+sc_synth::~sc_synth(void) { finalize(); }
 
 extern "C" {
 void* rt_free(World* dummy, void* ptr);

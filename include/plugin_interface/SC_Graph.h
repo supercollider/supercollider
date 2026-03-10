@@ -31,6 +31,7 @@
  */
 struct Graph {
     Node mNode;
+    int32 mRefCount;
 
     uint32 mNumWires;
     struct Wire* mWire;

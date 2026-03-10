@@ -3802,6 +3802,101 @@ template void sc_osc_handler::do_asynchronous_command<AsyncStageFnEx>(World*, vo
                                                                       AsyncStageFnEx, AsyncStageFnEx, AsyncFreeFn, int,
                                                                       const void*) const;
 
+template <bool realtime>
+void handle_async_unit_command(Unit* unit, const char* cmd_name, void* cmd_data, AsyncUnitStageFn stage2,
+                               AsyncUnitStageFn stage3, AsyncUnitStageFn stage4, AsyncFreeFn cleanup,
+                               completion_message&& message, endpoint_ptr&& endpoint) {
+    // See comment in handle_asynchronous_command().
+    spin_lock::scoped_lock lock(system_callback_allocator_lock);
+
+    // Get the owning synth
+    sc_synth* synth = static_cast<sc_synth*>(instance->find_synth(unit->mParent->mNode.mID));
+    assert(synth != nullptr);
+    // If the synth has no parent, it means that it has been removed. This can only happen
+    // if DoAsyncUnitCommand() is called in a Unit destructor (which is not allowed).
+    // This check is important because it makes sure that we don't increment the reference count
+    // that has already gone to zero!
+    if (synth->get_parent() == nullptr)
+        throw std::runtime_error("cannot call DoAsyncUnitCommand() in a Unit destructor!");
+
+    // make sure that the owning synth is kept alive for the whole duration of the command!
+    // This also means we can safely use the synth pointer inside the callbacks.
+    synth->add_ref();
+
+    cmd_dispatcher<realtime>::fire_system_callback(
+        [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
+            // stage 2 (NRT thread)
+            bool result2 = !stage2 || stage2(unit, cmd_data, endpoint.get());
+
+            if (!result2) {
+                // free in RT thread!
+                cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+                    if (cleanup)
+                        (cleanup)(unit->mWorld, cmd_data);
+                    consume(std::move(message));
+                    synth->release();
+                });
+                return;
+            }
+
+            cmd_dispatcher<realtime>::fire_rt_callback(
+                [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
+                    // stage 3 (RT thread)
+                    // Check whether the owning synth has been removed in the meantime. If yes, we pass
+                    // nullptr as the Unit pointer so that the stage function can detect and properly
+                    // handle the situation. For example, it may still have to release resources on stage4.
+                    // If the node can't be found, it has been removed.
+                    bool alive = synth->get_parent() != nullptr;
+                    bool result3 = !stage3 || stage3(alive ? unit : nullptr, cmd_data, endpoint.get());
+
+                    if (!result3) {
+                        if (cleanup)
+                            (cleanup)(unit->mWorld, cmd_data);
+                        consume(std::move(message));
+                        synth->release();
+                        return;
+                    }
+
+                    // only perform completion message if the synth is still alive!
+                    if (alive)
+                        handle_completion_message(std::move(message), endpoint);
+                    else
+                        consume(std::move(message));
+
+                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
+                        // stage 4 (NRT thread)
+                        bool result4 = !stage4 || stage4(unit, cmd_data, endpoint.get());
+
+                        // only send /done message if the synth has been alive in stage3.
+                        if (result4 && alive && cmd_name)
+                            send_done_message(endpoint, cmd_name);
+
+                        // free in RT thread!
+                        cmd_dispatcher<realtime>::fire_rt_callback([=] {
+                            if (cleanup)
+                                (cleanup)(unit->mWorld, cmd_data);
+                            synth->release();
+                        });
+                    });
+                });
+        });
+}
+
+void sc_osc_handler::do_async_unit_command(Unit* unit, void* replyAddr, const char* cmdName, void* cmdData,
+                                           AsyncUnitStageFn stage2, AsyncUnitStageFn stage3, AsyncUnitStageFn stage4,
+                                           AsyncFreeFn cleanup, int completionMsgSize,
+                                           const void* completionMsgData) const {
+    completion_message msg(completionMsgSize, completionMsgData);
+
+    nova_endpoint* endpoint = static_cast<nova_endpoint*>(replyAddr);
+    endpoint_ptr endpoint_ptr(endpoint ? endpoint->shared_from_this() : nullptr);
+
+    if (unit->mWorld->mRealTime)
+        handle_async_unit_command<true>(unit, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
+                                        std::move(endpoint_ptr));
+    else
+        handle_async_unit_command<false>(unit, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
+                                         std::move(endpoint_ptr));
 }
 
 // called from RT thread, perform in NRT thread, free in RT thread

@@ -239,6 +239,7 @@ void InterfaceTable_Init() {
     ft->fDoneAction = &Unit_DoneAction;
     ft->fDoAsynchronousCommand = &PerformAsynchronousCommand;
     ft->fDoAsynchronousCommandEx = &PerformAsynchronousCommandEx;
+    ft->fDoAsyncUnitCommand = &PerformAsyncUnitCommand;
     ft->fBufAlloc = &bufAlloc;
 
     ft->fSCfftCreate = &scfft_create;

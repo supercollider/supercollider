@@ -135,6 +135,12 @@ struct InterfaceTable {
         AsyncStageFnEx stage4, // stage4 is non real time - sends done if stage4 returns true
         AsyncFreeFn cleanup, int32 completionMsgSize, const void* completionMsgData);
 
+    SCErr (*fDoAsyncUnitCommand)(
+        Unit* inUnit, void* replyAddr, const char* cmdName, void* cmdData,
+        AsyncUnitStageFn stage2, // stage2 is non real time
+        AsyncUnitStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+        AsyncUnitStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+        AsyncFreeFn cleanup, int32 completionMsgSize, const void* completionMsgData);
 
     // fBufAlloc should only be called within a BufGenFunc
     SCErr (*fBufAlloc)(SndBuf* inBuf, int32 inChannels, int32 inFrames, double inSampleRate);
@@ -204,6 +210,8 @@ typedef struct InterfaceTable InterfaceTable;
 #define DoAsynchronousCommand (*ft->fDoAsynchronousCommand)
 
 #define DoAsynchronousCommandEx (*ft->fDoAsynchronousCommandEx)
+
+#define DoAsyncUnitCommand (*ft->fDoAsyncUnitCommand)
 
 #define DefineSimpleUnit(name) (*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, 0, 0);
 

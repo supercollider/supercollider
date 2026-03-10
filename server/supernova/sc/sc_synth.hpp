@@ -53,14 +53,6 @@ public:
 
     ~sc_synth(void);
 
-    /** run ugen constructors and initialize first sample
-     *
-     *  to be executed after preparing the synth and setting the controls
-     */
-    void prepare(void);
-
-    void finalize(void);
-
     HOT inline void perform(void) {
         if (unlikely(!initialized))
             prepare();
@@ -121,6 +113,15 @@ public:
             run_traced();
     }
 
+private:
+    /** run ugen constructors and initialize first sample
+     *
+     *  to be executed after preparing the synth and setting the controls
+     */
+    void prepare(void);
+
+    void finalize(void);
+
     void prefetch(Unit* unit) {
         char* ptr = (char*)unit;
         char* end = (char*)unit + sizeof(Unit) + 2 * sizeof(Wire) /* + 4 * sizeof(void*)*/;
@@ -136,6 +137,7 @@ public:
         }
     }
 
+public:
     void run(void) override;
 
     void set(slot_index_t slot_index, sample val) override;

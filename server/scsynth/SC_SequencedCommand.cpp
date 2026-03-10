@@ -1594,3 +1594,95 @@ template <typename StageFn> void AsyncPlugInCmd_<StageFn>::Stage4() {
     if (result && mCmdName && mReplyAddress.mReplyFunc != null_reply_func)
         SendDone(mCmdName);
 }
+
+///////////////////////////////////////////////////////////////////////////
+
+SCErr PerformAsyncUnitCommand(
+    Unit* inUnit, void* replyAddr, const char* cmdName, void* cmdData,
+    AsyncUnitStageFn stage2, // stage2 is non real time
+    AsyncUnitStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+    AsyncUnitStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+    AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData) {
+    if (!Graph_HasParent(inUnit->mParent)) {
+        // If Graph_HasParent() returns false, it means that the graph has been removed. This can only
+        // happen if DoAsyncUnitCommand() is called in a Unit destructor (which is not allowed).
+        // This check is important because it makes sure that we don't increment a reference count
+        // that has already gone to zero!
+        scprintf("ERROR: cannot call DoAsyncUnitCommand() in a Unit destructor!\n");
+        return kSCErr_Failed;
+    }
+
+    void* space = World_Alloc(inUnit->mWorld, sizeof(AsyncUnitCmd));
+    ReturnSCErrIfNil(space);
+    AsyncUnitCmd* cmd = new (space) AsyncUnitCmd(inUnit, (ReplyAddress*)replyAddr, cmdName, cmdData, stage2, stage3,
+                                                 stage4, cleanup, completionMsgSize, completionMsgData);
+    if (!cmd)
+        return kSCErr_Failed;
+    if (inUnit->mWorld->mRealTime)
+        cmd->CallNextStage();
+    else
+        cmd->CallEveryStage();
+    return kSCErr_None;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+AsyncUnitCmd::AsyncUnitCmd(
+    Unit* inUnit, ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
+    AsyncUnitStageFn stage2, // stage2 is non real time
+    AsyncUnitStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+    AsyncUnitStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+    AsyncFreeFn cleanup, // cleanup is called in real time
+    int completionMsgSize, const void* completionMsgData):
+    SC_SequencedCommand(inUnit->mWorld, inReplyAddress),
+    mUnit(inUnit),
+    mCmdName(cmdName),
+    mCmdData(cmdData),
+    mStage2(stage2),
+    mStage3(stage3),
+    mStage4(stage4),
+    mCleanup(cleanup),
+    mAlive(true) {
+    // make sure that the owning Graph is kept alive for the whole duration of the command!
+    Graph_AddRef(inUnit->mParent);
+
+    if (completionMsgSize > 0 && completionMsgData) {
+        mMsgSize = completionMsgSize;
+        mMsgData = (char*)World_Alloc(mWorld, mMsgSize);
+        ThrowIfNil(mMsgData);
+        memcpy(mMsgData, completionMsgData, mMsgSize);
+    }
+}
+
+AsyncUnitCmd::~AsyncUnitCmd() {
+    if (mCleanup)
+        mCleanup(mWorld, mCmdData);
+    // finally release the owning Graph
+    Graph_Release(mUnit->mParent);
+}
+
+void AsyncUnitCmd::CallDestructor() { this->~AsyncUnitCmd(); }
+
+bool AsyncUnitCmd::Stage2() {
+    bool result = !mStage2 || (mStage2)(mUnit, mCmdData, &mReplyAddress);
+    return result;
+}
+
+bool AsyncUnitCmd::Stage3() {
+    // Check whether the owning Graph has been removed in the meantime. If yes, we pass
+    // nullptr as the Unit pointer so that the stage function can detect and properly
+    // handle the situation. For example, it may still have to release resources on stage4.
+    mAlive = Graph_HasParent(mUnit->mParent);
+    bool result = !mStage3 || (mStage3)(mAlive ? mUnit : nullptr, mCmdData, &mReplyAddress);
+    // Only send completition message if the Graph is still alive!
+    if (result && mAlive)
+        SEND_COMPLETION_MSG;
+    return result;
+}
+
+void AsyncUnitCmd::Stage4() {
+    bool result = !mStage4 || (mStage4)(mUnit, mCmdData, &mReplyAddress);
+    // Only send /done message if the Graph has been alive in stage3.
+    if (result && mAlive && mCmdName && mReplyAddress.mReplyFunc != null_reply_func)
+        SendDone(mCmdName);
+}
