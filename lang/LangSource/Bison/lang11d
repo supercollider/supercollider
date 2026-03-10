@@ -1306,7 +1306,6 @@ listliteral	: integer	{ $$ = (intptr_t)newPyrLiteralNode((PyrSlotNode*)$1, NULL)
 			| falseobj	{ $$ = (intptr_t)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| nilobj	{ $$ = (intptr_t)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| listlit2	{ $$ = (intptr_t)newPyrLiteralNode(NULL, (PyrParseNode*)$1); }
-			| dictlit2  { $$ = (intptr_t)newPyrLiteralNode(NULL, (PyrParseNode*)$1); }
 			;
 
 block	: '{' argdecls funcvardecls funcbody '}'
@@ -1456,10 +1455,6 @@ rwslotdef		: rwspec name
 				| rwspec name '=' slotliteral
 					{ $$ = (intptr_t)newPyrVarDefNode((PyrSlotNode*)$2, (PyrParseNode*)$4, $1); }
 				;
-
-dictlit2	: '(' litdictslotlist ')'
-				{ $$ = (intptr_t)newPyrLitDictNode((PyrParseNode*)$2); }
-			;
 
 litdictslotdef	: listliteral ':' listliteral
 				{ $$ = (intptr_t)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }

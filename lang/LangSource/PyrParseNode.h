@@ -382,15 +382,6 @@ struct PyrLitListNode : public PyrParseNode {
     struct PyrParseNode* mElems;
 };
 
-struct PyrLitDictNode : public PyrParseNode {
-    PyrLitDictNode(): PyrParseNode(pn_LitDictNode) {}
-    virtual ~PyrLitDictNode() {}
-    virtual void compile(PyrSlot* result);
-    virtual void dump(int level);
-
-    struct PyrParseNode* mElems;
-};
-
 extern PyrParseNode* gRootParseNode;
 extern intptr_t gParserResult;
 extern bool gIsTailCodeBranch;
@@ -445,7 +436,6 @@ PyrPushNameNode* newPyrPushNameNode(PyrSlotNode* slotNode);
 PyrDynDictNode* newPyrDynDictNode(PyrParseNode* elems);
 PyrDynListNode* newPyrDynListNode(PyrParseNode* classname, PyrParseNode* elems);
 PyrLitListNode* newPyrLitListNode(PyrParseNode* classname, PyrParseNode* elems);
-PyrLitDictNode* newPyrLitDictNode(PyrParseNode* elems);
 PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(PyrSlotNode* varNames, PyrSlotNode* rest);
 PyrBlockNode* newPyrBlockNode(PyrArgListNode* arglist, PyrVarListNode* varlist, PyrParseNode* body, bool isTopLevel);
 
