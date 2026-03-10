@@ -30,13 +30,14 @@
 namespace nova {
 
 sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstract_synth(node_id, prototype) {
-    World const& world = sc_factory->world;
+    World& world = sc_factory->world;
     const bool rt_synthesis = world.mRealTime;
 
-    mNode.mWorld = &sc_factory->world;
-    rgen.init((uint32_t)(uint64_t)this);
-
     /* initialize sc wrapper class */
+    mNode.mWorld = &world;
+    mNode.mID = node_id;
+
+    rgen.init(reinterpret_cast<uintptr_t>(this));
     mRGen = &rgen;
     mSubsampleOffset = world.mSubsampleOffset;
     mSampleOffset = world.mSampleOffset;
@@ -49,8 +50,6 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     // so far mPrivate is only used for queued unit commands,
     // i.e. it just points to the head of the list.
     mPrivate = nullptr;
-
-    mNode.mID = node_id;
 
     sc_synthdef const& synthdef = *prototype;
 
@@ -110,7 +109,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     sc_factory->allocate_ugens(synthdef.graph.size());
     for (size_t i = 0; i != synthdef.graph.size(); ++i) {
         sc_synthdef::unit_spec_t const& spec = synthdef.graph[i];
-        units[i] = spec.prototype->construct(spec, this, i, &sc_factory->world, allocator);
+        units[i] = spec.prototype->construct(spec, this, i, &world, allocator);
     }
 
     for (size_t i = 0; i != synthdef.calc_unit_indices.size(); ++i) {
