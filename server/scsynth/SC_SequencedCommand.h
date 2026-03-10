@@ -28,13 +28,15 @@
 
 #pragma once
 
-#include "OSC_Packet.h"
 #include "SC_World.h"
 #include "SC_Command.h"
-#include "SC_BufGen.h"
 #include "sc_msg_iter.h"
 #include "SC_SndFileHelpers.hpp"
-#include <new>
+#include "SC_ReplyImpl.hpp"
+
+struct BufGen;
+struct GraphDef;
+struct Unit;
 
 #define CallSequencedCommand(T, inWorld, inSize, inData, inReply)                                                      \
     void* space = World_Alloc(inWorld, sizeof(T));                                                                     \
@@ -431,8 +433,6 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include "SC_GraphDef.h"
-
 class LoadSynthDefCmd : public SC_SequencedCommand {
 public:
     LoadSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress);
@@ -452,8 +452,6 @@ protected:
 };
 
 ///////////////////////////////////////////////////////////////////////////
-
-#include "SC_GraphDef.h"
 
 class RecvSynthDefCmd : public SC_SequencedCommand {
 public:
@@ -510,19 +508,16 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////
 
-
-typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
-typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
-
-class AsyncPlugInCmd : public SC_SequencedCommand {
+// AsyncPlugInCmd and AsyncPlugInCmdEx only differ in the type of stage function.
+template <typename StageFn> class AsyncPlugInCmd_ : public SC_SequencedCommand {
 public:
-    AsyncPlugInCmd(World* inWorld, ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
-                   AsyncStageFn stage2, // stage2 is non real time
-                   AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
-                   AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
-                   AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
+    AsyncPlugInCmd_(World* inWorld, ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
+                    StageFn stage2, // stage2 is non real time
+                    StageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+                    StageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+                    AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
 
-    virtual ~AsyncPlugInCmd();
+    virtual ~AsyncPlugInCmd_();
 
     virtual bool Stage2(); // non real time
     virtual bool Stage3(); //     real time
@@ -531,8 +526,11 @@ public:
 protected:
     const char* mCmdName;
     void* mCmdData;
-    AsyncStageFn mStage2, mStage3, mStage4;
+    StageFn mStage2, mStage3, mStage4;
     AsyncFreeFn mCleanup;
 
     virtual void CallDestructor();
 };
+
+using AsyncPlugInCmd = AsyncPlugInCmd_<AsyncStageFn>;
+using AsyncPlugInCmdEx = AsyncPlugInCmd_<AsyncStageFnEx>;

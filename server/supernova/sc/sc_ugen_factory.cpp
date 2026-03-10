@@ -213,14 +213,15 @@ sample* sc_plugin_container::run_bufgen(World* world, const char* name, uint32_t
 }
 
 
-bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, struct sc_msg_iter* args, void* replyAddr) {
+bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, sc_msg_iter* args,
+                                         detail::endpoint_ptr const& endpoint) {
     cmdplugin_set_type::iterator it = cmdplugin_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == cmdplugin_set.end()) {
         std::cout << "unable to find cmd plugin: " << name << std::endl;
         return false;
     }
 
-    it->run(world, args, replyAddr);
+    it->run(world, args, endpoint);
 
     return true;
 }

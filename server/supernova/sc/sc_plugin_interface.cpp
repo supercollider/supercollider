@@ -560,6 +560,17 @@ SCErr do_asynchronous_command(
     return 0;
 }
 
+SCErr do_asynchronous_command_ex(
+    World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
+    AsyncStageFnEx stage2, // stage2 is non real time
+    AsyncStageFnEx stage3, // stage3 is real time - completion msg performed if stage3 returns true
+    AsyncStageFnEx stage4, // stage4 is non real time - sends done if stage4 returns true
+    AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData) {
+    nova::instance->do_asynchronous_command(inWorld, replyAddr, cmdName, cmdData, stage2, stage3, stage4, cleanup,
+                                            completionMsgSize, completionMsgData);
+    return 0;
+}
+
 SCBool send_message_from_RT(World* world, struct FifoMsg* msg) {
     nova::instance->send_message_from_RT(world, *msg);
     return true;
@@ -675,6 +686,7 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
 
     /* osc plugins */
     sc_interface.fDoAsynchronousCommand = &do_asynchronous_command;
+    sc_interface.fDoAsynchronousCommandEx = &do_asynchronous_command_ex;
 
     /* initialize world */
     /* control busses */
@@ -1079,7 +1091,7 @@ void sc_plugin_interface::buffer_zero(uint32_t index) {
     zerovec(buf->data + unrolled, remain);
 }
 
-sample* sc_plugin_interface::buffer_generate(uint32_t buffer_index, const char* cmd_name, struct sc_msg_iter& msg) {
+sample* sc_plugin_interface::buffer_generate(uint32_t buffer_index, const char* cmd_name, sc_msg_iter& msg) {
     return sc_factory->run_bufgen(&world, cmd_name, buffer_index, &msg);
 }
 

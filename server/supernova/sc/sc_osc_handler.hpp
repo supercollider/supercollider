@@ -50,6 +50,7 @@
 
 #include "SC_Command.h"
 
+#include "sc_endpoint.hpp"
 #include "../server/memory_pool.hpp"
 #include "../server/server_args.hpp"
 #include "../server/server_scheduler.hpp"
@@ -67,10 +68,6 @@ namespace detail {
 using namespace boost::asio;
 using namespace boost::asio::ip;
 
-struct nova_endpoint : public std::enable_shared_from_this<nova_endpoint> {
-    virtual void send(const char* data, size_t length) = 0;
-};
-
 class udp_endpoint : public nova_endpoint {
 public:
     udp_endpoint(udp::endpoint const& ep): endpoint_(ep) {}
@@ -82,8 +79,6 @@ private:
 
     udp::endpoint endpoint_;
 };
-
-typedef std::shared_ptr<nova_endpoint> endpoint_ptr;
 
 /**
  * observer to receive osc notifications
@@ -336,8 +331,9 @@ public:
     time_tag time_per_tick;
     /* @} */
 
-    void do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData, AsyncStageFn stage2,
-                                 AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
+    template <typename StageFn>
+    void do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData, StageFn stage2,
+                                 StageFn stage3, StageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
                                  const void* completionMsgData) const;
 
     void send_message_from_RT(const World* world, FifoMsg& msg) const;

@@ -22,7 +22,7 @@
 
 static InterfaceTable* ft;
 
-// example of implementing a plug in command with async execution.
+// example of implementing a plugin command with async execution.
 
 struct MyPluginData // data for the global instance of the plugin
 {
@@ -38,7 +38,7 @@ struct MyCmdData // data for each command
 
 MyPluginData gMyPlugin; // global
 
-SCBool cmdStage2(World* world, void* inUserData) {
+SCBool cmdStage2(World* world, void* inUserData, void* inReplyAddress) {
     // user data is the command.
     MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
@@ -49,7 +49,7 @@ SCBool cmdStage2(World* world, void* inUserData) {
     return true;
 }
 
-SCBool cmdStage3(World* world, void* inUserData) {
+SCBool cmdStage3(World* world, void* inUserData, void* inReplyAddress) {
     // user data is the command.
     MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
@@ -61,7 +61,7 @@ SCBool cmdStage3(World* world, void* inUserData) {
     return true;
 }
 
-SCBool cmdStage4(World* world, void* inUserData) {
+SCBool cmdStage4(World* world, void* inUserData, void* inReplyAddress) {
     // user data is the command.
     MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
@@ -100,62 +100,58 @@ void cmdDemoFunc(World* inWorld, void* inUserData, struct sc_msg_iter* args, voi
     myCmdData->myPlugin = thePlugInData;
 
     // ..get data from args..
-    myCmdData->x = 0.;
-    myCmdData->y = 0.;
-    myCmdData->name = 0;
 
     // float arguments
     myCmdData->x = args->getf();
     myCmdData->y = args->getf();
 
     // how to pass a string argument:
-    const char* name = args->gets(); // get the string argument
-    if (name) {
-        myCmdData->name = (char*)RTAlloc(inWorld, strlen(name) + 1); // allocate space, free it in cmdCleanup.
-        if (!myCmdData->name) {
-            Print("cmdDemoFunc: memory allocation failed!\n");
-            return;
-        }
-        strcpy(myCmdData->name, name); // copy the string
+    const char* name = args->gets("(empty)"); // get the string argument
+    size_t nameSize = strlen(name) + 1;
+    myCmdData->name = (char*)RTAlloc(inWorld, nameSize); // allocate space, free it in cmdCleanup.
+    if (!myCmdData->name) {
+        Print("cmdDemoFunc: memory allocation failed!\n");
+        return;
     }
+    memcpy(myCmdData->name, name, nameSize); // copy the string
 
-    // how to pass a completion message
-    int msgSize = args->getbsize();
-    char* msgData = 0;
-    if (msgSize) {
-        // allocate space for completion message
-        // scsynth will delete the completion message for you.
-        msgData = (char*)RTAlloc(inWorld, msgSize);
-        if (!msgData) {
-            Print("cmdDemoFunc: memory allocation failed!\n");
-            return;
-        }
-        args->getb(msgData, msgSize); // copy completion message.
-    }
+    // how to pass an (optional) completion message.
+    // NOTE: there is no need to copy the data!
+    // DoAsynchronousCommand will internally make a copy as needed.
+    size_t msgSize = args->getbsize();
+    const void* msgData = args->rdpos + 4;
 
-    DoAsynchronousCommand(inWorld, replyAddr, "cmdDemoFunc", (void*)myCmdData, (AsyncStageFn)cmdStage2,
-                          (AsyncStageFn)cmdStage3, (AsyncStageFn)cmdStage4, cmdCleanup, msgSize, msgData);
+    DoAsynchronousCommandEx(inWorld, replyAddr, "pluginCmdDemo", myCmdData, cmdStage2, cmdStage3, cmdStage4, cmdCleanup,
+                            msgSize, msgData);
 
     Print("<-cmdDemoFunc\n");
 }
 
-/*
- * to test the above, send the server these commands:
- *
- *
- * SynthDef(\sine, { Out.ar(0, SinOsc.ar(800,0,0.2)) }).load(s);
- * s.sendMsg(\cmd, \pluginCmdDemo, 7, 9, \mno, [\s_new, \sine, 900, 0, 0]);
- * s.sendMsg(\n_free, 900);
- * s.sendMsg(\cmd, \pluginCmdDemo, 7, 9, \mno);
- * s.sendMsg(\cmd, \pluginCmdDemo, 7, 9);
- * s.sendMsg(\cmd, \pluginCmdDemo, 7);
- * s.sendMsg(\cmd, \pluginCmdDemo);
- *
- */
+/* to test the above, send the server these commands:
+
+(
+SynthDef(\sine, {
+    Out.ar(0, SinOsc.ar(800,0,0.2) * 0.01)
+}).add;
+
+// listen for /done message
+OSCdef(\cmd_test, {
+    "pluginCmdDemo done!".postln;
+}, '/done', nil, nil, [ \pluginCmdDemo ]);
+)
+
+s.sendMsg('/cmd', \pluginCmdDemo, 7, 9, \mno, ['/s_new', \sine, 900, 0, 0]);
+s.sendMsg('/n_free', 900);
+s.sendMsg('/cmd', \pluginCmdDemo, 7, 9, \mno);
+s.sendMsg('/cmd', \pluginCmdDemo, 7, 9);
+s.sendMsg('/cmd', \pluginCmdDemo, 7);
+s.sendMsg('/cmd', \pluginCmdDemo);
+
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-// example of implementing a plug in with unit commands
+// example of implementing a plugin with unit commands
 
 struct UnitCmdDemo : public Unit {
     float value;

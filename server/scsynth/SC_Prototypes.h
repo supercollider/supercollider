@@ -220,4 +220,11 @@ SCErr PerformAsynchronousCommand(
     AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
     AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
 
+SCErr PerformAsynchronousCommandEx(
+    World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
+    AsyncStageFnEx stage2, // stage2 is non real time
+    AsyncStageFnEx stage3, // stage3 is real time - completion msg performed if stage3 returns true
+    AsyncStageFnEx stage4, // stage4 is non real time - sends done if stage4 returns true
+    AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
+
 ////////////////////////////////////////////////////////////////////////

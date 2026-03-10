@@ -92,7 +92,7 @@ struct sc_bufgen_def : public named_hash_entry {
 
     sc_bufgen_def(const char* name, BufGenFunc func): named_hash_entry(name), func(func) {}
 
-    sample* run(World* world, uint32_t buffer_index, struct sc_msg_iter* args);
+    sample* run(World* world, uint32_t buffer_index, sc_msg_iter* args);
 };
 
 struct sc_cmdplugin_def : public named_hash_entry {
@@ -104,7 +104,9 @@ struct sc_cmdplugin_def : public named_hash_entry {
         func(func),
         user_data(user_data) {}
 
-    void run(World* world, struct sc_msg_iter* args, void* replyAddr) { (func)(world, user_data, args, replyAddr); }
+    void run(World* world, sc_msg_iter* args, detail::endpoint_ptr const& endpoint) {
+        (func)(world, user_data, args, endpoint.get());
+    }
 };
 
 class sc_plugin_container {
@@ -155,8 +157,8 @@ public:
     bool register_ugen_command_function(const char* ugen_name, const char* cmd_name, UnitCmdFunc);
     bool register_cmd_plugin(const char* cmd_name, PlugInCmdFunc func, void* user_data);
 
-    sample* run_bufgen(World* world, const char* name, uint32_t buffer_index, struct sc_msg_iter* args);
-    bool run_cmd_plugin(World* world, const char* name, struct sc_msg_iter* args, void* replyAddr);
+    sample* run_bufgen(World* world, const char* name, uint32_t buffer_index, sc_msg_iter* args);
+    bool run_cmd_plugin(World* world, const char* name, sc_msg_iter* args, detail::endpoint_ptr const& endpoint);
 };
 
 /** factory class for supercollider ugens

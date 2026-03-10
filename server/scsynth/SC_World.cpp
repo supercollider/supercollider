@@ -237,6 +237,7 @@ void InterfaceTable_Init() {
     ft->fGroup_DeleteAll = &Group_DeleteAll;
     ft->fDoneAction = &Unit_DoneAction;
     ft->fDoAsynchronousCommand = &PerformAsynchronousCommand;
+    ft->fDoAsynchronousCommandEx = &PerformAsynchronousCommandEx;
     ft->fBufAlloc = &bufAlloc;
 
     ft->fSCfftCreate = &scfft_create;

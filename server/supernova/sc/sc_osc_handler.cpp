@@ -3036,13 +3036,13 @@ void handle_u_cmd(ReceivedMessage const& msg, int size) {
     synth->apply_unit_cmd(cmd_name, ugen_index, &args);
 }
 
-void handle_cmd(ReceivedMessage const& msg, int size, endpoint_ptr endpoint) {
+void handle_cmd(ReceivedMessage const& msg, int size, endpoint_ptr const& endpoint) {
     int skip_bytes = addr_pattern_size(msg); // skip address pattern
     sc_msg_iter args(size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     const char* cmd = args.gets();
 
-    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, endpoint.get());
+    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, endpoint);
 }
 
 } /* namespace */
@@ -3712,10 +3712,17 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
 }
 
 
-template <bool realtime>
-void handle_asynchronous_command(World* world, const char* cmdName, void* cmdData, AsyncStageFn stage2,
-                                 AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
-                                 completion_message&& message, endpoint_ptr endpoint) {
+template <bool realtime, typename StageFn>
+void handle_asynchronous_command(World* world, const char* cmd_name, void* cmd_data, StageFn stage2, StageFn stage3,
+                                 StageFn stage4, AsyncFreeFn cleanup, completion_message&& message,
+                                 endpoint_ptr&& endpoint) {
+    auto call_stage_fn = [](StageFn fn, World* world, void* cmd_data, endpoint_ptr const& endpoint) {
+        if constexpr (std::is_same_v<StageFn, AsyncStageFnEx>)
+            return !fn || fn(world, cmd_data, endpoint.get());
+        else
+            return !fn || fn(world, cmd_data);
+    };
+
     // Usually, this API function is called in response to plugin/unit commands (handled *before* DSP computation).
     // We lock the memory pool nevertheless, just in case it's called from RT helper threads.
     // Actually, it's not a good idea to call it from within the perform routine because fire_system_callback()
@@ -3726,65 +3733,75 @@ void handle_asynchronous_command(World* world, const char* cmdName, void* cmdDat
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
             // stage 2 (NRT thread)
-            bool result2 = !stage2 || (stage2)(world, cmdData);
+            bool result2 = call_stage_fn(stage2, world, cmd_data, endpoint);
 
-            if (result2) {
-                cmd_dispatcher<realtime>::fire_rt_callback(
-                    [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-                        // stage 3 (RT thread)
-                        bool result3 = !stage3 || (stage3)(world, cmdData);
-
-                        if (result3) {
-                            handle_completion_message(std::move(message), endpoint);
-
-                            cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
-                                // stage 4 (NRT thread)
-                                bool result4 = !stage4 || (stage4)(world, cmdData);
-
-                                if (result4 && cmdName)
-                                    send_done_message(endpoint, cmdName);
-
-                                // free in RT thread!
-                                cmd_dispatcher<realtime>::fire_rt_callback([=] {
-                                    if (cleanup)
-                                        (cleanup)(world, cmdData);
-                                });
-                            });
-                        } else {
-                            if (cleanup)
-                                (cleanup)(world, cmdData);
-                            consume(std::move(message));
-                        }
-                    });
-            } else {
+            if (!result2) {
                 // free in RT thread!
                 cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
                     if (cleanup)
-                        (cleanup)(world, cmdData);
+                        (cleanup)(world, cmd_data);
                     consume(std::move(message));
                 });
+                return;
             }
+
+            cmd_dispatcher<realtime>::fire_rt_callback(
+                [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
+                    // stage 3 (RT thread)
+                    bool result3 = call_stage_fn(stage3, world, cmd_data, endpoint);
+
+                    if (!result3) {
+                        if (cleanup)
+                            (cleanup)(world, cmd_data);
+                        consume(std::move(message));
+                        return;
+                    }
+
+                    handle_completion_message(std::move(message), endpoint);
+
+                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
+                        // stage 4 (NRT thread)
+                        bool result4 = call_stage_fn(stage4, world, cmd_data, endpoint);
+
+                        if (result4 && cmd_name)
+                            send_done_message(endpoint, cmd_name);
+
+                        // free in RT thread!
+                        cmd_dispatcher<realtime>::fire_rt_callback([=] {
+                            if (cleanup)
+                                (cleanup)(world, cmd_data);
+                        });
+                    });
+                });
         });
 }
 
+template <typename StageFn>
 void sc_osc_handler::do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData,
-                                             AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4,
-                                             AsyncFreeFn cleanup, int completionMsgSize,
-                                             const void* completionMsgData) const {
+                                             StageFn stage2, StageFn stage3, StageFn stage4, AsyncFreeFn cleanup,
+                                             int completionMsgSize, const void* completionMsgData) const {
     completion_message msg(completionMsgSize, completionMsgData);
-    endpoint_ptr shared_endpoint;
 
-    nova_endpoint* endpoint = replyAddr ? static_cast<nova_endpoint*>(replyAddr) : nullptr;
-
-    if (endpoint)
-        shared_endpoint = endpoint->shared_from_this();
+    nova_endpoint* endpoint = static_cast<nova_endpoint*>(replyAddr);
+    endpoint_ptr endpoint_ptr(endpoint ? endpoint->shared_from_this() : nullptr);
 
     if (world->mRealTime)
         handle_asynchronous_command<true>(world, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
-                                          shared_endpoint);
+                                          std::move(endpoint_ptr));
     else
         handle_asynchronous_command<false>(world, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
-                                           shared_endpoint);
+                                           std::move(endpoint_ptr));
+}
+
+// explicit template instantiations for AsyncStageFn and AsyncStageFnEx
+template void sc_osc_handler::do_asynchronous_command<AsyncStageFn>(World*, void*, const char*, void*, AsyncStageFn,
+                                                                    AsyncStageFn, AsyncStageFn, AsyncFreeFn, int,
+                                                                    const void*) const;
+
+template void sc_osc_handler::do_asynchronous_command<AsyncStageFnEx>(World*, void*, const char*, void*, AsyncStageFnEx,
+                                                                      AsyncStageFnEx, AsyncStageFnEx, AsyncFreeFn, int,
+                                                                      const void*) const;
+
 }
 
 // called from RT thread, perform in NRT thread, free in RT thread

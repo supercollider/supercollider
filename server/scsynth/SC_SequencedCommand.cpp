@@ -20,6 +20,9 @@
 
 
 #include "SC_SequencedCommand.h"
+#include "SC_GraphDef.h"
+#include "SC_BufGen.h"
+#include "SC_Unit.h"
 #include "SC_CoreAudio.h"
 #include "SC_Errors.h"
 #include "scsynthsend.h"
@@ -1510,11 +1513,33 @@ SCErr PerformAsynchronousCommand(
 
 ///////////////////////////////////////////////////////////////////////////
 
-AsyncPlugInCmd::AsyncPlugInCmd(
+SCErr PerformAsynchronousCommandEx(
+    World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
+    AsyncStageFnEx stage2, // stage2 is non real time
+    AsyncStageFnEx stage3, // stage3 is real time - completion msg performed if stage3 returns true
+    AsyncStageFnEx stage4, // stage4 is non real time - sends done if stage4 returns true
+    AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData) {
+    void* space = World_Alloc(inWorld, sizeof(AsyncPlugInCmdEx));
+    ReturnSCErrIfNil(space);
+    AsyncPlugInCmdEx* cmd = new (space) AsyncPlugInCmdEx(inWorld, (ReplyAddress*)replyAddr, cmdName, cmdData, stage2,
+                                                         stage3, stage4, cleanup, completionMsgSize, completionMsgData);
+    if (!cmd)
+        return kSCErr_Failed;
+    if (inWorld->mRealTime)
+        cmd->CallNextStage();
+    else
+        cmd->CallEveryStage();
+    return kSCErr_None;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+template <typename StageFn>
+AsyncPlugInCmd_<StageFn>::AsyncPlugInCmd_(
     World* inWorld, ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
-    AsyncStageFn stage2, // stage2 is non real time
-    AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
-    AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+    StageFn stage2, // stage2 is non real time
+    StageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+    StageFn stage4, // stage4 is non real time - sends done if stage4 returns true
     AsyncFreeFn cleanup, // cleanup is called in real time
     int completionMsgSize, const void* completionMsgData):
     SC_SequencedCommand(inWorld, inReplyAddress),
@@ -1524,7 +1549,7 @@ AsyncPlugInCmd::AsyncPlugInCmd(
     mStage3(stage3),
     mStage4(stage4),
     mCleanup(cleanup) {
-    if (completionMsgSize && completionMsgData) {
+    if (completionMsgSize > 0 && completionMsgData) {
         mMsgSize = completionMsgSize;
         mMsgData = (char*)World_Alloc(mWorld, mMsgSize);
         ThrowIfNil(mMsgData);
@@ -1532,24 +1557,40 @@ AsyncPlugInCmd::AsyncPlugInCmd(
     }
 }
 
-AsyncPlugInCmd::~AsyncPlugInCmd() { (mCleanup)(mWorld, mCmdData); }
+template <typename StageFn> AsyncPlugInCmd_<StageFn>::~AsyncPlugInCmd_() {
+    // NOTE: before SC 3.15 the clean up function could not be NULL.
+    if (mCleanup)
+        mCleanup(mWorld, mCmdData);
+}
 
-void AsyncPlugInCmd::CallDestructor() { this->~AsyncPlugInCmd(); }
+template <typename StageFn> void AsyncPlugInCmd_<StageFn>::CallDestructor() { this->~AsyncPlugInCmd_(); }
 
-bool AsyncPlugInCmd::Stage2() {
-    bool result = !mStage2 || (mStage2)(mWorld, mCmdData);
+template <typename StageFn> bool AsyncPlugInCmd_<StageFn>::Stage2() {
+    bool result;
+    if constexpr (std::is_same_v<StageFn, AsyncStageFnEx>)
+        result = !mStage2 || (mStage2)(mWorld, mCmdData, &mReplyAddress);
+    else
+        result = !mStage2 || (mStage2)(mWorld, mCmdData);
     return result;
 }
 
-bool AsyncPlugInCmd::Stage3() {
-    bool result = !mStage3 || (mStage3)(mWorld, mCmdData);
+template <typename StageFn> bool AsyncPlugInCmd_<StageFn>::Stage3() {
+    bool result;
+    if constexpr (std::is_same_v<StageFn, AsyncStageFnEx>)
+        result = !mStage3 || (mStage3)(mWorld, mCmdData, &mReplyAddress);
+    else
+        result = !mStage3 || (mStage3)(mWorld, mCmdData);
     if (result)
         SEND_COMPLETION_MSG;
     return result;
 }
 
-void AsyncPlugInCmd::Stage4() {
-    bool result = !mStage4 || (mStage4)(mWorld, mCmdData);
+template <typename StageFn> void AsyncPlugInCmd_<StageFn>::Stage4() {
+    bool result;
+    if constexpr (std::is_same_v<StageFn, AsyncStageFnEx>)
+        result = !mStage4 || (mStage4)(mWorld, mCmdData, &mReplyAddress);
+    else
+        result = !mStage4 || (mStage4)(mWorld, mCmdData);
     if (result && mCmdName && mReplyAddress.mReplyFunc != null_reply_func)
-        SendDone((char*)mCmdName);
+        SendDone(mCmdName);
 }
