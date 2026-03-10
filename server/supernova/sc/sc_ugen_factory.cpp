@@ -131,23 +131,18 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
     return unit;
 }
 
-bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func) {
-    sc_unitcmd_def* def = new sc_unitcmd_def(cmd_name, func);
-    unitcmd_set.insert(*def);
-    return true;
-}
-
-void sc_ugen_def::run_unit_command(const char* cmd_name, Unit* unit, struct sc_msg_iter* args) {
+void sc_ugen_def::run_unit_command(const char* cmd_name, Unit* unit, sc_msg_iter* args,
+                                   detail::endpoint_ptr const& endpoint) {
     unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, named_hash_hash(), named_hash_equal());
 
     if (it != unitcmd_set.end()) {
-        it->run(unit, args);
+        it->run(unit, args, endpoint);
     } else {
         std::cout << "can't find unit command: " << cmd_name << std::endl;
     }
 }
 
-sample* sc_bufgen_def::run(World* world, uint32_t buffer_index, struct sc_msg_iter* args) {
+sample* sc_bufgen_def::run(World* world, uint32_t buffer_index, sc_msg_iter* args) {
     SndBuf* buf = World_GetNRTBuf(world, buffer_index);
     sample* data = buf->data;
 
@@ -178,16 +173,6 @@ sc_ugen_def* sc_plugin_container::find_ugen(symbol const& name) {
     return &*it;
 }
 
-bool sc_plugin_container::register_ugen_command_function(const char* ugen_name, const char* cmd_name,
-                                                         UnitCmdFunc func) {
-    sc_ugen_def* def = find_ugen(symbol(ugen_name));
-    if (!def) {
-        std::cout << "unable to register ugen command: ugen '" << ugen_name << "' doesn't exist" << std::endl;
-        return false;
-    }
-    return def->add_command(cmd_name, func);
-}
-
 bool sc_plugin_container::register_cmd_plugin(const char* cmd_name, PlugInCmdFunc func, void* user_data) {
     cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, named_hash_hash(), named_hash_equal());
     if (it != cmdplugin_set.end()) {
@@ -201,8 +186,7 @@ bool sc_plugin_container::register_cmd_plugin(const char* cmd_name, PlugInCmdFun
     return true;
 }
 
-sample* sc_plugin_container::run_bufgen(World* world, const char* name, uint32_t buffer_index,
-                                        struct sc_msg_iter* args) {
+sample* sc_plugin_container::run_bufgen(World* world, const char* name, uint32_t buffer_index, sc_msg_iter* args) {
     bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == bufgen_set.end()) {
         std::cout << "unable to find buffer generator: " << name << std::endl;

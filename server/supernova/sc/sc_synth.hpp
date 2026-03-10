@@ -25,6 +25,9 @@
 #include "SC_RGen.h"
 #include "SC_Wire.h"
 
+struct sc_msg_iter;
+
+#include "sc_endpoint.hpp"
 #include "sc_synth_definition.hpp"
 
 #include "../server/synth.hpp"
@@ -34,6 +37,7 @@ namespace nova {
 
 struct sc_unit_cmd {
     sc_unit_cmd* next;
+    detail::endpoint_ptr endpoint;
     int size;
     char data[1];
 };
@@ -197,9 +201,12 @@ public:
 
     void enable_tracing(void) { trace = 1; }
 
-    void apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, struct sc_msg_iter* args);
+    void apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, sc_msg_iter* args,
+                        detail::endpoint_ptr const& endpoint);
 
 private:
+    void queue_unit_cmd(sc_msg_iter* args, detail::endpoint_ptr const& endpoint);
+
     void run_traced(void);
 
     sample get_constant(size_t index) { return static_cast<sc_synth_definition*>(class_ptr.get())->constants[index]; }

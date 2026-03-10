@@ -34,11 +34,13 @@
 #include "SC_Prototypes.h"
 #include "SC_Errors.h"
 #include "Unroll.h"
+#include "SC_ReplyImpl.hpp"
 
 void Unit_ChooseMulAddFunc(Unit* unit);
 
 struct QueuedCmd {
     struct QueuedCmd* mNext;
+    ReplyAddress mReplyAddress;
     int mSize;
     char mData[1];
 };
@@ -64,8 +66,8 @@ void Graph_Dtor(Graph* inGraph) {
         }
     }
     // free queued Unit commands
-    // AFAICT this can only happen if a Graph is created, Unit commands are sent and the Graph
-    // is deleted all at the same time stamp.
+    // AFAICT this can only happen if a Graph is created, Unit commands are sent and
+    // the Graph is deleted all at in the same control block.
     QueuedCmd* cmd = (QueuedCmd*)inGraph->mPrivate;
     while (cmd) {
         QueuedCmd* next = cmd->mNext;
@@ -450,12 +452,16 @@ void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter*
     inGraphDef->mRefCount++;
 }
 
-void Graph_QueueUnitCmd(Graph* inGraph, int inSize, const char* inData) {
+void Graph_QueueUnitCmd(Graph* inGraph, int inSize, const char* inData, const ReplyAddress* inReplyAddress) {
     // put the unit command on a queue and dispatch it right after the first
     // calc function, i.e. after calling the unit constructors.
     // scprintf("->Graph_QueueUnitCmd\n");
     QueuedCmd* cmd = (QueuedCmd*)World_Alloc(inGraph->mNode.mWorld, sizeof(QueuedCmd) + inSize);
     cmd->mNext = nullptr;
+    if (inReplyAddress)
+        cmd->mReplyAddress = *inReplyAddress;
+    else
+        cmd->mReplyAddress.mReplyFunc = null_reply_func;
     cmd->mSize = inSize;
     memcpy(cmd->mData, inData, inSize);
     if (inGraph->mPrivate) {
@@ -487,7 +493,7 @@ static void Graph_DispatchUnitCmds(Graph* inGraph) {
         int32* cmdName = msg.gets4();
         UnitCmd* cmd = unitDef->mCmds->Get(cmdName);
 
-        (cmd->mFunc)(unit, &msg);
+        Unit_RunCommand(cmd, unit, &msg, &item->mReplyAddress);
 
         World_Free(inGraph->mNode.mWorld, item);
 

@@ -219,6 +219,7 @@ void InterfaceTable_Init() {
     ft->fSendNodeReply = &Node_SendReply;
 
     ft->fDefineUnitCmd = &UnitDef_AddCmd;
+    ft->fDefineUnitCmdEx = &UnitDef_AddCmdEx;
     ft->fDefinePlugInCmd = &PlugIn_DefineCmd;
 
     ft->fSendMsgFromRT = &SendMsgFromEngine;

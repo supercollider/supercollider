@@ -70,7 +70,6 @@ struct GraphDef {
     uint32 mNumVariants;
     struct GraphDef* mVariants;
 };
-typedef struct GraphDef GraphDef;
 
 GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, size_t size, GraphDef* inList);
 GraphDef* GraphDef_Load(World* inWorld, const std::filesystem::path& path, GraphDef* inList);

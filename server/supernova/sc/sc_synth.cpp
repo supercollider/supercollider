@@ -123,7 +123,6 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
 sc_synth::~sc_synth(void) { assert(!initialized); }
 
 extern "C" {
-void* rt_alloc(World* dummy, size_t size);
 void* rt_free(World* dummy, void* ptr);
 }
 
@@ -143,20 +142,24 @@ void sc_synth::prepare(void) {
     initialized = true;
 
     // *finally* dispatch queued unit commands
-    auto cmd = (sc_unit_cmd*)mPrivate;
-    while (cmd) {
+    auto unit_cmds = (sc_unit_cmd*)mPrivate;
+    for (auto cmd = unit_cmds; cmd != nullptr;) {
         auto next = cmd->next;
 
         sc_msg_iter args(cmd->size, cmd->data);
-        // error checking has already be done in Unit_DoCmd()
+        // error checking has already be done in handle_u_cmd() and apply_unit_cmd().
         int node_id = args.geti();
         assert(node_id == mNode.mID);
-        int ugen_index = args.geti();
+        int unit_index = args.geti();
         const char* cmd_name = args.gets();
 
-        apply_unit_cmd(cmd_name, ugen_index, &args);
+        Unit* unit = units[unit_index];
+        sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
 
-        // NOTE: we can't just do rt_pool.free() because other synths might be
+        def->run_unit_command(cmd_name, unit, &args, cmd->endpoint);
+
+        std::destroy_at(cmd);
+        // NOTE: we can't just call rt_pool.free() because other synths might be
         // calling rt_alloc()/rt_free() concurrently in their calc function!
         rt_free(nullptr, cmd);
 
@@ -164,7 +167,6 @@ void sc_synth::prepare(void) {
     }
     mPrivate = nullptr;
 }
-
 
 void sc_synth::finalize() {
     if (initialized) {
@@ -182,11 +184,13 @@ void sc_synth::finalize() {
     initialized = false;
 
     // free queued unit commands
-    // AFAICT this can only happen if a Graph is created, Unit commands are sent and the Graph
-    // is deleted all at the same time stamp.
-    auto* cmd = (sc_unit_cmd*)mPrivate;
-    while (cmd) {
+    // AFAICT this can only happen if a synth is created, unit commands are sent and
+    // the synth is freed all in the same control block.
+    auto* unit_cmds = (sc_unit_cmd*)mPrivate;
+    for (auto cmd = unit_cmds; cmd != nullptr;) {
         auto next = cmd->next;
+        std::destroy_at(cmd);
+        // finalize() is always called outside the calc function so this is thread-safe.
         rt_pool.free(cmd);
         cmd = next;
     }
@@ -280,37 +284,48 @@ void sc_synth::map_control_buses_audio(unsigned int slot_index, int audio_bus_in
         map_control_bus_audio(slot_index + i, audio_bus_index + i);
 }
 
-void sc_synth::apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, struct sc_msg_iter* args) {
-    if (unit_index >= 0 && unit_index < unit_count) {
-        if (!initialized) {
+void sc_synth::apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, sc_msg_iter* args,
+                              detail::endpoint_ptr const& endpoint) {
+    if (unit_index < unit_count) {
+        if (initialized) {
+            Unit* unit = units[unit_index];
+            sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+
+            def->run_unit_command(unit_cmd, unit, args, endpoint);
+        } else {
             // don't run the unit command if the unit constructor hasn't been called yet!
             // instead we put it on a queue and run it after the graph has been prepared.
-            // NOTE: we can't just use rt_pool.malloc() because other synths might be
-            // calling rt_alloc()/rt_free() concurrently in their calc function!
-            // log_printf("queue unit command\n");
-            auto cmd = (sc_unit_cmd*)rt_alloc(nullptr, sizeof(sc_unit_cmd) + args->size);
-            cmd->next = nullptr;
-            cmd->size = args->size;
-            memcpy(cmd->data, args->data, args->size);
-            if (mPrivate) {
-                // add to tail
-                auto ptr = (sc_unit_cmd*)mPrivate;
-                while (ptr->next)
-                    ptr = ptr->next;
-                ptr->next = cmd;
-            } else {
-                mPrivate = cmd;
-            }
+            queue_unit_cmd(args, endpoint);
             return;
         }
-        Unit* unit = units[unit_index];
-        sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-
-        def->run_unit_command(unit_cmd, unit, args);
     } else {
         log_printf("unit index %d out of range!\n", unit_index);
     }
 }
+
+void sc_synth::queue_unit_cmd(sc_msg_iter* args, detail::endpoint_ptr const& endpoint) {
+    // NOTE: we are not in a calc function, so we don't need to use rt_alloc()!
+    // log_printf("queue unit command\n");
+    void* mem = rt_pool.malloc(sizeof(sc_unit_cmd) + args->size);
+    if (mem == nullptr)
+        throw std::bad_alloc();
+
+    sc_unit_cmd* cmd = new (mem) sc_unit_cmd {};
+    cmd->next = nullptr;
+    cmd->endpoint = endpoint;
+    cmd->size = args->size;
+    memcpy(cmd->data, args->data, args->size);
+    if (mPrivate) {
+        // add to tail
+        auto ptr = (sc_unit_cmd*)mPrivate;
+        while (ptr->next)
+            ptr = ptr->next;
+        ptr->next = cmd;
+    } else {
+        mPrivate = cmd;
+    }
+}
+
 
 void sc_synth::run(void) { perform(); }
 

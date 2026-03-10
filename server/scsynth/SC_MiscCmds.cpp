@@ -163,8 +163,8 @@ SCErr meth_b_zero(World* inWorld, int inSize, char* inData, ReplyAddress* inRepl
 
 
 SCErr meth_u_cmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
-SCErr meth_u_cmd(World* inWorld, int inSize, char* inData, ReplyAddress* /*inReply*/) {
-    return Unit_DoCmd(inWorld, inSize, inData);
+SCErr meth_u_cmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+    return Unit_DoCmd(inWorld, inSize, inData, inReply);
 };
 
 SCErr meth_cmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);

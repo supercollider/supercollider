@@ -343,6 +343,10 @@ SCBool define_unitcmd(const char* unitClassName, const char* cmdName, UnitCmdFun
     return nova::sc_factory->register_ugen_command_function(unitClassName, cmdName, inFunc);
 }
 
+SCBool define_unitcmd_ex(const char* unitClassName, const char* cmdName, UnitCmdFuncEx inFunc) {
+    return nova::sc_factory->register_ugen_command_function(unitClassName, cmdName, inFunc);
+}
+
 SCBool define_plugincmd(const char* name, PlugInCmdFunc func, void* user_data) {
     return nova::sc_factory->register_cmd_plugin(name, func, user_data);
 }
@@ -620,6 +624,7 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     sc_interface.fDefineBufGen = &define_bufgen;
     sc_interface.fDefinePlugInCmd = &define_plugincmd;
     sc_interface.fDefineUnitCmd = &define_unitcmd;
+    sc_interface.fDefineUnitCmdEx = &define_unitcmd_ex;
 
     /* interface functions */
     sc_interface.fNodeEnd = &node_end;

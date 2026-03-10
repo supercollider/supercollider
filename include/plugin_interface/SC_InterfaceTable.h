@@ -72,6 +72,10 @@ struct InterfaceTable {
     // define a command for a unit generator  /u_cmd
     SCBool (*fDefineUnitCmd)(const char* inUnitClassName, const char* inCmdName, UnitCmdFunc inFunc);
 
+    // define a command for a unit generator  /u_cmd.
+    // this is an extended version of fDefineUnitCmd that takes a UnitCmdFuncEx instead of UnitCmdFunc.
+    SCBool (*fDefineUnitCmdEx)(const char* inUnitClassName, const char* inCmdName, UnitCmdFuncEx inFunc);
+
     // define a buf gen
     SCBool (*fDefineBufGen)(const char* inName, BufGenFunc inFunc);
 
@@ -163,6 +167,7 @@ typedef struct InterfaceTable InterfaceTable;
 #define DefineUnit (*ft->fDefineUnit)
 #define DefinePlugInCmd (*ft->fDefinePlugInCmd)
 #define DefineUnitCmd (*ft->fDefineUnitCmd)
+#define DefineUnitCmdEx (*ft->fDefineUnitCmdEx)
 #define DefineBufGen (*ft->fDefineBufGen)
 #define ClearUnitOutputs (*ft->fClearUnitOutputs)
 #define SendTrigger (*ft->fSendTrigger)
