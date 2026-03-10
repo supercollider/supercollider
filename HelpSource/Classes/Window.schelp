@@ -327,13 +327,13 @@ it is generally safer to scale positions relative to the screen or available are
 
 subsubsection:: Adjusting bounds from bottom-left
 
-Window coordinates use a bottom-left origin. The following examples show how to
+link::Classes/Window:: class coordinates use a bottom-left origin. The following examples show how to
 adjust bounds after creating a window.
 
 code::
 /* Create a window at the default position and size: */
 (
-w = Window("test");
+w = Window.new("test");
 w.front;
 )
 
@@ -341,7 +341,7 @@ w.front;
 w.bounds_(Rect(0, 0, 400, 400)).front; // May conflict with OS GUI elements at the bottom.
 
 (
-w.bounds = Rect(0, 100, 400, 400); // 100 avoids collision with OS GUI elements.
+w.bounds = Rect(100, 100, 400, 400); // 100 avoids collision with OS GUI elements.
 w.front;
 )
 
@@ -355,12 +355,35 @@ w.bounds_(Rect(0, Window.availableBounds.height * ~factor, 400, 400));
 
 (
 ~factor = 0.035; // 0: bottom, 1: top
-w.bounds_(Rect(0, Window.screenBounds.height * ~factor, 400, 400));
+w.bounds_(Rect(100, Window.screenBounds.height * ~factor, 400, 400));
 // Window.screenBounds includes the full display area.
 // Use this when OS GUI elements are hidden.
 )
 
 w.close;
+::
+
+note::
+The origin differs from the coordinate system used inside a link::Classes/View:: or link::Classes/Window:: class, which use a top-left origin:
+
+code::
+(
+x = Window("test", Rect(100, 100, 300, 100)); // origin: bottom-left
+
+b = Button(x, Rect(90, 0, 50, 25));           // origin: top-left
+v = View(x, Rect(0, 0, 100, 50));             // origin: top-left
+v.background = Color.gray;
+
+t = TextView(v, Rect(10, 10, 80, 30));        // origin: top-left
+
+c = StaticText(x, Rect(90, 30, 50, 25));      // origin: top-left
+c.string = "test";
+
+x.front;
+)
+
+x.close;
+::
 ::
 
 subsubsection:: Adjusting bounds from top-left
@@ -370,23 +393,32 @@ To position a window relative to the top, subtract from the height.
 code::
 /* Hard‑coded example (using a fixed pixel offset): */
 (
-x = Window.new("hard-coded position",
-Rect(100, Window.screenBounds.height - 200, 300, 100)
+x = Window("hard-coded position",
+    Rect(100, Window.screenBounds.height - 200, 300, 100)
 );
 x.front;
 )
 
 /* Scaling avoids hard‑coded (fixed‑pixel) offsets: */
 (
-var factor = 0; // 0: top, 1: bottom
-var rectHeight = 100;
-var titleHeight = 32; // The title bar height varies depending on OS and display setting.
-var normalizedPosition = Window.screenBounds.height * factor + rectHeight + titleHeight;
+~factor = 0; // 0: top, 1: bottom
+~rectHeight = 100;
+~titleHeight = 32; // The title bar height varies depending on OS and display setting.
+~screenHeight = Window.screenBounds.height;
+~normalizedOffset = ~screenHeight * ~factor + ~rectHeight + ~titleHeight;
 
-y = Window.new("scaled position",
-Rect(100, Window.screenBounds.height - normalizedPosition, 300, rectHeight)
+y = Window("scaled position",
+    Rect(100, ~screenHeight - ~normalizedOffset, 300, ~rectHeight)
 );
 y.front;
+)
+
+(
+~yHeight = y.bounds.height;
+~normalizedOffset  = ~screenHeight * 0.1 + ~yHeight + ~titleHeight;
+y.bounds_(
+	Rect(100, ~screenHeight - ~normalizedOffset, y.bounds.width, ~yHeight)
+).front
 )
 
 x.close;
@@ -401,8 +433,8 @@ around a point. Use code::Window.screenBounds:: when OS GUI elements are hidden.
 code::
 (
 w = Window("centered window",
-Rect.aboutPoint(Window.availableBounds.center, 200, 100)
-// Rect.aboutPoint(point: center, dx: halfWidth, dy: halfHeight)
+    Rect.aboutPoint(Window.availableBounds.center, 200, 100)
+    // Rect.aboutPoint(point: center, dx: halfWidth, dy: halfHeight)
 );
 w.front;
 )
@@ -418,8 +450,8 @@ edges of the available display area.
 code::
 (
 w = Window("window with margins",
-Window.availableBounds.insetBy(300, 200)
-// Rect.insetBy(h: hMargin, v: vMargin)
+    Window.availableBounds.insetBy(300, 200)
+    // Rect.insetBy(h: hMargin, v: vMargin)
 );
 // Use Window.screenBounds when OS GUI elements are hidden.
 w.front;
