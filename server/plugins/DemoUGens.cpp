@@ -49,8 +49,8 @@ SCBool cmdStage2(World* world, void* inUserData, void* inReplyAddress) {
     // just for demonstration purposes, let's assume that a string that says "fail" causes the command to fail.
     if (strcmp(myCmdData->name, "fail") != 0) {
         // "success" -> just print out the values
-        Print("cmdStage2 a %g  b %g  x %g  y %g  name %s\n", myCmdData->myPlugin->a, myCmdData->myPlugin->b, myCmdData->x,
-              myCmdData->y, myCmdData->name);
+        Print("cmdStage2 a %g  b %g  x %g  y %g  name %s\n", myCmdData->myPlugin->a, myCmdData->myPlugin->b,
+              myCmdData->x, myCmdData->y, myCmdData->name);
 
         // return 'true' to continue with stage3.
         return true;
@@ -221,7 +221,6 @@ SCBool UnitCmdDemo_stage2(Unit* unit, void* rawData, void* replyAddr) {
         // /done message will be sent.
         return false;
     }
-
 }
 
 SCBool UnitCmdDemo_stage3(Unit* unit, void* rawData, void* replyAddr) {
