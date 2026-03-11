@@ -1,4 +1,4 @@
-TestServer_SynthDefVersions : UnitTest {
+TestSynthDefVersions_Server : UnitTest {
 	var compiledDefs;
 
 	setUp {
