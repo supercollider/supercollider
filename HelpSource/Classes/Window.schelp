@@ -321,9 +321,8 @@ w.front;
 
 subsection:: Setting Bounds
 
-When positioning windows, remember that screen sizes and available display areas
-vary across systems. Instead of using a fixed pixel offset (a hard‑coded value),
-it is generally safer to scale positions relative to the screen or available area.
+Because screen sizes vary, scaling window coordinates relative to the screen bounds can offer 
+flexibility when using your GUI on different systems.
 
 subsubsection:: Adjusting bounds from bottom-left
 
@@ -338,8 +337,6 @@ w.front;
 )
 
 /* Hard‑coded example (using a fixed pixel offset): */
-w.bounds_(Rect(0, 0, 400, 400)).front; // May conflict with OS GUI elements at the bottom.
-
 (
 w.bounds = Rect(100, 100, 400, 400); // 100 avoids collision with OS GUI elements.
 w.front;
@@ -348,14 +345,14 @@ w.front;
 /* Scaling avoids hard‑coded (fixed‑pixel) offsets: */
 (
 ~factor = 0.037; // 0: bottom, 1: top
-w.bounds_(Rect(0, Window.availableBounds.height * ~factor, 400, 400));
+w.bounds_(Rect(0, Window.availableBounds.height * ~factor, 400, 400)).front;
 // Window.availableBounds excludes menu bars (macOS, Linux) and taskbars (Windows).
 // Use this when OS GUI elements are visible.
 )
 
 (
 ~factor = 0.035; // 0: bottom, 1: top
-w.bounds_(Rect(100, Window.screenBounds.height * ~factor, 400, 400));
+w.bounds_(Rect(100, Window.screenBounds.height * ~factor, 400, 400)).front;
 // Window.screenBounds includes the full display area.
 // Use this when OS GUI elements are hidden.
 )
