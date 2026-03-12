@@ -99,7 +99,7 @@ SC_INLINE int32 NUMBITS(int32 x) { return 32 - CLZ(x); }
 SC_INLINE int32 LOG2CEIL(int32 x) { return 32 - CLZ(x - 1); }
 
 // is x a power of two
-SC_INLINE SCBool ISPOWEROFTWO(int32 x) { return (x & (x - 1)) == 0; }
+SC_INLINE SCBool ISPOWEROFTWO(int32 x) { return x > 0 && (x & (x - 1)) == 0; }
 
 // next power of two greater than or equal to x
 SC_INLINE int32 NEXTPOWEROFTWO(int32 x) { return (int32)1L << LOG2CEIL(x); }
