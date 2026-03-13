@@ -3824,10 +3824,6 @@ void PyrLitListNode::compile(PyrSlot* result) {
 }
 
 
-int litDictPut(PyrObject* dict, PyrSlot* key, PyrSlot* value);
-int litDictPut(PyrObject* dict, PyrSlot* key, PyrSlot* value) { return errNone; }
-
-
 extern LongStack closedFuncCharNo;
 extern int lastClosedFuncCharNo;
 
