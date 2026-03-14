@@ -823,6 +823,18 @@ void PerformOSCMessage(int inSize, const char* inData, PyrObject* replyObj, int 
 
 // takes ownership of inPacket
 void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time) {
+    //Validate Packet before Processing;
+    if(!inPacket || !inPacket->mData || inPacket->mSize <= 0){
+        return;
+	}
+
+	char* data = inPacket->mData.get();
+
+	//OSC message must start with '/' or "#bundle";
+	if(data[0] != '/' && strncmp(data, "#bundle", 7) != 0){
+        return;
+	}
+
     // post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
     const auto isBundle = IsBundle(inPacket->mData.get());
 
