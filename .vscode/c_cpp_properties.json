@@ -1,10 +1,9 @@
 {
   "configurations": [
     {
-      "name": "Windows",
-      "compilerPath": "cl.exe",
-      "intelliSenseMode": "windows-msvc-x64",
-      "cppStandard": "c++17"
+      "name": "Mac",
+      "cppStandard": "c++17",
+      "configurationProvider": "ms-vscode.cmake-tools"
     }
   ],
   "version": 4

@@ -67,7 +67,7 @@ bool gUseDoubles = false;
 
 InternalSynthServerGlobals gInternalSynthServer = { nullptr, kNumDefaultSharedControls, gDefaultSharedControls };
 
-std::unique_ptr<InPort::UDP> gUDPport {};
+std::unique_ptr<InPort::UDP> gUDPport { };
 
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
