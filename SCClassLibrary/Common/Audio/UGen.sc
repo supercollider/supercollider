@@ -636,7 +636,7 @@ OutputProxy : UGen {
 	}
 
 	controlIndex {
-		if (source.isKindOf(Control).not) { ^nil };
+		if (source.class.isControlUGen.not) { ^nil };
 		^source.specialIndex + outputIndex
 	}
 
