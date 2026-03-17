@@ -136,8 +136,8 @@ void Control_next_1(Control* unit, int inNumSamples);
 
 void AudioControl_Ctor(AudioControl* inUnit);
 void AudioControl_Dtor(AudioControl* inUnit);
-void AudioControl_next_reblock(AudioControl* unit, int inNumSamples);
-void AudioControl_next_k(AudioControl* unit, int inNumSamples);
+void AudioControl_next_a_reblock(AudioControl* unit, int inNumSamples);
+void AudioControl_next_a(AudioControl* unit, int inNumSamples);
 void AudioControl_next_1(AudioControl* unit, int inNumSamples);
 
 void TrigControl_Ctor(TrigControl* inUnit);
@@ -147,67 +147,71 @@ void TrigControl_next_1(TrigControl* unit, int inNumSamples);
 void LagControl_Ctor(LagControl* inUnit);
 void LagControl_Dtor(LagControl* inUnit);
 void LagControl_next_k(LagControl* unit, int inNumSamples);
+void LagControl_next_k_reblock(LagControl* unit, int inNumSamples);
 void LagControl_next_1(LagControl* unit, int inNumSamples);
-
-void InTrig_Ctor(InTrig* unit);
-void InTrig_next_reblock(InTrig* unit, int inNumSamples);
-void InTrig_next_k(InTrig* unit, int inNumSamples);
+void LagControl_next_1_reblock(LagControl* unit, int inNumSamples);
 
 void In_Ctor(In* unit);
 void In_Dtor(In* unit);
-void In_next_reblock(In* unit, int inNumSamples);
+void In_next_a_reblock(In* unit, int inNumSamples);
 void In_next_a(In* unit, int inNumSamples);
 void In_next_k(In* unit, int inNumSamples);
 
 void LagIn_Ctor(LagIn* unit);
 void LagIn_next_0(LagIn* unit, int inNumSamples);
 void LagIn_next_k(LagIn* unit, int inNumSamples);
+void LagIn_next_k_reblock(LagIn* unit, int inNumSamples);
 
 void InFeedback_Ctor(InFeedback* unit);
 void InFeedback_Dtor(InFeedback* unit);
-void InFeedback_next_reblock(InFeedback* unit, int inNumSamples);
+void InFeedback_next_a_reblock(InFeedback* unit, int inNumSamples);
 void InFeedback_next_a(InFeedback* unit, int inNumSamples);
 
+void InTrig_Ctor(InTrig* unit);
+void InTrig_next_k_reblock(InTrig* unit, int inNumSamples);
+void InTrig_next_k(InTrig* unit, int inNumSamples);
+
+void ReplaceOut_Ctor(ReplaceOut* unit);
+void ReplaceOut_next_a_reblock(ReplaceOut* unit, int inNumSamples);
+void ReplaceOut_next_a(ReplaceOut* unit, int inNumSamples);
+void ReplaceOut_next_k_reblock(ReplaceOut* unit, int inNumSamples);
+void ReplaceOut_next_k(ReplaceOut* unit, int inNumSamples);
+
 void Out_Ctor(Out* unit);
-void Out_next_reblock(Out* unit, int inNumSamples);
+void Out_next_a_reblock(Out* unit, int inNumSamples);
 void Out_next_a(Out* unit, int inNumSamples);
+void Out_next_k_reblock(Out* unit, int inNumSamples);
 void Out_next_k(Out* unit, int inNumSamples);
 
 void XOut_Ctor(XOut* unit);
-void XOut_next_reblock(XOut* unit, int inNumSamples);
+void XOut_next_a_reblock(XOut* unit, int inNumSamples);
 void XOut_next_a(XOut* unit, int inNumSamples);
+void XOut_next_k_reblock(XOut* unit, int inNumSamples);
 void XOut_next_k(XOut* unit, int inNumSamples);
-
-void ReplaceOut_Ctor(ReplaceOut* unit);
-void ReplaceOut_next_reblock(ReplaceOut* unit, int inNumSamples);
-void ReplaceOut_next_a(ReplaceOut* unit, int inNumSamples);
-void ReplaceOut_next_k(ReplaceOut* unit, int inNumSamples);
 
 void OffsetOut_Ctor(OffsetOut* unit);
 void OffsetOut_Dtor(OffsetOut* unit);
-void OffsetOut_next_reblock(OffsetOut* unit, int inNumSamples);
+void OffsetOut_next_a_reblock(OffsetOut* unit, int inNumSamples);
 void OffsetOut_next_a(OffsetOut* unit, int inNumSamples);
 
-void LocalIn_Ctor(LocalIn* unit);
-void LocalIn_Dtor(LocalIn* unit);
-void LocalIn_next_reblock(LocalIn* unit, int inNumSamples);
-void LocalIn_next_a(LocalIn* unit, int inNumSamples);
-void LocalIn_next_k(LocalIn* unit, int inNumSamples);
-
-void LocalOut_Ctor(LocalOut* unit);
-void LocalOut_next_reblock(LocalOut* unit, int inNumSamples);
-void LocalOut_next_a(LocalOut* unit, int inNumSamples);
-void LocalOut_next_k(LocalOut* unit, int inNumSamples);
-
 void SharedIn_Ctor(SharedIn* unit);
-void SharedIn_next_reblock(SharedIn* unit, int inNumSamples);
-void SharedIn_next_a(SharedIn* unit, int inNumSamples);
 void SharedIn_next_k(SharedIn* unit, int inNumSamples);
 
 void SharedOut_Ctor(SharedOut* unit);
-void SharedOut_next_reblock(SharedOut* unit, int inNumSamples);
-void SharedOut_next_a(SharedOut* unit, int inNumSamples);
 void SharedOut_next_k(SharedOut* unit, int inNumSamples);
+
+void LocalIn_Ctor(LocalIn* unit);
+void LocalIn_Dtor(LocalIn* unit);
+void LocalIn_next_a_reblock(LocalIn* unit, int inNumSamples);
+void LocalIn_next_a(LocalIn* unit, int inNumSamples);
+void LocalIn_next_k_reblock(LocalIn* unit, int inNumSamples);
+void LocalIn_next_k(LocalIn* unit, int inNumSamples);
+
+void LocalOut_Ctor(LocalOut* unit);
+void LocalOut_next_a_reblock(LocalOut* unit, int inNumSamples);
+void LocalOut_next_a(LocalOut* unit, int inNumSamples);
+void LocalOut_next_k_reblock(LocalOut* unit, int inNumSamples);
+void LocalOut_next_k(LocalOut* unit, int inNumSamples);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -305,6 +309,7 @@ void Control_next_1(Control* unit, int inNumSamples) {
 }
 
 void Control_Ctor(Control* unit) {
+    // There is no need for dedicated reblocking calc functions.
     if (unit->mNumOutputs == 1) {
         SETCALC(Control_next_1);
         Control_next_1(unit, 1);
@@ -317,7 +322,7 @@ void Control_Ctor(Control* unit) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 // This is the reblocking version of AudioControl_next_channel().
-inline void AudioControl_next_reblock_channel(AudioControl* unit, int i, float* mapin, int mapRate, double resample,
+inline void AudioControl_next_channel_reblock(AudioControl* unit, int i, float* mapin, int mapRate, double resample,
                                               int inNumSamples) {
     float* out = OUT(i);
 
@@ -330,29 +335,36 @@ inline void AudioControl_next_reblock_channel(AudioControl* unit, int i, float* 
     case calc_BufRate: {
         float nextVal = mapin[0];
         float curVal = unit->m_prevVal[i];
-        // We must adjust the slope for the resample factor!
-        // Example: with 2x upsampling the output is double the
-        // size of the input, so we would have to half the slope.
-        float valSlope = CALCSLOPE(nextVal, curVal) * resample;
+        const int32 tick = unit->mParent->mTickCounter;
+        const int32 numTicks = unit->mParent->mNumTicks;
+        // Output the slope segment for the current tick.
+        // In the case of upsampling, the slope values will be sampled with zero-order-hold,
+        // just like regular audio signals. This means that we must use the *global* slope factor!
+        float valSlope = (nextVal - curVal) * unit->mWorld->mFullRate.mSlopeFactor;
+        int offset = tick * inNumSamples;
         for (int j = 0; j < inNumSamples; j++) {
-            out[j] = curVal; // should be prevVal
-            curVal += valSlope;
+            int index = (offset + j) * resample;
+            out[j] = curVal + valSlope * index;
         }
-        unit->m_prevVal[i] = curVal;
+        // only update on last tick
+        if (tick == numTicks - 1)
+            unit->m_prevVal[i] = nextVal;
     } break;
     case calc_FullRate: {
         // see comment in AudioControl_next_channel()
         World* world = unit->mWorld;
+        const int32 tick = unit->mParent->mTickCounter;
+        const int32 numTicks = unit->mParent->mNumTicks;
         int32* channelOffsets = unit->mParent->mAudioBusOffsets;
         int thisChannelOffset = channelOffsets[unit->mSpecialIndex + i];
         if (thisChannelOffset >= 0) {
-            int offset = unit->mParent->mTickCounter * inNumSamples * resample;
+            int offset = tick * inNumSamples * resample;
             float* in = mapin + offset;
 
             AudioBusGuard<true> guard(unit, thisChannelOffset, world->mNumAudioBusChannels);
 
             // cache current bus touching values on first tick
-            if (unit->mParent->mTickCounter == 0) {
+            if (tick == 0) {
                 unit->m_busTouchedCache[i] = world->mAudioBusTouched[thisChannelOffset];
             }
 
@@ -368,7 +380,9 @@ inline void AudioControl_next_reblock_channel(AudioControl* unit, int i, float* 
             } else if (diff == 1) {
                 if (unit->m_busUsedInPrevCycle[i]) {
                     Clear(inNumSamples, out);
-                    unit->m_busUsedInPrevCycle[i] = false;
+                    // only update on last tick!!
+                    if (tick == numTicks - 1)
+                        unit->m_busUsedInPrevCycle[i] = false;
                 } else {
                     // copy with reblocking/resampling
                     for (int i = 0; i < inNumSamples; ++i) {
@@ -388,7 +402,7 @@ inline void AudioControl_next_reblock_channel(AudioControl* unit, int i, float* 
     }
 }
 
-void AudioControl_next_reblock(AudioControl* unit, int inNumSamples) {
+void AudioControl_next_a_reblock(AudioControl* unit, int inNumSamples) {
     uint32 numChannels = unit->mNumOutputs;
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
     int* mapRates = unit->mParent->mControlRates + unit->mSpecialIndex;
@@ -403,7 +417,7 @@ void AudioControl_next_reblock(AudioControl* unit, int inNumSamples) {
     double resample = unit->mWorld->mSampleRate / SAMPLERATE;
 
     for (uint32 i = 0; i < numChannels; ++i) {
-        AudioControl_next_reblock_channel(unit, i, mapin[i], mapRates[i], resample, inNumSamples);
+        AudioControl_next_channel_reblock(unit, i, mapin[i], mapRates[i], resample, inNumSamples);
     }
 }
 
@@ -468,7 +482,7 @@ inline void AudioControl_next_channel(AudioControl* unit, int i, float* mapin, i
     }
 }
 
-void AudioControl_next_k(AudioControl* unit, int inNumSamples) {
+void AudioControl_next_a(AudioControl* unit, int inNumSamples) {
     uint32 numChannels = unit->mNumOutputs;
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
     int* mapRates = unit->mParent->mControlRates + unit->mSpecialIndex;
@@ -499,6 +513,7 @@ void AudioControl_next_1(AudioControl* unit, int inNumSamples) {
 
 void AudioControl_Ctor(AudioControl* unit) {
     World* world = unit->mWorld;
+    float** mapControls = unit->mParent->mMapControls + unit->mSpecialIndex;
     int numChannels = unit->mNumOutputs;
 
     unit->m_prevBus = nullptr;
@@ -516,7 +531,9 @@ void AudioControl_Ctor(AudioControl* unit) {
 
         unit->m_prevVal = (float*)mem; // see AudioControl_Dtor()!
         mem += numChannels * sizeof(float);
-        std::fill_n(unit->m_prevVal, numChannels, 0.f);
+        for (int i = 0; i < numChannels; ++i) {
+            unit->m_prevVal[i] = mapControls[i][0];
+        }
 
         unit->m_busTouchedCache = (int32*)mem;
         mem += numChannels * sizeof(int32);
@@ -525,8 +542,8 @@ void AudioControl_Ctor(AudioControl* unit) {
         unit->m_busUsedInPrevCycle = (bool*)mem;
         std::fill_n(unit->m_busUsedInPrevCycle, numChannels, false);
 
-        SETCALC(AudioControl_next_reblock);
-        AudioControl_next_reblock(unit, 1);
+        SETCALC(AudioControl_next_a_reblock);
+        AudioControl_next_a_reblock(unit, 1);
     } else {
         size_t memSize = numChannels * (sizeof(float) + sizeof(bool));
         char* mem = (char*)RTAlloc(world, memSize);
@@ -534,7 +551,9 @@ void AudioControl_Ctor(AudioControl* unit) {
 
         unit->m_prevVal = (float*)mem; // see AudioControl_Dtor()!
         mem += numChannels * sizeof(float);
-        std::fill_n(unit->m_prevVal, numChannels, 0.f);
+        for (int i = 0; i < numChannels; ++i) {
+            unit->m_prevVal[i] = mapControls[i][0];
+        }
 
         unit->m_busUsedInPrevCycle = (bool*)mem;
         std::fill_n(unit->m_busUsedInPrevCycle, numChannels, false);
@@ -545,8 +564,8 @@ void AudioControl_Ctor(AudioControl* unit) {
             SETCALC(AudioControl_next_1);
             AudioControl_next_1(unit, 1);
         } else {
-            SETCALC(AudioControl_next_k);
-            AudioControl_next_k(unit, 1);
+            SETCALC(AudioControl_next_a);
+            AudioControl_next_a(unit, 1);
         }
     }
 }
@@ -571,7 +590,7 @@ void TrigControl_next_k(TrigControl* unit, int inNumSamples) {
     }
 }
 
-void TrigControl_next_1(Unit* unit, int inNumSamples) {
+void TrigControl_next_1(TrigControl* unit, int inNumSamples) {
     int specialIndex = unit->mSpecialIndex;
     Graph* parent = unit->mParent;
     float** mapin = parent->mMapControls + specialIndex;
@@ -583,6 +602,7 @@ void TrigControl_next_1(Unit* unit, int inNumSamples) {
 
 void TrigControl_Ctor(TrigControl* unit) {
     // Print("TrigControl_Ctor\n");
+    // There is no need for dedicated reblocking calc functions.
     if (unit->mNumOutputs == 1) {
         SETCALC(TrigControl_next_1);
     } else {
@@ -597,19 +617,37 @@ void LagControl_next_k(LagControl* unit, int inNumSamples) {
     uint32 numChannels = unit->mNumOutputs;
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
     for (uint32 i = 0; i < numChannels; ++i) {
-        float* out = OUT(i);
         float z = mapin[i][0];
         float x = z + unit->m_b1[i] * (unit->m_y1[i] - z);
-        *out = unit->m_y1[i] = zapgremlins(x);
+        OUT0(i) = unit->m_y1[i] = zapgremlins(x);
+    }
+}
+
+void LagControl_next_k_reblock(LagControl* unit, int inNumSamples) {
+    // only compute the lagged value on the first tick!
+    if (unit->mParent->mTickCounter == 0) {
+        LagControl_next_k(unit, inNumSamples);
+    } else {
+        for (int i = 0; i < unit->mNumOutputs; ++i) {
+            OUT0(i) = unit->m_y1[i];
+        }
     }
 }
 
 void LagControl_next_1(LagControl* unit, int inNumSamples) {
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
-    float* out = OUT(0);
     float z = mapin[0][0];
     float x = z + unit->m_b1[0] * (unit->m_y1[0] - z);
-    *out = unit->m_y1[0] = zapgremlins(x);
+    OUT0(0) = unit->m_y1[0] = zapgremlins(x);
+}
+
+void LagControl_next_1_reblock(LagControl* unit, int inNumSamples) {
+    // only compute the lagged value on the first tick!
+    if (unit->mParent->mTickCounter == 0) {
+        LagControl_next_k(unit, inNumSamples);
+    } else {
+        OUT0(0) = unit->m_y1[0];
+    }
 }
 
 void LagControl_Ctor(LagControl* unit) {
@@ -621,17 +659,26 @@ void LagControl_Ctor(LagControl* unit) {
     unit->m_y1 = chunk;
     unit->m_b1 = chunk + numChannels;
 
+    // NOTE: we only compute the lagged value once per control block, which means
+    // that the coefficient must be computed from the *global* sample rate!
+    double sr = unit->mWorld->mBufRate.mSampleRate;
     for (int i = 0; i < numChannels; ++i) {
         unit->m_y1[i] = mapin[i][0];
-        float lag = ZIN0(i);
-        unit->m_b1[i] = lag == 0.f ? 0.f : (float)exp(log001 / (lag * SAMPLERATE));
+        float lag = IN0(i);
+        unit->m_b1[i] = lag == 0.f ? 0.f : (float)exp(log001 / (lag * sr));
     }
 
     if (unit->mNumOutputs == 1) {
-        SETCALC(LagControl_next_1);
+        if (REBLOCK_OR_RESAMPLE)
+            SETCALC(LagControl_next_1_reblock);
+        else
+            SETCALC(LagControl_next_1);
         LagControl_next_1(unit, 1);
     } else {
-        SETCALC(LagControl_next_k);
+        if (REBLOCK_OR_RESAMPLE)
+            SETCALC(LagControl_next_k_reblock);
+        else
+            SETCALC(LagControl_next_k);
         LagControl_next_k(unit, 1);
     }
 }
@@ -716,7 +763,7 @@ void In_next_a(In* unit, int inNumSamples) {
     }
 }
 
-void In_next_reblock(In* unit, int inNumSamples) {
+void In_next_a_reblock(In* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumOutputs;
@@ -809,7 +856,7 @@ void In_Ctor(In* unit) {
             ClearUnitIfMemFailed(unit->m_busTouchedCache);
             std::fill_n(unit->m_busTouchedCache, numChannels, -1);
 
-            SETCALC(In_next_reblock);
+            SETCALC(In_next_a_reblock);
         }
 #ifdef NOVA_SIMD
         else if (BUFLENGTH == 64)
@@ -823,6 +870,7 @@ void In_Ctor(In* unit) {
         unit->m_busTouched = world->mAudioBusTouched;
         In_next_a(unit, 1);
     } else {
+        // There is no need for a dedicated reblocking calc function.
         SETCALC(In_next_k);
         unit->m_bus = world->mControlBus;
         // unit->m_busTouched = world->mControlBusTouched;
@@ -850,11 +898,30 @@ void LagIn_next_k(LagIn* unit, int inNumSamples) {
     float* y1 = unit->m_y1;
 
     for (int i = 0; i < numChannels; ++i) {
-        ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
-        float z = readControlBus(bus + i, firstOutputChannel + i, maxChannel);
-        RELEASE_BUS_CONTROL(firstOutputChannel + i);
-        float x = z + b1 * (y1[i] - z);
-        OUT0(i) = y1[i] = zapgremlins(x);
+        if (i < kMaxLags) {
+            ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
+            float z = readControlBus(bus + i, firstOutputChannel + i, maxChannel);
+            RELEASE_BUS_CONTROL(firstOutputChannel + i);
+            float x = z + b1 * (y1[i] - z);
+            OUT0(i) = y1[i] = zapgremlins(x);
+        } else {
+            OUT0(i) = 0.0;
+        }
+    }
+}
+
+void LagIn_next_k_reblock(LagIn* unit, int inNumSamples) {
+    // only compute the lagged value on the first tick!
+    if (unit->mParent->mTickCounter == 0) {
+        LagIn_next_k(unit, inNumSamples);
+    } else {
+        for (int i = 0; i < unit->mNumOutputs; ++i) {
+            if (i < kMaxLags) {
+                OUT0(i) = unit->m_y1[i];
+            } else {
+                OUT0(i) = 0.0;
+            }
+        }
     }
 }
 
@@ -870,9 +937,13 @@ void LagIn_next_0(LagIn* unit, int inNumSamples) {
     const float* bus = unit->m_bus;
     float* y1 = unit->m_y1;
     for (int i = 0; i < numChannels; ++i) {
-        ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
-        OUT0(i) = y1[i] = readControlBus(bus + i, firstOutputChannel + i, maxChannel);
-        RELEASE_BUS_CONTROL(firstOutputChannel + i);
+        if (i < kMaxLags) {
+            ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
+            OUT0(i) = y1[i] = readControlBus(bus + i, firstOutputChannel + i, maxChannel);
+            RELEASE_BUS_CONTROL(firstOutputChannel + i);
+        } else {
+            OUT0(i) = 0.0;
+        }
     }
 }
 
@@ -881,16 +952,21 @@ void LagIn_Ctor(LagIn* unit) {
     unit->m_fbusChannel = -1.;
 
     float lag = ZIN0(1);
-    unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * SAMPLERATE));
-
-    SETCALC(LagIn_next_k);
+    // NOTE: we only compute the lagged value once per control block, which means
+    // that the coefficient must be computed from the *global* sample rate!
+    double sr = world->mBufRate.mSampleRate;
+    unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * sr));
+    if (REBLOCK_OR_RESAMPLE)
+        SETCALC(LagIn_next_k_reblock);
+    else
+        SETCALC(LagIn_next_k);
     unit->m_bus = world->mControlBus;
     LagIn_next_0(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InFeedback_next_reblock(InFeedback* unit, int inNumSamples) {
+void InFeedback_next_a_reblock(InFeedback* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumOutputs;
@@ -1010,8 +1086,8 @@ void InFeedback_Ctor(InFeedback* unit) {
         ClearUnitIfMemFailed(unit->m_busTouchedCache);
         std::fill_n(unit->m_busTouchedCache, numChannels, -1);
 
-        SETCALC(InFeedback_next_reblock);
-        InFeedback_next_reblock(unit, 1);
+        SETCALC(InFeedback_next_a_reblock);
+        InFeedback_next_a_reblock(unit, 1);
     } else {
         SETCALC(InFeedback_next_a);
         InFeedback_next_a(unit, 1);
@@ -1026,37 +1102,6 @@ void InFeedback_Dtor(InFeedback* unit) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
-void InTrig_next_reblock(InTrig* unit, int inNumSamples) {
-    World* world = unit->mWorld;
-    int numChannels = unit->mNumOutputs;
-
-    float fbusChannel = ZIN0(0);
-    IO_k_update_channels<true>(unit, world, fbusChannel, numChannels);
-    const int32 maxChannel = world->mNumControlBusChannels;
-    const int32 firstOutputChannel = (int)fbusChannel;
-
-    const float* in = unit->m_bus;
-    int32* touched = unit->m_busTouched;
-    int32 bufCounter = unit->mWorld->mBufCounter;
-
-    // only trigger on the first sub-tick!
-    // NB: we do not need to cache the buffer touch value
-    // because we only read it on the first tick.
-    if (unit->mParent->mTickCounter == 0) {
-        for (int i = 0; i < numChannels; ++i, in++) {
-            ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
-            if (touched[i] == bufCounter)
-                OUT0(i) = readControlBus(in, firstOutputChannel + i, maxChannel);
-            else
-                OUT0(i) = 0.f;
-            RELEASE_BUS_CONTROL(firstOutputChannel + i);
-        }
-    } else {
-        for (int i = 0; i < numChannels; ++i)
-            OUT0(i) = 0.f;
-    }
-}
 
 void InTrig_next_k(InTrig* unit, int inNumSamples) {
     World* world = unit->mWorld;
@@ -1081,6 +1126,17 @@ void InTrig_next_k(InTrig* unit, int inNumSamples) {
     }
 }
 
+void InTrig_next_k_reblock(InTrig* unit, int inNumSamples) {
+    // only trigger on the first tick!
+    // NB: we do not need to cache the buffer touch value because we only read it on the first tick.
+    if (unit->mParent->mTickCounter == 0) {
+        InTrig_next_k(unit, inNumSamples);
+    } else {
+        for (int i = 0; i < unit->mNumOutputs; ++i)
+            OUT0(i) = 0.f;
+    }
+}
+
 void InTrig_Ctor(InTrig* unit) {
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
@@ -1094,18 +1150,16 @@ void InTrig_Ctor(InTrig* unit) {
     unit->m_bus = world->mControlBus;
     unit->m_busTouched = world->mControlBusTouched;
 
-    if (REBLOCK_OR_RESAMPLE) {
-        SETCALC(InTrig_next_reblock);
-        InTrig_next_reblock(unit, 1);
-    } else {
+    if (REBLOCK_OR_RESAMPLE)
+        SETCALC(InTrig_next_k_reblock);
+    else
         SETCALC(InTrig_next_k);
-        InTrig_next_k(unit, 1);
-    }
+    InTrig_next_k(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void ReplaceOut_next_reblock(ReplaceOut* unit, int inNumSamples) {
+void ReplaceOut_next_a_reblock(ReplaceOut* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumInputs - 1;
@@ -1156,35 +1210,6 @@ void ReplaceOut_next_a(ReplaceOut* unit, int inNumSamples) {
             touched[i] = bufCounter;
         }
     }
-}
-
-void ReplaceOut_next_k(ReplaceOut* unit, int inNumSamples) {
-    World* world = unit->mWorld;
-    int numChannels = unit->mNumInputs - 1;
-
-    float fbusChannel = ZIN0(0);
-    IO_k_update_channels<true>(unit, world, fbusChannel, numChannels);
-    const int32 maxChannel = world->mNumControlBusChannels;
-    const int32 firstOutputChannel = (int)fbusChannel;
-
-    float* out = unit->m_bus;
-    int32* touched = unit->m_busTouched;
-    int32 bufCounter = unit->mWorld->mBufCounter;
-    for (int i = 0; i < numChannels; ++i, out++) {
-        if (firstOutputChannel + i < maxChannel) {
-            float* in = IN(i + 1);
-            ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
-            *out = *in;
-            touched[i] = bufCounter;
-            RELEASE_BUS_CONTROL((int32)fbusChannel + i);
-        }
-    }
-}
-
-void ReplaceOut_next_k_reblock(ReplaceOut* unit, int inNumSamples) {
-    // only output on the first tick!
-    if (unit->mParent->mTickCounter == 0)
-        ReplaceOut_next_k(unit, inNumSamples);
 }
 
 #ifdef NOVA_SIMD
@@ -1238,13 +1263,42 @@ FLATTEN void ReplaceOut_next_a_nova_64(ReplaceOut* unit, int inNumSamples) {
 
 #endif /* NOVA_SIMD */
 
+void ReplaceOut_next_k(ReplaceOut* unit, int inNumSamples) {
+    World* world = unit->mWorld;
+    int numChannels = unit->mNumInputs - 1;
+
+    float fbusChannel = ZIN0(0);
+    IO_k_update_channels<true>(unit, world, fbusChannel, numChannels);
+    const int32 maxChannel = world->mNumControlBusChannels;
+    const int32 firstOutputChannel = (int)fbusChannel;
+
+    float* out = unit->m_bus;
+    int32* touched = unit->m_busTouched;
+    int32 bufCounter = unit->mWorld->mBufCounter;
+    for (int i = 0; i < numChannels; ++i, out++) {
+        if (firstOutputChannel + i < maxChannel) {
+            float* in = IN(i + 1);
+            ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
+            *out = *in;
+            touched[i] = bufCounter;
+            RELEASE_BUS_CONTROL((int32)fbusChannel + i);
+        }
+    }
+}
+
+void ReplaceOut_next_k_reblock(ReplaceOut* unit, int inNumSamples) {
+    // only output on first tick!
+    if (unit->mParent->mTickCounter == 0)
+        ReplaceOut_next_k(unit, inNumSamples);
+}
+
 void ReplaceOut_Ctor(ReplaceOut* unit) {
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
 
     if (unit->mCalcRate == calc_FullRate) {
         if (REBLOCK_OR_RESAMPLE)
-            SETCALC(ReplaceOut_next_reblock);
+            SETCALC(ReplaceOut_next_a_reblock);
 #ifdef NOVA_SIMD
         else if (BUFLENGTH == 64)
             SETCALC(ReplaceOut_next_a_nova_64);
@@ -1267,7 +1321,7 @@ void ReplaceOut_Ctor(ReplaceOut* unit) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Out_next_reblock(Out* unit, int inNumSamples) {
+void Out_next_a_reblock(Out* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumInputs - 1;
@@ -1468,7 +1522,7 @@ void Out_Ctor(Out* unit) {
 
     if (unit->mCalcRate == calc_FullRate) {
         if (REBLOCK_OR_RESAMPLE)
-            SETCALC(Out_next_reblock);
+            SETCALC(Out_next_a_reblock);
 #if defined(NOVA_SIMD)
         else if (BUFLENGTH == 64)
             SETCALC(Out_next_a_nova_64);
@@ -1500,7 +1554,7 @@ void Out_Ctor(Out* unit) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void XOut_next_reblock(XOut* unit, int inNumSamples) {
+void XOut_next_a_reblock(XOut* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumInputs - 2;
@@ -1766,7 +1820,7 @@ void XOut_Ctor(XOut* unit) {
     unit->m_xfade = ZIN0(1);
     if (unit->mCalcRate == calc_FullRate) {
         if (REBLOCK_OR_RESAMPLE)
-            SETCALC(XOut_next_reblock);
+            SETCALC(XOut_next_a_reblock);
 #ifdef NOVA_SIMD
         else if (boost::alignment::is_aligned(BUFLENGTH, 16))
             SETCALC(XOut_next_a_nova);
@@ -1788,7 +1842,7 @@ void XOut_Ctor(XOut* unit) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void OffsetOut_next_reblock(OffsetOut* unit, int inNumSamples) {
+void OffsetOut_next_a_reblock(OffsetOut* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumInputs - 1;
@@ -1925,7 +1979,7 @@ void OffsetOut_Ctor(OffsetOut* unit) {
     unit->m_fbusChannel = -1.;
 
     if (REBLOCK_OR_RESAMPLE)
-        SETCALC(OffsetOut_next_reblock);
+        SETCALC(OffsetOut_next_a_reblock);
     else
         SETCALC(OffsetOut_next_a);
     unit->m_bus = world->mAudioBus;
@@ -2013,6 +2067,7 @@ void SharedIn_Ctor(SharedIn* unit) {
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
 
+    // There is no need for a dedicated reblocking calc function.
     SETCALC(SharedIn_next_k);
     unit->m_bus = world->mSharedControls;
     SharedIn_next_k(unit, 1);
@@ -2053,6 +2108,7 @@ void SharedOut_Ctor(SharedOut* unit) {
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
 
+    // There is no need for a dedicated reblocking calc function.
     SETCALC(SharedOut_next_k);
     unit->m_bus = world->mSharedControls;
     SharedOut_next_k(unit, 1);
@@ -2062,7 +2118,7 @@ void SharedOut_Ctor(SharedOut* unit) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void LocalIn_next_reblock(LocalIn* unit, int inNumSamples) {
+void LocalIn_next_a_reblock(LocalIn* unit, int inNumSamples) {
     int bufLength = unit->mBufLength;
     int numChannels = unit->mNumOutputs;
 
@@ -2074,7 +2130,7 @@ void LocalIn_next_reblock(LocalIn* unit, int inNumSamples) {
     int64 tickCounter = unit->mParent->mTickCounter;
     int64 numTicks = unit->mParent->mNumTicks;
     int64 counter = bufCounter * numTicks + tickCounter;
-    // Print("LocalIn_next_reblock: counter: %d\n", counter);
+    // Print("LocalIn_next_a_reblock: counter: %d\n", counter);
 
     for (int i = 0; i < numChannels; ++i, in += bufLength) {
         float* out = OUT(i);
@@ -2150,7 +2206,6 @@ FLATTEN void LocalIn_next_a_nova_64(LocalIn* unit, int inNumSamples) {
 
 void LocalIn_next_k_reblock(LocalIn* unit, int inNumSamples) {
     int numChannels = unit->mNumOutputs;
-
     float* in = unit->m_bus;
     int64* touched = unit->m_busTouched;
     // This keeps track of buffer touching for every subtick.
@@ -2171,7 +2226,6 @@ void LocalIn_next_k_reblock(LocalIn* unit, int inNumSamples) {
 
 void LocalIn_next_k(LocalIn* unit, int inNumSamples) {
     uint32 numChannels = unit->mNumOutputs;
-
     float* in = unit->m_bus;
     int64* touched = unit->m_busTouched;
     int32 bufCounter = unit->mWorld->mBufCounter;
@@ -2192,13 +2246,13 @@ void LocalIn_Ctor(LocalIn* unit) {
 
     int busDataSize = numChannels * BUFLENGTH;
 
-    // align the buffer to 256 bytes so that we can use avx instructions
+    // align the buffer to 32 bytes so that we can use avx instructions
     unit->m_realData =
         (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int64) + 32 * sizeof(float));
     ClearUnitIfMemFailed(unit->m_realData);
-    size_t alignment = (size_t)unit->m_realData & 31;
+    size_t alignment = (uintptr_t)unit->m_realData & 31;
 
-    unit->m_bus = alignment ? (float*)(size_t(unit->m_realData + 32) & ~31) : unit->m_realData;
+    unit->m_bus = alignment ? (float*)(((uintptr_t)unit->m_realData + 32) & ~31) : unit->m_realData;
 
     unit->m_busTouched = (int64*)(unit->m_bus + busDataSize);
     std::fill_n(unit->m_busTouched, numChannels, -1);
@@ -2211,7 +2265,7 @@ void LocalIn_Ctor(LocalIn* unit) {
         }
         unit->mParent->mLocalAudioBusUnit = unit;
         if (REBLOCK_OR_RESAMPLE)
-            SETCALC(LocalIn_next_reblock);
+            SETCALC(LocalIn_next_a_reblock);
 #ifdef NOVA_SIMD
         else if (BUFLENGTH == 64)
             SETCALC(LocalIn_next_a_nova_64);
@@ -2241,8 +2295,8 @@ void LocalIn_Dtor(LocalIn* unit) { RTFree(unit->mWorld, unit->m_realData); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void LocalOut_next_reblock(LocalOut* unit, int inNumSamples) {
-    // Print("LocalOut_next_reblock %d\n", unit->mNumInputs);
+void LocalOut_next_a_reblock(LocalOut* unit, int inNumSamples) {
+    // Print("LocalOut_next_a_reblock %d\n", unit->mNumInputs);
     int bufLength = unit->mBufLength;
     int numChannels = unit->mNumInputs;
 
@@ -2259,7 +2313,7 @@ void LocalOut_next_reblock(LocalOut* unit, int inNumSamples) {
     int64 tickCounter = unit->mParent->mTickCounter;
     int64 numTicks = unit->mParent->mNumTicks;
     int64 counter = bufCounter * numTicks + tickCounter;
-    // Print("LocalOut_next_reblock: counter: %d\n", counter);
+    // Print("LocalOut_next_a_reblock: counter: %d\n", counter);
 
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         float* in = IN(i);
@@ -2362,7 +2416,7 @@ FLATTEN void LocalOut_next_a_nova_64(LocalOut* unit, int inNumSamples) {
 void LocalOut_next_k_reblock(LocalOut* unit, int inNumSamples) {
     int numChannels = unit->mNumInputs;
 
-    LocalIn* localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
+    LocalIn* localIn = (LocalIn*)unit->mParent->mLocalControlBusUnit;
     if (!localIn)
         return;
 
@@ -2415,7 +2469,7 @@ void LocalOut_Ctor(LocalOut* unit) {
 
     if (unit->mCalcRate == calc_FullRate) {
         if (REBLOCK_OR_RESAMPLE)
-            SETCALC(LocalOut_next_reblock);
+            SETCALC(LocalOut_next_a_reblock);
 #ifdef NOVA_SIMD
         else if (BUFLENGTH == 64)
             SETCALC(LocalOut_next_a_nova_64);
