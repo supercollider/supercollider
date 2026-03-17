@@ -53,8 +53,8 @@ list::
 ## int32 - the synth block size. If the value is 0, the server block size will be used.
 If the value is -1, the block size is taken from the specified parameter (see next field).
 ## int32 - the parameter index for the block size. This is only used if the block size field above is -1.
-## float32 - the synth resample factor. For no resampling, the value should be 1.0. If the value is -1.0, the resample factor is taken from the specified parameter (see next field).
-## int32 - the parameter index for the resample factor. This is only used if the resample factor field above is -1.0.
+## float32 - the synth resampling factor. For no resampling, the value should be 0.0 or 1.0. If the value is -1.0, the resampling factor is taken from the specified parameter (see next field).
+## int32 - the parameter index for the resampling factor. This is only used if the resampling factor field above is -1.0.
 ::
 
 a strong::param-name:: is :
@@ -157,8 +157,8 @@ tree::
     ## int32 - the synth block size. If the value is 0, the server block size will be used.
     If the value is -1, the block size is taken from the specified parameter (see next field).
     ## int32 - the parameter index for the block size. This is only used if the block size field above is -1.
-    ## float32 - the synth resample factor. For no resampling, the value should be 1.0. If the value is -1.0, the resample factor is taken from the specified parameter (see next field).
-    ## int32 - the parameter index for the resample factor. This is only used if the resample factor field above is -1.0.
+    ## float32 - the synth resampling factor. For no resampling, the value should be 0.0 or 1.0. If the value is -1.0, the resampling factor is taken from the specified parameter (see next field).
+    ## int32 - the parameter index for the resampling factor. This is only used if the resampling factor field above is -1.0.
     ::
 ::
 
