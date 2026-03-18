@@ -224,16 +224,19 @@ template <bool LockShared> struct AudioBusGuard {
     AudioBusGuard(const Unit* unit, int32 currentChannel, int32 maxChannel):
         unit(unit),
         mCurrentChannel(currentChannel),
-        isValid(currentChannel < maxChannel) {
-        if (isValid)
+        mIsValid(currentChannel < maxChannel) {
+        if (mIsValid)
             lock();
     }
 
     ~AudioBusGuard() {
-        if (isValid)
+        if (mIsValid)
             unlock();
     }
 
+    bool isValid() const { return mIsValid; }
+
+private:
     void lock() {
         if (LockShared)
             ACQUIRE_BUS_AUDIO_SHARED(mCurrentChannel);
@@ -248,9 +251,10 @@ template <bool LockShared> struct AudioBusGuard {
             RELEASE_BUS_AUDIO(mCurrentChannel);
     }
 
-    const Unit* unit;
+
+    const Unit* unit; // for macros
     const int32 mCurrentChannel;
-    const bool isValid;
+    const bool mIsValid;
 };
 
 static inline float readControlBus(const float* bus, int channelIndex, int maxChannel) {
@@ -265,7 +269,7 @@ static inline float readControlBus(const float* bus, int channelIndex, int maxCh
 static inline void IO_a_update_channels(IOUnit* unit, World* world, float fbusChannel, int numChannels, int bufLength) {
     if (fbusChannel != unit->m_fbusChannel) {
         unit->m_fbusChannel = fbusChannel;
-        int busChannel = (uint32)fbusChannel;
+        int busChannel = (int32)fbusChannel;
         int lastChannel = busChannel + numChannels;
 
         if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
@@ -706,7 +710,7 @@ FLATTEN void In_next_a_nova(In* unit, int inNumSamples) {
 
         float* out = OUT(i);
 
-        if (guard.isValid && (touched[i] == bufCounter))
+        if (guard.isValid() && (touched[i] == bufCounter))
             nova::copyvec_simd(out, in, inNumSamples);
         else
             nova::zerovec_simd(out, inNumSamples);
@@ -730,7 +734,7 @@ FLATTEN void In_next_a_nova_64(In* unit, int inNumSamples) {
         AudioBusGuard<true> guard(unit, fbusChannel + i, maxChannel);
 
         float* out = OUT(i);
-        if (guard.isValid && (touched[i] == bufCounter))
+        if (guard.isValid() && (touched[i] == bufCounter))
             nova::copyvec_simd<64>(out, in);
         else
             nova::zerovec_simd<64>(out);
@@ -756,7 +760,7 @@ void In_next_a(In* unit, int inNumSamples) {
         AudioBusGuard<true> guard(unit, fbusChannel + i, maxChannel);
 
         float* out = OUT(i);
-        if (guard.isValid && (touched[i] == bufCounter))
+        if (guard.isValid() && (touched[i] == bufCounter))
             Copy(inNumSamples, out, in);
         else
             Clear(inNumSamples, out);
@@ -788,7 +792,7 @@ void In_next_a_reblock(In* unit, int inNumSamples) {
         }
 
         float* out = OUT(i);
-        if (guard.isValid && (touched[i] == bufCounter)) {
+        if (guard.isValid() && (touched[i] == bufCounter)) {
             // copy with reblocking/resampling
             for (int j = 0; j < inNumSamples; ++j) {
                 int index = j * resample;
@@ -818,7 +822,7 @@ void vIn_next_a(In* unit, int inNumSamples) {
         AudioBusGuard<true> guard(unit, fbusChannel + i, maxChannel);
 
         float* out = OUT(i);
-        if (guard.isValid && (touched[i] == bufCounter))
+        if (guard.isValid() && (touched[i] == bufCounter))
             vcopy(out, in, inNumSamples);
         else
             vfill(out, 0.f, inNumSamples);
@@ -997,14 +1001,14 @@ void InFeedback_next_a_reblock(InFeedback* unit, int inNumSamples) {
         }
         int diff = bufCounter - touched[i];
 
-        if (guard.isValid && diff == 0) {
+        if (guard.isValid() && diff == 0) {
             // copy with reblocking/resampling
             for (int j = 0; j < inNumSamples; ++j) {
                 int index = j * resample;
                 out[j] = in[index];
             }
             unit->m_busUsedInPrevCycle[i] = true;
-        } else if (guard.isValid && diff == 1) {
+        } else if (guard.isValid() && diff == 1) {
             if (unit->m_busUsedInPrevCycle[i]) {
                 Clear(inNumSamples, out);
                 // only update on last tick!!
@@ -1046,10 +1050,10 @@ void InFeedback_next_a(InFeedback* unit, int inNumSamples) {
         float* out = OUT(i);
         int diff = bufCounter - touched[i];
 
-        if (guard.isValid && diff == 0) {
+        if (guard.isValid() && diff == 0) {
             Copy(inNumSamples, out, in);
             unit->m_busUsedInPrevCycle[i] = true;
-        } else if (guard.isValid && diff == 1) {
+        } else if (guard.isValid() && diff == 1) {
             if (unit->m_busUsedInPrevCycle[i]) {
                 Clear(inNumSamples, out);
                 unit->m_busUsedInPrevCycle[i] = false;
@@ -1177,7 +1181,7 @@ void ReplaceOut_next_a_reblock(ReplaceOut* unit, int inNumSamples) {
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             float* in = IN(i + 1);
             for (int j = 0; j < outSamples; ++j) {
                 int index = j * resample;
@@ -1204,7 +1208,7 @@ void ReplaceOut_next_a(ReplaceOut* unit, int inNumSamples) {
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             float* in = IN(i + 1);
             Copy(inNumSamples, out, in);
             touched[i] = bufCounter;
@@ -1229,7 +1233,7 @@ FLATTEN void ReplaceOut_next_a_nova(ReplaceOut* unit, int inNumSamples) {
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             float* in = IN(i + 1);
             nova::copyvec_simd(out, in, inNumSamples);
             touched[i] = bufCounter;
@@ -1253,7 +1257,7 @@ FLATTEN void ReplaceOut_next_a_nova_64(ReplaceOut* unit, int inNumSamples) {
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             float* in = IN(i + 1);
             nova::copyvec_simd<64>(out, in);
             touched[i] = bufCounter;
@@ -1340,7 +1344,7 @@ void Out_next_a_reblock(Out* unit, int inNumSamples) {
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             if (tick == 0) {
                 // If this is the first tick, check if we are the first
                 // one writing to the bus. If yes, zero the *whole* channel
@@ -1380,7 +1384,7 @@ void Out_next_a(Out* unit, int inNumSamples) {
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             float* in = IN(i + 1);
             if (touched[i] == bufCounter)
                 Accum(inNumSamples, out, in);
@@ -1409,7 +1413,7 @@ void vOut_next_a(Out* unit, int inNumSamples) {
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             float* in = IN(i + 1);
             if (touched[i] == bufCounter) {
                 vadd(out, out, in, inNumSamples);
@@ -1440,7 +1444,7 @@ FLATTEN void Out_next_a_nova(Out* unit, int inNumSamples) {
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             float* in = IN(i + 1);
             if (touched[i] == bufCounter)
                 nova::addvec_simd(out, in, inNumSamples);
@@ -1469,7 +1473,7 @@ FLATTEN void Out_next_a_nova_64(Out* unit, int inNumSamples) {
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             float* in = IN(i + 1);
             if (touched[i] == bufCounter)
                 nova::addvec_simd<64>(out, in);
@@ -1580,7 +1584,7 @@ void XOut_next_a_reblock(XOut* unit, int inNumSamples) {
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-            if (guard.isValid) {
+            if (guard.isValid()) {
                 if (tick == 0) {
                     // If this is the first tick, check if we are the first
                     // one writing to the bus. If yes, zero the *whole* channel
@@ -1607,7 +1611,7 @@ void XOut_next_a_reblock(XOut* unit, int inNumSamples) {
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-            if (guard.isValid) {
+            if (guard.isValid()) {
                 float* in = IN(i + 2);
                 for (int j = 0; j < outSamples; ++j) {
                     int index = j * resample;
@@ -1621,7 +1625,8 @@ void XOut_next_a_reblock(XOut* unit, int inNumSamples) {
     } else {
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
-            if (guard.isValid) {
+
+            if (guard.isValid()) {
                 if (tick == 0) {
                     // See comment above.
                     if (touched[i] != bufCounter) {
@@ -1663,7 +1668,7 @@ void XOut_next_a(XOut* unit, int inNumSamples) {
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-            if (guard.isValid) {
+            if (guard.isValid()) {
                 float xfade = xfade0;
                 float* in = IN(i + 2);
                 if (touched[i] == bufCounter) {
@@ -1683,7 +1688,7 @@ void XOut_next_a(XOut* unit, int inNumSamples) {
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-            if (guard.isValid) {
+            if (guard.isValid()) {
                 float* in = IN(i + 2);
                 Copy(inNumSamples, out, in);
                 touched[i] = bufCounter;
@@ -1694,7 +1699,8 @@ void XOut_next_a(XOut* unit, int inNumSamples) {
     } else {
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
-            if (guard.isValid) {
+
+            if (guard.isValid()) {
                 float* in = IN(i + 2);
                 if (touched[i] == bufCounter) {
                     for (int j = 0; j < inNumSamples; ++j) {
@@ -1734,7 +1740,7 @@ FLATTEN void XOut_next_a_nova(XOut* unit, int inNumSamples) {
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-            if (guard.isValid) {
+            if (guard.isValid()) {
                 float xfade = xfade0;
                 float* in = IN(i + 2);
                 if (touched[i] == bufCounter)
@@ -1751,7 +1757,7 @@ FLATTEN void XOut_next_a_nova(XOut* unit, int inNumSamples) {
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-            if (guard.isValid) {
+            if (guard.isValid()) {
                 float* in = IN(i + 2);
                 nova::copyvec_simd(out, in, inNumSamples);
                 touched[i] = bufCounter;
@@ -1762,7 +1768,8 @@ FLATTEN void XOut_next_a_nova(XOut* unit, int inNumSamples) {
     } else {
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
-            if (guard.isValid) {
+
+            if (guard.isValid()) {
                 float* in = IN(i + 2);
                 if (touched[i] == bufCounter)
                     nova::mix_vec_simd(out, out, 1 - xfade0, in, xfade0, inNumSamples);
@@ -1870,7 +1877,7 @@ void OffsetOut_next_a_reblock(OffsetOut* unit, int inNumSamples) {
 
         float* in = IN(i + 1);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             if (tick == 0) {
                 // If this is the first tick, copy/accumulate the saved input
                 // from the previous period and clear the remaining channel so
@@ -1946,7 +1953,7 @@ void OffsetOut_next_a(OffsetOut* unit, int inNumSamples) {
         //	i, touched[i] == bufCounter, unit->m_empty,
         //	offset, remain);
 
-        if (guard.isValid) {
+        if (guard.isValid()) {
             if (touched[i] == bufCounter) {
                 if (unit->m_empty) {
                     // Print("touched offset %d\n", offset);
