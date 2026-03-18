@@ -374,14 +374,14 @@ inline void AudioControl_next_channel_reblock(AudioControl* unit, int i, float* 
 
             int diff = world->mBufCounter - unit->m_busTouchedCache[i];
 
-            if (diff == 0) {
+            if (guard.isValid() && diff == 0) {
                 // copy with reblocking/resampling
                 for (int i = 0; i < inNumSamples; ++i) {
                     int index = i * resample;
                     out[i] = in[index];
                 }
                 unit->m_busUsedInPrevCycle[i] = true;
-            } else if (diff == 1) {
+            } else if (guard.isValid() && diff == 1) {
                 if (unit->m_busUsedInPrevCycle[i]) {
                     Clear(inNumSamples, out);
                     // only update on last tick!!
@@ -464,10 +464,10 @@ inline void AudioControl_next_channel(AudioControl* unit, int i, float* mapin, i
 
             int diff = world->mBufCounter - world->mAudioBusTouched[thisChannelOffset];
 
-            if (diff == 0) {
+            if (guard.isValid() && diff == 0) {
                 Copy(inNumSamples, out, mapin);
                 unit->m_busUsedInPrevCycle[i] = true;
-            } else if (diff == 1) {
+            } else if (guard.isValid() && diff == 1) {
                 if (unit->m_busUsedInPrevCycle[i]) {
                     Clear(inNumSamples, out);
                     unit->m_busUsedInPrevCycle[i] = false;
