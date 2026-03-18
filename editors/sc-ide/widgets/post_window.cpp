@@ -96,13 +96,13 @@ void PostWindow::createActions(Settings::Manager* settings) {
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Enlarge Font"), this);
     ovrAction->setIconText("+");
     ovrAction->setStatusTip(tr("Enlarge post window font"));
-    connect(ovrAction, &QAction::triggered, this, [this]() { zoomIn(); });
+    connect(ovrAction, &QAction::triggered, this, &PostWindow::zoomIn);
     ovrAction->addToWidget(this);
 
     mActions[ZoomOut] = ovrAction = new OverridingAction(tr("Shrink Font"), this);
     ovrAction->setIconText("-");
     ovrAction->setStatusTip(tr("Shrink post window font"));
-    connect(ovrAction, &QAction::triggered, this, [this]() { zoomOut(); });
+    connect(ovrAction, &QAction::triggered, this, &PostWindow::zoomOut);
     ovrAction->addToWidget(this);
 
     mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Font Size"), this);
