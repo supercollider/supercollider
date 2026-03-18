@@ -1883,23 +1883,28 @@ void OffsetOut_next_a_reblock(OffsetOut* unit, int inNumSamples) {
                 // from the previous period and clear the remaining channel so
                 // that every tick can simply accumulate its input.
                 // (This also works in ParGroups because only one Ugen gets
-                // to updatemBufTouched!)
-                if (touched[i] != bufCounter) {
-                    touched[i] = bufCounter;
+                // to update mBufTouched!)
+                if (touched[i] == bufCounter) {
+                    if (unit->m_empty) {
+                        // Print("touched offset %d\n", offset);
+                    } else {
+                        Accum(offset, out, saved);
+                    }
+                } else {
                     if (unit->m_empty) {
                         // clear whole channel
                         Clear(bufLength, out);
+                        // Print("untouched offset %d\n", offset);
                     } else {
                         Copy(offset, out, saved);
                         Clear(remain, out + offset);
                     }
-                } else {
-                    Accum(offset, out, saved);
+                    touched[i] = bufCounter;
                 }
             }
 
-            // accumulate the current input into the bus
-            // (shifted by 'offset' samples)
+            // accumulate the current input (up to 'remain' samples)
+            // into the bus, shifted by 'offset' samples
             int n = sc_min(remain - outPhase, outSamples);
             if (n > 0) {
                 for (int j = 0; j < n; ++j) {
@@ -1910,16 +1915,15 @@ void OffsetOut_next_a_reblock(OffsetOut* unit, int inNumSamples) {
             }
         }
 
-        // from here we do not touch the bus so we can unlock it.
-        guard.unlock();
-
-        // save remaining input samples (with reblocking)
+        // save remaining input samples (with reblocking).
+        // Also do this if the buf channel was out-of-range.
         int n = sc_min(outPhase + outSamples - remain, outSamples);
         if (n > 0) {
+            // j starts at the offset within 'outSamples'.
             for (int j = outSamples - n; j < outSamples; ++j) {
-                int index = j + outPhase;
+                int index = outPhase + j - remain;
                 int k = j * resample;
-                saved[index - remain] = in[k];
+                saved[index] = in[k];
             }
         }
     }
@@ -1973,6 +1977,7 @@ void OffsetOut_next_a(OffsetOut* unit, int inNumSamples) {
             }
         }
 
+        // always copy the remaining input, even if the buf channel was out-of-range.
         Copy(offset, saved, in + remain);
 
         // Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
@@ -2019,21 +2024,25 @@ void OffsetOut_Dtor(OffsetOut* unit) {
         float* saved = unit->m_saved;
         int32* touched = unit->m_busTouched;
         int32 bufCounter = unit->mWorld->mBufCounter;
-        for (int i = 0; i < numChannels; ++i, out += bufLength, saved += offset) {
-            // Print("out %d  %d %d  %d %d\n",
-            //	i, touched[i] == bufCounter, unit->m_empty,
-            //	offset, remain);
+        int32 bufChannel = (int32)unit->m_fbusChannel;
+        int32 maxChannel = world->mNumAudioBusChannels;
 
-            if (!unit->m_empty) {
-                if (touched[i] == bufCounter) {
-                    Accum(offset, out, saved);
-                } else {
-                    Copy(offset, out, saved);
-                    Clear(remain, out + offset);
-                    touched[i] = bufCounter;
+        for (int i = 0; i < numChannels; ++i, out += bufLength, saved += offset) {
+            if ((bufChannel + i) < maxChannel) {
+                // Print("out %d  %d %d  %d %d\n",
+                //	i, touched[i] == bufCounter, unit->m_empty,
+                //	offset, remain);
+                if (!unit->m_empty) {
+                    if (touched[i] == bufCounter) {
+                        Accum(offset, out, saved);
+                    } else {
+                        Copy(offset, out, saved);
+                        Clear(remain, out + offset);
+                        touched[i] = bufCounter;
+                    }
                 }
+                // Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
             }
-            // Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
         }
 
         RTFree(unit->mWorld, unit->m_saved);
