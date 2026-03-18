@@ -53,7 +53,7 @@ Currently, only upsampling is supported! Any attempt at downsampling (e.g. a fac
 
 DISCUSSION::
 
-Note that the Resample object is not a UGen and there are certain restrictions on the types of arguments it accepts. In particular, you cannot use UGen expressions. (UGens are only evaluated after the Synth has been initialized. At this point, the resampling factor must have already been set.) For example, the following does not work and will throw an error:
+Note that the Resample object is strong::not:: a UGen and there are certain restrictions on the types of arguments it accepts. In particular, you cannot use UGen expressions. (UGens are only evaluated after the Synth has been initialized. At this point, the resampling factor must have already been set.) For example, the following does not work and will throw an error:
 code::
 // futile attempt at generating a random resampling factor:
 Resample(2 ** IRand(0, 4)); // -> throws an error
