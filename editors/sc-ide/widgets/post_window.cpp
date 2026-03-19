@@ -96,13 +96,15 @@ void PostWindow::createActions(Settings::Manager* settings) {
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Enlarge Font"), this);
     ovrAction->setIconText("+");
     ovrAction->setStatusTip(tr("Enlarge post window font"));
-    connect(ovrAction, &QAction::triggered, this, &PostWindow::zoomIn);
+    // Use lambda for zoomIn as the default parameter is not preserved when using pointer to member function
+    connect(ovrAction, &QAction::triggered, this, [this]() { zoomIn(); });
     ovrAction->addToWidget(this);
 
     mActions[ZoomOut] = ovrAction = new OverridingAction(tr("Shrink Font"), this);
     ovrAction->setIconText("-");
     ovrAction->setStatusTip(tr("Shrink post window font"));
-    connect(ovrAction, &QAction::triggered, this, &PostWindow::zoomOut);
+    // Use lambda for zoomOut as the default parameter is not preserved when using pointer to member function
+    connect(ovrAction, &QAction::triggered, this, [this]() { zoomOut(); });
     ovrAction->addToWidget(this);
 
     mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Font Size"), this);
@@ -127,7 +129,7 @@ void PostWindow::createActions(Settings::Manager* settings) {
     connect(action, &QAction::triggered, this, &PostWindow::onAutoScrollTriggered);
     addAction(action);
     settings->addAction(action, "post-auto-scroll", postCategory);
-}
+}/**/
 
 void PostWindow::updateActionShortcuts(Settings::Manager* settings) {
     settings->beginGroup("IDE/shortcuts");
