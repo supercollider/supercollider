@@ -129,7 +129,7 @@ void PostWindow::createActions(Settings::Manager* settings) {
     connect(action, &QAction::triggered, this, &PostWindow::onAutoScrollTriggered);
     addAction(action);
     settings->addAction(action, "post-auto-scroll", postCategory);
-}/**/
+}
 
 void PostWindow::updateActionShortcuts(Settings::Manager* settings) {
     settings->beginGroup("IDE/shortcuts");
