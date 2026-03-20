@@ -37,10 +37,12 @@ HelpBrowser {
 	}
 
 
-	*redirectToSystemBrowser { |url|
-			if(url.contains("http")) {
-				url.replaceRegexp("https?", "https").openOS;
-				(url ++ " opened in system browser").postln;
+	*prRedirectToSystemBrowser { |url|
+			url = url.asString;
+			redirectPattern = "^https?:\/\/(?!127.*|localhost)";
+			// matches all http except for loopback/localhost (IPv4)
+			if(redirectPattern.matchRegex(url)) {
+				url.openOS;
 				^true
 			} {
 				^false
@@ -49,9 +51,9 @@ HelpBrowser {
 
 	*goTo {|url|
 		var ideClass = \ScIDE.asClass;
-		var redirected = HelpBrowser.redirectToSystemBrowser(url);
+		var redirected = HelpBrowser.prRedirectToSystemBrowser(url);
 		case
-		{ redirected } { ^nil }
+		{ redirected } { (url ++ " opened in system browser").postln; }
 		{ ideClass.notNil } { ideClass.openHelpUrl(url) }
 		{ this.front.goTo(url) };
 	}
@@ -251,8 +253,10 @@ HelpBrowser {
 
 		webView.onLinkActivated = {|wv, url|
 			var redirected, newPath, oldPath;
-			redirected = this.redirectTextFile(url) or: { HelpBrowser.redirectToSystemBrowser(url) };
-			if (not(redirected)) {
+			case
+			{ HelpBrowser.prRedirectToSystemBrowser(url) } { (url ++ " opened in system browser").postln; }
+			{ this.redirectTextFile(url) } { ^nil }
+			{
 				#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 				};
