@@ -36,13 +36,24 @@ HelpBrowser {
 		^super.new.init( aHomeUrl ? defaultHomeUrl, newWin ?? { openNewWindows } );
 	}
 
+
+	*redirectToSystemBrowser { |url|
+			if(url.contains("http")) {
+				url.replaceRegexp("https?", "https").openOS;
+				(url ++ " opened in system browser").postln;
+				^true
+			} {
+				^false
+			}
+	}
+
 	*goTo {|url|
 		var ideClass = \ScIDE.asClass;
-		if ( ideClass.notNil ) {
-			ideClass.openHelpUrl(url);
-		}{
-			this.front.goTo(url);
-		}
+		var redirected = HelpBrowser.redirectToSystemBrowser(url);
+		case
+		{ redirected } { ^nil }
+		{ ideClass.notNil } { ideClass.openHelpUrl(url) }
+		{ this.front.goTo(url) };
 	}
 
 	*front {
@@ -240,7 +251,7 @@ HelpBrowser {
 
 		webView.onLinkActivated = {|wv, url|
 			var redirected, newPath, oldPath;
-			redirected = this.redirectTextFile(url);
+			redirected = this.redirectTextFile(url) or: { HelpBrowser.redirectToSystemBrowser(url) };
 			if (not(redirected)) {
 				#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
