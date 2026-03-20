@@ -38,10 +38,10 @@ HelpBrowser {
 
 
 	*prRedirectToSystemBrowser { |url|
+			var redirectPattern = "^https?:\/\/(?!127.*|localhost)";
 			url = url.asString;
-			redirectPattern = "^https?:\/\/(?!127.*|localhost)";
 			// matches all http except for loopback/localhost (IPv4)
-			if(redirectPattern.matchRegex(url)) {
+			if(redirectPattern.matchRegexp(url)) {
 				url.openOS;
 				^true
 			} {
