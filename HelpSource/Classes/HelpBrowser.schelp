@@ -48,6 +48,15 @@ Get or set the default home URL.
 method:: openNewWindows
 Get or set the default for "open in new windows" toggle.
 
+method:: redirectEnabled
+When set to true (default), redirects links that match code::redirectPattern:: to the system's default Web browser.
+Disable at your own risk: SC's help browser is not web safe.
+
+method:: redirectPattern
+Get or set the regex pattern (a link::Classes/String#Regular expressions#String::) that determines which links are forwarded to the system's default browser.
+When the link matches this pattern, it will be opened in the system's default browser (provided code::redirectEnabled:: is teletype::true::.)
+By default, this is set to code::"^http":: (i.e., it redirects all links that begin with teletype::http::).
+
 method:: goTo
 Go to url with singleton instance or a new window, depending on the code::openNewWindows:: setting.
 

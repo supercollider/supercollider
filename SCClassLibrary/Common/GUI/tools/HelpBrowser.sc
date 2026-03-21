@@ -4,6 +4,10 @@ HelpBrowser {
 	classvar <>openNewWindows = false;
 	classvar <>scrollStep = 40;
 	classvar <>scrollPageStep = 350;
+	classvar <>redirectEnabled = true;
+	// redirect link addresses that match redirectPattern to default system browser
+	classvar <>redirectPattern = "^http";
+	// all http gets redirected
 
 	var <>homeUrl;
 	var <window;
@@ -38,11 +42,10 @@ HelpBrowser {
 
 
 	*prRedirectToSystemBrowser { |url|
-			var redirectPattern = "^https?:\/\/(?!127.*|localhost)";
 			url = url.asString;
-			// matches all http except for loopback/localhost (IPv4)
-			if(redirectPattern.matchRegexp(url)) {
+			if(redirectEnabled and: { redirectPattern.matchRegexp(url) }) {
 				url.openOS;
+				(url ++ " opened in system browser").postln;
 				^true
 			} {
 				^false
@@ -53,7 +56,7 @@ HelpBrowser {
 		var ideClass = \ScIDE.asClass;
 		var redirected = HelpBrowser.prRedirectToSystemBrowser(url);
 		case
-		{ redirected } { (url ++ " opened in system browser").postln; }
+		{ redirected } { ^nil }
 		{ ideClass.notNil } { ideClass.openHelpUrl(url) }
 		{ this.front.goTo(url) };
 	}
@@ -253,10 +256,8 @@ HelpBrowser {
 
 		webView.onLinkActivated = {|wv, url|
 			var redirected, newPath, oldPath;
-			case
-			{ HelpBrowser.prRedirectToSystemBrowser(url) } { (url ++ " opened in system browser").postln; }
-			{ this.redirectTextFile(url) } { ^nil }
-			{
+			redirected = this.redirectTextFile(url) or: { HelpBrowser.prRedirectToSystemBrowser(url) };
+			if (not(redirected)) {
 				#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 				};
