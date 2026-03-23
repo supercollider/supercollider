@@ -104,7 +104,9 @@ void SC_LanguageClient::initRuntime(const Options& opt) {
                 error("Cannot change to runtime directory: %s", strerror(errno));
         }
         pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
+#ifndef __EMSCRIPTEN__
         init_OSC(opt.mPort);
+#endif
         schedInit();
         onInitRuntime();
     }
