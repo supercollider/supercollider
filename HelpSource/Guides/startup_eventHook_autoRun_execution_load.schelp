@@ -661,14 +661,14 @@ Stethoscope(s, numOuts, view: UserView(serverMeterView,
 	Rect(
 		serverMeterViewWidth,
 		0,
-		bounds.bounds.width - serverMeterViewWidth,
+		bounds.width - serverMeterViewWidth,
 		serverMeterView.bounds.height
 	)
 ));
 FreqScopeView(serverMeterView, Rect(
 	3,
 	25 + ServerMeterView.height,
-	bounds.bounds.width - 6,
+	bounds.width - 6,
 	ServerMeterView.height - 10
 )).active_(true).freqMode_(1);
 s.plotTreeView(0.5, plotTreeViewView);
