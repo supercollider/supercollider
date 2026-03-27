@@ -6,3 +6,7 @@ endif()
 if(UNIX AND NOT APPLE)
 	add_subdirectory(linux)
 endif()
+
+if(EMSCRIPTEN)
+    add_subdirectory(wasm)
+endif()
