@@ -40,25 +40,37 @@ HelpBrowser {
 		^super.new.init( aHomeUrl ? defaultHomeUrl, newWin ?? { openNewWindows } );
 	}
 
+	*prShouldRedirect {|url|
+		^(redirectEnabled and: { redirectPattern.matchRegexp(url) })
+	}
 
-	*prRedirectToSystemBrowser { |url|
-			url = url.asString;
-			if(redirectEnabled and: { redirectPattern.matchRegexp(url) }) {
-				url.openOS;
-				(url ++ " opened in system browser").postln;
-				^true
-			} {
-				^false
-			}
+	*prRedirectMenu { |url, openInSCIDE|
+		var systemDefaultBrowser = MenuAction("Open in system default browser");
+		var helpBrowser = MenuAction("Open in sclang HelpBrowser (unsafe)");
+		var closeMenu = MenuAction("Do not open");
+		var menu = Menu(systemDefaultBrowser, helpBrowser, closeMenu);
+		var removeDependants = { [systemDefaultBrowser, helpBrowser, closeMenu].do(_.removeDependant)  };
+		systemDefaultBrowser.addDependant { |action, what| if (what == \triggered) { url.openOS; removeDependants.() } };
+		helpBrowser.addDependant { |action, what| if (what == \triggered) { this.prIDEorHelpBrowser(url, openInSCIDE); removeDependants.() } };
+		^menu.front;
+	}
+
+	*prIDEorHelpBrowser { | url, openInSCIDE = true |
+		// when openInSCIDE = false, will open in a HelpBrowser instance.
+		var ideClass = \ScIDE.asClass;
+		if(ideClass.notNil and: openInSCIDE) {
+			ideClass.openHelpUrl(url)
+		} {
+			this.front.goTo(url)
+		}
 	}
 
 	*goTo {|url|
-		var ideClass = \ScIDE.asClass;
-		var redirected = HelpBrowser.prRedirectToSystemBrowser(url);
-		case
-		{ redirected } { ^nil }
-		{ ideClass.notNil } { ideClass.openHelpUrl(url) }
-		{ this.front.goTo(url) };
+		if(this.prShouldRedirect(url)) {
+			this.prRedirectMenu(url)
+		} {
+			this.prIDEorHelpBrowser(url)
+		}
 	}
 
 	*front {
@@ -153,6 +165,7 @@ HelpBrowser {
 		var x, y, w, h;
 		var str;
 
+		if (not(openNewWindows)) { singleton = this };
 		homeUrl = aHomeUrl;
 
 		winRect = Rect(0, 0, 800, (Window.screenBounds.height * 0.8).floor);
@@ -255,18 +268,21 @@ HelpBrowser {
 		webView.onLoadFailed = { this.stopAnim };
 
 		webView.onLinkActivated = {|wv, url|
-			var redirected, newPath, oldPath;
-			redirected = this.redirectTextFile(url) or: { HelpBrowser.prRedirectToSystemBrowser(url) };
-			if (not(redirected)) {
-				#newPath, oldPath = [url,webView.url].collect {|x|
-					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
-				};
-
-				if(newPath != oldPath && openNewWin) {
-						HelpBrowser.new(newWin:openNewWin).goTo(url);
+			var newPath, oldPath;
+			if( not(this.redirectTextFile(url)) ) {
+				if( HelpBrowser.prShouldRedirect(url)) {
+					HelpBrowser.prRedirectMenu(url, openInSCIDE: false)
 				} {
-					this.goTo(url);
-				};
+					#newPath, oldPath = [url,webView.url].collect {|x|
+					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
+					};
+			
+					if(newPath != oldPath && openNewWin) {
+							HelpBrowser.new(newWin:openNewWin).goTo(url);
+					} {
+						this.goTo(url);
+					}
+				}
 			}
 		};
 

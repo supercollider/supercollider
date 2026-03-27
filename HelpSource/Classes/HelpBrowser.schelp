@@ -34,7 +34,7 @@ table::
 ::
 
 classmethods::
-private:: getOldWrapUrl, initClass, prRedirectToSystemBrowser
+private:: getOldWrapUrl, initClass, prShouldRedirect, prRedirectMenu, prIDEorHelpBrowser
 
 method:: instance
 The singleton HelpBrowser instance.
