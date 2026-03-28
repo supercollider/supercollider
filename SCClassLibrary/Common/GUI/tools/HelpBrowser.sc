@@ -45,19 +45,23 @@ HelpBrowser {
 	}
 
 	*prRedirectMenu { |url, openInSCIDE|
+		var info = MenuAction("Choose how to open external link:\n").enabled_(false);
+		var domain = MenuAction(if(url.size < 75) {url} {url.replaceRegexp("https?:\/\/|(/.*)", "")} ).enabled_(false);
+		var separator = MenuAction().separator_(true);
 		var systemDefaultBrowser = MenuAction("Open in system default browser");
-		var helpBrowser = MenuAction("Open in sclang HelpBrowser (unsafe)");
-		var closeMenu = MenuAction("Do not open");
-		var menu = Menu(systemDefaultBrowser, helpBrowser, closeMenu);
+		var helpBrowser = MenuAction("Open in SuperCollider's help browser (unsafe)");
+		var closeMenu = MenuAction("Cancel");
+		var menu = Menu(info, domain, separator, systemDefaultBrowser, helpBrowser, closeMenu);
 		var removeDependants = { [systemDefaultBrowser, helpBrowser, closeMenu].do(_.removeDependant)  };
 		systemDefaultBrowser.addDependant { |action, what| if (what == \triggered) { url.openOS; removeDependants.() } };
 		helpBrowser.addDependant { |action, what| if (what == \triggered) { this.prIDEorHelpBrowser(url, openInSCIDE); removeDependants.() } };
 		^menu.front;
 	}
 
-	*prIDEorHelpBrowser { | url, openInSCIDE = true |
+	*prIDEorHelpBrowser { | url, openInSCIDE |
 		// when openInSCIDE = false, will open in a HelpBrowser instance.
 		var ideClass = \ScIDE.asClass;
+		openInSCIDE ?? { openInSCIDE = true };
 		if(ideClass.notNil and: openInSCIDE) {
 			ideClass.openHelpUrl(url)
 		} {

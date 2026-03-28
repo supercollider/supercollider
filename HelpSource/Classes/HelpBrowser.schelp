@@ -47,6 +47,7 @@ Get or set the default home URL.
 
 method:: openNewWindows
 Get or set the default for "open in new windows" toggle.
+When set to teletype::false:: (default), this class behaves like a singleton class.
 
 method:: redirectEnabled
 When set to true (default), redirects links that match code::redirectPattern:: to the system's default Web browser.
