@@ -45,7 +45,7 @@ HelpBrowser {
 	}
 
 	*prRedirectMenu { |url, openInSCIDE|
-		var info = MenuAction("Choose how to open external link:\n").enabled_(false);
+		var info = MenuAction("Choose how to open external link:").enabled_(false);
 		var domain = MenuAction(if(url.size < 75) {url} {url.replaceRegexp("https?:\/\/|(/.*)", "")} ).enabled_(false);
 		var separator = MenuAction().separator_(true);
 		var systemDefaultBrowser = MenuAction("Open in system default browser");
