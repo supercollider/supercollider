@@ -349,7 +349,7 @@ QC_LANG_PRIMITIVE(QObject_SetEventHandler, 4, PyrSlot* r, PyrSlot* a, VMGlobals*
         return errWrongType;
     int eventType = QtCollider::get(a + 0);
     PyrSymbol* method = 0;
-    slotSymbolVal(a + 1, &method);
+    if (slotSymbolVal(a + 1, &method))
     Synchronicity sync = IsTrue(a + 2) ? Synchronous : Asynchronous;
     bool enabled = IsTrue(a + 3);
 
