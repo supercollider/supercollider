@@ -410,7 +410,7 @@ QList<PyrObject*> QObjectProxy::children(PyrSymbol* className) {
 
     const QObjectList& children = qObject->children();
 
-    Q_FOREACH (QObject* child, children) {
+    for (QObject* child : children) {
         QObjectProxy* proxy = QObjectProxy::fromObject(child);
         if (!proxy)
             continue;
@@ -531,7 +531,7 @@ QObjectProxy* QObjectProxy::fromObject(QObject* object) {
         return 0;
 
     const QObjectList& children = object->children();
-    Q_FOREACH (QObject* child, children) {
+    for (QObject* child : children) {
         ProxyToken* token = qobject_cast<QtCollider::ProxyToken*>(child);
         if (token)
             return token->proxy;

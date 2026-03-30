@@ -24,12 +24,21 @@
 
 QC_DECLARE_QOBJECT_FACTORY(QcFileDialog);
 
-QcFileDialog::QcFileDialog(int fileMode, int acceptMode, const QString& startDir) {
+QcFileDialog::QcFileDialog(int fileMode, int acceptMode, const QString& startDir)
+    : _fileMode(fileMode)
+    , _acceptMode(acceptMode)
+    , _startDir(startDir) {
+    createDialog();
+}
+
+void QcFileDialog::createDialog() {
+    if (dialog)
+        return;
+
     dialog = new QFileDialog();
+    dialog->setDirectory(QDir{_startDir});
 
-    dialog->setDirectory(QDir { startDir });
-
-    switch (fileMode) {
+    switch (_fileMode) {
     case QFileDialog::AnyFile:
         dialog->setFileMode(QFileDialog::AnyFile);
         break;
@@ -46,7 +55,7 @@ QcFileDialog::QcFileDialog(int fileMode, int acceptMode, const QString& startDir
         qcErrorMsg("File dialog created with invalid file mode!\n");
     }
 
-    switch (acceptMode) {
+    switch (_acceptMode) {
     case QFileDialog::AcceptOpen:
         dialog->setAcceptMode(QFileDialog::AcceptOpen);
         break;
@@ -57,7 +66,9 @@ QcFileDialog::QcFileDialog(int fileMode, int acceptMode, const QString& startDir
         qcErrorMsg("File dialog created with invalid accept mode!\n");
     }
 
-    setParent(dialog);
+    // Keep the wrapper object alive while the dialog is open.
+    // Do not make QcFileDialog a child of the dialog to avoid accidental self-deletion on dialog close.
+    dialog->setParent(this);
 
-    connect(dialog, SIGNAL(finished(int)), this, SLOT(onFinished(int)));
+    connect(dialog, &QFileDialog::finished, this, &QcFileDialog::onFinished);
 }

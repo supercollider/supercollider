@@ -144,7 +144,7 @@ void WebView::toHtml(QcCallback* cb) const {
         } else {
             page()->toHtml([](const QString&) {});
         }
-    } else {
+    } else if (cb) {
         cb->asFunctor()(QString());
     }
 }
@@ -156,7 +156,7 @@ void WebView::toPlainText(QcCallback* cb) const {
         } else {
             page()->toPlainText([](const QString&) {});
         }
-    } else {
+    } else if (cb) {
         cb->asFunctor()(QString());
     }
 }
@@ -168,7 +168,7 @@ void WebView::runJavaScript(const QString& script, QcCallback* cb) {
         } else {
             page()->runJavaScript(script, [](const QVariant&) {});
         }
-    } else {
+    } else if (cb) {
         cb->asFunctor()(QString());
     }
 }
@@ -212,7 +212,11 @@ void WebView::findText(const QString& searchText, bool reversed, QcCallback* cb)
     }
 }
 
-void WebView::onPageReload() { Q_EMIT(reloadTriggered(url())); }
+void WebView::onPageReload() {
+    if (!page())
+        return;
+    Q_EMIT(reloadTriggered(url()));
+}
 
 void WebView::contextMenuEvent(QContextMenuEvent* event) {
     QMenu menu;
@@ -280,6 +284,9 @@ void WebView::pageLoaded(bool ok) { this->focusProxy()->installEventFilter(this)
 
 void WebView::setEditable(bool b) {
     _editable = b;
+    if (!page())
+        return;
+
     if (_editable) {
         page()->runJavaScript("document.documentElement.contentEditable = true");
     } else {

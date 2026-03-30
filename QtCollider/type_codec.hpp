@@ -138,8 +138,7 @@ template <> struct TypeCodec<float> {
 template <> struct TypeCodec<double> {
     static double read(PyrSlot* slot) {
         double d;
-        if (slotVal(slot, &d))
-            assert(false);
+        slotVal(slot, &d);
         return d;
     }
 

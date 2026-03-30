@@ -80,14 +80,14 @@ QcGraph::QcGraph():
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setAttribute(Qt::WA_AcceptTouchEvents);
 
-    connect(&_model, SIGNAL(removed(QcGraphElement*)), this, SLOT(onElementRemoved(QcGraphElement*)));
+    connect(&_model, &QcGraphModel::removed, this, &QcGraph::onElementRemoved);
 }
 
 QVariantList QcGraph::value() const {
     QVariantList x;
     QVariantList y;
     QList<QcGraphElement*> elems = _model.elements();
-    Q_FOREACH (QcGraphElement* e, elems) {
+    for (QcGraphElement* e : elems) {
         QPointF val = e->value;
         x.append(val.x());
         y.append(val.y());
@@ -194,14 +194,14 @@ void QcGraph::setCurves(const QVariantList& curves) {
 }
 
 void QcGraph::setCurves(double curvature) {
-    Q_FOREACH (QcGraphElement* e, _model.elements())
+    for (QcGraphElement* e : _model.elements())
         e->setCurveType(QcGraphElement::Curvature, curvature);
     update();
 }
 
 void QcGraph::setCurves(int typeId) {
     QcGraphElement::CurveType type = (QcGraphElement::CurveType)typeId;
-    Q_FOREACH (QcGraphElement* e, _model.elements())
+    for (QcGraphElement* e : _model.elements())
         e->setCurveType(type);
     update();
 }
@@ -220,7 +220,7 @@ void QcGraph::connectElements(int src, QVariantList targets) {
     if (src < 0 || src >= c)
         return;
 
-    Q_FOREACH (const QVariant& var, targets) {
+    for (const QVariant& var : targets) {
         int trg = var.toInt();
         if (trg < 0 || trg >= c)
             continue;
@@ -594,6 +594,14 @@ void QcGraph::moveSelected(const QPointF& dif, SelectionForm form, bool cached) 
     }
 }
 
+static void addCubicFromTangents(QPainterPath& path, const QPointF& pt1, const QPointF& pt2, qreal m1, qreal m2) {
+    qreal dx = pt2.x() - pt1.x();
+    path.moveTo(pt1);
+    QPointF cp1(pt1.x() + dx / 3.0, pt1.y() + m1 * dx / 3.0);
+    QPointF cp2(pt2.x() - dx / 3.0, pt2.y() - m2 * dx / 3.0);
+    path.cubicTo(cp1, cp2, pt2);
+}
+
 void QcGraph::addCurve(QPainterPath& path, QcGraphElement* e1, QcGraphElement* e2) {
     QcGraphElement::CurveType type = e1->curveType;
 
@@ -704,60 +712,35 @@ void QcGraph::addCurve(QPainterPath& path, QcGraphElement* e1, QcGraphElement* e
         break;
     }
     case QcGraphElement::Exponential: {
-        // FIXME: find a Bezier curve approximation
-
-        path.moveTo(pt1);
-
-        float dy = (pt2.y() - pt1.y());
-
-        // prevent NaN, optimize
-        if (pt1.y() <= 0.f || pt2.y() <= 0.f) {
-            path.lineTo(dy < 0 ? QPointF(pt1.x(), pt2.y()) : QPointF(pt2.x(), pt1.y()));
+        const qreal x1 = pt1.x();
+        const qreal x2 = pt2.x();
+        if (x1 == x2 || pt1.y() <= 0.0 || pt2.y() <= 0.0) {
+            path.moveTo(pt1);
             path.lineTo(pt2);
         } else {
-            static const int n = 100;
-            const qreal x1 = pt1.x();
-            const qreal x2 = pt2.x();
-            const qreal y1 = pt1.y();
-            const qreal y2 = pt2.y();
-
-            const qreal kx = (x2 - x1) / n;
-            const double ky = y1 != 0.0 ? std::pow(y2 / y1, 1.0 / n) : 1.f;
-            double y = y1;
-
-            for (int i = 1; i < n; ++i) {
-                qreal x = i * kx + x1;
-                y = y * ky;
-                path.lineTo(x, y);
-            }
-
-            path.lineTo(pt2);
+            const qreal dx = x2 - x1;
+            const qreal dy = pt2.y() - pt1.y();
+            const qreal ratio = pt2.y() / pt1.y();
+            const qreal lambda = std::log(ratio) / dx;
+            const qreal m1 = pt1.y() * lambda;
+            const qreal m2 = pt2.y() * lambda;
+            addCubicFromTangents(path, pt1, pt2, m1, m2);
         }
-
         break;
     }
-    case QcGraphElement::Curvature:
-
-        // FIXME: find a Bezier curve approximation
-
-        path.moveTo(pt1);
-
-        // prevent NaN
+    case QcGraphElement::Curvature: {
         double curve = qBound(-100.0, e1->curvature, 100.0);
-
-        if (std::abs(curve) < 0.0001) {
+        if (std::abs(curve) < 0.0001 || pt1.x() == pt2.x()) {
+            path.moveTo(pt1);
             path.lineTo(pt2);
         } else {
-            float dx = (pt2.x() - pt1.x());
-            float dy = (pt2.y() - pt1.y());
-            double denom = 1.0 - exp(curve);
-            const float n = 100.f;
-            for (float ph = 1 / n; ph <= (1 - 1 / n); ph += 1 / n) {
-                double numer = 1.0 - exp(ph * curve);
-                qreal y = pt1.y() + dy * (numer / denom);
-                path.lineTo(pt1.x() + (dx * ph), y);
-            }
-            path.lineTo(pt2);
+            const qreal dx = pt2.x() - pt1.x();
+            const qreal dy = pt2.y() - pt1.y();
+            const qreal slope = dy / dx;
+            const qreal normalizedCurve = qBound(-1.0, curve / 100.0, 1.0);
+            const qreal m1 = slope * (1.0 + normalizedCurve);
+            const qreal m2 = slope * (1.0 - normalizedCurve);
+            addCubicFromTangents(path, pt1, pt2, m1, m2);
         }
         break;
     }
@@ -878,8 +861,8 @@ void QcGraph::paintEvent(QPaintEvent*) {
         QPainterPath lines;
         QList<QcGraphModel::Connection> conns = _model.connections();
 
-        if (conns.count()) {
-            Q_FOREACH (QcGraphModel::Connection c, conns) {
+        if (!conns.isEmpty()) {
+            for (const QcGraphModel::Connection& c : conns) {
                 addCurve(lines, c.a, c.b);
             }
 

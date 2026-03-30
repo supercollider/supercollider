@@ -50,7 +50,7 @@ public:
     QcBoxLayout() {}
 
     QcBoxLayout(const QVariantList& items) {
-        Q_FOREACH (const QVariant& var, items) {
+        for (const QVariant& var : items) {
             QVariantList item = var.toList();
             addItem(item);
         }
@@ -204,7 +204,7 @@ public:
     QcStackLayout() {}
 
     Q_INVOKABLE QcStackLayout(const QVariantList& items) {
-        Q_FOREACH (const QVariant& var, items) {
+        for (const QVariant& var : items) {
             QWidget* w = var.value<QWidget*>();
             if (w)
                 addWidget(w);

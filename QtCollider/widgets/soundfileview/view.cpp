@@ -360,14 +360,14 @@ void QcWaveform::setSelectionColor(int i, const QColor& c) {
 
 QVariantList QcWaveform::waveColors() const {
     QVariantList clist;
-    Q_FOREACH (QColor clr, _waveColors)
+    for (const QColor& clr : _waveColors)
         clist << QVariant(clr);
     return clist;
 }
 
 void QcWaveform::setWaveColors(const QVariantList& list) {
     _waveColors.clear();
-    Q_FOREACH (const QVariant& var, list)
+    for (const QVariant& var : list)
         _waveColors << var.value<QColor>();
     redraw();
 }

@@ -35,12 +35,12 @@ void ProxyStyle::drawComplexControl(ComplexControl ctrl, const QStyleOptionCompl
                                     const QWidget* w) const {
 #ifdef SC_USE_QTWEBENGINE
     // FIXME: this is a workaround for the WebKit bug #104116 (or a variation on it).
-    if (ctrl == QStyle::CC_ScrollBar && qobject_cast<const QWebEngineView*>(w) != 0
+    if (ctrl == QStyle::CC_ScrollBar && qobject_cast<const QWebEngineView*>(w) != nullptr
         && opt->type == QStyleOption::SO_Slider) {
-        // WebKit tries to hide scrollbars, but mistakenly hides QWebView - NULL-ify styleObject to prevent.
+        // WebKit tries to hide scrollbars, but mistakenly hides QWebView - nullify styleObject to prevent.
         const QStyleOptionSlider* optSlider = static_cast<const QStyleOptionSlider*>(opt);
         QStyleOptionSlider opt2(*optSlider);
-        opt2.styleObject = NULL;
+        opt2.styleObject = nullptr;
 
         QProxyStyle::drawComplexControl(ctrl, &opt2, p, w);
         return;

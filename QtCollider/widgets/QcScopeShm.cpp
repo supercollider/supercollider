@@ -70,15 +70,21 @@ void QcScopeShm::setServerPort(int port) {
 
 void QcScopeShm::setBufferNumber(int n) {
     if (_running) {
-        // TODO: release used reader?
-        initScopeReader(_shm, n);
+        if (n != _scopeIndex) {
+            // Reset current scope reader state before switching buffers so the old
+            // reader does not keep stale pointer hooks in UI update flow.
+            _shm->reader = scope_buffer_reader();
+            _data = nullptr;
+            _availableFrames = 0;
+            initScopeReader(_shm, n);
+        }
     }
     _scopeIndex = n;
 }
 
 void QcScopeShm::setWaveColors(const QVariantList& newColors) {
     colors.clear();
-    Q_FOREACH (const QVariant& var, newColors) {
+    for (const QVariant& var : newColors) {
         QColor color = var.value<QColor>();
         if (!color.isValid())
             colors.append(QColor(0, 0, 0));
@@ -111,10 +117,15 @@ void QcScopeShm::start() {
 }
 
 void QcScopeShm::stop() {
-    // TODO: release used reader?
+    // Reset reader state and disconnect from shared memory client.
+    _shm->reader = scope_buffer_reader();
+    _data = nullptr;
+    _availableFrames = 0;
 
-    delete _shm->client;
-    _shm->client = 0;
+    if (_shm->client) {
+        delete _shm->client;
+        _shm->client = nullptr;
+    }
 
     timer->stop();
 

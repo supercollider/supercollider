@@ -33,7 +33,7 @@ QcPopUpMenu::QcPopUpMenu(): _changed(false), _reactivation(false) {
 
 void QcPopUpMenu::setItems(const QVariantList& items) {
     clear();
-    Q_FOREACH (const QVariant& item, items)
+    for (const QVariant& item : items)
         addItem(item.toString());
 }
 

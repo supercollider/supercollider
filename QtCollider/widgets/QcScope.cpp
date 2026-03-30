@@ -44,7 +44,7 @@ void QcScope::setBufferNumber(int n) {
 
 void QcScope::setWaveColors(const QVariantList& newColors) {
     colors.clear();
-    Q_FOREACH (const QVariant& var, newColors) {
+    for (const QVariant& var : newColors) {
         QColor color = var.value<QColor>();
         if (!color.isValid())
             colors.append(QColor(0, 0, 0));

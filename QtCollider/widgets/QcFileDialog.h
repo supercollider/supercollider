@@ -41,10 +41,17 @@ public:
     ~QcFileDialog() {
         if (dialog) {
             dialog->deleteLater();
-        };
+        }
     }
 
-    QFileDialog* theDialog() { return dialog; }
+    QFileDialog* theDialog() const { return dialog.data(); }
+
+private:
+    void createDialog();
+
+    int _fileMode;
+    int _acceptMode;
+    QString _startDir;
 
 Q_SIGNALS:
 
@@ -54,21 +61,30 @@ Q_SIGNALS:
 private Q_SLOTS:
 
     void show() {
-        dialog->exec();
-        dialog->deleteLater();
+        if (!dialog)
+            createDialog();
+
+        if (dialog)
+            dialog->open();
     }
 
     void onFinished(int res) {
+        if (!dialog)
+            return;
+
         if (res == QDialog::Accepted) {
             QStringList files = dialog->selectedFiles();
             QVariantList varFiles;
-            Q_FOREACH (QString f, files) {
+            for (const QString& f : files) {
                 varFiles << QVariant(f);
             }
             Q_EMIT(accepted(varFiles));
         } else {
             Q_EMIT(rejected());
         }
+
+        dialog->deleteLater();
+        dialog = nullptr;
     }
 
 private:

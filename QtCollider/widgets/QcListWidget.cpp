@@ -38,7 +38,7 @@ QcListWidget::QcListWidget(): _emitAction(true) {
 void QcListWidget::setItems(const QVariantList& items) {
     _emitAction = false;
     clear();
-    Q_FOREACH (const QVariant& item, items)
+    for (const QVariant& item : items)
         addItem(item.toString());
     setCurrentRow(0);
     _emitAction = true;
@@ -65,14 +65,14 @@ void QcListWidget::setCurrentRowWithoutAction(int row) {
 QVariantList QcListWidget::selection() const {
     QModelIndexList modelIndexes = QListView::selectedIndexes();
     QVariantList indexes;
-    Q_FOREACH (const QModelIndex& index, modelIndexes)
+    for (const QModelIndex& index : modelIndexes)
         indexes << index.row();
     return indexes;
 }
 
 void QcListWidget::setSelection(const QVariantList& list) {
     clearSelection();
-    Q_FOREACH (const QVariant& var, list) {
+    for (const QVariant& var : list) {
         int row = var.toInt();
         QListWidgetItem* item = QListWidget::item(row);
         if (item)

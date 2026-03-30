@@ -65,7 +65,7 @@ public:
 
         const QObjectList& children = parent->children();
 
-        Q_FOREACH (QObject* o, children) {
+        for (QObject* o : children) {
             if (!o->isWidgetType())
                 continue;
 
@@ -117,7 +117,7 @@ public:
         int varWidth = geom.width();
         int i = 0;
 
-        Q_FOREACH (QObject* o, children) {
+        for (QObject* o : children) {
             if (!o->isWidgetType())
                 continue;
             QWidget* w = static_cast<QWidget*>(o);
@@ -135,7 +135,7 @@ public:
         int partWidth = i > 0 && varWidth > 0 ? varWidth / i : 0;
         int x = 0;
 
-        Q_FOREACH (QObject* o, children) {
+        for (QObject* o : children) {
             if (!o->isWidgetType())
                 continue;
             QWidget* w = static_cast<QWidget*>(o);
@@ -167,7 +167,7 @@ public:
         int varHeight = geom.height();
         int i = 0;
 
-        Q_FOREACH (QObject* o, children) {
+        for (QObject* o : children) {
             if (!o->isWidgetType())
                 continue;
             QWidget* w = static_cast<QWidget*>(o);
@@ -185,7 +185,7 @@ public:
         int partHeight = i > 0 && varHeight > 0 ? varHeight / i : 0;
         int y = 0;
 
-        Q_FOREACH (QObject* o, children) {
+        for (QObject* o : children) {
             if (!o->isWidgetType())
                 continue;
             QWidget* w = static_cast<QWidget*>(o);

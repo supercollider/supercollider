@@ -58,7 +58,7 @@ void LangClient::onQuit(int exitCode) {
 
 void LangClient::onLibraryShutdown() {
     QWidgetList windows = QApplication::topLevelWidgets();
-    Q_FOREACH (QWidget* w, windows)
+    for (QWidget* w : windows)
         w->hide();
 }
 

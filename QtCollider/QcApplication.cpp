@@ -181,19 +181,31 @@ bool QcApplication::notify(QObject* object, QEvent* event) {
     bool result = QApplication::notify(object, event);
 
 #ifdef Q_OS_MAC
-    // XXX Explicitly accept all handled events so they don't propagate outside the application.
-    // This is a hack; for a not-fully-understood reason Qt past 5.7 sends these events to the
-    // native window if they aren't accepted here. This caused issue #4058. Accepting them here
-    // seems to solve the problem, but might cause other issues since it is a heavy-handed way
-    // of doing this.
-    // In order to still allow closing GUI windows with "cmd-w", we need to let through both
-    // this key combination, as well as modifier keys alone, since the "cmd" needs to be passed
-    // through by itself first for the "cmd-w" to work.
-    // TODO - solve more elegantly
+    // Explicitly accept handled key events for macOS so they are not re-routed to the native
+    // window and result in duplicate handling or incorrect menu shortcuts.
+    // This avoids the specific issue where Qt <= 5.7 forwards unaccepted key events to
+    // the native window, while still continuing to allow platform-level window shortcuts
+    // (e.g. cmd-w for close) and modifier-only events.
+    auto shouldIgnoreMacKeyPress = [](const QKeyEvent* kevent) {
+        if (!kevent) {
+            return true;
+        }
+        if (kevent->key() == Qt::Key_unknown) {
+            return true;
+        }
+        if (kevent->key() == Qt::Key_W && kevent->modifiers() == Qt::ControlModifier) {
+            return true;
+        }
+        if (kevent->key() == Qt::Key_Control || kevent->key() == Qt::Key_Shift || kevent->key() == Qt::Key_Alt
+            || kevent->key() == Qt::Key_Meta) {
+            return true;
+        }
+        return false;
+    };
+
     if (result && event->type() == QEvent::KeyPress) {
         auto kevent = static_cast<QKeyEvent*>(event);
-        if (!((kevent->key() == Qt::Key_W) && (kevent->modifiers() == Qt::ControlModifier))
-            && (kevent->key() != Qt::Key_unknown)) {
+        if (!shouldIgnoreMacKeyPress(kevent)) {
             event->accept();
         }
     }

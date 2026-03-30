@@ -518,7 +518,7 @@ void QWidgetProxy::sendRefreshEventRecursive(QWidget* w) {
     QApplication::sendEvent(w, &event);
 
     const QObjectList& children = w->children();
-    Q_FOREACH (QObject* child, children) {
+    for (QObject* child : children) {
         if (child->isWidgetType())
             sendRefreshEventRecursive(static_cast<QWidget*>(child));
     }

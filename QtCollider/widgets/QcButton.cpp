@@ -37,7 +37,7 @@ void QcButton::setStates(const QVariantList& statesArg) {
 
     states.clear();
 
-    Q_FOREACH (const QVariant& var, statesArg) {
+    for (const QVariant& var : statesArg) {
         QVariantList stateArg = var.toList();
         int count = stateArg.size();
         State state;

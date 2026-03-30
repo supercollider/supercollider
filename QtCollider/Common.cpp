@@ -32,7 +32,7 @@ void QtCollider::runLang(PyrObjectHdr* receiver, PyrSymbol* method, const QList<
     g->canCallOS = true;
     ++g->sp;
     SetObject(g->sp, receiver);
-    Q_FOREACH (QVariant var, args) {
+    for (const QVariant& var : args) {
         ++g->sp;
         if (!QtCollider::set(g->sp, var)) {
             qcErrorMsg("Failed to write a slot when trying to run interpreter!");

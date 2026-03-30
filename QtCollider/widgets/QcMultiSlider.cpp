@@ -68,7 +68,7 @@ QVector<double> QcMultiSlider::values() const { return QVector<double>::fromList
 void QcMultiSlider::setValues(const QVector<double>& vec) {
     _values.clear();
 
-    Q_FOREACH (double value, vec)
+    for (double value : vec)
         _values << qBound(0.0, rounded(value), 1.0);
 
     update();
@@ -94,7 +94,7 @@ QVector<double> QcMultiSlider::reference() const { return QVector<double>::fromL
 void QcMultiSlider::setReference(const QVector<double>& vec) {
     _ref.clear();
 
-    Q_FOREACH (double value, vec)
+    for (double value : vec)
         _ref << qBound(0.0, value, 1.0);
 
     update();
