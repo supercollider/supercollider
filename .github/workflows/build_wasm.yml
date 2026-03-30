@@ -9,7 +9,7 @@ on:
 jobs:
   build-wasm:
     runs-on: ubuntu-24.04
-    name: scsynth wasm
+    name: sc wasm
 
     env:
       BUILD_PATH: ${{ github.workspace }}/build
@@ -52,13 +52,13 @@ jobs:
       - name: build
         run: |
           cd $BUILD_PATH
-          emmake cmake --build . --target scsynth
+          emmake cmake --build . --target  webeditor
 
       - name: create archive
-        run: cd $BUILD_PATH/wasm-dist && zip --symlinks -r scsynth_wasm.zip .
+        run: cd $BUILD_PATH/wasm-dist && zip --symlinks -r wasm-dist.zip .
 
       - name: upload artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: scsynth_wasm.zip
-          path: ${{ env.BUILD_PATH }}/wasm-dist/scsynth_wasm.zip
+          name: "SuperCollider-${{ inputs.sc-version }}-wasm.zip"
+          path: ${{ env.BUILD_PATH }}/wasm-dist/wasm-dist.zip
