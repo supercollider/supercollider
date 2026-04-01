@@ -3,7 +3,8 @@
 [WebAssembly](https://webassembly.org/) (wasm) is used by browsers (and beyond) to provide native-like performance across a variety of platforms and processor architectures using the same binary.
 Since almost all browsers ship with a WebAssembly runtime, it is possible to run SuperCollider in a browser without any kind of installation.
 
-There is currently only a wasm build for scsynth, such that all the sound functionality of SuperCollider is available in the browser.
+scsynth and sclang have been ported to WebAssembly, exposing a JavaScript API to interact with them.
+They can be used independently on their own or together.
 
 ## scsynth
 
@@ -34,7 +35,66 @@ Check the CI of SuperCollider to obtain the wasm build artifact.
 * Any kind of Mouse/X11 UGens (i.e. `MouseX`, `MouseY`) are not implemented, though there is a emscripten binding to access the mouse data, see https://emscripten.org/docs/api_reference/html5.h.html#mouse.
   This will likely be implemented in a future version.
 
-#### HTTP Headers
+### Source code
+
+The basic idea of the wasm implementation is to remove the network stack since it requires socket access which is not available in a browser environment.
+Instead of "faking" a network stack, `SC_ComPort.cpp` is removed from compilation and the `ReplyAddress` struct also removes its `boost::asio::ip::address mAddress` member.
+Any OSC I/O is instead provided by JavaScript functions which write the messages into the scsynth `World` directly.
+
+Beyond that, the main additions to the scsynth source code are
+
+* `SC_WebAudioDriver`, located in `server/scsynth/SC_WebAudio.cpp`, which implements a [`WebAudioWorklet`](https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet) as a "fake" audio driver which receives a callback from the real time environment of the browser to generate the next n samples.
+  The emscripten documentation provides a good introduction on WebAudioWorklets, see https://emscripten.org/docs/api_reference/wasm_audio_worklets.html.
+  It also contains all missing fake implementations necessary due to the removal of `SC_ComPort.cpp` and contains the JS<->CPP glue code using emscripten.
+* `platform/wasm/SC_WebOsc.cpp` which implements a basic OSC builder and parser for JavaScript using the already included [oscpack](https://github.com/RossBencina/oscpack)
+* `platform/wasm/scsynth.pre.js` which provides some glue code and scaffolding such that a nice user facing JS API is available.
+
+Additionally, all plugins are statically linked.
+
+In `server/scsynth/CMakeList.txt`, the symbol to look out for is `EMSCRIPTEN` and within the source code any modifications are guarded by the `__EMSCRIPTEN__` symbol.
+
+## sclang
+
+Interaction with sclang happens via OSC and text I/O, where both kinds are accessible via a JavaScript API.
+Like for scsynth, all kind of networking is stripped away since wasm does not provide socket access.
+Instead, all incoming OSC messages should be passed as binary [`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) to `sendOsc` and all outgoing messages can be received as Uint8 array via `onOsc`.
+Take a look at the web editor how to interact with the API.
+
+The current network mock is rather limited and aimed at communicating with the scsynth.wasm server.
+To keep the implementation easier, the concept of IP address and port has been removed, which limits the usage of the wasm build to single client/server setups.
+This may change in the future though.
+
+### Limitations
+
+* No file access yet.
+  Will be available once the best approach for a filesystem in conjunction with scsynth and the browser has been determined.
+* DOM interaction is untested, but `JS.runCode` can run JS code in the main thread of the browser, which allows to interact with the DOM.
+* Any kind of OSCFunc/OSCdef that goes beyond the server is not implemented.
+* Clock-re-synchronization with the server is currently not in-place.
+* The clock implementation (SystemClock, AppClock, ...) may be janky in general.
+
+### Source code
+
+Any kind of patching in the source code is guarded by the `__EMSCRIPTEN__` definition.
+The most crucial patching has been performed in
+
+* `PyrObject.cpp`: Compilation of the class library is not happening in a boost thread pool but using `std::async` - like the Windows implementation.
+  Using the thread pool created termination problem of the thread pool.
+* `OSCData.cpp`: WASM does not allow to create sockets, so it is assumed that the network socket is located at `127.0.0.1:57120`.
+  Operations such as `NetAddr.broadcastFlag` are no-oped.
+* `SC_ComPort.h`: Any reference to a socket is removed
+
+The terminal client `SC_TerminalClient`, which is derived from `LanguageClient`, is replaced with a `SC_WasmClient`, which exposes text and OSC I/O via a JavaScript API using embind.
+
+Additionally, `SC_WebOsc.cpp` is also added to the build, which allows to construct and parse OSC messages.
+
+## Editor
+
+The wasm exclusive target `webeditor` is a mockup of the SC IDE in the browser using CodeMirror 5, bundling sclang and scsynth.
+The source code is located in `platform/wasm/editor`.
+It acts as an example how to connect sclang and scsynth in a wasm environment.
+
+## Deployment
 
 As mentioned, it is necessary to set HTTP headers in the webserver in order to make the necessary `SharedArrayBuffers` available.
 The provided `dev_server.py` allows to spin up a local development server with the necessary headers.
@@ -70,24 +130,6 @@ server {
 ```
 
 Use e.g. [certbot](https://certbot.eff.org/) to obtain a certificate for the domain, since a `https` context is also necessary for `SharedArrayBuffer` and `AudioContext` access.
-
-### Source code
-
-The basic idea of the wasm implementation is to remove the network stack since it requires socket access which is not available in a browser environment.
-Instead of "faking" a network stack, `SC_ComPort.cpp` is removed from compilation and the `ReplyAddress` struct also removes its `boost::asio::ip::address mAddress` member.
-Any OSC I/O is instead provided by JavaScript functions which write the messages into the scsynth `World` directly.
-
-Beyond that, the main additions to the scsynth source code are
-
-* `SC_WebAudioDriver`, located in `server/scsynth/SC_WebAudio.cpp`, which implements a [`WebAudioWorklet`](https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet) as a "fake" audio driver which receives a callback from the real time environment of the browser to generate the next n samples.
-  The emscripten documentation provides a good introduction on WebAudioWorklets, see https://emscripten.org/docs/api_reference/wasm_audio_worklets.html.
-  It also contains all missing fake implementations necessary due to the removal of `SC_ComPort.cpp` and contains the JS<->CPP glue code using emscripten.
-* `platform/wasm/SC_WebOsc.cpp` which implements a basic OSC builder and parser for JavaScript using the already included [oscpack](https://github.com/RossBencina/oscpack)
-* `platform/wasm/scsynth.pre.js` which provides some glue code and scaffolding such that a nice user facing JS API is available.
-
-Additionally, all plugins are statically linked.
-
-In `server/scsynth/CMakeList.txt`, the symbol to look out for is `EMSCRIPTEN` and within the source code any modifications are guarded by the `__EMSCRIPTEN__` symbol.
 
 ## Building
 
@@ -127,13 +169,13 @@ emcmake cmake \
   ..
 ```
 
-Now build `scsynth` for wasm using emscripten by running 
+Now build `webeditor` for wasm using emscripten by running 
 
 ```shell
-emmake cmake --build . --target scsynth
+emmake cmake --build . --target webeditor
 ```
 
-The build artifacts with examples will be written to `<your_build_directry>/scsynth-wasm-dist`.
+The build artifacts with examples will be written to `<your_build_directry>/wasm-dist`.
 
 ### CLion setup
 
@@ -156,6 +198,12 @@ and the following CMake options should be set
 -DCMAKE_TOOLCHAIN_FILE=/Users/scheiba/github/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DSC_EL=no  -DSUPERNOVA=no  -DSC_HIDAPI=no  -DNO_LIBSNDFILE=yes  -DSC_QT=no  -DNO_AVAHI=yes  -DSC_ABLETON_LINK=no  -DCMAKE_BUILD_TYPE="Release" -Wno-dev -DSSE=no -DSSE2=no -DNO_X11=yes -DAUDIOAPI=webaudio
 ```
 
+### Debugging
+
+Use the flag `-DWASM_DEBUG=on` to create a debug wasm build.
+
+See https://developer.chrome.com/blog/wasm-debugging-2020 how to use chrome to debug the wasm built.
+
 ## Credits
 
 The first implementation of scsynth in wasm has been written by Hanns Holger Rutz (Sciss).
@@ -165,4 +213,4 @@ The current implementation, which is enhanced by using AudioWorklets, does not r
 ## License
 
 scsynth and sclang are licensed via GPL-3.0.
-The wasm binding of scsynth is licensed via AGPL-3.0.
+The wasm bindings of sclang and scsynth are licensed via AGPL-3.0.
