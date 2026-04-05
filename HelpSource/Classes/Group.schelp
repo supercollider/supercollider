@@ -145,8 +145,11 @@ The default is false.
 
 method:: queryTree
 Near-duplicate of code::.dumpTree.:: Queries the server for a message describing this group's node subtree.
-Sends a server message of the type teletype::/g_queryTree::; the server's reply is automatically parsed in the post window.
-When you use the code::.queryTree:: method, you cannot customize this parsing; this is only possible when sending the server command directly.
+Sends a server message of the type teletype::/g_queryTree::; if no argument is provided, the server's reply is automatically parsed in the post window.
+Alternatively, a link::Classes/Function:: can be provided as an teletype::action:: argument, for instance: 
+code:: 
+Group().queryTree( { |msg| msg.postln });
+::
 See teletype::/g_queryTree:: in the link::Reference/Server-Command-Reference#/g_queryTree#Server Command Reference::.
 
 
@@ -240,6 +243,9 @@ g.query;
 
 // now query my tree and post a graph of it (mostly duplicates dumpTree)
 g.queryTree;
+
+// or if you prefer it unformatted:
+g.queryTree( { |msg| msg.postln });
 
 // kill me and my children
 g.free;
