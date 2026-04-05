@@ -147,7 +147,7 @@ method:: queryTree
 Near-duplicate of code::.dumpTree.:: Queries the server for a message describing this group's node subtree.
 Sends a server message of the type teletype::/g_queryTree::; the server's reply is automatically parsed in the post window.
 When you use the code::.queryTree:: method, you cannot customize this parsing; this is only possible when sending the server command directly.
-See teletype::/g_queryTree:: in the link::Reference/Server-Command-Reference#g_queryTree#Server Command Reference::.
+See teletype::/g_queryTree:: in the link::Reference/Server-Command-Reference#/g_queryTree#Server Command Reference::.
 
 
 Examples::
