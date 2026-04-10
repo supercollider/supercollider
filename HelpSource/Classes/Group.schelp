@@ -144,11 +144,13 @@ If code::postControls:: is true, then the current Control (arg) values for any s
 The default is false.
 
 method:: queryTree
-Near-duplicate of code::.dumpTree.:: Queries the server for a message describing this group's node subtree.
-Sends a server message of the type teletype::/g_queryTree::; if no argument is provided, the server's reply is automatically parsed in the post window.
-Alternatively, a link::Classes/Function:: can be provided as an teletype::action:: argument, for instance: 
-code:: 
-Group().queryTree( { |msg| msg.postln });
+Queries the server for a message describing this group's node subtree.
+Similar to to code::.dumpTree::, but with the difference that code::.queryTree:: permits
+custom handling of the server's reply message when an teletype::action:: argument is provided. 
+When no argument is provided to code::.queryTree::, the output resembles that of code::.dumpTree::.
+code::
+Group().queryTree; // default reply handler.
+Group().queryTree( { |msg| msg.postln }); // custom (but very boring) reply handler.
 ::
 See teletype::/g_queryTree:: in the link::Reference/Server-Command-Reference#/g_queryTree#Server Command Reference::.
 
