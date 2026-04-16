@@ -227,7 +227,7 @@ UGen : AbstractFunction {
 			/ log(inMax/inMin)) * outMin;
 	}
 
-    lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
+	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled, curvedResult;
 		var tooClose = abs(curve) < 0.001;
 		var curveIsNum = curve.isNumber;
