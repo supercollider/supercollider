@@ -137,23 +137,18 @@ if(LTO)
 				 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
+# yaml-cpp
 if(NOT SYSTEM_YAMLCPP)
   message(STATUS "Using bundled yaml-cpp")
 
-  # yaml-cpp
-  set(CMAKE_POLICY_VERSION_MINIMUM 3.10) # workaround for cmake 4
-  aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/src yaml_src)
-  CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
+  set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+  set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+  set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
+  set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-  add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
-  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include ${boost_include_dirs})
-  set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
-  set(YAMLCPP_LIBRARY yaml)
+  add_subdirectory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp EXCLUDE_FROM_ALL)
+  set_property( TARGET yaml-cpp PROPERTY FOLDER 3rdparty )
   set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include)
-
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
-  endif()
 
 endif()
 
