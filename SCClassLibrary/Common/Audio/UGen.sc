@@ -229,8 +229,8 @@ UGen : AbstractFunction {
 
     lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled, curvedResult;
-        var tooClose = abs(curve) < 0.001;
-        var curveIsNum = curve.isNumber;
+		var tooClose = abs(curve) < 0.001;
+		var curveIsNum = curve.isNumber;
 		if ( curveIsNum and: { tooClose }) {
 			^this.linlin(inMin, inMax, outMin, outMax, clip)
 		};
@@ -253,8 +253,8 @@ UGen : AbstractFunction {
 
 	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled, linResult;
-        var tooClose = abs(curve) < 0.001;
-        var curveIsNum = curve.isNumber;
+		var tooClose = abs(curve) < 0.001;
+		var curveIsNum = curve.isNumber;
 		if ( curveIsNum and: { tooClose }) {
 			^this.linlin(inMin, inMax, outMin, outMax, clip)
 		};
