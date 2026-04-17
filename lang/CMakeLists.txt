@@ -10,8 +10,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison
-
-                    ${YAMLCPP_INCLUDE_DIR}
 )
 
 
@@ -341,7 +339,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
+target_link_libraries(libsclang yaml-cpp)
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)

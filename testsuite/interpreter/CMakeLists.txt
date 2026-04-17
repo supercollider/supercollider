@@ -24,8 +24,6 @@ foreach(test ${test_sources})
                     ${CMAKE_SOURCE_DIR}/lang/Bison
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
-
-                    ${YAMLCPP_INCLUDE_DIR}
 	)
 
   add_test(interpreter__${test_name} ${test_name})

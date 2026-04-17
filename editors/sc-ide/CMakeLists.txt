@@ -223,7 +223,6 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${YAMLCPP_INCLUDE_DIR})
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
 # Needed for auto-generated forms headers:
@@ -326,7 +325,7 @@ endif()
 
 target_link_libraries( libscide PUBLIC
     ${QT_IDE_LIBRARIES}
-    ${YAMLCPP_LIBRARY}
+    yaml-cpp
     oscpack
 )
 

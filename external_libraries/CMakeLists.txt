@@ -147,7 +147,6 @@ if(NOT SYSTEM_YAMLCPP)
 
   add_subdirectory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp EXCLUDE_FROM_ALL)
   set_property( TARGET yaml-cpp PROPERTY FOLDER 3rdparty )
-  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include)
 
 endif()
 

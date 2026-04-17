@@ -429,10 +429,6 @@ endif()
 add_subdirectory(tools)
 add_subdirectory(external_libraries)
 
-if(NOT YAMLCPP_FOUND)
-  set(YAMLCPP_LIBRARY yaml-cpp)
-endif()
-
 
 configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/common)
