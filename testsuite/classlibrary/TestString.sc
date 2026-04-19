@@ -224,4 +224,67 @@ TestString : UnitTest {
 		var reconstructed = large.asCompileString.interpret;
 		this.assert(large == reconstructed, "A large string's compileString should interpret back to itself");
 	}
+
+	// ------- YAML/JSON -----------------------------------------------
+
+	test_parseYaml_arrays {
+		var yaml = "---\n- first\n- second\n- third";
+		var result = ["first", "second", "third"];
+		var expected = yaml.parseYAML;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseYaml_dictionaries {
+		var yaml = "---\nkeyA: valueA\nkeyB: valueB";
+		var result = Dictionary.newFrom([
+			"keyA", "valueA",
+			"keyB", "valueB"
+		]);
+		var expected = yaml.parseYAML;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseYaml_scalars {
+		var yaml = "--- single_scalar_string";
+		var result = "single_scalar_string";
+		var expected = yaml.parseYAML;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseYaml_nested_structures {
+		var yaml = "---\nparent:\n  - child1\n  - child2\nconfig:\n  status: active";
+		var result = Dictionary.newFrom([
+			"parent", ["child1", "child2"],
+			"config", Dictionary.newFrom(["status", "active"])
+		]);
+		var expected = yaml.parseYAML;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseJson_arrays {
+		var json = "[\"one\", \"two\", \"three\"]";
+		var result = ["one", "two", "three"];
+		var expected = json.parseJSON;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseJson_dictionaries {
+		var json = "{\"node_id\": \"1001\", \"type\": \"sine\"}";
+		var result = Dictionary.newFrom([
+			"node_id", "1001",
+			"type", "sine"
+		]);
+		var expected = json.parseJSON;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseJson_nested {
+		var json = "{\"synth\": {\"freq\": \"440\", \"amp\": \"0.5\"}, \"fx\": [\"reverb\", \"delay\"]}";
+		var result = Dictionary.newFrom([
+			"synth", Dictionary.newFrom(["freq", "440", "amp", "0.5"]),
+			"fx", ["reverb", "delay"]
+		]);
+		var expected = json.parseJSON;
+		this.assertEquals(result, expected);
+	}
 }
