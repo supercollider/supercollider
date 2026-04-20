@@ -1,5 +1,5 @@
 title:: Iteration
-summary:: for, do, loop, repeat
+summary:: for, do, loop, repeat, while, block
 categories:: Core,Common methods
 related::  Classes/Object, Classes/Function, Classes/Routine, Classes/Stream, Classes/Pattern
 

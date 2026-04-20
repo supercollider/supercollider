@@ -1,5 +1,5 @@
 title::Conditional Execution
-summary:: conditional expressions in SuperCollider
+summary:: conditional expressions (if, case, switch, while) in SuperCollider
 categories:: Language
 related:: Classes/Boolean, Classes/Function, Classes/Exception, Reference/Syntax-Shortcuts, Reference/loop
 
