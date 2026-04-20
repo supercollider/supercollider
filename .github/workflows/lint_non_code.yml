@@ -31,7 +31,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - uses: pre-commit/action@v3.0.1
-        name: 'Run pre-commit'
+      - name: setup pre-commit
+        run: python -m pip install pre-commit
+
+      - name: run pre-commit
+        run: pre-commit run --show-diff-on-failure --color=always --all-files
         env:
           FULL_CHECK: 1
