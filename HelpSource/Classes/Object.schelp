@@ -497,6 +497,8 @@ x.postln;
 )
 ::
 
+See link::Reference/Conditional-Execution::.
+
 subsection::Messaging
 
 Instead of directly sending a method to an object, a method may be invoked given a method selector only (a Symbol). The other arguments may be provided by passing them directly, from an environment. If it is not known whether the receiver implements the method, tryPerform only sends if it does. The messages code::superPerform::, code::superPerformList::; and code::superPerformArgs:: invoke the method of the superclass.
