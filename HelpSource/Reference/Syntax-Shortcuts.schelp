@@ -49,6 +49,46 @@ note::
 When using the new code::||:: syntax, the default value needs to be enclosed in parenthesis if it's not a literal.
 ::
 
+subsection:: ellipsis in function arguments
+
+table::
+## instead of writing: || you can write:
+## code:: { arg ... args; args.postln } :: || code:: { |... args| args.postln } ::
+## code:: { arg a ... rest; [a, rest].postln } :: || code:: { |a ... rest| [a, rest].postln } ::
+## code:: { arg a, b ... rest; [a, b, rest].postln } :: || code:: { |a, b ... rest| [a, b, rest].postln } ::
+
+code:: { |a b ... rest| [a, b, rest].postln } ::
+::
+
+note::
+Use code::...:: in function argument lists when the inputs are not fixed in advance, either in the number of arguments or in the names of arguments. Arguments matched by code::...:: are collected into a single link::Classes/Array:: instance.
+
+code::
+// It may collect all arguments:
+x = { arg ... args; args };
+x.(1, 2, 3);    // -> [1, 2, 3]
+
+x = { |... args| args };
+x.(1, 2, 3, 4, 5); // -> [1, 2, 3, 4, 5]
+
+// Or it may collect only the arguments that remain after earlier ones have been matched:
+x = { arg a ... rest; [a, rest] };
+x.(1, 2, 3, 4, 5);       // -> [ 1, [ 2, 3, 4, 5 ] ]
+
+x = { |a ... rest| [a, rest] };
+x.(1, 2, 3, 4, 5);          // -> [ 1, [ 2, 3, 4, 5 ] ]
+
+x = { arg a, b ... rest; [a, b, rest] };
+x.(1, 2, 3, 4, 5); // -> [ 1, 2, [ 3, 4, 5 ] ]
+
+x = { |a, b ... rest| [a, b, rest] }
+x.(1, 2, 3, 4, 5);    // -> [ 1, 2, [ 3, 4, 5 ] ]
+
+x = { |a b ... rest| [a, b, rest] }
+x.(1, 2, 3, 4, 5);     // -> [ 1, 2, [ 3, 4, 5 ] ]
+::
+::
+
 subsection:: partial application
 table::
 ## instead of writing: || you can write:
