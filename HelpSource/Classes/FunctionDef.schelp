@@ -64,7 +64,7 @@ Returns whether the function has variable keyword arguments
 code::
 { |a, b, c| a + b * c }.def.hasKwArgs; // false
 { |a, b ... c| a + b * c }.def.hasKwArgs; // false
-{ |a ... b, c| a * b }.def.hasVarArgs; // true
+{ |a ... b, c| a * b }.def.hasKwArgs; // true
 ::
 
 method::varArgsValue
