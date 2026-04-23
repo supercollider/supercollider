@@ -124,7 +124,11 @@ code::
 keywordWarnings(false)
 ::
 
-If a keyword argument and a positional argument specify the same argument, the keyword argument value overrides the positional argument value. Note that this usage, while legal, is discouraged as it can be confusing.
+If the same argument is specified more than once, whether by positional or keyword arguments, the rightmost value overrides all previous ones. Note that this usage, while legal, is discouraged as it can be confusing.
+code::
+f = { | a | a };
+f.(1, a: 2, a: 3); // -> 3, the rightmost value wins
+::
 
 For example, the code::ar:: class method of the SinOsc class takes arguments named freq, phase, mul, and add in that order. All of the following are legal calls to that method.
 code::
@@ -134,9 +138,9 @@ SinOsc.ar(800, pi, 0.2, 0); // all positional arguments: freq, phase, mul, add
 SinOsc.ar(800, mul: 0.2); // 800 is a positional argument, and 0.2 is a keyword one
 
 // freq = 800, phase = pi, mul = 0.2, add gets its default value of zero.
-SinOsc.ar(phase: pi, mul: 0.2, freq: 800); // all keyword arguments:
+SinOsc.ar(phase: pi, mul: 0.2, freq: 800); // all keyword arguments
 
-// keyword value of 1200 overrides the positional arg value of 800
+// the rightmost value of 1200 overrides the positional arg value of 800
 SinOsc.ar(800, freq: 1200); // should not be used.
 ::
 code::
