@@ -133,7 +133,7 @@ SinOsc.ar(800, pi, 0.2, 0); // all positional arguments: freq, phase, mul, add
 // freq = 800, mul = 0.2, others get default values.
 SinOsc.ar(800, mul: 0.2); // 800 is a positional argument, and 0.2 is a keyword one
 
-// all keyword arguments: freq = 800, phase = pi, mul = 0.2, add gets its default value of zero.
+// freq = 800, phase = pi, mul = 0.2, add gets its default value of zero.
 SinOsc.ar(phase: pi, mul: 0.2, freq: 800); // all keyword arguments:
 
 // keyword value of 1200 overrides the positional arg value of 800
