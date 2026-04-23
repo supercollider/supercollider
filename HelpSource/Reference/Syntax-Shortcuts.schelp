@@ -106,6 +106,14 @@ f.(1, 2, 3, 4, x: 5, y: 6);        // -> [ 1, 2, [ 3, 4 ], [ x, 5, y, 6 ] ]
 f.(1, 2, 3, 4, 5, 6, x: 7, y: 8);  // -> [ 1, 2, [ 3, 4, 5, 6 ], [ x, 7, y, 8 ] ]
 ::
 
+note::
+See
+list::
+## link::Classes/Object#performList::
+## link::Classes/Object#performArgs::
+::
+::
+
 subsection:: partial application
 table::
 ## instead of writing: || you can write:
