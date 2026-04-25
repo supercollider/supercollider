@@ -18,8 +18,8 @@ Buffer {
 		^super.newCopyArgs(
 			server,
 			bufnum,
-			numFrames.asInteger,
-			numChannels.asInteger,
+			numFrames,
+			numChannels,
 			sampleRate
 		).cache
 	}
@@ -60,14 +60,14 @@ Buffer {
 
 	allocRead { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		path = argpath;
-		this.startFrame = startFrame.asInteger;
-		server.listSendMsg(this.allocReadMsg(argpath, startFrame.asInteger, numFrames.asInteger, completionMessage))
+		this.startFrame = startFrame;
+		server.listSendMsg(this.allocReadMsg( argpath, startFrame, numFrames, completionMessage))
 	}
 
 	allocReadChannel { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		path = argpath;
-		this.startFrame = startFrame.asInteger;
-		server.listSendMsg(this.allocReadChannelMsg(argpath, startFrame.asInteger, numFrames.asInteger, channels.asInteger,
+		this.startFrame = startFrame;
+		server.listSendMsg(this.allocReadChannelMsg( argpath, startFrame, numFrames, channels,
 			completionMessage))
 	}
 
@@ -79,16 +79,16 @@ Buffer {
 	allocReadMsg { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		this.cache;
 		path = argpath;
-		this.startFrame = startFrame.asInteger;
+		this.startFrame = startFrame;
 		^["/b_allocRead", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger, completionMessage.value(this)]
 	}
 
 	allocReadChannelMsg { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		this.cache;
 		path = argpath;
-		this.startFrame = startFrame.asInteger;
+		this.startFrame = startFrame;
 		completionMessage !? { completionMessage = [completionMessage.value(this)] };
-		^["/b_allocReadChannel", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger] ++ channels.asInteger ++ completionMessage
+		^["/b_allocReadChannel", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger] ++ channels ++ completionMessage
 	}
 
 	// read whole file into memory for PlayBuf etc.
@@ -98,14 +98,14 @@ Buffer {
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
 			.doOnInfo_(action).cache
-			.allocRead(path, startFrame.asInteger, numFrames.asInteger, {|buf|["/b_query", buf.bufnum] })
+			.allocRead(path, startFrame, numFrames, {|buf|["/b_query", buf.bufnum] })
 	}
 
 	read { arg argpath, fileStartFrame = 0, numFrames = -1, bufStartFrame = 0, leaveOpen = false, action;
 		this.cache;
 		doOnInfo = action;
 		server.listSendMsg(
-			this.readMsg(argpath, fileStartFrame.asInteger, numFrames.asInteger, bufStartFrame.asInteger,
+			this.readMsg(argpath, fileStartFrame, numFrames, bufStartFrame,
 				leaveOpen, {|buf| ["/b_query", buf.bufnum] })
 		);
 	}
@@ -115,7 +115,7 @@ Buffer {
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
 			.doOnInfo_(action).cache
-			.allocReadChannel(path, startFrame.asInteger, numFrames.asInteger, channels.asInteger,
+			.allocReadChannel(path, startFrame, numFrames, channels,
 				{|buf|["/b_query", buf.bufnum]})
 	}
 
@@ -124,22 +124,22 @@ Buffer {
 		this.cache;
 		doOnInfo = action;
 		server.listSendMsg(
-			this.readChannelMsg(argpath, fileStartFrame.asInteger, numFrames.asInteger, bufStartFrame.asInteger,
-				leaveOpen, channels.asInteger, {|buf| ["/b_query", buf.bufnum] })
+			this.readChannelMsg(argpath, fileStartFrame, numFrames, bufStartFrame,
+				leaveOpen, channels, {|buf| ["/b_query", buf.bufnum] })
 		)
 	}
 
 	*readNoUpdate { arg server, path, startFrame = 0, numFrames = -1, bufnum, completionMessage;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
-		^super.newCopyArgs(server, bufnum).allocRead(path, startFrame.asInteger, numFrames.asInteger, completionMessage)
+		^super.newCopyArgs(server, bufnum).allocRead(path, startFrame, numFrames, completionMessage)
 	}
 
 	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames = -1,
 		bufStartFrame = 0, leaveOpen = false, completionMessage;
 		server.listSendMsg(
 			this.readMsg(
-				argpath, fileStartFrame.asInteger, numFrames.asInteger, bufStartFrame.asInteger, leaveOpen, completionMessage
+				argpath, fileStartFrame, numFrames, bufStartFrame, leaveOpen, completionMessage
 			)
 		)
 	}
@@ -156,22 +156,22 @@ Buffer {
 		bufStartFrame = 0, leaveOpen = false, channels, completionMessage;
 		path = argpath;
 		^["/b_readChannel", bufnum, path, fileStartFrame.asInteger, (numFrames ? -1).asInteger,
-			bufStartFrame.asInteger, leaveOpen.binaryValue] ++ channels.asInteger ++ [completionMessage.value(this)]
+			bufStartFrame.asInteger, leaveOpen.binaryValue] ++ channels ++ [completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
 
 	// preload a buffer for use with DiskIn
 	*cueSoundFile { arg server, path, startFrame = 0, numChannels= 2, bufferSize=32768, completionMessage;
-		^this.alloc(server, bufferSize, numChannels.asInteger, { arg buffer;
+		^this.alloc(server, bufferSize, numChannels, { arg buffer;
 			buffer.path_(path);
-			buffer.cueSoundFileMsg(path, startFrame.asInteger, completionMessage);
+			buffer.cueSoundFileMsg(path, startFrame, completionMessage);
 		}).cache
 	}
 
 	cueSoundFile { arg path, startFrame, completionMessage;
 		this.path_(path);
 		server.listSendMsg(
-			this.cueSoundFileMsg(path, startFrame.asInteger, completionMessage)
+			this.cueSoundFileMsg(path, startFrame, completionMessage)
 		)
 	}
 
@@ -188,7 +188,7 @@ Buffer {
 			if(collection.isKindOf(RawArray).not) { collection = collection.as(FloatArray) };
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
-			sndfile.numChannels = numChannels.asInteger;
+			sndfile.numChannels = numChannels;
 			path = PathName.tmp ++ sndfile.hash.asString;
 			if(sndfile.openWrite(path),
 				{
@@ -215,13 +215,13 @@ Buffer {
 				{ "Collection larger than available number of Frames".warn });
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
-			sndfile.numChannels = numChannels.asInteger;
+			sndfile.numChannels = numChannels;
 			path = PathName.tmp ++ sndfile.hash.asString;
 			if(sndfile.openWrite(path),
 				{
 					sndfile.writeData(data);
 					sndfile.close;
-					this.read(path, bufStartFrame: startFrame.asInteger, action: { |buf|
+					this.read(path, bufStartFrame: startFrame, action: { |buf|
 						if(File.delete(path), { buf.path = nil },
 							{("Could not delete data file:" + path).warn });
 						action.value(buf)
@@ -233,7 +233,7 @@ Buffer {
 
 	// send a Collection to a buffer one UDP sized packet at a time
 	*sendCollection { arg server, collection, numChannels = 1, wait = -1, action;
-		var buffer = this.new(server, ceil(collection.size / numChannels.asInteger), numChannels.asInteger);
+		var buffer = this.new(server, ceil(collection.size / numChannels), numChannels);
 		forkIfNeeded {
 			buffer.alloc;
 			server.sync;
@@ -254,7 +254,7 @@ Buffer {
 			if ( collsize > ((numFrames - startFrame) * numChannels),
 				{ "Collection larger than available number of Frames".warn });
 
-			this.streamCollection(collstream, collsize, startFrame.asInteger * numChannels.asInteger, wait, action)
+			this.streamCollection(collstream, collsize, startFrame * numChannels, wait, action)
 		} {
 			MethodError("Invalid arguments to Buffer:sendCollection", this).throw
 		}
@@ -271,7 +271,7 @@ Buffer {
 			while { pos < collsize } {
 				// 1626 max size for setn under udp
 				bundsize = min(1626, collsize - pos);
-				server.listSendMsg(['/b_setn', bufnum, pos + startFrame.asInteger, bundsize]
+				server.listSendMsg(['/b_setn', bufnum, pos + startFrame, bundsize]
 					++ Array.fill(bundsize, { collstream.next }));
 				pos = collstream.pos;
 				if(wait >= 0) { wait.wait } { server.sync };
@@ -288,7 +288,7 @@ Buffer {
 		var msg, cond, path, file, array;
 		{
 			path = PathName.tmp ++ this.hash.asString;
-			msg = this.write(path, "aiff", "float", count, index.asInteger);
+			msg = this.write(path, "aiff", "float", count, index);
 			server.sync;
 			file = SoundFile.new;
 			protect {
@@ -312,7 +312,7 @@ Buffer {
 		pos = index = index.asInteger;
 		// treat -1 and nil the same
 		if(count == -1 || count.isNil) {
-			count = (numFrames.asInteger * numChannels.asInteger).asInteger - index;
+			count = (numFrames * numChannels).asInteger - index;
 		};
 		array = FloatArray.newClear(count);
 		refcount = (count / 1633).roundUp;
@@ -352,7 +352,7 @@ Buffer {
 		path = path ?? { thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat };
 		server.listSendMsg(
 			this.writeMsg(path,
-				headerFormat, sampleFormat, numFrames.asInteger, startFrame.asInteger,
+				headerFormat, sampleFormat, numFrames, startFrame,
 				leaveOpen, completionMessage
 			)
 		)
@@ -405,7 +405,7 @@ Buffer {
 	}
 
 	set { arg index, float ... morePairs;
-		server.listSendMsg(this.setMsg(index.asInteger, float, *morePairs));
+		server.listSendMsg(this.setMsg(index, float, *morePairs));
 	}
 
 	setMsg { arg index, float ... morePairs;
@@ -440,7 +440,7 @@ Buffer {
 		// note: do not try to optimize this by moving 'getMsg' to the end
 		// we need 'getMsg' to check the buffer's validity *before* making the OSCFunc
 		// 'getMsg' must be first!
-		var msg = this.getMsg(index.asInteger);
+		var msg = this.getMsg(index);
 		OSCFunc({ |message|
 			// The server replies with a message of the form [/b_set, bufnum, index, value].
 			// We want "value," which is at index 3.
@@ -458,7 +458,7 @@ Buffer {
 		// note: do not try to optimize this by moving 'getnMsg' to the end
 		// we need 'getnMsg' to check the buffer's validity *before* making the OSCFunc
 		// 'getnMsg' must be first!
-		var msg = this.getnMsg(index.asInteger, count);  // action is not used
+		var msg = this.getnMsg(index, count);  // action is not used
 		OSCFunc({ |message|
 			// The server replies with a message of the form
 			// [/b_setn, bufnum, starting index, length, ...sample values].
@@ -474,7 +474,7 @@ Buffer {
 	}
 
 	fill { arg startAt, numFrames, value ... more;
-		server.listSendMsg(this.fillMsg(startAt, numFrames.asInteger, value, *more));
+		server.listSendMsg(this.fillMsg(startAt, numFrames, value, *more));
 	}
 
 	fillMsg { arg startAt, numFrames, value ... more;
@@ -584,7 +584,7 @@ Buffer {
 		action = action ?? {
 			{ |oscAddrPattern, bufnum, numFrames, numChannels, sampleRate|
 				postf("bufnum: %\nnumFrames: %\nnumChannels: %\nsampleRate: %\n",
-					bufnum, numFrames.asInteger, numChannels.asInteger, sampleRate
+					bufnum, numFrames, numChannels, sampleRate
 				);
 			}
 		};
@@ -686,7 +686,7 @@ Buffer {
 	}
 
 	printOn { arg stream;
-		stream << this.class.name << "(" <<* [bufnum, numFrames, numChannels.asInteger, sampleRate, path] <<")"
+		stream << this.class.name << "(" <<* [bufnum, numFrames, numChannels, sampleRate, path] <<")"
 	}
 
 	*loadDialog { arg server, startFrame = 0, numFrames, action, bufnum;
@@ -696,7 +696,7 @@ Buffer {
 		buffer = super.newCopyArgs(server, bufnum).cache;
 		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
-				.allocRead(path, startFrame.asInteger, numFrames.asInteger, { ["/b_query", buffer.bufnum] })
+				.allocRead(path, startFrame, numFrames, { ["/b_query", buffer.bufnum] })
 		});
 		^buffer
 	}
@@ -708,7 +708,7 @@ Buffer {
 		buffer = super.newCopyArgs(server, bufnum).cache;
 		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
-			.allocReadChannel(path, startFrame.asInteger, numFrames.asInteger, channels.asInteger,
+			.allocReadChannel(path, startFrame, numFrames, channels,
 				{|buf|["/b_query", buf.bufnum]})
 		});
 		^buffer
@@ -717,7 +717,7 @@ Buffer {
 	play { arg loop = false, mul = 1;
 		if(bufnum.isNil) { Error("Cannot play a % that has been freed".format(this.class.name)).throw };
 		^{ var player;
-			player = PlayBuf.ar(numChannels.asInteger, bufnum, BufRateScale.kr(bufnum),
+			player = PlayBuf.ar(numChannels, bufnum, BufRateScale.kr(bufnum),
 				loop: loop.binaryValue);
 			if(loop.not, FreeSelfWhenDone.kr(player));
 			player * mul;
