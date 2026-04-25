@@ -19,7 +19,7 @@ Buffer {
 			server,
 			bufnum,
 			numFrames.asInteger,
-			numChannels,
+			numChannels.asInteger,
 			sampleRate
 		).cache
 	}
@@ -32,7 +32,7 @@ Buffer {
 			server,
 			bufnum,
 			numFrames.asInteger,
-			numChannels,
+			numChannels.asInteger,
 			sampleRate
 		).alloc(completionMessage).cache
 	}
@@ -162,7 +162,7 @@ Buffer {
 
 	// preload a buffer for use with DiskIn
 	*cueSoundFile { arg server, path, startFrame = 0, numChannels= 2, bufferSize=32768, completionMessage;
-		^this.alloc(server, bufferSize, numChannels, { arg buffer;
+		^this.alloc(server, bufferSize, numChannels.asInteger, { arg buffer;
 			buffer.path_(path);
 			buffer.cueSoundFileMsg(path, startFrame.asInteger, completionMessage);
 		}).cache
@@ -188,7 +188,7 @@ Buffer {
 			if(collection.isKindOf(RawArray).not) { collection = collection.as(FloatArray) };
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
-			sndfile.numChannels = numChannels;
+			sndfile.numChannels = numChannels.asInteger;
 			path = PathName.tmp ++ sndfile.hash.asString;
 			if(sndfile.openWrite(path),
 				{
@@ -215,7 +215,7 @@ Buffer {
 				{ "Collection larger than available number of Frames".warn });
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
-			sndfile.numChannels = numChannels;
+			sndfile.numChannels = numChannels.asInteger;
 			path = PathName.tmp ++ sndfile.hash.asString;
 			if(sndfile.openWrite(path),
 				{
@@ -233,7 +233,7 @@ Buffer {
 
 	// send a Collection to a buffer one UDP sized packet at a time
 	*sendCollection { arg server, collection, numChannels = 1, wait = -1, action;
-		var buffer = this.new(server, ceil(collection.size / numChannels), numChannels);
+		var buffer = this.new(server, ceil(collection.size / numChannels.asInteger), numChannels.asInteger);
 		forkIfNeeded {
 			buffer.alloc;
 			server.sync;
@@ -254,7 +254,7 @@ Buffer {
 			if ( collsize > ((numFrames - startFrame) * numChannels),
 				{ "Collection larger than available number of Frames".warn });
 
-			this.streamCollection(collstream, collsize, startFrame.asInteger * numChannels, wait, action)
+			this.streamCollection(collstream, collsize, startFrame.asInteger * numChannels.asInteger, wait, action)
 		} {
 			MethodError("Invalid arguments to Buffer:sendCollection", this).throw
 		}
@@ -312,7 +312,7 @@ Buffer {
 		pos = index = index.asInteger;
 		// treat -1 and nil the same
 		if(count == -1 || count.isNil) {
-			count = (numFrames * numChannels).asInteger - index;
+			count = (numFrames * numChannels.asInteger).asInteger - index;
 		};
 		array = FloatArray.newClear(count);
 		refcount = (count / 1633).roundUp;
@@ -584,7 +584,7 @@ Buffer {
 		action = action ?? {
 			{ |oscAddrPattern, bufnum, numFrames, numChannels, sampleRate|
 				postf("bufnum: %\nnumFrames: %\nnumChannels: %\nsampleRate: %\n",
-					bufnum, numFrames.asInteger, numChannels, sampleRate
+					bufnum, numFrames.asInteger, numChannels.asInteger, sampleRate
 				);
 			}
 		};
@@ -686,7 +686,7 @@ Buffer {
 	}
 
 	printOn { arg stream;
-		stream << this.class.name << "(" <<* [bufnum, numFrames, numChannels, sampleRate, path] <<")"
+		stream << this.class.name << "(" <<* [bufnum, numFrames, numChannels.asInteger, sampleRate, path] <<")"
 	}
 
 	*loadDialog { arg server, startFrame = 0, numFrames, action, bufnum;
@@ -717,7 +717,7 @@ Buffer {
 	play { arg loop = false, mul = 1;
 		if(bufnum.isNil) { Error("Cannot play a % that has been freed".format(this.class.name)).throw };
 		^{ var player;
-			player = PlayBuf.ar(numChannels, bufnum, BufRateScale.kr(bufnum),
+			player = PlayBuf.ar(numChannels.asInteger, bufnum, BufRateScale.kr(bufnum),
 				loop: loop.binaryValue);
 			if(loop.not, FreeSelfWhenDone.kr(player));
 			player * mul;
