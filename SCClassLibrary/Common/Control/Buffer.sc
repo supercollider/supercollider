@@ -18,7 +18,7 @@ Buffer {
 		^super.newCopyArgs(
 			server,
 			bufnum,
-			numFrames,
+			numFrames.asInteger,
 			numChannels,
 			sampleRate
 		).cache
@@ -31,7 +31,7 @@ Buffer {
 		^super.newCopyArgs(
 			server,
 			bufnum,
-			numFrames,
+			numFrames.asInteger,
 			numChannels,
 			sampleRate
 		).alloc(completionMessage).cache
@@ -61,13 +61,13 @@ Buffer {
 	allocRead { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadMsg( argpath, startFrame, numFrames, completionMessage))
+		server.listSendMsg(this.allocReadMsg(argpath, startFrame, numFrames.asInteger, completionMessage))
 	}
 
 	allocReadChannel { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadChannelMsg( argpath, startFrame, numFrames, channels,
+		server.listSendMsg(this.allocReadChannelMsg(argpath, startFrame, numFrames.asInteger, channels,
 			completionMessage))
 	}
 
@@ -98,14 +98,14 @@ Buffer {
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
 			.doOnInfo_(action).cache
-			.allocRead(path, startFrame, numFrames, {|buf|["/b_query", buf.bufnum] })
+			.allocRead(path, startFrame, numFrames.asInteger, {|buf|["/b_query", buf.bufnum] })
 	}
 
 	read { arg argpath, fileStartFrame = 0, numFrames = -1, bufStartFrame = 0, leaveOpen = false, action;
 		this.cache;
 		doOnInfo = action;
 		server.listSendMsg(
-			this.readMsg(argpath, fileStartFrame, numFrames, bufStartFrame,
+			this.readMsg(argpath, fileStartFrame, numFrames.asInteger, bufStartFrame,
 				leaveOpen, {|buf| ["/b_query", buf.bufnum] })
 		);
 	}
@@ -115,7 +115,7 @@ Buffer {
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
 			.doOnInfo_(action).cache
-			.allocReadChannel(path, startFrame, numFrames, channels,
+			.allocReadChannel(path, startFrame, numFrames.asInteger, channels,
 				{|buf|["/b_query", buf.bufnum]})
 	}
 
@@ -124,7 +124,7 @@ Buffer {
 		this.cache;
 		doOnInfo = action;
 		server.listSendMsg(
-			this.readChannelMsg(argpath, fileStartFrame, numFrames, bufStartFrame,
+			this.readChannelMsg(argpath, fileStartFrame, numFrames.asInteger, bufStartFrame,
 				leaveOpen, channels, {|buf| ["/b_query", buf.bufnum] })
 		)
 	}
@@ -132,14 +132,14 @@ Buffer {
 	*readNoUpdate { arg server, path, startFrame = 0, numFrames = -1, bufnum, completionMessage;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
-		^super.newCopyArgs(server, bufnum).allocRead(path, startFrame, numFrames, completionMessage)
+		^super.newCopyArgs(server, bufnum).allocRead(path, startFrame, numFrames.asInteger, completionMessage)
 	}
 
 	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames = -1,
 		bufStartFrame = 0, leaveOpen = false, completionMessage;
 		server.listSendMsg(
 			this.readMsg(
-				argpath, fileStartFrame, numFrames, bufStartFrame, leaveOpen, completionMessage
+				argpath, fileStartFrame, numFrames.asInteger, bufStartFrame, leaveOpen, completionMessage
 			)
 		)
 	}
@@ -352,7 +352,7 @@ Buffer {
 		path = path ?? { thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat };
 		server.listSendMsg(
 			this.writeMsg(path,
-				headerFormat, sampleFormat, numFrames, startFrame,
+				headerFormat, sampleFormat, numFrames.asInteger, startFrame,
 				leaveOpen, completionMessage
 			)
 		)
@@ -474,7 +474,7 @@ Buffer {
 	}
 
 	fill { arg startAt, numFrames, value ... more;
-		server.listSendMsg(this.fillMsg(startAt, numFrames, value, *more));
+		server.listSendMsg(this.fillMsg(startAt, numFrames.asInteger, value, *more));
 	}
 
 	fillMsg { arg startAt, numFrames, value ... more;
@@ -584,7 +584,7 @@ Buffer {
 		action = action ?? {
 			{ |oscAddrPattern, bufnum, numFrames, numChannels, sampleRate|
 				postf("bufnum: %\nnumFrames: %\nnumChannels: %\nsampleRate: %\n",
-					bufnum, numFrames, numChannels, sampleRate
+					bufnum, numFrames.asInteger, numChannels, sampleRate
 				);
 			}
 		};
@@ -696,7 +696,7 @@ Buffer {
 		buffer = super.newCopyArgs(server, bufnum).cache;
 		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
-				.allocRead(path, startFrame, numFrames, { ["/b_query", buffer.bufnum] })
+				.allocRead(path, startFrame, numFrames.asInteger, { ["/b_query", buffer.bufnum] })
 		});
 		^buffer
 	}
@@ -708,7 +708,7 @@ Buffer {
 		buffer = super.newCopyArgs(server, bufnum).cache;
 		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
-			.allocReadChannel(path, startFrame, numFrames, channels,
+			.allocReadChannel(path, startFrame, numFrames.asInteger, channels,
 				{|buf|["/b_query", buf.bufnum]})
 		});
 		^buffer
