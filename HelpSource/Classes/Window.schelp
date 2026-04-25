@@ -336,7 +336,7 @@ w = Window.new("test");
 w.front;
 )
 
-/* Hard‑coded example (using a fixed pixel offset): */
+// Set window position using a fixed pixel offset:
 (
 w.bounds = Rect(100, 100, 400, 400); // 100 avoids collision with OS GUI elements.
 w.front;
