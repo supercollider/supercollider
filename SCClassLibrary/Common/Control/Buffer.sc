@@ -67,7 +67,7 @@ Buffer {
 	allocReadChannel { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame.asInteger;
-		server.listSendMsg(this.allocReadChannelMsg(argpath, startFrame.asInteger, numFrames.asInteger, channels,
+		server.listSendMsg(this.allocReadChannelMsg(argpath, startFrame.asInteger, numFrames.asInteger, channels.asInteger,
 			completionMessage))
 	}
 
@@ -88,7 +88,7 @@ Buffer {
 		path = argpath;
 		this.startFrame = startFrame.asInteger;
 		completionMessage !? { completionMessage = [completionMessage.value(this)] };
-		^["/b_allocReadChannel", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger] ++ channels ++ completionMessage
+		^["/b_allocReadChannel", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger] ++ channels.asInteger ++ completionMessage
 	}
 
 	// read whole file into memory for PlayBuf etc.
@@ -115,7 +115,7 @@ Buffer {
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
 			.doOnInfo_(action).cache
-			.allocReadChannel(path, startFrame.asInteger, numFrames.asInteger, channels,
+			.allocReadChannel(path, startFrame.asInteger, numFrames.asInteger, channels.asInteger,
 				{|buf|["/b_query", buf.bufnum]})
 	}
 
@@ -125,7 +125,7 @@ Buffer {
 		doOnInfo = action;
 		server.listSendMsg(
 			this.readChannelMsg(argpath, fileStartFrame.asInteger, numFrames.asInteger, bufStartFrame.asInteger,
-				leaveOpen, channels, {|buf| ["/b_query", buf.bufnum] })
+				leaveOpen, channels.asInteger, {|buf| ["/b_query", buf.bufnum] })
 		)
 	}
 
@@ -156,7 +156,7 @@ Buffer {
 		bufStartFrame = 0, leaveOpen = false, channels, completionMessage;
 		path = argpath;
 		^["/b_readChannel", bufnum, path, fileStartFrame.asInteger, (numFrames ? -1).asInteger,
-			bufStartFrame.asInteger, leaveOpen.binaryValue] ++ channels ++ [completionMessage.value(this)]
+			bufStartFrame.asInteger, leaveOpen.binaryValue] ++ channels.asInteger ++ [completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
 
@@ -708,7 +708,7 @@ Buffer {
 		buffer = super.newCopyArgs(server, bufnum).cache;
 		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
-			.allocReadChannel(path, startFrame.asInteger, numFrames.asInteger, channels,
+			.allocReadChannel(path, startFrame.asInteger, numFrames.asInteger, channels.asInteger,
 				{|buf|["/b_query", buf.bufnum]})
 		});
 		^buffer
