@@ -342,7 +342,7 @@ w.bounds = Rect(100, 100, 400, 400); // 100 avoids collision with OS GUI element
 w.front;
 )
 
-/* Scaling avoids hard‑coded (fixed‑pixel) offsets: */
+// Set window position (and size) with respect to available pixels in display's resolution:
 (
 ~factor = 0.037; // 0: bottom, 1: top
 w.bounds_(Rect(0, Window.availableBounds.height * ~factor, 400, 400)).front;
