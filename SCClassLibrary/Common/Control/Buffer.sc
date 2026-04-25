@@ -288,7 +288,7 @@ Buffer {
 		var msg, cond, path, file, array;
 		{
 			path = PathName.tmp ++ this.hash.asString;
-			msg = this.write(path, "aiff", "float", count, index);
+			msg = this.write(path, "aiff", "float", count, index.asInteger);
 			server.sync;
 			file = SoundFile.new;
 			protect {
@@ -405,7 +405,7 @@ Buffer {
 	}
 
 	set { arg index, float ... morePairs;
-		server.listSendMsg(this.setMsg(index, float, *morePairs));
+		server.listSendMsg(this.setMsg(index.asInteger, float, *morePairs));
 	}
 
 	setMsg { arg index, float ... morePairs;
@@ -440,7 +440,7 @@ Buffer {
 		// note: do not try to optimize this by moving 'getMsg' to the end
 		// we need 'getMsg' to check the buffer's validity *before* making the OSCFunc
 		// 'getMsg' must be first!
-		var msg = this.getMsg(index);
+		var msg = this.getMsg(index.asInteger);
 		OSCFunc({ |message|
 			// The server replies with a message of the form [/b_set, bufnum, index, value].
 			// We want "value," which is at index 3.
@@ -458,7 +458,7 @@ Buffer {
 		// note: do not try to optimize this by moving 'getnMsg' to the end
 		// we need 'getnMsg' to check the buffer's validity *before* making the OSCFunc
 		// 'getnMsg' must be first!
-		var msg = this.getnMsg(index, count);  // action is not used
+		var msg = this.getnMsg(index.asInteger, count);  // action is not used
 		OSCFunc({ |message|
 			// The server replies with a message of the form
 			// [/b_setn, bufnum, starting index, length, ...sample values].
