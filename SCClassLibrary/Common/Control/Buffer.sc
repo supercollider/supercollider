@@ -105,7 +105,7 @@ Buffer {
 		this.cache;
 		doOnInfo = action;
 		server.listSendMsg(
-			this.readMsg(argpath, fileStartFrame, numFrames.asInteger, bufStartFrame.asInteger,
+			this.readMsg(argpath, fileStartFrame.asInteger, numFrames.asInteger, bufStartFrame.asInteger,
 				leaveOpen, {|buf| ["/b_query", buf.bufnum] })
 		);
 	}
@@ -124,7 +124,7 @@ Buffer {
 		this.cache;
 		doOnInfo = action;
 		server.listSendMsg(
-			this.readChannelMsg(argpath, fileStartFrame, numFrames.asInteger, bufStartFrame.asInteger,
+			this.readChannelMsg(argpath, fileStartFrame.asInteger, numFrames.asInteger, bufStartFrame.asInteger,
 				leaveOpen, channels, {|buf| ["/b_query", buf.bufnum] })
 		)
 	}
@@ -139,7 +139,7 @@ Buffer {
 		bufStartFrame = 0, leaveOpen = false, completionMessage;
 		server.listSendMsg(
 			this.readMsg(
-				argpath, fileStartFrame, numFrames.asInteger, bufStartFrame.asInteger, leaveOpen, completionMessage
+				argpath, fileStartFrame.asInteger, numFrames.asInteger, bufStartFrame.asInteger, leaveOpen, completionMessage
 			)
 		)
 	}
