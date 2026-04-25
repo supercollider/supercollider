@@ -60,14 +60,14 @@ Buffer {
 
 	allocRead { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		path = argpath;
-		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadMsg(argpath, startFrame, numFrames.asInteger, completionMessage))
+		this.startFrame = startFrame.asInteger;
+		server.listSendMsg(this.allocReadMsg(argpath, startFrame.asInteger, numFrames.asInteger, completionMessage))
 	}
 
 	allocReadChannel { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		path = argpath;
-		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadChannelMsg(argpath, startFrame, numFrames.asInteger, channels,
+		this.startFrame = startFrame.asInteger;
+		server.listSendMsg(this.allocReadChannelMsg(argpath, startFrame.asInteger, numFrames.asInteger, channels,
 			completionMessage))
 	}
 
@@ -79,14 +79,14 @@ Buffer {
 	allocReadMsg { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		this.cache;
 		path = argpath;
-		this.startFrame = startFrame;
+		this.startFrame = startFrame.asInteger;
 		^["/b_allocRead", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger, completionMessage.value(this)]
 	}
 
 	allocReadChannelMsg { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		this.cache;
 		path = argpath;
-		this.startFrame = startFrame;
+		this.startFrame = startFrame.asInteger;
 		completionMessage !? { completionMessage = [completionMessage.value(this)] };
 		^["/b_allocReadChannel", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger] ++ channels ++ completionMessage
 	}
@@ -98,7 +98,7 @@ Buffer {
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
 			.doOnInfo_(action).cache
-			.allocRead(path, startFrame, numFrames.asInteger, {|buf|["/b_query", buf.bufnum] })
+			.allocRead(path, startFrame.asInteger, numFrames.asInteger, {|buf|["/b_query", buf.bufnum] })
 	}
 
 	read { arg argpath, fileStartFrame = 0, numFrames = -1, bufStartFrame = 0, leaveOpen = false, action;
@@ -115,7 +115,7 @@ Buffer {
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
 			.doOnInfo_(action).cache
-			.allocReadChannel(path, startFrame, numFrames.asInteger, channels,
+			.allocReadChannel(path, startFrame.asInteger, numFrames.asInteger, channels,
 				{|buf|["/b_query", buf.bufnum]})
 	}
 
@@ -132,7 +132,7 @@ Buffer {
 	*readNoUpdate { arg server, path, startFrame = 0, numFrames = -1, bufnum, completionMessage;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
-		^super.newCopyArgs(server, bufnum).allocRead(path, startFrame, numFrames.asInteger, completionMessage)
+		^super.newCopyArgs(server, bufnum).allocRead(path, startFrame.asInteger, numFrames.asInteger, completionMessage)
 	}
 
 	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames = -1,
@@ -164,14 +164,14 @@ Buffer {
 	*cueSoundFile { arg server, path, startFrame = 0, numChannels= 2, bufferSize=32768, completionMessage;
 		^this.alloc(server, bufferSize, numChannels, { arg buffer;
 			buffer.path_(path);
-			buffer.cueSoundFileMsg(path, startFrame, completionMessage);
+			buffer.cueSoundFileMsg(path, startFrame.asInteger, completionMessage);
 		}).cache
 	}
 
 	cueSoundFile { arg path, startFrame, completionMessage;
 		this.path_(path);
 		server.listSendMsg(
-			this.cueSoundFileMsg(path, startFrame, completionMessage)
+			this.cueSoundFileMsg(path, startFrame.asInteger, completionMessage)
 		)
 	}
 
@@ -221,7 +221,7 @@ Buffer {
 				{
 					sndfile.writeData(data);
 					sndfile.close;
-					this.read(path, bufStartFrame: startFrame, action: { |buf|
+					this.read(path, bufStartFrame: startFrame.asInteger, action: { |buf|
 						if(File.delete(path), { buf.path = nil },
 							{("Could not delete data file:" + path).warn });
 						action.value(buf)
@@ -254,7 +254,7 @@ Buffer {
 			if ( collsize > ((numFrames - startFrame) * numChannels),
 				{ "Collection larger than available number of Frames".warn });
 
-			this.streamCollection(collstream, collsize, startFrame * numChannels, wait, action)
+			this.streamCollection(collstream, collsize, startFrame.asInteger * numChannels, wait, action)
 		} {
 			MethodError("Invalid arguments to Buffer:sendCollection", this).throw
 		}
@@ -271,7 +271,7 @@ Buffer {
 			while { pos < collsize } {
 				// 1626 max size for setn under udp
 				bundsize = min(1626, collsize - pos);
-				server.listSendMsg(['/b_setn', bufnum, pos + startFrame, bundsize]
+				server.listSendMsg(['/b_setn', bufnum, pos + startFrame.asInteger, bundsize]
 					++ Array.fill(bundsize, { collstream.next }));
 				pos = collstream.pos;
 				if(wait >= 0) { wait.wait } { server.sync };
@@ -352,7 +352,7 @@ Buffer {
 		path = path ?? { thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat };
 		server.listSendMsg(
 			this.writeMsg(path,
-				headerFormat, sampleFormat, numFrames.asInteger, startFrame,
+				headerFormat, sampleFormat, numFrames.asInteger, startFrame.asInteger,
 				leaveOpen, completionMessage
 			)
 		)
@@ -696,7 +696,7 @@ Buffer {
 		buffer = super.newCopyArgs(server, bufnum).cache;
 		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
-				.allocRead(path, startFrame, numFrames.asInteger, { ["/b_query", buffer.bufnum] })
+				.allocRead(path, startFrame.asInteger, numFrames.asInteger, { ["/b_query", buffer.bufnum] })
 		});
 		^buffer
 	}
@@ -708,7 +708,7 @@ Buffer {
 		buffer = super.newCopyArgs(server, bufnum).cache;
 		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
-			.allocReadChannel(path, startFrame, numFrames.asInteger, channels,
+			.allocReadChannel(path, startFrame.asInteger, numFrames.asInteger, channels,
 				{|buf|["/b_query", buf.bufnum]})
 		});
 		^buffer
