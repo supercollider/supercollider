@@ -312,7 +312,7 @@ Buffer {
 		pos = index = index.asInteger;
 		// treat -1 and nil the same
 		if(count == -1 || count.isNil) {
-			count = (numFrames * numChannels).asInteger - index;
+			count = (numFrames.asInteger * numChannels.asInteger).asInteger - index;
 		};
 		array = FloatArray.newClear(count);
 		refcount = (count / 1633).roundUp;
