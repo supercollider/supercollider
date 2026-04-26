@@ -38,8 +38,11 @@ subsection:: Directories and filesystem stuff
 method:: classLibraryDir
 location of the bundled class library
 
-method:: helpDir
+method:: helpSourceDir
 location of the bundled help files
+
+method:: helpDir
+Location of the HTML help documents rendered from code::Platform.helpSourceDir::
 
 method:: systemAppSupportDir
 system application support directory
