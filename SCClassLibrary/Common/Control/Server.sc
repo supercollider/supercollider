@@ -1177,8 +1177,9 @@ Server {
 
 	prPingApp { |func, onFailure, timeout = 3|
 		var id = func.hash;
-		var resp = OSCFunc({ |msg| if(msg[1] == id, { func.value; task.stop }) }, "/synced", addr);
-		var task = timeout !? { fork { timeout.wait; resp.free;  onFailure.value } };
+		var resp, task;
+		resp = OSCFunc({ |msg| if(msg[1] == id, { func.value; task.stop }) }, "/synced", addr);
+		task = timeout !? { fork { timeout.wait; resp.free;  onFailure.value } };
 		addr.sendMsg("/sync", id);
 	}
 

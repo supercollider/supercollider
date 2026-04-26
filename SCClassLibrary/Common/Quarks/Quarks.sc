@@ -342,7 +342,7 @@ Quarks {
 			// and all Exceptions should respond to 'errorString'
 			// but "throw during error handling" is really really bad,
 			// so, be doubly sure it won't happen
-			var text = err.tryPerform(\errorString) ?? { text = err.asString };
+			var text = err.tryPerform(\errorString) ?? { err.asString };
 			("Failed to read quarks directory listing: %\n%".format(if(fetch, directoryUrl, dirTxtPath), text)).error;
 			if(fetch, {
 				// if fetch failed, try read from cache

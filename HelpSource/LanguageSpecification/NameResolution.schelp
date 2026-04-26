@@ -1,0 +1,140 @@
+title:: Name Resolution 
+summary:: Looking up variables, arguments, and other named things.
+categories:: LanguageSpecification
+
+section:: Intended Behavior
+
+SuperCollider strives to be a top-to-bottom left-to-right language, this means things happen as in the order that western languages read text.
+
+
+Here is an example of an error.
+code::
+{
+	arg a1 = x1; // x1 is not declared yet!
+	var x1 = 4;
+	a1
+}
+::
+
+The error that is posted relates to code::x1:: not being found, this is because SuperCollider only ever looks above and to the left of the declaration.
+
+By declaring code::x1:: above the function, that variable is used.
+code::
+var x1 = 10;
+{
+	arg a1 = x1; // x1 is 10
+	var x1 = 4; // this x1 'clobbers' the previous, meaning you can't access the old one after this line.
+	a1 + x1 // 10 + 4
+}.() // returns 14;
+::
+
+
+It is possible to access the same identifier when initializing it, but only inside a new function.
+
+This is useful when defining functions recursively.
+
+code::
+var f = { |n|
+	if (n < 2) { 1 } { f.( n - 1 ) + f.( n - 2 ) }
+};
+::
+
+
+section:: History
+
+In previous versions of SuperCollider it was possible to access things in a bottom-to-top right-to-left order.
+While not a common issue, this was very confusing when it occurred.
+
+Here are some examples, note, these won't work in version 3.16 and onwards.
+
+code::
+{
+	arg a1 = x1 + 1;  // <<
+	var x1 = 2 + 2;
+	a1
+}.()
+::
+
+On the highlighted line, code::x1:: is accessed before it is declared. 
+This is no longer allowed, but previously this function would have returned code::nil::.
+However, had code::x1:: been initialized with a constant, say code::var x1 = 4;:: then the function would have returned code::4::.
+
+What is confusing here is that the default value of the argument code::a1:: depends on whether code::x1:: is initialized with a literal constant or an expression.
+
+
+section:: Migration Help and Common Issues
+
+In version 3.15 an error message is displayed to the user informing them that some for of initialization bug has occurred and that they need to update their code.
+From version 3.16, this will not produce an error, but instead attempt to find the variable in the parent scope, following the top-to-bottom left-to-right ordering SuperCollider strives for.
+
+Importantly, if a user didn't run their code on version 3.15, they might never get to see the error message informing them that their code's behavior is going to change.
+This is something to watch out for, however, the hope is that most people won't be affected by this change.
+
+
+subsection:: Mutually Recursive functions
+
+In previous versions of supercollider the following code would have worked.
+
+code::
+var f = {|n| if (n % 2 == 0) { g.(n) } { g.(n - 1) } };
+var g = {|n| if (n > 0) { f.(n - 1)} { 10 }};
+::
+
+Howver from version 3.16 and onwards, the only way to write this is to declare each variable upfront.
+
+code::
+var f, g;
+f = {|n| if (n % 2 == 0) { g.(n) } { g.(n - 1) } };
+g = {|n| if (n > 0) { f.(n - 1)} { 10 }};
+::
+
+Such relationships between identifiers are rare, but they do occur.
+
+
+subsection:: Interpreter Variables
+
+One place where this behaviour may be confusing is when using interpreter variables, like the single letter variables.
+
+In the past, the following code would have returned code::1::.
+
+code::
+{
+	arg c = s;
+	var s = 1;
+	c
+}.()
+::
+
+However, from version 3.16 and onwards, code::c:: is initialised to the interpreter variables code::s::, which is of course code::Server.default::!	
+This is something to watch out for, however, version 3.15 does emit a warning allowing the user to update their code to hopefully avoid an unexpected suprise.
+
+
+subsection:: Why do this?
+
+There are three main reasons. 
+
+First, given code usually executes down the page, being able to refer to something later on is essentially like time-travel.
+This is very confusing.
+
+Second, since this behaviour depends on whether the compiler can turn this into a constant expression (whether it can compute the value at compile time), 
+predicting what will happen requires intimate knownledge of the compiler.
+Since the compiler can change between versions, this means users need to read the source code every version to understand what their code will do.
+This is clearly not good.
+
+Third, if in the future supercollider allows you to declare variables in the middle of a function, then adding variables later on in the code will affect
+previous variables.
+Consider this example.
+
+code::
+
+var foo = 1;
+{
+	arg bar = foo;
+	... many many lines of code ...
+	var foo = 10; /// <<<
+}
+::
+
+Inserting the line code::var foo = 10:: changes the behaviour of line code::arg bar = foo::, despite the fact it might be declared several, or even hundreds, 
+of lines above.
+This would be quite confusing.

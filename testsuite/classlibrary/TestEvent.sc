@@ -206,6 +206,7 @@ TestEvent : UnitTest {
 	}
 
 	test_server_messages_type_note {
+		var i, msg1, finishTest = false;
 		// type note
 		var event = (
 			type: \note,
@@ -218,7 +219,6 @@ TestEvent : UnitTest {
 			latency: 0,
 			finish: { finishTest = true }
 		);
-		var i, msg1, finishTest = false;
 		var isPlaying;
 
 		SynthDef(\xxx_test, { |freq, zzzz, gate = 1|

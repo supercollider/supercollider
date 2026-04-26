@@ -20,7 +20,9 @@ EnvirGui : JITGui {
 
 	removeReplaceKey { |replacer|
 		var pv = this.viewForParam(replacer);
-		var replaced = replaceKeys.removeAt(replaced);
+		// TODO: this looks wrong, what was the intention here?	
+		// Note that 'replaced' is not used!
+		var replaced = replaceKeys.removeAt(nil);
 		if (pv.notNil) { pv.label_(replacer) };
 	}
 

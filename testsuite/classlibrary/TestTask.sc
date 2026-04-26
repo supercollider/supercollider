@@ -41,8 +41,8 @@ TestTask : UnitTest {
 
 	makePlayTestWithClock { |clock, nameString|
 		var ok = false;
-		var task = Task { 0.001.wait; ok = true; cond.signalAll };
 		var cond = CondVar.new;
+		var task = Task { 0.001.wait; ok = true; cond.signalAll };
 		task.play(clock);
 		cond.waitFor(1, { ok });
 		task.stop;

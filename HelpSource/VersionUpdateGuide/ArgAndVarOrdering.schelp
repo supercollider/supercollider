@@ -1,0 +1,37 @@
+title:: Argument and Varible declaration ordering.
+summary:: A guide to updating code that used the old argument and variable initialisation ordering.
+categories:: VersionUpdateGuide
+
+
+In previous versions of supercollider the following code returned code::1::
+
+code::
+{
+	arg c = s;
+	var s = 1;
+	c
+}.()
+::
+
+However, this code returned code::nil::
+
+code::
+{
+	arg c = s;
+	var s = 2 - 1;
+	c
+}.()
+::
+
+This was because when the variable code::s:: is initialised with a constant expression (e.g., a literal value like code::1::) 
+it is assigned before the argument.
+
+This is confusing, but more importantly, 
+if in the future supercollider allows you to declare variables anywhere within a block of code, 
+this means adding variables onto the end of a function will change the behaviour of previously declared arguments and variables.
+
+That would be even more confusing!
+
+For this reason, going forward, supercollider will only let you use variables and arguments after they have started being declared. 
+
+For a more complete guide to this new behaviour see link::LanguageSpecification/NameResolution::.

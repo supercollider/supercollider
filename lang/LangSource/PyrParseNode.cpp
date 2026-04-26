@@ -37,11 +37,14 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <cctype>
+#include <unordered_map>
 #include "PredefinedSymbols.h"
+#include "SC_Version.hpp"
 #include "SimpleStack.h"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Codecvt.hpp"
 #include "SpecialSelectorsOperatorsAndClasses.h"
+#include "SC_VersionSwitches.hpp"
 
 namespace fs = std::filesystem;
 
@@ -69,6 +72,9 @@ PyrClass* gCompilingClass = nullptr;
 PyrMethod* gCompilingMethod = nullptr;
 PyrBlock* gCompilingBlock = nullptr;
 PyrBlock* gPartiallyAppliedFunction = nullptr;
+
+enum struct InitStates { NotStarted, Started, Finished };
+std::unordered_map<PyrBlock*, std::vector<InitStates>> gNamedIdentifierInitStates {};
 
 bool gIsTailCodeBranch = false;
 bool gTailIsMethodReturn = false;
@@ -132,8 +138,8 @@ void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileSwitchMsg(PyrCallNode* node);
-void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop);
-void compilePushVar(PyrParseNode* node, PyrSymbol* varName);
+void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop, bool ignoreInitErrors);
+void compilePushVar(PyrParseNode* node, PyrSymbol* varName, bool ignoreInitErrors = false);
 bool isAnInlineableBlock(PyrParseNode* node);
 bool isAnInlineableAtomicLiteralBlock(PyrParseNode* node);
 bool isAtomicLiteral(PyrParseNode* node);
@@ -155,8 +161,8 @@ void fillClassPrototypes(PyrClassNode* node, PyrClass* classobj, PyrClass* super
 bool isThisObjNode(PyrParseNode* node);
 int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSymbol* selector, int* selType);
 Byte conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot);
-bool findVarName(PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varType, int* level, int* index,
-                 PyrBlock** tempfunc);
+bool findVarName(PyrParseNode* node, PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varType, int* level,
+                 int* index, PyrBlock** tempfunc, bool ignoreInitErrors = false);
 void countClassVarDefs(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
 void dumpNodeList(PyrParseNode* node);
 int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrClass* specialClass);
@@ -253,18 +259,19 @@ struct FindVarNameResult {
     PyrClass* classobj;
 };
 
-std::optional<FindVarNameResult> findVarName(PyrBlock* func, PyrClass* classobjC, PyrSymbol* varName) {
+std::optional<FindVarNameResult> findVarName(PyrParseNode* node, PyrBlock* func, PyrClass* classobjC,
+                                             PyrSymbol* varName, bool ignoreInitErrors = false) {
     int level, index, varType;
     PyrClass* classobj = classobjC;
     PyrBlock* tempfunc;
 
-    if (findVarName(func, &classobj, varName, &varType, &level, &index, &tempfunc))
+    if (findVarName(node, func, &classobj, varName, &varType, &level, &index, &tempfunc, ignoreInitErrors))
         return FindVarNameResult { level, index, varType, tempfunc, classobj };
     else
         return std::nullopt;
 }
 
-void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
+void compilePushVar(PyrParseNode* node, PyrSymbol* varName, bool ignoreInitErrors) {
     if (std::isupper(varName->name[0])) {
         if (compilingCmdLine && varName->u.classobj == nullptr) {
             error("Class not defined.\n");
@@ -288,7 +295,7 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
         PushSpecialValue.emit(OpSpecialValue::False);
     } else if (varName == s_nil) {
         PushSpecialValue.emit(OpSpecialValue::Nil_);
-    } else if (const auto result = findVarName(gCompilingBlock, gCompilingClass, varName)) {
+    } else if (const auto result = findVarName(node, gCompilingBlock, gCompilingClass, varName, ignoreInitErrors)) {
         const FindVarNameResult findResult = *result;
         switch (findResult.varType) {
         case varInst:
@@ -1155,7 +1162,7 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrC
         PyrClass* classobj;
 
         classobj = gCompilingClass;
-        varFound = findVarName(gCompilingBlock, &classobj, slotRawSymbol(&nameNode->mSlot), &varType, &varLevel,
+        varFound = findVarName(node, gCompilingBlock, &classobj, slotRawSymbol(&nameNode->mSlot), &varType, &varLevel,
                                varIndex, nullptr);
         if (!varFound)
             return methNormal;
@@ -1327,6 +1334,8 @@ void PyrMethodNode::compile(PyrSlot* result) {
     methraw->popSize = numSlots - 1;
     firstKeyIndex = numArgs + numVariableArgs + numKwArgs;
 
+    gNamedIdentifierInitStates[method] = std::vector<InitStates>(numSlots, InitStates::NotStarted);
+
     numArgNames = methraw->posargs;
 
     if (numSlots == 1) {
@@ -1487,6 +1496,15 @@ void PyrMethodNode::compile(PyrSlot* result) {
         }
     }
 
+    // If there are no initialiser expression, which would involve using the name resolution, then set all the
+    // gNamedIdentifiers to finished. This is done here because some optimised types of methods never actually call
+    // compile on their body. If there are initialiser expression, then the methType is about to be set to methNormal
+    // and it will be compiled as expected.
+    if (!hasVarExprs) {
+        for (auto& v : gNamedIdentifierInitStates[method])
+            v = InitStates::Finished;
+    }
+
     methType = methNormal;
     if (hasVarExprs) {
         methType = methNormal;
@@ -1634,16 +1652,26 @@ void PyrMethodNode::compile(PyrSlot* result) {
         compile_body:
             SetTailIsMethodReturn mr(false);
             PyrSlot dummy;
+            const auto numTotalArguments = methraw->posargs;
             if (mArglist) {
                 vardef = mArglist->mVarDefs;
                 for (i = 1; i < numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+                    gNamedIdentifierInitStates[method][i] = InitStates::Started;
                     vardef->compileArg(&dummy);
+                    gNamedIdentifierInitStates[method][i] = InitStates::Finished;
                 }
+                // No need to compile, you can't set them.
+                if (mArglist->mRest)
+                    gNamedIdentifierInitStates[method][numArgs] = InitStates::Finished;
+                if (mArglist->mKeywordArgs)
+                    gNamedIdentifierInitStates[method][numArgs + 1] = InitStates::Finished;
             }
             if (mVarlist) {
                 vardef = mVarlist->mVarDefs;
                 for (i = 0; i < numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+                    gNamedIdentifierInitStates[method][numTotalArguments + i] = InitStates::Started;
                     vardef->compile(&dummy);
+                    gNamedIdentifierInitStates[method][numTotalArguments + i] = InitStates::Finished;
                 }
             }
             COMPILENODE(mBody, &dummy, true);
@@ -1651,11 +1679,13 @@ void PyrMethodNode::compile(PyrSlot* result) {
         installByteCodes((PyrBlock*)method);
     }
 
+
     if (!oldmethod) {
         addMethod(gCompilingClass, method);
     }
 
     gCompilingMethod = nullptr;
+    gNamedIdentifierInitStates.erase(method);
     gCompilingBlock = nullptr;
     gPartiallyAppliedFunction = nullptr;
 
@@ -1731,7 +1761,7 @@ bool PyrVarDefNode::hasExpr(PyrSlot* result) {
 void PyrVarDefNode::compile(PyrSlot* result) {
     if (hasExpr(nullptr)) {
         COMPILENODE(mDefVal, result, false);
-        compileAssignVar((PyrParseNode*)this, slotRawSymbol(&mVarName->mSlot), mDrop);
+        compileAssignVar((PyrParseNode*)this, slotRawSymbol(&mVarName->mSlot), mDrop, true);
     }
 }
 
@@ -1739,7 +1769,9 @@ void PyrVarDefNode::compileArg(PyrSlot* result) {
     if (hasExpr(nullptr)) {
         ByteCodes trueByteCodes;
 
-        compilePushVar((PyrParseNode*)this, slotRawSymbol(&mVarName->mSlot));
+        // Check if one was provided by the call sight.
+        // Here we ignore accessin it before it is declared.
+        compilePushVar((PyrParseNode*)this, slotRawSymbol(&mVarName->mSlot), true);
 
         mDrop = false;
         trueByteCodes = compileBodyWithGoto(this, 0, true);
@@ -1751,9 +1783,6 @@ void PyrVarDefNode::compileArg(PyrSlot* result) {
         compileAndFreeByteCodes(trueByteCodes);
         Drop.emit();
     }
-
-    // error("compilePyrVarDefNode: shouldn't get here.\n");
-    // compileErrors++;
 }
 
 
@@ -1840,6 +1869,7 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot* resul
     methraw->numtemps = numCurryArgs;
     methraw->popSize = numCurryArgs;
     methraw->methType = methBlock;
+    gNamedIdentifierInitStates[block] = std::vector<InitStates>(numCurryArgs, InitStates::NotStarted);
 
     {
         PyrSymbol* s_empty = getsym("_");
@@ -1875,6 +1905,7 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot* resul
     }
 
     gCompilingBlock = prevBlock;
+    gNamedIdentifierInitStates.erase(block);
     gCompilingClass = prevClass;
     gPartiallyAppliedFunction = prevPartiallyAppliedFunction;
     gFunctionCantBeClosed = gFunctionCantBeClosed || prevFunctionCantBeClosed;
@@ -2052,7 +2083,7 @@ void PyrCallNode::compileCall(PyrSlot* result) {
                     emitTailCall();
                     SendSpecialMsgThisOpt.emit(Operands::Index::fromRaw(selectorSlotOrSpecialIndex));
                 } else if (varname) {
-                    if (const auto result = findVarName(gCompilingBlock, gCompilingClass, varname);
+                    if (const auto result = findVarName(this, gCompilingBlock, gCompilingClass, varname);
                         result && result->varType == varInst) {
                         emitTailCall();
                         PushInstVarAndSendSpecialMsg.emit(Operands::Index::fromRaw(result->index),
@@ -3587,7 +3618,7 @@ bool isUnassignableSymbol(PyrSymbol* varName) {
         || varName == s_curMethod || varName == s_curBlock || varName == s_curClosure;
 }
 
-void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop) {
+void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop, bool ignoreInitErrors = false) {
     if (isUnassignableSymbol(varName)) {
         error("You may not assign to '%s'.", varName->name);
         nodePostErrorLine(node);
@@ -3601,7 +3632,7 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop) {
         return;
     }
 
-    const auto result = findVarName(gCompilingBlock, gCompilingClass, varName);
+    const auto result = findVarName(node, gCompilingBlock, gCompilingClass, varName, ignoreInitErrors);
     if (!result) {
         error("Variable '%s' not defined.\n", varName->name);
         nodePostErrorLine(node);
@@ -3979,6 +4010,8 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     methraw->numtemps = numSlots;
     methraw->popSize = numSlots;
 
+    gNamedIdentifierInitStates[block] = std::vector<InitStates>(numSlots, InitStates::NotStarted);
+
     numArgNames = methraw->posargs;
 
     if (numArgNames) {
@@ -4121,8 +4154,7 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
         for (i = 0; i < numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
             PyrSlot *slot, litval;
             slot = slotRawObject(&block->prototypeFrame)->slots + i;
-            if (vardef->hasExpr(&litval))
-                hasVarExprs = true;
+            vardef->hasExpr(&litval);
             *slot = litval;
         }
     }
@@ -4139,8 +4171,7 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
         for (i = 0; i < numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
             PyrSlot *slot, litval;
             slot = slotRawObject(&block->prototypeFrame)->slots + i + numArgs + numVariableArgs;
-            if (vardef->hasExpr(&litval))
-                hasVarExprs = true;
+            vardef->hasExpr(&litval);
             *slot = litval;
         }
     }
@@ -4151,18 +4182,26 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     {
         SetTailBranch branch(true);
         SetTailIsMethodReturn mr(false);
-        if (hasVarExprs) {
-            if (mArglist) {
-                vardef = mArglist->mVarDefs;
-                for (i = 0; i < numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
-                    vardef->compileArg(&dummy);
-                }
+        const auto numTotalArguments = methraw->posargs;
+        if (mArglist) {
+            vardef = mArglist->mVarDefs;
+            for (i = 0; i < numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+                gNamedIdentifierInitStates[block][i] = InitStates::Started;
+                vardef->compileArg(&dummy);
+                gNamedIdentifierInitStates[block][i] = InitStates::Finished;
             }
-            if (mVarlist) {
-                vardef = mVarlist->mVarDefs;
-                for (i = 0; i < numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
-                    vardef->compile(&dummy);
-                }
+            // No need to compile these because you can't set them.
+            if (mArglist->mRest)
+                gNamedIdentifierInitStates[block][numArgs] = InitStates::Finished;
+            if (mArglist->mKeywordArgs)
+                gNamedIdentifierInitStates[block][numArgs + 1] = InitStates::Finished;
+        }
+        if (mVarlist) {
+            vardef = mVarlist->mVarDefs;
+            for (i = 0; i < numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+                gNamedIdentifierInitStates[block][numTotalArguments + i] = InitStates::Started;
+                vardef->compile(&dummy);
+                gNamedIdentifierInitStates[block][numTotalArguments + i] = InitStates::Finished;
             }
         }
         if (mBody->mClassno == pn_BlockReturnNode) {
@@ -4185,6 +4224,7 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     gCompilingBlock = prevBlock;
     gCompilingClass = prevClass;
     gPartiallyAppliedFunction = prevPartiallyAppliedFunction;
+    gNamedIdentifierInitStates.erase(block);
     gFunctionCantBeClosed = gFunctionCantBeClosed || prevFunctionCantBeClosed;
     gFunctionHighestExternalRef = sc_max(gFunctionHighestExternalRef - 1, prevFunctionHighestExternalRef);
 }
@@ -4408,102 +4448,159 @@ int conjureConstantIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
     return constants->size - 1;
 }
 
-bool findVarName(PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varType, int* level, int* index,
-                 PyrBlock** tempfunc) {
-    int i, j, k;
-    int numargs;
-    PyrSymbol *argname, *varname;
-    PyrMethodRaw* methraw;
+bool findVarName(PyrParseNode* node, PyrBlock* startingFunc, PyrClass** classobj, PyrSymbol* name, int* varType,
+                 int* level, int* index, PyrBlock** tempfunc, bool ignoreInitErrors) {
+    assert(name);
+    assert(name->name);
+    // These can come first because you are not allowed to redefine them.
+    if (name == s_curProcess) {
+        *varType = varPseudo;
+        *index = opgProcess;
+        return true;
+    } else if (name == s_curThread) {
+        *varType = varPseudo;
+        *index = opgThread;
+        return true;
+    } else if (name == s_curMethod) {
+        *varType = varPseudo;
+        *index = opgMethod;
+        return true;
+    } else if (name == s_curBlock) {
+        *varType = varPseudo;
+        *index = opgFunctionDef;
+        return true;
+    } else if (name == s_curClosure) {
+        *varType = varPseudo;
+        *index = opgFunction;
+        return true;
+    } else if (std::isupper(name->name[0])) {
+        return false; // Never allowed to have a variable starting with an upper case letter.
+    }
 
-    // postfl("->findVarName %s\n", name->name);
-    // find var in enclosing blocks, instance, class
     if (name == s_super) {
         gFunctionCantBeClosed = true;
         name = s_this;
     }
-    if (name->name[0] >= 'A' && name->name[0] <= 'Z')
-        return false;
 
-    j = 0;
-    while (func != nullptr) {
-        methraw = METHRAW(func);
-        numargs = methraw->posargs;
-        for (i = 0; i < numargs; ++i) {
-            argname = slotRawSymbolArray(&func->argNames)->symbols[i];
-            // postfl("    %d %d arg '%s' '%s'\n", j, i, argname->name, name->name);
-            if (argname == name) {
-                *level = j;
-                *index = i;
-                *varType = varTemp;
-                if (tempfunc)
-                    *tempfunc = func;
-                if (j > gFunctionHighestExternalRef)
-                    gFunctionHighestExternalRef = j;
-                return true;
+    assert(name);
+    assert(name->name);
+
+
+    // Lambdas for walking the call stack
+
+    const auto getFrameIndexOfName = [&](PyrSymbolArray* names, size_t offsetInFrame,
+                                         PyrBlock* fdef) -> std::optional<int> {
+        if (!names)
+            return std::nullopt;
+
+        const auto size = names->size;
+        for (size_t index { 0 }; index < size; ++index) {
+            const auto frameIndex = offsetInFrame + index;
+
+            const auto consideringName = names->symbols[index];
+            if (consideringName != name)
+                continue;
+
+            if (ignoreInitErrors)
+                return { frameIndex };
+
+            const auto initialiser = gNamedIdentifierInitStates.find(fdef);
+            if (initialiser == std::end(gNamedIdentifierInitStates))
+                return { frameIndex };
+
+            const auto& states = initialiser->second;
+            assert(frameIndex < states.size());
+
+            const auto initState = states[offsetInFrame + index];
+            if (initState == InitStates::Finished)
+                return { frameIndex };
+
+            if (initState == InitStates::Started) {
+                // Lets you have recursive functions, but only functions, as they create a new FunctionDef
+                if (fdef != startingFunc) {
+                    return { frameIndex };
+                } else if constexpr (SC_Version < scVersionSwitches::nameResolutionChange) {
+                    post("\n");
+                    error("Using the variable '%s' in its own initialiser.\n"
+                          "From the next version of SuperCollider this will be an error and your code will fail to "
+                          "compile or behave differently.\n"
+                          "Please fix the code before updating.\n"
+                          "For more information on this change see scdoc://VersionUpdateGuide/ArgAndVarOrdering.html\n",
+                          name->name);
+                    nodePostErrorLine(node);
+                    post("\n");
+                    return { frameIndex };
+                }
             }
+
+            if constexpr (SC_Version < scVersionSwitches::nameResolutionChange) {
+                post("\n");
+                error("Accessing the named identifier '%s' before it was declared.\n"
+                      "From the next version of SuperCollider this will be an error and your code will fail to compile "
+                      "or behave differently.\n"
+                      "Please fix the code before updating.\n"
+                      "For more information on this change see scdoc://VersionUpdateGuide/ArgAndVarOrdering.html\n",
+                      name->name);
+                nodePostErrorLine(node);
+                post("\n");
+                return { frameIndex };
+            }
+
+            // Not allowed from 3.16 onwards.
+            return std::nullopt;
         }
-        for (i = 0, k = numargs; i < methraw->numvars; ++i, ++k) {
-            varname = slotRawSymbolArray(&func->varNames)->symbols[i];
-            // postfl("    %d %d %d var '%s' '%s'\n", j, i, k, varname->name, name->name);
-            if (varname == name) {
-                *level = j;
-                *index = k;
-                *varType = varTemp;
-                if (tempfunc)
-                    *tempfunc = func;
-                if (j > gFunctionHighestExternalRef)
-                    gFunctionHighestExternalRef = j;
-                return true;
-            }
+        return std::nullopt;
+    };
+
+    int fdefLevel = 0;
+    for (auto* fdef = startingFunc; fdef; fdef = slotRawBlock(&fdef->contextDef), ++fdefLevel) {
+        const auto methraw = METHRAW(fdef);
+        const auto numTotalArguments = methraw->posargs;
+
+        // Look in the arguments.
+        if (const auto indexInFrame = getFrameIndexOfName(slotRawSymbolArray(&fdef->argNames), 0, fdef)) {
+            *level = fdefLevel;
+            *index = *indexInFrame;
+            *varType = varTemp;
+            if (tempfunc)
+                *tempfunc = fdef;
+            if (fdefLevel > gFunctionHighestExternalRef)
+                gFunctionHighestExternalRef = fdefLevel;
+            return true;
         }
 
-        func = slotRawBlock(&func->contextDef);
-        ++j;
+        // Look in the variables.
+        if (const auto indexInFrame =
+                getFrameIndexOfName(slotRawSymbolArray(&fdef->varNames), numTotalArguments, fdef)) {
+            *level = fdefLevel;
+            *index = *indexInFrame;
+            *varType = varTemp;
+            if (tempfunc)
+                *tempfunc = fdef;
+            if (fdefLevel > gFunctionHighestExternalRef)
+                gFunctionHighestExternalRef = fdefLevel;
+            return true;
+        }
     }
 
+    // These must come at the end.
+    // This means we cannot have class definitions inside of functions.
     if (classFindInstVar(*classobj, name, index)) {
         *level = 0;
         *varType = varInst;
         if (gCompilingClass != class_interpreter)
             gFunctionCantBeClosed = true;
         return true;
-    }
-    if (classFindClassVar(classobj, name, index)) {
+    } else if (classFindClassVar(classobj, name, index)) {
         *varType = varClass;
         if (gCompilingClass != class_interpreter)
             gFunctionCantBeClosed = true;
         return true;
-    }
-    if (classFindConst(classobj, name, index)) {
+    } else if (classFindConst(classobj, name, index)) {
         *varType = varConst;
-        // if (gCompilingClass != class_interpreter) gFunctionCantBeClosed = true;
         return true;
     }
-    if (name == s_curProcess) {
-        *varType = varPseudo;
-        *index = opgProcess;
-        return true;
-    }
-    if (name == s_curThread) {
-        *varType = varPseudo;
-        *index = opgThread;
-        return true;
-    }
-    if (name == s_curMethod) {
-        *varType = varPseudo;
-        *index = opgMethod;
-        return true;
-    }
-    if (name == s_curBlock) {
-        *varType = varPseudo;
-        *index = opgFunctionDef;
-        return true;
-    }
-    if (name == s_curClosure) {
-        *varType = varPseudo;
-        *index = opgFunction;
-        return true;
-    }
+
     return false;
 }
 
