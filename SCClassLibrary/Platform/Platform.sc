@@ -4,7 +4,7 @@ Platform {
 	// IDE actions
 	classvar <>makeServerWindowAction, <>makeSynthDescWindowAction, <>openHelpFileAction, <>openHTMLFileAction;
 
-	var <classLibraryDir, <>recordingsDir, features;
+	var <classLibraryDir, <helpDir, <>recordingsDir, features;
 	var <>devpath;
 
 	*initClass {
