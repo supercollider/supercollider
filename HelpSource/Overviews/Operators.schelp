@@ -108,6 +108,12 @@ Convert an interval in MIDI notes into a frequency ratio.
 method:: ratiomidi
 Convert a frequency ratio to an interval in MIDI notes.
 
+method:: centratio
+Convert an interval in cents into a frequency ratio.
+
+method:: ratiocent
+Convert a frequency ratio to an interval in cents.
+
 method:: dbamp
 Convert decibels to linear amplitude.
 
