@@ -4,7 +4,7 @@ Platform {
 	// IDE actions
 	classvar <>makeServerWindowAction, <>makeSynthDescWindowAction, <>openHelpFileAction, <>openHTMLFileAction;
 
-	var <classLibraryDir, <helpDir, <>recordingsDir, features;
+	var <classLibraryDir, <>recordingsDir, features;
 	var <>devpath;
 
 	*initClass {
@@ -13,7 +13,6 @@ Platform {
 
 	initPlatform {
 		classLibraryDir = thisMethod.filenameSymbol.asString.dirname.dirname;
-		helpDir = thisProcess.platform.userAppSupportDir +/+ "Help";
 		features = IdentityDictionary.new;
 		recordingsDir = this.userAppSupportDir +/+ "Recordings";
 	}
@@ -30,8 +29,7 @@ Platform {
 
 	// directories
 	*classLibraryDir { ^thisProcess.platform.classLibraryDir }
-	*helpDir { ^thisProcess.platform.helpDir }
-	*helpSourceDir { ^thisMethod.filenameSymbol.asString.dirname.dirname.dirname +/+ "HelpSource"}
+	*helpDir { ^this.classLibraryDir.dirname +/+ "HelpSource" }
 
 	userHomeDir {
 		_Platform_userHomeDir
