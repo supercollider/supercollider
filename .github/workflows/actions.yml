@@ -205,7 +205,7 @@ jobs:
         with:
           path: ${{ env.INSTALL_PATH }} # no "name" paramter - download all artifacts
       - name: upload to the release page
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64.dmg/*
