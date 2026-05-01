@@ -19,6 +19,8 @@
  *
  ************************************************************************/
 
+#pragma once
+
 #include <PyrPrimitive.h>
 #include <VMGlobals.h>
 #include <PyrSlot.h>

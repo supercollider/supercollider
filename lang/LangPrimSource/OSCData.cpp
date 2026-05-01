@@ -618,8 +618,6 @@ static PyrInt8Array* MsgToInt8Array(sc_msg_iter& msg, bool runGC) {
     return obj;
 }
 
-static const double dInfinity = std::numeric_limits<double>::infinity();
-
 // Convert raw OSC message to Array.
 static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
     if ((inSize & 3) != 0) {

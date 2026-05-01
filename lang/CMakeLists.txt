@@ -187,11 +187,14 @@ endif()
 include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
-if(0 AND FINAL_BUILD) # sclang final-builds are broken
-	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
-	add_library(libsclang STATIC libsclang_final.cpp ${sclang_parser_source})
-else()
-	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+
+if(FINAL_BUILD)
+	set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+	set_target_properties(libsclang PROPERTIES 
+		UNITY_BUILD ON
+		UNITY_BUILD_BATCH_SIZE 16 
+	)
 endif()
 
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
