@@ -22,7 +22,7 @@ jobs:
             cmake-architectures: "x86_64;arm64"
             homebrew-packages: ""
             homebrew-uninstall: "readline"
-            vcpkg-packages: "readline libsndfile fftw3"
+            vcpkg-packages: "readline libsndfile"
             vcpkg-triplet: "arm64-osx-release-supercollider"
             vcpkg-triplet-other: "x64-osx-release-supercollider"
             vcpkg-triplet-universal: "universal" # we are not actually installing using this triplet, the packages will be manually copied there
@@ -38,10 +38,10 @@ jobs:
             deployment-target: "10.15"
             cmake-architectures: x86_64
             homebrew-packages: "readline portaudio"
-            vcpkg-packages: "libsndfile fftw3"
+            vcpkg-packages: "libsndfile"
             # homebrew-packages: "" # use this instead when cross-compiling for x86_64 on arm64
             # homebrew-uninstall: "readline" # use this instead when cross-compiling for x86_64 on arm64
-            # vcpkg-packages: "readline portaudio libsndfile fftw3" # use this instead when cross-compiling for x86_64 on arm64
+            # vcpkg-packages: "readline portaudio libsndfile" # use this instead when cross-compiling for x86_64 on arm64
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             extra-cmake-flags: "-D SC_COMPILER_ARCH_FLAGS='-march=ivybridge'"
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
@@ -52,7 +52,7 @@ jobs:
             xcode-version: "16.0"
             deployment-target: ""
             cmake-architectures: "arm64"
-            homebrew-packages: "qt@6 libsndfile readline fftw portaudio yaml-cpp boost"
+            homebrew-packages: "qt@6 libsndfile readline portaudio yaml-cpp boost"
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
@@ -64,7 +64,7 @@ jobs:
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: ""
             cmake-architectures: "arm64"
-            homebrew-packages: "qt@6 libsndfile readline fftw portaudio"
+            homebrew-packages: "qt@6 libsndfile readline portaudio"
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D LIBSCSYNTH=ON"
