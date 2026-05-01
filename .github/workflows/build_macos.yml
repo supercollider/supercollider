@@ -26,7 +26,7 @@ jobs:
             vcpkg-triplet: "arm64-osx-release-supercollider"
             vcpkg-triplet-other: "x64-osx-release-supercollider"
             vcpkg-triplet-universal: "universal" # we are not actually installing using this triplet, the packages will be manually copied there
-            extra-cmake-flags: "-D SYSTEM_PORTAUDIO=OFF" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
+            extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
             artifact-suffix: "macOS-universal"
             ctest: true
 
@@ -55,7 +55,7 @@ jobs:
             homebrew-packages: "qt@6 libsndfile readline portaudio yaml-cpp boost"
             vcpkg-packages: ""
             vcpkg-triplet: ""
-            extra-cmake-flags: "-D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
+            extra-cmake-flags: "-D SYSTEM_PORTAUDIO=ON -D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
             ctest: true
 
           - job-name: "arm64 shared libscsynth"
@@ -64,7 +64,7 @@ jobs:
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: ""
             cmake-architectures: "arm64"
-            homebrew-packages: "qt@6 libsndfile readline portaudio"
+            homebrew-packages: "qt@6 libsndfile readline"
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D LIBSCSYNTH=ON"
@@ -183,7 +183,7 @@ jobs:
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          CMAKE_FLAGS="-G Xcode -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
+          CMAKE_FLAGS="-G Xcode ${{ matrix.extra-cmake-flags }}"
 
           if [[ -n "${{ matrix.vcpkg-triplet-universal }}" ]]; then
             export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT

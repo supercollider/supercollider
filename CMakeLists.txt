@@ -113,8 +113,7 @@ option(NO_X11 "Disables the building of plugins that require the X11 library (fo
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
-# Build supernova by default only when on Linux or BSD systems
-option(SUPERNOVA "Build with supernova as optional audio synthesis server" ${LINUX_OR_BSD})
+option(SUPERNOVA "Build with supernova as an alternative audio synthesis server" ON)
 
 option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
 option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable memory pools).")
@@ -149,7 +148,7 @@ option(SYSTEM_ABLETON_LINK "Use link from system" OFF)
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 option(SYSTEM_PORTAUDIO "Use PortAudio libraries from system" ON)
-if(WIN32)
+if(WIN32 OR (APPLE AND SUPERNOVA))
     set(SYSTEM_PORTAUDIO OFF)
 else()
     mark_as_advanced(SYSTEM_PORTAUDIO)

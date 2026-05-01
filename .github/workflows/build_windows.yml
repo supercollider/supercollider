@@ -159,7 +159,7 @@ jobs:
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
 
       - name: build
         shell: bash
