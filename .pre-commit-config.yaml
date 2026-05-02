@@ -14,6 +14,7 @@ repos:
           - "c++"
         language: python
         additional_dependencies: ['clang-format==14.0.6']
+
     -   id: clang_lint
         name: Lint C++ code
         entry: python tools/clang-format.py lint
@@ -22,9 +23,17 @@ repos:
           - "c++"
         language: python
         additional_dependencies: ['clang-format==14.0.6']
+
     -   id: sc_empty_blank_lines
         name:  Check trailing blank lines in sclang
         entry: python tools/remove_trailing_blank_lines.py
         pass_filenames: true
         files: '\.sc((d|help)?)$'
         language: python
+
+    -   id: bison
+        name: Run Bison parser checking for any errors
+        entry: tools/generate_parser_bison.sh
+        files: lang/LangSource/Bison/lang11d
+        pass_filenames: false
+        language: script
