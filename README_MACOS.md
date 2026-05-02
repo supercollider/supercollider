@@ -219,7 +219,7 @@ Common arguments to control the build configuration are:
     Starting with 3.15, supernova is built by default on all platforms, including macOS.
     To not build supernova, set the configure variable `-DSUPERNOVA=OFF`.
   
-    Using supernova requires the portaudio audio backend, which will be built from source by  default. In order to use portaudio installed via Homebrew, additionally set the  `-DSYSTEM_PORTAUDIO=ON` flag.
+    Using supernova requires the portaudio audio backend, which will be built from source by default. In order to use portaudio installed via Homebrew, additionally set the  `-DSYSTEM_PORTAUDIO=ON` flag.
     
     *Note*: Supernova adds an alternative server executable and a supernova version of each plugin is built. If you also use the sc3-plugins package, make sure to
     compile them with supernova support too.
