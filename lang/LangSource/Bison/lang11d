@@ -1,3 +1,4 @@
+#include "lang11d_tab.h"
 %token  OPENCURLY CLOSECURLY OPENSQUARE CLOSESQUARE OPENPAREN CLOSEPAREN 
 %token  SEMICOLON NONLOCALRETURN COMMA HASH TILDE
 %token	NAME INTEGER SC_FLOAT ACCIDENTAL SYMBOL STRING ASCII PRIMITIVENAME CLASSNAME CURRYARG 
@@ -1466,29 +1467,10 @@ rwslotdef		: rwspec name
 					{ $$ = (intptr_t)newPyrVarDefNode(@$, (PyrSlotNode*)$2, (PyrParseNode*)$4, $1); }
 				;
 
-litdictslotdef	: listliteral COLON listliteral
-				{ $$ = (intptr_t)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
-			| keybinop listliteral
-				{
-					PyrParseNode* key = newPyrPushLitNode(@$, (PyrSlotNode*)$1, NULL);
-					$$ = (intptr_t)linkNextNode(key, (PyrParseNode*)$2);
-				}
-			;
-
-litdictslotlist1	: litdictslotdef
-				| litdictslotlist1 COMMA litdictslotdef
-					{ $$ = (intptr_t)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
-				;
-
-litdictslotlist	: { $$ = 0; }
-				| litdictslotlist1 optcomma
-				;
-
-
-listlit	: HASH OPENSQUARE literallistc CLOSESQUARE
-				{ $$ = (intptr_t)newPyrLitListNode(@$, 0, (PyrParseNode*)$3); }
-		| HASH classname  OPENSQUARE literallistc CLOSESQUARE
-				{ $$ = (intptr_t)newPyrLitListNode(@$, (PyrParseNode*)$2, (PyrParseNode*)$4); }
+listlit	: HASH OPERSQUARE literallistc CLOSESQUARE 
+				{ $$ = (intptr_t)newPyrLitListNode(0, (PyrParseNode*)$3); }
+		| HASH classname OPENSQUARE literallistc CLOSESQUARE
+				{ $$ = (intptr_t)newPyrLitListNode((PyrParseNode*)$2, (PyrParseNode*)$4); }
 		;
 
 listlit2	: OPENSQUARE literallistc CLOSESQUARE
