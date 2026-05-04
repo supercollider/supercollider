@@ -189,6 +189,21 @@ add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 
 if(FINAL_BUILD)
 	set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/SCDoc/lex.scdoc.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+    if(WIN32)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrFilePrim.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrPlatformPrim.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrSched.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_AudioDevicePrim.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_ComPort.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/lang/LangSource/PyrLexer.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+    endif()
+    if(MSVC)
+        target_compile_options(libsclang PRIVATE "/bigobj")
+    endif()
 	set_target_properties(libsclang PROPERTIES 
 		UNITY_BUILD ON
 		UNITY_BUILD_BATCH_SIZE 16 
