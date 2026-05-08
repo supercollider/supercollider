@@ -68,9 +68,12 @@ SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 // The generic .so extension has been deprecated in SC 3.15 so developers can ship shared libraries
 // along their plugins. We do the following to provide a smooth upgrade path:
-// If there has been a plugin with the SC_PLUGIN_EXT extension in the same folder or one of its
-// parent folders we simply ignore the .so file because we can assume it is a dependency.
+// If there has been a plugin with the SC_PLUGIN_EXT extension in the same folder or one of its parent
+// folders we simply ignore the .so file because we can assume it is a dependency.
 // Otherwise we load the .so file and post a warning.
+// We have to make an exception for 'top-level' search paths because system-wide extensions install their
+// plugin binaries in the same directory as the core plugins. Since the latter already use the new extension,
+// any plugins that still use the old .so extension would be skipped silently.
 // NOTE: we should remove this workaround in the future!
 #ifdef __linux__
 #    define LINUX_PLUGIN_WORKAROUND
@@ -78,7 +81,7 @@ SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 void initMiscCommands();
 #ifdef LINUX_PLUGIN_WORKAROUND
-static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool foundScxFile = false);
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool isTopLevel = true, bool foundScxFile = false);
 #else
 static bool PlugIn_LoadDir(const fs::path& dir, bool reportError);
 #endif
@@ -192,34 +195,28 @@ void initialize_library(const char* uGensPluginPath) {
 #endif // STATIC_PLUGINS
 
     // If uGensPluginPath is supplied, it is exclusive.
-    bool loadUGensExtDirs = true;
     if (uGensPluginPath) {
-        loadUGensExtDirs = false;
         SC_StringParser sp(uGensPluginPath, SC_STRPARSE_PATHDELIMITER);
         while (!sp.AtEnd()) {
             PlugIn_LoadDir(const_cast<char*>(sp.NextToken()), true);
         }
-    }
+    } else {
+        using DirName = SC_Filesystem::DirName;
 
-    using DirName = SC_Filesystem::DirName;
-
-    if (loadUGensExtDirs) {
 #ifdef SC_PLUGIN_DIR
         // load globally installed plugins
         if (fs::is_directory(SC_PLUGIN_DIR)) {
             PlugIn_LoadDir(SC_PLUGIN_DIR, true);
         }
 #endif // SC_PLUGIN_DIR
-       // load default plugin directory
+
+        // load default plugin directory
         const fs::path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
 
         if (fs::is_directory(pluginDir)) {
             PlugIn_LoadDir(pluginDir, true);
         }
-    }
 
-    // get extension directories
-    if (loadUGensExtDirs) {
         // load system extension plugins
         const fs::path sysExtDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
         PlugIn_LoadDir(sysExtDir, false);
@@ -399,7 +396,7 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError) {
 #else
 // if 'foundScxFile' is true, it means that we have alredy found a .scx file in one of the parent
 // directories. In this case, we treat all .so files as shared libraries and ignore them.
-static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool foundScxFile) {
+static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool isTopLevel, bool foundScxFile) {
 #endif
     std::error_code ec;
     fs::directory_iterator iter(dir, fs::directory_options::follow_directory_symlink, ec);
@@ -465,20 +462,22 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool foundScxF
             const fs::path& path = entry.path();
 
             if (fs::is_directory(path)) {
-                PlugIn_LoadDir(path, reportError, foundScxFile);
-            } else if (!foundScxFile && path.extension() == ".so") {
+                PlugIn_LoadDir(path, reportError, false, foundScxFile);
+            } else if ((isTopLevel || !foundScxFile) && path.extension() == ".so") {
                 // No .scx plugins were found in this directory or any parent directory -> assume the .so file is a
                 // plugin.
                 if (PlugIn_Load(path)) {
-                    scprintf("*** WARNING: '%s': the .so extension has been deprecated!\n",
+                    scprintf("WARNING: '%s': the .so extension has been deprecated!\n",
                              SC_Codecvt::path_to_utf8_str(path).c_str());
 
                     static bool didWarn = false;
                     if (!didWarn) {
                         scprintf("*** Please try to upgrade any SC extension where the UGen plugin still has the .so "
-                                 "extension. If you already have the latest version, please ask the developer to "
-                                 "update the extension. To suppress this warning in the meantime, you can manually "
-                                 "change the extension to .scx.\n");
+                                 "extension.\n");
+                        scprintf("*** If you already have the latest version, please ask the developer to update the "
+                                 "extension.\n");
+                        scprintf("*** To suppress this warning in the meantime, you can manually change the extension "
+                                 "to .scx.\n");
                         didWarn = true;
                     }
                 }

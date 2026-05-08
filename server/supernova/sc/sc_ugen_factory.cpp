@@ -37,9 +37,12 @@
 
 // The generic .so extension has been deprecated in SC 3.15 so developers can ship shared libraries
 // along their plugins. We do the following to provide a smooth upgrade path:
-// If there has been a plugin with the SC_PLUGIN_EXT extension in the same folder or one of its
-// parent folders we simply ignore the .so file because we can assume it is a dependency.
+// If there has been a plugin with the SC_PLUGIN_EXT extension in the same folder or one of its parent
+// folders we simply ignore the .so file because we can assume it is a dependency.
 // Otherwise we load the .so file and post a warning.
+// We have to make an exception for 'top-level' search paths because system-wide extensions install their
+// plugin binaries in the same directory as the core plugins. Since the latter already use the new extension,
+// any plugins that still use the old .so extension would be skipped silently.
 // NOTE: we should remove this workaround in the future!
 #ifdef __linux__
 #    define LINUX_PLUGIN_WORKAROUND
@@ -212,7 +215,7 @@ bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, sc_msg_
 
 void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir) {
 #ifdef LINUX_PLUGIN_WORKAROUND
-    load_plugin_folder(dir, false);
+    load_plugin_folder(dir, true, false);
 #else
     namespace fs = std::filesystem;
 
@@ -242,7 +245,7 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir) {
 #ifdef LINUX_PLUGIN_WORKAROUND
 // if 'found_scx_file' is true, it means that we have alredy found a .scx file in one of the parent
 // directories. In this case, we treat all .so files as shared libraries and ignore them.
-void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool found_scx_file) {
+void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool is_top_level, bool found_scx_file) {
     namespace fs = std::filesystem;
 
     fs::directory_iterator end;
@@ -267,19 +270,21 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool 
     // then iterate over subdirectories and .so files
     for (const auto& entry : fs::directory_iterator(dir, options)) {
         if (fs::is_directory(entry.path())) {
-            load_plugin_folder(entry.path(), found_scx_file);
-        } else if (!found_scx_file && entry.path().extension() == ".so") {
+            load_plugin_folder(entry.path(), false, found_scx_file);
+        } else if ((is_top_level || !found_scx_file) && entry.path().extension() == ".so") {
             // No .scx plugins were found in this directory or any parent directory -> assume the .so file is a plugin.
             load_plugin(entry.path());
-            std::cout << "*** WARNING: '" << SC_Codecvt::path_to_utf8_str(entry.path()).c_str()
+            std::cout << "WARNING: '" << SC_Codecvt::path_to_utf8_str(entry.path()).c_str()
                       << "': the .so extension has been deprecated!" << std::endl;
 
             static bool didWarn = false;
             if (!didWarn) {
                 std::cout << "*** Please try to upgrade any SC extension where the UGen plugin still has the .so "
-                          << "extension. If you already have the latest version, please ask the developer to update "
-                          << "the extension. To suppress this warning in the meantime, you can manually change the "
-                          << "extension to .scx." << std::endl;
+                          << "extension.\n"
+                          << "*** If you already have the latest version, please ask the developer to update the "
+                          << "extension.\n"
+                          << "*** To suppress this warning in the meantime, you can manually change the extensions to "
+                          << ".scx." << std::endl;
                 didWarn = true;
             }
         }

@@ -206,7 +206,7 @@ public:
     void load_plugin(std::filesystem::path const& path);
 
 private:
-    void load_plugin_folder(std::filesystem::path const& dir, bool found_scx_file);
+    void load_plugin_folder(std::filesystem::path const& dir, bool is_top_level, bool found_scx_file);
 
     void close_handles(void);
 
