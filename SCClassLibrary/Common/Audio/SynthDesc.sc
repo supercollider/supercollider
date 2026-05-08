@@ -436,9 +436,11 @@ SynthDesc {
 	}
 
 	makeMsgFunc {
-		var	string, comma=false;
+		var	string, strings, comma = false;
 		var	names = IdentitySet.new,
 		suffix = this.hash.asHexString(8);
+		var index = 0, count;
+		var return;
 		// if a control name is duplicated, the msgFunc will be invalid
 		// that "shouldn't" happen but it might; better to check for it
 		// and throw a proper error
@@ -451,11 +453,15 @@ SynthDesc {
 					.format(name).warn;
 					comma = true;
 				} {
-					names.add(name);
+					if(msgFuncKeepGate or: { name != \gate }) {
+						names.add(name);
+					};
 				};
 			};
 		});
-		if(names.size > 255) { Error("A synthDef cannot have more than 255 control names.").throw };
+		if(names.size == 0) {
+			^ #{ Array.new }
+		};
 		// reusing variable to know if I should continue or not
 		if(comma) {
 			"\nYour synthdef has been saved in the library and loaded on the server, if running.
@@ -464,54 +470,90 @@ Use of this synth in Patterns will not detect argument names automatically becau
 			^this
 		};
 		comma = false;
-		names = 0;	// now, count the args actually added to the func
 
-		string = String.streamContents {|stream|
-			stream << "#{ ";
-			if (controlNames.size > 0) {
-				stream << "arg " ;
-			};
-			controls.do {|controlName, i|
-				var name, name2;
-				name = controlName.name.asString;
-				if (name != "?") {
-					if (name == "gate") {
-						hasGate = true;
-						if(msgFuncKeepGate) {
-							if (comma) { stream << ", " } { comma = true };
-							stream << name;
-							names = names + 1;
-						}
-					}{
-						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
-						if (comma) { stream << ", " } { comma = true };
-						stream << name2;
-						names = names + 1;
-					};
-				};
-			};
-			if (controlNames.size > 0) {
-				stream << ";\n" ;
-			};
-			stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
-			comma = false;
-			controls.do {|controlName, i|
-				var name, name2;
-				name = controlName.name.asString;
-				if (name != "?") {
-					if (msgFuncKeepGate or: { name != "gate" }) {
-						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
-						stream << "\t" << name2 << " !? { x" << suffix
-						<< ".add('" << name << "').add(" << name2 << ") };\n";
-						names = names + 1;
-					};
-				};
-			};
-			stream << "\tx" << suffix << "\n}"
+		while {
+			// makeOneMsgFunc splits at a limit of 250 control names per func
+			return = this.makeOneMsgFunc(controls, suffix, index);
+			return.notNil
+		} {
+			#count, string = return;
+			strings = strings.add(string);
+			index = index + count;
 		};
 
-		// do not compile the string if no argnames were added
-		if(names > 0) { msgFunc = string.compile.value };
+		if(strings.size == 1) {
+			// <= 250 args, use the simplest form
+			msgFunc = strings[0].compile.value;
+		} {
+			// merge results from the split-up queries
+			msgFunc = String.streamContents({ |stream|
+				stream << "#{\n";
+				stream << "\tvar y" << suffix << " = Array(" << (names.size*2) << ");\n";
+				strings.do { |str|
+					stream << "\ty" << suffix
+					<< " = y" << suffix << ".addAll("
+					<< str << ".valueEnvir"
+					<< ");\n";
+				};
+				stream << "\ty" << suffix << ";\n}"
+			})
+			.compile.value
+		};
+	}
+
+	makeOneMsgFunc { |controlNames, suffix, index = 0, limit = 250|
+		var names = 0;
+		var string;
+		var scanned = 0, written = 0;
+		if(index < controlNames.size) {
+			string = String.streamContents { |stream|
+				var controlName, name, name2;
+				var comma = false;
+				stream << "#{ arg ";
+				while {
+					names < limit and: {
+						(index + scanned) < controlNames.size
+					}
+				} {
+					controlName = controlNames[index + scanned];
+					name = controlName.name.asString;
+					if (name != "?") {
+						if (name == "gate") {
+							hasGate = true;
+							if(msgFuncKeepGate) {
+								if (comma) { stream << ", " } { comma = true };
+								stream << name;
+								names = names + 1;
+							}
+						}{
+							if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
+							if (comma) { stream << ", " } { comma = true };
+							stream << name2;
+							names = names + 1;
+						};
+					};
+					scanned = scanned + 1;
+				};
+				stream << ";\n" ;
+				stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
+				comma = false;
+				while {
+					written < scanned
+				} {
+					name = controlNames[index + written].name.asString;
+					if (name != "?") {
+						if (msgFuncKeepGate or: { name != "gate" }) {
+							if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
+							stream << "\t" << name2 << " !? { x" << suffix
+							<< ".add('" << name << "').add(" << name2 << ") };\n";
+						};
+					};
+					written = written + 1;
+				};
+				stream << "\tx" << suffix << "\n}"
+			};
+			^[written, string]
+		} { ^nil }
 	}
 
 	msgFuncKeepGate_ { |bool = false|
