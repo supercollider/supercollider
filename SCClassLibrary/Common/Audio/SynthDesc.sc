@@ -540,12 +540,14 @@ Use of this synth in Patterns will not detect argument names automatically becau
 				};
 				scanned = scanned + 1;
 			};
-			^[scanned, String.streamContents { |stream|
-				stream << "#{ arg " << argStream.collection << ";\n";
-				stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
-				stream << fillStream.collection;
-				stream << "\tx" << suffix << "\n}"
-			}]
+			if(names > 0) {
+				^[scanned, String.streamContents { |stream|
+					stream << "#{ arg " << argStream.collection << ";\n";
+					stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
+					stream << fillStream.collection;
+					stream << "\tx" << suffix << "\n}"
+				}]
+			} { ^nil }
 		} { ^nil }
 	}
 
