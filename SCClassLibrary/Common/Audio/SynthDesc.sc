@@ -436,9 +436,10 @@ SynthDesc {
 	}
 
 	makeMsgFunc {
-		var	string, strings, comma = false;
-		var	names = IdentitySet.new,
-		suffix = this.hash.asHexString(8);
+		var string, strings;
+		var hasDuplicateNames = false;
+		var names = IdentitySet.new;
+		var suffix = this.hash.asHexString(8);
 		var index = 0, count;
 		var return;
 		// if a control name is duplicated, the msgFunc will be invalid
@@ -451,7 +452,7 @@ SynthDesc {
 				if(names.includes(name)) {
 					"Could not build msgFunc for this SynthDesc: duplicate control name %"
 					.format(name).warn;
-					comma = true;
+					hasDuplicateNames = true;
 				} {
 					if(msgFuncKeepGate or: { name != \gate }) {
 						names.add(name);
@@ -462,14 +463,12 @@ SynthDesc {
 		if(names.size == 0) {
 			^ #{ Array.new }
 		};
-		// reusing variable to know if I should continue or not
-		if(comma) {
+		if(hasDuplicateNames) {
 			"\nYour synthdef has been saved in the library and loaded on the server, if running.
 Use of this synth in Patterns will not detect argument names automatically because of the duplicate name(s).".postln;
 			msgFunc = nil;
 			^this
 		};
-		comma = false;
 
 		while {
 			// makeOneMsgFunc splits at a limit of 250 control names per func
@@ -503,56 +502,50 @@ Use of this synth in Patterns will not detect argument names automatically becau
 
 	makeOneMsgFunc { |controlNames, suffix, index = 0, limit = 250|
 		var names = 0;
-		var string;
-		var scanned = 0, written = 0;
+		var scanned = 0;
+		var argStream, fillStream;
+		var controlName, name;
+		var comma = false;
+		var streamName = { |name|
+			var name2;
+			if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
+			argStream << name2;
+			fillStream << "\t" << name2 << " !? { x" << suffix
+			<< ".add('" << name << "').add(" << name2 << ") };\n";
+		};
 		if(index < controlNames.size) {
-			string = String.streamContents { |stream|
-				var controlName, name, name2;
-				var comma = false;
-				stream << "#{ arg ";
-				while {
-					names < limit and: {
-						(index + scanned) < controlNames.size
+			argStream = CollStream.new;
+			fillStream = CollStream.new;
+			while {
+				names < limit and: {
+					(index + scanned) < controlNames.size
+				}
+			} {
+				controlName = controlNames[index + scanned];
+				name = controlName.name.asString;
+				case
+				{ name == "gate" } {
+					hasGate = true;
+					if(msgFuncKeepGate) {
+						if (comma) { argStream << ", " } { comma = true };
+						streamName.(name);
+						names = names + 1;
 					}
-				} {
-					controlName = controlNames[index + scanned];
-					name = controlName.name.asString;
-					if (name != "?") {
-						if (name == "gate") {
-							hasGate = true;
-							if(msgFuncKeepGate) {
-								if (comma) { stream << ", " } { comma = true };
-								stream << name;
-								names = names + 1;
-							}
-						}{
-							if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
-							if (comma) { stream << ", " } { comma = true };
-							stream << name2;
-							names = names + 1;
-						};
-					};
-					scanned = scanned + 1;
+				}
+				// "?" is a placeholder for arrayed controls
+				{ name != "?" } {
+					if (comma) { argStream << ", " } { comma = true };
+					streamName.(name);
+					names = names + 1;
 				};
-				stream << ";\n" ;
-				stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
-				comma = false;
-				while {
-					written < scanned
-				} {
-					name = controlNames[index + written].name.asString;
-					if (name != "?") {
-						if (msgFuncKeepGate or: { name != "gate" }) {
-							if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
-							stream << "\t" << name2 << " !? { x" << suffix
-							<< ".add('" << name << "').add(" << name2 << ") };\n";
-						};
-					};
-					written = written + 1;
-				};
-				stream << "\tx" << suffix << "\n}"
+				scanned = scanned + 1;
 			};
-			^[written, string]
+			^[scanned, String.streamContents { |stream|
+				stream << "#{ arg " << argStream.collection << ";\n";
+				stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
+				stream << fillStream.collection;
+				stream << "\tx" << suffix << "\n}"
+			}]
 		} { ^nil }
 	}
 
