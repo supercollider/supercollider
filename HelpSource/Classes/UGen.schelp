@@ -24,7 +24,7 @@ code::
 
 subsection:: Default argument values: Floats vs. Integers
 
-link::Guides/SCide#Method call assistance#SuperCollider-IDE code editor's method call assistance:: 
+link::Guides/SCIde#Method call assistance#SuperCollider-IDE code editor's method call assistance:: 
 and method signatures in the help documentation often 
 display default values as floating-point numbers, 
 even when the corresponding documentation describes or 
@@ -32,7 +32,7 @@ implies the argument is an integer. For example:
 
 list::
 ## The default values for code::loop::, code::doneAction::, and code::startPos:: appear as floats in 
-the link::Guides/SCide#Method call assistance#method call assistance:::
+the link::Guides/SCIde#Method call assistance#method call assistance:::
 
 table::
 ## image::UGen_Method-call-assistance.png#Method call assistance showing float defaults::
