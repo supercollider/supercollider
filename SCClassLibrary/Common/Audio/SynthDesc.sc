@@ -461,7 +461,7 @@ SynthDesc {
 			};
 		});
 		// note, don't remove this check;
-		// it prevents wrong syntax from being generated in makeOneMsgFunc
+		// it prevents wrong syntax from being generated in prMakeOneMsgFunc
 		if(names.size == 0) {
 			msgFunc = #{ Array.new };
 			^this
@@ -475,7 +475,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 
 		while {
 			// makeOneMsgFunc splits at a limit of 250 control names per func
-			return = this.makeOneMsgFunc(controls, suffix, index);
+			return = this.prMakeOneMsgFunc(controls, suffix, index);
 			return.notNil
 		} {
 			#count, string = return;
@@ -503,7 +503,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		};
 	}
 
-	makeOneMsgFunc { |controlNames, suffix, index = 0, limit = 250|
+	prMakeOneMsgFunc { |controlNames, suffix, index = 0, limit = 250|
 		var names = 0;
 		var scanned = 0;
 		var argStream, fillStream;
