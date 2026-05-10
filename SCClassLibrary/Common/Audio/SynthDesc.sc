@@ -460,8 +460,11 @@ SynthDesc {
 				};
 			};
 		});
+		// note, don't remove this check;
+		// it prevents wrong syntax from being generated in makeOneMsgFunc
 		if(names.size == 0) {
-			^ #{ Array.new }
+			msgFunc = #{ Array.new };
+			^this
 		};
 		if(hasDuplicateNames) {
 			"\nYour synthdef has been saved in the library and loaded on the server, if running.
@@ -540,14 +543,12 @@ Use of this synth in Patterns will not detect argument names automatically becau
 				};
 				scanned = scanned + 1;
 			};
-			if(names > 0) {
-				^[scanned, String.streamContents { |stream|
-					stream << "#{ arg " << argStream.collection << ";\n";
-					stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
-					stream << fillStream.collection;
-					stream << "\tx" << suffix << "\n}"
-				}]
-			} { ^nil }
+			^[scanned, String.streamContents { |stream|
+				stream << "#{ arg " << argStream.collection << ";\n";
+				stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
+				stream << fillStream.collection;
+				stream << "\tx" << suffix << "\n}"
+			}]
 		} { ^nil }
 	}
 

@@ -84,6 +84,21 @@ TestSynthDescMsgFunc : UnitTest {
 		)
 	}
 
+	test_SynthDesc_msgFunc_for_empty_arg_list_is_empty_array {
+		// by default, 'gate' is excluded.
+		// SynthDesc should recognizes that there's nothing else to include,
+		// and produce an empty-array msgFunc
+		SynthDef(\testempty, { |gate = 1|
+			Out.kr(1000, gate)
+		}).add;
+
+		this.assertEquals(
+			SynthDescLib.at(\testempty).msgFunc.value,
+			Array.new,
+			"The msgFunc for a SynthDef with no eligible controls should return an empty array"
+		);
+	}
+
 	unorderedPairsEqual { |a, b|
 		var aDict = a.asDict(class: IdentityDictionary);
 		var bDict = b.asDict(class: IdentityDictionary);
