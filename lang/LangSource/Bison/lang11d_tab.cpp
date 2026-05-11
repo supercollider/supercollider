@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 18 "lang11d"
+#line 18 "lang/LangSource/Bison/lang11d"
 
 
 #include "BisonHeaderInclude.hpp"
@@ -89,7 +89,7 @@ extern LongStack generatorStack;
 
 
 
-#line 93 "lang11d_tab.cpp"
+#line 93 "lang/LangSource/Bison/lang11d_tab.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -686,12 +686,12 @@ static const yytype_int16 yyrline[] =
     1352,  1356,  1360,  1366,  1370,  1374,  1378,  1382,  1389,  1390,
     1394,  1398,  1399,  1402,  1403,  1407,  1409,  1411,  1419,  1420,
     1423,  1424,  1428,  1430,  1432,  1440,  1442,  1449,  1450,  1454,
-    1455,  1458,  1459,  1463,  1465,  1488,  1490,  1494,  1496,  1500,
-    1501,  1504,  1505,  1509,  1510,  1512,  1514,  1518,  1519,  1523,
-    1524,  1533,  1534,  1543,  1544,  1555,  1558,  1559,  1560,  1566,
-    1574,  1581,  1590,  1591,  1594,  1597,  1600,  1603,  1606,  1609,
-    1612,  1615,  1618,  1621,  1622,  1623,  1624,  1625,  1626,  1627,
-    1628,  1631,  1634,  1635,  1638
+    1455,  1458,  1459,  1463,  1465,  1469,  1471,  1475,  1477,  1481,
+    1482,  1485,  1486,  1490,  1491,  1493,  1495,  1499,  1500,  1504,
+    1505,  1514,  1515,  1524,  1525,  1536,  1539,  1540,  1541,  1547,
+    1555,  1562,  1571,  1572,  1575,  1578,  1581,  1584,  1587,  1590,
+    1593,  1596,  1599,  1602,  1603,  1604,  1605,  1606,  1607,  1608,
+    1609,  1612,  1615,  1616,  1619
 };
 #endif
 
@@ -2233,310 +2233,310 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* root: classes  */
-#line 49 "lang11d"
+#line 49 "lang/LangSource/Bison/lang11d"
                         { gRootParseNode = (PyrParseNode*)yyvsp[0]; gParserResult = 1; }
-#line 2239 "lang11d_tab.cpp"
+#line 2239 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 3: /* root: classextensions  */
-#line 51 "lang11d"
+#line 51 "lang/LangSource/Bison/lang11d"
                         { gRootParseNode = (PyrParseNode*)yyvsp[0]; gParserResult = 1; }
-#line 2245 "lang11d_tab.cpp"
+#line 2245 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 4: /* root: INTERPRET cmdlinecode  */
-#line 53 "lang11d"
+#line 53 "lang/LangSource/Bison/lang11d"
                         { gRootParseNode = (PyrParseNode*)yyvsp[0]; gParserResult = 2; }
-#line 2251 "lang11d_tab.cpp"
+#line 2251 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 5: /* classes: %empty  */
-#line 56 "lang11d"
+#line 56 "lang/LangSource/Bison/lang11d"
           { yyval = 0; }
-#line 2257 "lang11d_tab.cpp"
+#line 2257 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 6: /* classes: classes classdef  */
-#line 58 "lang11d"
+#line 58 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2263 "lang11d_tab.cpp"
+#line 2263 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 8: /* classextensions: classextensions classextension  */
-#line 63 "lang11d"
+#line 63 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2269 "lang11d_tab.cpp"
+#line 2269 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 9: /* classdef: classname superclass OPENCURLY classvardecls methods CLOSECURLY  */
-#line 67 "lang11d"
+#line 67 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrClassNode((yyloc), (PyrSlotNode*)yyvsp[-5], (PyrSlotNode*)yyvsp[-4],
 					(PyrVarListNode*)yyvsp[-2], (PyrMethodNode*)yyvsp[-1], 0);
 				}
-#line 2277 "lang11d_tab.cpp"
+#line 2277 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 10: /* classdef: classname OPENSQUARE optname CLOSESQUARE superclass OPENCURLY classvardecls methods CLOSECURLY  */
-#line 71 "lang11d"
+#line 71 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrClassNode((yyloc),(PyrSlotNode*)yyvsp[-8], (PyrSlotNode*)yyvsp[-4],
 					(PyrVarListNode*)yyvsp[-2], (PyrMethodNode*)yyvsp[-1],
 					(PyrSlotNode*)yyvsp[-6]);
 				}
-#line 2286 "lang11d_tab.cpp"
+#line 2286 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 11: /* classextension: ADD classname OPENCURLY methods CLOSECURLY  */
-#line 78 "lang11d"
+#line 78 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)newPyrClassExtNode((yyloc),(PyrSlotNode*)yyvsp[-3], (PyrMethodNode*)yyvsp[-1]);
 				}
-#line 2294 "lang11d_tab.cpp"
+#line 2294 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 12: /* optname: %empty  */
-#line 83 "lang11d"
+#line 83 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 2300 "lang11d_tab.cpp"
+#line 2300 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 14: /* superclass: %empty  */
-#line 87 "lang11d"
+#line 87 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 2306 "lang11d_tab.cpp"
+#line 2306 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 15: /* superclass: COLON classname  */
-#line 89 "lang11d"
+#line 89 "lang/LangSource/Bison/lang11d"
                                 { yyval = yyvsp[0]; }
-#line 2312 "lang11d_tab.cpp"
+#line 2312 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 16: /* classvardecls: %empty  */
-#line 92 "lang11d"
+#line 92 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 2318 "lang11d_tab.cpp"
+#line 2318 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 17: /* classvardecls: classvardecls classvardecl  */
-#line 94 "lang11d"
+#line 94 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2324 "lang11d_tab.cpp"
+#line 2324 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 18: /* classvardecl: CLASSVAR rwslotdeflist SEMICOLON  */
-#line 98 "lang11d"
+#line 98 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrVarListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], varClass); }
-#line 2330 "lang11d_tab.cpp"
+#line 2330 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 19: /* classvardecl: VAR rwslotdeflist SEMICOLON  */
-#line 100 "lang11d"
+#line 100 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrVarListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], varInst); }
-#line 2336 "lang11d_tab.cpp"
+#line 2336 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 20: /* classvardecl: SC_CONST constdeflist SEMICOLON  */
-#line 102 "lang11d"
+#line 102 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrVarListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], varConst); }
-#line 2342 "lang11d_tab.cpp"
+#line 2342 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 21: /* methods: %empty  */
-#line 105 "lang11d"
+#line 105 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 2348 "lang11d_tab.cpp"
+#line 2348 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 22: /* methods: methods methoddef  */
-#line 107 "lang11d"
+#line 107 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2354 "lang11d_tab.cpp"
+#line 2354 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 23: /* methoddef: name OPENCURLY argdecls funcvardecls primitive methbody CLOSECURLY  */
-#line 111 "lang11d"
+#line 111 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrMethodNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2],
 					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 0); }
-#line 2361 "lang11d_tab.cpp"
+#line 2361 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 24: /* methoddef: MULTIPLY name OPENCURLY argdecls funcvardecls primitive methbody CLOSECURLY  */
-#line 114 "lang11d"
+#line 114 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrMethodNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2],
 					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 1); }
-#line 2368 "lang11d_tab.cpp"
+#line 2368 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 25: /* methoddef: binop OPENCURLY argdecls funcvardecls primitive methbody CLOSECURLY  */
-#line 117 "lang11d"
+#line 117 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrMethodNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2],
 					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 0); }
-#line 2375 "lang11d_tab.cpp"
+#line 2375 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 26: /* methoddef: MULTIPLY binop OPENCURLY argdecls funcvardecls primitive methbody CLOSECURLY  */
-#line 120 "lang11d"
+#line 120 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrMethodNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2],
 					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 1); }
-#line 2382 "lang11d_tab.cpp"
+#line 2382 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 34: /* funcbody: exprseq funretval  */
-#line 138 "lang11d"
+#line 138 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrDropNode((yyloc), (PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2388 "lang11d_tab.cpp"
+#line 2388 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 35: /* cmdlinecode: OPENPAREN argdecls1 funcvardecls1 funcbody CLOSEPAREN  */
-#line 142 "lang11d"
+#line 142 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-3], (PyrVarListNode*)yyvsp[-2], (PyrParseNode*)yyvsp[-1], false); }
-#line 2394 "lang11d_tab.cpp"
+#line 2394 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 36: /* cmdlinecode: OPENPAREN argdecls1 funcbody CLOSEPAREN  */
-#line 144 "lang11d"
+#line 144 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-2], NULL, (PyrParseNode*)yyvsp[-1], false); }
-#line 2400 "lang11d_tab.cpp"
+#line 2400 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 37: /* cmdlinecode: OPENPAREN funcvardecls1 funcbody CLOSEPAREN  */
-#line 146 "lang11d"
+#line 146 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrBlockNode((yyloc), NULL, (PyrVarListNode*)yyvsp[-2], (PyrParseNode*)yyvsp[-1], false); }
-#line 2406 "lang11d_tab.cpp"
+#line 2406 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 38: /* cmdlinecode: argdecls1 funcvardecls1 funcbody  */
-#line 148 "lang11d"
+#line 148 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-2], (PyrVarListNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0], false); }
-#line 2412 "lang11d_tab.cpp"
+#line 2412 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 39: /* cmdlinecode: argdecls1 funcbody  */
-#line 150 "lang11d"
+#line 150 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-1], NULL, (PyrParseNode*)yyvsp[0], false); }
-#line 2418 "lang11d_tab.cpp"
+#line 2418 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 40: /* cmdlinecode: funcvardecls1 funcbody  */
-#line 152 "lang11d"
+#line 152 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrBlockNode((yyloc), NULL, (PyrVarListNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0], false); }
-#line 2424 "lang11d_tab.cpp"
+#line 2424 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 41: /* cmdlinecode: funcbody  */
-#line 154 "lang11d"
+#line 154 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrBlockNode((yyloc), NULL, NULL, (PyrParseNode*)yyvsp[0], false); }
-#line 2430 "lang11d_tab.cpp"
+#line 2430 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 43: /* methbody: exprseq retval  */
-#line 159 "lang11d"
+#line 159 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrDropNode((yyloc), (PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2436 "lang11d_tab.cpp"
+#line 2436 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 44: /* primitive: %empty  */
-#line 162 "lang11d"
+#line 162 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 2442 "lang11d_tab.cpp"
+#line 2442 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 45: /* primitive: primname optsemi  */
-#line 164 "lang11d"
+#line 164 "lang/LangSource/Bison/lang11d"
                                 { yyval = yyvsp[-1]; }
-#line 2448 "lang11d_tab.cpp"
+#line 2448 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 46: /* retval: %empty  */
-#line 168 "lang11d"
+#line 168 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrReturnNode((yyloc), NULL); }
-#line 2454 "lang11d_tab.cpp"
+#line 2454 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 47: /* retval: NONLOCALRETURN expr optsemi  */
-#line 170 "lang11d"
+#line 170 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrReturnNode((yyloc), (PyrParseNode*)yyvsp[-1]); }
-#line 2460 "lang11d_tab.cpp"
+#line 2460 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 48: /* funretval: %empty  */
-#line 174 "lang11d"
+#line 174 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrBlockReturnNode((yyloc)); }
-#line 2466 "lang11d_tab.cpp"
+#line 2466 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 49: /* funretval: NONLOCALRETURN expr optsemi  */
-#line 176 "lang11d"
+#line 176 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrReturnNode((yyloc), (PyrParseNode*)yyvsp[-1]); }
-#line 2472 "lang11d_tab.cpp"
+#line 2472 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 51: /* blocklist1: blocklist1 blocklistitem  */
-#line 181 "lang11d"
+#line 181 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]);
 				}
-#line 2480 "lang11d_tab.cpp"
+#line 2480 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 54: /* blocklist: %empty  */
-#line 190 "lang11d"
+#line 190 "lang/LangSource/Bison/lang11d"
                         { yyval = 0; }
-#line 2486 "lang11d_tab.cpp"
+#line 2486 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 56: /* msgsend: name blocklist1  */
-#line 195 "lang11d"
+#line 195 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0], 0, 0);
 			}
-#line 2494 "lang11d_tab.cpp"
+#line 2494 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 57: /* msgsend: OPENPAREN binop2 CLOSEPAREN blocklist1  */
-#line 199 "lang11d"
+#line 199 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], 0, 0);
 			}
-#line 2502 "lang11d_tab.cpp"
+#line 2502 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 58: /* msgsend: name OPENPAREN CLOSEPAREN blocklist1  */
-#line 203 "lang11d"
+#line 203 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-3], NULL, NULL, (PyrParseNode*)yyvsp[0]);
 			}
-#line 2510 "lang11d_tab.cpp"
+#line 2510 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 59: /* msgsend: name OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 207 "lang11d"
+#line 207 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-5], (PyrParseNode*)yyvsp[-3],
 						(PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
 			}
-#line 2519 "lang11d_tab.cpp"
+#line 2519 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 60: /* msgsend: OPENPAREN binop2 CLOSEPAREN OPENPAREN CLOSEPAREN blocklist1  */
-#line 212 "lang11d"
+#line 212 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-4], NULL, NULL, (PyrParseNode*)yyvsp[0]);
 			}
-#line 2527 "lang11d_tab.cpp"
+#line 2527 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 61: /* msgsend: OPENPAREN binop2 CLOSEPAREN OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 216 "lang11d"
+#line 216 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrParseNode*)yyvsp[-3],
 						(PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
 			}
-#line 2536 "lang11d_tab.cpp"
+#line 2536 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 62: /* msgsend: name OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 221 "lang11d"
+#line 221 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2554,11 +2554,11 @@ yyreduce:
 					newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-4], NULL));
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-1], 0);
 			}
-#line 2558 "lang11d_tab.cpp"
+#line 2558 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 63: /* msgsend: OPENPAREN binop2 CLOSEPAREN OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 239 "lang11d"
+#line 239 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2571,17 +2571,17 @@ yyreduce:
 					newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-5], NULL));
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-1], 0);
 			}
-#line 2575 "lang11d_tab.cpp"
+#line 2575 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 64: /* msgsend: classname OPENSQUARE arrayelems CLOSESQUARE  */
-#line 252 "lang11d"
+#line 252 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrDynListNode((yyloc), (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]); }
-#line 2581 "lang11d_tab.cpp"
+#line 2581 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 65: /* msgsend: classname blocklist1  */
-#line 254 "lang11d"
+#line 254 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2592,11 +2592,11 @@ yyreduce:
 				args = (PyrParseNode*)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[-1]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, (PyrParseNode*)yyvsp[0]);
 			}
-#line 2596 "lang11d_tab.cpp"
+#line 2596 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 66: /* msgsend: classname OPENPAREN CLOSEPAREN blocklist  */
-#line 265 "lang11d"
+#line 265 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2607,11 +2607,11 @@ yyreduce:
 				args = (PyrParseNode*)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[-3]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, NULL, (PyrParseNode*)yyvsp[0]);
 			}
-#line 2611 "lang11d_tab.cpp"
+#line 2611 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 67: /* msgsend: classname OPENPAREN keyarglist1 optcomma CLOSEPAREN blocklist  */
-#line 276 "lang11d"
+#line 276 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2622,11 +2622,11 @@ yyreduce:
 				args = (PyrParseNode*)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[-5]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0]);
 			}
-#line 2626 "lang11d_tab.cpp"
+#line 2626 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 68: /* msgsend: classname OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 287 "lang11d"
+#line 287 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2639,11 +2639,11 @@ yyreduce:
 					(PyrParseNode*)yyvsp[-3]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
 			}
-#line 2643 "lang11d_tab.cpp"
+#line 2643 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 69: /* msgsend: classname OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 300 "lang11d"
+#line 300 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode, *selectornode2;
 				PyrSlot slot, slot2;
@@ -2664,11 +2664,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[-2]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[0], 0);
 			}
-#line 2668 "lang11d_tab.cpp"
+#line 2668 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 70: /* msgsend: expr DOT OPENPAREN CLOSEPAREN blocklist  */
-#line 321 "lang11d"
+#line 321 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2677,11 +2677,11 @@ yyreduce:
 				selectornode = newPyrSlotNode((yyloc), &slot);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, (PyrParseNode*)yyvsp[-4], NULL, (PyrParseNode*)yyvsp[0]);
 			}
-#line 2681 "lang11d_tab.cpp"
+#line 2681 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 71: /* msgsend: expr DOT OPENPAREN keyarglist1 optcomma CLOSEPAREN blocklist  */
-#line 330 "lang11d"
+#line 330 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2690,20 +2690,20 @@ yyreduce:
 				selectornode = newPyrSlotNode((yyloc), &slot);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, (PyrParseNode*)yyvsp[-6], (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0]);
 			}
-#line 2694 "lang11d_tab.cpp"
+#line 2694 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 72: /* msgsend: expr DOT name OPENPAREN keyarglist1 optcomma CLOSEPAREN blocklist  */
-#line 339 "lang11d"
+#line 339 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-5], (PyrParseNode*)yyvsp[-7],
 					(PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0]);
 			}
-#line 2703 "lang11d_tab.cpp"
+#line 2703 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 73: /* msgsend: expr DOT OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 344 "lang11d"
+#line 344 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2716,11 +2716,11 @@ yyreduce:
 					(PyrParseNode*)yyvsp[-3]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
 			}
-#line 2720 "lang11d_tab.cpp"
+#line 2720 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 74: /* msgsend: expr DOT OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 358 "lang11d"
+#line 358 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot, slot2;
@@ -2740,29 +2740,29 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[-2]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-1], 0);
 			}
-#line 2744 "lang11d_tab.cpp"
+#line 2744 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 75: /* msgsend: expr DOT name OPENPAREN CLOSEPAREN blocklist  */
-#line 380 "lang11d"
+#line 380 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-5], NULL, (PyrParseNode*)yyvsp[0]);
 			}
-#line 2752 "lang11d_tab.cpp"
+#line 2752 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 76: /* msgsend: expr DOT name OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 384 "lang11d"
+#line 384 "lang/LangSource/Bison/lang11d"
                         {
 				PyrParseNode* args;
 				args = linkNextNode((PyrParseNode*)yyvsp[-7], (PyrParseNode*)yyvsp[-3]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-5], args, (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
 			}
-#line 2762 "lang11d_tab.cpp"
+#line 2762 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 77: /* msgsend: expr DOT name OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 390 "lang11d"
+#line 390 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2780,25 +2780,25 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[-2]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-1], 0);
 			}
-#line 2784 "lang11d_tab.cpp"
+#line 2784 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 78: /* msgsend: expr DOT name blocklist  */
-#line 408 "lang11d"
+#line 408 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-1], (PyrParseNode*)yyvsp[-3], 0, (PyrParseNode*)yyvsp[0]);
 			}
-#line 2792 "lang11d_tab.cpp"
+#line 2792 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 79: /* $@1: %empty  */
-#line 413 "lang11d"
+#line 413 "lang/LangSource/Bison/lang11d"
                                     { pushls(&generatorStack, yyvsp[0]); pushls(&generatorStack, 1); }
-#line 2798 "lang11d_tab.cpp"
+#line 2798 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 80: /* generator: OPENCURLY COLON exprseq $@1 COMMA qual CLOSECURLY  */
-#line 414 "lang11d"
+#line 414 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlot slot;
 				SetSymbol(&slot, getsym("r"));
@@ -2808,25 +2808,25 @@ yyreduce:
 				PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, (PyrParseNode*)blocklit, 0, 0);
 			}
-#line 2812 "lang11d_tab.cpp"
+#line 2812 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 81: /* $@2: %empty  */
-#line 423 "lang11d"
+#line 423 "lang/LangSource/Bison/lang11d"
                                               { pushls(&generatorStack, yyvsp[0]); pushls(&generatorStack, 2); }
-#line 2818 "lang11d_tab.cpp"
+#line 2818 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 82: /* generator: OPENCURLY SEMICOLON exprseq $@2 COMMA qual CLOSECURLY  */
-#line 424 "lang11d"
+#line 424 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = yyvsp[-1];
 			}
-#line 2826 "lang11d_tab.cpp"
+#line 2826 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 83: /* nextqual: %empty  */
-#line 430 "lang11d"
+#line 430 "lang/LangSource/Bison/lang11d"
                                 {
 					// innermost part
 					int action = popls(&generatorStack);
@@ -2848,17 +2848,17 @@ yyreduce:
 						} break;
 					}
 				}
-#line 2852 "lang11d_tab.cpp"
+#line 2852 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 84: /* nextqual: COMMA qual  */
-#line 452 "lang11d"
+#line 452 "lang/LangSource/Bison/lang11d"
                                 { yyval = yyvsp[0]; }
-#line 2858 "lang11d_tab.cpp"
+#line 2858 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 85: /* qual: name LEFTARROW exprseq nextqual  */
-#line 456 "lang11d"
+#line 456 "lang/LangSource/Bison/lang11d"
                         {
 				// later should check if exprseq is a series and optimize it to for loop
 				PyrParseNode *exprseq = (PyrParseNode*)yyvsp[-1];
@@ -2892,11 +2892,11 @@ yyreduce:
 					yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args2, 0, 0);
 				}
 			}
-#line 2896 "lang11d_tab.cpp"
+#line 2896 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 86: /* qual: name name LEFTARROW exprseq nextqual  */
-#line 490 "lang11d"
+#line 490 "lang/LangSource/Bison/lang11d"
                         {
 				// later should check if exprseq is a series and optimize it to for loop
 				PyrParseNode *exprseq = (PyrParseNode*)yyvsp[-1];
@@ -2934,11 +2934,11 @@ yyreduce:
 					yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args2, 0, 0);
 				}
 			}
-#line 2938 "lang11d_tab.cpp"
+#line 2938 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 87: /* qual: VAR name EQUALSSIGN exprseq nextqual  */
-#line 528 "lang11d"
+#line 528 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlot slot;
 				SetSymbol(&slot, s_value);
@@ -2952,11 +2952,11 @@ yyreduce:
 
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args2, 0, 0);
 			}
-#line 2956 "lang11d_tab.cpp"
+#line 2956 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 88: /* qual: exprseq nextqual  */
-#line 542 "lang11d"
+#line 542 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlot slot;
 				SetSymbol(&slot, getsym("if"));
@@ -2967,19 +2967,19 @@ yyreduce:
 
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args2, 0, 0);
 			}
-#line 2971 "lang11d_tab.cpp"
+#line 2971 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 89: /* qual: COLON COLON exprseq nextqual  */
-#line 553 "lang11d"
+#line 553 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrDropNode((yyloc), (PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]);
 			}
-#line 2979 "lang11d_tab.cpp"
+#line 2979 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 90: /* qual: COLON WHILE exprseq nextqual  */
-#line 557 "lang11d"
+#line 557 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlot slot;
 				SetSymbol(&slot, getsym("alwaysYield"));
@@ -3002,22 +3002,22 @@ yyreduce:
 
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode2, args3, 0, 0);
 			}
-#line 3006 "lang11d_tab.cpp"
+#line 3006 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 97: /* expr1: OPENPAREN exprseq CLOSEPAREN  */
-#line 588 "lang11d"
+#line 588 "lang/LangSource/Bison/lang11d"
                         {
 				PyrParseNode* node = (PyrParseNode*)yyvsp[-1];
 				node->mParens = 1;
 				yyval = yyvsp[-1];
 				node->location = (yyloc);
 			}
-#line 3017 "lang11d_tab.cpp"
+#line 3017 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 98: /* expr1: TILDE name  */
-#line 595 "lang11d"
+#line 595 "lang/LangSource/Bison/lang11d"
                         {
 				PyrParseNode* argnode;
 				PyrSlotNode* selectornode;
@@ -3027,41 +3027,41 @@ yyreduce:
 				selectornode = newPyrSlotNode((yyloc), &slot);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, argnode, 0, 0);
 			}
-#line 3031 "lang11d_tab.cpp"
+#line 3031 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 99: /* expr1: OPENSQUARE arrayelems CLOSESQUARE  */
-#line 605 "lang11d"
+#line 605 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrDynListNode((yyloc), 0, (PyrParseNode*)yyvsp[-1]); }
-#line 3037 "lang11d_tab.cpp"
+#line 3037 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 100: /* expr1: OPENPAREN valrange2 CLOSEPAREN  */
-#line 607 "lang11d"
+#line 607 "lang/LangSource/Bison/lang11d"
                         { yyval = yyvsp[-1]; }
-#line 3043 "lang11d_tab.cpp"
+#line 3043 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 101: /* expr1: OPENPAREN COLON valrange3 CLOSEPAREN  */
-#line 609 "lang11d"
+#line 609 "lang/LangSource/Bison/lang11d"
                         { yyval = yyvsp[-1]; }
-#line 3049 "lang11d_tab.cpp"
+#line 3049 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 102: /* expr1: OPENPAREN dictslotlist CLOSEPAREN  */
-#line 611 "lang11d"
+#line 611 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrDynDictNode((yyloc), (PyrParseNode*)yyvsp[-1]); }
-#line 3055 "lang11d_tab.cpp"
+#line 3055 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 103: /* expr1: pseudovar  */
-#line 613 "lang11d"
+#line 613 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[0]); }
-#line 3061 "lang11d_tab.cpp"
+#line 3061 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 104: /* expr1: expr1 OPENSQUARE arglist1 CLOSESQUARE  */
-#line 615 "lang11d"
+#line 615 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -3074,11 +3074,11 @@ yyreduce:
 					(PyrParseNode*)yyvsp[-1]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3078 "lang11d_tab.cpp"
+#line 3078 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 106: /* valrangex1: expr1 OPENSQUARE arglist1 DOTDOT CLOSESQUARE  */
-#line 631 "lang11d"
+#line 631 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3105,11 +3105,11 @@ yyreduce:
 				args = linkNextNode(args, nilnode2);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3109 "lang11d_tab.cpp"
+#line 3109 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 107: /* valrangex1: expr1 OPENSQUARE DOTDOT exprseq CLOSESQUARE  */
-#line 658 "lang11d"
+#line 658 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3127,11 +3127,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[-1]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3131 "lang11d_tab.cpp"
+#line 3131 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 108: /* valrangex1: expr1 OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE  */
-#line 676 "lang11d"
+#line 676 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -3156,11 +3156,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[-1]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3160 "lang11d_tab.cpp"
+#line 3160 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 109: /* valrangeassign: expr1 OPENSQUARE arglist1 DOTDOT CLOSESQUARE EQUALSSIGN expr  */
-#line 703 "lang11d"
+#line 703 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3188,11 +3188,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3192 "lang11d_tab.cpp"
+#line 3192 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 110: /* valrangeassign: expr1 OPENSQUARE DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
-#line 731 "lang11d"
+#line 731 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3211,11 +3211,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3215 "lang11d_tab.cpp"
+#line 3215 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 111: /* valrangeassign: expr1 OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
-#line 750 "lang11d"
+#line 750 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -3241,11 +3241,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3245 "lang11d_tab.cpp"
+#line 3245 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 112: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT CLOSESQUARE  */
-#line 778 "lang11d"
+#line 778 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3272,11 +3272,11 @@ yyreduce:
 				args = linkNextNode(args, nilnode2);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3276 "lang11d_tab.cpp"
+#line 3276 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 113: /* valrangexd: expr DOT OPENSQUARE DOTDOT exprseq CLOSESQUARE  */
-#line 805 "lang11d"
+#line 805 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3294,11 +3294,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[-1]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3298 "lang11d_tab.cpp"
+#line 3298 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 114: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE  */
-#line 823 "lang11d"
+#line 823 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -3323,11 +3323,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[-1]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3327 "lang11d_tab.cpp"
+#line 3327 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 115: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT CLOSESQUARE EQUALSSIGN expr  */
-#line 848 "lang11d"
+#line 848 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3355,11 +3355,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3359 "lang11d_tab.cpp"
+#line 3359 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 116: /* valrangexd: expr DOT OPENSQUARE DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
-#line 876 "lang11d"
+#line 876 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3378,11 +3378,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3382 "lang11d_tab.cpp"
+#line 3382 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 117: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
-#line 895 "lang11d"
+#line 895 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -3408,11 +3408,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3412 "lang11d_tab.cpp"
+#line 3412 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 118: /* valrange2: exprseq DOTDOT  */
-#line 923 "lang11d"
+#line 923 "lang/LangSource/Bison/lang11d"
                         {
 				// if this is not used in a 'do' or list comprehension, then should return an error.
 				PyrSlotNode *selectornode;
@@ -3430,11 +3430,11 @@ yyreduce:
 				args = linkNextNode(args, nilnode2);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3434 "lang11d_tab.cpp"
+#line 3434 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 119: /* valrange2: DOTDOT exprseq  */
-#line 942 "lang11d"
+#line 942 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *zeronode;
@@ -3452,11 +3452,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3456 "lang11d_tab.cpp"
+#line 3456 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 120: /* valrange2: exprseq DOTDOT exprseq  */
-#line 961 "lang11d"
+#line 961 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
@@ -3472,11 +3472,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3476 "lang11d_tab.cpp"
+#line 3476 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 121: /* valrange2: exprseq COMMA exprseq DOTDOT exprseq  */
-#line 978 "lang11d"
+#line 978 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot selectorSlot;
@@ -3490,11 +3490,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3494 "lang11d_tab.cpp"
+#line 3494 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 122: /* valrange2: exprseq COMMA exprseq DOTDOT  */
-#line 992 "lang11d"
+#line 992 "lang/LangSource/Bison/lang11d"
                         {
 				// if this is not used in a 'do' or list comprehension, then should return an error.
 				PyrSlotNode *selectornode;
@@ -3513,11 +3513,11 @@ yyreduce:
 				args = linkNextNode(args, nilnode);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3517 "lang11d_tab.cpp"
+#line 3517 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 123: /* valrange3: DOTDOT exprseq  */
-#line 1013 "lang11d"
+#line 1013 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *zeronode;
@@ -3535,11 +3535,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3539 "lang11d_tab.cpp"
+#line 3539 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 124: /* valrange3: exprseq DOTDOT  */
-#line 1032 "lang11d"
+#line 1032 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *nilnode2;
@@ -3556,11 +3556,11 @@ yyreduce:
 				args = linkNextNode(args, nilnode2);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3560 "lang11d_tab.cpp"
+#line 3560 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 125: /* valrange3: exprseq DOTDOT exprseq  */
-#line 1050 "lang11d"
+#line 1050 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
@@ -3576,11 +3576,11 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3580 "lang11d_tab.cpp"
+#line 3580 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 126: /* valrange3: exprseq COMMA exprseq DOTDOT  */
-#line 1067 "lang11d"
+#line 1067 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
@@ -3596,11 +3596,11 @@ yyreduce:
 				args = linkNextNode(args, nilnode);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3600 "lang11d_tab.cpp"
+#line 3600 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 127: /* valrange3: exprseq COMMA exprseq DOTDOT exprseq  */
-#line 1083 "lang11d"
+#line 1083 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot selectorSlot;
@@ -3614,17 +3614,17 @@ yyreduce:
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3618 "lang11d_tab.cpp"
+#line 3618 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 131: /* expr: classname  */
-#line 1101 "lang11d"
+#line 1101 "lang/LangSource/Bison/lang11d"
                             { yyval = (intptr_t)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[0]); }
-#line 3624 "lang11d_tab.cpp"
+#line 3624 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 132: /* expr: expr DOT OPENSQUARE arglist1 CLOSESQUARE  */
-#line 1103 "lang11d"
+#line 1103 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -3637,11 +3637,11 @@ yyreduce:
 					(PyrParseNode*)yyvsp[-1]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3641 "lang11d_tab.cpp"
+#line 3641 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 133: /* expr: BACKTICK expr  */
-#line 1116 "lang11d"
+#line 1116 "lang/LangSource/Bison/lang11d"
                         {
 				PyrParseNode *node, *args;
 				PyrSlotNode *slotnode;
@@ -3655,28 +3655,28 @@ yyreduce:
 				slotnode = newPyrSlotNode((yyloc), &slot);
 				yyval = (intptr_t)newPyrCallNode((yyloc), slotnode, args, 0, 0);
 			}
-#line 3659 "lang11d_tab.cpp"
+#line 3659 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 134: /* expr: expr binop2 adverb expr  */
-#line 1130 "lang11d"
+#line 1130 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrBinopCallNode((yyloc), (PyrSlotNode*)yyvsp[-2],
 						(PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0], (PyrParseNode*)yyvsp[-1]);
 			}
-#line 3668 "lang11d_tab.cpp"
+#line 3668 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 135: /* expr: name EQUALSSIGN expr  */
-#line 1135 "lang11d"
+#line 1135 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrAssignNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], 0);
 			}
-#line 3676 "lang11d_tab.cpp"
+#line 3676 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 136: /* expr: TILDE name EQUALSSIGN expr  */
-#line 1139 "lang11d"
+#line 1139 "lang/LangSource/Bison/lang11d"
                         {
 				PyrParseNode *argnode, *args;
 				PyrSlotNode* selectornode;
@@ -3687,20 +3687,20 @@ yyreduce:
 				selectornode = newPyrSlotNode((yyloc), &slot);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3691 "lang11d_tab.cpp"
+#line 3691 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 137: /* expr: expr DOT name EQUALSSIGN expr  */
-#line 1150 "lang11d"
+#line 1150 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrSetterNode((yyloc), (PyrSlotNode*)yyvsp[-2],
 						(PyrParseNode*)yyvsp[-4], (PyrParseNode*)yyvsp[0]);
 			}
-#line 3700 "lang11d_tab.cpp"
+#line 3700 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 138: /* expr: name OPENPAREN arglist1 optkeyarglist CLOSEPAREN EQUALSSIGN expr  */
-#line 1155 "lang11d"
+#line 1155 "lang/LangSource/Bison/lang11d"
                         {
 				if (yyvsp[-3] != 0) {
 					error("Setter method called with keyword arguments.\n");
@@ -3710,20 +3710,20 @@ yyreduce:
 				yyval = (intptr_t)newPyrSetterNode((yyloc), (PyrSlotNode*)yyvsp[-6],
 						(PyrParseNode*)yyvsp[-4], (PyrParseNode*)yyvsp[0]);
 			}
-#line 3714 "lang11d_tab.cpp"
+#line 3714 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 139: /* expr: HASH mavars EQUALSSIGN expr  */
-#line 1165 "lang11d"
+#line 1165 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrMultiAssignNode((yyloc), (PyrMultiAssignVarListNode*)yyvsp[-2],
 					(PyrParseNode*)yyvsp[0], 0);
 			}
-#line 3723 "lang11d_tab.cpp"
+#line 3723 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 140: /* expr: expr1 OPENSQUARE arglist1 CLOSESQUARE EQUALSSIGN expr  */
-#line 1170 "lang11d"
+#line 1170 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -3737,11 +3737,11 @@ yyreduce:
 				args = linkNextNode( args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3741 "lang11d_tab.cpp"
+#line 3741 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 141: /* expr: expr DOT OPENSQUARE arglist1 CLOSESQUARE EQUALSSIGN expr  */
-#line 1184 "lang11d"
+#line 1184 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -3755,698 +3755,698 @@ yyreduce:
 				args = linkNextNode( args, (PyrParseNode*)yyvsp[0]);
 				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
 			}
-#line 3759 "lang11d_tab.cpp"
+#line 3759 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 142: /* adverb: %empty  */
-#line 1199 "lang11d"
+#line 1199 "lang/LangSource/Bison/lang11d"
           { yyval = 0; }
-#line 3765 "lang11d_tab.cpp"
+#line 3765 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 143: /* adverb: DOT name  */
-#line 1200 "lang11d"
+#line 1200 "lang/LangSource/Bison/lang11d"
                            { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3771 "lang11d_tab.cpp"
+#line 3771 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 144: /* adverb: DOT integer  */
-#line 1201 "lang11d"
+#line 1201 "lang/LangSource/Bison/lang11d"
                               { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3777 "lang11d_tab.cpp"
+#line 3777 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 145: /* adverb: DOT OPENPAREN exprseq CLOSEPAREN  */
-#line 1202 "lang11d"
+#line 1202 "lang/LangSource/Bison/lang11d"
                                                    { yyval = yyvsp[-1]; }
-#line 3783 "lang11d_tab.cpp"
+#line 3783 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 147: /* exprn: exprn SEMICOLON expr  */
-#line 1207 "lang11d"
+#line 1207 "lang/LangSource/Bison/lang11d"
                         {
 				yyval = (intptr_t)newPyrDropNode((yyloc), (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
 			}
-#line 3791 "lang11d_tab.cpp"
+#line 3791 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 149: /* arrayelems: %empty  */
-#line 1215 "lang11d"
+#line 1215 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 3797 "lang11d_tab.cpp"
+#line 3797 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 150: /* arrayelems: arrayelems1 optcomma  */
-#line 1217 "lang11d"
+#line 1217 "lang/LangSource/Bison/lang11d"
                           { yyval = yyvsp[-1]; }
-#line 3803 "lang11d_tab.cpp"
+#line 3803 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 152: /* arrayelems1: exprseq COLON exprseq  */
-#line 1222 "lang11d"
+#line 1222 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3809 "lang11d_tab.cpp"
+#line 3809 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 153: /* arrayelems1: keybinop exprseq  */
-#line 1224 "lang11d"
+#line 1224 "lang/LangSource/Bison/lang11d"
                                 {
 					PyrParseNode* key = newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-1], NULL);
 					yyval = (intptr_t)linkNextNode(key, (PyrParseNode*)yyvsp[0]);
 				}
-#line 3818 "lang11d_tab.cpp"
+#line 3818 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 154: /* arrayelems1: arrayelems1 COMMA exprseq  */
-#line 1229 "lang11d"
+#line 1229 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3824 "lang11d_tab.cpp"
+#line 3824 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 155: /* arrayelems1: arrayelems1 COMMA keybinop exprseq  */
-#line 1231 "lang11d"
+#line 1231 "lang/LangSource/Bison/lang11d"
                                 {
 					PyrParseNode* elems;
 					PyrParseNode* key = newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-1], NULL);
 					elems = (PyrParseNode*)linkNextNode(key, (PyrParseNode*)yyvsp[0]);
 					yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-3], elems);
 				}
-#line 3835 "lang11d_tab.cpp"
+#line 3835 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 156: /* arrayelems1: arrayelems1 COMMA exprseq COLON exprseq  */
-#line 1238 "lang11d"
+#line 1238 "lang/LangSource/Bison/lang11d"
                                 {
 					PyrParseNode* elems;
 					elems = (PyrParseNode*)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
 					yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-4], elems);
 				}
-#line 3845 "lang11d_tab.cpp"
+#line 3845 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 158: /* arglist1: arglist1 COMMA exprseq  */
-#line 1247 "lang11d"
+#line 1247 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3851 "lang11d_tab.cpp"
+#line 3851 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 159: /* arglistv1: MULTIPLY exprseq  */
-#line 1251 "lang11d"
+#line 1251 "lang/LangSource/Bison/lang11d"
                                 { yyval = yyvsp[0]; }
-#line 3857 "lang11d_tab.cpp"
+#line 3857 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 160: /* arglistv1: arglist1 COMMA MULTIPLY exprseq  */
-#line 1253 "lang11d"
+#line 1253 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0]); }
-#line 3863 "lang11d_tab.cpp"
+#line 3863 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 162: /* keyarglist1: keyarglist1 COMMA keyarg  */
-#line 1258 "lang11d"
+#line 1258 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3869 "lang11d_tab.cpp"
+#line 3869 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 163: /* keyarg: keybinop exprseq  */
-#line 1262 "lang11d"
+#line 1262 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrPushKeyArgNode((yyloc), (PyrSlotNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 3875 "lang11d_tab.cpp"
+#line 3875 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 164: /* optkeyarglist: optcomma  */
-#line 1265 "lang11d"
+#line 1265 "lang/LangSource/Bison/lang11d"
                            { yyval = 0; }
-#line 3881 "lang11d_tab.cpp"
+#line 3881 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 165: /* optkeyarglist: COMMA keyarglist1 optcomma  */
-#line 1266 "lang11d"
+#line 1266 "lang/LangSource/Bison/lang11d"
                                                              { yyval = yyvsp[-1]; }
-#line 3887 "lang11d_tab.cpp"
+#line 3887 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 166: /* mavars: mavarlist  */
-#line 1270 "lang11d"
+#line 1270 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrMultiAssignVarListNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3893 "lang11d_tab.cpp"
+#line 3893 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 167: /* mavars: mavarlist ELLIPSIS name  */
-#line 1272 "lang11d"
+#line 1272 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrMultiAssignVarListNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrSlotNode*)yyvsp[0]); }
-#line 3899 "lang11d_tab.cpp"
+#line 3899 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 169: /* mavarlist: mavarlist COMMA name  */
-#line 1277 "lang11d"
+#line 1277 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3905 "lang11d_tab.cpp"
+#line 3905 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 170: /* slotliteral: integer  */
-#line 1281 "lang11d"
+#line 1281 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3911 "lang11d_tab.cpp"
+#line 3911 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 171: /* slotliteral: floatp  */
-#line 1282 "lang11d"
+#line 1282 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3917 "lang11d_tab.cpp"
+#line 3917 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 172: /* slotliteral: ascii  */
-#line 1283 "lang11d"
+#line 1283 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3923 "lang11d_tab.cpp"
+#line 3923 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 173: /* slotliteral: string  */
-#line 1284 "lang11d"
+#line 1284 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3929 "lang11d_tab.cpp"
+#line 3929 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 174: /* slotliteral: symbol  */
-#line 1285 "lang11d"
+#line 1285 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3935 "lang11d_tab.cpp"
+#line 3935 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 175: /* slotliteral: trueobj  */
-#line 1286 "lang11d"
+#line 1286 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3941 "lang11d_tab.cpp"
+#line 3941 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 176: /* slotliteral: falseobj  */
-#line 1287 "lang11d"
+#line 1287 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3947 "lang11d_tab.cpp"
+#line 3947 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 177: /* slotliteral: nilobj  */
-#line 1288 "lang11d"
+#line 1288 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3953 "lang11d_tab.cpp"
+#line 3953 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 178: /* slotliteral: listlit  */
-#line 1289 "lang11d"
+#line 1289 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), NULL, (PyrParseNode*)yyvsp[0]); }
-#line 3959 "lang11d_tab.cpp"
+#line 3959 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 179: /* blockliteral: block  */
-#line 1292 "lang11d"
+#line 1292 "lang/LangSource/Bison/lang11d"
                         { yyval = (intptr_t)newPyrPushLitNode((yyloc), NULL, (PyrParseNode*)yyvsp[0]); }
-#line 3965 "lang11d_tab.cpp"
+#line 3965 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 180: /* pushname: name  */
-#line 1295 "lang11d"
+#line 1295 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[0]); }
-#line 3971 "lang11d_tab.cpp"
+#line 3971 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 181: /* pushliteral: integer  */
-#line 1298 "lang11d"
+#line 1298 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3977 "lang11d_tab.cpp"
+#line 3977 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 182: /* pushliteral: floatp  */
-#line 1299 "lang11d"
+#line 1299 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3983 "lang11d_tab.cpp"
+#line 3983 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 183: /* pushliteral: ascii  */
-#line 1300 "lang11d"
+#line 1300 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3989 "lang11d_tab.cpp"
+#line 3989 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 184: /* pushliteral: string  */
-#line 1301 "lang11d"
+#line 1301 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3995 "lang11d_tab.cpp"
+#line 3995 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 185: /* pushliteral: symbol  */
-#line 1302 "lang11d"
+#line 1302 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4001 "lang11d_tab.cpp"
+#line 4001 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 186: /* pushliteral: trueobj  */
-#line 1303 "lang11d"
+#line 1303 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4007 "lang11d_tab.cpp"
+#line 4007 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 187: /* pushliteral: falseobj  */
-#line 1304 "lang11d"
+#line 1304 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4013 "lang11d_tab.cpp"
+#line 4013 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 188: /* pushliteral: nilobj  */
-#line 1305 "lang11d"
+#line 1305 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4019 "lang11d_tab.cpp"
+#line 4019 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 189: /* pushliteral: listlit  */
-#line 1306 "lang11d"
+#line 1306 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrPushLitNode((yyloc), NULL, (PyrParseNode*)yyvsp[0]); }
-#line 4025 "lang11d_tab.cpp"
+#line 4025 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 190: /* listliteral: integer  */
-#line 1309 "lang11d"
+#line 1309 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4031 "lang11d_tab.cpp"
+#line 4031 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 191: /* listliteral: floatp  */
-#line 1310 "lang11d"
+#line 1310 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4037 "lang11d_tab.cpp"
+#line 4037 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 192: /* listliteral: ascii  */
-#line 1311 "lang11d"
+#line 1311 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4043 "lang11d_tab.cpp"
+#line 4043 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 193: /* listliteral: string  */
-#line 1312 "lang11d"
+#line 1312 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4049 "lang11d_tab.cpp"
+#line 4049 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 194: /* listliteral: symbol  */
-#line 1313 "lang11d"
+#line 1313 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4055 "lang11d_tab.cpp"
+#line 4055 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 195: /* listliteral: name  */
-#line 1314 "lang11d"
+#line 1314 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4061 "lang11d_tab.cpp"
+#line 4061 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 196: /* listliteral: trueobj  */
-#line 1315 "lang11d"
+#line 1315 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4067 "lang11d_tab.cpp"
+#line 4067 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 197: /* listliteral: falseobj  */
-#line 1316 "lang11d"
+#line 1316 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4073 "lang11d_tab.cpp"
+#line 4073 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 198: /* listliteral: nilobj  */
-#line 1317 "lang11d"
+#line 1317 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4079 "lang11d_tab.cpp"
+#line 4079 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 199: /* listliteral: listlit2  */
-#line 1318 "lang11d"
+#line 1318 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrLiteralNode((yyloc), NULL, (PyrParseNode*)yyvsp[0]); }
-#line 4085 "lang11d_tab.cpp"
+#line 4085 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 200: /* block: OPENCURLY argdecls funcvardecls funcbody CLOSECURLY  */
-#line 1322 "lang11d"
+#line 1322 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-3], (PyrVarListNode*)yyvsp[-2],
 					(PyrParseNode*)yyvsp[-1], false); }
-#line 4092 "lang11d_tab.cpp"
+#line 4092 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 201: /* block: BEGINCLOSEDFUNC argdecls funcvardecls funcbody CLOSECURLY  */
-#line 1325 "lang11d"
+#line 1325 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-3], (PyrVarListNode*)yyvsp[-2],
 					(PyrParseNode*)yyvsp[-1], true); }
-#line 4099 "lang11d_tab.cpp"
+#line 4099 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 202: /* funcvardecls: %empty  */
-#line 1329 "lang11d"
+#line 1329 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 4105 "lang11d_tab.cpp"
+#line 4105 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 203: /* funcvardecls: funcvardecls funcvardecl  */
-#line 1331 "lang11d"
+#line 1331 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 4111 "lang11d_tab.cpp"
+#line 4111 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 205: /* funcvardecls1: funcvardecls1 funcvardecl  */
-#line 1336 "lang11d"
+#line 1336 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 4117 "lang11d_tab.cpp"
+#line 4117 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 206: /* funcvardecl: VAR vardeflist SEMICOLON  */
-#line 1340 "lang11d"
+#line 1340 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrVarListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], varLocal); }
-#line 4123 "lang11d_tab.cpp"
+#line 4123 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 207: /* argdecls: %empty  */
-#line 1343 "lang11d"
+#line 1343 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 4129 "lang11d_tab.cpp"
+#line 4129 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 208: /* argdecls: ARG vardeflist SEMICOLON  */
-#line 1345 "lang11d"
+#line 1345 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], NULL, NULL);
 				}
-#line 4137 "lang11d_tab.cpp"
+#line 4137 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 209: /* argdecls: ARG vardeflist0 ELLIPSIS name SEMICOLON  */
-#line 1349 "lang11d"
+#line 1349 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1], NULL);
 				}
-#line 4145 "lang11d_tab.cpp"
+#line 4145 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 210: /* argdecls: PIPE slotdeflist PIPE  */
-#line 1353 "lang11d"
+#line 1353 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], NULL, NULL);
 				}
-#line 4153 "lang11d_tab.cpp"
+#line 4153 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 211: /* argdecls: PIPE slotdeflist0 ELLIPSIS name PIPE  */
-#line 1357 "lang11d"
+#line 1357 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1], NULL);
 				}
-#line 4161 "lang11d_tab.cpp"
+#line 4161 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 212: /* argdecls: PIPE slotdeflist0 ELLIPSIS name COMMA name PIPE  */
-#line 1361 "lang11d"
+#line 1361 "lang/LangSource/Bison/lang11d"
                             {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-5], (PyrSlotNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1]);
 			    }
-#line 4169 "lang11d_tab.cpp"
+#line 4169 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 213: /* argdecls1: ARG vardeflist SEMICOLON  */
-#line 1367 "lang11d"
+#line 1367 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], NULL, NULL);
 				}
-#line 4177 "lang11d_tab.cpp"
+#line 4177 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 214: /* argdecls1: ARG vardeflist0 ELLIPSIS name SEMICOLON  */
-#line 1371 "lang11d"
+#line 1371 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1], NULL);
 				}
-#line 4185 "lang11d_tab.cpp"
+#line 4185 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 215: /* argdecls1: PIPE slotdeflist PIPE  */
-#line 1375 "lang11d"
+#line 1375 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], NULL, NULL);
 				}
-#line 4193 "lang11d_tab.cpp"
+#line 4193 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 216: /* argdecls1: PIPE slotdeflist0 ELLIPSIS name PIPE  */
-#line 1379 "lang11d"
+#line 1379 "lang/LangSource/Bison/lang11d"
                                 {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1], NULL);
 				}
-#line 4201 "lang11d_tab.cpp"
+#line 4201 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 217: /* argdecls1: PIPE slotdeflist0 ELLIPSIS name COMMA name PIPE  */
-#line 1383 "lang11d"
+#line 1383 "lang/LangSource/Bison/lang11d"
                             {
 					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-5], (PyrSlotNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1]);
 			    }
-#line 4209 "lang11d_tab.cpp"
+#line 4209 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 219: /* constdeflist: constdeflist optcomma constdef  */
-#line 1391 "lang11d"
+#line 1391 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4215 "lang11d_tab.cpp"
+#line 4215 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 220: /* constdef: rspec name EQUALSSIGN slotliteral  */
-#line 1395 "lang11d"
+#line 1395 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], yyvsp[-3]); }
-#line 4221 "lang11d_tab.cpp"
+#line 4221 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 221: /* slotdeflist0: %empty  */
-#line 1398 "lang11d"
+#line 1398 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 4227 "lang11d_tab.cpp"
+#line 4227 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 224: /* slotdeflist: slotdeflist optcomma slotdef  */
-#line 1404 "lang11d"
+#line 1404 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4233 "lang11d_tab.cpp"
+#line 4233 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 225: /* slotdef: name  */
-#line 1408 "lang11d"
+#line 1408 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL, 0); }
-#line 4239 "lang11d_tab.cpp"
+#line 4239 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 226: /* slotdef: name optequal slotliteral  */
-#line 1410 "lang11d"
+#line 1410 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], 0); }
-#line 4245 "lang11d_tab.cpp"
+#line 4245 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 227: /* slotdef: name optequal OPENPAREN exprseq CLOSEPAREN  */
-#line 1412 "lang11d"
+#line 1412 "lang/LangSource/Bison/lang11d"
                                 {
 					PyrParseNode* node = (PyrParseNode*)yyvsp[-1];
 					node->mParens = 1;
 					yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-4], node, 0);
 				}
-#line 4255 "lang11d_tab.cpp"
+#line 4255 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 228: /* vardeflist0: %empty  */
-#line 1419 "lang11d"
+#line 1419 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 4261 "lang11d_tab.cpp"
+#line 4261 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 231: /* vardeflist: vardeflist COMMA vardef  */
-#line 1425 "lang11d"
+#line 1425 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4267 "lang11d_tab.cpp"
+#line 4267 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 232: /* vardef: name  */
-#line 1429 "lang11d"
+#line 1429 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL, 0); }
-#line 4273 "lang11d_tab.cpp"
+#line 4273 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 233: /* vardef: name EQUALSSIGN expr  */
-#line 1431 "lang11d"
+#line 1431 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], 0); }
-#line 4279 "lang11d_tab.cpp"
+#line 4279 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 234: /* vardef: name OPENPAREN exprseq CLOSEPAREN  */
-#line 1433 "lang11d"
+#line 1433 "lang/LangSource/Bison/lang11d"
                                 {
 									PyrParseNode* node = (PyrParseNode*)yyvsp[-1];
 									node->mParens = 1;
 									yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-3], node, 0);
 								}
-#line 4289 "lang11d_tab.cpp"
+#line 4289 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 235: /* dictslotdef: exprseq COLON exprseq  */
-#line 1441 "lang11d"
+#line 1441 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4295 "lang11d_tab.cpp"
+#line 4295 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 236: /* dictslotdef: keybinop exprseq  */
-#line 1443 "lang11d"
+#line 1443 "lang/LangSource/Bison/lang11d"
                                 {
 					PyrParseNode* key = newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-1], NULL);
 					yyval = (intptr_t)linkNextNode(key, (PyrParseNode*)yyvsp[0]);
 				}
-#line 4304 "lang11d_tab.cpp"
+#line 4304 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 238: /* dictslotlist1: dictslotlist1 COMMA dictslotdef  */
-#line 1451 "lang11d"
+#line 1451 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4310 "lang11d_tab.cpp"
+#line 4310 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 239: /* dictslotlist: %empty  */
-#line 1454 "lang11d"
+#line 1454 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 4316 "lang11d_tab.cpp"
+#line 4316 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 242: /* rwslotdeflist: rwslotdeflist COMMA rwslotdef  */
-#line 1460 "lang11d"
+#line 1460 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4322 "lang11d_tab.cpp"
+#line 4322 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 243: /* rwslotdef: rwspec name  */
-#line 1464 "lang11d"
+#line 1464 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL, yyvsp[-1]); }
-#line 4328 "lang11d_tab.cpp"
+#line 4328 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 244: /* rwslotdef: rwspec name EQUALSSIGN slotliteral  */
-#line 1466 "lang11d"
+#line 1466 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], yyvsp[-3]); }
-#line 4334 "lang11d_tab.cpp"
+#line 4334 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 245: /* listlit: HASH OPENSQUARE literallistc CLOSESQUARE  */
-#line 1489 "lang11d"
+#line 1470 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLitListNode((yyloc), 0, (PyrParseNode*)yyvsp[-1]); }
-#line 4340 "lang11d_tab.cpp"
+#line 4340 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 246: /* listlit: HASH classname OPENSQUARE literallistc CLOSESQUARE  */
-#line 1491 "lang11d"
+#line 1472 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLitListNode((yyloc), (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]); }
-#line 4346 "lang11d_tab.cpp"
+#line 4346 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 247: /* listlit2: OPENSQUARE literallistc CLOSESQUARE  */
-#line 1495 "lang11d"
+#line 1476 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLitListNode((yyloc), 0, (PyrParseNode*)yyvsp[-1]); }
-#line 4352 "lang11d_tab.cpp"
+#line 4352 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 248: /* listlit2: classname OPENSQUARE literallistc CLOSESQUARE  */
-#line 1497 "lang11d"
+#line 1478 "lang/LangSource/Bison/lang11d"
                                 { yyval = (intptr_t)newPyrLitListNode((yyloc), (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]); }
-#line 4358 "lang11d_tab.cpp"
+#line 4358 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 249: /* literallistc: %empty  */
-#line 1500 "lang11d"
+#line 1481 "lang/LangSource/Bison/lang11d"
                   { yyval = 0; }
-#line 4364 "lang11d_tab.cpp"
+#line 4364 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 252: /* literallist1: literallist1 COMMA listliteral  */
-#line 1506 "lang11d"
+#line 1487 "lang/LangSource/Bison/lang11d"
                                         { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4370 "lang11d_tab.cpp"
+#line 4370 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 253: /* rwspec: %empty  */
-#line 1509 "lang11d"
+#line 1490 "lang/LangSource/Bison/lang11d"
            { yyval = rwPrivate; }
-#line 4376 "lang11d_tab.cpp"
+#line 4376 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 254: /* rwspec: LESSTHAN  */
-#line 1511 "lang11d"
+#line 1492 "lang/LangSource/Bison/lang11d"
                         { yyval = rwReadOnly; }
-#line 4382 "lang11d_tab.cpp"
+#line 4382 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 255: /* rwspec: READWRITEVAR  */
-#line 1513 "lang11d"
+#line 1494 "lang/LangSource/Bison/lang11d"
                         { yyval = rwReadWrite; }
-#line 4388 "lang11d_tab.cpp"
+#line 4388 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 256: /* rwspec: GREATERTHAN  */
-#line 1515 "lang11d"
+#line 1496 "lang/LangSource/Bison/lang11d"
                         { yyval = rwWriteOnly; }
-#line 4394 "lang11d_tab.cpp"
+#line 4394 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 257: /* rspec: %empty  */
-#line 1518 "lang11d"
+#line 1499 "lang/LangSource/Bison/lang11d"
            { yyval = rwPrivate; }
-#line 4400 "lang11d_tab.cpp"
+#line 4400 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 258: /* rspec: LESSTHAN  */
-#line 1520 "lang11d"
+#line 1501 "lang/LangSource/Bison/lang11d"
                         { yyval = rwReadOnly; }
-#line 4406 "lang11d_tab.cpp"
+#line 4406 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 259: /* integer: INTEGER  */
-#line 1523 "lang11d"
+#line 1504 "lang/LangSource/Bison/lang11d"
                   { yyval = zzval; }
-#line 4412 "lang11d_tab.cpp"
+#line 4412 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 260: /* integer: MINUS INTEGER  */
-#line 1525 "lang11d"
+#line 1506 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
 				SetRaw(&node->mSlot, -slotRawInt(&node->mSlot));
 				yyval = zzval;
 			}
-#line 4423 "lang11d_tab.cpp"
+#line 4423 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 261: /* floatr: SC_FLOAT  */
-#line 1533 "lang11d"
+#line 1514 "lang/LangSource/Bison/lang11d"
                    { yyval = zzval; }
-#line 4429 "lang11d_tab.cpp"
+#line 4429 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 262: /* floatr: MINUS SC_FLOAT  */
-#line 1535 "lang11d"
+#line 1516 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
 				SetRaw(&node->mSlot, -slotRawFloat(&node->mSlot));
 				yyval = zzval;
 			}
-#line 4440 "lang11d_tab.cpp"
+#line 4440 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 263: /* accidental: ACCIDENTAL  */
-#line 1543 "lang11d"
+#line 1524 "lang/LangSource/Bison/lang11d"
                         { yyval = zzval; }
-#line 4446 "lang11d_tab.cpp"
+#line 4446 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 264: /* accidental: MINUS ACCIDENTAL  */
-#line 1545 "lang11d"
+#line 1526 "lang/LangSource/Bison/lang11d"
                                 {
 					PyrSlotNode *node;
 					double intval, fracval;
@@ -4456,27 +4456,27 @@ yyreduce:
 					SetRaw(&node->mSlot, -intval + fracval);
 					yyval = zzval;
 				}
-#line 4460 "lang11d_tab.cpp"
+#line 4460 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 265: /* pie: PIE  */
-#line 1555 "lang11d"
+#line 1536 "lang/LangSource/Bison/lang11d"
                       { yyval = zzval; }
-#line 4466 "lang11d_tab.cpp"
+#line 4466 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 268: /* floatp: floatr pie  */
-#line 1561 "lang11d"
+#line 1542 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)yyvsp[-1];
 				SetRaw(&node->mSlot, slotRawFloat(&node->mSlot) * pi);
 			}
-#line 4476 "lang11d_tab.cpp"
+#line 4476 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 269: /* floatp: integer pie  */
-#line 1567 "lang11d"
+#line 1548 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *node;
 				double ival;
@@ -4484,159 +4484,159 @@ yyreduce:
 				ival = slotRawInt(&node->mSlot);
 				SetFloat(&node->mSlot, ival * pi);
 			}
-#line 4488 "lang11d_tab.cpp"
+#line 4488 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 270: /* floatp: pie  */
-#line 1575 "lang11d"
+#line 1556 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
 				SetFloat(&node->mSlot, pi);
 				yyval = zzval;
 			}
-#line 4499 "lang11d_tab.cpp"
+#line 4499 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 271: /* floatp: MINUS pie  */
-#line 1582 "lang11d"
+#line 1563 "lang/LangSource/Bison/lang11d"
                         {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
 				SetFloat(&node->mSlot, -pi);
 				yyval = zzval;
 			}
-#line 4510 "lang11d_tab.cpp"
+#line 4510 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 272: /* name: NAME  */
-#line 1590 "lang11d"
+#line 1571 "lang/LangSource/Bison/lang11d"
                        { yyval = zzval; }
-#line 4516 "lang11d_tab.cpp"
+#line 4516 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 273: /* name: WHILE  */
-#line 1591 "lang11d"
+#line 1572 "lang/LangSource/Bison/lang11d"
                                 { yyval = zzval; }
-#line 4522 "lang11d_tab.cpp"
+#line 4522 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 274: /* classname: CLASSNAME  */
-#line 1594 "lang11d"
+#line 1575 "lang/LangSource/Bison/lang11d"
                                     { yyval = zzval; }
-#line 4528 "lang11d_tab.cpp"
+#line 4528 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 275: /* primname: PRIMITIVENAME  */
-#line 1597 "lang11d"
+#line 1578 "lang/LangSource/Bison/lang11d"
                                         { yyval = zzval; }
-#line 4534 "lang11d_tab.cpp"
+#line 4534 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 276: /* trueobj: TRUEOBJ  */
-#line 1600 "lang11d"
+#line 1581 "lang/LangSource/Bison/lang11d"
                           { yyval = zzval; }
-#line 4540 "lang11d_tab.cpp"
+#line 4540 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 277: /* falseobj: FALSEOBJ  */
-#line 1603 "lang11d"
+#line 1584 "lang/LangSource/Bison/lang11d"
                            { yyval = zzval; }
-#line 4546 "lang11d_tab.cpp"
+#line 4546 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 278: /* nilobj: NILOBJ  */
-#line 1606 "lang11d"
+#line 1587 "lang/LangSource/Bison/lang11d"
                          { yyval = zzval; }
-#line 4552 "lang11d_tab.cpp"
+#line 4552 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 279: /* ascii: ASCII  */
-#line 1609 "lang11d"
+#line 1590 "lang/LangSource/Bison/lang11d"
                         { yyval = zzval; }
-#line 4558 "lang11d_tab.cpp"
+#line 4558 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 280: /* symbol: SYMBOL  */
-#line 1612 "lang11d"
+#line 1593 "lang/LangSource/Bison/lang11d"
                          { yyval = zzval; }
-#line 4564 "lang11d_tab.cpp"
+#line 4564 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 281: /* string: STRING  */
-#line 1615 "lang11d"
+#line 1596 "lang/LangSource/Bison/lang11d"
                          { yyval = zzval; }
-#line 4570 "lang11d_tab.cpp"
+#line 4570 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 282: /* pseudovar: PSEUDOVAR  */
-#line 1618 "lang11d"
+#line 1599 "lang/LangSource/Bison/lang11d"
                             { yyval = zzval; }
-#line 4576 "lang11d_tab.cpp"
+#line 4576 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 283: /* binop: BINOP  */
-#line 1621 "lang11d"
+#line 1602 "lang/LangSource/Bison/lang11d"
                 { yyval = zzval; }
-#line 4582 "lang11d_tab.cpp"
+#line 4582 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 284: /* binop: READWRITEVAR  */
-#line 1622 "lang11d"
+#line 1603 "lang/LangSource/Bison/lang11d"
                                { yyval = zzval; }
-#line 4588 "lang11d_tab.cpp"
+#line 4588 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 285: /* binop: LESSTHAN  */
-#line 1623 "lang11d"
+#line 1604 "lang/LangSource/Bison/lang11d"
                             { yyval = zzval; }
-#line 4594 "lang11d_tab.cpp"
+#line 4594 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 286: /* binop: GREATERTHAN  */
-#line 1624 "lang11d"
+#line 1605 "lang/LangSource/Bison/lang11d"
                                { yyval = zzval; }
-#line 4600 "lang11d_tab.cpp"
+#line 4600 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 287: /* binop: MINUS  */
-#line 1625 "lang11d"
+#line 1606 "lang/LangSource/Bison/lang11d"
                          { yyval = zzval; }
-#line 4606 "lang11d_tab.cpp"
+#line 4606 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 288: /* binop: MULTIPLY  */
-#line 1626 "lang11d"
+#line 1607 "lang/LangSource/Bison/lang11d"
                             { yyval = zzval; }
-#line 4612 "lang11d_tab.cpp"
+#line 4612 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 289: /* binop: ADD  */
-#line 1627 "lang11d"
+#line 1608 "lang/LangSource/Bison/lang11d"
                        { yyval = zzval; }
-#line 4618 "lang11d_tab.cpp"
+#line 4618 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 290: /* binop: PIPE  */
-#line 1628 "lang11d"
+#line 1609 "lang/LangSource/Bison/lang11d"
                         { yyval = zzval; }
-#line 4624 "lang11d_tab.cpp"
+#line 4624 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 291: /* keybinop: KEYBINOP  */
-#line 1631 "lang11d"
+#line 1612 "lang/LangSource/Bison/lang11d"
                     { yyval = zzval; }
-#line 4630 "lang11d_tab.cpp"
+#line 4630 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 294: /* curryarg: CURRYARG  */
-#line 1638 "lang11d"
+#line 1619 "lang/LangSource/Bison/lang11d"
                     { yyval =(intptr_t)newPyrCurryArgNode((yyloc)); }
-#line 4636 "lang11d_tab.cpp"
+#line 4636 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
 
-#line 4640 "lang11d_tab.cpp"
+#line 4640 "lang/LangSource/Bison/lang11d_tab.cpp"
 
       default: break;
     }
