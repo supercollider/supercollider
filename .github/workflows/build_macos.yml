@@ -58,7 +58,7 @@ jobs:
             extra-cmake-flags: "-D SYSTEM_PORTAUDIO=ON -D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
             ctest: true
 
-          - job-name: "arm64 shared libscsynth"
+          - job-name: "arm64 shared libscsynth unity build"
             os-version: "15"
             xcode-version: "16.0"
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
@@ -67,7 +67,7 @@ jobs:
             homebrew-packages: "qt@6 libsndfile readline"
             vcpkg-packages: ""
             vcpkg-triplet: ""
-            extra-cmake-flags: "-D LIBSCSYNTH=ON"
+            extra-cmake-flags: "-D LIBSCSYNTH=ON -D FINAL_BUILD=ON"
             ctest: false
 
     name: macOS ${{ matrix.job-name }}
