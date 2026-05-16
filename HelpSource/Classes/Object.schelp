@@ -569,6 +569,7 @@ argument:: selector
 A Symbol representing a method selector.
 argument:: pairs
 Array or List with key-value pairs.
+See link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs::.
 discussion::
 code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };

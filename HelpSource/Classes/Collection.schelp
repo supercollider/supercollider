@@ -7,6 +7,32 @@ DESCRIPTION::
 Collection is an abstract class. You do not create direct instances of Collection.
 There are many types of Collections including link::Classes/List::, link::Classes/Array::, link::Classes/Dictionary::, link::Classes/Bag::, link::Classes/Set::, link::Classes/SortedList::, etc. See link::Overviews/Collections:: for a complete class tree.
 
+note::
+Many subclasses of link::Classes/Collection:: support a shorthand syntax for placing key–value pairs directly inside their literal form.
+This syntax is distinct from link::Classes/Event:: literals and may be unfamiliar to new users. For example:
+
+code::
+// commonly used as an Array:
+[\freq: 440, \amp: 1]    // -> [\freq, 440, \amp, 1]
+
+// but also valid for other Collections:
+List[\freq: 440, \amp: 1]       // -> List[\freq, 440, \amp, 1]
+Set[\freq: 440, \amp: 1]        // -> Set[\freq, 440, \amp, 1]
+Bag[\freq: 440, \amp: 1]        // -> Bag[\freq, 440, \amp, 1]
+SortedList[\freq: 440, \amp: 1] // -> SortedList[\freq, 440, \amp, 1]
+SparseArray[\freq: 440, \amp: 1] // -> SparseArray[\freq, 440, \amp, 1]
+IdentitySet[\freq: 440, \amp: 1] // -> IdentitySet[\freq, 440, \amp, 1]
+...
+::
+
+Only expressions that form a valid key–value pair are interpreted this way.
+Expressions that do not form a pair (e.g., code::[\a: 3, \b]::) follow normal Collection parsing rules,
+and triplet forms such as code::[\a: 3: \b]:: will result in a syntax error.
+
+See link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs::
+::
+
+
 CLASSMETHODS::
 
 method::newFrom

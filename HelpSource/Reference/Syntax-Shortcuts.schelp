@@ -322,6 +322,7 @@ table::
 ## instead of writing: || you can write:
 ## code:: [\a, 1, \b, 2] :: || code:: [a: 1, b: 2] ::
 ::
+See link::Reference/Key-Value-Pairs:: and the note in link::Classes/Collection#description::.
 
 section:: Other shortcuts
 
