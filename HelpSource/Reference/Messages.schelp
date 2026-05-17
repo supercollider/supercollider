@@ -111,10 +111,17 @@ z = x.value(10, 5, 9);  // z is set to 15. (a is 10, b is 5, 9 is ignored)
 
 section:: Keyword Arguments and Positional Arguments
 
-Arguments to methods and functions may be specified either by position or by name.
-Arguments specified by position are called emphasis::positional arguments::, and are interpreted according to the order in which they are declared in the method or function definition.
-Arguments specified by name (followed by a colon) are called emphasis::keyword arguments::.
+Arguments to methods and functions may be specified either by position or by name:
+list::
+## Arguments specified by position are called emphasis::positional arguments::, and are interpreted according to the order in which they are declared in the method or function definition.
+## Arguments specified by name (followed by a colon) are called emphasis::keyword arguments::.
 Any argument may be passed as a keyword argument except for the receiver code::this::.
+
+note::
+These keyword arguments belong to the message-passing system, and should not be confused with the emphasis::arbitrary keyword arguments:: captured in Function definitions using code::|... args, kwargs|:: or code::|a, b ... args, kwargs|::.
+See link::Reference/Syntax-Shortcuts#arbitrary keyword arguments (kwargs)::
+::
+::
 
 Keyword arguments must come after any positional arguments, may be specified in any order among themselves, and once a keyword argument is used, no positional argument may follow.
 In other words, if you skip any argument defined before the one you want to specify, you must use keyword arguments. So once you use a keyword argument, all subsequent arguments must also be keyword arguments.
@@ -130,7 +137,9 @@ f = { | a | a };
 f.(1, a: 2, a: 3); // -> 3, the rightmost value wins
 ::
 
-For example, the code::ar:: class method of the SinOsc class takes arguments named freq, phase, mul, and add in that order. All of the following are legal calls to that method.
+For example, the code::ar:: class method of the link::Classes/SinOsc:: class takes arguments named code::freq::, code::phase::, code::mul::, and code::add:: in that order.
+All of the following are legal calls to that method.
+
 code::
 SinOsc.ar(800, pi, 0.2, 0); // all positional arguments: freq, phase, mul, add
 

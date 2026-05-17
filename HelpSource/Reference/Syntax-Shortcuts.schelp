@@ -64,12 +64,12 @@ note::
 See:
 list::
 ## link::Reference/Messages#Keyword Arguments and Positional Arguments::
-## link::Classes/FunctionDef#numArgs::
-## link::Classes/FunctionDef#numVars::
-## link::Classes/FunctionDef#varArgs::
-## link::Classes/FunctionDef#hasKwArgs::
-## link::Classes/FunctionDef#varArgsValue::
-## link::Classes/FunctionDef#.hasVarArgs::
+## link::Classes/FunctionDef#-numArgs::
+## link::Classes/FunctionDef#-numVars::
+## link::Classes/FunctionDef#-varArgs::
+## link::Classes/FunctionDef#-hasKwArgs::
+## link::Classes/FunctionDef#-varArgsValue::
+## link::Classes/FunctionDef#-hasVarArgs::
 ::
 ::
 
@@ -91,9 +91,15 @@ x = { |a, b ... rest| [a, b, rest] };
 x.(1, 2, 3, 4, 5);   // -> [ 1, 2, [ 3, 4, 5 ] ]
 ::
 
-subsubsection:: keyword arguments (kwargs)
+subsubsection:: arbitrary keyword arguments (kwargs)
 
-Use code::...args, kwargs:: to capture arbitrary keyword arguments that are not explicitly named. The keyword arguments are collected into a single link::Classes/Array:: instance of key-value pairs. Note that kwargs are only supported with the pipe notation (code:: | | ::), not with code:: arg ::.
+Use code::...args, kwargs:: to capture emphasis::arbitrary keyword arguments:: that are not explicitly named.
+These are often called emphasis::keyword arguments::, but they are different from the emphasis::keyword arguments messages used for declared arguments:: described in link::Reference/Messages#Keyword Arguments and Positional Arguments::.
+
+All arbitrary keyword arguments are collected into a single link::Classes/Array:: instance of key-value pairs.
+They are supported only with the pipe notation (code:: | | ::), not with code:: arg ::.
+
+The identifier for emphasis::arbitrary keyword arguments:: may be any variable name beginning with a lowercase letter, though code::kwargs:: is a common choice.
 
 code::
 // Capture arbitrary keyword arguments:
@@ -109,8 +115,8 @@ f.(1, 2, 3, 4, 5, 6, x: 7, y: 8);  // -> [ 1, 2, [ 3, 4, 5, 6 ], [ x, 7, y, 8 ] 
 note::
 See
 list::
-## link::Classes/Object#performList::
-## link::Classes/Object#performArgs::
+## link::Classes/Object#-performList::
+## link::Classes/Object#-performArgs::
 ::
 ::
 
