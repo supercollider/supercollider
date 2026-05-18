@@ -34,7 +34,7 @@ x.(b: 1)       // -> a: 0       b: 1 		 a - b = -1
 
 (See link::Overviews/SymbolicNotations#Where f is a function::.)
 
-This syntax uses the keyword argument message to set emphasis::declared arguments:: (see link::Reference/Messages#Keyword Arguments and Positional Arguments::).
+This syntax uses the keyword argument message to set link::Reference/Functions#declared arguments:: (see also link::Reference/Messages#Keyword Arguments and Positional Arguments::).
 It should not be confused with the key–value pair syntax used in link::Classes/Array::.
 
 By contrast, when link::Reference/Syntax-Shortcuts#arbitrary keyword arguments (kwargs):: are used, the caller supplies name–value pairs, and sclang collects them into a key–value array:

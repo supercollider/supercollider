@@ -73,7 +73,7 @@ list::
 ::
 ::
 
-subsubsection:: variable arguments (varargs)
+subsubsection:: positional variable arguments (varargs)
 
 Use code::...:: in function argument lists when the number of arguments is not fixed in advance. Arguments matched by code::...:: are collected into a single link::Classes/Array:: instance.
 
