@@ -56,15 +56,17 @@ Functions may take several kinds of arguments.
 SuperCollider language supports three categories of function arguments in the following order of an argument list:
 
 numberedlist::
-## Declared Arguments
+## link::#Declared Arguments::
 
 fixed, named arguments that may have default values.
 
-## Positional Variable Arguments
+## link::#Variadic Positional Arguments::
 
 a catch‑all for additional positional arguments.
 
-## Arbitrary Keyword Arguments
+
+
+## link::#Arbitrary Keyword Arguments::
 
 a catch‑all for additional keyword arguments.
 ::
@@ -75,7 +77,7 @@ The use of three arguments is often paired with link::Classes/Object#-performArg
 
 An argument list immediately follows the open curly bracket of a function definition. An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars. If a function takes no arguments, then the argument list may be omitted.
 
-While you can pick any name for the positional variable and arbitrary keyword arguments, they always refer to the unmatched positional and keyword arguments, so it is often best to name them code::args:: and code::kwargs::.
+While you can pick any name for the emphasis::variadic positional arguments:: and emphasis::arbitrary keyword arguments::, they always refer to the unmatched emphasis::variadic positional arguments:: and emphasis::arbitrary keyword arguments::, so it is often best to name them code::args:: and code::kwargs::.
 
 
 Names of arguments in the list may be initialized to a default value.
@@ -85,7 +87,7 @@ The following subsections describe each argument type in detail.
 
 subsection:: Declared Arguments
 
-Declared arguments are written first in the argument list.
+emphasis::Declared arguments:: are written first in the argument list.
 Names of arguments in the list may be initialized to a default value using the following syntax forms (literals or expressions):
 
 list::
@@ -105,7 +107,7 @@ code::{ |x = 1| ... } :: link::#[1]::
 code::{ |x = (10.rand)| ... } :: link::#[2]::
 ::
 
-Declared arguments behave differently depending on whether the default is a literal or an expression.
+emphasis::Declared arguments:: behave differently depending on whether the default is a literal or an expression.
 Literal defaults are stored in the link::Classes/FunctionDef::, while expression defaults are evaluated at call time only when the passed value is code::nil::.
 
 In general arguments may be initialized to literals or expressions, but in the case of link::Classes/Function#-play:: or link::Classes/SynthDef#-play::, they may only be initialized to literals.
@@ -210,8 +212,7 @@ code::
 
 subsection:: Variable Arguments
 
-Variable arguments are how functions catch an unknown number of arguments or keyword arguments.
-There are two possible variable arguments, the first for positional arguments, and second for keyword arguments.
+emphasis::Variable arguments:: are how functions catch an unknown number of arguments (link::#Variadic Positional Arguments#variadic positional arguments::) or optional keyword arguments (link::#Arbitrary Keyword Arguments#arbitrary keyword arguments::).
 They are marked by an ellipsis after any normal arguments and separated by a comma.
 
 You cannot reassign the value of the variable arguments at the call–site even if they share the same name:
@@ -224,44 +225,90 @@ f = { |...a, b| "a: %, b: %".format(a, b) };
 f.(a: 10, b: 20) // a: [], b: [a: 10, b: 20]
 ::
 
-subsubsection:: Positional Variable Arguments
+subsubsection:: Variadic Positional Arguments
 
-Positional variable arguments allow a function to catch an unknown number of positional arguments.
-They are written using an ellipsis code::...:: after any declared arguments.
+emphasis::Variadic positional arguments:: catch all remaining arguments in an link::Classes/Array:: and allow a function to catch an unknown number of positional arguments.
+They are written using an ellipsis code::...:: after any link::#Declared Arguments#declared arguments::.
+(See link::Reference/Syntax-Shortcuts#ellipsis in function arguments::.)
 
 The collected arguments are placed into an link::Classes/Array:::
 
 code::
 f = { |a ... args| "a: %, args: %".format(a, args) };
-f.(1, 2, 3);   // a: 1, args: [2, 3]
-f.(1);         // a: 1, args: []
-f.(a: 1);      // a: 1, args: []
-::
 
-A function may consist solely of variable positional arguments:
+f.(1, 2, 3, 4, 5);   // -> a: 1, args: [2, 3, 4, 5]
+f.(1, 2, 3);         // -> a: 1, args: [2, 3]
+f.(1);               // -> a: 1, args: []
+f.(a: 1);            // -> a: 1, args: []
+
+f.(a: 1, b: 2);
+// WARNING: keyword arg 'b' not found in call to function.
+// -> a: 1, args: []
+::
 
 code::
-g = { |...args| "args: %".format(args) };
+g = { |a, b ... rest| "a: %, b: %, rest: %".format(a, b, rest) };
 
-g.(1, 2, 3) // args: [1, 2, 3]
-g.() // args: []
+g.(1, 2, 3, 4, 5);   // -> a: 1, b: 2, rests: [3, 4, 5]
 ::
 
-Variable positional arguments always collect unmatched positional arguments, regardless of name.
+A function may consist solely of variadic positional arguments:
+
+code::
+h = { |...args| "args: %".format(args) };
+
+h.(1, 2, 3) // args: [1, 2, 3]
+h.(2, 3)    // args: [2, 3]
+h.()        // args: []
+::
+
+emphasis::Variadic positional arguments:: always collect unmatched positional arguments, regardless of name.
+
+note::
+See:
+list::
+## link::Reference/Messages#Keyword Argument Calls and Positional Argument Calls::
+## link::Classes/FunctionDef#-numArgs::
+## link::Classes/FunctionDef#-numVars::
+## link::Classes/FunctionDef#-varArgs::
+## link::Classes/FunctionDef#-varArgsValue::
+## link::Classes/FunctionDef#-hasVarArgs::
+::
+::
 
 subsubsection:: Arbitrary Keyword Arguments
 
-Arbitrary keyword arguments catches all keyword arguments.
-It puts them in an link::Classes/Array:: of key-value pairs.
+emphasis::Arbitrary keyword arguments:: catches all optional keyword arguments that are not explicitly named.
+(See link::Reference/Syntax-Shortcuts#ellipsis in function arguments::.)
+
+These are often called emphasis::keyword arguments::, but they are different from link::Reference/Messages#keyword argument calls#keyword argument calls::.
+
+They are supported only with the pipe notation (code:: | | ::), not with code:: arg ::.
+The identifier for emphasis::arbitrary keyword arguments:: may be any variable name beginning with a lowercase letter, though code::kwargs:: is a common choice.
+
+It puts them in an link::Classes/Array:: of link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key-value pairs:::
 
 code::
+// Capture arbitrary keyword arguments:
 f = { |...args, kwargs| "args: %, kwargs: %".format(args, kwargs) };
 
 f.(1, 2, 3)                     // args: [1, 2, 3], kwargs: []
-
 f.(a: 10)                       // args: [], kwargs: [a, 10]
-
 f.(1, 2, 3, meow: 10, woof: 20) // args: [1, 2, 3], kwargs: [meow, 10, woof, 20]
+
+// Named arguments are matched first; the rest go into args or kwargs:
+f = { |a, b ... args, kwargs| [a, b, args, kwargs] };
+f.(1, 2, 3, 4, x: 5, y: 6);        // -> [ 1, 2, [ 3, 4 ], [ x, 5, y, 6 ] ]
+f.(1, 2, 3, 4, 5, 6, x: 7, y: 8);  // -> [ 1, 2, [ 3, 4, 5, 6 ], [ x, 7, y, 8 ] ]
+::
+
+note::
+See
+list::
+## link::Classes/FunctionDef#-hasKwArgs::
+## link::Classes/Object#-performList::
+## link::Classes/Object#-performArgs::
+::
 ::
 
 section:: Variables

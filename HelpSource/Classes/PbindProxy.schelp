@@ -17,7 +17,7 @@ a.set(\note, Pseq([0, 6, 10]));
 a.stop;
 ::
 
-It also supports keyword argument syntax:
+It also supports link::Reference/Messages#keyword argument calls#keyword argument call:: syntax:
 
 code::
 a = PbindProxy(note: Pseq([0, 7, 9]), dur: 0.2).play;

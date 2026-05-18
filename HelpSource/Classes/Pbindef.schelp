@@ -16,7 +16,7 @@ code::
 Pbindef(\x, \note, Pseq([0, 7, 9]), \dur, 0.2).play;
 ::
 
-It also supports keyword argument syntax:
+It also supports link::Reference/Messages#keyword argument calls#keyword argument call:: syntax:
 
 code::
 Pbindef(\x, note: Pseq([0, 7, 9]), dur: 0.2).play;

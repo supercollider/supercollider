@@ -41,8 +41,8 @@ subsection::Adding values into event patterns (Or, "Pattern Composition")
 link::Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns::
 
 definitionList::
-## code::Pbindf(pattern, pairs):: || Adds new key-value pairs onto a pre-existing Pbind-style pattern.
-## code::Pchain(patterns):: || Chains separate Pbind-style patterns together, so that all their key-value pairs go into the same event.
+## code::Pbindf(pattern, pairs):: || Adds new link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key-value pairs:: onto a pre-existing Pbind-style pattern.
+## code::Pchain(patterns):: || Chains separate Pbind-style patterns together, so that all their link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key-value pairs:: go into the same event.
 ::
 
 subsection::Parallelizing event patterns

@@ -17,27 +17,27 @@ See link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs:: for 
 
 note::
 
-link::Classes/Function:: calls also allow a syntax using keyword argument messages that resembles key–value pairs. For example:
+link::Classes/Function:: calls also allow a syntax using link::Reference/Messages#keyword argument calls#keyword argument calls:: that resembles key–value pairs. For example:
 
 code::
 x = { |a = 0, b = 0| "a: % b: % \t\t a - b = %".format(a.asString.padRight(7, " "), b, a - b) };
 
-// calling with positional arguments:
+// positional argument calls:
 x.(1, 2)       // -> a: 1       b: 2 		 a - b = -1
 x.([1, 2], 3)  // -> a: [1, 2]  b: 3 		 a - b = [-2, -1]
 x.(*[1, 2])    // -> a: 1       b: 2 		 a - b = -1
 
-// calling with keyword arguments (key–value pairs):
+// keyword argument calls (key–value pairs):
 x.(b: 1, a: 2) // -> a: 2       b: 1 		 a - b = 1
 x.(b: 1)       // -> a: 0       b: 1 		 a - b = -1
 ::
 
 (See link::Overviews/SymbolicNotations#Where f is a function::.)
 
-This syntax uses the keyword argument message to set link::Reference/Functions#declared arguments:: (see also link::Reference/Messages#Keyword Arguments and Positional Arguments::).
+This syntax uses the link::Reference/Messages#keyword argument calls#keyword argument calls:: to set link::Reference/Functions#declared arguments::.
 It should not be confused with the key–value pair syntax used in link::Classes/Array::.
 
-By contrast, when link::Reference/Syntax-Shortcuts#arbitrary keyword arguments (kwargs):: are used, the caller supplies name–value pairs, and sclang collects them into a key–value array:
+By contrast, when link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments:: are used, the caller supplies name–value pairs, and sclang collects them into a key–value array:
 
 code::
 f = { |a ...args, kwargs| "a: %;\t args: %;\t kwargs: %".format(a, args, kwargs) }
@@ -46,7 +46,7 @@ f.("declared arg", "variable arg", x:"kwarg1", y:"kwarg1")
 // -> a: declared arg;	 args: [variable arg];	 kargs: [x, kwarg1, y, kwarg1]
 ::
 
-Arbitrary keyword arguments (code::kwargs::) are internally represented as key–value arrays.
+link::Reference/Functions#Arbitrary Keyword Arguments#Arbitrary keyword arguments:: are internally represented as key–value arrays.
 ::
 
 To make it easy to translate between these purposes and representations, there is a uniform set of methods:

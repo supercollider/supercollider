@@ -7,7 +7,7 @@ section::What's that Pbind thing?
 
 Some of the examples in the last tutorial played notes using Pbind, and you might be wondering how it works in general and what else you can do with it.
 
-In the most general sense, link::Classes/Pbind:: is just a way to give names to values coming out of the types of patterns we just saw. When you ask a Pbind stream for its next value, the result is an object called an link::Classes/Event::. Like a link::Classes/Dictionary:: (which is a superclass of Event), an event is a set of "key-value pairs": each value is named by a key.
+In the most general sense, link::Classes/Pbind:: is just a way to give names to values coming out of the types of patterns we just saw. When you ask a Pbind stream for its next value, the result is an object called an link::Classes/Event::. Like a link::Classes/Dictionary:: (which is a superclass of Event), an event is a set of "link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key-value pairs::": each value is named by a key.
 
 code::
 e = (freq: 440, dur: 0.5);	// an Event

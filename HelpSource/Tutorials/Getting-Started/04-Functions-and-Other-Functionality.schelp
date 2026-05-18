@@ -101,7 +101,7 @@ f.value(5, 3);
 
 Arguments are declared at the beginning of the Function, using the keyword code::'arg'::. You can then refer to them just like variables. When you call value on a Function, you can pass in arguments, in order, by putting them in parentheses: code::someFunc.value(arg1, arg2)::. This is the same with any method that takes arguments, not just value.
 
-You can specify different orders by using what are called keyword arguments:
+You can specify different orders by using what are called using link::Reference/Messages#keyword argument calls#keyword argument calls:::
 
 code::
 (
