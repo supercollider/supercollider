@@ -395,9 +395,9 @@ if(APPLE)
 
 elseif(WIN32)
 
-    if(NOT MSVC)
+    if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
-    endif(NOT MSVC)
+    endif()
 
     if(MSYS)
       add_custom_command(TARGET SuperCollider
