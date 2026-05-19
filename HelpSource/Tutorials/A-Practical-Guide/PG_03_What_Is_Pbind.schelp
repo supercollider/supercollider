@@ -197,7 +197,7 @@ section::Rest events
 Beginning with version 3.5, rests may be indicated using instances of link::Classes/Rest::.
 
 list::
-## Rests may be given in any Pbind key-value pair. (Previously, rests could be indicated only in \type, \degree, \note, \midinote or \freq.)
+## Rests may be given in any Pbind link::Reference/Key-Value-Pairs##key-value pair::. (Previously, rests could be indicated only in \type, \degree, \note, \midinote or \freq.)
 ## A rest has a value, e.g. code::Rest(0.5)::, and will pass transparently through calculations.
 ## Addresses some problems with the former convention (to be discussed in brief below).
 ::

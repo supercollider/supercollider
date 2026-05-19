@@ -520,7 +520,9 @@ a.performList(\value, [1, 2, 3]);
 ::
 
 method::performArgs
-Like link::#-perform::, but allows you to pass an link::Classes/Array:: of link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key-value pairs:: of link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::.
+Like link::#-perform::, but allows you to pass an link::Classes/Array:: of
+link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key–value pairs::
+representing link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::.
 Useful in link::#-doesNotUnderstand:: and other places where you might accept a variety of link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::.
 
 argument::selector
