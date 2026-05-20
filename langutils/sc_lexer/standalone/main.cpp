@@ -2,6 +2,7 @@
 #include "text_location.hpp"
 #include <cstdlib>
 #include <cstring>
+#include <ios>
 #include <iostream>
 #include <lexer.hpp>
 #include <sstream>
@@ -41,7 +42,7 @@ int main(int argc, char* argv[]) {
         ss << ", ";
         ss << "\"Text\": ";
         ss << "\"";
-        ss.write(ptr, sz);
+        ss.write(ptr, static_cast<std::streamsize>(sz));
         ss << "\"},\n";
     }
     ss << "}\n";

@@ -36,7 +36,7 @@ struct TypeAndLocationAction {
 
 struct TypeOnlyAction {
     using Output = TokenType;
-    template <TokenType type> std::optional<Output> process(SourceCodeRange loc) { return { type }; }
+    template <TokenType type> std::optional<Output> process(SourceCodeRange) { return { type }; }
 };
 
 }
@@ -203,7 +203,7 @@ decltype(auto) lexer_digits(CodePointStream& stream, Action& action, SourceCodeL
         [[fallthrough]];
     case 'E': {
         stream.advance(); // drop e
-        const auto has_sign = stream.peek_advance_if('+', '-');
+        stream.peek_advance_if('+', '-');
         const auto count = stream.advance_while_count([](auto c) { return is_numeric(c); });
         if (count == 0)
             return action.template process<TokenType::ErMissingExponent>({ token_start, stream.end_token() });
@@ -218,7 +218,7 @@ decltype(auto) lexer_digits(CodePointStream& stream, Action& action, SourceCodeL
         stream.advance_while(is_numeric);
         if (const auto e = stream.peek(); e == 'e' || e == 'E') {
             stream.advance(); // drop e
-            const auto has_sign = stream.peek_advance_if('+', '-');
+            stream.peek_advance_if('+', '-');
             const auto count = stream.advance_while_count([](auto c) { return is_numeric(c); });
             if (count == 0)
                 return action.template process<TokenType::ErMissingExponent>({ token_start, stream.end_token() });
@@ -354,7 +354,7 @@ next_token : {
             stream.advance();
             CodePoint it_1 = 0, it = 0;
             size_t level = 1;
-            const auto end = stream.advance_while([&](auto c) {
+            stream.advance_while([&](auto c) {
                 it_1 = it;
                 it = c;
                 if (it_1 == '/' && it == '*') {
@@ -380,7 +380,7 @@ next_token : {
 
         // '//'
         else if (p == '/') {
-            const auto end = stream.advance_while([](auto c) { return !is_newline(c); });
+            stream.advance_while([](auto c) { return !is_newline(c); });
             return_orelse_next_token(action.template process<TokenType::Comment>({ token_start, stream.end_token() }));
         }
 

@@ -4,10 +4,10 @@
 #include <optional>
 namespace sc::lex::utils {
 
-CodePointIterator::CodePointIterator(const char* txt_start, const char* txt_end, const char* current_location) noexcept:
-    txt_start(txt_start),
-    txt_end(txt_end),
-    txt_iter(current_location) {}
+CodePointIterator::CodePointIterator(const char* text_start, const char* text_end, const char* cur_location) noexcept:
+    txt_start(text_start),
+    txt_end(text_end),
+    txt_iter(cur_location) {}
 
 std::optional<CodePointIterator> CodePointIterator::make(const char* txt_start, const char* txt_end,
                                                          const char* current_location) {
@@ -23,7 +23,7 @@ std::optional<CodePointIterator> CodePointIterator::make(const char* txt_start, 
 std::optional<CodePoint> CodePointIterator::forwards() noexcept {
     if (txt_iter >= txt_end)
         return std::nullopt;
-    const auto [cp, sz] = utf8_sequence_to_codepoint(txt_iter, txt_end - txt_iter);
+    const auto [cp, sz] = utf8_sequence_to_codepoint(txt_iter, static_cast<std::size_t>(txt_end - txt_iter));
     if (cp == invalid_utf8_flag)
         return std::nullopt;
 
@@ -79,7 +79,7 @@ std::optional<LineIter::Result> LineIter::forwards() noexcept {
         current_line += 1; // assumming we don't overflow.
         return { { start, sz, current_line - 1, ends_in_newline_char } };
     }
-};
+}
 
 std::optional<LineIter::Result> LineIter::backwards() noexcept {
     if (previous_dir == Forwards) {}
@@ -102,6 +102,5 @@ std::optional<LineIter::Result> LineIter::backwards() noexcept {
             current_line -= 1; // avoid underflow if we are on line zero already.
         return { { start, sz, current_line + 1, ends_in_newline_char } };
     }
-};
-
+}
 }

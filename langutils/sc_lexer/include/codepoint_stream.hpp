@@ -18,7 +18,7 @@ template <std::size_t N> struct Peek {
         std::array<CodePoint, M> out;
         std::copy(characters.data(), characters.data() + characters.size(), out.data());
         return { out };
-    };
+    }
 
     [[nodiscard]] constexpr CodePoint operator[](std::size_t i) const { return characters[i]; }
 
@@ -46,7 +46,7 @@ class CodePointStream {
     } state {};
 
 public:
-    CodePointStream(const char* source, std::size_t source_length, FileCodeLocation source_start_in_file);
+    CodePointStream(const char* src, std::size_t src_len, FileCodeLocation src_start_in_file);
     CodePointStream() = delete;
     CodePointStream(CodePointStream&&) noexcept = default;
     CodePointStream(const CodePointStream&) = default;
@@ -118,7 +118,7 @@ public:
             return true;
         }
         return false;
-    };
+    }
 
     // Like peek_advance_if, but must match all in order rather than just one.
     // Advances stream by sizeof...(C)
@@ -131,9 +131,10 @@ public:
         if (!valid)
             return false;
 
-        ((advance(), cs), ...);
+        // Cast to void to indicate we are discarding the value.
+        ((advance(), void(cs)), ...);
         return true;
-    };
+    }
 
 
     // Null terminator is NEVER accepted as a predicate.
@@ -144,7 +145,7 @@ public:
         std::size_t i { 0 };
         for (auto c = peek(); discard_null_then_predicate(c); c = advance_and_peek(), ++i) {}
         return i;
-    };
+    }
 
     template <typename Predicate> SourceCodeLocation advance_while(Predicate&& predicate) {
         advance_while_count(std::forward<Predicate>(predicate));

@@ -2,19 +2,19 @@
 
 namespace sc::lex {
 
-CodePointStream::CodePointStream(const char* source, std::size_t source_length, FileCodeLocation source_start_in_file):
-    source_start_in_file(source_start_in_file),
-    source(source),
-    source_length(source_length) {}
+CodePointStream::CodePointStream(const char* src, std::size_t src_len, FileCodeLocation src_start_in_file):
+    source_start_in_file(src_start_in_file),
+    source(src),
+    source_length(src_len) {}
 
 
-[[nodiscard]] FileCodeRange CodePointStream::source_to_file(const SourceCodeRange& source) const {
-    return FileCodeRange { source_to_file(source.begin), source_to_file(source.end) };
+[[nodiscard]] FileCodeRange CodePointStream::source_to_file(const SourceCodeRange& src) const {
+    return FileCodeRange { source_to_file(src.begin), source_to_file(src.end) };
 }
 
-[[nodiscard]] FileCodeLocation CodePointStream::source_to_file(const SourceCodeLocation& source) const {
-    return { source.absolute + source_start_in_file.absolute, source.lineNumber + source_start_in_file.lineNumber,
-             source.lineNumber == 0 ? source.column + source_start_in_file.column : source.column };
+[[nodiscard]] FileCodeLocation CodePointStream::source_to_file(const SourceCodeLocation& src) const {
+    return { src.absolute + source_start_in_file.absolute, src.lineNumber + source_start_in_file.lineNumber,
+             src.lineNumber == 0 ? src.column + source_start_in_file.column : src.column };
 }
 
 [[nodiscard]] std::tuple<SourceCodeLocation, CodePoint> CodePointStream::start_token() {

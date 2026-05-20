@@ -29,12 +29,12 @@ public:
     void jump_backward(CodePoint cp) noexcept { txt_iter -= codepoint_size(cp); }
 
     [[nodiscard]] auto current_codepoint() const noexcept {
-        return utf8_sequence_to_codepoint(txt_iter, txt_end - txt_iter);
+        return utf8_sequence_to_codepoint(txt_iter, static_cast<std::size_t>(txt_end - txt_iter));
     }
     [[nodiscard]] const char* current_location() const noexcept { return txt_iter; }
 
 private:
-    CodePointIterator(const char* txt_start, const char* txt_end, const char* current_location) noexcept;
+    CodePointIterator(const char* text_start, const char* text_end, const char* cur_location) noexcept;
 
     const char* const txt_start;
     const char* const txt_end;
