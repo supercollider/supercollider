@@ -75,7 +75,7 @@ note::
 The use of three arguments is often paired with link::Classes/Object#-performArgs::.
 ::
 
-An argument list immediately follows the open curly bracket of a function definition. An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars. If a function takes no arguments, then the argument list may be omitted.
+An argument list immediately follows the open curly bracket of a function definition. An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars. If a function takes no arguments, then the argument list must be omitted.
 
 While you can pick any name for the emphasis::variadic positional arguments:: and emphasis::arbitrary keyword arguments::, they always refer to the unmatched emphasis::variadic positional arguments:: and emphasis::arbitrary keyword arguments::, so it is often best to name them code::args:: and code::kwargs::.
 
