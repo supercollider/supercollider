@@ -404,6 +404,7 @@ if(MSVC)
     /wd4101 # unreferenced local variable
     /wd4102 # unreferenced label
     /wd4200 # nonstandard extension used: zero-sized array in struct/union
+	/diagnostics:caret # better diagnostics, shows source code location in error repot
   )
 
 # this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error
