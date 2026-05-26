@@ -39,26 +39,63 @@ else()
   set(ide_name scide)
 endif()
 
+set(AdditionalBundleSources "")
+
 if(APPLE)
-    if(NOT SC_SYMLINK_CLASSLIB)
-        foreach(file ${ClassLibrary} ${HelpSource})
-            string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
-            get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
-            set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
-        endforeach()
+    if(SC_SYMLINK_CLASSLIB)
+        message(FATAL_ERROR "macOS .app bundle distribution requires SC_SYMLINK_CLASSLIB=OFF (no source-tree symlinks).")
     endif()
 
-    set(AdditionalStaticFiles ${Examples} ${Sounds})
-    foreach(file ${AdditionalStaticFiles})
-        string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
-        get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
-        set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
+    if(NOT SC_SYMLINK_CLASSLIB)
+        foreach(file IN LISTS ClassLibrary)
+            file(RELATIVE_PATH rel "${CMAKE_SOURCE_DIR}" "${file}")
+            get_filename_component(rel_dir "${rel}" DIRECTORY)
+            set_source_files_properties("${file}" PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources/${rel_dir}"
+            )
+        endforeach()
+
+        if(INSTALL_HELP)
+            foreach(file IN LISTS HelpSource)
+                file(RELATIVE_PATH rel "${CMAKE_SOURCE_DIR}" "${file}")
+                get_filename_component(rel_dir "${rel}" DIRECTORY)
+                set_source_files_properties("${file}" PROPERTIES
+                    MACOSX_PACKAGE_LOCATION "Resources/${rel_dir}"
+                )
+            endforeach()
+
+            foreach(file IN LISTS Examples)
+                file(RELATIVE_PATH exRel "${CMAKE_SOURCE_DIR}/examples" "${file}")
+                get_filename_component(exRelDir "${exRel}" DIRECTORY)
+
+                if(exRelDir STREQUAL "")
+                    set(exDest "Resources/HelpSource/examples")
+                else()
+                    set(exDest "Resources/HelpSource/examples/${exRelDir}")
+                endif()
+
+                set_source_files_properties("${file}" PROPERTIES
+                    MACOSX_PACKAGE_LOCATION "${exDest}"
+                )
+            endforeach()
+        endif()
+    endif()
+
+    foreach(file IN LISTS Sounds)
+        file(RELATIVE_PATH rel "${CMAKE_SOURCE_DIR}" "${file}")
+        get_filename_component(rel_dir "${rel}" DIRECTORY)
+        set_source_files_properties("${file}" PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Resources/${rel_dir}"
+        )
     endforeach()
 
-    set( Icons ../../icons/sc_ide.icns)
-    set_source_files_properties(../../icons/sc_ide.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set(Icons "${CMAKE_SOURCE_DIR}/icons/sc_ide.icns")
+    set_source_files_properties("${Icons}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
-    set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
+    set(AdditionalBundleSources ${ClassLibrary} ${BundleResources} ${Sounds} ${Icons})
+    if(INSTALL_HELP AND NOT SC_SYMLINK_CLASSLIB)
+        list(APPEND AdditionalBundleSources ${HelpSource} ${Examples})
+    endif()
 endif()
 
 set ( ide_moc_hdr
@@ -259,7 +296,7 @@ add_custom_target( update_ide_translations
 qt_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
 qt_wrap_ui( ide_forms_src ${ide_forms} )
 qt_add_resources( ide_rcc resources.qrc )
-qt_add_translation( translations ${translation_src} ${native_translation_src} ) 
+qt_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
@@ -275,7 +312,6 @@ endif()
 if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
 endif(WIN32)
-
 
 # final builds of the IDE seem to be broken atm
 if(0 AND FINAL_BUILD)
@@ -395,9 +431,9 @@ if(APPLE)
 
 elseif(WIN32)
 
-    if(NOT MSVC)
+    if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
-    endif(NOT MSVC)
+    endif()
 
     if(MSYS)
       add_custom_command(TARGET SuperCollider
@@ -517,10 +553,10 @@ if(APPLE OR WIN32)
         if(SC_CODESIGN_AFTER_DEPLOY)
             string(APPEND VERIFY_CMD "
                 message(STATUS \"Running ad hoc code signing\")
-                execute_process(COMMAND 
+                execute_process(COMMAND
                     codesign --force --deep --sign - ${CONTENTS_DIR}/MacOS/SuperCollider
                 )
-                execute_process(COMMAND 
+                execute_process(COMMAND
                     sh -c \
                     \"find ${CONTENTS_DIR}/MacOS ${CONTENTS_DIR}/Frameworks \
                     ${CONTENTS_DIR}/Resources ${CONTENTS_DIR}/Resources/plugins \
@@ -535,7 +571,7 @@ if(APPLE OR WIN32)
                     \\\\) \
                     -exec codesign --force --sign - {} \\\;\"
                 )
-                execute_process(COMMAND 
+                execute_process(COMMAND
                     codesign --force --sign - ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app
                 )
             ")
@@ -582,7 +618,6 @@ endif()
 if (LINUX)
   install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
 endif()
-
 
 set_property(TARGET libscide PROPERTY FOLDER Libs)
 set_property(TARGET update_ide_translations PROPERTY FOLDER Util)

@@ -264,7 +264,7 @@ Platform {
 	}
 
 	*exampleDir {
- 		^(Platform.resourceDir +/+ "examples")
+ 		^(Platform.resourceDir +/+ "HelpSource" +/+ "examples")
  	}
 }
 

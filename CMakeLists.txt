@@ -138,6 +138,13 @@ endif()
 
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 
+if(APPLE AND SC_IDE AND SC_SYMLINK_CLASSLIB)
+    message(FATAL_ERROR
+        "For macOS .app bundle distribution (SC_IDE=ON), SC_SYMLINK_CLASSLIB must be OFF. "
+        "Symlinks would make the app depend on the source tree."
+    )
+endif()
+
 if(LINUX)
     option(SC_CLANG_USES_LIBSTDCPP "Use libstdc++ with clang instead of libc++" ON)
 else()
@@ -265,7 +272,7 @@ if(SYSTEM_BOOST)
 else()
 	# bundled boost is set up in external_libraries/CMakeLists.txt
 	# here we just set some global definitions
-	if(WIN32)    
+	if(WIN32)
 		#avoid unnecesary autolink
 		add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 		# use session manager to set shared memory location, see issue 2409
@@ -274,7 +281,7 @@ else()
 		add_definitions(-DBOOST_ASIO_DISABLE_VISIBILITY -DBOOST_DISABLE_EXPLICIT_SYMBOL_VISIBILITY)
 	endif()
 	add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
-endif() 
+endif()
 
 if(SYSTEM_YAMLCPP)
   find_package(YamlCpp)
@@ -404,6 +411,7 @@ if(MSVC)
     /wd4101 # unreferenced local variable
     /wd4102 # unreferenced label
     /wd4200 # nonstandard extension used: zero-sized array in struct/union
+	/diagnostics:caret # better diagnostics, shows source code location in error repot
   )
 
 # this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error
@@ -428,15 +436,13 @@ endif()
 add_subdirectory(tools)
 add_subdirectory(external_libraries)
 
-
 configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/common)
 
-file(GLOB_RECURSE ClassLibrary SCClassLibrary/*sc)
-file(GLOB_RECURSE HelpSource   HelpSource/*)
-file(GLOB_RECURSE Sounds       sounds/*)
-file(GLOB_RECURSE Examples     examples/*)
-
+file(GLOB_RECURSE ClassLibrary LIST_DIRECTORIES false "${CMAKE_SOURCE_DIR}/SCClassLibrary/*.sc")
+file(GLOB_RECURSE HelpSource   LIST_DIRECTORIES false "${CMAKE_SOURCE_DIR}/HelpSource/*")
+file(GLOB_RECURSE Sounds       LIST_DIRECTORIES false "${CMAKE_SOURCE_DIR}/sounds/*")
+file(GLOB_RECURSE Examples     LIST_DIRECTORIES false "${CMAKE_SOURCE_DIR}/examples/*")
 
 if(APPLE)
   include(cmake_modules/MacAppFolder.cmake)
@@ -495,14 +501,16 @@ if(APPLE)
 		endforeach(onedirectory)
 
 		message(STATUS "Will create symlink of SCClassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary" )
-		if(NOT EXISTS "{CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
-			install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary)" )
-		endif()
+		install(CODE [==[
+			execute_process(COMMAND "${CMAKE_COMMAND}" -E make_directory "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
+		]==])
+
 		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
 		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
 		foreach(onedirectory ${classlibraryfolders})
-			install( CODE
-				"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
+			install(CODE [==[
+				execute_process(COMMAND ln -shF "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory}" "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory}")
+			]==])
 		endforeach(onedirectory)
 	endif()
 else()
@@ -515,10 +523,20 @@ else()
 endif()
 
 if(NOT APPLE)
-	install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
-	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
-elseif(APPLE)
-	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
+  install(DIRECTORY sounds DESTINATION ${auxresourcesdir})
+endif()
+
+set(SC_HELPSOURCE_INSTALL_DIR "${auxresourcesdir}/HelpSource")
+
+if(INSTALL_HELP AND NOT APPLE)
+  install(DIRECTORY HelpSource
+    DESTINATION ${auxresourcesdir}
+    PATTERN "*~" EXCLUDE
+    PATTERN "*#" EXCLUDE
+  )
+  install(DIRECTORY examples
+    DESTINATION "${auxresourcesdir}/HelpSource"
+  )
 endif()
 
 if (WIN32)
@@ -548,24 +566,6 @@ else()
 endif()
 
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
-
-if(INSTALL_HELP)
-	if(SC_SYMLINK_CLASSLIB AND APPLE)
-		message(STATUS "Will create symlink of HelpSource to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
-		if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
-			message(FATAL_ERROR "Symlinking will fail ! HelpSource folder already exists, please delete it first." )
-		endif()
-		install( CODE
-					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
-	elseif(NOT APPLE)
-		install(DIRECTORY HelpSource
-			DESTINATION ${auxresourcesdir}
-			PATTERN "*~" EXCLUDE
-			PATTERN "*#" EXCLUDE
-		)
-	endif()
-endif()
-
 
 #############################################
 #
