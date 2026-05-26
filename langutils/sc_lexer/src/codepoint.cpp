@@ -11,9 +11,9 @@ namespace sc::lex {
         utf8proc_iterate(reinterpret_cast<const std::uint8_t*>(utf8), static_cast<utf8proc_ssize_t>(len), &cp);
     const auto width = static_cast<std::uint8_t>(width_or_error);
     if (width_or_error < 0)
-        // Note: all these '0' need to be initalised like std::uint8_t{0} because MSVC thinks '0' is an int and can't
+        // Note: all these '1' need to be initalised like std::uint8_t{1} because MSVC thinks '1' is an int and can't
         // see the conversion is fine.
-        return { invalid_utf8_flag, std::uint8_t { 0 } };
+        return { invalid_utf8_flag, std::uint8_t { 1 } };
     else
         return { cp, width };
 }
@@ -31,14 +31,14 @@ namespace sc::lex {
         --c;
         ++count;
         if (c < start)
-            return { invalid_utf8_flag, std::uint8_t { 0 } };
+            return { invalid_utf8_flag, std::uint8_t { 1 } };
     }
 
     CodePoint cp;
     const auto width_or_error = utf8proc_iterate(c, count, &cp);
     const auto width { static_cast<std::uint8_t>(width_or_error) };
     if (width_or_error < 0)
-        return { invalid_utf8_flag, std::uint8_t { 0 } };
+        return { invalid_utf8_flag, std::uint8_t { 1 } };
     else
         return { cp, width };
 }
