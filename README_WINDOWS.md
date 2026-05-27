@@ -52,48 +52,24 @@ This is the Windows version of James McCartney's SuperCollider synthesis engine
 (`scsynth`) and programming language (`sclang`), distributed together with a
 dedicated IDE (`scide`).
 
-SuperCollider's homepage is:
-
-    http://supercollider.github.io/
+SuperCollider's homepage is http://supercollider.github.io/.
 
 Binaries of release-versions and pre-release snapshots are available as
-GitHub releases now:
-
-    https://github.com/supercollider/supercollider/releases
+GitHub releases at https://github.com/supercollider/supercollider/releases.
 
 You can also download a bleeding-edge build of the latest development branch!
-Builds are available for [32-bit][bleeding edge 32 bit] and
-[64-bit][bleeding edge 64 bit] Windows.
+Builds are available for [x86_64][bleeding edge 64 bit] Windows.
 
-This page also provides snapshots of the source version used for the release.
-Note though, that this automated Github service misses out on the submodules.
-For actual development work you should always use SuperCollider's Github repo:
-
-    https://github.com/supercollider/supercollider
-
-Older releases and snapshots of the source code used for them are available
-from Sourceforge:
-
-    http://sourceforge.net/projects/supercollider/files/?source=navbar
-
-There is an online version of SuperCollider Help:
-
-    http://doc.sccode.org/Help.html
-
-SC has a life in social media too. Visit a lively community at sccode.org:
-
-    http://sccode.org/
+There is an online version of SuperCollider Help: http://doc.sccode.org/Help.html.
 
 Listen to music composed with SuperCollider on SoundCloud:
-
-    https://soundcloud.com/groups/supercollider
+https://soundcloud.com/groups/supercollider
 
 There are several SuperCollider Facebook groups, some SuperCollider tweets, e.g.
-@sc140tweets. In addition you are strongly encouraged to subscribe to the two SC
-mailing lists 'sc-users' and 'sc-dev'. You will get friendly and qualified
-replies there, as well as interest, and encouragement for your projects:
-
-    http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
+@sc140tweets. Visit the forum at [scsynth.org](https://scsynth.org/) -
+you will get friendly and qualified replies there, as well as interest,
+and encouragement for your projects. 
+You can also find a repository of code snippets at [sccode.org](http://sccode.org/).
 
 
 Installing SuperCollider
@@ -111,9 +87,11 @@ Git *and* add it to the PATH. The Git installer will prompt you to the addition.
 For SC it is enough to add Git itself to the path, the additional unix tools
 (curl, find etc.) are not required.
 
-Git for Windows is available from
-
-    http://git-scm.com/downloads
+Git for Windows is available from http://git-scm.com/downloads.
+You can also install it using the `winget` tool:
+```ps
+winget install --id Git.Git -e --source winget
+``` 
 
 
 System Requirements
@@ -121,23 +99,16 @@ System Requirements
 
 ### Operating System
 
- - Windows 10
- - Windows 8
- - Windows 7
- - Windows Vista
-
+Supercollider runs on recent versions of Windows. Check out the main [README](README.md#platform-support) for details.
+ 
 ### Sound card
 
-Most sound cards running under Windows will work fine - the sound card should
-be one that is supported by [PortAudio][portaudio]. For professional
-use do some research and find a card that allows for low latency. If you have
-issues with latency, consult http://www.portaudio.com/docs/latency.html
-for advice on how to tune your operating system to achieve the best results.
-The portaudio build in SC supports various Windows audio APIs, among which you
-can chose. Usually you get best results and biggest control over latency by
-using the ASIO driver. If your soundcard does not provide an ASIO driver you
-should give *[ASIO4ALL][asio4all]* a try. See SC help for how to select the audio
-interface to be used by SC.
+Most sound cards running under Windows will work fine. For professional
+use you should choose a sound card that comes with a dedicated ASIO driver. 
+If your card doesn't provide one, you can use *[ASIO4ALL][asio4all]*, 
+which may provide lower latency than regular Windows drivers,
+but note that a dedicated ASIO driver is always preferred.
+See SC help for how to select the audio interface to be used by SC.
 
 
 Using the SuperCollider IDE
@@ -163,52 +134,56 @@ extensions, quarks, Help files, plugins, configuration files, synthdefs) is
 located in the Windows 'local application data' folder. In SC-speak this folder
 is called the `userAppSupportDir`. This location is a bit tricky to find when
 not using SC-IDE because its grandparent `AppData` is hidden by default. You
-can see it in the environment variable LOCALAPPDATA. In a command prompt,
-execute:
+can see it in the environment variable LOCALAPPDATA. In `PowerShell` execute:
 
-    echo %LOCALAPPDATA%
+```ps
+$env:LOCALAPPDATA
+```
 
-You will likely see (the grandpa referred to earlier):
+You will likely see:
 
-    C:\Users\<USERNAME>\AppData
+    C:\Users\<USERNAME>\AppData\Local
 
-The userAppSupportDir is in the subfolder `Local\SuperCollider`:
+The userAppSupportDir is in the subfolder `SuperCollider`:
 
     C:\Users\<USERNAME>\AppData\Local\SuperCollider
 
+You can open it in the File Explorer by running the following command in PowerShell:
+
+```ps
+ii $env:LOCALAPPDATA\SuperCollider
+```
+
 This folder is user writable and *not* deleted by uninstalling. Therefore your
 settings, quarks, and plugins persist through updates. This is usually good,
-but if you have binary "plugins" and update a minor version, e.g. 3.6 to 3.7,
+but if you have binary "plugins" and update a minor version, e.g. 3.14 to 3.15,
 the plugins may not work any more, and cause errors during SC start-up. There
 are more files in the `userAppSupportDir` that can cause trouble after updates,
 so you want to be aware of the possibility. In the IDE it is very easy to access
 the folder. There is a menu entry -> `Open user support directory`). You can
 also ask `sclang` where this folder is located. Type this in the SC-IDE:
 
-    Platform.userAppSupportDir
+```supercollider
+Platform.userAppSupportDir;
+```
 
 
 Extensions and Quarks
 ---------------------
 
 Extensions and Quarks are bundles of classes, and optionally plugins and
-help files that extend the functionality of core SC. The old school way of
-integrating them into SC is to move them to a folder called `Extensions`  in the
-`userAppSupportDir` (soft linking is not supported any more).
-
-The more flexible and recommended way since SC 3.7 does not restrict you to a
-single parent folder in a hidden system location. Any folder may be included
+help files that extend the functionality of core SC. 
+In the recent versions of SC any folder may be included
 among the folders scanned by SC at start-up ("compiled by the interpreter
 sclang"). New folders are integrated into SC by adding them to the list of
 "include folders" listed in a file called `sclang_config.yaml` in the
 `userAppSupportDir`. This file can be edited manually, but you might find it
-easier to add or remove folders via the 'settings' dialog in the IDE, or:
+easier to add or remove folders via the 'settings' dialog in the IDE.
 
 The community driven *Quarks* system provides an automated way to add, remove
 and also distribute extensions. It "clones" extensions from repositories. By
 default it looks in a central repository called "Quarks", located on Github:
-
-    https://github.com/supercollider-quarks
+https://github.com/supercollider-quarks
 
 Under the hood it speaks `sclang` and uses Git, so there is even some version
 control included. It also provides a management GUI that writes to the
@@ -216,7 +191,9 @@ control included. It also provides a management GUI that writes to the
 
 *Note*: Each time `sclang_config.yaml` is modified (by editing, via a menu or by
 using the Quarks system) the interpreter has to be restarted ("rebooted") so
-that sclang can learn which files are available. This can be done via the menu
+that sclang can learn which files are available. A dialog prompting interpreter
+restart will appear after making changes to the config file in the IDE settings.
+Restarting the interpreter can also be done via the menu
 entry 'Language -> Restart Interpreter'. For an overview of the Quarks system
 see 'Help -> Using Quarks'.
 
