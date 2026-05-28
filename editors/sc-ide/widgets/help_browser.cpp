@@ -87,6 +87,7 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
         // Register overriding action on this widget
         ovr->addToWidget(this);
         return ovr;
+        
     };
 
     mActions[Back]    = proxyPageAction(mWebView->pageAction(QWebEnginePage::Back));
