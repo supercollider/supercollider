@@ -74,17 +74,6 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     mWebView = new WebView(this, profile);
     mWebView->setContextMenuPolicy(Qt::NoContextMenu);
 
-    //
-    // Fix for Issue #7130:
-    // QWebEnginePage installs its own default QActions with shortcuts
-    // (Back, Forward, Reload, Copy, Paste, etc.)
-    // These shortcuts override SCIDE global shortcuts such as
-    // Cmd+Shift+P, Cmd+/, Cmd+I, Cmd+L on macOS.
-    //
-    // Solution:
-    // Replace all QWebEnginePage actions with OverridingAction objects
-    // that keep the same functionality but DO NOT steal global shortcuts.
-    //
     auto proxyPageAction = [this](QAction* pageAction) {
         auto ovr = new OverridingAction(pageAction->icon(), pageAction->text(), this);
         connect(ovr, &OverridingAction::triggered, pageAction, &QAction::trigger);
