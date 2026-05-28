@@ -72,7 +72,39 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 
     // setPage does not take ownership of webPage; it must be deleted manually later (see below)
     mWebView = new WebView(this, profile);
-    mWebView->setContextMenuPolicy(Qt::CustomContextMenu);
+    mWebView->setContextMenuPolicy(Qt::NoContextMenu);
+
+    //
+    // Fix for Issue #7130:
+    // QWebEnginePage installs its own default QActions with shortcuts
+    // (Back, Forward, Reload, Copy, Paste, etc.)
+    // These shortcuts override SCIDE global shortcuts such as
+    // Cmd+Shift+P, Cmd+/, Cmd+I, Cmd+L on macOS.
+    //
+    // Solution:
+    // Replace all QWebEnginePage actions with OverridingAction objects
+    // that keep the same functionality but DO NOT steal global shortcuts.
+    //
+    auto proxyPageAction = [this](QAction* pageAction) {
+        auto ovr = new OverridingAction(pageAction->icon(), pageAction->text(), this);
+        connect(ovr, &OverridingAction::triggered, pageAction, &QAction::trigger);
+
+        // Copy shortcut to overriding action
+        ovr->setShortcut(pageAction->shortcut());
+
+        // Remove shortcut from original WebEngine action
+        pageAction->setShortcut(QKeySequence());
+
+        // Register overriding action on this widget
+        ovr->addToWidget(this);
+        return ovr;
+    };
+
+    mActions[Back]    = proxyPageAction(mWebView->pageAction(QWebEnginePage::Back));
+    mActions[Forward] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Forward));
+    mActions[Reload]  = proxyPageAction(mWebView->pageAction(QWebEnginePage::Reload));
+    mActions[Copy]    = proxyPageAction(mWebView->pageAction(QWebEnginePage::Copy));
+    mActions[Paste]   = proxyPageAction(mWebView->pageAction(QWebEnginePage::Paste));
 
     // Set the style's standard palette to avoid system's palette incoherencies
     // get in the way of rendering web pages
@@ -97,7 +129,6 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 
     connect(mWebView, &WebView::loadStarted, mLoadProgressIndicator, [=]() { mLoadProgressIndicator->start(); });
     connect(mWebView, &WebView::loadFinished, this, &HelpBrowser::onPageLoad);
-    connect(mWebView, &WebView::customContextMenuRequested, this, &HelpBrowser::onContextMenuRequest);
 
     mWebView->setOverrideNavigation(true);
     connect(mWebView->page(), SIGNAL(navigationRequested(const QUrl&, QWebEnginePage::NavigationType, bool)), this,
@@ -165,25 +196,6 @@ void HelpBrowser::createActions() {
     connect(ovrAction, &QAction::triggered, this, &HelpBrowser::evaluateSelection);
     mActions[EvaluateRegion] = new OverridingAction(tr("Evaluate as Code Region"), this);
     connect(mActions[EvaluateRegion], &OverridingAction::triggered, this, [=]() { this->evaluateSelection(true); });
-    // For the sake of display:
-    mWebView->pageAction(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
-    mWebView->pageAction(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
-
-    // proxy page actions to avoid shortcuts conflicts with main window
-    // note that we assign shortcuts here as they don't depend on IDE settings
-    auto proxyPageAction = [this](QAction* pageAction) {
-        // OverridingAction limits shortcut context to this widget
-        auto ovrAction = new OverridingAction(pageAction->icon(), pageAction->text(), this);
-        connect(ovrAction, &OverridingAction::triggered, pageAction, &QAction::trigger);
-        // disable pageAction shortcut and assign it to ovrAction instead
-        ovrAction->setShortcut(pageAction->shortcut());
-        pageAction->setShortcut(QKeySequence());
-        ovrAction->addToWidget(this);
-        return ovrAction;
-    };
-    mActions[Back] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Back));
-    mActions[Forward] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Forward));
-    mActions[Reload] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Reload));
 }
 
 void HelpBrowser::applySettings(Settings::Manager* settings) {
@@ -403,13 +415,13 @@ void HelpBrowser::onContextMenuRequest(const QPoint& pos) {
 #    else
     if (contextData->isContentEditable() || !contextData->selectedText().isEmpty()) {
 #    endif
-        menu.addAction(mWebView->pageAction(QWebEnginePage::Copy));
+        menu.addAction(mActions[Copy]);
 #    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
         if (contextData.isContentEditable())
 #    else
         if (contextData->isContentEditable())
 #    endif
-            menu.addAction(mWebView->pageAction(QWebEnginePage::Paste));
+            menu.addAction(mActions[Paste]);
 
         menu.addSeparator();
     }
@@ -426,12 +438,6 @@ void HelpBrowser::onContextMenuRequest(const QPoint& pos) {
         menu.addAction(mActions[EvaluateRegion]);
     else
         menu.addAction(mActions[Evaluate]);
-
-    menu.addSeparator();
-
-    menu.addAction(mActions[Back]);
-    menu.addAction(mActions[Forward]);
-    menu.addAction(mActions[Reload]);
 
     menu.addSeparator();
 
