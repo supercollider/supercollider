@@ -206,10 +206,11 @@ void PostWindow::post(const QString& text) {
     }
 
     QTextCharFormat resultFormat = formatForPostLine("->");
-    + +cursor.movePosition(QTextCursor::End);
-    +cursor.beginEditBlock();
-    +cursor.insertText(text, resultFormat);
-    +cursor.endEditBlock();
+
+    cursor.movePosition(QTextCursor::End);
+    cursor.beginEditBlock();
+    cursor.insertText(text, resultFormat);
+    cursor.endEditBlock();
 
     if (scroll)
         emit(scrollToBottomRequest());
