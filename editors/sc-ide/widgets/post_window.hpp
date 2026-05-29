@@ -103,6 +103,7 @@ private:
     void updateActionShortcuts(Settings::Manager*);
     void zoomFont(int steps);
     void zoomFont(float scaler);
+    bool mInResultBlock = false;
     QTextCharFormat formatForPostLine(QString line);
 
     QAction* mActions[ActionCount];
