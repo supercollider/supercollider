@@ -120,7 +120,7 @@ private:
     /// Used in conjuction with anchorAt(QPos)
     QString clickedAnchor;
 
-    // State for multi-line result block formatting
+    /// State for multi-line result block formatting
     bool mInResultBlock = false;
 };
 
