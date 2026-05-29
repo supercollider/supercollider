@@ -205,12 +205,52 @@ void PostWindow::post(const QString& text) {
         return;
     }
 
-    QTextCharFormat resultFormat = formatForPostLine("->");
+    const auto ends_with_new_line = text.back() == '\n';
+    const auto lines = text.split("\n");
+    const auto line_count = lines.size();
 
-    cursor.movePosition(QTextCursor::End);
-    cursor.beginEditBlock();
-    cursor.insertText(text, resultFormat);
-    cursor.endEditBlock();
+    // ★ 이 호출이 "결과 블록"인지 한 번만 판단
+    const bool is_result_block = !lines.isEmpty() && lines.first().startsWith("->");
+
+    // 결과 블록일 때 쓸 포맷을 미리 준비
+    QTextCharFormat result_format;
+    if (is_result_block) {
+        result_format = formatForPostLine("->");
+    }
+
+    for (size_t i { 0 }; i < line_count; ++i) {
+        const auto line = lines[i];
+
+        // ★ 결과 블록이면 모든 줄에 result_format,
+        //   아니면 기존처럼 줄마다 formatForPostLine(line)
+        const auto line_format = is_result_block ? result_format : formatForPostLine(line);
+
+        cursor.movePosition(QTextCursor::End);
+
+        if (!line.contains("://")) {
+            cursor.insertText(line, line_format);
+        } else {
+            const auto words = line.split(" ");
+            const auto words_count = words.size();
+            for (size_t w { 0 }; w < words_count; ++w) {
+                const auto& word = words[w];
+                cursor.movePosition(QTextCursor::End);
+
+                if (const auto maybe_url = QUrl(word, QUrl::ParsingMode::StrictMode);
+                    maybe_url.isValid() && word.contains("://")) {
+                    cursor.insertHtml(QString("<a href='") + word + QString("'>") + word + QString("<\\a>"));
+                } else {
+                    cursor.insertText(word, line_format);
+                }
+
+                if (w + 1 != words_count)
+                    cursor.insertText(" ", line_format);
+            }
+        }
+
+        if (i + 1 != line_count)
+            cursor.insertText("\n", line_format);
+    }
 
     if (scroll)
         emit(scrollToBottomRequest());
