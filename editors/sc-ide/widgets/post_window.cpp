@@ -205,43 +205,11 @@ void PostWindow::post(const QString& text) {
         return;
     }
 
-    const auto ends_with_new_line = text.back() == '\n';
-    const auto lines = text.split("\n");
-    const auto line_count = lines.size();
-    for (size_t i { 0 }; i < line_count; ++i) {
-        const auto line = lines[i];
-        const auto line_format = formatForPostLine(line);
-        cursor.movePosition(QTextCursor::End);
-
-        // If there is some text that looks like a URI and contains '://' then turn it into a html anchor so we can
-        // click it.
-        if (!line.contains("://")) {
-            cursor.insertText(line, line_format);
-        } else {
-            // words are just text separated by spaces.
-            const auto words = line.split(" ");
-            const auto words_count = words.size();
-            for (size_t w { 0 }; w < words_count; ++w) {
-                const auto& word = words[w];
-                cursor.movePosition(QTextCursor::End);
-
-                if (const auto maybe_url = QUrl(word, QUrl::ParsingMode::StrictMode);
-                    maybe_url.isValid() && word.contains("://")) {
-                    cursor.insertHtml(QString("<a href='") + word + QString("'>") + word + QString("<\\a>"));
-                } else {
-                    cursor.insertText(word, line_format);
-                }
-
-                // Put space back in, if not last word.
-                if (w + 1 != words_count)
-                    cursor.insertText(" ", line_format);
-            }
-        }
-
-        // Don't write a new line in the final case.
-        if (i + 1 != line_count)
-            cursor.insertText("\n", line_format);
-    }
+    QTextCharFormat resultFormat = formatForPostLine("->");
+    + +cursor.movePosition(QTextCursor::End);
+    +cursor.beginEditBlock();
+    +cursor.insertText(text, resultFormat);
+    +cursor.endEditBlock();
 
     if (scroll)
         emit(scrollToBottomRequest());
