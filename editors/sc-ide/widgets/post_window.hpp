@@ -103,7 +103,6 @@ private:
     void updateActionShortcuts(Settings::Manager*);
     void zoomFont(int steps);
     void zoomFont(float scaler);
-    bool mInResultBlock = false;
     QTextCharFormat formatForPostLine(QString line);
 
     QAction* mActions[ActionCount];
@@ -120,6 +119,9 @@ private:
     /// Will be empty when no anchor has been clicked
     /// Used in conjuction with anchorAt(QPos)
     QString clickedAnchor;
+
+    // State for multi-line result block formatting
+    bool mInResultBlock = false;
 };
 
 
