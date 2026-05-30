@@ -196,10 +196,12 @@ void PostWindow::post(const QString& text) {
     const bool scroll = mActions[AutoScroll]->isChecked();
     QTextCursor cursor(document());
 
+    mInResultBlock = false;
+
     if (text == "\n") {
         cursor.movePosition(QTextCursor::End);
         cursor.insertText(text, currentFormat);
-        mInResultBlock = false;
+
         if (scroll)
             emit(scrollToBottomRequest());
         return;
@@ -213,8 +215,10 @@ void PostWindow::post(const QString& text) {
         const auto line = lines[i];
         cursor.movePosition(QTextCursor::End);
 
-        if (line.startsWith("->"))
+        bool isResultLine = line.startsWith("->");
+        if (isResultLine) {
             mInResultBlock = true;
+        }
 
         QTextCharFormat line_format = mInResultBlock ? result_format : formatForPostLine(line);
 
@@ -246,9 +250,6 @@ void PostWindow::post(const QString& text) {
         // Don't write a new line in the final case.
         if (i + 1 != line_count)
             cursor.insertText("\n", line_format);
-
-        if (line.isEmpty())
-            mInResultBlock = false;
     }
 
     if (scroll)
