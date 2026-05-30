@@ -211,7 +211,6 @@ void PostWindow::post(const QString& text) {
 
     for (size_t i { 0 }; i < line_count; ++i) {
         const auto line = lines[i];
-        const auto line_format = formatForPostLine(line);
         cursor.movePosition(QTextCursor::End);
 
         if (line.startsWith("->"))
