@@ -206,11 +206,12 @@ void PostWindow::post(const QString& text) {
     }
 
     const auto lines = text.split("\n");
-    const size_t line_count = lines.size();
+    const auto line_count = lines.size();
     QTextCharFormat result_format = formatForPostLine("->");
 
     for (size_t i { 0 }; i < line_count; ++i) {
-        const QString& line = lines[i];
+        const auto line = lines[i];
+        const auto line_format = formatForPostLine(line);
         cursor.movePosition(QTextCursor::End);
 
         if (line.startsWith("->"))
@@ -225,7 +226,7 @@ void PostWindow::post(const QString& text) {
         } else {
             // words are just text separated by spaces.
             const auto words = line.split(" ");
-            const size_t words_count = words.size();
+            const auto words_count = words.size();
             for (size_t w { 0 }; w < words_count; ++w) {
                 const auto& word = words[w];
                 cursor.movePosition(QTextCursor::End);
