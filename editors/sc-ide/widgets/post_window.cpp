@@ -258,7 +258,7 @@ void PostWindow::post(const QString& text) {
 
                 if (const auto maybe_url = QUrl(word, QUrl::ParsingMode::StrictMode);
                     maybe_url.isValid() && word.contains("://")) {
-                    cursor.insertHtml(QString("<a href='") + word + QString("'>") + word + QString("<\\a>"));
+                    cursor.insertHtml(QString("<a href='") + word + QString("'>") + word + QString("</a>"));
                 } else {
                     cursor.insertText(word, line_format);
                 }
