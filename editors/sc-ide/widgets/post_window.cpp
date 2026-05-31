@@ -44,7 +44,7 @@
 
 namespace ScIDE {
 
-static const QString RESULT_MARKER = QString::fromUtf8(u8"\u200B\u200C\u200D\u2060");
+static const QString RESULT_MARKER = QString::fromUtf8(u8"\u2060\u2060");
 
 PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     setReadOnly(true);
