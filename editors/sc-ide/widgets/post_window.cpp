@@ -44,6 +44,8 @@
 
 namespace ScIDE {
 
+static const QString RESULT_MARKER = QString::fromUtf8(u8"\u200B\u200C\u200D\u2060");
+
 PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     setReadOnly(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -209,18 +211,38 @@ void PostWindow::post(const QString& text) {
 
     const auto lines = text.split("\n");
     const auto line_count = lines.size();
-    QTextCharFormat result_format = formatForPostLine("->");
+
+    QTextCharFormat result_format = formatForPostLine(RESULT_MARKER);
+
 
     for (size_t i { 0 }; i < line_count; ++i) {
         const auto line = lines[i];
         cursor.movePosition(QTextCursor::End);
 
-        bool isResultLine = line.startsWith("->");
-        if (isResultLine) {
+        // Detect result prefix
+        int idx = line.indexOf(RESULT_MARKER);
+
+        if (idx == 0) {
+            // Entire line is result block
             mInResultBlock = true;
         }
 
         QTextCharFormat line_format = mInResultBlock ? result_format : formatForPostLine(line);
+
+        // Case: printed + result stuck together in one line
+        if (!mInResultBlock && idx > 0) {
+            QString before = line.left(idx);
+            QString after = line.mid(idx); // after starts with RESULT_MARKER
+
+            cursor.insertText(before, formatForPostLine(before));
+            cursor.insertText(after, result_format);
+
+            mInResultBlock = true;
+
+            if (i + 1 != line_count)
+                cursor.insertText("\n", result_format);
+            continue;
+        }
 
         // If there is some text that looks like a URI and contains '://' then turn it into a html anchor so we can
         // click it.
@@ -249,7 +271,7 @@ void PostWindow::post(const QString& text) {
 
         // Don't write a new line in the final case.
         if (i + 1 != line_count)
-            cursor.insertText("\n", line_format);
+            cursor.insertText("\n", mInResultBlock ? result_format : line_format);
     }
 
     if (scroll)
@@ -269,7 +291,7 @@ QTextCharFormat PostWindow::formatForPostLine(QString line) {
         format.merge(postWindowError);
     else if (line.startsWith("WARNING:", Qt::CaseInsensitive) || line.startsWith("?"))
         format.merge(postWindowWarning);
-    else if (line.startsWith("->"))
+    else if (line.startsWith(RESULT_MARKER))
         format.merge(postWindowSuccess);
     else if (line.startsWith("***"))
         format.merge(postWindowEmphasis);

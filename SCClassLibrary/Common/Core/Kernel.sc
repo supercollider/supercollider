@@ -716,7 +716,7 @@ Interpreter {
 		res = func.value;
 		thisProcess.nowExecutingPath = nil;
 		codeDump.value(code, res, func, this);
-		("-> " ++ res).postln;
+		("​‌‍⁠" ++ res).postln;
 	}
 
 	interpret { arg string ... args;
