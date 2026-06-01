@@ -466,7 +466,12 @@ endif()
 # See https://doc.qt.io/qt-5/osx-deployment.html for macdeployqt
 if(APPLE OR WIN32)
     if(APPLE)
-        find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
+            set(DEPLOY_PROG_NAME "macdeployqt6")
+        else()
+            set(DEPLOY_PROG_NAME "macdeployqt")
+        endif()
+        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
@@ -547,7 +552,12 @@ if(APPLE OR WIN32)
                 verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
         endif()
     else() # WIN32
-        find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
+            set(DEPLOY_PROG_NAME "windeployqt6")
+        else()
+            set(DEPLOY_PROG_NAME "windeployqt")
+        endif()
+        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 --verbose 1 --no-compiler-runtime
                 \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
