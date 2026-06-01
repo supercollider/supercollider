@@ -157,7 +157,7 @@ void HelpBrowser::createActions() {
     ovrAction->addToWidget(this);
 
     mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Zoom"), this);
-    connect(ovrAction, &QAction::triggered, this, &HelpBrowser::zoomOut);
+    connect(ovrAction, &QAction::triggered, this, &HelpBrowser::resetZoom);
     ovrAction->addToWidget(this);
 
     // eval actions are added to mWebView->focusProxy() in onPageLoad()
