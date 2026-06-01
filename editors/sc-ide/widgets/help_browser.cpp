@@ -316,9 +316,14 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
         }
         case QEvent::ShortcutOverride: {
             QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
-            if (kevent->key() == Qt::Key_Escape) {
-                event->accept();
-                return true;
+
+            QKeySequence sequence = OverridingAction::keySequence(kevent);
+
+            for (int i = 0; i < ActionCount; ++i) {
+                if (mActions[i] && mActions[i]->shortcuts().contains(sequence)) {
+                    event->accept();
+                    return true;
+                }
             }
             break;
         }
