@@ -19,7 +19,7 @@ method::new
 argument::path
 a link::Classes/String:: which likely contains one or more / as typical for folder separation. ~ will be converted to your fully addressed home directory, as per link::Classes/String#-standardizePath::.
 code::
-PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
+PathName.new(ExampleFiles.child);
 ::
 
 method::tmp
@@ -32,7 +32,7 @@ returns just the name of the file itself; i.e. everything after the last slash i
 code::
 (
 var myPath;
-myPath = PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
+myPath = PathName.new(ExampleFiles.child);
 myPath.fileName.postln;
 )
 ::
@@ -49,7 +49,7 @@ returns the full path up to the file name itself; i.e. everything up to and incl
 code::
 (
 var myPath;
-myPath = PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
+myPath = PathName.new(ExampleFiles.child);
 myPath.pathOnly.postln;
 )
 ::
@@ -62,7 +62,7 @@ returns only the name of the folder that the file is in; i.e. everything in betw
 code::
 (
 var myPath;
-myPath = PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
+myPath = PathName.new(ExampleFiles.child);
 myPath.folderName.postln;
 )
 ::
@@ -72,7 +72,7 @@ returns the full path name that PathName contains.
 code::
 (
 var myPath;
-myPath = PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
+myPath = PathName.new(ExampleFiles.child);
 myPath.fullPath.postln;
 )
 ::
@@ -138,11 +138,20 @@ myPath.filesDo{ |afile| afile.postln };
 ::
 
 method::allFolders
-returns a list of all the folder names contained in the pathname itself.
+Returns all folder names in the path.
+If the path ends with a file, all folders in the path are returned.
+If the path ends with a folder, the final folder (the folder itself) is not included.
+
 code::
 (
 var myPath;
-myPath = PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
+myPath = PathName.new(ExampleFiles.child);
+myPath.allFolders.postln;
+)
+
+(
+var myPath;
+myPath = PathName.new(ExampleFiles.dir);
 myPath.allFolders.postln;
 )
 ::
@@ -152,13 +161,13 @@ if path is an absolute path, returns the disk name; else a blank string.
 code::
 (
 var myPath;
-myPath = PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
+myPath = PathName.new(ExampleFiles.child);
 myPath.diskName.postln;
 )
 
 ( // note the / at the start
 var myPath;
-myPath = PathName.new("/MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
+myPath = PathName.new("/" ++ ExampleFiles.child);
 myPath.diskName.postln;
 )
 ::
