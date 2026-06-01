@@ -346,7 +346,11 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
 
             break;
         }
-            return false;
+        default:
+            break;
+        }
+    }
+    return false;
 }
 
 void HelpBrowser::sendRequest(const QString& code) {
