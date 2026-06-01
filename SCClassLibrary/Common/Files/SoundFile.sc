@@ -396,7 +396,7 @@ SoundFile {
 		}
 	}
 
-	*collect { | path = (ExampleFiles.dir +/+ "*") |
+	*collect { | path = (Platform.resourceDir +/+ "sounds/*") |
 		var paths, files;
 		paths = path.pathMatch;
 		files = paths.collect { | p | this.new(p).info };
@@ -404,7 +404,7 @@ SoundFile {
 		^files;
 	}
 
-	*collectIntoBuffers { |path = (ExampleFiles.dir +/+ "*"), server|
+	*collectIntoBuffers { |path = (Platform.resourceDir +/+ "sounds/*"), server|
 		server = server ?? { Server.default };
 		if(server.warnIfNotRunning(thisMethod)) { ^this };
 

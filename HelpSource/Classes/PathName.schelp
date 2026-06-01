@@ -151,7 +151,7 @@ myPath.allFolders.postln;
 
 (
 var myPath;
-myPath = PathName.new(ExampleFiles.dir);
+myPath = PathName.new(ExampleFiles.child.dirname);
 myPath.allFolders.postln;
 )
 ::
