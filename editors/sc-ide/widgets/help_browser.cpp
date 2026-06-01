@@ -315,8 +315,12 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
             break;
         }
         case QEvent::ShortcutOverride: {
-            event->accept();
-            return true;
+            QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
+            if (kevent->key() == Qt::Key_Escape) {
+                event->accept();
+                return true;
+            }
+            break;
         }
         default:
             break;
