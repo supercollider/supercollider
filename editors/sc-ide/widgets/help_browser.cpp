@@ -319,7 +319,7 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
             // if yes, capture the event, else, bubble up the event
             auto keyEvent = static_cast<QKeyEvent*>(event);
 
-            QKeySequence sequence = OverridingAction::keySequence(kevent);
+            auto sequence = OverridingAction::keySequence(keyEvent);
 
             for (int i = 0; i < ActionCount; ++i) {
                 if (mActions[i] && mActions[i]->shortcuts().contains(sequence)) {
