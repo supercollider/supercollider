@@ -183,7 +183,8 @@ void HelpBrowser::createActions() {
     };
     mActions[Back] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Back));
     mActions[Forward] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Forward));
-    mActions[Reload] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Reload));
+    mActions[Reload] = new QAction(tr("Reload"), this);
+    connect(mActions[Reload], &QAction::triggered, this, &HelpBrowser::onReload);
 }
 
 void HelpBrowser::applySettings(Settings::Manager* settings) {
@@ -191,16 +192,16 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
 
     mActions[DocClose]->setShortcut(settings->shortcut("ide-document-close"));
 
-    mActions[ZoomIn]->setShortcut(settings->shortcut("editor-enlarge-font"));
-
-    mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
-
-    mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
-
 #    ifdef Q_OS_MAC
-    mActions[Reload]->setShortcut(QKeySequence(Qt::META + Qt::Key_R)); // macOS: Cmd+R
+    mActions[ZoomIn]->setShortcut(QKeySequence(Qt::META + Qt::Key_Equal));
+    mActions[ZoomOut]->setShortcut(QKeySequence(Qt::META + Qt::Key_Minus));
+    mActions[ResetZoom]->setShortcut(QKeySequence(Qt::META + Qt::Key_0));
+    mActions[Reload]->setShortcut(QKeySequence(Qt::META + Qt::Key_R));
 #    else
-    mActions[Reload]->setShortcut(QKeySequence::Refresh); // Windows/Linux
+    mActions[ZoomIn]->setShortcut(settings->shortcut("editor-enlarge-font"));
+    mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
+    mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
+    mActions[Reload]->setShortcut(QKeySequence::Refresh);
 #    endif
 
     QList<QKeySequence> evalShortcuts;
@@ -325,19 +326,27 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
 
             QKeySequence sequence = OverridingAction::keySequence(kevent);
 
+            // HelpBrowser 액션 확인 (Reload 제외)
             for (int i = 0; i < ActionCount; ++i) {
+                if (i == Reload)
+                    continue;
                 if (mActions[i] && mActions[i]->shortcuts().contains(sequence)) {
                     event->accept();
                     return true;
                 }
             }
+
+            // Reload는 HelpBrowser 포커스 시에만
+            if (mActions[Reload] && mActions[Reload]->shortcuts().contains(sequence)) {
+                if (helpBrowserHasFocus()) {
+                    event->accept();
+                    return true;
+                }
+            }
+
             break;
         }
-        default:
-            break;
-        }
-    }
-    return false;
+            return false;
 }
 
 void HelpBrowser::sendRequest(const QString& code) {
