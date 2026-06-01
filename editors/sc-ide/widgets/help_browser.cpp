@@ -197,7 +197,12 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
 
     mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
 
-    mActions[Reload]->setShortcut(QKeySequence::Refresh);
+#    ifdef Q_OS_MAC
+    mActions[Reload]->setShortcut(QKeySequence(Qt::META + Qt::Key_R)); // macOS: Cmd+R
+#    else
+    mActions[Reload]->setShortcut(QKeySequence::Refresh); // Windows/Linux
+#    endif
+
     QList<QKeySequence> evalShortcuts;
     evalShortcuts.append(settings->shortcut("editor-eval-line"));
     evalShortcuts.append(QKeySequence(Qt::Key_Enter));
