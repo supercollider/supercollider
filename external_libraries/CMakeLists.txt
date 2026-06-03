@@ -27,6 +27,7 @@ if(MSVC) # hide warnings from 3rd party libraries
 	)
 endif()
 
+set(UTF8PROC_INSTALL OFF CACHE BOOL "Install utf8proc" FORCE)
 add_subdirectory(utf8proc)
 
 set_property(TARGET utf8proc PROPERTY FOLDER 3rdparty)
