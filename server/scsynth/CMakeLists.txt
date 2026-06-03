@@ -147,24 +147,25 @@ elseif (AUDIOAPI STREQUAL bela)
 elseif (AUDIOAPI STREQUAL webaudio)
     add_definitions(
             "-DSC_AUDIO_API=SC_AUDIO_API_WEBAUDIO"
-            "-DSTATIC_PLUGINS"
     )
     list(REMOVE_ITEM scsynth_sources
             SC_ComPort.cpp
             ${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
     )
+    list(APPEND scsynth_sources
+            SC_WebAudio.cpp
+            ${CMAKE_SOURCE_DIR}/platform/wasm/SC_WebOsc.cpp
+    )
+endif()
+
+if(STATIC_PLUGINS)
     # the plugins are linked statically, their sources must be included
     set(plugin_sources_abs "")
     foreach(plugin ${all_plugin_sources})
         string(CONCAT plugin_abs ${CMAKE_SOURCE_DIR}/server/plugins/ ${plugin} )
         list(APPEND plugin_sources_abs ${plugin_abs})
     endforeach(plugin)
-
-    list(APPEND scsynth_sources
-            SC_WebAudio.cpp
-            ${CMAKE_SOURCE_DIR}/platform/wasm/SC_WebOsc.cpp
-            ${plugin_sources_abs}
-    )
+    list(APPEND scsynth_sources ${plugin_sources_abs})
 endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth
@@ -226,6 +227,13 @@ endif()
 
 if(UNIX AND NOT APPLE)
 	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${LINUX_SC_PLUGIN_DIR}\"")
+endif()
+
+if(STATIC_PLUGINS)
+    target_compile_definitions(libscsynth PRIVATE "-DSTATIC_PLUGINS")
+endif()
+if(NO_X11)
+	target_compile_definitions(libscsynth PRIVATE "-DNO_X11")
 endif()
 
 if(NOT NO_AVAHI)

@@ -116,6 +116,7 @@ emcmake cmake \
   -DSUPERNOVA=no \
   -DSC_HIDAPI=no \
   -DNO_LIBSNDFILE=yes \
+  -DSTATIC_PLUGINS=yes \
   -DSC_QT=no \
   -DNO_AVAHI=yes \
   -DSC_ABLETON_LINK=no \

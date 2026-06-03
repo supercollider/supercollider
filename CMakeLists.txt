@@ -96,6 +96,7 @@ if (AUDIOAPI STREQUAL jack)
 endif()
 
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
+option(STATIC_PLUGINS "Compile plugins as static libraries (scsynth only)" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
