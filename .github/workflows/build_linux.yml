@@ -102,6 +102,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             ctest: true
+            artifact-suffix: "ubuntu-24.04-arm-clang18"
 
     name: Ubuntu ${{ matrix.os-version }} ${{ matrix.c-compiler }} ${{ matrix.job-name }}
     env:
