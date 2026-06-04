@@ -135,6 +135,22 @@ void HelpBrowser::onPageLoad() {
     // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
     static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[ZoomIn])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[ZoomOut])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[ResetZoom])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Reload])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
+
+#    ifdef Q_OS_WIN
+    static QAction* winCtrlRBlocker = nullptr;
+    if (!winCtrlRBlocker) {
+        winCtrlRBlocker = new OverridingAction(this);
+        winCtrlRBlocker->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_R));
+        winCtrlRBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    }
+    mWebView->focusProxy()->addAction(winCtrlRBlocker);
+#    endif
 }
 
 void HelpBrowser::createActions() {
@@ -191,8 +207,26 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
 
     mActions[DocClose]->setShortcut(settings->shortcut("ide-document-close"));
 
-    mActions[ZoomIn]->setShortcut(settings->shortcut("editor-enlarge-font"));
+    QList<QKeySequence> zoomInShortcuts;
+    zoomInShortcuts.append(settings->shortcut("editor-enlarge-font"));
 
+#    ifdef Q_OS_MAC
+    // macOS: Cmd + =
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Equal));
+    // macOS: Cmd + +
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Equal));
+    // macOS: Numpad +
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus));
+#    else
+    // Windows / Linux: Ctrl + =
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal));
+    // Windows / Linux: Ctrl + +
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Equal));
+    // Windows / Linux: Numpad +
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Plus));
+#    endif
+
+    mActions[ZoomIn]->setShortcuts(zoomInShortcuts);
     mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
 
     mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
