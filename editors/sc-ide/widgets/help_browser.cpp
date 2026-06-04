@@ -210,20 +210,19 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
     QList<QKeySequence> zoomInShortcuts;
     zoomInShortcuts.append(settings->shortcut("editor-enlarge-font"));
 
+    QList<QKeySequence> zoomInShortcuts;
+    zoomInShortcuts.append(settings->shortcut("editor-enlarge-font"));
+
 #    ifdef Q_OS_MAC
-    // macOS: Cmd + =
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Equal));
-    // macOS: Cmd + +
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Equal));
-    // macOS: Numpad +
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus));
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Equal)); // Cmd + =
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Equal)); // Cmd + Shift + =  → +
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus)); // Cmd + + (keypad)
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Plus)); // Cmd + Shift + +
 #    else
-    // Windows / Linux: Ctrl + =
-    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal));
-    // Windows / Linux: Ctrl + +
-    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Equal));
-    // Windows / Linux: Numpad +
-    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Plus));
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal)); // Ctrl + =
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Equal)); // Ctrl + Shift + =  → +
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Plus)); // Ctrl + + (keypad)
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Plus)); // Ctrl + Shift + +
 #    endif
 
     mActions[ZoomIn]->setShortcuts(zoomInShortcuts);
