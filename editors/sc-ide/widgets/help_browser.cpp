@@ -210,9 +210,6 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
     QList<QKeySequence> zoomInShortcuts;
     zoomInShortcuts.append(settings->shortcut("editor-enlarge-font"));
 
-    QList<QKeySequence> zoomInShortcuts;
-    zoomInShortcuts.append(settings->shortcut("editor-enlarge-font"));
-
 #    ifdef Q_OS_MAC
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Equal)); // Cmd + =
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Equal)); // Cmd + Shift + =  → +
