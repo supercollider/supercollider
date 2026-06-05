@@ -152,6 +152,12 @@ private:
     QAction* mActions[ActionCount];
 
     int mServerPort = 0; // if 0, server is not running
+
+#ifdef Q_OS_WIN
+    // Blocks the default Ctrl+R behavior on Windows, which would otherwise
+    // trigger an unwanted refresh action in the embedded browser widget.
+    static QAction* winCtrlRBlocker;
+#endif
 };
 
 class HelpBrowserFindBox : public QLineEdit {

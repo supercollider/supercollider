@@ -84,6 +84,10 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     mWebView->setStyle(QStyleFactory::create("Fusion"));
 #    endif
 
+#    ifdef Q_OS_WIN
+    QAction* HelpBrowser::winCtrlRBlocker = nullptr;
+#    endif
+
     mWebView->installEventFilter(this);
 
     mLoadProgressIndicator = new LoadProgressIndicator;
@@ -147,7 +151,6 @@ void HelpBrowser::onPageLoad() {
     mActions[ResetZoom]->setShortcutContext(Qt::WindowShortcut);
 
 #    ifdef Q_OS_WIN
-    static QAction* winCtrlRBlocker = nullptr;
     if (!winCtrlRBlocker) {
         winCtrlRBlocker = new OverridingAction(this);
         winCtrlRBlocker->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_R));
