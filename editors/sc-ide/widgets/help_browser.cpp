@@ -226,8 +226,11 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
 
     mActions[ZoomIn]->setShortcuts(zoomInShortcuts);
     mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
-
     mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
+
+    mActions[ZoomIn]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mActions[ZoomOut]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mActions[ResetZoom]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
     QList<QKeySequence> evalShortcuts;
     evalShortcuts.append(settings->shortcut("editor-eval-line"));
