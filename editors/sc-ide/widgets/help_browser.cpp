@@ -142,6 +142,10 @@ void HelpBrowser::onPageLoad() {
     static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
 
+    mActions[ZoomIn]->setShortcutContext(Qt::WindowShortcut);
+    mActions[ZoomOut]->setShortcutContext(Qt::WindowShortcut);
+    mActions[ResetZoom]->setShortcutContext(Qt::WindowShortcut);
+
 #    ifdef Q_OS_WIN
     static QAction* winCtrlRBlocker = nullptr;
     if (!winCtrlRBlocker) {
