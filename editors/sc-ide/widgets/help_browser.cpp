@@ -229,15 +229,10 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
 
 #    ifdef Q_OS_MAC
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Equal)); // Cmd + =
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Equal)); // Cmd + Shift + =
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus)); // Cmd + + (keypad)
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Plus)); // Cmd + Shift + +
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus));
 #    else
     zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal)); // Ctrl + =
-    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Equal)); // Ctrl + Shift + =  → +
     zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Plus)); // Ctrl + + (keypad)
-    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Plus)); // Ctrl + Shift + +
 #    endif
 
     mActions[ZoomIn]->setShortcuts(zoomInShortcuts);
