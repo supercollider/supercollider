@@ -218,6 +218,8 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
 
     QList<QKeySequence> zoomInShortcuts;
 
+    zoomInShortcuts.append(settings->shortcut("editor-enlarge-font"));
+
 #    ifdef Q_OS_MAC
     Qt::KeyboardModifier metaKey = Qt::META;
 #    else
