@@ -64,8 +64,8 @@ using namespace QtCollider;
 QAction* HelpBrowser::winCtrlRBlocker = nullptr;
 #    endif
 #    ifdef Q_OS_MAC
-QAction* HelpBrowser::macCmdPlusBlocker = nullptr;
-QAction* HelpBrowser::macCmdEqualBlocker = nullptr;
+QAction* HelpBrowser::macCmdPlusBlocker = nullptr; // does not work
+QAction* HelpBrowser::macCmdEqualBlocker = nullptr; // does not work
 #    endif
 
 HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
@@ -167,6 +167,25 @@ void HelpBrowser::onPageLoad() {
         winCtrlRBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     }
     mWebView->focusProxy()->addAction(winCtrlRBlocker);
+#    endif
+
+#    ifdef Q_OS_MAC
+    if (!macCmdPlusBlocker) {
+        macCmdPlusBlocker = new OverridingAction(this);
+        macCmdPlusBlocker->setShortcut(QKeySequence("Cmd++"));
+        macCmdPlusBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+        connect(macCmdPlusBlocker, &QAction::triggered, this, &HelpBrowser::zoomIn);
+    }
+    if (!macCmdEqualBlocker) {
+        macCmdEqualBlocker = new OverridingAction(this);
+        macCmdEqualBlocker->setShortcut(QKeySequence("Cmd+="));
+        macCmdEqualBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+        connect(macCmdEqualBlocker, &QAction::triggered, this, &HelpBrowser::zoomIn);
+    }
+    mWebView->focusProxy()->addAction(macCmdPlusBlocker);
+    mWebView->focusProxy()->addAction(macCmdEqualBlocker);
 #    endif
 }
 
