@@ -135,6 +135,12 @@ void HelpBrowser::onPageLoad() {
     // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
     static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[ZoomIn])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[ZoomOut])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[ResetZoom])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Reload])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
 }
 
 void HelpBrowser::createActions() {
@@ -295,29 +301,12 @@ bool HelpBrowser::helpBrowserHasFocus() const {
 }
 
 bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
-    if (object == mWebView) {
+    if (object == mWebView || (mWebView && object == mWebView->focusProxy())) {
         switch (event->type()) {
-        case QEvent::MouseButtonPress: {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-            switch (mouseEvent->button()) {
-            case Qt::XButton1:
-                mWebView->triggerPageAction(QWebEnginePage::Back);
-                return true;
-
-            case Qt::XButton2:
-                mWebView->triggerPageAction(QWebEnginePage::Forward);
-                return true;
-
-            default:
-                break;
-            }
-            break;
-        }
         case QEvent::ShortcutOverride: {
             auto keyEvent = static_cast<QKeyEvent*>(event);
 
 #    ifdef Q_OS_WIN
-            // 1. Windows: Ctrl + R does not activate Find & Replace in SC-IDE code editor.
             if (keyEvent->key() == Qt::Key_R && (keyEvent->modifiers() & Qt::ControlModifier)) {
                 event->accept();
                 if (mActions[Reload]) {
@@ -328,7 +317,6 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
 #    endif
 
 #    ifdef Q_OS_MAC
-            // 2. macOS: Cmd + Shift + = does not enlarge the font size in SC-IDE code editor.
             if ((keyEvent->key() == Qt::Key_Plus || keyEvent->key() == Qt::Key_Equal)
                 && (keyEvent->modifiers() & Qt::ControlModifier)) {
                 event->accept();
@@ -345,6 +333,20 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
                     event->accept();
                     return true;
                 }
+            }
+            break;
+        }
+        case QEvent::MouseButtonPress: {
+            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+            switch (mouseEvent->button()) {
+            case Qt::XButton1:
+                mWebView->triggerPageAction(QWebEnginePage::Back);
+                return true;
+            case Qt::XButton2:
+                mWebView->triggerPageAction(QWebEnginePage::Forward);
+                return true;
+            default:
+                break;
             }
             break;
         }
