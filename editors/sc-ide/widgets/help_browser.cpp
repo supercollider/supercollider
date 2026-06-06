@@ -144,7 +144,6 @@ void HelpBrowser::onPageLoad() {
     static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
 
-    // 이 오버라이딩 액션들이 focusProxy에 주입되면서 웹뷰 바닥에서부터 키를 낚아챕니다.
     static_cast<OverridingAction*>(mActions[ZoomIn])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[ZoomOut])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[ResetZoom])->addToWidget(mWebView->focusProxy());
@@ -152,10 +151,7 @@ void HelpBrowser::onPageLoad() {
     static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
 
-    // [맥OS 핵심 방어] focusProxy 내부에서 Zoom 액션들이 메인 메뉴바의 단축키를 이기도록
-    // WidgetWithChildrenShortcut 컨텍스트를 확실하게 재명시해 줍니다.
-#    ifdef Q_OS_MAC
-    mActions[ZoomIn]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    ifdef Q_OS_MAC mActions[ZoomIn]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mActions[ZoomOut]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mActions[ResetZoom]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 #    endif
