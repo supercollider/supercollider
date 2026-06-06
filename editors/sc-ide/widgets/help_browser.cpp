@@ -135,12 +135,6 @@ void HelpBrowser::onPageLoad() {
     // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
     static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[ZoomIn])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[ZoomOut])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[ResetZoom])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[Reload])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
 }
 
 void HelpBrowser::createActions() {
@@ -171,25 +165,14 @@ void HelpBrowser::createActions() {
     connect(ovrAction, &QAction::triggered, this, &HelpBrowser::evaluateSelection);
     mActions[EvaluateRegion] = new OverridingAction(tr("Evaluate as Code Region"), this);
     connect(mActions[EvaluateRegion], &OverridingAction::triggered, this, [=]() { this->evaluateSelection(true); });
+
     // For the sake of display:
     mWebView->pageAction(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
     mWebView->pageAction(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
 
-    // proxy page actions to avoid shortcuts conflicts with main window
-    // note that we assign shortcuts here as they don't depend on IDE settings
-    auto proxyPageAction = [this](QAction* pageAction) {
-        // OverridingAction limits shortcut context to this widget
-        auto ovrAction = new OverridingAction(pageAction->icon(), pageAction->text(), this);
-        connect(ovrAction, &OverridingAction::triggered, pageAction, &QAction::trigger);
-        // disable pageAction shortcut and assign it to ovrAction instead
-        ovrAction->setShortcut(pageAction->shortcut());
-        pageAction->setShortcut(QKeySequence());
-        ovrAction->addToWidget(this);
-        return ovrAction;
-    };
-    mActions[Back] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Back));
-    mActions[Forward] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Forward));
-    mActions[Reload] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Reload));
+    mActions[Back] = mWebView->pageAction(QWebEnginePage::Back);
+    mActions[Forward] = mWebView->pageAction(QWebEnginePage::Forward);
+    mActions[Reload] = mWebView->pageAction(QWebEnginePage::Reload);
 }
 
 void HelpBrowser::applySettings(Settings::Manager* settings) {
