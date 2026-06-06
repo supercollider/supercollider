@@ -48,9 +48,7 @@ public:
         if (event->key() >= Qt::Key_Shift && event->key() <= Qt::Key_Alt)
             return QKeySequence();
 
-        Qt::KeyboardModifiers modifiers = event->modifiers() & ~Qt::KeypadModifier;
-
-        return QKeySequence(modifiers | event->key());
+        return QKeySequence(event->modifiers() | event->key());
     }
 
 protected:

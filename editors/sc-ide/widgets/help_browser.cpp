@@ -140,7 +140,7 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 
 void HelpBrowser::onPageLoad() {
     mLoadProgressIndicator->stop();
-
+    // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
     static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
 
