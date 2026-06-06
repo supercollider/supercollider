@@ -320,6 +320,32 @@ bool HelpBrowser::helpBrowserHasFocus() const {
 bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
     if (object == mWebView) {
         switch (event->type()) {
+        case QEvent::KeyPress: {
+            QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+#    ifdef Q_OS_WIN
+            // 1. Windows: Ctrl + R does not activate Find & Replace in SC-IDE code editor.
+            if (ke->key() == Qt::Key_R && (ke->modifiers() & Qt::ControlModifier)) {
+                event->accept();
+                if (mActions[Reload]) {
+                    mActions[Reload]->trigger();
+                }
+                return true;
+            }
+#    endif
+
+#    ifdef Q_OS_MAC
+            // 2. macOS: Cmd + Shift + = does not enlarge the font size in SC-IDE code editor.
+            if ((ke->key() == Qt::Key_Plus || ke->key() == Qt::Key_Equal) && (ke->modifiers() & Qt::ControlModifier)) {
+                event->accept();
+                if (mActions[ZoomIn]) {
+                    mActions[ZoomIn]->trigger();
+                }
+                return true;
+            }
+#    endif
+            break;
+        }
+
         case QEvent::MouseButtonPress: {
             QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
             switch (mouseEvent->button()) {
