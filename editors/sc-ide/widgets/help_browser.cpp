@@ -60,6 +60,10 @@ namespace ScIDE {
 
 using namespace QtCollider;
 
+#    ifdef Q_OS_WIN
+QAction* HelpBrowser::winCtrlRBlocker = nullptr;
+#    endif
+
 HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     QRect availableScreenRect = qApp->primaryScreen()->availableGeometry();
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.7);
@@ -82,10 +86,6 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     // On macOS, checkboxes unwantedly appear in the top left-hand corner.
     // See QTBUG-43366, 43070, and 42948. The workaround is to set style to fusion.
     mWebView->setStyle(QStyleFactory::create("Fusion"));
-#    endif
-
-#    ifdef Q_OS_WIN
-    QAction* HelpBrowser::winCtrlRBlocker = nullptr;
 #    endif
 
     mWebView->installEventFilter(this);
