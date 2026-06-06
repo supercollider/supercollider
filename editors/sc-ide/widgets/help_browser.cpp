@@ -132,15 +132,11 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 
 void HelpBrowser::onPageLoad() {
     mLoadProgressIndicator->stop();
-    // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
     static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[ZoomIn])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[ZoomOut])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[ResetZoom])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[Reload])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
-    static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
+    if (mWebView && mWebView->focusProxy()) {
+        mWebView->focusProxy()->installEventFilter(this);
+    }
 }
 
 void HelpBrowser::createActions() {
@@ -309,9 +305,8 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
 #    ifdef Q_OS_WIN
             if (keyEvent->key() == Qt::Key_R && (keyEvent->modifiers() & Qt::ControlModifier)) {
                 event->accept();
-                if (mActions[Reload]) {
+                if (mActions[Reload])
                     mActions[Reload]->trigger();
-                }
                 return true;
             }
 #    endif
@@ -320,13 +315,23 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
             if ((keyEvent->key() == Qt::Key_Plus || keyEvent->key() == Qt::Key_Equal)
                 && (keyEvent->modifiers() & Qt::ControlModifier)) {
                 event->accept();
-                if (mActions[ZoomIn]) {
+                if (mActions[ZoomIn])
                     mActions[ZoomIn]->trigger();
-                }
                 return true;
             }
 #    endif
-
+            if (keyEvent->key() == Qt::Key_Minus && (keyEvent->modifiers() & Qt::ControlModifier)) {
+                event->accept();
+                if (mActions[ZoomOut])
+                    mActions[ZoomOut]->trigger();
+                return true;
+            }
+            if (keyEvent->key() == Qt::Key_0 && (keyEvent->modifiers() & Qt::ControlModifier)) {
+                event->accept();
+                if (mActions[ResetZoom])
+                    mActions[ResetZoom]->trigger();
+                return true;
+            }
             auto sequence = OverridingAction::keySequence(keyEvent);
             for (int i = 0; i < ActionCount; ++i) {
                 if (mActions[i] && mActions[i]->shortcuts().contains(sequence)) {
@@ -336,6 +341,7 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
             }
             break;
         }
+
         case QEvent::MouseButtonPress: {
             QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
             switch (mouseEvent->button()) {
