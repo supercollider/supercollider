@@ -63,6 +63,10 @@ using namespace QtCollider;
 #    ifdef Q_OS_WIN
 QAction* HelpBrowser::winCtrlRBlocker = nullptr;
 #    endif
+#    ifdef Q_OS_MAC
+QAction* HelpBrowser::macCmdPlusBlocker = nullptr;
+// QAction* HelpBrowser::macCmdEqualBlocker = nullptr;
+#    endif
 
 HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     QRect availableScreenRect = qApp->primaryScreen()->availableGeometry();
@@ -146,10 +150,6 @@ void HelpBrowser::onPageLoad() {
     static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
 
-    // mActions[ZoomIn]->setShortcutContext(Qt::WindowShortcut);
-    // mActions[ZoomOut]->setShortcutContext(Qt::WindowShortcut);
-    // mActions[ResetZoom]->setShortcutContext(Qt::WindowShortcut);
-
 #    ifdef Q_OS_WIN
     if (!winCtrlRBlocker) {
         winCtrlRBlocker = new OverridingAction(this);
@@ -157,6 +157,25 @@ void HelpBrowser::onPageLoad() {
         winCtrlRBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     }
     mWebView->focusProxy()->addAction(winCtrlRBlocker);
+#    endif
+
+#    ifdef Q_OS_MAC
+    if (!macCmdPlusBlocker) {
+        macCmdPlusBlocker = new OverridingAction(this);
+        // "Cmd++" 수신 시 주 편집창으로 가지 못하게 focusProxy 레벨에서 가로챔
+        macCmdPlusBlocker->setShortcut(QKeySequence("Cmd++"));
+        macCmdPlusBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        // 가로챈 뒤, HelpBrowser의 줌인 기능을 수행하도록 연결
+        connect(macCmdPlusBlocker, &QAction::triggered, this, &HelpBrowser::zoomIn);
+    }
+    if (!macCmdEqualBlocker) {
+        macCmdEqualBlocker = new OverridingAction(this);
+        macCmdEqualBlocker->setShortcut(QKeySequence("Cmd+="));
+        macCmdEqualBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(macCmdEqualBlocker, &QAction::triggered, this, &HelpBrowser::zoomIn);
+    }
+    mWebView->focusProxy()->addAction(macCmdPlusBlocker);
+    mWebView->focusProxy()->addAction(macCmdEqualBlocker);
 #    endif
 }
 
@@ -233,10 +252,6 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
     mActions[ZoomIn]->setShortcuts(zoomInShortcuts);
     mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
     mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
-
-    // mActions[ZoomIn]->setShortcutContext(Qt::WindowShortcut);
-    // mActions[ZoomOut]->setShortcutContext(Qt::WindowShortcut);
-    // mActions[ResetZoom]->setShortcutContext(Qt::WindowShortcut);
 
     QList<QKeySequence> evalShortcuts;
     evalShortcuts.append(settings->shortcut("editor-eval-line"));
