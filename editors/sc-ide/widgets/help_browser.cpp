@@ -146,9 +146,9 @@ void HelpBrowser::onPageLoad() {
     static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
 
-    mActions[ZoomIn]->setShortcutContext(Qt::WindowShortcut);
-    mActions[ZoomOut]->setShortcutContext(Qt::WindowShortcut);
-    mActions[ResetZoom]->setShortcutContext(Qt::WindowShortcut);
+    // mActions[ZoomIn]->setShortcutContext(Qt::WindowShortcut);
+    // mActions[ZoomOut]->setShortcutContext(Qt::WindowShortcut);
+    // mActions[ResetZoom]->setShortcutContext(Qt::WindowShortcut);
 
 #    ifdef Q_OS_WIN
     if (!winCtrlRBlocker) {
@@ -222,7 +222,6 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Equal)); // Cmd + Shift + =  → +
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus)); // Cmd + + (keypad)
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Plus)); // Cmd + Shift + +
-    zoomInShortcuts.append(QKeySequence("Meta++"));
     zoomInShortcuts.append(QKeySequence("Cmd++"));
 #    else
     zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal)); // Ctrl + =
@@ -235,9 +234,9 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
     mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
     mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
 
-    mActions[ZoomIn]->setShortcutContext(Qt::WindowShortcut);
-    mActions[ZoomOut]->setShortcutContext(Qt::WindowShortcut);
-    mActions[ResetZoom]->setShortcutContext(Qt::WindowShortcut);
+    // mActions[ZoomIn]->setShortcutContext(Qt::WindowShortcut);
+    // mActions[ZoomOut]->setShortcutContext(Qt::WindowShortcut);
+    // mActions[ResetZoom]->setShortcutContext(Qt::WindowShortcut);
 
     QList<QKeySequence> evalShortcuts;
     evalShortcuts.append(settings->shortcut("editor-eval-line"));

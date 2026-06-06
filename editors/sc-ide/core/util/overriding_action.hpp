@@ -29,14 +29,14 @@ namespace ScIDE {
 
 class OverridingAction : public QAction {
 public:
-    OverridingAction(QObject* parent): QAction(parent) { setShortcutContext(Qt::WidgetWithChildrenShortcut); }
+    OverridingAction(QObject* parent): QAction(parent) { setShortcutContext(Qt::WindowShortcut); }
 
     OverridingAction(const QString& text, QObject* parent): QAction(text, parent) {
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        setShortcutContext(Qt::WindowShortcut);
     }
 
     OverridingAction(const QIcon& icon, const QString& text, QObject* parent): QAction(icon, text, parent) {
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        setShortcutContext(Qt::WindowShortcut);
     }
 
     void addToWidget(QWidget* widget) {
