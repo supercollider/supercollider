@@ -169,13 +169,13 @@ void HelpBrowser::onPageLoad() {
     if (!macCmdPlusBlocker) {
         macCmdPlusBlocker = new OverridingAction(this);
         macCmdPlusBlocker->setShortcut(QKeySequence(Qt::META | Qt::Key_Plus));
-        macCmdPlusBlocker->setShortcutContext(Qt::WindowShortcut);
+        macCmdPlusBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(macCmdPlusBlocker, &QAction::triggered, this, &HelpBrowser::zoomIn);
     }
     if (!macCmdEqualBlocker) {
         macCmdEqualBlocker = new OverridingAction(this);
         macCmdEqualBlocker->setShortcut(QKeySequence(Qt::META | Qt::Key_Equal));
-        macCmdEqualBlocker->setShortcutContext(Qt::WindowShortcut);
+        macCmdEqualBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(macCmdEqualBlocker, &QAction::triggered, this, &HelpBrowser::zoomIn);
     }
     mWebView->focusProxy()->addAction(macCmdPlusBlocker);
