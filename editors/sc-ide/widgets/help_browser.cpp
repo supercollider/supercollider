@@ -217,16 +217,16 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
     mActions[DocClose]->setShortcut(settings->shortcut("ide-document-close"));
 
     QList<QKeySequence> zoomInShortcuts;
-    zoomInShortcuts.append(settings->shortcut("editor-enlarge-font"));
 
 #    ifdef Q_OS_MAC
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Equal));
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus));
+    Qt::KeyboardModifier metaKey = Qt::META;
 #    else
-    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal));
-    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Plus));
-    zoomInShortcuts.append(QKeySequence("Ctrl++"));
+    Qt::KeyboardModifier metaKey = Qt::CTRL;
 #    endif
+
+    zoomInShortcuts.append(QKeySequence(metaKey | Qt::Key_Equal));
+    zoomInShortcuts.append(QKeySequence(metaKey | Qt::Key_Plus));
+    zoomInShortcuts.append(QKeySequence("Ctrl++"));
 
     mActions[ZoomIn]->setShortcuts(zoomInShortcuts);
     mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
