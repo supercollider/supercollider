@@ -65,7 +65,7 @@ QAction* HelpBrowser::winCtrlRBlocker = nullptr;
 #    endif
 #    ifdef Q_OS_MAC
 QAction* HelpBrowser::macCmdPlusBlocker = nullptr;
-// QAction* HelpBrowser::macCmdEqualBlocker = nullptr;
+QAction* HelpBrowser::macCmdEqualBlocker = nullptr;
 #    endif
 
 HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {

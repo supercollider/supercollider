@@ -163,7 +163,7 @@ private:
     // Blocks the default `Cmd + +` behavior on macOS, which would otherwise
     // trigger an unwanted font‑size increase in the SC‑IDE code editor.
     static QAction* macCmdPlusBlocker;
-    // static QAction* macCmdEqualBlocker;
+    static QAction* macCmdEqualBlocker;
 #endif
 };
 
