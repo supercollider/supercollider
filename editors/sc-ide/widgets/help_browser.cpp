@@ -60,10 +60,6 @@ namespace ScIDE {
 
 using namespace QtCollider;
 
-#    ifdef Q_OS_WIN
-QAction* HelpBrowser::winCtrlRBlocker = nullptr;
-#    endif
-
 HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     QRect availableScreenRect = qApp->primaryScreen()->availableGeometry();
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.7);
@@ -150,15 +146,6 @@ void HelpBrowser::onPageLoad() {
     mActions[ZoomIn]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mActions[ZoomOut]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mActions[ResetZoom]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-#    endif
-
-#    ifdef Q_OS_WIN
-    if (!winCtrlRBlocker) {
-        winCtrlRBlocker = new OverridingAction(this);
-        winCtrlRBlocker->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_R));
-        winCtrlRBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    }
-    mWebView->focusProxy()->addAction(winCtrlRBlocker);
 #    endif
 }
 
