@@ -151,7 +151,8 @@ void HelpBrowser::onPageLoad() {
     static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
 
-    ifdef Q_OS_MAC mActions[ZoomIn]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+#    ifdef Q_OS_MAC
+    mActions[ZoomIn]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mActions[ZoomOut]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mActions[ResetZoom]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 #    endif
