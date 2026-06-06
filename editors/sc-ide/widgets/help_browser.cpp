@@ -320,32 +320,6 @@ bool HelpBrowser::helpBrowserHasFocus() const {
 bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
     if (object == mWebView) {
         switch (event->type()) {
-        case QEvent::KeyPress: {
-            QKeyEvent* ke = static_cast<QKeyEvent*>(event);
-#    ifdef Q_OS_WIN
-            // 1. Windows: Ctrl + R does not activate Find & Replace in SC-IDE code editor.
-            if (ke->key() == Qt::Key_R && (ke->modifiers() & Qt::ControlModifier)) {
-                event->accept();
-                if (mActions[Reload]) {
-                    mActions[Reload]->trigger();
-                }
-                return true;
-            }
-#    endif
-
-#    ifdef Q_OS_MAC
-            // 2. macOS: Cmd + Shift + = does not enlarge the font size in SC-IDE code editor.
-            if ((ke->key() == Qt::Key_Plus || ke->key() == Qt::Key_Equal) && (ke->modifiers() & Qt::ControlModifier)) {
-                event->accept();
-                if (mActions[ZoomIn]) {
-                    mActions[ZoomIn]->trigger();
-                }
-                return true;
-            }
-#    endif
-            break;
-        }
-
         case QEvent::MouseButtonPress: {
             QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
             switch (mouseEvent->button()) {
@@ -363,12 +337,32 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
             break;
         }
         case QEvent::ShortcutOverride: {
-            // check if any widget action shortcut matches the observed keyEvent
-            // if yes, capture the event, else, bubble up the event
             auto keyEvent = static_cast<QKeyEvent*>(event);
 
-            auto sequence = OverridingAction::keySequence(keyEvent);
+#    ifdef Q_OS_WIN
+            // 1. Windows: Ctrl + R does not activate Find & Replace in SC-IDE code editor.
+            if (keyEvent->key() == Qt::Key_R && (keyEvent->modifiers() & Qt::ControlModifier)) {
+                event->accept();
+                if (mActions[Reload]) {
+                    mActions[Reload]->trigger();
+                }
+                return true;
+            }
+#    endif
 
+#    ifdef Q_OS_MAC
+            // 2. macOS: Cmd + Shift + = does not enlarge the font size in SC-IDE code editor.
+            if ((keyEvent->key() == Qt::Key_Plus || keyEvent->key() == Qt::Key_Equal)
+                && (keyEvent->modifiers() & Qt::ControlModifier)) {
+                event->accept();
+                if (mActions[ZoomIn]) {
+                    mActions[ZoomIn]->trigger();
+                }
+                return true;
+            }
+#    endif
+
+            auto sequence = OverridingAction::keySequence(keyEvent);
             for (int i = 0; i < ActionCount; ++i) {
                 if (mActions[i] && mActions[i]->shortcuts().contains(sequence)) {
                     event->accept();
