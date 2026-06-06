@@ -158,13 +158,6 @@ private:
     // trigger an unwanted refresh action in the embedded browser widget.
     static QAction* winCtrlRBlocker;
 #endif
-
-#ifdef Q_OS_MAC
-    // Blocks the default `Cmd + +` behavior on macOS, which would otherwise
-    // trigger an unwanted font‑size increase in the SC‑IDE code editor.
-    static QAction* macCmdPlusBlocker;
-    static QAction* macCmdEqualBlocker;
-#endif
 };
 
 class HelpBrowserFindBox : public QLineEdit {
