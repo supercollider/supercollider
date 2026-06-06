@@ -143,7 +143,6 @@ void HelpBrowser::onPageLoad() {
     // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
     static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
-
     static_cast<OverridingAction*>(mActions[ZoomIn])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[ZoomOut])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[ResetZoom])->addToWidget(mWebView->focusProxy());
@@ -242,11 +241,12 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
     zoomInShortcuts.append(settings->shortcut("editor-enlarge-font"));
 
 #    ifdef Q_OS_MAC
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Equal)); // Cmd + =
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus)); // Cmd + + (keypad)
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Equal));
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus));
 #    else
-    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal)); // Ctrl + =
-    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Plus)); // Ctrl + + (keypad)
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal));
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Plus));
+    zoomInShortcuts.append(QKeySequence("Ctrl++"));
 #    endif
 
     mActions[ZoomIn]->setShortcuts(zoomInShortcuts);
