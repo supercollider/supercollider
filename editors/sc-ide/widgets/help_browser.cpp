@@ -140,15 +140,25 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 
 void HelpBrowser::onPageLoad() {
     mLoadProgressIndicator->stop();
-    // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
+
     static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
+
+    // 이 오버라이딩 액션들이 focusProxy에 주입되면서 웹뷰 바닥에서부터 키를 낚아챕니다.
     static_cast<OverridingAction*>(mActions[ZoomIn])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[ZoomOut])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[ResetZoom])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Reload])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
+
+    // [맥OS 핵심 방어] focusProxy 내부에서 Zoom 액션들이 메인 메뉴바의 단축키를 이기도록
+    // WidgetWithChildrenShortcut 컨텍스트를 확실하게 재명시해 줍니다.
+#    ifdef Q_OS_MAC
+    mActions[ZoomIn]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mActions[ZoomOut]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mActions[ResetZoom]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+#    endif
 
 #    ifdef Q_OS_WIN
     if (!winCtrlRBlocker) {
@@ -157,25 +167,6 @@ void HelpBrowser::onPageLoad() {
         winCtrlRBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     }
     mWebView->focusProxy()->addAction(winCtrlRBlocker);
-#    endif
-
-#    ifdef Q_OS_MAC
-    if (!macCmdPlusBlocker) {
-        macCmdPlusBlocker = new OverridingAction(this);
-        // "Cmd++" 수신 시 주 편집창으로 가지 못하게 focusProxy 레벨에서 가로챔
-        macCmdPlusBlocker->setShortcut(QKeySequence("Cmd++"));
-        macCmdPlusBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        // 가로챈 뒤, HelpBrowser의 줌인 기능을 수행하도록 연결
-        connect(macCmdPlusBlocker, &QAction::triggered, this, &HelpBrowser::zoomIn);
-    }
-    if (!macCmdEqualBlocker) {
-        macCmdEqualBlocker = new OverridingAction(this);
-        macCmdEqualBlocker->setShortcut(QKeySequence("Cmd+="));
-        macCmdEqualBlocker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(macCmdEqualBlocker, &QAction::triggered, this, &HelpBrowser::zoomIn);
-    }
-    mWebView->focusProxy()->addAction(macCmdPlusBlocker);
-    mWebView->focusProxy()->addAction(macCmdEqualBlocker);
 #    endif
 }
 
@@ -238,10 +229,10 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
 
 #    ifdef Q_OS_MAC
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Equal)); // Cmd + =
-    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Equal)); // Cmd + Shift + =  → +
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Equal)); // Cmd + Shift + =
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus)); // Cmd + + (keypad)
     zoomInShortcuts.append(QKeySequence(Qt::META | Qt::SHIFT | Qt::Key_Plus)); // Cmd + Shift + +
-    zoomInShortcuts.append(QKeySequence("Cmd++"));
+    zoomInShortcuts.append(QKeySequence(Qt::META | Qt::Key_Plus));
 #    else
     zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal)); // Ctrl + =
     zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Equal)); // Ctrl + Shift + =  → +
