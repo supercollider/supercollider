@@ -50,7 +50,7 @@ public:
 
         Qt::KeyboardModifiers modifiers = event->modifiers() & ~Qt::KeypadModifier;
 
-        return QKeySequence(event->modifiers() | event->key());
+        return QKeySequence(modifiers | event->key());
     }
 
 protected:
