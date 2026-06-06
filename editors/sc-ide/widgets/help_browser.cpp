@@ -171,7 +171,6 @@ void HelpBrowser::createActions() {
     connect(ovrAction, &QAction::triggered, this, &HelpBrowser::evaluateSelection);
     mActions[EvaluateRegion] = new OverridingAction(tr("Evaluate as Code Region"), this);
     connect(mActions[EvaluateRegion], &OverridingAction::triggered, this, [=]() { this->evaluateSelection(true); });
-
     // For the sake of display:
     mWebView->pageAction(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
     mWebView->pageAction(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
