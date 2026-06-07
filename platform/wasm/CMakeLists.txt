@@ -1,5 +1,13 @@
 # other emscripten definitions are in root, scsynth and sclang cmake
-# this only defines the editor build
+
+# osc binding to construct osc messages
+add_library(webosc STATIC
+    SC_WebOsc.cpp
+)
+target_include_directories(webosc PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/oscpack_1_1_0)
+target_link_libraries(webosc PUBLIC oscpack)
+
+# basic html editor
 
 add_custom_target(webeditor
     DEPENDS sclang scsynth
