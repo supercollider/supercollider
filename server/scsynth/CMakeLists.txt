@@ -273,7 +273,7 @@ elseif(AUDIOAPI STREQUAL bela)
 elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 elseif(AUDIOAPI STREQUAL webaudio)
-    target_link_libraries(libscsynth oscpack)
+    target_link_libraries(libscsynth webosc)
 endif()
 
 
