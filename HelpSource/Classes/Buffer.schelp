@@ -787,7 +787,7 @@ code::
 s.boot;
 b = Buffer.read(s, ExampleFiles.child);
 // like Buffer.plot
-b.getToFloatArray(wait: 0.01, action: { |array { array.plot }.defer; "done".postln });
+b.getToFloatArray(wait: 0.01, action: { |array| { array.plot }.defer; "done".postln });
 b.free;
 ::
 
