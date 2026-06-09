@@ -155,6 +155,25 @@ myPath = PathName.new(ExampleFiles.child.dirname);
 myPath.allFolders.postln;
 )
 ::
+
+warning::
+Adding a slash (code::/::) at the end of a filename or folder name is not recommended, as it changes the behavior described above.
+
+code::
+(
+var myPath;
+myPath = PathName.new(ExampleFiles.child ++ "/");
+myPath.allFolders.postln;
+)
+
+(
+var myPath;
+myPath = PathName.new(ExampleFiles.child.dirname ++ "/");
+myPath.allFolders.postln;
+)
+::
+::
+
 discussion::
 code::
 (
