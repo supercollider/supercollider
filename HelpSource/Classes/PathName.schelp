@@ -155,6 +155,54 @@ myPath = PathName.new(ExampleFiles.child.dirname);
 myPath.allFolders.postln;
 )
 ::
+discussion::
+code::
+(
+var test_FilePath_original       = PathName(ExampleFiles.child);
+var test_BasePath                = ("~/Downloads/test__" ++ Date.seed).standardizePath;
+var test_FolderPath_wo_extension = test_BasePath +/+ test_FilePath_original.extension;
+var test_FolderPath_w_extension  = test_BasePath +/+ test_FilePath_original.extension ++ ".folder";
+var test_FilePath_w_extension    = test_BasePath +/+ test_FilePath_original.fileName;
+var test_FilePath_wo_extension   = test_BasePath +/+ test_FilePath_original.fileNameWithoutExtension;
+
+[test_BasePath, test_FolderPath_wo_extension, test_FolderPath_w_extension].do { |path|
+	File.mkdir(path)
+};
+
+[test_FilePath_w_extension, test_FilePath_wo_extension].do { |path|
+	File.copy(test_FilePath_original.fullPath, path)
+};
+
+(
+"FILE (with extension):\n\tPathName("
+++ test_FilePath_w_extension ++ ").allFolders\n\t\t"
+++ PathName(test_FilePath_w_extension).allFolders
+++ "\n\t\t     <- All folder names are included."
+
+++ "\n\nFILE (without extension):\n\tPathName("
+++ test_FilePath_wo_extension ++ ").allFolders\n\t\t"
+++ PathName(test_FilePath_wo_extension).allFolders
+++ "\n\t\t     <- All folder names are included."
+
+++ "\n\nFOLDER (without extension):\n\tPathName(" ++ test_FolderPath_wo_extension
+++ ").allFolders\n\t\t"
+++ PathName(test_FolderPath_wo_extension).allFolders
+++ "\n\t\t     <- The folder name \"wav\" is excluded."
+
+++ "\n\nFOLDER (with extension):\n\tPathName(" ++ test_FolderPath_w_extension
+++ ").allFolders\n\t\t"
+++ PathName(test_FolderPath_w_extension).allFolders
+++ "\n\t\t     <- The folder name \"wav.folder\" is excluded.\n"
+).postln;
+
+test_BasePath.openOS;
+
+~test_BasePath = test_BasePath
+/*
+File.deleteAll(~test_BasePath) // Evaluate it to remove the test_ files/foler.
+*/
+)
+::
 
 method::diskName
 if path is an absolute path, returns the disk name; else a blank string.
