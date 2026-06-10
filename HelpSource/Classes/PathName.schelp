@@ -176,24 +176,24 @@ discussion::
 When the path does not end with a slash, the method handles the path consistently, regardless of whether the final component contains a file extension or not.
 code::
 (
-var test_FilePath_original       = PathName(ExampleFiles.child);
-var test_BasePath                = ("~/Downloads/test_" ++ Date.seed).standardizePath;
-var test_FolderPath_wo_extension = test_BasePath +/+ test_FilePath_original.extension;
-var test_FolderPath_w_extension  = test_BasePath +/+ test_FilePath_original.extension ++ ".folder";
-var test_FilePath_w_extension    = test_BasePath +/+ test_FilePath_original.fileName;
-var test_FilePath_wo_extension   = test_BasePath +/+ test_FilePath_original.fileNameWithoutExtension;
+var filePath_original       = PathName(ExampleFiles.child);
+var basePath                = ("~/Downloads/test_" ++ Date.seed).standardizePath;
+var folderPath_wo_extension = basePath +/+ filePath_original.extension;
+var folderPath_w_extension  = basePath +/+ filePath_original.extension ++ ".folder";
+var filePath_w_extension    = basePath +/+ filePath_original.fileName;
+var filePath_wo_extension   = basePath +/+ filePath_original.fileNameWithoutExtension;
 
-[test_BasePath, test_FolderPath_wo_extension, test_FolderPath_w_extension].do { |path| path.mkdir };
+[basePath, folderPath_wo_extension, folderPath_w_extension].do { |path| path.mkdir };
 
-[test_FilePath_w_extension, test_FilePath_wo_extension].do { |path|
-	File.copy(test_FilePath_original.fullPath, path)
+[filePath_w_extension, filePath_wo_extension].do { |path|
+	File.copy(filePath_original.fullPath, path)
 };
 
 [
-	["FILE (with extension):\n\t", test_FilePath_w_extension],
-	["FILE (without extension):\n\t", test_FilePath_wo_extension],
-	["FOLDER (without extension):\n\t", test_FolderPath_wo_extension],
-	["FOLDER (with extension):\n\t", test_FolderPath_w_extension],
+	["FILE with extension:\n\t", filePath_w_extension],
+	["FILE without extension:\n\t", filePath_wo_extension],
+	["FOLDER without extension:\n\t", folderPath_wo_extension],
+	["FOLDER with extension:\n\t", folderPath_w_extension],
 ].do { |array|
 	var code = "PathName(" ++ array[1].quote ++ ").allFolders";
 	(array[0] ++ code ++ "\n\t\t" ++ code.interpret.asString).postln;
@@ -206,10 +206,10 @@ var test_FilePath_wo_extension   = test_BasePath +/+ test_FilePath_original.file
 		++ "\n").postln
 };
 
-test_BasePath.openOS;
+basePath.openOS;
 
-~test_BasePath = test_BasePath /*
-File.deleteAll(~test_BasePath) // Evaluate this to remove the files and folders created for the test. */
+~basePath = basePath /*
+File.deleteAll(~basePath) // Evaluate this to remove the files and folders created for the test. */
 )
 ::
 
