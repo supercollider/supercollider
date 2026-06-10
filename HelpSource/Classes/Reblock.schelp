@@ -8,7 +8,7 @@ For certain algorithms it is necessary to run a link::Classes/Synth:: at a small
 
 The block size can be a constant number or it can be set dynamically via a Synth control (except for Supernova). See link::#*new:: for more information.
 
-note::For technical reasons, Supernova requires a fixed resampling factor. Trying to use a Synth control results in a warning.::
+note::For technical reasons, Supernova requires a fixed blockSize value. Trying to use a Synth control results in a warning.::
 
 For example, this can be used to implement very short feedback loops:
 
