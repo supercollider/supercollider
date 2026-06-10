@@ -138,9 +138,14 @@ myPath.filesDo{ |afile| afile.postln };
 ::
 
 method::allFolders
-Returns all folder names in the path.
-If the path ends with a file, all folders in the path are returned.
-If the path ends with a folder, the final folder (the folder itself) is not included.
+Returns a list of all folder names in the pathname.
+list::
+## If the path ends in a file, all folders in the path are returned.
+## If the path ends in a folder, the final folder is excluded.
+::
+note::
+Appending a slash (code::/::) to the path is not recommended, as it changes the behavior described above.
+::
 
 code::
 (
@@ -154,12 +159,7 @@ var myPath;
 myPath = PathName.new(ExampleFiles.child.dirname);
 myPath.allFolders.postln;
 )
-::
 
-warning::
-Adding a slash (code::/::) at the end of a filename or folder name is not recommended, as it changes the behavior described above.
-
-code::
 (
 var myPath;
 myPath = PathName.new(ExampleFiles.child ++ "/");
@@ -172,9 +172,8 @@ myPath = PathName.new(ExampleFiles.child.dirname ++ "/");
 myPath.allFolders.postln;
 )
 ::
-::
-
 discussion::
+When the path does not end with a slash, the method handles the path consistently, regardless of whether the final component contains a file extension or not.
 code::
 (
 var test_FilePath_original       = PathName(ExampleFiles.child);
