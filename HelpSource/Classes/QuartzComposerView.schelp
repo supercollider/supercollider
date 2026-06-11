@@ -183,7 +183,7 @@ x.keysValuesDo({ |i, elem| y[i.asInteger] = elem });
 y.postln;
 )
 
-// use QC to concat the strings)
+// use QC to concat the strings:
 m.stringConcatIn = ["foo", "bar"]; // array in
 x = m.stringConcatOut; // String Out
 

@@ -422,7 +422,7 @@ code::
 	~window.front;
 )
 
-// monte carlo :) exec every line to test
+// monte carlo : exec every line to test
 ~window.view.setBackgroundImage(~image, 1, ~alpha, ~bounds);
 ~window.view.setBackgroundImage(~image, 2, ~alpha, ~bounds);
 ~window.view.setBackgroundImage(~image, 3, ~alpha, ~bounds);
