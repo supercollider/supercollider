@@ -234,6 +234,16 @@ void send_done_message(endpoint_ptr const& endpoint, const char* cmd, osc::int32
     }
 }
 
+void send_done_message(endpoint_ptr const& endpoint, const char* cmd, osc::int32 index, osc::int32 index2) {
+    if (endpoint) {
+        char buffer[1024];
+        osc::OutboundPacketStream p(buffer, 1024);
+        p << osc::BeginMessage("/done") << cmd << index << index2 << osc::EndMessage;
+
+        endpoint->send(p.Data(), p.Size());
+    }
+}
+
 void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char* content) {
     if (endpoint) {
         char buffer[8192];
@@ -961,7 +971,7 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
         }
 
         if (observer >= 0)
-            send_done_message(endpoint, "/notify", observer);
+            send_done_message(endpoint, "/notify", observer, (osc::int32)server_arguments::instance().max_logins);
     });
 }
 
