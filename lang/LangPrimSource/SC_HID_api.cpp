@@ -44,7 +44,7 @@
 
 #include "SC_LanguageClient.h"
 
-extern bool compiledOK;
+extern bool gCompiledOK;
 
 #ifdef HAVE_HIDAPI
 
@@ -377,7 +377,7 @@ void SC_HID_APIManager::deviceClosed(int joy_idx, struct hid_dev_desc* dd, std::
         trace("error when locking language (%d)\n", status);
         return;
     }
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
         ++g->sp;
@@ -400,7 +400,7 @@ void SC_HID_APIManager::handleElement(int joy_idx, struct hid_device_element* el
         return;
     }
 
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
         ++g->sp;
@@ -436,7 +436,7 @@ void SC_HID_APIManager::handleDevice(int joy_idx, struct hid_dev_desc* devd, std
         return;
     }
 
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
         ++g->sp;
@@ -978,7 +978,7 @@ void initHIDAPIPrimitives() {
     definePrimitive(base, index++, "_HID_API_BuildDeviceList", prHID_API_BuildDeviceList, 1,
                     0); // this gets device info about the various devices that are attached
 
-    definePrimitive(base, index++, "_HID_API_OpenDevice", prHID_API_Open, 3, 0); // opens a specific device
+    definePrimitive(base, index++, "_HID_API_OpenDevice", prHID_API_Open, 4, 0); // opens a specific device
     definePrimitive(base, index++, "_HID_API_CloseDevice", prHID_API_Close, 2, 0); // closes a specific device
 
     definePrimitive(base, index++, "_HID_API_GetInfo", prHID_API_GetInfo, 2, 0); // gets info about a specific device
@@ -988,12 +988,12 @@ void initHIDAPIPrimitives() {
                     0); // gets info about a specific device element
     definePrimitive(base, index++, "_HID_API_GetNumberOfElements", prHID_API_GetNumberOfElements, 2,
                     0); // gets number of elements of a device
-    definePrimitive(base, index++, "_HID_API_GetElementInfo", prHID_API_GetElementInfo, 4,
+    definePrimitive(base, index++, "_HID_API_GetElementInfo", prHID_API_GetElementInfo, 3,
                     0); // gets info about a specific device element
 
-    definePrimitive(base, index++, "_HID_API_SetElementOutput", prHID_API_SetElementOutput, 3,
+    definePrimitive(base, index++, "_HID_API_SetElementOutput", prHID_API_SetElementOutput, 4,
                     0); // sets the output value of a specific device element, and sends the report
-    definePrimitive(base, index++, "_HID_API_SetElementRepeat", prHID_API_SetElementRepeat, 3,
+    definePrimitive(base, index++, "_HID_API_SetElementRepeat", prHID_API_SetElementRepeat, 4,
                     0); // sets the repeat property of a specific device element
 
     s_hidElementData = getsym("prHIDElementData"); // send back element data

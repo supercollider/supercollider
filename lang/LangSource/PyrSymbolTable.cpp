@@ -36,6 +36,13 @@ SCLANG_DLLEXPORT_C PyrSymbol* getsym(const char* name) {
     return symbol;
 }
 
+SCLANG_DLLEXPORT_C PyrSymbol* getsymlen(const char* name, std::size_t len) {
+    char str[256];
+    std::copy(name, name + len, str);
+    str[len] = 0;
+    return getsym(str);
+}
+
 SCLANG_DLLEXPORT_C PyrSymbol* getmetasym(const char* name) {
     char str[256];
     strcpy(str, "Meta_");

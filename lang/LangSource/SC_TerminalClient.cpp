@@ -124,7 +124,7 @@ int SC_TerminalClient::run(int argc, char** argv) {
     // startup library
     compileLibrary(opt.mStandalone);
 
-    if (!compiledOK) {
+    if (!gCompiledOK) {
         post("ERROR: Library has not been compiled successfully.\n");
         shutdownLibrary();
         flush();

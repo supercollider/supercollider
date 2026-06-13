@@ -139,8 +139,10 @@ void TypeCodec<QRectF>::write(PyrSlot* slot, const QRectF& r) {
 QSizeF TypeCodec<QSizeF>::read(PyrSlot* slot) {
     PyrSlot* slots = slotRawObject(slot)->slots;
     float w = 0.f, h = 0.f;
-    slotFloatVal(slots + 0, &w);
-    slotFloatVal(slots + 1, &h);
+    if (slotFloatVal(slots + 0, &w))
+        assert(false);
+    if (slotFloatVal(slots + 1, &h))
+        assert(false);
 
     return QSizeF(w, h);
 }
@@ -168,10 +170,14 @@ inline QColor asColor(PyrObject* obj) {
 
     float r, g, b, a;
     r = g = b = a = 0.f;
-    slotFloatVal(slots + 0, &r);
-    slotFloatVal(slots + 1, &g);
-    slotFloatVal(slots + 2, &b);
-    slotFloatVal(slots + 3, &a);
+    if (slotFloatVal(slots + 0, &r))
+        assert(false);
+    if (slotFloatVal(slots + 1, &g))
+        assert(false);
+    if (slotFloatVal(slots + 2, &b))
+        assert(false);
+    if (slotFloatVal(slots + 3, &a))
+        assert(false);
     return QColor(r * 255, g * 255, b * 255, a * 255);
 }
 

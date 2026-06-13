@@ -154,7 +154,7 @@ extern void setPostFile(FILE* file);
 extern "C" int vpost(const char* fmt, va_list vargs);
 extern void post(const char* fmt, ...);
 extern void postfl(const char* fmt, ...);
-extern void postText(const char* text, long length);
+extern void postText(const char* text, std::size_t length);
 extern void postChar(char c);
 extern void error(const char* fmt, ...);
 extern void flushPostBuf();

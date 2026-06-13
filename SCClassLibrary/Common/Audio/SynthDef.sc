@@ -9,6 +9,8 @@ SynthDef {
 	var <>constants;
 	var <>constantSet;
 	var <>maxLocalBufs;
+	var <reblock;
+	var <resample;
 
 	// topo sort
 	var <>available;
@@ -79,6 +81,8 @@ SynthDef {
 		controls = nil;
 		controlIndex = 0;
 		maxLocalBufs = nil;
+		reblock = nil;
+		resample = nil;
 	}
 	buildUgenGraph { arg func, rates, prependArgs;
 		var result;
@@ -302,6 +306,7 @@ SynthDef {
 		this.asArray.writeDef(stream);
 		^stream.collection;
 	}
+
 	writeDefFile { arg dir, overwrite(true), mdPlugin;
 		var desc, defFileExistedBefore;
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
@@ -323,11 +328,22 @@ SynthDef {
 		}
 	}
 
-	writeDef { arg file;
+	writeDef { arg file, version=3;
 		// This describes the file format for the synthdef files.
-		var allControlNamesTemp, allControlNamesMap;
+		var allControlNamesTemp, allControlNamesMap, byteSize, startPos, endPos;
 
 		try {
+			if (version < 2 or: { version > 3 }) {
+				Error("version number" + version + "out of range").throw
+			};
+
+			if (version > 2) {
+				// save current stream position so we can calculate the SynthDef size.
+				startPos = file.pos;
+				// the SynthDef size in bytes. This will be set at the very end.
+				file.putInt32(0);
+			};
+
 			file.putPascalString(name.asString);
 
 			this.writeConstants(file);
@@ -363,8 +379,7 @@ SynthDef {
 
 					varname = name ++ "." ++ varname;
 					if (varname.size > 32) {
-						Post << "variant '" << varname << "' name too long.\n";
-						^nil
+						Error("variant '%' name too long".format(varname)).throw;
 					};
 					varcontrols = controls.copy;
 					pairs.pairsDo { |cname, values|
@@ -373,9 +388,8 @@ SynthDef {
 						if (cn.notNil) {
 							values = values.asArray;
 							if (values.size > cn.defaultValue.asArray.size) {
-								postf("variant: '%' control: '%' size mismatch.\n",
-									varname, cname);
-								^nil
+								Error("variant: '%' control: '%' size mismatch"
+									.format(varname, cname)).throw;
 							}{
 								index = cn.index;
 								values.do {|val, i|
@@ -383,9 +397,8 @@ SynthDef {
 								}
 							}
 						}{
-							postf("variant: '%' control: '%' not found.\n",
-								varname, cname);
-							^nil
+							Error("variant: '%' control: '%' not found"
+								.format(varname, cname)).throw;
 						}
 					};
 					file.putPascalString(varname);
@@ -394,8 +407,24 @@ SynthDef {
 					};
 				};
 			};
-		} { // catch
-			arg e;
+
+			if (version > 2) {
+				// reblock
+				(this.reblock ?? { Reblock() }).writeDef(file);
+
+				// resample
+				(this.resample ?? { Resample() }).writeDef(file);
+
+				// calculate total size in bytes
+				endPos = file.pos;
+				byteSize = endPos - startPos;
+				// overwrite the size field in the beginning
+				file.pos = startPos;
+				file.putInt32(byteSize);
+				// restore stream position
+				file.pos = endPos;
+			}
+		} { arg e; // catch
 			Error("SynthDef: could not write def: %".format(e.what())).throw;
 		}
 	}
@@ -430,6 +459,27 @@ SynthDef {
 		^true
 	}
 
+	reblock_ { arg obj;
+		if (obj.isKindOf(Reblock).not) {
+			Error("wrong argument to reblock_").throw;
+		};
+		if (reblock.isNil) {
+			reblock = obj;
+		} {
+			"ignore duplicate Reblock object".warn;
+		};
+	}
+
+	resample_ { arg obj;
+		if (obj.isKindOf(Resample).not) {
+			Error("wrong argument to resample_").throw;
+		};
+		if (resample.isNil) {
+			resample = obj;
+		} {
+			"ignore duplicate Resample object".warn;
+		};
+	}
 
 	// UGens do these
 	addUGen { arg ugen;
@@ -628,14 +678,14 @@ SynthDef {
 			// should remember what dir synthDef was written to
 			dir = dir ? synthDefDir;
 			this.writeDefFile(dir);
-			server.sendMsg("/d_load", dir ++ name ++ ".scsyndef", completionMsg)
+			server.sendMsg("/d_load", dir +/+ name ++ ".scsyndef", completionMsg)
 		};
 	}
 
 	// write to file and make synth description
 	store { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
 		var lib = SynthDescLib.getLib(libname);
-		var file, path = dir ++ name ++ ".scsyndef";
+		var file, path = dir +/+ name ++ ".scsyndef";
 		if(metadata.falseAt(\shouldNotSend)) {
 			protect {
 				var bytes, desc;
@@ -720,4 +770,95 @@ SynthDef {
 		^synth
 	}
 
+}
+
+Reblock {
+	var <>synthDef;
+	var <>blockSize;
+	var <>controlIndex;
+
+	*new { arg blockSize=0;
+		^super.new.init(blockSize);
+	}
+
+	init { arg blockSize;
+		synthDef = UGen.buildSynthDef;
+		if (blockSize.isKindOf(SimpleNumber)) {
+			blockSize = blockSize.asInteger;
+			// 0 means no reblocking
+			if ((blockSize != 0) and: { blockSize.isPowerOfTwo.not }) {
+				Error("block size % is not a power of two".format(blockSize)).throw;
+			};
+			this.blockSize = blockSize;
+		} {
+			if (blockSize.isKindOf(OutputProxy)) {
+				controlIndex = blockSize.controlIndex
+			};
+			if (controlIndex.isNil) {
+				Error("Reblock requires a number or Synth Control").throw;
+			}
+		};
+		if (synthDef.notNil) {
+			synthDef.reblock = this;
+		}
+	}
+
+	writeDef { arg stream;
+		if (controlIndex.notNil) {
+			// use control index
+			stream.putInt32(-1);
+			stream.putInt32(controlIndex);
+		} {
+			// constant block size
+			stream.putInt32(blockSize);
+			stream.putInt32(0);
+		}
+	}
+}
+
+Resample {
+	var <>synthDef;
+	var <>factor;
+	var <>controlIndex;
+
+	*new { arg factor=1.0;
+		^super.new.init(factor);
+	}
+
+	init { arg factor;
+		synthDef = UGen.buildSynthDef;
+		if (factor.isKindOf(SimpleNumber)) {
+			factor = factor.asFloat;
+			// 0.0 means no resampling
+			if (factor == 0.0) { factor = 1.0 };
+			// make sure that 'factor' is a power of two (with positive or negative exponent)
+			if ((factor.asInteger.isPowerOfTwo.not) and:
+				{ factor.reciprocal.asInteger.isPowerOfTwo.not }) {
+				Error("resample factor % is not a power of two".format(factor)).throw;
+			};
+			this.factor = factor;
+		} {
+			if (factor.isKindOf(OutputProxy)) {
+				controlIndex = factor.controlIndex
+			};
+			if (controlIndex.isNil) {
+				Error("Resample requires a number or Synth Control").throw;
+			}
+		};
+		if (synthDef.notNil) {
+			synthDef.resample = this;
+		}
+	}
+
+	writeDef { arg stream;
+		if (controlIndex.notNil) {
+			// control index
+			stream.putFloat(-1.0);
+			stream.putInt32(controlIndex);
+		} {
+			// constant factor
+			stream.putFloat(factor);
+			stream.putInt32(0);
+		}
+	}
 }

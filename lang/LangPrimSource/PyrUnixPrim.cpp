@@ -56,7 +56,7 @@ Primitives for Unix.
 
 namespace fs = std::filesystem;
 
-extern bool compiledOK;
+extern bool gCompiledOK;
 PyrSymbol* s_unixCmdAction;
 
 int prString_System(struct VMGlobals* g, int numArgsPushed) {
@@ -128,7 +128,7 @@ static void string_popen_thread_func(pid_t pid, FILE* stream, bool postOutput) {
     res = WEXITSTATUS(res);
 
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
         ++g->sp;
         SetObject(g->sp, class_string);

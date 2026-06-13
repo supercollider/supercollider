@@ -11,6 +11,19 @@ ScIDE {
 		subListSorter = { | a b | a[0].perform('<', b[0]) };
 
 		Class.initClassTree(Server);
+		Class.initClassTree(SCDoc);
+		Class.initClassTree(PostWindowURLHandler);
+
+		PostWindowURLHandler.register(\scdoc, {|url|
+			var prefix = "scdoc://";
+			ScIDE.openHelpUrl("file://" ++ SCDoc.helpTargetDir +/+ url[prefix.size..])
+		});
+
+		PostWindowURLHandler.register(\file, {|url|
+			var prefix = "file://";
+			var parts = url[prefix.size..].split($:);
+			{ Document.open("/" ++ parts[0], parts[1] ?? { 0 }, parts[2] ?? [0]) }.fork(AppClock)
+		});
 
 		StartUp.add {
 			if (this.connected) {
@@ -423,6 +436,30 @@ ScIDE {
 	*prConnect {|ideName|
 		_ScIDE_Connect
 		this.primitiveFailed
+	}
+}
+
+PostWindowURLHandler {
+	classvar registered;
+
+	*initClass {
+		Class.initClassTree(IdentityDictionary);
+		registered = IdentityDictionary();
+	}
+
+	*register { |name, fn| registered[name] = fn }
+	
+	*new { |scheme, url|
+		var found = registered[scheme.asSymbol];
+		^if(found.isNil){
+			this.prDefault(url)
+		} {
+			found.(url)
+		}
+	}
+
+	*prDefault { |url|
+		"PostWindowURLHandler does not know how to handle the URL '%'".format(url).warn
 	}
 }
 

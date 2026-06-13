@@ -72,7 +72,7 @@ std::unique_ptr<InPort::UDP> gUDPport {};
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr, *s_recvrawmsg, *s_ipv4, *s_ipv6, *s_all;
-extern bool compiledOK;
+extern bool gCompiledOK;
 
 std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomUdpPorts;
 std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomTcpPorts;
@@ -264,7 +264,7 @@ static void localServerReplyFunc(struct ReplyAddress* inReplyAddr, char* inBuf, 
     bool isBundle = IsBundle(inBuf);
 
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         PyrObject* replyObj = ConvertReplyAddress(inReplyAddr);
         if (isBundle) {
             PerformOSCBundle(inSize, inBuf, replyObj, gUDPport->RealPortNum());
@@ -376,10 +376,10 @@ inline size_t OSCStrLen(char* str) { return (strlen(str) + 4) & ~3; }
 int makeSynthBundle(big_scpacket* packet, PyrSlot* slots, int size, bool useElapsed);
 
 static void netAddrTcpClientNotifyFunc(void* clientData) {
-    extern bool compiledOK;
+    extern bool gCompiledOK;
 
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         PyrObject* netAddrObj = (PyrObject*)clientData;
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
@@ -618,8 +618,6 @@ static PyrInt8Array* MsgToInt8Array(sc_msg_iter& msg, bool runGC) {
     return obj;
 }
 
-static const double dInfinity = std::numeric_limits<double>::infinity();
-
 // Convert raw OSC message to Array.
 static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
     if ((inSize & 3) != 0) {
@@ -827,9 +825,9 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
     const auto isBundle = IsBundle(inPacket->mData.get());
 
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         PyrObject* replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
-        if (compiledOK) {
+        if (gCompiledOK) {
             if (isBundle) {
                 PerformOSCBundle(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum);
             } else {
@@ -843,7 +841,7 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
 void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddress& replyAddress, int inPortNum,
                        double time) {
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
 
         PyrString* string = newPyrStringN(g->gc, inSize, 0, true);

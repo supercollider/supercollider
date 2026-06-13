@@ -82,7 +82,7 @@ p.stop;
 
 The code::releaseNode:: and code::loopNode:: envelope parameters do not take effect, because they are meaningful only when used in a Synth with a gated EnvGen.
 
-When the envelope ends, the stream will hold the final level indefinitely. The code::Pif(Ptime(inf) < totalTime, Env(...)):: trick can make it stop instead.
+When the envelope ends, the stream will hold the final level indefinitely. The code::Pif(Ptime(inf) < totalTime, Env(...)):: trick can make it stop instead.
 
 code::
 // Use an envelope to pan notes from left to right and back

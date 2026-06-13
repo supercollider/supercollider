@@ -931,7 +931,7 @@ int first_arg_as_int(ReceivedMessage const& message) {
     return val;
 }
 
-template <bool realtime> void handle_quit(endpoint_ptr endpoint) {
+template <bool realtime> void handle_quit(endpoint_ptr const& endpoint) {
     instance->quit_received = true;
     cmd_dispatcher<realtime>::fire_io_callback([=]() {
         instance->prepare_to_terminate();
@@ -1358,7 +1358,7 @@ void g_query_tree_fill_node(osc::OutboundPacketStream& p, bool flag, server_node
     }
 }
 
-template <bool realtime> void g_query_tree(int node_id, bool flag, endpoint_ptr endpoint) {
+template <bool realtime> void g_query_tree(int node_id, bool flag, endpoint_ptr const& endpoint) {
     server_node* node = find_node(node_id);
     if (!node || node->is_synth())
         return;
@@ -1387,7 +1387,7 @@ template <bool realtime> void g_query_tree(int node_id, bool flag, endpoint_ptr 
     }
 }
 
-template <bool realtime> void handle_g_queryTree(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_g_queryTree(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     while (!args.Eos()) {
@@ -1708,7 +1708,7 @@ template <nova::node_position Position> void handle_g_head_or_tail(ReceivedMessa
     instance->request_dsp_queue_update();
 }
 
-template <bool realtime> void handle_n_query(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_n_query(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     while (!args.Eos()) {
@@ -1847,7 +1847,7 @@ int32_t get_control_index(sc_synth* s, osc::ReceivedMessageArgumentIterator& it,
     return control;
 }
 
-template <bool realtime> void handle_s_get(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint) {
+template <bool realtime> void handle_s_get(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
     if (!it->IsInt32())
@@ -2013,13 +2013,13 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentIterat
 }
 
 // must be called from rt thread
-void handle_completion_message(completion_message&& message, endpoint_ptr endpoint) {
+void handle_completion_message(completion_message&& message, endpoint_ptr const& endpoint) {
     completion_message msg(std::forward<completion_message>(message));
     msg.handle(endpoint);
 }
 
 
-template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 bufferIndex, frames, channels;
@@ -2064,7 +2064,7 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
 }
 
 
-template <bool realtime> void handle_b_free(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_free(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 index;
@@ -2091,7 +2091,7 @@ template <bool realtime> void handle_b_free(ReceivedMessage const& msg, endpoint
 }
 
 
-template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 bufferIndex;
@@ -2139,7 +2139,7 @@ template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, end
 }
 
 
-template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
 
     osc::int32 bufnum = arg->AsInt32();
@@ -2208,7 +2208,7 @@ const char* b_write = "/b_write";
 
 void fire_b_write_exception(void) { throw std::runtime_error("wrong arguments for /b_write"); }
 
-template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
@@ -2293,7 +2293,7 @@ const char* b_read = "/b_read";
 
 void fire_b_read_exception(void) { throw std::runtime_error("wrong arguments for /b_read"); }
 
-template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
@@ -2376,7 +2376,7 @@ const char* b_readChannel = "/b_readChannel";
 
 void fire_b_readChannel_exception(void) { throw std::runtime_error("wrong arguments for /b_readChannel"); }
 
-template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
@@ -2472,7 +2472,7 @@ fire_callback:
 
 const char* b_zero = "/b_zero";
 
-template <bool realtime> void handle_b_zero(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_zero(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 index;
@@ -2593,7 +2593,7 @@ void handle_b_fill(ReceivedMessage const& msg) {
     }
 }
 
-template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     const size_t elem_size = 3 * sizeof(int) * sizeof(float);
 
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -2621,7 +2621,7 @@ template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoin
 }
 
 
-template <bool realtime> void handle_b_close(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_close(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     osc::int32 index;
     args >> index;
@@ -2637,7 +2637,7 @@ template <bool realtime> void handle_b_close(ReceivedMessage const& msg, endpoin
     });
 }
 
-template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     const size_t elem_size = sizeof(int) * sizeof(float);
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     const size_t index_count = msg.ArgumentCount() - 1;
@@ -2688,7 +2688,7 @@ template <typename Alloc> struct getn_data {
     std::vector<float, Alloc> data_;
 };
 
-template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     typedef getn_data<rt_pool_allocator<float>> getn_data;
@@ -2736,7 +2736,7 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
 }
 
 
-template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr const& endpoint) {
     int skip_bytes = addr_pattern_size(msg); // skip address pattern
     movable_array<char> cmd(msg_size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
@@ -2819,7 +2819,7 @@ void handle_c_fill(ReceivedMessage const& msg) {
     }
 }
 
-template <bool realtime> void handle_c_get(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_c_get(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     const size_t elem_size = sizeof(int) + sizeof(float);
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     const size_t index_count = msg.ArgumentCount();
@@ -2843,7 +2843,7 @@ template <bool realtime> void handle_c_get(ReceivedMessage const& msg, endpoint_
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
-template <bool realtime> void handle_c_getn(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_c_getn(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     /* we pessimize, but better to allocate too much than too little */
@@ -2883,7 +2883,7 @@ static std::vector<sc_synth_definition_ptr> wrapSynthdefs(std::vector<sc_synthde
     return wrappedSynthdefs;
 }
 
-template <bool realtime> void handle_d_recv(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_d_recv(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     const void* synthdef_data;
     osc::osc_bundle_element_size_t synthdef_size;
 
@@ -2915,7 +2915,7 @@ template <bool realtime> void handle_d_recv(ReceivedMessage const& msg, endpoint
 }
 
 
-template <bool realtime> void handle_d_load(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_d_load(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
     const char* path = args->AsString();
     args++;
@@ -2946,7 +2946,7 @@ template <bool realtime> void handle_d_load(ReceivedMessage const& msg, endpoint
 }
 
 
-template <bool realtime> void handle_d_loadDir(ReceivedMessage const& msg, endpoint_ptr endpoint) {
+template <bool realtime> void handle_d_loadDir(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     const char* path;
 
@@ -3017,7 +3017,7 @@ void handle_p_new(ReceivedMessage const& msg) {
     }
 }
 
-void handle_u_cmd(ReceivedMessage const& msg, int size) {
+void handle_u_cmd(ReceivedMessage const& msg, int size, endpoint_ptr const& endpoint) {
     int skip_bytes = addr_pattern_size(msg); // skip address pattern
     sc_msg_iter args(size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
@@ -3033,16 +3033,16 @@ void handle_u_cmd(ReceivedMessage const& msg, int size) {
     int ugen_index = args.geti();
     const char* cmd_name = args.gets();
 
-    synth->apply_unit_cmd(cmd_name, ugen_index, &args);
+    synth->apply_unit_cmd(cmd_name, ugen_index, &args, endpoint);
 }
 
-void handle_cmd(ReceivedMessage const& msg, int size, endpoint_ptr endpoint) {
+void handle_cmd(ReceivedMessage const& msg, int size, endpoint_ptr const& endpoint) {
     int skip_bytes = addr_pattern_size(msg); // skip address pattern
     sc_msg_iter args(size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     const char* cmd = args.gets();
 
-    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, endpoint.get());
+    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, endpoint);
 }
 
 } /* namespace */
@@ -3189,7 +3189,7 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         break;
 
     case cmd_u_cmd:
-        handle_u_cmd(message, msg_size);
+        handle_u_cmd(message, msg_size, endpoint);
         break;
 
     case cmd_b_free:
@@ -3651,7 +3651,7 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
     }
 
     if (strcmp(address + 1, "u_cmd") == 0) {
-        handle_u_cmd(message, msg_size);
+        handle_u_cmd(message, msg_size, endpoint);
         return;
     }
 
@@ -3712,10 +3712,17 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
 }
 
 
-template <bool realtime>
-void handle_asynchronous_command(World* world, const char* cmdName, void* cmdData, AsyncStageFn stage2,
-                                 AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
-                                 completion_message&& message, endpoint_ptr endpoint) {
+template <bool realtime, typename StageFn>
+void handle_asynchronous_command(World* world, const char* cmd_name, void* cmd_data, StageFn stage2, StageFn stage3,
+                                 StageFn stage4, AsyncFreeFn cleanup, completion_message&& message,
+                                 endpoint_ptr&& endpoint) {
+    auto call_stage_fn = [](StageFn fn, World* world, void* cmd_data, endpoint_ptr const& endpoint) {
+        if constexpr (std::is_same_v<StageFn, AsyncStageFnEx>)
+            return !fn || fn(world, cmd_data, endpoint.get());
+        else
+            return !fn || fn(world, cmd_data);
+    };
+
     // Usually, this API function is called in response to plugin/unit commands (handled *before* DSP computation).
     // We lock the memory pool nevertheless, just in case it's called from RT helper threads.
     // Actually, it's not a good idea to call it from within the perform routine because fire_system_callback()
@@ -3726,65 +3733,170 @@ void handle_asynchronous_command(World* world, const char* cmdName, void* cmdDat
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
             // stage 2 (NRT thread)
-            bool result2 = !stage2 || (stage2)(world, cmdData);
+            bool result2 = call_stage_fn(stage2, world, cmd_data, endpoint);
 
-            if (result2) {
-                cmd_dispatcher<realtime>::fire_rt_callback(
-                    [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-                        // stage 3 (RT thread)
-                        bool result3 = !stage3 || (stage3)(world, cmdData);
-
-                        if (result3) {
-                            handle_completion_message(std::move(message), endpoint);
-
-                            cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
-                                // stage 4 (NRT thread)
-                                bool result4 = !stage4 || (stage4)(world, cmdData);
-
-                                if (result4 && cmdName)
-                                    send_done_message(endpoint, cmdName);
-
-                                // free in RT thread!
-                                cmd_dispatcher<realtime>::fire_rt_callback([=] {
-                                    if (cleanup)
-                                        (cleanup)(world, cmdData);
-                                });
-                            });
-                        } else {
-                            if (cleanup)
-                                (cleanup)(world, cmdData);
-                            consume(std::move(message));
-                        }
-                    });
-            } else {
+            if (!result2) {
                 // free in RT thread!
                 cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
                     if (cleanup)
-                        (cleanup)(world, cmdData);
+                        (cleanup)(world, cmd_data);
                     consume(std::move(message));
                 });
+                return;
             }
+
+            cmd_dispatcher<realtime>::fire_rt_callback(
+                [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
+                    // stage 3 (RT thread)
+                    bool result3 = call_stage_fn(stage3, world, cmd_data, endpoint);
+
+                    if (!result3) {
+                        if (cleanup)
+                            (cleanup)(world, cmd_data);
+                        consume(std::move(message));
+                        return;
+                    }
+
+                    handle_completion_message(std::move(message), endpoint);
+
+                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
+                        // stage 4 (NRT thread)
+                        bool result4 = call_stage_fn(stage4, world, cmd_data, endpoint);
+
+                        if (result4 && cmd_name)
+                            send_done_message(endpoint, cmd_name);
+
+                        // free in RT thread!
+                        cmd_dispatcher<realtime>::fire_rt_callback([=] {
+                            if (cleanup)
+                                (cleanup)(world, cmd_data);
+                        });
+                    });
+                });
         });
 }
 
+template <typename StageFn>
 void sc_osc_handler::do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData,
-                                             AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4,
-                                             AsyncFreeFn cleanup, int completionMsgSize,
-                                             const void* completionMsgData) const {
+                                             StageFn stage2, StageFn stage3, StageFn stage4, AsyncFreeFn cleanup,
+                                             int completionMsgSize, const void* completionMsgData) const {
     completion_message msg(completionMsgSize, completionMsgData);
-    endpoint_ptr shared_endpoint;
 
-    nova_endpoint* endpoint = replyAddr ? static_cast<nova_endpoint*>(replyAddr) : nullptr;
-
-    if (endpoint)
-        shared_endpoint = endpoint->shared_from_this();
+    nova_endpoint* endpoint = static_cast<nova_endpoint*>(replyAddr);
+    endpoint_ptr endpoint_ptr(endpoint ? endpoint->shared_from_this() : nullptr);
 
     if (world->mRealTime)
         handle_asynchronous_command<true>(world, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
-                                          shared_endpoint);
+                                          std::move(endpoint_ptr));
     else
         handle_asynchronous_command<false>(world, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
-                                           shared_endpoint);
+                                           std::move(endpoint_ptr));
+}
+
+// explicit template instantiations for AsyncStageFn and AsyncStageFnEx
+template void sc_osc_handler::do_asynchronous_command<AsyncStageFn>(World*, void*, const char*, void*, AsyncStageFn,
+                                                                    AsyncStageFn, AsyncStageFn, AsyncFreeFn, int,
+                                                                    const void*) const;
+
+template void sc_osc_handler::do_asynchronous_command<AsyncStageFnEx>(World*, void*, const char*, void*, AsyncStageFnEx,
+                                                                      AsyncStageFnEx, AsyncStageFnEx, AsyncFreeFn, int,
+                                                                      const void*) const;
+
+template <bool realtime>
+void handle_async_unit_command(Unit* unit, const char* cmd_name, void* cmd_data, AsyncUnitStageFn stage2,
+                               AsyncUnitStageFn stage3, AsyncUnitStageFn stage4, AsyncFreeFn cleanup,
+                               completion_message&& message, endpoint_ptr&& endpoint) {
+    // See comment in handle_asynchronous_command().
+    spin_lock::scoped_lock lock(system_callback_allocator_lock);
+
+    // Get the owning synth
+    sc_synth* synth = static_cast<sc_synth*>(instance->find_synth(unit->mParent->mNode.mID));
+    assert(synth != nullptr);
+    // If the synth has no parent, it means that it has been removed. This can only happen
+    // if DoAsyncUnitCommand() is called in a Unit destructor (which is not allowed).
+    // This check is important because it makes sure that we don't increment the reference count
+    // that has already gone to zero!
+    if (synth->get_parent() == nullptr)
+        throw std::runtime_error("cannot call DoAsyncUnitCommand() in a Unit destructor!");
+
+    // make sure that the owning synth is kept alive for the whole duration of the command!
+    // This also means we can safely use the synth pointer inside the callbacks.
+    synth->add_ref();
+
+    cmd_dispatcher<realtime>::fire_system_callback(
+        [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
+            // stage 2 (NRT thread)
+            bool result2 = !stage2 || stage2(unit, cmd_data, endpoint.get());
+
+            if (!result2) {
+                // free in RT thread!
+                cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+                    if (cleanup)
+                        (cleanup)(unit->mWorld, cmd_data);
+                    consume(std::move(message));
+                    synth->release();
+                });
+                return;
+            }
+
+            cmd_dispatcher<realtime>::fire_rt_callback(
+                [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
+                    // stage 3 (RT thread)
+                    // Check whether the owning synth has been removed in the meantime. If yes, we pass
+                    // nullptr as the Unit pointer so that the stage function can detect and properly
+                    // handle the situation. For example, it may still have to release resources on stage4.
+                    // If the node can't be found, it has been removed.
+                    bool alive = synth->get_parent() != nullptr;
+                    bool result3 = !stage3 || stage3(alive ? unit : nullptr, cmd_data, endpoint.get());
+
+                    if (!result3) {
+                        if (cleanup)
+                            (cleanup)(unit->mWorld, cmd_data);
+                        consume(std::move(message));
+                        synth->release();
+                        return;
+                    }
+
+                    // only perform completion message if the synth is still alive!
+                    if (alive)
+                        handle_completion_message(std::move(message), endpoint);
+                    else
+                        consume(std::move(message));
+
+                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
+                        // stage 4 (NRT thread)
+                        bool result4 = !stage4 || stage4(unit, cmd_data, endpoint.get());
+
+                        // only send /done message if the synth has been alive in stage3.
+                        if (result4 && alive && cmd_name)
+                            send_done_message(endpoint, cmd_name);
+
+                        // free in RT thread!
+                        cmd_dispatcher<realtime>::fire_rt_callback([=] {
+                            if (cleanup)
+                                (cleanup)(unit->mWorld, cmd_data);
+                            synth->release();
+                        });
+                    });
+                });
+        });
+}
+
+void sc_osc_handler::do_async_unit_command(Unit* unit, void* replyAddr, const char* cmdName, void* cmdData,
+                                           AsyncUnitStageFn stage2, AsyncUnitStageFn stage3, AsyncUnitStageFn stage4,
+                                           AsyncFreeFn cleanup, int completionMsgSize,
+                                           const void* completionMsgData) const {
+    completion_message msg(completionMsgSize, completionMsgData);
+
+    nova_endpoint* endpoint = static_cast<nova_endpoint*>(replyAddr);
+    endpoint_ptr endpoint_ptr(endpoint ? endpoint->shared_from_this() : nullptr);
+
+    if (unit->mWorld->mRealTime)
+        handle_async_unit_command<true>(unit, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
+                                        std::move(endpoint_ptr));
+    else
+        handle_async_unit_command<false>(unit, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
+                                         std::move(endpoint_ptr));
 }
 
 // called from RT thread, perform in NRT thread, free in RT thread

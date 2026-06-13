@@ -219,6 +219,7 @@ void InterfaceTable_Init() {
     ft->fSendNodeReply = &Node_SendReply;
 
     ft->fDefineUnitCmd = &UnitDef_AddCmd;
+    ft->fDefineUnitCmdEx = &UnitDef_AddCmdEx;
     ft->fDefinePlugInCmd = &PlugIn_DefineCmd;
 
     ft->fSendMsgFromRT = &SendMsgFromEngine;
@@ -237,6 +238,8 @@ void InterfaceTable_Init() {
     ft->fGroup_DeleteAll = &Group_DeleteAll;
     ft->fDoneAction = &Unit_DoneAction;
     ft->fDoAsynchronousCommand = &PerformAsynchronousCommand;
+    ft->fDoAsynchronousCommandEx = &PerformAsynchronousCommandEx;
+    ft->fDoAsyncUnitCommand = &PerformAsyncUnitCommand;
     ft->fBufAlloc = &bufAlloc;
 
     ft->fSCfftCreate = &scfft_create;
@@ -927,9 +930,6 @@ void World_Cleanup(World* world, bool unload_plugins) {
         scsynth::stopAsioThread();
     }
 
-    if (unload_plugins)
-        deinitialize_library();
-
     HiddenWorld* hw = world->hw;
 
     if (hw && world->mRealTime)
@@ -939,6 +939,11 @@ void World_Cleanup(World* world, bool unload_plugins) {
 
     if (world->mTopGroup)
         Group_DeleteAll(world->mTopGroup);
+
+    // NOTE: only unload plugins after all Nodes have been destroyed,
+    // but before the World is cleaned up!
+    if (unload_plugins)
+        deinitialize_library();
 
     reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock();
     if (hw) {

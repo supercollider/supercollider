@@ -55,7 +55,6 @@
 #    include <sys/time.h>
 #endif
 
-static const double dInfinity = std::numeric_limits<double>::infinity();
 
 void runAwakeMessage(VMGlobals* g);
 

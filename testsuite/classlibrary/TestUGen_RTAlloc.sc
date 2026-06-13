@@ -187,6 +187,10 @@ TestUGen_RTAlloc : UnitTest {
 		var allocSeconds = this.memSizeSeconds;
 		var allocSamples = nextPowerOfTwo(this.memSizeFloats);
 		var blockSize = server.options.blockSize;
+
+		var convBufFrames = blockSize * 8;
+		var convBuf = Buffer.loadCollection(server, 1!convBufFrames);
+
 		var testArgs = [
 			["AllpassC", { AllpassC.ar(DC.ar(1), allocSeconds) }],
 			["AllpassL", { AllpassL.ar(DC.ar(1), allocSeconds) }],
@@ -226,15 +230,16 @@ TestUGen_RTAlloc : UnitTest {
 			// memSizeSeconds * 340 produces an allocation of memSizeFloats floats
 			["GVerb", { GVerb.ar(DC.ar(1), 1, maxroomsize: this.memSizeSeconds * 340) }],
 
-			// Convolution UGens don't need a valid 
 			// note: when trying to run tests in parallel, these required a separate batch or would crash the server
 			["Convolution", { Convolution.ar(DC.ar(1), DC.ar(1), allocSamples) }],
-			["Convolution2", { Convolution2.ar(DC.ar(1), -1, 0, allocSamples) }],
-			["Convolution2L", { Convolution2L.ar(DC.ar(1), -1, 0, allocSamples) }],
-			["Convolution3", { Convolution3.ar(DC.ar(1), -1, 0, allocSamples) }],
-			["StereoConvolution2L", { StereoConvolution2L.ar(DC.ar(1), -1, -1, 0, allocSamples) }],
-			["PartConv", { PartConv.ar(DC.ar(1), allocSamples, -1) }, server.options.blockSize * 2],
+			["Convolution2", { Convolution2.ar(DC.ar(1), convBuf, 0, allocSamples) }],
+			["Convolution2L", { Convolution2L.ar(DC.ar(1), convBuf, 0, allocSamples) }],
+			["Convolution3", { Convolution3.ar(DC.ar(1), convBuf, 0, allocSamples) }],
+			["StereoConvolution2L", { StereoConvolution2L.ar(DC.ar(1), convBuf, convBuf, 0, allocSamples) }],
+			["PartConv", { PartConv.ar(DC.ar(1), allocSamples, convBuf) }, server.options.blockSize * 2],
 		];
+
+		server.sync; // for convBuf;
 
 		// testArgs.collect { |args| { this.assertAllocFail(*args) } }.fork;
 		testArgs.do { |args| this.assertAllocFail(*args) };
@@ -260,7 +265,7 @@ TestUGen_RTAlloc : UnitTest {
 		var blockSize = server.options.blockSize;
 		var fftSize = blockSize;
 		var out = this.awaitSynthOutput({ FFT(LocalBuf(fftSize), DC.ar(1), hop:1) });
-		this.assert(out.notNil, 
+		this.assert(out.notNil,
 			"successful alloc test should complete (fftSize: %)".format(fftSize),
 			onFailure: \stop);
 		this.assert(out.any(_ > 0), "should return a valid bufnum (bufnum: %)".format(out));

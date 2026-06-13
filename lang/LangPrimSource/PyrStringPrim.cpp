@@ -24,6 +24,7 @@ Primitives for String.
 
 */
 
+#include "SCBase.h"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #include "GC.h"

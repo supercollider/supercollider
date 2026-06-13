@@ -46,9 +46,6 @@ Prerequisites:
 - **git, cmake >= 3.12, libsndfile, readline, and qt6 >= 6.2**, installed via homebrew:
   `brew install git cmake libsndfile readline qt@6`
 
-- If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
-  `brew install portaudio`
-
 Obtaining the source code
 -------------------------
 
@@ -67,8 +64,6 @@ Build instructions
     mkdir -p build
     cd build
     cmake -G Xcode ..
-    # or, if you want to build with supernova:
-    cmake -G Xcode -DSUPERNOVA=ON ..
     # then start the build
     cmake --build . --target install --config RelWithDebInfo
 
@@ -221,19 +216,22 @@ Common arguments to control the build configuration are:
 
   * Build the *supernova* server:
 
-    `-DSUPERNOVA=ON`
-
-    Using supernova requires the `portaudio` audio backend, so you need to install it
-    (Homebrew and MacPorts both provide packages).
-
-    *Note*: When you build with supernova, an alternative server executable and a supernova
-    version of each plugin is built. If you also use the sc3-plugins package, make sure to
+    Starting with 3.15, supernova is built by default on all platforms, including macOS.
+    To not build supernova, set the configure variable `-DSUPERNOVA=OFF`.
+  
+    Using supernova requires the portaudio audio backend, which will be built from source by default. In order to use portaudio installed via Homebrew, additionally set the  `-DSYSTEM_PORTAUDIO=ON` flag.
+    
+    *Note*: Supernova adds an alternative server executable and a supernova version of each plugin is built. If you also use the sc3-plugins package, make sure to
     compile them with supernova support too.
-
+  
     Within SC you will be able to switch between scsynth and supernova by evaluating one of:
+    
+    ```supercollider
+    Server.supernova; // use supernova
+    Server.scsynth; // use scsynth - default
 
-    `Server.supernova`
-    `Server.scsynth`
+    s.boot; // start the server
+    ```
 
     Check sc help for `ParGroup` to see how to make use of multi-core hardware.
 

@@ -28,8 +28,8 @@ added prRestartMIDI
 04/feb/03 prListMIDIEndpoints modification by Ron Kuivila added jt.
 */
 
-#include "PortMIDI.h"
-#include "PortTime.h"
+#include "portmidi.h"
+#include "porttime.h"
 
 #include "SCBase.h"
 #include "VMGlobals.h"
@@ -93,7 +93,7 @@ SC_Lock gPmStreamMutex;
 #define PMSTREAM_TIME_PROC NULL
 #define PMSTREAM_TIME_INFO NULL
 
-extern bool compiledOK;
+extern bool gCompiledOK;
 
 
 static void sysexBegin() {
@@ -257,7 +257,7 @@ static void PMProcessMidi(PtTimestamp timestamp, void* userData) {
             // | Lock the interp. mutex and dispatch message |
             // +---------------------------------------------+
             gLangMutex.lock();
-            if (compiledOK) {
+            if (gCompiledOK) {
                 VMGlobals* g = gMainVMGlobals;
                 uint8 status = static_cast<uint8>(Tstatus & 0xF0);
                 uint8 chan = static_cast<uint8>(Tstatus & 0x0F);

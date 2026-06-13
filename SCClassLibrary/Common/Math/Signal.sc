@@ -262,36 +262,36 @@ Signal[float] : FloatArray {
 	scurve { _SCurve; ^this.primitiveFailed }
 	ramp { _Ramp; ^this.primitiveFailed }
 
-	+ { arg aNumber; _Add; ^aNumber.performBinaryOpOnSignal('+', this) }
-	- { arg aNumber; _Sub; ^aNumber.performBinaryOpOnSignal('-', this) }
-	* { arg aNumber; _Mul; ^aNumber.performBinaryOpOnSignal('*', this) }
-	/ { arg aNumber; _FDiv; ^aNumber.performBinaryOpOnSignal('/', this) }
-	mod { arg aNumber; _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
-	modSeaside { arg aNumber; _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
-	div { arg aNumber; _IDiv; ^aNumber.performBinaryOpOnSignal('div', this) }
-	pow { arg aNumber; _Pow; ^aNumber.performBinaryOpOnSignal('pow', this) }
-	min { arg aNumber; _Min; ^aNumber.performBinaryOpOnSignal('min', this) }
-	max { arg aNumber; _Max; ^aNumber.performBinaryOpOnSignal('max', this) }
-	ring1 { arg aNumber; _Ring1; ^aNumber.performBinaryOpOnSignal('ring1', this) }
-	ring2 { arg aNumber; _Ring2; ^aNumber.performBinaryOpOnSignal('ring2', this) }
-	ring3 { arg aNumber; _Ring3; ^aNumber.performBinaryOpOnSignal('ring3', this) }
-	ring4 { arg aNumber; _Ring4; ^aNumber.performBinaryOpOnSignal('ring4', this) }
-	difsqr { arg aNumber; _DifSqr; ^aNumber.performBinaryOpOnSignal('difsqr', this) }
-	sumsqr { arg aNumber; _SumSqr; ^aNumber.performBinaryOpOnSignal('sumsqr', this) }
-	sqrsum { arg aNumber; _SqrSum; ^aNumber.performBinaryOpOnSignal('sqrsum', this) }
-	sqrdif { arg aNumber; _SqrDif; ^aNumber.performBinaryOpOnSignal('sqrdif', this) }
-	absdif { arg aNumber; _AbsDif; ^aNumber.performBinaryOpOnSignal('absdif', this) }
-	thresh { arg aNumber; _Thresh; ^aNumber.performBinaryOpOnSignal('thresh', this) }
-	amclip { arg aNumber; _AMClip; ^aNumber.performBinaryOpOnSignal('amclip', this) }
-	scaleneg { arg aNumber; _ScaleNeg; ^aNumber.performBinaryOpOnSignal('scaleneg', this) }
-	clip2 { arg aNumber=1; _Clip2; ^aNumber.performBinaryOpOnSignal('clip2', this) }
-	fold2 { arg aNumber=1; _Fold2; ^aNumber.performBinaryOpOnSignal('fold2', this) }
-	wrap2 { arg aNumber=1; _Wrap2; ^aNumber.performBinaryOpOnSignal('wrap2', this) }
-	excess { arg aNumber=1; _Excess; ^aNumber.performBinaryOpOnSignal('excess', this) }
-	firstArg { arg aNumber; _FirstArg; ^aNumber.performBinaryOpOnSignal('firstArg', this) }
+	+ { arg aNumber, adverb; _Add; ^aNumber.performBinaryOpOnSignal('+', this) }
+	- { arg aNumber, adverb; _Sub; ^aNumber.performBinaryOpOnSignal('-', this) }
+	* { arg aNumber, adverb; _Mul; ^aNumber.performBinaryOpOnSignal('*', this) }
+	/ { arg aNumber, adverb; _FDiv; ^aNumber.performBinaryOpOnSignal('/', this) }
+	mod { arg aNumber, adverb; _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
+	modSeaside { arg aNumber, adverb; _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
+	div { arg aNumber, adverb; _IDiv; ^aNumber.performBinaryOpOnSignal('div', this) }
+	pow { arg aNumber, adverb; _Pow; ^aNumber.performBinaryOpOnSignal('pow', this) }
+	min { arg aNumber, adverb; _Min; ^aNumber.performBinaryOpOnSignal('min', this) }
+	max { arg aNumber, adverb; _Max; ^aNumber.performBinaryOpOnSignal('max', this) }
+	ring1 { arg aNumber, adverb; _Ring1; ^aNumber.performBinaryOpOnSignal('ring1', this) }
+	ring2 { arg aNumber, adverb; _Ring2; ^aNumber.performBinaryOpOnSignal('ring2', this) }
+	ring3 { arg aNumber, adverb; _Ring3; ^aNumber.performBinaryOpOnSignal('ring3', this) }
+	ring4 { arg aNumber, adverb; _Ring4; ^aNumber.performBinaryOpOnSignal('ring4', this) }
+	difsqr { arg aNumber, adverb; _DifSqr; ^aNumber.performBinaryOpOnSignal('difsqr', this) }
+	sumsqr { arg aNumber, adverb; _SumSqr; ^aNumber.performBinaryOpOnSignal('sumsqr', this) }
+	sqrsum { arg aNumber, adverb; _SqrSum; ^aNumber.performBinaryOpOnSignal('sqrsum', this) }
+	sqrdif { arg aNumber, adverb; _SqrDif; ^aNumber.performBinaryOpOnSignal('sqrdif', this) }
+	absdif { arg aNumber, adverb; _AbsDif; ^aNumber.performBinaryOpOnSignal('absdif', this) }
+	thresh { arg aNumber, adverb; _Thresh; ^aNumber.performBinaryOpOnSignal('thresh', this) }
+	amclip { arg aNumber, adverb; _AMClip; ^aNumber.performBinaryOpOnSignal('amclip', this) }
+	scaleneg { arg aNumber, adverb; _ScaleNeg; ^aNumber.performBinaryOpOnSignal('scaleneg', this) }
+	clip2 { arg aNumber=1, adverb; _Clip2; ^aNumber.performBinaryOpOnSignal('clip2', this) }
+	fold2 { arg aNumber=1, adverb; _Fold2; ^aNumber.performBinaryOpOnSignal('fold2', this) }
+	wrap2 { arg aNumber=1, adverb; _Wrap2; ^aNumber.performBinaryOpOnSignal('wrap2', this) }
+	excess { arg aNumber=1, adverb; _Excess; ^aNumber.performBinaryOpOnSignal('excess', this) }
+	firstArg { arg aNumber, adverb; _FirstArg; ^aNumber.performBinaryOpOnSignal('firstArg', this) }
 
-	== { arg aNumber; _EQ; ^aNumber.performBinaryOpOnSignal('==', this) }
-	!= { arg aNumber; _NE; ^aNumber.performBinaryOpOnSignal('!=', this) }
+	== { arg aNumber, adverb; _EQ; ^aNumber.performBinaryOpOnSignal('==', this) }
+	!= { arg aNumber, adverb; _NE; ^aNumber.performBinaryOpOnSignal('!=', this) }
 
 	clip { arg lo, hi; _ClipSignal; ^this.primitiveFailed }
 	wrap { arg lo, hi; _WrapSignal; ^this.primitiveFailed }

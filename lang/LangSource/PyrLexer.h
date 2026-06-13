@@ -21,127 +21,46 @@
 
 #pragma once
 
-#include "PyrSlot.h"
 #include "PyrSymbol.h"
 #include "SC_Export.h"
-#include "SCBase.h"
 #include <filesystem>
 
-extern int charno, lineno, linepos;
-extern int* linestarts;
-
-struct ClassExtFile {
-    struct ClassExtFile* next;
-    PyrSymbol* fileSym;
-    int startPos, endPos, lineOffset;
-};
-
-typedef struct classdep {
-    struct classdep* next;
-    struct classdep* superClassDep;
-    struct classdep* subclasses;
-    PyrSymbol* className;
-    PyrSymbol* superClassName;
-    PyrSymbol* fileSym;
-    int startPos, endPos, lineOffset;
-} ClassDependancy;
-
+// These are set
+extern bool gCompilingCmdLine;
 extern PyrSymbol* gCompilingFileSym;
+extern char* gCompilingText;
+extern intptr_t gParserResult;
 
-ClassDependancy* newClassDependancy(PyrSymbol* className, PyrSymbol* superClassName, PyrSymbol* fileSym, int startPos,
-                                    int endPos, int lineOffset);
-bool parseOneClass(PyrSymbol* fileSym);
-void initPassOne();
-void finiPassOne();
-bool passOne();
-void buildDepTree();
-void traverseFullDepTree();
-void traverseDepTree(ClassDependancy* classdep, int level);
-void traverseFullDepTree2();
-void traverseDepTree2(ClassDependancy* classdep, int level);
-void compileClassExtensions();
-void compileClass(PyrSymbol* fileSym, int startPos, int endPos, int lineOffset);
+// This is set when calling yyparse.
+extern int gParseFailed;
+extern bool gCompiledOK;
+
+// The following globals are to be removed.
+extern int charno, lineno;
+extern int* linestarts;
+extern int lastClosedFuncCharNo;
+extern intptr_t zzval;
 
 
 struct FatalInterpreterError : public std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 
+SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone);
 // All exceptions are caught, except FatalInterpreterErrors
 SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
 
-void interpretCmdLine(const char* textbuf, int textlen, char* methodname);
-
-
-int input();
-int input0();
-void unput(int c);
-void unput0(int c);
+void startLexerCmdLine(char* textbuf, int textbuflen);
 
 void finiLexer();
-bool startLexer(char* filename);
-void startLexerCmdLine(char* textbuf, int textbuflen);
+
 int yylex();
 void yyerror(const char* s);
 void fatal();
-bool isValidSourceFileName(const std::filesystem::path& path);
-bool passOne_ProcessOneFile(const std::filesystem::path& path);
 
 std::filesystem::path relativeToCompileDir(const std::filesystem::path&);
 
-void initLexer();
-
-int processbinop(char* token);
-int processident(char* token);
-int processfloat(char* token, int sawpi);
-int processint(char* token);
-int processchar(int c);
-int processintradix(char* s, int n, int radix);
-int processfloatradix(char* s, int n, int radix);
-int processhex(char* s);
-int processsymbol(char* token);
-int processstring(char* token);
-int processkeywordbinop(char* token);
-
 void postErrorLine(int linenum, int start, int charpos);
-bool scanForClosingBracket();
-void parseClasses();
-
-extern int parseFailed;
-extern bool compilingCmdLine;
-extern bool compilingCmdLineErrorWindow;
-extern bool compiledOK;
-
-#define MAXYYLEN 81920
-
-extern int gNumCompiledFiles;
-extern int gClassCompileOrderNum;
-extern ClassDependancy** gClassCompileOrder;
-extern char curfilename[PATH_MAX];
-
-extern int runcount;
-
-extern const char* binopchars;
-extern char yytext[MAXYYLEN];
-extern char curfilename[PATH_MAX];
-
-extern int yylen;
-extern int lexCmdLine;
-extern bool compilingCmdLine;
-extern bool compilingCmdLineErrorWindow;
-extern intptr_t zzval;
-extern intptr_t gParserResult;
-
-extern int lineno, charno, linepos;
-extern int* linestarts;
-extern int maxlinestarts;
-
-extern char* text;
-extern int textlen;
-extern int textpos;
-extern int parseFailed;
-extern bool compiledOK;
-extern int radixcharpos, decptpos;
 
 int rtf2txt(char* txt);
 int html2txt(char* txt);

@@ -23,12 +23,16 @@
 
 #include "SC_Reply.h"
 
-#include <boost/asio.hpp>
+#ifndef __EMSCRIPTEN__
+#    include <boost/asio.hpp>
+#endif
 
 enum Protocol { kUDP, kTCP };
 
 struct ReplyAddress {
+#ifndef __EMSCRIPTEN__
     boost::asio::ip::address mAddress;
+#endif
     enum Protocol mProtocol;
     int mPort;
     int mSocket;

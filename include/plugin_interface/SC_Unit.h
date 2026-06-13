@@ -120,9 +120,10 @@ template <typename ToType, typename Value>
 #define BUFLENGTH (unit->mBufLength)
 #define BUFRATE (unit->mRate->mBufRate)
 #define BUFDUR (unit->mRate->mBufDuration)
-#define FULLRATE (unit->mWorld->mFullRate.mSampleRate)
-#define FULLBUFLENGTH (unit->mWorld->mFullRate.mBufLength)
-#define FULLSAMPLEDUR (unit->mWorld->mFullRate.mSampleDur)
+#define FULLRATE (unit->mParent->mFullRate->mSampleRate)
+#define FULLSAMPLEDUR (unit->mParent->mFullRate->mSampleDur)
+#define FULLBUFLENGTH (unit->mParent->mFullRate->mBufLength)
+#define REBLOCK_OR_RESAMPLE (unit->mParent->mFlags & kGraph_ReblockOrResample)
 
 #ifdef SUPERNOVA
 
@@ -381,9 +382,3 @@ template <bool shared> struct buffer_lock {
     rgen.s1 = s1;                                                                                                      \
     rgen.s2 = s2;                                                                                                      \
     rgen.s3 = s3;
-
-
-struct sc_msg_iter;
-
-typedef void (*UnitCmdFunc)(struct Unit* unit, struct sc_msg_iter* args);
-typedef void (*PlugInCmdFunc)(World* inWorld, void* inUserData, struct sc_msg_iter* args, void* replyAddr);

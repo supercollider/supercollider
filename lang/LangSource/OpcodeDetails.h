@@ -2,13 +2,11 @@
 #include "ByteCodeArray.h"
 #include <cassert>
 #include <tuple>
-#include <cstdint>
 #include <cstring>
-#include <optional>
 
 namespace Opcode::details {
 template <typename I> constexpr static Byte to_byte(I i) {
-    Byte to;
+    Byte to {};
     std::memcpy(&to, &i, sizeof(Byte));
     return to;
 }

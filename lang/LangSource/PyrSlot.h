@@ -20,12 +20,15 @@
 
 #pragma once
 
+#include <functional>
+#include <algorithm>
 #include <string>
 #include <cstdint>
 #include <type_traits>
 #include <cassert>
 #include <cstring>
 #include <cmath>
+#include "PyrObjectHdr.h"
 #include "PyrErrors.h"
 #include "function_attributes.h"
 #include "Hash.h"
@@ -306,6 +309,13 @@ private:
         return getTagAsU16(u_raw) == getTagAsU16(T);
     }
 
+    // Because doubles have odd rules we need to process them differently.
+    // Try to avoid introducing any more types with strange comparison rules.
+    template <template <typename> typename OP>
+    [[nodiscard]] static decltype(auto) apply_binary_op(PyrSlot a, PyrSlot b) noexcept {
+        return a.isDouble() && b.isDouble() ? OP {}(a.getDouble(), b.getDouble()) : OP {}(a.u_raw, b.u_raw);
+    }
+
 public:
     PyrSlot() noexcept: u_raw(Tags::nilTag) {}
     ~PyrSlot() noexcept = default;
@@ -314,10 +324,27 @@ public:
     PyrSlot& operator=(PyrSlot&&) noexcept = default;
     PyrSlot& operator=(const PyrSlot&) noexcept = default;
 
+    // This is identity, not equality in supercollider.
     [[nodiscard]] friend inline bool operator==(PyrSlot lhs, PyrSlot rhs) noexcept {
-        // This is identity, not equality in supercollider.
-        // Doubles have odd comparison rules, otherwise compare the raw data.
-        return (lhs.isDouble() && rhs.isDouble()) ? lhs.getDouble() == rhs.getDouble() : lhs.u_raw == rhs.u_raw;
+        return PyrSlot::apply_binary_op<std::equal_to>(lhs, rhs);
+    }
+    [[nodiscard]] friend inline bool operator!=(PyrSlot lhs, PyrSlot rhs) noexcept {
+        return PyrSlot::apply_binary_op<std::not_equal_to>(lhs, rhs);
+    }
+
+    // NOTE: these comparisons do NOT compare the value in the slot.
+    // They are used for sorting and ordering slots.
+    [[nodiscard]] friend inline bool operator<(PyrSlot lhs, PyrSlot rhs) noexcept {
+        return PyrSlot::apply_binary_op<std::less>(lhs, rhs);
+    }
+    [[nodiscard]] friend inline bool operator<=(PyrSlot lhs, PyrSlot rhs) noexcept {
+        return PyrSlot::apply_binary_op<std::less_equal>(lhs, rhs);
+    }
+    [[nodiscard]] friend inline bool operator>(PyrSlot lhs, PyrSlot rhs) noexcept {
+        return PyrSlot::apply_binary_op<std::greater>(lhs, rhs);
+    }
+    [[nodiscard]] friend inline bool operator>=(PyrSlot lhs, PyrSlot rhs) noexcept {
+        return PyrSlot::apply_binary_op<std::greater_equal>(lhs, rhs);
     }
 
     template <AssertDouble Check = AssertDouble::Okay> [[nodiscard]] inline static PyrSlot make(double d) noexcept {
@@ -333,22 +360,41 @@ public:
     [[nodiscard]] inline static PyrSlot make(char c) noexcept {
         return { PrivateTag(), Tags::charTag, static_cast<uint64_t>(details::bit_cast<uint8_t>(c)) };
     }
-    [[nodiscard]] inline static PyrSlot make(struct PyrObjectHdr* o) {
+
+    [[nodiscard]] inline static PyrSlot make(PyrObjectHdr* o) noexcept {
         return { PrivateTag(), Tags::objHdrTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
     }
-    [[nodiscard]] inline static PyrSlot make(struct PyrSymbol* o) {
+    [[nodiscard]] inline static PyrSlot make(PyrObjectHdr& o) noexcept {
+        return { PrivateTag(), Tags::objHdrTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(&o)) };
+    }
+
+    [[nodiscard]] inline static PyrSlot make(PyrSymbol* o) noexcept {
         return { PrivateTag(), Tags::symTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
     }
-    [[nodiscard]] inline static PyrSlot make(int32_t i) {
+    [[nodiscard]] inline static PyrSlot make(PyrSymbol& o) noexcept {
+        return { PrivateTag(), Tags::symTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(&o)) };
+    }
+
+    [[nodiscard]] inline static PyrSlot make(int32_t i) noexcept {
         return { PrivateTag(), Tags::intTag, static_cast<uint64_t>(details::bit_cast<uint32_t>(i)) };
     }
-    [[nodiscard]] inline static PyrSlot make(void* o) {
+    [[nodiscard]] inline static PyrSlot make(void* o) noexcept {
+        static_assert(sizeof(uintptr_t) <= sizeof(uint64_t)); // probably always true?
         return { PrivateTag(), Tags::ptrTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
     }
+    [[nodiscard]] inline static PyrSlot make() noexcept { return {}; }
     [[nodiscard]] inline static PyrSlot make(PyrNil) noexcept { return {}; }
     [[nodiscard]] inline static PyrSlot make(bool b) noexcept {
         return { PrivateTag(), b ? Tags::trueTag : Tags::falseTag };
     }
+
+    // This is a bit hard to read (SFINAE), but basically says 'If you aren't derived from PyrObjectHdr, we will not do
+    // any casts for you'. One day, when we upgrade to c++ 20, this can be replaced by a simple concept.
+    // This also means we will not do the implicit casting to void* if you give it a pointer, this is good, because
+    // thats a very powerful overload which you should only use if you really intend to.
+    template <typename T,
+              std::enable_if_t<!std::is_base_of_v<PyrObjectHdr, typename std::remove_pointer<T>::type>, bool> = true>
+    [[nodiscard]] static PyrSlot make(T) = delete;
 
     [[nodiscard]] bool inline isDouble() const noexcept { return !isBoxed(); }
     [[nodiscard]] inline bool isChar() const noexcept { return tagChecker<Tags::charTag>(); }
@@ -394,6 +440,8 @@ public:
         assert(isBoxed());
         if (isObjectHdr())
             return reinterpret_cast<T*>(u_objectHeader.getPtr());
+        // Previously, these values have all been used to mean nullptr. This is quite confusing, but would be a large
+        // breaking change that affected the langauge, so they remain.
         assert(isNil() || (isInt() && getInt() == 0) || (isDouble() && getDouble() == 0));
         return nullptr;
     }

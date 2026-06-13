@@ -34,6 +34,9 @@ argument:: function
 a link::Classes/Function:: which is passed two arguments, the first which is an integer from this to
 endval, and the second which is a number from zero to the number of iterations minus one.
 
+discussion::
+See link::Reference/Conditional-Execution::.
+
 method:: forBy
 Executes strong::function:: for all integers from this to strong::endval::, inclusive, stepping each time by strong::stepval::.
 argument:: endval
@@ -43,6 +46,9 @@ an link::Classes/Integer::.
 argument:: function
 a link::Classes/Function:: which is passed two arguments, the first which is an integer from this to
 endval, and the second which is a number from zero to the number of iterations minus one.
+
+discussion::
+See link::Reference/Conditional-Execution::.
 
 method:: collect
 Returns:: an link::Classes/Array:: of this size filled by objects generated from evaluating the strong::function::.
@@ -326,6 +332,9 @@ returns:: exits the sclang program and returns the receiver as an exit code to t
 discussion::
 code::
 7.exit; // this line stops the interpreter and returns 7 as exit code
+::
+note::
+See the link::Classes/Process#examples#Examples:: section in the link::Classes/Process:: class documentation for information on how a supercollider file can be executed and exited in command line interfaces such as terminal and command prompt windows.
 ::
 
 method:: generate

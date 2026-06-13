@@ -2223,10 +2223,10 @@ void DumpFrame(PyrFrame* frame) {
 
     meth = slotRawMethod(&frame->method);
     methraw = METHRAW(meth);
-    if (methraw->numtemps) {
+    if (methraw->numSlots) {
         post("\t%s\n", str);
-        numargs = methraw->numargs + methraw->varargs;
-        for (i = 0; i < methraw->numtemps; ++i) {
+        numargs = methraw->numNormalArguments + methraw->numVariableArguments;
+        for (i = 0; i < methraw->numSlots; ++i) {
             slotOneWord(frame->vars + i, str);
             // slotString(frame->vars + i, str);
             if (i < numargs) {
@@ -2260,10 +2260,10 @@ void DumpDetailedFrame(PyrFrame* frame) {
     meth = slotRawMethod(&frame->method);
     methraw = METHRAW(meth);
 
-    if (methraw->numtemps) {
+    if (methraw->numSlots) {
         post("\t%s\n", mstr);
-        numargs = methraw->numargs + methraw->varargs;
-        for (i = 0; i < methraw->numtemps; ++i) {
+        numargs = methraw->numNormalArguments + methraw->numVariableArguments;
+        for (i = 0; i < methraw->numSlots; ++i) {
             slotOneWord(frame->vars + i, str);
             // slotString(frame->vars + i, str);
             if (i < numargs) {
@@ -2278,7 +2278,7 @@ void DumpDetailedFrame(PyrFrame* frame) {
 
     post("\t....%s details:\n", mstr);
     post("\t\tneedsHeapContext  = %d\n", methraw->needsHeapContext);
-    post("\t\tnumtemps  = %d\n", methraw->numtemps);
+    post("\t\tnumtemps  = %d\n", methraw->numSlots);
     post("\t\tpopSize  = %d\n", methraw->popSize);
 
     slotString(&frame->method, str);
@@ -2480,7 +2480,7 @@ PyrBlock* newPyrBlock(int flags) {
     int32 numbytes = sizeof(PyrBlock) - sizeof(PyrObjectHdr);
     int32 numSlots = numbytes / sizeof(PyrSlot);
 
-    if (!compilingCmdLine)
+    if (!gCompilingCmdLine)
         block = (PyrBlock*)PyrGC::NewPermanent(numbytes, flags, obj_notindexed);
     else
         block = (PyrBlock*)gMainVMGlobals->gc->New(numbytes, flags, obj_notindexed, false);
@@ -2493,10 +2493,10 @@ PyrBlock* newPyrBlock(int flags) {
     methraw->methType = methBlock;
     methraw->needsHeapContext = 0;
     methraw->frameSize = 0;
-    methraw->varargs = 0;
-    methraw->numargs = 0;
-    methraw->numvars = 0;
-    methraw->numtemps = 0;
+    methraw->numVariableArguments = 0;
+    methraw->numNormalArguments = 0;
+    methraw->numVariables = 0;
+    methraw->numSlots = 0;
     methraw->popSize = 0;
 
     nilSlots(&block->rawData1, numSlots);

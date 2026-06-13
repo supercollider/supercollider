@@ -28,6 +28,8 @@
 #define SYMBOLCHUNK 32000
 
 SCLANG_DLLEXPORT_C PyrSymbol* getsym(const char* name);
+// name is not nullterminated
+SCLANG_DLLEXPORT_C PyrSymbol* getsymlen(const char* name, std::size_t len);
 SCLANG_DLLEXPORT_C PyrSymbol* findsym(const char* name);
 
 class SymbolSpace {

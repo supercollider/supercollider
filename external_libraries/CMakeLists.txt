@@ -13,23 +13,24 @@ if(MSVC) # hide warnings from 3rd party libraries
 		/wd4127 # conditional expression is constant (nova-simd)
 		/wd4146 # unary minus operator applied to unsigned type, result still unsigned (boost)
 		/wd4189 # local variable is initialized but not referenced (hidapi)
-		/wd4206 # nonstandard extension used: translation unit is empty (portmidi)
-		/wd4244 # conversion from 'type1' to 'type2', possible loss of data (hidapi, boost, nova-simd, portaudio, yaml-cpp)
+		/wd4244 # conversion from 'type1' to 'type2', possible loss of data (hidapi, boost, nova-simd, portaudio)
 		/wd4245 # 'conversion' : conversion from 'type1' to 'type2', signed/unsigned mismatch (hidapi, tlsf, portaudio)
-		/wd4267 # conversion from 'size_t' to 'type', possible loss of data (tlsf, portaudio, portmidi, yaml-cpp)
-		/wd4311 # 'variable': pointer truncation from 'type' to 'type' (tlsf, portmidi)
-		/wd4312 # 'operation': conversion from 'type1' to 'type2' of greater size (portmidi)
+		/wd4267 # conversion from 'size_t' to 'type', possible loss of data (tlsf, portaudio)
+		/wd4311 # 'variable': pointer truncation from 'type' to 'type' (tlsf)
 		/wd4389 # 'equality-operator': signed/unsigned mismatch (hidapi
-		/wd4456 # declaration of 'identifier' hides previous local declaration (hidapi, portmidi, yaml-cpp)
+		/wd4456 # declaration of 'identifier' hides previous local declaration (hidapi)
 		/wd4457 # declaration of 'identifier' hides function parameter (oscpack)
 		/wd4459 # declaration of 'identifier' hides global declaration (boost, nova-simd)
 		/wd4505 # unreferenced function with internal linkage has been removed (portaudio)
 		/wd4701 # potentially uninitialized local variable used (boost)
-		/wd4702 # unreachable code (yaml-cpp)
-		/wd4706 # assignment used as a condition (portmidi)
-		/wd4996 # function, class member, variable, or typedef marked deprecated (oscpack, portmidi, yaml-cpp)
+		/wd4996 # function, class member, variable, or typedef marked deprecated (oscpack, portmidi)
 	)
 endif()
+
+set(UTF8PROC_INSTALL OFF CACHE BOOL "Install utf8proc" FORCE)
+add_subdirectory(utf8proc)
+
+set_property(TARGET utf8proc PROPERTY FOLDER 3rdparty)
 
 if(NOT SYSTEM_PORTAUDIO)
     message(STATUS "PortAudio: building static library")
@@ -47,6 +48,8 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 		aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform)
 	elseif(PTHREADS_FOUND)
 		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform)
+	elseif(EMSCRIPTEN)
+		# emscripten contains its own pthreads implementation
 	else()
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
@@ -140,23 +143,17 @@ if(LTO)
 				 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
+# yaml-cpp
 if(NOT SYSTEM_YAMLCPP)
   message(STATUS "Using bundled yaml-cpp")
 
-  # yaml-cpp
-  set(CMAKE_POLICY_VERSION_MINIMUM 3.10) # workaround for cmake 4
-  aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/src yaml_src)
-  CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
+  set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+  set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+  set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
+  set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-  add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
-  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include ${boost_include_dirs})
-  set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
-  set(YAMLCPP_LIBRARY yaml)
-  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include)
-
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
-  endif()
+  add_subdirectory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp EXCLUDE_FROM_ALL)
+  set_property( TARGET yaml-cpp PROPERTY FOLDER 3rdparty )
 
 endif()
 
@@ -179,26 +176,13 @@ set( EXAMPLE_OSC OFF )
 
 if(SC_HIDAPI)
     add_subdirectory(hidapi)
+	set_property(TARGET hidapi_parser PROPERTY FOLDER Libs)
+	set_property(TARGET hidapi PROPERTY FOLDER Libs)
     message(STATUS "Building with HID support")
 else()
     message(STATUS "HID support disabled")
 endif()
 
 if(WIN32)
-  add_library(portmidi portmidi/pm_common/pminternal.h
-                       portmidi/pm_common/pmutil.c
-                       portmidi/pm_common/pmutil.h
-                       portmidi/pm_common/portmidi.c
-                       portmidi/pm_common/portmidi.h
-                       portmidi/pm_win/pmwin.c
-                       portmidi/pm_win/pmwinmm.c
-                       portmidi/pm_win/pmwinmm.h
-                       portmidi/porttime/porttime.c
-                       portmidi/porttime/porttime.h
-                       portmidi/porttime/ptwinmm.c)
-  target_include_directories(portmidi PUBLIC  portmidi/pm_common portmidi/porttime)
-  target_include_directories(portmidi PRIVATE portmidi/pm_win)
-
-  target_link_libraries(portmidi PRIVATE winmm.lib)
-  target_compile_definitions(portmidi INTERFACE HAVE_PORTMIDI)
+  add_subdirectory(portmidi)
 endif()

@@ -34,6 +34,7 @@ List : SequenceableCollection {
 	}
 
 	// accessing
+	indexOf { arg item; ^array.indexOf(item) }
 
 	at { arg i; ^array.at(i) }
 	clipAt { arg i; i = i.asInteger.clip(0, this.size - 1); ^array.at(i) }

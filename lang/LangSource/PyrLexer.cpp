@@ -19,16 +19,29 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "SCBase.h"
+#include "PyrLexer.h"
+#include "PyrSlot.h"
+#include "PyrSymbol.h"
+#include "SC_Constants.h"
+#include "SC_LanguageClient.h"
+#include "VMGlobals.h"
+#include "codepoint.hpp"
+#include "source_utils.hpp"
+#include "tokens.hpp"
+
+#include <algorithm>
+#include <optional>
+#include <sstream>
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
 #include <math.h>
 #include <new>
 #include <stdlib.h>
-#include <ctype.h>
-#include <cerrno>
 #include <limits>
 #include <set>
+#include <type_traits>
 
 #ifdef _WIN32
 #    include <direct.h>
@@ -38,50 +51,60 @@
 
 #include <filesystem>
 #include <fstream>
+#include <string.h>
 
 #include "PyrParseNode.h"
 #include "Bison/lang11d_tab.h"
 #include "SCBase.h"
 #include "PyrObject.h"
 #include "PyrObjectProto.h"
-#include "PyrLexer.h"
 #include "PyrSched.h"
-#include "SC_InlineUnaryOp.h"
-#include "SC_InlineBinaryOp.h"
 #include "GC.h"
 #include "SimpleStack.h"
 
 #include "PyrSymbolTable.h"
 #include "PyrInterpreter.h"
-#include "PyrPrimitive.h"
 #include "PyrObjectProto.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrKernelProto.h"
 #include "InitAlloc.h"
 #include "PredefinedSymbols.h"
-#ifdef _WIN32
-#else
-#    include "dirent.h"
-#endif
-#include <string.h>
-
 #include "SC_LanguageConfig.hpp"
 
 #include "SC_Filesystem.hpp" // getDirectory, resolveIfAlias, isStandalone
 #include "SC_Codecvt.hpp" // path_to_utf8_str
 #include "SC_TextUtils.hpp"
 
+
+#include <lexer.hpp>
+
+struct ClassExtFile {
+    struct ClassExtFile* next;
+    PyrSymbol* fileSym;
+    int startPos, endPos, lineOffset;
+};
+
+typedef struct classdep {
+    struct classdep* next;
+    struct classdep* superClassDep;
+    struct classdep* subclasses;
+    PyrSymbol* className;
+    PyrSymbol* superClassName;
+    PyrSymbol* fileSym;
+    int startPos, endPos, lineOffset;
+} ClassDependancy;
+
 int yyparse();
-int processaccidental1(char* s);
-int processaccidental2(char* s);
+PyrSlot process_accidental_cents(const char* s);
+PyrSlot process_accidental_steps(const char* s);
 
-
-extern bool gFullyFunctional;
 double compileStartTime;
-int gNumCompiledFiles;
-/*
-thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
-*/
+int gNumCompiledFiles { 0 };
+
+extern PyrClass* gClassList;
+ClassDependancy** gClassCompileOrder;
+int gClassCompileOrderNum { 0 };
+int gClassCompileOrderSize = 1000;
 
 namespace fs = std::filesystem;
 using DirName = SC_Filesystem::DirName;
@@ -90,46 +113,34 @@ PyrSymbol* gCompilingFileSym = nullptr;
 VMGlobals* gCompilingVMGlobals = nullptr;
 static fs::path gCompileDir;
 
-//#define DEBUGLEX 1
-bool gDebugLexer = false;
 
 bool gShowWarnings = false;
-LongStack brackets;
-LongStack closedFuncCharNo;
 LongStack generatorStack;
 int lastClosedFuncCharNo = 0;
 
-const char* binopchars = "!@%&*-+=|<>?/";
-char yytext[MAXYYLEN];
 fs::path currfilename;
 std::string printingCurrfilename; // for error reporting
 
-int yylen;
-int lexCmdLine = 0;
-bool compilingCmdLine = false;
-bool compilingCmdLineErrorWindow = false;
+bool gCompilingCmdLine = false;
 
+// TODO: replace with yylval
 intptr_t zzval;
 
+// TODO: replace with yyloc
 int lineno, charno, linepos;
 int* linestarts;
-int maxlinestarts;
+int maxlinestarts { 0 };
 
-char* text;
-int textlen;
-int textpos;
+// This is the text of the source file currently being tokenized.
+char* gCompilingText { nullptr };
+int gCompilinTextLen { 0 };
+int textpos { 0 };
+// I don't know what these do.
 int errLineOffset, errCharPosOffset;
-int parseFailed = 0;
-bool compiledOK = false;
+int gParseFailed = 0;
+bool gCompiledOK = false;
 std::set<fs::path> compiledDirectories;
 
-/* so the text editor's dumb paren matching will work */
-#define OPENPAREN '('
-#define OPENCURLY '{'
-#define OPENSQUAR '['
-#define CLOSSQUAR ']'
-#define CLOSCURLY '}'
-#define CLOSPAREN ')'
 
 int sc_strtoi(const char* str, int n, int base) {
     int z = 0;
@@ -170,1025 +181,817 @@ double sc_strtof(const char* str, int n, int base) {
 }
 
 bool startLexer(PyrSymbol* fileSym, const fs::path& p, int startPos, int endPos, int lineOffset);
-bool startLexer(PyrSymbol* fileSym, const fs::path& p, int startPos, int endPos, int lineOffset) {
-    const char* filename = fileSym->name;
-
-    textlen = -1;
-
-    if (!fileSym->u.source) {
-        try {
-            std::ifstream file;
-            file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-            file.open(p, std::ios_base::binary);
-            size_t sz = fs::file_size(p);
-
-            text = (char*)pyr_pool_compile->Alloc((sz + 1) * sizeof(char));
-            MEMFAIL(text);
-            file.read(text, sz);
-            text[sz] = '\0';
-            fileSym->u.source = text;
-            rtf2txt(text);
-        } catch (const std::exception& ex) {
-            error("Could not read %s: %s.\n", SC_Codecvt::path_to_utf8_str(p).c_str(), ex.what());
-            return false;
-        }
-    } else
-        text = fileSym->u.source;
-
-    if ((startPos >= 0) && (endPos > 0)) {
-        textlen = endPos - startPos;
-        text += startPos;
-    } else if (textlen == -1)
-        textlen = strlen(text);
-
-    if (lineOffset > 0)
-        errLineOffset = lineOffset;
-    else
-        errLineOffset = 0;
-
-    if (startPos > 0)
-        errCharPosOffset = startPos;
-    else
-        errCharPosOffset = 0;
-
-    initLongStack(&brackets);
-    initLongStack(&closedFuncCharNo);
-    initLongStack(&generatorStack);
-    lastClosedFuncCharNo = 0;
-    textpos = 0;
-    linepos = 0;
-    lineno = 1;
-    charno = 0;
-
-    yylen = 0;
-    zzval = 0;
-    parseFailed = 0;
-    lexCmdLine = 0;
-    currfilename = fs::path(filename);
-    printingCurrfilename = "file '" + SC_Codecvt::path_to_utf8_str(currfilename) + "'";
-    maxlinestarts = 1000;
-    linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
-    MEMFAIL(linestarts);
-    linestarts[0] = 0;
-    linestarts[1] = 0;
-
-    return true;
-}
-
-void startLexerCmdLine(char* textbuf, int textbuflen) {
-    // pyrmalloc:
-    // lifetime: kill after compile. (this one gets killed anyway)
-    text = (char*)pyr_pool_compile->Alloc((textbuflen + 2) * sizeof(char));
-    MEMFAIL(text);
-    memcpy(text, textbuf, textbuflen);
-    text[textbuflen] = ' ';
-    text[textbuflen + 1] = 0;
-    textlen = textbuflen + 1;
-
-    rtf2txt(text);
-
-    initLongStack(&brackets);
-    initLongStack(&closedFuncCharNo);
-    initLongStack(&generatorStack);
-    lastClosedFuncCharNo = 0;
-    textpos = 0;
-    linepos = 0;
-    lineno = 1;
-    charno = 0;
-
-    yylen = 0;
-    zzval = 0;
-    parseFailed = 0;
-    lexCmdLine = 1;
-    currfilename = fs::path("interpreted text");
-    printingCurrfilename = currfilename.string();
-    maxlinestarts = 1000;
-    linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
-    MEMFAIL(linestarts);
-    linestarts[0] = 0;
-    linestarts[1] = 0;
-
-    errLineOffset = 0;
-    errCharPosOffset = 0;
-}
-
-void finiLexer() {
-    pyr_pool_compile->Free(linestarts);
-    freeLongStack(&brackets);
-    freeLongStack(&closedFuncCharNo);
-    freeLongStack(&generatorStack);
-}
+void startLexerCmdLine(char* textbuf, int textbuflen);
+void finiLexer();
 
 void initLexer() {
     // strcpy(binopchars, "!@%&*-+=|:<>?/");
 }
 
-int input() {
-    int c;
-    if (textpos >= textlen) {
-        c = 0;
-    } else {
-        c = text[textpos++];
-        charno++;
+namespace lex = sc::lex;
+
+
+using TokenType = lex::TokenType;
+using UnderlyingTokenType = std::underlying_type_t<TokenType>;
+
+
+[[nodiscard]] constexpr std::optional<yytokentype> convert_to_bison_tokentype(TokenType t) {
+    if (sc::lex::is_error(t))
+        return BADTOKEN;
+
+    switch (t) {
+    case TokenType::EndOfFile:
+        return YYEOF;
+    case TokenType::Name:
+        return NAME;
+    case TokenType::ClassName:
+        return CLASSNAME;
+    case TokenType::PrimitiveName:
+        return PRIMITIVENAME;
+    case TokenType::Integer:
+        return INTEGER;
+    case TokenType::IntegerRadix:
+        return INTEGER;
+    case TokenType::Hexidecimal:
+        return INTEGER;
+    case TokenType::Float:
+    case TokenType::FloatRadix:
+    case TokenType::FloatExponent:
+    case TokenType::Inf:
+        return SC_FLOAT;
+    case TokenType::Pi:
+        return PIE;
+    case TokenType::AccidentalSteps:
+    case TokenType::AccidentalCents:
+        return ACCIDENTAL;
+    case TokenType::SymbolSlash:
+    case TokenType::SymbolQuote:
+        return SYMBOL;
+    case TokenType::Ascii:
+        return ASCII;
+    case TokenType::True:
+        return TRUEOBJ;
+    case TokenType::False:
+        return FALSEOBJ;
+    case TokenType::Nil:
+        return NILOBJ;
+    case TokenType::StringLine:
+        return STRING;
+    case TokenType::While:
+        return WHILE;
+    case TokenType::Var:
+        return VAR;
+    case TokenType::Arg:
+        return ARG;
+    case TokenType::ClassVar:
+        return CLASSVAR;
+    case TokenType::Const:
+        return SC_CONST;
+    case TokenType::OpenParen:
+        return OPENPAREN;
+    case TokenType::CloseParen:
+        return CLOSEPAREN;
+    case TokenType::OpenSquare:
+        return OPENSQUARE;
+    case TokenType::CloseSquare:
+        return CLOSESQUARE;
+    case TokenType::OpenCurly:
+        return OPENCURLY;
+    case TokenType::CloseCurly:
+        return CLOSECURLY;
+    case TokenType::BeginClosedFunction:
+        return BEGINCLOSEDFUNC;
+    case TokenType::SemiColon:
+        return SEMICOLON;
+    case TokenType::Colon:
+        return COLON;
+    case TokenType::Comma:
+        return COMMA;
+    case TokenType::EqualsSign:
+        return EQUALSSIGN;
+    case TokenType::NonLocalReturn:
+        return NONLOCALRETURN;
+    case TokenType::BackTick:
+        return BACKTICK;
+    case TokenType::Tilde:
+        return TILDE;
+    case TokenType::Hash:
+        return HASH;
+    case TokenType::LeftArrow:
+        return LEFTARROW;
+    case TokenType::ReadWriteVar:
+        return READWRITEVAR;
+    case TokenType::Ellipsis:
+        return ELLIPSIS;
+    case TokenType::Dot:
+        return DOT;
+    case TokenType::DotDot:
+        return DOTDOT;
+    case TokenType::CurryArg:
+        return CURRYARG;
+    case TokenType::Pipe:
+        return PIPE;
+    case TokenType::Minus:
+        return MINUS;
+    case TokenType::Multiply:
+        return MULTIPLY;
+    case TokenType::Add:
+        return ADD;
+    case TokenType::LessThan:
+        return LESSTHAN;
+    case TokenType::GreaterThan:
+        return GREATERTHAN;
+    case TokenType::BinaryOperator:
+        return BINOP;
+    case TokenType::KeywordBinaryOperator:
+        return KEYBINOP;
+    default:
+        assert(false);
+        return YYerror;
     }
-    if (c == '\n' || c == '\r') {
-        lineno++;
-        linepos = textpos;
-        if (linestarts) {
-            if (lineno >= maxlinestarts) {
-                maxlinestarts += maxlinestarts;
-                linestarts = (int*)pyr_pool_compile->Realloc(linestarts, maxlinestarts * sizeof(int*));
+}
+
+constexpr inline int str_to_int(const char* str, size_t n, int base) {
+    int z = 0;
+    for (int i = 0; i < n; ++i) {
+        int c = *str++;
+        if (!c)
+            break;
+        if (c >= '0' && c <= '0' + std::min(10, base) - 1)
+            z = z * base + c - '0';
+        else if (c >= 'a' && c <= 'a' + std::min(36, base) - 11)
+            z = z * base + c - 'a' + 10;
+        else if (c >= 'A' && c <= 'A' + std::min(36, base) - 11)
+            z = z * base + c - 'A' + 10;
+    }
+    return z;
+}
+
+
+enum struct ExtendedErrors : std::underlying_type_t<TokenType> {
+    ExtraClosingParenBracket = static_cast<UnderlyingTokenType>(TokenType::START_OF_USER_DEFINED_ERRORS),
+    ExtraClosingSqaureBracket,
+    ExtraClosingCurlyBracket,
+
+    GotParenExpectedSquare,
+    GotParenExpectedCurly,
+
+    GotCurlyExpectedParen,
+    GotCurlyExpectedSquare,
+
+    GotSquareExpectedParen,
+    GotSquareExpectedCurly,
+};
+
+struct BisonSemActionOutput {
+    [[nodiscard]] BisonSemActionOutput(ExtendedErrors e, lex::SourceCodeRange range):
+        type(static_cast<TokenType>(e)),
+        range(range),
+        slot({}) {};
+
+    [[nodiscard]] BisonSemActionOutput(ExtendedErrors e, lex::SourceCodeRange range, lex::SourceCodeRange extra_range):
+        type(static_cast<TokenType>(e)),
+        range(range),
+        slot({}),
+        extra_range_of_error(extra_range) {};
+
+    [[nodiscard]] BisonSemActionOutput(TokenType t, lex::SourceCodeRange range, std::optional<PyrSlot> slot = {}):
+        type(t),
+        range(range),
+        slot(slot) {};
+
+    [[nodiscard]] BisonSemActionOutput(TokenType t, lex::SourceCodeRange range, PyrSlot slot):
+        type(t),
+        range(range),
+        slot(slot) {};
+
+    [[nodiscard]] BisonSemActionOutput() = default;
+    [[nodiscard]] BisonSemActionOutput(BisonSemActionOutput&&) noexcept = default;
+    [[nodiscard]] BisonSemActionOutput(const BisonSemActionOutput&) noexcept = default;
+    BisonSemActionOutput& operator=(BisonSemActionOutput&&) noexcept = default;
+    BisonSemActionOutput& operator=(const BisonSemActionOutput&) noexcept = default;
+
+    [[nodiscard]] bool is_error() const { return sc::lex::is_error(type); }
+    [[nodiscard]] bool is(TokenType t) const { return type == t; }
+    [[nodiscard]] bool is(ExtendedErrors t) const { return static_cast<int>(type) == static_cast<int>(t); }
+
+    TokenType type {}; // can also include the ExtendedErrors set. There is no nice way to extend an enum in c++.
+    lex::SourceCodeRange range {};
+    std::optional<PyrSlot> slot {};
+    std::optional<lex::SourceCodeRange> extra_range_of_error {};
+};
+struct BisonLexerAction {
+public:
+    BisonLexerAction(const char* source): source(source) {};
+    BisonLexerAction() = delete;
+    BisonLexerAction(BisonLexerAction&&) noexcept = default;
+    BisonLexerAction(const BisonLexerAction&) = default;
+    BisonLexerAction& operator=(BisonLexerAction&&) noexcept = default;
+    BisonLexerAction& operator=(const BisonLexerAction&) = default;
+
+    const char* source;
+    std::vector<std::pair<TokenType, lex::SourceCodeRange>> closing_bracket_stack {};
+
+    // TODO: once parser/compiler has been updated, remove this.
+    std::vector<std::size_t> line_starts {};
+
+    using Output = BisonSemActionOutput;
+
+    template <TokenType T> std::optional<Output> process(lex::SourceCodeRange loc) {
+        // TODO: once parser/compiler has been updated, remove this.
+        while (line_starts.size() <= loc.begin.lineNumber) {
+            line_starts.push_back(loc.begin.absolute);
+        }
+        while (line_starts.size() < loc.end.lineNumber) {
+            line_starts.push_back(loc.begin.absolute);
+        }
+        if (line_starts.size() <= loc.end.lineNumber) {
+            line_starts.push_back(loc.end.absolute);
+        }
+
+        // Discard
+        if constexpr (sc::lex::is_whitespace(T) || sc::lex::is_comment(T))
+            return std::nullopt;
+
+        // Convert these directly to a symbol.
+        else if constexpr (sc::lex::is_identifier(T) || sc::lex::is_keyword(T) || T == TokenType::BinaryOperator
+                           || sc::lex::is_ambiguous_punctuation(T))
+            return { { T, loc, PyrSlot::make(text_to_symbol(loc)) } };
+
+        // More complex symbols that drop part of the location and/or use escape characters.
+        else if constexpr (T == TokenType::KeywordBinaryOperator)
+            return { { T, loc, PyrSlot::make(text_to_symbol(loc, 0, 1)) } };
+
+        else if constexpr (T == TokenType::SymbolSlash)
+            return { { T, loc, PyrSlot::make(text_to_symbol(loc, 1, 0)) } };
+
+        else if constexpr (T == TokenType::SymbolQuote)
+            return { { T, loc, PyrSlot::make(text_to_symbol(loc, 1, 1, true)) } };
+
+        // Constants
+        else if constexpr (sc::lex::matches(T, TokenType::Pi, TokenType::Nil, TokenType::Inf, TokenType::True,
+                                            TokenType::False))
+            return { { T, loc, to_constant<T>() } };
+
+        // Open brackets
+        else if constexpr (sc::lex::is_open_bracket(T)) {
+            closing_bracket_stack.push_back({ get_closing_bracket<T>(), loc });
+            return { { T, loc } };
+        }
+
+        // Closing brackets
+        else if constexpr (sc::lex::is_close_bracket(T)) {
+            if (closing_bracket_stack.empty()) {
+                if constexpr (T == TokenType::CloseParen)
+                    return { { ExtendedErrors::ExtraClosingParenBracket, loc } };
+                else if constexpr (T == TokenType::CloseSquare)
+                    return { { ExtendedErrors::ExtraClosingSqaureBracket, loc } };
+                else if constexpr (T == TokenType::CloseCurly)
+                    return { { ExtendedErrors::ExtraClosingCurlyBracket, loc } };
+                else {
+                    // Should not happen, all cases should be dealt with. Return something nice just in case.
+                    assert(false);
+                    return { { TokenType::ErUnknown, loc } };
+                }
+            } else {
+                const auto expected = closing_bracket_stack.back().first;
+                if (expected == T) {
+                    // This is pushed even if it isn't a closed function.
+                    lastClosedFuncCharNo = closing_bracket_stack.back().second.begin.absolute;
+                    closing_bracket_stack.pop_back();
+                    return { { T, loc } };
+                } else if (expected == TokenType::CloseParen) {
+                    if (T == TokenType::CloseSquare)
+                        return { { ExtendedErrors::GotSquareExpectedParen, loc, closing_bracket_stack.back().second } };
+                    if (T == TokenType::CloseCurly)
+                        return { { ExtendedErrors::GotCurlyExpectedParen, loc, closing_bracket_stack.back().second } };
+                } else if (expected == TokenType::CloseSquare) {
+                    if (T == TokenType::CloseParen)
+                        return { { ExtendedErrors::GotParenExpectedSquare, loc, closing_bracket_stack.back().second } };
+                    if (T == TokenType::CloseCurly)
+                        return { { ExtendedErrors::GotCurlyExpectedSquare, loc, closing_bracket_stack.back().second } };
+                } else if (expected == TokenType::CloseCurly) {
+                    if (T == TokenType::CloseParen)
+                        return { { ExtendedErrors::GotParenExpectedCurly, loc, closing_bracket_stack.back().second } };
+                    if (T == TokenType::CloseSquare)
+                        return { { ExtendedErrors::GotSquareExpectedCurly, loc, closing_bracket_stack.back().second } };
+                }
+                // Should not happen, all cases should be dealt with. Return something nice just in case.
+                assert(false);
+                return { { TokenType::ErUnknown, loc } };
             }
-            linestarts[lineno] = linepos;
         }
-        charno = 0;
-    }
-    if (c != 0 && yylen < MAXYYLEN - 2)
-        yytext[yylen++] = c;
-    // if (gDebugLexer) postfl("input '%c' %d\n",c,c);
-    return c;
-}
 
-int input0() {
-    int c;
-    if (textpos >= textlen) {
-        c = 0;
-        textpos++; // so unput will work properly
-    } else {
-        c = text[textpos++];
-        charno++;
-    }
-    if (c == '\n' || c == '\r') {
-        lineno++;
-        linepos = textpos;
-        if (linestarts) {
-            if (lineno >= maxlinestarts) {
-                maxlinestarts += maxlinestarts;
-                linestarts = (int*)pyr_pool_compile->Realloc(linestarts, maxlinestarts * sizeof(int*));
+        // Floats
+        else if constexpr (T == TokenType::Float)
+            return { { T, loc, PyrSlot::make(atof(fill_temp_buf(loc))) } };
+        else if constexpr (T == TokenType::FloatExponent)
+            return { { T, loc, PyrSlot::make(atof(fill_temp_buf(loc))) } };
+
+        // Radix, both int and float
+        else if constexpr (T == TokenType::IntegerRadix || T == TokenType::FloatRadix) {
+            const char* start = source + loc.begin.absolute;
+            // Looking for radix.
+            const char* it = start;
+            while (*it != 'r') // Potentially unsafe, but the lexer guarenteed this was found.
+                ++it;
+            const int radix = str_to_int(start, it - start, 10);
+            ++it; // drop r
+            if constexpr (T == TokenType::IntegerRadix) {
+                const auto slot_value = sc_strtoi(it, (source + loc.end.absolute) - it, radix);
+                return { { T, loc, PyrSlot::make(slot_value) } };
+            } else {
+                const double slot_value = sc_strtof(it, (source + loc.end.absolute) - it, radix);
+                return { { T, loc, PyrSlot::make(slot_value) } };
             }
-            linestarts[lineno] = linepos;
         }
-        charno = 0;
+
+        else if constexpr (T == TokenType::Integer)
+            return { { T, loc, PyrSlot::make(atoi(fill_temp_buf(loc))) } };
+
+        else if constexpr (T == TokenType::Hexidecimal) {
+            const char* c = source + loc.begin.absolute;
+            const char* const end = source + loc.end.absolute;
+            // BUG: this is probably a bug, we are ignoring everything before the 'x'
+            while (*c != 'x' && *c != 'X' && *c != 0 && c < end)
+                ++c;
+            ++c;
+            int val = 0;
+            while (c < end) {
+                if (*c >= '0' && *c <= '9')
+                    val = val * 16 + *c - '0';
+                else if (*c >= 'a' && *c <= 'z')
+                    val = val * 16 + *c - 'a' + 10;
+                else if (*c >= 'A' && *c <= 'Z')
+                    val = val * 16 + *c - 'A' + 10;
+                c++;
+            }
+            return { { T, loc, PyrSlot::make(val) } };
+        }
+
+        else if constexpr (T == TokenType::Ascii) {
+            assert(source[loc.begin.absolute] == '$');
+            if (loc.size() == 2) {
+                const char out = source[loc.begin.absolute + 1];
+                if (out == 0)
+                    // TODO: consider this change in more detail.
+                    // This is a little bit odd, but appears to be the current behaviour.
+                    // I believe this is because the language client places extra spaces after the code you evaluate.
+                    // There might be discrepencies here between class files, other language clients, and even depending
+                    // on how you evaluate a file, I've opted to make this consistent. If we need the null terminator
+                    // character, we could use $\0, although that currently produces the same of $0.
+                    return { { T, loc, PyrSlot::make(' ') } };
+                return { { T, loc, std::optional<PyrSlot> { PyrSlot::make(out) } } };
+            }
+            assert(loc.size() == 3);
+            assert(source[loc.begin.absolute] == '$');
+            assert(source[loc.begin.absolute + 1] == '\\');
+            // Three only occurs for the following escape characters.
+            char out = source[loc.begin.absolute + 2];
+            if (out == 'n')
+                out = '\n';
+            else if (out == 'r')
+                out = '\r';
+            else if (out == 't')
+                out = '\t';
+            else if (out == 'f')
+                out = '\f';
+            else if (out == 'v')
+                out = '\v';
+            return { Output { T, loc, std::optional<PyrSlot> { PyrSlot::make(out) } } };
+        }
+
+        else if constexpr (T == TokenType::AccidentalCents)
+            return { { TokenType::AccidentalCents, loc, process_accidental_cents(fill_temp_buf(loc)) } };
+        else if constexpr (T == TokenType::AccidentalSteps)
+            return { { TokenType::AccidentalSteps, loc, process_accidental_steps(fill_temp_buf(loc)) } };
+
+        else
+            return { { T, loc } };
     }
-    // if (gDebugLexer) postfl("input0 '%c' %d\n",c,c);
-    return c;
+
+
+private:
+    std::string temp_buffer {};
+
+    template <TokenType T> PyrSlot to_constant() {
+        static_assert(
+            sc::lex::matches(T, TokenType::Pi, TokenType::Nil, TokenType::Inf, TokenType::True, TokenType::False));
+        if constexpr (T == TokenType::Pi)
+            return PyrSlot::make(pi);
+        else if constexpr (T == TokenType::Nil)
+            return PyrSlot::make(PyrNil {});
+        else if constexpr (T == TokenType::Inf)
+            return PyrSlot::make(std::numeric_limits<double>::max());
+        else if constexpr (T == TokenType::True)
+            return PyrSlot::make(true);
+        else if constexpr (T == TokenType::False)
+            return PyrSlot::make(false);
+    }
+
+    const char* fill_temp_buf(lex::SourceCodeRange loc) {
+        temp_buffer.clear();
+        temp_buffer.insert(temp_buffer.begin(), source + loc.begin.absolute, source + loc.end.absolute);
+        return temp_buffer.c_str();
+    }
+
+    PyrSymbol* text_to_symbol(lex::SourceCodeRange loc, size_t drop_from_start = 0, size_t drop_from_end = 0,
+                              bool needs_escaping = false) {
+        temp_buffer.clear();
+        auto start = source + loc.begin.absolute + drop_from_start;
+        const auto end = source + loc.end.absolute - drop_from_end;
+        const size_t sz = end - start;
+        if (!needs_escaping) {
+            temp_buffer.insert(temp_buffer.begin(), start, end);
+            return getsym(temp_buffer.c_str());
+        }
+        bool escaped = false;
+        auto from_it = start;
+        for (; from_it != end; from_it += 1) {
+            if (*from_it == '\\' && !escaped) {
+                escaped = true;
+                // don't write
+                continue;
+            }
+
+            // Bit odd, we actually only use the escape character to escape the delimiter.
+            temp_buffer.push_back(*from_it);
+            escaped = false;
+        }
+        return getsym(temp_buffer.c_str());
+    }
+
+    template <TokenType T> constexpr auto get_closing_bracket() -> decltype(auto) {
+        static_assert(sc::lex::matches(T, TokenType::OpenParen, TokenType::OpenSquare, TokenType::OpenCurly,
+                                       TokenType::BeginClosedFunction));
+        if constexpr (T == TokenType::OpenParen)
+            return TokenType::CloseParen;
+        else if constexpr (T == TokenType::OpenSquare)
+            return TokenType::CloseSquare;
+        else
+            return TokenType::CloseCurly;
+    }
+};
+
+
+void print_error_line(const char* filepath, const char* txt, size_t txt_len, sc::lex::SourceCodeRange r,
+                      const char* short_description = nullptr) {
+    const auto short_desc_len = short_description == nullptr ? 0 : strlen(short_description);
+    std::stringstream ss;
+    ss << "Error: ";
+
+    if (filepath)
+        ss << filepath << ':' << r.begin.lineNumber + 1 << ':' << r.begin.column + 1;
+
+    ss << "\n──────────────────────────────────────────────────────────────────────────────────\n";
+    const auto selection_start = txt + r.begin.absolute;
+    const auto selection_end = txt + r.end.absolute;
+
+    auto maybe_iter = sc::lex::utils::LineIter::make(txt, txt + txt_len, r.begin);
+    if (!maybe_iter.has_value())
+        return;
+    auto iter = std::move(*maybe_iter);
+
+    iter.backwards(); // go to start of line.
+    if (r.line_count() <= 4) {
+        iter.backwards();
+        iter.backwards();
+    }
+
+    const auto single_line_error = r.line_count() == 1;
+
+
+    for (auto line = iter.forwards(); line; line = iter.forwards()) {
+        const auto [ptr, sz, line_number, ends_in_newline_char] = *line;
+
+        if (line_number < r.begin.lineNumber || line_number > r.end.lineNumber) {
+            ss << std::setfill(' ') << std::setw(5) << line_number + 1 << " │ ";
+            ss.write(ptr, sz);
+            if (!ends_in_newline_char)
+                ss << '\n';
+            if (line_number > r.end.lineNumber + 2)
+                break;
+            else
+                continue;
+        }
+
+        if (single_line_error) {
+            ss << std::setfill(' ') << std::setw(5) << line_number + 1 << " │ ";
+            ss.write(ptr, sz);
+
+            if (!ends_in_newline_char)
+                ss << '\n';
+
+            ss << "      ┆ ";
+            auto cp_iter = sc::lex::utils::CodePointIterator::make(ptr, ptr + sz, ptr).value();
+
+            for (auto cp = cp_iter.forwards(); cp; cp = cp_iter.forwards()) {
+                if (cp_iter.current_location() <= selection_start) {
+                    ss << sc::lex::codepoint_as_whitespace(*cp);
+                } else if (cp_iter.current_location() <= selection_end) {
+                    const auto w { sc::lex::codepoint_width(*cp) };
+                    for (size_t i { 0 }; i < w; ++i)
+                        ss << '^';
+                } else
+                    break;
+            }
+
+            if (short_description) {
+                ss << " ";
+                ss.write(short_description, short_desc_len);
+                ss << '\n';
+            }
+        } else {
+            ss << std::setfill(' ') << std::setw(5) << line_number + 1 << "*│ ";
+            ss.write(ptr, sz);
+
+            if (!ends_in_newline_char)
+                ss << '\n';
+
+            if (line_number == r.end.lineNumber) {
+                if (short_description) {
+                    ss << "     >│ "
+                       << "^ ";
+                    ss.write(short_description, short_desc_len);
+                    ss << '\n';
+                }
+            }
+        }
+    }
+
+    ss << "\n──────────────────────────────────────────────────────────────────────────────────\n";
+    const auto str = ss.str();
+
+    ::postText(str.c_str(), str.size());
 }
 
-void unput(int c) {
-    if (textpos > 0)
-        textpos--;
-    if (c) {
-        if (yylen)
-            --yylen;
-        if (charno)
-            --charno;
-        if (c == '\n' || c == '\r') {
-            --lineno;
+struct GlobalBisonLexerState {
+    enum struct Mode { CMDInitial, CMDContinuing, ClassLibrary };
+    GlobalBisonLexerState(Mode m, BisonLexerAction a, lex::CodePointStream s):
+        mode(m),
+        action(std::move(a)),
+        char_stream(std::move(s)) {}
+
+    Mode mode;
+
+    BisonLexerAction action;
+    lex::CodePointStream char_stream;
+    std::optional<BisonLexerAction::Output> cached {};
+
+    int mutate_global_state_for_return(const BisonLexerAction::Output& o) {
+        // If you set this to 0 when not in use, the parse will segfault.
+        // TODO: use yylval.
+        if (o.slot && !o.is_error())
+            zzval = (intptr_t)newPyrSlotNode(o.range, *o.slot);
+
+        yylloc = o.range;
+
+        // Yes it reads from the end point only. Very odd. Causes many issues.
+        textpos = o.range.end.absolute;
+        lineno = o.range.end.lineNumber + 1; // zero indexed to 1
+        linepos = action.line_starts[o.range.end.lineNumber];
+        charno = o.range.end.column;
+        if (maxlinestarts < o.range.end.lineNumber) {
+            maxlinestarts += maxlinestarts;
+            linestarts = (int*)pyr_pool_compile->Realloc(linestarts, maxlinestarts * sizeof(int*));
+        }
+        linestarts[lineno] = linepos;
+
+        if (o.is_error()) {
+            zzval = 0; // stop anything from continuing.
+
+            post("\nLexing "
+                 "Error:\n──────────────────────────────────────────────────────────────────────────────────\n");
+            if (o.is(ExtendedErrors::GotCurlyExpectedParen) || o.is(ExtendedErrors::GotSquareExpectedParen)) {
+                if (o.extra_range_of_error) {
+                    print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length,
+                                     *o.extra_range_of_error, "Parenthises opened here...");
+                    print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                     "...was expected to be closed here with a ')'.");
+                }
+            } else if (o.is(ExtendedErrors::GotCurlyExpectedSquare) || o.is(ExtendedErrors::GotParenExpectedSquare)) {
+                if (o.extra_range_of_error) {
+                    print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length,
+                                     *o.extra_range_of_error, "Square bracket opened here...");
+                    print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                     "...was expected to be closed here with a ']'.");
+                }
+            } else if (o.is(ExtendedErrors::GotParenExpectedCurly) || o.is(ExtendedErrors::GotSquareExpectedCurly)) {
+                if (o.extra_range_of_error) {
+                    print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length,
+                                     *o.extra_range_of_error, "Curly bracket opened here...");
+                    print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                     "...was expected to be closed here with a '}'.");
+                }
+            } else if (o.is(ExtendedErrors::ExtraClosingCurlyBracket)) {
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                 "Unexpected closing curly brace, could not find a matching opening one.");
+            } else if (o.is(ExtendedErrors::ExtraClosingParenBracket)) {
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                 "Unexpected closing parenthesis, could not find a matching opening one.");
+            } else if (o.is(ExtendedErrors::ExtraClosingSqaureBracket)) {
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                 "Unexpected closing square bracket, could not find a matching opening one.");
+            } else if (o.is(TokenType::ErMissingExponent)) {
+                const auto [ptr, sz] = char_stream.source_code_range_to_text(o.range);
+                const std::string example { ptr, sz };
+                const auto desc = std::string { "Expected digits after the 'e', for example '" } + example + "10'.";
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                 desc.c_str());
+            }
+
+            else if (o.is(TokenType::ErSymbolQuoteUnclosed)) {
+                const auto [ptr, sz] = char_stream.source_code_range_to_text(o.range);
+                size_t i { 0 };
+                while (i < sz && ptr[i] != ' ' && ptr[i] != '\n')
+                    ++i;
+                // TODO: we could look forward to see if the next token (discarding whitespace) is a '\'', in that case,
+                // the user has a new line character in the wrong place.
+                const std::string example { ptr, i };
+                const auto desc =
+                    std::string { "This quoted symbol does not have a matching closing quote, perhaps you meant "
+                                  + example + "'?" };
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                 desc.c_str());
+            }
+
+            else if (o.is(TokenType::ErInvalidUTF8)) {
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                 "Invalid UTF8 encountered here, you probably want to delete this.");
+            } else if (o.is(TokenType::ErInvalidToken)) {
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                 "Invalid token encountered, supercollider does not know how to handle this.");
+            }
+
+            else if (o.is(TokenType::ErStringUnclosed)) {
+                const auto [ptr, sz] = char_stream.source_code_range_to_text(o.range);
+                size_t i { 0 };
+                while (i < sz && ptr[i] != '\n' && ptr[i] != ' ')
+                    ++i;
+                const std::string example { ptr, i };
+                const auto desc =
+                    std::string { "This string does not have a closing '\"', perhaps you meant " + example + "\"?" };
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                 desc.c_str());
+            } else if (o.is(TokenType::ErMultilineCommentUnclosed)) {
+                const auto desc = std::string { "This multiline comment does not have a closing */." };
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range,
+                                 desc.c_str());
+            }
+
+            else {
+                print_error_line(gCompilingFileSym->name, char_stream.source, char_stream.source_length, o.range);
+            }
+        }
+        gParseFailed = o.is_error() ? 1 : 0;
+
+        return *convert_to_bison_tokentype(o.type);
+    }
+};
+
+std::optional<GlobalBisonLexerState> global_bison_lexer_state {};
+
+// Must also advance through global state.
+bool scanForClosingBracket(TokenType to_find) {
+    assert(global_bison_lexer_state);
+    GlobalBisonLexerState& s = *global_bison_lexer_state;
+    const auto tok = to_find;
+    assert(!s.action.closing_bracket_stack.empty());
+    const auto target_depth = s.action.closing_bracket_stack.size() - 1; // we have just pushed a bracket.
+
+    BisonLexerAction::Output out {};
+    while (true) {
+        out = lex::lexer(s.char_stream, s.action);
+
+        if (out.type == TokenType::EndOfFile || out.is_error()) {
+            s.mutate_global_state_for_return(out);
+            return false;
+        }
+        if (out.type == tok && s.action.closing_bracket_stack.size() == target_depth) {
+            s.mutate_global_state_for_return(out);
+            return true;
         }
     }
 }
 
-void unput0(int c) {
-    if (textpos > 0)
-        textpos--;
-    if (charno)
-        --charno;
-    if (c == '\n' || c == '\r') {
-        --lineno;
-    }
+void scan_for_end() {
+    assert(global_bison_lexer_state);
+    GlobalBisonLexerState& s = *global_bison_lexer_state;
+
+    BisonLexerAction::Output out;
+    do {
+        out = lex::lexer(s.char_stream, s.action);
+    } while (out.type != TokenType::EndOfFile && !out.is_error());
+
+    s.mutate_global_state_for_return(out);
 }
 
 int yylex() {
-    int r, c, c2;
-    intptr_t d;
-    int radix;
-
-    yylen = 0;
-    // finite state machine to parse input stream into tokens
-
-    if (lexCmdLine == 1) {
-        lexCmdLine = 2;
-        r = INTERPRET;
-        goto leave;
+    assert(global_bison_lexer_state);
+    GlobalBisonLexerState& s = *global_bison_lexer_state;
+    if (s.mode == GlobalBisonLexerState::Mode::CMDInitial) {
+        s.mode = GlobalBisonLexerState::Mode::CMDContinuing;
+        textpos = 0;
+        lineno = 0;
+        linepos = 0;
+        charno = 0;
+        linestarts[0] = 0;
+        zzval = 0;
+        gParseFailed = 0;
+        return INTERPRET;
     }
-start:
-    c = input();
 
-    if (c == 0) {
-        r = 0;
-        goto leave;
-    } else if (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f') {
-        yylen = 0;
-        goto start;
-    } else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_')
-        goto ident;
-    else if (c == '/') {
-        c = input();
-        if (c == '/')
-            goto comment1;
-        else if (c == '*')
-            goto comment2;
-        else {
-            unput(c);
-            goto binop;
-        }
-    } else if (c >= '0' && c <= '9')
-        goto digits_1;
-    else if (c == OPENPAREN || c == OPENSQUAR || c == OPENCURLY) {
-        pushls(&brackets, (intptr_t)c);
-        if (c == OPENCURLY) {
-            pushls(&closedFuncCharNo, (intptr_t)(linestarts[lineno] + charno - 1));
-        }
-        r = c;
-        goto leave;
-    } else if (c == CLOSSQUAR) {
-        if (!emptyls(&brackets)) {
-            if ((d = popls(&brackets)) != (intptr_t)OPENSQUAR) {
-                fatal();
-                post("opening bracket was a '%c', but found a '%c'\n", d, c);
-                goto error2;
+
+    // If we have a cached out return it.
+    // This is necessary for the string line bodge while we migrate, it can be remove in the future once the
+    // parser & compiler know how to deal with string lines.
+    if (s.cached) {
+        const auto o = std::move(*s.cached);
+        s.cached.reset();
+        return s.mutate_global_state_for_return(o);
+    }
+
+    BisonLexerAction::Output out = lex::lexer(s.char_stream, s.action);
+
+    if (out.type != TokenType::StringLine)
+        return s.mutate_global_state_for_return(out);
+
+    sc::lex::SourceCodeLocation start { out.range.begin };
+    std::string str {};
+    str.reserve(128);
+
+    auto prev = out;
+    while (true) {
+        // This is nasty, but in the future, this should move into the compiler making this unnecessary.
+        if (out.type != TokenType::StringLine) {
+            assert(!s.cached.has_value());
+
+            // Yes it reads from the end point only. Very odd. Causes many issues.
+            textpos = prev.range.end.absolute;
+            lineno = prev.range.end.lineNumber + 1; // zero indexed to 1
+
+            linepos = s.action.line_starts[prev.range.end.lineNumber];
+            charno = prev.range.end.column;
+            if (maxlinestarts < prev.range.end.lineNumber) {
+                maxlinestarts += maxlinestarts;
+                linestarts = (int*)pyr_pool_compile->Realloc(linestarts, maxlinestarts * sizeof(int*));
             }
-        } else {
-            fatal();
-            post("unmatched '%c'\n", c);
-            goto error2;
+            linestarts[lineno] = linepos;
+
+            // This is the one case in the whole lexer where we currently have to alloc using the GC.
+            // This would be much better pushed into the compiler.
+            const int flags = gCompilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
+            auto sc_str = newPyrString(gMainVMGlobals->gc, str.c_str(), flags, false);
+            zzval = (intptr_t)newPyrSlotNode(out.range, PyrSlot::make(sc_str));
+            yylloc = out.range;
+            gParseFailed = prev.is_error() ? 1 : 0;
+
+            s.cached = std::move(out); // save for next time.
+            return STRING;
         }
-        r = c;
-        goto leave;
-    } else if (c == CLOSPAREN) {
-        if (!emptyls(&brackets)) {
-            if ((d = popls(&brackets)) != OPENPAREN) {
-                fatal();
-                post("opening bracket was a '%c', but found a '%c'\n", d, c);
-                goto error2;
+        auto range = out.range;
+        // This is dodgy, we are dropping the quotes here.
+        // Again, once this is in the compilation phase, this becomes nice.
+        range.begin.absolute += 1;
+        range.end.absolute -= 1;
+
+        bool escaped = false;
+        const auto [bb, sz] = s.char_stream.source_code_range_to_text(range);
+        for (auto b = bb; b < (bb + sz); ++b) {
+            if (*b == '\\' && !escaped) {
+                escaped = true;
+                continue;
             }
-        } else {
-            fatal();
-            post("unmatched '%c'\n", c);
-            goto error2;
-        }
-        r = c;
-        goto leave;
-    } else if (c == CLOSCURLY) {
-        if (!emptyls(&brackets)) {
-            if ((d = popls(&brackets)) != OPENCURLY) {
-                fatal();
-                post("opening bracket was a '%c', but found a '%c'\n", d, c);
-                goto error2;
-            }
-            lastClosedFuncCharNo = popls(&closedFuncCharNo);
-        } else {
-            fatal();
-            post("unmatched '%c'\n", c);
-            goto error2;
-        }
-        r = c;
-        goto leave;
-    } else if (c == '^') {
-        r = c;
-        goto leave;
-    } else if (c == '~') {
-        r = c;
-        goto leave;
-    } else if (c == ';') {
-        r = c;
-        goto leave;
-    } else if (c == ':') {
-        r = c;
-        goto leave;
-    } else if (c == '`') {
-        r = c;
-        goto leave;
-    } else if (c == '\\')
-        goto symbol1;
-    else if (c == '\'')
-        goto symbol3;
-    else if (c == '"')
-        goto string1;
-    else if (c == '.') {
-        if ((c = input()) == '.') {
-            if ((c = input()) == '.') {
-                r = ELLIPSIS;
-                goto leave;
+
+            if (escaped) {
+                if (*b == 'n')
+                    str += '\n';
+                else if (*b == 'r')
+                    str += '\r';
+                else if (*b == 't')
+                    str += '\t';
+                else if (*b == 'f')
+                    str += '\f';
+                else if (*b == 'v')
+                    str += '\v';
+                else
+                    str += *b;
+                escaped = false;
             } else {
-                r = DOTDOT;
-                unput(c);
-                goto leave;
-            }
-        } else {
-            unput(c);
-            r = '.';
-            goto leave;
-        }
-
-    } else if (c == '#') {
-        if ((c = input()) == OPENCURLY) {
-            pushls(&brackets, (intptr_t)OPENCURLY);
-            pushls(&closedFuncCharNo, (intptr_t)(linestarts[lineno] + charno - 2));
-            r = BEGINCLOSEDFUNC;
-        } else {
-            unput(c);
-            r = '#';
-        }
-        goto leave;
-    } else if (c == '$') {
-        c = input();
-        if (c == '\\') {
-            c = input();
-            switch (c) {
-            case 'n':
-                c = '\n';
-                break;
-            case 'r':
-                c = '\r';
-                break;
-            case 't':
-                c = '\t';
-                break;
-            case 'f':
-                c = '\f';
-                break;
-            case 'v':
-                c = '\v';
-                break;
+                str += *b;
             }
         }
-        r = processchar(c);
-        goto leave;
-    } else if (c == ',') {
-        r = c;
-        goto leave;
-    } else if (c == '=') {
-        c = input();
-        if (strchr(binopchars, c))
-            goto binop;
-        else {
-            unput(c);
-            r = '=';
-            goto leave;
-        }
-    } else if (strchr(binopchars, c))
-        goto binop;
-    else if (!(isprint(c) || isspace(c) || c == 0)) {
-        yylen = 0;
-        goto start;
-    } else
-        goto error1;
 
-ident:
-    c = input();
-
-    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || (c >= '0' && c <= '9'))
-        goto ident;
-    else if (c == ':') {
-        yytext[yylen] = 0;
-        r = processkeywordbinop(yytext);
-        goto leave;
-    } else {
-        unput(c);
-        yytext[yylen] = 0;
-        r = processident(yytext);
-        goto leave;
+        prev = out;
+        out = lex::lexer(s.char_stream, s.action);
     }
-
-symbol1:
-    c = input();
-
-    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_')
-        goto symbol2;
-    else if (c >= '0' && c <= '9')
-        goto symbol4;
-    else {
-        unput(c);
-        yytext[yylen] = 0;
-        r = processsymbol(yytext);
-        goto leave;
-    }
-
-symbol2:
-    c = input();
-
-    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || (c >= '0' && c <= '9'))
-        goto symbol2;
-    else {
-        unput(c);
-        yytext[yylen] = 0;
-        r = processsymbol(yytext);
-        goto leave;
-    }
-
-symbol4:
-    c = input();
-    if (c >= '0' && c <= '9')
-        goto symbol4;
-    else {
-        unput(c);
-        yytext[yylen] = 0;
-        r = processsymbol(yytext);
-        goto leave;
-    }
-
-
-binop:
-
-    c = input();
-
-    if (c == 0)
-        goto binop2;
-    if (strchr(binopchars, c))
-        goto binop;
-    else {
-    binop2:
-        unput(c);
-        yytext[yylen] = 0;
-        r = processbinop(yytext);
-        goto leave;
-    }
-
-radix_digits_1:
-
-    c = input();
-    if (c >= '0' && c <= '0' + sc_min(10, radix) - 1)
-        goto radix_digits_1;
-    if (c >= 'a' && c <= 'a' + sc_min(36, radix) - 11)
-        goto radix_digits_1;
-    if (c >= 'A' && c <= 'A' + sc_min(36, radix) - 11)
-        goto radix_digits_1;
-    if (c == '.') {
-        goto radix_digits_2;
-    }
-    unput(c);
-    yytext[yylen] = 0;
-    r = processintradix(yytext, yylen, radix);
-    goto leave;
-
-radix_digits_2:
-
-    c = input();
-    if (c >= '0' && c <= '0' + sc_min(10, radix) - 1)
-        goto radix_digits_2;
-    if (c >= 'A' && c <= 'A' + sc_min(36, radix) - 11)
-        goto radix_digits_2;
-    // do not allow lower case after decimal point.
-    unput(c);
-    yytext[yylen] = 0;
-    r = processfloatradix(yytext, yylen, radix);
-    goto leave;
-
-hexdigits:
-
-    c = input();
-    if (c >= '0' && c <= '9')
-        goto hexdigits;
-    if (c >= 'a' && c <= 'f')
-        goto hexdigits;
-    if (c >= 'A' && c <= 'F')
-        goto hexdigits;
-    unput(c);
-    yytext[yylen] = 0;
-    r = processhex(yytext);
-    goto leave;
-
-digits_1: /* number started with digits */
-
-    c = input();
-
-    if (c >= '0' && c <= '9')
-        goto digits_1;
-    else if (c == 'r') {
-        radix = sc_strtoi(yytext, yylen - 1, 10);
-        yylen = 0;
-        goto radix_digits_1;
-    } else if (c == 'e' || c == 'E')
-        goto expon_1;
-    else if (c == '.') {
-        c2 = input();
-        if (c2 >= '0' && c2 <= '9')
-            goto digits_2;
-        else {
-            unput(c2);
-            unput(c);
-            yytext[yylen] = 0;
-            r = processint(yytext);
-            goto leave;
-        }
-    } else if (c == 'b' || c == 's') {
-        d = input();
-        if (d >= '0' && d <= '9')
-            goto accidental1;
-        if (d == c)
-            goto accidental2;
-        goto accidental3;
-    accidental1:
-        d = input();
-        if (d >= '0' && d <= '9')
-            goto accidental1;
-        unput(d);
-        yytext[yylen] = 0;
-        r = processaccidental1(yytext);
-        goto leave;
-    accidental2:
-        d = input();
-        if (d == c)
-            goto accidental2;
-    accidental3:
-        unput(d);
-        yytext[yylen] = 0;
-        r = processaccidental2(yytext);
-        goto leave;
-    } else if (c == 'x') {
-        yylen = 0;
-        goto hexdigits;
-    } else {
-        unput(c);
-        yytext[yylen] = 0;
-        r = processint(yytext);
-        goto leave;
-    }
-
-digits_2:
-
-    c = input();
-
-    if (c >= '0' && c <= '9')
-        goto digits_2;
-    else if (c == 'e' || c == 'E')
-        goto expon_1;
-    //	else if (c == 'π' || c == '∏') {
-    //		--yylen;
-    //		yytext[yylen] = 0;
-    //		r = processfloat(yytext, 1);
-    //		goto leave;
-    //	}
-    else {
-        unput(c);
-        yytext[yylen] = 0;
-        r = processfloat(yytext, 0);
-        goto leave;
-    }
-
-expon_1: /* e has been seen, need digits */
-    c = input();
-
-    if (c >= '0' && c <= '9')
-        goto expon_3;
-    else if (c == '+' || c == '-')
-        goto expon_2;
-    else
-        goto error1;
-
-expon_2: /* + or - seen but still need digits */
-    c = input();
-
-    if (c >= '0' && c <= '9')
-        goto expon_3;
-    else
-        goto error1;
-
-expon_3:
-    c = input();
-
-    if (c >= '0' && c <= '9')
-        goto expon_3;
-    //	else if (c == 'π' || c == '∏') {
-    //		--yylen;
-    //		yytext[yylen] = 0;
-    //		r = processfloat(yytext, 1);
-    //		goto leave;
-    //	}
-    else {
-        unput(c);
-        yytext[yylen] = 0;
-        r = processfloat(yytext, 0);
-        goto leave;
-    }
-
-symbol3 : {
-    int startline, endchar;
-    startline = lineno;
-    endchar = '\'';
-
-    /*do {
-        c = input();
-    } while (c != endchar && c != 0);*/
-    for (; yylen < MAXYYLEN;) {
-        c = input();
-        if (c == '\n' || c == '\r') {
-            post("Symbol open at end of line on line %d of %s\n", startline + errLineOffset,
-                 printingCurrfilename.c_str());
-            yylen = 0;
-            r = 0;
-            goto leave;
-        }
-        if (c == '\\') {
-            yylen--;
-            c = input();
-        } else if (c == endchar)
-            break;
-        if (c == 0)
-            break;
-    }
-    if (c == 0) {
-        post("Open ended symbol started on line %d of %s\n", startline + errLineOffset, printingCurrfilename.c_str());
-        yylen = 0;
-        r = 0;
-        goto leave;
-    }
-    yytext[yylen] = 0;
-    yytext[yylen - 1] = 0;
-    r = processsymbol(yytext);
-    goto leave;
 }
 
-string1 : {
-    int startline, endchar;
-    startline = lineno;
-    endchar = '"';
-
-    for (; yylen < MAXYYLEN;) {
-        c = input();
-        if (c == '\\') {
-            yylen--;
-            c = input();
-            switch (c) {
-            case 'n':
-                yytext[yylen - 1] = '\n';
-                break;
-            case 'r':
-                yytext[yylen - 1] = '\r';
-                break;
-            case 't':
-                yytext[yylen - 1] = '\t';
-                break;
-            case 'f':
-                yytext[yylen - 1] = '\f';
-                break;
-            case 'v':
-                yytext[yylen - 1] = '\v';
-                break;
-            }
-        } else if (c == '\r')
-            c = '\n';
-        else if (c == endchar)
-            break;
-        if (c == 0)
-            break;
-    }
-    if (c == 0) {
-        post("Open ended string started on line %d of %s\n", startline + errLineOffset, printingCurrfilename.c_str());
-        yylen = 0;
-        r = 0;
-        goto leave;
-    }
-    yylen--;
-
-    do {
-        c = input0();
-    } while (c && isspace(c));
-
-    if (c == '"')
-        goto string1;
-    else if (c)
-        unput0(c);
-
-    yytext[yylen] = 0;
-    r = processstring(yytext);
-    goto leave;
-}
-
-comment1: /* comment -- to end of line */
-    do {
-        c = input0();
-    } while (c != '\n' && c != '\r' && c != 0);
-    yylen = 0;
-    if (c == 0) {
-        r = 0;
-        goto leave;
-    } else
-        goto start;
-
-comment2 : {
-    int startline, clevel, prevc;
-    startline = lineno;
-    prevc = 0;
-    clevel = 1;
-    do {
-        c = input0();
-        if (c == '/' && prevc == '*') {
-            if (--clevel <= 0)
-                break;
-            else
-                prevc = c, c = input0(); // eat both characters
-        } else if (c == '*' && prevc == '/') {
-            clevel++;
-            prevc = c, c = input0(); // eat both characters
-        }
-        prevc = c;
-    } while (c != 0);
-    yylen = 0;
-    if (c == 0) {
-        post("Open ended comment started on line %d of %s\n", startline + errLineOffset, printingCurrfilename.c_str());
-        r = 0;
-        goto leave;
-    }
-    goto start;
-}
-
-
-error1:
-
-    yytext[yylen] = 0;
-
-    post("illegal input string '%s' \n   in %s line %d char %d\n", yytext, printingCurrfilename.c_str(),
-         lineno + errLineOffset, charno);
-    post("code %d\n", c);
-    // postfl(" '%c' '%s'\n", c, binopchars);
-    // postfl("%d\n", strchr(binopchars, c));
-
-error2:
-    post("  in %s line %d char %d\n", printingCurrfilename.c_str(), lineno + errLineOffset, charno);
-    r = BADTOKEN;
-    goto leave;
-
-leave:
-    yytext[yylen] = 0;
-
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("yylex: %d  '%s'\n", r, yytext);
-#endif
-    // if (lexCmdLine>0) postfl("yylex: %d  '%s'\n",r,yytext);
-    return r;
-}
-
-int processbinop(char* token) {
-    PyrSymbol* sym;
-    PyrSlot slot;
-    PyrSlotNode* node;
-
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processbinop: '%s'\n", token);
-#endif
-    sym = getsym(token);
-    SetSymbol(&slot, sym);
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    if (strcmp(token, "<-") == 0)
-        return LEFTARROW;
-    if (strcmp(token, "<>") == 0)
-        return READWRITEVAR;
-    if (strcmp(token, "|") == 0)
-        return '|';
-    if (strcmp(token, "<") == 0)
-        return '<';
-    if (strcmp(token, ">") == 0)
-        return '>';
-    if (strcmp(token, "-") == 0)
-        return '-';
-    if (strcmp(token, "*") == 0)
-        return '*';
-    if (strcmp(token, "+") == 0)
-        return '+';
-    return BINOP;
-}
-
-int processkeywordbinop(char* token) {
-    PyrSymbol* sym;
-    PyrSlot slot;
-    PyrSlotNode* node;
-
-    // post("'%s'  file '%s'\n", token, currfilename);
-
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processkeywordbinop: '%s'\n", token);
-#endif
-    token[strlen(token) - 1] = 0; // strip off colon
-    sym = getsym(token);
-    SetSymbol(&slot, sym);
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return KEYBINOP;
-}
-
-int processident(char* token) {
-    char c;
-    PyrSymbol* sym;
-
-    PyrSlot slot;
-    PyrParseNode* node;
-
-    c = token[0];
-    zzval = (intptr_t)-1;
-
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("word: '%s'\n", token);
-#endif
-    /*
-    strcpy(uptoken, token);
-    for (str = uptoken; *str; ++str) {
-        if (*str >= 'a' && *str <= 'z') *str += 'A' - 'a';
-    }*/
-
-    if (token[0] == '_') {
-        if (token[1] == 0) {
-            node = newPyrCurryArgNode();
-            zzval = (intptr_t)node;
-            return CURRYARG;
-        } else {
-            sym = getsym(token);
-            SetSymbol(&slot, sym);
-            node = newPyrSlotNode(&slot);
-            zzval = (intptr_t)node;
-            return PRIMITIVENAME;
-        }
-    }
-    if (token[0] >= 'A' && token[0] <= 'Z') {
-        sym = getsym(token);
-        SetSymbol(&slot, sym);
-        node = newPyrSlotNode(&slot);
-        zzval = (intptr_t)node;
-#if DEBUGLEX
-        if (gDebugLexer)
-            postfl("CLASSNAME: '%s'\n", token);
-#endif
-        return CLASSNAME;
-    }
-    if (strcmp("var", token) == 0)
-        return VAR;
-    if (strcmp("arg", token) == 0)
-        return ARG;
-    if (strcmp("classvar", token) == 0)
-        return CLASSVAR;
-    if (strcmp("const", token) == 0)
-        return SC_CONST;
-
-    if (strcmp("while", token) == 0) {
-        sym = getsym(token);
-        SetSymbol(&slot, sym);
-        node = newPyrSlotNode(&slot);
-        zzval = (intptr_t)node;
-        return WHILE;
-    }
-    if (strcmp("pi", token) == 0) {
-        SetFloat(&slot, pi);
-        node = newPyrSlotNode(&slot);
-        zzval = (intptr_t)node;
-        return PIE;
-    }
-    if (strcmp("true", token) == 0) {
-        SetTrue(&slot);
-        node = newPyrSlotNode(&slot);
-        zzval = (intptr_t)node;
-        return TRUEOBJ;
-    }
-    if (strcmp("false", token) == 0) {
-        SetFalse(&slot);
-        node = newPyrSlotNode(&slot);
-        zzval = (intptr_t)node;
-        return FALSEOBJ;
-    }
-    if (strcmp("nil", token) == 0) {
-        SetNil(&slot);
-        node = newPyrSlotNode(&slot);
-        zzval = (intptr_t)node;
-        return NILOBJ;
-    }
-    if (strcmp("inf", token) == 0) {
-        SetFloat(&slot, std::numeric_limits<double>::infinity());
-        node = newPyrSlotNode(&slot);
-        zzval = (intptr_t)node;
-        return SC_FLOAT;
-    }
-
-    sym = getsym(token);
-
-    SetSymbol(&slot, sym);
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return NAME;
-}
-
-int processhex(char* s) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-    char* c;
-    int val;
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processhex: '%s'\n", s);
-#endif
-
-    c = s;
-    val = 0;
-    while (*c) {
-        if (*c >= '0' && *c <= '9')
-            val = val * 16 + *c - '0';
-        else if (*c >= 'a' && *c <= 'z')
-            val = val * 16 + *c - 'a' + 10;
-        else if (*c >= 'A' && *c <= 'Z')
-            val = val * 16 + *c - 'A' + 10;
-        c++;
-    }
-
-    SetInt(&slot, val);
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return INTEGER;
-}
-
-
-int processintradix(char* s, int n, int radix) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processintradix: '%s'\n", s);
-#endif
-
-    SetInt(&slot, sc_strtoi(s, n, radix));
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return INTEGER;
-}
-
-int processfloatradix(char* s, int n, int radix) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processfloatradix: '%s'\n", s);
-#endif
-
-    SetFloat(&slot, sc_strtof(s, n, radix));
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return SC_FLOAT;
-}
-
-int processint(char* s) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processint: '%s'\n", s);
-#endif
-
-    SetInt(&slot, atoi(s));
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return INTEGER;
-}
-
-int processchar(int c) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processhex: '%c'\n", c);
-#endif
-
-    SetChar(&slot, c);
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return ASCII;
-}
-
-int processfloat(char* s, int sawpi) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-    double z;
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processfloat: '%s'\n", s);
-#endif
-
-    if (sawpi) {
-        z = atof(s) * pi;
-        SetFloat(&slot, z);
-    } else {
-        SetFloat(&slot, atof(s));
-    }
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return SC_FLOAT;
-}
-
-
-int processaccidental1(char* s) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-    char* c;
+PyrSlot process_accidental_cents(const char* s) {
+    const char* c = s;
     double degree = 0.;
     double cents = 0.;
     double centsdiv = 1000.;
-#if 0
-	printf("processaccidental1: '%s'\n",s);
-#endif
-
-    c = s;
     while (*c) {
         if (*c >= '0' && *c <= '9')
             degree = degree * 10. + *c - '0';
@@ -1214,23 +1017,13 @@ int processaccidental1(char* s) {
     if (cents > 499.)
         cents = 499.;
 
-    SetFloat(&slot, degree + cents / centsdiv);
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return ACCIDENTAL;
+    return PyrSlot::make(degree + cents / centsdiv);
 }
 
-int processaccidental2(char* s) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-    char* c;
+PyrSlot process_accidental_steps(const char* s) {
+    const char* c = s;
     double degree = 0.;
     double semitones = 0.;
-#if 0
-	printf("processaccidental2: '%s'\n",s);
-#endif
-
-    c = s;
     while (*c) {
         if (*c >= '0' && *c <= '9')
             degree = degree * 10. + *c - '0';
@@ -1252,58 +1045,21 @@ int processaccidental2(char* s) {
     else if (semitones < -4.)
         semitones = -4.;
 
-    SetFloat(&slot, degree + semitones / 10.);
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return ACCIDENTAL;
-}
-
-int processsymbol(char* s) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-    PyrSymbol* sym;
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processsymbol: '%s'\n", s);
-#endif
-    sym = getsym(s + 1);
-
-    SetSymbol(&slot, sym);
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return SYMBOL;
-}
-
-int processstring(char* s) {
-    PyrSlot slot;
-    PyrSlotNode* node;
-    PyrString* string;
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("processstring: '%s'\n", s);
-#endif
-    int flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
-    string = newPyrString(gMainVMGlobals->gc, s + 1, flags, false);
-    SetObject(&slot, string);
-    node = newPyrSlotNode(&slot);
-    zzval = (intptr_t)node;
-    return STRING;
+    return PyrSlot::make(degree + semitones / 10.);
 }
 
 void yyerror(const char* s) {
-    parseFailed = 1;
-    yytext[yylen] = 0;
+    gParseFailed = 1;
     error("%s\n", s);
     postErrorLine(lineno, linepos, charno);
-    // Debugger();
+    //  Debugger();
 }
 
 void fatal() {
-    parseFailed = 1;
-    yytext[yylen] = 0;
+    gParseFailed = 1;
     error("Parse error\n");
     postErrorLine(lineno, linepos, charno);
-    // Debugger();
+    //  Debugger();
 }
 
 void postErrorLine(int linenum, int start, int charpos) {
@@ -1320,29 +1076,23 @@ void postErrorLine(int linenum, int start, int charpos) {
 
     // postfl error line for context
     pos = start + charpos;
-    for (i = pos; i < textlen; ++i) {
-        if (text[i] == 0 || text[i] == '\r' || text[i] == '\n')
+    for (i = pos; i < gCompilinTextLen; ++i) {
+        if (gCompilingText[i] == 0 || gCompilingText[i] == '\r' || gCompilingText[i] == '\n')
             break;
     }
     end = i;
     for (i = start, j = 0; i < end && j < 255; ++i) {
-        str[j++] = text[i];
+        str[j++] = gCompilingText[i];
     }
     str[j] = 0;
-    post("  %s\n  ", str);
-    for (i = 0; i < charpos - yylen; i++)
-        post(" ");
-    for (i = 0; i < yylen; i++)
-        post("^");
-    post("\n");
 
     i = end + 1;
-    if (i < textlen) {
+    if (i < gCompilinTextLen) {
         // postfl following line for context
-        for (j = 0; j < 255 && i < textlen; ++i) {
-            if (text[i] == 0 || text[i] == '\r' || text[i] == '\n')
+        for (j = 0; j < 255 && i < gCompilinTextLen; ++i) {
+            if (gCompilingText[i] == 0 || gCompilingText[i] == '\r' || gCompilingText[i] == '\n')
                 break;
-            str[j++] = text[i];
+            str[j++] = gCompilingText[i];
         }
         str[j] = 0;
         post("  %s\n", str);
@@ -1381,203 +1131,6 @@ int pstrcmp(unsigned char* s1, unsigned char* s2) {
     if (len1 > len2)
         return 1;
     return 0;
-}
-
-bool scanForClosingBracket() {
-    int r, c, startLevel;
-    intptr_t d;
-    bool res = true;
-    // finite state machine to parse input stream into tokens
-
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("->scanForClosingBracket\n");
-#endif
-    startLevel = brackets.num;
-start:
-    c = input0();
-
-    if (c == 0)
-        goto leave;
-    else if (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f') {
-        goto start;
-    } else if (c == '\'')
-        goto symbol3;
-    else if (c == '"')
-        goto string1;
-    else if (c == '/') {
-        c = input0();
-        if (c == '/')
-            goto comment1;
-        else if (c == '*')
-            goto comment2;
-        else {
-            unput(c);
-            goto start;
-        }
-    } else if (c == '$') {
-        c = input0();
-        if (c == '\\') {
-            c = input0();
-            switch (c) {
-            case 'n':
-                c = '\n';
-                break;
-            case 'r':
-                c = '\r';
-                break;
-            case 't':
-                c = '\t';
-                break;
-            case 'f':
-                c = '\f';
-                break;
-            case 'v':
-                c = '\v';
-                break;
-            }
-        }
-        goto start;
-    } else if (c == OPENPAREN || c == OPENSQUAR || c == OPENCURLY) {
-        pushls(&brackets, (intptr_t)c);
-        r = c;
-        goto start;
-    } else if (c == CLOSSQUAR) {
-        if (!emptyls(&brackets)) {
-            if ((d = popls(&brackets)) != OPENSQUAR) {
-                fatal();
-                post("opening bracket was a '%c', but found a '%c'\n", d, c);
-                goto error1;
-            }
-        } else {
-            fatal();
-            post("unmatched '%c'\n", c);
-            goto error1;
-        }
-        r = c;
-        if (brackets.num < startLevel)
-            goto leave;
-        else
-            goto start;
-    } else if (c == CLOSPAREN) {
-        if (!emptyls(&brackets)) {
-            if ((d = popls(&brackets)) != (intptr_t)OPENPAREN) {
-                fatal();
-                post("opening bracket was a '%c', but found a '%c'\n", d, c);
-                goto error1;
-            }
-        } else {
-            fatal();
-            post("unmatched '%c'\n", c);
-            goto error1;
-        }
-        if (brackets.num < startLevel)
-            goto leave;
-        else
-            goto start;
-    } else if (c == CLOSCURLY) {
-        if (!emptyls(&brackets)) {
-            if ((d = popls(&brackets)) != OPENCURLY) {
-                fatal();
-                post("opening bracket was a '%c', but found a '%c'\n", d, c);
-                goto error1;
-            }
-        } else {
-            fatal();
-            post("unmatched '%c'\n", c);
-            goto error1;
-        }
-        if (brackets.num < startLevel)
-            goto leave;
-        else
-            goto start;
-    } else {
-        goto start;
-    }
-symbol3 : {
-    int startline, endchar;
-    startline = lineno;
-    endchar = '\'';
-
-    do {
-        c = input0();
-        if (c == '\\') {
-            input0();
-        }
-    } while (c != endchar && c != 0);
-    if (c == 0) {
-        post("Open ended symbol started on line %d of %s\n", startline, printingCurrfilename.c_str());
-        goto error2;
-    }
-    goto start;
-}
-
-string1 : {
-    int startline, endchar;
-    startline = lineno;
-    endchar = '\"';
-
-    do {
-        c = input0();
-        if (c == '\\') {
-            input0();
-        }
-    } while (c != endchar && c != 0);
-    if (c == 0) {
-        post("Open ended string started on line %d of %s\n", startline, printingCurrfilename.c_str());
-        goto error2;
-    }
-    goto start;
-}
-comment1: /* comment -- to end of line */
-    do {
-        c = input0();
-    } while (c != '\n' && c != '\r' && c != 0);
-    if (c == 0) {
-        goto leave;
-    } else
-        goto start;
-
-comment2 : {
-    int startline, clevel, prevc;
-    startline = lineno;
-    prevc = 0;
-    clevel = 1;
-    do {
-        c = input0();
-        if (c == '/' && prevc == '*') {
-            if (--clevel <= 0)
-                break;
-            else
-                prevc = c, c = input0(); // eat both characters
-        } else if (c == '*' && prevc == '/') {
-            clevel++;
-            prevc = c, c = input0(); // eat both characters
-        }
-        prevc = c;
-    } while (c != 0);
-    if (c == 0) {
-        post("Open ended comment started on line %d of %s\n", startline, printingCurrfilename.c_str());
-        goto error2;
-    }
-    goto start;
-}
-
-error1:
-    post("  in %s line %d char %d\n", printingCurrfilename.c_str(), lineno, charno);
-    res = false;
-    goto leave;
-
-error2:
-    res = false;
-    goto leave;
-
-leave:
-#if DEBUGLEX
-    if (gDebugLexer)
-        postfl("<-scanForClosingBracket\n");
-#endif
-    return res;
 }
 
 
@@ -1659,13 +1212,10 @@ void buildDepTree() {
     // postfl("<-buildDepTree\n"); fflush(stdout);
 }
 
-extern PyrClass* gClassList;
-
-ClassDependancy** gClassCompileOrder;
-int gClassCompileOrderNum = 0;
-int gClassCompileOrderSize = 1000;
 
 void compileDepTree();
+void traverseDepTree(ClassDependancy* classdep, int level);
+void compileClassExtensions();
 
 void traverseFullDepTree() {
     // postfl("->traverseFullDepTree\n"); fflush(stdout);
@@ -1722,12 +1272,12 @@ void compileClass(PyrSymbol* fileSym, int startPos, int endPos, int lineOffset) 
     initParserPool();
     if (startLexer(fileSym, fs::path(), startPos, endPos, lineOffset)) {
         // postfl("->Parsing %s\n", fileSym->name); fflush(stdout);
-        parseFailed = yyparse();
+        gParseFailed = yyparse();
         // postfl("<-Parsing %s %d\n", fileSym->name, parseFailed); fflush(stdout);
         // post("parseFailed %d\n", parseFailed); fflush(stdout);
-        if (!parseFailed && gRootParseNode) {
+        if (!gParseFailed && gRootParseNode) {
             // postfl("Compiling nodes %p\n", gRootParseNode);fflush(stdout);
-            compilingCmdLine = false;
+            gCompilingCmdLine = false;
             compileNodeList(gRootParseNode, true);
             // postfl("done compiling\n");fflush(stdout);
         } else {
@@ -1771,7 +1321,7 @@ void findDiscrepancy();
 
 void traverseFullDepTree2() {
     // assign a class index to all classes
-    if (!parseFailed && !compileErrors) {
+    if (!gParseFailed && !compileErrors) {
         buildClassTree();
         gNumClasses = 0;
 
@@ -1814,7 +1364,6 @@ void traverseFullDepTree2() {
 }
 
 bool parseOneClass(PyrSymbol* fileSym) {
-    int token;
     PyrSymbol *className, *superClassName;
     ClassDependancy* classdep;
     bool res;
@@ -1826,74 +1375,82 @@ bool parseOneClass(PyrSymbol* fileSym) {
     startPos = textpos;
     startLineOffset = lineno - 1;
 
-    token = yylex();
-    if (token == CLASSNAME) {
-        className = slotRawSymbol(&((PyrSlotNode*)zzval)->mSlot);
-        // I think this is wrong: zzval is space pool alloced
-        // pyrfree((PyrSlot*)zzval);
+    GlobalBisonLexerState& s = *global_bison_lexer_state;
+    BisonLexerAction::Output out = lex::lexer(s.char_stream, s.action);
 
-        token = yylex();
-        if (token == 0)
+    if (out.type == TokenType::ClassName) {
+        const auto [ptr, sz] = s.char_stream.source_code_range_to_text(out.range);
+        className = getsymlen(ptr, sz);
+
+        out = lex::lexer(s.char_stream, s.action);
+        if (out.type == TokenType::EndOfFile)
             return false;
-        if (token == OPENSQUAR) {
-            scanForClosingBracket(); // eat indexing spec
-            token = yylex();
-            if (token == 0)
+        if (out.type == TokenType::OpenSquare) {
+            scanForClosingBracket(TokenType::CloseSquare); // eat indexing spec
+            out = lex::lexer(s.char_stream, s.action);
+            if (out.type == TokenType::EndOfFile)
                 return false;
         }
-        if (token == ':') {
-            token = yylex(); // get super class
-            if (token == 0)
+        if (out.type == TokenType::Colon) {
+            out = lex::lexer(s.char_stream, s.action);
+            if (out.type == TokenType::EndOfFile)
                 return false;
-            if (token == CLASSNAME) {
-                superClassName = slotRawSymbol(&((PyrSlotNode*)zzval)->mSlot);
-                // I think this is wrong: zzval is space pool alloced
-                // pyrfree((PyrSlot*)zzval);
-                token = yylex();
-                if (token == 0)
+            if (out.type == TokenType::ClassName) {
+                const auto [ptr, sz] = s.char_stream.source_code_range_to_text(out.range);
+                superClassName = getsymlen(ptr, sz);
+
+                out = lex::lexer(s.char_stream, s.action);
+                if (out.type == TokenType::EndOfFile)
                     return false;
-                if (token == OPENCURLY) {
-                    scanForClosingBracket(); // eat class body
+                if (out.type == TokenType::OpenCurly) {
+                    scanForClosingBracket(TokenType::CloseCurly); // eat class body
                     classdep =
                         newClassDependancy(className, superClassName, fileSym, startPos, textpos, startLineOffset);
                 } else {
                     compileErrors++;
-                    postfl("Expected %c.  got token: '%s' %d\n", OPENCURLY, yytext, token);
-                    postErrorLine(lineno, linepos, charno);
+                    std::string expected = std::string { "Expected an open curly bracket '{' but received a " }
+                        + sc::lex::to_string(out.type);
+                    print_error_line(fileSym->name, gCompilingText, gCompilinTextLen, out.range, expected.c_str());
                     return false;
                 }
             } else {
                 compileErrors++;
-                post("Expected superclass name.  got token: '%s' %d\n", yytext, token);
-                postErrorLine(lineno, linepos, charno);
+                std::string expected =
+                    std::string { "Expected a superclass name but received a " } + sc::lex::to_string(out.type);
+                print_error_line(fileSym->name, gCompilingText, gCompilinTextLen, out.range, expected.c_str());
                 return false;
             }
-        } else if (token == OPENCURLY) {
+        } else if (out.type == TokenType::OpenCurly) {
             if (className == s_object)
                 superClassName = s_none;
             else
                 superClassName = s_object;
-            scanForClosingBracket(); // eat class body
+            scanForClosingBracket(TokenType::CloseCurly); // eat class body
             classdep = newClassDependancy(className, superClassName, fileSym, startPos, textpos, startLineOffset);
         } else {
             compileErrors++;
-            post("Expected ':' or %c.  got token: '%s' %d\n", OPENCURLY, yytext, token);
-            postErrorLine(lineno, linepos, charno);
+            std::string expected = std::string {
+                "Expected an open curly bracket '{', or a colon ':' followed by a superclass, but received a "
+            } + sc::lex::to_string(out.type);
+            print_error_line(fileSym->name, gCompilingText, gCompilinTextLen, out.range, expected.c_str());
             return false;
         }
-    } else if (token == '+') {
-        token = yylex();
-        if (token == 0)
+    } else if (out.type == TokenType::Add) {
+        out = lex::lexer(s.char_stream, s.action);
+        if (out.type == TokenType::EndOfFile)
             return false;
-        scanForClosingBracket();
+
+        scan_for_end();
 
         newClassExtFile(fileSym, startPos, textpos);
         return false;
     } else {
-        if (token != 0) {
+        if (out.type != TokenType::EndOfFile) {
             compileErrors++;
-            post("Expected class name.  got token: '%s' %d\n", yytext, token);
-            postErrorLine(lineno, linepos, charno);
+
+            std::string expected =
+                std::string { "Expected a class name but received a " } + sc::lex::to_string(out.type);
+            print_error_line(fileSym->name, gCompilingText, gCompilinTextLen, out.range, expected.c_str());
             return false;
         } else {
             res = false;
@@ -1925,7 +1482,7 @@ void initPassOne() {
 
     compileErrors = 0;
     numClassDeps = 0;
-    compiledOK = false;
+    gCompiledOK = false;
     compiledDirectories.clear();
 
     // main class library folder: only used for relative path resolution
@@ -1966,6 +1523,8 @@ static void passOne_HandleMissingDirectory(const fs::path& dir) {
 }
 
 fs::path relativeToCompileDir(const fs::path& p) { return fs::relative(p, gCompileDir); }
+
+bool passOne_ProcessOneFile(const fs::path& path);
 
 /** \brief Determines whether the directory should be skipped during compilation.
  *
@@ -2140,13 +1699,13 @@ void schedRun();
 
 void compileSucceeded();
 void compileSucceeded() {
-    compiledOK = !(parseFailed || compileErrors);
-    if (compiledOK) {
-        compiledOK = true;
+    gCompiledOK = !(gParseFailed || compileErrors);
+    if (gCompiledOK) {
+        gCompiledOK = true;
 
-        compiledOK = initRuntime(gMainVMGlobals, 128 * 1024, pyr_pool_runtime);
+        gCompiledOK = initRuntime(gMainVMGlobals, 128 * 1024, pyr_pool_runtime);
 
-        if (compiledOK) {
+        if (gCompiledOK) {
             VMGlobals* g = gMainVMGlobals;
 
             g->canCallOS = true;
@@ -2165,7 +1724,7 @@ void compileSucceeded() {
 static void runShutdown() {
     // printf("->aboutToCompileLibrary\n");
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
 
         g->canCallOS = true;
@@ -2196,7 +1755,7 @@ void shutdownLibrary() {
     gLangMutex.lock();
     closeAllCustomPorts();
 
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = true;
         g->gc->RunAllFinalizers();
@@ -2205,7 +1764,7 @@ void shutdownLibrary() {
 
     pyr_pool_runtime->FreeAll();
 
-    compiledOK = false;
+    gCompiledOK = false;
 
     gLangMutex.unlock();
     deinitPrimitives();
@@ -2217,7 +1776,7 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone) {
 
     gLangMutex.lock();
     gNumCompiledFiles = 0;
-    compiledOK = false;
+    gCompiledOK = false;
 
     if (!gLanguageConfig) {
         SC_LanguageConfig::readLibraryConfig(standalone);
@@ -2250,15 +1809,13 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone) {
         flushPostBuf();
         compileSucceeded();
     } else {
-        compiledOK = false;
+        gCompiledOK = false;
     }
 
     gLangMutex.unlock();
     // printf("<-compileLibrary\n");
-    return compiledOK;
+    return gCompiledOK;
 }
-
-void signal_init_globs();
 
 void dumpByteCodes(PyrBlock* theBlock);
 
@@ -2266,7 +1823,7 @@ SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
     VMGlobals* g = gMainVMGlobals;
     g->canCallOS = true;
     try {
-        if (compiledOK) {
+        if (gCompiledOK) {
             ++g->sp;
             SetObject(g->sp, g->process);
             runInterpreter(g, selector, 1);
@@ -2289,4 +1846,114 @@ SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
         error(ex.what());
     } catch (...) { postfl("DANGER: OUT of MEMORY. Operation failed.\n"); }
     g->canCallOS = false;
+}
+
+bool startLexer(PyrSymbol* fileSym, const fs::path& p, int startPos, int endPos, int lineOffset) {
+    const char* filename = fileSym->name;
+
+    gCompilinTextLen = -1;
+
+    if (!fileSym->u.source) {
+        try {
+            std::ifstream file;
+            file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+            file.open(p, std::ios_base::binary);
+            size_t sz = fs::file_size(p);
+
+            gCompilingText = (char*)pyr_pool_compile->Alloc((sz + 1) * sizeof(char));
+            MEMFAIL(gCompilingText);
+            file.read(gCompilingText, sz);
+            gCompilingText[sz] = '\0';
+            fileSym->u.source = gCompilingText;
+            rtf2txt(gCompilingText);
+        } catch (const std::exception& ex) {
+            error("Could not read %s: %s.\n", SC_Codecvt::path_to_utf8_str(p).c_str(), ex.what());
+            return false;
+        }
+    } else
+        gCompilingText = fileSym->u.source;
+
+    if ((startPos >= 0) && (endPos > 0)) {
+        gCompilinTextLen = endPos - startPos;
+        gCompilingText += startPos;
+    } else if (gCompilinTextLen == -1)
+        gCompilinTextLen = strlen(gCompilingText);
+
+    if (lineOffset > 0)
+        errLineOffset = lineOffset;
+    else
+        errLineOffset = 0;
+
+    if (startPos > 0)
+        errCharPosOffset = startPos;
+    else
+        errCharPosOffset = 0;
+
+    initLongStack(&generatorStack);
+    lastClosedFuncCharNo = 0;
+    textpos = 0;
+    linepos = 0;
+    lineno = 1;
+    charno = 0;
+
+    zzval = 0;
+    gParseFailed = 0;
+    currfilename = fs::path(filename);
+    printingCurrfilename = "file '" + SC_Codecvt::path_to_utf8_str(currfilename) + "'";
+    maxlinestarts = 1000;
+    linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
+    MEMFAIL(linestarts);
+    linestarts[0] = 0;
+    linestarts[1] = 0;
+    gCompilingCmdLine = false;
+
+    global_bison_lexer_state.emplace(
+        GlobalBisonLexerState::Mode::ClassLibrary, std::move(BisonLexerAction { gCompilingText }),
+        std::move(sc::lex::CodePointStream { gCompilingText, static_cast<size_t>(gCompilinTextLen), {} }));
+
+    return true;
+}
+
+void startLexerCmdLine(char* textbuf, int textbuflen) {
+    // pyrmalloc:
+    // lifetime: kill after compile. (this one gets killed anyway)
+    gCompilingText = (char*)pyr_pool_compile->Alloc((textbuflen + 2) * sizeof(char));
+    MEMFAIL(gCompilingText);
+    memcpy(gCompilingText, textbuf, textbuflen);
+    gCompilingText[textbuflen] = ' ';
+    gCompilingText[textbuflen + 1] = 0;
+    gCompilinTextLen = textbuflen + 1;
+
+    rtf2txt(gCompilingText);
+
+    initLongStack(&generatorStack);
+    lastClosedFuncCharNo = 0;
+    textpos = 0;
+    linepos = 0;
+    lineno = 1;
+    charno = 0;
+
+    gCompilingCmdLine = true;
+    zzval = 0;
+    gParseFailed = 0;
+    currfilename = fs::path("interpreted text");
+    printingCurrfilename = currfilename.string();
+    maxlinestarts = 1000;
+    linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
+    MEMFAIL(linestarts);
+    linestarts[0] = 0;
+    linestarts[1] = 0;
+
+    errLineOffset = 0;
+    errCharPosOffset = 0;
+
+    global_bison_lexer_state.emplace(
+        GlobalBisonLexerState::Mode::CMDInitial, std::move(BisonLexerAction { gCompilingText }),
+        std::move(lex::CodePointStream { gCompilingText, static_cast<size_t>(gCompilinTextLen), {} }));
+}
+
+void finiLexer() {
+    global_bison_lexer_state.reset();
+    pyr_pool_compile->Free(linestarts);
+    freeLongStack(&generatorStack);
 }

@@ -39,5 +39,7 @@ foreach(test ${simple_tests})
     target_link_libraries(${test_name} atomic)
   endif()
 
-  add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
+  add_test(supernova__${test_name}_run ${test_name})
+
+  set_property(TARGET ${test_name} PROPERTY FOLDER Test/Supernova)
 endforeach(test)

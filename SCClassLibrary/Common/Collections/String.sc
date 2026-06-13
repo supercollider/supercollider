@@ -383,10 +383,6 @@ String[char] : RawArray {
 		_String_StandardizePath
 		^this.primitiveFailed
 	}
-	realPath {
-		_String_RealPath
-		^this.primitiveFailed
-	}
 
 	withTrailingSlash {
 		^if(this.isEmpty or: { this.last.isPathSeparator.not }) {

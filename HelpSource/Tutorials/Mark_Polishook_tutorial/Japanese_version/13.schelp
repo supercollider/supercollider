@@ -235,7 +235,7 @@ Synth.head(~source, "filteredDust");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-For context, here, below, is the complete text of the strong::01 Why SuperCollider:: document (by James McCartney) from the SuperCollider 2 distribution.
+For context, here, below, is the complete text of the strong::01 Why SuperCollider:: document (by James McCartney) from the SuperCollider 2 distribution.
 
 section::Why SuperCollider 2.0 ?
 

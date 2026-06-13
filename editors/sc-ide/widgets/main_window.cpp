@@ -166,6 +166,8 @@ MainWindow::MainWindow(Main* main): mMain(main), mClockLabel(0), mDocDialog(0) {
     connect(this, &MainWindow::evaluateCode, main->scProcess(), &ScProcess::evaluateCode);
     // Interpreter: post output
     connect(main->scProcess(), &ScProcess::scPost, mPostDocklet->mPostWindow, &PostWindow::post);
+
+    connect(mPostDocklet->mPostWindow, &PostWindow::handleClickedURL, main->scProcess(), &ScProcess::evaluateCode);
     // Interpreter: monitor running state
     connect(main->scProcess(), &ScProcess::stateChanged, this, &MainWindow::onInterpreterStateChanged);
     // Interpreter: forward status messages

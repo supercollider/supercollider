@@ -20,6 +20,9 @@ set arguments of a node
 method::unset
 remove settings
 
+method::map
+map arguments of a node (synonymous with code::set::, mapping is done automatically when a suitable argument is passed).
+
 method::unmap
 remove mappings
 

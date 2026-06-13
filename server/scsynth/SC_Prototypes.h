@@ -26,6 +26,7 @@
 #include <cstring>
 
 #include "SC_Types.h"
+#include "SC_Command.h"
 #include "scsynthsend.h"
 
 ////////////////////////////////////////////////////////////////////////
@@ -107,15 +108,15 @@ void Rate_Init(struct Rate* inRate, double inSampleRate, int inBufLength);
 #define GRAPHDEF(inGraph) ((GraphDef*)((inGraph)->mNode.mDef))
 #define GRAPH_PARAM_TABLE(inGraph) (GRAPHDEF(inGraph)->mParamSpecTable)
 
-SCErr Graph_New(World* inWorld, struct GraphDef* def, int32 inID, struct sc_msg_iter* args, struct Graph** outGraph,
-                bool argtype = true);
-void Graph_Ctor(World* inWorld, struct GraphDef* inGraphDef, struct Graph* graph, struct sc_msg_iter* msg,
-                bool argtype);
-void Graph_Dtor(struct Graph* inGraph);
-SCErr Graph_GetControl(struct Graph* inGraph, uint32 inIndex, float& outValue);
-SCErr Graph_GetControl(struct Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, float& outValue);
-void Graph_SetControl(struct Graph* inGraph, uint32 inIndex, float inValue);
-void Graph_SetControl(struct Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, float inValue);
+SCErr Graph_New(World* inWorld, GraphDef* def, int32 inID, sc_msg_iter* args, Graph** outGraph, bool argtype = true);
+void Graph_Delete(Graph* inGraph);
+void Graph_AddRef(Graph* inGraph);
+void Graph_Release(Graph* inGraph);
+bool Graph_HasParent(const Graph* inGraph);
+SCErr Graph_GetControl(Graph* inGraph, uint32 inIndex, float& outValue);
+SCErr Graph_GetControl(Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, float& outValue);
+void Graph_SetControl(Graph* inGraph, uint32 inIndex, float inValue);
+void Graph_SetControl(Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, float inValue);
 void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus);
 void Graph_MapControl(Graph* inGraph, int32 inHash, int32* inName, uint32 inIndex, uint32 inBus);
 void Graph_MapAudioControl(Graph* inGraph, uint32 inIndex, uint32 inBus);
@@ -181,7 +182,7 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket* packet);
 
 ////////////////////////////////////////////////////////////////////////
 
-struct Unit* Unit_New(World* inWorld, struct UnitSpec* inUnitSpec, char*& memory);
+struct Unit* Unit_New(World* inWorld, struct Graph* graph, struct UnitSpec* inUnitSpec, char*& memory);
 void Unit_EndCalc(struct Unit* inUnit, int inNumSamples);
 void Unit_End(struct Unit* inUnit);
 
@@ -212,14 +213,25 @@ int32 server_timeseed();
 
 ////////////////////////////////////////////////////////////////////////
 
-typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
-typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
-
 SCErr PerformAsynchronousCommand(
     World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncStageFn stage2, // stage2 is non real time
     AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
     AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+    AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
+
+SCErr PerformAsynchronousCommandEx(
+    World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
+    AsyncStageFnEx stage2, // stage2 is non real time
+    AsyncStageFnEx stage3, // stage3 is real time - completion msg performed if stage3 returns true
+    AsyncStageFnEx stage4, // stage4 is non real time - sends done if stage4 returns true
+    AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
+
+SCErr PerformAsyncUnitCommand(
+    Unit* inUnit, void* replyAddr, const char* cmdName, void* cmdData,
+    AsyncUnitStageFn stage2, // stage2 is non real time
+    AsyncUnitStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+    AsyncUnitStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
     AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
 
 ////////////////////////////////////////////////////////////////////////

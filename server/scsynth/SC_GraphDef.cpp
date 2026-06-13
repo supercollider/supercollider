@@ -58,22 +58,27 @@ int32 GetHash(ParamSpec* inParamSpec) { return inParamSpec->mHash; }
 
 int32* GetKey(ParamSpec* inParamSpec) { return inParamSpec->mName; }
 
+// this is used for reading count fields that have been changed from int16 to int32 in SynthDef v2.
+inline int32 readCount(const char*& buffer, const char* end, int version) {
+    if (version >= 2)
+        return readInt32_be(buffer, end);
+    else
+        return readInt16_be(buffer, end);
+}
 
-void ReadName(char*& buffer, int32* name);
-void ReadName(char*& buffer, int32* name) {
-    uint32 namelen = readUInt8(buffer);
+void ReadName(const char*& buffer, const char* end, int32* name) {
+    uint32 namelen = readUInt8(buffer, end);
     if (namelen >= kSCNameByteLen) {
         std::ostringstream os;
         os << "name too long (> " << kSCNameByteLen - 1 << " chars): " << std::string(buffer, namelen);
         throw std::runtime_error(os.str());
     }
     memset(name, 0, kSCNameByteLen);
-    readData(buffer, (char*)name, namelen);
+    readData(buffer, end, (char*)name, namelen);
 }
 
-void ReadNodeDefName(char*& buffer, int32* name);
-void ReadNodeDefName(char*& buffer, int32* name) {
-    uint32 namelen = readUInt8(buffer);
+void ReadNodeDefName(const char*& buffer, const char* end, int32* name) {
+    uint32 namelen = readUInt8(buffer, end);
     if (namelen >= kSCNodeDefNameByteLen) {
         std::ostringstream os;
         os << "node definition name too long (> " << kSCNodeDefNameByteLen - 1
@@ -81,158 +86,112 @@ void ReadNodeDefName(char*& buffer, int32* name) {
         throw std::runtime_error(os.str());
     }
     memset(name, 0, kSCNodeDefNameByteLen);
-    readData(buffer, (char*)name, namelen);
+    readData(buffer, end, (char*)name, namelen);
 }
 
-void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer);
-void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer) {
-    ReadName(buffer, inParamSpec->mName);
-    inParamSpec->mIndex = readInt32_be(buffer);
+void ParamSpec_Read(ParamSpec* inParamSpec, const char*& buffer, const char* end, int version) {
+    ReadName(buffer, end, inParamSpec->mName);
+    inParamSpec->mIndex = readCount(buffer, end, version);
     inParamSpec->mHash = Hash(inParamSpec->mName);
 }
 
-void ParamSpec_ReadVer1(ParamSpec* inParamSpec, char*& buffer);
-void ParamSpec_ReadVer1(ParamSpec* inParamSpec, char*& buffer) {
-    ReadName(buffer, inParamSpec->mName);
-    inParamSpec->mIndex = readInt16_be(buffer);
-    inParamSpec->mHash = Hash(inParamSpec->mName);
-}
-
-void InputSpec_Read(InputSpec* inInputSpec, char*& buffer);
-void InputSpec_Read(InputSpec* inInputSpec, char*& buffer) {
-    inInputSpec->mFromUnitIndex = readInt32_be(buffer);
-    inInputSpec->mFromOutputIndex = readInt32_be(buffer);
+void InputSpec_Read(InputSpec* inInputSpec, const char*& buffer, const char* end, int version) {
+    inInputSpec->mFromUnitIndex = readCount(buffer, end, version);
+    inInputSpec->mFromOutputIndex = readCount(buffer, end, version);
 
     inInputSpec->mWireIndex = -1;
 }
 
-void InputSpec_ReadVer1(InputSpec* inInputSpec, char*& buffer);
-void InputSpec_ReadVer1(InputSpec* inInputSpec, char*& buffer) {
-    inInputSpec->mFromUnitIndex = (int16)readInt16_be(buffer);
-    inInputSpec->mFromOutputIndex = (int16)readInt16_be(buffer);
-
-    inInputSpec->mWireIndex = -1;
-}
-
-void OutputSpec_Read(OutputSpec* inOutputSpec, char*& buffer);
-void OutputSpec_Read(OutputSpec* inOutputSpec, char*& buffer) {
-    inOutputSpec->mCalcRate = readInt8(buffer);
+void OutputSpec_Read(OutputSpec* inOutputSpec, const char*& buffer, const char* end) {
+    inOutputSpec->mCalcRate = readInt8(buffer, end);
     inOutputSpec->mWireIndex = -1;
     inOutputSpec->mBufferIndex = -1;
     inOutputSpec->mNumConsumers = 0;
 }
 
-void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer);
-void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer) {
+void UnitSpec_Read(UnitSpec* inUnitSpec, const char*& buffer, const char* end, int version) {
     int32 name[kSCNameLen];
-    ReadName(buffer, name);
+    ReadName(buffer, end, name);
 
     inUnitSpec->mUnitDef = GetUnitDef(name);
     if (!inUnitSpec->mUnitDef) {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "UGen '%s' not installed.", (char*)name);
         throw std::runtime_error(str);
-        return;
     }
-    inUnitSpec->mCalcRate = readInt8(buffer);
+    inUnitSpec->mCalcRate = readInt8(buffer, end);
 
-    inUnitSpec->mNumInputs = readInt32_be(buffer);
-    inUnitSpec->mNumOutputs = readInt32_be(buffer);
-    inUnitSpec->mSpecialIndex = readInt16_be(buffer);
-    inUnitSpec->mInputSpec = (InputSpec*)malloc(sizeof(InputSpec) * inUnitSpec->mNumInputs);
-    inUnitSpec->mOutputSpec = (OutputSpec*)malloc(sizeof(OutputSpec) * inUnitSpec->mNumOutputs);
+    inUnitSpec->mNumInputs = readCount(buffer, end, version);
+    inUnitSpec->mNumOutputs = readCount(buffer, end, version);
+    inUnitSpec->mSpecialIndex = readInt16_be(buffer, end);
+    inUnitSpec->mInputSpec = new InputSpec[inUnitSpec->mNumInputs];
+    inUnitSpec->mOutputSpec = new OutputSpec[inUnitSpec->mNumOutputs];
     for (uint32 i = 0; i < inUnitSpec->mNumInputs; ++i) {
-        InputSpec_Read(inUnitSpec->mInputSpec + i, buffer);
+        InputSpec_Read(inUnitSpec->mInputSpec + i, buffer, end, version);
     }
     for (uint32 i = 0; i < inUnitSpec->mNumOutputs; ++i) {
-        OutputSpec_Read(inUnitSpec->mOutputSpec + i, buffer);
+        OutputSpec_Read(inUnitSpec->mOutputSpec + i, buffer, end);
     }
     uint64 numPorts = inUnitSpec->mNumInputs + inUnitSpec->mNumOutputs;
     inUnitSpec->mAllocSize = inUnitSpec->mUnitDef->mAllocSize + numPorts * (sizeof(Wire*) + sizeof(float*));
 }
 
-void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer);
-void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer) {
-    int32 name[kSCNameLen];
-    ReadName(buffer, name);
+GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, const char* end, GraphDef* inList, int32 inVersion);
 
-    inUnitSpec->mUnitDef = GetUnitDef(name);
-    if (!inUnitSpec->mUnitDef) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "UGen '%s' not installed.", (char*)name);
-        throw std::runtime_error(str);
-        return;
-    }
-    inUnitSpec->mCalcRate = readInt8(buffer);
+GraphDef* GraphDefLib_Read(World* inWorld, const char* buffer, size_t size, GraphDef* inList) {
+    const char* end = buffer + size;
 
-    inUnitSpec->mNumInputs = readInt16_be(buffer);
-    inUnitSpec->mNumOutputs = readInt16_be(buffer);
-    inUnitSpec->mSpecialIndex = readInt16_be(buffer);
-    inUnitSpec->mInputSpec = (InputSpec*)malloc(sizeof(InputSpec) * inUnitSpec->mNumInputs);
-    inUnitSpec->mOutputSpec = (OutputSpec*)malloc(sizeof(OutputSpec) * inUnitSpec->mNumOutputs);
-    for (uint32 i = 0; i < inUnitSpec->mNumInputs; ++i) {
-        InputSpec_ReadVer1(inUnitSpec->mInputSpec + i, buffer);
-    }
-    for (uint32 i = 0; i < inUnitSpec->mNumOutputs; ++i) {
-        OutputSpec_Read(inUnitSpec->mOutputSpec + i, buffer);
-    }
-    uint64 numPorts = inUnitSpec->mNumInputs + inUnitSpec->mNumOutputs;
-    inUnitSpec->mAllocSize = inUnitSpec->mUnitDef->mAllocSize + numPorts * (sizeof(Wire*) + sizeof(float*));
-}
+    // check header ('SCgf')
+    int32 magic = readInt32_be(buffer, end);
+    if (magic != (('S' << 24) | ('C' << 16) | ('g' << 8) | 'f'))
+        throw std::runtime_error("not a synthdef");
 
-GraphDef* GraphDef_Read(World* inWorld, char*& buffer, GraphDef* inList, int32 inVersion);
-GraphDef* GraphDef_ReadVer1(World* inWorld, char*& buffer, GraphDef* inList, int32 inVersion);
+    int32 version = readInt32_be(buffer, end);
+    if (version > 3)
+        throw std::runtime_error("version " + std::to_string(version) + " not supported");
 
-GraphDef* GraphDefLib_Read(World* inWorld, char* buffer, GraphDef* inList);
-GraphDef* GraphDefLib_Read(World* inWorld, char* buffer, GraphDef* inList) {
-    int32 magic = readInt32_be(buffer);
-    if (magic != (('S' << 24) | ('C' << 16) | ('g' << 8) | 'f') /*'SCgf'*/)
-        return inList;
+    uint32 numDefs = readInt16_be(buffer, end);
+    if (version > 2) {
+        // in version 3, every synth definition starts with a size field (int32) that tells
+        // the size of the entire definition in bytes (including the size field itself).
+        // NB: GraphDef_Read() might not read all the fields so we must explicitly set
+        // the begin and end on each iteration!
+        for (int i = 0; i < numDefs; ++i) {
+            size_t synthDefSize = readInt32_be(buffer, end);
+            const char* synthDefEnd = buffer + synthDefSize - 4;
+            if (synthDefEnd > end)
+                throw std::runtime_error("wrong synthdef size");
 
-    int32 version = readInt32_be(buffer);
+            inList = GraphDef_Read(inWorld, buffer, synthDefEnd, inList, version);
 
-    uint32 numDefs, i;
-    switch (version) {
-    case 2:
-        numDefs = readInt16_be(buffer);
-
-        for (i = 0; i < numDefs; ++i) {
-            inList = GraphDef_Read(inWorld, buffer, inList, version);
+            buffer = synthDefEnd;
         }
-        return inList;
-        break;
-    case 1:
-    case 0:
-        numDefs = readInt16_be(buffer);
-
-        for (i = 0; i < numDefs; ++i) {
-            inList = GraphDef_ReadVer1(inWorld, buffer, inList, version); // handles 1 and 0
+    } else {
+        for (int i = 0; i < numDefs; ++i) {
+            inList = GraphDef_Read(inWorld, buffer, end, inList, version);
         }
-        return inList;
-        break;
-
-    default:
-        return inList;
-        break;
     }
+
+    return inList;
 }
 
 
 void ChooseMulAddFunc(GraphDef* graphDef, UnitSpec* unitSpec);
 void DoBufferColoring(World* inWorld, GraphDef* inGraphDef);
 
-void GraphDef_ReadVariant(World* inWorld, char*& buffer, GraphDef* inGraphDef, GraphDef* inVariant) {
+void GraphDef_ReadVariant(World* inWorld, const char*& buffer, const char* end, GraphDef* inGraphDef,
+                          GraphDef* inVariant) {
     memcpy(inVariant, inGraphDef, sizeof(GraphDef));
 
     inVariant->mNumVariants = 0;
     inVariant->mVariants = nullptr;
 
-    ReadName(buffer, inVariant->mNodeDef.mName);
+    ReadName(buffer, end, inVariant->mNodeDef.mName);
     inVariant->mNodeDef.mHash = Hash(inVariant->mNodeDef.mName);
 
-    inVariant->mInitialControlValues = (float32*)malloc(sizeof(float32) * inGraphDef->mNumControls);
+    inVariant->mInitialControlValues = new float32[inGraphDef->mNumControls];
     for (uint32 i = 0; i < inGraphDef->mNumControls; ++i) {
-        inVariant->mInitialControlValues[i] = readFloat_be(buffer);
+        inVariant->mInitialControlValues[i] = readFloat_be(buffer, end);
     }
 }
 
@@ -242,43 +201,39 @@ typedef struct IndexMap {
     uint32 paramSpecIndex;
 } IndexMap;
 
-static inline bool sortIndexMaps(IndexMap map1, IndexMap map2) { return map1.paramSpecIndex < map2.paramSpecIndex; }
-
-// ver 2
-inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer) {
-    if (graphDef->mNumParamSpecs) {
-        int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
+inline static void calcParamSpecs(GraphDef* graphDef, const char*& buffer, const char* end, int version) {
+    uint32 numSpecs = graphDef->mNumParamSpecs;
+    if (numSpecs > 0) {
+        int hashTableSize = NEXTPOWEROFTWO(numSpecs);
         graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
-        uint32 nSpecs = graphDef->mNumParamSpecs;
-        graphDef->mParamSpecs = (ParamSpec*)malloc(nSpecs * sizeof(ParamSpec));
-        IndexMap* tempMaps = (IndexMap*)malloc(nSpecs * sizeof(IndexMap));
+        graphDef->mParamSpecs = new ParamSpec[numSpecs];
+        std::vector<IndexMap> tempMaps(numSpecs);
 
-        for (uint32 i = 0; i < nSpecs; ++i) {
-            ParamSpec* paramSpec = graphDef->mParamSpecs + i;
-            ParamSpec_Read(paramSpec, buffer);
+        for (uint32 i = 0; i < numSpecs; ++i) {
+            ParamSpec* paramSpec = &graphDef->mParamSpecs[i];
+            ParamSpec_Read(paramSpec, buffer, end, version);
             graphDef->mParamSpecTable->Add(paramSpec);
-            IndexMap* tempMap = tempMaps + i;
-            tempMap->index = i;
-            tempMap->paramSpecIndex = paramSpec->mIndex;
+            tempMaps[i].index = i;
+            tempMaps[i].paramSpecIndex = paramSpec->mIndex;
         }
         // calculate numChannels for each spec
         // printf("\n\n**************\n");
-        std::sort(tempMaps, tempMaps + nSpecs, sortIndexMaps);
-        for (uint32 i = 0; i < (nSpecs - 1); ++i) {
-            IndexMap* tempMap = tempMaps + i;
-            IndexMap* nextTempMap = tempMap + 1;
-            ParamSpec* paramSpec = graphDef->mParamSpecs + tempMap->index;
-            paramSpec->mNumChannels = nextTempMap->paramSpecIndex - tempMap->paramSpecIndex;
-            // printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels);
+        std::sort(tempMaps.begin(), tempMaps.end(),
+                  [](const auto& a, const auto& b) { return a.paramSpecIndex < b.paramSpecIndex; });
+        for (uint32 i = 0; i < (numSpecs - 1); ++i) {
+            const auto& tempMap = tempMaps[i];
+            const auto& nextTempMap = tempMaps[i + 1];
+            auto& paramSpec = graphDef->mParamSpecs[tempMap.index];
+            paramSpec.mNumChannels = nextTempMap.paramSpecIndex - tempMap.paramSpecIndex;
+            // printf("%s: numChannels = %i\n", paramSpec.mName, paramSpec.mNumChannels);
         }
 
-        IndexMap* tempMap = tempMaps + nSpecs - 1;
-        ParamSpec* paramSpec = graphDef->mParamSpecs + tempMap->index;
-        paramSpec->mNumChannels = graphDef->mNumControls - tempMap->paramSpecIndex;
+        // last spec
+        const auto& tempMap = tempMaps.back();
+        auto& paramSpec = graphDef->mParamSpecs[tempMap.index];
+        paramSpec.mNumChannels = graphDef->mNumControls - tempMap.paramSpecIndex;
 
-        // printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels, paramSpec->mIndex);
-
-        free(tempMaps);
+        // printf("%s: numChannels = %i\n", paramSpec.mName, paramSpec.mNumChannels, paramSpec.mIndex);
     } else {
         // empty table to eliminate test in Graph_SetControl
         graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, 4, false);
@@ -286,52 +241,6 @@ inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer) {
     }
 }
 
-// ver 1
-
-inline static void calcParamSpecs1(GraphDef* graphDef, char*& buffer) {
-    if (graphDef->mNumParamSpecs) {
-        int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
-        graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
-        uint32 nSpecs = graphDef->mNumParamSpecs;
-        graphDef->mParamSpecs = (ParamSpec*)malloc(nSpecs * sizeof(ParamSpec));
-        IndexMap* tempMaps = (IndexMap*)malloc(nSpecs * sizeof(IndexMap));
-
-        for (uint32 i = 0; i < nSpecs; ++i) {
-            ParamSpec* paramSpec = graphDef->mParamSpecs + i;
-            ParamSpec_ReadVer1(paramSpec, buffer); // read version 1 (the only difference to ver 2).
-            graphDef->mParamSpecTable->Add(paramSpec);
-            IndexMap* tempMap = tempMaps + i;
-            tempMap->index = i;
-            tempMap->paramSpecIndex = paramSpec->mIndex;
-        }
-        // calculate numChannels for each spec
-        // printf("\n\n**************\n");
-        std::sort(tempMaps, tempMaps + nSpecs, sortIndexMaps);
-        for (uint32 i = 0; i < (nSpecs - 1); ++i) {
-            IndexMap* tempMap = tempMaps + i;
-            IndexMap* nextTempMap = tempMap + 1;
-            ParamSpec* paramSpec = graphDef->mParamSpecs + tempMap->index;
-            paramSpec->mNumChannels = nextTempMap->paramSpecIndex - tempMap->paramSpecIndex;
-            // printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels);
-        }
-
-        IndexMap* tempMap = tempMaps + nSpecs - 1;
-        ParamSpec* paramSpec = graphDef->mParamSpecs + tempMap->index;
-        paramSpec->mNumChannels = graphDef->mNumControls - tempMap->paramSpecIndex;
-
-        // printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels, paramSpec->mIndex);
-
-        free(tempMaps);
-    } else {
-        // empty table to eliminate test in Graph_SetControl
-        graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, 4, false);
-        graphDef->mParamSpecs = nullptr;
-    }
-}
-
-// Allocation code shared between v1 and v2.
-// See https://github.com/supercollider/supercollider/issues/3266
-// TODO: refactor GraphDef to be less brittle.
 static void GraphDef_SetAllocSizes(GraphDef* graphDef) {
     graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
     graphDef->mUnitsAllocSize = graphDef->mNumUnitSpecs * sizeof(Unit*);
@@ -354,48 +263,48 @@ static void GraphDef_SetAllocSizes(GraphDef* graphDef) {
     graphDef->mNodeDef.mAllocSize += graphDef->mAudioMapBusOffsetSize;
 }
 
-// ver 2
-/** \note Relevant supernova code: \c sc_synthdef::prepare()
- * \note Relevant v1 code: \c GraphDef_ReadVer1()
- */
-GraphDef* GraphDef_Read(World* inWorld, char*& buffer, GraphDef* inList, int32 inVersion) {
+
+/** \note Relevant supernova code: \c sc_synthdef::sc_synthdef() */
+GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, const char* end, GraphDef* inList, int32 inVersion) {
     int32 name[kSCNodeDefNameLen];
-    ReadNodeDefName(buffer, name);
+    ReadNodeDefName(buffer, end, name);
 
-    GraphDef* graphDef = (GraphDef*)calloc(1, sizeof(GraphDef));
+    // Use custom deleter for automatic cleanup in case an exception is thrown.
+    auto deleter = [](GraphDef* def) { GraphDef_Free(def); };
+    // value-initialize so that all members of GraphDef are initially set to zero!
+    std::unique_ptr<GraphDef, decltype(deleter)> graphDef(new GraphDef {}, deleter);
 
-    graphDef->mOriginal = graphDef;
+    graphDef->mOriginal = graphDef.get();
 
     graphDef->mNodeDef.mAllocSize = sizeof(Graph);
 
-    memcpy((char*)graphDef->mNodeDef.mName, (char*)name, kSCNodeDefNameByteLen);
+    memcpy(graphDef->mNodeDef.mName, name, kSCNodeDefNameByteLen);
 
     graphDef->mNodeDef.mHash = Hash(graphDef->mNodeDef.mName);
 
-    graphDef->mNumConstants = readInt32_be(buffer);
-
-    graphDef->mConstants = (float*)malloc(graphDef->mNumConstants * sizeof(float));
+    graphDef->mNumConstants = readCount(buffer, end, inVersion);
+    graphDef->mConstants = new float32[graphDef->mNumConstants];
     for (uint32 i = 0; i < graphDef->mNumConstants; ++i) {
-        graphDef->mConstants[i] = readFloat_be(buffer);
+        graphDef->mConstants[i] = readFloat_be(buffer, end);
     }
-
-    graphDef->mNumControls = readInt32_be(buffer);
-    graphDef->mInitialControlValues = (float32*)malloc(sizeof(float32) * graphDef->mNumControls);
-    for (uint32 i = 0; i < graphDef->mNumControls; ++i) {
-        graphDef->mInitialControlValues[i] = readFloat_be(buffer);
-    }
-
-    graphDef->mNumParamSpecs = readInt32_be(buffer);
-
-    calcParamSpecs(graphDef, buffer);
-
     graphDef->mNumWires = graphDef->mNumConstants;
-    graphDef->mNumUnitSpecs = readInt32_be(buffer);
-    graphDef->mUnitSpecs = (UnitSpec*)malloc(sizeof(UnitSpec) * graphDef->mNumUnitSpecs);
+
+    graphDef->mNumControls = readCount(buffer, end, inVersion);
+    graphDef->mInitialControlValues = new float32[graphDef->mNumControls];
+    for (uint32 i = 0; i < graphDef->mNumControls; ++i) {
+        graphDef->mInitialControlValues[i] = readFloat_be(buffer, end);
+    }
+
+    graphDef->mNumParamSpecs = readCount(buffer, end, inVersion);
+    calcParamSpecs(graphDef.get(), buffer, end, inVersion);
+
+    uint32 numUnitSpecs = readCount(buffer, end, inVersion);
+    graphDef->mUnitSpecs = new UnitSpec[numUnitSpecs];
     graphDef->mNumCalcUnits = 0;
-    for (uint32 i = 0; i < graphDef->mNumUnitSpecs; ++i) {
-        UnitSpec* unitSpec = graphDef->mUnitSpecs + i;
-        UnitSpec_Read(unitSpec, buffer);
+    graphDef->mNumUnitSpecs = 0;
+    for (uint32 i = 0; i < numUnitSpecs; ++i) {
+        UnitSpec* unitSpec = &graphDef->mUnitSpecs[i];
+        UnitSpec_Read(unitSpec, buffer, end, inVersion);
 
         switch (unitSpec->mCalcRate) {
         case calc_ScalarRate:
@@ -414,107 +323,50 @@ GraphDef* GraphDef_Read(World* inWorld, char*& buffer, GraphDef* inList, int32 i
             break;
         }
 
+        // increment mNumUnitSpecs after every successful call to UnitSpec_Read() so that we
+        // can safely call GraphDef_Free() when we catch an exception.
+        graphDef->mNumUnitSpecs++;
         graphDef->mNodeDef.mAllocSize += unitSpec->mAllocSize;
         graphDef->mNumWires += unitSpec->mNumOutputs;
     }
 
-    DoBufferColoring(inWorld, graphDef);
+    DoBufferColoring(inWorld, graphDef.get());
 
-    GraphDef_SetAllocSizes(graphDef);
-
-    graphDef->mNext = inList;
-    graphDef->mRefCount = 1;
-
-    graphDef->mNumVariants = readInt16_be(buffer);
-    if (graphDef->mNumVariants) {
-        graphDef->mVariants = (GraphDef*)calloc(graphDef->mNumVariants, sizeof(GraphDef));
-        for (uint32 i = 0; i < graphDef->mNumVariants; ++i) {
-            GraphDef_ReadVariant(inWorld, buffer, graphDef, graphDef->mVariants + i);
-        }
-    }
-
-    return graphDef;
-}
-
-// ver 0 or 1
-GraphDef* GraphDef_ReadVer1(World* inWorld, char*& buffer, GraphDef* inList, int32 inVersion) {
-    int32 name[kSCNodeDefNameLen];
-    ReadNodeDefName(buffer, name);
-
-    GraphDef* graphDef = (GraphDef*)calloc(1, sizeof(GraphDef));
-
-    graphDef->mOriginal = graphDef;
-
-    graphDef->mNodeDef.mAllocSize = sizeof(Graph);
-
-    memcpy((char*)graphDef->mNodeDef.mName, (char*)name, kSCNodeDefNameByteLen);
-
-    graphDef->mNodeDef.mHash = Hash(graphDef->mNodeDef.mName);
-
-    graphDef->mNumConstants = readInt16_be(buffer);
-    graphDef->mConstants = (float*)malloc(graphDef->mNumConstants * sizeof(float));
-    for (uint32 i = 0; i < graphDef->mNumConstants; ++i) {
-        graphDef->mConstants[i] = readFloat_be(buffer);
-    }
-
-    graphDef->mNumControls = readInt16_be(buffer);
-    graphDef->mInitialControlValues = (float32*)malloc(sizeof(float32) * graphDef->mNumControls);
-    for (uint32 i = 0; i < graphDef->mNumControls; ++i) {
-        graphDef->mInitialControlValues[i] = readFloat_be(buffer);
-    }
-
-    graphDef->mNumParamSpecs = readInt16_be(buffer);
-    calcParamSpecs1(graphDef, buffer);
-
-    graphDef->mNumWires = graphDef->mNumConstants;
-    graphDef->mNumUnitSpecs = readInt16_be(buffer);
-    graphDef->mUnitSpecs = (UnitSpec*)malloc(sizeof(UnitSpec) * graphDef->mNumUnitSpecs);
-    graphDef->mNumCalcUnits = 0;
-    for (uint32 i = 0; i < graphDef->mNumUnitSpecs; ++i) {
-        UnitSpec* unitSpec = graphDef->mUnitSpecs + i;
-        UnitSpec_ReadVer1(unitSpec, buffer);
-
-        switch (unitSpec->mCalcRate) {
-        case calc_ScalarRate:
-            unitSpec->mRateInfo = &inWorld->mBufRate;
-            break;
-        case calc_BufRate:
-            graphDef->mNumCalcUnits++;
-            unitSpec->mRateInfo = &inWorld->mBufRate;
-            break;
-        case calc_FullRate:
-            graphDef->mNumCalcUnits++;
-            unitSpec->mRateInfo = &inWorld->mFullRate;
-            break;
-        case calc_DemandRate:
-            unitSpec->mRateInfo = &inWorld->mBufRate;
-            break;
-        }
-
-        graphDef->mNodeDef.mAllocSize += unitSpec->mAllocSize;
-        graphDef->mNumWires += unitSpec->mNumOutputs;
-    }
-
-    DoBufferColoring(inWorld, graphDef);
-
-    GraphDef_SetAllocSizes(graphDef);
-
-    graphDef->mNext = inList;
-    graphDef->mRefCount = 1;
+    GraphDef_SetAllocSizes(graphDef.get());
 
     if (inVersion >= 1) {
-        graphDef->mNumVariants = readInt16_be(buffer);
-        if (graphDef->mNumVariants) {
-            graphDef->mVariants = (GraphDef*)calloc(graphDef->mNumVariants, sizeof(GraphDef));
-            for (uint32 i = 0; i < graphDef->mNumVariants; ++i) {
-                GraphDef_ReadVariant(inWorld, buffer, graphDef, graphDef->mVariants + i);
+        uint16 numVariants = readInt16_be(buffer, end);
+        if (numVariants > 0) {
+            graphDef->mVariants = new GraphDef[numVariants];
+            for (uint32 i = 0; i < numVariants; ++i) {
+                GraphDef_ReadVariant(inWorld, buffer, end, graphDef.get(), graphDef->mVariants + i);
+                // increment mNumVariants after every successful call to GraphDef_ReadVariant()
+                // so that we can safely call GraphDef_Free() when we catch an exception.
+                graphDef->mNumVariants++;
             }
         }
     }
 
-    return graphDef;
-}
+    if (inVersion > 2) {
+        // reblock
+        graphDef->mBlockSize = readInt32_be(buffer, end);
+        graphDef->mBlockSizeIndex = readInt32_be(buffer, end);
+        // resample
+        graphDef->mResampleFactor = readFloat_be(buffer, end);
+        graphDef->mResampleIndex = readInt32_be(buffer, end);
+    } else {
+        graphDef->mBlockSize = 0;
+        graphDef->mBlockSizeIndex = 0;
+        graphDef->mResampleFactor = 1.0;
+        graphDef->mResampleIndex = 0;
+    }
 
+    // finally add to list
+    graphDef->mNext = inList;
+    graphDef->mRefCount = 1;
+
+    return graphDef.release();
+}
 
 void GraphDef_Define(World* inWorld, GraphDef* inList) {
     GraphDef* graphDef = inList;
@@ -586,9 +438,9 @@ SCErr GraphDef_DeleteMsg(World* inWorld, GraphDef* inDef) {
     return kSCErr_None;
 }
 
-GraphDef* GraphDef_Recv(World* inWorld, char* buffer, GraphDef* inList) {
+GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, size_t size, GraphDef* inList) {
     try {
-        inList = GraphDefLib_Read(inWorld, buffer, inList);
+        inList = GraphDefLib_Read(inWorld, buffer, size, inList);
     } catch (std::exception& exc) { scprintf("exception in GraphDef_Recv: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in GraphDef_Recv\n");
     }
@@ -627,7 +479,7 @@ std::string load_file(const std::filesystem::path& file_path) {
 GraphDef* GraphDef_Load(World* inWorld, const fs::path& path, GraphDef* inList) {
     try {
         std::string file_contents = load_file(path);
-        inList = GraphDefLib_Read(inWorld, &file_contents[0], inList);
+        inList = GraphDefLib_Read(inWorld, file_contents.data(), file_contents.size(), inList);
     } catch (const std::exception& e) {
         scprintf("exception in GraphDef_Load: %s\n", e.what());
         const std::string path_utf8_str = SC_Codecvt::path_to_utf8_str(path);
@@ -677,8 +529,8 @@ GraphDef* GraphDef_LoadDir(World* inWorld, const fs::path& dirname, GraphDef* in
 
 void UnitSpec_Free(UnitSpec* inUnitSpec);
 void UnitSpec_Free(UnitSpec* inUnitSpec) {
-    free(inUnitSpec->mInputSpec);
-    free(inUnitSpec->mOutputSpec);
+    delete[] inUnitSpec->mInputSpec;
+    delete[] inUnitSpec->mOutputSpec;
 }
 
 void GraphDef_Free(GraphDef* inGraphDef) {
@@ -689,15 +541,15 @@ void GraphDef_Free(GraphDef* inGraphDef) {
         UnitSpec_Free(inGraphDef->mUnitSpecs + i);
     }
     for (uint32 i = 0; i < inGraphDef->mNumVariants; ++i) {
-        free(inGraphDef->mVariants[i].mInitialControlValues);
+        delete[] inGraphDef->mVariants[i].mInitialControlValues;
     }
     delete inGraphDef->mParamSpecTable;
-    free(inGraphDef->mParamSpecs);
-    free(inGraphDef->mInitialControlValues);
-    free(inGraphDef->mConstants);
-    free(inGraphDef->mUnitSpecs);
-    free(inGraphDef->mVariants);
-    free(inGraphDef);
+    delete[] inGraphDef->mParamSpecs;
+    delete[] inGraphDef->mInitialControlValues;
+    delete[] inGraphDef->mConstants;
+    delete[] inGraphDef->mUnitSpecs;
+    delete[] inGraphDef->mVariants;
+    delete inGraphDef;
 }
 
 void NodeDef_Dump(NodeDef* inNodeDef) {
@@ -726,108 +578,44 @@ void GraphDef_Dump(GraphDef* inGraphDef) {
     }
 }
 
-/*
-SynthBufferAllocator
-{
-    var nextBufIndex = 0;
-    var stack;
-    var refs;
-
-    *new {
-        ^super.new.init
-    }
-    init {
-        refs = Bag.new;
-    }
-    alloc { arg count;
-        var bufNumber;
-        if (stack.size > 0, {
-            bufNumber = stack.pop
-        },{
-            bufNumber = nextBufIndex;
-            nextBufIndex = nextBufIndex + 1;
-        });
-        refs.add(bufNumber, count);
-        ^bufNumber
-    }
-    release { arg bufNumber;
-        refs.remove(bufNumber);
-        if (refs.includes(bufNumber).not, { stack = stack.add(bufNumber) });
-    }
-    numBufs { ^nextBufIndex }
-}
-*/
-
-struct BufColorAllocator {
-    int16* refs;
-    int16* stack;
-    int16 stackPtr;
-    int16 nextIndex;
-    int16 refsMaxSize;
-    int16 stackMaxSize;
-
+class BufColorAllocator {
+public:
     BufColorAllocator();
-    ~BufColorAllocator();
 
     uint32 alloc(uint32 count);
     bool release(int inIndex);
-    int NumBufs() { return nextIndex; }
+    int NumBufs() { return mRefs.size(); }
+
+private:
+    std::vector<int16> mRefs;
+    std::vector<int16> mStack;
 };
 
 inline BufColorAllocator::BufColorAllocator() {
-    refsMaxSize = 32;
-    stackMaxSize = 32;
-    refs = (int16*)calloc(refsMaxSize, sizeof(int16));
-    stack = (int16*)calloc(stackMaxSize, sizeof(int16));
-    stackPtr = 0;
-    nextIndex = 0;
-}
-
-inline BufColorAllocator::~BufColorAllocator() {
-    free(refs);
-    free(stack);
+    mRefs.reserve(32);
+    mStack.reserve(32);
 }
 
 inline uint32 BufColorAllocator::alloc(uint32 count) {
     uint32 outIndex;
-    if (stackPtr) {
-        outIndex = stack[--stackPtr];
+    if (!mStack.empty()) {
+        // pop index from stack
+        outIndex = mStack.back();
+        mStack.pop_back();
+        mRefs[outIndex] = count;
     } else {
-        outIndex = nextIndex++;
+        // make new index
+        outIndex = mRefs.size();
+        mRefs.push_back(count);
     }
-    if (outIndex >= refsMaxSize) {
-        int16* tmprefs = (int16*)realloc(refs, refsMaxSize * 2 * sizeof(int16));
-        if (tmprefs == nullptr) {
-            free(refs);
-            refs = nullptr;
-            throw std::runtime_error("buffer coloring error: reallocation failed.");
-        } else {
-            refs = tmprefs;
-        }
-        memset(refs + refsMaxSize, 0, refsMaxSize * sizeof(int16));
-        refsMaxSize *= 2;
-    }
-    refs[outIndex] = count;
     return outIndex;
 }
 
 inline bool BufColorAllocator::release(int inIndex) {
-    if (refs[inIndex] == 0)
+    if (mRefs[inIndex] == 0)
         return false;
-    if (--refs[inIndex] == 0) {
-        if (stackPtr >= stackMaxSize) {
-            int16* tmpstack = (int16*)realloc(stack, stackMaxSize * 2 * sizeof(int16));
-            if (tmpstack == nullptr) {
-                free(stack);
-                stack = nullptr;
-                throw std::runtime_error("buffer coloring error: reallocation during release failed.");
-            } else {
-                stack = tmpstack;
-            }
-            memset(stack + stackMaxSize, 0, stackMaxSize * sizeof(int16));
-            stackMaxSize *= 2;
-        }
-        stack[stackPtr++] = inIndex;
+    if (--mRefs[inIndex] == 0) {
+        mStack.push_back(inIndex);
     }
     return true;
 }

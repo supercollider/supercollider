@@ -1709,8 +1709,10 @@ int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed) {
     if (error)
         return errFailed;
     // slotIntVal(slotRawObject(a)->slots + 3, &info.frames);
-    slotIntVal(slotRawObject(a)->slots + 4, &info.channels);
-    slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate);
+    if (slotIntVal(slotRawObject(a)->slots + 4, &info.channels))
+        assert(false);
+    if (slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate))
+        assert(false);
 
     file = sndfileOpenFromCStr(filename, SFM_WRITE, &info);
 

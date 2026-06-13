@@ -25,7 +25,7 @@
 #include "OSC_Packet.h"
 #include "SC_SyncCondition.h"
 #include "PriorityQueue.h"
-#include <boost/optional.hpp>
+#include <optional>
 
 #include <SC_Lock.h>
 
@@ -35,6 +35,7 @@
 #define SC_AUDIO_API_AUDIOUNITS 4
 #define SC_AUDIO_API_COREAUDIOIPHONE 5
 #define SC_AUDIO_API_BELA 6
+#define SC_AUDIO_API_WEBAUDIO 7
 
 #ifdef SC_IPHONE
 #    define SC_AUDIO_API SC_AUDIO_API_COREAUDIOIPHONE
@@ -160,7 +161,7 @@ protected:
     int mNumSamplesPerCallback;
     uint32 mPreferredHardwareBufferFrameSize;
     uint32 mPreferredSampleRate;
-    boost::optional<uint32> mExplicitSampleRate;
+    std::optional<uint32> mExplicitSampleRate;
     double mBuffersPerSecond;
     double mAvgCPU, mPeakCPU;
     int mPeakCounter, mMaxPeakCounter;

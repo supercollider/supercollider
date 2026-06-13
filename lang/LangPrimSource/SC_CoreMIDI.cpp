@@ -79,7 +79,7 @@ std::vector<Byte> gSysexData;
 
 void midiNotifyProc(const MIDINotification* msg, void* refCon) {}
 
-extern bool compiledOK;
+extern bool gCompiledOK;
 
 #if 0
 static void dumpSysexData() {
@@ -231,7 +231,7 @@ static void midiProcessPacket(MIDIPacket* pkt, size_t uid) {
     if (pkt) {
         gLangMutex.lock(); // dont know if this is really needed/seems to be more stable..
                            // it is needed  -jamesmcc
-        if (compiledOK) {
+        if (gCompiledOK) {
             VMGlobals* g = gMainVMGlobals;
 
             int i = 0; // cp : changed uint8 to int if packet->length >= 256 bug:(infinite loop)

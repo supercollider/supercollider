@@ -1,9 +1,10 @@
 # Locate yaml-cpp
 #
 # This module defines
-#  YAMLCPP_FOUND, if false, do not try to link to yaml-cpp
+#  YamlCpp_FOUND, if false, do not try to link to yaml-cpp
 #  YAMLCPP_LIBRARY, where to find yaml-cpp
 #  YAMLCPP_INCLUDE_DIR, where to find yaml.h
+# It also wraps these variables into an imported target yaml-cpp
 #
 # By default, the dynamic libraries of yaml-cpp will be found. To find the static ones instead,
 # you must set the YAMLCPP_STATIC_LIBRARY variable to TRUE before calling find_package(YamlCpp ...).
@@ -44,7 +45,15 @@ find_library(YAMLCPP_LIBRARY
                     /opt
                     ${YAMLCPP_DIR}/lib)
 
-# handle the QUIETLY and REQUIRED arguments and set YAMLCPP_FOUND to TRUE if all listed variables are TRUE
+# handle the QUIETLY and REQUIRED arguments and set YamlCpp_FOUND to TRUE if all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(YAMLCPP DEFAULT_MSG YAMLCPP_INCLUDE_DIR YAMLCPP_LIBRARY)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(YamlCpp DEFAULT_MSG YAMLCPP_INCLUDE_DIR YAMLCPP_LIBRARY)
 mark_as_advanced(YAMLCPP_INCLUDE_DIR YAMLCPP_LIBRARY)
+
+if(YamlCpp_FOUND AND NOT TARGET yaml-cpp)
+    add_library(yaml-cpp UNKNOWN IMPORTED)
+    set_target_properties(yaml-cpp PROPERTIES
+        IMPORTED_LOCATION "${YAMLCPP_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${YAMLCPP_INCLUDE_DIR}"
+    )
+endif()

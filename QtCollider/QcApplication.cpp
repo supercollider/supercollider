@@ -42,7 +42,7 @@
 #    include "../../common/SC_Apple.hpp"
 #endif
 
-extern bool compiledOK;
+extern bool gCompiledOK;
 
 QcApplication* QcApplication::_instance = 0;
 QMutex QcApplication::_mutex;
@@ -130,7 +130,7 @@ bool QcApplication::compareThread() { return gMainVMGlobals->canCallOS; }
 
 void QcApplication::interpret(const QString& str, bool print) {
     QtCollider::lockLang();
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
 
         PyrString* strObj = newPyrString(g->gc, str.toStdString().c_str(), 0, true);

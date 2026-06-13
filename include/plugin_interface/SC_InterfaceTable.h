@@ -23,7 +23,10 @@
 // TODO next time this is updated, change SC_PlugIn.hpp `in`, `zin`, etc. to take uint32s
 // TODO next time this is updated, change SC_PlugIn.hpp `numInputs`, `numOutputs` to have correct
 // return type
-static const int sc_api_version = 4;
+// NOTE: The plugin API version has been temporarily bumped to avoid potential crashes
+// with existing plugins on the develop branch. After all plugin API changes have been
+// made for SC 3.15, the API version should be restored to 4.
+static const int sc_api_version = 6;
 
 #include "SC_Types.h"
 #include "SC_World.h"
@@ -33,11 +36,9 @@ static const int sc_api_version = 4;
 #include "SC_FifoMsg.h"
 #include "SC_fftlib.h"
 #include "SC_Export.h"
+#include "SC_Command.h"
 
 typedef struct SF_INFO SF_INFO;
-
-typedef SCBool (*AsyncStageFn)(World* inWorld, void* cmdData);
-typedef void (*AsyncFreeFn)(World* inWorld, void* cmdData);
 
 struct ScopeBufferHnd {
     void* internalData;
@@ -73,6 +74,10 @@ struct InterfaceTable {
 
     // define a command for a unit generator  /u_cmd
     SCBool (*fDefineUnitCmd)(const char* inUnitClassName, const char* inCmdName, UnitCmdFunc inFunc);
+
+    // define a command for a unit generator  /u_cmd.
+    // this is an extended version of fDefineUnitCmd that takes a UnitCmdFuncEx instead of UnitCmdFunc.
+    SCBool (*fDefineUnitCmdEx)(const char* inUnitClassName, const char* inCmdName, UnitCmdFuncEx inFunc);
 
     // define a buf gen
     SCBool (*fDefineBufGen)(const char* inName, BufGenFunc inFunc);
@@ -126,6 +131,19 @@ struct InterfaceTable {
         AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
         AsyncFreeFn cleanup, int32 completionMsgSize, const void* completionMsgData);
 
+    SCErr (*fDoAsynchronousCommandEx)(
+        World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
+        AsyncStageFnEx stage2, // stage2 is non real time
+        AsyncStageFnEx stage3, // stage3 is real time - completion msg performed if stage3 returns true
+        AsyncStageFnEx stage4, // stage4 is non real time - sends done if stage4 returns true
+        AsyncFreeFn cleanup, int32 completionMsgSize, const void* completionMsgData);
+
+    SCErr (*fDoAsyncUnitCommand)(
+        Unit* inUnit, void* replyAddr, const char* cmdName, void* cmdData,
+        AsyncUnitStageFn stage2, // stage2 is non real time
+        AsyncUnitStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+        AsyncUnitStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+        AsyncFreeFn cleanup, int32 completionMsgSize, const void* completionMsgData);
 
     // fBufAlloc should only be called within a BufGenFunc
     SCErr (*fBufAlloc)(SndBuf* inBuf, int32 inChannels, int32 inFrames, double inSampleRate);
@@ -158,6 +176,7 @@ typedef struct InterfaceTable InterfaceTable;
 #define DefineUnit (*ft->fDefineUnit)
 #define DefinePlugInCmd (*ft->fDefinePlugInCmd)
 #define DefineUnitCmd (*ft->fDefineUnitCmd)
+#define DefineUnitCmdEx (*ft->fDefineUnitCmdEx)
 #define DefineBufGen (*ft->fDefineBufGen)
 #define ClearUnitOutputs (*ft->fClearUnitOutputs)
 #define SendTrigger (*ft->fSendTrigger)
@@ -192,6 +211,10 @@ typedef struct InterfaceTable InterfaceTable;
 #define SndFileFormatInfoFromStrings (*ft->fSndFileFormatInfoFromStrings)
 
 #define DoAsynchronousCommand (*ft->fDoAsynchronousCommand)
+
+#define DoAsynchronousCommandEx (*ft->fDoAsynchronousCommandEx)
+
+#define DoAsyncUnitCommand (*ft->fDoAsyncUnitCommand)
 
 #define DefineSimpleUnit(name) (*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, 0, 0);
 

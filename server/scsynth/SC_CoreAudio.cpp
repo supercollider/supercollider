@@ -42,6 +42,12 @@
 
 #include "nova-tt/thread_priority.hpp"
 
+// NOVA_TT_PRIORITY_RT is defined in the thread_priority header - we do not want this set for emscripten
+// so we undo the definition.
+#ifdef __EMSCRIPTEN__
+#    undef NOVA_TT_PRIORITY_RT
+#endif
+
 
 int64 gStartupOSCTime = -1;
 
@@ -1160,7 +1166,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 
     *outNumSamplesPerCallback = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
     if (mExplicitSampleRate) {
-        *outSampleRate = mExplicitSampleRate.get();
+        *outSampleRate = mExplicitSampleRate.value();
     } else {
         *outSampleRate = outputStreamDesc.mSampleRate;
     }

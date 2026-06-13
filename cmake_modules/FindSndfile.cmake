@@ -40,49 +40,46 @@ elseif (APPLE)
   endif()
 
 else()
+  set(SNDFILE_HINT_PATHS_WIN "")
+  if(WIN32)
+    file(GLOB SNDFILE_HINT_PATHS_WIN
+      "$ENV{ProgramFiles}/libsndfile*"
+      "$ENV{ProgramFiles\(x86\)}/libsndfile*"
+      "$ENV{ProgramW6432}/libsndfile*"
+      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile*"
+      "${CMAKE_SOURCE_DIR}/../libsndfile*"
+    )
+  endif()
   find_path(SNDFILE_INCLUDE_DIR sndfile.h
     HINTS
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/include"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/include"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/include"
-      "$ENV{ProgramFiles}/libsndfile/include"
-    PATHS /usr/local/include
+      ${SNDFILE_HINT_PATHS_WIN}
+    PATH_SUFFIXES 
+      include
+    PATHS 
+      /usr/local/include
       /usr/include
   )
 
   find_library(SNDFILE_LIBRARY
     NAMES sndfile sndfile-1 libsndfile libsndfile-1
     HINTS
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/lib"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/lib"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/bin"
-      "$ENV{ProgramFiles}/libsndfile/lib"
-      "$ENV{ProgramFiles}/libsndfile/bin"
-    PATHS /usr/local/
+      ${SNDFILE_HINT_PATHS_WIN}
+    PATH_SUFFIXES 
+      lib
+    PATHS 
+      /usr/local/lib
       /usr/lib
   )
   # used by Windows only
-  find_path(SNDFILE_LIBRARY_DIR
-    NAMES libsndfile.dll libsndfile-1.dll sndfile.dll
-    HINTS
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/lib"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/lib"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/bin"
-      "$ENV{ProgramFiles}/libsndfile/lib"
-      "$ENV{ProgramFiles}/libsndfile/bin"
-    PATH_SUFFIXES "bin"
-  )
+  if(WIN32)
+    find_path(SNDFILE_LIBRARY_DIR
+      NAMES libsndfile.dll libsndfile-1.dll sndfile.dll
+      HINTS
+        ${SNDFILE_HINT_PATHS_WIN}
+      PATH_SUFFIXES 
+        bin
+    )
+  endif()
 
   # Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if
   # all listed variables are TRUE.
@@ -97,7 +94,7 @@ else()
   endif(SNDFILE_FOUND)
 
 endif()
-mark_as_advanced(SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)
+mark_as_advanced(SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY SNDFILE_LIBRARY_DIR)
 
 # check for format support
 # note: this only check whehter libsndfile's _version_ supports the given format

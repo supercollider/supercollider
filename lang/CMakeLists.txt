@@ -10,8 +10,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison
-
-                    ${YAMLCPP_INCLUDE_DIR}
 )
 
 
@@ -112,7 +110,7 @@ if(AUDIOAPI STREQUAL "default")
     endif(APPLE)
 endif()
 
-if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela)$")
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela|webaudio)$")
     message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
@@ -187,15 +185,20 @@ endif()
 include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
-if(0 AND FINAL_BUILD) # sclang final-builds are broken
-	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
-	add_library(libsclang STATIC libsclang_final.cpp ${sclang_parser_source})
-else()
-	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+
+if(FINAL_BUILD)
+	set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+	set_target_properties(libsclang PROPERTIES 
+		UNITY_BUILD ON
+		UNITY_BUILD_BATCH_SIZE 16 
+	)
 endif()
 
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
+
+target_link_libraries(libsclang sc_lexer)
 
 if(SC_QT OR SC_IDE)
     get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
@@ -326,6 +329,7 @@ endif()
 
 if(WIN32)
 	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
+	target_compile_definitions(libsclang PRIVATE HAVE_PORTMIDI)
 endif()
 
 if (GC_SANITYCHECK)
@@ -340,7 +344,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
+target_link_libraries(libsclang yaml-cpp)
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
@@ -367,9 +371,9 @@ if(APPLE)
             )
     endif()
 elseif(WIN32)
-    if(NOT MSVC)
+    if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
-    endif(NOT MSVC)
+    endif()
 
     target_compile_definitions(sclang PUBLIC UNICODE _UNICODE)
 
@@ -456,3 +460,5 @@ else()
         RUNTIME DESTINATION "bin"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
+
+set_property(TARGET libsclang PROPERTY FOLDER Libs)

@@ -102,7 +102,6 @@ void nova_server::prepare_backend(void) {
 
 nova_server::~nova_server(void) {
     // we should delete but get chrashes at the moment on linux and macosx
-    // delete sc_factory;
 #if defined(JACK_BACKEND) || defined(PORTAUDIO_BACKEND)
     deactivate_audio();
 #endif
@@ -112,6 +111,8 @@ nova_server::~nova_server(void) {
     scheduler<thread_init_functor>::terminate();
     io_interpreter.join_thread();
 
+    // NOTE: this will also unload all plugins. Make sure to do this
+    // after we have destroyed all Nodes!
     sc_factory.reset();
     instance = nullptr;
 }
@@ -166,14 +167,7 @@ void nova_server::set_node_slot(int node_id, const char* slot, float value) {
         node->set(slot, value);
 }
 
-void nova_server::finalize_node(server_node& node) {
-    if (node.is_synth()) {
-        sc_synth& synth = static_cast<sc_synth&>(node);
-        synth.finalize();
-    }
-    notification_node_ended(&node);
-}
-
+void nova_server::finalize_node(server_node& node) { notification_node_ended(&node); }
 
 void nova_server::free_node(server_node* node) {
     if (node->get_parent() == nullptr)

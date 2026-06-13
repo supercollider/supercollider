@@ -62,6 +62,12 @@ struct GraphDef {
     ParamSpec* mParamSpecs;
     ParamSpecTable* mParamSpecTable;
 
+    int32 mBlockSize;
+    uint32 mBlockSizeIndex;
+
+    float32 mResampleFactor;
+    uint32 mResampleIndex;
+
     int mRefCount;
     struct GraphDef* mNext;
 
@@ -70,9 +76,8 @@ struct GraphDef {
     uint32 mNumVariants;
     struct GraphDef* mVariants;
 };
-typedef struct GraphDef GraphDef;
 
-GraphDef* GraphDef_Recv(World* inWorld, char* buffer, GraphDef* inList);
+GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, size_t size, GraphDef* inList);
 GraphDef* GraphDef_Load(World* inWorld, const std::filesystem::path& path, GraphDef* inList);
 GraphDef* GraphDef_LoadDir(World* inWorld, const std::filesystem::path& path, GraphDef* inList);
 GraphDef* GraphDef_LoadGlob(World* inWorld, const char* pattern, GraphDef* inList);

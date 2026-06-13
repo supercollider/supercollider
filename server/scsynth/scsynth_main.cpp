@@ -506,6 +506,12 @@ int wmain(int argc, wchar_t** wargv) {
 
 #else
 
+#    ifdef __EMSCRIPTEN__
+// wasm build uses exported c function as entry
+int main(int argc, char** argv) { return 0; }
+#    else
+
 int main(int argc, char** argv) { return scsynth_main(argc, argv); };
 
+#    endif
 #endif //_WIN32

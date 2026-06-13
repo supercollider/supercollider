@@ -49,6 +49,71 @@ note::
 When using the new code::||:: syntax, the default value needs to be enclosed in parenthesis if it's not a literal.
 ::
 
+subsection:: ellipsis in function arguments
+
+The code:: arg :: and pipe notation (code:: | | ::) syntaxes are equivalent. The following pairs are identical:
+table::
+## code:: { arg ... args; args.postln } :: || code:: { |... args| args.postln } ::
+## code:: { arg a ... rest; [a, rest].postln } :: || code:: { |a ... rest| [a, rest].postln } ::
+## code:: { arg a, b ... rest; [a, b, rest].postln } :: || code:: { |a, b ... rest| [a, b, rest].postln } ::
+## code:: { arg a, b ... rest; [a, b, rest].postln } :: || code:: { |a b ... rest| [a, b, rest].postln } ::
+## (pipe notation only) || code:: { |a, b ... rest, kwargs| [a, b, rest, kwargs].postln } ::
+::
+
+note::
+See:
+list::
+## link::Reference/Messages#Keyword Arguments and Positional Arguments::
+## link::Classes/FunctionDef#numArgs::
+## link::Classes/FunctionDef#numVars::
+## link::Classes/FunctionDef#varArgs::
+## link::Classes/FunctionDef#hasKwArgs::
+## link::Classes/FunctionDef#varArgsValue::
+## link::Classes/FunctionDef#.hasVarArgs::
+::
+::
+
+subsubsection:: variable arguments (varargs)
+
+Use code::...:: in function argument lists when the number of arguments is not fixed in advance. Arguments matched by code::...:: are collected into a single link::Classes/Array:: instance.
+
+code::
+// It may collect all arguments:
+x = { |... args| args };
+x.(1, 2, 3);         // -> [ 1, 2, 3 ]
+x.(1, 2, 3, 4, 5);   // -> [ 1, 2, 3, 4, 5 ]
+
+// Or it may collect only the arguments that remain after earlier ones have been matched:
+x = { |a ... rest| [a, rest] };
+x.(1, 2, 3, 4, 5);   // -> [ 1, [ 2, 3, 4, 5 ] ]
+
+x = { |a, b ... rest| [a, b, rest] };
+x.(1, 2, 3, 4, 5);   // -> [ 1, 2, [ 3, 4, 5 ] ]
+::
+
+subsubsection:: keyword arguments (kwargs)
+
+Use code::...args, kwargs:: to capture arbitrary keyword arguments that are not explicitly named. The keyword arguments are collected into a single link::Classes/Array:: instance of key-value pairs. Note that kwargs are only supported with the pipe notation (code:: | | ::), not with code:: arg ::.
+
+code::
+// Capture arbitrary keyword arguments:
+f = { |... args, kwargs| kwargs };
+f.(x: 3, y: 4);      // -> [ x, 3, y, 4 ]
+
+// Named arguments are matched first; the rest go into args or kwargs:
+f = { |a, b ... args, kwargs| [a, b, args, kwargs] };
+f.(1, 2, 3, 4, x: 5, y: 6);        // -> [ 1, 2, [ 3, 4 ], [ x, 5, y, 6 ] ]
+f.(1, 2, 3, 4, 5, 6, x: 7, y: 8);  // -> [ 1, 2, [ 3, 4, 5, 6 ], [ x, 7, y, 8 ] ]
+::
+
+note::
+See
+list::
+## link::Classes/Object#performList::
+## link::Classes/Object#performArgs::
+::
+::
+
 subsection:: partial application
 table::
 ## instead of writing: || you can write:

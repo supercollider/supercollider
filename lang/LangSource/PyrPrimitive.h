@@ -30,11 +30,29 @@ Functions for defining language primitives.
 typedef int (*PrimitiveHandler)(struct VMGlobals* g, int numArgsPushed);
 typedef int (*PrimitiveWithKeysHandler)(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPushed);
 
+int undefinedPrimitive(struct VMGlobals* g, int numArgsPushed);
+
 int nextPrimitiveIndex();
 int definePrimitive(int base, int index, const char* name, PrimitiveHandler handler, int numArgs, int varArgs);
-int definePrimitiveWithKeys(int base, int index, const char* name, PrimitiveHandler handler,
-                            PrimitiveWithKeysHandler keyhandler, int numArgs, int varArgs);
+int definePrimitiveWithVariableKeys(int base, int index, const char* name, PrimitiveHandler handler,
+                                    PrimitiveWithKeysHandler keyhandler, int numArgs, int varArgs);
 int getPrimitiveNumArgs(int index);
 PyrSymbol* getPrimitiveName(int index);
 
 void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numArgsPushed);
+
+typedef struct {
+    PrimitiveHandler func;
+    PyrSymbol* name;
+    unsigned short base;
+    unsigned char numNormalArguments;
+    bool hasVariablePositionalArguments;
+    bool hasVariableKeywordArguments;
+} PrimitiveDef;
+
+typedef struct {
+    int size, maxsize;
+    PrimitiveDef* table;
+} PrimitiveTable;
+
+extern PrimitiveTable gPrimitiveTable;

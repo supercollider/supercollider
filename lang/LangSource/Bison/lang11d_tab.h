@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_LANG11D_TAB_H_INCLUDED
-# define YY_YY_LANG11D_TAB_H_INCLUDED
+#ifndef YY_YY_LANG_LANGSOURCE_BISON_LANG11D_TAB_H_INCLUDED
+# define YY_YY_LANG_LANGSOURCE_BISON_LANG11D_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -54,37 +54,57 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    NAME = 258,                    /* NAME  */
-    INTEGER = 259,                 /* INTEGER  */
-    SC_FLOAT = 260,                /* SC_FLOAT  */
-    ACCIDENTAL = 261,              /* ACCIDENTAL  */
-    SYMBOL = 262,                  /* SYMBOL  */
-    STRING = 263,                  /* STRING  */
-    ASCII = 264,                   /* ASCII  */
-    PRIMITIVENAME = 265,           /* PRIMITIVENAME  */
-    CLASSNAME = 266,               /* CLASSNAME  */
-    CURRYARG = 267,                /* CURRYARG  */
-    VAR = 268,                     /* VAR  */
-    ARG = 269,                     /* ARG  */
-    CLASSVAR = 270,                /* CLASSVAR  */
-    SC_CONST = 271,                /* SC_CONST  */
-    NILOBJ = 272,                  /* NILOBJ  */
-    TRUEOBJ = 273,                 /* TRUEOBJ  */
-    FALSEOBJ = 274,                /* FALSEOBJ  */
-    PSEUDOVAR = 275,               /* PSEUDOVAR  */
-    ELLIPSIS = 276,                /* ELLIPSIS  */
-    DOTDOT = 277,                  /* DOTDOT  */
-    PIE = 278,                     /* PIE  */
-    BEGINCLOSEDFUNC = 279,         /* BEGINCLOSEDFUNC  */
-    BADTOKEN = 280,                /* BADTOKEN  */
-    INTERPRET = 281,               /* INTERPRET  */
-    BEGINGENERATOR = 282,          /* BEGINGENERATOR  */
-    LEFTARROW = 283,               /* LEFTARROW  */
-    WHILE = 284,                   /* WHILE  */
-    BINOP = 285,                   /* BINOP  */
-    KEYBINOP = 286,                /* KEYBINOP  */
-    READWRITEVAR = 287,            /* READWRITEVAR  */
-    UMINUS = 288                   /* UMINUS  */
+    OPENCURLY = 258,               /* OPENCURLY  */
+    CLOSECURLY = 259,              /* CLOSECURLY  */
+    OPENSQUARE = 260,              /* OPENSQUARE  */
+    CLOSESQUARE = 261,             /* CLOSESQUARE  */
+    OPENPAREN = 262,               /* OPENPAREN  */
+    CLOSEPAREN = 263,              /* CLOSEPAREN  */
+    SEMICOLON = 264,               /* SEMICOLON  */
+    NONLOCALRETURN = 265,          /* NONLOCALRETURN  */
+    COMMA = 266,                   /* COMMA  */
+    HASH = 267,                    /* HASH  */
+    TILDE = 268,                   /* TILDE  */
+    NAME = 269,                    /* NAME  */
+    INTEGER = 270,                 /* INTEGER  */
+    SC_FLOAT = 271,                /* SC_FLOAT  */
+    ACCIDENTAL = 272,              /* ACCIDENTAL  */
+    SYMBOL = 273,                  /* SYMBOL  */
+    STRING = 274,                  /* STRING  */
+    ASCII = 275,                   /* ASCII  */
+    PRIMITIVENAME = 276,           /* PRIMITIVENAME  */
+    CLASSNAME = 277,               /* CLASSNAME  */
+    CURRYARG = 278,                /* CURRYARG  */
+    VAR = 279,                     /* VAR  */
+    ARG = 280,                     /* ARG  */
+    CLASSVAR = 281,                /* CLASSVAR  */
+    SC_CONST = 282,                /* SC_CONST  */
+    NILOBJ = 283,                  /* NILOBJ  */
+    TRUEOBJ = 284,                 /* TRUEOBJ  */
+    FALSEOBJ = 285,                /* FALSEOBJ  */
+    PSEUDOVAR = 286,               /* PSEUDOVAR  */
+    ELLIPSIS = 287,                /* ELLIPSIS  */
+    DOTDOT = 288,                  /* DOTDOT  */
+    PIE = 289,                     /* PIE  */
+    BEGINCLOSEDFUNC = 290,         /* BEGINCLOSEDFUNC  */
+    BADTOKEN = 291,                /* BADTOKEN  */
+    INTERPRET = 292,               /* INTERPRET  */
+    LEFTARROW = 293,               /* LEFTARROW  */
+    WHILE = 294,                   /* WHILE  */
+    COLON = 295,                   /* COLON  */
+    EQUALSSIGN = 296,              /* EQUALSSIGN  */
+    BINOP = 297,                   /* BINOP  */
+    KEYBINOP = 298,                /* KEYBINOP  */
+    MINUS = 299,                   /* MINUS  */
+    LESSTHAN = 300,                /* LESSTHAN  */
+    GREATERTHAN = 301,             /* GREATERTHAN  */
+    MULTIPLY = 302,                /* MULTIPLY  */
+    ADD = 303,                     /* ADD  */
+    PIPE = 304,                    /* PIPE  */
+    READWRITEVAR = 305,            /* READWRITEVAR  */
+    DOT = 306,                     /* DOT  */
+    BACKTICK = 307,                /* BACKTICK  */
+    UMINUS = 308                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -96,11 +116,14 @@ typedef int YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+typedef sc::lex::SourceCodeRange YYLTYPE;
+
 
 extern YYSTYPE yylval;
-
+extern YYLTYPE yylloc;
 
 int yyparse (void);
 
 
-#endif /* !YY_YY_LANG11D_TAB_H_INCLUDED  */
+#endif /* !YY_YY_LANG_LANGSOURCE_BISON_LANG11D_TAB_H_INCLUDED  */

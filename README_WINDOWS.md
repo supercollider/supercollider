@@ -387,9 +387,9 @@ than `Release`.
 
 ### SuperNova
 
-If you want to build supernova, add `-D SUPERNOVA=ON`
+Building supernova is enabled by default. If you want to build without supernova, add `-D SUPERNOVA=OFF`
 
-    cmake -D SUPERNOVA=ON ..
+    cmake -D SUPERNOVA=OFF ..
 
 ### Other targets (install, installer)
 
@@ -1039,7 +1039,7 @@ Commonly used variables to modify the build configuration are:
 
 * Build the *supernova* server:
 
-      -D SUPERNOVA=ON
+      -D SUPERNOVA=ON # ON by default
 
   *Note*: When you build with supernova, an alternative server executable and
   a supernova version of each plugin is built. If you also use the 'sc3-plugins'

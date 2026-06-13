@@ -24,6 +24,7 @@
 #include <QAction>
 #include <QGestureEvent>
 #include <QPlainTextEdit>
+#include <qurl.h>
 
 namespace ScIDE {
 
@@ -61,8 +62,14 @@ public:
     QSize minimumSizeHint() const { return QSize(50, 50); }
     QString symbolUnderCursor();
 
+    void mousePressEvent(QMouseEvent* e) override;
+
+    void mouseReleaseEvent(QMouseEvent* e) override;
+
+
 signals:
     void scrollToBottomRequest();
+    void handleClickedURL(const QString& command, bool silent);
 
 public slots:
     void post(const QString& text);
@@ -106,6 +113,12 @@ private:
     QSize mSizeHint;
     QChar previousChar;
     QTextCharFormat currentFormat;
+
+    /// Stores the html anchor that the user clicked on.
+    /// This is to facilitate clickable URL links in the post window.
+    /// Will be empty when no anchor has been clicked
+    /// Used in conjuction with anchorAt(QPos)
+    QString clickedAnchor;
 };
 
 

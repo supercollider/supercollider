@@ -20,6 +20,9 @@ endif()
 
 message(STATUS "SuperCollider Version: ${SC_VERSION}")
 message(STATUS "Building from ${GIT_REF_TYPE} ${GIT_BRANCH_OR_TAG}, commit hash is ${GIT_COMMIT_HASH}")
+
+# Stops CTest from generating a bunch of targets we don't care about.
+set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 include(CTest)
 enable_testing()
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
@@ -49,6 +52,7 @@ CONFIGURE_FILE(
 
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+set_property(TARGET uninstall PROPERTY FOLDER Util)
 
 # identify target architecture
 if(WIN32)
@@ -79,7 +83,7 @@ option(USE_CCACHE "Use ccache if available." ON)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela})")
+set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela,webaudio})")
 
 if (AUDIOAPI STREQUAL jack)
 	# here we check for JACK metadata API
@@ -92,6 +96,7 @@ if (AUDIOAPI STREQUAL jack)
 endif()
 
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
+option(STATIC_PLUGINS "Compile plugins as static libraries (scsynth only)" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
@@ -109,8 +114,7 @@ option(NO_X11 "Disables the building of plugins that require the X11 library (fo
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
-# Build supernova by default only when on Linux or BSD systems
-option(SUPERNOVA "Build with supernova as optional audio synthesis server" ${LINUX_OR_BSD})
+option(SUPERNOVA "Build with supernova as an alternative audio synthesis server" ON)
 
 option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
 option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable memory pools).")
@@ -145,7 +149,7 @@ option(SYSTEM_ABLETON_LINK "Use link from system" OFF)
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 option(SYSTEM_PORTAUDIO "Use PortAudio libraries from system" ON)
-if(WIN32)
+if(WIN32 OR (APPLE AND SUPERNOVA))
     set(SYSTEM_PORTAUDIO OFF)
 else()
     mark_as_advanced(SYSTEM_PORTAUDIO)
@@ -171,6 +175,14 @@ if(SC_DISABLE_XCODE_CODESIGNING)
     set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
     set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
 endif()
+
+if(EMSCRIPTEN)
+    # see # see https://developer.chrome.com/blog/wasm-debugging-2020
+    set(WASM_DEBUG OFF CACHE BOOL "include DWARF debug symbols in wasm build?")
+    set(WASM_ASSET_DIR ${CMAKE_SOURCE_DIR}/platform/wasm)
+    set(WASM_DIST_DIR ${CMAKE_BINARY_DIR}/wasm-dist)
+endif()
+
 
 #############################################
 # Detect CCache
@@ -234,7 +246,7 @@ endif()
 #############################################
 # some default libraries
 
-if (NOT WIN32)
+if (NOT WIN32 AND NOT EMSCRIPTEN)
     find_package(Pthreads)
 
     if (NOT PTHREADS_FOUND)
@@ -401,6 +413,7 @@ if(MSVC)
     /wd4101 # unreferenced local variable
     /wd4102 # unreferenced label
     /wd4200 # nonstandard extension used: zero-sized array in struct/union
+	/diagnostics:caret # better diagnostics, shows source code location in error repot
   )
 
 # this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error
@@ -425,10 +438,6 @@ endif()
 add_subdirectory(tools)
 add_subdirectory(external_libraries)
 
-if(NOT YAMLCPP_FOUND)
-  set(YAMLCPP_LIBRARY yaml)
-endif()
-
 
 configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/common)
@@ -447,6 +456,7 @@ else()
 endif()
 
 add_subdirectory(server)
+add_subdirectory(langutils)
 add_subdirectory(lang)
 add_subdirectory(platform)
 add_subdirectory(editors)

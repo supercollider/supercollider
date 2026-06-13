@@ -73,6 +73,11 @@ TestKwargs : UnitTest {
 			f.(1, b: 2, args: 10, kwargs: 20),
 			(a: 1, b: 2, args: [], kwargs: [\args, 10, \kwargs: 20]),
 			"Should be able to pass 'args' and 'kwargs' to methods"
+		);
+		this.assertEquals(
+			f.(1, b: 2),
+			(a: 1, b: 2, args: [], kwargs: []),
+			"Should be able to pass 'args' and 'kwargs' to methods"
 		)
 	}
 
@@ -156,27 +161,43 @@ TestKwargs : UnitTest {
 	test_control_flow {
 		var i = 0;
 		// These all used to crash.
-		this.assertEquals(true.if(trueFunc: {'s'}), 's');
-		this.assertEquals(true.if(falseFunc: {'s'}), nil);
+		this.assertEquals(true.if(trueFunc: {'s'}), 's', "If with truefunc");
+		this.assertEquals(true.if(falseFunc: {'s'}), nil, "If with falseFunc");
 
-		this.assertEquals(false.if(trueFunc: {'s'}), nil);
-		this.assertEquals(false.if(falseFunc: {'s'}), 's');
+		this.assertEquals(false.if(trueFunc: {'s'}), nil, "If with trueFunc, but false");
+		this.assertEquals(false.if(falseFunc: {'s'}), 's', "If with falseFunc, but false");
 
 		// Posts a warning, but that is fine.
-		this.assertEquals(100.loop(xyz: 1).(), 100);
+		this.assertEquals(100.loop(xyz: 1).(), 100, "loop");
 
-		this.assertEquals(true.and(that: {1}), 1);
-		this.assertEquals(false.and(that: {1}), false);
+		this.assertEquals(true.and(that: {1}), 1, "and true");
+		this.assertEquals(false.and(that: {1}), false, "and false");
 
 		// Unary messages
-		this.assertEquals(true.not(asd: 1), false);
-		this.assertEquals(false.not(asd: 1), true);
+		this.assertEquals(true.not(asd: 1), false, "not true");
+		this.assertEquals(false.not(asd: 1), true, "not false");
 
 		// Binary, note the unusual syntax needed to call these with keywords!
-		this.assertEquals( (!?)(1, obj: 2),  2);
-		this.assertEquals((+)(1, aNumber: 10 ), 11);
+		this.assertEquals((!?)(1, obj: 2),  2, "binary !? with kwargs");
+
+		// This one isn't inlined, and so actually does the kwargs lookup in doPrimitiveWithKeys
+		this.assertEquals((+)(1, aNumber: 10), 11, "binary + with kwargs");
 
 		while({ i < 10 }, body: { i = i + 1 });
-		this.assertEquals(i, 10);
+		this.assertEquals(i, 10, "while with kwargs works");
+	}
+
+	test_block {
+
+		var f = {
+			| a=1, b=2 ...args, kwargs|
+			var bar = 10;
+			this.assertEquals(a, 1);
+			this.assertEquals(b, 2);
+			this.assertEquals(bar, 10);
+			this.assertEquals(args, []);
+			this.assertEquals(kwargs, []);
+		};
+		f.();
 	}
 }

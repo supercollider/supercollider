@@ -14,6 +14,8 @@ IODesc {
 SynthDesc {
 	classvar <>mdPlugin, <>populateMetadataFunc;
 
+	const <headerMagic = 0x53436766; // 'SCgf'
+
 	var <>name, <>controlNames, <>controlDict;
 	var <>controls, <>inputs, <>outputs;
 	var <>metadata;
@@ -55,24 +57,34 @@ SynthDesc {
 		};
 		^dict;
 	}
-		// path is for metadata -- only this method has direct access to the new SynthDesc
-		// really this should be a private method -- use *read instead
+	// path is for metadata -- only this method has direct access to the new SynthDesc
+	// really this should be a private method -- use *read instead
 	*readFile { arg stream, keepDefs=false, dict, path;
-		var numDefs, version;
+		var numDefs, magic, version;
 		dict = dict ?? { IdentityDictionary.new };
-		stream.getInt32; // 'SCgf'
+		magic = stream.getInt32; // 'SCgf'
+		if (magic != headerMagic) {
+			Error("not a SynthDef").throw;
+		};
 		version = stream.getInt32; // version
+		if (version > 3) {
+			"SynthDef version % not supported".format(version).warn;
+			^dict;
+		};
 		numDefs = stream.getInt16;
 		numDefs.do {
 			var desc;
-			if(version >= 2, {
+			case { version == 3 } {
+				desc = SynthDesc.new.readSynthDef3(stream, keepDefs);
+			} { version == 2} {
 				desc = SynthDesc.new.readSynthDef2(stream, keepDefs);
-			},{
+			} {
 				desc = SynthDesc.new.readSynthDef(stream, keepDefs);
-			});
+			};
+
 			dict.put(desc.name.asSymbol, desc);
-				// AbstractMDPlugin dynamically determines the md archive type
-				// from the file extension
+			// AbstractMDPlugin dynamically determines the md archive type
+			// from the file extension
 			if(path.notNil) {
 				desc.metadata = AbstractMDPlugin.readMetadata(path);
 			};
@@ -83,40 +95,43 @@ SynthDesc {
 					desc.def.metadata.putAll(desc.metadata);
 				};
 				desc.def.metadata.put(\shouldNotSend, true)
-					.put(\loadPath, path);
+				.put(\loadPath, path);
 			};
 		}
 		^dict
 	}
+
+	// synthdef version 1
 	readSynthDef { arg stream, keepDef=false;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
+		var variantValues;
 
 		protect {
 
-		inputs = [];
-		outputs = [];
-		controlDict = IdentityDictionary.new;
+			inputs = [];
+			outputs = [];
+			controlDict = IdentityDictionary.new;
 
-		name = stream.getPascalString;
+			name = stream.getPascalString;
 
-		def = SynthDef.prNew(name);
-		UGen.buildSynthDef = def;
+			def = SynthDef.prNew(name);
+			UGen.buildSynthDef = def;
 
-		numConstants = stream.getInt16;
-		constants = FloatArray.newClear(numConstants);
-		stream.read(constants);
+			numConstants = stream.getInt16;
+			constants = FloatArray.newClear(numConstants);
+			stream.read(constants);
 
-		numControls = stream.getInt16;
-		def.controls = FloatArray.newClear(numControls);
-		stream.read(def.controls);
+			numControls = stream.getInt16;
+			def.controls = FloatArray.newClear(numControls);
+			stream.read(def.controls);
 
-		controls = Array.fill(numControls)
+			controls = Array.fill(numControls)
 			{ |i|
 				ControlName('?', i, '?', def.controls[i]);
 			};
 
-		numControlNames = stream.getInt16;
-		numControlNames.do
+			numControlNames = stream.getInt16;
+			numControlNames.do
 			{
 				var controlName, controlIndex;
 				controlName = stream.getPascalString.asSymbol;
@@ -126,31 +141,38 @@ SynthDesc {
 				controlDict[controlName] = controls[controlIndex];
 			};
 
-		numUGens = stream.getInt16;
-		numUGens.do {
-			this.readUGenSpec(stream);
-		};
+			numUGens = stream.getInt16;
+			numUGens.do {
+				this.readUGenSpec(stream);
+			};
 
-		controls.inject(nil) {|z,y|
-			if(y.name=='?') { z.defaultValue = z.defaultValue.asArray.add(y.defaultValue); z } { y }
-		};
+			controls.inject(nil) {|z,y|
+				if(y.name=='?') { z.defaultValue = z.defaultValue.asArray.add(y.defaultValue); z } { y }
+			};
 
-		def.controlNames = controls.select {|x| x.name.notNil };
-		hasArrayArgs = controls.any { |cn| cn.name == '?' };
+			def.controlNames = controls.select {|x| x.name.notNil };
+			hasArrayArgs = controls.any { |cn| cn.name == '?' };
 
-		numVariants = stream.getInt16;
-		hasVariants = numVariants > 0;
-			// maybe later, read in variant names and values
-			// this is harder than it might seem at first
+			numVariants = stream.getInt16;
+			hasVariants = numVariants > 0;
+			// maybe later, read in variant names and values.
+			// this is harder than it might seem at first.
+			// we could just skip the data, but instead we read it
+			// so we can detect corrupt SynthDef files.
+			variantValues = FloatArray.newClear(numControls);
+			numVariants.do {
+				stream.getPascalString;
+				stream.read(variantValues);
+			};
 
-		def.constants = Dictionary.new;
-		constants.do {|k,i| def.constants.put(k,i) };
-		if (keepDef.not) {
-			// throw away unneeded stuff
-			def = nil;
-			constants = nil;
-		};
-		this.makeMsgFunc;
+			def.constants = Dictionary.new;
+			constants.do {|k,i| def.constants.put(k,i) };
+			if (keepDef.not) {
+				// throw away unneeded stuff
+				def = nil;
+				constants = nil;
+			};
+			this.makeMsgFunc;
 
 		} {
 			UGen.buildSynthDef = nil;
@@ -158,36 +180,37 @@ SynthDesc {
 
 	}
 
-	// synthdef ver 2
-	readSynthDef2 { arg stream, keepDef=false;
+	// common method for readSynthDef2 and readSynthDef3
+	prReadSynthDef { arg stream, version, keepDef;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
+		var variantValues;
 
 		protect {
 
-		inputs = [];
-		outputs = [];
-		controlDict = IdentityDictionary.new;
+			inputs = [];
+			outputs = [];
+			controlDict = IdentityDictionary.new;
 
-		name = stream.getPascalString;
+			name = stream.getPascalString;
 
-		def = SynthDef.prNew(name);
-		UGen.buildSynthDef = def;
+			def = SynthDef.prNew(name);
+			UGen.buildSynthDef = def;
 
-		numConstants = stream.getInt32;
-		constants = FloatArray.newClear(numConstants);
-		stream.read(constants);
+			numConstants = stream.getInt32;
+			constants = FloatArray.newClear(numConstants);
+			stream.read(constants);
 
-		numControls = stream.getInt32;
-		def.controls = FloatArray.newClear(numControls);
-		stream.read(def.controls);
+			numControls = stream.getInt32;
+			def.controls = FloatArray.newClear(numControls);
+			stream.read(def.controls);
 
-		controls = Array.fill(numControls)
+			controls = Array.fill(numControls)
 			{ |i|
 				ControlName('?', i, '?', def.controls[i]);
 			};
 
-		numControlNames = stream.getInt32;
-		numControlNames.do
+			numControlNames = stream.getInt32;
+			numControlNames.do
 			{
 				var controlName, controlIndex;
 				controlName = stream.getPascalString.asSymbol;
@@ -197,36 +220,72 @@ SynthDesc {
 				controlDict[controlName] = controls[controlIndex];
 			};
 
-		numUGens = stream.getInt32;
-		numUGens.do {
-			this.readUGenSpec2(stream);
-		};
+			numUGens = stream.getInt32;
+			numUGens.do {
+				this.readUGenSpec2(stream);
+			};
 
-		controls.inject(nil) {|z,y|
-			if(y.name=='?') { z.defaultValue = z.defaultValue.asArray.add(y.defaultValue); z } { y }
-		};
+			controls.inject(nil) {|z,y|
+				if(y.name=='?') { z.defaultValue = z.defaultValue.asArray.add(y.defaultValue); z } { y }
+			};
 
-		def.controlNames = controls.select {|x| x.name.notNil };
-		hasArrayArgs = controls.any { |cn| cn.name == '?' };
+			def.controlNames = controls.select {|x| x.name.notNil };
+			hasArrayArgs = controls.any { |cn| cn.name == '?' };
 
-		numVariants = stream.getInt16;
-		hasVariants = numVariants > 0;
-			// maybe later, read in variant names and values
-			// this is harder than it might seem at first
+			numVariants = stream.getInt16;
+			hasVariants = numVariants > 0;
+			// maybe later, read in variant names and values.
+			// this is harder than it might seem at first.
+			// we could just skip the data, but instead we read it
+			// so we can detect corrupt SynthDef files.
+			variantValues = FloatArray.newClear(numControls);
+			numVariants.do {
+				stream.getPascalString;
+				stream.read(variantValues);
+			};
 
-		def.constants = Dictionary.new;
-		constants.do {|k,i| def.constants.put(k,i) };
-		if (keepDef.not) {
-			// throw away unneeded stuff
-			def = nil;
-			constants = nil;
-		};
-		this.makeMsgFunc;
+			if (version > 2) {
+				// read reblock and resample fields, just to detect corrupt SynthDef files.
+				stream.getInt32; // block size value
+				stream.getInt32; // block size control index
+				stream.getFloat; // resample factor
+				stream.getInt32; // resample control index
+				// just ignore all remaining (optional) fields.
+				// these will be skipped in the readSynthDef3 method.
+			};
+
+			def.constants = Dictionary.new;
+			constants.do {|k,i| def.constants.put(k,i) };
+			if (keepDef.not) {
+				// throw away unneeded stuff
+				def = nil;
+				constants = nil;
+			};
+			this.makeMsgFunc;
 
 		} {
 			UGen.buildSynthDef = nil;
 		}
+	}
 
+	// synthdef version 2
+	readSynthDef2 { arg stream, keepDef=false;
+		this.prReadSynthDef(stream, 2, keepDef);
+	}
+
+	// synthdef version 3
+	readSynthDef3 { arg stream, keepDef=false;
+		var byteSize, startPos, remaining;
+
+		// every synth definition starts with the byte size (including the field itself)
+		startPos = stream.pos;
+		byteSize = stream.getInt32;
+		this.prReadSynthDef(stream, 3, keepDef);
+		// NB: prReadSynthDef may not read all fields, so we must skip all remaining bytes before we read the next synth definition.
+		remaining = byteSize - (stream.pos - startPos);
+		if (remaining > 0) {
+			stream.skip(remaining);
+		};
 	}
 
 	readUGenSpec { arg stream;
@@ -259,16 +318,16 @@ SynthDesc {
 			ugenIndex = inputSpecs[i];
 			outputIndex = inputSpecs[i+1];
 			input = if (ugenIndex < 0)
-				{
-					constants[outputIndex]
+			{
+				constants[outputIndex]
+			}{
+				ugen = def.children[ugenIndex];
+				if (ugen.isKindOf(MultiOutUGen)) {
+					ugen.channels[outputIndex]
 				}{
-					ugen = def.children[ugenIndex];
-					if (ugen.isKindOf(MultiOutUGen)) {
-						ugen.channels[outputIndex]
-					}{
-						ugen
-					}
-				};
+					ugen
+				}
+			};
 			ugenInputs = ugenInputs.add(input);
 		};
 
@@ -333,16 +392,16 @@ SynthDesc {
 			ugenIndex = inputSpecs[i];
 			outputIndex = inputSpecs[i+1];
 			input = if (ugenIndex < 0)
-				{
-					constants[outputIndex]
+			{
+				constants[outputIndex]
+			}{
+				ugen = def.children[ugenIndex];
+				if (ugen.isKindOf(MultiOutUGen)) {
+					ugen.channels[outputIndex]
 				}{
-					ugen = def.children[ugenIndex];
-					if (ugen.isKindOf(MultiOutUGen)) {
-						ugen.channels[outputIndex]
-					}{
-						ugen
-					}
-				};
+					ugen
+				}
+			};
 			ugenInputs = ugenInputs.add(input);
 		};
 
@@ -377,82 +436,120 @@ SynthDesc {
 	}
 
 	makeMsgFunc {
-		var	string, comma=false;
-		var	names = IdentitySet.new,
-			suffix = this.hash.asHexString(8);
-			// if a control name is duplicated, the msgFunc will be invalid
-			// that "shouldn't" happen but it might; better to check for it
-			// and throw a proper error
+		var string, strings;
+		var hasDuplicateNames = false;
+		var names = IdentitySet.new;
+		var suffix = this.hash.asHexString(8);
+		var index = 0, count;
+		var return;
+		// if a control name is duplicated, the msgFunc will be invalid
+		// that "shouldn't" happen but it might; better to check for it
+		// and throw a proper error
 		controls.do({ |controlName|
 			var	name;
 			if(controlName.name.asString.first.isAlpha) {
 				name = controlName.name.asSymbol;
 				if(names.includes(name)) {
 					"Could not build msgFunc for this SynthDesc: duplicate control name %"
-						.format(name).warn;
-					comma = true;
+					.format(name).warn;
+					hasDuplicateNames = true;
 				} {
-					names.add(name);
+					if(msgFuncKeepGate or: { name != \gate }) {
+						names.add(name);
+					};
 				};
 			};
 		});
-		if(names.size > 255) { Error("A synthDef cannot have more than 255 control names.").throw };
-			// reusing variable to know if I should continue or not
-		if(comma) {
-"\nYour synthdef has been saved in the library and loaded on the server, if running.
+		// note, don't remove this check;
+		// it prevents wrong syntax from being generated in prMakeOneMsgFunc
+		if(names.size == 0) {
+			msgFunc = #{ Array.new };
+			^this
+		};
+		if(hasDuplicateNames) {
+			"\nYour synthdef has been saved in the library and loaded on the server, if running.
 Use of this synth in Patterns will not detect argument names automatically because of the duplicate name(s).".postln;
 			msgFunc = nil;
 			^this
 		};
-		comma = false;
-		names = 0;	// now, count the args actually added to the func
 
-		string = String.streamContents {|stream|
-			stream << "#{ ";
-			if (controlNames.size > 0) {
-				stream << "arg " ;
-			};
-			controls.do {|controlName, i|
-				var name, name2;
-				name = controlName.name.asString;
-				if (name != "?") {
-					if (name == "gate") {
-						hasGate = true;
-						if(msgFuncKeepGate) {
-							if (comma) { stream << ", " } { comma = true };
-							stream << name;
-							names = names + 1;
-						}
-					}{
-						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
-						if (comma) { stream << ", " } { comma = true };
-						stream << name2;
-						names = names + 1;
-					};
-				};
-			};
-			if (controlNames.size > 0) {
-				stream << ";\n" ;
-			};
-			stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
-			comma = false;
-			controls.do {|controlName, i|
-				var name, name2;
-				name = controlName.name.asString;
-				if (name != "?") {
-					if (msgFuncKeepGate or: { name != "gate" }) {
-						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
-						stream << "\t" << name2 << " !? { x" << suffix
-							<< ".add('" << name << "').add(" << name2 << ") };\n";
-						names = names + 1;
-					};
-				};
-			};
-			stream << "\tx" << suffix << "\n}"
+		while {
+			// makeOneMsgFunc splits at a limit of 250 control names per func
+			return = this.prMakeOneMsgFunc(controls, suffix, index);
+			return.notNil
+		} {
+			#count, string = return;
+			strings = strings.add(string);
+			index = index + count;
 		};
 
-			// do not compile the string if no argnames were added
-		if(names > 0) { msgFunc = string.compile.value };
+		if(strings.size == 1) {
+			// <= 250 args, use the simplest form
+			msgFunc = strings[0].compile.value;
+		} {
+			// merge results from the split-up queries
+			msgFunc = String.streamContents({ |stream|
+				stream << "#{\n";
+				stream << "\tvar y" << suffix << " = Array(" << (names.size*2) << ");\n";
+				strings.do { |str|
+					stream << "\ty" << suffix
+					<< " = y" << suffix << ".addAll("
+					<< str << ".valueEnvir"
+					<< ");\n";
+				};
+				stream << "\ty" << suffix << ";\n}"
+			})
+			.compile.value
+		};
+	}
+
+	prMakeOneMsgFunc { |controlNames, suffix, index = 0, limit = 250|
+		var names = 0;
+		var scanned = 0;
+		var argStream, fillStream;
+		var controlName, name;
+		var comma = false;
+		var streamName = { |name|
+			var name2;
+			if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
+			argStream << name2;
+			fillStream << "\t" << name2 << " !? { x" << suffix
+			<< ".add('" << name << "').add(" << name2 << ") };\n";
+		};
+		if(index < controlNames.size) {
+			argStream = CollStream.new;
+			fillStream = CollStream.new;
+			while {
+				names < limit and: {
+					(index + scanned) < controlNames.size
+				}
+			} {
+				controlName = controlNames[index + scanned];
+				name = controlName.name.asString;
+				case
+				{ name == "gate" } {
+					hasGate = true;
+					if(msgFuncKeepGate) {
+						if (comma) { argStream << ", " } { comma = true };
+						streamName.(name);
+						names = names + 1;
+					}
+				}
+				// "?" is a placeholder for arrayed controls
+				{ name != "?" } {
+					if (comma) { argStream << ", " } { comma = true };
+					streamName.(name);
+					names = names + 1;
+				};
+				scanned = scanned + 1;
+			};
+			^[scanned, String.streamContents { |stream|
+				stream << "#{ arg " << argStream.collection << ";\n";
+				stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
+				stream << fillStream.collection;
+				stream << "\tx" << suffix << "\n}"
+			}]
+		} { ^nil }
 	}
 
 	msgFuncKeepGate_ { |bool = false|
@@ -570,9 +667,9 @@ SynthDescLib {
 		var	keyString = key.asString, dotIndex = keyString.indexOf($.), desc;
 		if(dotIndex.isNil) { ^synthDescs.at(key.asSymbol) };
 		if((desc = synthDescs[keyString[..dotIndex-1].asSymbol]).notNil
-				and: { desc.hasVariants })
-			{ ^desc }
-			{ ^synthDescs.at(key.asSymbol) }
+			and: { desc.hasVariants })
+		{ ^desc }
+		{ ^synthDescs.at(key.asSymbol) }
 	}
 	*match { |key| ^global.match(key) }
 
@@ -608,22 +705,31 @@ SynthDescLib {
 	}
 
 	readStream { arg stream, keepDefs=true, path;
-		var numDefs, version, resultSet;
-		stream.getInt32; // 'SCgf'
+		var numDefs, magic, version, resultSet;
+		magic = stream.getInt32; // 'SCgf'
+		if (magic != SynthDesc.headerMagic) {
+			Error("not a SynthDef").throw;
+		};
 		version = stream.getInt32; // version
+		if (version > 3) {
+			"SynthDef version % not supported".format(version).warn;
+			^Set.new;
+		};
 		numDefs = stream.getInt16;
 		resultSet = Set.new(numDefs);
 		numDefs.do {
 			var desc;
-			if(version >= 2, {
+			case { version == 3 } {
+				desc = SynthDesc.new.readSynthDef3(stream, keepDefs);
+			} { version == 2 } {
 				desc = SynthDesc.new.readSynthDef2(stream, keepDefs);
-			},{
+			} {
 				desc = SynthDesc.new.readSynthDef(stream, keepDefs);
-			});
+			};
 			synthDescs.put(desc.name.asSymbol, desc);
 			resultSet.add(desc);
-				// AbstractMDPlugin dynamically determines the md archive type
-				// from the file extension
+			// AbstractMDPlugin dynamically determines the md archive type
+			// from the file extension
 			if(path.notNil) {
 				desc.metadata = AbstractMDPlugin.readMetadata(path);
 			};
@@ -634,7 +740,7 @@ SynthDescLib {
 					desc.def.metadata.putAll(desc.metadata);
 				};
 				desc.def.metadata.put(\shouldNotSend, true)
-					.put(\loadPath, path);
+				.put(\loadPath, path);
 			};
 		};
 		resultSet.do({|newDesc| this.changed(\synthDescAdded, newDesc); });
@@ -642,15 +748,23 @@ SynthDescLib {
 	}
 
 	readDescFromDef {arg stream, keepDef=true, def, metadata;
-		var desc, numDefs, version;
-		stream.getInt32; // 'SCgf'
+		var desc, numDefs, magic, version;
+		magic = stream.getInt32; // 'SCgf'
+		if (magic != SynthDesc.headerMagic) {
+			Error("not a SynthDef").throw;
+		};
 		version = stream.getInt32; // version
+		if (version > 3) {
+			Error("SynthDef version % not supported".format(version)).throw;
+		};
 		numDefs = stream.getInt16; // should be 1
-		if(version >= 2, {
+		case { version == 3 } {
+			desc = SynthDesc.new.readSynthDef3(stream, keepDef);
+		} { version == 2} {
 			desc = SynthDesc.new.readSynthDef2(stream, keepDef);
-		},{
+		} {
 			desc = SynthDesc.new.readSynthDef(stream, keepDef);
-		});
+		};
 		if(keepDef) { desc.def = def };
 		if(metadata.notNil) { desc.metadata = metadata };
 		synthDescs.put(desc.name.asSymbol, desc);
@@ -679,17 +793,17 @@ AbstractMDPlugin {
 	}
 	*writeMetadataFile {}
 
-		// clearMetadata should ensure that only one MD file ever exists
-		// therefore we can check the subclasses in turn
-		// and return the first MD found
-		// every subclass should have a unique extension
+	// clearMetadata should ensure that only one MD file ever exists
+	// therefore we can check the subclasses in turn
+	// and return the first MD found
+	// every subclass should have a unique extension
 	*readMetadata { |path|
 		var	pathTmp, classList, i;
 		path = path.splitext[0] ++ ".";
 		classList = this.allSubclasses;
-			// ensure that SynthDescLib.mdPlugin is preferred for reading,
-			// with other plugins as a fallback
-			// it will also be possible to use Events or Protos as plugins this way
+		// ensure that SynthDescLib.mdPlugin is preferred for reading,
+		// with other plugins as a fallback
+		// it will also be possible to use Events or Protos as plugins this way
 		if((i = classList.indexOf(SynthDesc.mdPlugin)).notNil and: { i > 0 }) {
 			classList = classList.copy.swap(0, i);
 		} {

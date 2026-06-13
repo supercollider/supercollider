@@ -53,6 +53,11 @@
 #    include <endian.h>
 #    include <netinet/in.h>
 
+#elif defined(__EMSCRIPTEN__)
+
+#    include <endian.h>
+#    include <netinet/in.h>
+
 #else
 
 #    error cannot find endianess on this platform

@@ -24,8 +24,8 @@
 #include "PyrObjectProto.h"
 #include "PyrSymbol.h"
 #include "InitAlloc.h"
+#include <limits>
 #include <string.h>
-#include <stdexcept>
 #include "PyrLexer.h"
 
 #define PAUSETIMES 0
@@ -334,33 +334,43 @@ void PyrGC::BecomeImmutable(PyrObject* inObject) { inObject->obj_flags |= obj_im
 void DumpBackTrace(VMGlobals* g);
 
 HOT PyrObject* PyrGC::New(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inRunCollection) {
-    PyrObject* obj = nullptr;
-
-    if (inFlags & obj_permanent) {
+    if (inFlags & obj_permanent)
         return NewPermanent(inNumBytes, inFlags, inFormat);
-    }
 
 #ifdef GC_SANITYCHECK
     SanityCheck();
 #endif
 
     // obtain size info
+    const size_t alignedSize = (inNumBytes + kAlignMask) & ~kAlignMask; // 16 byte align
 
-    int32 alignedSize = (inNumBytes + kAlignMask) & ~kAlignMask; // 16 byte align
-    int32 numSlots = alignedSize / sizeof(PyrSlot);
-    numSlots = numSlots < 1 ? 1 : numSlots;
-    int32 sizeclass = LOG2CEIL(numSlots);
-    sizeclass = sc_min(sizeclass, kNumGCSizeClasses - 1);
+    const size_t numSlots = std::max<size_t>(alignedSize / sizeof(PyrSlot), 1);
 
-    int32 credit = 1LL << sizeclass;
+    // LOG2CEIL currently only accepts ints, so we make sure that numSlots does not exceed
+    // the maximum sizeclass value (which is guaranteed to fit into an int32).
+    static constexpr auto maxSizeClass = kNumGCSizeClasses - 1;
+
+    static constexpr size_t maxCredit = 1ULL << (maxSizeClass);
+    static_assert(maxCredit <= std::numeric_limits<int32>::max());
+
+    // If numSlots is smaller than maxSizeClass, it is also guaranteed to fit into an int32
+    // and so it is safe to call LOG2CEIL.
+    const int32 sizeclass = (numSlots >= maxCredit) ? maxSizeClass : LOG2CEIL(static_cast<int32>(numSlots));
+
+    // If the object fits inside a size band, credit is the true number of slots allocated.
+    // If is doesn't, then this is dealt with separately through classification as a 'large' object.
+    const size_t credit = 1ULL << sizeclass;
+
     mAllocTotal += credit;
+    mNumToScan += credit;
     mNumAllocs++;
 
-    mNumToScan += credit;
-    obj = Allocate(inNumBytes, sizeclass, inRunCollection);
+    // Now we can allocate.
+    PyrObject* obj = Allocate(inNumBytes, sizeclass, inRunCollection);
 
     obj->obj_format = inFormat;
     obj->obj_flags = inFlags & 255;
+    // The size of the object is set to zero and the data inside the object is uninitialized memory.
     obj->size = 0;
     obj->classptr = class_object;
     obj->gc_color = mWhiteColor;
@@ -380,17 +390,28 @@ HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int
 #endif
 
     // obtain size info
+    // obtain size info
+    const size_t alignedSize = (inNumBytes + kAlignMask) & ~kAlignMask; // 16 byte align
+    const size_t numSlots = std::max<size_t>(alignedSize / sizeof(PyrSlot), 1);
 
-    int32 alignedSize = (inNumBytes + kAlignMask) & ~kAlignMask; // 16 byte align
-    int32 numSlots = alignedSize / sizeof(PyrSlot);
-    numSlots = numSlots < 1 ? 1 : numSlots;
-    int32 sizeclass = LOG2CEIL(numSlots);
-    sizeclass = sc_min(sizeclass, kNumGCSizeClasses - 1);
+    // LOG2CEIL currently only accepts ints, so we make sure that numSlots does not exceed
+    // the maximum sizeclass value (which is guaranteed to fit into an int32).
+    static constexpr auto maxSizeClass = kNumGCSizeClasses - 1;
 
-    int32 credit = 1LL << sizeclass;
+    static constexpr size_t maxCredit = 1ULL << (maxSizeClass);
+    static_assert(maxCredit <= std::numeric_limits<int32>::max());
+
+    // If numSlots is smaller than maxSizeClass, it is also guaranteed to fit into an int32
+    // and so it is safe to call LOG2CEIL.
+    const int32 sizeclass = (numSlots >= maxCredit) ? maxSizeClass : LOG2CEIL(static_cast<int32>(numSlots));
+
+    // If the object fits inside a size band, credit is the true number of slots allocated.
+    // If is doesn't, then this is dealt with separately through classification as a 'large' object.
+    const size_t credit = 1ULL << sizeclass;
+
     mAllocTotal += credit;
-    mNumAllocs++;
     mNumToScan += credit;
+    mNumAllocs++;
 
     obj = Allocate(inNumBytes, sizeclass, inAccount);
 
@@ -487,7 +508,6 @@ void PyrGC::SweepBigObjects() {
             } while (!IsMarker(obj));
         }
     }
-    mCanSweep = false;
 }
 
 void PyrGC::CompletePartialScan(PyrObject* obj) {
@@ -649,8 +669,9 @@ void PyrGC::FullCollection() {
     SweepBigObjects();
 }
 
-void PyrGC::Collect(int32 inNumToScan) {
-    mNumToScan = sc_max(mNumToScan, inNumToScan);
+void PyrGC::Collect(uint64 inNumToScan) {
+    assert(inNumToScan <= std::numeric_limits<int64>::max());
+    mNumToScan = std::max<int64>(mNumToScan, inNumToScan);
     Collect(); // collect space
 }
 

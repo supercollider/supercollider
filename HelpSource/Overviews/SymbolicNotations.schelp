@@ -314,10 +314,14 @@ definitionlist::
 ## code:: f.(*argList) :: || evaluate the function with the arguments in an array
 ## code:: f.(anArgName: value) :: || keyword addressing of function or method arguments
 code::
-f = { |a, b| a * b };
-f.(2, 4);
-f.(*[2, 4]);
-f.(a: 2, b: 4);
+f = { |a, b| [a, b] };
+
+f.(2, 4);        // -> [ 2, 4 ]
+
+f.(*[2, 4]);     // -> [ 2, 4 ]
+f.([2, 4]);      // -> [ [ 2, 4 ], nil ]
+
+f.(a: 2, b: 4);  // -> [ 2, 4 ]
 ::
 ## code:: SomeClass.[index] :: || Equivalent to SomeClass.at(index) -- Instr.at is a good example
 ## code:: myObject.method(*array) :: || call the method with the arguments in an array

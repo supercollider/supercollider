@@ -60,6 +60,9 @@ int main(int argc, char* argv[]) {
 
     QApplication app(argc, argv);
 
+    // Enable shortcuts manually as they are disabled by default on macOS
+    QApplication::setAttribute(Qt::AA_DontShowShortcutsInContextMenus, false);
+
     QStringList arguments(QApplication::arguments());
     arguments.pop_front(); // application path
 

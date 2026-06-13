@@ -53,9 +53,7 @@ set(plugins "")
 set(supernova_plugins "")
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
-if(APPLE OR WIN32)
-	set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
-endif()
+set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
 
 foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
@@ -91,9 +89,11 @@ endif()
 
 if(NOT NO_X11)
 	if (APPLE)
-		add_library(UIUGens MODULE UIUGens.mm)
+		set(ui_sources UIUGens.mm)
+		add_library(UIUGens MODULE ${ui_sources})
 	else()
-		add_library(UIUGens MODULE UIUGens.cpp)
+		set(ui_sources UIUGens.cpp)
+		add_library(UIUGens MODULE ${ui_sources})
 		target_link_libraries(UIUGens PRIVATE ${PTHREADS_LIBRARY})
 	endif()
 
@@ -102,23 +102,31 @@ if(NOT NO_X11)
 	list(APPEND plugins UIUGens)
 endif()
 
-add_library(FFT_UGens MODULE
+set(FFT_sources
 	FFTInterfaceTable.cpp
 	FFT_UGens.cpp
 	PV_UGens.cpp
 	PartitionedConvolution.cpp
+)
+
+add_library(FFT_UGens MODULE
+	${FFT_sources}
 	${scplugin_common_sources}
 )
 
-add_library(PV_ThirdParty MODULE
+set(PV_ThirdParty_sources
 	Convolution.cpp
 	FFT2InterfaceTable.cpp
 	FeatureDetection.cpp
 	PV_ThirdParty.cpp
+)
+
+add_library(PV_ThirdParty MODULE
+	${PV_ThirdParty_sources}
 	${scplugin_common_sources}
 )
 
-add_library(ML_UGens MODULE
+set(ML_sources
 	ML.cpp
 	Loudness.cpp
 	BeatTrack.cpp
@@ -133,6 +141,10 @@ add_library(ML_UGens MODULE
 	ML.h
 	Onsets.h
 	onsetsds.h
+)
+
+add_library(ML_UGens MODULE
+	${ML_sources}
 	${scplugin_common_sources}
 )
 
@@ -365,3 +377,14 @@ set_property(TARGET ${plugins} ${supernova_plugins} PROPERTY FOLDER UnitGenerato
 
 set(plugins "${plugins}" PARENT_SCOPE)
 set(supernova_plugins "${supernova_plugins}" PARENT_SCOPE)
+
+if(STATIC_PLUGINS)
+	set(all_plugin_sources
+		${plugin_sources}
+		${FFT_sources}
+		${PV_ThirdParty_sources}
+		${ML_sources}
+		${diskio_sources}
+		${ui_sources}
+	PARENT_SCOPE)
+endif()

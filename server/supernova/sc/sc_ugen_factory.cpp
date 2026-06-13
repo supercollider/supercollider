@@ -35,13 +35,26 @@
 #include "ErrorMessage.hpp"
 #include "SC_Filesystem.hpp" // SC_PLUGIN_EXT
 
+// The generic .so extension has been deprecated in SC 3.15 so developers can ship shared libraries
+// along their plugins. We do the following to provide a smooth upgrade path:
+// If there has been a plugin with the SC_PLUGIN_EXT extension in the same folder or one of its parent
+// folders we simply ignore the .so file because we can assume it is a dependency.
+// Otherwise we load the .so file and post a warning.
+// We have to make an exception for 'top-level' search paths because system-wide extensions install their
+// plugin binaries in the same directory as the core plugins. Since the latter already use the new extension,
+// any plugins that still use the old .so extension would be skipped silently.
+// NOTE: we should remove this workaround in the future!
+#ifdef __linux__
+#    define LINUX_PLUGIN_WORKAROUND
+#endif
+
 namespace nova {
 
 std::unique_ptr<sc_ugen_factory> sc_factory;
 
 Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* parent, int parentIndex, World* world,
                              linear_allocator& allocator) {
-    const int buffer_length = world->mBufLength;
+    const int buffer_length = parent->mFullRate->mBufLength;
 
     const size_t output_count = unit_spec.output_specs.size();
 
@@ -69,10 +82,10 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
     /* initialize members from synth */
     unit->mParent = static_cast<Graph*>(parent);
     unit->mParentIndex = parentIndex;
-    if (unit_spec.rate == 2)
-        unit->mRate = &world->mFullRate;
+    if (unit_spec.rate == calc_FullRate)
+        unit->mRate = parent->mFullRate;
     else
-        unit->mRate = &world->mBufRate;
+        unit->mRate = parent->mBufRate;
 
     unit->mBufLength = unit->mRate->mBufLength;
 
@@ -88,7 +101,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
         w->mBuffer = nullptr;
         w->mScalarValue = 0;
 
-        if (unit->mCalcRate == 2) {
+        if (unit->mCalcRate == calc_FullRate) {
             /* allocate a new buffer */
             assert(unit_spec.buffer_mapping[i] >= 0);
             std::size_t buffer_id = unit_spec.buffer_mapping[i];
@@ -121,23 +134,18 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
     return unit;
 }
 
-bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func) {
-    sc_unitcmd_def* def = new sc_unitcmd_def(cmd_name, func);
-    unitcmd_set.insert(*def);
-    return true;
-}
-
-void sc_ugen_def::run_unit_command(const char* cmd_name, Unit* unit, struct sc_msg_iter* args) {
+void sc_ugen_def::run_unit_command(const char* cmd_name, Unit* unit, sc_msg_iter* args,
+                                   detail::endpoint_ptr const& endpoint) {
     unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, named_hash_hash(), named_hash_equal());
 
     if (it != unitcmd_set.end()) {
-        it->run(unit, args);
+        it->run(unit, args, endpoint);
     } else {
         std::cout << "can't find unit command: " << cmd_name << std::endl;
     }
 }
 
-sample* sc_bufgen_def::run(World* world, uint32_t buffer_index, struct sc_msg_iter* args) {
+sample* sc_bufgen_def::run(World* world, uint32_t buffer_index, sc_msg_iter* args) {
     SndBuf* buf = World_GetNRTBuf(world, buffer_index);
     sample* data = buf->data;
 
@@ -168,16 +176,6 @@ sc_ugen_def* sc_plugin_container::find_ugen(symbol const& name) {
     return &*it;
 }
 
-bool sc_plugin_container::register_ugen_command_function(const char* ugen_name, const char* cmd_name,
-                                                         UnitCmdFunc func) {
-    sc_ugen_def* def = find_ugen(symbol(ugen_name));
-    if (!def) {
-        std::cout << "unable to register ugen command: ugen '" << ugen_name << "' doesn't exist" << std::endl;
-        return false;
-    }
-    return def->add_command(cmd_name, func);
-}
-
 bool sc_plugin_container::register_cmd_plugin(const char* cmd_name, PlugInCmdFunc func, void* user_data) {
     cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, named_hash_hash(), named_hash_equal());
     if (it != cmdplugin_set.end()) {
@@ -191,8 +189,7 @@ bool sc_plugin_container::register_cmd_plugin(const char* cmd_name, PlugInCmdFun
     return true;
 }
 
-sample* sc_plugin_container::run_bufgen(World* world, const char* name, uint32_t buffer_index,
-                                        struct sc_msg_iter* args) {
+sample* sc_plugin_container::run_bufgen(World* world, const char* name, uint32_t buffer_index, sc_msg_iter* args) {
     bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == bufgen_set.end()) {
         std::cout << "unable to find buffer generator: " << name << std::endl;
@@ -203,34 +200,97 @@ sample* sc_plugin_container::run_bufgen(World* world, const char* name, uint32_t
 }
 
 
-bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, struct sc_msg_iter* args, void* replyAddr) {
+bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, sc_msg_iter* args,
+                                         detail::endpoint_ptr const& endpoint) {
     cmdplugin_set_type::iterator it = cmdplugin_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == cmdplugin_set.end()) {
         std::cout << "unable to find cmd plugin: " << name << std::endl;
         return false;
     }
 
-    it->run(world, args, replyAddr);
+    it->run(world, args, endpoint);
 
     return true;
 }
 
+void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir) {
+#ifdef LINUX_PLUGIN_WORKAROUND
+    load_plugin_folder(dir, true, false);
+#else
+    namespace fs = std::filesystem;
 
-void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& path) {
-    using namespace std::filesystem;
+    fs::directory_iterator end;
 
-    directory_iterator end;
-
-    if (!is_directory(path))
+    if (!fs::is_directory(dir))
         return;
 
-    for (directory_iterator it(path); it != end; ++it) {
-        if (is_regular_file(it->status()))
-            load_plugin(it->path());
-        if (is_directory(it->status()))
-            load_plugin_folder(it->path());
+    if (SC_Filesystem::instance().shouldNotCompileDirectory(dir)) {
+        return;
+    }
+
+    fs::directory_iterator iter(dir, fs::directory_options::follow_directory_symlink);
+    for (const auto& entry : iter) {
+        if (fs::is_regular_file(entry.status())) {
+            // Ignore files that don't have the extension of an SC plugin
+            if (entry.path().extension() == SC_PLUGIN_EXT) {
+                load_plugin(entry.path());
+            }
+        } else if (fs::is_directory(entry.status())) {
+            load_plugin_folder(entry.path());
+        }
+    }
+#endif
+}
+
+#ifdef LINUX_PLUGIN_WORKAROUND
+// if 'found_scx_file' is true, it means that we have alredy found a .scx file in one of the parent
+// directories. In this case, we treat all .so files as shared libraries and ignore them.
+void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool is_top_level, bool found_scx_file) {
+    namespace fs = std::filesystem;
+
+    fs::directory_iterator end;
+
+    if (!is_directory(dir))
+        return;
+
+    if (SC_Filesystem::instance().shouldNotCompileDirectory(dir)) {
+        return;
+    }
+
+    auto options = fs::directory_options::follow_directory_symlink;
+
+    // first only iterate over .scx files
+    for (const auto& entry : fs::directory_iterator(dir, options)) {
+        if (fs::is_regular_file(entry.status()) && entry.path().extension() == SC_PLUGIN_EXT) {
+            load_plugin(entry.path());
+            found_scx_file = true;
+        }
+    }
+
+    // then iterate over subdirectories and .so files
+    for (const auto& entry : fs::directory_iterator(dir, options)) {
+        if (fs::is_directory(entry.path())) {
+            load_plugin_folder(entry.path(), false, found_scx_file);
+        } else if ((is_top_level || !found_scx_file) && entry.path().extension() == ".so") {
+            // No .scx plugins were found in this directory or any parent directory -> assume the .so file is a plugin.
+            load_plugin(entry.path());
+            std::cout << "WARNING: '" << SC_Codecvt::path_to_utf8_str(entry.path()).c_str()
+                      << "': the .so extension has been deprecated!" << std::endl;
+
+            static bool didWarn = false;
+            if (!didWarn) {
+                std::cout << "*** Please try to upgrade any SC extension where the UGen plugin still has the .so "
+                          << "extension.\n"
+                          << "*** If you already have the latest version, please ask the developer to update the "
+                          << "extension.\n"
+                          << "*** To suppress this warning in the meantime, you can manually change the extensions to "
+                          << ".scx." << std::endl;
+                didWarn = true;
+            }
+        }
     }
 }
+#endif // LINUX_PLUGIN_WORKAROUND
 
 static bool check_api_version(int (*api_version)(), std::string const& filename) {
     using namespace std;
@@ -251,13 +311,6 @@ static bool check_api_version(int (*api_version)(), std::string const& filename)
 
 #ifdef DLOPEN
 void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
-    using namespace std;
-
-    // Ignore files that don't have the extension of an SC plugin
-    if (path.extension() != SC_PLUGIN_EXT) {
-        return;
-    }
-
     void* handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
     if (handle == nullptr)
         return;
@@ -280,7 +333,7 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
 
     void* load_symbol = dlsym(handle, "load");
     if (!load_symbol) {
-        cout << "Problem when loading plugin: \"load\" function undefined" << path << endl;
+        std::cout << "Problem when loading plugin: \"load\" function undefined" << path << std::endl;
         dlclose(handle);
         return;
     }
@@ -307,14 +360,13 @@ void sc_ugen_factory::close_handles(void) {
 #elif defined(_WIN32)
 
 void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
-    // Ignore files that don't have the extension of an SC plugin
-    if (path.extension() != SC_PLUGIN_EXT) {
-        return;
-    }
-
+    // This allows plugins to place DLL dependencies in the same directory.
+    SetDllDirectoryW(path.parent_path().c_str());
     // std::cout << "try open plugin: " << path << std::endl;
-    const char* filename = path.string().c_str();
     HINSTANCE hinstance = LoadLibraryW(path.wstring().c_str());
+    // Reset DLL directory
+    SetDllDirectoryW(nullptr);
+
     if (!hinstance) {
         wchar_t* s;
         DWORD lastErr = GetLastError();
@@ -329,7 +381,7 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
     typedef int (*info_function)();
     info_function api_version = reinterpret_cast<info_function>(GetProcAddress(hinstance, "api_version"));
 
-    if (!check_api_version(api_version, filename)) {
+    if (!check_api_version(api_version, path.string())) {
         FreeLibrary(hinstance);
         return;
     }
@@ -352,7 +404,7 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
         FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                        nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
 
-        std::cout << "*** ERROR: GetProcAddress err " << SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str() << std::endl;
+        std::cout << "*** ERROR: GetProcAddress err " << SC_Codecvt::utf16_wcstr_to_utf8_string(s) << std::endl;
         LocalFree(s);
 
         FreeLibrary(hinstance);

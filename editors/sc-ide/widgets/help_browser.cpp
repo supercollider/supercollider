@@ -157,7 +157,7 @@ void HelpBrowser::createActions() {
     ovrAction->addToWidget(this);
 
     mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Zoom"), this);
-    connect(ovrAction, &QAction::triggered, this, &HelpBrowser::zoomOut);
+    connect(ovrAction, &QAction::triggered, this, &HelpBrowser::resetZoom);
     ovrAction->addToWidget(this);
 
     // eval actions are added to mWebView->focusProxy() in onPageLoad()
@@ -315,8 +315,19 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
             break;
         }
         case QEvent::ShortcutOverride: {
-            event->accept();
-            return true;
+            // check if any widget action shortcut matches the observed keyEvent
+            // if yes, capture the event, else, bubble up the event
+            auto keyEvent = static_cast<QKeyEvent*>(event);
+
+            auto sequence = OverridingAction::keySequence(keyEvent);
+
+            for (int i = 0; i < ActionCount; ++i) {
+                if (mActions[i] && mActions[i]->shortcuts().contains(sequence)) {
+                    event->accept();
+                    return true;
+                }
+            }
+            break;
         }
         default:
             break;

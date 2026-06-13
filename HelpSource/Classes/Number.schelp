@@ -74,6 +74,9 @@ argument:: function
 a link::Classes/Function:: which is passed two arguments, the first which is an number from this to
 argument endval, and the second which is a number from zero to the number of iterations minus one.
 
+discussion::
+See link::Reference/Conditional-Execution::.
+
 method:: forBy
 Calls strong::function:: for numbers from this up to endval stepping each time by step.
 argument:: endValue
@@ -83,6 +86,9 @@ a link::Classes/Number::.
 argument:: function
 a link::Classes/Function:: which is passed two arguments, the first which is an number from this to
 endval, and the second which is a number from zero to the number of iterations minus one.
+
+discussion::
+See link::Reference/Conditional-Execution::.
 
 method:: forSeries
 Calls strong::function:: for numbers from this up to endval stepping each time by a step specified by second.

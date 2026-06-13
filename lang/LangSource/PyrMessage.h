@@ -33,7 +33,9 @@ void initUniqueMethods();
 void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, std::int64_t totalSuppliedArgs,
                            std::int64_t numKwArgsSupplied, bool isMethod, PyrObject* optionalEnvirLookup = nullptr);
 
-void executeMethod(VMGlobals* g, PyrBlock* meth, std::int64_t totalNumArgsPushed, std::int64_t numKwArgsPushed);
+// Creates frame, filling it with arguments, and mutates the stack and instruction pointers to execute it.
+// Return to the main interpeter function to execute the method.
+void setupForMethod(VMGlobals* g, PyrBlock* meth, std::int64_t totalNumArgsPushed, std::int64_t numKwArgsPushed);
 
 void sendMessage(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed);
 void sendSuperMessage(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed);

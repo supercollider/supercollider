@@ -394,7 +394,7 @@ Image {
 		^this.primitiveFailed
 	}
 
-	prNewSVG { arg path;
+	prNewSVG { |path, size, element|
 		_QImage_NewSVG
 		^this.primitiveFailed
 	}

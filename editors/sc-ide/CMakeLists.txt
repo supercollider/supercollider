@@ -223,7 +223,6 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${YAMLCPP_INCLUDE_DIR})
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
 # Needed for auto-generated forms headers:
@@ -326,7 +325,7 @@ endif()
 
 target_link_libraries( libscide PUBLIC
     ${QT_IDE_LIBRARIES}
-    ${YAMLCPP_LIBRARY}
+    yaml-cpp
     oscpack
 )
 
@@ -396,9 +395,9 @@ if(APPLE)
 
 elseif(WIN32)
 
-    if(NOT MSVC)
+    if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
-    endif(NOT MSVC)
+    endif()
 
     if(MSYS)
       add_custom_command(TARGET SuperCollider
@@ -467,7 +466,12 @@ endif()
 # See https://doc.qt.io/qt-5/osx-deployment.html for macdeployqt
 if(APPLE OR WIN32)
     if(APPLE)
-        find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
+            set(DEPLOY_PROG_NAME "macdeployqt6")
+        else()
+            set(DEPLOY_PROG_NAME "macdeployqt")
+        endif()
+        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
@@ -548,7 +552,12 @@ if(APPLE OR WIN32)
                 verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
         endif()
     else() # WIN32
-        find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
+            set(DEPLOY_PROG_NAME "windeployqt6")
+        else()
+            set(DEPLOY_PROG_NAME "windeployqt")
+        endif()
+        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 --verbose 1 --no-compiler-runtime
                 \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
@@ -583,3 +592,7 @@ endif()
 if (LINUX)
   install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
 endif()
+
+
+set_property(TARGET libscide PROPERTY FOLDER Libs)
+set_property(TARGET update_ide_translations PROPERTY FOLDER Util)

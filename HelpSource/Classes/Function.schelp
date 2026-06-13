@@ -390,6 +390,9 @@ x.postln;
 )
 ::
 
+discussion::
+See link::Reference/Conditional-Execution::.
+
 method::matchItem
 
 Interface shared with other classes that implements pattern matching. See also: matchItem.

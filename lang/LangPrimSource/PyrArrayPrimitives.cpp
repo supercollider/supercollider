@@ -2487,8 +2487,9 @@ int arrayLevenshteinDistance(PyrSlot* result, const PyrObject* thisArray, const 
 }
 
 int prArrayLevenshteinDistance(struct VMGlobals* g, int numArgsPushed) {
-    auto* slotThatArray = g->sp;
-    auto* slotThisArray = g->sp - 1;
+    // compareFunc = g->sp;  ignored
+    auto* slotThatArray = g->sp - 1;
+    auto* slotThisArray = g->sp - 2;
 
     if (NotObj(slotThisArray) || NotObj(slotThatArray))
         return errWrongType;
@@ -2759,7 +2760,7 @@ void initArrayPrimitives() {
     definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
     definePrimitive(base, index++, "_ArrayUnlace", prArrayUnlace, 3, 0);
 
-    definePrimitive(base, index++, "_ArrayLevenshteinDistance", prArrayLevenshteinDistance, 2, 0);
+    definePrimitive(base, index++, "_ArrayLevenshteinDistance", prArrayLevenshteinDistance, 3, 0);
     definePrimitive(base, index++, "_ArrayIsRectangular", prArrayIsRectangular, 1, 0);
 
     definePrimitive(base, index++, "_ArrayHungarianSolve", prArrayHungarianSolve, 1, 0);
