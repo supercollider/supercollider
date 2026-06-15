@@ -173,7 +173,7 @@ File : UnixFILE {
 
 
 Pipe : UnixFILE {
-	var pid;
+	var <pid;
 
 	// pipe stdin to, or stdout from, a unix shell command.
 	*new { arg commandLine, mode;
