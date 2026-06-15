@@ -384,7 +384,7 @@ SCDocNode {
 SCDoc {
 
 	// Increment this whenever we make a change to the SCDoc system or its static files so that all help-files should be processed again
-	classvar version = 76;
+	classvar version = 77;
 
 	classvar <helpTargetDir;
 	classvar <helpTargetUrl;

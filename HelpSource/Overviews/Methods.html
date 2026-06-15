@@ -160,7 +160,7 @@ function showMethod(mname, node) {
 }
 
 function did_load() {
-    var hash = unescape(window.location.hash.slice(1));
+    var hash = decodeURIComponent(window.location.hash.slice(1));
 
     helpRoot=".."; fixTOC();
 
@@ -170,7 +170,7 @@ function did_load() {
 }
 
 function showmethods() {
-    var hash = unescape(window.location.hash.slice(1));
+    var hash = decodeURIComponent(window.location.hash.slice(1));
     var res = document.getElementById("methods");
     res.innerHTML = "";
 
