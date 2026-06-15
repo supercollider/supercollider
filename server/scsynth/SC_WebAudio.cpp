@@ -90,6 +90,7 @@ WorldOptions toScWorld(ScWebAudioOptions* userOptions) {
     options.mNumOutputBusChannels = userOptions->numOutputBusChannels;
     options.mNumControlBusChannels = userOptions->numControlBusChannels;
     options.mBufLength = userOptions->bufLength;
+    options.mRealTimeMemorySize = userOptions->realTimeMemorySize;
 
     // hardcoded options
     options.mLoadGraphDefs = false;
