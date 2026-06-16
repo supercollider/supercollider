@@ -43,7 +43,7 @@ TestServer_dumpTree : UnitTest {
             logFile = File(logPath, "r");
 			line = logFile.getLine;
 			while ({ line.notNil }) {
-				// line.postln; // inspect output
+				line.postln; // inspect output
 				// ignore output until we see matching start
 				if (line.beginsWith("NODE TREE")) {nodeTreeOutputDectected = true};
 				// once we see matching beginning, capture output
