@@ -1,21 +1,22 @@
 TestServer_dumpTree : UnitTest {
 
-	var pipe;
+	var pid;
 
 	setUp {
 	}
 
 	tearDown {
-		if (pipe.notNil) {
-			pipe.close;
-		};
+		pid !? {thisProcess.platform.killProcessByID(pid, true, true)};
 	}
 
 	getOutput { |program|
 		var actualOutput = List[],
 		oscPath = PathName.tmp +/+ "dumpTree_test.osc",
 		outPath = PathName.tmp +/+ "dummy_out.aiff",
-		cmd, line, score, nodeTreeOutputDectected = false;
+		logPath = PathName.tmp +/+ "nrt_output.log",
+		cond = CondVar(),
+		nodeTreeOutputDectected = false,
+		cmd, line, score, logFile;
 
 		score = Score();
 		// this overwrites the automatically created default group, so that we only get the root group in the output
@@ -26,25 +27,37 @@ TestServer_dumpTree : UnitTest {
 		// write osc score to a file
 		score.writeOSCFile(oscPath);
 		// construct the nrt command
-		cmd = "% -N % _ % 44100 AIFF int16".format(program, oscPath.quote, outPath.quote);
-		// run it and capture stdout
-		pipe = Pipe.new(cmd, "r");
-		line = pipe.getLine;
-		while ({ line.notNil }) {
-			line.postln; // inspect output
-			// ignore output until we see matching start
-			if (line.beginsWith("NODE TREE")) {nodeTreeOutputDectected = true};
-			// once we see matching beginning, capture output
-			if (nodeTreeOutputDectected) {actualOutput.add(line)};
-			// stop capturing when we see matching end
-			if (line.beginsWith("END NODE")) {nodeTreeOutputDectected = false};
-			line = pipe.getLine;
+		cmd = "% -N % _ % 44100 AIFF int16 > % 2>&1".format(program, oscPath.quote, outPath.quote, logPath.quote);
+		// protect against quote-stripping on Windows
+		if(thisProcess.platform.name == \windows) {cmd = cmd.quote};
+		// run command and capture output to a log file
+		pid = cmd.unixCmd({pid = nil; cond.signalOne});
+		cond.waitFor(60);
+		// failsafe shutdown
+		pid !? {
+			"server process % (pid %) took too long, shutting down...".format(program.quote, pid).warn;
+			thisProcess.platform.killProcessByID(pid, true, true)
+		};
+		// read output from the log file
+		if(File.exists(logPath)) {
+            logFile = File(logPath, "r");
+			line = logFile.getLine;
+			while ({ line.notNil }) {
+				// line.postln; // inspect output
+				// ignore output until we see matching start
+				if (line.beginsWith("NODE TREE")) {nodeTreeOutputDectected = true};
+				// once we see matching beginning, capture output
+				if (nodeTreeOutputDectected) {actualOutput.add(line)};
+				// stop capturing when we see matching end
+				if (line.beginsWith("END NODE")) {nodeTreeOutputDectected = false};
+				line = logFile.getLine;
+			};
+			logFile.close;
 		};
 		// cleanup
-		pipe.close;
-		if (File.exists(oscPath)) { File.delete(oscPath)};
-		if (File.exists(outPath)) { File.delete(outPath)};
-
+		[oscPath, outPath, logPath].do({|path|
+            if(File.exists(path)) {File.delete(path)};
+		});
 		^actualOutput;
 	}
 
