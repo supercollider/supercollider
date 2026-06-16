@@ -142,9 +142,9 @@ Does a string comparison based on LINK::Classes/Platform#*pathSeparator::, and w
 Since it solely relies on string comparison, this will not check the context of the filesystem to verify if the returned entries are actually folders.
 
 code::
-/* Test with a file */
+/* a separator at the beginning; no separator at the end */
 
-// a separator at the beginning; no separator at the end:
+// test with a file:
 (
 var filePath = ExampleFiles.child.debug;
 var myPath = PathName.new(filePath);
@@ -152,32 +152,7 @@ myPath.postln;
 myPath.allFolders; // includes the top-level directory; excludes a11wlk01.wav
 )
 
-(// separators at the beginning and at the end:
-var filePath = (ExampleFiles.child ++ "/").debug;
-var myPath = PathName.new(filePath);
-myPath.postln;
-myPath.allFolders; // includes both the top-level directory and a11wlk01.wav
-)
-
-// no separators at the beginning or the end:
-(
-var filePath = (ExampleFiles.child.replaceRegexp("^/", "")).debug;
-var myPath = PathName.new(filePath);
-myPath.postln; // PathName(filePath) adds a separator at the beginning when there is no separator at the end
-myPath.allFolders; // includes the top-level directory; excludes a11wlk01.wav
-)
-
-// no separator at the beginning; a separator at the end:
-(
-var filePath = (ExampleFiles.child.replaceRegexp("^/", "") ++ "/").debug;
-var myPath = PathName.new(filePath);
-myPath.postln; // PathName(filePath) does not add a separator at the beginning when there is one at the end
-myPath.allFolders; // excludes the top-level directory; includes a11wlk01.wav
-)
-
-/* Test with a folder*/
-
-// a separator at the beginning; no separator at the end:
+// test with a folder:
 (
 var folderPath = ExampleFiles.child.dirname.debug;
 var myPath = PathName.new(folderPath);
@@ -185,7 +160,18 @@ myPath.postln;
 myPath.allFolders; // includes the top-level directory; excludes the bottom-most folder
 )
 
-// separators at the beginning and at the end:
+
+/* separators at the beginning and at the end */
+
+// test with a file:
+(
+var filePath = (ExampleFiles.child ++ "/").debug;
+var myPath = PathName.new(filePath);
+myPath.postln;
+myPath.allFolders; // includes both the top-level directory and a11wlk01.wav
+)
+
+// test with a folder:
 (
 var folderPath = (ExampleFiles.child.dirname ++ "/").debug;
 var myPath = PathName.new(folderPath);
@@ -193,20 +179,58 @@ myPath.postln;
 myPath.allFolders; // includes both the top-level directory and the bottom-most folder
 )
 
-// no separators at the beginning or the end:
+
+/* no separators at the beginning or the end */
+
+// test with a file:
+(
+var filePath = (ExampleFiles.child.replaceRegexp("^/", "")).debug;
+var myPath = PathName.new(filePath);
+myPath.postln;
+
+myPath.allFolders; 
+// linux & macOS: excludes both the top-level directory and a11wlk01.wav
+// Windows: includes the top-level directory; excludes a11wlk01.wav
+// See the PathName method .diskName
+)
+
+// test with a folder:
 (
 var folderPath = (ExampleFiles.child.dirname.replaceRegexp("^/", "")).debug;
 var myPath = PathName.new(folderPath);
-myPath.postln; // PathName(folderPath) adds a separator at the beginning when there is no separator at the end
-myPath.allFolders; // includes the top-level directory; excludes the bottom-most folder
+myPath.postln;
+
+myPath.allFolders; 
+// linux & macOS: excludes both the top-level directory and the bottom-most folder
+// Windows: includes the top-level directory; excludes the bottom-most folder
+// See the PathName method .diskName
 )
 
-// no separator at the beginning; a separator at the end:
+
+/* no separator at the beginning; a separator at the end */
+
+// test with a file:
+(
+var filePath = (ExampleFiles.child.replaceRegexp("^/", "") ++ "/").debug;
+var myPath = PathName.new(filePath);
+myPath.postln;
+
+myPath.allFolders; 
+// linux & macOS: excludes the top-level directory; includes a11wlk01.wav
+// Windows: includes both the top-level directory and a11wlk01.wav
+// See the PathName method .diskName
+)
+
+// test with a folder:
 (
 var folderPath = (ExampleFiles.child.dirname.replaceRegexp("^/", "") ++ "/").debug;
 var myPath = PathName.new(folderPath);
-myPath.postln; // PathName(folderPath) adds a separator at the beginning; PathName(folderPath) removes the separator at the end
-myPath.allFolders; // includes the top-level directory; excludes a11wlk01.wav
+myPath.postln;
+
+myPath.allFolders; 
+// linux & macOS: excludes the top-level directory; includes the bottom-most folder
+// Windows: includes both the top-level directory and the bottom-most folder
+// See the PathName method .diskName
 )
 ::
 
@@ -224,24 +248,28 @@ var filePath_wo_extension   = basePath +/+ filePath_original.fileNameWithoutExte
 [basePath, folderPath_wo_extension, folderPath_w_extension].do { |path| path.mkdir };
 
 [filePath_w_extension, filePath_wo_extension].do { |path|
-	File.copy(filePath_original.fullPath, path)
+    File.copy(filePath_original.fullPath, path)
 };
 
 [
-	["FILE with extension:\n\t", filePath_w_extension],
-	["FILE without extension:\n\t", filePath_wo_extension],
-	["FOLDER without extension:\n\t", folderPath_wo_extension],
-	["FOLDER with extension:\n\t", folderPath_w_extension],
+    ["FILE with extension:\n\t", filePath_w_extension],
+    ["FILE without extension:\n\t", filePath_wo_extension],
+    ["FOLDER without extension:\n\t", folderPath_wo_extension],
+    ["FOLDER with extension:\n\t", folderPath_w_extension],
 ].do { |array|
-	var code = "PathName(" ++ array[1].quote ++ ").allFolders";
-	(array[0] ++ code ++ "\n\t\t" ++ code.interpret.asString).postln;
-	(
-		if(array[0].contains("FILE")) {
-			"\t\t     <- All folder names are included."
-		} {
-			"\t\t     <- The folder name \"" ++ array[1].basename++ "\" is excluded."
-		}
-		++ "\n").postln
+	var path = Platform.case(
+		\windows, { array[1].replace("/", "\\").replace("\\", "\\\\") },
+		{ array[1] }
+	);
+	var code = "PathName(" ++ path.quote ++ ").allFolders";
+    (array[0] ++ code ++ "\n\t\t" ++ code.interpret.asString).postln;
+    (
+        if(array[0].contains("FILE")) {
+            "\t\t     <- All folder names are included."
+        } {
+            "\t\t     <- The folder name \"" ++ array[1].basename++ "\" is excluded."
+        }
+        ++ "\n").postln
 };
 
 basePath.openOS;
@@ -252,7 +280,12 @@ File.deleteAll(~basePath) // Evaluate this to remove the files and folders creat
 ::
 
 method::diskName
-if path is an absolute path, returns the root directory on the storage; else a blank string.
+if path is an absolute path, returns
+list::
+## the top-level directory of the path on linux and macOS,
+## the drive letter on Windows
+::
+else a blank string.
 code::
 ( // note the / at the start is excluded
 var myPath;
@@ -264,9 +297,9 @@ returns on Linux:
 teletype::
 -> usr
 ::
-returns on macOS (currently does not return the correct root directory on the storage since a separator is prefixed by PathName):
+returns on macOS (The result below assumes that SuperCollider.app is located in the teletype::Applications:: folder.):
 teletype::
-->
+-> Applications
 ::
 returns on Windows:
 teletype::
@@ -280,15 +313,7 @@ myPath = PathName.new( "/test" +/+ ExampleFiles.child);
 myPath.diskName;
 )
 ::
-returns on Linux:
-teletype::
-->
-::
-returns on macOS:
-teletype::
-->
-::
-returns on Windows:
+returns on all platforms:
 teletype::
 ->
 ::
