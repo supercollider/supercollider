@@ -138,42 +138,80 @@ myPath.filesDo{ |afile| afile.postln };
 ::
 
 method::allFolders
-Returns a list of all folder names in the pathname.
-list::
-## If the path ends in a file, all folders in the path are returned.
-## If the path ends in a folder, the final folder is excluded.
-::
-note::
-Appending a slash (code::/::) to the path is not recommended, as it changes the behavior described above.
-::
+Does a string comparison based on LINK::Classes/Platform#*pathSeparator::, and will return all entries which are surrounded by this separator.
+Since it solely relies on string comparison, this will not check the context of the filesystem to verify if the returned entries are actually folders.
 
 code::
+/* Test with a file */
+
+// a separator at the beginning; no separator at the end:
 (
-var myPath;
-myPath = PathName.new(ExampleFiles.child);
-myPath.allFolders.postln;
+var filePath = ExampleFiles.child.debug;
+var myPath = PathName.new(filePath);
+myPath.postln;
+myPath.allFolders; // includes the top-level directory; excludes a11wlk01.wav
 )
 
-(
-var myPath;
-myPath = PathName.new(ExampleFiles.child.dirname);
-myPath.allFolders.postln;
+(// separators at the beginning and at the end:
+var filePath = (ExampleFiles.child ++ "/").debug;
+var myPath = PathName.new(filePath);
+myPath.postln;
+myPath.allFolders; // includes both the top-level directory and a11wlk01.wav
 )
 
+// no separators at the beginning or the end:
 (
-var myPath;
-myPath = PathName.new(ExampleFiles.child ++ "/");
-myPath.allFolders.postln;
+var filePath = (ExampleFiles.child.replaceRegexp("^/", "")).debug;
+var myPath = PathName.new(filePath);
+myPath.postln; // PathName(filePath) adds a separator at the beginning when there is no separator at the end
+myPath.allFolders; // includes the top-level directory; excludes a11wlk01.wav
 )
 
+// no separator at the beginning; a separator at the end:
 (
-var myPath;
-myPath = PathName.new(ExampleFiles.child.dirname ++ "/");
-myPath.allFolders.postln;
+var filePath = (ExampleFiles.child.replaceRegexp("^/", "") ++ "/").debug;
+var myPath = PathName.new(filePath);
+myPath.postln; // PathName(filePath) does not add a separator at the beginning when there is one at the end
+myPath.allFolders; // excludes the top-level directory; includes a11wlk01.wav
+)
+
+/* Test with a folder*/
+
+// a separator at the beginning; no separator at the end:
+(
+var folderPath = ExampleFiles.child.dirname.debug;
+var myPath = PathName.new(folderPath);
+myPath.postln;
+myPath.allFolders; // includes the top-level directory; excludes the bottom-most folder
+)
+
+// separators at the beginning and at the end:
+(
+var folderPath = (ExampleFiles.child.dirname ++ "/").debug;
+var myPath = PathName.new(folderPath);
+myPath.postln;
+myPath.allFolders; // includes both the top-level directory and the bottom-most folder
+)
+
+// no separators at the beginning or the end:
+(
+var folderPath = (ExampleFiles.child.dirname.replaceRegexp("^/", "")).debug;
+var myPath = PathName.new(folderPath);
+myPath.postln; // PathName(folderPath) adds a separator at the beginning when there is no separator at the end
+myPath.allFolders; // includes the top-level directory; excludes the bottom-most folder
+)
+
+// no separator at the beginning; a separator at the end:
+(
+var folderPath = (ExampleFiles.child.dirname.replaceRegexp("^/", "") ++ "/").debug;
+var myPath = PathName.new(folderPath);
+myPath.postln; // PathName(folderPath) adds a separator at the beginning; PathName(folderPath) removes the separator at the end
+myPath.allFolders; // includes the top-level directory; excludes a11wlk01.wav
 )
 ::
+
 discussion::
-When the path does not end with a slash, the method handles the path consistently, regardless of whether the final component contains a file extension or not.
+When the path does not end with a seperator, the method handles the path consistently, regardless of whether the final component contains a file extension or not.
 code::
 (
 var filePath_original       = PathName(ExampleFiles.child);
@@ -214,19 +252,45 @@ File.deleteAll(~basePath) // Evaluate this to remove the files and folders creat
 ::
 
 method::diskName
-if path is an absolute path, returns the disk name; else a blank string.
+if path is an absolute path, returns the root directory on the storage; else a blank string.
 code::
-(
+( // note the / at the start is excluded
 var myPath;
-myPath = PathName.new(ExampleFiles.child);
-myPath.diskName.postln;
+myPath = PathName.new(ExampleFiles.child.replaceRegexp("^/", ""));
+myPath.diskName;
 )
+::
+returns on Linux:
+teletype::
+-> usr
+::
+returns on macOS (currently does not return the correct root directory on the storage since a separator is prefixed by PathName):
+teletype::
+->
+::
+returns on Windows:
+teletype::
+-> C:
+::
 
+code::
 ( // note the / at the start
 var myPath;
-myPath = PathName.new("/" ++ ExampleFiles.child);
-myPath.diskName.postln;
+myPath = PathName.new( "/test" +/+ ExampleFiles.child);
+myPath.diskName;
 )
+::
+returns on Linux:
+teletype::
+->
+::
+returns on macOS:
+teletype::
+->
+::
+returns on Windows:
+teletype::
+->
 ::
 
 method::+/+
