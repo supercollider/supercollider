@@ -45,8 +45,7 @@ TestServer_dumpTree : UnitTest {
 				// ignore output until we see matching start
 				if (line.beginsWith("NODE TREE")) {nodeTreeOutputDectected = true};
 				// once we see matching beginning, capture output
-				// strip carriage return because of Windows
-				if (nodeTreeOutputDectected) {actualOutput.add(line.replace("\r", ""))};
+				if (nodeTreeOutputDectected) {actualOutput.add(line)};
 				// stop capturing when we see matching end
 				if (line.beginsWith("END NODE")) {nodeTreeOutputDectected = false};
 				line = logFile.getLine;
