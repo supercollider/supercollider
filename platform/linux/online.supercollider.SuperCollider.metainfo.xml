@@ -12,7 +12,7 @@
   <url type="bugtracker">https://github.com/supercollider/supercollider/issues/</url>
   <url type="help">https://scsynth.org/</url>
   <url type="contribute">https://github.com/supercollider/supercollider/blob/develop/CONTRIBUTING.md</url>
-  <launchable type="desktop-id">SuperColliderIDE.desktop</launchable>
+  <launchable type="desktop-id">online.supercollider.SuperCollider.desktop</launchable>
 
   <description>
     <p>
