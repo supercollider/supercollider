@@ -1,0 +1,57 @@
+name: Build Flatpak
+on:
+  workflow_call:
+    inputs:
+      sc-version:
+        required: true
+        type: string
+
+jobs:
+  build-flatpak:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install flatpak and flatpak-builder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+
+      - name: Add Flathub remote
+        run: |
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+      - name: Install SDK and runtime
+        run: |
+          flatpak install --user --noninteractive \
+            flathub org.kde.Platform//6.10 \
+            org.kde.Sdk//6.10 \
+            io.qt.qtwebengine.BaseApp//6.10
+
+      - name: Build Flatpak
+        run: |
+          flatpak-builder \
+            --force-clean \
+            --repo=repo builddir \
+            platform/linux/online.supercollider.SuperCollider.yml
+
+      - name: Create bundle
+        run: |
+          flatpak build-bundle repo "SuperCollider-${{ inputs.sc-version }}-${{ matrix.arch }}.flatpak" online.supercollider.SuperCollider
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.arch }}.flatpak"
+          path: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.arch }}.flatpak"

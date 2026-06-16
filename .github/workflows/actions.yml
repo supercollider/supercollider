@@ -64,6 +64,13 @@ jobs:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
+  build-flatpak:
+    needs: [lint, version-getter]
+    uses: ./.github/workflows/build_flatpak.yml
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
+
   build-macos:
     needs: [lint, version-getter]
     uses: ./.github/workflows/build_macos.yml
