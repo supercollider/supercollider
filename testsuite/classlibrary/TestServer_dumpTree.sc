@@ -22,14 +22,14 @@ TestServer_dumpTree : UnitTest {
 		// this overwrites the automatically created default group, so that we only get the root group in the output
 		score.score = ([
 			[0.0, ['/g_dumpTree', 0, 0]],
-			[0.1, [0]] // stop
+			[2.0, [0]] // stop
 		]);
 		// write osc score to a file
 		score.writeOSCFile(oscPath);
 		// construct the nrt command
 		cmd = "% -N % _ % 44100 AIFF int16 > % 2>&1".format(program, oscPath.quote, outPath.quote, logPath.quote);
 		// run command and capture output to a log file
-		pid = cmd.unixCmd({pid = nil; cond.signalOne});
+		pid = cmd.unixCmd({|e| "exit code: %\n".postf(e); pid = nil; cond.signalOne});
 		cond.waitFor(60);
 		// failsafe shutdown
 		pid !? {
@@ -44,6 +44,8 @@ TestServer_dumpTree : UnitTest {
 				line.postln; // inspect output
 				// ignore output until we see matching start
 				if (line.beginsWith("NODE TREE")) {nodeTreeOutputDectected = true};
+				// strip carriage return on Windows
+				if(thisProcess.platform.name == \windows) {line = line.replace("\r", "")};
 				// once we see matching beginning, capture output
 				if (nodeTreeOutputDectected) {actualOutput.add(line)};
 				// stop capturing when we see matching end
