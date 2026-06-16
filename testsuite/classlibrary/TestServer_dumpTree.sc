@@ -28,8 +28,6 @@ TestServer_dumpTree : UnitTest {
 		score.writeOSCFile(oscPath);
 		// construct the nrt command
 		cmd = "% -N % _ % 44100 AIFF int16 > % 2>&1".format(program, oscPath.quote, outPath.quote, logPath.quote);
-		// protect against quote-stripping on Windows
-		if(thisProcess.platform.name == \windows) {cmd = cmd.quote};
 		// run command and capture output to a log file
 		pid = cmd.unixCmd({pid = nil; cond.signalOne});
 		cond.waitFor(60);
@@ -47,7 +45,8 @@ TestServer_dumpTree : UnitTest {
 				// ignore output until we see matching start
 				if (line.beginsWith("NODE TREE")) {nodeTreeOutputDectected = true};
 				// once we see matching beginning, capture output
-				if (nodeTreeOutputDectected) {actualOutput.add(line)};
+				// strip carriage return because of Windows
+				if (nodeTreeOutputDectected) {actualOutput.add(line.replace("\r", ""))};
 				// stop capturing when we see matching end
 				if (line.beginsWith("END NODE")) {nodeTreeOutputDectected = false};
 				line = logFile.getLine;
