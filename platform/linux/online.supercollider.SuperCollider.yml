@@ -34,7 +34,7 @@ modules:
       - -DAUDIOAPI=jack
       - -DSC_QT=ON
       - -DSC_IDE=ON
-      - -DSC_USE_QTWEBENGINE=ON  # arm does not support qt webengine
+      - -DSC_USE_QTWEBENGINE=ON
       - -DSUPERNOVA=ON
       - -DSC_ABLETON_LINK=OFF
       - -DSC_HIDAPI=ON
