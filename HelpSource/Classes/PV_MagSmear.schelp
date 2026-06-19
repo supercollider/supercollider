@@ -34,7 +34,7 @@ c = Buffer.read(s, ExampleFiles.child);
 )
 
 (
-SynthDef("help-magSmear", { |out = 0, bufnum = 0|
+SynthDef(\help_magSmear, { |out = 0, bufnum = 0|
 	var in, chain;
 	in = LFSaw.ar(500, 0, Decay2.ar(Impulse.ar(2, 0, 0.2), 0.01, 2));
 	chain = FFT(bufnum, in);
@@ -44,7 +44,7 @@ SynthDef("help-magSmear", { |out = 0, bufnum = 0|
 )
 
 (
-SynthDef("help-magSmear2", { |out = 0, bufnum = 0, soundBufnum = 2|
+SynthDef(\help_magSmear2, { |out = 0, bufnum = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(bufnum, in);

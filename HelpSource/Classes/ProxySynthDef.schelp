@@ -42,11 +42,11 @@ always use link::Classes/OffsetOut::, if set to true (default: false)
 Examples::
 
 code::
-a = ProxySynthDef("xtest", { SinOsc.ar(400) * 0.1 });
+a = ProxySynthDef(\xtest, { SinOsc.ar(400) * 0.1 });
 
 a.add;
 
-x = Synth("xtest");
+x = Synth(\xtest);
 x.release;
 
 

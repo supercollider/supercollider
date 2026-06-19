@@ -29,7 +29,7 @@ s.sendMsg("/n_free", n);
 ::
 is
 code::
-n = Synth("default");
+n = Synth(\default);
 n.free;
 ::
 
@@ -43,7 +43,7 @@ s.sendMsg("/n_free", n);
 
 it is
 code::
-n = Synth("default", [\freq, 850]);
+n = Synth(\default, [\freq, 850]);
 n.set(\freq, 500)
 n.free;
 ::
@@ -69,7 +69,7 @@ The encapsulation of node objects results in a certain generalization, meaning t
 In certain cases, such as for granular synthesis it is recommended to use messages directly, because there is no benefit to be gained from the node objects (i.e. no need to message them) and they add cpu load to the client side.
 code::
 (
-SynthDef("grain", {
+SynthDef(\grain, {
 	Out.ar(0, Line.kr(0.1, 0, 0.01, doneAction: Done.freeSelf) * FSinOsc.ar(12000))
 }).send(s);
 )

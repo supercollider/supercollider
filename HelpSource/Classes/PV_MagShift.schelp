@@ -35,7 +35,7 @@ s.boot;
 b = Buffer.read(s, ExampleFiles.child);
 
 (
-SynthDef("help-magStretch", { |out = 0, bufnum = 0|
+SynthDef(\help_magStretch, { |out = 0, bufnum = 0|
 	var in, chain;
 	in = LFSaw.ar(200, 0, 0.2);
 	chain = FFT(LocalBuf(2048), in);
@@ -45,7 +45,7 @@ SynthDef("help-magStretch", { |out = 0, bufnum = 0|
 )
 
 (
-SynthDef("help-magStretch2", { |out = 0, soundBufnum = 2|
+SynthDef(\help_magStretch2, { |out = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(LocalBuf(2048), in);
@@ -55,7 +55,7 @@ SynthDef("help-magStretch2", { |out = 0, soundBufnum = 2|
 )
 
 (
-SynthDef("help-magShift", { |out = 0|
+SynthDef(\help_magShift, { |out = 0|
 	var in, chain;
 	in = LFSaw.ar(200, 0, 0.2);
 	chain = FFT(LocalBuf(2048), in);
@@ -65,7 +65,7 @@ SynthDef("help-magShift", { |out = 0|
 )
 
 (
-SynthDef("help-magShift2", { |out = 0, soundBufnum = 2|
+SynthDef(\help_magShift2, { |out = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(LocalBuf(2048), in);

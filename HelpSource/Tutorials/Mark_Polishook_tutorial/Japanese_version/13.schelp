@@ -14,7 +14,7 @@ code::
 //  グレインを生成するSynthDefは左チャンネル
 // グレインを遅らせるSynthDefは右チャンネル
 (
-SynthDef("someGrains", { arg centerFreq = 777, freqDev = 200, grainFreq = 2;
+SynthDef(\someGrains, { arg centerFreq = 777, freqDev = 200, grainFreq = 2;
 	var gate;
 	gate = Impulse.kr(grainFreq);
 	Out.ar(
@@ -27,7 +27,7 @@ SynthDef("someGrains", { arg centerFreq = 777, freqDev = 200, grainFreq = 2;
 	)
 }).add;
 
-SynthDef("aDelay", { arg delay = 0.25;
+SynthDef(\aDelay, { arg delay = 0.25;
 	Out.ar(
 		1,
 		DelayN.ar(
@@ -41,7 +41,7 @@ SynthDef("aDelay", { arg delay = 0.25;
 
 // グレインをテストして ... オフにしなさい
 // 全て左チャンネルだけ ... グッド！
-Synth("someGrains");
+Synth(\someGrains);
 
 
 // ２つのグループを作成。第1はソース、第2はエフェクト。
@@ -153,28 +153,28 @@ section::コンポーネント
 
 code::
 (
-SynthDef("filteredDust", {
+SynthDef(\filteredDust, {
 	Out.ar(
 		2,
 		Mix.arFill(10, { Resonz.ar(Dust.ar(0.2, 50), Rand(200, 3200), 0.003) })
 	)
 }).add;
 
-SynthDef("preDelay", {
+SynthDef(\preDelay, {
 	Out.ar(
 		4,
 		DelayN.ar(In.ar(2, 1), 0.048, 0.048)
 	)
 }).add;
 
-SynthDef("combs", {
+SynthDef(\combs, {
 	Out.ar(
 		6,
 		Mix.arFill(7, { CombL.ar(In.ar(4, 1), 0.1, LFNoise1.kr(Rand(0, 0.1), 0.04, 0.05), 15) })
 	)
 }).add;
 
-SynthDef("allpass", { arg gain = 0.2;
+SynthDef(\allpass, { arg gain = 0.2;
 	var source;
 	source = In.ar(6, 1);
 	4.do({ source = AllpassN.ar(source, 0.050, [Rand(0, 0.05), Rand(0, 0.05)], 1) });
@@ -184,7 +184,7 @@ SynthDef("allpass", { arg gain = 0.2;
 	)
 }).add;
 
-SynthDef("theMixer", { arg gain = 1;
+SynthDef(\theMixer, { arg gain = 1;
 	Out.ar(
 		0,
 		Mix.ar([In.ar(2, 1), In.ar(8, 2)]) * gain
@@ -195,11 +195,11 @@ SynthDef("theMixer", { arg gain = 1;
 // それぞれの行が実行されると、それぞれは最後のノードになる。結果は、"filteredDust"が最初のノードになり、
 // "theMixer"が最後のノードになる。これは我々が望んだ通りである。
 (
-Synth.tail(s, "filteredDust");
-Synth.tail(s, "preDelay");
-Synth.tail(s, "combs");
-Synth.tail(s, "allpass");
-Synth.tail(s, "theMixer");
+Synth.tail(s, \filteredDust);
+Synth.tail(s, \preDelay);
+Synth.tail(s, \combs);
+Synth.tail(s, \allpass);
+Synth.tail(s, \theMixer);
 )
 ::
 
@@ -219,11 +219,11 @@ code::
 // 以下のノードは、上で並べた通りに、グループにアサインされる
 // それゆえ、これらは正しい順序で実行される
 (
-Synth.head(~final, "theMixer");
-Synth.head(~proc3, "allpass");
-Synth.head(~proc2, "combs");
-Synth.head(~proc1, "preDelay");
-Synth.head(~source, "filteredDust");
+Synth.head(~final, \theMixer);
+Synth.head(~proc3, \allpass);
+Synth.head(~proc2, \combs);
+Synth.head(~proc1, \preDelay);
+Synth.head(~source, \filteredDust);
 )
 ::
 

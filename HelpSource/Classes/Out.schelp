@@ -48,9 +48,8 @@ change the size of this once a SynthDef has been built.
 Examples::
 
 code::
-
 (
-SynthDef("help-out", { |out = 0, freq = 440|
+SynthDef(\help_out, { |out = 0, freq = 440|
 	var source;
 		source = SinOsc.ar(freq, 0, 0.1);
 
@@ -61,8 +60,7 @@ SynthDef("help-out", { |out = 0, freq = 440|
 )
 
 
-Synth("help-out", [\freq, 500]);
-Synth("help-out", [\freq, 600]);
-Synth("help-out", [\freq, 700]);
-
+Synth(\help_out, [\freq, 500]);
+Synth(\help_out, [\freq, 600]);
+Synth(\help_out, [\freq, 700]);
 ::

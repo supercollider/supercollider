@@ -35,7 +35,7 @@ LPF（ローパス・フィルター）を使って入力ソースから高い�
 
 code::
 (
-SynthDef("subtractive", {
+SynthDef(\subtractive, {
 	Out.ar(
 		0,
 		LPF.ar(
@@ -46,7 +46,7 @@ SynthDef("subtractive", {
 }).add;
 )
 
-Synth("subtractive")
+Synth(\subtractive)
 ::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ RLFP（レゾナント・ローパス・フィルター）は、高い周波数�
 
 code::
 (
-SynthDef("passLowFreqs2", {
+SynthDef(\passLowFreqs2, {
 	Out.ar(
 		0,
 		RLPF.ar(
@@ -67,7 +67,7 @@ SynthDef("passLowFreqs2", {
 }).add;
 )
 
-Synth("passLowFreqs2")
+Synth(\passLowFreqs2)
 ::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ Rezonzはとても、とても、とても強力なフィルターです。特�
 
 code::
 (
-SynthDef("noiseToPitch", { arg out = 0, mul = 1;
+SynthDef(\noiseToPitch, { arg out = 0, mul = 1;
 	Out.ar(
 		out,
 		Resonz.ar(
@@ -92,8 +92,8 @@ SynthDef("noiseToPitch", { arg out = 0, mul = 1;
 
 (
 // 左右のチャンネルをアクティブ化する
-Synth("noiseToPitch", [\out, 0\mul, 1]);
-Synth("noiseToPitch", [\out, 1, \mul, 1]);
+Synth(\noiseToPitch, [\out, 0\mul, 1]);
+Synth(\noiseToPitch, [\out, 1, \mul, 1]);
 )
 ::
 

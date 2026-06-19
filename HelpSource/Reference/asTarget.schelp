@@ -37,9 +37,9 @@ code::
 s = Server.default;
 s.boot;
 g = s.nextNodeID.asTarget;
-x = Synth.head(g, "default");   // but g doesn't exist on the server
+x = Synth.head(g, \default);   // but g doesn't exist on the server
 s.sendMsg(*g.addToHeadMsg);     // now it's sent to the default server, in the default group
-x = Synth.head(g, "default");   // now this works
+x = Synth.head(g, \default);   // now this works
 x.free; g.free;
 
 // if not using the default Server Integer-asTarget can be problematic
@@ -49,10 +49,10 @@ Server.default.boot;            // quit the default server
 i = Server.internal; i.boot;
 g = i.nextNodeID.asTarget;
 i.sendMsg(*g.addToHeadMsg);     // seems to work, but...
-x = Synth.head(g, "default");   // oops, this goes to the default server, so Group not Found
+x = Synth.head(g, \default);   // oops, this goes to the default server, so Group not Found
 g.server == Server.default;     // true, so that's the problem
 g.server = i;
-x = Synth.head(g, "default");   // now to the right place
+x = Synth.head(g, \default);   // now to the right place
 x.free; g.free;
 ::
 code::

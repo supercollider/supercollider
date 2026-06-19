@@ -76,7 +76,7 @@ s.notify;
 )
 
 (
-SynthDef("help-SendTrig", {
+SynthDef(\help_SendTrig, {
 	SendTrig.kr(Dust.kr(1.0), 0, 0.9);
 }).add;
 
@@ -89,7 +89,7 @@ b = OSCresponderNode(s.addr, '/tr', { |time, responder, msg|
 }).add;
 )
 
-x = Synth.new("help-SendTrig");
+x = Synth(\help_SendTrig);
 a.remove;
 b.remove;
 x.free;
@@ -137,7 +137,7 @@ f = OSCresponderNode(s.addr, '/fail', { |time, responder, msg|
 f.add;
 
 // cause a failure
-Synth("gthhhhppppppp!");
+Synth(\gthhhhppppppp!);
 
 f.remove
 ::

@@ -45,7 +45,7 @@ s.boot;
 )
 
 (
-SynthDef("help-SharedOut", {
+SynthDef(\help_SharedOut, {
 	SharedOut.kr(0, SinOsc.kr(0.2));
 }).add;
 )

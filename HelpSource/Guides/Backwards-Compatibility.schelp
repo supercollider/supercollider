@@ -27,9 +27,9 @@ y = Synth.new(x.defName);	// get the arbitrary defname from x
 x.free;
 y.free;
 
-x = SynthDef("backcompat-sine", { arg freq = 440; Out.ar(1, SinOsc.ar(freq, 0, 0.5)) }).play;
+x = SynthDef(\backcompat_sine, { arg freq = 440; Out.ar(1, SinOsc.ar(freq, 0, 0.5)) }).play;
 x.set(\freq, 880);
-y = Synth.new("backcompat-sine");
+y = Synth(\backcompat_sine);
 x.free;
 y.free;
 ::

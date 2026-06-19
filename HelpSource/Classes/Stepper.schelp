@@ -55,7 +55,7 @@ Examples::
 
 code::
 
-SynthDef("help-Stepper", { |out = 0|
+SynthDef(\help_Stepper, { |out = 0|
 	Out.ar(out,
 		SinOsc.ar(
 			Stepper.kr(Impulse.kr(10), 0, 4, 16, 1) * 100,
@@ -64,7 +64,7 @@ SynthDef("help-Stepper", { |out = 0|
 	)
 }).play;
 
-SynthDef("help-Stepper", { |out = 0|
+SynthDef(\help_Stepper, { |out = 0|
 	Out.ar(out,
 		SinOsc.ar(
 			Stepper.kr(Impulse.kr(10), 0, 4, 16, -3) * 100,
@@ -73,7 +73,7 @@ SynthDef("help-Stepper", { |out = 0|
 	)
 }).play;
 
-SynthDef("help-Stepper", { |out = 0|
+SynthDef(\help_Stepper, { |out = 0|
 	Out.ar(out,
 		SinOsc.ar(
 			Stepper.kr(Impulse.kr(10), 0, 4, 16, 4) * 100,

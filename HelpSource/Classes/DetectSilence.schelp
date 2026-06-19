@@ -53,9 +53,8 @@ This UGen outputs 1 if silence is detected, otherwise 0.
 Examples::
 
 code::
-
 (
-SynthDef("detectSilence-help", { |out|
+SynthDef(\detectSilence_help, { |out|
 	var z;
 	z = SinOsc.ar(Rand(400, 700), 0, LFDNoise3.kr(8).max(0)).softclip * 0.3;
 	DetectSilence.ar(z, doneAction: Done.freeSelf);
@@ -63,20 +62,19 @@ SynthDef("detectSilence-help", { |out|
 }).add;
 )
 
-Synth("detectSilence-help");
-Synth("detectSilence-help");
-Synth("detectSilence-help");
+Synth(\detectSilence_help);
+Synth(\detectSilence_help);
+Synth(\detectSilence_help);
 
 
 (
 Task({
 	loop({
-		Synth("detectSilence-help");
+		Synth(\detectSilence_help);
 		[0.5, 1].choose.wait;
 	})
 }).play;
 )
-
 ::
 
 section::DetectSilence and multiple inputs

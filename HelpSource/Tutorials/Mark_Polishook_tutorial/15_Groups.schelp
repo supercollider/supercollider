@@ -69,7 +69,7 @@ New synths are attached by default to the head of the default_group.
 code::
 // 1st, evaluate a synthdef
 (
-SynthDef("ringModulation", {
+SynthDef(\ringModulation, {
 	Out.ar(
 		0,
 		Mix.ar(
@@ -83,7 +83,7 @@ SynthDef("ringModulation", {
 
 // 2nd, make a synth
 (
-Synth("ringModulation");
+Synth(\ringModulation);
 )
 
 // 3rd, tell the server to list its nodes
@@ -117,7 +117,7 @@ An example with two synths.
 code::
 // 1st, evaluate a synthdef
 (
-SynthDef("pitchFromNoise", { arg out = 0;
+SynthDef(\pitchFromNoise, { arg out = 0;
 	Out.ar(
 		out,
 		Resonz.ar(
@@ -131,8 +131,8 @@ SynthDef("pitchFromNoise", { arg out = 0;
 
 // 2nd, make 2 synths
 (
-Synth("ringModulation");
-Synth("pitchFromNoise", [\out, 1]);
+Synth(\ringModulation);
+Synth(\pitchFromNoise, [\out, 1]);
 )
 
 // 3rd, tell the server to list its nodes
@@ -171,14 +171,14 @@ It's the responsibility of the user to make sure that nodes on the server are or
 
 code::
 (
-SynthDef("firstNode-source", {
+SynthDef(\firstNode_source, {
 	Out.ar(
 		0,
 		Saw.ar([200, 201], 0.05)
 	)
 }).add;
 
-SynthDef("secondNode-filter", {
+SynthDef(\secondNode_filter, {
 	ReplaceOut.ar(
 		0,
 		LPF.ar(
@@ -195,8 +195,8 @@ SynthDef("secondNode-filter", {
 // evaluate "secondNode-filter" first
 // "firstNode-source" will go at the head of default_node
 (
-Synth("secondNode-filter");
-Synth("firstNode-source");
+Synth(\secondNode_filter);
+Synth(\firstNode_source);
 )
 
 (
@@ -210,8 +210,8 @@ Or, use .head and .tail messages to attach the nodes to the default_group).
 
 code::
 (
-Synth.head(s, "firstNode-source");
-Synth.tail(s, "secondNode-filter");
+Synth.head(s, \firstNode_source);
+Synth.tail(s, \secondNode_filter);
 )
 
 (
@@ -266,19 +266,19 @@ code::
 // each of the synthdefs below has a control for amplitude (mul)
 (
 // build 3 synthdefs and a group
-SynthDef("synthNumber1", { arg mul = 0.2;
+SynthDef(\synthNumber1, { arg mul = 0.2;
 	Out.ar(
 		0,
 		BrownNoise.ar(mul) * LFNoise0.kr([1, 1.01])
 	)
 	}, [0.1]).add;
-SynthDef("synthNumber2", { arg mul = 0.2;
+SynthDef(\synthNumber2, { arg mul = 0.2;
 	Out.ar(
 		0,
 		WhiteNoise.ar(mul) * LFNoise1.kr([2.99, 3])
 	)
 	}, [0.1]).add;
-SynthDef("synthNumber3", { arg mul = 0.2;
+SynthDef(\synthNumber3, { arg mul = 0.2;
 	Out.ar(
 		0,
 		PinkNoise.ar(mul) * LFNoise2.kr([0.79, 0.67])
@@ -293,9 +293,9 @@ SynthDef("synthNumber3", { arg mul = 0.2;
 
 (
 // attach 3 synths
-Synth.head(~myGroup, "synthNumber1");
-Synth.head(~myGroup, "synthNumber2");
-Synth.head(~myGroup, "synthNumber3");
+Synth.head(~myGroup, \synthNumber1);
+Synth.head(~myGroup, \synthNumber2);
+Synth.head(~myGroup, \synthNumber3);
 )
 
 // set the \mul control of each of the 3 synths in the group

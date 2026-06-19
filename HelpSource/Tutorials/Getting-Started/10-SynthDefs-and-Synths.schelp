@@ -77,8 +77,8 @@ code::
 SynthDef.new("tutorial-PinkNoise", { |out| Out.ar(out, PinkNoise.ar(0.3)) }).add;
 
 // then:
-x = Synth.new("tutorial-PinkNoise");
-y = Synth.new("tutorial-PinkNoise");
+x = Synth(\tutorial_PinkNoise);
+y = Synth(\tutorial_PinkNoise);
 x.free; y.free;
 ::
 
@@ -95,10 +95,10 @@ z = f.play;
 x.free; y.free; z.free;
 
 // Now with a SynthDef. No randomness!
-SynthDef("tutorial-NoRand", { |out| Out.ar(out, SinOsc.ar(440 + 200.rand, 0, 0.2)) }).add;
-x = Synth("tutorial-NoRand");
-y = Synth("tutorial-NoRand");
-z = Synth("tutorial-NoRand");
+SynthDef(\tutorial_NoRand, { |out| Out.ar(out, SinOsc.ar(440 + 200.rand, 0, 0.2)) }).add;
+x = Synth(\tutorial_NoRand);
+y = Synth(\tutorial_NoRand);
+z = Synth(\tutorial_NoRand);
 x.free; y.free; z.free;
 ::
 
@@ -110,10 +110,10 @@ There are numerous ways of getting variety out of SynthDefs, however. Some thing
 
 code::
 // With Rand, it works!
-SynthDef("tutorial-Rand", { |out| Out.ar(out, SinOsc.ar(Rand(440, 660), 0, 0.2)) }).add;
-x = Synth("tutorial-Rand");
-y = Synth("tutorial-Rand");
-z = Synth("tutorial-Rand");
+SynthDef(\tutorial_Rand, { |out| Out.ar(out, SinOsc.ar(Rand(440, 660), 0, 0.2)) }).add;
+x = Synth(\tutorial_Rand);
+y = Synth(\tutorial_Rand);
+z = Synth(\tutorial_Rand);
 x.free; y.free; z.free;
 ::
 
@@ -123,13 +123,13 @@ The most common way of creating variables is through putting arguments into the 
 
 code::
 (
-SynthDef("tutorial-args", { arg freq = 440, out = 0;
+SynthDef(\tutorial_args, { arg freq = 440, out = 0;
 	Out.ar(out, SinOsc.ar(freq, 0, 0.2));
 }).add;
 )
-x = Synth("tutorial-args");				// no args, so default values
-y = Synth("tutorial-args", ["freq", 660]);		// change freq
-z = Synth("tutorial-args", ["freq", 880, "out", 1]);	// change freq and output channel
+x = Synth(\tutorial_args);				// no args, so default values
+y = Synth(\tutorial_args, ["freq", 660]);		// change freq
+z = Synth(\tutorial_args, ["freq", 880, "out", 1]);	// change freq and output channel
 x.free; y.free; z.free;
 ::
 
@@ -147,9 +147,9 @@ SynthDef.new("tutorial-args", { arg freq = 440, out = 0;
 }).add;
 )
 s.scope; // scope so you can see the effect
-x = Synth.new("tutorial-args");
-x.set("freq", 660);
-x.set("freq", 880, "out", 1);
+x = Synth(\tutorial_args);
+x.set(\freq, 660);
+x.set(\freq, 880, \out, 1);
 x.free;
 ::
 

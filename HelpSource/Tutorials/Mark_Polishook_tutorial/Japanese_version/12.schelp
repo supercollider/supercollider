@@ -13,7 +13,7 @@ code::
 b = Buffer.read(s, ExampleFiles.child);
 
 // モノのサンプル・プレーヤー ... １チャンネルのみ
-SynthDef("aMonoSamplePlayer", { arg bus = 0, bufnum = 0, rateScale = 1;
+SynthDef(\aMonoSamplePlayer, { arg bus = 0, bufnum = 0, rateScale = 1;
 	Out.ar(
 		bus,
 		PlayBuf.ar(
@@ -29,7 +29,7 @@ SynthDef("aMonoSamplePlayer", { arg bus = 0, bufnum = 0, rateScale = 1;
 
 (
 // SynthDefをテストする ... 動く？（はい、大丈夫。左チャンネルで再生する。）
-Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b]);
+Synth(\aMonoSamplePlayer, [\bus, 0, \bufNum, b]);
 )
 
 
@@ -38,8 +38,8 @@ Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b]);
 // \busアーギュメントを使用して、同じSynthDefから作られたシンセを別のチャンネルにアサインする
 // この場合には、1チャンネルのサウンド・ファイルを2チャンネルで再生する
 // それぞれのチャンネルの再生レートを変えることで効果を明白にする
-Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b, \rateScale, 0.99]);
-Synth("aMonoSamplePlayer", [\bus, 1, \bufNum, b, \rateScale, 1.01]);
+Synth(\aMonoSamplePlayer, [\bus, 0, \bufNum, b, \rateScale, 0.99]);
+Synth(\aMonoSamplePlayer, [\bus, 1, \bufNum, b, \rateScale, 1.01]);
 )
 ::
 
@@ -106,7 +106,7 @@ section::実行の順序
 code::
 (
 // エンベロープなしのフィルター　ー永遠にとどまる
-SynthDef("soundFileFilter", { arg bus = 0, freq = 440, rq = 0.05;
+SynthDef(\soundFileFilter, { arg bus = 0, freq = 440, rq = 0.05;
 	ReplaceOut.ar(
 		bus,
 		BPF.ar(			// a bandpass filter
@@ -155,7 +155,7 @@ code::
 b = Buffer.read(s, ExampleFiles.child);
 
 // サウンド・ファイル全体をループ再生するサンプル・プレーヤーを定義する
-SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mul = 1;
+SynthDef(\aLoopingSamplePlayer, { arg outBus = 0, bufnum = 0, rateScale = 1, mul = 1;
 	Out.ar(
 		outBus,
 		PlayBuf.ar(
@@ -170,7 +170,7 @@ SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mu
 }).add;
 
 // オーディオ・ソースに振幅変調を適用する
-SynthDef("ampMod", { arg inBus = 0, outBus = 0, modFreq = 1;
+SynthDef(\ampMod, { arg inBus = 0, outBus = 0, modFreq = 1;
 	Out.ar(
 		outBus,
 		[In.ar(inBus, 1) * SinOsc.kr(modFreq), In.ar(inBus, 1) * SinOsc.kr(modFreq - 0.02)]
@@ -178,7 +178,7 @@ SynthDef("ampMod", { arg inBus = 0, outBus = 0, modFreq = 1;
 }).add;
 
 // オーディオ・ソースにローパス・フィルターを適用する
-SynthDef("aLowPassFilter", { arg inBus = 0, outBus = 0, freq = 300, freqDev = 50, boost = 1;
+SynthDef(\aLowPassFilter, { arg inBus = 0, outBus = 0, freq = 300, freqDev = 50, boost = 1;
 	Out.ar(
 		outBus,
 		RLPF.ar(

@@ -32,7 +32,7 @@ SynthDef(
 )
 
 // items in the array are passed to the controls in Synth when it's created
-z = Synth("withControls", [\freq, 440, \beatFreq, 1, \mul, 0.1]);
+z = Synth(\withControls, [\freq, 440, \beatFreq, 1, \mul, 0.1]);
 
 // evaluate this line after the synth is running to reset its controls
 z.set(\freq, 700, \beatFreq, 2, \mul, 0.2);
@@ -43,13 +43,13 @@ z.set(\freq, 700, \beatFreq, 2, \mul, 0.2);
 Write controls names and appropriate values in the array given as an argument to a synth. Control names can be given as symbols (a unique name within the SuperCollider system).
 
 code::
-Synth("withControls", [\freq, 440, \beatFreq, 0.5, \mul, 0.1]);
+Synth(\withControls, [\freq, 440, \beatFreq, 0.5, \mul, 0.1]);
 ::
 
 or as as strings (an array of characters)
 
 code::
-Synth("withControls", ["freq", 440, "beatFreq", 0.5, "mul", 0.1]);
+Synth(\withControls, ["freq", 440, "beatFreq", 0.5, "mul", 0.1]);
 ::
 
 Either way, the pattern is
@@ -63,7 +63,7 @@ See the link::Classes/Symbol:: and link::Classes/String:: files in the SuperColl
 A third way to pass controls to a synth is as
 
 code::
-Synth("withControls", [0, 440, 1, 1, 2, 0.1]);
+Synth(\withControls, [0, 440, 1, 1, 2, 0.1]);
 ::
 
 In this case, the pattern is
@@ -76,7 +76,7 @@ Use the code::.set:: message to change the value of a control while a synth is r
 
 code::
 (
-SynthDef("resetMyControls", { arg freq = 440, mul = 0.22;
+SynthDef(\resetMyControls, { arg freq = 440, mul = 0.22;
 	Out.ar(
 		0,
 		SinOsc.ar([freq, freq+1], 0, mul)
@@ -84,7 +84,7 @@ SynthDef("resetMyControls", { arg freq = 440, mul = 0.22;
 }).add;
 )
 
-~aSynth = Synth("resetMyControls", [\freq, 440, \mul, 0.06]);
+~aSynth = Synth(\resetMyControls, [\freq, 440, \mul, 0.06]);
 ~aSynth.set(\freq, 600, \mul, 0.25);
 ::
 
@@ -106,7 +106,7 @@ Use an array of lag times to state how long it takes to glide smoothly from one 
 
 code::
 (
-SynthDef("controlsWithLags", { arg freq1 = 440, freq2 = 443, mul = 0.12;
+SynthDef(\controlsWithLags, { arg freq1 = 440, freq2 = 443, mul = 0.12;
 	Out.ar(
 		0,
 		SinOsc.ar([freq1, freq2], 0, mul)
@@ -114,7 +114,7 @@ SynthDef("controlsWithLags", { arg freq1 = 440, freq2 = 443, mul = 0.12;
 }, [4, 5]).add;
 )
 
-~aSynth = Synth("controlsWithLags", [\freq1, 550, \freq2, 344, \mul, 0.1]);
+~aSynth = Synth(\controlsWithLags, [\freq1, 550, \freq2, 344, \mul, 0.1]);
 ~aSynth.set(\freq1, 600, \freq2, 701, \mul, 0.05);
 ::
 

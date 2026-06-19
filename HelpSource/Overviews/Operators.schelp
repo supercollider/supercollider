@@ -359,7 +359,7 @@ code::
 
 // trigger a synth
 (
-SynthDef("help-EnvGen", { arg out=0;
+SynthDef(\help_EnvGen, { arg out=0;
 	Out.ar(out,
 		EnvGen.kr(Env.perc,1.0,doneAction: Done.freeSelf)
 			* SinOsc.ar(440, 0, 0.1)
@@ -372,7 +372,7 @@ SynthDef("help-EnvGen", { arg out=0;
 { SendTrig.kr(Amplitude.kr(SoundIn.ar(0)) > 0.2) }.play;
 
 // OSCFunc to trigger synth
-OSCFunc({ "triggered".postln; Synth.new("help-EnvGen") },'/tr', s.addr);
+OSCFunc({ "triggered".postln; Synth(\help_EnvGen) },'/tr', s.addr);
 )
 ::
 

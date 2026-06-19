@@ -200,7 +200,7 @@ SynthDef(\cfstring1, { |i_out, freq = 360, gate = 1, pan, amp = 0.1|
 	Out.ar(i_out, Mix.ar(PanAz.ar(4, [a, b], [pan, pan+0.3])));
 }).add;
 
-SynthDef("sinegrain2",
+SynthDef(\sinegrain2,
 	{ |out = 0, freq = 440, sustain = 0.05, pan|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction: Done.freeSelf);

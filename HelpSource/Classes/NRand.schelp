@@ -40,9 +40,8 @@ towards gaussian.
 Examples::
 
 code::
-
 (
-SynthDef("help-NRand", { |out = 0, n = 0|
+SynthDef(\help_NRand, { |out = 0, n = 0|
 	Out.ar(out,
 		FSinOsc.ar(
 			NRand(1200.0, 4000.0, n),
@@ -55,7 +54,7 @@ SynthDef("help-NRand", { |out = 0, n = 0|
 n = 0;
 Routine({
 	inf.do({ |i|
-		Synth.new("help-NRand", [\n, n]); 0.05.wait;
+		Synth(\help_NRand, [\n, n]); 0.05.wait;
 	})
 }).play;
 )
@@ -63,5 +62,4 @@ Routine({
 n = 1;
 n = 2;
 n = 4;
-
 ::

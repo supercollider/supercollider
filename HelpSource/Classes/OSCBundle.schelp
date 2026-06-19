@@ -42,11 +42,11 @@ a = OSCBundle.new;
 
 // a synthdef that needs to be sent to the server, an operation that is asynchronous,
 // i.e. we have to wait until it is finished.
-x = SynthDef("test", { OffsetOut.ar(0, BPF.ar(Impulse.ar(4) * 10, Rand(9000, 1000), 0.1)) });
+x = SynthDef(\test, { OffsetOut.ar(0, BPF.ar(Impulse.ar(4) * 10, Rand(9000, 1000), 0.1)) });
 // this is why addPrepare is used.
-a.addPrepare(["/d_recv", x.asBytes]);
+a.addPrepare([\d_recv, x.asBytes]);
 // add is used with synchronous operations, like starting synths.
-a.add(["/s_new", "test", -1]);
+a.add([\s_new, \test, -1]);
 
 // the bundle has now the synchronous separated from the asynchronous bundles:
 a.messages;

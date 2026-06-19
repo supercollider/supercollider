@@ -133,7 +133,7 @@ t.stop;
 // Pdefn can be accessed in multiple streams
 
 (
-SynthDef("Pdefhelp", { |out, freq, sustain = 1, amp = 1, pan|
+SynthDef(\Pdefhelp, { |out, freq, sustain = 1, amp = 1, pan|
 	var env, u = 1;
 	env = EnvGen.kr(Env.perc(0.03, sustain), 1, doneAction: Done.freeSelf);
 	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1, 1.2) * d, 1) };

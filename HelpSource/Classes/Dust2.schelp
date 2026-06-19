@@ -27,7 +27,7 @@ Examples::
 code::
 
 (
-SynthDef("help-Dust2", { |out = 0|
+SynthDef(\help_Dust2, { |out = 0|
 	Out.ar(out,
 		Dust2.ar(200, 0.5)
 	)
@@ -35,11 +35,10 @@ SynthDef("help-Dust2", { |out = 0|
 )
 
 (
-SynthDef("help-Dust2", { |out = 0|
+SynthDef(\help_Dust2, { |out = 0|
 	Out.ar(out,
 		Dust2.ar(XLine.kr(20000, 2, 10), 0.5)
 	)
 }).play;
 )
-
 ::

@@ -105,7 +105,7 @@ code::
 
 // in granular synthesis:
 (
-SynthDef("pgrain",
+SynthDef(\pgrain,
 	{ |out = 0, sustain = 0.01, amp = 0.5, pan = 0|
 		var freq = MouseX.kr(300, 7000, 1);
 		var window = Env.sine(sustain, amp * AmpComp.ir(freq));
@@ -136,7 +136,7 @@ fork {
 // without AmpComp:
 
 (
-SynthDef("pgrain",
+SynthDef(\pgrain,
 	{ |out = 0, sustain = 0.01, amp = 0.5, pan = 0|
 		var freq = MouseX.kr(300, 7000, 1);
 		var window = Env.sine(sustain, amp);
@@ -152,7 +152,7 @@ SynthDef("pgrain",
 
 // with AmpCompA
 (
-SynthDef("pgrain",
+SynthDef(\pgrain,
 	{ |out = 0, sustain = 0.01, amp = 0.5, pan = 0|
 		var freq = MouseX.kr(300, 7000, 1);
 		var window = Env.sine(sustain, amp * AmpCompA.ir(freq));

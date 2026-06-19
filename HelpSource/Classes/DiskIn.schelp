@@ -46,7 +46,7 @@ s.boot; // start the server
 
 // examples below will use this synthdef
 (
-SynthDef("help-Diskin", { |out, bufnum = 0|
+SynthDef(\help_Diskin, { |out, bufnum = 0|
 	Out.ar(out, DiskIn.ar(1, bufnum));
 }).add
 )
@@ -87,13 +87,13 @@ r.stop; x.free; b.close; b.free; // you need to do all these to properly cleanup
 
 // cue and play right away
 (
-SynthDef("help-Diskin", { |out, bufnum = 0|
+SynthDef(\help_Diskin, { |out, bufnum = 0|
 	Out.ar(out, DiskIn.ar(1, bufnum));
 }).add;
 )
 
 (
-x = Synth.basicNew("help-Diskin");
+x = Synth.basicNew(\help_Diskin);
 m = { |buf| x.addToHeadMsg(nil, [\bufnum, buf.bufnum]) };
 
 b = Buffer.cueSoundFile(s, ExampleFiles.apollo11, 0, 1, completionMessage: m);

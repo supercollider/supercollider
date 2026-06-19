@@ -495,7 +495,7 @@ code::
 s.boot;
 (
 // send a synth def to server
-SynthDef("tpulse", { |out = 0, freq = 700, sawFreq = 440.0|
+SynthDef(\tpulse, { |out = 0, freq = 700, sawFreq = 440.0|
 	Out.ar(out, SyncSaw.ar(freq, sawFreq, 0.1))
 }).add;
 )
@@ -504,7 +504,7 @@ SynthDef("tpulse", { |out = 0, freq = 700, sawFreq = 440.0|
 // and executed simultaneously after 2 seconds.
 (
 s.makeBundle(2.0, {
-	x = Synth.new("tpulse");
+	x = Synth(\tpulse);
 	a = Bus.control.set(440);
 	x.map(\freq, a);
 });
@@ -783,7 +783,7 @@ NOTE::
 record creates the recording synth after the Server's default group and uses In.ar. Thus if you add nodes after the recording synth their output will not be captured.
 To avoid this, either use Node objects (which use the default node as their target) or (when using messaging style) use a target nodeID of 1.
 code::
-s.sendMsg("/s_new", "default", s.nextNodeID, 1, 1);
+s.sendMsg(\s_new, \default, s.nextNodeID, 1, 1);
 ::
 ::
 
@@ -798,7 +798,7 @@ s.boot; // start the server
 
 // something to record
 (
-SynthDef("bubbles", { |out|
+SynthDef(\bubbles, { |out|
 	var f, sound;
 	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8, 7.23], 0, 3, 80)).midicps; // glissando function
 	sound = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
@@ -806,7 +806,7 @@ SynthDef("bubbles", { |out|
 }).add;
 )
 
-x = Synth.new("bubbles");
+x = Synth(\bubbles);
 
 s.prepareForRecord; // if you want to start recording at a precise moment in time, you have to call this first.
 

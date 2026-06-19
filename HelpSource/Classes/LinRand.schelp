@@ -27,9 +27,8 @@ The output is skewed towards code::lo:: if code::minmax:: < 0, otherwise skewed 
 Examples::
 
 code::
-
 (
-SynthDef("help-LinRand", { |out = 0, minmax = 1|
+SynthDef(\help_LinRand, { |out = 0, minmax = 1|
 	Out.ar(out,
 		FSinOsc.ar(
 			LinRand(200.0, 10000.0, minmax),
@@ -42,7 +41,7 @@ SynthDef("help-LinRand", { |out = 0, minmax = 1|
 (
 Routine({
 	loop({
-		Synth.new("help-LinRand"); 0.04.wait;
+		Synth(\help_LinRand); 0.04.wait;
 	})
 }).play;
 )
@@ -51,9 +50,8 @@ Routine({
 (
 Routine({
 	loop({
-		Synth.new("help-LinRand", [\minmax, -1]); 0.04.wait;
+		Synth(\help_LinRand, [\minmax, -1]); 0.04.wait;
 	})
 }).play;
 )
-
 ::

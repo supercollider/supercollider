@@ -106,7 +106,7 @@ s.waitForBoot({
 
 // play the synth, indexing into the buffers with MouseX
 (
-x = SynthDef("help-VOsc", { |out = 0, bufoffset = 0, freq = 240|
+x = SynthDef(\help_VOsc, { |out = 0, bufoffset = 0, freq = 240|
 	// mouse x controls the wavetable position
 	var bufindex = MouseX.kr(0, ~bufs.size - 1) + bufoffset;
 

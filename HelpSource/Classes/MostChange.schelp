@@ -26,9 +26,8 @@ Input signal B.
 Examples::
 
 code::
-
 (
-d = SynthDef("help-MostChange", { |out, amp = 1.0|
+d = SynthDef(\help_MostChange, { |out, amp = 1.0|
 	var sound, in1, in2;
 	in1 = LFNoise1.ar(800, amp);
 	in2 = SinOsc.ar(800);
@@ -45,7 +44,7 @@ d.free;
 // the control that changed most is used for output:
 
 (
-d = SynthDef("help-MostChange", { |out, freq = 440|
+d = SynthDef(\help_MostChange, { |out, freq = 440|
 	var sound, internalFreq;
 	internalFreq = LFNoise0.ar(0.3, 300, 800);
 	sound = SinOsc.ar(
@@ -59,5 +58,4 @@ d.set(\freq, 800);
 d.set(\freq, 800); // nothing changed
 d.set(\freq, 900);
 d.free;
-
 ::

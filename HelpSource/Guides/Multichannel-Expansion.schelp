@@ -86,7 +86,7 @@ subsection:: Using flop and flop1 for multichannel expansion
 The method flop swaps columns and rows, allowing to derive series of argument sets:
 code::
 (
-SynthDef("help_multichannel", { |out=0, freq=440, mod=0.1, modrange=20|
+SynthDef(\help_multichannel, { |out=0, freq=440, mod=0.1, modrange=20|
 	Out.ar(out,
 		SinOsc.ar(
 			LFPar.kr(mod, 0, modrange) + freq
@@ -106,7 +106,7 @@ modrange = Array.rand(8, 0.1, 40);
 fork {
 	[\freq, freq, \mod, mod, \modrange, modrange].flop.do { |args|
 		args.postln;
-		Synth("help_multichannel", args);
+		Synth(\help_multichannel, args);
 		0.3.wait;
 	}
 };

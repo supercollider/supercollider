@@ -54,7 +54,7 @@ code::
 // (use headphones!)
 
 (
-	SynthDef("pitchFollow1", { |out|
+	SynthDef(\pitchFollow1, { |out|
 		var in, amp, freq, hasFreq, sound;
 		in = Mix.new(SoundIn.ar([0, 1]));
 		amp = Amplitude.kr(in, 0.05, 0.05);
@@ -72,7 +72,7 @@ code::
 code::
 
 (
-	SynthDef("pitchFollow2", { |out|
+	SynthDef(\pitchFollow2, { |out|
 		var in, amp, freq, hasFreq, sound;
 		in = Mix.new(SoundIn.ar([0, 1]));
 		amp = Amplitude.kr(in, 0.05, 0.05);

@@ -84,7 +84,7 @@ Create a link::Classes/SynthDef::. A SynthDef is a description of a processing m
 
 code::
 (
-SynthDef("sine", { arg freq=800;
+SynthDef(\sine, { arg freq=800;
 	var osc;
 	osc = SinOsc.ar(freq, 0, 0.1); // 800 Hz sine oscillator
 	Out.ar(0, osc); // send output to audio bus zero.
@@ -95,7 +95,7 @@ SynthDef("sine", { arg freq=800;
 Send the SynthDef to the server.
 
 code::
-s.sendSynthDef("sine");
+s.sendSynthDef(\sine);
 ::
 
 Start the sound. The code::/s_new:: command creates a new Synth which is an instance of the "sine" SynthDef. Each synth running on the server needs to have a unique ID. The simplest and safest way to do this is to get an ID from the server's NodeIDAllocator. This will automatically allow IDs to be reused, and will prevent conflicts both with your own nodes, and with nodes created automatically for purposes such as visual scoping and recording. Each synth needs to be installed in a Group. We install it in group one which is the default group. There is a group zero, called the RootNode, which contains the default group, but it is generally best not to use it as doing so can result in order of execution issues with automatically created nodes such as those mentioned above. (For more detail see the link::Reference/default_group::, link::Classes/RootNode::, and link::Guides/Order-of-execution:: helpfiles.)
@@ -123,7 +123,7 @@ Most generally useful and recommended is to use the method strong::add::, which 
 
 code::
 (
-SynthDef("sine", { arg freq=800;
+SynthDef(\sine, { arg freq=800;
 	var osc;
 	osc = SinOsc.ar(freq, 0, 0.1); // 800 Hz sine oscillator
 	Out.ar(0, osc); // send output to audio bus zero.
@@ -132,7 +132,7 @@ SynthDef("sine", { arg freq=800;
 
 
 (
-SynthDef("sine", { arg freq=800;
+SynthDef(\sine, { arg freq=800;
 	var osc;
 	osc = SinOsc.ar(freq, 0, 0.1); // 800 Hz sine oscillator
 	Out.ar(0, osc); // send output to audio bus zero.
@@ -140,7 +140,7 @@ SynthDef("sine", { arg freq=800;
 )
 
 (
-SynthDef("sine", { arg freq=800;
+SynthDef(\sine, { arg freq=800;
 	var osc;
 	osc = SinOsc.ar(freq, 0, 0.1); // 800 Hz sine oscillator
 	Out.ar(0, osc); // send output to audio bus zero.
@@ -156,7 +156,7 @@ code::
 s.boot;
 
 (
-SynthDef("sine", { arg freq;
+SynthDef(\sine, { arg freq;
 	var osc;
 	osc = SinOsc.ar(freq, 0, 0.1); // 800 Hz sine oscillator
 	Out.ar(0, osc); // send output to audio bus zero.
@@ -235,7 +235,7 @@ You can dynamically add and remove an effect to process another synth. In order 
 code::
 (
 // define a noise pulse
-SynthDef("tish", { arg freq = 1200, rate = 2;
+SynthDef(\tish, { arg freq = 1200, rate = 2;
 	var osc, trg;
 	trg = Decay2.ar(Impulse.ar(rate,0,0.3), 0.01, 0.3);
 	osc = {WhiteNoise.ar(trg)}.dup;
@@ -245,7 +245,7 @@ SynthDef("tish", { arg freq = 1200, rate = 2;
 
 (
 // define an echo effect
-SynthDef("echo", { arg delay = 0.2, decay = 4;
+SynthDef(\echo, { arg delay = 0.2, decay = 4;
 	var in;
 	in = In.ar(0,2);
 	// use ReplaceOut to overwrite the previous contents of the bus.
@@ -279,7 +279,7 @@ section::Mapping an Argument to a Control Bus
 code::
 (
 // define a control
-SynthDef("line", { arg i_bus=10, i_start=1000, i_end=500, i_time=1;
+SynthDef(\line, { arg i_bus=10, i_start=1000, i_end=500, i_time=1;
 	ReplaceOut.kr(i_bus, Line.kr(i_start, i_end, i_time, doneAction: Done.freeSelf));
 }).add
 )
@@ -328,26 +328,26 @@ code::
 (
 var space, offset, timer, saw, envsaw, sampler, delay;
 
-SynthDef("saw", { arg out=100, pan=0, trig=0.0, freq=500, amp=1, cutoff=10000, rezz=1;
+SynthDef(\saw, { arg out=100, pan=0, trig=0.0, freq=500, amp=1, cutoff=10000, rezz=1;
 	freq = Lag.kr(freq,0.1);
 	Out.ar(out,Pan2.ar(RLPF.ar(Saw.ar([freq,freq*2],amp),cutoff,rezz),
 		pan));
 }).add;
 
-SynthDef("envsaw",{ arg out=100, pan=0, sustain=0.5, freq=500, amp=1, cutoff=10000, rezz=1;
+SynthDef(\envsaw,{ arg out=100, pan=0, sustain=0.5, freq=500, amp=1, cutoff=10000, rezz=1;
 	var env;
 	env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.none, gate:amp);
 	Out.ar(out,Pan2.ar(RLPF.ar(Saw.ar(Lag.kr(freq,0.1),env),cutoff,rezz)*amp,
 		pan));
 }).add;
 
-SynthDef("delay", { arg out=0, delay = 0.4, decay = 14;
+SynthDef(\delay, { arg out=0, delay = 0.4, decay = 14;
 	var in;
 	in = In.ar(out,2);
 	Out.ar(out, CombN.ar(in, 0.5, delay, decay, 1, in));
 }).add;
 
-SynthDef("sampler",{ arg sample, trig=1,rate=1.0,out=0,bufnum=0,pan=0,amp=1, sustain=0.25;
+SynthDef(\sampler,{ arg sample, trig=1,rate=1.0,out=0,bufnum=0,pan=0,amp=1, sustain=0.25;
 	var env;
 	env = EnvGen.kr(Env.perc(0.001, sustain, 0.001), doneAction: Done.freeSelf);
 	Out.ar(out,
@@ -363,7 +363,7 @@ offset = Tempo.tempo.reciprocal;
 
 space = Buffer.read(s, ExampleFiles.child);
 
-saw = Synth("saw");
+saw = Synth(\saw);
 delay = Synth.after(saw,"delay", [\decay, 20]);
 
 timer.sched(0,{
@@ -374,7 +374,7 @@ timer.sched(0,{
 		cutoff = Pfunc({500.rand2+1000}).asStream;
 		rezz = 0.5;
 		inf.do({
-			saw.set("freq", freq.next.midicps, "cutoff", cutoff.next, "rezz", rezz, "amp", 0.1, "out", 0);
+			saw.set(\freq, freq.next.midicps, "cutoff", cutoff.next, "rezz", rezz, "amp", 0.1, "out", 0);
 			(wait.next*offset).wait
 		});
 	});
@@ -401,16 +401,16 @@ code::
 (
 //sappy emo electronica example...
 Tempo.bpm = 120;
-SynthDef("patternefx_Ex", { arg out, in;
+SynthDef(\patternefx_Ex, { arg out, in;
 	var audio, efx;
 	audio = In.ar([20,21],2);
 	efx=CombN.ar(audio, 0.5, [0.24,0.4], 2, 1);
 	Out.ar([0,1], audio+efx);
 	}).add;
 
-Synth.new("patternefx_Ex");
+Synth(\patternefx_Ex);
 
-SynthDef("pattern_Ex", { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;
+SynthDef(\pattern_Ex, { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;
 	Out.ar(out,
 		Pan2.ar(
 			RLPF.ar(
@@ -420,7 +420,7 @@ SynthDef("pattern_Ex", { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, re
 	)
 	}).add;
 
-SynthDef("bass_Ex", { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;
+SynthDef(\bass_Ex, { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;
 	Out.ar(out,
 		Pan2.ar(
 			RLPF.ar(

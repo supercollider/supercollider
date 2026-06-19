@@ -11,7 +11,7 @@ code::
 b = Buffer.read(s, ExampleFiles.child);
 
 // a samplePlayer in mono ... one channel only
-SynthDef("aMonoSamplePlayer", { arg bus = 0, bufnum = 0, rateScale = 1;
+SynthDef(\aMonoSamplePlayer, { arg bus = 0, bufnum = 0, rateScale = 1;
 	Out.ar(
 		bus,
 		PlayBuf.ar(
@@ -27,7 +27,7 @@ SynthDef("aMonoSamplePlayer", { arg bus = 0, bufnum = 0, rateScale = 1;
 
 (
 // test the synthdef ... does it work? (yes, it's fine. it plays on the left channel)
-Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b]);
+Synth(\aMonoSamplePlayer, [\bus, 0, \bufNum, b]);
 )
 
 
@@ -36,8 +36,8 @@ Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b]);
 // the same synthdef to different channels
 // in this case, play a 1-channel soundfile on 2 channels
 // a different playback rate for each channel makes the effect more obvious
-Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b, \rateScale, 0.99]);
-Synth("aMonoSamplePlayer", [\bus, 1, \bufNum, b, \rateScale, 1.01]);
+Synth(\aMonoSamplePlayer, [\bus, 0, \bufNum, b, \rateScale, 0.99]);
+Synth(\aMonoSamplePlayer, [\bus, 1, \bufNum, b, \rateScale, 1.01]);
 )
 ::
 
@@ -105,7 +105,7 @@ code::
 b = Buffer.read(s, ExampleFiles.child);
 
 // define a sample player that will loop over a soundfile
-SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mul = 1;
+SynthDef(\aLoopingSamplePlayer, { arg outBus = 0, bufnum = 0, rateScale = 1, mul = 1;
 	Out.ar(
 		outBus,
 		PlayBuf.ar(
@@ -120,7 +120,7 @@ SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mu
 }).add;
 
 // apply amplitude modulation to an audio source
-SynthDef("ampMod", { arg inBus = 0, outBus = 0, modFreq = 1;
+SynthDef(\ampMod, { arg inBus = 0, outBus = 0, modFreq = 1;
 	Out.ar(
 		outBus,
 		[	// In.ar ugen reads from an audio bus
@@ -131,7 +131,7 @@ SynthDef("ampMod", { arg inBus = 0, outBus = 0, modFreq = 1;
 }).add;
 
 // apply a low pass filter to an audio source
-SynthDef("aLowPassFilter", { arg inBus = 0, outBus = 0, freq = 300, freqDev = 50, boost = 1;
+SynthDef(\aLowPassFilter, { arg inBus = 0, outBus = 0, freq = 300, freqDev = 50, boost = 1;
 	Out.ar(
 		outBus,
 		RLPF.ar(

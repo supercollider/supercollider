@@ -145,7 +145,7 @@ w.front;
 )
 
 (
-SynthDef("sineBlip", {
+SynthDef(\sineBlip, {
 	arg freq = 440, vol = 0.1, la0, la1, la2, la3, la4, ta0, ta1, ta2, ta3, crva,
 		lf0, lf1, lf2, lf3, lf4, tf0, tf1, tf2, tf3, crvf;
 	var signal, fenv, aenv;
@@ -168,7 +168,7 @@ Routine({
 			x.env.levels ++
 			x.env.times ++
 			x.env.curves)).flatten;
-		s.sendBundle(s.latency, [\s_new, "sineBlip", -1, 1, 1, \freq, exprand(4e3, 11e3)] ++ par);
+		s.sendBundle(s.latency, [\s_new, \sineBlip, -1, 1, 1, \freq, exprand(4e3, 11e3)] ++ par);
 		0.04.wait;
 	});
 }).play;

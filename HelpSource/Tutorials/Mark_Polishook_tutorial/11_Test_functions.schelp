@@ -34,7 +34,7 @@ Code can be transfered from a test function into a synthdef. In the following ex
 
 code::
 (
-SynthDef("ringMod", {
+SynthDef(\ringMod, {
 	Out.ar(
 		0,
 		SinOsc.ar([440.067, 441.013], 0, 1)
@@ -44,7 +44,7 @@ SynthDef("ringMod", {
 }).add;
 )
 
-Synth("ringMod")
+Synth(\ringMod)
 ::
 
 section::Multi-channel expansion

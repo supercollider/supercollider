@@ -16,7 +16,7 @@ code::
 first make sure that the localhost server is booted. Then put the cursor anywhere on the line (shown above) and press <enter>. If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return( on Some Macs), or Shift-Return. The server will synthesize audio and text that looks something like
 
 code::
-Synth("-613784702" : 1000)
+-> Synth('temp__0' : 1000)
 ::
 
 will appear in the post window.
@@ -46,7 +46,7 @@ code::
 The server will synthesize audio and text that looks something like
 
 code::
-Synth("-393573063" : 1000)
+-> Synth('temp__1' : 1001)
 ::
 
 will appear in the post window.
