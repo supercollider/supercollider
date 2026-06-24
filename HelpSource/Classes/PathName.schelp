@@ -282,7 +282,7 @@ File.deleteAll(~basePath) // Evaluate this to remove the files and folders creat
 method::diskName
 if path is an absolute path, returns
 list::
-## the top-level directory of the path on linux and macOS,
+## the top-level directory of the path on Linux and macOS,
 ## the drive letter on Windows
 ::
 else a blank string.
