@@ -422,23 +422,13 @@ code::
 	~window.front;
 )
 
-// monte carlo : exec every line to test
-~window.view.setBackgroundImage(~image, 1, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 2, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 3, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 4, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 5, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 6, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 7, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 8, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 9, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 10, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 11, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 12, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 13, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 14, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 15, ~alpha, ~bounds);
-~window.view.setBackgroundImage(~image, 16, ~alpha, ~bounds);
+// sequential image mutation by cycling through tile modes
+// (monte-carlo-like visual effect; not an actual monte carlo algorithm)
+(
+{ 16.do { |i| 
+	~window.view.setBackgroundImage(~image, i + 1, ~alpha, ~bounds); 0.5.wait } 
+}.fork(AppClock)
+)
 
 // this is safe even if window is still open because Background object holds the Image
 ~image.free;
