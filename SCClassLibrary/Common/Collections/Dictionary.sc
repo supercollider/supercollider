@@ -360,7 +360,7 @@ Dictionary : Set {
 	}
 	scanFor { arg argKey;
 		var maxHash = array.size div: 2;
-		var start = (argKey.hash % maxHash) * 2;
+		var start = (argKey.keyHash % maxHash) * 2;
 		var end = array.size-1;
 		var i = start;
 		forBy( start, end, 2, { arg i;

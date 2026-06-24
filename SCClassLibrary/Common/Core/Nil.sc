@@ -129,4 +129,6 @@ Nil {
 	}
 
 	superclassesDo {}
+
+	keyHash { Error("'nil' is not valid as a Dictionary key").throw }
 }
