@@ -6,27 +6,6 @@ PathName {
 	classvar <>tmp;
 
 	*new { | path = "" |
-		var standardPath = path.standardizePath;
-		standardPath = if((path.first != $/) && (standardPath.first == $/)) {
-			standardPath[1..]
-		} {
-			standardPath
-		};
-		standardPath = if((path.first == $/) && (standardPath.first != $/)) {
-			"/" ++ standardPath
-		} {
-			standardPath
-		};
-		standardPath = if((path.last != $/) && (standardPath.last == $/)) {
-			standardPath ++ $/
-		} {
-			standardPath[..standardPath.size - 1]
-		};
-		standardPath = if((path.last == $/) && (standardPath.last != $/)) {
-			standardPath ++ $/
-		} {
-			standardPath
-		};
 		^super.newCopyArgs(standardPath);
 	}
 

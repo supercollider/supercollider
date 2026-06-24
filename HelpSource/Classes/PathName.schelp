@@ -138,151 +138,46 @@ myPath.filesDo{ |afile| afile.postln };
 ::
 
 method::allFolders
+note::
+This method has known reliability issues and is generally discouraged.
+Use instead link::Classes/String#-dirname:: and link::Classes/String#-split:: in combination:
+code::
+"Imaginary/Directory/fish.rtf".dirname.split($/) // on Linux and macOS
+::
+returns:
+teletype::
+-> [Imaginary, Directory]
+::
+code::
+"/Imaginary/Directory/fish.rtf".dirname.split($/) // on Linux and macOS
+::
+returns:
+teletype::
+-> [, Imaginary, Directory]
+::
+code::
+"D:/Directory/fish.rtf".dirname.split($/)        // on Windows
+::
+returns:
+teletype::
+-> [D:, Directory]
+::
+::
+
 Does a string comparison based on LINK::Classes/Platform#*pathSeparator::, and will return all entries which are surrounded by this separator.
 Since it solely relies on string comparison, this will not check the context of the filesystem to verify if the returned entries are actually folders.
 
-code::
-/* a separator at the beginning; no separator at the end */
-
-// test with a file:
-(
-var filePath = ExampleFiles.child.debug;
-var myPath = PathName.new(filePath);
-myPath.postln;
-myPath.allFolders; // includes the top-level directory; excludes a11wlk01.wav
-)
-
-// test with a folder:
-(
-var folderPath = ExampleFiles.child.dirname.debug;
-var myPath = PathName.new(folderPath);
-myPath.postln;
-myPath.allFolders; // includes the top-level directory; excludes the bottom-most folder
-)
-
-
-/* separators at the beginning and at the end */
-
-// test with a file:
-(
-var filePath = (ExampleFiles.child ++ "/").debug;
-var myPath = PathName.new(filePath);
-myPath.postln;
-myPath.allFolders; // includes both the top-level directory and a11wlk01.wav
-)
-
-// test with a folder:
-(
-var folderPath = (ExampleFiles.child.dirname ++ "/").debug;
-var myPath = PathName.new(folderPath);
-myPath.postln;
-myPath.allFolders; // includes both the top-level directory and the bottom-most folder
-)
-
-
-/* no separators at the beginning or the end */
-
-// test with a file:
-(
-var filePath = (ExampleFiles.child.replaceRegexp("^/", "")).debug;
-var myPath = PathName.new(filePath);
-myPath.postln;
-
-myPath.allFolders; 
-// linux & macOS: excludes both the top-level directory and a11wlk01.wav
-// Windows: includes the top-level directory; excludes a11wlk01.wav
-// See the PathName method .diskName
-)
-
-// test with a folder:
-(
-var folderPath = (ExampleFiles.child.dirname.replaceRegexp("^/", "")).debug;
-var myPath = PathName.new(folderPath);
-myPath.postln;
-
-myPath.allFolders; 
-// linux & macOS: excludes both the top-level directory and the bottom-most folder
-// Windows: includes the top-level directory; excludes the bottom-most folder
-// See the PathName method .diskName
-)
-
-
-/* no separator at the beginning; a separator at the end */
-
-// test with a file:
-(
-var filePath = (ExampleFiles.child.replaceRegexp("^/", "") ++ "/").debug;
-var myPath = PathName.new(filePath);
-myPath.postln;
-
-myPath.allFolders; 
-// linux & macOS: excludes the top-level directory; includes a11wlk01.wav
-// Windows: includes both the top-level directory and a11wlk01.wav
-// See the PathName method .diskName
-)
-
-// test with a folder:
-(
-var folderPath = (ExampleFiles.child.dirname.replaceRegexp("^/", "") ++ "/").debug;
-var myPath = PathName.new(folderPath);
-myPath.postln;
-
-myPath.allFolders; 
-// linux & macOS: excludes the top-level directory; includes the bottom-most folder
-// Windows: includes both the top-level directory and the bottom-most folder
-// See the PathName method .diskName
-)
-::
-
-discussion::
-When the path does not end with a seperator, the method handles the path consistently, regardless of whether the final component contains a file extension or not.
-code::
-(
-var filePath_original       = PathName(ExampleFiles.child);
-var basePath                = ("~/Downloads/test_" ++ Date.seed).standardizePath;
-var folderPath_wo_extension = basePath +/+ filePath_original.extension;
-var folderPath_w_extension  = basePath +/+ filePath_original.extension ++ ".folder";
-var filePath_w_extension    = basePath +/+ filePath_original.fileName;
-var filePath_wo_extension   = basePath +/+ filePath_original.fileNameWithoutExtension;
-
-[basePath, folderPath_wo_extension, folderPath_w_extension].do { |path| path.mkdir };
-
-[filePath_w_extension, filePath_wo_extension].do { |path|
-    File.copy(filePath_original.fullPath, path)
-};
-
-[
-    ["FILE with extension:\n\t", filePath_w_extension],
-    ["FILE without extension:\n\t", filePath_wo_extension],
-    ["FOLDER without extension:\n\t", folderPath_wo_extension],
-    ["FOLDER with extension:\n\t", folderPath_w_extension],
-].do { |array|
-	var path = Platform.case(
-		\windows, { array[1].replace("/", "\\").replace("\\", "\\\\") },
-		{ array[1] }
-	);
-	var code = "PathName(" ++ path.quote ++ ").allFolders";
-    (array[0] ++ code ++ "\n\t\t" ++ code.interpret.asString).postln;
-    (
-        if(array[0].contains("FILE")) {
-            "\t\t     <- All folder names are included."
-        } {
-            "\t\t     <- The folder name \"" ++ array[1].basename++ "\" is excluded."
-        }
-        ++ "\n").postln
-};
-
-basePath.openOS;
-
-~basePath = basePath /*
-File.deleteAll(~basePath) // Evaluate this to remove the files and folders created for the test. */
-)
-::
 
 method::diskName
+
+note::
+This method has known reliability issues and is generally discouraged.
+It remains available for legacy use cases, and the examples below illustrate how to use it when necessary.
+::
+
 if path is an absolute path, returns
 list::
-## the top-level directory of the path on linux and macOS,
+## the top-level directory of the path on Linux and macOS,
 ## the drive letter on Windows
 ::
 else a blank string.
