@@ -886,7 +886,7 @@ code::
 	w.front;
 )
 
-// monte carlo : exec every line to test
+// monte carlo :) exec every line to test
 // r = nil; // uncomment for full image
 w.view.backgroundImage_(a, 1, b, r);
 w.view.backgroundImage_(a, 2, b, r);
