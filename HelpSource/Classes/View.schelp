@@ -423,7 +423,7 @@ code::
 )
 
 // sequential image mutation by cycling through tile modes
-// (monte-carlo-like visual effect; not an actual monte carlo algorithm)
+// (monte-carlo-like visual effect; not an actual Monte Carlo methods)
 (
 { 16.do { |i| 
 	~window.view.setBackgroundImage(~image, i + 1, ~alpha, ~bounds); 0.5.wait } 
