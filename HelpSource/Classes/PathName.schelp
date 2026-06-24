@@ -142,21 +142,21 @@ note::
 This method has known reliability issues and is generally discouraged.
 Use instead link::Classes/String#-dirname:: and link::Classes/String#-split:: in combination:
 code::
-"Imaginary/Directory/fish.rtf".dirname.split($/) // on Linux and macOS
+"Imaginary/Directory/fish.rtf".dirname.split // on Linux and macOS
 ::
 returns:
 teletype::
 -> [Imaginary, Directory]
 ::
 code::
-"/Imaginary/Directory/fish.rtf".dirname.split($/) // on Linux and macOS
+"/Imaginary/Directory/fish.rtf".dirname.split // on Linux and macOS
 ::
 returns:
 teletype::
 -> [, Imaginary, Directory]
 ::
 code::
-"D:/Directory/fish.rtf".dirname.split($/)        // on Windows
+"D:/Directory/fish.rtf".dirname.split        // on Windows
 ::
 returns:
 teletype::

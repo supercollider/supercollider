@@ -6,7 +6,7 @@ PathName {
 	classvar <>tmp;
 
 	*new { | path = "" |
-		^super.newCopyArgs(standardPath);
+		^super.newCopyArgs(path.standardizePath)
 	}
 
 	*initClass {
