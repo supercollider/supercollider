@@ -218,9 +218,6 @@ void ScProcess::onReadAllStandardOutput(void) {
 
     QByteArray out = readAllStandardOutput();
     QString postString = QString::fromUtf8(out);
-#ifdef Q_OS_WIN
-    postString.remove('\r');
-#endif
     emit scPost(postString);
 }
 
@@ -231,11 +228,7 @@ void ScProcess::onReadAllStandardError(void) {
             return;
     }
     QByteArray out = readAllStandardError();
-    QString errorString = QString::fromUtf8(out);
-#ifdef Q_OS_WIN
-    errorString.remove('\r');
-#endif
-    emit scPost("ERROR: " + errorString);
+    emit scPost("ERROR: " + QString::fromUtf8(out));
 }
 
 void ScProcess::evaluateCode(QString const& commandString, bool silent) {
