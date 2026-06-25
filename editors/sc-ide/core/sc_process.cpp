@@ -160,7 +160,7 @@ void ScProcess::startLanguage(void) {
     };
     emit scPost(tr("Starting interpreter with \"") + startMessageContent + "\" in \"" + workingDirectory + "\"\n");
 
-    QProcess::start(sclangCommand, sclangArguments);
+    QProcess::start(sclangCommand, sclangArguments, QIODevice::ReadWrite | QIODevice::Text);
     bool processStarted = QProcess::waitForStarted();
     if (!processStarted)
         emit statusMessage(tr("Failed to start interpreter!"));
