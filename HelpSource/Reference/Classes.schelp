@@ -56,7 +56,7 @@ The messages of a class' interface are implemented in the methods of the class. 
 Method definitions follow the class variable and instance variable declarations in the class.
 
 Method definitions are similar to FunctionDefs in syntax. Method definitions begin with the message selector. The message selector must be an identifier or a binary operator. Methods have arguments and variable declarations with the same syntax as in FunctionDefs.
-Methods however have an implicit first argument named this which is the receiver of the message. The variable code::this:: may be referred to just like any of the other arguments and variables in the method. You may not assign a value to code::this::.
+Methods however have an implicit first argument named code::this:: which is the receiver of the message. The variable code::this:: may be referred to just like any of the other arguments and variables in the method. You may not assign a value to code::this::.
 
 section:: Class Methods
 
