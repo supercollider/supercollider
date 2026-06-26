@@ -222,7 +222,13 @@ void EditorTabBar::mouseDoubleClickEvent(QMouseEvent* event) {
 }
 
 void EditorTabBar::showContextMenu(QMouseEvent* event) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mTabUnderCursor = tabAt(event->pos());
+    QPoint globalPos = event->screenPos().toPoint();
+#else
+    mTabUnderCursor = tabAt(event->position().toPoint());
+    QPoint globalPos = event->globalPosition().toPoint();
+#endif
 
     QMenu* menu = new QMenu(this);
     // Cannot have a close tab action if we are not over a tab
@@ -234,7 +240,7 @@ void EditorTabBar::showContextMenu(QMouseEvent* event) {
         menu->addAction(tr("Close Tabs to the Right"), this, SLOT(onCloseTabsToTheRight()));
     }
 
-    menu->popup(event->screenPos().toPoint());
+    menu->popup(globalPos);
 }
 
 void EditorTabBar::onCloseTab() {

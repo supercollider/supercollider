@@ -478,7 +478,11 @@ bool QWidgetProxy::interpretDragEvent(QObject* o, QEvent* e, QList<QVariant>& ar
         if (!internal)
             interpretMimeData(data, args);
     } else {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QPoint pos = dnd->pos();
+#else
+        QPoint pos = dnd->position().toPoint();
+#endif
         args << pos.x() << pos.y();
     }
 
