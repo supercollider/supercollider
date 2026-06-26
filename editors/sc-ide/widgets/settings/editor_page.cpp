@@ -39,7 +39,7 @@ EditorPage::EditorPage(QWidget* parent):
     QWidget(parent),
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     fontDatabase(new QFontDatabase),
-#endif()
+#endif
     ui(new Ui::EditorConfigPage) {
     ui->setupUi(this);
 
