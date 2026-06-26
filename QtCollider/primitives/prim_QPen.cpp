@@ -308,14 +308,14 @@ QC_QPEN_PRIMITIVE(QPen_Rotate, 3, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
 
 QC_QPEN_PRIMITIVE(QPen_SetTransform, 1, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
     QVariantList list = QtCollider::get(a);
-    if (list.count() < 6)
+    if (list.size() < 6)
         return errWrongType;
     float f[6];
     int i = 6;
     while (i) {
         --i;
         const QVariant& var = list[i];
-        if (!var.canConvert(QVariant::Double))
+        if (!var.canConvert<double>())
             return errWrongType;
         f[i] = var.value<float>();
     }
