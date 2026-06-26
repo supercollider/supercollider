@@ -150,8 +150,14 @@ Token::Type ScLexer::nextTokenInCode(int& lengthResult) {
 
         for (; it != end; ++it) {
             LexicalRule const& rule = *it;
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             QRegularExpressionMatch match = rule.expr.match(mText, mOffset, QRegularExpression::NormalMatch,
                                                             QRegularExpression::AnchoredMatchOption);
+#else
+            QRegularExpressionMatch match = rule.expr.match(mText, mOffset, QRegularExpression::NormalMatch,
+                                                            QRegularExpression::AnchorAtOffsetMatchOption);
+#endif
             if (match.hasMatch()) {
                 // a guard to ensure all regexps match only at the beginning of the string:
                 Q_ASSERT(match.capturedStart() == mOffset);
