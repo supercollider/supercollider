@@ -62,8 +62,13 @@ SclangPage::SclangPage(QWidget* parent): QWidget(parent), ui(new Ui::SclangConfi
     connect(ui->sclang_remove_include, &QToolButton::clicked, this, &SclangPage::removeIncludePath);
     connect(ui->sclang_remove_exclude, &QToolButton::clicked, this, &SclangPage::removeExcludePath);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
     connect(ui->sclang_post_inline_warnings, &QCheckBox::stateChanged, this, &SclangPage::sclangConfigChanged);
     connect(ui->sclang_exclude_default_paths, &QCheckBox::stateChanged, this, &SclangPage::sclangConfigChanged);
+#else
+    connect(ui->sclang_post_inline_warnings, &QCheckBox::checkStateChanged, this, &SclangPage::sclangConfigChanged);
+    connect(ui->sclang_exclude_default_paths, &QCheckBox::checkStateChanged, this, &SclangPage::sclangConfigChanged);
+#endif
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(ui->sclang_port, SIGNAL(valueChanged(int)), this, SLOT(showLanguageRestartDialogOnSave()));
