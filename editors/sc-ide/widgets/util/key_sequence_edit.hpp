@@ -37,13 +37,27 @@ public:
         setReadOnly(true);
     }
 
-    QKeySequence sequence() { return QKeySequence(k1, k2, k3, k4); }
+    QKeySequence sequence() {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+        return QKeySequence(k1, k2, k3, k4);
+#else
+        return QKeySequence(QKeyCombination::fromCombined(k1), QKeyCombination::fromCombined(k2),
+                            QKeyCombination::fromCombined(k3), QKeyCombination::fromCombined(k4));
+#endif
+    }
 
     void setSequence(const QKeySequence& seq) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         k1 = seq[0];
         k2 = seq[1];
         k3 = seq[2];
         k4 = seq[3];
+#else
+        k1 = seq[0].toCombined();
+        k2 = seq[1].toCombined();
+        k3 = seq[2].toCombined();
+        k4 = seq[3].toCombined();
+#endif
 
         if (mEditing)
             finishEditing();
