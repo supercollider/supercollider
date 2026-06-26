@@ -173,7 +173,11 @@ bool QObjectProxy::invokeMethod(const char* method, PyrSlot* retSlot, PyrSlot* a
     // construct the return data object
     QGenericReturnArgument rarg;
     const char* rtype_name = mm.typeName();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     int rtype_id = QMetaType::type(rtype_name);
+#else
+    int rtype_id = QMetaType::fromName(rtype_name).id();
+#endif
 
     MetaValue returnVal;
 

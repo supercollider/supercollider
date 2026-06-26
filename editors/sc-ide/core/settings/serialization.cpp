@@ -214,19 +214,24 @@ static void writeTextFormat(const QTextCharFormat& fm, YAML::Emitter& out) {
 }
 
 static void writeValue(const QVariant& var, YAML::Emitter& out) {
-    switch (var.type()) {
-    case QVariant::Invalid: {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    int typeId = var.userType();
+#else
+    int typeId = var.typeId();
+#endif
+    switch (typeId) {
+    case QMetaType::UnknownType: {
         out << YAML::Null;
         break;
     }
-    case QVariant::KeySequence: {
+    case QMetaType::QKeySequence: {
         QKeySequence kseq = var.value<QKeySequence>();
 
         out << kseq.toString(QKeySequence::PortableText).toUtf8().constData();
 
         break;
     }
-    case QVariant::List: {
+    case QMetaType::QVariantList: {
         out << YAML::LocalTag("QVariantList") << YAML::BeginSeq;
 
         QVariantList list = var.value<QVariantList>();
@@ -237,7 +242,7 @@ static void writeValue(const QVariant& var, YAML::Emitter& out) {
 
         break;
     }
-    case QVariant::Map: {
+    case QMetaType::QVariantMap: {
         out << YAML::LocalTag("QVariantMap") << YAML::BeginMap;
 
         QVariantMap map = var.value<QVariantMap>();
@@ -252,18 +257,13 @@ static void writeValue(const QVariant& var, YAML::Emitter& out) {
 
         break;
     }
-    case QVariant::UserType: {
-        int utype = var.userType();
-
-        if (utype == qMetaTypeId<QTextCharFormat>()) {
+    default: {
+        if (typeId == qMetaTypeId<QTextCharFormat>()) {
             writeTextFormat(var.value<QTextCharFormat>(), out);
         } else {
             out << var.toString().toUtf8().constData();
         }
         break;
-    }
-    default: {
-        out << var.toString().toUtf8().constData();
     }
     }
 }
@@ -336,12 +336,17 @@ void printSettings(const QSettings* settings) {
 
     cout << "config filename: " << settings->fileName().toStdString() << endl;
     QStringList keys = settings->allKeys();
-    cout << "num keys: " << keys.count() << endl;
+    cout << "num keys: " << keys.size() << endl;
     Q_FOREACH (QString key, keys) {
         QVariant var = settings->value(key);
-        if (var.type() == QVariant::Invalid)
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        int typeId = var.userType();
+#else
+        int typeId = var.typeId();
+#endif
+        if (typeId == QMetaType::UnknownType)
             cout << key.toStdString() << ": <null>" << endl;
-        else if (var.type() == QVariant::String)
+        else if (typeId == QMetaType::QString)
             cout << key.toStdString() << ": " << var.toString().toStdString() << endl;
         else
             cout << key.toStdString() << ": <unknown value type>" << endl;

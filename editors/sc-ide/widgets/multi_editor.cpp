@@ -825,12 +825,17 @@ void MultiEditor::loadSplitterState(MultiSplitter* splitter, const QVariantMap& 
 
     QVariantList childrenData = data.value("elements").value<QVariantList>();
     foreach (const QVariant& childVar, childrenData) {
-        if (childVar.type() == QVariant::List) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        int typeId = childVar.userType();
+#else
+        int typeId = childVar.typeId();
+#endif
+        if (typeId == QMetaType::QVariantList) {
             CodeEditorBox* childBox = newBox(splitter);
             splitter->addWidget(childBox);
             QVariantList childBoxData = childVar.value<QVariantList>();
             loadBoxState(childBox, childBoxData, documentList);
-        } else if (childVar.type() == QVariant::Map) {
+        } else if (typeId == QMetaType::QVariantMap) {
             MultiSplitter* childSplitter = new MultiSplitter(this);
             splitter->addWidget(childSplitter);
             QVariantMap childSplitterData = childVar.value<QVariantMap>();
