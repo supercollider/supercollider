@@ -74,7 +74,9 @@ QcApplication::QcApplication(int& argc, char** argv): QApplication(argc, argv, Q
     _mutex.lock();
     _instance = this;
     _mutex.unlock();
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     this->setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
 
 #ifdef Q_OS_MAC
     QtCollider::Mac::DisableAutomaticWindowTabbing();
