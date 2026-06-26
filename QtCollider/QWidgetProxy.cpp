@@ -413,7 +413,7 @@ bool QWidgetProxy::interpretKeyEvent(QObject* o, QEvent* e, QList<QVariant>& arg
 #endif
     {
         QString text(ke->text());
-        if (text.count())
+        if (!text.isEmpty())
             character = text[0];
     }
 

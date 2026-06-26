@@ -637,7 +637,7 @@ void GenericCodeEditor::doKeyAction(QKeyEvent* ke) {
 #endif
     {
         QString text(ke->text());
-        if (text.count()) {
+        if (!text.isEmpty()) {
             character = text[0];
         } else {
             character = QChar(QChar::ReplacementCharacter);
