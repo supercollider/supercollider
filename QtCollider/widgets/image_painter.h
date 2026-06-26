@@ -123,7 +123,7 @@ struct ImagePainter {
         case AlignVCenter:
             rect.moveTop(targetRect.top() + targetRect.height() / 2 - rect.height() / 2);
             break;
-        case AlignRight:
+        case AlignBottom:
             rect.moveBottom(targetRect.bottom());
             break;
         default:
