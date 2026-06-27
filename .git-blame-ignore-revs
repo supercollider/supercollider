@@ -13,3 +13,5 @@ d769495d25008dfd30b07a4128aa922d5e46dff6
 1afacd5b6d9f4f07ce9a9728cb23bf51194d4e62
 # re-indent cmake files w/ 4 spaces - adds consistency
 72e761f83c2318006b65446912f4807d9e3844be
+# fix line endings on various files
+fb07071b50a2549cb7be6a9dfdf86a986ff7ad51
