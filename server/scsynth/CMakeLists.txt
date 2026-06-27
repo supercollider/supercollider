@@ -320,7 +320,7 @@ if(AUDIOAPI STREQUAL bela)
 elseif(AUDIOAPI STREQUAL webaudio)
     target_compile_options(libscsynth PUBLIC -pthread)
     target_compile_options(scsynth PRIVATE -pthread)
-    set_target_properties(scsynth PROPERTIES LINK_FLAGS "
+    set_target_properties(scsynth PROPERTIES LINK_FLAGS "\
             -sAUDIO_WORKLET -sWASM_WORKERS -sUSE_PTHREADS -pthread \
             --bind \
             -sMODULARIZE=1 \
