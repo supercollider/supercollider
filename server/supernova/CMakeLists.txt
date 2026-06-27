@@ -45,9 +45,9 @@ set(libsupernova_src
 )
 
 if(APPLE)
-  list( APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm )
+    list( APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm )
 
-  set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 endif()
 
 
@@ -62,18 +62,19 @@ endif()
 file(GLOB_RECURSE supernova_headers *hpp)
 
 if(COMPACT_BUILD)
-  CREATE_FINAL_FILE(libsupernova_final.cpp ${libsupernova_src})
-  add_library (libsupernova STATIC libsupernova_final.cpp)
+    CREATE_FINAL_FILE(libsupernova_final.cpp ${libsupernova_src})
+    add_library (libsupernova STATIC libsupernova_final.cpp)
 else()
-  add_library (libsupernova STATIC ${libsupernova_src})
+    add_library (libsupernova STATIC ${libsupernova_src})
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR (LINUX AND CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     target_link_libraries(libsupernova atomic)
 endif()
 if(NOT WIN32)
-  set_property(TARGET libsupernova
-               PROPERTY OUTPUT_NAME supernova)
+    set_property(TARGET libsupernova
+            PROPERTY OUTPUT_NAME supernova
+    )
 endif()
 
 target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES} Boost::thread Boost::sync)
@@ -101,15 +102,15 @@ endif()
 if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD|DragonFly|OpenBSD|NetBSD")
     target_compile_definitions(libsupernova PUBLIC DLOPEN)
 else()
-  find_library(DL NAMES dl)
-  if(DL)
-      target_compile_definitions(libsupernova PUBLIC DLOPEN)
-      target_link_libraries(libsupernova ${DL})
-  endif()
+    find_library(DL NAMES dl)
+    if(DL)
+        target_compile_definitions(libsupernova PUBLIC DLOPEN)
+        target_link_libraries(libsupernova ${DL})
+    endif()
 endif()
 
 if (APPLE)
-	target_compile_definitions(libsupernova PRIVATE SC_FFT_VDSP)
+    target_compile_definitions(libsupernova PRIVATE SC_FFT_VDSP)
 else()
     if(FFT_GREEN)
         target_compile_definitions(libsupernova PRIVATE SC_FFT_GREEN)
@@ -142,11 +143,11 @@ endif()
 if(AUDIOAPI STREQUAL jack)
     # NOTE: this is a workaround for Windows if pkgconfig is not available
     if(WIN32 AND _JACK_LINK_LIBRARIES AND _JACK_INCLUDE_DIRS)
-      set(JACK_LINK_LIBRARIES ${_JACK_LINK_LIBRARIES})
-      set(JACK_INCLUDE_DIRS ${_JACK_INCLUDE_DIRS})
+        set(JACK_LINK_LIBRARIES ${_JACK_LINK_LIBRARIES})
+        set(JACK_INCLUDE_DIRS ${_JACK_INCLUDE_DIRS})
     else()
-      include(FindPkgConfig)
-      pkg_check_modules(JACK REQUIRED jack)
+        include(FindPkgConfig)
+        pkg_check_modules(JACK REQUIRED jack)
     endif()
     message(STATUS "Using JACK_LINK_LIBRARIES: ${JACK_LINK_LIBRARIES}")
     message(STATUS "Using JACK_INCLUDE_DIRS: ${JACK_INCLUDE_DIRS}")
@@ -165,24 +166,24 @@ if(AUDIOAPI STREQUAL portaudio)
 endif()
 
 if(NOT NO_LIBSNDFILE)
-	find_package(Sndfile)
-	if(SNDFILE_FOUND)
-		if(SNDFILE_HAS_VORBIS)
-			target_compile_definitions(libsupernova PRIVATE SNDFILE_HAS_VORBIS)
-		endif()
-		if(SNDFILE_HAS_OPUS)
-			target_compile_definitions(libsupernova PRIVATE SNDFILE_HAS_OPUS)
-		endif()
-		if(SNDFILE_HAS_MPEG)
-			target_compile_definitions(libsupernova PRIVATE SNDFILE_HAS_MPEG)
-		endif()
-		target_link_libraries(libsupernova ${SNDFILE_LIBRARIES})
-		target_include_directories(libsupernova SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
-	else()
-		message(SEND_ERROR "Cannot find libsndfile")
-	endif()
+    find_package(Sndfile)
+    if(SNDFILE_FOUND)
+        if(SNDFILE_HAS_VORBIS)
+            target_compile_definitions(libsupernova PRIVATE SNDFILE_HAS_VORBIS)
+        endif()
+        if(SNDFILE_HAS_OPUS)
+            target_compile_definitions(libsupernova PRIVATE SNDFILE_HAS_OPUS)
+        endif()
+        if(SNDFILE_HAS_MPEG)
+            target_compile_definitions(libsupernova PRIVATE SNDFILE_HAS_MPEG)
+        endif()
+        target_link_libraries(libsupernova ${SNDFILE_LIBRARIES})
+        target_include_directories(libsupernova SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
+    else()
+        message(SEND_ERROR "Cannot find libsndfile")
+    endif()
 else()
-	target_compile_definitions(libsupernova PRIVATE NO_LIBSNDFILE)
+    target_compile_definitions(libsupernova PRIVATE NO_LIBSNDFILE)
 endif()
 
 if (FFTW3F_FOUND)
@@ -214,41 +215,41 @@ target_link_libraries(supernova libsupernova)
 
 if(WIN32)
     if(NOT MSVC)
-      target_link_libraries(supernova "-municode")
+        target_link_libraries(supernova "-municode")
     endif(NOT MSVC)
     if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
-      set_target_properties(supernova libsupernova PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
+        set_target_properties(supernova libsupernova PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif()
 
     if(FFTW3F_FOUND)
-      file(GLOB FFTW3F_DLL "${FFTW3F_LIBRARY_DIR}/*fftw3f*.dll")
-      add_custom_command(TARGET supernova
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFTW3F_DLL}" $<TARGET_FILE_DIR:supernova>
-      )
+        file(GLOB FFTW3F_DLL "${FFTW3F_LIBRARY_DIR}/*fftw3f*.dll")
+        add_custom_command(TARGET supernova
+                POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFTW3F_DLL}" $<TARGET_FILE_DIR:supernova>
+        )
     endif(FFTW3F_FOUND)
 
     if(SNDFILE_FOUND)
-      file(GLOB SNDFILE_DLL "${SNDFILE_LIBRARY_DIR}/*sndfile*.dll")
-      add_custom_command(TARGET supernova
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SNDFILE_DLL}" $<TARGET_FILE_DIR:supernova>
-      )
+        file(GLOB SNDFILE_DLL "${SNDFILE_LIBRARY_DIR}/*sndfile*.dll")
+        add_custom_command(TARGET supernova
+                POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SNDFILE_DLL}" $<TARGET_FILE_DIR:supernova>
+        )
     endif(SNDFILE_FOUND)
 
     add_custom_command(TARGET supernova
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:scsynth>
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:sclang>
-      COMMENT "Copying supernova to targets scsynth and sclang"
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:scsynth>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:sclang>
+            COMMENT "Copying supernova to targets scsynth and sclang"
     )
 
     if(SC_IDE)
-      add_custom_command(TARGET supernova
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>
-        COMMENT "Copying supernova to target SuperCollider"
-      )
+        add_custom_command(TARGET supernova
+                POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>
+                COMMENT "Copying supernova to target SuperCollider"
+        )
     endif(SC_IDE)
 
     install(TARGETS supernova
@@ -264,17 +265,17 @@ elseif(APPLE)
             )
     endif()
 else()
-  install(TARGETS supernova
-          DESTINATION "bin"
-          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    install(TARGETS supernova
+            DESTINATION "bin"
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
 
 if(LTO)
     set_property(TARGET supernova libsupernova
-                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+            APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
     set_property(TARGET supernova libsupernova
-                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+            APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
 if (APPLE)

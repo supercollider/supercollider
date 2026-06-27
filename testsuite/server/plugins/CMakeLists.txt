@@ -36,9 +36,9 @@ endforeach()
 add_library(testlib SHARED testlib.cpp)
 # export symbols!
 set_target_properties(testlib PROPERTIES
-  CXX_VISIBILITY_PRESET default
+    CXX_VISIBILITY_PRESET default
 )
 target_link_libraries(shared_lib_test PRIVATE testlib)
 target_link_libraries(shared_lib_test_supernova PRIVATE testlib)
 set_property(TARGET testlib PROPERTY FOLDER Test/Plugin/C_API)
-  set_property(TARGET shared_lib_test_supernova PROPERTY FOLDER Test/Supernova)
+set_property(TARGET shared_lib_test_supernova PROPERTY FOLDER Test/Supernova)
