@@ -57,6 +57,17 @@ void QcMenu::removeAction(QAction* action) {
     }
 }
 
+#ifdef Q_OS_MAC
+// workaround to trigger menu actions on macOS
+void QcMenu::mousePressEvent(QMouseEvent* event) {
+    if (QAction* action = actionAt(event->pos())) {
+        action->trigger();
+        hide();
+    }
+    QMenu::mousePressEvent(event);
+}
+#endif
+
 void QcToolBar::addAction(QAction* action) {
     if (action) {
         QToolBar::addAction(action);

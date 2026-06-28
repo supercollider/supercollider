@@ -98,6 +98,11 @@ public:
     Q_INVOKABLE void removeAction(QAction* action);
 
     Q_INVOKABLE void clear() { QMenu::clear(); }
+
+#ifdef Q_OS_MAC
+protected:
+    void mousePressEvent(QMouseEvent* event) override;
+#endif
 };
 
 class QcToolBar : public QToolBar {
