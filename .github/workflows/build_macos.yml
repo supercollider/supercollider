@@ -16,9 +16,9 @@ jobs:
           - job-name: "universal arm64 x64 with ctest"
             os-version: "15"
             xcode-version: "16.0"
-            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-version: "6.8.3" # will use qt from aqtinstall
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
-            deployment-target: "11"
+            deployment-target: "12"
             cmake-architectures: "x86_64;arm64"
             homebrew-packages: ""
             homebrew-uninstall: "readline"

@@ -34,7 +34,7 @@ SuperCollider is tested with:
 
 SuperCollider is known to support these platforms:
 - Windows 10, 11
-- macOS 11-15
+- macOS 12-15, 26
 - Ubuntu 22.04-24.04
 
 
