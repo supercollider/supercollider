@@ -10,12 +10,10 @@ set(SCDOC_SRCS
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set_source_files_properties(
-    ${SCDOC_DIR}/lex.scdoc.cpp
-    PROPERTIES COMPILE_FLAGS "-Wno-null-conversion")
+    set_source_files_properties(
+        ${SCDOC_DIR}/lex.scdoc.cpp
+        PROPERTIES COMPILE_FLAGS "-Wno-null-conversion"
+    )
 endif()
 
-include_directories(
-    ${SCDOC_DIR}
-)
-
+include_directories(${SCDOC_DIR})

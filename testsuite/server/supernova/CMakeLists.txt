@@ -13,9 +13,7 @@ set(simple_tests
     timetag_test.cpp
 )
 if(NOT NO_LIBSNDFILE)
-	list(APPEND simple_tests
-		sndfile_backend_test.cpp
-	)
+    list(APPEND simple_tests sndfile_backend_test.cpp)
 endif()
 
 if(!APPLE)
@@ -28,26 +26,29 @@ endif()
 
 # run simple tests
 foreach(test ${simple_tests})
-  string(REPLACE .cpp "" test_name ${test} )
-  add_executable(${test_name} ${test})
+    string(REPLACE .cpp "" test_name ${test})
+    add_executable(${test_name} ${test})
 
-  target_link_libraries(${test_name} boost_test libsupernova Boost::thread)
+    target_link_libraries(${test_name} boost_test libsupernova Boost::thread)
 
-  if(LINUX AND CMAKE_COMPILER_IS_CLANG)
-    target_link_libraries(${test_name} atomic)
-  endif()
+    if(LINUX AND CMAKE_COMPILER_IS_CLANG)
+        target_link_libraries(${test_name} atomic)
+    endif()
 
-  add_test(supernova__${test_name}_run ${test_name})
+    add_test(supernova__${test_name}_run ${test_name})
 
-  set_property(TARGET ${test_name} PROPERTY FOLDER Test/Supernova)
+    set_property(TARGET ${test_name} PROPERTY FOLDER Test/Supernova)
 endforeach(test)
 
 if(NOT NO_LIBSNDFILE)
-  foreach(test_target sndfile_backend_test buffer_manager_test)
-    target_link_libraries(${test_target} PRIVATE ${SNDFILE_LIBRARIES})
-    target_include_directories(${test_target} SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
-  endforeach()
+    foreach(test_target sndfile_backend_test buffer_manager_test)
+        target_link_libraries(${test_target} PRIVATE ${SNDFILE_LIBRARIES})
+        target_include_directories(
+            ${test_target}
+            SYSTEM
+            PRIVATE ${SNDFILE_INCLUDE_DIR}
+        )
+    endforeach()
 else()
-  target_compile_definitions(buffer_manager_test PRIVATE NO_LIBSNDFILE)
+    target_compile_definitions(buffer_manager_test PRIVATE NO_LIBSNDFILE)
 endif()
-

@@ -4,6 +4,14 @@ repos:
     hooks:
     -   id: check-merge-conflict
     -   id: check-case-conflict
+
+-   repo: https://github.com/BlankSpruce/gersemi-pre-commit
+    rev: 0.27.7
+    hooks:
+    - id: gersemi
+      name: cmake formmater
+      exclude: ^external_libraries/*/
+
 -   repo: local
     hooks:
     -   id: clang_format

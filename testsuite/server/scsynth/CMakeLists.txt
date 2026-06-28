@@ -1,9 +1,7 @@
-set(test_source_files
-    scsynth_test.cpp readwrite_test.cpp
-)
+set(test_source_files scsynth_test.cpp readwrite_test.cpp)
 
 foreach(test_file ${test_source_files})
-    string(REPLACE .cpp "" test_name ${test_file} )
+    string(REPLACE .cpp "" test_name ${test_file})
     add_executable(${test_name} ${test_file})
     target_include_directories(
         ${test_name}
@@ -14,7 +12,7 @@ foreach(test_file ${test_source_files})
         PUBLIC ${CMAKE_SOURCE_DIR}/server/scsynth
     )
     target_link_libraries(${test_name} libscsynth boost_test)
-    if (PTHREADS_FOUND)
+    if(PTHREADS_FOUND)
         target_link_libraries(${test_name} ${PTHREADS_LIBRARIES})
     endif()
 

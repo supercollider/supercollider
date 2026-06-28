@@ -24,14 +24,10 @@ else()
         set(CACHED ${CMAKE_FIND_ROOT_PATH_MODE_PROGRAM})
         set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
     endif()
-    find_program(XENOMAI_XENO_CONFIG
-        NAMES
-            xeno-config
-        PATHS
-            ${_XENOMAI_INCLUDEDIR}
-            /usr/xenomai/bin
-            /usr/local/bin
-            /usr/bin
+    find_program(
+        XENOMAI_XENO_CONFIG
+        NAMES xeno-config
+        PATHS ${_XENOMAI_INCLUDEDIR} /usr/xenomai/bin /usr/local/bin /usr/bin
     )
     if(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM)
         # restore the previous value
@@ -40,29 +36,42 @@ else()
 
     if(XENOMAI_XENO_CONFIG)
         set(XENOMAI_FOUND TRUE)
-        execute_process(COMMAND ${XENOMAI_XENO_CONFIG} --skin=posix --cflags OUTPUT_VARIABLE XENOMAI_CFLAGS)
+        execute_process(
+            COMMAND ${XENOMAI_XENO_CONFIG} --skin=posix --cflags
+            OUTPUT_VARIABLE XENOMAI_CFLAGS
+        )
         string(STRIP "${XENOMAI_CFLAGS}" XENOMAI_CFLAGS)
         # use grep to separate out defines and includes
         execute_process(
-            COMMAND bash -c "A= ; for a in ${XENOMAI_CFLAGS}; do echo $a | grep -q \"\\-D.*\" && A=\"$A $a\"; done; echo $A"
-            OUTPUT_VARIABLE XENOMAI_DEFINITIONS)
+            COMMAND
+                bash -c
+                "A= ; for a in ${XENOMAI_CFLAGS}; do echo $a | grep -q \"\\-D.*\" && A=\"$A $a\"; done; echo $A"
+            OUTPUT_VARIABLE XENOMAI_DEFINITIONS
+        )
         string(STRIP "${XENOMAI_DEFINITIONS}" XENOMAI_DEFINITIONS)
 
         execute_process(
-            COMMAND bash -c "A= ; for a in ${XENOMAI_CFLAGS}; do echo $a | grep -q \"\\-I.*\" && A=\"$A `echo $a|sed s/-I//`;\"; done; echo $A"
-            OUTPUT_VARIABLE XENOMAI_INCLUDE_DIRS)
+            COMMAND
+                bash -c
+                "A= ; for a in ${XENOMAI_CFLAGS}; do echo $a | grep -q \"\\-I.*\" && A=\"$A `echo $a|sed s/-I//`;\"; done; echo $A"
+            OUTPUT_VARIABLE XENOMAI_INCLUDE_DIRS
+        )
         string(STRIP "${XENOMAI_INCLUDE_DIRS}" XENOMAI_INCLUDE_DIRS)
 
         execute_process(
             COMMAND ${XENOMAI_XENO_CONFIG} --skin=posix --ldflags --no-auto-init
             COMMAND sed "s/-Wl,@.*wrappers//g"
-            OUTPUT_VARIABLE XENOMAI_LIBRARIES)
+            OUTPUT_VARIABLE XENOMAI_LIBRARIES
+        )
         string(STRIP "${XENOMAI_LIBRARIES}" XENOMAI_LIBRARIES)
     endif()
 
     if(XENOMAI_FOUND)
         if(NOT XENOMAI_FIND_QUIETLY)
-            execute_process(COMMAND ${XENOMAI_XENO_CONFIG} --prefix OUTPUT_VARIABLE XENOMAI_PREFIX)
+            execute_process(
+                COMMAND ${XENOMAI_XENO_CONFIG} --prefix
+                OUTPUT_VARIABLE XENOMAI_PREFIX
+            )
             message(STATUS "Found xenomai: ${XENOMAI_PREFIX}")
             message(STATUS "XENOMAI_LIBRARIES: ${XENOMAI_LIBRARIES}")
             message(STATUS "XENOMAI_INCLUDE_DIRS: ${XENOMAI_INCLUDE_DIRS}")
@@ -74,5 +83,4 @@ else()
 
     # show the XENOMAI_ variables only in the advanced view
     mark_as_advanced(XENOMAI_LIBRARIES XENOMAI_INCLUDE_DIRS XENOMAI_DEFINITIONS)
-
 endif()

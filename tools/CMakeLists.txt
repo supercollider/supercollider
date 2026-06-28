@@ -11,7 +11,6 @@ configure_file(lint_or_format.py.in "${CMAKE_BINARY_DIR}/lint.py")
 set(SC_LINT_FORMAT_HELPER_SCRIPT_COMMAND format)
 configure_file(lint_or_format.py.in "${CMAKE_BINARY_DIR}/format.py")
 
-
 set_property(TARGET lint PROPERTY FOLDER Util)
 set_property(TARGET format PROPERTY FOLDER Util)
 set_property(TARGET lintall PROPERTY FOLDER Util)

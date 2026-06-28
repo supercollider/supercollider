@@ -6,62 +6,75 @@ set(QT_IDE_COMPONENTS
     Widgets
 )
 
-set(QT_IDE_LIBRARIES
-    Qt::Concurrent
-    Qt::Core
-    Qt::Network
-    Qt::Widgets
-)
+set(QT_IDE_LIBRARIES Qt::Concurrent Qt::Core Qt::Network Qt::Widgets)
 
 if(SC_USE_QTWEBENGINE)
-    list(APPEND QT_IDE_COMPONENTS
-        WebChannel
-        WebEngineWidgets
-        WebSockets
-    )
-    list(APPEND QT_IDE_LIBRARIES
+    list(APPEND QT_IDE_COMPONENTS WebChannel WebEngineWidgets WebSockets)
+    list(
+        APPEND QT_IDE_LIBRARIES
         Qt::WebChannel
         Qt::WebEngineWidgets
         Qt::WebSockets
     )
 endif()
 
-if (${QT_VERSION_MAJOR} GREATER_EQUAL 6 AND UNIX AND SC_USE_QTWEBENGINE)
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6 AND UNIX AND SC_USE_QTWEBENGINE)
     list(APPEND QT_IDE_LIBRARIES Qt::DBus)
 endif()
 
-find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} COMPONENTS ${QT_IDE_COMPONENTS} REQUIRED)
+find_package(
+    Qt${QT_VERSION_MAJOR}
+    ${REQUIRED_QT_VERSION}
+    COMPONENTS ${QT_IDE_COMPONENTS}
+    REQUIRED
+)
 
-if (APPLE)
-  include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-  set(ide_name ${scappbundlename})
+if(APPLE)
+    include(${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+    set(ide_name ${scappbundlename})
 else()
-  set(ide_name scide)
+    set(ide_name scide)
 endif()
 
 if(APPLE)
     if(NOT SC_SYMLINK_CLASSLIB)
         foreach(file ${ClassLibrary} ${HelpSource})
-            string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
+            string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file})
             get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
-            set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
+            set_source_files_properties(
+                ${file}
+                PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle}
+            )
         endforeach()
     endif()
 
     set(AdditionalStaticFiles ${Examples} ${Sounds})
     foreach(file ${AdditionalStaticFiles})
-        string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
+        string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file})
         get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
-        set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
+        set_source_files_properties(
+            ${file}
+            PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle}
+        )
     endforeach()
 
-    set( Icons ../../icons/sc_ide.icns)
-    set_source_files_properties(../../icons/sc_ide.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set(Icons ../../icons/sc_ide.icns)
+    set_source_files_properties(
+        ../../icons/sc_ide.icns
+        PROPERTIES MACOSX_PACKAGE_LOCATION Resources
+    )
 
-    set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
+    set(AdditionalBundleSources
+        ${ClassLibrary}
+        ${HelpSource}
+        ${BundleResources}
+        ${Examples}
+        ${Sounds}
+        ${Icons}
+    )
 endif()
 
-set ( ide_moc_hdr
+set(ide_moc_hdr
     core/main.hpp
     core/sig_mux.hpp
     core/sc_process.hpp
@@ -106,9 +119,9 @@ set ( ide_moc_hdr
     widgets/util/volume_widget.hpp
 )
 
-file (GLOB_RECURSE all_hdr *hpp)
+file(GLOB_RECURSE all_hdr *hpp)
 
-set ( ide_src
+set(ide_src
     core/main.cpp
     core/app_palette.cpp
     core/sig_mux.cpp
@@ -156,16 +169,13 @@ set ( ide_src
     widgets/util/volume_widget.cpp
     widgets/util/status_box.cpp
     widgets/style/style.cpp
-
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
-
     ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp
     ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.hpp
-
     ${CMAKE_SOURCE_DIR}/SCDoc/SCDoc.cpp
     ${CMAKE_SOURCE_DIR}/SCDoc/SCDoc.tab.cpp
     ${CMAKE_SOURCE_DIR}/SCDoc/lex.scdoc.cpp
@@ -192,7 +202,7 @@ if(SC_USE_QTWEBENGINE)
     list(APPEND ide_src ${ide_webengine_src})
 endif()
 
-set( ide_forms
+set(ide_forms
     forms/settings_dialog.ui
     forms/settings_general.ui
     forms/settings_sclang.ui
@@ -201,21 +211,18 @@ set( ide_forms
 )
 
 # QtCollider shared sources:
-list(APPEND ide_moc_hdr
-    ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.hpp
-)
-list(APPEND ide_src
-    ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.cpp
-)
+list(APPEND ide_moc_hdr ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.hpp)
+list(APPEND ide_src ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.cpp)
 
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+    set_property(
+        SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
+        PROPERTY COMPILE_FLAGS -xobjective-c++
+    )
 endif()
 
 if(APPLE)
-	list(APPEND ide_src
-        ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
-    )
+    list(APPEND ide_src ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm)
 elseif(WIN32)
     list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
@@ -233,7 +240,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include(${CMAKE_SOURCE_DIR}/SCDoc/CMakeLists.txt)
 
 # Translation files
-set( translation_src
+set(translation_src
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_de.ts
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_es.ts
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_fr.ts
@@ -246,43 +253,47 @@ set( translation_src
 )
 
 # Translation file for source code native language, used only to handle singular/plural forms
-set( native_translation_src ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide.ts )
+set(native_translation_src ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide.ts)
 
 # A handy target to update translation source files
-add_custom_target( update_ide_translations
-    COMMAND lupdate ${CMAKE_CURRENT_SOURCE_DIR} -ts ${translation_src}
-            -no-obsolete
-    COMMAND lupdate ${CMAKE_CURRENT_SOURCE_DIR} -ts ${native_translation_src}
-            -no-obsolete -pluralonly
+add_custom_target(
+    update_ide_translations
+    COMMAND
+        lupdate ${CMAKE_CURRENT_SOURCE_DIR} -ts ${translation_src} -no-obsolete
+    COMMAND
+        lupdate ${CMAKE_CURRENT_SOURCE_DIR} -ts ${native_translation_src}
+        -no-obsolete -pluralonly
 )
 
-qt_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
-qt_wrap_ui( ide_forms_src ${ide_forms} )
+qt_wrap_cpp(ide_moc_src ${ide_moc_hdr})
+qt_wrap_ui(ide_forms_src ${ide_forms})
 qt_add_resources( ide_rcc resources.qrc )
-qt_add_translation( translations ${translation_src} ${native_translation_src} ) 
+qt_add_translation( translations ${translation_src} ${native_translation_src} )
 
-set(ide_sources ${ide_src} ${all_hdr} )
+set(ide_sources ${ide_src} ${all_hdr})
 
 set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc})
 
 if(APPLE)
     foreach(file ${translations})
-        set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/translations)
+        set_source_files_properties(
+            ${file}
+            PROPERTIES MACOSX_PACKAGE_LOCATION Resources/translations
+        )
     endforeach()
 endif()
 
 # This sets up the exe icon for windows.
 if(WIN32)
- set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
+    set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
 endif(WIN32)
-
 
 # final builds of the IDE seem to be broken atm
 if(0 AND FINAL_BUILD)
-  CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_library( libscide STATIC scide_final.cpp ${ide_rc_sources})
+    create_final_file(scide_final.cpp ${ide_sources})
+    add_library(libscide STATIC scide_final.cpp ${ide_rc_sources})
 else()
-  add_library( libscide STATIC ${ide_sources} ${ide_rc_sources})
+    add_library(libscide STATIC ${ide_sources} ${ide_rc_sources})
 endif()
 
 # Enable targets that depend on libscide to find its headers and their contents.
@@ -291,21 +302,30 @@ endif()
 #  "util/standard_dirs.hpp"
 #  "../primitives/localsocket_utils.hpp"
 # So we need add all the sub-directories to the search path:
-target_include_directories(libscide PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/core
-    ${CMAKE_CURRENT_SOURCE_DIR}/core/settings
-    ${CMAKE_CURRENT_SOURCE_DIR}/core/util
-    ${CMAKE_CURRENT_SOURCE_DIR}/forms
-    ${CMAKE_CURRENT_SOURCE_DIR}/primitives
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/code_editor
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/settings
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/style
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/util
+target_include_directories(
+    libscide
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/core
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/settings
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/util
+        ${CMAKE_CURRENT_SOURCE_DIR}/forms
+        ${CMAKE_CURRENT_SOURCE_DIR}/primitives
+        ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+        ${CMAKE_CURRENT_SOURCE_DIR}/widgets/code_editor
+        ${CMAKE_CURRENT_SOURCE_DIR}/widgets/settings
+        ${CMAKE_CURRENT_SOURCE_DIR}/widgets/style
+        ${CMAKE_CURRENT_SOURCE_DIR}/widgets/util
 )
 
-add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources} ${translations})
+add_executable(
+    SuperCollider
+    MACOSX_BUNDLE
+    core/main_function.cpp
+    ${RES_FILES}
+    ${AdditionalBundleSources}
+    ${translations}
+)
 
 set_target_properties(libscide PROPERTIES PREFIX "")
 
@@ -317,32 +337,37 @@ if(APPLE)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
     if(NOT SC_DISABLE_XCODE_CODESIGNING)
         # codesign --deep seems to be needed for the SuperCollider binary to allow incremental builds
-        set_target_properties(SuperCollider PROPERTIES XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep")
+        set_target_properties(
+            SuperCollider
+            PROPERTIES XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep"
+        )
     endif()
 else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-target_link_libraries( libscide PUBLIC
-    ${QT_IDE_LIBRARIES}
-    yaml-cpp
-    oscpack
-)
+target_link_libraries(libscide PUBLIC ${QT_IDE_LIBRARIES} yaml-cpp oscpack)
 
-target_link_libraries( SuperCollider libscide)
+target_link_libraries(SuperCollider libscide)
 
 # This makes sclang/scide work with a Qt installation at a fixed location.
-set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
+set_property(
+    TARGET libscide SuperCollider
+    PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE
+)
 
 if(APPLE)
-    target_link_libraries( libscide PUBLIC "-framework CoreServices -framework Foundation")
-    target_link_libraries( libscide PUBLIC "-framework Cocoa" )
+    target_link_libraries(
+        libscide
+        PUBLIC "-framework CoreServices -framework Foundation"
+    )
+    target_link_libraries(libscide PUBLIC "-framework Cocoa")
 elseif(WIN32)
-    target_link_libraries( libscide PUBLIC wsock32 )
-    target_compile_definitions( libscide PUBLIC UNICODE _UNICODE)
+    target_link_libraries(libscide PUBLIC wsock32)
+    target_compile_definitions(libscide PUBLIC UNICODE _UNICODE)
     # The following prevents a Windows console from showing up
     # when the executable is started:
-    set_target_properties( SuperCollider PROPERTIES WIN32_EXECUTABLE TRUE )
+    set_target_properties(SuperCollider PROPERTIES WIN32_EXECUTABLE TRUE)
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -354,7 +379,10 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     target_link_libraries(libscide PUBLIC ${X11_X11_LIB})
 
     # This makes sclang/scide work with a Qt installation at a fixed location.
-    set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    set_property(
+        TARGET libscide SuperCollider
+        PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
+    )
 endif()
 
 if(PTHREADS_FOUND)
@@ -362,11 +390,17 @@ if(PTHREADS_FOUND)
 endif()
 
 if(LTO)
-    set_property(TARGET SuperCollider
-                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+    set_property(
+        TARGET SuperCollider
+        APPEND
+        PROPERTY COMPILE_FLAGS "-flto -flto-report"
+    )
 
-    set_property(TARGET SuperCollider
-                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+    set_property(
+        TARGET SuperCollider
+        APPEND
+        PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program"
+    )
 endif()
 
 if(SC_USE_QTWEBENGINE)
@@ -378,87 +412,130 @@ endif()
 
 if(APPLE)
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-        set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Install path prefix" FORCE)
+        set(CMAKE_INSTALL_PREFIX
+            "${CMAKE_BINARY_DIR}/Install"
+            CACHE PATH
+            "Install path prefix"
+            FORCE
+        )
     endif()
 
     # set how it shows up in the Info.plist file
-    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
+    set(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
     # ensure copyright in plist file always says current year as end date
     string(TIMESTAMP CURRENT_YEAR "%Y")
 
-    install(TARGETS SuperCollider
-          DESTINATION ${scappbundlename})
+    install(TARGETS SuperCollider DESTINATION ${scappbundlename})
 
     # for processing into the plist:
-    set_property(TARGET SuperCollider
-	    PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
+    set_property(
+        TARGET SuperCollider
+        PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename}
+    )
 
 elseif(WIN32)
 
     if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
-        set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
+        set_target_properties(
+            SuperCollider
+            PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>"
+        )
     endif()
 
     if(MSYS)
-      add_custom_command(TARGET SuperCollider
-        POST_BUILD
-        COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "create" "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:SuperCollider>"
-        COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
-      )
+        add_custom_command(
+            TARGET SuperCollider
+            POST_BUILD
+            COMMAND
+                "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "create"
+                "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:SuperCollider>"
+            COMMENT
+                "Creating links to SCClassLibrary, HelpSource, examples and sounds"
+        )
     else()
-      add_custom_command(TARGET SuperCollider
-        PRE_BUILD
-        COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"\""
-        COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
-      )
+        add_custom_command(
+            TARGET SuperCollider
+            PRE_BUILD
+            COMMAND
+                cmd /C
+                "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"\""
+            COMMENT
+                "Creating links to SCClassLibrary, HelpSource, examples and sounds"
+        )
     endif()
 
     foreach(translation ${translations})
-      add_custom_command(TARGET SuperCollider
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/translations
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${translation} $<TARGET_FILE_DIR:SuperCollider>/translations
-      )
+        add_custom_command(
+            TARGET SuperCollider
+            POST_BUILD
+            COMMAND
+                ${CMAKE_COMMAND} -E make_directory
+                $<TARGET_FILE_DIR:SuperCollider>/translations
+            COMMAND
+                ${CMAKE_COMMAND} -E copy_if_different ${translation}
+                $<TARGET_FILE_DIR:SuperCollider>/translations
+        )
     endforeach()
 
-    install(TARGETS SuperCollider
+    install(
+        TARGETS SuperCollider
         DESTINATION "${SC_WIN_BUNDLE_NAME}"
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        PERMISSIONS
+            OWNER_READ
+            OWNER_WRITE
+            OWNER_EXECUTE
+            GROUP_READ
+            GROUP_EXECUTE
+            WORLD_READ
+            WORLD_EXECUTE
     )
-    install(FILES ${translations}
+    install(
+        FILES ${translations}
         DESTINATION "${SC_WIN_BUNDLE_NAME}/translations"
     )
 
     set(SC_WIN_DLL_DIRS)
     if(SNDFILE_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
+        list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
     endif(SNDFILE_LIBRARY_DIR)
     if(FFTW3F_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
+        list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
     endif(FFTW3F_LIBRARY_DIR)
     if(READLINE_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
+        list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
     endif(READLINE_LIBRARY_DIR)
     if(QT_BIN_PATH)
-      list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
+        list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
     endif(QT_BIN_PATH)
 
     # run fixup_bundle prior to deployment to get FFTW, libsndfile, MSVC, and Qt libs
     # will run windeployqt afterward to auto-deploy QtWebEngine dependencies
-    install(CODE
-        "
+    install(
+        CODE
+            "
             include(BundleUtilities)
             fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\" \"\" \"${SC_WIN_DLL_DIRS}\")
         "
     )
 
-
 else()
-  install(TARGETS SuperCollider
-      RUNTIME DESTINATION "bin"
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-  install(FILES ${translations}
-      DESTINATION "share/SuperCollider/translations")
+    install(
+        TARGETS SuperCollider
+        RUNTIME
+            DESTINATION "bin"
+            PERMISSIONS
+                OWNER_READ
+                OWNER_WRITE
+                OWNER_EXECUTE
+                GROUP_READ
+                GROUP_EXECUTE
+                WORLD_READ
+                WORLD_EXECUTE
+    )
+    install(
+        FILES ${translations}
+        DESTINATION "share/SuperCollider/translations"
+    )
 endif()
 
 # mac/windows: find the Qt deploy utility.
@@ -471,56 +548,103 @@ if(APPLE OR WIN32)
         else()
             set(DEPLOY_PROG_NAME "macdeployqt")
         endif()
-        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
+        find_program(
+            DEPLOY_PROG
+            ${DEPLOY_PROG_NAME}
+            PATHS ${CMAKE_PREFIX_PATH}
+            PATH_SUFFIXES bin
+        )
         # only the IDE executable is scanned normally, so force scanning of sclang as well
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
-        set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents)
-        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
+        set(CONTENTS_DIR
+            ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents
+        )
+        set(DEPLOY_CMD
+            "\"${DEPLOY_PROG}\"
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
                 -executable=${CONTENTS_DIR}/MacOS/sclang
                 -executable=${CONTENTS_DIR}/Resources/scsynth
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
-            ")
+            "
+        )
         if(SC_USE_QTWEBENGINE)
             set(QT_WEBENGINE_APP
-            "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/Current/Helpers/QtWebEngineProcess.app")
-            set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")
-            string(APPEND DEPLOY_CMD "
+                "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/Current/Helpers/QtWebEngineProcess.app"
+            )
+            set(QT_WEBENGINE_PROCESS
+                "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess"
+            )
+            string(
+                APPEND DEPLOY_CMD
+                "
                 -executable=${QT_WEBENGINE_PROCESS}
-            ")
+            "
+            )
         endif()
         set(VERIFY_CMD "include(BundleUtilities)")
-        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6 AND "${Qt6_VERSION}" VERSION_LESS "6.9.3" AND SC_USE_QTWEBENGINE)
+        if(
+            "${QT_VERSION_MAJOR}" GREATER_EQUAL 6
+            AND "${Qt6_VERSION}" VERSION_LESS "6.9.3"
+            AND SC_USE_QTWEBENGINE
+        )
             # Fix deployment with qt from homebrew
-            execute_process(COMMAND brew --prefix OUTPUT_VARIABLE BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-            get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
-            cmake_path(IS_PREFIX BREW_PREFIX ${QtCore_location} QT_IS_FROM_HOMEBREW)
+            execute_process(
+                COMMAND brew --prefix
+                OUTPUT_VARIABLE BREW_PREFIX
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+            get_target_property(
+                QtCore_location
+                Qt${QT_VERSION_MAJOR}::Core
+                LOCATION
+            )
+            cmake_path(
+                IS_PREFIX
+                BREW_PREFIX
+                ${QtCore_location}
+                QT_IS_FROM_HOMEBREW
+            )
 
             if(QT_IS_FROM_HOMEBREW)
-                message(STATUS "Detected Qt6 from homebrew: will fix deployment of QtQuickWidgets")
-                execute_process(COMMAND brew --prefix qt6 OUTPUT_VARIABLE QT_BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+                message(
+                    STATUS
+                    "Detected Qt6 from homebrew: will fix deployment of QtQuickWidgets"
+                )
+                execute_process(
+                    COMMAND brew --prefix qt6
+                    OUTPUT_VARIABLE QT_BREW_PREFIX
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                )
                 if(QT_BREW_PREFIX)
-                    string(APPEND VERIFY_CMD "
+                    string(
+                        APPEND VERIFY_CMD
+                        "
                         message(STATUS \"Manually copying QtQuickWidgets due to an issue with macdeployqt\")
                         file(COPY ${QT_BREW_PREFIX}/lib/QtQuickWidgets.framework DESTINATION ${CONTENTS_DIR}/Frameworks)
                         message(STATUS \"Changing install name in QtQuickWidgets\")
                         execute_process(COMMAND install_name_tool -id @executable_path/../Frameworks/QtQuickWidgets.framework/Versions/A/QtQuickWidgets ${CONTENTS_DIR}/Frameworks/QtQuickWidgets.framework/QtQuickWidgets)
                         execute_process(COMMAND install_name_tool -change ${QT_BREW_PREFIX}/lib/QtQuickWidgets.framework/Versions/A/QtQuickWidgets @executable_path/../Frameworks/QtQuickWidgets.framework/Versions/A/QtQuickWidgets ${CONTENTS_DIR}/Frameworks/QtQuickWidgets.framework/QtQuickWidgets)
-                    ")
+                    "
+                    )
                 endif()
             endif()
         endif()
         if(SUPERNOVA)
-            string(APPEND DEPLOY_CMD "
+            string(
+                APPEND DEPLOY_CMD
+                "
                 -executable=${CONTENTS_DIR}/Resources/supernova
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
-            ")
+            "
+            )
         endif()
 
         if(SC_CODESIGN_AFTER_DEPLOY)
-            string(APPEND VERIFY_CMD "
+            string(
+                APPEND VERIFY_CMD
+                "
                 message(STATUS \"Running ad hoc code signing\")
                 execute_process(COMMAND 
                     codesign --force --deep --sign - ${CONTENTS_DIR}/MacOS/SuperCollider
@@ -543,13 +667,17 @@ if(APPLE OR WIN32)
                 execute_process(COMMAND 
                     codesign --force --sign - ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app
                 )
-            ")
+            "
+            )
         endif()
 
         if(SC_VERIFY_APP)
-            string(APPEND VERIFY_CMD "
+            string(
+                APPEND VERIFY_CMD
+                "
                 message(STATUS \"Verifying app\")
-                verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
+                verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")"
+            )
         endif()
     else() # WIN32
         if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
@@ -557,21 +685,32 @@ if(APPLE OR WIN32)
         else()
             set(DEPLOY_PROG_NAME "windeployqt")
         endif()
-        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
-        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
+        find_program(
+            DEPLOY_PROG
+            ${DEPLOY_PROG_NAME}
+            PATHS ${CMAKE_PREFIX_PATH}
+            PATH_SUFFIXES bin
+        )
+        set(DEPLOY_CMD
+            "\"${DEPLOY_PROG}\"
                 --verbose 1 --no-compiler-runtime
                 \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
-            ")
+            "
+        )
         set(VERIFY_CMD "")
     endif()
 
     if(NOT DEPLOY_PROG)
-        message(FATAL_ERROR "Could not find macdeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH/bin")
+        message(
+            FATAL_ERROR
+            "Could not find macdeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH/bin"
+        )
     endif()
 
     message(STATUS "Found Qt deploy utility: ${DEPLOY_PROG}")
-    install(CODE
-        "
+    install(
+        CODE
+            "
             message(STATUS \"Deploying additional Qt resources and libraries\")
             execute_process(COMMAND ${DEPLOY_CMD}
                 RESULT_VARIABLE RES
@@ -589,10 +728,9 @@ if(APPLE OR WIN32)
     )
 endif()
 
-if (LINUX)
-  install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
+if(LINUX)
+    install(PROGRAMS SuperColliderIDE.desktop DESTINATION "share/applications")
 endif()
-
 
 set_property(TARGET libscide PROPERTY FOLDER Libs)
 set_property(TARGET update_ide_translations PROPERTY FOLDER Util)

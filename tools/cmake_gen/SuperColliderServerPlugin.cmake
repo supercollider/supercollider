@@ -7,22 +7,38 @@ include(SuperColliderCompilerConfig)
 function(sc_check_sc_path path)
     if(NOT path)
         set(sc_path_default "../supercollider")
-        message(WARNING "No SC_PATH specified, defaulting to '${sc_path_default}'.")
+        message(
+            WARNING
+            "No SC_PATH specified, defaulting to '${sc_path_default}'."
+        )
         set(path "${sc_path_default}")
     endif()
 
-    get_filename_component(full_path "${path}" ABSOLUTE BASE_DIR "${CMAKE_SOURCE_DIR}")
+    get_filename_component(
+        full_path
+        "${path}"
+        ABSOLUTE
+        BASE_DIR "${CMAKE_SOURCE_DIR}"
+    )
 
     # check main paths
     if(NOT EXISTS "${full_path}/include/plugin_interface/SC_PlugIn.h")
-        set(msg_end "\nPlease set SC_PATH to the root folder of the SuperCollider project relative to the folder containing this CMakeLists.txt file")
-        message(FATAL_ERROR "Could not find SuperCollider3 headers at '${full_path}'.${msg_end}")
+        set(msg_end
+            "\nPlease set SC_PATH to the root folder of the SuperCollider project relative to the folder containing this CMakeLists.txt file"
+        )
+        message(
+            FATAL_ERROR
+            "Could not find SuperCollider3 headers at '${full_path}'.${msg_end}"
+        )
     endif()
 
     # check supernova paths
-    if (SUPERNOVA)
-        if (NOT EXISTS ${full_path}/external_libraries/nova-tt/CMakeLists.txt)
-            message(FATAL_ERROR "The nova-tt submodule in the SuperCollider repository is missing (required for SuperNova plugins). This probably means you forgot to clone submodules. To fix this, run `git submodule update --init` from the root folder of the SuperCollider repository")
+    if(SUPERNOVA)
+        if(NOT EXISTS ${full_path}/external_libraries/nova-tt/CMakeLists.txt)
+            message(
+                FATAL_ERROR
+                "The nova-tt submodule in the SuperCollider repository is missing (required for SuperNova plugins). This probably means you forgot to clone submodules. To fix this, run `git submodule update --init` from the root folder of the SuperCollider repository"
+            )
         endif()
     endif()
 
@@ -30,31 +46,43 @@ function(sc_check_sc_path path)
 endfunction()
 
 function(sc_add_server_plugin_properties target is_supernova)
-    set_target_properties(${target} PROPERTIES
-        CXX_VISIBILITY_PRESET hidden
-        PREFIX ""
+    set_target_properties(
+        ${target}
+        PROPERTIES CXX_VISIBILITY_PRESET hidden PREFIX ""
     )
 
     if(APPLE OR WIN32)
         set_target_properties(${target} PROPERTIES SUFFIX ".scx")
     endif()
 
-    target_include_directories(${target} PUBLIC
-        ${SC_PATH}/include/plugin_interface
-        ${SC_PATH}/include/common
-        ${SC_PATH}/common
+    target_include_directories(
+        ${target}
+        PUBLIC
+            ${SC_PATH}/include/plugin_interface
+            ${SC_PATH}/include/common
+            ${SC_PATH}/common
     )
 
     # from CompilerConfig module
     sc_config_compiler_flags(${target})
 
-    target_compile_definitions(${target} PRIVATE $<$<BOOL:${is_supernova}>:SUPERNOVA>)
+    target_compile_definitions(
+        ${target}
+        PRIVATE $<$<BOOL:${is_supernova}>:SUPERNOVA>
+    )
 
     list(APPEND all_sc_server_plugins ${target})
     set(all_sc_server_plugins ${all_sc_server_plugins} PARENT_SCOPE)
 endfunction()
 
-function(sc_add_server_plugin dest_dir name cpp sc schelp)
+function(
+    sc_add_server_plugin
+    dest_dir
+    name
+    cpp
+    sc
+    schelp
+)
     if(SCSYNTH)
         set(sy_name "${name}_scsynth")
         add_library(${sy_name} MODULE "${cpp}")

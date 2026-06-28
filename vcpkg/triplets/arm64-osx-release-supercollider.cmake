@@ -5,7 +5,6 @@ if(PORT MATCHES "libsndfile|fftw3|readline") # only specific libraries are build
     set(VCPKG_LIBRARY_LINKAGE dynamic)
 endif()
 
-
 set(VCPKG_CMAKE_SYSTEM_NAME Darwin)
 set(VCPKG_OSX_ARCHITECTURES arm64)
 set(VCPKG_BUILD_TYPE release)
