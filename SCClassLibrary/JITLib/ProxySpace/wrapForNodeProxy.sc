@@ -320,7 +320,7 @@
 						in = NamedControl(\in, 0!proxy.numChannels, proxy.rate);
 						XOut.perform(rateArg, out, env, SelectX.perform(rateArg, wetAmp, [
 							in,
-							SynthDef.wrap(func, nil, [in]).postln
+							SynthDef.wrap(func, nil, [in])
 						]))
 					} {
 						// there are other sources that send a signal to the internal bus 'out',
