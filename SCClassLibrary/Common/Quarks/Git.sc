@@ -11,20 +11,21 @@ Git {
 	clone { |url|
 		this.git([
 			"clone",
+			"--quiet", // suppresses progress report on stderr
 			url,
 			thisProcess.platform.formatPathForCmdLine(localPath)
 		], false);
 		this.url = url;
 	}
 	pull {
-		this.git(["pull", "origin", this.defaultBranchName ? ""])
+		this.git(["pull", "--quiet", "origin", this.defaultBranchName ? ""])
 	}
 	checkout { |refspec|
-		this.git(["checkout", refspec])
+		this.git(["checkout", "--quiet", refspec])
 	}
 	fetch {
 		tags = remoteLatest = nil;
-		this.git(["fetch"]);
+		this.git(["fetch", "--quiet"]);
 	}
 	isDirty {
 		^this.git(["--no-pager diff HEAD --"]).size != 0
