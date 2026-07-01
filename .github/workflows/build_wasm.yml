@@ -58,7 +58,7 @@ jobs:
         run: cd $BUILD_PATH/wasm-dist && zip --symlinks -r scsynth_wasm.zip .
 
       - name: upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: scsynth_wasm.zip
           path: ${{ env.BUILD_PATH }}/wasm-dist/scsynth_wasm.zip
