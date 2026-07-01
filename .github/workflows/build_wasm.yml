@@ -20,7 +20,7 @@ jobs:
           submodules: recursive
 
       - name: Setup emsdk
-        uses: mymindstorm/setup-emsdk@v14
+        uses: mymindstorm/setup-emsdk@v16
         with:
           version: 4.0.18
           actions-cache-folder: 'emsdk-cache'
