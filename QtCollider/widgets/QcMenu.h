@@ -101,7 +101,7 @@ public:
 
 #ifdef Q_OS_MAC
 protected:
-    void mousePressEvent(QMouseEvent* event) override;
+    bool event(QEvent* event) override;
 #endif
 };
 

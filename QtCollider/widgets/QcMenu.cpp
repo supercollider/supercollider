@@ -59,12 +59,16 @@ void QcMenu::removeAction(QAction* action) {
 
 #ifdef Q_OS_MAC
 // workaround to trigger menu actions on macOS
-void QcMenu::mousePressEvent(QMouseEvent* event) {
-    if (QAction* action = actionAt(event->pos())) {
-        action->trigger();
-        hide();
+bool QcMenu::event(QEvent* event) {
+    if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+        if (QAction* act = actionAt(mouseEvent->pos())) {
+            act->trigger();
+            hide();
+            return true; // Consume the event
+        }
     }
-    QMenu::mousePressEvent(event);
+    return QMenu::event(event);
 }
 #endif
 
