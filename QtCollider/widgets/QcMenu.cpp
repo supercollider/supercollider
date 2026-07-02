@@ -76,16 +76,52 @@ void QcMenu::showEvent(QShowEvent* event) {
     QMenu::showEvent(event);
 }
 
-void QcMenu::hideEvent(QHideEvent* event) {
-    // Only apply the manual trigger if the native Qt routing failed
-    if (!m_actionTriggered && (QGuiApplication::mouseButtons() & Qt::LeftButton)) {
-        QPoint localPos = mapFromGlobal(QCursor::pos());
-        if (QAction* act = actionAt(localPos)) {
-            m_actionTriggered = true; // prevent double firing
-            QTimer::singleShot(0, act, &QAction::trigger); // defer execution
+bool QcMenu::event(QEvent* event) {
+    // if the event close arrive first
+    if (event->type() == QEvent::Close || event->type() == QEvent::Hide) {
+        if (!m_actionTriggered && (QGuiApplication::mouseButtons() & Qt::LeftButton)) {
+            QPoint localPos = mapFromGlobal(QCursor::pos());
+            if (QAction* act = actionAt(localPos)) {
+                m_actionTriggered = true; // indicate handled action
+                QTimer::singleShot(0, act, &QAction::trigger); // fire the action
+            }
         }
     }
-    QMenu::hideEvent(event);
+
+    // if the mousepress arrives first
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+        if (QAction* act = actionAt(mouseEvent->pos())) {
+            if (!m_actionTriggered) {
+                m_actionTriggered = true; // indicate handled action
+                QTimer::singleShot(0, act, &QAction::trigger); // fire the action
+            }
+            return true; // consume event
+        }
+    }
+
+    // avoid double-triggering
+    if (event->type() == QEvent::MouseButtonRelease) {
+        if (m_actionTriggered) {
+            return true; // consume event
+        }
+    }
+
+    // handle keyboard
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Space) {
+            if (QAction* act = activeAction()) {
+                if (!m_actionTriggered) {
+                    m_actionTriggered = true; // indicate handled action
+                    QTimer::singleShot(0, act, &QAction::trigger);
+                }
+                return true; // consume event
+            }
+        }
+    }
+
+    return QMenu::event(event);
 }
 #endif
 

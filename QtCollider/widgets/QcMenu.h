@@ -102,7 +102,7 @@ public:
 #ifdef Q_OS_MAC
 protected:
     void showEvent(QShowEvent* event) override;
-    void hideEvent(QHideEvent* event) override;
+    bool event(QEvent* event) override;
 
 private:
     bool m_actionTriggered = false;
