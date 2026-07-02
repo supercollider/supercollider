@@ -31,7 +31,18 @@ QC_DECLARE_QWIDGET_FACTORY(QcToolBar);
 QC_DECLARE_QOBJECT_FACTORY(QcAction);
 QC_DECLARE_QOBJECT_FACTORY(QcWidgetAction);
 
-QcMenu::QcMenu(): QMenu(NULL) { setAttribute(Qt::WA_DeleteOnClose, false); }
+#ifdef Q_OS_MAC
+#    include <QTimer>
+#    include <QGuiApplication>
+#    include <QCursor>
+#endif
+
+QcMenu::QcMenu(): QMenu(NULL) {
+    setAttribute(Qt::WA_DeleteOnClose, false);
+#ifdef Q_OS_MAC
+    connect(this, &QMenu::triggered, this, [this]() { m_actionTriggered = true; });
+#endif
+}
 
 void QcMenu::popup(QPointF pos, QAction* action) { QMenu::popup(QPoint(pos.x(), pos.y()), action); }
 
@@ -59,16 +70,22 @@ void QcMenu::removeAction(QAction* action) {
 
 #ifdef Q_OS_MAC
 // workaround to trigger menu actions on macOS
-bool QcMenu::event(QEvent* event) {
-    if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-        if (QAction* act = actionAt(mouseEvent->pos())) {
-            act->trigger();
-            hide();
-            return true; // Consume the event
+
+void QcMenu::showEvent(QShowEvent* event) {
+    m_actionTriggered = false; // reset the flag when the menu is shown
+    QMenu::showEvent(event);
+}
+
+void QcMenu::hideEvent(QHideEvent* event) {
+    // Only apply the manual trigger if the native Qt routing failed
+    if (!m_actionTriggered && (QGuiApplication::mouseButtons() & Qt::LeftButton)) {
+        QPoint localPos = mapFromGlobal(QCursor::pos());
+        if (QAction* act = actionAt(localPos)) {
+            m_actionTriggered = true; // prevent double firing
+            QTimer::singleShot(0, act, &QAction::trigger); // defer execution
         }
     }
-    return QMenu::event(event);
+    QMenu::hideEvent(event);
 }
 #endif
 
