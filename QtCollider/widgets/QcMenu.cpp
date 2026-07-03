@@ -37,7 +37,7 @@ QC_DECLARE_QOBJECT_FACTORY(QcWidgetAction);
 #    include <QCursor>
 #endif
 
-QcMenu::QcMenu(): QMenu(NULL) {
+QcMenu::QcMenu(): QMenu(nullptr) {
     setAttribute(Qt::WA_DeleteOnClose, false);
 #ifdef Q_OS_MAC
     connect(this, &QMenu::triggered, this, [this]() { m_actionTriggered = true; });
@@ -90,7 +90,7 @@ bool QcMenu::event(QEvent* event) {
 
     // if the mousepress arrives first
     if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+        auto* mouseEvent = static_cast<QMouseEvent*>(event);
         if (QAction* act = actionAt(mouseEvent->pos())) {
             if (!m_actionTriggered) {
                 m_actionTriggered = true; // indicate handled action
@@ -109,7 +109,7 @@ bool QcMenu::event(QEvent* event) {
 
     // handle keyboard
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        auto* keyEvent = static_cast<QKeyEvent*>(event);
         if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Space) {
             if (QAction* act = activeAction()) {
                 if (!m_actionTriggered) {
