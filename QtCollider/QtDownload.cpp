@@ -68,11 +68,10 @@ void QtDownload::download() {
         QNetworkRequest request;
         request.setUrl(url);
         m_reply = m_manager->get(request);
-        QObject::connect(m_reply, SIGNAL(downloadProgress(qint64, qint64)), this,
-                         SLOT(downloadProgress(qint64, qint64)));
-        QObject::connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
-                         SLOT(replyError(QNetworkReply::NetworkError)));
-        bool fin = QObject::connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
+        QObject::connect(m_reply, &QNetworkReply::downloadProgress, this, &QtDownload::downloadProgress);
+        QObject::connect(m_reply, &QNetworkReply::errorOccurred, this, &QtDownload::replyError);
+        bool fin = QObject::connect(m_reply, &QNetworkReply::finished, this, &QtDownload::downloadFinished);
+
         if (!fin) {
             qWarning("Download could not connect");
         }
