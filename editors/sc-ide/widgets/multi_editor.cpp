@@ -34,7 +34,6 @@
 #include <yaml-cpp/parser.h>
 
 #include <QApplication>
-#include <QDebug>
 #include <QDialog>
 #include <QFileInfo>
 #include <QHBoxLayout>

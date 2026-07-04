@@ -26,7 +26,6 @@
 #include "../../core/main.hpp"
 
 #include <QMenu>
-#include <QDebug>
 #include <QListWidgetItem>
 #include <QFontDatabase>
 #include <QApplication>

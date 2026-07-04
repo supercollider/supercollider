@@ -28,7 +28,6 @@
 #include <PyrSlot.h>
 #include <PyrKernel.h>
 
-#include <QDebug>
 #include <QChar>
 #include <QString>
 #include <QPoint>

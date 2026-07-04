@@ -19,7 +19,6 @@
  *
  ************************************************************************/
 
-#include <QDebug>
 
 #include "QObjectProxy.h"
 #include "QcApplication.h"

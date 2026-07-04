@@ -20,7 +20,6 @@
 
 #include "completion_menu.hpp"
 
-#include <QDebug>
 #include <QKeyEvent>
 #include <QApplication>
 

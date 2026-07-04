@@ -40,7 +40,6 @@
 #include <QFileOpenEvent>
 #include <QLibraryInfo>
 #include <QTranslator>
-#include <QDebug>
 #include <QStyleFactory>
 
 #include "util/HelpBrowserWebSocketServices.hpp"

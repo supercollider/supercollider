@@ -25,7 +25,6 @@
 #include <QAction>
 #include <QByteArray>
 #include <QDateTime>
-#include <QDebug>
 #include <QProcess>
 #include <QThread>
 #include <QUuid>

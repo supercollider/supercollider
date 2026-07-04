@@ -31,7 +31,6 @@
 #include <QTabBar>
 #include <QToolButton>
 #include <QLayout>
-#include <QDebug>
 
 #ifdef SC_USE_QTWEBENGINE
 #    include <QWebEngineView>

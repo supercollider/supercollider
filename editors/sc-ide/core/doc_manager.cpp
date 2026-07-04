@@ -27,7 +27,6 @@
 #include "util/standard_dirs.hpp"
 
 #include <QPlainTextDocumentLayout>
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>

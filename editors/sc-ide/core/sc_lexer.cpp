@@ -19,7 +19,6 @@
 */
 
 #include "sc_lexer.hpp"
-#include <QDebug>
 
 namespace ScIDE {
 
