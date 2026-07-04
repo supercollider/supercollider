@@ -93,7 +93,7 @@ void QtDownload::replyError(QNetworkReply::NetworkError errorCode) {
 }
 
 void QtDownload::downloadProgress(qint64 received, qint64 total) {
-    qcDebugMsg(2, QString("Download progress. Received: %1 bytes, Total: %2 bytes").arg(received).arg(total));
+    qcDebugMsg(2, QString("Download progress: received %1 out of %2 bytes").arg(received).arg(total));
 
     // call action
     Q_EMIT(doProgress(static_cast<int>(received), static_cast<int>(total)));
