@@ -70,7 +70,6 @@ void QtDownload::download() {
         QObject::connect(m_reply, &QNetworkReply::downloadProgress, this, &QtDownload::downloadProgress);
         QObject::connect(m_reply, &QNetworkReply::errorOccurred, this, &QtDownload::replyError);
         bool fin = QObject::connect(m_reply, &QNetworkReply::finished, this, &QtDownload::downloadFinished);
-
         if (!fin) {
             qWarning("Download could not connect");
         }
