@@ -29,7 +29,6 @@
 #include <QUrl>
 #include <QNetworkRequest>
 #include <QFile>
-#include <QDebug>
 
 QC_DECLARE_QOBJECT_FACTORY(QtDownload);
 
