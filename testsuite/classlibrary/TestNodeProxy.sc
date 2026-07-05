@@ -2,6 +2,8 @@ TestNodeProxy : UnitTest {
 
 	var server, proxy;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		// NOTE: these tests don't make use of a booted server
 		server = Server(this.class.name);
@@ -315,6 +317,8 @@ TestNodeProxy : UnitTest {
 TestNodeProxyBusMapping : UnitTest {
 	var server;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		server = Server(this.class.name);
 		server.latency = 0.1;
@@ -411,6 +415,9 @@ TestNodeProxyBusMapping : UnitTest {
 
 TestNodeProxySeti : UnitTest {
 	var proxy, server;
+
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		server = Server(this.class.name);
 		proxy = NodeProxy.audio(server, 5);

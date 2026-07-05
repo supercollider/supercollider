@@ -286,6 +286,8 @@ Server {
 
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		internal = Server.new(\internal, NetAddr.new);
+
+		program = "SC_SCSYNTH_PATH".getenv; // can be nil
 	}
 
 	*fromName { |name|
@@ -1355,13 +1357,38 @@ Server {
 		}
 	}
 
-	*scsynth {
-		this.program = this.program.replace("supernova", "scsynth")
+	*scsynth { this.program = this.scsynthProgram }
+
+	*supernova { this.program = this.supernovaProgram }
+
+	*scsynthProgram { |scsynthPath ("SC_SCSYNTH_PATH".getenv), oldProgram (this.program)|
+		^this.prReplaceProgram(
+			oldProgram, 
+			if (scsynthPath === \undefined) { nil } { scsynthPath } , 
+			"supernova", 
+			"scsynth"
+		);
 	}
 
-	*supernova {
-		this.program = this.program.replace("scsynth", "supernova")
+	*supernovaProgram { |supernovaPath ("SC_SUPERNOVA_PATH".getenv), oldProgram (this.program)|
+		^this.prReplaceProgram(
+			oldProgram,
+		 	if (supernovaPath === \undefined) { nil } { supernovaPath },
+		   	"scsynth",
+		    "supernova"
+		);
 	}
+
+	*prReplaceProgram { | programText, newPath, oldStub, newStub | 
+		newPath ?? { ^programText.replace(oldStub, newStub) };
+		^programText
+			.split($ )
+			.collect { |s|
+				if (s.contains(oldStub)) { newPath } { s }
+			}
+			.join($ )
+	}
+
 
 	warnIfNotRunning { |method|
 		if (this.serverRunning.not) {

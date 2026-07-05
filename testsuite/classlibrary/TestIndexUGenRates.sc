@@ -2,6 +2,8 @@ TestIndexUGenRates : UnitTest {
 
 	var server, numFrames, floats;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 
 		server = Server(this.class.name);

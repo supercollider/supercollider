@@ -33,6 +33,7 @@
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/sync/semaphore.hpp>
+#include <optional>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
@@ -133,7 +134,7 @@ private:
     void endInput();
     void cleanupInput();
 
-    int mReturnCode;
+    std::optional<int> mReturnCode;
     Options mOptions;
 
     // app-clock io service

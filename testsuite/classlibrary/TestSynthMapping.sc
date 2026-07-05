@@ -8,6 +8,8 @@ TestSynthAudioMapping : UnitTest {
 
 	var server, mapBus = 120, synth;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		server = Server(this.class.name);
 		this.bootServer(server);

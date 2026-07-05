@@ -345,6 +345,9 @@ PauseStream : Stream {
 
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
+
+		originalStream.exceptionHandler_(thisThread.exceptionHandler.asArray.copy);
+
 		clock = tempClock;
 		streamHasEnded = false;
 		this.refresh; //stream = originalStream;
@@ -465,16 +468,16 @@ Task : PauseStream {
 	// optimization:
 	// Task builds its own Routine, so 'protect' here
 	*new { arg func, clock;
-		var new = super.new(
+		var self = super.new(
 			Routine({ |inval|
 				protect {
 					func.value(inval)
 				} {
-					new.streamError
+					self.streamError
 				};
 			}
 		), clock);
-		^new
+		^self
 	}
 	// then there is no need to let PauseStream wrap it in another Routine
 	refresh {
@@ -568,6 +571,9 @@ EventStreamPlayer : PauseStream {
 
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
+
+		originalStream.exceptionHandler_(thisThread.exceptionHandler.asArray.copy);
+
 		clock = tempClock;
 		streamHasEnded = false;
 		stream = originalStream;

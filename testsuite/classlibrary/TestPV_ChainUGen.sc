@@ -4,6 +4,8 @@ UnitTest.gui
 */
 TestPV_ChainUGen : UnitTest {
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	// This test manually creates an FFT frame equivalent to pure white noise,
 	// on which certain ugens' action should be a no-op
 	test_whiteframe_noop {

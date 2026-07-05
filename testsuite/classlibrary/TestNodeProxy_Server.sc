@@ -2,6 +2,8 @@ TestNodeProxy_Server : UnitTest {
 
 	var server, proxy;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		server = Server(this.class.name);
 		server.options.numWireBufs = 2048;

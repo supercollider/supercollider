@@ -1,4 +1,6 @@
 TestUnitCommand : UnitTest {
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	synchronousUnitCommand { arg serverName;
 		var bus, cond = CondVar();
 		var busValue = 0.0, synthIndex, u;

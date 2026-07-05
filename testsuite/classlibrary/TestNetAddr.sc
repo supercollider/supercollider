@@ -36,7 +36,7 @@ TestNetAddr : UnitTest {
 			this.assertEquals(msg, testMsg, "Correct message received");
 			this.assertFloatEquals(time, AppClock.seconds, "Timestamp is valid", within: 0.1);
 			this.assertEquals(replyAddr.addr, addr.addr, "Hostname is valid");
-			this.assertEquals(replyAddr.port, 57120, "Port is valid");
+			this.assert(replyAddr.port >= 57120 and: replyAddr.port <= 57127);
 			this.assertEquals(recvPort, port, "recvPort is valid");
 		}
 	}

@@ -1,6 +1,8 @@
 TestSynthDefVersions_Server : UnitTest {
 	var compiledDefs;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		var defArray1, defArray2, defArray3, stream, graphFunc, variants;
 

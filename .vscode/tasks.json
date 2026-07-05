@@ -1,10 +1,153 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Generate Parser With Bison",
-            "type": "shell",
-            "command": "tools/generate_parser_bison.sh"
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Generate Parser With Bison",
+      "type": "shell",
+      "command": "tools/generate_parser_bison.sh",
+      "problemMatcher": []
+    },
+    {
+      "type": "cmake",
+      "label": "Build for CLI launch",
+      "hide": true,
+      "command": "build",
+      "targets": [
+        "sclang",
+        "scsynth",
+        "supernova"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build for CLI launch"
+    },
+    {
+      "label": "Launch sclang from build directory",
+      "type": "shell",
+      "command": "${command:cmake.buildDirectory}/lang/sclang",
+      "args": [
+        "-a",
+        "--include-path",
+        "${workspaceFolder}/SCClassLibrary",
+        "--include-path",
+        "${workspaceFolder}/testsuite/classlibrary",
+      ],
+      "dependsOn": [
+        "Build for CLI launch"
+      ],
+      "options": {
+        "env": {
+          "SC_SCSYNTH_PATH": "${command:cmake.buildDirectory}/server/scsynth/scsynth",
+          "SC_SUPERNOVA_PATH": "${command:cmake.buildDirectory}/server/supernova/supernova",
         }
-    ]
+      },
+      "icon": {
+        "id": "music",
+        "color": "terminal.ansiMagenta"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Launch sclang CI — no server boot",
+      "type": "shell",
+      "command": "${command:cmake.buildDirectory}/lang/sclang",
+      "args": [
+        "-a",
+        "--include-path",
+        "${workspaceFolder}/SCClassLibrary",
+        "--include-path",
+        "${workspaceFolder}/testsuite/classlibrary",
+        "${workspaceFolder}/testsuite/scripts/run_classlibrary_unittest_no_serverboot.scd",
+      ],
+      "options": {
+        "env": {
+          "SC_SCSYNTH_PATH": "${command:cmake.buildDirectory}/server/scsynth/scsynth",
+          "SC_SUPERNOVA_PATH": "${command:cmake.buildDirectory}/server/supernova/supernova",
+        }
+      },
+      "group": "test",
+      "dependsOn": [
+        "Build for CLI launch"
+      ],
+      "icon": {
+        "id": "beaker",
+        "color": "terminal.ansiGreen"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "revealProblems": "onProblem",
+        "showReuseMessage": false,
+      },
+      "problemMatcher": {
+        "owner": "sclang",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}"
+        ],
+        "source": "sclang",
+        "pattern": {
+          "regexp": "^(FAILED):(.*):(.*):([0-9]*):([0-9]*):([0-9]*):(.*)$",
+          "severity": 1,
+          "file": 3,
+          "line": 4,
+          "column": 5,
+          "endColumn": 6,
+          "message": 7,
+        }
+      },
+    },
+    {
+      "label": "Launch sclang CI — full",
+      "type": "shell",
+      "command": "${command:cmake.buildDirectory}/lang/sclang",
+      "args": [
+        "-a",
+        "--include-path",
+        "${workspaceFolder}/SCClassLibrary",
+        "--include-path",
+        "${workspaceFolder}/testsuite/classlibrary",
+        "testsuite/scripts/run_classlibrary_unittest_no_serverboot.scd"
+      ],
+      "options": {
+        "env": {
+          "SC_SCSYNTH_PATH": "${command:cmake.buildDirectory}/server/scsynth/scsynth",
+          "SC_SUPERNOVA_PATH": "${command:cmake.buildDirectory}/server/supernova/supernova",
+        }
+      },
+      "group": "test",
+      "dependsOn": [
+        "Build for CLI launch"
+      ],
+      "icon": {
+        "id": "beaker",
+        "color": "terminal.ansiGreen"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "revealProblems": "onProblem",
+        "showReuseMessage": false,
+      },
+      "problemMatcher": {
+        "owner": "sclang",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}"
+        ],
+        "source": "sclang",
+        "pattern": {
+          "regexp": "^(FAILED):(.*):(.*):([0-9]*):([0-9]*):([0-9]*):(.*)$",
+          "severity": 1,
+          "file": 3,
+          "line": 4,
+          "column": 5,
+          "endColumn": 6,
+          "message": 7,
+        }
+      }
+    }
+  ]
 }

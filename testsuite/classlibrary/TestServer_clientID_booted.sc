@@ -6,6 +6,8 @@ TestServer_clientID_booted.run;
 // with running server
 TestServer_clientID_booted : UnitTest {
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	test_default {
 		var s = Server(this.class.name);
 		this.bootServer(s);

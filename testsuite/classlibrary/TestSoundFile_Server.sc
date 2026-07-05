@@ -2,6 +2,8 @@ TestSoundFile_Server : UnitTest {
 
 	var server, soundFile;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		server = Server(this.class.name);
 		this.bootServer(server);

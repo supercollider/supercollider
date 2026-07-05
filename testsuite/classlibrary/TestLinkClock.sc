@@ -2,6 +2,11 @@ TestLinkClock : UnitTest {
 
 	classvar precision = 1e-04;
 
+
+	*knownIssues { 
+		^UnitTestKnownIssue("https://github.com/supercollider/supercollider/issues/5421")
+	}
+
 	// use Link Test Plan
 	// see external_libraries/link/TEST-PLAN.md
 
@@ -57,7 +62,7 @@ TestLinkClock : UnitTest {
 		clock2.stop;
 	}
 
-	// Test Plan - TEMPO-3
+	// Test Plan - TEMPO-3 (NO LONGER IMPLEMENTED)
 	// When connected, loading a new document should not change the Link session tempo.
 	// SC does not change tempo when opening a code document, so this test is irrelevant.
 

@@ -33,6 +33,9 @@ Main : Process {
 			"Please look backward in the post window and report the error on the mailing list or user forum.".postln;
 			"You may be able to resolve the problem by killing 'sclang%' processes in your system's task manager.\n\n"
 			.postf(if(this.platform.name == \windows) { ".exe" } { "" });
+
+			// Ensure error is rethrown to the main thread's exception handler.
+			error.throw;
 		};
 
 		this.platform.startup;

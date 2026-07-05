@@ -5,6 +5,8 @@ TestServer_GUI : UnitTest {
 
 	var window, button, server;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		window = Window.new;
 		button = Button(window);
@@ -30,7 +32,7 @@ TestServer_GUI : UnitTest {
 		var updateFunc;
 		var cond = Condition();
 
-		updateFunc = { button.value_(1); cond.test_(true).signal };
+		updateFunc = { button !? {button.value_(1)}; cond.test_(true).signal };
 		ServerBoot.add(updateFunc, server);
 		this.bootServer(server);
 
@@ -49,7 +51,7 @@ TestServer_GUI : UnitTest {
 		var updateFunc;
 		var cond = Condition();
 
-		updateFunc = { button.value_(1); cond.test_(true).signal };
+		updateFunc = { button !? {button.value_(1)}; cond.test_(true).signal };
 		ServerTree.add(updateFunc, server);
 		this.bootServer(server);
 
@@ -70,7 +72,7 @@ TestServer_GUI : UnitTest {
 
 		this.bootServer(server);
 
-		updateFunc = { button.value_(1); cond.test_(true).signal };
+		updateFunc = { button !? {button.value_(1)}; cond.test_(true).signal };
 		ServerTree.add(updateFunc, server);
 
 		CmdPeriod.run;
@@ -89,7 +91,7 @@ TestServer_GUI : UnitTest {
 		var updateFunc;
 		var cond = Condition();
 
-		updateFunc = { button.value_(1); cond.test_(true).signal };
+		updateFunc = { button !? {button.value_(1)}; cond.test_(true).signal };
 		ServerQuit.add(updateFunc, server);
 
 		server.bootSync;

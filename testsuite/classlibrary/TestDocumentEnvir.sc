@@ -2,6 +2,8 @@ TestDocumentEnvironment : UnitTest {
 
 	var doc, envir1, envir2, envir0;
 
+	*features { ^[UnitTestFeatures.needsDocument] }
+
 	setUp {
 		envir0 = (a: 0);
 		envir1 = (a: 27);
@@ -126,6 +128,8 @@ TestDocumentEnvironment : UnitTest {
 
 TestEnvironmentDocument : UnitTest {
 	var doc;
+
+	*features { ^[UnitTestFeatures.needsDocument] }
 
 	setUp {
 		currentEnvironment = topEnvironment;

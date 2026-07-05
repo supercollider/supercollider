@@ -2,6 +2,8 @@ TestQuery : UnitTest {
 
 	var server;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 
 		server = Server(this.class.name);

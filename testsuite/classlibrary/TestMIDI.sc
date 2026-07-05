@@ -1,4 +1,6 @@
 TestMIDI : UnitTest {
+	*features { ^[UnitTestFeatures.needsMIDI] }
+
 	test_linuxRealtimeCodesAreCorrect {
 		var in, out;
 		var find = { |array, str|

@@ -2,6 +2,12 @@ TestNodeProxyRoles : UnitTest {
 
 	var server, proxy;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
+	*knownIssues { 
+		^(\test_proxyroles_xfade_smoothly: UnitTestKnownIssue("https://github.com/supercollider/supercollider/issues/7576"))
+	}
+
 	setUp {
 		server = Server(this.class.name);
 		server.bootSync;

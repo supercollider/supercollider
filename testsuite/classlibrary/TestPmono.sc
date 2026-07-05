@@ -1,6 +1,8 @@
 
 TestPmono : UnitTest {
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	test_Pmono_makes_node_after_pause {
 		var player, event;
 		player = Pmono(

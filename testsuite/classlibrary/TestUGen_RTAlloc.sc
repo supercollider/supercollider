@@ -2,6 +2,8 @@ TestUGen_RTAlloc : UnitTest {
 
 	var server;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	*initClass {
 		passVerbosity = UnitTest.brief;
 	}

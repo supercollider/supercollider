@@ -2,6 +2,8 @@ TestMixedBundleTester : UnitTest {
 
 	var server, tester;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		server = Server(this.class.name);
 		server.bootSync;

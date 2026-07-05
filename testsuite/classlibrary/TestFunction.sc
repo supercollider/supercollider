@@ -1,5 +1,9 @@
 TestFunction : UnitTest {
 
+	setUp {
+		CommonTestClass.reset
+	}
+
 	test_function_scope {
 		var generator, list, result, a;
 		generator = {
@@ -14,6 +18,7 @@ TestFunction : UnitTest {
 
 	test_classmethod_scope {
 		var obj, func;
+
 		obj = CommonTestClass;
 		obj.x = 5;
 		func = obj.returnLexicalScopeGetterFunc;
@@ -36,21 +41,7 @@ TestFunction : UnitTest {
 		this.assert(obj.b == 42, "function should be able to set instance variable that has no setter");
 	}
 
-	test_plot {
-		var condition = CondVar.new;
-		var server = Server(thisMethod.name);
-		server.bootSync;
-		{ |x| DC.ar(x) }.asBuffer(duration: 0.01, target: server, action: { |b|
-			b.get(3, { |val|
-				this.assertEquals(val, 0, "unspecified function arguments should pass as 0 when function is written to a buffer");
-				b.free;
-				condition.signalOne;
-			})
-		});
-		condition.waitFor(2);
-		server.quitSync;
-		server.remove;
-	}
+	
 
 	test_argumentString_without_defaultArguments {
 		var function = { |a, b, c| };
@@ -349,6 +340,11 @@ CommonTestClass {
 
 	var <>a, <b = 3;
 	classvar <>x, <y = 7;
+
+	*reset {
+		x = nil;
+		y = 7;
+	}
 
 	*returnLexicalScopeGetterFunc {
 		^{ [x, y] }

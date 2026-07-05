@@ -2,6 +2,8 @@ TestUGen_Duty : UnitTest {
 
 	var server;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		server = Server(this.class.name);
 		this.bootServer(server);

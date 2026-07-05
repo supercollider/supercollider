@@ -16,6 +16,8 @@ TestServer_ServerGUI : UnitTest {
 	var buttons;
 	var buttonNames;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		if(buttonNames.isNil) {
 			buttonNames = Array.fill(5, "");

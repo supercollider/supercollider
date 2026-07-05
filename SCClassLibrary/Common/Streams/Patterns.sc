@@ -22,7 +22,9 @@ Pattern : AbstractFunction {
 	streamArg { ^this.asStream }
 
 	asEventStreamPlayer { arg protoEvent;
-		^EventStreamPlayer(this.asStream, protoEvent);
+		var stream = this.asStream;
+		stream.exceptionHandler_(thisThread.exceptionHandler.asArray.copy);
+		^EventStreamPlayer(stream, protoEvent);
 	}
 	embedInStream { arg inval;
 		^this.asStream.embedInStream(inval);
@@ -665,16 +667,12 @@ Pprotect : FilterPattern {
 	}
 	storeArgs { ^[ pattern, func ] }
 
-	embedInStream { arg inval;
-		var result = prTry { pattern.embedInStream(inval) };
-		if(result.isException) {
-			func.value(result, thisThread);
-			result.throw;  // to nested error handlers
-		} {
-			// here, `protect` calls the error handler
-			// but Pprotect has a slightly different meaning
-			^result
-		}
+	embedInStream { |inval|
+		// Despite this class being called protect, it doesn't actually do what protect does.
+		^try { pattern.embedInStream(inval) } { |er| 
+			func.value(er, thisThread); 
+			er.throw;
+		};
 	}
 }
 

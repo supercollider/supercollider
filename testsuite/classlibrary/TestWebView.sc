@@ -1,4 +1,5 @@
 TestWebView : UnitTest {
+	*features { ^[UnitTestFeatures.needsOpenWindow] }
 
 	test_findText_found {
 		var window = Window();
@@ -25,7 +26,7 @@ TestWebView : UnitTest {
 		this.assert(wasFound.notNil, "test timeout check");
 		if(wasFound.notNil) {
 			this.assert(wasFound, "findText should find")
-		}
+		};
 	}
 
 	test_findText_notFound {
@@ -53,9 +54,12 @@ TestWebView : UnitTest {
 		this.assert(wasFound.notNil, "test timeout check");
 		if(wasFound.notNil) {
 			this.assert(wasFound.not, "findText should not find");
-		}
+		};
 	}
 
+}
+
+TestWebView_js : UnitTest {
 	test_runJavaScript_returnTypes {
 		(
 			"1 + 1": 2 -> Integer,

@@ -3,6 +3,8 @@ TestDocument : UnitTest {
 	// need a public place to communicate the result
 	classvar <>success;
 
+	*features { ^[UnitTestFeatures.needsDocument] }
+
 	test_save_method_writes_file {
 		var doc, file, str, path;
 		if(Platform.ideName == "scqt") {

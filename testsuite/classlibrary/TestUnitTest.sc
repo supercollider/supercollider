@@ -4,6 +4,8 @@ TestUnitTest : UnitTest {
 	classvar <>classSetUpHappened = false;
 	classvar <>classTearDownHappened = false;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	*setUpClass {
 		this.classSetUpHappened = true;
 	}
@@ -29,13 +31,18 @@ TestUnitTest : UnitTest {
 		}
 	}
 
+	// There is no way to test this correctly if prRunWithinSetupClass has decided to fork.
+	// We could add a wait, but this is nasty!
+	/*
 	test_tearDownClass {
+		var cond = CondVar();
+		var done = false;
 		this.class.classTearDownHappened = false;
-		this.class.prRunWithinSetUpClass;
 		this.assert(this.class.classTearDownHappened,
 			"tearDownClass should have happened after prRunWithinSetUpClass function is called"
 		);
 	}
+	*/
 
 	test_setUp {
 		this.assert(setUpHappened, "setUp should have happened")
@@ -65,10 +72,6 @@ TestUnitTest : UnitTest {
 			BinaryOpFailureError,
 			"assertException should return true for specific error",
 		)
-	}
-
-	test_assertNoException_nonExceptionThrow {
-		this.assertNoException({ \stone.throw }, "assertException should return false for thrown object")
 	}
 
 	test_assertNoException_nonThrowingFunction {

@@ -28,6 +28,8 @@
 
 #include "SC_CLIOptions.hpp"
 #include <cstdlib>
+#include <exception>
+#include <iostream>
 
 #ifdef SC_QT
 #    include "../../QtCollider/LanguageClient.h"
@@ -77,7 +79,7 @@ static UINT gOldCodePage; // for remembering the old codepage when we switch to 
 
 SC_TerminalClient::SC_TerminalClient(const std::string& name):
     SC_LanguageClient(name),
-    mReturnCode(0),
+    mReturnCode(std::nullopt),
     mUseReadline(false),
     mWork(boost::asio::make_work_guard(mIoContext)),
     mTimer(mIoContext),
@@ -148,21 +150,35 @@ int SC_TerminalClient::run(int argc, char** argv) {
         cleanupInput();
     }
 
-    if (opt.mCallStop)
-        stopMain();
 
-    // shutdown library
-    shutdownLibrary();
-    flush();
+    // If we ever set a return code in sclang, return that, even if something in the shutdown process has failed
+    try {
+        if (opt.mCallStop)
+            stopMain();
 
-    shutdownRuntime();
+        // shutdown library
+        shutdownLibrary();
+        flush();
 
-    return mReturnCode;
+        shutdownRuntime();
+        return mReturnCode ? *mReturnCode : 0;
+    } catch (...) {
+        if (mReturnCode) {
+            std::exception_ptr p = std::current_exception();
+            std::cerr << "An exception was thrown when shutting down sclang\n";
+            return *mReturnCode;
+        } else
+            throw;
+    }
 }
 
 void SC_TerminalClient::recompileLibrary() { SC_LanguageClient::recompileLibrary(mOptions.mStandalone); }
 
-void SC_TerminalClient::quit(int code) { mReturnCode = code; }
+void SC_TerminalClient::quit(int code) {
+    // If we have already asked sc to quit with some code, then don't override this.
+    if (!mReturnCode)
+        mReturnCode = code;
+}
 
 static PyrSymbol* resolveMethodSymbol(bool silent) {
     if (silent)
@@ -575,9 +591,10 @@ int SC_TerminalClient::prArgv(struct VMGlobals* g, int) {
 int SC_TerminalClient::prExit(struct VMGlobals* g, int numArgsPushed) {
     int code;
 
-    int err = slotIntVal(g->sp, &code);
+    const int err = slotIntVal(g->sp, &code);
+    // Since we are asking the interpreter to exit, ensure that we quite regardless of what is passed
     if (err)
-        return err;
+        code = 1;
 
     ((SC_TerminalClient*)SC_LanguageClient::instance())->onQuit(code);
     switchToThread(g, slotRawThread(&g->process->mainThread), tDone, &numArgsPushed);

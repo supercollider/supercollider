@@ -1,6 +1,9 @@
 TestLinkUGens : UnitTest {
 	var server;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
+
 	setUp {
 		var condition = Condition();
 		server = Server(this.class.name);

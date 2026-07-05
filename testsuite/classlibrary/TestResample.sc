@@ -1,4 +1,6 @@
 TestResample : TestReblockBase {
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	test_resampleWithConstantFactorWorks {
 		var bus = Bus.control(server);
 		var factors = [ 0, 1, 2, 4, 8 ];

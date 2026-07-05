@@ -1,5 +1,6 @@
 
 TestBus : UnitTest {
+	*features { ^[UnitTestFeatures.needsServerBoot] }
 
 	ignore_test_free {
 		var s,busses,numBusses;

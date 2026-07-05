@@ -2,6 +2,8 @@ TestServer : UnitTest {
 
 	var big, server;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	// helper method, not a test
 	sync { |size|
 		var f, condition, bundleSize;

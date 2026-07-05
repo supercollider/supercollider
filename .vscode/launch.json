@@ -2,6 +2,73 @@
   // see https://vector-of-bool.github.io/docs/vscode-cmake-tools/debugging.html
   "version": "0.2.0",
   "configurations": [
+    {
+      "name": "Debug sclang CI - no server boot",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${command:cmake.buildDirectory}/lang/sclang",
+      "args": [
+        "-a",
+        "--include-path",
+        "${workspaceFolder}/SCClassLibrary",
+        "--include-path",
+        "${workspaceFolder}/testsuite/classlibrary",
+        "testsuite/scripts/run_classlibrary_unittest_no_serverboot.scd"
+      ],
+      "environment": [
+        {
+          "name": "SC_SCSYNTH_PATH",
+          "value": "${command:cmake.buildDirectory}/server/scsynth/scsynth"
+        },
+        {
+          "name": "SC_SUPERNOVA_PATH",
+          "value": "${command:cmake.buildDirectory}/server/supernova/supernova"
+        }
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build for CLI launch",
+    },
+    {
+      "name": "Debug sclang CI",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${command:cmake.buildDirectory}/lang/sclang",
+      "args": [
+        "-a",
+        "--include-path",
+        "SCClassLibrary",
+        "--include-path",
+        "testsuite/classlibrary",
+        "testsuite/scripts/run_classlibrary_unittest.scd"
+      ],
+      "environment": [
+        {
+          "name": "SC_SCSYNTH_PATH",
+          "value": "${command:cmake.buildDirectory}/server/scsynth/scsynth"
+        },
+        {
+          "name": "SC_SUPERNOVA_PATH",
+          "value": "${command:cmake.buildDirectory}/server/supernova/supernova"
+        },
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build for CLI launch",
+    },
+    {
+      "name": "Debug sclang",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${command:cmake.buildDirectory}/lang/sclang",
+      "args": [
+        "-a",
+        "--include-path",
+        "SCClassLibrary",
+        "--include-path",
+        "testsuite/classlibrary",
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build for CLI launch",
+    },
     // lldb/macOS configurations
     {
       "name": "lldb: attach",

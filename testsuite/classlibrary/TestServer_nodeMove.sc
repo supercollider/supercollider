@@ -2,6 +2,8 @@ TestServer_nodeMove : UnitTest {
 
 	var pipe;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	tearDown {
 		if (pipe.notNil) {
 			pipe.close;
@@ -14,11 +16,14 @@ TestServer_nodeMove : UnitTest {
 			port = 57110,
 			addr = NetAddr(ip, port),
 			line,
-			match;
+			match,
+			count = 0;
 		pipe = Pipe.new(program ++ ServerOptions().bindAddress_(ip).asOptionsString(port), "r");
 		line = pipe.getLine;
 		while ({ line.notNil && line.contains("ready").not }) {
 			line = pipe.getLine;
+			count = count + 1;
+			if (count > 100000) { Error("iteration limit").throw }
 		};
 		// build a known tree, then apply the moves and read back the resulting
 		// depth-first node order (root id 0 dropped). /g_new args are:
@@ -35,12 +40,15 @@ TestServer_nodeMove : UnitTest {
 		addr.sendMsg("/g_dumpTree", 0, 0);
 		addr.sendMsg("/quit");
 		line = pipe.getLine;
+		count = 0;
 		while ({ line.notNil }) {
 			match = line.findRegexp("^\\s+([0-9]+) group");
 			if (match.notEmpty and: { match[1][1].asInteger != 0 }) {
 				order.add(match[1][1].asInteger);
 			};
 			line = pipe.getLine;
+			count = count + 1;
+			if (count > 100000) { Error("iteration limit").throw }
 		};
 		pipe.close;
 		^ order
@@ -50,7 +58,7 @@ TestServer_nodeMove : UnitTest {
 	// inside group 1001, right after 3000.
 	test_moveAfter_acrossGroups {
 		var moves = [["/n_after", 2001, 3000]];
-		[Server.program, Server.program.replace("scsynth", "supernova")].do { |program|
+		[Server.scsynthProgram, Server.supernovaProgram].do { |program|
 			this.assertEquals(
 				this.treeAfter(program, moves),
 				List[1000, 2000, 1001, 3000, 2001, 3001],
@@ -64,7 +72,7 @@ TestServer_nodeMove : UnitTest {
 	// supernova sends it back to group 1000.
 	test_moveAfter_doesNotStaleParent {
 		var moves = [["/n_after", 2000, 3000], ["/n_after", 2000, 3001]];
-		[Server.program, Server.program.replace("scsynth", "supernova")].do { |program|
+		[Server.scsynthProgram, Server.supernovaProgram].do { |program|
 			this.assertEquals(
 				this.treeAfter(program, moves),
 				List[1000, 2001, 1001, 3000, 3001, 2000],

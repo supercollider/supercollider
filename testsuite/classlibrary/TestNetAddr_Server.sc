@@ -2,6 +2,8 @@ TestNetAddr_Server : UnitTest {
 
 	var server, big, addr;
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	// helper method
 	sendBundle { |size|
 		var f, condition, bundleSize;

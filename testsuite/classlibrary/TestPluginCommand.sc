@@ -1,5 +1,7 @@
 TestPluginCommand : UnitTest {
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	asyncPluginCommand { arg serverName;
 		var bus, cond = CondVar();
 		var done = false;

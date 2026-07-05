@@ -2,6 +2,8 @@ TestServer_boot : UnitTest {
 
 	var s; // mock server for testing
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	setUp {
 		s = Server(this.class.name, nil, ServerOptions());
 	}

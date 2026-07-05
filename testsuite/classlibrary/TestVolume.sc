@@ -1,5 +1,7 @@
 TestVolume : UnitTest {
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	test_booting {
 		var s = Server(thisMethod.name);
 		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 2, 1, 3, -1, 'volumeAmpControl2' ];

@@ -4,6 +4,8 @@
 // Tests for the server handling Version 1 synthdefs.
 TestServer_SynthDefVersion1 : UnitTest {
 
+	*features { ^[UnitTestFeatures.needsServerBoot] }
+
 	// See https://github.com/supercollider/supercollider/issues/3266
 	// Synthdef file (sonic-pi-beep.scsynthdef) by Sam Aaron, MIT License
 	// Original file: https://github.com/samaaron/sonic-pi/blob/36496b69e7e821562c6608a276b4536229d38250/etc/synthdefs/compiled/sonic-pi-beep.scsyndef

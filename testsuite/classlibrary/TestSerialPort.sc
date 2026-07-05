@@ -145,6 +145,7 @@ TestSerialPort : UnitTest {
 
 	test_connectionLost {
 		var in, cond;
+		var count = 0;
 		if(this.skipSerialTests) { ^this };
 
 		in = this.mkPort(input);
@@ -152,7 +153,11 @@ TestSerialPort : UnitTest {
 		this.destroyPorts();
 
 		fork { 3.wait; cond.test_(true) };
-		while { in.isOpen or: cond.test.not } { 0.001.wait };
+		while { in.isOpen or: cond.test.not } { 
+			0.001.wait;
+			count = count + 1;
+			if (count > 1000000) { Error("Iteration limit reached").throw }
+		 };
 
 		this.assert(in.isOpen.not);
 	}
@@ -167,7 +172,7 @@ TestSerialPort : UnitTest {
 	}
 
 	test_putAndNext_oneByte {
-		var in, out, result, rout, cond;
+		var in, out, result, rout, cond, count = 0;
 		if(this.skipSerialTests) { ^this };
 
 		in = this.mkPort(input);
@@ -180,7 +185,9 @@ TestSerialPort : UnitTest {
 		rout = fork {
 			while { result.isNil } {
 				result = in.next;
-				0.01.wait
+				0.01.wait;
+				count = count + 1;
+				if (count > 10000000) { Error("iteration limit reached").throw };
 			};
 			cond.test_(true).signal;
 		};
@@ -195,7 +202,7 @@ TestSerialPort : UnitTest {
 	}
 
 	test_putAndNext_twoBytes {
-		var in, out, result, rout, cond;
+		var in, out, result, rout, cond, count = 0;
 		if(this.skipSerialTests) { ^this };
 
 		in = this.mkPort(input);
@@ -209,7 +216,9 @@ TestSerialPort : UnitTest {
 		rout = fork {
 			while { result.isNil } {
 				result = in.next;
-				0.01.wait
+				0.01.wait;
+				count = count + 1;
+				if (count > 1000000) { Error("Iteration limit reached").throw }
 			};
 			cond.test_(true).signal;
 		};
@@ -257,7 +266,7 @@ TestSerialPort : UnitTest {
 	}
 
 	test_rxErrors_bufferOverflow {
-		var in, out, cond, rxErrs;
+		var in, out, cond, rxErrs, count = 0;
 		if(this.skipSerialTests) { ^this };
 
 		in = this.mkPort(input);
@@ -274,7 +283,12 @@ TestSerialPort : UnitTest {
 		fork { 3.wait; cond.test_(true).signal };
 
 		// spin until all data has been read
-		while { (rxErrs == 0) and: cond.test.not } { rxErrs = in.rxErrors; 0.01.wait; };
+		while { (rxErrs == 0) and: cond.test.not } { 
+			rxErrs = in.rxErrors;
+			0.01.wait;
+			count = count + 1;
+			if (count > 1000000) { Error("Iteration limit reached").throw }
+		 };
 
 		this.assert(rxErrs > 0);
 
@@ -283,7 +297,7 @@ TestSerialPort : UnitTest {
 	}
 
 	test_putAll {
-		var in, out, result, rout, cond;
+		var in, out, result, rout, cond, count = 0;
 		if(this.skipSerialTests) { ^this };
 
 		in = this.mkPort(input);
@@ -297,7 +311,9 @@ TestSerialPort : UnitTest {
 		rout = fork {
 			while { result.isNil } {
 				result = in.next;
-				0.01.wait
+				0.01.wait;
+				count = count + 1;
+				if (count > 1000000) { Error("Iteration limit reached").throw }
 			};
 			cond.test_(true).signal;
 		};
