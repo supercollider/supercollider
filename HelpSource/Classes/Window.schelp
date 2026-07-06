@@ -404,15 +404,15 @@ subsubsection:: Adjusting bounds from top-left
 To position a window relative to the top, subtract from the height.
 
 code::
-/* Hard‑coded example (using a fixed pixel offset): */
+/* Example that positions the window using a fixed pixel offset: */
 (
-x = Window("hard-coded position",
+x = Window("fixed-offset position"",
     Rect(100, Window.screenBounds.height - 200, 300, 100)
 );
 x.front;
 )
 
-/* Scaling avoids hard‑coded (fixed‑pixel) offsets: */
+/* Scaling the offset relative to the screen height: */
 (
 ~factor = 0; // 0: top, 1: bottom
 ~rectHeight = 100;
