@@ -88,6 +88,7 @@ jobs:
   test-linux:
     needs: [version-getter, build-linux]
     uses: ./.github/workflows/test_linux.yml
+    if: ${{ !cancelled() }}
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
@@ -95,6 +96,7 @@ jobs:
   test-macos:
     needs: [version-getter, build-macos]
     uses: ./.github/workflows/test_macos.yml
+    if: ${{ !cancelled() }}
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
@@ -102,6 +104,7 @@ jobs:
   test-windows:
     needs: [version-getter, build-windows]
     uses: ./.github/workflows/test_windows.yml
+    if: ${{ !cancelled() }}
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
