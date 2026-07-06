@@ -4,10 +4,10 @@ HelpBrowser {
 	classvar <>openNewWindows = false;
 	classvar <>scrollStep = 40;
 	classvar <>scrollPageStep = 350;
-	classvar <>redirectEnabled = true;
+
 	// redirect link addresses that match redirectPattern to default system browser
+	classvar <>redirectEnabled = true;
 	classvar <>redirectPattern = "^http";
-	// all http gets redirected
 
 	var <>homeUrl;
 	var <window;
@@ -44,7 +44,7 @@ HelpBrowser {
 		^(redirectEnabled and: { redirectPattern.matchRegexp(url) })
 	}
 
-	*prRedirectMenu { |url, openInSCIDE|
+	*prOpenRedirectMenu { |url, useSCIDE|
 		var info = MenuAction("Choose how to open external link:").enabled_(false);
 		var domain = MenuAction(if(url.size < 75) {url} {url.replaceRegexp("https?:\/\/|(/.*)", "")} ).enabled_(false);
 		var separator = MenuAction().separator_(true);
@@ -54,15 +54,14 @@ HelpBrowser {
 		var menu = Menu(info, domain, separator, systemDefaultBrowser, helpBrowser, closeMenu);
 		var removeDependants = { [systemDefaultBrowser, helpBrowser, closeMenu].do(_.removeDependant)  };
 		systemDefaultBrowser.addDependant { |action, what| if (what == \triggered) { url.openOS; removeDependants.() } };
-		helpBrowser.addDependant { |action, what| if (what == \triggered) { this.prIDEorHelpBrowser(url, openInSCIDE); removeDependants.() } };
+		helpBrowser.addDependant { |action, what| if (what == \triggered) { this.prOpenInIDEorHelpBrowser(url, useSCIDE); removeDependants.() } };
 		^menu.front;
 	}
 
-	*prIDEorHelpBrowser { | url, openInSCIDE |
-		// when openInSCIDE = false, will open in a HelpBrowser instance.
+	*prOpenInIDEorHelpBrowser { | url, useSCIDE(true) |
+		// when useSCIDE = false, will open in a HelpBrowser instance.
 		var ideClass = \ScIDE.asClass;
-		openInSCIDE ?? { openInSCIDE = true };
-		if(ideClass.notNil and: openInSCIDE) {
+		if(ideClass.notNil and: useSCIDE) {
 			ideClass.openHelpUrl(url)
 		} {
 			this.front.goTo(url)
@@ -71,9 +70,9 @@ HelpBrowser {
 
 	*goTo {|url|
 		if(this.prShouldRedirect(url)) {
-			this.prRedirectMenu(url)
+			this.prOpenRedirectMenu(url)
 		} {
-			this.prIDEorHelpBrowser(url)
+			this.prOpenInIDEorHelpBrowser(url)
 		}
 	}
 
@@ -275,7 +274,7 @@ HelpBrowser {
 			var newPath, oldPath;
 			if( not(this.redirectTextFile(url)) ) {
 				if( HelpBrowser.prShouldRedirect(url)) {
-					HelpBrowser.prRedirectMenu(url, openInSCIDE: false)
+					HelpBrowser.prOpenRedirectMenu(url, useSCIDE: false);
 				} {
 					#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
