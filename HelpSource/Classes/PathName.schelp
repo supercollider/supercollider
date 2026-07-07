@@ -138,7 +138,6 @@ myPath.filesDo{ |afile| afile.postln };
 ::
 
 method::allFolders
-note::
 This method has known reliability issues and is generally discouraged.
 Use instead link::Classes/String#-dirname:: and link::Classes/String#-split:: in combination:
 code::
@@ -156,62 +155,17 @@ teletype::
 -> [, Imaginary, Directory]
 ::
 code::
-"D:/Directory/fish.rtf".dirname.split        // on Windows
+"D:/Directory/fish.rtf".dirname.split         // on Windows
 ::
 returns:
 teletype::
 -> [D:, Directory]
 ::
-::
-
-Does a string comparison based on LINK::Classes/Platform#*pathSeparator::, and will return all entries which are surrounded by this separator.
-Since it solely relies on string comparison, this will not check the context of the filesystem to verify if the returned entries are actually folders.
-
 
 method::diskName
 
-note::
 This method has known reliability issues and is generally discouraged.
 It remains available for legacy use cases, and the examples below illustrate how to use it when necessary.
-::
-
-if path is an absolute path, returns
-list::
-## the top-level directory of the path on Linux and macOS,
-## the drive letter on Windows
-::
-else a blank string.
-code::
-( // note the / at the start is excluded
-var myPath;
-myPath = PathName.new(ExampleFiles.child.replaceRegexp("^/", ""));
-myPath.diskName;
-)
-::
-returns on Linux:
-teletype::
--> usr
-::
-returns on macOS (The result below assumes that SuperCollider.app is located in the teletype::Applications:: folder.):
-teletype::
--> Applications
-::
-returns on Windows:
-teletype::
--> C:
-::
-
-code::
-( // note the / at the start
-var myPath;
-myPath = PathName.new( "/test" +/+ ExampleFiles.child);
-myPath.diskName;
-)
-::
-returns on all platforms:
-teletype::
-->
-::
 
 method::+/+
 Path concatenation operator - useful for avoiding doubling-up slashes unnecessarily.
