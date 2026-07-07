@@ -11,7 +11,7 @@ keyword:: buffer
 keyword:: class
 || A description of the state and behaviour of a set of objects.
 
-## client
+## client anchor::client::
 keyword:: client
 || SC is divided into two separate applications: The client and the server. The client is where the SuperCollider language is implemented and where one executes code. The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client. See link::Guides/ClientVsServer:: for more information.
 
@@ -51,12 +51,12 @@ keyword:: node
 keyword:: object
 || Something that has data, representing the object's state, and a set of operations that can be performed on the object.
 
-## Open Sound Control
+## Open Sound Control anchor::Open Sound Control::
 keyword:: OSC, opensoundcontrol
 || a protocol defined by CNMAT at UCBerkeley for controlling synthesizers. See http://opensoundcontrol.org/. SuperCollider communicates between the client and server using OSC messages over UDP or TCP.
 
 ## OSC
-|| See Open Sound Control.
+|| See link::#Open Sound Control::.
 
 ## polymorphism
 keyword:: polymorphism
@@ -72,7 +72,7 @@ keyword:: receiver
 
 ## server
 keyword:: server
-|| SC is divided into two separate applications: The client and the server. The client is where the SuperCollider language is implemented and where one executes code. The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client. See link::Guides/ClientVsServer:: for more information.
+|| See link::#client::.
 
 ## synth
 keyword:: synth
