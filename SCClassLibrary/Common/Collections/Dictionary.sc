@@ -320,7 +320,8 @@ Dictionary : Set {
 	keysValuesArrayDo { arg argArray, function;
 		// special byte codes inserted by compiler for this method
 		var i=0, j=0, key, val;
-		var arraySize = argArray.size;
+		var arraySize;
+		arraySize = argArray.size;
 		while ({ i < arraySize },{
 			key = argArray.at(i);
 			if (key.notNil, {

@@ -1,3 +1,4 @@
+#include "text_location.hpp"
 #define BOOST_TEST_MODULE sc_lexer_tests
 #include "tokens.hpp"
 #include <boost/test/included/unit_test.hpp>
@@ -8,8 +9,17 @@
 
 using namespace sc::lex;
 // MSVC needs this.
-
-BOOST_TEST_DONT_PRINT_LOG_VALUE(sc::lex::TokenType);
+namespace sc::lex {
+std::ostream& boost_test_print_type(std::ostream& ostr, sc::lex::TokenType const& right) {
+    ostr << to_string(right);
+    return ostr;
+}
+std::ostream& boost_test_print_type(std::ostream& ostr, sc::lex::SourceCodeRange const& right) {
+    ostr << "{ begin: " << right.begin.absolute << ':' << right.begin.line_number << ':' << right.begin.column
+         << ", end: " << right.end.absolute << ':' << right.end.line_number << ':' << right.end.column << "}";
+    return ostr;
+}
+}
 
 BOOST_AUTO_TEST_CASE(codepointer_iterator_forward) {
     using CPI = utils::CodePointIterator;
@@ -67,19 +77,24 @@ BOOST_AUTO_TEST_CASE(line_iter_forwards) {
     {
         std::array<const char*, 4> expected { { "A\n", "b\n", "c\n", "" } };
 
+        std::size_t l { 0 };
         for (const char* e : expected) {
             const auto r = iter.forwards();
             BOOST_TEST(r.has_value());
             const auto [ptr, sz, line, end_in_new_line] = *r;
+
             for (size_t i { 0 }; i < sz; ++i) {
                 BOOST_TEST(ptr[i] == e[i]);
             }
+            BOOST_TEST(line == l);
+            l += 1;
         }
         BOOST_TEST(!iter.forwards().has_value());
     }
     {
         std::array<const char*, 4> expected { { "", "c\n", "b\n", "A\n" } };
 
+        std::size_t l { 3 };
         for (const char* e : expected) {
             const auto r = iter.backwards();
             BOOST_TEST(r.has_value());
@@ -87,49 +102,11 @@ BOOST_AUTO_TEST_CASE(line_iter_forwards) {
             for (size_t i { 0 }; i < sz; ++i) {
                 BOOST_TEST(ptr[i] == e[i]);
             }
+            BOOST_TEST(line == l);
+            l -= 1;
         }
-        BOOST_TEST(!iter.backwards().has_value());
-    }
-}
-
-BOOST_AUTO_TEST_CASE(line_iter_backwards) {
-    const char* const source = "A\n"
-                               "b\n"
-                               "c\n";
-    utils::LineIter iter = [&]() {
-        const auto len = strlen(source);
-        auto r = utils::LineIter::make(source, source + len + 1, { len + 1, 2, 2 });
-        BOOST_TEST(r.has_value());
-        return *r;
-    }();
-
-
-    {
-        std::array<const char*, 4> expected { { "", "c\n", "b\n", "A\n" } };
-
-        for (const char* e : expected) {
-            const auto r = iter.backwards();
-            BOOST_TEST(r.has_value());
-            const auto [ptr, sz, line, end_in_new_line] = *r;
-            for (size_t i { 0 }; i < sz; ++i) {
-                BOOST_TEST(ptr[i] == e[i]);
-            }
-        }
-        BOOST_TEST(!iter.backwards().has_value());
-    }
-
-    {
-        std::array<const char*, 4> expected { { "A\n", "b\n", "c\n", "" } };
-
-        for (const char* e : expected) {
-            const auto r = iter.forwards();
-            BOOST_TEST(r.has_value());
-            const auto [ptr, sz, line, end_in_new_line] = *r;
-            for (size_t i { 0 }; i < sz; ++i) {
-                BOOST_TEST(ptr[i] == e[i]);
-            }
-        }
-        BOOST_TEST(!iter.forwards().has_value());
+        const auto r = iter.backwards();
+        BOOST_TEST(!r.has_value());
     }
 }
 
@@ -142,7 +119,8 @@ static constexpr std::array default_gobble {
 template <size_t N, size_t M>
 void match(const char* text, const std::array<sc::lex::TokenType, N>& to_find,
            const std::array<sc::lex::TokenType, M>& to_gobble) {
-    CodePointStream stream { NormalisedSource(text, strlen(text)), {} };
+    auto src = NormalisedSource(text, strlen(text));
+    CodePointStream stream { src, {} };
 
     sc::lex::actions::TypeAndLocationAction action {};
 
@@ -329,10 +307,23 @@ Recorder {
     // clang-format on
 }
 
+BOOST_AUTO_TEST_CASE(unicode_comments_1) {
+    const auto txt = R"%%(// delta is only used to compute § )%%";
+    match(txt, std::array { sc::lex::TokenType::Comment }, std::array<sc::lex::TokenType, 0> {});
+}
+
+BOOST_AUTO_TEST_CASE(unicode_comments_2) {
+    const auto txt = R"%%(// © 2003 Lance Putnam
+1)%%";
+    match(txt, std::array { sc::lex::TokenType::Comment, sc::lex::TokenType::NewLine, sc::lex::TokenType::Integer },
+          std::array<sc::lex::TokenType, 0> {});
+}
+
 
 using TSource = std::pair<sc::lex::TokenType, const char*>;
 template <size_t I> void match_str(const char* text, const std::array<TSource, I>& expected) {
-    CodePointStream stream { sc::lex::NormalisedSource(text, strlen(text)), {} };
+    auto src = sc::lex::NormalisedSource(text, strlen(text));
+    CodePointStream stream { src, {} };
     sc::lex::actions::TypeAndLocationAction action {};
 
     const auto test = [&](auto o, sc::lex::TokenType t, const char* txt) {
@@ -405,5 +396,34 @@ BOOST_AUTO_TEST_CASE(newline_normalisation) {
     match_str("\"meow\f\v\n\rwoof\"",
               std::array {
                   TSource { sc::lex::TokenType::StringLine, "\"meow\n\n\n\nwoof\"" },
+              });
+}
+
+using TLoc = std::pair<sc::lex::TokenType, sc::lex::SourceCodeRange>;
+template <size_t I> void match_loc(const char* text, const std::array<TLoc, I>& expected) {
+    CodePointStream stream { sc::lex::NormalisedSource(text, strlen(text)), {} };
+    sc::lex::actions::TypeAndLocationAction action {};
+
+    const auto test = [&](auto o, sc::lex::TokenType t, sc::lex::SourceCodeRange r) {
+        BOOST_TEST(t == o.type);
+        BOOST_TEST(r == o.range);
+    };
+
+    for (const auto& e : expected) {
+        test(sc::lex::lexer(stream, action), e.first, e.second);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(locations) {
+    match_loc("1 + 2\n3\n  4",
+              std::array {
+                  TLoc { sc::lex::TokenType::Integer, sc::lex::SourceCodeRange { { 0, 0, 0 }, { 1, 0, 1 } } },
+                  TLoc { sc::lex::TokenType::Space, sc::lex::SourceCodeRange { { 1, 0, 1 }, { 2, 0, 2 } } },
+                  TLoc { sc::lex::TokenType::Add, sc::lex::SourceCodeRange { { 2, 0, 2 }, { 3, 0, 3 } } },
+                  TLoc { sc::lex::TokenType::Space, sc::lex::SourceCodeRange { { 3, 0, 3 }, { 4, 0, 4 } } },
+                  TLoc { sc::lex::TokenType::Integer, sc::lex::SourceCodeRange { { 4, 0, 4 }, { 5, 0, 5 } } },
+                  TLoc { sc::lex::TokenType::NewLine, sc::lex::SourceCodeRange { { 5, 0, 5 }, { 6, 0, 6 } } },
+                  TLoc { sc::lex::TokenType::Integer, sc::lex::SourceCodeRange { { 6, 1, 0 }, { 7, 1, 1 } } },
               });
 }

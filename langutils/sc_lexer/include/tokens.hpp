@@ -1,5 +1,6 @@
 #pragma once
 #include <limits>
+#include <tuple>
 #include <type_traits>
 
 namespace sc::lex {
@@ -72,11 +73,17 @@ enum struct TokenType : unsigned int {
 
     START_OF_BRACKETS = END_OF_KEYWORDS,
         START_OF_OPEN_BRACKETS = START_OF_BRACKETS,
-            OpenParen = START_OF_OPEN_BRACKETS,
-            OpenSquare,
-            OpenCurly,
-            BeginClosedFunction,
-        END_OF_OPEN_BRACKETS,
+            START_OF_HAS_CLOSING_PAREN = START_OF_OPEN_BRACKETS,
+                OpenParen = START_OF_OPEN_BRACKETS,
+            END_OF_HAS_CLOSING_PAREN,
+            START_OF_HAS_CLOSING_SQUARE = END_OF_HAS_CLOSING_PAREN,
+                OpenSquare = START_OF_HAS_CLOSING_SQUARE,
+            END_OF_HAS_CLOSING_SQUARE,
+            START_OF_HAS_CLOSING_CURLY = END_OF_HAS_CLOSING_SQUARE,
+                OpenCurly = START_OF_HAS_CLOSING_CURLY,
+                BeginClosedFunction,
+            END_OF_HAS_CLOSING_CURLY,
+        END_OF_OPEN_BRACKETS = END_OF_HAS_CLOSING_CURLY,
         START_OF_CLOSE_BRACKETS = END_OF_OPEN_BRACKETS,
             CloseParen = START_OF_CLOSE_BRACKETS,
             CloseSquare,
@@ -214,6 +221,26 @@ template <typename... ARGS> [[nodiscard]] constexpr inline bool matches(TokenTyp
 
 [[nodiscard]] constexpr inline bool is_close_bracket(TokenType t) {
     return TokenType::START_OF_CLOSE_BRACKETS <= t && t < TokenType::END_OF_CLOSE_BRACKETS;
+}
+
+// Requires 't' be a closing bracket.
+[[nodiscard]] constexpr inline std::tuple<TokenType, TokenType> get_opening_brackets(TokenType t) {
+    if (t == TokenType::CloseParen)
+        return { TokenType::START_OF_HAS_CLOSING_PAREN, TokenType::END_OF_HAS_CLOSING_PAREN };
+    else if (t == TokenType::CloseSquare)
+        return { TokenType::START_OF_HAS_CLOSING_SQUARE, TokenType::END_OF_HAS_CLOSING_SQUARE };
+    else // if (t == TokenType::CloseCurly)
+        return { TokenType::START_OF_HAS_CLOSING_CURLY, TokenType::END_OF_HAS_CLOSING_CURLY };
+}
+
+// Requires 't' be an opening bracket.
+[[nodiscard]] constexpr inline TokenType get_closing_bracket(TokenType t) {
+    if (TokenType::START_OF_HAS_CLOSING_PAREN <= t && t < TokenType::END_OF_HAS_CLOSING_PAREN)
+        return TokenType::CloseParen;
+    else if (TokenType::START_OF_HAS_CLOSING_SQUARE <= t && t < TokenType::END_OF_HAS_CLOSING_SQUARE)
+        return TokenType::CloseSquare;
+    else // if (TokenType::START_OF_HAS_CLOSING_CURLY <= t && t < TokenType::END_OF_HAS_CLOSING_CURLY)
+        return TokenType::CloseCurly;
 }
 
 

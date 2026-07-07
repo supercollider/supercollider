@@ -44,6 +44,12 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 65 "lang/LangSource/Bison/lang11d"
+ 
+#include "BisonHeaderInclude.hpp"
+
+#line 53 "lang/LangSource/Bison/lang11d_tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -82,36 +88,54 @@ extern int yydebug;
     NILOBJ = 283,                  /* NILOBJ  */
     TRUEOBJ = 284,                 /* TRUEOBJ  */
     FALSEOBJ = 285,                /* FALSEOBJ  */
-    PSEUDOVAR = 286,               /* PSEUDOVAR  */
+    PIE = 286,                     /* PIE  */
     ELLIPSIS = 287,                /* ELLIPSIS  */
     DOTDOT = 288,                  /* DOTDOT  */
-    PIE = 289,                     /* PIE  */
-    BEGINCLOSEDFUNC = 290,         /* BEGINCLOSEDFUNC  */
-    BADTOKEN = 291,                /* BADTOKEN  */
-    INTERPRET = 292,               /* INTERPRET  */
-    LEFTARROW = 293,               /* LEFTARROW  */
-    WHILE = 294,                   /* WHILE  */
-    COLON = 295,                   /* COLON  */
-    EQUALSSIGN = 296,              /* EQUALSSIGN  */
-    BINOP = 297,                   /* BINOP  */
-    KEYBINOP = 298,                /* KEYBINOP  */
-    MINUS = 299,                   /* MINUS  */
-    LESSTHAN = 300,                /* LESSTHAN  */
-    GREATERTHAN = 301,             /* GREATERTHAN  */
-    MULTIPLY = 302,                /* MULTIPLY  */
-    ADD = 303,                     /* ADD  */
-    PIPE = 304,                    /* PIPE  */
-    READWRITEVAR = 305,            /* READWRITEVAR  */
-    DOT = 306,                     /* DOT  */
-    BACKTICK = 307,                /* BACKTICK  */
-    UMINUS = 308                   /* UMINUS  */
+    BEGINCLOSEDFUNC = 289,         /* BEGINCLOSEDFUNC  */
+    BADTOKEN = 290,                /* BADTOKEN  */
+    INTERPRET = 291,               /* INTERPRET  */
+    LEFTARROW = 292,               /* LEFTARROW  */
+    WHILE = 293,                   /* WHILE  */
+    COLON = 294,                   /* COLON  */
+    EQUALSSIGN = 295,              /* EQUALSSIGN  */
+    BINOP = 296,                   /* BINOP  */
+    KEYBINOP = 297,                /* KEYBINOP  */
+    MINUS = 298,                   /* MINUS  */
+    LESSTHAN = 299,                /* LESSTHAN  */
+    GREATERTHAN = 300,             /* GREATERTHAN  */
+    MULTIPLY = 301,                /* MULTIPLY  */
+    ADD = 302,                     /* ADD  */
+    PIPE = 303,                    /* PIPE  */
+    READWRITEVAR = 304,            /* READWRITEVAR  */
+    DOT = 305,                     /* DOT  */
+    BACKTICK = 306,                /* BACKTICK  */
+    UMINUS = 307                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 74 "lang/LangSource/Bison/lang11d"
+ 
+	struct PyrParseNode* node;  // Base class.
+	struct PyrSlotNode* slotNode; // For some literal value
+	struct PyrVarListNode* varListNode;
+	struct PyrVarDefNode* varDefNode;
+	struct PyrMethodNode* methodNode;
+	struct PyrArgListNode* argListNode;
+	struct PyrBlockNode* blockNode;
+	struct PyrMultiAssignVarListNode* multiAssignListNode;
+	struct PyrRootNode* root;
+	ReadWriteAccessor rwAccessor;
+	EmptyYYVal empty;
+
+#line 136 "lang/LangSource/Bison/lang11d_tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

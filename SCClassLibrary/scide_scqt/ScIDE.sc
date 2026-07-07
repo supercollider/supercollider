@@ -22,7 +22,7 @@ ScIDE {
 		PostWindowURLHandler.register(\file, {|url|
 			var prefix = "file://";
 			var parts = url[prefix.size..].split($:);
-			{ Document.open("/" ++ parts[0], parts[1] ?? { 0 }, parts[2] ?? [0]) }.fork(AppClock)
+			{ Document.openAtLine(if(parts[0][0] == $/) {parts[0]} {"/" ++ parts[0]}, parts[1] ?? { 0 }, parts[2] ?? [0]) }.fork(AppClock)
 		});
 
 		StartUp.add {
@@ -502,6 +502,22 @@ Document {
 		^doc
 	}
 
+	*openAtLine { |path, lineNumber, column, selectionLength, envir|
+		var doc;
+		path = this.standardizePath(path);
+		allDocuments.do{ |d|
+			if(d.path == path.absolutePath){
+				doc = d
+			};
+		};
+		if(doc.notNil, {
+			^doc.front
+		});
+		doc = super.new.initFromPathLineColumn(path, lineNumber + column, selectionLength);
+		if (envir.notNil and: { doc.notNil }) { doc.envir_(envir) };
+		^doc
+	}
+
 	*syncFromIDE {|quuid, title, chars, isEdited, path, selStart, selSize|
 		var doc;
 		isEdited = isEdited.booleanValue;
@@ -635,6 +651,31 @@ Document {
 		title = path.basename;
 		isEdited = false;
 		this.prAdd;
+	}
+
+	initFromPathLineColumn { |argpath, line(1), column(0), selectionLength(1)|
+		quuid = ScIDE.getQUuid;
+		this.prReadTextFromFile(argpath);
+		this.propen(argpath, this.prFindIndexOfLineNumber(line) + column, selectionLength);
+		path = argpath;
+		title = path.basename;
+		isEdited = false;
+		this.prAdd;
+	}
+
+	prFindIndexOfLineNumber { |line(1)|
+		var txt = this.getText;
+		var count = 1;
+		txt.do {|c, i|
+			if (count == line){
+				^i
+			} {
+				if (c == $\n) {
+					count = count + 1;
+				}
+			}
+		};
+		^txt.size - 1
 	}
 
 	textChanged {|index, numCharsRemoved, addedChars|
@@ -839,6 +880,7 @@ Document {
 	selectionStart {
 		^this.prGetSelectionStart(quuid)
 	}
+
 
 	prGetSelectionStart {|id|
 		_ScIDE_GetDocSelectionStart

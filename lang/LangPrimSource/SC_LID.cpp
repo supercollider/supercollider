@@ -28,6 +28,7 @@
 
 #include <atomic>
 
+#include "ClassLibraryInfo.hpp"
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -43,6 +44,7 @@
 #include "PyrSched.h"
 #include "GC.h"
 #include "SC_LanguageClient.h"
+#include "ClassLibraryInfo.hpp"
 
 #if HAVE_LID
 #    include <errno.h>
@@ -62,7 +64,7 @@
 #    define LONG(x) ((x) / BITS_PER_LONG)
 #    define TEST_BIT(array, bit) (((array)[LONG(bit)] >> OFF(bit)) & 1)
 
-extern bool gCompiledOK;
+extern ClassLibraryInfo gClassLibraryInfo;
 
 static PyrSymbol* s_inputDeviceClass = nullptr;
 static PyrSymbol* s_inputDeviceInfoClass = nullptr;
@@ -277,7 +279,7 @@ void SC_LID::handleEvent(struct input_event& evt, std::atomic<bool> const& shoul
             return;
         }
 
-        if (gCompiledOK) {
+        if (gClassLibraryInfo.acceptsInput()) {
             VMGlobals* g = gMainVMGlobals;
             g->canCallOS = false;
             ++g->sp;
@@ -304,7 +306,7 @@ void SC_LID::readError(std::atomic<bool> const& shouldBeRunning) {
         return;
     }
 
-    if (gCompiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
         ++g->sp;

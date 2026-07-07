@@ -82,7 +82,8 @@ public slots:
     void showQuarks(void);
     void onReadAllStandardOutput();
     void onReadAllStandardError();
-    void evaluateCode(QString const& commandString, bool silent = false);
+    void evaluateCode(QString const& commandString, bool silent = false, const QString* filePath = nullptr,
+                      int lineNumber = 0, int column = 0);
 
 signals:
     void scPost(QString const&);
