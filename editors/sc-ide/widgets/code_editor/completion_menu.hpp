@@ -49,7 +49,7 @@ class CompletionMenu : public PopUpWidget {
     Q_OBJECT
 
 public:
-    enum DataRole { CompletionRole = Qt::UserRole, MethodRole };
+    enum DataRole { CompletionRole = Qt::UserRole, MethodRole, ClassRole };
 
     CompletionMenu(QWidget* parent = 0);
     void addItem(QStandardItem* item);
@@ -58,6 +58,7 @@ public:
     void setCompletionRole(int role);
     QString currentText();
     const ScLanguage::Method* currentMethod();
+    ScLanguage::Class* currentClass();
     QString exec(const QRect& rect);
     QSortFilterProxyModel* model();
     QListView* view();

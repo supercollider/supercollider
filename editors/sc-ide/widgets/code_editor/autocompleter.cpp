@@ -507,7 +507,9 @@ CompletionMenu* AutoCompleter::menuForClassCompletion(CompletionDescription cons
 
     for (ClassMap::const_iterator it = matchStart; it != matchEnd; ++it) {
         Class* klass = it->second.data();
-        menu->addItem(new QStandardItem(klass->name));
+        auto item = new QStandardItem(klass->name);
+        item->setData(QVariant::fromValue(klass), CompletionMenu::ClassRole);
+        menu->addItem(item);
     }
 
     menu->adapt();
@@ -569,6 +571,7 @@ CompletionMenu* AutoCompleter::menuForClassMethodCompletion(CompletionDescriptio
         QStandardItem* item = new QStandardItem();
         item->setText(methodName + detail.arg(method->ownerClass->name));
         item->setData(QVariant::fromValue(method), CompletionMenu::MethodRole);
+        item->setData(QVariant::fromValue(method->ownerClass), CompletionMenu::ClassRole);
         item->setData(methodName, CompletionMenu::CompletionRole);
         menu->addItem(item);
     }
@@ -616,6 +619,7 @@ CompletionMenu* AutoCompleter::menuForMethodCompletion(CompletionDescription con
             item->setText(methodName + detail.arg(count));
 
         item->setData(methodName, CompletionMenu::CompletionRole);
+        item->setData(QVariant::fromValue(method->ownerClass), CompletionMenu::ClassRole);
 
         menu->addItem(item);
 
@@ -720,7 +724,7 @@ void AutoCompleter::updateCompletionMenu(bool forceShow) {
     } else
         menu->hide();
 
-    if (mCompletion.type == ClassCompletion && Main::settings()->value("IDE/editor/showAutocompleteHelp").toBool())
+    if (Main::settings()->value("IDE/editor/showAutocompleteHelp").toBool())
         updateCompletionMenuInfo();
 }
 
@@ -751,23 +755,57 @@ void AutoCompleter::onCompletionMenuFinished(int result) {
     // quitCompletion("cancelled");
 }
 
-void AutoCompleter::updateCompletionMenuInfo() {
-    DocNode* node = parseHelpClass(findHelpClass(mCompletion.menu->currentText()));
-    if (!node) {
-        mCompletion.menu->addInfo(QString());
-        return;
-    }
-
+void AutoCompleter::fillClassHelp(DocNode* node, QString& infos) {
     QString examples = parseClassElement(node, "EXAMPLES");
     if (!examples.isEmpty())
         examples.prepend("<h4>Examples</h4>");
     // MSVStudio 2013 does not concatenate multiple QStringliterals ("""") properly
     // see http://blog.qt.io/blog/2014/06/13/qt-weekly-13-qstringliteral/
-    QString infos = QStringLiteral("<h4>%1</h4>%2%3<p><a href=\"%4\">go to help</a>")
-                        .arg(parseClassElement(node, "SUMMARY"))
-                        .arg(parseClassElement(node, "DESCRIPTION"))
-                        .arg(examples)
-                        .arg(mCompletion.menu->currentText());
+    infos = QStringLiteral("<h4>%1</h4>%2%3<p><a href=\"%4\">go to help</a>")
+                .arg(parseClassElement(node, "SUMMARY"))
+                .arg(parseClassElement(node, "DESCRIPTION"))
+                .arg(examples)
+                .arg(mCompletion.menu->currentText());
+}
+
+void AutoCompleter::fillMethodHelp(DocNode* node, QString& infos, const QString& methodName) {
+    QString instanceMethods = parseClassElement(node, "INSTANCEMETHODS");
+    infos = QStringLiteral("<h4>Method %1</h4>%2").arg(methodName).arg(instanceMethods);
+}
+
+void AutoCompleter::fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName) {
+    QString instanceMethods = parseClassElement(node, "CLASSMETHODS");
+    infos = QStringLiteral("<h4>Class Method %1</h4>%2").arg(methodName).arg(instanceMethods);
+}
+
+void AutoCompleter::updateCompletionMenuInfo() {
+    auto klass = mCompletion.menu->currentClass();
+    if (!klass) {
+        return;
+    }
+    auto className = klass->name.get();
+    DocNode* node = parseHelpClass(findHelpClass(className));
+    if (!node) {
+        mCompletion.menu->addInfo(QString());
+        return;
+    }
+
+    QString infos;
+
+    auto methodName = mCompletion.menu->currentText();
+
+    switch (mCompletion.type) {
+    case ClassCompletion:
+        fillClassHelp(node, infos);
+        break;
+    case MethodCompletion:
+        fillMethodHelp(node, infos, methodName);
+        break;
+    case ClassMethodCompletion:
+        break;
+    case InvalidCompletion:
+        break;
+    };
     mCompletion.menu->addInfo(infos);
     doc_node_free_tree(node);
 }
@@ -916,6 +954,7 @@ const ScLanguage::Method* AutoCompleter::disambiguateMethod(const QString& metho
             QStandardItem* item = new QStandardItem();
             item->setText(method->name + " (" + method->ownerClass->name + ')');
             item->setData(QVariant::fromValue(method), CompletionMenu::MethodRole);
+            item->setData(QVariant::fromValue(method->ownerClass), CompletionMenu::ClassRole);
             menu->addItem(item);
         }
 

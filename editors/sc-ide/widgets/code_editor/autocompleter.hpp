@@ -60,6 +60,9 @@ private slots:
     void onContentsChange(int pos, int removed, int added);
     void onCursorChanged();
     void onCompletionMenuFinished(int result);
+    void fillClassHelp(DocNode* node, QString& infos);
+    void fillMethodHelp(DocNode* node, QString& infos, const QString& methodName);
+    void fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName);
     void updateCompletionMenuInfo();
     void clearMethodCallStack();
     void hideWidgets();
