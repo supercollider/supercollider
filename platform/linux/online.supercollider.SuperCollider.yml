@@ -15,6 +15,7 @@ finish-args:
   - --filesystem=host
   # scsynth uses jack, but pipewire is jack compatible
   - --filesystem=xdg-run/pipewire-0
+  - --system-talk-name=org.freedesktop.Avahi
 
 # remove dev files from build
 cleanup:
@@ -36,11 +37,11 @@ modules:
       - -DSC_IDE=ON
       - -DSC_USE_QTWEBENGINE=ON
       - -DSUPERNOVA=ON
-      - -DSC_ABLETON_LINK=OFF
+      - -DSC_ABLETON_LINK=ON
       - -DSC_HIDAPI=ON
       - -DSYSTEM_BOOST=OFF
       - -DSYSTEM_YAMLCPP=OFF
-      - -DNO_AVAHI=ON
+      - -DNO_AVAHI=OFF
       - -DINSTALL_HELP=ON
       - -DENABLE_TESTSUITE=OFF
       - -DSC_SYMLINK_CLASSLIB=OFF
