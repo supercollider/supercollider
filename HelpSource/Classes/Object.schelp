@@ -205,8 +205,8 @@ method::cs
 Shorthand for link::#-asCompileString::.
 
 code::
-{ 10.do { 10.postln } }.asCompileString;
-"Strings don't post with surrounding quotes.".asCompileString;
+{ 10.do { 10.postln } }.cs;
+"Strings don't post with surrounding quotes.".cs;
 ::
 
 subsection::Archiving
