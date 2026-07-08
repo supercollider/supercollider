@@ -15,11 +15,11 @@ jobs:
         include:
           - arch: x86_64
             runner: ubuntu-24.04
-            jobname: "x86 64bit"
+            job-name: "x86 64bit"
             artifact-suffix: "x86_64.flatpak"
           - arch: aarch64
             runner: ubuntu-24.04-arm
-            jobname: "arm64"
+            job-name: "arm64"
             artifact-suffix: "arm64.flatpak"
 
     steps:
