@@ -229,7 +229,7 @@ var f;
 f = "myString";
 f.postln;
 f.asCompileString.postln;
-f.cs.postln; // .cs is a short form for .asCompileString.
+f.cs.postln; // .cs is the short form for .asCompileString.
 )
 ::
 
