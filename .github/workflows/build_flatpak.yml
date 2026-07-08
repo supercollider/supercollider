@@ -22,6 +22,8 @@ jobs:
             job-name: "arm64"
             artifact-suffix: "arm64"
 
+    name: flatpak ${{ matrix.job-name }}
+
     steps:
       - uses: actions/checkout@v6
         with:
