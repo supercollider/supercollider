@@ -160,7 +160,7 @@ On Windows platforms, this will return the disk name for absolute paths.
 Otherwise, and on unix platforms, this will return an empty string.
 
 code::
-PathName.new(ExampleFiles.child).diskName.cs;
+PathName.new(ExampleFiles.child).diskName.asCompileString;
 ::
 
 method::+/+
