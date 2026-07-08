@@ -103,7 +103,7 @@ returns:: a string that when interpreted matches the receiver, if the number is 
 
 code::
 a = 2.81882773638;
-a.asCompileString.interpret == a;
+a.cs.interpret == a;
 ::
 
 method:: asStringPrec

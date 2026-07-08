@@ -192,7 +192,7 @@ Returns a String that can be interpreted to reconstruct a copy of the receiver. 
 
 code::
 a = { 10.do { 10.postln } };
-a.asCompileString.postcs;
+a.cs.postcs;
 a.postcs;
 ::
 

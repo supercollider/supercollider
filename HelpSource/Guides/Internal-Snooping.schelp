@@ -140,7 +140,7 @@ Collection.dumpByteCodes('select');
 
 { 1 + 2 }.dump;              // this is a Function
 { 1 + 2 }.def.dump;          // dump its FunctionDef
-{ 1 + 2 }.asCompileString;   // show its implementation
+{ 1 + 2 }.cs;   // show its implementation
 { 1 + 2 }.def.dumpByteCodes; // dump its code.
 ::
 

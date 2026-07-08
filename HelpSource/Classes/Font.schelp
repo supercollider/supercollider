@@ -233,7 +233,7 @@ Font.availableFonts.do({ |name|
 		s = Button(b, Rect(0, 0, 140, height + 20));
 		s.font = font;
 		s.states = [[name]];
-		s.action = { font.asCompileString.postln };
+		s.action = { font.cs.postln };
 
 		n = NumberBox(b, Rect(0, 0, 56, height + 20));
 		n.font = font;

@@ -3,7 +3,7 @@ summary:: asCompileString in JITLib
 categories:: JITLib>Tutorials
 
 code::
-{ 10 + 6 * ~harry }.asCompileString;
+{ 10 + 6 * ~harry }.cs;
 ::
 
 Many objects understand strong::.storeOn::, which a way to post their string that is needed to reproduce them by compilation. Sometimes one wants to store a certain configuration of a proxy space, which can be done
@@ -39,7 +39,7 @@ p = ProxySpace.push(s);
 ~out.set(\freq, 760, \ffreq, 20);
 )
 
-p.asCompileString;
+p.cs;
 
 // the document message creates a new document which it posts the code into
 
