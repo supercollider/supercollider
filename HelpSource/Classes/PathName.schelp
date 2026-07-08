@@ -151,11 +151,6 @@ myPath.allFolders;
 note::
 This returns different results depending on a trailing path separator, e.g. code::PathName("/foo/bar").allFolders:: and code::PathName("/foo/bar/").allFolders::, which are the same valid unix paths, return different arrays.
 Use with caution.
-
-As an alternative, a combination of link::Classes/String#-dirname:: and link::Classes/String#-split:: may provide more predictable results:
-code::
-ExampleFiles.child.dirname.split(Platform.pathSeparator).reject({|x| x.size==0})
-::
 ::
 
 method::diskName
