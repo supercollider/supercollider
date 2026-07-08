@@ -133,8 +133,15 @@ jobs:
             s3-artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
+          - artifact-suffix: flatpak-x86
+            s3-os-name: flatpak-x86
+            s3-artifact-prefix: '-flatpak-x86'
+            s3-artifact-suffix: ''
+            s3-artifact-extension: 'zip'
+            s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
+
     if: github.repository_owner == 'supercollider' && github.event_name != 'pull_request' # run in the main repo, but not on pull requests
-    needs: [lint, version-getter, build-macos, build-windows]
+    needs: [lint, version-getter, build-macos, build-windows, build-flatpak]
     runs-on: ubuntu-latest
     name: 'deploy ${{ matrix.artifact-suffix }} to s3'
     env:
