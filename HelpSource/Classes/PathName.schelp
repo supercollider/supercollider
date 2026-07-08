@@ -33,7 +33,7 @@ code::
 (
 var myPath;
 myPath = PathName.new(ExampleFiles.child);
-myPath.fileName.postln;
+myPath.fileName;
 )
 ::
 
@@ -50,7 +50,7 @@ code::
 (
 var myPath;
 myPath = PathName.new(ExampleFiles.child);
-myPath.pathOnly.postln;
+myPath.pathOnly;
 )
 ::
 
@@ -63,7 +63,7 @@ code::
 (
 var myPath;
 myPath = PathName.new(ExampleFiles.child);
-myPath.folderName.postln;
+myPath.folderName;
 )
 ::
 
@@ -73,7 +73,7 @@ code::
 (
 var myPath;
 myPath = PathName.new(ExampleFiles.child);
-myPath.fullPath.postln;
+myPath.fullPath;
 )
 ::
 
@@ -140,20 +140,29 @@ myPath.filesDo{ |afile| afile.postln };
 method::allFolders
 returns a list of all the folder names contained in the pathname itself.
 
+code::
+(
+var myPath;
+myPath = PathName.new(ExampleFiles.child);
+myPath.allFolders;
+)
+::
+
 note::
 This returns different results depending on a trailing path separator, e.g. code::PathName("/foo/bar").allFolders:: and code::PathName("/foo/bar/").allFolders::, which are the same valid unix paths, return different arrays.
 Use with caution.
 
 As an alternative, a combination of link::Classes/String#-dirname:: and link::Classes/String#-split:: may provide more predictable results:
 code::
-ExampleFiles.child.split(Platform.pathSeparator).reject({|x| x.size==0})
+ExampleFiles.child.dirname.split(Platform.pathSeparator).reject({|x| x.size==0})
 ::
 ::
 
 method::diskName
 
-This method has known reliability issues and is generally discouraged.
-It remains available for legacy use cases, and the examples below illustrate how to use it when necessary:
+if path is an absolute path, returns the disk name; else a blank string.
+On Windows platforms, this will return the disk name for absolute paths.
+Otherwise, and on unix platforms, this will return an empty string.
 
 code::
 (
@@ -161,9 +170,6 @@ var myPath;
 myPath = PathName.new(ExampleFiles.child);
 myPath.diskName;
 )
-// On Windows platforms, this will return the disk name for absolute paths.
-// Otherwise, and on unix platforms, this will return an empty string.
-
 ::
 
 method::+/+
