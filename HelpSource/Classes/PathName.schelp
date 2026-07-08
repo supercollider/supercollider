@@ -143,34 +143,28 @@ returns a list of all the folder names contained in the pathname itself.
 note::
 This returns different results depending on a trailing path separator, e.g. code::PathName("/foo/bar").allFolders:: and code::PathName("/foo/bar/").allFolders::, which are the same valid unix paths, return different arrays.
 Use with caution.
-::
 
+As an alternative, a combination of link::Classes/String#-dirname:: and link::Classes/String#-split:: may provide more predictable results:
 code::
-"Imaginary/Directory/fish.rtf".dirname.split // on Linux and macOS
+ExampleFiles.child.split(Platform.pathSeparator).reject({|x| x.size==0})
 ::
-returns:
-teletype::
--> [Imaginary, Directory]
-::
-code::
-"/Imaginary/Directory/fish.rtf".dirname.split // on Linux and macOS
-::
-returns:
-teletype::
--> [, Imaginary, Directory]
-::
-code::
-"D:/Directory/fish.rtf".dirname.split         // on Windows
-::
-returns:
-teletype::
--> [D:, Directory]
 ::
 
 method::diskName
 
 This method has known reliability issues and is generally discouraged.
-It remains available for legacy use cases, and the examples below illustrate how to use it when necessary.
+It remains available for legacy use cases, and the examples below illustrate how to use it when necessary:
+
+code::
+(
+var myPath;
+myPath = PathName.new(ExampleFiles.child);
+myPath.diskName;
+)
+// On Windows platforms, this will return the disk name for absolute paths.
+// Otherwise, and on unix platforms, this will return an empty string.
+
+::
 
 method::+/+
 Path concatenation operator - useful for avoiding doubling-up slashes unnecessarily.
