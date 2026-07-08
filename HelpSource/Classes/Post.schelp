@@ -9,7 +9,7 @@ Post <<< a << " " <<< b << " " <<< c << " " <<< d << Char.nl;
 ::
 vs
 code::
-(a.cs + b.cs + c.cs + d.cs).postln;
+(a.asCompileString + b.asCompileString + c.asCompileString + d.asCompileString).postln;
 ::
 
 warning::
@@ -81,5 +81,5 @@ Post <<< d << Char.nl;
 // This is the equivalent of :
 d.postln;
 // or
-d.cs.postln;
+d.asCompileString.postln;
 ::

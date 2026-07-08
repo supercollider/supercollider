@@ -172,7 +172,7 @@ g = [
 	[1, [\c_set, 0, 0]] // finish
 	];
 f = File(Platform.defaultTempDir +/+ "score-test", "w");
-f.write(g.cs);
+f.write(g.asCompileString);
 f.close;
 )
 
@@ -229,7 +229,7 @@ g = [
 	[1, [\c_set, 0, 0]] // finish
 	];
 f = File(Platform.defaultTempDir +/+ "score-test", "w");
-f.write(g.cs);
+f.write(g.asCompileString);
 f.close;
 )
 

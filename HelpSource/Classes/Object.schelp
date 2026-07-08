@@ -192,7 +192,7 @@ Returns a String that can be interpreted to reconstruct a copy of the receiver. 
 
 code::
 a = { 10.do { 10.postln } };
-a.cs.postcs;
+a.asCompileString.postcs;
 a.postcs;
 ::
 
@@ -205,8 +205,8 @@ method::cs
 Shorthand for link::#-asCompileString::.
 
 code::
-{ 10.do { 10.postln } }.cs;
-"Strings don't post with surrounding quotes.".cs;
+{ 10.do { 10.postln } }.asCompileString;
+"Strings don't post with surrounding quotes.".asCompileString;
 ::
 
 subsection::Archiving

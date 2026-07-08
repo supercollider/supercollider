@@ -296,7 +296,7 @@ i.free;
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 
 i.url;
-i.cs;
+i.asCompileString;
 i.writeArchive("~/Desktop/my_image.scd".standardizePath);
 
 i.free;

@@ -135,7 +135,7 @@ a.at(\freq); // returns 20
 y = (i: -1);
 b.parent_(y);
 a.at(\i); // returns -1
-a.cs;
+a.asCompileString;
 
 ::
 
@@ -148,7 +148,7 @@ y = (freq: 300);
 b = (amp: 0.5).parent_(y);
 a.parent_(b);
 a.at(\freq); // returns 300
-a.cs;
+a.asCompileString;
 
 ::
 

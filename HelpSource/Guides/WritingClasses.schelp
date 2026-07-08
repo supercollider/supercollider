@@ -576,7 +576,7 @@ MyTestPoint {
 ::
 
 code::
-MyTestPoint(2, 3).cs;
+MyTestPoint(2, 3).asCompileString;
 ::
 
 section::Private Methods
