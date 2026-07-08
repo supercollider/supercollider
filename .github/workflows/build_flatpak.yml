@@ -16,11 +16,11 @@ jobs:
           - arch: x86_64
             runner: ubuntu-24.04
             job-name: "x86 64bit"
-            artifact-suffix: "x86_64.flatpak"
+            artifact-suffix: "x86_64"
           - arch: aarch64
             runner: ubuntu-24.04-arm
             job-name: "arm64"
-            artifact-suffix: "arm64.flatpak"
+            artifact-suffix: "arm64"
 
     steps:
       - uses: actions/checkout@v6
