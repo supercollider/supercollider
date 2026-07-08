@@ -138,8 +138,13 @@ myPath.filesDo{ |afile| afile.postln };
 ::
 
 method::allFolders
-This method has known reliability issues and is generally discouraged.
-Use instead link::Classes/String#-dirname:: and link::Classes/String#-split:: in combination:
+returns a list of all the folder names contained in the pathname itself.
+
+note::
+This returns different results depending on a trailing path separator, e.g. code::PathName("/foo/bar").allFolders:: and code::PathName("/foo/bar/").allFolders::, which are the same valid unix paths, return different arrays.
+Use with caution.
+::
+
 code::
 "Imaginary/Directory/fish.rtf".dirname.split // on Linux and macOS
 ::
