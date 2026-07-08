@@ -33,6 +33,7 @@
 #    include "../help_browser.hpp"
 #endif // SC_USE_QTWEBENGINE
 
+#include <iostream>
 #include <yaml-cpp/node/node.h>
 #include <yaml-cpp/parser.h>
 
@@ -479,7 +480,7 @@ void AutoCompleter::showCompletionMenu(bool forceShow) {
 
     updateCompletionMenu(forceShow);
 
-    if (mCompletion.type == ClassCompletion && Main::settings()->value("IDE/editor/showAutocompleteHelp").toBool()) {
+    if (Main::settings()->value("IDE/editor/showAutocompleteHelp").toBool()) {
         connect(menu, &CompletionMenu::itemChanged, this, &AutoCompleter::updateCompletionMenuInfo);
         connect(menu, &CompletionMenu::infoClicked, this, &AutoCompleter::gotoHelp);
         updateCompletionMenuInfo();
@@ -601,29 +602,18 @@ CompletionMenu* AutoCompleter::menuForMethodCompletion(CompletionDescription con
     CompletionMenu* menu = new CompletionMenu(editor);
     menu->setCompletionRole(CompletionMenu::CompletionRole);
 
-    for (MethodMap::const_iterator it = matchStart; it != matchEnd;) {
+    for (MethodMap::const_iterator it = matchStart; it != matchEnd; ++it) {
         const Method* method = it->second.data();
-
-        std::pair<MethodMap::const_iterator, MethodMap::const_iterator> range = methods.equal_range(it->first);
-
-        int count = std::distance(range.first, range.second);
 
         QStandardItem* item = new QStandardItem();
 
         QString methodName = method->name.get();
-        QString detail(" [ %1 ]");
-        if (count == 1) {
-            item->setText(methodName + detail.arg(method->ownerClass->name));
-            item->setData(QVariant::fromValue(method), CompletionMenu::MethodRole);
-        } else
-            item->setText(methodName + detail.arg(count));
-
+        item->setText(methodName + QStringLiteral(" [ %1 ]").arg(method->ownerClass->name));
+        item->setData(QVariant::fromValue(method), CompletionMenu::MethodRole);
         item->setData(methodName, CompletionMenu::CompletionRole);
         item->setData(QVariant::fromValue(method->ownerClass), CompletionMenu::ClassRole);
 
         menu->addItem(item);
-
-        it = range.second;
     }
 
     menu->adapt();
@@ -768,12 +758,13 @@ void AutoCompleter::fillClassHelp(DocNode* node, QString& infos) {
                 .arg(mCompletion.menu->currentText());
 }
 
-void AutoCompleter::fillMethodHelp(DocNode* node, QString& infos, const QString& methodName) {
-    QString instanceMethods = parseClassElement(node, "INSTANCEMETHODS");
-    infos = QStringLiteral("<h4>Method %1</h4>%2").arg(methodName).arg(instanceMethods);
+void AutoCompleter::fillMethodHelp(DocNode* node, QString& infos, const QString& methodName, const QString& className) {
+    QString instanceMethods = getMethodDocs(node, methodName, false);
+    infos = QStringLiteral("<h4>%1-%2</h4>%3").arg(className).arg(methodName).arg(instanceMethods);
 }
 
 void AutoCompleter::fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName) {
+    // @todo derive via meta class
     QString instanceMethods = parseClassElement(node, "CLASSMETHODS");
     infos = QStringLiteral("<h4>Class Method %1</h4>%2").arg(methodName).arg(instanceMethods);
 }
@@ -799,9 +790,10 @@ void AutoCompleter::updateCompletionMenuInfo() {
         fillClassHelp(node, infos);
         break;
     case MethodCompletion:
-        fillMethodHelp(node, infos, methodName);
+        fillMethodHelp(node, infos, methodName, className);
         break;
     case ClassMethodCompletion:
+        fillClassMethodHelp(node, infos, methodName);
         break;
     case InvalidCompletion:
         break;
@@ -1228,11 +1220,44 @@ QString AutoCompleter::parseClassElement(DocNode* node, QString element) {
     return QString();
 }
 
+bool isMatchingMethod(DocNode* node, QString methodName) {
+    if (QString(node->id) == "METHODNAMES" && node->n_childs > 0 && node->children[0]->text == methodName) {
+        return true;
+    }
+    for (int i = 0; i < node->n_childs; i++) {
+        if (isMatchingMethod(node->children[i], methodName))
+            return true;
+    }
+    return false;
+}
+
+QString AutoCompleter::getMethodDocs(DocNode* node, QString methodName, bool isClassMethod = false) {
+    if (QString(node->id) == (isClassMethod ? "CMETHOD" : "IMETHOD") && isMatchingMethod(node, methodName)
+        && node->n_childs > 0) {
+        QString str;
+        parseClassNode(node->children[1], &str);
+        return str;
+    }
+
+    for (int i = 0; i < node->n_childs; i++) {
+        QString ret = getMethodDocs(node->children[i], methodName, isClassMethod);
+        if (!ret.isEmpty())
+            return ret;
+    }
+
+    return QString();
+}
+
 void AutoCompleter::parseClassNode(DocNode* node, QString* str) {
     QString id = node->id;
 
+    std::cout << node->id << std::endl;
+
     if (id == "NOTE")
         str->append("<br><br>Note:<br>");
+
+    if (id == "ARGUMENTS")
+        str->append("<br>");
 
     if (node->text) {
         if (id == "LINK") {
@@ -1247,6 +1272,8 @@ void AutoCompleter::parseClassNode(DocNode* node, QString* str) {
             str->append(QStringLiteral("<code>%1</code>").arg(node->text));
         } else if (id == "CODEBLOCK") {
             str->append(QStringLiteral("<pre><code>%1</code></pre>").arg(node->text));
+        } else if (id == "ARGUMENT") {
+            str->append(QStringLiteral("<br><code><b>%1</b></code>: ").arg(node->text));
         } else {
             str->append(node->text);
         }
