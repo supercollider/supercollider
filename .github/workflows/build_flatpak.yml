@@ -15,8 +15,12 @@ jobs:
         include:
           - arch: x86_64
             runner: ubuntu-24.04
+            jobname: "x86 64bit"
+            artifact-suffix: "x86_64.flatpak"
           - arch: aarch64
             runner: ubuntu-24.04-arm
+            jobname: "arm64"
+            artifact-suffix: "arm64.flatpak"
 
     steps:
       - uses: actions/checkout@v6
@@ -48,10 +52,10 @@ jobs:
 
       - name: Create bundle
         run: |
-          flatpak build-bundle repo "SuperCollider-${{ inputs.sc-version }}-${{ matrix.arch }}.flatpak" online.supercollider.SuperCollider
+          flatpak build-bundle repo "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}.flatpak" online.supercollider.SuperCollider
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.arch }}.flatpak"
-          path: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.arch }}.flatpak"
+          name: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}.flatpak"
+          path: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}.flatpak"
