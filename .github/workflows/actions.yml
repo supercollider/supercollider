@@ -136,16 +136,16 @@ jobs:
             s3-artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
-          - artifact-suffix: "flatpak-x86_64"
-            s3-os-name: flatpak-x86_64
+          - artifact-suffix: "Linux-x86_64"
+            s3-os-name: Linux-Flatpak-x86_64
             s3-artifact-prefix: '-x86_64-flatpak'
             s3-artifact-suffix: ''
             s3-artifact-extension: 'flatpak'
             artifact-extension: '.flatpak'
             s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
 
-          - artifact-suffix: "flatpak-arm64"
-            s3-os-name: flatpak-arm64
+          - artifact-suffix: "Linux-arm64"
+            s3-os-name: Linux-Flatpak-arm64
             s3-artifact-prefix: '-arm64-flatpak'
             s3-artifact-suffix: ''
             s3-artifact-extension: 'flatpak'

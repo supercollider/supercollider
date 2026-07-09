@@ -24,6 +24,9 @@ jobs:
 
     name: flatpak ${{ matrix.job-name }}
 
+    env:
+      FLATPAK_FILE: "SuperCollider-${{ inputs.sc-version }}-Linux-${{ matrix.artifact-suffix }}.flatpak"
+
     steps:
       - uses: actions/checkout@v6
         with:
@@ -62,10 +65,10 @@ jobs:
 
       - name: Create bundle
         run: |
-          flatpak build-bundle repo "SuperCollider-${{ inputs.sc-version }}-flatpak-${{ matrix.artifact-suffix }}.flatpak" online.supercollider.SuperCollider
+          flatpak build-bundle repo "${{ env.FLATPAK_FILE }}" online.supercollider.SuperCollider
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "SuperCollider-${{ inputs.sc-version }}-flatpak-${{ matrix.artifact-suffix }}.flatpak"
-          path: "SuperCollider-${{ inputs.sc-version }}-flatpak-${{ matrix.artifact-suffix }}.flatpak"
+          name: ${{ env.FLATPAK_FILE }}
+          path: ${{ env.FLATPAK_FILE }}
