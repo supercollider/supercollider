@@ -33,18 +33,7 @@ modules:
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DAUDIOAPI=jack
-      - -DSC_QT=ON
-      - -DSC_IDE=ON
-      - -DSC_USE_QTWEBENGINE=ON
-      - -DSUPERNOVA=ON
-      - -DSC_ABLETON_LINK=ON
-      - -DSC_HIDAPI=ON
-      - -DSYSTEM_BOOST=OFF
-      - -DSYSTEM_YAMLCPP=OFF
-      - -DNO_AVAHI=OFF
-      - -DINSTALL_HELP=ON
       - -DENABLE_TESTSUITE=OFF
-      - -DSC_SYMLINK_CLASSLIB=OFF
       - -DCMAKE_INSTALL_PREFIX=/app
     sources:
       - type: dir
