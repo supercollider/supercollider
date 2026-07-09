@@ -763,10 +763,10 @@ void AutoCompleter::fillMethodHelp(DocNode* node, QString& infos, const QString&
     infos = QStringLiteral("<h4>%1-%2</h4>%3").arg(className).arg(methodName).arg(instanceMethods);
 }
 
-void AutoCompleter::fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName) {
-    // @todo derive via meta class
-    QString instanceMethods = parseClassElement(node, "CLASSMETHODS");
-    infos = QStringLiteral("<h4>Class Method %1</h4>%2").arg(methodName).arg(instanceMethods);
+void AutoCompleter::fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName,
+                                        const QString& className) {
+    QString instanceMethods = getMethodDocs(node, methodName, true);
+    infos = QStringLiteral("<h4>%1#%2</h4>%3").arg(className).arg(methodName).arg(instanceMethods);
 }
 
 void AutoCompleter::updateCompletionMenuInfo() {
@@ -775,6 +775,11 @@ void AutoCompleter::updateCompletionMenuInfo() {
         return;
     }
     auto className = klass->name.get();
+    // strip Meta_ prefix for resolution of docs
+    if (className.startsWith("Meta_")) {
+        className.remove(0, 5);
+    }
+
     DocNode* node = parseHelpClass(findHelpClass(className));
     if (!node) {
         mCompletion.menu->addInfo(QString());
@@ -793,7 +798,7 @@ void AutoCompleter::updateCompletionMenuInfo() {
         fillMethodHelp(node, infos, methodName, className);
         break;
     case ClassMethodCompletion:
-        fillClassMethodHelp(node, infos, methodName);
+        fillClassMethodHelp(node, infos, methodName, className);
         break;
     case InvalidCompletion:
         break;
@@ -1250,8 +1255,6 @@ QString AutoCompleter::getMethodDocs(DocNode* node, QString methodName, bool isC
 
 void AutoCompleter::parseClassNode(DocNode* node, QString* str) {
     QString id = node->id;
-
-    std::cout << node->id << std::endl;
 
     if (id == "NOTE")
         str->append("<br><br>Note:<br>");

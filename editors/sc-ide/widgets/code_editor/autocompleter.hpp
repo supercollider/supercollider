@@ -62,7 +62,7 @@ private slots:
     void onCompletionMenuFinished(int result);
     void fillClassHelp(DocNode* node, QString& infos);
     void fillMethodHelp(DocNode* node, QString& infos, const QString& methodName, const QString& className);
-    void fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName);
+    void fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName, const QString& className);
     void updateCompletionMenuInfo();
     void clearMethodCallStack();
     void hideWidgets();
