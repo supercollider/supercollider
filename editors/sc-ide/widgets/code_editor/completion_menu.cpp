@@ -23,6 +23,8 @@
 #include <QKeyEvent>
 #include <QApplication>
 
+#include "main.hpp"
+
 namespace ScIDE {
 
 CompletionMenu::CompletionMenu(QWidget* parent): PopUpWidget(parent), mCompletionRole(Qt::DisplayRole) {
@@ -54,6 +56,14 @@ CompletionMenu::CompletionMenu(QWidget* parent): PopUpWidget(parent), mCompletio
     auto browserFont = mTextBrowser->font();
     browserFont.setPointSize(font.pointSize());
     mTextBrowser->setFont(browserFont);
+
+    // set links to match the color of symbol as highlight color
+    // inject this via a style sheet
+    auto classFontColor = Main::settings()->getThemeVal("symbol").foreground().color();
+    mTextBrowser->document()->setDefaultStyleSheet(QStringLiteral("a { color: rgb(%1, %2, %3) }")
+                                                       .arg(classFontColor.red())
+                                                       .arg(classFontColor.green())
+                                                       .arg(classFontColor.blue()));
 
     connect(mListView, &QListView::clicked, this, &CompletionMenu::accept);
     connect(mTextBrowser, &CompletionTextBrowser::anchorClicked, this, &CompletionMenu::onAnchorClicked);
