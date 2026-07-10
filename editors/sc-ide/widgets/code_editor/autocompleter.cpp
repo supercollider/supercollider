@@ -507,9 +507,9 @@ CompletionMenu* AutoCompleter::menuForClassCompletion(CompletionDescription cons
 
     for (ClassMap::const_iterator it = matchStart; it != matchEnd; ++it) {
         Class* klass = it->second.data();
-        auto item = new QStandardItem(klass->name);
-        item->setData(QVariant::fromValue(klass), CompletionMenu::ClassRole);
+        auto* item = new QStandardItem(klass->name);
         menu->addItem(item);
+        item->setData(QVariant::fromValue(klass), CompletionMenu::ClassRole);
     }
 
     menu->adapt();
