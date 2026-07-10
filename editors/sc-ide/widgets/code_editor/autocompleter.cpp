@@ -1235,7 +1235,7 @@ bool isMatchingMethod(DocNode* node, QString methodName) {
     return false;
 }
 
-QString AutoCompleter::getMethodDocs(DocNode* node, QString methodName, bool isClassMethod = false) {
+QString AutoCompleter::getMethodDocs(DocNode* node, QString methodName, bool isClassMethod) {
     if (QString(node->id) == (isClassMethod ? "CMETHOD" : "IMETHOD") && isMatchingMethod(node, methodName)
         && node->n_childs >= 2) {
         QString str;
