@@ -788,6 +788,11 @@ void AutoCompleter::updateCompletionMenuInfo() {
     QString infos;
 
     auto methodName = mCompletion.menu->currentText();
+    // setter methods are appended with `_`, but SCDoc maps does not have documentation for a setter method,
+    // so we fall back to the getter method.
+    if (methodName.endsWith("_")) {
+        methodName.chop(1);
+    }
 
     switch (mCompletion.type) {
     case ClassCompletion:
