@@ -760,13 +760,13 @@ void AutoCompleter::fillClassHelp(DocNode* node, QString& infos) {
 void AutoCompleter::fillMethodHelp(const DocNode& node, QString& infos, const QString& methodName,
                                    const QString& className) {
     QString instanceMethods = getMethodDocs(node, methodName, false);
-    infos = QStringLiteral("<h4>%1-%2</h4>%3").arg(className).arg(methodName).arg(instanceMethods);
+    infos = QStringLiteral("<h4><code>%1-%2</code></h4>%3").arg(className).arg(methodName).arg(instanceMethods);
 }
 
 void AutoCompleter::fillClassMethodHelp(const DocNode& node, QString& infos, const QString& methodName,
                                         const QString& className) {
     QString instanceMethods = getMethodDocs(node, methodName, true);
-    infos = QStringLiteral("<h4>%1#%2</h4>%3").arg(className).arg(methodName).arg(instanceMethods);
+    infos = QStringLiteral("<h4><code>%1#%2</code></h4>%3").arg(className).arg(methodName).arg(instanceMethods);
 }
 
 void AutoCompleter::updateCompletionMenuInfo() {
