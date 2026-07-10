@@ -25,6 +25,16 @@ ScIDE {
 			{ Document.open("/" ++ parts[0], parts[1] ?? { 0 }, parts[2] ?? [0]) }.fork(AppClock)
 		});
 
+		PostWindowURLHandler.register(\http, {|url|
+			var prefix = "http://";
+			PostWindowURLHandler.prOpenRedirectMenu(url)
+		});
+
+		PostWindowURLHandler.register(\https, {|url|
+			var prefix = "http://";
+			PostWindowURLHandler.prOpenRedirectMenu(url)
+		});
+
 		StartUp.add {
 			if (this.connected) {
 				this.handshake
@@ -448,7 +458,7 @@ PostWindowURLHandler {
 	}
 
 	*register { |name, fn| registered[name] = fn }
-	
+
 	*new { |scheme, url|
 		var found = registered[scheme.asSymbol];
 		^if(found.isNil){
@@ -460,6 +470,26 @@ PostWindowURLHandler {
 
 	*prDefault { |url|
 		"PostWindowURLHandler does not know how to handle the URL '%'".format(url).warn
+	}
+	*prOpenRedirectMenu { |url, useSCIDE|
+		var info = MenuAction("Choose how to open external link:").enabled_(false);
+		var domain = MenuAction(if(url.size < 75) {url} {url.replaceRegexp("https?:\/\/|(/.*)", "")} ).enabled_(false);
+		var separator = MenuAction().separator_(true);
+		var systemDefaultBrowser = MenuAction("Open in system default browser");
+		var helpBrowser = MenuAction("Open in SuperCollider's help browser (unsafe)");
+		var closeMenu = MenuAction("Cancel");
+		var menu = Menu(info, domain, separator, systemDefaultBrowser, helpBrowser, closeMenu);
+		var removeDependants = { [systemDefaultBrowser, helpBrowser, closeMenu].do(_.removeDependant)  };
+		systemDefaultBrowser.addDependant { |action, what| if (what == \triggered) { url.openOS; removeDependants.() } };
+		helpBrowser.addDependant { |action, what| if (what == \triggered) {
+			var redirectEnabledBeforeTrigger = HelpBrowser.redirectEnabled;
+			HelpBrowser.redirectEnabled_(false);
+			HelpBrowser.goTo(url);
+			HelpBrowser.redirectEnabled_(redirectEnabledBeforeTrigger);
+			removeDependants.()
+		}
+		};
+		^menu.front;
 	}
 }
 
