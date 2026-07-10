@@ -58,7 +58,7 @@ public:
     void setCompletionRole(int role);
     QString currentText();
     const ScLanguage::Method* currentMethod();
-    ScLanguage::Class* currentClass();
+    ScLanguage::Class* currentClass() const;
     QString exec(const QRect& rect);
     QSortFilterProxyModel* model();
     QListView* view();
