@@ -744,29 +744,28 @@ void AutoCompleter::onCompletionMenuFinished(int result) {
     // quitCompletion("cancelled");
 }
 
-void AutoCompleter::fillClassHelp(DocNode* node, QString& infos) {
+QString AutoCompleter::fillClassHelp(DocNode* node) const {
     QString examples = parseClassElement(node, "EXAMPLES");
     if (!examples.isEmpty())
         examples.prepend("<h4>Examples</h4>");
     // MSVStudio 2013 does not concatenate multiple QStringliterals ("""") properly
     // see http://blog.qt.io/blog/2014/06/13/qt-weekly-13-qstringliteral/
-    infos = QStringLiteral("<h4>%1</h4>%2%3<p><a href=\"%4\">go to help</a>")
-                .arg(parseClassElement(node, "SUMMARY"))
-                .arg(parseClassElement(node, "DESCRIPTION"))
-                .arg(examples)
-                .arg(mCompletion.menu->currentText());
+    return QStringLiteral("<h4>%1</h4>%2%3<p><a href=\"%4\">go to help</a>")
+        .arg(parseClassElement(node, "SUMMARY"))
+        .arg(parseClassElement(node, "DESCRIPTION"))
+        .arg(examples)
+        .arg(mCompletion.menu->currentText());
 }
 
-void AutoCompleter::fillMethodHelp(const DocNode& node, QString& infos, const QString& methodName,
-                                   const QString& className) {
+QString AutoCompleter::fillMethodHelp(const DocNode& node, const QString& methodName, const QString& className) const {
     QString instanceMethods = getMethodDocs(node, methodName, false);
-    infos = QStringLiteral("<h4><code>%1-%2</code></h4>%3").arg(className).arg(methodName).arg(instanceMethods);
+    return QStringLiteral("<h4><code>%1-%2</code></h4>%3").arg(className).arg(methodName).arg(instanceMethods);
 }
 
-void AutoCompleter::fillClassMethodHelp(const DocNode& node, QString& infos, const QString& methodName,
-                                        const QString& className) {
+QString AutoCompleter::fillClassMethodHelp(const DocNode& node, const QString& methodName,
+                                           const QString& className) const {
     QString instanceMethods = getMethodDocs(node, methodName, true);
-    infos = QStringLiteral("<h4><code>%1#%2</code></h4>%3").arg(className).arg(methodName).arg(instanceMethods);
+    return QStringLiteral("<h4><code>%1#%2</code></h4>%3").arg(className).arg(methodName).arg(instanceMethods);
 }
 
 void AutoCompleter::updateCompletionMenuInfo() {
@@ -793,21 +792,21 @@ void AutoCompleter::updateCompletionMenuInfo() {
         methodName.chop(1);
     }
 
-    QString infos;
+    QString info;
     switch (mCompletion.type) {
     case ClassCompletion:
-        fillClassHelp(node, infos);
+        info = fillClassHelp(node);
         break;
     case MethodCompletion:
-        fillMethodHelp(*node, infos, methodName, className);
+        info = fillMethodHelp(*node, methodName, className);
         break;
     case ClassMethodCompletion:
-        fillClassMethodHelp(*node, infos, methodName, className);
+        info = fillClassMethodHelp(*node, methodName, className);
         break;
     case InvalidCompletion:
         break;
     };
-    mCompletion.menu->addInfo(infos);
+    mCompletion.menu->addInfo(info);
     doc_node_free_tree(node);
 }
 

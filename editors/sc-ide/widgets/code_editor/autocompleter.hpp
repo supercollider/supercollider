@@ -137,9 +137,9 @@ private:
 
     // fill info box w/ docs
 
-    void fillClassHelp(DocNode* node, QString& infos);
-    void fillMethodHelp(const DocNode& node, QString& infos, const QString& methodName, const QString& className);
-    void fillClassMethodHelp(const DocNode& node, QString& infos, const QString& methodName, const QString& className);
+    QString fillClassHelp(DocNode* node) const;
+    QString fillMethodHelp(const DocNode& node, const QString& methodName, const QString& className) const;
+    QString fillClassMethodHelp(const DocNode& node, const QString& methodName, const QString& className) const;
 
     // data
 
