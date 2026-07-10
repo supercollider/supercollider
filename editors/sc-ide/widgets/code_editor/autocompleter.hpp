@@ -60,9 +60,6 @@ private slots:
     void onContentsChange(int pos, int removed, int added);
     void onCursorChanged();
     void onCompletionMenuFinished(int result);
-    void fillClassHelp(DocNode* node, QString& infos);
-    void fillMethodHelp(DocNode* node, QString& infos, const QString& methodName, const QString& className);
-    void fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName, const QString& className);
     void updateCompletionMenuInfo();
     void clearMethodCallStack();
     void hideWidgets();
@@ -137,6 +134,12 @@ private:
     static QString parseClassElement(DocNode* node, QString element);
     QString getMethodDocs(DocNode* node, QString methodName, bool isClassMethod);
     static void parseClassNode(DocNode* node, QString* str);
+
+    // fill info box w/ docs
+
+    void fillClassHelp(DocNode* node, QString& infos);
+    void fillMethodHelp(DocNode* node, QString& infos, const QString& methodName, const QString& className);
+    void fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName, const QString& className);
 
     // data
 
