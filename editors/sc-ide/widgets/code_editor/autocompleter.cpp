@@ -33,7 +33,6 @@
 #    include "../help_browser.hpp"
 #endif // SC_USE_QTWEBENGINE
 
-#include <iostream>
 #include <yaml-cpp/node/node.h>
 #include <yaml-cpp/parser.h>
 
