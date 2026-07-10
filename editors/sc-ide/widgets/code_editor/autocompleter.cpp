@@ -769,7 +769,7 @@ void AutoCompleter::fillClassMethodHelp(DocNode* node, QString& infos, const QSt
 }
 
 void AutoCompleter::updateCompletionMenuInfo() {
-    auto klass = mCompletion.menu->currentClass();
+    const auto* klass = mCompletion.menu->currentClass();
     if (!klass) {
         return;
     }
