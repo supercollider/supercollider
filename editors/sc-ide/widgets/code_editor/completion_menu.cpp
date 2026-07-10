@@ -47,6 +47,14 @@ CompletionMenu::CompletionMenu(QWidget* parent): PopUpWidget(parent), mCompletio
     mLayout->addWidget(mTextBrowser);
     mLayout->setContentsMargins(1, 1, 1, 1);
 
+    auto font = parent->font();
+    mListView->setFont(font);
+
+    // modify font of help window so it matches the size of the editor font
+    auto browserFont = mTextBrowser->font();
+    browserFont.setPointSize(font.pointSize());
+    mTextBrowser->setFont(browserFont);
+
     connect(mListView, &QListView::clicked, this, &CompletionMenu::accept);
     connect(mTextBrowser, &CompletionTextBrowser::anchorClicked, this, &CompletionMenu::onAnchorClicked);
 
