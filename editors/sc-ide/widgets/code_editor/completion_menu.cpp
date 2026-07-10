@@ -49,12 +49,13 @@ CompletionMenu::CompletionMenu(QWidget* parent): PopUpWidget(parent), mCompletio
     mLayout->addWidget(mTextBrowser);
     mLayout->setContentsMargins(1, 1, 1, 1);
 
-    auto font = parent->font();
-    mListView->setFont(font);
+    auto parentFont = parent->font();
+    parentFont.setPointSizeF(parentFont.pointSizeF() * 0.8f);
+    mListView->setFont(parentFont);
 
-    // modify font of help window so it matches the size of the editor font
+    // modify font of help window so it is relative to the size of the editor font
     auto browserFont = mTextBrowser->font();
-    browserFont.setPointSize(font.pointSize());
+    browserFont.setPointSizeF(parentFont.pointSizeF() * 0.8f);
     mTextBrowser->setFont(browserFont);
 
     // set links to match the color of symbol as highlight color
