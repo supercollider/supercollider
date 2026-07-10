@@ -1237,8 +1237,10 @@ bool isMatchingMethod(DocNode* node, QString methodName) {
 
 QString AutoCompleter::getMethodDocs(DocNode* node, QString methodName, bool isClassMethod = false) {
     if (QString(node->id) == (isClassMethod ? "CMETHOD" : "IMETHOD") && isMatchingMethod(node, methodName)
-        && node->n_childs > 0) {
+        && node->n_childs >= 2) {
         QString str;
+        // first child is method name, which we want to skip here
+        // we want straight access to the body of the method doc
         parseClassNode(node->children[1], &str);
         return str;
     }
