@@ -89,7 +89,6 @@ const ScLanguage::Method* CompletionMenu::currentMethod() {
 }
 
 ScLanguage::Class* CompletionMenu::currentClass() {
-    // @todo use std::optional as return value
     QStandardItem* item = mModel->itemFromIndex(mFilterModel->mapToSource(mListView->currentIndex()));
 
     return item ? item->data(ClassRole).value<ScLanguage::Class*>() : nullptr;
