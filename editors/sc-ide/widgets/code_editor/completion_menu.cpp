@@ -60,7 +60,7 @@ CompletionMenu::CompletionMenu(QWidget* parent): PopUpWidget(parent), mCompletio
 
     // set links to match the color of symbol as highlight color
     // inject this via a style sheet
-    auto classFontColor = Main::settings()->getThemeVal("symbol").foreground().color();
+    const auto& classFontColor = Main::settings()->getThemeVal("symbol").foreground().color();
     mTextBrowser->document()->setDefaultStyleSheet(QStringLiteral("a { color: rgb(%1, %2, %3) }")
                                                        .arg(classFontColor.red())
                                                        .arg(classFontColor.green())
