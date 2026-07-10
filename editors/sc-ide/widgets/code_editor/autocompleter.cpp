@@ -757,12 +757,13 @@ void AutoCompleter::fillClassHelp(DocNode* node, QString& infos) {
                 .arg(mCompletion.menu->currentText());
 }
 
-void AutoCompleter::fillMethodHelp(DocNode* node, QString& infos, const QString& methodName, const QString& className) {
+void AutoCompleter::fillMethodHelp(const DocNode& node, QString& infos, const QString& methodName,
+                                   const QString& className) {
     QString instanceMethods = getMethodDocs(node, methodName, false);
     infos = QStringLiteral("<h4>%1-%2</h4>%3").arg(className).arg(methodName).arg(instanceMethods);
 }
 
-void AutoCompleter::fillClassMethodHelp(DocNode* node, QString& infos, const QString& methodName,
+void AutoCompleter::fillClassMethodHelp(const DocNode& node, QString& infos, const QString& methodName,
                                         const QString& className) {
     QString instanceMethods = getMethodDocs(node, methodName, true);
     infos = QStringLiteral("<h4>%1#%2</h4>%3").arg(className).arg(methodName).arg(instanceMethods);
@@ -798,10 +799,10 @@ void AutoCompleter::updateCompletionMenuInfo() {
         fillClassHelp(node, infos);
         break;
     case MethodCompletion:
-        fillMethodHelp(node, infos, methodName, className);
+        fillMethodHelp(*node, infos, methodName, className);
         break;
     case ClassMethodCompletion:
-        fillClassMethodHelp(node, infos, methodName, className);
+        fillClassMethodHelp(*node, infos, methodName, className);
         break;
     case InvalidCompletion:
         break;
@@ -1228,29 +1229,29 @@ QString AutoCompleter::parseClassElement(DocNode* node, QString element) {
     return QString();
 }
 
-bool isMatchingMethod(DocNode* node, QString methodName) {
-    if (QString(node->id) == "METHODNAMES" && node->n_childs > 0 && node->children[0]->text == methodName) {
+bool isMatchingMethod(const DocNode& node, QString methodName) {
+    if (QString(node.id) == "METHODNAMES" && node.n_childs > 0 && node.children[0]->text == methodName) {
         return true;
     }
-    for (int i = 0; i < node->n_childs; i++) {
-        if (isMatchingMethod(node->children[i], methodName))
+    for (int i = 0; i < node.n_childs; i++) {
+        if (isMatchingMethod(*node.children[i], methodName))
             return true;
     }
     return false;
 }
 
-QString AutoCompleter::getMethodDocs(DocNode* node, QString methodName, bool isClassMethod) {
-    if (QString(node->id) == (isClassMethod ? "CMETHOD" : "IMETHOD") && isMatchingMethod(node, methodName)
-        && node->n_childs >= 2) {
+QString AutoCompleter::getMethodDocs(const DocNode& node, QString methodName, bool isClassMethod) const {
+    if (QString(node.id) == (isClassMethod ? "CMETHOD" : "IMETHOD") && isMatchingMethod(node, methodName)
+        && node.n_childs >= 2) {
         QString str;
         // first child is method name, which we want to skip here
         // we want straight access to the body of the method doc
-        parseClassNode(node->children[1], &str);
+        parseClassNode(node.children[1], &str);
         return str;
     }
 
-    for (int i = 0; i < node->n_childs; i++) {
-        QString ret = getMethodDocs(node->children[i], methodName, isClassMethod);
+    for (int i = 0; i < node.n_childs; i++) {
+        QString ret = getMethodDocs(*node.children[i], methodName, isClassMethod);
         if (!ret.isEmpty())
             return ret;
     }
