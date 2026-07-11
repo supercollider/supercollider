@@ -26,7 +26,6 @@ ScIDE {
 		});
 
 		PostWindowURLHandler.register(\http, {|url|
-			var prefix = "http://";
 			HelpBrowser.goTo(url)
 		});
 
