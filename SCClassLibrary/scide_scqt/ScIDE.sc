@@ -30,7 +30,6 @@ ScIDE {
 		});
 
 		PostWindowURLHandler.register(\https, {|url|
-			var prefix = "http://";
 			HelpBrowser.goTo(url)
 		});
 
