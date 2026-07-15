@@ -406,11 +406,37 @@ sudo ldconfig
 
 To uninstall:
 
-```shell
-sudo make uninstall
-```
+Since SuperCollider does not provide a make uninstall target, removing the files installed by sudo make install must be done manually. After deleting these files, only the Flatpak installation remains, and the duplicate entries in the Ubuntu start menu disappear.
 
-(or `make uninstall` if you did user-wide installation).
+* Required:
+  ```shell
+  
+  sudo rm -f /usr/local/bin/sclang
+  sudo rm -f /usr/local/bin/scsynth
+  sudo rm -f /usr/local/bin/supernova
+  sudo rm -f /usr/local/bin/scide
+  
+  sudo rm -rf /usr/local/lib/SuperCollider
+  sudo rm -f /usr/local/lib/libsclang*
+  sudo rm -f /usr/local/lib/libscsynth*
+  sudo rm -f /usr/local/lib/libsupernova*
+  
+  sudo rm -rf /usr/local/include/SuperCollider
+  sudo rm -rf /usr/local/share/SuperCollider
+  
+  sudo rm -f /usr/local/share/applications/supercollider.desktop
+  ```
+* Optional:
+  ```shell
+  sudo ldconfig
+  ```
+* Verification:
+  ```shell
+  which sclang
+  which scsynth
+  which supernova
+  which scide
+  ```
 
 ### Building a Debian package
 
