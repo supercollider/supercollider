@@ -1,6 +1,6 @@
-#include "source_utils.hpp"
-#include "codepoint.hpp"
-#include "text_location.hpp"
+#include "sc_lexer/source_utils.hpp"
+#include "sc_lexer/codepoint.hpp"
+#include "sc_lexer/text_location.hpp"
 #include <optional>
 namespace sc::lex::utils {
 

@@ -24,7 +24,7 @@ enum struct TokenType : unsigned int {
         START_OF_LITERAL_INTS = START_OF_LITERALS,
             Integer = START_OF_LITERAL_INTS,
             IntegerRadix,
-            Hexidecimal,
+            Hexadecimal,
         END_OF_LITERAL_INTS,
 
         START_OF_LITERAL_FLOATS = END_OF_LITERAL_INTS,

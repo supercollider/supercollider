@@ -1,0 +1,5 @@
+add_executable(sc_parser_tests tests.cpp)
+target_link_libraries( sc_parser_tests boost_test sc_parser)
+target_include_directories(sc_parser_tests PUBLIC ${boost_include_dirs})
+add_test(sc_parser_tests_run sc_parser_tests)
+set_property(TARGET sc_parser_tests PROPERTY FOLDER Test/Parser)

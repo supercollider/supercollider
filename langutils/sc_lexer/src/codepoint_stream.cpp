@@ -1,5 +1,4 @@
-#include "codepoint_stream.hpp"
-#include <cstddef>
+#include "sc_lexer/codepoint_stream.hpp"
 
 namespace sc::lex {
 

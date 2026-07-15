@@ -252,7 +252,7 @@ decltype(auto) lexer_digits(CodePointStream& stream, Action& action, SourceCodeL
         // BUG: this means 89702347890234589xAA == 0xAA. Probably not intended.
         const auto end = stream.advance_while(
             [](auto c) { return is_numeric(c) || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'); });
-        return action.template process<TokenType::Hexidecimal>({ token_start, end });
+        return action.template process<TokenType::Hexadecimal>({ token_start, end });
     }
 
     default:

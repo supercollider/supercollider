@@ -1,4 +1,4 @@
-#include <codepoint.hpp>
+#include "sc_lexer/codepoint.hpp"
 #include "utf8proc.h"
 #include <array>
 

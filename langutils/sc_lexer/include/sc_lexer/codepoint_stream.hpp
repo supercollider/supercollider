@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <array>
 
-#include <text_location.hpp>
-#include <codepoint.hpp>
-#include <normalise_source.hpp>
+#include "sc_lexer/text_location.hpp"
+#include "sc_lexer/codepoint.hpp"
+#include "sc_lexer/normalise_source.hpp"
 
 namespace sc::lex {
 

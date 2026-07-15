@@ -1,4 +1,5 @@
-#include <text_location.hpp>
+#include "sc_lexer/text_location.hpp"
+#include <cassert>
 
 using namespace sc::lex;
 
@@ -53,12 +54,17 @@ using namespace sc::lex;
 }
 
 [[nodiscard]] SourceCodeRange SourceCodeRange::range(SourceCodeRange left, SourceCodeRange right) {
+    assert(left.begin < right.end);
     return { left.begin, right.end };
 }
 
-[[nodiscard]] std::size_t sc::lex::SourceCodeRange::size() const { return end.absolute - begin.absolute; }
+[[nodiscard]] std::size_t sc::lex::SourceCodeRange::size() const {
+    assert(end.absolute >= begin.absolute);
+    return end.absolute - begin.absolute;
+}
 
 [[nodiscard]] std::size_t sc::lex::SourceCodeRange::line_count() const {
+    assert(end.absolute >= begin.absolute);
     return (end.line_number - begin.line_number) + 1;
 }
 
@@ -80,7 +86,10 @@ using namespace sc::lex;
     return { left.begin, right.end };
 }
 
-[[nodiscard]] std::size_t sc::lex::FileCodeRange::size() const { return end.absolute - begin.absolute; }
+[[nodiscard]] std::size_t sc::lex::FileCodeRange::size() const {
+    assert(end.absolute >= begin.absolute);
+    return end.absolute - begin.absolute;
+}
 
 
 [[nodiscard]] bool sc::lex::FileCodeRange::operator==(const FileCodeRange& o) const noexcept {
@@ -94,6 +103,7 @@ using namespace sc::lex;
     return begin < o.end && end > o.end;
 }
 [[nodiscard]] std::size_t sc::lex::FileCodeRange::line_count() const {
+    assert(end.absolute >= begin.absolute);
     return (end.line_number - begin.line_number) + 1;
 }
 

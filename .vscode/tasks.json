@@ -5,6 +5,12 @@
             "label": "Generate Parser With Bison",
             "type": "shell",
             "command": "tools/generate_parser_bison.sh"
-        }
+        },
+        {
+          "label": "Generator SCGrammar",
+          "type": "shell",
+          "command" : "bison -v -Wcounterexamples --header=langutils/sc_parser/src/sc_grammar_parser.hpp --output=langutils/sc_parser/src/sc_grammar_parser.cpp langutils/sc_parser/src/sc_grammar.y ",
+          "problemMatcher": []
+      }
     ]
 }

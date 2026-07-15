@@ -165,7 +165,7 @@ using UnderlyingTokenType = std::underlying_type_t<TokenType>;
         return INTEGER;
     case TokenType::IntegerRadix:
         return INTEGER;
-    case TokenType::Hexidecimal:
+    case TokenType::Hexadecimal:
         return INTEGER;
     case TokenType::Float:
     case TokenType::FloatRadix:
@@ -447,7 +447,7 @@ public:
         else if constexpr (T == TokenType::Integer)
             return { { T, loc, PyrSlot::make(atoi(fill_temp_buf(loc))) } };
 
-        else if constexpr (T == TokenType::Hexidecimal) {
+        else if constexpr (T == TokenType::Hexadecimal) {
             const auto& str = textInfo->normalisedSource.as_string();
             const char* c_str = str.c_str();
             const char* c = c_str + loc.begin.absolute;

@@ -2,6 +2,7 @@
   // see https://vector-of-bool.github.io/docs/vscode-cmake-tools/debugging.html
   "version": "0.2.0",
   "configurations": [
+
     // lldb/macOS configurations
     {
       "name": "lldb: attach",
@@ -51,6 +52,31 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "externalConsole": true,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Set Disassembly Flavor to Intel",
+          "text": "-gdb-set disassembly-flavor intel",
+          "ignoreFailures": true
+        }
+      ]
+    },
+{
+      "name": "sc_sema launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/langutils/sc_sema/standalone/sc_sema_standalone",
+      "args": [
+        "SCClassLibrary"
+      ],
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
       "MIMode": "gdb",
       "setupCommands": [
         {

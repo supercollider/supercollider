@@ -1,0 +1,181 @@
+#include "sc_diagnostic/sc_diagnostic.hpp"
+#include "sc_lexer/source_utils.hpp"
+#include <filesystem>
+
+
+namespace sc::diag {
+
+std::string diagnosticToString(Severity type, const char* generalDescription,
+                               const std::vector<Diagnostic::Location>& locations) {
+    std::stringstream ss;
+
+    ss << "\n──────────────────────────────────────────────────────────────────────────────────\n";
+
+    switch (type) {
+    case Severity::Error:
+    case Severity::ErrorButCanCompileClassLibrary:
+        ss << "Error: ";
+        break;
+    case Severity::Warning:
+        ss << "Warning: ";
+        break;
+    }
+
+    if (generalDescription)
+        ss << generalDescription;
+
+    ss << '\n';
+
+    size_t i { 0 };
+    for (const auto& loc : locations) {
+        const auto filepath = loc.text_info->file_path;
+        const auto txt = loc.text_info->source.as_string().c_str();
+        const auto txt_len = loc.text_info->source.as_string().size();
+        const auto range = loc.range;
+        const auto source_line = loc.text_info->source_start_in_file.line_number;
+        const auto source_column = loc.text_info->source_start_in_file.column;
+        const auto& description = loc.msg;
+
+        const auto starting_line = source_line + range.begin.line_number;
+        const auto start_column = source_column + range.end.column;
+
+        if (filepath) {
+            const auto abs = std::filesystem::absolute(*filepath);
+            ss << "file://" << abs.string() << ':' << starting_line + 1 << ':' << start_column << '\n';
+        } else
+            ss << "unknown file:" << starting_line + 1 << ':' << start_column + 1 << '\n';
+
+        if (!txt || txt_len == 0) {
+            ss << description;
+            break; // nothing left to do
+        }
+        const auto selection_start = txt + range.begin.absolute;
+        const auto selection_end = txt + range.end.absolute;
+
+        auto maybe_iter = sc::lex::utils::LineIter::make(txt, txt + txt_len, range.begin);
+        if (!maybe_iter.has_value())
+            continue;
+
+        auto iter = std::move(*maybe_iter);
+
+        if (range.line_count() <= 4) {
+            iter.backwards();
+            iter.backwards();
+        }
+
+        const auto single_line_error = range.line_count() == 1;
+
+        for (auto line = iter.forwards(); line; line = iter.forwards()) {
+            const auto [ptr, sz, line_number, ends_in_newline_char] = *line;
+            const auto real_line_number = line_number + 1 + source_line;
+
+            // If is outside of the highlight range
+            if (line_number < range.begin.line_number || line_number > range.end.line_number) {
+                ss << std::setfill(' ') << std::setw(5) << real_line_number << " │ ";
+                ss.write(ptr, sz);
+                if (!ends_in_newline_char)
+                    ss << '\n';
+                if (line_number > range.end.line_number + 2)
+                    break;
+                else
+                    continue;
+            }
+            // Otherwise...
+
+            if (single_line_error) {
+                ss << std::setfill(' ') << std::setw(5) << real_line_number << " │ ";
+                ss.write(ptr, sz);
+
+                if (!ends_in_newline_char)
+                    ss << '\n';
+
+                ss << "      ┆ ";
+                auto cp_iter = sc::lex::utils::CodePointIterator::make(ptr, ptr + sz, ptr).value();
+
+                for (auto cp = cp_iter.forwards(); cp; cp = cp_iter.forwards()) {
+                    if (cp_iter.current_location() <= selection_start) {
+                        ss << sc::lex::codepoint_as_whitespace(*cp);
+                    } else if (cp_iter.current_location() <= selection_end) {
+                        const auto w { sc::lex::codepoint_width(*cp) };
+                        for (size_t i { 0 }; i < w; ++i)
+                            ss << '^';
+                    } else
+                        break;
+                }
+
+                ss << " " << description << '\n';
+            } else {
+                ss << std::setfill(' ') << std::setw(5) << real_line_number << "*│ ";
+                ss.write(ptr, sz);
+
+                if (!ends_in_newline_char)
+                    ss << '\n';
+
+                if (line_number == range.end.line_number) {
+                    ss << "     >│ ^ " << description << '\n';
+                }
+            }
+        }
+
+        if (i < locations.size() - 1) {
+            ss << "\n";
+        }
+
+        ++i;
+    }
+
+    ss << "\n──────────────────────────────────────────────────────────────────────────────────\n";
+    return ss.str();
+}
+
+
+Diagnostic::Diagnostic(const char* name, Severity severity, std::vector<Location> location) noexcept:
+    m_locations(std::move(location)),
+    m_name(name),
+    m_severity(severity) {}
+
+const std::vector<Diagnostic::Location>& Diagnostic::locations() const { return m_locations; }
+
+Severity Diagnostic::severity() const { return m_severity; }
+
+bool Diagnostic::fatal() const { return m_severity == Severity::Error; }
+
+[[nodiscard]] const char* Diagnostic::name() const { return m_name; }
+
+std::string Diagnostic::to_string() const { return diagnosticToString(severity(), name(), locations()); }
+
+////////////////////////////////////////////////////////////////////////////////
+
+Diagnostic Diagnostic::unexpectedToken(std::shared_ptr<const sc::lex::TextInfo> text_info, sc::lex::SourceCodeRange loc,
+                                       std::string expected, const char* received) {
+    return { "Unexpected Token.", //
+             Severity::Error, //
+             std::vector<Location> { {
+                 std::move(text_info), //
+                 loc, //
+                 std::string { "Expected: " } + std::move(expected) + " but received " + received //
+             } } };
+};
+
+Diagnostic Diagnostic::regionMissingSemi(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                         sc::lex::SourceCodeRange loc) {
+    return { "Region missing semi-colon.", //
+             Severity::Error, //
+             std::vector<Location> { { std::move(text_info), //
+                                       loc, //
+                                       "Insert semi-colon here." } } };
+}
+
+[[nodiscard]] Diagnostic Diagnostic::duplicate_class(std::shared_ptr<const sc::lex::TextInfo> first_text_info,
+                                                     sc::lex::SourceCodeRange first_loc,
+                                                     std::shared_ptr<const sc::lex::TextInfo> second_text_info,
+                                                     sc::lex::SourceCodeRange second_loc) {
+    return { "Duplicate Class definition.", //
+             Severity::Error, //
+             std::vector<Location> {
+                 { std::move(first_text_info), first_loc, "Duplicate here..." },
+                 { std::move(second_text_info), second_loc, "...and here." },
+             } };
+}
+
+}
