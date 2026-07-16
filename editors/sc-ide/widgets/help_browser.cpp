@@ -190,6 +190,14 @@ void HelpBrowser::createActions() {
     mActions[Back] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Back));
     mActions[Forward] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Forward));
     mActions[Reload] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Reload));
+
+    // Explicitly set Ctrl+R for Reload to capture the event before it bubbles up
+    // to the IDE's Find/Replace, especially on Windows where Qt's default Refresh
+    // sequence might just be F5 and not catch Ctrl+R.
+    QList<QKeySequence> reloadShortcuts;
+    reloadShortcuts.append(QKeySequence::Refresh);
+    reloadShortcuts.append(QKeySequence("Ctrl+R"));
+    mActions[Reload]->setShortcuts(reloadShortcuts);
 }
 
 void HelpBrowser::applySettings(Settings::Manager* settings) {
@@ -198,19 +206,17 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
     mActions[DocClose]->setShortcut(settings->shortcut("ide-document-close"));
 
     QList<QKeySequence> zoomInShortcuts;
+    zoomInShortcuts.append(QKeySequence::ZoomIn);
 
 #    ifdef Q_OS_MAC
-    int metaKey = Qt::META;
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Equal));
 #    else
-    int metaKey = Qt::CTRL;
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal));
 #    endif
 
-    zoomInShortcuts.append(QKeySequence(metaKey | Qt::Key_Equal));
-    zoomInShortcuts.append(QKeySequence(metaKey | Qt::Key_Plus));
-    zoomInShortcuts.append(QKeySequence("Ctrl++"));
-
     mActions[ZoomIn]->setShortcuts(zoomInShortcuts);
-    mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
+
+    mActions[ZoomOut]->setShortcut(QKeySequence::ZoomOut);
     mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
 
     QList<QKeySequence> evalShortcuts;
