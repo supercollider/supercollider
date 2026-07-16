@@ -309,8 +309,8 @@ SuperCollider's cmake scripts will find libsndfile and fftw installed in dedicat
 
 Libsndfile can be downloaded and copied into `C:\Program Files\libsndfile`.
 
-When not using vcpkg, portaudio bundled with will be used.
-In order to support ASIO drivers (highly recommended for low-latency operation), **[Asio SDK][asiosdk]** needs to be manually installed.
+When not using vcpkg, a bundled version of `portaudio` will be used.
+In order to support ASIO drivers (highly recommended for low latency operation), **[Asio SDK][asiosdk]** needs to be manually installed.
 After downloading it and extracting the contents of the zip file, place the files in the following directory structure:
 
     supercollider
@@ -327,7 +327,7 @@ After downloading it and extracting the contents of the zip file, place the file
 FFTW can be downloaded and unpacked into `C:\Program Files\fftw`.
 
 FFTW does not provide build files for Visual Studio. In the **Developer Command
-Prompt for VS2022** (or newer; note that this is _not_ `cmd.exe`), `cd` to the
+Prompt for VS2022** (or newer version; note that this is _not_ `cmd.exe`), `cd` to the
 directory where FFTW is installed and, for a **64-bit** build:
 
     lib /machine:x64 /def:libfftw3f-3.def
