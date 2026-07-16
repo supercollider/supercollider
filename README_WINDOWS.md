@@ -299,13 +299,15 @@ When detected, vcpkg is used in "manifest mode". That means that there's no need
 
 ### Building without vcpkg
 
-Instead of using `vcpkg`, `libsndfile` and `fftw` may be installed manually.
-`Portaudio` may be built from the source included with SuperCollider.
-*Note:* there's no straightforward way of installing `readline` dependency manually, so you need to use `vcpkg` to keep interactive sclang command prompt functionality.
+Instead of using `vcpkg`, `libsndfile` and `fftw` may be installed manually. Using `vcpkg` is still recommended though.
 
-In order to build without vcpkg, make sure the `VCPKG_ROOT` environment variable is not set. Using `vcpkg` is still recommended.
+There's no straightforward way of installing `readline` dependency manually, so you need to use `vcpkg` to keep interactive sclang command prompt functionality.
 
-SuperCollider's cmake scripts will find libsndfile and fftw installed in dedicated folders in Program Files.
+When not using vcpkg, `portaudio` will be built from the source included with SuperCollider.
+
+In order to build without vcpkg, make sure the `VCPKG_ROOT` environment variable is not set. 
+
+SuperCollider's cmake scripts will find `libsndfile` and `fftw` installed in dedicated folders in Program Files.
 **[Libsndfile][libsndfile]** can be downloaded and copied into `C:\Program Files\libsndfile`.
 
 When not using vcpkg, a bundled version of `portaudio` will be used.
