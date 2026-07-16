@@ -303,12 +303,52 @@ Instead of using `vcpkg`, `libsndfile` and `fftw` may be installed manually. Usi
 
 There's no straightforward way of installing `readline` dependency manually, so you need to use `vcpkg` to keep interactive sclang command prompt functionality.
 
-When not using vcpkg, `portaudio` will be built from the source included with SuperCollider.
-
 In order to build without vcpkg, make sure the `VCPKG_ROOT` environment variable is not set. 
 
+#### Libsndfile
+
 SuperCollider's cmake scripts will find `libsndfile` and `fftw` installed in dedicated folders in Program Files.
-**[Libsndfile][libsndfile]** can be downloaded and copied into `C:\Program Files\libsndfile`.
+**[Libsndfile][libsndfile]** should be unpacked into `C:\Program Files\libsndfile` or `C:\Program Files\libsndfile-<version>`, e.g. `C:\Program Files\libsndfile-1.2.2-win64`:
+
+    Program Files
+        libsndfile-1.2.2-win64
+            bin
+            cmake
+            include
+            lib
+            share
+
+#### FFTW
+
+**[FFTW][fftw]** should be unpacked into `C:\Program Files\fftw` or `C:\Program Files\fftw-<version>`, e.g. `C:\Program Files\fftw-3.3.5-dll64`:
+
+    Program Files
+        fftw-3.3.5-dll64
+            bench.exe
+            ...
+            fftw3.h
+            ...
+            libfftw3f-3.dll
+            ...
+
+FFTW does not provide `.lib` "import libraries" for Visual Studio. In the **Developer Command
+Prompt for VS2022** (or newer version; note that this is _not_ `cmd.exe`), `cd` to the
+directory where FFTW is installed and, for a **64-bit x86** build:
+
+    lib /machine:x64 /def:libfftw3f-3.def
+
+For a **32-bit** build:
+
+    lib /def:libfftw3f-3.def
+
+The SC build only uses the single precision FFTW library (fftw3f).
+
+*Note*: if you compile FFTW yourself, all files must end up in the root fftw
+directory.
+
+#### Portaudio
+
+When not using vcpkg, `portaudio` will be built from the source included with SuperCollider.
 
 When not using vcpkg, a bundled version of `portaudio` will be used.
 In order to support ASIO drivers (highly recommended for low latency operation), **[Asio SDK][asiosdk]** needs to be manually installed.
@@ -323,24 +363,6 @@ After downloading it and extracting the contents of the zip file, place the file
                     common
                     ...
             ...
-
-
-**[FFTW][fftw]** can be downloaded and unpacked into `C:\Program Files\fftw`.
-
-FFTW does not provide build files for Visual Studio. In the **Developer Command
-Prompt for VS2022** (or newer version; note that this is _not_ `cmd.exe`), `cd` to the
-directory where FFTW is installed and, for a **64-bit x86** build:
-
-    lib /machine:x64 /def:libfftw3f-3.def
-
-For a **32-bit** build:
-
-    lib /def:libfftw3f-3.def
-
-The SC build only uses the single precision FFTW library (fftw3f).
-
-*Note*: if you compile FFTW yourself, all files must end up in the root fftw
-directory.
 
 Additional build settings
 -------------------------
