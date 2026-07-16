@@ -276,7 +276,6 @@ REM only set these if you haven't set them globally
 SET PATH=C:\Qt\6.2\msvc2022_64\bin;%PATH% 
 SET Qt_DIR=C:\Qt\6.2.0\msvc2022_64
 SET VCPKG_ROOT=C:\vcpkg
-REM -----
 
 mkdir build
 cd build
