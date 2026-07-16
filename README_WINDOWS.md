@@ -221,7 +221,10 @@ Required components:
 - **[Qt][Qt]** >= 6.2. We recommend using the latest version. Make sure that the
   version you select matches the architecture (e.g. x64 vs arm64) and compiler ABI (MSVC vs MinGW)
   you are building with. This varies per Qt version.
+  - add Qt's `bin` directory (e.g. `C:\Qt\6.2\msvc2022_64\bin`) to `PATH` environment variable
+  - set Qt directory (e.g. `C:\Qt\6.2\msvc2022_64\`) as `Qt_DIR` environment variable
 - **[vcpkg][vcpkg]** for installing dependencies
+  - set vcpkg directory (e.g. `c:\vcpkg`) as `VCPKG_ROOT` environment variable
 
 
 Optional components:
@@ -239,10 +242,7 @@ Build SuperCollider - TL;DR
 ---------------------------
 
 - install components listed above
-- optional but recommended: add global environemnt varilables for Qt and vcpkg:
-  - add Qt's `bin` directory (e.g. `C:\Qt\6.2\msvc2022_64\bin`) to `PATH`
-  - set Qt directory (e.g. `C:\Qt\6.2\msvc2022_64\`) as `Qt_DIR`
-  - set vcpkg directory (e.g. `c:\vcpkg`) as `VCPKG_ROOT`
+  - optionally set global environemnt varilables for Qt and vcpkg, as indicated above
 - clone supercollider repository
 - build 
 
