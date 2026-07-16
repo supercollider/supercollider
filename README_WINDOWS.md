@@ -1191,7 +1191,7 @@ software publicly and freely available.
 
 [7-zip]: http://www.7-zip.org (unixy decompression tool)
 [asio4all]: http://www.asio4all.com/ (ASIO4ALL, generic ASIO driver)
-[asiosdk]: http://www.steinberg.net/en/company/developers.html (ASIO SDK v2.3)
+[asiosdk]: https://www.steinberg.net/asiosdk (ASIO SDK v2.3)
 [bleeding edge 64 bit]: http://supercollider.s3.amazonaws.com/builds/supercollider/supercollider/win64/develop-latest.html
 [cmake]: http://www.cmake.org/download/
 [conemu]: https://conemu.github.io/ (free console emulator)
