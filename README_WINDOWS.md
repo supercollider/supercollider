@@ -348,9 +348,8 @@ directory.
 
 #### Portaudio
 
-When not using vcpkg, `portaudio` will be built from the source included with SuperCollider.
-
 When not using vcpkg, a bundled version of `portaudio` will be used.
+
 In order to support ASIO drivers (highly recommended for low latency operation), **[Asio SDK][asiosdk]** needs to be manually installed.
 After downloading it and extracting the contents of the zip file, place the files in the following directory structure:
 
