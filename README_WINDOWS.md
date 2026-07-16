@@ -287,8 +287,8 @@ For the final step, you can also build from within Visual Studio:
 
     start SuperCollider.sln
 
-`vcpkg` support
----------------
+Dependencies and `vcpkg` support
+--------------------------------
 
 SuperCollider uses vcpkg to install its dependencies: `libsndfile`, `fftw`, `readline`.
 `vcpkg` instalation will be picked up automatcally when `VCPKG_ROOT` environment variable is set, either through the `Edit the system environment variables` GUI, or via command prompt (cmd): `SET VCPKG_ROOT=c:\path\to\vcpkg`.
@@ -307,7 +307,7 @@ Using `vcpkg` is still recommended.
 
 SuperCollider's cmake scripts will find libsndfile and fftw installed in dedicated folders in Program Files.
 
-Libsndfile can be downloaded and copied into `C:\Program Files\libsndfile`.
+**[Libsndfile][libsndfile]** can be downloaded and copied into `C:\Program Files\libsndfile`.
 
 When not using vcpkg, a bundled version of `portaudio` will be used.
 In order to support ASIO drivers (highly recommended for low latency operation), **[Asio SDK][asiosdk]** needs to be manually installed.
@@ -324,11 +324,11 @@ After downloading it and extracting the contents of the zip file, place the file
             ...
 
 
-FFTW can be downloaded and unpacked into `C:\Program Files\fftw`.
+**[FFTW][fftw]** can be downloaded and unpacked into `C:\Program Files\fftw`.
 
 FFTW does not provide build files for Visual Studio. In the **Developer Command
 Prompt for VS2022** (or newer version; note that this is _not_ `cmd.exe`), `cd` to the
-directory where FFTW is installed and, for a **64-bit** build:
+directory where FFTW is installed and, for a **64-bit x86** build:
 
     lib /machine:x64 /def:libfftw3f-3.def
 
