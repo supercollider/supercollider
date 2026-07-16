@@ -309,8 +309,9 @@ SuperCollider's cmake scripts will find libsndfile and fftw installed in dedicat
 
 Libsndfile can be downloaded and copied into `C:\Program Files\libsndfile`.
 
-When not using vcpkg, portaudio bundled with will be used. 
-In that case, in order to get support for ASIO drivers, follow this directory structure:
+When not using vcpkg, portaudio bundled with will be used.
+In order to support ASIO drivers (highly recommended for low-latency operation), **[Asio SDK][asiosdk]** needs to be manually installed.
+After downloading it and extracting the contents of the zip file, place the files in the following directory structure:
 
     supercollider
         external_libraries
