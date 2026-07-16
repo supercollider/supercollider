@@ -27,7 +27,6 @@ Table of contents
   - Configuration and building
   - Additional build settings
     - Build type
-    - SuperNova
     - Other targets (install, installer)
     - PortAudio
     - Ccache
@@ -392,12 +391,6 @@ The `Debug` configuration is used to develop the C++ codebase. For developing
 the SuperCollider core libraries, `Release` should be fine. Using a `Debug`
 build in production is strongly discouraged, as it will be many times slower
 than `Release`.
-
-### SuperNova
-
-Building supernova is enabled by default. If you want to build without supernova, add `-D SUPERNOVA=OFF`
-
-    cmake -D SUPERNOVA=OFF ..
 
 ### Other targets (install, installer)
 
@@ -1043,14 +1036,6 @@ Commonly used variables to modify the build configuration are:
       Server.scsynth
 
   Check SC help for `ParGroup` to see how to make use of multi-core hardware.
-
-  *Note*: If you experience problems getting the supernova plugins recognized
-  (plugins related error at supernova boot), try placing them in a folder called
-  "plugins" in the "userAppSupportDirectory\Extensions" folder. It may also be
-  required to separate binary plugins and classes. The class files may reside
-  anywhere in the Extensions folder (or in any "included" class folder), whereas
-  the binary plugins should reside in a folder "plugins" (this mirrors the situation
-  in the application directory)
 
 * It is possible to build SuperCollider without the IDE, and even without Qt
   (and implicitly without the IDE). This is not controlled via build targets,
