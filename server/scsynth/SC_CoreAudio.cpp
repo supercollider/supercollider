@@ -615,7 +615,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
             free(outputBufList);
 
             if (mWorld->mVerbosity >= 0) {
-                scprintf("- \"%s\"\n  (%d ins, %d outs)\n", name, inChs, outChs);
+                scprintf("- \"%s\"\t(%d ins, %d outs)\n", name, inChs, outChs);
             }
             free(name);
         }

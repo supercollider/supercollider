@@ -95,7 +95,7 @@ public:
         printf("%d Available Audio Devices:\n", device_number);
         for (int i = 0; i < device_number; i++) {
             const PaDeviceInfo* pdi = Pa_GetDeviceInfo(i);
-            printf("- \"%s\"\n  (%d ins, %d outs)\n", GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
+            printf("- \"%s\"\t(%d ins, %d outs)\n", GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
                    pdi->maxOutputChannels);
         }
         printf("\n");
