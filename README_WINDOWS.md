@@ -466,8 +466,8 @@ for libraries that do not depend on MinGW runtimes or make sure all components
 in the build can use the same runtimes.
 - Architecture mismatches. This does not only concern target system architecture
 (32- or 64-bit) but also the toolchain used to compile SC and Qt. They have to
-match as closely as possible. SC built with VS requires the msvc2013_64 or
-msvc2013 package.
+match as closely as possible. SC built with VS requires the msvc2022_64 or
+msvc2022 package.
 - Dirty states in your build folder (usually resulting from changes in the build
 configuration). See below for how to fix this.
 - cmake finds and uses different libraries on your system than the ones intended
@@ -655,7 +655,7 @@ For this to be meaningful we need to
     For VS Studio the toolchain need not be added to the path. You just need
     to specify the generator like so:
 
-    $> cmake -G "Visual Studio 12 2013 Win64" ..\sc3-plugins
+    $> cmake -G "Visual Studio 17 2022 Win64" ..\sc3-plugins
 
 CMake will likely return two or three errors:
 
@@ -785,7 +785,7 @@ Once CMake-Gui is running it will need to know (just like on the command line):
   - While Qt can be added via the PATH as well, it is safer to define an
     environment variable "CMAKE_PREFIX_PATH", that contains the path
     to the parent folder of the "Qt-system" we are using. The Qt-architecture
-    must fit the build system, in this case Microsoft Visual Studio 2013, 64-bit.
+    must fit the build system, in this case Microsoft Visual Studio 2022, 64-bit.
     In a standard install, the path is likely to be:
 
         C:\Qt\6.2\msvc2022_64
@@ -1136,37 +1136,34 @@ These lines create a VS environment:
 
     echo off
     echo Setting up environment for Qt usage...
-    set PATH=C:\Qt\5.5\msvc2013_64\bin;%PATH%
-    set CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2013_64
+    set PATH=C:\Qt\6.8\msvc2022_64\bin;%PATH%
+    set CMAKE_PREFIX_PATH=C:\Qt\6.8\msvc2022_64
     echo Running vcvarsall.bat to complete environment setup!
-    call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+    call "C:\Program Files (x86)\Microsoft Visual Studio 17.0\VC\vcvarsall.bat"
     echo Done!
     cd /D %USERPROFILE%\Projects\sc\supercollider
-    DOSKEY cm=cmake -G "Visual Studio 12 2013 Win64" %USERPROFILE%\Projects\sc\supercollider
+    DOSKEY cm=cmake -G "Visual Studio 17 2022 Win64" %USERPROFILE%\Projects\sc\supercollider
     DOSKEY mkDb=cmake --build . --config Debug
     DOSKEY mkRl=cmake --build . --config Release
     DOSKEY mkDbI=cmake --build . --config Debug --target Install
     DOSKEY mkRlI=cmake --build . --config Release --target Install
     DOSKEY cds=cd %USERPROFILE%\Projects\sc\supercollider
     DOSKEY cdb=cd %USERPROFILE%\Projects\sc\supercollider\build_VS
-    DOSKEY cdd=cd %USERPROFILE%\Projects\sc\deployment\msvc2013_64
+    DOSKEY cdd=cd %USERPROFILE%\Projects\sc\deployment\msvc2022_64
 
 Another option are batch-files that construct CMake arguments and execute the
 build. If for some reason you need to enter many of those and/or can't keep the
 build folder with the cache file, this can come in handy. Here is a example that
-allows to edit all paths to dependencies. They go into a single environment
-variable (`CMAKE_PREFIX_PATH`) that CMake will read. The lines here contain
-random assignments to demonstrate some possibilities. Note that the batch files
+allows to edit all paths to dependencies.
+The lines here contain random assignments to demonstrate some possibilities. 
+Note that the batch files
 above use Windows path syntax, while the one below uses forward slash for
 CMake:
 
-    set CMAKE_GENERATOR="Visual Studio 12 2013 Win64"
-    set QT_HOME=C:/Qt/5.5
-    set QT_FLAVOUR=msvc2013_64
-    set QT_PREFIX_PATH=%QT_HOME%/%QT_FLAVOUR%
-    set SNDFILE_PREFIX_PATH="C:/Program Files/nerd/libsndfile"
-    set FFTW_PREFIX_PATH=%USERPROFILE%/fftw
-    set CMAKE_PREFIX_PATH=%QT_PREFIX_PATH%;%SNDFILE_PREFIX_PATH%;%FFTW_PREFIX_PATH%
+    set CMAKE_GENERATOR="Visual Studio 17 2022 Win64"
+    set QT_HOME=C:/Qt/6.8
+    set QT_FLAVOUR=msvc2022_64
+    set Qt_DIR=%QT_HOME%/%QT_FLAVOUR%
     cmake --build .
     start Supercollider.sln
 
