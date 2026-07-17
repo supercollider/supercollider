@@ -12,7 +12,7 @@ TestSoundFile_Server : UnitTest {
 	tearDown {
 		soundFile.close;
 		Buffer.freeAll;
-		server.quit.remove;
+		server.quitSync.remove;
 	}
 
 	test_cue_passInEvent {

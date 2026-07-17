@@ -58,7 +58,7 @@ PyrSymbol* s_midiSMPTEAction;
 const int kMaxMidiPorts = 128;
 bool gMIDIInitialized = false;
 
-extern bool compiledOK;
+extern bool gCompiledOK;
 
 // =====================================================================
 // Platform declarations (interface routines)
@@ -172,7 +172,7 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt) {
         return;
     }
 
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
         PyrInt8Array* sysexArray;
 

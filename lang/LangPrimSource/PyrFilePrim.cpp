@@ -959,7 +959,7 @@ int prFileGetDouble(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readDouble_be());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readDouble_be());
     }
     return errNone;
 }
@@ -980,7 +980,7 @@ int prFileGetFloat(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readFloat_be());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readFloat_be());
     }
     return errNone;
 }
@@ -1002,7 +1002,7 @@ int prFileGetDoubleLE(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readDouble_le());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readDouble_le());
     }
     return errNone;
 }
@@ -1023,7 +1023,7 @@ int prFileGetFloatLE(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readFloat_le());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readFloat_le());
     }
     return errNone;
 }
@@ -1362,22 +1362,15 @@ int prPipeOpen(struct VMGlobals* g, int numArgsPushed) {
 
     PyrFile* pfile = reinterpret_cast<PyrFile*>(slotRawObject(callerSlot));
 
-    // c++17 structured binding declarations will make this into a single line
-    // auto [error, string] = ...
-    int error;
-    std::string commandLine;
-    std::tie(error, commandLine) = slotStrStdStrVal(commandLineSlot);
-    if (error != errNone)
-        return error;
+    auto [errorCmd, commandLine] = slotStrStdStrVal(commandLineSlot);
+    if (errorCmd != errNone)
+        return errorCmd;
 
-    std::string mode;
-    std::tie(error, mode) = slotStrStdStrVal(modeSlot);
-    if (error != errNone)
-        return error;
+    auto [errorMode, mode] = slotStrStdStrVal(modeSlot);
+    if (errorMode != errNone)
+        return errorMode;
 
-    pid_t pid;
-    FILE* file;
-    std::tie(pid, file) = sc_popen_shell(std::move(commandLine), mode);
+    auto [pid, file] = sc_popen_shell(std::move(commandLine), mode);
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);
         SetInt(callerSlot, pid);
@@ -1413,22 +1406,15 @@ int prPipeOpenArgv(struct VMGlobals* g, int numArgsPushed) {
     if (argsColl->size < 1)
         return errFailed;
 
-    // c++17 structured binding declarations will make this into a single line
-    // auto [error, mode] = ...;
-    int error;
-    std::string mode;
-    std::tie(error, mode) = slotStrStdStrVal(modeSlot);
-    if (error != errNone)
-        return error;
+    auto [errorMode, mode] = slotStrStdStrVal(modeSlot);
+    if (errorMode != errNone)
+        return errorMode;
 
-    std::vector<std::string> strings;
-    std::tie(error, strings) = PyrCollToVectorStdString(argsColl);
-    if (error != errNone)
-        return error;
+    auto [errorStr, strings] = PyrCollToVectorStdString(argsColl);
+    if (errorStr != errNone)
+        return errorStr;
 
-    pid_t pid;
-    FILE* file;
-    std::tie(pid, file) = sc_popen_argv(strings, mode);
+    auto [pid, file] = sc_popen_argv(strings, mode);
 
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);
@@ -1723,8 +1709,10 @@ int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed) {
     if (error)
         return errFailed;
     // slotIntVal(slotRawObject(a)->slots + 3, &info.frames);
-    slotIntVal(slotRawObject(a)->slots + 4, &info.channels);
-    slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate);
+    if (slotIntVal(slotRawObject(a)->slots + 4, &info.channels))
+        assert(false);
+    if (slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate))
+        assert(false);
 
     file = sndfileOpenFromCStr(filename, SFM_WRITE, &info);
 
@@ -1773,12 +1761,20 @@ int prSFRead(struct VMGlobals* g, int numArgsPushed) {
     case obj_int32:
         slotRawObject(b)->size = sf_read_int(file, (int*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
         break;
-    case obj_float:
-        slotRawObject(b)->size = sf_read_float(file, (float*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
+    case obj_float: {
+        PyrFloatArray* floatArray = slotRawFloatArray(b);
+        floatArray->size = sf_read_float(file, floatArray->f, floatArray->size);
+        for (size_t i { 0 }; i < floatArray->size; ++i)
+            floatArray->f[i] = removeBadNans(floatArray->f[i]);
         break;
-    case obj_double:
-        slotRawObject(b)->size = sf_read_double(file, (double*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
+    }
+    case obj_double: {
+        PyrDoubleArray* doubleArray = slotRawDoubleArray(b);
+        doubleArray->size = sf_read_double(file, doubleArray->d, doubleArray->size);
+        for (size_t i { 0 }; i < doubleArray->size; ++i)
+            doubleArray->d[i] = removeBadNans(doubleArray->d[i]);
         break;
+    }
     default:
         error("sample format not supported.\n");
         return errFailed;

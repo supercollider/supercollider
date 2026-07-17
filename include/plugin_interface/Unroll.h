@@ -20,8 +20,11 @@
 
 /*
 
-These macros allow one to write code which can be compiled optimally depending on
-what loop constructs the compiler can best generate code.
+These macros had been used to write optimal loop constructs for
+particular platforms/compilers. However, they are not necessary
+with modern compilers and only make the code harder to read.
+
+Do NOT use these in new code!
 
 */
 

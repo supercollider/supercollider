@@ -34,8 +34,6 @@
 #endif
 
 
-extern int textpos;
-
 void dumpNodeList(PyrParseNode* node) {
     for (; node; node = node->mNext) {
         DUMPNODE(node, 0);

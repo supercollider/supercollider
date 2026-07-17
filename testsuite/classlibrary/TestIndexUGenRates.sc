@@ -11,7 +11,7 @@ TestIndexUGenRates : UnitTest {
 	tearDown {
 
 		Buffer.freeAll;
-		server.quit;
+		server.quitSync;
 		server.remove;
 	}
 

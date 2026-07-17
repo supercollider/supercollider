@@ -12,6 +12,7 @@ ServerStatusWatcher {
 	var <sampleRate, <actualSampleRate;
 
 	var reallyDeadCount = 0, bootNotifyFirst = true;
+	var <>timeoutBeforeConsideredDeadOnExit = 3.0;
 
 	*new { |server|
 		^super.newCopyArgs(server)
@@ -100,13 +101,13 @@ ServerStatusWatcher {
 					}
 				}, '/done', server.addr);
 
-				AppClock.sched(3.0, {
+				AppClock.sched(timeoutBeforeConsideredDeadOnExit, {
 					if(serverReallyQuit.not) {
 						if(unresponsive) {
-							"Server '%' remained unresponsive during quit."
+							"Server '%' remained unresponsive during quit.".format(server.name).warn;
 						} {
-							"Server '%' failed to quit after 3.0 seconds."
-						}.format(server.name).warn;
+							"Server '%' failed to quit after % seconds.".format(server.name, timeoutBeforeConsideredDeadOnExit).warn;
+						};
 						// don't accumulate quit-watchers if /done doesn't come back
 						serverReallyQuitWatcher.free;
 						statusWatcher !? { statusWatcher.disable };

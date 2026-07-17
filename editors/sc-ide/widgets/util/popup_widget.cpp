@@ -24,7 +24,6 @@
 #include <QApplication>
 #include <QScreen>
 #include <QWindow>
-#include <QDebug>
 
 namespace ScIDE {
 

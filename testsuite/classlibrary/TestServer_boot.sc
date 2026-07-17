@@ -45,7 +45,7 @@ TestServer_boot : UnitTest {
 		);
 
 		of.free;
-		s.quit;
+		s.quitSync;
 	}
 
 	test_bootSync {
@@ -64,7 +64,7 @@ TestServer_boot : UnitTest {
 		);
 
 		of.free;
-		s.quit;
+		s.quitSync;
 	}
 
 	test_rebootOffServer {
@@ -74,7 +74,7 @@ TestServer_boot : UnitTest {
 		condvar.waitFor(5);
 
 		this.assertEquals(s.serverRunning, true, "Calling reboot should boot a non-booted Server.");
-		s.quit;
+		s.quitSync;
 	}
 
 	test_rebootRunningServer {
@@ -93,7 +93,7 @@ TestServer_boot : UnitTest {
 		condvar.waitFor(10);
 
 		this.assertEquals(s.serverRunning, true, "Calling reboot should reboot a running Server.");
-		s.quit;
+		s.quitSync;
 	}
 
 
@@ -111,7 +111,7 @@ TestServer_boot : UnitTest {
 
 		this.assertEquals(count, 1, "Toggling Server.notify should not cause ServerBoot actions to run.");
 
-		s.quit;
+		s.quitSync;
 		ServerBoot.remove(func, s);
 	}
 
@@ -129,7 +129,7 @@ TestServer_boot : UnitTest {
 
 		this.assertEquals(count, 1, "Toggling Server.notify should not cause ServerTree actions to run.");
 
-		s.quit;
+		s.quitSync;
 		ServerTree.remove(func, s);
 	}
 
@@ -159,7 +159,7 @@ TestServer_boot : UnitTest {
 		cond.hang;
 
 		timer.stop;
-		s.quit;
+		s.quitSync;
 		ServerBoot.remove(func, s);
 		of.free;
 
@@ -176,7 +176,7 @@ TestServer_boot : UnitTest {
 		cond.wait;
 
 		ServerQuit.remove(func, s);
-		s.quit;
+		s.quitSync;
 
 		this.assert(cond.test.not, "ServerQuit should not run when the server boots.");
 	}
@@ -204,7 +204,7 @@ TestServer_boot : UnitTest {
 		// exit early if server boot fails
 		if(s.serverRunning.not) {
 			this.assert(false, "Server did not boot after 5 seconds.");
-			s.quit;
+			s.quitSync;
 			^nil
 		};
 
@@ -221,7 +221,7 @@ TestServer_boot : UnitTest {
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
 		);
-		s.quit;
+		s.quitSync;
 	}
 
 	// Check that with s.waitForBoot, the four most common ways of creating sound processes will work.
@@ -260,7 +260,7 @@ TestServer_boot : UnitTest {
 		cond.hang;
 
 		// clean up
-		s.quit;
+		s.quitSync;
 		o.free;
 
 		// check whether each pair of channels was nonzero

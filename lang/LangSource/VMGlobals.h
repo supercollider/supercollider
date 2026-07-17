@@ -55,9 +55,7 @@ struct VMGlobals {
     class SymbolTable* symbolTable;
     class PyrGC* gc; // garbage collector for this process
     PyrObject* classvars;
-#if TAILCALLOPTIMIZE
     int tailCall; // next byte code is a tail call.
-#endif
     bool canCallOS;
 
     // thread context

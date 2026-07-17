@@ -31,7 +31,18 @@ QC_DECLARE_QWIDGET_FACTORY(QcToolBar);
 QC_DECLARE_QOBJECT_FACTORY(QcAction);
 QC_DECLARE_QOBJECT_FACTORY(QcWidgetAction);
 
-QcMenu::QcMenu(): QMenu(NULL) { setAttribute(Qt::WA_DeleteOnClose, false); }
+#ifdef Q_OS_MAC
+#    include <QTimer>
+#    include <QGuiApplication>
+#    include <QCursor>
+#endif
+
+QcMenu::QcMenu(): QMenu(nullptr) {
+    setAttribute(Qt::WA_DeleteOnClose, false);
+#ifdef Q_OS_MAC
+    connect(this, &QMenu::triggered, this, [this]() { m_actionTriggered = true; });
+#endif
+}
 
 void QcMenu::popup(QPointF pos, QAction* action) { QMenu::popup(QPoint(pos.x(), pos.y()), action); }
 
@@ -56,6 +67,63 @@ void QcMenu::removeAction(QAction* action) {
         QMenu::removeAction(action);
     }
 }
+
+#ifdef Q_OS_MAC
+// workaround to trigger menu actions on macOS
+
+void QcMenu::showEvent(QShowEvent* event) {
+    m_actionTriggered = false; // reset the flag when the menu is shown
+    QMenu::showEvent(event);
+}
+
+bool QcMenu::event(QEvent* event) {
+    // if the event close arrive first
+    if (event->type() == QEvent::Close || event->type() == QEvent::Hide) {
+        if (!m_actionTriggered && (QGuiApplication::mouseButtons() & Qt::LeftButton)) {
+            QPoint localPos = mapFromGlobal(QCursor::pos());
+            if (QAction* act = actionAt(localPos)) {
+                m_actionTriggered = true; // indicate handled action
+                QTimer::singleShot(0, act, &QAction::trigger); // fire the action
+            }
+        }
+    }
+
+    // if the mousepress arrives first
+    if (event->type() == QEvent::MouseButtonPress) {
+        auto* mouseEvent = static_cast<QMouseEvent*>(event);
+        if (QAction* act = actionAt(mouseEvent->pos())) {
+            if (!m_actionTriggered) {
+                m_actionTriggered = true; // indicate handled action
+                QTimer::singleShot(0, act, &QAction::trigger); // fire the action
+            }
+            return true; // consume event
+        }
+    }
+
+    // avoid double-triggering
+    if (event->type() == QEvent::MouseButtonRelease) {
+        if (m_actionTriggered) {
+            return true; // consume event
+        }
+    }
+
+    // handle keyboard
+    if (event->type() == QEvent::KeyPress) {
+        auto* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Space) {
+            if (QAction* act = activeAction()) {
+                if (!m_actionTriggered) {
+                    m_actionTriggered = true; // indicate handled action
+                    QTimer::singleShot(0, act, &QAction::trigger);
+                }
+                return true; // consume event
+            }
+        }
+    }
+
+    return QMenu::event(event);
+}
+#endif
 
 void QcToolBar::addAction(QAction* action) {
     if (action) {

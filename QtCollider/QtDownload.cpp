@@ -29,7 +29,6 @@
 #include <QUrl>
 #include <QNetworkRequest>
 #include <QFile>
-#include <QDebug>
 
 QC_DECLARE_QOBJECT_FACTORY(QtDownload);
 
@@ -49,7 +48,7 @@ void QtDownload::downloadFinished() {
             return;
         const QByteArray sdata = m_reply->readAll();
         localFile.write(sdata);
-        qDebug() << sdata;
+        qcDebugMsg(2, QString("Download finished. Size: %1 bytes").arg(sdata.size()));
         localFile.close();
 
         // call action
@@ -68,11 +67,9 @@ void QtDownload::download() {
         QNetworkRequest request;
         request.setUrl(url);
         m_reply = m_manager->get(request);
-        QObject::connect(m_reply, SIGNAL(downloadProgress(qint64, qint64)), this,
-                         SLOT(downloadProgress(qint64, qint64)));
-        QObject::connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
-                         SLOT(replyError(QNetworkReply::NetworkError)));
-        bool fin = QObject::connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
+        QObject::connect(m_reply, &QNetworkReply::downloadProgress, this, &QtDownload::downloadProgress);
+        QObject::connect(m_reply, &QNetworkReply::errorOccurred, this, &QtDownload::replyError);
+        bool fin = QObject::connect(m_reply, &QNetworkReply::finished, this, &QtDownload::downloadFinished);
         if (!fin) {
             qWarning("Download could not connect");
         }
@@ -94,7 +91,7 @@ void QtDownload::replyError(QNetworkReply::NetworkError errorCode) {
 }
 
 void QtDownload::downloadProgress(qint64 received, qint64 total) {
-    qDebug() << received << total;
+    qcDebugMsg(2, QString("Download progress: received %1 out of %2 bytes").arg(received).arg(total));
 
     // call action
     Q_EMIT(doProgress(static_cast<int>(received), static_cast<int>(total)));

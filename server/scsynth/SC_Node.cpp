@@ -34,7 +34,7 @@
 void Node_StateMsg(Node* inNode, int inState);
 
 // create a new node
-int Node_New(World* inWorld, NodeDef* def, int32 inID, Node** outNode) {
+SCErr Node_New(World* inWorld, NodeDef* def, int32 inID, Node** outNode) {
     if (inID < 0) {
         if (inID == -1) { // -1 means generate an id for the event
             HiddenWorld* hw = inWorld->hw;
@@ -85,6 +85,8 @@ void Node_Dtor(Node* inNode) {
 // remove a node from a group
 void Node_Remove(Node* s) {
     Group* group = s->mParent;
+    if (group == nullptr)
+        return;
 
     if (s->mPrev)
         s->mPrev->mNext = s->mNext;
@@ -132,7 +134,7 @@ void Node_Delete(Node* inNode) {
     if (inNode->mIsGroup)
         Group_Dtor((Group*)inNode);
     else
-        Graph_Dtor((Graph*)inNode);
+        Graph_Delete((Graph*)inNode);
 }
 
 // add a node after another one

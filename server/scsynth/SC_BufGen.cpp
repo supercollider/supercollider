@@ -20,21 +20,10 @@
 
 
 #include "SC_BufGen.h"
-#include "SC_World.h"
-#include "SC_Unit.h"
-#include "SC_InterfaceTable.h"
-#include <stdio.h>
-#include <stdlib.h>
-#ifndef _MSC_VER
-#    include <dirent.h>
-#endif //_MSC_VER
-#include <string.h>
 #include "SC_Prototypes.h"
 #include "SC_Str4.h"
 
-extern InterfaceTable gInterfaceTable;
-
-bool BufGen_Create(const char* inName, BufGenFunc inFunc) {
+SCBool BufGen_Create(const char* inName, BufGenFunc inFunc) {
     BufGen* bufGen = (BufGen*)malloc(sizeof(BufGen));
     str4cpy(bufGen->mBufGenName, inName);
     bufGen->mHash = Hash(bufGen->mBufGenName);

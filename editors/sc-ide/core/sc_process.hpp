@@ -25,7 +25,6 @@
 #include <QAction>
 #include <QByteArray>
 #include <QDateTime>
-#include <QDebug>
 #include <QProcess>
 #include <QThread>
 #include <QUuid>
@@ -81,6 +80,8 @@ public slots:
     void recompileClassLibrary(void);
     void stopMain(void);
     void showQuarks(void);
+    void onReadAllStandardOutput();
+    void onReadAllStandardError();
     void evaluateCode(QString const& commandString, bool silent = false);
 
 signals:
@@ -95,7 +96,6 @@ private slots:
     void onIpcData();
     void finalizeConnection();
     void onProcessStateChanged(QProcess::ProcessState state);
-    void onReadyRead(void);
     void updateToggleRunningAction();
 
 private:
@@ -124,9 +124,9 @@ class ScRequest : public QObject {
     Q_OBJECT
 public:
     ScRequest(ScProcess* sc, QObject* parent = 0): QObject(parent), mSc(sc) {
-        connect(mSc, SIGNAL(response(QString, QString)), this, SLOT(onResponse(QString, QString)));
+        connect(mSc, &ScProcess::response, this, &ScRequest::onResponse);
 
-        connect(mSc, SIGNAL(classLibraryRecompiled()), this, SLOT(cancel()));
+        connect(mSc, &ScProcess::classLibraryRecompiled, this, &ScRequest::cancel);
     }
 
     void send(const QString& command, const QString& data) {

@@ -300,16 +300,6 @@ Pen {
 
 	//---------------------- PRIVATE! -- Painter on/off-----------------------------
 
-	*prBegin { arg aView;
-		_QPen_Begin
-		^this.primitiveFailed;
-	}
-
-	*prEnd {
-		_QPen_End
-		^this.primitiveFailed;
-	}
-
 	*prDrawImage { arg target, image, source, operation, opacity;
 		_QPen_DrawImage
 		^this.primitiveFailed;

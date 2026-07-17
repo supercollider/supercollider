@@ -13,7 +13,7 @@ METHOD:: new
 Create a new buffer.
 
 ARGUMENT:: size
-Initial size. The collection will be able to hold one minus this number of values.
+Initial size. The actual capacity will be the given size minus one element, see the maxSize method.
 
 ARGUMENT:: collectionClass
 Defaults to the LINK::Classes/Array:: class.
@@ -37,7 +37,7 @@ METHOD:: size
 Alias of LINK::#-readable::.
 
 METHOD:: readable
-Number of readble items.
+Number of readable items.
 
 METHOD:: writable
 Number of writable items.

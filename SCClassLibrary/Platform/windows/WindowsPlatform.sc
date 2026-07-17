@@ -32,7 +32,8 @@ WindowsPlatform : Platform {
 	}
 	clearMetadata { |path|
 		path = path.splitext[0].do({ |chr, i| if(chr == $/) { path[i] = $\\.asAscii } });
-		"del %%.*meta%".format(34.asAscii, path, 34.asAscii).systemCmd;
+		// suppress error message if no files match the given pattern
+		"del \"%.*meta\" 2>nul".format(path).systemCmd;
 	}
 
 	killProcessByID { |pid, force = true, subprocesses = true|

@@ -61,6 +61,7 @@ public:
         DocOpen,
         DocOpenStartup,
         DocOpenSupportDir,
+        DocOpenExamplesDir,
         DocSave,
         DocSaveAs,
         DocSaveAsExtension,
@@ -173,6 +174,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void openStartupFile();
     void openUserSupportDirectory();
+    void openExamplesDirectory();
 
     void switchSession(Session* session);
     void saveSession(Session* session);

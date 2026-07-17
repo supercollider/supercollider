@@ -1,6 +1,6 @@
 class:: MIDIOut
 summary:: send MIDI messages
-related:: Classes/MIDIClient, Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI
+related:: Classes/MIDIClient, Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI, Overviews/MidiPatterns
 categories:: External Control>MIDI
 
 description::
@@ -103,16 +103,33 @@ m.stop
 
 subsection::Using patterns for sending MIDI events
 
+See link::Overviews/MidiPatterns:: for details!
+
 code::
 MIDIClient.init;
 m = MIDIOut(0);  // Linux users: MIDIOut(0, MIDIClient.destinations[0].uid)
 
-a = Pbind(\degree, Prand([1, 2, 3, [0, 5]], inf), \bend, Pwhite(0, 76, inf));
+// Simplest way for sending \note-type events to MIDI
+// define a Pattern of note-events:
+a = Pbind(degree: Prand([1, 2, 3, [0, 5]], inf));
 
-
-// chain a midi event into the pattern and play it (see Pchain)
-
+// chain a \midi-type event into the pattern and play it (see link::Classes/Pchain::)
+// this will also take care of noteOffs. 
 (a <> (type: \midi, midiout: m)).play;
+
+// a tidier way to do the same, where we specify the type of midi commands we want to send:
+a = Pbind(midicmd: \noteOn, degree: Prand([1, 2, 3, [0, 5]], inf));
+(a <> (type: \midi, midiout: m)).play;
+//again, noteOffs are taken care off by default (but this can be turned off).
+
+//other selected midicmds:
+// for bend messages: 
+b = Pbind(midicmd: \bend, val: Pwhite(0,16383));
+(b <> (type: \midi, midiout: m)).play;
+
+// for CC messages: 
+c = Pbind(midicmd: \control, control: Pwhite(0,127), ctlNum: 0);
+(c <> (type: \midi, midiout: m)).play;
 ::
 
 See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#MIDI output:: for a list of midi commands supported by the 'midi' event type.

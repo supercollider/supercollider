@@ -62,7 +62,7 @@
 #    define LONG(x) ((x) / BITS_PER_LONG)
 #    define TEST_BIT(array, bit) (((array)[LONG(bit)] >> OFF(bit)) & 1)
 
-extern bool compiledOK;
+extern bool gCompiledOK;
 
 static PyrSymbol* s_inputDeviceClass = nullptr;
 static PyrSymbol* s_inputDeviceInfoClass = nullptr;
@@ -277,7 +277,7 @@ void SC_LID::handleEvent(struct input_event& evt, std::atomic<bool> const& shoul
             return;
         }
 
-        if (compiledOK) {
+        if (gCompiledOK) {
             VMGlobals* g = gMainVMGlobals;
             g->canCallOS = false;
             ++g->sp;
@@ -304,7 +304,7 @@ void SC_LID::readError(std::atomic<bool> const& shouldBeRunning) {
         return;
     }
 
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
         ++g->sp;

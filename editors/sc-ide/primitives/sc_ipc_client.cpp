@@ -41,7 +41,7 @@
 SCIpcClient::SCIpcClient(const char* ideName): mSocket(NULL) {
     mSocket = new QLocalSocket();
     mSocket->connectToServer(QString(ideName));
-    connect(mSocket, SIGNAL(readyRead()), this, SLOT(readIDEData()));
+    connect(mSocket, &QLocalSocket::readyRead, this, &SCIpcClient::readIDEData);
 }
 
 void SCIpcClient::send(const char* data, size_t length) { mSocket->write(data, length); }
@@ -475,7 +475,7 @@ void initScIDEPrimitives() {
     definePrimitive(base, index++, "_ScIDE_Connect", ScIDE_Connect, 2, 0);
     definePrimitive(base, index++, "_ScIDE_Connected", ScIDE_Connected, 1, 0);
     definePrimitive(base, index++, "_ScIDE_Send", ScIDE_Send, 3, 0);
-    definePrimitive(base, index++, "_ScIDE_GetQUuid", ScIDE_GetQUuid, 0, 0);
+    definePrimitive(base, index++, "_ScIDE_GetQUuid", ScIDE_GetQUuid, 1, 0);
     definePrimitive(base, index++, "_ScIDE_GetDocTextMirror", ScIDE_GetDocTextMirror, 4, 0);
     definePrimitive(base, index++, "_ScIDE_SetDocTextMirror", ScIDE_SetDocTextMirror, 5, 0);
     definePrimitive(base, index++, "_ScIDE_GetDocSelectionStart", ScIDE_GetDocSelectionStart, 2, 0);

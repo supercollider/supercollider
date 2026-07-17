@@ -1,0 +1,60 @@
+TITLE:: Resample
+summary:: Change the sample rate of a SynthDef/Synth
+categories:: Server>Abstractions
+related:: Classes/Reblock, Classes/SynthDef
+
+DESCRIPTION::
+For certain applications it is beneficial to run a link::Classes/Synth:: at a higher sample rate. Instead of increasing the sample rate of the whole Server, which could be very wasteful, you can use the Resample object inside a link::Classes/SynthDef:: to only change the sample rate of specific Synths.
+
+For example, with a factor of 4.0, the Synth will run at four times the Server's sample rate. Keep in mind that upsampling increases the CPU usage roughly proportionally to the upsampling factor.
+
+The resampling factor can be a constant number or it can be set dynamically via a Synth control (except for Supernova). See link::#*new:: for more information.
+
+note::For technical reasons, Supernova requires a fixed resampling factor. Trying to use a Synth control results in a warning.::
+
+For example, you can use upsampling + filtering to reduce the effects of aliasing:
+
+code::
+(
+SynthDef(\hardsync, { |out, upsample|
+	var sig, cutoff = 18000;
+
+	Resample(upsample);
+
+	sig = SyncSaw.ar(MouseY.kr(1, 1000, 2), MouseX.kr(100, 4000, 2));
+
+	// crude anti-alisaing filter
+	sig = LPF.ar(sig, cutoff);
+	sig = LPF.ar(sig, cutoff);
+	Out.ar(out, sig * 0.05 ! 2);
+}).add;
+)
+
+// no upsampling -> lots of aliasing
+Synth(\hardsync);
+// watch aliasing disappear with increasing upsampling factors
+Synth(\hardsync, [ upsample: 2.0 ]);
+Synth(\hardsync, [ upsample: 4.0 ]);
+Synth(\hardsync, [ upsample: 8.0 ]);
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+
+Specify the resampling factor of the Synth. You should only create this once per SynthDef. Duplicate instances generate a warning and are ignored.
+
+ARGUMENT:: factor
+the resampling factor. This can either be a constant number (e.g. 2.0) or a Synth control. With the latter, the resampling factor can be set independently for each Synth. However, it cannot be modulated after the Synth has been instantiated on the Server.
+
+The resampling factor must be power of two. A value of 0.0 is the same as 1.0 (= no resampling).
+
+Currently, only upsampling is supported! Any attempt at downsampling (e.g. a factor of 0.5) is ignored and results in a warning.
+
+DISCUSSION::
+
+Note that the Resample object is strong::not:: a UGen and there are certain restrictions on the types of arguments it accepts. In particular, you cannot use UGen expressions. (UGens are only evaluated after the Synth has been initialized. At this point, the resampling factor must have already been set.) For example, the following does not work and will throw an error:
+code::
+// futile attempt at generating a random resampling factor:
+Resample(2 ** IRand(0, 4)); // -> throws an error
+::

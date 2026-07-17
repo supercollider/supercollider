@@ -239,7 +239,7 @@ Task({
 
 method:: save
 Save this Document.
-argument:: path
+argument:: docPath
 An optional instance of link::Classes/String:: indicating the path to save the Document. If a path is not provided, the current path (if it has been previously saved or read) is used. After a successful save, this Document's path will be updated if needed. See also link::Classes/Document#*open:: above.
 code::
 d = Document.new("testSave", "foo");

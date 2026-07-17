@@ -20,17 +20,18 @@
 
 #pragma once
 
+#include "SC_Rate.h"
 #include "SC_Unit.h"
 #include "SC_Wire.h"
 
 // demand rate unit support.
 
-inline bool IsDemandInput(Unit* unit, int index) {
+SC_INLINE SCBool IsDemandInput(Unit* unit, int index) {
     Unit* fromUnit = unit->mInput[index]->mFromUnit;
     return fromUnit && fromUnit->mCalcRate == calc_DemandRate;
 }
 
-inline float DemandInput(Unit* unit, int index) {
+SC_INLINE float DemandInput(Unit* unit, int index) {
     Unit* fromUnit = unit->mInput[index]->mFromUnit;
     if (fromUnit && fromUnit->mCalcRate == calc_DemandRate)
         (fromUnit->mCalcFunc)(fromUnit, 1);
@@ -41,7 +42,7 @@ inline float DemandInput(Unit* unit, int index) {
 // offset comes in as inNumSamples, so is in the range 1..size ! inNumSamples = 0 has a special meaning (reset).
 // it is converted to a buffer index here.
 
-inline float DemandInputA(Unit* unit, int index, int offset) {
+SC_INLINE float DemandInputA(Unit* unit, int index, int offset) {
     Unit* fromUnit = unit->mInput[index]->mFromUnit;
     if (!fromUnit) {
         return IN0(index);
@@ -56,7 +57,7 @@ inline float DemandInputA(Unit* unit, int index, int offset) {
     }
 }
 
-inline void ResetInput(Unit* unit, int index) {
+SC_INLINE void ResetInput(Unit* unit, int index) {
     Unit* fromUnit = unit->mInput[index]->mFromUnit;
     if (fromUnit && fromUnit->mCalcRate == calc_DemandRate)
         (fromUnit->mCalcFunc)(fromUnit, 0);

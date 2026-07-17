@@ -181,7 +181,7 @@ void SC_NamedObj::SetName(const char* inName) {
 
 SC_LibCmd::SC_LibCmd(SC_CommandFunc inFunc): mFunc(inFunc) {}
 
-SCErr SC_LibCmd::Perform(struct World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+SCErr SC_LibCmd::Perform(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
     SCErr err;
     //	int kSendError = 1;		// i.e., 0x01 | 0x02;
     try {

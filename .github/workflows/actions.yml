@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -28,12 +28,15 @@ jobs:
           sudo npm install -g lintspaces-cli
           lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.10'
 
-      - uses: pre-commit/action@v3.0.1
-        name: 'Run pre-commit'
+      - name: setup pre-commit
+        run: python -m pip install pre-commit
+
+      - name: run pre-commit
+        run: pre-commit run --show-diff-on-failure --color=always --all-files
         env:
           FULL_CHECK: 1
 
@@ -61,9 +64,23 @@ jobs:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
+  build-flatpak:
+    needs: [lint, version-getter]
+    uses: ./.github/workflows/build_flatpak.yml
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
+
   build-macos:
     needs: [lint, version-getter]
     uses: ./.github/workflows/build_macos.yml
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
+
+  build-wasm:
+    needs: [lint, version-getter]
+    uses: ./.github/workflows/build_wasm.yml
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
@@ -78,6 +95,7 @@ jobs:
   test-linux:
     needs: [version-getter, build-linux]
     uses: ./.github/workflows/test_linux.yml
+    if: ${{ !cancelled() }}
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
@@ -85,16 +103,18 @@ jobs:
   test-macos:
     needs: [version-getter, build-macos]
     uses: ./.github/workflows/test_macos.yml
+    if: ${{ !cancelled() }}
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
-  # test-windows:
-  #   needs: [version-getter, build-windows]
-  #   uses: ./.github/workflows/test_windows.yml
-  #   with:
-  #     sc-version: ${{ needs.version-getter.outputs.sc-version }}
-  #   secrets: inherit
+  test-windows:
+    needs: [version-getter, build-windows]
+    uses: ./.github/workflows/test_windows.yml
+    if: ${{ !cancelled() }}
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
 
   deploy_s3:
     strategy:
@@ -116,8 +136,24 @@ jobs:
             s3-artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
+          - artifact-suffix: "Linux-x86_64"
+            s3-os-name: Linux-Flatpak-x86_64
+            s3-artifact-prefix: '-flatpak-x86_64'
+            s3-artifact-suffix: ''
+            s3-artifact-extension: 'flatpak'
+            artifact-extension: '.flatpak'
+            s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
+
+          - artifact-suffix: "Linux-arm64"
+            s3-os-name: Linux-Flatpak-arm64
+            s3-artifact-prefix: '-flatpak-arm64'
+            s3-artifact-suffix: ''
+            s3-artifact-extension: 'flatpak'
+            artifact-extension: '.flatpak'
+            s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
+
     if: github.repository_owner == 'supercollider' && github.event_name != 'pull_request' # run in the main repo, but not on pull requests
-    needs: [lint, version-getter, build-macos, build-windows]
+    needs: [lint, version-getter, build-macos, build-windows, build-flatpak]
     runs-on: ubuntu-latest
     name: 'deploy ${{ matrix.artifact-suffix }} to s3'
     env:
@@ -131,7 +167,7 @@ jobs:
       S3_ROOT_URL: 'https://supercollider.s3.amazonaws.com'
     steps:
       - name: download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         if: env.UPLOAD_TO_S3 == 'true'
         with:
           name: ${{ env.ARTIFACT_FILE }}
@@ -190,7 +226,7 @@ jobs:
   # release - list of files uploaded to GH release is specified in the *upload* step
   deploy_gh:
     if: startsWith(github.ref, 'refs/tags/') # run on tagged commits
-    needs: [lint, version-getter, build-macos, build-windows]
+    needs: [lint, version-getter, build-macos, build-windows, build-flatpak]
     runs-on: ubuntu-latest
     name: 'deploy release'
     env:
@@ -198,11 +234,11 @@ jobs:
       ARTIFACT_FILE_PREFIX: 'SuperCollider-${{ needs.version-getter.outputs.sc-version }}'
     steps:
       - name: download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ${{ env.INSTALL_PATH }} # no "name" paramter - download all artifacts
       - name: upload to the release page
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64.dmg/*
@@ -211,6 +247,6 @@ jobs:
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64-legacy.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-flatpak-x86_64.flatpak/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-flatpak-arm64.flatpak/*
           draft: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

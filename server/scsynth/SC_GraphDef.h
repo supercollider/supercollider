@@ -24,6 +24,8 @@
 #include "HashTable.h"
 #include <filesystem>
 
+struct World;
+
 struct ParamSpec {
     int32 mName[kSCNameLen];
     int32 mIndex;
@@ -60,6 +62,12 @@ struct GraphDef {
     ParamSpec* mParamSpecs;
     ParamSpecTable* mParamSpecTable;
 
+    int32 mBlockSize;
+    uint32 mBlockSizeIndex;
+
+    float32 mResampleFactor;
+    uint32 mResampleIndex;
+
     int mRefCount;
     struct GraphDef* mNext;
 
@@ -68,14 +76,13 @@ struct GraphDef {
     uint32 mNumVariants;
     struct GraphDef* mVariants;
 };
-typedef struct GraphDef GraphDef;
 
-GraphDef* GraphDef_Recv(World* inWorld, char* buffer, GraphDef* inList);
-GraphDef* GraphDef_Load(struct World* inWorld, const std::filesystem::path& path, GraphDef* inList);
-GraphDef* GraphDef_LoadDir(struct World* inWorld, const std::filesystem::path& path, GraphDef* inList);
+GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, size_t size, GraphDef* inList);
+GraphDef* GraphDef_Load(World* inWorld, const std::filesystem::path& path, GraphDef* inList);
+GraphDef* GraphDef_LoadDir(World* inWorld, const std::filesystem::path& path, GraphDef* inList);
 GraphDef* GraphDef_LoadGlob(World* inWorld, const char* pattern, GraphDef* inList);
 SCErr GraphDef_Remove(World* inWorld, int32* inName);
-SCErr GraphDef_DeleteMsg(struct World* inWorld, GraphDef* inDef);
+SCErr GraphDef_DeleteMsg(World* inWorld, GraphDef* inDef);
 void GraphDef_Dump(GraphDef* inGraphDef);
 int32 GetHash(ParamSpec* inParamSpec);
 int32* GetKey(ParamSpec* inParamSpec);

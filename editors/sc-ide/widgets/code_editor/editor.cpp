@@ -80,20 +80,19 @@ GenericCodeEditor::GenericCodeEditor(Document* doc, QWidget* parent):
 
     mOverlayAnimator = new OverlayAnimator(this, mOverlay);
 
-    connect(mDoc, SIGNAL(defaultFontChanged()), this, SLOT(onDocumentFontChanged()));
+    connect(mDoc, &Document::defaultFontChanged, this, &GenericCodeEditor::onDocumentFontChanged);
 
-    connect(this, SIGNAL(blockCountChanged(int)), mLineIndicator, SLOT(setLineCount(int)));
+    connect(this, &GenericCodeEditor::blockCountChanged, mLineIndicator, &LineIndicator::setLineCount);
 
-    connect(mLineIndicator, SIGNAL(widthChanged()), this, SLOT(updateLayout()));
+    connect(mLineIndicator, &LineIndicator::widthChanged, this, &GenericCodeEditor::updateLayout);
 
-    connect(this, SIGNAL(updateRequest(QRect, int)), this, SLOT(updateLineIndicator(QRect, int)));
+    connect(this, &GenericCodeEditor::updateRequest, this, &GenericCodeEditor::updateLineIndicator);
 
-    connect(this, SIGNAL(selectionChanged()), mLineIndicator, SLOT(update()));
-    connect(this, SIGNAL(selectionChanged()), this, SLOT(updateDocLastSelection()));
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChanged()));
+    connect(this, &GenericCodeEditor::selectionChanged, mLineIndicator, [=]() { mLineIndicator->update(); });
+    connect(this, &GenericCodeEditor::selectionChanged, this, &GenericCodeEditor::updateDocLastSelection);
+    connect(this, &GenericCodeEditor::cursorPositionChanged, this, &GenericCodeEditor::onCursorPositionChanged);
 
-    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)), this,
-            SLOT(applySettings(Settings::Manager*)));
+    connect(Main::instance(), &Main::applySettingsRequest, this, &GenericCodeEditor::applySettings);
 
     QTextDocument* tdoc = doc->textDocument();
     QPlainTextEdit::setDocument(tdoc);
@@ -638,7 +637,7 @@ void GenericCodeEditor::doKeyAction(QKeyEvent* ke) {
 #endif
     {
         QString text(ke->text());
-        if (text.count()) {
+        if (!text.isEmpty()) {
             character = text[0];
         } else {
             character = QChar(QChar::ReplacementCharacter);
@@ -698,7 +697,7 @@ void GenericCodeEditor::mousePressEvent(QMouseEvent* e) {
                                          .arg(e->position().x())
                                          .arg(e->position().y())
 #endif
-                                         .arg(e->modifiers())
+                                         .arg(static_cast<Qt::KeyboardModifiers::Int>(e->modifiers()))
                                          .arg(button),
                                      true);
     }
@@ -732,7 +731,7 @@ void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent* e) {
                                          .arg(e->position().x())
                                          .arg(e->position().y())
 #endif
-                                         .arg(e->modifiers())
+                                         .arg(static_cast<Qt::KeyboardModifiers::Int>(e->modifiers()))
                                          .arg(button),
                                      true);
     }
@@ -766,7 +765,7 @@ void GenericCodeEditor::mouseReleaseEvent(QMouseEvent* e) {
                                          .arg(e->position().x())
                                          .arg(e->position().y())
 #endif
-                                         .arg(e->modifiers())
+                                         .arg(static_cast<Qt::KeyboardModifiers::Int>(e->modifiers()))
                                          .arg(button),
                                      true);
     }

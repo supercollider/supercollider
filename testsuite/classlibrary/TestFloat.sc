@@ -47,6 +47,14 @@ TestFloat : UnitTest {
 		this.assertEquals(zeroDivString, "nan");
 	}
 
+	test_nan {
+	    this.assertEquals((1.0/0.0), inf);
+	    this.assertEquals((-1.0/0.0), -inf);
+	    this.assert((0.0/0.0).isNaN);
+	    this.assert((-0.0/0.0).isNaN);
+	    this.assert(((-0.0/0.0) + (0.0/0.0)).isNaN);
+	}
+
 	test_asString_largeNumberUsesExp {
 		this.assertEquals((1e26).asString, "1e+26")
 	}

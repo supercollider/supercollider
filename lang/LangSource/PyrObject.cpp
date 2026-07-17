@@ -54,6 +54,14 @@
 #    include <parallel/algorithm>
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#    define PRAGMA_IVDEP _Pragma("GCC ivdep")
+#elif defined(_MSC_VER)
+#    define PRAGMA_IVDEP __pragma(loop(ivdep))
+#else
+#    define PRAGMA_IVDEP
+#endif
+
 
 PyrClass* gClassList = nullptr;
 int gNumSelectors = 0;
@@ -65,6 +73,7 @@ int gFormatElemTag[NUMOBJFORMATS];
 PyrMethod* gNullMethod; // used to fill row table
 PyrClass* gTagClassTable[16];
 
+PyrClass* class_abstract_object;
 PyrClass* class_object;
 PyrClass* class_dict;
 PyrClass* class_array;
@@ -97,6 +106,7 @@ PyrClass* class_finalizer;
 PyrClass* class_server_shm_interface;
 
 PyrSymbol* s_none;
+PyrSymbol* s_abstract_object;
 PyrSymbol* s_object;
 PyrSymbol* s_bag;
 PyrSymbol* s_set;
@@ -154,6 +164,7 @@ PyrSymbol* s_performArgs;
 PyrSymbol *s_series, *s_copyseries, *s_putseries;
 PyrSymbol *s_envirGet, *s_envirPut;
 PyrSymbol *s_synth, *s_environment, *s_event;
+PyrSymbol* s_proto_object;
 PyrSymbol* s_shutdown;
 PyrSymbol *s_super, *s_this;
 
@@ -181,6 +192,7 @@ void initSymbols() {
 
     // classes
     s_object = getsym("Object");
+    s_abstract_object = getsym("AbstractObjectExperimental");
     s_ref = getsym("Ref");
     s_dictionary = getsym("Dictionary");
     s_bag = getsym("Bag");
@@ -239,6 +251,7 @@ void initSymbols() {
     s_synth = getsym("Synth");
     s_environment = getsym("Environment");
     s_event = getsym("Event");
+    s_proto_object = getsym("ProtoObject");
 
     // interpreter
     s_interpretCmdLine = getsym("interpretCmdLine");
@@ -288,22 +301,20 @@ void initSymbols() {
     SetFloat(&o_ftwo, 2.);
     SetFloat(&o_inf, std::numeric_limits<double>::infinity());
 
-    slotCopy(&gSpecialValues[svNil], &o_nil);
-    slotCopy(&gSpecialValues[svFalse], &o_false);
-    slotCopy(&gSpecialValues[svTrue], &o_true);
+    gSpecialValues.Nil_ = o_nil;
+    gSpecialValues.True = o_true;
+    gSpecialValues.False = o_false;
+    gSpecialValues.Inf = o_inf;
 
-    slotCopy(&gSpecialValues[svNegOne], &o_negone);
-    slotCopy(&gSpecialValues[svZero], &o_zero);
-    slotCopy(&gSpecialValues[svOne], &o_one);
-    slotCopy(&gSpecialValues[svTwo], &o_two);
-
-    slotCopy(&gSpecialValues[svFHalf], &o_fhalf);
-    slotCopy(&gSpecialValues[svFNegOne], &o_fnegone);
-    slotCopy(&gSpecialValues[svFZero], &o_fzero);
-    slotCopy(&gSpecialValues[svFOne], &o_fone);
-    slotCopy(&gSpecialValues[svFTwo], &o_ftwo);
-    slotCopy(&gSpecialValues[svInf], &o_inf);
-
+    gSpecialNumbers.MinusOne = o_negone;
+    gSpecialNumbers.Zero = o_zero;
+    gSpecialNumbers.One = o_one;
+    gSpecialNumbers.Two = o_two;
+    gSpecialNumbers.Half = o_fhalf;
+    gSpecialNumbers.MinusOneFloat = o_fnegone;
+    gSpecialNumbers.ZeroFloat = o_fzero;
+    gSpecialNumbers.OneFloat = o_fone;
+    gSpecialNumbers.TwoFloat = o_ftwo;
 
     gFormatElemSize[obj_notindexed] = sizeof(PyrSlot);
     gFormatElemSize[obj_slot] = sizeof(PyrSlot);
@@ -1055,7 +1066,7 @@ static void binsortClassRows(PyrMethod const** bigTable, const ColumnDescriptor*
         PyrMethod const** row = bigTable + j * numSelectors;
         memcpy(temprow, row, numSelectors * sizeof(PyrMethod*));
 
-#pragma GCC ivdep
+        PRAGMA_IVDEP
         for (int i = 0; i < numSelectors; ++i)
             row[i] = temprow[sels[i].selectorIndex];
     }
@@ -1182,11 +1193,12 @@ void buildBigMethodMatrix() {
 #endif
     filledClassIndices.wait();
 #ifdef _MSC_VER
-    size_t numentries = fillClassRows(class_object, bigTable);
+    size_t numentries = fillClassRows(class_abstract_object, bigTable);
 #else
-    size_t numentries = fillClassRows(class_object, bigTable, pool);
+    size_t numentries = fillClassRows(class_abstract_object, bigTable, pool);
 #endif
-    post("\tnumentries = %lu / %d = %.2g\n", numentries, bigTableSize, (double)numentries / (double)bigTableSize);
+    post("\tnum entries = %lu, big table size = %d, num entries / big table size = %.2g\n", numentries, bigTableSize,
+         (double)numentries / (double)bigTableSize);
 
 
     ColumnDescriptor* filledSelectors = filledSelectorsFuture.get();
@@ -1349,7 +1361,7 @@ static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable, boost
     if (superclassobj) {
         PyrMethod** superrow = bigTable + slotRawInt(&superclassobj->classIndex) * gNumSelectors;
 
-#pragma GCC ivdep
+        PRAGMA_IVDEP
         for (int i = 0; i != gNumSelectors; ++i) {
             myrow[i] = superrow[i];
             if (superrow[i])
@@ -1482,7 +1494,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, in
         metaSuperClass = metaSuperClassName->u.classobj;
         superInstVars = numSuperInstVars(superClass);
     } else {
-        // else it must be Object and so has no superclass
+        // else it must be AbstractObjectExperimental and so has no superclass
         metaSuperClassName = nullptr;
         superInstVars = 0;
     }
@@ -1494,6 +1506,8 @@ PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, in
     SetInt(&metaclassobj->classFlags, slotRawInt(&metaclassobj->classFlags) | classIsIntrinsic);
 
     if (metaSuperClassName && classClassNumInstVars) {
+        assert(!metaclassobj->iprototype.isNil());
+        assert(!metaSuperClass->iprototype.isNil());
         memcpy(slotRawObject(&metaclassobj->iprototype)->slots, slotRawObject(&metaSuperClass->iprototype)->slots,
                sizeof(PyrSlot) * classClassNumInstVars);
         memcpy(slotRawSymbolArray(&metaclassobj->instVarNames)->symbols,
@@ -1536,28 +1550,32 @@ void addIntrinsicClassVar(PyrClass* classobj, const char* varName, PyrSlot* slot
 }
 
 void initClasses() {
-    PyrClass* class_object_meta;
-    PyrMethodRaw* methraw;
-
     // BOOTSTRAP THE OBJECT HIERARCHY
-
     gNumClassVars = 0;
     gClassList = nullptr;
     gNullMethod = newPyrMethod();
     SetSymbol(&gNullMethod->name, (PyrSymbol*)nullptr);
-    methraw = METHRAW(gNullMethod);
+    PyrMethodRaw* methraw = METHRAW(gNullMethod);
     methraw->methType = methNormal;
 
     // build intrinsic classes
     class_class = nullptr;
-    class_object = makeIntrinsicClass(s_object, nullptr, 0, 4);
+    class_abstract_object = makeIntrinsicClass(s_abstract_object, nullptr, 0, 0);
+    class_object = makeIntrinsicClass(s_object, s_abstract_object, 0, 4);
     class_class = makeIntrinsicClass(s_class, s_object, classClassNumInstVars, 1);
 
     // now fix class_class ptrs that were just previously installed erroneously
-    class_object->classptr->classptr = class_class;
-    class_class->classptr->classptr = class_class;
-    class_object_meta = class_object->classptr;
-    class_object_meta->superclass = class_class->name;
+    PyrClass* class_object_meta = class_object->classptr;
+    PyrClass* class_abstract_object_meta = class_abstract_object->classptr;
+
+    class_object_meta->classptr = class_class;
+    class_abstract_object_meta->classptr = class_class;
+
+    PyrClass* class_class_meta = class_class->classptr;
+    class_class_meta->classptr = class_class;
+
+    class_abstract_object_meta->superclass = class_class->name;
+    class_object_meta->superclass = class_abstract_object_meta->name;
 
     addIntrinsicClassVar(class_object, "dependantsDictionary", &o_nil);
     addIntrinsicClassVar(class_object, "currentEnvironment", &o_nil);
@@ -1598,9 +1616,14 @@ void initClasses() {
     memcpy(slotRawSymbolArray(&class_object_meta->instVarNames)->symbols,
            slotRawSymbolArray(&class_class->instVarNames)->symbols, sizeof(PyrSymbol*) * classClassNumInstVars);
 
-    memcpy(slotRawObject(&class_class->classptr->iprototype)->slots, slotRawObject(&class_class->iprototype)->slots,
+    memcpy(slotRawObject(&class_abstract_object_meta->iprototype)->slots,
+           slotRawObject(&class_class->iprototype)->slots, sizeof(PyrSlot) * classClassNumInstVars);
+    memcpy(slotRawSymbolArray(&class_abstract_object_meta->instVarNames)->symbols,
+           slotRawSymbolArray(&class_class->instVarNames)->symbols, sizeof(PyrSymbol*) * classClassNumInstVars);
+
+    memcpy(slotRawObject(&class_class_meta->iprototype)->slots, slotRawObject(&class_class->iprototype)->slots,
            sizeof(PyrSlot) * classClassNumInstVars);
-    memcpy(slotRawSymbolArray(&class_class->classptr->instVarNames)->symbols,
+    memcpy(slotRawSymbolArray(&class_class_meta->instVarNames)->symbols,
            slotRawSymbolArray(&class_class->instVarNames)->symbols, sizeof(PyrSymbol*) * classClassNumInstVars);
 
 
@@ -1615,8 +1638,9 @@ void initClasses() {
 
     // now fix array classptrs in already created classes
     fixClassArrays(class_class);
-    fixClassArrays(class_class->classptr);
+    fixClassArrays(class_class_meta);
     fixClassArrays(class_object_meta);
+    fixClassArrays(class_abstract_object_meta);
     fixClassArrays(class_collection);
     fixClassArrays(class_sequenceable_collection);
     fixClassArrays(class_arrayed_collection);
@@ -2215,10 +2239,10 @@ void DumpFrame(PyrFrame* frame) {
 
     meth = slotRawMethod(&frame->method);
     methraw = METHRAW(meth);
-    if (methraw->numtemps) {
+    if (methraw->numSlots) {
         post("\t%s\n", str);
-        numargs = methraw->numargs + methraw->varargs;
-        for (i = 0; i < methraw->numtemps; ++i) {
+        numargs = methraw->numNormalArguments + methraw->numVariableArguments;
+        for (i = 0; i < methraw->numSlots; ++i) {
             slotOneWord(frame->vars + i, str);
             // slotString(frame->vars + i, str);
             if (i < numargs) {
@@ -2252,10 +2276,10 @@ void DumpDetailedFrame(PyrFrame* frame) {
     meth = slotRawMethod(&frame->method);
     methraw = METHRAW(meth);
 
-    if (methraw->numtemps) {
+    if (methraw->numSlots) {
         post("\t%s\n", mstr);
-        numargs = methraw->numargs + methraw->varargs;
-        for (i = 0; i < methraw->numtemps; ++i) {
+        numargs = methraw->numNormalArguments + methraw->numVariableArguments;
+        for (i = 0; i < methraw->numSlots; ++i) {
             slotOneWord(frame->vars + i, str);
             // slotString(frame->vars + i, str);
             if (i < numargs) {
@@ -2270,7 +2294,7 @@ void DumpDetailedFrame(PyrFrame* frame) {
 
     post("\t....%s details:\n", mstr);
     post("\t\tneedsHeapContext  = %d\n", methraw->needsHeapContext);
-    post("\t\tnumtemps  = %d\n", methraw->numtemps);
+    post("\t\tnumtemps  = %d\n", methraw->numSlots);
     post("\t\tpopSize  = %d\n", methraw->popSize);
 
     slotString(&frame->method, str);
@@ -2371,7 +2395,7 @@ void nilSlots(PyrSlot* slot, int size) { fillSlots(slot, size, &o_nil); }
 
 void zeroSlots(PyrSlot* slot, int size) {
     PyrSlot zero;
-    SetTagRaw(&zero, 0);
+    SetRaw(&zero, 0);
     SetRaw(&zero, 0.0);
     fillSlots(slot, size, &zero);
 }
@@ -2472,7 +2496,7 @@ PyrBlock* newPyrBlock(int flags) {
     int32 numbytes = sizeof(PyrBlock) - sizeof(PyrObjectHdr);
     int32 numSlots = numbytes / sizeof(PyrSlot);
 
-    if (!compilingCmdLine)
+    if (!gCompilingCmdLine)
         block = (PyrBlock*)PyrGC::NewPermanent(numbytes, flags, obj_notindexed);
     else
         block = (PyrBlock*)gMainVMGlobals->gc->New(numbytes, flags, obj_notindexed, false);
@@ -2485,10 +2509,10 @@ PyrBlock* newPyrBlock(int flags) {
     methraw->methType = methBlock;
     methraw->needsHeapContext = 0;
     methraw->frameSize = 0;
-    methraw->varargs = 0;
-    methraw->numargs = 0;
-    methraw->numvars = 0;
-    methraw->numtemps = 0;
+    methraw->numVariableArguments = 0;
+    methraw->numNormalArguments = 0;
+    methraw->numVariables = 0;
+    methraw->numSlots = 0;
     methraw->popSize = 0;
 
     nilSlots(&block->rawData1, numSlots);
@@ -2780,9 +2804,7 @@ std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject* co
     for (int i = 0; i < coll->size; ++i) {
         PyrSlot argSlot;
         getIndexedSlot(coll, &argSlot, i);
-        int error;
-        std::string string;
-        std::tie(error, string) = slotStrStdStrVal(&argSlot);
+        auto [error, string] = slotStrStdStrVal(&argSlot);
         if (error != errNone) {
             strings.clear();
             return std::make_tuple(error, strings);
@@ -2790,51 +2812,6 @@ std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject* co
         strings.push_back(std::move(string));
     }
     return make_tuple(errNone, std::move(strings));
-}
-
-static int hashPtr(void* ptr) {
-    int32 hashed_part = int32((size_t)ptr & 0xffffffff);
-    return Hash(hashed_part);
-}
-
-int calcHash(PyrSlot* a);
-int calcHash(PyrSlot* a) {
-    int hash;
-    switch (GetTag(a)) {
-    case tagObj:
-        hash = hashPtr(slotRawObject(a));
-        break;
-    case tagInt:
-        hash = Hash(slotRawInt(a));
-        break;
-    case tagChar:
-        hash = Hash(slotRawChar(a) & 255);
-        break;
-    case tagSym:
-        hash = slotRawSymbol(a)->hash;
-        break;
-    case tagNil:
-        hash = 0xA5A5A5A5;
-        break;
-    case tagFalse:
-        hash = 0x55AA55AA;
-        break;
-    case tagTrue:
-        hash = 0x69696969;
-        break;
-    case tagPtr:
-        hash = hashPtr(slotRawPtr(a));
-        break;
-    default:
-        // hash for a double
-        union {
-            int32 i[2];
-            double d;
-        } u;
-        u.d = slotRawFloat(a);
-        hash = Hash(u.i[0] + Hash(u.i[1]));
-    }
-    return hash;
 }
 
 void InstallFinalizer(VMGlobals* g, PyrObject* inObj, int slotIndex, ObjFuncPtr inFunc) {

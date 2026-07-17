@@ -66,7 +66,8 @@ std::string read_pstring(const char*& buffer, const char* buffer_end) {
 float read_float(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int32_t data = *(big_int32_t*)buffer;
+    big_int32_t data;
+    std::memcpy(&data, buffer, 4);
     buffer += 4;
 
     union {
@@ -81,7 +82,7 @@ float read_float(const char*& buffer, const char* buffer_end) {
 int8_t read_int8(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int8_t data = *(big_int8_t*)buffer;
+    int8_t data = buffer[0];
     buffer += 1;
     return data;
 }
@@ -90,7 +91,8 @@ int8_t read_int8(const char*& buffer, const char* buffer_end) {
 int16_t read_int16(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int16_t data = *(big_int16_t*)buffer;
+    big_int16_t data;
+    std::memcpy(&data, buffer, 2);
     buffer += 2;
     return data;
 }
@@ -98,7 +100,8 @@ int16_t read_int16(const char*& buffer, const char* buffer_end) {
 int32_t read_int32(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int32_t data = *(big_int32_t*)buffer;
+    big_int32_t data;
+    std::memcpy(&data, buffer, 4);
     buffer += 4;
     return data;
 }
@@ -116,25 +119,46 @@ int32_t read_int(const char*& buffer, const char* buffer_end, int size) {
 } /* namespace */
 
 std::vector<sc_synthdef> read_synthdefs(const char* buffer, const char* buffer_end) {
-    /* int32 header = */ read_int32(buffer, buffer_end);
-    int32 version = read_int32(buffer, buffer_end);
+    try {
+        std::vector<sc_synthdef> result;
 
-    int16 definition_count = read_int16(buffer, buffer_end);
+        // check header ('SCgf')
+        int32 magic = read_int32(buffer, buffer_end);
+        if (magic != (('S' << 24) | ('C' << 16) | ('g' << 8) | 'f'))
+            throw std::runtime_error("not a synthdef");
 
-    std::vector<sc_synthdef> ret;
+        int32 version = read_int32(buffer, buffer_end);
+        if (version > 3)
+            throw std::runtime_error("version " + std::to_string(version) + " not supported");
 
-    for (int i = 0; i != definition_count; ++i) {
-        try {
-#ifdef __clang__
-            // clang does not like to emplace_back
-            sc_synthdef def(buffer, buffer_end, version);
-            ret.push_back(def);
-#else
-            ret.emplace_back(buffer, buffer_end, version);
-#endif
-        } catch (std::exception const& e) { std::cout << "Exception when reading synthdef: " << e.what() << std::endl; }
+        int16 definition_count = read_int16(buffer, buffer_end);
+
+        if (version > 2) {
+            // in version 3, every synth definition starts with a size field (int32) that tells
+            // the size of the entire definition in bytes (including the size field itself).
+            // NB: sc_synthdef() might not read all the fields so we must explicitly set
+            // the begin and end on each iteration!
+            for (int i = 0; i != definition_count; ++i) {
+                size_t synthdef_size = read_int32(buffer, buffer_end);
+                const char* synthdef_end = buffer + synthdef_size - 4;
+                if (synthdef_end > buffer_end)
+                    throw std::runtime_error("wrong synthdef size");
+
+                result.emplace_back(buffer, synthdef_end, version);
+
+                buffer = synthdef_end;
+            }
+        } else {
+            for (int i = 0; i != definition_count; ++i) {
+                result.emplace_back(buffer, buffer_end, version);
+            }
+        }
+
+        return result;
+    } catch (std::exception const& e) {
+        std::cout << "Exception when reading synthdef: " << e.what() << std::endl;
+        return {};
     }
-    return ret;
 }
 
 std::vector<sc_synthdef> read_synthdef_file(std::filesystem::path const& filename) {
@@ -188,7 +212,7 @@ sc_synthdef::sc_synthdef(const char*& buffer, const char* buffer_end, int versio
 
 void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int version) {
     using namespace std;
-    const int short_int_size = (version == 1) ? 16 : 32;
+    const int short_int_size = (version < 2) ? 16 : 32;
 
     /* read name */
     name_ = symbol(read_pstring(buffer, buffer_end));
@@ -227,6 +251,49 @@ void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int
     for (int i = 0; i != ugen_count; ++i) {
         unit_spec_t data(buffer, buffer_end, version);
         graph.push_back(data);
+    }
+
+    /* variants are currently not implemented, so we just skip the data. */
+    int16_t variant_count = read_int16(buffer, buffer_end);
+    for (int i = 0; i != variant_count; ++i) {
+        read_pstring(buffer, buffer_end);
+        for (int j = 0; j != par_count; ++j) {
+            read_float(buffer, buffer_end);
+        }
+    }
+
+    if (version > 2) {
+        /* Unfortunately, we cannot set the block size or resample factor via a Control
+         * because of the way that Supernova constructs Synths. (The Synth arguments are
+         * only parsed and set after the Synth has been fully constructed. At this point
+         * it is already too late.) If we detect that the user wants to use Controls,
+         * we just post a warning and bash the value to the default.
+         */
+
+        /* reblock */
+        block_size = read_int32(buffer, buffer_end);
+        block_size_index = read_int32(buffer, buffer_end);
+        if (block_size < 0) {
+            /* get block size from Synth Control - not supported yet */
+            std::cout << "WARNING: SynthDef: block size must be a constant (Controls are not supported yet)"
+                      << std::endl;
+            block_size = 0; /* no reblocking */
+        }
+
+        /* resample */
+        resample_factor = read_float(buffer, buffer_end);
+        resample_index = read_int32(buffer, buffer_end);
+        if (resample_factor < 0.0) {
+            /* get resample factor from Synth Control - not supported yet */
+            std::cout << "WARNING: SynthDef: resample factor must be a constant (Controls are not supported yet)"
+                      << std::endl;
+            resample_factor = 1.0; /* no resampling */
+        }
+    } else {
+        block_size = 0;
+        block_size_index = 0;
+        resample_factor = 1.0;
+        resample_index = 0;
     }
 
     prepare();

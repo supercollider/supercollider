@@ -109,27 +109,27 @@ TextFindReplacePanel::TextFindReplacePanel(QWidget* parent):
     QWidget::setTabOrder(mFindField, mReplaceField);
     mFindField->installEventFilter(this);
 
-    connect(mNextBtn, SIGNAL(clicked()), this, SLOT(findNext()));
-    connect(mPrevBtn, SIGNAL(clicked()), this, SLOT(findPrevious()));
-    connect(mReplaceBtn, SIGNAL(clicked()), this, SLOT(replace()));
-    connect(mReplaceAllBtn, SIGNAL(clicked()), this, SLOT(replaceAll()));
-    connect(mFindField, SIGNAL(returnPressed()), this, SLOT(onFindFieldReturn()));
-    connect(mFindField, SIGNAL(textChanged(QString)), this, SLOT(onFindFieldTextChanged()));
-    connect(mReplaceField, SIGNAL(returnPressed()), this, SLOT(replace()));
+    connect(mNextBtn, &QToolButton::clicked, this, &TextFindReplacePanel::findNext);
+    connect(mPrevBtn, &QToolButton::clicked, this, &TextFindReplacePanel::findPrevious);
+    connect(mReplaceBtn, &QToolButton::clicked, this, &TextFindReplacePanel::replace);
+    connect(mReplaceAllBtn, &QToolButton::clicked, this, &TextFindReplacePanel::replaceAll);
+    connect(mFindField, &QLineEdit::returnPressed, this, &TextFindReplacePanel::onFindFieldReturn);
+    connect(mFindField, &QLineEdit::textChanged, this, &TextFindReplacePanel::onFindFieldTextChanged);
+    connect(mReplaceField, &QLineEdit::returnPressed, this, &TextFindReplacePanel::replace);
     // Update search results when options change:
-    connect(optMenu, SIGNAL(triggered(QAction*)), this, SLOT(findAll()));
+    connect(optMenu, &QMenu::triggered, this, &TextFindReplacePanel::findAll);
 
     Settings::Manager* settings = Main::settings();
     QAction* action;
 
     action = mActions[FindNext] = new QAction(tr("Find Next"), this);
     action->setShortcut(tr("Ctrl+G", "Find Next"));
-    connect(action, SIGNAL(triggered()), this, SLOT(findNext()));
+    connect(action, &QAction::triggered, this, &TextFindReplacePanel::findNext);
     settings->addAction(action, "editor-find-next", tr("Text Editor"));
 
     action = mActions[FindPrevious] = new QAction(tr("Find Previous"), this);
     action->setShortcut(tr("Ctrl+Shift+G", "Find Previous"));
-    connect(action, SIGNAL(triggered()), this, SLOT(findPrevious()));
+    connect(action, &QAction::triggered, this, &TextFindReplacePanel::findPrevious);
     settings->addAction(action, "editor-find-previous", tr("Text Editor"));
 }
 

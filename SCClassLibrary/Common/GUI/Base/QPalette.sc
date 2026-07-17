@@ -68,7 +68,7 @@ QPalette {
 		^this.primitiveFailed
 	}
 
-	prAuto {
+	prAuto { |button, window|
 		_QPalette_Auto
 		^this.primitiveFailed
 	}

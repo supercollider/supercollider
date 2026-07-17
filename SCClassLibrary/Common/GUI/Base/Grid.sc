@@ -419,7 +419,7 @@ DrawGridX {
 			} {
 				protoLabel.bounds(Font(Font.defaultSansFace, 9)).asSize
 			};
-			labelSz.width = labelSz.width * 1.1;
+			labelSz.width = labelSz.width * 1.3;
 			lastLabelSize = labelSz;
 
 			^labelSz

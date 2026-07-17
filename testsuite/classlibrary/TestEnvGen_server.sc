@@ -7,7 +7,7 @@ TestEnvGen_server : UnitTest {
 	}
 
 	tearDown {
-		if(server.serverRunning) { server.quit };
+		if(server.serverRunning) { server.quitSync };
 		server.remove;
 	}
 
@@ -61,7 +61,7 @@ TestEnvGen_server : UnitTest {
 		var cleanup = {
 			tr_resp.free;
 			n_end_resp.free;
-			server.quit;
+			server.quitSync;
 			Server.scsynth;
 		};
 
@@ -92,8 +92,10 @@ TestEnvGen_server : UnitTest {
 			}, '/tr', server.addr, argTemplate: [synth.nodeID]);
 
 			n_end_resp = OSCFunc({ |msg|
-				cleanup.value;
-				cond.unhang;
+				fork{ // we need to for to wait for the server to quit with quitSync inside the cleanup function
+					cleanup.value;
+					cond.unhang;
+				}
 			}, '/n_end', server.addr, argTemplate: [synth.nodeID]);
 
 			cond.hang;

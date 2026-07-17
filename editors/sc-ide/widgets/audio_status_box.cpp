@@ -24,6 +24,7 @@
 #include <QHBoxLayout>
 #include <QWheelEvent>
 
+#include "QtCollider/widgets/QcAbstractStepValue.h"
 #include "main.hpp"
 
 namespace ScIDE {
@@ -74,13 +75,11 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     addAction(server->action(ScServer::Volume));
 
     // server -> box
-    connect(server, SIGNAL(runningStateChanged(bool, QString, int, bool)), this,
-            SLOT(onServerRunningChanged(bool, QString, int, bool)));
-    connect(server, SIGNAL(updateServerStatus(int, int, int, int, float, float)), this,
-            SLOT(updateStatistics(int, int, int, int, float, float)));
-    connect(server, SIGNAL(volumeChanged(float)), this, SLOT(updateVolumeLabel(float)));
-    connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
-    connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
+    connect(server, &ScServer::runningStateChanged, this, &AudioStatusBox::onServerRunningChanged);
+    connect(server, &ScServer::updateServerStatus, this, &AudioStatusBox::updateStatistics);
+    connect(server, &ScServer::volumeChanged, this, &AudioStatusBox::updateVolumeLabel);
+    connect(server, &ScServer::mutedChanged, this, &AudioStatusBox::updateMuteLabel);
+    connect(server, &ScServer::recordingChanged, this, &AudioStatusBox::updateRecordLabel);
 
     auto const main = Main::instance();
     applySettings(main->settings());
@@ -137,8 +136,10 @@ void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, b
 }
 
 void AudioStatusBox::wheelEvent(QWheelEvent* event) {
-    if (!event->angleDelta().isNull()) {
-        if (event->angleDelta().x() > 0)
+    // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
+    const double delta = getScrollSteps(event).y();
+    if (delta) {
+        if (delta > 0)
             emit increaseVolume();
         else
             emit decreaseVolume();

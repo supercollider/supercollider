@@ -86,15 +86,19 @@ This eliminates ambiguity: if lowercase letters were allowed,
 code::36rA.bitNot:: might be a function call, or it might be
 code::36rA.BITNOT == 10.320080118934::.
 code::
-12r4a.abc // wrong
-12r4a.ABC // works
-12r4A.ABC // better
+12r4a.ab // wrong
+12r4a.AB // works
+12r4A.AB // better
 ::
 
 Hexidecimal numbers notated with code::0x:: may only be expressed as integers.
 
 subsection::Scale Degrees
-Integer numbers as scale degrees supports accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
+Integer numbers as scale degrees supports accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. 
+Accidentals are represented as floating point values, 
+where each 0.1 of difference to the nearest integer corresponds to 100 cents (i.e., a semitone in 12TET).
+While the digit to the left of the decimal separator is a degree, and thus is affected by tuning and scale, 
+the digits to the right are not, and are always in cents. (See link::Classes/Scale#-degreeToRatio::)
 
 code::
 2s == 2.1  // scale degree two, sharp
@@ -161,8 +165,9 @@ $\t  // tab (horizontal tab)
 $\f  // form feed
 $\v  // vertical tab
 $\n  // newline (linefeed)
-$\r  // return
+$\r  // carriage return
 $\\  // backslash`
+$    // the space 
 ::
 
 section::Symbols and Strings
@@ -192,6 +197,13 @@ code::
 \not really a symbol  // illegal
 ::
 
+You can also specify integer symbols this way, but if the symbol starts with a digit, it cannot contain letters.
+code::
+\1234;
+\892342534;
+\3456meow // now illegal
+::
+
 subsection::Strings
 
 Strings are written in double quotes:
@@ -214,24 +226,13 @@ ng
 a.size // 9
 ::
 
+note::
+Since version 3.15, the newline character is guarented to be '\n' regardless of the contents of the source file.
+::
+
 The SuperCollider IDE uses UTF-8 to decode and display strings.
 See link::Classes/String#Character encodings##String:: for more information.
 
-A string literal may comprise no more than 8188 characters (bytes). A
-string object can be larger as a result of string operations.
-
-code::
-// artificially generate a long string
-a = String.fill(9000, { "abcdefghijklmnopqrstuvwxyz".choose });
-
-// wrap it in quote marks to make it a literal
-a = "\"" ++ a ++ "\"";
-
-// interpret the literal
-b = a.interpret;
-
-b.size;  // 8188 and NOT 9000
-::
 
 section::Identifiers
 

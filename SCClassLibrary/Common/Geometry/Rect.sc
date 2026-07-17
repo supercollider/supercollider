@@ -155,13 +155,6 @@ Rect {
 		stream << this.class.name << "(" <<* [left, top, width, height] << ")";
 	}
 
-	// the drawing routine here use Quickdraw.
-	// If you want CoreGraphics drawing, use methods in Pen.
-	draw { arg color, operation=2;
-		_Rect_Draw
-		^this.primitiveFailed
-	}
-
 	asRect { ^this }
 	asSize { ^Size(width, height) }
 	bounds { ^Rect.new(left, top, width, height) }

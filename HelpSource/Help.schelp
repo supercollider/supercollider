@@ -35,11 +35,11 @@ table::
 ::
 
 ## • soft:: ::link::Classes/ScIDE:: — A dedicated editor for SuperCollider with an integrated help system.||
-The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs. The full list of support editors is available at  link::https://github.com/supercollider/supercollider/wiki/Systems-interfacing-with-SC#editors::
+The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs. The full list of support editors is available at link::https://github.com/supercollider/supercollider/wiki/Systems-interfacing-with-SC#editors::
 ::
 
-The server and client link::Guides/ClientVsServer##communicate:: via Open Sound Control (link::http://opensoundcontrol.org/##OSC::
-), allowing SuperCollider to run on a single machine or on multiple machines over a network.
+The server and client link::Guides/ClientVsServer##communicate:: via Open Sound Control (link::http://opensoundcontrol.org/##OSC::), 
+allowing SuperCollider to run on a single machine or on multiple machines over a network.
 Thanks to this client/server architecture, it is possible for link::Guides/MultiClient_Setups##multiple clients:: to connect and control what is happening on the server.
 Users can also control the audio server directly with any OSC-enabled program by using the link::Guides/NodeMessaging:: protocol.
 
@@ -49,13 +49,23 @@ SECTION::Getting started
 
 These are useful starting points for getting help on SuperCollider:
 
-definitionlist::
-## link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started tutorial series:: || Get started with SuperCollider
-## link::Guides/Glossary:: || Glossary
-## link::Guides/More-On-Getting-Help:: || Using Help Files effectively and inspecting class definition files to build more understanding
-## link::Browse.html#Tutorials#All tutorials:: || Index of all help files categorized under "Tutorials"
-## link::Guides/UserFAQ:: || Common Errors and FAQ
-## link::https://github.com/supercollider/supercollider/wiki/Tutorials##Community Learning Resources (Tutorials & Publications):: || SuperCollider Tutorials Wiki: Community-curated tutorial index and learning resources
+subsection:: Introduction & Reference Materials
+
+list::
+## link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started tutorial series::
+## link::Guides/Glossary::
+## link::Guides/More-On-Getting-Help##More On Getting Help:::
+
+Using Help Files effectively and inspecting class definition files to build more understanding
+## link::Browse.html#Tutorials#All tutorials:::
+
+Index of all help files categorized under emphasis::Tutorials::
+## link::Guides/UserFAQ##Common Errors and FAQ::
+## SuperCollider examples folder:
+code::
+Platform.exampleDir.openOS 
+// Hold down the Shift key and press the Enter key to open the "SuperCollider examples folder".
+::
 ::
 
 subsection:: Getting Sound
@@ -124,7 +134,7 @@ numberedlist::
 ## link::Reference/Assignment::
 ## link::Reference/Scope::
 ## link::Reference/Functions::
-## link::Reference/Control-Structures::
+## link::Reference/Conditional-Execution::
 ## link::Reference/Syntax-Shortcuts::
 ## link::Overviews/SymbolicNotations::
 ## link::Reference/Adverbs::
@@ -234,7 +244,7 @@ subsection:: For more information
 
 list::
 ##link::https://github.com/supercollider/supercollider/wiki##SuperCollider Wiki::
-##link::https://scsynth.org##SuoerCollider Forum::
+##link::https://scsynth.org##SuperCollider Forum::
 ::
 
 SECTION::Licensing

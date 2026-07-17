@@ -21,18 +21,24 @@
 
 #pragma once
 
-#include <cmath>
+#ifdef __cplusplus
 
-#include "SC_Types.h"
-#include "SC_Constants.h"
-#include "float.h"
+#    include <cmath>
 
-#ifdef _MSC_VER
+#    include "SC_Types.h"
+#    include "SC_Constants.h"
+#    include "float.h"
+
+#    ifdef _MSC_VER
 // hypotf is c99, but not c++
-#    define hypotf _hypotf
-#endif
+#        define hypotf _hypotf
+#    endif
+
+#endif // __cplusplus
 
 ////////////////////////////////////////////////////////////////////////////////
+
+#ifdef __cplusplus
 
 namespace detail {
 
@@ -71,12 +77,18 @@ static bool initTables(void) {
 
 bool dummy = initTables();
 
-}
+} // namespace
+
+} // detail
+
+#endif // __cplusplus
 
 struct Polar;
 
-
 struct Complex {
+    float real, imag;
+
+#ifdef __cplusplus
     Complex() {}
     Complex(float r, float i): real(r), imag(i) {}
     void Set(float r, float i) {
@@ -107,11 +119,15 @@ struct Complex {
     void ToPolarInPlace();
 
     void ToPolarApxInPlace();
-
-    float real, imag;
+#endif // __cplusplus
 };
 
+typedef struct Complex Complex;
+
 struct Polar {
+    float mag, phase;
+
+#ifdef __cplusplus
     Polar() {}
     Polar(float m, float p): mag(m), phase(p) {}
     void Set(float m, float p) {
@@ -122,6 +138,7 @@ struct Polar {
     Complex ToComplex() { return Complex(mag * std::cos(phase), mag * std::sin(phase)); }
 
     Complex ToComplexApx() {
+        using namespace detail;
         uint32 sinindex = (int32)(kSinePhaseScale * phase) & kSineMask;
         uint32 cosindex = (sinindex + (kSineSize >> 2)) & kSineMask;
         return Complex(mag * gSine[cosindex], mag * gSine[sinindex]);
@@ -138,13 +155,17 @@ struct Polar {
         mag = complx.real;
         phase = complx.imag;
     }
-
-    float mag, phase;
+#endif // __cplusplus
 };
+
+typedef struct Polar Polar;
+
+#ifdef __cplusplus
 
 inline Polar Complex::ToPolar() { return Polar(hypotf(imag, real), std::atan2(imag, real)); }
 
 inline Polar Complex::ToPolarApx() {
+    using namespace detail;
     int32 index;
     float absreal = fabs(real);
     float absimag = fabs(imag);
@@ -185,20 +206,23 @@ inline void Complex::ToPolarApxInPlace() {
     imag = polar.phase;
 }
 
-}
-
-using detail::Complex;
-using detail::Polar;
+#endif // __cplusplus
 
 struct ComplexFT {
     float dc, nyq;
     Complex complex[1];
 };
 
+typedef struct ComplexFT ComplexFT;
+
 struct PolarFT {
     float dc, nyq;
     Polar polar[1];
 };
+
+typedef struct PolarFT PolarFT;
+
+#ifdef __cplusplus
 
 void ToComplex(Polar in, Complex& out);
 
@@ -256,3 +280,5 @@ inline Polar operator*=(Polar a, float b) {
     a.mag *= b;
     return a;
 }
+
+#endif // __cplusplus

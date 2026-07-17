@@ -620,8 +620,9 @@ Pdup : FilterPattern {
 		while {
 			(inevent = stream.next(event)).notNil
 		} {
-			if((nn = nstream.next(event)).notNil) {
-				nn.abs.do {
+			nn = nstream.next(event);
+			if(nn.notNil and: { nn >= 1 }) {
+				nn.do {
 					event = inevent.copy.yield;
 				};
 			} { ^event };

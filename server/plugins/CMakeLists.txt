@@ -1,7 +1,5 @@
 if(NOT NO_LIBSNDFILE)
 	find_package(Sndfile)
-else()
-	add_definitions("-DNO_LIBSNDFILE")
 endif()
 
 include_directories(
@@ -53,20 +51,12 @@ set(plugins "")
 set(supernova_plugins "")
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
-if(APPLE OR WIN32)
-	set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
-endif()
-
-if (${CMAKE_COMPILER_IS_GNUCXX})
-	add_definitions(-fno-finite-math-only)
-	if(NOT WIN32)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden")
-	endif()
-endif()
+set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
 
 foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
-		add_library(${plugin_name} MODULE ${plugin})
+	add_library(${plugin_name} MODULE ${plugin})
+	target_link_libraries(${plugin_name} PRIVATE Boost::headers)
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
 
@@ -77,7 +67,7 @@ if(AUDIOAPI STREQUAL bela)
     find_package(Xenomai REQUIRED)
     find_package(Bela REQUIRED)
     message(STATUS "Found Bela libraries: ${BELA_LIBRARIES}")
-    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         # recommended compile flags for beaglebone etc; set here because bela api flag directly implies the architecture
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BELA_C_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BELA_CXX_FLAGS}")
@@ -88,19 +78,22 @@ if(BELA_FOUND)
     add_library(BelaUGens MODULE
         BelaUGens.cpp
     )
-    add_definitions("-DSC_BELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
+    target_compile_definitions(BelaUGens PRIVATE SC_BELA)
+	target_compile_options(BelaUGens PRIVATE ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
     include_directories(${XENOMAI_INCLUDE_DIRS} ${BELA_INCLUDE_DIRS})
-    target_link_libraries(BelaUGens ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES})
+    target_link_libraries(BelaUGens PRIVATE ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES})
 
     list(APPEND plugins BelaUGens)
 endif()
 
 if(NOT NO_X11)
 	if (APPLE)
-		add_library(UIUGens MODULE UIUGens.mm)
+		set(ui_sources UIUGens.mm)
+		add_library(UIUGens MODULE ${ui_sources})
 	else()
-		add_library(UIUGens MODULE UIUGens.cpp)
-		target_link_libraries(UIUGens ${PTHREADS_LIBRARY})
+		set(ui_sources UIUGens.cpp)
+		add_library(UIUGens MODULE ${ui_sources})
+		target_link_libraries(UIUGens PRIVATE ${PTHREADS_LIBRARY})
 	endif()
 
 	set(uiugens UIUGens)
@@ -108,23 +101,31 @@ if(NOT NO_X11)
 	list(APPEND plugins UIUGens)
 endif()
 
-add_library(FFT_UGens MODULE
+set(FFT_sources
 	FFTInterfaceTable.cpp
 	FFT_UGens.cpp
 	PV_UGens.cpp
 	PartitionedConvolution.cpp
+)
+
+add_library(FFT_UGens MODULE
+	${FFT_sources}
 	${scplugin_common_sources}
 )
 
-add_library(PV_ThirdParty MODULE
+set(PV_ThirdParty_sources
 	Convolution.cpp
 	FFT2InterfaceTable.cpp
 	FeatureDetection.cpp
 	PV_ThirdParty.cpp
+)
+
+add_library(PV_ThirdParty MODULE
+	${PV_ThirdParty_sources}
 	${scplugin_common_sources}
 )
 
-add_library(ML_UGens MODULE
+set(ML_sources
 	ML.cpp
 	Loudness.cpp
 	BeatTrack.cpp
@@ -139,8 +140,25 @@ add_library(ML_UGens MODULE
 	ML.h
 	Onsets.h
 	onsetsds.h
+)
+
+add_library(ML_UGens MODULE
+	${ML_sources}
 	${scplugin_common_sources}
 )
+
+if(SC_ABLETON_LINK)
+	add_library(Link_UGen MODULE
+		LinkUGen.cpp
+	)
+	# bug-fix for undefined reference to `GetAdaptersAddresses'
+	if (MINGW)
+		target_link_libraries(Link_UGen PRIVATE iphlpapi)
+	endif()
+	include(../../external_libraries/link/AbletonLinkConfig.cmake)
+	target_link_libraries(Link_UGen PRIVATE Ableton::Link)
+	list(APPEND plugins Link_UGen)
+endif()
 
 if(NOT NO_LIBSNDFILE)
 	set(diskio_sources DiskIO_UGens.cpp)
@@ -152,16 +170,16 @@ if(NOT NO_LIBSNDFILE)
 
 	if(SNDFILE_FOUND)
 		if(SNDFILE_HAS_VORBIS)
-			target_compile_definitions(DiskIO_UGens PUBLIC SNDFILE_HAS_VORBIS)
+			target_compile_definitions(DiskIO_UGens PRIVATE SNDFILE_HAS_VORBIS)
 		endif()
 		if(SNDFILE_HAS_OPUS)
-			target_compile_definitions(DiskIO_UGens PUBLIC SNDFILE_HAS_OPUS)
+			target_compile_definitions(DiskIO_UGens PRIVATE SNDFILE_HAS_OPUS)
 		endif()
 		if(SNDFILE_HAS_MPEG)
-			target_compile_definitions(DiskIO_UGens PUBLIC SNDFILE_HAS_MPEG)
+			target_compile_definitions(DiskIO_UGens PRIVATE SNDFILE_HAS_MPEG)
 		endif()
-		target_include_directories(DiskIO_UGens PUBLIC ${SNDFILE_INCLUDE_DIR})
-		target_link_libraries(DiskIO_UGens ${PTHREADS_LIBRARY} ${SNDFILE_LIBRARIES})
+		target_include_directories(DiskIO_UGens SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
+		target_link_libraries(DiskIO_UGens PRIVATE ${PTHREADS_LIBRARY} ${SNDFILE_LIBRARIES})
 		list(APPEND plugins DiskIO_UGens)
 	else()
 		message(SEND_ERROR "Cannot find libsndfile")
@@ -179,6 +197,7 @@ if (SUPERNOVA)
 	foreach(plugin ${plugin_sources})
 		string(REPLACE .cpp "_supernova" plugin_name ${plugin} )
 		add_library(${plugin_name} MODULE ${plugin})
+		target_link_libraries(${plugin_name} PRIVATE Boost::headers)
 		list(APPEND supernova_plugins ${plugin_name})
 	endforeach(plugin)
 
@@ -221,7 +240,7 @@ if (SUPERNOVA)
 			add_library(UIUGens_supernova MODULE UIUGens.mm)
 		else()
 			add_library(UIUGens_supernova MODULE UIUGens.cpp)
-			target_link_libraries(UIUGens_supernova ${PTHREADS_LIBRARY})
+			target_link_libraries(UIUGens_supernova PRIVATE ${PTHREADS_LIBRARY})
 		endif()
 		list(APPEND uiugens UIUGens_supernova)
 	endif()
@@ -230,8 +249,8 @@ if (SUPERNOVA)
 		add_library(DiskIO_UGens_supernova MODULE DiskIO_UGens.cpp)
 
 		if(SNDFILE_FOUND)
-			target_include_directories(DiskIO_UGens_supernova PUBLIC ${SNDFILE_INCLUDE_DIR})
-      target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${PTHREADS_LIBRARY} ${MATH_LIBRARY} boost_thread_lib)
+			target_include_directories(DiskIO_UGens_supernova SYSTEM PUBLIC ${SNDFILE_INCLUDE_DIR})
+      target_link_libraries(DiskIO_UGens_supernova PRIVATE ${SNDFILE_LIBRARIES} ${PTHREADS_LIBRARY} ${MATH_LIBRARY} Boost::thread)
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")
@@ -240,22 +259,23 @@ if (SUPERNOVA)
 endif(SUPERNOVA)
 
 foreach(ugen ${fft_ugens})
-	target_link_libraries(${ugen} ${PTHREADS_LIBRARY} ${MATH_LIBRARY})
+	target_link_libraries(${ugen} PRIVATE ${PTHREADS_LIBRARY} ${MATH_LIBRARY})
 
 	if(APPLE)
-		target_link_libraries(${ugen} "-framework Accelerate")
+		target_link_libraries(${ugen} PRIVATE "-framework Accelerate")
 	endif()
 endforeach()
 
 if(NOT NO_X11)
 	foreach(ugen ${uiugens})
-    target_link_libraries(${ugen} boost_thread_lib)
+    target_link_libraries(${ugen} PRIVATE Boost::thread)
 	endforeach()
 endif()
 
 foreach(plugin ${plugins})
+	target_link_libraries(${plugin} PRIVATE Boost::headers)
 	if(WIN32)
-		target_link_libraries(${plugin} wsock32 ws2_32)
+		target_link_libraries(${plugin} PRIVATE wsock32 ws2_32)
 	endif()
 endforeach()
 
@@ -271,7 +291,7 @@ foreach(plugin ${supernova_plugins})
 	target_compile_definitions(${plugin} PUBLIC SUPERNOVA)
 
 	if (WIN32)
-		target_link_libraries(${plugin} ws2_32)
+		target_link_libraries(${plugin} PRIVATE ws2_32)
 	endif()
 endforeach()
 
@@ -286,18 +306,18 @@ if(NOT NO_X11)
 		include_directories(${X11_Xt_INCLUDE_PATH})
 
 		foreach (ugen ${uiugens})
-			target_link_libraries(${ugen} ${X11_X11_LIB})
+			target_link_libraries(${ugen} PRIVATE ${X11_X11_LIB})
 		endforeach()
 	elseif (APPLE)
 		foreach (ugen ${uiugens})
-			target_link_libraries(${ugen} "-framework CoreServices -framework AppKit")
+			target_link_libraries(${ugen} PRIVATE "-framework CoreServices -framework AppKit")
 		endforeach()
 	endif()
 endif()
 
 if (APPLE)
 	if(NOT NO_LIBSNDFILE)
-		target_link_libraries(DiskIO_UGens "-framework CoreServices")
+		target_link_libraries(DiskIO_UGens PRIVATE "-framework CoreServices")
 	endif()
 endif()
 
@@ -356,3 +376,14 @@ set_property(TARGET ${plugins} ${supernova_plugins} PROPERTY FOLDER UnitGenerato
 
 set(plugins "${plugins}" PARENT_SCOPE)
 set(supernova_plugins "${supernova_plugins}" PARENT_SCOPE)
+
+if(STATIC_PLUGINS)
+	set(all_plugin_sources
+		${plugin_sources}
+		${FFT_sources}
+		${PV_ThirdParty_sources}
+		${ML_sources}
+		${diskio_sources}
+		${ui_sources}
+	PARENT_SCOPE)
+endif()

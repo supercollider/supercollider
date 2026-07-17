@@ -50,7 +50,7 @@ public:
         box->setContentsMargins(0, 0, 0, 0);
         box->setSpacing(1);
 
-        connect(mButton, SIGNAL(clicked()), this, SLOT(execDialog()), Qt::QueuedConnection);
+        connect(mButton, &QPushButton::clicked, this, &PathChooserWidget::execDialog, Qt::QueuedConnection);
     }
 
     QString text() const { return mTextField->text(); }

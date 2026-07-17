@@ -41,33 +41,33 @@ SyntaxHighlighterGlobals::SyntaxHighlighterGlobals(Main* main, Settings::Manager
     // initialize formats from settings:
     applySettings(settings);
 
-    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)), this, SLOT(applySettings(Settings::Manager*)));
+    connect(main, &Main::applySettingsRequest, this, &SyntaxHighlighterGlobals::applySettings);
 }
 
 void SyntaxHighlighterGlobals::applySettings(Settings::Manager* s) {
-    applySettings(s, "whitespace", WhitespaceFormat);
-    applySettings(s, "keyword", KeywordFormat);
-    applySettings(s, "built-in", BuiltinFormat);
-    applySettings(s, "primitive", PrimitiveFormat);
-    applySettings(s, "class", ClassFormat);
-    applySettings(s, "number", NumberFormat);
-    applySettings(s, "symbol", SymbolFormat);
-    applySettings(s, "env-var", EnvVarFormat);
-    applySettings(s, "string", StringFormat);
-    applySettings(s, "char", CharFormat);
-    applySettings(s, "comment", CommentFormat);
+    applySettingsKey(s, "whitespace", WhitespaceFormat);
+    applySettingsKey(s, "keyword", KeywordFormat);
+    applySettingsKey(s, "built-in", BuiltinFormat);
+    applySettingsKey(s, "primitive", PrimitiveFormat);
+    applySettingsKey(s, "class", ClassFormat);
+    applySettingsKey(s, "number", NumberFormat);
+    applySettingsKey(s, "symbol", SymbolFormat);
+    applySettingsKey(s, "env-var", EnvVarFormat);
+    applySettingsKey(s, "string", StringFormat);
+    applySettingsKey(s, "char", CharFormat);
+    applySettingsKey(s, "comment", CommentFormat);
 
     Q_EMIT(syntaxFormatsChanged());
 }
 
-void SyntaxHighlighterGlobals::applySettings(Settings::Manager* s, const QString& key, SyntaxFormat type) {
+void SyntaxHighlighterGlobals::applySettingsKey(Settings::Manager* s, const QString& key, SyntaxFormat type) {
     mFormats[type] = s->getThemeVal(key);
 }
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent): QSyntaxHighlighter(parent) {
     mGlobals = SyntaxHighlighterGlobals::instance();
 
-    connect(mGlobals, SIGNAL(syntaxFormatsChanged()), this, SLOT(rehighlight()));
+    connect(mGlobals, &SyntaxHighlighterGlobals::syntaxFormatsChanged, this, &SyntaxHighlighter::rehighlight);
 
     connect(Main::scProcess(), &ScProcess::introspectionChanged, this, &SyntaxHighlighter::rehighlight);
 }

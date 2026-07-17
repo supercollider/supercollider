@@ -28,7 +28,6 @@
 #include <PyrSlot.h>
 #include <PyrKernel.h>
 
-#include <QDebug>
 #include <QChar>
 #include <QString>
 #include <QPoint>
@@ -132,13 +131,14 @@ template <> struct TypeCodec<float> {
         return val;
     }
 
-    static void write(PyrSlot* slot, const float val) { SetFloat(slot, val); }
+    static void write(PyrSlot* slot, const float val) { SetFloat<AssertDouble::CouldBeBadNan>(slot, val); }
 };
 
 template <> struct TypeCodec<double> {
     static double read(PyrSlot* slot) {
         double d;
-        slotVal(slot, &d);
+        if (slotVal(slot, &d))
+            assert(false);
         return d;
     }
 
@@ -151,7 +151,7 @@ template <> struct TypeCodec<double> {
 
     static void write(PyrSlot* slot, const double val) {
         // NOTE: the signature actually reads SetFloat(PyrSlot*, double):
-        SetFloat(slot, val);
+        SetFloat<AssertDouble::CouldBeBadNan>(slot, val);
     }
 };
 

@@ -27,6 +27,7 @@ This file contains the definitions of the core objects that implement the class 
 
 #include "PyrObject.h"
 #include "VMGlobals.h"
+#include "Opcodes.h"
 
 #define classClassNumInstVars 19
 
@@ -81,10 +82,13 @@ struct PyrFrame : public PyrObjectHdr {
     PyrSlot context;
     PyrSlot homeContext;
     PyrSlot ip;
+    // For non-local returns, sometimes we need to remove stuff from the stack.
+    // This allows us to do that.
+    PyrSlot expected_stack_depth_after_return;
     PyrSlot vars[1];
 };
 
-#define FRAMESIZE 5
+#define FRAMESIZE 6
 
 struct PyrProcess : public PyrObjectHdr {
     PyrSlot classVars;
@@ -131,13 +135,14 @@ struct PyrMethodRaw {
 #endif
 
     unsigned char unused2;
-    unsigned char numargs;
-    unsigned char varargs;
-    unsigned char numvars;
-    unsigned char numtemps;
+    unsigned char numNormalArguments; // Does not include variable arguments (...args, kwargs)
+    unsigned char numVariableArguments; // 0, 1, or 2, for no variable arguments, positional variable arguments, and
+                                        // positional and keyword.
+    unsigned char numVariables;
+    unsigned char numSlots; // sum of totalNumberArguments and numVariables
     unsigned char needsHeapContext;
-    unsigned char popSize;
-    unsigned char posargs;
+    unsigned char popSize; // Sometime different to the numSlots as this isn't always popped.
+    unsigned char totalNumberArguments; // Sum of numNormalArguments and numVariableArguments.
 };
 
 
@@ -196,26 +201,63 @@ struct PyrInterpreter : public PyrObjectHdr {
     PyrSlot codeDump, preProcessor;
 };
 
-/* special values */
-enum {
-    svNil,
-    svFalse,
-    svTrue,
-    svNegOne,
-    svZero,
-    svOne,
-    svTwo,
-    svFHalf,
-    svFNegOne,
-    svFZero,
-    svFOne,
-    svFTwo,
-    svInf,
 
-    svNumSpecialValues
+struct SpecialValuesStruct {
+    PyrSlot True, False, Nil_, Inf;
+
+    PyrSlot* operator[](OpSpecialValue v) {
+        switch (v) {
+        case OpSpecialValue::True:
+            return &True;
+        case OpSpecialValue::False:
+            return &False;
+        case OpSpecialValue::Nil_:
+            return &Nil_;
+        case OpSpecialValue::Inf:
+            return &Inf;
+        default:
+            assert(false);
+            return nullptr;
+        }
+    }
 };
+extern SpecialValuesStruct gSpecialValues;
+// Some compilers add padding to the struct so this fails
+// static_assert((int)OpSpecialValue::COUNT == sizeof(SpecialValuesStruct) / sizeof(PyrSlot));
 
-extern PyrSlot gSpecialValues[svNumSpecialValues];
+struct SpecialNumberStruct {
+    PyrSlot MinusOne, Zero, One, Two, Half, MinusOneFloat, ZeroFloat, OneFloat, TwoFloat;
+
+    PyrSlot* operator[](OpSpecialNumbers n) {
+        switch (n) {
+        case OpSpecialNumbers::MinusOne:
+            return &MinusOne;
+        case OpSpecialNumbers::Zero:
+            return &Zero;
+        case OpSpecialNumbers::One:
+            return &One;
+        case OpSpecialNumbers::Two:
+            return &Two;
+        case OpSpecialNumbers::Half:
+            return &Half;
+        case OpSpecialNumbers::MinusOneFloat:
+            return &MinusOneFloat;
+        case OpSpecialNumbers::ZeroFloat:
+            return &ZeroFloat;
+        case OpSpecialNumbers::OneFloat:
+            return &OneFloat;
+        case OpSpecialNumbers::TwoFloat:
+            return &TwoFloat;
+        default:
+            assert(false);
+            return nullptr;
+        }
+    }
+};
+extern SpecialNumberStruct gSpecialNumbers;
+// Some compilers add padding to the struct so this fails
+// static_assert((int)OpSpecialNumbers::COUNT == sizeof(SpecialNumberStruct) / sizeof(PyrSlot));
+
 
 extern PyrMethod* gNullMethod; // used to fill row table
 

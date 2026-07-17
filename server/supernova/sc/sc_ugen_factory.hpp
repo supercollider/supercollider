@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <variant>
+
 #include <boost/intrusive/set.hpp>
 #include <boost/intrusive/unordered_set.hpp>
 #include <boost/checked_delete.hpp>
@@ -35,11 +37,17 @@ namespace nova {
 namespace bi = boost::intrusive;
 
 struct sc_unitcmd_def : public named_hash_entry {
-    const UnitCmdFunc func;
+    const std::variant<UnitCmdFunc, UnitCmdFuncEx> func;
 
-    sc_unitcmd_def(const char* cmd_name, UnitCmdFunc func): named_hash_entry(cmd_name), func(func) {}
+    template <typename Func> sc_unitcmd_def(const char* cmd_name, Func func): named_hash_entry(cmd_name), func(func) {}
 
-    void run(Unit* unit, struct sc_msg_iter* args) { (func)(unit, args); }
+    void run(Unit* unit, sc_msg_iter* args, detail::endpoint_ptr const& endpoint) {
+        if (auto fn = std::get_if<UnitCmdFuncEx>(&func)) {
+            (*fn)(unit, args, endpoint.get());
+        } else {
+            std::get<UnitCmdFunc>(func)(unit, args);
+        }
+    }
 };
 
 class sc_ugen_def : public aligned_class, public named_hash_entry {
@@ -83,8 +91,13 @@ public:
         return alloc_size + 64; // overallocate to allow alignment
     }
 
-    bool add_command(const char* cmd_name, UnitCmdFunc func);
-    void run_unit_command(const char* cmd_name, Unit* unit, struct sc_msg_iter* args);
+    template <typename Func> bool add_command(const char* cmd_name, Func func) {
+        sc_unitcmd_def* def = new sc_unitcmd_def(cmd_name, func);
+        unitcmd_set.insert(*def);
+        return true;
+    }
+
+    void run_unit_command(const char* cmd_name, Unit* unit, sc_msg_iter* args, detail::endpoint_ptr const& endpoint);
 };
 
 struct sc_bufgen_def : public named_hash_entry {
@@ -92,7 +105,7 @@ struct sc_bufgen_def : public named_hash_entry {
 
     sc_bufgen_def(const char* name, BufGenFunc func): named_hash_entry(name), func(func) {}
 
-    sample* run(World* world, uint32_t buffer_index, struct sc_msg_iter* args);
+    sample* run(World* world, uint32_t buffer_index, sc_msg_iter* args);
 };
 
 struct sc_cmdplugin_def : public named_hash_entry {
@@ -104,7 +117,9 @@ struct sc_cmdplugin_def : public named_hash_entry {
         func(func),
         user_data(user_data) {}
 
-    void run(World* world, struct sc_msg_iter* args, void* replyAddr) { (func)(world, user_data, args, replyAddr); }
+    void run(World* world, sc_msg_iter* args, detail::endpoint_ptr const& endpoint) {
+        (func)(world, user_data, args, endpoint.get());
+    }
 };
 
 class sc_plugin_container {
@@ -152,12 +167,22 @@ public:
 
     sc_ugen_def* find_ugen(symbol const& name);
 
-    bool register_ugen_command_function(const char* ugen_name, const char* cmd_name, UnitCmdFunc);
+    template <typename Func> bool register_ugen_command_function(const char* ugen_name, const char* cmd_name, Func);
     bool register_cmd_plugin(const char* cmd_name, PlugInCmdFunc func, void* user_data);
 
-    sample* run_bufgen(World* world, const char* name, uint32_t buffer_index, struct sc_msg_iter* args);
-    bool run_cmd_plugin(World* world, const char* name, struct sc_msg_iter* args, void* replyAddr);
+    sample* run_bufgen(World* world, const char* name, uint32_t buffer_index, sc_msg_iter* args);
+    bool run_cmd_plugin(World* world, const char* name, sc_msg_iter* args, detail::endpoint_ptr const& endpoint);
 };
+
+template <typename Func>
+bool sc_plugin_container::register_ugen_command_function(const char* ugen_name, const char* cmd_name, Func func) {
+    sc_ugen_def* def = find_ugen(symbol(ugen_name));
+    if (!def) {
+        std::cout << "unable to register ugen command: ugen '" << ugen_name << "' doesn't exist" << std::endl;
+        return false;
+    }
+    return def->add_command(cmd_name, func);
+}
 
 /** factory class for supercollider ugens
  *
@@ -177,10 +202,12 @@ public:
     uint32_t ugen_count(void) const { return ugen_count_; }
     /* @} */
 
-    void load_plugin_folder(std::filesystem::path const& path);
+    void load_plugin_folder(std::filesystem::path const& dir);
     void load_plugin(std::filesystem::path const& path);
 
 private:
+    void load_plugin_folder(std::filesystem::path const& dir, bool is_top_level, bool found_scx_file);
+
     void close_handles(void);
 
     uint32_t ugen_count_ = 0;

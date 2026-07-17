@@ -29,7 +29,6 @@
 #include "SC_Types.h"
 #include "SC_Rate.h"
 #include "SC_SndBuf.h"
-#include "SC_RGen.h"
 
 #ifdef SUPERNOVA
 namespace nova {
@@ -48,8 +47,8 @@ struct World {
 
     // data accessible to plug-ins :
     double mSampleRate;
-    int mBufLength;
-    int mBufCounter;
+    int32 mBufLength;
+    int32 mBufCounter;
 
     uint32 mNumAudioBusChannels;
     uint32 mNumControlBusChannels;
@@ -78,29 +77,29 @@ struct World {
     Rate mFullRate, mBufRate;
 
     uint32 mNumRGens;
-    RGen* mRGen;
+    struct RGen* mRGen;
 
     uint32 mNumUnits, mNumGraphs, mNumGroups;
-    int mSampleOffset; // offset in the buffer of current event time.
+    int32 mSampleOffset; // offset in the buffer of current event time.
 
     void* mNRTLock;
 
     uint32 mNumSharedControls;
     float* mSharedControls;
 
-    bool mRealTime;
-    bool mRunning;
-    int mDumpOSC;
+    SCBool mRealTime;
+    SCBool mRunning;
+    int32 mDumpOSC;
 
     void* mDriverLock;
 
     float mSubsampleOffset; // subsample accurate offset in the buffer of current event time.
 
-    int mVerbosity;
-    int mErrorNotification;
-    int mLocalErrorNotification;
+    int32 mVerbosity;
+    int32 mErrorNotification;
+    int32 mLocalErrorNotification;
 
-    bool mRendezvous; // Allow user to disable Rendezvous
+    SCBool mRendezvous; // Allow user to disable Rendezvous
 
     const char* mRestrictedPath; // OSC commands to read/write data can only do it within this path, if specified
 
@@ -116,13 +115,15 @@ struct World {
 #endif // SC_BELA
 };
 
-inline SndBuf* World_GetBuf(struct World* inWorld, uint32 index) {
+typedef struct World World;
+
+SC_INLINE SndBuf* World_GetBuf(World* inWorld, uint32 index) {
     if (index > inWorld->mNumSndBufs)
         index = 0;
     return inWorld->mSndBufs + index;
 }
 
-inline SndBuf* World_GetNRTBuf(struct World* inWorld, uint32 index) {
+SC_INLINE SndBuf* World_GetNRTBuf(World* inWorld, uint32 index) {
     if (index > inWorld->mNumSndBufs)
         index = 0;
     return inWorld->mSndBufsNonRealTimeMirror + index;

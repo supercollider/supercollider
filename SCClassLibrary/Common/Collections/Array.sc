@@ -134,6 +134,10 @@ Array[slot] : ArrayedCollection {
 		_ArrayContainsSeqColl
 		^this.primitiveFailed
 	}
+	hungarianSolve {
+		_ArrayHungarianSolve
+		^this.primitiveFailed
+	}
 
 	//************** inconsistent argnames, see SequenceableColllection unlace!
 	unlace { arg clumpSize=2, numChan=1, clip=false;

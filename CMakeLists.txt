@@ -20,8 +20,12 @@ endif()
 
 message(STATUS "SuperCollider Version: ${SC_VERSION}")
 message(STATUS "Building from ${GIT_REF_TYPE} ${GIT_BRANCH_OR_TAG}, commit hash is ${GIT_COMMIT_HASH}")
+
+# Stops CTest from generating a bunch of targets we don't care about.
+set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 include(CTest)
 enable_testing()
+list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 
 include (cmake_modules/FinalFile.cmake)
 
@@ -48,6 +52,7 @@ CONFIGURE_FILE(
 
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+set_property(TARGET uninstall PROPERTY FOLDER Util)
 
 # identify target architecture
 if(WIN32)
@@ -59,80 +64,16 @@ if(WIN32)
         SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
     endif()
 
-    # installing to default application-location creates an error (a privileges and/or path syntax problem)
-    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Cmake install path" FORCE)
-    endif()
-
 endif(WIN32)
 
-#############################################
-# Compiler flags etc
-
-if (${CMAKE_COMPILER_IS_GNUCXX})
-    execute_process(
-            COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
-            OUTPUT_VARIABLE _gcc_version
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-
-    add_compile_options(
-        -Werror=return-type      # Error out if function definitions lack a return type
-        -fschedule-insns2        # Optimize instruction scheduling
-        -fomit-frame-pointer     # Optimize by omitting the frame pointer where possible
-        -fno-math-errno          # Optimize math functions by not setting errno
-        -fno-signaling-nans      # Assume no signaling NaNs for better optimization
-        -fsigned-zeros           # Maintain distinction between -0.0 and +0.0
-        -fno-associative-math    # Prevent reordering of floating-point operations
-    )
-
-	if(${_gcc_version} VERSION_LESS 4.8)
-		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
-	endif()
-
-	if(APPLE)
-        execute_process(
-                COMMAND ${CMAKE_CXX_COMPILER} --version
-                OUTPUT_VARIABLE _gcc_version_info
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-		if ("${_gcc_version_info}" MATCHES "Apple")
-			add_definitions("-fpascal-strings")
-		endif()
-		add_definitions("-D_REENTRANT")
-	elseif(NOT (WIN32 AND NOT CYGWIN))
-		add_definitions("-pthread")
-	endif()
-
-elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
-	set(CMAKE_COMPILER_IS_INTEL 1)
-	add_definitions(-Wno-unknown-pragmas)
-	add_definitions(-simd)
-
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(CMAKE_COMPILER_IS_CLANG 1)
-endif()
-
-if(APPLE)
+# install settings
+if(APPLE OR WIN32)
 	if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path" FORCE)
+		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Cmake install path" FORCE)
 	endif()
 elseif(UNIX)
-	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
+	add_compile_definitions(SC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 endif()
-
-if(WIN32)
-    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0600)
-
-    #avoid unnecesary autolink
-    add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
-
-    # use session manager to set shared memory location, see issue 2409
-    add_definitions(-DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
-endif()
-
-add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
-
 
 #############################################
 # Options
@@ -142,15 +83,7 @@ option(USE_CCACHE "Use ccache if available." ON)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^AMD64|EM64T|x86_64|X86|i386|i686")
-    option(SSE "Compile with support for SSE instructions." ON)
-    option(SSE2 "Compile with support for SSE2 instructions." ON)
-else() # non-x86 platforms do not have SSE
-    set(SSE OFF)
-    set(SSE2 OFF)
-endif()
-
-set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela})")
+set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela,webaudio})")
 
 if (AUDIOAPI STREQUAL jack)
 	# here we check for JACK metadata API
@@ -163,6 +96,7 @@ if (AUDIOAPI STREQUAL jack)
 endif()
 
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
+option(STATIC_PLUGINS "Compile plugins as static libraries (scsynth only)" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
@@ -180,8 +114,7 @@ option(NO_X11 "Disables the building of plugins that require the X11 library (fo
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
-# Build supernova by default only when on Linux or BSD systems
-option(SUPERNOVA "Build with supernova as optional audio synthesis server" ${LINUX_OR_BSD})
+option(SUPERNOVA "Build with supernova as an alternative audio synthesis server" ON)
 
 option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
 option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable memory pools).")
@@ -193,15 +126,14 @@ if(WIN32)
 else(WIN32)
     option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
 endif(WIN32)
-option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines).")
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     option(LTO "Use GCC's link time optimizer' (experimental).")
 endif()
 
@@ -217,7 +149,7 @@ option(SYSTEM_ABLETON_LINK "Use link from system" OFF)
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 option(SYSTEM_PORTAUDIO "Use PortAudio libraries from system" ON)
-if(WIN32)
+if(WIN32 OR (APPLE AND SUPERNOVA))
     set(SYSTEM_PORTAUDIO OFF)
 else()
     mark_as_advanced(SYSTEM_PORTAUDIO)
@@ -225,11 +157,7 @@ endif()
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
-if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
-    option(SC_HIDAPI "Build with HID support" OFF)
-else()
-    option(SC_HIDAPI "Build with HID support" ON)
-endif()
+option(SC_HIDAPI "Build with HID support" ON)
 
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 
@@ -242,6 +170,19 @@ if(APPLE)
     # verify_app fails with official Qt; we'll still use it for Qt from homebrew
     option(SC_VERIFY_APP "Run verify_app on the app bundle" OFF)
 endif()
+
+if(SC_DISABLE_XCODE_CODESIGNING)
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+endif()
+
+if(EMSCRIPTEN)
+    # see # see https://developer.chrome.com/blog/wasm-debugging-2020
+    set(WASM_DEBUG OFF CACHE BOOL "include DWARF debug symbols in wasm build?")
+    set(WASM_ASSET_DIR ${CMAKE_SOURCE_DIR}/platform/wasm)
+    set(WASM_DIST_DIR ${CMAKE_BINARY_DIR}/wasm-dist)
+endif()
+
 
 #############################################
 # Detect CCache
@@ -305,7 +246,7 @@ endif()
 #############################################
 # some default libraries
 
-if (NOT WIN32)
+if (NOT WIN32 AND NOT EMSCRIPTEN)
     find_package(Pthreads)
 
     if (NOT PTHREADS_FOUND)
@@ -315,36 +256,34 @@ if (NOT WIN32)
 endif()
 
 if(SYSTEM_BOOST)
-    # https://github.com/supercollider/supercollider/issues/4576#issuecomment-531499017
-    # Boost >= 1.71 ships with its own Boost config file, we ignore it for now.
-    set(Boost_NO_BOOST_CMAKE ON)
+    # policy CMP0167 is only available from CMake 3.30 on
+    if(POLICY CMP0167)
+        # CMP0167 NEW policy: use Boost-provided BoostConfig.cmake config file
+        # instead of the old FindBoost module
+        cmake_policy(SET CMP0167 NEW)
+    endif()
     set(Boost_USE_MULTITHREADED ON)
-    find_package( Boost 1.50.0 COMPONENTS  thread system filesystem program_options regex test_exec_monitor )
+    set(BOOST_COMPONENTS thread program_options regex)
+    if(ENABLE_TESTSUITE)
+        list(APPEND BOOST_COMPONENTS unit_test_framework)
+    endif()
+    find_package(Boost 1.70.0 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
     if (Boost_FOUND)
-        # we're specifically setting up the boost libraries here, so we can
-        # name them
-        add_library(boost_thread_lib SHARED IMPORTED)
-        set_property(TARGET boost_thread_lib PROPERTY IMPORTED_LOCATION
-          ${Boost_THREAD_LIBRARY})
-        add_library(boost_system_lib SHARED IMPORTED)
-        set_property(TARGET boost_system_lib PROPERTY IMPORTED_LOCATION
-          ${Boost_SYSTEM_LIBRARY})
-        add_library(boost_program_options_lib SHARED IMPORTED)
-        set_property(TARGET boost_program_options_lib PROPERTY
-          IMPORTED_LOCATION ${Boost_PROGRAM_OPTIONS_LIBRARY})
-        add_library(boost_regex_lib SHARED IMPORTED)
-        set_property(TARGET boost_regex_lib PROPERTY IMPORTED_LOCATION
-          ${Boost_REGEX_LIBRARY})
-        add_library(boost_test_exec_monitor_lib SHARED IMPORTED)
-        set_property(TARGET boost_test_exec_monitor_lib PROPERTY
-          IMPORTED_LOCATION ${Boost_TEST_EXEC_MONITOR_LIBRARY})
-        set(boost_include_dirs ${Boost_INCLUDE_DIRS})
-    else()
-        message(FATAL_ERROR "Not able to use system boost because none was found.")
+        message(STATUS "Found system Boost in ${Boost_INCLUDE_DIRS}")
     endif()
 else()
-    set(boost_include_dirs ${CMAKE_SOURCE_DIR}/external_libraries/boost)
-endif()
+	# bundled boost is set up in external_libraries/CMakeLists.txt
+	# here we just set some global definitions
+	if(WIN32)    
+		#avoid unnecesary autolink
+		add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
+		# use session manager to set shared memory location, see issue 2409
+		add_definitions(-DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
+	else()
+		add_definitions(-DBOOST_ASIO_DISABLE_VISIBILITY -DBOOST_DISABLE_EXPLICIT_SYMBOL_VISIBILITY)
+	endif()
+	add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
+endif() 
 
 if(SYSTEM_YAMLCPP)
   find_package(YamlCpp)
@@ -352,120 +291,152 @@ else()
   set(SYSTEM_YAMLCPP OFF)
 endif()
 
-set(CMAKE_CXX_STANDARD 17)
-
 #############################################
-# some preprocessor flags
-if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
-	if (SSE)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse")
-		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
-			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse")
+# compiler settings - hardware
+
+set(SC_COMPILER_ARCH_FLAGS "" CACHE STRING "Architecture specific compiler flags")
+
+if("${SC_COMPILER_ARCH_FLAGS}" STREQUAL "")
+
+	set(_detected_flags "")
+
+	if(APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		if (NATIVE)
+			list(APPEND _detected_flags "-march=native")
+		else()
+			if("x86_64" IN_LIST CMAKE_OSX_ARCHITECTURES AND "arm64" IN_LIST CMAKE_OSX_ARCHITECTURES) # universal binary
+				list(APPEND _detected_flags "-Xarch_x86_64" "-march=haswell" "-Xarch_arm64" "-mcpu=apple-m1")
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+				list(APPEND _detected_flags "-march=haswell")
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+				list(APPEND _detected_flags "-mcpu=apple-m1")
+			endif()
+		endif()
+
+	elseif(MSVC)
+		if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES "x64" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.40")
+			list(APPEND _detected_flags "/arch:SSE4.2")
+		elseif(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES "ARM64" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.40")
+			list(APPEND _detected_flags "/arch:armv8.0")
+		endif()
+
+	elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+		if (NATIVE)
+			list(APPEND _detected_flags "-march=native")
+		else()
+			if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
+				if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12.0" OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "11.0"))
+					list(APPEND _detected_flags "-march=x86-64-v2")
+				else() # fallback for older compilers
+					list(APPEND _detected_flags "-msse4.2")
+				endif()
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
+				list(APPEND _detected_flags "-march=armv8-a")
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "armv7")
+				list(APPEND _detected_flags "-march=armv7-a" "-mfpu=neon" "-mfloat-abi=hard")
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "armv6")
+				list(APPEND _detected_flags "-march=armv6" "-mtune=arm1176jzf-s" "-mfpu=vfp" "-mfloat-abi=hard")
+			else()
+				message(STATUS "${CMAKE_CXX_COMPILER_ID}: No hardware optimization flags set for ${CMAKE_SYSTEM_PROCESSOR}")
+			endif()
 		endif()
 	endif()
-	if (SSE2)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2")
-	endif()
-	if (NATIVE)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+
+	if(NOT "${_detected_flags}" STREQUAL "")
+		set(SC_COMPILER_ARCH_FLAGS "${_detected_flags}" CACHE STRING "Architecture specific compiler flags" FORCE)
 	endif()
 
-    if(CMAKE_COMPILER_IS_CLANG AND NOT SC_CLANG_USES_LIBSTDCPP)
-        # the default
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
-    endif()
-
-	if(FORTIFY)
-		add_definitions( -D_FORTIFY_SOURCE=2 )
-	endif()
-
-	add_definitions(-fvisibility=hidden)
 endif()
 
-if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
-	if (SSE)
-		add_definitions(-mia32)
-	endif()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+if(NOT "${SC_COMPILER_ARCH_FLAGS}" STREQUAL "")
+	separate_arguments(SC_COMPILER_ARCH_FLAGS)
+	message(STATUS "Compiler architecture flags: ${SC_COMPILER_ARCH_FLAGS}")
+	add_compile_options(${SC_COMPILER_ARCH_FLAGS})
+endif()
 
-	# disable warnings
-	add_definitions(-diag-disable 170) # pointer points outside of underlying object ... used heavily in sclang
-	add_definitions(-diag-disable 279) # controlling expression is constant
+#############################################
+# other compiler flags
+
+set(CMAKE_CXX_STANDARD 17)
+
+# set default symbol visibility
+SET(CMAKE_CXX_VISIBILITY_PRESET hidden)
+SET(CMAKE_C_VISIBILITY_PRESET hidden)
+SET(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+	add_compile_options(
+		-fno-math-errno          # Optimize math functions by not setting errno
+		-fno-signaling-nans      # Assume no signaling NaNs for better optimization
+	)
+
+	if(APPLE)
+		add_compile_definitions("_REENTRANT")
+	elseif(NOT WIN32)
+		add_compile_options("-pthread")
+	endif()
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	if(NOT APPLE)
+		add_compile_options(
+			-fno-math-errno      # On Apple and most BSDs, math library functions never set errno, and so -fno-math-errno is the default
+		)
+	endif()
+	if(NOT SC_CLANG_USES_LIBSTDCPP)
+		# the default
+		add_compile_options("-stdlib=libc++")
+		add_link_options("-stdlib=libc++")
+	endif()
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+	add_compile_options(
+		-Werror=return-type      # Error out if function definitions lack a return type
+		-fsigned-zeros           # Maintain distinction between -0.0 and +0.0
+		-fno-associative-math    # Prevent reordering of floating-point operations
+	)
+
+	if(FORTIFY)
+		add_compile_definitions("_FORTIFY_SOURCE=2")
+	endif()
+
+endif()
+
+if(WIN32)
+	add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX _WIN32_WINNT=0x0600)
 endif()
 
 if(MSVC)
-  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
-    set(${flag} "${${flag}} /wd4102") # unreferenced label
-    set(${flag} "${${flag}} /wd4267") # conversion from 'size_t' to 'int', possible loss of data
-    set(${flag} "${${flag}} /wd4244") # conversion from '__int64' to 'int', possible loss of data
-    set(${flag} "${${flag}} /wd4305") # '=' : truncation from 'double' to 'float'
-    set(${flag} "${${flag}} /wd4309") # '=' : truncation of constant value
-    set(${flag} "${${flag}} /wd4800") # forcing value to bool 'true' or 'false' (performance warning)
-    set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
-  endforeach()
+  add_compile_options(
+    /wd4100 # unreferenced parameter
+    /wd4101 # unreferenced local variable
+    /wd4102 # unreferenced label
+    /wd4200 # nonstandard extension used: zero-sized array in struct/union
+	/diagnostics:caret # better diagnostics, shows source code location in error repot
+  )
 
 # this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error
 # caused by some versions of libsndfile's C++ header redefining nullptr as NULL.
 # See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
   add_compile_options("/Zc:__cplusplus")
 
-# _ENABLE_ATOMIC_ALIGNMENT_FIX prevents the build from breaking when VS2015 update 2 upwards are used
-# see http://boost.2283326.n4.nabble.com/lockfree-ENABLE-ATOMIC-ALIGNMENT-FIX-for-VS-2015-Update-2-td4685955.html
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_ENABLE_ATOMIC_ALIGNMENT_FIX)
+# for math operations, we expect the default /fp:precise flag to be used, so that we match settings for gcc/clang
+
 endif(MSVC)
 
+if(MINGW)
+	add_compile_options(-mstackrealign)
+endif()
+
 if (SC_MEMORY_DEBUGGING)
-	add_definitions(-DDISABLE_MEMORY_POOLS)
-	add_definitions(-DENABLE_MEMORY_CHECKS)
-endif()
-
-if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER 4.8.5) AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
-# no-strict-aliasing was introduced because of problems with MinGW/GCC 4.9.2
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign -fno-strict-aliasing")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign -fno-strict-aliasing")
-elseif(MINGW)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
-endif()
-
-# support for building on Raspberry Pi 1/2/3 and BBB
-if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l")
-  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} -mfloat-abi=hard")
-    set(${flag} "${${flag}} -mfpu=neon")
-  endforeach()
-elseif(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l")
-  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} -march=armv6")
-    set(${flag} "${${flag}} -mtune=arm1176jzf-s")
-    set(${flag} "${${flag}} -mfloat-abi=hard")
-    set(${flag} "${${flag}} -mfpu=vfp")
-  endforeach()
-endif()
-
-if (NO_GPL3)
-	add_definitions(-DNO_GPL3)
-endif()
-
-if(SC_DISABLE_XCODE_CODESIGNING)
-    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
-    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+	add_compile_definitions(DISABLE_MEMORY_POOLS ENABLE_MEMORY_CHECKS)
 endif()
 
 #############################################
 # subdirectories
 add_subdirectory(tools)
 add_subdirectory(external_libraries)
-
-if(NOT YAMLCPP_FOUND)
-  set(YAMLCPP_LIBRARY yaml)
-endif()
 
 
 configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
@@ -485,6 +456,7 @@ else()
 endif()
 
 add_subdirectory(server)
+add_subdirectory(langutils)
 add_subdirectory(lang)
 add_subdirectory(platform)
 add_subdirectory(editors)
@@ -679,3 +651,15 @@ mark_as_advanced(MATH_LIBRARY)
 mark_as_advanced(QT_QMAKE_EXECUTABLE)
 mark_as_advanced(SNDFILE SNDFILE_LIBRARY_DIR)
 mark_as_advanced(SC_HIDAPI)
+
+#############################################
+# uninstall target
+if(NOT TARGET uninstall)
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+  add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()

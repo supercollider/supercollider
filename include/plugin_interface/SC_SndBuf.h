@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include "SC_Types.h"
 
 #define GETSNDFILE(x) ((SNDFILE*)x->sndfile)
 
@@ -153,16 +153,16 @@ struct SndBuf {
     double samplerate;
     double sampledur; // = 1/ samplerate
     float* data;
-    int channels;
-    int samples;
-    int frames;
-    int mask; // for delay lines
-    int mask1; // for interpolating oscillators.
-    int coord; // used by fft ugens
+    int32 channels;
+    int32 samples;
+    int32 frames;
+    int32 mask; // for delay lines
+    int32 mask1; // for interpolating oscillators.
+    int32 coord; // used by fft ugens
     void* sndfile; // used by disk i/o
     // SF_INFO fileinfo; // used by disk i/o
 #ifdef SUPERNOVA
-    bool isLocal;
+    SCBool isLocal;
     mutable rw_spinlock lock;
 #endif
 };
@@ -170,14 +170,14 @@ struct SndBuf {
 typedef struct SndBuf SndBuf;
 
 struct SndBufUpdates {
-    int reads;
-    int writes;
+    int32 reads;
+    int32 writes;
 };
 typedef struct SndBufUpdates SndBufUpdates;
 
 enum { coord_None, coord_Complex, coord_Polar };
 
-inline float PhaseFrac(uint32_t inPhase) {
+SC_INLINE float PhaseFrac(uint32_t inPhase) {
     union {
         uint32_t itemp;
         float ftemp;
@@ -186,7 +186,7 @@ inline float PhaseFrac(uint32_t inPhase) {
     return u.ftemp - 1.f;
 }
 
-inline float PhaseFrac1(uint32_t inPhase) {
+SC_INLINE float PhaseFrac1(uint32_t inPhase) {
     union {
         uint32_t itemp;
         float ftemp;
@@ -195,13 +195,13 @@ inline float PhaseFrac1(uint32_t inPhase) {
     return u.ftemp;
 }
 
-inline float lookup(const float* table, int32_t phase, int32_t mask) { return table[(phase >> 16) & mask]; }
+SC_INLINE float lookup(const float* table, int32_t phase, int32_t mask) { return table[(phase >> 16) & mask]; }
 
 
 #define xlobits 14
 #define xlobits1 13
 
-inline float lookupi(const float* table, uint32_t phase, uint32_t mask) {
+SC_INLINE float lookupi(const float* table, uint32_t phase, uint32_t mask) {
     float frac = PhaseFrac(phase);
     const float* tbl = table + ((phase >> 16) & mask);
     float a = tbl[0];
@@ -209,7 +209,7 @@ inline float lookupi(const float* table, uint32_t phase, uint32_t mask) {
     return a + frac * (b - a);
 }
 
-inline float lookupi2(const float* table, uint32_t phase, uint32_t mask) {
+SC_INLINE float lookupi2(const float* table, uint32_t phase, uint32_t mask) {
     float frac = PhaseFrac1(phase);
     const float* tbl = table + ((phase >> 16) & mask);
     float a = tbl[0];
@@ -217,7 +217,7 @@ inline float lookupi2(const float* table, uint32_t phase, uint32_t mask) {
     return a + frac * b;
 }
 
-inline float lookupi1(const float* table0, const float* table1, uint32_t pphase, int32_t lomask) {
+SC_INLINE float lookupi1(const float* table0, const float* table1, uint32_t pphase, int32_t lomask) {
     float pfrac = PhaseFrac1(pphase);
     uint32_t index = ((pphase >> xlobits1) & (uint32_t)lomask);
     float val1 = *(const float*)((const char*)table0 + index);
@@ -226,9 +226,9 @@ inline float lookupi1(const float* table0, const float* table1, uint32_t pphase,
 }
 
 
-inline float lininterp(float x, float a, float b) { return a + x * (b - a); }
+SC_INLINE float lininterp(float x, float a, float b) { return a + x * (b - a); }
 
-inline float cubicinterp(float x, float y0, float y1, float y2, float y3) {
+SC_INLINE float cubicinterp(float x, float y0, float y1, float y2, float y3) {
     // 4-point, 3rd-order Hermite (x-form)
     float c0 = y1;
     float c1 = 0.5f * (y2 - y0);

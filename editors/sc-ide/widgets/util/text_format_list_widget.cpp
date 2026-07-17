@@ -90,7 +90,7 @@ TextFormatListWidget::TextFormatListWidget(QWidget* parent): QTreeView(parent) {
 
     setContextMenuPolicy(Qt::CustomContextMenu);
 
-    connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onDoubleClicked(const QModelIndex&)));
+    connect(this, &TextFormatListWidget::doubleClicked, this, &TextFormatListWidget::onDoubleClicked);
 }
 
 void TextFormatListWidget::addFormat(const QString& name, const QTextCharFormat& format) {

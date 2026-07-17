@@ -48,7 +48,7 @@ QC_LANG_PRIMITIVE(QWidget_SetFocus, 1, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
     return errNone;
 }
 
-QC_LANG_PRIMITIVE(QWidget_BringFront, 1, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
+QC_LANG_PRIMITIVE(QWidget_BringFront, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
     QWidgetProxy* proxy = QWIDGET_PROXY_RECEIVER(r);
 
     QApplication::postEvent(proxy, new QEvent((QEvent::Type)QtCollider::Event_Proxy_BringFront));
@@ -56,7 +56,7 @@ QC_LANG_PRIMITIVE(QWidget_BringFront, 1, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
     return errNone;
 }
 
-QC_LANG_PRIMITIVE(QWidget_Refresh, 1, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
+QC_LANG_PRIMITIVE(QWidget_Refresh, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
     QWidgetProxy* proxy = QWIDGET_PROXY_RECEIVER(r);
 
     if (!proxy->compareThread())
@@ -189,7 +189,7 @@ QC_LANG_PRIMITIVE(QWidget_SetAcceptsMouse, 1, PyrSlot* r, PyrSlot* a, VMGlobals*
     return errNone;
 }
 
-QC_LANG_PRIMITIVE(QWidget_AcceptsMouse, 1, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
+QC_LANG_PRIMITIVE(QWidget_AcceptsMouse, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
     QWidgetProxy* proxy = QWIDGET_PROXY_RECEIVER(r);
     if (!proxy->compareThread())
         return QtCollider::wrongThreadError();

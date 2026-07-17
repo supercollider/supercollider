@@ -45,6 +45,15 @@ If you see someone who is making an extra effort to ensure our community is welc
 * Avoid using the community as a platform to advertise commercial products that lack direct connections to the software.
 * Self-promotion postings should be in courteous volumes and preferably include good descriptions.
 
+### Usage of AI tools
+
+* The community values the thoughts and ideas of others, using an AI to *develop* one's thoughts is acceptable, but posting the output of an AI 'as if' it came from a human is not.
+* AI slop and AI based low effort contributions are not tolerated and will be judged by moderators discretion on a case by case basis.
+* Do not use any kind of autonomous bots (i.e. OpenClaw etc.) for any kind of interaction with the community or development!
+* Ensure all AI‑generated text or code has been carefully reviewed and edited by yourself.
+* Do not paste other user's content or code into LLMs without their consent.
+* AI tools, such as translators, may be used to help one participate and contribute to the community, but they should be used in moderation, or as a last resort.  The community would rather engage with human imperfection than a confident machine.
+
 ## Unacceptable Behavior
 
 Unacceptable behaviors include: intimidating, harassing, abusive, culturally appropriative, discriminatory, derogatory or demeaning speech or actions by any participant in our community online, at all related events and in one-on-one communications carried out in the context of community business. Community event venues may be shared with members of the public; please be respectful to all patrons of these locations.

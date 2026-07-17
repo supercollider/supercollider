@@ -1,4 +1,39 @@
-# Building SuperCollider on Linux
+# SuperCollider on Linux
+
+## Flatpak
+
+> This is currently an exerimental feature - please provide feedback regarding jack/pipewire support
+
+[Flatpaks](https://flatpak.org/)  are sandboxed binaries which can run on a variety of linux distributions and desktop environments. and are self-contained.
+They provide an alternative to the distribution via distro-package-managers, which use dynamic linking.
+This allows to run an abitrary version of SuperCollider without the necessity of building SuperCollider locally and the version being available via the distro package manager.
+The flatpak installation can co-exist to your local installation, though it is advised to choose one in order to avoid confusion about multiple SuperCollider installations.
+
+SuperCollider Flatpaks are currently not available through [flathub](https://flathub.org).
+The flatpak binaries are instead available via the [official SuperCollider website](https://supercollider.github.io/) or via the CI artifacts.
+
+Before installing the flatpak file via a double click or using `flatpak install`, it is necessary to add the flathub repo index to get access to the Qt runtime for the IDE.
+
+```shell
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+
+Flatpak can only expose one binary to the environment, which is `scide`.
+Access to `sclang` via CLI has therefore be indirected through flatpak, i.e.
+
+```shell
+flatpak run --command=sclang online.supercollider.SuperCollider
+```
+
+The following can be added to a `~/.zshrc` file to make `sclang` etc. available as expected
+
+```shell
+alias sclang="flatpak run --command=sclang online.supercollider.SuperCollider"
+alias scsynth="flatpak run --command=scsynth online.supercollider.SuperCollider"
+alias supernova="flatpak run --command=supernova online.supercollider.SuperCollider"
+```
+
+To build the flatpak file locally, follow the build instructions from the CI, see [.github/workflows/build_flatpak.yaml](.github/workflows/build_flatpak.yaml).
 
 ## Build requirements
 
@@ -294,6 +329,15 @@ If you're compiling SC only for use on your own machine (that is, you aren't cro
 
 ```shell
 cmake -DNATIVE=ON ..
+```
+
+If the Native option is OFF, the binary is still optimized to run on certain hardware.
+The `SC_COMPILER_ARCH_FLAGS` option can set the architecture or architecture level for the resulting binary.
+See https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels for more information.
+
+```shell
+cmake -D SC_COMPILER_ARCH_FLAGS="-march=x86-64-v2" .. # default on x86_64
+cmake -D SC_COMPILER_ARCH_FLAGS="-march=armv8-a" .. # default on arm64
 ```
 
 #### Install location

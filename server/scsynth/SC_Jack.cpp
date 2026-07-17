@@ -92,7 +92,7 @@ protected:
     virtual bool DriverStop();
 
 public:
-    SC_JackDriver(struct World* inWorld);
+    SC_JackDriver(World* inWorld);
     virtual ~SC_JackDriver();
 
     // process loop
@@ -117,7 +117,7 @@ private:
     void ConnectClientOutputs(const char* pattern);
 };
 
-SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_JackDriver(inWorld); }
+SC_AudioDriver* SC_NewAudioDriver(World* inWorld) { return new SC_JackDriver(inWorld); }
 
 // =====================================================================
 // SC_JackPortList
@@ -188,7 +188,7 @@ void sc_jack_shutdown_cb(void* arg) {
 // =====================================================================
 // SC_JackDriver (JACK)
 
-SC_JackDriver::SC_JackDriver(struct World* inWorld):
+SC_JackDriver::SC_JackDriver(World* inWorld):
     SC_AudioDriver(inWorld),
     mClient(nullptr),
     mInputList(nullptr),

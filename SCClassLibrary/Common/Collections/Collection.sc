@@ -664,7 +664,7 @@ Collection {
                 outliers, this.size, min, max
             )
         };
-        
+
 		^freqs;
 	}
 
@@ -712,12 +712,16 @@ Collection {
 
 	// Synth support
 
-	writeDef { | file |
+	writeDef { | file, version=3 |
+		if (version < 2 or: { version > 3 }) {
+			Error("version number" + version + "out of range").throw
+		};
+
 		file.putString("SCgf");
-		file.putInt32(2); // file version
+		file.putInt32(version); // file version
 		file.putInt16(this.size); // number of defs in file.
 
-		this.do { | item | item.writeDef(file); }
+		this.do { | item | item.writeDef(file, version); }
 	}
 
 	writeInputSpec { | file, synthDef |

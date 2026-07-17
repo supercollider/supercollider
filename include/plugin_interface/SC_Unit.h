@@ -21,21 +21,26 @@
 
 #pragma once
 
-#include <type_traits>
 #include "SC_Types.h"
 #include "SC_SndBuf.h"
+
+#ifdef __cplusplus
+#    include <type_traits>
+#endif
+
+struct World;
 
 typedef void (*UnitCtorFunc)(struct Unit* inUnit);
 typedef void (*UnitDtorFunc)(struct Unit* inUnit);
 
-typedef void (*UnitCalcFunc)(struct Unit* inThing, int inNumSamples);
+typedef void (*UnitCalcFunc)(struct Unit* inUnit, int32 inNumSamples);
 
 struct SC_Unit_Extensions {
     float* todo;
 };
 
 struct Unit {
-    struct World* mWorld;
+    World* mWorld;
     struct UnitDef* mUnitDef;
     struct Graph* mParent;
     uint32 mNumInputs, mNumOutputs; // changed from uint16 for synthdef ver 2
@@ -45,12 +50,12 @@ struct Unit {
     int16 mDone;
     struct Wire **mInput, **mOutput;
     struct Rate* mRate;
-    SC_Unit_Extensions*
+    struct SC_Unit_Extensions*
         mExtensions; // future proofing and backwards compatibility; used to be SC_Dimension struct pointer
     float **mInBuf, **mOutBuf;
 
     UnitCalcFunc mCalcFunc;
-    int mBufLength;
+    int32 mBufLength;
 };
 
 typedef struct Unit Unit;
@@ -85,7 +90,7 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
     Print("%s: alloc failed, increase server's RT memory (e.g. via ServerOptions)\n", __func__);                       \
     SETCALC(ClearUnitOutputs);                                                                                         \
     ClearUnitOutputs(unit, 1);                                                                                         \
-    unit->mDone = true;                                                                                                \
+    unit->mDone = kSCTrue;                                                                                             \
     return;
 
 // macro for handling RT allocation failures. Example usage:
@@ -96,11 +101,16 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
         ClearUnitOnMemFailed                                                                                           \
     }
 
+#ifdef __cplusplus
 template <typename ToType, typename Value>
 [[nodiscard]] inline constexpr auto copyAndCastToTypeOfFirstArg(const ToType&, const Value& value) noexcept {
     using TargetT = std::remove_cv_t<std::remove_reference_t<ToType>>;
     return static_cast<TargetT>(value);
 }
+#else
+#    define copyAndCastToTypeOfFirstArg(ToType, value) (value)
+#endif
+
 // calculate a slope for control rate interpolation to audio rate.
 #define CALCSLOPE(next, prev) ((next - prev) * copyAndCastToTypeOfFirstArg(next, unit->mRate->mSlopeFactor))
 
@@ -110,9 +120,10 @@ template <typename ToType, typename Value>
 #define BUFLENGTH (unit->mBufLength)
 #define BUFRATE (unit->mRate->mBufRate)
 #define BUFDUR (unit->mRate->mBufDuration)
-#define FULLRATE (unit->mWorld->mFullRate.mSampleRate)
-#define FULLBUFLENGTH (unit->mWorld->mFullRate.mBufLength)
-#define FULLSAMPLEDUR (unit->mWorld->mFullRate.mSampleDur)
+#define FULLRATE (unit->mParent->mFullRate->mSampleRate)
+#define FULLSAMPLEDUR (unit->mParent->mFullRate->mSampleDur)
+#define FULLBUFLENGTH (unit->mParent->mFullRate->mBufLength)
+#define REBLOCK_OR_RESAMPLE (unit->mParent->mFlags & kGraph_ReblockOrResample)
 
 #ifdef SUPERNOVA
 
@@ -371,6 +382,3 @@ template <bool shared> struct buffer_lock {
     rgen.s1 = s1;                                                                                                      \
     rgen.s2 = s2;                                                                                                      \
     rgen.s3 = s3;
-
-typedef void (*UnitCmdFunc)(struct Unit* unit, struct sc_msg_iter* args);
-typedef void (*PlugInCmdFunc)(World* inWorld, void* inUserData, struct sc_msg_iter* args, void* replyAddr);

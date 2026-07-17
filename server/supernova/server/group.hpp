@@ -218,7 +218,7 @@ public:
 
     template <node_position Relation> static void move_before_or_after(server_node* node, server_node* target) {
         assert((Relation == before) || (Relation == after));
-        abstract_group* target_parent = node->get_parent();
+        abstract_group* target_parent = target->get_parent();
 
         if (Relation == after && target->next_node() == nullptr) {
             // for the sake of simplicity, move the node to the tail of the target's parent group

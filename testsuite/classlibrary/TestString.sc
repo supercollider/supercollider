@@ -165,6 +165,20 @@ TestString : UnitTest {
 		this.assertEquals(result, expected);
 	}
 
+	test_absolutePath_Windows {
+		var drive;
+		if (thisProcess.platform.name == \windows) {
+			drive = Platform.resourceDir[..1];
+			this.assertEquals("C:/test".absolutePath, "C:/test", "absolute path <drive>:/");
+			this.assertEquals("C:\\test".absolutePath, "C:\\test", "absolute path <drive>:\\");
+			this.assertEquals("\\\\system07\\test".absolutePath, "\\\\system07\\test", "absolute path UNC");
+			this.assertEquals("/test".absolutePath, drive ++ "/test", "path starting with /");
+			this.assertEquals("\\test".absolutePath, drive ++ "\\test", "path starting with \\");
+			this.assertEquals("~/test".absolutePath, "~/test".standardizePath, "path starting with ~");
+			this.assertEquals("test".absolutePath, File.getcwd +/+ "test", "relative path");
+		}
+	}
+
 	// ------- time-related operations -----------------------------------------------
 
 	test_asSecs_stringDddHhMmSsSss_convertsToSeconds {
@@ -206,8 +220,75 @@ TestString : UnitTest {
 	}
 
 	test_largeStringCompileString {
-		var large = String.fill(9000, { |i| "0123456789".wrapAt(i) });
+		var large = String.fill(81920, { |i| "0123456789".wrapAt(i) });
 		var reconstructed = large.asCompileString.interpret;
 		this.assert(large == reconstructed, "A large string's compileString should interpret back to itself");
+	}
+
+	// ------- YAML/JSON -----------------------------------------------
+
+	test_parseYaml_arrays {
+		var yaml = "---\n- first\n- second\n- third";
+		var result = ["first", "second", "third"];
+		var expected = yaml.parseYAML;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseYaml_dictionaries {
+		var yaml = "---\nkeyA: valueA\nkeyB: valueB";
+		var result = Dictionary.newFrom([
+			"keyA", "valueA",
+			"keyB", "valueB"
+		]);
+		var expected = yaml.parseYAML;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseYaml_scalars {
+		var yaml = "--- single_scalar_string";
+		var result = "single_scalar_string";
+		var expected = yaml.parseYAML;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseYaml_nested_structures {
+		var yaml = "---\nparent:\n  - child1\n  - child2\nconfig:\n  status: active";
+		var result = Dictionary.newFrom([
+			"parent", ["child1", "child2"],
+			"config", Dictionary.newFrom(["status", "active"])
+		]);
+		var expected = yaml.parseYAML;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseJson_arrays {
+		var json = "[\"one\", \"two\", \"three\"]";
+		var result = ["one", "two", "three"];
+		var expected = json.parseJSON;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseJson_dictionaries {
+		var json = "{\"node_id\": \"1001\", \"type\": \"sine\"}";
+		var result = Dictionary.newFrom([
+			"node_id", "1001",
+			"type", "sine"
+		]);
+		var expected = json.parseJSON;
+		this.assertEquals(result, expected);
+	}
+
+	test_parseJson_nested {
+		var json = "{\"synth\": {\"freq\": \"440\", \"amp\": \"0.5\"}, \"fx\": [\"reverb\", \"delay\"]}";
+		var result = Dictionary.newFrom([
+			"synth", Dictionary.newFrom(["freq", "440", "amp", "0.5"]),
+			"fx", ["reverb", "delay"]
+		]);
+		var expected = json.parseJSON;
+		this.assertEquals(result, expected);
+	}
+
+	test_asStringLimit {
+		this.assert((0..1024).asString(32).size < (0..1024).asString, "asString should pass on the limit argument and make the string shorter.");
 	}
 }

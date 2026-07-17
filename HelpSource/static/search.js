@@ -96,7 +96,7 @@ function onLoad() {
 }
 
 function checkHash() {
-    var x = unescape(window.location.hash.slice(1));
+    var x = decodeURIComponent(window.location.hash.slice(1));
     if(x!="" && newinput!=x) {
         document.getElementById("search_input").value = x;
         newinput = x;

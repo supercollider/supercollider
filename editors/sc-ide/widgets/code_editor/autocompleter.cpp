@@ -68,33 +68,17 @@ public:
         mLabel->setTextFormat(Qt::RichText);
         mLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-        // Qt 4 had a class called "QGtkStyle" which allowed Qt to access the
-        // native style of the window manager in Linux and other *nix systems.
-        // It was removed in Qt 5, so we don't have that option anymore. We have
-        // to hardcode the colors now. In the future, this should be configurable
-        // by the user.
+        auto font = mLabel->font();
+        font.setPointSizeF(parent->font().pointSizeF() * 0.8f);
+        mLabel->setFont(font);
 
-        // This #if used to be "#if defined(Q_WS_X11)", and then NetBSD was
-        // excluded (commit c3017f5) because QGtkStyle was not defined on that
-        // system. Qt 5 got rid of the Q_WS_ macros, so we changed Q_WS_X11 to
-        // Q_OS_UNIX && !Q_OS_MAC as a best guess. The NetBSD check is probably
-        // vestigial, but we REALLY needed to get this fix through since Linux
-        // users have had unreadable autocomplete widgets for almost 18 months
-        // now. We figured it was best to leave it alone.
+        auto palette = mLabel->palette();
+        auto textTheme = Main::settings()->getThemeVal("text");
+        palette.setColor(QPalette::ToolTipText, textTheme.foreground().color());
+        palette.setColor(QPalette::ToolTipBase, textTheme.background().color());
+        mLabel->setPalette(palette);
 
-        // See: https://github.com/supercollider/supercollider/pull/2762
-
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC) && !defined(__NetBSD__)
-        QPalette p;
-        p.setColor(QPalette::Window, QColor(255, 255, 220));
-        p.setColor(QPalette::WindowText, Qt::black);
-        setPalette(p);
-#else
-        QPalette p(palette());
-        p.setColor(QPalette::Window, p.color(QPalette::ToolTipBase));
-        setPalette(p);
-        mLabel->setForegroundRole(QPalette::ToolTipText);
-#endif
+        mHighlightColor = Main::settings()->getThemeVal("symbol").foreground().color();
     }
 
     void showMethod(const AutoCompleter::MethodCall& methodCall, int argNum, const QRect& cursorRect) {
@@ -104,7 +88,7 @@ public:
         QString text;
 
         if (methodCall.functionalNotation) {
-            addArgument(text, "receiver", QString(), argNum == 0);
+            addArgument(text, "receiver", QString(), argNum == 0, mHighlightColor);
             --argNum;
             if (argc)
                 text += ", &nbsp;&nbsp;";
@@ -113,7 +97,7 @@ public:
         for (int i = 0; i < argc; ++i) {
             const ScLanguage::Argument& arg = method->arguments[i];
 
-            addArgument(text, arg.name, arg.defaultValue, argNum == i);
+            addArgument(text, arg.name, arg.defaultValue, argNum == i, mHighlightColor);
 
             if (i != argc - 1)
                 text += ", &nbsp;&nbsp;";
@@ -128,12 +112,16 @@ public:
     }
 
 private:
-    void static addArgument(QString& text, const QString& argText, const QString& valText, bool highlight) {
+    void static addArgument(QString& text, const QString& argText, const QString& valText, bool highlight,
+                            const QColor& highlightColor) {
         if (highlight) {
-            text += QString("<span style=\""
-                            //"text-decoration: underline;"
-                            "font-weight: bold;"
-                            "\">");
+            text += QStringLiteral("<span style=\""
+                                   "font-weight: bold;"
+                                   "color: rgb(%1, %2, %3);"
+                                   "\">")
+                        .arg(highlightColor.red())
+                        .arg(highlightColor.green())
+                        .arg(highlightColor.blue());
         }
 
         text += argText;
@@ -176,20 +164,21 @@ private:
 
     QLabel* mLabel;
     QRect mTargetRect;
+    QColor mHighlightColor;
 };
 
 AutoCompleter::AutoCompleter(ScCodeEditor* editor): QObject(editor), mEditor(editor) {
     mCompletion.on = false;
     mEditor->installEventFilter(this);
 
-    connect(editor, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorChanged()));
-    connect(editor->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(hideWidgets()));
-    connect(editor->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(hideWidgets()));
-    connect(Main::scProcess(), SIGNAL(introspectionChanged()), this, SLOT(clearMethodCallStack()));
+    connect(editor, &ScCodeEditor::cursorPositionChanged, this, &AutoCompleter::onCursorChanged);
+    connect(editor->horizontalScrollBar(), &QScrollBar::valueChanged, this, &AutoCompleter::hideWidgets);
+    connect(editor->verticalScrollBar(), &QScrollBar::valueChanged, this, &AutoCompleter::hideWidgets);
+    connect(Main::scProcess(), &ScProcess::introspectionChanged, this, &AutoCompleter::clearMethodCallStack);
 }
 
 void AutoCompleter::documentChanged(QTextDocument* doc) {
-    connect(doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(onContentsChange(int, int, int)));
+    connect(doc, &QTextDocument::contentsChange, this, &AutoCompleter::onContentsChange);
 }
 
 inline QTextDocument* AutoCompleter::document() { return static_cast<QPlainTextEdit*>(mEditor)->document(); }
@@ -471,7 +460,7 @@ void AutoCompleter::showCompletionMenu(bool forceShow) {
 
     mCompletion.menu = menu;
 
-    connect(menu, SIGNAL(finished(int)), this, SLOT(onCompletionMenuFinished(int)));
+    connect(menu, &CompletionMenu::finished, this, &AutoCompleter::onCompletionMenuFinished);
 
     QRect popupTargetRect = globalCursorRect(mCompletion.pos).adjusted(0, -5, 0, 5);
 
@@ -480,8 +469,8 @@ void AutoCompleter::showCompletionMenu(bool forceShow) {
     updateCompletionMenu(forceShow);
 
     if (mCompletion.type == ClassCompletion && Main::settings()->value("IDE/editor/showAutocompleteHelp").toBool()) {
-        connect(menu, SIGNAL(itemChanged(int)), this, SLOT(updateCompletionMenuInfo()));
-        connect(menu, SIGNAL(infoClicked(QString)), this, SLOT(gotoHelp(QString)));
+        connect(menu, &CompletionMenu::itemChanged, this, &AutoCompleter::updateCompletionMenuInfo);
+        connect(menu, &CompletionMenu::infoClicked, this, &AutoCompleter::gotoHelp);
         updateCompletionMenuInfo();
     }
 }

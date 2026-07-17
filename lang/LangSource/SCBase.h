@@ -40,7 +40,7 @@
 void postfl(const char* fmt, ...);
 void post(const char* fmt, ...);
 void error(const char* fmt, ...);
-void postText(const char* text, std::int64_t length);
+void postText(const char* text, std::size_t length);
 void postChar(char c);
 void flushPostBuf();
 void setPostFile(FILE* file); // If file is not NULL, causes all posted text to also be written to the file.

@@ -34,22 +34,40 @@ table::
 ::
 
 classmethods::
-private:: getOldWrapUrl, initClass
+private:: getOldWrapUrl, initClass, init, prShouldRedirect, prOpenRedirectMenu, prOpenInIDEorHelpBrowser
 
 method:: instance
 The singleton HelpBrowser instance.
+emphasis::Does not concern the SCIDE's built-in helpbrowser.::
 
 method:: new
 Create a new HelpBrowser instance with given home URL.
+emphasis::Does not concern the SCIDE's built-in helpbrowser.::
 
 method:: defaultHomeUrl
 Get or set the default home URL.
 
 method:: openNewWindows
+emphasis::Does not concern the SCIDE's built-in helpbrowser.::
 Get or set the default for "open in new windows" toggle.
+When set to teletype::false:: (default), this class behaves like a singleton class.
+
+method:: redirectEnabled
+When set to teletype::true:: (default), clicking on links whose target matches code::redirectPattern:: will open a menu giving the user the choice to open the link in the system's default Web browser (recommended),
+or in SuperCollider's own help browser (strong::not:: recommended for remote links, because not safe for web browsing).
+warning::Disable at your own risk: SC's help browser is not web safe.
+
+This concerns both the SCIDE's built-in help browser and help browser instances created
+through code::HelpBrowser.new()::.::
+
+method:: redirectPattern
+Get or set the regex pattern (a link::Classes/String#Regular expressions#String::) that determines which links will open the menu described above (link::#*redirectEnabled::).
+By default, this is set to code::"^http":: (i.e., it opens the menu all links that begin with teletype::http::).
+To exclude addresses such as teletype::localhost:: from this behavior, append a link::https://en.wikipedia.org/wiki/Regular_expression#Assertions#negative lookahead::, e.g.: code::"^https?:\/\/(?!localhost|127\..*)"::.
 
 method:: goTo
-Go to url with singleton instance or a new window, depending on the code::openNewWindows:: setting.
+When using the SCIDE, go to teletype::url:: in the built-in helpbrowser;
+otherwise, go to url with singleton code::HelpBrowser:: instance or a new window, depending on the code::openNewWindows:: setting.
 
 method:: openHelpFor
 Open the relevant help page for given text in the singleton HelpBrowser instance.

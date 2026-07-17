@@ -8,7 +8,7 @@ TestUGen_Duty : UnitTest {
 	}
 
 	tearDown {
-		server.quit.remove;
+		server.quitSync.remove;
 	}
 
 	/*

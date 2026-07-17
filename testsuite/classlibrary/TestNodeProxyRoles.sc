@@ -11,7 +11,7 @@ TestNodeProxyRoles : UnitTest {
 
 	tearDown {
 		proxy.clear;
-		server.quit;
+		server.quitSync;
 		server.remove;
 	}
 

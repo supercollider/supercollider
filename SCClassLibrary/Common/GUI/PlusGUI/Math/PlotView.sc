@@ -3,7 +3,7 @@ Plot {
 
 	var <>plotter;
 	var <value, <bounds, <plotBounds, <>drawGrid;
-	var <spec, <domainSpec;
+	var <spec, <domainSpec, prDomainSpec;
 	var <font, <fontColor, <gridColorX, <gridColorY, <plotColor, <>backgroundColor, <plotMode;
 	var <labelX, <labelY, <labelFont, <labelFontColor;
 	var <gridOnX = true, <gridOnY = true;
@@ -12,6 +12,7 @@ Plot {
 	var <>labelMargin = 2;  // margin around tick or axis labels
 	var <>borderMargin = 3; // margin separating the edge of the view from its inner elements
 	var <>hideLabelsHeightRatio = 1.2, <>hideLabelsWidthRatio = 1.5; // hide labels below plot:labels ratio
+	var domainPad = 0.0, halfBinWidthPx = 0.0; // for steplike data width
 	var valueCache, resolution;
 
 	*initClass {
@@ -209,6 +210,7 @@ Plot {
 		value = array;
 		valueCache = nil;
 	}
+
 	spec_ { |sp|
 		spec = sp;
 		if(gridOnY and: { spec.notNil }) {
@@ -218,15 +220,37 @@ Plot {
 			drawGrid.vertGrid = nil;
 		};
 	}
+
 	domainSpec_ { |sp|
 		domainSpec = sp;
-		if(gridOnX and: { domainSpec.notNil }) {
-			drawGrid.horzGrid = domainSpec.grid;
+
+		// update private domain specs to give visual padding to the beginning and end of the data
+		if(value.size > 1) {
+			domainPad = if(this.hasCenteredSteplikeDisplay) {
+				if(plotter.domain.isNil)
+				{ 0.5 } // domain step defaults to 1
+				{ plotter.domain.differentiate.drop(1).minItem / 2 }
+			} {
+				0.0
+			};
+
+			prDomainSpec = domainSpec.copy;
+			prDomainSpec
+			.minval_(domainSpec.minval - domainPad)
+			.maxval_(domainSpec.maxval + domainPad);
+		} {
+			prDomainSpec = domainSpec;
+			domainPad = if(this.hasCenteredSteplikeDisplay) { 0.5 } { 0.0 };
+		};
+
+		if(gridOnX and: { prDomainSpec.notNil }) {
+			drawGrid.horzGrid = prDomainSpec.grid;
 			this.unitLocation_(this.unitLocation); // updates unit labels if enabled
 		} {
 			drawGrid.horzGrid = nil;
 		};
 	}
+
 	plotColor_ { |c|
 		plotColor = c.as(Array);
 	}
@@ -271,7 +295,7 @@ Plot {
 	}
 	gridOnX_ { |bool|
 		gridOnX = bool;
-		drawGrid.horzGrid = if(gridOnX,{domainSpec.grid},{nil});
+		drawGrid.horzGrid = if(gridOnX, { prDomainSpec.grid }, { nil });
 	}
 	gridOnY_ { |bool|
 		gridOnY= bool;
@@ -374,20 +398,23 @@ Plot {
 	}
 
 	domainCoordinates { |size|
-		var range, vals;
+		var vals, domainRange;
 
-		vals = if (plotter.domain.notNil) {
-			domainSpec.unmap(plotter.domain);
+		if (plotter.domain.notNil) {
+			vals = prDomainSpec.unmap(plotter.domain);
 		} {
-			range = domainSpec.range;
-			if (range == 0.0 or: { size == 1 }) {
-				0.5.dup(size) // put the values in the middle of the plot
+			if (size == 1 or: { domainSpec.range == 0.0 }) {
+				vals = 0.5.dup(size) // put the values in the middle of the plot
 			} {
-				domainSpec.unmap(
+				vals = prDomainSpec.unmap(
 					Array.interpolation(size, domainSpec.minval, domainSpec.maxval)
 				);
 			}
 		};
+
+		domainRange = prDomainSpec.range;
+		if(domainRange == 0) { domainRange = 1 };
+		halfBinWidthPx = domainPad / domainRange * plotBounds.width;
 
 		^plotBounds.left + (vals * plotBounds.width);
 	}
@@ -495,11 +522,51 @@ Plot {
 		this.dots(x, y, radius, fill: true);
 	}
 
+	dlevels { |x, y, radius|
+		this.levels(x, y);
+		this.dots(x, y, radius, fill: true);
+	}
+
+	plevels { |x, y, radius|
+		this.levels(x, y);
+		this.dots(x, y, radius, fill: false);
+	}
+
+	dlevelsCentered { |x, y, radius|
+		this.levelsCentered(x, y);
+		this.dots(x, y, radius, fill: true);
+	}
+
+	plevelsCentered { |x, y, radius|
+		this.levelsCentered(x, y);
+		this.dots(x, y, radius, fill: false);
+	}
+
 	levels { |x, y|
 		Pen.smoothing_(false);
 		y.size.do { |i|
-			Pen.moveTo(x[i] @ y[i]);
-			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			Pen.moveTo(Point(x[i], y[i]));
+			Pen.lineTo(Point(x[i + 1] ?? { plotBounds.right }, y[i]));
+		};
+		Pen.stroke
+	}
+
+	psteps { |x, y, radius|
+		this.steps(x, y);
+		this.dots(x, y, radius, fill: false);
+	}
+
+	dsteps { |x, y, radius|
+		this.steps(x, y);
+		this.dots(x, y, radius, fill: true);
+	}
+
+
+	levelsCentered { |x, y|
+		Pen.smoothing_(false);
+		y.size.do { |i|
+			Pen.moveTo(Point(x[i] - halfBinWidthPx, y[i]));
+			Pen.lineTo(Point(x[i] + halfBinWidthPx, y[i]));
 		};
 		Pen.stroke
 	}
@@ -508,24 +575,29 @@ Plot {
 		Pen.smoothing_(false);
 		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
-			Pen.lineTo(x[i] @ y[i]);
-			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			Pen.lineTo(Point(x[i], y[i]));
+			Pen.lineTo(Point(x[i + 1] ?? { plotBounds.right }, y[i]));
 		};
 		Pen.stroke;
 	}
 
 	bars { |x, y|
+		var gap = halfBinWidthPx * 0.1;
+		var xOffset = halfBinWidthPx.neg + gap;
+		var barWidth = halfBinWidthPx * 2 - (2 * gap);
+		var centery = 0.linlin(this.spec.minval, this.spec.maxval, plotBounds.bottom, plotBounds.top, clip: nil);
+
 		Pen.smoothing_(false);
+
 		y.size.do { |i|
 			var p = x[i] @ y[i];
-			var nextx = x[i + 1] ?? {plotBounds.right};
-			var centery = 0.linlin(this.spec.minval, this.spec.maxval, plotBounds.bottom, plotBounds.top, clip:nil);
+			var nextx = x[i + 1] ?? { plotBounds.right };
 			var rely = y[i] - centery;
-			var gap = (nextx - x[i]) * 0.1;
+
 			if (rely < 0) {
-				Pen.addRect(Rect(x[i] + gap, centery + rely, nextx- x[i] - (2 * gap), rely.abs))
+				Pen.addRect(Rect(x[i] + xOffset, centery + rely, barWidth, rely.abs))
 			} {
-				Pen.addRect(Rect(x[i] + gap, centery, nextx - x[i] - ( 2 * gap), rely))
+				Pen.addRect(Rect(x[i] + xOffset, centery, barWidth, rely))
 			}
 		};
 		Pen.fill
@@ -611,8 +683,8 @@ Plot {
 		ySpec = ControlSpec( ptLeft.y, ptRight.y );
 		ptLo = Point();
 		ptHi = Point();
-		ptLo.x = domainSpec.unmap(iLo) * plotBounds.width + plotBounds.left;
-		ptHi.x = domainSpec.unmap(iHi) * plotBounds.width + plotBounds.left;
+		ptLo.x = prDomainSpec.unmap(iLo) * plotBounds.width + plotBounds.left; // TODO: validate use of prDomainSpec
+		ptHi.x = prDomainSpec.unmap(iHi) * plotBounds.width + plotBounds.left;
 		ptLo.y = ySpec.map( xSpec.unmap(ptLo.x) );
 		ptHi.y = ySpec.map( xSpec.unmap(ptHi.x) );
 
@@ -631,7 +703,7 @@ Plot {
 	}
 
 	getRelativePositionX { |x|
-		^domainSpec.map((x - plotBounds.left) / plotBounds.width)
+		^prDomainSpec.map((x - plotBounds.left) / plotBounds.width)
 	}
 
 	getRelativePositionY { |y|
@@ -639,32 +711,46 @@ Plot {
 	}
 
 	hasSteplikeDisplay {
-		^#[\levels, \steps, \bars].includesAny(plotMode)
+		^#[\levels, \plevels, \dlevels, \steps, \psteps, \dsteps, \bars].includesAny(plotMode)
+	}
+
+	hasCenteredSteplikeDisplay {
+		^#[\levelsCentered, \plevelsCentered, \dlevelsCentered, \bars].includesAny(plotMode)
+	}
+
+	hasHoldlikeDisplay {
+		^#[\levels, \plevels, \dlevels, \steps, \psteps, \dsteps].includesAny(plotMode)
 	}
 
 	getIndex { |x|
 		var ycoord = this.dataCoordinates;
-		var xcoord = this.domainCoordinates(ycoord.size);
-		var binwidth = 0;
-		var offset;
+		var xPosNorm, idxPlusOne;
 
-		if (plotter.domain.notNil) {
-			if (this.hasSteplikeDisplay) {
-				// round down to index
-				^plotter.domain.indexInBetween(this.getRelativePositionX(x)).floor.asInteger
+		^if (plotter.domain.notNil) {
+			if(this.hasHoldlikeDisplay) {
+				idxPlusOne = this.domainCoordinates(nil).indexOfGreaterThan(x);
+				if(idxPlusOne.isNil) {
+					value.size - 1
+				} {
+					max(idxPlusOne - 1, 0)
+				}
 			} {
-				// round to nearest index
-				^plotter.domain.indexIn(this.getRelativePositionX(x))
-			};
+				this.domainCoordinates(nil).indexIn(x)
+			}
 		} {
-			if (xcoord.size > 0) {
-				binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0]
-			};
-			offset = if(this.hasSteplikeDisplay) { binwidth * 0.5 } { 0.0 };
-
-			^(  // domain unspecified, values are evenly distributed between either side of the plot
-				((x - offset - plotBounds.left) / plotBounds.width) * (value.size - 1)
-			).round.clip(0, value.size-1).asInteger
+			// domain is nil, values are evenly distributed between either side of the plot
+			xPosNorm = (x - plotBounds.left) / plotBounds.width;
+			case
+			{ this.hasCenteredSteplikeDisplay } {
+				xPosNorm * value.size - 0.5
+			}
+			{ this.hasHoldlikeDisplay } {
+				xPosNorm * (value.size - 1) - 0.5
+			}
+			{ // otherwise
+				xPosNorm * (value.size - 1)
+			}
+			.round.clip(0, value.size-1).asInteger;
 		}
 	}
 
@@ -720,14 +806,24 @@ Plot {
 
 
 Plotter {
+	classvar <modes = #[ // valid modes, order determines hotkey switching order
+		\points, \dots,
+		\lines, \linear, \plines, \dlines,
+		\levels, \dlevels, \plevels,
+		\levelsCentered, \dlevelsCentered, \plevelsCentered,
+		\stems, \pstems, \dstems,
+		\steps, \psteps, \dsteps,
+		\filled, \pfilled, \dfilled,
+		\bars
+	];
 
-	var <>name;
+	var <>name; // copyArgs
 	var <>bounds, <>parent;
 	var <value, <data, <domain;
-	var <plots, <specs, <domainSpecs, plotColor;
+	var <plots, <specs, <domainSpecs, plotColor, <domainSpecsAreForSteplikeData = false;
 	var <cursorPos, plotMode, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
-	var modes, <interactionView;
+	var modeIterator, <interactionView;
 	var <editPlotIndex, <editPos;
 	var <>drawFunc, <>editFunc;
 	var <showUnits = true, <unitLocation = \axis; // \ticks or \axis
@@ -738,8 +834,15 @@ Plotter {
 	}
 
 	makeWindow { |argParent, argBounds|
+		var modesTmp, rmvIdx;
+
 		parent = argParent ? parent;
 		bounds = argBounds ? bounds;
+
+		modesTmp = modes.copy;
+		rmvIdx = modesTmp.indexOf(\lines); // don't need to iterate over synonyms
+		rmvIdx !? { modesTmp.removeAt(rmvIdx) };
+		modeIterator = modesTmp.iter.loop;
 
 		if(parent.isNil) {
 			parent = Window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
@@ -756,8 +859,6 @@ Plotter {
 			interactionView.drawFunc = { this.draw };
 		};
 		this.prSetUpInteractionView;
-
-		modes = [\points, \dots, \levels, \steps, \lines, \plines, \dlines, \stems, \pstems, \dstems, \filled, \pfilled, \dfilled, \bars].iter.loop;
 		this.plotMode = \linear;
 		this.plotColor = GUI.skins.plot.plotColor;
 		// at this point no values are set, so no Plots have been created
@@ -857,7 +958,7 @@ Plotter {
 					},
 					// toggle plot mode
 					$m, {
-						this.plotMode = modes.next;
+						this.plotMode = modeIterator.next;
 					},
 					// toggle editing
 					$e, {
@@ -927,7 +1028,9 @@ Plotter {
 			)).throw;
 		} {
 			domain = domainArray
-		}
+		};
+
+		this.refresh;
 	}
 
 	superpose_ { |flag|
@@ -1081,11 +1184,17 @@ Plotter {
 
 	plotMode_ { |modes|
 		plotMode = modes.asArray;
+		plotMode.do{ |mode|
+			if(this.class.modes.includes(mode).not, {
+				"% is not a valid plotMode, valid plot modes are: %".format(mode, this.class.modes).warn;
+				^this
+			})
+		};
 		plots.do { |plot, i|
 			// rotate to ensure proper behavior with superpose
 			plot.plotMode_(plotMode.rotate(i.neg))
 		};
-		this.refresh;
+		this.updatePlotSpecs;
 	}
 
 	plotMode {
@@ -1232,7 +1341,7 @@ Plotter {
 
 	calcDomainSpecs {
 		// for now, a simple version
-		domainSpecs = data.collect { |val|
+		domainSpecs = data.collect { |val|  // TODO?
 			[0, val.size - 1, \lin].asSpec
 		}
 	}
@@ -1312,11 +1421,12 @@ Plotter {
 
 		numChannels !? { array = array.unlace(numChannels) };
 		array = array.collect {|elem, i|
-			case {elem.isKindOf(Env)}		{elem.asMultichannelSignal.flop}
-				 {elem.isKindOf(Wavetable)} {elem.asSignal}
-				 {elem.isNil}				{Error("Cannot plot array: non-numeric value at index %".format(i)).throw}
-  				 {hasSubArrays}				{elem.asArray} 
-			  	 {elem};
+			case
+			{ elem.isKindOf(Env) }       { elem.asMultichannelSignal.flop }
+			{ elem.isKindOf(Wavetable) } { elem.asSignal }
+			{ elem.isNil }               { Error("Cannot plot array: non-numeric value at index %".format(i)).throw }
+			{ hasSubArrays }             { elem.asArray }
+			{ elem };
 		};
 
 		plotter.setValue(
@@ -1431,7 +1541,7 @@ Plotter {
 	plot { |name, bounds, minval, maxval, separately = false, parent|
 		var plotter, action;
 
-		if(server.warnIfNotRunning(thisMethod)) { ^nil };		
+		if(server.warnIfNotRunning(thisMethod)) { ^nil };
 
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
 

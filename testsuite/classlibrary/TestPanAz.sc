@@ -7,7 +7,7 @@ TestPanAz : UnitTest {
 	}
 
 	tearDown {
-		if(server.serverRunning) { server.quit };
+		if(server.serverRunning) { server.quitSync };
 		server.remove;
 	}
 

@@ -7,7 +7,7 @@ TestIOUGens : UnitTest {
 	}
 
 	tearDown {
-		server.quit;
+		server.quitSync;
 		server.remove;
 	}
 

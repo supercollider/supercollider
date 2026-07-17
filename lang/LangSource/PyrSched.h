@@ -73,3 +73,5 @@ inline int lockLanguageOrQuit(std::atomic<bool> const& shouldBeRunning) {
     }
     return 0;
 }
+
+inline constexpr double dInfinity = std::numeric_limits<double>::infinity();

@@ -56,7 +56,7 @@
 #endif
 
 struct InternalSynthServerGlobals {
-    struct World* mWorld;
+    World* mWorld;
     int mNumSharedControls;
     float* mSharedControls;
 };
@@ -72,7 +72,7 @@ std::unique_ptr<InPort::UDP> gUDPport {};
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr, *s_recvrawmsg, *s_ipv4, *s_ipv6, *s_all;
-extern bool compiledOK;
+extern bool gCompiledOK;
 
 std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomUdpPorts;
 std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomTcpPorts;
@@ -264,7 +264,7 @@ static void localServerReplyFunc(struct ReplyAddress* inReplyAddr, char* inBuf, 
     bool isBundle = IsBundle(inBuf);
 
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         PyrObject* replyObj = ConvertReplyAddress(inReplyAddr);
         if (isBundle) {
             PerformOSCBundle(inSize, inBuf, replyObj, gUDPport->RealPortNum());
@@ -376,10 +376,10 @@ inline size_t OSCStrLen(char* str) { return (strlen(str) + 4) & ~3; }
 int makeSynthBundle(big_scpacket* packet, PyrSlot* slots, int size, bool useElapsed);
 
 static void netAddrTcpClientNotifyFunc(void* clientData) {
-    extern bool compiledOK;
+    extern bool gCompiledOK;
 
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         PyrObject* netAddrObj = (PyrObject*)clientData;
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
@@ -458,7 +458,7 @@ static int prNetAddr_SendBundle(VMGlobals* g, int numArgsPushed) {
     int err = slotDoubleVal(args, &time);
     if (!err) {
         time += slotRawFloat(&g->thread->seconds);
-        SetFloat(args, time);
+        SetFloat<AssertDouble::Okay>(args, time);
     }
     int numargs = numArgsPushed - 1;
     makeSynthBundle(&packet, args, numargs, true);
@@ -618,8 +618,6 @@ static PyrInt8Array* MsgToInt8Array(sc_msg_iter& msg, bool runGC) {
     return obj;
 }
 
-static const double dInfinity = std::numeric_limits<double>::infinity();
-
 // Convert raw OSC message to Array.
 static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
     if ((inSize & 3) != 0) {
@@ -658,10 +656,10 @@ static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
             SetInt(slots + i + 1, msg.geti());
             break;
         case 'f':
-            SetFloat(slots + i + 1, msg.getf());
+            SetFloat<AssertDouble::CouldBeBadNan>(slots + i + 1, msg.getf());
             break;
         case 'd':
-            SetFloat(slots + i + 1, msg.getd());
+            SetFloat<AssertDouble::CouldBeBadNan>(slots + i + 1, msg.getd());
             break;
         case 's':
             SetSymbol(slots + i + 1, getsym(msg.gets()));
@@ -675,7 +673,7 @@ static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
             SetChar(slots + i + 1, (char)msg.geti());
             break;
         case 't':
-            SetFloat(slots + i + 1, OSCToElapsedTime(msg.gett()));
+            SetFloat<AssertDouble::CouldBeBadNan>(slots + i + 1, OSCToElapsedTime(msg.gett()));
             break;
 
             // argument tags without any associated value
@@ -688,7 +686,7 @@ static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
             msg.count++;
             break;
         case 'I':
-            SetFloat(slots + i + 1, dInfinity);
+            SetFloat<AssertDouble::Okay>(slots + i + 1, dInfinity);
             msg.count++;
             break;
         case 'N':
@@ -735,7 +733,7 @@ static PyrObject* ConvertOSCBundle(int inSize, const char* inData) {
 
     if (oscTime != 1) {
         double seconds = static_cast<double>(oscTime) * kOSCtoSecs;
-        SetFloat(slots, seconds);
+        SetFloat<AssertDouble::Okay>(slots, seconds);
     } else {
         SetNil(slots); // immediate
     }
@@ -787,7 +785,7 @@ void PerformOSCBundle(int inSize, const char* inData, PyrObject* replyObj, int i
             ++g->sp;
             SetObject(g->sp, g->process);
             ++g->sp;
-            SetFloat(g->sp, seconds);
+            SetFloat<AssertDouble::CouldBeBadNan>(g->sp, seconds);
             ++g->sp;
             SetObject(g->sp, replyObj);
             ++g->sp;
@@ -810,7 +808,7 @@ void PerformOSCMessage(int inSize, const char* inData, PyrObject* replyObj, int 
     ++g->sp;
     SetObject(g->sp, g->process);
     ++g->sp;
-    SetFloat(g->sp, time); // time
+    SetFloat<AssertDouble::CouldBeBadNan>(g->sp, time); // time
     ++g->sp;
     SetObject(g->sp, replyObj);
     ++g->sp;
@@ -827,9 +825,9 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
     const auto isBundle = IsBundle(inPacket->mData.get());
 
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         PyrObject* replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
-        if (compiledOK) {
+        if (gCompiledOK) {
             if (isBundle) {
                 PerformOSCBundle(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum);
             } else {
@@ -843,7 +841,7 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
 void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddress& replyAddress, int inPortNum,
                        double time) {
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gCompiledOK) {
         VMGlobals* g = gMainVMGlobals;
 
         PyrString* string = newPyrStringN(g->gc, inSize, 0, true);
@@ -854,7 +852,7 @@ void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddre
         ++g->sp;
         SetObject(g->sp, g->process);
         ++g->sp;
-        SetFloat(g->sp, time); // time
+        SetFloat<AssertDouble::CouldBeBadNan>(g->sp, time); // time
         ++g->sp;
         SetObject(g->sp, ConvertReplyAddress(&replyAddress));
         ++g->sp;
@@ -1370,11 +1368,11 @@ int prGetSharedControl(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
     if (index < 0 || index >= gInternalSynthServer.mNumSharedControls) {
-        SetFloat(a, 0.);
+        SetFloat<AssertDouble::Okay>(a, 0.);
         return errNone;
     }
     float val = gInternalSynthServer.mSharedControls[index];
-    SetFloat(a, val);
+    SetFloat<AssertDouble::CouldBeBadNan>(a, val);
     return errNone;
 }
 
@@ -1477,7 +1475,7 @@ int prGetControlBusValue(VMGlobals* g, int numArgsPushed) {
     server_shared_memory_client* client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
 
     float value = client->get_control_busses()[busIndex];
-    SetFloat(a, value);
+    SetFloat<AssertDouble::CouldBeBadNan>(a, value);
     return errNone;
 }
 
@@ -1510,7 +1508,7 @@ int prGetControlBusValues(VMGlobals* g, int numArgsPushed) {
 
     for (int i = 0; i != numberOfChannels; ++i) {
         float value = client->get_control_busses()[busIndex + i];
-        SetFloat(ret->slots + i, value);
+        SetFloat<AssertDouble::CouldBeBadNan>(ret->slots + i, value);
     }
 
     SetObject(a, ret);

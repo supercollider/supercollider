@@ -34,7 +34,6 @@
 #include <yaml-cpp/parser.h>
 
 #include <QApplication>
-#include <QDebug>
 #include <QDialog>
 #include <QFileInfo>
 #include <QHBoxLayout>
@@ -71,7 +70,7 @@ public:
         layout->addWidget(mListView);
         layout->setContentsMargins(1, 1, 1, 1);
 
-        connect(mListView, SIGNAL(activated(QModelIndex)), this, SLOT(accept()));
+        connect(mListView, &QListView::activated, this, &DocumentSelectPopUp::accept);
 
         mListView->setFocus(Qt::OtherFocusReason);
 
@@ -222,7 +221,13 @@ void EditorTabBar::mouseDoubleClickEvent(QMouseEvent* event) {
 }
 
 void EditorTabBar::showContextMenu(QMouseEvent* event) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mTabUnderCursor = tabAt(event->pos());
+    QPoint globalPos = event->screenPos().toPoint();
+#else
+    mTabUnderCursor = tabAt(event->position().toPoint());
+    QPoint globalPos = event->globalPosition().toPoint();
+#endif
 
     QMenu* menu = new QMenu(this);
     // Cannot have a close tab action if we are not over a tab
@@ -234,7 +239,7 @@ void EditorTabBar::showContextMenu(QMouseEvent* event) {
         menu->addAction(tr("Close Tabs to the Right"), this, SLOT(onCloseTabsToTheRight()));
     }
 
-    menu->popup(event->screenPos().toPoint());
+    menu->popup(globalPos);
 }
 
 void EditorTabBar::onCloseTab() {
@@ -293,7 +298,7 @@ MultiEditor::MultiEditor(Main* main, QWidget* parent):
 
     makeSignalConnections();
 
-    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)), this, SLOT(applySettings(Settings::Manager*)));
+    connect(main, &Main::applySettingsRequest, this, &MultiEditor::applySettings);
 
     createActions();
 
@@ -305,15 +310,15 @@ MultiEditor::MultiEditor(Main* main, QWidget* parent):
 void MultiEditor::makeSignalConnections() {
     DocumentManager* docManager = Main::documentManager();
 
-    connect(docManager, SIGNAL(opened(Document*, int, int)), this, SLOT(onOpen(Document*, int, int)));
-    connect(docManager, SIGNAL(closed(Document*)), this, SLOT(onClose(Document*)));
-    connect(docManager, SIGNAL(saved(Document*)), this, SLOT(update(Document*)));
-    connect(docManager, SIGNAL(showRequest(Document*, int, int)), this, SLOT(show(Document*, int, int)));
-    connect(docManager, SIGNAL(titleChanged(Document*)), this, SLOT(update(Document*)));
+    connect(docManager, &DocumentManager::opened, this, &MultiEditor::onOpen);
+    connect(docManager, &DocumentManager::closed, this, &MultiEditor::onClose);
+    connect(docManager, &DocumentManager::saved, this, &MultiEditor::update);
+    connect(docManager, &DocumentManager::showRequest, this, &MultiEditor::show);
+    connect(docManager, &DocumentManager::titleChanged, this, &MultiEditor::update);
 
-    connect(mTabs, SIGNAL(currentChanged(int)), this, SLOT(onCurrentTabChanged(int)));
-    connect(mTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(onCloseRequest(int)));
-    connect(mTabs, SIGNAL(tabMoved(int, int)), this, SLOT(updateDocOrder(int, int)));
+    connect(mTabs, &QTabBar::currentChanged, this, &MultiEditor::onCurrentTabChanged);
+    connect(mTabs, &QTabBar::tabCloseRequested, this, &MultiEditor::onCloseRequest);
+    connect(mTabs, &QTabBar::tabMoved, this, &MultiEditor::updateDocOrder);
 
     mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)), this,
                         SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
@@ -535,19 +540,19 @@ void MultiEditor::createActions() {
 #else
     action->setShortcut(QKeySequence(Qt::ALT | Qt::Key_E, Qt::ALT | Qt::Key_V));
 #endif
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowWhitespace(bool)));
+    connect(action, &QAction::triggered, this, &MultiEditor::setShowWhitespace);
     settings->addAction(action, "editor-toggle-show-whitespace", editorCategory);
 
     mActions[ShowLinenumber] = action = new QAction(tr("Show Line Number"), this);
     action->setCheckable(true);
     action->setShortcut(tr("Ctrl+Alt+#", "Show Line Number"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowLinenumber(bool)));
+    connect(action, &QAction::triggered, this, &MultiEditor::setShowLinenumber);
     settings->addAction(action, "editor-toggle-show-line-number", editorCategory);
 
     mActions[ShowAutocompleteHelp] = action = new QAction(tr("Show Autocomplete Help"), this);
     action->setCheckable(true);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowAutocompleteHelp(bool)));
+    connect(action, &QAction::triggered, this, &MultiEditor::setShowAutocompleteHelp);
     settings->addAction(action, "editor-toggle-show-autocomplete-help", editorCategory);
 
     mActions[IndentWithSpaces] = action = new QAction(tr("Use Spaces for Indentation"), this);
@@ -564,7 +569,7 @@ void MultiEditor::createActions() {
 #else
     action->setShortcut(tr("Meta+Tab", "Next Document"));
 #endif
-    connect(action, SIGNAL(triggered()), this, SLOT(showNextDocument()));
+    connect(action, &QAction::triggered, this, &MultiEditor::showNextDocument);
     settings->addAction(action, "editor-document-next", editorCategory);
 
     mActions[PreviousDocument] = action = new QAction(tr("Previous Document"), this);
@@ -573,31 +578,31 @@ void MultiEditor::createActions() {
 #else
     action->setShortcut(tr("Meta+Shift+Tab", "Previous Document"));
 #endif
-    connect(action, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
+    connect(action, &QAction::triggered, this, &MultiEditor::showPreviousDocument);
     settings->addAction(action, "editor-document-previous", editorCategory);
 
     mActions[SwitchDocument] = action = new QAction(tr("Switch Document"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
+    connect(action, &QAction::triggered, this, &MultiEditor::switchDocument);
     settings->addAction(action, "editor-document-switch", editorCategory);
 
     mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
     // action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
-    connect(action, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
+    connect(action, &QAction::triggered, this, &MultiEditor::splitHorizontally);
     settings->addAction(action, "editor-split-right", editorCategory);
 
     mActions[SplitVertically] = action = new QAction(tr("Split To Bottom"), this);
     // action->setShortcut( tr("Ctrl+P, 2", "Split To Bottom"));
-    connect(action, SIGNAL(triggered()), this, SLOT(splitVertically()));
+    connect(action, &QAction::triggered, this, &MultiEditor::splitVertically);
     settings->addAction(action, "editor-split-bottom", editorCategory);
 
     mActions[RemoveCurrentSplit] = action = new QAction(tr("Remove Current Split"), this);
     // action->setShortcut( tr("Ctrl+P, 1", "Remove Current Split"));
-    connect(action, SIGNAL(triggered()), this, SLOT(removeCurrentSplit()));
+    connect(action, &QAction::triggered, this, &MultiEditor::removeCurrentSplit);
     settings->addAction(action, "editor-split-remove", editorCategory);
 
     mActions[RemoveAllSplits] = action = new QAction(tr("Remove All Splits"), this);
     // action->setShortcut( tr("Ctrl+P, 0", "Remove All Splits"));
-    connect(action, SIGNAL(triggered()), this, SLOT(removeAllSplits()));
+    connect(action, &QAction::triggered, this, &MultiEditor::removeAllSplits);
     settings->addAction(action, "editor-split-remove-all", editorCategory);
 
     // Language
@@ -825,12 +830,17 @@ void MultiEditor::loadSplitterState(MultiSplitter* splitter, const QVariantMap& 
 
     QVariantList childrenData = data.value("elements").value<QVariantList>();
     foreach (const QVariant& childVar, childrenData) {
-        if (childVar.type() == QVariant::List) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        int typeId = childVar.userType();
+#else
+        int typeId = childVar.typeId();
+#endif
+        if (typeId == QMetaType::QVariantList) {
             CodeEditorBox* childBox = newBox(splitter);
             splitter->addWidget(childBox);
             QVariantList childBoxData = childVar.value<QVariantList>();
             loadBoxState(childBox, childBoxData, documentList);
-        } else if (childVar.type() == QVariant::Map) {
+        } else if (typeId == QMetaType::QVariantMap) {
             MultiSplitter* childSplitter = new MultiSplitter(this);
             splitter->addWidget(childSplitter);
             QVariantMap childSplitterData = childVar.value<QVariantMap>();
@@ -1092,7 +1102,7 @@ int MultiEditor::tabForDocument(Document* doc) {
 CodeEditorBox* MultiEditor::newBox(MultiSplitter* currSplitter) {
     CodeEditorBox* box = new CodeEditorBox(currSplitter);
 
-    connect(box, SIGNAL(activated(CodeEditorBox*)), this, SLOT(onBoxActivated(CodeEditorBox*)));
+    connect(box, &CodeEditorBox::activated, this, &MultiEditor::onBoxActivated);
 
     return box;
 }

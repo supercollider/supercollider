@@ -16,34 +16,34 @@ jobs:
           - job-name: "universal arm64 x64 with ctest"
             os-version: "15"
             xcode-version: "16.0"
-            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-version: "6.8.3" # will use qt from aqtinstall
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
-            deployment-target: "11"
+            deployment-target: "12"
             cmake-architectures: "x86_64;arm64"
             homebrew-packages: ""
             homebrew-uninstall: "readline"
-            vcpkg-packages: "readline libsndfile fftw3"
+            vcpkg-packages: "readline libsndfile"
             vcpkg-triplet: "arm64-osx-release-supercollider"
             vcpkg-triplet-other: "x64-osx-release-supercollider"
             vcpkg-triplet-universal: "universal" # we are not actually installing using this triplet, the packages will be manually copied there
-            extra-cmake-flags: "-D SYSTEM_PORTAUDIO=OFF" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
+            extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
             artifact-suffix: "macOS-universal"
             ctest: true
 
           - job-name: "x64 legacy"
-            os-version: "13"
-            xcode-version: "14.1"
+            os-version: "15-intel"
+            xcode-version: "16.0"
             qt-version: "5.15.2" # will use qt from aqtinstall
             qt-modules: 'qtwebengine'
             deployment-target: "10.15"
             cmake-architectures: x86_64
             homebrew-packages: "readline portaudio"
-            vcpkg-packages: "libsndfile fftw3"
+            vcpkg-packages: "libsndfile"
             # homebrew-packages: "" # use this instead when cross-compiling for x86_64 on arm64
             # homebrew-uninstall: "readline" # use this instead when cross-compiling for x86_64 on arm64
-            # vcpkg-packages: "readline portaudio libsndfile fftw3" # use this instead when cross-compiling for x86_64 on arm64
+            # vcpkg-packages: "readline portaudio libsndfile" # use this instead when cross-compiling for x86_64 on arm64
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
-            extra-cmake-flags: ""
+            extra-cmake-flags: "-D SC_COMPILER_ARCH_FLAGS='-march=ivybridge'"
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
             ctest: false
 
@@ -52,20 +52,19 @@ jobs:
             xcode-version: "16.0"
             deployment-target: ""
             cmake-architectures: "arm64"
-            homebrew-packages: "qt@6 libsndfile readline fftw portaudio yaml-cpp boost"
+            homebrew-packages: "qt@6 libsndfile readline portaudio yaml-cpp boost"
             vcpkg-packages: ""
             vcpkg-triplet: ""
-            extra-cmake-flags: "-D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
+            extra-cmake-flags: "-D SYSTEM_PORTAUDIO=ON -D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
             ctest: true
 
-          - job-name: "x64 shared libscsynth"
-            os-version: "13"
-            xcode-version: "15.2"
-            qt-version: "6.7.3" # will use qt from aqtinstall
+          - job-name: "arm64 shared libscsynth"
+            os-version: "15"
+            xcode-version: "16.0"
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: ""
-            cmake-architectures: x86_64
-            homebrew-packages: "libsndfile readline fftw portaudio"
+            cmake-architectures: "arm64"
+            homebrew-packages: "qt@6 libsndfile readline"
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D LIBSCSYNTH=ON"
@@ -88,7 +87,7 @@ jobs:
       BREW_UNIVERSAL_WORKDIR: ${{ github.workspace }}/brew-universal
       SKIP_SIGNING: 1 # for brew-install-universal
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -99,7 +98,7 @@ jobs:
           echo "week=$(date '+%U')" >> $GITHUB_OUTPUT
 
       - name: cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/ccache
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-${{ steps.current-date.outputs.stamp }}
@@ -109,7 +108,7 @@ jobs:
         run: rm -rf $(brew --cache)/downloads
 
       - name: cache homebrew downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
@@ -118,7 +117,7 @@ jobs:
 
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
@@ -184,7 +183,7 @@ jobs:
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          CMAKE_FLAGS="-G Xcode -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
+          CMAKE_FLAGS="-G Xcode ${{ matrix.extra-cmake-flags }}"
 
           if [[ -n "${{ matrix.vcpkg-triplet-universal }}" ]]; then
             export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
@@ -215,13 +214,13 @@ jobs:
           hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE || hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE
 
       - name: upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
 
       - name: Run CTests
-        continue-on-error: true
+        continue-on-error: false
         if: matrix.ctest
         run: cmake --build $BUILD_PATH --config Release --target RUN_TESTS

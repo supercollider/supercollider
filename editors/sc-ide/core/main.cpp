@@ -40,7 +40,6 @@
 #include <QFileOpenEvent>
 #include <QLibraryInfo>
 #include <QTranslator>
-#include <QDebug>
 #include <QStyleFactory>
 
 #include "util/HelpBrowserWebSocketServices.hpp"
@@ -78,7 +77,7 @@ bool SingleInstanceGuard::tryConnect(QStringList const& arguments) {
 
         bool listening = mIpcServer->listen(serverName);
         if (listening) {
-            connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
+            connect(mIpcServer, &QLocalServer::newConnection, this, &SingleInstanceGuard::onNewIpcConnection);
             return false;
         }
     }
@@ -140,7 +139,7 @@ Main::Main(void):
     QtCollider::Mac::DisableAutomaticWindowTabbing();
 #endif
 
-    connect(mScProcess, SIGNAL(response(QString, QString)), mDocManager, SLOT(handleScLangMessage(QString, QString)));
+    connect(mScProcess, &ScProcess::response, mDocManager, &DocumentManager::handleScLangMessage);
 
     qApp->installEventFilter(this);
     qApp->installNativeEventFilter(this);

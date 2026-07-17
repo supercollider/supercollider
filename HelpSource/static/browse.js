@@ -3,7 +3,7 @@ var path = [];
 
 function GotoPath(p) {
     path = p.split(">");
-    var x = escape(p);
+    var x = encodeURIComponent(p);
     if(window.location.hash != x)
         window.location.hash = x;
     updateTree();
@@ -168,9 +168,9 @@ window.onload = function() {
     filter.onchange = onChange;
 
     buildCategoryTree();
-    GotoPath(unescape(window.location.hash.slice(1)));
+    GotoPath(decodeURIComponent(window.location.hash.slice(1)));
 }
 
 window.onhashchange = function() {
-    GotoPath(unescape(window.location.hash.slice(1)));
+    GotoPath(decodeURIComponent(window.location.hash.slice(1)));
 }

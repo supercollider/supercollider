@@ -67,7 +67,11 @@ public:
         QList<QByteArray> params = mm.parameterTypes();
 
         for (int i = 0; i < params.count(); ++i) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             int type = QMetaType::type(params.at(i).constData());
+#else
+            int type = QMetaType::fromName(params.at(i)).id();
+#endif
             if (type == QMetaType::Void)
                 qcErrorMsg(QString("QObject:connect: Don't know how to handle '%1', "
                                    "use qRegisterMetaType to register it.")

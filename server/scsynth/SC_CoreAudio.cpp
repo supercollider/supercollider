@@ -42,6 +42,12 @@
 
 #include "nova-tt/thread_priority.hpp"
 
+// NOVA_TT_PRIORITY_RT is defined in the thread_priority header - we do not want this set for emscripten
+// so we undo the definition.
+#ifdef __EMSCRIPTEN__
+#    undef NOVA_TT_PRIORITY_RT
+#endif
+
 
 int64 gStartupOSCTime = -1;
 
@@ -326,7 +332,7 @@ void Free_FromEngine_Msg(FifoMsg* inMsg) { World_Free(inMsg->mWorld, inMsg->mDat
 // =====================================================================
 // Audio driver (Common)
 
-SC_AudioDriver::SC_AudioDriver(struct World* inWorld):
+SC_AudioDriver::SC_AudioDriver(World* inWorld):
     mWorld(inWorld),
     mSampleTime(0),
     mNumSamplesPerCallback(0),
@@ -391,12 +397,12 @@ bool SC_AudioDriver::SendOscPacketMsgToEngine(FifoMsg& inMsg) {
     return mOscPacketsToEngine.Write(inMsg);
 }
 
-void SC_ScheduledEvent::FreeInRT(struct World* world, OSC_Packet* packet) {
+void SC_ScheduledEvent::FreeInRT(World* world, OSC_Packet* packet) {
     World_Free(world, packet->mData);
     World_Free(world, packet);
 }
 
-void SC_ScheduledEvent::FreeInNRT(struct World* world, OSC_Packet* packet) {
+void SC_ScheduledEvent::FreeInNRT(World* world, OSC_Packet* packet) {
     FifoMsg msg;
     msg.Set(world, FreeOSCPacket, nullptr, (void*)packet);
     world->hw->mAudioDriver->SendMsgFromEngine(msg);
@@ -467,13 +473,13 @@ bool SC_AudioDriver::Stop() {
 // Audio driver (CoreAudio)
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
 
-SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_CoreAudioDriver(inWorld); }
+SC_AudioDriver* SC_NewAudioDriver(World* inWorld) { return new SC_CoreAudioDriver(inWorld); }
 
 #endif
 
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO || SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
 
-SC_CoreAudioDriver::SC_CoreAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld), mInputBufList(0) {}
+SC_CoreAudioDriver::SC_CoreAudioDriver(World* inWorld): SC_AudioDriver(inWorld), mInputBufList(0) {}
 
 SC_CoreAudioDriver::~SC_CoreAudioDriver() {
     if (mInputBufList) {
@@ -1185,7 +1191,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 
     *outNumSamplesPerCallback = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
     if (mExplicitSampleRate) {
-        *outSampleRate = mExplicitSampleRate.get();
+        *outSampleRate = mExplicitSampleRate.value();
     } else {
         *outSampleRate = outputStreamDesc.mSampleRate;
     }
@@ -1942,7 +1948,7 @@ OSStatus AddDeviceListeners(AudioDeviceID inDevice, void* inClientData) {
 // Audio driver (CoreAudioIPHONE)
 
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIOIPHONE
-SC_iCoreAudioDriver::SC_iCoreAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld) { receivedIn = 0; }
+SC_iCoreAudioDriver::SC_iCoreAudioDriver(World* inWorld): SC_AudioDriver(inWorld) { receivedIn = 0; }
 
 SC_iCoreAudioDriver::~SC_iCoreAudioDriver() {}
 

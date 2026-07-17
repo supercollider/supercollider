@@ -32,10 +32,6 @@ endif()
 
 find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} COMPONENTS ${QT_IDE_COMPONENTS} REQUIRED)
 
-if(${CMAKE_COMPILER_IS_GNUCXX})
-    add_definitions(-Wreorder)
-endif()
-
 if (APPLE)
   include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
   set(ide_name ${scappbundlename})
@@ -227,7 +223,6 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${YAMLCPP_INCLUDE_DIR})
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
 # Needed for auto-generated forms headers:
@@ -279,12 +274,6 @@ endif()
 # This sets up the exe icon for windows.
 if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
- if(MINGW OR MSYS)
- set(CMAKE_RC_COMPILER_INIT windres)
- ENABLE_LANGUAGE(RC)
- SET(CMAKE_RC_COMPILE_OBJECT
- "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
- endif(MINGW OR MSYS)
 endif(WIN32)
 
 
@@ -320,6 +309,10 @@ add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} 
 
 set_target_properties(libscide PROPERTIES PREFIX "")
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(libscide PRIVATE "-Wreorder")
+endif()
+
 if(APPLE)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
     if(NOT SC_DISABLE_XCODE_CODESIGNING)
@@ -332,14 +325,11 @@ endif()
 
 target_link_libraries( libscide PUBLIC
     ${QT_IDE_LIBRARIES}
-    ${YAMLCPP_LIBRARY}
+    yaml-cpp
     oscpack
 )
 
 target_link_libraries( SuperCollider libscide)
-
-target_link_libraries( libscide PUBLIC boost_system_lib)
-include_directories(${boost_include_dirs})
 
 # This makes sclang/scide work with a Qt installation at a fixed location.
 set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -405,9 +395,9 @@ if(APPLE)
 
 elseif(WIN32)
 
-    if(NOT MSVC)
+    if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
-    endif(NOT MSVC)
+    endif()
 
     if(MSYS)
       add_custom_command(TARGET SuperCollider
@@ -476,7 +466,12 @@ endif()
 # See https://doc.qt.io/qt-5/osx-deployment.html for macdeployqt
 if(APPLE OR WIN32)
     if(APPLE)
-        find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
+            set(DEPLOY_PROG_NAME "macdeployqt6")
+        else()
+            set(DEPLOY_PROG_NAME "macdeployqt")
+        endif()
+        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
@@ -497,7 +492,7 @@ if(APPLE OR WIN32)
             ")
         endif()
         set(VERIFY_CMD "include(BundleUtilities)")
-        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6 AND SC_USE_QTWEBENGINE)
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6 AND "${Qt6_VERSION}" VERSION_LESS "6.9.3" AND SC_USE_QTWEBENGINE)
             # Fix deployment with qt from homebrew
             execute_process(COMMAND brew --prefix OUTPUT_VARIABLE BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
             get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
@@ -518,7 +513,6 @@ if(APPLE OR WIN32)
             endif()
         endif()
         if(SUPERNOVA)
-            get_target_property(LINK_FFTW libsupernova SUPERNOVA_FFTW)
             string(APPEND DEPLOY_CMD "
                 -executable=${CONTENTS_DIR}/Resources/supernova
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
@@ -558,7 +552,12 @@ if(APPLE OR WIN32)
                 verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
         endif()
     else() # WIN32
-        find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
+            set(DEPLOY_PROG_NAME "windeployqt6")
+        else()
+            set(DEPLOY_PROG_NAME "windeployqt")
+        endif()
+        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 --verbose 1 --no-compiler-runtime
                 \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
@@ -593,3 +592,7 @@ endif()
 if (LINUX)
   install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
 endif()
+
+
+set_property(TARGET libscide PROPERTY FOLDER Libs)
+set_property(TARGET update_ide_translations PROPERTY FOLDER Util)

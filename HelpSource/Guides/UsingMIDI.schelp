@@ -113,8 +113,10 @@ emphasis::dewdrop_lib:: is a third party library providing a number of useful pe
 
 Among its features:
 
-- user-extensible: simple functions may be used, and frequently-needed responses can be written into classes that inherit from the framework (see BasicMIDISocket and BasicMIDIControl helpfiles)
+list::
+## user-extensible: simple functions may be used, and frequently-needed responses can be written into classes that inherit from the framework (see BasicMIDISocket and BasicMIDIControl helpfiles)
 
-- easy to use classes for playing MIDI notes and assigning MIDI controllers to synthesis parameters
+## easy to use classes for playing MIDI notes and assigning MIDI controllers to synthesis parameters
 
-- a user-configurable array of MIDI controller numbers, to simplify assignment of events to hardware controllers
+## a user-configurable array of MIDI controller numbers, to simplify assignment of events to hardware controllers
+::

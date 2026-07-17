@@ -22,9 +22,12 @@
 
 #include "PyrSlot.h"
 #include "PyrKernel.h"
+#include "SC_Version.hpp"
 #include "ByteCodeArray.h"
 #include "Opcodes.h"
 #include "AdvancingAllocPool.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
+#include "text_location.hpp"
 
 
 enum { rwPrivate = 0, rwReadOnly = 1, rwWriteOnly = 2, rwReadWrite = 3 };
@@ -98,8 +101,7 @@ struct PyrParseNode {
 
     struct PyrParseNode* mNext;
     struct PyrParseNode* mTail;
-    int mLineno;
-    int mCharno;
+    sc::lex::SourceCodeRange location;
     unsigned char mClassno;
     unsigned char mParens;
 };
@@ -380,25 +382,14 @@ struct PyrLitListNode : public PyrParseNode {
     struct PyrParseNode* mElems;
 };
 
-struct PyrLitDictNode : public PyrParseNode {
-    PyrLitDictNode(): PyrParseNode(pn_LitDictNode) {}
-    virtual ~PyrLitDictNode() {}
-    virtual void compile(PyrSlot* result);
-    virtual void dump(int level);
-
-    struct PyrParseNode* mElems;
-};
-
 extern PyrParseNode* gRootParseNode;
 extern intptr_t gParserResult;
 extern bool gIsTailCodeBranch;
 extern bool gTailIsMethodReturn;
 
-extern bool compilingCmdLine;
+extern bool gCompilingCmdLine;
 
 extern const char* nodename[];
-
-void compileNode(PyrParseNode* node, PyrSlot* result, bool onTailBranch);
 
 class SetTailBranch {
     bool mSave;
@@ -411,111 +402,55 @@ public:
     ~SetTailBranch() { gIsTailCodeBranch = mSave; }
 };
 
-class SetTailIsMethodReturn {
-    bool mSave;
-
-public:
-    SetTailIsMethodReturn(bool inValue) {
-        mSave = gTailIsMethodReturn;
-        gTailIsMethodReturn = inValue;
-    }
-    ~SetTailIsMethodReturn() { gTailIsMethodReturn = mSave; }
-};
-
 inline void compileNode(PyrParseNode* node, PyrSlot* result, bool onTailBranch) {
     SetTailBranch branch(gIsTailCodeBranch && onTailBranch);
-    /*if (compilingCmdLine) {
-        printf("stb  %14s %d %d\n", nodename[node->mClassno], onTailBranch, gIsTailCodeBranch);
-    }*/
     node->compile(result);
 }
 
 void initParseNodes();
 
-PyrSlotNode* newPyrSlotNode(PyrSlot* slot);
-PyrCurryArgNode* newPyrCurryArgNode();
-PyrClassNode* newPyrClassNode(PyrSlotNode* className, PyrSlotNode* superClassName, PyrVarListNode* varlists,
-                              PyrMethodNode* methods, PyrSlotNode* indexType);
-PyrClassExtNode* newPyrClassExtNode(PyrSlotNode* className, PyrMethodNode* methods);
-PyrMethodNode* newPyrMethodNode(PyrSlotNode* methodName, PyrSlotNode* primitiveName, PyrArgListNode* arglist,
-                                PyrVarListNode* varlist, PyrParseNode* body, int isClassMethod);
-PyrArgListNode* newPyrArgListNode(PyrVarDefNode* varDefs, PyrSlotNode* rest, PyrSlotNode* kwArgs);
-PyrVarListNode* newPyrVarListNode(PyrVarDefNode* vardefs, int flags);
-PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrParseNode* defVal, int flags);
-PyrCallNode* newPyrCallNode(PyrSlotNode* selector, PyrParseNode* arglist, PyrParseNode* keyarglist,
-                            PyrParseNode* blocklist);
-PyrBinopCallNode* newPyrBinopCallNode(PyrSlotNode* selector, PyrParseNode* arg1, PyrParseNode* arg2,
-                                      PyrParseNode* arg3);
-PyrDropNode* newPyrDropNode(PyrParseNode* expr1, PyrParseNode* expr2);
-PyrPushKeyArgNode* newPyrPushKeyArgNode(PyrSlotNode* selector, PyrParseNode* expr);
-PyrPushLitNode* newPyrPushLitNode(PyrSlotNode* literalSlot, PyrParseNode* literalObj);
-PyrLiteralNode* newPyrLiteralNode(PyrSlotNode* literalSlot, PyrParseNode* literalObj);
-PyrReturnNode* newPyrReturnNode(PyrParseNode* expr);
-PyrBlockReturnNode* newPyrBlockReturnNode();
-PyrAssignNode* newPyrAssignNode(PyrSlotNode* varName, PyrParseNode* expr, int flags);
-PyrSetterNode* newPyrSetterNode(PyrSlotNode* varName, PyrParseNode* expr1, PyrParseNode* expr2);
-PyrMultiAssignNode* newPyrMultiAssignNode(PyrMultiAssignVarListNode* varList, PyrParseNode* expr, int flags);
-PyrPushNameNode* newPyrPushNameNode(PyrSlotNode* slotNode);
-PyrDynDictNode* newPyrDynDictNode(PyrParseNode* elems);
-PyrDynListNode* newPyrDynListNode(PyrParseNode* classname, PyrParseNode* elems);
-PyrLitListNode* newPyrLitListNode(PyrParseNode* classname, PyrParseNode* elems);
-PyrLitDictNode* newPyrLitDictNode(PyrParseNode* elems);
-PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(PyrSlotNode* varNames, PyrSlotNode* rest);
-PyrBlockNode* newPyrBlockNode(PyrArgListNode* arglist, PyrVarListNode* varlist, PyrParseNode* body, bool isTopLevel);
+PyrSlotNode* newPyrSlotNode(sc::lex::SourceCodeRange loc, PyrSlot slot);
+PyrSlotNode* newPyrSlotNode(sc::lex::SourceCodeRange loc, PyrSlot* slot);
+PyrCurryArgNode* newPyrCurryArgNode(sc::lex::SourceCodeRange loc);
+PyrClassNode* newPyrClassNode(sc::lex::SourceCodeRange loc, PyrSlotNode* className, PyrSlotNode* superClassName,
+                              PyrVarListNode* varlists, PyrMethodNode* methods, PyrSlotNode* indexType);
+PyrClassExtNode* newPyrClassExtNode(sc::lex::SourceCodeRange loc, PyrSlotNode* className, PyrMethodNode* methods);
+PyrMethodNode* newPyrMethodNode(sc::lex::SourceCodeRange loc, PyrSlotNode* methodName, PyrSlotNode* primitiveName,
+                                PyrArgListNode* arglist, PyrVarListNode* varlist, PyrParseNode* body,
+                                int isClassMethod);
+PyrArgListNode* newPyrArgListNode(sc::lex::SourceCodeRange loc, PyrVarDefNode* varDefs, PyrSlotNode* rest,
+                                  PyrSlotNode* kwArgs);
+PyrVarListNode* newPyrVarListNode(sc::lex::SourceCodeRange loc, PyrVarDefNode* vardefs, int flags);
+PyrVarDefNode* newPyrVarDefNode(sc::lex::SourceCodeRange loc, PyrSlotNode* varName, PyrParseNode* defVal, int flags);
+PyrCallNode* newPyrCallNode(sc::lex::SourceCodeRange loc, PyrSlotNode* selector, PyrParseNode* arglist,
+                            PyrParseNode* keyarglist, PyrParseNode* blocklist);
+PyrBinopCallNode* newPyrBinopCallNode(sc::lex::SourceCodeRange loc, PyrSlotNode* selector, PyrParseNode* arg1,
+                                      PyrParseNode* arg2, PyrParseNode* arg3);
+PyrDropNode* newPyrDropNode(sc::lex::SourceCodeRange loc, PyrParseNode* expr1, PyrParseNode* expr2);
+PyrPushKeyArgNode* newPyrPushKeyArgNode(sc::lex::SourceCodeRange loc, PyrSlotNode* selector, PyrParseNode* expr);
+PyrPushLitNode* newPyrPushLitNode(sc::lex::SourceCodeRange loc, PyrSlotNode* literalSlot, PyrParseNode* literalObj);
+PyrLiteralNode* newPyrLiteralNode(sc::lex::SourceCodeRange loc, PyrSlotNode* literalSlot, PyrParseNode* literalObj);
+PyrReturnNode* newPyrReturnNode(sc::lex::SourceCodeRange loc, PyrParseNode* expr);
+PyrBlockReturnNode* newPyrBlockReturnNode(sc::lex::SourceCodeRange loc);
+PyrAssignNode* newPyrAssignNode(sc::lex::SourceCodeRange loc, PyrSlotNode* varName, PyrParseNode* expr, int flags);
+PyrSetterNode* newPyrSetterNode(sc::lex::SourceCodeRange loc, PyrSlotNode* varName, PyrParseNode* expr1,
+                                PyrParseNode* expr2);
+PyrMultiAssignNode* newPyrMultiAssignNode(sc::lex::SourceCodeRange loc, PyrMultiAssignVarListNode* varList,
+                                          PyrParseNode* expr, int flags);
+PyrPushNameNode* newPyrPushNameNode(sc::lex::SourceCodeRange loc, PyrSlotNode* slotNode);
+PyrDynDictNode* newPyrDynDictNode(sc::lex::SourceCodeRange loc, PyrParseNode* elems);
+PyrDynListNode* newPyrDynListNode(sc::lex::SourceCodeRange loc, PyrParseNode* classname, PyrParseNode* elems);
+PyrLitListNode* newPyrLitListNode(sc::lex::SourceCodeRange loc, PyrParseNode* classname, PyrParseNode* elems);
+PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(sc::lex::SourceCodeRange loc, PyrSlotNode* varNames,
+                                                        PyrSlotNode* rest);
+PyrBlockNode* newPyrBlockNode(sc::lex::SourceCodeRange loc, PyrArgListNode* arglist, PyrVarListNode* varlist,
+                              PyrParseNode* body, bool isTopLevel);
 
-void compilePyrMethodNode(PyrMethodNode* node, PyrSlot* result);
-void compilePyrLiteralNode(PyrLiteralNode* node, PyrSlot* result);
-
-PyrClass* getNodeSuperclass(PyrClassNode* node);
-void countNodeMethods(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
-void compileExtNodeMethods(PyrClassExtNode* node);
-void countVarDefs(PyrClassNode* node);
-bool compareVarDefs(PyrClassNode* node, PyrClass* classobj);
-void recompileSubclasses(PyrClass* classobj);
-void compileNodeMethods(PyrClassNode* node);
-void fillClassPrototypes(PyrClassNode* node, PyrClass* classobj, PyrClass* superclassobj);
 
 int nodeListLength(PyrParseNode* node);
 bool isSuperObjNode(PyrParseNode* node);
-bool isThisObjNode(PyrParseNode* node);
-int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSymbol* selector, int* selType);
-int conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot);
-bool findVarName(PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varType, int* level, int* index,
-                 PyrBlock** tempfunc);
-void countClassVarDefs(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
+
 void compileNodeList(PyrParseNode* node, bool onTailBranch);
-void dumpNodeList(PyrParseNode* node);
-int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrClass* specialClass);
-
-bool findSpecialClassName(PyrSymbol* className, int* index);
-int getIndexType(PyrClassNode* classnode);
-
-void compileAnyIfMsg(PyrCallNodeBase2* node);
-void compileIfMsg(PyrCallNodeBase2* node);
-void compileIfNilMsg(PyrCallNodeBase2* node, bool flag);
-void compileCaseMsg(PyrCallNodeBase2* node);
-void compileWhileMsg(PyrCallNodeBase2* node);
-void compileLoopMsg(PyrCallNodeBase2* node);
-void compileAndMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileSwitchMsg(PyrCallNode* node);
-
-void compilePushInt(int value);
-void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop);
-void compilePushVar(PyrParseNode* node, PyrSymbol* varName);
-bool isAnInlineableBlock(PyrParseNode* node);
-bool isAnInlineableAtomicLiteralBlock(PyrParseNode* node);
-bool isAtomicLiteral(PyrParseNode* node);
-bool isWhileTrue(PyrParseNode* node);
-void installByteCodes(PyrBlock* block);
-
-ByteCodes compileSubExpression(PyrPushLitNode* litnode, bool onTailBranch);
-ByteCodes compileSubExpressionWithGoto(PyrPushLitNode* litnode, int branchLen, bool onTailBranch);
-ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBranch);
-// ByteCodes compileDefaultValue(int litIndex, int realExprLen);
 
 void initParser();
 void finiParser();
@@ -531,6 +466,11 @@ PyrParseNode* linkNextNode(PyrParseNode* a, PyrParseNode* b);
 PyrParseNode* linkAfterHead(PyrParseNode* a, PyrParseNode* b);
 
 extern int compileErrors;
+
+/// Creates a compiler error if current version is greater than or equal to 'version'.
+/// Otherwise posts a warning informing the user to fix their code before updating.
+void emitCompilerErrorFromVersion(SemanticVersion version);
+
 extern int numOverwrites;
 extern std::string overwriteMsg;
 
@@ -546,11 +486,5 @@ extern PyrClass* gCurrentMetaClass;
 extern PyrClass* gCompilingClass;
 extern PyrMethod* gCompilingMethod;
 extern PyrBlock* gCompilingBlock;
-
-/*
-    compiling
-    "inlining" of special arithmetic opcodes.
-    inlining of IF, WHILE, AND, OR
-*/
 
 #define YYSTYPE intptr_t

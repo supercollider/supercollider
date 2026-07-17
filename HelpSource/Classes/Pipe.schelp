@@ -51,6 +51,9 @@ Closes the pipe, waiting for the command to finish. You must do this explicitly 
 
 returns:: The exit status of the command (an Integer).
 
+method::pid
+returns:: The operating system's PID (process ID) of the executing command (an Integer).
+
 Examples::
 
 code::

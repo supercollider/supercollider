@@ -172,8 +172,12 @@ ScrollView : AbstractScroll {
 	}
 
 	canvas_ { arg view;
-		canvas = view;
-		this.invokeMethod( \setWidget, view, true );
+		if(view.notNil and: {view.parent == this}) {
+			Error("Can't set canvas to a view, whose parent is this ScrollView.").throw; // when that's the case, the interpreter crashes
+		} {
+			canvas = view;
+			this.invokeMethod( \setWidget, view, true );
+		}
 	}
 
 	action_ { arg handler;

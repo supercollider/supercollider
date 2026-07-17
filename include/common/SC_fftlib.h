@@ -21,7 +21,7 @@ Copyright (c) 2008 Dan Stowell. All rights reserved.
 
 #pragma once
 
-#include <string.h>
+#include "SC_Types.h"
 
 // These specify the min & max FFT sizes expected (used when creating windows, also allocating some other arrays).
 #define SC_FFT_MINSIZE 8
@@ -37,30 +37,16 @@ Copyright (c) 2008 Dan Stowell. All rights reserved.
 
 struct scfft;
 
-class SCFFT_Allocator {
-public:
-    virtual void* alloc(size_t size) = 0;
-    virtual void free(void* ptr) = 0;
-    virtual ~SCFFT_Allocator() {}
+typedef void* (*SCFFT_AllocFunc)(void* user, size_t size);
+typedef void (*SCFFT_FreeFunc)(void* user, void* ptr);
+
+struct SCFFT_Allocator {
+    SCFFT_AllocFunc mAlloc;
+    SCFFT_FreeFunc mFree;
+    void* mUser;
 };
 
 enum SCFFT_Direction { kForward = 1, kBackward = 0 };
 
 // These values are referred to from SC lang as well as in the following code - do not rearrange!
 enum SCFFT_WindowFunction { kRectWindow = -1, kSineWindow = 0, kHannWindow = 1 };
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// Functions
-
-// To initialise a specific FFT, ensure your input and output buffers exist. Internal data structures
-// will be allocated using the alloc object,
-// Both "fullsize" and "winsize" should be powers of two (this is not checked internally).
-scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype, float* indata, float* outdata,
-                    SCFFT_Direction forward, SCFFT_Allocator& alloc);
-
-// These two will take data from indata, use trbuf to process it, and put their results in outdata.
-void scfft_dofft(scfft* f);
-void scfft_doifft(scfft* f);
-
-// destroy any resources held internally.
-void scfft_destroy(scfft* f, SCFFT_Allocator& alloc);

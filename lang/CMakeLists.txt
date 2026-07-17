@@ -5,15 +5,11 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/common
 
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
-
                     LangSource
                     LangPrimSource
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison
-
-                    ${YAMLCPP_INCLUDE_DIR}
 )
 
 
@@ -114,7 +110,7 @@ if(AUDIOAPI STREQUAL "default")
     endif(APPLE)
 endif()
 
-if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela)$")
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela|webaudio)$")
     message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
@@ -122,14 +118,10 @@ if (AUDIOAPI STREQUAL coreaudio)
     add_definitions("-DSC_AUDIO_API_COREAUDIO")
 elseif (AUDIOAPI STREQUAL portaudio)
     if (SYSTEM_PORTAUDIO)
-        find_package(Portaudio)
-        if(NOT PORTAUDIO_FOUND)
-            message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
-        endif()
+        find_package(Portaudio REQUIRED)
     endif()
     add_definitions("-DSC_AUDIO_API_PORTAUDIO")
     list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
-    include_directories(${PORTAUDIO_INCLUDE_DIRS})
 elseif(AUDIOAPI STREQUAL bela)
     add_definitions("-DSC_AUDIO_API_BELA")
 endif()
@@ -165,12 +157,6 @@ endif()
 # This sets up the exe icon for windows.
 if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
- if(MINGW OR MSYS)
- set(CMAKE_RC_COMPILER_INIT windres)
- ENABLE_LANGUAGE(RC)
- SET(CMAKE_RC_COMPILE_OBJECT
- "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
- endif(MINGW OR MSYS)
 endif(WIN32)
 
 if(SC_HIDAPI)
@@ -179,7 +165,7 @@ if(SC_HIDAPI)
         ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi
         ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi_parser
     )
-    add_definitions(-DSC_HIDAPI)
+    add_compile_definitions(SC_HIDAPI)
 endif(SC_HIDAPI)
 
 if(SC_QT OR SC_IDE)
@@ -199,15 +185,20 @@ endif()
 include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
-if(0 AND FINAL_BUILD) # sclang final-builds are broken
-	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
-	add_library(libsclang STATIC libsclang_final.cpp ${sclang_parser_source})
-else()
-	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+
+if(FINAL_BUILD)
+	set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+	set_target_properties(libsclang PROPERTIES 
+		UNITY_BUILD ON
+		UNITY_BUILD_BATCH_SIZE 16 
+	)
 endif()
 
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
+
+target_link_libraries(libsclang sc_lexer)
 
 if(SC_QT OR SC_IDE)
     get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
@@ -235,6 +226,9 @@ endif()
 if(SC_HIDAPI)
   target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
   target_link_libraries( libsclang hidapi hidapi_parser )
+  if(WIN32)
+    target_link_libraries(libsclang hid)
+  endif()
 
   if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
     target_link_libraries( libsclang ${UDEV_LIBRARIES})
@@ -244,8 +238,13 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_program_options_lib)
-target_include_directories(libsclang PUBLIC ${boost_include_dirs})
+target_link_libraries(
+  libsclang 
+  Boost::thread
+  Boost::program_options
+  Boost::regex
+  Boost::sync
+)
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
@@ -304,20 +303,20 @@ if(ALSA_FOUND)
 endif(ALSA_FOUND)
 
 if (AUDIOAPI STREQUAL portaudio)
-    target_link_libraries(libsclang ${PORTAUDIO_LIBRARIES})
+    target_link_libraries(libsclang PortAudio::PortAudio)
 endif()
 
 if(SNDFILE_FOUND)
 	if(SNDFILE_HAS_VORBIS)
-		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_VORBIS)
+		target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_VORBIS)
 	endif()
 	if(SNDFILE_HAS_OPUS)
-		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_OPUS)
+		target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_OPUS)
 	endif()
 	if(SNDFILE_HAS_MPEG)
-		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_MPEG)
+		target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_MPEG)
 	endif()
-	target_include_directories(libsclang PUBLIC ${SNDFILE_INCLUDE_DIR})
+	target_include_directories(libsclang SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
 elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
@@ -328,10 +327,9 @@ if (FFTW3F_FOUND)
 	target_link_libraries(libsclang ${FFTW3F_LIBRARY})
 endif()
 
-if (WIN32 AND SC_HIDAPI)
-	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi hid)
-elseif(WIN32)
+if(WIN32)
 	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
+	target_compile_definitions(libsclang PRIVATE HAVE_PORTMIDI)
 endif()
 
 if (GC_SANITYCHECK)
@@ -346,7 +344,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
+target_link_libraries(libsclang yaml-cpp)
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
@@ -373,9 +371,9 @@ if(APPLE)
             )
     endif()
 elseif(WIN32)
-    if(NOT MSVC)
+    if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
-    endif(NOT MSVC)
+    endif()
 
     target_compile_definitions(sclang PUBLIC UNICODE _UNICODE)
 
@@ -462,3 +460,5 @@ else()
         RUNTIME DESTINATION "bin"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
+
+set_property(TARGET libsclang PROPERTY FOLDER Libs)

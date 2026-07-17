@@ -48,13 +48,19 @@
 
 #pragma once
 
-#include "SC_Endian.h"
 #include "SC_Types.h"
-#include "SC_BoundsMacros.h"
-#include "Hash.h"
-#include <math.h>
+
+#ifdef __cplusplus
+#    include "SC_Endian.h"
+#    include "Hash.h"
+#    include <math.h>
+#    include "SC_BoundsMacros.h"
+#endif
 
 struct RGen {
+    uint32 s1, s2, s3; // random generator state
+
+#ifdef __cplusplus
     void init(uint32 seed);
 
     uint32 trand();
@@ -80,9 +86,12 @@ struct RGen {
     double exprand(double scale);
     double biexprand(double scale);
     double sum3rand(double scale);
-
-    uint32 s1, s2, s3; // random generator state
+#endif
 };
+
+typedef struct RGen RGen;
+
+#ifdef __cplusplus
 
 inline void RGen::init(uint32 seed) {
     // humans tend to use small seeds - mess up the bits
@@ -118,21 +127,21 @@ inline uint32 RGen::trand() { return ::trand(s1, s2, s3); }
 
 /// Generate a double from 0.0 to 0.999...
 inline double RGen::drand() {
-#if BYTE_ORDER == BIG_ENDIAN
+#    if BYTE_ORDER == BIG_ENDIAN
     union {
         struct {
             uint32 hi, lo;
         } i;
         double f;
     } du;
-#else
+#    else
     union {
         struct {
             uint32 lo, hi;
         } i;
         double f;
     } du;
-#endif
+#    endif
     du.i.hi = 0x41300000;
     du.i.lo = trand();
     return du.f - 1048576.;
@@ -336,3 +345,5 @@ inline float fcoin(uint32& s1, uint32& s2, uint32& s3) {
     u.i = 0x3F800000 | (0x80000000 & trand(s1, s2, s3));
     return u.f;
 }
+
+#endif // __cplusplus

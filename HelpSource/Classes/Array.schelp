@@ -419,6 +419,57 @@ code::
 [0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC; // bundle
 ::
 
+method::hungarianSolve
+Given a two-dimensional array, in which rows represent workers, columns represent tasks, and values represent the cost for each worker to do each job, this returns the assignment of workers to tasks which has the lowest total cost.
+This is known as the Linear Assignment Problem, and here it is solved using the Hungarian Algorithm, also known as Munkres, which is enormously faster than solving it by brute force.
+The result is given in the format code::[lowest_cost, [assignments]]::, where the code::[assignments]:: array maps each row to its assigned optimal column. For example, assignments code::[0, 2, 1]:: means that for the lowest overall cost, worker 0 should do job 0, worker 1 should do job 2, and worker 2 should do job 1.
+Receiver must be a 2-dimensional Array of arrays, but it need not be square (zeroes will be added when necessary), and may contain negative numbers and floats.
+This algorithm is useful in music for voice-leading and any other problem, such as assigning notes to instruments, which can be framed as a cost-minimization task.
+
+code::
+// Basic example from Wikipedia (https://en.wikipedia.org/wiki/Hungarian_algorithm)
+(
+[
+   [8, 4, 7],
+   [5, 2, 3],
+   [9, 4, 8]
+].hungarianSolve;
+//—> [15.0, [0, 2, 1]]
+)
+
+// Musical example: Voice-leading between two chords
+(
+//You have two chords, and you wish to know which note in the first chord should move to which note in the second chord for optimal voice-leading.
+~sourceChord = [60, 64, 67]; //C in root position
+~targetChord = [55, 59, 62]; //G in root position
+
+//Build a cost matrix with interval distance from one note to the next as the cost. In other words, the farther the target note from the source note, the more 'expensive' it is for the source note to go to the target note. Other, more sophisticated cost functions are possible; for example, one could build in an extra penalty for leaps.
+~costMatrix = ~sourceChord.collect { |n1| ~targetChord.collect { |n2| (n1 - n2).abs } };
+
+//Take a look at the resulting cost matrix
+"Cost Matrix:".postln; ~costMatrix.do { |r| r.postln };
+// —> [5, 1, 2]
+//    [9, 5, 2]
+//    [12, 8, 5]
+
+//Solve the cost matrix, i.e. find the assignments of source note to target note that has the lowest overall cost
+~assignments = ~costMatrix.hungarianSolve[1];
+// —> [1, 2, 0]
+
+//Associate each source note with its optimal target note, following the given assignments
+~voiceLeading = ~assignments.collect { |targetIndex, sourceIndex| [~sourceChord[sourceIndex], ~targetChord[targetIndex]] };
+
+//Print the results!
+"Best Voice-Leading:".postln; ~voiceLeading.do { |assignment|
+    var sourceNote = assignment[0], targetNote = assignment[1], interval = targetNote - sourceNote;
+    ("Note " ++ sourceNote ++ " → " ++ targetNote ++ " (interval: " ++ interval ++ ")").postln;
+};
+// —> Note 60 → 59 (interval: -1)
+//    Note 64 → 62 (interval: -2)
+//    Note 67 → 55 (interval: -12)
+)
+::
+
 subsection:: Bela
 
 method:: belaScope

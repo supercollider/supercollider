@@ -35,6 +35,10 @@ QString standardDirectory(StandardDirectory type) {
         dn = DirName::Resource;
         break;
 
+    case ScExamplesDir:
+        dn = DirName::Examples;
+        break;
+
     case ScAppDataSystemDir:
         dn = DirName::SystemAppSupport;
         break;

@@ -33,7 +33,7 @@ protected:
     virtual bool DriverStop();
 
 public:
-    SC_AUAudioDriver(struct World* inWorld);
+    SC_AUAudioDriver(World* inWorld);
     virtual ~SC_AUAudioDriver();
     void Callback(const AudioBufferList* in, AudioBufferList* out, AudioTimeStamp* inTimeStamp,
                   UInt32 inFramesToProcess, Float64 sampleRate, int64 oscTime);

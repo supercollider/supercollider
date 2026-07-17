@@ -20,20 +20,27 @@
 
 #pragma once
 
+struct FifoMsg;
+struct World;
+
 typedef void (*FifoMsgFunc)(struct FifoMsg*);
 
 struct FifoMsg {
+#ifdef __cplusplus
     FifoMsg(): mPerformFunc(0), mFreeFunc(0), mData(0), mWorld(0) {}
 
-    void Set(struct World* inWorld, FifoMsgFunc inPerform, FifoMsgFunc inFree, void* inData);
+    void Set(World* inWorld, FifoMsgFunc inPerform, FifoMsgFunc inFree, void* inData);
     void Perform();
     void Free();
+#endif
 
     FifoMsgFunc mPerformFunc;
     FifoMsgFunc mFreeFunc;
     void* mData;
-    struct World* mWorld;
+    World* mWorld;
 };
+
+#ifdef __cplusplus
 
 inline void FifoMsg::Set(World* inWorld, FifoMsgFunc inPerform, FifoMsgFunc inFree, void* inData) {
     mWorld = inWorld;
@@ -51,3 +58,5 @@ inline void FifoMsg::Free() {
     if (mFreeFunc)
         (mFreeFunc)(this);
 }
+
+#endif // __cplusplus

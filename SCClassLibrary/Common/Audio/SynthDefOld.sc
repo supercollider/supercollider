@@ -1,10 +1,4 @@
 SynthDefOld : SynthDef {
-
-	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^super.new.name_(name.asSymbol).variants_(variants).metadata_(metadata).children_(Array.new(64))
-			.build(ugenGraphFunc, rates, prependArgs)
-	}
-
 	writeDefFile { arg dir, overwrite(true);
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
 			super.writeDefFileOld(name, dir, overwrite);
@@ -57,8 +51,7 @@ SynthDefOld : SynthDef {
 
 					varname = name ++ "." ++ varname;
 					if (varname.size > 32) {
-						Post << "variant '" << varname << "' name too long.\n";
-						^nil
+						Error("variant '%' name too long".format(varname)).throw;
 					};
 					varcontrols = controls.copy;
 					pairs.pairsDo { |cname, values|
@@ -67,9 +60,8 @@ SynthDefOld : SynthDef {
 						if (cn.notNil) {
 							values = values.asArray;
 							if (values.size > cn.defaultValue.asArray.size) {
-								postf("variant: '%' control: '%' size mismatch.\n",
-									varname, cname);
-								^nil
+								Error("variant: '%' control: '%' size mismatch"
+									.format(varname, cname)).throw;
 							}{
 								index = cn.index;
 								values.do {|val, i|
@@ -77,9 +69,8 @@ SynthDefOld : SynthDef {
 								}
 							}
 						}{
-							postf("variant: '%' control: '%' not found.\n",
-								varname, cname);
-							^nil
+							Error("variant: '%' control: '%' not found"
+								.format(varname, cname)).throw;
 						}
 					};
 					file.putPascalString(varname);

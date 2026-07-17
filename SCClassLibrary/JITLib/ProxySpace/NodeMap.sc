@@ -28,6 +28,12 @@ NodeMap : IdentityDictionary {
 		this.changed(\unset, keys);
 	}
 
+	map { |...args|
+		this.putPairs(args);
+		upToDate = false;
+		this.changed(\map, args);
+	}
+
 	unmap { |... keys|
 		keys.do { |x| this.put(x, nil) };
 		this.changed(\unmap, keys);
@@ -105,14 +111,6 @@ ProxyNodeMap : NodeMap {
 
 	wakeUpParentsToBundle { | bundle, checkedAlready |
 		this.pairsDo({ |key, item| item.wakeUpToBundle(bundle, checkedAlready) });
-	}
-
-	// map works only for proxies so far
-
-	map { |...args|
-		this.putPairs(args);
-		upToDate = false;
-		this.changed(\map, args);
 	}
 
 	mapEnvir { |... keys|

@@ -51,6 +51,9 @@ definitionlist::
 ## -t tcp-port-number
 || a port number 0-65535
 
+## -B bind address
+|| Bind the UDP or TCP socket to this address. Default 127.0.0.1. Set to 0.0.0.0 to listen on all interfaces (has security implications).
+
 ## -v verbosity
 || Controls the verbosity of server messages. A value of 0 is normal behaviour. -1 suppresses informational messages. -2 suppresses informational and many error messages, as well as messages from Poll. The default is 0.
 
@@ -117,6 +120,12 @@ To specify only input device and use default output, or only output device and u
 
 ## -N cmd-filename input-filename output-filename sample-rate header-format sample-format
 || Run in non-real-time mode.
+
+## -R publish to Rendezvous? 
+|| 0 or 1.
+
+## -L enable memory locking
+|| Does not use arguments, the presence of this flag means code::true::, and the absence code::false::.
 
 The cmd-filename should be a file that contains OSC bundles sorted in ascending time order. If cmd-filename is the underscore character _, then OSC will be streamed from standard input.
 

@@ -4,9 +4,9 @@ related::Classes/String
 categories:: Core
 
 description::
-An ASCII character represented as a signed 8-bit integer (-128 to 127).
-Valid ASCII values are in the range 0-127.
-Chars may be written as literals using the $ sign. For example: $a, $b, $c.
+A Char is a signed 8-bit integer (-128 to 127) that is used to represent that bytes inside a link::Classes/String::.
+You can also make a Char with an ASCII literal by prefixing an ASCII character with a dollar symbol: code:$x:.
+These ASCII values are in the range 0-127.
 Some special characters can be expressed as literals using escape sequences (for example, code::$\n:: for newline).
 See link::Reference/Literals#Characters:: for more information.
 
@@ -19,6 +19,17 @@ together in strings that use these encodings.
 
 The SuperCollider IDE uses UTF-8 to decode and display strings.
 See link::Classes/String:: for more information.
+
+note::
+From version 3.15 onwards one can no longer have a whitespace literal (except the space) after the dollar sign.
+If you see source code with a dollar followed by some whitespace, it is now always the space character.
+code::
+// This is a compiler error from version 3.15 as there is no space after the dollar.
+a = $
+;
+a == $\n;
+::
+::
 
 classmethods::
 

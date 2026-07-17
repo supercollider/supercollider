@@ -5,6 +5,10 @@ HelpBrowser {
 	classvar <>scrollStep = 40;
 	classvar <>scrollPageStep = 350;
 
+	// redirect link addresses that match redirectPattern to default system browser
+	classvar <>redirectEnabled = true;
+	classvar <>redirectPattern = "^http";
+
 	var <>homeUrl;
 	var <window;
 	var webView;
@@ -36,12 +40,39 @@ HelpBrowser {
 		^super.new.init( aHomeUrl ? defaultHomeUrl, newWin ?? { openNewWindows } );
 	}
 
-	*goTo {|url|
+	*prShouldRedirect {|url|
+		^(redirectEnabled and: { redirectPattern.matchRegexp(url) })
+	}
+
+	*prOpenRedirectMenu { |url, useSCIDE|
+		var info = MenuAction("Choose how to open external link:").enabled_(false);
+		var domain = MenuAction(if(url.size < 75) {url} {url.replaceRegexp("https?:\/\/|(/.*)", "")} ).enabled_(false);
+		var separator = MenuAction().separator_(true);
+		var systemDefaultBrowser = MenuAction("Open in system default browser");
+		var helpBrowser = MenuAction("Open in SuperCollider's help browser (unsafe)");
+		var closeMenu = MenuAction("Cancel");
+		var menu = Menu(info, domain, separator, systemDefaultBrowser, helpBrowser, closeMenu);
+		var removeDependants = { [systemDefaultBrowser, helpBrowser, closeMenu].do(_.removeDependant)  };
+		systemDefaultBrowser.addDependant { |action, what| if (what == \triggered) { url.openOS; removeDependants.() } };
+		helpBrowser.addDependant { |action, what| if (what == \triggered) { this.prOpenInIDEorHelpBrowser(url, useSCIDE); removeDependants.() } };
+		^menu.front;
+	}
+
+	*prOpenInIDEorHelpBrowser { | url, useSCIDE(true) |
+		// when useSCIDE = false, will open in a HelpBrowser instance.
 		var ideClass = \ScIDE.asClass;
-		if ( ideClass.notNil ) {
-			ideClass.openHelpUrl(url);
-		}{
-			this.front.goTo(url);
+		if(ideClass.notNil and: useSCIDE) {
+			ideClass.openHelpUrl(url)
+		} {
+			this.front.goTo(url)
+		}
+	}
+
+	*goTo {|url|
+		if(this.prShouldRedirect(url)) {
+			this.prOpenRedirectMenu(url)
+		} {
+			this.prOpenInIDEorHelpBrowser(url)
 		}
 	}
 
@@ -137,6 +168,7 @@ HelpBrowser {
 		var x, y, w, h;
 		var str;
 
+		if (not(openNewWindows)) { singleton = this };
 		homeUrl = aHomeUrl;
 
 		winRect = Rect(0, 0, 800, (Window.screenBounds.height * 0.8).floor);
@@ -239,18 +271,21 @@ HelpBrowser {
 		webView.onLoadFailed = { this.stopAnim };
 
 		webView.onLinkActivated = {|wv, url|
-			var redirected, newPath, oldPath;
-			redirected = this.redirectTextFile(url);
-			if (not(redirected)) {
-				#newPath, oldPath = [url,webView.url].collect {|x|
-					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
-				};
-
-				if(newPath != oldPath && openNewWin) {
-						HelpBrowser.new(newWin:openNewWin).goTo(url);
+			var newPath, oldPath;
+			if( not(this.redirectTextFile(url)) ) {
+				if( HelpBrowser.prShouldRedirect(url)) {
+					HelpBrowser.prOpenRedirectMenu(url, useSCIDE: false);
 				} {
-					this.goTo(url);
-				};
+					#newPath, oldPath = [url,webView.url].collect {|x|
+					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
+					};
+			
+					if(newPath != oldPath && openNewWin) {
+							HelpBrowser.new(newWin:openNewWin).goTo(url);
+					} {
+						this.goTo(url);
+					}
+				}
 			}
 		};
 

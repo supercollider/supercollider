@@ -28,7 +28,7 @@ Function : AbstractFunction {
 
 
 	// evaluation
-	value { arg ... args;
+	value { | ...args, kwargs|
 		_FunctionValue
 		// evaluate a function with args
 		^this.primitiveFailed
@@ -40,7 +40,7 @@ Function : AbstractFunction {
 		^this.primitiveFailed
 	}
 
-	valueEnvir { arg ... args;
+	valueEnvir { | ...args, kwargs|
 		_FunctionValueEnvir
 		// evaluate a function with args.
 		// unsupplied argument names are looked up in the currentEnvironment
@@ -53,7 +53,7 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
-	functionPerformList { |... args, kwargs|
+	functionPerformList { | ...args, kwargs|
         _ObjectPerformList;
         this.primitiveFailed
 	}
@@ -155,7 +155,13 @@ Function : AbstractFunction {
 	}
 
 	forkIfNeeded { arg clock, quant, stackSize;
-		if(thisThread.isKindOf(Routine), this, { ^this.fork(clock, quant, stackSize) });
+		// We should fork if the clocks don't match.
+		// We should also fork if the quants/stackSize don't match, but that doesn't seem possible.
+		if(thisThread.isKindOf(Routine) 
+			and: { clock.isNil or: { clock == thisThread.clock }},
+			this, 
+			{ ^this.fork(clock, quant, stackSize) }
+		);
 		^thisThread;
 	}
 

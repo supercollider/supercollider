@@ -49,10 +49,9 @@ ScCodeEditor::ScCodeEditor(Document* doc, QWidget* parent):
     mAutoCompleter(new AutoCompleter(this)) {
     Q_ASSERT(mDoc != 0);
 
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(matchBrackets()));
+    connect(this, &ScCodeEditor::cursorPositionChanged, this, &ScCodeEditor::matchBrackets);
 
-    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)), this,
-            SLOT(applySettings(Settings::Manager*)));
+    connect(Main::instance(), &Main::applySettingsRequest, this, &ScCodeEditor::applySettings);
 
     mAutoCompleter->documentChanged(textDocument());
 

@@ -1,0 +1,25 @@
+TITLE:: LinkTempo
+summary:: UGen that gets and sets the tempo of the server's Link clock in cycles per second
+categories:: UGens>Clock, Streams-Patterns-Events
+related:: Classes/LinkPhase, Classes/LinkClock, Classes/LinkJump
+
+DESCRIPTION::
+
+An UGen that gets and sets the tempo of the server's Link clock in cycles per second (cps), such that the tempo can be modulated through a signal.
+Ableton Link internally uses BPM which gets converted by the server to cps by dividing the BPM value by 60.
+See LINK::Classes/LinkPhase:: for examples.
+
+CLASSMETHODS::
+
+METHOD:: kr
+Returns the current tempo of the server's Link clock in cps (cycles per second).
+If the server clock has not been enabled via LINK::Classes/LinkPhase#*start::, it will return MATH::-1.0::.
+argument:: gate
+If CODE::>0::, the tempo (second argument) will be used to set the tempo of the server's Link clock and the new tempo will be published to the other clients.
+argument::tempo
+The tempo to be set in cps (cycles per second).
+Ableton Link uses BPM internally and only allows bpm values between MATH::[20, 999]::, which translates to MATH::[\frac{1}{3}, 16.65]:: cps.
+
+NOTE::
+See also LINK::Classes/LinkPhase#*setTempo::
+::

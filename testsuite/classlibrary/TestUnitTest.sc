@@ -45,7 +45,7 @@ TestUnitTest : UnitTest {
 		var server = Server(this.class.name);
 		server.bootSync;
 		this.assert(server.serverRunning, "The test's Server should be booted while we waited");
-		server.quit.remove;
+		server.quitSync.remove;
 	}
 
 	test_assert {

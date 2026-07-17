@@ -268,7 +268,7 @@ void UDP::initHandler(HandlerType handlerType) {
 void UDP::startReceiveUDP() {
     using namespace boost;
     mUdpSocket.async_receive_from(
-        asio::buffer(mRecvBuffer), mRemoteEndpoint,
+        boost::asio::buffer(mRecvBuffer), mRemoteEndpoint,
         [this](auto error, auto bytesTransferred) { handleReceivedUDP(error, bytesTransferred); });
 }
 

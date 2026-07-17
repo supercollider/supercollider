@@ -181,7 +181,11 @@ void QcGraph::setCurves(const QVariantList& curves) {
         const QVariant& data = curves[i];
         QcGraphElement::CurveType type;
         double curvature;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         if (data.type() == QVariant::Int) {
+#else
+        if (data.typeId() == QMetaType::Int) {
+#endif
             type = (QcGraphElement::CurveType)data.toInt();
             curvature = 0.0;
         } else {

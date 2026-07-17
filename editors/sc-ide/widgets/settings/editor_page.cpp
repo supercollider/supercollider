@@ -26,7 +26,6 @@
 #include "../../core/main.hpp"
 
 #include <QMenu>
-#include <QDebug>
 #include <QListWidgetItem>
 #include <QFontDatabase>
 #include <QApplication>
@@ -39,30 +38,37 @@ EditorPage::EditorPage(QWidget* parent):
     QWidget(parent),
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     fontDatabase(new QFontDatabase),
-#endif()
+#endif
     ui(new Ui::EditorConfigPage) {
     ui->setupUi(this);
 
-    connect(ui->tabs, SIGNAL(currentChanged(int)), this, SLOT(onCurrentTabChanged(int)));
+    connect(ui->tabs, &QTabWidget::currentChanged, this, &EditorPage::onCurrentTabChanged);
 
-    connect(ui->onlyMonoFonts, SIGNAL(toggled(bool)), this, SLOT(onMonospaceToggle(bool)));
+    connect(ui->onlyMonoFonts, &QCheckBox::toggled, this, &EditorPage::onMonospaceToggle);
     connect(ui->fontCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateFontPreview);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()));
-    connect(ui->fontAntialias, SIGNAL(stateChanged(int)), this, SLOT(updateFontPreview()));
+#else
+    connect(ui->fontSize, &QSpinBox::valueChanged, this, &EditorPage::updateFontPreview);
+#endif
+#if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
+    connect(ui->fontAntialias, &QCheckBox::stateChanged, this, &EditorPage::updateFontPreview);
+#else
+    connect(ui->fontAntialias, &QCheckBox::checkStateChanged, this, &EditorPage::updateFontPreview);
+#endif
 
     connect(ui->themeCombo, &QComboBox::currentTextChanged, this, &EditorPage::updateTheme);
-    connect(ui->themeCopyBtn, SIGNAL(clicked()), this, SLOT(dialogCopyTheme()));
-    connect(ui->themeDeleteBtn, SIGNAL(clicked()), this, SLOT(deleteTheme()));
-    connect(ui->textFormats, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this,
-            SLOT(updateTextFormatEdit()));
-    connect(ui->fgPicker, SIGNAL(colorPicked(QColor)), this, SLOT(updateTextFormatDisplay()));
-    connect(ui->bgPicker, SIGNAL(colorPicked(QColor)), this, SLOT(updateTextFormatDisplay()));
-    connect(ui->italicOption, SIGNAL(clicked()), this, SLOT(updateTextFormatDisplay()));
-    connect(ui->boldOption, SIGNAL(clicked()), this, SLOT(updateTextFormatDisplay()));
-    connect(ui->fgClearBtn, SIGNAL(clicked()), ui->fgPicker, SLOT(clear()));
-    connect(ui->fgClearBtn, SIGNAL(clicked()), this, SLOT(updateTextFormatDisplay()));
-    connect(ui->bgClearBtn, SIGNAL(clicked()), ui->bgPicker, SLOT(clear()));
-    connect(ui->bgClearBtn, SIGNAL(clicked()), this, SLOT(updateTextFormatDisplay()));
+    connect(ui->themeCopyBtn, &QPushButton::clicked, this, &EditorPage::dialogCopyTheme);
+    connect(ui->themeDeleteBtn, &QPushButton::clicked, this, &EditorPage::deleteTheme);
+    connect(ui->textFormats, &QTreeWidget::currentItemChanged, this, &EditorPage::updateTextFormatEdit);
+    connect(ui->fgPicker, &ColorWidget::colorPicked, this, &EditorPage::updateTextFormatDisplayGeneric);
+    connect(ui->bgPicker, &ColorWidget::colorPicked, this, &EditorPage::updateTextFormatDisplayGeneric);
+    connect(ui->italicOption, &QCheckBox::clicked, this, &EditorPage::updateTextFormatDisplayGeneric);
+    connect(ui->boldOption, &QCheckBox::clicked, this, &EditorPage::updateTextFormatDisplayGeneric);
+    connect(ui->fgClearBtn, &QCheckBox::clicked, ui->fgPicker, &ColorWidget::clear);
+    connect(ui->fgClearBtn, &QCheckBox::clicked, this, &EditorPage::updateTextFormatDisplayGeneric);
+    connect(ui->bgClearBtn, &QCheckBox::clicked, ui->bgPicker, &ColorWidget::clear);
+    connect(ui->bgClearBtn, &QCheckBox::clicked, this, &EditorPage::updateTextFormatDisplayGeneric);
 
     updateTextFormatEdit();
 }
@@ -424,7 +430,7 @@ void EditorPage::updateTextFormatEdit() {
     }
 }
 
-void EditorPage::updateTextFormatDisplay() {
+void EditorPage::updateTextFormatDisplayGeneric() {
     QTreeWidgetItem* item = ui->textFormats->currentItem();
     bool canEdit = item && item->data(0, TextFormatConfigKeyRole).isValid();
     if (!canEdit)

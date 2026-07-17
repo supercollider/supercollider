@@ -111,13 +111,15 @@ String[char] : RawArray {
 	asString { ^this }
 	asCompileString {
 		var out;
-		// empirically, the compiler limits `"literals"` to 8188 characters
-		// 8180 leaves a little headroom
-		^if(this.size <= 8180) {
+		var safeLiteralSize = 81920 - 10; // leave some head room, see PyrLexer.h for where this is defined.
+		// The compiler limits literals (pertinently string literals) to 81920 characters,
+		//	 as defined in PyrLexer.h - MAXYYLEN
+		// 81910 leaves a little headroom
+		^if(this.size <= safeLiteralSize) {
 			this.prAsCompileString
 		} {
 			out = "[";
-			this.clump(8180).do { |substr, i|
+			this.clump(safeLiteralSize).do { |substr, i|
 				if(i > 0) { out = out ++ ", " };
 				out = out ++ substr.prAsCompileString;
 			};
@@ -261,6 +263,25 @@ String[char] : RawArray {
 		_String_FindBackwards
 		^this.primitiveFailed
 	}
+	findSimilarIn { |array, maxEditDistance, minSimilarity, prioritizeCapitalization = true|
+		var names, editDistances, bestMatchIndices, searchFor;
+		if(prioritizeCapitalization) {
+			names = array.collect { |x| x.asString.toLower };
+			searchFor = this.toLower;
+		} {
+			names = array.collect { |x| x.asString };
+			searchFor = this;
+		};
+
+		editDistances = names.collect(editDistance(_, searchFor));
+		bestMatchIndices = editDistances.order;
+		bestMatchIndices = bestMatchIndices.select { |i|
+			maxEditDistance.isNil or: { editDistances[i] <= maxEditDistance }
+			and:
+			{ minSimilarity.isNil or: { similarity(names[i], searchFor) >= minSimilarity } }
+		}
+		^array[bestMatchIndices]
+	}
 	endsWith { arg string;
 		^this.contains(string, this.size - string.size)
 	}
@@ -360,10 +381,6 @@ String[char] : RawArray {
 
 	standardizePath {
 		_String_StandardizePath
-		^this.primitiveFailed
-	}
-	realPath {
-		_String_RealPath
 		^this.primitiveFailed
 	}
 
@@ -487,7 +504,6 @@ String[char] : RawArray {
 	}
 	asAbsolutePath {
 			// changed because there is no need to create a separate object
-			// when String already knows how to make an absolute path
 		^this.absolutePath;  // was ^PathName(this).asAbsolutePath
 	}
 

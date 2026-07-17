@@ -23,11 +23,25 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if !defined(__cplusplus)
-#    include <stdbool.h>
+#if __cplusplus
+#    define SC_INLINE inline
+#else
+#    define SC_INLINE static inline
+#endif
+
+#ifdef __cplusplus
+// unfortunately, we have to use 'bool' for source compatibility with
+// existing  C++ plugins, but we make sure that it is indeed 1 byte long.
+typedef bool SCBool;
+static_assert(sizeof(SCBool) == 1, "unexpected size of 'bool'");
+#else
+// let's take the chance and use a well-defined type for SCBool.
+typedef uint8_t SCBool;
 #endif // __cplusplus
 
-typedef int SCErr;
+enum { kSCTrue = 1, kSCFalse = 0 };
+
+typedef int32_t SCErr;
 
 typedef int64_t int64;
 typedef uint64_t uint64;
@@ -56,14 +70,10 @@ typedef union {
     float64 f;
 } elem64;
 
+#ifdef __cplusplus
 const unsigned int kSCNameLen = 8;
 const unsigned int kSCNameByteLen = 8 * sizeof(int32);
-
-// Do not use this. C casting is bad and causes many subtle issues.
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#    define sc_typeof_cast(x) (decltype(x))
-#elif defined(__GNUC__)
-#    define sc_typeof_cast(x) (__typeof__(x))
 #else
-#    define sc_typeof_cast(x) /* (typeof(x)) */
+#    define kSCNameLen 8
+#    define kSCNameByteLen (8 * sizeof(int32))
 #endif

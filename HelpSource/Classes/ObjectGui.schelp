@@ -8,7 +8,7 @@ In the MVC architecture this is the Controller, which creates Views for manipula
 
 Each class specifies its Gui class via the guiClass method.
 
-The default guiClass for an Object is ObjectGui.  So if a class does not implement guiClass at all, then at least there is a default ObjectGui that will display the name.
+The default guiClass for an Object is ObjectGui. So if a class does not implement guiClass at all, then at least there is a default ObjectGui that will display the name.
 
 Many subclasses override the guiClass method to specify a different class, one that subclasses ObjectGui.
 
@@ -164,7 +164,7 @@ YourGuiClass : ObjectGui {
 		
 		// display some param on screen.
 		// here we assume that someParam is something that
-		//  has a suitable gui class
+		// has a suitable gui class
 		// implemented, or that the default ObjectGui is sufficient.
 		model.someParam.gui(layout);
 		
@@ -200,7 +200,7 @@ YourGuiClass : ObjectGui {
 			*/
 			numberEditor.value = model.howFast;
 			/*
-				note that 
+				note that
 					numberEditor.value = model.howFast;
 				is passive, and does not fire the numberEditor's action.	
 

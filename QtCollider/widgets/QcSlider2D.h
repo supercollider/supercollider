@@ -83,6 +83,7 @@ private:
     void setValue(const QPointF val, bool doAction = true);
     void mouseMoveEvent(QMouseEvent*);
     void mousePressEvent(QMouseEvent*);
+    void wheelEvent(QWheelEvent*);
     void keyPressEvent(QKeyEvent*);
     void paintEvent(QPaintEvent*);
 
@@ -93,4 +94,6 @@ private:
 
     QColor _knobColor;
     QtCollider::ImagePainter _backgroundImage;
+
+    QSizeF scrollRemainder;
 };

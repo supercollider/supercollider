@@ -77,6 +77,28 @@ void QcSlider2D::mousePressEvent(QMouseEvent* ev) {
     setValue(val);
 }
 
+void QcSlider2D::wheelEvent(QWheelEvent* e) {
+    const QRect contRect(QtCollider::Style::sunkenContentsRect(rect()));
+    const auto range = QSizeF(contRect.width(), contRect.height()) - _thumbSize;
+    const QSizeF pxStep =
+        QSizeF(range.width() > 0 ? 1. / range.width() : 0, range.height() > 0 ? 1. / range.height() : 0);
+
+    double stepX = qMax(_step, pxStep.width());
+    double stepY = qMax(_step, pxStep.height());
+    QPointF numSteps = getScrollSteps(e);
+    modifyStep(&stepX);
+    modifyStep(&stepY);
+
+    // accumulate fractional numSteps to help scrolling through big steps
+    double dx = numSteps.x(), dy = numSteps.y();
+    scrollRemainder.setWidth(std::modf(dx + scrollRemainder.width(), &dx));
+    scrollRemainder.setHeight(std::modf(dy + scrollRemainder.height(), &dy));
+
+    QPointF newValue(_x + dx * stepX, _y + dy * stepY);
+    setValue(newValue);
+    Q_EMIT(action());
+}
+
 void QcSlider2D::keyPressEvent(QKeyEvent* e) {
     double step = _step;
     switch (e->key()) {

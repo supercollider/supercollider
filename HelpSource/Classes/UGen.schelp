@@ -356,9 +356,18 @@ Outputs 1, representing true for positive, 0 representing false for negative or 
 method::isNegative
 Outputs 1, representing true for negative, 0 representing false for positive or zero input values.
 
+method:: ==
+note::
+code::==:: compares UGen objects by equality.
+Use code::|==|:: to compare the signals they produce.
+::
 
 method::|==|
-Outputs 1, representing true, when the receiver and argument signal coincide. Note that this may be ambivalent in many cases, because of floating point arithmetic. A special sign is needed, because code::==:: compares the UGen objects, and not the signal they produce.
+Returns 1 (true) when the receiver and argument signals are equal.
+Because of floating‑point arithmetic, results may vary in practice.
+note::
+For object identity comparison, use code::==:: instead.
+::
 
 code::
 // an example of floating point relevance for the |==| operator.

@@ -1,7 +1,7 @@
 class::LinkClock
 categories::Scheduling>Clocks
 summary::Scheduler synchronized with Ableton Link
-related::Classes/TempoClock
+related::Classes/TempoClock, Classes/LinkPhase, Classes/LinkTempo, Classes/LinkJump
 
 Description::
 

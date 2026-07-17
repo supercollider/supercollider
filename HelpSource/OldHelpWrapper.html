@@ -19,7 +19,7 @@
     </style>
     <script>
         function checkHash() {
-            var urls = unescape(window.location.hash.slice(1)).split("?");
+            var urls = decodeURIComponent(window.location.hash.slice(1)).split("?");
             document.getElementById("oldframe").setAttribute("src", urls[0]);
             document.getElementById("newlink").setAttribute("href", urls[1]);
             document.getElementById("filename").innerHTML = urls[0];

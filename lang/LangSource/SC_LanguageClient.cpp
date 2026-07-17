@@ -221,14 +221,14 @@ SC_LanguageClient* SC_LanguageClient::instance() { return gInstance; }
 void SC_LanguageClient::lockInstance() { gInstanceMutex.lock(); }
 void SC_LanguageClient::unlockInstance() { gInstanceMutex.unlock(); }
 
-extern bool compiledOK;
+extern bool gCompiledOK;
 
 const char* SC_LanguageClient::getName() const { return mHiddenClient->mName.c_str(); }
 
 FILE* SC_LanguageClient::getPostFile() { return mHiddenClient->mPostFile; }
 void SC_LanguageClient::setPostFile(FILE* file) { mHiddenClient->mPostFile = file; }
 
-bool SC_LanguageClient::isLibraryCompiled() { return compiledOK; }
+bool SC_LanguageClient::isLibraryCompiled() { return gCompiledOK; }
 
 int SC_LanguageClient::run(int argc, char** argv) {
     throw std::runtime_error("SC_LanguageClient::run only supported on terminal client");
@@ -273,7 +273,7 @@ void postfl(const char* fmt, ...) {
     va_end(ap);
 }
 
-void postText(const char* str, std::int64_t len) {
+void postText(const char* str, std::size_t len) {
     SC_LanguageClient* client = SC_LanguageClient::lockedInstance();
     if (client)
         client->postFlush(str, len);
