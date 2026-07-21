@@ -294,7 +294,7 @@ SuperCollider uses vcpkg to install its dependencies: `libsndfile`, `fftw`, `rea
 The latter is only valid within the current command prompt session.
 
 ### Manifest mode
-When detected, vcpkg is used in "manifest mode". That means that there's no need to separately install dependencies - they will be installed automatically during the `cmake ..` configure step. The following cmake flags allow controling which dependencies are used from vcpkg: `USE_VCPKG_FFTW`, `USE_VCPKG_LIBSNDFILE`, `USE_VCPKG_READLINE`, and `USE_VCPKG_PORTAUDIO`. When vcpkg is detected, all of them are set to `ON` _when building on Windows_.
+When detected, vcpkg is used in "manifest mode". That means that there's no need to separately install dependencies - they will be installed automatically during the `cmake ..` configure step. The following cmake flags allow controling which dependencies are used from vcpkg: `USE_VCPKG_FFTW`, `USE_VCPKG_LIBSNDFILE`, and `USE_VCPKG_READLINE`. When vcpkg is detected, all of them are set to `ON` _when building on Windows_.
 
 ### Building without vcpkg
 
@@ -345,22 +345,10 @@ The SC build only uses the single precision FFTW library (fftw3f).
 *Note*: if you compile FFTW yourself, all files must end up in the root fftw
 directory.
 
-#### Portaudio
+### Portaudio
 
-When not using vcpkg, a bundled version of `portaudio` will be used.
-
-In order to support ASIO drivers (highly recommended for low latency operation), **[Asio SDK][asiosdk]** needs to be manually installed.
-After downloading it and extracting the contents of the zip file, place the files in the following directory structure:
-
-    supercollider
-        external_libraries
-            portaudio
-                portaudio_submodule
-                asiosdk
-                    asio
-                    common
-                    ...
-            ...
+By default, a bundled version of `portaudio` will be used, so that it is built with a chosen subset of Windows audio APIs.
+In order to support ASIO drivers (highly recommended for low latency operation), **[Asio SDK][asiosdk]** will be downloaded automatically with the first `cmake ..` run. 
 
 Additional build settings
 -------------------------
