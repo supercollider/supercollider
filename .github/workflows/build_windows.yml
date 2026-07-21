@@ -31,15 +31,15 @@ jobs:
             # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             # installer-suffix: "win32-installer"
 
-          - job-name: "64-bit MSVC 2022 with ctest"
+          - job-name: "64-bit MSVC 2026 with ctest"
             fftw-arch: "x64"
             cmake-arch: "x64"
-            os-version: "2022"
+            os-version: "2025-vs2026"
             qt-version: "6.8.3"
             qt-arch: "win64_msvc2022_64"
             fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip"
-            cmake-generator: "Visual Studio 17 2022"
-            vcvars-script-path: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+            cmake-generator: "Visual Studio 18 2026"
+            vcvars-script-path: "C:/Program Files/Microsoft Visual Studio/18/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
             vcpkg-triplet: x64-windows-release
             use-qtwebengine: "ON" # might need to be turned off for MinGW
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
