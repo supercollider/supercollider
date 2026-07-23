@@ -1442,24 +1442,6 @@ Plotter {
 	}
 }
 
-+ Collection {
-	plotHisto { arg steps = 100, min, max;
-		var histo = this.histo(steps, min, max);
-		var plotter = histo.plot;
-		var minmax = [min ?? { this.minItem }, max ?? { this.maxItem }];
-		var binwidth = minmax[1] - minmax[0] / steps;
-
-		^plotter
-		.domainSpecs_([minmax.asSpec])
-		.specs_([[0, histo.maxItem * 1.05, \linear, 1].asSpec])
-		.plotMode_(\steps)
-		.axisLabelY_("Occurrences")
-		.axisLabelX_("Bins")
-		.domain_(binwidth * (0..steps-1) + minmax[0])
-		;
-	}
-}
-
 
 + Function {
 	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false, parent|
