@@ -12,7 +12,7 @@ Plot {
 	var <>labelMargin = 2;  // margin around tick or axis labels
 	var <>borderMargin = 3; // margin separating the edge of the view from its inner elements
 	var <>hideLabelsHeightRatio = 1.2, <>hideLabelsWidthRatio = 1.5; // hide labels below plot:labels ratio
-	var domainPad = 0.0, halfBinWidthPx = 0.0; // for steplike data width
+	var plotXPad = 0.0, halfBinWidthPx = 0.0; // for steplike data width
 	var valueCache, resolution;
 
 	*initClass {
@@ -225,22 +225,20 @@ Plot {
 		domainSpec = sp;
 
 		// update private domain specs to give visual padding to the beginning and end of the data
-		if(value.size > 1) {
-			domainPad = if(this.hasCenteredSteplikeDisplay) {
-				if(plotter.domain.isNil)
-				{ 0.5 } // domain step defaults to 1
-				{ plotter.domain.differentiate.drop(1).minItem / 2 }
+		// this padding is a fraction of the plotBounds (e.g. 1/200 for data of size 100)
+		plotXPad = if(this.hasCenteredSteplikeDisplay) {
+				(value.size).reciprocal/2
 			} {
 				0.0
 			};
-
+		if(value.size > 1) {
 			prDomainSpec = domainSpec.copy;
 			prDomainSpec
-			.minval_(domainSpec.minval - domainPad)
-			.maxval_(domainSpec.maxval + domainPad);
+				.minval_(domainSpec.warp.map(0 - plotXPad))
+				.maxval_(domainSpec.warp.map(1 + plotXPad));
+			// warp.map can take args outside [0, 1], which spec.map would clip
 		} {
 			prDomainSpec = domainSpec;
-			domainPad = if(this.hasCenteredSteplikeDisplay) { 0.5 } { 0.0 };
 		};
 
 		if(gridOnX and: { prDomainSpec.notNil }) {
@@ -398,7 +396,7 @@ Plot {
 	}
 
 	domainCoordinates { |size|
-		var vals, domainRange;
+		var vals; // linear in [0, 1]
 
 		if (plotter.domain.notNil) {
 			vals = prDomainSpec.unmap(plotter.domain);
@@ -406,15 +404,11 @@ Plot {
 			if (size == 1 or: { domainSpec.range == 0.0 }) {
 				vals = 0.5.dup(size) // put the values in the middle of the plot
 			} {
-				vals = prDomainSpec.unmap(
-					Array.interpolation(size, domainSpec.minval, domainSpec.maxval)
-				);
+				vals = Array.interpolation(size, plotXPad, 1 - plotXPad)
 			}
 		};
 
-		domainRange = prDomainSpec.range;
-		if(domainRange == 0) { domainRange = 1 };
-		halfBinWidthPx = domainPad / domainRange * plotBounds.width;
+		halfBinWidthPx = plotXPad * plotBounds.width;
 
 		^plotBounds.left + (vals * plotBounds.width);
 	}
@@ -587,7 +581,7 @@ Plot {
 		var barWidth = halfBinWidthPx * 2 - (2 * gap);
 		var centery = 0.linlin(this.spec.minval, this.spec.maxval, plotBounds.bottom, plotBounds.top, clip: nil);
 
-		Pen.smoothing_(false);
+		Pen.smoothing_(true);
 
 		y.size.do { |i|
 			var p = x[i] @ y[i];
