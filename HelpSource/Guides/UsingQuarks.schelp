@@ -29,7 +29,7 @@ list::
 section:: Installing/uninstalling/updating quarks
 
 warning::
-soft::&hsp;::Some Quarks are not actively maintained and may cause errors during compilation or usage. The most frequently encountered errors are:
+Some Quarks are not actively maintained and may cause errors during compilation or usage. The most frequently encountered errors are:
 
 list::
 ## teletype::ERROR: duplicate Class found::
