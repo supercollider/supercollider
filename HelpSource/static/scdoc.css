@@ -125,7 +125,7 @@ a.subclass_toggle:hover {
     padding: 0.5em 0;
     background-color: var(--color-bg);
     box-shadow: 0em 0em 0.25em var(--color-fg-200);
-    z-index: 2;
+    z-index: 3;
 }
 
 #nav {
@@ -246,9 +246,21 @@ li.menuitem a.menu-link.home {
     border: 1px solid var(--color-fg-100);
 }
 
-
 .header {
-  padding-bottom: 0.18em;
+    padding-bottom: 0.18em;
+    position: sticky;
+    top: var(--menu-bar-height);
+    background: var(--color-bg);
+    z-index: 2;
+    border-bottom: 1px solid var(--color-fg-100);
+
+    h1 {
+        transition: font-size 0.4s;
+    }
+
+    &.collapsed h1 {
+        font-size: 1.3em;
+    }
 }
 
 #label {

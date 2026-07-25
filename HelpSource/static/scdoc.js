@@ -378,3 +378,22 @@ function toggleLineNumbers(v) {
       t.editor.setOption("lineNumbers", v);
     });
 }
+
+
+// collapse the header of the docs while scrolling
+function setStickyHeaderResize() {
+    document.addEventListener('DOMContentLoaded', function () {
+        const header = document.querySelector('.header');
+        if (!header) return;
+
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 80) {
+                header.classList.add('collapsed');
+            } else {
+                header.classList.remove('collapsed');
+            }
+        });
+    });
+}
+
+setStickyHeaderResize();
