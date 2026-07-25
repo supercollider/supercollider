@@ -211,11 +211,7 @@ Quarks.addFolder("~/supercollider/quarks");
 Now you can (un)install your own packages from your local folder.
 
 warning::
-Do not include plugins, extensions, or classes distributed by others directly inside
-your Quark folder. SuperCollider loads Extensions globally, so placing an external
-Extension inside a Quark can cause duplicate class errors for users who have already
-installed that Extension separately, according to that extension’s installation
-instructions.
+Do not include plugins, extensions, or classes distributed by others directly inside your Quark folder. SuperCollider loads Extensions globally, so placing an external Extension inside a Quark can cause duplicate class errors for users who have already installed that Extension separately, according to that extension’s installation instructions.
 
 Example:
 
@@ -225,8 +221,7 @@ ERROR: duplicate Class found: 'SomeClassName'
 ~/Library/Application Support/SuperCollider/downloaded-quarks/YourQuark/classes/...
 ::
 
-If your Quark depends on an external Extension, declare it as a dependency in your
-README file or in the Quark metadata, rather than bundling the Extension itself.
+If your Quark depends on an external Extension, declare it as a dependency in your README file or in the Quark metadata, rather than bundling the Extension itself.
 ::
 
 Managing your code with git is optional, but you should consider using it early on. Even if you do not intend to share your code with anyone else, git provides a backup system and a time machine if you break something.
