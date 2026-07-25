@@ -28,6 +28,18 @@ list::
 
 section:: Installing/uninstalling/updating quarks
 
+warning::
+soft::&hsp;::Some Quarks are not actively maintained and may cause errors during compilation or usage. The most frequently encountered errors are:
+
+list::
+## teletype::ERROR: duplicate Class found::
+## teletype::ERROR: Found duplicate instance variable name::
+::
+
+If you encounter such issues, you can report the problem by creating an issue in the Quark's repository. More proactive users are encouraged to fork the repository, resolve the issue, and open a Pull Request.
+
+In these situations, rather than relying solely on the built-in documentation, you may need to independently troubleshoot the problem. We recommend actively seeking help on link::https://scsynth.org:: or other social network services.
+::
 
 subsection::using the GUI
 
