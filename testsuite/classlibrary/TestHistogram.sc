@@ -39,18 +39,18 @@ TestHistogram : UnitTest {
         "Histogram: sum of frequencies plus outliers should equal number of data points")
     }
 
-        // ok, this won't work
     test_avoid_integer_aliasing {
-        var data = {200.rand}.dup(170);
-        var min = 10, max = 189; //this might produce pseudo outliers
-        var n_bins = 16; // this is close, but should get corrected
+        var data = {rrand(10, 189)}.dup(170);
+        var min = 10, max = 189; //
+        var n_bins = 16; // this is close, but should get corrected to 15
         var histo = data.histo(n_bins, min, max);
-        this.assert( histo.range == 179 and: ( histo.n_bins == 16 ) and: (histo.binSize == 12),
+        var binWidth = (histo.domain[1] - histo.domain[0]).round;
+        this.assert( (histo.max - histo.min) == 179 and: { histo.n_bins == 15 } and: { binWidth == 12},
         "Histogram: when data is Integers, only allow integer bin sizes")
     }
 
     test_permit_change_of_histo_params_on_existing_data {
-        var data = {200.rand}.dup(170);
+        var data = { rrand(0.001, 2000) }.dup(170);
         var histo = data.histo;
         var histoChanged = histo.copy().n_bins_(10).x_warp_(\exp).min_(20).max_(70);
 

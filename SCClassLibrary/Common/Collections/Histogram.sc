@@ -8,93 +8,100 @@ Histogram  {
     var <plotter;
 
     *new { | data, n_bins, min, max, x_warp(\lin) |
-		if(data.isEmpty) { MethodError("Histogram.new: data is empty"); ^nil };
-        data = Histogram.prCheckData(data);
+		if(data.isEmpty) { MethodError("Histogram.new: data is empty").throw; };
         ^super.newCopyArgs(data, n_bins, min, max, x_warp)
             .prUpdateHistogram;
 	}
 
-    *prCheckData { |data|
-        if(not(data[0].isCollection)) {
-            data = [data]; // prepare for loop in prMakeFreqsArray
-        } {
-            if(data.collect(_.size).differentiate[1..].sum > 0) {
-                warn("Histogram.new: data arrays not of same sample size; \
-                    comparison may not be sensible")
-            };
-        };
-        ^data
-    }
-
     prUpdateHistogram {
         domainSpec = this.prPrepareDomainSpec;
-        freqsArray = this.prMakeFreqsArray;
-
-        // the data points should align with the middle of each bin,
-        // not at its left boundary.
-        // so we offset the Plotter's domain by half a bin width:
-        // UNLESS the plotmode does this already!? --> Verify
-        domain = domainSpec.map(Array.series(n_bins, 1 / (2  * n_bins), 1/n_bins));
+        if(data.maxDepth == 1) {
+            #freqsArray, outliers = this.prMakeFreqsArray(data);
+        } {
+            #freqsArray, outliers = data.collect (this.prMakeFreqsArray(_)).flop;
+        };
+        domain = domainSpec.map(Array.series(n_bins, 0, 1/(n_bins)));
+        // the values in domain give the lower bounds of each bins.
+        // this means that domain.last will be < max.
         yspec = [0, freqsArray.flat.maxItem * 1.05, \lin].asSpec;
         plotter !? { this.plot };
         ^this
     }
 
     prPrepareDomainSpec {
-        var range, binWidth;
-        n_bins = n_bins ?? { data[0].size.sqrt.ceil };
-        min = min ?? { data[0].minItem };
-		max = max ?? { data[0].maxItem };
+        // flat copy: mem abuse?
+        var range, binWidth, new_n_bins, new_max, dataflat = data.flat;
+        n_bins = n_bins ?? { data.shape.last.sqrt.ceil };
+        min = min ?? { dataflat.minItem };
+		max = max ?? { dataflat.maxItem };
         range = max - min;
-        if(data.every(_.every(_.isInteger)) and: { x_warp === \lin }) {
-            if (n_bins > range) {
-                n_bins = range.asInteger
-            } { // binWidth needs to be integer;
-                // so we round up n_bins
-                binWidth = (range/n_bins).ceil;
-                n_bins = (range/binWidth).ceil.asInteger;
+        if(x_warp === \lin and: { dataflat.every(_.isInteger) } ) {
+            range = range + 1; // this +1 is for the max (e.g.: 4 - 2 = 2, but interval [2, 4] includes 3 integers)
+            if (n_bins >= range) {
+                new_n_bins = range.asInteger;
+            } { // binWidth should be integer.
+                // if not, there may be artifacts where certain bins contain more integers than others
+                // e.g.: the intervals (bins) [1.9, 3.1) and  [2.1, 3.3), are of the same size,
+                // but the former contains 2 integer values (2 and 3); contains only 1 (3);
+                // first, establish bin width closest to specified extremes and n_bins:
+                if (not(range.isPrime)) {
+                    binWidth = range/(n_bins + [0, 1, -1, 2, -2]);
+                    binWidth = binWidth.detect { |x| x.floor == x }
+                };
+                binWidth = binWidth ?? { (range/n_bins).round.asInteger };
+                // we may in turn have to round n_bins as well:
+                new_n_bins = (range/binWidth).round.asInteger;
                 // update max accordingly
-                max = n_bins * binWidth + min;
+                new_max = new_n_bins * binWidth + min - 1;
+                if ( new_max != max or: { new_n_bins != n_bins } ) {
+                    n_bins = new_n_bins;
+                    max = new_max;
+                    postln("Histogram: adjustments for integer domain: \n"
+                        "adjusted max and/or n_bins to permit integer bin width and avoid artifacts.\n"
+                        "bin width = %; width of rightmost bin may be larger by 1. \n"
+                        "using n_bins = %, max = %".format(binWidth, n_bins, max))
+                }
             }
-        }
+        };
         ^[min, max, x_warp].asSpec;
     }
 
-    prMakeFreqsArray {
-		var freqs, freqIndexArray, lastIndex;
-		lastIndex = n_bins - 1;
-		freqs = 0.dup([data.size, n_bins]);
-        outliers = 0.dup(data.size);
+    prMakeFreqsArray { | data1d |
+		var freqs, freqIndex, outliers1d;
+		freqs = 0.dup(n_bins);
+        outliers1d = 0;
 
-        data.do { | dataset, datasetIndex |
-            freqIndexArray = (domainSpec.unmap(dataset) * lastIndex).floor.asInteger ;
-		    freqIndexArray.do { |freqIndex, i|
-                // freqIndex is now constrained (by the unmapping) to [0, lastIndex];
-                // so we need to distinguish clipped outliers from actual first/last bin values
-                if (freqIndex != 0 and: { freqIndex != lastIndex } or: { dataset[i].inclusivelyBetween(min, max) } ) {
-                    freqs[datasetIndex][freqIndex] = freqs[datasetIndex][freqIndex] + 1;
-                } { // else it is an outlier.
-                    outliers[datasetIndex] =  outliers[datasetIndex] + 1;
-                };
-            };
+        data1d.do { | x |
+            freqIndex = (domainSpec.unmap(x) * n_bins).asInteger;
+            // Note that (only) when x >= max, this will output n_bins,
+            // even though the last index of freqs is n_bins - 1.
+            // this is intentional; the last bin interval is closed on both sides,
+            // i.e., it should include the max, and this slight asymmetry requires special treatment.
+            // special cases:
+            // 1. freqIndex == n_bins; this happens when x == max and with outliers (i.e., x > max)
+            // 2. freqIndex == 0; this happens when x is in the first bin (not just when x == min !), and with outliers (x < min).
+            case
+                {freqIndex.exclusivelyBetween(0, n_bins)} { freqs[freqIndex] = freqs[freqIndex] + 1 }
+                { x == max } { freqs[n_bins-1] = freqs[n_bins-1] + 1 }
+                { x > max } { outliers1d = outliers1d + 1 }
+                { x >= min } { freqs[0] = freqs[0] + 1 }
+                { outliers1d = outliers1d + 1 }
         };
 
-        if (outliers.any(_ > 0)) {
-                data.size.do { |i|
-                    postf("Histogram : % of % values in the collection are out of the histogram range [%, %].\n",
-                    outliers[i], data[i].size, min, max)
-                }
+        if (outliers1d > 0) {
+                postf("Histogram : % of % values in the collection are out of the histogram range [%, %].\n",
+                outliers1d, data1d.size, min, max)
         };
+		^[freqs, outliers1d];
+    }
 
-		^freqs;
-	}
 
     data_ { | new_data |
         data = Histogram.prCheckdata(new_data);
         this.prUpdateHistogram
     }
 
-    n_bins_ {| new_n_bins |
+    n_bins_ { | new_n_bins |
         n_bins = new_n_bins;
         this.prUpdateHistogram
     }
