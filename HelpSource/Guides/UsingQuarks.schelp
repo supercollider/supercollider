@@ -202,7 +202,7 @@ Quarks.addFolder("~/supercollider/quarks");
 Now you can (un)install your own packages from your local folder.
 
 warning::
-If your Quark relies on any extension that is not a Quark, list it as a dependency in your README instead of relying on the Quarks to install that extension.
+If your Quark relies on any extension that is not a Quark, list it as a dependency in your README instead of relying on the Quarks system to install that extension.
 ::
 
 Managing your code with git is optional, but you should consider using it early on. Even if you do not intend to share your code with anyone else, git provides a backup system and a time machine if you break something.
