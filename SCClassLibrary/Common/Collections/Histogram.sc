@@ -30,22 +30,23 @@ Histogram  {
 
     prPrepareDomainSpec {
         // flat copy: mem abuse?
-        var range, binWidth, new_n_bins, new_max, dataflat = data.flat;
+        var range, binWidth, new_n_bins, new_max, dataflat = data.asArray.flat;
         n_bins = n_bins ?? { data.shape.last.sqrt.ceil };
         min = min ?? { dataflat.minItem };
 		max = max ?? { dataflat.maxItem };
         range = max - min;
-        if(x_warp === \lin and: { dataflat.every(_.isInteger) } ) {
-            range = range + 1; // this +1 is for the max (e.g.: 4 - 2 = 2, but interval [2, 4] includes 3 integers)
+        if(x_warp === \lin or: { x_warp === \linear } and: { dataflat.every(_.isInteger) } ) {
+            range = range + 1; // this +1 is to include the max (e.g.: 4 - 2 = 2, but interval [2, 4] includes 3 integers)
             if (n_bins >= range) {
-                new_n_bins = range.asInteger;
+                n_bins = range.asInteger;
             } { // binWidth should be integer.
                 // if not, there may be artifacts where certain bins contain more integers than others
                 // e.g.: the intervals (bins) [1.9, 3.1) and  [2.1, 3.3), are of the same size,
                 // but the former contains 2 integer values (2 and 3); contains only 1 (3);
                 // first, establish bin width closest to specified extremes and n_bins:
                 if (not(range.isPrime)) {
-                    binWidth = range/(n_bins + [0, 1, -1, 2, -2]);
+                    // test if other possible values for n_bins result in Integer binWidth
+                    binWidth = range/(n_bins + ([0] ++ (1..n_bins.div(4)) *.x [1, -1]));
                     binWidth = binWidth.detect { |x| x.floor == x }
                 };
                 binWidth = binWidth ?? { (range/n_bins).round.asInteger };
@@ -58,7 +59,7 @@ Histogram  {
                     max = new_max;
                     postln("Histogram: adjustments for integer domain: \n"
                         "adjusted max and/or n_bins to permit integer bin width and avoid artifacts.\n"
-                        "bin width = %; width of rightmost bin may be larger by 1. \n"
+                        "bin width = %; width of rightmost bin may still be larger by 1. \n"
                         "using n_bins = %, max = %".format(binWidth, n_bins, max))
                 }
             }
@@ -121,10 +122,13 @@ Histogram  {
         this.prUpdateHistogram
     }
 
-    plot {
+    plot { | name, bounds, parent |
         // if a plotter already exists, update its values rather than making a new one.
-        plotter = plotter !? { plotter.value = freqsArray } ?? { freqsArray.plot };
-        plotter.domainSpecs_([domainSpec])
+        plotter = plotter !? { plotter.value = freqsArray } ?? { freqsArray.plot(name, bounds, parent: parent) };
+        plotter
+            .name_(name ?? { plotter.name })
+            .bounds_(bounds ?? { plotter.bounds })
+            .domainSpecs_([domainSpec])
             .domain_(domain)
             .specs_([yspec])
             .plotMode_(\bars)

@@ -1424,6 +1424,7 @@ Plotter {
 			case
 			{ elem.isKindOf(Env) }       { elem.asMultichannelSignal.flop }
 			{ elem.isKindOf(Wavetable) } { elem.asSignal }
+			{ elem.isKindOf(Histogram) } { ^this.collect(_.data).histo(min: minval, max: maxval).plot(name, bounds, parent) }
 			{ elem.isNil }               { Error("Cannot plot array: non-numeric value at index %".format(i)).throw }
 			{ hasSubArrays }             { elem.asArray }
 			{ elem };
