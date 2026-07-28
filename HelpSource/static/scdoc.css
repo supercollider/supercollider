@@ -54,8 +54,13 @@ p {
 
 a {
     /* The menu bar takes some pixels which we need to respect
-    when jumping to an anchor. */
-    scroll-margin-top: var(--menu-bar-height);
+    when jumping to an anchor.
+    Additionally, some offset is added b/c of the dynamic height
+    of the collapsing header (see .header.collapsed).
+    At some point, this should be dynamically linked via a css property
+    instead of hardcoding heights...
+     */
+    scroll-margin-top: calc(var(--menu-bar-height) + 70px);
 }
 
 a:link, a:visited, a:link:hover {
