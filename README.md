@@ -35,20 +35,20 @@ SuperCollider is tested with:
 SuperCollider is known to support these platforms:
 - Windows 10, 11
 - macOS 12-15, 26
-- Ubuntu 22.04-24.04
+- Ubuntu 22.04-26.04
 
 
 SuperCollider has guaranteed support for:
 - Windows 10, 11
-- MSVC 2019, 2022
-- macOS 13-15
-- Xcode 14-16
+- MSVC 2022, 2025
+- macOS 15, 26
+- Xcode 16, 26
 - Debian >= 11
-- Ubuntu 22.04, 24.04
-- Fedora 36, 37
+- Ubuntu 24.04, 26.04
+- Fedora 40-44
 - Arch Linux
-- gcc >= 9
-- clang >= 11
+- gcc >= 13
+- clang >= 18
 - Qt >= 6.2
 
 There is still limited support for Qt 5.15. Further details are described in [README_MACOS.md](README_MACOS.md).
