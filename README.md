@@ -40,7 +40,7 @@ SuperCollider is known to support these platforms:
 
 SuperCollider has guaranteed support for:
 - Windows 10, 11
-- MSVC 2022, 2025
+- MSVC 2022, 2026
 - macOS 15, 26
 - Xcode 16, 26
 - Debian >= 11
