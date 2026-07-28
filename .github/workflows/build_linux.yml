@@ -21,6 +21,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             ctest: false
+            unity-build: false
 
           - job-name: ""
             os-version: "22.04"
@@ -29,6 +30,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             ctest: false
+            unity-build: false
 
           - job-name: "with ctest"
             os-version: "22.04"
@@ -38,6 +40,7 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: "ubuntu-22.04-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
             ctest: true
+            unity-build: false
 
           - job-name: "use system libraries with ctest"
             os-version: "24.04"
@@ -46,6 +49,7 @@ jobs:
             use-syslibs: true
             shared-libscsynth: false
             ctest: true
+            unity-build: false
 
           - job-name: "shared libscsynth"
             os-version: "24.04"
@@ -54,6 +58,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: true
             ctest: false
+            unity-build: false
             
           - job-name: ""
             os-version: "22.04"
@@ -62,6 +67,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             ctest: false
+            unity-build: false
 
           - job-name: ""
             os-version: "24.04"
@@ -70,6 +76,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             ctest: false
+            unity-build: false
 
           - job-name: ""
             os-version: "24.04"
@@ -79,13 +86,14 @@ jobs:
             shared-libscsynth: false
             ctest: false
 
-          - job-name: ""
+          - job-name: "unity build"
             os-version: "24.04"
             c-compiler: "clang-17"
             cxx-compiler: "clang++-17"
             use-syslibs: false
             shared-libscsynth: false
             ctest: false
+            unity-build: true
 
           - job-name: "with ctest"
             os-version: "24.04"
@@ -94,6 +102,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             ctest: true
+            unity-build: false
 
           - job-name: "arm64 with ctest"
             os-version: "24.04-arm"
@@ -102,6 +111,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             ctest: true
+            unity-build: false
 
     name: Ubuntu ${{ matrix.os-version }} ${{ matrix.c-compiler }} ${{ matrix.job-name }}
     env:
@@ -109,6 +119,7 @@ jobs:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
+      UNITY_BUILD: ${{ matrix.unity-build }}
       CC: ${{ matrix.c-compiler }}
       CXX: ${{ matrix.cxx-compiler }}
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}"
@@ -159,6 +170,8 @@ jobs:
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
+
+          if $UNITY_BUILD; then EXTRA_CMAKE_FLAGS="-DFINAL_BUILD=ON $EXTRA_CMAKE_FLAGS"; fi
 
           cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
 
