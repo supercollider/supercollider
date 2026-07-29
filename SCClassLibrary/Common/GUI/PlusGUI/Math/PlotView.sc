@@ -576,12 +576,13 @@ Plot {
 	}
 
 	bars { |x, y|
-		var gap = halfBinWidthPx * 0.1;
+		// if gaps would be < 1 pixel, don't draw gaps at all.
+		var gap = if(halfBinWidthPx >= 5) { halfBinWidthPx * 0.1 } { 0 };
 		var xOffset = halfBinWidthPx.neg + gap;
 		var barWidth = halfBinWidthPx * 2 - (2 * gap);
 		var centery = 0.linlin(this.spec.minval, this.spec.maxval, plotBounds.bottom, plotBounds.top, clip: nil);
 
-		Pen.smoothing_(true);
+		Pen.smoothing_(false);
 
 		y.size.do { |i|
 			var p = x[i] @ y[i];
