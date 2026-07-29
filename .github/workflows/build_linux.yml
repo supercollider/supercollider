@@ -15,7 +15,7 @@ jobs:
         include:
 
           - job-name: ""
-            os-version: "22.04"
+            os-version: "24.04"
             c-compiler: "gcc-11"
             cxx-compiler: "g++-11"
             use-syslibs: false
