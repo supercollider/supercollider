@@ -46,6 +46,20 @@ jobs:
             installer-suffix: "win64-installer"
             ctest-cmd: "RUN_TESTS"
 
+          - job-name: "64-bit MSVC 2026"
+            cmake-arch: "x64"
+            os-version: "2025-vs2026"
+            qt-version: "6.8.3"
+            qt-arch: "win64_msvc2022_64"
+            cmake-generator: "Visual Studio 18 2026"
+            vcpkg-triplet: x64-windows-release
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            artifact-suffix: "win64-msvc2026" # set if needed - will trigger artifact upload
+            # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
+            # installer-suffix: "win64-installer"
+            # ctest: true
+            # ctest-cmd: "RUN_TESTS"
+
           - job-name: "64-bit MinGW with ctest"
             fftw-arch: "x64"
             os-version: "2022"
