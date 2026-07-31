@@ -35,7 +35,7 @@ Recorder {
 			if(this.isRecording.not) {
 				this.prRecord(bus, node, duration);
 				this.changedServer(\recording, true);
-				"Recording channels % ... \npath: '%'\n"
+				"Recording channels % ... \npath: \"%\"\n"
 				.postf(bus + (0..this.numChannels - 1), recordBuf.path);
 			} {
 				if(paused) {
@@ -69,7 +69,7 @@ Recorder {
 		if(recordNode.isPlaying) {
 			recordNode.run(false);
 			this.changedServer(\pausedRecording);
-			"... paused recording.\npath: '%'\n".postf(recordBuf.path);
+			"... paused recording.\npath: \"%\"\n".postf(recordBuf.path);
 		} {
 			"Not Recording".warn
 		};
@@ -81,7 +81,7 @@ Recorder {
 			if(paused) {
 				recordNode.run(true);
 				this.changedServer(\recording, true);
-				"Resumed recording ...\npath: '%'\n".postf(recordBuf.path);
+				"Resumed recording ...\npath: \"%\"\n".postf(recordBuf.path);
 			}
 		} {
 			"Not Recording".warn
