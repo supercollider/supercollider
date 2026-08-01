@@ -1268,6 +1268,7 @@ bool NotifyCmd::Stage2() {
         SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
 
     } else {
+        // keep this in sync w/ `World_RemoveClient` implementation for TCP de-registration via disconnect
         auto const it = std::find(hw->mUsers->begin(), hw->mUsers->end(), mReplyAddress);
         if (it != hw->mUsers->end()) {
             // remove from list

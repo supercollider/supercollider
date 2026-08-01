@@ -1005,6 +1005,36 @@ void World_Cleanup(World* world, bool unload_plugins) {
     free_alig(world);
 }
 
+/** @brief Gets called when a TCP client disconnects. Since the client may have
+ *  registered via `/notify`, we need to remove the client from this list as well because otherwise
+ *  the notification will be still send to the now closed socket.
+ *  This implementation is similar to `NotifyCmd::Stage2` which handles the
+ *  removal of UDP clients by sending `/notify 0`.
+ *
+ *  @details Contrary to UDP, TCP is stateful - i.e. a socket can get closed
+ *  and we should avoid writing into it after it has been closed.
+ *  Since there is no way of knowing if a UDP connection got dropped, we keep
+ *  all UDP clients alive and can be reclaimed by a client via the internal logic of `/notify`.
+ */
+void World_RemoveClient(FifoMsg* msg) {
+    auto* world = msg->mWorld;
+    auto* address = static_cast<ReplyAddress*>(msg->mData);
+    auto* hw = world->hw;
+
+    auto const it = hw->mUsers->find(*address);
+    if (it != hw->mUsers->end()) {
+        // make client ID free to be picked up by others again
+        auto const clientId = hw->mClientIDdict->at(*address);
+        hw->mAvailableClientIDs->push_back(clientId);
+
+        // remove it elsewhere
+        hw->mClientIDdict->erase(*address);
+        hw->mUsers->erase(it);
+    }
+    // free msg
+    delete address;
+}
+
 
 void World_NRTLock(World* world) { reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock(); }
 

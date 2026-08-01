@@ -38,6 +38,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/typeof/typeof.hpp>
 
+#include "SC_CoreAudio.h"
+#include "SC_FifoMsg.h"
 #include "SC_Lock.h"
 
 #include "nova-tt/semaphore.hpp"
@@ -48,7 +50,9 @@
 #endif
 
 
+// forward declarations
 bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
+void World_RemoveClient(FifoMsg* msg);
 
 namespace scsynth {
 
@@ -332,6 +336,11 @@ public:
         boost::asio::ip::tcp::no_delay noDelayOption(true);
         socket.set_option(noDelayOption, error);
 
+        mClientIdentification.mProtocol = kTCP;
+        mClientIdentification.mPort = socket.remote_endpoint().port();
+        mClientIdentification.mSocket = socket.native_handle();
+        mClientIdentification.mAddress = socket.remote_endpoint().address();
+
         // first message must be the password. 4 tries.
         bool validated = mWorld->hw->mPassword[0] == 0;
         for (int i = 0; !validated && i < 4; ++i) {
@@ -368,6 +377,9 @@ private:
     int32 OSCMsgLength;
     char* data;
     class SC_TcpInPort* mParent;
+
+    /** acts as the identification within SC world, which is necessary when deregistering upon disconnect. */
+    ReplyAddress mClientIdentification;
 
     void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
         if (error) {
@@ -477,7 +489,18 @@ public:
     }
 };
 
-SC_TcpConnection::~SC_TcpConnection() { mParent->connectionDestroyed(); }
+SC_TcpConnection::~SC_TcpConnection() {
+    // we need to de-register our client. clients are matched by reply address.
+    // we use fifomsg to get access to the stage2 thread lock.
+    // the callback function removes its passed data, so we make a copy of our reply address.
+    FifoMsg msg;
+    msg.Set(mWorld, World_RemoveClient, nullptr, new ReplyAddress(mClientIdentification));
+    AudioDriver(mWorld)->SendMsgFromEngine(msg);
+
+    // now close the socket
+    socket.close();
+    mParent->connectionDestroyed();
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
