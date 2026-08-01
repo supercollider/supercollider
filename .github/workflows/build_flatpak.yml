@@ -28,7 +28,7 @@ jobs:
       FLATPAK_FILE: "SuperCollider-${{ inputs.sc-version }}-Linux-${{ matrix.artifact-suffix }}.flatpak"
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
