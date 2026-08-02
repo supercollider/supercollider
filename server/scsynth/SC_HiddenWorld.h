@@ -33,6 +33,7 @@
 #include <deque>
 #include <set>
 
+#include "SC_ClientManager.h"
 #include "boost/sync/semaphore.hpp"
 
 #include "../../common/server_shm.hpp"
@@ -102,13 +103,14 @@ struct HiddenWorld {
     class AllocPool* mAllocPool;
     IntHashTable<struct Node, AllocPool>* mNodeLib;
     GrafDefTable* mGraphDefLib;
+
+    ClientManager* mClientManager;
     uint32 mMaxUsers;
     Clients* mUsers;
     ClientIDs* mAvailableClientIDs;
     ClientIDDict* mClientIDdict;
 
     class SC_AudioDriver* mAudioDriver;
-    char mPassword[32];
 
     uint32 mMaxWireBufs;
     float* mWireBufSpace;
