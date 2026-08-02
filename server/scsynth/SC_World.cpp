@@ -404,10 +404,9 @@ World* World_New(WorldOptions* inOptions) {
         world->mDriverLock = new SC_Lock();
 
         if (inOptions->mPassword) {
-            strncpy(world->hw->mPassword, inOptions->mPassword, 31);
-            world->hw->mPassword[31] = 0;
+            world->hw->mClientManager->setPassword(inOptions->mPassword);
         } else {
-            world->hw->mPassword[0] = 0;
+            world->hw->mClientManager->setPassword("");
         }
 #ifdef SC_BELA
         world->hw->mBelaAnalogInputChannels = inOptions->mBelaAnalogInputChannels;

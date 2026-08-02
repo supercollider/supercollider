@@ -343,7 +343,7 @@ public:
         mClientIdentification.mAddress = socket.remote_endpoint().address();
 
         // first message must be the password. 4 tries.
-        bool validated = mWorld->hw->mPassword[0] == 0;
+        auto validated = !mWorld->hw->mClientManager->hasPassword();
         for (int i = 0; !validated && i < 4; ++i) {
             // FIXME: error handling!
             size = boost::asio::read(socket, boost::asio::buffer((void*)&msglen, sizeof(int32)));
@@ -358,7 +358,7 @@ public:
             if (size < 0)
                 return;
 
-            validated = strcmp(buf, mWorld->hw->mPassword) == 0;
+            validated = mWorld->hw->mClientManager->checkPassword(buf);
 
             std::this_thread::sleep_for(std::chrono::seconds(i + 1)); // thwart cracking.
         }
