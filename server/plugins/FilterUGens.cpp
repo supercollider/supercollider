@@ -2626,7 +2626,9 @@ void Median_Ctor(Median* unit) {
     // printf("Median_Reset\n");
     SETCALC(Median_next);
     float in = ZIN0(1);
-    unit->m_medianSize = sc_clip((int)ZIN0(0), 0, kMAXMEDIANSIZE);
+    // a length below 1 leaves pos at -1 in Median_InsertMedian, which then indexes
+    // m_medianValue out of bounds; 1 is the documented minimum and is a no-op
+    unit->m_medianSize = sc_clip((int)ZIN0(0), 1, kMAXMEDIANSIZE);
     Median_InitMedian(unit, unit->m_medianSize, in);
     ZOUT0(0) = Median_InsertMedian(unit, in);
 }

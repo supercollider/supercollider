@@ -18,7 +18,8 @@ argument::length
 Number of input points in which to find the median. Must be an
 odd number from 1 to 31. If
 code::length::  is 1
-then Median has no effect.
+then Median has no effect. Values below 1 are clipped to 1, values
+above 31 are clipped to 31.
 
 
 argument::in

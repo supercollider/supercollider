@@ -164,6 +164,22 @@ TestFilterUGens : UnitTest {
 		this.assertEquals(result, 1, "Integral of a single 1 should be 1");
 	}
 
+	// A length below 1 left the insertion index at -1 in Median_InsertMedian,
+	// which then indexed the median buffer out of bounds and took the server
+	// down with it. Median's own help file documents the valid range as 1 to 31.
+	test_Median_length_below_one_does_not_crash_server {
+		[0.5, 0, -1].do { |length|
+			{ Median.ar(length, DC.ar(0)) }.play(target: server);
+		};
+
+		0.5.wait;
+
+		this.assert(
+			server.serverRunning and: { server.unresponsive.not },
+			"server should survive Median.ar with a length below 1"
+		);
+	}
+
 	test_ugen_generator_equivalences {
 		var condvar = CondVar();
 		var completed = 0;
