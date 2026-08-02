@@ -105,7 +105,6 @@ struct HiddenWorld {
     GrafDefTable* mGraphDefLib;
 
     ClientManager* mClientManager;
-    uint32 mMaxUsers;
     Clients* mUsers;
     ClientIDs* mAvailableClientIDs;
     ClientIDDict* mClientIDdict;

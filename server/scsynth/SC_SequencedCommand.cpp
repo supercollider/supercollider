@@ -1255,7 +1255,7 @@ bool NotifyCmd::Stage2() {
             }
         }
 
-        if (hw->mUsers->size() >= hw->mMaxUsers) {
+        if (!hw->mClientManager->clientSlotFree()) {
             SendFailure(&mReplyAddress, "/notify", "too many users\n");
             scprintf("too many users\n");
             return false;
@@ -1265,7 +1265,7 @@ bool NotifyCmd::Stage2() {
 
         hw->mClientIDdict->insert(std::make_pair(mReplyAddress, clientID));
         hw->mUsers->insert(mReplyAddress);
-        SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
+        SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mClientManager->getMaxUsers());
 
     } else {
         // keep this in sync w/ `World_RemoveClient` implementation for TCP de-registration via disconnect

@@ -333,11 +333,9 @@ World* World_New(WorldOptions* inOptions) {
         hw->mGraphDefLib = new HashTable<struct GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
         hw->mNodeLib = new IntHashTable<Node, AllocPool>(hw->mAllocPool, inOptions->mMaxNodes, false);
         hw->mUsers = new Clients();
-        hw->mMaxUsers = inOptions->mMaxLogins;
+        hw->mClientManager = new ClientManager(inOptions->mMaxLogins);
         hw->mAvailableClientIDs = new ClientIDs();
-        for (int i = 0; i < hw->mMaxUsers; i++) {
-            hw->mAvailableClientIDs->push_back(i);
-        }
+
         hw->mClientIDdict = new ClientIDDict();
         hw->mHiddenID = -8;
         hw->mRecentID = -8;
