@@ -172,7 +172,7 @@ TestFilterUGens : UnitTest {
 			{ Median.ar(length, DC.ar(0)) }.play(target: server);
 		};
 
-		0.5.wait;
+		server.sync;
 
 		this.assert(
 			server.serverRunning and: { server.unresponsive.not },
