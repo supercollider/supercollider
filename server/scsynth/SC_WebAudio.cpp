@@ -29,7 +29,7 @@
 #include "SC_WorldOptions.h"
 
 // forward declarations
-static void jsReplyFunc(ReplyAddress*, char* msg, int size);
+static void jsReplyFunc(const ReplyAddress*, char* msg, int size);
 bool ProcessOSCPacket(World*, OSC_Packet*); // SC_CoreAudio function
 class SC_WebAudioDriver;
 
@@ -327,7 +327,7 @@ int World_OpenTCP(World*, const char*, int, int, int) { return 1; }
  * The caller is responsible for freeing the passed message.
  * A copy is made b/c the function is async and the object could be out-of-scope already by then.
  */
-static void jsReplyFunc(ReplyAddress*, char* msg, int size) {
+static void jsReplyFunc(const ReplyAddress*, char* msg, int size) {
     // offset within sc heap
     char* copy = static_cast<char*>(malloc(size));
     if (!copy)
