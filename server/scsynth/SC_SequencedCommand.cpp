@@ -1245,11 +1245,11 @@ bool NotifyCmd::Stage2() {
     HiddenWorld* hw = mWorld->hw;
 
     if (mOnOff) {
-        for (auto addr : *hw->mUsers) {
+        for (auto addr : hw->mClientManager->getClients()) {
             if (mReplyAddress == addr) {
                 // already in table - don't fail though..
                 SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n",
-                                        hw->mClientIDdict->at(mReplyAddress));
+                                        hw->mClientManager->getClientIDDict().at(mReplyAddress));
                 scprintf("/notify : already registered\n");
                 return false;
             }
@@ -1261,20 +1261,14 @@ bool NotifyCmd::Stage2() {
             return false;
         }
 
-        int const clientID = popAvailableClientID(mID, *hw->mAvailableClientIDs);
+        int const clientID = hw->mClientManager->popAvailableClientID(mID);
 
-        hw->mClientIDdict->insert(std::make_pair(mReplyAddress, clientID));
-        hw->mUsers->insert(mReplyAddress);
+        hw->mClientManager->addClientId(clientID, mReplyAddress);
+        hw->mClientManager->addClient(mReplyAddress);
         SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mClientManager->getMaxUsers());
 
     } else {
-        // keep this in sync w/ `World_RemoveClient` implementation for TCP de-registration via disconnect
-        auto const it = std::find(hw->mUsers->begin(), hw->mUsers->end(), mReplyAddress);
-        if (it != hw->mUsers->end()) {
-            // remove from list
-            hw->mAvailableClientIDs->push_back(hw->mClientIDdict->at(mReplyAddress)); // push the freed ID
-            hw->mClientIDdict->erase(mReplyAddress);
-            hw->mUsers->erase(it);
+        if (hw->mClientManager->removeClient(mReplyAddress)) {
             SendDone("/notify");
             return false;
         }

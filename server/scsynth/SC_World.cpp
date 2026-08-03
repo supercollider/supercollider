@@ -332,11 +332,8 @@ World* World_New(WorldOptions* inOptions) {
         HiddenWorld* hw = world->hw;
         hw->mGraphDefLib = new HashTable<struct GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
         hw->mNodeLib = new IntHashTable<Node, AllocPool>(hw->mAllocPool, inOptions->mMaxNodes, false);
-        hw->mUsers = new Clients();
         hw->mClientManager = new ClientManager(inOptions->mMaxLogins);
-        hw->mAvailableClientIDs = new ClientIDs();
 
-        hw->mClientIDdict = new ClientIDDict();
         hw->mHiddenID = -8;
         hw->mRecentID = -8;
 
@@ -990,9 +987,6 @@ void World_Cleanup(World* world, bool unload_plugins) {
         if (hw->mNRTCmdFile)
             fclose(hw->mNRTCmdFile);
 #endif
-        delete hw->mUsers;
-        delete hw->mAvailableClientIDs;
-        delete hw->mClientIDdict;
         delete hw->mNodeLib;
         delete hw->mGraphDefLib;
         delete hw->mQuitProgram;
@@ -1016,18 +1010,9 @@ void World_Cleanup(World* world, bool unload_plugins) {
 void World_RemoveClient(FifoMsg* msg) {
     auto* world = msg->mWorld;
     auto* address = static_cast<ReplyAddress*>(msg->mData);
-    auto* hw = world->hw;
 
-    auto const it = hw->mUsers->find(*address);
-    if (it != hw->mUsers->end()) {
-        // make client ID free to be picked up by others again
-        auto const clientId = hw->mClientIDdict->at(*address);
-        hw->mAvailableClientIDs->push_back(clientId);
+    world->hw->mClientManager->removeClient(*address);
 
-        // remove it elsewhere
-        hw->mClientIDdict->erase(*address);
-        hw->mUsers->erase(it);
-    }
     // free msg
     delete address;
 }
@@ -1106,7 +1091,7 @@ void TriggerMsg::Perform() {
     packet.addi(mTriggerID);
     packet.addf(mValue);
 
-    for (auto addr : *mWorld->hw->mUsers)
+    for (auto addr : mWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 }
 
@@ -1129,7 +1114,7 @@ void NodeReplyMsg::Perform() {
         packet.addf(mValues[i]);
     }
 
-    for (auto addr : *mWorld->hw->mUsers)
+    for (auto addr : mWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 
     // Free memory in realtime thread
@@ -1193,7 +1178,7 @@ void NodeEndMsg::Perform() {
         packet.addi(mIsGroup);
     }
 
-    for (auto addr : *mWorld->hw->mUsers)
+    for (auto addr : mWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 }
 
@@ -1204,7 +1189,7 @@ void NotifyNoArgs(World* inWorld, char* inString) {
     small_scpacket packet;
     packet.adds(inString);
 
-    for (auto addr : *inWorld->hw->mUsers)
+    for (auto addr : inWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 }
 
