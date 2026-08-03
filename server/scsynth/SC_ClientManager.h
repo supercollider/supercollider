@@ -66,11 +66,10 @@ public:
      * Only call this in (N)RT locked environments!
      */
     std::optional<ClientID> getClientID(const ReplyAddress& address) const {
-        auto it = mClientDict.find(address);
-        if (it == mClientDict.end()) {
-            return {};
+        if (auto it = mClientDict.find(address); it != mClientDict.end()) {
+            return it->second;
         }
-        return it->second;
+        return std::nullopt;
     }
 
     /**
