@@ -1,5 +1,7 @@
 #pragma once
 #include <map>
+#include <optional>
+#include <string>
 
 #include "SC_Types.h"
 #include "SC_ReplyImpl.hpp"
