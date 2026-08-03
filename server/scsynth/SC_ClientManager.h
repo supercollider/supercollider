@@ -10,9 +10,6 @@ struct World;
  * @brief Manages client access of the server such as password check, client id issuing and handling tcp disconnects.
  */
 class ClientManager {
-    /// maximum number of clients that the server accepts
-    uint32 mMaxUsers;
-
     /// since this gets accessed in the real time thread, this should only be accessed via
     /// in protected environments such as stage1, stage2, ... or in the real time thread.
     std::map<ReplyAddress, uint32> mClientDict;
@@ -20,6 +17,8 @@ class ClientManager {
     /// the password necessary for login.
     std::optional<std::string> mPassword {};
 
+    /// maximum number of clients that the server accepts
+    uint32 mMaxUsers;
 
 public:
     /**
