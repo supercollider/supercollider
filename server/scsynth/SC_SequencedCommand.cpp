@@ -1247,7 +1247,7 @@ bool NotifyCmd::Stage2() {
             if (mReplyAddress == addr) {
                 // already in table - don't fail though..
                 SendFailureWithIntValue(&mReplyAddress, "/notify", "already registered\n",
-                                        hw->mClientManager->getClientIDDict().at(mReplyAddress));
+                                        hw->mClientManager->getClientID(mReplyAddress));
                 scprintf("/notify: already registered\n");
                 return false;
             }
