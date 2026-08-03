@@ -1126,7 +1126,7 @@ void TriggerMsg::Perform() {
     packet.addi(mTriggerID);
     packet.addf(mValue);
 
-    for (auto addr : mWorld->hw->mClientManager->getClients())
+    for (const auto& [addr, clientID] : mWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 }
 
@@ -1149,7 +1149,7 @@ void NodeReplyMsg::Perform() {
         packet.addf(mValues[i]);
     }
 
-    for (auto addr : mWorld->hw->mClientManager->getClients())
+    for (const auto& [addr, clientID] : mWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 
     // Free memory in realtime thread
@@ -1213,7 +1213,7 @@ void NodeEndMsg::Perform() {
         packet.addi(mIsGroup);
     }
 
-    for (auto addr : mWorld->hw->mClientManager->getClients())
+    for (const auto& [addr, clientID] : mWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 }
 
@@ -1224,7 +1224,7 @@ void NotifyNoArgs(World* inWorld, char* inString) {
     small_scpacket packet;
     packet.adds(inString);
 
-    for (auto addr : inWorld->hw->mClientManager->getClients())
+    for (const auto& [addr, clientID] : inWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 }
 
