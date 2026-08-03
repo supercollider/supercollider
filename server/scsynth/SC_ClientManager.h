@@ -65,7 +65,7 @@ public:
         return true;
     }
 
-    ClientIDDict& getClientIDDict() { return mClientIDdict; }
+    uint32 getClientID(const ReplyAddress& address) const { return mClientIDdict.at(address); }
 
     void addClientId(uint32 clientID, ReplyAddress address) { mClientIDdict.insert(std::make_pair(address, clientID)); }
 
