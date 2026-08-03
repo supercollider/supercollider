@@ -6,13 +6,15 @@
 
 struct World;
 
+using ClientID = uint32;
+
 /**
  * @brief Manages client access of the server such as password check, client id issuing and handling tcp disconnects.
  */
 class ClientManager {
     /// since this gets accessed in the real time thread, this should only be accessed via
     /// in protected environments such as stage1, stage2, ... or in the real time thread.
-    std::map<ReplyAddress, uint32> mClientDict;
+    std::map<ReplyAddress, ClientID> mClientDict;
 
     /// the password necessary for login.
     std::optional<std::string> mPassword {};
@@ -45,7 +47,7 @@ public:
      * @brief Returns the dict of all registered clients and their ID.
      * Only access this in (N)RT locked environments!
      */
-    const std::map<ReplyAddress, uint32>& getClients() const { return mClientDict; }
+    const std::map<ReplyAddress, ClientID>& getClients() const { return mClientDict; }
 
     /**
      * @brief returns true iff passed client was present and got removed
@@ -63,7 +65,7 @@ public:
      * @brief returns a value iff client has an id and has therefore been registered
      * Only call this in (N)RT locked environments!
      */
-    std::optional<uint32> getClientID(const ReplyAddress& address) const {
+    std::optional<ClientID> getClientID(const ReplyAddress& address) const {
         auto it = mClientDict.find(address);
         if (it == mClientDict.end()) {
             return {};
@@ -75,7 +77,7 @@ public:
      * @brief registers a client with an optional given ID.
      * Only call this in (N)RT locked environments!
      */
-    std::optional<uint32> registerClient(const ReplyAddress& address, std::optional<uint32> requestedID = {}) {
+    std::optional<ClientID> registerClient(const ReplyAddress& address, std::optional<ClientID> requestedID = {}) {
         auto id = getNextClientID(requestedID);
         if (!id)
             return {};
@@ -84,7 +86,7 @@ public:
     }
 
 private:
-    bool isClientIDTaken(uint32 id) const {
+    bool isClientIDTaken(ClientID id) const {
         for (const auto& [addr, clientID] : mClientDict) {
             if (clientID == id)
                 return true;
@@ -92,7 +94,7 @@ private:
         return false;
     }
 
-    std::optional<uint32> getNextClientID(std::optional<uint32> requestedID) const {
+    std::optional<ClientID> getNextClientID(std::optional<ClientID> requestedID) const {
         if (requestedID && *requestedID < mMaxUsers && !isClientIDTaken(*requestedID)) {
             return requestedID;
         }
