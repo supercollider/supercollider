@@ -167,16 +167,23 @@ TestFilterUGens : UnitTest {
 	// A length below 1 left the insertion index at -1 in Median_InsertMedian,
 	// which then indexed the median buffer out of bounds and took the server
 	// down with it. Median's own help file documents the valid range as 1 to 31.
-	test_Median_length_below_one_does_not_crash_server {
-		[0.5, 0, -1].do { |length|
-			{ Median.ar(length, DC.ar(0)) }.play(target: server);
-		};
+	test_medianLengthBelowOne {
+		var condition = CondVar();
+		var signal;
 
-		server.sync;
+		{ Median.ar(length: [0.5, 0, -1], in: DC.ar(0)) }.loadToFloatArray(
+			duration: 0.01,
+			target: server,
+			action: { |array| signal = array; condition.signalOne }
+		);
 
 		this.assert(
-			server.serverRunning and: { server.unresponsive.not },
-			"server should survive Median.ar with a length below 1"
+			condition.waitFor(5),
+			"Median.ar with a length below 1 should render instead of taking the server down"
+		);
+		this.assert(
+			signal.notNil and: { signal.every { |sample| sample == 0.0 } },
+			"a length below 1 should clip to 1, which passes the input through unchanged"
 		);
 	}
 
