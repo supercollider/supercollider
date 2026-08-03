@@ -18,7 +18,7 @@ class ClientManager {
     std::map<ReplyAddress, uint32> mClientDict;
 
     /// the password necessary for login.
-    std::optional<std::string> mPassword = {};
+    std::optional<std::string> mPassword {};
 
 
 public:
