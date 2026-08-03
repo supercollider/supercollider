@@ -11,13 +11,18 @@ class ClientManager {
     /// maximum number of clients that the server accepts
     uint32 mMaxUsers;
 
+    /// since this gets accessed in the real time thread, this should only be accessed via
+    /// in protected environments such as stage1, stage2, ... or in the real time thread.
     std::map<ReplyAddress, uint32> mClientDict;
 
     /// the password necessary for login.
-    std::optional<std::string> mPassword;
+    std::optional<std::string> mPassword = {};
 
 
 public:
+    /**
+     * @param maxUsers maximum number of clients that can connect to the server
+     */
     ClientManager(uint32 maxUsers): mMaxUsers(maxUsers) {}
 
     /**
@@ -29,7 +34,7 @@ public:
             return mPassword == password;
         }
         return true;
-    };
+    }
 
     /// returns true if the server has set a password
     bool hasPassword() const { return mPassword.has_value(); };
@@ -37,18 +42,25 @@ public:
     /// set password for server login
     void setPassword(const std::optional<const std::string>& password) { mPassword = password; }
 
-    /// returns true iff the server has a free slot for a new client
-    bool clientSlotFree() const { return mClientDict.size() < mMaxUsers; }
-
     /// returns maximum number of allowed users for this server
     uint32 getMaxUsers() const { return mMaxUsers; }
 
+    /**
+     * @brief Returns the dict of all registered clients and their ID.
+     * Only access this in (N)RT locked environments!
+     */
     const std::map<ReplyAddress, uint32>& getClients() const { return mClientDict; }
 
-    /// returns true iff passed client was present and got removed
+    /**
+     * @brief returns true iff passed client was present and got removed
+     * Only call this in (N)RT locked environments!
+     */
     bool removeClient(const ReplyAddress& client) { return mClientDict.erase(client); }
 
-    /// returns a value iff client has an id and has therefore been registered
+    /**
+     * @brief returns a value iff client has an id and has therefore been registered
+     * Only call this in (N)RT locked environments!
+     */
     std::optional<uint32> getClientID(const ReplyAddress& address) const {
         auto it = mClientDict.find(address);
         if (it == mClientDict.end()) {
@@ -58,7 +70,8 @@ public:
     }
 
     /**
-     * @brief registers a client with
+     * @brief registers a client with an optional given ID.
+     * Only call this in (N)RT locked environments!
      */
     std::optional<uint32> registerClient(const ReplyAddress& address, std::optional<uint32> requestedID = {}) {
         auto id = getNextClientID(requestedID);
