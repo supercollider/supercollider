@@ -4,6 +4,8 @@
 #include "SC_Types.h"
 #include "SC_ReplyImpl.hpp"
 
+struct World;
+
 /**
  * @brief Manages client access of the server such as password check, client id issuing and handling tcp disconnects.
  */
@@ -56,6 +58,12 @@ public:
      * Only call this in (N)RT locked environments!
      */
     bool removeClient(const ReplyAddress& client) { return mClientDict.erase(client); }
+
+    /**
+     * @brief remove client from list of registered client by defering it via the message queue.
+     * This can be called from any thread (though not RT thread!)
+     */
+    static void removeClientDefer(World* world, const ReplyAddress& client);
 
     /**
      * @brief returns a value iff client has an id and has therefore been registered
