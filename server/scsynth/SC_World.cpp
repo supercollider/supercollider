@@ -987,6 +987,7 @@ void World_Cleanup(World* world, bool unload_plugins) {
         if (hw->mNRTCmdFile)
             fclose(hw->mNRTCmdFile);
 #endif
+        delete hw->mClientManager;
         delete hw->mNodeLib;
         delete hw->mGraphDefLib;
         delete hw->mQuitProgram;
