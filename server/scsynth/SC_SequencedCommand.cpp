@@ -1245,36 +1245,26 @@ bool NotifyCmd::Stage2() {
     HiddenWorld* hw = mWorld->hw;
 
     if (mOnOff) {
-        for (auto addr : hw->mClientManager->getClients()) {
-            if (mReplyAddress == addr) {
-                // already in table - don't fail though..
-                SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n",
-                                        hw->mClientManager->getClientID(mReplyAddress));
-                scprintf("/notify : already registered\n");
-                return false;
+        if (hw->mClientManager->clientPresent(mReplyAddress)) {
+            SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n",
+                                    hw->mClientManager->getClientID(mReplyAddress));
+            scprintf("/notify : already registered\n");
+        } else {
+            if (auto newClientId = hw->mClientManager->registerClient(mReplyAddress)) {
+                SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", newClientId.value(),
+                                    (int)hw->mClientManager->getMaxUsers());
+            } else {
+                SendFailure(&mReplyAddress, "/notify", "too many users\n");
+                scprintf("too many users\n");
             }
         }
-
-        if (!hw->mClientManager->clientSlotFree()) {
-            SendFailure(&mReplyAddress, "/notify", "too many users\n");
-            scprintf("too many users\n");
-            return false;
-        }
-
-        int const clientID = hw->mClientManager->popAvailableClientID(mID);
-
-        hw->mClientManager->addClientId(clientID, mReplyAddress);
-        hw->mClientManager->addClient(mReplyAddress);
-        SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mClientManager->getMaxUsers());
-
     } else {
         if (hw->mClientManager->removeClient(mReplyAddress)) {
             SendDone("/notify");
-            return false;
+        } else {
+            SendFailure(&mReplyAddress, "/notify", "not registered\n");
+            scprintf("not registered\n");
         }
-
-        SendFailure(&mReplyAddress, "/notify", "not registered\n");
-        scprintf("not registered\n");
     }
     return false;
 }

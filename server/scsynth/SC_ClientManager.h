@@ -51,8 +51,6 @@ public:
 
     const Clients& getClients() const { return mUsers; }
 
-    void addClient(const ReplyAddress& client) { mUsers.insert(client); }
-
     /// returns true iff passed client was present and got removed
     bool removeClient(const ReplyAddress& client) {
         auto const it = mUsers.find(client);
@@ -67,8 +65,21 @@ public:
 
     uint32 getClientID(const ReplyAddress& address) const { return mClientIDdict.at(address); }
 
-    void addClientId(uint32 clientID, ReplyAddress address) { mClientIDdict.insert(std::make_pair(address, clientID)); }
+    bool clientPresent(const ReplyAddress& address) const { return mClientIDdict.count(address) > 0; }
 
+    std::optional<uint32> registerClient(const ReplyAddress& address, std::optional<uint32> requestedClientID = {}) {
+        if (!clientSlotFree()) {
+            return {};
+        }
+        int const clientID = popAvailableClientID(requestedClientID.value_or(-1));
+
+        mClientIDdict.insert(std::make_pair(address, clientID));
+        mUsers.insert(address);
+
+        return clientID;
+    };
+
+private:
     /** @brief Attempts to find and remove the requested \c id from \c availableIDs.
      *
      * If \c id is -1 or not in \c availableIDs, returns the first element in
