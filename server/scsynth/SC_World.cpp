@@ -401,7 +401,7 @@ World* World_New(WorldOptions* inOptions) {
         if (inOptions->mPassword) {
             world->hw->mClientManager->setPassword(inOptions->mPassword);
         } else {
-            world->hw->mClientManager->setPassword("");
+            world->hw->mClientManager->setPassword({});
         }
 #ifdef SC_BELA
         world->hw->mBelaAnalogInputChannels = inOptions->mBelaAnalogInputChannels;
