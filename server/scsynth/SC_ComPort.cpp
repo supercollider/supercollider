@@ -374,12 +374,13 @@ private:
                                ba::placeholders::bytes_transferred));
     }
 
+    /// acts as the identification within SC world, which is necessary when deregistering upon disconnect
+    ReplyAddress mClientIdentification;
+
     int32 OSCMsgLength;
     char* data;
     class SC_TcpInPort* mParent;
 
-    /** acts as the identification within SC world, which is necessary when deregistering upon disconnect. */
-    ReplyAddress mClientIdentification;
 
     void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
         if (error) {
