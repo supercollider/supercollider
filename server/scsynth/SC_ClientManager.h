@@ -20,15 +20,22 @@ class ClientManager {
 public:
     ClientManager(uint32 maxUsers): mMaxUsers(maxUsers) {}
 
-    /// checks a given password. if password has not been set, this will always return false,
-    /// so check with has password before.
-    bool checkPassword(const std::string& password) const { return mPassword == password; };
+    /**
+     * @brief checks a given password and returns true if the password is valid.
+     * If no password has been set, this will return true for any password.
+     */
+    bool checkPassword(const std::string& password) const {
+        if (mPassword) {
+            return mPassword == password;
+        }
+        return true;
+    };
 
-    /// returns if server has a password set
+    /// returns true if the server has set a password
     bool hasPassword() const { return mPassword.has_value(); };
 
     /// set password for server login
-    void setPassword(const std::string& password) { mPassword = password; }
+    void setPassword(const std::optional<const std::string>& password) { mPassword = password; }
 
     /// returns true iff the server has a free slot for a new client
     bool clientSlotFree() const { return mClientDict.size() < mMaxUsers; }
