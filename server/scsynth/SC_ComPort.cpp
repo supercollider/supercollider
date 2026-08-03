@@ -53,7 +53,6 @@
 
 // forward declarations
 bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
-void World_RemoveClient(FifoMsg* msg);
 
 namespace scsynth {
 
@@ -491,12 +490,7 @@ public:
 };
 
 SC_TcpConnection::~SC_TcpConnection() {
-    // we need to de-register our client. clients are matched by reply address.
-    // we use fifomsg to get access to the stage2 thread lock.
-    // the callback function removes its passed data, so we make a copy of our reply address.
-    FifoMsg msg;
-    msg.Set(mWorld, World_RemoveClient, nullptr, new ReplyAddress(mClientIdentification));
-    AudioDriver(mWorld)->SendMsgFromEngine(msg);
+    ClientManager::removeClientDefer(mWorld, mClientIdentification);
 
     // now close the socket
     try {
