@@ -95,9 +95,6 @@ typedef MsgFifoNoFree<NodeEndMsg, 1024> NodeEndsFifo;
 typedef MsgFifoNoFree<DeleteGraphDefMsg, 512> DeleteGraphDefsFifo;
 typedef HashTable<struct GraphDef, Malloc> GrafDefTable;
 
-typedef std::map<struct ReplyAddress, uint32> ClientIDDict;
-typedef std::deque<int> ClientIDs;
-typedef std::set<ReplyAddress> Clients;
 
 struct HiddenWorld {
     class AllocPool* mAllocPool;
@@ -105,9 +102,6 @@ struct HiddenWorld {
     GrafDefTable* mGraphDefLib;
 
     ClientManager* mClientManager;
-    Clients* mUsers;
-    ClientIDs* mAvailableClientIDs;
-    ClientIDDict* mClientIDdict;
 
     class SC_AudioDriver* mAudioDriver;
 
