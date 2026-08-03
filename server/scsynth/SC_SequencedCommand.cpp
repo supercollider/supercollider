@@ -127,7 +127,7 @@ char* allocAndRestrictPath(World* mWorld, const char* inPath, const char* restri
     return saferPath;
 }
 
-SC_SequencedCommand::SC_SequencedCommand(World* inWorld, ReplyAddress* inReplyAddress):
+SC_SequencedCommand::SC_SequencedCommand(World* inWorld, const ReplyAddress* inReplyAddress):
     mNextStage(1),
     mWorld(inWorld),
     mMsgSize(0),
@@ -1214,40 +1214,12 @@ int NotifyCmd::Init(char* inData, int inSize) {
 
 void NotifyCmd::CallDestructor() { this->~NotifyCmd(); }
 
-/** \brief Attempts to find and remove the requested \c id from \c availableIDs.
- *
- * If \c id is -1 or not in \c availableIDs, returns the first element in
- * \c availableIDs. Otherwise, returns \c id.
- */
-int popAvailableClientID(int const id, ClientIDs& availableIDs) {
-    int clientID = -1;
-    if (id == -1) {
-        // no requested clientID
-        clientID = availableIDs.front(); // pop an ID
-        availableIDs.pop_front();
-    } else {
-        // user ID requested
-        auto it = std::find(availableIDs.begin(), availableIDs.end(), id);
-        if (it != availableIDs.end()) { // return the requested ID if available
-            clientID = id;
-            availableIDs.erase(it);
-        } else {
-            // otherwise return the first free one
-            clientID = availableIDs.front();
-            availableIDs.pop_front();
-        }
-    }
-
-    return clientID;
-}
-
 bool NotifyCmd::Stage2() {
     HiddenWorld* hw = mWorld->hw;
 
     if (mOnOff) {
-        if (hw->mClientManager->clientPresent(mReplyAddress)) {
-            SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n",
-                                    hw->mClientManager->getClientID(mReplyAddress));
+        if (auto clientID = hw->mClientManager->getClientID(mReplyAddress)) {
+            SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n", *clientID);
             scprintf("/notify : already registered\n");
         } else {
             if (auto newClientId = hw->mClientManager->registerClient(mReplyAddress)) {
@@ -1457,7 +1429,7 @@ void LoadSynthDefDirCmd::Stage4() { SendDone("/d_loadDir"); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-SendReplyCmd::SendReplyCmd(World* inWorld, ReplyAddress* inReplyAddress):
+SendReplyCmd::SendReplyCmd(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 
 int SendReplyCmd::Init(char* inData, int inSize) {

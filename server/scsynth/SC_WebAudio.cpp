@@ -279,7 +279,7 @@ bool SC_WebAudioDriver::DriverStart() {
  */
 
 // fill SC_ReplyImpl.hpp implementation holes
-void null_reply_func(struct ReplyAddress* addr, char* msg, int size) {}
+void null_reply_func(const ReplyAddress* addr, char* msg, int size) {}
 bool operator==(const ReplyAddress& a, const ReplyAddress& b) { return true; }
 bool operator<(const ReplyAddress& a, const ReplyAddress& b) { return true; }
 

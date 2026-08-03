@@ -1,14 +1,8 @@
 #pragma once
-#include <deque>
 #include <map>
-#include <set>
 
 #include "SC_Types.h"
 #include "SC_ReplyImpl.hpp"
-
-typedef std::map<ReplyAddress, uint32> ClientIDDict;
-typedef std::deque<int> ClientIDs;
-typedef std::set<ReplyAddress> Clients;
 
 /**
  * @brief Manages client access of the server such as password check, client id issuing and handling tcp disconnects.
@@ -17,21 +11,14 @@ class ClientManager {
     /// maximum number of clients that the server accepts
     uint32 mMaxUsers;
 
-    // @todo we actually only need the dictionary, other stuff is redundant
-    Clients mUsers;
-    ClientIDs mAvailableClientIDs;
-    ClientIDDict mClientIDdict;
+    std::map<ReplyAddress, uint32> mClientDict;
 
     /// the password necessary for login.
     std::optional<std::string> mPassword;
 
 
 public:
-    ClientManager(uint32 maxUsers): mMaxUsers(maxUsers) {
-        for (uint32 i = 0; i < mMaxUsers; i++) {
-            mAvailableClientIDs.push_back(i);
-        }
-    }
+    ClientManager(uint32 maxUsers): mMaxUsers(maxUsers) {}
 
     /// checks a given password. if password has not been set, this will always return false,
     /// so check with has password before.
@@ -44,66 +31,54 @@ public:
     void setPassword(const std::string& password) { mPassword = password; }
 
     /// returns true iff the server has a free slot for a new client
-    bool clientSlotFree() const { return mClientIDdict.size() < mMaxUsers; }
+    bool clientSlotFree() const { return mClientDict.size() < mMaxUsers; }
 
     /// returns maximum number of allowed users for this server
-    uint32 getMaxUsers() { return mMaxUsers; }
+    uint32 getMaxUsers() const { return mMaxUsers; }
 
-    const Clients& getClients() const { return mUsers; }
+    const std::map<ReplyAddress, uint32>& getClients() const { return mClientDict; }
 
     /// returns true iff passed client was present and got removed
-    bool removeClient(const ReplyAddress& client) {
-        auto const it = mUsers.find(client);
-        if (it == mUsers.end())
-            return false;
+    bool removeClient(const ReplyAddress& client) { return mClientDict.erase(client); }
 
-        mAvailableClientIDs.push_back(mClientIDdict.at(client));
-        mClientIDdict.erase(client);
-        mUsers.erase(client);
-        return true;
-    }
-
-    uint32 getClientID(const ReplyAddress& address) const { return mClientIDdict.at(address); }
-
-    bool clientPresent(const ReplyAddress& address) const { return mClientIDdict.count(address) > 0; }
-
-    std::optional<uint32> registerClient(const ReplyAddress& address, std::optional<uint32> requestedClientID = {}) {
-        if (!clientSlotFree()) {
+    /// returns a value iff client has an id and has therefore been registered
+    std::optional<uint32> getClientID(const ReplyAddress& address) const {
+        auto it = mClientDict.find(address);
+        if (it == mClientDict.end()) {
             return {};
         }
-        int const clientID = popAvailableClientID(requestedClientID.value_or(-1));
+        return it->second;
+    }
 
-        mClientIDdict.insert(std::make_pair(address, clientID));
-        mUsers.insert(address);
-
-        return clientID;
-    };
+    /**
+     * @brief registers a client with
+     */
+    std::optional<uint32> registerClient(const ReplyAddress& address, std::optional<uint32> requestedID = {}) {
+        auto id = getNextClientID(requestedID);
+        if (!id)
+            return {};
+        mClientDict.insert(std::make_pair(address, *id));
+        return id;
+    }
 
 private:
-    /** @brief Attempts to find and remove the requested \c id from \c availableIDs.
-     *
-     * If \c id is -1 or not in \c availableIDs, returns the first element in
-     * \c availableIDs. Otherwise, returns \c id.
-     */
-    int popAvailableClientID(int const id) {
-        int clientID = -1;
-        if (id == -1) {
-            // no requested clientID
-            clientID = mAvailableClientIDs.front(); // pop an ID
-            mAvailableClientIDs.pop_front();
-        } else {
-            // user ID requested
-            auto it = std::find(mAvailableClientIDs.begin(), mAvailableClientIDs.end(), id);
-            if (it != mAvailableClientIDs.end()) { // return the requested ID if available
-                clientID = id;
-                mAvailableClientIDs.erase(it);
-            } else {
-                // otherwise return the first free one
-                clientID = mAvailableClientIDs.front();
-                mAvailableClientIDs.pop_front();
+    bool isClientIDTaken(uint32 id) const {
+        for (const auto& [addr, clientID] : mClientDict) {
+            if (clientID == id)
+                return true;
+        }
+        return false;
+    }
+
+    std::optional<uint32> getNextClientID(std::optional<uint32> requestedID) const {
+        if (requestedID && *requestedID < mMaxUsers && !isClientIDTaken(*requestedID)) {
+            return requestedID;
+        }
+        for (uint32 i = 0; i < mMaxUsers; i++) {
+            if (!isClientIDTaken(i)) {
+                return i;
             }
         }
-
-        return clientID;
+        return {};
     }
 };

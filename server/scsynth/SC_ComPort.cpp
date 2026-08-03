@@ -155,7 +155,7 @@ boost::asio::io_context ioContext;
 const int kTextBufSize = 65536;
 
 
-static void udp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
+static void udp_reply_func(const ReplyAddress* addr, char* msg, int size) {
     using namespace boost::asio;
 
     ip::udp::socket* socket = reinterpret_cast<ip::udp::socket*>(addr->mReplyData);
@@ -168,7 +168,7 @@ static void udp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
         printf("%s\n", errc.message().c_str());
 }
 
-static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
+static void tcp_reply_func(const ReplyAddress* addr, char* msg, int size) {
     // Write size as 32bit unsigned network-order integer
     uint32 u = sc_htonl(size);
 
