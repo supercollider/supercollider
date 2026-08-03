@@ -30,12 +30,7 @@ public:
      * @brief checks a given password and returns true if the password is valid.
      * If no password has been set, this will return true for any password.
      */
-    bool checkPassword(const std::string& password) const {
-        if (mPassword) {
-            return mPassword == password;
-        }
-        return true;
-    }
+    bool checkPassword(const std::string& password) const { return mPassword ? password == *mPassword : true; }
 
     /// returns true if the server has set a password
     bool hasPassword() const { return mPassword.has_value(); };
