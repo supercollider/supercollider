@@ -44,7 +44,6 @@
 
 #include "nova-tt/semaphore.hpp"
 #include "nova-tt/thread_priority.hpp"
-#include "oscpack_1_1_0/osc/OscException.h"
 
 #ifdef USE_RENDEZVOUS
 #    include "Rendezvous.h"
