@@ -127,7 +127,7 @@ char* allocAndRestrictPath(World* mWorld, const char* inPath, const char* restri
     return saferPath;
 }
 
-SC_SequencedCommand::SC_SequencedCommand(World* inWorld, ReplyAddress* inReplyAddress):
+SC_SequencedCommand::SC_SequencedCommand(World* inWorld, const ReplyAddress* inReplyAddress):
     mNextStage(1),
     mWorld(inWorld),
     mMsgSize(0),
@@ -1214,72 +1214,29 @@ int NotifyCmd::Init(char* inData, int inSize) {
 
 void NotifyCmd::CallDestructor() { this->~NotifyCmd(); }
 
-/** \brief Attempts to find and remove the requested \c id from \c availableIDs.
- *
- * If \c id is -1 or not in \c availableIDs, returns the first element in
- * \c availableIDs. Otherwise, returns \c id.
- */
-int popAvailableClientID(int const id, ClientIDs& availableIDs) {
-    int clientID = -1;
-    if (id == -1) {
-        // no requested clientID
-        clientID = availableIDs.front(); // pop an ID
-        availableIDs.pop_front();
-    } else {
-        // user ID requested
-        auto it = std::find(availableIDs.begin(), availableIDs.end(), id);
-        if (it != availableIDs.end()) { // return the requested ID if available
-            clientID = id;
-            availableIDs.erase(it);
-        } else {
-            // otherwise return the first free one
-            clientID = availableIDs.front();
-            availableIDs.pop_front();
-        }
-    }
-
-    return clientID;
-}
-
 bool NotifyCmd::Stage2() {
     HiddenWorld* hw = mWorld->hw;
 
     if (mOnOff) {
-        for (auto addr : *hw->mUsers) {
-            if (mReplyAddress == addr) {
-                // already in table - don't fail though..
-                SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n",
-                                        hw->mClientIDdict->at(mReplyAddress));
-                scprintf("/notify : already registered\n");
-                return false;
+        if (auto clientID = hw->mClientManager->getClientID(mReplyAddress)) {
+            SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n", *clientID);
+            scprintf("/notify : already registered\n");
+        } else {
+            if (auto newClientId = hw->mClientManager->registerClient(mReplyAddress)) {
+                SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", newClientId.value(),
+                                    (int)hw->mClientManager->getMaxUsers());
+            } else {
+                SendFailure(&mReplyAddress, "/notify", "too many users\n");
+                scprintf("too many users\n");
             }
         }
-
-        if (hw->mUsers->size() >= hw->mMaxUsers) {
-            SendFailure(&mReplyAddress, "/notify", "too many users\n");
-            scprintf("too many users\n");
-            return false;
-        }
-
-        int const clientID = popAvailableClientID(mID, *hw->mAvailableClientIDs);
-
-        hw->mClientIDdict->insert(std::make_pair(mReplyAddress, clientID));
-        hw->mUsers->insert(mReplyAddress);
-        SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
-
     } else {
-        auto const it = std::find(hw->mUsers->begin(), hw->mUsers->end(), mReplyAddress);
-        if (it != hw->mUsers->end()) {
-            // remove from list
-            hw->mAvailableClientIDs->push_back(hw->mClientIDdict->at(mReplyAddress)); // push the freed ID
-            hw->mClientIDdict->erase(mReplyAddress);
-            hw->mUsers->erase(it);
+        if (hw->mClientManager->removeClient(mReplyAddress)) {
             SendDone("/notify");
-            return false;
+        } else {
+            SendFailure(&mReplyAddress, "/notify", "not registered\n");
+            scprintf("not registered\n");
         }
-
-        SendFailure(&mReplyAddress, "/notify", "not registered\n");
-        scprintf("not registered\n");
     }
     return false;
 }
@@ -1472,7 +1429,7 @@ void LoadSynthDefDirCmd::Stage4() { SendDone("/d_loadDir"); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-SendReplyCmd::SendReplyCmd(World* inWorld, ReplyAddress* inReplyAddress):
+SendReplyCmd::SendReplyCmd(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 
 int SendReplyCmd::Init(char* inData, int inSize) {

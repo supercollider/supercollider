@@ -41,12 +41,12 @@ struct ReplyAddress {
     void* mReplyData;
 };
 
-void null_reply_func(struct ReplyAddress* addr, char* msg, int size);
+void null_reply_func(const ReplyAddress* addr, char* msg, int size);
 
 bool operator==(const ReplyAddress& a, const ReplyAddress& b);
 
 bool operator<(const ReplyAddress& a, const ReplyAddress& b);
 
-inline void SendReply(struct ReplyAddress* inReplyAddr, char* inBuf, int inSize) {
+inline void SendReply(const ReplyAddress* inReplyAddr, char* inBuf, int inSize) {
     (inReplyAddr->mReplyFunc)(inReplyAddr, inBuf, inSize);
 }

@@ -38,16 +38,20 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/typeof/typeof.hpp>
 
+#include "SC_CoreAudio.h"
+#include "SC_FifoMsg.h"
 #include "SC_Lock.h"
 
 #include "nova-tt/semaphore.hpp"
 #include "nova-tt/thread_priority.hpp"
+#include "oscpack_1_1_0/osc/OscException.h"
 
 #ifdef USE_RENDEZVOUS
 #    include "Rendezvous.h"
 #endif
 
 
+// forward declarations
 bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
 
 namespace scsynth {
@@ -150,7 +154,7 @@ boost::asio::io_context ioContext;
 const int kTextBufSize = 65536;
 
 
-static void udp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
+static void udp_reply_func(const ReplyAddress* addr, char* msg, int size) {
     using namespace boost::asio;
 
     ip::udp::socket* socket = reinterpret_cast<ip::udp::socket*>(addr->mReplyData);
@@ -163,7 +167,7 @@ static void udp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
         printf("%s\n", errc.message().c_str());
 }
 
-static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
+static void tcp_reply_func(const ReplyAddress* addr, char* msg, int size) {
     // Write size as 32bit unsigned network-order integer
     uint32 u = sc_htonl(size);
 
@@ -332,8 +336,13 @@ public:
         boost::asio::ip::tcp::no_delay noDelayOption(true);
         socket.set_option(noDelayOption, error);
 
+        mClientIdentification.mProtocol = kTCP;
+        mClientIdentification.mPort = socket.remote_endpoint().port();
+        mClientIdentification.mSocket = socket.native_handle();
+        mClientIdentification.mAddress = socket.remote_endpoint().address();
+
         // first message must be the password. 4 tries.
-        bool validated = mWorld->hw->mPassword[0] == 0;
+        auto validated = !mWorld->hw->mClientManager->hasPassword();
         for (int i = 0; !validated && i < 4; ++i) {
             // FIXME: error handling!
             size = boost::asio::read(socket, boost::asio::buffer((void*)&msglen, sizeof(int32)));
@@ -348,7 +357,7 @@ public:
             if (size < 0)
                 return;
 
-            validated = strcmp(buf, mWorld->hw->mPassword) == 0;
+            validated = mWorld->hw->mClientManager->checkPassword(buf);
 
             std::this_thread::sleep_for(std::chrono::seconds(i + 1)); // thwart cracking.
         }
@@ -365,9 +374,13 @@ private:
                                ba::placeholders::bytes_transferred));
     }
 
+    /// acts as the identification within SC world, which is necessary when deregistering upon disconnect
+    ReplyAddress mClientIdentification;
+
     int32 OSCMsgLength;
     char* data;
     class SC_TcpInPort* mParent;
+
 
     void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
         if (error) {
@@ -477,7 +490,15 @@ public:
     }
 };
 
-SC_TcpConnection::~SC_TcpConnection() { mParent->connectionDestroyed(); }
+SC_TcpConnection::~SC_TcpConnection() {
+    ClientManager::removeClientDefer(mWorld, mClientIdentification);
+
+    // now close the socket
+    try {
+        socket.close();
+    } catch (boost::system::system_error& e) { printf("ERROR: Could not close TCP socket: %s\n", e.what()); }
+    mParent->connectionDestroyed();
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
