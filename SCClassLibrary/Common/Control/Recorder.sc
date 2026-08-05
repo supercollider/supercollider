@@ -1,15 +1,30 @@
 Recorder {
 
-	var <server, <>numChannels;
-	var >recHeaderFormat, >recSampleFormat, >recBufSize;
+	var <server, <>recChannels;
+	var <>recHeaderFormat, <>recSampleFormat, <>recBufSize;
 	var recordBuf, recordNode, synthDef;
 	var <paused = false, <duration = 0, <>notifyServer = false;
 	var <>filePrefix = "SC_";
 	var responder, id;
 
 	*new { |server|
-		^super.newCopyArgs(server)
+		var self = super.newCopyArgs(
+			server: server,
+			recChannels: server.options.recChannels,
+			recSampleFormat: server.options.recSampleFormat,
+			recHeaderFormat: server.options.recHeaderFormat,
+			recBufSize: server.options.recBufSize
+		);
+		if(self.recBufSize.isNil) {
+			server.doWhenBooted { 
+				self.recBufSize = server.sampleRate.nextPowerOfTwo
+			};
+		};	
+		^self
 	}
+
+	numChannels { ^recChannels }
+	numChannels_ { |n| recChannels = n }
 
 	record { |path, bus, numChannels, node, duration|
 
@@ -23,7 +38,7 @@ Recorder {
 				this.record(path, bus, numChannels, node, duration) // now we are ready
 			}
 		} {
-			if(numChannels.notNil and: { numChannels != this.numChannels }) {
+			if(numChannels.notNil and: { numChannels != this.recChannels }) {
 				"Cannot change recording number of channels while running".warn;
 				^this
 			};
@@ -36,7 +51,7 @@ Recorder {
 				this.prRecord(bus, node, duration);
 				this.changedServer(\recording, true);
 				"Recording channels % ... \npath: '%'\n"
-				.postf(bus + (0..this.numChannels - 1), recordBuf.path);
+				.postf(bus + (0..this.recChannels - 1), recordBuf.path);
 			} {
 				if(paused) {
 					this.resumeRecording
@@ -98,14 +113,15 @@ Recorder {
 		}
 	}
 
-	recHeaderFormat { ^recHeaderFormat ? server.recHeaderFormat }
-	recSampleFormat { ^recSampleFormat ? server.recSampleFormat }
-	recBufSize { ^recBufSize ?? { server.recBufSize } ?? { server.sampleRate.nextPowerOfTwo } }
-
 	prepareForRecord { | path, numChannels |
 		var dir;
 
-		numChannels = numChannels ? server.recChannels;
+		if (not(server.serverRunning)) { 
+			"Server % not running: unable to prepare for recording".format(server).warn; 
+			^this
+		};
+
+		numChannels = numChannels ?? { this.recChannels; };
 
 		path = if(path.isNil) { this.makePath } { path.standardizePath };
 		dir = path.dirname;
@@ -120,7 +136,7 @@ Recorder {
 		);
 		if(recordBuf.isNil) { Error("could not allocate buffer").throw };
 		recordBuf.path = path;
-		this.numChannels = numChannels;
+		this.recChannels = numChannels;
 		id = UniqueID.next;
 
 		synthDef = SynthDef(SystemSynthDefs.generateTempName, { |in, bufnum, duration|
@@ -180,6 +196,5 @@ Recorder {
 	changedServer { | what ... moreArgs |
 		if(notifyServer) { server.changed(what, *moreArgs) }
 	}
-
 
 }
