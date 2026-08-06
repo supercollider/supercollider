@@ -29,16 +29,18 @@ for all their names and default values.
 
 code::
 // open default theme
-(SCDoc.helpTargetDir +/+ "themes" +/+ "default.css").openDocument
+(SCDoc.helpTargetDir +/+ "static" +/+ "themes" +/+ "default.css").openDocument
 
 // copy default theme to 'custom.css' as a starting point
+(
 File.copy(
-	SCDoc.helpTargetDir +/+ "themes" +/+ "default.css",
+	SCDoc.helpTargetDir +/+ "static" +/+ "themes" +/+ "default.css",
 	SCDoc.helpTargetDir +/+ "custom.css"
+)
 )
 
 // open directory with all themes
-(SCDoc.helpTargetDir +/+ "themes").openOS;
+(SCDoc.helpTargetDir +/+ "static" +/+ "themes").openOS;
 ::
 
 The teletype::themes:: directory also contains a teletype::README.md:: which
