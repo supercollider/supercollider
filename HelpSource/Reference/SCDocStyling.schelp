@@ -41,9 +41,9 @@ File.copy(
 After pasting, open the custom.css file and
 use the Find/Replace feature to replace ../images with /images in the following locations:
 - Line 153: background-image: url("../images/SC_icon.png");
-- Line 614: background: url("./../images/vline.png") repeat-y;
-- Line 628: background: url("./../images/node.png") no-repeat;
-- Line 634: background: var(--color-bg) url("./../images/lastnode.png") no-repeat;
+- Line 614: background: url("../images/vline.png") repeat-y;
+- Line 628: background: url("../images/node.png") no-repeat;
+- Line 634: background: var(--color-bg) url("../images/lastnode.png") no-repeat;
 */
 )
 

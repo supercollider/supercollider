@@ -611,7 +611,7 @@ ul.toc li a:hover {
 
 ul.tree, ul.tree ul {
  list-style-type: none;
- background: url("./../images/vline.png") repeat-y;
+ background: url("../images/vline.png") repeat-y;
  margin: 0;
  padding: 0;
  margin-left: 1em;
@@ -625,13 +625,13 @@ ul.tree li {
  margin: 0;
  padding: 0 12px;
  line-height: 20px;
- background: url("./../images/node.png") no-repeat;
+ background: url("../images/node.png") no-repeat;
 /* color: #369;
  font-weight: bold;*/
 }
 
 ul.tree li:last-child {
- background: var(--color-bg) url("./../images/lastnode.png") no-repeat;
+ background: var(--color-bg) url("../images/lastnode.png") no-repeat;
 }
 
 /* is this still used? */
