@@ -139,7 +139,7 @@ LevelIndicator : View {
 			numRMSSamps = server.sampleRate / updateFreq;
 			numRMSSampsRecip = 1 / numRMSSamps;
 			(numIns > 0).if({
-				inresp = OSCProxy({ |msg, t|      {try {
+				inresp = OSCFunc({ |msg, t|      {try {
 					msg.copyToEnd(3).pairsDo({|val, peak, i|
 						var meter;
 						i = i * 0.5;
@@ -149,7 +149,7 @@ LevelIndicator : View {
 				}) }}.defer;
 				}, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix;
 			});
-			outresp = OSCProxy({ |msg, t|      {try {
+			outresp = OSCFunc({ |msg, t|      {try {
 				msg.copyToEnd(3).pairsDo({|val, peak, i|
 					var meter;
 					i = i * 0.5;
