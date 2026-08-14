@@ -489,15 +489,14 @@ The add action for the synth.  For a list of valid addActions see link::Classes/
 argument::args
 An array of key value pairs of control names and control values which are used when starting the synth.
 
+discussion::
+
 note::
 Some UGens are added in this process.
 list::
 ## an link::Classes/Out:: UGen for playing the audio to the first audio busses. If the function returns an Out UGen, this is omitted. ##an envelope with a code::\gate:: control for releasing and crossfading. If the function provides its own releasable envelope, this is omitted.
 ::
 ::
-
-
-
 
 code::
 x = { |freq = 440| SinOsc.ar(freq, 0, 0.3) }.play; // this returns a Synth object;
