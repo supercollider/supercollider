@@ -464,6 +464,13 @@ a.method-name {
     margin-bottom: 2em;
 }
 
+.method-group {
+    border: 0;
+    border-top: 1px solid var(--color-fg-100);
+    transform: scaleY(0.5);
+    margin: 1em 0;
+}
+
 .argstr {
     white-space: nowrap;
 }
