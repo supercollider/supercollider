@@ -360,7 +360,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 1px solid var(--color-fg-100);
+    border-bottom: 4px solid var(--color-fg-100);
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
@@ -466,9 +466,8 @@ a.method-name {
 
 .method-group {
     border: 0;
-    border-top: 1px solid var(--color-fg-100);
-    transform: scaleY(0.5);
-    margin: 1em 0;
+    border-top: 2px solid var(--color-fg-100);
+    margin: 1.5em 0;
 }
 
 .argstr {
