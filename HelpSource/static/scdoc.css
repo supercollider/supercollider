@@ -610,9 +610,14 @@ ul.toc li a:hover {
     font-family: monospace;
     font-weight: normal;
 /*    font-size: 9.5pt;*/
+    border-left: 2px solid var(--color-fg-100);
 }
 .toc3 a {
     color: var(--color-fg-300);
+}
+.method-group-toc {
+    border: 0;
+    margin-bottom: 0;
 }
 
 ul.tree, ul.tree ul {

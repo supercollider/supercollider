@@ -916,21 +916,21 @@ SCDocHTMLRenderer {
 						<< (n.children[0].children.collect{|m|
 							"<a href='#*"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
 						}.join(" "))
-						<< "</li>\n";
+						<< "</li>\n<hr class='method-group-toc'>\n";
 					},
 					\IMETHOD, {
 						stream << "<li class='toc3'>"
 						<< (n.children[0].children.collect{|m|
 							"<a href='#-"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
 						}.join(" "))
-						<< "</li>\n";
+						<< "</li>\n<hr class='method-group-toc'>\n";
 					},
 					\METHOD, {
 						stream << "<li class='toc3'>"
 						<< (n.children[0].children.collect{|m|
 							"<a href='#."++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
 						}.join(" "))
-						<< "</li>\n";
+						<< "</li>\n<hr class='method-group-toc'>\n";
 					},
 
 					\SECTION, {
