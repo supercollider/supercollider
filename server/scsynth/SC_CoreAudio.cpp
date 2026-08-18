@@ -595,24 +595,22 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
             chPropAddr.mElement = kAudioObjectPropertyElementMaster;
 
             chPropAddr.mScope = kAudioDevicePropertyScopeInput;
-            AudioObjectGetPropertyDataSize(devices[i], &chPropAddr, 0, NULL, &propertySize);
-            AudioBufferList* inputBufList = (AudioBufferList*)malloc(propertySize);
-            AudioObjectGetPropertyData(devices[i], &chPropAddr, 0, NULL, &propertySize, inputBufList);
-
+            AudioObjectGetPropertyDataSize(devices[i], &chPropAddr, 0, nullptr, &propertySize);
+            std::vector<uint8_t> inBufferData(propertySize);
+            auto* inputBufList = reinterpret_cast<AudioBufferList*>(inBufferData.data());
+            AudioObjectGetPropertyData(devices[i], &chPropAddr, 0, nullptr, &propertySize, inputBufList);
             int inChs = 0;
             for (UInt32 j = 0; j < inputBufList->mNumberBuffers; ++j)
                 inChs += inputBufList->mBuffers[j].mNumberChannels;
-            free(inputBufList);
 
             chPropAddr.mScope = kAudioDevicePropertyScopeOutput;
-            AudioObjectGetPropertyDataSize(devices[i], &chPropAddr, 0, NULL, &propertySize);
-            AudioBufferList* outputBufList = (AudioBufferList*)malloc(propertySize);
-            AudioObjectGetPropertyData(devices[i], &chPropAddr, 0, NULL, &propertySize, outputBufList);
-
+            AudioObjectGetPropertyDataSize(devices[i], &chPropAddr, 0, nullptr, &propertySize);
+            std::vector<uint8_t> outBufferData(propertySize);
+            auto* outputBufList = reinterpret_cast<AudioBufferList*>(outBufferData.data());
+            AudioObjectGetPropertyData(devices[i], &chPropAddr, 0, nullptr, &propertySize, outputBufList);
             int outChs = 0;
             for (UInt32 j = 0; j < outputBufList->mNumberBuffers; ++j)
                 outChs += outputBufList->mBuffers[j].mNumberChannels;
-            free(outputBufList);
 
             if (mWorld->mVerbosity >= 0) {
                 scprintf("- \"%s\" (%d ins, %d outs)\n", name, inChs, outChs);
