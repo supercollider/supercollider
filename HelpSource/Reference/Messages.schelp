@@ -109,60 +109,75 @@ z = x.value(10, 5);     // z is set to 15. (a is 10, b is 5)
 z = x.value(10, 5, 9);  // z is set to 15. (a is 10, b is 5, 9 is ignored)
 ::
 
-section:: Keyword Arguments and Positional Arguments
+section:: Keyword Argument Calls and Positional Argument Calls
 
-Arguments to methods and functions may be specified either by position or by name.
-Arguments specified by position are called emphasis::positional arguments::, and are interpreted according to the order in which they are declared in the method or function definition.
-Arguments specified by name (followed by a colon) are called emphasis::keyword arguments::.
-Any argument may be passed as a keyword argument except for the receiver code::this::.
+Arguments to methods and functions may be specified either by position or by name:
+list::
+## strong::Positional Argument Calls::: anchor::positional argument calls::
 
-Keyword arguments must come after any positional arguments, may be specified in any order among themselves, and once a keyword argument is used, no positional argument may follow.
-In other words, if you skip any argument defined before the one you want to specify, you must use keyword arguments. So once you use a keyword argument, all subsequent arguments must also be keyword arguments.
+Arguments specified by position.
+They are interpreted according to the order in which they are declared in the method or function definition.
 
-If a keyword is specified and there is no matching argument, it is ignored and a warning will be printed. This warning may be turned off globally by making the following call:
+## strong::Keyword Argument Calls::: anchor::keyword argument calls::
+
+Arguments specified by name (followed by a colon).
+Any argument may be passed by keyword except for the receiver code::this::.
+
+note::
+emphasis::Keyword argument calls:: belong to the message-passing system and should not be confused with the link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments:: captured in Function definitions using code::|... args, kwargs|:: or code::|a, b ... args, kwargs|::.
+::
+::
+
+emphasis::Keyword argument calls:: must come after any emphasis::positional argument calls::. They may be specified in any order among themselves, and once a emphasis::keyword argument call:: is used, no emphasis::positional argument call:: may follow.
+In other words, if you skip any argument defined before the one you want to specify, you must use a emphasis::keyword argument call::. Once you use a emphasis::keyword argument call::, all subsequent argument calls must also be emphasis::keyword argument calls::.
+
+If a keyword is specified and there is no matching argument, it is ignored and a warning is printed. This warning may be turned off globally by making the following call:
 code::
 keywordWarnings(false)
 ::
 
-If the same argument is specified more than once, whether by positional or keyword arguments, the rightmost value overrides all previous ones. Note that this usage, while legal, is discouraged as it can be confusing.
+If the same argument is specified more than once, whether by emphasis::positional argument call:: or emphasis::keyword argument call::, the rightmost value overrides all previous ones. Note that this usage, while legal, is discouraged because it can be confusing.
 code::
-f = { | a | a };
+f = { |a| a };
 f.(1, a: 2, a: 3); // -> 3, the rightmost value wins
 ::
 
-For example, the code::ar:: class method of the SinOsc class takes arguments named freq, phase, mul, and add in that order. All of the following are legal calls to that method.
+For example, the code::ar:: class method of the link::Classes/SinOsc:: class takes arguments named code::freq::, code::phase::, code::mul::, and code::add:: in that order.
+All of the following are legal calls to that method.
+
 code::
-SinOsc.ar(800, pi, 0.2, 0); // all positional arguments: freq, phase, mul, add
+SinOsc.ar(800, pi, 0.2, 0); // all positional argument calls: freq, phase, mul, add
 
 // freq = 800, mul = 0.2, others get default values.
-SinOsc.ar(800, mul: 0.2); // 800 is a positional argument, and 0.2 is a keyword one
+SinOsc.ar(800, mul: 0.2); // 800 is passed positionally, and 0.2 is passed by keyword
 
 // freq = 800, phase = pi, mul = 0.2, add gets its default value of zero.
-SinOsc.ar(phase: pi, mul: 0.2, freq: 800); // all keyword arguments
+SinOsc.ar(phase: pi, mul: 0.2, freq: 800); // all keyword argument calls
 
-// the rightmost value of 1200 overrides the positional arg value of 800
+// the rightmost value of 1200 overrides the positional value of 800
 SinOsc.ar(800, freq: 1200); // should not be used.
 ::
 code::
 SinOsc.ar(zorg: 999); // invalid keyword prints warning. should not be used.
 ::
 
-The arguments to a link::Classes/Function:: instance work the same way when using the 'value' message.
+Arguments to a link::Classes/Function:: instance work the same way when the function is called using the 'value' message.
+
 code::
-// function args specified positionally from the first argument defined in the function.
+// function arguments specified positionally from the first argument defined in the function.
 { arg a=1, b=2, c=3; [a, b, c].postln }.value(7, 8);
 // -> [ 7, 8, 3 ]
 
-// function args specified by keyword, skipping the first argument defined in the function.
+// function arguments specified by keyword, skipping the first argument defined in the function.
 { arg a=1, b=2, c=3; [a, b, c].postln }.value(b: 7, c: 8);
 // -> [ 1, 7, 8 ]
 ::
 
-You may also use keyword arguments when using the 'perform' method.
+You may also use emphasis::keyword argument calls:: when using the link::Classes/Object#-perform:: method.
 code::
 SinOsc.perform('ar', phase: pi, mul: 0.2, freq: 800);
 ::
 
-subsection:: Cost of using keyword arguments
+subsection:: Cost of using keyword argument calls
 
-When using keyword arguments there is a runtime cost to do the matching that you should be aware of. The cost can be worth the convenience when speed is not critical.
+When using link::#keyword argument calls::, there is a runtime cost for matching arguments to parameter names. The cost can be worth the convenience when speed is not critical.

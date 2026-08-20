@@ -19,7 +19,7 @@ code::
 Pbind(\note, Pseq([0, 4, 7]), \amp, 0.1, \dur, 0.2).play
 ::
 
-The message code::new:: converts keyword arguments into key value pairs, so that we can write:
+The message code::new:: converts link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword argument:: into link::Reference/Key-Value-Pairs#key value pairs#key value pairs::, so that we can write:
 
 code::
 Pbind(note: Pseq([0, 4, 7]), amp: 0.1, dur: 0.2).play
@@ -92,10 +92,10 @@ Pbind(
 ).play;
 ::
 
-The keys can be specified as keyword arguments, as above, or as a sequence of keys to patterns provided as arguments.
+The keys can be specified as link::Reference/Messages#keyword argument calls#keyword argument calls::, as above, or as a sequence of keys to patterns provided as arguments.
 Additionally, when an array of keys is provided, the pattern with be unpacked into two streams (see following example).
-However, this does not work when using keyword arguments, and therefore must go before them.
-For historical reasons, you are more likely to see the sequence of keys to patterns rather than keyword arguments.
+However, this does not work when using link::Reference/Messages#keyword argument calls#keyword argument calls::, and therefore must go before them.
+For historical reasons, you are more likely to see the sequence of keys to patterns rather than link::Reference/Messages#keyword argument calls#keyword argument calls::.
 
 code::
 // Both of these do the same thing.
@@ -114,7 +114,7 @@ SynthDef(\test, {
 )
 
 // Assignment to multiple keys using an Array.
-// Must come before any keyword arguments.
+// Must come before any keyword argument calls.
 Pbind(
 	[\freq, \sustain], Ptuple([
                           Pseq((1..16) * 50, 4),

@@ -40,6 +40,10 @@ A String or Symbol specifying the name of the SynthDef to use in creating the Sy
 
 argument:: args
 An optional link::Classes/Array:: specifying initial values for the link::Classes/SynthDef::'s arguments (controls). These are specified in pairs of control name or index and value. If names are used they can be specified with either link::Classes/String::s or link::Classes/Symbol::s. e.g. code:: [\frequency, 440, \amplitude, 1, ...] ::.
+
+Alternatively, the link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key‑value pair syntax:: can be used:
+code::[frequency: 440, amplitude: 1, ...]::.
+
 Values that are arrays are sent using OSC array type-tags ($[ and $]).  These values will be assigned to subsequent controls.
 
 argument:: target

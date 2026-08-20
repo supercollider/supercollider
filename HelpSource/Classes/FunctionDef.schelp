@@ -60,7 +60,7 @@ code::
 ::
 
 method::hasKwArgs
-Returns whether the function has variable keyword arguments
+Returns whether the function has link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::
 code::
 { |a, b, c| a + b * c }.def.hasKwArgs; // false
 { |a, b ... c| a + b * c }.def.hasKwArgs; // false
@@ -68,11 +68,11 @@ code::
 ::
 
 method::varArgsValue
-Returns how many sets of variable arguments the function has. 0 for none, 1 for ellipsis arguments, 2 for keyword arguments.
+Returns how many sets of link::Reference/Functions#Variable Arguments#variable arguments:: the function has. 0 for none, 1 for ellipsis arguments (link::Reference/Functions#Variadic Positional Arguments#variadic positional arguments::), 2 for link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::.
 code::
 { |a, b, c| a + b * c }.def.varArgsValue; // 0
 { |a, b ... c| a + b * c }.def.varArgsValue; // 1
-{ |a ... b, c| a * b }.def.varArgsValue; // 1
+{ |a ... b, c| a * b }.def.varArgsValue; // 2
 ::
 
 method::hasVarArgs
@@ -162,7 +162,7 @@ subsection::Generating Strings
 
 method::makeFuncModifierString
 
-Return a string that can be interpreted as code for a new function which extracts the arguments from the receiver. This can be used to build a hygienic macro which returns a function with valid keyword arguments, instead of just anonymously forwarding the arguments, like in code::{ |...args| func.valueArray(args) }::.
+Return a string that can be interpreted as code for a new function which extracts the arguments from the receiver. This can be used to build a hygienic macro which returns a function with valid link::Reference/Messages#keyword argument calls#keyword argument calls::, instead of just anonymously forwarding the arguments, like in code::{ |...args| func.valueArray(args) }::.
 
 For an implementation example link::Classes/Function#flop:: (as below).
 

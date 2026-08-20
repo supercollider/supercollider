@@ -242,7 +242,7 @@ q.y;			// [100, 200, 300]
 
 subsection::Syntax subtleties
 
-Events have a very special meaning in a musical context within SuperCollider, especially when it comes to sequencing with Patterns. Nevertheless, as the class inherits from link::Classes/IdentityDictionary::, it is often used as a convenient-to-type replacement for (Identity)Dictionary-like objects. The syntax very much reminds of the declaration of keyword arguments in function or method calls. However, there is a subtle difference:
+Events have a very special meaning in a musical context within SuperCollider, especially when it comes to sequencing with Patterns. Nevertheless, as the class inherits from link::Classes/IdentityDictionary::, it is often used as a convenient-to-type replacement for (Identity)Dictionary-like objects. The syntax very much reminds of the declaration of link::Reference/Messages#keyword argument calls#keyword argument calls:: in function or method calls. However, there is a subtle difference:
 
 code::
 e = (a: 10);  // -> ('a': 10)

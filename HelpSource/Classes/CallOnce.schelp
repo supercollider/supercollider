@@ -42,7 +42,8 @@ argument::  ... args
 Arguments to use in the call to the wrapped function, if the call happens. If code::didEvaluate:: already returns code::true:: (before the current call to code::value::) then the current code::args:: are irrelevant because the wrapped function is not called anymore.
 
 argument:: kwargs
-Array of key-value pairs for keyword arguments. See link::Classes/Function#-value::.
+link::Classes/Array:: of link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key-value pairs:: for link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::.
+See link::Classes/Function#-value::.
 
 returns::
 list::

@@ -189,9 +189,9 @@ If initialisation logic that prepares the arguments before assignment is require
 ideally, it should go before the call to code::super.newCopyArgs::.
 This way the final object never exists in an invalid state — an alternative is the use of an code::init:: method and shall be shown shortly.
 
-However, when there is a hierarchy of classes, code::newCopyArgs:: requires that all the base class arguments be passed in the order they are defined. 
+However, when there is a hierarchy of classes, code::newCopyArgs:: requires that all the base class arguments be passed in the order they are defined.
 This makes changing the base class difficult.
-Here is one way to mitigate this issue using variable keyword arguments link::Reference/Functions#Variable Arguments:: and link::Classes/Object#-superPerformArgs::.
+Here is one way to mitigate this issue using link::Reference/Functions#Variable Arguments#variable arguments:: (pariculary link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::) and link::Classes/Object#-superPerformArgs::.
 
 code::
 Base {
@@ -221,13 +221,13 @@ Derived(d: 10) // If 'd' existed somewhere in the hierarchy, it would be assigne
 Although this approach might seem complex, the benefit is that the new instance variables can be added to either class and it will always be clear which one you meant to assign to.
 
 Should it be desirable to remove instance variables of the base class in the future,
-it is good to require that only keyword arguments be used.
+it is good to require that only link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments:: be used.
 This can be achieved by removing the named arguments and throwing an error if code::args:: is not empty.
 One disadvantage here is that autocomplete in the IDE will not work.
 
 code::
 Foo {
-	*new { |... args, kwargs| 
+	*new { |... args, kwargs|
 		if(args.empty.not) { Error().throw };
 		^super.superPerformArgs(\newCopyArgs, #[], kwargs);
 	}
@@ -275,8 +275,8 @@ Derived : Base {
 }
 ::
 
-Warning:: 
-If both the code::Base:: and code::Derived:: class define an code::init:: method, the code::Derived:: class will override the code::Base::'s implementation, 
+Warning::
+If both the code::Base:: and code::Derived:: class define an code::init:: method, the code::Derived:: class will override the code::Base::'s implementation,
 meaning it will no longer be possible to call that implementation.
 In such cases, a unique method name like code::myclassInit:: should be used, or better yet, a specialised name that indicates what kind of initialization is performed.
 ::

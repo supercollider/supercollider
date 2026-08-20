@@ -130,7 +130,8 @@ code::
 );
 
 
-// sets
+// sets:
+
 ~a = Set[0, 4, 5, 7];
 ~b = Set[4, 5];
 ~c = ~a union: ~b; // union of the two sets (note that the shortcut | does not work here.).
@@ -147,7 +148,8 @@ code::
 ~d.value; // but not part of the intersection
 
 
-// envirs
+// envirs:
+
 ~a = (note: [1, 2]);
 ~b = (dur: 1);
 ~c = ~a.putAll(~b) // provisionally put everything into the placholder
@@ -159,7 +161,8 @@ code::
 ~a = (note: [7.5]);
 ~d.value; // [7.5]
 
-// patterns
+// patterns:
+
 ~a = Pseq([1, 2, 3]);
 ~b = Pseq([5, ~a, ~a + 10], inf);
 ~b.value.asStream.nextN(10);
@@ -168,14 +171,14 @@ code::
 ~a = Prand([100, 200]);
 ~b.value.asStream.nextN(10);
 
-// keyword arguments
+// declared arguments with positional argument calls or keyword argument calls:
 
 ~a = { |x=0, y=0| x + y };
-~a.(2, 3);
-~a.(y:3);
+~a.(2, 3); // positional argument calls
+~a.(y:3);  // keyword argument call
 
 ~k = 1997;
-~a.(x:2, y:~k);
+~a.(x:2, y:~k); // keyword argument calls
 
 
 

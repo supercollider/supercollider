@@ -520,8 +520,10 @@ a.performList(\value, [1, 2, 3]);
 ::
 
 method::performArgs
-Like link::#-perform::, but allows you to pass a key-value array of keyword arguments.
-Useful in link::#-doesNotUnderstand:: and other places where you might accept a variety of keyword arguments.
+Like link::#-perform::, but allows you to pass an link::Classes/Array:: of
+link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key–value pairs::
+representing link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::.
+Useful in link::#-doesNotUnderstand:: and other places where you might accept a variety of link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::.
 
 argument::selector
 A link::Classes/Symbol:: of the method name.
@@ -569,6 +571,7 @@ argument:: selector
 A Symbol representing a method selector.
 argument:: pairs
 Array or List with key-value pairs.
+See link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs::.
 discussion::
 code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
@@ -589,7 +592,7 @@ Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 // Error occurs within keysValuesDo -- error is thrown back to halt execution
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].flippityblargh });
 
-// keyword arguments are passed on
+// arbitrary keyword arguments are passed on
 [1, 2, 3, 4].tryPerform(\pyramid, patternType: 1)
 
 ::
@@ -612,7 +615,7 @@ method::superPerformArgs
 Like performLArgs, superPerformArgs calls a method, however it calls the method on the superclass.
 selector: A Symbol representing a method selector.
 args: Method arguments.
-kwargs: Keyword arguments, are passed as key value pairs.
+kwargs: link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword arguments::, are passed as key value pairs.
 
 method::multiChannelPerform
 Perform selector with multichannel expansion. See also: link::Guides/Multichannel-Expansion::.
@@ -695,7 +698,7 @@ argument::... args
 An link::Classes/Array:: of arguments.
 
 argument::kwargs
-An link::Classes/Array:: of keyword argument pairs.
+An link::Classes/Array:: of link::Reference/Functions#Arbitrary Keyword Arguments#arbitrary keyword argument:: pairs.
 
 method::throw
 

@@ -41,8 +41,8 @@ g.value(f.value(1));
 Event patterns can be similarly composed.
 
 definitionList::
-## code::Pbindf(pattern, pairs):: || Adds new key-value pairs onto a pre-existing Pbind-style pattern. code::Pbindf(Pbind(\a, patternA), \b, patternB, \c, patternC):: gets the same result as code::Pbind(\a, patternA, \b, patternB, \c, patternC):: .
-## code::Pchain(patterns):: || Chains separate Pbind-style patterns together, so that all their key-value pairs go into the same event. For example, if one part of your code creates a Pbind instance code::a = Pbind(\a, patternA):: and another part creates code::b = Pbind(\b, patternB, \c, patternC)::, you could append code::\b:: and code::\c:: into the code::\a:: result using code::Pchain(b, a):: . The subpatterns evaluate in reverse order, in keeping with function composition notation.
+## code::Pbindf(pattern, pairs):: || Adds new link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key-value pairs:: onto a pre-existing Pbind-style pattern. code::Pbindf(Pbind(\a, patternA), \b, patternB, \c, patternC):: gets the same result as code::Pbind(\a, patternA, \b, patternB, \c, patternC):: .
+## code::Pchain(patterns):: || Chains separate Pbind-style patterns together, so that all their link::Reference/Syntax-Shortcuts#creating Arrays with key-value pairs#key-value pairs:: go into the same event. For example, if one part of your code creates a Pbind instance code::a = Pbind(\a, patternA):: and another part creates code::b = Pbind(\b, patternB, \c, patternC)::, you could append code::\b:: and code::\c:: into the code::\a:: result using code::Pchain(b, a):: . The subpatterns evaluate in reverse order, in keeping with function composition notation.
 
 For musical purposes, you could have one part of your code create a pattern defining rhythm and another part defining pitch material, then combine them with link::Classes/Pchain::.
 

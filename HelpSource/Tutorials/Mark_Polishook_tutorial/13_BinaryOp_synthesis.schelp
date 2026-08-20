@@ -106,9 +106,9 @@ code::
 
 Setting the doneAction argument (control) to 2 insures that after the envelope reaches its endpoint, SuperCollider will release the memory it used for the instances of the SinOsc and the EnvGen.
 
-section::Keyword arguments
+section::Keyword argument calls
 
-Keywords make code easier to read and they allow arguments to be presented in any order. Here, the doneAction and the timeScale arguments are expressed in keyword style.
+Keywords make code easier to read and they allow arguments to be presented in any order. Here, the doneAction and the timeScale arguments are expressed in keyword style. (See link::Reference/Messages#keyword argument calls#keyword argument calls::.)
 
 code::
 (
