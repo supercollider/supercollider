@@ -153,7 +153,7 @@ void LinPan2_Ctor(LinPan2* unit) {
 #ifdef NOVA_SIMD
         if (BUFLENGTH == 64)
             SETCALC(LinPan2_next_ak_nova_64);
-        if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
             SETCALC(LinPan2_next_ak_nova);
         else
 #endif
@@ -429,7 +429,7 @@ void XFade2_Ctor(XFade2* unit) {
 #ifdef NOVA_SIMD
         if (BUFLENGTH == 64)
             SETCALC(XFade2_next_ak_nova_64);
-        if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
             SETCALC(XFade2_next_ak_nova);
         else
 #endif
@@ -796,7 +796,7 @@ void Pan2_Ctor(Pan2* unit) {
 #if defined(NOVA_SIMD)
         if (BUFLENGTH == 64)
             SETCALC(Pan2_next_ak_nova_64);
-        if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
             SETCALC(Pan2_next_ak_nova);
         else
             SETCALC(Pan2_next_ak);

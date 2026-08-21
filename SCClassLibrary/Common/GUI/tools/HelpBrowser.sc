@@ -333,11 +333,7 @@ HelpBrowser {
 			#keyLeftArrow, keyRightArrow = [65361, 65363];
 
 			// +/= has the same value on macOS when pressed with <Cmd>
-			zoomIn = Platform.case(\osx, {
-				((key == keyEquals) && modifier) || ((key == keyK) && mods.isShift);
-			}, {
-				((key == keyPlus) && modifier) || ((key == keyK) && mods.isShift);
-			});
+			zoomIn = ((key == keyEquals) && modifier) || ((key == keyK) && mods.isShift);
 
 			case(
 				{ zoomIn }, {

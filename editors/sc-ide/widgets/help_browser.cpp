@@ -135,6 +135,12 @@ void HelpBrowser::onPageLoad() {
     // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
     static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[ZoomIn])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[ZoomOut])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[ResetZoom])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Reload])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Back])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Forward])->addToWidget(mWebView->focusProxy());
 }
 
 void HelpBrowser::createActions() {
@@ -184,6 +190,14 @@ void HelpBrowser::createActions() {
     mActions[Back] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Back));
     mActions[Forward] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Forward));
     mActions[Reload] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Reload));
+
+    // Explicitly set Ctrl+R for Reload to capture the event before it bubbles up
+    // to the IDE's Find/Replace, especially on Windows where Qt's default Refresh
+    // sequence might just be F5 and not catch Ctrl+R.
+    QList<QKeySequence> reloadShortcuts;
+    reloadShortcuts.append(QKeySequence::Refresh);
+    reloadShortcuts.append(QKeySequence("Ctrl+R"));
+    mActions[Reload]->setShortcuts(reloadShortcuts);
 }
 
 void HelpBrowser::applySettings(Settings::Manager* settings) {
@@ -191,10 +205,18 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
 
     mActions[DocClose]->setShortcut(settings->shortcut("ide-document-close"));
 
-    mActions[ZoomIn]->setShortcut(settings->shortcut("editor-enlarge-font"));
+    QList<QKeySequence> zoomInShortcuts;
+    zoomInShortcuts.append(QKeySequence::ZoomIn);
 
-    mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
+#    ifdef Q_OS_MAC
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Equal));
+#    else
+    zoomInShortcuts.append(QKeySequence(Qt::CTRL | Qt::Key_Equal));
+#    endif
 
+    mActions[ZoomIn]->setShortcuts(zoomInShortcuts);
+
+    mActions[ZoomOut]->setShortcut(QKeySequence::ZoomOut);
     mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
 
     QList<QKeySequence> evalShortcuts;
@@ -304,28 +326,11 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
             case Qt::XButton1:
                 mWebView->triggerPageAction(QWebEnginePage::Back);
                 return true;
-
             case Qt::XButton2:
                 mWebView->triggerPageAction(QWebEnginePage::Forward);
                 return true;
-
             default:
                 break;
-            }
-            break;
-        }
-        case QEvent::ShortcutOverride: {
-            // check if any widget action shortcut matches the observed keyEvent
-            // if yes, capture the event, else, bubble up the event
-            auto keyEvent = static_cast<QKeyEvent*>(event);
-
-            auto sequence = OverridingAction::keySequence(keyEvent);
-
-            for (int i = 0; i < ActionCount; ++i) {
-                if (mActions[i] && mActions[i]->shortcuts().contains(sequence)) {
-                    event->accept();
-                    return true;
-                }
             }
             break;
         }
