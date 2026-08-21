@@ -252,7 +252,7 @@ code::
 "4".asInteger
 :: 
 The method code::.asInteger:: does not understand scientific notation (e.g., teletype::2e3:: for teletype::2000::), 
-and simply ignores all characters in the string after its first nonnumeric character  
+and simply ignores all characters in the string after its first nonnumeric character 
 (excepting signs teletype::+,-:: at the beginning of the string). 
 If you use scientific notation, use link::#-asFloat:: instead.
 
