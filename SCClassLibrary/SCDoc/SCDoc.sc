@@ -682,7 +682,7 @@ SCDoc {
 			^url;
 		};
 
-		warn("SCDoc: Broken link:" + url.asString);
+		warn("SCDoc: Broken link:" + url.asString.replace(" ", "%20"));
 		^nil;
 	}
 
