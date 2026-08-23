@@ -56,7 +56,6 @@ SCDocHTMLRenderer {
 		.replace(">", "%3E")
 		.replace("`", "%60")
 	}
-	}
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system
 	*prLinkTargetForInternalLink { |linkBase, linkAnchor, originalLink|
