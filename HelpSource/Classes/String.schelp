@@ -955,10 +955,13 @@ code::
 ::
 
 method::help
-Performs link::#-findHelpFile:: on this, and opens the file it if it exists, otherwise opens the main helpfile.
+Opens the given string in the help system.
+If the string resembles an HTML filename or a URL, it is opened directly via link::Classes/HelpBrowser#*goTo::.
+Otherwise, the corresponding documentation is opened when available. If multiple related documents exist—or none is found—the help search page displays the results.
 code::
-"Document".help;
-"foobar".help;
+"https://dev.docs.supercollider.online/".help
+"Document".help
+"foobar".help
 ::
 
 subsection::Misc methods
