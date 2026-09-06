@@ -241,7 +241,7 @@ Build SuperCollider - TL;DR
 ---------------------------
 
 - install components listed above
-  - optionally set global environemnt varilables for Qt and vcpkg, as indicated above
+  - optionally set global environemnt variables for Qt and vcpkg, as indicated above
 - clone supercollider repository
 - build 
 
