@@ -630,7 +630,7 @@ difference(a, b);
 
 method::symmetricDifference
 Return the set of all items which are not elements of both  this and strong::that::.
-this -- that
+this — that
 code::
 a = [1, 2, 3]; b = [2, 3, 4, 5];
 symmetricDifference(a, b);

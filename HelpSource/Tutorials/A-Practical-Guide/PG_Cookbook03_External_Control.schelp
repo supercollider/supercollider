@@ -117,7 +117,7 @@ var	pattern = Pbind(
 
 subsection::Triggering a pattern by signal amplitude
 
-Triggering a pattern based on audio amplitude is a bit trickier -- not because it's harder to play the pattern, but because identifying when the trigger should happen is more involved. The most straightforward way in SuperCollider is to use the link::Classes/Amplitude:: UGen to get the volume of the input signal and compare it to a threshold. Volume can fluctuate rapidly, so the code::releaseTime:: argument of Amplitude is set to a high value. This makes the measured amplitude fall more slowly toward the baseline, preventing triggers from being sent too close together.
+Triggering a pattern based on audio amplitude is a bit trickier — not because it's harder to play the pattern, but because identifying when the trigger should happen is more involved. The most straightforward way in SuperCollider is to use the link::Classes/Amplitude:: UGen to get the volume of the input signal and compare it to a threshold. Volume can fluctuate rapidly, so the code::releaseTime:: argument of Amplitude is set to a high value. This makes the measured amplitude fall more slowly toward the baseline, preventing triggers from being sent too close together.
 
 The actual threshold depends on the incoming signal, so the example pops up a quick and dirty window to see the measured amplitude and set the threshold and decay accordingly. The synth listens by default to the first hardware input bus, but you can change it the following in the code to use a different input bus:
 

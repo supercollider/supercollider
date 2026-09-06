@@ -14,11 +14,11 @@ Technically, code::SinOsc:: uses the same implementation as  link::Classes/Osc::
 subsection:: Other sinewaves oscillators
 
 LIST::
-## link::Classes/FSinOsc:: – fast sinewave oscillator
-## link::Classes/SinOscFB:: – sinewave with phase feedback
-## link::Classes/PMOsc:: – phase modulation sine oscillator
-## link::Classes/Klang:: – bank of sinewave oscillators
-## link::Classes/DynKlang:: – modulable bank of sinewave oscillators
+## link::Classes/FSinOsc:: — fast sinewave oscillator
+## link::Classes/SinOscFB:: — sinewave with phase feedback
+## link::Classes/PMOsc:: — phase modulation sine oscillator
+## link::Classes/Klang:: — bank of sinewave oscillators
+## link::Classes/DynKlang:: — modulable bank of sinewave oscillators
 ::
 
 

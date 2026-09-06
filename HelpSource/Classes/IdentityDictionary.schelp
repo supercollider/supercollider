@@ -36,7 +36,7 @@ list::
 ## code::proto:: and code::parent:: values are not shown when posting the dictionary.
 ## Copying an IdentityDictionary transfers a reference to the parent and proto into the copy. It is a reference, not a copy: changing the copy's parent also affects the parent of the original. This is for efficiency.
 ## Iteration operations (link::Classes/Dictionary#-do::, link::Classes/Dictionary#-keysValuesDo::) only touch the main-level values.
-## link::Classes/Dictionary#-collect::, link::Classes/Dictionary#-select::, and link::Classes/Dictionary#-reject:: return new dictionaries. The parent and proto will be preserved emphasis::as is:: in the new result, but -- as with code::do:: -- they will not be processed in the iteration, and as with code::copy::, they are identical references.
+## link::Classes/Dictionary#-collect::, link::Classes/Dictionary#-select::, and link::Classes/Dictionary#-reject:: return new dictionaries. The parent and proto will be preserved emphasis::as is:: in the new result, but — as with code::do:: — they will not be processed in the iteration, and as with code::copy::, they are identical references.
 ::
 
 code::

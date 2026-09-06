@@ -33,7 +33,7 @@ h.value(1);
 (f <> g).value(1)
 --> 3	// == (1*2) + 1
 
-// g · f == g(f(x)) -- f is evaluated first, and its result is passed to g
+// g · f == g(f(x)) — f is evaluated first, and its result is passed to g
 g.value(f.value(1));
 --> 4
 ::
@@ -111,7 +111,7 @@ table::
 ::
 Similar for code::Pmulpre::.
 
-A third group -- link::Classes/Psetp::, link::Classes/Paddp::, link::Classes/Pmulp:: -- behave slightly differently, nesting pattern evaluation.
+A third group — link::Classes/Psetp::, link::Classes/Paddp::, link::Classes/Pmulp:: — behave slightly differently, nesting pattern evaluation.
 
 Previous:	link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns::
 
