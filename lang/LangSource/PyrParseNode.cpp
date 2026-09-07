@@ -891,7 +891,7 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
 
         if (const auto r = std::get_if<PyrParseNode*>(&loc)) {
             cxt.postErrorInCurrentFile(
-                node->mClassName->location, "Duplicate identifier within a class heirachy.",
+                (*r)->location, "Duplicate identifier within a class hierarchy.",
                 "This identifier was also declared in a superclass, please rename it, or delete it.", { { 3, 16, 0 } });
             // TODO: how do we find the other duplicate?
         } else if (const auto r = std::get_if<std::tuple<PyrParseNode*, PyrParseNode*>>(&loc)) {
@@ -911,7 +911,7 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
             const auto l_vardef = nodeCast<PyrVarDefNode>(last);
 
             const auto className = classobj->name.getSymbol()->name;
-            const auto msg = std::string { "Duplicate identifier within the class heirachy of '" } + className + "'.";
+            const auto msg = std::string { "Duplicate identifier within the class hierarchy of '" } + className + "'.";
 
             const DiagnosticHighlight hg[2] {
                 cxt.textInfo->createDiagnosticHighlight(f_vardef->mVarName->location, "Duplicate here..."),
