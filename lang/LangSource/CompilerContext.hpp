@@ -113,6 +113,7 @@ struct CompilerContext {
 
     std::size_t errors {};
     std::size_t warnings {};
+    std::size_t thingsPosted {}; // count errors + warnings, but includes ones where the version requirement isn't met.
 
     LongStack generatorStack {};
     struct VMGlobals* vm_globals {};

@@ -143,6 +143,7 @@ std::string diagnosticToString(ErrorType type, const char* generalDescription, c
 }
 
 void CompilerContext::postError(const std::string& str, std::optional<SemanticVersion> versionOfError) {
+    thingsPosted += 1;
     ::postText(str.c_str(), str.size());
     if (versionOfError) {
         if (SC_Version >= *versionOfError) {
@@ -160,6 +161,7 @@ void CompilerContext::postError(const std::string& str, std::optional<SemanticVe
 
 
 void CompilerContext::postWarning(const std::string& str, std::optional<SemanticVersion> versionOfError) {
+    thingsPosted += 1;
     ::postText(str.c_str(), str.size());
     if (versionOfError) {
         if (SC_Version >= *versionOfError) {

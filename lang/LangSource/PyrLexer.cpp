@@ -1159,14 +1159,16 @@ bool compile(CompilerContext& cxt) {
     return parse(cxt, on_parse_success, on_parse_failure);
 }
 
-bool compile(const ClassDependency& dep) {
+std::tuple<bool, std::size_t> compile(const ClassDependency& dep) {
     CompilerContext cxt { dep.textInfo, {}, dep.range, nullptr };
-    return compile(cxt);
+    const auto r = compile(cxt);
+    return { r, cxt.thingsPosted };
 }
 
-bool compile(const ClassExtentionFile& ext) {
+std::tuple<bool, std::size_t> compile(const ClassExtentionFile& ext) {
     CompilerContext cxt { ext.textInfo, {}, ext.start, nullptr };
-    return compile(cxt);
+    const auto r = compile(cxt);
+    return { r, cxt.thingsPosted };
 }
 
 
@@ -1695,16 +1697,24 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalo
         }
     }
 
-    std::vector<ClassDependency> classesToRemove;
-    for (const auto& d : topo)
-        if (!compile(d))
-            classesToRemove.push_back(d);
+    std::size_t thingsPosted { 0 };
 
-    for (const auto& d : extList) {
-        compile(d);
+    std::vector<ClassDependency> classesToRemove;
+    for (const auto& d : topo) {
+        const auto [result, postedCount] = compile(d);
+        thingsPosted += postedCount;
+        if (!result)
+            classesToRemove.push_back(d);
     }
 
-    if (!classesToRemove.empty()) {
+    bool errorInExt { false };
+    for (const auto& d : extList) {
+        const auto [result, postedCount] = compile(d);
+        thingsPosted += postedCount;
+        errorInExt = errorInExt || !result;
+    }
+
+    if (!classesToRemove.empty() || errorInExt) {
         throw std::runtime_error { "Class Library has failed to compile." };
     }
 
@@ -1738,6 +1748,11 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalo
 
     if (!isSubclassOf(class_main, class_process)) {
         throw std::runtime_error { "Class 'Main' is not a subclass of 'Process'" };
+    }
+
+    if (thingsPosted > 20) {
+        post("\nInfo: many errors or warnings were posted.\nIf quarks are installed, try updating them with "
+             "`Quarks.all.do{ |quark| quark.update() };\n`");
     }
 
     post("Compile done.\n");
