@@ -964,7 +964,7 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
             if (auto maybe_super_class = super_name->u.classobj) {
                 superclassobj = maybe_super_class;
             } else {
-                cxt.postErrorInCurrentFile(mSuperClassName->location, "Non existance class",
+                cxt.postErrorInCurrentFile(mSuperClassName->location, "Non existence class",
                                            "This class does not exist.");
                 return;
             }
@@ -1025,7 +1025,7 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
         if (varsDiffer) {
             if (isIntrinsic) {
                 cxt.postErrorInCurrentFile(mClassName->location, "Attempt to change intrinsic class.",
-                                           "You cannot change the variables of an instrinsic class, the compiler is "
+                                           "You cannot change the variables of an intrinsic class, the compiler is "
                                            "expecting a certain layout.");
                 return;
             } else {
@@ -1320,7 +1320,7 @@ void postDuplicateIdentifierError(CompilerContext& cxt, sc::lex::SourceCodeRange
         cxt.textInfo->createDiagnosticHighlight(first, "This identifier is duplicated..."),
         cxt.textInfo->createDiagnosticHighlight(second, "...here. Names must be unique, rename one of these."),
     };
-    const auto str = diagnosticToString(ErrorType::Error, "Duplicate named indentifier", hg, 2);
+    const auto str = diagnosticToString(ErrorType::Error, "Duplicate named identifier", hg, 2);
     cxt.postError(str);
 }
 
@@ -1407,7 +1407,7 @@ PyrSlot createVarNames(CompilerContext& cxt, std::size_t size, PyrVarListNode* v
     return PyrSlot::make(names);
 }
 
-// returns slot with result, and a bool indicating whether default argument/variable values require compilatio (i.e.,
+// returns slot with result, and a bool indicating whether default argument/variable values require compilation (i.e.,
 // are not constant expressions).
 std::tuple<PyrSlot, bool, bool> createPrototypeFrame(CompilerContext& cxt, std::size_t size, bool hasThis,
                                                      PyrArgListNode* argList, PyrVarListNode* vars) {
@@ -1743,7 +1743,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                 const DiagnosticHighlight hg[2] {
                     cxt.textInfo->createDiagnosticHighlight(mArglist->location, "The argument count here... "),
                     cxt.textInfo->createDiagnosticHighlight(mPrimitiveName->location,
-                                                            "...should match the argugment count of this primitive."),
+                                                            "...should match the argument count of this primitive."),
                 };
                 const auto str = diagnosticToString(ErrorType::Error, "Primitive argument mismatch", hg, 2);
                 cxt.postError(str);
@@ -1752,9 +1752,9 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
             if (prim.hasVariablePositionalArguments && methraw->numVariableArguments < 1) {
                 const DiagnosticHighlight hg[2] {
                     cxt.textInfo->createDiagnosticHighlight(mArglist->mVarDefs->mTail->location,
-                                                            "Insert variadic postional arguments: `...args`... "),
+                                                            "Insert variadic positional arguments: `...args`... "),
                     cxt.textInfo->createDiagnosticHighlight(mPrimitiveName->location,
-                                                            "... to match the defintion of this primitive."),
+                                                            "... to match the definition of this primitive."),
                 };
                 const auto str = diagnosticToString(ErrorType::Error, "Primitive argument mismatch", hg, 2);
                 cxt.postError(str);
@@ -1765,7 +1765,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     cxt.textInfo->createDiagnosticHighlight(mArglist->mVarDefs->mTail->location,
                                                             "Insert variadic keyword arguments: `...args, kwargs`... "),
                     cxt.textInfo->createDiagnosticHighlight(mPrimitiveName->location,
-                                                            "... to match the defintion of this primitive."),
+                                                            "... to match the definition of this primitive."),
                 };
                 const auto str = diagnosticToString(ErrorType::Error, "Primitive argument mismatch", hg, 2);
                 cxt.postError(str);
@@ -1779,7 +1779,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
             SetTailBranch branch(cxt, false); // set to true in the return method node
             SetTailIsMethodReturn mr { cxt, false };
 
-            // These optimisations are special bytecodes that get emitted instead of looking at the source.
+            // These optimisation are special bytecodes that get emitted instead of looking at the source.
             // TODO: this means the source should be deleted and we should construct them here, or better yet, right at
             // the top of this function so all this nasty logic can be abstracted.
 
@@ -1795,8 +1795,8 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     }
                 if (badArg) {
                     cxt.postErrorInCurrentFile(
-                        badArg->mDefVal->location, "Non simple arg in optimised method.",
-                        "This method is optimised by the compiler, you cannot have non-literal arguments.");
+                        badArg->mDefVal->location, "Non simple arg in optimized method.",
+                        "This method is optimized by the compiler, you cannot have non-literal arguments.");
                 }
                 badArg = nullptr;
                 if (varsRequiresCompilation)
@@ -1810,7 +1810,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                 if (badArg) {
                     cxt.postErrorInCurrentFile(
                         badArg->mDefVal->location, "Non simple var in body.",
-                        "This method is optimised by the compiler, you cannot have non-literal variable defaults.");
+                        "This method is optimized by the compiler, you cannot have non-literal variable defaults.");
                 }
             };
 
@@ -1819,13 +1819,13 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     std::stringstream ss;
                     ss << "There should be " << numArgs - 1 << " arguments here.";
                     cxt.postErrorInCurrentFile(mArglist ? mArglist->location : mMethodName->location,
-                                               "Incorrect number of arguments in optimised method.", ss.str());
+                                               "Incorrect number of arguments in optimized method.", ss.str());
                 }
                 if (slotRawSymbolArray(&method->varNames)->size != numVars) {
                     std::stringstream ss;
                     ss << "There should be " << numVars << " variables here.";
                     cxt.postErrorInCurrentFile(mVarlist ? mVarlist->location : mBody->location,
-                                               "Incorrect number of variables in optimised method.", ss.str());
+                                               "Incorrect number of variables in optimized method.", ss.str());
                 }
             };
 

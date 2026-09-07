@@ -283,7 +283,7 @@ constexpr inline int str_to_int(const char* str, size_t n, int base) {
 
 enum struct ExtendedErrors : std::underlying_type_t<TokenType> {
     ExtraClosingParenBracket = static_cast<UnderlyingTokenType>(TokenType::START_OF_USER_DEFINED_ERRORS),
-    ExtraClosingSqaureBracket,
+    ExtraClosingSquareBracket,
     ExtraClosingCurlyBracket,
 
     GotParenExpectedSquare,
@@ -382,7 +382,7 @@ public:
                 if constexpr (T == TokenType::CloseParen)
                     return { { ExtendedErrors::ExtraClosingParenBracket, loc } };
                 else if constexpr (T == TokenType::CloseSquare)
-                    return { { ExtendedErrors::ExtraClosingSqaureBracket, loc } };
+                    return { { ExtendedErrors::ExtraClosingSquareBracket, loc } };
                 else if constexpr (T == TokenType::CloseCurly)
                     return { { ExtendedErrors::ExtraClosingCurlyBracket, loc } };
                 else {
@@ -431,7 +431,7 @@ public:
             const char* start = c_str + loc.begin.absolute;
             // Looking for radix.
             const char* it = start;
-            while (*it != 'r') // Potentially unsafe, but the lexer guarenteed this was found.
+            while (*it != 'r') // Potentially unsafe, but the lexer guaranteed this was found.
                 ++it;
             const int radix = str_to_int(start, it - start, 10);
             ++it; // drop r
@@ -647,13 +647,13 @@ std::optional<ParserState> gParserState {};
         }
     } else if (o.is(ExtendedErrors::ExtraClosingCurlyBracket)) {
         const DiagnosticHighlight h = txtInfo.createDiagnosticHighlight(
-            o.range, "Unexpected closing curly braket, could not find a matching opening one.");
+            o.range, "Unexpected closing curly bracket, could not find a matching opening one.");
         return { diagnosticToString(ErrorType::Error, "Curly bracket mismatch", &h, 1), ErrorType::Error };
     } else if (o.is(ExtendedErrors::ExtraClosingParenBracket)) {
         const DiagnosticHighlight h = txtInfo.createDiagnosticHighlight(
             o.range, "Unexpected closing parenthesis, could not find a matching opening one.");
-        return { diagnosticToString(ErrorType::Error, "Paranthesis mismatch", &h, 1), ErrorType::Error };
-    } else if (o.is(ExtendedErrors::ExtraClosingSqaureBracket)) {
+        return { diagnosticToString(ErrorType::Error, "Parenthesis mismatch", &h, 1), ErrorType::Error };
+    } else if (o.is(ExtendedErrors::ExtraClosingSquareBracket)) {
         const DiagnosticHighlight h = txtInfo.createDiagnosticHighlight(
             o.range, "Unexpected closing square bracket, could not find a matching opening one.");
         return { diagnosticToString(ErrorType::Error, "Square bracket mismatch", &h, 1), ErrorType::Error };
@@ -1139,7 +1139,7 @@ struct ClassExtentionFile {
 };
 
 bool compile(CompilerContext& cxt) {
-    const auto on_parse_sucess = [&](PyrRootNode& root) {
+    const auto on_parse_success = [&](PyrRootNode& root) {
         // Prints errors for us.
         // TODO: this would be nicer if it returned diagnostics
         compileNodeList(cxt, &root, true);
@@ -1156,7 +1156,7 @@ bool compile(CompilerContext& cxt) {
     };
 
 
-    return parse(cxt, on_parse_sucess, on_parse_failure);
+    return parse(cxt, on_parse_success, on_parse_failure);
 }
 
 bool compile(const ClassDependency& dep) {
@@ -1743,7 +1743,7 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalo
     post("Compile done.\n");
     gClassLibraryInfo.markCompilationOkay();
 
-    post("Initalising runtime.\n");
+    post("Initialising runtime.\n");
 
     initRuntime(gMainVMGlobals, 128 * 1024, pyr_pool_runtime);
 

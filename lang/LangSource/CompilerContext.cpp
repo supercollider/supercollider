@@ -85,7 +85,7 @@ std::string diagnosticToString(ErrorType type, const char* generalDescription, c
             const auto [ptr, sz, line_number, ends_in_newline_char] = *line;
             const auto real_line_number = line_number + 1 + source_line;
 
-            // If is outside of the highligh range
+            // If is outside of the highlight range
             if (line_number < range.begin.line_number || line_number > range.end.line_number) {
                 ss << std::setfill(' ') << std::setw(5) << real_line_number << " │ ";
                 ss.write(ptr, sz);
