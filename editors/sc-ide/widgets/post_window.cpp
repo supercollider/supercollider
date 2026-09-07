@@ -213,6 +213,7 @@ void PostWindow::post(const QString& text) {
         const auto line_format = formatForPostLine(line);
         cursor.movePosition(QTextCursor::End);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         if (!line.contains("\x1b]8;;")) {
             cursor.insertText(line, line_format);
         } else {
@@ -235,7 +236,11 @@ void PostWindow::post(const QString& text) {
                 cursor.insertText(line.sliced(textEnd + 7), line_format);
             }
         }
-
+#else
+        // No escape codes in qt5, could add this by supporting older QString methods, but it is already no officially
+        // supported. Remove this in the future.
+        cursor.insertText(line, line_format);
+#endif
         // Don't write a new line in the final case.
         if (i + 1 != line_count)
             cursor.insertText("\n", line_format);
