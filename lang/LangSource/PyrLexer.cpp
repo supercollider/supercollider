@@ -1704,9 +1704,9 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalo
         compile(d);
     }
 
-    if (!classesToRemove.empty())
-        throw std::runtime_error { "There are classes that need removing, this is currently a compilation error but "
-                                   "one day will only post a warning." };
+    if (!classesToRemove.empty()) {
+        throw std::runtime_error { "Class Library has failed to compile." };
+    }
 
 
     buildClassTree();
