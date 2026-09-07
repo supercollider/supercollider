@@ -918,7 +918,7 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
                 cxt.textInfo->createDiagnosticHighlight(l_vardef->mVarName->location, "... and here.")
             };
             const auto str = diagnosticToString(ErrorType::Error, msg.c_str(), hg, 2);
-            cxt.postError(str);
+            cxt.postError(str, { { 3, 16, 0 } });
         }
     };
 
