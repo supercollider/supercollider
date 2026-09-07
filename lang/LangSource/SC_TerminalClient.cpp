@@ -574,6 +574,8 @@ void SC_TerminalClient::pushCmdLine(const char* newData, size_t size) {
         char c = *newData++;
         switch (c) {
         case RecompileLibrary:
+            recompileLibrary();
+            break;
         case InterpretCmdLine:
         case InterpretPrintCmdLine:
             mInputBuf.append(mInputThrdBuf.getData(), mInputThrdBuf.getSize());

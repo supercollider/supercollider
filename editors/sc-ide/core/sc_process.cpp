@@ -174,7 +174,8 @@ void ScProcess::recompileClassLibrary(void) {
         return;
     }
     mCompiled = false;
-    write("\x18");
+    const char recompileChar { SC_LanguageClient::RecompileLibrary };
+    write(&recompileChar);
 }
 
 
