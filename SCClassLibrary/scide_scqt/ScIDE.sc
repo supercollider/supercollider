@@ -307,6 +307,10 @@ ScIDE {
 		});
 	}
 
+	*clearPostWindow {
+		this.send(\clearPostWindow);
+	}
+
 	*cmdPeriod { docRoutine.play(AppClock) }
 
 	*processUrl { |urlString, doneAction|
