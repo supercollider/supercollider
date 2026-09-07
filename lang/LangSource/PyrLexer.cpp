@@ -603,20 +603,20 @@ struct ParserState {
 
 std::optional<ParserState> gParserState {};
 
-[[nodiscard]] std::string mkLexingError(const TextInfo& txtInfo, BisonSemActionOutput o) {
+[[nodiscard]] std::tuple<std::string, ErrorType> mkLexingDiagnostic(const TextInfo& txtInfo, BisonSemActionOutput o) {
     if (o.is(ExtendedErrors::GotCurlyExpectedParen) || o.is(ExtendedErrors::GotSquareExpectedParen)) {
         if (o.extra_range_of_error) {
             const DiagnosticHighlight highlights[2] {
-                txtInfo.createDiagnosticHighlight(*o.extra_range_of_error, "Parenthsises opened here..."),
+                txtInfo.createDiagnosticHighlight(*o.extra_range_of_error, "Parentheses opened here..."),
                 txtInfo.createDiagnosticHighlight(o.range, "...was expected to be closed here."),
             };
-            return diagnosticToString(ErrorType::Error, "Parenthises mismatch.", highlights, 2);
+            return { diagnosticToString(ErrorType::Error, "Parentheses mismatch.", highlights, 2), ErrorType::Error };
         } else {
             // Should not happen.
             assert(false);
             const DiagnosticHighlight h =
-                txtInfo.createDiagnosticHighlight(o.range, "Parenthises opened here was expected to be closed.");
-            return diagnosticToString(ErrorType::Error, "Parenthises mismatch", &h, 1);
+                txtInfo.createDiagnosticHighlight(o.range, "Parentheses opened here was expected to be closed.");
+            return { diagnosticToString(ErrorType::Error, "Parentheses mismatch", &h, 1), ErrorType::Error };
         }
     } else if (o.is(ExtendedErrors::GotCurlyExpectedSquare) || o.is(ExtendedErrors::GotParenExpectedSquare)) {
         if (o.extra_range_of_error) {
@@ -624,12 +624,13 @@ std::optional<ParserState> gParserState {};
                 txtInfo.createDiagnosticHighlight(*o.extra_range_of_error, "Square bracket opened here..."),
                 txtInfo.createDiagnosticHighlight(o.range, "...was expected to be closed here."),
             };
-            return diagnosticToString(ErrorType::Error, "Square bracket mismatch.", highlights, 2);
+            return { diagnosticToString(ErrorType::Error, "Square bracket mismatch.", highlights, 2),
+                     ErrorType::Error };
         } else {
             assert(false);
             const DiagnosticHighlight h =
                 txtInfo.createDiagnosticHighlight(o.range, "Square bracket opened here was expected to be closed.");
-            return diagnosticToString(ErrorType::Error, "Square bracket mismatch", &h, 1);
+            return { diagnosticToString(ErrorType::Error, "Square bracket mismatch", &h, 1), ErrorType::Error };
         }
     } else if (o.is(ExtendedErrors::GotParenExpectedCurly) || o.is(ExtendedErrors::GotSquareExpectedCurly)) {
         if (o.extra_range_of_error) {
@@ -637,32 +638,32 @@ std::optional<ParserState> gParserState {};
                 txtInfo.createDiagnosticHighlight(*o.extra_range_of_error, "Curly bracket opened here..."),
                 txtInfo.createDiagnosticHighlight(o.range, "...was expected to be closed here."),
             };
-            return diagnosticToString(ErrorType::Error, "Curly bracket mismatch.", highlights, 2);
+            return { diagnosticToString(ErrorType::Error, "Curly bracket mismatch.", highlights, 2), ErrorType::Error };
         } else {
             assert(false);
             const DiagnosticHighlight h =
                 txtInfo.createDiagnosticHighlight(o.range, "Curly bracket opened here was expected to be closed.");
-            return diagnosticToString(ErrorType::Error, "Curly bracket mismatch", &h, 1);
+            return { diagnosticToString(ErrorType::Error, "Curly bracket mismatch", &h, 1), ErrorType::Error };
         }
     } else if (o.is(ExtendedErrors::ExtraClosingCurlyBracket)) {
         const DiagnosticHighlight h = txtInfo.createDiagnosticHighlight(
             o.range, "Unexpected closing curly braket, could not find a matching opening one.");
-        return diagnosticToString(ErrorType::Error, "Curly bracket mismatch", &h, 1);
+        return { diagnosticToString(ErrorType::Error, "Curly bracket mismatch", &h, 1), ErrorType::Error };
     } else if (o.is(ExtendedErrors::ExtraClosingParenBracket)) {
         const DiagnosticHighlight h = txtInfo.createDiagnosticHighlight(
             o.range, "Unexpected closing parenthesis, could not find a matching opening one.");
-        return diagnosticToString(ErrorType::Error, "Paranthesis mismatch", &h, 1);
+        return { diagnosticToString(ErrorType::Error, "Paranthesis mismatch", &h, 1), ErrorType::Error };
     } else if (o.is(ExtendedErrors::ExtraClosingSqaureBracket)) {
         const DiagnosticHighlight h = txtInfo.createDiagnosticHighlight(
             o.range, "Unexpected closing square bracket, could not find a matching opening one.");
-        return diagnosticToString(ErrorType::Error, "Square bracket mismatch", &h, 1);
+        return { diagnosticToString(ErrorType::Error, "Square bracket mismatch", &h, 1), ErrorType::Error };
     } else if (o.is(TokenType::ErMissingExponent)) {
         const auto [ptr, sz] = txtInfo.indexIntoSource(o.range);
         const std::string example { ptr, sz };
         auto desc = std::string { "Expected digits after the 'e', for example '" } + example + "10'.";
 
         const auto h = txtInfo.createDiagnosticHighlight(o.range, std::move(desc));
-        return diagnosticToString(ErrorType::Error, "Invalid float exponent.", &h, 1);
+        return { diagnosticToString(ErrorType::Error, "Invalid float exponent.", &h, 1), ErrorType::Error };
     }
 
     else if (o.is(TokenType::ErSymbolQuoteUnclosed)) {
@@ -676,17 +677,17 @@ std::optional<ParserState> gParserState {};
         auto desc = std::string { "This quoted symbol does not have a matching closing quote, perhaps you meant "
                                   + example + "'?" };
         const auto h = txtInfo.createDiagnosticHighlight(o.range, std::move(desc));
-        return diagnosticToString(ErrorType::Error, "Invalid symbol.", &h, 1);
+        return { diagnosticToString(ErrorType::Error, "Invalid symbol.", &h, 1), ErrorType::Error };
     }
 
     else if (o.is(TokenType::ErInvalidUTF8)) {
         const auto h = txtInfo.createDiagnosticHighlight(o.range, "this is invalid utf8, please delete it.");
-        return diagnosticToString(ErrorType::Error, "Invalid utf8", &h, 1);
+        return { diagnosticToString(ErrorType::Warning, "Invalid utf8", &h, 1), ErrorType::Warning };
     }
 
     else if (o.is(TokenType::ErInvalidToken)) {
         const auto h = txtInfo.createDiagnosticHighlight(o.range, "this token is invalid in this context.");
-        return diagnosticToString(ErrorType::Error, "Invalid token.", &h, 1);
+        return { diagnosticToString(ErrorType::Error, "Invalid token.", &h, 1), ErrorType::Warning };
     }
 
     else if (o.is(TokenType::ErStringUnclosed)) {
@@ -698,17 +699,17 @@ std::optional<ParserState> gParserState {};
 
         const auto h = txtInfo.createDiagnosticHighlight(
             o.range, std::string { "This string does not have a closing '\"', perhaps you meant " + example + "\"?" });
-        return diagnosticToString(ErrorType::Error, "Unclosed string.", &h, 1);
+        return { diagnosticToString(ErrorType::Error, "Unclosed string.", &h, 1), ErrorType::Error };
     } else if (o.is(TokenType::ErMultilineCommentUnclosed)) {
         const auto h = txtInfo.createDiagnosticHighlight(o.range, "this comment lacks a closing */.");
-        return diagnosticToString(ErrorType::Error, "Unclosed string.", &h, 1);
+        return { diagnosticToString(ErrorType::Error, "Unclosed string.", &h, 1), ErrorType::Error };
     } else if (o.is(TokenType::ErASCIIInvalidWhitespace)) {
         const auto h =
             txtInfo.createDiagnosticHighlight(o.range, "did you mean either: '$ ' (missing space) or '$\\n'?");
-        return diagnosticToString(ErrorType::Error, "Invalid whitespace in char", &h, 1);
+        return { diagnosticToString(ErrorType::Error, "Invalid whitespace in char", &h, 1), ErrorType::Error };
     } else {
-        const auto h = txtInfo.createDiagnosticHighlight(o.range, "an unknown error has occured right here!");
-        return diagnosticToString(ErrorType::Error, "Unknown error.", &h, 1);
+        const auto h = txtInfo.createDiagnosticHighlight(o.range, "an unknown error has occurred right here!");
+        return { diagnosticToString(ErrorType::Error, "Unknown error.", &h, 1), ErrorType::Error };
     }
 }
 
@@ -725,21 +726,23 @@ int yylex() {
     const auto prepForOutput = [&](BisonSemActionOutput o) {
         yylval.empty = {};
         yylloc = o.range;
-        if (o.slot)
-            yylval.slotNode = bison_cxt->allocParseNode<PyrSlotNode>(o.range, *o.slot);
-        if (o.is_error()) {
-            auto str = mkLexingError(*bison_cxt->textInfo.get(), o);
-            bison_cxt->postError(str);
-            // These errors are swallowed, printed, but not returned.
-            // In a future version this needs to be removed.
-            if (o.type == TokenType::ErInvalidUTF8 || o.type == TokenType::ErUnexpectedUnicode) {
-                return yylex();
-            } else {
+
+        if (!o.is_error()) {
+            if (o.slot)
+                yylval.slotNode = bison_cxt->allocParseNode<PyrSlotNode>(o.range, *o.slot);
+
+            return static_cast<int>(*convert_to_bison_tokentype(o.type));
+        } else {
+            const auto [str, type] = mkLexingDiagnostic(*bison_cxt->textInfo.get(), o);
+            if (type == ErrorType::Error) {
+                bison_cxt->postError(str);
                 return static_cast<int>(YYerror); // This suppresses the printing of the error message that the parse
                                                   // generates because we have already printed one.
+            } else {
+                bison_cxt->postWarning(str);
+                return yylex(); // Recursion, try next token.
             }
         }
-        return static_cast<int>(*convert_to_bison_tokentype(o.type));
     };
 
 

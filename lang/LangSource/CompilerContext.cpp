@@ -206,6 +206,6 @@ void CompilerContext::postErrorInCurrentFile(sc::lex::SourceCodeRange range, con
 void CompilerContext::postWarningInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
                                                std::string description, std::optional<SemanticVersion> versionOfError) {
     const auto h = textInfo->createDiagnosticHighlight(range, std::move(description));
-    const auto str = diagnosticToString(ErrorType::Error, generalDescription, &h, 1);
+    const auto str = diagnosticToString(ErrorType::Warning, generalDescription, &h, 1);
     postWarning(str, versionOfError);
 }

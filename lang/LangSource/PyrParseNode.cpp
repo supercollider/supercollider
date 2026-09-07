@@ -2537,12 +2537,12 @@ CompilingBytecodes compileBodyWithGoto(CompilerContext& cxt, PyrParseNode* body,
 
 void print_inline_warning(CompilerContext& cxt, PyrParseNode* args, PyrParseNode* vars) {
     if (args) {
-        cxt.postErrorInCurrentFile(args->location, "Function contains arguments, it cannot be inlined.",
-                                   "remove this to make the function inlinable.");
+        cxt.postWarningInCurrentFile(args->location, "Function contains arguments, it cannot be inlined.",
+                                     "remove this to make the function inlinable.");
     }
     if (vars) {
-        cxt.postErrorInCurrentFile(vars->location, "Function contains variables, it cannot be inlined.",
-                                   "remove this to make the function inlineable.");
+        cxt.postWarningInCurrentFile(vars->location, "Function contains variables, it cannot be inlined.",
+                                     "remove this to make the function inlineable.");
     }
 }
 
