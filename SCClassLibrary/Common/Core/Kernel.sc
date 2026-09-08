@@ -237,20 +237,48 @@ Process {
 	var curThread, <mainThread;
 	var schedulerQueue;
 	var <>nowExecutingPath;
+	classvar <initializedClassesOkay = false;
 
 	startup {
 		var time;
 
-		Class.initClassTree(AppClock); // AppClock first in case of error
-		time = this.class.elapsedTime;
-		Class.initClassTree(Object);
-		Class.initClassTree(AbstractObjectExperimental);
-		("Class tree inited in" + (this.class.elapsedTime - time).round(0.01) + "seconds").postln;
-		Class.classesInited = nil;
+		try {
+			Class.initClassTree(AppClock); // AppClock first in case of error
+			time = this.class.elapsedTime;
+			// Object goes here as it creates the dependantsDictionary
+			Class.initClassTree(Object);
+			// AbstractObject doesn't have an initClass method, subclasses might.
+			Class.initClassTree(AbstractObjectExperimental);
+			("Class tree initialized in" + (this.class.elapsedTime - time).round(0.01) + "seconds").postln;
+			Class.classesInited = nil;
 
-		topEnvironment = Environment.new;
-		currentEnvironment = topEnvironment;
-		Archive.read;
+			topEnvironment = Environment.new;
+			currentEnvironment = topEnvironment;
+
+		} { |er|
+			er.reportError;
+
+			"An error was thrown while initializing the class library.\n"
+			"This means the class library is no longer in a valid state and cannot be used.\n"
+			"If you are reading this after updating SuperCollider, please:\n" 
+			"   1. remove all your quarks from the language config file,\n"
+			"   2. update all quarks using `Quarks.gui`,\n"
+			"   3. and reinstall them one at a time.\n"
+			"If there are still error, inspect the error message above and ensure all classes referenced\n"
+			"in a `initClass` method are initialized using `Class.initClassTree(NAME_OF_CLASS) at the top of the method`.\n"
+			"See the help documentation on `initClass` for some more information.\n\n\n"
+				.error;
+			1.exit; // Kills the interpreter, however it also calls Process.shutdown on the way.
+		};
+
+		initializedClassesOkay = true;
+
+		try {
+			Archive.read;
+		} { |er|
+			er.reportError;
+			"Archive.read in the main startup process has failed.".error
+		};
 
 		// This method is called automatically right after compiling.
 		// Override in class 'Main' to do initialization stuff,
@@ -267,12 +295,18 @@ Process {
 		// Override in class 'Main' to do whatever you want.
 	}
 	shutdown {
-		// This method is called before recompiling or quitting.
-		// Override in class 'Main' to do whatever you want.
-		ShutDown.run;
-		NetAddr.disconnectAll;
-		File.closeAll;
-		Archive.write;
+		if (initializedClassesOkay) {
+			try { ShutDown.run } { |er| er.reportError };
+			try { NetAddr.disconnectAll } { |er| er.reportError };
+			try { File.closeAll } { |er| er.reportError };
+			try { Archive.write } { |er| er.reportError };
+		} {
+			// Try to do them, but don't post any errors, we only care about the error above.
+			try { ShutDown.run };
+			try { NetAddr.disconnectAll };
+			try { File.closeAll };
+			try { Archive.write };
+		}
 	}
 	tick { // called repeatedly by SCVirtualMachine::doPeriodicTask
 		^AppClock.tick;

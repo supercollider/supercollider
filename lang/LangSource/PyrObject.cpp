@@ -1663,13 +1663,14 @@ void initClasses() {
     // addIntrinsicVar(class_frame, "homeContext", &o_nil);
     // addIntrinsicVar(class_frame, "ip", &o_nil);
 
-    class_process = makeIntrinsicClass(s_process, s_object, 6, 0);
+    class_process = makeIntrinsicClass(s_process, s_object, 6, 1);
     addIntrinsicVar(class_process, "classVars", &o_nil);
     addIntrinsicVar(class_process, "interpreter", &o_nil);
     addIntrinsicVar(class_process, "curThread", &o_nil);
     addIntrinsicVar(class_process, "mainThread", &o_nil);
     addIntrinsicVar(class_process, "schedulerQueue", &o_nil);
     addIntrinsicVar(class_process, "nowExecutingPath", &o_nil);
+    addIntrinsicClassVar(class_process, "initializedClassesOkay", &o_false);
 
     class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 33, 0);
 
