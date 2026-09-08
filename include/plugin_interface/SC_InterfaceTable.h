@@ -26,7 +26,7 @@
 // NOTE: The plugin API version has been temporarily bumped to avoid potential crashes
 // with existing plugins on the develop branch. After all plugin API changes have been
 // made for SC 3.15, the API version should be restored to 4.
-static const int sc_api_version = 6;
+static const int sc_api_version = 7;
 
 #include "SC_Types.h"
 #include "SC_World.h"

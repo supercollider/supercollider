@@ -91,7 +91,7 @@ b = Synth(\help_isRand); // a different randomly selected freq
 
 subsection:: Reblocking and Resampling
 
-Since SC 3.15, Synths can be downblocked to smaller block sizes and upsampled to higher sample rates than the Server's own block size resp. sample rate. This enables things like single-sample feedback or anti-aliasing through upsampling and filtering.
+Since SC 3.15, Synths can have block sizes other than the Server block size and they can be upsampled to higher sample rates than the Server sample rate. This enables things like single-sample feedback or anti-aliasing via upsampling and filtering.
 
 Reblocking and resampling is done with the link::Classes/Reblock:: and link::Classes/Resample:: objects. You can put these in your SynthDef and either pass a fixed number or a Synth argument/control.
 

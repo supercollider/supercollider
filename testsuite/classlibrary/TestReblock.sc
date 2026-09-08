@@ -200,11 +200,12 @@ TestReblock : TestReblockBase {
 		var arTestBus = Bus.audio(server, 2);
 		var krTestBus = Bus.control(server, 2);
 		var testBlockSize = 1;
+		var testFactor = testBlockSize * 4;
 
-		simpleAB = { |defName|
+		simpleAB = { |defName, resample=false|
 			{ |busA, busB|
 				[
-					Synth(defName, [ out: busA, blockSize: testBlockSize ], server, \addToTail),
+					Synth(defName, [ out: busA, blockSize: testBlockSize, resample: if (resample, testFactor, 1) ], server, \addToTail),
 					Synth(defName, [ out: busB ], server, \addToTail)
 				]
 			}
@@ -231,6 +232,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testOutAr), \ar, "Out.ar works with reblocking");
+		this.performABTest(simpleAB.(\testOutAr, true), \ar, "Out.ar works with reblocking and resampling");
 
 		SynthDef(\testOutKr, { |out, blockSize|
 			var sig = [ Line.kr, SinOsc.kr ];
@@ -243,6 +245,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testOutKr), \kr, "Out.kr works with reblocking");
+		this.performABTest(simpleAB.(\testOutKr, true), \kr, "Out.kr works with reblocking and resampling");
 
 		// ReplaceOut.ar / ReplaceOut.kr
 
@@ -254,6 +257,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testReplaceOutAr), \ar, "ReplaceOut.ar works with reblocking");
+		this.performABTest(simpleAB.(\testReplaceOutAr, true), \ar, "ReplaceOut.ar works with reblocking and resampling");
 
 		SynthDef(\testReplaceOutKr, { |out, blockSize|
 			Reblock(blockSize);
@@ -263,6 +267,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testReplaceOutKr), \kr, "ReplaceOut.kr works with reblocking");
+		this.performABTest(simpleAB.(\testReplaceOutKr, true), \kr, "ReplaceOut.kr works with reblocking and resampling");
 
 		// OffsetOut.ar
 
@@ -277,6 +282,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testOffsetOutAr), \ar, "OffsetOut.ar works with reblocking");
+		this.performABTest(simpleAB.(\testOffsetOutAr, true), \ar, "OffsetOut.ar works with reblocking and resampling");
 
 		// XOut.ar / XOut.kr
 
@@ -288,6 +294,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testXOutAr), \ar, "XOut.ar works with reblocking");
+		this.performABTest(simpleAB.(\testXOutAr, true), \ar, "XOut.ar works with reblocking and resampling");
 
 		SynthDef(\testXOutKr, { |out, blockSize|
 			Reblock(blockSize);
@@ -297,6 +304,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testXOutKr), \kr, "XOut.kr works with reblocking");
+		this.performABTest(simpleAB.(\testXOutKr, true), \kr, "XOut.kr works with reblocking and resampling");
 
 		// In.ar / In.kr
 
@@ -308,6 +316,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testInAr), \ar, "In.ar works with reblocking");
+		this.performABTest(simpleAB.(\testInAr, true), \ar, "In.ar works with reblocking and resampling");
 
 		SynthDef(\testInKr, { |out, blockSize|
 			Reblock(blockSize);
@@ -317,6 +326,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testInKr), \kr, "In.kr works with reblocking");
+		this.performABTest(simpleAB.(\testInKr, true), \kr, "In.kr works with reblocking and resampling");
 
 		// FeedbackIn.ar
 
@@ -328,6 +338,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testInFeedbackAr), \ar, "InFeedback.ar works with reblocking");
+		this.performABTest(simpleAB.(\testInFeedbackAr, true), \ar, "InFeedback.ar works with reblocking and resampling");
 
 		// LagIn.kr
 
@@ -339,6 +350,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testLagInKr), \kr, "LagIn.kr works with reblocking");
+		this.performABTest(simpleAB.(\testLagInKr, true), \kr, "LagIn.kr works with reblocking and resampling");
 
 		// InTrig.kr
 
@@ -368,6 +380,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testControl), \kr, "Control with default value works with reblocking");
+		this.performABTest(simpleAB.(\testControl, true), \kr, "Control with default value works with reblocking and resampling");
 
 		this.performABTest({ |busA, busB|
 			var a = Synth(\testControl, [ out: busA, blockSize: testBlockSize ], server, \addToTail).map(\ctl, krTestBus);
@@ -385,6 +398,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testAudioControl), \ar, "AudioControl with default value works with reblocking");
+		this.performABTest(simpleAB.(\testAudioControl, true), \ar, "AudioControl with default value works with reblocking and resampling");
 
 		this.performABTest({ |busA, busB|
 			var a = Synth(\testAudioControl, [ out: busA, blockSize: testBlockSize ], server, \addToTail).map(\ctl, arTestBus);
@@ -408,6 +422,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testLagControl), \kr, "LagControl with default value works with reblocking");
+		this.performABTest(simpleAB.(\testLagControl, true), \kr, "LagControl with default value works with reblocking and resampling");
 
 		this.performABTest({ |busA, busB|
 			var a = Synth(\testLagControl, [ out: busA, blockSize: testBlockSize ], server, \addToTail).map(\ctl, krTestBus);
@@ -425,6 +440,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testTrigControl), \kr, "TrigControl with default value works with reblocking");
+		this.performABTest(simpleAB.(\testTrigControl, true), \kr, "TrigControl with default value works with reblocking and resampling");
 
 		this.performABTest({ |busA, busB|
 			var a, b;
@@ -449,6 +465,7 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testLocalBusAr), \ar, "LocalIn.ar and LocalOut.ar work with reblocking");
+		this.performABTest(simpleAB.(\testLocalBusAr, true), \ar, "LocalIn.ar and LocalOut.ar work with reblocking and resampling");
 
 		SynthDef(\testLocalBusKr, { |out, blockSize|
 			var sig = SinOsc.kr([220, 440]);
@@ -462,5 +479,6 @@ TestReblock : TestReblockBase {
 		server.sync;
 
 		this.performABTest(simpleAB.(\testLocalBusKr), \kr, "LocalIn.kr and LocalOut.kr work with reblocking");
+		this.performABTest(simpleAB.(\testLocalBusKr, true), \kr, "LocalIn.kr and LocalOut.kr work with reblocking and resampling");
 	}
 }
