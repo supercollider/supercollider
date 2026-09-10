@@ -265,7 +265,7 @@ Process {
 			"   2. update all quarks using `Quarks.gui`,\n"
 			"   3. and reinstall them one at a time.\n"
 			"If there are still error, inspect the error message above and ensure all classes referenced\n"
-			"in a `initClass` method are initialized using `Class.initClassTree(NAME_OF_CLASS) at the top of the method`.\n"
+			"in a `initClass` method are initialized using `Class.initClassTree(NAME_OF_CLASS)` at the top of the method.\n"
 			"See the help documentation on `initClass` for some more information.\n\n\n"
 				.error;
 			1.exit; // Kills the interpreter, however it also calls Process.shutdown on the way.
