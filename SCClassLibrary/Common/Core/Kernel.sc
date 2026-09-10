@@ -261,11 +261,13 @@ Process {
 			"An error was thrown while initializing the class library.\n"
 			"This means the class library is no longer in a valid state and cannot be used.\n"
 			"If you are reading this after updating SuperCollider, please:\n" 
-			"   1. remove all your quarks from the language config file,\n"
-			"   2. update all quarks using `Quarks.gui`,\n"
+			"   1. switch to a new, clean language configuration file,\n"
+			"   2. update all quarks (e.g. `Quarks.all.do(_.update)`),\n"
 			"   3. and reinstall them one at a time.\n"
-			"If there are still error, inspect the error message above and ensure all classes referenced\n"
-			"in a `initClass` method are initialized using `Class.initClassTree(NAME_OF_CLASS)` at the top of the method.\n"
+			"\n"
+			"If there are still errors, inspect the error message above and locate which class's `initClass` method is being called.\n"
+			"It is likely the class has failed to initialize another before using it.\n"
+			"This can be accomplished by placing `Class.initClassTree(NAME_OF_CLASS)` at the top of the method.\n"
 			"See the help documentation on `initClass` for some more information.\n\n\n"
 				.error;
 			1.exit; // Kills the interpreter, however it also calls Process.shutdown on the way.
