@@ -8,13 +8,15 @@ Git {
 	*new { |localPath|
 		^super.new.localPath_(localPath)
 	}
-	clone { |url|
-		this.git([
+	clone { |url, additionalFlags(["--recurse-submodules"])|
+        var command = [
 			"clone",
 			"--quiet", // suppresses progress report on stderr
 			url,
 			thisProcess.platform.formatPathForCmdLine(localPath)
-		], false);
+		] ++ additionalFlags;
+
+		this.git(command, false);
 		this.url = url;
 	}
 	pull {
