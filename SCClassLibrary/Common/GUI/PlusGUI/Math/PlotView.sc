@@ -1424,6 +1424,7 @@ Plotter {
 			case
 			{ elem.isKindOf(Env) }       { elem.asMultichannelSignal.flop }
 			{ elem.isKindOf(Wavetable) } { elem.asSignal }
+			{ elem.isKindOf(Histogram) } { ^this.collect(_.data).histo(min: minval, max: maxval).plot(name, bounds, parent) }
 			{ elem.isNil }               { Error("Cannot plot array: non-numeric value at index %".format(i)).throw }
 			{ hasSubArrays }             { elem.asArray }
 			{ elem };
@@ -1439,24 +1440,6 @@ Plotter {
 		);
 
 		^plotter
-	}
-}
-
-+ Collection {
-	plotHisto { arg steps = 100, min, max;
-		var histo = this.histo(steps, min, max);
-		var plotter = histo.plot;
-		var minmax = [min ?? { this.minItem }, max ?? { this.maxItem }];
-		var binwidth = minmax[1] - minmax[0] / steps;
-
-		^plotter
-		.domainSpecs_([minmax.asSpec])
-		.specs_([[0, histo.maxItem * 1.05, \linear, 1].asSpec])
-		.plotMode_(\steps)
-		.axisLabelY_("Occurrences")
-		.axisLabelX_("Bins")
-		.domain_(binwidth * (0..steps-1) + minmax[0])
-		;
 	}
 }
 

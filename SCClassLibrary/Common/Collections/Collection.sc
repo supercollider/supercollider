@@ -633,41 +633,6 @@ Collection {
 		^res
 	}
 
-	histo { arg steps = 100, min, max;
-		var freqs, freqIndex, lastIndex, stepSize, outliers = 0;
-		if(this.isEmpty) { ^this.species.new };
-		min = min ?? { this.minItem };
-		max = max ?? { this.maxItem };
-
-		freqs = Array.fill(steps, 0);
-		lastIndex = steps - 1;
-		stepSize = steps / (max - min);
-
-		this.do { arg el;
-			freqIndex = ((el - min) * stepSize).asInteger;
-
-			if (freqIndex.inclusivelyBetween(0, lastIndex)) {
-				freqs[freqIndex] = freqs[freqIndex] + 1;
-			} {
-						// if max is derived from maxItem, count it in:
-				if (el == max) {
-					freqs[steps-1] = freqs[steps-1] + 1;
-				} { 		// else it is an outlier.
-					outliers =  outliers + 1;
-				};
-			};
-		};
-
-        if (outliers > 0) {
-            postf(
-                "Histogram : % of % values in the collection are out of the histogram range [%, %].\n",
-                outliers, this.size, min, max
-            )
-        };
-
-		^freqs;
-	}
-
 //	printAll { this.do { | item | item.postln; }; } // convenience method
 	printAll { |before, after|
 		if (before.isNil and: after.isNil) {
