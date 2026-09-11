@@ -575,6 +575,18 @@ a.sortBy(\b);
 a.sortBy(\c);
 ::
 
+method::sortItemOccurrence
+Returns an array of link::Classes/Event::s.
+Each Event represents a unique item from the receiver as the key, and includes the number of times that item appears (its occurrence count).
+code::
+[\a, \2, '2', "3", "3", "3", 4, 4, 4, 4, ].sortItemOccurrence
+::
+returns:
+teletype::
+-> [(4: 4), ("3": 3), ('2': 2), ('a': 1)]
+::
+See also: link::Classes/Bag#-sortedCounts::.
+
 method::order
 Return an array of indices that would sort the collection into order. strong::function:: is treated the same way as for the link::#-sort:: method.
 code::
