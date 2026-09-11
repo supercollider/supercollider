@@ -4,6 +4,14 @@ repos:
     hooks:
     -   id: check-merge-conflict
     -   id: check-case-conflict
+
+-   repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+    rev: '3.6.1'
+    hooks:
+    -   id: editorconfig-checker
+        alias: ec
+        name: Run editorconfig checker
+
 -   repo: local
     hooks:
     -   id: clang_format
