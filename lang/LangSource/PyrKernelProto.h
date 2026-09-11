@@ -35,10 +35,13 @@ bool classFindClassVar(PyrClass** classobj, PyrSymbol* name, int* index);
 bool classFindConst(PyrClass** classobj, PyrSymbol* name, int* index);
 
 void buildClassTree();
-void indexClassTree(PyrClass* classobj, int numSuperMethods);
+// Returns number of classes
+std::size_t indexClassTree(PyrClass* classobj, int numSuperMethods);
 void postClassTree(PyrClass* classobj, int level);
-void setSelectorFlags();
-void buildBigMethodMatrix();
+
+// Returns number of selectors
+int setSelectorFlags();
+void buildBigMethodMatrix(std::size_t);
 
 bool funcFindArg(PyrBlock* func, PyrSymbol* name, int* index);
 bool funcFindVar(PyrBlock* func, PyrSymbol* name, int* index);
@@ -47,7 +50,7 @@ void addMethod(PyrClass* classobj, PyrMethod* method);
 
 PyrMethod* classFindDirectMethod(PyrClass* classobj, PyrSymbol* name);
 
-PyrBlock* newPyrBlock(int flags);
+PyrBlock* newPyrBlock(bool compiling_command_line, int flags);
 PyrMethod* newPyrMethod();
 PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, int numInstVars, int numClassVars);
 void addIntrinsicVar(PyrClass* classobj, const char* varName, PyrSlot* slot);

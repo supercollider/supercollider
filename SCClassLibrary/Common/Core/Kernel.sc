@@ -455,14 +455,32 @@ Process {
 	prSchedulerQueue { ^schedulerQueue }
 }
 
-
+// A FunctionDef is defined by a code within curly braces {} (when it isn't inlined)
+// When you use a FunctionDef in your code it gets pushed on the stack
+// as an instance of Function (PyrClosure)
 FunctionDef {
-	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
-	var <sourceCode;
+	var raw1, raw2;  // MethodRaw, stores lots of data with small sizes (chars and shorts).
+	var <code; // Int8Array (bytes)
+	var <selectors; // Array
+	var <constants; // Array
+	var <prototypeFrame; // Array of arg and var default values
+	var <context; // where captured (closed over) variables live.
+	var <argNames;  // SymbolArray
+	var <varNames; // 
+	var <isClosed; // Boolean, true if context is nil or Interpreter:functionCompiler, otherwise false
+	var fileLocation; // either nil or an Array of: the line number, and the byte offset in line.
+	var <sourceCodeFileOrSnippet; // String. Might be the whole file, or could just be a code snippet (text within a file)
+	var <name; // Symbol. Method name, or if a function, an attempt to deduce the function name is made, example: (f = {}).def.name == 'f';
+	var filePath; // Symbol. can be nil if file hasn't been saved.
+	var <sourceCodeStartIndex, <sourceCodeEndIndex; // Integers. This are offsets into the sourceCodeFileOrSnippet.
+	var <byteCodeLocations; // IntArray location of each byte code as offsets into sourceCode [start0, end0, start1, end1... startn, endn]
+	var byteCodeSizes; // Int8Array size of each byte code in bytes. PyrInt8Array
 
-	// a FunctionDef is defined by a code within curly braces {}
-	// When you use a FunctionDef in your code it gets pushed on the stack
-	// as an instance of Function
+	filenameSymbol { ^filePath }
+
+	sourceCode {
+		^sourceCodeFileOrSnippet[sourceCodeStartIndex..(sourceCodeEndIndex - 1)]
+	}
 
 	dumpByteCodes {
 		_DumpByteCodes
@@ -606,9 +624,12 @@ FunctionDef {
 }
 
 Method : FunctionDef {
-	var <ownerClass, <name, <primitiveName;
-	var <filenameSymbol, <charPos;
+	var <ownerClass, <primitiveName;
 
+	charPos {
+		// Because methods are always compiled with a whole file, we can access this directly.
+		^sourceCodeStartIndex
+	 }
 	openCodeFile {
 		this.filenameSymbol.asString.openDocument(this.charPos, -1);
 	}
@@ -665,7 +686,7 @@ Frame {
 }
 
 DebugFrame {
-	var <functionDef, <args, <vars, <caller, <context, <address;
+	var <functionDef, <args, <vars, <caller, <context, <address, <ipIndex;
 	// Object.getBackTrace returns one of these.
 	// 'functionDef' is the FunctionDef for this function or method.
 	// 'args' the values of the arguments to the function call.
@@ -674,6 +695,74 @@ DebugFrame {
 	// 'context' points to another DebugFrame for the frame lexically enclosing this one.
 	// 'address' memory address of the actual frame object.
 	asString { ^"DebugFrame of " ++ functionDef.asString }
+
+	// Turns whole backtrace into string 
+	backtracePrintOnto { |stream, prefix(""), callFrameAnnotations(#[]), oneBeforeBeginMethod, endMethod, maxVerboseFrames(3)|  
+		var stack = {
+			var f = this; 
+			while { f.notNil } {
+				f.yield;
+				f = f.caller;
+			};
+		}.r.all;
+		var newPrefix = prefix ++ thisPrefix;
+
+		var begin = oneBeforeBeginMethod !? { this.prLastIndexOf(stack, oneBeforeBeginMethod) } ?? { -1 } + 1;
+		var end = endMethod !? { this.prFirstIndexOf(stack, endMethod) } ?? { stack.size };
+		var thisPrefix = "     ";
+		var count = 0;
+
+		var stackToPrint = stack[begin..(end - 1)];
+
+		var dups=0;
+		var prevDef;
+		var stackSkipMask = stackToPrint.collect {|s|
+			if (s.functionDef === prevDef) {
+				dups = dups + 1
+			} {
+				dups = 0
+			};
+			prevDef = s.functionDef;
+			dups < 3
+		};
+
+		stream << "\n";
+
+		[stackToPrint, stackSkipMask].flop.reverseDo { |f, j|
+			var d = f[0];
+			var mask = f[1];
+			stream << prefix << (stackToPrint.size - j).asString.padRight(4) << ": ";
+			d.printOntoBacktrace(stream, newPrefix, callFrameAnnotations[stackToPrint.size - count - 1], (stackToPrint.size - j - 1) < maxVerboseFrames, mask);
+			count = count + 1;
+		};
+
+
+		^stream;
+	 }
+
+	// Turns this frame into a formatted string
+	printOntoBacktrace { |stream, prefix(""), annotation, printArgsAndVars, printSource| 
+		stream << this.prAsErrorString(prefix, annotation, printArgsAndVars, printSource)
+	}
+
+	prAsErrorString {|prefix, annotation, printArgsAndVars, printSource| _DebugFrame_asErrorString }
+
+	prLastIndexOf { |collection, predicate({})|
+		var last = 0;
+		collection.do{ 
+			|v,i| 
+			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { last = i } 
+		};
+		^last
+	}
+	prFirstIndexOf { |collection, predicate({})|
+		var first = 0;
+		collection.reverseDo{ 
+			|v,i| 
+			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { first = i } 
+		};
+		^(collection.size - first) - 1;
+	}
 }
 
 RawPointer {
@@ -685,7 +774,17 @@ Interpreter {
 	// The interpreter defines a context in which interactive commands
 	// are compiled.
 
-	var <>cmdLine; // place holder for text executed from a worksheet
+
+	// NOTE: all instance variables defined here (or in Object) will be accessible from every single function evaluated in the repl,
+	// ... yes, even the members without a readwrite accessor, see method 'compile' for more information.
+
+	// These 3 members are provided by the language client.
+	// It reaches into the supercollider runtime and sets these.
+	var cmdLine;
+	var filePath;
+	var lineNumber;
+	var column;
+
 	var context; // faked interpreter context frame. Don't mess with it.
 
 	// a-z are predefined variables for use by the interactive context.
@@ -700,13 +799,13 @@ Interpreter {
 	*new { ^this.shouldNotImplement(thisMethod) }
 
 	interpretCmdLine {
-		^this.compile(cmdLine).value;
+		^this.prCompileUsingMembers.()
 	}
 
 	interpretPrintCmdLine {
 		var res, func, code = cmdLine, doc, ideClass = \ScIDE.asClass;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
-		func = this.compile(cmdLine);
+		func = this.prCompileUsingMembers;
 		if (ideClass.notNil) {
 			thisProcess.nowExecutingPath = ideClass.currentPath
 		} {
@@ -720,22 +819,39 @@ Interpreter {
 		("-> " ++ res).postln;
 	}
 
-	interpret { arg string ... args;
-		// compile, evaluate
-		cmdLine = string;
-		^this.compile(string).valueArray(args);
+	// compile, evaluate
+	interpret { |string ... args, kwargs|
+		kwargs = kwargs.asEvent;
+		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column]).valueArray(args);
 	}
-	interpretPrint { arg string ... args;
-		// compile, evaluate, print
-		cmdLine = string;
-		^this.compile(string).valueArray(args).postln;
+	// compile, evaluate, print
+	interpretPrint { arg string ... args, kwargs;
+		kwargs = kwargs.asEvent;
+		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column]).valueArray(args).postln;
 	}
-	compile { arg string;
+
+	// Compiles a string into Function object (closure).
+	// This is done *as-if* it was a function written inside of the method Interpreter:functionCompileContext,
+	// therefore, 'this' will return an instance of this class, and you can access all the instance variables.
+	// This is also true for *closed* functions. All valid code:  #{ context }, #{ a }, #{cmdLine}...
+	// This is also why you can access these straight from the repl... `context`, `cmdLine`, all valid!
+	// Yes, even the 'private' instance variables can be accessed this way.
+	// This also applied to everything inside object, e.g., `currentEnvironment` and `nl`.
+	compile  { |string, filePath_, lineNumber_, column_|
+		cmdLine = string;
+		filePath = filePath_;
+		lineNumber = lineNumber_;
+		column = column_;
+		^this.prCompileUsingMembers
+	}
+
+	prCompileUsingMembers {
+		^this.prCompile(cmdLine, filePath, lineNumber, column)
+	}
+
+	prCompile { |string, filePath, lineNumber, column|
 		_CompileExpression
-		// compiles string and returns a Function.
-		// the string must be a valid expression.
-		// You cannot compile a class definition this way.
-		// This method is not implemented in SCPlay.
+		// TODO: this is rather bad, returning nil if the compilation fails means we can't tell if it failed because returning nil is valid.
 		^nil
 	}
 
@@ -774,17 +890,15 @@ Interpreter {
 			// comment out shebang to preserve line count
 			text.overWrite("//");
 		});
-		^this.compile(text)
+		^this.compile(text, pathName.asSymbol, 0, 0);
 	}
+
+	shallowCopy { ^this }
 
 	// PRIVATE
-	functionCompileContext {
-		// compiler uses this method as a fake context in which to compile
-		// the user's function.
-		// Do not edit this method!
+	// All repl invocations and 'closed' functions `#{...}`} are evaluated *as-if* they were written inside this method during class compilation.
+	// Essentially, all 'top-level' non-class-library code takes place in here.
+	// This is how we 'magically' have access to the variables 'a', 'b', ... everywhere `#{ a }`
+	functionCompileContext { }
 
-		{}	// this forces the compiler to generate a heap allocated frame rather than
-		// a frame on the stack
-	}
-	shallowCopy { ^this }
 }

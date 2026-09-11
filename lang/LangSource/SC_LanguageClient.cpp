@@ -24,6 +24,7 @@
 */
 
 #include "SC_LanguageClient.h"
+#include "ClassLibraryInfo.hpp"
 #include "SC_Lock.h"
 #include <cstring>
 #include <string>
@@ -41,7 +42,6 @@
 
 #include "PyrObject.h"
 #include "PyrKernel.h"
-#include "PyrPrimitive.h"
 #include "PyrSched.h"
 #include "GC.h"
 #include "VMGlobals.h"
@@ -71,7 +71,7 @@ public:
     bool mRunning;
 };
 
-SC_LanguageClient::SC_LanguageClient(const std::string& name) {
+SC_LanguageClient::SC_LanguageClient(const std::string& name): compiledSuccessfully(false) {
     mHiddenClient = new HiddenLanguageClient;
 
     lockInstance();
@@ -115,36 +115,36 @@ void SC_LanguageClient::shutdownRuntime() {
     cleanup_OSC();
 }
 
-void SC_LanguageClient::compileLibrary(bool standalone) { ::compileLibrary(standalone); }
+bool SC_LanguageClient::compileLibrary(bool standalone) {
+    return compiledSuccessfully = ::compileLibrary(compiledSuccessfully, standalone);
+}
 
-extern void shutdownLibrary();
 void SC_LanguageClient::shutdownLibrary() {
-    ::shutdownLibrary();
+    ::shutdownLibrary(compiledSuccessfully);
     flush();
 }
 
-void SC_LanguageClient::recompileLibrary(bool standalone) { compileLibrary(standalone); }
+bool SC_LanguageClient::recompileLibrary(bool standalone) {
+    return compiledSuccessfully = ::compileLibrary(compiledSuccessfully, standalone);
+}
 
-void SC_LanguageClient::setCmdLine(const char* buf, size_t size) {
+void SC_LanguageClient::setCmdLine(const char* buf, size_t size, const std::string* const filePath, int lineNumber,
+                                   int column) {
     if (isLibraryCompiled()) {
         lock();
         if (isLibraryCompiled()) {
-            VMGlobals* g = gMainVMGlobals;
-
-            PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
-            memcpy(strobj->s, buf, size);
-
-            SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
-            g->gc->GCWriteNew(slotRawObject(&g->process->interpreter),
-                              strobj); // we know strobj is white so we can use GCWriteNew
+            setCommandLine(buf, size, filePath ? filePath->c_str() : nullptr, lineNumber, column);
         }
         unlock();
     }
 }
 
-void SC_LanguageClient::setCmdLine(const char* str) { setCmdLine(str, strlen(str)); }
+void SC_LanguageClient::setCmdLine(const char* str, const std::string* const filePath, int lineNumber, int column) {
+    setCmdLine(str, strlen(str), filePath, lineNumber, column);
+}
 
-void SC_LanguageClient::setCmdLinef(const char* fmt, ...) {
+void SC_LanguageClient::setCmdLinef(const std::string* const filePath, int lineNumber, int column, const char* fmt,
+                                    ...) {
     SC_StringBuffer& scratch = mHiddenClient->mScratch;
     va_list ap;
     va_start(ap, fmt);
@@ -175,7 +175,7 @@ void SC_LanguageClient::executeFile(const std::string& fileName) {
         ++i;
     }
 
-    setCmdLinef("thisProcess.interpreter.executeFile(\"%s\")", escaped_file_name.c_str());
+    setCmdLinef(&fileName, 0, 0, "thisProcess.interpreter.executeFile(\"%s\")", escaped_file_name.c_str());
     runLibrary(s_interpretCmdLine);
 }
 
@@ -221,14 +221,15 @@ SC_LanguageClient* SC_LanguageClient::instance() { return gInstance; }
 void SC_LanguageClient::lockInstance() { gInstanceMutex.lock(); }
 void SC_LanguageClient::unlockInstance() { gInstanceMutex.unlock(); }
 
-extern bool gCompiledOK;
 
 const char* SC_LanguageClient::getName() const { return mHiddenClient->mName.c_str(); }
 
 FILE* SC_LanguageClient::getPostFile() { return mHiddenClient->mPostFile; }
 void SC_LanguageClient::setPostFile(FILE* file) { mHiddenClient->mPostFile = file; }
 
-bool SC_LanguageClient::isLibraryCompiled() { return gCompiledOK; }
+extern ClassLibraryInfo gClassLibraryInfo;
+
+bool SC_LanguageClient::isLibraryCompiled() { return gClassLibraryInfo.acceptsInput(); }
 
 int SC_LanguageClient::run(int argc, char** argv) {
     throw std::runtime_error("SC_LanguageClient::run only supported on terminal client");

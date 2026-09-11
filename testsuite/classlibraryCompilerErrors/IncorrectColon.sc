@@ -1,0 +1,2 @@
+ClassWithImmediateColon: Object {}
+ClassWithImmediateColonAndNoSpace:Object {}

@@ -1,0 +1,2 @@
+IncorrectParens1 {
+	meow{}

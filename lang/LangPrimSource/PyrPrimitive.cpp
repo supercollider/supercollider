@@ -18,6 +18,12 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "ClassLibraryInfo.hpp"
+#include "CompilerContext.hpp"
+#include "PyrErrors.h"
+#include "PyrObjectHdr.h"
+#include "PyrSymbolTable.h"
+#include "SC_Version.hpp"
 #include "PyrErrors.h"
 #include "PyrKernel.h"
 #include "PyrObject.h"
@@ -39,12 +45,18 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "VMGlobals.h"
+#include "normalise_source.hpp"
+#include "text_location.hpp"
 
+#include <cstddef>
 #include <iterator>
 #include <map>
 #include <cstdlib>
 #include <cstring>
 #include <csetjmp>
+#include <memory>
+#include <sstream>
+#include <unordered_map>
 
 #ifdef _WIN32
 #    include <direct.h>
@@ -987,6 +999,7 @@ HOT int blockValueWithKeys(struct VMGlobals* g, int allArgsPushed, int numKeyArg
     g->sp = args - 1;
     g->ip = slotRawInt8Array(&block->code)->b - 1;
     g->frame = frame;
+    g->frame->ip = PyrSlot::make(static_cast<void*>(g->ip));
     g->frame->expected_stack_depth_after_return = PyrSlot::make(static_cast<int>(g->gc->StackDepth() + 1));
     g->block = block;
 
@@ -1847,6 +1860,25 @@ private:
         } else
             SetNil(debugFrameObj->slots + 4);
 
+
+        const auto* startingByteCode = meth->code.getPyrObjType<PyrInt8Array>()->b;
+        ptrdiff_t byteCodeOffset;
+        if (frame->ip.getPtr() == nullptr) {
+            byteCodeOffset = meth->code.getPyrObjType<PyrInt8Array>()->size - 1;
+        } else {
+            byteCodeOffset = std::distance(startingByteCode, reinterpret_cast<const uint8_t*>(frame->ip.getPtr()));
+        }
+
+        const auto* sizes = meth->codeSizes.getPyrObjType<PyrInt8Array>();
+        const auto sizesCount = sizes->size;
+
+        int index = 0;
+        for (size_t sum { 0 }; index < sizesCount && sum < byteCodeOffset; ++index) {
+            sum += sizes->b[index];
+        }
+
+        debugFrameObj->slots[6] = PyrSlot::make(index);
+
         visited_frames.push_back(frame);
         visited_frames_final_location.push_back(outSlot);
     }
@@ -1861,6 +1893,182 @@ private:
 
 int prGetBackTrace(VMGlobals* g, int numArgsPushed) {
     DebugFrameConstructor(g, g->frame, g->sp);
+    return errNone;
+}
+
+
+int debugFrame_AsErrorString(VMGlobals* g, int) {
+    try {
+        auto* stack = g->sp - 4;
+        const auto debugFrame = stack[0].getPyrObjType<PyrObject>();
+        const auto prefix = stack[1];
+        const auto annotation = stack[2];
+        const auto printArgsAndVars = stack[3].isTrue();
+        const auto printSource = stack[4].isTrue();
+
+        const auto [prefixPtr, prefixSz] = [&]() -> std::tuple<const char*, size_t> {
+            if (prefix.isNil()) {
+                return { nullptr, 0 };
+            } else {
+                const auto& str = *prefix.getPyrObjType<PyrString>();
+                return { str.s, static_cast<size_t>(str.size) };
+            }
+        }();
+
+
+        std::stringstream ss;
+
+        const auto frame = debugFrame;
+        const auto def = frame->slots[0];
+
+        if (def.getObjectHdr()->classptr->name.getSymbol() == s_method) {
+            const auto* method = def.getPyrObjType<PyrMethod>();
+            ss << "Method Name: '" << method->ownerclass.getPyrObjType<PyrClass>()->name.getSymbol()->name;
+            ss << "-";
+            ss << method->name.getSymbol()->name << "'";
+        } else {
+            const auto* block = def.getPyrObjType<PyrBlock>();
+            if (!block->name.isNil()) {
+                ss << "Function Name: '" << block->name.getSymbol()->name << "'";
+            } else {
+                ss << "Anonymous Function";
+            }
+        }
+        const auto* block = def.getPyrObjType<PyrBlock>();
+
+        ss << '\n';
+
+
+        if (printArgsAndVars) {
+            std::string temp;
+            if (const auto args = frame->slots[1].isObjectHdr() ? frame->slots[1].getPyrObjType<PyrObject>() : nullptr;
+                args && args->size) {
+                const auto names = block->argNames.getPyrObjType<PyrSymbolArray>()->symbols;
+                ss.write(prefixPtr, prefixSz);
+                ss << "  args: ";
+
+                for (size_t i { 0 }; i < args->size; ++i) {
+                    ss.write(names[i]->name, names[i]->length);
+                    ss << "=";
+                    temp.clear();
+                    args->slots[i].appendToStringForDebug(temp);
+                    ss << temp;
+                    if (i + 1 < args->size) {
+                        ss << ", ";
+                    }
+                }
+                ss << '\n';
+            }
+            if (const auto vars = frame->slots[2].isObjectHdr() ? frame->slots[2].getPyrObjType<PyrObject>() : nullptr;
+                vars && vars->size) {
+                const auto names = block->varNames.getPyrObjType<PyrSymbolArray>()->symbols;
+                ss.write(prefixPtr, prefixSz);
+                ss << "  vars: ";
+
+                for (size_t i { 0 }; i < vars->size; ++i) {
+                    ss.write(names[i]->name, names[i]->length);
+                    ss << "=";
+                    temp.clear();
+                    vars->slots[i].appendToStringForDebug(temp);
+                    ss << temp;
+                    if (i + 1 < vars->size) {
+                        ss << ", ";
+                    }
+                }
+                ss << '\n';
+            }
+        }
+
+        if (printSource) {
+            ss.write(prefixPtr, prefixSz);
+
+            std::string annotationStr;
+            if (annotation.isNil()) {
+                annotationStr = "";
+            } else {
+                annotationStr = std::string { annotation.getPyrObjType<PyrString>()->s,
+                                              static_cast<size_t>(annotation.getPyrObjType<PyrString>()->size) };
+            }
+
+            // print args and vars.
+            const auto [file_line, file_column] = [&]() -> std::tuple<size_t, size_t> {
+                if (block->fileLocation.isNil()) {
+                    return { 0, 0 };
+                } else {
+                    auto array = block->fileLocation.getPyrObjType<PyrObject>();
+                    return { array->slots[0].getInt(), array->slots[1].getInt() };
+                }
+            }();
+
+
+            const auto ipIndex = frame->slots[6].getInt() - 1;
+
+            const auto& src = *block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>();
+            const char* str = src.s;
+            const auto strSize = src.size;
+
+            // Loop to build location data.
+            sc::lex::SourceCodeRange loc;
+            const uint32_t start = block->codeLocations.getPyrObjType<PyrInt32Array>()->i[ipIndex * 2];
+            const uint32_t end = block->codeLocations.getPyrObjType<PyrInt32Array>()->i[(ipIndex * 2) + 1];
+
+            loc.begin.absolute = start;
+            loc.end.absolute = end;
+
+            int lineCount = 0;
+            int columnCount = 0;
+            bool prevWasNewline = false;
+            for (int abs { 0 }; abs < strSize; ++abs) {
+                if (str[abs] == '\n') {
+                    prevWasNewline = true;
+                } else {
+                    prevWasNewline = false;
+                }
+
+                if (abs == start) {
+                    loc.begin.line_number = lineCount;
+                    loc.begin.column = columnCount;
+                } else if (abs == end) {
+                    break;
+                }
+                if (prevWasNewline) {
+                    lineCount += 1;
+                    columnCount = 0;
+                    prevWasNewline = false;
+                } else {
+                    columnCount += 1;
+                }
+            }
+            loc.end.line_number = lineCount;
+            loc.end.column = columnCount;
+            // We need a nice way to initialise the sourcecode range from the limited info here.
+
+            std::string prefixForDiag;
+            prefixForDiag.append(prefixPtr, prefixSz);
+            prefixForDiag += "    ";
+
+            const DiagnosticHighlight d { block->filePath.isSymbol() ? block->filePath.getSymbol()->name : nullptr,
+                                          block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->s,
+                                          static_cast<size_t>(
+                                              block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->size),
+                                          loc,
+                                          file_line,
+                                          file_column,
+                                          annotationStr };
+
+            ss.write(prefixPtr, prefixSz);
+            streamSourceCodeWithHighlight(ss, d, printSource, prefixForDiag.c_str(), prefixForDiag.size());
+        }
+
+        const auto string = std::move(ss).str();
+        auto strPyr = newPyrStringN(g->gc, string.size(), 0, false);
+        std::memcpy(strPyr->s, string.c_str(), sizeof(char) * string.size());
+
+        stack[0] = PyrSlot::make(strPyr);
+    } catch (...) {
+        // this cannot be allowed to fail otherwise we would be throwing an error while printing one and potentially get
+        // stuck in a infinite loop in sclang
+    }
     return errNone;
 }
 
@@ -2099,13 +2307,12 @@ int prCanCallOS(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-extern bool gGenerateTailCallByteCodes;
 
 int prGetTailCallOptimize(struct VMGlobals* g, int numArgsPushed);
 int prGetTailCallOptimize(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
-    SetBool(a, gGenerateTailCallByteCodes);
+    SetBool(a, gClassLibraryInfo.generateTailCalls);
 
     return errNone;
 }
@@ -2117,9 +2324,9 @@ int prSetTailCallOptimize(struct VMGlobals* g, int numArgsPushed) {
 #if TAILCALLOPTIMIZE
     PyrSlot* b = g->sp;
     if (IsTrue(b)) {
-        gGenerateTailCallByteCodes = true;
+        gClassLibraryInfo.generateTailCalls = true;
     } else if (IsFalse(b)) {
-        gGenerateTailCallByteCodes = false;
+        gClassLibraryInfo.generateTailCalls = false;
     } else
         return errWrongType;
 #endif
@@ -2333,8 +2540,7 @@ int prInstancesOfClassRespondTo(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-PyrMethod* GetFunctionCompileContext(VMGlobals* g);
-PyrMethod* GetFunctionCompileContext(VMGlobals* g) {
+PyrMethod* GetFunctionCompileContext(VMGlobals* g, CompilerContext& cxt) {
     PyrClass* classobj;
     PyrSymbol *classsym, *contextsym;
     PyrMethod* meth;
@@ -2353,86 +2559,99 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g) {
         error("compile context method 'functionCompileContext' not found.\n");
         return nullptr;
     }
-    gCompilingClass = classobj;
-    gCompilingMethod = meth;
-    gCompilingBlock = (PyrBlock*)meth;
+    cxt.compilingClass = classobj;
+    cxt.compilingMethod = meth;
+    cxt.compilingBlock = meth;
     return meth;
 }
 
 #if !SCPLAYER
 int prCompileString(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot *a, *b;
-    PyrString* string;
-    PyrMethod* meth;
-
-    a = g->sp - 1;
-    b = g->sp;
+    auto stackStart = g->sp - 4;
+    auto interpreter = stackStart[0];
+    auto stringSlot = stackStart[1];
+    auto fileName = stackStart[2];
+    auto lineNumber = stackStart[3];
+    auto column = stackStart[4];
 
     // check b is a string
-    if (NotObj(b))
+    if (!stringSlot.isObjectHdr() || !isKindOf(stringSlot.getObjectHdr(), class_string))
         return errWrongType;
-    if (!isKindOf(slotRawObject(b), class_string))
-        return errWrongType;
-    string = slotRawString(b);
+    auto string = stringSlot.getPyrObjType<PyrString>();
 
-    gRootParseNode = nullptr;
-    initParserPool();
-    // assert(g->gc->SanityCheck());
-    startLexerCmdLine(string->s, string->size);
-    compileErrors = 0;
-    gCompilingCmdLine = true;
-    gCompilingVMGlobals = g;
-    // assert(g->gc->SanityCheck());
-    gParseFailed = yyparse();
-    // assert(g->gc->SanityCheck());
-    if (!gParseFailed && gRootParseNode) {
-        PyrSlot slotResult;
 
-        meth = GetFunctionCompileContext(g);
+    sc::lex::NormalisedSource src { string->s, static_cast<size_t>(string->size) };
+    const auto& srcStr = src.as_string();
+    auto* strPyr = newPyrString(g->gc, srcStr.c_str(), 0, false);
+
+    auto fileSym = fileName.isSymbol() ? fileName.getSymbol() : getsym("interpreted_text");
+
+    const auto offset = sc::lex::FileCodeLocation {
+        0,
+        static_cast<size_t>(lineNumber.isInt() ? lineNumber.getInt() : 0),
+        static_cast<size_t>(column.isInt() ? column.getInt() : 0),
+    };
+
+
+    auto textInfo = std::make_shared<TextInfo>(std::move(src), *strPyr, *fileSym, offset);
+
+    CompilerContext cxt { textInfo, g };
+    // This is the only place where this can be set.
+    // In the future we should consider removing this.
+    cxt.generateTailCallByteCodes = gClassLibraryInfo.generateTailCalls;
+
+    const auto on_parse_failure = [&](const std::vector<CompilerContext::ParseErrorInCurFile>& errors,
+                                      int error_code) -> int {
+        for (const auto& er : errors) {
+            const auto hg = textInfo->createDiagnosticHighlight(er.location, std::string { er.msg });
+            const auto str = diagnosticToCompilerError(ErrorType::Error, "parsing error", &hg, 1);
+            cxt.postError(str);
+        }
+        stackStart[0] = PyrSlot {};
+        return errFailed;
+    };
+
+    const auto on_parse_sucess = [&](PyrRootNode& root) -> int {
+        auto meth = GetFunctionCompileContext(g, cxt);
+        assert(meth); // Should be impossible.
         if (!meth)
             return errFailed;
 
-        ((PyrBlockNode*)gRootParseNode)->mIsTopLevel = true;
+        auto& children = *root.children;
+        auto blockNode = nodeCast<PyrBlockNode>(&children);
 
-        SetNil(&slotResult);
-        COMPILENODE(gRootParseNode, &slotResult, true);
+        // All cmd line code should return a block.
+        assert(blockNode);
+        if (!blockNode)
+            return errFailed;
 
-        if (NotObj(&slotResult) || slotRawObject(&slotResult)->classptr != class_fundef) {
-            compileErrors++;
-            error("Compile did not return a FunctionDef..\n");
+        // Should be only one top level block.
+        assert(blockNode->mNext == nullptr);
+
+        blockNode->mIsTopLevel = true;
+
+        PyrSlot compileResult {};
+        compileNode(cxt, blockNode, &compileResult, true);
+
+        if (cxt.errors > 0) {
+            stackStart[0] = PyrSlot {};
+            return errFailed;
         }
-        if (compileErrors) {
-            SetNil(a);
-        } else {
-            PyrBlock* block;
-            PyrClosure* closure;
 
-            block = slotRawBlock(&slotResult);
-            // create a closure
-            closure = (PyrClosure*)g->gc->New(2 * sizeof(PyrSlot), 0, obj_notindexed, false);
-            closure->classptr = class_func;
-            closure->size = 2;
-            SetObject(&closure->block, block);
-            slotCopy(&closure->context, &slotRawInterpreter(&g->process->interpreter)->context);
-            SetObject(a, closure);
-        }
-    } else {
-        if (gParseFailed) {
-            compileErrors++;
-            error("Command line parse failed\n");
-        } else {
-            postfl("<nothing to do>\n");
-        }
-        SetNil(a);
-    }
-    finiLexer();
-    freeParserPool();
+        // Compiler should always write a pyrblock to the result when compiling a blocknode.
+        assert(compileResult.isObjectHdr() && compileResult.getPyrObjType<PyrObject>()->classptr == class_fundef);
+        auto block = compileResult.getPyrObjType<PyrBlock>();
+        constexpr auto closure_size = (sizeof(PyrClosure) - sizeof(PyrObjectHdr)) / sizeof(PyrSlot);
+        auto closure = reinterpret_cast<PyrClosure*>(g->gc->New(closure_size, 0, obj_notindexed, false));
+        closure->classptr = class_func;
+        closure->size = 2;
+        closure->block = PyrSlot::make(block);
+        closure->context = g->process->interpreter.getPyrObjType<PyrInterpreter>()->context;
+        stackStart[0] = PyrSlot::make(closure);
+        return errNone;
+    };
 
-    pyr_pool_compile->FreeAll();
-    // flushErrors();
-    gCompilingCmdLine = false;
-
-    return !(gParseFailed || compileErrors) ? errNone : errFailed;
+    return parse(cxt, on_parse_sucess, on_parse_failure);
 }
 #endif
 
@@ -3217,7 +3436,7 @@ int prBlork(struct VMGlobals* g, int numArgsPushed) {
 int prOverwriteMsg(struct VMGlobals* g, int numArgsPushed);
 int prOverwriteMsg(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
-    PyrString* string = newPyrString(g->gc, overwriteMsg.c_str(), 0, false);
+    PyrString* string = newPyrString(g->gc, gClassLibraryInfo.overwriteMsg().c_str(), 0, false);
     SetObject(a, string);
     return errNone;
 }
@@ -3408,7 +3627,7 @@ static int prVersionTweak(struct VMGlobals* g, int numArgsPushed) {
 
 int numUninlinedFunctionsInClassLib(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* result = g->sp;
-    SetInt(result, gNumUninlinedFunctions);
+    SetInt(result, gClassLibraryInfo.numUninlinedFunctions());
     return errNone;
 }
 
@@ -4021,8 +4240,6 @@ void initPrimitives() {
     definePrimitive(base, index++, "_Trace", prTraceOn, 1, 0);
     definePrimitive(base, index++, "_CanCallOS", prCanCallOS, 1, 0);
     definePrimitive(base, index++, "_KeywordError", prKeywordError, 1, 0);
-    definePrimitive(base, index++, "_GetTailCallOptimize", prGetTailCallOptimize, 1, 0);
-    definePrimitive(base, index++, "_SetTailCallOptimize", prSetTailCallOptimize, 2, 0);
 
 
     definePrimitive(base, index++, "_PrimitiveError", prPrimitiveError, 1, 0);
@@ -4044,7 +4261,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_ObjectDeepCopy", prDeepCopy, 1, 0);
 
 #if !SCPLAYER
-    definePrimitive(base, index++, "_CompileExpression", prCompileString, 2, 0);
+    definePrimitive(base, index++, "_CompileExpression", prCompileString, 5, 0);
 #endif
     definePrimitive(base, index++, "_GetBackTrace", prGetBackTrace, 1, 0);
     definePrimitive(base, index++, "_DumpBackTrace", prDumpBackTrace, 1, 0);
@@ -4103,6 +4320,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_NumUninlinedFunctionInClassLib", numUninlinedFunctionsInClassLib, 1, 0);
     definePrimitive(base, index++, "_SC_BuildString", prBuildString, 1, 0);
 
+    definePrimitive(base, index++, "_DebugFrame_asErrorString", debugFrame_AsErrorString, 5, 0);
     // void initOscilPrimitives();
     // void initControllerPrimitives();
 

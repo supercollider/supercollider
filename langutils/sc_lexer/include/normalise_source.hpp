@@ -18,6 +18,11 @@ struct NormalisedSource {
     [[nodiscard]] explicit operator std::string() && { return std::move(s); }
     [[nodiscard]] explicit operator std::string() const&& { return s; }
 
+    // For some silly reason older compilers don't understand the conversion operators.
+    [[nodiscard]] const std::string& as_string() const& { return s; }
+    [[nodiscard]] const std::string& as_string() const&& { return s; }
+    [[nodiscard]] std::string as_string() && { return std::move(s); }
+
 private:
     std::string s {};
 

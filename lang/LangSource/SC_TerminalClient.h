@@ -41,9 +41,15 @@
 // TODO: move locks & thread out of the header, possibly using pimpl
 class SCLANG_DLLEXPORT SC_TerminalClient : public SC_LanguageClient {
 public:
-    enum {
+    // OPTION 1: [text] 0x1b|0x0c
+    // OPTION 2: [text] 0x1b|0x19 0x01 0x1c [filepath] 0x1c [linenumber] 0x32 [column] 0x0c
+    // OPTION 3: 0x18
+    enum : char {
         kInterpretCmdLine = 0x1b,
         kInterpretPrintCmdLine = 0x0c,
+        kInterpretPrintCmdLineWithHeader = 0x19,
+        kStartOfHeader = 0x01,
+        kFileNameDelimiter = 0x1c,
         kRecompileLibrary = 0x18 // ctrl+x
     };
 

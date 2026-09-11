@@ -1,4 +1,5 @@
 #pragma once
+#include "text_location.hpp"
 #include "ByteCodeArray.h"
 #include <cassert>
 #include <tuple>
@@ -26,9 +27,25 @@ template <Byte CODE, typename... OPERANDS> struct SimpleOpSpec {
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const { return { OPERANDS::fromRaw(*(++ip))... }; }
 
-    void emit(OPERANDS... operands) const {
-        emitByte(code);
-        (emitByte(static_cast<Byte>(operands)), ...);
+    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, OPERANDS... operands) const {
+        bc.emit(loc, code, static_cast<Byte>(operands)...);
+    }
+
+    // Emits the code with a prefix, used in the extended opcodes.
+protected:
+    void emitPrefix(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, Byte prefix, OPERANDS... operands) const {
+        bc.emit(loc, prefix, code, static_cast<Byte>(operands)...);
+    }
+};
+
+template <Byte PREFIX, typename OPSPEC> struct WithPrefix : public OPSPEC {
+    constexpr WithPrefix() = delete;
+
+    unsigned int byteSize = 1U + OPSPEC::byteSize;
+
+    template <typename... OPERANDS>
+    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, OPERANDS... operands) const {
+        OPSPEC::emitPrefix(bc, loc, PREFIX, operands...);
     }
 };
 
@@ -48,19 +65,26 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     bool validNibble(unsigned int nibble) const { return startCode + nibble < endCode; }
 
     const char* name;
+    const char* secondNibbleDescription = "";
     unsigned int byteSize = sizeof...(OPERANDS) + 1U;
 
-    void emit(unsigned int nibble, OPERANDS... operands) const {
+    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, unsigned int nibble, OPERANDS... operands) const {
         const Byte bytecode = startCode + nibble;
         assert(bytecode < endCode);
-        emitByte(bytecode);
-
-        (emitByte(static_cast<Byte>(operands)), ...);
+        bc.emit(loc, bytecode, static_cast<Byte>(operands)...);
     }
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
         // increment instruction pointer and get the values for each operand.
         return { (*ip) - startCode, OPERANDS::fromRaw(*(++ip))... };
+    }
+
+protected:
+    void emitPrefix(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, Byte prefix, unsigned int nibble,
+                    OPERANDS... operands) const {
+        const Byte bytecode = startCode + nibble;
+        assert(bytecode < endCode);
+        bc.emit(loc, prefix, bytecode, static_cast<Byte>(operands)...);
     }
 };
 template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbleNonZeroOpSpec {
@@ -80,13 +104,11 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
 
     bool validNibble(unsigned int nibble) const { return startCode + (nibble - 1) < endCode; }
 
-    void emit(unsigned int nibble, OPERANDS... operands) const {
+    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, unsigned int nibble, OPERANDS... operands) const {
         assert(nibble != 0);
         const Byte bytecode = startCode + (nibble - 1);
         assert(bytecode < endCode);
-        emitByte(bytecode);
-
-        (emitByte(static_cast<Byte>(operands)), ...);
+        bc.emit(loc, bytecode, static_cast<Byte>(operands)...);
     }
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
@@ -113,15 +135,13 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
         return startCode + highBits < endCode;
     }
 
-    void emit(unsigned int fullValue, OPERANDS... operands) const {
+    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, unsigned int fullValue,
+              OPERANDS... operands) const {
         assert(fullValue < (1 << 12));
         const Byte code = startCode + ((fullValue >> 8) & 15);
         assert(code >= startCode);
         assert(code < endCode);
-
-        emitByte(code);
-        emitByte(fullValue & 255);
-        (emitByte(static_cast<Byte>(operands)), ...);
+        bc.emit(loc, code, fullValue & 255, static_cast<Byte>(operands)...);
     }
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
@@ -148,18 +168,17 @@ template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> s
     }
 
 
-    void emit(ENUM_T e, OPERANDS... operands) const {
+    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, ENUM_T e, OPERANDS... operands) const {
         const Byte nibble = static_cast<Byte>(e);
         assert(nibble < 16);
         const Byte bytecode = startCode + nibble;
         assert(bytecode < endCode);
-        emitByte(bytecode);
-
-        (emitByte(operands), ...);
+        bc.emit(loc, bytecode, static_cast<Byte>(operands)...);
     }
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
-        return { details::to_enum<typename ENUM_T::UnderlyingEnum>(*ip - startCode), OPERANDS::fromRaw(*(++ip))... };
+        return { { details::to_enum<typename ENUM_T::UnderlyingEnum>(*ip - startCode) },
+                 OPERANDS::fromRaw(*(++ip))... };
     }
 };
 

@@ -60,14 +60,16 @@ set(sclang_sources
 	LangSource/PyrObject.cpp
 	LangSource/PyrParseNode.cpp
 	LangSource/PyrSignal.cpp
+	LangSource/PyrSlot.cpp
 	LangSource/PyrSymbolTable.cpp
     LangSource/SC_CLIOptions.cpp
 	LangSource/SC_LanguageClient.cpp
 	LangSource/SC_LanguageConfig.cpp
 	LangSource/SC_TerminalClient.cpp
 	LangSource/SimpleStack.cpp
-	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
+	LangSource/CompilerContext.cpp
+	LangSource/ClassLibraryInfo.cpp
 
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp

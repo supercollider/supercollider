@@ -35,6 +35,7 @@
 #include "util/standard_dirs.hpp"
 #include "../primitives/localsocket_utils.hpp"
 
+#include <qstringview.h>
 #include <yaml-cpp/node/node.h>
 #include <yaml-cpp/parser.h>
 
@@ -231,22 +232,41 @@ void ScProcess::onReadAllStandardError(void) {
     emit scPost("ERROR: " + QString::fromUtf8(out));
 }
 
-void ScProcess::evaluateCode(QString const& commandString, bool silent) {
+void ScProcess::evaluateCode(QString const& commandString, bool silent, const QString* filePath, int lineNumber,
+                             int column) {
     if (state() != QProcess::Running) {
         emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
 
     QByteArray bytesToWrite = commandString.toUtf8();
-    size_t writtenBytes = write(bytesToWrite);
-    if (writtenBytes != bytesToWrite.size()) {
-        emit statusMessage(tr("Error when passing data to interpreter!"));
+
+
+    if (!filePath || filePath->isEmpty()) {
+        bytesToWrite.append(silent ? '\x1b' : '\x0c');
+        size_t writtenBytes = write(bytesToWrite);
+        if (writtenBytes != bytesToWrite.size())
+            emit statusMessage(tr("Error when passing data to interpreter!"));
         return;
     }
+    bytesToWrite.append(silent ? '\x1b' : '\x19');
 
-    char commandChar = silent ? '\x1b' : '\x0c';
+    // start of header
+    bytesToWrite.append('\x01');
 
-    write(&commandChar, 1);
+    bytesToWrite.append('\x1c');
+    bytesToWrite.append(filePath->toUtf8());
+    bytesToWrite.append('\x1c');
+    const auto lineNumberString = QString::number(lineNumber);
+    const auto columnString = QString::number(column);
+    bytesToWrite.append(lineNumberString.toUtf8());
+    bytesToWrite.append(' ');
+    bytesToWrite.append(columnString.toUtf8());
+    bytesToWrite.append('\x0c'); // form feed ends input.
+
+    size_t writtenBytes = write(bytesToWrite);
+    if (writtenBytes != bytesToWrite.size())
+        emit statusMessage(tr("Error when passing data to interpreter!"));
 }
 
 void ScProcess::onNewIpcConnection() {

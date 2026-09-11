@@ -115,6 +115,14 @@ jobs:
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
+  
+  sclang-error-regression:
+    needs: [version-getter, build-linux]
+    uses: ./.github/workflows/sclang_error_regression.yml
+    if: ${{ !cancelled() }}
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
 
   deploy_s3:
     strategy:

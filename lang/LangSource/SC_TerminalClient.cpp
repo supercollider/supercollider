@@ -122,9 +122,8 @@ int SC_TerminalClient::run(int argc, char** argv) {
         std::filesystem::create_directories(SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
 
     // startup library
-    compileLibrary(opt.mStandalone);
 
-    if (!gCompiledOK) {
+    if (!compileLibrary(opt.mStandalone)) {
         post("ERROR: Library has not been compiled successfully.\n");
         shutdownLibrary();
         flush();
@@ -185,38 +184,130 @@ void SC_TerminalClient::interpretCmdLine(const char* cmdLine, size_t size, bool 
 }
 
 // Note: called only if the input thread does not perform an asynchronous read operation
+struct Span {
+    const char* ptr;
+    size_t size;
+
+    [[nodiscard]] constexpr Span advance() const noexcept {
+        assert(size != 0);
+        return { ptr + 1, size - 1 };
+    }
+    [[nodiscard]] constexpr explicit operator bool() const noexcept { return size != 0; }
+    [[nodiscard]] constexpr char operator[](size_t i) const noexcept {
+        assert(i < size);
+        return ptr[i];
+    }
+    [[nodiscard]] constexpr const char* end() const noexcept { return ptr + size; }
+    [[nodiscard]] constexpr const char* start() const noexcept { return ptr; }
+
+    [[nodiscard]] explicit operator std::string() const { return { ptr, ptr + size }; }
+};
+
 void SC_TerminalClient::interpretInput() {
-    char* data = mInputBuf.getData();
-    int c = mInputBuf.getSize();
-    int i = 0;
-    while (i < c) {
-        switch (data[i]) {
-        case kInterpretCmdLine:
-            interpretCmdLine(data, i, true);
-            break;
-        case kInterpretPrintCmdLine:
-            interpretCmdLine(data, i, false);
-            break;
+    const Span startOfBody { mInputBuf.getData(), mInputBuf.getSize() };
 
-        case kRecompileLibrary:
-            recompileLibrary();
-            break;
+    if (!startOfBody)
+        return;
 
-        default:
-            ++i;
+    if (startOfBody[0] == kRecompileLibrary) {
+        recompileLibrary();
+        return;
+    }
+
+    auto rollingBody = startOfBody;
+    while (rollingBody
+           && !(rollingBody[0] == kInterpretCmdLine || rollingBody[0] == kInterpretPrintCmdLine
+                || rollingBody[0] == kInterpretPrintCmdLineWithHeader)) {
+        rollingBody = rollingBody.advance();
+    }
+
+    const auto cleanUp = [&]() {
+        mInputBuf.reset();
+        if (mUseReadline)
+            mReadlineSem.post();
+        else
+            startInputRead();
+    };
+
+    const auto endOfBody = rollingBody;
+
+    const auto executeIgnoreHeader = [&](bool silent = false) {
+        setCmdLine(startOfBody.start(), std::distance(startOfBody.start(), endOfBody.start()));
+        runLibrary(resolveMethodSymbol(silent));
+        flush();
+    };
+
+    if (!endOfBody) {
+        executeIgnoreHeader();
+        cleanUp();
+        return;
+    }
+    const auto silent = rollingBody[0] == kInterpretCmdLine;
+
+    auto rollingHeader = rollingBody.advance();
+
+    if (!rollingHeader || rollingHeader[0] != kStartOfHeader) {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+
+    rollingHeader = rollingHeader.advance();
+
+    if (!rollingHeader || rollingHeader[0] != kFileNameDelimiter) {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+
+    auto rollingFileName = rollingHeader.advance();
+    const auto startOfFileName = rollingFileName;
+    while (true) {
+        if (!rollingFileName) {
+            executeIgnoreHeader(silent);
+            cleanUp();
+            return;
+        } else if (rollingFileName[0] == kFileNameDelimiter) {
+            break;
+        } else {
+            rollingFileName = rollingFileName.advance();
             continue;
         }
-
-        data += i + 1;
-        c -= i + 1;
-        i = 0;
     }
-    mInputBuf.reset();
+    const auto endOfFileName = rollingFileName;
+    rollingHeader = rollingFileName.advance(); // skip delimiter
 
-    if (mUseReadline)
-        mReadlineSem.post();
-    else
-        startInputRead();
+    const auto startOfLineNumber = rollingHeader;
+    if (!startOfLineNumber) {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+    while (rollingHeader && ('0' <= rollingHeader[0] && rollingHeader[0] <= '9')) {
+        rollingHeader = rollingHeader.advance();
+    }
+    const auto endOfLineNumber = rollingHeader;
+    if (!endOfLineNumber || endOfLineNumber[0] != ' ') {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+
+    const auto startOfColumn = rollingHeader.advance();
+    while (rollingHeader && ('0' <= rollingHeader[0] && rollingHeader[0] <= '9')) {
+        rollingHeader = rollingHeader.advance();
+    }
+    const auto endOfColumn = rollingHeader;
+
+
+    const auto fileName = std::string { startOfFileName.start(), endOfFileName.start() };
+    const auto lineNumber = atoi(startOfLineNumber.start());
+    const auto column = atoi(startOfColumn.start());
+    setCmdLine(startOfBody.start(), std::distance(startOfBody.start(), endOfBody.start()), &fileName, lineNumber,
+               column);
+    runLibrary(resolveMethodSymbol(silent));
+    flush();
+    cleanUp();
 }
 
 void SC_TerminalClient::onLibraryStartup() {

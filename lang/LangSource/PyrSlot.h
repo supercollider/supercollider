@@ -503,6 +503,12 @@ public:
             return Hash(u.i[0] + Hash(u.i[1]));
         }
     }
+
+    // We dont' use a ostream here because we want to set a write limit.
+    // Writes the slot to a string for the purpose of debugging in the language.
+    // This is not a full pretty print, but is meant to provide some useful information for debugging.
+    // It will format the output all on one line, even if there are newline characters
+    void appendToStringForDebug(std::string& stream, size_t sizeLimit = 40) const;
 };
 
 static_assert(sizeof(PyrSlot) == sizeof(double));

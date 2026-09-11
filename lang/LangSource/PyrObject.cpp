@@ -887,34 +887,34 @@ void buildClassTree() {
     gClassList = sortClasses(gClassList);
 }
 
-void indexClassTree(PyrClass* classobj, int numSuperMethods) {
-    int i, numMethods;
-
+void indexClassTreeImpl(PyrClass* classobj, int numSuperMethods, std::size_t& numClasses) {
     if (!classobj)
         return;
 
-    SetInt(&classobj->classIndex, gNumClasses);
-    gNumClasses++;
+    SetInt(&classobj->classIndex, numClasses);
+    numClasses += 1;
 
-    if (IsObj(&classobj->methods)) {
-        PyrObject* methods = slotRawObject(&classobj->methods);
-        numMethods = methods->size;
-    } else
-        numMethods = 0;
+    const int numMethods =
+        numSuperMethods + (IsObj(&classobj->methods) ? classobj->methods.getPyrObjType<PyrObject>()->size : 0);
 
-    numMethods = numSuperMethods + numMethods;
     if (IsObj(&classobj->subclasses)) {
         PyrObject* subclasses = slotRawObject(&classobj->subclasses);
-        for (i = 0; i < subclasses->size; ++i)
-            indexClassTree(slotRawClass(&subclasses->slots[i]), numMethods);
+        for (int i = 0; i < subclasses->size; ++i)
+            indexClassTreeImpl(slotRawClass(&subclasses->slots[i]), numMethods, numClasses);
     }
-    SetInt(&classobj->maxSubclassIndex, gNumClasses - 1);
+    SetInt(&classobj->maxSubclassIndex, numClasses - 1);
 }
 
-void findDiscrepancy();
+std::size_t indexClassTree(PyrClass* classobj, int numSuperMethods) {
+    std::size_t i { 0 };
+    indexClassTreeImpl(classobj, numSuperMethods, i);
+    return i;
+}
+
 void findDiscrepancy() {
     PyrClass *classobjA, *classobjB;
 
+    assert(gClassList);
     classobjA = gClassList;
     while (classobjA) {
         classobjB = slotRawClass(&classobjA->nextclass);
@@ -982,14 +982,15 @@ void postClassTree(PyrClass* classobj, int level) {
 }
 
 
-void setSelectorFlags() {
-    int i;
+int setSelectorFlags() {
+    int count { 0 };
 
     PyrClass* classobj = gClassList;
     while (classobj) {
         if (IsObj(&classobj->methods)) {
             PyrObject* methods = slotRawObject(&classobj->methods);
-            for (i = 0; i < methods->size; ++i) {
+            const auto sz = methods->size;
+            for (std::size_t i { 0 }; i < sz; ++i) {
                 PyrMethod* method = slotRawMethod(&methods->slots[i]);
                 slotRawSymbol(&method->name)->flags |= sym_Selector;
                 // if (method->methType == methRedirect) {
@@ -1001,15 +1002,17 @@ void setSelectorFlags() {
         classobj = slotRawClass(&classobj->nextclass);
     }
     // count selectors
-    gNumSelectors = 0;
     SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-    for (int i = 0; i < symbolTable->TableSize(); ++i) {
+    const auto sz = symbolTable->TableSize();
+    for (std::size_t i { 0 }; i < sz; ++i) {
         PyrSymbol* sym = symbolTable->Get(i);
         if (sym && (sym->flags & sym_Selector)) {
-            sym->u.index = gNumSelectors++;
+            sym->u.index = count++;
         }
     }
-    // post("gNumSelectors %d\n", gNumSelectors);
+    gNumSelectors = count;
+    post("gNumSelectors %d\n", gNumSelectors);
+    return count;
 }
 
 // the chunky stuff can be commented back in for implementing a better
@@ -1135,7 +1138,7 @@ static void calcRowStats(PyrMethod const* const* bigTable, ColumnDescriptor* sel
         sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
 }
 
-void buildBigMethodMatrix() {
+void buildBigMethodMatrix(std::size_t numSeletorsI) {
     PyrMethod **bigTable, **row;
     PyrClass** classes;
     int j, k;
@@ -1298,10 +1301,7 @@ void buildBigMethodMatrix() {
     for (int i = 0; i < freeIndex + numClasses; ++i)
         gRowTable[i] = gNullMethod;
 
-    // post("fill compressed table\n");
-    //{ FILE* fp;
-    // newPyrMethod
-    // fp = fopen("meth table", "w");
+
     for (int i = 0; i < numSelectors; ++i) {
         int offset, maxwidth;
         offset = sels[i].rowOffset + sels[i].minClassIndex;
@@ -1313,16 +1313,9 @@ void buildBigMethodMatrix() {
                 table[j] = row[k];
         }
     }
-    // fclose(fp);
-    //}
-
     for (int i = 0; i < freeIndex + numClasses; ++i)
         assert(gRowTable[i]);
 
-
-        // post("freeIndex %d\n", freeIndex);
-        // post("widthSum %d\n", widthSum);
-        // post("popSum %d\n", popSum);
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
     post("building table took %.3g seconds\n", elapsedTime() - t0);
@@ -1340,12 +1333,6 @@ void buildBigMethodMatrix() {
     post("\tmethod table size %d bytes, ", rowTableSize);
     post("big table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
     // postfl("%p %p %p\n", classes, bigTable, sels);
-    /*
-        // not necessary since the entire pool will be freed..
-        pyr_pool_compile->Free(classes);
-        pyr_pool_compile->Free(bigTable);
-        pyr_pool_compile->Free(sels);
-    */
 }
 
 #ifdef _MSC_VER
@@ -1646,7 +1633,7 @@ void initClasses() {
     fixClassArrays(class_arrayed_collection);
     fixClassArrays(class_array);
 
-    class_fundef = makeIntrinsicClass(s_fundef, s_object, 10, 0);
+    class_fundef = makeIntrinsicClass(s_fundef, s_object, 18, 0);
     // declare varNames for Block
 
     addIntrinsicVar(class_fundef, "raw1", &o_nil);
@@ -1654,21 +1641,23 @@ void initClasses() {
     addIntrinsicVar(class_fundef, "code", &o_nil);
     addIntrinsicVar(class_fundef, "selectors", &o_nil);
     addIntrinsicVar(class_fundef, "constants", &o_nil);
-
     addIntrinsicVar(class_fundef, "prototypeFrame", &o_nil);
     addIntrinsicVar(class_fundef, "context", &o_nil);
     addIntrinsicVar(class_fundef, "argNames", &o_nil);
     addIntrinsicVar(class_fundef, "varNames", &o_nil);
-    addIntrinsicVar(class_fundef, "sourceCode", &o_nil);
+    addIntrinsicVar(class_fundef, "isClosed", &o_false);
+    addIntrinsicVar(class_fundef, "fileLocation", &o_false);
+    addIntrinsicVar(class_fundef, "sourceCodeFileOrSnippet", &o_nil);
+    addIntrinsicVar(class_fundef, "name", &o_nil);
+    addIntrinsicVar(class_fundef, "filePath", &o_nil);
+    addIntrinsicVar(class_fundef, "sourceCodeStartIndex", &o_nil);
+    addIntrinsicVar(class_fundef, "sourceCodeEndIndex", &o_nil);
+    addIntrinsicVar(class_fundef, "byteCodeLocations", &o_nil);
+    addIntrinsicVar(class_fundef, "byteCodeSizes", &o_nil);
 
-    class_method = makeIntrinsicClass(s_method, s_fundef, 5, 0);
+    class_method = makeIntrinsicClass(s_method, s_fundef, 2, 0);
     addIntrinsicVar(class_method, "ownerClass", &o_nil);
-    addIntrinsicVar(class_method, "name", &o_nil);
     addIntrinsicVar(class_method, "primitiveName", &o_nil);
-    addIntrinsicVar(class_method, "filenameSymbol", &o_nil);
-    addIntrinsicVar(class_method, "charPos", &o_zero);
-    // addIntrinsicVar(class_method, "byteMeter", &o_zero);
-    // addIntrinsicVar(class_method, "callMeter", &o_zero);
 
     class_frame = makeIntrinsicClass(s_frame, s_object, 0, 0);
     SetInt(&class_frame->classFlags, slotRawInt(&class_frame->classFlags) | classHasIndexableInstances);
@@ -1686,8 +1675,13 @@ void initClasses() {
     addIntrinsicVar(class_process, "schedulerQueue", &o_nil);
     addIntrinsicVar(class_process, "nowExecutingPath", &o_nil);
 
-    class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 29, 0);
+    class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 33, 0);
+
     addIntrinsicVar(class_interpreter, "cmdLine", &o_nil);
+    addIntrinsicVar(class_interpreter, "filePath", &o_nil);
+    addIntrinsicVar(class_interpreter, "lineNumber", &o_nil);
+    addIntrinsicVar(class_interpreter, "column", &o_nil);
+
     addIntrinsicVar(class_interpreter, "context", &o_nil);
     for (int i = 0; i < 26; ++i) {
         char name[2];
@@ -2488,7 +2482,7 @@ PyrString* newPyrStringN(class PyrGC* gc, int length, int flags, bool runGC) {
     return string;
 }
 
-PyrBlock* newPyrBlock(int flags) {
+PyrBlock* newPyrBlock(bool cmd, int flags) {
     PyrBlock* block;
     PyrMethodRaw* methraw;
 
@@ -2496,12 +2490,14 @@ PyrBlock* newPyrBlock(int flags) {
     int32 numbytes = sizeof(PyrBlock) - sizeof(PyrObjectHdr);
     int32 numSlots = numbytes / sizeof(PyrSlot);
 
-    if (!gCompilingCmdLine)
+    if (!cmd)
         block = (PyrBlock*)PyrGC::NewPermanent(numbytes, flags, obj_notindexed);
     else
         block = (PyrBlock*)gMainVMGlobals->gc->New(numbytes, flags, obj_notindexed, false);
     block->classptr = class_fundef;
     block->size = numSlots;
+
+    nilSlots(&block->rawData1, numSlots);
 
     // clear out raw area
     methraw = METHRAW(block);
@@ -2515,7 +2511,6 @@ PyrBlock* newPyrBlock(int flags) {
     methraw->numSlots = 0;
     methraw->popSize = 0;
 
-    nilSlots(&block->rawData1, numSlots);
     return block;
 }
 

@@ -19,20 +19,38 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include <cstddef>
+#include <iostream>
+#include <iterator>
+#include <memory>
+#include <mutex>
+#include "AllocPools.h"
+#include "ClassLibraryInfo.hpp"
+#include "CompilerContext.hpp"
+#include "PyrKernel.h"
+#include "PyrMessage.h"
+#include "PyrObjectHdr.h"
 #include "SCBase.h"
 #include "PyrLexer.h"
 #include "PyrSlot.h"
 #include "PyrSymbol.h"
+#include "SC_AllocPool.h"
 #include "SC_Constants.h"
 #include "SC_LanguageClient.h"
+#include "SimpleStack.h"
 #include "VMGlobals.h"
-#include "codepoint.hpp"
-#include "normalise_source.hpp"
+
+#include "BisonHeaderInclude.hpp"
 #include "codepoint_stream.hpp"
-#include "source_utils.hpp"
+#include "normalise_source.hpp"
+#include "lang11d_tab.h"
+
+#include "text_location.hpp"
 #include "tokens.hpp"
 
 #include <algorithm>
+#include <exception>
+#include <mutex>
 #include <optional>
 #include <sstream>
 #include <stdlib.h>
@@ -44,6 +62,8 @@
 #include <limits>
 #include <set>
 #include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 
 #ifdef _WIN32
 #    include <direct.h>
@@ -56,93 +76,33 @@
 #include <string.h>
 
 #include "PyrParseNode.h"
-#include "Bison/lang11d_tab.h"
 #include "SCBase.h"
 #include "PyrObject.h"
 #include "PyrObjectProto.h"
 #include "PyrSched.h"
 #include "GC.h"
-#include "SimpleStack.h"
 
 #include "PyrSymbolTable.h"
 #include "PyrInterpreter.h"
 #include "PyrObjectProto.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrKernelProto.h"
-#include "InitAlloc.h"
 #include "PredefinedSymbols.h"
 #include "SC_LanguageConfig.hpp"
 
 #include "SC_Filesystem.hpp" // getDirectory, resolveIfAlias, isStandalone
 #include "SC_Codecvt.hpp" // path_to_utf8_str
-#include "SC_TextUtils.hpp"
-
 
 #include <lexer.hpp>
 
-struct ClassExtFile {
-    struct ClassExtFile* next;
-    PyrSymbol* fileSym;
-    int startPos, endPos, lineOffset;
-};
-
-typedef struct classdep {
-    struct classdep* next;
-    struct classdep* superClassDep;
-    struct classdep* subclasses;
-    PyrSymbol* className;
-    PyrSymbol* superClassName;
-    PyrSymbol* fileSym;
-    int startPos, endPos, lineOffset;
-} ClassDependancy;
+extern ClassLibraryInfo gClassLibraryInfo;
 
 int yyparse();
 PyrSlot process_accidental_cents(const char* s);
 PyrSlot process_accidental_steps(const char* s);
 
-double compileStartTime;
-int gNumCompiledFiles { 0 };
-
-extern PyrClass* gClassList;
-ClassDependancy** gClassCompileOrder;
-int gClassCompileOrderNum { 0 };
-int gClassCompileOrderSize = 1000;
-
 namespace fs = std::filesystem;
 using DirName = SC_Filesystem::DirName;
-
-PyrSymbol* gCompilingFileSym = nullptr;
-VMGlobals* gCompilingVMGlobals = nullptr;
-static fs::path gCompileDir;
-
-
-bool gShowWarnings = false;
-LongStack generatorStack;
-int lastClosedFuncCharNo = 0;
-
-fs::path currfilename;
-std::string printingCurrfilename; // for error reporting
-
-bool gCompilingCmdLine = false;
-
-// TODO: replace with yylval
-intptr_t zzval;
-
-// TODO: replace with yyloc
-int lineno, charno, linepos;
-int* linestarts;
-int maxlinestarts { 0 };
-
-// This is the text of the source file currently being tokenized.
-char* gCompilingText { nullptr };
-int gCompilinTextLen { 0 };
-int textpos { 0 };
-// I don't know what these do.
-int errLineOffset, errCharPosOffset;
-int gParseFailed = 0;
-bool gCompiledOK = false;
-std::set<fs::path> compiledDirectories;
-
 
 int sc_strtoi(const char* str, int n, int base) {
     int z = 0;
@@ -182,20 +142,11 @@ double sc_strtof(const char* str, int n, int base) {
     return z;
 }
 
-bool startLexer(PyrSymbol* fileSym, const fs::path& p, int startPos, int endPos, int lineOffset);
-void startLexerCmdLine(char* textbuf, int textbuflen);
-void finiLexer();
-
-void initLexer() {
-    // strcpy(binopchars, "!@%&*-+=|:<>?/");
-}
 
 namespace lex = sc::lex;
 
-
 using TokenType = lex::TokenType;
 using UnderlyingTokenType = std::underlying_type_t<TokenType>;
-
 
 [[nodiscard]] constexpr std::optional<yytokentype> convert_to_bison_tokentype(TokenType t) {
     if (sc::lex::is_error(t))
@@ -381,33 +332,20 @@ struct BisonSemActionOutput {
 };
 struct BisonLexerAction {
 public:
-    BisonLexerAction(std::string src): source(std::move(src)) {};
+    BisonLexerAction(std::shared_ptr<TextInfo> textInfo): textInfo(std::move(textInfo)) {};
     BisonLexerAction() = delete;
     BisonLexerAction(BisonLexerAction&&) noexcept = default;
     BisonLexerAction(const BisonLexerAction&) = default;
     BisonLexerAction& operator=(BisonLexerAction&&) noexcept = default;
     BisonLexerAction& operator=(const BisonLexerAction&) = default;
 
-    std::string source;
+    std::shared_ptr<TextInfo> textInfo;
     std::vector<std::pair<TokenType, lex::SourceCodeRange>> closing_bracket_stack {};
 
-    // TODO: once parser/compiler has been updated, remove this.
-    std::vector<std::size_t> line_starts {};
 
     using Output = BisonSemActionOutput;
 
     template <TokenType T> std::optional<Output> process(lex::SourceCodeRange loc) {
-        // TODO: once parser/compiler has been updated, remove this.
-        while (line_starts.size() <= loc.begin.lineNumber) {
-            line_starts.push_back(loc.begin.absolute);
-        }
-        while (line_starts.size() < loc.end.lineNumber) {
-            line_starts.push_back(loc.begin.absolute);
-        }
-        if (line_starts.size() <= loc.end.lineNumber) {
-            line_starts.push_back(loc.end.absolute);
-        }
-
         // Discard
         if constexpr (sc::lex::is_whitespace(T) || sc::lex::is_comment(T))
             return std::nullopt;
@@ -456,7 +394,6 @@ public:
                 const auto expected = closing_bracket_stack.back().first;
                 if (expected == T) {
                     // This is pushed even if it isn't a closed function.
-                    lastClosedFuncCharNo = closing_bracket_stack.back().second.begin.absolute;
                     closing_bracket_stack.pop_back();
                     return { { T, loc } };
                 } else if (expected == TokenType::CloseParen) {
@@ -489,7 +426,9 @@ public:
 
         // Radix, both int and float
         else if constexpr (T == TokenType::IntegerRadix || T == TokenType::FloatRadix) {
-            const char* start = source.c_str() + loc.begin.absolute;
+            const auto& str = textInfo->normalisedSource.as_string();
+            const char* c_str = str.c_str();
+            const char* start = c_str + loc.begin.absolute;
             // Looking for radix.
             const char* it = start;
             while (*it != 'r') // Potentially unsafe, but the lexer guarenteed this was found.
@@ -497,10 +436,10 @@ public:
             const int radix = str_to_int(start, it - start, 10);
             ++it; // drop r
             if constexpr (T == TokenType::IntegerRadix) {
-                const auto slot_value = sc_strtoi(it, (source.c_str() + loc.end.absolute) - it, radix);
+                const auto slot_value = sc_strtoi(it, (c_str + loc.end.absolute) - it, radix);
                 return { { T, loc, PyrSlot::make(slot_value) } };
             } else {
-                const double slot_value = sc_strtof(it, (source.c_str() + loc.end.absolute) - it, radix);
+                const double slot_value = sc_strtof(it, (c_str + loc.end.absolute) - it, radix);
                 return { { T, loc, PyrSlot::make(slot_value) } };
             }
         }
@@ -509,8 +448,10 @@ public:
             return { { T, loc, PyrSlot::make(atoi(fill_temp_buf(loc))) } };
 
         else if constexpr (T == TokenType::Hexidecimal) {
-            const char* c = source.c_str() + loc.begin.absolute;
-            const char* const end = source.c_str() + loc.end.absolute;
+            const auto& str = textInfo->normalisedSource.as_string();
+            const char* c_str = str.c_str();
+            const char* c = c_str + loc.begin.absolute;
+            const char* const end = c_str + loc.end.absolute;
             // BUG: this is probably a bug, we are ignoring everything before the 'x'
             while (*c != 'x' && *c != 'X' && *c != 0 && c < end)
                 ++c;
@@ -529,9 +470,11 @@ public:
         }
 
         else if constexpr (T == TokenType::Ascii) {
-            assert(source[loc.begin.absolute] == '$');
+            const auto& str = textInfo->normalisedSource.as_string();
+            const char* c_str = str.c_str();
+            assert(c_str[loc.begin.absolute] == '$');
             if (loc.size() == 2) {
-                const char out = source[loc.begin.absolute + 1];
+                const char out = c_str[loc.begin.absolute + 1];
                 if (out == 0)
                     // TODO: consider this change in more detail.
                     // This is a little bit odd, but appears to be the current behaviour.
@@ -543,10 +486,10 @@ public:
                 return { { T, loc, std::optional<PyrSlot> { PyrSlot::make(out) } } };
             }
             assert(loc.size() == 3);
-            assert(source[loc.begin.absolute] == '$');
-            assert(source[loc.begin.absolute + 1] == '\\');
+            assert(c_str[loc.begin.absolute] == '$');
+            assert(c_str[loc.begin.absolute + 1] == '\\');
             // Three only occurs for the following escape characters.
-            char out = source[loc.begin.absolute + 2];
+            char out = c_str[loc.begin.absolute + 2];
             if (out == 'n')
                 out = '\n';
             else if (out == 'r')
@@ -590,16 +533,21 @@ private:
     }
 
     const char* fill_temp_buf(lex::SourceCodeRange loc) {
+        const auto& str = textInfo->normalisedSource.as_string();
+        const char* c_str = str.c_str();
         temp_buffer.clear();
-        temp_buffer.insert(temp_buffer.begin(), source.c_str() + loc.begin.absolute, source.c_str() + loc.end.absolute);
+        temp_buffer.insert(temp_buffer.begin(), c_str + loc.begin.absolute, c_str + loc.end.absolute);
         return temp_buffer.c_str();
     }
 
     PyrSymbol* text_to_symbol(lex::SourceCodeRange loc, size_t drop_from_start = 0, size_t drop_from_end = 0,
                               bool needs_escaping = false) {
         temp_buffer.clear();
-        auto start = source.c_str() + loc.begin.absolute + drop_from_start;
-        const auto end = source.c_str() + loc.end.absolute - drop_from_end;
+
+        const auto& str = textInfo->normalisedSource.as_string();
+        const char* c_str = str.c_str();
+        auto start = c_str + loc.begin.absolute + drop_from_start;
+        const auto end = c_str + loc.end.absolute - drop_from_end;
         const size_t sz = end - start;
         if (!needs_escaping) {
             temp_buffer.insert(temp_buffer.begin(), start, end);
@@ -635,308 +583,164 @@ private:
     }
 };
 
-
-void print_error_line(const char* filepath, const char* txt, size_t txt_len, sc::lex::SourceCodeRange r,
-                      const char* short_description = nullptr) {
-    const auto short_desc_len = short_description == nullptr ? 0 : strlen(short_description);
-    std::stringstream ss;
-    ss << "Error: ";
-
-    if (filepath)
-        ss << filepath << ':' << r.begin.lineNumber + 1 << ':' << r.begin.column + 1;
-
-    ss << "\n──────────────────────────────────────────────────────────────────────────────────\n";
-    const auto selection_start = txt + r.begin.absolute;
-    const auto selection_end = txt + r.end.absolute;
-
-    auto maybe_iter = sc::lex::utils::LineIter::make(txt, txt + txt_len, r.begin);
-    if (!maybe_iter.has_value())
-        return;
-    auto iter = std::move(*maybe_iter);
-
-    iter.backwards(); // go to start of line.
-    if (r.line_count() <= 4) {
-        iter.backwards();
-        iter.backwards();
-    }
-
-    const auto single_line_error = r.line_count() == 1;
-
-
-    for (auto line = iter.forwards(); line; line = iter.forwards()) {
-        const auto [ptr, sz, line_number, ends_in_newline_char] = *line;
-
-        if (line_number < r.begin.lineNumber || line_number > r.end.lineNumber) {
-            ss << std::setfill(' ') << std::setw(5) << line_number + 1 << " │ ";
-            ss.write(ptr, sz);
-            if (!ends_in_newline_char)
-                ss << '\n';
-            if (line_number > r.end.lineNumber + 2)
-                break;
-            else
-                continue;
-        }
-
-        if (single_line_error) {
-            ss << std::setfill(' ') << std::setw(5) << line_number + 1 << " │ ";
-            ss.write(ptr, sz);
-
-            if (!ends_in_newline_char)
-                ss << '\n';
-
-            ss << "      ┆ ";
-            auto cp_iter = sc::lex::utils::CodePointIterator::make(ptr, ptr + sz, ptr).value();
-
-            for (auto cp = cp_iter.forwards(); cp; cp = cp_iter.forwards()) {
-                if (cp_iter.current_location() <= selection_start) {
-                    ss << sc::lex::codepoint_as_whitespace(*cp);
-                } else if (cp_iter.current_location() <= selection_end) {
-                    const auto w = std::max<std::uint8_t>(1, sc::lex::codepoint_width(*cp));
-                    for (size_t i { 0 }; i < w; ++i)
-                        ss << '^';
-                } else
-                    break;
-            }
-
-            if (short_description) {
-                ss << " ";
-                ss.write(short_description, short_desc_len);
-                ss << '\n';
-            }
-        } else {
-            ss << std::setfill(' ') << std::setw(5) << line_number + 1 << "*│ ";
-            ss.write(ptr, sz);
-
-            if (!ends_in_newline_char)
-                ss << '\n';
-
-            if (line_number == r.end.lineNumber) {
-                if (short_description) {
-                    ss << "     >│ "
-                       << "^ ";
-                    ss.write(short_description, short_desc_len);
-                    ss << '\n';
-                }
-            }
-        }
-    }
-
-    ss << "\n──────────────────────────────────────────────────────────────────────────────────\n";
-    const auto str = ss.str();
-
-    ::postText(str.c_str(), str.size());
-}
-
-struct GlobalBisonLexerState {
-    enum struct Mode { CMDInitial, CMDContinuing, ClassLibrary };
-    GlobalBisonLexerState(Mode m, BisonLexerAction a, lex::CodePointStream s):
-        mode(m),
-        action(std::move(a)),
-        char_stream(std::move(s)) {}
-
-    Mode mode;
-
+struct ParserState {
+    // Lifetime is complex here due to the class library jumping around to different files, shared_ptr isn't the most
+    // performant, but is the simplest to deal with.
+    std::shared_ptr<const TextInfo> textInfo;
+    // Converts lexer tokens in to parser tokens.
     BisonLexerAction action;
-    lex::CodePointStream char_stream;
+    // Iterates through the source code.
+    lex::CodePointStream codePointStream;
+    // cmd line code must emit a special token at the start, this is the state that implements that.
+    enum struct Mode { CMDInitial, CMDContinue, ClassLibrary } mode;
+
+    // Ugly cache used for turning string lines from the lexer into a single string.
+    // TODO: refactor pyrparse nodes (slot node in particular) so we can have a them create the literals from the text
+    // and token during compilation.
     std::optional<BisonLexerAction::Output> cached {};
-
-    int mutate_global_state_for_return(const BisonLexerAction::Output& o) {
-        // If you set this to 0 when not in use, the parse will segfault.
-        // TODO: use yylval.
-        if (o.slot && !o.is_error())
-            zzval = (intptr_t)newPyrSlotNode(o.range, *o.slot);
-
-        yylloc = o.range;
-
-        // Yes it reads from the end point only. Very odd. Causes many issues.
-        textpos = o.range.end.absolute;
-        lineno = o.range.end.lineNumber + 1; // zero indexed to 1
-        linepos = action.line_starts[o.range.end.lineNumber];
-        charno = o.range.end.column;
-        if (maxlinestarts < o.range.end.lineNumber) {
-            maxlinestarts += maxlinestarts;
-            linestarts = (int*)pyr_pool_compile->Realloc(linestarts, maxlinestarts * sizeof(int*));
-        }
-        linestarts[lineno] = linepos;
-
-        const char* fileName = gCompilingFileSym ? gCompilingFileSym->name : nullptr;
-
-
-        bool swallowError = false;
-        if (o.is_error()) {
-            zzval = 0; // stop anything from continuing.
-
-            post("\nLexing "
-                 "Error:\n──────────────────────────────────────────────────────────────────────────────────\n");
-            if (o.is(ExtendedErrors::GotCurlyExpectedParen) || o.is(ExtendedErrors::GotSquareExpectedParen)) {
-                if (o.extra_range_of_error) {
-                    print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(),
-                                     *o.extra_range_of_error, "Parenthises opened here...");
-                    print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                     "...was expected to be closed here with a ')'.");
-                }
-            } else if (o.is(ExtendedErrors::GotCurlyExpectedSquare) || o.is(ExtendedErrors::GotParenExpectedSquare)) {
-                if (o.extra_range_of_error) {
-                    print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(),
-                                     *o.extra_range_of_error, "Square bracket opened here...");
-                    print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                     "...was expected to be closed here with a ']'.");
-                }
-            } else if (o.is(ExtendedErrors::GotParenExpectedCurly) || o.is(ExtendedErrors::GotSquareExpectedCurly)) {
-                if (o.extra_range_of_error) {
-                    print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(),
-                                     *o.extra_range_of_error, "Curly bracket opened here...");
-                    print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                     "...was expected to be closed here with a '}'.");
-                }
-            } else if (o.is(ExtendedErrors::ExtraClosingCurlyBracket)) {
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 "Unexpected closing curly brace, could not find a matching opening one.");
-            } else if (o.is(ExtendedErrors::ExtraClosingParenBracket)) {
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 "Unexpected closing parenthesis, could not find a matching opening one.");
-            } else if (o.is(ExtendedErrors::ExtraClosingSqaureBracket)) {
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 "Unexpected closing square bracket, could not find a matching opening one.");
-            } else if (o.is(TokenType::ErMissingExponent)) {
-                const auto [ptr, sz] = char_stream.source_code_range_to_text(o.range);
-                const std::string example { ptr, sz };
-                const auto desc = std::string { "Expected digits after the 'e', for example '" } + example + "10'.";
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 desc.c_str());
-            }
-
-            else if (o.is(TokenType::ErSymbolQuoteUnclosed)) {
-                const auto [ptr, sz] = char_stream.source_code_range_to_text(o.range);
-                size_t i { 0 };
-                while (i < sz && ptr[i] != ' ' && ptr[i] != '\n')
-                    ++i;
-                // TODO: we could look forward to see if the next token (discarding whitespace) is a '\'', in that case,
-                // the user has a new line character in the wrong place.
-                const std::string example { ptr, i };
-                const auto desc =
-                    std::string { "This quoted symbol does not have a matching closing quote, perhaps you meant "
-                                  + example + "'?" };
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 desc.c_str());
-            }
-
-            else if (o.is(TokenType::ErInvalidUTF8)) {
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 "Invalid UTF8 encountered here, you probably want to delete this. This is probably "
-                                 "from an old text file and needs updating.");
-                // The old lexer didn't think this was an error. That is a mistake. Here we don't mark this as a true
-                // error so comilation can continue.
-                swallowError = true;
-            } else if (o.is(TokenType::ErInvalidToken)) {
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 "Invalid token encountered, supercollider does not know how to handle this.");
-            } else if (o.is(TokenType::ErUnexpectedUnicode)) {
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 "Unexpected unicode encountered, supercollider does not know how to handle this.");
-                swallowError = true;
-            }
-
-            else if (o.is(TokenType::ErStringUnclosed)) {
-                const auto [ptr, sz] = char_stream.source_code_range_to_text(o.range);
-                size_t i { 0 };
-                while (i < sz && ptr[i] != '\n' && ptr[i] != ' ')
-                    ++i;
-                const std::string example { ptr, i };
-                const auto desc =
-                    std::string { "This string does not have a closing '\"', perhaps you meant " + example + "\"?" };
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 desc.c_str());
-            } else if (o.is(TokenType::ErMultilineCommentUnclosed)) {
-                const auto desc = std::string { "This multiline comment does not have a closing */." };
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range,
-                                 desc.c_str());
-            } else if (o.is(TokenType::ErASCIIInvalidWhitespace)) {
-                const auto [ptr, sz] = char_stream.source_code_range_to_text(o.range);
-                const char raw_c = sz == 3 ? ptr[2] : ptr[1];
-                std::string msg;
-                switch (raw_c) {
-                case '\n':
-                    msg = "replace with '$\\n'.";
-                    break;
-                // The following three are actually not possible due to normalisation, but are kept here just in case
-                // that changes.
-                case '\r':
-                    msg = "replace with '$\\r'.";
-                    break;
-                case '\v':
-                    msg = "replace with '$\\v'.";
-                    break;
-                case '\f':
-                    msg = "replace with '$\\f'.";
-                    break;
-                default:
-                    msg = "only the normal ascii space ' ' is allowed as a whitespace character. Use the escape "
-                          "character instead (e.g., '$\\n').";
-                    break;
-                }
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range, msg.c_str());
-            } else {
-                print_error_line(fileName, char_stream.source.c_str(), char_stream.source.size(), o.range);
-            }
-        }
-        gParseFailed = o.is_error() && !swallowError ? 1 : 0;
-
-        return *convert_to_bison_tokentype(o.type);
-    }
 };
 
-std::optional<GlobalBisonLexerState> global_bison_lexer_state {};
 
-// Must also advance through global state.
-bool scanForClosingBracket(TokenType to_find) {
-    assert(global_bison_lexer_state);
-    GlobalBisonLexerState& s = *global_bison_lexer_state;
-    const auto tok = to_find;
-    assert(!s.action.closing_bracket_stack.empty());
-    const auto target_depth = s.action.closing_bracket_stack.size() - 1; // we have just pushed a bracket.
+std::optional<ParserState> gParserState {};
 
-    BisonLexerAction::Output out {};
-    while (true) {
-        out = lex::lexer(s.char_stream, s.action);
-
-        if (out.type == TokenType::EndOfFile) {
-            s.mutate_global_state_for_return(out);
-            return false;
+[[nodiscard]] std::string mkLexingError(const TextInfo& txtInfo, BisonSemActionOutput o) {
+    if (o.is(ExtendedErrors::GotCurlyExpectedParen) || o.is(ExtendedErrors::GotSquareExpectedParen)) {
+        if (o.extra_range_of_error) {
+            const DiagnosticHighlight highlights[2] {
+                txtInfo.createDiagnosticHighlight(*o.extra_range_of_error, "Parenthsises opened here..."),
+                txtInfo.createDiagnosticHighlight(o.range, "...was expected to be closed here."),
+            };
+            return diagnosticToCompilerError(ErrorType::Error, "Parenthises mismatch.", highlights, 2);
+        } else {
+            // Should not happen.
+            assert(false);
+            const DiagnosticHighlight h =
+                txtInfo.createDiagnosticHighlight(o.range, "Parenthises opened here was expected to be closed.");
+            return diagnosticToCompilerError(ErrorType::Error, "Parenthises mismatch", &h, 1);
         }
-        if (out.type == tok && s.action.closing_bracket_stack.size() == target_depth) {
-            s.mutate_global_state_for_return(out);
-            return true;
+    } else if (o.is(ExtendedErrors::GotCurlyExpectedSquare) || o.is(ExtendedErrors::GotParenExpectedSquare)) {
+        if (o.extra_range_of_error) {
+            const DiagnosticHighlight highlights[2] {
+                txtInfo.createDiagnosticHighlight(*o.extra_range_of_error, "Square bracket opened here..."),
+                txtInfo.createDiagnosticHighlight(o.range, "...was expected to be closed here."),
+            };
+            return diagnosticToCompilerError(ErrorType::Error, "Square bracket mismatch.", highlights, 2);
+        } else {
+            assert(false);
+            const DiagnosticHighlight h =
+                txtInfo.createDiagnosticHighlight(o.range, "Square bracket opened here was expected to be closed.");
+            return diagnosticToCompilerError(ErrorType::Error, "Square bracket mismatch", &h, 1);
         }
+    } else if (o.is(ExtendedErrors::GotParenExpectedCurly) || o.is(ExtendedErrors::GotSquareExpectedCurly)) {
+        if (o.extra_range_of_error) {
+            const DiagnosticHighlight highlights[2] {
+                txtInfo.createDiagnosticHighlight(*o.extra_range_of_error, "Curly bracket opened here..."),
+                txtInfo.createDiagnosticHighlight(o.range, "...was expected to be closed here."),
+            };
+            return diagnosticToCompilerError(ErrorType::Error, "Curly bracket mismatch.", highlights, 2);
+        } else {
+            assert(false);
+            const DiagnosticHighlight h =
+                txtInfo.createDiagnosticHighlight(o.range, "Curly bracket opened here was expected to be closed.");
+            return diagnosticToCompilerError(ErrorType::Error, "Curly bracket mismatch", &h, 1);
+        }
+    } else if (o.is(ExtendedErrors::ExtraClosingCurlyBracket)) {
+        const DiagnosticHighlight h = txtInfo.createDiagnosticHighlight(
+            o.range, "Unexpected closing curly braket, could not find a matching opening one.");
+        return diagnosticToCompilerError(ErrorType::Error, "Curly bracket mismatch", &h, 1);
+    } else if (o.is(ExtendedErrors::ExtraClosingParenBracket)) {
+        const DiagnosticHighlight h = txtInfo.createDiagnosticHighlight(
+            o.range, "Unexpected closing parenthesis, could not find a matching opening one.");
+        return diagnosticToCompilerError(ErrorType::Error, "Paranthesis mismatch", &h, 1);
+    } else if (o.is(ExtendedErrors::ExtraClosingSqaureBracket)) {
+        const DiagnosticHighlight h = txtInfo.createDiagnosticHighlight(
+            o.range, "Unexpected closing square bracket, could not find a matching opening one.");
+        return diagnosticToCompilerError(ErrorType::Error, "Square bracket mismatch", &h, 1);
+    } else if (o.is(TokenType::ErMissingExponent)) {
+        const auto [ptr, sz] = txtInfo.indexIntoSource(o.range);
+        const std::string example { ptr, sz };
+        auto desc = std::string { "Expected digits after the 'e', for example '" } + example + "10'.";
+
+        const auto h = txtInfo.createDiagnosticHighlight(o.range, std::move(desc));
+        return diagnosticToCompilerError(ErrorType::Error, "Invalid float exponent.", &h, 1);
+    }
+
+    else if (o.is(TokenType::ErSymbolQuoteUnclosed)) {
+        const auto [ptr, sz] = txtInfo.indexIntoSource(o.range);
+        size_t i { 0 };
+        while (i < sz && ptr[i] != ' ' && ptr[i] != '\n')
+            ++i;
+        // TODO: we could look forward to see if the next token (discarding whitespace) is a '\'', in that case,
+        // the user has a new line character in the wrong place.
+        const std::string example { ptr, i };
+        auto desc = std::string { "This quoted symbol does not have a matching closing quote, perhaps you meant "
+                                  + example + "'?" };
+        const auto h = txtInfo.createDiagnosticHighlight(o.range, std::move(desc));
+        return diagnosticToCompilerError(ErrorType::Error, "Invalid symbol.", &h, 1);
+    }
+
+    else if (o.is(TokenType::ErInvalidUTF8)) {
+        const auto h = txtInfo.createDiagnosticHighlight(o.range, "this is invalid utf8, please delete it.");
+        return diagnosticToCompilerError(ErrorType::Error, "Invalid utf8", &h, 1);
+    }
+
+    else if (o.is(TokenType::ErInvalidToken)) {
+        const auto h = txtInfo.createDiagnosticHighlight(o.range, "this token is invalid in this context.");
+        return diagnosticToCompilerError(ErrorType::Error, "Invalid token.", &h, 1);
+    }
+
+    else if (o.is(TokenType::ErStringUnclosed)) {
+        const auto [ptr, sz] = txtInfo.indexIntoSource(o.range);
+        size_t i { 0 };
+        while (i < sz && ptr[i] != '\n' && ptr[i] != ' ')
+            ++i;
+        const std::string example { ptr, i };
+
+        const auto h = txtInfo.createDiagnosticHighlight(
+            o.range, std::string { "This string does not have a closing '\"', perhaps you meant " + example + "\"?" });
+        return diagnosticToCompilerError(ErrorType::Error, "Unclosed string.", &h, 1);
+    } else if (o.is(TokenType::ErMultilineCommentUnclosed)) {
+        const auto h = txtInfo.createDiagnosticHighlight(o.range, "this comment lacks a closing */.");
+        return diagnosticToCompilerError(ErrorType::Error, "Unclosed string.", &h, 1);
+    } else if (o.is(TokenType::ErASCIIInvalidWhitespace)) {
+        const auto h =
+            txtInfo.createDiagnosticHighlight(o.range, "did you mean either: '$ ' (missing space) or '$\\n'?");
+        return diagnosticToCompilerError(ErrorType::Error, "Invalid whitespace in char", &h, 1);
+    } else {
+        const auto h = txtInfo.createDiagnosticHighlight(o.range, "an unknown error has occured right here!");
+        return diagnosticToCompilerError(ErrorType::Error, "Unknown error.", &h, 1);
     }
 }
 
-void scanForEnd() {
-    assert(global_bison_lexer_state);
-    GlobalBisonLexerState& s = *global_bison_lexer_state;
-
-    BisonLexerAction::Output out;
-    do {
-        out = lex::lexer(s.char_stream, s.action);
-    } while (out.type != TokenType::EndOfFile);
-
-    s.mutate_global_state_for_return(out);
-}
-
+// Only ever called from inside of yyparse.
+// Right now, this allocates using the GC, this should be removed.
 int yylex() {
-    assert(global_bison_lexer_state);
-    GlobalBisonLexerState& s = *global_bison_lexer_state;
-    if (s.mode == GlobalBisonLexerState::Mode::CMDInitial) {
-        s.mode = GlobalBisonLexerState::Mode::CMDContinuing;
-        textpos = 0;
-        lineno = 0;
-        linepos = 0;
-        charno = 0;
-        linestarts[0] = 0;
-        zzval = 0;
-        gParseFailed = 0;
+    assert(gParserState);
+    ParserState& s = *gParserState;
+    if (s.mode == ParserState::Mode::CMDInitial) {
+        s.mode = ParserState::Mode::CMDContinue;
         return INTERPRET;
     }
+
+    const auto prepForOutput = [&](BisonSemActionOutput o) {
+        yylval.empty = {};
+        yylloc = o.range;
+        if (o.slot)
+            yylval.slotNode = bison_cxt->allocParseNode<PyrSlotNode>(o.range, *o.slot);
+        if (o.is_error()) {
+            auto str = mkLexingError(*bison_cxt->textInfo.get(), o);
+            bison_cxt->postError(str);
+            // These errors are swallowed, printed, but not returned.
+            // In a future version this needs to be removed.
+            if (o.type == TokenType::ErInvalidUTF8 || o.type == TokenType::ErUnexpectedUnicode) {
+                return yylex();
+            } else {
+                return static_cast<int>(YYerror); // This suppresses the printing of the error message that the parse
+                                                  // generates because we have already printed one.
+            }
+        }
+        return static_cast<int>(*convert_to_bison_tokentype(o.type));
+    };
 
 
     // If we have a cached out return it.
@@ -945,19 +749,13 @@ int yylex() {
     if (s.cached) {
         const auto o = std::move(*s.cached);
         s.cached.reset();
-        return s.mutate_global_state_for_return(o);
+        return prepForOutput(o);
     }
 
-    BisonLexerAction::Output out = lex::lexer(s.char_stream, s.action);
-
-    while (out.type == TokenType::ErInvalidUTF8 || out.type == TokenType::ErUnexpectedUnicode) {
-        // swallow invalid utf8.
-        s.mutate_global_state_for_return(out);
-        out = lex::lexer(s.char_stream, s.action);
-    }
+    BisonLexerAction::Output out = lex::lexer(s.codePointStream, s.action);
 
     if (out.type != TokenType::StringLine)
-        return s.mutate_global_state_for_return(out);
+        return prepForOutput(out);
 
     sc::lex::SourceCodeLocation start { out.range.begin };
     std::string str {};
@@ -969,25 +767,12 @@ int yylex() {
         if (out.type != TokenType::StringLine) {
             assert(!s.cached.has_value());
 
-            // Yes it reads from the end point only. Very odd. Causes many issues.
-            textpos = prev.range.end.absolute;
-            lineno = prev.range.end.lineNumber + 1; // zero indexed to 1
-
-            linepos = s.action.line_starts[prev.range.end.lineNumber];
-            charno = prev.range.end.column;
-            if (maxlinestarts < prev.range.end.lineNumber) {
-                maxlinestarts += maxlinestarts;
-                linestarts = (int*)pyr_pool_compile->Realloc(linestarts, maxlinestarts * sizeof(int*));
-            }
-            linestarts[lineno] = linepos;
-
             // This is the one case in the whole lexer where we currently have to alloc using the GC.
             // This would be much better pushed into the compiler.
-            const int flags = gCompilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
+            const int flags = s.textInfo->isClassFile ? obj_permanent | obj_immutable : obj_immutable;
             auto sc_str = newPyrString(gMainVMGlobals->gc, str.c_str(), flags, false);
-            zzval = (intptr_t)newPyrSlotNode(out.range, PyrSlot::make(sc_str));
+            yylval.slotNode = bison_cxt->allocParseNode<PyrSlotNode>(out.range, PyrSlot::make(sc_str));
             yylloc = out.range;
-            gParseFailed = prev.is_error() ? 1 : 0;
 
             s.cached = std::move(out); // save for next time.
             return STRING;
@@ -999,7 +784,7 @@ int yylex() {
         range.end.absolute -= 1;
 
         bool escaped = false;
-        const auto [bb, sz] = s.char_stream.source_code_range_to_text(range);
+        const auto [bb, sz] = s.codePointStream.source_code_range_to_text(range);
         for (auto b = bb; b < (bb + sz); ++b) {
             if (*b == '\\' && !escaped) {
                 escaped = true;
@@ -1026,7 +811,7 @@ int yylex() {
         }
 
         prev = out;
-        out = lex::lexer(s.char_stream, s.action);
+        out = lex::lexer(s.codePointStream, s.action);
     }
 }
 
@@ -1091,463 +876,440 @@ PyrSlot process_accidental_steps(const char* s) {
     return PyrSlot::make(degree + semitones / 10.);
 }
 
-void yyerror(const char* s) {
-    gParseFailed = 1;
-    error("%s\n", s);
-    postErrorLine(lineno, linepos, charno);
-    //  Debugger();
-}
 
-void fatal() {
-    gParseFailed = 1;
-    error("Parse error\n");
-    postErrorLine(lineno, linepos, charno);
-    //  Debugger();
-}
+struct ParseClassException {
+    ~ParseClassException() = default;
+    [[nodiscard]] virtual std::string getError() & = 0;
+    [[nodiscard]] virtual std::string getError() && = 0;
+};
 
-void postErrorLine(int linenum, int start, int charpos) {
-    int i, j, end, pos;
-    char str[256];
+struct ParseClassExceptionSimple : ParseClassException {
+    ParseClassExceptionSimple() = delete;
+    ParseClassExceptionSimple(std::shared_ptr<TextInfo> textInfo, sc::lex::SourceCodeRange range, const char* desc):
+        textInfo(std::move(textInfo)),
+        range(range),
+        desc(desc) {}
+    ~ParseClassExceptionSimple() = default;
+    ParseClassExceptionSimple(ParseClassExceptionSimple&&) noexcept = default;
+    ParseClassExceptionSimple(const ParseClassExceptionSimple&) noexcept = default;
 
-    // post("start %d\n", start);
-    // parseFailed = true;
-    post("  in %s\n", printingCurrfilename.c_str());
-    post("  line %d char %d:\n\n", linenum + errLineOffset, charpos);
-    // nice: postfl previous line for context
+    std::shared_ptr<TextInfo> textInfo;
+    sc::lex::SourceCodeRange range;
+    const char* desc;
 
-    // postfl("text '%s' %d\n", text, text);
-
-    // postfl error line for context
-    pos = start + charpos;
-    for (i = pos; i < gCompilinTextLen; ++i) {
-        if (gCompilingText[i] == 0 || gCompilingText[i] == '\r' || gCompilingText[i] == '\n')
-            break;
+    [[nodiscard]] std::string getError() & override {
+        const auto highlight = textInfo->createDiagnosticHighlight(range, { desc });
+        return diagnosticToCompilerError(ErrorType::Error, "Parsing error.", &highlight, 1);
     }
-    end = i;
-    for (i = start, j = 0; i < end && j < 255; ++i) {
-        str[j++] = gCompilingText[i];
+    [[nodiscard]] std::string getError() && override {
+        const auto highlight = textInfo->createDiagnosticHighlight(range, { desc });
+        return diagnosticToCompilerError(ErrorType::Error, "Parsing error.", &highlight, 1);
     }
-    str[j] = 0;
+};
+struct ParseClassExceptionBracket : ParseClassException {
+    ParseClassExceptionBracket() = delete;
+    ParseClassExceptionBracket(TextInfo f_info, sc::lex::SourceCodeRange start, sc::lex::SourceCodeRange end,
+                               std::string startDesc, std::string endDesc):
+        f_info(f_info),
+        start(start),
+        end(end),
+        startDesc(startDesc),
+        endDesc(std::move(endDesc)) {}
+    ~ParseClassExceptionBracket() = default;
+    ParseClassExceptionBracket(ParseClassExceptionBracket&&) noexcept = default;
+    ParseClassExceptionBracket(const ParseClassExceptionBracket&) noexcept = default;
 
-    i = end + 1;
-    if (i < gCompilinTextLen) {
-        // postfl following line for context
-        for (j = 0; j < 255 && i < gCompilinTextLen; ++i) {
-            if (gCompilingText[i] == 0 || gCompilingText[i] == '\r' || gCompilingText[i] == '\n')
-                break;
-            str[j++] = gCompilingText[i];
+    TextInfo f_info;
+
+    sc::lex::SourceCodeRange start, end;
+    std::string startDesc, endDesc;
+
+    [[nodiscard]] std::string getError() & override {
+        const DiagnosticHighlight highlight[2] {
+            f_info.createDiagnosticHighlight(start, std::string { startDesc }),
+            f_info.createDiagnosticHighlight(end, std::string { endDesc }),
+        };
+        return diagnosticToCompilerError(ErrorType::Error, "Parsing error.", highlight, 2);
+    }
+    [[nodiscard]] std::string getError() && override {
+        const DiagnosticHighlight highlight[2] {
+            f_info.createDiagnosticHighlight(start, std::move(startDesc)),
+            f_info.createDiagnosticHighlight(end, std::move(endDesc)),
+        };
+        return diagnosticToCompilerError(ErrorType::Error, "Parsing error.", highlight, 2);
+    }
+};
+
+struct OptionalIndex {
+    static constexpr auto invalid = std::numeric_limits<std::size_t>::max();
+    [[nodiscard]] constexpr static OptionalIndex valid(std::size_t v) {
+        assert(v != invalid);
+        return { v };
+    }
+    constexpr OptionalIndex(): v(invalid) {}
+    constexpr OptionalIndex(OptionalIndex&&) noexcept = default;
+    constexpr OptionalIndex(const OptionalIndex&) noexcept = default;
+    constexpr OptionalIndex& operator=(OptionalIndex&&) noexcept = default;
+    constexpr OptionalIndex& operator=(const OptionalIndex&) noexcept = default;
+    ~OptionalIndex() = default;
+    [[nodiscard]] explicit operator bool() const { return v != invalid; }
+    [[nodiscard]] [[nodiscard]] std::size_t valueUnchecked() const { return v; }
+
+private:
+    constexpr OptionalIndex(std::size_t v): v(v) {}
+    std::size_t v;
+};
+struct ClassDependency {
+    ClassDependency(PyrSymbol* name, PyrSymbol* superClassName, std::shared_ptr<TextInfo>& textInfo,
+                    sc::lex::SourceCodeRange range, sc::lex::SourceCodeRange rangeOfClassname,
+                    std::optional<sc::lex::SourceCodeRange> rangeOfSuperClass):
+        className(name),
+        superClassName(superClassName),
+        textInfo(textInfo),
+        range(range),
+        rangeOfClassName(rangeOfClassname),
+        rangeOfSuperClass(rangeOfSuperClass) {}
+
+    ClassDependency(ClassDependency&&) noexcept = default;
+    ClassDependency(const ClassDependency&) = default;
+    ClassDependency& operator=(ClassDependency&&) noexcept = default;
+    ClassDependency& operator=(const ClassDependency&) = default;
+
+    PyrSymbol* className;
+    PyrSymbol* superClassName; // can be nullptr
+    std::shared_ptr<TextInfo> textInfo;
+    sc::lex::SourceCodeRange range;
+    sc::lex::SourceCodeRange rangeOfClassName;
+    std::optional<sc::lex::SourceCodeRange> rangeOfSuperClass;
+    // Set in a second pass
+    OptionalIndex parent {}, firstChild {}, lastChild {}, nextSibling {};
+};
+
+struct ClassDependencyList {
+    std::unordered_map<PyrSymbol*, std::size_t> className2DepIndex;
+    std::vector<ClassDependency> deps;
+
+    // returns false if duplicate
+    bool add(ClassDependency dep) {
+        const auto name = dep.className;
+        if (className2DepIndex.find(name) != std::end(className2DepIndex)) {
+            return false;
         }
-        str[j] = 0;
-        post("  %s\n", str);
+        const auto index = deps.size();
+        deps.push_back(std::move(dep));
+        className2DepIndex.emplace(name, index);
+        return true;
     }
-    post("-----------------------------------\n", str);
-}
-
-void pstrncpy(unsigned char* s1, unsigned char* s2, int n);
-void pstrncpy(unsigned char* s1, unsigned char* s2, int n) {
-    int i, m;
-    m = *s2++;
-    n = (n < m) ? n : m;
-    *s1 = n;
-    s1++;
-    for (i = 0; i < n; ++i) {
-        *s1 = *s2;
-        s1++;
-        s2++;
-    }
-}
-
-int pstrcmp(unsigned char* s1, unsigned char* s2);
-int pstrcmp(unsigned char* s1, unsigned char* s2) {
-    int i, len1, len2, len;
-    len1 = *s1++;
-    len2 = *s2++;
-    len = sc_min(len1, len2);
-    for (i = 0; i < len; ++i) {
-        if (s1[i] < s2[i])
-            return -1;
-        if (s1[i] > s2[i])
-            return 1;
-    }
-    if (len1 < len2)
-        return -1;
-    if (len1 > len2)
-        return 1;
-    return 0;
-}
 
 
-int numClassDeps;
-static ClassExtFile* sClassExtFiles;
-static ClassExtFile* eClassExtFiles;
+    // returns vector of dependencys whose super class is not defined.
+    void linkReturnUndefinedSuperClasses() {
+        const auto count = deps.size();
+        for (std::size_t i { 0 }; i < count; ++i) {
+            auto& dep = deps[i];
+            if (!dep.superClassName)
+                continue;
 
-ClassExtFile* newClassExtFile(PyrSymbol* fileSym, int startPos, int endPos);
-ClassExtFile* newClassExtFile(PyrSymbol* fileSym, int startPos, int endPos) {
-    ClassExtFile* classext;
-    classext = (ClassExtFile*)pyr_pool_compile->Alloc(sizeof(ClassExtFile));
-    MEMFAIL(classext);
-    classext->fileSym = fileSym;
-    classext->next = nullptr;
-    classext->startPos = startPos;
-    classext->endPos = endPos;
-    if (!sClassExtFiles)
-        sClassExtFiles = classext;
-    else
-        eClassExtFiles->next = classext;
-    eClassExtFiles = classext;
-    return classext;
-}
-
-
-ClassDependancy* newClassDependancy(PyrSymbol* className, PyrSymbol* superClassName, PyrSymbol* fileSym, int startPos,
-                                    int endPos, int lineOffset) {
-    ClassDependancy* classdep;
-
-    // post("classdep '%s' '%s' '%s' %d %d\n", className->name, superClassName->name,
-    //	fileSym->name, className, superClassName);
-    // pyrmalloc:
-    // lifetime: kill after compile.
-    numClassDeps++;
-    if (className->classdep) {
-        error("duplicate Class found: '%s' \n", className->name);
-        post("%s\n", className->classdep->fileSym->name);
-        postfl("%s\n\n", fileSym->name);
-        return className->classdep;
-    }
-    classdep = (ClassDependancy*)pyr_pool_compile->Alloc(sizeof(ClassDependancy));
-    MEMFAIL(classdep);
-    classdep->className = className;
-    classdep->superClassName = superClassName;
-    classdep->fileSym = fileSym;
-    classdep->superClassDep = nullptr;
-    classdep->next = nullptr;
-    classdep->subclasses = nullptr;
-
-    classdep->startPos = startPos;
-    classdep->endPos = endPos;
-    classdep->lineOffset = lineOffset;
-
-    className->classdep = classdep;
-    return classdep;
-}
-
-void buildDepTree() {
-    ClassDependancy* next;
-    SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-
-    // postfl("->buildDepTree\n"); fflush(stdout);
-    for (int i = 0; i < symbolTable->TableSize(); ++i) {
-        PyrSymbol* sym = symbolTable->Get(i);
-        if (sym && (sym->flags & sym_Class)) {
-            if (sym->classdep) {
-                if (sym->classdep->superClassName->classdep) {
-                    next = sym->classdep->superClassName->classdep->subclasses;
-                    sym->classdep->superClassName->classdep->subclasses = sym->classdep;
-                    sym->classdep->next = next;
-                } else if (sym->classdep->superClassName != s_none) {
-                    error("Superclass '%s' of class '%s' is not defined in any file.\n%s\n",
-                          sym->classdep->superClassName->name, sym->classdep->className->name,
-                          sym->classdep->fileSym->name);
-                }
+            auto fnd = className2DepIndex.find(dep.superClassName);
+            if (fnd == className2DepIndex.end()) {
+                continue;
+            }
+            auto& parent = deps[fnd->second];
+            if (!parent.firstChild) {
+                parent.firstChild = OptionalIndex::valid(i);
+                parent.lastChild = OptionalIndex::valid(i);
+            } else {
+                assert(parent.lastChild);
+                const auto last = parent.lastChild.valueUnchecked();
+                assert(!deps[last].nextSibling);
+                deps[last].nextSibling = OptionalIndex::valid(i);
+                parent.lastChild = OptionalIndex::valid(i);
             }
         }
     }
-    // postfl("<-buildDepTree\n"); fflush(stdout);
-}
 
+    struct TopoResult {
+        std::vector<ClassDependency> valid;
+        std::vector<std::vector<ClassDependency>> loops;
+        [[nodiscard]] explicit operator bool() const { return loops.empty(); }
+    };
 
-void compileDepTree();
-void traverseDepTree(ClassDependancy* classdep, int level);
-void compileClassExtensions();
+    [[nodiscard]] TopoResult getTopologicalOrdering() const {
+        const auto count = deps.size();
+        std::vector<Mark> marks(count, Mark::NotVisited);
 
-void traverseFullDepTree() {
-    // postfl("->traverseFullDepTree\n"); fflush(stdout);
-    gClassCompileOrderNum = 0;
-    gClassCompileOrder = (ClassDependancy**)pyr_pool_compile->Alloc(gClassCompileOrderSize * sizeof(ClassDependancy));
-    MEMFAIL(gClassCompileOrder);
+        std::vector<ClassDependency> out, loop;
+        out.reserve(count);
 
-    // parse and compile all files
-    initParser(); // sets compiler errors to 0
-    gParserResult = -1;
-
-    traverseDepTree(s_abstract_object->classdep, 0);
-    compileDepTree(); // compiles backwards using the order defined in gClassCompileOrder
-    compileClassExtensions();
-
-    pyr_pool_compile->Free(gClassCompileOrder);
-
-    finiParser();
-    // postfl("<-traverseFullDepTree\n"); fflush(stdout);
-}
-
-
-void traverseDepTree(ClassDependancy* classdep, int level) {
-    ClassDependancy* subclassdep;
-
-    if (!classdep)
-        return;
-
-    subclassdep = classdep->subclasses;
-    for (; subclassdep; subclassdep = subclassdep->next) {
-        traverseDepTree(subclassdep, level + 1);
-    }
-    if (gClassCompileOrderNum > gClassCompileOrderSize) {
-        gClassCompileOrderSize *= 2;
-        gClassCompileOrder = (ClassDependancy**)pyr_pool_compile->Realloc(
-            gClassCompileOrder, gClassCompileOrderSize * sizeof(ClassDependancy));
-        MEMFAIL(gClassCompileOrder);
-    }
-
-    /*	postfl("traverse level:%d, gClassCompileOrderNum:%d, '%s' '%s' '%s'\n", level, gClassCompileOrderNum,
-       classdep->className->name, classdep->superClassName->name, classdep->fileSym->name); fflush(stdout);
-    */
-
-    gClassCompileOrder[gClassCompileOrderNum++] = classdep;
-}
-
-
-void compileClass(PyrSymbol* fileSym, int startPos, int endPos, int lineOffset) {
-    // fprintf(stderr, "compileClass: %d\n", fileSym->u.index);
-
-    gCompilingFileSym = fileSym;
-    gCompilingVMGlobals = nullptr;
-    gRootParseNode = nullptr;
-    initParserPool();
-    if (startLexer(fileSym, fs::path(), startPos, endPos, lineOffset)) {
-        // postfl("->Parsing %s\n", fileSym->name); fflush(stdout);
-        gParseFailed = yyparse();
-        // postfl("<-Parsing %s %d\n", fileSym->name, parseFailed); fflush(stdout);
-        // post("parseFailed %d\n", parseFailed); fflush(stdout);
-        if (!gParseFailed && gRootParseNode) {
-            // postfl("Compiling nodes %p\n", gRootParseNode);fflush(stdout);
-            gCompilingCmdLine = false;
-            compileNodeList(gRootParseNode, true);
-            // postfl("done compiling\n");fflush(stdout);
-        } else {
-            compileErrors++;
-            fs::path pathname(fileSym->name);
-            error("file '%s' parse failed\n", SC_Codecvt::path_to_utf8_str(pathname).c_str());
-            postfl("error parsing\n");
+        const auto objIndex = className2DepIndex.at(s_abstract_object);
+        std::unordered_set<std::size_t> toVisit;
+        toVisit.reserve(deps.size());
+        for (std::size_t i { 0 }; i < deps.size(); ++i) {
+            toVisit.insert(i);
         }
-        finiLexer();
-    } else {
-        error("file '%s' open failed\n", fileSym->name);
+
+        topoSortHasLoop(objIndex, marks, out, toVisit);
+        std::reverse(out.begin(), out.end());
+
+        std::vector<std::vector<ClassDependency>> loops;
+        std::vector<std::size_t> toVisitCopy;
+        toVisitCopy.reserve(toVisit.size());
+        std::copy(toVisit.begin(), toVisit.end(), std::back_inserter(toVisitCopy));
+        for (auto it : toVisitCopy) {
+            if (toVisit.count(it) == 1) {
+                std::vector<ClassDependency> chain;
+                buildLoops(it, toVisit, chain);
+
+                std::sort(chain.begin(), chain.end(), [](const ClassDependency& l, const ClassDependency& r) {
+                    const auto lex = strcmp(l.textInfo->filePathDescription.name, r.textInfo->filePathDescription.name);
+                    return lex == 0 ? l.rangeOfClassName < r.rangeOfClassName : lex;
+                });
+
+
+                loops.push_back(std::move(chain));
+            }
+        }
+        return { out, loops };
     }
-    freeParserPool();
+
+private:
+    void buildLoops(std::size_t i, std::unordered_set<std::size_t>& toVisit,
+                    std::vector<ClassDependency>& chain) const {
+        toVisit.erase(i);
+        chain.push_back(deps[i]);
+
+        for (auto it = deps[i].firstChild; it; it = deps[it.valueUnchecked()].nextSibling) {
+            if (toVisit.count(it.valueUnchecked()) == 1) {
+                buildLoops(it.valueUnchecked(), toVisit, chain);
+            }
+        }
+    }
+
+
+    enum struct Mark { NotVisited, InProgress, Visited };
+    void topoSortHasLoop(std::size_t i, std::vector<Mark>& marks, std::vector<ClassDependency>& sorted,
+                         std::unordered_set<std::size_t>& visited) const {
+        // DFS
+        switch (marks[i]) {
+        case Mark::InProgress:
+        default:
+            unreachable();
+        case Mark::Visited:
+            return;
+        case Mark::NotVisited:
+            marks[i] = Mark::InProgress;
+            bool foundLoop { false };
+            // if we find a loop, all classes added to sorted are invalidated
+            const auto startingSize = sorted.size();
+            for (auto it = deps[i].firstChild; it; it = deps[it.valueUnchecked()].nextSibling) {
+                topoSortHasLoop(it.valueUnchecked(), marks, sorted, visited);
+            }
+            visited.erase(i);
+            marks[i] = Mark::Visited;
+            sorted.push_back(deps[i]);
+            return;
+        }
+    }
+};
+
+struct ClassExtentionFile {
+    std::shared_ptr<TextInfo> textInfo;
+    sc::lex::SourceCodeLocation start;
+};
+
+bool compile(CompilerContext& cxt) {
+    const auto on_parse_sucess = [&](PyrRootNode& root) {
+        // Prints errors for us.
+        // TODO: this would be nicer if it returned diagnostics
+        compileNodeList(cxt, &root, true);
+        return cxt.errors == 0;
+    };
+
+    const auto on_parse_failure = [&](const std::vector<CompilerContext::ParseErrorInCurFile>& errors, int error_code) {
+        for (const auto& error : errors) {
+            const auto highlight = cxt.textInfo->createDiagnosticHighlight(error.location, std::string { error.msg });
+            const auto str = diagnosticToCompilerError(ErrorType::Error, "parse error", &highlight, 1);
+            cxt.postError(str.c_str(), error.versionOfError);
+        }
+        return false;
+    };
+
+
+    return parse(cxt, on_parse_sucess, on_parse_failure);
 }
 
-void compileDepTree() {
-    ClassDependancy* classdep;
-    int i;
-
-    for (i = gClassCompileOrderNum - 1; i >= 0; --i) {
-        classdep = gClassCompileOrder[i];
-        /*postfl("compile %d '%s' '%s' '%s'...%d/%d/%d\n", i, classdep->className->name, classdep->superClassName->name,
-            classdep->fileSym->name, classdep->startLine, classdep->endLine, classDep->lineOffset);*/
-        compileClass(classdep->fileSym, classdep->startPos, classdep->endPos, classdep->lineOffset);
-    }
-    // postfl("<compile\n");
+bool compile(const ClassDependency& dep) {
+    CompilerContext cxt { dep.textInfo, {}, dep.range, nullptr };
+    return compile(cxt);
 }
 
-void compileClassExtensions() {
-    if (sClassExtFiles) {
-        ClassExtFile* classext = sClassExtFiles;
-        do {
-            // postfl("compile class ext: %d/%d\n", classext->startPos, classext->endPos);
-            compileClass(classext->fileSym, classext->startPos, classext->endPos, -1);
-            classext = classext->next;
-        } while (classext);
-    }
+bool compile(const ClassExtentionFile& ext) {
+    CompilerContext cxt { ext.textInfo, {}, ext.start, nullptr };
+    return compile(cxt);
 }
+
 
 void findDiscrepancy();
 
-void traverseFullDepTree2() {
-    // assign a class index to all classes
-    if (!gParseFailed && !compileErrors) {
-        buildClassTree();
-        gNumClasses = 0;
-
-        // now I index them during pass one
-        indexClassTree(class_abstract_object, 0);
-        setSelectorFlags();
-        if (2 * numClassDeps != gNumClasses) {
-            error("There is a discrepancy.\n");
-            /* not always correct
-                    if(2*numClassDeps < gNumClasses) {
-                        post("Duplicate files may exist in the directory structure.\n");
-                    } else {
-                        post("Some class files may be missing.\n");
-                    }
-                    */
-            post("numClassDeps %d   gNumClasses %d\n", numClassDeps, gNumClasses);
-            findDiscrepancy();
-            compileErrors++;
-        } else {
-            double elapsed;
-            buildBigMethodMatrix();
-            SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-            post("\tNumber of Symbols %d\n", symbolTable->NumItems());
-            post("\tByte Code Size %d\n", totalByteCodes);
-            // elapsed = TickCount() - compileStartTime;
-            // elapsed = 0;
-            elapsed = elapsedTime() - compileStartTime;
-            post("\tcompiled %d files in %.2f seconds\n", gNumCompiledFiles, elapsed);
-            if (numOverwrites == 1) {
-                post("\nInfo: One method is currently overwritten by an extension. To see which, "
-                     "execute:\nMethodOverride.printAll\n\n");
-            } else if (numOverwrites > 1) {
-                post("\nInfo: %i methods are currently overwritten by extensions. To see which, "
-                     "execute:\nMethodOverride.printAll\n\n",
-                     numOverwrites);
-            }
-            post("compile done\n");
-        }
-    }
-}
-
-bool parseOneClass(PyrSymbol* fileSym) {
-    PyrSymbol *className, *superClassName;
-    ClassDependancy* classdep;
-    bool res;
-
-    int startPos, startLineOffset;
-
-    res = true;
-
-    startPos = textpos;
-    startLineOffset = lineno - 1;
-
-    GlobalBisonLexerState& s = *global_bison_lexer_state;
-
-    // skips all lexing errors
-    const auto advance = [&]() {
-        while (true) {
-            const auto r = lex::lexer(s.char_stream, s.action);
-            if (r.is_error())
-                continue;
-            else
-                return r;
-        }
+struct ActionSkipWhitespace {
+    struct Output {
+        sc::lex::TokenType type;
+        sc::lex::SourceCodeRange range;
     };
-
-    BisonLexerAction::Output out = advance();
-
-    if (out.type == TokenType::ClassName) {
-        const auto [ptr, sz] = s.char_stream.source_code_range_to_text(out.range);
-        className = getsymlen(ptr, sz);
-
-        out = lex::lexer(s.char_stream, s.action);
-        if (out.type == TokenType::EndOfFile)
-            return false;
-        if (out.type == TokenType::OpenSquare) {
-            scanForClosingBracket(TokenType::CloseSquare); // eat indexing spec
-            out = advance();
-            if (out.type == TokenType::EndOfFile)
-                return false;
-        }
-        if (out.type == TokenType::Colon) {
-            out = advance();
-            if (out.type == TokenType::EndOfFile)
-                return false;
-            if (out.type == TokenType::ClassName) {
-                const auto [ptr, sz] = s.char_stream.source_code_range_to_text(out.range);
-                superClassName = getsymlen(ptr, sz);
-
-                out = advance();
-                if (out.type == TokenType::EndOfFile)
-                    return false;
-                if (out.type == TokenType::OpenCurly) {
-                    scanForClosingBracket(TokenType::CloseCurly); // eat class body
-                    classdep =
-                        newClassDependancy(className, superClassName, fileSym, startPos, textpos, startLineOffset);
-                } else {
-                    compileErrors++;
-                    std::string expected = std::string { "Expected an open curly bracket '{' but received a " }
-                        + sc::lex::to_string(out.type);
-                    print_error_line(fileSym->name, gCompilingText, gCompilinTextLen, out.range, expected.c_str());
-                    return false;
-                }
-            } else {
-                compileErrors++;
-                std::string expected =
-                    std::string { "Expected a superclass name but received a " } + sc::lex::to_string(out.type);
-                print_error_line(fileSym->name, gCompilingText, gCompilinTextLen, out.range, expected.c_str());
-                return false;
-            }
-        } else if (out.type == TokenType::OpenCurly) {
-            if (className == s_abstract_object)
-                superClassName = s_none;
-            else
-                superClassName = s_object;
-            scanForClosingBracket(TokenType::CloseCurly); // eat class body
-            classdep = newClassDependancy(className, superClassName, fileSym, startPos, textpos, startLineOffset);
-        } else {
-            compileErrors++;
-            std::string expected = std::string {
-                "Expected an open curly bracket '{', or a colon ':' followed by a superclass, but received a "
-            } + sc::lex::to_string(out.type);
-            print_error_line(fileSym->name, gCompilingText, gCompilinTextLen, out.range, expected.c_str());
-            return false;
-        }
-    } else if (out.type == TokenType::Add) {
-        out = advance();
-        if (out.type == TokenType::EndOfFile)
-            return false;
-
-        scanForEnd();
-
-        newClassExtFile(fileSym, startPos, textpos);
-        return false;
-    } else {
-        if (out.type != TokenType::EndOfFile) {
-            compileErrors++;
-
-            std::string expected =
-                std::string { "Expected a class name but received a " } + sc::lex::to_string(out.type);
-            print_error_line(fileSym->name, gCompilingText, gCompilinTextLen, out.range, expected.c_str());
-            return false;
-        } else {
-            res = false;
-        }
+    template <sc::lex::TokenType type> std::optional<Output> process(sc::lex::SourceCodeRange loc) {
+        if constexpr (sc::lex::is_whitespace(type) || sc::lex::is_comment(type))
+            return std::nullopt;
+        else
+            return { { type, loc } };
     }
-    return res;
+};
+
+template <typename... TS>
+ActionSkipWhitespace::Output match(std::shared_ptr<TextInfo>& f_info, sc::lex::CodePointStream& cps,
+                                   ActionSkipWhitespace& action, const char* desc, TS... ts) {
+    auto out = lex::lexer(cps, action);
+
+    if (((out.type == ts) || ...))
+        return out;
+
+    throw ParseClassExceptionSimple { f_info, out.range, desc };
 }
 
-void initPassOne() {
-    // dump_pool_histo(pyr_pool_runtime);
-    pyr_pool_runtime->FreeAllInternal();
-    // dump_pool_histo(pyr_pool_runtime);
-    // gPermanentObjPool.Init(pyr_pool_runtime, PERMOBJCHUNK);
-    sClassExtFiles = nullptr;
+// Must have *just* consumed the opening bracket.
+ActionSkipWhitespace::Output matchClosingBracket(std::shared_ptr<TextInfo>& f_info, sc::lex::CodePointStream& cps,
+                                                 ActionSkipWhitespace& action, sc::lex::SourceCodeRange loc_of_open,
+                                                 sc::lex::TokenType opening) {
+    assert(sc::lex::is_open_bracket(opening));
+    const auto closing = sc::lex::get_closing_bracket(opening);
+    assert(sc::lex::is_close_bracket(closing));
+    const auto [c_start, o_end] = sc::lex::get_opening_brackets(closing);
 
-    void* ptr = pyr_pool_runtime->Alloc(sizeof(SymbolTable));
-    MEMFAIL(ptr);
-    gMainVMGlobals->symbolTable = new (ptr) SymbolTable(pyr_pool_runtime, 65536);
+    auto out = lex::lexer(cps, action);
 
-    initSymbols(); // initialize symbol globals
-    initSpecialSelectors();
-    initSpecialClasses();
-    initClasses();
-    initParserPool();
-    initParseNodes();
-    initPrimitives();
+    std::size_t bracket_level { 1 };
 
-    initLexer();
+    while (true) {
+        if (out.type == sc::lex::TokenType::EndOfFile)
+            throw ParseClassExceptionSimple { f_info, loc_of_open, "Could not find closing bracket opened here." };
+        else if (c_start <= out.type && out.type < o_end)
+            ++bracket_level;
+        else if (out.type == closing) {
+            --bracket_level;
+            if (bracket_level == 0)
+                return out;
+        }
 
-    compileErrors = 0;
-    numClassDeps = 0;
-    gCompiledOK = false;
-    compiledDirectories.clear();
-
-    // main class library folder: only used for relative path resolution
-    gCompileDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / "SCClassLibrary";
+        out = lex::lexer(cps, action);
+    }
 }
 
-void finiPassOne() {
-    // postfl("->finiPassOne\n");
-    freeParserPool();
-    // postfl("<-finiPassOne\n");
+// Called in a loop until it returns false.
+bool initaliseClassDependencyListAndRegisterExtensions(std::shared_ptr<TextInfo>& textInfo,
+                                                       sc::lex::CodePointStream& cps, ActionSkipWhitespace& action,
+                                                       ClassDependencyList& depList,
+                                                       std::vector<ClassExtentionFile>& extList) {
+    // What we want here is an error resistant approach to parsing.
+    // In future this should be rewritten so we can avoid manual checks, this will involve a more 'theoretical' and
+    // consider approach to parsing. Right now, we just have some basic cases. It is very easy to end up with an
+    // un-parsable file, which will result in valid class definitions being missed.
+
+    const auto first =
+        match(textInfo, cps, action, "Expected class name or '+' for extention class", TokenType::ClassName,
+              TokenType::KeywordBinaryOperator, TokenType::Add, TokenType::EndOfFile);
+
+    if (first.type == TokenType::EndOfFile)
+        return false; // This is the main exit of the loop.
+    else if (first.type == TokenType::KeywordBinaryOperator) {
+        std::string msg = "Replace with '";
+        const auto [ptr, sz] = textInfo->indexIntoSource(first.range);
+        msg.append(ptr, sz - 1);
+        msg += " :'";
+        const auto hg = textInfo->createDiagnosticHighlight(first.range, msg);
+        const auto err =
+            diagnosticToCompilerError(ErrorType::Error, "Must have a space between class name and the colon.", &hg, 1);
+        postText(err.c_str(), err.size());
+
+        // Skip this class definition.
+        const auto maybeSuper = match(textInfo, cps, action, "Expected superclass after ':'", TokenType::ClassName);
+        const auto open_curly = match(textInfo, cps, action, "Expected open curly bracket '{'.", TokenType::OpenCurly);
+        const auto close_curly = matchClosingBracket(textInfo, cps, action, open_curly.range, TokenType::OpenCurly);
+        return true; // try to parse the remainder of the file.
+    } else if (first.type == TokenType::Add) {
+        const auto class_name = match(textInfo, cps, action, "Expected class name after '+'", TokenType::ClassName);
+        const auto open_curly = match(textInfo, cps, action, "Expected open curly bracket '{'.", TokenType::OpenCurly);
+        const auto close_curly = matchClosingBracket(textInfo, cps, action, open_curly.range, TokenType::OpenCurly);
+        // This marks the rest of the file as an extention, do not continue.
+        extList.push_back(ClassExtentionFile { textInfo, first.range.begin });
+        return false;
+    }
+
+    assert(first.type == TokenType::ClassName);
+    const auto [ptr, sz] = cps.source_code_range_to_text(first.range);
+    const auto className = getsymlen(ptr, sz);
+
+    // mutable variable, is updated as we step through the code.
+    auto next = lex::lexer(cps, action);
+
+    if (next.type == TokenType::OpenSquare) {
+        // TODO: these checks can be moved to the compilation stage
+        if (className == s_object)
+            throw ParseClassExceptionSimple { textInfo, first.range, "Class 'Object' cannot have an index spec." };
+
+        if (className == s_abstract_object)
+            throw ParseClassExceptionSimple { textInfo, first.range,
+                                              "Class 'AbstractObject' cannot have an index spec." };
+
+        matchClosingBracket(textInfo, cps, action, next.range, TokenType::OpenSquare);
+        next = lex::lexer(cps, action);
+    }
+
+    std::optional<sc::lex::SourceCodeRange> superloc {};
+    PyrSymbol* superName;
+    if (next.type != TokenType::Colon) {
+        superName = className == s_object ? s_none : s_object;
+    } else {
+        if (className == s_abstract_object)
+            throw ParseClassExceptionSimple { textInfo, first.range,
+                                              "Class 'AbstractObject' cannot inherit from another class." };
+        const auto super = match(textInfo, cps, action, "Expected a super class name", TokenType::ClassName);
+        const auto [ptr, sz] = cps.source_code_range_to_text(super.range);
+
+        superName = getsymlen(ptr, sz);
+        superloc = super.range;
+
+        next = lex::lexer(cps, action);
+    }
+
+    if (next.type != TokenType::OpenCurly) {
+        throw ParseClassExceptionSimple { textInfo, next.range, "Expected open curly bracket '{'." };
+    }
+    matchClosingBracket(textInfo, cps, action, next.range, TokenType::OpenCurly);
+
+    depList.add(ClassDependency {
+        className,
+        superName,
+        textInfo,
+        { first.range.begin, cps.end_token() },
+        first.range,
+        superloc,
+    });
+    return true; // keep going
+}
+
+// Returns whether there are more classes to parse in the file.
+bool declareClassForDependencyTree(std::shared_ptr<TextInfo>& textInfo, sc::lex::CodePointStream& cps,
+                                   ActionSkipWhitespace& action, ClassDependencyList& depList,
+                                   std::vector<ClassExtentionFile>& extList) {
+    try {
+        return initaliseClassDependencyListAndRegisterExtensions(textInfo, cps, action, depList, extList);
+    } catch (ParseClassException& p) {
+        // TODO: consider implementing some for of error recovery here by skipping some classes.
+        // As this only prints one error per file.
+        // Alternatively, if we move towards a language server, this is unnecessary.
+        const auto str = std::move(p).getError();
+        postText(str.c_str(), str.size());
+        return false;
+    }
 }
 
 /**
@@ -1558,6 +1320,8 @@ static bool isDefaultClassLibraryDirectory(const fs::path& dir) {
     auto const iter = std::find(defaultDirs.begin(), defaultDirs.end(), dir);
     return iter != defaultDirs.end();
 }
+
+using ClassLibraryFileMap = std::unordered_map<PyrSymbol*, std::shared_ptr<TextInfo>>;
 
 /**
  * \brief Handles a missing directory encountered during compilation.
@@ -1577,9 +1341,9 @@ static void passOne_HandleMissingDirectory(const fs::path& dir) {
     }
 }
 
-fs::path relativeToCompileDir(const fs::path& p) { return fs::relative(p, gCompileDir); }
 
-bool passOne_ProcessOneFile(const fs::path& path);
+bool passOne_ProcessOneFile(const fs::path& path, ClassLibraryFileMap& files, struct PyrGC* gc,
+                            ClassDependencyList& depList, std::vector<ClassExtentionFile>& extList);
 
 /** \brief Determines whether the directory should be skipped during compilation.
  *
@@ -1589,9 +1353,8 @@ bool passOne_ProcessOneFile(const fs::path& path);
  * - the language configuration says this path is excluded
  * - SC_Filesystem::shouldNotCompileDirectory(dir) returns `true`
  */
-static bool passOne_ShouldSkipDirectory(const fs::path& dir) {
-    return (compiledDirectories.find(dir) != compiledDirectories.end())
-        || (gLanguageConfig && gLanguageConfig->pathIsExcluded(dir))
+static bool passOne_ShouldSkipDirectory(const fs::path& dir, const std::set<fs::path>& compiledDirs) {
+    return (compiledDirs.find(dir) != compiledDirs.end()) || (gLanguageConfig && gLanguageConfig->pathIsExcluded(dir))
         || (SC_Filesystem::instance().shouldNotCompileDirectory(dir));
 }
 
@@ -1616,7 +1379,8 @@ static bool passOne_ShouldSkipDirectory(const fs::path& dir) {
  * \returns `true` if processing was successful, `false` if it failed.
  *   See above for what constitutes success and failure conditions.
  */
-static bool passOne_ProcessDir(const fs::path& dir) {
+static bool passOne_ProcessDir(const fs::path& dir, std::set<fs::path>& compiledDirs, ClassLibraryFileMap& files,
+                               PyrGC* gc, ClassDependencyList& deps, std::vector<ClassExtentionFile>& extList) {
     // Prefer non-throwing versions of filesystem functions, since they are actually not unexpected
     // and because it's faster to use error codes.
     std::error_code ec;
@@ -1642,7 +1406,7 @@ static bool passOne_ProcessDir(const fs::path& dir) {
 
             return false;
         }
-    } else if (passOne_ShouldSkipDirectory(expdir)) {
+    } else if (passOne_ShouldSkipDirectory(expdir, compiledDirs)) {
         // If we should skip the directory, just return success now.
         return true;
     } else {
@@ -1651,7 +1415,7 @@ static bool passOne_ProcessDir(const fs::path& dir) {
     }
 
     // Record that we have touched this directory already.
-    compiledDirectories.insert(expdir);
+    compiledDirs.insert(expdir);
 
     // Invariant: we have processed (or begun to process) every directory or file already
     // touched by the iterator.
@@ -1661,12 +1425,12 @@ static bool passOne_ProcessDir(const fs::path& dir) {
         // If the file is a directory, perform the same checks as above to see if we should
         // skip compilation on it.
         if (fs::is_directory(path)) {
-            if (passOne_ShouldSkipDirectory(path)) {
+            if (passOne_ShouldSkipDirectory(path, compiledDirs)) {
                 rditer.disable_recursion_pending(); // don't "push" into the next level of the hierarchy
             } else {
                 // Mark this directory as compiled.
                 // By not calling no_push(), we allow the iterator to enter the directory
-                compiledDirectories.insert(path);
+                compiledDirs.insert(path);
             }
 
         } else { // ordinary file
@@ -1678,13 +1442,17 @@ static bool passOne_ProcessDir(const fs::path& dir) {
             const fs::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
             if (isAlias && fs::is_directory(respath)) {
                 // If the resolved alias is a directory, recurse on it.
-                if (!passOne_ProcessDir(respath)) {
+                if (!passOne_ProcessDir(respath, compiledDirs, files, gc, deps, extList)) {
                     return false;
                 }
             } else if (respath.empty()) {
                 error("Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
-            } else if (!passOne_ProcessOneFile(respath)) {
-                return false;
+
+            } else {
+                if (passOne_ProcessOneFile(respath, files, gc, deps, extList)) {
+                } else {
+                    return false;
+                }
             }
         }
 
@@ -1699,12 +1467,14 @@ static bool passOne_ProcessDir(const fs::path& dir) {
     return true;
 }
 
-bool passOne() {
-    initPassOne();
-    bool success = gLanguageConfig->forEachIncludedDirectory(passOne_ProcessDir);
-    finiPassOne();
-
-    return success;
+// Pass one build the class dependancy tree.
+bool declareDependancyTreeLoadFiles(ClassLibraryFileMap& files, ClassDependencyList& deps,
+                                    std::vector<ClassExtentionFile>& extList, PyrGC* gc) {
+    return gLanguageConfig->forEachIncludedDirectory(
+        [&, compiled_dirs = std::set<fs::path> {}](const fs::path& p) mutable {
+            return passOne_ProcessDir(p, compiled_dirs, files, gc, deps, extList);
+        });
+    ;
 }
 
 /// True if file doesn't begin with '.', and ends with either '.sc' or '.rtf'
@@ -1713,6 +1483,7 @@ bool isValidSourceFileName(const fs::path& path) {
     return path.filename().c_str()[0] != '.' && // must not be hidden file
         ((ext == ".sc") || (ext == ".rtf" && path.stem().extension() == ".sc"));
 }
+
 
 /** \brief Attempt to parse a single SuperCollider source file
  *
@@ -1723,62 +1494,52 @@ bool isValidSourceFileName(const fs::path& path) {
  * \returns Whether parsing was successful. The only failure condition occurs
  * when the file can't be opened.
  */
-bool passOne_ProcessOneFile(const fs::path& path) {
-    bool success = true;
-
+bool passOne_ProcessOneFile(const fs::path& path, ClassLibraryFileMap& files, class PyrGC* gc,
+                            ClassDependencyList& depList, std::vector<ClassExtentionFile>& extList) try {
     const std::string path_str = SC_Codecvt::path_to_utf8_str(path);
     const char* path_c_str = path_str.c_str();
     if (gLanguageConfig && gLanguageConfig->pathIsExcluded(path)) {
         post("\texcluding file: '%s'\n", path_c_str);
-        return success;
+        return true;
     }
+    if (!isValidSourceFileName(path))
+        return true;
 
-    if (isValidSourceFileName(path)) {
-        gNumCompiledFiles++;
-        PyrSymbol* fileSym = getsym(path_c_str);
-        fileSym->u.source = nullptr;
-        if (startLexer(fileSym, path, -1, -1, -1)) {
-            while (parseOneClass(fileSym)) {};
-            finiLexer();
-        } else {
-            error("file '%s' open failed\n", path_c_str);
-            success = false;
-        }
-    } else {
-        // wasn't a valid source file; ignore
-    }
-    return success;
+    PyrSymbol* fileSym = getsym(path_c_str);
+    std::ifstream file;
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    file.open(path, std::ios::binary);
+
+    std::stringstream ss;
+
+    ss << file.rdbuf();
+
+    sc::lex::NormalisedSource norm { ss.str() };
+    auto pyrString =
+        newPyrString(gc, static_cast<const std::string&>(norm).c_str(), obj_immutable | obj_permanent, false);
+
+    auto textInfo = std::make_shared<TextInfo>(norm, *pyrString, *fileSym, sc::lex::FileCodeLocation {}, true);
+    files.emplace(fileSym, textInfo);
+
+    sc::lex::CodePointStream cps { textInfo->normalisedSource, textInfo->offsetInFile };
+    ActionSkipWhitespace action {};
+
+    while (declareClassForDependencyTree(textInfo, cps, action, depList, extList)) {};
+    return true;
+
+} catch (const std::exception& ex) {
+    error("Could not read %s: %s.\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ex.what());
+    return false;
 }
+
 
 void schedRun();
 
-void compileSucceeded() {
-    gCompiledOK = !(gParseFailed || compileErrors);
-    if (gCompiledOK) {
-        gCompiledOK = true;
 
-        gCompiledOK = initRuntime(gMainVMGlobals, 128 * 1024, pyr_pool_runtime);
-
-        if (gCompiledOK) {
-            VMGlobals* g = gMainVMGlobals;
-
-            g->canCallOS = true;
-
-            ++g->sp;
-            SetObject(g->sp, g->process);
-            runInterpreter(g, s_startup, 1);
-            g->canCallOS = false;
-
-            schedRun();
-        }
-        flushPostBuf();
-    }
-}
-
-static void runShutdown() {
+static void runShutdown(bool wasCompiledPreviously) {
     // printf("->aboutToCompileLibrary\n");
     gLangMutex.lock();
-    if (gCompiledOK) {
+    if (wasCompiledPreviously) {
         VMGlobals* g = gMainVMGlobals;
 
         g->canCallOS = true;
@@ -1797,78 +1558,196 @@ void closeAllGUIScreens();
 void TempoClock_stopAll(void);
 void closeAllCustomPorts();
 
-void shutdownLibrary() {
+void shutdownLibrary(bool wasCompiledPreviously) {
+    gClassLibraryInfo.markShuttingDown();
     closeAllGUIScreens();
 
     schedStop();
 
-    runShutdown();
+    runShutdown(wasCompiledPreviously);
 
     TempoClock_stopAll();
 
-    gLangMutex.lock();
-    closeAllCustomPorts();
+    {
+        auto lock = std::lock_guard<std::timed_mutex> { gLangMutex };
+        closeAllCustomPorts();
 
-    if (gCompiledOK) {
-        VMGlobals* g = gMainVMGlobals;
-        g->canCallOS = true;
-        g->gc->RunAllFinalizers();
-        g->canCallOS = false;
+        if (wasCompiledPreviously) {
+            VMGlobals* g = gMainVMGlobals;
+            g->canCallOS = true;
+            g->gc->RunAllFinalizers();
+            g->canCallOS = false;
+        }
+
+        pyr_pool_runtime->FreeAll();
     }
 
-    pyr_pool_runtime->FreeAll();
-
-    gCompiledOK = false;
-
-    gLangMutex.unlock();
+    gClassLibraryInfo.reset();
     deinitPrimitives();
 }
 
-SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone) {
-    // printf("->compileLibrary\n");
-    shutdownLibrary();
+SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalone) try {
+    // ensure buffer is flushed
+    struct FlushOnExit {
+        ~FlushOnExit() { flushPostBuf(); }
+    } flush;
 
-    gLangMutex.lock();
-    gNumCompiledFiles = 0;
-    gCompiledOK = false;
+    shutdownLibrary(wasCompiledPreviously);
 
-    if (!gLanguageConfig) {
+    auto lock = std::lock_guard<std::timed_mutex> { gLangMutex };
+
+    // TODO: this should just use chrono directly.
+    const auto startTime = elapsedTime();
+
+    if (!gLanguageConfig)
         SC_LanguageConfig::readLibraryConfig(standalone);
-    }
 
-    compileStartTime = elapsedTime();
 
-    totalByteCodes = 0;
+    pyr_pool_runtime->FreeAllInternal();
+
+    void* ptr = pyr_pool_runtime->Alloc(sizeof(SymbolTable));
+    if (!ptr)
+        throw FatalInterpreterError { "Out of memory" };
+
+    gMainVMGlobals->symbolTable = new (ptr) SymbolTable(pyr_pool_runtime, 65536);
 
 #ifdef NDEBUG
-    postfl("compiling class library...\n");
+    postfl("Compiling class library...\n");
 #else
-    postfl("compiling class library (debug build)...\n");
+    postfl("Compiling class library (debug build)...\n");
 #endif
 
-    bool res = passOne();
-    if (res) {
-        if (!compileErrors) {
-            buildDepTree();
-            traverseFullDepTree();
-            traverseFullDepTree2();
-            flushPostBuf();
+    gClassLibraryInfo.markCompilationInProgress();
 
-            if (!compileErrors && gShowWarnings) {
-                SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-                symbolTable->CheckSymbols();
+    initSymbols();
+    initSpecialSelectors();
+    initSpecialClasses();
+    initClasses();
+    initPrimitives();
+
+    ClassLibraryFileMap files;
+    ClassDependencyList deps;
+    std::vector<ClassExtentionFile> extList;
+
+    std::size_t numFilesCompiled { 0 };
+
+    declareDependancyTreeLoadFiles(files, deps, extList, nullptr);
+
+    deps.linkReturnUndefinedSuperClasses();
+
+    auto [topo, disconnected] = deps.getTopologicalOrdering();
+
+    for (const std::vector<ClassDependency>& dis : disconnected) {
+        if (dis.size() == 1) { // A chain of one, either inherits from self, or from an undefined class
+            if (dis[0].superClassName == dis[0].className) {
+                const auto h = dis[0].textInfo->createDiagnosticHighlight(dis[0].rangeOfSuperClass.value(),
+                                                                          "Classes cannot inherit from themselves");
+                const auto str = diagnosticToCompilerError(ErrorType::Error, "Self inheritance", &h, 1);
+                ::postText(str.c_str(), str.size());
+            } else {
+                const auto h = dis[0].textInfo->createDiagnosticHighlight(dis[0].rangeOfSuperClass.value(),
+                                                                          "This superclass does not exist.");
+                const auto str = diagnosticToCompilerError(ErrorType::Error, "Undefined classes", &h, 1);
+                ::postText(str.c_str(), str.size());
             }
+        } else {
+            // Long chain
+            std::vector<DiagnosticHighlight> diags;
+            const auto disSz = dis.size();
+            for (std::size_t i { 0 }; i < disSz; ++i) {
+                if (i == 0)
+                    diags.push_back(dis[i].textInfo->createDiagnosticHighlight(dis[i].rangeOfClassName,
+                                                                               "Inheritance loop started here..."));
+                else if (i + 1 == disSz)
+                    diags.push_back(dis[i].textInfo->createDiagnosticHighlight(dis[i].rangeOfClassName,
+                                                                               "...inheritance loop ended here."));
+                else
+                    diags.push_back(dis[i].textInfo->createDiagnosticHighlight(dis[i].rangeOfClassName, "..."));
+            }
+
+            const auto str = diagnosticToCompilerError(ErrorType::Error, "Inheritance loop", &diags[0], diags.size());
+            ::postText(str.c_str(), str.size());
         }
-        pyr_pool_compile->FreeAll();
-        flushPostBuf();
-        compileSucceeded();
-    } else {
-        gCompiledOK = false;
     }
 
-    gLangMutex.unlock();
-    // printf("<-compileLibrary\n");
-    return gCompiledOK;
+    std::vector<ClassDependency> classesToRemove;
+    for (const auto& d : topo)
+        if (!compile(d))
+            classesToRemove.push_back(d);
+
+    for (const auto& d : extList) {
+        compile(d);
+    }
+
+    if (!classesToRemove.empty())
+        throw std::runtime_error { "There are classes that need removing, this is currently a compilation error but "
+                                   "one day will only post a warning." };
+
+
+    buildClassTree();
+    gNumClasses = indexClassTree(class_abstract_object, 0);
+    const auto numSelectors = setSelectorFlags();
+
+    buildBigMethodMatrix(numSelectors);
+
+    SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
+    post("\tNumber of Symbols %d\n", symbolTable->NumItems());
+    const auto elapsed = elapsedTime() - startTime;
+    post("\tcompiled in %.2f seconds\n", elapsed);
+    const auto numOverwrites = gClassLibraryInfo.methodOverrideCount();
+    if (numOverwrites == 1) {
+        post("\nInfo: One method is currently overwritten by an extension. To see which, "
+             "execute:\nMethodOverride.printAll\n\n");
+    } else if (numOverwrites > 1) {
+        post("\nInfo: %i methods are currently overwritten by extensions. To see which, "
+             "execute:\nMethodOverride.printAll\n\n",
+             numOverwrites);
+    }
+
+    pyr_pool_compile->FreeAll();
+
+    PyrClass* class_main = s_main->u.classobj;
+    if (!class_main)
+        throw std::runtime_error { "Class 'Main' was not defined" };
+
+
+    if (!isSubclassOf(class_main, class_process)) {
+        throw std::runtime_error { "Class 'Main' is not a subclass of 'Process'" };
+    }
+
+    post("Compile done.\n");
+    gClassLibraryInfo.markCompilationOkay();
+
+    post("Initalising runtime.\n");
+
+    initRuntime(gMainVMGlobals, 128 * 1024, pyr_pool_runtime);
+
+    post("Executing 'Process.startup'...\n");
+    VMGlobals* g = gMainVMGlobals;
+    g->canCallOS = true;
+    ++g->sp;
+    SetObject(g->sp, g->process);
+
+    // This will post the main greating.
+    runInterpreter(g, s_startup, 1);
+    g->canCallOS = false;
+    schedRun();
+
+    gClassLibraryInfo.markLibraryInitalised();
+
+    return true;
+} catch (const FatalInterpreterError& e) {
+    gClassLibraryInfo.markCompilationFailed();
+    throw;
+} catch (const std::exception& e) {
+    error("Exception thrown while booting: %s\n", e.what());
+    flushPostBuf();
+    gClassLibraryInfo.markCompilationFailed();
+    return false;
+} catch (...) {
+    error("Unexpected throw object");
+    gClassLibraryInfo.markCompilationFailed();
+    return false;
 }
 
 void dumpByteCodes(PyrBlock* theBlock);
@@ -1877,7 +1756,7 @@ SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
     VMGlobals* g = gMainVMGlobals;
     g->canCallOS = true;
     try {
-        if (gCompiledOK) {
+        if (gClassLibraryInfo.acceptsInput()) {
             ++g->sp;
             SetObject(g->sp, g->process);
             runInterpreter(g, selector, 1);
@@ -1902,120 +1781,75 @@ SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
     g->canCallOS = false;
 }
 
-bool startLexer(PyrSymbol* fileSym, const fs::path& p, int startPos, int endPos, int lineOffset) {
-    const char* filename = fileSym->name;
+SCLANG_DLLEXPORT_C void setCommandLine(const char* txt, size_t txtSize, const char* filePath, int lineNumber,
+                                       int column) {
+    VMGlobals* g = gMainVMGlobals;
 
-    gCompilinTextLen = -1;
-    gCompilingFileSym = fileSym;
+    auto interpreter = g->process->interpreter.getPyrObjType<PyrInterpreter>();
 
-    if (!fileSym->u.source) {
-        try {
-            std::ifstream file;
-            file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-            file.open(p, std::ios_base::binary);
+    PyrString* strobj = newPyrStringN(g->gc, txtSize, 0, true);
+    memcpy(strobj->s, txt, txtSize);
+    interpreter->cmdLine = PyrSlot::make(strobj);
 
-            std::stringstream ss;
-            ss << file.rdbuf();
-            sc::lex::NormalisedSource src(ss.str());
-            const auto& string = static_cast<const std::string&>(src);
+    interpreter->filePath = filePath ? PyrSlot::make(getsym(filePath)) : PyrSlot {};
+    interpreter->lineNumber = PyrSlot::make(lineNumber);
+    interpreter->column = PyrSlot::make(column);
 
-            gCompilingText = (char*)pyr_pool_compile->Alloc((string.size() + 1) * sizeof(char));
-            MEMFAIL(gCompilingText);
-            std::copy(string.begin(), string.end(), gCompilingText);
-            gCompilingText[string.size()] = '\0';
-
-            fileSym->u.source = gCompilingText;
-            rtf2txt(gCompilingText);
-        } catch (const std::exception& ex) {
-            error("Could not read %s: %s.\n", SC_Codecvt::path_to_utf8_str(p).c_str(), ex.what());
-            return false;
-        }
-    } else
-        gCompilingText = fileSym->u.source;
-
-    if ((startPos >= 0) && (endPos > 0)) {
-        gCompilinTextLen = endPos - startPos;
-        gCompilingText += startPos;
-    } else if (gCompilinTextLen == -1)
-        gCompilinTextLen = strlen(gCompilingText);
-
-    if (lineOffset > 0)
-        errLineOffset = lineOffset;
-    else
-        errLineOffset = 0;
-
-    if (startPos > 0)
-        errCharPosOffset = startPos;
-    else
-        errCharPosOffset = 0;
-
-    initLongStack(&generatorStack);
-    lastClosedFuncCharNo = 0;
-    textpos = 0;
-    linepos = 0;
-    lineno = 1;
-    charno = 0;
-
-    zzval = 0;
-    gParseFailed = 0;
-    currfilename = fs::path(filename);
-    printingCurrfilename = "file '" + SC_Codecvt::path_to_utf8_str(currfilename) + "'";
-    maxlinestarts = 1000;
-    linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
-    MEMFAIL(linestarts);
-    linestarts[0] = 0;
-    linestarts[1] = 0;
-    gCompilingCmdLine = false;
-
-    sc::lex::NormalisedSource src { gCompilingText, static_cast<size_t>(gCompilinTextLen) };
-    BisonLexerAction ba { static_cast<const std::string&>(src) };
-    global_bison_lexer_state.emplace(GlobalBisonLexerState::Mode::ClassLibrary, std::move(ba),
-                                     std::move(sc::lex::CodePointStream { std::move(src), {} }));
-
-    return true;
+    // we know strobj is white so we can use GCWriteNew
+    g->gc->GCWriteNew(interpreter, strobj);
 }
 
-void startLexerCmdLine(char* textbuf, int textbuflen) {
-    sc::lex::NormalisedSource src(textbuf, textbuflen);
-    const auto& string = static_cast<const std::string&>(src);
-
-    gCompilingText = (char*)pyr_pool_compile->Alloc((string.size()) * sizeof(char));
-    MEMFAIL(gCompilingText);
-    std::copy(string.begin(), string.end(), gCompilingText);
-
-    gCompilinTextLen = string.size();
-
-    rtf2txt(gCompilingText);
-
+CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, sc::lex::FileCodeLocation fileLoc,
+                                 sc::lex::SourceCodeLocation loc, struct VMGlobals* vm):
+    textInfo(std::move(t)),
+    vm_globals(vm) {
+    parseNodePool.Init(pyr_pool_compile, 32000, 32000, 2000);
+    assert(bison_cxt == nullptr);
+    bison_cxt = this;
+    assert(!gParserState);
     initLongStack(&generatorStack);
-    lastClosedFuncCharNo = 0;
-    textpos = 0;
-    linepos = 0;
-    lineno = 1;
-    charno = 0;
-
-    gCompilingCmdLine = true;
-    zzval = 0;
-    gParseFailed = 0;
-    gCompilingFileSym = getsym("interpreted text");
-    currfilename = fs::path("interpreted text");
-    printingCurrfilename = currfilename.string();
-    maxlinestarts = 1000;
-    linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
-    MEMFAIL(linestarts);
-    linestarts[0] = 0;
-    linestarts[1] = 0;
-
-    errLineOffset = 0;
-    errCharPosOffset = 0;
-
-    BisonLexerAction ba { static_cast<const std::string&>(src) };
-    global_bison_lexer_state.emplace(GlobalBisonLexerState::Mode::CMDInitial, std::move(ba),
-                                     std::move(lex::CodePointStream { std::move(src), {} }));
+    parseNodePool.FreeAll();
+    gParserState =
+        ParserState { textInfo, BisonLexerAction { textInfo },
+                      sc::lex::CodePointStream { textInfo->normalisedSource, fileLoc, loc },
+                      textInfo->isClassFile ? ParserState::Mode::ClassLibrary : ParserState::Mode::CMDInitial };
 }
 
-void finiLexer() {
-    global_bison_lexer_state.reset();
-    pyr_pool_compile->Free(linestarts);
+CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, sc::lex::FileCodeLocation fileLoc,
+                                 sc::lex::SourceCodeRange range, struct VMGlobals* vm):
+    textInfo(std::move(t)),
+    vm_globals(vm) {
+    parseNodePool.Init(pyr_pool_compile, 32000, 32000, 2000);
+    assert(bison_cxt == nullptr);
+    bison_cxt = this;
+    assert(!gParserState);
+    initLongStack(&generatorStack);
+    parseNodePool.FreeAll();
+    gParserState =
+        ParserState { textInfo, BisonLexerAction { textInfo },
+                      sc::lex::CodePointStream { textInfo->normalisedSource, fileLoc, range },
+                      textInfo->isClassFile ? ParserState::Mode::ClassLibrary : ParserState::Mode::CMDInitial };
+}
+
+CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, struct VMGlobals* vm):
+    textInfo(std::move(t)),
+    vm_globals(vm) {
+    parseNodePool.Init(pyr_pool_compile, 32000, 32000, 2000);
+    assert(bison_cxt == nullptr);
+    bison_cxt = this;
+    assert(!gParserState);
+    initLongStack(&generatorStack);
+    parseNodePool.FreeAll();
+
+    gParserState =
+        ParserState { textInfo, BisonLexerAction { textInfo }, sc::lex::CodePointStream { textInfo->normalisedSource },
+                      textInfo->isClassFile ? ParserState::Mode::ClassLibrary : ParserState::Mode::CMDInitial };
+}
+
+CompilerContext::~CompilerContext() {
+    gParserState.reset();
+    parseNodePool.FreeAll();
     freeLongStack(&generatorStack);
+    assert(bison_cxt == this);
+    bison_cxt = nullptr;
 }

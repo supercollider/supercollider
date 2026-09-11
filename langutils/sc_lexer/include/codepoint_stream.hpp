@@ -40,25 +40,62 @@ class CodePointStream {
     struct State {
         std::size_t next_byte_offest { 0 };
         std::size_t current_line_number { 0 };
-        // Doesn't work with tabs, fix this once the main parser no longer needs this.
+        // Byte offset in line, not visual column.
         std::size_t current_column_count { 0 };
         bool prev_was_newline { false };
         void update(CodePoint next, std::uint8_t sz) noexcept;
     } state {};
 
 public:
-    CodePointStream(NormalisedSource src, FileCodeLocation src_start_in_file) noexcept:
+    // NOTE: NormalisedSource src must outlive this object.
+
+    // Used to stream through a whole piece of text from beginning to end.
+    CodePointStream(const NormalisedSource& src, FileCodeLocation src_start_in_file) noexcept:
         source_start_in_file(src_start_in_file),
-        source(std::move(src)) {}
+        source(static_cast<const std::string&>(src).c_str()),
+        snippet(source),
+        snippet_len(static_cast<const std::string&>(src).size()) {}
+
+    CodePointStream(const NormalisedSource& src) noexcept:
+        source_start_in_file(),
+        source(static_cast<const std::string&>(src).c_str()),
+        snippet(source),
+        snippet_len(static_cast<const std::string&>(src).size()) {}
+
+    // Used to stream through a snippet from a larger source.
+    CodePointStream(const NormalisedSource& src, FileCodeLocation src_start_in_file,
+                    SourceCodeRange snippet_in_src) noexcept:
+        state({ snippet_in_src.begin.absolute, snippet_in_src.begin.line_number, snippet_in_src.begin.column }),
+        source_start_in_file(src_start_in_file),
+        source(static_cast<const std::string&>(src).c_str()),
+        snippet(source + snippet_in_src.begin.absolute),
+        snippet_len(snippet_in_src.size()) {}
+
+    // Used to stream through a snippet from a larger source, from a starting point until the end of the file.
+    CodePointStream(const NormalisedSource& src, FileCodeLocation src_start_in_file,
+                    SourceCodeLocation snippet_start_in_src) noexcept:
+        state({ snippet_start_in_src.absolute, snippet_start_in_src.line_number, snippet_start_in_src.column }),
+        source_start_in_file(src_start_in_file),
+        source(static_cast<const std::string&>(src).c_str()),
+        snippet(source + snippet_start_in_src.absolute),
+        snippet_len(static_cast<const std::string&>(src).size() - snippet_start_in_src.absolute) {}
+
     CodePointStream(CodePointStream&&) noexcept = default;
     CodePointStream(const CodePointStream&) = default;
-    CodePointStream& operator=(CodePointStream&&) noexcept = delete;
-    CodePointStream& operator=(const CodePointStream&) = delete;
+    CodePointStream& operator=(CodePointStream&&) noexcept = default;
+    CodePointStream& operator=(const CodePointStream&) = default;
 
     // Allows us to get the location in the file that the source came from.
-    const FileCodeLocation source_start_in_file;
+    FileCodeLocation source_start_in_file;
+
     // Text, could be code snippet, or whole file, may not be null terminated.
-    const std::string source;
+    // This is used to resolve SourceCodeRanges
+    const char* source;
+
+    // This is the text we are actually moving through, it is a part of source
+    const char* snippet;
+    std::size_t snippet_len;
+
 
     // SourceCodeRange manipulation
     [[nodiscard]] FileCodeRange source_to_file(const SourceCodeRange& source) const;
@@ -82,14 +119,15 @@ public:
         // Copy state, don't update the main stream's state.
         State rolling_state { state };
         const auto get_next = [&]() {
-            const auto [cp, cp_size] = utf8_sequence_to_codepoint(source.c_str() + rolling_state.next_byte_offest,
-                                                                  source.size() - rolling_state.next_byte_offest);
+            const auto remaining = std::max<ptrdiff_t>(0, (snippet + snippet_len) - (source + state.next_byte_offest));
+            const auto [cp, cp_size] = utf8_sequence_to_codepoint(source + rolling_state.next_byte_offest,
+                                                                  static_cast<std::size_t>(remaining));
             rolling_state.update(cp, cp_size);
             return cp;
         };
 
         for (std::size_t char_count { 0 }; char_count < N; ++char_count)
-            out[char_count] = (rolling_state.next_byte_offest >= source.size()) ? 0 : get_next();
+            out[char_count] = (source + rolling_state.next_byte_offest >= snippet + snippet_len) ? 0 : get_next();
 
         return { out };
     }
@@ -141,7 +179,7 @@ public:
     // Null terminator is NEVER accepted as a predicate.
     template <typename Predicate> std::size_t advance_while_count(Predicate&& predicate) {
         auto discard_null_then_predicate = [&](auto c) {
-            return (c == 0 || state.next_byte_offest >= source.size()) ? false : predicate(c);
+            return (c == 0 || source + state.next_byte_offest >= snippet + snippet_len) ? false : predicate(c);
         };
         std::size_t i { 0 };
         for (auto c = peek(); discard_null_then_predicate(c); c = advance_and_peek(), ++i) {}
@@ -152,8 +190,6 @@ public:
         advance_while_count(std::forward<Predicate>(predicate));
         return end_token();
     }
-
-    void reset();
 };
 
 

@@ -1,0 +1,447 @@
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: Integer does not understand the message 'meow'.
+
+15  : Method Name: 'Function-prTry'
+          file://SCClassLibrary/Common/Core/Function.sc:207:22
+           205 │ 		};
+           206 │ 		Exception.inProtectedFunction = true;
+           207 │ 		result = this.value;
+               ┆ 		         ^^^^^^^^^^ 
+           208 │ 		Exception.inProtectedFunction = wasInProtectedFunc;
+           209 │ 		thread.exceptionHandler = next; // pop
+           210 │ 		^result
+14  : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:4:13
+             2 │ 	var catch = { |action|
+             3 │ 		try {
+             4 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             5 │ 		} { |er|
+             6 │ 			er.reportError(stream);
+             7 │ 			stream << "\n";
+13  : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:12:46
+            10 │ 
+            11 │ 	catch.value {
+            12 │ 		ErrorGenerator.doesNotUnderstandErrorMethod
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            13 │ 	};
+            14 │ 
+            15 │ 	catch.value {
+12  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethod'
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:13:69
+            11 │ 
+            12 │     *doesNotUnderstandErrorMethod {
+            13 │         this.doesNotUnderstandErrorMethodImpl(10, 32, someThing: 10)
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            14 │     }
+            15 │ 
+            16 │     *doesNotUnderstandErrorFunction {
+11  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+10  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+9   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+8   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+7   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+6   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+5   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+4   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+3   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+       args: this=, i=Integer(2), a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:8:81
+             6 │             1.meow(10, args: \woof)
+             7 │         } {
+             8 │             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+               ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+             9 │         }
+            10 │     }
+            11 │ 
+2   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+       args: this=, i=Integer(1), a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:8:81
+             6 │             1.meow(10, args: \woof)
+             7 │         } {
+             8 │             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+               ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+             9 │         }
+            10 │     }
+            11 │ 
+1   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+       args: this=, i=Integer(0), a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:6:36
+             4 │         var var1 = 100.0.rand;
+             5 │         if (i == 0) {
+             6 │             1.meow(10, args: \woof)
+               ┆             ^^^^^^^^^^^^^^^^^^^^^^^ Integer does not understand the message 'meow'.
+             7 │         } {
+             8 │             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+             9 │         }
+
+Messages with a similar name understood by the receiver:
+  geom
+  mod
+  pow
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: Integer does not understand the message 'meow'.
+
+15  : Method Name: 'Function-prTry'
+          file://SCClassLibrary/Common/Core/Function.sc:207:22
+           205 │ 		};
+           206 │ 		Exception.inProtectedFunction = true;
+           207 │ 		result = this.value;
+               ┆ 		         ^^^^^^^^^^ 
+           208 │ 		Exception.inProtectedFunction = wasInProtectedFunc;
+           209 │ 		thread.exceptionHandler = next; // pop
+           210 │ 		^result
+14  : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:4:13
+             2 │ 	var catch = { |action|
+             3 │ 		try {
+             4 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             5 │ 		} { |er|
+             6 │ 			er.reportError(stream);
+             7 │ 			stream << "\n";
+13  : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:16:48
+            14 │ 
+            15 │ 	catch.value {
+            16 │ 		ErrorGenerator.doesNotUnderstandErrorFunction
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            17 │ 	};
+            18 │ 
+            19 │ 	catch.value {
+12  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorFunction'
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:26:43
+            24 │         };
+            25 │ 
+            26 │         f.(10, \23423, 123, 32, foo: \bar)
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            27 │     }
+            28 │ 
+            29 │ 
+11  : Function Name: 'f'
+10  : Function Name: 'f'
+9   : Function Name: 'f'
+8   : Function Name: 'f'
+7   : Function Name: 'f'
+6   : Function Name: 'f'
+5   : Function Name: 'f'
+4   : Function Name: 'f'
+3   : Function Name: 'f'
+       args: i=Integer(2), a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:22:55
+            20 │                 1.meow(10, args: \woof)
+            21 │             } {
+            22 │                 f.performArgs(\value,[ i - 1], kwargs)
+               ┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            23 │             }
+            24 │         };
+            25 │ 
+2   : Function Name: 'f'
+       args: i=Integer(1), a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:22:55
+            20 │                 1.meow(10, args: \woof)
+            21 │             } {
+            22 │                 f.performArgs(\value,[ i - 1], kwargs)
+               ┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            23 │             }
+            24 │         };
+            25 │ 
+1   : Function Name: 'f'
+       args: i=Integer(0), a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:20:40
+            18 │             var var1 = 100.0.rand;
+            19 │             if (i == 0) {
+            20 │                 1.meow(10, args: \woof)
+               ┆                 ^^^^^^^^^^^^^^^^^^^^^^^ Integer does not understand the message 'meow'.
+            21 │             } {
+            22 │                 f.performArgs(\value,[ i - 1], kwargs)
+            23 │             }
+
+Messages with a similar name understood by the receiver:
+  geom
+  mod
+  pow
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: This is a test error
+
+4   : Method Name: 'Function-prTry'
+          file://SCClassLibrary/Common/Core/Function.sc:207:22
+           205 │ 		};
+           206 │ 		Exception.inProtectedFunction = true;
+           207 │ 		result = this.value;
+               ┆ 		         ^^^^^^^^^^ 
+           208 │ 		Exception.inProtectedFunction = wasInProtectedFunc;
+           209 │ 		thread.exceptionHandler = next; // pop
+           210 │ 		^result
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:4:13
+             2 │ 	var catch = { |action|
+             3 │ 		try {
+             4 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             5 │ 		} { |er|
+             6 │ 			er.reportError(stream);
+             7 │ 			stream << "\n";
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:20:23
+            18 │ 
+            19 │ 	catch.value {
+            20 │ 		ErrorGenerator.error
+               ┆ 		^^^^^^^^^^^^^^^^^^^^ 
+            21 │ 	};
+            22 │ 
+            23 │ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-error'
+       args: this=
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:31:38
+            29 │ 
+            30 │     *error {
+            31 │         Error("This is a test error").throw
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            32 │     }
+            33 │ 
+            34 │     *errorWrapper {
+
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: Wrapping some error
+
+Wrapped error:
+     2   : Method Name: 'Function-prTry'
+            args: this=
+            vars: result=nil, thread=, next=, wasInProtectedFunc=true
+                    file://SCClassLibrary/Common/Core/Function.sc:207:22
+                205 │ 		};
+                206 │ 		Exception.inProtectedFunction = true;
+                207 │ 		result = this.value;
+                    ┆ 		         ^^^^^^^^^^ 
+                208 │ 		Exception.inProtectedFunction = wasInProtectedFunc;
+                209 │ 		thread.exceptionHandler = next; // pop
+                210 │ 		^result
+     1   : Anonymous Function
+                    file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:36:38
+                 34 │     *errorWrapper {
+                 35 │         try {
+                 36 │             Error("some other error").throw;
+                    ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^ 
+                 37 │         } { |er|
+                 38 │             ErrorWrapper(er, "Wrapping some error").throw
+                 39 │         }
+This error:
+1   : Anonymous Function
+       args: er=
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:38:52
+            36 │             Error("some other error").throw;
+            37 │         } { |er|
+            38 │             ErrorWrapper(er, "Wrapping some error").throw
+               ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            39 │         }
+            40 │     }
+            41 │ 
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: Not yet implemented
+
+4   : Method Name: 'Function-prTry'
+          file://SCClassLibrary/Common/Core/Function.sc:207:22
+           205 │ 		};
+           206 │ 		Exception.inProtectedFunction = true;
+           207 │ 		result = this.value;
+               ┆ 		         ^^^^^^^^^^ 
+           208 │ 		Exception.inProtectedFunction = wasInProtectedFunc;
+           209 │ 		thread.exceptionHandler = next; // pop
+           210 │ 		^result
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:4:13
+             2 │ 	var catch = { |action|
+             3 │ 		try {
+             4 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             5 │ 		} { |er|
+             6 │ 			er.reportError(stream);
+             7 │ 			stream << "\n";
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:33:40
+            31 │ 
+            32 │ 	catch.value {
+            33 │ 		ErrorGenerator.notYetImplementedError
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            34 │ 	};
+            35 │ 
+            36 │ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-notYetImplementedError'
+       args: this=
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:53:31
+            51 │ 
+            52 │     *notYetImplementedError {
+            53 │         this.notYetImplemented;
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^ This method has not yet been implemented.
+            54 │     }
+            55 │ 
+            56 │     *immutable {
+
+RECEIVER: Nil
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
+
+5   : Method Name: 'Function-prTry'
+          file://SCClassLibrary/Common/Core/Function.sc:207:22
+           205 │ 		};
+           206 │ 		Exception.inProtectedFunction = true;
+           207 │ 		result = this.value;
+               ┆ 		         ^^^^^^^^^^ 
+           208 │ 		Exception.inProtectedFunction = wasInProtectedFunc;
+           209 │ 		thread.exceptionHandler = next; // pop
+           210 │ 		^result
+4   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:4:13
+             2 │ 	var catch = { |action|
+             3 │ 		try {
+             4 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             5 │ 		} { |er|
+             6 │ 			er.reportError(stream);
+             7 │ 			stream << "\n";
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:37:27
+            35 │ 
+            36 │ 	catch.value {
+            37 │ 		ErrorGenerator.immutable
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^ 
+            38 │ 	};
+            39 │ 
+            40 │ 	catch.value {
+2   : Method Name: 'Meta_ErrorGenerator-immutable'
+       args: this=
+       vars: a=[Integer(1)]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:58:18
+            56 │     *immutable {
+            57 │         var a = #[1];
+            58 │         a[0] = 10;
+               ┆         ^^^^^^^^^ Attempted write to immutable object.
+            59 │     }
+            60 │ 
+            61 │     *subclassResponsibilityError {
+1   : Method Name: 'ArrayedCollection-put'
+       args: this=[Integer(1)], index=Integer(0), item=Integer(10)
+          file://SCClassLibrary/Common/Collections/ArrayedCollection.sc:50:24
+            48 │ 	put { arg index, item;
+            49 │ 		_BasicPut;
+            50 │ 		^this.primitiveFailed;
+               ┆ 		 ^^^^^^^^^^^^^^^^^^^^ 
+            51 │ 	}
+            52 │ 	clipPut { arg index, item;
+            53 │ 		_BasicClipPut;
+
+RECEIVER: Array
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
+
+4   : Method Name: 'Function-prTry'
+          file://SCClassLibrary/Common/Core/Function.sc:207:22
+           205 │ 		};
+           206 │ 		Exception.inProtectedFunction = true;
+           207 │ 		result = this.value;
+               ┆ 		         ^^^^^^^^^^ 
+           208 │ 		Exception.inProtectedFunction = wasInProtectedFunc;
+           209 │ 		thread.exceptionHandler = next; // pop
+           210 │ 		^result
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:4:13
+             2 │ 	var catch = { |action|
+             3 │ 		try {
+             4 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             5 │ 		} { |er|
+             6 │ 			er.reportError(stream);
+             7 │ 			stream << "\n";
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:41:45
+            39 │ 
+            40 │ 	catch.value {
+            41 │ 		ErrorGenerator.subclassResponsibilityError
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Please implement this method for the class 'Meta_ErrorGenerator'
+            42 │ 	};
+            43 │ 
+            44 │ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-subclassResponsibilityError'
+       args: this=
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:62:48
+            60 │ 
+            61 │     *subclassResponsibilityError {
+            62 │         this.subclassResponsibility(thisMethod);
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            63 │     }
+            64 │ 
+            65 │     *shouldNotImplementError {
+
+RECEIVER: Meta_ErrorGenerator
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
+
+4   : Method Name: 'Function-prTry'
+          file://SCClassLibrary/Common/Core/Function.sc:207:22
+           205 │ 		};
+           206 │ 		Exception.inProtectedFunction = true;
+           207 │ 		result = this.value;
+               ┆ 		         ^^^^^^^^^^ 
+           208 │ 		Exception.inProtectedFunction = wasInProtectedFunc;
+           209 │ 		thread.exceptionHandler = next; // pop
+           210 │ 		^result
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:4:13
+             2 │ 	var catch = { |action|
+             3 │ 		try {
+             4 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             5 │ 		} { |er|
+             6 │ 			er.reportError(stream);
+             7 │ 			stream << "\n";
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:45:41
+            43 │ 
+            44 │ 	catch.value {
+            45 │ 		ErrorGenerator.shouldNotImplementError
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'Meta_ErrorGenerator' cannot respond to this message, please remove the call.
+            46 │ 	};
+            47 │ 
+            48 │ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-shouldNotImplementError'
+       args: this=
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:66:44
+            64 │ 
+            65 │     *shouldNotImplementError {
+            66 │         this.shouldNotImplement(thisMethod);
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            67 │     }
+            68 │ 
+            69 │     // leave these unset to throw an error
+
+RECEIVER: Meta_ErrorGenerator
+
+──────────────────────────────────────────────────────────────────────────────────
+

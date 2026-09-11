@@ -58,9 +58,14 @@ SCLANG_DLLEXPORT_C void schedRun();
 SCLANG_DLLEXPORT_C void schedStop();
 SCLANG_DLLEXPORT_C void schedClear();
 
-SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone);
+// MAIN ENTRY POINT OF SC LANG.
+SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalone);
 SCLANG_DLLEXPORT_C void runLibrary(struct PyrSymbol* selector);
 SCLANG_DLLEXPORT_C void runInterpreter(struct VMGlobals* g, struct PyrSymbol* selector, int numArgsPushed);
+SCLANG_DLLEXPORT_C void shutdownLibrary(bool wasCompiledPreviously);
+SCLANG_DLLEXPORT_C void setCommandLine(const char* txt, size_t txtSize, const char* filePath, int lineNumber = 0,
+                                       int column = 0);
+
 
 SCLANG_DLLEXPORT_C struct VMGlobals* scGlobals();
 

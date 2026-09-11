@@ -57,6 +57,8 @@ protected:
     virtual ~SC_LanguageClient();
     friend void destroyLanguageClient(class SC_LanguageClient*);
 
+    bool compiledSuccessfully { false };
+
 public:
     // singleton instance access locking
     static void lockInstance();
@@ -78,9 +80,9 @@ public:
 
     // library startup/shutdown
     bool isLibraryCompiled();
-    void compileLibrary(bool standalone);
+    [[nodiscard]] bool compileLibrary(bool standalone);
     void shutdownLibrary();
-    void recompileLibrary(bool standalone);
+    [[nodiscard]] bool recompileLibrary(bool standalone);
 
     // interpreter access
     void lock();
@@ -89,9 +91,11 @@ public:
 
     struct VMGlobals* getVMGlobals();
 
-    void setCmdLine(const char* buf, size_t size);
-    void setCmdLine(const char* str);
-    void setCmdLinef(const char* fmt, ...);
+    void setCmdLine(const char* buf, size_t size, const std::string* filePath = nullptr, int lineNumber = 0,
+                    int column = 0);
+    void setCmdLine(const char* str, const std::string* const filePath = nullptr, int lineNumber = 0, int column = 0);
+    void setCmdLinef(const std::string* const filePath = nullptr, int lineNumber = 0, int column = 0,
+                     const char* fmt = nullptr, ...);
     void runLibrary(const char* methodName);
     void interpretCmdLine();
     void interpretPrintCmdLine();
