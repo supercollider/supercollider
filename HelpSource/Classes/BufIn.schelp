@@ -1,0 +1,124 @@
+class:: BufIn
+summary:: Reads Buffer samples as flat array
+related:: Classes/BufRd, Classes/Index
+categories:: UGens>Buffer
+
+Description::
+Outputs the contents of a buffer as a control signal, reading a number of
+consecutive samples as separate channels. Like link::Classes/Index::, but
+for multiple indices as the same time, saving the overhead of making multiple UGens.
+
+In comparison to link::Classes/BufRd:::
+BufRd has a single reading head that moves through buffer samples, BufIn has
+multiple heads, each staying still on a different sample.
+
+For multi-channel buffers, BufIn defaults to reading a single channel, but can
+also read all of them as a flat, interleaved sequence of values, by setting the
+channel argument to -1. Note that the provided number of outputs has to take
+this into account, e.g. to read 2 frames of a 2-channel buffer,
+teletype::numOutputs:: has to be set to 4.
+See link::#examples:: below, and link::Classes/Buffer#Multichannel Buffers:: for more info.
+
+classmethods::
+private:: categories
+method:: ar, kr
+
+argument::numOutputs
+Number of output channels, i.e. number of consecutive samples to read from the
+buffer.
+note::
+It doesn't have to match the Buffer's number of samples. If the
+buffer has less samples than requested, the exceeding output channels will return 0.::
+
+argument::bufnum
+The index of the buffer to use.
+
+argument::channel
+Select which channel to read, or teletype::-1:: for reading all of them as an
+interleaved flat series (see link::examples:: below).
+
+argument::offset
+The sample index to start reading from. Exceeding the buffer's number of
+channels will results in zeros being returned.
+
+returns::
+An array of output channels, corresponding to the requested buffer samples.
+
+instancemethods::
+private:: init, argNamesInputsOffset, checkInputs
+
+Examples::
+
+code::
+
+// load some numbers on a buffer
+b = Buffer.loadCollection(s, [34, 61, 104.3, 50]);
+
+// print those numbers
+x = { BufIn.kr(4, b).poll }.play;
+
+x.free;
+
+// use as control signals for other UGens
+(
+{ 
+	var notes = BufIn.kr(4, b);
+	Splay.ar(SinOsc.ar(notes.midicps) * 0.2)
+}.play;
+)
+
+// change buffer contents, sound updates automatically
+b.loadCollection({rrand(40,100)}!4);
+
+b.free
+::
+
+Reading a single channel from a multi-channel buffer:
+code::
+b = Buffer.loadCollection(s, [[1,2,3], [4,5,6]].lace);
+
+x = { BufIn.kr(3, b, channel: 0).poll }.play;
+// outputs [1, 2, 3]
+x.free;
+
+x = { BufIn.kr(3, b, channel: 1).poll }.play;
+// outputs [4, 5, 6]
+x.free;
+
+// multichannel expansion
+x = { BufIn.kr(3, b, channel: [0,1]).poll }.play;
+// outputs [[1, 2, 3], [4, 5, 6]]
+x.free;
+
+// note that 'channel' is modulatable
+(
+x = { 
+	var ch = ToggleFF.kr(Impulse.kr(1)).poll(label:'channel')).poll;
+	BufIn.kr(3, b, channel: ch)
+}.play;
+)
+
+x.free;
+
+b.free;
+::
+
+To read all channels at the same time, set teletype::`channel: -1`::. The output
+will be a flat array with all channels interleaved.
+Note that they need to be interleaved manually when using link::Classes/Buffer#*loadCollection::
+
+code::
+b = Buffer.loadCollection(s, [[1,2,3], [4,5,6]].lace);
+
+x = { BufIn.kr(6, b, channel: -1).poll }.play;
+// outputs [1, 4, 2, 5, 3, 6]
+// i.e. [ch0_0, ch1_0, ch0_1, ch1_1, ch0_2, ch1_2]
+
+x.free;
+
+// user can de-interleave manually afterwards
+x = { BufIn.kr(6, b).unlace(2).poll }.play;
+// outputs [1, 2, 3, 4, 5, 6]
+
+b.free
+::
