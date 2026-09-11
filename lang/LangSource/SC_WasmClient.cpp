@@ -73,10 +73,11 @@ static int prIdeSend(struct VMGlobals* g, int numArgsPushed) {
     std::memcpy(copy, array->b, size);
     MAIN_THREAD_ASYNC_EM_ASM(
         {
-            if (Module['onIdeSend']) {
-                Module['onIdeSend'](HEAPU8.slice($0, $0 + $1));
-            }
-            Module['_free']($0);
+            try {
+                if (Module['onIdeSend']) {
+                    Module['onIdeSend'](HEAPU8.slice($0, $0 + $1));
+                }
+            } finally { Module['_free']($0); }
         },
         copy, size);
     return errNone;
@@ -296,15 +297,20 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize,
 int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sendMsgLen) {
     // prepend size of the message
     char* rawMessage = static_cast<char*>(malloc(msglen));
+    if (!rawMessage) {
+        post("NetAddr: Could not allocate memory for OSC message");
+        return errFailed;
+    }
     std::memcpy(rawMessage, bufptr, msglen);
     // pass message to main thread
     MAIN_THREAD_ASYNC_EM_ASM(
         {
-            if (Module.onOsc) {
-                var data = HEAPU8.slice($0, $0 + $1);
-                Module.onOsc(data);
-                Module['_free']($0);
-            }
+            try {
+                if (Module.onOsc) {
+                    var data = HEAPU8.slice($0, $0 + $1);
+                    Module.onOsc(data);
+                }
+            } finally { Module['_free']($0); }
         },
         rawMessage, msglen);
     return errNone;

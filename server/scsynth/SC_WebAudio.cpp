@@ -332,11 +332,14 @@ static void jsReplyFunc(ReplyAddress*, char* msg, int size) {
     memcpy(copy, msg, size);
     MAIN_THREAD_ASYNC_EM_ASM(
         {
-            // create a view into SC C++ heap
-            const heap = new Uint8Array(Module.scHeap);
-            // copy the content of `copy` from the C++ heap to the Uint8Array
-            Module['onOscReply'](heap.slice($0, $0 + $1));
-            Module['_free']($0);
+            try {
+                if (Module['onOscReply']) {
+                    // create a view into SC C++ heap
+                    const heap = new Uint8Array(Module.scHeap);
+                    // copy the content of `copy` from the C++ heap to the Uint8Array
+                    Module['onOscReply'](heap.slice($0, $0 + $1));
+                }
+            } finally { Module['_free']($0); }
         },
         copy, size);
 }
