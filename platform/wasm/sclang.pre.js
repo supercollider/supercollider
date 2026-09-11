@@ -42,8 +42,9 @@ Module['onIdeSend'] = function(message) {}
 /**
  * Gets called from sclang when it sends out an OSC message.
  *
- * @param message {Uint8Array} This will be freed, so it is necessary to make a copy
- * if it should be passed around.
+ * @param message {Uint8Array} Message is a copy owned by JS.
+ * The buffer where this came from will be freed after the callback returns,
+ * but the array itself can be kept or passed on without copying.
  */
 Module['onOsc'] = function(message){
     console.log("New OSC message from sclang", message);

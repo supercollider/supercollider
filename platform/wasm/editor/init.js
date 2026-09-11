@@ -37,9 +37,8 @@ sclang.printCallback = printToConsole;
 scsynth.onStdout = printToConsole;
 
 sclang.onOsc = (osc) => {
-    // osc message will be freed - so create a copy for scsynth!
-    let copy = new Uint8Array(osc);
-    scsynth.sendOsc(copy);
+    // the osc array is already JS owned, no need to copy
+    scsynth.sendOsc(osc);
 };
 
 scsynth.onOscReply = (oscReply) => {
