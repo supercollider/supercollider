@@ -26,6 +26,7 @@ This file contains the definitions of the core objects that implement the class 
 #pragma once
 
 #include "PyrObject.h"
+#include "PyrObjectHdr.h"
 #include "VMGlobals.h"
 #include "Opcodes.h"
 
@@ -201,6 +202,9 @@ struct PyrInterpreter : public PyrObjectHdr {
     PyrSlot codeDump, preProcessor;
 };
 
+struct PyrDebugFrame : public PyrObjectHdr {
+    PyrSlot functionDef, args, vars, caller, context, address;
+};
 
 struct SpecialValuesStruct {
     PyrSlot True, False, Nil_, Inf;
@@ -266,7 +270,7 @@ PyrObject* instantiateObject(class PyrGC* gc, PyrClass* classobj, int size, bool
 PyrObject* newPyrObject(class PyrGC* gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect);
 PyrString* newPyrString(class PyrGC* gc, const char* s, int flags, bool collect);
 PyrString* newPyrStringN(class PyrGC* gc, int size, int flags, bool collect);
-PyrObject* newPyrArray(class PyrGC* gc, int size, int flags, bool collect);
+PyrObject* newPyrArray(class PyrGC* gc, int capacity, int flags, bool collect);
 PyrSymbolArray* newPyrSymbolArray(class PyrGC* gc, int size, int flags, bool collect);
 PyrInt8Array* newPyrInt8Array(class PyrGC* gc, int size, int flags, bool collect);
 PyrInt32Array* newPyrInt32Array(class PyrGC* gc, int size, int flags, bool collect);
