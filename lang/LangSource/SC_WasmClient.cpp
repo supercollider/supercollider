@@ -159,11 +159,7 @@ void wasmTick(void*) {
     }
 }
 
-void SC_WasmClient::postText(const char* str, size_t len) {
-    for (size_t i = 0; i < len; i++) {
-        std::cout << str[i];
-    }
-}
+void SC_WasmClient::postText(const char* str, size_t len) { std::cout.write(str, len); }
 
 void SC_WasmClient::postFlush(const char* str, size_t len) {
     std::cout.write(str, len);
