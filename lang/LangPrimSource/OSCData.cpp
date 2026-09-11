@@ -304,12 +304,12 @@ int makeSynthBundle(big_scpacket* packet, PyrSlot* slots, int size, bool useElap
     return errNone;
 }
 
+#ifndef __EMSCRIPTEN__
 static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sendMsgLen = true) {
     using namespace boost::asio;
 
     if (IsPtr(netAddrObj->slots + ivxNetAddr_Socket)) {
         auto comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
-
         // send TCP
         ip::tcp::socket& socket = comPort->Socket();
 
@@ -330,7 +330,6 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         }
 
         return errNone;
-
     } else {
         if (gUDPport == nullptr)
             return errFailed;
@@ -343,11 +342,11 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
             return err;
 
         if (addr == 0) {
-#ifndef NO_INTERNAL_SERVER
+#    ifndef NO_INTERNAL_SERVER
             if (gInternalSynthServer.mWorld) {
                 World_SendPacket(gInternalSynthServer.mWorld, msglen, bufptr, &localServerReplyFunc);
             }
-#endif
+#    endif
             return errNone;
         }
 
@@ -357,7 +356,6 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
             return err;
 
         std::uint64_t ulAddress = (unsigned int)addr;
-
         using namespace boost::asio;
         ip::udp::endpoint address(ip::address_v4(ulAddress), port);
 
@@ -366,6 +364,10 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
 
     return errNone;
 }
+#else
+// forward declaration - implementation is in SC_WasmClient.cpp
+int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sendMsgLen = true);
+#endif
 
 
 ///////////
@@ -488,7 +490,11 @@ static int prNetAddr_SendRaw(VMGlobals* g, int numArgsPushed) {
 static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
     if (gUDPport == nullptr)
         return errFailed;
-
+#ifdef __EMSCRIPTEN__
+    // we silently ignore and pass any socket requests instead
+    // of bailing out
+    return errNone;
+#else
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option;
     gUDPport->getSocket().get_option(option, ec);
@@ -498,12 +504,15 @@ static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
 
     SetBool(g->sp, option.value());
     return errNone;
+#endif
 }
 
 static int prNetAddr_SetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
     if (gUDPport == nullptr)
         return errFailed;
-
+#ifdef __EMSCRIPTEN__
+    return errNone;
+#else
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option(IsTrue(g->sp));
     gUDPport->getSocket().set_option(option, ec);
@@ -512,6 +521,7 @@ static int prNetAddr_SetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
         return errFailed;
 
     return errNone;
+#endif
 }
 
 static int prNetAddr_BundleSize(VMGlobals* g, int numArgsPushed) {
@@ -762,7 +772,13 @@ static PyrObject* ConvertReplyAddress(ReplyAddress* inReply) {
     VMGlobals* g = gMainVMGlobals;
     PyrObject* obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
     PyrSlot* slots = obj->slots;
+#ifdef __EMSCRIPTEN__
+    // hardcode to 127.0.0.1 b/c otherwise ServerStatusWatcher
+    // will not believe that the server is online
+    SetInt(slots + 0, 0x7F000001);
+#else
     SetInt(slots + 0, inReply->mAddress.to_v4().to_uint());
+#endif
     SetInt(slots + 1, inReply->mPort);
     return obj;
 }
@@ -996,14 +1012,33 @@ static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
 
 static int prGetLangPort(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
+#ifdef __EMSCRIPTEN__
+    // hardcode port number for emscripten to default port 57120
+    SetInt(a, 57120);
+#else
     if (!gUDPport)
         return errFailed;
     SetInt(a, gUDPport->RealPortNum());
+#endif
     return errNone;
 }
 
 static int prLocalIPs(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
+#ifdef __EMSCRIPTEN__
+    // emscripten returns 127.0.0.1 here, although emscripten
+    // does not really have the concept of IP due to the
+    // non-existing network stack.
+    // Returning an empty array will introduce problems when
+    // booting the server, probably due to ServerStatusWatcher.
+    PyrObject* array = newPyrArray(g->gc, 1, 0, true);
+    PyrString* str = newPyrString(g->gc, "127.0.0.1", 0, true);
+    SetObject(array->slots, (PyrObjectHdr*)str);
+    array->size = 1;
+
+    SetObject(g->sp - 1, (PyrObjectHdr*)array);
+    return errNone;
+#else
     int addressFamily = AF_UNSPEC; // IPv4 + IPv6
     if (IsSym(a)) {
         PyrSymbol* sym = slotRawSymbol(a);
@@ -1018,7 +1053,7 @@ static int prLocalIPs(VMGlobals* g, int numArgsPushed) {
         return errWrongType;
     }
 
-#ifdef _WIN32
+#    ifdef _WIN32
 
     // first get the size of the required buffer
     ULONG size = 0;
@@ -1074,7 +1109,7 @@ static int prLocalIPs(VMGlobals* g, int numArgsPushed) {
 
     free(adapterAddresses);
 
-#else
+#    else
 
     struct ifaddrs* ifap;
     if (getifaddrs(&ifap) != 0) {
@@ -1115,10 +1150,11 @@ static int prLocalIPs(VMGlobals* g, int numArgsPushed) {
     array->size = index; // set actual size (interfaces may have been skipped)
 
     freeifaddrs(ifap);
-#endif
+#    endif
 
     SetObject(g->sp - 1, (PyrObjectHdr*)array);
     return errNone;
+#endif
 }
 
 static int prLocalIP(VMGlobals* g, int numArgsPushed) {

@@ -115,8 +115,10 @@ public:
 
     /** @brief calculates the next 128 (quantum) samples */
     bool processBlock(int numInputs, const AudioSampleFrame* inputs, int numOutputs, AudioSampleFrame* outputs);
-    /** @brief passes osc bytes into the scsynth world */
-    bool sendOsc(const char* data, int size);
+    /** @brief passes osc bytes into the scsynth world.
+     *  Takes ownership of data, which must come from malloc (freed using FreeOSCPacket)
+     */
+    bool sendOsc(char* data, int size);
 
 protected:
     bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate) override {
@@ -222,20 +224,15 @@ bool SC_WebAudioDriver::processBlock(int numInputs, const AudioSampleFrame* inpu
     return true;
 }
 
-bool SC_WebAudioDriver::sendOsc(const char* data, const int size) {
-    auto ptr = malloc(sizeof(OSC_Packet));
-    if (!ptr) {
+bool SC_WebAudioDriver::sendOsc(char* data, const int size) {
+    auto packet = static_cast<OSC_Packet*>(malloc(sizeof(OSC_Packet)));
+    if (!packet) {
         scprintf("Could not process OSC message, out of wasm memory\n");
+        free(data);
         return false;
     }
-    auto packet = static_cast<OSC_Packet*>(ptr);
 
-    // this additional copy can be removed once this has been refactored to use the
-    // `World_SendPacket` API, see below
-    auto rawBuffer = static_cast<char*>(malloc(size * sizeof(char)));
-    memcpy(rawBuffer, data, size);
-
-    packet->mData = rawBuffer;
+    packet->mData = data;
     packet->mSize = size;
     packet->mIsBundle = data[0] == 35; // maybe too naive?
     packet->mReplyAddr.mReplyFunc = jsReplyFunc;
@@ -251,7 +248,7 @@ bool SC_WebAudioDriver::sendOsc(const char* data, const int size) {
     // but it does not require the network stack, so it could be
     // separated from any network implementation.
     if (!ProcessOSCPacket(mWorld, packet)) {
-        free(rawBuffer);
+        free(data);
         free(packet);
     }
     return true;
@@ -335,11 +332,14 @@ static void jsReplyFunc(ReplyAddress*, char* msg, int size) {
     memcpy(copy, msg, size);
     MAIN_THREAD_ASYNC_EM_ASM(
         {
-            // create a view into SC C++ heap
-            const heap = new Uint8Array(Module.scHeap);
-            // copy the content of `copy` from the C++ heap to the Uint8Array
-            Module['onOscReply'](heap.slice($0, $0 + $1));
-            Module['_free']($0);
+            try {
+                if (Module['onOscReply']) {
+                    // create a view into SC C++ heap
+                    const heap = new Uint8Array(Module.scHeap);
+                    // copy the content of `copy` from the C++ heap to the Uint8Array
+                    Module['onOscReply'](heap.slice($0, $0 + $1));
+                }
+            } finally { Module['_free']($0); }
         },
         copy, size);
 }
@@ -531,12 +531,17 @@ EMSCRIPTEN_BINDINGS(scWebAudio) {
                                  return;
                              }
                              auto length = uint8array["length"].as<size_t>();
-                             auto buffer = std::make_unique<char[]>(length);
+                             // ownership passes to sendOsc -> FreeOSCPacket takes care
+                             auto buffer = static_cast<char*>(malloc(length));
+                             if (!buffer) {
+                                 printf("scsynth sendOsc: out of wasm memory\n");
+                                 return;
+                             }
                              // memory view maps the heap linearly so it can be treated like a ptr from within JS land
-                             emscripten::val memoryView(emscripten::typed_memory_view(length, buffer.get()));
+                             emscripten::val memoryView(emscripten::typed_memory_view(length, buffer));
                              // copy the user provided bytes to our c++/wasm heap
                              memoryView.call<void>("set", uint8array);
-                             gScWebAudioDriver->sendOsc(buffer.get(), length);
+                             gScWebAudioDriver->sendOsc(buffer, length);
                          }));
 
     /** @brief debug function to check scsynth state */

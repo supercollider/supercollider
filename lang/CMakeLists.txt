@@ -34,7 +34,6 @@ set(sclang_sources
 	LangPrimSource/PyrSched.cpp
 	LangPrimSource/PyrPrimitive.cpp
 	LangPrimSource/PyrMathPrim.cpp
-	LangPrimSource/SC_ComPort.cpp
 	LangPrimSource/OSCData.cpp
 	LangPrimSource/PyrArchiver.cpp
 	LangPrimSource/PyrArrayPrimitives.cpp
@@ -46,7 +45,6 @@ set(sclang_sources
 	LangPrimSource/PyrStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
 	LangPrimSource/PyrUnixPrim.cpp
-	LangPrimSource/PyrSerialPrim.cpp
 	LangSource/AdvancingAllocPool.cpp
 	LangSource/ByteCodeArray.cpp
 	LangSource/DumpParseNode.cpp
@@ -61,10 +59,8 @@ set(sclang_sources
 	LangSource/PyrParseNode.cpp
 	LangSource/PyrSignal.cpp
 	LangSource/PyrSymbolTable.cpp
-    LangSource/SC_CLIOptions.cpp
 	LangSource/SC_LanguageClient.cpp
 	LangSource/SC_LanguageConfig.cpp
-	LangSource/SC_TerminalClient.cpp
 	LangSource/SimpleStack.cpp
 	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
@@ -77,7 +73,6 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/fftlib.c
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
@@ -85,6 +80,23 @@ set(sclang_sources
 
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
+
+# emscripten (wasm compiler) does not have network capabilities
+# and does not use the CLI, but uses its own JS bindings for interactions
+if(NOT EMSCRIPTEN)
+	LIST(APPEND sclang_sources
+		LangPrimSource/SC_ComPort.cpp
+		LangPrimSource/PyrSerialPrim.cpp
+		LangSource/SC_TerminalClient.cpp
+		LangSource/SC_CLIOptions.cpp
+		LangSource/cmdLineFuncs.cpp
+		${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
+    )
+else()
+	list(APPEND sclang_sources
+		LangSource/SC_WasmClient.cpp
+    )
+endif()
 
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
@@ -370,6 +382,64 @@ if(APPLE)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> ${CMAKE_INSTALL_PREFIX}/${scappbindir}
             )
     endif()
+elseif(EMSCRIPTEN)
+#    target_compile_definitions(libsclang PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
+    target_link_libraries(sclang oscpack)
+    target_include_directories(sclang PRIVATE ${CMAKE_SOURCE_DIR}/external_libraries/oscpack_1_1_0)
+
+    target_link_libraries(sclang webosc)
+
+    # see https://emscripten.org/docs/tools_reference/settings_reference.html#initial-memory
+    # improves performance b/c heap increase is rather expensive
+    set(INITIAL_MEMORY_GROWTH "67108864" CACHE STRING "Initial heap size of sclang.wasm")
+
+    # see https://emscripten.org/docs/tools_reference/settings_reference.html#pthread-pool-size
+    # necessary b/c pthread init is async in emscripten, but sclang needs some threads right away
+    set(PTHREAD_POOL_SIZE "4" CACHE STRING "Number of threads to spawn sclang.wasm at call time")
+
+    set_target_properties(sclang PROPERTIES LINK_FLAGS "\
+    	-sAUDIO_WORKLET \
+    	--bind \
+    	-sWASM_WORKERS \
+    	-sUSE_PTHREADS \
+    	-pthread \
+    	-sALLOW_MEMORY_GROWTH \
+    	-sINITIAL_MEMORY=${INITIAL_MEMORY_GROWTH} \
+    	-sEXIT_RUNTIME=0 \
+    	--pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/sclang.pre.js \
+    	-sEXPORT_ES6=1 \
+    	-sEXPORT_NAME='ScLang' \
+    	-sMODULARIZE=1 \
+    	-sEXPORTED_FUNCTIONS=['_webOscBindingAnchor','_main','_free','_scWasmBindingAnchor'] \
+    	-sPTHREAD_POOL_SIZE=${PTHREAD_POOL_SIZE} \
+    	--preload-file ${CMAKE_SOURCE_DIR}/SCClassLibrary@/sc/SCClassLibrary \
+    ")
+    if(WASM_DEBUG)
+        target_compile_options(libsclang PUBLIC -pthread -g)
+        target_compile_options(sclang PRIVATE -pthread -g)
+        target_compile_options(libscsynth PRIVATE -pthread -g)
+        set_property(TARGET sclang APPEND_STRING PROPERTY LINK_FLAGS "
+                -g \
+                -sASSERTIONS \
+                -fdebug-compilation-dir='..' \
+                -sNO_DISABLE_EXCEPTION_CATCHING \
+        ")
+    endif()
+    # create sub-folder in order to separate build files from cmake cache files
+    set_target_properties(sclang PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${WASM_DIST_DIR}/sclang
+    )
+    set(SCLANG_WASM_FILES
+        ${WASM_ASSET_DIR}/sclang/index.html
+        ${WASM_ASSET_DIR}/LICENSE
+        ${WASM_ASSET_DIR}/dev_server.py
+        ${WASM_ASSET_DIR}/sclang/init.js
+        ${CMAKE_SOURCE_DIR}/README_WASM.md
+    )
+    add_custom_command(TARGET sclang POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${SCLANG_WASM_FILES} $<TARGET_FILE_DIR:sclang>
+    )
 elseif(WIN32)
     if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")

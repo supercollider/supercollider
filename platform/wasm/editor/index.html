@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>sc.wasm</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.39.2/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.39.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.39.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.39.2/addon/mode/simple.min.js"></script>
+
+    <style>
+        /* copied from HelpSource/static */
+        :root {
+            /* editor colors */
+            --color-cm-border: #e1e1e1;
+            --color-cm-background: #fff;
+            --color-cm-evaluated: #308cc6;
+            --color-cm-keyword: #0000e6;
+            --color-cm-built-in: #3333bf;
+            --color-cm-number: #980099;
+            --color-cm-symbol: #007300;
+            --color-cm-class: #0000d2;
+            --color-cm-primitive: #3333bf;
+            --color-cm-char: #007300;
+            --color-cm-env-var: #8c4614;
+            --color-cm-comment: #bf0000;
+            --color-cm-string: #5f5f5f;
+            --color-cm-text: #000;
+            --color-cm-selection: var(--color-cm-evaluated);
+
+            /* derived colors
+            in future use `color-mix` to calculate them which allows for fewer variables
+            but currently the qt browser does not support it, see
+            https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix
+            */
+            --color-bg: var(--color-cm-background);
+
+            --color-warning-bg: var(--color-fg-100);
+            --color-warning-fg: var(--color-cm-keyword);
+
+            --color-fg: var(--color-cm-text);
+            --color-fg-400: #333;
+            --color-fg-300: #555;
+            --color-fg-200: #aaa;
+            --color-fg-100: #eee;
+
+            --color-link: var(--color-cm-string);
+
+            --color-extensions-bg: var(--color-link);
+            --color-extensions-fg: var(--color-cm-background);
+
+            --color-input-fg: var(--color-fg);
+            --color-input-bg: var(--color-fg-100);
+        }
+
+        .cm-s-default .cm-header {color: blue;}
+        .cm-s-default .cm-quote {color: #090;}
+        .cm-negative {color: #d44;}
+        .cm-positive {color: #292;}
+        .cm-header, .cm-strong {font-weight: bold;}
+        .cm-em {font-style: italic;}
+        .cm-link {text-decoration: underline;}
+        .cm-strikethrough {text-decoration: line-through;}
+
+        .cm-s-default .cm-keyword {color: #708;}
+        .cm-s-default .cm-atom {color: #219;}
+        .cm-s-default .cm-number {color: #164;}
+        .cm-s-default .cm-def {color: #00f;}
+        .cm-s-default .cm-variable,
+        .cm-s-default .cm-punctuation,
+        .cm-s-default .cm-property,
+        .cm-s-default .cm-operator {}
+        .cm-s-default .cm-variable-2 {color: #05a;}
+        .cm-s-default .cm-variable-3, .cm-s-default .cm-type {color: #085;}
+        .cm-s-default .cm-comment {color: #a50;}
+        .cm-s-default .cm-string {color: #a11;}
+        .cm-s-default .cm-string-2 {color: #f50;}
+        .cm-s-default .cm-meta {color: #555;}
+        .cm-s-default .cm-qualifier {color: #555;}
+        .cm-s-default .cm-builtin {color: #30a;}
+        .cm-s-default .cm-bracket {color: #997;}
+        .cm-s-default .cm-tag {color: #170;}
+        .cm-s-default .cm-attribute {color: #00c;}
+        .cm-s-default .cm-hr {color: #999;}
+        .cm-s-default .cm-link {color: #00c;}
+
+        .cm-s-default .cm-error {color: #f00;}
+        .cm-invalidchar {color: #f00;}
+
+        .cm-s-default .cm-keyword { color: var(--color-cm-class); font-weight: bold; }
+        .cm-s-default .cm-built-in { color: var(--color-cm-built-in); }
+        .cm-s-default .cm-number { color: var(--color-cm-number); }
+        .cm-s-default .cm-symbol { color: var(--color-cm-symbol); }
+        .cm-s-default .cm-class { color: var(--color-cm-class); }
+        .cm-s-default .cm-primitive { color: var(--color-cm-primitive); }
+        .cm-s-default .cm-char { color: var(--color-cm-char); }
+        .cm-s-default .cm-env-var { color: var(--color-cm-env-var); }
+        /* used to be red */
+        .cm-s-default .cm-comment { color: var(--color-cm-comment); }
+        .cm-s-default .cm-string { color: var(--color-cm-string); }
+        .cm-s-default .cm-text { color: var(--color-cm-text); }
+
+        @keyframes text-flash {
+            0% {
+                background: rgba(0, 0, 0, 0);
+                color: black;
+            }
+            40% {
+                background: var(--color-cm-evaluated);
+                color: black;
+            }
+            100% {
+                background: rgba(0, 0, 0, 0);
+                color: black;
+            }
+        }
+
+        .CodeMirror .text-flash {
+            animation: text-flash .35s ease-in;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-size:1.05em;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: monospace;
+
+        }
+
+        #layout {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #left-panel {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        #editor-wrapper {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .CodeMirror {
+            height: 100% !important;
+        }
+
+        #console {
+            display: block;
+            width: 100%;
+            height: 20vh;
+            resize: none;
+            font-family: monospace;
+        }
+
+        #left-panel {
+            max-width: 67%;
+        }
+
+        #right-panel {
+            min-width: 33%;
+        }
+
+        #right-panel iframe {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        @media (max-device-width: 768px) {
+            #right-panel {
+                display: none;
+            }
+            #left-panel {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="layout">
+
+    <div id="main">
+
+        <div id="left-panel">
+            <div id="editor-wrapper">
+                <textarea id="code">// welcome to sc.wasm <3
+//
+// on mobile you can double tap w/ 3 fingers to evaluate code
+
+// increase for mic access
+s.options.numInputBusChannels = 0;
+
+s.boot;
+
+(
+Ndef(\x, {
+	var freq = SinOscFB.kr([1/5, 1/7]/4, 1.5).exprange(20, 10) gcd: SinOsc.kr([1/5, 1/7]/8).exprange(30, SinOsc.kr(0.005).range(60, 65).floor);
+	var sig = Ringz.ar(Impulse.ar(1.0, (0..4)/5), freq * [100, 400, 1000, 20, 300], 0.2).tanh;
+	Splay.ar(sig).tanh * 0.2;
+}).play;
+)
+</textarea>
+        </div>
+            <textarea id="console" readonly></textarea>
+        </div>
+
+        <div id="right-panel">
+            <iframe id="preview" src="./docs/index.html"></iframe>
+        </div>
+
+    </div>
+</div>
+
+<script async type="module" src="init.js"></script>
+
+</body>
+</html>
