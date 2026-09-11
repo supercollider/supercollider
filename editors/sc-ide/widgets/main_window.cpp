@@ -166,6 +166,11 @@ MainWindow::MainWindow(Main* main): mMain(main), mClockLabel(0), mDocDialog(0) {
     connect(this, &MainWindow::evaluateCode, main->scProcess(), &ScProcess::evaluateCode);
     // Interpreter: post output
     connect(main->scProcess(), &ScProcess::scPost, mPostDocklet->mPostWindow, &PostWindow::post);
+    // Interpreter: clear post window on request
+    connect(main->scProcess(), &ScProcess::response, this, [this](const QString& selector, const QString&) {
+        if (selector == QStringLiteral("clearPostWindow"))
+            mPostDocklet->mPostWindow->clear();
+    });
 
     connect(mPostDocklet->mPostWindow, &PostWindow::handleClickedURL, main->scProcess(), &ScProcess::evaluateCode);
     // Interpreter: monitor running state
