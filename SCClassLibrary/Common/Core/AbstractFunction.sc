@@ -48,6 +48,8 @@ AbstractFunction {
 	cpsmidi { ^this.composeUnaryOp('cpsmidi') }
 	midiratio { ^this.composeUnaryOp('midiratio') }
 	ratiomidi { ^this.composeUnaryOp('ratiomidi') }
+	ratiocent { ^this.composeUnaryOp('ratiocent') }
+	centratio { ^this.composeUnaryOp('centratio') }
 	ampdb { ^this.composeUnaryOp('ampdb') }
 	dbamp { ^this.composeUnaryOp('dbamp') }
 	octcps { ^this.composeUnaryOp('octcps') }
