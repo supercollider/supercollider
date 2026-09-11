@@ -182,9 +182,9 @@ void start_audio_backend(server_arguments const& args) {
 
     std::cout << "Requested audio devices:" << std::endl;
     if (input_channels)
-        std::cout << "  In: " << (input_device.empty() ? "(default)" : input_device) << std::endl;
+        std::cout << "  In: \"" << (input_device.empty() ? "(default)" : input_device) << "\"" << std::endl;
     if (output_channels)
-        std::cout << "  Out: " << (output_device.empty() ? "(default)" : output_device) << std::endl;
+        std::cout << "  Out: \"" << (output_device.empty() ? "(default)" : output_device) << "\"" << std::endl;
 #    ifdef __APPLE__
     bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
                                          args.blocksize, args.hardware_buffer_size, args.safety_clip_threshold);
@@ -209,7 +209,7 @@ void start_audio_backend(server_arguments const& args) {
     instance->prepare_backend();
     instance->activate_audio();
 
-    std::cout << "Audio devices opened successfully" << std::endl;
+    std::cout << "Audio devices opened successfully, and server booted successfully." << std::endl;
 }
 
 #else
@@ -350,7 +350,7 @@ int supernova_main(int argc, char* argv[]) {
     rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
     lock_memory(args);
 
-    cout << "Supernova booting" << endl;
+    cout << "\n*** Supernova booting" << endl;
 #ifndef NDEBUG
     cout << "compiled for debugging" << endl;
 #endif
@@ -372,7 +372,7 @@ int supernova_main(int argc, char* argv[]) {
                 start_audio_backend(args);
                 // Server is ready!
                 bootDelayWarningTimer.stop();
-                cout << "Supernova ready" << endl;
+                cout << "SuperCollider 3 server (supernova) ready." << endl;
             } catch (exception const& e) {
                 cout << "\n*** ERROR: could not start audio backend: " << e.what() << endl;
                 exit(1);
