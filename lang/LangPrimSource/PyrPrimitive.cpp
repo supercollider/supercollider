@@ -74,6 +74,32 @@ PyrSymbol* s_recvmsg;
 
 void initPatternPrimitives();
 
+int prReturnIsValid(VMGlobals* g, int) {
+    auto thread = g->thread;
+    auto curframe = g->frame;
+    auto homeContext = curframe->context.getPyrObjType<PyrFrame>()->homeContext.getPyrObjType<PyrFrame>();
+
+    auto returnFrame = slotRawFrame(&homeContext->caller);
+    if (!returnFrame)
+        g->sp[0] = PyrSlot::make(true);
+
+    PyrFrame* tempFrame = curframe;
+    while (tempFrame != returnFrame) {
+        tempFrame = slotRawFrame(&tempFrame->caller);
+
+        if (!tempFrame) {
+            if (isKindOf((PyrObject*)thread, class_routine) && !thread->parent.isNil()) {
+                thread = thread->parent.getPyrObjType<PyrThread>();
+                tempFrame = thread->frame.getPyrObjType<PyrFrame>();
+            } else {
+                g->sp[0] = PyrSlot::make(false);
+                return errNone;
+            }
+        }
+    }
+    g->sp[0] = PyrSlot::make(true);
+    return errNone;
+}
 
 int getPrimitiveNumArgs(int index) { return gPrimitiveTable.table[index].numNormalArguments; }
 
@@ -4102,6 +4128,8 @@ void initPrimitives() {
     definePrimitive(base, index++, "_SC_VersionTweak", prVersionTweak, 1, 0);
     definePrimitive(base, index++, "_NumUninlinedFunctionInClassLib", numUninlinedFunctionsInClassLib, 1, 0);
     definePrimitive(base, index++, "_SC_BuildString", prBuildString, 1, 0);
+
+    definePrimitive(base, index++, "_ReturnIsValid", prReturnIsValid, 1, 0);
 
     // void initOscilPrimitives();
     // void initControllerPrimitives();
