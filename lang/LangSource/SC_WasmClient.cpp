@@ -64,6 +64,9 @@ static int prRunJsCode(struct VMGlobals* g, int numArgsPushed) {
 
 /** @brief sends a raw OSC byte array to the IDE. This will not be forwarded to the server.  */
 static int prIdeSend(struct VMGlobals* g, int numArgsPushed) {
+    if (!isKindOfSlot(g->sp, class_int8array)) {
+        return errWrongType;
+    }
     PyrInt8Array* array = slotRawInt8Array(g->sp);
     int size = array->size;
     char* copy = static_cast<char*>(malloc(size));
