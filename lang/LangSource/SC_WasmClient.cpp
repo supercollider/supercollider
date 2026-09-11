@@ -176,17 +176,17 @@ void SC_WasmClient::postError(const char* str, size_t len) {
 void SC_WasmClient::flush() { std::cout << std::endl; }
 
 static void* bootInterpreter(void* args) {
-    auto client = new SC_WasmClient("sclang");
+    auto client = SC_WasmClient("sclang");
     std::cout << "Welcome to sclang.wasm!" << std::endl;
     auto options = SC_LanguageClient::Options();
-    client->initRuntime(options);
+    client.initRuntime(options);
     compileLibrary(false);
 
     if (!gCompiledOK) {
         std::cout << "ERROR: Library has not been compiled successfully." << std::endl;
         return nullptr;
     }
-    client->runMain();
+    client.runMain();
     emscripten_exit_with_live_runtime();
 };
 
