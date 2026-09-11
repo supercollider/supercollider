@@ -64,7 +64,4 @@ public:
      * instead of using boost asio, we are using JS callbacks
      */
     void ticker();
-
-    /** @brief responds to _AppClock_SchedNotify primitive */
-    static int primitiveTicker(VMGlobals* g, int numArgsPushed);
 };

@@ -83,6 +83,15 @@ static int prIdeSend(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+/** @brief responds to _AppClock_SchedNotify primitive */
+static int primitiveTicker(VMGlobals* g, int numArgsPushed) {
+    if (auto client = static_cast<SC_WasmClient*>(SC_WasmClient::instance())) {
+        // defer execution to js runtime
+        client->scheduleTick(1.0);
+    }
+    return errNone;
+}
+
 void SC_WasmClient::onLibraryStartup() {
     SC_LanguageClient::onLibraryStartup();
     int index = 0;
@@ -144,14 +153,6 @@ void SC_WasmClient::ticker() {
         }
     }
 }
-
-int SC_WasmClient::primitiveTicker(VMGlobals* g, int numArgsPushed) {
-    if (auto client = static_cast<SC_WasmClient*>(instance())) {
-        // defer execution to js runtime
-        client->scheduleTick(1.0);
-    }
-    return errNone;
-};
 
 void wasmTick(void*) {
     if (auto client = static_cast<SC_WasmClient*>(SC_WasmClient::instance())) {
