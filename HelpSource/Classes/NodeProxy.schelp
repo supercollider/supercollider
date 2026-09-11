@@ -555,6 +555,12 @@ code::
 ~p.specs.postln;
 ::
 
+method::partMap
+Returns a link::Classes/NodeProxyPartMap:: object, used to map only specific outputs of this proxy to another
+
+argument::indices
+A list of indices (outputs) to map.
+
 subsection::Sending synths to server explicitly
 
 Normally, processes (usually synths) are started when their respective source is added to the proxy. The processes can also be restarted, however, or the proxy can be used while asleep and the processes can then be started explicitly.

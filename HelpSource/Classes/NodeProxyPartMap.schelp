@@ -1,0 +1,36 @@
+class:: NodeProxyPartMap
+summary:: represents a subset of the output bus of a proxy that can be mapped to a control.
+categories:: JITLib>NodeProxy
+related:: Classes/Bus, Classes/NodeProxy
+
+description::
+Object that represents a subset of the output bus of a proxy. Used to map such subsets to controls of proxies.
+
+code::
+p = NodeProxy.control(s,4);
+p.source = {[0,1,2,3]};
+
+o = NodeProxy.control(s,2);
+o.source = {|x=#[0,0]| x.poll};
+
+// Maps only outputs 0 and 3
+m = NodeProxyPartMap.new(p, [0,3]);
+
+o.set(\x, m);
+
+// same as 
+o.set(\x, p.partMap([0,3]));
+::
+
+ClassMethods::
+
+subsection::Creation
+
+method::new
+Return a new instance of NodeProxyPartMap.
+
+argument::proxy
+The proxy to map the outputs from
+
+argument::indices
+A list of indices (outputs from the proxy) to map.
