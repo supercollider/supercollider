@@ -17,13 +17,17 @@ Integer : SimpleNumber {
 	odd { ^this.bitAnd(1) == 1 }
 
 	xrand { arg exclude=0;
-		^(exclude + (this - 1).rand + 1) % this;
+		var res = this.rand;
+		if ( res == exclude ) { res = this };
+		^res;
 	}
+
 	xrand2 { arg exclude=0;
-		var res;
-		res = (2 * this).rand - this;
-		if (res == exclude, { ^this },{ ^res });
+		var res = this.rand2;
+		if ( res == exclude ) { res = [this, this.neg].choose };
+		^res;
 	}
+
 	degreeToKey { arg scale, stepsPerOctave = 12;
 		^scale.performDegreeToKey(this, stepsPerOctave)
 	}
