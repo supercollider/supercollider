@@ -96,6 +96,11 @@ void SC_WasmClient::runCode(const std::string& code) {
     runLibrary(s_interpretPrintCmdLine);
 }
 
+void SC_WasmClient::scheduleTick(double delayMs) {
+    emscripten_clear_timeout(mTickTimeoutId);
+    mTickTimeoutId = emscripten_set_timeout(wasmTick, delayMs, nullptr);
+}
+
 void SC_WasmClient::runCodeSilent(const std::string& code) {
     setCmdLine(code.c_str());
     runLibrary(s_interpretCmdLine);
@@ -117,6 +122,8 @@ int SC_WasmClient::run(int argc, char** argv) {
 }
 
 void SC_WasmClient::ticker() {
+    // the pending timeout that called us has timet out
+    mTickTimeoutId = 0;
     double secs;
     lock();
     const bool haveNext = tickLocked(&secs);
@@ -130,7 +137,7 @@ void SC_WasmClient::ticker() {
             delayMs = 1.0;
         }
         if (!isnan(delayMs) && !isinf(delayMs)) {
-            emscripten_set_timeout(wasmTick, delayMs, nullptr);
+            scheduleTick(delayMs);
         } else {
             std::cout << "Invalid delayMs value for AppClock ticker: " << delayMs << std::endl;
         }
@@ -138,8 +145,10 @@ void SC_WasmClient::ticker() {
 }
 
 int SC_WasmClient::primitiveTicker(VMGlobals* g, int numArgsPushed) {
-    // defer execution to js runtime
-    emscripten_set_timeout(wasmTick, 1, nullptr);
+    if (auto client = static_cast<SC_WasmClient*>(instance())) {
+        // defer execution to js runtime
+        client->scheduleTick(1.0);
+    }
     return errNone;
 };
 

@@ -44,6 +44,13 @@ public:
     void runCode(const std::string& code);
 
     /**
+     * (Re-arms) the single AppClock tick timer, replacing the pending one.
+     */
+    void scheduleTick(double delayMs);
+    // id of the pending timeout, 0 if none has been set yet
+    int mTickTimeoutId = 0;
+
+    /**
      * Evaluates the code w/o printing to stdout.
      * This becomes necessary for e.g. providing reflections to the editor.
      * @param code
@@ -52,8 +59,10 @@ public:
 
     int run(int argc, char** argv) override;
 
-    // from SC_TerminalClient
-    // instead of using boost asio, we are using JS callbacks
+    /**
+     * from SC_TerminalClient.
+     * instead of using boost asio, we are using JS callbacks
+     */
     void ticker();
 
     /** @brief responds to _AppClock_SchedNotify primitive */
