@@ -145,14 +145,58 @@ TestReblock : TestReblockBase {
 			cond.wait;
 			synth.free;
 		};
+
+		// a block size of 0 should yield the Server block size
 		this.assert(results[0] == server.options.blockSize, "Reblock with control default argument matches Server block size");
+
+		// the remaining block sizes should be set as is.
 		success = [ blockSizes[1..], results[1..] ].flop.every { |pair| pair[0] == pair[1] };
 		this.assert(success, "Reblock with control argument matches BlockSize output");
 	}
 
+	test_reblockWithUpsamplingWorks {
+		var bus = Bus.control(server);
+		// with 4x upsampling we can reblock up to 256 samples.
+		// the last value (512) is out of range and should be clamped to 256.
+		var upsampleFactor = 4;
+		var blockSizes = [ 0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 ];
+		var results = Array.fill(blockSizes.size, nil);
+		var success;
+
+		SynthDef(\testReblockControl, { |out, blockSize|
+			Reblock(blockSize);
+			Resample(upsampleFactor);
+			Out.kr(out, BlockSize.ir);
+		}).add;
+		server.sync;
+
+		blockSizes.do { |blockSize, index|
+			var cond = Condition();
+			var synth = Synth(\testReblockControl, [ out: bus, blockSize: blockSize ]);
+			server.sync; // let it compute at least one block
+			bus.get { |f|
+				results[index] = f;
+				cond.test_(true).signal;
+			};
+			cond.wait;
+			synth.free;
+		};
+
+		// a block size of 0 should yield the Server block size
+		this.assert(results[0] == server.options.blockSize, "Reblock with default argument + upsampling matches Server block size");
+
+		// a block size larger than Server block size * upsample factor should be adjust to the latter.
+		this.assert(results.wrapAt(-1) == blockSizes.wrapAt(-2), "Block size larger than Server block size * upsample factor is adjusted properly");
+
+		// the remaining block sizes should be set as is.
+		success = [ blockSizes, results ].flop.drop(1).drop(-1).every { |pair| pair[0] == pair[1] };
+		this.assert(success, "Reblock with argument + upsampling matches BlockSize output");
+	}
+
 	test_reblockWithBadControlBlockSizeUsesDefault {
 		var bus = Bus.control(server);
-		var blockSizes = [ -1, 3, 7 ];
+		// Note: the block size can not exceed Server block size * upsample factor (here: 1)
+		var blockSizes = [ -1, 3, 7, server.options.blockSize * 2 ];
 		var results = Array.fill(blockSizes.size, nil);
 		var success;
 		SynthDef(\testReblockControlFail, { |out, blockSize|
