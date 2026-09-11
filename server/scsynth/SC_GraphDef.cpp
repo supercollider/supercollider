@@ -701,16 +701,4 @@ void DoBufferColoring(World* inWorld, GraphDef* inGraphDef) {
             inWorld->hw->mMaxWireBufs = sc_max(inWorld->hw->mMaxWireBufs, inGraphDef->mNumWireBufs);
         }
     }
-
-    // multiply buf indices by buf length for proper offset
-    int bufLength = inWorld->mBufLength;
-    for (uint32 j = 0; j < inGraphDef->mNumUnitSpecs; ++j) {
-        UnitSpec* unitSpec = inGraphDef->mUnitSpecs + j;
-        for (uint32 i = 0; i < unitSpec->mNumOutputs; ++i) {
-            OutputSpec* outputSpec = unitSpec->mOutputSpec + i;
-            if (outputSpec->mCalcRate == calc_FullRate) {
-                outputSpec->mBufferIndex *= bufLength;
-            }
-        }
-    }
 }

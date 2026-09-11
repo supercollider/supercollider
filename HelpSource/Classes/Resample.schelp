@@ -16,7 +16,7 @@ For example, you can use upsampling + filtering to reduce the effects of aliasin
 
 code::
 (
-SynthDef(\hardsync, { |out, upsample|
+SynthDef(\hardsync, { |out, upsample, blocksize|
 	var sig, cutoff = 18000;
 
 	Resample(upsample);
@@ -32,6 +32,7 @@ SynthDef(\hardsync, { |out, upsample|
 
 // no upsampling -> lots of aliasing
 Synth(\hardsync);
+
 // watch aliasing disappear with increasing upsampling factors
 Synth(\hardsync, [ upsample: 2.0 ]);
 Synth(\hardsync, [ upsample: 4.0 ]);
