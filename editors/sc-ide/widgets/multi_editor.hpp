@@ -127,6 +127,9 @@ public:
         EvaluateRegion,
         EvaluateLine,
 
+        // Rich Text
+        ApplyCodeFormat,
+
         ActionRoleCount
     };
 
@@ -136,7 +139,8 @@ public:
     Document* documentForTab(int index);
     int tabForDocument(Document* doc);
 
-    GenericCodeEditor* currentEditor();
+    QWidget* currentEditor();
+    GenericCodeEditor* currentGenericEditor();
     CodeEditorBox* currentBox() { return mCurrentEditorBox; }
     void split(Qt::Orientation direction);
 
@@ -179,7 +183,7 @@ private slots:
     void update(Document*);
     void onCloseRequest(int index);
     void onCurrentTabChanged(int index);
-    void onCurrentEditorChanged(GenericCodeEditor*);
+    void onCurrentEditorChanged(QWidget*);
     void onBoxActivated(CodeEditorBox*);
     void onDocModified(Document*);
     void updateDocOrder(int, int);
@@ -200,7 +204,7 @@ private:
     int insertTab(Document* doc, int insertIndex = -1);
     CodeEditorBox* newBox(MultiSplitter*);
     void setCurrentBox(CodeEditorBox*);
-    void setCurrentEditor(GenericCodeEditor*);
+    void setCurrentEditor(QWidget*);
     void loadBoxState(CodeEditorBox* box, const QVariantList& data, const QList<Document*>& documentList);
     void loadSplitterState(MultiSplitter*, const QVariantMap& data, const QList<Document*>& documentList);
     void showEditorTabs(bool);
