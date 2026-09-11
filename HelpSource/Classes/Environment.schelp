@@ -189,7 +189,7 @@ orc = Environment.make {
 
 subsection::Environments and asynchronous functions
 
-Local variables declared in functions, and class and instance variables, use lexical scope. That is, the context in which they are understood depends on where the declaration is read during compilation. Asynchronous functions -- any function that will execute outside (later than) the current execution flow -- carry their lexically scoped variables with them.
+Local variables declared in functions, and class and instance variables, use lexical scope. That is, the context in which they are understood depends on where the declaration is read during compilation. Asynchronous functions — any function that will execute outside (later than) the current execution flow — carry their lexically scoped variables with them.
 code::
 f = { var a = "got it"; { a.postln }.defer(0.5) };
 f.value;
@@ -228,7 +228,7 @@ e = (someVariable: 5, printMe: { |self, string| string.postln });
 
 An object prototype looks up the method selector in the Environment to decide what to do.
 
-Most objects are simply returned -- the method call behaves like a getter for any other object.
+Most objects are simply returned — the method call behaves like a getter for any other object.
 code::
 e.someVariable;
 // same as
@@ -252,7 +252,7 @@ code::
 e.mul2 = { |z| z.someVariable * 2 };
 e.mul2;
 ::
-Environment variables inside a function will refer to the currently active environment -- not to the Environment being addressed. This is to allow the object prototype to interact with the link::#currentEnvironment::.
+Environment variables inside a function will refer to the currently active environment — not to the Environment being addressed. This is to allow the object prototype to interact with the link::#currentEnvironment::.
 code::
 e.mul2 = { |z| ~someVariable * 2 };
 // this will throw an error because ~someVariable is nil in the currentEnvironment
@@ -267,7 +267,7 @@ e.mul2;
 note::
 Be careful to avoid method names that are defined in any of the superclasses of environment (or event). Object prototyping works by trapping method selectors that are not already defined as class library methods. Using a generic method selector such as 'stop' or 'reset' will cause the corresponding class library method to respond, and the items in the environment will never be checked.
 
-Assigning a value into an environment using a setter -- strong::name_():: or strong::.name = ...:: -- posts a warning message if the name is already defined in the class library.
+Assigning a value into an environment using a setter — strong::name_():: or strong::.name = ...:: — posts a warning message if the name is already defined in the class library.
 code::
 e.reset = { "My reset function".postln };
 

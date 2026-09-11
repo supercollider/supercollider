@@ -146,7 +146,7 @@ a = Synth(\help_Klank, [
 Advanced examples:
 code::
 
-// -- overlap texture
+// — overlap texture
 (
 SynthDef("help-KlankOverlapTexture",
 { |out = 0, freqs = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], rings = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], atk = 5, sus = 8, rel = 5, pan = 0|
@@ -182,7 +182,7 @@ r.stop;	// stop spawning new synths
 
 
 
-// -- frequency and decay scaling
+// — frequency and decay scaling
 (
 SynthDef("help-KlankScaling", { |out = 0, freq = 0, rings = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pan = 0|
 	var e = EnvGen.kr(Env(#[1, 1, 0], #[0.4, 0.01]), doneAction: Done.freeSelf);
@@ -215,7 +215,7 @@ r.play;
 r.stop;
 
 
-// -- overlap texture 2
+// — overlap texture 2
 (
 SynthDef("help-KlankOverlapTexture2",
 { |out = 0, freqs = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], rings = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], atk = 5, sus = 8, rel = 5, pan = 0|
@@ -250,7 +250,7 @@ r.play;
 r.stop;
 
 
-// -- overlap texture 3
+// — overlap texture 3
 (
 SynthDef("help-KlankOverlapTexture3",
 { |out = 0, freqs = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], rings = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pan = 0|

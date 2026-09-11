@@ -96,7 +96,7 @@ subsection::Streams' input values (inval, inevent)
 
 Before discussing input values in patterns, let's take a step back and discuss how it works for Routines.
 
-link::Classes/Routine::'s code::next:: method takes one argument, which is passed into the stream (Routine). The catch is that the routine doesn't start over from the beginning -- if it did, it would lose its unique advantage of remembering its position and resuming on demand. So it isn't sufficient to receive the argument using the routine function's argument variable.
+link::Classes/Routine::'s code::next:: method takes one argument, which is passed into the stream (Routine). The catch is that the routine doesn't start over from the beginning — if it did, it would lose its unique advantage of remembering its position and resuming on demand. So it isn't sufficient to receive the argument using the routine function's argument variable.
 
 In reality, when a Routine yields a value, its execution is interrupted after calling code::yield::, but before code::yield:: returns. Then, when the Routine is asked for its next value, execution resumes by providing a return value from the code::yield:: method. (This behavior isn't visible in the SuperCollider code in the class library; code::yield:: is a primitive in the C++ backend, which is how it's able to do something that is otherwise impossible in the language.)
 
@@ -125,7 +125,7 @@ r = Routine({ |inval|
 (1..3).do { |x| r.next(x).postln };
 ::
 
-This convention -- receiving the first input value as an argument, and subsequent input values as a result of a method call -- holds true for the code::embedInStream:: method in patterns also. The rules are:
+This convention — receiving the first input value as an argument, and subsequent input values as a result of a method call — holds true for the code::embedInStream:: method in patterns also. The rules are:
 
 list::
 ## code::embedInStream:: takes strong::one argument::, which is the first input value.
@@ -207,7 +207,7 @@ Pwhite : Pattern {
 		var loStr = lo.asStream;
 		var hiStr = hi.asStream;
 		var hiVal, loVal;
-			// length.value -- functions allowed for length
+			// length.value — functions allowed for length
 			// e.g., Pwhite could give a random number of values for each embed
 		length.value.do({
 			hiVal = hiStr.next(inval);

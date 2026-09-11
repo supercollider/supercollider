@@ -74,7 +74,7 @@ subsection::Changing Pbind value patterns on the fly
 
 Patterns are converted into streams to generate values (or events). By design, there is no way to access the internal state of the stream. This means, for Pbind and similar patterns, the streams producing values for the event keys are invisible. So, it isn't possible to reach inside the stream and change them while the pattern is playing.
 
-What we can do instead is base the Pbind on strong::pattern proxies:: -- objects that take the place of a pattern. The link::Classes/PatternProxy:: is a single object that creates a single stream within Pbind, but it looks for its values to the pattern and stream contained inside the proxy. Changing the proxy's pattern replaces the stream, without having to touch the Pbind's closed box.
+What we can do instead is base the Pbind on strong::pattern proxies:: — objects that take the place of a pattern. The link::Classes/PatternProxy:: is a single object that creates a single stream within Pbind, but it looks for its values to the pattern and stream contained inside the proxy. Changing the proxy's pattern replaces the stream, without having to touch the Pbind's closed box.
 
 In the first example, pattern proxies are held in environment variables, and they can be manipulated through those variables.
 

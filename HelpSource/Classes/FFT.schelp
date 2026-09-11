@@ -13,7 +13,7 @@ FFT and link::Classes/IFFT:: UGens require a buffer to store the frequency-domai
 To do FFT processing on a multichannel signal, provide an array of mono buffers, one for each channel. Then, FFT/IFFT will perform link::Guides/Multichannel-Expansion::, to process each channel separately.
 
 code::
-// NO: The buffer has two channels -- this will not work
+// NO: The buffer has two channels — this will not work
 fft = FFT(LocalBuf(2048, 2), aStereoSignal);
 
 // YES: Use an array of two single-channel buffers

@@ -84,7 +84,7 @@ section::Why patterns?
 
 Patterns describe calculations without explicitly stating every step. They are a higher-level representation of a computational task. While patterns are not ideally suited for every type of calculation, when they are appropriate they free the user from worrying about every detail of the process. Using patterns, one writes emphasis::what:: is supposed to happen, rather than emphasis::how:: to accomplish it.
 
-In SuperCollider, patterns are best for tasks that need to produce sequences, or streams, of information. Often these are numbers, but they don't have to be -- patterns can generate any kind of object.
+In SuperCollider, patterns are best for tasks that need to produce sequences, or streams, of information. Often these are numbers, but they don't have to be — patterns can generate any kind of object.
 
 For a simple example, let's count upward starting from 0. We don't know how high we will need to count; we just know that every time we ask for values, we should get a continually increasing series.
 
@@ -126,7 +126,7 @@ What are the advantages of the pattern representation?
 list::
 ## It's shorter.
 ## It's tested and it works. You don't have to debug how Pseries works (whereas, if you write a Routine, you might make a mistake and then have to find it.)
-## With the Routine -- especially if it's complicated -- you will have to decipher it when you come back to the code later. The Pattern states the purpose right there in the code.
+## With the Routine — especially if it's complicated — you will have to decipher it when you come back to the code later. The Pattern states the purpose right there in the code.
 ::
 
 What are some disadvantages?
@@ -149,7 +149,7 @@ A pattern is like a blueprint for a building, showing how all the parts fit toge
 
 A pattern is supposed to describe behavior, and in general, evaluating the pattern (by way of a stream) should not change anything in the Pattern object itself. In computer science terms, patterns are emphasis::stateless::; their definition does not change over time. The stream is what keeps track of where we are in the pattern's evaluation.
 
-This explains an easy "gotcha" with patterns -- forgetting to turn the pattern into a stream doesn't get the expected result. Since a pattern doesn't have any concept of a current state, calling code::next:: on it is meaningless, so code::next:: does what it does for most objects: return the receiver object itself. The method code::asStream:: creates the stream conforming to the pattern's specification, and calling code::next:: on the stream advances to its next state and returns the new value.
+This explains an easy "gotcha" with patterns — forgetting to turn the pattern into a stream doesn't get the expected result. Since a pattern doesn't have any concept of a current state, calling code::next:: on it is meaningless, so code::next:: does what it does for most objects: return the receiver object itself. The method code::asStream:: creates the stream conforming to the pattern's specification, and calling code::next:: on the stream advances to its next state and returns the new value.
 
 code::
 p = Pseries(0, 1, 10);

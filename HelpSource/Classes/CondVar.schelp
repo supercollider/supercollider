@@ -32,7 +32,7 @@ This usually takes the form of a while loop of the form: code::while { /* condit
 The following code illustrates these two approaches:
 
 code::
-// Version 1: `wait` without predicate -- while loop required
+// Version 1: `wait` without predicate — while loop required
 (
 var c = CondVar();
 // Our resource here will be a "message", which is set to some string
@@ -64,7 +64,7 @@ fork {
 };
 )
 
-// Version 2: `wait` with predicate -- no while loop required
+// Version 2: `wait` with predicate — no while loop required
 (
 var c = CondVar(), message = "";
 var waitThreadDelay = 1;

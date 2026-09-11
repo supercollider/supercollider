@@ -42,7 +42,7 @@ For audio-rate signals the delay is one audio frame, and for control-rate signal
 
 Why is the default value of strong::x1:: different depending on the code::UGen::'s rate?
 
-At audio-rate, an analog delay model is followed—the input signal is preceded by silence (zero).
+At audio-rate, an analog delay model is followed — the input signal is preceded by silence (zero).
 At control-rate, leading with a zero is less appropriate because control signals are often DC or other non zero-mean signals (e.g. a frequency or gain control signal).
 
 

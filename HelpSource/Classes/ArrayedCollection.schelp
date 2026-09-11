@@ -386,7 +386,7 @@ z = z.boundedInsert(-2, \b); // -> [b, 1, 999, 2]
 ::
 
 method::move
-Moves an item from one position to another. – Both code::fromIndex:: and code::toIndex:: arguments are specified as integers starting from 0.
+Moves an item from one position to another. — Both code::fromIndex:: and code::toIndex:: arguments are specified as integers starting from 0.
 
 code::
 [10, 20, 1000, 40, 50].move(2, 0) // move 1000 to index 0
@@ -436,7 +436,7 @@ code::
 ::
 
 method::copyRange
-Return a new link::Classes/ArrayedCollection:: which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. – Both start and end are specified as integers starting from 0. If strong::end:: < strong::start::, an empty ArrayedCollection is returned.
+Return a new link::Classes/ArrayedCollection:: which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. — Both start and end are specified as integers starting from 0. If strong::end:: < strong::start::, an empty ArrayedCollection is returned.
 code::
 (
 var x, y;
@@ -453,7 +453,7 @@ See link::#copyRange_copySeries#NOTE:: in link::#-copySeries::.
 ::
 
 method::copySeries
-Return a new link::Classes/ArrayedCollection:: consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. – All indices (first, second, last) are specified as integers starting from 0. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
+Return a new link::Classes/ArrayedCollection:: consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. — All indices (first, second, last) are specified as integers starting from 0. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
 
 code::x.copySeries(a, nil, c):: is equivalent to code::x[a..c]::, and code::x.copySeries(a, b, c):: is equivalent to code::x[a, b..c]::
 
@@ -501,7 +501,7 @@ y.postln;
 ::
 
 method::putSeries
-Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. – All indices (first, second, last) are specified as integers starting from 0.
+Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. — All indices (first, second, last) are specified as integers starting from 0.
 code::x.putSeries(a, b, c, val):: can also be written as code::x[a, b..c] = val::
 code::
 (
