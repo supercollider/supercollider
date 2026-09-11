@@ -790,8 +790,8 @@ Event : Environment {
 					},
 
 					midi: #{|server|
-						var freqs, lag, dur, sustain, strum;
-						var bndl, midiout, hasGate, midicmd;
+						var freqs, lag, dur, sustain, strum, offset;
+						var clock, bndl, midiout, hasGate, midicmd;
 
 						freqs = ~freq = ~detunedFreq.value;
 
@@ -799,6 +799,8 @@ Event : Environment {
 						~midinote = (freqs.cpsmidi).round(1).asInteger;
 						strum = ~strum;
 						lag = ~lag;
+						offset = ~timingOffset;
+						clock = thisThread.clock;
 						sustain = ~sustain = ~sustain.value;
 						midiout = ~midiout.value;
 						~uid ?? { ~uid = midiout.uid };  // mainly for sysex cmd
@@ -809,19 +811,27 @@ Event : Environment {
 						bndl = bndl.asControlInput.flop;
 
 						bndl.do {|msgArgs, i|
-							var latency;
+							var beatOffset;
 
-							latency = i * strum + lag;
+							beatOffset = i * strum + offset;
 
-							if(latency == 0.0) {
-								midiout.performList(midicmd, msgArgs)
+							if(lag == 0.0) {
+								if(beatOffset == 0.0) {
+									midiout.performList(midicmd, msgArgs)
+								} {
+									clock.sched(beatOffset, {
+										midiout.performList(midicmd, msgArgs);
+									})
+								}
 							} {
-								thisThread.clock.sched(latency, {
-									midiout.performList(midicmd, msgArgs);
+								SystemClock.sched(lag, {
+									clock.sched(beatOffset, {
+										midiout.performList(midicmd, msgArgs);
+									})
 								})
 							};
 							if(hasGate and: { midicmd === \noteOn }) {
-								thisThread.clock.sched(sustain + latency, {
+								clock.sched(sustain + beatOffset, {
 									midiout.noteOff(*msgArgs)
 								});
 							};
