@@ -7,7 +7,7 @@ PmonoStream : Stream {
 		event,
 		streamout, name,
 		streampairs, endval,
-		msgFunc, hasGate, synthLib, desc, schedBundleArray, schedBundle;
+		synthLib, descs, schedBundleArray, schedBundle;
 
 	*new { |pattern|
 		^super.newCopyArgs(pattern)
@@ -41,16 +41,8 @@ PmonoStream : Stream {
 
 		event = inevent.copy;
 		event.use {
-			synthLib = ~synthLib ?? { SynthDescLib.global };
-			~synthDesc = desc = synthLib.match(pattern.synthName);
-			if (desc.notNil) {
-				~hasGate = hasGate = desc.hasGate;
-				~msgFunc = desc.msgFunc;
-			}{
-				~msgFunc = ~defaultMsgFunc;
-				~hasGate = hasGate = false;
-			};
-			msgFunc = ~msgFunc;
+			~instrument = pattern.synthName;
+			descs = ~getInstrumentDescs.();
 		}
 	}
 
@@ -68,11 +60,14 @@ PmonoStream : Stream {
 				if(event.isRest.not) {
 					~type = \monoNote;
 					~instrument = pattern.synthName;
+					~instrDescs = descs;
 					currentCleanupFunc = cleanup.addFunction(event, { | flag |
-						if (flag and: { id.notNil }) { (id: id, server: server, type: \off,
-							hasGate: hasGate,
-							schedBundleArray: schedBundleArray,
-							schedBundle: schedBundle).play
+						if (flag and: { id.notNil }) {
+							(id: id, server: server, type: \off,
+								instrDescs: descs,
+								schedBundleArray: schedBundleArray,
+								schedBundle: schedBundle
+							).play
 						};
 						currentCleanupFunc = nil;
 						id = nil;
@@ -109,7 +104,7 @@ PmonoStream : Stream {
 			~server = server;
 			~id = id;
 			~type = \monoSet;
-			~msgFunc= msgFunc;
+			~instrDescs = descs;
 		};
 	}
 }
