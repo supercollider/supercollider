@@ -38,13 +38,13 @@ METHOD:: globalKeyDownAction
 
 	A settable class variable containing an object (e.g. an instance of Function or FunctionList) which is evaluated (i.e. link::Classes/Object#-value#value:: method is called on it) whenever a key is pressed, independently of keyboard focus. See also link::#-addAction::.
 
-	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode, key.
+	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode, key, autoRepeat.
 
 METHOD:: globalKeyUpAction
 
 	A settable class variable containing an object (e.g. an instance of Function or FunctionList) which is evaluated (i.e. link::Classes/Object#-value#value:: method is called on it) whenever a key is released, independently of keyboard focus. See also link::#-addAction::.
 
-	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode.
+	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode, autoRepeat.
 
 
 METHOD:: currentDrag
@@ -379,7 +379,7 @@ METHOD:: setBackgroundImage
 Sets an Image as a valid view background, with 16 different drawing modes and opacity support.
 
 	argument:: image
-	the Image to use. 
+	the Image to use.
 
 	argument:: tileMode
 	the mode to use. By default 1 (fixed to left, fixed to top).
@@ -685,12 +685,14 @@ note:: Only characters with an ASCII code are passed. Non-ASCII keys (Ctrl/Alt/C
 ## strong::keycode:: - The hardware dependent keycode indicating the physical key. This will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard. warning::Function key modifier in combination with another key may change the latter's keycode.::
 
 ## strong::key:: - An Integer denoting a key, corresponding to the "Key" enum of the Qt C++ API. Comparing this value is the most reliable way to check which key was pressed. For a list of possible values, see: link::http://qt-project.org/doc/qt-4.8/qt.html#Key-enum::.
+
+## strong::autoRepeat:: - A Boolean indicating whether this action was triggered by the auto repeat feature. On certain operating systems, holding a key down will keep triggering key events as if the user was constantly pressing and releasing the key. This flag allows you to ignore those events when implementing your own actions.
 ::
 
 METHOD:: keyDownAction
     The object to be evaluated when a key is pressed.
 
-    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key, autoRepeat::. See link::#Key actions:: for explanation of arguments.
 
     The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
 
@@ -699,8 +701,8 @@ METHOD:: keyDownAction
 CODE::
 // open a new document that posts the parameters passed into the keydownAction function.
 (
-Document("test arguments").keyDownAction = { |doc, char, mod, unicode, keycode, key|
-	[doc, char, mod, unicode, keycode, key].postln
+Document("test arguments").keyDownAction = { |doc, char, mod, unicode, keycode, key, autoRepeat|
+	[doc, char, mod, unicode, keycode, key, autoRepeat].postln
 };
 )
 ::
@@ -708,7 +710,7 @@ Document("test arguments").keyDownAction = { |doc, char, mod, unicode, keycode, 
 METHOD:: keyUpAction
     The object to be evaluated when a key is released.
 
-    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key, autoRepeat::. See link::#Key actions:: for explanation of arguments.
 
     The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
 
