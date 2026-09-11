@@ -14,6 +14,7 @@ Plot {
 	var <>hideLabelsHeightRatio = 1.2, <>hideLabelsWidthRatio = 1.5; // hide labels below plot:labels ratio
 	var domainPad = 0.0, halfBinWidthPx = 0.0; // for steplike data width
 	var valueCache, resolution;
+    var interp = true; // this will be set to false if codomain is integers
 
 	*initClass {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
@@ -209,6 +210,7 @@ Plot {
 	value_ { |array|
 		value = array;
 		valueCache = nil;
+		interp = value.any(_.isInteger.not);
 	}
 
 	spec_ { |sp|
@@ -794,9 +796,13 @@ Plot {
 				specStep = numSpecSteps.reciprocal;
 				sizem1 = value.size - 1;
 
-				valueCache = (numSpecSteps + 1).collect{ |i|
-					value.blendAt((specStep * i) * sizem1)  // float index of new value
-				}
+				if (interp) { //interpolate values for resampling
+					valueCache = (numSpecSteps + 1).collect{ |i|
+						value.blendAt(specStep * sizem1 * i)};
+				} { //or simply skip some values if there aren't enough pixels
+					valueCache = (numSpecSteps + 1).collect{ |i|
+						value.at((specStep * sizem1 * i).asInteger)};
+				};
 			} {
 				valueCache
 			}
