@@ -213,31 +213,34 @@ void PostWindow::post(const QString& text) {
         const auto line_format = formatForPostLine(line);
         cursor.movePosition(QTextCursor::End);
 
-        // If there is some text that looks like a URI and contains '://' then turn it into a html anchor so we can
-        // click it.
-        if (!line.contains("://")) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        if (!line.contains("\x1b]8;;")) {
             cursor.insertText(line, line_format);
         } else {
-            // words are just text separated by spaces.
-            const auto words = line.split(" ");
-            const auto words_count = words.size();
-            for (size_t w { 0 }; w < words_count; ++w) {
-                const auto& word = words[w];
-                cursor.movePosition(QTextCursor::End);
+            const auto openingPos = line.indexOf("\x1b]8;;");
+            const auto uriStart = openingPos + 5;
+            const auto uriEnd = line.sliced(uriStart).indexOf("\x1b\\") + uriStart;
+            const auto textStart = uriEnd + 2;
+            const auto textEnd = line.sliced(textStart, line.size() - textStart).indexOf("\x1b]8;;\x1b\\") + textStart;
 
-                if (const auto maybe_url = QUrl(word, QUrl::ParsingMode::StrictMode);
-                    maybe_url.isValid() && word.contains("://")) {
-                    cursor.insertHtml(QString("<a href='") + word + QString("'>") + word + QString("</a>"));
-                } else {
-                    cursor.insertText(word, line_format);
-                }
+            if (openingPos < 0 || uriStart < 0 || uriEnd < 0 || textStart < 0 || textEnd < 0) {
+                cursor.insertText(line, line_format);
+            } else {
+                const auto before = line.first(openingPos);
+                if (openingPos != 0)
+                    cursor.insertText(before, line_format);
 
-                // Put space back in, if not last word.
-                if (w + 1 != words_count)
-                    cursor.insertText(" ", line_format);
+                const auto uri = line.sliced(uriStart, uriEnd - uriStart);
+                const auto text = line.sliced(textStart, textEnd - textStart);
+                cursor.insertHtml(QString("<a href='") + uri + QString("'>") + text + QString("</a>"));
+                cursor.insertText(line.sliced(textEnd + 7), line_format);
             }
         }
-
+#else
+        // No escape codes in qt5, could add this by supporting older QString methods, but it is already no officially
+        // supported. Remove this in the future.
+        cursor.insertText(line, line_format);
+#endif
         // Don't write a new line in the final case.
         if (i + 1 != line_count)
             cursor.insertText("\n", line_format);
