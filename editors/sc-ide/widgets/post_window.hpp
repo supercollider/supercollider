@@ -69,7 +69,8 @@ public:
 
 signals:
     void scrollToBottomRequest();
-    void handleClickedURL(const QString& command, bool silent);
+    void handleClickedURL(const QString& command, bool silent, const QString* filePath = nullptr, int lineNumber = 0,
+                          int column = 0);
 
 public slots:
     void post(const QString& text);

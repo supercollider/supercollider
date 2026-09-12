@@ -41,12 +41,6 @@
 // TODO: move locks & thread out of the header, possibly using pimpl
 class SCLANG_DLLEXPORT SC_TerminalClient : public SC_LanguageClient {
 public:
-    enum {
-        kInterpretCmdLine = 0x1b,
-        kInterpretPrintCmdLine = 0x0c,
-        kRecompileLibrary = 0x18 // ctrl+x
-    };
-
     enum Signal {
         sig_input = 0x01, // there is new input
         sig_sched = 0x02, // something has been scheduled

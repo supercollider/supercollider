@@ -53,8 +53,6 @@ public:
     int TableSize() { return mMaxItems; }
     PyrSymbol* Get(int inIndex) { return mTable[inIndex]; }
 
-    void CheckSymbols();
-
 private:
     friend PyrSymbol* getsym(const char* name);
     friend PyrSymbol* findsym(const char* name);

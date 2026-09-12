@@ -27,6 +27,7 @@
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 #include "../../core/settings/theme.hpp"
+#include <qtextcursor.h>
 
 #ifdef SC_USE_QTWEBENGINE
 #    include "help_browser.hpp"
@@ -1202,6 +1203,25 @@ void ScCodeEditor::openCommandLine() { Main::openCommandLine(symbolUnderCursor()
 
 void ScCodeEditor::findReferences() { Main::findReferences(symbolUnderCursor(), this); }
 
+// zero indexed.
+int cursorLineNumber(QTextCursor cursor) {
+    // https://stackoverflow.com/questions/15814776/how-do-i-get-the-actual-visible-cursors-line-number/15821474#15821474
+    cursor.movePosition(QTextCursor::StartOfLine);
+
+    int lines = 0;
+    while (cursor.positionInBlock() > 0) {
+        cursor.movePosition(QTextCursor::Up);
+        lines++;
+    }
+    QTextBlock block = cursor.block().previous();
+
+    while (block.isValid()) {
+        lines += block.lineCount();
+        block = block.previous();
+    }
+    return lines;
+}
+
 void ScCodeEditor::evaluateLine() {
     QString text;
 
@@ -1215,9 +1235,9 @@ void ScCodeEditor::evaluateLine() {
 
     // Try current selection
     QTextCursor cursor = textCursor();
-    if (cursor.hasSelection())
+    if (cursor.hasSelection()) {
         text = cursor.selectedText();
-    else {
+    } else {
         text = cursor.block().text();
 
         if (mStepForwardEvaluation) {
@@ -1237,7 +1257,7 @@ void ScCodeEditor::evaluateLine() {
 
     text.replace(QChar(0x2029), QChar('\n'));
 
-    Main::evaluateCode(text);
+    Main::evaluateCode(text, false, &document()->filePath(), cursorLineNumber(textCursor()));
 
     blinkCode(cursor);
 }
@@ -1283,14 +1303,14 @@ void ScCodeEditor::evaluateRegion() {
 
     text.replace(QChar(0x2029), QChar('\n'));
 
-    Main::evaluateCode(text);
+    Main::evaluateCode(text, false, &document()->filePath(), cursorLineNumber(textCursor()), 0);
 
     blinkCode(cursor);
 }
 
 void ScCodeEditor::evaluateDocument() {
     QString documentText = textDocument()->toPlainText();
-    Main::evaluateCode(documentText);
+    Main::evaluateCode(documentText, false, &document()->filePath(), 0, 0);
 }
 
 QTextCursor ScCodeEditor::cursorAt(const TokenIterator it, int offset) {

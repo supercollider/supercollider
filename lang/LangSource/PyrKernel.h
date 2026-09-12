@@ -25,9 +25,9 @@ This file contains the definitions of the core objects that implement the class 
 
 #pragma once
 
+#include "OpcodeOperands.h"
 #include "PyrObject.h"
 #include "VMGlobals.h"
-#include "Opcodes.h"
 
 #define classClassNumInstVars 19
 
@@ -148,30 +148,54 @@ struct PyrMethodRaw {
 
 #define METHRAW(obj) ((PyrMethodRaw*)&(((PyrBlock*)obj)->rawData1))
 
+
 struct PyrBlock : public PyrObjectHdr {
+    // methraw
     PyrSlot rawData1;
     PyrSlot rawData2;
-    PyrSlot code; // byte codes, nil if inlined
-    PyrSlot selectors; // method selectors, class names, closures table, stores literals in methReturnLiteral methods.
-    PyrSlot constants; // floating point constants table (to alleviate the literal table problem)
-    PyrSlot prototypeFrame; // prototype of an activation frame
-    PyrSlot contextDef; // ***defining block context
-    PyrSlot argNames; // ***arguments to block
-    PyrSlot varNames; // ***variables in block
-    PyrSlot sourceCode; // source code if it is a closed function.
+    // byte codes, nil if turned into a single instruction and methraw->methType != methBlock
+    PyrSlot code;
+    // method selectors, class names, closures table, stores literals in methReturnLiteral methods.
+    PyrSlot selectors;
+    // floating point constants table (to alleviate the literal table problem)
+    PyrSlot constants;
+    // prototype of an activation frame
+    PyrSlot prototypeFrame;
+    // defining block context
+    PyrSlot contextDef;
+    // arguments to block
+    PyrSlot argNames;
+    // variables in block
+    PyrSlot varNames;
+    // Just a bool
+    PyrSlot isClosed;
+    // Array of [lineNumber, column] or nil. Represent the location of the code snippet inside the file.
+    // The class library always sets this, in command line mode, it is up to the language client (see terminal client).
+    PyrSlot fileLocation;
+    // Source code as string of the entire file or just the function, see block_info.
+    // The indices below always refer to an index into this.
+    PyrSlot sourceCodeFileOrSnippet;
+    // maybe nil, else symbol
+    PyrSlot name;
+    // maybe nil, else symbol
+    PyrSlot filePath;
+    // function delimiters '{}' produce no byte code, so their location must be stored like this.
+    PyrSlot sourceCodeStartIndex;
+    PyrSlot sourceCodeEndIndex;
+    // PyrInt32Array[startChar0, endChar0, startChar1, endChar1 ... startCharN, endCharN]
+    // Location in source_code
+    PyrSlot codeLocations;
+    // PyrInt8Array - Size of each bytecode in bytes.
+    PyrSlot codeSizes;
 };
 
 struct PyrMethod : public PyrBlock {
     PyrSlot ownerclass;
-    PyrSlot name;
     PyrSlot primitiveName;
-    PyrSlot filenameSym;
-    PyrSlot charPos;
-    // PyrSlot byteMeter;
-    // PyrSlot callMeter;
 };
 
-enum {
+
+enum MethodType : unsigned short {
     methNormal = 0,
     methReturnSelf,
     methReturnLiteral,
@@ -194,7 +218,8 @@ struct PyrClosure : public PyrObjectHdr {
 };
 
 struct PyrInterpreter : public PyrObjectHdr {
-    PyrSlot cmdLine, context;
+    PyrSlot cmdLine, filePath, lineNumber, column;
+    PyrSlot context;
     PyrSlot a, b, c, d, e, f, g, h, i, j;
     PyrSlot k, l, m, n, o, p, q, r, s, t;
     PyrSlot u, v, w, x, y, z;
@@ -266,11 +291,11 @@ PyrObject* instantiateObject(class PyrGC* gc, PyrClass* classobj, int size, bool
 PyrObject* newPyrObject(class PyrGC* gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect);
 PyrString* newPyrString(class PyrGC* gc, const char* s, int flags, bool collect);
 PyrString* newPyrStringN(class PyrGC* gc, int size, int flags, bool collect);
-PyrObject* newPyrArray(class PyrGC* gc, int size, int flags, bool collect);
-PyrSymbolArray* newPyrSymbolArray(class PyrGC* gc, int size, int flags, bool collect);
-PyrInt8Array* newPyrInt8Array(class PyrGC* gc, int size, int flags, bool collect);
-PyrInt32Array* newPyrInt32Array(class PyrGC* gc, int size, int flags, bool collect);
-PyrDoubleArray* newPyrDoubleArray(class PyrGC* gc, int size, int flags, bool collect);
+PyrObject* newPyrArray(class PyrGC* gc, int capacity, int flags, bool collect);
+PyrSymbolArray* newPyrSymbolArray(class PyrGC* gc, int capacity, int flags, bool collect);
+PyrInt8Array* newPyrInt8Array(class PyrGC* gc, int capacity, int flags, bool collect);
+PyrInt32Array* newPyrInt32Array(class PyrGC* gc, int capacity, int flags, bool collect);
+PyrDoubleArray* newPyrDoubleArray(class PyrGC* gc, int capacity, int flags, bool collect);
 
 PyrObject* copyObject(class PyrGC* gc, PyrObject* inobj, bool collect);
 PyrObject* copyObjectRange(class PyrGC* gc, PyrObject* inobj, int start, int end, bool collect);

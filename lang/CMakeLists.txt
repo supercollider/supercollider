@@ -66,8 +66,9 @@ set(sclang_sources
 	LangSource/SC_LanguageConfig.cpp
 	LangSource/SC_TerminalClient.cpp
 	LangSource/SimpleStack.cpp
-	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
+	LangSource/CompilerContext.cpp
+	LangSource/ClassLibraryInfo.cpp
 
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp

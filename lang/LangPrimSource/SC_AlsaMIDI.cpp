@@ -23,6 +23,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "ClassLibraryInfo.hpp"
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -57,8 +58,6 @@ PyrSymbol* s_midiSMPTEAction;
 
 const int kMaxMidiPorts = 128;
 bool gMIDIInitialized = false;
-
-extern bool gCompiledOK;
 
 // =====================================================================
 // Platform declarations (interface routines)
@@ -163,6 +162,8 @@ static inline void SC_AlsaParseUID(int uid, int& clientID, int& portID) {
     portID = uid & 0xFFFF;
 }
 
+extern ClassLibraryInfo gClassLibraryInfo;
+
 void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt) {
     int status = lockLanguageOrQuit(mShouldBeRunning);
     if (status == EINTR)
@@ -172,7 +173,7 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt) {
         return;
     }
 
-    if (gCompiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         VMGlobals* g = gMainVMGlobals;
         PyrInt8Array* sysexArray;
 

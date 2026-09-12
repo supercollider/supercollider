@@ -13,6 +13,7 @@ jobs:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-win64"
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
+      COMPILER_TESTS_PATH: ${{ github.workspace }}/testsuite/classlibraryCompilerErrors
       SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/sclang
       TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
       TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/gha_result.scxtar
@@ -60,7 +61,7 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          timeout 20m $SCLANG --include-path $TESTS_PATH $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+          timeout 20m $SCLANG --include-path $TESTS_PATH --include-path $COMPILER_TESTS_PATH $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
 
       - name: Post test results
         shell: bash

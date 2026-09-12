@@ -14,13 +14,46 @@ When SuperCollider starts up, just after it has compiled the library, it initial
 
 This method can be overloaded in any class that requires initialization of classvars or other resources.
 
+Please avoid 'forking' or creating another thread inside an code::initClass:: method.
+
+If an code::initClass:: throws an error outside of itself, the class library will be in an invalid state and cannot be used.
+
+If you need to use access a different class you need to declare the class by using code::initClassTree::, 
+however, it is best to avoid situations where this is necessary. 
+If you have resource as a classvar that needs initializing, instead create a getter method that checks for some uninitialized state then creates and assigns the resource if needed.
+
+code::
+A {
+	classvar prFoo = \uninitialized;
+
+	*foo { 
+		if (prFoo === \uninitialized) {
+			prFoo = ....;
+		};
+		^prFoo
+	}
+
+	*foo_ { |f| prFoo = f }
+}
+::
+
+
 note::
 Each class will be initialized once, thus each class' code::initClass:: is called exactly once during the initialization phase.
 ::
 
+
+warn::
+If a class throws an error during this method, the entire class library is invalid and cannot be used.
+::
+
+
+
 method:: initClassTree
 
-used in link::#*initClass:: to assure the initialisation of code::aClass:: before using it. Wherever necessary, it recursively initializes all classes required by code::aClass::.
+used in link::#*initClass:: to assure the initialization of code::aClass:: before using it. 
+Wherever necessary, it recursively initializes all classes required by code::aClass::.
+
 
 In some cases it is required that another class and its resources are initialized before you initialize your own. This can be accomplished by
 
@@ -41,6 +74,11 @@ YourClass {
     ..
 
 }
+
+::
+
+warning::
+You must do this for every class you reference in an link::#*initClass:: method, even if it works without it!
 ::
 
 Pre-initialized data such as link::Classes/SynthDef::s should be deferred to link::Classes/StartUp::
@@ -56,7 +94,6 @@ YourClass {
     ..
 
 }
-::
 
 InstanceMethods::
 

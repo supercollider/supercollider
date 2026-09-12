@@ -19,20 +19,16 @@
 */
 
 
+#include "GC.h"
 #include "Opcodes.h"
 #include "PyrInterpreter.h"
-#include "PyrPrimitive.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrMathPrim.h"
 #include "PyrListPrim.h"
 #include "PyrKernel.h"
 #include "PyrMessage.h"
 #include "PyrParseNode.h"
-#include "PyrSignal.h"
 #include "PyrSched.h"
-#include "SC_InlineUnaryOp.h"
-#include "SC_InlineBinaryOp.h"
-#include "PyrKernelProto.h"
 #include "PyrSymbolTable.h"
 #include <math.h>
 #include <stdlib.h>
@@ -45,8 +41,6 @@
 #define kBigBigFloat DBL_MAX
 #define kSmallSmallFloat DBL_MIN
 
-
-#include <new>
 #include "InitAlloc.h"
 #include "function_attributes.h"
 
@@ -100,7 +94,6 @@ bool gTraceInterpreter = false;
 
 const char* byteCodeString(int code);
 
-extern int gNumClasses;
 extern PyrClass* gClassList;
 
 // runInterpreter has 7 call sites:
@@ -313,23 +306,14 @@ template <typename F> void ifTailCallOptimise(F&& f) {
 #endif
 }
 
-bool initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {
+void initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {
     /*
         create a GC environment
         create a vmachine instance of main
         initialize VMGlobals
     */
-
     PyrClass* class_main = s_main->u.classobj;
 
-    if (!class_main) {
-        error("Class 'Main' not defined.\n");
-        return false;
-    }
-    if (!isSubclassOf(class_main, class_process)) {
-        error("Class Main is not a subclass of Process.\n");
-        return false;
-    }
 
     // create GC environment, process
     g->allocPool = inPool;
@@ -365,8 +349,6 @@ bool initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {
 #ifdef GC_SANITYCHECK
     g->gc->SanityCheck();
 #endif
-
-    return true;
 }
 
 static bool initAwakeMessage(VMGlobals* g) {
@@ -1375,7 +1357,7 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(PushAllArgsAndSendMsg) {
                 const auto [selectorIndex] = PushAllArgsAndSendMsg.pullOperandsFromInstructions(ip);
-                numArgsPushed = METHRAW(g->block)->numNormalArguments;
+                numArgsPushed = METHRAW(g->block)->totalNumberArguments;
                 PyrSlot* pslot = g->frame->vars - 1;
                 for (int m = 0; m < numArgsPushed; ++m)
                     *++sp = *++pslot;
@@ -1387,7 +1369,7 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(PushAllButFirstArgAndSendMsg) {
                 const auto [selectorIndex] = PushAllButFirstArgAndSendMsg.pullOperandsFromInstructions(ip);
-                numArgsPushed = METHRAW(g->block)->numNormalArguments;
+                numArgsPushed = METHRAW(g->block)->totalNumberArguments;
                 PyrSlot* pslot = g->frame->vars;
                 for (int m = 0; m < numArgsPushed - 1; ++m)
                     *++sp = *++pslot;
@@ -1399,7 +1381,7 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(PushAllArgsAndSendSpecialMsg) {
                 const auto [selectorIndex] = PushAllArgsAndSendSpecialMsg.pullOperandsFromInstructions(ip);
-                numArgsPushed = METHRAW(g->block)->numNormalArguments;
+                numArgsPushed = METHRAW(g->block)->totalNumberArguments;
                 PyrSlot* pslot = g->frame->vars - 1;
                 for (int m = 0; m < numArgsPushed; ++m)
                     *++sp = *++pslot;
@@ -1411,7 +1393,7 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(PushAllButFirstArgAndSendSpecialMsg) {
                 const auto [specialIndex] = PushAllButFirstArgAndSendSpecialMsg.pullOperandsFromInstructions(ip);
-                numArgsPushed = METHRAW(g->block)->numNormalArguments;
+                numArgsPushed = METHRAW(g->block)->totalNumberArguments;
                 PyrSlot* pslot = g->frame->vars;
                 for (int m = 0; m < numArgsPushed - 1; ++m)
                     *++sp = *++pslot;
@@ -1423,7 +1405,7 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(PushAllButFirstTwoArgsAndSendMsg) {
                 const auto [index] = PushAllButFirstTwoArgsAndSendMsg.pullOperandsFromInstructions(ip);
-                numArgsPushed = METHRAW(g->block)->numNormalArguments + 1;
+                numArgsPushed = METHRAW(g->block)->totalNumberArguments + 1;
                 PyrSlot* pslot = g->frame->vars;
                 for (int m = 0; m < numArgsPushed - 2; ++m)
                     *++sp = *++pslot;
@@ -1435,7 +1417,7 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(PushAllButFirstTwoArgsAndSendSpecialMsg) {
                 const auto [index] = PushAllButFirstTwoArgsAndSendSpecialMsg.pullOperandsFromInstructions(ip);
-                numArgsPushed = METHRAW(g->block)->numNormalArguments + 1;
+                numArgsPushed = METHRAW(g->block)->totalNumberArguments + 1;
                 PyrSlot* pslot = g->frame->vars;
                 for (int m = 0; m < numArgsPushed - 2; ++m)
                     *++sp = *++pslot;
@@ -1462,6 +1444,7 @@ HOT void Interpret(VMGlobals* g) {
                 switch (extendedCode) {
                 case Extended::IntegerDo.LoopOrReturn.code: {
                     PyrSlot* vars = g->frame->vars;
+                    assert(g->frame->size - FRAMESIZE == 3);
                     if (slotRawInt(&vars[2]) < slotRawInt(&g->receiver)) {
                         // Push: function, i, and i (i is duplicated because it is its own index).
                         pushAndPrepForCall(opmValue, &vars[1], &vars[2], &vars[2]);
@@ -1483,6 +1466,7 @@ HOT void Interpret(VMGlobals* g) {
 
 
                 case Extended::IntegerReverseDo.Init.code: {
+                    assert(g->frame->size - FRAMESIZE == 4);
                     SetRaw(&g->frame->vars[2], slotRawInt(&g->receiver) - 1);
                     dispatch_opcode;
                 }
@@ -1508,6 +1492,7 @@ HOT void Interpret(VMGlobals* g) {
                 }
 
                 case Extended::IntegerFor.Init.code: {
+                    assert(g->frame->size - FRAMESIZE == 6);
                     PyrSlot* vars = g->frame->vars;
                     if (GetTag(&vars[1]) != tagInt) {
                         if (IsFloat(&vars[1])) {
@@ -1550,6 +1535,7 @@ HOT void Interpret(VMGlobals* g) {
 
 
                 case Extended::IntegerForBy.Init.code: {
+                    assert(g->frame->size - FRAMESIZE == 6);
                     PyrSlot* vars = g->frame->vars;
                     // Detect case of a zero-valued stepval argument, which
                     // would result in an infinite loop.
@@ -1613,6 +1599,7 @@ HOT void Interpret(VMGlobals* g) {
                 }
 
                 case Extended::ArrayedCollectionDo.LoopOrReturn.code: {
+                    assert(g->frame->size - FRAMESIZE == 3);
                     // 0 this, 1 func, 2 i
                     PyrSlot* vars = g->frame->vars;
                     if (slotRawInt(&vars[2]) < slotRawObject(&g->receiver)->size) {
@@ -1632,6 +1619,7 @@ HOT void Interpret(VMGlobals* g) {
                     // TODO: ArrayedCollectionDo also uses the IntegerDo's DropAndJumpBackToLoop. Fix this.
 
                 case Extended::ArrayedCollectionReversedDo.Init.code:
+                    assert(g->frame->size - FRAMESIZE == 4);
                     SetRaw(&g->frame->vars[2], slotRawObject(&g->receiver)->size - 1);
                     dispatch_opcode;
                 case Extended::ArrayedCollectionReversedDo.LoopOrReturn.code: {
@@ -1654,6 +1642,7 @@ HOT void Interpret(VMGlobals* g) {
                     // this.
 
                 case Extended::DictionaryKeyValuesArrayDo.LoopOrReturn.code: {
+                    assert(g->frame->size - FRAMESIZE == 8);
                     PyrSlot* vars = g->frame->vars;
                     if (IsNil(&vars[1])) {
                         error("Dictionary-keysValuesArrayDo: first argument should not be nil.\n");
@@ -1694,6 +1683,7 @@ HOT void Interpret(VMGlobals* g) {
                 }
 
                 case Extended::FloatDo.LoopOrReturn.code: {
+                    assert(g->frame->size - FRAMESIZE == 3);
                     PyrSlot* vars = g->frame->vars;
                     if (slotRawFloat(&vars[2]) + 0.5 < slotRawFloat(&g->receiver)) {
                         // Push: function, i, i (is is also the index).
@@ -1713,6 +1703,7 @@ HOT void Interpret(VMGlobals* g) {
                 }
 
                 case Extended::FloatDoReverse.Init.code: {
+                    assert(g->frame->size - FRAMESIZE == 4);
                     SetFloat(&g->frame->vars[2], slotRawFloat(&g->receiver) - 1.0);
                     dispatch_opcode;
                 }
@@ -1798,6 +1789,7 @@ HOT void Interpret(VMGlobals* g) {
                 }
 
                 case Extended::NumberForSeries.Init.code: {
+                    assert(g->frame->size - FRAMESIZE == 6);
                     PyrSlot* vars = g->frame->vars;
                     // 0 receiver, 1 step, 2 last, 3 function, 4 i, 5 j
                     if (IsInt(vars + 0) && (IsInt(vars + 1) || IsNil(vars + 1))

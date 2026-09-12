@@ -77,13 +77,15 @@ public:
     static DocumentManager* documentManager() { return instance()->mDocManager; }
     static Settings::Manager* settings() { return instance()->mSettings; }
 
-    static void evaluateCode(QString const& text, bool silent = false) {
-        instance()->scProcess()->evaluateCode(text, silent);
+    static void evaluateCode(QString const& text, bool silent = false, const QString* filePath = nullptr,
+                             int lineNumber = 0, int column = 0) {
+        instance()->scProcess()->evaluateCode(text, silent, filePath, lineNumber, column);
     }
 
-    static void evaluateCodeIfCompiled(QString const& text, bool silent = false) {
+    static void evaluateCodeIfCompiled(QString const& text, bool silent = false, const QString* filePath = nullptr,
+                                       int lineNumber = 0, int column = 0) {
         if (instance()->scProcess()->compiled())
-            evaluateCode(text, silent);
+            evaluateCode(text, silent, filePath, lineNumber, column);
     }
 
     static bool openDocumentation(const QString& string);
