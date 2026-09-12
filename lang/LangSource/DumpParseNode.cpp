@@ -40,7 +40,12 @@ void dumpNodeList(PyrParseNode* node) {
     }
 }
 
-void PyrCurryArgNode::dump(int level) { postfl("%2d CurryArg %d\n", level, mArgNum); }
+void PyrCurryArgNode::dump(int level) {
+    postfl("%2d CurryArg %d\n", level, mArgNum);
+    // Without this the argument list is truncated at the first `_`, so in
+    // `a.every(_ == a.first)` the right operand never appears.
+    DUMPNODE(mNext, level);
+}
 
 void PyrSlotNode::dump(int level) {
     if (mClassno == pn_PushLitNode)
@@ -78,9 +83,19 @@ void PyrClassNode::dump(int level) {
 }
 
 void PyrMethodNode::dump(int level) {
-    postfl("%2d MethodNode '%s'  %s\n", level, slotRawSymbol(&mMethodName->mSlot)->name,
+    // Mark class methods with a leading `*`, as the source does. A class and an
+    // instance method may share a name -- Environment defines both `*make` and
+    // `make` -- and were otherwise indistinguishable.
+    postfl("%2d MethodNode '%s%s'  %s\n", level, mIsClassMethod ? "*" : "",
+           slotRawSymbol(&mMethodName->mSlot)->name,
            mPrimitiveName ? slotRawSymbol(&mPrimitiveName->mSlot)->name : "");
     DUMPNODE(mArglist, level + 1);
+    // Dump the variable declarations, which were omitted entirely. mVarDefs
+    // already chains across every `var` statement, while each PyrVarListNode
+    // after the first points partway along that chain, so dumping the list
+    // chain instead would repeat the tail of the declarations.
+    if (mVarlist)
+        DUMPNODE(mVarlist->mVarDefs, level + 1);
     DUMPNODE(mBody, level + 1);
     DUMPNODE(mNext, level);
 }
@@ -132,7 +147,10 @@ void PyrSlotNode::dumpPushLit(int level) {
     if (!IsPtr(&mSlot))
         dumpPyrSlot(&mSlot);
     else {
-        DUMPNODE((PyrParseNode*)slotRawObject(&mSlot), level);
+        // newPyrPushLitNode and newPyrLiteralNode fill this slot with SetPtr,
+        // so it has to be read back with slotRawPtr. Reading it as an object
+        // meant function literals never dumped at all.
+        DUMPNODE((PyrParseNode*)slotRawPtr(&mSlot), level);
     }
 }
 
@@ -141,7 +159,10 @@ void PyrSlotNode::dumpLiteral(int level) {
     if (!IsPtr(&mSlot))
         dumpPyrSlot(&mSlot);
     else {
-        DUMPNODE((PyrParseNode*)slotRawObject(&mSlot), level);
+        // newPyrPushLitNode and newPyrLiteralNode fill this slot with SetPtr,
+        // so it has to be read back with slotRawPtr. Reading it as an object
+        // meant function literals never dumped at all.
+        DUMPNODE((PyrParseNode*)slotRawPtr(&mSlot), level);
     }
 }
 
@@ -208,6 +229,12 @@ void PyrLitListNode::dump(int level) {
 void PyrBlockNode::dump(int level) {
     postfl("%2d Func\n", level);
     DUMPNODE(mArglist, level + 1);
+    // Dump the variable declarations, which were omitted entirely. mVarDefs
+    // already chains across every `var` statement, while each PyrVarListNode
+    // after the first points partway along that chain, so dumping the list
+    // chain instead would repeat the tail of the declarations.
+    if (mVarlist)
+        DUMPNODE(mVarlist->mVarDefs, level + 1);
     DUMPNODE(mBody, level + 1);
     DUMPNODE(mNext, level);
 }
