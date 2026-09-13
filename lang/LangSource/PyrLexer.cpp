@@ -97,6 +97,12 @@ typedef struct classdep {
 } ClassDependancy;
 
 int yyparse();
+
+// Parse-tree dumping, for differential testing against third-party parsers.
+// DumpParseNode.cpp has defined these for years but nothing has ever called
+// them: no flag, no primitive, no caller. Setting SCLANG_DUMP_PARSE=1 makes
+// class-library compilation emit each file's parse tree between markers.
+void dumpNodeList(PyrParseNode* node);
 PyrSlot process_accidental_cents(const char* s);
 PyrSlot process_accidental_steps(const char* s);
 
@@ -1320,6 +1326,11 @@ void compileClass(PyrSymbol* fileSym, int startPos, int endPos, int lineOffset) 
         // post("parseFailed %d\n", parseFailed); fflush(stdout);
         if (!gParseFailed && gRootParseNode) {
             // postfl("Compiling nodes %p\n", gRootParseNode);fflush(stdout);
+            if (getenv("SCLANG_DUMP_PARSE")) {
+                post("***PARSE-DUMP-BEGIN %s***\n", fileSym->name);
+                dumpNodeList(gRootParseNode);
+                post("***PARSE-DUMP-END***\n");
+            }
             gCompilingCmdLine = false;
             compileNodeList(gRootParseNode, true);
             // postfl("done compiling\n");fflush(stdout);
