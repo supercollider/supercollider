@@ -18,14 +18,22 @@ Thread : Stream {
 	var <executingPath, <oldExecutingPath;
 	var rescheduledTime;
 
-	*new { arg func, stackSize = (512);
-		^super.new.init(func, stackSize)
+	*new { |func, stackSize(512), exceptionHandler([])|
+		^super.new.init(func, stackSize).exceptionHandler_(exceptionHandler)
 	}
+
 	init { arg argFunc, argStackSize = 512;
 		_Thread_Init
 		^this.primitiveFailed
 	}
+
 	copy { ^this } // sorry cannot copy
+
+	play { |clock, quant|
+		this.exceptionHandler_(thisThread.exceptionHandler.asArray.copy);
+		clock = clock ? TempoClock.default;
+		clock.play(this, quant.asQuant);
+	}
 
 	clock_ { arg inClock;
 		clock = inClock;
@@ -76,8 +84,13 @@ Thread : Stream {
 		_PrimName
 		^this.primitiveFailed
 	}
-	handleError { arg error;
-		(exceptionHandler ? parent).handleError(error)
+
+	handleError { |error| 
+		^if (this.exceptionHandler.size != 0)  {
+			this.exceptionHandler.pop.handleError(error)
+		} {
+			this.parent.handleError(error);
+		}
 	}
 
 	// these make Thread act like an Object not like Stream.
@@ -135,24 +148,17 @@ Routine : Thread {
 			clock = argClock;
 		}
 	}
-	run { arg inval;
-		_RoutineResume
-		^this.primitiveFailed
-	}
 
-	valueArray { arg inval;
-		^this.value(inval)
-	}
 
 	reset {
 		_RoutineReset
 		^this.primitiveFailed
 	}
-		// the _RoutineStop primitive can't stop the currently running Routine
-		// but a user should be able to use .stop anywhere
+
+	// The _RoutineStop primitive can't stop the currently running Routine
+	// but a user should be able to use .stop anywhere
 	stop {
-		if(this === thisThread) { nil.alwaysYield }
-			{ this.prStop };
+		if(this === thisThread) { nil.alwaysYield } { this.prStop };
 	}
 	prStop {
 		_RoutineStop
@@ -169,6 +175,7 @@ Routine : Thread {
 	}
 
 	// PRIVATE
+	// This method is called in the interpreter from C++ code whenever any thread/clock (e.g., LinkClock) wishes to awaken a task.
 	awake { arg inBeats, inSeconds, inClock;
 		if(rescheduledTime.isNil) {
 			clock = inClock;
@@ -180,6 +187,7 @@ Routine : Thread {
 			^nil
 		}
 	}
+	// This is called by prRoutineResume and is called once *this* thread has become *thisThread*.
 	prStart { arg inval;
 		func.value(inval);
 		// if the user's function returns then always yield nil

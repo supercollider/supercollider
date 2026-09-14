@@ -151,7 +151,7 @@ Function : AbstractFunction {
 	get { arg prevVal; ^prevVal }
 
 	fork { arg clock, quant, stackSize;
-		^Routine(this, stackSize).play(clock, quant);
+		^Routine(this, stackSize, thisThread.exceptionHandler.asArray.copy).play(clock, quant);
 	}
 
 	forkIfNeeded { arg clock, quant, stackSize;
@@ -183,37 +183,42 @@ Function : AbstractFunction {
 		^dt
 	}
 
-	protect { arg handler;
-		var result;
-		result = this.prTry;
-		if (result.isException) {
-			handler.value(result);
-			result.throw;
-		}{
-			handler.value; // argument should be nil if there was no exception.
-			^result
-		};
+	protect { |handler, deep(false)|
+		^try(deep: deep) {
+			var r = this.value();
+			handler.();
+			r
+		} { |er|
+			handler.(er);
+			er.throw
+		}
 	}
 
-	try { arg handler;
-		var result = this.prTry;
-		if (result.isException) { ^handler.value(result); }
-		{ ^result }
-	}
-	prTry {
-		var result, thread = thisThread;
-		var next = thread.exceptionHandler,
-		wasInProtectedFunc = Exception.inProtectedFunction;
-		thread.exceptionHandler = {|error|
-			thread.exceptionHandler = next; // pop
-			^error
-		};
+	try { |handler, deep(false)| 
+		var result;
+		var wasInProtectedFunc = Exception.inProtectedFunction;
+
+		thisThread.exceptionHandler = thisThread.exceptionHandler.add({ |error|
+			// Used to cover generator expressions.
+			if (OutOfContextReturnError.returnIsValid) { 
+				^handler.value(error);
+			};
+			if (deep) {
+				handler.value(error); 
+				this.halt; // We do not return because we were forked and there is nothing to return to.
+			} {
+				error.throw
+			}
+		});
 		Exception.inProtectedFunction = true;
 		result = this.value;
+		// TOOD: currently this is quite borked because if the function does a non-local return, the exception handler will never be popped.
+		// Fixing this requires an interpreter level protect.
+		thisThread.exceptionHandler.pop;
 		Exception.inProtectedFunction = wasInProtectedFunc;
-		thread.exceptionHandler = next; // pop
 		^result
 	}
+
 
 	handleError { arg error; ^this.value(error) }
 

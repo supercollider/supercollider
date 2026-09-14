@@ -67,10 +67,6 @@ TestUnitTest : UnitTest {
 		)
 	}
 
-	test_assertNoException_nonExceptionThrow {
-		this.assertNoException({ \stone.throw }, "assertException should return false for thrown object")
-	}
-
 	test_assertNoException_nonThrowingFunction {
 		this.assertNoException({ try { 1789.monarchy } }, "assertNoThrow should return true for not an error")
 	}

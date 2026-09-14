@@ -345,6 +345,8 @@ PauseStream : Stream {
 
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
+		originalStream.exceptionHandler_(thisThread.exceptionHandler.asArray.copy);
+
 		clock = tempClock;
 		streamHasEnded = false;
 		this.refresh; //stream = originalStream;
@@ -568,6 +570,9 @@ EventStreamPlayer : PauseStream {
 
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
+
+		originalStream.exceptionHandler_(thisThread.exceptionHandler.asArray.copy);
+
 		clock = tempClock;
 		streamHasEnded = false;
 		stream = originalStream;

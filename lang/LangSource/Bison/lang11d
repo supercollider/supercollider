@@ -208,6 +208,11 @@ msgsend : name blocklist1
 				$$ = (intptr_t)newPyrCallNode(@$, (PyrSlotNode*)$1, (PyrParseNode*)$3,
 						(PyrParseNode*)$4, (PyrParseNode*)$6);
 			}
+		| name OPENPAREN keyarglist1[keys] CLOSEPAREN blocklist[blocks]
+			{
+				$$ = (intptr_t)newPyrCallNode(@$, (PyrSlotNode*)$name, nullptr,
+						(PyrParseNode*)$keys, (PyrParseNode*)$blocks);
+			}
 		| OPENPAREN binop2 CLOSEPAREN OPENPAREN CLOSEPAREN blocklist1
 			{
 				$$ = (intptr_t)newPyrCallNode(@$, (PyrSlotNode*)$2, NULL, NULL, (PyrParseNode*)$6);

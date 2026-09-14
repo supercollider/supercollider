@@ -237,6 +237,7 @@ OutOfContextReturnError : MethodError {
 		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name
 		++ "' Out of context return of value: " ++ result
 	}
+	*returnIsValid { _ReturnIsValid }
 }
 
 ImmutableError : MethodError {
