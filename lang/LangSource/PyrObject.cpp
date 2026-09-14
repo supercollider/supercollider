@@ -100,6 +100,7 @@ PyrClass *class_func, *class_absfunc;
 PyrClass* class_stream;
 PyrClass* class_process;
 PyrClass* class_interpreter;
+PyrClass* class_debugFrame;
 PyrClass* class_thread;
 PyrClass* class_routine;
 PyrClass* class_finalizer;
@@ -107,6 +108,7 @@ PyrClass* class_server_shm_interface;
 
 PyrSymbol* s_none;
 PyrSymbol* s_abstract_object;
+PyrSymbol* s_debugFrame;
 PyrSymbol* s_object;
 PyrSymbol* s_bag;
 PyrSymbol* s_set;
@@ -244,6 +246,7 @@ void initSymbols() {
     s_routine = getsym("Routine");
     s_task = getsym("Task");
     s_interpreter = getsym("Interpreter");
+    s_debugFrame = getsym("DebugFrame");
     s_finalizer = getsym("Finalizer");
     s_systemclock = getsym("SystemClock");
     s_server_shm_interface = getsym("ServerShmInterface");
@@ -1698,6 +1701,15 @@ void initClasses() {
     addIntrinsicVar(class_interpreter, "codeDump", &o_nil);
     addIntrinsicVar(class_interpreter, "preProcessor", &o_nil);
 
+
+    class_debugFrame = makeIntrinsicClass(s_debugFrame, s_object, 6, 0);
+    addIntrinsicVar(class_debugFrame, "functionDef", &o_nil);
+    addIntrinsicVar(class_debugFrame, "args", &o_nil);
+    addIntrinsicVar(class_debugFrame, "vars", &o_nil);
+    addIntrinsicVar(class_debugFrame, "caller", &o_nil);
+    addIntrinsicVar(class_debugFrame, "context", &o_nil);
+    addIntrinsicVar(class_debugFrame, "address", &o_nil);
+
     class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0);
     class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0);
 
@@ -2404,10 +2416,10 @@ PyrObject* newPyrObject(class PyrGC* gc, size_t inNumBytes, int inFlags, int inF
     return gc->New(inNumBytes, inFlags, inFormat, inRunGC);
 }
 
-PyrObject* newPyrArray(class PyrGC* gc, int size, int flags, bool runGC) {
+PyrObject* newPyrArray(class PyrGC* gc, int capacity, int flags, bool runGC) {
     PyrObject* array;
 
-    int numbytes = size * sizeof(PyrSlot);
+    size_t numbytes = capacity * sizeof(PyrSlot);
     if (!gc)
         array = PyrGC::NewPermanent(numbytes, flags, obj_slot);
     else

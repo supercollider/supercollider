@@ -94,11 +94,15 @@ public:
 
     // general purpose write barriers:
     void GCWrite(PyrObjectHdr* inParent, PyrSlot* inSlot) {
+        if (!inParent)
+            return;
         if (IsBlack(inParent) && IsObj(inSlot) && IsWhite(slotRawObject(inSlot))) {
             ToGrey(slotRawObject(inSlot));
         }
     }
     void GCWrite(PyrObjectHdr* inParent, PyrObjectHdr* inChild) {
+        if (!inParent)
+            return;
         if (IsBlack(inParent) && IsWhite(inChild)) {
             ToGrey(inChild);
         }
