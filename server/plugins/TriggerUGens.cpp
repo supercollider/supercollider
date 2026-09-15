@@ -200,6 +200,10 @@ struct PauseSelfWhenDone : public Unit {
     Unit* m_src;
 };
 
+struct InitializationSample : public Unit {
+    float inInitSample;
+};
+
 extern "C" {
 void Trig1_Ctor(Trig1* unit);
 void Trig1_next(Trig1* unit, int inNumSamples);
@@ -333,6 +337,9 @@ void Free_next(Free* unit, int inNumSamples);
 
 void PauseSelfWhenDone_Ctor(PauseSelfWhenDone* unit);
 void PauseSelfWhenDone_next(PauseSelfWhenDone* unit, int inNumSamples);
+
+void InitializationSample_Ctor(InitializationSample* unit);
+void InitializationSample_next(InitializationSample* unit, int inNumSamples);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2458,6 +2465,18 @@ void PauseSelfWhenDone_next(PauseSelfWhenDone* unit, int inNumSamples) {
     *out = *in;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+
+void InitializationSample_Ctor(InitializationSample* unit) {
+    SETCALC(InitializationSample_next);
+    OUT0(0) = unit->inInitSample = IN0(0);
+}
+
+void InitializationSample_next(InitializationSample* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    LOOP1(inNumSamples, ZXP(out) = unit->inInitSample;);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct SendPeakRMS : public Unit {
@@ -2689,6 +2708,7 @@ PluginLoad(Trigger) {
     DefineSimpleUnit(Free);
     DefineSimpleUnit(FreeSelfWhenDone);
     DefineSimpleUnit(PauseSelfWhenDone);
+    DefineSimpleUnit(InitializationSample);
 
     DefineDtorUnit(SendPeakRMS);
 }
