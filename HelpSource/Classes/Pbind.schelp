@@ -91,7 +91,8 @@ Pbind(\degree,Pseq([5, 5.7, 4.1, 4])).play
 
 Pbind(\degree,Pseq([0, 3, 3.1, 5.5, 5])).play
 // 3 = F; 4 = G; 5 = A; 6 = B
-// 5.5 = 6bbbbb = degree 6 with a quintuple flat (B, B flat, A, A flat, G, G flat)
+// 5.5 = 6bbbbb = degree 6 with a quintuple flat (B, B flat, A, A flat, G, G flat) 
+// Caution: bbbbb and sssss are not supported as literals. The maximum allowed is four.
 // 3.1 = 3s = degree 3 with a sharp
 // in 12 equal temperament: B with a quintuple flat = F sharp
 // 3.1 = 5.5
