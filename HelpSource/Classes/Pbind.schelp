@@ -38,12 +38,27 @@ The behavior of code::\degree:: differs from that of code::\note::.
 (See link::Reference/Literals#Scale Degrees::.)
 
 code::
-Pbind(\degree,Pseq([0,  1,  2,  3,  4,   5,  6,  7])).play
+Pbind(\degree, Pseq([0,  1,  2,  3,  4,   5,  6,  7])).play;
 // \degree:         0,  1,  2,  3,  4,   5,  6,  7 (= octave higher than 0)
-// solmisation:     do, re, mi, fa, sol, la, si, do
-// pitchclass:      C,  D,  E,  F,  G,   A,  B,  C
-// \midinote:       60, 62, 64, 65, 67,  69, 71, 72 (= 60 + 12)
+// solmization:     do, re, mi, fa, sol, la, si, do
+// pitch class:     C,  D,  E,  F,  G,   A,  B,  C
+// \midinote:       60, 62, 64, 65, 67,  69, 71, 72 // 72 = 60 + 12
+// \note:           0,  2,  4,  5,  7,   9,  11, 12 // 12 = 0 + 12
 
+// Using \midinote, the code in the first line can be transcribed as:
+Pbind(\midinote, Pseq([0,  2,  4,  5,  7,   9,  11,  12] + 60)).play;
+
+// or as:
+Pbind(\midinote, Pseq([60, 62, 64, 65, 67, 69, 71, 72])).play;
+
+// Alternatively, using \note:
+Pbind(\note, Pseq([0,  2,  4,  5,  7,   9,  11,  12])).play;
+
+// However, it should not be written as:
+Pbind(\note, Pseq([0,  1,  2,  3,  4,   5,  6,  7])).play;
+::
+
+code::
 Pbind(\degree,Pseq([2.1, 3])).play
 // 2 = E; 3 = F
 // 2.1 = 2s = degree 2 with a sharp (E sharp = F) = 3
