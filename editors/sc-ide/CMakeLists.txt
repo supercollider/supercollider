@@ -33,10 +33,10 @@ endif()
 find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} COMPONENTS ${QT_IDE_COMPONENTS} REQUIRED)
 
 if (APPLE)
-  include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-  set(ide_name ${scappbundlename})
+    include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+    set(ide_name ${scappbundlename})
 else()
-  set(ide_name scide)
+    set(ide_name scide)
 endif()
 
 if(APPLE)
@@ -209,11 +209,11 @@ list(APPEND ide_src
 )
 
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 endif()
 
 if(APPLE)
-	list(APPEND ide_src
+    list(APPEND ide_src
         ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
     )
 elseif(WIN32)
@@ -273,16 +273,16 @@ endif()
 
 # This sets up the exe icon for windows.
 if(WIN32)
- set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
+    set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
 endif(WIN32)
 
 
 # final builds of the IDE seem to be broken atm
 if(0 AND FINAL_BUILD)
-  CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_library( libscide STATIC scide_final.cpp ${ide_rc_sources})
+    CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
+    add_library( libscide STATIC scide_final.cpp ${ide_rc_sources})
 else()
-  add_library( libscide STATIC ${ide_sources} ${ide_rc_sources})
+    add_library( libscide STATIC ${ide_sources} ${ide_rc_sources})
 endif()
 
 # Enable targets that depend on libscide to find its headers and their contents.
@@ -363,10 +363,10 @@ endif()
 
 if(LTO)
     set_property(TARGET SuperCollider
-                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+            APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
     set_property(TARGET SuperCollider
-                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+            APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
 if(SC_USE_QTWEBENGINE)
@@ -387,11 +387,11 @@ if(APPLE)
     string(TIMESTAMP CURRENT_YEAR "%Y")
 
     install(TARGETS SuperCollider
-          DESTINATION ${scappbundlename})
+            DESTINATION ${scappbundlename})
 
     # for processing into the plist:
     set_property(TARGET SuperCollider
-	    PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
+            PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
 
 elseif(WIN32)
 
@@ -400,25 +400,25 @@ elseif(WIN32)
     endif()
 
     if(MSYS)
-      add_custom_command(TARGET SuperCollider
-        POST_BUILD
-        COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "create" "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:SuperCollider>"
-        COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
-      )
+        add_custom_command(TARGET SuperCollider
+                POST_BUILD
+                COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "create" "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:SuperCollider>"
+                COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
+        )
     else()
-      add_custom_command(TARGET SuperCollider
-        PRE_BUILD
-        COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"\""
-        COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
-      )
+        add_custom_command(TARGET SuperCollider
+                PRE_BUILD
+                COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"\""
+                COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
+        )
     endif()
 
     foreach(translation ${translations})
-      add_custom_command(TARGET SuperCollider
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/translations
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${translation} $<TARGET_FILE_DIR:SuperCollider>/translations
-      )
+        add_custom_command(TARGET SuperCollider
+                POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/translations
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${translation} $<TARGET_FILE_DIR:SuperCollider>/translations
+        )
     endforeach()
 
     install(TARGETS SuperCollider
@@ -431,16 +431,16 @@ elseif(WIN32)
 
     set(SC_WIN_DLL_DIRS)
     if(SNDFILE_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
+        list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
     endif(SNDFILE_LIBRARY_DIR)
     if(FFTW3F_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
+        list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
     endif(FFTW3F_LIBRARY_DIR)
     if(READLINE_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
+        list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
     endif(READLINE_LIBRARY_DIR)
     if(QT_BIN_PATH)
-      list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
+        list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
     endif(QT_BIN_PATH)
 
     # run fixup_bundle prior to deployment to get FFTW, libsndfile, MSVC, and Qt libs
@@ -454,11 +454,11 @@ elseif(WIN32)
 
 
 else()
-  install(TARGETS SuperCollider
-      RUNTIME DESTINATION "bin"
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-  install(FILES ${translations}
-      DESTINATION "share/SuperCollider/translations")
+    install(TARGETS SuperCollider
+            RUNTIME DESTINATION "bin"
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    install(FILES ${translations}
+            DESTINATION "share/SuperCollider/translations")
 endif()
 
 # mac/windows: find the Qt deploy utility.
@@ -590,7 +590,7 @@ if(APPLE OR WIN32)
 endif()
 
 if (LINUX)
-  install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
+    install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
 endif()
 
 

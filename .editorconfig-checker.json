@@ -1,0 +1,29 @@
+{
+  "Verbose": false,
+  "Debug": false,
+  "IgnoreDefaults": false,
+  "SpacesAfterTabs": false,
+  "NoColor": false,
+  "Exclude": [
+    "\\.sc",
+    "\\.schelp",
+    "\\.h",
+    "\\.hpp",
+    "\\.cpp",
+    "\\.yaml",
+    "\\.yml",
+    "\\.json",
+    "\\.js"
+  ],
+  "AllowedContentTypes": [],
+  "PassedFiles": [],
+  "Disable": {
+    "EndOfLine": false,
+    "Indentation": false,
+    "IndentSize": false,
+    "InsertFinalNewline": false,
+    "TrimTrailingWhitespace": false,
+    "MaxLineLength": false,
+    "Charset": false
+  }
+}
