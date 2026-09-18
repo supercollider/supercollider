@@ -46,7 +46,7 @@ METHOD:: new
 Create an instance of Rest, with a value to be used in the resulting rest event.
 
 argument:: value
-The Rest instance's numeric value, to be used in math operations. Note that a Rest's value is ignored for most Event keys (assuming the Event does nothing in response to code::.play::). If a Rest appears in a rhythm key (code::dur:: or code::delta::), then the number is the time until the next event. Consequently, numeric Rests are often used for duration -- but there is no requirement that a Rest's value must be a duration.
+The Rest instance's numeric value, to be used in math operations. Note that a Rest's value is ignored for most Event keys (assuming the Event does nothing in response to code::.play::). If a Rest appears in a rhythm key (code::dur:: or code::delta::), then the number is the time until the next event. Consequently, numeric Rests are often used for duration — but there is no requirement that a Rest's value must be a duration.
 
 discussion::
 code::

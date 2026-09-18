@@ -4,21 +4,24 @@ categories:: Server>Abstractions
 related:: Classes/Resample, Classes/SynthDef
 
 DESCRIPTION::
-For certain algorithms it is necessary to run a link::Classes/Synth:: at a small block size. Instead of decreasing the block size of the whole Server, which could be rather wasteful, you can use the Reblock object inside a link::Classes/SynthDef:: to only change the block size of specific Synths. (Keep in mind that very small block sizes will increase the CPU usage.)
+For certain algorithms it is necessary to run a link::Classes/Synth:: at a small block size. Instead of decreasing the Server block size, which could be rather wasteful, you can use the Reblock object inside a link::Classes/SynthDef:: to only change the block size of specific Synths. (Keep in mind that very small block sizes will increase the CPU usage.)
 
 The block size can be a constant number or it can be set dynamically via a Synth control (except for Supernova). See link::#*new:: for more information.
 
-note::For technical reasons, Supernova requires a fixed blockSize value. Trying to use a Synth control results in a warning.::
+note::For technical reasons, Supernova requires a fixed block size value. Trying to use a Synth control results in a warning.::
 
 For example, this can be used to implement very short feedback loops:
 
 code::
 // Karplus-Strong with different block sizes
 (
-SynthDef(\delay, { |out, blockSize|
+SynthDef(\delay, { |out, blockSize, upsample|
     var source, local;
 
 	Reblock(blockSize);
+	Resample(upsample);
+	BlockSize.ir.poll(1, "block size");
+	SampleRate.ir.poll(1, "sr");
 
     source = Decay.ar(Impulse.ar(2), 0.1) * WhiteNoise.ar(0.2);
     local = LocalIn.ar(2) + [source, 0]; // read feedback, add to source
@@ -33,11 +36,23 @@ SynthDef(\delay, { |out, blockSize|
 
 // by default, the min. delay length is the Server block size
 Synth(\delay);
+
 // try with smaller block sizes:
 Synth(\delay, [ blockSize: 16 ]);
 Synth(\delay, [ blockSize: 4 ]);
 Synth(\delay, [ blockSize: 1 ]);
 ::
+
+When combined with upsampling, you can get even shorter feedback loops:
+
+code::
+// run the feedback loop at twice the Server sample rate:
+Synth(\delay, [ blockSize: 1, upsample: 2 ]);
+// or even faster:
+Synth(\delay, [ blockSize: 1, upsample: 4 ]);
+::
+
+You can also emphasis::increase:: the block size, but only up to code::Server block size * upsample factor::. This can be used to save some CPU while upsampling (see link::Classes/Resample::). It can also be beneficial for FFT processing, particularly for convolving the inputs or outputs with an FIR filter kernel. (If the FFT resp. kernel size is the same as the block size, no buffering is needed and the FFT will introduce no delay.)
 
 CLASSMETHODS::
 
@@ -50,7 +65,7 @@ the block size. This can either be a constant number (e.g. 1) or a Synth control
 
 The block size must be a power of two. A value of 0 means that the Server block size should be used (= no reblocking).
 
-Currently, only downblocking is supported! A block size greater than the Server block size is ignored and results in a warning.
+At the moment, the block size can not be larger than code::Server block size * resample factor:: (see link::Classes/Resample::). For example, with 4x upsampling and a Server block size of 64 samples, the block size can be up to 256 samples. If you try to go higher, you will get a warning.
 
 DISCUSSION::
 

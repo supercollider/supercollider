@@ -11,6 +11,8 @@ TestSerialPort : UnitTest {
 	var skipSerialTests;
 	var input;
 	var output;
+	var socatPath;
+	var com0comPath;
 
 	const kBufferSize = 8192;
 
@@ -24,8 +26,8 @@ TestSerialPort : UnitTest {
 		this.destroyPorts();
 	}
 
-	// Return true if we are on Windows or socat is not installed.
-	// This method memoizes its results.
+	// Return if socat (macOS/Linux) or com0com (Windows) is not installed.
+	// This method memorizes its results.
 	// FIXME find better way to annotate/skip tests
 	skipSerialTests {
 		if(skipSerialTests.notNil) {
@@ -33,27 +35,109 @@ TestSerialPort : UnitTest {
 		};
 		skipSerialTests = false;
 		if(thisProcess.platform.name == \windows) {
-			"Skipping most SerialPort tests because platform is Windows.".warn;
-			skipSerialTests = true;
-		};
-		if("which socat".systemCmd != 0) {
-			"Skipping most SerialPort tests because socat is not installed.".warn;
-			skipSerialTests = true;
+			com0comPath ?? { this.findCom0com };
+			com0comPath ?? {
+				"Skipping most SerialPort tests because com0com could not be found.".warn;
+				skipSerialTests = true;
+			}
+		} {
+			socatPath ?? { this.findSocat };
+			socatPath ?? {
+				"Skipping most SerialPort tests because socat could not be found.".warn;
+				skipSerialTests = true;
+			}
 		};
 		^skipSerialTests;
 	}
 
+	findCom0com {
+		block {|break|
+			[
+				"C:\\Program Files\\com0com\\setupc.exe",
+				"C:\\Program Files (x86)\\com0com\\setupc.exe",
+				"C:\\Program Files (Arm)\\com0com\\setupc.exe"
+			].do({|thisPath|
+				if(File.exists(thisPath), {
+					com0comPath = thisPath;
+					break.();
+				})
+			})
+		};
+		com0comPath !? {com0comPath = thisProcess.platform.formatPathForCmdLine(com0comPath)}
+	}
+
+	findSocat {
+		socatPath = "which socat".unixCmdGetStdOut.replace($\n);
+		if(socatPath.size == 0, {socatPath = nil}); //reset to nil if it's an empty string
+		socatPath ?? {
+			block {|break|
+				[
+					"/usr/bin/socat",
+					"/usr/local/bin/socat",
+					"/opt/homebrew/bin/socat"
+				].do({|thisPath|
+					if(File.exists(thisPath), {
+						socatPath = thisPath;
+						break.();
+					})
+				})
+			}
+		};
+		socatPath !? {socatPath = thisProcess.platform.formatPathForCmdLine(socatPath)}
+	}
+
 	// Create a pair of virtual serial ports and return their names
 	createPorts {
-		^this.createSocatPorts();
+		if(thisProcess.platform.name == \windows) {
+			^this.getCom0ComPorts;
+		} {
+			^this.createSocatPorts;
+		}
 	}
 
 	destroyPorts {
-		"killall socat".unixCmdGetStdOut();
+		if(thisProcess.platform.name != \windows) {
+			"killall socat".unixCmdGetStdOut();
+		};
+	}
+
+	getCom0ComPorts {
+		var cmd = "% list".format(socatPath);
+		var allPorts = cmd.unixCmdGetStdOut;
+		var first, second;
+		var getNameFromLine;
+
+		if(allPorts.size == 0) {
+			Error("No virtual ports available, create ports first").throw;
+		};
+
+		allPorts = allPorts.split($\n);
+
+		getNameFromLine = {|line|
+			var thisPort = line.findRegexp("PortName=([^,\r\n]+)")[1][1];
+			if((thisPort == "-") || (thisPort == "COM#")) {thisPort = "\\\\.\\" ++ line.split($ ).first}; // use internal name if there's no alias;
+			thisPort
+		};
+
+		first = allPorts[0].stripWhiteSpace;
+		first = getNameFromLine.(first);
+		if(first.isEmpty) {
+			Error("Could not get the port name").throw;
+		};
+
+		second = allPorts[1].stripWhiteSpace;
+		second = getNameFromLine.(second);
+		if(second.isEmpty) {
+			Error("Could not get the port name").throw;
+		};
+
+		"Using ports % and %\n".postf(first, second);
+
+		^[first, second]
 	}
 
 	createSocatPorts {
-		var cmd = "socat -d -d pty,raw,echo=0 pty,raw,echo=0 2>&1";
+		var cmd = "% -d -d pty,raw,echo=0 pty,raw,echo=0 2>&1".format(socatPath);
 		var pipe = Pipe.new(cmd, "r");
 		var first, second;
 
@@ -123,10 +207,12 @@ TestSerialPort : UnitTest {
 	}
 
 	test_open_errorOnExistingDevice_crtsctsAndXonxoffBothTrue {
+		var port;
 		if(this.skipSerialTests) { ^this };
-		this.assertException({ SerialPort(input, crtscts: true, xonxoff: true) },
+		this.assertException({ port = SerialPort(input, crtscts: true, xonxoff: true) },
 			PrimitiveFailedError,
 			"Trying to open a serial port with both xonxoff and crtscts should throw");
+		port !? { port.close() };
 	}
 
 	test_open_errorOnMissingDevice {
@@ -257,24 +343,31 @@ TestSerialPort : UnitTest {
 	}
 
 	test_rxErrors_bufferOverflow {
-		var in, out, cond, rxErrs;
+		var in, out, rxErrs;
+		var written = 0, res, now, timeoutTime = 5;
 		if(this.skipSerialTests) { ^this };
 
 		in = this.mkPort(input);
 		out = this.mkPort(output);
-		cond = Condition();
 		rxErrs = 0;
 
 		// Overflow the buffer by exactly 1
 		for(0, kBufferSize) { |i|
-			out.put($a);
+			while { res = out.put($a); res == false } { // retry if writing failed
+				"retrying send...".postln;
+				0.001.wait;
+			};
+			if(res) {written = written + 1};
 			0.0001.wait;
 		};
 
-		fork { 3.wait; cond.test_(true).signal };
+		now = thisProcess.mainThread.seconds;
 
 		// spin until all data has been read
-		while { (rxErrs == 0) and: cond.test.not } { rxErrs = in.rxErrors; 0.01.wait; };
+		while { (rxErrs == 0) and: ((thisProcess.mainThread.seconds - now) < timeoutTime) } { rxErrs = in.rxErrors; 0.01.wait; };
+
+		if((thisProcess.mainThread.seconds - now) > timeoutTime) { "TIMEOUT!".warn };
+		// "Written bytes: %\nrxErrs: %\n".postf(written,rxErrs);
 
 		this.assert(rxErrs > 0);
 

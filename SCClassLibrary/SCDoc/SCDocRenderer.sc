@@ -49,6 +49,12 @@ SCDocHTMLRenderer {
 	}
 	*escapeSpacesInAnchor { |str|
 		^str.replace(" ", "%20")
+		.replace("\"", "%22")
+		.replace("'", "%27")
+		.replace(",", "%2C")
+		.replace("<", "%3C")
+		.replace(">", "%3E")
+		.replace("`", "%60")
 	}
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system

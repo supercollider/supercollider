@@ -42,7 +42,7 @@ definitionlist::
 ## srcID || The UID (unique identifier) of the MIDI port. This is set by the system, and is available through the link::Classes/MIDIEndPoint:: objects in the array code::MIDIClient.sources::. (For MIDI input, use code::MIDIClient.sources::, not code::destinations::.) If you know the device's array index, you can set code::srcID: MIDIClient.sources[index].uid::. If you know the device's name, you can search the array for a matching MIDIEndPoint first: code::srcID: MIDIClient.sources.detect { |e| e.device.containsi("searchstring") }.uid::.
 ::
 
-Any filters that are omitted will match all values -- e.g., for an omni-channel responder, simply leave out a code::chan:: filter.
+Any filters that are omitted will match all values — e.g., for an omni-channel responder, simply leave out a code::chan:: filter.
 
 subsection:: MIDIIn
 

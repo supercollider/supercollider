@@ -44,8 +44,11 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     mLocalAudioBusUnit = nullptr;
     mLocalControlBusUnit = nullptr;
 
+    mLocalSndBufs = nullptr;
     localBufNum = 0;
     localMaxBufNum = 0;
+
+    mFlags = 0;
 
     int block_size = prototype->block_size;
     float upsample = prototype->resample_factor;
@@ -79,18 +82,24 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
         }
 
         if (block_size != 0) {
-            // block size cannot be larger than wire buffer size (yet)!
-            if (block_size > world.mBufLength) {
-                log_printf("WARNING: Synth: block size (%d) cannot be larger than Server "
-                           "block size (%d)\n",
-                           block_size, world.mBufLength);
-                // use Server block size
-                block_size = world.mBufLength;
-            } else if (!ispoweroftwo(block_size)) {
+            if (!ispoweroftwo(block_size)) {
                 log_printf("WARNING: Synth: block size (%d) not a power of two\n", block_size);
                 // use Server block size
                 block_size = world.mBufLength;
-            } else {
+            }
+
+            const int32_t effective_block_size = block_size / static_cast<int32>(upsample);
+            if (effective_block_size > world.mBufLength) {
+                // The effective block size cannot be larger than the Server block size.
+                // For now, let's keep the upsample factor and adjust the block size accordingly.
+                const int32_t wanted_block_size = block_size;
+                block_size = world.mBufLength * static_cast<int32_t>(upsample);
+                log_printf("WARNING: Synth: block size (%d) too large for resample factor (%f). "
+                           "Adjusting block size to %d samples.\n",
+                           wanted_block_size, upsample, block_size);
+            }
+
+            if (block_size != world.mBufLength) {
                 mFlags |= kGraph_Reblock; // ok
             }
         } else {
@@ -98,7 +107,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
             block_size = world.mBufLength;
         }
 
-        mNumTicks = (world.mBufLength / block_size) * upsample;
+        mNumTicks = (world.mBufLength * upsample) / block_size;
         mTickCounter = 0;
     }
 

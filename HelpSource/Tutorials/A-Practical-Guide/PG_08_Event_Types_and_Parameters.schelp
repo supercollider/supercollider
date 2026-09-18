@@ -203,7 +203,7 @@ definitionList::
 
 subsection::Buffer control
 
-All of these buffer event types expect the buffer number to be provided. They will not automatically get a buffer number from the server's buffer allocator. A Buffer object is allowed -- you could create the Buffer first using code::Buffer.alloc:: or code::Buffer.new:: and then use this object in the control events. See also link::#Event types with cleanup:: below for other, user-friendlier Buffer control options.
+All of these buffer event types expect the buffer number to be provided. They will not automatically get a buffer number from the server's buffer allocator. A Buffer object is allowed — you could create the Buffer first using code::Buffer.alloc:: or code::Buffer.new:: and then use this object in the control events. See also link::#Event types with cleanup:: below for other, user-friendlier Buffer control options.
 
 definitionList::
 ## alloc || Allocate memory for a buffer on the server. Only one buffer may be allocated per event.
@@ -449,7 +449,7 @@ m = MIDIOut(0);
 ## setProperties || Set variables belonging to a given object. One possible use is to control a GUI using a pattern.
 definitionList::
 ## receiver || The object to be modified.
-## args || The list of variable names to set in the receiver. The receiver should have a setter method -- variableName_ -- for each of these. New values will be looked up in the event.
+## args || The list of variable names to set in the receiver. The receiver should have a setter method — variableName_ — for each of these. New values will be looked up in the event.
 ::
 
 code::

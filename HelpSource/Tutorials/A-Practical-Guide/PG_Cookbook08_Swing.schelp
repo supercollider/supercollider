@@ -161,7 +161,7 @@ definitionlist::
 ## Is it in a weaker metrical position? || Dividing by the base value yields an even number for stronger positions, and odd for weaker positions: code::(now / ev[\swingBase]).round.asInteger.odd::.
 ::
 
-There's room also for a slight optimization. In the previous event, we decided whether the next event would need to swing or not. Now, in the current event, we are processing what used to be "next." So we can just copy the old value of teletype::nextShouldSwing:: from last time, instead of redoing the calculation. (Note that this requires code::nextShouldSwing = false:: in the beginning -- because teletype::now:: is always 0 for the first event, and consequently can never swing.)
+There's room also for a slight optimization. In the previous event, we decided whether the next event would need to swing or not. Now, in the current event, we are processing what used to be "next." So we can just copy the old value of teletype::nextShouldSwing:: from last time, instead of redoing the calculation. (Note that this requires code::nextShouldSwing = false:: in the beginning — because teletype::now:: is always 0 for the first event, and consequently can never swing.)
 
 code::
 		// current this time is what was "next" last time

@@ -176,7 +176,7 @@ list::
 
 strong::Don't send or load SynthDefs; use .add or .store instead::
 
-To send only the relevant values to the new Synth, the Event needs to know what controls exist in the SynthDef. This is done by a library of descriptors for SynthDefs; the descriptor is a link::Classes/SynthDesc::, and the library is a link::Classes/SynthDescLib::. The normal methods -- code::.send(s)::, code::.load(s):: -- to communicate a SynthDef to the server do not enter it into the library. As a result, SynthDefs sent this way will not work properly with Pbind. Instead, use different methods that emphasis::store:: the SynthDef into the library.
+To send only the relevant values to the new Synth, the Event needs to know what controls exist in the SynthDef. This is done by a library of descriptors for SynthDefs; the descriptor is a link::Classes/SynthDesc::, and the library is a link::Classes/SynthDescLib::. The normal methods — code::.send(s)::, code::.load(s):: — to communicate a SynthDef to the server do not enter it into the library. As a result, SynthDefs sent this way will not work properly with Pbind. Instead, use different methods that emphasis::store:: the SynthDef into the library.
 
 code::
 // Save into the library, write a .scsyndef file, and load it on the server
@@ -230,7 +230,7 @@ In 3.9, it is no longer supported to use the Rest class in patterns. All rests n
 
 The older convention for rests is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. (This usage is still supported, but not recommended because it is limited to pitch-related keys only.)
 
-If it's the code::\freq:: key that determines whether the event as a rest or not, why does it work to use it with code::\note::? As noted, keys like code::\degree::, code::\note::, and code::\midinote:: are automatically converted into frequency. The math operations that perform the conversion preserve Symbols intact -- e.g., code::\rest + 1 == \rest:: . So the code::\rest:: value is passed all the way through the chain of conversions so that code::\freq:: in the event ends up receiving code::\rest::.
+If it's the code::\freq:: key that determines whether the event as a rest or not, why does it work to use it with code::\note::? As noted, keys like code::\degree::, code::\note::, and code::\midinote:: are automatically converted into frequency. The math operations that perform the conversion preserve Symbols intact — e.g., code::\rest + 1 == \rest:: . So the code::\rest:: value is passed all the way through the chain of conversions so that code::\freq:: in the event ends up receiving code::\rest::.
 
 Note that it doesn't matter if the SynthDef has a code::freq:: argument. It's the event, on the emphasis::client:: side, that looks to this key to determine whether to play the note or not. If it is a rest, the server is not involved at all.
 
@@ -268,7 +268,7 @@ SynthDef(\trig_demo, { |out, freq = 440, gate = 1, t_trig = 1|	// t_trig here
 (
 p = Pmono(\trig_demo,
 	\freq, Pexprand(200, 800, inf),
-	\trig, 1,	// note that this is NOT t_trig -- just \trig
+	\trig, 1,	// note that this is NOT t_trig — just \trig
 	\delta, 0.125
 ).play;
 )

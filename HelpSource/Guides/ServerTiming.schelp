@@ -57,7 +57,7 @@ Average physical latency:
 0.00144247559999830              .0032120224000039
 ::
 
-Notice that even though the left and right channel patterns were scheduled for exactly the same time, the events don't complete executing at the same time. Further, the Synth(...) call instructs the server to play the synth immediately on receipt, so the right channel will be lagging behind the left by about 2 ms each event--and not by the same amount each time. Timing, then, is always slightly imprecise.
+Notice that even though the left and right channel patterns were scheduled for exactly the same time, the events don't complete executing at the same time. Further, the Synth(...) call instructs the server to play the synth immediately on receipt, so the right channel will be lagging behind the left by about 2 ms each event — and not by the same amount each time. Timing, then, is always slightly imprecise.
 
 This version is the same, but it generates each synth with a 1/4 second latency parameter:
 

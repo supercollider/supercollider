@@ -234,9 +234,9 @@ list::
 ## code::sc_floor::
 ## code::sc_reciprocal::
 ## code::sc_frac::
-## code::sc_log2:: (legacy -- use code::std\::log2(std\::abs(x))::)
-## code::sc_log10:: (legacy -- use code::std\::log10(std\::abs(x))::)
-## code::sc_trunc:: (legacy -- use code::std\::trunc::)
+## code::sc_log2:: (legacy — use code::std\::log2(std\::abs(x))::)
+## code::sc_log10:: (legacy — use code::std\::log10(std\::abs(x))::)
+## code::sc_trunc:: (legacy — use code::std\::trunc::)
 ::
 
 The following unary functions are available for both float32 and float64, but have no sclang equivalent:
@@ -320,7 +320,7 @@ list::
 ## code::sc_sumsqr(a, b)::
 ## code::sc_sqrsum(a, b)::
 ## code::sc_sqrdif(a, b)::
-## code::sc_atan2(a, b):: (legacy -- use code::std\::atan2::)
+## code::sc_atan2(a, b):: (legacy — use code::std\::atan2::)
 ::
 
 section:: Constants

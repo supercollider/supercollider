@@ -190,7 +190,7 @@ code::
 ERROR: Primitive '_BasicPut' failed.
 Attempted write to immutable object.
 ::
-code:: #[0, 1, 2] :: is a literal array. Literal arrays cannot be manipulated--they can only be indexed. They cannot be changed internally.
+code:: #[0, 1, 2] :: is a literal array. Literal arrays cannot be manipulated — they can only be indexed. They cannot be changed internally.
 
 Solution: copy the array first.
 code::

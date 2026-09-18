@@ -125,7 +125,7 @@ TestResample : TestReblockBase {
 		var trigBusB = Bus.control(server, 2);
 		var arTestBus = Bus.audio(server, 2);
 		var krTestBus = Bus.control(server, 2);
-		var testFactor = 1;
+		var testFactor = 4;
 
 		simpleAB = { |defName|
 			{ |busA, busB|

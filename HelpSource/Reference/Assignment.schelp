@@ -53,7 +53,7 @@ The form of a multiple assignment is:
 code::
 # <list of variables> = <expression>
 ::
--- or --
+— or —
 code::
 # <list of variables> ... <variable> = <expression>
 ::

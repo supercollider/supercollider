@@ -178,9 +178,9 @@ Also, because a uid bypasses patchbay connections, it is meaningless to specify 
 
 strong::Compatibility::
 list::
-## code::MIDIOut.newByName("device", "port"):: -- Should be compatible on all systems.
-## code::MIDIOut(index):: -- macOS, Windows (teletype::index:: is the device's index in code::MIDIClient.destinations::). Note that this usage is emphasis::not:: compatible with Linux! macOS and Windows users should not expect Linux users to be able to run this style of connection.
-## code::MIDIOut(0, MIDIClient.destinations[index].uid):: -- Linux only (teletype::index:: is the device's index in code::MIDIClient.destinations::).
+## code::MIDIOut.newByName("device", "port"):: — Should be compatible on all systems.
+## code::MIDIOut(index):: — macOS, Windows (teletype::index:: is the device's index in code::MIDIClient.destinations::). Note that this usage is emphasis::not:: compatible with Linux! macOS and Windows users should not expect Linux users to be able to run this style of connection.
+## code::MIDIOut(0, MIDIClient.destinations[index].uid):: — Linux only (teletype::index:: is the device's index in code::MIDIClient.destinations::).
 ::
 
 

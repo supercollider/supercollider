@@ -5,7 +5,7 @@ categories:: Streams-Patterns-Events>Patterns>Repetition
 
 Description::
 
-Psync behaves somewhat like link::Classes/Pfindur:: -- it has a teletype::maxdur:: argument that limits the total duration of the event stream.
+Psync behaves somewhat like link::Classes/Pfindur:: — it has a teletype::maxdur:: argument that limits the total duration of the event stream.
 
 The difference is in what happens if the event pattern stops on its own before teletype::maxdur:: is reached. If the total duration of the event pattern is shorter than the given maximum duration:
 

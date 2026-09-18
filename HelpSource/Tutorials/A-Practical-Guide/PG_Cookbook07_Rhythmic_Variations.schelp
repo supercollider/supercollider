@@ -38,7 +38,7 @@ definitionList::
 
 ## code::Pn(..., inf):: || Repeat the enclosed pattern (Plazy) an infinite number of times.
 
-## code::Plazy({ ... }):: || The function can do anything it likes, as long as it returns some kind of pattern. The first two lines of the function do the hard work, especially code::~addNotes::.value, calling into the environment to use the rhythm generator code. This changes the data in the environment, which then get plugged into Pbind in the code::~pbindPairs.value():: line. That pattern will play through; when it ends, Plazy gives control back to its parent -- Pn, which repeats Plazy.
+## code::Plazy({ ... }):: || The function can do anything it likes, as long as it returns some kind of pattern. The first two lines of the function do the hard work, especially code::~addNotes::.value, calling into the environment to use the rhythm generator code. This changes the data in the environment, which then get plugged into Pbind in the code::~pbindPairs.value():: line. That pattern will play through; when it ends, Plazy gives control back to its parent — Pn, which repeats Plazy.
 
 ## code::Pbindf(..., \freq, ...):: || Pbindf adds new values into events coming from a different pattern. This usage is to take advantage of a fact about the default event. If the code::\freq:: key is a symbol (rather than a number or array), the event represents a rest and nothing will play on the server. It doesn't matter whether or not the SynthDef has a code::freq:: control; a symbol in this space produces a rest. Here it's a simple conditional to produce a rest when code:: amp == 0 ::.
 
@@ -182,7 +182,7 @@ TempoClock.default.tempo = 104 / 60;
 			\dur, 0.25,
 			*(~pbindPairs.value(#[amp, decay2]))
 		),
-			// default Event checks \freq --
+			// default Event checks \freq —
 			// if a symbol like \rest or even just \,
 			// the event is a rest and no synth will be played
 		\freq, Pif(Pkey(\amp) > 0, 1, \rest)

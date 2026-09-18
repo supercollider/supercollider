@@ -266,7 +266,8 @@ static inline float readControlBus(const float* bus, int channelIndex, int maxCh
 }
 
 // Update the relevant IOUnit instance members if the audio bus number has changed
-static inline void IO_a_update_channels(IOUnit* unit, World* world, float fbusChannel, int numChannels, int bufLength) {
+static inline void IO_a_update_channels(IOUnit* unit, const World* world, float fbusChannel, int numChannels,
+                                        int bufLength) {
     if (fbusChannel != unit->m_fbusChannel) {
         unit->m_fbusChannel = fbusChannel;
         int busChannel = (int32)fbusChannel;
@@ -283,7 +284,7 @@ static inline void IO_a_update_channels(IOUnit* unit, World* world, float fbusCh
 // As a small optimization, UpdateTouched tells whether we actually need to
 // update the m_busTouched member.
 template <bool UpdateTouched>
-static inline void IO_k_update_channels(IOUnit* unit, World* world, float fbusChannel, int numChannels) {
+static inline void IO_k_update_channels(IOUnit* unit, const World* world, float fbusChannel, int numChannels) {
     if (fbusChannel != unit->m_fbusChannel) {
         unit->m_fbusChannel = fbusChannel;
         int busChannel = (int)fbusChannel;
@@ -1164,16 +1165,34 @@ void InTrig_Ctor(InTrig* unit) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void ReplaceOut_next_a_reblock(ReplaceOut* unit, int inNumSamples) {
-    World* world = unit->mWorld;
-    int bufLength = world->mBufLength;
-    int numChannels = unit->mNumInputs - 1;
+    const World* world = unit->mWorld;
+    const int bufLength = world->mBufLength;
+    const int numChannels = unit->mNumInputs - 1;
 
-    float fbusChannel = ZIN0(0);
+    const float fbusChannel = ZIN0(0);
     IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
-    double resample = SAMPLERATE / world->mSampleRate;
-    int outSamples = inNumSamples / resample;
-    float* out = unit->m_bus + unit->mParent->mTickCounter * outSamples;
+    const float resample = SAMPLERATE / world->mSampleRate;
+    if (resample < 1.f) {
+        // downsampling not supported (yet)
+        Print("ERROR: ReplaceOut: bad resample factor (%f)\n", resample);
+        return;
+    }
+
+    // in case of upsampling, we only write every N samples (N = resample factor)
+    const int tick = unit->mParent->mTickCounter;
+    const int upsample = static_cast<int>(resample);
+    assert(ISPOWEROFTWO(upsample));
+    const int inputOffset = tick * inNumSamples;
+    if (inputOffset & (upsample - 1)) {
+        // All samples in this block would be skipped by downsampling, so we can return early.
+        // This also ensures that the code below works for the case where inNumSamples < upsample.
+        return;
+    }
+
+    const uint32_t shift = LOG2CEIL(upsample);
+    const int outSamples = std::max<int>(inNumSamples >> shift, 1);
+    float* out = unit->m_bus + (inputOffset >> shift);
     int32* touched = unit->m_busTouched;
     const int32 bufCounter = unit->mWorld->mBufCounter;
     const int32 maxChannel = world->mNumAudioBusChannels;
@@ -1184,9 +1203,9 @@ void ReplaceOut_next_a_reblock(ReplaceOut* unit, int inNumSamples) {
         if (guard.isValid()) {
             float* in = IN(i + 1);
             for (int j = 0; j < outSamples; ++j) {
-                int index = j * resample;
-                out[j] = in[index];
+                out[j] = in[j << shift];
             }
+
             touched[i] = bufCounter;
         }
     }
@@ -1326,17 +1345,34 @@ void ReplaceOut_Ctor(ReplaceOut* unit) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Out_next_a_reblock(Out* unit, int inNumSamples) {
-    World* world = unit->mWorld;
-    int bufLength = world->mBufLength;
-    int numChannels = unit->mNumInputs - 1;
+    const World* world = unit->mWorld;
+    const int bufLength = world->mBufLength;
+    const int numChannels = unit->mNumInputs - 1;
 
-    float fbusChannel = ZIN0(0);
+    const float fbusChannel = ZIN0(0);
     IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
-    int tick = unit->mParent->mTickCounter;
-    double resample = SAMPLERATE / world->mSampleRate;
-    int outSamples = inNumSamples / resample;
-    float* out = unit->m_bus + tick * outSamples;
+    const float resample = SAMPLERATE / world->mSampleRate;
+    if (resample < 1.f) {
+        // downsampling not supported (yet)
+        Print("ERROR: Out: bad resample factor (%f)\n", resample);
+        return;
+    }
+
+    // in case of upsampling, we only write every N samples (N = resample factor)
+    const int tick = unit->mParent->mTickCounter;
+    const int upsample = static_cast<int>(resample);
+    assert(ISPOWEROFTWO(upsample));
+    const int inputOffset = tick * inNumSamples;
+    if (inputOffset & (upsample - 1)) {
+        // All samples in this block would be skipped by downsampling, so we can return early.
+        // This also ensures that the code below works for the case where inNumSamples < upsample.
+        return;
+    }
+
+    const uint32_t shift = LOG2CEIL(upsample);
+    const int outSamples = std::max<int>(inNumSamples >> shift, 1);
+    float* out = unit->m_bus + (inputOffset >> shift);
     int32* touched = unit->m_busTouched;
     const int32 bufCounter = unit->mWorld->mBufCounter;
     const int32 maxChannel = world->mNumAudioBusChannels;
@@ -1345,23 +1381,19 @@ void Out_next_a_reblock(Out* unit, int inNumSamples) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
         if (guard.isValid()) {
-            if (tick == 0) {
-                // If this is the first tick, check if we are the first
-                // one writing to the bus. If yes, zero the *whole* channel
-                // so every tick can simply accumulate.
-                // (This also works in ParGroups because only one Ugen
-                // gets to update mBufTouched!)
-                if (touched[i] != bufCounter) {
-                    touched[i] = bufCounter;
-                    Clear(bufLength, unit->m_bus + bufLength * i);
-                }
+            // If this is the first tick, check if we are the first one touching the bus.
+            // If yes, zero the *whole* channel so every tick can simply accumulate.
+            // This way we don't have to cache the bus touch values. (This also works
+            // in ParGroups because only one UGen gets to update mBufTouched!)
+            if (tick == 0 && touched[i] != bufCounter) {
+                touched[i] = bufCounter;
+                Clear(bufLength, unit->m_bus + bufLength * i);
             }
 
             // accumulate
             float* in = IN(i + 1);
             for (int j = 0; j < outSamples; ++j) {
-                int index = j * resample;
-                out[j] += in[index];
+                out[j] += in[j << shift];
             }
         }
     }
@@ -1559,63 +1591,78 @@ void Out_Ctor(Out* unit) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void XOut_next_a_reblock(XOut* unit, int inNumSamples) {
-    World* world = unit->mWorld;
-    int bufLength = world->mBufLength;
-    int numChannels = unit->mNumInputs - 2;
+    const World* world = unit->mWorld;
+    const int bufLength = world->mBufLength;
+    const int numChannels = unit->mNumInputs - 2;
 
-    float fbusChannel = ZIN0(0);
+    const float fbusChannel = ZIN0(0);
     IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
-    float next_xfade = ZIN0(1);
-    float xfade0 = unit->m_xfade;
-    int tick = unit->mParent->mTickCounter;
-    double resample = SAMPLERATE / world->mSampleRate;
-    int outSamples = inNumSamples / resample;
-    float* out = unit->m_bus + tick * outSamples;
+    const float resample = SAMPLERATE / world->mSampleRate;
+    if (resample < 1.f) {
+        // downsampling not supported (yet)
+        Print("ERROR: XOut: bad resample factor (%f)\n", resample);
+        return;
+    }
+
+    // in case of upsampling, we only write every N samples (N = resample factor)
+    const int tick = unit->mParent->mTickCounter;
+    const int upsample = static_cast<int>(resample);
+    assert(ISPOWEROFTWO(upsample));
+    const int inputOffset = tick * inNumSamples;
+    if (inputOffset & (upsample - 1)) {
+        // All samples in this block would be skipped by downsampling, so we can return early.
+        // This also ensures that the code below works for the case where inNumSamples < upsample.
+        return;
+    }
+
+    const float next_xfade = ZIN0(1);
+    const float xfade0 = unit->m_xfade;
+    const uint32_t shift = LOG2CEIL(upsample);
+    const int outSamples = std::max<int>(inNumSamples >> shift, 1);
+    float* out = unit->m_bus + (inputOffset >> shift);
     int32* touched = unit->m_busTouched;
     const int32 bufCounter = unit->mWorld->mBufCounter;
     const int32 maxChannel = world->mNumAudioBusChannels;
 
     if (xfade0 != next_xfade) {
-        // We must adjust the slope for the resample factor!
-        // Example: with 2x upsampling the output has only half the
-        // size of the input, so we would have to double the slope.
+        // new crossfade level -> ramp from new to old value while crossfading with previous bus content.
+        //
+        // NOTE: We must adjust the slope for the resample factor!
+        // Example: with 2x upsampling the output has only half the size of the input,
+        // so we would have to double the slope.
         float slope = CALCSLOPE(next_xfade, xfade0) * resample;
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
             if (guard.isValid()) {
-                if (tick == 0) {
-                    // If this is the first tick, check if we are the first
-                    // one writing to the bus. If yes, zero the *whole* channel
-                    // so every tick can simply accumulate.
-                    // (This also works in ParGroups because only one Ugen
-                    // gets to update mBufTouched!)
-                    if (touched[i] != bufCounter) {
-                        touched[i] = bufCounter;
-                        Clear(bufLength, unit->m_bus + bufLength * i);
-                    }
+                // If this is the first tick, check if we are the first one touching the bus.
+                // If yes, zero the *whole* channel so every tick can simply accumulate.
+                // This way we don't have to cache the bus touch values.
+                // (This also works in ParGroups because only one Ugen gets to update mBufTouched!)
+                if (tick == 0 && touched[i] != bufCounter) {
+                    touched[i] = bufCounter;
+                    Clear(bufLength, unit->m_bus + bufLength * i);
                 }
 
                 // accumulate
                 float xfade = xfade0;
                 float* in = IN(i + 2);
                 for (int j = 0; j < outSamples; ++j, xfade += slope) {
-                    int index = j * resample;
                     float zout = out[j];
-                    out[j] = zout + xfade * (in[index] - zout);
+                    out[j] = zout + xfade * (in[j << shift] - zout);
                 }
             }
         }
     } else if (xfade0 == 1.f) {
+        // replace bus content
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
             if (guard.isValid()) {
                 float* in = IN(i + 2);
                 for (int j = 0; j < outSamples; ++j) {
-                    int index = j * resample;
-                    out[j] = in[index];
+                    out[j] += in[j << shift];
                 }
                 touched[i] = bufCounter;
             }
@@ -1623,24 +1670,22 @@ void XOut_next_a_reblock(XOut* unit, int inNumSamples) {
     } else if (xfade0 == 0.f) {
         // do nothing.
     } else {
+        // crossfade with previous content
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
             if (guard.isValid()) {
-                if (tick == 0) {
-                    // See comment above.
-                    if (touched[i] != bufCounter) {
-                        touched[i] = bufCounter;
-                        Clear(bufLength, unit->m_bus + bufLength * i);
-                    }
+                // see comment in xfade0 != next_xfade branch.
+                if (tick == 0 && touched[i] != bufCounter) {
+                    touched[i] = bufCounter;
+                    Clear(bufLength, unit->m_bus + bufLength * i);
                 }
 
                 // accumulate
                 float* in = IN(i + 2);
                 for (int j = 0; j < outSamples; ++j) {
-                    int index = j * resample;
                     float zout = out[j];
-                    out[j] = zout + xfade0 * (in[index] - zout);
+                    out[j] = zout + xfade0 * (in[j << shift] - zout);
                 }
             }
         }
@@ -1664,6 +1709,8 @@ void XOut_next_a(XOut* unit, int inNumSamples) {
     const int32 maxChannel = world->mNumAudioBusChannels;
 
     if (xfade0 != next_xfade) {
+        // new crossfade level -> ramp from new to old value
+        // while crossfading with previous bus content.
         float slope = CALCSLOPE(next_xfade, xfade0);
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
@@ -1685,6 +1732,7 @@ void XOut_next_a(XOut* unit, int inNumSamples) {
             }
         }
     } else if (xfade0 == 1.f) {
+        // replace bus content
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
@@ -1697,6 +1745,7 @@ void XOut_next_a(XOut* unit, int inNumSamples) {
     } else if (xfade0 == 0.f) {
         // do nothing.
     } else {
+        // crossfade with previous content
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
@@ -1736,6 +1785,8 @@ FLATTEN void XOut_next_a_nova(XOut* unit, int inNumSamples) {
     const int32 maxChannel = world->mNumAudioBusChannels;
 
     if (xfade0 != next_xfade) {
+        // new crossfade level -> ramp from new to old value
+        // while crossfading with previous bus content.
         float slope = CALCSLOPE(next_xfade, xfade0);
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
@@ -1754,6 +1805,7 @@ FLATTEN void XOut_next_a_nova(XOut* unit, int inNumSamples) {
         }
         unit->m_xfade = next_xfade;
     } else if (xfade0 == 1.f) {
+        // replace content
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
@@ -1766,6 +1818,7 @@ FLATTEN void XOut_next_a_nova(XOut* unit, int inNumSamples) {
     } else if (xfade0 == 0.f) {
         // do nothing.
     } else {
+        // crossfade with previous content
         for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
@@ -1850,47 +1903,74 @@ void XOut_Ctor(XOut* unit) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void OffsetOut_next_a_reblock(OffsetOut* unit, int inNumSamples) {
-    World* world = unit->mWorld;
-    int bufLength = world->mBufLength;
-    int numChannels = unit->mNumInputs - 1;
+    const World* world = unit->mWorld;
+    const int bufLength = world->mBufLength;
+    const int numChannels = unit->mNumInputs - 1;
 
-    float fbusChannel = ZIN0(0);
+    const float fbusChannel = ZIN0(0);
     IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
-    int32 offset = unit->mParent->mSampleOffset;
-    int32 remain = bufLength - offset;
+    const float resample = SAMPLERATE / world->mSampleRate;
+    if (resample < 1.f) {
+        // downsampling not supported (yet)
+        Print("ERROR: OffsetOut: bad resample factor (%f)\n", resample);
+        return;
+    }
 
-    int tick = unit->mParent->mTickCounter;
-    int numTicks = unit->mParent->mNumTicks;
-    double resample = SAMPLERATE / world->mSampleRate;
-    int32 outSamples = inNumSamples / resample;
-    int32 outPhase = tick * outSamples;
+    // in case of upsampling, we only write every N samples (N = resample factor)
+    const int tick = unit->mParent->mTickCounter;
+    const int numTicks = unit->mParent->mNumTicks;
+    const int upsample = static_cast<int>(resample);
+    assert(ISPOWEROFTWO(upsample));
+    const int inPhase = tick * inNumSamples;
+    if (inPhase & (upsample - 1)) {
+        // All samples in this block would be skipped by downsampling, so we can return early.
+        // This also ensures that the code below works for the case where inNumSamples < upsample.
+        return;
+    }
 
+    const int32 offset = unit->mParent->mSampleOffset;
+    const int32 remain = bufLength - offset;
+
+    const uint32_t shift = LOG2CEIL(upsample);
+    const int outSamples = std::max<int>(inNumSamples >> shift, 1);
+    const int outPhase = inPhase >> shift;
     float* out = unit->m_bus;
     float* saved = unit->m_saved;
     int32* touched = unit->m_busTouched;
     const int32 bufCounter = unit->mWorld->mBufCounter;
     const int32 maxChannel = world->mNumAudioBusChannels;
 
+    // This one is a bit tricky, but the following example might help understand it:
+    //
+    // Server block size = 64 samples, graph block size = 16 samples (= 4 ticks),
+    // sample offset = 48 samples
+    //
+    //           ┌―――――――――――――――――――――――――――――――――――――――┐
+    //           ▼                                       │
+    //    saved: █        ← offset →        █            │
+    //           │                                       │
+    //           │                                       │
+    //           │                      in: █ ← remain → ║       ← offset →         █
+    //           │                 inPhase: █---------|---------|---------|---------█
+    //           │                          │
+    //           ▼                          ▼
+    //      out: █        ← offset →        ║ ← remain → █
+    // outPhase: █---------|---------|---------|---------█
+
     for (int i = 0; i < numChannels; ++i, out += bufLength, saved += offset) {
         AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
-        float* in = IN(i + 1);
+        const float* in = IN(i + 1);
+        const int diff1 = remain - outPhase;
 
         if (guard.isValid()) {
             if (tick == 0) {
-                // If this is the first tick, copy/accumulate the saved input
-                // from the previous period and clear the remaining channel so
-                // that every tick can simply accumulate its input.
-                // (This also works in ParGroups because only one Ugen gets
-                // to update mBufTouched!)
-                if (touched[i] == bufCounter) {
-                    if (unit->m_empty) {
-                        // Print("touched offset %d\n", offset);
-                    } else {
-                        Accum(offset, out, saved);
-                    }
-                } else {
+                // copy/accumulate the saved input from the previous control period.
+                if (touched[i] != bufCounter) {
+                    // If we are the first one touching the bus, clear the remaining channel
+                    // so that every tick can simply accumulate. (This also works in ParGroups
+                    // because only one Ugen gets to update mBufTouched!)
                     if (unit->m_empty) {
                         // clear whole channel
                         Clear(bufLength, out);
@@ -1900,36 +1980,41 @@ void OffsetOut_next_a_reblock(OffsetOut* unit, int inNumSamples) {
                         Clear(remain, out + offset);
                     }
                     touched[i] = bufCounter;
+                } else {
+                    if (unit->m_empty) {
+                        // just keep bus content
+                        // Print("touched offset %d\n", offset);
+                    } else {
+                        Accum(offset, out, saved);
+                    }
                 }
             }
 
-            // accumulate the current input (up to 'remain' samples)
-            // into the bus, shifted by 'offset' samples
-            int n = sc_min(remain - outPhase, outSamples);
-            if (n > 0) {
+            if (diff1 > 0) {
+                // accumulate the current input (up to 'remain' samples)
+                // into the bus, shifted by 'offset' samples.
+                const int n = std::min<int>(diff1, outSamples);
                 for (int j = 0; j < n; ++j) {
-                    int index = outPhase + j;
-                    int k = j * resample;
-                    out[index + offset] += in[k];
+                    const int outIndex = offset + outPhase + j;
+                    out[outIndex] += in[j << shift];
                 }
             }
         }
 
-        // save remaining input samples (with reblocking).
-        // Also do this if the buf channel was out-of-range.
-        int n = sc_min(outPhase + outSamples - remain, outSamples);
-        if (n > 0) {
-            // j starts at the offset within 'outSamples'.
+        const int diff2 = outSamples - diff1;
+        if (diff2 > 0) {
+            // save remaining input samples (with downsampling),
+            // even if the buf channel was out-of-range.
+            const int n = std::min<int>(diff2, outSamples);
+            // j starts at the input block offset
             for (int j = outSamples - n; j < outSamples; ++j) {
-                int index = outPhase + j - remain;
-                int k = j * resample;
-                saved[index] = in[k];
+                const int outIndex = j - diff1;
+                saved[outIndex] = in[j << shift];
             }
         }
     }
-    // only on the last tick!
-    if (tick == numTicks - 1)
-        unit->m_empty = false;
+
+    unit->m_empty = false;
 }
 
 void OffsetOut_next_a(OffsetOut* unit, int inNumSamples) {
@@ -1958,49 +2043,58 @@ void OffsetOut_next_a(OffsetOut* unit, int inNumSamples) {
         //	offset, remain);
 
         if (guard.isValid()) {
-            if (touched[i] == bufCounter) {
+            if (touched[i] != bufCounter) {
+                // we are the first to touch the bus
                 if (unit->m_empty) {
-                    // Print("touched offset %d\n", offset);
-                } else {
-                    Accum(offset, out, saved);
-                }
-                Accum(remain, out + offset, in);
-            } else {
-                if (unit->m_empty) {
+                    // clear the first bus section
                     Clear(offset, out);
                     // Print("untouched offset %d\n", offset);
                 } else {
+                    // copy the saved content into the first bus section
                     Copy(offset, out, saved);
                 }
+                // copy the input into the second bus section
                 Copy(remain, out + offset, in);
                 touched[i] = bufCounter;
+            } else {
+                if (unit->m_empty) {
+                    // just keep the existing bus content
+                    // Print("touched offset %d\n", offset);
+                } else {
+                    // accumulate the saved content into the first bus section
+                    Accum(offset, out, saved);
+                }
+                // accumulate the input into the second bus section
+                Accum(remain, out + offset, in);
             }
         }
 
-        // always copy the remaining input, even if the buf channel was out-of-range.
+        // always save the remaining input, even if the buf channel was out-of-range.
         Copy(offset, saved, in + remain);
 
         // Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
     }
+
     unit->m_empty = false;
 }
 
 void OffsetOut_Ctor(OffsetOut* unit) {
     // Print("->Out_Ctor\n");
-    World* world = unit->mWorld;
+    const World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
 
-    if (REBLOCK_OR_RESAMPLE)
+    if (REBLOCK_OR_RESAMPLE) {
         SETCALC(OffsetOut_next_a_reblock);
-    else
+    } else {
         SETCALC(OffsetOut_next_a);
+    }
     unit->m_bus = world->mAudioBus;
     unit->m_busTouched = world->mAudioBusTouched;
-    int32 offset = unit->mParent->mSampleOffset;
-    int numChannels = unit->mNumInputs - 1;
     // NB: if mSampleOffset is 0, RTAlloc() might return a nullptr and
     // trigger ClearUnitIfMemFailed(), so we have to handle it specially.
+    const int32 offset = unit->mParent->mSampleOffset;
     if (offset > 0) {
+        const int numChannels = unit->mNumInputs - 1;
         unit->m_saved = (float*)RTAlloc(unit->mWorld, offset * numChannels * sizeof(float));
         ClearUnitIfMemFailed(unit->m_saved);
     } else {
@@ -2013,19 +2107,19 @@ void OffsetOut_Ctor(OffsetOut* unit) {
 void OffsetOut_Dtor(OffsetOut* unit) {
     // Write remaining samples (if any)
     if (unit->m_saved) {
-        World* world = unit->mWorld;
-        int bufLength = world->mBufLength;
-        int numChannels = unit->mNumInputs - 1;
+        const World* world = unit->mWorld;
+        const int bufLength = world->mBufLength;
+        const int numChannels = unit->mNumInputs - 1;
 
-        int32 offset = unit->mParent->mSampleOffset;
-        int32 remain = bufLength - offset; // Do not use BUFLENGTH!
+        const int32 offset = unit->mParent->mSampleOffset;
+        const int32 remain = bufLength - offset; // Do not use BUFLENGTH!
 
         float* out = unit->m_bus;
         float* saved = unit->m_saved;
         int32* touched = unit->m_busTouched;
-        int32 bufCounter = unit->mWorld->mBufCounter;
-        int32 bufChannel = (int32)unit->m_fbusChannel;
-        int32 maxChannel = world->mNumAudioBusChannels;
+        const int32 bufCounter = unit->mWorld->mBufCounter;
+        const int32 bufChannel = (int32)unit->m_fbusChannel;
+        const int32 maxChannel = world->mNumAudioBusChannels;
 
         for (int i = 0; i < numChannels; ++i, out += bufLength, saved += offset) {
             if ((bufChannel + i) < maxChannel) {
@@ -2033,12 +2127,12 @@ void OffsetOut_Dtor(OffsetOut* unit) {
                 //	i, touched[i] == bufCounter, unit->m_empty,
                 //	offset, remain);
                 if (!unit->m_empty) {
-                    if (touched[i] == bufCounter) {
-                        Accum(offset, out, saved);
-                    } else {
+                    if (touched[i] != bufCounter) {
                         Copy(offset, out, saved);
                         Clear(remain, out + offset);
                         touched[i] = bufCounter;
+                    } else {
+                        Accum(offset, out, saved);
                     }
                 }
                 // Print("out %d %d %d  %g %g\n", i, in[0], out[0]);

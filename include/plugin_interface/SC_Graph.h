@@ -28,17 +28,15 @@ enum { kGraph_Reblock = 0x1, kGraph_Resample = 0x2 };
 
 #define kGraph_ReblockOrResample (kGraph_Reblock | kGraph_Resample)
 
-/*
- changes to this struct likely also mean that a change is needed for
-    static const int sc_api_version = x;
- value in SC_InterfaceTable.h file.
+/* NOTE: any changes to this struct cause an ABI break and therefore require
+ * bumping the plugin API version number in SC_InterfaceTable.h!
  */
 struct Graph {
     Node mNode;
     int32 mRefCount;
 
-    uint16 mNumTicks;
-    uint16 mTickCounter;
+    uint32 mNumTicks;
+    uint32 mTickCounter;
 
     uint32 mFlags;
 

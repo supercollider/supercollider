@@ -141,7 +141,7 @@ Returns the size of the pitch class set from which the tuning is drawn.
 code::
 Scale.ionian.pitchesPerOctave; // 12
 Scale.minorPentatonic.pitchesPerOctave; // 12
-Scale.ajam.pitchesPerOctave; // 24--this is a quarter-tone scale
+Scale.ajam.pitchesPerOctave; // 24 — this is a quarter-tone scale
 Scale.partch_o1.pitchesPerOctave; // 43
 ::
 
@@ -153,7 +153,7 @@ Scale.new(#[0, 3, 6, 9, 12], 13, tuning: \bp).stepsPerOctave;	// ~ 19.02
 ::
 but note:
 code::
-Scale.ajam.stepsPerOctave;	// 12 -- quarter-tone scales have normal octaves
+Scale.ajam.stepsPerOctave;	// 12 — quarter-tone scales have normal octaves
 ::
 
 method::at, wrapAt

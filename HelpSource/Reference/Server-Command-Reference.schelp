@@ -107,10 +107,10 @@ table::
 ::
 For convenience of client-side methods, you can also suppress errors temporarily, for the scope of a single bundle.
 table::
-## -1 || turn off locally in the bundle -- error posting reverts to the "permanent" setting for the next message or bundle.
+## -1 || turn off locally in the bundle — error posting reverts to the "permanent" setting for the next message or bundle.
 ## -2 || turn on locally in the bundle.
 ::
-These "temporary" states accumulate within a single bundle -- so if you have nested calls to methods that use bundle-local error suppression, error posting remains off until all the layers have been unwrapped.
+These "temporary" states accumulate within a single bundle — so if you have nested calls to methods that use bundle-local error suppression, error posting remains off until all the layers have been unwrapped.
 If you use ['/error', -1] within a self-bundling method, you should always close it with ['/error', -2] so that subsequent bundled messages will take the correct error posting status.
 However, even if this is not done, the next bundle or message received will begin with the standard error posting status, as set by modes 0 or 1.
 

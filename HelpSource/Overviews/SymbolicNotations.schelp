@@ -275,7 +275,7 @@ definitionlist::
 ## code:: '' :: or code:: \ :: || define a literal link::Classes/Symbol:: : code:: 'abc' === \abc ::
 ## code:: "" :: || define a literal link::Classes/String:: : code:: "SuperCollider is the best" ::
 ## code:: [item, item...] :: || define an link::Classes/Array:: containing given items
-## code:: Set[item, item...] :: || define a link::Classes/Set:: -- any link::Classes/Collection:: class name can be used other than Set
+## code:: Set[item, item...] :: || define a link::Classes/Set:: — any link::Classes/Collection:: class name can be used other than Set
 ## code:: #[item, item...] :: || define a literal link::Classes/Array::
 ## code:: (a:1, b:2) :: || define an link::Classes/Event:: (same as code:: Event[\a -> 1, \b -> 2] ::)
 ## code:: ` :: (backtick or backquote) || define a link::Classes/Ref:: : code:: `1 == Ref(1), `(a+1) == Ref(a+1) ::
@@ -323,7 +323,7 @@ f.([2, 4]);      // -> [ [ 2, 4 ], nil ]
 
 f.(a: 2, b: 4);  // -> [ 2, 4 ]
 ::
-## code:: SomeClass.[index] :: || Equivalent to SomeClass.at(index) -- Instr.at is a good example
+## code:: SomeClass.[index] :: || Equivalent to SomeClass.at(index) — Instr.at is a good example
 ## code:: myObject.method(*array) :: || call the method with the arguments in an array
 ## code:: obj1 method: obj2 :: || same as code::obj1.method(obj2):: or code::method(obj1, obj2)::.
 This works only with single-argument methods like binary operators.
@@ -363,7 +363,7 @@ definitionlist::
 ## code:: a[i..j] :: || same as code:: a.copySeries(i, j) :: (see link::Classes/ArrayedCollection#-copySeries::)
 ## code:: a[i, j..k] :: || e.g.: code:: a[1, 3..9] :: retrieves array elements 1, 3, 5, 7, 9
 ## code:: a[..j] :: || same as code:: a.copySeries(0, j) ::
-## code:: a[j..] :: || same as code:: a.copySeries(i, a.size-1) :: (this is OK--Array is finite)
+## code:: a[j..] :: || same as code:: a.copySeries(i, a.size-1) :: (this is OK — Array is finite)
 
 ## code:: ~ :: || access an environment variable
 ## code:: ~abc :: || compiles to code:: \abc.envirGet ::

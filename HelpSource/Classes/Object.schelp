@@ -583,10 +583,10 @@ code::
 
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
-// Set does not understand keysValuesDo -- result is nil
+// Set does not understand keysValuesDo — result is nil
 Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
-// Error occurs within keysValuesDo -- error is thrown back to halt execution
+// Error occurs within keysValuesDo — error is thrown back to halt execution
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].flippityblargh });
 
 // keyword arguments are passed on

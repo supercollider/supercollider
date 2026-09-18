@@ -156,8 +156,8 @@ code::
 s.boot;
 
 (
-l = Bus.control(s, 1);  // get a bus for the LFO--not relevant to order-of-exec
-b = Bus.audio(s, 2);	// assuming stereo--this is to keep the src->fx chain separate from
+l = Bus.control(s, 1);  // get a bus for the LFO — not relevant to order-of-exec
+b = Bus.audio(s, 2);	// assuming stereo — this is to keep the src->fx chain separate from
 				// other similar chains
 ~synthgroup = Group.tail(s);
 ~fxgroup = Group.tail(s);

@@ -421,6 +421,7 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
     graph->mLocalAudioBusUnit = nullptr;
     graph->mLocalControlBusUnit = nullptr;
 
+    graph->mLocalSndBufs = nullptr;
     graph->localBufNum = 0;
     graph->localMaxBufNum = 0; // this is set from synth
 
@@ -461,6 +462,7 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
         graph->mTickCounter = 0;
         graph->mFullRate = &inWorld->mFullRate;
         graph->mBufRate = &inWorld->mBufRate;
+        blockSize = inWorld->mBufLength;
     } else {
         // reblocking or upsampling
         if (upsample > 1.0) {
@@ -481,18 +483,41 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
         }
 
         if (blockSize != 0) {
-            // block size cannot be larger than wire buffer size (yet)!
-            if (blockSize > inWorld->mBufLength) {
-                scprintf("WARNING: Synth: block size (%d) cannot be larger than Server "
-                         "block size (%d)\n",
-                         blockSize, inWorld->mBufLength);
-                // use Server block size
-                blockSize = inWorld->mBufLength;
-            } else if (!ISPOWEROFTWO(blockSize)) {
+            if (!ISPOWEROFTWO(blockSize)) {
                 scprintf("WARNING: Synth: block size (%d) not a power of two\n", blockSize);
                 // use Server block size
                 blockSize = inWorld->mBufLength;
-            } else {
+            }
+
+            const int32_t effectiveBlockSize = blockSize / static_cast<int32_t>(upsample);
+            if (effectiveBlockSize > inWorld->mBufLength) {
+                // The effective block size cannot be larger than the Server block size.
+                // For now, let's keep the upsample factor and adjust the block size accordingly.
+                const int32_t originalBlockSize = blockSize;
+                blockSize = inWorld->mBufLength * static_cast<int32_t>(upsample);
+                scprintf("WARNING: Synth: block size (%d) too large for resample factor (%f). "
+                         "Adjusting block size to %d samples.\n",
+                         originalBlockSize, upsample, blockSize);
+            }
+
+            // Make sure we have enough wire buffer space!
+            // This is necessary so that we can later safely set the wire buffer pointers.
+            if (blockSize > inWorld->mBufLength) {
+                const int32_t availableBufferSpace = inWorld->hw->mMaxWireBufs * inWorld->mBufLength;
+                const int32_t requiredBufferSpace = inGraphDef->mNumWireBufs * blockSize;
+                if (requiredBufferSpace > availableBufferSpace) {
+                    const int32_t originalBlockSize = blockSize;
+                    blockSize = availableBufferSpace / inGraphDef->mNumWireBufs;
+                    assert(blockSize >= inWorld->mBufLength);
+                    const int32_t minNumWireBufs = requiredBufferSpace / inWorld->mBufLength;
+                    scprintf("WARNING: Synth: too little wire buffer space for block size (%d) and "
+                             "resample factor (%f). Adjusting block size to %d samples. Please increase "
+                             "the number of wire buffers in the Server Options to at least %d. \n",
+                             originalBlockSize, upsample, blockSize, minNumWireBufs);
+                }
+            }
+
+            if (blockSize != inWorld->mBufLength) {
                 graph->mFlags |= kGraph_Reblock; // ok
             }
         } else {
@@ -500,7 +525,7 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
             blockSize = inWorld->mBufLength;
         }
 
-        graph->mNumTicks = (inWorld->mBufLength / blockSize) * upsample;
+        graph->mNumTicks = (inWorld->mBufLength * upsample) / blockSize;
         graph->mTickCounter = 0;
         double sampleRate = inWorld->mSampleRate * upsample;
 
@@ -571,7 +596,12 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
                 for (uint32 j = 0; j < numOutputs; ++j, ++wire, ++outputSpec) {
                     wire->mFromUnit = unit;
                     wire->mCalcRate = calc_FullRate;
-                    wire->mBuffer = bufspace + outputSpec->mBufferIndex;
+                    // In a normal Graph, wire buffers have the same size as the Server block size.
+                    // A reblocked Graph, however, needs a different buffer size, especially when
+                    // its own block size is *larger* than the Server block size. (Otherwise we would
+                    // overwrite subsequent buffers.) Since the wire buffer space is a single large
+                    // array, we can simply multiply the wire buffer index by the Graph block size.
+                    wire->mBuffer = bufspace + outputSpec->mBufferIndex * blockSize;
                     unitOutput[j] = wire;
                     unitOutBuf[j] = wire->mBuffer;
                 }

@@ -351,7 +351,7 @@ f.close;
 
 s.boot;
 
-// It's a proper audio file -- server can load it
+// It's a proper audio file — server can load it
 b = Buffer.read(s, PathName.tmp +/+ "sf-help.wav");
 
 // It's a sinewave...

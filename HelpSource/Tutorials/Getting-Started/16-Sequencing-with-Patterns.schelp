@@ -29,7 +29,7 @@ r = p.asStream;
 while { (m = r.next).notNil } { m.postln };
 ::
 
-Note that the Pseq is not streamable by itself, but it creates a stream (Routine) when you call asStream on it. This routine can then be used exactly like to any other routine -- the while loop used to read out the stream values is exactly the same for both, even though they are written differently.
+Note that the Pseq is not streamable by itself, but it creates a stream (Routine) when you call asStream on it. This routine can then be used exactly like to any other routine — the while loop used to read out the stream values is exactly the same for both, even though they are written differently.
 
 Thus the 'Over the Rainbow' example could be rewritten, with less clutter:
 
@@ -77,8 +77,8 @@ Other patterns generate values according to various parameters. In addition to t
 definitionList::
 ## link::Classes/Pseries::(start, step, length) || arithmetic series, e.g., 1, 2, 3, 4, 5
 ## link::Classes/Pgeom::(start, grow, length) || geometric series, e.g., 1, 2, 4, 8, 16
-## link::Classes/Pwhite::(lo, hi, length) || random number generator, uses rrand(lo, hi) -- equal distribution
-## link::Classes/Pexprand::(lo, hi, length) || random number generator, uses exprand(lo, hi) -- exponential distribution
+## link::Classes/Pwhite::(lo, hi, length) || random number generator, uses rrand(lo, hi) — equal distribution
+## link::Classes/Pexprand::(lo, hi, length) || random number generator, uses exprand(lo, hi) — exponential distribution
 ::
 
 Other patterns modify the output of value patterns. These are called FilterPatterns.
@@ -123,7 +123,7 @@ SynthDef(\smooth, { |out, freq = 440, sustain = 1, amp = 0.5|
 p = Pbind(
 		// the name of the SynthDef to use for each note
 	\instrument, \smooth,
-		// MIDI note numbers -- converted automatically to Hz
+		// MIDI note numbers — converted automatically to Hz
 	\midinote, Pseq([60, 72, 71, 67, 69, 71, 72, 60, 69, 67], 1),
 		// rhythmic values
 	\dur, Pseq([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1)

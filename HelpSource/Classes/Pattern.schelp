@@ -86,7 +86,7 @@ An link::Classes/Event:: is a link::Classes/Environment:: with a 'play' method. 
 
 subsection::Playing Event Patterns
 
-The link::#-play:: method does not return the pattern itself. Instead, it returns the link::Classes/EventStreamPlayer:: object that actually runs the pattern. Control instructions -- stop, pause, resume, play, reset -- should be addressed to the EventStreamPlayer. (The same pattern can play many times simultaneously, using different EventStreamPlayers.)
+The link::#-play:: method does not return the pattern itself. Instead, it returns the link::Classes/EventStreamPlayer:: object that actually runs the pattern. Control instructions — stop, pause, resume, play, reset — should be addressed to the EventStreamPlayer. (The same pattern can play many times simultaneously, using different EventStreamPlayers.)
 
 code::
 p = Pbind(...);

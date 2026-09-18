@@ -229,8 +229,12 @@ var f;
 f = "myString";
 f.postln;
 f.asCompileString.postln;
+f.cs.postln; // .cs is the short form for .asCompileString.
 )
 ::
+
+method::cs
+See link::#-asCompileString::
 
 method::asSymbol
 Return a link::Classes/Symbol:: derived from the String.

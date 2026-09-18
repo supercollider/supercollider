@@ -153,7 +153,7 @@ code::
 )
 ::
 
-PV processes can also share a single FFT UGen to process a signal in parallel. In the following example, 'chain0' and 'chain1' share the same FFT UGen. SuperCollider automatically copies the FFT data from 'chain' into hidden LocalBufs inside the Synth. In the following example, if the link::Classes/PV_PhaseShift:: UGen were operating directly on code::chainA::, then the two link::Classes/IFFT:: units would produce the same signal, which, when added together, would reinforce each other. Instead, the sound is nearly silent -- proving that code::chainB:: is in a different buffer, even though the function does not explicitly create it.
+PV processes can also share a single FFT UGen to process a signal in parallel. In the following example, 'chain0' and 'chain1' share the same FFT UGen. SuperCollider automatically copies the FFT data from 'chain' into hidden LocalBufs inside the Synth. In the following example, if the link::Classes/PV_PhaseShift:: UGen were operating directly on code::chainA::, then the two link::Classes/IFFT:: units would produce the same signal, which, when added together, would reinforce each other. Instead, the sound is nearly silent — proving that code::chainB:: is in a different buffer, even though the function does not explicitly create it.
 
 code::
 (

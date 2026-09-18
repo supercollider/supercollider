@@ -23,7 +23,7 @@ list::
 ## Phasor: fix init sample: don't ignore trig on first sample. If code relied on this bug, it may change behavior. by @elgiano in https://github.com/supercollider/supercollider/pull/6833
 ## fix code:: mod :: for negative integer modulus (only). The method code:: modSeaside :: can be used to restore the original behavior, named this way for reasons not immediately obvious, by @passyur and @telephon  https://github.com/supercollider/supercollider/pull/6699
 ## code:: Splay :: and code:: SplayAz :: level compensation has been fixed and made more flexible, this may change overall level distribution, by @adcxyz https://github.com/supercollider/supercollider/pull/6804.
-## mark code:: SetResetFF :: explicitly as unipolar, this changes output levels when using code:: range :: – e.g. if you have used code:: .range(0, 1) ::, it had assumed bipolar default so far and returned a range of code:: [0.5, 1] ::.) by @capital-G in https://github.com/supercollider/supercollider/pull/6023
+## mark code:: SetResetFF :: explicitly as unipolar, this changes output levels when using code:: range :: — e.g. if you have used code:: .range(0, 1) ::, it had assumed bipolar default so far and returned a range of code:: [0.5, 1] ::.) by @capital-G in https://github.com/supercollider/supercollider/pull/6023
 ## code:: Set.remove :: now returns the item removed by @JordanHendersonMusic in https://github.com/supercollider/supercollider/pull/6409
 ## fix Dictionary code:: trueAt :: by @telephon in https://github.com/supercollider/supercollider/pull/6001, and @mtmccrea in https://github.com/supercollider/supercollider/pull/6335 This changes behavior as follows:
 
@@ -145,7 +145,7 @@ list::
 ## Fix wrong behaviour of code:: lastForWhich :: and code:: lastIndexForWhich :: of code:: Collection ::, also add synonym method of them by @OzelotVanilla in https://github.com/supercollider/supercollider/pull/6665
 ## Correct openOS behaviour on Windows by @prko in https://github.com/supercollider/supercollider/pull/6880
 ## Remove whitespace from .storeOn .printOn by @dyfer in https://github.com/supercollider/supercollider/pull/6113
-## code:: EnvironmentRedirect :: and code:: LazyEnvir :: – call dispatch on code:: removeAt ::. The message code:: localRemoveAt :: can be used to removeAt without calling the dospatch. by @telephon in https://github.com/supercollider/supercollider/pull/5923
+## code:: EnvironmentRedirect :: and code:: LazyEnvir :: — call dispatch on code:: removeAt ::. The message code:: localRemoveAt :: can be used to removeAt without calling the dospatch. by @telephon in https://github.com/supercollider/supercollider/pull/5923
 ## Fix unixCmd quoting on Windows by @dyfer in https://github.com/supercollider/supercollider/pull/6858
 ## Function:-asBuffer restore doneAction via RecordBuf by @mtmccrea in https://github.com/supercollider/supercollider/pull/6663
 ## Simplify Function:plot 'dur' redundancy by @jamshark70 in https://github.com/supercollider/supercollider/pull/6200
@@ -153,7 +153,7 @@ list::
 ## Add option to close subprocesses using killProcessByID by @dyfer in https://github.com/supercollider/supercollider/pull/6849
 ## Add boundedInsert method to ArrayedCollection and List by @prko in https://github.com/supercollider/supercollider/pull/6394
 ## Function:-asBuffer, -plot: use sampleRate to infer control rate data, clean/update docs by @mtmccrea in https://github.com/supercollider/supercollider/pull/6217
-## Pbindef with a Pbind – fix order of new keys by @telephon in https://github.com/supercollider/supercollider/pull/6897
+## Pbindef with a Pbind — fix order of new keys by @telephon in https://github.com/supercollider/supercollider/pull/6897
 ## when NodeProxy is neutral, rest source pattern by @telephon in https://github.com/supercollider/supercollider/pull/6223
 ## NodeProxy.buildProxy is always nil outside a SynthDef build process by @telephon in https://github.com/supercollider/supercollider/pull/6032 ()
 ## in Ndef, call proxyspace dispatch explicitly by @telephon in https://github.com/supercollider/supercollider/pull/5930

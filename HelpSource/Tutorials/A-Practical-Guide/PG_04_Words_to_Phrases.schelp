@@ -32,7 +32,7 @@ p = Pbind(
 p.stop;
 ::
 
-But it gets even more fun -- list patterns don't care whether they're enclosing value patterns (as in the previous example) or event patterns. That means you can write a set of Pbind-style patterns, each one representing a phrase, and string them together. This next example is longer, but that's only because of a larger number of phrase patterns. The structure is very simple, though: code::Pxrand([Pbind(), Pmono(), Pmono()...], inf):: . Some of the phrases are written with Pmono to slide between notes.
+But it gets even more fun — list patterns don't care whether they're enclosing value patterns (as in the previous example) or event patterns. That means you can write a set of Pbind-style patterns, each one representing a phrase, and string them together. This next example is longer, but that's only because of a larger number of phrase patterns. The structure is very simple, though: code::Pxrand([Pbind(), Pmono(), Pmono()...], inf):: . Some of the phrases are written with Pmono to slide between notes.
 
 code::
 (
@@ -167,7 +167,7 @@ p = Psym(Pxrand(#[repeated, octave, tritone, dim], inf), ~phrases).play;
 p.stop;
 ::
 
-A complicated pattern with lots of embedding can be hard to read because it's more work to separate note-level details from the larger structure. The pattern choosing the phrases -- code::Pxrand(#[repeated, octave, tritone, dim], inf) :: -- is self-explanatory, however, and Psym fills in the details transparently.
+A complicated pattern with lots of embedding can be hard to read because it's more work to separate note-level details from the larger structure. The pattern choosing the phrases — code::Pxrand(#[repeated, octave, tritone, dim], inf) :: — is self-explanatory, however, and Psym fills in the details transparently.
 
 note::
 Because of some special handling needed for event patterns, there are two versions of Psym. link::Classes/Psym:: handles event patterns, while link::Classes/Pnsym:: is for value patterns. Think of it this way: Pbind can be contained within Psym, but it contains Pnsym.
