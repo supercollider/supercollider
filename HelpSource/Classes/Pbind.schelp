@@ -35,8 +35,10 @@ Pbind([\note, \amp], Pseq([[0, 0.05],  [4, 0.5],  [7, 0.1]]), dur: 0.2).play
 
 discussion::
 The behavior of code::\degree:: differs from that of code::\note::.
-(See link::Reference/Literals#Scale Degrees::.)
+(See link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions#Pitch conversions:: and link::Reference/Literals#Scale Degrees::.)
 
+definitionlist::
+## Basc Examples:||
 code::
 Pbind(\degree, Pseq([0,  1,  2,  3,  4,   5,  6,  7])).play;
 // \degree:         0,  1,  2,  3,  4,   5,  6,  7 (= octave higher than 0)
@@ -57,7 +59,7 @@ Pbind(\note, Pseq([0,  2,  4,  5,  7,   9,  11,  12])).play;
 // However, it should not be written as:
 Pbind(\note, Pseq([0,  1,  2,  3,  4,   5,  6,  7])).play;
 ::
-
+## More Examples:||
 code::
 Pbind(\degree,Pseq([2.1, 3])).play
 // 2 = E; 3 = F
@@ -91,11 +93,12 @@ Pbind(\degree,Pseq([5, 5.7, 4.1, 4])).play
 
 Pbind(\degree,Pseq([0, 3, 3.1, 5.5, 5])).play
 // 3 = F; 4 = G; 5 = A; 6 = B
-// 5.5 = 6bbbbb = degree 6 with a quintuple flat (B, B flat, A, A flat, G, G flat) 
+// 5.5 = 6bbbbb = degree 6 with a quintuple flat (B, B flat, A, A flat, G, G flat)
 // Caution: bbbbb and sssss are not supported as literals. The maximum allowed is four.
 // 3.1 = 3s = degree 3 with a sharp
 // in 12 equal temperament: B with a quintuple flat = F sharp
 // 3.1 = 5.5
+::
 ::
 
 InstanceMethods::
