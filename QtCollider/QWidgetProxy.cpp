@@ -433,6 +433,7 @@ bool QWidgetProxy::interpretKeyEvent(QObject* o, QEvent* e, QList<QVariant>& arg
     args << keycode;
     args << key;
     args << ke->spontaneous();
+    args << ke->isAutoRepeat();
 
     return true;
 }
