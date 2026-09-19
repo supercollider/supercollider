@@ -51,33 +51,33 @@ Pbind(\degree, Pseq([0,  1,  2,  3,  4,   5,  6,  7], 1), \dur, 0.25).play; // T
 // \note:            0,  2,  4,  5,  7,   9,  11, 12 // 12 = 0 + 12
 
 // Using \midinote, the code in the first line can be transcribed as:
-Pbind(\midinote, Pseq([0,  2,  4,  5,  7,   9,  11,  12] + 60)).play;
+Pbind(\midinote, Pseq([0,  2,  4,  5,  7,  9,  11, 12] + 60)).play;
 
 // or as:
 Pbind(\midinote, Pseq([60, 62, 64, 65, 67, 69, 71, 72])).play;
 
 // Alternatively, using \note:
-Pbind(\note, Pseq([0,  2,  4,  5,  7,   9,  11,  12])).play;
+Pbind(\note,     Pseq([0,  2,  4,  5,  7,  9,  11, 12])).play;
 
 // However, it should not be written as:
-Pbind(\note, Pseq([0,  1,  2,  3,  4,   5,  6,  7])).play;
+Pbind(\note,     Pseq([0,  1,  2,  3,  4,  5,  6,  7])).play;
 
 
 /* Other scales starting from MIDI note 60 */
 
 Pbind(\scale, Scale.minor, \degree, Pseq((0..7), 1), \dur, 0.25).play;
-// \degree:          0,  1,  2,       3,  4,   5,       6,       7
-// solmization:      la, si, do,      re, mi,  fa,      sol,     la
-// pitch class:      C,  D,  E flat,  F,  G,   A flat,  B flat,  C
-// \midinote:        60, 62, 63,      65, 67,  68,      70,      72
-// \note:            0,  2,  3,       5,  7,   8,       10,      12
+// \degree:          0,  1,  2,      3,  4,   5,      6,      7
+// solmization:      la, si, do,     re, mi,  fa,     sol,    la
+// pitch class:      C,  D,  E flat, F,  G,   A flat, B flat, C
+// \midinote:        60, 62, 63,     65, 67,  68,     70,     72
+// \note:            0,  2,  3,      5,  7,   8,      10,     12
 
 Pbind(\scale, Scale.harmonicMinor, \degree, Pseq((0..7), 1), \dur, 0.25).play;
-// \degree:          0,  1,  2,       3,  4,   5,       6,       7
-// solmization:      la, si, do,      re, mi,  fa,      sil,     la
-// pitch class:      C,  D,  E flat,  F,  G,   A flat,  B,       C
-// \midinote:        60, 62, 63,      65, 67,  68,      71,      72
-// \note:            0,  2,  3,       5,  7,   8,       11,      12
+// \degree:          0,  1,  2,      3,  4,   5,      6,      7
+// solmization:      la, si, do,     re, mi,  fa,     sil,    la
+// pitch class:      C,  D,  E flat, F,  G,   A flat, B,      C
+// \midinote:        60, 62, 63,     65, 67,  68,     71,     72
+// \note:            0,  2,  3,      5,  7,   8,      11,     12
 ::
 
 ## More Examples:||
