@@ -27,10 +27,10 @@ code::
 s.boot; // boot the server
 
 // compile and send this def
-SynthDef.new("FSinOsc-test", { Out.ar(0, FSinOsc.ar(800, 0, 0.2)) }).send(s); // out channel 0
+SynthDef("FSinOsc-test", { Out.ar(0, FSinOsc.ar(800, 0, 0.2)) }).send; // out channel 0
 
 // now create a Synth object which represents a synth node on the server
-x = Synth.new("FSinOsc-test");
+x = Synth("FSinOsc-test");
 
 // free the synth
 x.free;

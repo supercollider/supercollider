@@ -19,7 +19,7 @@ SynthDef(\x, { |out, freq = 440|
 	Out.ar(out,
 		Ringz.ar(Dust.ar(40), freq, 0.1)
 	)
-}).send(s)
+}).add
 )
 
 // send a first synth:

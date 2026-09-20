@@ -91,11 +91,11 @@ SynthDef(\help_randomSeed, { arg out=0, freq=440;
 			Dust2.ar([10, 10], 270) + WhiteNoise.ar(4),
 		freq, 0.01)
 	)
-}).send(s);
+}).add;
 
 SynthDef(\help_setRandomSeed, { arg seed=1956, tbus=0.0;
 		RandSeed.kr(tbus, seed);
-}).send(s);
+}).add;
 )
 
 // run a patch

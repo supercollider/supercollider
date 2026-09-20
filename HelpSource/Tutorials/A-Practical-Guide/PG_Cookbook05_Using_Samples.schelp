@@ -269,7 +269,7 @@ fork {
 		mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
 		car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
 		RecordBuf.ar(car, bufnum, loop: 0, doneAction: Done.freeSelf);
-	}).send(s);
+	}).add;
 	s.sync;
 	// record all 8 buffers concurrently
 	b.do({ |buf, i|
