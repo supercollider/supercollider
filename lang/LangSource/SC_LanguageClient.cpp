@@ -182,7 +182,9 @@ void SC_LanguageClient::executeFile(const std::string& fileName) {
 void SC_LanguageClient::tick() {
     if (trylock()) {
         if (isLibraryCompiled()) {
-            ::runLibrary(s_tick);
+            // see tickLocked - though wasm does not call tick, only tickLocked,
+            // but in order to keep both implementations in sync
+            ::runLibrary(s_tick, true);
         }
         unlock();
     }
@@ -191,7 +193,12 @@ void SC_LanguageClient::tick() {
 
 bool SC_LanguageClient::tickLocked(double* nextTime) {
     if (isLibraryCompiled()) {
-        ::runLibrary(s_tick);
+        // The AppClock tick should run in the main thread, which is the default
+        // thread but not the default thread for the wasm client.
+        // We therefore have to pass runsInMainThread explicitly here, which is fine
+        // b/c the AppClock is also scheduled from the main thread in wasm.
+        // See also DEFAULT_THREAD_IS_MAIN_THREAD
+        ::runLibrary(s_tick, true);
     }
 
     return slotDoubleVal(&gMainVMGlobals->result, nextTime) == errNone;

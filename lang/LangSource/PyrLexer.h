@@ -39,11 +39,4 @@ struct FatalInterpreterError : public std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 
-// MAIN ENTRY POINTS OF SC LANG.
-
-// All exceptions are caught, except FatalInterpreterErrors, which are printed and rethrown.
-SCLANG_DLLEXPORT_C bool compileLibrary(bool was_compiled_previously, bool standalone);
-SCLANG_DLLEXPORT_C void shutdownLibrary(bool was_compiled_previously);
-SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
-SCLANG_DLLEXPORT_C void setCommandLine(const char* txt, size_t txtSize, const char* filePath, int lineNumber,
-                                       int column);
+// MAIN ENTRY POINTS OF SC LANG are located in SCBase.h
