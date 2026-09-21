@@ -416,6 +416,7 @@ elseif(EMSCRIPTEN)
     	--preload-file ${CMAKE_SOURCE_DIR}/SCClassLibrary@/sc/SCClassLibrary \
     	-sSTACK_SIZE=1048576 \
     	-sDEFAULT_PTHREAD_STACK_SIZE=1048576 \
+    	-sENVIRONMENT=web,worker,node \
     ")
     if(WASM_DEBUG)
         target_compile_options(libsclang PUBLIC -pthread -g)
@@ -439,6 +440,8 @@ elseif(EMSCRIPTEN)
         ${WASM_ASSET_DIR}/LICENSE
         ${WASM_ASSET_DIR}/dev_server.py
         ${WASM_ASSET_DIR}/sclang/init.js
+        ${WASM_ASSET_DIR}/sclang/sclang-tests.mjs
+        ${WASM_ASSET_DIR}/package.json
         ${CMAKE_SOURCE_DIR}/README_WASM.md
     )
     add_custom_command(TARGET sclang POST_BUILD

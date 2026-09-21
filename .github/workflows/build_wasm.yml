@@ -54,6 +54,12 @@ jobs:
           cd $BUILD_PATH
           emmake cmake --build . --target  webeditor
 
+      - name: run sclang eval test
+        run: |
+          cd $BUILD_PATH
+          cd wasm-dist/sclang
+          timeout 1m node sclang-tests.mjs
+
       - name: create archive
         run: cd $BUILD_PATH/wasm-dist && zip --symlinks -r wasm-dist.zip .
 
