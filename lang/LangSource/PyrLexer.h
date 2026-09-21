@@ -18,49 +18,32 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
 #pragma once
 
+#include "SCBase.h"
 #include "PyrSymbol.h"
 #include "SC_Export.h"
-#include <filesystem>
+#include <stdexcept>
 
-// These are set
-extern bool gCompilingCmdLine;
-extern PyrSymbol* gCompilingFileSym;
-extern char* gCompilingText;
-extern intptr_t gParserResult;
+// Note: this file is used to implement the bindings from sc_lexer to the requirements of the bison parser.
+// If you need to lex sc code, but don't need to compile it, you should use sc_lexer instead.
 
-// This is set when calling yyparse.
-extern int gParseFailed;
-extern bool gCompiledOK;
+// Called from inside the bison parser.
+int yylex();
 
-// The following globals are to be removed.
-extern int charno, lineno;
-extern int* linestarts;
-extern int lastClosedFuncCharNo;
-extern intptr_t zzval;
+// Called from inside the bison parser when an error occurs.
+void yyerror(const char* s);
 
-
+/// Often the result of a gc error, used to represent any unrecoverable state.
 struct FatalInterpreterError : public std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 
-SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone);
-// All exceptions are caught, except FatalInterpreterErrors
+// MAIN ENTRY POINTS OF SC LANG.
+
+// All exceptions are caught, except FatalInterpreterErrors, which are printed and rethrown.
+SCLANG_DLLEXPORT_C bool compileLibrary(bool was_compiled_previously, bool standalone);
+SCLANG_DLLEXPORT_C void shutdownLibrary(bool was_compiled_previously);
 SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
-
-void startLexerCmdLine(char* textbuf, int textbuflen);
-
-void finiLexer();
-
-int yylex();
-void yyerror(const char* s);
-void fatal();
-
-std::filesystem::path relativeToCompileDir(const std::filesystem::path&);
-
-void postErrorLine(int linenum, int start, int charpos);
-
-int rtf2txt(char* txt);
-int html2txt(char* txt);
+SCLANG_DLLEXPORT_C void setCommandLine(const char* txt, size_t txtSize, const char* filePath, int lineNumber,
+                                       int column);

@@ -66,30 +66,6 @@
 
 
 
-/* First part of user prologue.  */
-#line 18 "lang/LangSource/Bison/lang11d"
-
-
-#include "BisonHeaderInclude.hpp"
-#include <stdlib.h>
-#include <string.h>
-#include "PyrLexer.h"
-#include "PyrParseNode.h"
-#include "SC_Constants.h"
-#include "SC_InlineUnaryOp.h"
-#include "SC_InlineBinaryOp.h"
-#include "InitAlloc.h"
-#include "PredefinedSymbols.h"
-#include "SimpleStack.h"
-
-void bcopy(void *src, void *dst, size_t size) ;
-int yyparse();
-extern bool compilingCmdLine;
-extern LongStack generatorStack;
-
-
-
-#line 93 "lang/LangSource/Bison/lang11d_tab.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -148,131 +124,153 @@ enum yysymbol_kind_t
   YYSYMBOL_NILOBJ = 28,                    /* NILOBJ  */
   YYSYMBOL_TRUEOBJ = 29,                   /* TRUEOBJ  */
   YYSYMBOL_FALSEOBJ = 30,                  /* FALSEOBJ  */
-  YYSYMBOL_PSEUDOVAR = 31,                 /* PSEUDOVAR  */
+  YYSYMBOL_PIE = 31,                       /* PIE  */
   YYSYMBOL_ELLIPSIS = 32,                  /* ELLIPSIS  */
   YYSYMBOL_DOTDOT = 33,                    /* DOTDOT  */
-  YYSYMBOL_PIE = 34,                       /* PIE  */
-  YYSYMBOL_BEGINCLOSEDFUNC = 35,           /* BEGINCLOSEDFUNC  */
-  YYSYMBOL_BADTOKEN = 36,                  /* BADTOKEN  */
-  YYSYMBOL_INTERPRET = 37,                 /* INTERPRET  */
-  YYSYMBOL_LEFTARROW = 38,                 /* LEFTARROW  */
-  YYSYMBOL_WHILE = 39,                     /* WHILE  */
-  YYSYMBOL_COLON = 40,                     /* COLON  */
-  YYSYMBOL_EQUALSSIGN = 41,                /* EQUALSSIGN  */
-  YYSYMBOL_BINOP = 42,                     /* BINOP  */
-  YYSYMBOL_KEYBINOP = 43,                  /* KEYBINOP  */
-  YYSYMBOL_MINUS = 44,                     /* MINUS  */
-  YYSYMBOL_LESSTHAN = 45,                  /* LESSTHAN  */
-  YYSYMBOL_GREATERTHAN = 46,               /* GREATERTHAN  */
-  YYSYMBOL_MULTIPLY = 47,                  /* MULTIPLY  */
-  YYSYMBOL_ADD = 48,                       /* ADD  */
-  YYSYMBOL_PIPE = 49,                      /* PIPE  */
-  YYSYMBOL_READWRITEVAR = 50,              /* READWRITEVAR  */
-  YYSYMBOL_DOT = 51,                       /* DOT  */
-  YYSYMBOL_BACKTICK = 52,                  /* BACKTICK  */
-  YYSYMBOL_UMINUS = 53,                    /* UMINUS  */
-  YYSYMBOL_YYACCEPT = 54,                  /* $accept  */
-  YYSYMBOL_root = 55,                      /* root  */
-  YYSYMBOL_classes = 56,                   /* classes  */
-  YYSYMBOL_classextensions = 57,           /* classextensions  */
-  YYSYMBOL_classdef = 58,                  /* classdef  */
-  YYSYMBOL_classextension = 59,            /* classextension  */
-  YYSYMBOL_optname = 60,                   /* optname  */
-  YYSYMBOL_superclass = 61,                /* superclass  */
-  YYSYMBOL_classvardecls = 62,             /* classvardecls  */
-  YYSYMBOL_classvardecl = 63,              /* classvardecl  */
-  YYSYMBOL_methods = 64,                   /* methods  */
-  YYSYMBOL_methoddef = 65,                 /* methoddef  */
-  YYSYMBOL_optsemi = 66,                   /* optsemi  */
-  YYSYMBOL_optcomma = 67,                  /* optcomma  */
-  YYSYMBOL_optequal = 68,                  /* optequal  */
-  YYSYMBOL_funcbody = 69,                  /* funcbody  */
-  YYSYMBOL_cmdlinecode = 70,               /* cmdlinecode  */
-  YYSYMBOL_methbody = 71,                  /* methbody  */
-  YYSYMBOL_primitive = 72,                 /* primitive  */
-  YYSYMBOL_retval = 73,                    /* retval  */
-  YYSYMBOL_funretval = 74,                 /* funretval  */
-  YYSYMBOL_blocklist1 = 75,                /* blocklist1  */
-  YYSYMBOL_blocklistitem = 76,             /* blocklistitem  */
-  YYSYMBOL_blocklist = 77,                 /* blocklist  */
-  YYSYMBOL_msgsend = 78,                   /* msgsend  */
-  YYSYMBOL_generator = 79,                 /* generator  */
-  YYSYMBOL_80_1 = 80,                      /* $@1  */
-  YYSYMBOL_81_2 = 81,                      /* $@2  */
-  YYSYMBOL_nextqual = 82,                  /* nextqual  */
-  YYSYMBOL_qual = 83,                      /* qual  */
-  YYSYMBOL_expr1 = 84,                     /* expr1  */
-  YYSYMBOL_valrangex1 = 85,                /* valrangex1  */
-  YYSYMBOL_valrangeassign = 86,            /* valrangeassign  */
-  YYSYMBOL_valrangexd = 87,                /* valrangexd  */
-  YYSYMBOL_valrange2 = 88,                 /* valrange2  */
-  YYSYMBOL_valrange3 = 89,                 /* valrange3  */
-  YYSYMBOL_expr = 90,                      /* expr  */
-  YYSYMBOL_adverb = 91,                    /* adverb  */
-  YYSYMBOL_exprn = 92,                     /* exprn  */
-  YYSYMBOL_exprseq = 93,                   /* exprseq  */
-  YYSYMBOL_arrayelems = 94,                /* arrayelems  */
-  YYSYMBOL_arrayelems1 = 95,               /* arrayelems1  */
-  YYSYMBOL_arglist1 = 96,                  /* arglist1  */
-  YYSYMBOL_arglistv1 = 97,                 /* arglistv1  */
-  YYSYMBOL_keyarglist1 = 98,               /* keyarglist1  */
-  YYSYMBOL_keyarg = 99,                    /* keyarg  */
-  YYSYMBOL_optkeyarglist = 100,            /* optkeyarglist  */
-  YYSYMBOL_mavars = 101,                   /* mavars  */
-  YYSYMBOL_mavarlist = 102,                /* mavarlist  */
-  YYSYMBOL_slotliteral = 103,              /* slotliteral  */
-  YYSYMBOL_blockliteral = 104,             /* blockliteral  */
-  YYSYMBOL_pushname = 105,                 /* pushname  */
-  YYSYMBOL_pushliteral = 106,              /* pushliteral  */
-  YYSYMBOL_listliteral = 107,              /* listliteral  */
-  YYSYMBOL_block = 108,                    /* block  */
-  YYSYMBOL_funcvardecls = 109,             /* funcvardecls  */
-  YYSYMBOL_funcvardecls1 = 110,            /* funcvardecls1  */
-  YYSYMBOL_funcvardecl = 111,              /* funcvardecl  */
-  YYSYMBOL_argdecls = 112,                 /* argdecls  */
-  YYSYMBOL_argdecls1 = 113,                /* argdecls1  */
-  YYSYMBOL_constdeflist = 114,             /* constdeflist  */
-  YYSYMBOL_constdef = 115,                 /* constdef  */
-  YYSYMBOL_slotdeflist0 = 116,             /* slotdeflist0  */
-  YYSYMBOL_slotdeflist = 117,              /* slotdeflist  */
-  YYSYMBOL_slotdef = 118,                  /* slotdef  */
-  YYSYMBOL_vardeflist0 = 119,              /* vardeflist0  */
-  YYSYMBOL_vardeflist = 120,               /* vardeflist  */
-  YYSYMBOL_vardef = 121,                   /* vardef  */
-  YYSYMBOL_dictslotdef = 122,              /* dictslotdef  */
-  YYSYMBOL_dictslotlist1 = 123,            /* dictslotlist1  */
-  YYSYMBOL_dictslotlist = 124,             /* dictslotlist  */
-  YYSYMBOL_rwslotdeflist = 125,            /* rwslotdeflist  */
-  YYSYMBOL_rwslotdef = 126,                /* rwslotdef  */
-  YYSYMBOL_listlit = 127,                  /* listlit  */
-  YYSYMBOL_listlit2 = 128,                 /* listlit2  */
-  YYSYMBOL_literallistc = 129,             /* literallistc  */
-  YYSYMBOL_literallist1 = 130,             /* literallist1  */
-  YYSYMBOL_rwspec = 131,                   /* rwspec  */
-  YYSYMBOL_rspec = 132,                    /* rspec  */
-  YYSYMBOL_integer = 133,                  /* integer  */
-  YYSYMBOL_floatr = 134,                   /* floatr  */
-  YYSYMBOL_accidental = 135,               /* accidental  */
-  YYSYMBOL_pie = 136,                      /* pie  */
-  YYSYMBOL_floatp = 137,                   /* floatp  */
-  YYSYMBOL_name = 138,                     /* name  */
-  YYSYMBOL_classname = 139,                /* classname  */
-  YYSYMBOL_primname = 140,                 /* primname  */
-  YYSYMBOL_trueobj = 141,                  /* trueobj  */
-  YYSYMBOL_falseobj = 142,                 /* falseobj  */
-  YYSYMBOL_nilobj = 143,                   /* nilobj  */
-  YYSYMBOL_ascii = 144,                    /* ascii  */
-  YYSYMBOL_symbol = 145,                   /* symbol  */
-  YYSYMBOL_string = 146,                   /* string  */
-  YYSYMBOL_pseudovar = 147,                /* pseudovar  */
-  YYSYMBOL_binop = 148,                    /* binop  */
-  YYSYMBOL_keybinop = 149,                 /* keybinop  */
-  YYSYMBOL_binop2 = 150,                   /* binop2  */
-  YYSYMBOL_curryarg = 151                  /* curryarg  */
+  YYSYMBOL_BEGINCLOSEDFUNC = 34,           /* BEGINCLOSEDFUNC  */
+  YYSYMBOL_BADTOKEN = 35,                  /* BADTOKEN  */
+  YYSYMBOL_INTERPRET = 36,                 /* INTERPRET  */
+  YYSYMBOL_LEFTARROW = 37,                 /* LEFTARROW  */
+  YYSYMBOL_WHILE = 38,                     /* WHILE  */
+  YYSYMBOL_COLON = 39,                     /* COLON  */
+  YYSYMBOL_EQUALSSIGN = 40,                /* EQUALSSIGN  */
+  YYSYMBOL_BINOP = 41,                     /* BINOP  */
+  YYSYMBOL_KEYBINOP = 42,                  /* KEYBINOP  */
+  YYSYMBOL_MINUS = 43,                     /* MINUS  */
+  YYSYMBOL_LESSTHAN = 44,                  /* LESSTHAN  */
+  YYSYMBOL_GREATERTHAN = 45,               /* GREATERTHAN  */
+  YYSYMBOL_MULTIPLY = 46,                  /* MULTIPLY  */
+  YYSYMBOL_ADD = 47,                       /* ADD  */
+  YYSYMBOL_PIPE = 48,                      /* PIPE  */
+  YYSYMBOL_READWRITEVAR = 49,              /* READWRITEVAR  */
+  YYSYMBOL_DOT = 50,                       /* DOT  */
+  YYSYMBOL_BACKTICK = 51,                  /* BACKTICK  */
+  YYSYMBOL_UMINUS = 52,                    /* UMINUS  */
+  YYSYMBOL_YYACCEPT = 53,                  /* $accept  */
+  YYSYMBOL_root = 54,                      /* root  */
+  YYSYMBOL_classes = 55,                   /* classes  */
+  YYSYMBOL_classextensions = 56,           /* classextensions  */
+  YYSYMBOL_classdef = 57,                  /* classdef  */
+  YYSYMBOL_classextension = 58,            /* classextension  */
+  YYSYMBOL_optName = 59,                   /* optName  */
+  YYSYMBOL_optSuperName = 60,              /* optSuperName  */
+  YYSYMBOL_classvardecls = 61,             /* classvardecls  */
+  YYSYMBOL_classvardecl = 62,              /* classvardecl  */
+  YYSYMBOL_methods = 63,                   /* methods  */
+  YYSYMBOL_methoddef = 64,                 /* methoddef  */
+  YYSYMBOL_optsemi = 65,                   /* optsemi  */
+  YYSYMBOL_optcomma = 66,                  /* optcomma  */
+  YYSYMBOL_optequal = 67,                  /* optequal  */
+  YYSYMBOL_funcbody = 68,                  /* funcbody  */
+  YYSYMBOL_cmdlinecode = 69,               /* cmdlinecode  */
+  YYSYMBOL_methbody = 70,                  /* methbody  */
+  YYSYMBOL_optPrim = 71,                   /* optPrim  */
+  YYSYMBOL_retval = 72,                    /* retval  */
+  YYSYMBOL_funretval = 73,                 /* funretval  */
+  YYSYMBOL_blocklist1 = 74,                /* blocklist1  */
+  YYSYMBOL_blocklistitem = 75,             /* blocklistitem  */
+  YYSYMBOL_blocklist = 76,                 /* blocklist  */
+  YYSYMBOL_msgsend = 77,                   /* msgsend  */
+  YYSYMBOL_generator = 78,                 /* generator  */
+  YYSYMBOL_79_1 = 79,                      /* $@1  */
+  YYSYMBOL_80_2 = 80,                      /* $@2  */
+  YYSYMBOL_nextqual = 81,                  /* nextqual  */
+  YYSYMBOL_qual = 82,                      /* qual  */
+  YYSYMBOL_expr1 = 83,                     /* expr1  */
+  YYSYMBOL_valrangex1 = 84,                /* valrangex1  */
+  YYSYMBOL_valrangeassign = 85,            /* valrangeassign  */
+  YYSYMBOL_valrangexd = 86,                /* valrangexd  */
+  YYSYMBOL_valrange2 = 87,                 /* valrange2  */
+  YYSYMBOL_valrange3 = 88,                 /* valrange3  */
+  YYSYMBOL_expr = 89,                      /* expr  */
+  YYSYMBOL_adverb = 90,                    /* adverb  */
+  YYSYMBOL_exprn = 91,                     /* exprn  */
+  YYSYMBOL_exprseq = 92,                   /* exprseq  */
+  YYSYMBOL_arrayelems = 93,                /* arrayelems  */
+  YYSYMBOL_arrayelems1 = 94,               /* arrayelems1  */
+  YYSYMBOL_arglist1 = 95,                  /* arglist1  */
+  YYSYMBOL_arglistv1 = 96,                 /* arglistv1  */
+  YYSYMBOL_keyarglist1 = 97,               /* keyarglist1  */
+  YYSYMBOL_keyarg = 98,                    /* keyarg  */
+  YYSYMBOL_optkeyarglist = 99,             /* optkeyarglist  */
+  YYSYMBOL_mavars = 100,                   /* mavars  */
+  YYSYMBOL_nameList = 101,                 /* nameList  */
+  YYSYMBOL_slotliteral = 102,              /* slotliteral  */
+  YYSYMBOL_blockliteral = 103,             /* blockliteral  */
+  YYSYMBOL_pushname = 104,                 /* pushname  */
+  YYSYMBOL_pushliteral = 105,              /* pushliteral  */
+  YYSYMBOL_listliteral = 106,              /* listliteral  */
+  YYSYMBOL_block = 107,                    /* block  */
+  YYSYMBOL_funcvardecls = 108,             /* funcvardecls  */
+  YYSYMBOL_funcvardecls1 = 109,            /* funcvardecls1  */
+  YYSYMBOL_funcvardecl = 110,              /* funcvardecl  */
+  YYSYMBOL_argdecls = 111,                 /* argdecls  */
+  YYSYMBOL_argdecls1 = 112,                /* argdecls1  */
+  YYSYMBOL_constdeflist = 113,             /* constdeflist  */
+  YYSYMBOL_constdef = 114,                 /* constdef  */
+  YYSYMBOL_slotdeflist0 = 115,             /* slotdeflist0  */
+  YYSYMBOL_slotdeflist = 116,              /* slotdeflist  */
+  YYSYMBOL_slotdef = 117,                  /* slotdef  */
+  YYSYMBOL_vardeflist0 = 118,              /* vardeflist0  */
+  YYSYMBOL_vardeflist = 119,               /* vardeflist  */
+  YYSYMBOL_vardef = 120,                   /* vardef  */
+  YYSYMBOL_dictslotdef = 121,              /* dictslotdef  */
+  YYSYMBOL_dictslotlist1 = 122,            /* dictslotlist1  */
+  YYSYMBOL_dictslotlist = 123,             /* dictslotlist  */
+  YYSYMBOL_rwslotdeflist = 124,            /* rwslotdeflist  */
+  YYSYMBOL_rwslotdef = 125,                /* rwslotdef  */
+  YYSYMBOL_listlit = 126,                  /* listlit  */
+  YYSYMBOL_listlit2 = 127,                 /* listlit2  */
+  YYSYMBOL_literallistc = 128,             /* literallistc  */
+  YYSYMBOL_literallist1 = 129,             /* literallist1  */
+  YYSYMBOL_rwspec = 130,                   /* rwspec  */
+  YYSYMBOL_rspec = 131,                    /* rspec  */
+  YYSYMBOL_integer = 132,                  /* integer  */
+  YYSYMBOL_floatr = 133,                   /* floatr  */
+  YYSYMBOL_accidental = 134,               /* accidental  */
+  YYSYMBOL_floatp = 135,                   /* floatp  */
+  YYSYMBOL_name = 136,                     /* name  */
+  YYSYMBOL_binop = 137,                    /* binop  */
+  YYSYMBOL_binop2 = 138,                   /* binop2  */
+  YYSYMBOL_curryArg = 139                  /* curryArg  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
 
+/* Second part of user prologue.  */
+#line 134 "lang/LangSource/Bison/lang11d"
+
+
+#include <stdlib.h>
+#include <string.h>
+#include "PyrLexer.h"
+#include "PyrParseNode.h"
+#include "SC_Constants.h"
+#include "PredefinedSymbols.h"
+#include "SimpleStack.h"
+
+
+void yyerror(const char* s) { bison_cxt->logErrorInCurFile(yylloc, s); }
+
+inline bool checkArraySubrangeSyntax(PyrParseNode* args, const size_t argLen) {
+	if(argLen <= 2) 
+		return true;
+	const auto first = args->mNext->mNext;
+	auto last = first;
+	while(true) {
+		auto next = last->mNext;
+		if (next) {
+			last = next;
+		} else 
+			break;
+	}
+	const auto range = sc::lex::SourceCodeRange::range(first->location, last->location);
+	bison_cxt->postErrorInCurrentFile(range, "Invalid subrange", "expected 2 or less arguments, delete these.");
+	return false;
+}
+
+
+#line 274 "lang/LangSource/Bison/lang11d_tab.cpp"
 
 
 #ifdef short
@@ -597,21 +595,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  70
+#define YYFINAL  60
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   1677
+#define YYLAST   1536
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  54
+#define YYNTOKENS  53
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  98
+#define YYNNTS  87
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  294
+#define YYNRULES  284
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  551
+#define YYNSTATES  545
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   308
+#define YYMAXUTOK   307
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -655,43 +653,42 @@ static const yytype_int8 yytranslate[] =
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46,    47,    48,    49,    50,    51,    52,    53
+      45,    46,    47,    48,    49,    50,    51,    52
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    48,    48,    50,    52,    56,    57,    61,    62,    66,
-      70,    77,    83,    84,    87,    88,    92,    93,    97,    99,
-     101,   105,   106,   110,   113,   116,   119,   124,   125,   128,
-     129,   132,   133,   136,   137,   141,   143,   145,   147,   149,
-     151,   153,   157,   158,   162,   163,   168,   169,   174,   175,
-     179,   180,   186,   187,   190,   191,   194,   198,   202,   206,
-     211,   215,   220,   238,   251,   253,   264,   275,   286,   299,
-     320,   329,   338,   343,   357,   379,   383,   389,   407,   413,
-     413,   423,   423,   430,   451,   455,   489,   527,   541,   552,
-     556,   581,   582,   583,   584,   585,   586,   587,   594,   604,
-     606,   608,   610,   612,   614,   627,   630,   657,   675,   702,
-     730,   749,   777,   804,   822,   847,   875,   894,   922,   941,
-     960,   977,   991,  1012,  1031,  1049,  1066,  1082,  1098,  1099,
-    1100,  1101,  1102,  1115,  1129,  1134,  1138,  1149,  1154,  1164,
-    1169,  1183,  1199,  1200,  1201,  1202,  1205,  1206,  1212,  1215,
-    1216,  1220,  1221,  1223,  1228,  1230,  1237,  1245,  1246,  1250,
-    1252,  1256,  1257,  1261,  1265,  1266,  1269,  1271,  1275,  1276,
-    1281,  1282,  1283,  1284,  1285,  1286,  1287,  1288,  1289,  1292,
-    1295,  1298,  1299,  1300,  1301,  1302,  1303,  1304,  1305,  1306,
-    1309,  1310,  1311,  1312,  1313,  1314,  1315,  1316,  1317,  1318,
-    1321,  1324,  1329,  1330,  1334,  1335,  1339,  1343,  1344,  1348,
-    1352,  1356,  1360,  1366,  1370,  1374,  1378,  1382,  1389,  1390,
-    1394,  1398,  1399,  1402,  1403,  1407,  1409,  1411,  1419,  1420,
-    1423,  1424,  1428,  1430,  1432,  1440,  1442,  1449,  1450,  1454,
-    1455,  1458,  1459,  1463,  1465,  1469,  1471,  1475,  1477,  1481,
-    1482,  1485,  1486,  1490,  1491,  1493,  1495,  1499,  1500,  1504,
-    1505,  1514,  1515,  1524,  1525,  1536,  1539,  1540,  1541,  1547,
-    1555,  1562,  1571,  1572,  1575,  1578,  1581,  1584,  1587,  1590,
-    1593,  1596,  1599,  1602,  1603,  1604,  1605,  1606,  1607,  1608,
-    1609,  1612,  1615,  1616,  1619
+       0,   175,   175,   180,   185,   191,   192,   195,   196,   199,
+     201,   204,   207,   207,   210,   210,   212,   213,   216,   218,
+     220,   223,   224,   227,   229,   231,   233,   236,   236,   237,
+     237,   238,   238,   240,   241,   244,   246,   248,   250,   252,
+     254,   256,   259,   260,   263,   264,   266,   267,   270,   272,
+     275,   276,   279,   279,   281,   281,   283,   286,   289,   292,
+     295,   298,   301,   316,   322,   325,   331,   337,   343,   352,
+     372,   377,   382,   384,   389,   405,   407,   409,   422,   431,
+     431,   438,   438,   441,   451,   453,   470,   490,   500,   507,
+     509,   523,   524,   525,   526,   527,   528,   529,   536,   542,
+     544,   546,   548,   550,   556,   558,   570,   580,   594,   607,
+     619,   636,   655,   666,   680,   693,   702,   716,   724,   734,
+     740,   745,   753,   763,   774,   784,   794,   800,   801,   802,
+     803,   805,   810,   819,   825,   827,   833,   837,   844,   846,
+     851,   857,   858,   859,   860,   862,   863,   866,   868,   869,
+     871,   872,   874,   876,   878,   880,   883,   884,   887,   889,
+     892,   893,   896,   899,   900,   902,   904,   907,   908,   911,
+     912,   913,   914,   915,   916,   917,   918,   919,   921,   923,
+     925,   926,   927,   928,   929,   930,   931,   932,   933,   935,
+     936,   937,   938,   939,   940,   941,   942,   943,   944,   946,
+     948,   951,   952,   955,   956,   959,   962,   963,   965,   967,
+     969,   971,   973,   976,   978,   980,   982,   984,   986,   989,
+     990,   993,   996,   997,   999,  1000,  1003,  1005,  1007,  1014,
+    1015,  1017,  1018,  1021,  1023,  1025,  1032,  1034,  1037,  1038,
+    1041,  1042,  1044,  1045,  1048,  1050,  1053,  1055,  1058,  1060,
+    1063,  1064,  1066,  1067,  1070,  1071,  1072,  1073,  1075,  1076,
+    1078,  1079,  1086,  1087,  1094,  1095,  1104,  1105,  1106,  1112,
+    1118,  1119,  1126,  1126,  1127,  1127,  1127,  1127,  1127,  1127,
+    1127,  1127,  1128,  1128,  1129
 };
 #endif
 
@@ -712,29 +709,27 @@ static const char *const yytname[] =
   "SEMICOLON", "NONLOCALRETURN", "COMMA", "HASH", "TILDE", "NAME",
   "INTEGER", "SC_FLOAT", "ACCIDENTAL", "SYMBOL", "STRING", "ASCII",
   "PRIMITIVENAME", "CLASSNAME", "CURRYARG", "VAR", "ARG", "CLASSVAR",
-  "SC_CONST", "NILOBJ", "TRUEOBJ", "FALSEOBJ", "PSEUDOVAR", "ELLIPSIS",
-  "DOTDOT", "PIE", "BEGINCLOSEDFUNC", "BADTOKEN", "INTERPRET", "LEFTARROW",
-  "WHILE", "COLON", "EQUALSSIGN", "BINOP", "KEYBINOP", "MINUS", "LESSTHAN",
+  "SC_CONST", "NILOBJ", "TRUEOBJ", "FALSEOBJ", "PIE", "ELLIPSIS", "DOTDOT",
+  "BEGINCLOSEDFUNC", "BADTOKEN", "INTERPRET", "LEFTARROW", "WHILE",
+  "COLON", "EQUALSSIGN", "BINOP", "KEYBINOP", "MINUS", "LESSTHAN",
   "GREATERTHAN", "MULTIPLY", "ADD", "PIPE", "READWRITEVAR", "DOT",
   "BACKTICK", "UMINUS", "$accept", "root", "classes", "classextensions",
-  "classdef", "classextension", "optname", "superclass", "classvardecls",
+  "classdef", "classextension", "optName", "optSuperName", "classvardecls",
   "classvardecl", "methods", "methoddef", "optsemi", "optcomma",
-  "optequal", "funcbody", "cmdlinecode", "methbody", "primitive", "retval",
+  "optequal", "funcbody", "cmdlinecode", "methbody", "optPrim", "retval",
   "funretval", "blocklist1", "blocklistitem", "blocklist", "msgsend",
   "generator", "$@1", "$@2", "nextqual", "qual", "expr1", "valrangex1",
   "valrangeassign", "valrangexd", "valrange2", "valrange3", "expr",
   "adverb", "exprn", "exprseq", "arrayelems", "arrayelems1", "arglist1",
   "arglistv1", "keyarglist1", "keyarg", "optkeyarglist", "mavars",
-  "mavarlist", "slotliteral", "blockliteral", "pushname", "pushliteral",
+  "nameList", "slotliteral", "blockliteral", "pushname", "pushliteral",
   "listliteral", "block", "funcvardecls", "funcvardecls1", "funcvardecl",
   "argdecls", "argdecls1", "constdeflist", "constdef", "slotdeflist0",
   "slotdeflist", "slotdef", "vardeflist0", "vardeflist", "vardef",
   "dictslotdef", "dictslotlist1", "dictslotlist", "rwslotdeflist",
   "rwslotdef", "listlit", "listlit2", "literallistc", "literallist1",
-  "rwspec", "rspec", "integer", "floatr", "accidental", "pie", "floatp",
-  "name", "classname", "primname", "trueobj", "falseobj", "nilobj",
-  "ascii", "symbol", "string", "pseudovar", "binop", "keybinop", "binop2",
-  "curryarg", YY_NULLPTR
+  "rwspec", "rspec", "integer", "floatr", "accidental", "floatp", "name",
+  "binop", "binop2", "curryArg", YY_NULLPTR
 };
 
 static const char *
@@ -744,12 +739,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-473)
+#define YYPACT_NINF (-489)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-291)
+#define YYTABLE_NINF (-282)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -758,62 +753,61 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      60,   806,    94,    38,    94,    50,  -473,    16,  1149,   710,
-    1444,   202,    46,  -473,  -473,  -473,  -473,  -473,  -473,  -473,
-    -473,  -473,    46,    46,  -473,  -473,  -473,  -473,  -473,    15,
-    -473,   211,    46,  1444,  -473,  -473,  -473,  -473,  -473,    99,
-    -473,  -473,  -473,  1626,   160,   162,  -473,  -473,  -473,  -473,
-     666,  -473,   666,  -473,   171,   171,  -473,  -473,  -473,    20,
-     241,  -473,  -473,  -473,  -473,  -473,  -473,  -473,  -473,   218,
-    -473,  -473,    13,  -473,  1444,    46,  1444,    46,  -473,   758,
-    -473,   190,   233,   220,  1444,  1444,  1191,  -473,   211,  -473,
-    -473,  -473,  -473,   134,  -473,   234,   261,   666,   666,  -473,
-     239,   252,  -473,  1444,   258,  1500,  1547,   229,   111,  -473,
-     270,   242,   141,  -473,    21,   257,   225,  -473,  -473,  -473,
-    -473,  -473,   260,    25,  -473,    31,  -473,  1233,  -473,  -473,
-     139,  -473,   262,  1444,  -473,  -473,  -473,  -473,  -473,   666,
-    -473,  -473,   978,  1444,    51,  -473,  -473,  -473,  1149,   849,
-      51,  -473,    46,    94,   281,  -473,   271,   256,  -473,   275,
-      26,   666,  1444,  -473,  1149,  -473,  -473,  -473,  1444,   280,
-      19,  -473,  -473,  1444,  1444,  1444,   285,   313,   666,  1149,
-    -473,  -473,  -473,   205,  -473,  -473,  1547,  -473,  -473,   318,
-     324,   171,  -473,  -473,   336,  -473,  -473,  -473,  -473,  -473,
-    -473,  1444,    46,    46,  1547,  1444,  -473,    46,  1444,  1444,
-      46,  -473,   666,    46,  -473,  -473,    46,  -473,  1577,  1444,
-    -473,    40,  1275,   892,    76,   338,  1444,  1626,  -473,    51,
-    1444,   343,   344,  1626,  -473,   341,    51,   343,   344,   347,
-    -473,  1444,  1466,   360,  -473,  -473,  -473,   357,    46,  -473,
-     358,    46,  -473,   345,  -473,  -473,   330,  1444,  -473,  -473,
-    1444,  1444,   342,  -473,  -473,  -473,  -473,   372,   346,  -473,
-    1444,  1021,    51,   375,  -473,  1547,  -473,  1547,  1626,  -473,
-    -473,   381,  1626,  -473,   382,  1626,   380,   388,    32,  -473,
-    1444,    85,  -473,  -473,   171,  -473,  -473,  -473,  -473,  -473,
-    -473,  -473,   387,   359,  1444,  1317,  1444,   184,    51,   343,
-     344,   347,   935,  1444,    51,  -473,  1444,   383,  -473,  -473,
-     354,    51,  -473,  1064,  -473,   401,   367,   403,  -473,  -473,
-     404,   413,   367,   422,  -473,  -473,  1584,  -473,   430,   435,
-     399,   254,  1107,   431,  1107,    33,  -473,  1444,  -473,   409,
-    -473,  1444,  -473,    51,   343,   344,  -473,  -473,   437,  -473,
-    -473,  -473,  -473,    46,  -473,   443,   419,  1444,  -473,   420,
-     439,   448,   421,  1359,  -473,   456,   458,   459,    51,   343,
-     344,   347,  1626,   464,  1444,   347,    90,  -473,    51,  -473,
-    -473,    51,   472,   476,    15,    15,   478,   209,   209,   438,
-    -473,  1478,    46,   119,   480,   471,   288,  -473,   481,    46,
-    -473,  -473,  1444,  -473,    51,   479,   483,  -473,   440,  -473,
-    1444,  1626,  1444,   447,   453,  1444,   455,   491,    51,  -473,
-      51,  -473,   492,   493,   498,  -473,  -473,  -473,  1444,  -473,
-    -473,  -473,    15,    15,  -473,  -473,  -473,  -473,  -473,  -473,
-     331,  -473,    46,   335,  -473,   353,  -473,    46,  -473,   470,
-    1444,  1444,  -473,  1107,  -473,  1444,   474,  -473,   465,  -473,
-      51,  -473,  -473,  1626,  1626,  1444,  1444,  1626,  1444,   475,
-    -473,  -473,    51,  -473,    51,  1626,  -473,  -473,    78,    78,
-     254,  -473,   209,   485,  -473,  -473,   438,   486,  1444,   471,
-     471,  -473,   471,  1444,  -473,  -473,  1626,  1626,  1626,  1444,
-    -473,  -473,    78,    78,  -473,  1402,   510,  1402,  1490,  -473,
-    1623,  -473,  1623,   471,  -473,  -473,  -473,   471,  1626,  1402,
-    1402,  1444,   516,  -473,   518,  -473,   525,  -473,  -473,  -473,
-    -473,  -473,   526,   528,  1500,  -473,  -473,  -473,  -473,  -473,
-    -473
+      98,   544,     4,    32,    76,    52,  -489,    78,  1044,   604,
+    1414,   297,    13,  -489,  -489,  -489,  -489,  -489,  -489,  -489,
+     201,  -489,    13,    13,  -489,  -489,  -489,  -489,    95,  -489,
+     352,    13,  1414,  -489,  -489,  -489,  -489,  -489,    85,  -489,
+    -489,  -489,  1484,   107,    94,  -489,  -489,  -489,  -489,   836,
+    -489,   836,  -489,    99,   109,  -489,  -489,    34,  -489,   145,
+    -489,    16,  -489,  -489,  1414,    13,  1414,    13,  -489,   660,
+    1414,   115,   173,   169,  1414,  1085,  -489,  1414,   352,  -489,
+    -489,  -489,  -489,   307,  -489,   178,   232,   836,   836,  -489,
+     180,   184,  -489,   192,   556,  1444,   213,   179,    77,  -489,
+     186,  1044,   710,    46,  -489,  -489,  -489,   249,  -489,    17,
+     204,   313,  -489,  -489,  -489,  -489,  -489,   207,    91,  -489,
+     460,  -489,  1126,  -489,  -489,  -489,   200,   195,  1414,  -489,
+    -489,  -489,  -489,  -489,   836,  -489,  -489,   877,  1414,    46,
+    -489,    13,   224,   254,  -489,   243,   327,  -489,   257,   163,
+     836,  -489,  1414,  -489,  1167,  -489,  -489,  1414,   258,    11,
+    -489,  -489,  -489,  1414,  1414,  1414,   278,   292,   836,  1208,
+    -489,  -489,   159,  -489,  -489,  1444,  -489,  -489,  -489,   308,
+    -489,  -489,  -489,  -489,  -489,   311,   303,    99,  -489,  -489,
+    1444,  1414,    13,    13,  1414,   312,    46,  1414,  1414,  -489,
+     315,   316,   320,  -489,  -489,  -489,    13,  1414,  1414,    13,
+    -489,   836,    13,  -489,  -489,    13,  -489,  1473,  1414,   170,
+    1249,   752,    43,   104,  1414,  1484,  -489,    46,   315,   316,
+    1484,   306,   333,  -489,  -489,  -489,   335,    13,  -489,   345,
+      13,  -489,   355,  -489,  -489,  1414,   321,  -489,  -489,  1414,
+    1414,   332,  -489,  -489,  -489,  -489,   362,  1414,   336,  -489,
+     919,    46,   365,  1444,  -489,  1444,  -489,   380,  1484,  -489,
+    -489,  1484,  -489,    46,  -489,  -489,  -489,   961,  -489,   386,
+     366,   407,   366,   411,  -489,   412,  1484,   331,   417,    22,
+    -489,  1414,    26,  -489,  -489,  -489,  -489,  -489,  -489,  -489,
+    -489,    99,  -489,   416,   383,  1414,  1290,  1414,   262,    46,
+     315,   316,   320,   794,  1414,  -489,  1414,   413,  -489,  -489,
+     377,    46,   423,   430,  -489,   491,  -489,   437,   439,   404,
+     261,  1003,   370,  1003,    36,  -489,  -489,  1414,   415,  -489,
+    1414,  -489,    46,   315,   316,  -489,   444,  -489,  -489,  1414,
+    -489,   320,    46,  -489,  -489,    46,  -489,  -489,    13,  -489,
+      13,  -489,   445,   414,  1414,   418,   446,   449,   419,  1331,
+    -489,   456,   458,   459,    46,   315,   316,   320,  1484,   461,
+      88,  -489,   454,   465,    95,    95,   467,   -15,   -15,   428,
+    -489,   344,    13,     0,   469,   464,   256,  -489,    13,   472,
+      13,  -489,  -489,  1414,  -489,    46,   470,   474,  -489,  -489,
+    -489,  -489,  -489,   468,   432,  -489,  1414,  1484,  1414,   447,
+     448,  1414,   451,   480,    46,  -489,    46,  -489,   486,   493,
+     496,  -489,  1414,  -489,    95,    95,  -489,  -489,  -489,  -489,
+    -489,  -489,   389,  -489,    13,   393,  -489,   394,  -489,    13,
+    -489,   471,  1414,  1414,  -489,  1003,  -489,  1414,   462,   500,
+    -489,   466,  -489,    46,  -489,  -489,  -489,  1484,  1484,  1414,
+    1414,  1484,  1414,   473,  -489,  -489,    46,  -489,    46,  1484,
+    -489,  -489,    68,    68,   261,  -489,   -15,   481,  -489,  -489,
+     428,   490,  1414,   464,   464,  -489,   464,  1414,  -489,  -489,
+    -489,  1484,  1484,  1484,  1414,  -489,  -489,    68,    68,   501,
+    1373,  1373,   479,  -489,  1493,  -489,  1493,   464,  -489,  -489,
+    -489,   464,  1484,  1373,  1373,  -489,  1414,   508,  -489,   531,
+     538,  -489,  -489,  -489,  -489,  -489,   540,   542,   556,  -489,
+    -489,  -489,  -489,  -489,  -489
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -821,92 +815,89 @@ static const yytype_int16 yypact[] =
    means the default is an error.  */
 static const yytype_int16 yydefact[] =
 {
-       5,    48,     0,     0,     2,     3,     7,   207,   149,   239,
-       0,     0,     0,   272,   259,   261,   263,   280,   281,   279,
-     274,   294,     0,   228,   278,   276,   277,   282,   265,   207,
-     273,     0,   221,     0,    41,     4,    33,    96,    93,   128,
-     105,   130,   129,   146,    27,    48,    92,    94,    91,   179,
-      48,   204,    48,   189,   181,   266,   267,   270,   182,   180,
-     131,   186,   187,   188,   183,   185,   184,   103,    95,     0,
-       1,     6,    14,     8,     0,   228,     0,   221,   202,   239,
-     291,   151,     0,    29,     0,     0,     0,   283,   287,   285,
-     286,   288,   289,   221,   284,     0,     0,    48,    48,   237,
-      29,     0,   292,   293,     0,    27,   249,     0,   166,   168,
-       0,    98,     0,   230,   232,     0,   229,   202,   260,   262,
-     264,   271,     0,    29,   223,    31,   133,     0,   287,   290,
-       0,   293,   142,    28,   148,    34,    40,   205,    39,    48,
-     269,   268,     0,     0,    56,    50,    53,    52,   149,     0,
-      65,    21,    12,     0,     0,    81,     0,   229,    79,     0,
-      29,    48,     0,    99,    30,   150,   153,   119,     0,     0,
-       0,   100,    97,     0,   118,     0,     0,     0,    48,    30,
-     240,   102,   236,     0,    28,    49,   249,   251,   199,     0,
-      29,   190,   191,   195,     0,   196,   197,   198,   192,   194,
-     193,     0,     0,     0,   249,     0,   206,     0,     0,     0,
-       0,   213,    48,     0,    30,   215,     0,    32,     0,     0,
-     157,     0,     0,     0,    54,     0,     0,   147,    38,     0,
-       0,    29,    29,   135,    51,     0,    54,    29,    29,    29,
-     161,     0,     0,     0,    13,    15,    16,     0,     0,   208,
-       0,     0,   210,     0,   203,   152,   154,     0,   123,   101,
-       0,   124,     0,   120,   235,    37,    36,     0,     0,   238,
-       0,     0,    57,     0,   245,    30,   250,   249,   139,   169,
-     167,     0,   136,   231,     0,   233,     0,     0,     0,   224,
-       0,     0,   226,   178,   170,   171,   175,   176,   177,   172,
-     174,   173,     0,   104,     0,     0,     0,     0,    54,    29,
-      29,    29,     0,     0,    55,    78,     0,     0,   144,   143,
-     134,    58,   159,    30,   164,     0,    30,     0,    64,    66,
-       0,     0,    30,     0,   163,    11,   288,    22,     0,     0,
-      14,    21,     0,     0,     0,     0,   200,     0,   155,     0,
-     125,   122,    35,     0,    29,    29,   247,   252,     0,   246,
-     234,   214,   201,     0,   216,     0,   107,     0,   158,   106,
-       0,     0,   132,     0,    70,     0,     0,     0,    54,    29,
-      29,    29,   137,     0,     0,    29,    54,    62,    54,    69,
-     162,    54,     0,     0,   207,   207,     0,   253,   253,   257,
-      17,     0,     0,     0,     0,    83,   180,   209,     0,     0,
-     211,   156,   126,   121,    60,     0,     0,   248,     0,   227,
-       0,   140,     0,   108,   113,     0,   112,     0,    54,    74,
-      54,    75,     0,     0,     0,   145,   160,   165,     0,    59,
-      68,    67,   207,   207,   202,   202,    16,   254,   256,   255,
-       0,   241,     0,     0,   258,    29,   218,     0,     9,     0,
-       0,     0,    82,     0,    88,     0,     0,    80,     0,   127,
-      54,    63,   217,   110,   109,     0,     0,   141,     0,   114,
-      73,    71,    54,    77,    54,   138,   202,   202,    44,    44,
-      21,    19,   253,   243,    18,    20,   257,     0,     0,    83,
-      83,    84,    83,     0,   212,    61,   111,   116,   115,     0,
-      76,    72,    44,    44,   275,    46,    27,    46,     0,   242,
-       0,   219,     0,    83,    90,    89,    85,    83,   117,    46,
-      46,     0,     0,    42,    46,    45,     0,    10,   244,   220,
-      87,    86,     0,     0,    27,    23,    43,    25,    24,    26,
-      47
+       5,    48,     0,     0,     2,     3,     7,   206,   148,   240,
+       0,     0,     0,   272,   260,   262,   264,   184,   183,   182,
+     130,   284,     0,   229,   187,   185,   186,   270,   206,   273,
+       0,   222,     0,    41,     4,    33,    96,    93,   127,   104,
+     129,   128,   145,    27,    48,    92,    94,    91,   178,    48,
+     203,    48,   188,   180,   266,   267,   181,   179,    95,     0,
+       1,    14,     6,     8,     0,   229,     0,   222,   201,   240,
+       0,   150,     0,    29,     0,     0,   274,   283,   278,   276,
+     277,   279,   280,   222,   275,     0,     0,    48,    48,   238,
+      29,     0,   282,     0,    27,   250,     0,     0,   165,   167,
+      98,   148,     0,    65,    50,    53,    52,     0,   231,   233,
+       0,   230,   201,   261,   263,   265,   271,     0,    29,   224,
+      31,   132,     0,   283,   278,   281,     0,   141,    28,   147,
+      34,    40,   204,    39,    48,   269,   268,     0,     0,    56,
+      21,    12,     0,     0,    81,     0,   230,    79,     0,    29,
+      48,   152,     0,    99,    30,   149,   118,     0,     0,     0,
+     237,   100,    97,     0,   117,     0,     0,     0,    48,    30,
+     241,   102,     0,    28,    49,   250,   193,   192,   191,     0,
+     197,   195,   196,   252,   198,     0,    29,   189,   190,   194,
+     250,     0,     0,     0,     0,     0,    54,     0,     0,   156,
+      29,    29,    29,   160,    51,   205,     0,     0,     0,     0,
+     213,    48,     0,    30,   216,     0,    32,     0,     0,     0,
+       0,     0,    54,     0,     0,   146,    38,     0,    29,    29,
+     134,     0,     0,    13,    15,    16,     0,     0,   207,     0,
+       0,   210,     0,   202,   151,     0,   153,   122,   101,     0,
+     123,     0,   119,   236,    37,    36,     0,     0,     0,   239,
+       0,    57,     0,   250,   246,    30,   251,     0,   138,   168,
+     166,   135,    64,    55,    66,   162,   158,    30,   163,     0,
+      30,     0,    30,     0,   232,     0,   234,     0,     0,     0,
+     225,     0,     0,   173,   172,   171,   176,   174,   175,   227,
+     177,   169,   170,     0,   103,     0,     0,     0,     0,    54,
+      29,    29,    29,     0,     0,    78,     0,     0,   143,   142,
+     133,    58,     0,     0,    11,   279,    22,     0,     0,    14,
+      21,     0,     0,     0,     0,   199,   154,     0,     0,   124,
+     121,    35,     0,    29,    29,   248,     0,   253,   247,     0,
+     157,    29,    54,    69,   161,    54,   235,   214,     0,   200,
+       0,   217,     0,   106,     0,   105,     0,     0,   131,     0,
+      70,     0,     0,     0,    54,    29,    29,    29,   136,     0,
+      54,    62,     0,     0,   206,   206,     0,   254,   254,   258,
+      17,     0,     0,     0,     0,    83,   179,   208,     0,     0,
+       0,   211,   155,   125,   120,    60,     0,     0,   249,   159,
+     164,    68,    67,     0,     0,   228,     0,   139,     0,   107,
+     112,     0,   111,     0,    54,    74,    54,    75,     0,     0,
+       0,   144,     0,    59,   206,   206,   201,   201,    16,   255,
+     257,   256,     0,   242,     0,     0,   259,    29,   219,     0,
+       9,     0,     0,     0,    82,     0,    88,     0,     0,     0,
+      80,     0,   126,    54,    63,   215,   218,   109,   108,     0,
+       0,   140,     0,   113,    73,    71,    54,    77,    54,   137,
+     201,   201,    44,    44,    21,    19,   254,   244,    18,    20,
+     258,     0,     0,    83,    83,    84,    83,     0,   209,   212,
+      61,   110,   115,   114,     0,    76,    72,    44,    44,    27,
+      46,    46,     0,   243,     0,   220,     0,    83,    90,    89,
+      85,    83,   116,    46,    46,    45,     0,     0,    42,    46,
+       0,    10,   245,   221,    87,    86,     0,     0,    27,    23,
+      43,    25,    24,    26,    47
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -473,  -473,  -473,  -473,  -473,   529,  -473,   195,    91,  -473,
-    -339,  -473,  -100,   -76,  -473,   298,  -473,  -333,  -374,     2,
-     494,   -28,  -115,   237,  -473,   127,  -473,  -473,   -53,  -330,
-    -473,  -473,  -473,  -473,  -473,  -473,    -7,  -473,  -473,    -8,
-     390,  -473,   -48,  -136,  -127,   208,   266,  -473,  -473,  -472,
-     178,  -473,  -473,   267,  -473,  -113,     7,   112,   -23,   534,
-    -473,    52,   469,   473,   333,   487,    -6,   340,   374,  -473,
-    -473,   153,    62,  -203,  -473,  -165,  -473,  -473,  -473,   -98,
-    -473,  -473,   -21,   -95,   181,   126,  -473,   -94,   -86,   -57,
-      39,    43,    82,  -473,  -233,   329,    10,  -473
+    -489,  -489,  -489,  -489,  -489,   543,  -489,   221,   114,  -489,
+    -316,  -489,   -92,   194,  -489,    -9,  -489,  -488,  -228,    48,
+     526,   -12,   -96,  -202,  -489,    55,  -489,  -489,  -273,  -323,
+    -489,  -489,  -489,  -489,  -489,  -489,    -7,  -489,  -489,    -8,
+     478,  -489,   -51,  -125,   -83,   298,  -147,  -489,  -489,   -98,
+     234,  -489,  -489,   318,  -489,  -103,     9,    64,   -22,   572,
+    -489,   100,   517,   518,   373,   528,    -6,   385,   425,  -489,
+    -489,   208,   124,  -213,  -489,  -162,  -489,  -489,  -489,   -90,
+    -489,  -489,   -80,    41,  -220,     7,  -489
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-       0,     3,     4,     5,    71,     6,   243,   154,   341,   400,
-     242,   337,   134,   324,   218,    34,    35,   532,   515,   533,
-      36,   314,   145,   315,    37,    38,   250,   247,   464,   404,
-      39,    40,    41,    42,    95,   169,    43,   226,    44,    45,
-      82,    83,   221,   232,   385,   240,   325,   107,   108,   292,
-      46,    47,    48,   187,    49,   161,    50,   254,    78,    52,
-     455,   456,   122,   123,   124,   115,   112,   113,    99,   100,
-     101,   450,   451,    53,   188,   189,   190,   452,   457,    54,
-      55,    56,    57,    58,    59,    60,   516,    61,    62,    63,
-      64,    65,    66,    67,   102,   131,   132,    68
+       0,     3,     4,     5,    62,     6,   232,   143,   330,   390,
+     231,   326,   129,   278,   217,    33,    34,   527,   510,   528,
+      35,   273,   104,   274,    36,    37,   239,   236,   456,   394,
+      38,    39,    40,    41,    85,   158,    42,   224,    43,    44,
+      72,    73,   200,   201,   351,   203,   279,    97,    98,   299,
+      45,    46,    47,   183,    48,   150,    49,   243,    68,    51,
+     447,   448,   117,   118,   119,   110,   107,   108,    89,    90,
+      91,   442,   443,    52,   184,   185,   186,   444,   449,    53,
+      54,    55,    56,    57,    92,   127,    58
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -914,443 +905,413 @@ static const yytype_int16 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      81,    96,   401,   105,   212,   185,   117,   165,   191,   339,
-     121,   192,   195,   238,   408,   293,    97,   116,   152,   104,
-     196,   273,   239,     7,   180,    74,   126,   142,   208,   234,
-     260,   144,   150,   140,   141,   234,   214,   214,    70,   281,
-      75,    75,  -225,   363,   409,  -225,   303,   216,   538,   197,
-     539,   304,   261,   153,     7,    29,    76,  -222,  -222,   139,
-      13,   143,   209,  -225,    77,    77,   155,   121,   158,   157,
-    -225,    96,   217,   305,   215,   252,   166,   167,   170,     7,
-    -225,   364,   410,   312,   216,    30,    29,   310,   191,   104,
-     106,   192,   195,     7,   231,   182,   311,     1,     2,   514,
-     196,   237,    22,   393,   127,   178,   191,    20,     2,   192,
-     195,    29,   358,    51,   276,   517,    20,   313,   196,   220,
-     294,    51,   202,   295,   296,    29,   227,   318,    69,   197,
-      72,   438,   297,   501,   220,   355,   233,   110,   529,   530,
-      81,   220,  -290,   203,   222,   198,   223,   197,    13,   199,
-     206,   518,   207,    13,   255,   272,   256,   234,   460,   461,
-     258,   298,   137,   333,    51,   262,   263,   264,   339,   133,
-     140,   268,    10,    30,   307,   309,   380,   191,    30,   191,
-     192,   195,   192,   195,   536,   381,   146,   146,   200,   196,
-     372,   196,   109,   111,   278,   304,   542,   543,   282,   234,
-     284,   321,   285,   114,   114,    28,   234,   106,     7,   137,
-      51,   302,   271,   125,   220,   220,    13,   373,   197,   320,
-     197,   151,   322,   354,    20,   198,   118,   119,   120,   199,
-     162,   164,   194,   334,   211,   377,   207,   147,   147,   163,
-      29,    30,   171,   198,     7,    28,   148,   199,   149,   348,
-     179,   137,   349,   350,   447,   448,   114,   299,   125,   449,
-     181,   300,   182,   220,   379,   249,   183,   207,   200,   172,
-     201,   146,   173,   140,   125,   204,    29,   146,   397,   245,
-     398,   399,   365,   205,   246,   339,   200,   193,   259,   210,
-     137,     7,   213,   265,   174,   142,   368,   370,   371,   234,
-     301,   175,    13,   248,   220,   434,   382,   251,   383,   437,
-     146,   224,   194,   225,   198,   368,   198,   293,   199,   293,
-     199,   266,   147,    29,   274,   414,   465,    30,   147,   143,
-     194,   488,   489,   244,   405,   275,   405,    84,   103,   411,
-     491,   277,   492,   413,   494,   316,   492,   328,   136,   346,
-     138,   146,    13,    14,   323,   326,   146,   200,   332,   200,
-     421,   147,   495,   146,   214,   427,   340,   193,   342,   344,
-     347,   444,   445,   512,   513,   351,   436,    30,   144,   496,
-     352,   356,   317,   279,   280,   193,   175,   359,   114,   361,
-     360,   286,   362,   366,   288,   176,   177,   125,   118,   146,
-     367,   194,   147,   194,   469,   130,   319,   147,   103,   386,
-      80,   387,   388,   473,   147,   474,   535,   110,   477,   486,
-     487,   389,   294,   338,   294,   295,   296,   295,   296,   343,
-     391,   485,   345,   394,   297,   146,   297,   228,   395,   153,
-     407,   146,   412,   417,   550,   423,   524,   525,   146,   526,
-     147,   419,   499,   500,   424,   405,   193,   502,   193,   253,
-     420,   422,   425,   298,   428,   298,   429,   430,   506,   507,
-     540,   508,   435,   329,   541,   442,   267,    84,   241,   443,
-     146,   446,   463,   454,   462,   467,   147,   470,   475,   472,
-     523,   471,   147,   257,   476,   527,   478,   479,   327,   147,
-     482,   483,   528,   330,   331,   146,   484,   534,   270,   534,
-     287,   498,   503,   146,   504,   146,   509,   392,   146,   184,
-     545,   534,   534,   406,   544,   406,   520,   522,   531,   547,
-     548,   147,   549,   146,    73,   396,   546,   490,   235,   135,
-     390,   146,   357,    98,   418,   374,   159,   283,   521,   289,
-     160,   453,   241,   269,   519,   146,   147,   146,     0,   299,
-       0,   299,   156,   300,   147,   300,   147,     0,     0,   147,
-       0,     0,     0,     0,     0,   375,   376,     0,     0,     0,
-       0,     0,   338,   459,   147,     0,     0,   466,     0,     0,
-     468,     0,   147,     0,     0,     0,     0,   146,     0,     0,
-       0,     0,   301,     0,   301,     0,   147,     0,   147,   146,
-       0,   146,     0,     0,     0,   431,     0,     0,     0,     0,
-     415,   416,     0,   439,     0,   440,     0,     0,   441,     0,
-       0,     0,     0,   493,     0,     0,     0,     0,   497,     0,
-       0,   241,     0,     0,   406,   432,   433,     0,   147,     0,
-       0,     0,   241,     0,     0,   241,     0,     0,     0,     0,
-     147,   241,   147,     0,     0,   480,     0,   481,     0,     7,
-       0,     8,     0,    79,     0,     0,    10,     0,    11,    12,
-      13,    14,    15,    16,    17,    18,    19,     0,    20,    21,
-      22,     0,     0,     0,    24,    25,    26,    27,     0,   338,
-      28,    29,     0,     0,     0,    30,     0,   505,     0,     0,
-      31,     0,     0,     7,     0,     8,     0,    79,    33,   510,
-       0,   511,    11,    12,    13,    14,    15,    16,    17,    18,
-      19,     0,    20,    21,    22,    23,     0,     0,    24,    25,
-      26,    27,     0,    85,    28,    29,     0,     0,     0,    30,
-      86,     0,    87,    80,    88,    89,    90,    91,    92,    93,
-      94,     7,    33,     8,     0,    79,     0,     0,     0,     0,
-      11,    12,    13,    14,    15,    16,    17,    18,    19,     0,
-      20,    21,     0,     0,     0,     0,    24,    25,    26,    27,
-       0,    85,    28,    29,     0,     0,     0,    30,    86,     0,
-      87,    80,    88,    89,    90,    91,    92,   129,    94,     7,
-      33,     8,     0,     9,     0,     0,    10,     0,    11,    12,
-      13,    14,    15,    16,    17,    18,    19,     0,    20,    21,
-      22,    23,     0,     0,    24,    25,    26,    27,     0,     0,
-      28,    29,     0,     0,     0,    30,     0,     0,     0,     0,
-      31,     0,     7,     0,     8,    32,    79,   236,    33,     0,
-       0,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-       0,    20,    21,     0,     0,     0,     0,    24,    25,    26,
-      27,     0,     0,    28,    29,     0,     0,     0,    30,     0,
-       0,     0,    80,    31,     0,     7,   230,     8,     0,    79,
-     308,    33,     0,     0,    11,    12,    13,    14,    15,    16,
+      71,    86,   174,    94,   300,   187,   112,   204,   103,   211,
+     399,   328,   229,   262,   391,   188,    93,   111,    87,   202,
+     315,   141,   249,   530,   207,   121,    59,    13,   267,   439,
+     440,    95,    60,   360,   441,   536,   537,     7,   452,   453,
+     131,   137,   133,   204,   250,   139,     7,   400,    96,     7,
+     313,    29,    99,   100,   281,   142,   144,   208,   147,   146,
+     134,    86,   151,   109,   109,    50,   156,   159,    28,   160,
+     361,   219,   120,    50,   138,   105,    93,    28,   166,   167,
+      28,   322,   323,   314,   401,   187,   228,    64,   192,   509,
+     122,     7,    22,    71,   199,   188,   311,   168,    61,     2,
+     187,   346,   213,    65,    10,   383,   109,   370,   120,   193,
+     188,   316,   105,   132,   199,    50,   128,    66,    13,    14,
+      65,   225,    28,  -223,   120,   226,    67,   301,   432,   199,
+     135,   230,   495,   318,     1,   344,   189,   302,   312,   214,
+     136,   242,    29,    67,   244,     2,   246,   317,   140,   247,
+     411,   132,    50,   412,   152,   251,   252,   253,   105,   256,
+     261,   258,     7,   371,   372,   204,   260,   222,   512,   308,
+     310,   328,   427,   187,   213,   187,   304,   204,   433,   153,
+     154,   305,   233,   188,   268,   188,   161,   271,   376,   275,
+     276,   169,   171,    28,   105,  -223,   406,   407,   132,   285,
+     172,   286,   288,   306,     7,   220,   101,   221,   102,   343,
+     303,   241,   199,   199,    13,   321,   189,   320,   190,   191,
+     518,   519,   474,   520,   475,   204,   194,   105,   428,   429,
+     377,   189,   132,   269,   270,    28,   209,   336,    29,   212,
+     162,   338,   339,   163,   534,   223,   234,   109,   535,   160,
+     287,   105,   199,   289,   106,   511,   120,   235,   205,     7,
+     206,   500,   375,   137,   319,   164,   248,   155,   368,   350,
+      13,   165,   327,   305,   505,   237,   506,   105,   332,   523,
+     524,   334,   105,   362,   170,   387,   254,   388,   389,   240,
+      28,   106,   328,   457,    29,   369,   138,   350,   366,   367,
+     255,   300,    95,   300,   189,   199,   189,   378,   379,   204,
+     324,    13,   215,   263,   265,  -281,   105,   264,   272,    96,
+      13,    13,   210,   395,   206,   395,   277,   280,   105,   402,
+     405,   282,   404,   482,   483,    29,   238,   106,   206,   329,
+     357,   409,   358,   215,    29,    29,   331,    76,   450,   124,
+      79,    80,   325,    82,   125,    84,   333,   417,    13,   335,
+     337,   423,   436,   437,   105,   340,   382,   113,   114,   115,
+     341,   345,   396,   106,   396,   165,   105,   507,   508,   397,
+     266,   398,    29,   116,   139,    76,   348,   124,    79,    80,
+     325,    82,   125,    84,   352,   462,   283,   105,   485,   413,
+     486,   414,   488,   489,   486,   213,   106,   105,   197,   467,
+     105,   468,   480,   481,   471,   353,   532,   525,   533,   355,
+     356,   359,   363,   364,   301,   479,   301,   126,   113,   105,
+     106,   380,   327,   451,   302,   105,   302,   458,   381,   459,
+     384,   461,   385,   142,   493,   494,   544,   395,   403,   496,
+     408,   105,   419,   415,   416,   420,   106,   434,   418,   421,
+     105,   106,   501,   502,   424,   503,   425,   426,   435,   431,
+     438,  -226,   446,   454,  -226,   455,   460,   465,   463,   105,
+     466,   105,   464,   531,   517,   487,   473,   469,   470,   521,
+     491,   472,  -226,    13,   476,   106,   396,   522,  -226,   497,
+     216,   477,   529,   529,   478,    13,   373,   106,  -226,   498,
+     173,   492,   539,   504,   499,   529,   529,    29,   105,   538,
+      76,   514,   124,    79,    80,   325,    82,   125,    84,    29,
+     516,   105,    76,   105,   124,    79,    80,    81,    82,   125,
+      84,   526,   541,   106,   542,   410,   543,     7,    63,     8,
+     386,     9,   484,   327,    10,   106,    11,    12,    13,    14,
+      15,    16,    17,    18,    19,   173,    20,    21,    22,    23,
+     130,   430,    24,    25,    26,    27,   106,   540,    28,   195,
+     354,    88,    29,   347,   148,   149,   106,    30,   290,   106,
+     515,   284,    31,   145,   259,    32,   445,    76,   123,   124,
+      79,    80,    81,    82,   125,    84,   126,     7,   106,     8,
+     513,    69,     0,     0,   106,     0,    11,    12,    13,    14,
+      15,    16,    17,    18,    19,     0,    20,    21,    22,    23,
+     106,     0,    24,    25,    26,    27,     0,    74,    28,   106,
+       0,   490,    29,    75,     0,    76,    77,    78,    79,    80,
+      81,    82,    83,    84,     0,    32,     0,     0,   106,     0,
+     106,     0,     0,     7,     0,     8,     0,    69,     0,     0,
+       0,     0,    11,    12,    13,    14,    15,    16,    17,    18,
+      19,     0,    20,    21,     0,     0,     0,     0,    24,    25,
+      26,    27,     0,    74,    28,     0,     0,   106,    29,    75,
+       0,    76,    77,    78,    79,    80,    81,    82,   125,    84,
+     106,    32,   106,     7,     0,     8,     0,    69,   196,     0,
+       0,     0,    11,    12,    13,    14,    15,    16,    17,    18,
+      19,     0,    20,    21,     0,     0,     0,     0,    24,    25,
+      26,    27,     0,     0,    28,     0,     0,     0,    29,     0,
+       0,     0,   197,    30,     0,     7,   198,     8,     0,    69,
+     309,    32,     0,     0,    11,    12,    13,    14,    15,    16,
       17,    18,    19,     0,    20,    21,     0,     0,     0,     0,
-      24,    25,    26,    27,     0,     0,    28,    29,     0,     0,
-       0,    30,     0,     0,     0,    80,    31,     0,     7,   230,
-       8,     0,    79,   378,    33,     0,     0,    11,    12,    13,
-      14,    15,    16,    17,    18,    19,     0,    20,    21,     0,
-       0,     0,     0,    24,    25,    26,    27,     0,     0,    28,
-      29,     0,     0,     0,    30,     0,     0,     0,    80,    31,
-       0,     7,   230,     8,     0,    79,   229,    33,     0,     0,
-      11,    12,    13,    14,    15,    16,    17,    18,    19,     0,
-      20,    21,     0,     0,     0,     0,    24,    25,    26,    27,
-       0,     0,    28,    29,     0,     0,     0,    30,     0,     0,
-       0,     0,    31,     0,     7,   230,     8,     0,    79,   353,
-      33,     0,     0,    11,    12,    13,    14,    15,    16,    17,
-      18,    19,     0,    20,    21,     0,     0,     0,     0,    24,
-      25,    26,    27,     0,     0,    28,    29,     0,     0,     0,
-      30,     0,     0,     0,     0,    31,     0,     7,   230,     8,
-       0,    79,     0,    33,     0,     0,    11,    12,    13,    14,
+      24,    25,    26,    27,     0,     0,    28,     0,     0,     0,
+      29,     0,     0,     0,   197,    30,     0,     7,   198,     8,
+       0,    69,   374,    32,     0,     0,    11,    12,    13,    14,
       15,    16,    17,    18,    19,     0,    20,    21,     0,     0,
-       0,     0,    24,    25,    26,    27,     0,     0,    28,    29,
-       0,     0,     0,    30,     0,     0,     0,    80,    31,     0,
-       7,   384,     8,     0,    79,     0,    33,     0,     0,    11,
-      12,    13,    14,    15,    16,    17,    18,    19,     0,    20,
-      21,   402,     0,     0,     0,    24,    25,    26,    27,     0,
-       0,    28,    29,     0,     0,     0,    30,   403,     0,     0,
-       0,    31,     7,     0,     8,     0,    79,     0,     0,    33,
-       0,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-       0,    20,    21,     0,     0,     0,     0,    24,    25,    26,
-      27,     0,     0,    28,    29,     0,     0,     0,    30,     0,
-       0,     0,    80,    31,     7,     0,     8,     0,    79,     0,
-       0,    33,     0,    11,    12,    13,    14,    15,    16,    17,
-      18,    19,     0,    20,    21,     0,     0,     0,     0,    24,
-      25,    26,    27,     0,   168,    28,    29,     0,     0,     0,
-      30,     0,     0,     0,     0,    31,     7,     0,     8,     0,
-      79,     0,     0,    33,     0,    11,    12,    13,    14,    15,
-      16,    17,    18,    19,     0,    20,    21,     0,     0,     0,
-       0,    24,    25,    26,    27,     0,   219,    28,    29,     0,
-       0,     0,    30,     0,     0,     0,     0,    31,     7,     0,
-       8,     0,    79,     0,     0,    33,     0,    11,    12,    13,
-      14,    15,    16,    17,    18,    19,     0,    20,    21,     0,
-       0,     0,     0,    24,    25,    26,    27,     0,   306,    28,
-      29,     0,     0,     0,    30,     0,     0,     0,     0,    31,
-       7,     0,     8,   369,    79,     0,     0,    33,     0,    11,
+       0,     0,    24,    25,    26,    27,     0,     0,    28,     0,
+       0,     0,    29,     0,     0,     0,   197,    30,     0,     7,
+     198,     8,     0,    69,     0,    32,    10,     0,    11,    12,
+      13,    14,    15,    16,    17,    18,    19,     0,    20,    21,
+      22,     0,     0,     0,    24,    25,    26,    27,     0,     0,
+      28,     0,     0,     0,    29,     0,     0,     0,     0,    30,
+       7,     0,     8,     0,    69,   227,     0,    32,     0,    11,
       12,    13,    14,    15,    16,    17,    18,    19,     0,    20,
       21,     0,     0,     0,     0,    24,    25,    26,    27,     0,
-       0,    28,    29,     0,     0,     0,    30,     0,     0,     0,
-       0,    31,     7,     0,     8,   426,    79,     0,     0,    33,
+       0,    28,     0,     0,     0,    29,     0,     0,     0,     0,
+      30,     0,     7,   198,     8,     0,    69,   342,    32,     0,
        0,    11,    12,    13,    14,    15,    16,    17,    18,    19,
        0,    20,    21,     0,     0,     0,     0,    24,    25,    26,
-      27,     0,     0,    28,    29,     0,     0,     0,    30,     0,
-       0,     0,     0,    31,     0,     7,     0,     8,     0,    79,
-       0,    33,   531,     0,    11,    12,    13,    14,    15,    16,
-      17,    18,    19,     0,    20,    21,     0,     0,     0,     0,
-      24,    25,    26,    27,     0,     0,    28,    29,     0,     0,
-       0,    30,     0,     0,     0,     0,    31,     7,     0,     8,
-       0,    79,     0,     0,    33,     0,    11,    12,    13,    14,
+      27,     0,     0,    28,     0,     0,     0,    29,     0,     0,
+       0,     0,    30,     0,     7,   198,     8,     0,    69,     0,
+      32,     0,     0,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,     0,    20,    21,     0,     0,     0,     0,    24,
+      25,    26,    27,     0,     0,    28,     0,     0,     0,    29,
+       0,     0,     0,   197,    30,     0,     7,   349,     8,     0,
+      69,     0,    32,     0,     0,    11,    12,    13,    14,    15,
+      16,    17,    18,    19,     0,    20,    21,   392,     0,     0,
+       0,    24,    25,    26,    27,     0,     0,    28,     0,     0,
+       0,    29,   393,     0,     0,     0,    30,     7,     0,     8,
+       0,    69,     0,     0,    32,     0,    11,    12,    13,    14,
       15,    16,    17,    18,    19,     0,    20,    21,     0,     0,
-     335,     0,    24,    25,    26,    27,     0,     0,    28,    29,
-      13,     0,   458,    30,     0,     0,     0,     0,    31,     0,
-       0,     0,    13,     0,   537,     0,    33,     0,     0,     0,
-       0,     0,     0,     0,    13,    30,     0,     0,    87,   184,
-     128,    89,    90,   336,    92,   129,    94,    30,     0,     0,
-      87,     0,   128,    89,    90,   336,    92,   129,    94,    30,
-       0,     0,    87,     0,   128,    89,    90,   336,    92,   129,
-      94,     0,    87,    80,   128,    89,    90,    91,    92,   129,
-      94,   130,   186,     0,     0,     0,     0,     0,     0,     0,
-       0,    13,    14,    15,    16,    17,    18,    19,     0,    20,
-       0,     0,     0,     0,     0,    24,    25,    26,     0,     0,
-       0,    28,     0,     0,   290,     0,    30,     0,     0,   291,
-       0,    31,    14,    15,    16,    17,    18,    19,    13,     0,
-       0,     0,     0,     0,     0,    24,    25,    26,     0,     0,
-       0,    28,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    31,     0,    30,     0,     0,    87,     0,   128,    89,
-      90,    91,    92,   129,    94,   291,     0,     0,    14,    15,
-      16,    17,    18,    19,     0,     0,     0,     0,     0,     0,
-       0,    24,    25,    26,     0,     0,     0,    28,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    31,    87,    80,
-     128,    89,    90,    91,    92,   129,    94,   130
+       0,     0,    24,    25,    26,    27,     0,     0,    28,     0,
+       0,     0,    29,     0,     0,     0,    70,    30,     7,     0,
+       8,     0,    69,     0,     0,    32,     0,    11,    12,    13,
+      14,    15,    16,    17,    18,    19,     0,    20,    21,     0,
+       0,     0,     0,    24,    25,    26,    27,     0,   157,    28,
+       0,     0,     0,    29,     0,     0,     0,     0,    30,     7,
+       0,     8,     0,    69,     0,     0,    32,     0,    11,    12,
+      13,    14,    15,    16,    17,    18,    19,     0,    20,    21,
+       0,     0,     0,     0,    24,    25,    26,    27,     0,   218,
+      28,     0,     0,     0,    29,     0,     0,     0,     0,    30,
+       7,     0,     8,     0,    69,     0,     0,    32,     0,    11,
+      12,    13,    14,    15,    16,    17,    18,    19,     0,    20,
+      21,     0,     0,     0,     0,    24,    25,    26,    27,     0,
+       0,    28,     0,     0,     0,    29,     0,     0,     0,   245,
+      30,     7,     0,     8,     0,    69,     0,     0,    32,     0,
+      11,    12,    13,    14,    15,    16,    17,    18,    19,     0,
+      20,    21,     0,     0,     0,     0,    24,    25,    26,    27,
+       0,     0,    28,     0,     0,     0,    29,     0,     0,     0,
+     257,    30,     7,     0,     8,     0,    69,     0,     0,    32,
+       0,    11,    12,    13,    14,    15,    16,    17,    18,    19,
+       0,    20,    21,     0,     0,     0,     0,    24,    25,    26,
+      27,     0,   307,    28,     0,     0,     0,    29,     0,     0,
+       0,     0,    30,     7,     0,     8,   365,    69,     0,     0,
+      32,     0,    11,    12,    13,    14,    15,    16,    17,    18,
+      19,     0,    20,    21,     0,     0,     0,     0,    24,    25,
+      26,    27,     0,     0,    28,     0,     0,     0,    29,     0,
+       0,     0,     0,    30,     7,     0,     8,   422,    69,     0,
+       0,    32,     0,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,     0,    20,    21,     0,     0,     0,     0,    24,
+      25,    26,    27,     0,     0,    28,     0,     0,     0,    29,
+       0,     0,     0,     0,    30,     0,     7,     0,     8,     0,
+      69,     0,    32,   526,     0,    11,    12,    13,    14,    15,
+      16,    17,    18,    19,     0,    20,    21,     0,     0,     0,
+       0,    24,    25,    26,    27,     0,     0,    28,     0,     0,
+       0,    29,     0,     0,     0,     0,    30,     7,     0,     8,
+       0,    69,     0,     0,    32,     0,    11,    12,    13,    14,
+      15,    16,    17,    18,    19,     0,    20,    21,     0,     0,
+       0,     0,    24,    25,    26,    27,     0,     0,    28,   175,
+       0,     0,    29,     0,     0,     0,     0,    30,    13,    14,
+      15,    16,   176,   177,   178,    32,   179,     0,     0,     0,
+       0,     0,   180,   181,   182,    27,     0,     0,     0,     0,
+     291,     0,    29,     0,     0,   292,     0,    30,    14,    15,
+      16,   293,   294,   295,     0,     0,     0,     0,     0,     0,
+       0,   296,   297,   298,    27,   292,     0,     0,    14,    15,
+      16,   293,   294,   295,     0,     0,    30,     0,     0,     0,
+       0,   296,   297,   298,    27,    76,   123,   124,    79,    80,
+      81,    82,   125,    84,   126,     0,    30
 };
 
 static const yytype_int16 yycheck[] =
 {
-       8,     9,   341,    10,   117,   105,    29,    83,   106,   242,
-      31,   106,   106,   149,   344,   218,     9,    23,     5,     9,
-     106,   186,   149,     3,   100,     9,    33,     7,     7,   144,
-      11,    59,    60,    54,    55,   150,    11,    11,     0,   204,
-      25,    25,    11,    11,    11,    14,     6,   123,   520,   106,
-     522,    11,    33,    40,     3,    35,    40,    32,    32,    52,
-      14,    41,    41,    32,    49,    49,    74,    88,    76,    75,
-      39,    79,    41,    33,    49,    49,    84,    85,    86,     3,
-      49,    49,    49,     7,   160,    39,    35,   223,   186,    79,
-       5,   186,   186,     3,   142,   103,   223,    37,    48,    21,
-     186,   149,    24,   336,     5,    98,   204,    22,    48,   204,
-     204,    35,   277,     1,   190,   489,    22,    41,   204,   127,
-     218,     9,    11,   218,   218,    35,   133,   225,     2,   186,
-       4,    41,   218,   463,   142,   271,   143,    11,   512,   513,
-     148,   149,     8,    32,     5,   106,     7,   204,    14,   106,
-       9,   490,    11,    14,   162,   183,   164,   272,    39,    40,
-     168,   218,    50,   239,    52,   173,   174,   175,   401,     9,
-     191,   179,    10,    39,   222,   223,   312,   275,    39,   277,
-     275,   275,   277,   277,   517,   312,    59,    60,   106,   275,
-       6,   277,    11,    12,   201,    11,   529,   530,   205,   314,
-     208,   229,   209,    22,    23,    34,   321,     5,     3,    97,
-      98,   219,     7,    32,   222,   223,    14,    33,   275,   226,
-     277,     3,   230,   271,    22,   186,    15,    16,    17,   186,
-      40,    11,   106,   241,     9,   311,    11,    59,    60,     6,
-      35,    39,     8,   204,     3,    34,     5,   204,     7,   257,
-      11,   139,   260,   261,    45,    46,    75,   218,    77,    50,
-       8,   218,   270,   271,   312,     9,     8,    11,   186,     8,
-      41,   144,    11,   294,    93,     5,    35,   150,    24,   153,
-      26,    27,   290,    41,     3,   518,   204,   106,     8,    32,
-     178,     3,    32,     8,    33,     7,   304,   305,   306,   414,
-     218,    40,    14,    32,   312,   381,   313,    32,   316,   385,
-     183,   130,   186,    51,   275,   323,   277,   520,   275,   522,
-     277,     8,   144,    35,     6,   353,    38,    39,   150,    41,
-     204,   444,   445,   152,   342,    11,   344,     8,     9,   347,
-       9,     5,    11,   351,     9,     7,    11,     6,    50,     4,
-      52,   224,    14,    15,    11,    11,   229,   275,    11,   277,
-     367,   183,     9,   236,    11,   373,     6,   186,    11,    11,
-      40,   394,   395,   486,   487,    33,   384,    39,   406,   455,
-       8,     6,    44,   202,   203,   204,    40,     6,   207,     9,
-       8,   210,     4,     6,   213,    97,    98,   216,    15,   272,
-      41,   275,   224,   277,   412,    51,   225,   229,    79,     8,
-      43,     8,     8,   420,   236,   422,   516,   291,   425,   442,
-     443,     8,   520,   242,   522,   520,   520,   522,   522,   248,
-       8,   438,   251,     3,   520,   308,   522,   139,     3,    40,
-       9,   314,    33,     6,   544,     6,   499,   500,   321,   502,
-     272,     8,   460,   461,     6,   463,   275,   465,   277,   161,
-      41,    41,    41,   520,     8,   522,     8,     8,   475,   476,
-     523,   478,     8,   236,   527,     3,   178,   148,   149,     3,
-     353,     3,    11,    45,     4,     4,   308,     8,    41,    49,
-     498,     8,   314,   164,    41,   503,    41,     6,   232,   321,
-       8,     8,   509,   237,   238,   378,     8,   515,   179,   517,
-     212,    41,    38,   386,    49,   388,    41,   336,   391,     9,
-       4,   529,   530,   342,   531,   344,    41,    41,    10,     4,
-       4,   353,     4,   406,     5,   340,   534,   446,   148,    45,
-     332,   414,   275,     9,   363,   308,    77,   207,   496,   216,
-      77,   398,   223,   179,   492,   428,   378,   430,    -1,   520,
-      -1,   522,    75,   520,   386,   522,   388,    -1,    -1,   391,
-      -1,    -1,    -1,    -1,    -1,   309,   310,    -1,    -1,    -1,
-      -1,    -1,   401,   402,   406,    -1,    -1,   406,    -1,    -1,
-     409,    -1,   414,    -1,    -1,    -1,    -1,   470,    -1,    -1,
-      -1,    -1,   520,    -1,   522,    -1,   428,    -1,   430,   482,
-      -1,   484,    -1,    -1,    -1,   378,    -1,    -1,    -1,    -1,
-     354,   355,    -1,   386,    -1,   388,    -1,    -1,   391,    -1,
-      -1,    -1,    -1,   452,    -1,    -1,    -1,    -1,   457,    -1,
-      -1,   312,    -1,    -1,   463,   379,   380,    -1,   470,    -1,
-      -1,    -1,   323,    -1,    -1,   326,    -1,    -1,    -1,    -1,
-     482,   332,   484,    -1,    -1,   428,    -1,   430,    -1,     3,
-      -1,     5,    -1,     7,    -1,    -1,    10,    -1,    12,    13,
-      14,    15,    16,    17,    18,    19,    20,    -1,    22,    23,
-      24,    -1,    -1,    -1,    28,    29,    30,    31,    -1,   518,
-      34,    35,    -1,    -1,    -1,    39,    -1,   470,    -1,    -1,
-      44,    -1,    -1,     3,    -1,     5,    -1,     7,    52,   482,
-      -1,   484,    12,    13,    14,    15,    16,    17,    18,    19,
-      20,    -1,    22,    23,    24,    25,    -1,    -1,    28,    29,
-      30,    31,    -1,    33,    34,    35,    -1,    -1,    -1,    39,
-      40,    -1,    42,    43,    44,    45,    46,    47,    48,    49,
-      50,     3,    52,     5,    -1,     7,    -1,    -1,    -1,    -1,
-      12,    13,    14,    15,    16,    17,    18,    19,    20,    -1,
-      22,    23,    -1,    -1,    -1,    -1,    28,    29,    30,    31,
-      -1,    33,    34,    35,    -1,    -1,    -1,    39,    40,    -1,
-      42,    43,    44,    45,    46,    47,    48,    49,    50,     3,
-      52,     5,    -1,     7,    -1,    -1,    10,    -1,    12,    13,
-      14,    15,    16,    17,    18,    19,    20,    -1,    22,    23,
-      24,    25,    -1,    -1,    28,    29,    30,    31,    -1,    -1,
-      34,    35,    -1,    -1,    -1,    39,    -1,    -1,    -1,    -1,
-      44,    -1,     3,    -1,     5,    49,     7,     8,    52,    -1,
-      -1,    12,    13,    14,    15,    16,    17,    18,    19,    20,
-      -1,    22,    23,    -1,    -1,    -1,    -1,    28,    29,    30,
-      31,    -1,    -1,    34,    35,    -1,    -1,    -1,    39,    -1,
-      -1,    -1,    43,    44,    -1,     3,    47,     5,    -1,     7,
-       8,    52,    -1,    -1,    12,    13,    14,    15,    16,    17,
+       8,     9,    94,    10,   217,    95,    28,   103,    20,   112,
+     333,   231,   137,   175,   330,    95,     9,    23,     9,   102,
+     222,     5,    11,   511,     7,    32,    22,    14,   190,    44,
+      45,     5,     0,    11,    49,   523,   524,     3,    38,    39,
+      49,     7,    51,   139,    33,    57,     3,    11,    22,     3,
+       7,    38,    11,    12,   201,    39,    64,    40,    66,    65,
+      51,    69,    70,    22,    23,     1,    74,    75,    34,    77,
+      48,   122,    31,     9,    40,    20,    69,    34,    87,    88,
+      34,   228,   229,    40,    48,   175,   137,     9,    11,    21,
+       5,     3,    24,   101,   102,   175,   221,    88,    22,    47,
+     190,   263,    11,    25,    10,   325,    65,   309,    67,    32,
+     190,     7,    57,    49,   122,    51,     9,    39,    14,    15,
+      25,   128,    34,    32,    83,   134,    48,   217,    40,   137,
+      31,   138,   455,   223,    36,   260,    95,   217,   221,    48,
+      31,   150,    38,    48,   152,    47,   154,    43,     3,   157,
+     352,    87,    88,   355,    39,   163,   164,   165,   103,   168,
+     172,   169,     3,   310,   311,   261,     7,   126,   484,   220,
+     221,   391,   374,   263,    11,   265,     6,   273,   380,     6,
+      11,    11,   141,   263,   191,   265,     8,   194,   313,   197,
+     198,    11,     8,    34,   139,    32,   343,   344,   134,   207,
+       8,   208,   211,    33,     3,     5,     5,     7,     7,   260,
+     218,    48,   220,   221,    14,   227,   175,   224,     5,    40,
+     493,   494,   424,   496,   426,   321,    40,   172,   375,   376,
+     313,   190,   168,   192,   193,    34,    32,   245,    38,    32,
+       8,   249,   250,    11,   517,    50,    22,   206,   521,   257,
+     209,   196,   260,   212,    20,   483,   215,     3,     9,     3,
+      11,   463,   313,     7,   223,    33,     8,    73,     6,   277,
+      14,    39,   231,    11,   476,    32,   478,   222,   237,   507,
+     508,   240,   227,   291,    90,    24,     8,    26,    27,    32,
+      34,    57,   512,    37,    38,    33,    40,   305,   306,   307,
+       8,   514,     5,   516,   263,   313,   265,   314,   316,   405,
+       4,    14,   118,     5,    11,     8,   261,     6,     6,    22,
+      14,    14,     9,   331,    11,   333,    11,    11,   273,   337,
+     342,    11,   340,   436,   437,    38,     9,   103,    11,     6,
+       9,   349,    11,   149,    38,    38,    11,    41,     4,    43,
+      44,    45,    46,    47,    48,    49,    11,   364,    14,     4,
+      39,   369,   384,   385,   309,    33,   325,    15,    16,    17,
+       8,     6,   331,   139,   333,    39,   321,   480,   481,     9,
+     186,    11,    38,    31,   396,    41,     6,    43,    44,    45,
+      46,    47,    48,    49,     8,   403,   202,   342,     9,   358,
+      11,   360,     9,     9,    11,    11,   172,   352,    42,   416,
+     355,   418,   434,   435,   421,     8,   514,   509,   516,     8,
+       8,     4,     6,    40,   514,   432,   516,    50,    15,   374,
+     196,     8,   391,   392,   514,   380,   516,   396,     8,   398,
+       3,   400,     3,    39,   452,   453,   538,   455,    33,   457,
+       6,   396,     6,     8,    40,     6,   222,     3,    40,    40,
+     405,   227,   469,   470,     8,   472,     8,     8,     3,     8,
+       3,    11,    44,     4,    14,    11,     4,     9,     8,   424,
+      48,   426,     8,     4,   492,   444,     6,    40,    40,   497,
+     449,    40,    32,    14,     8,   261,   455,   504,    38,    37,
+      40,     8,   510,   511,     8,    14,   312,   273,    48,     9,
+       9,    40,     4,    40,    48,   523,   524,    38,   463,   526,
+      41,    40,    43,    44,    45,    46,    47,    48,    49,    38,
+      40,   476,    41,   478,    43,    44,    45,    46,    47,    48,
+      49,    10,     4,   309,     4,   351,     4,     3,     5,     5,
+     329,     7,   438,   512,    10,   321,    12,    13,    14,    15,
+      16,    17,    18,    19,    20,     9,    22,    23,    24,    25,
+      44,   377,    28,    29,    30,    31,   342,   529,    34,   101,
+     282,     9,    38,   265,    67,    67,   352,    43,   215,   355,
+     490,   206,    48,    65,   169,    51,   388,    41,    42,    43,
+      44,    45,    46,    47,    48,    49,    50,     3,   374,     5,
+     486,     7,    -1,    -1,   380,    -1,    12,    13,    14,    15,
+      16,    17,    18,    19,    20,    -1,    22,    23,    24,    25,
+     396,    -1,    28,    29,    30,    31,    -1,    33,    34,   405,
+      -1,   447,    38,    39,    -1,    41,    42,    43,    44,    45,
+      46,    47,    48,    49,    -1,    51,    -1,    -1,   424,    -1,
+     426,    -1,    -1,     3,    -1,     5,    -1,     7,    -1,    -1,
+      -1,    -1,    12,    13,    14,    15,    16,    17,    18,    19,
+      20,    -1,    22,    23,    -1,    -1,    -1,    -1,    28,    29,
+      30,    31,    -1,    33,    34,    -1,    -1,   463,    38,    39,
+      -1,    41,    42,    43,    44,    45,    46,    47,    48,    49,
+     476,    51,   478,     3,    -1,     5,    -1,     7,     8,    -1,
+      -1,    -1,    12,    13,    14,    15,    16,    17,    18,    19,
+      20,    -1,    22,    23,    -1,    -1,    -1,    -1,    28,    29,
+      30,    31,    -1,    -1,    34,    -1,    -1,    -1,    38,    -1,
+      -1,    -1,    42,    43,    -1,     3,    46,     5,    -1,     7,
+       8,    51,    -1,    -1,    12,    13,    14,    15,    16,    17,
       18,    19,    20,    -1,    22,    23,    -1,    -1,    -1,    -1,
-      28,    29,    30,    31,    -1,    -1,    34,    35,    -1,    -1,
-      -1,    39,    -1,    -1,    -1,    43,    44,    -1,     3,    47,
-       5,    -1,     7,     8,    52,    -1,    -1,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    -1,    22,    23,    -1,
-      -1,    -1,    -1,    28,    29,    30,    31,    -1,    -1,    34,
-      35,    -1,    -1,    -1,    39,    -1,    -1,    -1,    43,    44,
-      -1,     3,    47,     5,    -1,     7,     8,    52,    -1,    -1,
-      12,    13,    14,    15,    16,    17,    18,    19,    20,    -1,
-      22,    23,    -1,    -1,    -1,    -1,    28,    29,    30,    31,
-      -1,    -1,    34,    35,    -1,    -1,    -1,    39,    -1,    -1,
-      -1,    -1,    44,    -1,     3,    47,     5,    -1,     7,     8,
-      52,    -1,    -1,    12,    13,    14,    15,    16,    17,    18,
-      19,    20,    -1,    22,    23,    -1,    -1,    -1,    -1,    28,
-      29,    30,    31,    -1,    -1,    34,    35,    -1,    -1,    -1,
-      39,    -1,    -1,    -1,    -1,    44,    -1,     3,    47,     5,
-      -1,     7,    -1,    52,    -1,    -1,    12,    13,    14,    15,
+      28,    29,    30,    31,    -1,    -1,    34,    -1,    -1,    -1,
+      38,    -1,    -1,    -1,    42,    43,    -1,     3,    46,     5,
+      -1,     7,     8,    51,    -1,    -1,    12,    13,    14,    15,
       16,    17,    18,    19,    20,    -1,    22,    23,    -1,    -1,
-      -1,    -1,    28,    29,    30,    31,    -1,    -1,    34,    35,
-      -1,    -1,    -1,    39,    -1,    -1,    -1,    43,    44,    -1,
-       3,    47,     5,    -1,     7,    -1,    52,    -1,    -1,    12,
-      13,    14,    15,    16,    17,    18,    19,    20,    -1,    22,
-      23,    24,    -1,    -1,    -1,    28,    29,    30,    31,    -1,
-      -1,    34,    35,    -1,    -1,    -1,    39,    40,    -1,    -1,
-      -1,    44,     3,    -1,     5,    -1,     7,    -1,    -1,    52,
-      -1,    12,    13,    14,    15,    16,    17,    18,    19,    20,
-      -1,    22,    23,    -1,    -1,    -1,    -1,    28,    29,    30,
-      31,    -1,    -1,    34,    35,    -1,    -1,    -1,    39,    -1,
-      -1,    -1,    43,    44,     3,    -1,     5,    -1,     7,    -1,
-      -1,    52,    -1,    12,    13,    14,    15,    16,    17,    18,
-      19,    20,    -1,    22,    23,    -1,    -1,    -1,    -1,    28,
-      29,    30,    31,    -1,    33,    34,    35,    -1,    -1,    -1,
-      39,    -1,    -1,    -1,    -1,    44,     3,    -1,     5,    -1,
-       7,    -1,    -1,    52,    -1,    12,    13,    14,    15,    16,
-      17,    18,    19,    20,    -1,    22,    23,    -1,    -1,    -1,
-      -1,    28,    29,    30,    31,    -1,    33,    34,    35,    -1,
-      -1,    -1,    39,    -1,    -1,    -1,    -1,    44,     3,    -1,
-       5,    -1,     7,    -1,    -1,    52,    -1,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    -1,    22,    23,    -1,
-      -1,    -1,    -1,    28,    29,    30,    31,    -1,    33,    34,
-      35,    -1,    -1,    -1,    39,    -1,    -1,    -1,    -1,    44,
-       3,    -1,     5,     6,     7,    -1,    -1,    52,    -1,    12,
+      -1,    -1,    28,    29,    30,    31,    -1,    -1,    34,    -1,
+      -1,    -1,    38,    -1,    -1,    -1,    42,    43,    -1,     3,
+      46,     5,    -1,     7,    -1,    51,    10,    -1,    12,    13,
+      14,    15,    16,    17,    18,    19,    20,    -1,    22,    23,
+      24,    -1,    -1,    -1,    28,    29,    30,    31,    -1,    -1,
+      34,    -1,    -1,    -1,    38,    -1,    -1,    -1,    -1,    43,
+       3,    -1,     5,    -1,     7,     8,    -1,    51,    -1,    12,
       13,    14,    15,    16,    17,    18,    19,    20,    -1,    22,
       23,    -1,    -1,    -1,    -1,    28,    29,    30,    31,    -1,
-      -1,    34,    35,    -1,    -1,    -1,    39,    -1,    -1,    -1,
-      -1,    44,     3,    -1,     5,     6,     7,    -1,    -1,    52,
+      -1,    34,    -1,    -1,    -1,    38,    -1,    -1,    -1,    -1,
+      43,    -1,     3,    46,     5,    -1,     7,     8,    51,    -1,
       -1,    12,    13,    14,    15,    16,    17,    18,    19,    20,
       -1,    22,    23,    -1,    -1,    -1,    -1,    28,    29,    30,
-      31,    -1,    -1,    34,    35,    -1,    -1,    -1,    39,    -1,
-      -1,    -1,    -1,    44,    -1,     3,    -1,     5,    -1,     7,
-      -1,    52,    10,    -1,    12,    13,    14,    15,    16,    17,
-      18,    19,    20,    -1,    22,    23,    -1,    -1,    -1,    -1,
-      28,    29,    30,    31,    -1,    -1,    34,    35,    -1,    -1,
-      -1,    39,    -1,    -1,    -1,    -1,    44,     3,    -1,     5,
-      -1,     7,    -1,    -1,    52,    -1,    12,    13,    14,    15,
+      31,    -1,    -1,    34,    -1,    -1,    -1,    38,    -1,    -1,
+      -1,    -1,    43,    -1,     3,    46,     5,    -1,     7,    -1,
+      51,    -1,    -1,    12,    13,    14,    15,    16,    17,    18,
+      19,    20,    -1,    22,    23,    -1,    -1,    -1,    -1,    28,
+      29,    30,    31,    -1,    -1,    34,    -1,    -1,    -1,    38,
+      -1,    -1,    -1,    42,    43,    -1,     3,    46,     5,    -1,
+       7,    -1,    51,    -1,    -1,    12,    13,    14,    15,    16,
+      17,    18,    19,    20,    -1,    22,    23,    24,    -1,    -1,
+      -1,    28,    29,    30,    31,    -1,    -1,    34,    -1,    -1,
+      -1,    38,    39,    -1,    -1,    -1,    43,     3,    -1,     5,
+      -1,     7,    -1,    -1,    51,    -1,    12,    13,    14,    15,
       16,    17,    18,    19,    20,    -1,    22,    23,    -1,    -1,
-       4,    -1,    28,    29,    30,    31,    -1,    -1,    34,    35,
-      14,    -1,     4,    39,    -1,    -1,    -1,    -1,    44,    -1,
-      -1,    -1,    14,    -1,     4,    -1,    52,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    14,    39,    -1,    -1,    42,     9,
-      44,    45,    46,    47,    48,    49,    50,    39,    -1,    -1,
-      42,    -1,    44,    45,    46,    47,    48,    49,    50,    39,
-      -1,    -1,    42,    -1,    44,    45,    46,    47,    48,    49,
-      50,    -1,    42,    43,    44,    45,    46,    47,    48,    49,
-      50,    51,     5,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    14,    15,    16,    17,    18,    19,    20,    -1,    22,
-      -1,    -1,    -1,    -1,    -1,    28,    29,    30,    -1,    -1,
-      -1,    34,    -1,    -1,     7,    -1,    39,    -1,    -1,    12,
-      -1,    44,    15,    16,    17,    18,    19,    20,    14,    -1,
-      -1,    -1,    -1,    -1,    -1,    28,    29,    30,    -1,    -1,
-      -1,    34,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    44,    -1,    39,    -1,    -1,    42,    -1,    44,    45,
-      46,    47,    48,    49,    50,    12,    -1,    -1,    15,    16,
+      -1,    -1,    28,    29,    30,    31,    -1,    -1,    34,    -1,
+      -1,    -1,    38,    -1,    -1,    -1,    42,    43,     3,    -1,
+       5,    -1,     7,    -1,    -1,    51,    -1,    12,    13,    14,
+      15,    16,    17,    18,    19,    20,    -1,    22,    23,    -1,
+      -1,    -1,    -1,    28,    29,    30,    31,    -1,    33,    34,
+      -1,    -1,    -1,    38,    -1,    -1,    -1,    -1,    43,     3,
+      -1,     5,    -1,     7,    -1,    -1,    51,    -1,    12,    13,
+      14,    15,    16,    17,    18,    19,    20,    -1,    22,    23,
+      -1,    -1,    -1,    -1,    28,    29,    30,    31,    -1,    33,
+      34,    -1,    -1,    -1,    38,    -1,    -1,    -1,    -1,    43,
+       3,    -1,     5,    -1,     7,    -1,    -1,    51,    -1,    12,
+      13,    14,    15,    16,    17,    18,    19,    20,    -1,    22,
+      23,    -1,    -1,    -1,    -1,    28,    29,    30,    31,    -1,
+      -1,    34,    -1,    -1,    -1,    38,    -1,    -1,    -1,    42,
+      43,     3,    -1,     5,    -1,     7,    -1,    -1,    51,    -1,
+      12,    13,    14,    15,    16,    17,    18,    19,    20,    -1,
+      22,    23,    -1,    -1,    -1,    -1,    28,    29,    30,    31,
+      -1,    -1,    34,    -1,    -1,    -1,    38,    -1,    -1,    -1,
+      42,    43,     3,    -1,     5,    -1,     7,    -1,    -1,    51,
+      -1,    12,    13,    14,    15,    16,    17,    18,    19,    20,
+      -1,    22,    23,    -1,    -1,    -1,    -1,    28,    29,    30,
+      31,    -1,    33,    34,    -1,    -1,    -1,    38,    -1,    -1,
+      -1,    -1,    43,     3,    -1,     5,     6,     7,    -1,    -1,
+      51,    -1,    12,    13,    14,    15,    16,    17,    18,    19,
+      20,    -1,    22,    23,    -1,    -1,    -1,    -1,    28,    29,
+      30,    31,    -1,    -1,    34,    -1,    -1,    -1,    38,    -1,
+      -1,    -1,    -1,    43,     3,    -1,     5,     6,     7,    -1,
+      -1,    51,    -1,    12,    13,    14,    15,    16,    17,    18,
+      19,    20,    -1,    22,    23,    -1,    -1,    -1,    -1,    28,
+      29,    30,    31,    -1,    -1,    34,    -1,    -1,    -1,    38,
+      -1,    -1,    -1,    -1,    43,    -1,     3,    -1,     5,    -1,
+       7,    -1,    51,    10,    -1,    12,    13,    14,    15,    16,
+      17,    18,    19,    20,    -1,    22,    23,    -1,    -1,    -1,
+      -1,    28,    29,    30,    31,    -1,    -1,    34,    -1,    -1,
+      -1,    38,    -1,    -1,    -1,    -1,    43,     3,    -1,     5,
+      -1,     7,    -1,    -1,    51,    -1,    12,    13,    14,    15,
+      16,    17,    18,    19,    20,    -1,    22,    23,    -1,    -1,
+      -1,    -1,    28,    29,    30,    31,    -1,    -1,    34,     5,
+      -1,    -1,    38,    -1,    -1,    -1,    -1,    43,    14,    15,
+      16,    17,    18,    19,    20,    51,    22,    -1,    -1,    -1,
+      -1,    -1,    28,    29,    30,    31,    -1,    -1,    -1,    -1,
+       7,    -1,    38,    -1,    -1,    12,    -1,    43,    15,    16,
       17,    18,    19,    20,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    28,    29,    30,    -1,    -1,    -1,    34,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    44,    42,    43,
-      44,    45,    46,    47,    48,    49,    50,    51
+      -1,    28,    29,    30,    31,    12,    -1,    -1,    15,    16,
+      17,    18,    19,    20,    -1,    -1,    43,    -1,    -1,    -1,
+      -1,    28,    29,    30,    31,    41,    42,    43,    44,    45,
+      46,    47,    48,    49,    50,    -1,    43
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    37,    48,    55,    56,    57,    59,     3,     5,     7,
+       0,    36,    47,    54,    55,    56,    58,     3,     5,     7,
       10,    12,    13,    14,    15,    16,    17,    18,    19,    20,
-      22,    23,    24,    25,    28,    29,    30,    31,    34,    35,
-      39,    44,    49,    52,    69,    70,    74,    78,    79,    84,
-      85,    86,    87,    90,    92,    93,   104,   105,   106,   108,
-     110,   111,   113,   127,   133,   134,   135,   136,   137,   138,
-     139,   141,   142,   143,   144,   145,   146,   147,   151,   139,
-       0,    58,   139,    59,     9,    25,    40,    49,   112,     7,
-      43,    93,    94,    95,   149,    33,    40,    42,    44,    45,
-      46,    47,    48,    49,    50,    88,    93,   110,   113,   122,
-     123,   124,   148,   149,   150,    90,     5,   101,   102,   138,
-     139,   138,   120,   121,   138,   119,   120,   112,    15,    16,
-      17,   136,   116,   117,   118,   138,    90,     5,    44,    49,
-      51,   149,   150,     9,    66,    74,    69,   111,    69,   110,
-     136,   136,     7,    41,    75,    76,    79,   104,     5,     7,
-      75,     3,     5,    40,    61,    93,   119,   120,    93,   116,
-     117,   109,    40,     6,    11,    67,    93,    93,    33,    89,
-      93,     8,     8,    11,    33,    40,    69,    69,   110,    11,
-      67,     8,    93,     8,     9,    66,     5,   107,   128,   129,
-     130,   133,   137,   138,   139,   141,   142,   143,   144,   145,
-     146,    41,    11,    32,     5,    41,     9,    11,     7,    41,
-      32,     9,   109,    32,    11,    49,    67,    41,    68,    33,
-      93,    96,     5,     7,   138,    51,    91,    90,    69,     8,
-      47,    96,    97,    90,    76,    94,     8,    96,    97,    98,
-      99,   149,    64,    60,   138,   139,     3,    81,    32,     9,
-      80,    32,    49,    69,   111,    93,    93,   149,    93,     8,
-      11,    33,    93,    93,    93,     8,     8,    69,    93,   122,
-     149,     7,    75,   129,     6,    11,    67,     5,    90,   138,
-     138,   129,    90,   121,    93,    90,   138,    69,   138,   118,
-       7,    12,   103,   127,   133,   137,   141,   142,   143,   144,
-     145,   146,    93,     6,    11,    33,    33,    96,     8,    96,
-      97,    98,     7,    41,    75,    77,     7,    44,   133,   138,
-      90,    75,    93,    11,    67,   100,    11,   100,     6,    77,
-     100,   100,    11,    67,    93,     4,    47,    65,   138,   148,
-       6,    62,    11,   138,    11,   138,     4,    40,    93,    93,
-      93,    33,     8,     8,    96,    97,     6,   107,   129,     6,
-       8,     9,     4,    11,    49,    93,     6,    41,    93,     6,
-      93,    93,     6,    33,    77,   100,   100,    67,     8,    96,
-      97,    98,    90,    93,    47,    98,     8,     8,     8,     8,
-      99,     8,   138,   148,     3,     3,    61,    24,    26,    27,
-      63,    64,    24,    40,    83,    93,   138,     9,    83,    11,
-      49,    93,    33,    93,    75,   100,   100,     6,   138,     8,
-      41,    90,    41,     6,     6,    41,     6,    93,     8,     8,
-       8,    77,   100,   100,    67,     8,    93,    67,    41,    77,
-      77,    77,     3,     3,   112,   112,     3,    45,    46,    50,
-     125,   126,   131,   125,    45,   114,   115,   132,     4,   138,
-      39,    40,     4,    11,    82,    38,   138,     4,   138,    93,
-       8,     8,    49,    90,    90,    41,    41,    90,    41,     6,
-      77,    77,     8,     8,     8,    90,   112,   112,   109,   109,
-      62,     9,    11,   138,     9,     9,    67,   138,    41,    93,
-      93,    83,    93,    38,    49,    77,    90,    90,    90,    41,
-      77,    77,   109,   109,    21,    72,   140,    72,    64,   126,
-      41,   115,    41,    93,    82,    82,    82,    93,    90,    72,
-      72,    10,    71,    73,    93,    66,    71,     4,   103,   103,
-      82,    82,    71,    71,    90,     4,    73,     4,     4,     4,
-      66
+      22,    23,    24,    25,    28,    29,    30,    31,    34,    38,
+      43,    48,    51,    68,    69,    73,    77,    78,    83,    84,
+      85,    86,    89,    91,    92,   103,   104,   105,   107,   109,
+     110,   112,   126,   132,   133,   134,   135,   136,   139,    22,
+       0,    22,    57,    58,     9,    25,    39,    48,   111,     7,
+      42,    92,    93,    94,    33,    39,    41,    42,    43,    44,
+      45,    46,    47,    48,    49,    87,    92,   109,   112,   121,
+     122,   123,   137,   138,    89,     5,    22,   100,   101,   136,
+     136,     5,     7,    74,    75,    78,   103,   119,   120,   136,
+     118,   119,   111,    15,    16,    17,    31,   115,   116,   117,
+     136,    89,     5,    42,    43,    48,    50,   138,     9,    65,
+      73,    68,   110,    68,   109,    31,    31,     7,    40,    74,
+       3,     5,    39,    60,    92,   118,   119,    92,   115,   116,
+     108,    92,    39,     6,    11,    66,    92,    33,    88,    92,
+      92,     8,     8,    11,    33,    39,    68,    68,   109,    11,
+      66,     8,     8,     9,    65,     5,    18,    19,    20,    22,
+      28,    29,    30,   106,   127,   128,   129,   132,   135,   136,
+       5,    40,    11,    32,    40,    93,     8,    42,    46,    92,
+      95,    96,    97,    98,    75,     9,    11,     7,    40,    32,
+       9,   108,    32,    11,    48,    66,    40,    67,    33,    95,
+       5,     7,   136,    50,    90,    89,    68,     8,    95,    96,
+      89,    63,    59,   136,    22,     3,    80,    32,     9,    79,
+      32,    48,    68,   110,    92,    42,    92,    92,     8,    11,
+      33,    92,    92,    92,     8,     8,    68,    42,    92,   121,
+       7,    74,   128,     5,     6,    11,    66,   128,    89,   136,
+     136,    89,     6,    74,    76,    92,    92,    11,    66,    99,
+      11,    99,    11,    66,   120,    92,    89,   136,    68,   136,
+     117,     7,    12,    18,    19,    20,    28,    29,    30,   102,
+     126,   132,   135,    92,     6,    11,    33,    33,    95,     8,
+      95,    96,    97,     7,    40,    76,     7,    43,   132,   136,
+      89,    74,    99,    99,     4,    46,    64,   136,   137,     6,
+      61,    11,   136,    11,   136,     4,    92,    39,    92,    92,
+      33,     8,     8,    95,    96,     6,   128,   106,     6,    46,
+      92,    97,     8,     8,    98,     8,     8,     9,    11,     4,
+      11,    48,    92,     6,    40,     6,    92,    92,     6,    33,
+      76,    99,    99,    66,     8,    95,    96,    97,    89,    92,
+       8,     8,   136,   137,     3,     3,    60,    24,    26,    27,
+      62,    63,    24,    39,    82,    92,   136,     9,    11,    82,
+      11,    48,    92,    33,    92,    74,    99,    99,     6,    92,
+      66,    76,    76,   136,   136,     8,    40,    89,    40,     6,
+       6,    40,     6,    92,     8,     8,     8,    76,    99,    99,
+      66,     8,    40,    76,     3,     3,   111,   111,     3,    44,
+      45,    49,   124,   125,   130,   124,    44,   113,   114,   131,
+       4,   136,    38,    39,     4,    11,    81,    37,   136,   136,
+       4,   136,    92,     8,     8,     9,    48,    89,    89,    40,
+      40,    89,    40,     6,    76,    76,     8,     8,     8,    89,
+     111,   111,   108,   108,    61,     9,    11,   136,     9,     9,
+      66,   136,    40,    92,    92,    82,    92,    37,     9,    48,
+      76,    89,    89,    89,    40,    76,    76,   108,   108,    21,
+      71,    71,    63,   125,    40,   114,    40,    92,    81,    81,
+      81,    92,    89,    71,    71,    65,    10,    70,    72,    92,
+      70,     4,   102,   102,    81,    81,    70,    70,    89,     4,
+      72,     4,     4,     4,    65
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    54,    55,    55,    55,    56,    56,    57,    57,    58,
-      58,    59,    60,    60,    61,    61,    62,    62,    63,    63,
-      63,    64,    64,    65,    65,    65,    65,    66,    66,    67,
-      67,    68,    68,    69,    69,    70,    70,    70,    70,    70,
-      70,    70,    71,    71,    72,    72,    73,    73,    74,    74,
-      75,    75,    76,    76,    77,    77,    78,    78,    78,    78,
-      78,    78,    78,    78,    78,    78,    78,    78,    78,    78,
-      78,    78,    78,    78,    78,    78,    78,    78,    78,    80,
-      79,    81,    79,    82,    82,    83,    83,    83,    83,    83,
-      83,    84,    84,    84,    84,    84,    84,    84,    84,    84,
-      84,    84,    84,    84,    84,    84,    85,    85,    85,    86,
-      86,    86,    87,    87,    87,    87,    87,    87,    88,    88,
-      88,    88,    88,    89,    89,    89,    89,    89,    90,    90,
-      90,    90,    90,    90,    90,    90,    90,    90,    90,    90,
-      90,    90,    91,    91,    91,    91,    92,    92,    93,    94,
-      94,    95,    95,    95,    95,    95,    95,    96,    96,    97,
-      97,    98,    98,    99,   100,   100,   101,   101,   102,   102,
-     103,   103,   103,   103,   103,   103,   103,   103,   103,   104,
-     105,   106,   106,   106,   106,   106,   106,   106,   106,   106,
-     107,   107,   107,   107,   107,   107,   107,   107,   107,   107,
-     108,   108,   109,   109,   110,   110,   111,   112,   112,   112,
-     112,   112,   112,   113,   113,   113,   113,   113,   114,   114,
-     115,   116,   116,   117,   117,   118,   118,   118,   119,   119,
-     120,   120,   121,   121,   121,   122,   122,   123,   123,   124,
-     124,   125,   125,   126,   126,   127,   127,   128,   128,   129,
-     129,   130,   130,   131,   131,   131,   131,   132,   132,   133,
-     133,   134,   134,   135,   135,   136,   137,   137,   137,   137,
-     137,   137,   138,   138,   139,   140,   141,   142,   143,   144,
-     145,   146,   147,   148,   148,   148,   148,   148,   148,   148,
-     148,   149,   150,   150,   151
+       0,    53,    54,    54,    54,    55,    55,    56,    56,    57,
+      57,    58,    59,    59,    60,    60,    61,    61,    62,    62,
+      62,    63,    63,    64,    64,    64,    64,    65,    65,    66,
+      66,    67,    67,    68,    68,    69,    69,    69,    69,    69,
+      69,    69,    70,    70,    71,    71,    72,    72,    73,    73,
+      74,    74,    75,    75,    76,    76,    77,    77,    77,    77,
+      77,    77,    77,    77,    77,    77,    77,    77,    77,    77,
+      77,    77,    77,    77,    77,    77,    77,    77,    77,    79,
+      78,    80,    78,    81,    81,    82,    82,    82,    82,    82,
+      82,    83,    83,    83,    83,    83,    83,    83,    83,    83,
+      83,    83,    83,    83,    83,    84,    84,    84,    85,    85,
+      85,    86,    86,    86,    86,    86,    86,    87,    87,    87,
+      87,    87,    88,    88,    88,    88,    88,    89,    89,    89,
+      89,    89,    89,    89,    89,    89,    89,    89,    89,    89,
+      89,    90,    90,    90,    90,    91,    91,    92,    93,    93,
+      94,    94,    94,    94,    94,    94,    95,    95,    96,    96,
+      97,    97,    98,    99,    99,   100,   100,   101,   101,   102,
+     102,   102,   102,   102,   102,   102,   102,   102,   103,   104,
+     105,   105,   105,   105,   105,   105,   105,   105,   105,   106,
+     106,   106,   106,   106,   106,   106,   106,   106,   106,   107,
+     107,   108,   108,   109,   109,   110,   111,   111,   111,   111,
+     111,   111,   111,   112,   112,   112,   112,   112,   112,   113,
+     113,   114,   115,   115,   116,   116,   117,   117,   117,   118,
+     118,   119,   119,   120,   120,   120,   121,   121,   122,   122,
+     123,   123,   124,   124,   125,   125,   126,   126,   127,   127,
+     128,   128,   129,   129,   130,   130,   130,   130,   131,   131,
+     132,   132,   133,   133,   134,   134,   135,   135,   135,   135,
+     135,   135,   136,   136,   137,   137,   137,   137,   137,   137,
+     137,   137,   138,   138,   139
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -1366,25 +1327,24 @@ static const yytype_int8 yyr2[] =
        5,     7,     8,     7,     6,     6,     8,     7,     4,     0,
        7,     0,     7,     0,     2,     4,     5,     5,     2,     4,
        4,     1,     1,     1,     1,     1,     1,     3,     2,     3,
-       3,     4,     3,     1,     4,     1,     5,     5,     6,     7,
-       7,     8,     6,     6,     7,     8,     8,     9,     2,     2,
-       3,     5,     4,     2,     2,     3,     4,     5,     1,     1,
-       1,     1,     5,     2,     4,     3,     4,     5,     7,     4,
-       6,     7,     0,     2,     2,     4,     1,     3,     2,     0,
-       2,     1,     3,     2,     3,     4,     5,     1,     3,     2,
-       4,     1,     3,     2,     1,     3,     1,     3,     1,     3,
+       3,     4,     3,     4,     1,     5,     5,     6,     7,     7,
+       8,     6,     6,     7,     8,     8,     9,     2,     2,     3,
+       5,     4,     2,     2,     3,     4,     5,     1,     1,     1,
+       1,     5,     2,     4,     3,     4,     5,     7,     4,     6,
+       7,     0,     2,     2,     4,     1,     3,     2,     0,     2,
+       1,     3,     2,     3,     4,     5,     1,     3,     2,     4,
+       1,     3,     2,     1,     3,     1,     3,     1,     3,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       5,     5,     0,     2,     1,     2,     3,     0,     3,     5,
-       3,     5,     7,     3,     5,     3,     5,     7,     1,     3,
-       4,     0,     1,     1,     3,     1,     3,     5,     0,     1,
-       1,     3,     1,     3,     4,     3,     2,     1,     3,     0,
-       2,     1,     3,     2,     4,     4,     5,     3,     4,     0,
-       2,     1,     3,     0,     1,     1,     1,     0,     1,     1,
-       2,     1,     2,     1,     2,     1,     1,     1,     2,     2,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     5,
+       5,     0,     2,     1,     2,     3,     0,     3,     5,     7,
+       3,     5,     7,     3,     5,     7,     3,     5,     7,     1,
+       3,     4,     0,     1,     1,     3,     1,     3,     5,     0,
+       1,     1,     3,     1,     3,     4,     3,     2,     1,     3,
+       0,     2,     1,     3,     2,     4,     4,     5,     3,     4,
+       0,     2,     1,     3,     0,     1,     1,     1,     0,     1,
+       1,     2,     1,     2,     1,     2,     1,     1,     2,     2,
        1,     2,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1
 };
 
@@ -2233,2410 +2193,1781 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* root: classes  */
-#line 49 "lang/LangSource/Bison/lang11d"
-                        { gRootParseNode = (PyrParseNode*)yyvsp[0]; gParserResult = 1; }
-#line 2239 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 176 "lang/LangSource/Bison/lang11d"
+                                        { 
+						(yyval.root) = bison_cxt->allocParseNode<PyrRootNode>((yyloc), (yyvsp[0].node));
+						bison_cxt->assignRoot(*(yyval.root));
+					}
+#line 2202 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 3: /* root: classextensions  */
-#line 51 "lang/LangSource/Bison/lang11d"
-                        { gRootParseNode = (PyrParseNode*)yyvsp[0]; gParserResult = 1; }
-#line 2245 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 181 "lang/LangSource/Bison/lang11d"
+                                        { 
+						(yyval.root) = bison_cxt->allocParseNode<PyrRootNode>((yyloc), (yyvsp[0].node));
+						bison_cxt->assignRoot(*(yyval.root));
+					}
+#line 2211 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 4: /* root: INTERPRET cmdlinecode  */
-#line 53 "lang/LangSource/Bison/lang11d"
-                        { gRootParseNode = (PyrParseNode*)yyvsp[0]; gParserResult = 2; }
-#line 2251 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 186 "lang/LangSource/Bison/lang11d"
+                                        { 
+						(yyval.root) = bison_cxt->allocParseNode<PyrRootNode>((yyloc), (yyvsp[0].blockNode));
+						bison_cxt->assignRoot(*(yyval.root));
+					}
+#line 2220 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 5: /* classes: %empty  */
-#line 56 "lang/LangSource/Bison/lang11d"
-          { yyval = 0; }
-#line 2257 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 191 "lang/LangSource/Bison/lang11d"
+                                 { (yyval.node) = nullptr; }
+#line 2226 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 6: /* classes: classes classdef  */
-#line 58 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2263 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 193 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-1].node), (yyvsp[0].node)); }
+#line 2232 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 8: /* classextensions: classextensions classextension  */
-#line 63 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2269 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 197 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-1].node), (yyvsp[0].node)); }
+#line 2238 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 9: /* classdef: classname superclass OPENCURLY classvardecls methods CLOSECURLY  */
-#line 67 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrClassNode((yyloc), (PyrSlotNode*)yyvsp[-5], (PyrSlotNode*)yyvsp[-4],
-					(PyrVarListNode*)yyvsp[-2], (PyrMethodNode*)yyvsp[-1], 0);
-				}
-#line 2277 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 9: /* classdef: CLASSNAME optSuperName OPENCURLY classvardecls methods CLOSECURLY  */
+#line 200 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrClassNode>((yyloc), (yyvsp[-5].slotNode), (yyvsp[-4].slotNode), nullptr, (yyvsp[-2].varListNode), (yyvsp[-1].methodNode)); }
+#line 2244 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 10: /* classdef: classname OPENSQUARE optname CLOSESQUARE superclass OPENCURLY classvardecls methods CLOSECURLY  */
-#line 71 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrClassNode((yyloc),(PyrSlotNode*)yyvsp[-8], (PyrSlotNode*)yyvsp[-4],
-					(PyrVarListNode*)yyvsp[-2], (PyrMethodNode*)yyvsp[-1],
-					(PyrSlotNode*)yyvsp[-6]);
-				}
-#line 2286 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 10: /* classdef: CLASSNAME OPENSQUARE optName CLOSESQUARE optSuperName OPENCURLY classvardecls methods CLOSECURLY  */
+#line 202 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrClassNode>((yyloc), (yyvsp[-8].slotNode), (yyvsp[-4].slotNode), (yyvsp[-6].slotNode), (yyvsp[-2].varListNode), (yyvsp[-1].methodNode)); }
+#line 2250 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 11: /* classextension: ADD classname OPENCURLY methods CLOSECURLY  */
-#line 78 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)newPyrClassExtNode((yyloc),(PyrSlotNode*)yyvsp[-3], (PyrMethodNode*)yyvsp[-1]);
-				}
-#line 2294 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 11: /* classextension: ADD CLASSNAME OPENCURLY methods CLOSECURLY  */
+#line 205 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrClassExtNode>((yyloc), (yyvsp[-3].slotNode), (yyvsp[-1].methodNode)); }
+#line 2256 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 12: /* optname: %empty  */
-#line 83 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 2300 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 12: /* optName: %empty  */
+#line 207 "lang/LangSource/Bison/lang11d"
+                                 { (yyval.slotNode) = nullptr; }
+#line 2262 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 14: /* superclass: %empty  */
-#line 87 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 2306 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 14: /* optSuperName: %empty  */
+#line 210 "lang/LangSource/Bison/lang11d"
+                         { (yyval.slotNode) = nullptr; }
+#line 2268 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 15: /* superclass: COLON classname  */
-#line 89 "lang/LangSource/Bison/lang11d"
-                                { yyval = yyvsp[0]; }
-#line 2312 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 15: /* optSuperName: COLON CLASSNAME  */
+#line 210 "lang/LangSource/Bison/lang11d"
+                                                             { (yyval.slotNode) = (yyvsp[0].slotNode); }
+#line 2274 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 16: /* classvardecls: %empty  */
-#line 92 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 2318 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 212 "lang/LangSource/Bison/lang11d"
+                         { (yyval.varListNode) = nullptr; }
+#line 2280 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 17: /* classvardecls: classvardecls classvardecl  */
-#line 94 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2324 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 214 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varListNode) = linkNodes((yyvsp[-1].varListNode), (yyvsp[0].varListNode)); }
+#line 2286 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 18: /* classvardecl: CLASSVAR rwslotdeflist SEMICOLON  */
-#line 98 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrVarListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], varClass); }
-#line 2330 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 217 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varListNode) = bison_cxt->allocParseNode<PyrVarListNode>((yyloc), (yyvsp[-1].varDefNode), varClass); }
+#line 2292 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 19: /* classvardecl: VAR rwslotdeflist SEMICOLON  */
-#line 100 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrVarListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], varInst); }
-#line 2336 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 219 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varListNode) = bison_cxt->allocParseNode<PyrVarListNode>((yyloc), (yyvsp[-1].varDefNode), varInst); }
+#line 2298 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 20: /* classvardecl: SC_CONST constdeflist SEMICOLON  */
-#line 102 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrVarListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], varConst); }
-#line 2342 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 221 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varListNode) = bison_cxt->allocParseNode<PyrVarListNode>((yyloc), (yyvsp[-1].varDefNode), varConst); }
+#line 2304 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 21: /* methods: %empty  */
-#line 105 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 2348 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 223 "lang/LangSource/Bison/lang11d"
+                                 { (yyval.methodNode) = nullptr; }
+#line 2310 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 22: /* methods: methods methoddef  */
-#line 107 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2354 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 225 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.methodNode) = linkNodes((yyvsp[-1].methodNode), (yyvsp[0].methodNode)); }
+#line 2316 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 23: /* methoddef: name OPENCURLY argdecls funcvardecls primitive methbody CLOSECURLY  */
-#line 111 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrMethodNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2],
-					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 0); }
-#line 2361 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 23: /* methoddef: name OPENCURLY argdecls funcvardecls optPrim methbody CLOSECURLY  */
+#line 228 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.methodNode) = bison_cxt->allocParseNode<PyrMethodNode>((yyloc), (yyvsp[-6].slotNode), (yyvsp[-2].slotNode), (yyvsp[-4].argListNode), (yyvsp[-3].varListNode), (yyvsp[-1].node), false); }
+#line 2322 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 24: /* methoddef: MULTIPLY name OPENCURLY argdecls funcvardecls primitive methbody CLOSECURLY  */
-#line 114 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrMethodNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2],
-					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 1); }
-#line 2368 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 24: /* methoddef: MULTIPLY name OPENCURLY argdecls funcvardecls optPrim methbody CLOSECURLY  */
+#line 230 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.methodNode) = bison_cxt->allocParseNode<PyrMethodNode>((yyloc), (yyvsp[-6].slotNode), (yyvsp[-2].slotNode), (yyvsp[-4].argListNode), (yyvsp[-3].varListNode), (yyvsp[-1].node), true); }
+#line 2328 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 25: /* methoddef: binop OPENCURLY argdecls funcvardecls primitive methbody CLOSECURLY  */
-#line 117 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrMethodNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2],
-					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 0); }
-#line 2375 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 25: /* methoddef: binop OPENCURLY argdecls funcvardecls optPrim methbody CLOSECURLY  */
+#line 232 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.methodNode) = bison_cxt->allocParseNode<PyrMethodNode>((yyloc), (yyvsp[-6].slotNode), (yyvsp[-2].slotNode), (yyvsp[-4].argListNode), (yyvsp[-3].varListNode), (yyvsp[-1].node), false); }
+#line 2334 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 26: /* methoddef: MULTIPLY binop OPENCURLY argdecls funcvardecls primitive methbody CLOSECURLY  */
-#line 120 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrMethodNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2],
-					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 1); }
-#line 2382 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 26: /* methoddef: MULTIPLY binop OPENCURLY argdecls funcvardecls optPrim methbody CLOSECURLY  */
+#line 234 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.methodNode) = bison_cxt->allocParseNode<PyrMethodNode>((yyloc), (yyvsp[-6].slotNode), (yyvsp[-2].slotNode), (yyvsp[-4].argListNode), (yyvsp[-3].varListNode), (yyvsp[-1].node), true); }
+#line 2340 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 34: /* funcbody: exprseq funretval  */
-#line 138 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrDropNode((yyloc), (PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2388 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 242 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrDropNode>((yyloc), (yyvsp[-1].node), (yyvsp[0].node)); }
+#line 2346 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 35: /* cmdlinecode: OPENPAREN argdecls1 funcvardecls1 funcbody CLOSEPAREN  */
-#line 142 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-3], (PyrVarListNode*)yyvsp[-2], (PyrParseNode*)yyvsp[-1], false); }
-#line 2394 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 245 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.blockNode) = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), (yyvsp[-3].argListNode), (yyvsp[-2].varListNode), (yyvsp[-1].node), false); }
+#line 2352 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 36: /* cmdlinecode: OPENPAREN argdecls1 funcbody CLOSEPAREN  */
-#line 144 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-2], NULL, (PyrParseNode*)yyvsp[-1], false); }
-#line 2400 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 247 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.blockNode) = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), (yyvsp[-2].argListNode), nullptr, (yyvsp[-1].node), false); }
+#line 2358 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 37: /* cmdlinecode: OPENPAREN funcvardecls1 funcbody CLOSEPAREN  */
-#line 146 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrBlockNode((yyloc), NULL, (PyrVarListNode*)yyvsp[-2], (PyrParseNode*)yyvsp[-1], false); }
-#line 2406 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 249 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.blockNode) = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), nullptr, (yyvsp[-2].varListNode), (yyvsp[-1].node), false); }
+#line 2364 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 38: /* cmdlinecode: argdecls1 funcvardecls1 funcbody  */
-#line 148 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-2], (PyrVarListNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0], false); }
-#line 2412 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 251 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.blockNode) = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), (yyvsp[-2].argListNode), (yyvsp[-1].varListNode), (yyvsp[0].node), false); }
+#line 2370 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 39: /* cmdlinecode: argdecls1 funcbody  */
-#line 150 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-1], NULL, (PyrParseNode*)yyvsp[0], false); }
-#line 2418 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 253 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.blockNode) = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), (yyvsp[-1].argListNode), nullptr, (yyvsp[0].node), false); }
+#line 2376 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 40: /* cmdlinecode: funcvardecls1 funcbody  */
-#line 152 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrBlockNode((yyloc), NULL, (PyrVarListNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0], false); }
-#line 2424 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 255 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.blockNode) = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), nullptr, (yyvsp[-1].varListNode), (yyvsp[0].node), false); }
+#line 2382 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 41: /* cmdlinecode: funcbody  */
-#line 154 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrBlockNode((yyloc), NULL, NULL, (PyrParseNode*)yyvsp[0], false); }
-#line 2430 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 257 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.blockNode) = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), nullptr, nullptr, (yyvsp[0].node), false); }
+#line 2388 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 43: /* methbody: exprseq retval  */
-#line 159 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrDropNode((yyloc), (PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 2436 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 261 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrDropNode>((yyloc), (yyvsp[-1].node), (yyvsp[0].node)); }
+#line 2394 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 44: /* primitive: %empty  */
-#line 162 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 2442 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 44: /* optPrim: %empty  */
+#line 263 "lang/LangSource/Bison/lang11d"
+                                { (yyval.slotNode) = nullptr; }
+#line 2400 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 45: /* primitive: primname optsemi  */
-#line 164 "lang/LangSource/Bison/lang11d"
-                                { yyval = yyvsp[-1]; }
-#line 2448 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 45: /* optPrim: PRIMITIVENAME optsemi  */
+#line 264 "lang/LangSource/Bison/lang11d"
+                                                        { (yyval.slotNode) = (yyvsp[-1].slotNode); }
+#line 2406 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 46: /* retval: %empty  */
-#line 168 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrReturnNode((yyloc), NULL); }
-#line 2454 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 266 "lang/LangSource/Bison/lang11d"
+                                 { (yyval.node) = bison_cxt->allocParseNode<PyrReturnNode>((yyloc), nullptr); }
+#line 2412 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 47: /* retval: NONLOCALRETURN expr optsemi  */
-#line 170 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrReturnNode((yyloc), (PyrParseNode*)yyvsp[-1]); }
-#line 2460 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 268 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrReturnNode>((yyloc), (yyvsp[-1].node)); }
+#line 2418 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 48: /* funretval: %empty  */
-#line 174 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrBlockReturnNode((yyloc)); }
-#line 2466 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 271 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrBlockReturnNode>((yyloc), nullptr); }
+#line 2424 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 49: /* funretval: NONLOCALRETURN expr optsemi  */
-#line 176 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrReturnNode((yyloc), (PyrParseNode*)yyvsp[-1]); }
-#line 2472 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 273 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrReturnNode>((yyloc), (yyvsp[-1].node)); }
+#line 2430 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 51: /* blocklist1: blocklist1 blocklistitem  */
-#line 181 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]);
-				}
-#line 2480 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 277 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-1].node), (yyvsp[0].node)); }
+#line 2436 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 54: /* blocklist: %empty  */
-#line 190 "lang/LangSource/Bison/lang11d"
-                        { yyval = 0; }
-#line 2486 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 281 "lang/LangSource/Bison/lang11d"
+                                 { (yyval.node) = nullptr; }
+#line 2442 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 56: /* msgsend: name blocklist1  */
-#line 195 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0], 0, 0);
-			}
-#line 2494 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 284 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-1].slotNode), (yyvsp[0].node), nullptr); }
+#line 2448 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 57: /* msgsend: OPENPAREN binop2 CLOSEPAREN blocklist1  */
-#line 199 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], 0, 0);
-			}
-#line 2502 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 287 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-2].slotNode), (yyvsp[0].node), nullptr); }
+#line 2454 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 58: /* msgsend: name OPENPAREN CLOSEPAREN blocklist1  */
-#line 203 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-3], NULL, NULL, (PyrParseNode*)yyvsp[0]);
-			}
-#line 2510 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 290 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-3].slotNode), (yyvsp[0].node), nullptr); }
+#line 2460 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 59: /* msgsend: name OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 207 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-5], (PyrParseNode*)yyvsp[-3],
-						(PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
-			}
-#line 2519 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 293 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-5].slotNode), linkNodes((yyvsp[-3].node), (yyvsp[0].node)), (yyvsp[-2].node)); }
+#line 2466 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 60: /* msgsend: OPENPAREN binop2 CLOSEPAREN OPENPAREN CLOSEPAREN blocklist1  */
-#line 212 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-4], NULL, NULL, (PyrParseNode*)yyvsp[0]);
-			}
-#line 2527 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 296 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-4].slotNode), (yyvsp[0].node), nullptr); }
+#line 2472 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 61: /* msgsend: OPENPAREN binop2 CLOSEPAREN OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 216 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-6], (PyrParseNode*)yyvsp[-3],
-						(PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
-			}
-#line 2536 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 299 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-6].slotNode), linkNodes((yyvsp[-3].node), (yyvsp[0].node)), (yyvsp[-2].node)); }
+#line 2478 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 62: /* msgsend: name OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 221 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				if (isSuperObjNode((PyrParseNode*)yyvsp[-2])) {
-					SetRaw(&((PyrPushNameNode*)yyvsp[-2])->mSlot, s_this);
-					SetSymbol(&slot, s_superPerformList);
-				} else {
-					SetSymbol(&slot, s_performList);
-				}
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = linkAfterHead(
-					(PyrParseNode*)yyvsp[-2],
-					newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-4], NULL));
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-1], 0);
-			}
-#line 2558 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 302 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrSlot selector;
+						// Is the keyword 'super' in 'msg(super, *[])'.
+						if (isSuperObjNode((yyvsp[-2].node))) {
+							auto* slot_node = nodeCast<PyrSlotNode>((yyvsp[-2].node));
+							slot_node->mSlot = PyrSlot::make(s_this);
+							selector = PyrSlot::make(s_superPerformList);
+						} else {
+							selector = PyrSlot::make(s_performList);
+						}
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), selector);
+						auto* args = linkAfterHead((yyvsp[-2].node), (yyvsp[-4].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>());
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, (yyvsp[-1].node));
+					}
+#line 2497 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 63: /* msgsend: OPENPAREN binop2 CLOSEPAREN OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 239 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				SetSymbol(&slot, s_performList);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = linkAfterHead(
-					(PyrParseNode*)yyvsp[-2],
-					newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-5], NULL));
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-1], 0);
-			}
-#line 2575 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 317 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_performList));
+						auto* args = linkAfterHead((yyvsp[-2].node), (yyvsp[-5].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>());
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, (yyvsp[-1].node));
+					}
+#line 2507 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 64: /* msgsend: classname OPENSQUARE arrayelems CLOSESQUARE  */
-#line 252 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrDynListNode((yyloc), (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]); }
-#line 2581 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 64: /* msgsend: CLASSNAME OPENSQUARE arrayelems CLOSESQUARE  */
+#line 323 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrDynListNode>((yyloc), (yyvsp[-3].slotNode), (yyvsp[-1].node)); }
+#line 2513 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 65: /* msgsend: classname blocklist1  */
-#line 254 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				SetSymbol(&slot, s_new);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = (PyrParseNode*)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[-1]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, (PyrParseNode*)yyvsp[0]);
-			}
-#line 2596 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 65: /* msgsend: CLASSNAME blocklist1  */
+#line 326 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_new));
+						auto* args = linkNodes((yyvsp[-1].slotNode)->changeLiteralType<PyrParseNodeType::PushNameNode>(), (yyvsp[0].node));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2523 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 66: /* msgsend: classname OPENPAREN CLOSEPAREN blocklist  */
-#line 265 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				SetSymbol(&slot, s_new);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = (PyrParseNode*)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[-3]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, NULL, (PyrParseNode*)yyvsp[0]);
-			}
-#line 2611 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 66: /* msgsend: CLASSNAME OPENPAREN CLOSEPAREN blocklist  */
+#line 332 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_new));
+						auto* args = linkNodes((yyvsp[-3].slotNode)->changeLiteralType<PyrParseNodeType::PushNameNode>(), (yyvsp[0].node));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2533 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 67: /* msgsend: classname OPENPAREN keyarglist1 optcomma CLOSEPAREN blocklist  */
-#line 276 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				SetSymbol(&slot, s_new);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = (PyrParseNode*)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[-5]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0]);
-			}
-#line 2626 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 67: /* msgsend: CLASSNAME OPENPAREN keyarglist1 optcomma CLOSEPAREN blocklist  */
+#line 338 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_new));
+						auto* args = linkNodes((yyvsp[-5].slotNode)->changeLiteralType<PyrParseNodeType::PushNameNode>(), (yyvsp[0].node));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, (yyvsp[-3].node));
+					}
+#line 2543 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 68: /* msgsend: classname OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 287 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				SetSymbol(&slot, s_new);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[-5]),
-					(PyrParseNode*)yyvsp[-3]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
-			}
-#line 2643 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 68: /* msgsend: CLASSNAME OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
+#line 344 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_new));
+						auto* args = linkNodes(
+							(yyvsp[-5].slotNode)->changeLiteralType<PyrParseNodeType::PushNameNode>(), 
+							(yyvsp[-3].node),
+							(yyvsp[0].node));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, (yyvsp[-2].node));
+					}
+#line 2556 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 69: /* msgsend: classname OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 300 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode, *selectornode2;
-				PyrSlot slot, slot2;
-				PyrParseNode* args;
+  case 69: /* msgsend: CLASSNAME OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
+#line 353 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrSlot selector;
+						if (isSuperObjNode((yyvsp[-4].slotNode))) {
+							// Ehh? this is not possible. CLASSNAME cannot be 'super'.
+							(yyvsp[-4].slotNode)->mSlot = PyrSlot::make(s_this);
+							selector = PyrSlot::make(s_superPerformList);
+						} else {
+							selector = PyrSlot::make(s_performList);
+						}
 
-				if (isSuperObjNode((PyrParseNode*)yyvsp[-4])) {
-					SetRaw(&((PyrPushNameNode*)yyvsp[-4])->mSlot, s_this);
-					SetSymbol(&slot, s_superPerformList);
-				} else {
-					SetSymbol(&slot, s_performList);
-				}
-				SetSymbol(&slot2, s_new);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				selectornode2 = newPyrSlotNode((yyloc), &slot2);
-				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[-4]),
-					newPyrPushLitNode((yyloc), selectornode2, NULL));
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-2]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[0], 0);
-			}
-#line 2668 "lang/LangSource/Bison/lang11d_tab.cpp"
+						auto* new_selector_push_lit = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_new), PyrParseNodeType::PushLitNode);
+						auto* args = linkNodes(
+							(yyvsp[-4].slotNode)->changeLiteralType<PyrParseNodeType::PushNameNode>(),
+							new_selector_push_lit,
+							(yyvsp[-2].node)
+						);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), selector);
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, (yyvsp[-1].node));
+					}
+#line 2580 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 70: /* msgsend: expr DOT OPENPAREN CLOSEPAREN blocklist  */
-#line 321 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-
-				SetSymbol(&slot, s_value);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, (PyrParseNode*)yyvsp[-4], NULL, (PyrParseNode*)yyvsp[0]);
-			}
-#line 2681 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 373 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_value));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-4].node), (yyvsp[0].node)), nullptr);
+					}
+#line 2589 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 71: /* msgsend: expr DOT OPENPAREN keyarglist1 optcomma CLOSEPAREN blocklist  */
-#line 330 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-
-				SetSymbol(&slot, s_value);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, (PyrParseNode*)yyvsp[-6], (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0]);
-			}
-#line 2694 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 378 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_value));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-6].node), (yyvsp[0].node)), (yyvsp[-3].node));
+					}
+#line 2598 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 72: /* msgsend: expr DOT name OPENPAREN keyarglist1 optcomma CLOSEPAREN blocklist  */
-#line 339 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-5], (PyrParseNode*)yyvsp[-7],
-					(PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0]);
-			}
-#line 2703 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 383 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-5].slotNode), linkNodes((yyvsp[-7].node), (yyvsp[0].node)), (yyvsp[-3].node)); }
+#line 2604 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 73: /* msgsend: expr DOT OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 344 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				SetSymbol(&slot, s_value);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = linkNextNode(
-					(PyrParseNode*)yyvsp[-6],
-					(PyrParseNode*)yyvsp[-3]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
-			}
-#line 2720 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 385 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_value));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-6].node), (yyvsp[-3].node), (yyvsp[0].node)), (yyvsp[-2].node));
+					}
+#line 2613 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 74: /* msgsend: expr DOT OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 358 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot, slot2;
-				PyrParseNode* args;
-
-				if (isSuperObjNode((PyrParseNode*)yyvsp[-5])) {
-					SetRaw(&((PyrPushNameNode*)yyvsp[-5])->mSlot, s_this);
-					SetSymbol(&slot, s_superPerformList);
-				} else {
-					SetSymbol(&slot, s_performList);
-				}
-				SetSymbol(&slot2, s_value);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = linkNextNode(
-					(PyrParseNode*)yyvsp[-5],
-					newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &slot2), NULL));
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-2]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-1], 0);
-			}
-#line 2744 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 390 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrSlot selectorSlot;
+						if (isSuperObjNode((yyvsp[-5].node))) {
+							nodeCast<PyrSlotNode>((yyvsp[-5].node))->mSlot = PyrSlot::make(s_this);
+							selectorSlot = PyrSlot::make(s_superPerformList);
+						} else {
+							selectorSlot = PyrSlot::make(s_performList);
+						}
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), selectorSlot);
+						auto* args = linkNodes(
+							(yyvsp[-5].node), 
+							bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_value), PyrParseNodeType::PushLitNode),
+							(yyvsp[-2].node));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, (yyvsp[-1].node));
+					}
+#line 2633 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 75: /* msgsend: expr DOT name OPENPAREN CLOSEPAREN blocklist  */
-#line 380 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-5], NULL, (PyrParseNode*)yyvsp[0]);
-			}
-#line 2752 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 406 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-3].slotNode), linkNodes((yyvsp[-5].node), (yyvsp[0].node)), nullptr); }
+#line 2639 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 76: /* msgsend: expr DOT name OPENPAREN arglist1 optkeyarglist CLOSEPAREN blocklist  */
-#line 384 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrParseNode* args;
-				args = linkNextNode((PyrParseNode*)yyvsp[-7], (PyrParseNode*)yyvsp[-3]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-5], args, (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
-			}
-#line 2762 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 408 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-5].slotNode), linkNodes((yyvsp[-7].node), (yyvsp[-3].node), (yyvsp[0].node)), (yyvsp[-2].node)); }
+#line 2645 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 77: /* msgsend: expr DOT name OPENPAREN arglistv1 optkeyarglist CLOSEPAREN  */
-#line 390 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				if (isSuperObjNode((PyrParseNode*)yyvsp[-6])) {
-					SetRaw(&((PyrPushNameNode*)yyvsp[-6])->mSlot, s_this);
-					SetSymbol(&slot, s_superPerformList);
-				} else {
-					SetSymbol(&slot, s_performList);
-				}
-				selectornode = newPyrSlotNode((yyloc), &slot);
-
-				args = linkNextNode((PyrParseNode*)yyvsp[-6], newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-4], NULL));
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-2]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, (PyrParseNode*)yyvsp[-1], 0);
-			}
-#line 2784 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 410 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrSlot slot;
+						if (isSuperObjNode((yyvsp[-6].node))) {
+							nodeCast<PyrSlotNode>((yyvsp[-6].node))->mSlot = PyrSlot::make(s_this);
+							slot = PyrSlot::make(s_superPerformList);
+						} else {
+							slot = PyrSlot::make(s_performList);
+						}
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), slot);
+						auto* args = linkNodes((yyvsp[-6].node), (yyvsp[-4].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(), (yyvsp[-2].node));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, (yyvsp[-1].node));
+					}
+#line 2662 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 78: /* msgsend: expr DOT name blocklist  */
-#line 408 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrCallNode((yyloc), (PyrSlotNode*)yyvsp[-1], (PyrParseNode*)yyvsp[-3], 0, (PyrParseNode*)yyvsp[0]);
-			}
-#line 2792 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 423 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), (yyvsp[-1].slotNode), linkNodes((yyvsp[-3].node), (yyvsp[0].node)), nullptr); }
+#line 2668 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 79: /* $@1: %empty  */
-#line 413 "lang/LangSource/Bison/lang11d"
-                                    { pushls(&generatorStack, yyvsp[0]); pushls(&generatorStack, 1); }
-#line 2798 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 431 "lang/LangSource/Bison/lang11d"
+                                                  { bison_cxt->pushToGenerator((yyvsp[0].node), 1); }
+#line 2674 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 80: /* generator: OPENCURLY COLON exprseq $@1 COMMA qual CLOSECURLY  */
-#line 414 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlot slot;
-				SetSymbol(&slot, getsym("r"));
-				PyrSlotNode* selectornode = newPyrSlotNode((yyloc), &slot);
-
-				PyrParseNode *block = (PyrParseNode*)newPyrBlockNode((yyloc), 0, 0, (PyrParseNode*)yyvsp[-1], false);
-				PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, (PyrParseNode*)blocklit, 0, 0);
-			}
-#line 2812 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 432 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrSlotNode* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("r")));
+						PyrParseNode *block = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), nullptr, nullptr, (yyvsp[-1].node), false);
+						PyrParseNode *blocklit = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>(block)), PyrParseNodeType::PushLitNode);
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, blocklit, nullptr);
+					}
+#line 2685 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 81: /* $@2: %empty  */
-#line 423 "lang/LangSource/Bison/lang11d"
-                                              { pushls(&generatorStack, yyvsp[0]); pushls(&generatorStack, 2); }
-#line 2818 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 438 "lang/LangSource/Bison/lang11d"
+                                                              { bison_cxt->pushToGenerator((yyvsp[0].node), 2); }
+#line 2691 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 82: /* generator: OPENCURLY SEMICOLON exprseq $@2 COMMA qual CLOSECURLY  */
-#line 424 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = yyvsp[-1];
-			}
-#line 2826 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 439 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = (yyvsp[-1].node); }
+#line 2697 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 83: /* nextqual: %empty  */
-#line 430 "lang/LangSource/Bison/lang11d"
-                                {
-					// innermost part
-					int action = popls(&generatorStack);
-					PyrParseNode* expr = (PyrParseNode*)popls(&generatorStack);
-
-					switch (action)
-					{
-						case 1 :
-						{
-							PyrSlot slot;
-							SetSymbol(&slot, getsym("yield"));
-							PyrSlotNode* selectornode = newPyrSlotNode((yyloc), &slot);
-
-							yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, expr, 0, 0);
-						} break;
-						case 2 :
-						{
-							yyval = (intptr_t)expr;
-						} break;
+#line 442 "lang/LangSource/Bison/lang11d"
+                                        {
+						// innermost part
+						const auto [expr, action] = bison_cxt->popFromGenerator();
+						if (action == 1) 
+							(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("yield"))), expr, nullptr);
+						else if (action == 2)
+							(yyval.node) = expr; 
+						// if action is neither, then what?
 					}
-				}
-#line 2852 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 2711 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 84: /* nextqual: COMMA qual  */
-#line 452 "lang/LangSource/Bison/lang11d"
-                                { yyval = yyvsp[0]; }
-#line 2858 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 451 "lang/LangSource/Bison/lang11d"
+                                             { (yyval.node) = (yyvsp[0].node); }
+#line 2717 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 85: /* qual: name LEFTARROW exprseq nextqual  */
-#line 456 "lang/LangSource/Bison/lang11d"
-                        {
-				// later should check if exprseq is a series and optimize it to for loop
-				PyrParseNode *exprseq = (PyrParseNode*)yyvsp[-1];
-				if (exprseq->mClassno == pn_CallNode) {
-					PyrCallNode *callnode = (PyrCallNode*)exprseq;
-					if (slotRawSymbol(&callnode->mSelector->mSlot) == s_series)
-					{
-						SetSymbol(&callnode->mSelector->mSlot, getsym("forSeries"));
-
-						PyrVarDefNode* var = newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-3], NULL, 0);
-						PyrArgListNode* args = newPyrArgListNode((yyloc), var, NULL, NULL);
-						PyrParseNode *block = (PyrParseNode*)newPyrBlockNode((yyloc), args, 0, (PyrParseNode*)yyvsp[0], false);
-						PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block);
-
-						callnode->mArglist = linkNextNode(callnode->mArglist, blocklit);
-						yyval = (intptr_t)callnode;
-
-					} else goto notoptimized1;
-				} else {
-					notoptimized1:
-					PyrSlot slot;
-					SetSymbol(&slot, getsym("do"));
-					PyrSlotNode* selectornode = newPyrSlotNode((yyloc), &slot);
-
-					PyrVarDefNode* var = newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-3], NULL, 0);
-					PyrArgListNode* args = newPyrArgListNode((yyloc), var, NULL, NULL);
-					PyrParseNode *block = (PyrParseNode*)newPyrBlockNode((yyloc), args, 0, (PyrParseNode*)yyvsp[0], false);
-					PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block);
-
-					PyrParseNode* args2 = linkNextNode(exprseq, blocklit);
-					yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args2, 0, 0);
-				}
-			}
-#line 2896 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 454 "lang/LangSource/Bison/lang11d"
+                                        {
+						// later should check if exprseq is a series and optimize it to for loop
+						
+						auto* var = bison_cxt->allocParseNode<PyrVarDefNode>((yylsp[-3]), (yyvsp[-3].slotNode), nullptr, ReadWriteAccessor::Private);
+						auto* args = bison_cxt->allocParseNode<PyrArgListNode>((yylsp[-3]), var, nullptr, nullptr);
+						auto *block = bison_cxt->allocParseNode<PyrBlockNode>((yylsp[-3]), args, nullptr, (yyvsp[0].node), false);
+						auto *blocklit = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>(block)), PyrParseNodeType::PushLitNode);
+						if (auto* call = nodeCast<PyrCallNode>((yyvsp[-1].node)); call && call->mSelector->mSlot.getSymbol() == s_series) {
+								call->mSelector->mSlot = PyrSlot::make(getsym("forSeries"));
+								call->mArglist = linkNodes(call->mArglist, blocklit);
+								(yyval.node) = call;
+						} else {
+							auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-1]), PyrSlot::make(getsym("do")));
+							(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-1].node), blocklit), nullptr);
+						}
+					}
+#line 2738 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 86: /* qual: name name LEFTARROW exprseq nextqual  */
-#line 490 "lang/LangSource/Bison/lang11d"
-                        {
-				// later should check if exprseq is a series and optimize it to for loop
-				PyrParseNode *exprseq = (PyrParseNode*)yyvsp[-1];
-				if (exprseq->mClassno == pn_CallNode) {
-					PyrCallNode *callnode = (PyrCallNode*)exprseq;
-					if (slotRawSymbol(&callnode->mSelector->mSlot) == s_series)
-					{
-						SetSymbol(&callnode->mSelector->mSlot, getsym("forSeries"));
+#line 471 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* call = nodeCast<PyrCallNode>((yyvsp[-1].node));
+						const auto is_series = call ? (call->mSelector->mSlot.getSymbol() == s_series) : false;
 
-						PyrVarDefNode* var1 = newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-4], NULL, 0);
-						PyrVarDefNode* var2 = newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-3], NULL, 0);
-						PyrVarDefNode* vars = (PyrVarDefNode*)linkNextNode(var1, var2);
-						PyrArgListNode* args = newPyrArgListNode((yyloc), vars, NULL, NULL);
-						PyrParseNode *block = (PyrParseNode*)newPyrBlockNode((yyloc), args, 0, (PyrParseNode*)yyvsp[0], false);
-						PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block);
+						auto* var1 = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[-4].slotNode), nullptr, ReadWriteAccessor::Private);
+						auto* var2 = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[-3].slotNode), nullptr, ReadWriteAccessor::Private);
+						auto* args = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), linkNodes(var1, var2), nullptr, nullptr);
+						auto *block = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), args, nullptr, (yyvsp[0].node), false);
+						auto *blocklit = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>(block)), PyrParseNodeType::PushLitNode);
 
-						callnode->mArglist = linkNextNode(callnode->mArglist, blocklit);
-						yyval = (intptr_t)callnode;
-
-					} else goto notoptimized2;
-				} else {
-					notoptimized2:
-					PyrSlot slot;
-					SetSymbol(&slot, getsym("do"));
-					PyrSlotNode* selectornode = newPyrSlotNode((yyloc), &slot);
-
-					PyrVarDefNode* var1 = newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-4], NULL, 0);
-					PyrVarDefNode* var2 = newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-3], NULL, 0);
-					PyrVarDefNode* vars = (PyrVarDefNode*)linkNextNode(var1, var2);
-					PyrArgListNode* args = newPyrArgListNode((yyloc), vars, NULL, NULL);
-					PyrParseNode *block = (PyrParseNode*)newPyrBlockNode((yyloc), args, 0, (PyrParseNode*)yyvsp[0], false);
-					PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block);
-
-					PyrParseNode* args2 = linkNextNode(exprseq, blocklit);
-					yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args2, 0, 0);
-				}
-			}
-#line 2938 "lang/LangSource/Bison/lang11d_tab.cpp"
+						if (auto* call = nodeCast<PyrCallNode>((yyvsp[-2].slotNode)); call && call->mSelector->mSlot.getSymbol() == s_series) {
+							call->mSelector->mSlot = PyrSlot::make(getsym("forSeries"));
+							call->mArglist = linkNodes(call->mArglist, blocklit);
+							(yyval.node) = call;
+						} else {
+							auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-2]), PyrSlot::make(getsym("do")));
+							(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-1].node), blocklit), nullptr);
+						}
+					}
+#line 2762 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 87: /* qual: VAR name EQUALSSIGN exprseq nextqual  */
-#line 528 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlot slot;
-				SetSymbol(&slot, s_value);
-				PyrSlotNode* selectornode = newPyrSlotNode((yyloc), &slot);
-
-				PyrVarDefNode* var = newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-3], NULL, 0);
-				PyrArgListNode* args = newPyrArgListNode((yyloc), var, NULL, NULL);
-				PyrParseNode *block = (PyrParseNode*)newPyrBlockNode((yyloc), args, 0, (PyrParseNode*)yyvsp[0], false);
-				PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block);
-				PyrParseNode* args2 = (PyrParseNode*)linkNextNode(blocklit, (PyrParseNode*)yyvsp[-1]);
-
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args2, 0, 0);
-			}
-#line 2956 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 491 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrSlot slot = PyrSlot::make(s_value);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), slot);
+						auto* var = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[-3].slotNode), nullptr, ReadWriteAccessor::Private);
+						auto* args = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), var, nullptr, nullptr);
+						auto *block = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), args, nullptr, (yyvsp[0].node), false);
+						auto *blocklit = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>(block)), PyrParseNodeType::PushLitNode);
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes(blocklit, (yyvsp[-1].node)), nullptr);
+					}
+#line 2776 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 88: /* qual: exprseq nextqual  */
-#line 542 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlot slot;
-				SetSymbol(&slot, getsym("if"));
-				PyrSlotNode* selectornode = newPyrSlotNode((yyloc), &slot);
-				PyrParseNode *block = (PyrParseNode*)newPyrBlockNode((yyloc), 0, 0, (PyrParseNode*)yyvsp[0], false);
-				PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block);
-				PyrParseNode* args2 = (PyrParseNode*)linkNextNode((PyrParseNode*)yyvsp[-1], blocklit);
-
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args2, 0, 0);
-			}
-#line 2971 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 501 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("if")));
+						auto* block = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), nullptr, nullptr, (yyvsp[0].node), false);
+						auto* blocklit = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>(block)), PyrParseNodeType::PushLitNode);
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-1].node), blocklit), nullptr);
+					}
+#line 2787 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 89: /* qual: COLON COLON exprseq nextqual  */
-#line 553 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrDropNode((yyloc), (PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]);
-			}
-#line 2979 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 508 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrDropNode>((yyloc), (yyvsp[-1].node), (yyvsp[0].node)); }
+#line 2793 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 90: /* qual: COLON WHILE exprseq nextqual  */
-#line 557 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlot slot;
-				SetSymbol(&slot, getsym("alwaysYield"));
-				PyrSlotNode* selectornode1 = newPyrSlotNode((yyloc), &slot);
+#line 510 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode1 = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("alwaysYield")));
+						auto* pushnil = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode);
+						auto* yieldNil = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode1, pushnil, nullptr);
+						auto* block1 = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), nullptr, nullptr, yieldNil, false);
+						auto* blocklit1 = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>(block1)), PyrParseNodeType::PushLitNode);
+						auto* block2 = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), nullptr, nullptr, (yyvsp[0].node), false);
+						auto* blocklit2 = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>(block2)), PyrParseNodeType::PushLitNode);
 
-				SetSymbol(&slot, getsym("if"));
-				PyrSlotNode* selectornode2 = newPyrSlotNode((yyloc), &slot);
-
-				SetNil(&slot);
-				PyrParseNode *pushnil = (PyrParseNode*)newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &slot), NULL);
-
-				PyrParseNode *yieldNil = (PyrParseNode*)newPyrCallNode((yyloc), selectornode1, pushnil, 0, 0);
-
-				PyrParseNode *block1 = (PyrParseNode*)newPyrBlockNode((yyloc), 0, 0, yieldNil, false);
-				PyrParseNode *blocklit1 = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block1);
-				PyrParseNode *block2 = (PyrParseNode*)newPyrBlockNode((yyloc), 0, 0, (PyrParseNode*)yyvsp[0], false);
-				PyrParseNode *blocklit2 = (PyrParseNode*)newPyrPushLitNode((yyloc), NULL, block2);
-				PyrParseNode* args2 = (PyrParseNode*)linkNextNode((PyrParseNode*)yyvsp[-1], blocklit2);
-				PyrParseNode* args3 = (PyrParseNode*)linkNextNode(args2, blocklit1);
-
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode2, args3, 0, 0);
-			}
-#line 3006 "lang/LangSource/Bison/lang11d_tab.cpp"
+						auto* selectornode2 = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("if")));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode2, linkNodes((yyvsp[-1].node), blocklit2, blocklit1), nullptr);
+					}
+#line 2810 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 97: /* expr1: OPENPAREN exprseq CLOSEPAREN  */
-#line 588 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrParseNode* node = (PyrParseNode*)yyvsp[-1];
-				node->mParens = 1;
-				yyval = yyvsp[-1];
-				node->location = (yyloc);
-			}
-#line 3017 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 530 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrParseNode* node = (yyvsp[-1].node);
+						node->mParens = true; // This means  (((((1))))), will not count the brackets, but just indicates they exist.
+						node->location = (yyloc); // make the location include the brackets.
+						(yyval.node) = (yyvsp[-1].node);
+					}
+#line 2821 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 98: /* expr1: TILDE name  */
-#line 595 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrParseNode* argnode;
-				PyrSlotNode* selectornode;
-				PyrSlot slot;
-				argnode = (PyrParseNode*)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL);
-				SetSymbol(&slot, s_envirGet);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, argnode, 0, 0);
-			}
-#line 3031 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 537 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* argnode = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>();
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_envirGet));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, argnode, nullptr);
+					}
+#line 2831 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 99: /* expr1: OPENSQUARE arrayelems CLOSESQUARE  */
-#line 605 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrDynListNode((yyloc), 0, (PyrParseNode*)yyvsp[-1]); }
-#line 3037 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 543 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrDynListNode>((yyloc), nullptr, (yyvsp[-1].node)); }
+#line 2837 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 100: /* expr1: OPENPAREN valrange2 CLOSEPAREN  */
-#line 607 "lang/LangSource/Bison/lang11d"
-                        { yyval = yyvsp[-1]; }
-#line 3043 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 545 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = (yyvsp[-1].node); }
+#line 2843 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 101: /* expr1: OPENPAREN COLON valrange3 CLOSEPAREN  */
-#line 609 "lang/LangSource/Bison/lang11d"
-                        { yyval = yyvsp[-1]; }
-#line 3049 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 547 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = (yyvsp[-1].node); }
+#line 2849 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 102: /* expr1: OPENPAREN dictslotlist CLOSEPAREN  */
-#line 611 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrDynDictNode((yyloc), (PyrParseNode*)yyvsp[-1]); }
-#line 3055 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 549 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrDynDictNode>((yyloc), (yyvsp[-1].node)); }
+#line 2855 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 103: /* expr1: pseudovar  */
-#line 613 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[0]); }
-#line 3061 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 103: /* expr1: expr1 OPENSQUARE arglist1 CLOSESQUARE  */
+#line 551 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_at));
+						auto* args = linkNodes((yyvsp[-3].node), (yyvsp[-1].node));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2865 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 104: /* expr1: expr1 OPENSQUARE arglist1 CLOSESQUARE  */
-#line 615 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
+  case 105: /* valrangex1: expr1 OPENSQUARE arglist1 DOTDOT CLOSESQUARE  */
+#line 559 "lang/LangSource/Bison/lang11d"
+                                        {
+						const auto arglen = nodeListLength((yyvsp[-2].node));
+						checkArraySubrangeSyntax((yyvsp[-2].node), arglen);
+						auto* args = linkNodes((yyvsp[-4].node), (yyvsp[-2].node));
+						if (arglen < 2) 
+							args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
 
-				SetSymbol(&slot, s_at);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = linkNextNode(
-					(PyrParseNode*)yyvsp[-3],
-					(PyrParseNode*)yyvsp[-1]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3078 "lang/LangSource/Bison/lang11d_tab.cpp"
+						args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_copyseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2881 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 106: /* valrangex1: expr1 OPENSQUARE arglist1 DOTDOT CLOSESQUARE  */
-#line 631 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				int arglen = nodeListLength((PyrParseNode*)yyvsp[-2]);
-				if (arglen > 2) {
-					error("ArrayedCollection subrange has too many arguments.\n");
-					nodePostErrorLine((PyrParseNode*)yyvsp[-2]);
-					compileErrors++;
-				}
-
-				SetNil(&nilSlot);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-4], (PyrParseNode*)yyvsp[-2]);
-				if (arglen < 2) {
-					nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-					args = linkNextNode(args, nilnode1);
-				}
-				args = linkNextNode(args, nilnode2);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3109 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 106: /* valrangex1: expr1 OPENSQUARE DOTDOT exprseq CLOSESQUARE  */
+#line 571 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* nilnode1 = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode);
+						auto* args = linkNodes((yyvsp[-4].node), nilnode1);
+						auto* nilnode2 = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode);
+						args = linkNodes(args, nilnode2);
+						args = linkNodes(args, (yyvsp[-1].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_copyseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2895 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 107: /* valrangex1: expr1 OPENSQUARE DOTDOT exprseq CLOSESQUARE  */
-#line 658 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
+  case 107: /* valrangex1: expr1 OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE  */
+#line 581 "lang/LangSource/Bison/lang11d"
+                                        {
+						const int arglen = nodeListLength((yyvsp[-3].node));
+						checkArraySubrangeSyntax((yyvsp[-3].node), arglen);
 
-				SetNil(&nilSlot);
-				nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-4], nilnode1);
-				args = linkNextNode(args, nilnode2);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-1]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3131 "lang/LangSource/Bison/lang11d_tab.cpp"
+						auto* args = linkNodes((yyvsp[-5].node), (yyvsp[-3].node));
+						if (arglen < 2) 
+							args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						
+						args = linkNodes(args, (yyvsp[-1].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_copyseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2912 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 108: /* valrangex1: expr1 OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE  */
-#line 676 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				int arglen = nodeListLength((PyrParseNode*)yyvsp[-3]);
-				if (arglen > 2) {
-					error("ArrayedCollection subrange has too many arguments.\n");
-					nodePostErrorLine((PyrParseNode*)yyvsp[-3]);
-					compileErrors++;
-				}
-
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-5], (PyrParseNode*)yyvsp[-3]);
-				if (arglen < 2) {
-					SetNil(&nilSlot);
-					nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-					args = linkNextNode(args, nilnode1);
-				}
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-1]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3160 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 108: /* valrangeassign: expr1 OPENSQUARE arglist1 DOTDOT CLOSESQUARE EQUALSSIGN expr  */
+#line 595 "lang/LangSource/Bison/lang11d"
+                                        {
+						const int arglen = nodeListLength((yyvsp[-4].node));
+						checkArraySubrangeSyntax((yyvsp[-4].node), arglen);
+						
+						auto* args = linkNodes((yyvsp[-6].node), (yyvsp[-4].node));
+						if (arglen < 2) 
+							args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						
+						args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode), (yyvsp[0].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_putseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2929 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 109: /* valrangeassign: expr1 OPENSQUARE arglist1 DOTDOT CLOSESQUARE EQUALSSIGN expr  */
+  case 109: /* valrangeassign: expr1 OPENSQUARE DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
+#line 608 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes(
+							(yyvsp[-6].node),
+							bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode),
+							bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode),
+							(yyvsp[-3].node), 
+							(yyvsp[0].node)
+						);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_putseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2945 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 110: /* valrangeassign: expr1 OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
+#line 620 "lang/LangSource/Bison/lang11d"
+                                        {
+						const int arglen = nodeListLength((yyvsp[-5].node));
+						auto* args = linkNodes((yyvsp[-7].node), (yyvsp[-5].node));
+						if (arglen < 2) 
+							args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						
+						args = linkNodes(args, (yyvsp[-3].node), (yyvsp[0].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_putseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2960 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 111: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT CLOSESQUARE  */
+#line 637 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrSlotNode* nilnode1, *nilnode2;
+						PyrSlot selectorSlot, nilSlot;
+						PyrParseNode* args;
+
+						const int arglen = nodeListLength((yyvsp[-2].node));
+
+						checkArraySubrangeSyntax((yyvsp[-2].node), arglen);
+
+						args = linkNodes((yyvsp[-5].node), (yyvsp[-2].node));
+						if (arglen < 2) 
+							args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), nilSlot, PyrParseNodeType::PushLitNode));
+
+						args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_copyseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2983 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 112: /* valrangexd: expr DOT OPENSQUARE DOTDOT exprseq CLOSESQUARE  */
+#line 656 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes(
+							(yyvsp[-5].node),
+							bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode),
+							bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode),
+							(yyvsp[-1].node)
+						);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_copyseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 2998 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 113: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE  */
+#line 667 "lang/LangSource/Bison/lang11d"
+                                        {
+						const int arglen = nodeListLength((yyvsp[-3].node));
+
+						checkArraySubrangeSyntax((yyvsp[-3].node), arglen);
+
+						auto* args = linkNodes((yyvsp[-6].node), (yyvsp[-3].node));
+						if (arglen < 2) 
+							args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						
+						args = linkNodes(args, (yyvsp[-1].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_copyseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3016 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 114: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT CLOSESQUARE EQUALSSIGN expr  */
+#line 681 "lang/LangSource/Bison/lang11d"
+                                        {
+						const int arglen = nodeListLength((yyvsp[-4].node));
+						checkArraySubrangeSyntax((yyvsp[-4].node), arglen);
+
+						auto* args = linkNodes((yyvsp[-7].node), (yyvsp[-4].node));
+						if (arglen < 2) 
+							args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						
+						args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode), (yyvsp[0].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_putseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3033 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 115: /* valrangexd: expr DOT OPENSQUARE DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
+#line 694 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes((yyvsp[-7].node), bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						args = linkNodes(args, (yyvsp[-3].node));
+						args = linkNodes(args, (yyvsp[0].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_putseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3046 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 116: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
 #line 703 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
+                                        {
+						const int arglen = nodeListLength((yyvsp[-5].node));
+						checkArraySubrangeSyntax((yyvsp[-5].node), arglen);
 
-				int arglen = nodeListLength((PyrParseNode*)yyvsp[-4]);
-				if (arglen > 2) {
-					error("ArrayedCollection subrange has too many arguments.\n");
-					nodePostErrorLine((PyrParseNode*)yyvsp[-4]);
-					compileErrors++;
-				}
-
-				SetNil(&nilSlot);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_putseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-6], (PyrParseNode*)yyvsp[-4]);
-				if (arglen < 2) {
-					nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-					args = linkNextNode(args, nilnode1);
-				}
-				args = linkNextNode(args, nilnode2);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3192 "lang/LangSource/Bison/lang11d_tab.cpp"
+						auto* args = linkNodes((yyvsp[-8].node), (yyvsp[-5].node));
+						if (arglen < 2) 
+							args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						
+						args = linkNodes(args, (yyvsp[-3].node), (yyvsp[0].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_putseries));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3063 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 110: /* valrangeassign: expr1 OPENSQUARE DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
-#line 731 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_putseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-6], nilnode1);
-				args = linkNextNode(args, nilnode2);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-3]);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3215 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 117: /* valrange2: exprseq DOTDOT  */
+#line 717 "lang/LangSource/Bison/lang11d"
+                                        {
+						// if this is not used in a 'do' or list comprehension, then should return an error.
+						auto* args = linkNodes((yyvsp[-1].node), bison_cxt->allocParseNode<PyrSlotNode>((yylsp[0]), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						args = linkNodes(args, bison_cxt->allocParseNode<PyrSlotNode>((yylsp[0]), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_series));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3075 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 111: /* valrangeassign: expr1 OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
-#line 750 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				int arglen = nodeListLength((PyrParseNode*)yyvsp[-5]);
-				if (arglen > 2) {
-					error("ArrayedCollection subrange has too many arguments.\n");
-					nodePostErrorLine((PyrParseNode*)yyvsp[-5]);
-					compileErrors++;
-				}
-
-				SetSymbol(&selectorSlot, s_putseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-7], (PyrParseNode*)yyvsp[-5]);
-				if (arglen < 2) {
-					SetNil(&nilSlot);
-					nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-					args = linkNextNode(args, nilnode1);
-				}
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-3]);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3245 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 118: /* valrange2: DOTDOT exprseq  */
+#line 725 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes(
+							bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-1]), PyrSlot::make(0), PyrParseNodeType::PushLitNode),
+							bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-1]), PyrSlot{}, PyrParseNodeType::PushLitNode),
+							(yyvsp[0].node)
+						);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_series));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3089 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 112: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT CLOSESQUARE  */
-#line 778 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				int arglen = nodeListLength((PyrParseNode*)yyvsp[-2]);
-				if (arglen > 2) {
-					error("ArrayedCollection subrange has too many arguments.\n");
-					nodePostErrorLine((PyrParseNode*)yyvsp[-3]);
-					compileErrors++;
-				}
-
-				SetNil(&nilSlot);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-5], (PyrParseNode*)yyvsp[-2]);
-				if (arglen < 2) {
-					nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-					args = linkNextNode(args, nilnode1);
-				}
-				args = linkNextNode(args, nilnode2);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3276 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 119: /* valrange2: exprseq DOTDOT exprseq  */
+#line 735 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes((yyvsp[-2].node), bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode), (yyvsp[0].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_series));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3099 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 113: /* valrangexd: expr DOT OPENSQUARE DOTDOT exprseq CLOSESQUARE  */
-#line 805 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-5], nilnode1);
-				args = linkNextNode(args, nilnode2);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-1]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3298 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 120: /* valrange2: exprseq COMMA exprseq DOTDOT exprseq  */
+#line 741 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_series));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-4].node), (yyvsp[-2].node), (yyvsp[0].node)), nullptr);
+					}
+#line 3108 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 114: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE  */
-#line 823 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
+  case 121: /* valrange2: exprseq COMMA exprseq DOTDOT  */
+#line 746 "lang/LangSource/Bison/lang11d"
+                                        {
+						// if this is not used in a 'do' or list comprehension, then should return an error.
+						auto* args = linkNodes((yyvsp[-3].node), (yyvsp[-1].node), bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot{}, PyrParseNodeType::PushLitNode));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_series));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3119 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
 
-				int arglen = nodeListLength((PyrParseNode*)yyvsp[-3]);
-				if (arglen > 2) {
-					error("ArrayedCollection subrange has too many arguments.\n");
-					nodePostErrorLine((PyrParseNode*)yyvsp[-4]);
-					compileErrors++;
-				}
+  case 122: /* valrange3: DOTDOT exprseq  */
+#line 754 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes(
+							bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-1]), PyrSlot::make(0), PyrParseNodeType::PushLitNode),
+							bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-1]), PyrSlot{}, PyrParseNodeType::PushLitNode),
+							(yyvsp[0].node)
+						);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("seriesIter")));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3133 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
 
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-6], (PyrParseNode*)yyvsp[-3]);
-				if (arglen < 2) {
-					SetNil(&nilSlot);
-					nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-					args = linkNextNode(args, nilnode1);
-				}
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-1]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
+  case 123: /* valrange3: exprseq DOTDOT  */
+#line 764 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes(
+							(yyvsp[-1].node),
+							bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-1]), PyrSlot{}, PyrParseNodeType::PushLitNode),
+							bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-1]), PyrSlot{}, PyrParseNodeType::PushLitNode)
+						);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("seriesIter")));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3147 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 124: /* valrange3: exprseq DOTDOT exprseq  */
+#line 775 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes(
+							(yyvsp[-2].node),
+							bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-1]), PyrSlot{}, PyrParseNodeType::PushLitNode),
+							(yyvsp[0].node)
+						);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("seriesIter")));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3161 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 125: /* valrange3: exprseq COMMA exprseq DOTDOT  */
+#line 785 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes(
+							(yyvsp[-3].node),
+							(yyvsp[-1].node),
+							bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-2]), PyrSlot{}, PyrParseNodeType::PushLitNode)
+						);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("seriesIter")));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3175 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 126: /* valrange3: exprseq COMMA exprseq DOTDOT exprseq  */
+#line 795 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(getsym("seriesIter")));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-4].node), (yyvsp[-2].node), (yyvsp[0].node)), nullptr);
+					}
+#line 3184 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 130: /* expr: CLASSNAME  */
+#line 804 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushNameNode>(); }
+#line 3190 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 131: /* expr: expr DOT OPENSQUARE arglist1 CLOSESQUARE  */
+#line 806 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_at));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-4].node), (yyvsp[-1].node)), nullptr);
+					}
+#line 3199 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 132: /* expr: BACKTICK expr  */
+#line 811 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes(
+							bison_cxt->allocParseNode<PyrSlotNode>((yylsp[-1]), PyrSlot::make(s_ref), PyrParseNodeType::PushNameNode),
+							(yyvsp[0].node)
+						);
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_new));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3212 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 133: /* expr: expr binop2 adverb expr  */
+#line 820 "lang/LangSource/Bison/lang11d"
+                                        {
+						(yyvsp[-3].node)->mNext = (yyvsp[0].node);
+						(yyvsp[0].node)->mNext = (yyvsp[-1].node);
+						(yyval.node) = bison_cxt->allocParseNode<PyrBinopCallNode>((yyloc), (yyvsp[-2].slotNode), (yyvsp[-3].node));
+					}
+#line 3222 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 134: /* expr: name EQUALSSIGN expr  */
+#line 826 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrAssignNode>((yyloc), (yyvsp[-2].slotNode), (yyvsp[0].node)); }
+#line 3228 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 135: /* expr: TILDE name EQUALSSIGN expr  */
+#line 828 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* args = linkNodes((yyvsp[-2].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(), (yyvsp[0].node));
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_envirPut));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, args, nullptr);
+					}
+#line 3238 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 136: /* expr: expr DOT name EQUALSSIGN expr  */
+#line 834 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrSetterNode>((yyloc), (yyvsp[-2].slotNode), (yyvsp[-4].node), (yyvsp[0].node)); }
+#line 3244 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 137: /* expr: name OPENPAREN arglist1 optkeyarglist CLOSEPAREN EQUALSSIGN expr  */
+#line 838 "lang/LangSource/Bison/lang11d"
+                                        {
+						if ((yyvsp[-3].node) != nullptr) {
+							bison_cxt->postErrorInCurrentFile((yyvsp[-3].node)->location, "Setter method call with keyword arguments", "delete these keyword arguments.");
+						}
+						(yyval.node) = bison_cxt->allocParseNode<PyrSetterNode>((yyloc), (yyvsp[-6].slotNode), (yyvsp[-4].node), (yyvsp[0].node));
+					}
+#line 3255 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 138: /* expr: HASH mavars EQUALSSIGN expr  */
+#line 845 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrMultiAssignNode>((yyloc), (yyvsp[-2].multiAssignListNode), (yyvsp[0].node)); }
+#line 3261 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 139: /* expr: expr1 OPENSQUARE arglist1 CLOSESQUARE EQUALSSIGN expr  */
+#line 847 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_put));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-5].node), (yyvsp[-3].node), (yyvsp[0].node)), nullptr);
+					}
+#line 3270 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 140: /* expr: expr DOT OPENSQUARE arglist1 CLOSESQUARE EQUALSSIGN expr  */
+#line 852 "lang/LangSource/Bison/lang11d"
+                                        {
+						auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(s_put));
+						(yyval.node) = bison_cxt->allocParseNode<PyrCallNode>((yyloc), selectornode, linkNodes((yyvsp[-6].node), (yyvsp[-3].node), (yyvsp[0].node)), nullptr);
+					}
+#line 3279 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 141: /* adverb: %empty  */
+#line 857 "lang/LangSource/Bison/lang11d"
+                                  { (yyval.node) = nullptr; }
+#line 3285 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 142: /* adverb: DOT name  */
+#line 858 "lang/LangSource/Bison/lang11d"
+                                           { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3291 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 143: /* adverb: DOT integer  */
+#line 859 "lang/LangSource/Bison/lang11d"
+                                              { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3297 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 144: /* adverb: DOT OPENPAREN exprseq CLOSEPAREN  */
+#line 860 "lang/LangSource/Bison/lang11d"
+                                                                   { (yyval.node) = (yyvsp[-1].node); }
+#line 3303 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 146: /* exprn: exprn SEMICOLON expr  */
+#line 864 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrDropNode>((yyloc), (yyvsp[-2].node), (yyvsp[0].node)); }
+#line 3309 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 148: /* arrayelems: %empty  */
+#line 868 "lang/LangSource/Bison/lang11d"
+                                 { (yyval.node) = nullptr; }
+#line 3315 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 149: /* arrayelems: arrayelems1 optcomma  */
+#line 869 "lang/LangSource/Bison/lang11d"
+                                                       { (yyval.node) = (yyvsp[-1].node); }
+#line 3321 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 151: /* arrayelems1: exprseq COLON exprseq  */
+#line 873 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-2].node), (yyvsp[0].node)); }
 #line 3327 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 115: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT CLOSESQUARE EQUALSSIGN expr  */
-#line 848 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				int arglen = nodeListLength((PyrParseNode*)yyvsp[-4]);
-				if (arglen > 2) {
-					error("ArrayedCollection subrange has too many arguments.\n");
-					nodePostErrorLine((PyrParseNode*)yyvsp[-5]);
-					compileErrors++;
-				}
-
-				SetNil(&nilSlot);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_putseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-7], (PyrParseNode*)yyvsp[-4]);
-				if (arglen < 2) {
-					nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-					args = linkNextNode(args, nilnode1);
-				}
-				args = linkNextNode(args, nilnode2);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3359 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 152: /* arrayelems1: KEYBINOP exprseq  */
+#line 875 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes( (yyvsp[-1].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(), (yyvsp[0].node)); }
+#line 3333 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 116: /* valrangexd: expr DOT OPENSQUARE DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
-#line 876 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_putseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-7], nilnode1);
-				args = linkNextNode(args, nilnode2);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-3]);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3382 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 153: /* arrayelems1: arrayelems1 COMMA exprseq  */
+#line 877 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = linkNodes((yyvsp[-2].node), (yyvsp[0].node)); }
+#line 3339 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 117: /* valrangexd: expr DOT OPENSQUARE arglist1 DOTDOT exprseq CLOSESQUARE EQUALSSIGN expr  */
-#line 895 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode1;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				int arglen = nodeListLength((PyrParseNode*)yyvsp[-5]);
-				if (arglen > 2) {
-					error("ArrayedCollection subrange has too many arguments.\n");
-					nodePostErrorLine((PyrParseNode*)yyvsp[-6]);
-					compileErrors++;
-				}
-
-				SetSymbol(&selectorSlot, s_putseries);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-8], (PyrParseNode*)yyvsp[-5]);
-				if (arglen < 2) {
-					SetNil(&nilSlot);
-					nilnode1 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-					args = linkNextNode(args, nilnode1);
-				}
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[-3]);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3412 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 154: /* arrayelems1: arrayelems1 COMMA KEYBINOP exprseq  */
+#line 879 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-3].node), (yyvsp[-1].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(), (yyvsp[0].node)); }
+#line 3345 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 118: /* valrange2: exprseq DOTDOT  */
+  case 155: /* arrayelems1: arrayelems1 COMMA exprseq COLON exprseq  */
+#line 881 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-4].node), (yyvsp[-2].node), (yyvsp[0].node)); }
+#line 3351 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 157: /* arglist1: arglist1 COMMA exprseq  */
+#line 885 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-2].node), (yyvsp[0].node)); }
+#line 3357 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 158: /* arglistv1: MULTIPLY exprseq  */
+#line 888 "lang/LangSource/Bison/lang11d"
+                                        { (yylsp[0]) = (yyloc); (yyval.node) = (yyvsp[0].node); }
+#line 3363 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 159: /* arglistv1: arglist1 COMMA MULTIPLY exprseq  */
+#line 890 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = linkNodes((yyvsp[-3].node), (yyvsp[0].node)); }
+#line 3369 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 161: /* keyarglist1: keyarglist1 COMMA keyarg  */
+#line 894 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = linkNodes((yyvsp[-2].node), (yyvsp[0].node)); }
+#line 3375 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 162: /* keyarg: KEYBINOP exprseq  */
+#line 897 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrPushKeyArgNode>((yyloc), (yyvsp[-1].slotNode), (yyvsp[0].node)); }
+#line 3381 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 163: /* optkeyarglist: optcomma  */
+#line 899 "lang/LangSource/Bison/lang11d"
+                           { (yyval.node) = nullptr; }
+#line 3387 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 164: /* optkeyarglist: COMMA keyarglist1 optcomma  */
+#line 900 "lang/LangSource/Bison/lang11d"
+                                                             { (yyval.node) = (yyvsp[-1].node); }
+#line 3393 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 165: /* mavars: nameList  */
+#line 903 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.multiAssignListNode) = bison_cxt->allocParseNode<PyrMultiAssignVarListNode>((yyloc), (yyvsp[0].slotNode), nullptr); }
+#line 3399 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 166: /* mavars: nameList ELLIPSIS name  */
+#line 905 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.multiAssignListNode) = bison_cxt->allocParseNode<PyrMultiAssignVarListNode>((yyloc), (yyvsp[-2].slotNode), (yyvsp[0].slotNode)); }
+#line 3405 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 168: /* nameList: nameList COMMA name  */
+#line 909 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.slotNode) = linkNodes((yyvsp[-2].slotNode), (yyvsp[0].slotNode)); }
+#line 3411 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 169: /* slotliteral: integer  */
+#line 911 "lang/LangSource/Bison/lang11d"
+                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3417 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 170: /* slotliteral: floatp  */
+#line 912 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3423 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 171: /* slotliteral: ASCII  */
+#line 913 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3429 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 172: /* slotliteral: STRING  */
+#line 914 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3435 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 173: /* slotliteral: SYMBOL  */
+#line 915 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3441 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 174: /* slotliteral: TRUEOBJ  */
+#line 916 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3447 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 175: /* slotliteral: FALSEOBJ  */
+#line 917 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3453 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 176: /* slotliteral: NILOBJ  */
+#line 918 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3459 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 177: /* slotliteral: listlit  */
+#line 919 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>((yyvsp[0].node))), PyrParseNodeType::LiteralNode); }
+#line 3465 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 178: /* blockliteral: block  */
+#line 921 "lang/LangSource/Bison/lang11d"
+                        { (yyval.node) = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>((yyvsp[0].node))), PyrParseNodeType::PushLitNode); }
+#line 3471 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 179: /* pushname: name  */
 #line 923 "lang/LangSource/Bison/lang11d"
-                        {
-				// if this is not used in a 'do' or list comprehension, then should return an error.
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_series);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-1], nilnode);
-				args = linkNextNode(args, nilnode2);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3434 "lang/LangSource/Bison/lang11d_tab.cpp"
+                               { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushNameNode>(); }
+#line 3477 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 119: /* valrange2: DOTDOT exprseq  */
+  case 180: /* pushliteral: integer  */
+#line 925 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3483 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 181: /* pushliteral: floatp  */
+#line 926 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3489 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 182: /* pushliteral: ASCII  */
+#line 927 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3495 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 183: /* pushliteral: STRING  */
+#line 928 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3501 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 184: /* pushliteral: SYMBOL  */
+#line 929 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3507 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 185: /* pushliteral: TRUEOBJ  */
+#line 930 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3513 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 186: /* pushliteral: FALSEOBJ  */
+#line 931 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3519 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 187: /* pushliteral: NILOBJ  */
+#line 932 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(); }
+#line 3525 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 188: /* pushliteral: listlit  */
+#line 933 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>((yyvsp[0].node))), PyrParseNodeType::PushLitNode); }
+#line 3531 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 189: /* listliteral: integer  */
+#line 935 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>();}
+#line 3537 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 190: /* listliteral: floatp  */
+#line 936 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3543 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 191: /* listliteral: ASCII  */
+#line 937 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3549 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 192: /* listliteral: STRING  */
+#line 938 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3555 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 193: /* listliteral: SYMBOL  */
+#line 939 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3561 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 194: /* listliteral: name  */
+#line 940 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3567 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 195: /* listliteral: TRUEOBJ  */
+#line 941 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3573 "lang/LangSource/Bison/lang11d_tab.cpp"
+    break;
+
+  case 196: /* listliteral: FALSEOBJ  */
 #line 942 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode, *zeronode;
-				PyrSlot selectorSlot, nilSlot, zeroSlot;
-				PyrParseNode* args;
-
-				SetInt(&zeroSlot, 0);
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-				zeronode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &zeroSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_series);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode(zeronode, nilnode);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3456 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 120: /* valrange2: exprseq DOTDOT exprseq  */
-#line 961 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_series);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-2], nilnode);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3476 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 121: /* valrange2: exprseq COMMA exprseq DOTDOT exprseq  */
-#line 978 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot selectorSlot;
-				PyrParseNode* args;
-
-				SetSymbol(&selectorSlot, s_series);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode(
-					(PyrParseNode*)yyvsp[-4],
-					(PyrParseNode*)yyvsp[-2]);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3494 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 122: /* valrange2: exprseq COMMA exprseq DOTDOT  */
-#line 992 "lang/LangSource/Bison/lang11d"
-                        {
-				// if this is not used in a 'do' or list comprehension, then should return an error.
-				PyrSlotNode *selectornode;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-				PyrPushLitNode *nilnode;
-
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, s_series);
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode(
-					(PyrParseNode*)yyvsp[-3],
-					(PyrParseNode*)yyvsp[-1]);
-				args = linkNextNode(args, nilnode);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3517 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 123: /* valrange3: DOTDOT exprseq  */
-#line 1013 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode, *zeronode;
-				PyrSlot selectorSlot, nilSlot, zeroSlot;
-				PyrParseNode* args;
-
-				SetInt(&zeroSlot, 0);
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-				zeronode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &zeroSlot), NULL);
-
-				SetSymbol(&selectorSlot, getsym("seriesIter"));
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode(zeronode, nilnode);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3539 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 124: /* valrange3: exprseq DOTDOT  */
-#line 1032 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode, *nilnode2;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-				nilnode2 = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, getsym("seriesIter"));
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-1], nilnode);
-				args = linkNextNode(args, nilnode2);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3560 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 125: /* valrange3: exprseq DOTDOT exprseq  */
-#line 1050 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, getsym("seriesIter"));
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-2], nilnode);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3580 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 126: /* valrange3: exprseq COMMA exprseq DOTDOT  */
-#line 1067 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode((yyloc), newPyrSlotNode((yyloc), &nilSlot), NULL);
-
-				SetSymbol(&selectorSlot, getsym("seriesIter"));
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode((PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]);
-				args = linkNextNode(args, nilnode);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3600 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 127: /* valrange3: exprseq COMMA exprseq DOTDOT exprseq  */
-#line 1083 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot selectorSlot;
-				PyrParseNode* args;
-
-				SetSymbol(&selectorSlot, getsym("seriesIter"));
-				selectornode = newPyrSlotNode((yyloc), &selectorSlot);
-				args = linkNextNode(
-					(PyrParseNode*)yyvsp[-4],
-					(PyrParseNode*)yyvsp[-2]);
-				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3618 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 131: /* expr: classname  */
-#line 1101 "lang/LangSource/Bison/lang11d"
-                            { yyval = (intptr_t)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[0]); }
-#line 3624 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 132: /* expr: expr DOT OPENSQUARE arglist1 CLOSESQUARE  */
-#line 1103 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				SetSymbol(&slot, s_at);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = linkNextNode(
-					(PyrParseNode*)yyvsp[-4],
-					(PyrParseNode*)yyvsp[-1]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3641 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 133: /* expr: BACKTICK expr  */
-#line 1116 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrParseNode *node, *args;
-				PyrSlotNode *slotnode;
-				PyrSlot slot;
-
-				SetSymbol(&slot, s_ref);
-				slotnode = newPyrSlotNode((yyloc), &slot);
-				node = (PyrParseNode*)newPyrPushNameNode((yyloc), slotnode);
-				args = linkNextNode(node, (PyrParseNode*)yyvsp[0]);
-				SetSymbol(&slot, s_new);
-				slotnode = newPyrSlotNode((yyloc), &slot);
-				yyval = (intptr_t)newPyrCallNode((yyloc), slotnode, args, 0, 0);
-			}
-#line 3659 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 134: /* expr: expr binop2 adverb expr  */
-#line 1130 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrBinopCallNode((yyloc), (PyrSlotNode*)yyvsp[-2],
-						(PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0], (PyrParseNode*)yyvsp[-1]);
-			}
-#line 3668 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 135: /* expr: name EQUALSSIGN expr  */
-#line 1135 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrAssignNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], 0);
-			}
-#line 3676 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 136: /* expr: TILDE name EQUALSSIGN expr  */
-#line 1139 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrParseNode *argnode, *args;
-				PyrSlotNode* selectornode;
-				PyrSlot slot;
-				argnode = (PyrParseNode*)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-2], NULL);
-				args = linkNextNode(argnode, (PyrParseNode*)yyvsp[0]);
-				SetSymbol(&slot, s_envirPut);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3691 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 137: /* expr: expr DOT name EQUALSSIGN expr  */
-#line 1150 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrSetterNode((yyloc), (PyrSlotNode*)yyvsp[-2],
-						(PyrParseNode*)yyvsp[-4], (PyrParseNode*)yyvsp[0]);
-			}
-#line 3700 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 138: /* expr: name OPENPAREN arglist1 optkeyarglist CLOSEPAREN EQUALSSIGN expr  */
-#line 1155 "lang/LangSource/Bison/lang11d"
-                        {
-				if (yyvsp[-3] != 0) {
-					error("Setter method called with keyword arguments.\n");
-					nodePostErrorLine((PyrParseNode*)yyvsp[-3]);
-					compileErrors++;
-				}
-				yyval = (intptr_t)newPyrSetterNode((yyloc), (PyrSlotNode*)yyvsp[-6],
-						(PyrParseNode*)yyvsp[-4], (PyrParseNode*)yyvsp[0]);
-			}
-#line 3714 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 139: /* expr: HASH mavars EQUALSSIGN expr  */
-#line 1165 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrMultiAssignNode((yyloc), (PyrMultiAssignVarListNode*)yyvsp[-2],
-					(PyrParseNode*)yyvsp[0], 0);
-			}
-#line 3723 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 140: /* expr: expr1 OPENSQUARE arglist1 CLOSESQUARE EQUALSSIGN expr  */
-#line 1170 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				SetSymbol(&slot, s_put);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = linkNextNode(
-					(PyrParseNode*)yyvsp[-5],
-					(PyrParseNode*)yyvsp[-3]);
-				args = linkNextNode( args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3741 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 141: /* expr: expr DOT OPENSQUARE arglist1 CLOSESQUARE EQUALSSIGN expr  */
-#line 1184 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-
-				SetSymbol(&slot, s_put);
-				selectornode = newPyrSlotNode((yyloc), &slot);
-				args = linkNextNode(
-					(PyrParseNode*)yyvsp[-6],
-					(PyrParseNode*)yyvsp[-3]);
-				args = linkNextNode( args, (PyrParseNode*)yyvsp[0]);
-				yyval = (intptr_t)newPyrCallNode((yyloc), selectornode, args, 0, 0);
-			}
-#line 3759 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 142: /* adverb: %empty  */
-#line 1199 "lang/LangSource/Bison/lang11d"
-          { yyval = 0; }
-#line 3765 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 143: /* adverb: DOT name  */
-#line 1200 "lang/LangSource/Bison/lang11d"
-                           { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3771 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 144: /* adverb: DOT integer  */
-#line 1201 "lang/LangSource/Bison/lang11d"
-                              { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3777 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 145: /* adverb: DOT OPENPAREN exprseq CLOSEPAREN  */
-#line 1202 "lang/LangSource/Bison/lang11d"
-                                                   { yyval = yyvsp[-1]; }
-#line 3783 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 147: /* exprn: exprn SEMICOLON expr  */
-#line 1207 "lang/LangSource/Bison/lang11d"
-                        {
-				yyval = (intptr_t)newPyrDropNode((yyloc), (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
-			}
-#line 3791 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 149: /* arrayelems: %empty  */
-#line 1215 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 3797 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 150: /* arrayelems: arrayelems1 optcomma  */
-#line 1217 "lang/LangSource/Bison/lang11d"
-                          { yyval = yyvsp[-1]; }
-#line 3803 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 152: /* arrayelems1: exprseq COLON exprseq  */
-#line 1222 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3809 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 153: /* arrayelems1: keybinop exprseq  */
-#line 1224 "lang/LangSource/Bison/lang11d"
-                                {
-					PyrParseNode* key = newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-1], NULL);
-					yyval = (intptr_t)linkNextNode(key, (PyrParseNode*)yyvsp[0]);
-				}
-#line 3818 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 154: /* arrayelems1: arrayelems1 COMMA exprseq  */
-#line 1229 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3824 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 155: /* arrayelems1: arrayelems1 COMMA keybinop exprseq  */
-#line 1231 "lang/LangSource/Bison/lang11d"
-                                {
-					PyrParseNode* elems;
-					PyrParseNode* key = newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-1], NULL);
-					elems = (PyrParseNode*)linkNextNode(key, (PyrParseNode*)yyvsp[0]);
-					yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-3], elems);
-				}
-#line 3835 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 156: /* arrayelems1: arrayelems1 COMMA exprseq COLON exprseq  */
-#line 1238 "lang/LangSource/Bison/lang11d"
-                                {
-					PyrParseNode* elems;
-					elems = (PyrParseNode*)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]);
-					yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-4], elems);
-				}
-#line 3845 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 158: /* arglist1: arglist1 COMMA exprseq  */
-#line 1247 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3851 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 159: /* arglistv1: MULTIPLY exprseq  */
-#line 1251 "lang/LangSource/Bison/lang11d"
-                                { yyval = yyvsp[0]; }
-#line 3857 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 160: /* arglistv1: arglist1 COMMA MULTIPLY exprseq  */
-#line 1253 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0]); }
-#line 3863 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 162: /* keyarglist1: keyarglist1 COMMA keyarg  */
-#line 1258 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3869 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 163: /* keyarg: keybinop exprseq  */
-#line 1262 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrPushKeyArgNode((yyloc), (PyrSlotNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 3875 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 164: /* optkeyarglist: optcomma  */
-#line 1265 "lang/LangSource/Bison/lang11d"
-                           { yyval = 0; }
-#line 3881 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 165: /* optkeyarglist: COMMA keyarglist1 optcomma  */
-#line 1266 "lang/LangSource/Bison/lang11d"
-                                                             { yyval = yyvsp[-1]; }
-#line 3887 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 166: /* mavars: mavarlist  */
-#line 1270 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrMultiAssignVarListNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3893 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 167: /* mavars: mavarlist ELLIPSIS name  */
-#line 1272 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrMultiAssignVarListNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrSlotNode*)yyvsp[0]); }
-#line 3899 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 169: /* mavarlist: mavarlist COMMA name  */
-#line 1277 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 3905 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 170: /* slotliteral: integer  */
-#line 1281 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3911 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 171: /* slotliteral: floatp  */
-#line 1282 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3917 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 172: /* slotliteral: ascii  */
-#line 1283 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3923 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 173: /* slotliteral: string  */
-#line 1284 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3929 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 174: /* slotliteral: symbol  */
-#line 1285 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3935 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 175: /* slotliteral: trueobj  */
-#line 1286 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3941 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 176: /* slotliteral: falseobj  */
-#line 1287 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3947 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 177: /* slotliteral: nilobj  */
-#line 1288 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3953 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 178: /* slotliteral: listlit  */
-#line 1289 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), NULL, (PyrParseNode*)yyvsp[0]); }
-#line 3959 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 179: /* blockliteral: block  */
-#line 1292 "lang/LangSource/Bison/lang11d"
-                        { yyval = (intptr_t)newPyrPushLitNode((yyloc), NULL, (PyrParseNode*)yyvsp[0]); }
-#line 3965 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 180: /* pushname: name  */
-#line 1295 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrPushNameNode((yyloc), (PyrSlotNode*)yyvsp[0]); }
-#line 3971 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 181: /* pushliteral: integer  */
-#line 1298 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3977 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 182: /* pushliteral: floatp  */
-#line 1299 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3983 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 183: /* pushliteral: ascii  */
-#line 1300 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3989 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 184: /* pushliteral: string  */
-#line 1301 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 3995 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 185: /* pushliteral: symbol  */
-#line 1302 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4001 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 186: /* pushliteral: trueobj  */
-#line 1303 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4007 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 187: /* pushliteral: falseobj  */
-#line 1304 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4013 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 188: /* pushliteral: nilobj  */
-#line 1305 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4019 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 189: /* pushliteral: listlit  */
-#line 1306 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrPushLitNode((yyloc), NULL, (PyrParseNode*)yyvsp[0]); }
-#line 4025 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 190: /* listliteral: integer  */
-#line 1309 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4031 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 191: /* listliteral: floatp  */
-#line 1310 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4037 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 192: /* listliteral: ascii  */
-#line 1311 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4043 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 193: /* listliteral: string  */
-#line 1312 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4049 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 194: /* listliteral: symbol  */
-#line 1313 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4055 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 195: /* listliteral: name  */
-#line 1314 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4061 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 196: /* listliteral: trueobj  */
-#line 1315 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4067 "lang/LangSource/Bison/lang11d_tab.cpp"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3579 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 197: /* listliteral: falseobj  */
-#line 1316 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4073 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 197: /* listliteral: NILOBJ  */
+#line 943 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = (yyvsp[0].slotNode)->changeLiteralType<PyrParseNodeType::LiteralNode>(); }
+#line 3585 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 198: /* listliteral: nilobj  */
-#line 1317 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrLiteralNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL); }
-#line 4079 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 198: /* listliteral: listlit2  */
+#line 944 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = bison_cxt->allocParseNode<PyrSlotNode>((yyloc), PyrSlot::make(static_cast<void*>((yyvsp[0].node))), PyrParseNodeType::LiteralNode); }
+#line 3591 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 199: /* listliteral: listlit2  */
-#line 1318 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrLiteralNode((yyloc), NULL, (PyrParseNode*)yyvsp[0]); }
-#line 4085 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 199: /* block: OPENCURLY argdecls funcvardecls funcbody CLOSECURLY  */
+#line 947 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), (yyvsp[-3].argListNode), (yyvsp[-2].varListNode), (yyvsp[-1].node), false); }
+#line 3597 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 200: /* block: OPENCURLY argdecls funcvardecls funcbody CLOSECURLY  */
-#line 1322 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-3], (PyrVarListNode*)yyvsp[-2],
-					(PyrParseNode*)yyvsp[-1], false); }
-#line 4092 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 200: /* block: BEGINCLOSEDFUNC argdecls funcvardecls funcbody CLOSECURLY  */
+#line 949 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrBlockNode>((yyloc), (yyvsp[-3].argListNode), (yyvsp[-2].varListNode), (yyvsp[-1].node), true); }
+#line 3603 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 201: /* block: BEGINCLOSEDFUNC argdecls funcvardecls funcbody CLOSECURLY  */
-#line 1325 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrBlockNode((yyloc), (PyrArgListNode*)yyvsp[-3], (PyrVarListNode*)yyvsp[-2],
-					(PyrParseNode*)yyvsp[-1], true); }
-#line 4099 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 201: /* funcvardecls: %empty  */
+#line 951 "lang/LangSource/Bison/lang11d"
+                         { (yyval.varListNode) = nullptr; }
+#line 3609 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 202: /* funcvardecls: %empty  */
-#line 1329 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 4105 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 202: /* funcvardecls: funcvardecls funcvardecl  */
+#line 953 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varListNode) = linkNodes((yyvsp[-1].varListNode), (yyvsp[0].varListNode)); }
+#line 3615 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 203: /* funcvardecls: funcvardecls funcvardecl  */
-#line 1331 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 4111 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 204: /* funcvardecls1: funcvardecls1 funcvardecl  */
+#line 957 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varListNode) = linkNodes((yyvsp[-1].varListNode), (yyvsp[0].varListNode)); }
+#line 3621 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 205: /* funcvardecls1: funcvardecls1 funcvardecl  */
-#line 1336 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); }
-#line 4117 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 205: /* funcvardecl: VAR vardeflist SEMICOLON  */
+#line 960 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varListNode) = bison_cxt->allocParseNode<PyrVarListNode>((yyloc), (yyvsp[-1].varDefNode), varLocal); }
+#line 3627 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 206: /* funcvardecl: VAR vardeflist SEMICOLON  */
-#line 1340 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrVarListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], varLocal); }
-#line 4123 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 206: /* argdecls: %empty  */
+#line 962 "lang/LangSource/Bison/lang11d"
+                                 { (yyval.argListNode) = nullptr; }
+#line 3633 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 207: /* argdecls: %empty  */
-#line 1343 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 4129 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 207: /* argdecls: ARG vardeflist SEMICOLON  */
+#line 964 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-1].varDefNode), nullptr, nullptr); }
+#line 3639 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 208: /* argdecls: ARG vardeflist SEMICOLON  */
-#line 1345 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], NULL, NULL);
-				}
-#line 4137 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 208: /* argdecls: ARG vardeflist0 ELLIPSIS name SEMICOLON  */
+#line 966 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-3].varDefNode), (yyvsp[-1].slotNode), nullptr); }
+#line 3645 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 209: /* argdecls: ARG vardeflist0 ELLIPSIS name SEMICOLON  */
-#line 1349 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1], NULL);
-				}
-#line 4145 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 209: /* argdecls: ARG vardeflist0 ELLIPSIS name COMMA name SEMICOLON  */
+#line 968 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-5].varDefNode), (yyvsp[-3].slotNode), (yyvsp[-1].slotNode)); }
+#line 3651 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 210: /* argdecls: PIPE slotdeflist PIPE  */
-#line 1353 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], NULL, NULL);
-				}
-#line 4153 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 970 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-1].varDefNode), nullptr, nullptr); }
+#line 3657 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 211: /* argdecls: PIPE slotdeflist0 ELLIPSIS name PIPE  */
-#line 1357 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1], NULL);
-				}
-#line 4161 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 972 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-3].varDefNode), (yyvsp[-1].slotNode), nullptr); }
+#line 3663 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 212: /* argdecls: PIPE slotdeflist0 ELLIPSIS name COMMA name PIPE  */
-#line 1361 "lang/LangSource/Bison/lang11d"
-                            {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-5], (PyrSlotNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1]);
-			    }
-#line 4169 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 974 "lang/LangSource/Bison/lang11d"
+                                    { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-5].varDefNode), (yyvsp[-3].slotNode), (yyvsp[-1].slotNode)); }
+#line 3669 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 213: /* argdecls1: ARG vardeflist SEMICOLON  */
-#line 1367 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], NULL, NULL);
-				}
-#line 4177 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 977 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-1].varDefNode), nullptr, nullptr); }
+#line 3675 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
   case 214: /* argdecls1: ARG vardeflist0 ELLIPSIS name SEMICOLON  */
-#line 1371 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1], NULL);
-				}
-#line 4185 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 979 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-3].varDefNode), (yyvsp[-1].slotNode), nullptr); }
+#line 3681 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 215: /* argdecls1: PIPE slotdeflist PIPE  */
-#line 1375 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-1], NULL, NULL);
-				}
-#line 4193 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 215: /* argdecls1: ARG vardeflist0 ELLIPSIS name COMMA name SEMICOLON  */
+#line 981 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-5].varDefNode), (yyvsp[-3].slotNode), (yyvsp[-1].slotNode)); }
+#line 3687 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 216: /* argdecls1: PIPE slotdeflist0 ELLIPSIS name PIPE  */
-#line 1379 "lang/LangSource/Bison/lang11d"
-                                {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1], NULL);
-				}
-#line 4201 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 216: /* argdecls1: PIPE slotdeflist PIPE  */
+#line 983 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-1].varDefNode), nullptr, nullptr); }
+#line 3693 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 217: /* argdecls1: PIPE slotdeflist0 ELLIPSIS name COMMA name PIPE  */
-#line 1383 "lang/LangSource/Bison/lang11d"
-                            {
-					yyval = (intptr_t)newPyrArgListNode((yyloc), (PyrVarDefNode*)yyvsp[-5], (PyrSlotNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1]);
-			    }
-#line 4209 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 217: /* argdecls1: PIPE slotdeflist0 ELLIPSIS name PIPE  */
+#line 985 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-3].varDefNode), (yyvsp[-1].slotNode), nullptr); }
+#line 3699 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 219: /* constdeflist: constdeflist optcomma constdef  */
-#line 1391 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4215 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 218: /* argdecls1: PIPE slotdeflist0 ELLIPSIS name COMMA name PIPE  */
+#line 987 "lang/LangSource/Bison/lang11d"
+                                    { (yyval.argListNode) = bison_cxt->allocParseNode<PyrArgListNode>((yyloc), (yyvsp[-5].varDefNode), (yyvsp[-3].slotNode), (yyvsp[-1].slotNode)); }
+#line 3705 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 220: /* constdef: rspec name EQUALSSIGN slotliteral  */
-#line 1395 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], yyvsp[-3]); }
-#line 4221 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 220: /* constdeflist: constdeflist optcomma constdef  */
+#line 991 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = linkNodes((yyvsp[-2].varDefNode), (yyvsp[0].varDefNode)); }
+#line 3711 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 221: /* slotdeflist0: %empty  */
-#line 1398 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 4227 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 221: /* constdef: rspec name EQUALSSIGN slotliteral  */
+#line 994 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[-2].slotNode), (yyvsp[0].node), (yyvsp[-3].rwAccessor)); }
+#line 3717 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 224: /* slotdeflist: slotdeflist optcomma slotdef  */
-#line 1404 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4233 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 222: /* slotdeflist0: %empty  */
+#line 996 "lang/LangSource/Bison/lang11d"
+                         { (yyval.varDefNode) = nullptr; }
+#line 3723 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 225: /* slotdef: name  */
-#line 1408 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL, 0); }
-#line 4239 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 225: /* slotdeflist: slotdeflist optcomma slotdef  */
+#line 1001 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = linkNodes((yyvsp[-2].varDefNode), (yyvsp[0].varDefNode)); }
+#line 3729 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 226: /* slotdef: name optequal slotliteral  */
-#line 1410 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], 0); }
-#line 4245 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 226: /* slotdef: name  */
+#line 1004 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[0].slotNode), nullptr, ReadWriteAccessor::Private); }
+#line 3735 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 227: /* slotdef: name optequal OPENPAREN exprseq CLOSEPAREN  */
-#line 1412 "lang/LangSource/Bison/lang11d"
-                                {
-					PyrParseNode* node = (PyrParseNode*)yyvsp[-1];
-					node->mParens = 1;
-					yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-4], node, 0);
-				}
-#line 4255 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 227: /* slotdef: name optequal slotliteral  */
+#line 1006 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[-2].slotNode), (yyvsp[0].node), ReadWriteAccessor::Private); }
+#line 3741 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 228: /* vardeflist0: %empty  */
-#line 1419 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 4261 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 228: /* slotdef: name optequal OPENPAREN exprseq CLOSEPAREN  */
+#line 1008 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrParseNode* node = (yyvsp[-1].node);
+						node->mParens = 1;
+						(yyval.varDefNode) = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[-4].slotNode), node, ReadWriteAccessor::Private);
+					}
+#line 3751 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 231: /* vardeflist: vardeflist COMMA vardef  */
-#line 1425 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4267 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 229: /* vardeflist0: %empty  */
+#line 1014 "lang/LangSource/Bison/lang11d"
+                          { (yyval.varDefNode) = nullptr; }
+#line 3757 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 232: /* vardef: name  */
-#line 1429 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL, 0); }
-#line 4273 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 232: /* vardeflist: vardeflist COMMA vardef  */
+#line 1019 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = linkNodes((yyvsp[-2].varDefNode), (yyvsp[0].varDefNode)); }
+#line 3763 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 233: /* vardef: name EQUALSSIGN expr  */
-#line 1431 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], 0); }
-#line 4279 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 233: /* vardef: name  */
+#line 1022 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[0].slotNode), nullptr, ReadWriteAccessor::Private); }
+#line 3769 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 234: /* vardef: name OPENPAREN exprseq CLOSEPAREN  */
-#line 1433 "lang/LangSource/Bison/lang11d"
-                                {
-									PyrParseNode* node = (PyrParseNode*)yyvsp[-1];
-									node->mParens = 1;
-									yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-3], node, 0);
-								}
-#line 4289 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 234: /* vardef: name EQUALSSIGN expr  */
+#line 1024 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[-2].slotNode), (yyvsp[0].node), ReadWriteAccessor::Private); }
+#line 3775 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 235: /* dictslotdef: exprseq COLON exprseq  */
-#line 1441 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4295 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 235: /* vardef: name OPENPAREN exprseq CLOSEPAREN  */
+#line 1026 "lang/LangSource/Bison/lang11d"
+                                        {
+						PyrParseNode* node = (yyvsp[-1].node);
+						node->mParens = 1;
+						(yyval.varDefNode) = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[-3].slotNode), node, ReadWriteAccessor::Private);
+					}
+#line 3785 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 236: /* dictslotdef: keybinop exprseq  */
-#line 1443 "lang/LangSource/Bison/lang11d"
-                                {
-					PyrParseNode* key = newPyrPushLitNode((yyloc), (PyrSlotNode*)yyvsp[-1], NULL);
-					yyval = (intptr_t)linkNextNode(key, (PyrParseNode*)yyvsp[0]);
-				}
-#line 4304 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 236: /* dictslotdef: exprseq COLON exprseq  */
+#line 1033 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-2].node), (yyvsp[0].node)); }
+#line 3791 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 238: /* dictslotlist1: dictslotlist1 COMMA dictslotdef  */
-#line 1451 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4310 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 237: /* dictslotdef: KEYBINOP exprseq  */
+#line 1035 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-1].slotNode)->changeLiteralType<PyrParseNodeType::PushLitNode>(), (yyvsp[0].node)); }
+#line 3797 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 239: /* dictslotlist: %empty  */
-#line 1454 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 4316 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 239: /* dictslotlist1: dictslotlist1 COMMA dictslotdef  */
+#line 1039 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-2].node), (yyvsp[0].node)); }
+#line 3803 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 242: /* rwslotdeflist: rwslotdeflist COMMA rwslotdef  */
-#line 1460 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4322 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 240: /* dictslotlist: %empty  */
+#line 1041 "lang/LangSource/Bison/lang11d"
+                         { (yyval.node) = nullptr; }
+#line 3809 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 243: /* rwslotdef: rwspec name  */
-#line 1464 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[0], NULL, yyvsp[-1]); }
-#line 4328 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 243: /* rwslotdeflist: rwslotdeflist COMMA rwslotdef  */
+#line 1046 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = linkNodes((yyvsp[-2].varDefNode), (yyvsp[0].varDefNode)); }
+#line 3815 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 244: /* rwslotdef: rwspec name EQUALSSIGN slotliteral  */
-#line 1466 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)newPyrVarDefNode((yyloc), (PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], yyvsp[-3]); }
-#line 4334 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 244: /* rwslotdef: rwspec name  */
+#line 1049 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[0].slotNode), nullptr, (yyvsp[-1].rwAccessor)); }
+#line 3821 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 245: /* listlit: HASH OPENSQUARE literallistc CLOSESQUARE  */
-#line 1470 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLitListNode((yyloc), 0, (PyrParseNode*)yyvsp[-1]); }
-#line 4340 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 245: /* rwslotdef: rwspec name EQUALSSIGN slotliteral  */
+#line 1051 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.varDefNode) = bison_cxt->allocParseNode<PyrVarDefNode>((yyloc), (yyvsp[-2].slotNode), (yyvsp[0].node), (yyvsp[-3].rwAccessor)); }
+#line 3827 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 246: /* listlit: HASH classname OPENSQUARE literallistc CLOSESQUARE  */
-#line 1472 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLitListNode((yyloc), (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]); }
-#line 4346 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 246: /* listlit: HASH OPENSQUARE literallistc CLOSESQUARE  */
+#line 1054 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrLitListNode>((yyloc), nullptr, (yyvsp[-1].node)); }
+#line 3833 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 247: /* listlit2: OPENSQUARE literallistc CLOSESQUARE  */
-#line 1476 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLitListNode((yyloc), 0, (PyrParseNode*)yyvsp[-1]); }
-#line 4352 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 247: /* listlit: HASH CLASSNAME OPENSQUARE literallistc CLOSESQUARE  */
+#line 1056 "lang/LangSource/Bison/lang11d"
+                                                { (yyval.node) = bison_cxt->allocParseNode<PyrLitListNode>((yyloc), (yyvsp[-3].slotNode), (yyvsp[-1].node)); }
+#line 3839 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 248: /* listlit2: classname OPENSQUARE literallistc CLOSESQUARE  */
-#line 1478 "lang/LangSource/Bison/lang11d"
-                                { yyval = (intptr_t)newPyrLitListNode((yyloc), (PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]); }
-#line 4358 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 248: /* listlit2: OPENSQUARE literallistc CLOSESQUARE  */
+#line 1059 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrLitListNode>((yyloc), nullptr, (yyvsp[-1].node)); }
+#line 3845 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 249: /* literallistc: %empty  */
-#line 1481 "lang/LangSource/Bison/lang11d"
-                  { yyval = 0; }
-#line 4364 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 249: /* listlit2: CLASSNAME OPENSQUARE literallistc CLOSESQUARE  */
+#line 1061 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = bison_cxt->allocParseNode<PyrLitListNode>((yyloc), (yyvsp[-3].slotNode), (yyvsp[-1].node)); }
+#line 3851 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 252: /* literallist1: literallist1 COMMA listliteral  */
-#line 1487 "lang/LangSource/Bison/lang11d"
-                                        { yyval = (intptr_t)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); }
-#line 4370 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 250: /* literallistc: %empty  */
+#line 1063 "lang/LangSource/Bison/lang11d"
+                         { (yyval.node) = nullptr; }
+#line 3857 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 253: /* rwspec: %empty  */
-#line 1490 "lang/LangSource/Bison/lang11d"
-           { yyval = rwPrivate; }
-#line 4376 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 253: /* literallist1: literallist1 COMMA listliteral  */
+#line 1068 "lang/LangSource/Bison/lang11d"
+                                        { (yyval.node) = linkNodes((yyvsp[-2].node), (yyvsp[0].node)); }
+#line 3863 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 254: /* rwspec: LESSTHAN  */
-#line 1492 "lang/LangSource/Bison/lang11d"
-                        { yyval = rwReadOnly; }
-#line 4382 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 254: /* rwspec: %empty  */
+#line 1070 "lang/LangSource/Bison/lang11d"
+                                 { (yyval.rwAccessor) = ReadWriteAccessor::Private; }
+#line 3869 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 255: /* rwspec: READWRITEVAR  */
-#line 1494 "lang/LangSource/Bison/lang11d"
-                        { yyval = rwReadWrite; }
-#line 4388 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 255: /* rwspec: LESSTHAN  */
+#line 1071 "lang/LangSource/Bison/lang11d"
+                                           { (yyval.rwAccessor) = ReadWriteAccessor::Read; }
+#line 3875 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 256: /* rwspec: GREATERTHAN  */
-#line 1496 "lang/LangSource/Bison/lang11d"
-                        { yyval = rwWriteOnly; }
-#line 4394 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 256: /* rwspec: READWRITEVAR  */
+#line 1072 "lang/LangSource/Bison/lang11d"
+                                               { (yyval.rwAccessor) = ReadWriteAccessor::ReadWrite; }
+#line 3881 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 257: /* rspec: %empty  */
-#line 1499 "lang/LangSource/Bison/lang11d"
-           { yyval = rwPrivate; }
-#line 4400 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 257: /* rwspec: GREATERTHAN  */
+#line 1073 "lang/LangSource/Bison/lang11d"
+                                              { (yyval.rwAccessor) = ReadWriteAccessor::Write; }
+#line 3887 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 258: /* rspec: LESSTHAN  */
-#line 1501 "lang/LangSource/Bison/lang11d"
-                        { yyval = rwReadOnly; }
-#line 4406 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 258: /* rspec: %empty  */
+#line 1075 "lang/LangSource/Bison/lang11d"
+                                 { (yyval.rwAccessor) = ReadWriteAccessor::Private; }
+#line 3893 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 259: /* integer: INTEGER  */
-#line 1504 "lang/LangSource/Bison/lang11d"
-                  { yyval = zzval; }
-#line 4412 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 259: /* rspec: LESSTHAN  */
+#line 1076 "lang/LangSource/Bison/lang11d"
+                                           { (yyval.rwAccessor) = ReadWriteAccessor::Read; }
+#line 3899 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 260: /* integer: MINUS INTEGER  */
-#line 1506 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *node;
-				node = (PyrSlotNode*)zzval;
-				SetRaw(&node->mSlot, -slotRawInt(&node->mSlot));
-				yyval = zzval;
-			}
-#line 4423 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 261: /* integer: MINUS INTEGER  */
+#line 1080 "lang/LangSource/Bison/lang11d"
+                                        {
+						const auto v = (yyvsp[0].slotNode)->mSlot.getInt();
+						(yyvsp[0].slotNode)->mSlot = PyrSlot::make(-v);
+						(yyval.slotNode) = (yyvsp[0].slotNode);
+					}
+#line 3909 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 261: /* floatr: SC_FLOAT  */
-#line 1514 "lang/LangSource/Bison/lang11d"
-                   { yyval = zzval; }
-#line 4429 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 263: /* floatr: MINUS SC_FLOAT  */
+#line 1088 "lang/LangSource/Bison/lang11d"
+                                        {
+						const double v = (yyvsp[0].slotNode)->mSlot.getDouble();
+						(yyvsp[0].slotNode)->mSlot = PyrSlot::make(-v);
+						(yyval.slotNode) = (yyvsp[0].slotNode);
+					}
+#line 3919 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 262: /* floatr: MINUS SC_FLOAT  */
-#line 1516 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *node;
-				node = (PyrSlotNode*)zzval;
-				SetRaw(&node->mSlot, -slotRawFloat(&node->mSlot));
-				yyval = zzval;
-			}
-#line 4440 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 265: /* accidental: MINUS ACCIDENTAL  */
+#line 1096 "lang/LangSource/Bison/lang11d"
+                                        {
+						const double in = (yyvsp[0].slotNode)->mSlot.getDouble();
+						const double intval = floor(in + 0.5);
+						const double fracval = in - intval;
+						(yyvsp[0].slotNode)->mSlot = PyrSlot::make(-intval + fracval);
+						(yyval.slotNode) = (yyvsp[0].slotNode);
+					}
+#line 3931 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 263: /* accidental: ACCIDENTAL  */
-#line 1524 "lang/LangSource/Bison/lang11d"
-                        { yyval = zzval; }
-#line 4446 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 268: /* floatp: floatr PIE  */
+#line 1107 "lang/LangSource/Bison/lang11d"
+                                        {
+						(yyvsp[-1].slotNode)->mSlot = PyrSlot::make((yyvsp[-1].slotNode)->mSlot.getDouble() * pi);
+						(yyvsp[-1].slotNode)->location = (yyloc);
+						(yyval.slotNode) = (yyvsp[-1].slotNode);
+					}
+#line 3941 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 264: /* accidental: MINUS ACCIDENTAL  */
-#line 1526 "lang/LangSource/Bison/lang11d"
-                                {
-					PyrSlotNode *node;
-					double intval, fracval;
-					node = (PyrSlotNode*)zzval;
-					intval = floor(slotRawFloat(&node->mSlot) + 0.5);
-					fracval = slotRawFloat(&node->mSlot) - intval;
-					SetRaw(&node->mSlot, -intval + fracval);
-					yyval = zzval;
-				}
-#line 4460 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 269: /* floatp: integer PIE  */
+#line 1113 "lang/LangSource/Bison/lang11d"
+                                        {
+						(yyvsp[-1].slotNode)->mSlot = PyrSlot::make((yyvsp[-1].slotNode)->mSlot.getInt() * pi);
+						(yyvsp[-1].slotNode)->location = (yyloc);
+						(yyval.slotNode) = (yyvsp[-1].slotNode);
+					}
+#line 3951 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 265: /* pie: PIE  */
-#line 1536 "lang/LangSource/Bison/lang11d"
-                      { yyval = zzval; }
-#line 4466 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 271: /* floatp: MINUS PIE  */
+#line 1120 "lang/LangSource/Bison/lang11d"
+                                        {
+						(yyvsp[0].slotNode)->mSlot = PyrSlot::make(-pi);
+						(yyvsp[0].slotNode)->location = (yyloc);
+						(yyval.slotNode) = (yyvsp[0].slotNode);
+					}
+#line 3961 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 268: /* floatp: floatr pie  */
-#line 1542 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *node;
-				node = (PyrSlotNode*)yyvsp[-1];
-				SetRaw(&node->mSlot, slotRawFloat(&node->mSlot) * pi);
-			}
-#line 4476 "lang/LangSource/Bison/lang11d_tab.cpp"
+  case 284: /* curryArg: CURRYARG  */
+#line 1129 "lang/LangSource/Bison/lang11d"
+                                   { (yyval.node) = bison_cxt->allocParseNode<PyrCurryArgNode>((yyloc)); }
+#line 3967 "lang/LangSource/Bison/lang11d_tab.cpp"
     break;
 
-  case 269: /* floatp: integer pie  */
-#line 1548 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *node;
-				double ival;
-				node = (PyrSlotNode*)yyvsp[-1];
-				ival = slotRawInt(&node->mSlot);
-				SetFloat(&node->mSlot, ival * pi);
-			}
-#line 4488 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 270: /* floatp: pie  */
-#line 1556 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *node;
-				node = (PyrSlotNode*)zzval;
-				SetFloat(&node->mSlot, pi);
-				yyval = zzval;
-			}
-#line 4499 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 271: /* floatp: MINUS pie  */
-#line 1563 "lang/LangSource/Bison/lang11d"
-                        {
-				PyrSlotNode *node;
-				node = (PyrSlotNode*)zzval;
-				SetFloat(&node->mSlot, -pi);
-				yyval = zzval;
-			}
-#line 4510 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 272: /* name: NAME  */
-#line 1571 "lang/LangSource/Bison/lang11d"
-                       { yyval = zzval; }
-#line 4516 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 273: /* name: WHILE  */
-#line 1572 "lang/LangSource/Bison/lang11d"
-                                { yyval = zzval; }
-#line 4522 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 274: /* classname: CLASSNAME  */
-#line 1575 "lang/LangSource/Bison/lang11d"
-                                    { yyval = zzval; }
-#line 4528 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 275: /* primname: PRIMITIVENAME  */
-#line 1578 "lang/LangSource/Bison/lang11d"
-                                        { yyval = zzval; }
-#line 4534 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 276: /* trueobj: TRUEOBJ  */
-#line 1581 "lang/LangSource/Bison/lang11d"
-                          { yyval = zzval; }
-#line 4540 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 277: /* falseobj: FALSEOBJ  */
-#line 1584 "lang/LangSource/Bison/lang11d"
-                           { yyval = zzval; }
-#line 4546 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 278: /* nilobj: NILOBJ  */
-#line 1587 "lang/LangSource/Bison/lang11d"
-                         { yyval = zzval; }
-#line 4552 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 279: /* ascii: ASCII  */
-#line 1590 "lang/LangSource/Bison/lang11d"
-                        { yyval = zzval; }
-#line 4558 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 280: /* symbol: SYMBOL  */
-#line 1593 "lang/LangSource/Bison/lang11d"
-                         { yyval = zzval; }
-#line 4564 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 281: /* string: STRING  */
-#line 1596 "lang/LangSource/Bison/lang11d"
-                         { yyval = zzval; }
-#line 4570 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 282: /* pseudovar: PSEUDOVAR  */
-#line 1599 "lang/LangSource/Bison/lang11d"
-                            { yyval = zzval; }
-#line 4576 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 283: /* binop: BINOP  */
-#line 1602 "lang/LangSource/Bison/lang11d"
-                { yyval = zzval; }
-#line 4582 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 284: /* binop: READWRITEVAR  */
-#line 1603 "lang/LangSource/Bison/lang11d"
-                               { yyval = zzval; }
-#line 4588 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 285: /* binop: LESSTHAN  */
-#line 1604 "lang/LangSource/Bison/lang11d"
-                            { yyval = zzval; }
-#line 4594 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 286: /* binop: GREATERTHAN  */
-#line 1605 "lang/LangSource/Bison/lang11d"
-                               { yyval = zzval; }
-#line 4600 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 287: /* binop: MINUS  */
-#line 1606 "lang/LangSource/Bison/lang11d"
-                         { yyval = zzval; }
-#line 4606 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 288: /* binop: MULTIPLY  */
-#line 1607 "lang/LangSource/Bison/lang11d"
-                            { yyval = zzval; }
-#line 4612 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 289: /* binop: ADD  */
-#line 1608 "lang/LangSource/Bison/lang11d"
-                       { yyval = zzval; }
-#line 4618 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 290: /* binop: PIPE  */
-#line 1609 "lang/LangSource/Bison/lang11d"
-                        { yyval = zzval; }
-#line 4624 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 291: /* keybinop: KEYBINOP  */
-#line 1612 "lang/LangSource/Bison/lang11d"
-                    { yyval = zzval; }
-#line 4630 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
-  case 294: /* curryarg: CURRYARG  */
-#line 1619 "lang/LangSource/Bison/lang11d"
-                    { yyval =(intptr_t)newPyrCurryArgNode((yyloc)); }
-#line 4636 "lang/LangSource/Bison/lang11d_tab.cpp"
-    break;
-
 
-#line 4640 "lang/LangSource/Bison/lang11d_tab.cpp"
+#line 3971 "lang/LangSource/Bison/lang11d_tab.cpp"
 
       default: break;
     }

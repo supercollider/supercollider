@@ -23,6 +23,9 @@ GUI {
 	}
 
 	*initClass {
+		Class.initClassTree(IdentityDictionary);
+		Class.initClassTree(Color);
+		Class.initClassTree(Point);
 		skins = (
 			default: (
 				fontSpecs: 	["Helvetica", 10],

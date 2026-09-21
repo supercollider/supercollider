@@ -28,47 +28,31 @@ TestSourceCode : UnitTest {
 	}
 
 	test_partial {
-		// Right now, only 'closed' functions store their source code.
-		// Once this is fixed, uncomment below.
-// 		var f;
+ 		var f;
 
-// 		f = _ + 1;
-// 		this.assertEquals(f.def.sourceCode.quote, "_ + 1".quote);
+ 		f = _    + 1;
+ 		this.assertEquals(f.def.sourceCode.quote, "_    + 1".quote);
 
-// 		f = (_ + 1)
-// 		// dont' remove this comment or new line
-// 		;
-// 		this.assertEquals(f.def.sourceCode.quote, "(_ + 1)".quote);
+ 		f = (_ + 1)
+ 		// dont' remove this comment or new line
+ 		;
+ 		this.assertEquals(f.def.sourceCode.quote, "(_ + 1)".quote);
 
-// 		f = (_ + 1);
-// 		this.assertEquals(f.def.sourceCode.quote, "(_ + 1)".quote);
-
-// 		f = _
+ 		f = (_ + 1);
+ 		this.assertEquals(f.def.sourceCode.quote, "(_ + 1)".quote);
 
 
 
-// 		+
-// // a
 
-// 		1
+ 		f = _ + _ + _ + _;
+ 		this.assertEquals(f.def.sourceCode.quote, "_ + _ + _ + _".quote);
 
+ 		f = (_ + (_ + (_)) + _);
+ 		this.assertEquals(f.def.sourceCode.quote, "(_ + (_ + (_)) + _)".quote);
+	}
 
-
-// 		;
-// 		this.assertEquals(f.def.sourceCode.quote, "_
-
-
-
-// 		+
-// // a
-
-// 		1".quote);
-
-
-// 		f = _ + _ + _ + _;
-// 		this.assertEquals(f.def.sourceCode.quote, "_ + _ + _ + _".quote);
-
-// 		f = (_ + (_ + (_)) + _);
-// 		this.assertEquals(f.def.sourceCode.quote, "(_ + (_ + (_)) + _)".quote);
+	test_compileString {
+		var func = { 1 + 1 };
+		this.assertEquals(func.asCompileString, "{ 1 + 1 }");
 	}
 }

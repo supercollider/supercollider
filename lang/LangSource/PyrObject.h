@@ -68,6 +68,9 @@ struct PyrSymbolArray : public PyrObjectHdr {
     PyrSymbol* symbols[1];
 };
 
+
+extern PyrClass* gClassList;
+
 extern struct PyrClass* class_abstract_object;
 extern struct PyrClass* class_object;
 extern struct PyrClass* class_array;
@@ -190,6 +193,8 @@ struct PyrClass* PyrSlot::getClass() {
         return class_float;
     }
 }
+
+PyrClass* sortClasses(PyrClass* aClassList);
 
 inline struct PyrClass* classOfSlot(PyrSlot* slot) { return slot->getClass(); }
 

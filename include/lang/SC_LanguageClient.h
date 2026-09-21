@@ -40,6 +40,20 @@ SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient*);
 
 class SCLANG_DLLEXPORT SC_LanguageClient {
 public:
+    // Input header, allows for passing source location information.
+    // If other editors want to support this feature, they will need to alter their output.
+    // In future this will need to change again to support an LSP as this is a bit haphazard at the moment.
+    // This is used in the terminal client, which despite being the only class to inherit from this, isn't publicly
+    // available.
+    enum InputHeader : char {
+        InterpretCmdLine = 0x1b,
+        InterpretPrintCmdLine = 0x0c,
+        InterpretPrintCmdLineWithHeader = 0x19,
+        StartOfHeader = 0x01,
+        FileNameDelimiter = 0x1c,
+        RecompileLibrary = 0x18
+    };
+
     struct Options {
         static constexpr int defaultMemSpace = 2 * 1024 * 1024;
         static constexpr int defaultMemGrow = 256 * 1024;
@@ -51,11 +65,14 @@ public:
         std::string mRuntimeDir; // runtime directory
     };
 
+
 protected:
     // create singleton instance
     SC_LanguageClient(const std::string& name);
     virtual ~SC_LanguageClient();
     friend void destroyLanguageClient(class SC_LanguageClient*);
+
+    bool compiledSuccessfully { false };
 
 public:
     // singleton instance access locking
@@ -78,9 +95,9 @@ public:
 
     // library startup/shutdown
     bool isLibraryCompiled();
-    void compileLibrary(bool standalone);
+    [[nodiscard]] bool compileLibrary(bool standalone);
     void shutdownLibrary();
-    void recompileLibrary(bool standalone);
+    [[nodiscard]] bool recompileLibrary(bool standalone);
 
     // interpreter access
     void lock();
@@ -89,9 +106,11 @@ public:
 
     struct VMGlobals* getVMGlobals();
 
-    void setCmdLine(const char* buf, size_t size);
-    void setCmdLine(const char* str);
-    void setCmdLinef(const char* fmt, ...);
+    void setCmdLine(const char* buf, size_t size, const std::string* filePath = nullptr, int lineNumber = 0,
+                    int column = 0);
+    void setCmdLine(const char* str, const std::string* const filePath = nullptr, int lineNumber = 0, int column = 0);
+    void setCmdLinef(const std::string* const filePath = nullptr, int lineNumber = 0, int column = 0,
+                     const char* fmt = nullptr, ...);
     void runLibrary(const char* methodName);
     void interpretCmdLine();
     void interpretPrintCmdLine();

@@ -6,12 +6,12 @@ Function : AbstractFunction {
 	*new { ^this.shouldNotImplement(thisMethod) }
 
 	isFunction { ^true }
-	isClosed { ^def.sourceCode.notNil }
+	isClosed { ^def.isClosed }
 
 
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
-	checkCanArchive { if (def.sourceCode.isNil) { "cannot archive open Functions".warn } }
+	checkCanArchive { if (this.isClosed.not) { "cannot archive open Functions".warn } }
 	storeOn { arg stream;
 		var args;
 		stream << (def.sourceCode ?? {

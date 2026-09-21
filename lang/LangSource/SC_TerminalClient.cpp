@@ -27,6 +27,7 @@
 #include "SC_TerminalClient.h"
 
 #include "SC_CLIOptions.hpp"
+#include "SC_LanguageClient.h"
 #include <cstdlib>
 
 #ifdef SC_QT
@@ -122,9 +123,8 @@ int SC_TerminalClient::run(int argc, char** argv) {
         std::filesystem::create_directories(SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
 
     // startup library
-    compileLibrary(opt.mStandalone);
 
-    if (!gCompiledOK) {
+    if (!compileLibrary(opt.mStandalone)) {
         post("ERROR: Library has not been compiled successfully.\n");
         shutdownLibrary();
         flush();
@@ -186,37 +186,113 @@ void SC_TerminalClient::interpretCmdLine(const char* cmdLine, size_t size, bool 
 
 // Note: called only if the input thread does not perform an asynchronous read operation
 void SC_TerminalClient::interpretInput() {
-    char* data = mInputBuf.getData();
-    int c = mInputBuf.getSize();
-    int i = 0;
-    while (i < c) {
-        switch (data[i]) {
-        case kInterpretCmdLine:
-            interpretCmdLine(data, i, true);
-            break;
-        case kInterpretPrintCmdLine:
-            interpretCmdLine(data, i, false);
-            break;
+    std::string_view startOfBody { mInputBuf.getData(), mInputBuf.getSize() };
 
-        case kRecompileLibrary:
-            recompileLibrary();
-            break;
 
-        default:
-            ++i;
+    if (startOfBody.empty())
+        return;
+
+    if (startOfBody[0] == SC_LanguageClient::RecompileLibrary) {
+        recompileLibrary();
+        return;
+    }
+
+    // While not empty and not a input header
+    auto rollingBody = startOfBody;
+    while (!rollingBody.empty()
+           && !(rollingBody[0] == SC_LanguageClient::InterpretCmdLine
+                || rollingBody[0] == SC_LanguageClient::InterpretPrintCmdLine
+                || rollingBody[0] == SC_LanguageClient::InterpretPrintCmdLineWithHeader)) {
+        rollingBody.remove_prefix(1);
+    }
+
+    const auto cleanUp = [&]() {
+        mInputBuf.reset();
+        if (mUseReadline)
+            mReadlineSem.post();
+        else
+            startInputRead();
+    };
+
+    const auto endOfBody = rollingBody;
+
+    const auto executeIgnoreHeader = [&](bool silent = false) {
+        setCmdLine(startOfBody.data(), std::distance(startOfBody.begin(), endOfBody.begin()));
+        runLibrary(resolveMethodSymbol(silent));
+        flush();
+    };
+
+    if (endOfBody.empty()) {
+        executeIgnoreHeader();
+        cleanUp();
+        return;
+    }
+    const auto silent = rollingBody[0] == SC_LanguageClient::InterpretCmdLine;
+
+    auto rollingHeader = rollingBody.substr(1);
+
+    if (rollingHeader.empty() || rollingHeader[0] != SC_LanguageClient::StartOfHeader) {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+
+    rollingHeader.remove_prefix(1);
+
+    if (rollingHeader.empty() || rollingHeader[0] != SC_LanguageClient::FileNameDelimiter) {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+
+    auto rollingFileName = rollingHeader.substr(1);
+    const auto startOfFileName = rollingFileName;
+    while (true) {
+        if (rollingFileName.empty()) {
+            executeIgnoreHeader(silent);
+            cleanUp();
+            return;
+        } else if (rollingFileName[0] == SC_LanguageClient::FileNameDelimiter) {
+            break;
+        } else {
+            rollingFileName.remove_prefix(1);
             continue;
         }
-
-        data += i + 1;
-        c -= i + 1;
-        i = 0;
     }
-    mInputBuf.reset();
+    const auto endOfFileName = rollingFileName;
+    rollingHeader = rollingFileName.substr(1); // skip delimiter
 
-    if (mUseReadline)
-        mReadlineSem.post();
-    else
-        startInputRead();
+    const auto startOfLineNumber = rollingHeader;
+    if (startOfLineNumber.empty()) {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+    while (!rollingHeader.empty() && ('0' <= rollingHeader[0] && rollingHeader[0] <= '9')) {
+        rollingHeader.remove_prefix(1);
+    }
+    const auto endOfLineNumber = rollingHeader;
+    if (endOfLineNumber.empty() || endOfLineNumber[0] != ' ') {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+
+    const auto startOfColumn = rollingHeader.substr(1);
+    while (!rollingHeader.empty() && ('0' <= rollingHeader[0] && rollingHeader[0] <= '9')) {
+        rollingHeader.remove_prefix(1);
+    }
+    const auto endOfColumn = rollingHeader;
+
+
+    const auto fileName = std::string { startOfFileName.begin(), endOfFileName.begin() };
+    const auto lineNumber = atoi(startOfLineNumber.data());
+    const auto column = atoi(startOfColumn.data());
+    setCmdLine(startOfBody.data(), std::distance(startOfBody.begin(), endOfBody.begin()), &fileName, lineNumber,
+               column);
+    runLibrary(resolveMethodSymbol(silent));
+    flush();
+    cleanUp();
 }
 
 void SC_TerminalClient::onLibraryStartup() {
@@ -378,7 +454,7 @@ void SC_TerminalClient::readlineCmdLine(char* cmdLine) {
         int len = strlen(cmdLine);
 
         client->mInputBuf.append(cmdLine, len);
-        client->mInputBuf.append(kInterpretPrintCmdLine);
+        client->mInputBuf.append(SC_TerminalClient::InterpretPrintCmdLine);
         client->sendSignal(sig_input);
         client->mReadlineSem.wait();
     }
@@ -497,9 +573,11 @@ void SC_TerminalClient::pushCmdLine(const char* newData, size_t size) {
     while (size--) {
         char c = *newData++;
         switch (c) {
-        case kRecompileLibrary:
-        case kInterpretCmdLine:
-        case kInterpretPrintCmdLine:
+        case RecompileLibrary:
+            recompileLibrary();
+            break;
+        case InterpretCmdLine:
+        case InterpretPrintCmdLine:
             mInputBuf.append(mInputThrdBuf.getData(), mInputThrdBuf.getSize());
             mInputBuf.append(c);
             signal = true;
