@@ -43,7 +43,7 @@ Exception {
 
 		^this.newCopyArgs(
 			what: what.asString, 
-			callFrameAnnotations: [],
+			callFrameAnnotations: callFrameAnnotations,
 			backtrace: this.getBackTrace,
 			methodBeforeBacktraceStart: methodBeforeBacktraceStart ?? {
 				thisConstructor = this.class.findMethod(\new);
