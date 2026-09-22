@@ -68,7 +68,10 @@ try {
 	if (thisProcess.argv[0].notNil) {
 		var str = action.(CollStream()).collection;
 		str = str.split($\n).collect{ |line|
-			line.replaceRegexp("(\\s*)[0-9]+ │", "│").replaceRegexp("(\\s*)file:/.*$", "file:/")
+			line
+				.replaceRegexp("(\\s*)[0-9]+ │", "\t\t│")
+				.replaceRegexp("(\\s*)┆", "\t\t┆")
+				.replaceRegexp("(\\s*)file:/.*$", "\t\tfile:/")
 		}.join($\n);
 
 		File.use(thisProcess.argv[0], "w", {|f|

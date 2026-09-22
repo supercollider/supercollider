@@ -2,41 +2,41 @@
 ERROR: Integer does not understand the message 'meow'.
 
 15  : Method Name: 'Function-prTry'
-file:/
-│ 		};
-│ 		Exception.inProtectedFunction = true;
-│ 		result = this.value;
-               ┆ 		         ^^^^^^^^^^ 
-│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-│ 		thread.exceptionHandler = next; // pop
-│ 		^result
+		file:/
+		│ 		};
+		│ 		Exception.inProtectedFunction = true;
+		│ 		result = this.value;
+		┆ 		         ^^^^^^^^^^ 
+		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
+		│ 		thread.exceptionHandler = next; // pop
+		│ 		^result
 14  : Anonymous Function
-file:/
-│ 	var catch = { |action|
-│ 		try {
-│ 			action.()
-               ┆ 			^^^^^^^^^ 
-│ 		} { |er|
-│ 			er.reportError(stream);
-│ 			stream << "\n";
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
 13  : Anonymous Function
-file:/
-│ 
-│ 	catch.value {
-│ 		ErrorGenerator.doesNotUnderstandErrorMethod
-               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│ 	};
-│ 
-│ 	catch.value {
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.doesNotUnderstandErrorMethod
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
 12  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethod'
-file:/
-│ 
-│     *doesNotUnderstandErrorMethod {
-│         this.doesNotUnderstandErrorMethodImpl(10, 32, someThing: 10)
-               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│     }
-│ 
-│     *doesNotUnderstandErrorFunction {
+		file:/
+		│ 
+		│     *doesNotUnderstandErrorMethod {
+		│         this.doesNotUnderstandErrorMethodImpl(10, 32, someThing: 10)
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│     *doesNotUnderstandErrorFunction {
 11  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
 10  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
 9   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
@@ -48,36 +48,36 @@ file:/
 3   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
        args: this=, i=Integer(2), a=nil
        vars: var1=[]
-file:/
-│             1.meow(10, args: \woof)
-│         } {
-│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
-               ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│         }
-│     }
-│ 
+		file:/
+		│             1.meow(10, args: \woof)
+		│         } {
+		│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│         }
+		│     }
+		│ 
 2   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
        args: this=, i=Integer(1), a=nil
        vars: var1=[]
-file:/
-│             1.meow(10, args: \woof)
-│         } {
-│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
-               ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│         }
-│     }
-│ 
+		file:/
+		│             1.meow(10, args: \woof)
+		│         } {
+		│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│         }
+		│     }
+		│ 
 1   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
        args: this=, i=Integer(0), a=nil
        vars: var1=[]
-file:/
-│         var var1 = 100.0.rand;
-│         if (i == 0) {
-│             1.meow(10, args: \woof)
-               ┆             ^^^^^^^^^^^^^^^^^^^^^^^ 
-│         } {
-│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
-│         }
+		file:/
+		│         var var1 = 100.0.rand;
+		│         if (i == 0) {
+		│             1.meow(10, args: \woof)
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^ 
+		│         } {
+		│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+		│         }
 
 Messages with a similar name understood by the receiver:
   geom
@@ -89,41 +89,41 @@ Messages with a similar name understood by the receiver:
 ERROR: Integer does not understand the message 'meow'.
 
 15  : Method Name: 'Function-prTry'
-file:/
-│ 		};
-│ 		Exception.inProtectedFunction = true;
-│ 		result = this.value;
-               ┆ 		         ^^^^^^^^^^ 
-│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-│ 		thread.exceptionHandler = next; // pop
-│ 		^result
+		file:/
+		│ 		};
+		│ 		Exception.inProtectedFunction = true;
+		│ 		result = this.value;
+		┆ 		         ^^^^^^^^^^ 
+		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
+		│ 		thread.exceptionHandler = next; // pop
+		│ 		^result
 14  : Anonymous Function
-file:/
-│ 	var catch = { |action|
-│ 		try {
-│ 			action.()
-               ┆ 			^^^^^^^^^ 
-│ 		} { |er|
-│ 			er.reportError(stream);
-│ 			stream << "\n";
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
 13  : Anonymous Function
-file:/
-│ 
-│ 	catch.value {
-│ 		ErrorGenerator.doesNotUnderstandErrorFunction
-               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│ 	};
-│ 
-│ 	catch.value {
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.doesNotUnderstandErrorFunction
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
 12  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorFunction'
-file:/
-│         };
-│ 
-│         f.(10, \23423, 123, 32, foo: \bar)
-               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│     }
-│ 
-│ 
+		file:/
+		│         };
+		│ 
+		│         f.(10, \23423, 123, 32, foo: \bar)
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│ 
 11  : Function Name: 'f'
 10  : Function Name: 'f'
 9   : Function Name: 'f'
@@ -135,36 +135,36 @@ file:/
 3   : Function Name: 'f'
        args: i=Integer(2), a=nil
        vars: var1=[]
-file:/
-│                 1.meow(10, args: \woof)
-│             } {
-│                 f.performArgs(\value,[ i - 1], kwargs)
-               ┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│             }
-│         };
-│ 
+		file:/
+		│                 1.meow(10, args: \woof)
+		│             } {
+		│                 f.performArgs(\value,[ i - 1], kwargs)
+		┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│             }
+		│         };
+		│ 
 2   : Function Name: 'f'
        args: i=Integer(1), a=nil
        vars: var1=[]
-file:/
-│                 1.meow(10, args: \woof)
-│             } {
-│                 f.performArgs(\value,[ i - 1], kwargs)
-               ┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│             }
-│         };
-│ 
+		file:/
+		│                 1.meow(10, args: \woof)
+		│             } {
+		│                 f.performArgs(\value,[ i - 1], kwargs)
+		┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│             }
+		│         };
+		│ 
 1   : Function Name: 'f'
        args: i=Integer(0), a=nil
        vars: var1=[]
-file:/
-│             var var1 = 100.0.rand;
-│             if (i == 0) {
-│                 1.meow(10, args: \woof)
-               ┆                 ^^^^^^^^^^^^^^^^^^^^^^^ 
-│             } {
-│                 f.performArgs(\value,[ i - 1], kwargs)
-│             }
+		file:/
+		│             var var1 = 100.0.rand;
+		│             if (i == 0) {
+		│                 1.meow(10, args: \woof)
+		┆                 ^^^^^^^^^^^^^^^^^^^^^^^ 
+		│             } {
+		│                 f.performArgs(\value,[ i - 1], kwargs)
+		│             }
 
 Messages with a similar name understood by the receiver:
   geom
@@ -176,42 +176,42 @@ Messages with a similar name understood by the receiver:
 ERROR: This is a test error
 
 4   : Method Name: 'Function-prTry'
-file:/
-│ 		};
-│ 		Exception.inProtectedFunction = true;
-│ 		result = this.value;
-               ┆ 		         ^^^^^^^^^^ 
-│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-│ 		thread.exceptionHandler = next; // pop
-│ 		^result
+		file:/
+		│ 		};
+		│ 		Exception.inProtectedFunction = true;
+		│ 		result = this.value;
+		┆ 		         ^^^^^^^^^^ 
+		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
+		│ 		thread.exceptionHandler = next; // pop
+		│ 		^result
 3   : Anonymous Function
-file:/
-│ 	var catch = { |action|
-│ 		try {
-│ 			action.()
-               ┆ 			^^^^^^^^^ 
-│ 		} { |er|
-│ 			er.reportError(stream);
-│ 			stream << "\n";
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
 2   : Anonymous Function
-file:/
-│ 
-│ 	catch.value {
-│ 		ErrorGenerator.error
-               ┆ 		^^^^^^^^^^^^^^^^^^^^ 
-│ 	};
-│ 
-│ 	catch.value {
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.error
+		┆ 		^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
 1   : Method Name: 'Meta_ErrorGenerator-error'
        args: this=
-file:/
-│ 
-│     *error {
-│         Error("This is a test error").throw
-               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│     }
-│ 
-│     *errorWrapper {
+		file:/
+		│ 
+		│     *error {
+		│         Error("This is a test error").throw
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│     *errorWrapper {
 
 
 ──────────────────────────────────────────────────────────────────────────────────
@@ -223,34 +223,34 @@ Wrapped error:
      2   : Method Name: 'Function-prTry'
             args: this=
             vars: result=nil, thread=, next=, wasInProtectedFunc=true
-file:/
-│ 		};
-│ 		Exception.inProtectedFunction = true;
-│ 		result = this.value;
-                    ┆ 		         ^^^^^^^^^^ 
-│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-│ 		thread.exceptionHandler = next; // pop
-│ 		^result
+		file:/
+		│ 		};
+		│ 		Exception.inProtectedFunction = true;
+		│ 		result = this.value;
+		┆ 		         ^^^^^^^^^^ 
+		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
+		│ 		thread.exceptionHandler = next; // pop
+		│ 		^result
      1   : Anonymous Function
-file:/
-│     *errorWrapper {
-│         try {
-│             Error("some other error").throw;
-                    ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│         } { |er|
-│             ErrorWrapper(er, "Wrapping some error").throw
-│         }
+		file:/
+		│     *errorWrapper {
+		│         try {
+		│             Error("some other error").throw;
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│         } { |er|
+		│             ErrorWrapper(er, "Wrapping some error").throw
+		│         }
 This error:
 1   : Anonymous Function
        args: er=
-file:/
-│             Error("some other error").throw;
-│         } { |er|
-│             ErrorWrapper(er, "Wrapping some error").throw
-               ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│         }
-│     }
-│ 
+		file:/
+		│             Error("some other error").throw;
+		│         } { |er|
+		│             ErrorWrapper(er, "Wrapping some error").throw
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│         }
+		│     }
+		│ 
 
 ──────────────────────────────────────────────────────────────────────────────────
 
@@ -258,42 +258,42 @@ file:/
 ERROR: Not yet implemented
 
 4   : Method Name: 'Function-prTry'
-file:/
-│ 		};
-│ 		Exception.inProtectedFunction = true;
-│ 		result = this.value;
-               ┆ 		         ^^^^^^^^^^ 
-│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-│ 		thread.exceptionHandler = next; // pop
-│ 		^result
+		file:/
+		│ 		};
+		│ 		Exception.inProtectedFunction = true;
+		│ 		result = this.value;
+		┆ 		         ^^^^^^^^^^ 
+		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
+		│ 		thread.exceptionHandler = next; // pop
+		│ 		^result
 3   : Anonymous Function
-file:/
-│ 	var catch = { |action|
-│ 		try {
-│ 			action.()
-               ┆ 			^^^^^^^^^ 
-│ 		} { |er|
-│ 			er.reportError(stream);
-│ 			stream << "\n";
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
 2   : Anonymous Function
-file:/
-│ 
-│ 	catch.value {
-│ 		ErrorGenerator.notYetImplementedError
-               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│ 	};
-│ 
-│ 	catch.value {
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.notYetImplementedError
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
 1   : Method Name: 'Meta_ErrorGenerator-notYetImplementedError'
        args: this=
-file:/
-│ 
-│     *notYetImplementedError {
-│         this.notYetImplemented;
-               ┆         ^^^^^^^^^^^^^^^^^^^^^^ 
-│     }
-│ 
-│     *immutable {
+		file:/
+		│ 
+		│     *notYetImplementedError {
+		│         this.notYetImplemented;
+		┆         ^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│     *immutable {
 
 RECEIVER: Nil
 
@@ -303,53 +303,53 @@ RECEIVER: Nil
 ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
 
 5   : Method Name: 'Function-prTry'
-file:/
-│ 		};
-│ 		Exception.inProtectedFunction = true;
-│ 		result = this.value;
-               ┆ 		         ^^^^^^^^^^ 
-│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-│ 		thread.exceptionHandler = next; // pop
-│ 		^result
+		file:/
+		│ 		};
+		│ 		Exception.inProtectedFunction = true;
+		│ 		result = this.value;
+		┆ 		         ^^^^^^^^^^ 
+		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
+		│ 		thread.exceptionHandler = next; // pop
+		│ 		^result
 4   : Anonymous Function
-file:/
-│ 	var catch = { |action|
-│ 		try {
-│ 			action.()
-               ┆ 			^^^^^^^^^ 
-│ 		} { |er|
-│ 			er.reportError(stream);
-│ 			stream << "\n";
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
 3   : Anonymous Function
-file:/
-│ 
-│ 	catch.value {
-│ 		ErrorGenerator.immutable
-               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^ 
-│ 	};
-│ 
-│ 	catch.value {
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.immutable
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
 2   : Method Name: 'Meta_ErrorGenerator-immutable'
        args: this=
        vars: a=[Integer(1)]
-file:/
-│     *immutable {
-│         var a = #[1];
-│         a[0] = 10;
-               ┆         ^^^^^^^^^ 
-│     }
-│ 
-│     *subclassResponsibilityError {
+		file:/
+		│     *immutable {
+		│         var a = #[1];
+		│         a[0] = 10;
+		┆         ^^^^^^^^^ 
+		│     }
+		│ 
+		│     *subclassResponsibilityError {
 1   : Method Name: 'ArrayedCollection-put'
        args: this=[Integer(1)], index=Integer(0), item=Integer(10)
-file:/
-│ 	put { arg index, item;
-│ 		_BasicPut;
-│ 		^this.primitiveFailed;
-               ┆ 		 ^^^^^^^^^^^^^^^^^^^^ 
-│ 	}
-│ 	clipPut { arg index, item;
-│ 		_BasicClipPut;
+		file:/
+		│ 	put { arg index, item;
+		│ 		_BasicPut;
+		│ 		^this.primitiveFailed;
+		┆ 		 ^^^^^^^^^^^^^^^^^^^^ 
+		│ 	}
+		│ 	clipPut { arg index, item;
+		│ 		_BasicClipPut;
 
 RECEIVER: Array
 
@@ -359,42 +359,42 @@ RECEIVER: Array
 ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
 
 4   : Method Name: 'Function-prTry'
-file:/
-│ 		};
-│ 		Exception.inProtectedFunction = true;
-│ 		result = this.value;
-               ┆ 		         ^^^^^^^^^^ 
-│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-│ 		thread.exceptionHandler = next; // pop
-│ 		^result
+		file:/
+		│ 		};
+		│ 		Exception.inProtectedFunction = true;
+		│ 		result = this.value;
+		┆ 		         ^^^^^^^^^^ 
+		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
+		│ 		thread.exceptionHandler = next; // pop
+		│ 		^result
 3   : Anonymous Function
-file:/
-│ 	var catch = { |action|
-│ 		try {
-│ 			action.()
-               ┆ 			^^^^^^^^^ 
-│ 		} { |er|
-│ 			er.reportError(stream);
-│ 			stream << "\n";
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
 2   : Anonymous Function
-file:/
-│ 
-│ 	catch.value {
-│ 		ErrorGenerator.subclassResponsibilityError
-               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│ 	};
-│ 
-│ 	catch.value {
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.subclassResponsibilityError
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
 1   : Method Name: 'Meta_ErrorGenerator-subclassResponsibilityError'
        args: this=
-file:/
-│ 
-│     *subclassResponsibilityError {
-│         this.subclassResponsibility(thisMethod);
-               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│     }
-│ 
-│     *shouldNotImplementError {
+		file:/
+		│ 
+		│     *subclassResponsibilityError {
+		│         this.subclassResponsibility(thisMethod);
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│     *shouldNotImplementError {
 
 RECEIVER: Meta_ErrorGenerator
 
@@ -404,42 +404,42 @@ RECEIVER: Meta_ErrorGenerator
 ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
 
 4   : Method Name: 'Function-prTry'
-file:/
-│ 		};
-│ 		Exception.inProtectedFunction = true;
-│ 		result = this.value;
-               ┆ 		         ^^^^^^^^^^ 
-│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-│ 		thread.exceptionHandler = next; // pop
-│ 		^result
+		file:/
+		│ 		};
+		│ 		Exception.inProtectedFunction = true;
+		│ 		result = this.value;
+		┆ 		         ^^^^^^^^^^ 
+		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
+		│ 		thread.exceptionHandler = next; // pop
+		│ 		^result
 3   : Anonymous Function
-file:/
-│ 	var catch = { |action|
-│ 		try {
-│ 			action.()
-               ┆ 			^^^^^^^^^ 
-│ 		} { |er|
-│ 			er.reportError(stream);
-│ 			stream << "\n";
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
 2   : Anonymous Function
-file:/
-│ 
-│ 	catch.value {
-│ 		ErrorGenerator.shouldNotImplementError
-               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│ 	};
-│ 
-│ 	catch.value {
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.shouldNotImplementError
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
 1   : Method Name: 'Meta_ErrorGenerator-shouldNotImplementError'
        args: this=
-file:/
-│ 
-│     *shouldNotImplementError {
-│         this.shouldNotImplement(thisMethod);
-               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-│     }
-│ 
-│     // leave these unset to throw an error
+		file:/
+		│ 
+		│     *shouldNotImplementError {
+		│         this.shouldNotImplement(thisMethod);
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│     // leave these unset to throw an error
 
 RECEIVER: Meta_ErrorGenerator
 
