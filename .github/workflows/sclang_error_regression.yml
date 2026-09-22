@@ -31,10 +31,30 @@ jobs:
           echo Contents of `pwd`:
           ls
           unzip $ARTIFACT_FILE.zip
+
+      - name: Setup environment
+        run: |
+          # install dependencies
+          sudo apt-get update
+          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qt6-base-dev libqt6svg6-dev qt6-webengine-dev libqt6webenginecore6-bin jackd1 socat
+
+          # add bin to PATH so that scsynth can be found
+          echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
+
+          # start jack
+          jackd --no-realtime --silent -d dummy &
+
+          # start virtual display server
+          export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
+          Xvfb $DISPLAY -screen 0 1024x768x16 &
           
       - name: Create File
         shell: bash
         continue-on-error: false
+        env:
+          QTWEBENGINE_CHROMIUM_FLAGS: "--no-sandbox --disable-gpu"
+          LIBGL_ALWAYS_SOFTWARE: "1"
         run: |
           timeout 5m $SCLANG -a --include-path $CLASS_LIB --include-path $ERROR_REGRESSION $ERROR_REGRESSION/generateError.sc ${{ github.workspace }}/build/regression.txt
 
