@@ -62,4 +62,4 @@ jobs:
       - name: Check for differences
         shell: bash
         run: |
-          diff $ERROR_REGRESSION/regression.txt ${{ github.workspace }}/build/regression.txt -y --color
+          diff $ERROR_REGRESSION/regression.txt ${{ github.workspace }}/build/regression.txt --unified --color

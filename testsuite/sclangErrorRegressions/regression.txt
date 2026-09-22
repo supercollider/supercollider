@@ -74,7 +74,7 @@ ERROR: Integer does not understand the message 'meow'.
 		│         var var1 = 100.0.rand;
 		│         if (i == 0) {
 		│             1.meow(10, args: \woof)
-		┆             ^^^^^^^^^^^^^^^^^^^^^^^ 
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^ Integer does not understand the message 'meow'.
 		│         } {
 		│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
 		│         }
@@ -161,7 +161,7 @@ ERROR: Integer does not understand the message 'meow'.
 		│             var var1 = 100.0.rand;
 		│             if (i == 0) {
 		│                 1.meow(10, args: \woof)
-		┆                 ^^^^^^^^^^^^^^^^^^^^^^^ 
+		┆                 ^^^^^^^^^^^^^^^^^^^^^^^ Integer does not understand the message 'meow'.
 		│             } {
 		│                 f.performArgs(\value,[ i - 1], kwargs)
 		│             }
@@ -290,7 +290,7 @@ ERROR: Not yet implemented
 		│ 
 		│     *notYetImplementedError {
 		│         this.notYetImplemented;
-		┆         ^^^^^^^^^^^^^^^^^^^^^^ 
+		┆         ^^^^^^^^^^^^^^^^^^^^^^ This method has not yet been implemented.
 		│     }
 		│ 
 		│     *immutable {
@@ -336,7 +336,7 @@ ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable
 		│     *immutable {
 		│         var a = #[1];
 		│         a[0] = 10;
-		┆         ^^^^^^^^^ 
+		┆         ^^^^^^^^^ Attempted write to immutable object.
 		│     }
 		│ 
 		│     *subclassResponsibilityError {
@@ -381,7 +381,7 @@ ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorG
 		│ 
 		│ 	catch.value {
 		│ 		ErrorGenerator.subclassResponsibilityError
-		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Please implement this method for the class 'Meta_ErrorGenerator'
 		│ 	};
 		│ 
 		│ 	catch.value {
@@ -426,7 +426,7 @@ ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for 
 		│ 
 		│ 	catch.value {
 		│ 		ErrorGenerator.shouldNotImplementError
-		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'Meta_ErrorGenerator' cannot respond to this message, please remove the call.
 		│ 	};
 		│ 
 		│ 	catch.value {
