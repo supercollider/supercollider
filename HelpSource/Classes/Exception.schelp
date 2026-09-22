@@ -56,16 +56,9 @@ protect {
 
 With "protect" the second function will execute even if there is no error, and any error will be passed up the chain.
 
-In Java, you can catch specific classes of exception. You can simulate this usage with the following construction:
 
 code::
-// Java-style
-
-try { }
-catch { FileNotFoundException e } { console.printLine("File not found: " + e.path) }
-catch { EmptyFileException e } { console.printLine("File is empty: " + e.path) };
-
-// SuperCollider-style (hypothetical; these specific exceptions do not exist in the main library
+// hypothetical; these specific exceptions do not exist in the main library
 
 try { } { |error|
 	switch(error.species.name)

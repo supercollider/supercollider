@@ -917,7 +917,7 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
                 cxt.textInfo->createDiagnosticHighlight(f_vardef->mVarName->location, "Duplicate here..."),
                 cxt.textInfo->createDiagnosticHighlight(l_vardef->mVarName->location, "... and here.")
             };
-            const auto str = diagnosticToString(ErrorType::Error, msg.c_str(), hg, 2);
+            const auto str = diagnosticToCompilerError(ErrorType::Error, msg.c_str(), hg, 2);
             cxt.postError(str, { { 3, 16, 0 } });
         }
     };
@@ -1320,7 +1320,7 @@ void postDuplicateIdentifierError(CompilerContext& cxt, sc::lex::SourceCodeRange
         cxt.textInfo->createDiagnosticHighlight(first, "This identifier is duplicated..."),
         cxt.textInfo->createDiagnosticHighlight(second, "...here. Names must be unique, rename one of these."),
     };
-    const auto str = diagnosticToString(ErrorType::Error, "Duplicate named identifier", hg, 2);
+    const auto str = diagnosticToCompilerError(ErrorType::Error, "Duplicate named identifier", hg, 2);
     cxt.postError(str);
 }
 
@@ -1511,7 +1511,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                                                     "... was redclared here. Each method must have a unique name."),
         };
 
-        const auto str = diagnosticToString(ErrorType::Error, "Duplicate method.", hg, 2);
+        const auto str = diagnosticToCompilerError(ErrorType::Error, "Duplicate method.", hg, 2);
         cxt.postError(str);
         return;
     }
@@ -1745,7 +1745,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     cxt.textInfo->createDiagnosticHighlight(mPrimitiveName->location,
                                                             "...should match the argument count of this primitive."),
                 };
-                const auto str = diagnosticToString(ErrorType::Error, "Primitive argument mismatch", hg, 2);
+                const auto str = diagnosticToCompilerError(ErrorType::Error, "Primitive argument mismatch", hg, 2);
                 cxt.postError(str);
             }
 
@@ -1756,7 +1756,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     cxt.textInfo->createDiagnosticHighlight(mPrimitiveName->location,
                                                             "... to match the definition of this primitive."),
                 };
-                const auto str = diagnosticToString(ErrorType::Error, "Primitive argument mismatch", hg, 2);
+                const auto str = diagnosticToCompilerError(ErrorType::Error, "Primitive argument mismatch", hg, 2);
                 cxt.postError(str);
             }
 
@@ -1767,7 +1767,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     cxt.textInfo->createDiagnosticHighlight(mPrimitiveName->location,
                                                             "... to match the definition of this primitive."),
                 };
-                const auto str = diagnosticToString(ErrorType::Error, "Primitive argument mismatch", hg, 2);
+                const auto str = diagnosticToCompilerError(ErrorType::Error, "Primitive argument mismatch", hg, 2);
                 cxt.postError(str);
             }
         }

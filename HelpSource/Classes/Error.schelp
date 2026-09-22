@@ -32,6 +32,7 @@ The following error classes exist in the main library.
 
 list::
 ## link::Classes/Error::
+## link::Classes/ErrorWrapper:: : wraps an existing error in another.
 ## link::Classes/DeprecatedError:: : this method is no longer supported.
 ## link::Classes/MethodError:: : generic error occurring within a method.
 ## link::Classes/DoesNotUnderstandError:: : the receiver does not understand the method name.
