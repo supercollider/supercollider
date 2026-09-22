@@ -737,7 +737,7 @@ DebugFrame {
 	asString { ^"DebugFrame of " ++ functionDef.asString }
 
 	// Turns whole backtrace into string 
-	backtracePrintOnto { |stream, prefix(""), callFrameAnnotations(#[]), oneBeforeBeginMethod, endMethod, maxVerboseFrames(3)|  
+	backtracePrintOnto { |stream, prefix(""), callFrameAnnotations(#[]), methodBeforeBacktraceStart, methodBacktraceEnd, maxVerboseFrames(3)|  
 		var stack = {
 			var f = this; 
 			while { f.notNil } {
@@ -747,8 +747,8 @@ DebugFrame {
 		}.r.all;
 		var newPrefix = prefix ++ thisPrefix;
 
-		var begin = oneBeforeBeginMethod !? { this.prLastIndexOf(stack, oneBeforeBeginMethod) } ?? { -1 } + 1;
-		var end = endMethod !? { this.prFirstIndexOf(stack, endMethod) } ?? { stack.size };
+		var begin = methodBeforeBacktraceStart !? { this.prLastIndexOf(stack, methodBeforeBacktraceStart) } ?? { -1 } + 1;
+		var end = methodBacktraceEnd !? { this.prFirstIndexOf(stack, methodBacktraceEnd) } ?? { stack.size };
 		var thisPrefix = "     ";
 		var count = 0;
 
