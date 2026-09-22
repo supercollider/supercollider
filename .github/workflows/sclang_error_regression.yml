@@ -11,6 +11,7 @@ jobs:
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-ubuntu-26.04-gcc16"
+      SCLANG: ${{ github.workspace }}/build/Install/bin/sclang
       CLASS_LIB: ${{ github.workspace }}/SCClassLibrary
       ERROR_REGRESSION: ${{ github.workspace }}/testsuite/sclangErrorRegressions
     steps:
