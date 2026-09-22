@@ -56,7 +56,8 @@ jobs:
           QTWEBENGINE_CHROMIUM_FLAGS: "--no-sandbox --disable-gpu"
           LIBGL_ALWAYS_SOFTWARE: "1"
         run: |
-          timeout 5m $SCLANG -a --include-path $CLASS_LIB --include-path $ERROR_REGRESSION $ERROR_REGRESSION/generateError.scd ${{ github.workspace }}/build/regression.txt
+          cd ${{ github.workspace }}
+          timeout 5m $SCLANG -a --include-path SCClassLibrary --include-path testsuite/sclangErrorRegressions testsuite/sclangErrorRegressions/generateError.scd ${{ github.workspace }}/build/regression.txt
 
       - name: Check for differences
         shell: bash
