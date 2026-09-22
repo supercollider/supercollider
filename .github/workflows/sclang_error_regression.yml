@@ -1,0 +1,43 @@
+name: SClang Error Regression
+on:
+  workflow_call:
+    inputs:
+      sc-version:
+        required: true
+        type: string
+jobs:
+  sclang-error-regression:
+    runs-on: ubuntu-22.04
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-ubuntu-22.04-gcc12"
+      CLASS_LIB: ${{ github.workspace }}/SCClassLibrary
+      ERROR_REGRESSION: ${{ github.workspace }}/testsuite/sclangErrorRegressions
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false # don't need submodules for testing
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}
+
+      - name: Extract artifact
+        run: |
+          cd "$INSTALL_PATH"
+          echo Contents of `pwd`:
+          ls
+          unzip $ARTIFACT_FILE.zip
+          
+      - name: Create File
+        shell: bash
+        continue-on-error: false
+        run: |
+          timeout 5m $SCLANG -a --include-path $CLASS_LIB --include-path $ERROR_REGRESSION $ERROR_REGRESSION/generateError.sc ${{ github.workspace }}/build/regression.txt
+
+      - name: Check for differences
+        shell: bash
+        run: |
+          diff $ERROR_REGRESSION/regression.txt ${{ github.workspace }}/build/regression.txt

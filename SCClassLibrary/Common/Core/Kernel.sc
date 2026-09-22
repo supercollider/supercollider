@@ -499,15 +499,22 @@ Process {
 // When you use a FunctionDef in your code it gets pushed on the stack
 // as an instance of Function (PyrClosure)
 FunctionDef {
-	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
-	var <isClosed;
-	var fileLocation;// either nil or an Array of: the line number, byte offset in line (only if this is a cmd functiondef).
-	var sourceCodeFileOrSnippet; // Might be the whole file, or could just be a code snippet (text within a file)
-	var <name; // Method name, or if a function, an attempt to deduce the function name is made, example: (f = {}).def.name == 'f';
-	var filePath; // can be nil if file hasn't been saved.
-	var sourceCodeStartIndex, sourceCodeEndIndex; // This are offsets into the sourceCodeFileOrSnippet.
-	var byteCodeLocations; // location of each byte code as offsets into sourceCode (yes the method call result)
-	var byteCodeSizes; // size of each byte code in bytes.
+	var raw1, raw2;  // MethodRaw, stores lots of data with small sizes (chars and shorts).
+	var <code; // Int8Array (bytes)
+	var <selectors; // Array
+	var <constants; // Array
+	var <prototypeFrame; // Array of arg and var default values
+	var <context; // where captured (closed over) variables live.
+	var <argNames;  // SymbolArray
+	var <varNames; // 
+	var <isClosed; // Boolean, true if context is nil or Interpreter:functionCompiler, otherwise false
+	var fileLocation; // either nil or an Array of: the line number, and the byte offset in line.
+	var <sourceCodeFileOrSnippet; // String. Might be the whole file, or could just be a code snippet (text within a file)
+	var <name; // Symbol. Method name, or if a function, an attempt to deduce the function name is made, example: (f = {}).def.name == 'f';
+	var filePath; // Symbol. can be nil if file hasn't been saved.
+	var <sourceCodeStartIndex, <sourceCodeEndIndex; // Integers. This are offsets into the sourceCodeFileOrSnippet.
+	var <byteCodeLocations; // IntArray location of each byte code as offsets into sourceCode [start0, end0, start1, end1... startn, endn]
+	var byteCodeSizes; // Int8Array size of each byte code in bytes. PyrInt8Array
 
 	filenameSymbol { ^filePath }
 
@@ -719,7 +726,7 @@ Frame {
 }
 
 DebugFrame {
-	var <functionDef, <args, <vars, <caller, <context, <address;
+	var <functionDef, <args, <vars, <caller, <context, <address, <ipIndex;
 	// Object.getBackTrace returns one of these.
 	// 'functionDef' is the FunctionDef for this function or method.
 	// 'args' the values of the arguments to the function call.
@@ -728,6 +735,74 @@ DebugFrame {
 	// 'context' points to another DebugFrame for the frame lexically enclosing this one.
 	// 'address' memory address of the actual frame object.
 	asString { ^"DebugFrame of " ++ functionDef.asString }
+
+	// Turns whole backtrace into string 
+	backtracePrintOnto { |stream, prefix(""), callFrameAnnotations(#[]), oneBeforeBeginMethod, endMethod, maxVerboseFrames(3)|  
+		var stack = {
+			var f = this; 
+			while { f.notNil } {
+				f.yield;
+				f = f.caller;
+			};
+		}.r.all;
+		var newPrefix = prefix ++ thisPrefix;
+
+		var begin = oneBeforeBeginMethod !? { this.prLastIndexOf(stack, oneBeforeBeginMethod) } ?? { -1 } + 1;
+		var end = endMethod !? { this.prFirstIndexOf(stack, endMethod) } ?? { stack.size };
+		var thisPrefix = "     ";
+		var count = 0;
+
+		var stackToPrint = stack[begin..(end - 1)];
+
+		var dups=0;
+		var prevDef;
+		var stackSkipMask = stackToPrint.collect {|s|
+			if (s.functionDef === prevDef) {
+				dups = dups + 1
+			} {
+				dups = 0
+			};
+			prevDef = s.functionDef;
+			dups < 3
+		};
+
+		stream << "\n";
+
+		[stackToPrint, stackSkipMask].flop.reverseDo { |f, j|
+			var d = f[0];
+			var mask = f[1];
+			stream << prefix << (stackToPrint.size - j).asString.padRight(4) << ": ";
+			d.printOntoBacktrace(stream, newPrefix, callFrameAnnotations[stackToPrint.size - count - 1], (stackToPrint.size - j - 1) < maxVerboseFrames, mask);
+			count = count + 1;
+		};
+
+
+		^stream;
+	 }
+
+	// Turns this frame into a formatted string
+	printOntoBacktrace { |stream, prefix(""), annotation, printArgsAndVars, printSource| 
+		stream << this.prAsErrorString(prefix, annotation, printArgsAndVars, printSource)
+	}
+
+	prAsErrorString {|prefix, annotation, printArgsAndVars, printSource| _DebugFrame_asErrorString }
+
+	prLastIndexOf { |collection, predicate({})|
+		var last = 0;
+		collection.do{ 
+			|v,i| 
+			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { last = i } 
+		};
+		^last
+	}
+	prFirstIndexOf { |collection, predicate({})|
+		var first = 0;
+		collection.reverseDo{ 
+			|v,i| 
+			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { first = i } 
+		};
+		^(collection.size - first) - 1;
+	}
 }
 
 RawPointer {

@@ -29,6 +29,7 @@
 #include "PyrMessage.h"
 #include "PyrParseNode.h"
 #include "PyrSched.h"
+#include "PyrSlot.h"
 #include "PyrSymbolTable.h"
 #include <math.h>
 #include <stdlib.h>
@@ -964,6 +965,7 @@ HOT void Interpret(VMGlobals* g) {
         const auto storeLoadSpAndIp = [&](auto action) {
             g->sp = sp;
             g->ip = ip;
+            g->frame->ip = PyrSlot::make(static_cast<void*>(ip));
             action();
             sp = g->sp;
             ip = g->ip;

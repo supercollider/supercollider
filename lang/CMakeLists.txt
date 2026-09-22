@@ -60,6 +60,7 @@ set(sclang_sources
 	LangSource/PyrObject.cpp
 	LangSource/PyrParseNode.cpp
 	LangSource/PyrSignal.cpp
+	LangSource/PyrSlot.cpp
 	LangSource/PyrSymbolTable.cpp
     LangSource/SC_CLIOptions.cpp
 	LangSource/SC_LanguageClient.cpp

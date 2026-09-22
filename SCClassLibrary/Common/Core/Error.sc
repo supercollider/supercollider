@@ -1,339 +1,313 @@
 Exception {
 	classvar <>handling = false;
+	classvar <>reporting = false;
 	classvar <>debug = false;
 	classvar <>inProtectedFunction = false;
 
-	var <>what, <>protectedBacktrace, <>path;
+	// Due to backwards compatibility we cannot make these members private...
+	// This means any one who sets these must ensure they follow the expected type.
+	// This is because when creating an error, we are not always allowed to throw another.
 
-	*new { arg what;
-		var protectedBacktrace, instance;
-		if (debug || inProtectedFunction, {
-			protectedBacktrace = this.getBackTrace.caller;
-			inProtectedFunction = false;
-		});
-		^super.newCopyArgs(what ? this.name, protectedBacktrace, thisProcess.nowExecutingPath);
-	}
-	errorString {
-		^"EXCEPTION: " ++ what
-	}
-	reportError {
-		this.errorString.postln;
-		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
-		this.dumpBackTrace;
-		// this.adviceLink.postln;
-		"^^ The preceding error dump is for %\n".postf(this.errorString);
-	}
-	adviceLink {
-		^("For advice: [http://supercollider.sf.net/wiki/index.php/%]"
-			.format(this.adviceLinkPage));
-	}
-	adviceLinkPage {
-		^this.errorString.tr($ , $_).tr($\n, $_);
-	}
-	postProtectedBacktrace {
-		var out, currentFrame, def, ownerClass, methodName, pos, tempStr;
-		out = CollStream.new;
-		"\nPROTECTED CALL STACK:".postln;
-		currentFrame = protectedBacktrace;
-		while({currentFrame.notNil}, {
-			def = currentFrame.functionDef;
-			if(def.isKindOf(Method), {
-				ownerClass = def.ownerClass;
-				methodName = def.name;
-				if(ownerClass == Function && { #['protect', 'try'].includes(methodName) }, {
-					pos = out.pos;
-				});
-				out << "\t%:%\t%\n".format(ownerClass, methodName, currentFrame.address);
-			}, {
-				out << "\ta FunctionDef\t%\n".format(currentFrame.address);
-				// sourceCode may be ridiculously huge,
-				// so steal the technique from Object:asString to reduce the printed size
-				tempStr = String.streamContentsLimit({ |stream|
-					stream << "\t\tsourceCode = " <<< (def.sourceCode ? "<an open Function>");
-				}, 512);
-				out << tempStr;
-				if(tempStr.size >= 512) { out << "...etc..." << $" };
-				out << Char.nl;
-			});
-			def.argNames.do({|name, i|
-				out << "\t\targ % = %\n".format(name, currentFrame.args[i]);
-			});
-			def.varNames.do({|name, i|
-				out << "\t\tvar % = %\n".format(name, currentFrame.vars[i]);
-			});
-			currentFrame = currentFrame.caller;
-		});
-		// lose everything after the last Function:protect
-		// it just duplicates the normal stack with less info
-		// but, an Error in a routine in a Scheduler
-		// may not have a try/protect in the protectedBacktrace
-		// then, pos is nil and we should print everything
-		postln(
-			if(pos.notNil) {
-				out.collection.copyFromStart(pos)
-			} {
-				out.collection
-			}
-		);
+	// A String.
+	// Describes the error.
+	var <>what; 
+
+	// An Array of (Strings or Nil).
+	// Text that is printed next to the backtrace depending on its index, if out of range of the array (or nil), nothing is printed.
+	var	<>callFrameAnnotations; 
+
+	// A function accepting a Method that returns a Boolean.
+	// A predicate deciding if the method at the bottom of the backtrace should be printed.
+	// Typically used to ignore methods like the constructor of this error, and Object.doesNotUnderstand.
+	var <>methodBeforeBacktraceStart;
+
+	// A function accepting a Method that returns a Boolean.
+	// A predicate deciding if we have reached the end of the backtrace we wish to print.
+	// Typically used to ignore all the interpreter stuff, or the stuff above a try/protect block.
+	var <>methodBacktraceEnd; // Function[Method -> Boolean]
+	
+	// Set when the exception is created, shows the call stack that led to this point.
+	var <backtrace;
+
+	// This represents the nowExecutingPath, it doesn't represent what file the code was written in!
+	// It is kept only for backwards compatibility and should no longer be used, instead use the backtrace.
+	var <>path;
+
+	*new { |what(""), callFrameAnnotations([]), methodBeforeBacktraceStart, methodBacktraceEnd|
+		var thisConstructor; // used to create the methodBeforeBacktraceStart
+
+		if (Exception.reporting) {
+			"Attempting to construct and error while reporting one. This is not allowed, please file a bug report.".error;
+			this.halt; // Just quit the thread here, we might get stuck in an infinite loop.
+		}; 
+
+		^this.newCopyArgs(
+			what: what.asString, 
+			callFrameAnnotations: [],
+			backtrace: this.getBackTrace,
+			methodBeforeBacktraceStart: methodBeforeBacktraceStart ?? {
+				thisConstructor = this.class.findMethod(\new);
+				{ |method| method === thisConstructor }
+			},
+			methodBacktraceEnd: methodBacktraceEnd ?? {
+				// Skip all the interpreter stuff, that isn't useful for this error (or if it is, there is an issue in the class library).
+				{ |method| method.ownerClass === Interpreter or: {method.ownerClass == Function and: { method.name === 'protect' or: {method.name == 'try'} }} }
+			},
+			path: thisProcess.nowExecutingPath // backwards compatible.
+		)
 	}
 
+	
+	// These two report methods allow subclasses to inject their own printing behavior
+	reportStage1 { |stream, prefix| 
+		backtrace.backtracePrintOnto(
+			stream, 
+			prefix: prefix,
+			callFrameAnnotations: callFrameAnnotations,
+			methodBeforeBacktraceStart: methodBeforeBacktraceStart,
+			methodBacktraceEnd: methodBacktraceEnd,
+			maxVerboseFrames: 3,
+		) 
+	}
+	reportStage2 { |stream, prefix| } 
+
+	// Just does what.error. 
+	// This probably shouldn't be used anymore.
+	errorString { ^what.error }
+
+	// Do not override this! Instead use reportStage1 and reportStage2.
+	// To change where we print (to a file perhaps?) set the stream argument.
+	// The prefix can be used to set the indentation if this is used as a part of some other text.
+	reportError { |stream(Post), prefix("")|
+		var oldReporting = Exception.reporting;
+
+		Exception.reporting = true;
+
+		stream << prefix << "──────────────────────────────────────────────────────────────────────────────────\n";
+		stream << prefix << "ERROR: " << this.what << "\n";
+		this.reportStage1(stream, prefix);
+		stream << "\n" << prefix;
+
+		this.reportStage2(stream, prefix);
+
+		stream << "\n" << prefix << "──────────────────────────────────────────────────────────────────────────────────\n";
+
+		Exception.reporting = oldReporting;
+		^stream;
+	}
+
+	// in the class library it is equivalent to x.isKindOf(Exception), so this is useless, don't use.
 	isException { ^true }
 }
 
-Error : Exception {
-	errorString {
-		^"ERROR: " ++ what
+Error : Exception { }
+
+// Is used to wrap an existing error, very useful when you want to append more information to an error inside a try catch, and then rethrow it.
+ErrorWrapper : Exception {
+	var <>wrapped;
+
+	*new { |wrapped, what, callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd|
+		^super
+			.new(what, callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd)
+			.wrapped_(wrapped)
 	}
-	errorPathString {
-		^if(path.isNil) { "" } { "PATH:" + path ++ "\n" }
+
+	reportStage1 { |stream, prefix|
+		super.reportStage2(stream, prefix)
+	}
+
+	reportStage2{ |stream, prefix|
+		stream << prefix << "Wrapped error:";
+		wrapped.reportStage1(stream, prefix ++ "     ");
+		wrapped.reportStage2(stream, prefix ++ "     ");
+		stream << prefix << "This error:";
+		super.reportStage1(stream, prefix)
 	}
 }
 
 MethodError : Error {
 	var <>receiver;
 
-	*new { arg what, receiver;
-		^super.new(what).receiver_(receiver)
-	}
-	reportError {
-		this.errorString.postln;
-		"RECEIVER:\n".post;
-		receiver.dump;
-		this.errorPathString.post;
-		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
-		this.dumpBackTrace;
-		// this.adviceLink.postln;
-		"^^ The preceding error dump is for %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
-	}
-	adviceLinkPage {
-		^this.class.name
+	*new { |what, receiver, callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd| 
+		^super.new(what, callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd).receiver_(receiver)
 	}
 
+	reportStage2 { |stream, prefix|
+		stream << "RECEIVER: " << receiver.class.name << $\n;
+	}
 }
 
 PrimitiveFailedError : MethodError {
 	var <>failedPrimitiveName;
 
-	*new { arg receiver;
-		^super.new(Thread.primitiveErrorString, receiver)
-		.failedPrimitiveName_(thisThread.failedPrimitiveName)
-	}
-	errorString {
-		^"ERROR: Primitive '%' failed.\n%".format(failedPrimitiveName, what ? "")
+	*new { |receiver, failedPrimitive(thisThread.failedPrimitiveName), errorString(Thread.primitiveErrorString)|
+		var thisConstructor = this.class.findMethod(\new);
+		^super.new(
+			what: errorString 
+				!? { "Primitive '%' failed with message : '%'.".format(failedPrimitive, errorString) }
+				?? { "Primitive '%' failed.".format(failedPrimitive) },
+			receiver: receiver,
+			callFrameAnnotations: [nil, errorString],
+			methodBeforeBacktraceStart: { |m| m === thisConstructor or: { m.ownerClass === Object and: { m.name === 'primitiveFailed' } } }
+		)
 	}
 }
 
 SubclassResponsibilityError : MethodError {
 	var <>method, <>class;
-	*new { arg receiver, method, class;
-		^super.new(nil, receiver).method_(method).class_(class)
-	}
-	errorString {
-		^"ERROR: '" ++ method.name ++ "' should have been implemented by " ++ class.name ++ "."
+
+	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
+		var thisConstructor = this.class.findMethod(\new);
+		^super.new(
+			what: "'%' should have been implemented by %.".format(method.name, class.name), 
+			receiver: receiver,
+			callFrameAnnotations: [nil, "Please implement this method for the class '%'".format(class.name)],
+			methodBeforeBacktraceStart: { |m| 
+				m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'subclassResponsibility'}} 
+			}
+		)
+			.method_(method)
+			.class_(class)
 	}
 }
 
 ShouldNotImplementError : MethodError {
 	var <>method, <>class;
-	*new { arg receiver, method, class;
-		^super.new(nil, receiver).method_(method).class_(class)
-	}
-	errorString {
-		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name
-		++ "' Message not valid for this subclass: " ++ class.name ++ "."
+
+	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
+		var thisConstructor = this.class.findMethod(\new);
+		^super.new(
+			what: "'%-%' is not a valid message for the subclass '%'".format(method.ownerClass.name, method.name, class.name), 
+			callFrameAnnotations: [nil, "'%' cannot respond to this message, please remove the call.".format(class.name)],
+			receiver: receiver, 
+			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'shouldNotImplement'}} },
+		)
+			.method_(method)
+			.class_(class)
 	}
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector, <>args, <>keywordArgumentPairs, suggestion = "";
-	*new { arg receiver, selector, args, keywordArgumentPairs;
-		^super.new(nil, receiver)
-		.selector_(selector)
-		.args_(args)
-		.keywordArgumentPairs_(keywordArgumentPairs)
-		// note: deliberately not calling '.init'
-		// until a method suggestion is needed;
-		// see 'suggestion' below
+	var <>selector, <>args, <>keywordArgumentPairs;
+
+	*new { |receiver, selector, args([]), keywordArgumentPairs([])|
+		var thisConstructor = this.class.findMethod(\new);
+		var msg = "% does not understand the message '%'.".format(receiver.class.name, selector);
+
+		// Note: is it okay to throw in the constructor of an exception, but not in reportError
+		selector ?? { Error("'selector' was nil in DoesNotUnderstandError.new").throw };
+
+		^super.new(
+			what: msg,
+			callFrameAnnotations: [msg],
+			// We don't need to print Object.doesNotUnderstand.
+			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'doesNotUnderstand'}} },
+			receiver: receiver
+		)
+			.selector_(selector.asSymbol)
+			.args_(args)
+			.keywordArgumentPairs_(keywordArgumentPairs)
 	}
 
-	init {
-		var methodSuggestions, classSuggestions, plural;
-		if(selector.notNil) {
-			methodSuggestions = receiver.class.findSimilarSelectors(selector, minSimilarity: 0.5, maxEditDistance: 2);
-			if(methodSuggestions.notEmpty) {
-				plural = if(methodSuggestions.size > 1) { "s" } { "" };
-				methodSuggestions = methodSuggestions.join("\n\t");
-				suggestion = suggestion ++
-				"\nMessage% with a similar name understood by the receiver:\n\t%\n".format(plural, methodSuggestions);
-			};
-			classSuggestions = Object.findRespondingUpperSubclasses(selector).collect(_.name);
-			if(classSuggestions.notEmpty) {
-				if(classSuggestions.size < 8) {
-					classSuggestions = classSuggestions.join("\n\t");
-					suggestion = suggestion ++
-					"\nObjects which respond to the selector '%' derive from:\n\t%"
-					.format(selector, classSuggestions)
-				} {
-					suggestion = suggestion ++
-					"\nMany other objects respond to the message '%' (found % superclasses)."
-					.format(selector, classSuggestions.size)
-				}
+	reportStage2 { |stream, prefix| 
+		var methodSuggestions = receiver.class.findSimilarSelectors(selector, minSimilarity: 0.5, maxEditDistance: 2);
+		var classSuggestions = Object.findRespondingUpperSubclasses(selector).collect(_.name);
+		if(methodSuggestions.notEmpty) {
+			stream << "Message% with a similar name understood by the receiver:".format( if(methodSuggestions.size > 1) { "s" } { "" } );
+			stream << "\n" << prefix << "  ";
+			stream << methodSuggestions.join("\n" ++ prefix ++ "  ");
+		};
+		if(classSuggestions.notEmpty) {
+			if(classSuggestions.size < 8) {
+				stream << "\n" << prefix << "Objects which respond to the selector '%' derive from:".format(selector);
+				stream << "\n" << prefix << "  ";
+				stream << classSuggestions.join("\n" ++ prefix ++ "  ");
+			} {
+				stream << "\n" << prefix << "Many other objects respond to the message '%' (found % superclasses).".format(selector, classSuggestions.size);
 			}
-		} {
-			"DoesNotUnderstandError selector for % was nil".format(receiver).warn;
 		}
-	}
-
-	errorString {
-		^"ERROR: Message '" ++ selector ++ "' not understood."
-	}
-
-	suggestion {
-		if(suggestion.size == 0) {  // size == 0 for both "" and nil
-			this.init;
-		};
-		^suggestion
-	}
-
-	reportError {
-		this.errorString.postln;
-		"RECEIVER:\n".post;
-		receiver.dump;
-		"ARGS:\n".post;
-		args.dumpAll;
-		keywordArgumentPairs !? {
-			"KEYWORD ARGUMENTS:".postln;
-			keywordArgumentPairs.dumpAll;
-		};
-		this.errorPathString.post;
-		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
-		this.dumpBackTrace;
-		// this.adviceLink.postln;
-		"\n^^ %\nRECEIVER: %\n".postf(this.errorString, receiver);
-		this.suggestion.postln;
-		"\n".post;
-	}
-	adviceLinkPage {
-		^"%#%".format(this.class.name, selector)
 	}
 }
 
 
 MustBeBooleanError : MethodError {
-	errorString {
-		^"ERROR: Non Boolean in test."
+	*new { |receiver| 
+		var thisConstructor = this.class.findMethod(\new);
+		^super.new( 
+			what: "Non boolean in test ", 
+			receiver: receiver,
+			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'mustBeBoolean'}} },
+		) 
 	}
 }
 
 NotYetImplementedError : MethodError {
-}
+	*new { |receiver| 
+		var thisConstructor = this.class.findMethod(\new);
+		^super.new( 
+			what: "Not yet implemented", 
+			callFrameAnnotations: ["This method has not yet been implemented."],
+			receiver: receiver,
+			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'notYetImplemented'}} },
+		) 
+	}
+
+ }
 
 OutOfContextReturnError : MethodError {
 	var <>method, <>result;
-	*new { arg receiver, method, result;
-		^super.new(nil, receiver).method_(method).result_(result)
-	}
-	errorString {
-		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name
-		++ "' Out of context return of value: " ++ result
+	*new { |receiver, method, result|
+		var thisConstructor = this.class.findMethod(\new);
+		if (method.isKindOf(Method).not) {
+			Error("OutOfContextReturnError excepts a method").throw
+		};
+		^super.new(
+			what: "'%-%' tried to return to a call frame that has expired with a value of: %".format(method.ownerClass),
+			callFrameAnnotations: ["Could not complete this return as the parent method is no longer active."],
+			receiver: receiver,
+			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'outOfContextReturn'}} },
+		)
+			.method_(method) 
+			.result_(result)
 	}
 }
 
 ImmutableError : MethodError {
 	var <>value;
-	*new { arg receiver, value;
-		^super.new(nil, receiver).value_(value)
-	}
-	errorString {
-		^"ERROR: Object is immutable: " ++ receiver
+	*new { |receiver, value|
+		var thisConstructor = this.class.findMethod(\new);
+		^super.new(
+			what: "Cannot mutate an immutable object",
+			callFrameAnnotations: ["Make a copy of this object before mutating it."],
+			receiver: receiver,
+			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'immutableError'}} },
+		)
+			.value_(value)
 	}
 }
 
-BinaryOpFailureError : DoesNotUnderstandError {
-	errorString {
-		^"ERROR: binary operator '" ++ selector ++ "' failed."
-	}
-}
+// This doesn't need to exist.
+BinaryOpFailureError : DoesNotUnderstandError { }
 
 DeprecatedError : MethodError {
-	var <>method, <>class, <>alternateMethod;
+	var <>method, <>alternateMethod;
 
-	*new { arg receiver, method, alternateMethod, class;
-		^super.new(nil).receiver_(receiver).method_(method).class_(class).alternateMethod_(alternateMethod)
-	}
-	errorString {
-		var methodSignature = { arg m;
-			m.ownerClass.name.asString  ++ ":" ++ m.name;
-		};
-		var searchForCaller = { arg backtrace, m;
-			while {
-				backtrace.notNil and: {
-					backtrace.functionDef !== m
-				}
-			} {
-				backtrace = backtrace.caller;
-			};
-			// backtrace.caller may now be a FunctionDef,
-			// useless for troubleshooting
-			// so roll back to the last real method
-			while {
-				backtrace.notNil and: {
-					backtrace = backtrace.caller;
-					backtrace.functionDef.isKindOf(Method).not
-				}
-			};
-			if(backtrace.notNil) { backtrace.tryPerform(\functionDef) };
-		};
-		var caller, string;
-		if(protectedBacktrace.notNil) {
-			caller = searchForCaller.value(protectedBacktrace, method);
-		};
-		if(caller.isNil) {
-			caller = searchForCaller.value(this.getBackTrace, method);
-		};
-		if(caller.isNil) {
-			caller = "{unknown}"
-		} {
-			if(caller.isKindOf(Method)) {
-				caller = methodSignature.value(caller);
-			} {
-				caller = caller.asString;
-			};
-		};
-		string = "WARNING: Called from %, method % is deprecated and will be removed.".format(
-			caller,
-			methodSignature.value(method)
-		);
-		if(alternateMethod.notNil) {
-			string = string + "Use" + methodSignature.value(alternateMethod) + "instead.";
-		};
-
-		string = string ++ "\nThe definition of '%' is to be found here: '%'".format(method, method.filenameSymbol);
-
-		^string
+	*new { |receiver, method, alternateMethod|
+		var thisConstructor = this.class.findMethod(\new);
+		^super.new(
+			what: "The method '%-%' is deprecated, instead use '%-%'.".format(method.ownerClass.name, method.name, alternateMethod.ownerClass.name, alternateMethod.name),
+			callFrameAnnotations: ["Replace this with '*.%".format(alternateMethod.name)],
+			receiver: receiver,
+			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m == method} },
+		)
+			.method_(method)
+			.alternateMethod_(alternateMethod)
 	}
 
-	reportError {
-		this.errorString.postln;
-		this.errorPathString.post;
-		// this.adviceLink.postln;
-		"\n\n".post;
-	}
-
+	// This disables throwing when not in debug mode, but will halt when in debug.
+	// This means that DeprecatedErrors are *not* exceptions, despite inheriting from Exception.
 	throw {
-		Error.handling = true;
 		this.reportError;
-		if (Error.debug) {
-			if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
-			this.dumpBackTrace;
-			Error.handling = false;
-			this.halt;
-		} {
-			Error.handling = false;
-		};
-
-	}
-	adviceLinkPage {
-		^"DeprecatedError"
+		if (Error.debug) { this.halt }
 	}
 }

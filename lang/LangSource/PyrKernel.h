@@ -286,6 +286,9 @@ extern SpecialNumberStruct gSpecialNumbers;
 
 extern PyrMethod* gNullMethod; // used to fill row table
 
+// The size parameter here is only used when creating an array-like object.
+// If you are creating a normal class, then the 'size' is ignored and the real size is deduced from the class instance
+// variable prototype.
 PyrObject* instantiateObject(class PyrGC* gc, PyrClass* classobj, int size, bool fill, bool collect);
 
 PyrObject* newPyrObject(class PyrGC* gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect);
