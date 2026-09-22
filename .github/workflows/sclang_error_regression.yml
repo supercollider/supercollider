@@ -7,7 +7,7 @@ on:
         type: string
 jobs:
   sclang-error-regression:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-ubuntu-26.04-gcc16"
