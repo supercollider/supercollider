@@ -175,7 +175,7 @@ void ScProcess::recompileClassLibrary(void) {
     }
     mCompiled = false;
     const char recompileChar { SC_LanguageClient::RecompileLibrary };
-    write(&recompileChar);
+    write(&recompileChar, 1);
 }
 
 
