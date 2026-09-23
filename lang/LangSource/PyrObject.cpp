@@ -783,33 +783,17 @@ struct compareByName {
 
 template <class T> class pyr_pool_compile_allocator {
 public:
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
-    typedef T* pointer;
-    typedef const T* const_pointer;
-    typedef T& reference;
-    typedef const T& const_reference;
     typedef T value_type;
 
-    template <class U> struct rebind { typedef pyr_pool_compile_allocator<U> other; };
+    pyr_pool_compile_allocator() = default;
 
-    pyr_pool_compile_allocator(void) {}
+    template <class U> pyr_pool_compile_allocator(const pyr_pool_compile_allocator<U>&) {}
 
-    template <class U> pyr_pool_compile_allocator(pyr_pool_compile_allocator<U> const&) {}
-
-    pointer address(reference x) const { return &x; }
-
-    const_pointer address(const_reference x) const { return &x; }
-
-    pointer allocate(size_type n, const void* hint = nullptr) {
-        return (pointer)pyr_pool_compile->Alloc(n * sizeof(T));
+    [[nodiscard]] T* allocate(size_t n) {
+        return static_cast<T*>(pyr_pool_compile->Alloc(n * sizeof(T)));
     }
 
-    void deallocate(pointer p, size_type n) { pyr_pool_compile->Free(p); }
-
-    void construct(pointer p, const T& val) { ::new (p) T(val); }
-
-    void destroy(pointer p) { p->~T(); }
+    void deallocate(T* p, size_t n) { pyr_pool_compile->Free(p); }
 };
 
 
