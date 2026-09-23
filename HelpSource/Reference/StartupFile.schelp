@@ -1,47 +1,98 @@
 title:: Sclang Startup File
-summary:: The sclang startup file
+summary:: Code to run whenever the interpreter (sclang) boots, used for custom settings.
 categories:: Language
 
-Once the class library is finished compiling the interpreter looks for a file at code::Platform.userConfigDir +/+ "startup.scd":: and if such a
-file exists, executes any code within it (this happens within link::Classes/Main#-startup::). By creating a file in this location you can make user
-specific customizations.
+Once the class library is finished compiling, the interpreter looks for a file at code::Platform.userConfigDir +/+ "startup.scd"::, 
+and if such a file exists, executes any code within it (this happens within link::Classes/Main#-startup::). 
+By creating a file in this location you can make user specific customizations.
 
 definitionList::
-## Linux   || teletype::~/.config/SuperCollider/startup.scd::, according to the xdg base directory specification
-## macOS   || teletype::~/Library/Application Support/SuperCollider/startup.scd::
-## Windows || teletype::C:\\SuperCollider\\startup.scd:: (or similar, depending on the location of the SuperCollider installation)
+## Linux   || teletype::/Users/YourUserName/.config/SuperCollider/startup.scd::, 
+				i.e. in teletype::$XDG_CONFIG_HOME:: according to the link::https://specifications.freedesktop.org/basedir/latest/#basics#xdg base directory specification::
+## macOS   || teletype::/Users/YourUserName/Library/Application Support/SuperCollider/startup.scd:: for the link::Guides/SuperCollider IDE::.
+
+				More precisely, this location is checked only when teletype::$XDG_CONFIG_HOME:: is not defined. 
+				This means that if you run sclang in a terminal or in a different IDE,
+				the location might be set to teletype::/Users/YourUserName/.config/SuperCollider/startup.scd::, as in Linux.
+## Windows || teletype::C:\Users\YourUserName\AppData\Local\SuperCollider\startup.scd::
+			(or similar, depending on the location of the SuperCollider installation)
 ::
 
-
-A common example would be to alter the options of the local and internal Servers:
+Make SCIDE's editor show your startup file programmatically:
 code::
-// placing the following code in the file will cause these modifications to be made
-// at startup (see also: ServerOptions)
-
-Server.local.options.numOutputBusChannels = 4;	// change number of input and output channels
-Server.local.options.numInputBusChannels = 4;
-Server.internal.options.numOutputBusChannels = 4;
-Server.internal.options.numInputBusChannels = 4;
-
-Server.local.options.device = "Built-in Audio";	// use a specific soundcard
-Server.local.options.device = "MOTU Traveler";
-Server.local.options.device = "TASCAM US-122";
-Server.local.options.device = "Jack Router";
-Server.local.options.device = nil;				// use the system default soundcard
-
-Server.local.options.blockSize = 128; // increase block size (default is 64)
-Server.internal.options.blockSize = 128;
-
-Server.local.options.sampleRate = 96000; // increase sampling rate (if your hardware supports it)
-Server.internal.options.sampleRate = 96000;
-Server.internal.options.sampleRate = nil;	// use the currently selected samplerate of the soundcard
-
-// change the standard archive path to a custom one:
-Archive.archiveDir = "~/scwork".standardizePath;
-
-// hook up jack ports to audio channels
-"SC_JACK_DEFAULT_INPUTS".setenv("system");
-"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
-
+Document.open(Platform.userConfigDir +/+ "startup.scd")
+// this may not work outside of SCIDE
 ::
-Naturally the file must contain only valid SC expressions.
+
+section:: An example startup file
+A common example would be to alter the options of the default server.
+If you place the following code at the expected path and reboot sclang,
+the default server's link::Classes/ServerOptions##.options:: will be modified accordingly.
+This means that the next time that server boots, it boots with those options.
+
+code::
+// most settings, if left unset, or set to 'nil', will have reasonable defaults
+// or will use the current OS setting (device, samplerate, etc.).
+
+//device specific options
+Server.default.options.device = "Built-in Audio";	// use a specific soundcard
+Server.default.options.numOutputBusChannels = 2;	
+Server.default.options.numInputBusChannels = 2;
+Server.default.options.sampleRate = 48000; // or 96k, or 192k...
+
+// more audio settings (for supercollider)
+Server.default.options.memSize = 2**20; // 1GB; more can be reasonable too!
+Server.default.options.maxNodes = 1024; // increase for more of dem grains
+Server.default.options.blockSize = 128; // increase block size (default is 64)
+Server.default.options.numWireBufs = 8192; //
+
+
+// Platform specific options: 
+// E.g., on linux, hook up jack ports to audio channels
+// and feel superior to other operatings systems
+Platform.case(
+	\linux, { 
+		"SC_JACK_DEFAULT_INPUTS".setenv("system");
+		"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+	},
+	\osx, { "shoulda got a phone".postln },
+	\windows, { "shoulda got a console".postln },
+);
+
+// load more files from here, so you don't have to put everything in one file:
+"/path/to/more/scd/files/containing/more/customization.scd".load 
+
+// you may or may not want to start the server automatically at startup 
+s.boot 
+::
+
+There are no restrictions on what code can be placed in the startup file, 
+as long as it only contains valid SC expressions.
+
+For instance, it can be used also to initialize GUI elements, 
+print political manifestos to the post window, 
+or register a link::Classes/Pattern:: to be played once the server has booted.
+
+
+section:: Order of execution when sclang starts:
+When sclang starts, the order of execution is as follows:
+numberedlist::
+## Initialization of class library
+## Startup file (and whatever code is loaded from within that file)
+## StartUp system actions
+::
+
+Note that the startup strong::file:: described here is distinct from the StartUp link::Classes/AbstractSystemAction::: 
+the StartUp sytem action is intended for use in the class library, 
+and is not usually used for personal setup.
+(e.g. certain utility Classes such as link::Classes/FreqScope:: might need to add their own SynthDefs, 
+or prepare GUI related variables).
+
+
+section:: Additional links that might help you put together your own startup file:
+list::
+## link::Reference/AudioDeviceSelection:: - find out what devices are available, 
+and what they are called: (code::ServerOptions.devices::)
+## link::Classes/ServerOptions:: - what do all these options mean?
+## link::Guides/Server-Guide#Local vs. Internal:: - What are the default, local, internal servers?
+::
