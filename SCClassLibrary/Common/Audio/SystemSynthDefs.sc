@@ -45,9 +45,6 @@ SystemSynthDefs {
 							Out.kr(out, In.kr(in, i) * env)
 					}, [\kr, \kr, \ir]),
 
-					SynthDef("system_diskout_" ++ i, { arg i_in, i_bufNum=0;
-						DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
-					}),
 
 					SynthDef("system_setbus_hold_audio_" ++ i, { arg out = 0, fadeTime = 0, curve = 0, gate = 1;
 						var values = NamedControl.ir(\values, 0 ! i);
@@ -72,6 +69,15 @@ SystemSynthDefs {
 						ReplaceOut.kr(out, sig);
 					}, [\ir, \kr, \ir])
 				];
+
+				// wasm does not have DiskOut UGen
+				if(thisProcess.platform.name != \wasm, {
+					list = list.add(
+						SynthDef("system_diskout_" ++ i, { arg i_in, i_bufNum=0;
+							DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
+						});
+					);
+				});
 
 				list.do { |synthDef|
 					synthDef.add;

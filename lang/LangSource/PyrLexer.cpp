@@ -1565,7 +1565,7 @@ static void runShutdown(bool wasCompiledPreviously) {
     if (wasCompiledPreviously) {
         VMGlobals* g = gMainVMGlobals;
 
-        g->canCallOS = true;
+        g->canCallOS = DEFAULT_THREAD_IS_MAIN_THREAD;
 
         ++g->sp;
         SetObject(g->sp, g->process);
@@ -1597,7 +1597,7 @@ void shutdownLibrary(bool wasCompiledPreviously) {
 
         if (wasCompiledPreviously) {
             VMGlobals* g = gMainVMGlobals;
-            g->canCallOS = true;
+            g->canCallOS = DEFAULT_THREAD_IS_MAIN_THREAD;
             g->gc->RunAllFinalizers();
             g->canCallOS = false;
         }
@@ -1820,7 +1820,7 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalo
 
     post("Executing 'Process.startup'...\n");
     VMGlobals* g = gMainVMGlobals;
-    g->canCallOS = true;
+    g->canCallOS = DEFAULT_THREAD_IS_MAIN_THREAD;
     ++g->sp;
     SetObject(g->sp, g->process);
 
@@ -1848,9 +1848,9 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalo
 
 void dumpByteCodes(PyrBlock* theBlock);
 
-SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
+SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector, const bool runsInMainThread) {
     VMGlobals* g = gMainVMGlobals;
-    g->canCallOS = true;
+    g->canCallOS = runsInMainThread;
     try {
         if (gClassLibraryInfo.acceptsInput()) {
             ++g->sp;

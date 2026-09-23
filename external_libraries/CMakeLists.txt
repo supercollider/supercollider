@@ -66,6 +66,10 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 		target_compile_definitions(boost_thread_lib PRIVATE BOOST_THREAD_BUILD_LIB)
 	endif()
 
+	if(EMSCRIPTEN)
+		target_compile_options(boost_thread_lib PUBLIC -pthread)
+	endif()
+
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		target_compile_options(boost_thread_lib PRIVATE -fPIC)
 		target_link_libraries(boost_thread_lib rt)
@@ -185,4 +189,12 @@ endif()
 
 if(WIN32)
   add_subdirectory(portmidi)
+endif()
+
+if(EMSCRIPTEN)
+	target_compile_options(boost_program_options_lib PUBLIC -pthread)
+	target_compile_options(boost_regex_lib PUBLIC -pthread)
+	target_compile_options(tlsf PUBLIC -pthread)
+	target_compile_options(oscpack PUBLIC -pthread)
+	target_compile_options(yaml-cpp PUBLIC -pthread)
 endif()

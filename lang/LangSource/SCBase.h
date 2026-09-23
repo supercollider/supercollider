@@ -37,6 +37,19 @@
 #include "AllocPools.h"
 #include "SC_Export.h"
 
+/**
+ * Normally, the client runs in its own main thread which has already access to GUI primitives.
+ * This is not the case for the wasm client, which is executing code in a dedicated thread in order to
+ * prevent locking of the main thread (aka the browser thread) which results in a browser tab freeze, see
+ * https://emscripten.org/docs/porting/pthreads.html#blocking-on-the-main-browser-thread
+ */
+constexpr bool DEFAULT_THREAD_IS_MAIN_THREAD =
+#ifdef __EMSCRIPTEN__
+    false;
+#else
+    true;
+#endif
+
 void postfl(const char* fmt, ...);
 void post(const char* fmt, ...);
 void error(const char* fmt, ...);
@@ -60,7 +73,15 @@ SCLANG_DLLEXPORT_C void schedClear();
 
 // MAIN ENTRY POINT OF SC LANG.
 SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalone);
-SCLANG_DLLEXPORT_C void runLibrary(struct PyrSymbol* selector);
+/**
+ *  All exceptions are caught, except \c FatalInterpreterErrors .
+ *  \param runsInMainThread:  determines if this is called from the main thread,
+ *  which is the default case except for the WASM client which runs the AppClock on the main thread
+ *  but everything else in a dedicated \c gSclangWasmThread
+ *  \see DEFAULT_THREAD_IS_MAIN_THREAD
+ */
+SCLANG_DLLEXPORT_C void runLibrary(struct PyrSymbol* selector,
+                                   const bool runsInMainThread = DEFAULT_THREAD_IS_MAIN_THREAD);
 SCLANG_DLLEXPORT_C void runInterpreter(struct VMGlobals* g, struct PyrSymbol* selector, int numArgsPushed);
 SCLANG_DLLEXPORT_C void shutdownLibrary(bool wasCompiledPreviously);
 SCLANG_DLLEXPORT_C void setCommandLine(const char* txt, size_t txtSize, const char* filePath, int lineNumber = 0,

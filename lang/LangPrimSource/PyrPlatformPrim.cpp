@@ -123,6 +123,8 @@ int prPlatform_architecture(struct VMGlobals* g, int numArgsPushed) {
     SetSymbol(g->sp, getsym("x86_64"));
 #elif BOOST_ARCH_PPC
     SetSymbol(g->sp, getsym("PowerPC"));
+#elif __EMSCRIPTEN__
+    SetSymbol(g->sp, getsym("wasm"));
 #else
 #    warning "Unknown platform architecture: please submit a pull request to add yours!"
     SetSymbol(g->sp, getsym("unknown"));
