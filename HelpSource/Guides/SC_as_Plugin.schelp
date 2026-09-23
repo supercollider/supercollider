@@ -1,0 +1,38 @@
+title:: SuperCollider as a Plugin in a Host
+categories:: Guides
+summary:: Overview of using SuperCollider SynthDefs in VST-enabled hosts via bridge plug-ins.
+
+Description::
+
+Many DAWs and audio editors include built-in instruments and effects. If you need more control over synthesis structure or signal flow, you can author DSP in SuperCollider and load it in a host via a bridge plug-in.
+
+note::
+This page intentionally stays at a high level, because DAW/host integration details can change across plug-in versions and hosts. Bridge plug-ins are maintained by their respective projects (not by the SuperCollider core team).
+
+As of early 2026 (around the SuperCollider 3.14 release), we recommend using link::https://github.com/asb2m10/plugincollider##PluginCollider:: for current workflows. PluginCollider is under active development; check its documentation for current compatibility notes and installation instructions.
+::
+
+section:: General Workflow
+
+numberedlist::
+## Design and test: Write your instrument or effect as a link::Classes/SynthDef:: in SuperCollider. Test it in teletype::sclang::.
+## Define parameters: Choose which link::Classes/SynthDef:: arguments you want to control from the host (e.g. teletype::amp::, teletype::freq::), and which should remain internal.
+## Export: Use link::Classes/SynthDef#-writeDefFile:: to export a teletype::.scsyndef:: file to a location accessible to your plug-in workflow.
+## Load: In a VST3-compatible host, use link::https://github.com/asb2m10/plugincollider##PluginCollider:: to load the exported link::Classes/SynthDef::.
+::
+
+section:: Exporting SynthDefs
+
+code::
+(
+var pluginColliderSynthdefsDir = "/absolute/path/to/your/synthdefs";
+SynthDef(\simpleSine, { |out = 0, freq = 440, amp = 0.1, gate = 1|
+    var sig = SinOsc.ar(freq) * EnvGen.kr(Env.adsr, gate, doneAction: Done.freeSelf);
+    Out.ar(out, (sig ! 2) * amp);
+}).writeDefFile(pluginColliderSynthdefsDir);
+)
+::
+
+note::
+For installation steps, OS-specific paths, and advanced host integration, see the link::https://github.com/asb2m10/plugincollider##PluginCollider documentation::.
+::
