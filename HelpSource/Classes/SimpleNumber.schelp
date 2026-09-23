@@ -41,7 +41,18 @@ method:: mod
 Modulo
 
 method:: div
-Integer Division
+Divide teletype::this:: by teletype::aNumber:: and rounds to next-lower integer.
+For positive integers strong::only::, this is equivalent to standard integer division.
+Warning::
+This is a non-standard implementation of integer division,
+which has been preserved in SuperCollider for backward compatibility reasons,
+and is equivalent to code::floor(this/aNumber)::.
+
+For standard integer division, use code::truncate(this/aNumber):: or link::#-divide::
+::
+
+method:: divide
+Standard integer division, divides teletype::this:: by teletype::aNumber:: and rounds towards 0.
 
 method:: **
 Exponentiation
@@ -71,7 +82,10 @@ method:: round
 Round to multiple of aNumber
 
 method:: roundUp
-Round up to a multiple of aNumber. For roundDown use link::Classes/SimpleNumber#-trunc#trunc::.
+Round up to a multiple of aNumber.
+
+method:: roundDown
+Round down to a multiple of aNumber. 
 
 method:: smallButNotZero
 Check if the value is closer to zero than a threshold, but not zero.
@@ -80,7 +94,20 @@ argument::thresh
 The threshold to use for comparison.
 
 method:: trunc
-Truncate to multiple of aNumber (e.g. it rounds numbers down to a multiple of aNumber).
+Round down to a multiple of teletype::aNumber::. (Alias of link::#-roundDown::)
+For positive integers strong::only::, this is equivalent to standard truncation.
+Warning::
+This is a non-standard implementation of truncation, 
+which has been preserved in SuperCollider for backward compatibility reasons.
+
+For standard truncation, use link::#-truncate::.
+::
+
+method:: truncate
+Removes digits after the decimal separator and returns an integer:
+code::
+-3.9.truncate == -3
+::
 
 method:: softRound
 Rounds the value to a multiple of strong::resolution::. By using strong::margin:: and strong::strength:: you can control which values will be rounded, and by how much.
