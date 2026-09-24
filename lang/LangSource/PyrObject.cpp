@@ -29,38 +29,11 @@
 #include "PyrObjectProto.h"
 #include "PyrKernelProto.h"
 #include "InitAlloc.h"
-#include "SC_Lock.h"
 
 #include <set>
 #include <limits>
 
-
-#ifndef USE_THREAD_POOL
-// Don't use thread pool with Emscripten because it actually slows things down.
-#    if defined(__EMSCRIPTEN__)
-#        define USE_THREAD_POOL 0
-#    else
-#        define USE_THREAD_POOL 1
-#    endif
-#endif
-
 #define CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME 0
-
-#if USE_THREAD_POOL
-#    define BOOST_THREAD_VERSION 5
-#    define BOOST_THREAD_PROVIDES_EXECUTORS
-
-#    include <boost/thread/future.hpp>
-#    include <boost/thread/executor.hpp>
-#    include <boost/thread/executors/basic_thread_pool.hpp>
-
-// see spinWait()
-#    define SYNC_WAIT_SPIN 1
-#endif
-
-#if 0 // not yet
-#    include <parallel/algorithm>
-#endif
 
 #if defined(__GNUC__) || defined(__clang__)
 #    define PRAGMA_IVDEP _Pragma("GCC ivdep")
@@ -69,87 +42,6 @@
 #else
 #    define PRAGMA_IVDEP
 #endif
-
-namespace {
-
-#if USE_THREAD_POOL
-// boost::async implementation.
-// In the future, we might switch everything to std::execution (C++26).
-
-template <typename T> using Future = boost::future<T>;
-
-using Executor = boost::basic_thread_pool;
-
-template <typename... Args> auto schedTask(Executor& ex, Args&&... args) {
-    return boost::async(ex, std::forward<Args>(args)...);
-}
-
-// participates in the thread pool while waiting for the future
-template <typename T> void waitForTask(Executor& ex, T& future) {
-    while (!future.is_ready()) {
-#    if SYNC_WAIT_SPIN
-        // spin wait if there are no pending tasks
-        ex.schedule_one_or_yield();
-#    else
-        // wait once there are no more pending tasks
-        if (!ex.try_executing_one()) {
-            future.wait();
-            return;
-        }
-#    endif
-    }
-}
-
-#else
-// Dummy single-threaded implementation.
-
-template <typename T> class Future {
-public:
-    explicit Future(T&& value): mValue(std::move(value)) {}
-
-    Future(Future&& other) = default;
-
-    Future& operator=(Future&& other) = default;
-
-    T get() { return std::move(mValue); }
-
-private:
-    T mValue;
-};
-
-template <> class Future<void> {
-public:
-    void get() {}
-};
-
-// Dummy implementation, compatible with boost::basic_thread_pool
-class Executor {
-public:
-    Executor(int numThreads) {}
-
-    // non-copyable
-    Executor(const Executor&) = delete;
-    Executor& operator=(const Executor&) = delete;
-};
-
-template <typename Func, typename... Args> auto schedTask(Executor& ex, Func&& fn, Args&&... args) {
-    // invoke immediately
-    using ReturnType = std::invoke_result_t<Func, Args...>;
-    if constexpr (std::is_void_v<ReturnType>) {
-        std::invoke(std::forward<Func>(fn), std::forward<Args>(args)...);
-        return Future<void> {};
-    } else {
-        auto result = std::invoke(std::forward<Func>(fn), std::forward<Args>(args)...);
-        return Future<ReturnType>(std::move(result));
-    }
-}
-
-template <typename T> void waitForTask(Executor&, T& future) {}
-
-#endif
-
-} // namespace
-
 
 PyrClass* gClassList = nullptr;
 int gNumSelectors = 0;
@@ -1050,35 +942,31 @@ typedef struct {
     int rowOffset;
 } ColumnDescriptor;
 
-int compareColDescs(const void* va, const void* vb);
-int compareColDescs(const void* va, const void* vb) {
-    ColumnDescriptor* a = (ColumnDescriptor*)va;
-    ColumnDescriptor* b = (ColumnDescriptor*)vb;
-    int diff;
-    // diff = b->largestChunk - a->largestChunk;
+bool compareColDescs(const ColumnDescriptor& a, const ColumnDescriptor& b) {
+    // int diff = b.largestChunk - a.largestChunk;
     // if (diff != 0) return diff;
-    diff = b->rowWidth - a->rowWidth;
+    int diff = b.rowWidth - a.rowWidth;
     if (diff != 0)
-        return diff;
-    // diff = b->chunkOffset - a->chunkOffset;
-    diff = b->minClassIndex - a->minClassIndex;
-    return diff;
+        return diff < 0;
+    // diff = b.chunkOffset - a.chunkOffset;
+    diff = b.minClassIndex - a.minClassIndex;
+    return diff < 0;
 }
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
 double elapsedTime();
 #endif
 
-static void binsortClassRows(PyrMethod const** bigTable, const ColumnDescriptor* sels, size_t numSelectors,
-                             size_t begin, size_t end) {
+static void binsortClassRows(PyrMethod** bigTable, const ColumnDescriptor* sels, size_t numClasses,
+                             size_t numSelectors) {
     // bin sort the class rows to the new ordering
     // post("reorder rows\n");
     const int allocaThreshold = 16384;
     PyrMethod** temprow = (numSelectors < allocaThreshold) ? (PyrMethod**)alloca(numSelectors * sizeof(PyrMethod*))
                                                            : (PyrMethod**)malloc(numSelectors * sizeof(PyrMethod*));
 
-    for (int j = begin; j < end; ++j) {
-        PyrMethod const** row = bigTable + j * numSelectors;
+    for (int j = 0; j < numClasses; ++j) {
+        auto row = bigTable + j * numSelectors;
         memcpy(temprow, row, numSelectors * sizeof(PyrMethod*));
 
         PRAGMA_IVDEP
@@ -1090,7 +978,7 @@ static void binsortClassRows(PyrMethod const** bigTable, const ColumnDescriptor*
         free(temprow);
 }
 
-static ColumnDescriptor* prepareColumnTable(ColumnDescriptor* sels, int numSelectors) {
+static void prepareColumnTable(ColumnDescriptor* sels, int numSelectors) {
     // fill selector table
     // post("fill selector table\n");
     SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
@@ -1113,16 +1001,13 @@ static ColumnDescriptor* prepareColumnTable(ColumnDescriptor* sels, int numSelec
         sels[i].selectorIndex = i;
         sels[i].population = 0;
     }
-    return sels;
 }
 
-
-static void calcRowStats(PyrMethod const* const* bigTable, ColumnDescriptor* sels, int numClasses, int numSelectors,
-                         int begin, int end) {
+static void calcRowStats(PyrMethod const* const* bigTable, ColumnDescriptor* sels, int numClasses, int numSelectors) {
     // chunkSize = 0;
     // chunkOffset = 0;
     for (int classIndex = 0; classIndex < numClasses; ++classIndex) {
-        for (int selectorIndex = begin; selectorIndex < end; ++selectorIndex) {
+        for (int selectorIndex = 0; selectorIndex < numSelectors; ++selectorIndex) {
             PyrMethod const* method = bigTable[classIndex * numSelectors + selectorIndex];
             if (method) {
                 // classobj = method->ownerclass.uoc;
@@ -1147,11 +1032,11 @@ static void calcRowStats(PyrMethod const* const* bigTable, ColumnDescriptor* sel
         }
     }
 
-    for (int i = begin; i < end; ++i)
+    for (int i = 0; i < numSelectors; ++i)
         sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
 }
 
-static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable, Executor& executor);
+static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable);
 
 void buildBigMethodMatrix(std::size_t numSeletors) {
     const size_t numSelectors = gNumSelectors;
@@ -1162,73 +1047,28 @@ void buildBigMethodMatrix(std::size_t numSeletors) {
     double t0 = elapsedTime();
 #endif
 
-    const int hw_concurrency = SC_Thread::hardware_concurrency();
-    const int cpuCount = hw_concurrency > 0 ? hw_concurrency : 1;
-    const int helperThreadCount = cpuCount > 1 ? cpuCount - 1 : 1;
-    Executor executor(helperThreadCount);
-
     // pyrmalloc:
     // lifetime: kill after compile
     // post("bigTableSize %d %d %d\n", bigTableSize, numSelectors, numClasses);
     ColumnDescriptor* sels = (ColumnDescriptor*)pyr_pool_compile->Alloc(numSelectors * sizeof(ColumnDescriptor));
     MEMFAIL(sels);
-
-    auto filledSelectorsFuture = schedTask(executor, prepareColumnTable, sels, numSelectors);
+    prepareColumnTable(sels, numSelectors);
 
     const size_t bigTableSize = numSelectors * numClasses;
-    auto bigTable = (PyrMethod**)pyr_pool_compile->Alloc(bigTableSize * sizeof(PyrMethod*));
+    PyrMethod** bigTable = (PyrMethod**)pyr_pool_compile->Alloc(bigTableSize * sizeof(PyrMethod*));
     MEMFAIL(bigTable);
-
-    size_t numentries = fillClassRow(class_abstract_object, bigTable, executor);
+    size_t numentries = fillClassRow(class_abstract_object, bigTable);
 
     // post("\tnum entries = %lu, big table size = %d, num entries / big table size = %.2g\n", numentries,
     //      bigTableSize, (double)numentries / (double)bigTableSize);
 
-    ColumnDescriptor* filledSelectors = filledSelectorsFuture.get();
-    std::vector<Future<void>> columnDescriptorsWithStats;
-    size_t selectorsPerJob = std::max<size_t>(numSelectors / cpuCount / 2, 1);
-    // dispatch all but one job to helper threads
-    for (size_t beginSelectorIndex = selectorsPerJob; beginSelectorIndex < numSelectors;
-         beginSelectorIndex += selectorsPerJob) {
-        size_t endSelectorIndex = std::min(beginSelectorIndex + selectorsPerJob, numSelectors);
-        auto future = schedTask(executor, calcRowStats, bigTable, filledSelectors, numClasses, numSelectors,
-                                beginSelectorIndex, endSelectorIndex);
-        columnDescriptorsWithStats.push_back(std::move(future));
-    }
-    // run the remaining job synchronously
-    calcRowStats(bigTable, filledSelectors, numClasses, numSelectors, 0, std::min(selectorsPerJob, numSelectors));
-    // finally wait for the scheduled jobs
-    for (auto& future : columnDescriptorsWithStats) {
-        waitForTask(executor, future);
-    }
+    calcRowStats(bigTable, sels, numClasses, numSelectors);
 
     // post("qsort\n");
     // sort rows by largest chunk, then by width, then by chunk offset
+    std::sort(sels, sels + numSelectors, compareColDescs);
 
-#if 0 // not yet
-	__gnu_parallel::sort(sels, sels + numSelectors, [](ColumnDescriptor const & rhs, ColumnDescriptor const & lhs) {
-		return compareColDescs(&rhs, &lhs) < 0;
-	});
-#else
-    std::sort(sels, sels + numSelectors,
-              [](ColumnDescriptor const& rhs, ColumnDescriptor const& lhs) { return compareColDescs(&rhs, &lhs) < 0; });
-#endif
-
-    std::vector<Future<void>> binsortedClassRowFuture;
-    size_t classesPerJob = std::max<size_t>(numClasses / cpuCount / 2, 1);
-    // dispatch all but one job to helper threads
-    for (size_t beginClassIndex = classesPerJob; beginClassIndex < numClasses; beginClassIndex += classesPerJob) {
-        size_t endClassIndex = std::min(beginClassIndex + classesPerJob, numClasses);
-        auto future = schedTask(executor, binsortClassRows, (PyrMethod const**)bigTable, sels, numSelectors,
-                                beginClassIndex, endClassIndex);
-        binsortedClassRowFuture.push_back(std::move(future));
-    }
-    // run the remaining job synchronously
-    binsortClassRows((PyrMethod const**)bigTable, sels, numSelectors, 0, std::min(classesPerJob, numClasses));
-    // finally wait for the scheduled jobs
-    for (auto& future : binsortedClassRowFuture) {
-        waitForTask(executor, future);
-    }
+    binsortClassRows(bigTable, sels, numClasses, numSelectors);
 
     // post("calc row offsets %d\n", numSelectors);
     int widthSum = 0;
@@ -1253,7 +1093,6 @@ void buildBigMethodMatrix(std::size_t numSeletors) {
     // having the method ptr always be valid saves a branch in SendMessage()
     for (int i = 0; i < freeIndex + numClasses; ++i)
         gRowTable[i] = gNullMethod;
-
 
     for (int i = 0; i < numSelectors; ++i) {
         const int offset = sels[i].rowOffset + sels[i].minClassIndex;
@@ -1285,7 +1124,7 @@ void buildBigMethodMatrix(std::size_t numSeletors) {
     post("\tbig table size %d bytes\n", numSelectors * numClasses * sizeof(PyrMethod*));
 }
 
-static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable, Executor& executor) {
+static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable) {
     size_t count = 0;
 
     PyrMethod** myrow = bigTable + slotRawInt(&classobj->classIndex) * gNumSelectors;
@@ -1322,30 +1161,8 @@ static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable, Execu
 
     if (IsObj(&classobj->subclasses)) {
         const PyrObject* subclasses = slotRawObject(&classobj->subclasses);
-        int numSubclasses = subclasses->size;
-
-        if (numSubclasses) {
-            if (numSubclasses <= 2) {
-                for (size_t subClassIndex = 0; subClassIndex < numSubclasses; ++subClassIndex) {
-                    result += fillClassRow(slotRawClass(&subclasses->slots[subClassIndex]), bigTable, executor);
-                }
-            } else {
-                // dispatch all but one job to helper threads
-                std::vector<Future<size_t>> subclassResults;
-                for (size_t subClassIndex = 1; subClassIndex < numSubclasses; ++subClassIndex) {
-                    auto subclass = slotRawClass(&subclasses->slots[subClassIndex]);
-                    auto subclassResult = schedTask(executor, fillClassRow, subclass, bigTable, std::ref(executor));
-                    subclassResults.emplace_back(std::move(subclassResult));
-                }
-                // run the remaining job synchronously
-                result += fillClassRow(slotRawClass(&subclasses->slots[0]), bigTable, executor);
-                // finally wait for scheduled jobs
-                for (auto& subclassResult : subclassResults) {
-                    // the waitForTask() is not strictly necessary, but it allows to run jobs while waiting.
-                    waitForTask(executor, subclassResult);
-                    result += subclassResult.get();
-                }
-            }
+        for (size_t subClassIndex = 0; subClassIndex < subclasses->size; ++subClassIndex) {
+            result += fillClassRow(slotRawClass(&subclasses->slots[subClassIndex]), bigTable);
         }
     }
 
