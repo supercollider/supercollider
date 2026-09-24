@@ -705,6 +705,8 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     sc_interface.fDoAsynchronousCommandEx = &do_asynchronous_command_ex;
     sc_interface.fDoAsyncUnitCommand = &do_async_unit_command;
 
+    world.ft = &sc_interface;
+
     /* initialize world */
     /* control busses */
     world.mControlBus = control_busses;
