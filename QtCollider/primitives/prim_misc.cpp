@@ -39,7 +39,6 @@
 #include <QFontDatabase>
 #include <QFontInfo>
 #include <QFontMetrics>
-#include <QDesktopWidget>
 #include <QStyleFactory>
 #include <QCursor>
 #include <QScreen>
@@ -53,6 +52,12 @@ QC_LANG_PRIMITIVE(QtGUI_SetDebugLevel, 1, PyrSlot* r, PyrSlot* a, VMGlobals* g) 
 
 QC_LANG_PRIMITIVE(QtGUI_DebugLevel, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
     SetInt(r, QtCollider::debugLevel());
+    return errNone;
+}
+
+QC_LANG_PRIMITIVE(Qt_Version, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
+    auto version = QString { qVersion() };
+    QtCollider::set(r, version);
     return errNone;
 }
 
@@ -91,9 +96,14 @@ QC_LANG_PRIMITIVE(Qt_StringBounds, 2, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
 }
 
 QC_LANG_PRIMITIVE(Qt_AvailableFonts, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
-    QFontDatabase database;
     QVariantList list;
-    Q_FOREACH (QString family, database.families())
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    QFontDatabase database;
+    auto families = database.families();
+#else
+    auto families = QFontDatabase::families();
+#endif
+    Q_FOREACH (QString family, families)
         list << family;
     QtCollider::set(r, list);
     return errNone;
@@ -416,6 +426,7 @@ void defineMiscPrimitives() {
     LangPrimitiveDefiner definer;
     definer.define<QtGUI_SetDebugLevel>();
     definer.define<QtGUI_DebugLevel>();
+    definer.define<Qt_Version>();
     definer.define<QWindow_ScreenBounds>();
     definer.define<QWindow_AvailableGeometry>();
     definer.define<Qt_StringBounds>();

@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_LANG11D_TAB_H_INCLUDED
-# define YY_YY_LANG11D_TAB_H_INCLUDED
+#ifndef YY_YY_LANG_LANGSOURCE_BISON_LANG11D_TAB_H_INCLUDED
+# define YY_YY_LANG_LANGSOURCE_BISON_LANG11D_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -44,6 +44,12 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 65 "lang/LangSource/Bison/lang11d"
+ 
+#include "BisonHeaderInclude.hpp"
+
+#line 53 "lang/LangSource/Bison/lang11d_tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -54,51 +60,94 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    NAME = 258,                    /* NAME  */
-    INTEGER = 259,                 /* INTEGER  */
-    SC_FLOAT = 260,                /* SC_FLOAT  */
-    ACCIDENTAL = 261,              /* ACCIDENTAL  */
-    SYMBOL = 262,                  /* SYMBOL  */
-    STRING = 263,                  /* STRING  */
-    ASCII = 264,                   /* ASCII  */
-    PRIMITIVENAME = 265,           /* PRIMITIVENAME  */
-    CLASSNAME = 266,               /* CLASSNAME  */
-    CURRYARG = 267,                /* CURRYARG  */
-    VAR = 268,                     /* VAR  */
-    ARG = 269,                     /* ARG  */
-    CLASSVAR = 270,                /* CLASSVAR  */
-    SC_CONST = 271,                /* SC_CONST  */
-    NILOBJ = 272,                  /* NILOBJ  */
-    TRUEOBJ = 273,                 /* TRUEOBJ  */
-    FALSEOBJ = 274,                /* FALSEOBJ  */
-    PSEUDOVAR = 275,               /* PSEUDOVAR  */
-    ELLIPSIS = 276,                /* ELLIPSIS  */
-    DOTDOT = 277,                  /* DOTDOT  */
-    PIE = 278,                     /* PIE  */
-    BEGINCLOSEDFUNC = 279,         /* BEGINCLOSEDFUNC  */
-    BADTOKEN = 280,                /* BADTOKEN  */
-    INTERPRET = 281,               /* INTERPRET  */
-    BEGINGENERATOR = 282,          /* BEGINGENERATOR  */
-    LEFTARROW = 283,               /* LEFTARROW  */
-    WHILE = 284,                   /* WHILE  */
-    BINOP = 285,                   /* BINOP  */
-    KEYBINOP = 286,                /* KEYBINOP  */
-    READWRITEVAR = 287,            /* READWRITEVAR  */
-    UMINUS = 288                   /* UMINUS  */
+    OPENCURLY = 258,               /* OPENCURLY  */
+    CLOSECURLY = 259,              /* CLOSECURLY  */
+    OPENSQUARE = 260,              /* OPENSQUARE  */
+    CLOSESQUARE = 261,             /* CLOSESQUARE  */
+    OPENPAREN = 262,               /* OPENPAREN  */
+    CLOSEPAREN = 263,              /* CLOSEPAREN  */
+    SEMICOLON = 264,               /* SEMICOLON  */
+    NONLOCALRETURN = 265,          /* NONLOCALRETURN  */
+    COMMA = 266,                   /* COMMA  */
+    HASH = 267,                    /* HASH  */
+    TILDE = 268,                   /* TILDE  */
+    NAME = 269,                    /* NAME  */
+    INTEGER = 270,                 /* INTEGER  */
+    SC_FLOAT = 271,                /* SC_FLOAT  */
+    ACCIDENTAL = 272,              /* ACCIDENTAL  */
+    SYMBOL = 273,                  /* SYMBOL  */
+    STRING = 274,                  /* STRING  */
+    ASCII = 275,                   /* ASCII  */
+    PRIMITIVENAME = 276,           /* PRIMITIVENAME  */
+    CLASSNAME = 277,               /* CLASSNAME  */
+    CURRYARG = 278,                /* CURRYARG  */
+    VAR = 279,                     /* VAR  */
+    ARG = 280,                     /* ARG  */
+    CLASSVAR = 281,                /* CLASSVAR  */
+    SC_CONST = 282,                /* SC_CONST  */
+    NILOBJ = 283,                  /* NILOBJ  */
+    TRUEOBJ = 284,                 /* TRUEOBJ  */
+    FALSEOBJ = 285,                /* FALSEOBJ  */
+    PIE = 286,                     /* PIE  */
+    ELLIPSIS = 287,                /* ELLIPSIS  */
+    DOTDOT = 288,                  /* DOTDOT  */
+    BEGINCLOSEDFUNC = 289,         /* BEGINCLOSEDFUNC  */
+    BADTOKEN = 290,                /* BADTOKEN  */
+    INTERPRET = 291,               /* INTERPRET  */
+    LEFTARROW = 292,               /* LEFTARROW  */
+    WHILE = 293,                   /* WHILE  */
+    COLON = 294,                   /* COLON  */
+    EQUALSSIGN = 295,              /* EQUALSSIGN  */
+    BINOP = 296,                   /* BINOP  */
+    KEYBINOP = 297,                /* KEYBINOP  */
+    MINUS = 298,                   /* MINUS  */
+    LESSTHAN = 299,                /* LESSTHAN  */
+    GREATERTHAN = 300,             /* GREATERTHAN  */
+    MULTIPLY = 301,                /* MULTIPLY  */
+    ADD = 302,                     /* ADD  */
+    PIPE = 303,                    /* PIPE  */
+    READWRITEVAR = 304,            /* READWRITEVAR  */
+    DOT = 305,                     /* DOT  */
+    BACKTICK = 306,                /* BACKTICK  */
+    UMINUS = 307                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 74 "lang/LangSource/Bison/lang11d"
+ 
+	struct PyrParseNode* node;  // Base class.
+	struct PyrSlotNode* slotNode; // For some literal value
+	struct PyrVarListNode* varListNode;
+	struct PyrVarDefNode* varDefNode;
+	struct PyrMethodNode* methodNode;
+	struct PyrArgListNode* argListNode;
+	struct PyrBlockNode* blockNode;
+	struct PyrMultiAssignVarListNode* multiAssignListNode;
+	struct PyrRootNode* root;
+	ReadWriteAccessor rwAccessor;
+	EmptyYYVal empty;
+
+#line 136 "lang/LangSource/Bison/lang11d_tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+typedef sc::lex::SourceCodeRange YYLTYPE;
+
 
 extern YYSTYPE yylval;
+extern YYLTYPE yylloc;
 
 int yyparse (void);
 
-#endif /* !YY_YY_LANG11D_TAB_H_INCLUDED  */
+
+#endif /* !YY_YY_LANG_LANGSOURCE_BISON_LANG11D_TAB_H_INCLUDED  */

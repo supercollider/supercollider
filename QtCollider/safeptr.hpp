@@ -47,13 +47,13 @@ public:
 
     ~SafePtr() { deref(); }
 
-    T* operator->() const { return d->ptr.load(); }
+    T* operator->() const { return d->ptr.loadRelaxed(); }
 
-    T& operator*() const { return *d->ptr.load(); }
+    T& operator*() const { return *d->ptr.loadRelaxed(); }
 
-    operator T*() const { return (d ? d->ptr.load() : 0); }
+    operator T*() const { return (d ? d->ptr.loadRelaxed() : 0); }
 
-    T* ptr() const { return (d ? d->ptr.load() : 0); }
+    T* ptr() const { return (d ? d->ptr.loadRelaxed() : 0); }
 
     void* id() const { return (void*)d; } // useful for checking internal pointer identity
 
@@ -73,13 +73,13 @@ private:
     void ref() {
         if (d) {
             d->refCount.ref();
-            qcDebugMsg(2, QString("SafePtr: +refcount = %1").arg(d->refCount.load()));
+            qcDebugMsg(2, QString("SafePtr: +refcount = %1").arg(d->refCount.loadRelaxed()));
         }
     }
     void deref() {
         if (d) {
             bool ref = d->refCount.deref();
-            qcDebugMsg(2, QString("SafePtr: -refcount = %1").arg(d->refCount.load()));
+            qcDebugMsg(2, QString("SafePtr: -refcount = %1").arg(d->refCount.loadRelaxed()));
             if (!ref) {
                 qcDebugMsg(2, "SafePtr: unreferenced!");
                 delete d;

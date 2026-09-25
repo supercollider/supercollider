@@ -183,6 +183,16 @@ x.recordNRT(oscFilePath: oscPath, ..., action: {
 });
 ::
 
+subsection:: Using system SynthDefs
+
+Some code requires a number of SynthDefs that are assumed to exist on the server (link::Classes/SystemSynthDefs::). When booting a server in realtime mode, they are sent automatically. In non-realtime mode, they need to be added to the score explicitly:
+
+code::
+x = Score.new;
+x.addSystemSynthDefs;
+::
+
+
 subsection:: Server instance
 
 If you want to use server abstraction objects (e.g. Synth, Group, Buffer), you might also want them to allocate node IDs or buffer and bus numbers for you. link::Classes/Synth#*basicNew:: and link::Classes/Buffer#*new:: use the server's allocators if you don't supply an ID (leave it nil). However, if you accidentally use the default server, any IDs you allocate for NRT will be marked as allocated in the default, realtime server. To avoid this, you can create a separate Server instance, just for producing the Score, and then remove the instance after rendering. This is a client-only object; you don't need to boot it.
@@ -245,6 +255,7 @@ NOTE:: Another common technique to transmit SynthDefs to an NRT server is to use
 
 The good news is that a NRT server does not have to wait for "heavy" operations like receiving SynthDefs or loading buffers. Commands that are considered asynchronous in a realtime server behave as synchronous commands in NRT. So, you can simply front-load your Score with all the SynthDefs and Buffers, at time 0.0, and then start the audio processing also at time 0.0. (However, you might need a slight offset for the audio processing because code::sort:: may not know which entries at time 0.0 must come first.) The following examples demonstrate.
 
+
 section:: Examples
 
 subsection:: Algorithmic generation of Synth messages
@@ -302,7 +313,7 @@ The example audio file is not very long, but processing here is almost instantan
 code::
 (
 var server,
-inputFile = SoundFile.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+inputFile = SoundFile.openRead(ExampleFiles.child);
 
 inputFile.close;  // doesn't need to stay open; we just need the stats
 
@@ -397,7 +408,7 @@ x = Pbind(
 
 // the score also needs the def and buffer
 x.add([0.0, [\d_recv, def.asBytes]]);
-x.add([0.0, buf.allocReadMsg(Platform.resourceDir +/+ "sounds/a11wlk01.wav")]);
+x.add([0.0, buf.allocReadMsg(ExampleFiles.child)]);
 x.sort;
 
 x.recordNRT(
@@ -439,7 +450,7 @@ fork {
 	var resultbuf, resultpath, oscpath, score, dur, sf, cond, size, data;
 
 	// get duration
-	sf = SoundFile.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+	sf = SoundFile.openRead(ExampleFiles.child);
 	dur = sf.duration;
 	sf.close;
 

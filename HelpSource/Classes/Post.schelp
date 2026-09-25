@@ -66,7 +66,7 @@ code::
 a = "a string";
 b = 'a symbol';
 c = 4;
-d = [1,2,3,4,a,b];
+d = [1, 2, 3, 4, a, b];
 
 // post as string
 Post << a << Char.nl;
@@ -78,8 +78,8 @@ Post << d << Char.nl;
 // post as compile string
 Post <<< d << Char.nl;
 
-//This is the equivalent of :
+// This is the equivalent of :
 d.postln;
-//or
+// or
 d.asCompileString.postln;
 ::

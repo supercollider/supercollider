@@ -81,19 +81,19 @@ protected:
     virtual bool DriverStop();
 
 public:
-    SC_PortAudioDriver(struct World* inWorld);
+    SC_PortAudioDriver(World* inWorld);
     virtual ~SC_PortAudioDriver();
 
     int PortAudioCallback(const void* input, void* output, unsigned long frameCount,
                           const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
 };
 
-SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_PortAudioDriver(inWorld); }
+SC_AudioDriver* SC_NewAudioDriver(World* inWorld) { return new SC_PortAudioDriver(inWorld); }
 
 #define PRINT_PORTAUDIO_ERROR(function, errorcode)                                                                     \
     scprintf("SC_PortAudioDriver: PortAudio failed at %s with error: '%s'\n", #function, Pa_GetErrorText(errorcode))
 
-SC_PortAudioDriver::SC_PortAudioDriver(struct World* inWorld):
+SC_PortAudioDriver::SC_PortAudioDriver(World* inWorld):
     SC_AudioDriver(inWorld),
     mStream(0)
 #ifdef SC_PA_USE_DLL
@@ -243,9 +243,7 @@ int SC_PortAudioDriver::PortAudioCallback(const void* input, void* output, unsig
         }
     } catch (std::exception& exc) {
         scprintf("SC_PortAudioDriver: exception in real time: %s\n", exc.what());
-    } catch (...) {
-        scprintf("SC_PortAudioDriver: unknown exception in real time\n");
-    }
+    } catch (...) { scprintf("SC_PortAudioDriver: unknown exception in real time\n"); }
 
     double cpuUsage = Pa_GetStreamCpuLoad(mStream) * 100.0;
     mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);
@@ -274,8 +272,8 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
     fprintf(stdout, "\nDevice options:\n");
     for (int i = 0; i < numDevices; i++) {
         pdi = Pa_GetDeviceInfo(i);
-        fprintf(stdout, "  - %s   (device #%d with %d ins %d outs)\n", GetPaDeviceName(i).c_str(), i,
-                pdi->maxInputChannels, pdi->maxOutputChannels);
+        fprintf(stdout, "- %s\n  (%d ins, %d outs)\n", GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
+                pdi->maxOutputChannels);
     }
 
     auto* inDeviceName = mWorld->hw->mInDeviceName;

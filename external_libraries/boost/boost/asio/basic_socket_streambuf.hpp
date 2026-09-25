@@ -2,7 +2,7 @@
 // basic_socket_streambuf.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -36,38 +36,6 @@
 # include <boost/asio/steady_timer.hpp>
 #endif // defined(BOOST_ASIO_HAS_BOOST_DATE_TIME)
        // && defined(BOOST_ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
-
-#if !defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
-
-# include <boost/asio/detail/variadic_templates.hpp>
-
-// A macro that should expand to:
-//   template <typename T1, ..., typename Tn>
-//   basic_socket_streambuf* connect(T1 x1, ..., Tn xn)
-//   {
-//     init_buffers();
-//     typedef typename Protocol::resolver resolver_type;
-//     resolver_type resolver(socket().get_executor());
-//     connect_to_endpoints(
-//         resolver.resolve(x1, ..., xn, ec_));
-//     return !ec_ ? this : 0;
-//   }
-// This macro should only persist within this file.
-
-# define BOOST_ASIO_PRIVATE_CONNECT_DEF(n) \
-  template <BOOST_ASIO_VARIADIC_TPARAMS(n)> \
-  basic_socket_streambuf* connect(BOOST_ASIO_VARIADIC_BYVAL_PARAMS(n)) \
-  { \
-    init_buffers(); \
-    typedef typename Protocol::resolver resolver_type; \
-    resolver_type resolver(socket().get_executor()); \
-    connect_to_endpoints( \
-        resolver.resolve(BOOST_ASIO_VARIADIC_BYVAL_ARGS(n), ec_)); \
-    return !ec_ ? this : 0; \
-  } \
-  /**/
-
-#endif // !defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -117,11 +85,11 @@ template <typename Protocol,
 #if defined(BOOST_ASIO_HAS_BOOST_DATE_TIME) \
   && defined(BOOST_ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
     typename Clock = boost::posix_time::ptime,
-    typename WaitTraits = time_traits<Clock> >
+    typename WaitTraits = time_traits<Clock>>
 #else // defined(BOOST_ASIO_HAS_BOOST_DATE_TIME)
       // && defined(BOOST_ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
     typename Clock = chrono::steady_clock,
-    typename WaitTraits = wait_traits<Clock> >
+    typename WaitTraits = wait_traits<Clock>>
 #endif // defined(BOOST_ASIO_HAS_BOOST_DATE_TIME)
        // && defined(BOOST_ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
 class basic_socket_streambuf;
@@ -132,7 +100,7 @@ class basic_socket_streambuf;
 #if defined(GENERATING_DOCUMENTATION)
 template <typename Protocol,
     typename Clock = chrono::steady_clock,
-    typename WaitTraits = wait_traits<Clock> >
+    typename WaitTraits = wait_traits<Clock>>
 #else // defined(GENERATING_DOCUMENTATION)
 template <typename Protocol, typename Clock, typename WaitTraits>
 #endif // defined(GENERATING_DOCUMENTATION)
@@ -198,7 +166,6 @@ public:
     init_buffers();
   }
 
-#if defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Construct a basic_socket_streambuf from the supplied socket.
   explicit basic_socket_streambuf(basic_stream_socket<protocol_type> s)
     : detail::socket_streambuf_io_context(0),
@@ -242,7 +209,6 @@ public:
     other.init_buffers();
     return *this;
   }
-#endif // defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destructor flushes buffered data.
   virtual ~basic_socket_streambuf()
@@ -266,7 +232,6 @@ public:
     return !ec_ ? this : 0;
   }
 
-#if defined(GENERATING_DOCUMENTATION)
   /// Establish a connection.
   /**
    * This function automatically establishes a connection based on the supplied
@@ -276,9 +241,6 @@ public:
    * @return \c this if a connection was successfully established, a null
    * pointer otherwise.
    */
-  template <typename T1, ..., typename TN>
-  basic_socket_streambuf* connect(T1 t1, ..., TN tn);
-#elif defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
   template <typename... T>
   basic_socket_streambuf* connect(T... x)
   {
@@ -288,9 +250,6 @@ public:
     connect_to_endpoints(resolver.resolve(x..., ec_));
     return !ec_ ? this : 0;
   }
-#else
-  BOOST_ASIO_VARIADIC_GENERATE(BOOST_ASIO_PRIVATE_CONNECT_DEF)
-#endif
 
   /// Close the connection.
   /**
@@ -560,9 +519,9 @@ protected:
 
 private:
   // Disallow copying and assignment.
-  basic_socket_streambuf(const basic_socket_streambuf&) BOOST_ASIO_DELETED;
+  basic_socket_streambuf(const basic_socket_streambuf&) = delete;
   basic_socket_streambuf& operator=(
-      const basic_socket_streambuf&) BOOST_ASIO_DELETED;
+      const basic_socket_streambuf&) = delete;
 
   void init_buffers()
   {
@@ -679,10 +638,6 @@ private:
 } // namespace boost
 
 #include <boost/asio/detail/pop_options.hpp>
-
-#if !defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
-# undef BOOST_ASIO_PRIVATE_CONNECT_DEF
-#endif // !defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
 
 #endif // !defined(BOOST_ASIO_NO_IOSTREAM)
 

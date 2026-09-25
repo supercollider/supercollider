@@ -56,7 +56,9 @@ static void doLoadFactories() {
     QC_ADD_FACTORY(QcScrollArea);
     QC_ADD_FACTORY(QcSlider);
     QC_ADD_FACTORY(QcSlider2D);
+#ifndef NO_LIBSNDFILE
     QC_ADD_FACTORY(QcWaveform);
+#endif
     QC_ADD_FACTORY(QcTextEdit);
     QC_ADD_FACTORY(QcTreeWidget);
     QC_ADD_FACTORY(QcMenu);
@@ -74,7 +76,7 @@ static void doLoadFactories() {
 #ifdef SC_USE_QTWEBENGINE
     QC_ADD_FACTORY(WebView);
 #endif
-#ifdef __APPLE__
+#if defined(__APPLE__) && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QC_ADD_FACTORY(QcQuartzComposerView);
 #endif
 }

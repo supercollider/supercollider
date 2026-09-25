@@ -23,8 +23,8 @@ By using arguments strong::key1, key2 ... keyN::, one can start at an address wi
 method::putTree
 A way to insert objects into the tree with a syntax similar to the organization of the tree itself.
 code::
-//pseudo code:
-putTree(key1,[
+// pseudo code:
+putTree(key1, [
 	key2a, item1-2a,
 	key2b, item1-2b,
 	[

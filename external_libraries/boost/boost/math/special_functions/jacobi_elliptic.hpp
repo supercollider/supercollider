@@ -107,7 +107,7 @@ T jacobi_imp(const T& x, const T& k, T* cn, T* dn, const Policy& pol, const char
    }*/
    T T1;
    T kc = 1 - k;
-   T k_prime = k < 0.5 ? T(sqrt(1 - k * k)) : T(sqrt(2 * kc - kc * kc));
+   T k_prime = k < T(0.5) ? T(sqrt(1 - k * k)) : T(sqrt(2 * kc - kc * kc));
    T T0 = jacobi_recurse(x, k, T(1), k_prime, 0, &T1, pol);
    *cn = cos(T0);
    *dn = cos(T0) / cos(T1 - T0);
@@ -123,9 +123,9 @@ inline typename tools::promote_args<T, U, V>::type jacobi_elliptic(T k, U theta,
    typedef typename tools::promote_args<T>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
@@ -137,7 +137,7 @@ inline typename tools::promote_args<T, U, V>::type jacobi_elliptic(T k, U theta,
       *pcn = policies::checked_narrowing_cast<result_type, Policy>(cn, function);
    if(pdn)
       *pdn = policies::checked_narrowing_cast<result_type, Policy>(dn, function);
-   return policies::checked_narrowing_cast<result_type, Policy>(sn, function);;
+   return policies::checked_narrowing_cast<result_type, Policy>(sn, function);
 }
 
 template <class T, class U, class V>
@@ -150,7 +150,7 @@ template <class U, class T, class Policy>
 inline typename tools::promote_args<T, U>::type jacobi_sn(U k, T theta, const Policy& pol)
 {
    typedef typename tools::promote_args<T, U>::type result_type;
-   return jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(0), static_cast<result_type*>(0), pol);
+   return jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(nullptr), static_cast<result_type*>(nullptr), pol);
 }
 
 template <class U, class T>
@@ -164,7 +164,7 @@ inline typename tools::promote_args<T, U>::type jacobi_cn(T k, U theta, const Po
 {
    typedef typename tools::promote_args<T, U>::type result_type;
    result_type cn;
-   jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), &cn, static_cast<result_type*>(0), pol);
+   jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), &cn, static_cast<result_type*>(nullptr), pol);
    return cn;
 }
 
@@ -179,7 +179,7 @@ inline typename tools::promote_args<T, U>::type jacobi_dn(T k, U theta, const Po
 {
    typedef typename tools::promote_args<T, U>::type result_type;
    result_type dn;
-   jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(0), &dn, pol);
+   jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(nullptr), &dn, pol);
    return dn;
 }
 
@@ -223,7 +223,7 @@ template <class T, class U, class Policy>
 inline typename tools::promote_args<T, U>::type jacobi_ns(T k, U theta, const Policy& pol)
 {
    typedef typename tools::promote_args<T, U>::type result_type;
-   return 1 / jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(0), static_cast<result_type*>(0), pol);
+   return 1 / jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(nullptr), static_cast<result_type*>(nullptr), pol);
 }
 
 template <class T, class U>
@@ -237,7 +237,7 @@ inline typename tools::promote_args<T, U>::type jacobi_sd(T k, U theta, const Po
 {
    typedef typename tools::promote_args<T, U>::type result_type;
    result_type sn, dn;
-   sn = jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(0), &dn, pol);
+   sn = jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(nullptr), &dn, pol);
    return sn / dn;
 }
 
@@ -252,7 +252,7 @@ inline typename tools::promote_args<T, U>::type jacobi_ds(T k, U theta, const Po
 {
    typedef typename tools::promote_args<T, U>::type result_type;
    result_type sn, dn;
-   sn = jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(0), &dn, pol);
+   sn = jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), static_cast<result_type*>(nullptr), &dn, pol);
    return dn / sn;
 }
 
@@ -291,7 +291,7 @@ inline typename tools::promote_args<T, U>::type jacobi_sc(T k, U theta, const Po
 {
    typedef typename tools::promote_args<T, U>::type result_type;
    result_type sn, cn;
-   sn = jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), &cn, static_cast<result_type*>(0), pol);
+   sn = jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), &cn, static_cast<result_type*>(nullptr), pol);
    return sn / cn;
 }
 
@@ -306,7 +306,7 @@ inline typename tools::promote_args<T, U>::type jacobi_cs(T k, U theta, const Po
 {
    typedef typename tools::promote_args<T, U>::type result_type;
    result_type sn, cn;
-   sn = jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), &cn, static_cast<result_type*>(0), pol);
+   sn = jacobi_elliptic(static_cast<result_type>(k), static_cast<result_type>(theta), &cn, static_cast<result_type*>(nullptr), pol);
    return cn / sn;
 }
 

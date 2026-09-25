@@ -168,7 +168,7 @@ SerialPort {
 	}
 
 	// PRIMITIVE
-	prOpen { | ... args |
+	prOpen { | portName, exclusive, baudrate, databits, stopBits, parity, crtscts, xonxoff |
 		_SerialPort_Open
 		^this.primitiveFailed
 	}

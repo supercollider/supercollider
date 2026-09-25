@@ -1,15 +1,25 @@
 class:: GrayNoise
-summary:: Gray Noise.
+summary:: Bit-flipping Noise
 related:: Classes/BrownNoise, Classes/ClipNoise, Classes/PinkNoise, Classes/WhiteNoise
 categories::  UGens>Generators>Stochastic
 
-
 Description::
 
-Generates noise which results from flipping random bits in a word.
-This type of noise has a high RMS level relative to its peak to peak
-level. The spectrum is emphasized towards lower frequencies.
+Generates noise which results from flipping random bits in a word.footnote::
+Generated through math::X_{0} = 1;\;X_{n+1} = X_{n} \oplus z::,
+where math::\oplus:: is bitwise exclusive or,
+and math::z:: is a 32-bit binary number with exactly one nonzero digit;
+the position of the nonzero digit is a uniform random variable.
+::
 
+This type of noise has a high RMS level relative to its peak to peak level.
+The spectrum is emphasized towards lower frequencies.
+
+Grey/gray noise does not have a standard definition as pink and white noise do.
+While link::Classes/GrayNoise:: generates bit-flipping noise, the term "grey/gray noise" may also refer to noise shaped to perceptual equal loudness contours.footnote::
+See link::https://web.archive.org/web/20090427190825/http://www.ptpart.co.uk:80/show.php?contentid=71##Joseph Wisniewski's 1996 usenet message:: that seems to have informed the wikipedia articles on link::https://en.wikipedia.org/wiki/Grey_noise##Grey noise:: and on link::https://en.wikipedia.org/wiki/Colors_of_noise##Colors of noise::.
+Notice that the bit-flipping version of gray noise is mentioned in a reply to said usenet message.
+::
 
 classmethods::
 
@@ -24,14 +34,11 @@ This value will be added to the output.
 Examples::
 
 code::
-
 (
-SynthDef("help-GrayNoise", { arg out=0;
+SynthDef("help-GrayNoise", { |out = 0|
 	Out.ar(out,
-		GrayNoise.ar(0.1)
+		GrayNoise.ar(-20.dbamp)
 	)
 }).play;
 )
-
 ::
-

@@ -21,13 +21,13 @@ Examples::
 code::
 s.boot;
 
-b = Buffer.alloc(s, 512, 1, { |buf| buf.chebyMsg([1,0,1,1,0,1])});
+b = Buffer.alloc(s, 512, 1, { |buf| buf.chebyMsg([1, 0, 1, 1, 0, 1]) });
 
 (
 {
 	Shaper.ar(
 		b,
-		SinOsc.ar(300, 0, Line.kr(0,1,6)),
+		SinOsc.ar(300, 0, Line.kr(0, 1, 6)),
 		0.5
 	)
 }.scope;
@@ -41,14 +41,14 @@ image::chebyshevpolynomials.png::
 Wave shaping transfer functions are typically designed by using Chebyshev polynomials to control which harmonics are generated when a cosine wave is passed in. The implementation in SuperCollider compensates for the DC offset due to even polynomial terms, making sure that when 0 is put into the transfer function, you get 0 out. By default, normalization is set to true, which avoids output overload. If you want to construct a transfer function without this, you need to be careful with the final output scaling, since it could easily overload the -1 to 1 range for audio.
 code::
 // I want the first harmonic at 0.25 amplitude, second at 0.5, third at 0.25
-b = Buffer.alloc(s, 512, 1, {arg buf; buf.chebyMsg([0.25,0.5,0.25], false)});
+b = Buffer.alloc(s, 512, 1, { |buf| buf.chebyMsg([0.25, 0.5, 0.25], false) });
 
 (
 {
 	Shaper.ar(
 		b,
-		SinOsc.ar(440, 0.5pi, Line.kr(0,1,6)), //input cosine wave
-		0.5 //scale output down because otherwise it goes between -1.05 and 0.5, distorting...
+		SinOsc.ar(440, 0.5pi, Line.kr(0, 1, 6)), // input cosine wave
+		0.5 // scale output down because otherwise it goes between -1.05 and 0.5, distorting...
 	)
 }.scope;
 )
@@ -73,8 +73,8 @@ Or, you can calculate the transfer function in a client-side array (Signal class
 code::
 b = Buffer.alloc(s, 1024, 1);
 
-//size must be power of two plus 1
-t = Signal.chebyFill(513,[1, 0.5, 1, 0.125]);
+// size must be power of two plus 1
+t = Signal.chebyFill(513, [1, 0.5, 1, 0.125]);
 
 // linear function
 t.plot
@@ -128,7 +128,7 @@ d = (a.copy.reverse.neg) ++(Signal[0])++ a;
 
 d.plot
 
-d.size	//must be buffer size/2 + 1, so 513 is fine
+d.size	// must be buffer size/2 + 1, so 513 is fine
 
 b.sendCollection(d.asWavetableNoWrap);  // may also use loadCollection here
 
@@ -139,10 +139,8 @@ b.plot // wavetable format!
 {
 	Shaper.ar(
 		b,
-		SinOsc.ar(440, 0.5, Line.kr(0,0.9,6))
+		SinOsc.ar(440, 0.5, Line.kr(0, 0.9, 6))
 	)
 }.scope
 )
 ::
-
-

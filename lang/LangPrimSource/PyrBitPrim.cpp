@@ -85,7 +85,7 @@ int prSetBit(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
     bit = bit & 31;
-    mask = 1L << bit;
+    mask = 1LL << bit;
     if (IsFalse(c)) {
         SetRaw(a, slotRawInt(a) & ~mask);
     } else {
@@ -95,8 +95,9 @@ int prSetBit(VMGlobals* g, int numArgsPushed) {
 }
 
 int prHammingDistance(VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a = g->sp - 1;
-    PyrSlot* b = g->sp;
+    PyrSlot* a = g->sp - 2;
+    PyrSlot* b = g->sp - 1;
+    PyrSlot* adverb = g->sp; // Ignored
 
     if (NotInt(a) || NotInt(b))
         return errWrongType;
@@ -128,5 +129,5 @@ void initBitPrimitives() {
     definePrimitive(base, index++, "_Log2Ceil", prLog2Ceil, 1, 0);
     definePrimitive(base, index++, "_SetBit", prSetBit, 3, 0);
     definePrimitive(base, index++, "_BinaryGrayCode", prBinaryGrayCode, 1, 0);
-    definePrimitive(base, index++, "_HammingDistance", prHammingDistance, 2, 0);
+    definePrimitive(base, index++, "_HammingDistance", prHammingDistance, 3, 0);
 }

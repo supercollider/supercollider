@@ -1,4 +1,3 @@
-
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright 2014 Anton Bikineev
 //  Copyright 2014 Christopher Kormanyos
@@ -21,7 +20,7 @@
   namespace boost { namespace math { namespace detail {
 
      template <class T, class Policy>
-     T hypergeometric_1F1_divergent_fallback(const T& a, const T& b, const T& z, const Policy& pol, int& log_scaling);
+     T hypergeometric_1F1_divergent_fallback(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling);
 
      template <class T>
      bool hypergeometric_1F1_is_tricomi_viable_positive_b(const T& a, const T& b, const T& z)
@@ -79,13 +78,13 @@
            if ((term * bessel_cache[cache_size - 1] < tools::min_value<T>() / (tools::epsilon<T>() * tools::epsilon<T>())) || !(boost::math::isfinite)(term) || (!std::numeric_limits<T>::has_infinity && (fabs(term) > tools::max_value<T>())))
            {
               term = -log(fabs(bessel_arg)) * b_minus_1_plus_n / 2;
-              log_scale = itrunc(term);
+              log_scale = lltrunc(term);
               term -= log_scale;
               term = exp(term);
            }
            else
               log_scale = 0;
-#ifndef BOOST_NO_CXX17_IF_CONSTEXPR
+#ifndef BOOST_MATH_NO_CXX17_IF_CONSTEXPR
            if constexpr (std::numeric_limits<T>::has_infinity)
            {
               if (!(boost::math::isfinite)(bessel_cache[cache_size - 1]))
@@ -137,7 +136,7 @@
            return result;
         }
 
-        int scale()const
+        long long scale()const
         {
            return log_scale;
         }
@@ -146,9 +145,10 @@
         T A_minus_2, A_minus_1, A, mult, term, b_minus_1_plus_n, bessel_arg, two_a_minus_b;
         std::array<T, cache_size> bessel_cache;
         const Policy& pol;
-        int n, log_scale, cache_offset;
+        int n, cache_offset;
+        long long log_scale;
 
-        hypergeometric_1F1_AS_13_3_7_tricomi_series operator=(const hypergeometric_1F1_AS_13_3_7_tricomi_series&);
+        hypergeometric_1F1_AS_13_3_7_tricomi_series operator=(const hypergeometric_1F1_AS_13_3_7_tricomi_series&) = delete;
 
         void refill_cache()
         {
@@ -170,7 +170,7 @@
               //
               if (b_minus_1_plus_n > 0)
               {
-                 bessel_j_backwards_iterator<T> i(b_minus_1_plus_n + (int)cache_size - 1, 2 * sqrt(bessel_arg), arbitrary_small_value(last_value));
+                 bessel_j_backwards_iterator<T, Policy> i(b_minus_1_plus_n + (int)cache_size - 1, 2 * sqrt(bessel_arg), arbitrary_small_value(last_value));
 
                  for (int j = cache_size - 1; j >= 0; --j, ++i)
                  {
@@ -184,12 +184,12 @@
                     //
                     if ((j < cache_size - 2) && (tools::max_value<T>() / fabs(64 * bessel_cache[j] / bessel_cache[j + 1]) < fabs(bessel_cache[j])))
                     {
-                       T rescale = pow(fabs(bessel_cache[j] / bessel_cache[j + 1]), j + 1) * 2;
+                       T rescale = static_cast<T>(pow(fabs(bessel_cache[j] / bessel_cache[j + 1]), T(j + 1)) * 2);
                        if (!((boost::math::isfinite)(rescale)))
                           rescale = tools::max_value<T>();
                        for (int k = j; k < cache_size; ++k)
                           bessel_cache[k] /= rescale;
-                       bessel_j_backwards_iterator<T> ti(b_minus_1_plus_n + j, 2 * sqrt(bessel_arg), bessel_cache[j + 1], bessel_cache[j]);
+                       bessel_j_backwards_iterator<T, Policy> ti(b_minus_1_plus_n + j, 2 * sqrt(bessel_arg), bessel_cache[j + 1], bessel_cache[j]);
                        i = ti;
                     }
                  }
@@ -220,7 +220,7 @@
                     // We have crossed over into the region where backward recursion is the stable direction
                     // start from arbitrary value and recurse down to "pos" and normalise:
                     //
-                    bessel_j_backwards_iterator<T> i2(b_minus_1_plus_n + (int)cache_size - 1, 2 * sqrt(bessel_arg), arbitrary_small_value(bessel_cache[pos-1]));
+                    bessel_j_backwards_iterator<T, Policy> i2(b_minus_1_plus_n + (int)cache_size - 1, 2 * sqrt(bessel_arg), arbitrary_small_value(bessel_cache[pos-1]));
                     for (int loc = cache_size - 1; loc >= pos; --loc)
                        bessel_cache[loc] = *i2++;
                     ratio = bessel_cache[pos - 1] / *i2;
@@ -245,7 +245,7 @@
               //
               if (b_minus_1_plus_n > 0)
               {
-                 bessel_i_backwards_iterator<T> i(b_minus_1_plus_n + (int)cache_size - 1, 2 * sqrt(-bessel_arg), arbitrary_small_value(last_value));
+                 bessel_i_backwards_iterator<T, Policy> i(b_minus_1_plus_n + (int)cache_size - 1, 2 * sqrt(-bessel_arg), arbitrary_small_value(last_value));
 
                  for (int j = cache_size - 1; j >= 0; --j, ++i)
                  {
@@ -259,12 +259,12 @@
                     //
                     if ((j < cache_size - 2) && (tools::max_value<T>() / fabs(64 * bessel_cache[j] / bessel_cache[j + 1]) < fabs(bessel_cache[j])))
                     {
-                       T rescale = pow(fabs(bessel_cache[j] / bessel_cache[j + 1]), j + 1) * 2;
+                       T rescale = static_cast<T>(pow(fabs(bessel_cache[j] / bessel_cache[j + 1]), T(j + 1)) * 2);
                        if (!((boost::math::isfinite)(rescale)))
                           rescale = tools::max_value<T>();
                        for (int k = j; k < cache_size; ++k)
                           bessel_cache[k] /= rescale;
-                       i = bessel_i_backwards_iterator<T>(b_minus_1_plus_n + j, 2 * sqrt(-bessel_arg), bessel_cache[j + 1], bessel_cache[j]);
+                       i = bessel_i_backwards_iterator<T, Policy>(b_minus_1_plus_n + j, 2 * sqrt(-bessel_arg), bessel_cache[j + 1], bessel_cache[j]);
                     }
                  }
                  ratio = last_value / *i;
@@ -274,7 +274,7 @@
                  //
                  // Forwards iteration is stable:
                  //
-                 bessel_i_forwards_iterator<T> i(b_minus_1_plus_n, 2 * sqrt(-bessel_arg));
+                 bessel_i_forwards_iterator<T, Policy> i(b_minus_1_plus_n, 2 * sqrt(-bessel_arg));
                  int pos = 0;
                  while ((pos < cache_size) && (b_minus_1_plus_n + pos < 0.5))
                  {
@@ -286,7 +286,7 @@
                     // We have crossed over into the region where backward recursion is the stable direction
                     // start from arbitrary value and recurse down to "pos" and normalise:
                     //
-                    bessel_i_backwards_iterator<T> i2(b_minus_1_plus_n + (int)cache_size - 1, 2 * sqrt(-bessel_arg), arbitrary_small_value(last_value));
+                    bessel_i_backwards_iterator<T, Policy> i2(b_minus_1_plus_n + (int)cache_size - 1, 2 * sqrt(-bessel_arg), arbitrary_small_value(last_value));
                     for (int loc = cache_size - 1; loc >= pos; --loc)
                        bessel_cache[loc] = *i2++;
                     ratio = bessel_cache[pos - 1] / *i2;
@@ -315,7 +315,7 @@
      };
 
      template <class T, class Policy>
-     T hypergeometric_1F1_AS_13_3_7_tricomi(const T& a, const T& b, const T& z, const Policy& pol, int& log_scale)
+     T hypergeometric_1F1_AS_13_3_7_tricomi(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scale)
      {
         BOOST_MATH_STD_USING
         //
@@ -330,7 +330,7 @@
         T prefix(0);
         int prefix_sgn(0);
         bool use_logs = false;
-        int scale = 0;
+        long long scale = 0;
         //
         // We can actually support the b == 2a case within here, but we haven't
         // as we appear never to get here in practice.  Which means this get out
@@ -339,33 +339,41 @@
         if(b == 2 * a)
            return hypergeometric_1F1_divergent_fallback(a, b, z, pol, log_scale);
 
+#ifndef BOOST_MATH_NO_EXCEPTIONS
         try
+#endif
         {
            prefix = boost::math::tgamma(b, pol);
            prefix *= exp(z / 2);
         }
+#ifndef BOOST_MATH_NO_EXCEPTIONS
         catch (const std::runtime_error&)
         {
            use_logs = true;
         }
+#endif
         if (use_logs || (prefix == 0) || !(boost::math::isfinite)(prefix) || (!std::numeric_limits<T>::has_infinity && (fabs(prefix) >= tools::max_value<T>())))
         {
            use_logs = true;
            prefix = boost::math::lgamma(b, &prefix_sgn, pol) + z / 2;
-           scale = itrunc(prefix);
+           scale = lltrunc(prefix);
            log_scale += scale;
            prefix -= scale;
         }
         T result(0);
-        boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+        std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
         bool retry = false;
-        int series_scale = 0;
+        long long series_scale = 0;
+#ifndef BOOST_MATH_NO_EXCEPTIONS
         try
+#endif
         {
            hypergeometric_1F1_AS_13_3_7_tricomi_series<T, Policy> s(a, b, z, pol);
            series_scale = s.scale();
            log_scale += s.scale();
+#ifndef BOOST_MATH_NO_EXCEPTIONS
            try
+#endif
            {
               T norm = 0;
               result = 0;
@@ -378,6 +386,7 @@
               if (norm / fabs(result) > 1 / boost::math::tools::root_epsilon<T>())
                  retry = true;  // fatal cancellation
            }
+#ifndef BOOST_MATH_NO_EXCEPTIONS
            catch (const std::overflow_error&)
            {
               retry = true;
@@ -386,7 +395,9 @@
            {
               retry = true;
            }
+#endif
         }
+#ifndef BOOST_MATH_NO_EXCEPTIONS
         catch (const std::overflow_error&)
         {
            log_scale -= scale;
@@ -397,6 +408,7 @@
            log_scale -= scale;
            return hypergeometric_1F1_divergent_fallback(a, b, z, pol, log_scale);
         }
+#endif
         if (retry)
         {
            log_scale -= scale;
@@ -415,7 +427,7 @@
            if ((fabs(result) > 1) && (fabs(prefix) > 1) && (tools::max_value<T>() / fabs(result) < fabs(prefix)))
            {
               // Overflow:
-              scale = itrunc(tools::log_max_value<T>()) - 10;
+              scale = lltrunc(tools::log_max_value<T>()) - 10;
               log_scale += scale;
               result /= exp(T(scale));
            }
@@ -444,14 +456,14 @@
      };
 
      template <class T, class Policy>
-     T cyl_bessel_i_large_x_scaled(const T& v, const T& x, int& log_scaling, const Policy& pol)
+     T cyl_bessel_i_large_x_scaled(const T& v, const T& x, long long& log_scaling, const Policy& pol)
      {
         BOOST_MATH_STD_USING
            cyl_bessel_i_large_x_sum<T> s(v, x);
-        boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+        std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
         T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
         boost::math::policies::check_series_iterations<T>("boost::math::cyl_bessel_i_large_x<%1%>(%1%,%1%)", max_iter, pol);
-        int scale = boost::math::itrunc(x);
+        long long scale = boost::math::lltrunc(x);
         log_scaling += scale;
         return result * exp(x - scale) / sqrt(boost::math::constants::two_pi<T>() * x);
      }
@@ -508,7 +520,7 @@
            return result;
         }
 
-        int scaling()const
+        long long scaling()const
         {
            return scale;
         }
@@ -516,7 +528,8 @@
      private:
         T b_minus_a, half_z, poch_1, poch_2, b_poch, term, last_result;
         int sign;
-        int n, cache_offset, scale;
+        int n, cache_offset;
+        long long scale;
         const Policy& pol;
         std::array<T, cache_size> bessel_i_cache;
 
@@ -531,7 +544,7 @@
            //
            cache_offset += cache_size;
            T last_value = bessel_i_cache.back();
-           bessel_i_backwards_iterator<T> i(b_minus_a + cache_offset + (int)cache_size - 1.5f, half_z, tools::min_value<T>() * (fabs(last_value) > 1 ? last_value : 1) / tools::epsilon<T>());
+           bessel_i_backwards_iterator<T, Policy> i(b_minus_a + cache_offset + (int)cache_size - 1.5f, half_z, tools::min_value<T>() * (fabs(last_value) > 1 ? last_value : 1) / tools::epsilon<T>());
 
            for (int j = cache_size - 1; j >= 0; --j, ++i)
            {
@@ -545,12 +558,12 @@
               //
               if((j < cache_size - 2) && (bessel_i_cache[j + 1] != 0) && (tools::max_value<T>() / fabs(64 * bessel_i_cache[j] / bessel_i_cache[j + 1]) < fabs(bessel_i_cache[j])))
               {
-                 T rescale = pow(fabs(bessel_i_cache[j] / bessel_i_cache[j + 1]), j + 1) * 2;
+                 T rescale = static_cast<T>(pow(fabs(bessel_i_cache[j] / bessel_i_cache[j + 1]), T(j + 1)) * 2);
                  if (rescale > tools::max_value<T>())
                     rescale = tools::max_value<T>();
                  for (int k = j; k < cache_size; ++k)
                     bessel_i_cache[k] /= rescale;
-                 i = bessel_i_backwards_iterator<T>(b_minus_a -0.5f + cache_offset + j, half_z, bessel_i_cache[j + 1], bessel_i_cache[j]);
+                 i = bessel_i_backwards_iterator<T, Policy>(b_minus_a -0.5f + cache_offset + j, half_z, bessel_i_cache[j + 1], bessel_i_cache[j]);
               }
            }
            T ratio = last_value / *i;
@@ -558,28 +571,28 @@
               *j *= ratio;
         }
 
-        hypergeometric_1F1_AS_13_3_6_series();
-        hypergeometric_1F1_AS_13_3_6_series(const hypergeometric_1F1_AS_13_3_6_series&);
-        hypergeometric_1F1_AS_13_3_6_series& operator=(const hypergeometric_1F1_AS_13_3_6_series&);
+        hypergeometric_1F1_AS_13_3_6_series() = delete;
+        hypergeometric_1F1_AS_13_3_6_series(const hypergeometric_1F1_AS_13_3_6_series&) = delete;
+        hypergeometric_1F1_AS_13_3_6_series& operator=(const hypergeometric_1F1_AS_13_3_6_series&) = delete;
      };
 
      template <class T, class Policy>
-     T hypergeometric_1F1_AS_13_3_6(const T& a, const T& b, const T& z, const T& b_minus_a, const Policy& pol, int& log_scaling)
+     T hypergeometric_1F1_AS_13_3_6(const T& a, const T& b, const T& z, const T& b_minus_a, const Policy& pol, long long& log_scaling)
      {
         BOOST_MATH_STD_USING
         if(b_minus_a == 0)
         {
            // special case: M(a,a,z) == exp(z)
-           int scale = itrunc(z, pol);
+           long long scale = lltrunc(z, pol);
            log_scaling += scale;
            return exp(z - scale);
         }
         hypergeometric_1F1_AS_13_3_6_series<T, Policy> s(a, b, z, b_minus_a, pol);
-        boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+        std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
         T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
         boost::math::policies::check_series_iterations<T>("boost::math::hypergeometric_1F1_AS_13_3_6<%1%>(%1%,%1%,%1%)", max_iter, pol);
-        result *= boost::math::tgamma(b_minus_a - 0.5f) * pow(z / 4, -b_minus_a + 0.5f);
-        int scale = itrunc(z / 2);
+        result *= boost::math::tgamma(b_minus_a - 0.5f, pol) * pow(z / 4, -b_minus_a + T(0.5f));
+        long long scale = lltrunc(z / 2);
         log_scaling += scale;
         log_scaling += s.scaling();
         result *= exp(z / 2 - scale);
@@ -641,7 +654,7 @@
         BOOST_MATH_STD_USING
         T prefix = exp(h * z) * boost::math::tgamma(b);
         hypergeometric_1F1_AS_13_3_8_series<T, Policy> s(a, b, z, h, pol);
-        boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+        std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
         T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
         boost::math::policies::check_series_iterations<T>("boost::math::hypergeometric_1F1_AS_13_3_8<%1%>(%1%,%1%,%1%)", max_iter, pol);
         result *= prefix;
@@ -676,12 +689,12 @@
            return result;
         }
         T term, two_a_minus_1_plus_s, two_a_minus_b_plus_s, b_plus_s, a_minus_half_plus_s, half_z;
-        int s;
+        long long s;
         const Policy& pol;
      };
 
      template <class T, class Policy>
-     T hypergeometric_1f1_13_11_1(const T& a, const T& b, const T& z, const Policy& pol, int& log_scaling)
+     T hypergeometric_1f1_13_11_1(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling)
      {
         BOOST_MATH_STD_USING
            bool use_logs = false;
@@ -711,12 +724,12 @@
         }
 
         hypergeometric_1f1_13_11_1_series<T, Policy> s(a, b, z, pol);
-        boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+        std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
         T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
         boost::math::policies::check_series_iterations<T>("boost::math::hypergeometric_1f1_13_11_1<%1%>(%1%,%1%,%1%)", max_iter, pol);
         if (use_logs)
         {
-           int scaling = itrunc(prefix);
+           long long scaling = lltrunc(prefix);
            log_scaling += scaling;
            prefix -= scaling;
            result *= exp(prefix) * prefix_sgn;

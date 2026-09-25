@@ -27,7 +27,6 @@ Table of contents
   - Configuration and building
   - Additional build settings
     - Build type
-    - SuperNova
     - Other targets (install, installer)
     - PortAudio
     - Ccache
@@ -52,48 +51,24 @@ This is the Windows version of James McCartney's SuperCollider synthesis engine
 (`scsynth`) and programming language (`sclang`), distributed together with a
 dedicated IDE (`scide`).
 
-SuperCollider's homepage is:
-
-    http://supercollider.github.io/
+SuperCollider's homepage is http://supercollider.github.io/.
 
 Binaries of release-versions and pre-release snapshots are available as
-GitHub releases now:
-
-    https://github.com/supercollider/supercollider/releases
+GitHub releases at https://github.com/supercollider/supercollider/releases.
 
 You can also download a bleeding-edge build of the latest development branch!
-Builds are available for [32-bit][bleeding edge 32 bit] and
-[64-bit][bleeding edge 64 bit] Windows.
+Builds are available for [x86_64][bleeding edge 64 bit] Windows.
 
-This page also provides snapshots of the source version used for the release.
-Note though, that this automated Github service misses out on the submodules.
-For actual development work you should always use SuperCollider's Github repo:
-
-    https://github.com/supercollider/supercollider
-
-Older releases and snapshots of the source code used for them are available
-from Sourceforge:
-
-    http://sourceforge.net/projects/supercollider/files/?source=navbar
-
-There is an online version of SuperCollider Help:
-
-    http://doc.sccode.org/Help.html
-
-SC has a life in social media too. Visit a lively community at sccode.org:
-
-    http://sccode.org/
+There is an online version of SuperCollider Help: http://doc.sccode.org/Help.html.
 
 Listen to music composed with SuperCollider on SoundCloud:
-
-    https://soundcloud.com/groups/supercollider
+https://soundcloud.com/groups/supercollider
 
 There are several SuperCollider Facebook groups, some SuperCollider tweets, e.g.
-@sc140tweets. In addition you are strongly encouraged to subscribe to the two SC
-mailing lists 'sc-users' and 'sc-dev'. You will get friendly and qualified
-replies there, as well as interest, and encouragement for your projects:
-
-    http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
+@sc140tweets. Visit the forum at [scsynth.org](https://scsynth.org/) -
+you will get friendly and qualified replies there, as well as interest,
+and encouragement for your projects. 
+You can also find a repository of code snippets at [sccode.org](http://sccode.org/).
 
 
 Installing SuperCollider
@@ -111,9 +86,11 @@ Git *and* add it to the PATH. The Git installer will prompt you to the addition.
 For SC it is enough to add Git itself to the path, the additional unix tools
 (curl, find etc.) are not required.
 
-Git for Windows is available from
-
-    http://git-scm.com/downloads
+Git for Windows is available from http://git-scm.com/downloads.
+You can also install it using the `winget` tool:
+```ps
+winget install --id Git.Git -e --source winget
+``` 
 
 
 System Requirements
@@ -121,23 +98,16 @@ System Requirements
 
 ### Operating System
 
- - Windows 10
- - Windows 8
- - Windows 7
- - Windows Vista
-
+Supercollider runs on recent versions of Windows. Check out the main [README](README.md#platform-support) for details.
+ 
 ### Sound card
 
-Most sound cards running under Windows will work fine - the sound card should
-be one that is supported by [PortAudio][portaudio]. For professional
-use do some research and find a card that allows for low latency. If you have
-issues with latency, consult http://www.portaudio.com/docs/latency.html
-for advice on how to tune your operating system to achieve the best results.
-The portaudio build in SC supports various Windows audio APIs, among which you
-can chose. Usually you get best results and biggest control over latency by
-using the ASIO driver. If your soundcard does not provide an ASIO driver you
-should give *[ASIO4ALL][asio4all]* a try. See SC help for how to select the audio
-interface to be used by SC.
+Most sound cards running under Windows will work fine. For professional
+use you should choose a sound card that comes with a dedicated ASIO driver. 
+If your card doesn't provide one, you can use *[ASIO4ALL][asio4all]*, 
+which may provide lower latency than regular Windows drivers,
+but note that a dedicated ASIO driver is always preferred.
+See SC help for how to select the audio interface to be used by SC.
 
 
 Using the SuperCollider IDE
@@ -163,52 +133,56 @@ extensions, quarks, Help files, plugins, configuration files, synthdefs) is
 located in the Windows 'local application data' folder. In SC-speak this folder
 is called the `userAppSupportDir`. This location is a bit tricky to find when
 not using SC-IDE because its grandparent `AppData` is hidden by default. You
-can see it in the environment variable LOCALAPPDATA. In a command prompt,
-execute:
+can see it in the environment variable LOCALAPPDATA. In `PowerShell` execute:
 
-    echo %LOCALAPPDATA%
+```ps
+$env:LOCALAPPDATA
+```
 
-You will likely see (the grandpa referred to earlier):
+You will likely see:
 
-    C:\Users\<USERNAME>\AppData
+    C:\Users\<USERNAME>\AppData\Local
 
-The userAppSupportDir is in the subfolder `Local\SuperCollider`:
+The userAppSupportDir is in the subfolder `SuperCollider`:
 
     C:\Users\<USERNAME>\AppData\Local\SuperCollider
 
+You can open it in the File Explorer by running the following command in PowerShell:
+
+```ps
+ii $env:LOCALAPPDATA\SuperCollider
+```
+
 This folder is user writable and *not* deleted by uninstalling. Therefore your
 settings, quarks, and plugins persist through updates. This is usually good,
-but if you have binary "plugins" and update a minor version, e.g. 3.6 to 3.7,
+but if you have binary "plugins" and update a minor version, e.g. 3.14 to 3.15,
 the plugins may not work any more, and cause errors during SC start-up. There
 are more files in the `userAppSupportDir` that can cause trouble after updates,
 so you want to be aware of the possibility. In the IDE it is very easy to access
 the folder. There is a menu entry -> `Open user support directory`). You can
 also ask `sclang` where this folder is located. Type this in the SC-IDE:
 
-    Platform.userAppSupportDir
+```supercollider
+Platform.userAppSupportDir;
+```
 
 
 Extensions and Quarks
 ---------------------
 
 Extensions and Quarks are bundles of classes, and optionally plugins and
-help files that extend the functionality of core SC. The old school way of
-integrating them into SC is to move them to a folder called `Extensions`  in the
-`userAppSupportDir` (soft linking is not supported any more).
-
-The more flexible and recommended way since SC 3.7 does not restrict you to a
-single parent folder in a hidden system location. Any folder may be included
+help files that extend the functionality of core SC. 
+In the recent versions of SC any folder may be included
 among the folders scanned by SC at start-up ("compiled by the interpreter
 sclang"). New folders are integrated into SC by adding them to the list of
 "include folders" listed in a file called `sclang_config.yaml` in the
 `userAppSupportDir`. This file can be edited manually, but you might find it
-easier to add or remove folders via the 'settings' dialog in the IDE, or:
+easier to add or remove folders via the 'settings' dialog in the IDE.
 
 The community driven *Quarks* system provides an automated way to add, remove
 and also distribute extensions. It "clones" extensions from repositories. By
 default it looks in a central repository called "Quarks", located on Github:
-
-    https://github.com/supercollider-quarks
+https://github.com/supercollider-quarks
 
 Under the hood it speaks `sclang` and uses Git, so there is even some version
 control included. It also provides a management GUI that writes to the
@@ -216,7 +190,9 @@ control included. It also provides a management GUI that writes to the
 
 *Note*: Each time `sclang_config.yaml` is modified (by editing, via a menu or by
 using the Quarks system) the interpreter has to be restarted ("rebooted") so
-that sclang can learn which files are available. This can be done via the menu
+that sclang can learn which files are available. A dialog prompting interpreter
+restart will appear after making changes to the config file in the IDE settings.
+Restarting the interpreter can also be done via the menu
 entry 'Language -> Restart Interpreter'. For an overview of the Quarks system
 see 'Help -> Using Quarks'.
 
@@ -226,47 +202,48 @@ Enjoy SuperCollider!
 Building SuperCollider for Windows
 ==================================
 
-SuperCollider uses [CMake][cmake] as its build system. The main toolchain
-supported by the development team is Visual Studio - Microsoft's IDE for C++ -
-which also includes Visual C++, the official Microsoft C++ compiler. Use of
-other build environments and toolchains (such as MinGW, gcc, and Cygwin) is not
-currently supported.
+SuperCollider uses [CMake][cmake] as its build system. 
+The main toolchain supported by the development team is Visual Studio (also known as MSVC) - Microsoft's IDE for C++ - which also includes Visual C++, the official Microsoft C++ compiler. 
+While the use of other build environments and toolchains (such as MinGW, gcc, and Cygwin) is not officially supported, they are known to work, but with caveats (e.g. Qt's Webengine component is not available in MinGW). MSVC is still the one officially supported toolchain.
 
 Required and Optional Components
 --------------------------------
 
-You will need to install these packages manually if you do not already have
-them. When you are given the option, make sure to choose the 32-bit or 64-bit
-version of each library as appropriate.
+You will need to install these packages manually if you do not already have them. 
+When you are given the option, make sure to choose the appropriate architecture for your system (x64 vs arm64).
 
 Required components:
 
-- **[Git][Git]** for Windows
-- **[CMake][cmake]** >= 3.12.
-- **[Visual Studio 15 2017][VS2017]** or later.
-- **[Qt][Qt]** >= 5.7. We recommend using the latest version. Make sure that the
-  version you select matches the architecture (32-bit or 64-bit) and compiler ABI
+- **[Git][Git]** for Windows (may be installed via winget: `winget install --id Git.Git -e --source winget`)
+- **[CMake][cmake]** >= 3.12 (may be installed via winget: `winget install -e --id Kitware.CMake`)
+- **[Visual Studio][msvc]** - the official Microsoft C++ compiler.
+- **[Qt][Qt]** >= 6.2. We recommend using the latest version. Make sure that the
+  version you select matches the architecture (e.g. x64 vs arm64) and compiler ABI (MSVC vs MinGW)
   you are building with. This varies per Qt version.
-- **[libsndfile][libsndfile]** >= 1.0.25.
-- The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
+  - add Qt's `bin` directory (e.g. `C:\Qt\6.2\msvc2022_64\bin`) to `PATH` environment variable
+  - set Qt directory (e.g. `C:\Qt\6.2\msvc2022_64\`) as `Qt_DIR` environment variable
+- **[vcpkg][vcpkg]** for installing dependencies
+  - set vcpkg directory (e.g. `c:\vcpkg`) as `VCPKG_ROOT` environment variable
 
-Optional, but highly recommended:
-
-- **[fftw][fftw]** >= 3.3.4
-- **[Asio SDK][asiosdk]** >= 2.3, for Asio support in PortAudio
 
 Optional components:
 
-- **DirectX SDK** [v.9][dx9sdk] for Direct Sound support in Portaudio
 - **[NSIS][nsis]** to create an installation executable. Make sure to add
   `makensis` to your `PATH`!
 
 Other development tools:
 
-- a Unix line-ending friendly text editor like **[Atom][atomeditor]** or
-  **[Notepad++][notepad++]**. There are SuperCollider packages available
-  for Atom.
+- a developer-friendly text editor like **[VS Code][vscode]** or **[Notepad++][notepad++]**.
 - **[7-zip][7-zip]** to extract .tar and .gz format archives
+
+
+Build SuperCollider - TL;DR
+---------------------------
+
+- install components listed above
+  - optionally set global environemnt variables for Qt and vcpkg, as indicated above
+- clone supercollider repository
+- build 
 
 Preparing to build
 ------------------
@@ -280,45 +257,82 @@ switching to different stages of submodules might be required. In this case use:
 
     git submodule update
 
-Note that a slightly patched version of PortAudio source is provided as
-submodule. PortAudio can support up to five different backends: MME, DSound,
-WDM-KS, ASIO and WASAPI. For ASIO support, you will need to install the ASIO
-SDK; for DSound, install the DirectX SDK (see the preceding section).
 
-### Arranging the components
+Configuration and Building
+--------------------------
 
-*Note:* creating the folder structure *exactly as given here* could save you
-from headaches if CMake cannot find them for whatever reason.
+*Note:* This section assumes familiarity with the command line. The section below titled
+"Avoiding the command line" may be helpful if that doesn't describe you.
 
-Create a new folder next to where you cloned SuperCollider. If you're making a
-32-bit build, call it `x86`; use `x64` for 64-bit. Next, move the installed
-files of `libsndfile` (by default, placed in `C:\Program Files\Mega-Nerd\libsndfile`)
-and the library for `fftw` so that they match the
-following folder structure *exactly*:
+*Note:* You should always use forward slashes for paths passed to CMake.
 
-    supercollider
-    x64 (or x86)
-        libsndfile
+**Confirm the location of your Qt and vcpkg install before executing these commands.**
+You may need to modify them if you installed Qt or vcpkg somewhere else. 
+The following commands should be executed starting from the root directory of the SuperCollider repository.
+
+```cmd
+REM only set these if you haven't set them globally
+SET PATH=C:\Qt\6.2\msvc2022_64\bin;%PATH% 
+SET Qt_DIR=C:\Qt\6.2.0\msvc2022_64
+SET VCPKG_ROOT=C:\vcpkg
+
+mkdir build
+cd build
+cmake -G "Visual Studio 17 2022 Win64" ..
+cmake --build . --config Release
+```
+
+For the final step, you can also build from within Visual Studio:
+
+    start SuperCollider.sln
+
+Dependencies and `vcpkg` support
+--------------------------------
+
+SuperCollider uses vcpkg to install its dependencies: `libsndfile`, `fftw`, `readline`.
+`vcpkg` instalation will be picked up automatcally when `VCPKG_ROOT` environment variable is set, either through the `Edit the system environment variables` GUI, or via command prompt (cmd): `SET VCPKG_ROOT=c:\path\to\vcpkg`.
+The latter is only valid within the current command prompt session.
+
+### Manifest mode
+When detected, vcpkg is used in "manifest mode". That means that there's no need to separately install dependencies - they will be installed automatically during the `cmake ..` configure step. The following cmake flags allow controling which dependencies are used from vcpkg: `USE_VCPKG_FFTW`, `USE_VCPKG_LIBSNDFILE`, and `USE_VCPKG_READLINE`. When vcpkg is detected, all of them are set to `ON` _when building on Windows_.
+
+### Building without vcpkg
+
+Instead of using `vcpkg`, `libsndfile` and `fftw` may be installed manually. Using `vcpkg` is still recommended though.
+
+There's no straightforward way of installing `readline` dependency manually, so you need to use `vcpkg` to keep interactive sclang command prompt functionality.
+
+In order to build without vcpkg, make sure the `VCPKG_ROOT` environment variable is not set. 
+
+#### Libsndfile
+
+SuperCollider's cmake scripts will find `libsndfile` and `fftw` installed in dedicated folders in Program Files.
+**[Libsndfile][libsndfile]** should be unpacked into `C:\Program Files\libsndfile` or `C:\Program Files\libsndfile-<version>`, e.g. `C:\Program Files\libsndfile-1.2.2-win64`:
+
+    Program Files
+        libsndfile-1.2.2-win64
             bin
+            cmake
             include
             lib
-        fftw
+            share
 
-In order to get support for ASIO drivers, follow this directory structure:
+#### FFTW
 
-    supercollider
-        external_libraries
-            portaudio
-                portaudio_submodule
-                asiosdk
-                    asio
-                    common
-                    ...
+**[FFTW][fftw]** should be unpacked into `C:\Program Files\fftw` or `C:\Program Files\fftw-<version>`, e.g. `C:\Program Files\fftw-3.3.5-dll64`:
+
+    Program Files
+        fftw-3.3.5-dll64
+            bench.exe
+            ...
+            fftw3.h
+            ...
+            libfftw3f-3.dll
             ...
 
-FFTW does not provide build files for Visual Studio. In the **Developer Command
-Prompt for VS2019** (or VS2017; note that this is not `cmd.exe`), `cd` to the
-directory where FFTW is installed and, for a **64-bit** build:
+FFTW does not provide `.lib` "import libraries" for Visual Studio. In the **Developer Command
+Prompt for VS2022** (or newer version; note that this is _not_ `cmd.exe`), `cd` to the
+directory where FFTW is installed and, for a **64-bit x86** build:
 
     lib /machine:x64 /def:libfftw3f-3.def
 
@@ -331,38 +345,10 @@ The SC build only uses the single precision FFTW library (fftw3f).
 *Note*: if you compile FFTW yourself, all files must end up in the root fftw
 directory.
 
-Configuration and Building
---------------------------
+### Portaudio
 
-*Note:* This section assumes familiarity with the command line. The section below titled
-"Avoiding the command line" may be helpful if that doesn't describe you.
-
-*Note:* You should always use forward slashes for paths passed to CMake.
-
-**Confirm the location of your Qt install before executing these commands.** You
-may need to modify them if you installed Qt somewhere else. The following
-commands should be executed starting from the root directory of the
-SuperCollider repository.
-
-    SET PATH=C:\Qt\5.5\msvc2017_64\bin;%PATH%
-    SET CMAKE_PREFIX_PATH=C:\Qt\5.11.0\msvc2017_64
-    mkdir build
-    cd build
-    cmake -G "Visual Studio 15 2017 Win64" ..
-    cmake --build . --config Release
-
-For a 32-bit build, you will use a different generator and Qt directory:
-
-    SET PATH=C:\Qt\5.5\msvc2015\bin;%PATH%
-    SET CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2015
-    mkdir build
-    cd build
-    cmake -G "Visual Studio 15 2017" ..
-    cmake --build . --config Release
-
-For the final step, you can also build from within Visual Studio:
-
-    start SuperCollider.sln
+By default, a bundled version of `portaudio` will be used, so that it is built with a chosen subset of Windows audio APIs.
+In order to support ASIO drivers (highly recommended for low latency operation), **[Asio SDK][asiosdk]** will be downloaded automatically with the first `cmake ..` run. 
 
 Additional build settings
 -------------------------
@@ -394,18 +380,12 @@ the SuperCollider core libraries, `Release` should be fine. Using a `Debug`
 build in production is strongly discouraged, as it will be many times slower
 than `Release`.
 
-### SuperNova
-
-If you want to build supernova, add `-D SUPERNOVA=ON`
-
-    cmake -D SUPERNOVA=ON ..
-
 ### Other targets (install, installer)
 
 If you used the basic instructions above, you will end up with three target
 folders (four if supernova is built). You can run these executables to develop
 SuperCollider, but, as the Qt libraries are not copied to the target folders,
-you *must* keep Qt5 in your environment PATH when running sclang or sc-ide.
+you *must* keep Qt6 in your environment PATH when running sclang or sc-ide.
 The target folders are:
 
     sc-ide:    build-folder\editors\scide\<build configuration>
@@ -451,23 +431,6 @@ always loose the local customizations and additions stored in the
 userAppSupportDirectory. The new Quarks system provides means to make porting
 of extension/Quark groups easier.
 
-### PortAudio
-
-You can study the files `external_libraries\portaudio\portaudio_submodule\CMakeLists.txt`
-and `external_libraries\portaudio\CMakeLists.txt` to
-learn about the options that the build provides. With default settings, all APIs
-that *work out of the box* are enabled and only the library for static linking
-is built. In the VS-build all APIs are enabled. For MinGW, WASAPI is omitted
-and some features of DSound's full duplex mode are unavailable.  If you would
-like to tweak the PortAudio build you can single it out from the SC build with:
-
-    cmake --build . --target portaudio
-
-*Note:* MSYS2 provides a portaudio package, but it only comes with MME and
-DSound support out of the box. If you want ASIO or WDM-KS, you need to build
-PortAudio within MSYS2. Users have experienced issues using the WASAPI backend
-to build in MinGW-based environments. Use Visual Studio if you need WASAPI.
-
 ### Ccache
 
 Ccache speeds up recompilation by caching previous compilations and detecting when the same compilation is being done again. Ccache added partial support for MSVC in version 4.6.1. When the ccache executable is found in the PATH during the configuration step, it will be used to speed up the build process.
@@ -491,8 +454,8 @@ for libraries that do not depend on MinGW runtimes or make sure all components
 in the build can use the same runtimes.
 - Architecture mismatches. This does not only concern target system architecture
 (32- or 64-bit) but also the toolchain used to compile SC and Qt. They have to
-match as closely as possible. SC built with VS requires the msvc2013_64 or
-msvc2013 package.
+match as closely as possible. SC built with VS requires the msvc2022_64 or
+msvc2022 package.
 - Dirty states in your build folder (usually resulting from changes in the build
 configuration). See below for how to fix this.
 - cmake finds and uses different libraries on your system than the ones intended
@@ -548,7 +511,7 @@ The aspects relating to environment settings are relevant for other use cases
 as well)
 - study the file CMakeCache.txt in the root build folder. The quickest way to
 find the relevant entries is by searching for the library names (sndfile,
-fftw and Qt5). Look for paths pointing to headers (include_dir),
+fftw and Qt6). Look for paths pointing to headers (include_dir),
 (import-) libraries, dll's and dll-directories.
 
 You can change build settings both in CMake-Gui and by editing CMakeCache.txt.
@@ -680,7 +643,7 @@ For this to be meaningful we need to
     For VS Studio the toolchain need not be added to the path. You just need
     to specify the generator like so:
 
-    $> cmake -G "Visual Studio 12 2013 Win64" ..\sc3-plugins
+    $> cmake -G "Visual Studio 17 2022 Win64" ..\sc3-plugins
 
 CMake will likely return two or three errors:
 
@@ -788,7 +751,7 @@ the environment defined by the overall system set during login. This means you
 cannot set the path on the command line (in a *shell*), but have to make the
 path adjustments on system level (using Control Panel/System/Advanced System
 Settings/Environment Variables). Setting the PATH on system level brings along
-some risks that need to be managed carefully, most importantly: adding Qt5 (or a
+some risks that need to be managed carefully, most importantly: adding Qt6 (or a
 toolchain) at the head of the system PATH can cause other applications that may
 depend on similar path settings, to malfunction. This can be easily corrected by
 removing the offending entry when done with SC development (and avoiding the
@@ -810,14 +773,14 @@ Once CMake-Gui is running it will need to know (just like on the command line):
   - While Qt can be added via the PATH as well, it is safer to define an
     environment variable "CMAKE_PREFIX_PATH", that contains the path
     to the parent folder of the "Qt-system" we are using. The Qt-architecture
-    must fit the build system, in this case Microsoft Visual Studio 2013, 64-bit.
+    must fit the build system, in this case Microsoft Visual Studio 2022, 64-bit.
     In a standard install, the path is likely to be:
 
-        C:\Qt\5.5\msvc2013_64
+        C:\Qt\6.2\msvc2022_64
 
     You can modify the Windows environment variables by hitting Win-key-x,
     choosing `System` -> `Advanced System Settings` -> `Environment Variables`.
-    Apply the `SET CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2013_64` logic to this
+    Apply the `SET CMAKE_PREFIX_PATH=C:\Qt\6.2\msvc2022_64` logic to this
     dialog. Note that there is no `bin` in the CMAKE_PREFIX_PATH, this is *not*
     a binaries search path, but an anchor path for CMake to work out all
     relevant Qt locations.
@@ -851,7 +814,7 @@ long list of cmake variables alongside with the values assigned to them as
 stored in the cache. In the box at the bottom you can scroll through the output
 CMake produced during configuration and analyse it. At this stage it is good to
 scroll through the central pane and check for the paths related to the
-"smaller" libraries (libsndfile, fftw) and the Qt5 related paths. Do they fit
+"smaller" libraries (libsndfile, fftw) and the Qt6 related paths. Do they fit
 the locations we expect? If not, you may try to correct it in the window
 presented. On the other hand, errors in this stage are more likely to be caused
 by conflicts with your system settings, typos in paths or the like. In that
@@ -917,7 +880,7 @@ working directory for the respective target. This can be done in the "Debug"
 pane of the target properties dialog.
 
 *Important Note*: provided the build environment is set up properly (the main
-setting is the requirement to have the Qt5/bin folder in the PATH of the current
+setting is the requirement to have the Qt6/bin folder in the PATH of the current
 environment), the various SC components can be run directly in the target
 folders. If you want to run SC outside of the build environment, or copy the
 build to a different computer, you need to build the target "install". This step
@@ -941,7 +904,7 @@ toolchain and Qt are handled as part of defining "kits", and controlled via
 comfortable selection dialogs. You can open a CMake project directly, and run
 `cmake` from within the IDE, quite similar to how you would work with CMake-Gui.
 QtC automatically creates environment variables adjusted to the kit used (i.e.
-Qt5 and the toolchain are found and added to the PATH as required), without
+Qt6 and the toolchain are found and added to the PATH as required), without
 interfering with the overall system. You can "run" the SC targets containing
 executables directly from within QtC. In order to start the server from the
 SC-IDE or sclang, you will have to set the "working directory" to the target
@@ -1048,7 +1011,7 @@ Commonly used variables to modify the build configuration are:
 
 * Build the *supernova* server:
 
-      -D SUPERNOVA=ON
+      -D SUPERNOVA=ON # ON by default
 
   *Note*: When you build with supernova, an alternative server executable and
   a supernova version of each plugin is built. If you also use the 'sc3-plugins'
@@ -1061,14 +1024,6 @@ Commonly used variables to modify the build configuration are:
       Server.scsynth
 
   Check SC help for `ParGroup` to see how to make use of multi-core hardware.
-
-  *Note*: If you experience problems getting the supernova plugins recognized
-  (plugins related error at supernova boot), try placing them in a folder called
-  "plugins" in the "userAppSupportDirectory\Extensions" folder. It may also be
-  required to separate binary plugins and classes. The class files may reside
-  anywhere in the Extensions folder (or in any "included" class folder), whereas
-  the binary plugins should reside in a folder "plugins" (this mirrors the situation
-  in the application directory)
 
 * It is possible to build SuperCollider without the IDE, and even without Qt
   (and implicitly without the IDE). This is not controlled via build targets,
@@ -1169,37 +1124,34 @@ These lines create a VS environment:
 
     echo off
     echo Setting up environment for Qt usage...
-    set PATH=C:\Qt\5.5\msvc2013_64\bin;%PATH%
-    set CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2013_64
+    set PATH=C:\Qt\6.8\msvc2022_64\bin;%PATH%
+    set CMAKE_PREFIX_PATH=C:\Qt\6.8\msvc2022_64
     echo Running vcvarsall.bat to complete environment setup!
-    call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+    call "C:\Program Files (x86)\Microsoft Visual Studio 17.0\VC\vcvarsall.bat"
     echo Done!
     cd /D %USERPROFILE%\Projects\sc\supercollider
-    DOSKEY cm=cmake -G "Visual Studio 12 2013 Win64" %USERPROFILE%\Projects\sc\supercollider
+    DOSKEY cm=cmake -G "Visual Studio 17 2022 Win64" %USERPROFILE%\Projects\sc\supercollider
     DOSKEY mkDb=cmake --build . --config Debug
     DOSKEY mkRl=cmake --build . --config Release
     DOSKEY mkDbI=cmake --build . --config Debug --target Install
     DOSKEY mkRlI=cmake --build . --config Release --target Install
     DOSKEY cds=cd %USERPROFILE%\Projects\sc\supercollider
     DOSKEY cdb=cd %USERPROFILE%\Projects\sc\supercollider\build_VS
-    DOSKEY cdd=cd %USERPROFILE%\Projects\sc\deployment\msvc2013_64
+    DOSKEY cdd=cd %USERPROFILE%\Projects\sc\deployment\msvc2022_64
 
 Another option are batch-files that construct CMake arguments and execute the
 build. If for some reason you need to enter many of those and/or can't keep the
 build folder with the cache file, this can come in handy. Here is a example that
-allows to edit all paths to dependencies. They go into a single environment
-variable (`CMAKE_PREFIX_PATH`) that CMake will read. The lines here contain
-random assignments to demonstrate some possibilities. Note that the batch files
+allows to edit all paths to dependencies.
+The lines here contain random assignments to demonstrate some possibilities. 
+Note that the batch files
 above use Windows path syntax, while the one below uses forward slash for
 CMake:
 
-    set CMAKE_GENERATOR="Visual Studio 12 2013 Win64"
-    set QT_HOME=C:/Qt/5.5
-    set QT_FLAVOUR=msvc2013_64
-    set QT_PREFIX_PATH=%QT_HOME%/%QT_FLAVOUR%
-    set SNDFILE_PREFIX_PATH="C:/Program Files/nerd/libsndfile"
-    set FFTW_PREFIX_PATH=%USERPROFILE%/fftw
-    set CMAKE_PREFIX_PATH=%QT_PREFIX_PATH%;%SNDFILE_PREFIX_PATH%;%FFTW_PREFIX_PATH%
+    set CMAKE_GENERATOR="Visual Studio 17 2022 Win64"
+    set QT_HOME=C:/Qt/6.8
+    set QT_FLAVOUR=msvc2022_64
+    set Qt_DIR=%QT_HOME%/%QT_FLAVOUR%
     cmake --build .
     start Supercollider.sln
 
@@ -1207,19 +1159,13 @@ Another way of storing CMake command line arguments is creating a "toolchain"
 file. This is the CMake suggested method. Please look up the CMake documentation
 if you require an advanced configuration, and are interested in this approach.
 
-### Readline support
+### CPU optimizations
 
-Previously Windows builds of SuperCollider did not support command line mode for sclang due to unavailability of the `readline` library. Currently it is possible to install `readline` using [vcpkg](https://github.com/microsoft/vcpkg). Follow these steps to build SC with the `readline` library (note that the following commands assume using MSVC):
-- install `vcpkg`, if not installed already
-- install the library using `vcpkg`:  
-`vcpkg install readline --triplet=x64-windows`
-- set `VCPKG_ROOT` environment variable to point to the root `vcpkg` directory:  
-`SET VCPKG_ROOT=c:\path\to\vcpkg`
-- readline should be picked up by CMake during the configuration stage
+The `SC_COMPILER_ARCH_FLAGS` option can be used to set the optimizations for advanced CPU instructions, like SSE4.2, AVX, AVX2 etc. Newer versions of MSVC 2022 allow to set this to `SSE4.2`, which SC uses by default if available. If not set, MSVC compiles with `SSE2`. 
+If you don't need to support older and/or lower-end processors, you can set this to `AVX` or higher. 
+See https://learn.microsoft.com/en-us/cpp/build/reference/arch-x64 for more information.
 
-Note: 
-- For 32-bit builds use `x86-windows` instead of `x64-windows` triplet when installing `readline`
-- At the time of writing this, `readline` would not build using a triplet for MinGW
+      -D SC_COMPILER_ARCH_FLAGS="/arch:SSE4.2" ..
 
 Known issues
 ============
@@ -1237,28 +1183,21 @@ software publicly and freely available.
 
 [7-zip]: http://www.7-zip.org (unixy decompression tool)
 [asio4all]: http://www.asio4all.com/ (ASIO4ALL, generic ASIO driver)
-[asiosdk]: http://www.steinberg.net/en/company/developers.html (ASIO SDK v2.3)
-[atomeditor]: https://atom.io/ (free unixy text editor with SuperCollider package)
-[bleeding edge 32 bit]: http://supercollider.s3.amazonaws.com/builds/supercollider/supercollider/win32/develop-latest.html
+[asiosdk]: https://www.steinberg.net/asiosdk (ASIO SDK v2.3)
 [bleeding edge 64 bit]: http://supercollider.s3.amazonaws.com/builds/supercollider/supercollider/win64/develop-latest.html
 [cmake]: http://www.cmake.org/download/
 [conemu]: https://conemu.github.io/ (free console emulator)
 [dependency walker]: http://www.dependencywalker.com/ (inspect missing library errors)
-[dx9sdk]: http://www.microsoft.com/en-us/download/details.aspx?id=6812 (MS DirectX 9 SDK, June 2010)
 [fftw]: http://www.fftw.org/install/windows.html
 [Git]: http://git-scm.com/download/win (Git for Windows)
-[libsndfile]: http://www.mega-nerd.com/libsndfile/
+[libsndfile]: https://github.com/libsndfile/libsndfile
+[msvc]: https://www.visualstudio.com/downloads/ (Visual Studio)
 [msys2]: https://msys2.github.io/
 [notepad++]: http://notepad-plus-plus.org (free unixy text editor)
 [NSIS]: http://nsis.sourceforge.net/Download (create installer)
-[portaudio]: http://www.portaudio.com/
-[Qt]: http://www.qt.io/download-open-source/#section-2 (Qt official distribution, choose online installer)
+[Qt]: http://www.qt.io/download-open-source (Qt official distribution, choose online installer)
 [SC]: https://supercollider.github.io (Main SC-site)
-[SC mailing lists]: http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
-[SC repo]: https://github.com/supercollider/supercollider (SC source repository on Github with issue tracker)
 [SC help]: http://doc.sccode.org/Help.html (SC online help)
-[VS]: https://my.visualstudio.com/downloads
-[VS2017]: https://www.visualstudio.com/downloads/ (Visual Studio)
-[Windows 8 SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk (Windows 8.1 SDK including debugger used by Qt Creator)
-[Windows 10 SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk  (Windows 10 SDK including debugger used by Qt Creator)
-[libsndfile readme]: https://github.com/erikd/libsndfile/blob/master/README.md (libsndfile readme)
+[SC repo]: https://github.com/supercollider/supercollider (SC source repository on Github with issue tracker)
+[vcpkg]: https://vcpkg.io/ (C/C++ dependency manager)
+[vscode]: https://code.visualstudio.com/ (text editor with SuperCollider package)

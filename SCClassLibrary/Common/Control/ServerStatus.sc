@@ -12,6 +12,7 @@ ServerStatusWatcher {
 	var <sampleRate, <actualSampleRate;
 
 	var reallyDeadCount = 0, bootNotifyFirst = true;
+	var <>timeoutBeforeConsideredDeadOnExit = 3.0;
 
 	*new { |server|
 		^super.newCopyArgs(server)
@@ -48,10 +49,11 @@ ServerStatusWatcher {
 		this.prSendNotifyRequest(flag, false);
 	}
 
-	doWhenBooted { |onComplete, limit = 100, onFailure|
+	doWhenBooted { |onComplete, limit = 100, onFailure, clock|
 		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
 
+		clock = clock ?? { AppClock };
 		^Routine {
 			while {
 				server.serverRunning.not
@@ -81,7 +83,7 @@ ServerStatusWatcher {
 				onComplete.value;
 			});
 
-		}.play(AppClock)
+		}.play(clock)
 	}
 
 
@@ -99,13 +101,13 @@ ServerStatusWatcher {
 					}
 				}, '/done', server.addr);
 
-				AppClock.sched(3.0, {
+				AppClock.sched(timeoutBeforeConsideredDeadOnExit, {
 					if(serverReallyQuit.not) {
 						if(unresponsive) {
-							"Server '%' remained unresponsive during quit."
+							"Server '%' remained unresponsive during quit.".format(server.name).warn;
 						} {
-							"Server '%' failed to quit after 3.0 seconds."
-						}.format(server.name).warn;
+							"Server '%' failed to quit after % seconds.".format(server.name, timeoutBeforeConsideredDeadOnExit).warn;
+						};
 						// don't accumulate quit-watchers if /done doesn't come back
 						serverReallyQuitWatcher.free;
 						statusWatcher !? { statusWatcher.disable };
@@ -219,6 +221,15 @@ ServerStatusWatcher {
 	unresponsive_ { | val |
 		if (val != unresponsive) {
 			unresponsive = val;
+			// when remote server reboots, remote clients lose
+			// notification, so renew it when recovering
+			if (server.remoteControlled) {
+				if (unresponsive) {
+					notified = false
+				} {
+					this.prSendNotifyRequest
+				}
+			};
 			{ server.changed(\serverRunning) }.defer;
 		}
 	}
@@ -320,5 +331,4 @@ ServerStatusWatcher {
 			"Switched off notification messages from server '%'\n".postf(server.name);
 		};
 	}
-
 }

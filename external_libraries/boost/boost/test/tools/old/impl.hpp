@@ -301,9 +301,10 @@ struct BOOST_TEST_DECL check_is_close_t {
     assertion_result
     operator()( FPT1 left, FPT2 right, ToleranceType tolerance ) const
     {
-        fpc::close_at_tolerance<typename tt_detail::comp_supertype<FPT1,FPT2>::type> pred( tolerance, fpc::FPC_STRONG );
+        typedef typename tt_detail::comp_supertype<FPT1,FPT2>::type super_type;
+        fpc::close_at_tolerance<super_type> pred( tolerance, fpc::FPC_STRONG );
 
-        assertion_result ar( pred( left, right ) );
+        assertion_result ar( pred( static_cast<super_type>(left), static_cast<super_type>(right) ) );
 
         if( !ar )
             ar.message() << pred.tested_rel_diff();

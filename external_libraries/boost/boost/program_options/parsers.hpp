@@ -120,7 +120,11 @@ namespace boost { namespace program_options {
         basic_command_line_parser(const std::vector<
                                   std::basic_string<charT> >& args);
         /** Creates a command line parser for the specified arguments
-            list. The parameters should be the same as passed to 'main'.
+            list. The parameters should be the same as passed to 'main', meaning:
+            @param argc Must be non-negative i.e. >= 0
+            @param argv Argv[argc] must be 0 e.g. nullptr and
+            if argc is >0 argv[0] up to argv[argc-1] must point to
+            null terminated strings
         */
         basic_command_line_parser(int argc, const charT* const argv[]);
 

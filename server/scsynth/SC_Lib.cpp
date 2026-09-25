@@ -181,22 +181,18 @@ void SC_NamedObj::SetName(const char* inName) {
 
 SC_LibCmd::SC_LibCmd(SC_CommandFunc inFunc): mFunc(inFunc) {}
 
-SCErr SC_LibCmd::Perform(struct World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+SCErr SC_LibCmd::Perform(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
     SCErr err;
     //	int kSendError = 1;		// i.e., 0x01 | 0x02;
     try {
         err = (mFunc)(inWorld, inSize, inData, inReply);
-    } catch (int iexc) {
-        err = iexc;
-    } catch (std::exception& exc) {
+    } catch (int iexc) { err = iexc; } catch (std::exception& exc) {
         if (inWorld->mLocalErrorNotification <= 0 && inWorld->mErrorNotification) {
             CallSendFailureCommand(inWorld, (char*)Name(), exc.what(), inReply);
             scprintf("FAILURE IN SERVER %s %s\n", (char*)Name(), exc.what());
         }
         return kSCErr_Failed;
-    } catch (...) {
-        err = kSCErr_Failed;
-    }
+    } catch (...) { err = kSCErr_Failed; }
     if (err && (inWorld->mLocalErrorNotification <= 0 && inWorld->mErrorNotification)) {
         char errstr[128];
         SC_ErrorString(err, errstr);

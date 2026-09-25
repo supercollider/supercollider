@@ -61,9 +61,9 @@ code::
 // example
 
 a = nil;
-a = a.addFunc { |x="", y=""| "this % is an % example\n".postf(x, y); 1 };
+a = a.addFunc { |x = "", y = ""| "this % is an % example\n".postf(x, y); 1 };
 a.postln;
-a = a.addFunc { |x="", y=""| "there is no % that is %\n".postf(x, y); 2 };
+a = a.addFunc { |x = "", y = ""| "there is no % that is %\n".postf(x, y); 2 };
 a.value;
 a.value("text", "extraordinary well written")
 a.valueArray(["x", "y"]);
@@ -103,13 +103,14 @@ a.value;
 code::
 // compatibility with function multichannel expansion
 a = nil;
-a = a.addFunc { |x=0| if(x > 0) { 7 } { 1000.rand } };
-a = a.addFunc { |x=0| if(x < 0) { 17 } { -1000.rand } };
+a = a.addFunc { |x = 0| if(x > 0) { 7 } { 1000.rand } };
+a = a.addFunc { |x = 0| if(x < 0) { 17 } { -1000.rand } };
 a.value
 
 a = a.flop;
 a.value
 a.value([-1, 1])
+a.value(x:[-1, 1]); // kwargs
 ::
 
 code::
@@ -119,7 +120,7 @@ code::
 d = Document.current;
 d.keyDownAction = { "You touched the keyboard.".postln };
 
-d.keyDownAction = d.keyDownAction.addFunc {:x, x<-(1..), :: "already % times\n\n".postf(x) };
+d.keyDownAction = d.keyDownAction.addFunc { :x, x<-(1..), :: "already % times\n\n".postf(x) };
 
 
 d.keyDownAction = nil;
@@ -129,12 +130,9 @@ d.keyDownAction = nil;
 
 (
 d.keyDownAction = nil;
-d.keyDownAction = d.keyDownAction.addFunc {:x, x<-(1..), :: "already % times\n\n".postf(x) };
+d.keyDownAction = d.keyDownAction.addFunc { :x, x<-(1..), :: "already % times\n\n".postf(x) };
 
 );
 
 d.keyDownAction = nil;
 ::
-
-
-

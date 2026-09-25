@@ -35,21 +35,20 @@ class bstree_algorithms_base
    typedef typename NodeTraits::node_ptr        node_ptr;
    typedef typename NodeTraits::const_node_ptr  const_node_ptr;
 
-   //! <b>Requires</b>: 'node' is a node from the tree except the header.
+   //! <b>Requires</b>: 'n' is a node from the tree except the header.
    //!
    //! <b>Effects</b>: Returns the next node of the tree.
    //!
    //! <b>Complexity</b>: Average constant time.
    //!
    //! <b>Throws</b>: Nothing.
-   static node_ptr next_node(const node_ptr & node)
+   static node_ptr next_node(node_ptr n) BOOST_NOEXCEPT
    {
-      node_ptr const n_right(NodeTraits::get_right(node));
+      node_ptr const n_right(NodeTraits::get_right(n));
       if(n_right){
          return minimum(n_right);
       }
       else {
-         node_ptr n(node);
          node_ptr p(NodeTraits::get_parent(n));
          while(n == NodeTraits::get_right(p)){
             n = p;
@@ -59,24 +58,23 @@ class bstree_algorithms_base
       }
    }
 
-   //! <b>Requires</b>: 'node' is a node from the tree except the leftmost node.
+   //! <b>Requires</b>: 'n' is a node from the tree except the leftmost node.
    //!
    //! <b>Effects</b>: Returns the previous node of the tree.
    //!
    //! <b>Complexity</b>: Average constant time.
    //!
    //! <b>Throws</b>: Nothing.
-   static node_ptr prev_node(const node_ptr & node)
+   static node_ptr prev_node(node_ptr n) BOOST_NOEXCEPT
    {
-      if(is_header(node)){
-         //return NodeTraits::get_right(node);
-         return maximum(NodeTraits::get_parent(node));
+      if(is_header(n)){
+         return NodeTraits::get_right(n);
       }
-      else if(NodeTraits::get_left(node)){
-         return maximum(NodeTraits::get_left(node));
+      else if(NodeTraits::get_left(n)){
+         return maximum(NodeTraits::get_left(n));
       }
       else {
-         node_ptr p(node);
+         node_ptr p(n);
          node_ptr x = NodeTraits::get_parent(p);
          while(p == NodeTraits::get_left(x)){
             p = x;
@@ -86,38 +84,38 @@ class bstree_algorithms_base
       }
    }
 
-   //! <b>Requires</b>: 'node' is a node of a tree but not the header.
+   //! <b>Requires</b>: 'n' is a node of a tree but not the header.
    //!
    //! <b>Effects</b>: Returns the minimum node of the subtree starting at p.
    //!
    //! <b>Complexity</b>: Logarithmic to the size of the subtree.
    //!
    //! <b>Throws</b>: Nothing.
-   static node_ptr minimum(node_ptr node)
+   static node_ptr minimum(node_ptr n)
    {
-      for(node_ptr p_left = NodeTraits::get_left(node)
+      for(node_ptr p_left = NodeTraits::get_left(n)
          ;p_left
-         ;p_left = NodeTraits::get_left(node)){
-         node = p_left;
+         ;p_left = NodeTraits::get_left(n)){
+         n = p_left;
       }
-      return node;
+      return n;
    }
 
-   //! <b>Requires</b>: 'node' is a node of a tree but not the header.
+   //! <b>Requires</b>: 'n' is a node of a tree but not the header.
    //!
    //! <b>Effects</b>: Returns the maximum node of the subtree starting at p.
    //!
    //! <b>Complexity</b>: Logarithmic to the size of the subtree.
    //!
    //! <b>Throws</b>: Nothing.
-   static node_ptr maximum(node_ptr node)
+   static node_ptr maximum(node_ptr n)
    {
-      for(node_ptr p_right = NodeTraits::get_right(node)
+      for(node_ptr p_right = NodeTraits::get_right(n)
          ;p_right
-         ;p_right = NodeTraits::get_right(node)){
-         node = p_right;
+         ;p_right = NodeTraits::get_right(n)){
+         n = p_right;
       }
-      return node;
+      return n;
    }
 
    //! <b>Requires</b>: p is a node of a tree.
@@ -127,7 +125,7 @@ class bstree_algorithms_base
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: Nothing.
-   static bool is_header(const const_node_ptr & p)
+   static bool is_header(const_node_ptr p) BOOST_NOEXCEPT
    {
       node_ptr p_left (NodeTraits::get_left(p));
       node_ptr p_right(NodeTraits::get_right(p));
@@ -144,37 +142,37 @@ class bstree_algorithms_base
       return false;
    }
 
-   //! <b>Requires</b>: 'node' is a node of the tree or a header node.
+   //! <b>Requires</b>: 'n' is a node of the tree or a header node.
    //!
    //! <b>Effects</b>: Returns the header of the tree.
    //!
    //! <b>Complexity</b>: Logarithmic.
    //!
    //! <b>Throws</b>: Nothing.
-   static node_ptr get_header(const const_node_ptr & node)
+   static node_ptr get_header(const_node_ptr n)
    {
-      node_ptr n(detail::uncast(node));
-      node_ptr p(NodeTraits::get_parent(node));
-      //If p is null, then n is the header of an empty tree
+      node_ptr nn(detail::uncast(n));
+      node_ptr p(NodeTraits::get_parent(n));
+      //If p is null, then nn is the header of an empty tree
       if(p){
-         //Non-empty tree, check if n is neither root nor header
+         //Non-empty tree, check if nn is neither root nor header
          node_ptr pp(NodeTraits::get_parent(p));
-         //If granparent is not equal to n, then n is neither root nor header,
+         //If granparent is not equal to nn, then nn is neither root nor header,
          //the try the fast path
-         if(n != pp){
+         if(nn != pp){
             do{
-               n = p;
+               nn = p;
                p = pp;
                pp = NodeTraits::get_parent(pp);
-            }while(n != pp);
-            n = p;
+            }while(nn != pp);
+            nn = p;
          }
-         //Check if n is root or header when size() > 0
-         else if(!bstree_algorithms_base::is_header(n)){
-            n = p;
+         //Check if nn is root or header when size() > 0
+         else if(!bstree_algorithms_base::is_header(nn)){
+            nn = p;
          }
       }
-      return n;
+      return nn;
    }
 };
 

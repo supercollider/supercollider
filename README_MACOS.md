@@ -22,6 +22,7 @@ Table of contents
  * Using ccache with Xcode
  * Building without Qt or the IDE
  * sclang and scynth executables
+ * `vcpkg` integration
 
 Executables
 -----------
@@ -39,19 +40,13 @@ Prerequisites:
 -------------
 
 - **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com.
-  Xcode >= 10 is recommended; use earlier versions at your own risk.
 - If you do not have the **Xcode command line tools** installed already, install them with:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake >= 3.12, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
-  `brew install git cmake libsndfile readline qt5`
-- If you are building with Qt libraries, you will also need the [requirements for
-  QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
-  10.9 and the macOS SDK for 10.10 or later.
-
-- If you want to build with the *supernova* server, you need **portaudio** and **fftw** packages, which can also be installed via homebrew:
-  `brew install portaudio fftw`
+- **git, cmake >= 3.12, libsndfile, readline, and qt6 >= 6.2**, installed via homebrew:
+  `brew install git cmake libsndfile readline qt@6`
+  See the section on `vcpkg` for alternative source for libraries when cross-compiling.
 
 Obtaining the source code
 -------------------------
@@ -70,9 +65,7 @@ Build instructions
     cd SuperCollider
     mkdir -p build
     cd build
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
-    # or, if you want to build with supernova:
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSUPERNOVA=ON ..
+    cmake -G Xcode ..
     # then start the build
     cmake --build . --target install --config RelWithDebInfo
 
@@ -81,6 +74,13 @@ If successful this will build the application into `build/Install/SuperCollider/
 You can see the available build options with ```cmake -LH```.
 
 To install, you may move this to /Applications or use it in place from the build directory.
+
+**Qt 5.15 compatibility**:  
+**Qt5 is outdated** and will soon be deprecated. It is strongly advised to build with Qt6. If your system also has Qt5 installed you may have to adjust your brew and shell config. In order to build with Qt5, Qt6 needs to be uninstalled or unlinked:
+
+    brew unlink qt@6
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5` ..
+    cmake --build . --target install --config RelWithDebInfo
 
 More info on *supernova* can be found in the section **Frequently used cmake settings** below.
 
@@ -95,15 +95,11 @@ More info on *supernova* can be found in the section **Frequently used cmake set
 
 ##### Prepare for building by making a configuration file:
 
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
+    cmake -G Xcode ..
 
 (The `..` at the end is easy to miss. Don't forget it!)
 
-This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it.
-Use `brew info` to confirm you are referring to the correct version of Qt.
-
-If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that
-Qt tree.
+This specifies to cmake that we will be using Xcode to build. 
 
 ##### Build
 
@@ -136,7 +132,7 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
+**cmake, qt, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt@6` should show you the Qt6 version information.
 
 `brew upgrade ____` will update the dependency to a newer version.
 
@@ -212,21 +208,32 @@ Common arguments to control the build configuration are:
 
     `-DNATIVE=ON`
 
+  * Set architecture level (`-march`) and/or cpu type (`-mcpu`) when Native is OFF
+
+    ```shell
+    -D SC_COMPILER_ARCH_FLAGS="-march=haswell" # default for x86_64
+    -D SC_COMPILER_ARCH_FLAGS="-mcpu=apple-m1" # default for arm64
+    -D SC_COMPILER_ARCH_FLAGS="-Xarch_x86_64 -march=haswell -Xarch_arm64 -mcpu=apple-m1" # default for universal builds
+    ```
+
   * Build the *supernova* server:
 
-    `-DSUPERNOVA=ON`
-
-    Using supernova requires the `portaudio` audio backend, so you need to install it
-    (Homebrew and MacPorts both provide packages).
-
-    *Note*: When you build with supernova, an alternative server executable and a supernova
-    version of each plugin is built. If you also use the sc3-plugins package, make sure to
+    Starting with 3.15, supernova is built by default on all platforms, including macOS.
+    To not build supernova, set the configure variable `-DSUPERNOVA=OFF`.
+  
+    Using supernova requires the portaudio audio backend, which will be built from source by default. In order to use portaudio installed via Homebrew, additionally set the  `-DSYSTEM_PORTAUDIO=ON` flag.
+    
+    *Note*: Supernova adds an alternative server executable and a supernova version of each plugin is built. If you also use the sc3-plugins package, make sure to
     compile them with supernova support too.
-
+  
     Within SC you will be able to switch between scsynth and supernova by evaluating one of:
+    
+    ```supercollider
+    Server.supernova; // use supernova
+    Server.scsynth; // use scsynth - default
 
-    `Server.supernova`
-    `Server.scsynth`
+    s.boot; // start the server
+    ```
 
     Check sc help for `ParGroup` to see how to make use of multi-core hardware.
 
@@ -268,16 +275,18 @@ of an Xcode.app package.
 You can build without using XCode using `make`, by omitting the `-G Xcode` - in this case, your build command
 is `make` rather than `xcodebuild`
 
-Qt Creator has very good `cmake` integration and can build `cmake` projects without requiring a `cmake` generated project file. If you have Qt5 via homebrew installed, you can install Qt Creator by running:
+Qt Creator has very good `cmake` integration and can build `cmake` projects without requiring a `cmake` generated project file. If you have Qt6 via homebrew installed, you can install Qt Creator by running:
 
-    brew linkapps qt5
+    brew install qt-creator
 
 Using ccache with Xcode
 -----------------------
 
 Although cmake does not support using `ccache` with Xcode out of the box, this project is set up to
-allow it with the option `-DRULE_LAUNCH_COMPILE=ccache`. This can speed up build times
+support it. By default, ccache will be used if it's present on your system. This can speed up build times
 significantly, even when the build directory has been cleared.
+
+Using `ccache` can be disabled by setting cmake option `-D USE_CCACHE=OFF`.
 
 Building without Qt or the IDE
 ------------------------------
@@ -396,3 +405,23 @@ This application failed to start because it could not find or load the Qt platfo
 
 - scsynth will not find the included "plugins", unless given explicitly
   with the -U commandline flag or using the SC_PLUGIN_PATH environment variable as shown above.
+
+`vcpkg` integration
+-----------------------------
+
+When building Supercollider, it's possible to use `libsndfile` and `readline` from `vcpkg` instead of `homebrew`. This is useful when cross-compiling supercollider, including building a "universal binary" for arm64 and x86_64 platforms. 
+`vcpkg` is automatically detected if `VCPKG_ROOT` environment variable, pointing to the `vcpkg` installation, is set. `vcpkg` can be used in manifest mode when compiling for a single architecture, as well as in classic mode.
+
+In manifest mode, there's no need to run `vcpkg install <package>` - dependencies will be automatically installed at the configure time. 
+Dedicated cmake switches are available to enable building individual dependencies. To enable them, set the `-D USE_VCPKG_LIBSNDFILE=ON` and `-D USE_VCPKG_READLINE=ON` flags. 
+Additionally, you need to specify the vcpkg triplet. Supercollider comes with a set of preconfigured triplets. Here's an example cmake invocation:
+
+```sh
+cmake -G Xcode -DVCPKG_TARGET_TRIPLET=x64-osx-release-supercollider -DCMAKE_BUILD_TYPE=Release -D USE_VCPKG_LIBSNDFILE=ON -D USE_VCPKG_READLINE=ON ..
+```
+
+At the time of writing this, it's not possible to automatically build dual-architecture `vcpkg` packages. 
+In order to build a universal binary of supercollider, one needs to install `vcpkg` versions of libraries for both x86_64 and arm64 platforms and then combine them together into a universal package, exposed as a "fake" triplet. We have a script to facilitate creating these "universal" packages (`tools/vcpkg_combine_libs.sh`). 
+Note that the manifest mode needs to be disabled (`-D VCPKG_MANIFEST_MODE=OFF`) when using system-installed `vcpkg` packages and the fake "universal" triplet needs to be passed to cmake configuration. 
+Please refer to the CI configuration for more details.
+

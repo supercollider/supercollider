@@ -55,4 +55,51 @@ TestContiguousBlockAllocator : UnitTest {
 			alloc.top == (alloc.addrOffset + alloc.size - 1),
 			"ContiguousBlockAllocator should reclaim its full range after mixed allocation/removal.")
 	}
+
+	test_CBAllocator_can_reserve_multiple_range_types {
+		var alloc = ContiguousBlockAllocator(50);
+		var block;
+		var ok;
+
+		try {
+			block = alloc.reserve(0, 10);
+		};
+		this.assert(block.notNil, "ContiguousBlockAllocator can reserve from the start of its range");
+
+		block = nil;
+		try {
+			block = alloc.reserve(20, 10);
+		};
+		this.assert(block.notNil, "ContiguousBlockAllocator can reserve in the last free region");
+
+		block = nil;
+		try {
+			block = alloc.reserve(12, 5);
+		};
+		this.assert(block.notNil, "ContiguousBlockAllocator can reserve within an interior free region");
+	}
+
+	test_CBAllocator_can_reserve_with_nonzero_offset {
+		var offset = 10;
+		var alloc = ContiguousBlockAllocator(50, addrOffset: offset);
+		var block;
+		var ok;
+
+		try {
+			block = alloc.reserve(offset, 10);
+		};
+		this.assert(block.notNil, "ContiguousBlockAllocator with offset > 0 can reserve from the start of its range");
+
+		block = nil;
+		try {
+			block = alloc.reserve(offset + 20, 10);
+		};
+		this.assert(block.notNil, "ContiguousBlockAllocator with offset > 0 can reserve in the last free region");
+
+		block = nil;
+		try {
+			block = alloc.reserve(offset + 12, 5);
+		};
+		this.assert(block.notNil, "ContiguousBlockAllocator with offset > 0 can reserve within an interior free region");
+	}
 }

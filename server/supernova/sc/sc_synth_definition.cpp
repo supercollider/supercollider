@@ -19,7 +19,7 @@
 #include <iostream>
 #include <future>
 
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 #include <boost/range/iterator_range.hpp>
 
 #include "sc_synth.hpp"
@@ -49,7 +49,7 @@ std::vector<sc_synthdef> sc_read_synthdefs_file(path const& file) {
 }
 
 std::vector<sc_synthdef> sc_read_synthdefs_dir(path const& dir) {
-    using namespace boost::filesystem;
+    using namespace std::filesystem;
     using namespace std;
 
     typedef vector<sc_synthdef> def_vector;

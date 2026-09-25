@@ -59,7 +59,7 @@ code::
 c = ContiguousBlockAllocator(10);
 c.alloc(5);  // 0 = first available
 c.alloc(2);  // 5
-c.alloc(4);  // nil -- no block of 4 available
+c.alloc(4);  // nil — no block of 4 available
 
 c.free(1);  // no-op: nothing at 1 to free
 

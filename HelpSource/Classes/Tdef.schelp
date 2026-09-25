@@ -6,11 +6,11 @@ related:: Classes/TaskProxy, Classes/Task, Classes/Routine
 description::
 Tdef registers tasks by key. All accesses to the registered tasks go through the Tdef class via that key. Registered tasks can be replaced with other tasks while playing. The old task and its replacement can automatically crossfade and the replacement time can be quantized.
 
-Tdef provides an interface to its superclass TaskProxy. Tdef keeps a reference to a task ( strong::time pattern:: ) that can be replaced while playing. It continues playing when the old stream ended and a new stream is set and schedules the changes to the beat. One Tdef may be used in many tasks in different places. A change in the task definition Tdef propagates through all tasks.
+Tdef provides an interface to its superclass TaskProxy. Tdef keeps a reference to a task (strong::time pattern::) that can be replaced while playing. It continues playing when the old stream ended and a new stream is set and schedules the changes to the beat. One Tdef may be used in many tasks in different places. A change in the task definition Tdef propagates through all tasks.
 
 code::
-Tdef(key)	//returns the instance
-Tdef(key, func)	//defines the task and returns the instance, like Pdef and Ndef.
+Tdef(key)	// returns the instance
+Tdef(key, func)	// defines the task and returns the instance, like Pdef and Ndef.
 ::
 
 Graphical overview over all current Tdefs: link::Classes/TdefAllGui::. Overview: link::Overviews/JITLib::
@@ -52,13 +52,13 @@ method::default
 Default source, if none is given. The default task has a function that waits in 1.0 beat steps and does nothing.
 
 method::removeAll
-Remove all proxies from the global dictionary ( link::#*all:: )
+Remove all proxies from the global dictionary (link::#*all::)
 
 method::clear
 Clear all proxies, setting their source to silence.
 
 method::all
-Set or return the environment ( link::Classes/IdentityDictionary:: ) that stores all instances.
+Set or return the environment (link::Classes/IdentityDictionary::) that stores all instances.
 
 method::defaultQuant
 Set the default quantisation for new instances (default: 1.0). This can be an array [quant, phase, timingOffset, outset]
@@ -154,19 +154,19 @@ subsection::Tdef as a Task player
 code::
 Tdef(\x).play; // create an empty Tdef and play it.
 
-Tdef(\x, { loop({ "ggggggggggggggggg9999ggg999ggg999gg".scramble.postln; 0.5.wait; }) });
+Tdef(\x, { loop({ "ggggggggggggggggg9999ggg999ggg999gg".scramble.postln; 0.5.wait }) });
 
 
-Tdef(\x, { loop({ "---------////----------------------".scramble.postln; 0.25.wait; }) });
-Tdef(\x, { loop({ thisThread.seconds.postln; 1.wait; }) });
-Tdef(\x, { loop({ thisThread.seconds.postln; 1.01.wait; }) });
+Tdef(\x, { loop({ "---------////----------------------".scramble.postln; 0.25.wait }) });
+Tdef(\x, { loop({ thisThread.seconds.postln; 1.wait }) });
+Tdef(\x, { loop({ thisThread.seconds.postln; 1.01.wait }) });
 
 TempoClock.default.tempo = 2;
 
 Tdef(\x, { "the end".postln });
 Tdef(\x, { "one more".postln });
-Tdef(\x, { 10.do({ "ten more".scramble.postln; 0.25.wait; }) });
-Tdef(\x, { loop({ "lots more".scramble.postln; 0.25.wait; }) });
+Tdef(\x, { 10.do({ "ten more".scramble.postln; 0.25.wait }) });
+Tdef(\x, { loop({ "lots more".scramble.postln; 0.25.wait }) });
 
 TempoClock.default.tempo = 1;
 
@@ -183,7 +183,7 @@ code::
 // load a synthdef
 s.boot;
 SynthDef(\pdef_grainlet,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -194,7 +194,7 @@ Tdef(\x).play;
 (
 Tdef(\x, {
 	loop({
-		s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, rrand(600, 640));
+		s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, rrand(600, 640));
 		0.1.wait;
 	})
 })
@@ -205,7 +205,7 @@ Tdef(\x, {
 	var x;
 	x = Pseries(300, 20, 100).loop.asStream;
 	loop({
-		s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, x.next);
+		s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, x.next);
 		0.05.wait;
 	})
 })
@@ -216,14 +216,14 @@ Tdef(\x, {
 	var x;
 	x = Plazy({ Pseries(300 + 300.rand, 10 + 30.rand, 10 + 30.rand) }).loop.asStream;
 	loop({
-		s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, x.next);
+		s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, x.next);
 		0.05.wait;
 	})
 })
 )
 
 // metronome
-Tdef(\y, { loop({ s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, 1500); 1.wait; }) }).play;
+Tdef(\y, { loop({ s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, 1500); 1.wait }) }).play;
 
 // play ending stream once
 (
@@ -231,8 +231,8 @@ Tdef(\x, {
 	var x, dt;
 	dt = [0.1, 0.125, 0.05].choose;
 	x = Plazy({ Pseries(1300 + 300.rand, 110 + 130.rand, 16) }).asStream;
-	x.do({ arg item;
-		s.sendMsg("/s_new", "pdef_grainlet", -1,0,0, \freq, item);
+	x.do({ |item|
+		s.sendMsg("/s_new", "pdef_grainlet", -1, 0, 0, \freq, item);
 		dt.wait;
 	})
 })
@@ -270,9 +270,9 @@ r.play;
 
 // of course Tdefs can be used in other Tdefs:
 (
-Tdef(\a, { 10.do { |i| (" a: " + i).postln; 0.3.wait; } });
-Tdef(\b, { 15.do { |i| ("\t\t b: " + i).postln; 0.2.wait; } });
-Tdef(\c, { 5.do { |i| ("\t\t\t\t c: " + i).postln; 0.5.wait; } });
+Tdef(\a, { 10.do { |i| (" a: " + i).postln; 0.3.wait } });
+Tdef(\b, { 15.do { |i| ("\t\t b: " + i).postln; 0.2.wait } });
+Tdef(\c, { 5.do { |i| ("\t\t\t\t c: " + i).postln; 0.5.wait } });
 
 Tdef(\d, {
 	"embed - sequence.".postln;
@@ -291,9 +291,9 @@ Tdef(\d).play;
 // to start a tdef in its own separate thread, thus branching into parallel threads,
 // one can use .fork, or .playOnce
 (
-Tdef(\a, { 10.do { |i| (" a: " + i).postln; 0.3.wait; } });
-Tdef(\b, { 15.do { |i| ("\t\t b: " + i).postln; 0.2.wait; } });
-Tdef(\c, { 5.do { |i| ("\t\t\t\t c: " + i).postln; 0.5.wait; } });
+Tdef(\a, { 10.do { |i| (" a: " + i).postln; 0.3.wait } });
+Tdef(\b, { 15.do { |i| ("\t\t b: " + i).postln; 0.2.wait } });
+Tdef(\c, { 5.do { |i| ("\t\t\t\t c: " + i).postln; 0.5.wait } });
 
 Tdef(\d, {
 	"fork - parallel.".postln;
@@ -318,7 +318,7 @@ code::
 // load a synthdef
 s.boot;
 SynthDef("pdef_grainlet",
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -343,7 +343,7 @@ Pset(\instrument, \pdef_grainlet,
 			\note, 8
 		)
 	])
-).play(quant:1);
+).play(quant: 1);
 )
 
 

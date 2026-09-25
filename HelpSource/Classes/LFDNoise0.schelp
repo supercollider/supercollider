@@ -12,7 +12,7 @@ given by the  code::freq::  argument, with two differences:
 list::
 ## no time quantization
 ## fast recovery from low freq values footnote::
-link::Classes/LFNoise0:: ,  link::Classes/LFNoise1::  and
+link::Classes/LFNoise0::, link::Classes/LFNoise1::  and
 link::Classes/LFNoise2::  quantize to the nearest integer division
 of the samplerate, and they poll the  code::freq::
 argument only when scheduled; thus they often seem to hang
@@ -44,9 +44,9 @@ code::
 // try wiggling mouse quickly;
 // LFNoise frequently seems stuck, LFDNoise changes smoothly.
 
-{ LFNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1)  }.play
+{ LFNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
 
-{ LFDNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1)  }.play
+{ LFDNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
 
 // silent for 2 secs before going up in freq
 
@@ -63,4 +63,3 @@ code::
 
 { LFNoise2.ar(1000, 0.25) }.play;
 ::
-

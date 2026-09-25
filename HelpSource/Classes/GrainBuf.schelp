@@ -9,7 +9,7 @@ private:: categories
 method:: ar
 
 argument:: numChannels
-the number of channels to output. If 1, mono is returned and pan is ignored.
+the number of channels to output. If 1, mono is returned and pan is ignored. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument:: trigger
 a kr or ar trigger to start a new grain. If ar, grains after the start of the synth are sample accurate.
@@ -65,7 +65,7 @@ s.boot;
 (
 var winenv;
 
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
+b = Buffer.read(s, ExampleFiles.apollo11);
 // a custom envelope
 winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
 z = Buffer.sendCollection(s, winenv.discretize, 1);
@@ -94,4 +94,3 @@ x.set(\envbuf, -1);
 
 x.set(\gate, 0);
 ::
-

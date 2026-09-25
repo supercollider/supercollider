@@ -177,7 +177,7 @@ a.clear(3);
 ::
 
 ## \filter -> function
-|| Filter the audio on the proxy's own bus, using the first argument to pass in the sound. The function is any valid UGen function, which may be control or audio rate. Default controls are wet++index, where strong::index:: is the slot of the proxy (default 0), in the example below, the control is code::\wet1::, and it crossfades between the incoming sound source and the effect (wet) signal output.
+|| Filter an incoming signal, either from code::\in.ar:: (if used in primary slot) or from the proxy's own bus (if used in slot indices > 0). The first argument to the function is used to pass in the sound. The function is any valid UGen function, which may be control or audio rate. Default controls are code::wet++index::, where strong::index:: is the slot of the proxy (default 0). In the example below, the control is code::\wet1::, and it crossfades between the incoming sound source and the effect (wet) signal output.
 
 code::
 a = NodeProxy(s).play;

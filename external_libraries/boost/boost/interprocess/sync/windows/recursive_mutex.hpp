@@ -28,13 +28,13 @@ namespace interprocess {
 namespace ipcdetail {
 
 //Windows mutex is already recursive
-class windows_recursive_mutex
-   : public windows_mutex
+class winapi_recursive_mutex
+   : public winapi_mutex
 {
-   windows_recursive_mutex(const windows_recursive_mutex &);
-   windows_recursive_mutex &operator=(const windows_recursive_mutex &);
+   winapi_recursive_mutex(const winapi_recursive_mutex &);
+   winapi_recursive_mutex &operator=(const winapi_recursive_mutex &);
    public:
-   windows_recursive_mutex() : windows_mutex() {}
+   winapi_recursive_mutex() : winapi_mutex() {}
 };
 
 }  //namespace ipcdetail {

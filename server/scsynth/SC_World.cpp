@@ -47,6 +47,7 @@
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "../../common/Samp.hpp"
 #include "SC_StringParser.h"
+#include "SC_fftlib.hpp"
 #ifdef _WIN32
 #    include <direct.h>
 #else
@@ -75,9 +76,9 @@
 
 #include "server_shm.hpp"
 
-#include <boost/filesystem/path.hpp> // path
+#include <filesystem>
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 InterfaceTable gInterfaceTable;
 PrintFunc gPrint = nullptr;
@@ -86,15 +87,12 @@ extern HashTable<struct UnitDef, Malloc>* gUnitDefLib;
 extern HashTable<struct BufGen, Malloc>* gBufGenLib;
 extern HashTable<PlugInCmd, Malloc>* gPlugInCmds;
 
-extern "C" {
-
 #ifdef NO_LIBSNDFILE
 struct SF_INFO {};
 #endif
 
-bool SendMsgToEngine(World* inWorld, FifoMsg& inMsg);
-bool SendMsgFromEngine(World* inWorld, FifoMsg& inMsg);
-}
+SCBool SendMsgToEngine(World* inWorld, FifoMsg* inMsg);
+SCBool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -183,9 +181,11 @@ void sc_SetDenormalFlags() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd& hnd);
-static void pushScopeBuffer(World* inWorld, ScopeBufferHnd& hnd, int frames);
-static void releaseScopeBuffer(World* inWorld, ScopeBufferHnd& hnd);
+SCBool BufGen_Create(const char* inName, BufGenFunc inFunc);
+
+static SCBool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd* hnd);
+static void pushScopeBuffer(World* inWorld, ScopeBufferHnd* hnd, int frames);
+static void releaseScopeBuffer(World* inWorld, ScopeBufferHnd* hnd);
 
 void InterfaceTable_Init() {
     InterfaceTable* ft = &gInterfaceTable;
@@ -218,8 +218,8 @@ void InterfaceTable_Init() {
     ft->fSendTrigger = &Node_SendTrigger;
     ft->fSendNodeReply = &Node_SendReply;
 
-
     ft->fDefineUnitCmd = &UnitDef_AddCmd;
+    ft->fDefineUnitCmdEx = &UnitDef_AddCmdEx;
     ft->fDefinePlugInCmd = &PlugIn_DefineCmd;
 
     ft->fSendMsgFromRT = &SendMsgFromEngine;
@@ -235,11 +235,11 @@ void InterfaceTable_Init() {
     ft->fNRTLock = &World_NRTLock;
     ft->fNRTUnlock = &World_NRTUnlock;
 
-    ft->mUnused0 = false;
-
     ft->fGroup_DeleteAll = &Group_DeleteAll;
     ft->fDoneAction = &Unit_DoneAction;
     ft->fDoAsynchronousCommand = &PerformAsynchronousCommand;
+    ft->fDoAsynchronousCommandEx = &PerformAsynchronousCommandEx;
+    ft->fDoAsyncUnitCommand = &PerformAsyncUnitCommand;
     ft->fBufAlloc = &bufAlloc;
 
     ft->fSCfftCreate = &scfft_create;
@@ -271,7 +271,7 @@ void World_LoadGraphDefs(World* world) {
             GraphDef_Define(world, list);
         }
     } else {
-        bfs::path path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
+        fs::path path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
         if (world->mVerbosity > 0)
             scprintf("Loading synthdefs from default path: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
         list = GraphDef_LoadDir(world, path, list);
@@ -477,8 +477,7 @@ World* World_New(WorldOptions* inOptions) {
         scprintf("Exception in World_New: %s\n", exc.what());
         World_Cleanup(world, true);
         return nullptr;
-    } catch (...) {
-    }
+    } catch (...) {}
     return world;
 }
 
@@ -561,7 +560,7 @@ bool nextOSCPacket(FILE* file, OSC_Packet* packet, int64& outTime) {
 void PerformOSCBundle(World* inWorld, OSC_Packet* inPacket);
 
 #ifndef NO_LIBSNDFILE
-void World_NonRealTimeSynthesis(struct World* world, WorldOptions* inOptions) {
+void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
     if (inOptions->mLoadGraphDefs) {
         World_LoadGraphDefs(world);
     }
@@ -761,13 +760,11 @@ void World_NonRealTimeSynthesis(struct World* world, WorldOptions* inOptions) {
 }
 #endif // !NO_LIBSNDFILE
 
-void World_WaitForQuit(struct World* inWorld, bool unload_plugins) {
+void World_WaitForQuit(World* inWorld, bool unload_plugins) {
     try {
         inWorld->hw->mQuitProgram->wait();
         World_Cleanup(inWorld, unload_plugins);
-    } catch (std::exception& exc) {
-        scprintf("Exception in World_WaitForQuit: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("Exception in World_WaitForQuit: %s\n", exc.what()); } catch (...) {
     }
 }
 
@@ -933,9 +930,6 @@ void World_Cleanup(World* world, bool unload_plugins) {
         scsynth::stopAsioThread();
     }
 
-    if (unload_plugins)
-        deinitialize_library();
-
     HiddenWorld* hw = world->hw;
 
     if (hw && world->mRealTime)
@@ -945,6 +939,11 @@ void World_Cleanup(World* world, bool unload_plugins) {
 
     if (world->mTopGroup)
         Group_DeleteAll(world->mTopGroup);
+
+    // NOTE: only unload plugins after all Nodes have been destroyed,
+    // but before the World is cleaned up!
+    if (unload_plugins)
+        deinitialize_library();
 
     reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock();
     if (hw) {
@@ -1006,6 +1005,36 @@ void World_Cleanup(World* world, bool unload_plugins) {
     free_alig(world);
 }
 
+/** @brief Gets called when a TCP client disconnects. Since the client may have
+ *  registered via `/notify`, we need to remove the client from this list as well because otherwise
+ *  the notification will be still send to the now closed socket.
+ *  This implementation is similar to `NotifyCmd::Stage2` which handles the
+ *  removal of UDP clients by sending `/notify 0`.
+ *
+ *  @details Contrary to UDP, TCP is stateful - i.e. a socket can get closed
+ *  and we should avoid writing into it after it has been closed.
+ *  Since there is no way of knowing if a UDP connection got dropped, we keep
+ *  all UDP clients alive and can be reclaimed by a client via the internal logic of `/notify`.
+ */
+void World_RemoveClient(FifoMsg* msg) {
+    auto* world = msg->mWorld;
+    auto* address = static_cast<ReplyAddress*>(msg->mData);
+    auto* hw = world->hw;
+
+    auto const it = hw->mUsers->find(*address);
+    if (it != hw->mUsers->end()) {
+        // make client ID free to be picked up by others again
+        auto const clientId = hw->mClientIDdict->at(*address);
+        hw->mAvailableClientIDs->push_back(clientId);
+
+        // remove it elsewhere
+        hw->mClientIDdict->erase(*address);
+        hw->mUsers->erase(it);
+    }
+    // free msg
+    delete address;
+}
+
 
 void World_NRTLock(World* world) { reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock(); }
 
@@ -1013,31 +1042,31 @@ void World_NRTUnlock(World* world) { reinterpret_cast<SC_Lock*>(world->mNRTLock)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd& hnd) {
+SCBool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, ScopeBufferHnd* hnd) {
     server_shared_memory_creator* shm = inWorld->hw->mShmem;
 
     scope_buffer_writer writer = shm->get_scope_buffer_writer(index, channels, maxFrames);
 
     if (writer.valid()) {
-        hnd.internalData = writer.buffer;
-        hnd.data = writer.data();
-        hnd.channels = channels;
-        hnd.maxFrames = maxFrames;
+        hnd->internalData = writer.buffer;
+        hnd->data = writer.data();
+        hnd->channels = channels;
+        hnd->maxFrames = maxFrames;
         return true;
     } else {
-        hnd.internalData = nullptr;
+        hnd->internalData = nullptr;
         return false;
     }
 }
 
-void pushScopeBuffer(World* inWorld, ScopeBufferHnd& hnd, int frames) {
-    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+void pushScopeBuffer(World* inWorld, ScopeBufferHnd* hnd, int frames) {
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd->internalData));
     writer.push(frames);
-    hnd.data = writer.data();
+    hnd->data = writer.data();
 }
 
-void releaseScopeBuffer(World* inWorld, ScopeBufferHnd& hnd) {
-    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+void releaseScopeBuffer(World* inWorld, ScopeBufferHnd* hnd) {
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd->internalData));
     server_shared_memory_creator* shm = inWorld->hw->mShmem;
     shm->release_scope_buffer_writer(writer);
 }
@@ -1183,9 +1212,11 @@ void NotifyNoArgs(World* inWorld, char* inString) {
 }
 
 
-bool SendMsgToEngine(World* inWorld, FifoMsg& inMsg) { return inWorld->hw->mAudioDriver->SendMsgToEngine(inMsg); }
+SCBool SendMsgToEngine(World* inWorld, FifoMsg* inMsg) { return inWorld->hw->mAudioDriver->SendMsgToEngine(*inMsg); }
 
-bool SendMsgFromEngine(World* inWorld, FifoMsg& inMsg) { return inWorld->hw->mAudioDriver->SendMsgFromEngine(inMsg); }
+SCBool SendMsgFromEngine(World* inWorld, FifoMsg* inMsg) {
+    return inWorld->hw->mAudioDriver->SendMsgFromEngine(*inMsg);
+}
 
 void SetPrintFunc(PrintFunc func) { gPrint = func; }
 

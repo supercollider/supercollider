@@ -9,8 +9,8 @@ Pdefn provides an interface to its superclass link::Classes/PatternProxy::, keep
 Pdef and Pdefn use separate global collections.
 
 code::
-Pdefn(key)	//returns the instance
-Pdefn(key, pat)	//defines the pattern and returns the instance, like Pdef, Tdef and Ndef.
+Pdefn(key)	// returns the instance
+Pdefn(key, pat)	// defines the pattern and returns the instance, like Pdef, Tdef and Ndef.
 ::
 
 It is very similar to link::Classes/PatternProxy::.
@@ -75,13 +75,13 @@ method::default
 Default source, if none is given. The default is a Pattern that returns 1.0 (This is 1 and not 0 to avoid deadlocks when used as a duration pattern. In a sense, 1 is just as generic as 0).
 
 method::removeAll
-Remove all proxies from the global dictionary ( link::#*all::)
+Remove all proxies from the global dictionary (link::#*all::)
 
 method::clear
 Clear all proxies, setting their source to silence.
 
 method::all
-Set or return the environment ( link::Classes/IdentityDictionary:: ) that stores all Pdefns.
+Set or return the environment (link::Classes/IdentityDictionary::) that stores all Pdefns.
 
 InstanceMethods::
 
@@ -123,8 +123,8 @@ x = Pseq([0, 0, Pdefn(\x)], inf).asStream;
 t = Task({ loop({ x.next.postln; 0.3.wait }) }).play;
 
 
-Pdefn(\x, Pseq([55, 66, 77],inf));
-Pdefn(\x, Pseq([55, 66, 77],1));
+Pdefn(\x, Pseq([55, 66, 77], inf));
+Pdefn(\x, Pseq([55, 66, 77], 1));
 
 t.stop;
 
@@ -133,10 +133,10 @@ t.stop;
 // Pdefn can be accessed in multiple streams
 
 (
-SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
-	var env, u=1;
+SynthDef("Pdefhelp", { |out, freq, sustain = 1, amp = 1, pan|
+	var env, u = 1;
 	env = EnvGen.kr(Env.perc(0.03, sustain), 1, doneAction: Done.freeSelf);
-	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };
+	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1, 1.2) * d, 1) };
 	Out.ar(out, Pan2.ar(SinOsc.ar(u + 1 * freq, 0, amp * env), pan));
 
 }).add;
@@ -144,7 +144,7 @@ s.boot;
 )
 
 (
-Pdefn(\deg, Pseq([0, 3, 2],inf));
+Pdefn(\deg, Pseq([0, 3, 2], inf));
 
 Pset(\instrument, \Pdefhelp,
 	Ppar([
@@ -154,13 +154,13 @@ Pset(\instrument, \Pdefhelp,
 ).play;
 )
 
-Pdefn(\deg, Prand([0, 3, [1s, 4]],inf));
+Pdefn(\deg, Prand([0, 3, [1s, 4]], inf));
 
-Pdefn(\deg, Pn(Pshuf([0, 3, 2, 7, 6],2),inf));
+Pdefn(\deg, Pn(Pshuf([0, 3, 2, 7, 6], 2), inf));
 
 (
 Pdefn(\deg, Plazy { var pat;
-	pat = [Pshuf([0, 3, 2, 7, 6],2), Pseries(0, 1, 11), Pseries(11, -1, 11)].choose;
+	pat = [Pshuf([0, 3, 2, 7, 6], 2), Pseries(0, 1, 11), Pseries(11, -1, 11)].choose;
 	Pn(pat, inf)
 });
 )
@@ -174,7 +174,7 @@ If quant is set, the update is done at the next beat or whatever is specified:
 
 code::
 Pdefn(\deg).quant = 4;
-Pdefn(\deg, Pn(Pseries(0, 1, 8),inf));
+Pdefn(\deg, Pn(Pseries(0, 1, 8), inf));
 
 Pdefn(\deg).quant = nil; // activate immediately again
 
@@ -246,7 +246,7 @@ t.nextN(3);
 
 (
 Pdefn(\z, { |e|
-	//(e.a + e.b) + 0.1.rand.round(0.01) 1
+	// (e.a + e.b) + 0.1.rand.round(0.01) 1
 	Pseq([1, 2, e.a], 1)
 })
 );

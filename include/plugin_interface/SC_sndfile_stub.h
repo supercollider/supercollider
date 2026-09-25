@@ -22,6 +22,7 @@
 ** taken from sndfile.h
 **/
 
+#include "SC_Types.h"
 
 /* A SNDFILE* pointer can be passed around much like stdio.h's FILE* pointer. */
 
@@ -44,11 +45,11 @@ typedef off_t sf_count_t;
 
 struct SF_INFO {
     sf_count_t frames; /* Used to be called samples.  Changed to avoid confusion. */
-    int samplerate;
-    int channels;
-    int format;
-    int sections;
-    int seekable;
+    int32 samplerate;
+    int32 channels;
+    int32 format;
+    int32 sections;
+    int32 seekable;
 };
 
 typedef struct SF_INFO SF_INFO;

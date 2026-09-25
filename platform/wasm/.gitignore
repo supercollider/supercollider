@@ -1,0 +1,13 @@
+editor/docs/
+editor/sclang.data
+editor/sclang.js
+editor/sclang.wasm
+editor/scsynth.js
+editor/scsynth.wasm
+
+sclang/sclang.data
+sclang/sclang.js
+sclang/sclang.wasm
+
+scsynth/scsynth.js
+scsynth/scsynth.wasm

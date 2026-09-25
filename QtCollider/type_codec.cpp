@@ -98,8 +98,8 @@ void TypeCodec<QPointF>::write(PyrSlot* slot, const QPointF& pt) {
     SetObject(slot, obj);
 
     PyrSlot* slots = obj->slots;
-    SetFloat(slots + 0, pt.x());
-    SetFloat(slots + 1, pt.y());
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 0, pt.x());
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 1, pt.y());
 }
 
 
@@ -129,18 +129,20 @@ void TypeCodec<QRectF>::write(PyrSlot* slot, const QRectF& r) {
     SetObject(slot, obj);
 
     PyrSlot* slots = obj->slots;
-    SetFloat(slots + 0, r.x());
-    SetFloat(slots + 1, r.y());
-    SetFloat(slots + 2, r.width());
-    SetFloat(slots + 3, r.height());
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 0, r.x());
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 1, r.y());
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 2, r.width());
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 3, r.height());
 }
 
 
 QSizeF TypeCodec<QSizeF>::read(PyrSlot* slot) {
     PyrSlot* slots = slotRawObject(slot)->slots;
     float w = 0.f, h = 0.f;
-    slotFloatVal(slots + 0, &w);
-    slotFloatVal(slots + 1, &h);
+    if (slotFloatVal(slots + 0, &w))
+        assert(false);
+    if (slotFloatVal(slots + 1, &h))
+        assert(false);
 
     return QSizeF(w, h);
 }
@@ -159,8 +161,8 @@ void TypeCodec<QSizeF>::write(PyrSlot* slot, const QSizeF& sz) {
     SetObject(slot, obj);
 
     PyrSlot* slots = obj->slots;
-    SetFloat(slots + 0, sz.width());
-    SetFloat(slots + 1, sz.height());
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 0, sz.width());
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 1, sz.height());
 }
 
 inline QColor asColor(PyrObject* obj) {
@@ -168,10 +170,14 @@ inline QColor asColor(PyrObject* obj) {
 
     float r, g, b, a;
     r = g = b = a = 0.f;
-    slotFloatVal(slots + 0, &r);
-    slotFloatVal(slots + 1, &g);
-    slotFloatVal(slots + 2, &b);
-    slotFloatVal(slots + 3, &a);
+    if (slotFloatVal(slots + 0, &r))
+        assert(false);
+    if (slotFloatVal(slots + 1, &g))
+        assert(false);
+    if (slotFloatVal(slots + 2, &b))
+        assert(false);
+    if (slotFloatVal(slots + 3, &a))
+        assert(false);
     return QColor(r * 255, g * 255, b * 255, a * 255);
 }
 
@@ -207,10 +213,10 @@ void TypeCodec<QColor>::write(PyrSlot* slot, const QColor& c) {
     SetObject(slot, obj);
 
     PyrSlot* slots = obj->slots;
-    SetFloat(slots + 0, c.red() / 255.0);
-    SetFloat(slots + 1, c.green() / 255.0);
-    SetFloat(slots + 2, c.blue() / 255.0);
-    SetFloat(slots + 3, c.alpha() / 255.0);
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 0, c.red() / 255.0);
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 1, c.green() / 255.0);
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 2, c.blue() / 255.0);
+    SetFloat<AssertDouble::CouldBeBadNan>(slots + 3, c.alpha() / 255.0);
 }
 
 

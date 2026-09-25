@@ -22,7 +22,9 @@
 
 #include "util/docklet.hpp"
 #include <QAction>
+#include <QGestureEvent>
 #include <QPlainTextEdit>
+#include <qurl.h>
 
 namespace ScIDE {
 
@@ -60,8 +62,15 @@ public:
     QSize minimumSizeHint() const { return QSize(50, 50); }
     QString symbolUnderCursor();
 
+    void mousePressEvent(QMouseEvent* e) override;
+
+    void mouseReleaseEvent(QMouseEvent* e) override;
+
+
 signals:
     void scrollToBottomRequest();
+    void handleClickedURL(const QString& command, bool silent, const QString* filePath = nullptr, int lineNumber = 0,
+                          int column = 0);
 
 public slots:
     void post(const QString& text);
@@ -75,6 +84,8 @@ public slots:
     void openDefinition();
     void openCommandLine();
     void findReferences();
+
+    bool gestureEvent(QGestureEvent* event);
 
 protected:
     virtual bool event(QEvent*);
@@ -92,7 +103,8 @@ private:
     void createActions(Settings::Manager*);
     void updateActionShortcuts(Settings::Manager*);
     void zoomFont(int steps);
-    QTextCharFormat formatForPostLine(QStringRef line);
+    void zoomFont(float scaler);
+    QTextCharFormat formatForPostLine(QString line);
 
     QAction* mActions[ActionCount];
     /*
@@ -102,6 +114,12 @@ private:
     QSize mSizeHint;
     QChar previousChar;
     QTextCharFormat currentFormat;
+
+    /// Stores the html anchor that the user clicked on.
+    /// This is to facilitate clickable URL links in the post window.
+    /// Will be empty when no anchor has been clicked
+    /// Used in conjuction with anchorAt(QPos)
+    QString clickedAnchor;
 };
 
 

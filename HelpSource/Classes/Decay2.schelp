@@ -1,17 +1,23 @@
 class:: Decay2
 summary:: Exponential decay
-related:: Classes/Decay
+related:: Classes/Decay, Classes/Integrator
 categories::  UGens>Filters>Linear, UGens>Envelopes
 
 
 Description::
-link::Classes/Decay::  has a very sharp attack and can produce clicks.
-Decay2 rounds off the attack by subtracting one Decay from another.
-code:: Decay2.ar(in, attackTime, decayTime):: is equivalent to:
+An integrating filter like link::Classes/Decay::, but both the onset time and decay time can be specified.
 
-code::
+teletype::
+Decay2.ar(in, attackTime, decayTime)
+::
+
+is equivalent to:
+
+teletype::
 Decay.ar(in, decayTime) - Decay.ar(in, attackTime)
 ::
+
+For precise control over the attack, decay, and level of code::Decay2:: see link::#Onset control and normalizing the envelope of Decay2:: and link::#Calculating rise time and maximum rise time of Decay2:: below.
 
 
 classmethods::
@@ -19,37 +25,134 @@ classmethods::
 method::ar, kr
 
 argument::in
-
 The input signal.
 
-
 argument::attackTime
-
 60 dB attack time in seconds.
 
-
 argument::decayTime
-
 60 dB decay time in seconds.
 
-
 argument::mul
+The output will be multiplied by this value.
 
 argument::add
+This value will be added to the output.
 
 
 Examples::
 
 code::
-// since attack and decay are a difference of two Decays,
-// swapping the values, the envelope turns upside down:
-plot({ Decay2.ar(Impulse.ar(1), 0.001, 0.01) })
-plot({ Decay2.ar(Impulse.ar(1), 0.01, 0.001) })
-
-// used as an envelope
-{ Decay2.ar(Impulse.ar(XLine.kr(1,50,20), 0.25), 0.01, 0.2, FSinOsc.ar(600)) }.play;
-
-// compare the above with Decay used as the envelope
-{ Decay.ar(Impulse.ar(XLine.kr(1,50,20), 0.25), 0.2, FSinOsc.ar(600), 0)  }.play;
+// Used as an envelope
+play{ Decay2.ar(Impulse.ar(XLine.kr(1,50,20), 0.25), 0.01, 0.2, FSinOsc.ar(600)) };
+// Compare to Decay
+play{ Decay.ar(Impulse.ar(XLine.kr(1,50,20), 0.25), 0.2, FSinOsc.ar(600), 0) };
 ::
 
+Since code::Decay2:: is equivalent to the difference of two link::Classes/Decay::s, swapping the strong::attackTime:: and strong::decayTime:: inverts the envelope:
+
+code::
+(
+plot({
+    var attack = 0.001, decay = 0.01;
+    var imp = Impulse.ar(0);
+    [
+        Decay2.ar(imp, attack, decay),
+        Decay2.ar(imp, decay, attack)
+    ]
+}, duration: 0.01).superpose_(true)
+)
+::
+
+
+Subsection:: Onset control and normalizing the envelope of Decay2
+
+It can be useful to parameterize code::Decay2:: so that its peak value is code::1.0::, and to be able to control when the peak value is reached.
+The following example normalizes the envelope of code::Decay2:: and provides a parameter, code::riseScale::, to shift the onset earlier or later.
+
+A code::riseScale:: value of code::0.0:: gives a sharp onset time of just one sample, making it nearly equivalent to link::Classes/Decay::.
+A value of just less than code::1.0:: (it cannot be equal to code::1.0::) will generate the latest possible onset time, which is ~15% of the strong::decayTime::.
+
+code::
+(
+var t60, riseScale, riseFac, normFac;
+
+// Approximate 60 dB decay time
+// (actual t60 will increase with riseScale)
+t60 = 0.01;
+
+// Scale the rise time (< 1.0)
+riseScale = 0.1;
+
+// Calculate normalization factor
+riseFac = riseScale / (2 - riseScale);
+normFac = riseFac.pow(riseFac / (riseFac - 1)) / (1 - riseFac);
+
+// Plot and compare to Decay
+plot({
+    var imp = Impulse.ar(0);
+    [
+        Decay.ar(imp, t60),
+        Decay2.ar(imp,
+            attackTime: t60 * riseFac,
+            decayTime: t60,
+            mul: normFac
+        )
+    ]
+}, duration: t60)
+.plotColor_([Color.blue, Color.red])
+.superpose_(true)
+)
+::
+
+In the previous example, note that code::t60:: is "approximate" because, while the emphasis::rate:: of decay converges to that of the corresponding decay time, the actual time when the impulse response decays to -60 dB will be delayed as code::riseScale:: increases.
+This is apparent when looking at the impulse response on a decibel scale, with increasing values for code::riseScale::.
+
+code::
+(
+var t60, riseScale, riseFac, normFac;
+
+t60 = 0.01;
+riseScale = [0.0, 0.2, 0.5, 0.9];
+riseFac = riseScale / (2 - riseScale);
+normFac = riseFac.pow(riseFac / (riseFac - 1)) / (1 - riseFac);
+
+// Plot in dB to inspect decay time
+plot(
+    {
+        Decay2.ar(Impulse.ar(0),
+            attackTime: t60 * riseFac,
+            decayTime: t60,
+            mul: normFac
+        ).ampdb.max(-120) // to dB, clip -inf
+    },
+    duration: t60, minval: -60
+).superpose_(true)
+.axisLabelY_("dB")
+.axisLabelX_("Time (s)")
+)
+::
+
+
+Subsection:: Calculating rise time and maximum rise time of Decay2
+
+The longest possible rise time is constrained to ~15% of the strong::decayTime::. This maximum rise time, as well as exact rise time for a given code::riseScale:: factor, can be calculated as follows:
+
+code::
+(
+var t60, riseScale, riseFac, riseTime, maxRiseTime;
+
+t60 = 0.3; // decay time
+riseScale = 0.1;
+
+riseFac = riseScale / (2 - riseScale);
+maxRiseTime = t60 * 60.dbamp.log.reciprocal;
+riseTime = maxRiseTime * (riseFac * riseFac.log) / (riseFac - 1);
+
+postf(
+    "For decayTime = % sec, the max possible rise time is % sec.\n"
+    "When riseScale = %, the rise time is % sec.\n",
+    *round([t60, maxRiseTime, riseScale, riseTime], 0.001)
+);""
+)
+::

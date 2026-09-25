@@ -75,7 +75,7 @@ Q_SIGNALS:
 private:
     friend class SyntaxHighlighter;
 
-    void applySettings(Settings::Manager* s, const QString& key, SyntaxFormat);
+    void applySettingsKey(Settings::Manager* s, const QString& key, SyntaxFormat);
 
     QTextCharFormat mFormats[FormatCount];
 

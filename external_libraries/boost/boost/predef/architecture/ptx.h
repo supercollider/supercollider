@@ -37,6 +37,11 @@ https://en.wikipedia.org/wiki/Parallel_Thread_Execution[PTX] architecture.
 #   define BOOST_ARCH_PTX_AVAILABLE
 #endif
 
+#if BOOST_ARCH_PTX
+#   undef BOOST_ARCH_WORD_BITS_64
+#   define BOOST_ARCH_WORD_BITS_64 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_PTX_NAME "PTX"
 
 #endif

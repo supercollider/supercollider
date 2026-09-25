@@ -61,6 +61,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent*);
     virtual void mouseMoveEvent(QMouseEvent*);
     virtual void paintEvent(QPaintEvent*);
+    virtual void wheelEvent(QWheelEvent*);
 
 private:
     double value(const QPoint&);
@@ -70,4 +71,5 @@ private:
     int _mode;
     QPoint _prevPos;
     bool _centered;
+    double scrollRemainder;
 };

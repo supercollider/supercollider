@@ -14,11 +14,11 @@
 namespace boost {
 namespace date_time {
 
-//! Class to provide common iso formatting spec
+//! Class to provide common ISO 8601 formatting spec
 template<class charT>
 class iso_format_base {
 public:
-  //! Describe month format -- its an integer in iso format
+  //! Describe month format -- its an integer in ISO 8601 format
   static month_format_spec month_format()
   {
     return month_as_integer;
@@ -40,17 +40,17 @@ public:
     return "-infinity";
   }
 
-  //! ISO char for a year -- used in durations
+  //! ISO 8601 char for a year -- used in durations
   static charT year_sep_char()
   {
     return 'Y';
   }
-  //! ISO char for a month
+  //! ISO 8601 char for a month
   static charT month_sep_char()
   {
     return '-';
   }
-  //! ISO char for a day
+  //! ISO 8601 char for a day
   static charT day_sep_char()
   {
     return '-';
@@ -70,7 +70,7 @@ public:
   {
     return ':';
   }
-  //! ISO char for a period
+  //! ISO 8601 char for a period
   static charT period_start_char()
   {
     return 'P';
@@ -143,11 +143,11 @@ public:
 
 #ifndef BOOST_NO_STD_WSTRING
 
-//! Class to provide common iso formatting spec
+//! Class to provide common ISO 8601 formatting spec
 template<>
 class iso_format_base<wchar_t> {
 public:
-  //! Describe month format -- its an integer in iso format
+  //! Describe month format -- its an integer in ISO 8601 format
   static month_format_spec month_format()
   {
     return month_as_integer;
@@ -169,17 +169,17 @@ public:
     return L"-infinity";
   }
 
-  //! ISO char for a year -- used in durations
+  //! ISO 8601 char for a year -- used in durations
   static wchar_t year_sep_char()
   {
     return 'Y';
   }
-  //! ISO char for a month
+  //! ISO 8601 char for a month
   static wchar_t month_sep_char()
   {
     return '-';
   }
-  //! ISO char for a day
+  //! ISO 8601 char for a day
   static wchar_t day_sep_char()
   {
     return '-';
@@ -199,7 +199,7 @@ public:
   {
     return ':';
   }
-  //! ISO char for a period
+  //! ISO 8601 char for a period
   static wchar_t period_start_char()
   {
     return 'P';
@@ -272,7 +272,7 @@ public:
 
 #endif // BOOST_NO_STD_WSTRING
 
-//! Format description for iso normal YYYYMMDD
+//! Format description for ISO 8601 normal YYYYMMDD
 template<class charT>
 class iso_format : public iso_format_base<charT> {
 public:

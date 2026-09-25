@@ -2,7 +2,7 @@
 // compose.hpp
 // ~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,15 +16,12 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
-#include <boost/asio/async_result.hpp>
+#include <boost/asio/composed.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
 namespace boost {
 namespace asio {
-
-#if defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES) \
-  || defined(GENERATING_DOCUMENTATION)
 
 /// Launch an asynchronous operation with a stateful implementation.
 /**
@@ -38,11 +35,18 @@ namespace asio {
  * handler. The remaining arguments are any arguments that originate from the
  * completion handlers of any asynchronous operations performed by the
  * implementation.
-
+ *
  * @param token The completion token.
  *
  * @param io_objects_or_executors Zero or more I/O objects or I/O executors for
  * which outstanding work must be maintained.
+ *
+ * @par Per-Operation Cancellation
+ * By default, terminal per-operation cancellation is enabled for
+ * composed operations that are implemented using @c async_compose. To
+ * disable cancellation for the composed operation, or to alter its
+ * supported cancellation types, call the @c self object's @c
+ * reset_cancellation_state function.
  *
  * @par Example:
  *
@@ -87,10 +91,12 @@ namespace asio {
  * template <typename CompletionToken>
  * auto async_echo(tcp::socket& socket,
  *     boost::asio::mutable_buffer buffer,
- *     CompletionToken&& token) ->
- *   typename boost::asio::async_result<
- *     typename std::decay<CompletionToken>::type,
- *       void(boost::system::error_code, std::size_t)>::return_type
+ *     CompletionToken&& token)
+ *   -> decltype(
+ *     boost::asio::async_compose<CompletionToken,
+ *       void(boost::system::error_code, std::size_t)>(
+ *         std::declval<async_echo_implementation>(),
+ *         token, socket))
  * {
  *   return boost::asio::async_compose<CompletionToken,
  *     void(boost::system::error_code, std::size_t)>(
@@ -101,38 +107,24 @@ namespace asio {
  */
 template <typename CompletionToken, typename Signature,
     typename Implementation, typename... IoObjectsOrExecutors>
-BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, Signature)
-async_compose(BOOST_ASIO_MOVE_ARG(Implementation) implementation,
-    BOOST_ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token,
-    BOOST_ASIO_MOVE_ARG(IoObjectsOrExecutors)... io_objects_or_executors);
-
-#else // defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
-      //   || defined(GENERATING_DOCUMENTATION)
-
-template <typename CompletionToken, typename Signature, typename Implementation>
-BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, Signature)
-async_compose(BOOST_ASIO_MOVE_ARG(Implementation) implementation,
-    BOOST_ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token);
-
-#define BOOST_ASIO_PRIVATE_ASYNC_COMPOSE_DEF(n) \
-  template <typename CompletionToken, typename Signature, \
-      typename Implementation, BOOST_ASIO_VARIADIC_TPARAMS(n)> \
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, Signature) \
-  async_compose(BOOST_ASIO_MOVE_ARG(Implementation) implementation, \
-      BOOST_ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token, \
-      BOOST_ASIO_VARIADIC_MOVE_PARAMS(n));
-  /**/
-  BOOST_ASIO_VARIADIC_GENERATE(BOOST_ASIO_PRIVATE_ASYNC_COMPOSE_DEF)
-#undef BOOST_ASIO_PRIVATE_ASYNC_COMPOSE_DEF
-
-#endif // defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
-       //   || defined(GENERATING_DOCUMENTATION)
+inline auto async_compose(Implementation&& implementation,
+    type_identity_t<CompletionToken>& token,
+    IoObjectsOrExecutors&&... io_objects_or_executors)
+  -> decltype(
+    async_initiate<CompletionToken, Signature>(
+      composed<Signature>(static_cast<Implementation&&>(implementation),
+        static_cast<IoObjectsOrExecutors&&>(io_objects_or_executors)...),
+      token))
+{
+  return async_initiate<CompletionToken, Signature>(
+      composed<Signature>(static_cast<Implementation&&>(implementation),
+        static_cast<IoObjectsOrExecutors&&>(io_objects_or_executors)...),
+      token);
+}
 
 } // namespace asio
 } // namespace boost
 
 #include <boost/asio/detail/pop_options.hpp>
-
-#include <boost/asio/impl/compose.hpp>
 
 #endif // BOOST_ASIO_COMPOSE_HPP

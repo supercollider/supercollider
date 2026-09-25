@@ -44,11 +44,11 @@ code::
 
 s.boot;
 
-{ Mix.new([ PinkNoise.ar(0.1), FSinOsc.ar(801, 0.1), LFSaw.ar(40, 0.1)]) }.play
+{ Mix.new([PinkNoise.ar(0.1), FSinOsc.ar(801, 0.1), LFSaw.ar(40, 0.1)]) }.play
 
 (
 play({
-	Mix.new( Array.fill(8, { SinOsc.ar(500 + 500.0.rand, 0, 0.05) }) );
+	Mix.new(Array.fill(8, { SinOsc.ar(500 + 500.0.rand, 0, 0.05) }));
 }))
 
 (
@@ -57,4 +57,3 @@ play({
 }))
 
 ::
-

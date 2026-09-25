@@ -1,0 +1,110 @@
+TITLE:: LinkPhase
+summary:: UGen to access the phase of the server's Link clock
+categories:: UGens>Clock, Streams-Patterns-Events
+related:: Classes/LinkClock, Classes/LinkTempo, Classes/LinkJump
+
+DESCRIPTION::
+LinkPhase allows to access the phase of a shared Link clock.
+Such a Link clock can be e.g. LINK::Classes/LinkClock:: of sclang, allowing to synchronize an sclang pattern with sequencing on the server.
+
+NOTE::
+Each SuperCollider server only uses one Link clock internally.
+Multiple units of LinkPhase and other Link clock UGens will use the same shared clock.
+::
+
+code::
+// LinkPhase runs on the server, so the server needs to be started
+s.boot;
+
+// start participating in a Link session - default is 1.0cps / 60bpm if no Link session is available
+LinkPhase.start;
+
+// a Link phase runs from [0, quantum) with the given cps
+(
+Ndef(\l, {
+	var env = Env.perc(0.0, 0.1).kr(gate: LinkPhase.kr(quantum: 2) < 0.5);
+	env * WhiteNoise.ar.dup * 0.2
+}).play;
+)
+
+// change the tempo of the clock - lag will introduce a gradient change
+LinkPhase.setTempo(tempo: 3.0, lag: 4.0);
+
+// spawn a clock on sclang side
+l = LinkClock(1.0).latency_(Server.default.latency);
+
+// pattern is now in sync w/ the server
+(
+Pdef(\p, Pbind(
+	\dur, 0.5,
+	\amp, 0.5,
+	\scale, Scale.minor,
+	\degree, Pwrap(Pseries(0.0, 1.1), lo: 0.0, hi: 8.9),
+)).clock_(l).play;
+)
+
+// now fluctuate the tempo using LinkTempo
+(
+Ndef(\f, {
+	LinkTempo.kr(
+		gate: 1.0,
+		// tempo is in cycles per second (cps) - not bpm!
+		tempo: SinOsc.kr(0.1).exprange(130/60, 230/60),
+	);
+});
+)
+
+(
+Ndef(\f).clear;
+Pdef(\p).clear;
+Ndef(\l).clear;
+)
+::
+
+For further information on Link clock see LINK::Classes/LinkClock:: and the official Link documentation at https://ableton.github.io/link/ .
+
+CLASSMETHODS::
+
+METHOD:: start
+Join or create a Link session within the network.
+argument:: server
+A LINK::Classes/Server::, defaults to LINK::Classes/Server#-default::.
+
+METHOD:: stop
+Exit a Link session within the network.
+All informations from the Link session will be set to MATH::-1.0::.
+argument:: server
+A LINK::Classes/Server::, defaults to LINK::Classes/Server#-default::.
+
+METHOD:: setTempo
+Helper method to set the tempo of the server's Link clock in cps (cycles per second).
+NOTE::
+See also LINK::Classes/LinkTempo::.
+::
+argument:: tempo
+New tempo of the Link session in cycles per second.
+argument:: lag
+If MATH::>0.0::, the current tempo will be faded into the target tempo over this value in seconds using an LINK::Classes/Env::.
+If this value is CODE::0.0::, the clock will jump immediately to the new tempo.
+NOTE::
+Having multiple overlapping cross-fade processes can result in undefined behavior since they publish conflicting values.
+::
+argument:: curve
+See CODE::curve:: parameter of LINK::Classes/Env#-new::
+argument:: server
+A LINK::Classes/Server::, defaults to LINK::Classes/Server#-default::.
+
+METHOD:: kr
+Returns the phase of the clock, which goes from MATH::[0, q):: where MATH::q:: is the given quantum.
+If the server clock has not been enabled via CODE::LinkPhase.start::, it will return MATH::-1.0::.
+argument:: quantum
+The quantum is the value that the step count of the clock is taken modulo by.
+Since the global steps on the Link clock are shared among all clients, clients with the same quantum will share the same phase.
+
+Instead of choosing small values to get a EMPHASIS::faster:: phase, one should apply phase arithmetics, i.e.
+
+CODE::
+LinkPhase.kr(quantum: 4)*16 % 1.0 < 0.5
+::
+
+For further information, see https://ableton.github.io/link/ .

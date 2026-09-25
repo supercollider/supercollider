@@ -23,6 +23,8 @@
 
 #include "SC_Types.h"
 
+struct Node;
+
 typedef void (*NodeCalcFunc)(struct Node* inNode);
 
 struct Node {

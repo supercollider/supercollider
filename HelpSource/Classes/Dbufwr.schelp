@@ -24,7 +24,7 @@ b = Buffer.alloc(s, 24, 1);
 b.setn(0, { 210 } ! b.numFrames);
 
 // post some info:
-fork { loop { 0.5.wait; b.getn(0, b.numFrames, {|x| x.postln }) } };
+fork { loop { 0.5.wait; b.getn(0, b.numFrames, { |x| x.postln }) } };
 
 // write demand sequence into a buffer
 (
@@ -62,7 +62,7 @@ var read, write, readpos, writepos, writetrig;
 
 // write demand sequence into a buffer
 b.free; b = Buffer.alloc(s, 2, 1);
-fork { loop { 0.5.wait; b.getn(0, b.numFrames, {|x| x.postln }) } };
+fork { loop { 0.5.wait; b.getn(0, b.numFrames, { |x| x.postln }) } };
 b.setn(0, [1, 0]);
 
 (
@@ -83,4 +83,3 @@ var read, write, readpos, writepos, writetrig;
 // free buffer:
 b.free;
 ::
-

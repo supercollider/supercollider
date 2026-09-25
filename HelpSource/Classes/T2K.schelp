@@ -4,13 +4,18 @@ categories:: UGens>Conversion, UGens>Triggers
 related:: Classes/T2A, Classes/K2A, Classes/A2K
 
 description::
-Converts audio rate trigger into control rate trigger, using the maximum trigger in the input during each control period.
+Converts audio rate trigger into control rate trigger, using the maximum trigger level in the input during each control period.
 
 classmethods::
 method:: kr
 
 argument:: in
-input signal.
+An audio rate input signal.
+
+discussion::
+note::
+During initialization of the UGen graph, teletype::T2K:: will only produce a trigger if one is received on the first audio-rate input frame. Any trigger received after the first frame, but within the first block, will not be seen at initialization time. Therefore, downstream UGens will also not receive that missed trigger, which may affect their initialization state. Once the Synth runs, however, teletype::T2K:: will trigger as expected.
+::
 
 examples::
 code::

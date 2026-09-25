@@ -1,0 +1,24 @@
+{
+  "name": "supercollider",
+  "version": "0.0.1",
+  "features": {
+    "fftw3": {
+      "description": "Fast Fourier Transform library",
+      "dependencies": [
+        "fftw3"
+      ]
+    },
+    "libsndfile": {
+      "description": "Library for reading/writing audio files",
+      "dependencies": [
+        "libsndfile"
+      ]
+    },
+    "readline": {
+      "description": "GNU Readline library",
+      "dependencies": [
+        "readline"
+      ]
+    }
+  }
+}

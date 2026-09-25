@@ -10,78 +10,80 @@
 #pragma once
 #endif
 
-#include <boost/config/no_tr1/cmath.hpp>
-#include <boost/cstdint.hpp>
-#include <boost/type_traits/integral_constant.hpp>
-#include <boost/mpl/if.hpp>
 #include <boost/math/tools/precision.hpp>
 #include <boost/math/tools/complex.hpp>
+#include <type_traits>
+#include <cstdint>
+#include <cmath>
 
 namespace boost{ namespace math{ namespace tools{
 
 namespace detail
 {
 
-   template <class T>
-   struct is_pair : public boost::false_type{};
+   template <typename T>
+   struct is_pair : public std::false_type{};
 
-   template <class T, class U>
-   struct is_pair<std::pair<T,U> > : public boost::true_type{};
+   template <typename T, typename U>
+   struct is_pair<std::pair<T,U>> : public std::true_type{};
 
-   template <class Gen>
+   template <typename Gen>
    struct fraction_traits_simple
    {
-       typedef typename Gen::result_type result_type;
-       typedef typename Gen::result_type value_type;
+      using result_type = typename Gen::result_type;
+      using  value_type = typename Gen::result_type;
 
-       static result_type a(const value_type&) BOOST_MATH_NOEXCEPT(value_type)
-       {
-          return 1;
-       }
-       static result_type b(const value_type& v) BOOST_MATH_NOEXCEPT(value_type)
-       {
-          return v;
-       }
-   };
-
-   template <class Gen>
-   struct fraction_traits_pair
-   {
-       typedef typename Gen::result_type value_type;
-       typedef typename value_type::first_type result_type;
-
-       static result_type a(const value_type& v) BOOST_MATH_NOEXCEPT(value_type)
-       {
-          return v.first;
-       }
-       static result_type b(const value_type& v) BOOST_MATH_NOEXCEPT(value_type)
-       {
-          return v.second;
-       }
-   };
-
-   template <class Gen>
-   struct fraction_traits
-       : public boost::mpl::if_c<
-         is_pair<typename Gen::result_type>::value,
-         fraction_traits_pair<Gen>,
-         fraction_traits_simple<Gen> >::type
-   {
-   };
-
-   template <class T, bool = is_complex_type<T>::value>
-   struct tiny_value
-   {
-      static T get() {
-         return tools::min_value<T>(); 
+      static result_type a(const value_type&) BOOST_MATH_NOEXCEPT(value_type)
+      {
+         return 1;
+      }
+      static result_type b(const value_type& v) BOOST_MATH_NOEXCEPT(value_type)
+      {
+         return v;
       }
    };
-   template <class T>
+
+   template <typename Gen>
+   struct fraction_traits_pair
+   {
+      using  value_type = typename Gen::result_type;
+      using result_type = typename value_type::first_type;
+
+      static result_type a(const value_type& v) BOOST_MATH_NOEXCEPT(value_type)
+      {
+         return v.first;
+      }
+      static result_type b(const value_type& v) BOOST_MATH_NOEXCEPT(value_type)
+      {
+         return v.second;
+      }
+   };
+
+   template <typename Gen>
+   struct fraction_traits
+       : public std::conditional<
+         is_pair<typename Gen::result_type>::value,
+         fraction_traits_pair<Gen>,
+         fraction_traits_simple<Gen>>::type
+   {
+   };
+
+   template <typename T, bool = is_complex_type<T>::value>
+   struct tiny_value
+   {
+      // For float, double, and long double, 1/min_value<T>() is finite.
+      // But for mpfr_float and cpp_bin_float, 1/min_value<T>() is inf.
+      // Multiply the min by 16 so that the reciprocal doesn't overflow.
+      static T get() {
+         return 16*tools::min_value<T>();
+      }
+   };
+   template <typename T>
    struct tiny_value<T, true>
    {
-      typedef typename T::value_type value_type;
+      using value_type = typename T::value_type;
       static T get() {
-         return tools::min_value<value_type>();
+         return 16*tools::min_value<value_type>();
       }
    };
 
@@ -101,17 +103,17 @@ namespace detail
 //
 // Note that the first a0 returned by generator Gen is discarded.
 //
-template <class Gen, class U>
-inline typename detail::fraction_traits<Gen>::result_type continued_fraction_b(Gen& g, const U& factor, boost::uintmax_t& max_terms) 
-      BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
+template <typename Gen, typename U>
+inline typename detail::fraction_traits<Gen>::result_type continued_fraction_b(Gen& g, const U& factor, std::uintmax_t& max_terms)
+      noexcept(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
 {
    BOOST_MATH_STD_USING // ADL of std names
 
-   typedef detail::fraction_traits<Gen> traits;
-   typedef typename traits::result_type result_type;
-   typedef typename traits::value_type value_type;
-   typedef typename integer_scalar_type<result_type>::type integer_type;
-   typedef typename scalar_type<result_type>::type scalar_type;
+   using traits = detail::fraction_traits<Gen>;
+   using result_type = typename traits::result_type;
+   using value_type = typename traits::value_type;
+   using integer_type = typename integer_scalar_type<result_type>::type;
+   using scalar_type = typename scalar_type<result_type>::type;
 
    integer_type const zero(0), one(1);
 
@@ -127,8 +129,7 @@ inline typename detail::fraction_traits<Gen>::result_type continued_fraction_b(G
    C = f;
    D = 0;
 
-   boost::uintmax_t counter(max_terms);
-
+   std::uintmax_t counter(max_terms);
    do{
       v = g();
       D = traits::b(v) + traits::a(v) * D;
@@ -147,36 +148,36 @@ inline typename detail::fraction_traits<Gen>::result_type continued_fraction_b(G
    return f;
 }
 
-template <class Gen, class U>
+template <typename Gen, typename U>
 inline typename detail::fraction_traits<Gen>::result_type continued_fraction_b(Gen& g, const U& factor)
-   BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
+   noexcept(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
 {
-   boost::uintmax_t max_terms = (std::numeric_limits<boost::uintmax_t>::max)();
+   std::uintmax_t max_terms = (std::numeric_limits<std::uintmax_t>::max)();
    return continued_fraction_b(g, factor, max_terms);
 }
 
-template <class Gen>
+template <typename Gen>
 inline typename detail::fraction_traits<Gen>::result_type continued_fraction_b(Gen& g, int bits)
-   BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
+   noexcept(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
 {
    BOOST_MATH_STD_USING // ADL of std names
 
-   typedef detail::fraction_traits<Gen> traits;
-   typedef typename traits::result_type result_type;
+   using traits = detail::fraction_traits<Gen>;
+   using result_type = typename traits::result_type;
 
    result_type factor = ldexp(1.0f, 1 - bits); // 1 / pow(result_type(2), bits);
-   boost::uintmax_t max_terms = (std::numeric_limits<boost::uintmax_t>::max)();
+   std::uintmax_t max_terms = (std::numeric_limits<std::uintmax_t>::max)();
    return continued_fraction_b(g, factor, max_terms);
 }
 
-template <class Gen>
-inline typename detail::fraction_traits<Gen>::result_type continued_fraction_b(Gen& g, int bits, boost::uintmax_t& max_terms)
-   BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
+template <typename Gen>
+inline typename detail::fraction_traits<Gen>::result_type continued_fraction_b(Gen& g, int bits, std::uintmax_t& max_terms)
+   noexcept(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
 {
    BOOST_MATH_STD_USING // ADL of std names
 
-   typedef detail::fraction_traits<Gen> traits;
-   typedef typename traits::result_type result_type;
+   using traits = detail::fraction_traits<Gen>;
+   using result_type = typename traits::result_type;
 
    result_type factor = ldexp(1.0f, 1 - bits); // 1 / pow(result_type(2), bits);
    return continued_fraction_b(g, factor, max_terms);
@@ -196,17 +197,17 @@ inline typename detail::fraction_traits<Gen>::result_type continued_fraction_b(G
 //
 // Note that the first a1 and b1 returned by generator Gen are both used.
 //
-template <class Gen, class U>
-inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(Gen& g, const U& factor, boost::uintmax_t& max_terms)
-   BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
+template <typename Gen, typename U>
+inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(Gen& g, const U& factor, std::uintmax_t& max_terms)
+   noexcept(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
 {
    BOOST_MATH_STD_USING // ADL of std names
 
-   typedef detail::fraction_traits<Gen> traits;
-   typedef typename traits::result_type result_type;
-   typedef typename traits::value_type value_type;
-   typedef typename integer_scalar_type<result_type>::type integer_type;
-   typedef typename scalar_type<result_type>::type scalar_type;
+   using traits = detail::fraction_traits<Gen>;
+   using result_type = typename traits::result_type;
+   using value_type = typename traits::value_type;
+   using integer_type = typename integer_scalar_type<result_type>::type;
+   using scalar_type = typename scalar_type<result_type>::type;
 
    integer_type const zero(0), one(1);
 
@@ -223,7 +224,7 @@ inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(G
    C = f;
    D = 0;
 
-   boost::uintmax_t counter(max_terms);
+   std::uintmax_t counter(max_terms);
 
    do{
       v = g();
@@ -243,17 +244,17 @@ inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(G
    return a0/f;
 }
 
-template <class Gen, class U>
+template <typename Gen, typename U>
 inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(Gen& g, const U& factor)
-   BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
+   noexcept(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
 {
-   boost::uintmax_t max_iter = (std::numeric_limits<boost::uintmax_t>::max)();
+   std::uintmax_t max_iter = (std::numeric_limits<std::uintmax_t>::max)();
    return continued_fraction_a(g, factor, max_iter);
 }
 
-template <class Gen>
+template <typename Gen>
 inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(Gen& g, int bits)
-   BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
+   noexcept(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
 {
    BOOST_MATH_STD_USING // ADL of std names
 
@@ -261,19 +262,19 @@ inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(G
    typedef typename traits::result_type result_type;
 
    result_type factor = ldexp(1.0f, 1-bits); // 1 / pow(result_type(2), bits);
-   boost::uintmax_t max_iter = (std::numeric_limits<boost::uintmax_t>::max)();
+   std::uintmax_t max_iter = (std::numeric_limits<std::uintmax_t>::max)();
 
    return continued_fraction_a(g, factor, max_iter);
 }
 
-template <class Gen>
-inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(Gen& g, int bits, boost::uintmax_t& max_terms)
-   BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
+template <typename Gen>
+inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(Gen& g, int bits, std::uintmax_t& max_terms)
+   noexcept(BOOST_MATH_IS_FLOAT(typename detail::fraction_traits<Gen>::result_type) && noexcept(std::declval<Gen>()()))
 {
    BOOST_MATH_STD_USING // ADL of std names
 
-   typedef detail::fraction_traits<Gen> traits;
-   typedef typename traits::result_type result_type;
+   using traits = detail::fraction_traits<Gen>;
+   using result_type = typename traits::result_type;
 
    result_type factor = ldexp(1.0f, 1-bits); // 1 / pow(result_type(2), bits);
    return continued_fraction_a(g, factor, max_terms);
@@ -284,4 +285,3 @@ inline typename detail::fraction_traits<Gen>::result_type continued_fraction_a(G
 } // namespace boost
 
 #endif // BOOST_MATH_TOOLS_FRACTION_INCLUDED
-

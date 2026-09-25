@@ -18,124 +18,25 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
 #pragma once
 
-#include "PyrSlot.h"
+#include "SCBase.h"
 #include "PyrSymbol.h"
 #include "SC_Export.h"
-#include "SCBase.h"
-#include <boost/filesystem/path.hpp>
+#include <stdexcept>
 
-extern int charno, lineno, linepos;
-extern int* linestarts;
+// Note: this file is used to implement the bindings from sc_lexer to the requirements of the bison parser.
+// If you need to lex sc code, but don't need to compile it, you should use sc_lexer instead.
 
-struct ClassExtFile {
-    struct ClassExtFile* next;
-    PyrSymbol* fileSym;
-    int startPos, endPos, lineOffset;
+// Called from inside the bison parser.
+int yylex();
+
+// Called from inside the bison parser when an error occurs.
+void yyerror(const char* s);
+
+/// Often the result of a gc error, used to represent any unrecoverable state.
+struct FatalInterpreterError : public std::runtime_error {
+    using std::runtime_error::runtime_error;
 };
 
-typedef struct classdep {
-    struct classdep* next;
-    struct classdep* superClassDep;
-    struct classdep* subclasses;
-    PyrSymbol* className;
-    PyrSymbol* superClassName;
-    PyrSymbol* fileSym;
-    int startPos, endPos, lineOffset;
-} ClassDependancy;
-
-extern PyrSymbol* gCompilingFileSym;
-
-ClassDependancy* newClassDependancy(PyrSymbol* className, PyrSymbol* superClassName, PyrSymbol* fileSym, int startPos,
-                                    int endPos, int lineOffset);
-bool parseOneClass(PyrSymbol* fileSym);
-void initPassOne();
-void finiPassOne();
-bool passOne();
-void buildDepTree();
-void traverseFullDepTree();
-void traverseDepTree(ClassDependancy* classdep, int level);
-void traverseFullDepTree2();
-void traverseDepTree2(ClassDependancy* classdep, int level);
-void compileClassExtensions();
-void compileClass(PyrSymbol* fileSym, int startPos, int endPos, int lineOffset);
-
-SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
-
-void interpretCmdLine(const char* textbuf, int textlen, char* methodname);
-
-
-int input();
-int input0();
-void unput(int c);
-void unput0(int c);
-
-void finiLexer();
-bool startLexer(char* filename);
-void startLexerCmdLine(char* textbuf, int textbuflen);
-int yylex();
-void yyerror(const char* s);
-void fatal();
-bool isValidSourceFileName(const boost::filesystem::path& path);
-bool passOne_ProcessOneFile(const boost::filesystem::path& path);
-
-boost::filesystem::path relativeToCompileDir(const boost::filesystem::path&);
-
-void initLexer();
-
-int processbinop(char* token);
-int processident(char* token);
-int processfloat(char* token, int sawpi);
-int processint(char* token);
-int processchar(int c);
-int processintradix(char* s, int n, int radix);
-int processfloatradix(char* s, int n, int radix);
-int processhex(char* s);
-int processsymbol(char* token);
-int processstring(char* token);
-int processkeywordbinop(char* token);
-
-void postErrorLine(int linenum, int start, int charpos);
-bool scanForClosingBracket();
-void parseClasses();
-
-extern int parseFailed;
-extern bool compilingCmdLine;
-extern bool compilingCmdLineErrorWindow;
-extern bool compiledOK;
-
-#define MAXYYLEN 8192
-
-extern int gNumCompiledFiles;
-extern int gClassCompileOrderNum;
-extern ClassDependancy** gClassCompileOrder;
-extern char curfilename[PATH_MAX];
-
-extern int runcount;
-
-extern const char* binopchars;
-extern char yytext[MAXYYLEN];
-extern char curfilename[PATH_MAX];
-
-extern int yylen;
-extern int lexCmdLine;
-extern bool compilingCmdLine;
-extern bool compilingCmdLineErrorWindow;
-extern intptr_t zzval;
-extern intptr_t gParserResult;
-
-extern int lineno, charno, linepos;
-extern int* linestarts;
-extern int maxlinestarts;
-
-extern char* text;
-extern int textlen;
-extern int textpos;
-extern int parseFailed;
-extern bool compiledOK;
-extern int radixcharpos, decptpos;
-
-int rtf2txt(char* txt);
-int html2txt(char* txt);
+// MAIN ENTRY POINTS OF SC LANG are located in SCBase.h

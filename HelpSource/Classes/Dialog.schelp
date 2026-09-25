@@ -27,9 +27,9 @@ METHOD:: openPanel
 	Example:
 code::
 (
-Dialog.openPanel({ arg path;
+Dialog.openPanel({ |path|
 	path.postln;
-},{
+}, {
 	"cancelled".postln;
 });
 )
@@ -49,9 +49,9 @@ METHOD:: savePanel
 	Example:
 code::
 (
-Dialog.savePanel({ arg path;
+Dialog.savePanel({ |path|
 	path.postln;
-},{
+}, {
 	"cancelled".postln;
 });
 )

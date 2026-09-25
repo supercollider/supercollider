@@ -29,8 +29,13 @@ argument:: bgColor
 An instance of link::Classes/Color::. The background color of the scope.
 argument:: server
 the server whose buses to show on scope.
-discussion::
-Example:
+
+method:: getInstance
+Returns the (singleton) instance of the FreqScope.
+
+
+subsection:: Usage example
+
 code::
 s.boot;
 
@@ -41,13 +46,19 @@ FreqScope.new(400, 200, 0, server: s);
 { SinOsc.ar(2000, 0, 0.25) }.play(s);
 
 // random saw
-{ RLPF.ar(Saw.ar(110, 0.2), LFNoise2.kr(1,1e4,1e4), LFNoise2.kr(1, 0.2, 0.22)) }.play(s);
+{ RLPF.ar(Saw.ar(110, 0.2), LFNoise2.kr(1, 1e4, 1e4), LFNoise2.kr(1, 0.2, 0.22)) }.play(s);
 
 // modulate phase
 { SinOsc.ar(800, SinOsc.ar(XLine.kr(20, 8000, 10), 0, 2pi), 0.25) }.play(s);
 
 // all harmonics
 { Blip.ar(200, Line.kr(1, 100, 10), 0.2) }.play(s);
+
+// access the FreqScopeView object to set properties of the Qt Object:
+FreqScope.getInstance	// get the FreqScope instance
+	.scope				// and its FreqScopeView
+	.setProperty(\updateInterval, 1000)
+	// set updateInterval to 1000 ms because of reasons
 ::
 
 subsection:: Subclassing and Internal Methods
@@ -56,6 +67,8 @@ The following methods are usually not used directly or are called by a primitive
 
 method:: scopeOpen
 Returns a link::Classes/Boolean::, whether the scope is open.
+
+private:: instance
 
 InstanceMethods::
 

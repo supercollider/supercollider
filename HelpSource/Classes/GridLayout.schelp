@@ -51,10 +51,10 @@ METHOD:: rows
     Example:
 Code::
 (
-w=Window().layout_( GridLayout.rows(
-    [Slider2D(), Slider2D(), [Slider(), rows:2]],
+w = Window().layout_(GridLayout.rows(
+    [Slider2D(), Slider2D(), [Slider(), rows: 2]],
     [Slider2D(), Slider2D()],
-    [[Slider().orientation_(\horizontal), columns:2]]
+    [[Slider().orientation_(\horizontal), columns: 2]]
 )).front;
 )
 ::

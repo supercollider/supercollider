@@ -2,7 +2,7 @@
 // ip/basic_resolver_iterator.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -80,15 +80,13 @@ public:
   {
   }
 
-#if defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move constructor.
   basic_resolver_iterator(basic_resolver_iterator&& other)
-    : values_(BOOST_ASIO_MOVE_CAST(values_ptr_type)(other.values_)),
+    : values_(static_cast<values_ptr_type&&>(other.values_)),
       index_(other.index_)
   {
     other.index_ = 0;
   }
-#endif // defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Assignment operator.
   basic_resolver_iterator& operator=(const basic_resolver_iterator& other)
@@ -98,20 +96,18 @@ public:
     return *this;
   }
 
-#if defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move-assignment operator.
   basic_resolver_iterator& operator=(basic_resolver_iterator&& other)
   {
     if (this != &other)
     {
-      values_ = BOOST_ASIO_MOVE_CAST(values_ptr_type)(other.values_);
+      values_ = static_cast<values_ptr_type&&>(other.values_);
       index_ = other.index_;
       other.index_ = 0;
     }
 
     return *this;
   }
-#endif // defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Dereference an iterator.
   const basic_resolver_entry<InternetProtocol>& operator*() const
@@ -179,7 +175,7 @@ protected:
     return (*values_)[index_];
   }
 
-  typedef std::vector<basic_resolver_entry<InternetProtocol> > values_type;
+  typedef std::vector<basic_resolver_entry<InternetProtocol>> values_type;
   typedef boost::asio::detail::shared_ptr<values_type> values_ptr_type;
   values_ptr_type values_;
   std::size_t index_;

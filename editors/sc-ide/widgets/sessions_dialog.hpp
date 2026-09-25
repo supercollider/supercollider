@@ -62,9 +62,9 @@ public:
 
         setLayout(layout);
 
-        connect(removeBtn, SIGNAL(clicked()), this, SLOT(removeCurrent()));
-        connect(renameBtn, SIGNAL(clicked()), this, SLOT(renameCurrent()));
-        connect(dialogBtns, SIGNAL(accepted()), this, SLOT(accept()));
+        connect(removeBtn, &QPushButton::clicked, this, &SessionsDialog::removeCurrent);
+        connect(renameBtn, &QPushButton::clicked, this, &SessionsDialog::renameCurrent);
+        connect(dialogBtns, &QDialogButtonBox::accepted, this, &SessionsDialog::accept);
 
         updateSessions();
     }

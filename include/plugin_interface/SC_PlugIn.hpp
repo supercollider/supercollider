@@ -193,6 +193,12 @@ public:
         return FULLRATE;
     }
 
+    /// get sample duration of audio signal
+    double fullSampleDur() const {
+        const Unit* unit = this;
+        return FULLSAMPLEDUR;
+    }
+
     /// get buffer size of audio signals
     int fullBufferSize() const {
         const Unit* unit = this;
@@ -245,6 +251,7 @@ template <class UGenClass> void destroyClass(Unit* unit) { static_cast<UGenClass
 }
 
 template <class Unit> void registerUnit(InterfaceTable* ft, const char* name, bool disableBufferAliasing = false) {
+    static_assert(!std::is_polymorphic<Unit>::value, "UGen class must not contain virtual functions!");
     UnitCtorFunc ctor = detail::constructClass<Unit>;
     UnitDtorFunc dtor = std::is_trivially_destructible<Unit>::value ? nullptr : detail::destroyClass<Unit>;
 

@@ -10,7 +10,8 @@
 #pragma once
 #endif
 
-#include <boost/config/no_tr1/cmath.hpp>
+#include <cmath>
+#include <limits>
 #include <boost/math/tools/config.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/trunc.hpp>
@@ -26,9 +27,9 @@ inline T sin_pi_imp(T x, const Policy& pol)
    if(x < 0)
       return -sin_pi_imp(T(-x), pol);
    // sin of pi*x:
-   bool invert;
-   if(x < 0.5)
+   if(x < T(0.5))
       return sin(constants::pi<T>() * x);
+   bool invert;
    if(x < 1)
    {
       invert = true;
@@ -38,8 +39,10 @@ inline T sin_pi_imp(T x, const Policy& pol)
       invert = false;
 
    T rem = floor(x);
-   if(iconvert(rem, pol) & 1)
+   if(abs(floor(rem/2)*2 - rem) > std::numeric_limits<T>::epsilon())
+   {
       invert = !invert;
+   }
    rem = x - rem;
    if(rem > 0.5f)
       rem = 1 - rem;

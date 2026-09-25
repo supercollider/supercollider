@@ -81,9 +81,8 @@ code::
 	b2 = rho.squared.neg;
 
 	vib = SOS.kr(LFSaw.kr(3.16), 1.0, 0.0, 0.0, b1, b2);
-	SinOsc.ar( vib * 200 + 600) * 0.2
+	SinOsc.ar(vib * 200 + 600) * 0.2
 }.play
 )
 
 ::
-

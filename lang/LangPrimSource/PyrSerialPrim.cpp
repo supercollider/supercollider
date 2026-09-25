@@ -49,7 +49,7 @@
 using boost::uint8_t;
 using boost::asio::serial_port;
 
-extern boost::asio::io_service ioService; // defined in SC_ComPort.cpp
+extern boost::asio::io_context ioContext; // defined in SC_ComPort.cpp
 
 /**
  * \brief Serial port abstraction
@@ -61,8 +61,6 @@ extern boost::asio::io_service ioService; // defined in SC_ComPort.cpp
  */
 class SerialPort {
 public:
-    // 7, not 6 - the last two options passed in are condensed into flow_control
-    static const int kNumOptions = 7;
     static const int kBufferSize = 8192;
 
     /// Type of the underlying FIFO buffer.
@@ -104,7 +102,7 @@ public:
      */
     SerialPort(PyrObject* obj, const char* serialport, const Options& options):
         m_obj(obj),
-        m_port(ioService, serialport),
+        m_port(ioContext, serialport),
         m_options(options),
         m_rxErrors(0) {
         using namespace boost::asio;
@@ -320,7 +318,7 @@ static serial_port::flow_control::type asFlowControlType(bool hardware, bool sof
 // primitives
 
 static int prSerialPort_Open(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* args = g->sp - 1 - SerialPort::kNumOptions;
+    PyrSlot* args = g->sp - 8;
 
     int err;
 
@@ -472,7 +470,7 @@ void initSerialPrimitives() {
     base = nextPrimitiveIndex();
     index = 0;
 
-    definePrimitive(base, index++, "_SerialPort_Open", prSerialPort_Open, 2 + SerialPort::kNumOptions, 0);
+    definePrimitive(base, index++, "_SerialPort_Open", prSerialPort_Open, 9, 0);
     definePrimitive(base, index++, "_SerialPort_Close", prSerialPort_Close, 1, 0);
     definePrimitive(base, index++, "_SerialPort_Next", prSerialPort_Next, 1, 0);
     definePrimitive(base, index++, "_SerialPort_Put", prSerialPort_Put, 2, 0);

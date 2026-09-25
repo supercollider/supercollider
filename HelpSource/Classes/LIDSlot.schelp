@@ -83,16 +83,16 @@ EXAMPLES::
 code::
 LID.findAvailable;
 LID.postAvailable; // pick one that you want to open, and fill in the vendor and product id in the next line:
-d = LID.open( 2, 10 ); // trackpoint
+d = LID.open(2, 10); // trackpoint
 
 s.boot;
 
-d.slot(2,1).createBus;
+d.slot(2, 1).createBus;
 
-Ndef( \checkbus, { d.slot(2,1).kr.poll } );
+Ndef(\checkbus, { d.slot(2, 1).kr.poll });
 
-d.slot(2,1).freeBus;
+d.slot(2, 1).freeBus;
 
-Ndef( \checkbus ).clear;
+Ndef(\checkbus).clear;
 
 ::

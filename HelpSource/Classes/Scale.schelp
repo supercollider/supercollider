@@ -10,18 +10,18 @@ code::
 s.boot;
 
 a = Scale.major;
-a.degrees;		// [ 0, 2, 4, 5, 7, 9, 11 ]
-a.semitones;		// [ 0, 2, 4, 5, 7, 9, 11 ]
-a.cents;		// [ 0, 200, 300, 500, 700, 900, 1100 ]
-a.ratios;		// [ 1, 1.1224620483089, 1.2599210498937, 1.3348398541685, etc. ]
+a.degrees;		// [0, 2, 4, 5, 7, 9, 11]
+a.semitones;		// [0, 2, 4, 5, 7, 9, 11]
+a.cents;		// [0, 200, 300, 500, 700, 900, 1100]
+a.ratios;		// [1, 1.1224620483089, 1.2599210498937, 1.3348398541685, etc.]
 
 Pbind(\scale, a, \degree, Pseq((0..7) ++ (6..0) ++ [\rest], 1), \dur, 0.25).play;
 
 // use non-standard tuning
 a.tuning_(\just);
 a.degrees;		// no change; degrees are independent of tuning
-a.semitones;		// [ 0, 2.0391000173077, 3.1564128700055, 4.9804499913461, etc. ]
-a.ratios.collect(_.round(0.001));	// [ 1, 1.125, 1.2, 1.333, 1.5, 1.667, 1.875 ]
+a.semitones;		// [0, 2.0391000173077, 3.1564128700055, 4.9804499913461, etc.]
+a.ratios.collect(_.round(0.001));	// [1, 1.125, 1.2, 1.333, 1.5, 1.667, 1.875]
 
 Pbind(\scale, a, \degree, Pseq((0..7) ++ (6..0) ++ [\rest], 1), \dur, 0.25).play;
 ::
@@ -111,12 +111,12 @@ r = {
 		(
 			DegreeToKey.kr(
 				scale.as(LocalBuf),
-				MouseX.kr(0,15), // mouse indexes into scale
+				MouseX.kr(0, 15), // mouse indexes into scale
 				scale.stepsPerOctave,
 				1, // mul = 1
 				60 // offset by 72 notes
 			)
-			+ LFNoise1.kr([3,3], 0.04) // add some low freq stereo detuning
+			+ LFNoise1.kr([3, 3], 0.04) // add some low freq stereo detuning
 		).midicps, // convert midi notes to hertz
 		0,
 		0.25
@@ -141,7 +141,7 @@ Returns the size of the pitch class set from which the tuning is drawn.
 code::
 Scale.ionian.pitchesPerOctave; // 12
 Scale.minorPentatonic.pitchesPerOctave; // 12
-Scale.ajam.pitchesPerOctave; // 24--this is a quarter-tone scale
+Scale.ajam.pitchesPerOctave; // 24 — this is a quarter-tone scale
 Scale.partch_o1.pitchesPerOctave; // 43
 ::
 
@@ -153,7 +153,7 @@ Scale.new(#[0, 3, 6, 9, 12], 13, tuning: \bp).stepsPerOctave;	// ~ 19.02
 ::
 but note:
 code::
-Scale.ajam.stepsPerOctave;	// 12 -- quarter-tone scales have normal octaves
+Scale.ajam.stepsPerOctave;	// 12 — quarter-tone scales have normal octaves
 ::
 
 method::at, wrapAt
@@ -175,9 +175,18 @@ Scale.major(\just).degreeToFreq(2, 60.midicps, 1);	// 654.06391...
 
 method::degreeToRatio
 Returns a ratio based on current tuning.
+If the degree argument is not integer,
+the difference to the nearest integer is interpreted as an offset in cent,
+where 0.001 represents 1 cent (the ratio code::0.01.midiratio::, or code::2.pow(1/1200)::); 
+e.g., 2.1 is scale degree 3 according to tuning, plus one 12TET-semitone. 
+Maximum offset is 499 cent.
 code::
 Scale.major.degreeToRatio(2, 1).round(0.001);		// 2.52
 Scale.major(\just).degreeToRatio(2, 1).round(0.001);	// 2.5
+// detune by 14 cent to make the 12TET third just (2 - 1.986 = 0.014):
+Scale.major.degreeToRatio(1.986, 1).round(0.001);	// 2.5 
+// or to make the just third boring:
+Scale.major(\just).degreeToRatio(2.014, 1).round(0.001);	// 2.52
 ::
 
 EXAMPLES::

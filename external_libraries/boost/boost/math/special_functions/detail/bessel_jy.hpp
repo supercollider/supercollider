@@ -20,8 +20,6 @@
 #include <boost/math/special_functions/detail/bessel_jy_series.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/policies/error_handling.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/type_traits/is_floating_point.hpp>
 #include <complex>
 
 // Bessel functions of the first and second kind of fractional order
@@ -35,7 +33,7 @@ namespace boost { namespace math {
       // for use in A&S 9.2.5 and 9.2.6.
       // This series is quick to evaluate, but divergent unless
       // x is very large, in fact it's pretty hard to figure out
-      // with any degree of precision when this series actually 
+      // with any degree of precision when this series actually
       // *will* converge!!  Consequently, we may just have to
       // try it and see...
       //
@@ -82,7 +80,7 @@ namespace boost { namespace math {
             using namespace boost::math::tools;
          using namespace boost::math::constants;
 
-         BOOST_ASSERT(fabs(v) <= 0.5f);  // precondition for using this routine
+         BOOST_MATH_ASSERT(fabs(v) <= 0.5f);  // precondition for using this routine
 
          T gp = boost::math::tgamma1pm1(v, pol);
          T gm = boost::math::tgamma1pm1(-v, pol);
@@ -126,9 +124,9 @@ namespace boost { namespace math {
             coef *= coef_mult / k;
             sum += coef * g;
             sum1 += coef * h;
-            if (abs(coef * g) < abs(sum) * tolerance) 
-            { 
-               break; 
+            if (abs(coef * g) < abs(sum) * tolerance)
+            {
+               break;
             }
          }
          policies::check_series_iterations<T>("boost::math::bessel_jy<%1%>(%1%,%1%) in temme_jy", k, pol);
@@ -154,7 +152,7 @@ namespace boost { namespace math {
 
             // modified Lentz's method, see
             // Lentz, Applied Optics, vol 15, 668 (1976)
-            tolerance = 2 * policies::get_epsilon<T, Policy>();;
+            tolerance = 2 * policies::get_epsilon<T, Policy>();
          tiny = sqrt(tools::min_value<T>());
          C = f = tiny;                           // b0 = 0, replace with tiny
          D = 0;
@@ -170,7 +168,7 @@ namespace boost { namespace math {
             delta = C * D;
             f *= delta;
             if (D < 0) { s = -s; }
-            if (abs(delta - 1) < tolerance) 
+            if (abs(delta - 1) < tolerance)
             { break; }
          }
          policies::check_series_iterations<T>("boost::math::bessel_jy<%1%>(%1%,%1%) in CF1_jy", k / 100, pol);
@@ -197,7 +195,7 @@ namespace boost { namespace math {
 
          // |x| >= |v|, CF2_jy converges rapidly
          // |x| -> 0, CF2_jy fails to converge
-         BOOST_ASSERT(fabs(x) > 1);
+         BOOST_MATH_ASSERT(fabs(x) > 1);
 
          // modified Lentz's method, complex numbers involved, see
          // Lentz, Applied Optics, vol 15, 668 (1976)
@@ -264,7 +262,7 @@ namespace boost { namespace math {
       template <typename T, typename Policy>
       int bessel_jy(T v, T x, T* J, T* Y, int kind, const Policy& pol)
       {
-         BOOST_ASSERT(x >= 0);
+         BOOST_MATH_ASSERT(x >= 0);
 
          T u, Jv, Ju, Yv, Yv1, Yu, Yu1(0), fv, fu;
          T W, p, q, gamma, current, prev, next;
@@ -289,7 +287,7 @@ namespace boost { namespace math {
          if (v > static_cast<T>((std::numeric_limits<int>::max)()))
          {
             *J = *Y = policies::raise_evaluation_error<T>(function, "Order of Bessel function is too large to evaluate: got %1%", v, pol);
-            return 1;
+            return 1;  // LCOV_EXCL_LINE previous line will throw.
          }
          n = iround(v, pol);
          u = v - n;                              // -1/2 <= u < 1/2
@@ -305,21 +303,22 @@ namespace boost { namespace math {
 
          if(x == 0)
          {
-            if(v == 0)
-               *J = 1;
-            else if((u == 0) || !reflect)
+            if (v == 0)
+               *J = 1; // LCOV_EXCL_LINE multiprecision case only
+            else if ((u == 0) || !reflect)
                *J = 0;
             else if(kind & need_j)
                *J = policies::raise_domain_error<T>(function, "Value of Bessel J_v(x) is complex-infinity at %1%", x, pol); // complex infinity
             else
-               *J = std::numeric_limits<T>::quiet_NaN();  // any value will do, not using J.
+               *J = std::numeric_limits<T>::quiet_NaN();  // LCOV_EXCL_LINE, we should never get here, any value will do, not using J.
 
             if((kind & need_y) == 0)
                *Y = std::numeric_limits<T>::quiet_NaN();  // any value will do, not using Y.
-            else if(v == 0)
-               *Y = -policies::raise_overflow_error<T>(function, 0, pol);
             else
-               *Y = policies::raise_domain_error<T>(function, "Value of Bessel Y_v(x) is complex-infinity at %1%", x, pol); // complex infinity
+            {
+               // We shoud never get here:
+               BOOST_MATH_ASSERT(x != 0); // LCOV_EXCL_LINE
+            }
             return 1;
          }
 
@@ -346,7 +345,7 @@ namespace boost { namespace math {
                Jv = bessel_j_small_z_series(v, x, pol);
             else
                Jv = std::numeric_limits<T>::quiet_NaN();
-            if((org_kind&need_y && (!reflect || (cp != 0))) 
+            if((org_kind&need_y && (!reflect || (cp != 0)))
                || (org_kind & need_j && (reflect && (sp != 0))))
             {
                // Only calculate if we need it, and if the reflection formula will actually use it:
@@ -359,11 +358,13 @@ namespace boost { namespace math {
          {
             // Truncated series evaluation for small x and v an integer,
             // much quicker in this area than temme_jy below.
+            // This code is only used in the multiprecision case, otherwise
+            // we go via bessel_jn.  LCOV_EXCL_START
             if(kind&need_j)
                Jv = bessel_j_small_z_series(v, x, pol);
             else
                Jv = std::numeric_limits<T>::quiet_NaN();
-            if((org_kind&need_y && (!reflect || (cp != 0))) 
+            if((org_kind&need_y && (!reflect || (cp != 0)))
                || (org_kind & need_j && (reflect && (sp != 0))))
             {
                // Only calculate if we need it, and if the reflection formula will actually use it:
@@ -371,18 +372,19 @@ namespace boost { namespace math {
             }
             else
                Yv = std::numeric_limits<T>::quiet_NaN();
+            // LCOV_EXCL_STOP
          }
          else if(asymptotic_bessel_large_x_limit(v, x))
          {
             if(kind&need_y)
             {
-               Yv = asymptotic_bessel_y_large_x_2(v, x);
+               Yv = asymptotic_bessel_y_large_x_2(v, x, pol);
             }
             else
                Yv = std::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
             if(kind&need_j)
             {
-               Jv = asymptotic_bessel_j_large_x_2(v, x);
+               Jv = asymptotic_bessel_j_large_x_2(v, x, pol);
             }
             else
                Jv = std::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
@@ -390,7 +392,7 @@ namespace boost { namespace math {
          else if((x > 8) && hankel_PQ(v, x, &p, &q, pol))
          {
             //
-            // Hankel approximation: note that this method works best when x 
+            // Hankel approximation: note that this method works best when x
             // is large, but in that case we end up calculating sines and cosines
             // of large values, with horrendous resulting accuracy.  It is fast though
             // when it works....
@@ -405,8 +407,8 @@ namespace boost { namespace math {
             T mod_v = fmod(T(v / 2 + 0.25f), T(2));
             T sx = sin(x);
             T cx = cos(x);
-            T sv = sin_pi(mod_v);
-            T cv = cos_pi(mod_v);
+            T sv = boost::math::sin_pi(mod_v, pol);
+            T cv = boost::math::cos_pi(mod_v, pol);
 
             T sc = sx * cv - sv * cx; // == sin(chi);
             T cc = cx * cv + sx * sv; // == cos(chi);
@@ -418,9 +420,9 @@ namespace boost { namespace math {
          {
             if(temme_jy(u, x, &Yu, &Yu1, pol))             // Temme series
             {
-               // domain error:
-               *J = *Y = Yu;
-               return 1;
+               // domain error, this should really have already been handled.
+               *J = *Y = Yu; // LCOV_EXCL_LINE
+               return 1;     // LCOV_EXCL_LINE
             }
             prev = Yu;
             current = Yu1;
@@ -467,6 +469,13 @@ namespace boost { namespace math {
                for (k = n; k > 0; k--)             // backward recurrence for J
                {
                   next = 2 * (u + k) * current / x - prev;
+                  //
+                  // We can't allow next to completely cancel out or the subsequent logic breaks.
+                  // Pretend that one bit did not cancel:
+                  if (next == 0)
+                  {
+                     next = prev * tools::epsilon<T>() / 2;  // LCOV_EXCL_LINE requires specific hardware and rounding to trigger, does get tested on msvc
+                  }
                   prev = current;
                   current = next;
                }
@@ -517,7 +526,7 @@ namespace boost { namespace math {
             //
             if(gamma == 0)
             {
-               gamma = u * tools::epsilon<T>() / x;
+               gamma = u * tools::epsilon<T>() / x;  // LCOV_EXCL_LINE requires specific hardware and rounding to trigger, does get tested on msvc
             }
             BOOST_MATH_INSTRUMENT_VARIABLE(current);
             BOOST_MATH_INSTRUMENT_VARIABLE(W);
@@ -561,11 +570,11 @@ namespace boost { namespace math {
          if (reflect)
          {
             if((sp != 0) && (tools::max_value<T>() * fabs(Yv_scale) < fabs(sp * Yv)))
-               *J = org_kind & need_j ? T(-sign(sp) * sign(Yv) * (Yv_scale != 0 ? sign(Yv_scale) : 1) * policies::raise_overflow_error<T>(function, 0, pol)) : T(0);
+               *J = org_kind & need_j ? T(-sign(sp) * sign(Yv) * (Yv_scale != 0 ? sign(Yv_scale) : 1) * policies::raise_overflow_error<T>(function, nullptr, pol)) : T(0);
             else
                *J = cp * Jv - (sp == 0 ? T(0) : T((sp * Yv) / Yv_scale));     // reflection formula
             if((cp != 0) && (tools::max_value<T>() * fabs(Yv_scale) < fabs(cp * Yv)))
-               *Y = org_kind & need_y ? T(-sign(cp) * sign(Yv) * (Yv_scale != 0 ? sign(Yv_scale) : 1) * policies::raise_overflow_error<T>(function, 0, pol)) : T(0);
+               *Y = org_kind & need_y ? T(-sign(cp) * sign(Yv) * (Yv_scale != 0 ? sign(Yv_scale) : 1) * policies::raise_overflow_error<T>(function, nullptr, pol)) : T(0);
             else
                *Y = (sp != 0 ? sp * Jv : T(0)) + (cp == 0 ? T(0) : T((cp * Yv) / Yv_scale));
          }
@@ -573,7 +582,7 @@ namespace boost { namespace math {
          {
             *J = Jv;
             if(tools::max_value<T>() * fabs(Yv_scale) < fabs(Yv))
-               *Y = org_kind & need_y ? T(sign(Yv) * sign(Yv_scale) * policies::raise_overflow_error<T>(function, 0, pol)) : T(0);
+               *Y = org_kind & need_y ? T(sign(Yv) * sign(Yv_scale) * policies::raise_overflow_error<T>(function, nullptr, pol)) : T(0);
             else
                *Y = Yv / Yv_scale;
          }
@@ -586,4 +595,3 @@ namespace boost { namespace math {
 }} // namespaces
 
 #endif // BOOST_MATH_BESSEL_JY_HPP
-

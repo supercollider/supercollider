@@ -28,7 +28,7 @@
 # define BOOST_OPTIONAL_NO_INPLACE_FACTORY_SUPPORT
 #endif
 
-#if BOOST_WORKAROUND(__BORLANDC__, <= 0x551)
+#if BOOST_WORKAROUND(BOOST_BORLANDC, <= 0x551)
 // BCB (5.5.1) cannot parse the nested template struct in an inplace factory.
 # define BOOST_OPTIONAL_NO_INPLACE_FACTORY_SUPPORT
 #endif
@@ -53,7 +53,7 @@
 #endif
 
 #if (defined(_MSC_VER) && _MSC_VER <= 1800)
-// on MSCV 2013 and earlier an unwanted temporary is created when you assign from
+// on MSVC 2013 and earlier an unwanted temporary is created when you assign from
 // a const lvalue of integral type. Thus we bind not to the original address but
 // to a temporary. 
 # define BOOST_OPTIONAL_CONFIG_NO_PROPER_ASSIGN_FROM_CONST_INT
@@ -114,9 +114,9 @@
 #endif
 
 
-// Detect suport for defaulting move operations
+// Detect support for defaulting move operations
 // (some older compilers implement rvalue references,
-// defaulted funcitons but move operations are not special members and cannot be defaulted)
+// defaulted functions but move operations are not special members and cannot be defaulted)
 
 #ifdef BOOST_NO_CXX11_DEFAULTED_FUNCTIONS
 # define BOOST_OPTIONAL_DETAIL_NO_DEFAULTED_MOVE_FUNCTIONS

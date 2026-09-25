@@ -25,7 +25,7 @@ namespace boost { namespace numeric { namespace convdetail
    template< class T1, class T2>
    struct equal_to
    {
-   #if !defined(__BORLANDC__)
+   #if !defined(BOOST_BORLANDC)
    
        enum { x = ( BOOST_MPL_AUX_VALUE_WKND(T1)::value == BOOST_MPL_AUX_VALUE_WKND(T2)::value ) };
            

@@ -12,8 +12,7 @@
 # include <boost/config.hpp>
 # include <boost/config/workaround.hpp>
 # include <boost/typeof/constant.hpp>
-# include <boost/type_traits/enable_if.hpp>
-# include <boost/type_traits/is_function.hpp>
+# include <type_traits>
 
 # include <typeinfo>
 
@@ -168,12 +167,12 @@ namespace boost
         {
             typedef char(*type)[encode_type<T>::value];
         };
-        template<typename T> typename enable_if_<
-            !is_function<T>::value,
+        template<typename T> typename std::enable_if<
+            !std::is_function<T>::value,
             typename sizer<T>::type>::type encode_start(T const&);
 
-        template<typename T> typename enable_if_<
-            is_function<T>::value,
+        template<typename T> typename std::enable_if<
+            std::is_function<T>::value,
             typename sizer<T>::type>::type encode_start(T&);
         template<typename Organizer, typename T>
         msvc_register_type<T,Organizer> typeof_register_type(const T&,Organizer* =0);

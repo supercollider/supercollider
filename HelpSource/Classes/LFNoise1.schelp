@@ -45,4 +45,3 @@ code::
 // freq is the rate of starting points
 { var freq = 1000; [LFNoise1.ar(freq), Impulse.ar(freq)] }.plot
 ::
-

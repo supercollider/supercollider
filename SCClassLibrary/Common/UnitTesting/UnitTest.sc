@@ -427,7 +427,7 @@ UnitTestResult {
 
 	var <testClass, <testMethod, <message, <details, <debug;
 
-	*new { |testClass, testMethod, message = "", details, debug|
+	*new { |testClass, testMethod, message(""), details, debug|
 		^super.newCopyArgs(testClass ? this, testMethod ? thisMethod, message, details, debug)
 	}
 

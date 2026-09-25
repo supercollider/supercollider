@@ -51,15 +51,17 @@ int main(int argc, char* argv[]) {
         }
     }
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
     // In order to scale the UI properly on Windows with display scaling like 125% or 150%
     // we need to disable scale factor rounding
-    // This is only available in Qt >= 5.14
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
-#endif // QT_VERSION
 
     QApplication app(argc, argv);
+
+    // Enable shortcuts manually as they are disabled by default on macOS
+    QApplication::setAttribute(Qt::AA_DontShowShortcutsInContextMenus, false);
 
     QStringList arguments(QApplication::arguments());
     arguments.pop_front(); // application path
@@ -72,7 +74,11 @@ int main(int argc, char* argv[]) {
 
     // Set up translations
     QTranslator qtTranslator;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#else
+    qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+#endif
     app.installTranslator(&qtTranslator);
 
     QString ideTranslationPath = standardDirectory(ScResourceDir) + "/translations";
@@ -129,7 +135,9 @@ int main(int argc, char* argv[]) {
         sessions->newSession();
     }
 
-    foreach (QString argument, arguments) { main->documentManager()->open(argument); }
+    foreach (QString argument, arguments) {
+        main->documentManager()->open(argument);
+    }
 
     win->restoreDocuments();
 
@@ -140,5 +148,5 @@ int main(int argc, char* argv[]) {
 #ifdef SC_USE_QTWEBENGINE
     HelpBrowserWebSocketServices hbServices(win->helpBrowserDocklet()->browser());
 #endif
-    app.exec();
+    return app.exec();
 }

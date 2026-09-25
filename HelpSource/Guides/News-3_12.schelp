@@ -15,7 +15,7 @@ macOS Big Sur support (#5298, #5356)
 
 section::  General: Changed
 Bigger build matrix add CI jobs to implement platform support RFC (#4906)
- 
+
 Updated portaudio submodule (#4925)
 
 Implement RFC 10: Replace oppressive terminology with more accurate alternatives (#5251, #5424, #5470)

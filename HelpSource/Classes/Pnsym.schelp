@@ -11,7 +11,7 @@ ClassMethods::
 method::new
 
 argument::pattern
-a pattern that returns symbols or characters. Arrays are converted to parallel patterns ( link::Classes/Ptuple:: ).
+a pattern that returns symbols or characters. Arrays are converted to parallel patterns (link::Classes/Ptuple::).
 
 argument::dict
 the dictionary to be used for lookup. By default, this is code::Pdefn.all::, so one can embed Pdefns by name.
@@ -28,7 +28,7 @@ code::
 // load a synthdef
 s.boot;
 SynthDef("gpdef",
-	{ arg out=0, freq=440, sustain=0.05, amp=0.1, pan;
+	{ |out = 0, freq = 440, sustain = 0.05, amp = 0.1, pan|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf) * amp;
 		Out.ar(out, Pan2.ar(SinOsc.ar(freq, 0, env), pan))

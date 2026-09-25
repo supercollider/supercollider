@@ -22,8 +22,8 @@
 
 #include <QKeyEvent>
 #include <QApplication>
-#include <QDesktopWidget>
-#include <QDebug>
+#include <QScreen>
+#include <QWindow>
 
 namespace ScIDE {
 
@@ -75,7 +75,7 @@ void PopUpWidget::showEvent(QShowEvent*) {
     QWidget* parentWid = parentWidget();
     QWidget* referenceWidget = parentWid ? parentWid : this;
 
-    QRect screen = QApplication::desktop()->availableGeometry(referenceWidget);
+    QRect screen = referenceWidget->screen()->availableGeometry();
     if (!screen.contains(rect)) {
         if (rect.right() > screen.right())
             rect.moveRight(screen.right());

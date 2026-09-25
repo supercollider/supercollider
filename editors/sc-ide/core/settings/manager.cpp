@@ -25,7 +25,6 @@
 #include <QApplication>
 #include <QPalette>
 #include <QTextCharFormat>
-#include <QDebug>
 
 namespace ScIDE { namespace Settings {
 

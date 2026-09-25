@@ -47,33 +47,32 @@ code::
 
 // used as phase modulator (behaves like a triangular modulator in FM):
 // Compare:
-{SinOsc.ar(440, LFPar.ar(1, 2, mul: 8pi))}.play
-{SinOsc.ar(440 + LFTri.ar(1, mul: 8pi))}.play
+{ SinOsc.ar(440, LFPar.ar(1, 2, mul: 8pi)) }.play
+{ SinOsc.ar(440 + LFTri.ar(1, mul: 8pi)) }.play
 
 
 // more examples:
 
-{ LFPar.ar(LFPar.kr(LFPar.kr(0.2,0,8,10), 0, 400,800),0,0.1) }.play
-{ LFPar.ar(LFPar.kr(0.2, 0, 400,800),0,0.1) }.play
-{ LFPar.ar(800,0,0.1) }.play
-{ LFPar.ar(XLine.kr(100,8000,30),0,0.1) }.play
+{ LFPar.ar(LFPar.kr(LFPar.kr(0.2, 0, 8, 10), 0, 400, 800), 0, 0.1) }.play
+{ LFPar.ar(LFPar.kr(0.2, 0, 400, 800), 0, 0.1) }.play
+{ LFPar.ar(800, 0, 0.1) }.play
+{ LFPar.ar(XLine.kr(100, 8000, 30), 0, 0.1) }.play
 
 
 // compare:
 
-{ LFCub.ar(LFCub.kr(LFCub.kr(0.2,0,8,10),0, 400,800),0,0.1) }.play
-{ LFCub.ar(LFCub.kr(0.2, 0, 400,800),0,0.1) }.play
-{ LFCub.ar(800,0,0.1) }.play
-{ LFCub.ar(XLine.kr(100,8000,30),0,0.1) }.play
+{ LFCub.ar(LFCub.kr(LFCub.kr(0.2, 0, 8, 10), 0, 400, 800), 0, 0.1) }.play
+{ LFCub.ar(LFCub.kr(0.2, 0, 400, 800), 0, 0.1) }.play
+{ LFCub.ar(800, 0, 0.1) }.play
+{ LFCub.ar(XLine.kr(100, 8000, 30), 0, 0.1) }.play
 
-{ SinOsc.ar(SinOsc.kr(SinOsc.kr(0.2,0,8,10),0, 400,800),0,0.1) }.play
-{ SinOsc.ar(SinOsc.kr(0.2, 0, 400,800),0,0.1) }.play
-{ SinOsc.ar(800,0,0.1) }.play
-{ SinOsc.ar(XLine.kr(100,8000,30),0,0.1) }.play
+{ SinOsc.ar(SinOsc.kr(SinOsc.kr(0.2, 0, 8, 10), 0, 400, 800), 0, 0.1) }.play
+{ SinOsc.ar(SinOsc.kr(0.2, 0, 400, 800), 0, 0.1) }.play
+{ SinOsc.ar(800, 0, 0.1) }.play
+{ SinOsc.ar(XLine.kr(100, 8000, 30), 0, 0.1) }.play
 
-{ LFTri.ar(LFTri.kr(LFTri.kr(0.2,0,8,10),0, 400,800),0,0.1) }.play
-{ LFTri.ar(LFTri.kr(0.2, 0, 400,800),0,0.1) }.play
-{ LFTri.ar(800,0,0.1) }.play
-{ LFTri.ar(XLine.kr(100,8000,30),0,0.1) }.play
+{ LFTri.ar(LFTri.kr(LFTri.kr(0.2, 0, 8, 10), 0, 400, 800), 0, 0.1) }.play
+{ LFTri.ar(LFTri.kr(0.2, 0, 400, 800), 0, 0.1) }.play
+{ LFTri.ar(800, 0, 0.1) }.play
+{ LFTri.ar(XLine.kr(100, 8000, 30), 0, 0.1) }.play
 ::
-

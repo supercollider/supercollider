@@ -38,7 +38,7 @@ x.free;
 x = nil;
 ::
 
-In the previous example it was necessary to use interpreter variables (the variables a-z, which are declared at compile time) in order to refer to previously created objects in later blocks or lines of code. If one had declared a variable within a block of code (i.e. code::var mySynth;::) than it would have only persisted within that scope. (See the helpfile link::Reference/Scope:: for more detail.)
+In the previous example it was necessary to use interpreter variables (the variables a-z, which are declared at compile time) in order to refer to previously created objects in later blocks or lines of code. If one had declared a variable within a block of code (i.e. code::var mySynth;::) then it would have only persisted within that scope. (See the helpfile link::Reference/Scope:: for more detail.)
 
 This style of working, executing lines or blocks of code one at a time, can be very dynamic and flexible, and can be quite useful in a performance situation, especially when improvising. But it does raise the issues of scope and persistence. Another way around this that allows for more descriptive variable names is to use environment variables (i.e. names that begin with ~, so code::~mysynth;:: see the link::Classes/Environment:: helpfile for details). However, in both methods you become responsible for making sure that objects and nodes do not persist when you no longer need them.
 
@@ -164,7 +164,7 @@ SynthDef("help-Buffer",{ arg out=0, bufnum;
 
 y = Synth.basicNew("help-Buffer"); // not sent yet
 
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav", action: { arg buffer;
+b = Buffer.read(s, ExampleFiles.child, action: { arg buffer;
        // synth send its s_new msg to follow
        // after the buffer read completes
        s.sendBundle(nil, y.newMsg(s,[\bufnum,buffer],\addToTail));

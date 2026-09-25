@@ -7,36 +7,30 @@ set(QT_IDE_COMPONENTS
 )
 
 set(QT_IDE_LIBRARIES
-    Qt5::Concurrent
-    Qt5::Core
-    Qt5::Network
-    Qt5::Widgets
+    Qt::Concurrent
+    Qt::Core
+    Qt::Network
+    Qt::Widgets
 )
 
 if(SC_USE_QTWEBENGINE)
     list(APPEND QT_IDE_COMPONENTS
         WebChannel
-        WebEngine
         WebEngineWidgets
         WebSockets
     )
     list(APPEND QT_IDE_LIBRARIES
-        Qt5::WebChannel
-        Qt5::WebEngineWidgets
-        Qt5::WebSockets
+        Qt::WebChannel
+        Qt::WebEngineWidgets
+        Qt::WebSockets
     )
 endif()
 
-find_package(
-    Qt5 ${REQUIRED_QT_VERSION}
-    COMPONENTS
-    ${QT_IDE_COMPONENTS}
-    REQUIRED
-)
-
-if(${CMAKE_COMPILER_IS_GNUCXX})
-    add_definitions(-Wreorder)
+if (${QT_VERSION_MAJOR} GREATER_EQUAL 6 AND UNIX AND SC_USE_QTWEBENGINE)
+    list(APPEND QT_IDE_LIBRARIES Qt::DBus)
 endif()
+
+find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} COMPONENTS ${QT_IDE_COMPONENTS} REQUIRED)
 
 if (APPLE)
   include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
@@ -54,7 +48,8 @@ if(APPLE)
         endforeach()
     endif()
 
-    foreach(file ${Sounds})
+    set(AdditionalStaticFiles ${Examples} ${Sounds})
+    foreach(file ${AdditionalStaticFiles})
         string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
         get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
         set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
@@ -228,7 +223,6 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${YAMLCPP_INCLUDE_DIR})
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
 # Needed for auto-generated forms headers:
@@ -262,10 +256,10 @@ add_custom_target( update_ide_translations
             -no-obsolete -pluralonly
 )
 
-qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
-qt5_wrap_ui( ide_forms_src ${ide_forms} )
-qt5_add_resources( ide_rcc resources.qrc )
-qt5_add_translation( translations ${translation_src} ${native_translation_src} )
+qt_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
+qt_wrap_ui( ide_forms_src ${ide_forms} )
+qt_add_resources( ide_rcc resources.qrc )
+qt_add_translation( translations ${translation_src} ${native_translation_src} ) 
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
@@ -280,10 +274,6 @@ endif()
 # This sets up the exe icon for windows.
 if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
- set(CMAKE_RC_COMPILER_INIT windres)
- ENABLE_LANGUAGE(RC)
- SET(CMAKE_RC_COMPILE_OBJECT
- "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
 endif(WIN32)
 
 
@@ -319,6 +309,10 @@ add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} 
 
 set_target_properties(libscide PROPERTIES PREFIX "")
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(libscide PRIVATE "-Wreorder")
+endif()
+
 if(APPLE)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
     if(NOT SC_DISABLE_XCODE_CODESIGNING)
@@ -331,14 +325,11 @@ endif()
 
 target_link_libraries( libscide PUBLIC
     ${QT_IDE_LIBRARIES}
-    ${YAMLCPP_LIBRARY}
+    yaml-cpp
     oscpack
 )
 
 target_link_libraries( SuperCollider libscide)
-
-target_link_libraries( libscide PUBLIC boost_system_lib boost_filesystem_lib)
-include_directories(${boost_include_dirs})
 
 # This makes sclang/scide work with a Qt installation at a fixed location.
 set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -348,6 +339,7 @@ if(APPLE)
     target_link_libraries( libscide PUBLIC "-framework Cocoa" )
 elseif(WIN32)
     target_link_libraries( libscide PUBLIC wsock32 )
+    target_compile_definitions( libscide PUBLIC UNICODE _UNICODE)
     # The following prevents a Windows console from showing up
     # when the executable is started:
     set_target_properties( SuperCollider PROPERTIES WIN32_EXECUTABLE TRUE )
@@ -403,9 +395,9 @@ if(APPLE)
 
 elseif(WIN32)
 
-    if(NOT MSVC)
+    if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
-    endif(NOT MSVC)
+    endif()
 
     if(MSYS)
       add_custom_command(TARGET SuperCollider
@@ -474,81 +466,57 @@ endif()
 # See https://doc.qt.io/qt-5/osx-deployment.html for macdeployqt
 if(APPLE OR WIN32)
     if(APPLE)
-        find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
+            set(DEPLOY_PROG_NAME "macdeployqt6")
+        else()
+            set(DEPLOY_PROG_NAME "macdeployqt")
+        endif()
+        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
         set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents)
-        set(QT_WEBENGINE_APP
-            "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app")
-        set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
                 -executable=${CONTENTS_DIR}/MacOS/sclang
                 -executable=${CONTENTS_DIR}/Resources/scsynth
-                -executable=${CONTENTS_DIR}/Resources/supernova
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
-                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
+            ")
+        if(SC_USE_QTWEBENGINE)
+            set(QT_WEBENGINE_APP
+            "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/Current/Helpers/QtWebEngineProcess.app")
+            set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")
+            string(APPEND DEPLOY_CMD "
                 -executable=${QT_WEBENGINE_PROCESS}
             ")
+        endif()
         set(VERIFY_CMD "include(BundleUtilities)")
-        if(SUPERNOVA)
-            get_target_property(LINK_FFTW libsupernova SUPERNOVA_FFTW)
-            if(LINK_FFTW)
-                message(STATUS "macdeployqt: will fix linking FFTW for supernova")
-                # For supernova, libfftw3f.3.dylib has a further dependency (libgcc_s) which is copied in,
-                # but libfftw3f is not fixed up automatically when supernova is deployed.
-                string(APPEND VERIFY_CMD "
-                message(STATUS \"Fixing up bad path in libfftw3f.3.dylib manually due to faulty logic in macdeployqt\")
-                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/9/libgcc_s.1.dylib
-                    @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
-                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/10/libgcc_s.1.dylib
-                    @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
-                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/11/libgcc_s.1.dylib
-                    @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6 AND "${Qt6_VERSION}" VERSION_LESS "6.9.3" AND SC_USE_QTWEBENGINE)
+            # Fix deployment with qt from homebrew
+            execute_process(COMMAND brew --prefix OUTPUT_VARIABLE BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+            get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
+            cmake_path(IS_PREFIX BREW_PREFIX ${QtCore_location} QT_IS_FROM_HOMEBREW)
+
+            if(QT_IS_FROM_HOMEBREW)
+                message(STATUS "Detected Qt6 from homebrew: will fix deployment of QtQuickWidgets")
+                execute_process(COMMAND brew --prefix qt6 OUTPUT_VARIABLE QT_BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+                if(QT_BREW_PREFIX)
+                    string(APPEND VERIFY_CMD "
+                        message(STATUS \"Manually copying QtQuickWidgets due to an issue with macdeployqt\")
+                        file(COPY ${QT_BREW_PREFIX}/lib/QtQuickWidgets.framework DESTINATION ${CONTENTS_DIR}/Frameworks)
+                        message(STATUS \"Changing install name in QtQuickWidgets\")
+                        execute_process(COMMAND install_name_tool -id @executable_path/../Frameworks/QtQuickWidgets.framework/Versions/A/QtQuickWidgets ${CONTENTS_DIR}/Frameworks/QtQuickWidgets.framework/QtQuickWidgets)
+                        execute_process(COMMAND install_name_tool -change ${QT_BREW_PREFIX}/lib/QtQuickWidgets.framework/Versions/A/QtQuickWidgets @executable_path/../Frameworks/QtQuickWidgets.framework/Versions/A/QtQuickWidgets ${CONTENTS_DIR}/Frameworks/QtQuickWidgets.framework/QtQuickWidgets)
                     ")
+                endif()
             endif()
         endif()
-
-        if(SC_USE_QTWEBENGINE AND ${Qt5_VERSION} VERSION_EQUAL 5.15.1)
-            # QTBUG-86759 / #5175 -- macdeployqt fails to copy part of QtWebEngineCore that contains QtWebEngineProcess.app.
-            message(STATUS "macdeployqt: will fix deploying QtWebEngineProcess.app for Qt 5.15.1")
-
-            # Assume that QtWebEngine and QtWebEngineCore frameworks live in the same directory. Using
-            # Qt5::WebEngineCore doesn't work here; even requesting that component explicitly above doesn't fix it.
-            get_target_property(QT_WEBENGINE_LOCATION Qt5::WebEngine LOCATION)
-            get_filename_component(QT_WEBENGINE_DIR "${QT_WEBENGINE_LOCATION}" DIRECTORY)
-            get_filename_component(QT_WEBENGINECORE_COPY_FROM ../QtWebEngineCore.framework/Versions/5/Helpers ABSOLUTE BASE_DIR "${QT_WEBENGINE_DIR}")
-            set(QT_WEBENGINECORE_COPY_TO "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers")
-
-            # Construct a call to install_name_tool that fixes up Qt lib dependencies. We can't use fixup_bundle for
-            # this because it copies all the dependencies (~200MB) into this nested bundle.
-            set(QT_WEBENGINE_FIXUP_COMMAND "install_name_tool ${QT_WEBENGINE_PROCESS}")
-            foreach(component Gui Core WebEngineCore Quick QmlModels WebChannel Qml Network Positioning)
-                get_target_property(component_location Qt5::${component} LOCATION)
-                get_filename_component(component_location "${component_location}" DIRECTORY)
-                get_filename_component(component_location Versions/5/Qt${component} REALPATH BASE_DIR "${component_location}")
-                # If qt is installed through homebrew, `component_location` will look like
-                # /usr/local/Cellar/qt/5.15.1/lib/QtFoo.framework/Versions/5/QtFoo
-                set(component_load_path "@loader_path/../../../../../../../Qt${component}.framework/Versions/5/Qt${component}")
-                string(APPEND QT_WEBENGINE_FIXUP_COMMAND " -change \"${component_location}\" ${component_load_path}")
-            endforeach()
-
-            string(APPEND VERIFY_CMD "
-                message(STATUS \"Fixing up bad deployment of QtWebEngineProcess with Qt 5.15.1\")
-                execute_process(COMMAND \"${CMAKE_COMMAND}\" -E remove_directory \"${QT_WEBENGINECORE_COPY_TO}\")
-                execute_process(COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${QT_WEBENGINECORE_COPY_FROM}\"
-                    \"${QT_WEBENGINECORE_COPY_TO}\")
-                # Mark all copied files +w. The actual process so we can run install_name_tool on it, and then the other
-                # copied files mainly to avoid having to run xattr with sudo.
-                execute_process(COMMAND chmod +w ${QT_WEBENGINE_PROCESS})
-                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Info.plist)
-                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/PkgInfo)
-                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Resources/empty.lproj)
-                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Resources/QtWebEngineProcess.entitlements)
-                execute_process(COMMAND ${QT_WEBENGINE_FIXUP_COMMAND})
-                ")
+        if(SUPERNOVA)
+            string(APPEND DEPLOY_CMD "
+                -executable=${CONTENTS_DIR}/Resources/supernova
+                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
+            ")
         endif()
 
         if(SC_CODESIGN_AFTER_DEPLOY)
@@ -584,7 +552,12 @@ if(APPLE OR WIN32)
                 verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
         endif()
     else() # WIN32
-        find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
+            set(DEPLOY_PROG_NAME "windeployqt6")
+        else()
+            set(DEPLOY_PROG_NAME "windeployqt")
+        endif()
+        find_program(DEPLOY_PROG ${DEPLOY_PROG_NAME} PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 --verbose 1 --no-compiler-runtime
                 \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
@@ -619,3 +592,7 @@ endif()
 if (LINUX)
   install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
 endif()
+
+
+set_property(TARGET libscide PROPERTY FOLDER Libs)
+set_property(TARGET update_ide_translations PROPERTY FOLDER Util)

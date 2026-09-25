@@ -39,4 +39,3 @@ Class.allClasses.do({ arg aClass;
 )
 
 Class.allClasses.printAll; "" // print all the classes in SCClassLib
-

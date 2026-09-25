@@ -43,7 +43,7 @@ code::
 
 // transparent usage in chains:
 // scoping LFNoise0 before and after .range, while still using it to modulate SinOsc
-{ SinOsc.ar(LFNoise0.kr(10).belaScope(0).range(20,100).belaScope(1)) }.play
+{ SinOsc.ar(LFNoise0.kr(10).belaScope(0).range(20, 100).belaScope(1)) }.play
 ::
 
 method::monitorBus
@@ -81,14 +81,14 @@ code::
 
 // UGens: usage like .poll
 // scope the LFNoise0, and still use it to modulate a SinOsc
-{ var freq = LFNoise0.kr.range(20,2000); SinOsc.ar(freq.belaScope(0)) }.play(~belaServer)
+{ var freq = LFNoise0.kr.range(20, 2000); SinOsc.ar(freq.belaScope(0)) }.play(~belaServer)
 
 // scope an Array of UGens:
-{ var freq = LFNoise0.kr.range(20,2000) ! 4; SinOsc.ar(freq.belaScope(0)) }.play(~belaServer)
+{ var freq = LFNoise0.kr.range(20, 2000) ! 4; SinOsc.ar(freq.belaScope(0)) }.play(~belaServer)
 
 // Bus: scope 3 channels from bus number 10 on Bela Oscilloscope's channel 4
 b = Bus(\audio, 10, 6, ~belaServer);
-{ SinOsc.ar }.play(~belaServer, outbus:b);
+{ SinOsc.ar }.play(~belaServer, outbus: b);
 b.belaScope(4);
 
 // Server: usage like .scope
@@ -99,5 +99,5 @@ b.belaScope(4);
 
 // Function: usage like .scope
 // play and scope a multi-output function; scope starting on BelaScope channel 4
-{ SinOsc.ar(LFNoise0.ar([1,2,3]).exprange(20,20000)) * LFNoise1.ar([1,2,3]).exprange(0.001, 0.1) }.belaScope(4, ~belaServer)
+{ SinOsc.ar(LFNoise0.ar([1, 2, 3]).exprange(20, 20000)) * LFNoise1.ar([1, 2, 3]).exprange(0.001, 0.1) }.belaScope(4, ~belaServer)
 ::

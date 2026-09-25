@@ -2,7 +2,7 @@
 // ip/detail/impl/endpoint.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -32,7 +32,7 @@ namespace asio {
 namespace ip {
 namespace detail {
 
-endpoint::endpoint() BOOST_ASIO_NOEXCEPT
+endpoint::endpoint() noexcept
   : data_()
 {
   data_.v4.sin_family = BOOST_ASIO_OS_DEF(AF_INET);
@@ -40,7 +40,7 @@ endpoint::endpoint() BOOST_ASIO_NOEXCEPT
   data_.v4.sin_addr.s_addr = BOOST_ASIO_OS_DEF(INADDR_ANY);
 }
 
-endpoint::endpoint(int family, unsigned short port_num) BOOST_ASIO_NOEXCEPT
+endpoint::endpoint(int family, unsigned short port_num) noexcept
   : data_()
 {
   using namespace std; // For memcpy.
@@ -70,7 +70,7 @@ endpoint::endpoint(int family, unsigned short port_num) BOOST_ASIO_NOEXCEPT
 }
 
 endpoint::endpoint(const boost::asio::ip::address& addr,
-    unsigned short port_num) BOOST_ASIO_NOEXCEPT
+    unsigned short port_num) noexcept
   : data_()
 {
   using namespace std; // For memcpy.
@@ -107,7 +107,7 @@ void endpoint::resize(std::size_t new_size)
   }
 }
 
-unsigned short endpoint::port() const BOOST_ASIO_NOEXCEPT
+unsigned short endpoint::port() const noexcept
 {
   if (is_v4())
   {
@@ -121,7 +121,7 @@ unsigned short endpoint::port() const BOOST_ASIO_NOEXCEPT
   }
 }
 
-void endpoint::port(unsigned short port_num) BOOST_ASIO_NOEXCEPT
+void endpoint::port(unsigned short port_num) noexcept
 {
   if (is_v4())
   {
@@ -135,7 +135,7 @@ void endpoint::port(unsigned short port_num) BOOST_ASIO_NOEXCEPT
   }
 }
 
-boost::asio::ip::address endpoint::address() const BOOST_ASIO_NOEXCEPT
+boost::asio::ip::address endpoint::address() const noexcept
 {
   using namespace std; // For memcpy.
   if (is_v4())
@@ -147,27 +147,23 @@ boost::asio::ip::address endpoint::address() const BOOST_ASIO_NOEXCEPT
   else
   {
     boost::asio::ip::address_v6::bytes_type bytes;
-#if defined(BOOST_ASIO_HAS_STD_ARRAY)
     memcpy(bytes.data(), data_.v6.sin6_addr.s6_addr, 16);
-#else // defined(BOOST_ASIO_HAS_STD_ARRAY)
-    memcpy(bytes.elems, data_.v6.sin6_addr.s6_addr, 16);
-#endif // defined(BOOST_ASIO_HAS_STD_ARRAY)
     return boost::asio::ip::address_v6(bytes, data_.v6.sin6_scope_id);
   }
 }
 
-void endpoint::address(const boost::asio::ip::address& addr) BOOST_ASIO_NOEXCEPT
+void endpoint::address(const boost::asio::ip::address& addr) noexcept
 {
   endpoint tmp_endpoint(addr, port());
   data_ = tmp_endpoint.data_;
 }
 
-bool operator==(const endpoint& e1, const endpoint& e2) BOOST_ASIO_NOEXCEPT
+bool operator==(const endpoint& e1, const endpoint& e2) noexcept
 {
   return e1.address() == e2.address() && e1.port() == e2.port();
 }
 
-bool operator<(const endpoint& e1, const endpoint& e2) BOOST_ASIO_NOEXCEPT
+bool operator<(const endpoint& e1, const endpoint& e2) noexcept
 {
   if (e1.address() < e2.address())
     return true;

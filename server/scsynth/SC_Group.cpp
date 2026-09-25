@@ -46,7 +46,7 @@ void GroupNodeDef_Init() {
     gGroupNodeDef.mAllocSize = sizeof(Group);
 }
 
-int Group_New(World* inWorld, int32 inID, Group** outGroup) {
+SCErr Group_New(World* inWorld, int32 inID, Group** outGroup) {
     Group* group;
     int err = Node_New(inWorld, &gGroupNodeDef, inID, (Node**)&group);
     if (err)
@@ -107,6 +107,8 @@ void Group_DumpNodeTree(Group* inGroup) {
         child = next;
     }
     tabCount--;
+    if (tabCount == 0)
+        scprintf("END NODE TREE Group %d\n", inGroup->mNode.mID);
 }
 
 void Group_DumpNodeTreeAndControls(Group* inGroup) {
@@ -179,6 +181,8 @@ void Group_DumpNodeTreeAndControls(Group* inGroup) {
         child = next;
     }
     tabCount--;
+    if (tabCount == 0)
+        scprintf("END NODE TREE Group %d\n", inGroup->mNode.mID);
 }
 
 void Group_CalcDumpTree(Group* inGroup) {

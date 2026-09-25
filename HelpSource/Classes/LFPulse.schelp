@@ -14,7 +14,7 @@ argument::freq
 frequency in Hertz
 
 argument::iphase
-initial phase offset in cycles ( 0..1 )
+initial phase offset in cycles (0..1)
 
 argument::width
 pulse width duty cycle from zero to one.
@@ -69,4 +69,3 @@ code::
 }.scope(bufsize: 44100, zoom: 5)
 )
 ::
-

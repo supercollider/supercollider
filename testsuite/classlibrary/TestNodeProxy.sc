@@ -113,7 +113,7 @@ TestNodeProxy : UnitTest {
 			"asCode-posting nodeproxy with settings should post these correctly."
 		);
 
-		server.quit;
+		server.quitSync;
 	}
 
 	test_asCode_single_ndef {
@@ -278,7 +278,7 @@ TestNodeProxy : UnitTest {
 
 		this.assertFloatEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
 
-		server.quit;
+		server.quitSync;
 		server.remove;
 	}
 
@@ -298,6 +298,17 @@ TestNodeProxy : UnitTest {
 
 	}
 
+	test_buildProxy_inside {
+		var buildProxyFromInside;
+		proxy.source = { buildProxyFromInside = NodeProxy.buildProxy };
+		this.assertEquals(buildProxyFromInside, proxy, "From inside the source, buildProxy should be the current proxy");
+	}
+	test_buildProxy_outside {
+		var buildProxyFromOutside;
+		proxy.source = { 0.0 };
+		this.assert(buildProxyFromOutside.isNil, "From theoutside, buildProxy should be nil");
+	}
+
 }
 
 
@@ -313,7 +324,7 @@ TestNodeProxyBusMapping : UnitTest {
 
 
 	tearDown {
-		server.quit.remove;
+		server.quitSync.remove;
 	}
 
 	test_audiorate_mapping {

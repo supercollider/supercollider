@@ -5,11 +5,33 @@ ScIDE {
 	classvar serverController;
 	classvar volumeController, suppressAmpResponse = false;
 	classvar docRoutine;
+	classvar handshakeCondition;
 
 	*initClass {
 		subListSorter = { | a b | a[0].perform('<', b[0]) };
 
 		Class.initClassTree(Server);
+		Class.initClassTree(SCDoc);
+		Class.initClassTree(PostWindowURLHandler);
+
+		PostWindowURLHandler.register(\scdoc, {|url|
+			var prefix = "scdoc://";
+			ScIDE.openHelpUrl("file://" ++ SCDoc.helpTargetDir +/+ url[prefix.size..])
+		});
+
+		PostWindowURLHandler.register(\file, {|url|
+			var prefix = "file://";
+			var parts = url[prefix.size..].split($:);
+			{ Document.openAtLine(if(parts[0][0] == $/) {parts[0]} {"/" ++ parts[0]}, parts[1] ?? { 0 }, parts[2] ?? [0]) }.fork(AppClock)
+		});
+
+		PostWindowURLHandler.register(\http, {|url|
+			HelpBrowser.goTo(url)
+		});
+
+		PostWindowURLHandler.register(\https, {|url|
+			HelpBrowser.goTo(url)
+		});
 
 		StartUp.add {
 			if (this.connected) {
@@ -24,12 +46,25 @@ ScIDE {
 	}
 
 	*handshake {
-		this.send(\classLibraryRecompiled);
-		this.send(\requestDocumentList);
-		this.send(\requestCurrentPath);
+		fork{
+			handshakeCondition !? { "%: handshakeCondition is not nil!".format(thisMethod.asString).warn };
+			handshakeCondition = CondVar();
 
-		this.defaultServer = Server.default;
-		this.sendIntrospection;
+			this.send(\classLibraryRecompiled);
+			this.send(\requestDocumentList);
+			handshakeCondition.waitFor(5);
+			this.send(\requestCurrentPath);
+			handshakeCondition.waitFor(5);
+
+			this.defaultServer = Server.default;
+			this.sendIntrospection;
+
+			handshakeCondition = nil;
+		}
+	}
+
+	*prSignalHandshakeCond {
+		handshakeCondition !? { handshakeCondition.signalOne };
 	}
 
 	*defaultServer_ {|server|
@@ -272,6 +307,10 @@ ScIDE {
 		});
 	}
 
+	*clearPostWindow {
+		this.send(\clearPostWindow);
+	}
+
 	*cmdPeriod { docRoutine.play(AppClock) }
 
 	*processUrl { |urlString, doneAction|
@@ -394,6 +433,10 @@ ScIDE {
 		}
 	}
 
+	currentPath_ { |p|
+		currentPath = p.standardizePath;
+	}
+
 
 	// PRIVATE ///////////////////////////////////////////////////////////
 
@@ -405,6 +448,30 @@ ScIDE {
 	*prConnect {|ideName|
 		_ScIDE_Connect
 		this.primitiveFailed
+	}
+}
+
+PostWindowURLHandler {
+	classvar registered;
+
+	*initClass {
+		Class.initClassTree(IdentityDictionary);
+		registered = IdentityDictionary();
+	}
+
+	*register { |name, fn| registered[name] = fn }
+
+	*new { |scheme, url|
+		var found = registered[scheme.asSymbol];
+		^if(found.isNil){
+			this.prDefault(url)
+		} {
+			found.(url)
+		}
+	}
+
+	*prDefault { |url|
+		"PostWindowURLHandler does not know how to handle the URL '%'".format(url).warn
 	}
 }
 
@@ -443,6 +510,22 @@ Document {
 		};
 		if(doc.notNil, { ^doc.front });
 		doc = super.new.initFromPath(path, selectionStart, selectionLength);
+		if (envir.notNil and: { doc.notNil }) { doc.envir_(envir) };
+		^doc
+	}
+
+	*openAtLine { |path, lineNumber, column, selectionLength, envir|
+		var doc;
+		path = this.standardizePath(path);
+		allDocuments.do{ |d|
+			if(d.path == path.absolutePath){
+				doc = d
+			};
+		};
+		if(doc.notNil, {
+			^doc.front
+		});
+		doc = super.new.initFromPathLineColumn(path, lineNumber + column, selectionLength);
 		if (envir.notNil and: { doc.notNil }) { doc.envir_(envir) };
 		^doc
 	}
@@ -487,8 +570,8 @@ Document {
 	*prCurrent_ {|newCurrent|
 		current = this.current;
 		if((newCurrent === current).not, {
-			if(current.notNil, {current.didResignKey});
-			newCurrent.didBecomeKey;
+			current !? { current.didResignKey };
+			newCurrent !? { newCurrent.didBecomeKey };
 		});
 	}
 
@@ -580,6 +663,31 @@ Document {
 		title = path.basename;
 		isEdited = false;
 		this.prAdd;
+	}
+
+	initFromPathLineColumn { |argpath, line(1), column(0), selectionLength(1)|
+		quuid = ScIDE.getQUuid;
+		this.prReadTextFromFile(argpath);
+		this.propen(argpath, this.prFindIndexOfLineNumber(line) + column, selectionLength);
+		path = argpath;
+		title = path.basename;
+		isEdited = false;
+		this.prAdd;
+	}
+
+	prFindIndexOfLineNumber { |line(1)|
+		var txt = this.getText;
+		var count = 1;
+		txt.do {|c, i|
+			if (count == line){
+				^i
+			} {
+				if (c == $\n) {
+					count = count + 1;
+				}
+			}
+		};
+		^txt.size - 1
 	}
 
 	textChanged {|index, numCharsRemoved, addedChars|
@@ -785,6 +893,7 @@ Document {
 		^this.prGetSelectionStart(quuid)
 	}
 
+
 	prGetSelectionStart {|id|
 		_ScIDE_GetDocSelectionStart
 		^this.primitiveFailed;
@@ -806,7 +915,7 @@ Document {
 		^this.rangeText(rangestart, rangesize);
 	}
 
-	string_ { | string, rangestart = -1, rangesize = 1 |
+	string_ { | string, rangestart = 0, rangesize = -1 |
 		this.prSetText(string, nil, rangestart, rangesize);
 	}
 

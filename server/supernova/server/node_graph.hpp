@@ -185,6 +185,15 @@ public:
             return nullptr;
     }
 
+    // Some notes:
+    // - group_free_all() is only called by remove_node() and could actually be a private method.
+    // - group_free_deep() is not really called anywhere and could be removed.
+    // Since both methods are used in some tests, we keep them as they are.
+    //
+    // Note that the /g_freeAll and /g_deepFree commands are actually implemented in
+    // server::group_free_all() resp. server::group_free_deep()!
+    // This is pretty confusing as these methods have the same names. Even worse:
+    // since nova::server inherits from nova::node_graph, they actually *shadow* our methods.
     void group_free_all(abstract_group* group) {
         group_free_all(group, [](server_node&) {});
     }
@@ -215,8 +224,8 @@ public:
             if (node.is_synth()) {
                 release_node_id(&node);
                 synths += 1;
+                doOnFree(node);
             }
-            doOnFree(node);
         });
 
         group->free_synths_deep();

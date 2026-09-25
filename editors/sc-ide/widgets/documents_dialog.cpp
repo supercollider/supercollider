@@ -40,7 +40,7 @@ DocumentsDialog::DocumentsDialog(const QList<Document*>& docs, Mode mode, QWidge
 
 void DocumentsDialog::init(Mode mode, const QList<Document*>& docs) {
     DocumentManager* mng = Main::documentManager();
-    connect(mng, SIGNAL(changedExternally(Document*)), this, SLOT(onDocumentChangedExternally(Document*)));
+    connect(mng, &DocumentManager::changedExternally, this, &DocumentsDialog::onDocumentChangedExternally);
 
     mMode = mode;
 
@@ -83,38 +83,38 @@ void DocumentsDialog::init(Mode mode, const QList<Document*>& docs) {
     if (mode == ExternalChange) {
         defaultBtn = btn = dialogBtnBox->addButton(tr("&Reload"), QDialogButtonBox::ActionRole);
         btn->setIcon(QIcon::fromTheme("view-refresh"));
-        connect(btn, SIGNAL(clicked()), this, SLOT(reloadSelected()));
+        connect(btn, &QPushButton::clicked, this, &DocumentsDialog::reloadSelected);
 
         btn = dialogBtnBox->addButton(tr("Over&write"), QDialogButtonBox::ActionRole);
         btn->setIcon(QIcon::fromTheme("document-save"));
-        connect(btn, SIGNAL(clicked()), this, SLOT(saveSelected()));
+        connect(btn, &QPushButton::clicked, this, &DocumentsDialog::saveSelected);
 
         btn = dialogBtnBox->addButton(tr("&Ignore"), QDialogButtonBox::AcceptRole);
         btn->setIcon(QIcon::fromTheme("window-close"));
-        connect(btn, SIGNAL(clicked()), this, SLOT(ignoreSelected()));
+        connect(btn, &QPushButton::clicked, this, &DocumentsDialog::ignoreSelected);
 
         btn = dialogBtnBox->addButton(tr("&Close"), QDialogButtonBox::AcceptRole);
         btn->setIcon(QIcon::fromTheme("window-close"));
-        connect(btn, SIGNAL(clicked()), this, SLOT(closeSelected()));
+        connect(btn, &QPushButton::clicked, this, &DocumentsDialog::closeSelected);
     } else {
         defaultBtn = btn = dialogBtnBox->addButton(tr("&Save"), QDialogButtonBox::ActionRole);
         btn->setIcon(QIcon::fromTheme("document-save"));
-        connect(btn, SIGNAL(clicked()), this, SLOT(saveSelected()));
+        connect(btn, &QPushButton::clicked, this, &DocumentsDialog::saveSelected);
 
         btn = dialogBtnBox->addButton(tr("&Discard"), QDialogButtonBox::ActionRole);
         btn->setIcon(QIcon::fromTheme("window-close"));
-        connect(btn, SIGNAL(clicked()), this, SLOT(ignoreSelected()));
+        connect(btn, &QPushButton::clicked, this, &DocumentsDialog::ignoreSelected);
 
         btn = dialogBtnBox->addButton(tr("&Cancel"), QDialogButtonBox::RejectRole);
         btn->setIcon(QIcon::fromTheme("window-close"));
-        connect(btn, SIGNAL(clicked()), this, SLOT(reject()));
+        connect(btn, &QPushButton::clicked, this, &DocumentsDialog::reject);
     }
 
     QPushButton* selectAllBtn = new QPushButton(tr("Select &All"));
-    connect(selectAllBtn, SIGNAL(clicked()), this, SLOT(selectAll()));
+    connect(selectAllBtn, &QPushButton::clicked, this, &DocumentsDialog::selectAll);
 
     QPushButton* selectNoneBtn = new QPushButton(tr("Select N&one"));
-    connect(selectNoneBtn, SIGNAL(clicked()), this, SLOT(selectNone()));
+    connect(selectNoneBtn, &QPushButton::clicked, this, &DocumentsDialog::selectNone);
 
     QLabel* iconLabel = new QLabel;
     iconLabel->setPixmap(QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning).pixmap(48, 48));

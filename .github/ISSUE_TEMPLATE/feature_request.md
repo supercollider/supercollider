@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- Please see CONTRIBUTING.md for guidelines. -->
+<!-- For information about contributing see: https://github.com/supercollider/supercollider/wiki/Contributing-directory -->
 
 ## Motivation
 

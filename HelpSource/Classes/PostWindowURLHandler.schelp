@@ -1,0 +1,42 @@
+CLASS::PostWindowURLHandler
+summary::Used to respond when clicking links in the post window.
+related::Classes/ScIDE, Classes/Document
+categories:: Frontends, IDE
+
+DESCRIPTION::
+Used to respond to specific URLs when clicking links in the post window.
+For example, when clicking on a code::file://:: link, by default this will open the file.
+
+
+Here is an example of how this class can be used.
+
+When the user clicks on a URL in the post window with the scheme code::scdoc::, open the help file in the IDE help browser.
+code::
+PostWindowURLHandler.register(\scdoc, {|url|
+	var prefix = "scdoc://";
+	ScIDE.openHelpUrl("file://" ++ SCDoc.helpTargetDir +/+ url[prefix.size..])
+});
+::
+
+CLASSMETHODS::
+PRIVATE:: prDefault
+
+method:: register
+
+argument:: name 
+
+A link::Classes/Symbol:: representing the scheme of the URI. 
+For example, if the URL is code::bang://hello:: then the code::name:: should be code::\bang::.
+
+argument:: fn
+A link::Classes/Function:: accepting one argument, which is the full url as a link::Classes/String::.
+
+method:: new
+
+Used to trigger any registered action for the scheme if present, otherwise calls a default action, which posts a warning.
+This is no usually called by the user, but by the IDE backend.
+argument:: scheme
+The scheme of the URI.
+
+argument:: url
+The full url, including the scheme.

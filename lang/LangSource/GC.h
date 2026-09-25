@@ -30,6 +30,7 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 #include "VMGlobals.h"
 #include "AdvancingAllocPool.h"
 #include "function_attributes.h"
+#include <cstdint>
 
 void DumpSimpleBackTrace(VMGlobals* g);
 
@@ -37,7 +38,7 @@ const int kMaxPoolSet = 7;
 const int kNumGCSizeClasses = 28;
 const int kFinalizerSet = kNumGCSizeClasses;
 const int kNumGCSets = kNumGCSizeClasses + 1;
-const int kScanThreshold = 256;
+const uint64_t kScanThreshold = 256LL;
 
 
 class GCSet {
@@ -69,12 +70,12 @@ class PyrGC {
     static const int kLazyCollectThreshold = 1024;
 
 public:
-    PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, long poolSize);
+    PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize);
 
-    MALLOC PyrObject* New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect);
-    MALLOC PyrObject* NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool inAccount);
+    MALLOC PyrObject* New(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inCollect);
+    MALLOC PyrObject* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inAccount);
 
-    MALLOC static PyrObject* NewPermanent(size_t inNumBytes, long inFlags, long inFormat);
+    MALLOC static PyrObject* NewPermanent(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat);
 
     MALLOC PyrObject* NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject* inObject, bool inCollect);
 
@@ -123,10 +124,32 @@ public:
         }
     }
 
+    /// Don't call collect immediately, wait until some context has finished, then call collect.
+    /// This is implemented primarily for use inside primitives, where collecting while creating temporary objects can
+    /// lead to them being freed unless care is taken.
+    void enterDelayedCollectionContext() {
+        mDelayCollection = true;
+        mAttemptedToCollectWhenDelayed = false;
+    }
+    void exitDelayedCollectionContext() {
+        mDelayCollection = false;
+        if (mAttemptedToCollectWhenDelayed) {
+            mAttemptedToCollectWhenDelayed = false;
+            Collect();
+        }
+    }
+    /// To be called when you **absolutely** know you want collect to be called inside a delay collection context (e.g.
+    /// a primitive). You probably don't want to call this. If you do (and have benchmarks to prove it), it must be
+    /// called before any allocations are made (at the top of the primitive) otherwise memory leaks may arise.
+    void enableImmediateCollections() {
+        mDelayCollection = false;
+        mAttemptedToCollectWhenDelayed = false;
+    }
+
     // users should not call anything below.
 
     void Collect();
-    void Collect(int32 inNumToScan);
+    void Collect(uint64 inNumToScan);
     void LazyCollect() {
         if (mUncollectedAllocations > kLazyCollectThreshold)
             Collect();
@@ -144,7 +167,7 @@ public:
     void Free(PyrObjectHdr* inObj);
 
 
-    long StackDepth() { return mVMGlobals->sp - mStack->slots + 1; }
+    std::int64_t StackDepth() { return mVMGlobals->sp - mStack->slots + 1; }
     PyrObject* Stack() { return mStack; }
     void SetStack(PyrObject* inStack) { mStack = inStack; }
 
@@ -169,7 +192,7 @@ private:
     inline PyrObject* Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);
     static void throwMemfailed(size_t inNumBytes);
 
-    void ScanSlots(PyrSlot* inSlots, long inNumToScan);
+    void ScanSlots(PyrSlot* inSlots, std::int64_t inNumToScan);
     void SweepBigObjects();
     void DoPartialScan(int32 inObjSize);
     bool ScanOneObj();
@@ -197,15 +220,18 @@ private:
     PyrObjectHdr mGrey;
 
     int32 mPartialScanSlot;
-    int32 mNumToScan;
+    int64 mNumToScan;
     int32 mNumGrey;
 
-    int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned,
-        mUncollectedAllocations;
+    int64 mAllocTotal;
+    int32 mFlips, mCollects, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned, mUncollectedAllocations;
 
     unsigned char mBlackColor, mGreyColor, mWhiteColor, mFreeColor;
     bool mCanSweep;
     bool mRunning;
+
+    bool mDelayCollection { false };
+    bool mAttemptedToCollectWhenDelayed { false };
 };
 
 inline void PyrGC::DLRemove(PyrObjectHdr* obj) {
@@ -286,7 +312,7 @@ inline void PyrGC::ToGrey(PyrObjectHdr* obj) {
     /* set grey list pointer to obj */
     obj->gc_color = mGreyColor;
     mNumGrey++;
-    mNumToScan += 1L << obj->obj_sizeclass;
+    mNumToScan += 1LL << obj->obj_sizeclass;
 }
 
 inline void PyrGC::ToGrey2(PyrObjectHdr* obj) {
@@ -303,15 +329,16 @@ inline void PyrGC::ToGrey2(PyrObjectHdr* obj) {
 }
 
 inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRunCollection) {
-    if (inRunCollection && mNumToScan >= kScanThreshold)
+    if (inRunCollection && mNumToScan >= kScanThreshold) {
         Collect();
-    else {
+    } else {
         if (inRunCollection)
             mUncollectedAllocations = 0;
         else
             ++mUncollectedAllocations;
     }
 
+    assert(sizeclass >= 0);
     GCSet* gcs = mSets + sizeclass;
 
     PyrObject* obj = (PyrObject*)gcs->mFree;
@@ -321,11 +348,13 @@ inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRun
         assert(obj->obj_sizeclass == sizeclass);
     } else {
         if (sizeclass > kMaxPoolSet) {
+            // If the sizeclass has reached the cap, then allocSize (as calculated below) might not be large enough.
             SweepBigObjects();
-            size_t allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-            obj = (PyrObject*)mPool->Alloc(allocSize);
+            const size_t allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
+            obj = (PyrObject*)mPool->Alloc(std::max(allocSize, inNumBytes));
         } else {
             size_t allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
+            assert(allocSize >= inNumBytes);
             obj = (PyrObject*)mNewPool.Alloc(allocSize);
         }
         if (!obj)

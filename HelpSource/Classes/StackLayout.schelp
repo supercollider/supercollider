@@ -38,8 +38,8 @@ METHOD:: new
 code::
 (
 var stack;
-w = Window().layout_( VLayout(
-    Button().states_([["One"],["Two"],["Three"]]).action_({ |b| stack.index = b.value }),
+w = Window().layout_(VLayout(
+    Button().states_([["One"], ["Two"], ["Three"]]).action_({ |b| stack.index = b.value }),
     stack = StackLayout(
         TextView().string_("This is a chunk of text..."),
         TextView().string_("...and this is another..."),
@@ -89,23 +89,23 @@ Overlaying a TextView with a UserView to do additional drawing on top, while sti
 code::
 (
 var text, canvas;
-text = TextView().string_("Hello world!").keyDownAction_({canvas.refresh});
+text = TextView().string_("Hello world!").keyDownAction_({ canvas.refresh });
 canvas = UserView().acceptsMouse_(false).drawFunc_({
     var b = canvas.bounds();
     var str = text.string;
-    Pen.translate( b.center.x, b.center.y );
+    Pen.translate(b.center.x, b.center.y);
     Pen.fillColor = text.palette.baseText.alpha_(0.1);
     str.do { |c|
         var x = 40.0.rand + 10.0;
         var r = c.asString.bounds.center_(0@0);
         Pen.push;
-        Pen.rotate( 1.0.rand );
-        Pen.translate( rand2(-0.3,0.3) * b.width, rand2(-0.3,0.3) * b.width );
-        Pen.scale( x, x );
+        Pen.rotate(1.0.rand);
+        Pen.translate(rand2(-0.3, 0.3) * b.width, rand2(-0.3, 0.3) * b.width);
+        Pen.scale(x, x);
         Pen.stringCenteredIn(c.asString, r);
         Pen.pop;
     }
 }).refresh;
-w=Window().layout_( StackLayout( canvas, text ).mode_(\stackAll) ).front;
+w = Window().layout_(StackLayout(canvas, text).mode_(\stackAll)).front;
 )
 ::

@@ -22,9 +22,9 @@ number of levels
 
 code::
 IdentityDictionary[
-	elem1 -> [ otherElements ],
-	elem2 -> [ otherElements ],
-	elem2 -> [ otherElements ]
+	elem1 -> [otherElements],
+	elem2 -> [otherElements],
+	elem2 -> [otherElements]
 ]
 ::
 
@@ -43,7 +43,7 @@ Pdef(\a, Pbind(\dur, 0.25, \degree, Pseq((0..3))));
 Pdef(\b, Pbind(\dur, 0.25, \degree, Pseq((3..0))));
 
 // Random scale degrees
-Pdef(\c, Pbind(\dur, 0.125, \degree, Pwhite(0,10, 8)));
+Pdef(\c, Pbind(\dur, 0.125, \degree, Pwhite(0, 10, 8)));
 
 // Use the L-system to put together a sequence of keys
 // Psym will then retrieve the patterns from the global Pdef dictionary
@@ -62,9 +62,9 @@ Psym(
 (
 a = Prewrite(0, // start with 0
 	(
-		0: #[2,0],
-		1: #[0,0,1],
-		2: #[1,0,1]
+		0: #[2, 0],
+		1: #[0, 0, 1],
+		2: #[1, 0, 1]
 ), 4);
 x = a.asStream;
 30.do({ x.next.postln });

@@ -34,7 +34,7 @@ extern double elapsedTime();
 
 using namespace QtCollider;
 
-LangClient::LangClient(const char* name): SC_TerminalClient(name) {}
+LangClient::LangClient(const std::string& name): SC_TerminalClient(name) {}
 
 void LangClient::commandLoop() {
     int exit_code = QcApplication::instance()->exec();
@@ -70,7 +70,7 @@ void LangClient::customEvent(QEvent* e) {
 
     case Event_SCRequest_Work:
         QApplication::removePostedEvents(this, Event_SCRequest_Work);
-        mIoService.poll();
+        mIoContext.poll();
         break;
     case Event_SCRequest_Quit: {
         int code = static_cast<SCRequestEvent*>(e)->data.toInt();

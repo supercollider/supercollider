@@ -45,13 +45,16 @@ AmpComp : PureUGen {
 	*ir { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
 		^this.multiNew('scalar', freq, root, exp)
 	}
-	*ar { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
+	*ar { arg freq, root = 60.midicps, exp = 0.3333;
 		^this.multiNew('audio', freq, root, exp)
 	}
 	*kr { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
 		^this.multiNew('control', freq, root, exp)
 	}
-	checkInputs { ^if(rate === \audio) { this.checkSameRateAsFirstInput } }
+	checkInputs {
+		if(rate == \audio) { ^this.checkSameRateAsFirstInput };
+		^this.checkValidInputs
+	}
 }
 
 AmpCompA : AmpComp {

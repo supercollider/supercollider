@@ -112,7 +112,7 @@ convenience on/off methods
 
 method::filters
 keys and string fragments to filter for.
-e.g. [ 'all', "+" ] gets lines from all sources that contain the string "+".
+e.g. ['all', "+"] gets lines from all sources that contain the string "+".
 method::filterLines
 apply filtering to history lines
 

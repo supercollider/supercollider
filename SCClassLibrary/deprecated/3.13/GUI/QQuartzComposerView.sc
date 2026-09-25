@@ -26,21 +26,6 @@ QuartzComposerView : View {
 
 	openInQC{ ("open" + path.quote + "-a 'Quartz Composer'").unixCmd }
 
-	setInputValue{|key, value|
-		_QQuartzComposer_SetInputPort
-		^this.primitiveFailed;
-	}
-
-	getInputValue{|key|
-		_QQuartzComposer_GetInputPort
-		^this.primitiveFailed;
-	}
-
-	getOutputValue{|key|
-		_QQuartzComposer_GetOutputPort
-		^this.primitiveFailed;
-	}
-
 	maxFPS_{|rate|
 		this.invokeMethod(\setMaxRenderingFrameRate, rate.asFloat);
 	}

@@ -12,7 +12,7 @@
 	url = https://github.com/supercollider/scvim.git
 [submodule "external_libraries/yaml-cpp"]
 	path = external_libraries/yaml-cpp
-	url = https://github.com/supercollider/yaml-cpp.git
+	url = https://github.com/jbeder/yaml-cpp.git
 [submodule "editors/sc-el"]
 	path = editors/sc-el
 	url = https://github.com/supercollider/scel/
@@ -22,3 +22,9 @@
 [submodule "external_libraries/portaudio"]
 	path = external_libraries/portaudio/portaudio_submodule
 	url = https://github.com/PortAudio/portaudio.git
+[submodule "external_libraries/portmidi"]
+	path = external_libraries/portmidi/portmidi_submodule
+	url = https://github.com/PortMidi/portmidi.git
+[submodule "external_libraries/utf8proc"]
+	path = external_libraries/utf8proc
+	url = https://github.com/JuliaStrings/utf8proc.git

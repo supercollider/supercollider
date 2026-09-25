@@ -334,7 +334,7 @@ struct trait \
 // correct name but different number of arguments.
 #   define BOOST_MPL_HAS_MEMBER_MULTI_SUBSTITUTE(z, n, args) \
       template< \
-          template< BOOST_PP_ENUM_PARAMS(BOOST_PP_INC(n), typename V) > class V \
+          template< BOOST_PP_ENUM_PARAMS_Z(z, BOOST_PP_INC(n), typename V) > class V \
        > \
       struct BOOST_MPL_HAS_MEMBER_INTROSPECTION_SUBSTITUTE_NAME(args, n) { \
       }; \
@@ -503,7 +503,7 @@ struct trait \
                  z, n, args \
              ) \
         template< \
-             template< BOOST_PP_ENUM_PARAMS(BOOST_PP_INC(n), typename U) > class U \
+             template< BOOST_PP_ENUM_PARAMS_Z(z, BOOST_PP_INC(n), typename U) > class U \
         > \
         struct BOOST_MPL_HAS_MEMBER_INTROSPECTION_SUBSTITUTE_NAME_WITH_TEMPLATE_SFINAE( \
                 args, n \

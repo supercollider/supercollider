@@ -18,9 +18,9 @@ Scale {
 		^all.at(key)
 	}
 
-	*doesNotUnderstand { |selector, args|
-		var scale = this.newFromKey(selector, args).deepCopy;
-		^scale ?? { super.doesNotUnderstand(selector, args) };
+	*doesNotUnderstand { |selector... args, kwargs|
+		var scale = this.performArgs(\newFromKey, [selector] ++ args, kwargs).deepCopy;
+		^scale ?? { this.superPerformArgs(\doesNotUnderstand, [selector] ++ args, kwargs) }
 	}
 
 	*newFromKey { |key, tuning|
@@ -104,8 +104,11 @@ Scale {
 	}
 
 	degreeToRatio { |degree, octave = 0|
-		octave = octave + (degree div: degrees.size);
-		^this.ratios.wrapAt(degree) * (this.octaveRatio ** octave);
+		// extra steps to make scale degree literals like 2b == 1.9 work.
+		var degDiatonic = degree.round(1);
+        var centOffset = (degree - degDiatonic) * 10;
+		octave = octave + (degDiatonic div: degrees.size);
+		^this.ratios.wrapAt(degDiatonic) * (this.octaveRatio ** octave) * centOffset.midiratio;
 	}
 
 	degreeToFreq { |degree, rootFreq, octave|
@@ -184,9 +187,9 @@ Tuning {
 		^all.at(key)
 	}
 
-	*doesNotUnderstand { |selector, args|
-		var tuning = this.newFromKey(selector, args).deepCopy;
-		^tuning ?? { super.doesNotUnderstand(selector, args) }
+	*doesNotUnderstand { |selector... args, kwargs|
+		var tuning = this.performArgs(\newFromKey, [selector] ++ args, kwargs).deepCopy;
+		^tuning ?? { this.superPerformArgs(\doesNotUnderstand, [selector] ++ args, kwargs) }
 	}
 
 	*newFromKey { | key |

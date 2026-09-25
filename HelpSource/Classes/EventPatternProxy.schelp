@@ -20,7 +20,7 @@ set the default quantization value for the class.
 InstanceMethods::
 
 method::source
-set the source (a pattern). If a quantization is given, schedule this change to the next beat ( strong::pattern_::(..) is equivalent)
+set the source (a pattern). If a quantization is given, schedule this change to the next beat (strong::pattern_::(..) is equivalent)
 
 method::clear
 set the source to nil and stop playing
@@ -57,9 +57,9 @@ Replacement for code::nil:: outputs of the source pattern. One use case is link:
 code::
 a = EventPatternProxy.new;
 a.source = Pbind(\freq, Pgeom(100, Pwhite(1.01, 1.2), 4));
-r = Routine { |inval| loop { a.embedInStream(inval) }; };
+r = Routine { |inval| loop { a.embedInStream(inval) } };
 r.nextN(12, ()); // the next 12 values from r
-a.source = Pbind(\freq, Pgeom([100, 200], Pwhite(1.01, 1.2), 4));// replace the source
+a.source = Pbind(\freq, Pgeom([100, 200], Pwhite(1.01, 1.2), 4)); // replace the source
 r.nextN(12, ()); // the next 12 values from r
 ::
 
@@ -114,10 +114,10 @@ subsection::a) embedding EventPatternProxy in streams
 code::
 (
 SynthDef("Pdefhelp", {
-	arg out, freq, sustain=1, amp=0.1, pan;
-	var env, u=1;
+	arg out, freq, sustain = 1, amp = 0.1, pan;
+	var env, u = 1;
 	env = EnvGen.kr(Env.perc(0.03, sustain), 1, doneAction: Done.freeSelf);
-	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };
+	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1, 1.2) * d, 1) };
 	Out.ar(out, Pan2.ar(SinOsc.ar(u + 1 * freq, 0, amp * env), pan));
 }).add;
 )
@@ -155,10 +155,10 @@ m.stop;
 (
 x = Ppar([
 	Pbindf(Pn(a, inf),
-		\gtranspose, Pdup(8, Pseq(#[0, 2, 0, 3],inf))
+		\gtranspose, Pdup(8, Pseq(#[0, 2, 0, 3], inf))
 	),
 	Pbindf(Pn(a, inf),
-		\gtranspose, Pdup(8, Pseq(#[7, 4, 0, 3],inf)),
+		\gtranspose, Pdup(8, Pseq(#[7, 4, 0, 3], inf)),
 		\dur, 0.6
 	),
 	Pbindf(Pn(a, inf),
@@ -171,7 +171,7 @@ a.source = Pbind(\instrument, \Pdefhelp, \dur, 0.1, \degree, Pseq(#[0, 1, 0, 1, 
 
 a.source = Pbind(\instrument, \Pdefhelp, \dur, 0.2, \degree, Pseq([0, 4], inf));
 
-a.source = Pbind(\instrument, \Pdefhelp, \dur, 0.2, \degree, Pseq([0, 4, Prand([6, 8b],2)], inf));
+a.source = Pbind(\instrument, \Pdefhelp, \dur, 0.2, \degree, Pseq([0, 4, Prand([6, 8b], 2)], inf));
 
 a.source = Pbind(\instrument, \Pdefhelp, \dur, 0.1, \degree, Pseq(#[0, 1b, 1, 2b, 2, 3, 4b, 4, 5], inf));
 
@@ -189,14 +189,14 @@ s.boot;
 (
 // load a synthdef
 SynthDef("gpdef", {
-	arg out=0, freq=440, sustain=0.05, amp=0.1, pan;
+	arg out = 0, freq = 440, sustain = 0.05, amp = 0.1, pan;
 	var env;
 	env = EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf) * amp;
 	Out.ar(out, Pan2.ar(SinOsc.ar(freq, 0, env), pan))
 }).add;
 )
 
-#x, y = {EventPatternProxy.new} ! 2;
+#x, y = { EventPatternProxy.new } ! 2;
 
 x.play; // play them. A silent resting pattern is used.
 y.play;
@@ -218,7 +218,7 @@ y.source = Pbind(\dur, 0.25, \degree, Pseq([3, 4, 5b, 6]-2, inf), \instrument, \
 (
 x.source = Pbind(
 	\dur, 1 / 6,
-	\degree, Pseq([3, 4, Prand([8, 2, 3, 9, 10],1) - 5, 6]+1, inf),
+	\degree, Pseq([3, 4, Prand([8, 2, 3, 9, 10], 1) - 5, 6]+1, inf),
 	\instrument, \gpdef
 )
 )
@@ -226,7 +226,7 @@ x.source = Pbind(
 (
 x.source = Pbind(
 	\dur, 0.25,
-	\degree, Pseq([3, 4, Prand([8, 2, 3, 9, 10],1), 6], inf),
+	\degree, Pseq([3, 4, Prand([8, 2, 3, 9, 10], 1), 6], inf),
 	\instrument, \gpdef
 )
 )
@@ -242,10 +242,10 @@ y.source = Pbind(\dur, 0.25, \degree, Pseq([3, 4, 5, 6]+1, inf), \instrument, \g
 x.play;
 x.fadeTime = nil;
 
-x.source = Pbind(\dur, 0.25, \degree, Pseq([3, [7,4], 5, 6]-2), \instrument, \gpdef);
-x.source = Pbind(\dur, 0.125, \degree, Pseq([3, [7,4], 5, 4]-3), \instrument, \gpdef);
-x.source = Pbind(\dur, 0.35, \degree, Pseq([3, [7,4], 5, 4, 3]-3), \instrument, \gpdef);
-x.source = Pbind(\dur, 0.25, \degree, Pshuf([3, [7,4], 5, 6]-2), \instrument, \gpdef);
+x.source = Pbind(\dur, 0.25, \degree, Pseq([3, [7, 4], 5, 6]-2), \instrument, \gpdef);
+x.source = Pbind(\dur, 0.125, \degree, Pseq([3, [7, 4], 5, 4]-3), \instrument, \gpdef);
+x.source = Pbind(\dur, 0.35, \degree, Pseq([3, [7, 4], 5, 4, 3]-3), \instrument, \gpdef);
+x.source = Pbind(\dur, 0.25, \degree, Pshuf([3, [7, 4], 5, 6]-2), \instrument, \gpdef);
 
 
 TempoClock.default.tempo = 1.0;

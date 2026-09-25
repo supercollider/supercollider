@@ -24,6 +24,7 @@
 #include <QLocalSocket>
 #include <QMutex>
 #include <QHash>
+#include <QVariantList>
 
 class SCIpcClient : public QObject {
     Q_OBJECT

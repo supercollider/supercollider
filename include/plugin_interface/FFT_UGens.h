@@ -30,12 +30,18 @@ struct SCComplexBuf {
     SCComplex bin[1];
 };
 
+typedef struct SCComplexBuf SCComplexBuf;
+
 struct SCPolarBuf {
     float dc, nyq;
     SCPolar bin[1];
 };
 
-static inline SCPolarBuf* ToPolarApx(SndBuf* buf) {
+typedef struct SCPolarBuf SCPolarBuf;
+
+#ifdef __cplusplus
+
+SC_INLINE SCPolarBuf* ToPolarApx(SndBuf* buf) {
     if (buf->coord == coord_Complex) {
         SCComplexBuf* p = (SCComplexBuf*)buf->data;
         int numbins = (buf->samples - 2) >> 1;
@@ -48,7 +54,7 @@ static inline SCPolarBuf* ToPolarApx(SndBuf* buf) {
     return (SCPolarBuf*)buf->data;
 }
 
-static inline SCComplexBuf* ToComplexApx(SndBuf* buf) {
+SC_INLINE SCComplexBuf* ToComplexApx(SndBuf* buf) {
     if (buf->coord == coord_Polar) {
         SCPolarBuf* p = (SCPolarBuf*)buf->data;
         int numbins = (buf->samples - 2) >> 1;
@@ -62,92 +68,98 @@ static inline SCComplexBuf* ToComplexApx(SndBuf* buf) {
 
 struct PV_Unit : Unit {};
 
+#endif // __cplusplus
+
 // Ordinary ClearUnitOutputs outputs zero, potentially telling the IFFT (+ PV UGens) to act on buffer zero, so let's
 // skip that:
-static inline void FFT_ClearUnitOutputs(Unit* unit, int wrongNumSamples) { ZOUT0(0) = -1; }
+SC_INLINE void FFT_ClearUnitOutputs(Unit* unit, int wrongNumSamples) { OUT0(0) = -1; }
 
 #define ClearFFTUnitIfMemFailed(condition)                                                                             \
     if (!(condition)) {                                                                                                \
         Print("%s: alloc failed, increase server's RT memory (e.g. via ServerOptions)\n", __func__);                   \
         SETCALC(FFT_ClearUnitOutputs);                                                                                 \
-        unit->mDone = true;                                                                                            \
+        unit->mDone = kSCTrue;                                                                                         \
         return;                                                                                                        \
     }
 
 #define sc_clipbuf(x, hi) ((x) >= (hi) ? 0 : ((x) < 0 ? 0 : (x)))
 
+#ifdef __cplusplus
+
 // for operation on one buffer
-#define PV_GET_BUF                                                                                                     \
-    float fbufnum = ZIN0(0);                                                                                           \
-    if (fbufnum < 0.f) {                                                                                               \
-        ZOUT0(0) = -1.f;                                                                                               \
-        return;                                                                                                        \
-    }                                                                                                                  \
-    ZOUT0(0) = fbufnum;                                                                                                \
-    uint32 ibufnum = (uint32)fbufnum;                                                                                  \
-    World* world = unit->mWorld;                                                                                       \
-    SndBuf* buf;                                                                                                       \
-    if (ibufnum >= world->mNumSndBufs) {                                                                               \
-        int localBufNum = ibufnum - world->mNumSndBufs;                                                                \
-        Graph* parent = unit->mParent;                                                                                 \
-        if (localBufNum <= parent->localBufNum) {                                                                      \
-            buf = parent->mLocalSndBufs + localBufNum;                                                                 \
-        } else {                                                                                                       \
-            buf = world->mSndBufs;                                                                                     \
+#    define PV_GET_BUF                                                                                                 \
+        float fbufnum = ZIN0(0);                                                                                       \
+        if (fbufnum < 0.f) {                                                                                           \
+            ZOUT0(0) = -1.f;                                                                                           \
+            return;                                                                                                    \
         }                                                                                                              \
-    } else {                                                                                                           \
-        buf = world->mSndBufs + ibufnum;                                                                               \
-    }                                                                                                                  \
-    LOCK_SNDBUF(buf);                                                                                                  \
-    int numbins = (buf->samples - 2) >> 1;
+        ZOUT0(0) = fbufnum;                                                                                            \
+        uint32 ibufnum = (uint32)fbufnum;                                                                              \
+        World* world = unit->mWorld;                                                                                   \
+        SndBuf* buf;                                                                                                   \
+        if (ibufnum >= world->mNumSndBufs) {                                                                           \
+            int localBufNum = ibufnum - world->mNumSndBufs;                                                            \
+            Graph* parent = unit->mParent;                                                                             \
+            if (localBufNum <= parent->localBufNum) {                                                                  \
+                buf = parent->mLocalSndBufs + localBufNum;                                                             \
+            } else {                                                                                                   \
+                buf = world->mSndBufs;                                                                                 \
+            }                                                                                                          \
+        } else {                                                                                                       \
+            buf = world->mSndBufs + ibufnum;                                                                           \
+        }                                                                                                              \
+        LOCK_SNDBUF(buf);                                                                                              \
+        int numbins = (buf->samples - 2) >> 1;
 
 
 // for operation on two input buffers, result goes in first one.
-#define PV_GET_BUF2                                                                                                    \
-    float fbufnum1 = ZIN0(0);                                                                                          \
-    float fbufnum2 = ZIN0(1);                                                                                          \
-    if (fbufnum1 < 0.f || fbufnum2 < 0.f) {                                                                            \
-        ZOUT0(0) = -1.f;                                                                                               \
-        return;                                                                                                        \
-    }                                                                                                                  \
-    ZOUT0(0) = fbufnum1;                                                                                               \
-    uint32 ibufnum1 = (int)fbufnum1;                                                                                   \
-    uint32 ibufnum2 = (int)fbufnum2;                                                                                   \
-    World* world = unit->mWorld;                                                                                       \
-    SndBuf* buf1;                                                                                                      \
-    SndBuf* buf2;                                                                                                      \
-    if (ibufnum1 >= world->mNumSndBufs) {                                                                              \
-        int localBufNum = ibufnum1 - world->mNumSndBufs;                                                               \
-        Graph* parent = unit->mParent;                                                                                 \
-        if (localBufNum <= parent->localBufNum) {                                                                      \
-            buf1 = parent->mLocalSndBufs + localBufNum;                                                                \
-        } else {                                                                                                       \
-            buf1 = world->mSndBufs;                                                                                    \
+#    define PV_GET_BUF2                                                                                                \
+        float fbufnum1 = ZIN0(0);                                                                                      \
+        float fbufnum2 = ZIN0(1);                                                                                      \
+        if (fbufnum1 < 0.f || fbufnum2 < 0.f) {                                                                        \
+            ZOUT0(0) = -1.f;                                                                                           \
+            return;                                                                                                    \
         }                                                                                                              \
-    } else {                                                                                                           \
-        buf1 = world->mSndBufs + ibufnum1;                                                                             \
-    }                                                                                                                  \
-    if (ibufnum2 >= world->mNumSndBufs) {                                                                              \
-        int localBufNum = ibufnum2 - world->mNumSndBufs;                                                               \
-        Graph* parent = unit->mParent;                                                                                 \
-        if (localBufNum <= parent->localBufNum) {                                                                      \
-            buf2 = parent->mLocalSndBufs + localBufNum;                                                                \
+        ZOUT0(0) = fbufnum1;                                                                                           \
+        uint32 ibufnum1 = (int)fbufnum1;                                                                               \
+        uint32 ibufnum2 = (int)fbufnum2;                                                                               \
+        World* world = unit->mWorld;                                                                                   \
+        SndBuf* buf1;                                                                                                  \
+        SndBuf* buf2;                                                                                                  \
+        if (ibufnum1 >= world->mNumSndBufs) {                                                                          \
+            int localBufNum = ibufnum1 - world->mNumSndBufs;                                                           \
+            Graph* parent = unit->mParent;                                                                             \
+            if (localBufNum <= parent->localBufNum) {                                                                  \
+                buf1 = parent->mLocalSndBufs + localBufNum;                                                            \
+            } else {                                                                                                   \
+                buf1 = world->mSndBufs;                                                                                \
+            }                                                                                                          \
         } else {                                                                                                       \
-            buf2 = world->mSndBufs;                                                                                    \
+            buf1 = world->mSndBufs + ibufnum1;                                                                         \
         }                                                                                                              \
-    } else {                                                                                                           \
-        buf2 = world->mSndBufs + ibufnum2;                                                                             \
-    }                                                                                                                  \
-    LOCK_SNDBUF2(buf1, buf2);                                                                                          \
-    if (buf1->samples != buf2->samples)                                                                                \
-        return;                                                                                                        \
-    int numbins = (buf1->samples - 2) >> 1;
+        if (ibufnum2 >= world->mNumSndBufs) {                                                                          \
+            int localBufNum = ibufnum2 - world->mNumSndBufs;                                                           \
+            Graph* parent = unit->mParent;                                                                             \
+            if (localBufNum <= parent->localBufNum) {                                                                  \
+                buf2 = parent->mLocalSndBufs + localBufNum;                                                            \
+            } else {                                                                                                   \
+                buf2 = world->mSndBufs;                                                                                \
+            }                                                                                                          \
+        } else {                                                                                                       \
+            buf2 = world->mSndBufs + ibufnum2;                                                                         \
+        }                                                                                                              \
+        LOCK_SNDBUF2(buf1, buf2);                                                                                      \
+        if (buf1->samples != buf2->samples)                                                                            \
+            return;                                                                                                    \
+        int numbins = (buf1->samples - 2) >> 1;
 
-#define MAKE_TEMP_BUF                                                                                                  \
-    if (!unit->m_tempbuf) {                                                                                            \
-        unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, buf->samples * sizeof(float));                                 \
-        unit->m_numbins = numbins;                                                                                     \
-    } else if (numbins != unit->m_numbins)                                                                             \
-        return;
+#    define MAKE_TEMP_BUF                                                                                              \
+        if (!unit->m_tempbuf) {                                                                                        \
+            unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, buf->samples * sizeof(float));                             \
+            unit->m_numbins = numbins;                                                                                 \
+        } else if (numbins != unit->m_numbins)                                                                         \
+            return;
+
+#endif // __cplusplus
 
 extern InterfaceTable* ft;

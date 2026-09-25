@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 #include "sc_synthdef.hpp"
 
@@ -27,7 +27,7 @@
 
 namespace nova {
 
-using boost::filesystem::path;
+using std::filesystem::path;
 
 /* read synthdefs from path pattern */
 std::vector<sc_synthdef> sc_read_synthdefs_file(path const& filename);
@@ -40,7 +40,7 @@ public:
 private:
     friend class sc_synth;
 
-    virtual abstract_synth* create_instance(int) override;
+    virtual abstract_synth* create_instance(int node_id) override;
 };
 
 typedef boost::intrusive_ptr<sc_synth_definition> sc_synth_definition_ptr;

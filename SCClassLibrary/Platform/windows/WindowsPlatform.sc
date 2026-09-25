@@ -1,5 +1,7 @@
 WindowsPlatform : Platform {
 	name { ^\windows }
+	version { ^"[System.Environment]::OSVersion.Version".unixCmdGetStdOut.replace($\n, "") }
+
 	startupFiles {
 		var deprecated = ["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath];
 		Platform.deprecatedStartupFiles(deprecated);
@@ -30,15 +32,16 @@ WindowsPlatform : Platform {
 	}
 	clearMetadata { |path|
 		path = path.splitext[0].do({ |chr, i| if(chr == $/) { path[i] = $\\.asAscii } });
-		"del %%.*meta%".format(34.asAscii, path, 34.asAscii).systemCmd;
+		// suppress error message if no files match the given pattern
+		"del \"%.*meta\" 2>nul".format(path).systemCmd;
 	}
 
-	killProcessByID { |pid|
-		("taskkill /F /pid " ++ pid).unixCmd;
+	killProcessByID { |pid, force = true, subprocesses = true|
+		"taskkill % % /pid %".format(force.if({"/f"}, {""}), subprocesses.if({"/t"}, {""}), pid).unixCmd;
 	}
 
-	killAll { |cmdLineArgs|
-		("taskkill /F /IM " ++ cmdLineArgs).unixCmd;
+	killAll { |cmdLineArgs, force = true|
+		"taskkill % /im %".format(force.if({"/f"}, {""}), cmdLineArgs).unixCmd;
 	}
 
 	defaultTempDir {

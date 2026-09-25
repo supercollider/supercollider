@@ -5,15 +5,11 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/common
 
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
-
                     LangSource
                     LangPrimSource
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison
-
-                    ${YAMLCPP_INCLUDE_DIR}
 )
 
 
@@ -38,7 +34,6 @@ set(sclang_sources
 	LangPrimSource/PyrSched.cpp
 	LangPrimSource/PyrPrimitive.cpp
 	LangPrimSource/PyrMathPrim.cpp
-	LangPrimSource/SC_ComPort.cpp
 	LangPrimSource/OSCData.cpp
 	LangPrimSource/PyrArchiver.cpp
 	LangPrimSource/PyrArrayPrimitives.cpp
@@ -50,7 +45,6 @@ set(sclang_sources
 	LangPrimSource/PyrStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
 	LangPrimSource/PyrUnixPrim.cpp
-	LangPrimSource/PyrSerialPrim.cpp
 	LangSource/AdvancingAllocPool.cpp
 	LangSource/ByteCodeArray.cpp
 	LangSource/DumpParseNode.cpp
@@ -67,10 +61,10 @@ set(sclang_sources
 	LangSource/PyrSymbolTable.cpp
 	LangSource/SC_LanguageClient.cpp
 	LangSource/SC_LanguageConfig.cpp
-	LangSource/SC_TerminalClient.cpp
 	LangSource/SimpleStack.cpp
-	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
+	LangSource/CompilerContext.cpp
+	LangSource/ClassLibraryInfo.cpp
 
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
@@ -80,7 +74,6 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/fftlib.c
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
@@ -88,6 +81,23 @@ set(sclang_sources
 
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
+
+# emscripten (wasm compiler) does not have network capabilities
+# and does not use the CLI, but uses its own JS bindings for interactions
+if(NOT EMSCRIPTEN)
+	LIST(APPEND sclang_sources
+		LangPrimSource/SC_ComPort.cpp
+		LangPrimSource/PyrSerialPrim.cpp
+		LangSource/SC_TerminalClient.cpp
+		LangSource/SC_CLIOptions.cpp
+		LangSource/cmdLineFuncs.cpp
+		${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
+    )
+else()
+	list(APPEND sclang_sources
+		LangSource/SC_WasmClient.cpp
+    )
+endif()
 
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
@@ -113,7 +123,7 @@ if(AUDIOAPI STREQUAL "default")
     endif(APPLE)
 endif()
 
-if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela)$")
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela|webaudio)$")
     message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
@@ -121,14 +131,10 @@ if (AUDIOAPI STREQUAL coreaudio)
     add_definitions("-DSC_AUDIO_API_COREAUDIO")
 elseif (AUDIOAPI STREQUAL portaudio)
     if (SYSTEM_PORTAUDIO)
-        find_package(Portaudio)
-        if(NOT PORTAUDIO_FOUND)
-            message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
-        endif()
+        find_package(Portaudio REQUIRED)
     endif()
     add_definitions("-DSC_AUDIO_API_PORTAUDIO")
     list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
-    include_directories(${PORTAUDIO_INCLUDE_DIRS})
 elseif(AUDIOAPI STREQUAL bela)
     add_definitions("-DSC_AUDIO_API_BELA")
 endif()
@@ -164,10 +170,6 @@ endif()
 # This sets up the exe icon for windows.
 if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
- set(CMAKE_RC_COMPILER_INIT windres)
- ENABLE_LANGUAGE(RC)
- SET(CMAKE_RC_COMPILE_OBJECT
- "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
 endif(WIN32)
 
 if(SC_HIDAPI)
@@ -176,7 +178,7 @@ if(SC_HIDAPI)
         ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi
         ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi_parser
     )
-    add_definitions(-DSC_HIDAPI)
+    add_compile_definitions(SC_HIDAPI)
 endif(SC_HIDAPI)
 
 if(SC_QT OR SC_IDE)
@@ -188,7 +190,7 @@ endif()
 if(SC_IDE)
 	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
 
-	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
+	qt_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
 	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
 endif()
@@ -196,19 +198,24 @@ endif()
 include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
-if(0 AND FINAL_BUILD) # sclang final-builds are broken
-	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
-	add_library(libsclang STATIC libsclang_final.cpp ${sclang_parser_source})
-else()
-	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+
+if(FINAL_BUILD)
+	set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+	set_target_properties(libsclang PROPERTIES 
+		UNITY_BUILD ON
+		UNITY_BUILD_BATCH_SIZE 16 
+	)
 endif()
 
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
+target_link_libraries(libsclang sc_lexer)
+
 if(SC_QT OR SC_IDE)
-	get_target_property(QtCore_location Qt5::Core LOCATION)
-	message(STATUS "Found Qt: " ${QtCore_location} )
+    get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
+    message(STATUS "Found Qt ${QT_VERSION}: " ${QtCore_location} )
     get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
 
     if(SC_USE_QTWEBENGINE)
@@ -232,6 +239,9 @@ endif()
 if(SC_HIDAPI)
   target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
   target_link_libraries( libsclang hidapi hidapi_parser )
+  if(WIN32)
+    target_link_libraries(libsclang hid)
+  endif()
 
   if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
     target_link_libraries( libsclang ${UDEV_LIBRARIES})
@@ -241,8 +251,13 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_filesystem_lib)
-target_include_directories(libsclang PUBLIC ${boost_include_dirs})
+target_link_libraries(
+  libsclang 
+  Boost::thread
+  Boost::program_options
+  Boost::regex
+  Boost::sync
+)
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
@@ -301,20 +316,20 @@ if(ALSA_FOUND)
 endif(ALSA_FOUND)
 
 if (AUDIOAPI STREQUAL portaudio)
-    target_link_libraries(libsclang ${PORTAUDIO_LIBRARIES})
+    target_link_libraries(libsclang PortAudio::PortAudio)
 endif()
 
 if(SNDFILE_FOUND)
 	if(SNDFILE_HAS_VORBIS)
-		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_VORBIS)
+		target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_VORBIS)
 	endif()
 	if(SNDFILE_HAS_OPUS)
-		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_OPUS)
+		target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_OPUS)
 	endif()
 	if(SNDFILE_HAS_MPEG)
-		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_MPEG)
+		target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_MPEG)
 	endif()
-	target_include_directories(libsclang PUBLIC ${SNDFILE_INCLUDE_DIR})
+	target_include_directories(libsclang SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
 elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
@@ -325,21 +340,24 @@ if (FFTW3F_FOUND)
 	target_link_libraries(libsclang ${FFTW3F_LIBRARY})
 endif()
 
-if (WIN32 AND SC_HIDAPI)
-	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi hid)
-elseif(WIN32)
+if(WIN32)
 	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
+	target_compile_definitions(libsclang PRIVATE HAVE_PORTMIDI)
 endif()
 
 if (GC_SANITYCHECK)
 	target_compile_definitions(libsclang PUBLIC GC_SANITYCHECK)
 endif()
 
+if(MSVC)
+    target_compile_definitions(libsclang PUBLIC HAVE_ISXDIGIT) # needed for MSVC 2022
+endif()
+
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
+target_link_libraries(libsclang yaml-cpp)
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
@@ -365,10 +383,77 @@ if(APPLE)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> ${CMAKE_INSTALL_PREFIX}/${scappbindir}
             )
     endif()
+elseif(EMSCRIPTEN)
+#    target_compile_definitions(libsclang PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
+    target_link_libraries(sclang oscpack)
+    target_include_directories(sclang PRIVATE ${CMAKE_SOURCE_DIR}/external_libraries/oscpack_1_1_0)
+
+    target_link_libraries(sclang webosc)
+
+    # see https://emscripten.org/docs/tools_reference/settings_reference.html#initial-memory
+    # improves performance b/c heap increase is rather expensive
+    set(INITIAL_MEMORY_GROWTH "67108864" CACHE STRING "Initial heap size of sclang.wasm")
+
+    # see https://emscripten.org/docs/tools_reference/settings_reference.html#pthread-pool-size
+    # necessary b/c pthread init is async in emscripten, but sclang needs some threads right away
+    set(PTHREAD_POOL_SIZE "4" CACHE STRING "Number of threads to spawn sclang.wasm at call time")
+
+    set_target_properties(sclang PROPERTIES LINK_FLAGS "\
+    	-sAUDIO_WORKLET \
+    	--bind \
+    	-sWASM_WORKERS \
+    	-sUSE_PTHREADS \
+    	-pthread \
+    	-sALLOW_MEMORY_GROWTH \
+    	-sINITIAL_MEMORY=${INITIAL_MEMORY_GROWTH} \
+    	-sEXIT_RUNTIME=0 \
+    	--pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/sclang.pre.js \
+    	-sEXPORT_ES6=1 \
+    	-sEXPORT_NAME='ScLang' \
+    	-sMODULARIZE=1 \
+    	-sEXPORTED_FUNCTIONS=['_webOscBindingAnchor','_main','_free','_scWasmBindingAnchor'] \
+    	-sPTHREAD_POOL_SIZE=${PTHREAD_POOL_SIZE} \
+    	--preload-file ${CMAKE_SOURCE_DIR}/SCClassLibrary@/sc/SCClassLibrary \
+    	-sSTACK_SIZE=1048576 \
+    	-sDEFAULT_PTHREAD_STACK_SIZE=1048576 \
+    	-sENVIRONMENT=web,worker,node \
+    ")
+    if(WASM_DEBUG)
+        target_compile_options(libsclang PUBLIC -pthread -g)
+        target_compile_options(sclang PRIVATE -pthread -g)
+        target_compile_options(libscsynth PRIVATE -pthread -g)
+        set_property(TARGET sclang APPEND_STRING PROPERTY LINK_FLAGS "
+                -g \
+                -sASSERTIONS \
+                -fdebug-compilation-dir='..' \
+                -sNO_DISABLE_EXCEPTION_CATCHING \
+                -sSAFE_HEAP=1 \
+                -sSTACK_OVERFLOW_CHECK=2 \
+        ")
+    endif()
+    # create sub-folder in order to separate build files from cmake cache files
+    set_target_properties(sclang PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${WASM_DIST_DIR}/sclang
+    )
+    set(SCLANG_WASM_FILES
+        ${WASM_ASSET_DIR}/sclang/index.html
+        ${WASM_ASSET_DIR}/LICENSE
+        ${WASM_ASSET_DIR}/dev_server.py
+        ${WASM_ASSET_DIR}/sclang/init.js
+        ${WASM_ASSET_DIR}/sclang/sclang-tests.mjs
+        ${WASM_ASSET_DIR}/package.json
+        ${CMAKE_SOURCE_DIR}/README_WASM.md
+    )
+    add_custom_command(TARGET sclang POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${SCLANG_WASM_FILES} $<TARGET_FILE_DIR:sclang>
+    )
 elseif(WIN32)
-    if(NOT MSVC)
+    if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
-    endif(NOT MSVC)
+    endif()
+
+    target_compile_definitions(sclang PUBLIC UNICODE _UNICODE)
 
     set(SC_WIN_DLL_DIRS)
     if(SNDFILE_LIBRARY_DIR)
@@ -418,12 +503,12 @@ elseif(WIN32)
         SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
         include(InstallRequiredSystemLibraries)
         if(MSYS)
-            SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../share/qt5/plugins" CACHE PATH "Location of qt plugins for windows as provided by MSYS2")
+            SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../share/Qt${QT_VERSION_MAJOR}/plugins" CACHE PATH "Location of qt plugins for windows as provided by MSYS2") # note: not tested with Qt6
         else()
             SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../plugins" CACHE PATH "Location of qt plugins for windows")
         endif()
 
-        foreach(plugin ${Qt5Network_PLUGINS} ${Qt5Gui_PLUGINS} ${Qt5Sql_PLUGINS} ${Qt5PrintSupport_PLUGINS})
+        foreach(plugin ${Qt${QT_VERSION_MAJOR}Network_PLUGINS} ${Qt${QT_VERSION_MAJOR}Gui_PLUGINS} ${Qt${QT_VERSION_MAJOR}Sql_PLUGINS} ${Qt${QT_VERSION_MAJOR}PrintSupport_PLUGINS})
             get_target_property(_loc ${plugin} LOCATION)
             get_filename_component(_parent_dir ${_loc} DIRECTORY)
             get_filename_component(_name_we ${_loc} NAME_WE)
@@ -453,3 +538,5 @@ else()
         RUNTIME DESTINATION "bin"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
+
+set_property(TARGET libsclang PROPERTY FOLDER Libs)

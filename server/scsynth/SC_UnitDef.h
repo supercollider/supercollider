@@ -22,6 +22,8 @@
 
 #include "SC_Types.h"
 #include "SC_Unit.h"
+#include "SC_Reply.h"
+#include "SC_Command.h"
 #include "HashTable.h"
 
 struct PlugInCmd {
@@ -34,7 +36,11 @@ struct PlugInCmd {
 struct UnitCmd {
     int32 mCmdName[kSCNameLen];
     int32 mHash;
-    UnitCmdFunc mFunc;
+    union {
+        UnitCmdFunc mFunc;
+        UnitCmdFuncEx mFuncEx;
+    };
+    bool mHasFuncEx;
 };
 
 struct UnitDef {
@@ -49,13 +55,14 @@ struct UnitDef {
     uint32 mFlags;
 };
 
-extern "C" {
-bool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
-bool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFunc inFunc);
-bool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData);
-}
+SCBool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
+SCBool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFunc inFunc);
+SCBool UnitDef_AddCmdEx(const char* inUnitDefName, const char* inCmdName, UnitCmdFuncEx inFunc);
 
-int Unit_DoCmd(World* inWorld, int inSize, char* inData);
+SCBool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData);
+
+SCErr Unit_DoCmd(struct World* inWorld, int inSize, const char* inData, ReplyAddress* inReplyAddr);
+void Unit_RunCommand(const UnitCmd* cmd, Unit* unit, sc_msg_iter* msg, ReplyAddress* inReplyAddr);
 
 inline int32* GetKey(UnitCmd* inCmd) { return inCmd->mCmdName; }
 inline int32 GetHash(UnitCmd* inCmd) { return inCmd->mHash; }

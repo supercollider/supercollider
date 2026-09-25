@@ -130,14 +130,22 @@ public:
 
     QGenericArgument toGenericArgument() {
         if (mType)
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             return QGenericArgument(QMetaType::typeName(mType->id()), mData);
+#else
+            return QGenericArgument(QMetaType(mType->id()).name(), mData);
+#endif
         else
             return QGenericArgument();
     }
 
     QGenericReturnArgument toGenericReturnArgument() {
         if (mType)
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             return QGenericReturnArgument(QMetaType::typeName(mType->id()), mData);
+#else
+            return QGenericReturnArgument(QMetaType(mType->id()).name(), mData);
+#endif
         else
             return QGenericReturnArgument();
     }

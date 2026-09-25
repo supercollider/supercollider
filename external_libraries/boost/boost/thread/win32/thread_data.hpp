@@ -145,6 +145,8 @@ namespace boost
             {}
             virtual ~thread_data_base();
 
+            #if !defined(BOOST_EMBTC)
+              
             friend void intrusive_ptr_add_ref(thread_data_base * p)
             {
                 BOOST_INTERLOCKED_INCREMENT(&p->count);
@@ -158,6 +160,13 @@ namespace boost
                 }
             }
 
+            #else
+              
+            friend void intrusive_ptr_add_ref(thread_data_base * p);
+            friend void intrusive_ptr_release(thread_data_base * p);
+
+            #endif
+      
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
             void interrupt()
             {
@@ -180,6 +189,24 @@ namespace boost
             }
 //#endif
         };
+        
+#if defined(BOOST_EMBTC)
+
+        inline void intrusive_ptr_add_ref(thread_data_base * p)
+        {
+            BOOST_INTERLOCKED_INCREMENT(&p->count);
+        }
+
+        inline void intrusive_ptr_release(thread_data_base * p)
+        {
+            if(!BOOST_INTERLOCKED_DECREMENT(&p->count))
+            {
+                detail::heap_delete(p);
+            }
+        }
+
+#endif
+        
         BOOST_THREAD_DECL thread_data_base* get_current_thread_data();
 
         typedef boost::intrusive_ptr<detail::thread_data_base> thread_data_ptr;

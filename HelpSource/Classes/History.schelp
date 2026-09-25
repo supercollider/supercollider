@@ -15,7 +15,7 @@ History.start;         // starts recording, opens log file
 // execute these lines one by one, as a little performance history
 1 + 2;
 p = ProxySpace.push(s.boot);
-~a = {Dust.ar([1,1] * 30 ) * 0.3 };
+~a = { Dust.ar([1, 1] * 30) * 0.3 };
 ~a.play;
 ~a.end(3);
 
@@ -243,7 +243,7 @@ History.start;          // starts recording, opens log file
 // execute these lines one by one
 1 + 2;
 p = ProxySpace.push(s.boot);
-~a = {Dust.ar([1,1] * 30 ) * 0.3 };
+~a = { Dust.ar([1, 1] * 30) * 0.3 };
 ~a.play;
 ~a.end;
 
@@ -265,7 +265,7 @@ History.start;
 // enter 5 more lines
 10 + 200;
 p.push;
-~b = { |freq=500| LFDNoise3.ar(freq.dup(2)) * 0.2 };
+~b = { |freq = 500| LFDNoise3.ar(freq.dup(2)) * 0.2 };
 ~b.play;
 ~b.set(\freq, 1000);
 ~b.end(2);
@@ -296,8 +296,8 @@ History.drop(1); // drop the newest memory
 
 h.keep(9); h.lines.printAll; "";
 h.drop(3); h.lines.printAll; "";
-h.removeLast;       h.lines.printAll;"";
-h.removeAt([3, 4]); h.lines.printAll;"";
+h.removeLast;       h.lines.printAll; "";
+h.removeAt([3, 4]); h.lines.printAll; "";
 
 // more examples
 History.clear.start;
@@ -383,7 +383,7 @@ History.showLogFile; // current logfile...
 // filtering lines, to get subsets of all lines by key and/or searchstring:
 
 // get indices for specific keys
-h = History([[0, \me, "a=1+2"], [1, \me, "3+5"], [1.234, \you, "q = q ? ();"], [3, \they, "\"The-story ==== \".postln"]]);
+h = History([[0, \me, "a = 1+2"], [1, \me, "3+5"], [1.234, \you, "q = q ? ();"], [3, \they, "\"The-story ==== \".postln"]]);
 h.keys;
 h.matchKeys(\me);
 h.matchKeys(\you);

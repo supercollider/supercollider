@@ -22,6 +22,11 @@
 
 #include <cmath>
 
+#ifndef NAN // NAN is c99
+#    include <limits>
+#    define NAN std::numeric_limits<float>::quiet_NaN()
+#endif
+
 #ifndef __FP__
 const double pi = std::acos(-1.);
 #else

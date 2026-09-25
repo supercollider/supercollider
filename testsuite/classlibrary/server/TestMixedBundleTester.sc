@@ -10,7 +10,7 @@ TestMixedBundleTester : UnitTest {
 	}
 
 	tearDown {
-		server.quit;
+		server.quitSync;
 		server.remove;
 	}
 
@@ -134,4 +134,3 @@ TestMixedBundleTester : UnitTest {
 	}
 
 }
-

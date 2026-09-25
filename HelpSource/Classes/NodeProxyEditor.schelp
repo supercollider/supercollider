@@ -9,7 +9,7 @@ warning::
 NodeProxyEditor has been rewritten and renamed link::Classes/NdefGui::, which has the same functionality, but is both more consistent and more flexible. There are some changes to the strong::*new:: method:
 
 definitionList::
-## instead of || *new(proxy, nSliders=16, parent, extras=[\CLR, \reset, \scope, \doc, \end, \fade], monitor, sinks, morph)
+## instead of || *new(proxy, nSliders = 16, parent, extras = [\CLR, \reset, \scope, \doc, \end, \fade], monitor, sinks, morph)
 ## NdefGui uses || *new(object, numItems = 0, parent, bounds, makeSkip, options)
 ::
 
@@ -45,7 +45,7 @@ s.boot;
 p = ProxySpace.push(s);
 
 (
-~test = { |freq=300, dens=20, amp=0.1, pan|
+~test = { |freq = 300, dens = 20, amp = 0.1, pan|
 	Pan2.ar(Ringz.ar(Dust.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2), pan)
 };
 )
@@ -91,7 +91,7 @@ NodeProxyEditor(extras: [\CLR, \reset, \pausR, \sendR, \scope], monitor: false, 
 NodeProxyEditor(extras: [], monitor: false);
 
 	// not done yet - presets and morphing
-NodeProxyEditor( morph: true);
+NodeProxyEditor(morph: true);
 
 	// also works with Ndef
 Ndef(\a).ar;
@@ -105,7 +105,7 @@ n.proxy_(~test);
 )
 	// too many controls: an EZScroller helps.
 (
-~test = { |freq=300, dens=20, amp=0.1, pan, ping=12, tok=13, crak|
+~test = { |freq = 300, dens = 20, amp = 0.1, pan, ping = 12, tok = 13, crak|
 	Pan2.ar(Ringz.ar(Dust.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2), pan)
 };
 Spec.add(\dens, [0.1, 100, \exp, 0.01, 10]);
@@ -115,13 +115,13 @@ Spec.add(\dens, [0.1, 100, \exp, 0.01, 10]);
 n.fullUpdate;
 
 (	// keys go away if not needed
-~test = { |freq=300, dens=20, amp=0.1|
+~test = { |freq = 300, dens = 20, amp = 0.1|
 	Pan2.ar(Ringz.ar(Dust.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2))
 };
 )
 
 (	// and are added in order if needed
-~test = { |freq=300, intv=0, dens=20, amp=0.1, pan, pok, ting|
+~test = { |freq = 300, intv = 0, dens = 20, amp = 0.1, pan, pok, ting|
 	Pan2.ar(
 		Ringz.ar(
 			Dust.ar(dens ! 2, amp / (dens.max(1).sqrt)),
@@ -157,8 +157,8 @@ o = NodeProxyEditor(nil, 3); o.w.bounds_(o.w.bounds.moveBy(0, 480));
 Spec.add(\dens, [0.1, 300, \exp]);
 
 	// make 3 kinds of proxies: using tilde/proxyspace, Ndef, and unnamed.
-~spacy = {|dens=5| Formlet.ar(Dust.ar(dens ! 2), LFDNoise0.kr(20 ! 2).lag(0.1).linexp(-1, 1, 300, 5000), 0.003, 0.03) };
-Ndef(\ndeffy, { GrayNoise.ar( 0.1 ! 2) });
+~spacy = { |dens = 5| Formlet.ar(Dust.ar(dens ! 2), LFDNoise0.kr(20 ! 2).lag(0.1).linexp(-1, 1, 300, 5000), 0.003, 0.03) };
+Ndef(\ndeffy, { GrayNoise.ar(0.1 ! 2) });
 c = NodeProxy.audio.source_({ PinkNoise.ar(0.1 ! 2) });
 
 	// put one in each editor

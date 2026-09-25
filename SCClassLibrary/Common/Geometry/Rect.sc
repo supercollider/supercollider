@@ -155,13 +155,6 @@ Rect {
 		stream << this.class.name << "(" <<* [left, top, width, height] << ")";
 	}
 
-	// the drawing routine here use Quickdraw.
-	// If you want CoreGraphics drawing, use methods in Pen.
-	draw { arg color, operation=2;
-		_Rect_Draw
-		^this.primitiveFailed
-	}
-
 	asRect { ^this }
 	asSize { ^Size(width, height) }
 	bounds { ^Rect.new(left, top, width, height) }
@@ -203,5 +196,18 @@ Rect {
 			this.width - thatRect.width,
 			this.height - thatRect.height
 		)
+	}
+	minSize { |minSize|
+		var width, height;
+		minSize = minSize.asSize;
+		width = if (this.width < minSize.width) {
+			minSize.width } {
+			this.width
+		};
+		height = if (this.height < minSize.height) {
+			minSize.height } {
+			this.height
+		};
+		^Rect(this.left, this.top, width, height)
 	}
 }

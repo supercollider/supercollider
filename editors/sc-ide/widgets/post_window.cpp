@@ -25,9 +25,11 @@
 #include "../core/settings/manager.hpp"
 #include "../core/settings/theme.hpp"
 #include "../core/util/overriding_action.hpp"
+#include "editor.hpp"
 
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QWindow>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPointer>
@@ -36,6 +38,9 @@
 #include <QKeyEvent>
 #include <QTextDocumentFragment>
 #include <QMimeData>
+#include <qtextcursor.h>
+#include <qtextformat.h>
+#include <qurl.h>
 
 namespace ScIDE {
 
@@ -45,16 +50,17 @@ PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     setFrameShape(QFrame::NoFrame);
     previousChar = QChar('\n');
 
-    viewport()->setAttribute(Qt::WA_MacNoClickThrough, true);
-
-    QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
+    QRect availableScreenRect = this->screen()->availableGeometry();
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.3);
 
     createActions(Main::settings());
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    connect(this, SIGNAL(scrollToBottomRequest()), this, SLOT(scrollToBottom()), Qt::QueuedConnection);
+    connect(this, &PostWindow::scrollToBottomRequest, this, &PostWindow::scrollToBottom, Qt::QueuedConnection);
+
+    grabGesture(Qt::PinchGesture);
+    setAttribute(Qt::WA_AcceptTouchEvents);
 
     applySettings(Main::settings());
 }
@@ -69,8 +75,8 @@ void PostWindow::createActions(Settings::Manager* settings) {
     action->setShortcut(QKeySequence::Copy);
     action->setShortcutContext(Qt::WidgetShortcut);
     action->setEnabled(false);
-    connect(action, SIGNAL(triggered()), this, SLOT(copy()));
-    connect(this, SIGNAL(copyAvailable(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PostWindow::copy);
+    connect(this, &PostWindow::copyAvailable, action, &QAction::setEnabled);
     addAction(action);
 
     mActions[Clear] = action = new QAction(tr("Clear"), this);
@@ -78,7 +84,7 @@ void PostWindow::createActions(Settings::Manager* settings) {
     action->setShortcutContext(Qt::ApplicationShortcut);
     action->setShortcut(tr("Ctrl+Shift+P", "Clear post window"));
     settings->addAction(action, "post-clear", postCategory);
-    connect(action, SIGNAL(triggered()), this, SLOT(clear()));
+    connect(action, &QAction::triggered, this, &PostWindow::clear);
     addAction(action);
 
     action = new QAction(this);
@@ -87,23 +93,25 @@ void PostWindow::createActions(Settings::Manager* settings) {
 
     mActions[DocClose] = ovrAction = new OverridingAction(tr("Close"), this);
     action->setStatusTip(tr("Close the current document"));
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()));
+    connect(ovrAction, &QAction::triggered, this, &PostWindow::closeDocument);
     ovrAction->addToWidget(this);
 
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Enlarge Font"), this);
     ovrAction->setIconText("+");
     ovrAction->setStatusTip(tr("Enlarge post window font"));
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
+    // Use lambda for zoomIn as the default parameter is not preserved when using pointer to member function
+    connect(ovrAction, &QAction::triggered, this, [this]() { zoomIn(); });
     ovrAction->addToWidget(this);
 
     mActions[ZoomOut] = ovrAction = new OverridingAction(tr("Shrink Font"), this);
     ovrAction->setIconText("-");
     ovrAction->setStatusTip(tr("Shrink post window font"));
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
+    // Use lambda for zoomOut as the default parameter is not preserved when using pointer to member function
+    connect(ovrAction, &QAction::triggered, this, [this]() { zoomOut(); });
     ovrAction->addToWidget(this);
 
     mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Font Size"), this);
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
+    connect(ovrAction, &QAction::triggered, this, &PostWindow::resetZoom);
     ovrAction->addToWidget(this);
 
     action = new QAction(this);
@@ -114,14 +122,14 @@ void PostWindow::createActions(Settings::Manager* settings) {
     action->setStatusTip(tr("Wrap lines wider than the post window"));
     action->setCheckable(true);
     addAction(action);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(setLineWrap(bool)));
+    connect(action, &QAction::triggered, this, &PostWindow::setLineWrap);
     settings->addAction(action, "post-line-wrap", postCategory);
 
     mActions[AutoScroll] = action = new QAction(tr("Auto Scroll"), this);
     action->setStatusTip(tr("Scroll to bottom on new posts"));
     action->setCheckable(true);
     action->setChecked(true);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(onAutoScrollTriggered(bool)));
+    connect(action, &QAction::triggered, this, &PostWindow::onAutoScrollTriggered);
     addAction(action);
     settings->addAction(action, "post-auto-scroll", postCategory);
 }
@@ -164,11 +172,7 @@ void PostWindow::applySettings(Settings::Manager* settings) {
     QFontMetrics metrics(font);
     QString stringOfSpaces(settings->value("IDE/editor/indentWidth").toInt(), QChar(' '));
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
     setTabStopDistance(metrics.horizontalAdvance(stringOfSpaces));
-#else
-    setTabStopWidth(metrics.width(stringOfSpaces));
-#endif
 
     updateActionShortcuts(settings);
 }
@@ -189,36 +193,61 @@ QString PostWindow::symbolUnderCursor() {
 }
 
 void PostWindow::post(const QString& text) {
-    bool scroll = mActions[AutoScroll]->isChecked();
+    const bool scroll = mActions[AutoScroll]->isChecked();
     QTextCursor cursor(document());
-    QChar linebreak = QChar('\n');
 
-    int startPos = 0, position = 0;
-    foreach (const QChar chr, text) {
-        if (previousChar == linebreak) {
-            cursor.movePosition(QTextCursor::End);
-            cursor.insertText(QStringRef(&text, startPos, position - startPos).toString(), currentFormat);
-            startPos = position;
+    if (text == "\n") {
+        cursor.movePosition(QTextCursor::End);
+        cursor.insertText(text, currentFormat);
 
-            QStringRef newLine(&text, position, text.length() - 1);
-            currentFormat = formatForPostLine(newLine);
-        }
-
-        previousChar = chr;
-        position++;
+        if (scroll)
+            emit(scrollToBottomRequest());
+        return;
     }
 
-    // handle remaining chars if not \n terminated
-    if (startPos < text.length()) {
+    const auto ends_with_new_line = text.back() == '\n';
+    const auto lines = text.split("\n");
+    const auto line_count = lines.size();
+    for (size_t i { 0 }; i < line_count; ++i) {
+        const auto line = lines[i];
+        const auto line_format = formatForPostLine(line);
         cursor.movePosition(QTextCursor::End);
-        cursor.insertText(QStringRef(&text, startPos, text.length() - startPos).toString(), currentFormat);
+
+        // If there is some text that looks like a URI and contains '://' then turn it into a html anchor so we can
+        // click it.
+        if (!line.contains("://")) {
+            cursor.insertText(line, line_format);
+        } else {
+            // words are just text separated by spaces.
+            const auto words = line.split(" ");
+            const auto words_count = words.size();
+            for (size_t w { 0 }; w < words_count; ++w) {
+                const auto& word = words[w];
+                cursor.movePosition(QTextCursor::End);
+
+                if (const auto maybe_url = QUrl(word, QUrl::ParsingMode::StrictMode);
+                    maybe_url.isValid() && word.contains("://")) {
+                    cursor.insertHtml(QString("<a href='") + word + QString("'>") + word + QString("</a>"));
+                } else {
+                    cursor.insertText(word, line_format);
+                }
+
+                // Put space back in, if not last word.
+                if (w + 1 != words_count)
+                    cursor.insertText(" ", line_format);
+            }
+        }
+
+        // Don't write a new line in the final case.
+        if (i + 1 != line_count)
+            cursor.insertText("\n", line_format);
     }
 
     if (scroll)
         emit(scrollToBottomRequest());
 }
 
-QTextCharFormat PostWindow::formatForPostLine(QStringRef line) {
+QTextCharFormat PostWindow::formatForPostLine(QString line) {
     Settings::Manager* settings = Main::settings();
     QTextCharFormat postWindowError = settings->getThemeVal("postwindowerror");
     QTextCharFormat postWindowWarning = settings->getThemeVal("postwindowwarning");
@@ -253,10 +282,15 @@ void PostWindow::zoomOut(int steps) { zoomFont(-steps); }
 
 void PostWindow::zoomFont(int steps) {
     QFont currentFont = font();
-    const int newSize = currentFont.pointSize() + steps;
-    if (newSize <= 0)
-        return;
-    currentFont.setPointSize(newSize);
+    const float newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() + steps);
+    currentFont.setPointSizeF(newSize);
+    setFont(currentFont);
+}
+
+void PostWindow::zoomFont(float scaler) {
+    QFont currentFont = font();
+    const float newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() * scaler);
+    currentFont.setPointSizeF(newSize);
     setFont(currentFont);
 }
 
@@ -277,6 +311,10 @@ bool PostWindow::event(QEvent* event) {
         }
         break;
     }
+    case QEvent::Gesture: {
+        return gestureEvent(static_cast<QGestureEvent*>(event));
+        break;
+    }
     default:
         break;
     }
@@ -293,8 +331,9 @@ void PostWindow::wheelEvent(QWheelEvent* e) {
 
     // So rather just forward the event without modifiers.
 
-    QWheelEvent modifiedEvent(e->pos(), e->globalPos(), e->delta(), e->buttons(), 0, e->orientation());
-    QPlainTextEdit::wheelEvent(&modifiedEvent);
+    e->setModifiers(Qt::NoModifier);
+
+    QPlainTextEdit::wheelEvent(e);
     return;
 
 #if 0
@@ -308,6 +347,22 @@ void PostWindow::wheelEvent(QWheelEvent* e) {
 
     QPlainTextEdit::wheelEvent(e);
 #endif
+}
+
+void PostWindow::mousePressEvent(QMouseEvent* e) {
+    clickedAnchor = (e->button() & Qt::LeftButton) ? anchorAt(e->pos()) : QString();
+    QPlainTextEdit::mousePressEvent(e);
+}
+
+void PostWindow::mouseReleaseEvent(QMouseEvent* e) {
+    // Make sure that the release event was over the same anchor it started on.
+    if (e->button() & Qt::LeftButton && !clickedAnchor.isEmpty() && anchorAt(e->pos()) == clickedAnchor) {
+        QUrl url { clickedAnchor };
+        auto command =
+            QString("PostWindowURLHandler(\"") + url.scheme() + QString("\", \"") + clickedAnchor + QString("\");");
+        emit handleClickedURL(command, true);
+    }
+    QPlainTextEdit::mouseReleaseEvent(e);
 }
 
 void PostWindow::focusOutEvent(QFocusEvent* event) {
@@ -335,6 +390,19 @@ QMimeData* PostWindow::createMimeDataFromSelection() const {
     return data;
 }
 
+
+bool PostWindow::gestureEvent(QGestureEvent* event) {
+    if (QGesture* pinch = event->gesture(Qt::PinchGesture)) {
+        auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
+        if (pinchGesture->state() == Qt::GestureUpdated) {
+            float scaleFactor = pinchGesture->scaleFactor();
+            zoomFont(scaleFactor);
+        }
+        return true;
+    }
+    return false;
+}
+
 bool PostWindow::openDocumentation() { return Main::openDocumentation(symbolUnderCursor()); }
 
 void PostWindow::openDefinition() { Main::openDefinition(symbolUnderCursor(), window()); }
@@ -355,7 +423,9 @@ PostDocklet::PostDocklet(QWidget* parent): Docklet(tr("Post window"), parent) {
     mPostWindow = new PostWindow;
     setWidget(mPostWindow);
 
+    // This adds the QAction defined in PostWindow::createActions to the toolbar attached to the post window.
     toolBar()->addAction(mPostWindow->mActions[PostWindow::AutoScroll]);
+    toolBar()->addAction(mPostWindow->mActions[PostWindow::Clear]);
 
     // connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
 }
@@ -368,5 +438,6 @@ void PostDocklet::onFloatingChanged(bool floating) {
     if (floating)
         dockWidget()->resize(dockWidget()->size() - QSize(1, 1));
 }
+
 
 } // namespace ScIDE

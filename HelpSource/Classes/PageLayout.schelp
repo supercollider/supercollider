@@ -140,7 +140,7 @@ the object that wishes to be sent .remove on closing the window
 returns:: self
 
 METHOD:: resizeToFit
-Resize the top FlowView to fit its contents and then resize the Window to fit that.=
+Resize the top FlowView to fit its contents and then resize the Window to fit that.
 
 argument:: reflow
 boolean: FlowView can relay all of its child views in cases where the bounds have changed or views have been removed.  This puts them all back in place one by one for the updated bounds.  So this may result in smaller over all bounds, after which the window is shrunk.
@@ -174,7 +174,7 @@ argument:: func
 A handler that recieves the new FlowView as argument
 
 argument:: bounds
-Bounds fo the FlowView
+Bounds of the FlowView
 
 returns:: (returnvalue)
 

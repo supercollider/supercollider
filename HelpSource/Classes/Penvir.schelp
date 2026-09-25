@@ -20,7 +20,7 @@ Examples::
 
 code::
 (
-x = (a:8);
+x = (a: 8);
 y = Penvir(
 	x,
 	Pfunc { ~a * 2 }
@@ -34,7 +34,7 @@ t.next;
 
 
 (
-x = (a:8);
+x = (a: 8);
 y = Penvir(
 	x,
 	Pfunc { ~a = ~a * 2 }

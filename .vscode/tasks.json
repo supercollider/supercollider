@@ -1,0 +1,10 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Generate Parser With Bison",
+            "type": "shell",
+            "command": "tools/generate_parser_bison.sh"
+        }
+    ]
+}

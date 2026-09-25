@@ -95,6 +95,14 @@ TestLcmGcd : UnitTest {
 		^pass
 	}
 
+	callTest_fundamentalTheoremOfArithmetic { |a, b|
+
+		var x = gcd(a, b) * lcm(a, b);
+		var y = a * b;
+		var pass = x == y;
+		if(pass.not) { this.failed(thisMethod, this.assertion_fundamentalTheoremOfArithmetic(a, b)) };
+		^pass
+	}
 
 	// equalities expressed as formulas
 
@@ -133,6 +141,9 @@ TestLcmGcd : UnitTest {
 			a, b, b, c, a, c,
 			a, b, b, c, a, c
 		)
+	}
+	assertion_fundamentalTheoremOfArithmetic { |a, b|
+		^"gcd(%, %) * lcm(%, %) = % * %".format(a, b, a, b, a, b)
 	}
 
 
@@ -248,6 +259,16 @@ TestLcmGcd : UnitTest {
 
 	}
 
+	test_fundamentalTheoremOfArithmetic {
+
+		var operands = (-1..1).dup(2).allTuples;
+		this.assert(
+			operands.every { |pair| this.callTest_fundamentalTheoremOfArithmetic(*pair) },
+			this.assertion_fundamentalTheoremOfArithmetic("x", "y") + "is valid in the range (-1..1)"
+		);
+
+	}
+
 
 	test_booleanLattice {
 
@@ -257,4 +278,3 @@ TestLcmGcd : UnitTest {
 
 	}
 }
-

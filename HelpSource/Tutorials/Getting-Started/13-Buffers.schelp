@@ -39,8 +39,12 @@ section::Using Buffers with Sound Files
 Buffer has another class method called 'read', which reads a sound file from disk into memory, and returns a Buffer object. Using the UGen PlayBuf, we can play the file.
 
 code::
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
+// peek at the path to see location and the format of a path
+p.postln;
 // read a soundfile
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, p);
 
 // now play it
 (
@@ -67,7 +71,7 @@ Number of channels: When working with PlayBuf you must let it know how many chan
 
 Buffer Number: As noted above, Buffers are numbered, starting from zero. You can get a Buffer's number using its strong::bufnum:: method, but you will not normally need to do this, since Buffer objects can be passed directly as UGen inputs or Synth args.
 
-Rate of Playback: A rate of 1 would be normal speed, 2 twice as fast, etc. But here we see a UGen called BufRateScale. What this does is check the samplerate of the buffer (this is set to correspond to that of the soundfile when it is loaded) and outputs the rate which would correspond to normal speed. This is useful because the soundfile we loaded (a11wlk01.wav) actually has a samplerate of 11025 Hz. With a rate of 1, PlayBuf would play it back using the sampling rate of the server, which is usually 44100 Hz, or four times as fast! BufRateScale thus brings things back to normal.
+Rate of Playback: A rate of 1 would be normal speed, 2 twice as fast, etc. But here we see a UGen called BufRateScale. What this does is check the samplerate of the buffer (this is set to correspond to that of the soundfile when it is loaded) and outputs the rate which would correspond to normal speed. This is useful because if, for example, a soundfile we loaded has a samplerate of 11025 Hz, using a playback rate of 1 PlayBuf would play it back using the sampling rate of the server, which is usually 44100 Hz, or four times as fast! BufRateScale thus brings things back to normal.
 
 section::Streaming a File in From Disk
 
@@ -82,7 +86,7 @@ SynthDef("tutorial-Buffer-cue",{ arg out=0,bufnum;
 }).add;
 )
 
-b = Buffer.cueSoundFile(s,Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
+b = Buffer.cueSoundFile(s,ExampleFiles.apollo11, 0, 1);
 y = Synth.new("tutorial-Buffer-cue", [\bufnum,b], s);
 
 b.free; y.free;
@@ -98,7 +102,7 @@ Buffer has a number of other instance variables with getters which can provide h
 
 code::
 // watch the post window
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 b.bufnum;
 b.numFrames;
 b.numChannels;
@@ -112,7 +116,7 @@ code::
 // with an action function
 // note that the vars are not immediately up-to-date
 (
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav", action: { arg buffer;
+b = Buffer.read(s, ExampleFiles.child, action: { arg buffer;
 	("numFrames after update:" + buffer.numFrames).postln;
 	x = { PlayBuf.ar(1, buffer, BufRateScale.kr(buffer)) }.play;
 });
@@ -211,7 +215,7 @@ Buffer has two useful convenience methods: 'plot' and 'play'.
 
 code::
 // see the waveform
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 b.plot;
 
 // play the contents

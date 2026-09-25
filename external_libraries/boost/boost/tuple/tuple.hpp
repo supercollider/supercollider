@@ -24,7 +24,7 @@ namespace boost { namespace python { class tuple; }}
 #include <boost/static_assert.hpp>
 
 // other compilers
-#include <boost/ref.hpp>
+#include <boost/core/ref.hpp>
 #include <boost/tuple/detail/tuple_basic.hpp>
 
 

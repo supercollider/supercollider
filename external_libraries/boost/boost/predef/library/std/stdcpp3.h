@@ -16,7 +16,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 /* tag::reference[]
 = `BOOST_LIB_STD_GNU`
 
-http://gcc.gnu.org/libstdc++/[GNU libstdc++] Standard {CPP} library.
+https://gcc.gnu.org/onlinedocs/libstdc%2b%2b/[GNU libstdc++] Standard {CPP} library.
 Version number available as year (from 1970), month, and day.
 
 [options="header"]

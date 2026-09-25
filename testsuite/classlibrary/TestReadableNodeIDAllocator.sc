@@ -48,7 +48,7 @@ TestReadableNodeIDAllocator : UnitTest {
 			permIDs.add(nextPermID);
 		};
 		this.assert(
-			permIDs.size == (alloc.lowestTempID - 2),
+			permIDs.size == (alloc.lowestTempID - 4),
 			"ReadableNodeIDAllocator should hand out all permanent IDs in mixed alloc/free use."
 		);
 
@@ -65,7 +65,7 @@ TestReadableNodeIDAllocator : UnitTest {
 			alloc.freePerm(permIDToFree);
 		};
 		this.assert(
-			alloc.allocPerm == (alloc.idOffset + 2),
+			alloc.allocPerm == (alloc.idOffset + 4),
 			"ReadableNodeIDAllocator should begin at first permID after freeing all permanent IDs in mixed alloc/free use."
 		);
 	}

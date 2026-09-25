@@ -49,8 +49,8 @@ public:
 public Q_SLOTS:
     void onNewIpcConnection() {
         mIpcSocket = mIpcServer->nextPendingConnection();
-        connect(mIpcSocket, SIGNAL(disconnected()), mIpcSocket, SLOT(deleteLater()));
-        connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
+        connect(mIpcSocket, &QLocalSocket::disconnected, mIpcSocket, &QLocalSocket::deleteLater);
+        connect(mIpcSocket, &QLocalSocket::readyRead, this, &SingleInstanceGuard::onIpcData);
     }
 
     void onIpcData();
@@ -77,13 +77,15 @@ public:
     static DocumentManager* documentManager() { return instance()->mDocManager; }
     static Settings::Manager* settings() { return instance()->mSettings; }
 
-    static void evaluateCode(QString const& text, bool silent = false) {
-        instance()->scProcess()->evaluateCode(text, silent);
+    static void evaluateCode(QString const& text, bool silent = false, const QString* filePath = nullptr,
+                             int lineNumber = 0, int column = 0) {
+        instance()->scProcess()->evaluateCode(text, silent, filePath, lineNumber, column);
     }
 
-    static void evaluateCodeIfCompiled(QString const& text, bool silent = false) {
+    static void evaluateCodeIfCompiled(QString const& text, bool silent = false, const QString* filePath = nullptr,
+                                       int lineNumber = 0, int column = 0) {
         if (instance()->scProcess()->compiled())
-            evaluateCode(text, silent);
+            evaluateCode(text, silent, filePath, lineNumber, column);
     }
 
     static bool openDocumentation(const QString& string);
@@ -114,7 +116,11 @@ Q_SIGNALS:
 private:
     Main(void);
     bool eventFilter(QObject* obj, QEvent* event);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     bool nativeEventFilter(const QByteArray&, void* message, long*);
+#else
+    bool nativeEventFilter(const QByteArray&, void* message, qintptr*);
+#endif
 
     Settings::Manager* mSettings;
     ScProcess* mScProcess;

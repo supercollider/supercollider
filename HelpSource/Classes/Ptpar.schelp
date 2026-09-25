@@ -12,7 +12,7 @@ ClassMethods::
 method::new
 
 argument::list
-list of pairs of times and patterns: [time, pat, time, pat .. ].
+list of pairs of times and patterns: [time, pat, time, pat ..].
 
 note:: times are in beats and depend on the tempo of the link::Classes/TempoClock:: in use.::
 
@@ -29,7 +29,7 @@ a = Pbind(\x, Pseq([1, 2, 3, 4]), \dur, 1);
 b = Pbind(\x, Pseq([10, 20, 30, 40]), \dur, 0.4);
 c = Ptpar([0.0, a, 1.3, b]);
 t = c.asStream;
-20.do({ t.next(Event.default).postln; });
+20.do({ t.next(Event.default).postln });
 )
 
 // sound example
@@ -37,6 +37,6 @@ t = c.asStream;
 var a, b;
 a = Pbind(\note, Pseq([7, 4, 0], 4), \dur, Pseq([1, 0.5, 1.5], inf));
 b = Pbind(\note, Pseq([5, 10, 12], 4), \dur, 1);
-Ptpar([ 0.0, a, 1.3, b ]).play;
+Ptpar([0.0, a, 1.3, b]).play;
 )
 ::

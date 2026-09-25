@@ -64,4 +64,3 @@ METHOD:: typeKey
 Gets a key indicating the type of message this dispatcher responds to, in the form: code::('MIDI ' ++ messageType).asSymbol::.
 
 returns:: A link::Classes/Symbol::.
-

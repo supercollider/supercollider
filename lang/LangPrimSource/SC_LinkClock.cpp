@@ -45,12 +45,16 @@ void LinkClock::SetAll(double tempo, double inBeats, double inSeconds) {
 }
 
 double LinkClock::BeatsToSecs(double beats) const {
+    if (std::isinf(beats))
+        return beats;
     auto sessionState = mLink.captureAppSessionState();
     double secs = linkToHrTime(sessionState.timeAtBeat(beats, mQuantum)) - mLatency;
     return secs;
 }
 
 double LinkClock::SecsToBeats(double secs) const {
+    if (std::isinf(secs))
+        return secs;
     auto sessionState = mLink.captureAppSessionState();
     double beats = sessionState.beatAtTime(hrToLinkTime(secs + mLatency), mQuantum);
     return beats;

@@ -321,14 +321,14 @@ Env {
 	circle { arg timeFromLastToFirst = 0.0, curve = \lin;
 		var first0Then1;
 		if(UGen.buildSynthDef.isNil) { ^this };
-		first0Then1 = Latch.kr(1.0, Impulse.kr(0.0));
+		first0Then1 = Latch.kr(1.0, Delay1.kr(Impulse.kr(0.0), x1: 0.0));
 		if(releaseNode.isNil) {
-			levels = [0.0] ++ levels ++ 0.0;
+			levels = [levels.first] ++ levels ++ 0.0; // appended 0.0 is a dummy value - never reached
 			curves = [curve] ++ curves.asArray.wrapExtend(times.size) ++ \lin;
 			times  = [first0Then1 * timeFromLastToFirst] ++ times ++ inf;
 			releaseNode = levels.size - 2;
 		} {
-			levels = [0.0] ++ levels;
+			levels = [levels.first] ++ levels;
 			curves = [curve] ++ curves.asArray.wrapExtend(times.size);
 			times  = [first0Then1 * timeFromLastToFirst] ++ times;
 			releaseNode = releaseNode + 1;
@@ -338,7 +338,9 @@ Env {
 
 	test { arg releaseTime = 3.0;
 		var s = Server.default;
-		if(s.serverRunning.not) { "Server not running.".warn; ^this };
+		
+		if(s.warnIfNotRunning(thisMethod)) { ^this };
+		
 		fork {
 			var synth = { arg gate=1;
 				SinOsc.ar(800, pi/2, 0.3) * EnvGen.ar(this, gate, doneAction:2)

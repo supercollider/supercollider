@@ -15,4 +15,3 @@ method::ar
 argument::numChannels
 
 Number of channels to output.
-

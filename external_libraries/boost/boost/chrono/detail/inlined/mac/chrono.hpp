@@ -30,7 +30,7 @@ system_clock::time_point
 system_clock::now() BOOST_NOEXCEPT
 {
     timeval tv;
-    gettimeofday(&tv, 0);
+    gettimeofday(&tv, BOOST_NULLPTR);
     return time_point(seconds(tv.tv_sec) + microseconds(tv.tv_usec));
 }
 
@@ -39,7 +39,7 @@ system_clock::time_point
 system_clock::now(system::error_code & ec)
 {
     timeval tv;
-    gettimeofday(&tv, 0);
+    gettimeofday(&tv, BOOST_NULLPTR);
     if (!::boost::chrono::is_throws(ec))
     {
         ec.clear();
@@ -166,7 +166,7 @@ init_steady_clock(kern_return_t & err)
     err = mach_timebase_info(&MachInfo);
     if ( err != 0  )
     {
-        return 0;
+        return BOOST_NULLPTR;
     }
 
     if (MachInfo.numer == MachInfo.denom)
@@ -185,7 +185,7 @@ init_steady_clock_ec(kern_return_t & err)
     err = mach_timebase_info(&MachInfo);
     if ( err != 0  )
     {
-        return 0;
+        return BOOST_NULLPTR;
     }
 
     if (MachInfo.numer == MachInfo.denom)

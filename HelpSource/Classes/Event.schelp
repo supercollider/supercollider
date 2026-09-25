@@ -4,7 +4,7 @@ related::Classes/Pattern, Classes/Environment, Classes/IdentityDictionary
 categories::Collections>Unordered, Streams-Patterns-Events>Events
 
 DESCRIPTION::
-An Event specifies an action to be taken in response to a link::#-play:: message. Its key/value pairs specify the parameters of that action. Event inherits most of its methods from its superclasses, especially from link::Classes/Dictionary::. For the usage and meaning of the code::parent:: and code::proto:: events, see link::Classes/IdentityDictionary::.
+An Event specifies an action to be taken in response to a link::#-play:: message. Its key/value pairs specify the parameters of that action. Event inherits most of its methods from its superclasses, especially from link::Classes/Dictionary::. Nevertheless Event inherits from link::Classes/IdentityDictionary:: and querying values is done by checking its keys for emphasis::identity::, not emphasis::equality::. For the usage and meaning of the code::parent:: and code::proto:: events, see link::Classes/IdentityDictionary::'s helpfile.
 
 code::
 a = (x: 6, y: 7, play: { (~x * ~y).postln });
@@ -131,7 +131,7 @@ An event with default values which is used to override the parent event. If code
 discussion::
 code::
 Pbind(\type, \note, \degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur, 0.08).play;
-Event.addParentType(\note, (mtranspose: 2, root:5)); // set different defaults
+Event.addParentType(\note, (mtranspose: 2, root: 5)); // set different defaults
 
 // note is the default type, this will also pick up the information:
 Pbind(\degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur, 0.08).play;
@@ -154,7 +154,7 @@ A name (usually a symbol) for the event type.
 method::makeDefaultSynthDef
 This method is called in order to build the default SynthDef, which is stored under the key strong::\default::
 code::
-SynthDef(\default, { |out| Out.ar(out, Line.kr(0.3, 0, 0.5) * SinOsc.ar(Rand(300, 500.0)) ) }).add; // overwrite default
+SynthDef(\default, { |out| Out.ar(out, Line.kr(0.3, 0, 0.5) * SinOsc.ar(Rand(300, 500.0))) }).add; // overwrite default
 (freq: 600).play;
 Event.makeDefaultSynthDef; // reset default
 (freq: 600).play;
@@ -166,13 +166,13 @@ method::play
 Play the event. This evaluates the function at strong::\play::.
 code::
 (freq: 800).play;
-(play: {  "I rather do something else: ".post; ~x.postln; }, x: 800.rand).play;
+(play: {  "I rather do something else: ".post; ~x.postln }, x: 800.rand).play;
 ::
 
 method::delta
 Returns the inter onset time - the time delay until the next event in a sequence. This usually depends on strong::\dur:: and strong::\stretch::, but may be overridden by specifying strong::\delta:: directly.
 code::
-Pn((dur: 2, freq:8000)).play;
+Pn((dur: 2, freq: 8000)).play;
 ::
 
 method::next
@@ -237,14 +237,31 @@ code::
 q = (n: 10, x: [1, 2, 3]);
 q[\y] = q[\x] * q[\n];	// similar to ~y = ~x * ~n, but in a separate name space
 q.y = q.x * q.n;	// shorter way to do the same (pseudo-methods)
-q.y;			// [ 100, 200, 300 ]
+q.y;			// [100, 200, 300]
+::
+
+subsection::Syntax subtleties
+
+Events have a very special meaning in a musical context within SuperCollider, especially when it comes to sequencing with Patterns. Nevertheless, as the class inherits from link::Classes/IdentityDictionary::, it is often used as a convenient-to-type replacement for (Identity)Dictionary-like objects. The syntax very much reminds of the declaration of keyword arguments in function or method calls. However, there is a subtle difference:
+
+code::
+e = (a: 10);  // -> ('a': 10)
+a = nil;
+f = (a : 10); // -> nil
+              // ERROR: Primitive '_IdentDict_Put' failed.
+              // a is treated as a variable!
+a = "abc";
+f = (a : 10); // -> ("abc": 10)
+f["abc"];     // -> nil
+              // "abc" is equal to the string stored in a but not identical
+f[a]:         // -> 10
 ::
 
 subsection::Event for specifying different things to happen
 
 Event provides a link::#defaultParentEvent:: that defines a variety of different event types and provides a complete set of default key/value pairs for each type. The type is determined by the value of the key strong::\type:: which defaults to strong::\note::. Note events create synths on the server.
 code::
-( ).play;			// the default note
+().play;			// the default note
 (freq: 500, pan: -1) .play;	// 500 Hz, panned left
 (play: { ~what.postln }, what: "hello happening").play;	// something else
 ::
@@ -255,10 +272,10 @@ subsection::Events and SynthDefs
 The key used to select what synthdef is to be played is strong::\instrument::. In order to use a link::Classes/SynthDef:: with an Event, send it an strong::add:: message. This creates a description of the SynthDef that the event can consult to determine its control names. The values of these names in the event are used when the event is played. (See link::Classes/SynthDesc:: for details.)
 code::
 (
-SynthDef(\pm, { |out=0, freq=440, amp=0.1, pan=0, gate=1, ratio = 1, index = 1, ar = 0.1, dr = 0.1|
+SynthDef(\pm, { |out = 0, freq = 440, amp = 0.1, pan = 0, gate = 1, ratio = 1, index = 1, ar = 0.1, dr = 0.1|
 	var z;
 	z = LPF.ar(
-		PMOsc.ar(freq, freq * ratio, Linen.kr(gate, ar,index, dr), 0, 0.3),
+		PMOsc.ar(freq, freq * ratio, Linen.kr(gate, ar, index, dr), 0, 0.3),
 		XLine.kr(Rand(4000, 5000), Rand(2500, 3200), 1)
 	) * Linen.kr(gate, 0.01, 0.7, dr, 2);
 	OffsetOut.ar(out, Pan2.ar(z, pan, amp));
@@ -293,7 +310,7 @@ code::
 (note: (0..12), amp: [0, 0, 0.1]).play;
 
 // the same with different sustain times
-(note: (0..12), amp: [0, 0, 0.1], sustain:[0.1, 0.3, 1.3, 2.5]).play;
+(note: (0..12), amp: [0, 0, 0.1], sustain: [0.1, 0.3, 1.3, 2.5]).play;
 
 // timingOffset gives a tempo-relative offset time to each synth
 (instrument: \pm, ratio: [2.3, 4.5, 1.7], timingOffset: [0, 1.2, 3], sustain: [0.2, 2, 1]).play;
@@ -307,10 +324,10 @@ It is possible to assign an array to one of a link::Classes/SynthDef::'s control
 code::
 (
 SynthDef(\test, {
-	| out = 0, amp = 0.01, freq = #[300,400,400], pan, gate = 1 |
+	|out = 0, amp = 0.01, freq = #[300, 400, 400], pan, gate = 1|
 	var audio, env;
 	audio = Mix.ar(Pulse.ar(freq, 0.5));	// this is a mixture of three oscillators
-	env = Linen.kr(gate, susLevel: amp , doneAction: Done.freeSelf);
+	env = Linen.kr(gate, susLevel: amp, doneAction: Done.freeSelf);
 	audio = audio * env;
 	OffsetOut.ar(out, audio);
 }).add;
@@ -364,14 +381,14 @@ Here is an example that illustrates some more of the keys defined by the link::#
 code::
 (
 Pbind(*[
-	stepsPerOctave:	Pstep(Pseq((2..12).mirror, inf),12),	// 3 - 12 tone e.t. scales
+	stepsPerOctave:	Pstep(Pseq((2..12).mirror, inf), 12),	// 3 - 12 tone e.t. scales
 	note:		Pseq((0..12).mirror, inf),		// play full notes up and down
 	ctranspose:	Pwhite(-0.2, 0.2),			// detune up to +-20 cents
 	detune:		Pwhite(-1.0, 1.0),			// detune up to 1 Hz
 	sustain:	Prand([0.2, 0.2, 0.2, 4], inf), 	// notes last 0.2 or 4 seconds
 				// 1 in 6 chance waits 0.8 seconds:
 	dur:		Prand([0.2, 0.2, 0.2, 0.2, 0.2, 0.8], inf),
-	db:		Pstep(Pseq([-15, -25, -20, -25], inf), 0.8)// 4 beat accent structure
+	db:		Pstep(Pseq([-15, -25, -20, -25], inf), 0.8) // 4 beat accent structure
 ]).play;
 )
 ::

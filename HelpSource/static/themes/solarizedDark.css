@@ -1,0 +1,42 @@
+:root {
+    /* editor colors */
+    --color-cm-background: #002b36;
+    --color-cm-border: #e1e1e1;
+    --color-cm-evaluated: rgb(206, 222, 228);
+    --color-cm-keyword: #dc322f;
+    --color-cm-built-in: #b58900;
+    --color-cm-number: #6c71c4;
+    --color-cm-symbol: #b58900;
+    --color-cm-class: #268bd2;
+    --color-cm-primitive: #2aa198;
+    --color-cm-char: #cb4b16;
+    --color-cm-env-var: #d33682;
+    --color-cm-comment: #93a1a1;
+    --color-cm-string: #586e75;
+    --color-cm-text: #839496;
+    --color-cm-selection: var(--color-cm-border);
+
+    /* derived colors
+    in future use `color-mix` to calculate them which allows for fewer variables
+    but currently the qt browser does not support it, see
+    https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix
+    */
+    --color-bg: var(--color-cm-background);
+
+    --color-warning-bg: var(--color-cm-evaluated);
+    --color-warning-fg: var(--color-cm-keyword);
+
+    --color-fg: var(--color-cm-text);
+    --color-fg-400: #ccc;
+    --color-fg-300: #ccc;
+    --color-fg-200: #4f6e76;
+    --color-fg-100: #054252;
+
+    --color-link: var(--color-cm-string);
+
+    --color-extensions-bg: var(--color-link);
+    --color-extensions-fg: var(--color-fg-400);
+
+    --color-input-fg: var(--color-fg);
+    --color-input-bg: var(--color-fg-100);
+}

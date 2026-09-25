@@ -70,16 +70,16 @@ code::
 // the curves:
 
 // exp = 0.3333
-(200,210..10000).collect {|freq| (200/freq) ** 0.3333 }.plot;
+(200, 210..10000).collect { |freq| (200/freq) ** 0.3333 }.plot;
 
 // nearly linear for semitone steps:
 
-(48..72).midicps.collect {|freq| (48.midicps/freq) ** 0.3333 }.plot;
+(48..72).midicps.collect { |freq| (48.midicps/freq) ** 0.3333 }.plot;
 { AmpComp.ar(Line.ar(48, 72, 1).midicps, 48.midicps) }.plot(1.0);
 
 // exp = 1.2
-(200,210..10000).collect {|freq| (200/freq) ** 1.2 }.plot;
-(48..72).midicps.collect {|freq| (200/freq) ** 1.2 }.plot;
+(200, 210..10000).collect { |freq| (200/freq) ** 1.2 }.plot;
+(48..72).midicps.collect { |freq| (200/freq) ** 1.2 }.plot;
 { AmpComp.ar(Line.ar(48, 72, 1).midicps, 48.midicps, 1.2) }.plot(1.0);
 
 
@@ -106,7 +106,7 @@ code::
 // in granular synthesis:
 (
 SynthDef("pgrain",
-	{ arg out = 0, sustain=0.01, amp=0.5, pan = 0;
+	{ |out = 0, sustain = 0.01, amp = 0.5, pan = 0|
 		var freq = MouseX.kr(300, 7000, 1);
 		var window = Env.sine(sustain, amp * AmpComp.ir(freq));
 		Out.ar(out,
@@ -123,7 +123,7 @@ SynthDef("pgrain",
 (
 fork {
 	loop {
-		s.sendBundle(0.1, [\s_new, \pgrain, -1,1,1]);
+		s.sendBundle(0.1, [\s_new, \pgrain, -1, 1, 1]);
 		0.02.wait;
 	};
 }
@@ -137,7 +137,7 @@ fork {
 
 (
 SynthDef("pgrain",
-	{ arg out = 0, sustain=0.01, amp=0.5, pan = 0;
+	{ |out = 0, sustain = 0.01, amp = 0.5, pan = 0|
 		var freq = MouseX.kr(300, 7000, 1);
 		var window = Env.sine(sustain, amp);
 		Out.ar(out,
@@ -153,7 +153,7 @@ SynthDef("pgrain",
 // with AmpCompA
 (
 SynthDef("pgrain",
-	{ arg out = 0, sustain=0.01, amp=0.5, pan = 0;
+	{ |out = 0, sustain = 0.01, amp = 0.5, pan = 0|
 		var freq = MouseX.kr(300, 7000, 1);
 		var window = Env.sine(sustain, amp * AmpCompA.ir(freq));
 		Out.ar(out,
@@ -166,4 +166,3 @@ SynthDef("pgrain",
 ).add;
 )
 ::
-

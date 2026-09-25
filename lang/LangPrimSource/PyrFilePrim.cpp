@@ -49,9 +49,7 @@ Primitives for File i/o.
 
 /* C++ stdlib headers */
 #include <tuple>
-
-/* boost headers */
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 /* system headers */
 #ifndef _WIN32
@@ -70,7 +68,7 @@ Primitives for File i/o.
 
 #define DELIMITOR ':'
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 int prFileDelete(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a = g->sp - 1, *b = g->sp;
@@ -80,9 +78,9 @@ int prFileDelete(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-    const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-    boost::system::error_code error_code;
-    bfs::remove(p, error_code);
+    const fs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+    std::error_code error_code;
+    fs::remove(p, error_code);
 
     if (error_code)
         SetFalse(a);
@@ -100,14 +98,23 @@ int prFileDeleteAll(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-    const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-    if (bfs::remove_all(p) > 0) {
+    const fs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+    if (fs::remove_all(p) > 0) {
         SetTrue(a);
     } else {
         SetFalse(a);
     }
 
     return errNone;
+}
+
+std::time_t to_time_t(std::filesystem::file_time_type file_time) {
+    using namespace std::chrono;
+    // in case of C++20 update, consider
+    // https://stackoverflow.com/questions/61030383/how-to-convert-stdfilesystemfile-time-type-to-time-t
+    auto sctp = time_point_cast<system_clock::duration>(file_time - std::filesystem::file_time_type::clock::now()
+                                                        + system_clock::now());
+    return system_clock::to_time_t(sctp);
 }
 
 int prFileMTime(struct VMGlobals* g, int numArgsPushed) {
@@ -118,9 +125,9 @@ int prFileMTime(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-    const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-    time_t mtime = bfs::last_write_time(p);
-    SetInt(a, mtime);
+    const fs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+    auto mtime = fs::last_write_time(p);
+    SetInt(a, to_time_t(mtime));
     return errNone;
 }
 
@@ -132,8 +139,8 @@ int prFileExists(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-    const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-    bool res = bfs::exists(p);
+    const fs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+    bool res = fs::exists(p);
     SetBool(a, res);
     return errNone;
 }
@@ -149,13 +156,13 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed) {
         return err;
 
     bool isAlias = false;
-    bfs::path p = SC_Codecvt::utf8_str_to_path(ipath);
+    fs::path p = SC_Codecvt::utf8_str_to_path(ipath);
     p = SC_Filesystem::resolveIfAlias(p, isAlias);
     if (p.empty())
         return errFailed;
 
-    boost::system::error_code error_code;
-    p = bfs::canonical(p, error_code).make_preferred();
+    std::error_code error_code;
+    p = fs::canonical(p, error_code).make_preferred();
     if (error_code) {
         SetNil(a);
         return errNone;
@@ -178,8 +185,8 @@ int prFileMkDir(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-    const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-    bool result = bfs::create_directories(p);
+    const fs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+    bool result = fs::create_directories(p);
 
     SetBool(a, result);
     return errNone;
@@ -197,10 +204,10 @@ int prFileCopy(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-    const bfs::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
-    const bfs::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
-    boost::system::error_code error_code;
-    bfs::copy(p1, p2, error_code);
+    const fs::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
+    const fs::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
+    std::error_code error_code;
+    fs::copy(p1, p2, error_code);
     if (error_code) {
         std::ostringstream s;
         s << error_code.message() << ": copy from \"" << filename1 << "\" to \"" << filename2 << "\"";
@@ -208,6 +215,34 @@ int prFileCopy(struct VMGlobals* g, int numArgsPushed) {
     }
 
     return errNone;
+}
+
+int prFileTypeToInt(const fs::file_type& type) {
+    // see https://en.cppreference.com/w/cpp/filesystem/file_type
+    // and also check this with the `File.type` method located in
+    // `Common/Files/Files.sc`
+    switch (type) {
+    case fs::file_type::none:
+        return 0;
+    case fs::file_type::not_found:
+        return 1;
+    case fs::file_type::regular:
+        return 2;
+    case fs::file_type::directory:
+        return 3;
+    case fs::file_type::symlink:
+        return 4;
+    case fs::file_type::block:
+        return 5;
+    case fs::file_type::character:
+        return 6;
+    case fs::file_type::fifo:
+        return 7;
+    case fs::file_type::socket:
+        return 8;
+    default:
+        return 0;
+    }
 }
 
 int prFileType(struct VMGlobals* g, int numArgsPushed) {
@@ -218,9 +253,9 @@ int prFileType(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-    const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-    bfs::file_status s(bfs::symlink_status(p));
-    SetInt(a, s.type());
+    const fs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+    fs::file_status s(fs::symlink_status(p));
+    SetInt(a, prFileTypeToInt(s.type()));
     return errNone;
 }
 
@@ -232,8 +267,8 @@ int prFileSize(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-    const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-    uintmax_t sz = bfs::file_size(p);
+    const fs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+    uintmax_t sz = fs::file_size(p);
     SetInt(a, sz);
     return errNone;
 }
@@ -261,7 +296,7 @@ int prFileOpen(struct VMGlobals* g, int numArgsPushed) {
 
     memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
     filename[slotRawString(b)->size] = 0;
-    const bfs::path& path = SC_Codecvt::utf8_str_to_path(filename);
+    const fs::path& path = SC_Codecvt::utf8_str_to_path(filename);
 
     memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
     mode[slotRawString(c)->size] = 0;
@@ -288,7 +323,7 @@ int prFileOpen(struct VMGlobals* g, int numArgsPushed) {
         // check if directory exisits
         // create a temporary file (somewhere) for a handle
         // the file is deleted automatically when closed
-        if (bfs::is_directory(path)) {
+        if (fs::is_directory(path)) {
             int err;
 #    ifdef _MSC_VER
             err = tmpfile_s(&file);
@@ -348,7 +383,7 @@ int prFilePos(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     PyrFile* pfile;
     FILE* file;
-    long length;
+    std::int64_t length;
 
     a = g->sp;
     pfile = (PyrFile*)slotRawObject(a);
@@ -924,7 +959,7 @@ int prFileGetDouble(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readDouble_be());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readDouble_be());
     }
     return errNone;
 }
@@ -945,7 +980,7 @@ int prFileGetFloat(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readFloat_be());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readFloat_be());
     }
     return errNone;
 }
@@ -967,7 +1002,7 @@ int prFileGetDoubleLE(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readDouble_le());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readDouble_le());
     }
     return errNone;
 }
@@ -988,7 +1023,7 @@ int prFileGetFloatLE(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readFloat_le());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readFloat_le());
     }
     return errNone;
 }
@@ -1327,22 +1362,15 @@ int prPipeOpen(struct VMGlobals* g, int numArgsPushed) {
 
     PyrFile* pfile = reinterpret_cast<PyrFile*>(slotRawObject(callerSlot));
 
-    // c++17 structured binding declarations will make this into a single line
-    // auto [error, string] = ...
-    int error;
-    std::string commandLine;
-    std::tie(error, commandLine) = slotStrStdStrVal(commandLineSlot);
-    if (error != errNone)
-        return error;
+    auto [errorCmd, commandLine] = slotStrStdStrVal(commandLineSlot);
+    if (errorCmd != errNone)
+        return errorCmd;
 
-    std::string mode;
-    std::tie(error, mode) = slotStrStdStrVal(modeSlot);
-    if (error != errNone)
-        return error;
+    auto [errorMode, mode] = slotStrStdStrVal(modeSlot);
+    if (errorMode != errNone)
+        return errorMode;
 
-    pid_t pid;
-    FILE* file;
-    std::tie(pid, file) = sc_popen(std::move(commandLine), mode);
+    auto [pid, file] = sc_popen_shell(std::move(commandLine), mode);
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);
         SetInt(callerSlot, pid);
@@ -1378,22 +1406,15 @@ int prPipeOpenArgv(struct VMGlobals* g, int numArgsPushed) {
     if (argsColl->size < 1)
         return errFailed;
 
-    // c++17 structured binding declarations will make this into a single line
-    // auto [error, mode] = ...;
-    int error;
-    std::string mode;
-    std::tie(error, mode) = slotStrStdStrVal(modeSlot);
-    if (error != errNone)
-        return error;
+    auto [errorMode, mode] = slotStrStdStrVal(modeSlot);
+    if (errorMode != errNone)
+        return errorMode;
 
-    std::vector<std::string> strings;
-    std::tie(error, strings) = PyrCollToVectorStdString(argsColl);
-    if (error != errNone)
-        return error;
+    auto [errorStr, strings] = PyrCollToVectorStdString(argsColl);
+    if (errorStr != errNone)
+        return errorStr;
 
-    pid_t pid;
-    FILE* file;
-    std::tie(pid, file) = sc_popen_argv(strings, mode);
+    auto [pid, file] = sc_popen_argv(strings, mode);
 
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);
@@ -1688,8 +1709,10 @@ int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed) {
     if (error)
         return errFailed;
     // slotIntVal(slotRawObject(a)->slots + 3, &info.frames);
-    slotIntVal(slotRawObject(a)->slots + 4, &info.channels);
-    slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate);
+    if (slotIntVal(slotRawObject(a)->slots + 4, &info.channels))
+        assert(false);
+    if (slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate))
+        assert(false);
 
     file = sndfileOpenFromCStr(filename, SFM_WRITE, &info);
 
@@ -1738,12 +1761,20 @@ int prSFRead(struct VMGlobals* g, int numArgsPushed) {
     case obj_int32:
         slotRawObject(b)->size = sf_read_int(file, (int*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
         break;
-    case obj_float:
-        slotRawObject(b)->size = sf_read_float(file, (float*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
+    case obj_float: {
+        PyrFloatArray* floatArray = slotRawFloatArray(b);
+        floatArray->size = sf_read_float(file, floatArray->f, floatArray->size);
+        for (size_t i { 0 }; i < floatArray->size; ++i)
+            floatArray->f[i] = removeBadNans(floatArray->f[i]);
         break;
-    case obj_double:
-        slotRawObject(b)->size = sf_read_double(file, (double*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
+    }
+    case obj_double: {
+        PyrDoubleArray* doubleArray = slotRawDoubleArray(b);
+        doubleArray->size = sf_read_double(file, doubleArray->d, doubleArray->size);
+        for (size_t i { 0 }; i < doubleArray->size; ++i)
+            doubleArray->d[i] = removeBadNans(doubleArray->d[i]);
         break;
+    }
     default:
         error("sample format not supported.\n");
         return errFailed;

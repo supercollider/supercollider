@@ -1,117 +1,63 @@
 ServerOptions {
-	classvar <defaultValues;
+	// DO NOT CHANGE THE OREDER OF THESE INSTANCE VARIABLES
+	// They are used by _BootInProcessServer
+	var <numAudioBusChannels = 1024;
+	var <>numControlBusChannels = 16384;
+	var <numInputBusChannels = 2;
+	var <numOutputBusChannels = 2;
+	var <>numBuffers = 1024;
 
-	// order of variables is important here. Only add new instance variables to the end.
-	var <numAudioBusChannels;
-	var <>numControlBusChannels;
-	var <numInputBusChannels;
-	var <numOutputBusChannels;
-	var <>numBuffers;
+	var <>maxNodes = 8192;
+	var <>maxSynthDefs = 8192;
+	var <>protocol = \udp;
+	var <>blockSize = 64;
+	var <>hardwareBufferSize = nil;
 
-	var <>maxNodes;
-	var <>maxSynthDefs;
-	var <>protocol;
-	var <>blockSize;
-	var <>hardwareBufferSize;
+	var <>memSize = 256000;
+	var <>numRGens = 64;
+	var <>numWireBufs = 512;
 
-	var <>memSize;
-	var <>numRGens;
-	var <>numWireBufs;
+	var <>sampleRate = 0;
+	var <>loadDefs = true;
 
-	var <>sampleRate;
-	var <>loadDefs;
+	var <>inputStreamsEnabled = nil;
+	var <>outputStreamsEnabled = nil;
 
-	var <>inputStreamsEnabled;
-	var <>outputStreamsEnabled;
+	var <>inDevice = nil;
+	var <>outDevice = nil;
 
-	var <>inDevice;
-	var <>outDevice;
+	var <>verbosity = 0;
+	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
 
-	var <>verbosity;
-	var <>zeroConf; // Whether server publishes port to Bonjour, etc.
+	var <>restrictedPath = nil;
+	var <>ugenPluginsPath = nil;
 
-	var <>restrictedPath;
-	var <>ugenPluginsPath;
+	var <>initialNodeID = 1000;
+	var <>remoteControlVolume = false;
 
-	var <>initialNodeID;
-	var <>remoteControlVolume;
+	var <>memoryLocking = false;
+	var <>threads = nil; // for supernova
+	var <>threadPinning = nil; // for supernova
+	var <>useSystemClock = true;  // for supernova
 
-	var <>memoryLocking;
-	var <>threads; // for supernova
-	var <>useSystemClock;  // for supernova
+	var <numPrivateAudioBusChannels = 1020;
 
-	var <numPrivateAudioBusChannels;
+	var <>reservedNumAudioBusChannels = 0;
+	var <>reservedNumControlBusChannels = 0;
+	var <>reservedNumBuffers = 0;
+	var <>pingsBeforeConsideredDead = 5;
 
-	var <>reservedNumAudioBusChannels;
-	var <>reservedNumControlBusChannels;
-	var <>reservedNumBuffers;
-	var <>pingsBeforeConsideredDead;
+	var <maxLogins = 1;
 
-	var <maxLogins;
+	// These are stored locally by the Server class, they are not used as a part of the server cli command.
+	var <>recHeaderFormat = "wav";
+	var <>recSampleFormat = "float";
+	var <>recChannels = 2;
+	var <>recBufSize = nil;
 
-	var <>recHeaderFormat;
-	var <>recSampleFormat;
-	var <>recChannels;
-	var <>recBufSize;
+	var <>bindAddress = "127.0.0.1";
 
-	var <>bindAddress;
-
-	var <>safetyClipThreshold;
-
-	*initClass {
-		defaultValues = IdentityDictionary.newFrom(
-			(
-				numAudioBusChannels: 1024, // see corresponding setter method below
-				numControlBusChannels: 16384,
-				numInputBusChannels: 2, // see corresponding setter method below
-				numOutputBusChannels: 2, // see corresponding setter method below
-				numBuffers: 1024,
-				maxNodes: 1024,
-				maxSynthDefs: 1024,
-				protocol: \udp,
-				blockSize: 64,
-				hardwareBufferSize: nil,
-				memSize: 8192,
-				numRGens: 64,
-				numWireBufs: 64,
-				sampleRate: nil,
-				loadDefs: true,
-				inputStreamsEnabled: nil,
-				outputStreamsEnabled: nil,
-				inDevice: nil,
-				outDevice: nil,
-				verbosity: 0,
-				zeroConf: false,
-				restrictedPath: nil,
-				ugenPluginsPath: nil,
-				initialNodeID: 1000,
-				remoteControlVolume: false,
-				memoryLocking: false,
-				threads: nil,
-				useSystemClock: true,
-				numPrivateAudioBusChannels: 1020, // see corresponding setter method below
-				reservedNumAudioBusChannels: 0,
-				reservedNumControlBusChannels: 0,
-				reservedNumBuffers: 0,
-				pingsBeforeConsideredDead: 5,
-				maxLogins: 1,
-				recHeaderFormat: "wav",
-				recSampleFormat: "float",
-				recChannels: 2,
-				recBufSize: nil,
-				bindAddress: "127.0.0.1",
-				safetyClipThreshold: 1.26 // ca. 2 dB
-			)
-		)
-	}
-
-	*new {
-		^super.new.init
-	}
-
-	init {
-		defaultValues.keysValuesDo { |key, val| this.instVarPut(key, val) }
-	}
+	var <>safetyClipThreshold = 1.26;
 
 	device {
 		^if(inDevice == outDevice) {
@@ -122,114 +68,77 @@ ServerOptions {
 	}
 
 	device_ { |dev|
-		inDevice = outDevice = dev;
+		if (dev.isKindOf(String)) {
+			inDevice = outDevice = dev;
+		};
+
+		if (dev.isKindOf(Array)) {
+			inDevice = dev.wrapAt[0];
+			outDevice = dev.wrapAt[1];
+		}
 	}
 
 	asOptionsString { | port = 57110 |
-		var o;
-		o = if(protocol == \tcp, " -t ", " -u ");
-		o = o ++ port;
+		var o = if(protocol == \tcp) { " -t " } { " -u " } ++ port;
 
-		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
-		o = o ++ " -i " ++ numInputBusChannels;
-		o = o ++ " -o " ++ numOutputBusChannels;
-
-		if (bindAddress != defaultValues[\bindAddress], {
-			o = o ++ " -B " ++ bindAddress;
-		});
-		if (numControlBusChannels !== defaultValues[\numControlBusChannels], {
-			numControlBusChannels = numControlBusChannels.asInteger;
-			o = o ++ " -c " ++ numControlBusChannels;
-		});
-		if (numBuffers !== defaultValues[\numBuffers], {
-			numBuffers = numBuffers.asInteger;
-			o = o ++ " -b " ++ numBuffers;
-		});
-		if (maxNodes !== defaultValues[\maxNodes], {
-			maxNodes = maxNodes.asInteger;
-			o = o ++ " -n " ++ maxNodes;
-		});
-		if (maxSynthDefs !== defaultValues[\maxSynthDefs], {
-			maxSynthDefs = maxSynthDefs.asInteger;
-			o = o ++ " -d " ++ maxSynthDefs;
-		});
-		if (blockSize !== defaultValues[\blockSize], {
-			blockSize = blockSize.asInteger;
-			o = o ++ " -z " ++ blockSize;
-		});
-		if (hardwareBufferSize.notNil, {
-			o = o ++ " -Z " ++ hardwareBufferSize;
-		});
-		if (memSize !== defaultValues[\memSize], {
-			memSize = memSize.asInteger;
-			o = o ++ " -m " ++ memSize;
-		});
-		if (numRGens !== defaultValues[\numRGens], {
-			numRGens = numRGens.asInteger;
-			o = o ++ " -r " ++ numRGens;
-		});
-		if (numWireBufs !== defaultValues[\numWireBufs], {
-			numWireBufs = numWireBufs.asInteger;
-			o = o ++ " -w " ++ numWireBufs;
-		});
-		if (sampleRate.notNil, {
-			o = o ++ " -S " ++ sampleRate;
-		});
-		if (loadDefs.not, {
-			o = o ++ " -D 0";
-		});
-		if (inputStreamsEnabled.notNil, {
-			o = o ++ " -I " ++ inputStreamsEnabled ;
-		});
-		if (outputStreamsEnabled.notNil, {
-			o = o ++ " -O " ++ outputStreamsEnabled ;
-		});
-		if (inDevice == outDevice)
-		{
-			if (inDevice.notNil,
-				{
-					o = o ++ " -H %".format(inDevice.quote);
-			});
-		}
-		{
-			o = o ++ " -H % %".format((inDevice ? "").asString.quote, (outDevice ? "").asString.quote);
+		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels).asInteger;
+		o = o ++ " -i " ++ numInputBusChannels.asInteger;
+		o = o ++ " -o " ++ numOutputBusChannels.asInteger;
+		o = o ++ " -B " ++ bindAddress.asString;
+		o = o ++ " -c " ++ numControlBusChannels.asInteger;
+		o = o ++ " -b " ++ numBuffers.asInteger;
+		o = o ++ " -n " ++ maxNodes.asInteger;
+		o = o ++ " -d " ++ maxSynthDefs.asInteger;
+		o = o ++ " -z " ++ blockSize.asInteger;
+		if (hardwareBufferSize.notNil) {
+			o = o ++ " -Z " ++ hardwareBufferSize.asInteger
 		};
-		if (verbosity != defaultValues[\verbosity], {
-			o = o ++ " -V " ++ verbosity;
-		});
-		if (zeroConf.not, {
-			o = o ++ " -R 0";
-		});
-		if (restrictedPath.notNil, {
-			o = o ++ " -P " ++ restrictedPath;
-		});
-		if (ugenPluginsPath.notNil, {
-			if(ugenPluginsPath.isString, {
-				ugenPluginsPath = ugenPluginsPath.bubble;
-			});
-			o = o ++ " -U " ++ ugenPluginsPath.collect{|p|
+		o = o ++ " -m " ++ memSize.asInteger;
+		o = o ++ " -r " ++ numRGens.asInteger;
+		o = o ++ " -w " ++ numWireBufs.asInteger;
+		o = o ++ " -S " ++ sampleRate.asInteger;
+		o = o ++ " -V " ++ verbosity.asInteger;
+		o = o ++ " -l " ++ maxLogins.asInteger;
+		o = o ++ if (loadDefs) { " -D 1" } { " -D 0" };
+		o = o ++ if (zeroConf) { " -R 1" } { " -R 0" };
+		o = o ++ if (useSystemClock) { " -C 1" } { " -C 0" };
+
+		// No way to explicitly specify false.
+		if (memoryLocking) { o = o ++ " -L" };
+
+		// Server defaults to a nullptr for some string values and doesn't let you state a 'default' value, so nil check is required.
+		if (inputStreamsEnabled.notNil) { o = o ++ " -I " ++ inputStreamsEnabled };
+		if (outputStreamsEnabled.notNil) { o = o ++ " -O " ++ outputStreamsEnabled };
+		if (restrictedPath.notNil) { o = o ++ " -P " ++ restrictedPath };
+
+		if (inDevice == outDevice) {
+			if (inDevice.notNil) {
+				o = o ++ " -H %".format(inDevice.quote)
+			} {
+				// default value impossible to specify
+			}
+		} {
+			o = o ++ " -H % %".format((inDevice ? "").asString.quote, (outDevice ? "").asString.quote)
+		};
+
+		if (ugenPluginsPath.notNil) {
+			if(ugenPluginsPath.isString) {
+				ugenPluginsPath = ugenPluginsPath.bubble
+			};
+			o = o ++ " -U " ++ ugenPluginsPath.collect { |p|
 				thisProcess.platform.formatPathForCmdLine(p)
 			}.join(Platform.pathDelimiter);
-		});
-		if (memoryLocking, {
-			o = o ++ " -L";
-		});
-		if (threads.notNil, {
-			if (Server.program.asString.endsWith("supernova")) {
-				o = o ++ " -T " ++ threads;
-			}
-		});
-		if (useSystemClock, {
-			o = o ++ " -C 1"
-		}, {
-			o = o ++ " -C 0"
-		});
-		if (maxLogins.notNil, {
-			o = o ++ " -l " ++ maxLogins;
-		});
-		if (thisProcess.platform.name === \osx && safetyClipThreshold.notNil, {
-			o = o ++ " -s " ++ safetyClipThreshold;
-		});
+		};
+
+		if (Server.program.asString.contains("supernova")) {
+			if (threads.notNil) { o = o ++ " -T " ++ threads.asInteger };
+			if (threadPinning.notNil) { o = o ++ " -y " ++ threadPinning.asBoolean.asInteger };
+		};
+
+		if (thisProcess.platform.name === \osx && safetyClipThreshold.notNil) {
+			o = o ++ " -s " ++ safetyClipThreshold
+		};
+
 		^o
 	}
 
@@ -306,7 +215,7 @@ ServerShmInterface {
 		^this
 	}
 
-	connect {
+	connect { |portNumber|
 		_ServerShmInterface_connectSharedMem
 		^this.primitiveFailed
 	}
@@ -316,22 +225,22 @@ ServerShmInterface {
 		^this.primitiveFailed
 	}
 
-	getControlBusValue {
+	getControlBusValue { |busNumber|
 		_ServerShmInterface_getControlBusValue
 		^this.primitiveFailed
 	}
 
-	getControlBusValues {
+	getControlBusValues { |busNumber, count|
 		_ServerShmInterface_getControlBusValues
 		^this.primitiveFailed
 	}
 
-	setControlBusValue {
+	setControlBusValue { |busNumber, value|
 		_ServerShmInterface_setControlBusValue
 		^this.primitiveFailed
 	}
 
-	setControlBusValues {
+	setControlBusValues { |busNumber, values|
 		_ServerShmInterface_setControlBusValues
 		^this.primitiveFailed
 	}
@@ -357,7 +266,7 @@ Server {
 	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
-	var <window, <>scopeWindow, <serverMeter, <emacsbuf;
+	var <window, <>scopeWindow, <serverMeter, <emacsbuf, <nodeTreeView;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
 	var pidReleaseCondition;
@@ -786,18 +695,18 @@ Server {
 		condition.wait
 	}
 
-	waitForBoot { |onComplete, limit = 100, onFailure|
+	waitForBoot { |onComplete, limit = 100, onFailure, clock|
 		// onFailure.true: why is this necessary?
 		// this.boot also calls doWhenBooted.
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
 		if(this.serverRunning.not) { this.boot(onFailure: true) };
-		this.doWhenBooted(onComplete, limit, onFailure);
+		this.doWhenBooted(onComplete, limit, onFailure, clock);
 	}
 
-	doWhenBooted { |onComplete, limit=100, onFailure|
-		statusWatcher.doWhenBooted(onComplete, limit, onFailure)
+	doWhenBooted { |onComplete, limit=100, onFailure, clock|
+		statusWatcher.doWhenBooted(onComplete, limit, onFailure, clock)
 	}
 
 	ifRunning { |func, failFunc|
@@ -805,14 +714,9 @@ Server {
 			"server '%' not responsive".format(this.name).postln;
 			failFunc.value(this)
 		} {
-			if(statusWatcher.serverRunning) {
-				func.value(this)
-			} {
-				"server '%' not running".format(this.name).postln;
-				failFunc.value(this)
-			}
+			if(this.warnIfNotRunning(thisMethod)) { ^failFunc.value(this) };
+			func.value(this)
 		}
-
 	}
 
 	ifNotRunning { |func|
@@ -834,7 +738,9 @@ Server {
 
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
-		if(statusWatcher.serverRunning.not) { "server not running".postln; ^this };
+
+		if(this.warnIfNotRunning(thisMethod)) { ^this };
+
 		pingFunc = {
 			Routine.run {
 				var t, dt;
@@ -962,10 +868,12 @@ Server {
 		statusWatcher.doWhenBooted({
 			statusWatcher.serverBooting = false;
 			this.bootInit(recover);
+			"".postln;
 		}, onFailure: onFailure ? false);
 
 		if(remoteControlled) {
-			"You will have to manually boot remote server.".postln;
+			"*** %: can't boot a remote server - "
+			"You will have to boot it on its machine.".postf(this);
 		} {
 			this.prPingApp({
 				this.quit;
@@ -1057,7 +965,7 @@ Server {
 	}
 
 	reboot { |func, onFailure| // func is evaluated when server is off
-		if(isLocal.not) { "can't reboot a remote server".postln; ^this };
+		if(remoteControlled) { "*** %: can't reboot a remote server".postf(this); ^this };
 		if(statusWatcher.serverRunning and: { this.unresponsive.not }) {
 			this.quit({
 				func.value;
@@ -1108,6 +1016,10 @@ Server {
 	quit { |onComplete, onFailure, watchShutDown = true|
 		var func;
 
+		if (remoteControlled) {
+			"*** %: can't quit a remote server.\n\n".postf(this);
+			^this
+		};
 		addr.sendMsg("/quit");
 
 		if(this.unresponsive) {
@@ -1142,6 +1054,41 @@ Server {
 		volume.freeSynth;
 		RootNode(this).freeAll;
 		this.newAllocators;
+	}
+
+	quitSync { |condition|
+		condition ?? { condition = Condition.new };
+		condition.test = false;
+		this.quit;
+		this.prWaitForPidRelease({
+			condition.test = true;
+			condition.signal
+		}, {
+			// we may end up here
+			// if the server happened to become unresponsive recently
+			// in that case we try to quit again
+			this.quit;
+			this.prWaitForPidRelease({
+				condition.test = true;
+				condition.signal
+			}, {
+				// as a last resort...
+				"Server '%' failed to quit".format(this.name).postln;
+				this.pid !? {
+					"Forcing process with pid % to stop via system command.".format(this.pid).postln;
+					thisProcess.platform.killProcessByID(this.pid)
+				};
+				this.prWaitForPidRelease({
+					condition.test = true;
+					condition.signal
+				}, {
+					"The process did not stop after a timeout, which may result in dangling network resources.".warn;
+					condition.test = true;
+					condition.signal
+				});
+			});
+		}, this.statusWatcher.timeoutBeforeConsideredDeadOnExit * 1.5); // timeout is longer than ServerStatusWatcher waiting to declare the server unresponsive
+		condition.wait;
 	}
 
 	*quitAll { |watchShutDown = true|
@@ -1336,6 +1283,29 @@ Server {
 		}
 	}
 
+	rtMemoryStatus { |action|
+		var resp, freeKb, done = false;
+
+		if(this.warnIfNotRunning(thisMethod)) { ^this };
+
+		resp = OSCFunc({ |msg|
+			done = true;
+			if (action.notNil) { action.value(*msg.drop(1)) } {
+				freeKb = msg[1] / 1024;
+				"Used RT memory: % kb".format(options.memSize - freeKb).postln;
+				"Free RT memory: % kb".format(freeKb).postln;
+				"Largest free chunk: % kb".format(msg[2] / 1024).postln;
+			}
+		} , "/rtMemoryStatus.reply", addr).oneShot;
+		addr.sendMsg("/rtMemoryStatus");
+		SystemClock.sched(3, {
+			if(done.not) {
+				resp.free;
+				"Remote server failed to respond to rtMemoryStatus!".warn;
+			};
+		})
+	}
+
 	printOn { |stream|
 		stream << name;
 	}
@@ -1393,4 +1363,12 @@ Server {
 		this.program = this.program.replace("scsynth", "supernova")
 	}
 
+	warnIfNotRunning { |method|
+		if (this.serverRunning.not) {
+			"Server '%' not running.\nThe method '%' requires a running server.".format(this.name, method.name).warn;
+			^true
+  		} {
+        	^false
+    	}
+    }
 }

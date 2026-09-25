@@ -42,6 +42,12 @@
 
 #include "nova-tt/thread_priority.hpp"
 
+// NOVA_TT_PRIORITY_RT is defined in the thread_priority header - we do not want this set for emscripten
+// so we undo the definition.
+#ifdef __EMSCRIPTEN__
+#    undef NOVA_TT_PRIORITY_RT
+#endif
+
 
 int64 gStartupOSCTime = -1;
 
@@ -326,7 +332,7 @@ void Free_FromEngine_Msg(FifoMsg* inMsg) { World_Free(inMsg->mWorld, inMsg->mDat
 // =====================================================================
 // Audio driver (Common)
 
-SC_AudioDriver::SC_AudioDriver(struct World* inWorld):
+SC_AudioDriver::SC_AudioDriver(World* inWorld):
     mWorld(inWorld),
     mSampleTime(0),
     mNumSamplesPerCallback(0),
@@ -391,12 +397,12 @@ bool SC_AudioDriver::SendOscPacketMsgToEngine(FifoMsg& inMsg) {
     return mOscPacketsToEngine.Write(inMsg);
 }
 
-void SC_ScheduledEvent::FreeInRT(struct World* world, OSC_Packet* packet) {
+void SC_ScheduledEvent::FreeInRT(World* world, OSC_Packet* packet) {
     World_Free(world, packet->mData);
     World_Free(world, packet);
 }
 
-void SC_ScheduledEvent::FreeInNRT(struct World* world, OSC_Packet* packet) {
+void SC_ScheduledEvent::FreeInNRT(World* world, OSC_Packet* packet) {
     FifoMsg msg;
     msg.Set(world, FreeOSCPacket, nullptr, (void*)packet);
     world->hw->mAudioDriver->SendMsgFromEngine(msg);
@@ -467,13 +473,13 @@ bool SC_AudioDriver::Stop() {
 // Audio driver (CoreAudio)
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
 
-SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_CoreAudioDriver(inWorld); }
+SC_AudioDriver* SC_NewAudioDriver(World* inWorld) { return new SC_CoreAudioDriver(inWorld); }
 
 #endif
 
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO || SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
 
-SC_CoreAudioDriver::SC_CoreAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld), mInputBufList(0) {}
+SC_CoreAudioDriver::SC_CoreAudioDriver(World* inWorld): SC_AudioDriver(inWorld), mInputBufList(0) {}
 
 SC_CoreAudioDriver::~SC_CoreAudioDriver() {
     if (mInputBufList) {
@@ -870,7 +876,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
         return false;
     }
 
-    if (mInputDevice != kAudioDeviceUnknown) {
+    if ((mInputDevice != kAudioDeviceUnknown) && (mWorld->mNumInputs > 0)) {
         // get a description of the data format used by the input device
         count = sizeof(AudioStreamBasicDescription);
         // err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyStreamFormat, &count,
@@ -885,17 +891,58 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
             return false;
         }
 
-        if (
-            // We do not support mismatched input and output sample rates, but there's no harm in skipping
-            // this check if numInputBusChannels == 0. This allows the user to disable input entirely as
-            // a workaround for a sample rate mismatch.
-            mWorld->mNumInputs > 0 && !mExplicitSampleRate
-            && inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
-            scprintf("ERROR: Input sample rate is %g, but output is %g. "
-                     "Mismatched sample rates are not supported. "
-                     "To disable input, set the number of input channels to 0.\n",
+        if (!mExplicitSampleRate && inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
+            UInt32 dataSize;
+
+            // Check if the input device is in use
+            UInt32 inUse = 0;
+            dataSize = sizeof(inUse);
+
+            propertyAddress.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
+            propertyAddress.mScope = kAudioDevicePropertyScopeInput;
+
+            OSStatus status = AudioObjectGetPropertyData(mInputDevice, &propertyAddress, 0, nullptr, &dataSize, &inUse);
+
+            if (status == noErr && inUse) {
+                scprintf("ERROR: Input sample rate is %g, but output is %g. "
+                         "Input device is in use - we won't try changing its sample rate to match the output.\n"
+                         "Possible solutions:\n"
+                         "- in your system's \"Audio MIDI Setup\", set sample rate to the same "
+                         "value on both the input and output devices\n"
+                         "WARNING: this may interrupt audio capture of another application "
+                         "currently using the input device!\n"
+                         "- or, disable input completely:\n"
+                         "    s.options.numInputBusChannels = 0;\n",
+                         inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
+                return false;
+            }
+
+            scprintf("WARNING: Input sample rate is %g, but output is %g. "
+                     "Attempting to set input sample rate to match the output.\n",
                      inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
-            return false;
+
+            auto sampleRate = outputStreamDesc.mSampleRate;
+            dataSize = sizeof(sampleRate);
+
+            // Set the same rate on the input device
+            propertyAddress.mSelector = kAudioDevicePropertyNominalSampleRate;
+            propertyAddress.mScope = kAudioDevicePropertyScopeInput;
+
+            err = AudioObjectSetPropertyData(mInputDevice, &propertyAddress, 0, NULL, dataSize, &sampleRate);
+            if (err != noErr) {
+                scprintf("ERROR: Setting sample rate failed. OSStatus %4.4s\n"
+                         "Possible solutions:\n"
+                         "- explicitly set the sample rate to one supported by both devices:\n"
+                         "    s.options.sampleRate = <rate>;\n"
+                         "- or, in your system's \"Audio MIDI Setup\", set sample rate to the same "
+                         "value on both the input and output devices\n"
+                         "- or, disable input completely:\n"
+                         "    s.options.numInputBusChannels = 0;\n",
+                         (char*)&err);
+                return false;
+            }
+            // set mExplicitSampleRate so that we open both input and output with the new sample rate further down
+            mExplicitSampleRate = sampleRate;
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1119,7 +1166,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 
     *outNumSamplesPerCallback = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
     if (mExplicitSampleRate) {
-        *outSampleRate = mExplicitSampleRate.get();
+        *outSampleRate = mExplicitSampleRate.value();
     } else {
         *outSampleRate = outputStreamDesc.mSampleRate;
     }
@@ -1398,9 +1445,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferList
             }
             oscTime = mOSCbuftime = nextTime;
         }
-    } catch (std::exception& exc) {
-        scprintf("exception in real time: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in real time\n");
     }
     int64 systemTimeAfter = AudioGetCurrentHostTime();
@@ -1754,9 +1799,7 @@ bool SC_CoreAudioDriver::DriverStart() {
                 return false;
             }
         }
-    } catch (...) {
-        scprintf("exception in SC_CoreAudioDriver::DriverStart\n");
-    }
+    } catch (...) { scprintf("exception in SC_CoreAudioDriver::DriverStart\n"); }
     if (mWorld->mVerbosity >= 1) {
         scprintf("<-SC_CoreAudioDriver::DriverStart\n");
     }
@@ -1880,7 +1923,7 @@ OSStatus AddDeviceListeners(AudioDeviceID inDevice, void* inClientData) {
 // Audio driver (CoreAudioIPHONE)
 
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIOIPHONE
-SC_iCoreAudioDriver::SC_iCoreAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld) { receivedIn = 0; }
+SC_iCoreAudioDriver::SC_iCoreAudioDriver(World* inWorld): SC_AudioDriver(inWorld) { receivedIn = 0; }
 
 SC_iCoreAudioDriver::~SC_iCoreAudioDriver() {}
 
@@ -2125,9 +2168,7 @@ void SC_iCoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferLis
             }
             oscTime = mOSCbuftime = nextTime;
         }
-    } catch (std::exception& exc) {
-        scprintf("exception in real time: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in real time\n");
     }
 
@@ -2378,9 +2419,7 @@ bool SC_iCoreAudioDriver::DriverStart() {
     try {
         OSStatus ret = AUGraphStart(graph);
         AudioOutputUnitStart(inputUnit);
-    } catch (...) {
-        scprintf("exception in SC_CoreAudioDriver::DriverStart\n");
-    }
+    } catch (...) { scprintf("exception in SC_CoreAudioDriver::DriverStart\n"); }
     if (mWorld->mVerbosity >= 0) {
         scprintf("<-SC_CoreAudioDriver::DriverStart\n");
     }

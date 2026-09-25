@@ -10,7 +10,7 @@ Break a continuous signal into linearly interpolated segments with specific dura
 
 Feeding Ramp with noise is similar to link::Classes/LFNoise1::
 code::
-Ramp.kr(WhiteNoise.kr(1),0.5)
+Ramp.kr(WhiteNoise.kr(1), 0.5)
 ::
 is equal to:
 code::
@@ -66,9 +66,8 @@ s.boot;
 var pulse;
 {
 	pulse = LFPulse.kr(8.772);
-	Out.kr(0,[Ramp.kr(pulse, 0.025), Lag.kr(pulse, 0.025), pulse]);
+	Out.kr(0, [Ramp.kr(pulse, 0.025), Lag.kr(pulse, 0.025), pulse]);
 }.play;
 s.scope(3, bufsize: 44100, rate: \control, zoom: 40);
 )
 ::
-

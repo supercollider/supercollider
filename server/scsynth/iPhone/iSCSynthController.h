@@ -16,7 +16,7 @@
 
 @interface iSCSynthController : NSObject <UITabBarControllerDelegate> {
     WorldOptions options;
-    struct World* world;
+    World* world;
     NSTimer* timer;
 
     int lastNodeID;

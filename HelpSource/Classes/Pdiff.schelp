@@ -11,7 +11,7 @@ Examples::
 
 code::
 p = Pbind(
-	\degree, Pxrand([0,2,3,4,6,7],12),
+	\degree, Pxrand([0, 2, 3, 4, 6, 7], 12),
 	\dur, Pdiff(Pkey(\degree)).abs/4,
 ).play;
 ::

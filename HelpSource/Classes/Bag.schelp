@@ -57,9 +57,9 @@ method::do
 Evaluates strong::function:: for each item in the Bag.
 The function is passed two arguments, the item and an integer index.
 code::
-Bag[1, 2, 3, 300].do({ arg item, i; item.postln });
+Bag[1, 2, 3, 300].do({ |item, i| item.postln });
 
-Bag[1, 2, 2, 3, 300].do({ arg item, i; item.postln });
+Bag[1, 2, 2, 3, 300].do({ |item, i| item.postln });
 ::
 argument::function
 args to function: item, i
@@ -68,9 +68,9 @@ method::countsDo
 Evaluates strong::function:: for each unique item in the Bag along with that item's count.
 The function is passed two arguments, the item, the quantity of that item in the Bag and an integer index.
 code::
-Bag[1, 2, 3, 300].countsDo({ arg item, count, i; [item,count].postln });
+Bag[1, 2, 3, 300].countsDo({ |item, count, i| [item, count].postln });
 
-Bag[1, 2, 2, 3, 300].countsDo({ arg item, count, i; [item,count].postln });
+Bag[1, 2, 2, 3, 300].countsDo({ |item, count, i| [item, count].postln });
 ::
 
 subsection::Testing
@@ -100,4 +100,3 @@ a.add("something");
 a.add("something");
 a.contents; // two objects in the bag
 ::
-

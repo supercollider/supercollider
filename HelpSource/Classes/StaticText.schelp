@@ -69,8 +69,8 @@ a = StaticText(w, Rect(10, 10, 200, 20));
 a.string = "Rolof's Rolex";
 )
 
-// adjust look , alignment and content
-a.background=Color.grey;
+// adjust look, alignment and content
+a.background = Color.grey;
 a.align = \center;
 a.font = Font("Monaco", 11);
 a.string = "Your Rolex";
@@ -87,7 +87,7 @@ w = Window("Frequency Monitor", Rect(200, Window.screenBounds.height - 200, 300,
 a = StaticText(w, Rect(45, 10, 200, 20)).background_(Color.rand);
 a.string = " Current Frequency ";
 
-Button.new(w, Rect(45, 70, 200, 20)).states_([[ "close", Color.black, Color.rand ]]).action_({ w.close });
+Button.new(w, Rect(45, 70, 200, 20)).states_([["close", Color.black, Color.rand]]).action_({ w.close });
 
 s.waitForBoot({
 
@@ -132,7 +132,7 @@ subsection:: Dynamic Text
 code::
 (
 w = Window.new.front;
-w.view.background=Color.white;
+w.view.background = Color.white;
 a = Array.fill(20, { StaticText(w, Rect(w.bounds.extent.x.rand, w.bounds.extent.y.rand, 160, 16))
 	.string_("Rolof's Rolex".scramble)
 	.align_(\center)

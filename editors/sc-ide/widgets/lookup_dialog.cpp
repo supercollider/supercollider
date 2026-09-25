@@ -26,7 +26,9 @@
 #include <QVBoxLayout>
 #include <QHeaderView>
 #include <QKeyEvent>
-#include <QDesktopWidget>
+#include <QApplication>
+#include <QScreen>
+#include <QWindow>
 #include <QApplication>
 #include <QPainter>
 #include <QFileInfo>
@@ -63,9 +65,9 @@ GenericLookupDialog::GenericLookupDialog(QWidget* parent): QDialog(parent) {
 
     setLayout(layout);
 
-    connect(mQueryEdit, SIGNAL(returnPressed()), this, SLOT(performQuery()));
-    connect(mResult, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onAccepted(QModelIndex)));
-    connect(mResult, SIGNAL(activated(QModelIndex)), this, SLOT(onAccepted(QModelIndex)));
+    connect(mQueryEdit, &QLineEdit::returnPressed, this, &GenericLookupDialog::performQuery);
+    connect(mResult, &QTreeView::doubleClicked, this, &GenericLookupDialog::onAccepted);
+    connect(mResult, &QTreeView::activated, this, &GenericLookupDialog::onAccepted);
 
     mResult->installEventFilter(this);
 
@@ -74,7 +76,7 @@ GenericLookupDialog::GenericLookupDialog(QWidget* parent): QDialog(parent) {
         QRect parentRect = parent->rect();
         bounds.moveCenter(parent->mapToGlobal(parentRect.center()));
     } else {
-        QRect availableBounds = QApplication::desktop()->availableGeometry(this);
+        QRect availableBounds = this->screen()->availableGeometry();
         bounds.moveCenter(availableBounds.center());
     }
 
@@ -93,8 +95,8 @@ void GenericLookupDialog::setModel(QStandardItemModel* model) {
 
     if (mResult->selectionModel()) {
         mPreviewEditor->setActiveAppearance(true);
-        connect(mResult->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this,
-                SLOT(currentChanged(const QModelIndex&, const QModelIndex&)));
+        connect(mResult->selectionModel(), &QItemSelectionModel::currentChanged, this,
+                &GenericLookupDialog::currentChanged);
     } else {
         mPreviewEditor->setActiveAppearance(false);
     }
@@ -124,7 +126,11 @@ void GenericLookupDialog::currentChanged(const QModelIndex& item, const QModelIn
     file.close();
 
     QTextStream stream(bytes);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     stream.setCodec("UTF-8");
+#else
+    stream.setEncoding(QStringConverter::Utf8);
+#endif
     stream.setAutoDetectUnicode(true);
 
     mPreviewDocument->setTextInRange(stream.readAll(), 0, -1);
@@ -460,8 +466,8 @@ bool LookupDialog::performPartialQuery(const QString& queryString) {
 
 ReferencesDialog::ReferencesDialog(QWidget* parent): LookupDialog(parent) {
     mRequest = new SymbolReferenceRequest(Main::scProcess(), this);
-    connect(mRequest, SIGNAL(response(QString, QString)), this, SLOT(onResposeFromLanguage(QString, QString)));
-    connect(mRequest, SIGNAL(cancelled()), this, SLOT(requestCancelled()));
+    connect(mRequest, &SymbolReferenceRequest::response, this, &ReferencesDialog::onResposeFromLanguage);
+    connect(mRequest, &SymbolReferenceRequest::cancelled, this, &ReferencesDialog::requestCancelled);
 
     setWindowTitle(tr("Look Up References"));
 

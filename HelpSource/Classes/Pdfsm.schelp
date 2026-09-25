@@ -55,12 +55,12 @@ code::
 (
 	p = Pdfsm(
 		[
-			Pseq( [\foo,\bar], 2 ), // foobar signals
 			( // state 0
-				\foo : [ 1, Pseq([ 0, 1 ], 2 ) ]
+			Pseq([\foo, \bar], 2), // foobar signals
+				\foo : [1, Pseq([0, 1], 2)]
 			),
 			( // state 1
-				\bar : [ 0, 3 ]
+				\bar : [0, 3]
 			)
 		],
 		0,
@@ -72,7 +72,7 @@ code::
 
 (
 SynthDef(\help_Pdfsm1,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar([freq, freq + 0.1.rand2], 0, env))
@@ -83,21 +83,21 @@ SynthDef(\help_Pdfsm1,
 var p;
 p = Pdfsm(
 	[
-		Prand([0,1,2],inf),	// signalStream
+		Prand([0, 1, 2], inf),	// signalStream
 
 		IdentityDictionary[	// state 0
-			0 -> [ 2, Pseq([67,68,69], 2) ],
-			1 -> [ 0, 66 ],
-			2 -> [ 1, 65 ]
+			0 -> [2, Pseq([67, 68, 69], 2)],
+			1 -> [0, 66],
+			2 -> [1, 65]
 		],
 		IdentityDictionary[	// state 1
-			1 -> [ 1, Pseq([69,68,67],2) ],
-			\default -> [ 0, 70 ]
+			1 -> [1, Pseq([69, 68, 67], 2)],
+			\default -> [0, 70]
 		],
 		IdentityDictionary[
-			0 -> [ 0, 71 ],
-			1 -> [ 0, 72 ],
-			2 -> [ nil ]	// signalStream is infinitely long,
+			0 -> [0, 71],
+			1 -> [0, 72],
+			2 -> [nil]	// signalStream is infinitely long,
 					// so the fsm only ends because of this nil
 					// 2 -> [nil, nil] is also fine
 		]
@@ -108,8 +108,8 @@ p = Pdfsm(
 
 Routine({
 	var freq;
-	while({ (freq = p.next.postln).notNil },{
-		Synth(\help_Pdfsm1, [ \freq, freq.midicps ]);
+	while({ (freq = p.next.postln).notNil }, {
+		Synth(\help_Pdfsm1, [\freq, freq.midicps]);
 		0.1.wait;
 	})
 }).play;
@@ -117,59 +117,59 @@ Routine({
 
 (
 SynthDef(\help_Pdfsm2,
-	{ |out, freq, gate=1|
-		var n=8, env, osc;
-		env = Linen.kr( gate, 0.01, 1, 0.03, 2 );
+	{ |out, freq, gate = 1|
+		var n = 8, env, osc;
+		env = Linen.kr(gate, 0.01, 1, 0.03, 2);
 		osc = {
-			Mix.fill( n, { |i|
-				FSinOsc.ar(freq + Rand(-2.0,2.0), Rand(0, 0.05pi)) ring4:
+			Mix.fill(n, { |i|
+				FSinOsc.ar(freq + Rand(-2.0, 2.0), Rand(0, 0.05pi)) ring4:
 				FSinOsc.ar(freq * (i+1));
 			})
-		}.dup * FSinOsc.kr(Rand(1.5,4.5),{Rand(-0.1pi,0.1pi)}.dup,0.6,env*0.4);
-		Out.ar(out, env * osc / (n*4) )
+		}.dup * FSinOsc.kr(Rand(1.5, 4.5), { Rand(-0.1pi, 0.1pi) }.dup, 0.6, env*0.4);
+		Out.ar(out, env * osc / (n*4))
 }).add;
 )
 
 (
-var n=3, base, penult;
+var n = 3, base, penult;
 
-base = [3,4,4,0];
+base = [3, 4, 4, 0];
 
-for( 1, n, { arg i;
-	penult = Pbind( \degree, Pshuf(base - (i*5), 2), \dur, Pseq([0.2],2) );
+for(1, n, { |i|
+	penult = Pbind(\degree, Pshuf(base - (i*5), 2), \dur, Pseq([0.2], 2));
 	Pset(
 		\instrument, \help_Pdfsm2,
 		Pdfsm(
 			[
 				Pseq([	// signalStream
-					Pn(1,22 + i),
-					Pn(0,4),
-					Pn(1,8),
+					Pn(1, 22 + i),
+					Pn(0, 4),
+					Pn(1, 8),
 					Pseq([
-						Pn(0,3),
-						Prand([0,1],8),
-						Pn(1,8)
-					], 3 ),
-					Pn(2,2)
-				], 1 ),
+						Pn(0, 3),
+						Prand([0, 1], 8),
+						Pn(1, 8)
+					], 3),
+					Pn(2, 2)
+				], 1),
 				(	// state 0
-					0 : [ 0, Pbind( \degree, Pseq(base - i, 1), \dur, Pxrand([0.2,0.3],4) ) ],
-					1 : [ 1, Pbind(
+					0 : [0, Pbind(\degree, Pseq(base - i, 1), \dur, Pxrand([0.2, 0.3], 4))],
+					1 : [1, Pbind(
 							\degree, Pseq(base.reverse - (i*2), 2),
-							\dur, Pseq([0.2,0.21],1)
+							\dur, Pseq([0.2, 0.21], 1)
 							)
 						],
-					2 :	[ 2, penult ]
+					2 :	[2, penult]
 				),
 				(	// state 1
-					0 : [ 0, Pbind( \degree, Pshuf(base * i.neg, 8), \dur, Pseq([0.08],8) ) ],
-					1 : [ 0, Pbind( \degree, Pseq(base - (i*3),3+i), \dur, Pseq([0.11],3+i) ) ],
-					2 : [ 2, penult ]
+					0 : [0, Pbind(\degree, Pshuf(base * i.neg, 8), \dur, Pseq([0.08], 8))],
+					1 : [0, Pbind(\degree, Pseq(base - (i*3), 3+i), \dur, Pseq([0.11], 3+i))],
+					2 : [2, penult]
 				),
 				(	// state 2
-					\default : [ 2, Pbind(
+					\default : [2, Pbind(
 									\degree, Prand(base - (i*7), 5),
-									\dur, Prand([0.6,0.8],5)
+									\dur, Prand([0.6, 0.8], 5)
 								)
 							]
 				)

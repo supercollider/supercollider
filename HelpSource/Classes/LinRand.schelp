@@ -6,7 +6,7 @@ categories:: UGens>Random
 Description::
 
 Generates a single random float value in linear distribution from
-code::lo::  to  code::hi:: , skewed towards
+code::lo::  to  code::hi::, skewed towards
 code::lo::  if  code::minmax::  < 0, otherwise
 skewed towards  code::hi:: .
 
@@ -29,7 +29,7 @@ Examples::
 code::
 
 (
-SynthDef("help-LinRand", { arg out=0, minmax=1;
+SynthDef("help-LinRand", { |out = 0, minmax = 1|
 	Out.ar(out,
 		FSinOsc.ar(
 			LinRand(200.0, 10000.0, minmax),
@@ -38,7 +38,7 @@ SynthDef("help-LinRand", { arg out=0, minmax=1;
 }).add;
 )
 
-//towards hi
+// towards hi
 (
 Routine({
 	loop({
@@ -47,7 +47,7 @@ Routine({
 }).play;
 )
 
-//towards lo (doesn't work like that yet)
+// towards lo (doesn't work like that yet)
 (
 Routine({
 	loop({
@@ -57,4 +57,3 @@ Routine({
 )
 
 ::
-

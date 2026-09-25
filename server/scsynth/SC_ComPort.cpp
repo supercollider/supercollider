@@ -38,6 +38,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/typeof/typeof.hpp>
 
+#include "SC_CoreAudio.h"
+#include "SC_FifoMsg.h"
 #include "SC_Lock.h"
 
 #include "nova-tt/semaphore.hpp"
@@ -48,7 +50,9 @@
 #endif
 
 
+// forward declarations
 bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
+void World_RemoveClient(FifoMsg* msg);
 
 namespace scsynth {
 
@@ -145,7 +149,7 @@ static bool UnrollOSCPacket(World* inWorld, int inSize, char* inData, OSC_Packet
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_Thread gAsioThread;
-boost::asio::io_service ioService;
+boost::asio::io_context ioContext;
 
 const int kTextBufSize = 65536;
 
@@ -191,7 +195,7 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
 
 
 class SC_UdpInPort {
-    struct World* mWorld;
+    World* mWorld;
     int mPortNum;
     std::string mbindTo;
     boost::array<char, kTextBufSize> recvBuffer;
@@ -206,7 +210,7 @@ class SC_UdpInPort {
         if (error == boost::asio::error::operation_aborted)
             return; /* we're done */
 
-        if (error == boost::asio::error::connection_refused) {
+        if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset) {
             // avoid windows error message
             startReceiveUDP();
             return;
@@ -245,26 +249,61 @@ class SC_UdpInPort {
                                                  asio::placeholders::bytes_transferred));
     }
 
+    static constexpr int receiveBufferSize = 4 * 1024 * 1024;
+    static constexpr int sendBufferSize = 4 * 1024 * 1024;
+    static constexpr int fallbackBufferSize = 1 * 1024 * 1024;
+
 public:
     boost::asio::ip::udp::socket udpSocket;
 
-    SC_UdpInPort(struct World* world, std::string bindTo, int inPortNum):
+    SC_UdpInPort(World* world, std::string bindTo, int inPortNum):
         mWorld(world),
         mPortNum(inPortNum),
         mbindTo(bindTo),
-        udpSocket(ioService) {
+        udpSocket(ioContext) {
         using namespace boost::asio;
         BOOST_AUTO(protocol, ip::udp::v4());
         udpSocket.open(protocol);
 
-        udpSocket.bind(ip::udp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum));
+        udpSocket.bind(ip::udp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum));
+        if (inPortNum == 0)
+            mPortNum = udpSocket.local_endpoint().port();
 
-        boost::asio::socket_base::send_buffer_size option(65536);
-        udpSocket.set_option(option);
+        try {
+            boost::asio::socket_base::send_buffer_size sendBufferSize;
+            udpSocket.get_option(sendBufferSize);
+            int defaultBufferSize = sendBufferSize.value();
+            if (defaultBufferSize < SC_UdpInPort::sendBufferSize) {
+                sendBufferSize = SC_UdpInPort::sendBufferSize;
+                boost::system::error_code ec;
+                udpSocket.set_option(sendBufferSize, ec);
+                if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
+                    sendBufferSize = SC_UdpInPort::fallbackBufferSize;
+                    udpSocket.set_option(sendBufferSize);
+                }
+            }
+        } catch (boost::system::system_error& e) { printf("WARNING: failed to set send buffer size (%s)\n", e.what()); }
+
+        try {
+            boost::asio::socket_base::receive_buffer_size receiveBufferSize;
+            udpSocket.get_option(receiveBufferSize);
+            int defaultBufferSize = receiveBufferSize.value();
+            if (defaultBufferSize < SC_UdpInPort::receiveBufferSize) {
+                receiveBufferSize = SC_UdpInPort::receiveBufferSize;
+                boost::system::error_code ec;
+                udpSocket.set_option(receiveBufferSize, ec);
+                if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
+                    receiveBufferSize = SC_UdpInPort::fallbackBufferSize;
+                    udpSocket.set_option(receiveBufferSize);
+                }
+            }
+        } catch (boost::system::system_error& e) {
+            printf("WARNING: failed to set receive buffer size (%s)\n", e.what());
+        }
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_UDP, sc_htons(mPortNum)));
+            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_UDP, mPortNum));
             mRendezvousThread = std::move(thread);
         }
 #endif
@@ -276,13 +315,13 @@ public:
 
 class SC_TcpConnection : public boost::enable_shared_from_this<SC_TcpConnection> {
 public:
-    struct World* mWorld;
+    World* mWorld;
     typedef boost::shared_ptr<SC_TcpConnection> pointer;
     boost::asio::ip::tcp::socket socket;
 
-    SC_TcpConnection(struct World* world, boost::asio::io_service& ioService, class SC_TcpInPort* parent):
+    SC_TcpConnection(World* world, boost::asio::io_context& ioContext, class SC_TcpInPort* parent):
         mWorld(world),
-        socket(ioService),
+        socket(ioContext),
         mParent(parent) {}
 
     ~SC_TcpConnection();
@@ -296,6 +335,11 @@ public:
         boost::system::error_code error;
         boost::asio::ip::tcp::no_delay noDelayOption(true);
         socket.set_option(noDelayOption, error);
+
+        mClientIdentification.mProtocol = kTCP;
+        mClientIdentification.mPort = socket.remote_endpoint().port();
+        mClientIdentification.mSocket = socket.native_handle();
+        mClientIdentification.mAddress = socket.remote_endpoint().address();
 
         // first message must be the password. 4 tries.
         bool validated = mWorld->hw->mPassword[0] == 0;
@@ -333,6 +377,9 @@ private:
     int32 OSCMsgLength;
     char* data;
     class SC_TcpInPort* mParent;
+
+    /** acts as the identification within SC world, which is necessary when deregistering upon disconnect. */
+    ReplyAddress mClientIdentification;
 
     void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
         if (error) {
@@ -374,6 +421,9 @@ private:
         packet->mReplyAddr.mProtocol = kTCP;
         packet->mReplyAddr.mReplyFunc = tcp_reply_func;
         packet->mReplyAddr.mReplyData = (void*)&socket;
+        packet->mReplyAddr.mPort = socket.remote_endpoint().port();
+        packet->mReplyAddr.mSocket = socket.native_handle();
+        packet->mReplyAddr.mAddress = socket.remote_endpoint().address();
 
         packet->mSize = OSCMsgLength;
 
@@ -385,7 +435,7 @@ private:
 };
 
 class SC_TcpInPort {
-    struct World* mWorld;
+    World* mWorld;
     boost::asio::ip::tcp::acceptor acceptor;
 
 #ifdef USE_RENDEZVOUS
@@ -396,15 +446,17 @@ class SC_TcpInPort {
     friend class SC_TcpConnection;
 
 public:
-    SC_TcpInPort(struct World* world, const std::string& bindTo, int inPortNum, int inMaxConnections, int inBacklog):
+    SC_TcpInPort(World* world, const std::string& bindTo, int inPortNum, int inMaxConnections, int inBacklog):
         mWorld(world),
-        acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum)),
+        acceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum)),
         mAvailableConnections(inMaxConnections) {
         // FIXME: backlog???
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_TCP, sc_htons(inPortNum)));
+            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_TCP,
+                                         inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum));
+
             mRendezvousThread = std::move(thread);
         }
 #endif
@@ -415,7 +467,7 @@ public:
     void startAccept() {
         if (mAvailableConnections > 0) {
             --mAvailableConnections;
-            SC_TcpConnection::pointer newConnection(new SC_TcpConnection(mWorld, ioService, this));
+            SC_TcpConnection::pointer newConnection(new SC_TcpConnection(mWorld, ioContext, this));
 
             acceptor.async_accept(
                 newConnection->socket,
@@ -437,7 +489,20 @@ public:
     }
 };
 
-SC_TcpConnection::~SC_TcpConnection() { mParent->connectionDestroyed(); }
+SC_TcpConnection::~SC_TcpConnection() {
+    // we need to de-register our client. clients are matched by reply address.
+    // we use fifomsg to get access to the stage2 thread lock.
+    // the callback function removes its passed data, so we make a copy of our reply address.
+    FifoMsg msg;
+    msg.Set(mWorld, World_RemoveClient, nullptr, new ReplyAddress(mClientIdentification));
+    AudioDriver(mWorld)->SendMsgFromEngine(msg);
+
+    // now close the socket
+    try {
+        socket.close();
+    } catch (boost::system::system_error& e) { printf("ERROR: Could not close TCP socket: %s\n", e.what()); }
+    mParent->connectionDestroyed();
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -449,8 +514,9 @@ static void asioFunction() {
     nova::thread_set_priority_rt(priority);
 #endif
 
-    boost::asio::io_service::work work(ioService);
-    ioService.run();
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
+        boost::asio::make_work_guard(ioContext);
+    ioContext.run();
 }
 
 void startAsioThread() {
@@ -459,7 +525,7 @@ void startAsioThread() {
 }
 
 void stopAsioThread() {
-    ioService.stop();
+    ioContext.stop();
     gAsioThread.join();
 }
 
@@ -484,6 +550,8 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize,
         packet->mReplyAddr.mReplyFunc = inFunc;
         packet->mReplyAddr.mReplyData = inContext;
         packet->mReplyAddr.mSocket = 0;
+        packet->mReplyAddr.mProtocol = kUDP;
+        packet->mReplyAddr.mPort = 0;
 
         if (!UnrollOSCPacket(inWorld, inSize, inData, packet)) {
             free(packet);
@@ -514,17 +582,15 @@ template <typename T, typename... Args> static bool protectedOpenPort(const char
         }
     } catch (const std::exception& exc) {
         scprintf("\n*** ERROR: failed to open %s socket: %s\n", socketType, exc.what());
-    } catch (...) {
-        scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType);
-    }
+    } catch (...) { scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType); }
     return false;
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World* inWorld, const char* bindTo, int inPort) {
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(World* inWorld, const char* bindTo, int inPort) {
     return protectedOpenPort<SC_UdpInPort>("UDP", inWorld, bindTo, inPort);
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
+SCSYNTH_DLLEXPORT_C int World_OpenTCP(World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
                                       int inBacklog) {
     return protectedOpenPort<SC_TcpInPort>("TCP", inWorld, bindTo, inPort, inMaxConnections, inBacklog);
 }

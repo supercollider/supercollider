@@ -1,7 +1,7 @@
 class::Boolean
 summary:: abstract class whose instances represent a logical value
 categories::Core
-related:: Reference/Control-Structures
+related:: Reference/Conditional-Execution
 
 description::
 Boolean is the superclass of link::Classes/True:: and link::Classes/False:: which are the concrete realizations.
@@ -61,5 +61,3 @@ Returns:: The receiver. The same message is understood by link::Classes/SimpleNu
 method::keywordWarnings
 
 turn on/off warnings if a keyword argument is not found
-
-

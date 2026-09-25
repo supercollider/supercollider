@@ -1,24 +1,7 @@
-Object  {
+Object : AbstractObjectExperimental {
 	classvar <dependantsDictionary, currentEnvironment, topEnvironment, <uniqueMethods;
 
 	const nl = "\n";
-
-	*new { arg maxSize = 0;
-		_BasicNew
-		^this.primitiveFailed
-		// creates a new instance that can hold up to maxSize
-		// indexable slots. the indexed size will be zero.
-		// to actually put things in the object you need to
-		// add them.
-	}
-	*newCopyArgs { arg ... args;
-		_BasicNewCopyArgsToInstVars
-		^this.primitiveFailed
-		// creates a new instance that can hold up to maxSize
-		// indexable slots. the indexed size will be zero.
-		// to actually put things in the object you need to
-		// add them.
-	}
 
 	// debugging and diagnostics
 	dump {
@@ -75,43 +58,55 @@ Object  {
 	isMemberOf { arg aClass; _ObjectIsMemberOf; ^this.primitiveFailed }
 	respondsTo { arg aSymbol; _ObjectRespondsTo; ^this.primitiveFailed }
 
-	performMsg { arg msg;
+    // args and kwargs should be arrays here, not variable arguments!
+	performArgs { |selector, args, kwargs|
+		_ObjectPerformArgs;
+		^this.primitiveFailed
+	}
+	superPerformArgs { |selector, args, kwargs|
+		_ObjectSuperPerformArgs;
+		^this.primitiveFailed
+	}
+	performMsg { |msg|
 		_ObjectPerformMsg;
 		^this.primitiveFailed
 	}
-
-	perform { arg selector ... args;
+	perform { |selector ...args, kwargs|
 		_ObjectPerform;
 		^this.primitiveFailed
 	}
-	performList { arg selector, arglist;
+	performList { | ...args, kwargs|
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
-	functionPerformList {
+	functionPerformList { | ...args, kwargs|
 		// perform only if Function. see Function-functionPerformList
 		^this
+	}
+	valueArgs { | args, kwargs|
+		^this.performArgs(\value, args, kwargs)
 	}
 
 	// super.perform(selector,arg) doesn't do what you might think.
 	// \perform would be looked up in the superclass, not the selector you are interested in.
 	// Hence these methods, which look up the selector in the superclass.
 	// These methods must be called with this as the receiver.
-	superPerform { arg selector ... args;
+	superPerform { | ...args, kwargs|
 		_SuperPerform;
 		^this.primitiveFailed
 	}
-	superPerformList { arg selector, arglist;
+	superPerformList { | ...args, kwargs|
 		_SuperPerformList;
 		^this.primitiveFailed
 	}
 
-	tryPerform { arg selector ... args;
-		^if(this.respondsTo(selector),{
-			this.performList(selector,args)
+	tryPerform { | ...args, kwargs|
+		^if(this.respondsTo(args[0]), {
+			this.performArgs(args[0], args[1..], kwargs)
 		})
 	}
-	multiChannelPerform { arg selector ... args;
+
+	multiChannelPerform { |selector ... args|
 		^flop([this, selector] ++ args).collect { |item|
 			performList(item[0], item[1], item[2..])
 		}
@@ -130,7 +125,7 @@ Object  {
 			val !? { args[i] = val };
 		};
 
-		^this.performList(selector, args)
+		^this.performArgs(selector, args);
 	}
 
 	performKeyValuePairs { |selector, pairs|
@@ -172,8 +167,6 @@ Object  {
 	// equality, identity
 	== { arg obj; ^this === obj }
 	!= { arg obj; ^not(this == obj) }
-	=== { arg obj; _Identical; ^this.primitiveFailed }
-	!== { arg obj;_NotIdentical; ^this.primitiveFailed }
 	equals { arg that, properties;
 		^that.respondsTo(properties) and: {
 			properties.every { |selector| this.perform(selector) == that.perform(selector) }
@@ -215,7 +208,6 @@ Object  {
 
 	basicHash { _ObjectHash; ^this.primitiveFailed }
 	hash { _ObjectHash; ^this.primitiveFailed }
-	identityHash { _ObjectHash; ^this.primitiveFailed }
 
 	// lazy equality: same as == for objects
 	// "composed" for lazy operands (patterns, UGens)
@@ -290,13 +282,6 @@ Object  {
 	threadPlayer {}
 	threadPlayer_ {}
 
-	// testing
-	? { arg obj; ^this }
-	?? { arg obj; ^this }
-	!? { arg obj; ^obj.value(this) }
-
-	isNil { ^false }
-	notNil { ^true }
 	isNumber { ^false }
 	isInteger { ^false }
 	isFloat { ^false }
@@ -311,9 +296,7 @@ Object  {
 
 	matchItem {|item| ^this === item }
 	trueAt { ^false }
-	falseAt { arg key;
-		^this.trueAt(key).not
-	}
+	falseAt { ^true }
 
 	pointsTo { arg obj; _ObjectPointsTo; ^this.primitiveFailed }
 	mutable { _ObjectIsMutable; ^this.primitiveFailed }
@@ -325,6 +308,8 @@ Object  {
 		OnError.run;
 		this.prHalt
 	}
+	// _Halt will exit the interpreter, but isn't by itself an error, see Integer.exit.
+	// Object.halt does trigger OnError.
 	prHalt {
 		_Halt
 		^this.primitiveFailed
@@ -340,8 +325,9 @@ Object  {
 	subclassResponsibility { arg method;
 		SubclassResponsibilityError(this, method, this.class).throw;
 	}
-	doesNotUnderstand { arg selector ... args;
-		DoesNotUnderstandError(this, selector, args).throw;
+	// Overloaded from abstract object as 'this' is now safe.
+	doesNotUnderstand { |selector ...args, kwargs|
+		DoesNotUnderstandError(this, selector, args, kwargs).throw;
 	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;
@@ -357,6 +343,7 @@ Object  {
 		DeprecatedError(this, method, alternateMethod, this.class).throw;
 	}
 
+	// Overloaded from abstract object as 'this' is now safe.
 	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
 	notYetImplemented { NotYetImplementedError(nil, this).throw; }
 
@@ -737,7 +724,7 @@ Object  {
 		// to actually put things in the object you need to
 		// add them.
 	}
-	*prNewCopyArgs { arg ... args;
+	*prNewCopyArgs { | ...args, kwargs|
 		_BasicNewCopyArgsToInstVars
 		^this.primitiveFailed
 		// creates a new instance which holds the args as slots

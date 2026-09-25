@@ -28,4 +28,4 @@
 typedef Polar SCPolar;
 typedef Complex SCComplex;
 
-inline void init_SCComplex(InterfaceTable* inTable) {}
+SC_INLINE void init_SCComplex(struct InterfaceTable* inTable) {}

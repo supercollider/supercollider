@@ -6,13 +6,13 @@ TestSoundFile_Server : UnitTest {
 		server = Server(this.class.name);
 		this.bootServer(server);
 
-		soundFile = SoundFile(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+		soundFile = SoundFile(ExampleFiles.child);
 	}
 
 	tearDown {
 		soundFile.close;
 		Buffer.freeAll;
-		server.quit.remove;
+		server.quitSync.remove;
 	}
 
 	test_cue_passInEvent {

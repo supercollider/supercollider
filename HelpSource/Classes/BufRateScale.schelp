@@ -26,12 +26,11 @@ code::.ir::  will not track the changes.
 Examples::
 
 code::
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 (
-x = { arg rate=1;
+x = { |rate = 1|
 	BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b) * rate, 0, BufFrames.kr(b)))
 }.play;
 )
 ::
-

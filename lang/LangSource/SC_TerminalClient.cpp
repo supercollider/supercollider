@@ -25,6 +25,11 @@
 */
 
 #include "SC_TerminalClient.h"
+
+#include "SC_CLIOptions.hpp"
+#include "SC_LanguageClient.h"
+#include <cstdlib>
+
 #ifdef SC_QT
 #    include "../../QtCollider/LanguageClient.h"
 #endif
@@ -61,7 +66,7 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Version.hpp"
 
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 
 using namespace boost::placeholders;
 
@@ -71,16 +76,16 @@ static FILE* gPostDest = stdout;
 static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
 #endif
 
-SC_TerminalClient::SC_TerminalClient(const char* name):
+SC_TerminalClient::SC_TerminalClient(const std::string& name):
     SC_LanguageClient(name),
     mReturnCode(0),
     mUseReadline(false),
-    mWork(mIoService),
-    mTimer(mIoService),
+    mWork(boost::asio::make_work_guard(mIoContext)),
+    mTimer(mIoContext),
 #ifndef _WIN32
-    mStdIn(mInputService, STDIN_FILENO)
+    mStdIn(mInputContext, STDIN_FILENO)
 #else
-    mStdIn(mInputService, GetStdHandle(STD_INPUT_HANDLE))
+    mStdIn(mInputContext, GetStdHandle(STD_INPUT_HANDLE))
 #endif
 {
 }
@@ -101,169 +106,35 @@ void SC_TerminalClient::postError(const char* str, size_t len) {
 
 void SC_TerminalClient::flush() { fflush(gPostDest); }
 
-void SC_TerminalClient::printUsage() {
-    Options opt;
-
-    const size_t bufSize = 128;
-    char memGrowBuf[bufSize];
-    char memSpaceBuf[bufSize];
-
-    snprintMemArg(memGrowBuf, bufSize, opt.mMemGrow);
-    snprintMemArg(memSpaceBuf, bufSize, opt.mMemSpace);
-
-    fprintf(stdout, "Usage:\n   %s [options] [file..] [-]\n\n", getName());
-    fprintf(
-        stdout,
-        "Options:\n"
-        "   -v                             Print supercollider version and exit\n"
-        "   -d <path>                      Set runtime directory\n"
-        "   -D                             Enter daemon mode (no input)\n"
-        "   -g <memory-growth>[km]         Set heap growth (default %s)\n"
-        "   -h                             Display this message and exit\n"
-        "   -l <path>                      Set library configuration file\n"
-        "   -m <memory-space>[km]          Set initial heap size (default %s)\n"
-        "   -r                             Call Main.run on startup\n"
-        "   -s                             Call Main.stop on shutdown\n"
-        "   -u <network-port-number>       Set UDP listening port (default %d)\n"
-        "   -i <ide-name>                  Specify IDE name (for enabling IDE-specific class code, default \"%s\")\n"
-        "   -a                             Standalone mode (exclude SCClassLibrary and user and system Extensions "
-        "folders from search path)\n",
-        memGrowBuf, memSpaceBuf, opt.mPort, SC_Filesystem::instance().getIdeName().c_str());
-}
-
-bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt) {
-    const char* optstr = ":d:Dg:hl:m:rsu:i:av";
-    int c;
-
-    // inhibit error reporting
-    opterr = 0;
-
-    while ((c = getopt(argc, argv, optstr)) != -1) {
-        switch (c) {
-        case 'd':
-            opt.mRuntimeDir = optarg;
-            break;
-        case 'D':
-            opt.mDaemon = true;
-            break;
-        case 'g':
-            if (!parseMemArg(optarg, &opt.mMemGrow)) {
-                optopt = c;
-                goto optArgInvalid;
-            }
-            break;
-        case 'h':
-            goto help;
-        case 'l':
-            opt.mLibraryConfigFile = optarg;
-            break;
-        case 'm':
-            if (!parseMemArg(optarg, &opt.mMemSpace)) {
-                optopt = c;
-                goto optArgInvalid;
-            }
-            break;
-        case 'r':
-            opt.mCallRun = true;
-            break;
-        case 'v':
-            fprintf(stdout, "sclang %s (%s)\n", SC_VersionString().c_str(), SC_BuildString().c_str());
-            quit(0);
-            return false;
-            break;
-        case 's':
-            opt.mCallStop = true;
-            break;
-        case 'u':
-            if (!parsePortArg(optarg, &opt.mPort)) {
-                optopt = c;
-                goto optArgInvalid;
-            }
-            break;
-        case '?':
-            goto optInvalid;
-            break;
-        case ':':
-            goto optArgExpected;
-            break;
-        case 'i':
-            SC_Filesystem::instance().setIdeName(optarg);
-            break;
-        case 'a':
-            opt.mStandalone = true;
-            break;
-        default:
-            ::post("%s: unknown error (getopt)\n", getName());
-            quit(255);
-            return false;
-        }
-    }
-
-    argv += optind;
-    argc -= optind;
-
-    return true;
-
-help:
-    printUsage();
-    quit(0);
-    return false;
-
-optInvalid:
-    ::post("%s: invalid option -%c\n", getName(), optopt);
-    quit(1);
-    return false;
-
-optArgExpected:
-    ::post("%s: missing argument for option -%c\n", getName(), optopt);
-    quit(1);
-    return false;
-
-optArgInvalid:
-    ::post("%s: invalid argument for option -%c -- %s\n", getName(), optopt, optarg);
-    quit(1);
-    return false;
-}
-
 int SC_TerminalClient::run(int argc, char** argv) {
     Options& opt = mOptions;
 
-    if (!parseOptions(argc, argv, opt)) {
-        return mReturnCode;
+    SC_CLI::CLIOptions cliOptions;
+
+    if (const auto errorCode = cliOptions.parse(argc, argv, mOptions)) {
+        return *errorCode;
     }
-
-    // finish argv processing
-    const char* codeFile = nullptr;
-
-    if (argc > 0) {
-        codeFile = argv[0];
-        opt.mDaemon = true;
-        argv++;
-        argc--;
-    }
-
-    opt.mArgc = argc;
-    opt.mArgv = argv;
-
-    // read library configuration file
-    if (opt.mLibraryConfigFile)
-        SC_LanguageConfig::setConfigPath(opt.mLibraryConfigFile);
-    SC_LanguageConfig::readLibraryConfig(opt.mStandalone);
 
     // initialize runtime
     initRuntime(opt);
 
     // Create config directory so that it can be used by Quarks, etc. See #2919.
-    if (!opt.mStandalone && !opt.mLibraryConfigFile)
-        boost::filesystem::create_directories(
-            SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
+    if (!opt.mStandalone && opt.mLibraryConfigFile.empty())
+        std::filesystem::create_directories(SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
 
     // startup library
-    compileLibrary(opt.mStandalone);
+
+    if (!compileLibrary(opt.mStandalone)) {
+        post("ERROR: Library has not been compiled successfully.\n");
+        shutdownLibrary();
+        flush();
+        shutdownRuntime();
+        return EXIT_FAILURE;
+    }
 
     // enter main loop
-    if (codeFile)
-        executeFile(codeFile);
+    if (!cliOptions.mInputFile.empty())
+        executeFile(cliOptions.mInputFile);
     if (opt.mCallRun)
         runMain();
 
@@ -315,37 +186,113 @@ void SC_TerminalClient::interpretCmdLine(const char* cmdLine, size_t size, bool 
 
 // Note: called only if the input thread does not perform an asynchronous read operation
 void SC_TerminalClient::interpretInput() {
-    char* data = mInputBuf.getData();
-    int c = mInputBuf.getSize();
-    int i = 0;
-    while (i < c) {
-        switch (data[i]) {
-        case kInterpretCmdLine:
-            interpretCmdLine(data, i, true);
-            break;
-        case kInterpretPrintCmdLine:
-            interpretCmdLine(data, i, false);
-            break;
+    std::string_view startOfBody { mInputBuf.getData(), mInputBuf.getSize() };
 
-        case kRecompileLibrary:
-            recompileLibrary();
-            break;
 
-        default:
-            ++i;
+    if (startOfBody.empty())
+        return;
+
+    if (startOfBody[0] == SC_LanguageClient::RecompileLibrary) {
+        recompileLibrary();
+        return;
+    }
+
+    // While not empty and not a input header
+    auto rollingBody = startOfBody;
+    while (!rollingBody.empty()
+           && !(rollingBody[0] == SC_LanguageClient::InterpretCmdLine
+                || rollingBody[0] == SC_LanguageClient::InterpretPrintCmdLine
+                || rollingBody[0] == SC_LanguageClient::InterpretPrintCmdLineWithHeader)) {
+        rollingBody.remove_prefix(1);
+    }
+
+    const auto cleanUp = [&]() {
+        mInputBuf.reset();
+        if (mUseReadline)
+            mReadlineSem.post();
+        else
+            startInputRead();
+    };
+
+    const auto endOfBody = rollingBody;
+
+    const auto executeIgnoreHeader = [&](bool silent = false) {
+        setCmdLine(startOfBody.data(), std::distance(startOfBody.begin(), endOfBody.begin()));
+        runLibrary(resolveMethodSymbol(silent));
+        flush();
+    };
+
+    if (endOfBody.empty()) {
+        executeIgnoreHeader();
+        cleanUp();
+        return;
+    }
+    const auto silent = rollingBody[0] == SC_LanguageClient::InterpretCmdLine;
+
+    auto rollingHeader = rollingBody.substr(1);
+
+    if (rollingHeader.empty() || rollingHeader[0] != SC_LanguageClient::StartOfHeader) {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+
+    rollingHeader.remove_prefix(1);
+
+    if (rollingHeader.empty() || rollingHeader[0] != SC_LanguageClient::FileNameDelimiter) {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+
+    auto rollingFileName = rollingHeader.substr(1);
+    const auto startOfFileName = rollingFileName;
+    while (true) {
+        if (rollingFileName.empty()) {
+            executeIgnoreHeader(silent);
+            cleanUp();
+            return;
+        } else if (rollingFileName[0] == SC_LanguageClient::FileNameDelimiter) {
+            break;
+        } else {
+            rollingFileName.remove_prefix(1);
             continue;
         }
-
-        data += i + 1;
-        c -= i + 1;
-        i = 0;
     }
-    mInputBuf.reset();
+    const auto endOfFileName = rollingFileName;
+    rollingHeader = rollingFileName.substr(1); // skip delimiter
 
-    if (mUseReadline)
-        mReadlineSem.post();
-    else
-        startInputRead();
+    const auto startOfLineNumber = rollingHeader;
+    if (startOfLineNumber.empty()) {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+    while (!rollingHeader.empty() && ('0' <= rollingHeader[0] && rollingHeader[0] <= '9')) {
+        rollingHeader.remove_prefix(1);
+    }
+    const auto endOfLineNumber = rollingHeader;
+    if (endOfLineNumber.empty() || endOfLineNumber[0] != ' ') {
+        executeIgnoreHeader(silent);
+        cleanUp();
+        return;
+    }
+
+    const auto startOfColumn = rollingHeader.substr(1);
+    while (!rollingHeader.empty() && ('0' <= rollingHeader[0] && rollingHeader[0] <= '9')) {
+        rollingHeader.remove_prefix(1);
+    }
+    const auto endOfColumn = rollingHeader;
+
+
+    const auto fileName = std::string { startOfFileName.begin(), endOfFileName.begin() };
+    const auto lineNumber = atoi(startOfLineNumber.data());
+    const auto column = atoi(startOfColumn.data());
+    setCmdLine(startOfBody.data(), std::distance(startOfBody.begin(), endOfBody.begin()), &fileName, lineNumber,
+               column);
+    runLibrary(resolveMethodSymbol(silent));
+    flush();
+    cleanUp();
 }
 
 void SC_TerminalClient::onLibraryStartup() {
@@ -361,19 +308,19 @@ void SC_TerminalClient::onLibraryStartup() {
 void SC_TerminalClient::sendSignal(Signal sig) {
     switch (sig) {
     case sig_input:
-        mIoService.post(boost::bind(&SC_TerminalClient::interpretInput, this));
+        boost::asio::post(mIoContext, [this] { this->interpretInput(); });
         break;
 
     case sig_recompile:
-        mIoService.post(boost::bind(&SC_TerminalClient::recompileLibrary, this));
+        boost::asio::post(mIoContext, [this] { this->recompileLibrary(); });
         break;
 
     case sig_sched:
-        mIoService.post(boost::bind(&SC_TerminalClient::tick, this, boost::system::error_code()));
+        boost::asio::post(mIoContext, [this] { this->tick(boost::system::error_code()); });
         break;
 
     case sig_stop:
-        mIoService.post(boost::bind(&SC_TerminalClient::stopMain, this));
+        boost::asio::post(mIoContext, [this] { this->stopMain(); });
         break;
     }
 }
@@ -448,7 +395,7 @@ void SC_TerminalClient::tick(const boost::system::error_code& error) {
     }
 }
 
-void SC_TerminalClient::commandLoop() { mIoService.run(); }
+void SC_TerminalClient::commandLoop() { mIoContext.run(); }
 
 void SC_TerminalClient::daemonLoop() { commandLoop(); }
 
@@ -507,7 +454,7 @@ void SC_TerminalClient::readlineCmdLine(char* cmdLine) {
         int len = strlen(cmdLine);
 
         client->mInputBuf.append(cmdLine, len);
-        client->mInputBuf.append(kInterpretPrintCmdLine);
+        client->mInputBuf.append(SC_TerminalClient::InterpretPrintCmdLine);
         client->sendSignal(sig_input);
         client->mReadlineSem.wait();
     }
@@ -615,8 +562,9 @@ void SC_TerminalClient::inputThreadFn() {
 
     startInputRead();
 
-    boost::asio::io_service::work work(mInputService);
-    mInputService.run();
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
+        boost::asio::make_work_guard(mInputContext);
+    mInputContext.run();
 }
 
 
@@ -625,9 +573,11 @@ void SC_TerminalClient::pushCmdLine(const char* newData, size_t size) {
     while (size--) {
         char c = *newData++;
         switch (c) {
-        case kRecompileLibrary:
-        case kInterpretCmdLine:
-        case kInterpretPrintCmdLine:
+        case RecompileLibrary:
+            recompileLibrary();
+            break;
+        case InterpretCmdLine:
+        case InterpretPrintCmdLine:
             mInputBuf.append(mInputThrdBuf.getData(), mInputThrdBuf.getSize());
             mInputBuf.append(c);
             signal = true;
@@ -663,7 +613,7 @@ void SC_TerminalClient::startInput() {
 }
 
 void SC_TerminalClient::endInput() {
-    mInputService.stop();
+    mInputContext.stop();
     mStdIn.cancel();
 #ifdef _WIN32
     // Note this breaks Windows XP compatibility, since this function is only defined in Vista and later
@@ -682,8 +632,8 @@ void SC_TerminalClient::cleanupInput() {
 }
 
 int SC_TerminalClient::prArgv(struct VMGlobals* g, int) {
-    int argc = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgc;
-    char** argv = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgv;
+    auto& argv = static_cast<SC_TerminalClient*>(SC_TerminalClient::instance())->options().mArgs;
+    size_t argc = argv.size();
 
     PyrSlot* argvSlot = g->sp;
 
@@ -691,7 +641,7 @@ int SC_TerminalClient::prArgv(struct VMGlobals* g, int) {
     SetObject(argvSlot, argvObj); // this is okay here as we don't use the receiver
 
     for (int i = 0; i < argc; i++) {
-        PyrString* str = newPyrString(g->gc, argv[i], 0, true);
+        PyrString* str = newPyrString(g->gc, argv[i].c_str(), 0, true);
         SetObject(argvObj->slots + i, str);
         argvObj->size++;
         g->gc->GCWriteNew(argvObj, (PyrObject*)str); // we know str is white so we can use GCWriteNew
@@ -700,7 +650,7 @@ int SC_TerminalClient::prArgv(struct VMGlobals* g, int) {
     return errNone;
 }
 
-int SC_TerminalClient::prExit(struct VMGlobals* g, int) {
+int SC_TerminalClient::prExit(struct VMGlobals* g, int numArgsPushed) {
     int code;
 
     int err = slotIntVal(g->sp, &code);
@@ -708,8 +658,20 @@ int SC_TerminalClient::prExit(struct VMGlobals* g, int) {
         return err;
 
     ((SC_TerminalClient*)SC_LanguageClient::instance())->onQuit(code);
+    switchToThread(g, slotRawThread(&g->process->mainThread), tDone, &numArgsPushed);
+    // return all the way out.
+    // PyrSlot *bottom = g->gc->Stack()->slots;
+    // slotCopy(bottom,g->sp);
+    // g->sp = bottom; // ??!! pop everybody
+    g->method = nullptr;
+    g->block = nullptr;
+    g->frame = nullptr;
+    SetNil(g->sp);
+    longjmp(g->escapeInterpreter, 3);
+    // hmm need to fix this to work only on main thread. //!!!
+    // g->sp = g->gc->Stack()->slots - 1;
 
-    return errNone;
+    return errReturn;
 }
 
 int SC_TerminalClient::prScheduleChanged(struct VMGlobals* g, int numArgsPushed) {

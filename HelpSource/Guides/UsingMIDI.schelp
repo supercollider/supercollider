@@ -42,7 +42,7 @@ definitionlist::
 ## srcID || The UID (unique identifier) of the MIDI port. This is set by the system, and is available through the link::Classes/MIDIEndPoint:: objects in the array code::MIDIClient.sources::. (For MIDI input, use code::MIDIClient.sources::, not code::destinations::.) If you know the device's array index, you can set code::srcID: MIDIClient.sources[index].uid::. If you know the device's name, you can search the array for a matching MIDIEndPoint first: code::srcID: MIDIClient.sources.detect { |e| e.device.containsi("searchstring") }.uid::.
 ::
 
-Any filters that are omitted will match all values -- e.g., for an omni-channel responder, simply leave out a code::chan:: filter.
+Any filters that are omitted will match all values — e.g., for an omni-channel responder, simply leave out a code::chan:: filter.
 
 subsection:: MIDIIn
 
@@ -113,8 +113,10 @@ emphasis::dewdrop_lib:: is a third party library providing a number of useful pe
 
 Among its features:
 
-- user-extensible: simple functions may be used, and frequently-needed responses can be written into classes that inherit from the framework (see BasicMIDISocket and BasicMIDIControl helpfiles)
+list::
+## user-extensible: simple functions may be used, and frequently-needed responses can be written into classes that inherit from the framework (see BasicMIDISocket and BasicMIDIControl helpfiles)
 
-- easy to use classes for playing MIDI notes and assigning MIDI controllers to synthesis parameters
+## easy to use classes for playing MIDI notes and assigning MIDI controllers to synthesis parameters
 
-- a user-configurable array of MIDI controller numbers, to simplify assignment of events to hardware controllers
+## a user-configurable array of MIDI controller numbers, to simplify assignment of events to hardware controllers
+::

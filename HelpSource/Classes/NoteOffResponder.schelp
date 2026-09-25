@@ -36,8 +36,8 @@ method::learn
 Wait for the next noteOff message, reset self to match src, chan.
 code::
 (
-c = NoteOffResponder({ |src,chan,note,vel|
-		[src,chan,note,vel].postln;
+c = NoteOffResponder({ |src, chan, note, vel|
+		[src, chan, note, vel].postln;
 	});
 	c.learn; // wait for the first note off
 )
@@ -49,8 +49,8 @@ Examples::
 
 code::
 (
-	c = NoteOffResponder({ |src,chan,note,vel|
-		[src,chan,note,vel].postln;
+	c = NoteOffResponder({ |src, chan, note, vel|
+		[src, chan, note, vel].postln;
 		},
 		nil, // any source
 		nil, // any channel
@@ -64,8 +64,8 @@ c.remove
 
 code::
 (
-	c = NoteOffResponder({ |src,chan,note,vel|
-		[src,chan,note,vel].postln;
+	c = NoteOffResponder({ |src, chan, note, vel|
+		[src, chan, note, vel].postln;
 		},
 		nil, // any source
 		nil, // any channel

@@ -11,7 +11,7 @@ Examples::
 
 code::
 (
-f = { arg vals;
+f = { |vals|
 	vals.postln;
 };
 x = PstepNfunc(f, [
@@ -21,10 +21,10 @@ x = PstepNfunc(f, [
 )
 
 (
-f = { arg vals;
+f = { |vals|
 	var r;
 	r = vals.copy.removeAt(0);
-	vals.do({ arg item;  r = item / r.squared * 10 });
+	vals.do({ |item|  r = item / r.squared * 10 });
 	r
 };
 x = PstepNfunc(f,
@@ -40,7 +40,7 @@ x = PstepNfunc(f,
 
 // note that if the last pattern loops it will stick to that one:
 (
-f = { arg vals;
+f = { |vals|
 	vals.postln;
 };
 x = PstepNfunc(f, [Pseq([1, 2, 3]), Pseq([10, 20, 30, 40]), Pseq([100, 200, 300], inf)]).asStream;
@@ -49,8 +49,8 @@ x = PstepNfunc(f, [Pseq([1, 2, 3]), Pseq([10, 20, 30, 40]), Pseq([100, 200, 300]
 
 
 (
-f = { arg vals;
-	vals.inject(1, { arg x, y; x * y })
+f = { |vals|
+	vals.inject(1, { |x, y| x * y })
 };
 x = PstepNfunc(f,
 	[

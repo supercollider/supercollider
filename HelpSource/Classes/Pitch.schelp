@@ -24,13 +24,13 @@ discussion::
 The pitch follower executes periodically at the rate specified by code::execFreq:: in cps. code::execFreq:: is clipped to be between code::minFreq:: and code::maxFreq::. First it detects whether the input peak to peak amplitude is above the code::ampThreshold::.
 If it is not then no pitch estimation is performed, code::hasFreq:: is set to zero and code::freq:: is held at its previous value. It performs an autocorrelation on the input and looks for the first peak after the peak around the lag of zero that is above code::peakThreshold:: times the amplitude of the peak at lag zero.
 
-If the code::clar:: argument is greater than zero (it is zero by default) then code::hasFreq:: is given additional detail. Rather than simply being 1 when a pitch is detected, it is a "clarity" measure in the range between zero and one. (Technically, it's the height of the autocorrelation peak normalised by the height of the zero-lag peak.)
+If the code::clar:: argument is greater than zero (it is zero by default) then code::hasFreq:: is given additional detail. Rather than simply being 1 when a pitch is detected, it is a "clarity" measure in the range between zero and one.
+(Technically, it's the height of the autocorrelation peak normalised by the height of the zero-lag peak.)
 It therefore gives a kind of measure of "purity" of the pitched signal.
 
 Using a code::peakThreshold:: of one half does a pretty good job of eliminating overtones, and finding the first peak above that threshold rather than the absolute maximum peak does a good job of eliminating estimates that are actually multiple periods of the wave.
 
-The autocorrelation is done coarsely at first using a maximum of code::maxBinsPerOctave:: lags until the peak is located. Then a fine resolution search is performed until the peak is found. (Note that maxBinsPerOctave does NOT affect the final pitch resolution; a fine resolution search is always performed.
-Setting maxBinsPerOctave larger will cause the coarse search to take longer, and setting it smaller will cause the fine search to take longer.)
+The autocorrelation is done coarsely at first using a maximum of code::maxBinsPerOctave:: lags until the peak is located. Then a fine resolution search is performed until the peak is found. (Note that maxBinsPerOctave does NOT affect the final pitch resolution; a fine resolution search is always performed. Setting maxBinsPerOctave larger will cause the coarse search to take longer, and setting it smaller will cause the fine search to take longer.)
 
 The three values around the peak are used to find a fractional lag value for the pitch. If the pitch frequency is higher than code::maxFreq::, or if no peak is found above code::minFreq::, then code::hasFreq:: is set to zero and code::freq:: is held at its previous value.
 
@@ -51,39 +51,39 @@ private:: init
 examples::
 
 code::
-	// (use headphones!)
+// (use headphones!)
 
-	(
-		SynthDef("pitchFollow1", { |out|
-			var in, amp, freq, hasFreq, sound;
-			in = Mix.new(SoundIn.ar([0, 1]));
-			amp = Amplitude.kr(in, 0.05, 0.05);
-			# freq, hasFreq = Pitch.kr(in, ampThreshold: 0.02, median: 7);
-			//freq = Lag.kr(freq.cpsmidi.round(1).midicps, 0.05);
-			sound = Mix.new(VarSaw.ar(freq * [0.5, 1, 2], 0, LFNoise1.kr(0.3, 0.1, 0.1), amp));
-			6.do {
-				sound = AllpassN.ar(sound, 0.040, [0.040.rand,0.040.rand], 2)
-			};
-			Out.ar(out, sound);
-		}).play
-	)
+(
+	SynthDef("pitchFollow1", { |out|
+		var in, amp, freq, hasFreq, sound;
+		in = Mix.new(SoundIn.ar([0, 1]));
+		amp = Amplitude.kr(in, 0.05, 0.05);
+		# freq, hasFreq = Pitch.kr(in, ampThreshold: 0.02, median: 7);
+		// freq = Lag.kr(freq.cpsmidi.round(1).midicps, 0.05);
+		sound = Mix.new(VarSaw.ar(freq * [0.5, 1, 2], 0, LFNoise1.kr(0.3, 0.1, 0.1), amp));
+		6.do {
+			sound = AllpassN.ar(sound, 0.040, [0.040.rand, 0.040.rand], 2)
+		};
+		Out.ar(out, sound);
+	}).play
+)
 ::
 
 code::
 
-	(
-		SynthDef("pitchFollow2", { |out|
-			var in, amp, freq, hasFreq, sound;
-			in = Mix.new(SoundIn.ar([0, 1]));
-			amp = Amplitude.kr(in, 0.05, 0.05);
-			# freq, hasFreq = Pitch.kr(in, ampThreshold: 0.02, median: 7);
-			sound = CombC.ar(LPF.ar(in, 1000), 0.1, (2 * freq + 10).reciprocal, -6).distort * 0.05;
-			6.do({
-				sound = AllpassN.ar(sound, 0.040, [0.040.rand, 0.040.rand], 2)
-			});
-			Out.ar(out, sound);
-		}).play(s);
-	)
+(
+	SynthDef("pitchFollow2", { |out|
+		var in, amp, freq, hasFreq, sound;
+		in = Mix.new(SoundIn.ar([0, 1]));
+		amp = Amplitude.kr(in, 0.05, 0.05);
+		# freq, hasFreq = Pitch.kr(in, ampThreshold: 0.02, median: 7);
+		sound = CombC.ar(LPF.ar(in, 1000), 0.1, (2 * freq + 10).reciprocal, -6).distort * 0.05;
+		6.do({
+			sound = AllpassN.ar(sound, 0.040, [0.040.rand, 0.040.rand], 2)
+		});
+		Out.ar(out, sound);
+	}).play(s);
+)
 
 /*
 
@@ -106,15 +106,15 @@ andreavalle
 
 */
 
-	(
-		SynthDef(\RmOctaver, { |out|
-			var in, freq, hasFreq;
-			in = SoundIn.ar(0);
-			# freq, hasFreq = Pitch.kr(in);
-			Out.ar(out, SinOsc.ar(freq: freq * 0.5) * in + in);
-		}).add;
-	)
+(
+	SynthDef(\RmOctaver, { |out|
+		var in, freq, hasFreq;
+		in = SoundIn.ar(0);
+		# freq, hasFreq = Pitch.kr(in);
+		Out.ar(out, SinOsc.ar(freq: freq * 0.5) * in + in);
+	}).add;
+)
 
-	Synth.new(\RmOctaver);
+Synth.new(\RmOctaver);
 
 ::

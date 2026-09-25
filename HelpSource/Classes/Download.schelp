@@ -54,9 +54,24 @@ Get or set the download progress link::Classes/Function::.
 EXAMPLES::
 
 code::
-Download("http://art-on-wires.org/wp-content/uploads/2011/03/nick_collins.png", "/tmp/nick.png", {\huzzah.postln;}, {\error.postln}, {|rec, tot| [rec, tot].postln}); // beautify your tmp directory
+(
+var url = "https://scottwilson.ca/files/flame.mp3";
+var localPath = Platform.defaultTempDir +/+ url.split($/).last;
 
-d = Download("http://scottwilson.ca/files/flame.mp3", "/tmp/flame.mp3", {\huzzah.postln;}, {\error.postln}, {|rec, tot| [rec, tot].postln});
+d = Download(
+	url,
+	localPath,
+	{
+		"downloaded to %".format(localPath).postln;
+	},
+	{
+		"error".postln;
+	},
+	{ |receivedBytes, totalBytes|
+		"Downloaded %\\%".format((receivedBytes/totalBytes*100.0).round(1e-2)).postln;
+	},
+);
+)
+
 d.cancel; // cancel this
-
 ::

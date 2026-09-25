@@ -43,7 +43,7 @@ Put a value at the desired index. This works just like all ArrayedCollection typ
 code::
 g = SparseArray.newClear(10, 3);
 g.put(4, \horse);
-g.put(6, [4,5,6]);
+g.put(6, [4, 5, 6]);
 g[1] = \hello; // Common compact notation
 ::
 
@@ -72,7 +72,7 @@ code::
 // Let's create a standard array, big but with only a couple of unusual values hidden in there
 (
 {
-	a = {10}.dup(1000000);
+	a = { 10 }.dup(1000000);
 	a[551] = 77;
 	a[8722] = \foo;
 }.bench
@@ -96,9 +96,9 @@ code::
 )
 
 // accessing:
-{1000.do{ a[a.size.rand] == 60.rand }}.bench
-{1000.do{ b[b.size.rand] == 60.rand }}.bench
+{ 1000.do{ a[a.size.rand] == 60.rand } }.bench
+{ 1000.do{ b[b.size.rand] == 60.rand } }.bench
 // setting:
-{1000.do{ a[a.size.rand] = 60.rand }}.bench
-{1000.do{ b[b.size.rand] = 60.rand }}.bench
+{ 1000.do{ a[a.size.rand] = 60.rand } }.bench
+{ 1000.do{ b[b.size.rand] = 60.rand } }.bench
 ::

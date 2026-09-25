@@ -35,7 +35,7 @@ namespace gregorian {
     return std::string("[" + d1 + "/" + d2 + "]");
   }
 
-  //! Date period to iso standard format CCYYMMDD/CCYYMMDD. Example: 20021225/20021231
+  //! Date period to ISO 8601 standard format CCYYMMDD/CCYYMMDD. Example: 20021225/20021231
   /*!\ingroup date_format
    */
   inline std::string to_iso_string(const date_period& d) {
@@ -44,14 +44,14 @@ namespace gregorian {
   }
 
 
-  //! Convert to iso extended format string CCYY-MM-DD. Example 2002-12-31
+  //! Convert to ISO 8601 extended format string CCYY-MM-DD. Example 2002-12-31
   /*!\ingroup date_format
    */
   inline std::string to_iso_extended_string(const date& d) {
     return date_time::date_formatter<date,date_time::iso_extended_format<char> >::date_to_string(d);
   }
 
-  //! Convert to iso standard string YYYYMMDD. Example: 20021231
+  //! Convert to ISO 8601 standard string YYYYMMDD. Example: 20021231
   /*!\ingroup date_format
    */
   inline std::string to_iso_string(const date& d) {

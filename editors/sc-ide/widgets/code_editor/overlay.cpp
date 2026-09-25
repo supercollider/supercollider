@@ -198,7 +198,7 @@ void ScCodeEditor::blinkCode(const QTextCursor& c) {
     anim->setEasingCurve(QEasingCurve::InCubic);
     anim->start();
 
-    connect(anim, SIGNAL(finished()), item, SLOT(deleteLater()));
+    connect(anim, &QPropertyAnimation::finished, item, &CodeFragmentOverlay::deleteLater);
 }
 
 } // namespace ScIDE

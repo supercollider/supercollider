@@ -15,7 +15,7 @@ classmethods::
 method::ar
 
 argument::numChannels
-The number of output channels.
+The number of output channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument::trigger
 At each trigger, the following arguments are sampled and used as
@@ -61,25 +61,25 @@ Examples::
 code::
 
 s.boot;
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 (
 {
 	var trate, dur, rate;
-	trate = MouseY.kr(2,200,1);
+	trate = MouseY.kr(2, 200, 1);
 	dur = 4 / trate;
 	rate = Dseq([10, 1, 1, 0.5, 0.5, 0.2, 0.1], inf);
-	TGrains.ar(2, Impulse.ar(trate), b, rate, MouseX.kr(0,BufDur.kr(b)), dur, Dseq([-1, 1], inf), 0.1, 2);
+	TGrains.ar(2, Impulse.ar(trate), b, rate, MouseX.kr(0, BufDur.kr(b)), dur, Dseq([-1, 1], inf), 0.1, 2);
 }.scope(zoom: 4);
 )
 
 (
 {
 	var trate, dur, clk, pos, pan;
-	trate = MouseY.kr(8,120,1);
+	trate = MouseY.kr(8, 120, 1);
 	dur = 12 / trate;
 	clk = Impulse.kr(trate);
-	pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
+	pos = MouseX.kr(0, BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
 	pan = WhiteNoise.kr(0.6);
 	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
 }.scope(zoom: 4);
@@ -89,10 +89,10 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 (
 {
 	var trate, dur, clk, pos, pan;
-	trate = MouseY.kr(8,120,1);
+	trate = MouseY.kr(8, 120, 1);
 	dur = 12 / trate;
 	clk = Impulse.kr(trate);
-	pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
+	pos = MouseX.kr(0, BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
 	pan = WhiteNoise.kr(0.6);
 	TGrains.ar(4, clk, b, 1, pos, dur, pan, 0.1);
 }.scope(4, zoom: 4);
@@ -101,10 +101,10 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 (
 {
 	var trate, dur, clk, pos, pan;
-	trate = MouseY.kr(8,120,1);
+	trate = MouseY.kr(8, 120, 1);
 	dur = 4 / trate;
 	clk = Dust.kr(trate);
-	pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
+	pos = MouseX.kr(0, BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
 	pan = WhiteNoise.kr(0.6);
 	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
 }.scope(zoom: 4);
@@ -113,10 +113,10 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 (
 {
 	var trate, dur, clk, pos, pan;
-	trate = LinExp.kr(LFTri.kr(MouseY.kr(0.1,2,1)),-1,1,8,120);
+	trate = LinExp.kr(LFTri.kr(MouseY.kr(0.1, 2, 1)), -1, 1, 8, 120);
 	dur = 12 / trate;
 	clk = Impulse.ar(trate);
-	pos = MouseX.kr(0,BufDur.kr(b));
+	pos = MouseX.kr(0, BufDur.kr(b));
 	pan = WhiteNoise.kr(0.6);
 	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
 }.scope(zoom: 4);
@@ -126,9 +126,9 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 {
 	var trate, dur, clk, pos, pan;
 	trate = 12;
-	dur = MouseY.kr(0.2,24,1) / trate;
+	dur = MouseY.kr(0.2, 24, 1) / trate;
 	clk = Impulse.kr(trate);
-	pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
+	pos = MouseX.kr(0, BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
 	pan = WhiteNoise.kr(0.6);
 	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
 }.scope(zoom: 4);
@@ -149,10 +149,10 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 (
 {
 	var trate, dur, clk, pos, pan;
-	trate = MouseY.kr(1,400,1);
+	trate = MouseY.kr(1, 400, 1);
 	dur = 8 / trate;
 	clk = Impulse.kr(trate);
-	pos = MouseX.kr(0,BufDur.kr(b));
+	pos = MouseX.kr(0, BufDur.kr(b));
 	pan = WhiteNoise.kr(0.8);
 	TGrains.ar(2, clk, b, 2 ** WhiteNoise.kr(2), pos, dur, pan, 0.1);
 }.scope(zoom: 4);
@@ -161,9 +161,9 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 (
 {
 	var trate, dur;
-	trate = MouseY.kr(2,120,1);
+	trate = MouseY.kr(2, 120, 1);
 	dur = 1.2 / trate;
-	TGrains.ar(2, Impulse.ar(trate), b, (1.2 ** WhiteNoise.kr(3).round(1)), MouseX.kr(0,BufDur.kr(b)), dur, WhiteNoise.kr(0.6), 0.1);
+	TGrains.ar(2, Impulse.ar(trate), b, (1.2 ** WhiteNoise.kr(3).round(1)), MouseX.kr(0, BufDur.kr(b)), dur, WhiteNoise.kr(0.6), 0.1);
 }.scope(zoom: 4);
 )
 

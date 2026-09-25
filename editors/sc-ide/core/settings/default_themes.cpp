@@ -200,6 +200,58 @@ void Theme::fillDracula() {
 /*
 The MIT license (MIT)
 
+Copyright (c) 2015 Colorsublime.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+void Theme::fillMonokai() {
+    add("text", QColor("#F8F8F2"), QColor("#272822"));
+    add("currentLine", Qt::transparent, QColor("#3E3D32"));
+    add("searchResult", Qt::black, QColor("#FFE792"));
+    add("matchingBrackets", QColor("#66d9ef"), QColor("#1b1c18"), true, false, true);
+    add("mismatchedBrackets", QColor("#F44747"), Qt::transparent, true);
+    add("evaluatedCode", Qt::white, Qt::black);
+    add("whitespace", QColor("#75715E"));
+    add("keyword", QColor("#F92672"), Qt::transparent, true);
+    add("built-in", QColor("#AE81FF"));
+    add("env-var", QColor("#FD971F"), Qt::transparent, false, true);
+    add("class", QColor("#A6E22E"), Qt::transparent, true, false, true);
+    add("number", QColor("#AE81FF"));
+    add("symbol", QColor("#E6DB74"));
+    add("string", QColor("#E6DB74"));
+    add("char", QColor("#E6DB74"));
+    add("comment", QColor("#75715E"));
+    add("primitive", QColor("#A6E22E"));
+    add("lineNumbers", QColor("#75715E"));
+    add("selection", Qt::transparent, QColor("#49483E"));
+    add("postwindowtext", QColor("#F8F8F2"));
+    add("postwindowerror", QColor("#F44747"));
+    add("postwindowwarning", QColor("#FD971F"));
+    add("postwindowsuccess", QColor("#A6E22E"));
+    add("postwindowemphasis", QColor("#F8F8F2"), Qt::transparent, true);
+}
+/* END MIT LICENSED CODE */
+
+/*
+The MIT license (MIT)
+
 Copyright (c) 2011 Ethan Schoonover
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

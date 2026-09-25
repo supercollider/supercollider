@@ -14,7 +14,7 @@ code::
 var a, b;
 a = Pseq([1, 2, 3], 2);	// repeat twice
 b = a.asStream;
-7.do({ b.next.postln; });
+7.do({ b.next.postln });
 )
 ::
 
@@ -24,7 +24,7 @@ code::
 var a, b;
 a = Pseq([1, 2, 3, 4], 3, 2);	// repeat 3, offset 2
 b = a.asStream;
-13.do({ b.next.postln; });
+13.do({ b.next.postln });
 )
 ::
 
@@ -32,9 +32,9 @@ You can pass a function for the repeats variable that gets evaluated when the st
 code::
 (
 var a, b;
-a = Pseq([1, 2], { rrand(1, 3) });	// repeat 1,2, or 3 times
+a = Pseq([1, 2], { rrand(1, 3) });	// repeat 1, 2, or 3 times
 b = a.asStream;
-7.do({ b.next.postln; });
+7.do({ b.next.postln });
 )
 ::
 
@@ -44,7 +44,7 @@ code::
 var a, b;
 a = Pseq([1, 2, 3], inf);	// infinite repeat
 b = a.asStream;
-10.do({ b.next.postln; });
+10.do({ b.next.postln });
 )
 ::
 
@@ -53,7 +53,7 @@ Pseq used as a sequence of pitches:
 code::
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))

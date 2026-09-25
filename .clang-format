@@ -13,3 +13,12 @@ NamespaceIndentation: None
 SortIncludes: false
 SpaceBeforeCtorInitializerColon: false
 TabWidth: 4
+SpaceInEmptyBlock: false
+PackConstructorInitializers: CurrentLine 
+AllowShortFunctionsOnASingleLine: All
+AllowShortBlocksOnASingleLine: Always
+AllowShortLoopsOnASingleLine: false 
+ForEachMacros: ['Q_FOREACH', 'foreach']
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterForeachMacros: true 

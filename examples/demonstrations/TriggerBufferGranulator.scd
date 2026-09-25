@@ -2,7 +2,7 @@
 //this Synth uses the SoundIn as a trigger to step through and granulate the loaded buffer
 
 s.boot;
-b = Buffer.read(s, "sounds/a11wlk01.wav");  //use your own buffer here - mine is probably not on your computer
+b = Buffer.read(s, ExampleFiles.child);  //use your own buffer here - mine is probably not on your computer
 
 (
 SynthDef("TriggerBufferGranular", {arg out=0, bufnum=0, in=0, thresh = 0.004, ampScaler = 1, duration =

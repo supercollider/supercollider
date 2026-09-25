@@ -79,7 +79,14 @@ Nil {
 		// array = array.add(thing);     Instead, it just works.
 		^[value]
 	}
-	addAll { arg array; ^array.asArray }
+	addAll { |array|
+		var result = array.asArray;
+		^if(result === array) {
+			result.copy
+		} {
+			result
+		}
+	}
 	++ { arg array; ^array }
 	asCollection { ^[] }
 	remove {}

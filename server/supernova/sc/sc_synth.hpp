@@ -25,6 +25,9 @@
 #include "SC_RGen.h"
 #include "SC_Wire.h"
 
+struct sc_msg_iter;
+
+#include "sc_endpoint.hpp"
 #include "sc_synth_definition.hpp"
 
 #include "../server/synth.hpp"
@@ -34,6 +37,7 @@ namespace nova {
 
 struct sc_unit_cmd {
     sc_unit_cmd* next;
+    detail::endpoint_ptr endpoint;
     int size;
     char data[1];
 };
@@ -49,6 +53,70 @@ public:
 
     ~sc_synth(void);
 
+    HOT inline void perform(void) {
+        if (unlikely(!initialized))
+            prepare();
+
+        if (likely(trace == 0)) {
+            const size_t preroll = calc_unit_count & 7;
+            const size_t unroll = calc_unit_count / 8;
+
+            size_t tick_count = mNumTicks;
+
+            for (size_t k = 0; k != tick_count; ++k) {
+                mTickCounter = k;
+
+                Unit** units = calc_units;
+
+                for (size_t i = 0; i != preroll; ++i) {
+                    Unit* unit = units[i];
+                    prefetch(units[i + 1]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+                }
+
+                units += preroll;
+
+                for (size_t i = 0; i != unroll; ++i) {
+                    Unit* unit = units[0];
+                    prefetch(units[1]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[1];
+                    prefetch(units[2]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[2];
+                    prefetch(units[3]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[3];
+                    prefetch(units[4]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[4];
+                    prefetch(units[5]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[5];
+                    prefetch(units[6]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[6];
+                    prefetch(units[7]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    unit = units[7];
+                    prefetch(units[8]);
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                    units += 8;
+                }
+            }
+        } else
+            run_traced();
+    }
+
+private:
     /** run ugen constructors and initialize first sample
      *
      *  to be executed after preparing the synth and setting the controls
@@ -56,66 +124,6 @@ public:
     void prepare(void);
 
     void finalize(void);
-
-    HOT inline void perform(void) {
-        if (unlikely(!initialized))
-            prepare();
-
-        if (likely(trace == 0)) {
-            const size_t count = calc_unit_count;
-            Unit** units = calc_units;
-
-            const size_t preroll = count & 7;
-
-            for (size_t i = 0; i != preroll; ++i) {
-                Unit* unit = units[i];
-                prefetch(units[i + 1]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-            }
-
-            units += preroll;
-
-            const size_t unroll = count / 8;
-            if (unroll == 0)
-                return;
-
-            for (size_t i = 0; i != unroll; ++i) {
-                Unit* unit = units[0];
-                prefetch(units[1]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[1];
-                prefetch(units[2]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[2];
-                prefetch(units[3]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[3];
-                prefetch(units[4]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[4];
-                prefetch(units[5]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[5];
-                prefetch(units[6]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[6];
-                prefetch(units[7]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                unit = units[7];
-                prefetch(units[8]);
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-                units += 8;
-            }
-        } else
-            run_traced();
-    }
 
     void prefetch(Unit* unit) {
         char* ptr = (char*)unit;
@@ -132,6 +140,7 @@ public:
         }
     }
 
+public:
     void run(void) override;
 
     void set(slot_index_t slot_index, sample val) override;
@@ -197,9 +206,12 @@ public:
 
     void enable_tracing(void) { trace = 1; }
 
-    void apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, struct sc_msg_iter* args);
+    void apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, sc_msg_iter* args,
+                        detail::endpoint_ptr const& endpoint);
 
 private:
+    void queue_unit_cmd(sc_msg_iter* args, detail::endpoint_ptr const& endpoint);
+
     void run_traced(void);
 
     sample get_constant(size_t index) { return static_cast<sc_synth_definition*>(class_ptr.get())->constants[index]; }

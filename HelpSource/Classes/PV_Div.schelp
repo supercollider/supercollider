@@ -44,15 +44,14 @@ p = Plotter.new;
 t = Task {
 	loop {
 		0.1.wait;
-		b.loadToFloatArray(action: {|data|
+		b.loadToFloatArray(action: { |data|
 			{
 			p.value = data[2..]
 				.clump(2)
-				.collect {|a| a[0].squared + a[1].squared }
-				.collect {|a| if(a.isNaN) { 0.post } { a } }
+				.collect { |a| a[0].squared + a[1].squared }
+				.collect { |a| if(a.isNaN) { 0.post } { a } }
 		}.defer
 		})
-}}.play;
+} }.play;
 )
 ::
-

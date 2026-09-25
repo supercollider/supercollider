@@ -61,6 +61,7 @@ public:
         DocOpen,
         DocOpenStartup,
         DocOpenSupportDir,
+        DocOpenExamplesDir,
         DocSave,
         DocSaveAs,
         DocSaveAsExtension,
@@ -165,7 +166,8 @@ public Q_SLOTS:
     void showSettings();
 
 signals:
-    void evaluateCode(const QString&, bool silent = true);
+    void evaluateCode(const QString&, bool silent = true, const QString* filePath = nullptr, int lineNumber = 0,
+                      int column = 0);
 
 public Q_SLOTS:
     void showStatusMessage(QString const& string);
@@ -173,6 +175,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void openStartupFile();
     void openUserSupportDirectory();
+    void openExamplesDirectory();
 
     void switchSession(Session* session);
     void saveSession(Session* session);

@@ -34,6 +34,7 @@ List : SequenceableCollection {
 	}
 
 	// accessing
+	indexOf { arg item; ^array.indexOf(item) }
 
 	at { arg i; ^array.at(i) }
 	clipAt { arg i; i = i.asInteger.clip(0, this.size - 1); ^array.at(i) }
@@ -48,6 +49,7 @@ List : SequenceableCollection {
 	add { arg item; array = array.add(item); }
 	addFirst { arg item; array = array.addFirst(item); }
 	insert { arg index, item; array = array.insert(index, item); }
+	boundedInsert { arg index, item; array = array.boundedInsert(index, item); }
 	removeAt { arg index; ^array.removeAt(index); }
 	pop { ^array.pop }
 	first { if (this.size > 0, { ^array.at(0) }, { ^nil }) }

@@ -28,14 +28,11 @@
 
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
-		var synth, synthDef, bytes, synthMsg, outUGen, server;
+	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds;
+		var server, synth, synthDef, bytes, synthMsg, outUGen;
 
 		server = Server.default;
-		if(server.serverRunning.not) {
-			(server.name.asString ++ " server not running!").postln;
-			^nil
-		};
+		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
@@ -46,6 +43,7 @@
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
 		server.sendMsg("/d_recv", bytes, synthMsg);
 		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
+		bounds !? { server.scopeWindow.bounds_(bounds) };
 		^synth
 	}
 

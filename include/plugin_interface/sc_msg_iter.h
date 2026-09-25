@@ -26,7 +26,7 @@
 #include <string.h>
 
 // return the ptr to the byte after the OSC string.
-inline const char* OSCstrskip(const char* str) {
+SC_INLINE const char* OSCstrskip(const char* str) {
     //	while (str[3]) { str += 4; }
     //	return str + 4;
     do {
@@ -36,31 +36,36 @@ inline const char* OSCstrskip(const char* str) {
 }
 
 // returns the number of bytes (including padding) for an OSC string.
-inline size_t OSCstrlen(const char* strin) { return (size_t)(OSCstrskip(strin) - strin); }
+SC_INLINE size_t OSCstrlen(const char* strin) { return (size_t)(OSCstrskip(strin) - strin); }
 
 // returns a float, converting an int if necessary
-inline float32 OSCfloat(const char* inData) {
+SC_INLINE float32 OSCfloat(const char* inData) {
     elem32 elem;
     elem.u = sc_ntohl(*(uint32*)inData);
     return elem.f;
 }
 
-inline int32 OSCint(const char* inData) { return (int32)sc_ntohl(*(uint32*)inData); }
+SC_INLINE int32 OSCint(const char* inData) { return (int32)sc_ntohl(*(uint32*)inData); }
 
-inline int64 OSCtime(const char* inData) {
+SC_INLINE int64 OSCtime(const char* inData) {
     return ((int64)sc_ntohl(*(uint32*)inData) << 32) + (sc_ntohl(*(uint32*)(inData + 4)));
 }
 
-inline float64 OSCdouble(const char* inData) {
+SC_INLINE float64 OSCdouble(const char* inData) {
     elem64 slot;
     slot.i = ((int64)sc_ntohl(*(uint32*)inData) << 32) + (sc_ntohl(*(uint32*)(inData + 4)));
     return slot.f;
 }
 
 struct sc_msg_iter {
-    const char *data, *rdpos, *endpos, *tags;
-    int size, count;
+    const char* data;
+    const char* rdpos;
+    const char* endpos;
+    const char* tags;
+    int32 size;
+    int32 count;
 
+#ifdef __cplusplus
     sc_msg_iter();
     sc_msg_iter(int inSize, const char* inData);
     void init(int inSize, const char* inData);
@@ -76,7 +81,10 @@ struct sc_msg_iter {
     size_t remain() { return (size_t)(endpos - rdpos); }
 
     char nextTag(char defaultTag = 'f') { return tags ? tags[count] : defaultTag; }
+#endif
 };
+
+#ifdef __cplusplus
 
 inline sc_msg_iter::sc_msg_iter() {}
 
@@ -301,3 +309,5 @@ inline void sc_msg_iter::skipb() {
     rdpos += len4;
     count++;
 }
+
+#endif // __cplusplus

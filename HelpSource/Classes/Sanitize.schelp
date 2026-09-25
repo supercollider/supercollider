@@ -15,4 +15,3 @@ Input signal to sanitize.
 
 argument:: replace
 The signal that replaces bad values.
-

@@ -36,6 +36,11 @@ http://en.wikipedia.org/wiki/System/390[System/390] architecture.
 #   define BOOST_ARCH_SYS390_AVAILABLE
 #endif
 
+#if BOOST_ARCH_SYS390
+#   undef BOOST_ARCH_WORD_BITS_32
+#   define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_SYS390_NAME "System/390"
 
 #endif

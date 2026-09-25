@@ -44,7 +44,7 @@ class TCPConnection : public std::enable_shared_from_this<TCPConnection>, privat
 public:
     using pointer = std::shared_ptr<TCPConnection>;
 
-    TCPConnection(boost::asio::io_service& ioService, int portNum, HandlerType);
+    TCPConnection(boost::asio::io_context& ioContext, int portNum, HandlerType);
 
     void start();
     auto& getSocket() { return mSocket; }
@@ -72,7 +72,9 @@ public:
     ~UDP() = default;
 
     auto RealPortNum() const { return mPortNum; }
+#ifndef __EMSCRIPTEN__
     auto& getSocket() { return mUdpSocket; }
+#endif
 
 private:
     void initHandler(HandlerType type);
@@ -82,9 +84,14 @@ private:
 
     int mPortNum;
     HandleDataFunc mHandleFunc;
+    static constexpr int receiveBufferSize = 4 * 1024 * 1024;
+    static constexpr int sendBufferSize = 4 * 1024 * 1024;
+    static constexpr int fallbackBufferSize = 1 * 1024 * 1024;
     std::array<char, kTextBufSize> mRecvBuffer;
+#ifndef __EMSCRIPTEN__
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
     boost::asio::ip::udp::socket mUdpSocket;
+#endif
 };
 
 class UDPCustom : public UDP {
@@ -118,10 +125,12 @@ public:
     typedef void (*ClientNotifyFunc)(void* clientData);
 
 public:
-    TCP(unsigned long inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = 0, void* clientData = 0);
+    TCP(std::uint64_t inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = 0, void* clientData = 0);
     int Close();
 
+#ifndef __EMSCRIPTEN__
     boost::asio::ip::tcp::socket& Socket() { return mSocket; }
+#endif
 
 private:
     void startReceive();
@@ -132,8 +141,10 @@ private:
     HandleDataFunc mHandleFunc;
     int32 mOSCMsgLength;
     std::unique_ptr<char[]> mData;
+#ifndef __EMSCRIPTEN__
     boost::asio::ip::tcp::socket mSocket;
     boost::asio::ip::tcp::endpoint mEndpoint;
+#endif
     ClientNotifyFunc mClientNotifyFunc;
     void* mClientData;
 };

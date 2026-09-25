@@ -1,0 +1,59 @@
+TITLE:: LinkJump
+summary:: UGen that jumps to a position within a quantum of the server's Link clock
+categories:: UGens>Clock, Streams-Patterns-Events
+related:: Classes/LinkClock, Classes/LinkTempo, Classes/LinkPhase
+
+DESCRIPTION::
+LinkJump jumps to a specific position within the quantum of a Link clock, either for the Link clock of the server or for all Link clocks on the network.
+
+code::
+// LinkJump runs on the server, so the server needs to be started
+s.boot;
+
+// start participating in a Link session - default is 1.0cps / 60bpm if no Link session is available
+LinkPhase.start;
+
+LinkPhase.setTempo(3.0);
+
+// a Link phase runs from [0, quantum) with the given cps
+(
+Ndef(\l, {
+	var env = Env.perc(0.0, 0.1).kr(gate: LinkPhase.kr(quantum: 2) < 0.5);
+	env * WhiteNoise.ar.dup * 0.2
+}).play;
+)
+
+(
+// this forces all clients to jump to beat 1.0 at quantum 4.0
+// the moment Dust triggers, which creates a jittery clock
+Ndef(\j, {
+	LinkJump.kr(
+		gate: Dust.kr(1.0),
+		beat: 1.0,
+		quantum: 4.0,
+		// all other clients need to follow us as well
+		force: 1.0,
+	);
+});
+)
+
+// back to normal
+Ndef(\j).clear;
+Ndef(\l).clear;
+::
+
+For further information on Link clock see LINK::Classes/LinkClock:: and the official Link documentation at https://ableton.github.io/link/ .
+
+CLASSMETHODS::
+
+METHOD:: kr
+If the server clock has not been enabled via CODE::LinkPhase.start::, it will return MATH::-1.0::, otherwise it will return MATH::0.0::.
+argument:: gate
+A gate signal MATH::>0:: will invoke a jump using the following arguments.
+argument:: beat
+This value MATH::b:: should be within MATH::0 \leq b < q::, where MATH::q:: is the provided quantum.
+argument:: quantum
+The quantum value for to identify the beat within the induced grid.
+argument:: force
+If force is MATH::> 0::, it will "rudely re-map the beat/time relationship for all peers in a session".
+Otherwise it will "attempt to map the given beat to the given time in the context of the given quantum", which behaves depending on if there are other clients within the network or not.

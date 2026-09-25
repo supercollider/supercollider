@@ -30,7 +30,7 @@ namespace ScIDE { namespace Settings {
 GeneralPage::GeneralPage(QWidget* parent): QWidget(parent), ui(new Ui::GeneralConfigPage) {
     ui->setupUi(this);
 
-    connect(ui->startSessionName, SIGNAL(textChanged(QString)), this, SLOT(onStartSessionNameChanged(QString)));
+    connect(ui->startSessionName, &QLineEdit::textChanged, this, &GeneralPage::onStartSessionNameChanged);
 }
 
 GeneralPage::~GeneralPage() { delete ui; }

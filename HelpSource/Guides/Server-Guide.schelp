@@ -83,5 +83,3 @@ t.startAliveThread( 0 );
 t.doWhenBooted({ "remote tcp server started".postln; t.notify; t.initTree });
 )
 ::
-
-

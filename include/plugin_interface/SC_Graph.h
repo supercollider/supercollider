@@ -24,42 +24,53 @@
 #include "SC_Rate.h"
 #include "SC_SndBuf.h"
 
-/*
- changes to this struct likely also mean that a change is needed for
-    static const int sc_api_version = x;
- value in SC_InterfaceTable.h file.
+enum { kGraph_Reblock = 0x1, kGraph_Resample = 0x2 };
+
+#define kGraph_ReblockOrResample (kGraph_Reblock | kGraph_Resample)
+
+/* NOTE: any changes to this struct cause an ABI break and therefore require
+ * bumping the plugin API version number in SC_InterfaceTable.h!
  */
 struct Graph {
     Node mNode;
+    int32 mRefCount;
+
+    uint32 mNumTicks;
+    uint32 mTickCounter;
+
+    uint32 mFlags;
+
+    Rate* mFullRate;
+    Rate* mBufRate;
 
     uint32 mNumWires;
-    struct Wire* mWire;
-
     uint32 mNumControls;
+
+    struct Wire* mWire;
     float* mControls;
     float** mMapControls;
     int32* mAudioBusOffsets;
 
     // try this for setting the rate of a control
-    int* mControlRates;
+    int32* mControlRates;
 
     uint32 mNumUnits;
-    struct Unit** mUnits;
-
     uint32 mNumCalcUnits;
+
+    struct Unit** mUnits;
     struct Unit** mCalcUnits; // excludes i-rate units.
 
-    int mSampleOffset;
+    int32 mSampleOffset;
+    float mSubsampleOffset;
+
     struct RGen* mRGen;
 
     struct Unit* mLocalAudioBusUnit;
     struct Unit* mLocalControlBusUnit;
 
-    float mSubsampleOffset;
-
     SndBuf* mLocalSndBufs;
-    int localBufNum;
-    int localMaxBufNum;
+    int32 localBufNum;
+    int32 localMaxBufNum;
 
     void* mPrivate;
 };

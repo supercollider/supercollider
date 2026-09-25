@@ -40,7 +40,7 @@ w.view.background = HiliteGradient(Color.red, Color.white, \h, 12, 0.5);
 // almost unnoticeable variations can be pleasant
 (
 w = Window.new.front;
-v = CompositeView(w, Rect(50,50,300,300));
+v = CompositeView(w, Rect(50, 50, 300, 300));
 c = Color.rand;
 d = c.vary(0.15);
 v.background = HiliteGradient(c, d, \v);

@@ -1,11 +1,12 @@
 class:: SplayAz
 summary:: Spreads an array of channels across a ring of channels
 categories:: UGens>Multichannel>Panners
-related:: Classes/Splay, Classes/PanAz, Classes/SelectXFocus
+related:: Classes/Splay, Classes/PanAz, Classes/SelectXFocus, Classes/LevelComp, Guides/Level_Compensation
 
 description::
 SplayAz spreads an array of channels across a ring of channels.
-Optional spread and center controls, and equal power levelCompensation.
+Optional spread and center controls, and flexible levelCompensation
+tunable for equal power and/or equal amplitude.
 numChans and orientation are as in link::Classes/PanAz::.
 
 code::
@@ -43,8 +44,22 @@ Should be zero if the front is a vertex of the polygon. The first
 speaker will be directly in front. Should be 0.5 if the front
 bisects a side of the polygon. Then the first speaker will be the
 one left of center.
+
 argument:: levelComp
-If true, the signal level is adjusted to maintain overall loudness the same (n.reciprocal.sqrt).
+a flag or numeric value:
+
+list::
+##code::true:: :  maintain equal power, keeping overall loudness the same.
+##code::false:: : off / no level change,
+##float between code::0.0:: and code::1.0:: : smooth tuning of levelComp factor:
+list::
+##code::0.0:: is none -> factor 1
+##code::0.5:: is equal power -> factor (1/n).squared
+##code::1.0:: is equal amplitude -> factor (1/n)
+::
+::
+
+See link::Classes/LevelComp:: for full discussion.
 
 method:: arFill
 argument:: numChans
@@ -63,10 +78,10 @@ argument:: levelComp
 examples::
 code::
 (
-x = { arg spread=1, level=0.2, width=2, center=0.0;
+x = { |spread = 1, level = 0.2, width = 2, center = 0.0|
  SplayAz.ar(
   4,
-  SinOsc.ar( { |i| LFNoise2.kr( rrand(10, 20), 200, i + 3 * 100) } ! 10),
+  SinOsc.ar({ |i| LFNoise2.kr(rrand(10, 20), 200, i + 3 * 100) } ! 10),
   spread,
   level,
   width,
@@ -88,11 +103,11 @@ x.free;
 
  // the same example written with arFill:
 (
-x = { arg spread=1, level=0.5, width=2, center=0.0;
+x = { |spread = 1, level = 0.5, width = 2, center = 0.0|
  SplayAz.arFill(
   4,
   10,
-  { |i| SinOsc.ar( LFNoise2.kr( rrand(10, 20), 200, i + 3 * 100) ) },
+  { |i| SinOsc.ar(LFNoise2.kr(rrand(10, 20), 200, i + 3 * 100)) },
   spread,
   level,
   width,
@@ -104,7 +119,7 @@ x = { arg spread=1, level=0.5, width=2, center=0.0;
  // or with mouse control
 (
 x = { var src;
- src = SinOsc.ar( { |i| LFNoise2.kr( rrand(10, 20), 200, i * 100 + 400) } ! 10);
+ src = SinOsc.ar({ |i| LFNoise2.kr(rrand(10, 20), 200, i * 100 + 400) } ! 10);
  SplayAz.ar(4, src, MouseY.kr(1, 0), 0.2, center: MouseX.kr(-1, 1));
 }.scope;
 )

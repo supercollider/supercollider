@@ -622,7 +622,7 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_backref()
    if(index >= hash_value_mask)
    {
       named_subexpressions::range_type r = re.get_data().equal_range(index);
-      BOOST_ASSERT(r.first != r.second);
+      BOOST_REGEX_ASSERT(r.first != r.second);
       do
       {
          index = r.first->index;

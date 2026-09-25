@@ -45,7 +45,17 @@ namespace BOOST_REGEX_DETAIL_NS{
 //
 // error checking API:
 //
-BOOST_REGEX_DECL void BOOST_REGEX_CALL verify_options(boost::regex_constants::syntax_option_type ef, match_flag_type mf);
+inline void BOOST_REGEX_CALL verify_options(boost::regex_constants::syntax_option_type, match_flag_type mf)
+{
+   //
+   // can't mix match_extra with POSIX matching rules:
+   //
+   if ((mf & match_extra) && (mf & match_posix))
+   {
+      std::logic_error msg("Usage Error: Can't mix regular expression captures with POSIX matching rules");
+      throw_exception(msg);
+   }
+}
 //
 // function can_start:
 //
@@ -88,7 +98,7 @@ inline bool can_start(unsigned int c, const unsigned char* map, unsigned char ma
 
 //
 // Unfortunately Rogue Waves standard library appears to have a bug
-// in std::basic_string::compare that results in eroneous answers
+// in std::basic_string::compare that results in erroneous answers
 // in some cases (tested with Borland C++ 5.1, Rogue Wave lib version
 // 0x020101) the test case was:
 // {39135,0} < {0xff,0}
@@ -375,7 +385,7 @@ class perl_matcher
 public:
    typedef typename traits::char_type char_type;
    typedef perl_matcher<BidiIterator, Allocator, traits> self_type;
-   typedef bool (self_type::*matcher_proc_type)(void);
+   typedef bool (self_type::*matcher_proc_type)();
    typedef std::size_t traits_size_type;
    typedef typename is_byte<char_type>::width_type width_type;
    typedef typename regex_iterator_traits<BidiIterator>::difference_type difference_type;
@@ -633,4 +643,3 @@ private:
 #include <boost/regex/v4/perl_matcher_common.hpp>
 
 #endif
-

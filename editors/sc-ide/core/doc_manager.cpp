@@ -27,7 +27,6 @@
 #include "util/standard_dirs.hpp"
 
 #include <QPlainTextDocumentLayout>
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
@@ -57,7 +56,7 @@ Document::Document(bool isPlainText, const QByteArray& id, const QString& title,
     mTmpCoalCount = 0;
     mTmpCoalTimer.setInterval(RESTORE_COAL_MSECS);
     mTmpCoalTimer.setSingleShot(true);
-    connect(&mTmpCoalTimer, SIGNAL(timeout()), this, SLOT(onTmpCoalUsecs()));
+    connect(&mTmpCoalTimer, &QTimer::timeout, this, &Document::onTmpCoalUsecs);
 
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
@@ -69,8 +68,7 @@ Document::Document(bool isPlainText, const QByteArray& id, const QString& title,
     if (!isPlainText)
         mHighlighter = new SyntaxHighlighter(mDoc);
 
-    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)), this,
-            SLOT(applySettings(Settings::Manager*)));
+    connect(Main::instance(), &Main::applySettingsRequest, this, &Document::applySettings);
 
     applySettings(Main::settings());
 }
@@ -126,15 +124,11 @@ void Document::setIndentWidth(int numSpaces) {
     mIndentWidth = numSpaces;
 
     QFontMetricsF fontMetrics(mDoc->defaultFont());
-    qreal tabStop = fontMetrics.width(' ') * numSpaces;
+    qreal tabStop = fontMetrics.horizontalAdvance(' ') * numSpaces;
 
     QTextOption options = mDoc->defaultTextOption();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     options.setTabStopDistance(tabStop);
-#else
-    options.setTabStop(tabStop);
-#endif
 
     mDoc->setDefaultTextOption(options);
 }
@@ -261,9 +255,9 @@ DocumentManager::DocumentManager(Main* main, Settings::Manager* settings):
     mGlobalKeyDownEnabled(false),
     mGlobalKeyUpEnabled(false) {
     mDocumentModel = new QStandardItemModel(this);
-    connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
+    connect(&mFsWatcher, &QFileSystemWatcher::fileChanged, this, &DocumentManager::onFileChanged);
 
-    connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)), this, SLOT(storeSettings(Settings::Manager*)));
+    connect(main, &Main::storeSettingsRequest, this, &DocumentManager::storeSettings);
 
     loadRecentDocuments(settings);
 }
@@ -278,14 +272,14 @@ Document* DocumentManager::createDocument(bool isPlainText, const QByteArray& id
     item->setData(QVariant::fromValue(doc));
     mDocumentModel->appendRow(item);
     QTextDocument* tdoc = doc->textDocument();
-    connect(tdoc, SIGNAL(modificationChanged(bool)), doc, SLOT(onModificationChanged(bool)));
+    connect(tdoc, &QTextDocument::modificationChanged, doc, &Document::onModificationChanged);
     return doc;
 }
 
 void DocumentManager::create() {
     Document* doc = createDocument();
 
-    connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
+    connect(doc->textDocument(), &QTextDocument::contentsChanged, doc, &Document::storeTmpFile);
     syncLangDocument(doc);
     Q_EMIT(opened(doc, 0, 0));
 }
@@ -347,7 +341,7 @@ Document* DocumentManager::open(const QString& path, int initialCursorPosition, 
     doc->setTitle(fileTitle);
     doc->mSaveTime = info.lastModified();
     doc->setInitialSelection(initialCursorPosition, selectionLength);
-    connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
+    connect(doc->textDocument(), &QTextDocument::contentsChanged, doc, &Document::storeTmpFile);
 
     if (!isRTF)
         mFsWatcher.addPath(cpath);
@@ -415,7 +409,7 @@ void DocumentManager::restore() {
         doc->mTmpFilePath = path;
         syncLangDocument(doc);
         Q_EMIT(opened(doc, 0, 0));
-        connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
+        connect(doc->textDocument(), &QTextDocument::contentsChanged, doc, &Document::storeTmpFile);
     }
 }
 
@@ -434,7 +428,11 @@ Document* DocumentManager::documentForId(const QByteArray docID) {
 
 QString DocumentManager::decodeDocument(const QByteArray& bytes) {
     QTextStream stream(bytes);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     stream.setCodec("UTF-8");
+#else
+    stream.setEncoding(QStringConverter::Utf8);
+#endif
     stream.setAutoDetectUnicode(true);
     return stream.readAll();
 }
@@ -711,6 +709,7 @@ void DocumentManager::handleDocListScRequest() {
         command = command.append(docData);
     }
     command = command.append("]);");
+    command = command.append(QStringLiteral("ScIDE.prSignalHandshakeCond;"));
     Main::evaluateCode(command, true);
 }
 
@@ -752,7 +751,7 @@ void DocumentManager::handleOpenFileScRequest(const QString& data) {
             open(QString(path.c_str()), position, selectionLength, true, id.c_str(), false);
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << endl;
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << "\n";
         return;
     }
 }
@@ -780,7 +779,7 @@ void DocumentManager::handleGetDocTextScRequest(const QString& data) {
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << endl;
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << "\n";
         return;
     }
 }
@@ -802,15 +801,15 @@ void DocumentManager::handleSetDocTextScRequest(const QString& data) {
             if (document) {
                 // avoid a loop
                 if (document == mCurrentDocument) {
-                    disconnect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this,
-                               SLOT(updateCurrentDocContents(int, int, int)));
+                    disconnect(document->textDocument(), &QTextDocument::contentsChange, this,
+                               &DocumentManager::updateCurrentDocContents);
                 }
 
                 document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
 
                 if (document == mCurrentDocument) {
-                    connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this,
-                            SLOT(updateCurrentDocContents(int, int, int)));
+                    connect(document->textDocument(), &QTextDocument::contentsChange, this,
+                            &DocumentManager::updateCurrentDocContents);
                 }
 
                 // Only execute a call if a function name was passed.
@@ -1161,12 +1160,12 @@ void DocumentManager::syncLangDocument(Document* doc) {
 
 void DocumentManager::setActiveDocument(Document* document) {
     if (mCurrentDocument)
-        disconnect(mCurrentDocument->textDocument(), SIGNAL(contentsChange(int, int, int)), this,
-                   SLOT(updateCurrentDocContents(int, int, int)));
+        disconnect(mCurrentDocument->textDocument(), &QTextDocument::contentsChange, this,
+                   &DocumentManager::updateCurrentDocContents);
     if (document) {
         mCurrentDocumentPath = document->filePath();
-        connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this,
-                SLOT(updateCurrentDocContents(int, int, int)));
+        connect(document->textDocument(), &QTextDocument::contentsChange, this,
+                &DocumentManager::updateCurrentDocContents);
         mCurrentDocument = document;
     } else {
         mCurrentDocumentPath.clear();
@@ -1187,9 +1186,11 @@ void DocumentManager::sendActiveDocument() {
         } else {
             command = command.append(QStringLiteral("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
         }
+        command = command.append(QStringLiteral("ScIDE.prSignalHandshakeCond;"));
         Main::evaluateCodeIfCompiled(command, true);
     } else
-        Main::evaluateCodeIfCompiled(QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil;"), true);
+        Main::evaluateCodeIfCompiled(
+            QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil; ScIDE.prSignalHandshakeCond;"), true);
 }
 
 void DocumentManager::updateCurrentDocContents(int position, int charsRemoved, int charsAdded) {

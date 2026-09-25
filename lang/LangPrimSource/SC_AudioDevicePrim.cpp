@@ -42,7 +42,7 @@ int listDevices(VMGlobals* g, int type) {
     propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
     propertyAddress.mElement = kAudioObjectPropertyElementMaster;
 
-    //	unsigned long count;
+    //	std::uint64_t count;
     UInt32 count;
     //    OSStatus err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
     OSStatus err = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count);
@@ -180,8 +180,10 @@ int listDevices(VMGlobals* g, int type) {
 int prListAudioDevices(VMGlobals* g, int numArgsPushed) {
     int in = 0;
     int out = 0;
-    slotIntVal(g->sp, &out);
-    slotIntVal(g->sp - 1, &in);
+    if (slotIntVal(g->sp, &out))
+        assert(false);
+    if (slotIntVal(g->sp - 1, &in))
+        assert(false);
 
     int type;
     if (in && out)

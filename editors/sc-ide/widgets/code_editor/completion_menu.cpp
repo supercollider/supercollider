@@ -20,9 +20,10 @@
 
 #include "completion_menu.hpp"
 
-#include <QDebug>
 #include <QKeyEvent>
 #include <QApplication>
+
+#include "main.hpp"
 
 namespace ScIDE {
 
@@ -48,8 +49,25 @@ CompletionMenu::CompletionMenu(QWidget* parent): PopUpWidget(parent), mCompletio
     mLayout->addWidget(mTextBrowser);
     mLayout->setContentsMargins(1, 1, 1, 1);
 
-    connect(mListView, SIGNAL(clicked(QModelIndex)), this, SLOT(accept()));
-    connect(mTextBrowser, SIGNAL(anchorClicked(const QUrl)), this, SLOT(onAnchorClicked(const QUrl)));
+    auto parentFont = parent->font();
+    parentFont.setPointSizeF(parentFont.pointSizeF() * 0.8f);
+    mListView->setFont(parentFont);
+
+    // modify font of help window so it is relative to the size of the editor font
+    auto browserFont = mTextBrowser->font();
+    browserFont.setPointSizeF(parentFont.pointSizeF() * 0.8f);
+    mTextBrowser->setFont(browserFont);
+
+    // set links to match the color of symbol as highlight color
+    // inject this via a style sheet
+    const auto& classFontColor = Main::settings()->getThemeVal("symbol").foreground().color();
+    mTextBrowser->document()->setDefaultStyleSheet(QStringLiteral("a { color: rgb(%1, %2, %3) }")
+                                                       .arg(classFontColor.red())
+                                                       .arg(classFontColor.green())
+                                                       .arg(classFontColor.blue()));
+
+    connect(mListView, &QListView::clicked, this, &CompletionMenu::accept);
+    connect(mTextBrowser, &CompletionTextBrowser::anchorClicked, this, &CompletionMenu::onAnchorClicked);
 
     mListView->setFocus(Qt::OtherFocusReason);
 
@@ -60,7 +78,7 @@ void CompletionMenu::addItem(QStandardItem* item) { mModel->appendRow(item); }
 
 void CompletionMenu::adapt() {
     mListView->setFixedWidth(mListView->sizeHintForColumn(0));
-    resize(0, 0);
+    adjustSize();
 }
 
 void CompletionMenu::addInfo(QString info) {

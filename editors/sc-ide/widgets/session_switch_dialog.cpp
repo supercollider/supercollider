@@ -50,7 +50,7 @@ SessionSwitchDialog::SessionSwitchDialog(QWidget* parent): QDialog(parent) {
     if (currentSessionIndex != -1)
         mSessions->setCurrentRow(currentSessionIndex);
 
-    connect(mSessions, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(onItemActivated(QListWidgetItem*)));
+    connect(mSessions, &QListWidget::itemActivated, this, &SessionSwitchDialog::onItemActivated);
 }
 
 void SessionSwitchDialog::onItemActivated(QListWidgetItem* item) { accept(); }

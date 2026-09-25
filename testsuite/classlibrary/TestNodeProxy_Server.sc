@@ -11,8 +11,7 @@ TestNodeProxy_Server : UnitTest {
 
 	tearDown {
 		proxy.clear;
-		server.sync;
-		server.quit;
+		server.quitSync;
 		server.remove;
 	}
 
@@ -80,13 +79,13 @@ TestNodeProxy_Server : UnitTest {
 
 	test_loaded_after_quit {
 		proxy.send;
-		server.quit;
+		server.quitSync;
 		this.assertEquals(proxy.loaded, false, "NodeProxy should not be loaded after server quit");
 	}
 
 	test_send_after_quit {
 		proxy.send;
-		server.quit;
+		server.quitSync;
 		proxy.send;
 		this.assertEquals(proxy.loaded, false, "After server quit, sending should not set node as loaded");
 	}
@@ -95,7 +94,7 @@ TestNodeProxy_Server : UnitTest {
 		var build;
 
 		proxy.source = { build = true; Silent.ar };
-		server.quit;
+		server.quitSync;
 		proxy.rebuild;
 		this.assertEquals(build, true, "After server quit, rebuilding NodeProxy should rebuild SynthDef");
 	}
@@ -156,14 +155,22 @@ TestNodeProxy_Server : UnitTest {
 	}
 
 	test_schedAfterFade_notBeforeQuant {
-		var ok = true, earlierThan = 0.01;
+		var ok = true, earlierThan = 0.05, cond = Condition();
+		var betweenFadeAndQuant;
 		proxy.source = { Silent.ar };
 		proxy.fadeTime = 0.1;
 		proxy.clock = TempoClock.new(1);
 		proxy.quant = 1.0;
-		0.2.wait;
-		proxy.schedAfterFade { ok = false };
-		(proxy.fadeTime + proxy.server.latency + 1.0 - 0.2 - earlierThan).wait;
+		betweenFadeAndQuant = 0.2; // fadeTime < betweenFadeAndQuant < quant
+		{
+			var schedOk = true;
+			betweenFadeAndQuant.wait;
+			proxy.schedAfterFade { schedOk = false };
+			(proxy.fadeTime + proxy.server.latency + proxy.quant - betweenFadeAndQuant - earlierThan).wait;
+			ok = schedOk;
+			cond.unhang;
+		}.fork(proxy.clock);
+		cond.hang;
 		this.assert(ok, "schedAfterFade should not happened before quant and fadeTime");
 	}
 

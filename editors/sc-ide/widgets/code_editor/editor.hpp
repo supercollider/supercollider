@@ -20,9 +20,11 @@
 
 #pragma once
 
+#include <QGestureEvent>
 #include <QPlainTextEdit>
 #include <QGraphicsScene>
 #include <QList>
+#include <QRegularExpression>
 
 namespace ScIDE {
 
@@ -56,14 +58,17 @@ public:
     QTextDocument* textDocument() { return QPlainTextEdit::document(); }
     bool showWhitespace();
     bool showLinenumber();
-    bool find(const QRegExp& expr, QTextDocument::FindFlags options = 0);
-    bool replace(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options = 0);
-    int findAll(const QRegExp& expr, QTextDocument::FindFlags options = 0);
-    int replaceAll(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options = 0);
+    bool find(const QRegularExpression& expr, QTextDocument::FindFlags options);
+    bool replace(const QRegularExpression& expr, const QString& replacement, QTextDocument::FindFlags options);
+    int findAll(const QRegularExpression& expr, QTextDocument::FindFlags options);
+    int replaceAll(const QRegularExpression& expr, const QString& replacement, QTextDocument::FindFlags options);
 
     void showPosition(int charPosition, int selectionLength = 0);
     QString symbolUnderCursor();
+    bool gestureEvent(QGestureEvent* event);
     int inactiveFadeAlpha() { return mInactiveFadeAlpha; }
+
+    static float clampFontSize(float newSize);
 
 protected:
     virtual bool event(QEvent*);
@@ -115,6 +120,7 @@ protected:
     virtual void indentCurrentRegion() {}
 
     void zoomFont(int steps);
+    void zoomFont(float scaler);
 
     void copyUpDown(bool up);
     void moveLineUpDown(bool up);

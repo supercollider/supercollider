@@ -160,8 +160,8 @@ EXAMPLES::
 code::
 HID.findAvailable; // find available devices
 HID.postAvailable; // post available devices
-~myhid = HID.open( 1103, 53251 ); // open a device
+~myhid = HID.open(1103, 53251); // open a device
 ~myhid.postElements; // post available elements
-//Set actions for the second element:
-~myhid.elements[1].action = { |...args| args.postln; };
+// Set actions for the second element:
+~myhid.elements[1].action = { |...args| args.postln };
 ::

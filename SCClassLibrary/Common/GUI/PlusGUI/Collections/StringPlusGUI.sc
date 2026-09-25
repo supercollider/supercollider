@@ -40,14 +40,6 @@
 	drawInRect { arg rect, font, color;
 		Pen.stringInRect( this, rect, font, color )
 	}
-	prDrawAtPoint { arg point, font, color;
-		_String_DrawAtPoint
-		^this.primitiveFailed
-	}
-	prDrawInRect { arg rect, font, color;
-		_String_DrawInRect
-		^this.primitiveFailed
-	}
 	drawCenteredIn { arg rect, font, color;
 		Pen.stringCenteredIn( this, rect, font, color )
 	}
@@ -72,10 +64,6 @@
 		},{
 			^GUI.stringBounds(this, font)
 		});
-	}
-	prBounds { arg rect, font;
-		_String_GetBounds
-		^this.primitiveFailed
 	}
 
 

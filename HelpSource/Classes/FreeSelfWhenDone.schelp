@@ -51,23 +51,22 @@ output
 // record for four seconds
 b = Buffer.alloc(s, 44100 * 4.0, 1);
 (
-SynthDef("help-RecordBuf",{ arg out=0,bufnum=0;
+SynthDef("help-RecordBuf", { |out = 0, bufnum = 0|
 	var formant, recbuf;
-	formant = Formant.ar(XLine.kr(400,1000, 4), 2000, 800, 0.125);
+	formant = Formant.ar(XLine.kr(400, 1000, 4), 2000, 800, 0.125);
 	recbuf = RecordBuf.ar(formant, bufnum, recLevel: Line.kr(1, 1), loop: 0);
 	// The RecordBuf doesn't loop, so you can check it for 'done' status
 	FreeSelfWhenDone.kr(recbuf);
-}).play(s,[\out, 0, \bufnum, b]);
+}).play(s, [\out, 0, \bufnum, b]);
 )
 
 // play it back
 (
-SynthDef("help-RecordBuf play",{ arg out=0,bufnum=0;
+SynthDef("help-RecordBuf play", { |out = 0, bufnum = 0|
 	var playbuf;
-	playbuf = PlayBuf.ar(1,bufnum);
+	playbuf = PlayBuf.ar(1, bufnum);
 	FreeSelfWhenDone.kr(playbuf); // frees the synth when the PlayBuf is finished
 	Out.ar(out, playbuf);
-}).play(s,[\out, 0, \bufnum, b]);
+}).play(s, [\out, 0, \bufnum, b]);
 )
 ::
-

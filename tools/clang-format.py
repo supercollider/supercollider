@@ -118,8 +118,8 @@ except ImportError:  # Forced testing
 # Constants
 #
 
-CLANG_FORMAT_ACCEPTED_VERSION_REGEX = re.compile("8\\.\\d+\\.\\d+")
-CLANG_FORMAT_ACCEPTED_VERSION_STRING = "8.y.z"
+CLANG_FORMAT_ACCEPTED_VERSION_REGEX = re.compile("14\\.\\d+\\.\\d+")
+CLANG_FORMAT_ACCEPTED_VERSION_STRING = "14.y.z"
 
 # all the extensions we format with clang-format in SC (no JS!)
 CLANG_FORMAT_FILES_REGEX = re.compile('\\.(cpp|hpp|h|c|m|mm)$')
@@ -586,6 +586,20 @@ occurs.
 
     options.clang_format = resolve_program_name(options.clang_format, 'SC_CLANG_FORMAT', 'clang-format')
     options.clang_format_diff = resolve_program_name(options.clang_format_diff, 'SC_CLANG_FORMAT_DIFF', 'clang-format-diff.py')
+
+    # in CI we want to replace the 'lint' and 'format' command with a full scan
+    # to obtain a full stateless scan of the repository.
+    # We do this by passing an env variable, see `.pre-commit-config.yaml`
+    # and github actions workflow
+    if os.environ.get("FULL_CHECK") is not None:
+        print("Found FULL_CHECK environment variable. Perform a full scan")
+        if options.command == 'lint':
+            options.command = 'lintall'
+        elif options.command == 'format':
+            options.command = 'formatall'
+        else:
+            print("FULL_CHECK is only compatible with 'format' and 'lint' commands")
+            sys.exit(1)
 
     try:
         if options.command == 'lint' or options.command == 'format':

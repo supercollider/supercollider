@@ -17,7 +17,7 @@ When a Server is booted, there is a top level group with an ID of 0 that
 defines the root of the tree. This is represented by a subclass of Group:
 link::Classes/RootNode::.
 
-sclang has the notion of a "default group," which is automatically created when
+sclang has the notion of a "default group, " which is automatically created when
 the server is booted. This group is the default enclosing group for all Nodes,
 i.e. it's what you get if you don't specify. In general you should create new
 Nodes within the default group of a Server rather than in its RootNode.
@@ -91,7 +91,7 @@ discussion::
 code::
 s.boot;
 g = Group.basicNew(s); // Create without sending
-s.sendBundle(nil, g.newMsg;); // Now send a message; create at the head of s' default group
+s.sendBundle(nil, g.newMsg); // Now send a message; create at the head of s' default group
 s.queryAllNodes;
 g.free;
 ::
@@ -150,15 +150,15 @@ code::
 s.boot;
 
 (
-SynthDef("help-Group-moto-rev", { arg out=0,freq=100,ffreq=120;
+SynthDef("help-Group-moto-rev", { |out = 0, freq = 100, ffreq = 120|
 	var x;
-	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, freq), [0,0.1], 0.1),
+	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, freq), [0, 0.1], 0.1),
 		ffreq, 0.1).clip2(0.4);
 	Out.ar(out, x);
 }).add;
 
 
-SynthDef("help-Group-wah", { arg out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1;
+SynthDef("help-Group-wah", { |out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq = 0.1|
 	var zin, zout, q;
 
 	zin = In.ar(out, 2);
@@ -169,7 +169,7 @@ SynthDef("help-Group-wah", { arg out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq
 		* 0.15;
 
 	// replace the incoming bus with the effected version
-	ReplaceOut.ar( out , zout );
+	ReplaceOut.ar(out, zout);
 
 }).add;
 )
@@ -177,23 +177,23 @@ SynthDef("help-Group-wah", { arg out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq
 g = Group.new;
 
 (
-l = Array.fill(3,{
+l = Array.fill(3, {
 	// random freq for each synth, added to g at the head
-	Synth("help-Group-moto-rev",["out",0,"freq",rrand(10,120)],g,\addToHead);
+	Synth("help-Group-moto-rev", ["out", 0, "freq", rrand(10, 120)], g, \addToHead);
 });
 )
 
 // set all controls that match "ffreq" in all nodes in g to 90
-g.set("ffreq",300);
+g.set("ffreq", 300);
 
-g.set("freq",80);
+g.set("freq", 80);
 
 // since we stored the Synths in an Array, we can also control them individually
 (
 r = Routine({
 	inf.do({
-		l.do({ arg node;
-			node.set("freq",rrand(10,120));
+		l.do({ |node|
+			node.set("freq", rrand(10, 120));
 			1.0.wait;
 		});
 	})
@@ -206,7 +206,7 @@ r.play;
 g.group.inspect;
 
 // asking a wah to go order-of-execution after g, in the same group as g.
-x = Synth.after(g,"help-Group-wah",["out",0]);
+x = Synth.after(g, "help-Group-wah", ["out", 0]);
 
 // now dump my tree to confirm
 g.dumpTree;
@@ -229,30 +229,30 @@ g.query;
 (
 3.do({
 	// random freq for each synth, added to g at the head
-	Synth("help-Group-moto-rev",["out",0,"freq",rrand(10,1200)],g,\addToHead);
+	Synth("help-Group-moto-rev", ["out", 0, "freq", rrand(10, 1200)], g, \addToHead);
 });
 )
 
 // now query my tree and post a graph of it (duplicates dumpTree)
 // msg format is ['/g_querytree.reply', node1-ID, numChildren, defName, child1-ID, numChildren, ...]
 (
-g.queryTree({|msg|
-   var i = 1, tabs = 0, dumpFunc;
-   ("NODE TREE Group" + msg[1]).postln;
-   if(msg[2] > 0, {
-       dumpFunc = {|numChildren|
-           tabs = tabs + 1;
-           numChildren.do({
-               i = i + 3;
-               tabs.do({ "   ".post });
-               msg[i].post;
-               (" " ++ msg[i + 2]).postln;
-               if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });
-           });
-           tabs = tabs - 1;
-       };
-       dumpFunc.value(msg[2]);
-   });
+g.queryTree({ |msg|
+	var i = 1, tabs = 0, dumpFunc;
+	("NODE TREE Group" + msg[1]).postln;
+	if(msg[2] > 0, {
+		dumpFunc = { |numChildren|
+			tabs = tabs + 1;
+			numChildren.do({
+				i = i + 3;
+				tabs.do({ "   ".post });
+				msg[i].post;
+				(" " ++ msg[i + 2]).postln;
+				if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });
+			});
+			tabs = tabs - 1;
+		};
+		dumpFunc.value(msg[2]);
+	});
 });
 )
 
@@ -262,4 +262,3 @@ g.free;
 // see, I'm gone
 g.query;
 ::
-

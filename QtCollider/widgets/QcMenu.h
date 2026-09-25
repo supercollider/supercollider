@@ -49,7 +49,7 @@ class QcAction : public QAction {
 public:
     QcAction();
 
-    Q_PROPERTY(const QtCollider::SharedImage& icon READ icon WRITE setIcon);
+    Q_PROPERTY(const QSharedPointer<QtCollider::Image>& icon READ icon WRITE setIcon);
     Q_PROPERTY(QMenu* menu READ menu WRITE setMenu);
     Q_PROPERTY(QString shortcut READ shortcut WRITE setShortcut);
     Q_PROPERTY(bool separator READ isSeparator WRITE setSeparator);
@@ -98,6 +98,15 @@ public:
     Q_INVOKABLE void removeAction(QAction* action);
 
     Q_INVOKABLE void clear() { QMenu::clear(); }
+
+#ifdef Q_OS_MAC
+protected:
+    void showEvent(QShowEvent* event) override;
+    bool event(QEvent* event) override;
+
+private:
+    bool m_actionTriggered = false;
+#endif
 };
 
 class QcToolBar : public QToolBar {

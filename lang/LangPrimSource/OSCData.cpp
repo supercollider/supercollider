@@ -18,6 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "ClassLibraryInfo.hpp"
+#include "PyrLexer.h"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #include "PyrInterpreter.h"
@@ -42,6 +44,7 @@
 #include "SC_Msg.h"
 #include "SC_SndBuf.h"
 #include "SC_WorldOptions.h"
+#include "ClassLibraryInfo.hpp"
 
 #include <boost/asio.hpp>
 
@@ -55,8 +58,10 @@
 
 #endif
 
+extern ClassLibraryInfo gClassLibraryInfo;
+
 struct InternalSynthServerGlobals {
-    struct World* mWorld;
+    World* mWorld;
     int mNumSharedControls;
     float* mSharedControls;
 };
@@ -71,17 +76,37 @@ std::unique_ptr<InPort::UDP> gUDPport {};
 
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
-PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr, *s_recvrawmsg;
-extern bool compiledOK;
+PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr, *s_recvrawmsg, *s_ipv4, *s_ipv6, *s_all;
+extern ClassLibraryInfo gClassLibraryInfo;
 
 std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomUdpPorts;
 std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomTcpPorts;
 
 ///////////
 
-inline bool IsBundle(char* ptr) { return strcmp(ptr, "#bundle") == 0; }
+inline bool IsBundle(const char* ptr) { return strcmp(ptr, "#bundle") == 0; }
+inline bool IsMessage(const char* ptr) { return ptr[0] == '/'; }
 
 ///////////
+
+static void closeSocket(int socket) {
+#ifdef _WIN32
+    closesocket(socket);
+#else
+    close(socket);
+#endif
+}
+
+static void printLastSocketError(const char* name) {
+#ifdef _WIN32
+    int err = WSAGetLastError();
+#else
+    int err = errno;
+#endif
+    error("%s failed with error code %d.\n", name, err);
+}
+
+//////////
 
 const int ivxNetAddr_Hostaddr = 0;
 const int ivxNetAddr_PortID = 1;
@@ -235,8 +260,8 @@ static int makeSynthMsgWithTags(big_scpacket* packet, PyrSlot* slots, int size) 
     return errNone;
 }
 
-void PerformOSCBundle(int inSize, char* inData, PyrObject* inReply, int inPortNum);
-void PerformOSCMessage(int inSize, char* inData, PyrObject* inReply, int inPortNum, double time);
+void PerformOSCBundle(int inSize, const char* inData, PyrObject* inReply, int inPortNum);
+void PerformOSCMessage(int inSize, const char* inData, PyrObject* inReply, int inPortNum, double time);
 static PyrObject* ConvertReplyAddress(ReplyAddress* inReply);
 
 static void localServerReplyFunc(struct ReplyAddress* inReplyAddr, char* inBuf, int inSize) {
@@ -244,7 +269,7 @@ static void localServerReplyFunc(struct ReplyAddress* inReplyAddr, char* inBuf, 
     bool isBundle = IsBundle(inBuf);
 
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         PyrObject* replyObj = ConvertReplyAddress(inReplyAddr);
         if (isBundle) {
             PerformOSCBundle(inSize, inBuf, replyObj, gUDPport->RealPortNum());
@@ -284,12 +309,12 @@ int makeSynthBundle(big_scpacket* packet, PyrSlot* slots, int size, bool useElap
     return errNone;
 }
 
+#ifndef __EMSCRIPTEN__
 static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sendMsgLen = true) {
     using namespace boost::asio;
 
     if (IsPtr(netAddrObj->slots + ivxNetAddr_Socket)) {
         auto comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
-
         // send TCP
         ip::tcp::socket& socket = comPort->Socket();
 
@@ -310,7 +335,6 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         }
 
         return errNone;
-
     } else {
         if (gUDPport == nullptr)
             return errFailed;
@@ -323,11 +347,11 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
             return err;
 
         if (addr == 0) {
-#ifndef NO_INTERNAL_SERVER
+#    ifndef NO_INTERNAL_SERVER
             if (gInternalSynthServer.mWorld) {
                 World_SendPacket(gInternalSynthServer.mWorld, msglen, bufptr, &localServerReplyFunc);
             }
-#endif
+#    endif
             return errNone;
         }
 
@@ -336,8 +360,7 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         if (err)
             return err;
 
-        unsigned long ulAddress = (unsigned int)addr;
-
+        std::uint64_t ulAddress = (unsigned int)addr;
         using namespace boost::asio;
         ip::udp::endpoint address(ip::address_v4(ulAddress), port);
 
@@ -346,6 +369,10 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
 
     return errNone;
 }
+#else
+// forward declaration - implementation is in SC_WasmClient.cpp
+int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sendMsgLen = true);
+#endif
 
 
 ///////////
@@ -356,10 +383,8 @@ inline size_t OSCStrLen(char* str) { return (strlen(str) + 4) & ~3; }
 int makeSynthBundle(big_scpacket* packet, PyrSlot* slots, int size, bool useElapsed);
 
 static void netAddrTcpClientNotifyFunc(void* clientData) {
-    extern bool compiledOK;
-
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         PyrObject* netAddrObj = (PyrObject*)clientData;
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
@@ -385,7 +410,7 @@ static int prNetAddr_Connect(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    unsigned long ulAddress = (unsigned int)addr;
+    std::uint64_t ulAddress = (unsigned int)addr;
 
     try {
         OutPort::TCP* comPort =
@@ -438,7 +463,7 @@ static int prNetAddr_SendBundle(VMGlobals* g, int numArgsPushed) {
     int err = slotDoubleVal(args, &time);
     if (!err) {
         time += slotRawFloat(&g->thread->seconds);
-        SetFloat(args, time);
+        SetFloat<AssertDouble::Okay>(args, time);
     }
     int numargs = numArgsPushed - 1;
     makeSynthBundle(&packet, args, numargs, true);
@@ -468,7 +493,11 @@ static int prNetAddr_SendRaw(VMGlobals* g, int numArgsPushed) {
 static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
     if (gUDPport == nullptr)
         return errFailed;
-
+#ifdef __EMSCRIPTEN__
+    // we silently ignore and pass any socket requests instead
+    // of bailing out
+    return errNone;
+#else
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option;
     gUDPport->getSocket().get_option(option, ec);
@@ -478,12 +507,15 @@ static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
 
     SetBool(g->sp, option.value());
     return errNone;
+#endif
 }
 
 static int prNetAddr_SetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
     if (gUDPport == nullptr)
         return errFailed;
-
+#ifdef __EMSCRIPTEN__
+    return errNone;
+#else
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option(IsTrue(g->sp));
     gUDPport->getSocket().set_option(option, ec);
@@ -492,6 +524,7 @@ static int prNetAddr_SetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
         return errFailed;
 
     return errNone;
+#endif
 }
 
 static int prNetAddr_BundleSize(VMGlobals* g, int numArgsPushed) {
@@ -529,6 +562,7 @@ static int prNetAddr_UseDoubles(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+// Interpret an Array as an OSC message/bundle and convert it to raw bytes (Int8Array).
 static int prArray_OSCBytes(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     PyrObject* array = slotRawObject(a);
@@ -558,6 +592,32 @@ static int prArray_OSCBytes(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+static PyrObject* ConvertOSCMessage(int inSize, const char* inData);
+static PyrObject* ConvertOSCBundle(int inSize, const char* inData);
+
+// Try to interpret an Int8Array it as an OSC message/bundle,
+// throwing an exception on failure.
+static int prOSCBytes_Array(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    const PyrInt8Array* array = slotRawInt8Array(a);
+    int size = array->size;
+    const char* data = (const char*)array->b;
+    if (size < 1)
+        return errFailed;
+
+    PyrObject* result;
+    if (IsBundle(data)) {
+        result = ConvertOSCBundle(size, data);
+    } else if (IsMessage(data)) {
+        result = ConvertOSCMessage(size, data);
+    } else {
+        throw std::runtime_error("Not an OSC message");
+    }
+    SetObject(a, result);
+
+    return errNone;
+}
+
 // Create a new <PyrInt8Array> object and copy data from `msg.getb'.
 // Bytes are properly untyped, but there is no <UInt8Array> type.
 
@@ -571,10 +631,14 @@ static PyrInt8Array* MsgToInt8Array(sc_msg_iter& msg, bool runGC) {
     return obj;
 }
 
-static const double dInfinity = std::numeric_limits<double>::infinity();
+// Convert raw OSC message to Array.
+static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
+    if ((inSize & 3) != 0) {
+        // OSC messages
+        throw std::runtime_error("Bad OSC message size");
+    }
 
-static PyrObject* ConvertOSCMessage(int inSize, char* inData) {
-    char* cmdName = inData;
+    const char* cmdName = inData;
     int cmdNameLen = OSCstrlen(cmdName);
     sc_msg_iter msg(inSize - cmdNameLen, inData + cmdNameLen);
 
@@ -605,10 +669,10 @@ static PyrObject* ConvertOSCMessage(int inSize, char* inData) {
             SetInt(slots + i + 1, msg.geti());
             break;
         case 'f':
-            SetFloat(slots + i + 1, msg.getf());
+            SetFloat<AssertDouble::CouldBeBadNan>(slots + i + 1, msg.getf());
             break;
         case 'd':
-            SetFloat(slots + i + 1, msg.getd());
+            SetFloat<AssertDouble::CouldBeBadNan>(slots + i + 1, msg.getd());
             break;
         case 's':
             SetSymbol(slots + i + 1, getsym(msg.gets()));
@@ -622,7 +686,7 @@ static PyrObject* ConvertOSCMessage(int inSize, char* inData) {
             SetChar(slots + i + 1, (char)msg.geti());
             break;
         case 't':
-            SetFloat(slots + i + 1, OSCToElapsedTime(msg.gett()));
+            SetFloat<AssertDouble::CouldBeBadNan>(slots + i + 1, OSCToElapsedTime(msg.gett()));
             break;
 
             // argument tags without any associated value
@@ -635,7 +699,7 @@ static PyrObject* ConvertOSCMessage(int inSize, char* inData) {
             msg.count++;
             break;
         case 'I':
-            SetFloat(slots + i + 1, dInfinity);
+            SetFloat<AssertDouble::Okay>(slots + i + 1, dInfinity);
             msg.count++;
             break;
         case 'N':
@@ -652,24 +716,84 @@ static PyrObject* ConvertOSCMessage(int inSize, char* inData) {
     return obj;
 }
 
+// Convert raw OSC bundle to Array ([time, elements...]).
+static PyrObject* ConvertOSCBundle(int inSize, const char* inData) {
+    // OSC bundles must have at least 16 bytes (#bundle + timetag)
+    if (inSize < 16 || (inSize & 3) != 0) {
+        // OSC messages
+        throw std::runtime_error("Bad OSC bundle size");
+    }
+
+    int64 oscTime = OSCtime(inData + 8);
+    const char* data = inData + 16;
+    const char* dataEnd = inData + inSize;
+
+    // first count all elements
+    int numElements = 0;
+    for (const char* ptr = data; ptr < dataEnd;) {
+        int32 size = OSCint(ptr);
+        if (size > 0 && (size & 3) == 0) {
+            ptr += sizeof(int32) + size;
+            numElements++;
+        } else {
+            throw std::runtime_error("Bad OSC bundle element size");
+        }
+    }
+
+    VMGlobals* g = gMainVMGlobals;
+    PyrObject* result = newPyrArray(g->gc, numElements + 1, 0, false);
+    PyrSlot* slots = result->slots;
+
+    if (oscTime != 1) {
+        double seconds = static_cast<double>(oscTime) * kOSCtoSecs;
+        SetFloat<AssertDouble::Okay>(slots, seconds);
+    } else {
+        SetNil(slots); // immediate
+    }
+
+    for (int i = 0; i < numElements; i++) {
+        int32 size = OSCint(data);
+        data += sizeof(int32);
+        PyrObject* bundleElement;
+        if (IsBundle(data)) {
+            bundleElement = ConvertOSCBundle(size, data);
+        } else if (IsMessage(data)) {
+            bundleElement = ConvertOSCMessage(size, data);
+        } else {
+            throw std::runtime_error("Malformed OSC bundle element");
+        }
+        SetObject(slots + i + 1, bundleElement);
+        data += size;
+    }
+
+    result->size = numElements + 1;
+
+    return result;
+}
+
 static PyrObject* ConvertReplyAddress(ReplyAddress* inReply) {
     VMGlobals* g = gMainVMGlobals;
     PyrObject* obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
     PyrSlot* slots = obj->slots;
-    SetInt(slots + 0, inReply->mAddress.to_v4().to_ulong());
+#ifdef __EMSCRIPTEN__
+    // hardcode to 127.0.0.1 b/c otherwise ServerStatusWatcher
+    // will not believe that the server is online
+    SetInt(slots + 0, 0x7F000001);
+#else
+    SetInt(slots + 0, inReply->mAddress.to_v4().to_uint());
+#endif
     SetInt(slots + 1, inReply->mPort);
     return obj;
 }
 
-void PerformOSCBundle(int inSize, char* inData, PyrObject* replyObj, int inPortNum) {
-    // convert all data to arrays
-
+// perform all OSC bundle elements
+void PerformOSCBundle(int inSize, const char* inData, PyrObject* replyObj, int inPortNum) {
     int64 oscTime = OSCtime(inData + 8);
     double seconds = OSCToElapsedTime(oscTime);
 
     VMGlobals* g = gMainVMGlobals;
-    char* data = inData + 16;
-    char* dataEnd = inData + inSize;
+    const char* data = inData + 16;
+    const char* dataEnd = inData + inSize;
     while (data < dataEnd) {
         int32 msgSize = OSCint(data);
         data += sizeof(int32);
@@ -680,7 +804,7 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject* replyObj, int inPortN
             ++g->sp;
             SetObject(g->sp, g->process);
             ++g->sp;
-            SetFloat(g->sp, seconds);
+            SetFloat<AssertDouble::CouldBeBadNan>(g->sp, seconds);
             ++g->sp;
             SetObject(g->sp, replyObj);
             ++g->sp;
@@ -695,7 +819,7 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject* replyObj, int inPortN
     }
 }
 
-void PerformOSCMessage(int inSize, char* inData, PyrObject* replyObj, int inPortNum, double time) {
+void PerformOSCMessage(int inSize, const char* inData, PyrObject* replyObj, int inPortNum, double time) {
     PyrObject* arrayObj = ConvertOSCMessage(inSize, inData);
 
     // call virtual machine to handle message
@@ -703,7 +827,7 @@ void PerformOSCMessage(int inSize, char* inData, PyrObject* replyObj, int inPort
     ++g->sp;
     SetObject(g->sp, g->process);
     ++g->sp;
-    SetFloat(g->sp, time); // time
+    SetFloat<AssertDouble::CouldBeBadNan>(g->sp, time); // time
     ++g->sp;
     SetObject(g->sp, replyObj);
     ++g->sp;
@@ -720,9 +844,9 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
     const auto isBundle = IsBundle(inPacket->mData.get());
 
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         PyrObject* replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
-        if (compiledOK) {
+        if (gClassLibraryInfo.acceptsInput()) {
             if (isBundle) {
                 PerformOSCBundle(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum);
             } else {
@@ -736,7 +860,7 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
 void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddress& replyAddress, int inPortNum,
                        double time) {
     gLangMutex.lock();
-    if (compiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         VMGlobals* g = gMainVMGlobals;
 
         PyrString* string = newPyrStringN(g->gc, inSize, 0, true);
@@ -747,7 +871,7 @@ void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddre
         ++g->sp;
         SetObject(g->sp, g->process);
         ++g->sp;
-        SetFloat(g->sp, time); // time
+        SetFloat<AssertDouble::CouldBeBadNan>(g->sp, time); // time
         ++g->sp;
         SetObject(g->sp, ConvertReplyAddress(&replyAddress));
         ++g->sp;
@@ -774,12 +898,9 @@ void init_OSC(int port) {
 #endif
 
     startAsioThread();
-
     try {
-        gUDPport.reset(new InPort::UDP(port, HandlerType::OSC));
-    } catch (std::exception const& e) {
-        postfl("No networking: %s", e.what());
-    }
+        gUDPport = std::make_unique<InPort::UDP>(port, HandlerType::OSC);
+    } catch (std::exception const& e) { postfl("No networking: %s", e.what()); }
 }
 
 int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed);
@@ -838,6 +959,10 @@ void closeAllCustomPorts() {
 void cleanup_OSC() {
     postfl("cleaning up OSC\n");
 
+    // NOTE: the socket must be destroyed *before* the IO service.
+    // We cannot rely on the global object destructor because the order would be undefined.
+    gUDPport = nullptr;
+
     stopAsioThread();
 
 #ifdef _WIN32
@@ -845,7 +970,7 @@ void cleanup_OSC() {
 #endif
 }
 
-extern boost::asio::io_service ioService;
+extern boost::asio::io_context ioContext;
 
 static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
@@ -888,94 +1013,199 @@ static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
 #endif
 }
 
-int prGetLangPort(VMGlobals* g, int numArgsPushed);
-int prGetLangPort(VMGlobals* g, int numArgsPushed) {
+static int prGetLangPort(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
+#ifdef __EMSCRIPTEN__
+    // hardcode port number for emscripten to default port 57120
+    SetInt(a, 57120);
+#else
     if (!gUDPport)
         return errFailed;
     SetInt(a, gUDPport->RealPortNum());
+#endif
     return errNone;
 }
 
-int prMatchLangIP(VMGlobals* g, int numArgsPushed);
-int prMatchLangIP(VMGlobals* g, int numArgsPushed) {
-    PyrSlot* argString = g->sp;
-    char ipstring[40];
-    int err = slotStrVal(argString, ipstring, 39);
-    if (err)
-        return err;
+static int prLocalIPs(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+#ifdef __EMSCRIPTEN__
+    // emscripten returns 127.0.0.1 here, although emscripten
+    // does not really have the concept of IP due to the
+    // non-existing network stack.
+    // Returning an empty array will introduce problems when
+    // booting the server, probably due to ServerStatusWatcher.
+    PyrObject* array = newPyrArray(g->gc, 1, 0, true);
+    PyrString* str = newPyrString(g->gc, "127.0.0.1", 0, true);
+    SetObject(array->slots, (PyrObjectHdr*)str);
+    array->size = 1;
 
-    std::string loopback("127.0.0.1");
-    // check for loopback address
-    if (!loopback.compare(ipstring)) {
-        SetTrue(g->sp - 1);
-        return errNone;
+    SetObject(g->sp - 1, (PyrObjectHdr*)array);
+    return errNone;
+#else
+    int addressFamily = AF_UNSPEC; // IPv4 + IPv6
+    if (IsSym(a)) {
+        PyrSymbol* sym = slotRawSymbol(a);
+        if (sym == s_ipv4) {
+            addressFamily = AF_INET;
+        } else if (sym == s_ipv6) {
+            addressFamily = AF_INET6;
+        } else if (sym != s_all) {
+            error("ignoring unknown option %s\n", sym->name);
+        }
+    } else if (NotNil(a)) {
+        return errWrongType;
     }
 
-#ifdef _WIN32
-
-    DWORD rv, size = 0;
-    PIP_ADAPTER_ADDRESSES adapter_addresses, aa;
-    PIP_ADAPTER_UNICAST_ADDRESS ua;
+#    ifdef _WIN32
 
     // first get the size of the required buffer
-    rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, NULL, &size);
+    ULONG size = 0;
+    auto rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, NULL, &size);
     if (rv != ERROR_BUFFER_OVERFLOW) {
-        error("GetAdaptersAddresses() failed...");
+        error("GetAdaptersAddresses() failed.\n");
         return errFailed;
     }
+
     // now allocate a buffer for the linked list
-    adapter_addresses = (PIP_ADAPTER_ADDRESSES)malloc(size);
-
-    rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, adapter_addresses, &size);
+    PIP_ADAPTER_ADDRESSES adapterAddresses = (PIP_ADAPTER_ADDRESSES)malloc(size);
+    rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, adapterAddresses, &size);
     if (rv != ERROR_SUCCESS) {
-        error("GetAdaptersAddresses() failed...");
-        free(adapter_addresses);
+        error("GetAdaptersAddresses() failed.\n");
+        free(adapterAddresses);
         return errFailed;
     }
 
-    for (aa = adapter_addresses; aa != NULL; aa = aa->Next) {
-        for (ua = aa->FirstUnicastAddress; ua != NULL; ua = ua->Next) {
-            char buf[40];
-            memset(buf, 0, sizeof(buf));
-            getnameinfo(ua->Address.lpSockaddr, ua->Address.iSockaddrLength, buf, sizeof(buf), NULL, 0, NI_NUMERICHOST);
-            if (strcmp(ipstring, buf) == 0) {
-                SetTrue(g->sp - 1);
-                free(adapter_addresses);
-                return errNone;
-            }
-        }
-    }
-
-    free(adapter_addresses);
-
-#else
-
-    struct ifaddrs *ifap, *ifa;
-    if (getifaddrs(&ifap) != 0) {
-        error(strerror(errno));
-        return errFailed;
-    }
-
-    for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
-        if (ifa->ifa_addr) {
-            int family = ifa->ifa_addr->sa_family;
-            if (family == AF_INET || family == AF_INET6) {
-                struct sockaddr_in* sa = (struct sockaddr_in*)ifa->ifa_addr;
-                char* addr = inet_ntoa(sa->sin_addr);
-                if (strcmp(ipstring, addr) == 0) {
-                    SetTrue(g->sp - 1);
-                    freeifaddrs(ifap);
-                    return errNone;
+    // first count the addresses
+    int count = 0;
+    for (auto aa = adapterAddresses; aa != NULL; aa = aa->Next) {
+        // skip interfaces that are not available
+        if (aa->OperStatus == IfOperStatusUp) {
+            for (auto ua = aa->FirstUnicastAddress; ua != NULL; ua = ua->Next) {
+                int family = ua->Address.lpSockaddr->sa_family;
+                if (addressFamily == AF_UNSPEC || addressFamily == family) {
+                    count++;
                 }
             }
         }
     }
 
-    freeifaddrs(ifap);
-#endif
+    // now allocate and fill Array
+    PyrObject* array = newPyrArray(g->gc, count, 0, true);
+    int index = 0;
+    for (auto aa = adapterAddresses; aa != NULL; aa = aa->Next) {
+        if (aa->OperStatus == IfOperStatusUp) {
+            for (auto ua = aa->FirstUnicastAddress; ua != NULL; ua = ua->Next) {
+                int family = ua->Address.lpSockaddr->sa_family;
+                if (addressFamily == AF_UNSPEC || addressFamily == family) {
+                    char buf[40];
+                    memset(buf, 0, sizeof(buf));
+                    getnameinfo(ua->Address.lpSockaddr, ua->Address.iSockaddrLength, buf, sizeof(buf), NULL, 0,
+                                NI_NUMERICHOST);
+                    PyrString* str = newPyrString(g->gc, buf, 0, false);
+                    SetObject(array->slots + index, (PyrObjectHdr*)str);
+                    index++;
+                }
+            }
+        }
+    }
+    array->size = index;
 
-    SetFalse(g->sp - 1);
+    free(adapterAddresses);
+
+#    else
+
+    struct ifaddrs* ifap;
+    if (getifaddrs(&ifap) != 0) {
+        error("getifaddrs() failed: %s.\n", strerror(errno));
+        return errFailed;
+    }
+
+    // first count addresses
+    int count = 0;
+    for (auto ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr) {
+            int family = ifa->ifa_addr->sa_family;
+            if (addressFamily == AF_UNSPEC || addressFamily == family) {
+                count++;
+            }
+        }
+    }
+
+    // now allocate and fill Array
+    PyrObject* array = newPyrArray(g->gc, count, 0, true);
+    int index = 0;
+    for (auto ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr) {
+            int family = ifa->ifa_addr->sa_family;
+            if (addressFamily == AF_UNSPEC || addressFamily == family) {
+                socklen_t len = (family == AF_INET6) ? sizeof(sockaddr_in6) : sizeof(sockaddr_in);
+                char buf[40];
+                memset(buf, 0, sizeof(buf));
+                // NB: getnameinfo() will fail if an interface is not available
+                if (getnameinfo(ifa->ifa_addr, len, buf, sizeof(buf), NULL, 0, NI_NUMERICHOST) == 0) {
+                    PyrString* str = newPyrString(g->gc, buf, 0, false);
+                    SetObject(array->slots + index, (PyrObjectHdr*)str);
+                    index++;
+                }
+            }
+        }
+    }
+    array->size = index; // set actual size (interfaces may have been skipped)
+
+    freeifaddrs(ifap);
+#    endif
+
+    SetObject(g->sp - 1, (PyrObjectHdr*)array);
+    return errNone;
+#endif
+}
+
+static int prLocalIP(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+
+    sockaddr_in remoteAddr;
+    memset(&remoteAddr, 0, sizeof(remoteAddr));
+    remoteAddr.sin_family = AF_INET;
+    remoteAddr.sin_port = sc_htons(80); // can be any port
+
+    if (NotNil(a)) {
+        // get IP address from string or symbol
+        char addr[64];
+        if (slotStrVal(a, addr, 64) != errNone) {
+            return errWrongType;
+        }
+        if (inet_pton(AF_INET, addr, &remoteAddr.sin_addr) != 1) {
+            error("%s is not a valid IP address.\n", addr);
+            return errFailed;
+        }
+    } else {
+        // use arbitrary global IP address (8.8.8.8)
+        remoteAddr.sin_addr.s_addr = sc_htonl(0x08080808);
+    }
+
+    // create temporary socket and connect it to our remote address
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (connect(sock, (struct sockaddr*)&remoteAddr, sizeof(remoteAddr)) < 0) {
+        printLastSocketError("connect");
+        closeSocket(sock);
+        return errFailed;
+    }
+    // now get local IP address
+    sockaddr_in localAddr;
+    socklen_t len = sizeof(localAddr);
+    if (getsockname(sock, (sockaddr*)&localAddr, &len) < 0) {
+        printLastSocketError("getsockname");
+        closeSocket(sock);
+        return errFailed;
+    }
+    closeSocket(sock);
+
+    const char* addrString = inet_ntoa(localAddr.sin_addr);
+    PyrString* result = newPyrString(g->gc, addrString, 0, true);
+    if (!result)
+        return errFailed;
+    SetObject(g->sp - 1, (PyrObjectHdr*)result);
+
     return errNone;
 }
 
@@ -1177,11 +1407,11 @@ int prGetSharedControl(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
     if (index < 0 || index >= gInternalSynthServer.mNumSharedControls) {
-        SetFloat(a, 0.);
+        SetFloat<AssertDouble::Okay>(a, 0.);
         return errNone;
     }
     float val = gInternalSynthServer.mSharedControls[index];
-    SetFloat(a, val);
+    SetFloat<AssertDouble::CouldBeBadNan>(a, val);
     return errNone;
 }
 
@@ -1284,7 +1514,7 @@ int prGetControlBusValue(VMGlobals* g, int numArgsPushed) {
     server_shared_memory_client* client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
 
     float value = client->get_control_busses()[busIndex];
-    SetFloat(a, value);
+    SetFloat<AssertDouble::CouldBeBadNan>(a, value);
     return errNone;
 }
 
@@ -1317,7 +1547,7 @@ int prGetControlBusValues(VMGlobals* g, int numArgsPushed) {
 
     for (int i = 0; i != numberOfChannels; ++i) {
         float value = client->get_control_busses()[busIndex + i];
-        SetFloat(ret->slots + i, value);
+        SetFloat<AssertDouble::CouldBeBadNan>(ret->slots + i, value);
     }
 
     SetObject(a, ret);
@@ -1409,9 +1639,11 @@ void init_OSC_primitives() {
 
     definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);
     definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);
+    definePrimitive(base, index++, "_OSCBytes_Array", prOSCBytes_Array, 1, 0);
     definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);
     definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);
-    definePrimitive(base, index++, "_MatchLangIP", prMatchLangIP, 2, 0);
+    definePrimitive(base, index++, "_LocalIPs", prLocalIPs, 2, 0);
+    definePrimitive(base, index++, "_LocalIP", prLocalIP, 2, 0);
     definePrimitive(base, index++, "_Exit", prExit, 1, 0);
 #ifndef NO_INTERNAL_SERVER
     definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);
@@ -1439,4 +1671,7 @@ void init_OSC_primitives() {
     s_recvrawmsg = getsym("recvRawMessage");
     s_recvoscbndl = getsym("recvOSCbundle");
     s_netaddr = getsym("NetAddr");
+    s_ipv4 = getsym("ipv4");
+    s_ipv6 = getsym("ipv6");
+    s_all = getsym("all");
 }

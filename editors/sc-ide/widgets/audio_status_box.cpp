@@ -24,9 +24,14 @@
 #include <QHBoxLayout>
 #include <QWheelEvent>
 
+#include "QtCollider/widgets/QcAbstractStepValue.h"
+#include "main.hpp"
+
 namespace ScIDE {
 
 AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(parent) {
+    mServer = server;
+
     mStatisticsLabel = new StatusLabel;
     mVolumeLabel = new StatusLabel;
     mMuteLabel = new StatusLabel;
@@ -70,13 +75,15 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     addAction(server->action(ScServer::Volume));
 
     // server -> box
-    connect(server, SIGNAL(runningStateChanged(bool, QString, int, bool)), this,
-            SLOT(onServerRunningChanged(bool, QString, int, bool)));
-    connect(server, SIGNAL(updateServerStatus(int, int, int, int, float, float)), this,
-            SLOT(updateStatistics(int, int, int, int, float, float)));
-    connect(server, SIGNAL(volumeChanged(float)), this, SLOT(updateVolumeLabel(float)));
-    connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
-    connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
+    connect(server, &ScServer::runningStateChanged, this, &AudioStatusBox::onServerRunningChanged);
+    connect(server, &ScServer::updateServerStatus, this, &AudioStatusBox::updateStatistics);
+    connect(server, &ScServer::volumeChanged, this, &AudioStatusBox::updateVolumeLabel);
+    connect(server, &ScServer::mutedChanged, this, &AudioStatusBox::updateMuteLabel);
+    connect(server, &ScServer::recordingChanged, this, &AudioStatusBox::updateRecordLabel);
+
+    auto const main = Main::instance();
+    applySettings(main->settings());
+    connect(main, &Main::applySettingsRequest, this, &AudioStatusBox::applySettings);
 
     onServerRunningChanged(false, "", 0, false);
     updateVolumeLabel(server->volume());
@@ -89,17 +96,39 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     connect(this, &AudioStatusBox::increaseVolume, [=]() { server->changeVolume(+0.5); });
 }
 
+void AudioStatusBox::applySettings(Settings::Manager* settings) {
+    auto backgroundColor = settings->getThemeVal("text").background().color();
+
+    mStatisticsLabel->setBackground(backgroundColor);
+    mVolumeLabel->setBackground(backgroundColor);
+    mMuteLabel->setBackground(backgroundColor);
+    mRecordLabel->setBackground(backgroundColor);
+
+    // used if e.g. server is not recording is not recording
+    noActionColor = settings->getThemeVal("text").foreground().color();
+
+    unresponsiveColor = settings->getThemeVal("postwindowwarning").foreground().color();
+    runningColor = settings->getThemeVal("postwindowsuccess").foreground().color();
+    notRunningColor = settings->getThemeVal("text").foreground().color();
+    errorColor = settings->getThemeVal("postwindowerror").foreground().color();
+
+    if (mServer) {
+        updateVolumeLabel(mServer->volume());
+        updateMuteLabel(mServer->isMuted());
+        updateRecordLabel(mServer->isRecording());
+    }
+}
 
 void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, bool unresponsive) {
     if (unresponsive) {
-        mStatisticsLabel->setTextColor(Qt::yellow);
-        mVolumeLabel->setTextColor(Qt::yellow);
+        mStatisticsLabel->setTextColor(unresponsiveColor);
+        mVolumeLabel->setTextColor(unresponsiveColor);
     } else if (running) {
-        mStatisticsLabel->setTextColor(Qt::green);
-        mVolumeLabel->setTextColor(Qt::green);
+        mStatisticsLabel->setTextColor(runningColor);
+        mVolumeLabel->setTextColor(runningColor);
     } else {
-        mStatisticsLabel->setTextColor(Qt::white);
-        mVolumeLabel->setTextColor(Qt::white);
+        mStatisticsLabel->setTextColor(notRunningColor);
+        mVolumeLabel->setTextColor(notRunningColor);
     };
     if (!running) {
         updateStatistics(0, 0, 0, 0, 0, 0);
@@ -107,8 +136,10 @@ void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, b
 }
 
 void AudioStatusBox::wheelEvent(QWheelEvent* event) {
-    if (event->orientation() == Qt::Vertical) {
-        if (event->delta() > 0)
+    // If Alt is pressed, Qt swaps scroll axis: undo it because we use alt to change scale
+    const double delta = getScrollSteps(event).y();
+    if (delta) {
+        if (delta > 0)
             emit increaseVolume();
         else
             emit decreaseVolume();
@@ -132,10 +163,10 @@ void AudioStatusBox::updateVolumeLabel(float volume) {
     mVolumeLabel->setText(QStringLiteral("%1dB ").arg(volume, 5, 'f', 1));
 }
 
-void AudioStatusBox::updateMuteLabel(bool muted) { mMuteLabel->setTextColor(muted ? Qt::red : QColor(30, 30, 30)); }
+void AudioStatusBox::updateMuteLabel(bool muted) { mMuteLabel->setTextColor(muted ? errorColor : noActionColor); }
 
 void AudioStatusBox::updateRecordLabel(bool recording) {
-    mRecordLabel->setTextColor(recording ? Qt::red : QColor(30, 30, 30));
+    mRecordLabel->setTextColor(recording ? errorColor : noActionColor);
 }
 
 

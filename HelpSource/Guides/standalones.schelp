@@ -134,7 +134,7 @@ if (File.exists(~pathToNewApp).not) {
 );
 
 "replacing bundleName % in plist file at these locations: "
-.postf(~nameToReplace.cs);
+.postf(~nameToReplace.asCompileString);
 ~foundNameLocs = ~infoString.findAll(~nameToReplace).postln;
 
 ~newInfoString = ~infoString.replace(~nameToReplace, ~newAppName );
@@ -266,7 +266,7 @@ s.waitForBoot {
 "// example startup file for osx standalone.
 // running loadfile in this project folder:
 %.loadRelative;
-".format((~projDirName +/+ ~loadfilepath.basename).cs);
+".format((~projDirName +/+ ~loadfilepath.basename).asCompileString);
 
 ~writeText.(~newAppResDir +/+ "startup.scd", ~startupCode);
 (~newAppResDir +/+ "startup.scd").openOS;

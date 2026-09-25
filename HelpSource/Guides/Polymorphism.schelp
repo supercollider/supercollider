@@ -142,4 +142,3 @@ Pbind(\degree, Pseq([0, 1, 2, 3],inf)).play;
 
 section:: Conclusion
 Polymorphism allows you to write code that does not assume anything about the implementation of an object, but rather asks the object to "do what I mean" and have the object respond appropriately.
-

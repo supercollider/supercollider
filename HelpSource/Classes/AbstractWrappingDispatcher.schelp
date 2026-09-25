@@ -58,5 +58,3 @@ A link::Classes/Symbol:: indicating what has changed. Currently the only thing s
 
 METHOD:: free
 This method removes this dispatcher from its responder func's dependants dictionaries, and deactivates it. Users should only call this method if you are finished with this dispatcher.
-
-

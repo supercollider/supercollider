@@ -2,7 +2,7 @@
 // basic_raw_socket.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -46,11 +46,24 @@ class basic_raw_socket;
  * @par Thread Safety
  * @e Distinct @e objects: Safe.@n
  * @e Shared @e objects: Unsafe.
+ *
+ * Synchronous @c send, @c send_to, @c receive, @c receive_from, @c connect,
+ * and @c shutdown operations are thread safe with respect to each other, if
+ * the underlying operating system calls are also thread safe. This means that
+ * it is permitted to perform concurrent calls to these synchronous operations
+ * on a single socket object. Other synchronous operations, such as @c open or
+ * @c close, are not thread safe.
  */
 template <typename Protocol, typename Executor>
 class basic_raw_socket
   : public basic_socket<Protocol, Executor>
 {
+private:
+  class initiate_async_send;
+  class initiate_async_send_to;
+  class initiate_async_receive;
+  class initiate_async_receive_from;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -101,9 +114,9 @@ public:
    */
   template <typename ExecutionContext>
   explicit basic_raw_socket(ExecutionContext& context,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
     : basic_socket<Protocol, Executor>(context)
   {
   }
@@ -138,9 +151,10 @@ public:
    */
   template <typename ExecutionContext>
   basic_raw_socket(ExecutionContext& context, const protocol_type& protocol,
-      typename enable_if<
-        is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      constraint_t<
+        is_convertible<ExecutionContext&, execution_context&>::value,
+        defaulted_constraint
+      > = defaulted_constraint())
     : basic_socket<Protocol, Executor>(context, protocol)
   {
   }
@@ -183,9 +197,9 @@ public:
    */
   template <typename ExecutionContext>
   basic_raw_socket(ExecutionContext& context, const endpoint_type& endpoint,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
     : basic_socket<Protocol, Executor>(context, endpoint)
   {
   }
@@ -228,14 +242,13 @@ public:
   template <typename ExecutionContext>
   basic_raw_socket(ExecutionContext& context,
       const protocol_type& protocol, const native_handle_type& native_socket,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
     : basic_socket<Protocol, Executor>(context, protocol, native_socket)
   {
   }
 
-#if defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move-construct a basic_raw_socket from another.
   /**
    * This constructor moves a raw socket from one object to another.
@@ -247,7 +260,7 @@ public:
    * constructed using the @c basic_raw_socket(const executor_type&)
    * constructor.
    */
-  basic_raw_socket(basic_raw_socket&& other) BOOST_ASIO_NOEXCEPT
+  basic_raw_socket(basic_raw_socket&& other) noexcept
     : basic_socket<Protocol, Executor>(std::move(other))
   {
   }
@@ -283,10 +296,10 @@ public:
    */
   template <typename Protocol1, typename Executor1>
   basic_raw_socket(basic_raw_socket<Protocol1, Executor1>&& other,
-      typename enable_if<
+      constraint_t<
         is_convertible<Protocol1, Protocol>::value
           && is_convertible<Executor1, Executor>::value
-      >::type* = 0)
+      > = 0)
     : basic_socket<Protocol, Executor>(std::move(other))
   {
   }
@@ -303,16 +316,15 @@ public:
    * constructor.
    */
   template <typename Protocol1, typename Executor1>
-  typename enable_if<
+  constraint_t<
     is_convertible<Protocol1, Protocol>::value
       && is_convertible<Executor1, Executor>::value,
     basic_raw_socket&
-  >::type operator=(basic_raw_socket<Protocol1, Executor1>&& other)
+  > operator=(basic_raw_socket<Protocol1, Executor1>&& other)
   {
     basic_socket<Protocol, Executor>::operator=(std::move(other));
     return *this;
   }
-#endif // defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destroys the socket.
   /**
@@ -407,25 +419,31 @@ public:
 
   /// Start an asynchronous send on a connected socket.
   /**
-   * This function is used to send data on the raw socket. The function call
-   * will block until the data has been sent successfully or an error occurs.
+   * This function is used to asynchronously send data on the raw socket. It is
+   * an initiating function for an @ref asynchronous_operation, and always
+   * returns immediately.
    *
    * @param buffers One or more data buffers to be sent on the socket. Although
    * the buffers object may be copied as necessary, ownership of the underlying
    * memory blocks is retained by the caller, which must guarantee that they
-   * remain valid until the handler is called.
+   * remain valid until the completion handler is called.
    *
-   * @param handler The handler to be called when the send operation completes.
-   * Copies will be made of the handler as required. The function signature of
-   * the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the send completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const boost::system::error_code& error, // Result of operation.
-   *   std::size_t bytes_transferred           // Number of bytes sent.
+   *   std::size_t bytes_transferred // Number of bytes sent.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using boost::asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using boost::asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code, std::size_t) @endcode
    *
    * @note The async_send operation can only be used with a connected socket.
    * Use the async_send_to function to send data on an unconnected raw
@@ -439,65 +457,92 @@ public:
    * See the @ref buffer documentation for information on sending multiple
    * buffers in one go, and how to use it with arrays, boost::array or
    * std::vector.
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename ConstBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
-        std::size_t)) WriteHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
-      void (boost::system::error_code, std::size_t))
-  async_send(const ConstBufferSequence& buffers,
-      BOOST_ASIO_MOVE_ARG(WriteHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+        std::size_t)) WriteToken = default_completion_token_t<executor_type>>
+  auto async_send(const ConstBufferSequence& buffers,
+      WriteToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<WriteToken,
+        void (boost::system::error_code, std::size_t)>(
+          declval<initiate_async_send>(), token,
+          buffers, socket_base::message_flags(0)))
   {
-    return async_initiate<WriteHandler,
+    return async_initiate<WriteToken,
       void (boost::system::error_code, std::size_t)>(
-        initiate_async_send(this), handler,
+        initiate_async_send(this), token,
         buffers, socket_base::message_flags(0));
   }
 
   /// Start an asynchronous send on a connected socket.
   /**
-   * This function is used to send data on the raw socket. The function call
-   * will block until the data has been sent successfully or an error occurs.
+   * This function is used to asynchronously send data on the raw socket. It is
+   * an initiating function for an @ref asynchronous_operation, and always
+   * returns immediately.
    *
    * @param buffers One or more data buffers to be sent on the socket. Although
    * the buffers object may be copied as necessary, ownership of the underlying
    * memory blocks is retained by the caller, which must guarantee that they
-   * remain valid until the handler is called.
+   * remain valid until the completion handler is called.
    *
    * @param flags Flags specifying how the send call is to be made.
    *
-   * @param handler The handler to be called when the send operation completes.
-   * Copies will be made of the handler as required. The function signature of
-   * the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the send completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const boost::system::error_code& error, // Result of operation.
-   *   std::size_t bytes_transferred           // Number of bytes sent.
+   *   std::size_t bytes_transferred // Number of bytes sent.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using boost::asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using boost::asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code, std::size_t) @endcode
    *
    * @note The async_send operation can only be used with a connected socket.
    * Use the async_send_to function to send data on an unconnected raw
    * socket.
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename ConstBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
-        std::size_t)) WriteHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
-      void (boost::system::error_code, std::size_t))
-  async_send(const ConstBufferSequence& buffers,
+        std::size_t)) WriteToken = default_completion_token_t<executor_type>>
+  auto async_send(const ConstBufferSequence& buffers,
       socket_base::message_flags flags,
-      BOOST_ASIO_MOVE_ARG(WriteHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+      WriteToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<WriteToken,
+        void (boost::system::error_code, std::size_t)>(
+          declval<initiate_async_send>(), token, buffers, flags))
   {
-    return async_initiate<WriteHandler,
+    return async_initiate<WriteToken,
       void (boost::system::error_code, std::size_t)>(
-        initiate_async_send(this), handler, buffers, flags);
+        initiate_async_send(this), token, buffers, flags);
   }
 
   /// Send raw data to the specified endpoint.
@@ -591,27 +636,33 @@ public:
   /// Start an asynchronous send.
   /**
    * This function is used to asynchronously send raw data to the specified
-   * remote endpoint. The function call always returns immediately.
+   * remote endpoint. It is an initiating function for an @ref
+   * asynchronous_operation, and always returns immediately.
    *
    * @param buffers One or more data buffers to be sent to the remote endpoint.
    * Although the buffers object may be copied as necessary, ownership of the
    * underlying memory blocks is retained by the caller, which must guarantee
-   * that they remain valid until the handler is called.
+   * that they remain valid until the completion handler is called.
    *
    * @param destination The remote endpoint to which the data will be sent.
    * Copies will be made of the endpoint as required.
    *
-   * @param handler The handler to be called when the send operation completes.
-   * Copies will be made of the handler as required. The function signature of
-   * the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the send completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const boost::system::error_code& error, // Result of operation.
-   *   std::size_t bytes_transferred           // Number of bytes sent.
+   *   std::size_t bytes_transferred // Number of bytes sent.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using boost::asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using boost::asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code, std::size_t) @endcode
    *
    * @par Example
    * To send a single data buffer use the @ref buffer function as follows:
@@ -624,65 +675,94 @@ public:
    * See the @ref buffer documentation for information on sending multiple
    * buffers in one go, and how to use it with arrays, boost::array or
    * std::vector.
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename ConstBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
-        std::size_t)) WriteHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
-      void (boost::system::error_code, std::size_t))
-  async_send_to(const ConstBufferSequence& buffers,
+        std::size_t)) WriteToken = default_completion_token_t<executor_type>>
+  auto async_send_to(const ConstBufferSequence& buffers,
       const endpoint_type& destination,
-      BOOST_ASIO_MOVE_ARG(WriteHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+      WriteToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<WriteToken,
+        void (boost::system::error_code, std::size_t)>(
+          declval<initiate_async_send_to>(), token, buffers,
+          destination, socket_base::message_flags(0)))
   {
-    return async_initiate<WriteHandler,
+    return async_initiate<WriteToken,
       void (boost::system::error_code, std::size_t)>(
-        initiate_async_send_to(this), handler, buffers,
+        initiate_async_send_to(this), token, buffers,
         destination, socket_base::message_flags(0));
   }
 
   /// Start an asynchronous send.
   /**
    * This function is used to asynchronously send raw data to the specified
-   * remote endpoint. The function call always returns immediately.
+   * remote endpoint. It is an initiating function for an @ref
+   * asynchronous_operation, and always returns immediately.
    *
    * @param buffers One or more data buffers to be sent to the remote endpoint.
    * Although the buffers object may be copied as necessary, ownership of the
    * underlying memory blocks is retained by the caller, which must guarantee
-   * that they remain valid until the handler is called.
+   * that they remain valid until the completion handler is called.
    *
    * @param flags Flags specifying how the send call is to be made.
    *
    * @param destination The remote endpoint to which the data will be sent.
    * Copies will be made of the endpoint as required.
    *
-   * @param handler The handler to be called when the send operation completes.
-   * Copies will be made of the handler as required. The function signature of
-   * the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the send completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const boost::system::error_code& error, // Result of operation.
-   *   std::size_t bytes_transferred           // Number of bytes sent.
+   *   std::size_t bytes_transferred // Number of bytes sent.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using boost::asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using boost::asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code, std::size_t) @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename ConstBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
-        std::size_t)) WriteHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
-      void (boost::system::error_code, std::size_t))
-  async_send_to(const ConstBufferSequence& buffers,
+        std::size_t)) WriteToken = default_completion_token_t<executor_type>>
+  auto async_send_to(const ConstBufferSequence& buffers,
       const endpoint_type& destination, socket_base::message_flags flags,
-      BOOST_ASIO_MOVE_ARG(WriteHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+      WriteToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<WriteToken,
+        void (boost::system::error_code, std::size_t)>(
+          declval<initiate_async_send_to>(), token,
+          buffers, destination, flags))
   {
-    return async_initiate<WriteHandler,
+    return async_initiate<WriteToken,
       void (boost::system::error_code, std::size_t)>(
-        initiate_async_send_to(this), handler, buffers, destination, flags);
+        initiate_async_send_to(this), token,
+        buffers, destination, flags);
   }
 
   /// Receive some data on a connected socket.
@@ -777,24 +857,30 @@ public:
   /// Start an asynchronous receive on a connected socket.
   /**
    * This function is used to asynchronously receive data from the raw
-   * socket. The function call always returns immediately.
+   * socket. It is an initiating function for an @ref asynchronous_operation,
+   * and always returns immediately.
    *
    * @param buffers One or more buffers into which the data will be received.
    * Although the buffers object may be copied as necessary, ownership of the
    * underlying memory blocks is retained by the caller, which must guarantee
-   * that they remain valid until the handler is called.
+   * that they remain valid until the completion handler is called.
    *
-   * @param handler The handler to be called when the receive operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the receive completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const boost::system::error_code& error, // Result of operation.
-   *   std::size_t bytes_transferred           // Number of bytes received.
+   *   std::size_t bytes_transferred // Number of bytes received.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using boost::asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using boost::asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code, std::size_t) @endcode
    *
    * @note The async_receive operation can only be used with a connected socket.
    * Use the async_receive_from function to receive data on an unconnected
@@ -809,65 +895,93 @@ public:
    * See the @ref buffer documentation for information on receiving into
    * multiple buffers in one go, and how to use it with arrays, boost::array or
    * std::vector.
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename MutableBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
-        std::size_t)) ReadHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
-      void (boost::system::error_code, std::size_t))
-  async_receive(const MutableBufferSequence& buffers,
-      BOOST_ASIO_MOVE_ARG(ReadHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+        std::size_t)) ReadToken = default_completion_token_t<executor_type>>
+  auto async_receive(const MutableBufferSequence& buffers,
+      ReadToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<ReadToken,
+        void (boost::system::error_code, std::size_t)>(
+          declval<initiate_async_receive>(), token,
+          buffers, socket_base::message_flags(0)))
   {
-    return async_initiate<ReadHandler,
+    return async_initiate<ReadToken,
       void (boost::system::error_code, std::size_t)>(
-        initiate_async_receive(this), handler,
+        initiate_async_receive(this), token,
         buffers, socket_base::message_flags(0));
   }
 
   /// Start an asynchronous receive on a connected socket.
   /**
    * This function is used to asynchronously receive data from the raw
-   * socket. The function call always returns immediately.
+   * socket. It is an initiating function for an @ref asynchronous_operation,
+   * and always returns immediately.
    *
    * @param buffers One or more buffers into which the data will be received.
    * Although the buffers object may be copied as necessary, ownership of the
    * underlying memory blocks is retained by the caller, which must guarantee
-   * that they remain valid until the handler is called.
+   * that they remain valid until the completion handler is called.
    *
    * @param flags Flags specifying how the receive call is to be made.
    *
-   * @param handler The handler to be called when the receive operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the receive completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const boost::system::error_code& error, // Result of operation.
-   *   std::size_t bytes_transferred           // Number of bytes received.
+   *   std::size_t bytes_transferred // Number of bytes received.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using boost::asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using boost::asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code, std::size_t) @endcode
    *
    * @note The async_receive operation can only be used with a connected socket.
    * Use the async_receive_from function to receive data on an unconnected
    * raw socket.
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename MutableBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
-        std::size_t)) ReadHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
-      void (boost::system::error_code, std::size_t))
-  async_receive(const MutableBufferSequence& buffers,
+        std::size_t)) ReadToken
+          = default_completion_token_t<executor_type>>
+  auto async_receive(const MutableBufferSequence& buffers,
       socket_base::message_flags flags,
-      BOOST_ASIO_MOVE_ARG(ReadHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+      ReadToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<ReadToken,
+        void (boost::system::error_code, std::size_t)>(
+          declval<initiate_async_receive>(), token, buffers, flags))
   {
-    return async_initiate<ReadHandler,
+    return async_initiate<ReadToken,
       void (boost::system::error_code, std::size_t)>(
-        initiate_async_receive(this), handler, buffers, flags);
+        initiate_async_receive(this), token, buffers, flags);
   }
 
   /// Receive raw data with the endpoint of the sender.
@@ -906,7 +1020,7 @@ public:
     boost::asio::detail::throw_error(ec, "receive_from");
     return s;
   }
-  
+
   /// Receive raw data with the endpoint of the sender.
   /**
    * This function is used to receive raw data. The function call will block
@@ -933,7 +1047,7 @@ public:
     boost::asio::detail::throw_error(ec, "receive_from");
     return s;
   }
-  
+
   /// Receive raw data with the endpoint of the sender.
   /**
    * This function is used to receive raw data. The function call will block
@@ -961,30 +1075,36 @@ public:
 
   /// Start an asynchronous receive.
   /**
-   * This function is used to asynchronously receive raw data. The function
-   * call always returns immediately.
+   * This function is used to asynchronously receive raw data. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * @param buffers One or more buffers into which the data will be received.
    * Although the buffers object may be copied as necessary, ownership of the
    * underlying memory blocks is retained by the caller, which must guarantee
-   * that they remain valid until the handler is called.
+   * that they remain valid until the completion handler is called.
    *
    * @param sender_endpoint An endpoint object that receives the endpoint of
    * the remote sender of the data. Ownership of the sender_endpoint object
    * is retained by the caller, which must guarantee that it is valid until the
-   * handler is called.
+   * completion handler is called.
    *
-   * @param handler The handler to be called when the receive operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the receive completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const boost::system::error_code& error, // Result of operation.
-   *   std::size_t bytes_transferred           // Number of bytes received.
+   *   std::size_t bytes_transferred // Number of bytes received.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using boost::asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using boost::asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code, std::size_t) @endcode
    *
    * @par Example
    * To receive into a single data buffer use the @ref buffer function as
@@ -994,74 +1114,104 @@ public:
    * See the @ref buffer documentation for information on receiving into
    * multiple buffers in one go, and how to use it with arrays, boost::array or
    * std::vector.
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename MutableBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
-        std::size_t)) ReadHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
-      void (boost::system::error_code, std::size_t))
-  async_receive_from(const MutableBufferSequence& buffers,
+        std::size_t)) ReadToken = default_completion_token_t<executor_type>>
+  auto async_receive_from(const MutableBufferSequence& buffers,
       endpoint_type& sender_endpoint,
-      BOOST_ASIO_MOVE_ARG(ReadHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+      ReadToken&& token
+        = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<ReadToken,
+        void (boost::system::error_code, std::size_t)>(
+          declval<initiate_async_receive_from>(), token, buffers,
+          &sender_endpoint, socket_base::message_flags(0)))
   {
-    return async_initiate<ReadHandler,
+    return async_initiate<ReadToken,
       void (boost::system::error_code, std::size_t)>(
-        initiate_async_receive_from(this), handler, buffers,
+        initiate_async_receive_from(this), token, buffers,
         &sender_endpoint, socket_base::message_flags(0));
   }
 
   /// Start an asynchronous receive.
   /**
-   * This function is used to asynchronously receive raw data. The function
-   * call always returns immediately.
+   * This function is used to asynchronously receive raw data. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * @param buffers One or more buffers into which the data will be received.
    * Although the buffers object may be copied as necessary, ownership of the
    * underlying memory blocks is retained by the caller, which must guarantee
-   * that they remain valid until the handler is called.
+   * that they remain valid until the completion handler is called.
    *
    * @param sender_endpoint An endpoint object that receives the endpoint of
    * the remote sender of the data. Ownership of the sender_endpoint object
    * is retained by the caller, which must guarantee that it is valid until the
-   * handler is called.
+   * completion handler is called.
    *
    * @param flags Flags specifying how the receive call is to be made.
    *
-   * @param handler The handler to be called when the receive operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the receive completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const boost::system::error_code& error, // Result of operation.
-   *   std::size_t bytes_transferred           // Number of bytes received.
+   *   std::size_t bytes_transferred // Number of bytes received.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using boost::asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using boost::asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code, std::size_t) @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename MutableBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
-        std::size_t)) ReadHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
-      void (boost::system::error_code, std::size_t))
-  async_receive_from(const MutableBufferSequence& buffers,
+        std::size_t)) ReadToken
+          = default_completion_token_t<executor_type>>
+  auto async_receive_from(const MutableBufferSequence& buffers,
       endpoint_type& sender_endpoint, socket_base::message_flags flags,
-      BOOST_ASIO_MOVE_ARG(ReadHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+      ReadToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<ReadToken,
+        void (boost::system::error_code, std::size_t)>(
+          declval<initiate_async_receive_from>(), token,
+          buffers, &sender_endpoint, flags))
   {
-    return async_initiate<ReadHandler,
+    return async_initiate<ReadToken,
       void (boost::system::error_code, std::size_t)>(
-        initiate_async_receive_from(this), handler,
+        initiate_async_receive_from(this), token,
         buffers, &sender_endpoint, flags);
   }
 
 private:
   // Disallow copying and assignment.
-  basic_raw_socket(const basic_raw_socket&) BOOST_ASIO_DELETED;
-  basic_raw_socket& operator=(const basic_raw_socket&) BOOST_ASIO_DELETED;
+  basic_raw_socket(const basic_raw_socket&) = delete;
+  basic_raw_socket& operator=(const basic_raw_socket&) = delete;
 
   class initiate_async_send
   {
@@ -1073,13 +1223,13 @@ private:
     {
     }
 
-    executor_type get_executor() const BOOST_ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename WriteHandler, typename ConstBufferSequence>
-    void operator()(BOOST_ASIO_MOVE_ARG(WriteHandler) handler,
+    void operator()(WriteHandler&& handler,
         const ConstBufferSequence& buffers,
         socket_base::message_flags flags) const
     {
@@ -1107,13 +1257,13 @@ private:
     {
     }
 
-    executor_type get_executor() const BOOST_ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename WriteHandler, typename ConstBufferSequence>
-    void operator()(BOOST_ASIO_MOVE_ARG(WriteHandler) handler,
+    void operator()(WriteHandler&& handler,
         const ConstBufferSequence& buffers, const endpoint_type& destination,
         socket_base::message_flags flags) const
     {
@@ -1141,13 +1291,13 @@ private:
     {
     }
 
-    executor_type get_executor() const BOOST_ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename ReadHandler, typename MutableBufferSequence>
-    void operator()(BOOST_ASIO_MOVE_ARG(ReadHandler) handler,
+    void operator()(ReadHandler&& handler,
         const MutableBufferSequence& buffers,
         socket_base::message_flags flags) const
     {
@@ -1175,13 +1325,13 @@ private:
     {
     }
 
-    executor_type get_executor() const BOOST_ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename ReadHandler, typename MutableBufferSequence>
-    void operator()(BOOST_ASIO_MOVE_ARG(ReadHandler) handler,
+    void operator()(ReadHandler&& handler,
         const MutableBufferSequence& buffers, endpoint_type* sender_endpoint,
         socket_base::message_flags flags) const
     {

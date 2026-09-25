@@ -31,8 +31,8 @@ Examples::
 
 code::
 (
-f = {"foo".postln };
-g = {"bar".postln };
+f = { "foo".postln };
+g = { "bar".postln };
 CmdPeriod.add(f);
 CmdPeriod.add(g);
 )
@@ -76,9 +76,9 @@ CmdPeriod.doOnce { w.close };
 
 
 // in some cases you might need to defer the function by a short amount of time
-a = { Synth(\default)};
+a = { Synth(\default) };
 a.value;
-CmdPeriod.add({{a.value}.defer(0.01)});
+CmdPeriod.add({ { a.value }.defer(0.01) });
 
 // remove all
 CmdPeriod.removeAll

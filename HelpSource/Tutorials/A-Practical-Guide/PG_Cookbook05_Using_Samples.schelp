@@ -1,7 +1,7 @@
 title:: Pattern Guide Cookbook 05: Using Samples
 summary:: Using samples
 related:: Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI, Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network
-categories:: Streams-Patterns-Events>A-Practical-Guide
+categories:: Streams-Patterns-Events>A-Practical-Guide, Tutorials>Pattern-Guide
 
 section::Using samples
 
@@ -19,7 +19,7 @@ numberedlist::
 
 strong::1. Determine the loop boundaries::
 
-Use an external audio editor to identify a segment of the source file that loops in a musically sensible way. For this example, we will use "a11wlk01.wav" because it's readily available. Empirically, we can find that the segment from 0.404561 to 3.185917 seconds produces a rhythm that can be parsed as one bar of 4/4 time.
+Use an external audio editor to identify a segment of the source file that loops in a musically sensible way. For this example, we will use code::ExampleFiles.child:: from link::Classes/ExampleFiles:: because it's readily available. Empirically, we can find that the segment from 0.404561 to 3.185917 seconds produces a rhythm that can be parsed as one bar of 4/4 time.
 
 The segment beginning (0.404561) and ending (3.185917) are important. We will use them below.
 
@@ -58,7 +58,7 @@ The loop actually starts with a half-beat anacrusis, so link::Classes/Ptpar:: de
 
 code::
 (
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 // one loop segment
 SynthDef(\oneLoop, { |out, bufnum, start, time, amp, rate = 1|

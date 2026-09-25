@@ -530,7 +530,7 @@ SynthDef(\play_from_to, { arg out, bufnum, from=0.0, to=1.0, sustain=1.0;
 }).add;
 )
 
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav")
+b = Buffer.read(s, ExampleFiles.child)
 
 (
 Pdef(\poch, { arg sustain=1.0, from=0.0, to=1.0, n=3;

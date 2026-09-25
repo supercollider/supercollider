@@ -229,29 +229,33 @@ UGen : AbstractFunction {
 
 	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled, curvedResult;
-		if (curve.isNumber and: { abs(curve) < 0.125 }) {
+		var tooClose = abs(curve) < 0.001;
+		var curveIsNum = curve.isNumber;
+		if ( curveIsNum and: { tooClose }) {
 			^this.linlin(inMin, inMax, outMin, outMax, clip)
 		};
+
 		grow = exp(curve);
 		a = outMax - outMin / (1.0 - grow);
 		b = outMin + a;
 		scaled = (this.prune(inMin, inMax, clip) - inMin) / (inMax - inMin);
-
 		curvedResult = b - (a * pow(grow, scaled));
 
-		if (curve.rate == \scalar) {
+		if (curveIsNum) {
 			^curvedResult
 		} {
-			^Select.perform(this.methodSelectorForRate, abs(curve) >= 0.125, [
-				this.linlin(inMin, inMax, outMin, outMax, clip),
-				curvedResult
+			^Select.perform(this.methodSelectorForRate, tooClose, [
+				curvedResult,
+				this.linlin(inMin, inMax, outMin, outMax, clip)
 			])
 		}
 	}
 
 	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled, linResult;
-		if (curve.isNumber and: { abs(curve) < 0.125 }) {
+		var tooClose = abs(curve) < 0.001;
+		var curveIsNum = curve.isNumber;
+		if ( curveIsNum and: { tooClose }) {
 			^this.linlin(inMin, inMax, outMin, outMax, clip)
 		};
 		grow = exp(curve);
@@ -260,12 +264,12 @@ UGen : AbstractFunction {
 
 		linResult = log( (b - this.prune(inMin, inMax, clip)) / a ) * (outMax - outMin) / curve + outMin;
 
-		if (curve.rate == \scalar) {
+		if (curveIsNum) {
 			^linResult
 		} {
-			^Select.perform(this.methodSelectorForRate, abs(curve) >= 0.125, [
-				this.linlin(inMin, inMax, outMin, outMax, clip),
-				linResult
+			^Select.perform(this.methodSelectorForRate, tooClose, [
+				linResult,
+				this.linlin(inMin, inMax, outMin, outMax, clip)
 			])
 		}
 	}
@@ -282,6 +286,12 @@ UGen : AbstractFunction {
 	moddif { |that = 0.0, mod = 1.0|
 		^ModDif.multiNew(this.rate, this, that, mod)
 	}
+
+	binaryValue { ^this.sign.max(0) }
+
+	isPositive { ^this >= 0 }
+	isNegative { ^this < 0 }
+	isStrictlyPositive { ^this > 0 }
 
 	// Note that this differs from |==| for other AbstractFunctions
 	// Other AbstractFunctions write '|==|' into the compound function
@@ -337,7 +347,6 @@ UGen : AbstractFunction {
 		if (rate == 'audio') {
 			n.do {| i |
 				if (inputs.at(i).rate != 'audio') {
-					//"failed".postln;
 					^("input " ++ i ++ " is not audio rate: " + inputs.at(i) + inputs.at(0).rate);
 				};
 			};
@@ -576,8 +585,9 @@ MultiOutUGen : UGen {
 	}
 
 	initOutputs { arg numChannels, rate;
-		if(numChannels.isNil or: { numChannels < 1 }, {
-			Error("%: wrong number of channels (%)".format(this, numChannels)).throw
+		if(numChannels.isInteger.not or: { numChannels < 1 }, {
+			Error("%: numChannels must be a nonzero positive integer, but received (%)."
+              .format(this, numChannels)).throw
 		});
 		channels = Array.fill(numChannels, { arg i;
 			OutputProxy(rate, this, i);
@@ -624,17 +634,14 @@ OutputProxy : UGen {
 	}
 
 	controlName {
-		var counter = 0, index = 0;
-
-		this.synthDef.children.do({
-			arg ugen;
-			if(this.source.synthIndex == ugen.synthIndex,
-				{ index = counter + this.outputIndex; });
-			if(ugen.isKindOf(Control),
-				{ counter = counter + ugen.channels.size; });
-		});
-
+		var index = this.controlIndex;
+		if (index.isNil) { ^nil };
 		^synthDef.controlNames.detect({ |c| c.index == index });
+	}
+
+	controlIndex {
+		if (source.class.isControlUGen.not) { ^nil };
+		^source.specialIndex + outputIndex
 	}
 
 	spec_{ arg spec;

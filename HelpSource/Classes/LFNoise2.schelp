@@ -48,4 +48,3 @@ code::
 // freq is the rate of interpolation points
 { var freq = 1000; [LFNoise2.ar(freq), Impulse.ar(freq)] }.plot
 ::
-

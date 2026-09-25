@@ -6,6 +6,8 @@ Integer : SimpleNumber {
 	+ { arg aNumber, adverb; _AddInt; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
 	- { arg aNumber, adverb; _SubInt; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
 	* { arg aNumber, adverb; _MulInt; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
+	
+	modSeaside { arg aNumber, adverb; _ModSeasideInt; ^aNumber.performBinaryOpOnSimpleNumber('modSeaside', this, adverb) }
 
 	clip { arg lo, hi; _ClipInt; ^this.primitiveFailed }
 	wrap { arg lo, hi; _WrapInt; ^this.primitiveFailed }
@@ -179,11 +181,11 @@ Integer : SimpleNumber {
 		^super.factorial.asInteger
 	}
 
-	// exit the program and return the result code to unix shell
 	exit {
 		_Exit
 		^this.primitiveFailed
 	}
+
 	asStringToBase { | base=10, width=8 |
 		var rest = this, string, mask;
 		if (base.inclusivelyBetween(2, 36).not) {

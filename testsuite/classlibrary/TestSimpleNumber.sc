@@ -255,4 +255,33 @@ TestSimpleNumber : UnitTest {
 		arr = first.series(first, first);
 		this.assert(arr.size == 1, "SimpleNumber:series Float types with first == last and step == 0 should return an array of [ first ]");
 	}
+
+	test_midiratio {
+		var precision = 1e-20;
+		var valMidi = [0, 12, 24];
+		var valRatio = [1, 2, 4];
+		this.assertArrayFloatEquals(valMidi.midiratio, valRatio, "SimpleNumber.midiratio should be precise within " ++ precision, precision);
+	}
+
+	test_midicps {
+		var precision = 1e-20;
+		var valMidi = [57, 69, 81, 105];
+		var valCps = [220, 440, 880, 3520];
+		this.assertArrayFloatEquals(valMidi.midicps, valCps, "SimpleNumber.midicps should be precise within " ++ precision, precision);
+	}
+
+	test_cpsmidi {
+		var precision = 1e-20;
+		var valCps = [220, 440, 880, 3520];
+		var valMidi = [57, 69, 81, 105];
+		this.assertArrayFloatEquals(valCps.cpsmidi, valMidi, "SimpleNumber.cpsmidi should be precise within " ++ precision, precision);
+	}
+
+	test_cpsoct {
+		var precision = 1e-20;
+		var valCps = [220, 440, 880];
+		var valOct = [3.75, 4.75, 5.75];
+		this.assertArrayFloatEquals(valCps.cpsoct, valOct, "SimpleNumber.cpsoct should be precise within " ++ precision, precision);
+	}
+
 }

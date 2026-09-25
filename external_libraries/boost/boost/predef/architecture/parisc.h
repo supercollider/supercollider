@@ -57,6 +57,11 @@ http://en.wikipedia.org/wiki/PA-RISC_family[HP/PA RISC] architecture.
 #   define BOOST_ARCH_PARISC_AVAILABLE
 #endif
 
+#if BOOST_ARCH_PARISC
+#   undef BOOST_ARCH_WORD_BITS_32
+#   define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_PARISC_NAME "HP/PA RISC"
 
 #endif

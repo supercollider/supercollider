@@ -68,11 +68,11 @@ s.waitForBoot({
 		Signal.chebyFill(256+1, amplitudes, normalize: true, zeroOffset: true),
 		Signal.chebyFill(256+1, amplitudes, normalize: true, zeroOffset: false)
 	];
-	b = sigs.collect{ arg sig; Buffer.loadCollection(s, sig.asWavetableNoWrap) };
+	b = sigs.collect{ |sig| Buffer.loadCollection(s, sig.asWavetableNoWrap) };
 	s.sync;
 	x = {
 		var in = SinOsc.ar(100, 0, SinOsc.kr(0.1, 0, 0.5, 0.5));
-		Shaper.ar(b, in ) ++ LeakDC.ar(Shaper.ar(b[1], in))
+		Shaper.ar(b, in) ++ LeakDC.ar(Shaper.ar(b[1], in))
 	}.scope;
 })
 )
@@ -173,9 +173,9 @@ a function that should calculate the value of a sample.
 code::
 (
 a = Signal.newClear(256);
-a.waveFill({ arg x, old, i; sin(x)}, 0, 3pi);
-a.waveFill({ arg x, old, i; old * sin(11 * x + 0.3) }, 0, 3pi);
-a.waveFill({ arg x, old, i; old * (x % 4) }, 0, 3pi);
+a.waveFill({ |x, old, i| sin(x) }, 0, 3pi);
+a.waveFill({ |x, old, i| old * sin(11 * x + 0.3) }, 0, 3pi);
+a.waveFill({ |x, old, i| old * (x % 4) }, 0, 3pi);
 
 a.plot;
 )
@@ -192,7 +192,7 @@ As arguments, three values are passed to the function: the current input value (
 code::
 (
 a = Signal.newClear(16);
-a.waveFill({ arg x, prev, i; [x, prev, i].postln; sin(x).max(0) }, 0, 3pi);
+a.waveFill({ |x, prev, i| [x, prev, i].postln; sin(x).max(0) }, 0, 3pi);
 a.plot;
 )
 ::
@@ -422,7 +422,7 @@ code::
 (
 x = Signal.fill(512, { rrand(0.0, 1.0) });
 y = Signal.fill(512, { |i| (i * pi / 64).sin });
-[x, y, (x + y) * 0.5, x * y, min(x, y), max(x, y) ].flop.flat
+[x, y, (x + y) * 0.5, x * y, min(x, y), max(x, y)].flop.flat
 	.plot(numChannels: 6);
 )
 ::
@@ -434,13 +434,3 @@ Before SuperCollider 3.13 this function was implemented incorrectly, evaluating 
 method::+, -, *, /, div, pow, mod, min, max, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, wrap2, excess
 method:: %, **
 method:: <!
-
-code::
-// these fail for Signal but work for FloatArray:
-Signal[0, 0.5, 1] pow: 2;
-Signal[0, 0.5, 1] ** 2;
-Signal[0, 0.5, 1] mod: 0.15;
-Signal[0, 0.5, 1] % 0.15;
-
-FloatArray[0, 0.5, 1] % 0.15;
-::

@@ -20,6 +20,7 @@ Interval : Collection {
 		forBy(start, end, step, function);
 	}
 
+	remove { ^this.shouldNotImplement(thisMethod) }
 	add { ^this.shouldNotImplement(thisMethod) }
 	put { ^this.shouldNotImplement(thisMethod) }
 	storeArgs { ^[start, end, step] }
@@ -50,6 +51,7 @@ Range : Collection {
 		^(val >= start) and: { (val < this.end)  and: { val.frac == 0 }}
 	}
 
+	remove { ^this.shouldNotImplement(thisMethod) }
 	add { ^this.shouldNotImplement(thisMethod) }
 	put { ^this.shouldNotImplement(thisMethod) }
 

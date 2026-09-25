@@ -48,7 +48,7 @@ METHOD:: value
 	If there were already existent nodes and their amount is different than the amount of x/y pairs in the argument, nodes will be added or removed (in order of creation reversed) until the amounts match, and then the new values will be applied.
 
 	argument::
-		An Array containing two other Arrays, of which one contains the horizontal and the other the vertical position of the new nodes. The values must be between 0 and 1. For example: code:: [[ x1, x2, x3, ... ], [ y1, y2, y3, ... ]] ::
+		An Array containing two other Arrays, of which one contains the horizontal and the other the vertical position of the new nodes. The values must be between 0 and 1. For example: code:: [[x1, x2, x3, ...], [y1, y2, y3, ...]] ::
 
 METHOD:: valueAction
 	Sets link::#-value:: to the argument and triggers the link::#-action::.
@@ -349,7 +349,7 @@ Use as envelope view
 code::
 (
 // use shift-click to keep a node selected
-w = Window("envelope", Rect(150 , Window.screenBounds.height - 250, 250, 100)).front;
+w = Window("envelope", Rect(150, Window.screenBounds.height - 250, 250, 100)).front;
 w.view.decorator = FlowLayout(w.view.bounds);
 
 b = EnvelopeView(w, Rect(0, 0, 230, 80))
@@ -358,9 +358,9 @@ b = EnvelopeView(w, Rect(0, 0, 230, 80))
 	.drawRects_(true)
 	.resize_(5)
 	.step_(0.05)
-	.action_({arg b; [b.index, b.value].postln})
+	.action_({ |b| [b.index, b.value].postln })
 	.thumbSize_(5)
-	.value_([[0.0, 0.1, 0.5, 1.0],[0.1,1.0,0.8,0.0]]);
+	.value_([[0.0, 0.1, 0.5, 1.0], [0.1, 1.0, 0.8, 0.0]]);
 w.front;
 )
 
@@ -369,18 +369,18 @@ b.grid = Point(0.2, 0.2);
 b.gridOn_(true);
 
 // show Env
-b.setEnv(Env.asr(0.5,1, 0.2));
+b.setEnv(Env.asr(0.5, 1, 0.2));
 
 // make the first point unmoveable
 (
-b.setEditable(0,false);
+b.setEditable(0, false);
 )
 ::
 
 Use shift click to select/unselect the points
 code::
 (
-w = Window("envelope", Rect(150 , Window.screenBounds.height - 250, 400, 150)).front;
+w = Window("envelope", Rect(150, Window.screenBounds.height - 250, 400, 150)).front;
 w.view.decorator = FlowLayout(w.view.bounds);
 
 b = EnvelopeView(w, Rect(0, 0, 350, 100))
@@ -390,13 +390,13 @@ b = EnvelopeView(w, Rect(0, 0, 350, 100))
 	.selectionColor_(Color.red)
 	.drawRects_(true)
 	.value_([(0.0, 0.1 .. 1.0), (0.0, 0.1 .. 1.0)])
-	.setEditable(0,false);
+	.setEditable(0, false);
 )
 
 (
 r = Routine({
 	var j = 0;
-	20.do({ arg i;
+	20.do({ |i|
 		b.selectIndex((b.size - 1).rand.abs);
 		0.1.wait;
 		b.x_(1.0.rand.abs);
@@ -411,7 +411,7 @@ AppClock.play(r);
 Show boxes with a string in it:
 code::
 (
-a = Window("text-boxes", Rect(200 , 450, 450, 450));
+a = Window("text-boxes", Rect(200, 450, 450, 450));
 a.view.decorator = FlowLayout(a.view.bounds);
 
 b = EnvelopeView(a, Rect(0, 0, 440, 440))
@@ -421,15 +421,15 @@ b = EnvelopeView(a, Rect(0, 0, 440, 440))
 	.drawRects_(true)
 	.selectionColor_(Color.red)
 	.value_([[0.1, 0.4, 0.5, 0.3], [0.1, 0.2, 0.9, 0.7]]);
-4.do({arg i;
+4.do({ |i|
 	b.setString(i, ["this", "is", "so much", "fun"].at(i));
-	b.setFillColor(i,[Color.yellow, Color.white, Color.green].choose);
+	b.setFillColor(i, [Color.yellow, Color.white, Color.green].choose);
 });
 a.front;
 )
 
 (
-b.connect(3, [2.0,0.0,1.0]); // the text objects can be connected
-b.connect(0,[2.0,3.0,1.0]);
+b.connect(3, [2.0, 0.0, 1.0]); // the text objects can be connected
+b.connect(0, [2.0, 3.0, 1.0]);
 )
 ::

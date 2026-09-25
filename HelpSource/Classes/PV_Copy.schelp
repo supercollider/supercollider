@@ -26,7 +26,7 @@ examples::
 code::
 
 // read a sound file
-d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+d = Buffer.read(s, ExampleFiles.child);
 
 
 // crossfade between original and magmul-ed whitenoise
@@ -146,7 +146,7 @@ x.free;
 // post all buffers
 (
 ~allBuffers.keysValuesDo { |name, buffer, i|
-	buffer.getToFloatArray(action: { arg array;
+	buffer.getToFloatArray(action: { |array|
 		var z, x;
 		// Initially, data is in complex form
 		z = array.clump(2).flop;
@@ -165,4 +165,3 @@ x.free;
 )
 
 ::
-

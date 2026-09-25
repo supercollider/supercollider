@@ -2,18 +2,19 @@
 
 CallOnce : Thunk {
 
-	value { |... args| ^this.prEvaluate(\valueArray, args) }
-	valueArray { |... args| ^this.prEvaluate(\valueArray, *args) }
+	value { |... args, kwargs|  ^this.prEvaluate(\value, args, kwargs) }
+	valueArray { |... args| ^this.prEvaluate(\valueArray, args) }
 	valueEnvir { |... args| ^this.prEvaluate(\valueArrayEnvir, args) }
-	valueArrayEnvir { |... args| ^this.prEvaluate(\valueArrayEnvir, *args) }
+	valueArrayEnvir { |... args| ^this.prEvaluate(\valueArrayEnvir, args) }
 
-	prEvaluate { |selector, args|
+	prEvaluate { |selector, args, kwargs|
 		^value ?? {
-			value = function.performList(selector, args);
+			value = function.performArgs(selector, args, kwargs);
 			function = nil;
 			value
 		}
 	}
+
 }
 
 

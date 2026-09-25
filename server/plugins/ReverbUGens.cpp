@@ -1063,7 +1063,7 @@ int nearestprime(int n, float rerror) {
     if (isprime(n))
         return (n);
     /* assume n is large enough and n*rerror enough smaller than n */
-    bound = (int)(n * rerror);
+    bound = n * static_cast<int>(rerror);
     for (k = 1; k <= bound; k++) {
         if (isprime(n + k))
             return (n + k);
@@ -1162,7 +1162,7 @@ static inline void damper_set(GVerb* unit, g_damper* p, float damping) { p->damp
 
 static inline float damper_do(GVerb* unit, g_damper* p, float x) {
     float y;
-    y = x * (1.0 - p->damping) + p->delay * p->damping;
+    y = x * (1.0f - p->damping) + p->delay * p->damping;
     p->delay = zapgremlins(y);
     return (y);
 }
@@ -1182,7 +1182,7 @@ static inline void gverb_set_roomsize(GVerb* unit, const float a) {
         unit->roomsize = 1.0;
     } else {
         if (a >= unit->maxroomsize)
-            unit->roomsize = unit->maxroomsize - 1.;
+            unit->roomsize = unit->maxroomsize - 1.f;
         else
             unit->roomsize = a;
     };
@@ -1197,7 +1197,7 @@ static inline void gverb_set_roomsize(GVerb* unit, const float a) {
 
     for (i = 0; i < FDNORDER; i++) {
         float oldfdngain = unit->fdngains[i];
-        unit->fdngains[i] = -powf((float)unit->alpha, unit->fdnlens[i]);
+        unit->fdngains[i] = static_cast<float>(-std::pow(unit->alpha, static_cast<double>(unit->fdnlens[i])));
         unit->fdngainslopes[i] = CALCSLOPE(unit->fdngains[i], oldfdngain);
     }
 
@@ -1208,7 +1208,7 @@ static inline void gverb_set_roomsize(GVerb* unit, const float a) {
 
     for (i = 0; i < FDNORDER; i++) {
         float oldtapgain = unit->tapgains[i];
-        unit->tapgains[i] = pow(unit->alpha, unit->taps[i]);
+        unit->tapgains[i] = static_cast<float>(std::pow(unit->alpha, static_cast<double>(unit->taps[i])));
         unit->tapgainslopes[i] = CALCSLOPE(unit->tapgains[i], oldtapgain);
     }
 }
@@ -1226,7 +1226,7 @@ static inline void gverb_set_revtime(GVerb* unit, float a) {
 
     for (i = 0; i < FDNORDER; i++) {
         float oldfdngain = unit->fdngains[i];
-        unit->fdngains[i] = -powf((float)unit->alpha, unit->fdnlens[i]);
+        unit->fdngains[i] = static_cast<float>(-std::pow(unit->alpha, static_cast<double>(unit->fdnlens[i])));
         unit->fdngainslopes[i] = CALCSLOPE(unit->fdngains[i], oldfdngain);
     }
 }
@@ -1277,7 +1277,9 @@ void GVerb_Ctor(GVerb* unit) {
     unit->earlylevel = 0.; // IN0(7);
     unit->taillevel = 0.; // IN0(8);
 
-    float maxroomsize = unit->maxroomsize = IN0(9);
+    // when roomsize is greater than maxroomsize, it is set to maxroomsize - 1
+    // when roomsize is less than 0, it is set to 1, therefore maxroomsize must be at least 1.
+    float maxroomsize = unit->maxroomsize = sc_max(1.0001f, IN0(9));
 
     float maxdelay = unit->maxdelay = SAMPLERATE * maxroomsize / 340.f;
     float largestdelay = unit->largestdelay = SAMPLERATE * roomsize / 340.f;
@@ -1305,7 +1307,7 @@ void GVerb_Ctor(GVerb* unit) {
         } else {
             unit->fdnlens[i] = f_round(gb);
         }
-        unit->fdngains[i] = -powf((float)alpha, unit->fdnlens[i]);
+        unit->fdngains[i] = static_cast<float>(-std::pow(alpha, static_cast<double>(unit->fdnlens[i])));
     }
     // make the fixeddelay lines and dampers
     for (int i = 0; i < FDNORDER; i++) {
@@ -1315,7 +1317,7 @@ void GVerb_Ctor(GVerb* unit) {
     }
 
     // diffuser section
-    float diffscale = (float)unit->fdnlens[3] / (210. + 159. + 562. + 410.);
+    float diffscale = static_cast<float>(unit->fdnlens[3] / (210. + 159. + 562. + 410.));
     float spread1 = spread;
     float spread2 = 3.0 * spread;
 
@@ -1359,7 +1361,7 @@ void GVerb_Ctor(GVerb* unit) {
     unit->taps[3] = 5; //+ f_round(0.000 * largestdelay);
 
     for (int i = 0; i < FDNORDER; i++) {
-        unit->tapgains[i] = pow(alpha, (double)unit->taps[i]);
+        unit->tapgains[i] = static_cast<float>(std::pow(alpha, static_cast<double>(unit->taps[i])));
     }
 
     unit->tapdelay = make_fixeddelay(unit, 44000, 44000);

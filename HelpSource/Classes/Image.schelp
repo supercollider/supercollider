@@ -52,8 +52,8 @@ If strong::multiple:: is a number, then this argument indicates the height of th
 METHOD::color
 Creates a new Image instance filled with the specified color.
 code::
-i = Image.color(400, 200, Color.blue(0.9,0.1));
-i.plot(freeOnClose:true);
+i = Image.color(400, 200, Color.blue(0.9, 0.1));
+i.plot(freeOnClose: true);
 ::
 
 ARGUMENT::... args
@@ -64,7 +64,7 @@ Creates a new Image instance from the local file at strong::path::.
 code::
 (
 i = Image.open(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-i.plot(freeOnClose:true);
+i.plot(freeOnClose: true);
 i.url.postln;
 )
 ::
@@ -74,7 +74,7 @@ Creates a new Image instance from the local SVG file at strong::path::.
 code::
 (
 i = Image.openSVG(SCDoc.helpSourceDir +/+ "images/plugin.svg", 200@200);
-i.plot(freeOnClose:true);
+i.plot(freeOnClose: true);
 i.url.postln;
 )
 ::
@@ -92,7 +92,7 @@ Creates a new Image instance from a valid image at the specified URL strong::pat
 code::
 i = Image.openURL(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 i.url;
-w = i.plot(freeOnClose:true);
+w = i.plot(freeOnClose: true);
 ::
 
 METHOD::fromImage
@@ -132,7 +132,7 @@ code::
 (
 	i = Image.fromWindow(w);
 	w.close;
-	i.plot(freeOnClose:true);
+	i.plot(freeOnClose: true);
 )
 
 // VIEW Capture Example:
@@ -142,7 +142,7 @@ code::
 	b = [10, 80].asSpec;
 	c = NumberBox(w, Rect(20, 20, 60, 40));
 	a = Slider(w, Rect(20, 80, 100, 40))
-		.focusColor_(Color.red(alpha:0.2))
+		.focusColor_(Color.red(alpha: 0.2))
 		.action_({
 			c.value_(b.map(a.value).round(0.01))
 	// round the float so it will fit in the NumberBox
@@ -153,7 +153,7 @@ code::
 (
 	i = Image.fromWindow(w, a.bounds);
 	w.close;
-	i.plot(freeOnClose:true);
+	i.plot(freeOnClose: true);
 )
 ::
 
@@ -236,14 +236,14 @@ code::
 (
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 i.bounds.postln; // getting the dimensions
-w =i.plot;
+w = i.plot;
 )
 
 // changing the size of an image
 (
 i.scalesWhenResized_(true);
 i.setSize(400, (400 / (i.width / i.height)).asInteger);
-a =i.plot;
+a = i.plot;
 )
 
 (
@@ -327,12 +327,12 @@ i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 w = i.plot;
 w.close;
 
-w = i.plot(showInfo:false);
+w = i.plot(showInfo: false);
 w.close;
 i.free;
 
 // other option - image will be automatically freed when closed
-Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png").plot("Hello", freeOnClose:true);
+Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png").plot("Hello", freeOnClose: true);
 ::
 
 ARGUMENT::name
@@ -359,8 +359,8 @@ list::
 ::
 code::
 (
-	j = Image.new(400,300);
-	j.draw({ arg image;
+	j = Image.new(400, 300);
+	j.draw({ |image|
 
 		Pen.translate(100, 100);
 		1000.do {
@@ -375,14 +375,14 @@ code::
 			);
 			Pen.perform([\stroke, \fill].choose);
 		};
-	}).plot(freeOnClose:true);
+	}).plot(freeOnClose: true);
 )
 
 //	String drawing support on the image
 //	drawStringAtPoint(string, point, font, color);
 (
-	j = Image.new(150,50);
-	j.draw({ arg bounds;
+	j = Image.new(150, 50);
+	j.draw({ |bounds|
 		j.drawStringAtPoint("Hello, world!", 10@10, Font("Lucida Grande", 24), Color.black);
 	});
 )
@@ -396,7 +396,7 @@ METHOD::drawStringAtPoint
 renders *correctly* a String inside an Image :) code::// to fix to have a compliant interface::
 code::
 (
-	var width, height, tgHeight, ratio, str, font, color, strb, targetWidth=400, shadowColor, run = true;
+	var width, height, tgHeight, ratio, str, font, color, strb, targetWidth = 400, shadowColor, run = true;
 	shadowColor = Color.black;
 
 	color = Color.gray(0.8);
@@ -407,19 +407,19 @@ code::
 	height = strb.height;
 	ratio = height / width;
 	i = Image(width@(height));
-	i.draw({|bb|
+	i.draw({ |bb|
 		Pen.smoothing_(false);
 		i.drawStringAtPoint(str, 0@0, font, color);
 	});
 	i.interpolation_(\none);
 	tgHeight = targetWidth * ratio;
-	w = Window.new("", Rect(400,400, 450, 150)).drawHook_({
-		Pen.setShadow(2@2, 0.4, color:Color.red);
-		i.drawInRect(Rect(5,5,targetWidth, tgHeight));
+	w = Window.new("", Rect(400, 400, 450, 150)).drawHook_({
+		Pen.setShadow(2@2, 0.4, color: Color.red);
+		i.drawInRect(Rect(5, 5, targetWidth, tgHeight));
 	});
 
 	w.view.background_(Color.white);
-	w.onClose_({run = false; i.free;});
+	w.onClose_({ run = false; i.free });
 	w.front;
 )
 ::
@@ -428,7 +428,7 @@ METHOD::drawAtPoint
 render the image or a portion of it in the current graphic context.
 code::
 (
-	var operation='sourceOver', fraction=1.0, i, w;
+	var operation = 'sourceOver', fraction = 1.0, i, w;
 
 	i = Image.new(
 	//	"http://supercollider.sourceforge.net/theme/sc01/icon.supercollider.gif"
@@ -440,15 +440,15 @@ code::
 
 	Slider.new(w, Rect(10, 150, 150, 16))
 		.value_(1.0)
-		.action_({ arg sl;
+		.action_({ |sl|
 			fraction = sl.value;
 			w.refresh;
 		});
 
 	PopUpMenu.new(w, Rect(170, 150, 100, 16))
-		.items_( Image.compositingOperations.collect({ arg i; i.asString }) )
+		.items_(Image.compositingOperations.collect({ |i| i.asString }))
 		.value_(2)
-		.action_({ arg pm;
+		.action_({ |pm|
 			operation = Image.compositingOperations.at(pm.value);
 			w.refresh;
 		});
@@ -487,7 +487,7 @@ code::
 	w = Window.new("Image", Rect(120, 400, 360, 180)).front;
 	w.onClose_({ i.free }); // free the image when the window is closed
 	w.drawHook_({
-		i.drawInRect(Rect(10,10,50,50), Rect(10,10,50,50), 2, 1.0); // only a section
+		i.drawInRect(Rect(10, 10, 50, 50), Rect(10, 10, 50, 50), 2, 1.0); // only a section
 	});
 )
 ::
@@ -541,11 +541,11 @@ SUBSECTION::Instance Methods / accessing and setting pixels
 METHOD::setPixel
 fill a pixel located at x @ y.
 code::
-i = Image.color(60, 60, Color.blue(0.1,0.1));
+i = Image.color(60, 60, Color.blue(0.1, 0.1));
 w = i.plot;
-i.setPixel(Image.colorToPixel(Color.new(1,0,0,1)), 0, 0); // setting red
+i.setPixel(Image.colorToPixel(Color.new(1, 0, 0, 1)), 0, 0); // setting red
 w.refresh;
-("pixel at 0 @ 0:"+Image.pixelToColor(i.getPixel(0,0)).asArray).postln;
+("pixel at 0 @ 0:"+Image.pixelToColor(i.getPixel(0, 0)).asArray).postln;
 i.free;
 ::
 
@@ -562,10 +562,10 @@ code::
 // A simple example on how to manipulate pixels with Image
 (
 b = Int32Array[
-	Image.colorToPixel(Color.new255(255,0,0,255)), // red
-	Image.colorToPixel(Color.new255(0,255,0,255)), // green
-	Image.colorToPixel(Color.new255(0,0,255,255)), // blue
-	Image.colorToPixel(Color.new255(255,0,255,255)) // purple
+	Image.colorToPixel(Color.new255(255, 0, 0, 255)), // red
+	Image.colorToPixel(Color.new255(0, 255, 0, 255)), // green
+	Image.colorToPixel(Color.new255(0, 0, 255, 255)), // blue
+	Image.colorToPixel(Color.new255(255, 0, 255, 255)) // purple
 ];
 )
 
@@ -580,16 +580,16 @@ a.plot;
 
 // Set + Get
 a.setPixel(Image.colorToPixel(Color.new255(255, 0, 255, 128)) /* create an Integer from 0-255 integer rgba value */, 0, 0).plot;
-p = a.getPixel(0,0);
+p = a.getPixel(0, 0);
 
-Image.pixelToColor(p).red;// 1.0
+Image.pixelToColor(p).red; // 1.0
 Image.pixelToColor(p).green; // 0.0
 Image.pixelToColor(p).blue; // 1.0
 Image.pixelToColor(p).alpha; // ~0.5
 
 // now another important example
 a.setPixel(Image.colorToPixel(Color.new255(255, 0, 255, 0)), 1, 0).plot; // clear color -> alpha is 0
-p = a.getPixel(1,0);
+p = a.getPixel(1, 0);
 
 Image.pixelToColor(p).red; // you expect 1.0 but you get 0.0 ??? Why = because Image uses premultiplied color component value internally
 // meaning all Red, Green, and Blue component are premultiplied by the alpha
@@ -599,7 +599,7 @@ Image.pixelToColor(p).green; // 0
 Image.pixelToColor(p).blue; // 0
 Image.pixelToColor(p).alpha; // 0
 
-p = a.getColor(1,0); // more explicit - but same here
+p = a.getColor(1, 0); // more explicit - but same here
 ::
 
 METHOD::setColor
@@ -657,22 +657,22 @@ code::
 i = Image.new(20@20);
 i.pixels_(
 	Int32Array.fill(i.width * i.height, {
-		Image.colorToPixel(Color.new255(255.rand,127.rand,255.rand,255))
+		Image.colorToPixel(Color.new255(255.rand, 127.rand, 255.rand, 255))
 	})
 );
-//i.interpolation_(\fast); // uncomment to see the difference
-w = i.plot(freeOnClose:true);
+// i.interpolation_(\fast); // uncomment to see the difference
+w = i.plot(freeOnClose: true);
 i.pixels.postln;
 )
 
 (
 i = Image.color(50@50, Color.white);
 i.setPixels(
-	Int32Array.fill(20*20,{Image.colorToPixel(Color.new255(255.rand,127.rand,255.rand,255))}),
-	Rect(10,10,20,20)
+	Int32Array.fill(20*20, { Image.colorToPixel(Color.new255(255.rand, 127.rand, 255.rand, 255)) }),
+	Rect(10, 10, 20, 20)
 );
 i.interpolation_(\fast); // uncomment to see the difference
-w = i.plot(freeOnClose:true);
+w = i.plot(freeOnClose: true);
 i.pixels.postln;
 )
 ::

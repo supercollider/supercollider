@@ -163,7 +163,7 @@ public:
 
     DocumentManager(Main*, Settings::Manager*);
     QList<Document*> documents() { return mDocHash.values(); }
-    QList<QByteArray> documentIDs() { return mDocHash.uniqueKeys(); }
+    QList<QByteArray> documentIDs() { return mDocHash.keys(); }
 
     void create();
     void close(Document*);

@@ -1,0 +1,90 @@
+title:: Size
+summary:: A simple geometry class representing width and height.
+categories:: Geometry
+related:: Classes/Point, Classes/Rect, Classes/Image, Classes/QPenPrinter
+
+
+description::
+link::Classes/Size:: represents a two-dimensional extent, consisting of a teletype::width:: and a teletype::height::.
+It is used in classes that require explicit dimensions, such as link::Classes/Image:: and link::Classes/QPenPrinter::.
+
+
+CLASSMETHODS::
+
+
+method:: new
+
+Create a new link::Classes/Size:: instance with the given width and height.
+
+argument:: width
+
+The width component. Typically an link::Classes/Integer:: or an link::Classes/Float::, but accepts any built-in subclasses of link::Classes/Number::.
+
+argument:: height
+
+The height component. Typically an link::Classes/Integer:: or an link::Classes/Float::, but accepts any built-in subclasses of link::Classes/Number::.
+
+returns:: A new link::Classes/Size:: instance.
+
+
+instancemethods::
+
+
+METHOD:: width
+
+
+METHOD:: storeArgs
+
+returns:: An Array containing the width and height: code::[width, height]::.
+
+
+METHOD:: height
+
+
+METHOD:: asSize
+
+
+METHOD:: asPoint
+
+returns:: A new link::Classes/Point:: instance.
+
+
+METHOD:: asRect
+
+returns:: A new link::Classes/Rect:: instance.
+
+
+METHOD:: ==
+
+ARGUMENT:: size
+
+
+METHOD:: hash
+
+
+METHOD:: printOn
+
+ARGUMENT:: stream
+
+
+EXAMPLES::
+
+code::
+~aSize1 = Size(100, 200);
+
+~aSize1;
+
+~aSize1.width = 50;
+~aSize1.postln;
+
+~aSize1.height_(100);
+~aSize1.postln;
+
+~aSize2 = Size(100, 200);
+
+~aSize1 == ~aSize2; // -> false
+
+~aSize1.asRect;     // -> Rect(0, 0, 50, 100)
+
+~aSize1.asPoint;     // -> Point(50, 100)
+::

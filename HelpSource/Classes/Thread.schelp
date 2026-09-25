@@ -198,7 +198,7 @@ discussion::
 Example:
 code::
 g = thisThread.randSeed = 4;
-10.do{1.0.rand2.postln};
+10.do{ 1.0.rand2.postln };
 ::
 
 method::randData
@@ -208,11 +208,10 @@ discussion::
 Example:
 code::
 g = thisThread.randData;
-10.do{1.0.rand2.postln};
+10.do{ 1.0.rand2.postln };
 ::
 code::
 // each time the seed is reset, the random number generation should give the same sequence
-thisThread.randData_(Int32Array[ -662787342, 1546785953, 1661466823 ]);
-10.do{1.0.rand2.postln};
+thisThread.randData_(Int32Array[-662787342, 1546785953, 1661466823]);
+10.do{ 1.0.rand2.postln };
 ::
-

@@ -12,9 +12,9 @@ Examples::
 code::
 (
 var a, b;
-a = Place(#[1, [2,5], [3, 6]], inf);
+a = Place(#[1, [2, 5], [3, 6]], inf);
 x = a.asStream;
-8.do({ x.next.postln; });
+8.do({ x.next.postln });
 )
 
 1
@@ -28,11 +28,11 @@ x = a.asStream;
 
 
 
-//Place used as a sequence of pitches
+// Place used as a sequence of pitches
 
 (
 SynthDef("help-sinegrain",
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))

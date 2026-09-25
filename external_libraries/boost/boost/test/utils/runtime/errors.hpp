@@ -39,7 +39,7 @@ namespace runtime {
 
 class BOOST_SYMBOL_VISIBLE param_error : public std::exception {
 public:
-    ~param_error() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE {}
+    BOOST_TEST_DEFAULTED_FUNCTION(~param_error() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE, {})
 
     const char * what() const BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE
     {
@@ -58,13 +58,13 @@ protected:
 class BOOST_SYMBOL_VISIBLE init_error : public param_error {
 protected:
     explicit    init_error( cstring param_name ) : param_error( param_name ) {}
-    ~init_error() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE {}
+    BOOST_TEST_DEFAULTED_FUNCTION(~init_error() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE, {})
 };
 
 class BOOST_SYMBOL_VISIBLE input_error : public param_error {
 protected:
     explicit    input_error( cstring param_name ) : param_error( param_name ) {}
-    ~input_error() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE {}
+    BOOST_TEST_DEFAULTED_FUNCTION(~input_error() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE, {})
 };
 
 //____________________________________________________________________________//
@@ -73,7 +73,7 @@ template<typename Derived, typename Base>
 class BOOST_SYMBOL_VISIBLE specific_param_error : public Base {
 protected:
     explicit    specific_param_error( cstring param_name ) : Base( param_name ) {}
-    ~specific_param_error() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE {}
+    BOOST_TEST_DEFAULTED_FUNCTION(~specific_param_error() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE, {})
 
 public:
 
@@ -166,7 +166,7 @@ public:
     : specific_param_error<ambiguous_param,input_error>( "" )
     , m_amb_candidates( amb_candidates ) {}
 #endif
-    ~ambiguous_param() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE {}
+    BOOST_TEST_DEFAULTED_FUNCTION(~ambiguous_param() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE, {})
 
     std::vector<cstring> m_amb_candidates;
 };
@@ -182,7 +182,7 @@ public:
     : specific_param_error<unrecognized_param,input_error>( "" )
     , m_typo_candidates( type_candidates ) {}
 #endif
-    ~unrecognized_param() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE {}
+    BOOST_TEST_DEFAULTED_FUNCTION(~unrecognized_param(), BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE {})
 
     std::vector<cstring> m_typo_candidates;
 };

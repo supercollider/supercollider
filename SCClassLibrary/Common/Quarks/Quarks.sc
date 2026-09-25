@@ -9,7 +9,8 @@ Quarks {
 		fetched=false,
 		cache,
 		regex,
-		installedPaths;
+		installedPaths,
+		installing;
 
 	*install { |name, refspec|
 		var path, quark;
@@ -188,7 +189,7 @@ Quarks {
 	*installQuark { |quark|
 		var
 			deps,
-			incompatible = { arg name;
+			incompatible = { |name|
 				(quark.name
 					+ "reports an incompatibility with this SuperCollider version"
 					+ "or with other already installed quarks."
@@ -197,28 +198,35 @@ Quarks {
 			},
 			prev = this.installed.detect({ |q| q.name == quark.name });
 
-		if(prev.notNil and: {prev.localPath != quark.localPath}, {
+		if(prev.notNil and: { prev.localPath != quark.localPath }) {
 			("A version of % is already installed at %".format(quark, prev.localPath)).error;
 			^false
-		});
+		};
 
 		"Installing %".format(quark.name).postln;
-
+		// add currently installing quark to 'installing' Array
+		installing = if(installing.size == 0) { [quark] } { installing ++ quark };
 		quark.checkout();
-		if(quark.isCompatible().not, {
+		if(quark.isCompatible().not) {
 			^incompatible.value(quark.name);
-		});
-		quark.dependencies.do { |dep|
-			var ok = dep.install();
-			if(ok.not, {
-				("Failed to install" + quark.name).error;
-				^false
-			});
+		};
+		quark.dependencies.do{ |dep|
+			var ok;
+			// check if dependency is already installing
+			if(installing.detect({ |q| q.name == dep.name }).isNil) {				
+				ok = dep.install();
+				if(ok.not) {
+					("Failed to install" + quark.name).error;
+					^false
+				}
+			}
 		};
 		quark.runHook(\preInstall);
 		this.link(quark.localPath);
 		quark.runHook(\postInstall);
 		(quark.name + "installed").postln;
+		// remove quark from installing Array
+		installing = installing.reject{ |q| q.name == quark.name };
 		this.clearCache();
 		^true
 	}

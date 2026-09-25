@@ -54,8 +54,8 @@ code::
 // write a sine oscillator's output to a pin
 
 (
-SynthDef("help-DigitalOut",{ arg out=0;
-    DigitalOut.ar( 0, SinOsc.ar( 10 ) );
+SynthDef("help-DigitalOut", { |out = 0|
+    DigitalOut.ar(0, SinOsc.ar(10));
 }).play;
 )
 

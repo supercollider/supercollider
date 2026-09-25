@@ -14,7 +14,7 @@
 #include <map>
 
 #ifndef BOOST_EXCEPTION_ENABLE_WARNINGS
-#if __GNUC__*100+__GNUC_MINOR__>301
+#if defined(__GNUC__) && __GNUC__*100+__GNUC_MINOR__>301
 #pragma GCC system_header
 #endif
 #ifdef __clang__
@@ -31,7 +31,7 @@ boost
     template <class Tag,class T>
     inline
     std::string
-    error_info_name( error_info<Tag,T> const & x )
+    error_info_name( error_info<Tag,T> const & )
         {
         return tag_type_name<Tag>();
         }
@@ -86,9 +86,6 @@ boost
                 if( info_.end()!=i )
                     {
                     shared_ptr<error_info_base> const & p = i->second;
-#ifndef BOOST_NO_RTTI
-                    BOOST_ASSERT( *BOOST_EXCEPTION_DYNAMIC_TYPEID(*p).type_==*ti.type_ );
-#endif
                     return p;
                     }
                 return shared_ptr<error_info_base>();

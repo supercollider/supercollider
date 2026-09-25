@@ -29,7 +29,7 @@ d == e; // true
 )
 ::
 
-## The most typical usage is to create a Date from a year/month/day and possibly hour/minute/second.  All of these properties (except teletype::year::) have default values (teletype::month=1::, teletype::day=1::, teletype::hour=0::, teletype::minute=0::, teletype::second=0::). teletype::rawSeconds:: is computed based on the other properties. There is no default year -- if no teletype::year:: is provided, an error is thrown.
+## The most typical usage is to create a Date from a year/month/day and possibly hour/minute/second.  All of these properties (except teletype::year::) have default values (teletype::month = 1::, teletype::day = 1::, teletype::hour = 0::, teletype::minute = 0::, teletype::second = 0::). teletype::rawSeconds:: is computed based on the other properties. There is no default year — if no teletype::year:: is provided, an error is thrown.
 
 code::
 Date(1969, 7, 20, 20, 18); // -> Sun Jul 20 20:18:00 1969
@@ -37,9 +37,13 @@ Date(2016); // -> Fri Jan  1 00:00:00 2016
 d = Date(2010, day: 15, minute: 30); // -> Fri Jan 15 00:30:00 2010
 [d.asString, d.dayOfWeek, d.rawSeconds]; // dayOfWeek and rawSeconds were computed
 ::
+
+Note::
+On Windows, code::Date:: creation fails for dates before Unix epoch, i.e. before January 1st, 1970.
+::
 ::
 
-It is possible to specify dates with "out of range" values that will be resolved into a valid range -- this allows simple date offset calculations to be performed (see example below).
+It is possible to specify dates with "out of range" values that will be resolved into a valid range — this allows simple date offset calculations to be performed (see example below).
 
 code::
 (
@@ -106,9 +110,9 @@ code::
 (
 var a = Date.seed;
 thisThread.randSeed = a;
-20.do { [1,0].choose.post }; "".postln;
+20.do { [1, 0].choose.post }; "".postln;
 thisThread.randSeed = a;
-25.do { [1,0].choose.post }; "".postln;
+25.do { [1, 0].choose.post }; "".postln;
 )
 ::
 
@@ -117,7 +121,7 @@ InstanceMethods::
 method::rawSeconds
 Get or set the receiver's raw time in seconds (relative to the "epoch" of January 1, 1970).
 
-If you modify this property, the other properties will not update. See note at link::#-resolve:: -- there is no "resolveFromRawSeconds" method, but you can generate a new self-consistent Date instance by passing the teletype::rawSeconds:: as an argument to link::#*new::.
+If you modify this property, the other properties will not update. See note at link::#-resolve:: — there is no "resolveFromRawSeconds" method, but you can generate a new self-consistent Date instance by passing the teletype::rawSeconds:: as an argument to link::#*new::.
 
 note::
 This value is not portable between machines, because of differences in the way the underlying time functions are implemented, and because of time zone differences.  To save/restore Date values between runs and on different platforms, it is recommended strong::not:: to use the rawSeconds value.  Instead, you should serialize the Date to a string, for example:
@@ -160,12 +164,12 @@ Returns asctime.
 method::resolve
 Resolve any inconsistencies in the Date object, updating all the fields (in particular teletype::dayOfWeek:: and teletype::rawSeconds::) as necessary.
 
-If the instance properties (teletype::year::, teletype::month::, teletype::day::, teletype::hour::, teletype::minute::, teletype::second::) are modified, the Date will be in an inconsistent state -- its teletype::rawSeconds:: won't reflect the modifications, and the properties may fall outside of "normal" ranges (teletype::month: 1-12, day:1-31, hour: 0-23, minute/second: 0-59::).  Also, using the string conversion methods may give strange results. Calling the teletype::resolve:: method will put things back into a consistent state.
+If the instance properties (teletype::year::, teletype::month::, teletype::day::, teletype::hour::, teletype::minute::, teletype::second::) are modified, the Date will be in an inconsistent state — its teletype::rawSeconds:: won't reflect the modifications, and the properties may fall outside of "normal" ranges (teletype::month: 1-12, day:1-31, hour: 0-23, minute/second: 0-59::).  Also, using the string conversion methods may give strange results. Calling the teletype::resolve:: method will put things back into a consistent state.
 
 code::
 // Simple date/time offsetting can be performed:
 d = Date(2017, 9, 30, 10, 30); // -> Sat Sep 30 10:30:00 2017
-[d.dayOfWeek, d.rawSeconds]; // -> [ 6, 1506760200 ]
+[d.dayOfWeek, d.rawSeconds]; // -> [6, 1506760200]
 d.hour = d.hour - 13; // -> Sat Sep 30 -03:30:00 2017
 d.month = d.month + 4; // -> Sat ??? 30 -03:30:00 2017
 d.minute = d.minute + 200; // -> Sat ??? 30 -03:230:00 2017
@@ -173,7 +177,7 @@ d.rawSeconds; // hasn't changed: still 1506760200
 
 // Now resolve everything back into reasonable ranges, applying the offsets:
 d.resolve; // -> Tue Jan 30 00:50:00 2018
-[d.dayOfWeek, d.rawSeconds]; // -> [ 2, 1517269800 ]
+[d.dayOfWeek, d.rawSeconds]; // -> [2, 1517269800]
 ::
 
 note::
@@ -274,7 +278,7 @@ definitionList::
 || Replaced by the time in a.m. and p.m. notation; in the POSIX locale this shall be equivalent to %I :%M :%S%p. [ tm_hour, tm_min, tm_sec]
 
 ## %R
-|| Replaced by the time in 24-hour notation (%H : %M ). [ tm_hour, tm_min]
+|| Replaced by the time in 24-hour notation (%H : %M). [ tm_hour, tm_min]
 
 ## %S
 || Replaced by the second as a decimal number [00,60]. [ tm_sec]
@@ -283,7 +287,7 @@ definitionList::
 || Replaced by a <tab>.
 
 ## %T
-|| Replaced by the time ( %H : %M : %S ). [ tm_hour, tm_min, tm_sec]
+|| Replaced by the time ( %H : %M : %S). [ tm_hour, tm_min, tm_sec]
 
 ## %u
 || Replaced by the weekday as a decimal number [1,7], with 1 representing Monday. [ tm_wday]
@@ -313,7 +317,7 @@ definitionList::
 || Replaced by the year as a decimal number (for example, 1997). [ tm_year]
 
 ## %z
-|| Replaced by the offset from UTC in the ISO 8601:2000 standard format ( +hhmm or -hhmm ), or by no characters if no timezone is determinable. For example, "-0430" means 4 hours 30 minutes behind UTC (west of Greenwich). If tm_isdst is zero, the standard time offset is used. If tm_isdst is greater than zero, the daylight savings time offset is used. If tm_isdst is negative, no characters are returned. [ tm_isdst]
+|| Replaced by the offset from UTC in the ISO 8601:2000 standard format ( +hhmm or -hhmm), or by no characters if no timezone is determinable. For example, "-0430" means 4 hours 30 minutes behind UTC (west of Greenwich). If tm_isdst is zero, the standard time offset is used. If tm_isdst is greater than zero, the daylight savings time offset is used. If tm_isdst is negative, no characters are returned. [ tm_isdst]
 
 ## %Z
 || Replaced by the timezone name or abbreviation, or by no bytes if no timezone information exists. [ tm_isdst]

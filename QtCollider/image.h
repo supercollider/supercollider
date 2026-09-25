@@ -199,4 +199,6 @@ typedef QSharedPointer<QtCollider::Image> SharedImage;
 
 } // namespace QtCollider
 
-Q_DECLARE_METATYPE(QtCollider::SharedImage);
+// SharedImage is a typedef, so Q_PROPERTY and Q_INVOKABLE need to use its full type name,
+// otherwise some type comparisons when invoking methods might fail
+Q_DECLARE_METATYPE(QSharedPointer<QtCollider::Image>);

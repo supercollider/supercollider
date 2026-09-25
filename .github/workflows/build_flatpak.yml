@@ -1,0 +1,74 @@
+name: Build Flatpak
+on:
+  workflow_call:
+    inputs:
+      sc-version:
+        required: true
+        type: string
+
+jobs:
+  build-flatpak:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+            job-name: "x86 64bit"
+            artifact-suffix: "x86_64"
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+            job-name: "arm64"
+            artifact-suffix: "arm64"
+
+    name: flatpak ${{ matrix.job-name }}
+
+    env:
+      FLATPAK_FILE: "SuperCollider-${{ inputs.sc-version }}-Linux-${{ matrix.artifact-suffix }}.flatpak"
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Install flatpak and flatpak-builder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+
+      - name: Add Flathub remote
+        run: |
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+      - name: Install SDK and runtime
+        run: |
+          flatpak install --user --noninteractive \
+            flathub org.kde.Platform//6.10 \
+            org.kde.Sdk//6.10 \
+            io.qt.qtwebengine.BaseApp//6.10
+
+      - name: cache ccache
+        uses: actions/cache@v6
+        with:
+          path: .flatpak-builder
+          key: flatpak-${{ matrix.arch }}-${{ hashFiles('platform/linux/online.supercollider.SuperCollider.yml') }}
+          restore-keys: flatpak-${{ matrix.arch }}-
+
+      - name: Build Flatpak
+        run: |
+          flatpak-builder \
+            --ccache \
+            --force-clean \
+            --repo=repo builddir \
+            platform/linux/online.supercollider.SuperCollider.yml
+
+      - name: Create bundle
+        run: |
+          flatpak build-bundle repo "${{ env.FLATPAK_FILE }}" online.supercollider.SuperCollider
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.FLATPAK_FILE }}
+          path: ${{ env.FLATPAK_FILE }}

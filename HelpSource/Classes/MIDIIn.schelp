@@ -32,7 +32,7 @@ private::prDispatchEvent, connectByUID, disconnectByUID
 method::findPort
 searches for a connected link::Classes/MIDIEndPoint:: by name.
 code::
-//list connected ins:
+// list connected ins:
 MIDIClient.init;
 MIDIClient.sources;
 ::
@@ -223,16 +223,16 @@ code::
 (
 MIDIIn.connect;	// init for one port midi interface
 // register functions:
-~noteOff = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
-~noteOn = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
-~polytouch = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
-~control = { arg src, chan, num, val;	[chan,num,val].postln; };
-~program = { arg src, chan, prog;		[chan,prog].postln; };
-~touch = { arg src, chan, pressure;	[chan,pressure].postln; };
-~bend = { arg src, chan, bend;		[chan,bend - 8192].postln; };
-~sysex = { arg src, sysex;		sysex.postln; };
-~sysrt = { arg src, chan, val;		[chan,val].postln; };
-~smpte = { arg src, chan, val;		[chan,val].postln; };
+~noteOff = 	{ |src, chan, num, vel|	[chan, num, vel / 127].postln };
+~noteOn = 	{ |src, chan, num, vel|	[chan, num, vel / 127].postln };
+~polytouch = { |src, chan, num, vel| [chan, num, vel / 127].postln };
+~control = 	{ |src, chan, num, val|	[chan, num, val].postln };
+~program = 	{ |src, chan, prog|		[chan, prog].postln };
+~touch = 	{ |src, chan, pressure|	[chan, pressure].postln };
+~bend = 	{ |src, chan, bend|		[chan, bend - 8192].postln };
+~sysex = 	{ |src, sysex|			sysex.postln };
+~sysrt = 	{ |src, chan, val|		[chan, val].postln };
+~smpte = 	{ |src, chan, val|		[chan, val].postln };
 MIDIIn.addFuncTo(\noteOn, ~noteOn);
 MIDIIn.addFuncTo(\noteOff, ~noteOff);
 MIDIIn.addFuncTo(\polytouch, ~polytouch);
@@ -245,7 +245,7 @@ MIDIIn.addFuncTo(\sysrt, ~sysrt);
 MIDIIn.addFuncTo(\smpte, ~smpte);
 )
 
-//cleanup
+// cleanup
 (
 MIDIIn.removeFuncFrom(\noteOn, ~noteOn);
 MIDIIn.removeFuncFrom(\noteOff, ~noteOff);
@@ -265,8 +265,8 @@ code::
 (
 	var inPorts = 2;
 	var outPorts = 2;
-	MIDIClient.init(inPorts,outPorts);	// explicitly intialize the client
-	inPorts.do({ arg i;
+	MIDIClient.init(inPorts, outPorts);	// explicitly intialize the client
+	inPorts.do({ |i|
 		MIDIIn.connect(i, MIDIClient.sources.at(i));
 	});
 )
@@ -292,28 +292,28 @@ SynthDef("sik-goo", { |out, freq = 440, formfreq = 100, gate = 0.0, bwfreq = 800
 
 x = Synth("sik-goo");
 
-//set the action:
+// set the action:
 (
-~noteOn = {arg src, chan, num, vel;
+~noteOn = { |src, chan, num, vel|
 	x.set(\freq, num.midicps / 4.0);
-	x.set(\gate, vel / 200 );
+	x.set(\gate, vel / 200);
 	x.set(\formfreq, vel / 127 * 1000);
 };
 MIDIIn.addFuncTo(\noteOn, ~noteOn);
 
-~noteOff = { arg src,chan,num,vel;
+~noteOff = { |src, chan, num, vel|
 	x.set(\gate, 0.0);
 };
 MIDIIn.addFuncTo(\noteOff, ~noteOff);
 
-~bend = { arg src,chan,val;
-	//(val * 0.048828125).postln;
-	x.set(\bwfreq, val * 0.048828125 );
+~bend = { |src, chan, val|
+	// (val * 0.048828125).postln;
+	x.set(\bwfreq, val * 0.048828125);
 };
 MIDIIn.addFuncTo(\bend, ~bend);
 )
 
-//cleanup
+// cleanup
 MIDIIn.removeFuncFrom(\noteOn, ~noteOn);
 MIDIIn.removeFuncFrom(\noteOff, ~noteOff);
 MIDIIn.removeFuncFrom(\bend, ~bend);
@@ -321,11 +321,11 @@ MIDIIn.removeFuncFrom(\bend, ~bend);
 
 subsection::writing to the bus rather than directly to the synth
 code::
-//i used this and got acceptable latency for triggering synths live.
-//The latency might actually be less than sc2, but i haven't used it enough
-//to tell for sure yet.
-//Powerbook G4, 512mb ram.
-//- matrix6k@somahq.com
+// i used this and got acceptable latency for triggering synths live.
+// The latency might actually be less than sc2, but i haven't used it enough
+// to tell for sure yet.
+// Powerbook G4, 512mb ram.
+// - matrix6k@somahq.com
 
 s.boot;
 
@@ -354,19 +354,19 @@ x.map(0, b);
 
 
 MIDIIn.connect;
-//set the action:
+// set the action:
 (
-~noteOn = {arg src, chan, num, vel;
+~noteOn = { |src, chan, num, vel|
 	b.value = num.midicps.postln;
 };
 MIDIIn.addFuncTo(\noteOn, ~noteOn);
 
-~control = {arg src, chan, num, val;
-	[chan,num,val].postln;
+~control = { |src, chan, num, val|
+	[chan, num, val].postln;
 };
 MIDIIn.addFuncTo(\control, ~control);
 
-~bend = {arg src, chan, val;
+~bend = { |src, chan, val|
 	val.postln;
 };
 MIDIIn.addFuncTo(\bend, ~bend);
@@ -382,22 +382,22 @@ MIDIIn.removeFuncFrom(\bend, ~bend);
 
 subsection::Keyboard Split for two voices
 code::
-//pbend to cutoff, mod to rez, 7 to amp
-//- matrix6k@somahq.com
+// pbend to cutoff, mod to rez, 7 to amp
+// - matrix6k@somahq.com
 
 s.boot;
 (
-SynthDef("funk",{ | out, freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed = 0 |
+SynthDef("funk", { |out, freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed = 0|
 	var e, x, env, range, filterfreq;
 	e = Env.new([0, 0.1, 0.1, 0], [0, 0.1, 0.1], 'linear', 2);
-	env = Env.adsr(0.3,1,1,1);
+	env = Env.adsr(0.3, 1, 1, 1);
 	range = cutoff -1;
-	filterfreq = SinOsc.kr(lfospeed,0, range, cutoff).abs;
+	filterfreq = SinOsc.kr(lfospeed, 0, range, cutoff).abs;
 	x = RLPF.ar(Mix.ar([
-			Mix.arFill(2, {Saw.ar(freq *2 + 0.2.rand2, amp)}),
-			Mix.arFill(2, {Saw.ar(freq *4+ 0.2.rand2, amp)})
+			Mix.arFill(2, { Saw.ar(freq *2 + 0.2.rand2, amp) }),
+			Mix.arFill(2, { Saw.ar(freq *4+ 0.2.rand2, amp) })
 		]),
-		EnvGen.kr(env,gate)*filterfreq,
+		EnvGen.kr(env, gate)*filterfreq,
 		rez);
 	Out.ar(out, x * EnvGen.kr(e, gate, doneAction: Done.freeSelf))
 }).add;
@@ -406,10 +406,10 @@ SynthDef("strings", { |out, freq = 700, amp = 0.2, gate = 1|
 	var x, enve;
 	enve = Env.new([0, 0.1, 0.1, 0], [2, 0.1, 1], 'linear', 2);
 	x = RLPF.ar(Mix.ar([
-			Mix.arFill(2, {Saw.ar(freq +2.rand2,0.6)}),
-			Mix.arFill(2, {Saw.ar(freq *0.5 + 2.rand2,0.6)})
+			Mix.arFill(2, { Saw.ar(freq +2.rand2, 0.6) }),
+			Mix.arFill(2, { Saw.ar(freq *0.5 + 2.rand2, 0.6) })
 		]),
-		6000,1);
+		6000, 1);
 	Out.ar(out, x * EnvGen.kr(enve, gate, doneAction: Done.freeSelf))
 }).add;
 )
@@ -423,51 +423,51 @@ MIDIIn.connect(0, MIDIClient.sources.at(0));
 
 g = Group.new;
 
-cutspec = ControlSpec(100,10000,\linear,0.001);
-cutbus = Bus.new(\control,1,1,s);
+cutspec = ControlSpec(100, 10000, \linear, 0.001);
+cutbus = Bus.new(\control, 1, 1, s);
 cutbus.value = 10000;
 
-rezspec = ControlSpec(1,0,\linear,0.001);
-rezbus = Bus.new(\control,2,1,s);
+rezspec = ControlSpec(1, 0, \linear, 0.001);
+rezbus = Bus.new(\control, 2, 1, s);
 rezbus.value = 1.0;
 
-lfospec = ControlSpec(0,50,\linear,0.001);
-lfobus = Bus.new(\control,3,1,s);
+lfospec = ControlSpec(0, 50, \linear, 0.001);
+lfobus = Bus.new(\control, 3, 1, s);
 
-~control = {arg src, chan, num, val;
-	if(num == 1,{
+~control = { |src, chan, num, val|
+	if(num == 1, {
 		rezbus.value = rezspec.map(val/127.0);
 	});
-	if(num == 7,{
+	if(num == 7, {
 		lfobus.value = lfospec.map(val/127.0).postln;
 	});
 };
 MIDIIn.addFuncTo(\control, ~control);
 
-~bend = {arg src, chan, val;
+~bend = { |src, chan, val|
 	cutbus.value = cutspec.map(val/16383.0);
 };
 MIDIIn.addFuncTo(\bend, ~bend);
 
-~noteOn = {arg src, chan, num, vel;
+~noteOn = { |src, chan, num, vel|
 	var node;
 	if(num < 60, {
 		node = Synth.tail(g, "funk", [\freq, num.midicps, \amp, vel/255]);
-		node.map("cutoff",1,"rez",2,"lfospeed",3);
-//		node = Synth.basicNew("funk",s);
+		node.map("cutoff", 1, "rez", 2, "lfospeed", 3);
+//		node = Synth.basicNew("funk", s);
 //		s.sendBundle(nil,
-//			node.addToTailMsg(g,[\freq, num.midicps, \amp, vel/255]),
-//			node.mapMsg("cutoff",1,"rez",2,"lfospeed",3)
+//			node.addToTailMsg(g, [\freq, num.midicps, \amp, vel/255]),
+//			node.mapMsg("cutoff", 1, "rez", 2, "lfospeed", 3)
 //		);
 		keys.put(num, node)
-	},{
+	}, {
 		node = Synth.tail(g, "strings", [\freq, num.midicps, \amp, vel/255]);
 		keys.put(num, node)
 	});
 };
 MIDIIn.addFuncTo(\noteOn, ~noteOn);
 
-~noteOff = {arg src, chan, num, vel;
+~noteOff = { |src, chan, num, vel|
 	var node;
 	node = keys.at(num);
 	if (node.notNil, {
@@ -480,7 +480,7 @@ MIDIIn.addFuncTo(\noteOn, ~noteOn);
 MIDIIn.addFuncTo(\noteOff, ~noteOff);
 )
 
-//cleanup
+// cleanup
 MIDIIn.removeFuncFrom(\noteOn, ~noteOn);
 MIDIIn.removeFuncFrom(\control, ~control);
 MIDIIn.removeFuncFrom(\bend, ~bend);

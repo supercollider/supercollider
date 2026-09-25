@@ -6,10 +6,7 @@ categories::  UGens>Delays
 
 Description::
 
-Comb delay line with cubic interpolation. See also  link::Classes/CombN::
-which uses no interpolation, and  link::Classes/CombL::  which uses linear
-interpolation. Cubic interpolation is more computationally expensive
-than linear, but more accurate.
+Comb delay line with cubic interpolation. See also link::Classes/CombN:: which uses no interpolation, and link::Classes/CombL:: which uses linear interpolation. Cubic interpolation is more computationally expensive than linear, but more accurate.
 
 The feedback coefficient is given by the equation code:: fb == 0.001 ** (delay / decay.abs) * decay.sign :: where 0.001 is -60 dBFS.
 
@@ -61,11 +58,11 @@ code::
 { CombC.ar(WhiteNoise.ar(0.01), 0.01, XLine.kr(0.0001, 0.01, 20), -0.2) }.play;
 
 // used as an echo.
-{ CombN.ar(Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
+{ CombN.ar(Decay.ar(Dust.ar(1, 0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
 
 // large delay lines
 (
-s.options.memSize= 8192*2;
+s.options.memSize = 8192*2;
 s.reboot;
 )
 ({
@@ -80,4 +77,3 @@ s.reboot;
 );
 
 ::
-

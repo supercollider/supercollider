@@ -30,10 +30,10 @@ int instVarPut(VMGlobals* g, int numArgsPushed);
 int instVarSize(VMGlobals* g, int numArgsPushed);
 int objectHash(VMGlobals* g, int numArgsPushed);
 int objectClass(VMGlobals* g, int numArgsPushed);
-int blockValue(VMGlobals* g, int numArgsPushed);
+
 int blockValueWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushed);
+inline int blockValue(VMGlobals* g, int numArgsPushed) { return blockValueWithKeys(g, numArgsPushed, 0); }
 int blockValueArray(VMGlobals* g, int numArgsPushed);
-int blockSpawn(VMGlobals* g, int numArgsPushed);
 
 int objectIsKindOf(VMGlobals* g, int numArgsPushed);
 int objectIsMemberOf(VMGlobals* g, int numArgsPushed);
@@ -63,6 +63,7 @@ int prObjectShallowCopy(VMGlobals* g, int numArgsPushed);
 int prObjectCopyRange(VMGlobals* g, int numArgsPushed);
 int prObjectPointsTo(VMGlobals* g, int numArgsPushed);
 int prObjectRespondsTo(VMGlobals* g, int numArgsPushed);
+int prInstancesOfClassRespondTo(VMGlobals* g, int numArgsPushed);
 
 int prCompileString(VMGlobals* g, int numArgsPushed);
 int prDumpBackTrace(VMGlobals* g, int numArgsPushed);

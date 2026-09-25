@@ -61,7 +61,7 @@ s.waitForBoot({	// only needed if you are using sound
 	// here the string label is independent of the content type (Function)
 	// dragLabel_() is used for the label while dragging
 	f = DragSource(w, Rect(10, 130, 150, 20)).align_(\center).setBoth_(false);
-	f.object = { { SinOsc.ar(440,0,0.4) }.play };
+	f.object = { { SinOsc.ar(440, 0, 0.4) }.play };
 	f.string = "My label is independent";
 	f.dragLabel = " My dragLabel_() says \n I am dragging a sound function ";
 
@@ -78,16 +78,16 @@ s.waitForBoot({	// only needed if you are using sound
 	h = DragSink(w, Rect(170, 70, 200, 20)).align_(\center);
 	h.string = "I convert to Rect";
 	h.canReceiveDragHandler = { View.currentDrag.isKindOf(Number) || View.currentDrag.isKindOf(Point) };
-	h.receiveDragHandler = { arg v; h.object = View.currentDrag.asRect };
+	h.receiveDragHandler = { |v| h.object = View.currentDrag.asRect };
 
 	// receive only functions, and try to play them
 	i = DragSink(w, Rect(170, 100, 200, 20)).align_(\center);
 	i.string = "I evaluate a (sound) function";
 	i.canReceiveDragHandler = { View.currentDrag.isKindOf(Function) };
-	i.receiveDragHandler = { arg v;
+	i.receiveDragHandler = { |v|
 		i.object = View.currentDrag.value;
 		i.string = "click here for silence";
-		i.background_(Color.red)};
+		i.background_(Color.red) };
 	i.mouseDownAction_({
 		i.object.free;
 		i.string = "I evaluate a (sound) function";

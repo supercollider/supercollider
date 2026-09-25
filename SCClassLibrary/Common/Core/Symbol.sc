@@ -166,6 +166,7 @@ Symbol {
 	* { ^this }
 	/ { ^this }
 	mod { ^this }
+	modSeaside { ^this }
 	min { ^this }
 	max { ^this }
 	bitAnd { ^this }
@@ -188,10 +189,10 @@ Symbol {
 	rrand { ^this }
 	exprand { ^this }
 
-	< { arg aNumber; _LT; ^this }
-	> { arg aNumber; _GT; ^this }
-	<= { arg aNumber; _LE; ^this }
-	>= { arg aNumber; _GE; ^this }
+	< { |aNumber, adverb| _LT; ^this }
+	> { |aNumber, adverb| _GT; ^this }
+	<= { |aNumber, adverb| _LE; ^this }
+	>= { |aNumber, adverb| _GE; ^this }
 
 	degreeToKey { ^this }
 

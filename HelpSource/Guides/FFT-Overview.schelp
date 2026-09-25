@@ -109,7 +109,7 @@ A similar example using a soundfile:
 
 code::
 // read the soundfile into a buffer
-d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+d = Buffer.read(s, ExampleFiles.child);
 
 (
 {
@@ -153,7 +153,7 @@ code::
 )
 ::
 
-PV processes can also share a single FFT UGen to process a signal in parallel. In the following example, 'chain0' and 'chain1' share the same FFT UGen. SuperCollider automatically copies the FFT data from 'chain' into hidden LocalBufs inside the Synth. In the following example, if the link::Classes/PV_PhaseShift:: UGen were operating directly on code::chainA::, then the two link::Classes/IFFT:: units would produce the same signal, which, when added together, would reinforce each other. Instead, the sound is nearly silent -- proving that code::chainB:: is in a different buffer, even though the function does not explicitly create it.
+PV processes can also share a single FFT UGen to process a signal in parallel. In the following example, 'chain0' and 'chain1' share the same FFT UGen. SuperCollider automatically copies the FFT data from 'chain' into hidden LocalBufs inside the Synth. In the following example, if the link::Classes/PV_PhaseShift:: UGen were operating directly on code::chainA::, then the two link::Classes/IFFT:: units would produce the same signal, which, when added together, would reinforce each other. Instead, the sound is nearly silent — proving that code::chainB:: is in a different buffer, even though the function does not explicitly create it.
 
 code::
 (
@@ -210,7 +210,7 @@ subsection::UGen access to FFT data
 It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods pvcalc, pvcalc2, pvcollect. Here's an example which uses the  methods link::Classes/SequenceableCollection#-clump:: and link::Classes/SequenceableCollection#-flop:: to rearrange the order of the spectral bins:
 
 code::
-c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, ExampleFiles.child);
 
 (
 x = {
@@ -325,4 +325,3 @@ definitionlist::
 ## link::Classes/UnpackFFT::, link::Classes/PackFFT::, link::Classes/Unpack1FFT:: || "unpacking" components used in pvcalc, pvcalc2, pvcollect (can also be used on their own)
 ::
 For a full list of FFT UGens, see strong::UGens>FFT:: in the link::Browse#UGens>FFT:: page.
-

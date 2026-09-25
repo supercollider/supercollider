@@ -23,6 +23,9 @@ NOTE:
 vDSP uses a "SplitBuf" as an intermediate representation of the data.
 For speed we keep this global, although this makes the code non-thread-safe.
 (This is not new to this refactoring. Just worth noting.)
+NEW ADDITION:
+Additional logic was used when adapting this for Supernova,
+ensuring that each thread has its own SplitBuf.
 */
 
 #include "clz.h"
@@ -32,7 +35,7 @@ For speed we keep this global, although this makes the code non-thread-safe.
 #include <cstring>
 #include <cassert>
 
-#include "SC_fftlib.h"
+#include "SC_fftlib.hpp"
 #include "malloc_aligned.hpp"
 
 #ifdef NOVA_SIMD
@@ -85,20 +88,24 @@ extern "C" {
 
 // This struct is a bit like FFTW's idea of a "plan": it represents an FFT operation that may be applied once or
 // repeatedly. It should be possible for indata and outdata to be the same, for quasi-in-place operation.
-typedef struct scfft {
+struct scfft {
     unsigned int nfull, nwin, log2nfull,
         log2nwin; // Lengths of full FFT frame, and the (possibly shorter) windowed data frame
     short wintype;
     float *indata, *outdata, *trbuf;
     float scalefac; // Used to rescale the data to unity gain
-} scfft;
+};
 
 
 static float* fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 
 #if SC_FFT_VDSP
 static FFTSetup fftSetup[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1]; // vDSP setups, one per FFT size
+#    ifdef SUPERNOVA
+thread_local static COMPLEX_SPLIT splitBuf;
+#    else
 static COMPLEX_SPLIT splitBuf; // Temp buf for holding rearranged data
+#    endif
 #endif
 
 #if SC_FFT_GREEN
@@ -167,6 +174,23 @@ static inline float* scfft_create_fftwindow(int wintype, int log2n) {
 
 static void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype);
 
+#if SC_FFT_VDSP
+// initialize splitbuf memory
+void scfft_init_splitbuf() {
+    // vDSP prepares its memory-aligned buffer for rearranging input data.
+    // Note max size here - meaning max input buffer size is these two sizes added together.
+    // vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
+    splitBuf.realp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
+    splitBuf.imagp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
+}
+#endif
+
+void scfft_thread_init() {
+#if SC_FFT_VDSP
+    scfft_init_splitbuf();
+#endif
+}
+
 static bool scfft_global_initialization(void) {
     for (int wintype = 0; wintype < 2; ++wintype) {
         for (int i = 0; i < SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
@@ -192,11 +216,12 @@ static bool scfft_global_initialization(void) {
             printf("FFT ERROR: Mac vDSP library could not allocate FFT setup for size %i\n", 1 << i);
         }
     }
-    // vDSP prepares its memory-aligned buffer for rearranging input data.
-    // Note max size here - meaning max input buffer size is these two sizes added together.
-    // vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
-    splitBuf.realp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
-    splitBuf.imagp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
+#    ifndef SUPERNOVA
+    // allocate splitBuf memory
+    // on supernova we do that by calling scfft_thread_init() from
+    // realtime_engine_functor::init_thread() and thread_init_functor::operator()
+    scfft_init_splitbuf();
+#    endif
     // printf("SC FFT global init: vDSP initialised.\n");
 #elif SC_FFT_FFTW
     size_t maxSize = 1 << SC_FFT_LOG2_MAXSIZE;
@@ -243,20 +268,20 @@ static size_t scfft_trbufsize(unsigned int fullsize) {
 static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
 static int largest_fftsize = 1 << largest_log2n;
 
-scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype, float* indata, float* outdata,
-                    SCFFT_Direction forward, SCFFT_Allocator& alloc) {
+scfft* scfft_create(size_t fullsize, size_t winsize, int32 wintype, float* indata, float* outdata, int32 direction,
+                    SCFFT_Allocator* alloc) {
     if ((fullsize > SC_FFT_ABSOLUTE_MAXSIZE) || (fullsize < SC_FFT_MINSIZE))
         return NULL;
 
     const int alignment = 128; // in bytes
-    char* chunk = (char*)alloc.alloc(sizeof(scfft) + scfft_trbufsize(fullsize) + alignment);
+    size_t allocSize = sizeof(scfft) + scfft_trbufsize(fullsize) + alignment;
+    char* chunk = (char*)alloc->mAlloc(alloc->mUser, allocSize);
     if (!chunk)
         return NULL;
 
     scfft* f = (scfft*)chunk;
     float* trbuf = (float*)(chunk + sizeof(scfft));
-    trbuf = (float*)((size_t)((char*)trbuf + (alignment - 1))
-                     & -alignment); // FIXME: should be intptr_t instead of size_t once we use c++11
+    trbuf = (float*)((uintptr_t)((char*)trbuf + (alignment - 1)) & -alignment);
 
 #ifdef NOVA_SIMD
     assert(nova::vec<float>::is_aligned(trbuf));
@@ -278,13 +303,14 @@ scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintyp
 
     // The scale factors rescale the data to unity gain. The old Green lib did this itself, meaning scalefacs would here
     // be 1...
-    if (forward) {
+    if (direction == kForward) {
 #if SC_FFT_VDSP
         f->scalefac = 0.5f;
 #else // forward FFTW and Green factor
         f->scalefac = 1.f;
 #endif
     } else { // backward FFTW and VDSP factor
+        assert(direction == kBackward);
 #if SC_FFT_GREEN
         f->scalefac = 1.f;
 #else // fftw, vdsp
@@ -443,4 +469,4 @@ void scfft_doifft(scfft* f) {
     scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nwin, f->wintype, f->scalefac);
 }
 
-void scfft_destroy(scfft* f, SCFFT_Allocator& alloc) { alloc.free(f); }
+void scfft_destroy(scfft* f, SCFFT_Allocator* alloc) { alloc->mFree(alloc->mUser, f); }

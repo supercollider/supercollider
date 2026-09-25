@@ -68,6 +68,7 @@ def main(version: Version):
         "Have all the deprecations been either removed or deferred to a later release?\n      Deprecations are removed on a case-by-case basis with each minor (3.x) release.\n      Corresponding UGen and primitive code should also be removed.\n      Be careful when deprecating UGens and be considerate of alternate clients!",
         "Have all the removed deprecations been documented in the changelog?",
         ["Have you reviewed the platform support information in the main README.md for accuracy?", f"https://github.com/supercollider/supercollider/blob/{release_branch_name}/README.md#platform-support"],
+        "Have you added a release entry to the AppStream/Flatpak metafile located at platform/linux/online.supercollider.SuperCollider.metainfo.xml?",
 
         "Have you updated SCVersion.txt?",
         "Have you updated CHANGELOG.md with information about merged PRs?",

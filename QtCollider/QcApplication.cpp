@@ -20,6 +20,7 @@
  ************************************************************************/
 
 #include "QcApplication.h"
+#include "ClassLibraryInfo.hpp"
 #include "widgets/QcTreeWidget.h"
 
 #include <PyrLexer.h>
@@ -42,7 +43,7 @@
 #    include "../../common/SC_Apple.hpp"
 #endif
 
-extern bool compiledOK;
+extern ClassLibraryInfo gClassLibraryInfo;
 
 QcApplication* QcApplication::_instance = 0;
 QMutex QcApplication::_mutex;
@@ -74,7 +75,9 @@ QcApplication::QcApplication(int& argc, char** argv): QApplication(argc, argv, Q
     _mutex.lock();
     _instance = this;
     _mutex.unlock();
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     this->setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
 
 #ifdef Q_OS_MAC
     QtCollider::Mac::DisableAutomaticWindowTabbing();
@@ -130,15 +133,9 @@ bool QcApplication::compareThread() { return gMainVMGlobals->canCallOS; }
 
 void QcApplication::interpret(const QString& str, bool print) {
     QtCollider::lockLang();
-    if (compiledOK) {
-        VMGlobals* g = gMainVMGlobals;
-
-        PyrString* strObj = newPyrString(g->gc, str.toStdString().c_str(), 0, true);
-
-        SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strObj);
-        g->gc->GCWriteNew(slotRawObject(&g->process->interpreter),
-                          strObj); // we know strObj is white so we can use GCWriteNew
-
+    if (gClassLibraryInfo.acceptsInput()) {
+        const auto stdStr = str.toStdString();
+        setCommandLine(stdStr.c_str(), stdStr.size(), nullptr, 0, 0);
         runLibrary(print ? SC_SYM(interpretPrintCmdLine) : SC_SYM(interpretCmdLine));
     }
     QtCollider::unlockLang();

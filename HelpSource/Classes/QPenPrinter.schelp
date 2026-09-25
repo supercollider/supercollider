@@ -88,7 +88,7 @@ discussion::
 This can be used to scale the graphics to fit the page if the bounds of the graphics is known:
 code::
 x = penPrinter.pageSize.width / bounds.width;
-Pen.scale(x,x);
+Pen.scale(x, x);
 // ... draw stuff here ...
 ::
 
@@ -146,4 +146,3 @@ p.showDialog {
     "Printing cancelled!".postln;
 };
 ::
-

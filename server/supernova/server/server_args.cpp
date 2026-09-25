@@ -34,6 +34,13 @@ server_arguments::server_arguments(int argc, char* argv[]) {
     /* prepare options */
     options_description options("general options");
 
+    // only enable thread pinning by default on Linux
+#if defined(__linux__)
+    bool def_thread_pinning = true;
+#else
+    bool def_thread_pinning = false;
+#endif
+
     // clang-format off
     options.add_options()
         ("help,h", "show this help")
@@ -75,6 +82,7 @@ server_arguments::server_arguments(int argc, char* argv[]) {
 #endif
         ("restricted-path,P", value<vector<string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
         ("threads,T", value<uint16_t>(&threads)->default_value(boost::thread::physical_concurrency()), "number of audio threads")
+        ("thread-pinning,y", value<bool>(&thread_pinning)->default_value(def_thread_pinning), "pin threads to CPU cores")
         ("socket-address,B", value<string>(&socket_address_str)->default_value("127.0.0.1"), "Bind the UDP or TCP socket to this address.\n"
                                                             "Set to 0.0.0.0 to listen on all interfaces.")
         ;

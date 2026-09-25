@@ -5,14 +5,14 @@ categories:: UGens>Demand
 
 Description::
 link::Classes/Dbrown::  returns numbers in the continuous range between
-code::lo::  and  code::hi:: ,
+code::lo::  and  code::hi::,
 Dibrown returns integer values.
 
 
 The arguments can be a number or any other UGen.
 
 
-See link::Classes/Pbrown::,  link::Classes/BrownNoise::  for structurally related
+See link::Classes/Pbrown::, link::Classes/BrownNoise::  for structurally related
 equivalents.
 
 
@@ -56,4 +56,3 @@ code::
 )
 
 ::
-

@@ -1,0 +1,201 @@
+name: Build Linux
+on:
+  workflow_call:
+    inputs:
+      sc-version:
+        required: true
+        type: string
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-${{ matrix.os-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - job-name: ""
+            os-version: "24.04"
+            c-compiler: "gcc-11"
+            cxx-compiler: "g++-11"
+            use-syslibs: false
+            shared-libscsynth: false
+            ctest: false
+
+          - job-name: "use system libraries with ctest"
+            os-version: "24.04"
+            c-compiler: "gcc-13"
+            cxx-compiler: "g++-13"
+            use-syslibs: true
+            shared-libscsynth: false
+            ctest: true
+
+          - job-name: "shared libscsynth"
+            os-version: "24.04"
+            c-compiler: "gcc-14"
+            cxx-compiler: "g++-14"
+            use-syslibs: false
+            shared-libscsynth: true
+            ctest: false
+
+          - job-name: ""
+            os-version: "26.04"
+            c-compiler: "gcc-15"
+            cxx-compiler: "g++-15"
+            use-syslibs: false
+            shared-libscsynth: false
+            ctest: false
+
+          - job-name: "with ctest"
+            os-version: "26.04"
+            c-compiler: "gcc-16"
+            cxx-compiler: "g++-16"
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: "ubuntu-26.04-gcc16" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
+            ctest: true
+            
+          - job-name: ""
+            os-version: "24.04"
+            c-compiler: "clang-14"
+            cxx-compiler: "clang++-14"
+            use-syslibs: false
+            shared-libscsynth: false
+            ctest: false
+
+          - job-name: "with ctest"
+            os-version: "24.04"
+            c-compiler: "clang-18"
+            cxx-compiler: "clang++-18"
+            use-syslibs: false
+            shared-libscsynth: false
+            ctest: true
+
+          - job-name: ""
+            os-version: "26.04"
+            c-compiler: "clang-19"
+            cxx-compiler: "clang++-19"
+            use-syslibs: false
+            shared-libscsynth: false
+            ctest: false
+
+          - job-name: ""
+            os-version: "26.04"
+            c-compiler: "clang-20"
+            cxx-compiler: "clang++-20"
+            use-syslibs: false
+            shared-libscsynth: false
+            ctest: false
+
+          - job-name: "with ctest"
+            os-version: "26.04"
+            c-compiler: "clang-21"
+            cxx-compiler: "clang++-21"
+            use-syslibs: false
+            shared-libscsynth: false
+            ctest: true
+
+          - job-name: "arm64 with ctest"
+            os-version: "26.04-arm"
+            c-compiler: "clang-21"
+            cxx-compiler: "clang++-21"
+            use-syslibs: false
+            shared-libscsynth: false
+            ctest: true
+
+    name: Ubuntu ${{ matrix.os-version }} ${{ matrix.c-compiler }} ${{ matrix.job-name }}
+    env:
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      USE_SYSLIBS: ${{ matrix.use-syslibs }}
+      SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
+      CC: ${{ matrix.c-compiler }}
+      CXX: ${{ matrix.cxx-compiler }}
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}"
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: prepare daily timestamp for cache
+        id: current-date
+        run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: cache ccache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.ccache
+            ~/.cache/ccache
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
+
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs ccache
+          # install appropriate clang/gcc compilers
+          if [[ "$CC" =~ clang-[1-9] ]]; then
+            sudo apt-get install -y $CC # package names are clang-X
+            sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
+          elif [[ "$CC" =~ gcc-[1-9] ]]; then
+            sudo apt-get install -y $CXX # package names are g++-X
+          fi
+
+      - name: install system libraries
+        if: env.USE_SYSLIBS == 'true'
+        run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
+
+      - name: install qt from apt
+        run: |
+          sudo apt-get install --yes qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools linguist-qt6 qt6-l10n-tools libglx-dev libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxcb-xkb-dev libqt6opengl6-dev libqt6svg6-dev
+          # some package names differ between ubuntu 24.04 and 26.04 so we try both
+          sudo apt-get install -y libqt6webchannel6-dev libqt6websockets6-dev || sudo apt-get install -y qt6-webchannel-dev qt6-websockets-dev
+
+      - name: configure
+        run: |
+          mkdir $BUILD_PATH && cd $BUILD_PATH
+
+          EXTRA_CMAKE_FLAGS=
+
+          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
+
+          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
+
+          cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
+
+      - name: build
+        run: |
+          cd $BUILD_PATH
+          make install -j$(nproc)
+
+
+      - name: create archive
+        if: matrix.artifact-suffix
+        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE.zip .
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v7
+        if: matrix.artifact-suffix
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
+
+      - name: Configure CTests
+        if: matrix.ctest
+        run: |
+          cd $BUILD_PATH
+          sudo apt-get install --yes xvfb jackd1 socat
+          # start jack
+          jackd --no-realtime --silent -d dummy &
+
+          # start virtual display server
+          export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
+          Xvfb $DISPLAY -screen 0 1024x768x16 &
+
+      - name: Run CTests
+        continue-on-error: false
+        if: matrix.ctest
+        run: cmake --build $BUILD_PATH --config Release --target test

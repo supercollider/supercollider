@@ -38,7 +38,7 @@ list::
 ## MemorySize: amount of real time memory allocated to this server.
 ## NumWireBufs: maximum number of buffers for connecting ugens.
 ## DoNoteOn: (experimental) if true the server will send an OSC bundle setting the "note" and "velocity" parameters when a MIDI noteon or noteoff message is received. For this to work you need a host that supports Midi effect AudioUnits and sends them MIDI messages.
-## BeatDiv: For linking Demand Ugens to the Host tempo. If this number is set, SuperColliderAU will trigger bus 0 each beat division and use bus 1 for reset.
+## BeatDiv: For linking Demand UGens to the Host tempo. If this number is set, SuperColliderAU will trigger bus 0 each beat division and use bus 1 for reset.
 ::
 
 subsection::pluginSpec.plist

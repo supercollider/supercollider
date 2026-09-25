@@ -36,6 +36,7 @@ http://en.wikipedia.org/wiki/Netbsd[NetBSD] operating system.
     defined(__NETBSD__) || defined(__NetBSD__) \
     )
 #   ifndef BOOST_OS_BSD_AVAILABLE
+#       undef BOOST_OS_BSD
 #       define BOOST_OS_BSD BOOST_VERSION_NUMBER_AVAILABLE
 #       define BOOST_OS_BSD_AVAILABLE
 #   endif

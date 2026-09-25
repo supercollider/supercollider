@@ -5,7 +5,7 @@ categories::  UGens>Buffer>Info
 
 Description::
 
-Returns the current number of allocated samples. A sample is not the same as a frame (compare with link::Classes/BufFrames:: ); a frame includes the samples in each channel of the buffer. Only for a mono buffer are samples the same as frames.
+Returns the current number of allocated samples. A sample is not the same as a frame (compare with link::Classes/BufFrames::); a frame includes the samples in each channel of the buffer. Only for a mono buffer are samples the same as frames.
 code::
 samples = frames * numChannels
 ::
@@ -28,7 +28,7 @@ code::.ir::  will not track the changes.
 examples::
 code::
 // example; this buffer is mono, so the number of samples matches the number of frames
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 // indexing with a phasor
 { BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b), 0, BufSamples.kr(b))) }.play;
@@ -38,4 +38,3 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 b.free;
 ::
-

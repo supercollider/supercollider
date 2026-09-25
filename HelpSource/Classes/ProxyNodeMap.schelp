@@ -5,4 +5,3 @@ related:: Classes/Bus
 
 description::
 Object to store control values and bus mappings independantly of a specific NodeProxy.
-

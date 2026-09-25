@@ -17,14 +17,14 @@ code::
 
 LID.findAvailable;
 LID.postAvailable; // pick one that you want to open, and fill in the vendor and product id in the next line:
-d = LID.open( 2, 10 ); // trackpoint
+d = LID.open(2, 10); // trackpoint
 
 d.postInfo;
 d.postSlots;
 
-d.debug_( true ); // wiggle a little and see the data coming in
+d.debug_(true); // wiggle a little and see the data coming in
 
-d.debug_( false );
+d.debug_(false);
 
 // create a GUI:
 d.makeGui;
@@ -51,7 +51,7 @@ LID.postAvailable;
 
 // look for the one you want and find it:
 
-LID.findBy( 2, 10 ) // by vendor and product
+LID.findBy(2, 10) // by vendor and product
 ::
 
 METHOD:: findAvailable
@@ -101,18 +101,18 @@ A unique identifier for the device, defined by the operating system.
 returns:: an IdentityDictionary of devices the match the search query, or nil if no arguments are given
 
 code::
-LID.findBy( 2 ); // by vendorID
-LID.findBy( 2, 10 ) // by vendor and product
-LID.findBy( productID: 10 );
-LID.findBy( path: "/dev/input/event4" );
-LID.findBy( version: 0 );
-LID.findBy( physical: 'synaptics-pt/serio0/input0' )
-LID.findBy( physical: "synaptics-pt/serio0/input0" ) // argument is converted to symbol for check
-LID.findBy( unique: '' )
-LID.findBy( unique: "" ) // argument is converted to symbol for check
+LID.findBy(2); // by vendorID
+LID.findBy(2, 10) // by vendor and product
+LID.findBy(productID: 10);
+LID.findBy(path: "/dev/input/event4");
+LID.findBy(version: 0);
+LID.findBy(physical: 'synaptics-pt/serio0/input0')
+LID.findBy(physical: "synaptics-pt/serio0/input0") // argument is converted to symbol for check
+LID.findBy(unique: '')
+LID.findBy(unique: "") // argument is converted to symbol for check
 
 // using all possible arguments:
-LID.findBy( 2, 10, "/dev/input/event4", 0x0000, 'synaptics-pt/serio0/input0' )
+LID.findBy(2, 10, "/dev/input/event4", 0x0000, 'synaptics-pt/serio0/input0')
 ::
 
 SUBSECTION:: Opening devices
@@ -329,8 +329,8 @@ When set to true, the incoming data from this LID device will be printed to the 
 
 
 CODE::
-d.debug_( true );
-d.debug_( false );
+d.debug_(true);
+d.debug_(false);
 ::
 
 
@@ -338,7 +338,7 @@ METHOD:: closeAction
 Function to be performed when device is closed.
 
 CODE::
-d.closeAction_( { "hey, I got closed!".postln; } );
+d.closeAction_({ "hey, I got closed!".postln });
 d.close;
 ::
 
@@ -346,8 +346,8 @@ METHOD:: action
 Set or get the action to be performed upon receiving data from the device. The function will be passed in the evtType, the evtCode, the value (mapped according to the slot's spec), and the raw value.
 
 CODE::
-d.action_( { arg ...args; ("my action" + args ).postln; } );
-d.action_( nil );
+d.action_({ |...args| ("my action" + args).postln });
+d.action_(nil);
 ::
 
 SUBSECTION:: Properties of the device
@@ -415,20 +415,20 @@ code::
 
 LID.findAvailable;
 LID.postAvailable; // pick one that you want to open, and fill in the vendor and product id in the next line:
-d = LID.open( 2, 10 ); // trackpoint
+d = LID.open(2, 10); // trackpoint
 
 d.postInfo;
 d.postSlots;
 
-d.debug_( true ); // wiggle a little and see the data coming in
-d.debug_( false );
+d.debug_(true); // wiggle a little and see the data coming in
+d.debug_(false);
 ::
 
 subsection:: Event actions (raw events)
 The device's 'action' instance variable can be used for event notifications. it is passed the event type, code and current value.
 code::
 (
-d.action = { | evtType, evtCode, evtValue |
+d.action = { |evtType, evtCode, evtValue|
 	[evtType.asHexString(4), evtCode.asHexString(4), evtValue].postln
 }
 )
@@ -437,7 +437,7 @@ d.action = nil;
 ::
 If a device is detached LID will detect this, and close the device. It will execute a closeAction, which can be defined by the user:
 code::
-d.closeAction = { "device was detached".postln; };
+d.closeAction = { "device was detached".postln };
 ::
 
 subsection:: Event actions (raw slot events)
@@ -445,7 +445,7 @@ subsection:: Event actions (raw slot events)
 When 'action' is nil, actions can be bound to specific events.
 code::
 (
-d.slot(0x0002, 0x0001).action = { | slot |
+d.slot(0x0002, 0x0001).action = { |slot|
 	[slot.type.asHexString(4), slot.code.asHexString(4), slot.value].postln;
 }
 )
@@ -453,7 +453,7 @@ d.slot(0x0002, 0x0001).action = { | slot |
 Relative slots can have deltaActions:
 code::
 (
-d.slot(0x0002, 0x0001).deltaAction = { | slot |
+d.slot(0x0002, 0x0001).deltaAction = { |slot|
 	[slot.type.asHexString(4), slot.code.asHexString(4), slot.delta].postln;
 }
 )
@@ -465,7 +465,7 @@ subsection:: Event actions (symbolic slot events)
 When a device spec was registered for a given device name, slot
 actions can be assigned by using the symbolic control name.
 code::
-	d[\x].action = { | slot | [\x, slot.value].postln };
+	d[\x].action = { |slot| [\x, slot.value].postln };
 ::
 
 
@@ -475,13 +475,13 @@ some devices have LEDs which can be turned on and off. These show up with d.caps
 code::
 d = LID("/dev/input/event0");
 // LED's can be turned on:
-d.setLEDState( 0x0, 1 )
+d.setLEDState(0x0, 1)
 // (LED 0x0 should be available on any keyboard)
 // and off:
-d.setLEDState( 0x0, 0 )
+d.setLEDState(0x0, 0)
 d.close;
 
-// setLEDState( evtCode, evtValue ): value should be 1 or 0
+// setLEDState(evtCode, evtValue): value should be 1 or 0
 ::
 
 
@@ -518,7 +518,7 @@ LID.findAvailable;
 buildDeviceList builds a table of the devices found in LID.deviceRoot+"/event", trying to open all that it finds, looking up its name and closing them again. The result is returned and can later be accessed by LID.deviceList.
 You can query another name than "/event" by passing an argument. (the search will be: LID.deviceRoot++"/"++name++"*")
 code::
-LID.findAvailable( "mouse" );
+LID.findAvailable("mouse");
 ::
 Note:: this is likely to give the info that the devices could not be opened, as "mouse" uses another interface (you can of course access mice via the "event" interface) ::
 

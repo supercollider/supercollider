@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>613</width>
-    <height>421</height>
+    <height>433</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,13 @@
     <widget class="QWidget" name="widget" native="true">
      <layout class="QFormLayout" name="formLayout">
       <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::ExpandingFieldsGrow</enum>
+       <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>12</number>
       </property>
       <item row="0" column="1">
        <widget class="QCheckBox" name="autoStart">
@@ -28,23 +34,41 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
+       <widget class="QLabel" name="sclang_port_label">
         <property name="text">
-         <string>Runtime Directory:</string>
+         <string>Language port</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="ScIDE::PathChooserWidget" name="runtimeDir"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="activeConfigFileLabel">
-        <property name="text">
-         <string>Active config file:</string>
+       <widget class="QSpinBox" name="sclang_port">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Default port is 57120</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>65535</number>
+        </property>
+        <property name="value">
+         <number>57120</number>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
+       <widget class="ScIDE::PathChooserWidget" name="runtimeDir"/>
+      </item>
+      <item row="4" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QComboBox" name="activeConfigFileComboBox">
@@ -87,6 +111,20 @@
         </item>
        </layout>
       </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="activeConfigFileLabel">
+        <property name="text">
+         <string>Active config file:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Runtime Directory:</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -115,7 +153,7 @@
      </property>
      <layout class="QFormLayout" name="formLayout_2">
       <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::ExpandingFieldsGrow</enum>
+       <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
       </property>
       <item row="2" column="0">
        <widget class="QLabel" name="label">
@@ -134,11 +172,8 @@
         </property>
         <layout class="QGridLayout" name="gridLayout">
          <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
+          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
          </property>
-         <item row="0" column="0" rowspan="2">
-          <widget class="QListWidget" name="sclang_include_directories"/>
-         </item>
          <item row="0" column="2">
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
@@ -162,6 +197,9 @@
             </widget>
            </item>
           </layout>
+         </item>
+         <item row="0" column="0" rowspan="2">
+          <widget class="QListWidget" name="sclang_include_directories"/>
          </item>
         </layout>
        </widget>

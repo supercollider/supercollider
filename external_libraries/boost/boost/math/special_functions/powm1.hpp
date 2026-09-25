@@ -16,7 +16,8 @@
 #include <boost/math/special_functions/log1p.hpp>
 #include <boost/math/special_functions/expm1.hpp>
 #include <boost/math/special_functions/trunc.hpp>
-#include <boost/assert.hpp>
+#include <boost/math/special_functions/sign.hpp>
+#include <boost/math/tools/assert.hpp>
 
 namespace boost{ namespace math{ namespace detail{
 
@@ -25,22 +26,21 @@ inline T powm1_imp(const T x, const T y, const Policy& pol)
 {
    BOOST_MATH_STD_USING
    static const char* function = "boost::math::powm1<%1%>(%1%, %1%)";
-
    if (x > 0)
    {
-      if ((fabs(y * (x - 1)) < 0.5) || (fabs(y) < 0.2))
+      if ((fabs(y * (x - 1)) < T(0.5)) || (fabs(y) < T(0.2)))
       {
          // We don't have any good/quick approximation for log(x) * y
          // so just try it and see:
          T l = y * log(x);
-         if (l < 0.5)
-            return boost::math::expm1(l);
+         if (l < T(0.5))
+            return boost::math::expm1(l, pol);
          if (l > boost::math::tools::log_max_value<T>())
-            return boost::math::policies::raise_overflow_error<T>(function, 0, pol);
+            return boost::math::policies::raise_overflow_error<T>(function, nullptr, pol);
          // fall through....
       }
    }
-   else
+   else if ((boost::math::signbit)(x)) // Need to error check -0 here as well
    {
       // y had better be an integer:
       if (boost::math::trunc(y) != y)
@@ -48,13 +48,18 @@ inline T powm1_imp(const T x, const T y, const Policy& pol)
       if (boost::math::trunc(y / 2) == y / 2)
          return powm1_imp(T(-x), y, pol);
    }
-   return pow(x, y) - 1;
+   T result = pow(x, y) - 1;
+   if((boost::math::isinf)(result))
+      return result < 0 ? -boost::math::policies::raise_overflow_error<T>(function, nullptr, pol) : boost::math::policies::raise_overflow_error<T>(function, nullptr, pol);
+   if((boost::math::isnan)(result))
+      return boost::math::policies::raise_domain_error<T>(function, "Result of pow is complex or undefined", x, pol);
+   return result;
 }
 
 } // detail
 
 template <class T1, class T2>
-inline typename tools::promote_args<T1, T2>::type 
+inline typename tools::promote_args<T1, T2>::type
    powm1(const T1 a, const T2 z)
 {
    typedef typename tools::promote_args<T1, T2>::type result_type;
@@ -62,7 +67,7 @@ inline typename tools::promote_args<T1, T2>::type
 }
 
 template <class T1, class T2, class Policy>
-inline typename tools::promote_args<T1, T2>::type 
+inline typename tools::promote_args<T1, T2>::type
    powm1(const T1 a, const T2 z, const Policy& pol)
 {
    typedef typename tools::promote_args<T1, T2>::type result_type;

@@ -23,14 +23,13 @@ Frequency of the fundamental.
 
 argument::sawFreq
 
-Frequency of the synched sawtooth wave. Should always be
-greater than
-code::syncFreq:: .
+Frequency of the synched sawtooth wave. Should always be greater than strong::syncFreq::.
+warning:: teletype::SyncSaw:: will go out of range if the frequency exceeds the sampling rate (which for control rate is code::s.sampleRate / s.options.blockSize::).::
 
 
 argument::mul
 
-Output will be multiplied by this value.
+The output will be multiplied by this value.
 
 
 argument::add
@@ -70,4 +69,3 @@ scope {
 )
 
 ::
-

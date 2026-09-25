@@ -12,7 +12,7 @@ SuperCollider language. UGens exist more or less independently of the interprete
 with SC to write them.
 
 Writing UGens is not too difficult, but it's arguably far less convenient and intuitive than the high-level tools that
-SuperCollider provides. You'll need a build system and a good amount of boilerplate code -- even fairly basic signal
+SuperCollider provides. You'll need a build system and a good amount of boilerplate code — even fairly basic signal
 processing operations can require a lot of code. You don't have an instant live coding environment, and mistakes can
 easily crash the server. SuperCollider's UGens are stable and well-tested, and custom UGens are best viewed as a last
 resort for when the limitations of SC are impassable.
@@ -24,7 +24,7 @@ SuperCollider code that abbreviates a certain configuration of UGens that gets u
 that superficially resembles a UGen class, but it only returns a composition of existing UGens. It has no efficiency
 savings, but it does save typing.
 
-The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr::
+The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr:: 
 methods.
 
 code::
@@ -74,7 +74,7 @@ plugin. If you modify the plugin file but not the class file, you don't need to 
 
 section:: FAUST
 
-FAUST footnote::http://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. It can
+FAUST footnote::https://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. It can
 compile to SuperCollider plugins, providing an easy way to create UGens in SuperCollider.
 
 FAUST provides a shell script useful for SuperCollider users called code::faust2supercollider::. This compiles a .dsp
@@ -107,8 +107,8 @@ architecture as well as a bunch of helper functions. These are documented at lin
 
 subsection:: The Entry Point
 
-When the library is loaded the server calls a function in the library, which is defined by the code::PluginLoad()::
-macro.  This entry point has two responsibilities:
+When the library is loaded the server calls a function in the library, which is defined by the code::PluginLoad():: 
+macro. This entry point has two responsibilities:
 
 list::
 ## It needs to store the passed in pointer to the InterfaceTable in a global variable.
@@ -133,10 +133,17 @@ list::
 ## The unit generator destructor is named code::PluginName_Dtor::
 ::
 
+subsection:: The Exit Point
+
+The optional code::PluginUnload():: macro exports a function that is called when the library is deinitialized,
+right before it is unloaded. This is only required in rare cases, typically for resource cleanup that cannot be safely done
+in a global object destructor. For example, the DiskIO UGens and UI UGens in code::DiskIO_UGens.cpp:: resp. code::UIUGens.cpp::
+use the unload function to safely join their worker threads.
+
 subsection:: The Calculation Function
 
 The meat of the UGen is its calculation function, which gets called every control period with the UGen object as an
-argument. (This is for control-rate and audio-rate UGens -- demand-rate is different.) In this function, the UGen reads
+argument. (This is for control-rate and audio-rate UGens — demand-rate is different.) In this function, the UGen reads
 from its inputs and writes to its outputs.
 
 The calculation function is selected in the code::PluginName_Ctor:: function with the code::SETCALC:: macro. You can
@@ -150,7 +157,7 @@ reverb?
 
 subsection:: Building Unit Generator Plugins
 
-The most portable way to build plugins is using cmake footnote::http://www.cmake.org::, a cross-platform build
+The most portable way to build plugins is using cmake footnote::https://www.cmake.org::, a cross-platform build
 system.
 
 The examples in the example repository contain code::CMakeLists.txt:: files.

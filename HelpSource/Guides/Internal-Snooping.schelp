@@ -159,7 +159,7 @@ code::
 }
 )
 
-Window.allWindows.dump;	// dump a list of all open SCWindows
+Window.allWindows.dump;	// dump a list of all open Windows
 
 // a little more helpful, dump their names
 Window.allWindows.collect { | w | w.name }.postln;
@@ -239,4 +239,3 @@ this.interpret("(1 + 2).postln");
 // interpret some text and print the result
 this.interpretPrint("1 + 2");
 ::
-

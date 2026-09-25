@@ -22,9 +22,9 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #include <boost/align/aligned_allocator.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include "utilities/named_hash_entry.hpp"
 
@@ -127,6 +127,12 @@ private:
     float_vector parameters;
     parameter_index_map_t parameter_map;
 
+    int32_t block_size; /**< Synth block size. 0 = same as Server. -1 = take from control */
+    uint32_t block_size_index; /**< control index for block size */
+
+    float resample_factor; /**< resample factor. 1.0 = no resampling. -1.0 = take from control */
+    uint32_t resample_index; /**< control index for resample factor */
+
     graph_t graph;
     unsigned int buffer_count;
     calc_units_t calc_unit_indices; /**< indices of the units, that need to be calculated */
@@ -134,6 +140,6 @@ private:
 };
 
 std::vector<sc_synthdef> read_synthdefs(const char* buffer, const char* buffer_end);
-std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const& filename);
+std::vector<sc_synthdef> read_synthdef_file(std::filesystem::path const& filename);
 
 } /* namespace nova */

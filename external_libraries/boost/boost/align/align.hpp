@@ -10,7 +10,7 @@ Distributed under the Boost Software License, Version 1.0.
 
 #include <boost/config.hpp>
 
-#if !defined(BOOST_NO_CXX11_STD_ALIGN)
+#if !defined(BOOST_NO_CXX11_STD_ALIGN) && !defined(BOOST_LIBSTDCXX_VERSION)
 #include <boost/align/detail/align_cxx11.hpp>
 #else
 #include <boost/align/detail/align.hpp>

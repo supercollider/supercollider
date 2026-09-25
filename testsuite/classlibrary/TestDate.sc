@@ -42,7 +42,7 @@ TestDate : UnitTest {
 			d.rawSeconds.floor,
 			"Creation from all properties except dayOfWeek and rawSeconds");
 
-		this.assertEquals(Date(1969, 7, 20, minute: 18).stamp, "690720_001800",
+		this.assertEquals(Date(1970, 7, 20, minute: 18).stamp, "700720_001800",
 			"new with defaults");
 		this.assertEquals(Date(2016).stamp, "160101_000000",
 			"new with defaults");

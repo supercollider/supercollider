@@ -146,7 +146,7 @@ code::
 STRONG:: Action help strings ::
 code::
 (
-~view = View(bounds:300@100).layout_(VLayout(
+~view = View(bounds: 300@100).layout_(VLayout(
 	Button()
 		.states_([["Options..."]])
 		.action_({ ~menu.front }),
@@ -197,20 +197,20 @@ s.waitForBoot {
 					.icon_(~startIcon)
 					.toolTip_("Start playing synth.")
 					.shortcut_("space")
-					.font_(Font(bold:true, size:18));
+					.font_(Font(bold: true, size: 18));
 	~stopAction = MenuAction("stop")
 					.action_({ ~stopSynth.() })
 					.icon_(~stopIcon)
 					.toolTip_("Stop the synth.")
 					.enabled_(false)
 					.shortcut_(".")
-					.font_(Font(bold:true, size:18));
+					.font_(Font(bold: true, size: 18));
 	~playing = MenuAction("playing")
 					.enabled_(false)
 					.checkable_(true)
 					.checked_(false);
 
-	~view = View(bounds:300@200).layout_(VLayout(
+	~view = View(bounds: 300@200).layout_(VLayout(
 		ToolBar(~startAction, ~stopAction, MenuAction.separator, ~playing).focus,
 		nil,
 		Button().states_([["Options..."]]).action_({

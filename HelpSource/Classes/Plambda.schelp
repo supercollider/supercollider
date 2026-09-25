@@ -32,7 +32,7 @@ sharing data between eachother
 	a = Pbind(
 		\dur, 0.125,
 		\octave, 4,
-		\degree, Plet(\melody, pattern: Pwhite(0,7))
+		\degree, Plet(\melody, pattern: Pwhite(0, 7))
 	);
 
 	// the bass, scale degrees sampled from the \melody variable defined above
@@ -55,7 +55,7 @@ Three patterns running in parallel
 */
 (
 SynthDef(\sine,
-	{ arg out=0, freq=440, sustain=0.05, pan=0, amp=0.1;
+	{ |out = 0, freq = 440, sustain = 0.05, pan = 0, amp = 0.1|
 		var env;
 		env = EnvGen.kr(Env.perc(Rand(0.001, 0.02), sustain, AmpCompA.kr(freq)*amp), doneAction: Done.freeSelf);
 		Out.ar(out, Pan2.ar(SinOsc.ar(freq), pan, env))
@@ -68,7 +68,7 @@ a = Plambda(
 	Pfindur(5,
 		Ppar([
 			Pbind(\note, Plet(\x, Prand([1, 5, 1, [10, 14]], inf)), \dur, 8/3, \pan, -1),
-			Pbind(\note, Plet(\y, Pseq([5, 3, 2, 0, [0, 5, 6, 9]], inf)), \dur, 0.5, \pan,1),
+			Pbind(\note, Plet(\y, Pseq([5, 3, 2, 0, [0, 5, 6, 9]], inf)), \dur, 0.5, \pan, 1),
 			Pbind(\note, Pseq([Pget(\x), Pget(\y)], inf) + 12, \pan, 0, \dur, 2/3)
 		])
 	),

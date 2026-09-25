@@ -70,5 +70,5 @@ EXAMPLES::
 Get the usage description for a collection or element with usage page 1 and usage index 5
 
 code::
-HIDUsage.getUsageDescription( 1, 5 );
+HIDUsage.getUsageDescription(1, 5);
 ::

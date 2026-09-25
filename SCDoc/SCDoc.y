@@ -51,7 +51,7 @@ static inline bool stringEqual(const char * a, const char * b)
 
 %}
 %locations
-%error-verbose
+%define parse.error verbose
 %union {
     intptr_t i;
     const char *id;
@@ -63,14 +63,14 @@ static inline bool stringEqual(const char * a, const char * b)
 // single line body tags that take text
 %token CLASSTREE COPYMETHOD KEYWORD PRIVATE
 // single line structural tags that take text, with children
-%token SECTION SUBSECTION METHOD ARGUMENT
+%token SECTION SUBSECTION SUBSUBSECTION METHOD ARGUMENT
 // single line structural tags with no text, with children
 %token DESCRIPTION CLASSMETHODS INSTANCEMETHODS EXAMPLES RETURNS DISCUSSION
 // nestable range tags with no text, with children
 %token LIST TREE NUMBEREDLIST DEFINITIONLIST TABLE FOOTNOTE NOTE WARNING
 // modal range tags that take multi-line text
-%token CODE LINK ANCHOR SOFT IMAGE TELETYPE STRONG EMPHASIS
-%token CODEBLOCK "CODE block" TELETYPEBLOCK "TELETYPE block"
+%token CODE LINK ANCHOR SOFT IMAGE TELETYPE MATH STRONG EMPHASIS
+%token CODEBLOCK "CODE block" TELETYPEBLOCK "TELETYPE block" MATHBLOCK "MATH block"
 // symbols
 %token TAGSYM "::" BARS "||" HASHES "##"
 // text and whitespace
@@ -183,9 +183,10 @@ optsubsubsections: subsubsections
 subsubsections: subsubsections subsubsection { $$ = doc_node_add_child($1,$2); }
               | subsubsection { $$ = doc_node_make("(SUBSUBSECTIONS)",NULL,$1); }
               | body { $$ = doc_node_make_take_children("(SUBSUBSECTIONS)",NULL,$1); }
-; 
+;
 
-subsubsection: METHOD methnames optMETHODARGS eol methodbody
+subsubsection: SUBSUBSECTION words2 eol optbody { $$ = doc_node_make_take_children("SUBSUBSECTION", $2, $4); }
+             | METHOD methnames optMETHODARGS eol methodbody
     {
         $2->id = "METHODNAMES";
         $$ = doc_node_make(method_type,$3,$2);
@@ -317,10 +318,12 @@ inlinetag: LINK { $$ = "LINK"; }
          | EMPHASIS { $$ = "EMPHASIS"; }
          | CODE { $$ = "CODE"; }
          | TELETYPE { $$ = "TELETYPE"; }
+         | MATH { $$ = "MATH"; }
          | ANCHOR { $$ = "ANCHOR"; }
 ;
 
 blocktag: CODEBLOCK { $$ = "CODEBLOCK"; }
+        | MATHBLOCK { $$ = "MATHBLOCK"; }
         | TELETYPEBLOCK { $$ = "TELETYPEBLOCK"; }
 ;
 
@@ -446,4 +449,3 @@ void scdocerror(const char *str)
         fprintf(stderr,"  %s\n-------------------\n", txt);
 */
 }
-

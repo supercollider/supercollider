@@ -97,7 +97,7 @@ namespace boost { namespace date_time {
     //! match() should be called and return value checked.
     //! \param[in]  str  the string to check
     //! \returns  false if it is definitely not a special value
-    static bool likely(const string_type& str)
+    static bool should_call_match(const string_type& str)
     {
         if (!str.empty()) {
             switch (str[0]) {

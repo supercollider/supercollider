@@ -19,15 +19,20 @@
 #include <stdexcept>
 
 #include "SC_Win32Utils.h"
+#include "SC_fftlib.hpp"
 
 #include "nova-tt/thread_affinity.hpp"
 #include "nova-tt/thread_priority.hpp"
 #include "nova-tt/name_thread.hpp"
 
+#include <tuple>
+
 #include "server.hpp"
 #include "sync_commands.hpp"
 
-#include "nrt_synthesis.hpp"
+#ifndef NO_LIBSNDFILE
+#    include "nrt_synthesis.hpp"
+#endif
 
 #include "sc/sc_synth_definition.hpp"
 #include "sc/sc_ugen_factory.hpp"
@@ -38,7 +43,7 @@
 #    include <CoreAudio/CoreAudioTypes.h>
 #endif
 
-#include <boost/predef/hardware.h>
+#define DEBUG_THREAD_PINNING 0
 
 namespace nova {
 
@@ -49,7 +54,7 @@ nova_server::nova_server(server_arguments const& args):
     // different interfaces), they can end up using the same shmem location.
     server_shared_memory_creator(args.port(), args.control_busses),
 
-    scheduler<thread_init_functor>(args.threads, !args.non_rt),
+    scheduler<thread_init_functor>(args.threads, !args.non_rt, args.thread_pinning),
     buffer_manager(args.buffers),
     sc_osc_handler(args) {
     assert(instance == 0);
@@ -57,6 +62,7 @@ nova_server::nova_server(server_arguments const& args):
 
     use_system_clock = (args.use_system_clock == 1);
     non_rt = args.non_rt;
+    pin_threads = args.thread_pinning;
     smooth_samplerate = args.samplerate;
 
     if (!args.non_rt) {
@@ -96,7 +102,6 @@ void nova_server::prepare_backend(void) {
 
 nova_server::~nova_server(void) {
     // we should delete but get chrashes at the moment on linux and macosx
-    // delete sc_factory;
 #if defined(JACK_BACKEND) || defined(PORTAUDIO_BACKEND)
     deactivate_audio();
 #endif
@@ -106,6 +111,8 @@ nova_server::~nova_server(void) {
     scheduler<thread_init_functor>::terminate();
     io_interpreter.join_thread();
 
+    // NOTE: this will also unload all plugins. Make sure to do this
+    // after we have destroyed all Nodes!
     sc_factory.reset();
     instance = nullptr;
 }
@@ -160,14 +167,7 @@ void nova_server::set_node_slot(int node_id, const char* slot, float value) {
         node->set(slot, value);
 }
 
-void nova_server::finalize_node(server_node& node) {
-    if (node.is_synth()) {
-        sc_synth& synth = static_cast<sc_synth&>(node);
-        synth.finalize();
-    }
-    notification_node_ended(&node);
-}
-
+void nova_server::finalize_node(server_node& node) { notification_node_ended(&node); }
 
 void nova_server::free_node(server_node* node) {
     if (node->get_parent() == nullptr)
@@ -198,9 +198,13 @@ void nova_server::group_free_deep(abstract_group* group) {
 
 
 void nova_server::run_nonrt_synthesis(server_arguments const& args) {
+#ifndef NO_LIBSNDFILE
     start_dsp_threads();
     non_realtime_synthesis_engine engine(args);
     engine.run();
+#else
+    std::cout << "Warning: Non-RT synthesis not supported as supernova was compiled without libsndfile" << std::endl;
+#endif
 }
 
 void nova_server::rebuild_dsp_queue(void) {
@@ -213,7 +217,13 @@ void nova_server::rebuild_dsp_queue(void) {
 static void name_current_thread(int thread_index) {
     char buf[1024];
     sprintf(buf, "DSP Thread %d", thread_index);
+#if defined(__linux__)
     name_thread(buf);
+#elif defined(__APPLE__)
+    // TODO
+#elif defined(_WIN32)
+    win32_name_thread(buf);
+#endif
 }
 
 static void set_daz_ftz(void) {
@@ -252,21 +262,27 @@ static bool set_realtime_priority(int thread_index) {
     if (!success) {
 #ifdef NOVA_TT_PRIORITY_RT
 
-#    ifdef JACK_BACKEND
+#    if defined(JACK_BACKEND)
         int priority = instance->realtime_priority();
+        /* This line has effectively been bypassed for years because
+         * of a logic error further below. With the logic error fixed,
+         * it would cause lower realtime priorities for DSP helper threads.
+         * Let's keep the old behavior until we figure out what this code
+         * is supposed to do in the first place... */
+#        if 0
         if (priority >= 0)
             success = true;
+#        endif
 
-#    elif _WIN32
+#    elif defined(_WIN32)
         int priority = thread_priority_interval_rt().second;
 #    else
-        int min, max;
-        boost::tie(min, max) = thread_priority_interval_rt();
+        auto [min, max] = thread_priority_interval_rt();
         int priority = max - 3;
         priority = std::max(min, priority);
 #    endif
 
-        if (success)
+        if (!success)
             success = thread_set_priority_rt(priority);
 #endif
     }
@@ -277,6 +293,8 @@ static bool set_realtime_priority(int thread_index) {
     return success;
 }
 
+/* utilities/hardware_topology.cpp */
+int get_cpu_for_thread_index(int thread_index);
 
 void thread_init_functor::operator()(int thread_index) {
     set_daz_ftz();
@@ -285,10 +303,23 @@ void thread_init_functor::operator()(int thread_index) {
     if (rt)
         set_realtime_priority(thread_index);
 
-#ifndef __APPLE__
-    if (!thread_set_affinity(thread_index))
-        std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
+    if (pin) {
+        auto cpu = get_cpu_for_thread_index(thread_index);
+#if DEBUG_THREAD_PINNING
+        std::cout << "pin thread " << thread_index << " to CPU " << cpu << std::endl;
 #endif
+#ifdef _WIN32
+        // nova::thread_set_affinity() is not implemented for Windows
+        bool result = win32_thread_set_affinity(cpu);
+#else
+        bool result = thread_set_affinity(cpu);
+#endif
+        if (!result)
+            std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
+    }
+
+    // initialize thread local buffers
+    scfft_thread_init();
 }
 
 void io_thread_init_functor::operator()() const {
@@ -311,11 +342,20 @@ void synth_definition_deleter::dispose(synth_definition* ptr) {
 void realtime_engine_functor::init_thread(void) {
     set_daz_ftz();
 
-#ifndef __APPLE__
-    if (!thread_set_affinity(0))
-        std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+    if (instance->pin_threads) {
+        auto cpu = get_cpu_for_thread_index(0);
+#if DEBUG_THREAD_PINNING
+        std::cout << "pin thread 0 to CPU " << cpu << std::endl;
 #endif
-
+#ifdef _WIN32
+        // nova::thread_set_affinity() is not implemented for Windows
+        bool result = win32_thread_set_affinity(cpu);
+#else
+        bool result = thread_set_affinity(cpu);
+#endif
+        if (!result)
+            std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+    }
 #ifdef JACK_BACKEND
     set_realtime_priority(0);
 #endif
@@ -325,6 +365,9 @@ void realtime_engine_functor::init_thread(void) {
     }
 
     name_current_thread(0);
+
+    // initialize thread local buffers
+    scfft_thread_init();
 }
 
 void realtime_engine_functor::log_(const char* str) {

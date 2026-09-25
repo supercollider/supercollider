@@ -83,4 +83,3 @@ argument:: num
 
 METHOD:: reset
 reset allocator to initial state
-

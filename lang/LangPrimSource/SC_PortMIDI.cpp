@@ -28,8 +28,9 @@ added prRestartMIDI
 04/feb/03 prListMIDIEndpoints modification by Ron Kuivila added jt.
 */
 
-#include "PortMIDI.h"
-#include "PortTime.h"
+#include "ClassLibraryInfo.hpp"
+#include "portmidi.h"
+#include "porttime.h"
 
 #include "SCBase.h"
 #include "VMGlobals.h"
@@ -93,8 +94,7 @@ SC_Lock gPmStreamMutex;
 #define PMSTREAM_TIME_PROC NULL
 #define PMSTREAM_TIME_INFO NULL
 
-extern bool compiledOK;
-
+extern ClassLibraryInfo gClassLibraryInfo;
 
 static void sysexBegin() {
     gRunningStatus = 0; // clear running status
@@ -227,7 +227,7 @@ static void PMProcessMidi(PtTimestamp timestamp, void* userData) {
 
     for (int i = 0; i < gNumMIDIInPorts; ++i) {
         for (;;) {
-            long Tstatus, data1, data2;
+            std::int64_t Tstatus, data1, data2;
             // Only lock the PM mutex while accessing the PortMidi functionality. It is very important to not acquire
             // the lang mutex while holding the PM mutex to avoid a deadlock, since the laguage may try to acquire the
             // PM mutex for a MIDIOut operation
@@ -257,7 +257,7 @@ static void PMProcessMidi(PtTimestamp timestamp, void* userData) {
             // | Lock the interp. mutex and dispatch message |
             // +---------------------------------------------+
             gLangMutex.lock();
-            if (compiledOK) {
+            if (gClassLibraryInfo.acceptsInput()) {
                 VMGlobals* g = gMainVMGlobals;
                 uint8 status = static_cast<uint8>(Tstatus & 0xF0);
                 uint8 chan = static_cast<uint8>(Tstatus & 0x0F);
@@ -413,7 +413,7 @@ static int initMIDI(int numIn, int numOut) {
     for (int i = 0; i < gNumMIDIOutPorts; i++) {
         const int pmdid = gMidiOutputIndexToPmDevIndex[i];
         const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(pmdid);
-        const PmError error = Pm_OpenOutput(&gMIDIOutStreams[i], pmdid, NULL, 512L, NULL, NULL, 0);
+        const PmError error = Pm_OpenOutput(&gMIDIOutStreams[i], pmdid, NULL, 512LL, NULL, NULL, 0);
 
         std::printf("MIDI: device %d %d %d %s (%s)\n", i, pmdid, &gMIDIOutStreams[i], Pm_GetErrorText(error),
                     devInfo->name);

@@ -570,6 +570,7 @@ template
    , class O8  = void
    , class O9  = void
    , class O10 = void
+   , class O11 = void
    >
 #else
 template<class T, class ...Options>
@@ -589,6 +590,7 @@ template
    , class O8  = void
    , class O9  = void
    , class O10 = void
+   , class O11 = void
    >
 #else
 template<class T, class ...Options>

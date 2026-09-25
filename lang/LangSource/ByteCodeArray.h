@@ -19,34 +19,58 @@
 */
 
 #pragma once
+#include "text_location.hpp"
+#include <cassert>
+#include <cstdint>
+#include <limits>
+#include <vector>
 
 
 typedef unsigned char Byte;
+class CompilingBytecodes {
+public:
+    using Location = sc::lex::SourceCodeRange;
+    CompilingBytecodes() = default;
+    ~CompilingBytecodes() = default;
 
-#define BYTE_CODE_CHUNK_SIZE 64
+    // No copies.
+    CompilingBytecodes(const CompilingBytecodes&&) = delete;
+    CompilingBytecodes& operator=(const CompilingBytecodes&&) = delete;
 
-typedef struct {
-    Byte* bytes;
-    Byte* ptr;
-    size_t size;
-} ByteCodeArray, *ByteCodes;
+    // Moves only. Used to store a temporary.
+    CompilingBytecodes(CompilingBytecodes&&) = default;
+    CompilingBytecodes& operator=(CompilingBytecodes&&) = default;
 
-extern ByteCodes gCompilingByteCodes;
-extern long totalByteCodes;
+    struct Data {
+        std::vector<Byte> codes;
+        std::vector<int> startAndEndLocations; // location in source text. Twice as large as the codes vector.
+        std::vector<std::uint8_t> sizeOfCodes; // codes can be variable width.
+    };
 
-void initByteCodes();
-void compileByte(long byte);
-void compileAndFreeByteCodes(ByteCodes byteCodes);
-void copyByteCodes(Byte* dest, ByteCodes byteCodes);
-ByteCodes getByteCodes();
-ByteCodes saveByteCodeArray();
-void restoreByteCodeArray(ByteCodes byteCodes);
-size_t byteCodeLength(ByteCodes byteCodes);
-void compileByteCodes(ByteCodes byteCodes);
-ByteCodes allocByteCodes();
-void reallocByteCodes(ByteCodes byteCodes);
-void freeByteCodes(ByteCodes byteCodes);
-int compileOpcode(long opcode, long operand1);
-void compileJump(long opcode, long jumplen);
-int compileNumber(unsigned long value);
-int compileNumber24(unsigned long value);
+    void consume(CompilingBytecodes&& other);
+
+    [[nodiscard]] size_t length() const noexcept;
+
+    template <typename... BYTES> void emit(sc::lex::SourceCodeRange loc, BYTES... bytes) {
+        static_assert(sizeof...(BYTES) > 0);
+        static_assert(sizeof...(BYTES) <= std::numeric_limits<std::uint8_t>::max());
+        // SCLang only support int type.
+        assert(loc.begin.absolute <= std::numeric_limits<int>::max());
+        assert(loc.end.absolute <= std::numeric_limits<int>::max());
+        m_data.startAndEndLocations.push_back(loc.begin.absolute);
+        m_data.startAndEndLocations.push_back(loc.end.absolute);
+        (m_data.codes.push_back(static_cast<Byte>(bytes)), ...);
+        m_data.sizeOfCodes.push_back(static_cast<std::uint8_t>(sizeof...(bytes)));
+    }
+
+    // Returns data and sets the held data to empty as per the move constructor (not assignment).
+    // Note the r value qualifier.
+    [[nodiscard]] Data finish() && noexcept;
+
+    void backSetByte(size_t index, Byte newValue) noexcept;
+
+    void assertEmpty() const noexcept;
+
+private:
+    Data m_data;
+};

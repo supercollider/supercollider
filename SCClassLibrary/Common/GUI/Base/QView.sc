@@ -219,7 +219,7 @@ View : QObject {
 		^this.getProperty( \focus );
 	}
 
-	acceptsMouse {
+	acceptsMouse { 
 		_QWidget_AcceptsMouse
 		^this.primitiveFailed;
 	}

@@ -106,7 +106,7 @@ enum{
 // this is used by basic_regex for expression storage
 //
 
-class BOOST_REGEX_DECL raw_storage
+class raw_storage
 {
 public:
    typedef std::size_t           size_type;
@@ -123,8 +123,30 @@ public:
       ::operator delete(start);
    }
 
-   void BOOST_REGEX_CALL resize(size_type n);
-   
+   void BOOST_REGEX_CALL resize(size_type n)
+   {
+      size_type newsize = start ? last - start : 1024;
+      while (newsize < n)
+         newsize *= 2;
+      size_type datasize = end - start;
+      // extend newsize to WORD/DWORD boundary:
+      newsize = (newsize + padding_mask) & ~(padding_mask);
+
+      // allocate and copy data:
+      pointer ptr = static_cast<pointer>(::operator new(newsize));
+      BOOST_REGEX_NOEH_ASSERT(ptr)
+         if (start)
+            std::memcpy(ptr, start, datasize);
+
+      // get rid of old buffer:
+      ::operator delete(start);
+
+      // and set up pointers:
+      start = ptr;
+      end = ptr + datasize;
+      last = ptr + newsize;
+   }
+
    void* BOOST_REGEX_CALL extend(size_type n)
    {
       if(size_type(last - end) < n)
@@ -134,7 +156,16 @@ public:
       return result;
    }
 
-   void* BOOST_REGEX_CALL insert(size_type pos, size_type n);
+   void* BOOST_REGEX_CALL insert(size_type pos, size_type n)
+   {
+      BOOST_REGEX_ASSERT(pos <= size_type(end - start));
+      if (size_type(last - end) < n)
+         resize(n + (end - start));
+      void* result = start + pos;
+      std::memmove(start + pos + n, start + pos, (end - start) - pos);
+      end += n;
+      return result;
+   }
 
    size_type BOOST_REGEX_CALL size()
    {

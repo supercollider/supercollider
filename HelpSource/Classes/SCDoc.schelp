@@ -21,6 +21,7 @@ Run this method if you added a new document and want to see the changes without 
 
 argument:: clearCache
 If true, force re-render of files even if the schelp source file is not newer than the destination.
+This will also refresh all static files via link::Classes/SCDoc#*refreshStaticFiles::.
 
 discussion::
 This will take a couple of seconds, and will be done automatically once before any help can be viewed. You might consider putting this in your startup.scd file to avoid getting this delay later when you decide to view a helpfile.
@@ -96,6 +97,16 @@ method:: renderAll
 Render all help-files. Useful mainly if you want to render all help to put online or similar.
 argument:: includeExtensions
 If false, skip quarks, plugins and other extensions.
+
+method:: refreshStaticFiles
+Copy (and replace) all non-schelp files within link::Classes/SCDoc#*helpSourceDirs:: to link::Classes/SCDoc#*helpTargetDir::.
+This should only be called by the user for development or debugging purposes.
+
+This will be invoked by
+list::
+## link::Classes/SCDoc#*indexAllDocuments:: if invoked with code::clearCache=true:: or if link::Classes/SCDoc#*checkVersion:: detects a version bump of link::Classes/SCDoc#*version::
+## link::Classes/SCDoc#*renderAll::
+::
 
 method:: prepareHelpForURL
 Prepare help for the given URL by checking if the file needs rendering from schelp source, or some other action needs to be done.

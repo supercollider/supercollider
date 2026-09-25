@@ -42,7 +42,7 @@ b.free;
 (
 {
 	var index, f0, f1, f3;
-	var buffer = [ 200, 210, 400, 430, 600, 800 ].as(LocalBuf);
+	var buffer = [200, 210, 400, 430, 600, 800].as(LocalBuf);
 	f0 = MouseX.kr(200, 900);
 	index = IndexInBetween.kr(buffer, f0);
 	f1 = IndexL.kr(buffer, index);
@@ -62,7 +62,7 @@ b.free;
 ~to = [0, 1, 0, -1, 0];
 (
 x = {
-	IndexL.kr(~to.as(LocalBuf), IndexInBetween.kr(~from.as(LocalBuf),MouseX.kr(~from.first, ~from.last).poll).poll).poll
+	IndexL.kr(~to.as(LocalBuf), IndexInBetween.kr(~from.as(LocalBuf), MouseX.kr(~from.first, ~from.last).poll).poll).poll
 }.play
 )
 ::

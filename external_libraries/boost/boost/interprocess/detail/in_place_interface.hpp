@@ -42,8 +42,8 @@ struct in_place_interface
    std::size_t size;
    const char *type_name;
 
-   virtual void construct_n(void *mem, std::size_t num, std::size_t &constructed) = 0;
-   virtual void destroy_n(void *mem, std::size_t num, std::size_t &destroyed) = 0;
+   virtual void construct_n(void *mem, std::size_t num) = 0;
+   virtual void destroy_n(void *mem, std::size_t num) = 0;
    virtual ~in_place_interface(){}
 };
 
@@ -54,14 +54,14 @@ struct placement_destroy :  public in_place_interface
       :  in_place_interface(::boost::container::dtl::alignment_of<T>::value, sizeof(T), typeid(T).name())
    {}
 
-   virtual void destroy_n(void *mem, std::size_t num, std::size_t &destroyed)
+   virtual void destroy_n(void *mem, std::size_t num) BOOST_OVERRIDE
    {
       T* memory = static_cast<T*>(mem);
-      for(destroyed = 0; destroyed < num; ++destroyed)
+      for(std::size_t destroyed = 0; destroyed < num; ++destroyed)
          (memory++)->~T();
    }
 
-   virtual void construct_n(void *, std::size_t, std::size_t &) {}
+   virtual void construct_n(void *, std::size_t) BOOST_OVERRIDE {}
 
    private:
    void destroy(void *mem)

@@ -28,6 +28,7 @@
 
 #include <atomic>
 
+#include "ClassLibraryInfo.hpp"
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -43,6 +44,7 @@
 #include "PyrSched.h"
 #include "GC.h"
 #include "SC_LanguageClient.h"
+#include "ClassLibraryInfo.hpp"
 
 #if HAVE_LID
 #    include <errno.h>
@@ -54,6 +56,7 @@
 #    include <sys/types.h>
 #    include <unistd.h>
 
+
 #    define BITS_PER_LONG (sizeof(long) * 8)
 #    define NBITS(x) ((((x)-1) / BITS_PER_LONG) + 1)
 #    define OFF(x) ((x) % BITS_PER_LONG)
@@ -61,7 +64,7 @@
 #    define LONG(x) ((x) / BITS_PER_LONG)
 #    define TEST_BIT(array, bit) (((array)[LONG(bit)] >> OFF(bit)) & 1)
 
-extern bool compiledOK;
+extern ClassLibraryInfo gClassLibraryInfo;
 
 static PyrSymbol* s_inputDeviceClass = nullptr;
 static PyrSymbol* s_inputDeviceInfoClass = nullptr;
@@ -103,9 +106,9 @@ struct SC_LID {
     PyrObject* m_obj;
     int m_fd;
     int m_lastEventType;
-    unsigned long m_eventTypeCaps[NBITS(EV_MAX)];
-    unsigned long m_eventCodeCaps[NBITS(KEY_MAX)];
-    unsigned long m_keyState[NBITS(KEY_MAX)];
+    std::uint64_t m_eventTypeCaps[NBITS(EV_MAX)];
+    std::uint64_t m_eventCodeCaps[NBITS(KEY_MAX)];
+    std::uint64_t m_keyState[NBITS(KEY_MAX)];
 };
 
 // =====================================================================
@@ -276,7 +279,7 @@ void SC_LID::handleEvent(struct input_event& evt, std::atomic<bool> const& shoul
             return;
         }
 
-        if (compiledOK) {
+        if (gClassLibraryInfo.acceptsInput()) {
             VMGlobals* g = gMainVMGlobals;
             g->canCallOS = false;
             ++g->sp;
@@ -303,7 +306,7 @@ void SC_LID::readError(std::atomic<bool> const& shouldBeRunning) {
         return;
     }
 
-    if (compiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
         ++g->sp;

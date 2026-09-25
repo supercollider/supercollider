@@ -62,7 +62,7 @@ a = SynthDef(\src2x2, { |out|
 )
 
 // kick it in
-z = Synth(\FreeVerb2x2, [\outbus, 0], addAction:\addToTail)
+z = Synth(\FreeVerb2x2, [\outbus, 0], addAction: \addToTail)
 // experiment with some settings
 z.set(\room, 0.7)
 z.set(\mix, 0.33)

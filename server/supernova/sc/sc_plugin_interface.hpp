@@ -33,6 +33,8 @@
 
 namespace nova {
 
+void initialize_rate(Rate& rate, double sample_rate, int blocksize);
+
 class sc_done_action_handler {
 public:
     void add_pause_node(server_node* node) {
@@ -98,7 +100,7 @@ public:
 
     /* @{ */
     /* audio buffer handling */
-    SndBuf* allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels);
+    SndBuf* allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels, double samplerate);
     void allocate_buffer(SndBuf* buf, uint32_t frames, uint32_t channels, double samplerate);
     void buffer_read_alloc(uint32_t index, const char* filename, uint32_t start, uint32_t frames);
     void buffer_alloc_read_channels(uint32_t index, const char* filename, uint32_t start, uint32_t frames,
@@ -121,7 +123,7 @@ public:
     void buffer_zero(uint32_t index);
     void buffer_close(uint32_t index);
 
-    sample* buffer_generate(uint32_t index, const char* cmd_name, struct sc_msg_iter& msg);
+    sample* buffer_generate(uint32_t index, const char* cmd_name, sc_msg_iter& msg);
 
     void increment_write_updates(uint32_t index) { world.mSndBufUpdates[index].writes++; }
 

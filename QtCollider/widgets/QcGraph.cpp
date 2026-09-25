@@ -181,7 +181,11 @@ void QcGraph::setCurves(const QVariantList& curves) {
         const QVariant& data = curves[i];
         QcGraphElement::CurveType type;
         double curvature;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         if (data.type() == QVariant::Int) {
+#else
+        if (data.typeId() == QMetaType::Int) {
+#endif
             type = (QcGraphElement::CurveType)data.toInt();
             curvature = 0.0;
         } else {
@@ -879,7 +883,9 @@ void QcGraph::paintEvent(QPaintEvent*) {
         QList<QcGraphModel::Connection> conns = _model.connections();
 
         if (conns.count()) {
-            Q_FOREACH (QcGraphModel::Connection c, conns) { addCurve(lines, c.a, c.b); }
+            Q_FOREACH (QcGraphModel::Connection c, conns) {
+                addCurve(lines, c.a, c.b);
+            }
 
         } else {
             QcGraphElement* e1 = elems[0];

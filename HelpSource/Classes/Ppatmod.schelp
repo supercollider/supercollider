@@ -21,8 +21,8 @@ Examples::
 code::
 (
 a = Ppatmod(
-	Pseq([0, 0, 0, 0],1),
-	{ arg pat, i;
+	Pseq([0, 0, 0, 0], 1),
+	{ |pat, i|
 		var list;
 		list = pat.list;
 		pat.list = list.put(list.size.rand, 2);
@@ -33,11 +33,11 @@ x = a.asStream;
 )
 
 
-//Ppatmod used to modify a pattern that produces a sequence of pitches:
+// Ppatmod used to modify a pattern that produces a sequence of pitches:
 
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -47,8 +47,8 @@ SynthDef(\help_sinegrain,
 (
 a = Pn(
 	Ppatmod(
-		Pseq([0, 0, 0, 0],1),
-		{ arg pat, i;
+		Pseq([0, 0, 0, 0], 1),
+		{ |pat, i|
 			var list;
 			list = pat.list;
 			pat.list = list.put(list.size.rand, 2);

@@ -28,7 +28,7 @@ Set : Collection {
 	}
 	add { arg item;
 		var index;
-		if (item.isNil, { Error("A Set cannot contain nil.\n").throw; });
+		if (item.isNil, { Error("A set cannot contain nil.\n").throw; });
 		index = this.scanFor(item);
 		if ( array.at(index).isNil, { this.putCheck(index, item) });
 	}
@@ -38,7 +38,9 @@ Set : Collection {
 			array.put(index, nil);
 			size = size - 1;
 			this.fixCollisionsFrom(index);
+			^item
 		});
+		^nil
 	}
 	choose {
 		var index, val;
@@ -221,8 +223,9 @@ OrderedIdentitySet : IdentitySet {
 	}
 
 	remove { arg item;
-		super.remove(item);
+		var out = super.remove(item);
 		items.remove(item);
+		^out
 	}
 	sort { arg func;
 		items.sort(func)

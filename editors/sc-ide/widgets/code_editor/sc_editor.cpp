@@ -27,6 +27,7 @@
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 #include "../../core/settings/theme.hpp"
+#include <qtextcursor.h>
 
 #ifdef SC_USE_QTWEBENGINE
 #    include "help_browser.hpp"
@@ -49,10 +50,9 @@ ScCodeEditor::ScCodeEditor(Document* doc, QWidget* parent):
     mAutoCompleter(new AutoCompleter(this)) {
     Q_ASSERT(mDoc != 0);
 
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(matchBrackets()));
+    connect(this, &ScCodeEditor::cursorPositionChanged, this, &ScCodeEditor::matchBrackets);
 
-    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)), this,
-            SLOT(applySettings(Settings::Manager*)));
+    connect(Main::instance(), &Main::applySettingsRequest, this, &ScCodeEditor::applySettings);
 
     mAutoCompleter->documentChanged(textDocument());
 
@@ -613,6 +613,8 @@ void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockM
     int global_level = 0;
     int blockNum = 0;
     bool in_string = false;
+    bool in_comment = false;
+
     QTextBlock block = QPlainTextEdit::document()->begin();
     while (block.isValid()) {
         int initialStackSize = stack.size();
@@ -622,6 +624,8 @@ void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockM
         TextBlockData* data = static_cast<TextBlockData*>(block.userData());
         if (data) {
             int count = data->tokens.size();
+            in_comment = data->isInMultilineComment;
+
             for (int idx = 0; idx < count; ++idx) {
                 const Token& token = data->tokens[idx];
                 switch (token.type) {
@@ -658,7 +662,11 @@ void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockM
                 indentLevel = initialStackSize;
             else
                 indentLevel = 0;
-            block = indent(block, indentLevel);
+            // lexer does not detect "/*" as in comment, therefore we check if the current
+            // block is equal to it. If so, also do not indent the multi-line comment start
+            if (!in_comment && block.text() != "/*") {
+                block = indent(block, indentLevel);
+            }
         }
 
         if (blockNum == endBlockNum)
@@ -770,8 +778,8 @@ void ScCodeEditor::triggerAutoCompletion() { mAutoCompleter->triggerCompletion()
 void ScCodeEditor::triggerMethodCallAid() { mAutoCompleter->triggerMethodCallAid(); }
 
 static bool isSingleLineComment(QTextBlock const& block) {
-    static QRegExp commentRegex("^\\s*//.*");
-    return commentRegex.exactMatch(block.text());
+    static QRegularExpression commentRegex("^\\s*//.*");
+    return commentRegex.match(block.text()).hasMatch();
 }
 
 static bool isSingleLineComment(QTextCursor const& selection) {
@@ -1195,6 +1203,25 @@ void ScCodeEditor::openCommandLine() { Main::openCommandLine(symbolUnderCursor()
 
 void ScCodeEditor::findReferences() { Main::findReferences(symbolUnderCursor(), this); }
 
+// zero indexed.
+int cursorLineNumber(QTextCursor cursor) {
+    // https://stackoverflow.com/questions/15814776/how-do-i-get-the-actual-visible-cursors-line-number/15821474#15821474
+    cursor.movePosition(QTextCursor::StartOfLine);
+
+    int lines = 0;
+    while (cursor.positionInBlock() > 0) {
+        cursor.movePosition(QTextCursor::Up);
+        lines++;
+    }
+    QTextBlock block = cursor.block().previous();
+
+    while (block.isValid()) {
+        lines += block.lineCount();
+        block = block.previous();
+    }
+    return lines;
+}
+
 void ScCodeEditor::evaluateLine() {
     QString text;
 
@@ -1208,9 +1235,9 @@ void ScCodeEditor::evaluateLine() {
 
     // Try current selection
     QTextCursor cursor = textCursor();
-    if (cursor.hasSelection())
+    if (cursor.hasSelection()) {
         text = cursor.selectedText();
-    else {
+    } else {
         text = cursor.block().text();
 
         if (mStepForwardEvaluation) {
@@ -1230,7 +1257,7 @@ void ScCodeEditor::evaluateLine() {
 
     text.replace(QChar(0x2029), QChar('\n'));
 
-    Main::evaluateCode(text);
+    Main::evaluateCode(text, false, &document()->filePath(), cursorLineNumber(textCursor()));
 
     blinkCode(cursor);
 }
@@ -1276,14 +1303,14 @@ void ScCodeEditor::evaluateRegion() {
 
     text.replace(QChar(0x2029), QChar('\n'));
 
-    Main::evaluateCode(text);
+    Main::evaluateCode(text, false, &document()->filePath(), cursorLineNumber(textCursor()), 0);
 
     blinkCode(cursor);
 }
 
 void ScCodeEditor::evaluateDocument() {
     QString documentText = textDocument()->toPlainText();
-    Main::evaluateCode(documentText);
+    Main::evaluateCode(documentText, false, &document()->filePath(), 0, 0);
 }
 
 QTextCursor ScCodeEditor::cursorAt(const TokenIterator it, int offset) {

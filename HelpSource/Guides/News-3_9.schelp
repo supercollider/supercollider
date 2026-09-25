@@ -219,7 +219,7 @@ code:: Server.allBootedServers ::.
 
 section:: Class library: Changed
 
-strong:: Breaking change: :: Rests in the patterns system have been restructured. Instead of using the code:: isRest :: event property, events are considered rests if one of their properties is a code:: Rest :: object. You must use instances of code:: Rest :: rather than the rest class itself -- use of code:: Rest :: instead of code:: Rest() :: is now deprecated.
+strong:: Breaking change: :: Rests in the patterns system have been restructured. Instead of using the code:: isRest :: event property, events are considered rests if one of their properties is a code:: Rest :: object. You must use instances of code:: Rest :: rather than the rest class itself — use of code:: Rest :: instead of code:: Rest() :: is now deprecated.
 
 strong:: Breaking change: :: Fixed code:: Dictionary:== :: only comparing the values of the two dictionaries, not the keys.
 

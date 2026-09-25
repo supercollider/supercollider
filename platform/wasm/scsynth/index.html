@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>scysnth.wasm</title>
+    <style>
+        :root {
+            --color-bg: #fff;
+            --color-text: #333;
+            --color-accent: #ff00ff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body, html, button, textarea, a, input {
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            line-height: 1.0;
+            font-size: x-large;
+        }
+
+        .wrapper {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            color: var(--color-accent);
+        }
+
+        h1, h2, h3, h4, h5, p {
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
+
+        .highlight {
+            color: var(--color-accent);
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+
+            .controls {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+            }
+        }
+
+        input, textarea {
+            width: 100%;
+        }
+
+        input.channel {
+            width: auto;
+        }
+
+        .fullwidth {
+            width: 100%;
+            display: flex;
+        }
+
+        button {
+            border-radius: 1px;
+            border: 2px solid var(--color-accent);
+            background-color: var(--color-bg);
+            color: var(--color-accent);
+            padding: 5px 10px;
+        }
+
+        input {
+            outline: 0;
+            border-width: 0 0 2px;
+            /*border-color: var(--color-accent);*/
+        }
+
+        .input input {
+            padding: 10px;
+        }
+
+        h2.section-header {
+            margin: 30px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <h2 class="highlight">scsynth.wasm</h2>
+            <div class="controls" class>
+                Inputs:
+                <input type="number" class="channel" id="num-inputs" value="0" min="0" max="2" step="1">
+                Outputs:
+                <input type="number" class="channel" id="num-outputs" value="2" min="0" max="2" step="1">
+                <button onclick="start();" id="boot">boot</button>
+                <button onclick="playGcd();">play gcd</button>
+                <button onclick="cmdPeriod();">cmdperiod</button>
+            </div>
+        </div>
+
+        <div class="input">
+            <h2 class="section-header">input</h2>
+            <div>
+                <p>
+                    <b>OSC message</b><br/>
+                    see <a href="https://docs.supercollider.online/Reference/Server-Command-Reference.html" target="_blank">server
+                    command reference</a>.
+                    For strings with spaces, use JS console.
+                    <br/>
+                </p>
+                <div class="fullwidth">
+                    <input type="text" id="oscMessage" placeholder="e.g. /s_new gcd -1 1 0">
+                    <button onclick="sendOscMessage(false)">Send</button>
+                </div>
+                <p style="margin-top: 25px;">
+                    <b>SynthDef</b><br/>
+                    Add SynthDef by using .asBytes.cs on a SynthDef in sclang.
+                </p>
+                <div class="fullwidth">
+                    <input type="text" id="synthDefBytes" placeholder="bytes, e.g. [47, 38, 50, ...]">
+                    <button onclick="sendSynthDef()">Send</button>
+                </div>
+                <p style="margin-top: 25px;">
+                    Play the SynthDef by writing its name here
+                </p>
+                <div class="fullwidth">
+                    <input type="text" id="synthDefName" placeholder="name...">
+                    <button onclick="playSynthDef()">Play</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="section-header">output</h2>
+            <p>console</p>
+            <div class="fullwidth">
+                <textarea id="console" rows="8" readonly style="width: 100%;"></textarea>
+            </div>
+
+            <p>osc reply</p>
+            <div class="fullwidth">
+                <textarea id="console-osc" rows="8" readonly style="width: 100%;"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="init.js"></script>
+</body>
+</html>

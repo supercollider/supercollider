@@ -26,20 +26,18 @@ A PyrSymbol is a unique string that resides in a global hash table.
 #pragma once
 
 #include "SC_Types.h"
-#include "PyrSlot.h"
+#include <cstdint>
 
 struct PyrSymbol {
     char* name;
-    long hash;
+    std::int64_t hash;
     short specialIndex;
-    uint8 flags;
-    uint8 length;
+    std::uint8_t flags;
+    std::uint8_t length;
     union {
         intptr_t index; // index in row table or primitive table
         struct PyrClass* classobj; // pointer to class with this name.
-        char* source; // source code for sym_Filename; used only during compilation.
     } u;
-    struct classdep* classdep;
 };
 
 enum {

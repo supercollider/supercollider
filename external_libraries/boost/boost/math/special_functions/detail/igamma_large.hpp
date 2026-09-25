@@ -65,10 +65,10 @@ namespace boost{ namespace math{ namespace detail{
 // when T is unsuitable to be passed to these routines:
 //
 template <class T, class Policy>
-inline T igamma_temme_large(T, T, const Policy& /* pol */, boost::integral_constant<int, 0> const *)
+inline T igamma_temme_large(T, T, const Policy& /* pol */, std::integral_constant<int, 0> const *)
 {
    // stub function, should never actually be called
-   BOOST_ASSERT(0);
+   BOOST_MATH_ASSERT(0);
    return 0;
 }
 //
@@ -76,7 +76,7 @@ inline T igamma_temme_large(T, T, const Policy& /* pol */, boost::integral_const
 // (80-bit long double, or 10^-20).
 //
 template <class T, class Policy>
-T igamma_temme_large(T a, T x, const Policy& pol, boost::integral_constant<int, 64> const *)
+T igamma_temme_large(T a, T x, const Policy& pol, std::integral_constant<int, 64> const *)
 {
    BOOST_MATH_STD_USING // ADL of std functions
    T sigma = (x - a) / a;
@@ -281,7 +281,7 @@ T igamma_temme_large(T a, T x, const Policy& pol, boost::integral_constant<int, 
 // (IEEE double precision or 10^-17).
 //
 template <class T, class Policy>
-T igamma_temme_large(T a, T x, const Policy& pol, boost::integral_constant<int, 53> const *)
+T igamma_temme_large(T a, T x, const Policy& pol, std::integral_constant<int, 53> const *)
 {
    BOOST_MATH_STD_USING // ADL of std functions
    T sigma = (x - a) / a;
@@ -423,7 +423,7 @@ T igamma_temme_large(T a, T x, const Policy& pol, boost::integral_constant<int, 
 // (IEEE float precision, or 10^-8)
 //
 template <class T, class Policy>
-T igamma_temme_large(T a, T x, const Policy& pol, boost::integral_constant<int, 24> const *)
+T igamma_temme_large(T a, T x, const Policy& pol, std::integral_constant<int, 24> const *)
 {
    BOOST_MATH_STD_USING // ADL of std functions
    T sigma = (x - a) / a;
@@ -479,7 +479,7 @@ T igamma_temme_large(T a, T x, const Policy& pol, boost::integral_constant<int, 
 // require many more terms in the polynomials.
 //
 template <class T, class Policy>
-T igamma_temme_large(T a, T x, const Policy& pol, boost::integral_constant<int, 113> const *)
+T igamma_temme_large(T a, T x, const Policy& pol, std::integral_constant<int, 113> const *)
 {
    BOOST_MATH_STD_USING // ADL of std functions
    T sigma = (x - a) / a;

@@ -45,7 +45,7 @@ argument::func
 The function that takes two arrays as inputs  (code::magnitude::, and code::phase::) and returns a resulting pair of arrays code::[magnitude, phase]::.
 code::
 // example function
-{ | magnitudes, phases |
+{ |magnitudes, phases|
 	[mags.reverse, phases.reverse] // e.g. upside-down spectrum
 }
 ::
@@ -72,7 +72,7 @@ chain = chain.pvcalc2(chain2, numframes, func, frombin, tobin, zeroothers)
 ::
 
 argument::chain2
-The scond FFT chain.
+The second FFT chain.
 
 argument::numframes
 Number of FFT frames to process
@@ -81,7 +81,7 @@ argument::func
 The function that takes four arrays as inputs (magnitudes1, phases1, magnitudes2, phases2) and returns a resulting pair of arrays code::[magnitude, phase]::.
 code::
 // example function
-{ | magnitudes1, phases1, magnitudes2, phases2 |
+{ |magnitudes1, phases1, magnitudes2, phases2|
 	[magnitudes1, phases2] // e.g. use the magnitudes of one, ane the phases of the other
 }
 ::
@@ -114,7 +114,7 @@ argument::func
 The function that processes each bin. It should be a function that takes code:: magnitude, phase, bin, index :: as inputs and returns a resulting array code::[magnitude, phase]::.
 code::
 // example function
-{ | magnitude, phase, bin, index |
+{ |magnitude, phase, bin, index|
 	// randomize magnitudes somewhat (noisier signal)
 	[magnitude * (5.0.rand2.dbamp), phase]
 }
@@ -155,7 +155,7 @@ Examples::
 subsection:: pvcalc
 code::
 // a sound file
-c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c.free; c = Buffer.read(s, ExampleFiles.child);
 
 (
 {
@@ -163,12 +163,12 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	in = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
 	chain = FFT(LocalBuf(1024), in);
 
-	chain = chain.pvcalc(1024, {|mags, phases|
+	chain = chain.pvcalc(1024, { |mags, phases|
 //////// Try uncommenting each of these lines in turn and re-running the synth:
-		[mags * {1.5.rand}.dup(mags.size), phases + {pi.rand}.dup(phases.size)]; // Arbitrary filter, arbitrary phase shift
-		//[mags.reverse, phases.reverse]; // Upside-down!
-		//[mags.differentiate, phases.differentiate]; // Differentiate along frequency axis
-		//[mags[30..] ++ mags[..30], phases[30..] ++ phases[..30]]; // ".rotate" doesn't work directly, but this is equivalent
+		[mags * { 1.5.rand }.dup(mags.size), phases + { pi.rand }.dup(phases.size)]; // Arbitrary filter, arbitrary phase shift
+		// [mags.reverse, phases.reverse]; // Upside-down!
+		// [mags.differentiate, phases.differentiate]; // Differentiate along frequency axis
+		// [mags[30..] ++ mags[..30], phases[30..] ++ phases[..30]]; // ".rotate" doesn't work directly, but this is equivalent
 	}, frombin: 0, tobin: 250, zeroothers: 0);
 
 	0.5 * IFFT(chain).dup
@@ -178,7 +178,7 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 subsection:: pvcalc2
 code::
-c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c.free; c = Buffer.read(s, ExampleFiles.child);
 
 (
 x = {
@@ -211,7 +211,7 @@ x = {
 
 subsection:: pvcollect
 code::
-c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c.free; c = Buffer.read(s, ExampleFiles.child);
 
 
 (
@@ -222,20 +222,20 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 	v = LFPar.kr(0.5).range(0.1, 1);
 
-	chain = chain.pvcollect(1024, {|mag, phase, index|
+	chain = chain.pvcollect(1024, { |mag, phase, index|
 
 //////// Try uncommenting each of these lines in turn and re-running the synth:
-		//mag;
-		//[mag, phase];
-		//[mag, phase] / 3;
-		//[mag, phase].sqrt;
-		//[mag, 3.14.rand];
-		//[mag, LFNoise0.kr.range(0, 3.14)];
-		//[mag * Dseq([1, 0, 0, 1, 1, 0, 1, 0].dupEach(8), 999999999999)]; // Can even use Demand ugens! One val demanded each frame
-		//[mag.sqrt, 3.14.rand];
-		//if(index % 7 == 0, mag, 0); // Comb filter
-		//if(LFNoise0.kr(10) > 0.5, mag, 0);
-		//mag + DelayN.kr(mag, 1, v); // Spectral delay
+		// mag;
+		// [mag, phase];
+		// [mag, phase] / 3;
+		// [mag, phase].sqrt;
+		// [mag, 3.14.rand];
+		// [mag, LFNoise0.kr.range(0, 3.14)];
+		// [mag * Dseq([1, 0, 0, 1, 1, 0, 1, 0].dupEach(8), 999999999999)]; // Can even use Demand ugens! One val demanded each frame
+		// [mag.sqrt, 3.14.rand];
+		// if(index % 7 == 0, mag, 0); // Comb filter
+		// if(LFNoise0.kr(10) > 0.5, mag, 0);
+		// mag + DelayN.kr(mag, 1, v); // Spectral delay
 
 		if((index - LFPar.kr(0.1).range(2, 1024/20)).abs < 10, mag, 0); // Swept bandpass
 

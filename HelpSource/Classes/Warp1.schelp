@@ -10,7 +10,7 @@ private:: categories
 
 method:: ar
 argument::numChannels
-the number of channels in the soundfile used in bufnum.
+the number of channels in the soundfile used in bufnum. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument::bufnum
 the buffer number of a mono soundfile.
@@ -50,7 +50,7 @@ code::
 s.boot;
 
 (
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
+b = Buffer.read(s, ExampleFiles.apollo11);
 x = { |envbuf = -1|
 	var pointer, pitch;
 	// pointer - move from beginning to end of soundfile over 15 seconds
@@ -58,15 +58,15 @@ x = { |envbuf = -1|
 	// control pitch with MouseX
 	pitch = MouseX.kr(0.5, 2);
 	Warp1.ar(
-		numChannels:1,
-		bufnum:b,
-		pointer:pointer,
-		freqScale:pitch,
-		windowSize:0.1,
-		envbufnum:envbuf,
-		overlaps:8,
-		windowRandRatio:0.1,
-		interp:2
+		numChannels: 1,
+		bufnum: b,
+		pointer: pointer,
+		freqScale: pitch,
+		windowSize: 0.1,
+		envbufnum: envbuf,
+		overlaps: 8,
+		windowRandRatio: 0.1,
+		interp: 2
 	)
 }.play
 
@@ -92,7 +92,7 @@ x.relase; z.free;
 code::
 (
 b.free;
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
+b = Buffer.read(s, ExampleFiles.apollo11);
 {
 	var pointer = Phasor.ar(0, SampleDur.ir / BufDur.ir(b) * XLine.kr(1, 0.25, 20));
 	var sound = Warp1.ar(1, b, pointer, 1, 0.3, -1, 16, Line.kr(0, 1, 40), 4);
@@ -101,4 +101,3 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
 )
 b.free;
 ::
-

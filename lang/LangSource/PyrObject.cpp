@@ -18,43 +18,53 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <atomic>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <climits>
 #include "GC.h"
+#include "PyrKernel.h"
 #include "PyrMessage.h"
 #include "PyrInterpreter.h"
 #include "PyrSymbolTable.h"
 #include "PyrObjectProto.h"
 #include "PyrKernelProto.h"
-#include "PyrLexer.h"
 #include "InitAlloc.h"
-#include "Hash.h"
-#include "SC_Constants.h"
-#include "SC_Alloca.h"
 #include "SC_Lock.h"
 
 #include <set>
 #include <limits>
 
-#include <memory>
 #include <boost/range/irange.hpp>
 
-#define BOOST_THREAD_VERSION 4
-#define BOOST_THREAD_PROVIDES_EXECUTORS
 
-#include <boost/thread/future.hpp>
-#include <boost/thread/executor.hpp>
-#include <boost/thread/executors/basic_thread_pool.hpp>
+#if defined(__EMSCRIPTEN__) || defined(_MSC_VER)
+// windows does not use boost asio thread pool but relies on std::async
+// emscripten does the same to avoid boost
+#    define USE_STD_ASYNC
+#endif
 
-#ifdef _MSC_VER
+
+#ifdef USE_STD_ASYNC
 #    include <future>
+#else
+#    define BOOST_THREAD_VERSION 4
+#    define BOOST_THREAD_PROVIDES_EXECUTORS
+
+#    include <boost/thread/future.hpp>
+#    include <boost/thread/executor.hpp>
+#    include <boost/thread/executors/basic_thread_pool.hpp>
 #endif
 
 #if 0 // not yet
 #    include <parallel/algorithm>
+#endif
+
+#if defined(__GNUC__) || defined(__clang__)
+#    define PRAGMA_IVDEP _Pragma("GCC ivdep")
+#elif defined(_MSC_VER)
+#    define PRAGMA_IVDEP __pragma(loop(ivdep))
+#else
+#    define PRAGMA_IVDEP
 #endif
 
 
@@ -68,6 +78,7 @@ int gFormatElemTag[NUMOBJFORMATS];
 PyrMethod* gNullMethod; // used to fill row table
 PyrClass* gTagClassTable[16];
 
+PyrClass* class_abstract_object;
 PyrClass* class_object;
 PyrClass* class_dict;
 PyrClass* class_array;
@@ -100,6 +111,7 @@ PyrClass* class_finalizer;
 PyrClass* class_server_shm_interface;
 
 PyrSymbol* s_none;
+PyrSymbol* s_abstract_object;
 PyrSymbol* s_object;
 PyrSymbol* s_bag;
 PyrSymbol* s_set;
@@ -153,9 +165,11 @@ PyrSymbol* s_next;
 PyrSymbol* s_env;
 PyrSymbol *s_new, *s_ref, *s_value, *s_at, *s_put;
 PyrSymbol *s_performList, *s_superPerformList;
+PyrSymbol* s_performArgs;
 PyrSymbol *s_series, *s_copyseries, *s_putseries;
 PyrSymbol *s_envirGet, *s_envirPut;
 PyrSymbol *s_synth, *s_environment, *s_event;
+PyrSymbol* s_proto_object;
 PyrSymbol* s_shutdown;
 PyrSymbol *s_super, *s_this;
 
@@ -183,6 +197,7 @@ void initSymbols() {
 
     // classes
     s_object = getsym("Object");
+    s_abstract_object = getsym("AbstractObjectExperimental");
     s_ref = getsym("Ref");
     s_dictionary = getsym("Dictionary");
     s_bag = getsym("Bag");
@@ -241,6 +256,7 @@ void initSymbols() {
     s_synth = getsym("Synth");
     s_environment = getsym("Environment");
     s_event = getsym("Event");
+    s_proto_object = getsym("ProtoObject");
 
     // interpreter
     s_interpretCmdLine = getsym("interpretCmdLine");
@@ -260,6 +276,7 @@ void initSymbols() {
     s_value = getsym("value");
     s_performList = getsym("performList");
     s_superPerformList = getsym("superPerformList");
+    s_performArgs = getsym("performArgs");
     s_at = getsym("at");
     s_put = getsym("put");
     s_prstart = getsym("prStart");
@@ -289,22 +306,20 @@ void initSymbols() {
     SetFloat(&o_ftwo, 2.);
     SetFloat(&o_inf, std::numeric_limits<double>::infinity());
 
-    slotCopy(&gSpecialValues[svNil], &o_nil);
-    slotCopy(&gSpecialValues[svFalse], &o_false);
-    slotCopy(&gSpecialValues[svTrue], &o_true);
+    gSpecialValues.Nil_ = o_nil;
+    gSpecialValues.True = o_true;
+    gSpecialValues.False = o_false;
+    gSpecialValues.Inf = o_inf;
 
-    slotCopy(&gSpecialValues[svNegOne], &o_negone);
-    slotCopy(&gSpecialValues[svZero], &o_zero);
-    slotCopy(&gSpecialValues[svOne], &o_one);
-    slotCopy(&gSpecialValues[svTwo], &o_two);
-
-    slotCopy(&gSpecialValues[svFHalf], &o_fhalf);
-    slotCopy(&gSpecialValues[svFNegOne], &o_fnegone);
-    slotCopy(&gSpecialValues[svFZero], &o_fzero);
-    slotCopy(&gSpecialValues[svFOne], &o_fone);
-    slotCopy(&gSpecialValues[svFTwo], &o_ftwo);
-    slotCopy(&gSpecialValues[svInf], &o_inf);
-
+    gSpecialNumbers.MinusOne = o_negone;
+    gSpecialNumbers.Zero = o_zero;
+    gSpecialNumbers.One = o_one;
+    gSpecialNumbers.Two = o_two;
+    gSpecialNumbers.Half = o_fhalf;
+    gSpecialNumbers.MinusOneFloat = o_fnegone;
+    gSpecialNumbers.ZeroFloat = o_fzero;
+    gSpecialNumbers.OneFloat = o_fone;
+    gSpecialNumbers.TwoFloat = o_ftwo;
 
     gFormatElemSize[obj_notindexed] = sizeof(PyrSlot);
     gFormatElemSize[obj_slot] = sizeof(PyrSlot);
@@ -802,7 +817,7 @@ public:
  * we fill a binary search tree
  *
  */
-static PyrClass* sortClasses(PyrClass* aClassList) {
+PyrClass* sortClasses(PyrClass* aClassList) {
     typedef std::set<PyrClass*, compareByName, pyr_pool_compile_allocator<PyrClass*>> classSetType;
     classSetType classSet;
 
@@ -828,83 +843,34 @@ static PyrClass* sortClasses(PyrClass* aClassList) {
 }
 
 
-void buildClassTree() {
-    // after all classes are compiled this function builds the tree and
-    // indexes the classes
-
-    // count subclasses
-    // postfl("count subclasses\n");
-    PyrClass* classobj = gClassList;
-    while (classobj) {
-        PyrClass* superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
-        if (superclassobj) {
-            // postfl("     superclassobj %s\n", slotRawSymbol(&superclassobj->name)->name);
-            SetRaw(&superclassobj->subclasses, slotRawInt(&superclassobj->subclasses) + 1);
-        }
-        classobj = slotRawClass(&classobj->nextclass);
-    }
-    // allocate subclass arrays
-    // postfl("allocate subclass arrays\n");
-    classobj = gClassList;
-    while (classobj) {
-        int numSubclasses;
-        numSubclasses = slotRawInt(&classobj->subclasses);
-        // postfl("  %s %d\n", slotRawSymbol(&classobj->name)->name, numSubclasses);
-        if (numSubclasses) {
-            SetObject(&classobj->subclasses,
-                      (PyrObject*)newPyrArray(nullptr, numSubclasses, obj_permanent | obj_immutable, false));
-            slotRawObject(&classobj->subclasses)->size = 0;
-        } else {
-            SetNil(&classobj->subclasses);
-        }
-        classobj = slotRawClass(&classobj->nextclass);
-    }
-    // fill in subclass arrays
-    // postfl("fill in subclass arrays\n");
-    classobj = gClassList;
-    while (classobj) {
-        // postfl("  %s\n", slotRawSymbol(&classobj->name)->name);
-        PyrClass* superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
-        if (superclassobj) {
-            objAddIndexedObject(slotRawObject(&superclassobj->subclasses), (PyrObject*)classobj);
-            // postfl("     superclassobj %s %d\n", slotRawSymbol(&superclassobj->name)->name,
-            //	slotRawObject(&superclassobj->subclasses)->size);
-        }
-        classobj = slotRawClass(&classobj->nextclass);
-    }
-
-    // alpha sort the classes via insertion sort
-    gClassList = sortClasses(gClassList);
-}
-
-void indexClassTree(PyrClass* classobj, int numSuperMethods) {
-    int i, numMethods;
-
+void indexClassTreeImpl(PyrClass* classobj, int numSuperMethods, std::size_t& numClasses) {
     if (!classobj)
         return;
 
-    SetInt(&classobj->classIndex, gNumClasses);
-    gNumClasses++;
+    SetInt(&classobj->classIndex, numClasses);
+    numClasses += 1;
 
-    if (IsObj(&classobj->methods)) {
-        PyrObject* methods = slotRawObject(&classobj->methods);
-        numMethods = methods->size;
-    } else
-        numMethods = 0;
+    const int numMethods =
+        numSuperMethods + (IsObj(&classobj->methods) ? classobj->methods.getPyrObjType<PyrObject>()->size : 0);
 
-    numMethods = numSuperMethods + numMethods;
     if (IsObj(&classobj->subclasses)) {
         PyrObject* subclasses = slotRawObject(&classobj->subclasses);
-        for (i = 0; i < subclasses->size; ++i)
-            indexClassTree(slotRawClass(&subclasses->slots[i]), numMethods);
+        for (int i = 0; i < subclasses->size; ++i)
+            indexClassTreeImpl(slotRawClass(&subclasses->slots[i]), numMethods, numClasses);
     }
-    SetInt(&classobj->maxSubclassIndex, gNumClasses - 1);
+    SetInt(&classobj->maxSubclassIndex, numClasses - 1);
 }
 
-void findDiscrepancy();
+std::size_t indexClassTree(PyrClass* classobj, int numSuperMethods) {
+    std::size_t i { 0 };
+    indexClassTreeImpl(classobj, numSuperMethods, i);
+    return i;
+}
+
 void findDiscrepancy() {
     PyrClass *classobjA, *classobjB;
 
+    assert(gClassList);
     classobjA = gClassList;
     while (classobjA) {
         classobjB = slotRawClass(&classobjA->nextclass);
@@ -972,14 +938,13 @@ void postClassTree(PyrClass* classobj, int level) {
 }
 
 
-void setSelectorFlags() {
-    int i;
-
+int setSelectorFlags() {
     PyrClass* classobj = gClassList;
     while (classobj) {
         if (IsObj(&classobj->methods)) {
             PyrObject* methods = slotRawObject(&classobj->methods);
-            for (i = 0; i < methods->size; ++i) {
+            const auto sz = methods->size;
+            for (std::size_t i { 0 }; i < sz; ++i) {
                 PyrMethod* method = slotRawMethod(&methods->slots[i]);
                 slotRawSymbol(&method->name)->flags |= sym_Selector;
                 // if (method->methType == methRedirect) {
@@ -991,15 +956,18 @@ void setSelectorFlags() {
         classobj = slotRawClass(&classobj->nextclass);
     }
     // count selectors
-    gNumSelectors = 0;
     SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-    for (int i = 0; i < symbolTable->TableSize(); ++i) {
+    int countSelectors { 0 };
+    const auto sz = symbolTable->TableSize();
+    for (std::size_t i { 0 }; i < sz; ++i) {
         PyrSymbol* sym = symbolTable->Get(i);
         if (sym && (sym->flags & sym_Selector)) {
-            sym->u.index = gNumSelectors++;
+            sym->u.index = countSelectors++;
         }
     }
-    // post("gNumSelectors %d\n", gNumSelectors);
+    gNumSelectors = countSelectors;
+    post("gNumSelectors %d\n", gNumSelectors);
+    return countSelectors;
 }
 
 // the chunky stuff can be commented back in for implementing a better
@@ -1037,7 +1005,7 @@ int compareColDescs(const void* va, const void* vb) {
 double elapsedTime();
 #endif
 
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
 static size_t fillClassRows(const PyrClass* classobj, PyrMethod** bigTable);
 #else
 static size_t fillClassRows(const PyrClass* classobj, PyrMethod** bigTable, boost::basic_thread_pool& pool);
@@ -1056,7 +1024,7 @@ static void binsortClassRows(PyrMethod const** bigTable, const ColumnDescriptor*
         PyrMethod const** row = bigTable + j * numSelectors;
         memcpy(temprow, row, numSelectors * sizeof(PyrMethod*));
 
-#pragma GCC ivdep
+        PRAGMA_IVDEP
         for (int i = 0; i < numSelectors; ++i)
             row[i] = temprow[sels[i].selectorIndex];
     }
@@ -1125,7 +1093,7 @@ static void calcRowStats(PyrMethod const* const* bigTable, ColumnDescriptor* sel
         sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
 }
 
-void buildBigMethodMatrix() {
+void buildBigMethodMatrix(std::size_t numSeletors) {
     PyrMethod **bigTable, **row;
     PyrClass** classes;
     int j, k;
@@ -1144,7 +1112,9 @@ void buildBigMethodMatrix() {
     const int hw_concurrency = SC_Thread::hardware_concurrency();
     const int cpuCount = hw_concurrency > 0 ? hw_concurrency : 1;
     const int helperThreadCount = cpuCount > 1 ? cpuCount - 1 : 1;
+#ifndef USE_STD_ASYNC
     boost::basic_thread_pool pool(helperThreadCount);
+#endif
 
     // pyrmalloc:
     // lifetime: kill after compile
@@ -1152,7 +1122,7 @@ void buildBigMethodMatrix() {
     // post("bigTableSize %d %d %d\n", bigTableSize, numSelectors, numClasses);
     ColumnDescriptor* sels = (ColumnDescriptor*)pyr_pool_compile->Alloc(numSelectors * sizeof(ColumnDescriptor));
     MEMFAIL(sels);
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
     auto filledSelectorsFuture = std::async(std::launch::deferred, std::bind(&prepareColumnTable, sels, numSelectors));
 #else
     auto filledSelectorsFuture = boost::async(pool, std::bind(&prepareColumnTable, sels, numSelectors));
@@ -1169,7 +1139,7 @@ void buildBigMethodMatrix() {
         }
         return classes;
     };
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
     auto filledClassIndices = std::async(std::launch::deferred, fillClassIndices, classes);
 #else
     auto filledClassIndices = boost::async(pool, fillClassIndices, classes);
@@ -1178,20 +1148,21 @@ void buildBigMethodMatrix() {
     bigTable = (PyrMethod**)pyr_pool_compile->Alloc(bigTableSize * sizeof(PyrMethod*));
     MEMFAIL(bigTable);
 
-#ifndef _MSC_VER
+#ifndef USE_STD_ASYNC
     pool.try_executing_one();
 #endif
     filledClassIndices.wait();
-#ifdef _MSC_VER
-    size_t numentries = fillClassRows(class_object, bigTable);
+#ifdef USE_STD_ASYNC
+    size_t numentries = fillClassRows(class_abstract_object, bigTable);
 #else
-    size_t numentries = fillClassRows(class_object, bigTable, pool);
+    size_t numentries = fillClassRows(class_abstract_object, bigTable, pool);
 #endif
-    post("\tnumentries = %lu / %d = %.2g\n", numentries, bigTableSize, (double)numentries / (double)bigTableSize);
+    post("\tnum entries = %lu, big table size = %d, num entries / big table size = %.2g\n", numentries, bigTableSize,
+         (double)numentries / (double)bigTableSize);
 
 
     ColumnDescriptor* filledSelectors = filledSelectorsFuture.get();
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
     std::vector<std::future<void>> columnDescriptorsWithStats;
 #else
     std::vector<boost::future<void>> columnDescriptorsWithStats;
@@ -1199,7 +1170,7 @@ void buildBigMethodMatrix() {
     size_t selectorsPerJob = numSelectors / cpuCount / 2;
     for (size_t beginSelectorIndex : boost::irange(selectorsPerJob, numSelectors, selectorsPerJob)) {
         size_t endSelectorIndex = std::min(beginSelectorIndex + selectorsPerJob, numSelectors);
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
         auto future = std::async(std::launch::deferred, calcRowStats, bigTable, filledSelectors, numClasses,
                                  numSelectors, beginSelectorIndex, endSelectorIndex);
 #else
@@ -1212,7 +1183,7 @@ void buildBigMethodMatrix() {
     calcRowStats(bigTable, filledSelectors, numClasses, numSelectors, 0, std::min(selectorsPerJob, numSelectors));
 
     for (auto& future : columnDescriptorsWithStats) {
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
         future.wait();
 #else
         while (!future.is_ready())
@@ -1234,7 +1205,7 @@ void buildBigMethodMatrix() {
 
     // bin sort the class rows to the new ordering
     // post("reorder rows\n");
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
     std::vector<std::future<void>> binsortedClassRowFuture;
 #else
     std::vector<boost::future<void>> binsortedClassRowFuture;
@@ -1242,7 +1213,7 @@ void buildBigMethodMatrix() {
     size_t classesPerJob = numClasses / cpuCount / 2;
     for (size_t beginClassIndex : boost::irange(classesPerJob, numClasses, classesPerJob)) {
         size_t endClassIndex = std::min(beginClassIndex + classesPerJob, numClasses);
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
         auto future = std::async(std::launch::deferred, binsortClassRows, (PyrMethod const**)bigTable, sels,
                                  numSelectors, beginClassIndex, endClassIndex);
 #else
@@ -1255,7 +1226,7 @@ void buildBigMethodMatrix() {
     binsortClassRows((PyrMethod const**)bigTable, sels, numSelectors, 0, std::min(classesPerJob, numClasses));
 
     for (auto& future : binsortedClassRowFuture) {
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
         future.wait();
 #else
         while (!future.is_ready())
@@ -1287,10 +1258,7 @@ void buildBigMethodMatrix() {
     for (int i = 0; i < freeIndex + numClasses; ++i)
         gRowTable[i] = gNullMethod;
 
-    // post("fill compressed table\n");
-    //{ FILE* fp;
-    // newPyrMethod
-    // fp = fopen("meth table", "w");
+
     for (int i = 0; i < numSelectors; ++i) {
         int offset, maxwidth;
         offset = sels[i].rowOffset + sels[i].minClassIndex;
@@ -1302,16 +1270,9 @@ void buildBigMethodMatrix() {
                 table[j] = row[k];
         }
     }
-    // fclose(fp);
-    //}
-
     for (int i = 0; i < freeIndex + numClasses; ++i)
         assert(gRowTable[i]);
 
-
-        // post("freeIndex %d\n", freeIndex);
-        // post("widthSum %d\n", widthSum);
-        // post("popSum %d\n", popSum);
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
     post("building table took %.3g seconds\n", elapsedTime() - t0);
@@ -1329,15 +1290,9 @@ void buildBigMethodMatrix() {
     post("\tmethod table size %d bytes, ", rowTableSize);
     post("big table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
     // postfl("%p %p %p\n", classes, bigTable, sels);
-    /*
-        // not necessary since the entire pool will be freed..
-        pyr_pool_compile->Free(classes);
-        pyr_pool_compile->Free(bigTable);
-        pyr_pool_compile->Free(sels);
-    */
 }
 
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
 static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable)
 #else
 static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable, boost::basic_thread_pool& pool)
@@ -1350,7 +1305,7 @@ static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable, boost
     if (superclassobj) {
         PyrMethod** superrow = bigTable + slotRawInt(&superclassobj->classIndex) * gNumSelectors;
 
-#pragma GCC ivdep
+        PRAGMA_IVDEP
         for (int i = 0; i != gNumSelectors; ++i) {
             myrow[i] = superrow[i];
             if (superrow[i])
@@ -1382,7 +1337,7 @@ static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable, boost
         int numSubclasses = subclasses->size;
 
         if (numSubclasses) {
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
             if (numSubclasses <= 2) {
                 for (int subClassIndex : boost::irange(0, numSubclasses))
                     result += fillClassRow(slotRawClass(&subclasses->slots[subClassIndex]), bigTable);
@@ -1433,7 +1388,7 @@ static size_t fillClassRow(const PyrClass* classobj, PyrMethod** bigTable, boost
     return result;
 }
 
-#ifdef _MSC_VER
+#ifdef USE_STD_ASYNC
 static size_t fillClassRows(const PyrClass* classobj, PyrMethod** bigTable) { return fillClassRow(classobj, bigTable); }
 #else
 static size_t fillClassRows(const PyrClass* classobj, PyrMethod** bigTable, boost::basic_thread_pool& pool) {
@@ -1483,7 +1438,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, in
         metaSuperClass = metaSuperClassName->u.classobj;
         superInstVars = numSuperInstVars(superClass);
     } else {
-        // else it must be Object and so has no superclass
+        // else it must be AbstractObjectExperimental and so has no superclass
         metaSuperClassName = nullptr;
         superInstVars = 0;
     }
@@ -1495,6 +1450,8 @@ PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, in
     SetInt(&metaclassobj->classFlags, slotRawInt(&metaclassobj->classFlags) | classIsIntrinsic);
 
     if (metaSuperClassName && classClassNumInstVars) {
+        assert(!metaclassobj->iprototype.isNil());
+        assert(!metaSuperClass->iprototype.isNil());
         memcpy(slotRawObject(&metaclassobj->iprototype)->slots, slotRawObject(&metaSuperClass->iprototype)->slots,
                sizeof(PyrSlot) * classClassNumInstVars);
         memcpy(slotRawSymbolArray(&metaclassobj->instVarNames)->symbols,
@@ -1537,28 +1494,32 @@ void addIntrinsicClassVar(PyrClass* classobj, const char* varName, PyrSlot* slot
 }
 
 void initClasses() {
-    PyrClass* class_object_meta;
-    PyrMethodRaw* methraw;
-
     // BOOTSTRAP THE OBJECT HIERARCHY
-
     gNumClassVars = 0;
     gClassList = nullptr;
     gNullMethod = newPyrMethod();
     SetSymbol(&gNullMethod->name, (PyrSymbol*)nullptr);
-    methraw = METHRAW(gNullMethod);
+    PyrMethodRaw* methraw = METHRAW(gNullMethod);
     methraw->methType = methNormal;
 
     // build intrinsic classes
     class_class = nullptr;
-    class_object = makeIntrinsicClass(s_object, nullptr, 0, 4);
+    class_abstract_object = makeIntrinsicClass(s_abstract_object, nullptr, 0, 0);
+    class_object = makeIntrinsicClass(s_object, s_abstract_object, 0, 4);
     class_class = makeIntrinsicClass(s_class, s_object, classClassNumInstVars, 1);
 
     // now fix class_class ptrs that were just previously installed erroneously
-    class_object->classptr->classptr = class_class;
-    class_class->classptr->classptr = class_class;
-    class_object_meta = class_object->classptr;
-    class_object_meta->superclass = class_class->name;
+    PyrClass* class_object_meta = class_object->classptr;
+    PyrClass* class_abstract_object_meta = class_abstract_object->classptr;
+
+    class_object_meta->classptr = class_class;
+    class_abstract_object_meta->classptr = class_class;
+
+    PyrClass* class_class_meta = class_class->classptr;
+    class_class_meta->classptr = class_class;
+
+    class_abstract_object_meta->superclass = class_class->name;
+    class_object_meta->superclass = class_abstract_object_meta->name;
 
     addIntrinsicClassVar(class_object, "dependantsDictionary", &o_nil);
     addIntrinsicClassVar(class_object, "currentEnvironment", &o_nil);
@@ -1599,9 +1560,14 @@ void initClasses() {
     memcpy(slotRawSymbolArray(&class_object_meta->instVarNames)->symbols,
            slotRawSymbolArray(&class_class->instVarNames)->symbols, sizeof(PyrSymbol*) * classClassNumInstVars);
 
-    memcpy(slotRawObject(&class_class->classptr->iprototype)->slots, slotRawObject(&class_class->iprototype)->slots,
+    memcpy(slotRawObject(&class_abstract_object_meta->iprototype)->slots,
+           slotRawObject(&class_class->iprototype)->slots, sizeof(PyrSlot) * classClassNumInstVars);
+    memcpy(slotRawSymbolArray(&class_abstract_object_meta->instVarNames)->symbols,
+           slotRawSymbolArray(&class_class->instVarNames)->symbols, sizeof(PyrSymbol*) * classClassNumInstVars);
+
+    memcpy(slotRawObject(&class_class_meta->iprototype)->slots, slotRawObject(&class_class->iprototype)->slots,
            sizeof(PyrSlot) * classClassNumInstVars);
-    memcpy(slotRawSymbolArray(&class_class->classptr->instVarNames)->symbols,
+    memcpy(slotRawSymbolArray(&class_class_meta->instVarNames)->symbols,
            slotRawSymbolArray(&class_class->instVarNames)->symbols, sizeof(PyrSymbol*) * classClassNumInstVars);
 
 
@@ -1616,14 +1582,15 @@ void initClasses() {
 
     // now fix array classptrs in already created classes
     fixClassArrays(class_class);
-    fixClassArrays(class_class->classptr);
+    fixClassArrays(class_class_meta);
     fixClassArrays(class_object_meta);
+    fixClassArrays(class_abstract_object_meta);
     fixClassArrays(class_collection);
     fixClassArrays(class_sequenceable_collection);
     fixClassArrays(class_arrayed_collection);
     fixClassArrays(class_array);
 
-    class_fundef = makeIntrinsicClass(s_fundef, s_object, 10, 0);
+    class_fundef = makeIntrinsicClass(s_fundef, s_object, 18, 0);
     // declare varNames for Block
 
     addIntrinsicVar(class_fundef, "raw1", &o_nil);
@@ -1631,21 +1598,23 @@ void initClasses() {
     addIntrinsicVar(class_fundef, "code", &o_nil);
     addIntrinsicVar(class_fundef, "selectors", &o_nil);
     addIntrinsicVar(class_fundef, "constants", &o_nil);
-
     addIntrinsicVar(class_fundef, "prototypeFrame", &o_nil);
     addIntrinsicVar(class_fundef, "context", &o_nil);
     addIntrinsicVar(class_fundef, "argNames", &o_nil);
     addIntrinsicVar(class_fundef, "varNames", &o_nil);
-    addIntrinsicVar(class_fundef, "sourceCode", &o_nil);
+    addIntrinsicVar(class_fundef, "isClosed", &o_false);
+    addIntrinsicVar(class_fundef, "fileLocation", &o_false);
+    addIntrinsicVar(class_fundef, "sourceCodeFileOrSnippet", &o_nil);
+    addIntrinsicVar(class_fundef, "name", &o_nil);
+    addIntrinsicVar(class_fundef, "filePath", &o_nil);
+    addIntrinsicVar(class_fundef, "sourceCodeStartIndex", &o_nil);
+    addIntrinsicVar(class_fundef, "sourceCodeEndIndex", &o_nil);
+    addIntrinsicVar(class_fundef, "byteCodeLocations", &o_nil);
+    addIntrinsicVar(class_fundef, "byteCodeSizes", &o_nil);
 
-    class_method = makeIntrinsicClass(s_method, s_fundef, 5, 0);
+    class_method = makeIntrinsicClass(s_method, s_fundef, 2, 0);
     addIntrinsicVar(class_method, "ownerClass", &o_nil);
-    addIntrinsicVar(class_method, "name", &o_nil);
     addIntrinsicVar(class_method, "primitiveName", &o_nil);
-    addIntrinsicVar(class_method, "filenameSymbol", &o_nil);
-    addIntrinsicVar(class_method, "charPos", &o_zero);
-    // addIntrinsicVar(class_method, "byteMeter", &o_zero);
-    // addIntrinsicVar(class_method, "callMeter", &o_zero);
 
     class_frame = makeIntrinsicClass(s_frame, s_object, 0, 0);
     SetInt(&class_frame->classFlags, slotRawInt(&class_frame->classFlags) | classHasIndexableInstances);
@@ -1655,16 +1624,22 @@ void initClasses() {
     // addIntrinsicVar(class_frame, "homeContext", &o_nil);
     // addIntrinsicVar(class_frame, "ip", &o_nil);
 
-    class_process = makeIntrinsicClass(s_process, s_object, 6, 0);
+    class_process = makeIntrinsicClass(s_process, s_object, 6, 1);
     addIntrinsicVar(class_process, "classVars", &o_nil);
     addIntrinsicVar(class_process, "interpreter", &o_nil);
     addIntrinsicVar(class_process, "curThread", &o_nil);
     addIntrinsicVar(class_process, "mainThread", &o_nil);
     addIntrinsicVar(class_process, "schedulerQueue", &o_nil);
     addIntrinsicVar(class_process, "nowExecutingPath", &o_nil);
+    addIntrinsicClassVar(class_process, "initializedClassesOkay", &o_false);
 
-    class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 29, 0);
+    class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 33, 0);
+
     addIntrinsicVar(class_interpreter, "cmdLine", &o_nil);
+    addIntrinsicVar(class_interpreter, "filePath", &o_nil);
+    addIntrinsicVar(class_interpreter, "lineNumber", &o_nil);
+    addIntrinsicVar(class_interpreter, "column", &o_nil);
+
     addIntrinsicVar(class_interpreter, "context", &o_nil);
     for (int i = 0; i < 26; ++i) {
         char name[2];
@@ -2216,10 +2191,10 @@ void DumpFrame(PyrFrame* frame) {
 
     meth = slotRawMethod(&frame->method);
     methraw = METHRAW(meth);
-    if (methraw->numtemps) {
+    if (methraw->numSlots) {
         post("\t%s\n", str);
-        numargs = methraw->numargs + methraw->varargs;
-        for (i = 0; i < methraw->numtemps; ++i) {
+        numargs = methraw->numNormalArguments + methraw->numVariableArguments;
+        for (i = 0; i < methraw->numSlots; ++i) {
             slotOneWord(frame->vars + i, str);
             // slotString(frame->vars + i, str);
             if (i < numargs) {
@@ -2253,10 +2228,10 @@ void DumpDetailedFrame(PyrFrame* frame) {
     meth = slotRawMethod(&frame->method);
     methraw = METHRAW(meth);
 
-    if (methraw->numtemps) {
+    if (methraw->numSlots) {
         post("\t%s\n", mstr);
-        numargs = methraw->numargs + methraw->varargs;
-        for (i = 0; i < methraw->numtemps; ++i) {
+        numargs = methraw->numNormalArguments + methraw->numVariableArguments;
+        for (i = 0; i < methraw->numSlots; ++i) {
             slotOneWord(frame->vars + i, str);
             // slotString(frame->vars + i, str);
             if (i < numargs) {
@@ -2271,7 +2246,7 @@ void DumpDetailedFrame(PyrFrame* frame) {
 
     post("\t....%s details:\n", mstr);
     post("\t\tneedsHeapContext  = %d\n", methraw->needsHeapContext);
-    post("\t\tnumtemps  = %d\n", methraw->numtemps);
+    post("\t\tnumtemps  = %d\n", methraw->numSlots);
     post("\t\tpopSize  = %d\n", methraw->popSize);
 
     slotString(&frame->method, str);
@@ -2353,7 +2328,7 @@ bool objAddIndexedSymbol(PyrSymbolArray* obj, PyrSymbol* symbol) {
     }
 }
 
-bool objAddIndexedObject(PyrObject* obj, PyrObject* obj2) {
+bool objAddIndexedObject(PyrObject* obj, PyrObjectHdr* obj2) {
     if (obj->size < ARRAYMAXINDEXSIZE(obj)) {
         SetObject(obj->slots + obj->size, obj2);
         obj->size++;
@@ -2372,7 +2347,7 @@ void nilSlots(PyrSlot* slot, int size) { fillSlots(slot, size, &o_nil); }
 
 void zeroSlots(PyrSlot* slot, int size) {
     PyrSlot zero;
-    SetTagRaw(&zero, 0);
+    SetRaw(&zero, 0);
     SetRaw(&zero, 0.0);
     fillSlots(slot, size, &zero);
 }
@@ -2381,10 +2356,10 @@ PyrObject* newPyrObject(class PyrGC* gc, size_t inNumBytes, int inFlags, int inF
     return gc->New(inNumBytes, inFlags, inFormat, inRunGC);
 }
 
-PyrObject* newPyrArray(class PyrGC* gc, int size, int flags, bool runGC) {
+PyrObject* newPyrArray(class PyrGC* gc, int capacity, int flags, bool runGC) {
     PyrObject* array;
 
-    int numbytes = size * sizeof(PyrSlot);
+    int numbytes = capacity * sizeof(PyrSlot);
     if (!gc)
         array = PyrGC::NewPermanent(numbytes, flags, obj_slot);
     else
@@ -2393,10 +2368,10 @@ PyrObject* newPyrArray(class PyrGC* gc, int size, int flags, bool runGC) {
     return array;
 }
 
-PyrSymbolArray* newPyrSymbolArray(class PyrGC* gc, int size, int flags, bool runGC) {
+PyrSymbolArray* newPyrSymbolArray(class PyrGC* gc, int capacity, int flags, bool runGC) {
     PyrSymbolArray* array;
 
-    int numbytes = size * sizeof(PyrSymbol*);
+    int numbytes = capacity * sizeof(PyrSymbol*);
     if (!gc)
         array = (PyrSymbolArray*)PyrGC::NewPermanent(numbytes, flags, obj_symbol);
     else
@@ -2405,20 +2380,20 @@ PyrSymbolArray* newPyrSymbolArray(class PyrGC* gc, int size, int flags, bool run
     return array;
 }
 
-PyrInt8Array* newPyrInt8Array(class PyrGC* gc, int size, int flags, bool runGC) {
+PyrInt8Array* newPyrInt8Array(class PyrGC* gc, int capacity, int flags, bool runGC) {
     PyrInt8Array* array;
 
     if (!gc)
-        array = (PyrInt8Array*)PyrGC::NewPermanent(size, flags, obj_int8);
+        array = (PyrInt8Array*)PyrGC::NewPermanent(capacity, flags, obj_int8);
     else
-        array = (PyrInt8Array*)gc->New(size, flags, obj_int8, runGC);
+        array = (PyrInt8Array*)gc->New(capacity, flags, obj_int8, runGC);
     array->classptr = class_int8array;
     return array;
 }
 
-PyrInt32Array* newPyrInt32Array(class PyrGC* gc, int size, int flags, bool runGC) {
+PyrInt32Array* newPyrInt32Array(class PyrGC* gc, int capacity, int flags, bool runGC) {
     PyrInt32Array* array;
-    int numbytes = size * sizeof(int32);
+    int numbytes = capacity * sizeof(int32);
     if (!gc)
         array = (PyrInt32Array*)PyrGC::NewPermanent(numbytes, flags, obj_int32);
     else
@@ -2427,14 +2402,14 @@ PyrInt32Array* newPyrInt32Array(class PyrGC* gc, int size, int flags, bool runGC
     return array;
 }
 
-PyrDoubleArray* newPyrDoubleArray(class PyrGC* gc, int size, int flags, bool runGC) {
+PyrDoubleArray* newPyrDoubleArray(class PyrGC* gc, int capacity, int flags, bool runGC) {
     PyrDoubleArray* array;
 
-    int numbytes = size * sizeof(double);
+    int numbytes = capacity * sizeof(double);
     if (!gc)
         array = (PyrDoubleArray*)PyrGC::NewPermanent(numbytes, flags, obj_double);
     else
-        array = (PyrDoubleArray*)gc->New(size, flags, obj_double, runGC);
+        array = (PyrDoubleArray*)gc->New(capacity, flags, obj_double, runGC);
     array->classptr = class_doublearray;
     return array;
 }
@@ -2465,7 +2440,7 @@ PyrString* newPyrStringN(class PyrGC* gc, int length, int flags, bool runGC) {
     return string;
 }
 
-PyrBlock* newPyrBlock(int flags) {
+PyrBlock* newPyrBlock(bool cmd, int flags) {
     PyrBlock* block;
     PyrMethodRaw* methraw;
 
@@ -2473,12 +2448,14 @@ PyrBlock* newPyrBlock(int flags) {
     int32 numbytes = sizeof(PyrBlock) - sizeof(PyrObjectHdr);
     int32 numSlots = numbytes / sizeof(PyrSlot);
 
-    if (!compilingCmdLine)
+    if (!cmd)
         block = (PyrBlock*)PyrGC::NewPermanent(numbytes, flags, obj_notindexed);
     else
         block = (PyrBlock*)gMainVMGlobals->gc->New(numbytes, flags, obj_notindexed, false);
     block->classptr = class_fundef;
     block->size = numSlots;
+
+    nilSlots(&block->rawData1, numSlots);
 
     // clear out raw area
     methraw = METHRAW(block);
@@ -2486,13 +2463,12 @@ PyrBlock* newPyrBlock(int flags) {
     methraw->methType = methBlock;
     methraw->needsHeapContext = 0;
     methraw->frameSize = 0;
-    methraw->varargs = 0;
-    methraw->numargs = 0;
-    methraw->numvars = 0;
-    methraw->numtemps = 0;
+    methraw->numVariableArguments = 0;
+    methraw->numNormalArguments = 0;
+    methraw->numVariables = 0;
+    methraw->numSlots = 0;
     methraw->popSize = 0;
 
-    nilSlots(&block->rawData1, numSlots);
     return block;
 }
 
@@ -2781,9 +2757,7 @@ std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject* co
     for (int i = 0; i < coll->size; ++i) {
         PyrSlot argSlot;
         getIndexedSlot(coll, &argSlot, i);
-        int error;
-        std::string string;
-        std::tie(error, string) = slotStrStdStrVal(&argSlot);
+        auto [error, string] = slotStrStdStrVal(&argSlot);
         if (error != errNone) {
             strings.clear();
             return std::make_tuple(error, strings);
@@ -2791,51 +2765,6 @@ std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject* co
         strings.push_back(std::move(string));
     }
     return make_tuple(errNone, std::move(strings));
-}
-
-static int hashPtr(void* ptr) {
-    int32 hashed_part = int32((size_t)ptr & 0xffffffff);
-    return Hash(hashed_part);
-}
-
-int calcHash(PyrSlot* a);
-int calcHash(PyrSlot* a) {
-    int hash;
-    switch (GetTag(a)) {
-    case tagObj:
-        hash = hashPtr(slotRawObject(a));
-        break;
-    case tagInt:
-        hash = Hash(slotRawInt(a));
-        break;
-    case tagChar:
-        hash = Hash(slotRawChar(a) & 255);
-        break;
-    case tagSym:
-        hash = slotRawSymbol(a)->hash;
-        break;
-    case tagNil:
-        hash = 0xA5A5A5A5;
-        break;
-    case tagFalse:
-        hash = 0x55AA55AA;
-        break;
-    case tagTrue:
-        hash = 0x69696969;
-        break;
-    case tagPtr:
-        hash = hashPtr(slotRawPtr(a));
-        break;
-    default:
-        // hash for a double
-        union {
-            int32 i[2];
-            double d;
-        } u;
-        u.d = slotRawFloat(a);
-        hash = Hash(u.i[0] + Hash(u.i[1]));
-    }
-    return hash;
 }
 
 void InstallFinalizer(VMGlobals* g, PyrObject* inObj, int slotIndex, ObjFuncPtr inFunc) {

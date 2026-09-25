@@ -238,7 +238,7 @@ METHOD:: runJavaScript
         NOTE:: javascript code can correctly return Numbers, Strings and Arrays, but it can't currently pass javascript Objects to sclang. It is possible however to use JSON serialization to acheive this: ::
         CODE::
 // passing a nested object from javascript to sclang:
-WebView().runJavaScript("JSON.stringify({a: [1,2,3], b: {ba: 1, bb: 'yeah'}})"){ |res| res.parseJSON.postln }
+WebView().runJavaScript("JSON.stringify({ a: [1,2,3], b: { ba: 1, bb: 'yeah' } })"){ |res| res.parseJSON.postln }
 ::
 
 EXAMPLES::
@@ -298,7 +298,7 @@ webview.onLoadFailed = {
 	urlBox.background = Color.red(1, 0.2);
 };
 
-browser = View(bounds:900@700).layout_(VLayout(
+browser = View(bounds: 900@700).layout_(VLayout(
 	HLayout(
 		prev, reloadStop, next,
 		urlBox,

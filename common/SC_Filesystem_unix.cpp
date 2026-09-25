@@ -25,7 +25,7 @@
 /*
  * SC_Filesystem implementation for Linux/FreeBSD/OpenBSD.
  */
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__EMSCRIPTEN__)
 
 #    include "SC_Filesystem.hpp"
 
@@ -89,9 +89,15 @@ Path SC_Filesystem::globNext(Glob* glob) {
 
 //============= PRIVATE METHODS ==============//
 
+#    ifndef __EMSCRIPTEN__
 bool SC_Filesystem::isNonHostPlatformDirectoryName(const std::string& s) {
-    return s == "osx" || s == "windows" || s == "iphone";
+    return s == "osx" || s == "windows" || s == "iphone" || s == "wasm";
 }
+#    else
+bool SC_Filesystem::isNonHostPlatformDirectoryName(const std::string& s) {
+    return s == "osx" || s == "windows" || s == "iphone" || s == "linux";
+}
+#    endif
 
 Path SC_Filesystem::defaultSystemAppSupportDirectory() {
 #    ifdef SC_DATA_DIR

@@ -7,6 +7,17 @@ CLASSMETHODS::
 method::new
 Creates a SortedList with the initial capacity given by strong::size:: and a comparison strong::function::. The SortedList can contain equal / identical elements more than once.
 
+The function must accept two arguments and return true if and only if the first argument comes before the second argument in the sort order.  
+If omitted, defaults to code::{|a, b| a < b}::.  
+(Note that this is slightly different from what link::Classes/SequenceableCollection#-.sort:: does by default, which uses the code::<=:: operator instead.)
+
+code::
+t = SortedList.new(8, {|a,b| a.first < b.first });
+t.add([10, "last"]);
+t.add([1, "first"]);
+t.postln;
+::
+
 INSTANCEMETHODS::
 
 private::indexForInserting

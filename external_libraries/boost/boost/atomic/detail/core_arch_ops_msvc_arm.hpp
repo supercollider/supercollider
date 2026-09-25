@@ -222,7 +222,7 @@ struct core_arch_operations< 1u, Signed, Interprocess > :
     {
         storage_type previous = expected, old_val;
 
-        switch (cas_common_order(success_order, failure_order))
+        switch (base_type::cas_common_order(success_order, failure_order))
         {
         case memory_order_relaxed:
             old_val = static_cast< storage_type >(BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE8_RELAXED(&storage, desired, previous));
@@ -387,7 +387,7 @@ struct core_arch_operations< 2u, Signed, Interprocess > :
     {
         storage_type previous = expected, old_val;
 
-        switch (cas_common_order(success_order, failure_order))
+        switch (base_type::cas_common_order(success_order, failure_order))
         {
         case memory_order_relaxed:
             old_val = static_cast< storage_type >(BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE16_RELAXED(&storage, desired, previous));
@@ -552,7 +552,7 @@ struct core_arch_operations< 4u, Signed, Interprocess > :
     {
         storage_type previous = expected, old_val;
 
-        switch (cas_common_order(success_order, failure_order))
+        switch (base_type::cas_common_order(success_order, failure_order))
         {
         case memory_order_relaxed:
             old_val = static_cast< storage_type >(BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE_RELAXED(&storage, desired, previous));
@@ -717,7 +717,7 @@ struct core_arch_operations< 8u, Signed, Interprocess > :
     {
         storage_type previous = expected, old_val;
 
-        switch (cas_common_order(success_order, failure_order))
+        switch (base_type::cas_common_order(success_order, failure_order))
         {
         case memory_order_relaxed:
             old_val = static_cast< storage_type >(BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE64_RELAXED(&storage, desired, previous));

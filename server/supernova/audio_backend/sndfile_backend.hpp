@@ -56,6 +56,11 @@ class sndfile_backend : public detail::audio_backend_base<sample_type, float, bl
 public:
     sndfile_backend(void): read_frames(queue_size), write_frames(queue_size) {}
 
+    ~sndfile_backend() {
+        if (audio_is_active())
+            deactivate_audio();
+    }
+
     size_t get_audio_blocksize(void) const { return block_size_; }
 
     std::vector<sample_type> const& get_peaks() const { return max_peaks; }
@@ -103,6 +108,8 @@ public:
     bool audio_is_active(void) { return running.load(std::memory_order_acquire); }
 
     void activate_audio(void) {
+        assert(running.load() == false);
+
         running.store(true);
 
         if (input_file) {
@@ -110,12 +117,13 @@ public:
             reader_thread = std::thread(std::bind(&sndfile_backend::sndfile_read_thread, this));
         }
 
-
         writer_running.store(true);
         writer_thread = std::thread(std::bind(&sndfile_backend::sndfile_write_thread, this));
     }
 
     void deactivate_audio(void) {
+        assert(running.load() == true);
+
         running.store(false);
 
         if (input_file) {
@@ -234,8 +242,7 @@ private:
                 break;
         }
 
-        while (poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples)) {
-        }
+        while (poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples)) {}
     }
 
     bool poll_writer_queue(sample_type* data_to_write, const size_t buffer_samples, size_t& pending_samples) {
@@ -278,6 +285,10 @@ private:
 
 public:
     void audio_fn_noinput(size_t frames_per_tick) {
+        if (unlikely(!engine_initialized)) {
+            engine_functor::init_thread();
+            engine_initialized = true;
+        }
         engine_functor::run_tick();
         write_output_buffers(frames_per_tick);
     }
@@ -285,21 +296,21 @@ public:
     void audio_fn(size_t frames_per_tick) {
         super::clear_outputs(frames_per_tick);
         read_input_buffers(frames_per_tick);
-        engine_functor::run_tick();
-        write_output_buffers(frames_per_tick);
+        audio_fn_noinput(frames_per_tick);
     }
 
 private:
     SndfileHandle input_file, output_file;
     std::size_t read_position;
     int block_size_;
+    bool engine_initialized = false;
 
     aligned_storage_ptr<sample_type> temp_buffer;
 
     std::thread reader_thread, writer_thread;
     boost::lockfree::spsc_queue<sample_type> read_frames, write_frames;
     boost::sync::semaphore read_semaphore, write_semaphore;
-    std::atomic<bool> running = { false }, reader_running = { false }, writer_running = { false };
+    std::atomic<bool> running { false }, reader_running { false }, writer_running { false };
     std::vector<sample_type> max_peaks;
 };
 

@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include <boost/detail/atomic_count.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/unordered_set.hpp>
 
@@ -41,7 +40,7 @@ class server_node : public bi::list_base_hook<bi::link_mode<bi::auto_unlink>>, /
                     public bi::unordered_set_base_hook<bi::link_mode<bi::auto_unlink>> /* for node_id mapping */
 {
 protected:
-    server_node(int32_t node_id, bool type): node_id(node_id), node_is_synth(type), use_count_(0) {}
+    server_node(int32_t node_id, bool type): node_id(node_id), node_is_synth(type) {}
 
     virtual ~server_node(void) { assert(parent_ == 0); }
 
@@ -158,7 +157,9 @@ public:
     }
 
 private:
-    boost::detail::atomic_count use_count_;
+    /* the ref count of server_nodes only changes during tree operations, which
+     * are never called concurrently. Therefore the ref count can be non-atomic. */
+    int32_t use_count_ = 0;
     /* @} */
 };
 

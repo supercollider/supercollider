@@ -18,23 +18,13 @@
 #  pragma once
 #endif
 
+#include <boost/intrusive/detail/value_functors.hpp>
+
 namespace boost {
 namespace container {
 
-//Functors for member algorithm defaults
-template<class ValueType>
-struct value_less
-{
-   bool operator()(const ValueType &a, const ValueType &b) const
-      {  return a < b;  }
-};
-
-template<class ValueType>
-struct value_equal
-{
-   bool operator()(const ValueType &a, const ValueType &b) const
-      {  return a == b;  }
-};
+using ::boost::intrusive::value_less;
+using ::boost::intrusive::value_equal;
 
 }  //namespace container {
 }  //namespace boost {

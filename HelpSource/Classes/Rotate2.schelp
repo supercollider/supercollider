@@ -19,7 +19,7 @@ code::
 yout = cos(angle) * yin - sin(angle) * xin;
 ::
 
-where angle = pos * pi,  so that -1 becomes -pi and +1 becomes +pi. This
+where angle = pos * pi, so that -1 becomes -pi and +1 becomes +pi. This
 allows you to use an LFSaw to do continuous rotation around a circle.
 
 
@@ -52,12 +52,12 @@ code::
 	var w, x, y, p, q, a, b, c, d;
 
 	p = WhiteNoise.ar(0.05); // source
-	q = LFSaw.ar(200,0,0.03)+LFSaw.ar(200.37,0,0.03)+LFSaw.ar(201,0,0.03);
+	q = LFSaw.ar(200, 0, 0.03)+LFSaw.ar(200.37, 0, 0.03)+LFSaw.ar(201, 0, 0.03);
 
 	// B-format encode 2 signals at opposite sides of the circle
 	#w, x, y = PanB2.ar(p, -0.5) + PanB2.ar(q, 0.5);
 
-	#x, y = Rotate2.ar(x, y, MouseX.kr(-1,1));
+	#x, y = Rotate2.ar(x, y, MouseX.kr(-1, 1));
 
 	// B-format decode to quad
 	#a, b, c, d = DecodeB2.ar(4, w, x, y);
@@ -74,9 +74,9 @@ code::
 	// rotation via lfo
 	var x, y;
 	x = PinkNoise.ar(0.4);
-	y = LFTri.ar(800) * LFPulse.kr(3,0,0.3,0.2);
+	y = LFTri.ar(800) * LFPulse.kr(3, 0, 0.3, 0.2);
 	#x, y = Rotate2.ar(x, y, LFSaw.kr(0.1));
-	[x,y]
+	[x, y]
 }.play;
 )
 
@@ -84,9 +84,9 @@ code::
 	// rotation via mouse
 	var x, y;
 	x = Mix.fill(4, { LFSaw.ar(200 + 2.0.rand2, 0, 0.1) });
-	y = SinOsc.ar(900) * LFPulse.kr(3,0,0.3,0.2);
-	#x, y = Rotate2.ar(x, y, MouseX.kr(0,2));
-	[x,y]
+	y = SinOsc.ar(900) * LFPulse.kr(3, 0, 0.3, 0.2);
+	#x, y = Rotate2.ar(x, y, MouseX.kr(0, 2));
+	[x, y]
 }.play;
 
 
@@ -109,4 +109,3 @@ xout = xin;
 #yout, zout = Rotate2.ar(yin, zin, pos);
 
 ::
-

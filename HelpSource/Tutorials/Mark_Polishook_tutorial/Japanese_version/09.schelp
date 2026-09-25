@@ -101,7 +101,7 @@ code::
 { WhiteNoise.ar(0.1) * SinOsc.kr(1, 1) }.scope;
 ::
 
-次の例は、2つのノイズを生成するUgenがサイン波でスケーリングされてBinaryOpUGenを生成し、それがまた別のBinaryOpUGenに加算されるというものです。
+次の例は、2つのノイズを生成するUGenがサイン波でスケーリングされてBinaryOpUGenを生成し、それがまた別のBinaryOpUGenに加算されるというものです。
 
 code::
 (

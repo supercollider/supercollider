@@ -10,7 +10,7 @@ TestServer_clientID_booted : UnitTest {
 		var s = Server(this.class.name);
 		this.bootServer(s);
 		this.assertEquals(s.clientID, 0, "clientID should be 0 by default");
-		s.quit;
+		s.quitSync;
 		s.remove;
 	}
 
@@ -21,7 +21,7 @@ TestServer_clientID_booted : UnitTest {
 
 		this.bootServer(s);
 		this.assertEquals(s.clientID, 3, "clientID should be settable by clientID_ before boot.");
-		s.quit;
+		s.quitSync;
 		s.remove;
 	}
 
@@ -31,7 +31,7 @@ TestServer_clientID_booted : UnitTest {
 
 		this.bootServer(s);
 		this.assertEquals(s.clientID, 3, "clientID should be settable by Server constructor.");
-		s.quit;
+		s.quitSync;
 		s.remove;
 	}
 
@@ -50,7 +50,7 @@ TestServer_clientID_booted : UnitTest {
 
 		synth1.free;
 		synth2.free;
-		s.quit;
+		s.quitSync;
 		ServerTree.remove(func, s);
 		s.remove;
 	}
@@ -67,7 +67,7 @@ TestServer_clientID_booted : UnitTest {
 		this.assertEquals(s.clientID, lockedID,
 			"clientID should be locked while server is running.");
 
-		s.quit;
+		s.quitSync;
 		s.remove;
 	}
 
@@ -99,7 +99,7 @@ TestServer_clientID_booted : UnitTest {
 
 		cond = Condition.new;
 
-		timer = fork { 3.wait; cond.unhang };
+		timer = fork { 10.wait; cond.unhang };
 		server.doWhenBooted {
 			"% - server login timed out.\n".postf(thisMethod);
 			timer.stop;
@@ -120,7 +120,7 @@ TestServer_clientID_booted : UnitTest {
 			"after repeated login, nodeID allocator should not be reset."
 		);
 
-		server.quit;
+		server.quitSync;
 		server.remove;
 
 	}
@@ -129,18 +129,19 @@ TestServer_clientID_booted : UnitTest {
 	// first login initializes fully,
 	// second login from same address gets the same clientID, and sets running state.
 	test_remoteLogin {
-		var options, serverPid, remote1, cond, timer;
+		var options, serverPid, remote1, cond, timer, exitCond, testsFinished;
 
 		options = ServerOptions.new;
 		options.maxLogins = 4;
 
+		exitCond = CondVar.new;
 		// simulate a remote server process by starting a server process independently of SC
-		serverPid = unixCmd(Server.program + options.asOptionsString);
+		serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
 
 		// login with standard Server.remote method to test for
 		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
 		cond = Condition.new;
-		timer = fork { 3.wait; cond.unhang };
+		timer = fork { 10.wait; cond.unhang };
 
 		remote1.doWhenBooted {
 			"% - server first login timed out.\n".postf(thisMethod);
@@ -157,24 +158,27 @@ TestServer_clientID_booted : UnitTest {
 			"after first login, remote client should have its requested clientID."
 		);
 
-		remote1.remove;
+		remote1.stopAliveThread.remove;
 		thisProcess.platform.killProcessByID(serverPid);
+		testsFinished = exitCond.waitFor(10); // wait for the server process to exit
+		this.assert(testsFinished, "TIMEOUT: server process did not quit");
 	}
 
 	test_repeatedRemoteLogin {
 
-		var options, serverPid, remote1, remote2, cond, timer;
+		var options, serverPid, remote1, remote2, cond, timer, exitCond, testsFinished;
 
 		options = ServerOptions.new;
 		options.maxLogins = 4;
 
+		exitCond = CondVar.new;
 		// simulate a remote server process by starting a server process independently of SC
-		serverPid = unixCmd(Server.program + options.asOptionsString);
+		serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
 
 		// login with standard Server.remote method to test for
 		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
 		cond = Condition.new;
-		timer = fork { 3.wait; cond.unhang };
+		timer = fork { 10.wait; cond.unhang };
 
 		remote1.doWhenBooted {
 			"% - server first login timed out.\n".postf(thisMethod);
@@ -193,7 +197,7 @@ TestServer_clientID_booted : UnitTest {
 
 		remote2 = Server.remote(\remoteLogin2, options: options);
 		cond = Condition.new;
-		timer = fork { 3.wait; cond.unhang };
+		timer = fork { 10.wait; cond.unhang };
 
 		remote2.doWhenBooted {
 			"% - server repeated login timed out.\n".postf(thisMethod);
@@ -212,8 +216,10 @@ TestServer_clientID_booted : UnitTest {
 		);
 
 		// cleanup
-		remote1.remove;
-		remote2.remove;
+		remote1.stopAliveThread.remove;
+		remote2.stopAliveThread.remove;
 		thisProcess.platform.killProcessByID(serverPid);
+		testsFinished = exitCond.waitFor(10); // wait for the server process to exit
+		this.assert(testsFinished, "TIMEOUT: server process did not quit")
 	}
 }

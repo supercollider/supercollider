@@ -257,11 +257,11 @@ Qt::Orientations StackLayout::expandingDirections() const {
 
     switch (_mode) {
     case StackOne:
-        directions = _index >= 0 ? _list.at(_index)->expandingDirections() : (Qt::Orientations)0;
+        directions = _index >= 0 ? _list.at(_index)->expandingDirections() : Qt::Orientations {};
         break;
 
     case StackAll: {
-        Qt::Orientations directions = 0;
+        Qt::Orientations directions {};
         int n = _list.count();
         for (int i = 0; i < n; ++i)
             directions |= _list.at(i)->expandingDirections();

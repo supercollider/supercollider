@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -40,6 +40,10 @@
 # endif // defined(BOOST_ASIO_HAS_PTHREADS)
 #endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
        // || defined(__MACH__) && defined(__APPLE__)
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1800)
+# include <malloc.h>
+#endif // defined(_MSC_VER) && (_MSC_VER >= 1800)
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -79,7 +83,7 @@ inline void get_last_error(
 {
   if (!is_error_condition)
   {
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
   }
   else
   {
@@ -95,16 +99,18 @@ inline void get_last_error(
 
 template <typename SockLenType>
 inline socket_type call_accept(SockLenType msghdr::*,
-    socket_type s, socket_addr_type* addr, std::size_t* addrlen)
+    socket_type s, void* addr, std::size_t* addrlen)
 {
   SockLenType tmp_addrlen = addrlen ? (SockLenType)*addrlen : 0;
-  socket_type result = ::accept(s, addr, addrlen ? &tmp_addrlen : 0);
+  socket_type result = ::accept(s,
+      static_cast<socket_addr_type*>(addr),
+      addrlen ? &tmp_addrlen : 0);
   if (addrlen)
     *addrlen = (std::size_t)tmp_addrlen;
   return result;
 }
 
-socket_type accept(socket_type s, socket_addr_type* addr,
+socket_type accept(socket_type s, void* addr,
     std::size_t* addrlen, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
@@ -130,12 +136,12 @@ socket_type accept(socket_type s, socket_addr_type* addr,
   }
 #endif
 
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return new_s;
 }
 
 socket_type sync_accept(socket_type s, state_type state,
-    socket_addr_type* addr, std::size_t* addrlen, boost::system::error_code& ec)
+    void* addr, std::size_t* addrlen, boost::system::error_code& ec)
 {
   // Accept a socket.
   for (;;)
@@ -180,9 +186,8 @@ socket_type sync_accept(socket_type s, state_type state,
 
 #if defined(BOOST_ASIO_HAS_IOCP)
 
-void complete_iocp_accept(socket_type s,
-    void* output_buffer, DWORD address_length,
-    socket_addr_type* addr, std::size_t* addrlen,
+void complete_iocp_accept(socket_type s, void* output_buffer,
+    DWORD address_length, void* addr, std::size_t* addrlen,
     socket_type new_socket, boost::system::error_code& ec)
 {
   // Map non-portable errors to their portable counterparts.
@@ -226,7 +231,7 @@ void complete_iocp_accept(socket_type s,
 #else // defined(BOOST_ASIO_HAS_IOCP)
 
 bool non_blocking_accept(socket_type s,
-    state_type state, socket_addr_type* addr, std::size_t* addrlen,
+    state_type state, void* addr, std::size_t* addrlen,
     boost::system::error_code& ec, socket_type& new_socket)
 {
   for (;;)
@@ -273,12 +278,13 @@ bool non_blocking_accept(socket_type s,
 
 template <typename SockLenType>
 inline int call_bind(SockLenType msghdr::*,
-    socket_type s, const socket_addr_type* addr, std::size_t addrlen)
+    socket_type s, const void* addr, std::size_t addrlen)
 {
-  return ::bind(s, addr, (SockLenType)addrlen);
+  return ::bind(s, static_cast<const socket_addr_type*>(addr),
+      (SockLenType)addrlen);
 }
 
-int bind(socket_type s, const socket_addr_type* addr,
+int bind(socket_type s, const void* addr,
     std::size_t addrlen, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
@@ -338,7 +344,24 @@ int close(socket_type s, state_type& state,
         ::fcntl(s, F_SETFL, flags & ~O_NONBLOCK);
 # else // defined(__SYMBIAN32__) || defined(__EMSCRIPTEN__)
       ioctl_arg_type arg = 0;
-      ::ioctl(s, FIONBIO, &arg);
+      if ((state & possible_dup) == 0)
+      {
+        result = ::ioctl(s, FIONBIO, &arg);
+        get_last_error(ec, result < 0);
+      }
+      if ((state & possible_dup) != 0
+#  if defined(ENOTTY)
+          || ec.value() == ENOTTY
+#  endif // defined(ENOTTY)
+#  if defined(ENOTCAPABLE)
+          || ec.value() == ENOTCAPABLE
+#  endif // defined(ENOTCAPABLE)
+        )
+      {
+        int flags = ::fcntl(s, F_GETFL, 0);
+        if (flags >= 0)
+          ::fcntl(s, F_SETFL, flags & ~O_NONBLOCK);
+      }
 # endif // defined(__SYMBIAN32__) || defined(__EMSCRIPTEN__)
 #endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
       state &= ~non_blocking;
@@ -374,14 +397,36 @@ bool set_user_non_blocking(socket_type s,
   if (result >= 0)
   {
     int flag = (value ? (result | O_NONBLOCK) : (result & ~O_NONBLOCK));
-    result = ::fcntl(s, F_SETFL, flag);
+    result = (flag != result) ? ::fcntl(s, F_SETFL, flag) : 0;
     get_last_error(ec, result < 0);
   }
-#else
+#else // defined(__SYMBIAN32__) || defined(__EMSCRIPTEN__)
   ioctl_arg_type arg = (value ? 1 : 0);
-  int result = ::ioctl(s, FIONBIO, &arg);
-  get_last_error(ec, result < 0);
-#endif
+  int result = 0;
+  if ((state & possible_dup) == 0)
+  {
+    result = ::ioctl(s, FIONBIO, &arg);
+    get_last_error(ec, result < 0);
+  }
+  if ((state & possible_dup) != 0
+# if defined(ENOTTY)
+      || ec.value() == ENOTTY
+# endif // defined(ENOTTY)
+# if defined(ENOTCAPABLE)
+      || ec.value() == ENOTCAPABLE
+# endif // defined(ENOTCAPABLE)
+    )
+  {
+    result = ::fcntl(s, F_GETFL, 0);
+    get_last_error(ec, result < 0);
+    if (result >= 0)
+    {
+      int flag = (value ? (result | O_NONBLOCK) : (result & ~O_NONBLOCK));
+      result = (flag != result) ? ::fcntl(s, F_SETFL, flag) : 0;
+      get_last_error(ec, result < 0);
+    }
+  }
+#endif // defined(__SYMBIAN32__) || defined(__EMSCRIPTEN__)
 
   if (result >= 0)
   {
@@ -428,14 +473,36 @@ bool set_internal_non_blocking(socket_type s,
   if (result >= 0)
   {
     int flag = (value ? (result | O_NONBLOCK) : (result & ~O_NONBLOCK));
-    result = ::fcntl(s, F_SETFL, flag);
+    result = (flag != result) ? ::fcntl(s, F_SETFL, flag) : 0;
     get_last_error(ec, result < 0);
   }
-#else
+#else // defined(__SYMBIAN32__) || defined(__EMSCRIPTEN__)
   ioctl_arg_type arg = (value ? 1 : 0);
-  int result = ::ioctl(s, FIONBIO, &arg);
-  get_last_error(ec, result < 0);
-#endif
+  int result = 0;
+  if ((state & possible_dup) == 0)
+  {
+    result = ::ioctl(s, FIONBIO, &arg);
+    get_last_error(ec, result < 0);
+  }
+  if ((state & possible_dup) != 0
+# if defined(ENOTTY)
+      || ec.value() == ENOTTY
+# endif // defined(ENOTTY)
+# if defined(ENOTCAPABLE)
+      || ec.value() == ENOTCAPABLE
+# endif // defined(ENOTCAPABLE)
+    )
+  {
+    result = ::fcntl(s, F_GETFL, 0);
+    get_last_error(ec, result < 0);
+    if (result >= 0)
+    {
+      int flag = (value ? (result | O_NONBLOCK) : (result & ~O_NONBLOCK));
+      result = (flag != result) ? ::fcntl(s, F_SETFL, flag) : 0;
+      get_last_error(ec, result < 0);
+    }
+  }
+#endif // defined(__SYMBIAN32__) || defined(__EMSCRIPTEN__)
 
   if (result >= 0)
   {
@@ -464,12 +531,13 @@ int shutdown(socket_type s, int what, boost::system::error_code& ec)
 
 template <typename SockLenType>
 inline int call_connect(SockLenType msghdr::*,
-    socket_type s, const socket_addr_type* addr, std::size_t addrlen)
+    socket_type s, const void* addr, std::size_t addrlen)
 {
-  return ::connect(s, addr, (SockLenType)addrlen);
+  return ::connect(s, static_cast<const socket_addr_type*>(addr),
+      (SockLenType)addrlen);
 }
 
-int connect(socket_type s, const socket_addr_type* addr,
+int connect(socket_type s, const void* addr,
     std::size_t addrlen, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
@@ -482,12 +550,17 @@ int connect(socket_type s, const socket_addr_type* addr,
   get_last_error(ec, result != 0);
 #if defined(__linux__)
   if (result != 0 && ec == boost::asio::error::try_again)
-    ec = boost::asio::error::no_buffer_space;
+  {
+    if (static_cast<const socket_addr_type*>(addr)->sa_family == AF_UNIX)
+      ec = boost::asio::error::in_progress;
+    else
+      ec = boost::asio::error::no_buffer_space;
+  }
 #endif // defined(__linux__)
   return result;
 }
 
-void sync_connect(socket_type s, const socket_addr_type* addr,
+void sync_connect(socket_type s, const void* addr,
     std::size_t addrlen, boost::system::error_code& ec)
 {
   // Perform the connect operation.
@@ -597,7 +670,7 @@ bool non_blocking_connect(socket_type s, boost::system::error_code& ec)
           boost::asio::error::get_system_category());
     }
     else
-      ec.assign(0, ec.category());
+      boost::asio::error::clear(ec);
   }
 
   return true;
@@ -642,7 +715,7 @@ bool sockatmark(socket_type s, boost::system::error_code& ec)
 # endif // defined(ENOTTY)
 #else // defined(SIOCATMARK)
   int value = ::sockatmark(s);
-  get_last_error(ec, result < 0);
+  get_last_error(ec, value < 0);
 #endif // defined(SIOCATMARK)
 
   return ec ? false : value != 0;
@@ -723,9 +796,9 @@ void init_buf(buf& b, const void* data, size_t size)
 #endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
 }
 
-inline void init_msghdr_msg_name(void*& name, socket_addr_type* addr)
+inline void init_msghdr_msg_name(void*& name, void* addr)
 {
-  name = addr;
+  name = static_cast<socket_addr_type*>(addr);
 }
 
 inline void init_msghdr_msg_name(void*& name, const socket_addr_type* addr)
@@ -734,15 +807,15 @@ inline void init_msghdr_msg_name(void*& name, const socket_addr_type* addr)
 }
 
 template <typename T>
-inline void init_msghdr_msg_name(T& name, socket_addr_type* addr)
+inline void init_msghdr_msg_name(T& name, void* addr)
 {
-  name = reinterpret_cast<T>(addr);
+  name = static_cast<T>(addr);
 }
 
 template <typename T>
-inline void init_msghdr_msg_name(T& name, const socket_addr_type* addr)
+inline void init_msghdr_msg_name(T& name, const void* addr)
 {
-  name = reinterpret_cast<T>(const_cast<socket_addr_type*>(addr));
+  name = static_cast<T>(const_cast<void*>(addr));
 }
 
 signed_size_type recv(socket_type s, buf* bufs, size_t count,
@@ -764,7 +837,7 @@ signed_size_type recv(socket_type s, buf* bufs, size_t count,
     result = 0;
   if (result != 0)
     return socket_error_retval;
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return bytes_transferred;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   msghdr msg = msghdr();
@@ -797,7 +870,7 @@ signed_size_type recv1(socket_type s, void* data, size_t size,
     result = 0;
   if (result != 0)
     return socket_error_retval;
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return bytes_transferred;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   signed_size_type result = ::recv(s, static_cast<char*>(data), size, flags);
@@ -818,7 +891,7 @@ size_t sync_recv(socket_type s, state_type state, buf* bufs,
   // A request to read 0 bytes on a stream is a no-op.
   if (all_empty && (state & stream_oriented))
   {
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
     return 0;
   }
 
@@ -863,7 +936,7 @@ size_t sync_recv1(socket_type s, state_type state, void* data,
   // A request to read 0 bytes on a stream is a no-op.
   if (size == 0 && (state & stream_oriented))
   {
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
     return 0;
   }
 
@@ -916,7 +989,7 @@ void complete_iocp_recv(state_type state,
   }
   else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
   {
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
   }
 
   // Check for connection closed.
@@ -1009,8 +1082,7 @@ bool non_blocking_recv1(socket_type s,
 #endif // defined(BOOST_ASIO_HAS_IOCP)
 
 signed_size_type recvfrom(socket_type s, buf* bufs, size_t count,
-    int flags, socket_addr_type* addr, std::size_t* addrlen,
-    boost::system::error_code& ec)
+    int flags, void* addr, std::size_t* addrlen, boost::system::error_code& ec)
 {
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   // Receive some data.
@@ -1018,8 +1090,8 @@ signed_size_type recvfrom(socket_type s, buf* bufs, size_t count,
   DWORD bytes_transferred = 0;
   DWORD recv_flags = flags;
   int tmp_addrlen = (int)*addrlen;
-  int result = ::WSARecvFrom(s, bufs, recv_buf_count,
-        &bytes_transferred, &recv_flags, addr, &tmp_addrlen, 0, 0);
+  int result = ::WSARecvFrom(s, bufs, recv_buf_count, &bytes_transferred,
+      &recv_flags, static_cast<socket_addr_type*>(addr), &tmp_addrlen, 0, 0);
   get_last_error(ec, true);
   *addrlen = (std::size_t)tmp_addrlen;
   if (ec.value() == ERROR_NETNAME_DELETED)
@@ -1030,7 +1102,7 @@ signed_size_type recvfrom(socket_type s, buf* bufs, size_t count,
     result = 0;
   if (result != 0)
     return socket_error_retval;
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return bytes_transferred;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   msghdr msg = msghdr();
@@ -1046,21 +1118,19 @@ signed_size_type recvfrom(socket_type s, buf* bufs, size_t count,
 }
 
 template <typename SockLenType>
-inline signed_size_type call_recvfrom(SockLenType msghdr::*,
-    socket_type s, void* data, size_t size, int flags,
-    socket_addr_type* addr, std::size_t* addrlen)
+inline signed_size_type call_recvfrom(SockLenType msghdr::*, socket_type s,
+    void* data, size_t size, int flags, void* addr, std::size_t* addrlen)
 {
   SockLenType tmp_addrlen = addrlen ? (SockLenType)*addrlen : 0;
-  signed_size_type result = ::recvfrom(s, static_cast<char*>(data),
-      size, flags, addr, addrlen ? &tmp_addrlen : 0);
+  signed_size_type result = ::recvfrom(s, static_cast<char*>(data), size,
+      flags, static_cast<socket_addr_type*>(addr), addrlen ? &tmp_addrlen : 0);
   if (addrlen)
     *addrlen = (std::size_t)tmp_addrlen;
   return result;
 }
 
 signed_size_type recvfrom1(socket_type s, void* data, size_t size,
-    int flags, socket_addr_type* addr, std::size_t* addrlen,
-    boost::system::error_code& ec)
+    int flags, void* addr, std::size_t* addrlen, boost::system::error_code& ec)
 {
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   // Receive some data.
@@ -1070,8 +1140,8 @@ signed_size_type recvfrom1(socket_type s, void* data, size_t size,
   DWORD bytes_transferred = 0;
   DWORD recv_flags = flags;
   int tmp_addrlen = (int)*addrlen;
-  int result = ::WSARecvFrom(s, &buf, 1, &bytes_transferred,
-      &recv_flags, addr, &tmp_addrlen, 0, 0);
+  int result = ::WSARecvFrom(s, &buf, 1, &bytes_transferred, &recv_flags,
+      static_cast<socket_addr_type*>(addr), &tmp_addrlen, 0, 0);
   get_last_error(ec, true);
   *addrlen = (std::size_t)tmp_addrlen;
   if (ec.value() == ERROR_NETNAME_DELETED)
@@ -1082,7 +1152,7 @@ signed_size_type recvfrom1(socket_type s, void* data, size_t size,
     result = 0;
   if (result != 0)
     return socket_error_retval;
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return bytes_transferred;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   signed_size_type result = call_recvfrom(&msghdr::msg_namelen,
@@ -1092,9 +1162,8 @@ signed_size_type recvfrom1(socket_type s, void* data, size_t size,
 #endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
 }
 
-size_t sync_recvfrom(socket_type s, state_type state, buf* bufs,
-    size_t count, int flags, socket_addr_type* addr,
-    std::size_t* addrlen, boost::system::error_code& ec)
+size_t sync_recvfrom(socket_type s, state_type state, buf* bufs, size_t count,
+    int flags, void* addr, std::size_t* addrlen, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
   {
@@ -1125,9 +1194,8 @@ size_t sync_recvfrom(socket_type s, state_type state, buf* bufs,
   }
 }
 
-size_t sync_recvfrom1(socket_type s, state_type state, void* data,
-    size_t size, int flags, socket_addr_type* addr,
-    std::size_t* addrlen, boost::system::error_code& ec)
+size_t sync_recvfrom1(socket_type s, state_type state, void* data, size_t size,
+    int flags, void* addr, std::size_t* addrlen, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
   {
@@ -1178,15 +1246,14 @@ void complete_iocp_recvfrom(
   }
   else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
   {
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
   }
 }
 
 #else // defined(BOOST_ASIO_HAS_IOCP)
 
-bool non_blocking_recvfrom(socket_type s,
-    buf* bufs, size_t count, int flags,
-    socket_addr_type* addr, std::size_t* addrlen,
+bool non_blocking_recvfrom(socket_type s, buf* bufs,
+    size_t count, int flags, void* addr, std::size_t* addrlen,
     boost::system::error_code& ec, size_t& bytes_transferred)
 {
   for (;;)
@@ -1217,9 +1284,8 @@ bool non_blocking_recvfrom(socket_type s,
   }
 }
 
-bool non_blocking_recvfrom1(socket_type s,
-    void* data, size_t size, int flags,
-    socket_addr_type* addr, std::size_t* addrlen,
+bool non_blocking_recvfrom1(socket_type s, void* data,
+    size_t size, int flags, void* addr, std::size_t* addrlen,
     boost::system::error_code& ec, size_t& bytes_transferred)
 {
   for (;;)
@@ -1325,7 +1391,7 @@ void complete_iocp_recvmsg(
   }
   else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
   {
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
   }
 }
 
@@ -1382,15 +1448,15 @@ signed_size_type send(socket_type s, const buf* bufs, size_t count,
     ec = boost::asio::error::connection_refused;
   if (result != 0)
     return socket_error_retval;
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return bytes_transferred;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   msghdr msg = msghdr();
   msg.msg_iov = const_cast<buf*>(bufs);
   msg.msg_iovlen = static_cast<int>(count);
-#if defined(__linux__)
+#if defined(BOOST_ASIO_HAS_MSG_NOSIGNAL)
   flags |= MSG_NOSIGNAL;
-#endif // defined(__linux__)
+#endif // defined(BOOST_ASIO_HAS_MSG_NOSIGNAL)
   signed_size_type result = ::sendmsg(s, &msg, flags);
   get_last_error(ec, result < 0);
   return result;
@@ -1416,12 +1482,12 @@ signed_size_type send1(socket_type s, const void* data, size_t size,
     ec = boost::asio::error::connection_refused;
   if (result != 0)
     return socket_error_retval;
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return bytes_transferred;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
-#if defined(__linux__)
+#if defined(BOOST_ASIO_HAS_MSG_NOSIGNAL)
   flags |= MSG_NOSIGNAL;
-#endif // defined(__linux__)
+#endif // defined(BOOST_ASIO_HAS_MSG_NOSIGNAL)
   signed_size_type result = ::send(s,
       static_cast<const char*>(data), size, flags);
   get_last_error(ec, result < 0);
@@ -1441,7 +1507,7 @@ size_t sync_send(socket_type s, state_type state, const buf* bufs,
   // A request to write 0 bytes to a stream is a no-op.
   if (all_empty && (state & stream_oriented))
   {
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
     return 0;
   }
 
@@ -1479,7 +1545,7 @@ size_t sync_send1(socket_type s, state_type state, const void* data,
   // A request to write 0 bytes to a stream is a no-op.
   if (size == 0 && (state & stream_oriented))
   {
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
     return 0;
   }
 
@@ -1591,16 +1657,17 @@ bool non_blocking_send1(socket_type s,
 
 #endif // defined(BOOST_ASIO_HAS_IOCP)
 
-signed_size_type sendto(socket_type s, const buf* bufs, size_t count,
-    int flags, const socket_addr_type* addr, std::size_t addrlen,
-    boost::system::error_code& ec)
+signed_size_type sendto(socket_type s, const buf* bufs,
+    size_t count, int flags, const void* addr,
+    std::size_t addrlen, boost::system::error_code& ec)
 {
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   // Send the data.
   DWORD send_buf_count = static_cast<DWORD>(count);
   DWORD bytes_transferred = 0;
   int result = ::WSASendTo(s, const_cast<buf*>(bufs),
-        send_buf_count, &bytes_transferred, flags, addr,
+        send_buf_count, &bytes_transferred, flags,
+        static_cast<const socket_addr_type*>(addr),
         static_cast<int>(addrlen), 0, 0);
   get_last_error(ec, true);
   if (ec.value() == ERROR_NETNAME_DELETED)
@@ -1609,7 +1676,7 @@ signed_size_type sendto(socket_type s, const buf* bufs, size_t count,
     ec = boost::asio::error::connection_refused;
   if (result != 0)
     return socket_error_retval;
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return bytes_transferred;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   msghdr msg = msghdr();
@@ -1617,9 +1684,9 @@ signed_size_type sendto(socket_type s, const buf* bufs, size_t count,
   msg.msg_namelen = static_cast<int>(addrlen);
   msg.msg_iov = const_cast<buf*>(bufs);
   msg.msg_iovlen = static_cast<int>(count);
-#if defined(__linux__)
+#if defined(BOOST_ASIO_HAS_MSG_NOSIGNAL)
   flags |= MSG_NOSIGNAL;
-#endif // defined(__linux__)
+#endif // defined(BOOST_ASIO_HAS_MSG_NOSIGNAL)
   signed_size_type result = ::sendmsg(s, &msg, flags);
   get_last_error(ec, result < 0);
   return result;
@@ -1629,15 +1696,15 @@ signed_size_type sendto(socket_type s, const buf* bufs, size_t count,
 template <typename SockLenType>
 inline signed_size_type call_sendto(SockLenType msghdr::*,
     socket_type s, const void* data, size_t size, int flags,
-    const socket_addr_type* addr, std::size_t addrlen)
+    const void* addr, std::size_t addrlen)
 {
-  return ::sendto(s, static_cast<char*>(const_cast<void*>(data)),
-      size, flags, addr, (SockLenType)addrlen);
+  return ::sendto(s, static_cast<char*>(const_cast<void*>(data)), size, flags,
+      static_cast<const socket_addr_type*>(addr), (SockLenType)addrlen);
 }
 
-signed_size_type sendto1(socket_type s, const void* data, size_t size,
-    int flags, const socket_addr_type* addr, std::size_t addrlen,
-    boost::system::error_code& ec)
+signed_size_type sendto1(socket_type s, const void* data,
+    size_t size, int flags, const void* addr,
+    std::size_t addrlen, boost::system::error_code& ec)
 {
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   // Send the data.
@@ -1645,8 +1712,9 @@ signed_size_type sendto1(socket_type s, const void* data, size_t size,
   buf.buf = const_cast<char*>(static_cast<const char*>(data));
   buf.len = static_cast<ULONG>(size);
   DWORD bytes_transferred = 0;
-  int result = ::WSASendTo(s, &buf, 1, &bytes_transferred,
-      flags, addr, static_cast<int>(addrlen), 0, 0);
+  int result = ::WSASendTo(s, &buf, 1, &bytes_transferred, flags,
+      static_cast<const socket_addr_type*>(addr),
+      static_cast<int>(addrlen), 0, 0);
   get_last_error(ec, true);
   if (ec.value() == ERROR_NETNAME_DELETED)
     ec = boost::asio::error::connection_reset;
@@ -1654,12 +1722,12 @@ signed_size_type sendto1(socket_type s, const void* data, size_t size,
     ec = boost::asio::error::connection_refused;
   if (result != 0)
     return socket_error_retval;
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return bytes_transferred;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
-#if defined(__linux__)
+#if defined(BOOST_ASIO_HAS_MSG_NOSIGNAL)
   flags |= MSG_NOSIGNAL;
-#endif // defined(__linux__)
+#endif // defined(BOOST_ASIO_HAS_MSG_NOSIGNAL)
   signed_size_type result = call_sendto(&msghdr::msg_namelen,
       s, data, size, flags, addr, addrlen);
   get_last_error(ec, result < 0);
@@ -1667,8 +1735,8 @@ signed_size_type sendto1(socket_type s, const void* data, size_t size,
 #endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
 }
 
-size_t sync_sendto(socket_type s, state_type state, const buf* bufs,
-    size_t count, int flags, const socket_addr_type* addr,
+size_t sync_sendto(socket_type s, state_type state,
+    const buf* bufs, size_t count, int flags, const void* addr,
     std::size_t addrlen, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
@@ -1700,8 +1768,8 @@ size_t sync_sendto(socket_type s, state_type state, const buf* bufs,
   }
 }
 
-size_t sync_sendto1(socket_type s, state_type state, const void* data,
-    size_t size, int flags, const socket_addr_type* addr,
+size_t sync_sendto1(socket_type s, state_type state,
+    const void* data, size_t size, int flags, const void* addr,
     std::size_t addrlen, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
@@ -1737,7 +1805,7 @@ size_t sync_sendto1(socket_type s, state_type state, const void* data,
 
 bool non_blocking_sendto(socket_type s,
     const buf* bufs, size_t count, int flags,
-    const socket_addr_type* addr, std::size_t addrlen,
+    const void* addr, std::size_t addrlen,
     boost::system::error_code& ec, size_t& bytes_transferred)
 {
   for (;;)
@@ -1770,7 +1838,7 @@ bool non_blocking_sendto(socket_type s,
 
 bool non_blocking_sendto1(socket_type s,
     const void* data, size_t size, int flags,
-    const socket_addr_type* addr, std::size_t addrlen,
+    const void* addr, std::size_t addrlen,
     boost::system::error_code& ec, size_t& bytes_transferred)
 {
   for (;;)
@@ -1825,7 +1893,9 @@ socket_type socket(int af, int type, int protocol,
   return s;
 #elif defined(__MACH__) && defined(__APPLE__) || defined(__FreeBSD__)
   socket_type s = ::socket(af, type, protocol);
-  get_last_error(ec, s < 0);
+  get_last_error(ec, s == invalid_socket);
+  if (s == invalid_socket)
+    return s;
 
   int optval = 1;
   int result = ::setsockopt(s, SOL_SOCKET,
@@ -1882,7 +1952,7 @@ int setsockopt(socket_type s, state_type& state, int level, int optname,
       state |= enable_connection_aborted;
     else
       state &= ~enable_connection_aborted;
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
     return 0;
   }
 
@@ -1967,7 +2037,7 @@ int getsockopt(socket_type s, state_type state, int level, int optname,
     }
 
     *static_cast<int*>(optval) = (state & enable_connection_aborted) ? 1 : 0;
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
     return 0;
   }
 
@@ -1994,7 +2064,7 @@ int getsockopt(socket_type s, state_type state, int level, int optname,
         // value is non-zero (i.e. true). This corresponds to the behavior of
         // IPv6 sockets on Windows platforms pre-Vista.
         *static_cast<DWORD*>(optval) = 1;
-        ec.assign(0, ec.category());
+        boost::asio::error::clear(ec);
       }
       return result;
     }
@@ -2014,7 +2084,7 @@ int getsockopt(socket_type s, state_type state, int level, int optname,
     // non-zero (i.e. true). This corresponds to the behavior of IPv6 sockets
     // on Windows platforms pre-Vista.
     *static_cast<DWORD*>(optval) = 1;
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
   }
   return result;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
@@ -2039,16 +2109,17 @@ int getsockopt(socket_type s, state_type state, int level, int optname,
 
 template <typename SockLenType>
 inline int call_getpeername(SockLenType msghdr::*,
-    socket_type s, socket_addr_type* addr, std::size_t* addrlen)
+    socket_type s, void* addr, std::size_t* addrlen)
 {
   SockLenType tmp_addrlen = (SockLenType)*addrlen;
-  int result = ::getpeername(s, addr, &tmp_addrlen);
+  int result = ::getpeername(s,
+      static_cast<socket_addr_type*>(addr), &tmp_addrlen);
   *addrlen = (std::size_t)tmp_addrlen;
   return result;
 }
 
-int getpeername(socket_type s, socket_addr_type* addr,
-    std::size_t* addrlen, bool cached, boost::system::error_code& ec)
+int getpeername(socket_type s, void* addr, std::size_t* addrlen,
+    bool cached, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
   {
@@ -2075,7 +2146,7 @@ int getpeername(socket_type s, socket_addr_type* addr,
     }
 
     // The cached value is still valid.
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
     return 0;
   }
 #else // defined(BOOST_ASIO_WINDOWS) && !defined(BOOST_ASIO_WINDOWS_APP)
@@ -2091,15 +2162,16 @@ int getpeername(socket_type s, socket_addr_type* addr,
 
 template <typename SockLenType>
 inline int call_getsockname(SockLenType msghdr::*,
-    socket_type s, socket_addr_type* addr, std::size_t* addrlen)
+    socket_type s, void* addr, std::size_t* addrlen)
 {
   SockLenType tmp_addrlen = (SockLenType)*addrlen;
-  int result = ::getsockname(s, addr, &tmp_addrlen);
+  int result = ::getsockname(s,
+      static_cast<socket_addr_type*>(addr), &tmp_addrlen);
   *addrlen = (std::size_t)tmp_addrlen;
   return result;
 }
 
-int getsockname(socket_type s, socket_addr_type* addr,
+int getsockname(socket_type s, void* addr,
     std::size_t* addrlen, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
@@ -2170,7 +2242,7 @@ int select(int nfds, fd_set* readfds, fd_set* writefds,
     if (milliseconds == 0)
       milliseconds = 1; // Force context switch.
     ::Sleep(milliseconds);
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
     return 0;
   }
 
@@ -2490,7 +2562,7 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
 
   // Windows may set error code on success.
   if (result != socket_error_retval)
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
 
   // Windows may not set an error code on failure.
   else if (result == socket_error_retval && !ec)
@@ -2513,7 +2585,13 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
         && ((ipv6_address->s6_addr[1] & 0x0f) == 0x02));
     if ((!is_link_local && !is_multicast_link_local)
         || if_indextoname(static_cast<unsigned>(scope_id), if_name + 1) == 0)
+#if defined(BOOST_ASIO_HAS_SNPRINTF)
+      snprintf(if_name + 1, sizeof(if_name) - 1, "%lu", scope_id);
+#elif defined(BOOST_ASIO_HAS_SECURE_RTL)
+      sprintf_s(if_name + 1, sizeof(if_name) -1, "%lu", scope_id);
+#else // defined(BOOST_ASIO_HAS_SECURE_RTL)
       sprintf(if_name + 1, "%lu", scope_id);
+#endif // defined(BOOST_ASIO_HAS_SECURE_RTL)
     strcat(dest, if_name);
   }
   return result;
@@ -2544,7 +2622,7 @@ int inet_pton(int af, const char* src, void* dest,
     bytes[1] = static_cast<unsigned char>(b1);
     bytes[2] = static_cast<unsigned char>(b2);
     bytes[3] = static_cast<unsigned char>(b3);
-    ec.assign(), ec.category());
+    boost::asio::error::clear(ec);
     return 1;
   }
   else if (af == BOOST_ASIO_OS_DEF(AF_INET6))
@@ -2660,7 +2738,7 @@ int inet_pton(int af, const char* src, void* dest,
     for (int i = 0; i < num_back_bytes; ++i)
       bytes[16 - num_back_bytes + i] = back_bytes[i];
 
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
     return 1;
   }
   else
@@ -2703,12 +2781,12 @@ int inet_pton(int af, const char* src, void* dest,
     if (result != socket_error_retval)
     {
       memcpy(dest, &address.v4.sin_addr, sizeof(in4_addr_type));
-      ec.assign(0, ec.category());
+      boost::asio::error::clear(ec);
     }
     else if (strcmp(src, "255.255.255.255") == 0)
     {
       static_cast<in4_addr_type*>(dest)->s_addr = INADDR_NONE;
-      ec.assign(0, ec.category());
+      boost::asio::error::clear(ec);
     }
   }
   else // AF_INET6
@@ -2718,7 +2796,7 @@ int inet_pton(int af, const char* src, void* dest,
       memcpy(dest, &address.v6.sin6_addr, sizeof(in6_addr_type));
       if (scope_id)
         *scope_id = address.v6.sin6_scope_id;
-      ec.assign(0, ec.category());
+      boost::asio::error::clear(ec);
     }
   }
 
@@ -2727,7 +2805,7 @@ int inet_pton(int af, const char* src, void* dest,
     ec = boost::asio::error::invalid_argument;
 
   if (result != socket_error_retval)
-    ec.assign(0, ec.category());
+    boost::asio::error::clear(ec);
 
   return result == socket_error_retval ? -1 : 1;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
@@ -3621,7 +3699,9 @@ inline boost::system::error_code getnameinfo_emulation(
       {
         return ec = boost::asio::error::no_buffer_space;
       }
-#if defined(BOOST_ASIO_HAS_SECURE_RTL)
+#if defined(BOOST_ASIO_HAS_SNPRINTF)
+      snprintf(serv, servlen, "%u", ntohs(port));
+#elif defined(BOOST_ASIO_HAS_SECURE_RTL)
       sprintf_s(serv, servlen, "%u", ntohs(port));
 #else // defined(BOOST_ASIO_HAS_SECURE_RTL)
       sprintf(serv, "%u", ntohs(port));
@@ -3644,7 +3724,9 @@ inline boost::system::error_code getnameinfo_emulation(
         {
           return ec = boost::asio::error::no_buffer_space;
         }
-#if defined(BOOST_ASIO_HAS_SECURE_RTL)
+#if defined(BOOST_ASIO_HAS_SNPRINTF)
+        snprintf(serv, servlen, "%u", ntohs(port));
+#elif defined(BOOST_ASIO_HAS_SECURE_RTL)
         sprintf_s(serv, servlen, "%u", ntohs(port));
 #else // defined(BOOST_ASIO_HAS_SECURE_RTL)
         sprintf(serv, "%u", ntohs(port));
@@ -3656,7 +3738,7 @@ inline boost::system::error_code getnameinfo_emulation(
     }
   }
 
-  ec.assign(0, ec.category());
+  boost::asio::error::clear(ec);
   return ec;
 }
 
@@ -3806,7 +3888,7 @@ void freeaddrinfo(addrinfo_type* ai)
 #endif
 }
 
-boost::system::error_code getnameinfo(const socket_addr_type* addr,
+boost::system::error_code getnameinfo(const void* addr,
     std::size_t addrlen, char* host, std::size_t hostlen,
     char* serv, std::size_t servlen, int flags, boost::system::error_code& ec)
 {
@@ -3814,8 +3896,8 @@ boost::system::error_code getnameinfo(const socket_addr_type* addr,
 # if defined(BOOST_ASIO_HAS_GETADDRINFO)
   // Building for Windows XP, Windows Server 2003, or later.
   clear_last_error();
-  int error = ::getnameinfo(addr, static_cast<socklen_t>(addrlen),
-      host, static_cast<DWORD>(hostlen),
+  int error = ::getnameinfo(static_cast<const socket_addr_type*>(addr),
+      static_cast<socklen_t>(addrlen), host, static_cast<DWORD>(hostlen),
       serv, static_cast<DWORD>(servlen), flags);
   return ec = translate_addrinfo_error(error);
 # else
@@ -3827,34 +3909,34 @@ boost::system::error_code getnameinfo(const socket_addr_type* addr,
     if (gni_t gni = (gni_t)::GetProcAddress(winsock_module, "getnameinfo"))
     {
       clear_last_error();
-      int error = gni(addr, static_cast<int>(addrlen),
-          host, static_cast<DWORD>(hostlen),
+      int error = gni(static_cast<const socket_addr_type*>(addr),
+          static_cast<int>(addrlen), host, static_cast<DWORD>(hostlen),
           serv, static_cast<DWORD>(servlen), flags);
       return ec = translate_addrinfo_error(error);
     }
   }
   clear_last_error();
-  return getnameinfo_emulation(addr, addrlen,
-      host, hostlen, serv, servlen, flags, ec);
+  return getnameinfo_emulation(static_cast<const socket_addr_type*>(addr),
+      addrlen, host, hostlen, serv, servlen, flags, ec);
 # endif
 #elif !defined(BOOST_ASIO_HAS_GETADDRINFO)
   using namespace std; // For memcpy.
   sockaddr_storage_type tmp_addr;
   memcpy(&tmp_addr, addr, addrlen);
-  addr = reinterpret_cast<socket_addr_type*>(&tmp_addr);
+  addr = &tmp_addr;
   clear_last_error();
-  return getnameinfo_emulation(addr, addrlen,
-      host, hostlen, serv, servlen, flags, ec);
+  return getnameinfo_emulation(static_cast<const socket_addr_type*>(addr),
+      addrlen, host, hostlen, serv, servlen, flags, ec);
 #else
   clear_last_error();
-  int error = ::getnameinfo(addr, addrlen, host, hostlen, serv, servlen, flags);
+  int error = ::getnameinfo(static_cast<const socket_addr_type*>(addr),
+      addrlen, host, hostlen, serv, servlen, flags);
   return ec = translate_addrinfo_error(error);
 #endif
 }
 
-boost::system::error_code sync_getnameinfo(
-    const socket_addr_type* addr, std::size_t addrlen,
-    char* host, std::size_t hostlen, char* serv,
+boost::system::error_code sync_getnameinfo(const void* addr,
+    std::size_t addrlen, char* host, std::size_t hostlen, char* serv,
     std::size_t servlen, int sock_type, boost::system::error_code& ec)
 {
   // First try resolving with the service name. If that fails try resolving
@@ -3873,7 +3955,7 @@ boost::system::error_code sync_getnameinfo(
 
 boost::system::error_code background_getnameinfo(
     const weak_cancel_token_type& cancel_token,
-    const socket_addr_type* addr, std::size_t addrlen,
+    const void* addr, std::size_t addrlen,
     char* host, std::size_t hostlen, char* serv,
     std::size_t servlen, int sock_type, boost::system::error_code& ec)
 {

@@ -115,4 +115,3 @@ method:: toJSON
 Write a representation of this document entry as JSON to Stream. Used to export the document entries to the javascript used in the link::Classes/HelpBrowser##HTML help browser::.
 argument:: stream
 A Stream.
-

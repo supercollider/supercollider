@@ -67,4 +67,3 @@ code::
 
 (1..8).collect {|x| Point(100 * x, 50) }; // need to use a function for this.
 ::
-

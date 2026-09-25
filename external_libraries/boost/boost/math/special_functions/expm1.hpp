@@ -10,9 +10,9 @@
 #pragma once
 #endif
 
-#include <boost/config/no_tr1/cmath.hpp>
-#include <math.h> // platform's ::expm1
-#include <boost/limits.hpp>
+#include <cmath>
+#include <cstdint>
+#include <limits>
 #include <boost/math/tools/config.hpp>
 #include <boost/math/tools/series.hpp>
 #include <boost/math/tools/precision.hpp>
@@ -20,13 +20,7 @@
 #include <boost/math/policies/error_handling.hpp>
 #include <boost/math/tools/rational.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
-#include <boost/mpl/less_equal.hpp>
-
-#ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
-#  include <boost/static_assert.hpp>
-#else
-#  include <boost/assert.hpp>
-#endif
+#include <boost/math/tools/assert.hpp>
 
 #if defined(__GNUC__) && defined(BOOST_MATH_USE_FLOAT128)
 //
@@ -71,8 +65,8 @@ namespace detail
      int k;
      const T m_x;
      T m_term;
-     expm1_series(const expm1_series&);
-     expm1_series& operator=(const expm1_series&);
+     expm1_series(const expm1_series&) = delete;
+     expm1_series& operator=(const expm1_series&) = delete;
   };
 
 template <class T, class Policy, class tag>
@@ -85,12 +79,12 @@ struct expm1_initializer
          do_init(tag());
       }
       template <int N>
-      static void do_init(const boost::integral_constant<int, N>&){}
-      static void do_init(const boost::integral_constant<int, 64>&)
+      static void do_init(const std::integral_constant<int, N>&){}
+      static void do_init(const std::integral_constant<int, 64>&)
       {
          expm1(T(0.5));
       }
-      static void do_init(const boost::integral_constant<int, 113>&)
+      static void do_init(const std::integral_constant<int, 113>&)
       {
          expm1(T(0.5));
       }
@@ -112,7 +106,7 @@ const typename expm1_initializer<T, Policy, tag>::init expm1_initializer<T, Poli
 // This version uses a Taylor series expansion for 0.5 > |x| > epsilon.
 //
 template <class T, class Policy>
-T expm1_imp(T x, const boost::integral_constant<int, 0>&, const Policy& pol)
+T expm1_imp(T x, const std::integral_constant<int, 0>&, const Policy& pol)
 {
    BOOST_MATH_STD_USING
 
@@ -126,7 +120,7 @@ T expm1_imp(T x, const boost::integral_constant<int, 0>&, const Policy& pol)
       if(a >= tools::log_max_value<T>())
       {
          if(x > 0)
-            return policies::raise_overflow_error<T>("boost::math::expm1<%1%>(%1%)", 0, pol);
+            return policies::raise_overflow_error<T>("boost::math::expm1<%1%>(%1%)", nullptr, pol);
          return -1;
       }
       return exp(x) - T(1);
@@ -134,19 +128,16 @@ T expm1_imp(T x, const boost::integral_constant<int, 0>&, const Policy& pol)
    if(a < tools::epsilon<T>())
       return x;
    detail::expm1_series<T> s(x);
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582)) && !BOOST_WORKAROUND(__EDG_VERSION__, <= 245)
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+
    T result = tools::sum_series(s, policies::get_epsilon<T, Policy>(), max_iter);
-#else
-   T zero = 0;
-   T result = tools::sum_series(s, policies::get_epsilon<T, Policy>(), max_iter, zero);
-#endif
+
    policies::check_series_iterations<T>("boost::math::expm1<%1%>(%1%)", max_iter, pol);
    return result;
 }
 
 template <class T, class P>
-T expm1_imp(T x, const boost::integral_constant<int, 53>&, const P& pol)
+T expm1_imp(T x, const std::integral_constant<int, 53>&, const P& pol)
 {
    BOOST_MATH_STD_USING
 
@@ -156,7 +147,7 @@ T expm1_imp(T x, const boost::integral_constant<int, 53>&, const P& pol)
       if(a >= tools::log_max_value<T>())
       {
          if(x > 0)
-            return policies::raise_overflow_error<T>("boost::math::expm1<%1%>(%1%)", 0, pol);
+            return policies::raise_overflow_error<T>("boost::math::expm1<%1%>(%1%)", nullptr, pol);
          return -1;
       }
       return exp(x) - T(1);
@@ -173,7 +164,7 @@ T expm1_imp(T x, const boost::integral_constant<int, 53>&, const P& pol)
 }
 
 template <class T, class P>
-T expm1_imp(T x, const boost::integral_constant<int, 64>&, const P& pol)
+T expm1_imp(T x, const std::integral_constant<int, 64>&, const P& pol)
 {
    BOOST_MATH_STD_USING
 
@@ -183,7 +174,7 @@ T expm1_imp(T x, const boost::integral_constant<int, 64>&, const P& pol)
       if(a >= tools::log_max_value<T>())
       {
          if(x > 0)
-            return policies::raise_overflow_error<T>("boost::math::expm1<%1%>(%1%)", 0, pol);
+            return policies::raise_overflow_error<T>("boost::math::expm1<%1%>(%1%)", nullptr, pol);
          return -1;
       }
       return exp(x) - T(1);
@@ -192,16 +183,16 @@ T expm1_imp(T x, const boost::integral_constant<int, 64>&, const P& pol)
       return x;
 
    static const float Y = 0.10281276702880859375e1f;
-   static const T n[] = { 
-      BOOST_MATH_BIG_CONSTANT(T, 64, -0.281276702880859375e-1), 
-       BOOST_MATH_BIG_CONSTANT(T, 64, 0.512980290285154286358e0), 
+   static const T n[] = {
+      BOOST_MATH_BIG_CONSTANT(T, 64, -0.281276702880859375e-1),
+       BOOST_MATH_BIG_CONSTANT(T, 64, 0.512980290285154286358e0),
        BOOST_MATH_BIG_CONSTANT(T, 64, -0.667758794592881019644e-1),
        BOOST_MATH_BIG_CONSTANT(T, 64, 0.131432469658444745835e-1),
        BOOST_MATH_BIG_CONSTANT(T, 64, -0.72303795326880286965e-3),
        BOOST_MATH_BIG_CONSTANT(T, 64, 0.447441185192951335042e-4),
        BOOST_MATH_BIG_CONSTANT(T, 64, -0.714539134024984593011e-6)
    };
-   static const T d[] = { 
+   static const T d[] = {
       BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 64, -0.461477618025562520389e0),
       BOOST_MATH_BIG_CONSTANT(T, 64, 0.961237488025708540713e-1),
@@ -216,7 +207,7 @@ T expm1_imp(T x, const boost::integral_constant<int, 64>&, const P& pol)
 }
 
 template <class T, class P>
-T expm1_imp(T x, const boost::integral_constant<int, 113>&, const P& pol)
+T expm1_imp(T x, const std::integral_constant<int, 113>&, const P& pol)
 {
    BOOST_MATH_STD_USING
 
@@ -226,7 +217,7 @@ T expm1_imp(T x, const boost::integral_constant<int, 113>&, const P& pol)
       if(a >= tools::log_max_value<T>())
       {
          if(x > 0)
-            return policies::raise_overflow_error<T>("boost::math::expm1<%1%>(%1%)", 0, pol);
+            return policies::raise_overflow_error<T>("boost::math::expm1<%1%>(%1%)", nullptr, pol);
          return -1;
       }
       return exp(x) - T(1);
@@ -235,7 +226,7 @@ T expm1_imp(T x, const boost::integral_constant<int, 113>&, const P& pol)
       return x;
 
    static const float Y = 0.10281276702880859375e1f;
-   static const T n[] = { 
+   static const T n[] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.28127670288085937499999999999999999854e-1),
       BOOST_MATH_BIG_CONSTANT(T, 113, 0.51278156911210477556524452177540792214e0),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.63263178520747096729500254678819588223e-1),
@@ -247,7 +238,7 @@ T expm1_imp(T x, const boost::integral_constant<int, 113>&, const P& pol)
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.15995603306536496772374181066765665596e-8),
       BOOST_MATH_BIG_CONSTANT(T, 113, 0.45261820069007790520447958280473183582e-10)
    };
-   static const T d[] = { 
+   static const T d[] = {
       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
       BOOST_MATH_BIG_CONSTANT(T, 113, -0.45441264709074310514348137469214538853e0),
       BOOST_MATH_BIG_CONSTANT(T, 113, 0.96827131936192217313133611655555298106e-1),
@@ -274,13 +265,13 @@ inline typename tools::promote_args<T>::type expm1(T x, const Policy& /* pol */)
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::precision<result_type, Policy>::type precision_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 :
@@ -288,7 +279,7 @@ inline typename tools::promote_args<T>::type expm1(T x, const Policy& /* pol */)
    > tag_type;
 
    detail::expm1_initializer<value_type, forwarding_policy, tag_type>::force_instantiate();
-   
+
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(detail::expm1_imp(
       static_cast<value_type>(x),
       tag_type(), forwarding_policy()), "boost::math::expm1<%1%>(%1%)");
@@ -318,23 +309,6 @@ inline typename tools::promote_args<T>::type expm1(T x)
 {
    return expm1(x, policies::policy<>());
 }
-
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
-inline float expm1(float z)
-{
-   return expm1<float>(z);
-}
-inline double expm1(double z)
-{
-   return expm1<double>(z);
-}
-#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
-inline long double expm1(long double z)
-{
-   return expm1<long double>(z);
-}
-#endif
-#endif
 
 } // namespace math
 } // namespace boost

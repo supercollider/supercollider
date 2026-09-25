@@ -41,4 +41,3 @@ The getter returns the value bound to the FlowVar. If the value is not yet avail
 
 ARGUMENT:: inVal
 Any object.
-

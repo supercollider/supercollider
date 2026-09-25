@@ -26,13 +26,13 @@ Examples::
 
 code::
 s.boot;
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 
 (
-SynthDef("help-localMax", { arg out=0;
+SynthDef("help-localMax", { |out = 0|
 	var in, chain;
-	in = Mix.arFill(3, { LFSaw.ar(exprand(100, 500), 0, 0.1); });
+	in = Mix.arFill(3, { LFSaw.ar(exprand(100, 500), 0, 0.1) });
 	chain = FFT(LocalBuf(2048), in);
 	chain = PV_LocalMax(chain, MouseX.kr(0, 50));
 	Out.ar(out, 0.5 * IFFT(chain).dup);
@@ -40,7 +40,7 @@ SynthDef("help-localMax", { arg out=0;
 )
 
 (
-SynthDef("help-localMax2", { arg out=0, soundBufnum=2;
+SynthDef("help-localMax2", { |out = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(LocalBuf(2048), in);
@@ -50,4 +50,3 @@ SynthDef("help-localMax2", { arg out=0, soundBufnum=2;
 )
 
 ::
-

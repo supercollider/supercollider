@@ -1,4 +1,3 @@
-
 //  (C) Copyright John Maddock 2006.
 //  Use, modification and distribution are subject to the
 //  Boost Software License, Version 1.0. (See accompanying file
@@ -13,6 +12,7 @@
 
 #include <utility>
 #include <vector>
+#include <type_traits>
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/factorials.hpp>
 #include <boost/math/tools/roots.hpp>
@@ -66,7 +66,7 @@ T legendre_imp(unsigned l, T x, const Policy& pol, bool second = false)
    while(n < l)
    {
       std::swap(p0, p1);
-      p1 = boost::math::legendre_next(n, x, p0, p1);
+      p1 = static_cast<T>(boost::math::legendre_next(n, x, p0, p1));
       ++n;
    }
    return p1;
@@ -100,7 +100,7 @@ T legendre_p_prime_imp(unsigned l, T x, const Policy& pol, T* Pn
     T p0 = 1;
     T p1 = x;
     T p_prime;
-    bool odd = l & 1;
+    bool odd = ((l & 1) == 1);
     // If the order is odd, we sum all the even polynomials:
     if (odd)
     {
@@ -115,7 +115,7 @@ T legendre_p_prime_imp(unsigned l, T x, const Policy& pol, T* Pn
     while(n < l - 1)
     {
        std::swap(p0, p1);
-       p1 = boost::math::legendre_next(n, x, p0, p1);
+       p1 = static_cast<T>(boost::math::legendre_next(n, x, p0, p1));
        ++n;
        if (odd)
        {
@@ -131,7 +131,7 @@ T legendre_p_prime_imp(unsigned l, T x, const Policy& pol, T* Pn
     if (Pn)
     {
         std::swap(p0, p1);
-        *Pn = boost::math::legendre_next(n, x, p0, p1);
+        *Pn = static_cast<T>(boost::math::legendre_next(n, x, p0, p1));
     }
     return p_prime;
 }
@@ -149,7 +149,7 @@ struct legendre_p_zero_func
       T Pn;
       T Pn_prime = detail::legendre_p_prime_imp(n, x, pol, &Pn);
       return std::pair<T, T>(Pn, Pn_prime); 
-   };
+   }
 };
 
 template <class T, class Policy>
@@ -163,7 +163,7 @@ std::vector<T> legendre_p_zeros_imp(int n, const Policy& pol)
     using boost::math::constants::half;
     using boost::math::tools::newton_raphson_iterate;
 
-    BOOST_ASSERT(n >= 0);
+    BOOST_MATH_ASSERT(n >= 0);
     std::vector<T> zeros;
     if (n == 0)
     {
@@ -198,7 +198,7 @@ std::vector<T> legendre_p_zeros_imp(int n, const Policy& pol)
         T sin_nk = sin(theta_nk);
         T x_nk_guess = (1 - inv_n_sq/static_cast<T>(8) + inv_n_sq /static_cast<T>(8*n) - (inv_n_sq*inv_n_sq/384)*(39  - 28 / (sin_nk*sin_nk) ) )*cos_nk;
 
-        boost::uintmax_t number_of_iterations = policies::get_max_root_iterations<Policy>();
+        std::uintmax_t number_of_iterations = policies::get_max_root_iterations<Policy>();
 
         legendre_p_zero_func<T, Policy> f(n, pol);
 
@@ -206,9 +206,14 @@ std::vector<T> legendre_p_zeros_imp(int n, const Policy& pol)
                                               lower_bound, upper_bound,
                                               policies::digits<T, Policy>(),
                                               number_of_iterations);
+        if (number_of_iterations >= policies::get_max_root_iterations<Policy>())
+        {
+           policies::raise_evaluation_error<T>("legendre_p_zeros<%1%>", "Unable to locate solution in a reasonable time:"  // LCOV_EXCL_LINE
+              " either there is no answer or the answer is infinite.  Current best guess is %1%", x_nk, Policy()); // LCOV_EXCL_LINE
+        }
 
-        BOOST_ASSERT(lower_bound < x_nk);
-        BOOST_ASSERT(upper_bound > x_nk);
+        BOOST_MATH_ASSERT(lower_bound < x_nk);
+        BOOST_MATH_ASSERT(upper_bound > x_nk);
         zeros[k] = x_nk;
         ++k;
     }
@@ -218,7 +223,7 @@ std::vector<T> legendre_p_zeros_imp(int n, const Policy& pol)
 } // namespace detail
 
 template <class T, class Policy>
-inline typename boost::enable_if_c<policies::is_policy<Policy>::value, typename tools::promote_args<T>::type>::type
+inline typename std::enable_if<policies::is_policy<Policy>::value, typename tools::promote_args<T>::type>::type
    legendre_p(int l, T x, const Policy& pol)
 {
    typedef typename tools::promote_args<T>::type result_type;
@@ -231,7 +236,7 @@ inline typename boost::enable_if_c<policies::is_policy<Policy>::value, typename 
 
 
 template <class T, class Policy>
-inline typename boost::enable_if_c<policies::is_policy<Policy>::value, typename tools::promote_args<T>::type>::type
+inline typename std::enable_if<policies::is_policy<Policy>::value, typename tools::promote_args<T>::type>::type
    legendre_p_prime(int l, T x, const Policy& pol)
 {
    typedef typename tools::promote_args<T>::type result_type;
@@ -273,7 +278,7 @@ inline std::vector<T> legendre_p_zeros(int l)
 }
 
 template <class T, class Policy>
-inline typename boost::enable_if_c<policies::is_policy<Policy>::value, typename tools::promote_args<T>::type>::type
+inline typename std::enable_if<policies::is_policy<Policy>::value, typename tools::promote_args<T>::type>::type
    legendre_q(unsigned l, T x, const Policy& pol)
 {
    typedef typename tools::promote_args<T>::type result_type;
@@ -302,6 +307,7 @@ namespace detail{
 template <class T, class Policy>
 T legendre_p_imp(int l, int m, T x, T sin_theta_power, const Policy& pol)
 {
+   BOOST_MATH_STD_USING
    // Error handling:
    if((x < -1) || (x > 1))
       return policies::raise_domain_error<T>(
@@ -311,6 +317,18 @@ T legendre_p_imp(int l, int m, T x, T sin_theta_power, const Policy& pol)
    // Handle negative arguments first:
    if(l < 0)
       return legendre_p_imp(-l-1, m, x, sin_theta_power, pol);
+   if ((l == 0) && (m == -1))
+   {
+      return sqrt((1 - x) / (1 + x));
+   }
+   if ((l == 1) && (m == 0))
+   {
+      return x;
+   }
+   if (-m == l)
+   {
+      return pow((1 - x * x) / 4, T(l) / 2) / boost::math::tgamma<T>(l + 1, pol);
+   }
    if(m < 0)
    {
       int sign = (m&1) ? -1 : 1;

@@ -1,9 +1,23 @@
 CLASS::SequenceableCollection
-summary::Abstract superclass of integer indexable collections
+summary::Abstract superclass of indexable collections
 categories::Collections>Ordered
 
 DESCRIPTION::
-SequenceableCollection is a subclass of Collection whose elements can be indexed by an Integer. It has many useful subclasses; link::Classes/Array:: and link::Classes/List:: are amongst the most commonly used.
+link::Classes/SequenceableCollection:: is a subclass of link::Classes/Collection:: whose items can be indexed by a link::Classes/SimpleNumber::. It has many useful subclasses; link::Classes/Array:: and link::Classes/List:: are amongst the most commonly used.
+
+subsection::Indexing
+
+In SuperCollider, an strong::index:: is a number used to access items in the subclasses of link::Classes/SequenceableCollection:: such as arrays and lists. Indexing starts at code::0::, so the first element of a collection is at index code::0::, the second at index code::1::, and so on. The item at a specific index is accessed using code::.at(index):: method or its shortcut code::[index]::. If using an index that is outside the bounds of the collection (too low or too high), SuperCollider returns code::nil::.
+
+Example:
+
+code::
+a = [100, 200, 300];
+a.at(0); // Returns 100 (the first item)
+a[0]     // Same as above (syntactic sugar; shortcut)
+a[2];    // Returns 300 (the third item)
+a[5];    // Returns nil (the index is out of bounds)
+::
 
 CLASSMETHODS::
 
@@ -70,23 +84,29 @@ INSTANCEMETHODS::
 
 
 method::|@|
-synonym for link::Classes/ArrayedCollection#-clipAt::.
+synonym for link::Classes/ArrayedCollection#-clipAt:: and link::Classes/List#-clipAt::.
 code::
-[3, 4, 5]|@|6;
+[3, 4, 5]|@|6     // -> 5
+List[3, 4, 5]|@|6 // -> 5
 ::
 
 method::@@
-synonym for link::Classes/ArrayedCollection#-wrapAt::.
+synonym for link::Classes/ArrayedCollection#-wrapAt:: and link::Classes/List#-wrapAt::.
 code::
-[3, 4, 5]@@6;
-[3, 4, 5]@@ -1;
-[3, 4, 5]@@[6, 8]
+[3, 4, 5]@@6      // -> 3
+[3, 4, 5]@@ -1    // -> 5
+[3, 4, 5]@@[6, 8] // -> [3, 5]
+
+List[3, 4, 5]@@6      // -> 3
+List[3, 4, 5]@@ -1    // -> 5
+List[3, 4, 5]@@[6, 8] // -> [3, 5]
 ::
 
 method::@|@
-synonym for link::Classes/ArrayedCollection#-foldAt::.
+synonym for link::Classes/ArrayedCollection#-foldAt:: and link::Classes/List#-foldAt::.
 code::
-[3, 4, 5]@|@[6, 8];
+[3, 4, 5]@|@[6, 8]     // -> [5, 3]
+List[3, 4, 5]@|@[6, 8] // -> [5, 3]
 ::
 
 method::first
@@ -132,7 +152,7 @@ y.indicesOfEqual(5);
 method::indexOfGreaterThan
 Return the first index containing an strong::item:: which is greater than strong::item::.
 code::
-y = List[ 10, 5, 77, 55, 12, 123];
+y = List[10, 5, 77, 55, 12, 123];
 y.indexOfGreaterThan(70);
 ::
 
@@ -140,7 +160,7 @@ method::selectIndices
 Return a new collection of same type as receiver which consists of all indices of those elements of the receiver for which function answers code::true::. The function is passed two arguments, the item and an integer index.
 
 code::
-#[a, b, c, g, h, h, j, h].selectIndices({|item, i| item === \h})
+#[a, b, c, g, h, h, j, h].selectIndices({ |item, i| item === \h })
 ::
 
 If you want to control what type of collection is returned, use link::#-selectIndicesAs::
@@ -149,7 +169,7 @@ method::selectIndicesAs
 Return a new collection of type emphasis::class:: which consists of all indices of those elements of the receiver for which function answers code::true::. The function is passed two arguments, the item and an integer index.
 
 code::
-#[a, b, c, g, h, h, j, h].selectIndicesAs({|item, i| item === \h}, Set)
+#[a, b, c, g, h, h, j, h].selectIndicesAs({ |item, i| item === \h }, Set)
 ::
 
 
@@ -157,7 +177,7 @@ method::rejectIndices
 Return a new collection of same type as receiver which consists of all indices of those elements of the receiver for which function answers code::false::. The function is passed two arguments, the item and an integer index.
 
 code::
-#[a, b, c, g, h, h, j, h].rejectIndices({|item, i| item === \h})
+#[a, b, c, g, h, h, j, h].rejectIndices({ |item, i| item === \h })
 ::
 
 If you want to control what type of collection is returned, use link::#-rejectIndicesAs::
@@ -166,7 +186,7 @@ method::rejectIndicesAs
 Return a new collection of type emphasis::class:: which consists of all indices of those elements of the receiver for which function answers code::false::. The function is passed two arguments, the item and an integer index.
 
 code::
-#[a, b, c, g, h, h, j, h].rejectIndicesAs({|item, i| item === \h}, Set)
+#[a, b, c, g, h, h, j, h].rejectIndicesAs({ |item, i| item === \h }, Set)
 ::
 
 copymethod:: Collection -maxIndex
@@ -315,8 +335,8 @@ code::
 method::flat
 Returns a collection from which all nesting has been flattened.
 code::
-[[1, 2, 3], [[4, 5], [[6]]]].flat; // [ 1, 2, 3, 4, 5, 6 ]
-[1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]].flat; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+[[1, 2, 3], [[4, 5], [[6]]]].flat; // [1, 2, 3, 4, 5, 6]
+[1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]].flat; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 ::
 
 method::flatten
@@ -327,10 +347,10 @@ Specifies how many levels downward (inward) to flatten. Zero returns the origina
 
 code::
 a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
-a.flatten(1); // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ] ]
-a.flatten(2); // [ 1, 2, 3, 4, 5, 6, [ 7, 8, [ 9, 0 ] ] ]
-a.flatten(3); // [ 1, 2, 3, 4, 5, 6, 7, 8, [ 9, 0 ] ]
-a.flatten(4); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+a.flatten(1); // [ 1, 2, 3, 4, [ 5, 6, [ 7, 8, [9, 0] ] ] ]
+a.flatten(2); // [ 1, 2, 3, 4, 5, 6, [ 7, 8, [9, 0] ] ]
+a.flatten(3); // [ 1, 2, 3, 4, 5, 6, 7, 8, [9, 0] ]
+a.flatten(4); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 ::
 
 
@@ -342,15 +362,15 @@ Specifies how many levels downward (inward) or upward (outward) to flatten.
 
 code::
 a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
-a.flatten2(4);  // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
-a.flatten2(3);  // [ 1, 2, 3, 4, 5, 6, 7, 8, [ 9, 0 ] ]
-a.flatten2(2);  // [ 1, 2, 3, 4, 5, 6, [ 7, 8, [ 9, 0 ] ] ]
-a.flatten2(1);  // [ 1, 2, 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ]
-a.flatten2(0);  // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ] ]
-a.flatten2(-1); // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, 9, 0 ] ] ] ]
-a.flatten2(-2); // [ 1, 2, [ 3, 4, [ 5, 6, 7, 8, 9, 0 ] ] ]
-a.flatten2(-3); // [ 1, 2, [ 3, 4, 5, 6, 7, 8, 9, 0 ] ]
-a.flatten2(-4); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+a.flatten2(4);  // [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+a.flatten2(3);  // [ 1, 2, 3, 4, 5, 6, 7, 8, [9, 0] ]
+a.flatten2(2);  // [ 1, 2, 3, 4, 5, 6, [ 7, 8, [9, 0] ] ]
+a.flatten2(1);  // [ 1, 2, 3, 4, [ 5, 6, [ 7, 8, [9, 0] ] ] ]
+a.flatten2(0);  // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, [9, 0] ] ] ] ]
+a.flatten2(-1); // [ 1, 2, [ 3, 4, [ 5, 6, [7, 8, 9, 0] ] ] ]
+a.flatten2(-2); // [ 1, 2, [ 3, 4, [5, 6, 7, 8, 9, 0] ] ]
+a.flatten2(-3); // [ 1, 2, [3, 4, 5, 6, 7, 8, 9, 0] ]
+a.flatten2(-4); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 ::
 
 
@@ -364,15 +384,15 @@ level 0 is outermost, so flatBelow(0) is like flat.
 
 code::
 a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
-a.flatBelow(0); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
-a.flatBelow(1); // [ 1, 2, [ 3, 4, 5, 6, 7, 8, 9, 0 ] ]
-a.flatBelow(2); // [ 1, 2, [ 3, 4, [ 5, 6, 7, 8, 9, 0 ] ] ]
+a.flatBelow(0); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+a.flatBelow(1); // [ 1, 2, [3, 4, 5, 6, 7, 8, 9, 0] ]
+a.flatBelow(2); // [ 1, 2, [ 3, 4, [5, 6, 7, 8, 9, 0] ] ]
 
 // to set the level below which to flatten from the deepest level up,
 // one can use coll.maxDepth. E.g. to flatten only the innermost level:
-a.flatBelow( (a.maxDepth - 1) - 1);
+a.flatBelow((a.maxDepth - 1) - 1);
 // for lowest two levels:
-a.flatBelow( (a.maxDepth - 1) - 2);
+a.flatBelow((a.maxDepth - 1) - 2);
 ::
 
 
@@ -397,10 +417,10 @@ method::flopWith
 Flop with a user defined function. Can be used to collect over several collections in parallel.
 code::
 [[1, 2, 3], [4, 5, 6]].flopWith(_+_);
-[[1, 2, 3], 1, [7, 8]].flopWith{ |a,b,c| a+b+c }; // shorter array wraps
+[[1, 2, 3], 1, [7, 8]].flopWith{ |a, b, c| a+b+c }; // shorter array wraps
 
 // typical use case (pseudocode)
-[synths, buffers].flopWith{ |a,b| a.set(\buf, b) }
+[synths, buffers].flopWith{ |a, b| a.set(\buf, b) }
 ::
 argument::func
 A function taking as many arguments as elements in the array.
@@ -479,13 +499,13 @@ argument::step
 Step size to look for. If none is given, any step size will match.
 
 code::
-[ 0, 1, 2, 3, 4, 5 ].isSeries; // true
-[ 1.5, 2.5, 3.5, 4.5, 5.5, 6.5 ].isSeries; // true
-[ 0, 1, 4, 5 ].isSeries; // false
-[ 0, 3, 6, 9, 12, 15 ].isSeries; // true
-[ 0, 3, 6, 9, 12, 15 ].isSeries(1); // false
-[ 2 ] // true
-[ ] // true (empty sequence)
+[0, 1, 2, 3, 4, 5].isSeries; // true
+[1.5, 2.5, 3.5, 4.5, 5.5, 6.5].isSeries; // true
+[0, 1, 4, 5].isSeries; // false
+[0, 3, 6, 9, 12, 15].isSeries; // true
+[0, 3, 6, 9, 12, 15].isSeries(1); // false
+[2] // true
+[] // true (empty sequence)
 ::
 
 method::resamp0
@@ -514,11 +534,29 @@ code::
 [1, 2, 3, 4].wchoose([0.1, 0.2, 0.3, 0.4]);
 ::
 
+method::wchoosen
+Choose an element from the collection at random using a list of probabilities or weights. The weights are derived from a function or an array of any size, and their sum is automatically normalized to 1.0. If the weights are shorter than the collection, the remaining weights are assumed to be zero. If the weights are longer, the exceeding weights are ignored. A weight defined as a function is first called with the collection as the argument. Because the provided weights are normalized on every call, it is less efficient than using link::#-wchoose:: with pre-normalized weights.
+
+code::
+// weights are a non-normalized array
+10.collect { [1, 2, 3, 4].wchoosen([10, 18, 3, 2]) }
+// weights are a non-normalized too short
+10.collect { [1, 2, 3, 4].wchoosen([10, 18]) }
+// weights contain functions
+10.collect {  [1, 2, 3, 4].wchoosen([1, 1, { 15.rand }, 1]) }
+// weights contains streams
+10.collect { [1, 2, 3, 4].wchoosen([1, 1, Pseries(0,1).asStream, 1]) };
+// weights is a function
+10.collect { [1, 2, 3, 4].wchoosen({ |list| list.collect { |x| if(x.even) { 1 } { 2 } }  }) };
+// weights is nil: behave like choose
+10.collect { [1, 2, 3, 4].wchoosen };
+::
+
 method::sort
-Sort the contents of the collection using the comparison function argument. The function should take two elements as arguments and return true if the first argument should be sorted before the second argument. If the function is nil, the following default function is used. { arg a, b; a < b }
+Sort the contents of the collection using the comparison function argument. The function should take two elements as arguments and return true if the first argument should be sorted before the second argument. If the function is nil, the following default function is used. { |a, b| a <= b }
 code::
 [6, 2, 1, 7, 5].sort;
-[6, 2, 1, 7, 5].sort({ arg a, b; a > b }); // reverse sort
+[6, 2, 1, 7, 5].sort({ |a, b| a > b }); // reverse sort
 ::
 
 method::sortBy
@@ -549,19 +587,19 @@ Swap two elements in the collection at indices strong::i:: and strong::j::.
 method::pairsDo
 Calls function for each subsequent pair of elements in the SequentialCollection. The function is passed the two elements and an index.
 code::
-[1, 2, 3, 4, 5].pairsDo({ arg a, b; [a, b].postln; });
+[1, 2, 3, 4, 5].pairsDo({ |a, b| [a, b].postln });
 ::
 
 method::doAdjacentPairs
 Calls function for every adjacent pair of elements in the SequenceableCollection. The function is passed the two adjacent elements and an index.
 code::
-[1, 2, 3, 4, 5].doAdjacentPairs({ arg a, b; [a, b].postln; });
+[1, 2, 3, 4, 5].doAdjacentPairs({ |a, b| [a, b].postln });
 ::
 
 method::separate
 Separates the collection into sub-collections by calling the function for each adjacent pair of elements. If the function returns true, then a separation is made between the elements.
 code::
-[1, 2, 3, 5, 6, 8, 10].separate({ arg a, b; (b - a) > 1 }).postcs;
+[1, 2, 3, 5, 6, 8, 10].separate({ |a, b| (b - a) > 1 }).postcs;
 ::
 
 method::clump
@@ -686,7 +724,7 @@ argument::compareFunc
 An optional comparison function to use for each element. It will be provided two arguments, and the function must return a boolean as to whether or not they are the same. Default value is teletype::nil::, which will use strong::identity:: (not equality) to compare elements.
 
 code::
-[1,2,3,4].editDistance([2,3,4,5], { | a, b |
+[1, 2, 3, 4].editDistance([2, 3, 4, 5], { |a, b|
 	a == b;
 });
 ::
@@ -731,6 +769,9 @@ All of the following messages send the message link::#-performBinaryOp:: to the 
 method:: +, -, *, /, div, min, max, <, <=, >, >=, bitXor, lcm, gcd, round, trunc, atan2, hypot, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, rrand, exprand
 
 method:: %, **, &, |, >>, +>>, <!
+
+method:: modSeaside
+Pre-3.14 modulo with unexpected behavior for negative integer modulus; see link::Classes/Integer#-modSeaside::. Calling code::modSeaside:: on a non-integer operand will fall back to code::mod:: behavior; see link::Classes/Float#-modSeaside::.
 
 method::performBinaryOp
 Creates a new collection of the results of applying the selector with the operand to all elements in the receiver. If the operand is a collection then elements of that collection are paired with elements of the receiver.
@@ -922,7 +963,7 @@ The method converts a collection of the form code:: [beat-count, [rtm-list], rep
 If the divisions in the rtm-list are events, the event durations are interpreted as relative durations, and a list of events is returned.
 code::
 // using numbers as score
-[3, [1, 2, 1], 1].convertRhythm; // List[ 0.75, 1.5, 0.75 ]
+[3, [1, 2, 1], 1].convertRhythm; // List[0.75, 1.5, 0.75]
 [2, [1, 3, [1, [2, 1, 1, 1]], 1, 3], 1].convertRhythm;
 [2, [1, [1, [2, 1, 1, 1]]], 1].convertRhythm;
 [2, [1, [1, [2, 1, 1, 1]]], 2].convertRhythm; // repeat
@@ -932,12 +973,16 @@ code::
 Pbind(\degree, Pseries(0, 1, inf), \dur, Pseq([2, [1, [1, [2, 1, 1, -1]]], 2].convertRhythm)).play;
 ::
 
-subsection:: Starting UNIX processes
+subsection:: Starting system processes
 
 private::prUnixCmd
 
 method::unixCmd
-Execute a UNIX command strong::asynchronously::. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+Executes a system command strong::asynchronously::.
+This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable.
+This method starts the process directly without using a shell.
+
+If you want to run a command using a shell, use link::Classes/String#-unixCmd::.
 argument:: action
 A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
 argument:: postOutput
@@ -947,13 +992,13 @@ An link::Classes/Integer:: - the pid of the newly created process. Use link::Cla
 discussion::
 Example:
 code::
-["ls","/"].unixCmd;
+["ls", "/"].unixCmd;
 ::
 
 method::unixCmdGetStdOut
 Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 code::
-~listing = ["ls","/"].unixCmdGetStdOut; // Grab
+~listing = ["ls", "/"].unixCmdGetStdOut; // Grab
 ~listing.reverse.as(Array).dupEach.join.postln; // Mangle
 ::
 

@@ -55,7 +55,7 @@ private Q_SLOTS:
     void updateFontPreview();
 
     void updateTextFormatEdit();
-    void updateTextFormatDisplay();
+    void updateTextFormatDisplayGeneric();
     void updateTextFormatDisplayCommons();
     void updateTheme(QString name);
 

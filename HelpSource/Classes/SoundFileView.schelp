@@ -266,7 +266,7 @@ METHOD:: selections
 
     All the selections.
 
-    returns:: An array of 64 arrays of start frames and sizes: [ [ start0, size0 ] , [ start1, size1 ], ... ].
+    returns:: An array of 64 arrays of start frames and sizes: [[start0, size0], [start1, size1], ...].
 
 METHOD:: selection
 
@@ -434,7 +434,7 @@ METHOD:: rmsColor
 
 METHOD:: waveColors
 
-    An array of colors for the peak-to-peak data for each channel, allowing each channel to be represented by a different color. Defaults to code::[ ]::. Once set, it overrides link::#-peakColor::. In order to revert to using code::.peakColor::, set code::.waveColors:: back to an empty array: code::.waveColors_([])::.
+    An array of colors for the peak-to-peak data for each channel, allowing each channel to be represented by a different color. Defaults to code::[]::. Once set, it overrides link::#-peakColor::. In order to revert to using code::.peakColor::, set code::.waveColors:: back to an empty array: code::.waveColors_([])::.
 
     note::link::#-rmsColor:: stays the same for all channels. However, using alpha blending, it is possible to display RMS data using either a lighter (e.g. code::.rmsColor_(Color.grey(1, 0.3))::) or a darker (e.g. code::.rmsColor_(Color.grey(0, 0.3))::) shade of the peak-to-peak color.::
 
@@ -540,10 +540,14 @@ code::
 // To scroll: right-click + mouse-left/right
 (
 w = Window.new("soundfile test", Rect(200, 300, 740, 100));
-a = SoundFileView.new(w, Rect(20,20, 700, 60));
+a = SoundFileView.new(w, Rect(20, 20, 700, 60));
 
 f = SoundFile.new;
-f.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
+// peek at the path to see location and the format of a path
+p.postln;
+f.openRead(p);
 f.inspect;
 
 a.soundfile = f;
@@ -567,10 +571,10 @@ code::
 y = Window.screenBounds.height - 120;
 w = Window.new("soundfile test", Rect(200, y, 740, 100)).alwaysOnTop_(true);
 w.front;
-a = SoundFileView.new(w, Rect(20,20, 700, 60));
+a = SoundFileView.new(w, Rect(20, 20, 700, 60));
 
 f = SoundFile.new;
-f.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+f.openRead(ExampleFiles.child);
 // f.inspect;
 
 a.soundfile = f;            // set soundfile
@@ -625,7 +629,7 @@ a.timeCursorColor
 
 // Selections: multiple selections are supported.
 // e.g. use selection 0:
-a.setSelectionColor(0, Color.red);  // set...( index, value )
+a.setSelectionColor(0, Color.red);  // set...(index, value)
 a.selectionStart(0);                // at index
 a.setSelectionStart(0, 12345);
 a.setSelectionSize(0, 12345);
@@ -709,8 +713,8 @@ list::
 ::
 
 code::
-
-f = SoundFile.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+p = ExampleFiles.child;
+f = SoundFile.openRead(p);
 f.readData(d = Signal.newClear(f.numFrames * f.numChannels));
 f.close;
 

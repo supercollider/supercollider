@@ -1,0 +1,5 @@
+add_executable(sc_lexer_test tests.cpp)
+target_link_libraries(sc_lexer_test boost_test sc_lexer)
+target_include_directories(sc_lexer_test PUBLIC ${boost_include_dirs})
+add_test(sc_lexer_test_run sc_lexer_test)
+set_property(TARGET sc_lexer_test PROPERTY FOLDER Test/Lexer)

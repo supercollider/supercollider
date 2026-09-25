@@ -1,0 +1,167 @@
+TITLE:: LevelComp
+summary:: Level compensation logic for Splay and SplayAz
+categories:: Panning
+related:: Classes/Splay, Classes/SplayAz, Guides/Level_Compensation
+
+DESCRIPTION::
+Mixing and Panning multichannel signals often requires link::Guides/Level_Compensation::.
+LevelComp provides a logic for this that is used internally in the link::Classes/Splay:: and link::Classes/SplayAz:: UGens.
+Using the code::levelComp:: argument of code::Splay/Az::, it calculates a level compensation factor applied to the input signals, depending on the number of input channels.
+
+CLASSMETHODS::
+
+METHOD:: new
+Calculate a scaling factor based on the code::levelComp:: argument and the number of channels to be mixed.
+
+ARGUMENT:: levelComp
+a flag or numeric value:
+
+list::
+##code::true:: : equal power level compensation (default)
+##code::false:: : off / no level change,
+##float between code::0.0:: and code::1.0:: : smooth tuning of levelComp factor:
+list::
+##code::0.0:: is none -> factor 1
+##code::0.5:: is equal power -> factor (1/n).squared
+##code::1.0:: is equal amplitude -> factor (1/n)
+::
+::
+
+ARGUMENT:: rate
+the rate for which to calculate - \audio or \control.
+
+ARGUMENT:: n
+the number of channels being mixed and scaled.
+
+returns::
+the levelComp factor by which to multiply the output signals.
+
+EXAMPLES::
+
+code::Splay:: and code::SplayAz:: use code::LevelComp:: internally via the code::levelComp:: argument, and obtain rate and number of channels from code::Splay/Az::.
+
+Here is an Overview of the code::levelComp:: usage variants:
+code::
+// default is equal power comp: level / (numchans.sqrt)
+Splay.ar(ins, spread, level, center); // true is default
+// write it explicitly for clarity
+Splay.ar(ins, spread, level, center, levelComp: true);
+// or do equal power as float levelComp
+Splay.ar(ins, spread, level, center, levelComp: 0.5); //
+
+// maximum peak safety by equal amplitude comp: level / numchans
+Splay.ar(ins, spread, level, center, levelComp: 1);
+// or calculate by hand:
+Splay.ar(ins, spread, level / ins.size, center, levelComp: false);
+
+// no compensation, just tune level by hand
+Splay.ar(ins, spread, level, center, levelComp: false);
+Splay.ar(ins, spread, level, center, levelComp: 0);
+
+// levelComp by float: level / (numchans ** levelComp),
+// so 0.0 is no compensation: level / 1;
+//    0.5 is equal power : level / (numchans.sqrt)
+//    1.0 is equal amplitude : level / (numchans)
+// can be used to tune e.g. between equal power and equal amp:
+Splay.ar(ins, spread, level, center, levelComp: 0.75);
+
+::
+
+subsection:: Discussion and demonstration of level compensation options:
+
+We begin testing with equal power compensation: how much too high can the summed levels rise for different numbers of channel to mix/pan with link::Classes/Splay::?
+
+code::
+
+s.meter;
+s.scope;
+
+// synthesize 2 test signals at level 0.1 (-20 dB), first on separate channels
+(
+{ var n = 2, level = 0.1, spread = 1, pan = 0;
+	LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1) * level
+}.play;
+)
+
+// now mix/pan these 2 signals using Splay, level at 0.1 (-20dB)
+(
+x = { |spread = 1, level = 0.1, center = 0|
+    var n = 2;
+	var snd = LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1);
+	var stereo = Splay.ar(snd, spread, level, center);
+	Peak.ar(stereo, Impulse.kr(2)).ampdb.poll(2);
+    stereo
+}.play;
+)
+
+// when we set full spread, panned to center:
+// the 2 signals are discrete, left and right
+// we see the energy-based levelComp applied (1/2.sqrt).ampdb = -3
+x.set(\spread, 1, \center, 0); // -20 - 3 = -23dB
+
+// no spread, panned center:
+// each signal decreases by 3dB as they move to the center (from the panning function)
+// and the two signals mix on each channel, so we get -20 dB
+x.set(\spread, 0, \center, 0); //  -20dB
+
+// no spread, panned fully right:
+// the signals fully mix in the right channel (+6 dB)
+x.set(\spread, 0, \center, 1); // -23 + 6 = -17db
+::
+
+Trying the same example with 20 channels and with equal power compensation,
+(which we get with levelComp code::true::), we see that the resulting sum
+levels are much higher:
+
+code::
+(
+x = { |spread = 1, level = 0.1, center = 0|
+	var n = 20;
+	var snd = Splay.ar(LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1),
+		spread, level, center);
+	Peak.ar(snd, 0.01, 1).ampdb.poll(1);
+	snd
+}.play;
+)
+
+// at full spread, level -20, pan to center:
+// peak is higher at -11 db
+x.set(\spread, 1, \center, 0);
+// with no spread, i.e. all panned center, slightly higher -10
+x.set(\spread, 0, \center, 0);
+// worst case: no spread, pan full left: -8db
+x.set(\spread, 0, \center, -1); // -8
+::
+
+Finally, here are the theoretical worst cases for 20, 200, and 2000 channels,
+with equal power: 13, 23 and 33 db louder!
+
+code::
+// plot 0.01 seconds, and poll for precise amp readout
+{ Splay.ar(DC.ar(1!20), 0, 1, 0.999).ampdb.poll }.plot;
+{ Splay.ar(DC.ar(1!200), 0, 1, 0.999).ampdb.poll }.plot; // 200: 23 db louder
+{ Splay.ar(DC.ar(1!2000), 0, 1, 0.999).ampdb.poll }.plot; // 2000: 33 db louder
+::
+
+So for maximum peak safety, use code::levelComp: 1:: (or equivalently, set code::levelComp: false::, and explicitly set level to 1/n, i.e. divide by the number of channels for amplitude compensation).
+
+Then the levels predictably remain the same, independent of the number of channels to be mixed.
+code::
+{ n = 2; Splay.ar(DC.ar(1!n), 1, 1, 0, levelComp: 1).ampdb.poll }.plot; // -6 db on both
+{ n = 2; Splay.ar(DC.ar(1!n), 1, 1/n, 0, levelComp: false).ampdb.poll }.plot;
+{ n = 2; Splay.ar(DC.ar(1!n), 0, 1, 0, levelComp: 1).ampdb.poll }.plot; // -3 db on both
+{ n = 2; Splay.ar(DC.ar(1!n), 0, 1, 0.99, levelComp: 1).ampdb.poll }.plot; // 0 db
+
+// these are now the same for all tested values of n:
+{ n = 20; Splay.ar(DC.ar(1!n), 1, 1, 0, levelComp: 1).ampdb.poll }.plot; // -4 db
+{ n = 20; Splay.ar(DC.ar(1!n), 0, 1, 0, levelComp: 1).ampdb.poll }.plot; // -3 db
+{ n = 20; Splay.ar(DC.ar(1!n), 0, 1, 0.99, levelComp: 1).ampdb.poll }.plot; // 0 db on right
+
+{ n = 200; Splay.ar(DC.ar(1!n), 1, 1, 0, levelComp: 1).ampdb.poll }.plot; // -4 db
+{ n = 200; Splay.ar(DC.ar(1!n), 0, 1, 0, levelComp: 1).ampdb.poll }.plot; // -3 db
+{ n = 200; Splay.ar(DC.ar(1!n), 0, 1, 0.99, levelComp: 1).ampdb.poll }.plot; // 0 db on right
+
+{ n = 2000; Splay.ar(DC.ar(1!n), 1, 1, 0, levelComp: 1).ampdb.poll }.plot; // -4 db
+{ n = 2000; Splay.ar(DC.ar(1!n), 0, 1, 0, levelComp: 1).ampdb.poll }.plot; // -3 db
+{ n = 2000; Splay.ar(DC.ar(1!n), 0, 1, 0.99, levelComp: 1).ampdb.poll }.plot; // 0 db on right
+::

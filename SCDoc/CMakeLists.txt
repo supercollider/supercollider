@@ -9,7 +9,7 @@ set(SCDOC_SRCS
     ${SCDOC_DIR}/SCDocPrim.h
 )
 
-if(CMAKE_COMPILER_IS_CLANG)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set_source_files_properties(
     ${SCDOC_DIR}/lex.scdoc.cpp
     PROPERTIES COMPILE_FLAGS "-Wno-null-conversion")

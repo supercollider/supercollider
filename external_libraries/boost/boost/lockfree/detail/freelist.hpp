@@ -60,7 +60,7 @@ public:
     {
         for (std::size_t i = 0; i != n; ++i) {
             T * node = Alloc::allocate(1);
-            std::memset(node, 0, sizeof(T));
+            std::memset((void*)node, 0, sizeof(T));
 #ifdef BOOST_LOCKFREE_FREELIST_INIT_RUNS_DTOR
             destruct<false>(node);
 #else
@@ -74,7 +74,7 @@ public:
     {
         for (std::size_t i = 0; i != count; ++i) {
             T * node = Alloc::allocate(1);
-            std::memset(node, 0, sizeof(T));
+            std::memset((void*)node, 0, sizeof(T));
             deallocate<ThreadSafe>(node);
         }
     }
@@ -183,7 +183,7 @@ private:
             if (!old_pool.get_ptr()) {
                 if (!Bounded) {
                     T *ptr = Alloc::allocate(1);
-                    std::memset(ptr, 0, sizeof(T));
+                    std::memset((void*)ptr, 0, sizeof(T));
                     return ptr;
                 }
                 else
@@ -208,7 +208,7 @@ private:
         if (!old_pool.get_ptr()) {
             if (!Bounded) {
                 T *ptr = Alloc::allocate(1);
-                std::memset(ptr, 0, sizeof(T));
+                std::memset((void*)ptr, 0, sizeof(T));
                 return ptr;
             }
             else
@@ -338,7 +338,7 @@ protected:
 
 template <typename T,
           std::size_t size>
-struct compiletime_sized_freelist_storage
+struct BOOST_ALIGNMENT(BOOST_LOCKFREE_CACHELINE_BYTES) compiletime_sized_freelist_storage
 {
     // array-based freelists only support a 16bit address space.
     BOOST_STATIC_ASSERT(size < 65536);
@@ -380,7 +380,7 @@ struct runtime_sized_freelist_storage:
         if (count > 65535)
             boost::throw_exception(std::runtime_error("boost.lockfree: freelist size is limited to a maximum of 65535 objects"));
         nodes_ = allocator_type::allocate(count);
-        std::memset(nodes_, 0, sizeof(T) * count);
+        std::memset((void*)nodes_, 0, sizeof(T) * count);
     }
 
     ~runtime_sized_freelist_storage(void)

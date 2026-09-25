@@ -10,13 +10,13 @@ A NAryOpStream is created as a result of a n-ary math operation on a Stream. It 
 Examples::
 
 code::
-x = Routine { 6.do { arg i; i.yield; } }.wrap(0, 3);
+x = Routine { 6.do { |i| i.yield } }.wrap(0, 3);
 x.dump;
 ::
 
 code::
 (
-x = Routine { 6.do { arg i; i.yield; } }.wrap(0, 3);
+x = Routine { 6.do { |i| i.yield } }.wrap(0, 3);
 x.next.postln;
 x.next.postln;
 x.next.postln;

@@ -91,8 +91,8 @@ ControlSpec.specs[\myFreq] = ControlSpec(0.01, 2000, \exp, 0.01, 440, units: "Hz
 
 code::
 // array is used as arguments to ControlSpec.new(minval, maxval, warp, step, default)
-[300,3000,\exponential,100].asSpec.dump
-Instance of ControlSpec {    (0313FC08, gc=00, fmt=00, flg=00, set=03)
+[300, 3000, \exponential, 100].asSpec.dump
+Instance of ControlSpec {    (0313FC08, gc = 00, fmt = 00, flg = 00, set = 03)
   instance variables [6]
     minval : Integer 300
     maxval : Integer 3000
@@ -102,8 +102,8 @@ Instance of ControlSpec {    (0313FC08, gc=00, fmt=00, flg=00, set=03)
 }
 
 // partially specified ...
-[-48,48].asSpec.dump
-Instance of ControlSpec {    (0313FF18, gc=00, fmt=00, flg=00, set=03)
+[-48, 48].asSpec.dump
+Instance of ControlSpec {    (0313FF18, gc = 00, fmt = 00, flg = 00, set = 03)
   instance variables [6]
     minval : Integer -48
     maxval : Integer 48
@@ -114,11 +114,11 @@ Instance of ControlSpec {    (0313FF18, gc=00, fmt=00, flg=00, set=03)
 
 // a Symbol
 \freq.asSpec.dump
-Instance of ControlSpec {    (180F4910, gc=3C, fmt=00, flg=00, set=03)
+Instance of ControlSpec {    (180F4910, gc = 3C, fmt = 00, flg = 00, set = 03)
   instance variables [8]
     minval : Integer 20
     maxval : Integer 20000
-    warp : instance of ExponentialWarp (17FEDB30, size=1, set=1)
+    warp : instance of ExponentialWarp (17FEDB30, size = 1, set = 1)
     step : Integer 0
     default : Integer 440
     units : " Hz"
@@ -129,7 +129,7 @@ Instance of ControlSpec {    (180F4910, gc=3C, fmt=00, flg=00, set=03)
 
 // nil becomes a default ControlSpec
 nil.asSpec.dump
-Instance of ControlSpec {    (0313FF18, gc=00, fmt=00, flg=00, set=03)
+Instance of ControlSpec {    (0313FF18, gc = 00, fmt = 00, flg = 00, set = 03)
   instance variables [6]
     minval : Float 0
     maxval : Float 1
@@ -200,13 +200,13 @@ code::
 // ControlSpec-map can also be used to map ugens
 (
 var spec;
-spec = [ 100, 18000, \exp].asSpec;
+spec = [100, 18000, \exp].asSpec;
 {
-	var freq,osc;
-	osc = SinOsc.kr(0.1).range(0,1);
-	freq = spec.map( osc );
+	var freq, osc;
+	osc = SinOsc.kr(0.1).range(0, 1);
+	freq = spec.map(osc);
 
-	freq.dump;// BinaryOpUGen
+	freq.dump; // BinaryOpUGen
 
 	SinOsc.ar(
 		freq.poll

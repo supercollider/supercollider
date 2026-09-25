@@ -46,7 +46,7 @@ subsection::Example 1, loading and granulating a sound file.
 
 code::
 (
-SynthDef(\help_playbuf, { | out=0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1, sustain = 1, pan = 0, loop = 1|
+SynthDef(\help_playbuf, { |out = 0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1, sustain = 1, pan = 0, loop = 1|
 	var audio;
 	rate = rate * BufRateScale.ir(bufnum);
 	startPos = startPos * BufFrames.ir(bufnum);
@@ -55,17 +55,17 @@ SynthDef(\help_playbuf, { | out=0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1
 	audio = EnvGen.ar(Env.sine, 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
 	audio = Pan2.ar(audio, pan, amp);
 	OffsetOut.ar(out, audio);
-}).add;  //use .store for rendering example below
+}).add;  // use .store for rendering example below
 
 a = Pproto({
 	~newgroup = (type: \group).yield;
-	~sf1 = (type: \allocRead, path: Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff").yield;
+	~sf1 = (type: \allocRead, path: ExampleFiles.apollo11).yield;
 },
 	Pbind(*[
 		instrument:	\help_playbuf,
-		dur:		Pseg([0,0,0.25,0.5, 0.75, 1],10).linexp(0,1,0.01,2),
+		dur:		Pseg([0, 0, 0.25, 0.5, 0.75, 1], 10).linexp(0, 1, 0.01, 2),
 		legato:		4,
-		startPos:	Pn(Pseg([0,1], 20), inf),
+		startPos:	Pn(Pseg([0, 1], 20), inf),
 		rate:		Pwhite(1, 1).midiratio,
 		loop:		0,
 		group:		Pkey(\newgroup),
@@ -75,39 +75,39 @@ a = Pproto({
 a.play;
 )
 
-//a.render("sounds/test.aif", 40)
-//SoundFile.openRead("sounds/test.aif").play
+// a.render("sounds/test.aif", 40)
+// SoundFile.openRead("sounds/test.aif").play
 ::
 
 subsection::Example 2, loading a waveform buffer and modifying it in performance.
 
 code::
 (
-SynthDef(\osc,{ arg out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0;
+SynthDef(\osc, { |out = 0, bufnum = 0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0|
 	var audio;
 	audio = Osc.ar(bufnum, freq);
-	audio = EnvGen.ar(Env.linen(0.01, 0.90,0.9), 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
+	audio = EnvGen.ar(Env.linen(0.01, 0.90, 0.9), 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
 	audio = Pan2.ar(audio, pan, amp);
 	OffsetOut.ar(out, audio);
-}).add;  //use .store for rendering example below
+}).add;  // use .store for rendering example below
 
 b = Pproto({
-	~bufnum = (type: \sine1, amps: 1.0/[1,2,3,4,5,6] ).yield;
+	~bufnum = (type: \sine1, amps: 1.0/[1, 2, 3, 4, 5, 6]).yield;
 	},
 	Ppar([
 		Pbind(*[
 			instrument: 	\osc,
 			freq:		Pwhite(1, 16) * 100,
-			detune:		Pfunc { Array.fill(3.rand + 1, {3.0.rand}) },
-			dur:		Prand([2,2,2.5,1],10),
-			db:		Pn(Pstep([-10, -20, -20, -15, -20, -20, -20], 0.5) ),
-			legato:		Pwhite(0.0,1).linexp(0,1,0.1, 3)
+			detune:		Pfunc { Array.fill(3.rand + 1, { 3.0.rand }) },
+			dur:		Prand([2, 2, 2.2, 1], 10),
+			db:		Pn(Pstep([-10, -20, -20, -15, -20, -20, -20], 0.5)),
+			legato:		Pwhite(0.0, 1).linexp(0, 0, 0.1, 3)
 		]),
 		Pbind(*[
 			type:		\sine1,
-			amps:		Pseg(Pfunc{ | ev | Array.fill(10, {1.0.rand}) }, 1),
+			amps:		Pseg(Pfunc{ |ev| Array.fill(10, { 1.0.rand }) }, 1),
 			numOvertones:	Pseg(Pwhite(0, 9), 10).asInteger,
-			amps:		Pfunc{ | ev | ev[\amps].copyRange(0, ev[\numOvertones]) },
+			amps:		Pfunc{ |ev| ev[\amps].copyRange(0, ev[\numOvertones]) },
 			dur: 		0.05,
 			bufNum:		Pkey(\bufnum)
 		])
@@ -116,60 +116,60 @@ b = Pproto({
 b.play
 )
 
-//b.render("sounds/test.aif", 40)
-//SoundFile.openRead("sounds/test.aif").play
+// b.render("sounds/test.aif", 40)
+// SoundFile.openRead("sounds/test.aif").play
 ::
 
 subsection::Example 3, loading a waveshaper buffer and modifying it in performance.
 
 code::
 (
-SynthDef(\shaper,{ arg out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0;
+SynthDef(\shaper, { |out = 0, bufnum = 0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0|
 	var audio;
 	audio = SinOsc.ar(freq);
-	audio = EnvGen.ar(Env.linen(0.4, 0.50,0.9), 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
+	audio = EnvGen.ar(Env.linen(0.4, 0.50, 0.9), 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
 	audio = Shaper.ar(bufnum, audio);
 	audio = Pan2.ar(audio, pan, amp);
 	OffsetOut.ar(out, LeakDC.ar(audio));
-}).add;  //use .store for rendering example below
+}).add;  // use .store for rendering example below
 
 c = Pproto({
-	~bufnum = (type: \cheby, amps: 1.0/[1,2,3,4,5,6] ).yield;
+	~bufnum = (type: \cheby, amps: 1.0/[1, 1, 1, 1, 1, 6]).yield;
 	},
 	Ppar([
 		Pbind(*[
 			instrument: 	\shaper,
 			freq:		Pwhite(1, 16) * 100,
-			detune:		Pfunc { Array.fill(3.rand + 1, {3.0.rand}) },
-			dur:		Prand([2,2,2.5,1],inf),
-			db:		Pn(Pstep([-10, -20, -20, -15, -20, -20, -20], 0.5) ),
-			legato:		Pwhite(0.0,1).linexp(0,1,1.1, 5)
+			detune:		Pfunc { Array.fill(3.rand + 1, { 3.0.rand }) },
+			dur:		Prand([2, 2, 2.2, 1], inf),
+			db:		Pn(Pstep([-10, -20, -20, -15, -20, -20, -20], 0.5)),
+			legato:		Pwhite(0.0, 1).linexp(0, 0, 1.1, 5)
 		]),
 		Pbind(*[
 			type:		\cheby,
-			amps:		Pseg(Pfunc{ | ev | Array.fill(10, {1.0.rand}) }, 4),
+			amps:		Pseg(Pfunc{ |ev| Array.fill(10, { 1.0.rand }) }, 4),
 			dur: 		0.05
 		])
 	])
 );
 c.play
 )
-//c.render("sounds/test.aif", 40)
-//SoundFile("sounds/test.aif").play
+// c.render("sounds/test.aif", 40)
+// SoundFile("sounds/test.aif").play
 ::
 
 subsection::Example 4, using an effect with parallel control.
 
 code::
 (
-SynthDef(\echo, { arg out=0, maxdtime=0.2, dtime=0.2, decay=2, gate=1;
+SynthDef(\echo, { |out = 0, maxdtime = 0.2, dtime = 0.2, decay = 2, gate = 1|
 	var env, in;
 	env = Linen.kr(gate, 0.05, 1, 5, 2);
 	in = In.ar(out, 2);
 	XOut.ar(out, env, CombL.ar(in * env, maxdtime, Lag.kr(dtime, 4), decay, 1, in));
 }, [\ir, \ir, 0.1, 0.1, 0]).add;
 
-SynthDef(\fm, { arg out=0, freq, index, decay=2, gate=1;
+SynthDef(\fm, { |out = 0, freq, index, decay = 2, gate = 1|
 	var env, in;
 	env = Linen.kr(gate, 0.05, 1, 5, 2);
 	in = In.ar(out, 2);
@@ -179,29 +179,29 @@ SynthDef(\fm, { arg out=0, freq, index, decay=2, gate=1;
 Pproto({
 	// start two effect synths (just switching them on) and store the parameters in the environment
 	~fsynth = (type: \on, instrument: \fm, freq: 4, index: 1, addAction: 1, db: -30).yield;
-	~fControl = [\set, ~fsynth[\id], ~fsynth[\msgFunc] ];
+	~fControl = [\set, ~fsynth[\id], ~fsynth[\msgFunc]];
 
 	~synth = (type: \on, instrument: \echo, addAction: 1).yield;
-	~sControl = [\set, ~synth[\id], ~synth[\msgFunc] ];
+	~sControl = [\set, ~synth[\id], ~synth[\msgFunc]];
 
 	}, [
 	Pbind(*[
 		#[type, id, msgFunc],	Pkey(\fControl), // fetch the parameters from the environment
 
-		freq:	Pseg([0,1], 10).linexp(0,1, 0.1, 1000),
-		index:	Pseg([0,1], 10).linexp(0,1, 0.1, 100),
+		freq:	Pseg([0, 1], 10).linexp(0, 1, 0.1, 1000),
+		index:	Pseg([0, 1], 10).linexp(0, 1, 0.1, 100),
 		dur:	0.1
 	]),
 	Pbind(*[
 		#[type, id, msgFunc],	Pkey(\sControl), // fetch the parameters from the environment
 
-		dtime:	Pwhite(0,0.2),
-		decay:	Pwhite(0.1,2),
+		dtime:	Pwhite(0, 0.2),
+		decay:	Pwhite(0.1, 2),
 		dur:	1
 	]),
 	Pbind(*[
 		instrument: \default,
-		freq: Pwhite(1,16) * 100,
+		freq: Pwhite(1, 16) * 100,
 		dur: 0.2,
 		db:	0
 	])

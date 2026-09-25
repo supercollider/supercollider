@@ -20,14 +20,12 @@ Slew.scopeResponse
 */
 
 + Function {
-	scopeResponse{ |server, freqMode=1, label="Empirical Frequency response", mute = false|
+	scopeResponse { |server, freqMode=1, label="Empirical Frequency response", mute = false|
 
 		var bus1, bus2, synth, win, fs;
 
 		server = server ? Server.default;
-		if (server.serverRunning.not) {
-			Error("Function-scopeResponse: server not running").throw
-		};
+		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		// Create two private busses
 		bus1 = Bus.audio(server, 1);

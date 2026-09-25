@@ -441,7 +441,12 @@ private:
         std::sort(measured_values.begin(), measured_values.end());
         auto median = measured_values[measured_values.size() / 2];
 
-        watchdog_iterations = (seconds(timeout_in_seconds) / median) * backoff_iterations;
+        if (median.count() > 0) {
+            watchdog_iterations = (seconds(timeout_in_seconds) / median) * backoff_iterations;
+        } else {
+            std::cout << "WARNING: could not calibrate back off, watchdog disabled." << std::endl;
+            watchdog_iterations = std::numeric_limits<int>::max();
+        }
     }
 
     template <bool YieldBackoff> void run_item(thread_count_t index) {

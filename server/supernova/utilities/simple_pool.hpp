@@ -53,6 +53,7 @@ template <bool blocking = false> class simple_pool {
 
             std::memset(pool, 0, size);
             init_memory_pool(size, pool);
+            pool_size = size;
         }
 
         ~data(void) {
@@ -64,7 +65,9 @@ template <bool blocking = false> class simple_pool {
         }
 
         char* pool;
+        size_t pool_size;
     };
+
 
 public:
     simple_pool(void) {}
@@ -107,7 +110,9 @@ public:
         free_ex(p, data_.pool);
     }
 
+    std::size_t get_pool_size(void) { return data_.pool_size; }
     std::size_t get_max_size(void) { return ::get_max_size(data_.pool); }
+    std::size_t get_used_size(void) { return ::get_used_size(data_.pool); }
 #endif
 private:
     data data_;

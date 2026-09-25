@@ -14,14 +14,14 @@ code::
 var a, b;
 a = Pshuf([1, 2, 3, 4, 5], 3);	// repeat 3 times
 b = a.asStream;
-16.do({ b.next.postln; });
+16.do({ b.next.postln });
 )
 
-//Pshuf used as a sequence of pitches:
+// Pshuf used as a sequence of pitches:
 
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))

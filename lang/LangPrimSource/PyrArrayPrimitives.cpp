@@ -26,12 +26,14 @@ Primitives for Arrays.
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
+#include "SCBase.h"
 #include "SC_InlineBinaryOp.h"
 #include "SC_Constants.h"
 #include "SC_Levenshtein.h"
+#include "SC_Hungarian.h" // header-only; namespace schungarian::solve<T>(matrix)
 
 #include <cstring>
-#include <algorithm>
+#include <vector>
 
 // Primitives that work with Arrays. Most of these are used in ArrayedCollection and Array.
 
@@ -2485,8 +2487,9 @@ int arrayLevenshteinDistance(PyrSlot* result, const PyrObject* thisArray, const 
 }
 
 int prArrayLevenshteinDistance(struct VMGlobals* g, int numArgsPushed) {
-    auto* slotThatArray = g->sp;
-    auto* slotThisArray = g->sp - 1;
+    // compareFunc = g->sp;  ignored
+    auto* slotThatArray = g->sp - 1;
+    auto* slotThisArray = g->sp - 2;
 
     if (NotObj(slotThisArray) || NotObj(slotThatArray))
         return errWrongType;
@@ -2501,6 +2504,201 @@ int prArrayLevenshteinDistance(struct VMGlobals* g, int numArgsPushed) {
         return errNotAnIndexableObject;
 
     return arrayLevenshteinDistance(slotThisArray, objThisArray, objThatArray);
+}
+
+struct IsRectangularResult {
+    // an int with three special values
+    // -1: depth first searching the array has reached something isn't an array (nesting terminator),
+    //      this is a 'truthy' result.
+    // -2: the array is not rectangular, a valid false result.
+    // -3: one of the children was a Collection, but not an arrayed collection. An error.
+    [[nodiscard]] static constexpr IsRectangularResult make_size(int sz) {
+        assert(sz >= 0);
+        return IsRectangularResult(sz);
+    }
+    [[nodiscard]] static constexpr IsRectangularResult make_nesting_terminator() { return IsRectangularResult(-1); }
+    [[nodiscard]] static constexpr IsRectangularResult make_false_result() { return IsRectangularResult(-2); }
+    [[nodiscard]] static constexpr IsRectangularResult make_type_error() { return IsRectangularResult(-3); }
+    [[nodiscard]] constexpr bool is_valid() const noexcept {
+        return m_value >= 0 || m_value == make_nesting_terminator();
+    }
+    [[nodiscard]] constexpr bool is_type_error() const noexcept { return m_value == make_type_error(); }
+
+    // implicitly converts to int.
+    constexpr operator int() const noexcept { return m_value; }
+
+private:
+    constexpr explicit IsRectangularResult(int i) noexcept: m_value(i) {}
+    int m_value;
+};
+
+// Does a depth first check of the size and shape.
+// On left most path, inserts the size.
+inline IsRectangularResult is_rectangular(const PyrSlot* a, std::vector<IsRectangularResult>& expected_size,
+                                          uint32_t depth, bool is_left_most) {
+    // no Lists, only derived classes of ArrayedCollection!
+    if (isKindOfSlot(a, class_sequenceable_collection) && !isKindOfSlot(a, class_arrayed_collection)) {
+        return IsRectangularResult::make_type_error();
+    }
+
+    // 'a' is not an array
+    if (!IsObj(a) || !isKindOfSlot(a, class_arrayed_collection)) {
+        // has not reached this depth before
+        if (expected_size.size() < depth + 1) {
+            if (!is_left_most)
+                return IsRectangularResult::make_false_result(); // did not match
+            // ensure other nested array always terminates at this depth
+            expected_size.push_back(IsRectangularResult::make_nesting_terminator());
+        }
+        return expected_size[depth] != IsRectangularResult::make_nesting_terminator()
+            ? IsRectangularResult::make_false_result()
+            : IsRectangularResult::make_nesting_terminator();
+    }
+
+    // 'a' is an array.
+
+    const PyrObject* obj = slotRawObject(a);
+    const int size = obj->size;
+
+    if (expected_size.size() < depth + 1) {
+        if (!is_left_most)
+            return IsRectangularResult::make_false_result();
+        expected_size.push_back(IsRectangularResult::make_size(size));
+    }
+
+    // mismatch
+    if (size != expected_size[depth])
+        return IsRectangularResult::make_false_result();
+
+
+    // raw arrays are functors over exactly one type, which is always a c++ scalar type
+    // (https://en.cppreference.com/w/cpp/types/is_scalar)
+    // therefore the size can be returned without checking
+    if (isKindOf(obj, class_rawarray))
+        return IsRectangularResult::make_size(size);
+
+    // early return for no children
+    if (size <= 0)
+        return IsRectangularResult::make_size(0);
+    // iterator over the children
+    const PyrSlot* item_at_index = obj->slots;
+
+    // left most path, inserts expected_size
+    const auto first_sz = is_rectangular(item_at_index, expected_size, depth + 1, is_left_most);
+    if (!first_sz.is_valid())
+        return first_sz;
+
+    for (int i = 1; i < size; ++i) {
+        const auto this_sz = is_rectangular(item_at_index + i, expected_size, depth + 1, false);
+        if (!this_sz.is_valid())
+            return this_sz;
+        else if (this_sz != first_sz)
+            return IsRectangularResult::make_false_result();
+        else
+            continue;
+    }
+    return IsRectangularResult::make_size(size);
+}
+
+int prArrayIsRectangular(struct VMGlobals* g, int numArgsPushed) {
+    // checks array's sub arrays all have the same size, recurs on those sub arrays to check them
+    PyrSlot* array = g->sp;
+    if (!isKindOfSlot(array, class_arrayed_collection))
+        return errWrongType;
+
+    std::vector<IsRectangularResult> expected_shape;
+    const auto r = is_rectangular(array, expected_shape, 0, true);
+    if (r.is_type_error()) {
+        post("Subarray was not an instance of ArrayedCollection.\n");
+        SetNil(array);
+        return errWrongType;
+    } else {
+        SetBool(array, r.is_valid());
+        return errNone;
+    }
+}
+
+// Convert Array-of-Arrays (receiver) -> std::vector<std::vector<double>>
+static int readDoubleMatrixFromReceiver(VMGlobals* g, PyrSlot* recv, std::vector<std::vector<double>>& out) {
+    if (!isKindOfSlot(recv, class_array))
+        return errWrongType;
+    PyrObject* rows = slotRawObject(recv);
+    const int J = rows->size;
+    if (J <= 0) {
+        out.clear();
+        return errNone;
+    }
+
+    // ensure rectangular & numeric
+    int Wref = -1;
+    out.assign(J, {});
+    for (int i = 0; i < J; ++i) {
+        PyrSlot* rowSlot = rows->slots + i;
+        if (!isKindOfSlot(rowSlot, class_array))
+            return errWrongType;
+        PyrObject* rowObj = slotRawObject(rowSlot);
+        const int W = rowObj->size;
+        if (Wref < 0)
+            Wref = W;
+        else if (W != Wref)
+            return errIndexOutOfRange;
+
+        out[i].resize(W);
+        for (int j = 0; j < W; ++j) {
+            double v;
+            if (slotDoubleVal(rowObj->slots + j, &v))
+                return errWrongType;
+            out[i][j] = v;
+        }
+    }
+    return errNone;
+}
+
+// _ArrayHungarianSolve(receiver = 2D matrix) -> [ cost: Float, assignment: IntArray ]
+static int prArrayHungarianSolve(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp; // receiver (Array of Arrays), same convention as other Array prims
+
+    std::vector<std::vector<double>> C;
+    int err = readDoubleMatrixFromReceiver(g, a, C);
+    if (err)
+        return err;
+
+    // Empty -> return [0, []]
+    if (C.empty() || C[0].empty()) {
+        PyrObject* out = newPyrArray(g->gc, 2, 0, true);
+        SetObject(a, out);
+        SetFloat(out->slots + 0, 0.0);
+        out->size = 1;
+
+        PyrObject* asg = newPyrArray(g->gc, 0, 0, true);
+        SetObject(out->slots + 1, asg);
+        out->size = 2;
+        g->gc->GCWriteNew(out, asg);
+        asg->size = 0;
+        return errNone;
+    }
+
+    auto res = schungarian::solve<double>(C);
+    const double cost = (double)res.first;
+    const std::vector<int>& match = res.second;
+
+    // Build result: [ cost, assignment ]
+    PyrObject* out = newPyrArray(g->gc, 2, 0, true);
+    SetObject(a, out); // put return value on the receiver slot
+    SetFloat(out->slots + 0, cost);
+    out->size = 1;
+
+    PyrObject* asg = newPyrArray(g->gc, (int)match.size(), 0, true);
+    SetObject(out->slots + 1, asg);
+    out->size = 2;
+    g->gc->GCWriteNew(out, asg);
+
+    for (int i = 0; i < (int)match.size(); ++i) {
+        SetInt(asg->slots + i, match[i]);
+    }
+    asg->size = (int)match.size();
+
+    return errNone;
 }
 
 void initArrayPrimitives() {
@@ -2562,5 +2760,8 @@ void initArrayPrimitives() {
     definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
     definePrimitive(base, index++, "_ArrayUnlace", prArrayUnlace, 3, 0);
 
-    definePrimitive(base, index++, "_ArrayLevenshteinDistance", prArrayLevenshteinDistance, 2, 0);
+    definePrimitive(base, index++, "_ArrayLevenshteinDistance", prArrayLevenshteinDistance, 3, 0);
+    definePrimitive(base, index++, "_ArrayIsRectangular", prArrayIsRectangular, 1, 0);
+
+    definePrimitive(base, index++, "_ArrayHungarianSolve", prArrayHungarianSolve, 1, 0);
 }

@@ -98,7 +98,8 @@ int legacyTheme(Manager* settings) {
 void Theme::add(const char* key, const QColor& fg,
                 const QColor& bg, // = QColor(Qt::transparent)
                 bool bold, // = false
-                bool italic // = false
+                bool italic, // = false
+                bool underline // = false
 ) {
     QTextCharFormat* format = new QTextCharFormat();
 
@@ -111,6 +112,8 @@ void Theme::add(const char* key, const QColor& fg,
     if (bold)
         format->setFontWeight(QFont::Bold);
     format->setFontItalic(italic);
+
+    format->setFontUnderline(underline);
 
     mFormats.insert(key, format);
 }
@@ -174,6 +177,9 @@ Theme::Theme(const QString& _name, Manager* settings) {
     } else if (mName == "dracula") {
         fillDracula();
         mLocked = true;
+    } else if (mName == "monokai") {
+        fillMonokai();
+        mLocked = true;
     } else if (mName == "solarizedLight") {
         fillSolarizedLight();
         mLocked = true;
@@ -199,6 +205,8 @@ Theme::Theme(const QString& _name, const QString& _source, Manager* settings): m
         fillDark();
     } else if (_source == "dracula") {
         fillDracula();
+    } else if (_source == "monokai") {
+        fillMonokai();
     } else if (_source == "solarizedLight") {
         fillSolarizedLight();
     } else if (_source == "solarizedDark") {
@@ -246,6 +254,7 @@ QList<QString> Theme::availableThemes() {
     themes.append("classic");
     themes.append("dark");
     themes.append("dracula");
+    themes.append("monokai");
     themes.append("solarizedLight");
     themes.append("solarizedDark");
 

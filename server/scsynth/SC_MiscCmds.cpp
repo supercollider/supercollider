@@ -163,8 +163,8 @@ SCErr meth_b_zero(World* inWorld, int inSize, char* inData, ReplyAddress* inRepl
 
 
 SCErr meth_u_cmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
-SCErr meth_u_cmd(World* inWorld, int inSize, char* inData, ReplyAddress* /*inReply*/) {
-    return Unit_DoCmd(inWorld, inSize, inData);
+SCErr meth_u_cmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+    return Unit_DoCmd(inWorld, inSize, inData, inReply);
 };
 
 SCErr meth_cmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
@@ -746,9 +746,8 @@ SCErr meth_d_free(World* inWorld, int inSize, char* inData, ReplyAddress* inRepl
     return kSCErr_None;
 }
 
-
-SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
-SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inReply*/) {
+// 'argtype' is false for setn type args
+SCErr meth_s_do_new(World* inWorld, int inSize, char* inData, bool argtype) {
     SCErr err;
     sc_msg_iter msg(inSize, inData);
     int32* defname = msg.gets4();
@@ -770,7 +769,7 @@ SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
         Group* group = Msg_GetGroup(inWorld, msg);
         if (!group)
             return kSCErr_GroupNotFound;
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, true); // true for normal args
+        err = Graph_New(inWorld, def, nodeID, &msg, &graph, argtype);
         if (err)
             return err;
         if (!graph)
@@ -781,7 +780,7 @@ SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
         Group* group = Msg_GetGroup(inWorld, msg);
         if (!group)
             return kSCErr_GroupNotFound;
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, true);
+        err = Graph_New(inWorld, def, nodeID, &msg, &graph, argtype);
         if (err)
             return err;
         Group_AddTail(group, &graph->mNode);
@@ -790,7 +789,7 @@ SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
         Node* beforeThisNode = Msg_GetNode(inWorld, msg);
         if (!beforeThisNode)
             return kSCErr_NodeNotFound;
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, true);
+        err = Graph_New(inWorld, def, nodeID, &msg, &graph, argtype);
         if (err)
             return err;
         Node_AddBefore(&graph->mNode, beforeThisNode);
@@ -799,7 +798,7 @@ SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
         Node* afterThisNode = Msg_GetNode(inWorld, msg);
         if (!afterThisNode)
             return kSCErr_NodeNotFound;
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, true);
+        err = Graph_New(inWorld, def, nodeID, &msg, &graph, argtype);
         if (err)
             return err;
         Node_AddAfter(&graph->mNode, afterThisNode);
@@ -808,9 +807,7 @@ SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
         Node* replaceThisNode = Msg_GetNode(inWorld, msg);
         if (!replaceThisNode)
             return kSCErr_NodeNotFound;
-        Node_RemoveID(replaceThisNode);
-
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, true);
+        err = Graph_New(inWorld, def, nodeID, &msg, &graph, argtype);
         if (err)
             return err;
         Node_Replace(&graph->mNode, replaceThisNode);
@@ -822,77 +819,14 @@ SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
     return kSCErr_None;
 }
 
+SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
+SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress*) {
+    return meth_s_do_new(inWorld, inSize, inData, true);
+}
+
 SCErr meth_s_newargs(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
-SCErr meth_s_newargs(World* inWorld, int inSize, char* inData, ReplyAddress* /*inReply*/) {
-    SCErr err;
-    sc_msg_iter msg(inSize, inData);
-    int32* defname = msg.gets4();
-    if (!defname)
-        return kSCErr_WrongArgType;
-
-    int32 nodeID = msg.geti();
-    int32 addAction = msg.geti();
-
-    GraphDef* def = World_GetGraphDef(inWorld, defname);
-    if (!def) {
-        scprintf("*** ERROR: SynthDef %s not found\n", (char*)defname);
-        return kSCErr_SynthDefNotFound;
-    }
-
-    Graph* graph = nullptr;
-    switch (addAction) {
-    case 0: {
-        Group* group = Msg_GetGroup(inWorld, msg);
-        if (!group)
-            return kSCErr_GroupNotFound;
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, false); // false for setn type args
-        if (err)
-            return err;
-        if (!graph)
-            return kSCErr_Failed;
-        Group_AddHead(group, &graph->mNode);
-    } break;
-    case 1: {
-        Group* group = Msg_GetGroup(inWorld, msg);
-        if (!group)
-            return kSCErr_GroupNotFound;
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, false);
-        if (err)
-            return err;
-        Group_AddTail(group, &graph->mNode);
-    } break;
-    case 2: {
-        Node* beforeThisNode = Msg_GetNode(inWorld, msg);
-        if (!beforeThisNode)
-            return kSCErr_NodeNotFound;
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, false);
-        if (err)
-            return err;
-        Node_AddBefore(&graph->mNode, beforeThisNode);
-    } break;
-    case 3: {
-        Node* afterThisNode = Msg_GetNode(inWorld, msg);
-        if (!afterThisNode)
-            return kSCErr_NodeNotFound;
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, false);
-        if (err)
-            return err;
-        Node_AddAfter(&graph->mNode, afterThisNode);
-    } break;
-    case 4: {
-        Node* replaceThisNode = Msg_GetNode(inWorld, msg);
-        if (!replaceThisNode)
-            return kSCErr_NodeNotFound;
-        err = Graph_New(inWorld, def, nodeID, &msg, &graph, false);
-        if (err)
-            return err;
-        Node_Replace(&graph->mNode, replaceThisNode);
-    } break;
-    default:
-        return kSCErr_Failed;
-    }
-    Node_StateMsg(&graph->mNode, kNode_Go);
-    return kSCErr_None;
+SCErr meth_s_newargs(World* inWorld, int inSize, char* inData, ReplyAddress*) {
+    return meth_s_do_new(inWorld, inSize, inData, false);
 }
 
 SCErr meth_g_new(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
@@ -1300,6 +1234,12 @@ SCErr meth_status(World* inWorld, int inSize, char* inData, ReplyAddress* inRepl
     return kSCErr_None;
 }
 
+SCErr meth_rtMemoryStatus(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
+SCErr meth_rtMemoryStatus(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+    CallSequencedCommand(RTMemStatusCmd, inWorld, inSize, inData, inReply);
+    return kSCErr_None;
+}
+
 SCErr meth_quit(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
 SCErr meth_quit(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
     CallSequencedCommand(AudioQuitCmd, inWorld, inSize, inData, inReply);
@@ -1396,6 +1336,23 @@ SCErr meth_b_setn(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRe
             data[i] = value;
         }
     }
+
+    return kSCErr_None;
+}
+
+SCErr meth_b_setSampleRate(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
+SCErr meth_b_setSampleRate(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+    sc_msg_iter msg(inSize, inData);
+    int bufindex = msg.geti();
+    SndBuf* buf = World_GetBuf(inWorld, bufindex);
+    SndBuf* nrtBuf = World_GetNRTBuf(inWorld, bufindex);
+    if (!buf || !nrtBuf)
+        return kSCErr_Failed;
+
+    auto proposedSampleRate = msg.getf();
+    double newSampleRate = proposedSampleRate > 0.0 ? proposedSampleRate : inWorld->mSampleRate;
+    buf->samplerate = nrtBuf->samplerate = newSampleRate;
+    buf->sampledur = nrtBuf->sampledur = 1.0 / newSampleRate;
 
     return kSCErr_None;
 }
@@ -1871,6 +1828,7 @@ void initMiscCommands() {
     NEW_COMMAND(quit);
     NEW_COMMAND(clearSched);
     NEW_COMMAND(version);
+    NEW_COMMAND(rtMemoryStatus);
 
     NEW_COMMAND(d_recv);
     NEW_COMMAND(d_load);
@@ -1923,6 +1881,7 @@ void initMiscCommands() {
     NEW_COMMAND(b_zero);
     NEW_COMMAND(b_set);
     NEW_COMMAND(b_setn);
+    NEW_COMMAND(b_setSampleRate);
     NEW_COMMAND(b_fill);
     NEW_COMMAND(b_gen);
 

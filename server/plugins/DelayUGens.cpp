@@ -218,38 +218,38 @@ struct DelTapRd : public Unit {
 
 extern "C" {
 
-void SampleRate_Ctor(Unit* unit, int inNumSamples);
-void ControlRate_Ctor(Unit* unit, int inNumSamples);
-void SampleDur_Ctor(Unit* unit, int inNumSamples);
-void ControlDur_Ctor(Unit* unit, int inNumSamples);
-void SubsampleOffset_Ctor(Unit* unit, int inNumSamples);
-void RadiansPerSample_Ctor(Unit* unit, int inNumSamples);
-void NumInputBuses_Ctor(Unit* unit, int inNumSamples);
-void NumOutputBuses_Ctor(Unit* unit, int inNumSamples);
-void NumAudioBuses_Ctor(Unit* unit, int inNumSamples);
-void NumControlBuses_Ctor(Unit* unit, int inNumSamples);
-void NumBuffers_Ctor(Unit* unit, int inNumSamples);
-void NodeID_Ctor(Unit* unit, int inNumSamples);
-void NumRunningSynths_Ctor(Unit* unit, int inNumSamples);
+void SampleRate_Ctor(Unit* unit);
+void ControlRate_Ctor(Unit* unit);
+void SampleDur_Ctor(Unit* unit);
+void ControlDur_Ctor(Unit* unit);
+void SubsampleOffset_Ctor(Unit* unit);
+void RadiansPerSample_Ctor(Unit* unit);
+void NumInputBuses_Ctor(Unit* unit);
+void NumOutputBuses_Ctor(Unit* unit);
+void NumAudioBuses_Ctor(Unit* unit);
+void NumControlBuses_Ctor(Unit* unit);
+void NumBuffers_Ctor(Unit* unit);
+void NodeID_Ctor(Unit* unit);
+void NumRunningSynths_Ctor(Unit* unit);
 void NumRunningSynths_next(Unit* unit, int inNumSamples);
 
 void BufSampleRate_next(BufInfoUnit* unit, int inNumSamples);
-void BufSampleRate_Ctor(BufInfoUnit* unit, int inNumSamples);
+void BufSampleRate_Ctor(BufInfoUnit* unit);
 
 void BufFrames_next(BufInfoUnit* unit, int inNumSamples);
-void BufFrames_Ctor(BufInfoUnit* unit, int inNumSamples);
+void BufFrames_Ctor(BufInfoUnit* unit);
 
 void BufDur_next(BufInfoUnit* unit, int inNumSamples);
-void BufDur_Ctor(BufInfoUnit* unit, int inNumSamples);
+void BufDur_Ctor(BufInfoUnit* unit);
 
 void BufChannels_next(BufInfoUnit* unit, int inNumSamples);
-void BufChannels_Ctor(BufInfoUnit* unit, int inNumSamples);
+void BufChannels_Ctor(BufInfoUnit* unit);
 
 void BufSamples_next(BufInfoUnit* unit, int inNumSamples);
-void BufSamples_Ctor(BufInfoUnit* unit, int inNumSamples);
+void BufSamples_Ctor(BufInfoUnit* unit);
 
 void BufRateScale_next(BufInfoUnit* unit, int inNumSamples);
-void BufRateScale_Ctor(BufInfoUnit* unit, int inNumSamples);
+void BufRateScale_Ctor(BufInfoUnit* unit);
 
 void PlayBuf_next_aa(PlayBuf* unit, int inNumSamples);
 void PlayBuf_next_ak(PlayBuf* unit, int inNumSamples);
@@ -431,38 +431,36 @@ void DelTapRd_next4_k(DelTapRd* unit, int inNumSamples);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void SampleRate_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mSampleRate; }
+void SampleRate_Ctor(Unit* unit) { ZOUT0(0) = FULLRATE; }
+
+void ControlRate_Ctor(Unit* unit) { ZOUT0(0) = BUFRATE; }
+
+void SampleDur_Ctor(Unit* unit) { ZOUT0(0) = FULLSAMPLEDUR; }
+
+void ControlDur_Ctor(Unit* unit) { ZOUT0(0) = BUFDUR; }
+
+void RadiansPerSample_Ctor(Unit* unit) { ZOUT0(0) = unit->mWorld->mFullRate.mRadiansPerSample; }
+
+void BlockSize_Ctor(Unit* unit) { ZOUT0(0) = FULLBUFLENGTH; }
+
+void SubsampleOffset_Ctor(Unit* unit) { ZOUT0(0) = unit->mParent->mSubsampleOffset; }
 
 
-void ControlRate_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mBufRate.mSampleRate; }
+void NumInputBuses_Ctor(Unit* unit) { ZOUT0(0) = unit->mWorld->mNumInputs; }
 
+void NumOutputBuses_Ctor(Unit* unit) { ZOUT0(0) = unit->mWorld->mNumOutputs; }
 
-void SampleDur_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mFullRate.mSampleDur; }
+void NumAudioBuses_Ctor(Unit* unit) { ZOUT0(0) = unit->mWorld->mNumAudioBusChannels; }
 
-void ControlDur_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mFullRate.mBufDuration; }
+void NumControlBuses_Ctor(Unit* unit) { ZOUT0(0) = unit->mWorld->mNumControlBusChannels; }
 
-void RadiansPerSample_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mFullRate.mRadiansPerSample; }
+void NumBuffers_Ctor(Unit* unit) { ZOUT0(0) = unit->mWorld->mNumSndBufs; }
 
-void BlockSize_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mFullRate.mBufLength; }
-
-void SubsampleOffset_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mParent->mSubsampleOffset; }
-
-
-void NumInputBuses_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mNumInputs; }
-
-void NumOutputBuses_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mNumOutputs; }
-
-void NumAudioBuses_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mNumAudioBusChannels; }
-
-void NumControlBuses_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mNumControlBusChannels; }
-
-void NumBuffers_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mNumSndBufs; }
-
-void NodeID_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = (float)unit->mParent->mNode.mID; }
+void NodeID_Ctor(Unit* unit) { ZOUT0(0) = (float)unit->mParent->mNode.mID; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void NumRunningSynths_Ctor(Unit* unit, int inNumSamples) {
+void NumRunningSynths_Ctor(Unit* unit) {
     if (INRATE(0) != calc_ScalarRate) {
         SETCALC(NumRunningSynths_next);
     }
@@ -499,7 +497,7 @@ void BufSampleRate_next(BufInfoUnit* unit, int inNumSamples) {
     ZOUT0(0) = buf->samplerate;
 }
 
-void BufSampleRate_Ctor(BufInfoUnit* unit, int inNumSamples) {
+void BufSampleRate_Ctor(BufInfoUnit* unit) {
     SETCALC(BufSampleRate_next);
     CTOR_GET_BUF
     unit->m_fbufnum = fbufnum;
@@ -513,7 +511,7 @@ void BufFrames_next(BufInfoUnit* unit, int inNumSamples) {
     ZOUT0(0) = buf->frames;
 }
 
-void BufFrames_Ctor(BufInfoUnit* unit, int inNumSamples) {
+void BufFrames_Ctor(BufInfoUnit* unit) {
     SETCALC(BufFrames_next);
     CTOR_GET_BUF
     unit->m_fbufnum = fbufnum;
@@ -527,7 +525,7 @@ void BufDur_next(BufInfoUnit* unit, int inNumSamples) {
     ZOUT0(0) = buf->frames * buf->sampledur;
 }
 
-void BufDur_Ctor(BufInfoUnit* unit, int inNumSamples) {
+void BufDur_Ctor(BufInfoUnit* unit) {
     SETCALC(BufDur_next);
     CTOR_GET_BUF
     unit->m_fbufnum = fbufnum;
@@ -541,7 +539,7 @@ void BufChannels_next(BufInfoUnit* unit, int inNumSamples) {
     ZOUT0(0) = buf->channels;
 }
 
-void BufChannels_Ctor(BufInfoUnit* unit, int inNumSamples) {
+void BufChannels_Ctor(BufInfoUnit* unit) {
     SETCALC(BufChannels_next);
     CTOR_GET_BUF
     unit->m_fbufnum = fbufnum;
@@ -555,7 +553,7 @@ void BufSamples_next(BufInfoUnit* unit, int inNumSamples) {
     ZOUT0(0) = buf->samples;
 }
 
-void BufSamples_Ctor(BufInfoUnit* unit, int inNumSamples) {
+void BufSamples_Ctor(BufInfoUnit* unit) {
     SETCALC(BufSamples_next);
     CTOR_GET_BUF
     unit->m_fbufnum = fbufnum;
@@ -566,15 +564,15 @@ void BufSamples_Ctor(BufInfoUnit* unit, int inNumSamples) {
 
 void BufRateScale_next(BufInfoUnit* unit, int inNumSamples) {
     SIMPLE_GET_BUF_SHARED
-    ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
+    ZOUT0(0) = buf->samplerate * FULLSAMPLEDUR;
 }
 
-void BufRateScale_Ctor(BufInfoUnit* unit, int inNumSamples) {
+void BufRateScale_Ctor(BufInfoUnit* unit) {
     SETCALC(BufRateScale_next);
     CTOR_GET_BUF
     unit->m_fbufnum = fbufnum;
     unit->m_buf = buf;
-    ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
+    ZOUT0(0) = buf->samplerate * FULLSAMPLEDUR;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -596,7 +594,7 @@ static void LocalBuf_allocBuffer(LocalBuf* unit, SndBuf* buf, int numChannels, i
     buf->samples = numSamples;
     buf->mask = BUFMASK(numSamples); // for delay lines
     buf->mask1 = buf->mask - 1; // for oscillators
-    buf->samplerate = unit->mWorld->mSampleRate;
+    buf->samplerate = FULLRATE;
     buf->sampledur = 1. / buf->samplerate;
 #if SUPERNOVA
     buf->isLocal = true;
@@ -1684,19 +1682,19 @@ void Pitch_Ctor(Pitch* unit) {
 
     if (INRATE(kPitchIn) == calc_FullRate) {
         SETCALC(Pitch_next_a);
-        unit->m_downsamp = sc_clip(downsamp, 1, unit->mWorld->mFullRate.mBufLength);
+        unit->m_downsamp = sc_clip(downsamp, 1, FULLBUFLENGTH);
         unit->m_srate = FULLRATE / (float)unit->m_downsamp;
     } else {
         SETCALC(Pitch_next_k);
         unit->m_downsamp = sc_max(downsamp, 1);
-        unit->m_srate = FULLRATE / (float)(unit->mWorld->mFullRate.mBufLength * unit->m_downsamp);
+        unit->m_srate = FULLRATE / (float)(FULLBUFLENGTH * unit->m_downsamp);
     }
 
     unit->m_minperiod = (long)(unit->m_srate / unit->m_maxfreq);
     unit->m_maxperiod = (long)(unit->m_srate / unit->m_minfreq);
 
     unit->m_execPeriod = (int)(unit->m_srate / execfreq);
-    unit->m_execPeriod = sc_max(unit->m_execPeriod, unit->mWorld->mFullRate.mBufLength);
+    unit->m_execPeriod = sc_max(unit->m_execPeriod, FULLBUFLENGTH);
 
     unit->m_size = sc_max(unit->m_maxperiod << 1, unit->m_execPeriod);
 
@@ -1725,7 +1723,7 @@ void Pitch_next_a(Pitch* unit, int inNumSamples) {
     uint32 index = unit->m_index;
     int downsamp = unit->m_downsamp;
     int readp = unit->m_readp;
-    int ksamps = unit->mWorld->mFullRate.mBufLength;
+    int ksamps = FULLBUFLENGTH;
 
     float* bufData = unit->m_buffer;
 
@@ -1925,7 +1923,7 @@ void Pitch_next_k(Pitch* unit, int inNumSamples) {
     uint32 index = unit->m_index;
     int downsamp = unit->m_downsamp;
     int readp = unit->m_readp;
-    //  	int ksamps = unit->mWorld->mFullRate.mBufLength;
+    //  	int ksamps = FULLBUFLENGTH;
 
     float* bufData = unit->m_buffer;
 
@@ -4527,7 +4525,7 @@ void ScopeOut2_next(ScopeOut2* unit, int inNumSamples) {
     }
 
     if (framepos + inNumSamples >= period)
-        (*ft->fPushScopeBuffer)(unit->mWorld, unit->m_buffer, period);
+        (*ft->fPushScopeBuffer)(unit->mWorld, &unit->m_buffer, period);
 
     if (wrap) {
         for (int i = 0; i != numChannels; ++i) {
@@ -4549,7 +4547,7 @@ void ScopeOut2_Ctor(ScopeOut2* unit) {
     uint32 scopeNum = (uint32)ZIN0(0);
     uint32 maxFrames = (uint32)ZIN0(1);
 
-    bool ok = (*ft->fGetScopeBuffer)(unit->mWorld, scopeNum, numChannels, maxFrames, unit->m_buffer);
+    bool ok = (*ft->fGetScopeBuffer)(unit->mWorld, scopeNum, numChannels, maxFrames, &unit->m_buffer);
 
     if (!ok) {
         if (unit->mWorld->mVerbosity > -1 && !unit->mDone)
@@ -4564,7 +4562,7 @@ void ScopeOut2_Ctor(ScopeOut2* unit) {
 
 void ScopeOut2_Dtor(ScopeOut2* unit) {
     if (unit->m_buffer)
-        (*ft->fReleaseScopeBuffer)(unit->mWorld, unit->m_buffer);
+        (*ft->fReleaseScopeBuffer)(unit->mWorld, &unit->m_buffer);
 }
 
 

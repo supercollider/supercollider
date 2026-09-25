@@ -9,8 +9,8 @@ Ndef registers synths by key. All accesses to the registered synths go through t
 Ndef is a reference to a proxy, forms an alternative to link::Classes/ProxySpace::. All methods are inherited from link::Classes/NodeProxy::.
 
 code::
-Ndef(key)	//returns the instance
-Ndef(key, obj)	//stores the object and returns the instance, like Tdef and Pdef.
+Ndef(key)	// returns the instance
+Ndef(key, obj)	// stores the object and returns the instance, like Tdef and Pdef.
 ::
 
 Graphical editor overviewing all current Ndefs: link::Classes/NdefMixer::. A general overview: link::Overviews/JITLib::.
@@ -41,7 +41,7 @@ private::initClass
 subsection::Creation
 
 method::new
-Return a new node proxy and store it in a global ProxySpace under the key. If there is already an Ndef there, replace its object with the new one. The object can be any supported class, see link::Classes/NodeProxy#Supported sources:: help.
+Return a new node proxy and store it in a global ProxySpace under the key. If there is already an Ndef there, replace its object with the new one. The object can be any supported class, see link::Classes/NodeProxy#Supported sources:: help. Internally, all instances are kept in a link::Classes/ProxySpace::. The link::Classes/EnvironmentRedirect#dispatch:: function is called when the source is set.
 
 argument::key
 the name of the proxy (usually a symbol). If only the key is given and no object, it returns the proxy object:
@@ -65,7 +65,10 @@ method::kr
 equivalent to code::*new(key).kr(numChannels, offset):: (see link::Classes/BusPlug#-kr::)
 
 method::clear
-clear all proxies
+clear all Ndefs in all proxyspaces of the Ndef class
+
+method::clearDict
+clear all Ndefs and remove all proxyspaces of the Ndef class
 
 method::defaultServer
 set the default server (default: code::Server.default::)
@@ -83,6 +86,16 @@ Return the proxyspace for a given server.
 code::
 Ndef.dictFor(s);
 ::
+
+InstanceMethods::
+
+method::proxyspace
+Return the proxyspace for this instance
+
+code::
+Ndef(\x).proxyspace
+::
+
 
 subsection::Setting default parameters
 Behind every Ndef there is one single instance of link::Classes/ProxySpace:: per server used (usually just the one for the default server). This ProxySpace keeps default values for the proxies that can be set. This can be done by:
@@ -104,14 +117,14 @@ Ndef(\sound).fadeTime = 1;
 Ndef(\sound, { SinOsc.ar([600, 635], 0, SinOsc.kr(2).max(0) * 0.2) });
 Ndef(\sound, { SinOsc.ar([600, 635] * 3, 0, SinOsc.kr(2 * 3).max(0) * 0.2) });
 Ndef(\sound, { SinOsc.ar([600, 635] * 2, 0, SinOsc.kr(2 * 3).max(0) * 0.2) });
-Ndef(\sound, Pbind(\dur, 0.17, \freq, Pfunc({ rrand(300, 700) })) );
+Ndef(\sound, Pbind(\dur, 0.17, \freq, Pfunc({ rrand(300, 700) })));
 
 Ndef(\lfo, { LFNoise1.kr(3, 400, 800) });
 Ndef(\sound).map(\freq, Ndef(\lfo));
-Ndef(\sound, { arg freq; SinOsc.ar([600, 635] + freq, 0, SinOsc.kr(2 * 3).max(0) * 0.2) });
+Ndef(\sound, { |freq| SinOsc.ar([600, 635] + freq, 0, SinOsc.kr(2 * 3).max(0) * 0.2) });
 Ndef(\lfo, { LFNoise1.kr(300, 400, 800) });
 
-Ndef.clear; //clear all Ndefs
+Ndef.clear; // clear all Ndefs
 ::
 
 subsection::using Ndef inside other Ndefs
@@ -190,7 +203,7 @@ Controlling multi-channeled sequenced streams and having independent control ove
 code::
 // a SynthDef, creating single-channel grain when instantiated
 (
-SynthDef(\grain, { |out=0, freq=300, amp=0.3|
+SynthDef(\grain, { |out = 0, freq = 300, amp = 0.3|
 	OffsetOut.ar(out, Pulse.ar(freq) * EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * amp)
 }).add;
 )
@@ -209,7 +222,7 @@ SynthDef(\grain, { |out=0, freq=300, amp=0.3|
 ~freqs = Bus.control(s, ~numChans);
 ~freqs.setn(Array.geom(~numChans, 300, 1.1));
 ~amps = Bus.control(s, ~numChans);
-~amps.setn(0.2!~numChans);
+~amps.setn(0.2 ! ~numChans);
 
 // the Pattern: a Ppar holding one Pbind for each channel,
 // all wrapped in a Pdef
@@ -226,7 +239,7 @@ Pdef(\ppar,
             // we only want to make sure the offset is right
             \channelOffset, i,
         )
-    }!~numChans)
+    } ! ~numChans)
 )
 )
 
@@ -238,7 +251,7 @@ Ndef(\ppar)[0] = Pdef(\ppar);
 // mix the 5 channel audio coming from Ndef(\ppar) down to stereo
 // Splay will spread the channels over the stereo panorama
 // possibly use headphones to clearly identify the effect
-Ndef(\stereo, { Splay.ar(\in.ar(0!~numChans)) });
+Ndef(\stereo, { Splay.ar(\in.ar(0 ! ~numChans)) });
 
 // concatenate the Ndefs, so Ndef(\ppar)'s out will feed into Ndef(\stereo)'s in
 Ndef(\stereo) <<> Ndef(\ppar);
@@ -257,8 +270,8 @@ Ndef(\stereo).play;
 (
 Ndef(\filter, {
 	HPF.ar(
-		\in.ar(0!~numChans),
-		SinOsc.ar({|i| 2 + i}!~numChans) + 1 * \multFreq.kr(Array.geom(~numChans, 400, 2))
+		\in.ar(0 ! ~numChans),
+		SinOsc.ar({ |i| 2 + i }  ! ~numChans) + 1 * \multFreq.kr(Array.geom(~numChans, 400, 2))
 	)
 }).mold(~numChans, \audio, \elastic);
 )
@@ -311,7 +324,7 @@ code::
 // create a new server
 a = Server(\foo, NetAddr("127.0.0.1", 57123)).boot.makeWindow;
 Ndef(\sound, { SinOsc.ar([600, 635]) * SinOsc.kr(2).max(0) * 0.2 }).play; // play on default
-Ndef(\sound -> \foo, { SinOsc.ar([700, 745]) * SinOsc.kr(2).max(0) * 0.2 }).play;// play on foo
+Ndef(\sound -> \foo, { SinOsc.ar([700, 745]) * SinOsc.kr(2).max(0) * 0.2 }).play; // play on foo
 
 // clear definitions
 Ndef(\sound -> \foo).clear(3);
@@ -349,9 +362,9 @@ code::
 Ndef(\x,
 	\setsrc -> Pbind(\source,
 		Pseq([
-			{ LFTri.ar(280 * Line.kr(1.1, 0.4, rrand(2, 3)) + [0,1]) * 0.1 },
-			{ Pulse.ar(40 + [0,1]) * 0.1 },
-			{ LFTri.ar(LFTri.kr(1).round(1.0.rand) + 1 * 180 + [0,1], 0.04) * 0.3 },
+			{ LFTri.ar(280 * Line.kr(1.1, 0.4, rrand(2, 3)) + [0, 1]) * 0.1 },
+			{ Pulse.ar(40 + [0, 1]) * 0.1 },
+			{ LFTri.ar(LFTri.kr(1).round(1.0.rand) + 1 * 180 + [0, 1], 0.04) * 0.3 },
 		], inf),
 		\dur, Prand([3, 2, 4], inf)
 	)

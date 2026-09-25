@@ -23,7 +23,7 @@
 
 #include <boost/predef.h>
 
-#if BOOST_ARCH_X86_64 || defined (__aarch64__)
+#if BOOST_ARCH_X86_64 || ( (BOOST_ARCH_ARM >= BOOST_VERSION_NUMBER(8,0,0)) && !BOOST_PLAT_ANDROID )
 #define BOOST_LOCKFREE_PTR_COMPRESSION 1
 #endif
 

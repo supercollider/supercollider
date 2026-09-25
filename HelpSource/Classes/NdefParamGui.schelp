@@ -34,11 +34,11 @@ Ndef(\a).set(\freq, 234);	// add a setting
 
 Ndef(\a).play
 Ndef(\lfo, { LFNoise0.kr([12, 8], 200).sum + 500 });
-Ndef(\a).map(\freq, Ndef(\lfo));// mapped proxies are shown
+Ndef(\a).map(\freq, Ndef(\lfo)); // mapped proxies are shown
 
 g.useRanger = false;
 
-//Multichannel controls are shown in EZText
+// Multichannel controls are shown in EZText
 g.putSpec(\freqs, \freq);
 Ndef(\a, { |freqs = #[300, 303], pan, amp = 0.2| SinOsc.ar(freqs).sum * amp });
 Ndef(\a).play
@@ -92,6 +92,6 @@ g = NdefParamGui(Ndef(\a), 3, w);
 NdefParamGui(Ndef(\c), 15, w);
 )
 	// even
-Ndef(\c).set(\otto, 123, \mops, [1,2,3], \kotzt, [0, 6, 0, 6]);
+Ndef(\c).set(\otto, 123, \mops, [1, 2, 3], \kotzt, [0, 6, 0, 6]);
 Ndef(\c).nodeMap.clear;
 ::

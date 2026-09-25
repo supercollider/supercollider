@@ -23,10 +23,10 @@ code::
 
 s.boot;
 
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 (
-SynthDef("help-magNoise", { arg out=0;
+SynthDef("help-magNoise", { |out = 0|
 	var in, chain;
 	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08, 0, 6, 6.2).squared, 0, 100, 800));
 	chain = FFT(LocalBuf(2048), in);
@@ -36,16 +36,15 @@ SynthDef("help-magNoise", { arg out=0;
 )
 
 (
-SynthDef("help-magNoise2", {  arg out=0, soundBufnum=2;
+SynthDef("help-magNoise2", { |out = 0, soundBufnum = 2|
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(LocalBuf(2048), in);
 	chain = PV_MagNoise(chain);
 	Out.ar(out, 0.2 * IFFT(chain).dup);
-}).play(s,[\soundBufnum, b]);
+}).play(s, [\soundBufnum, b]);
 )
 
 b.free;
 
 ::
-

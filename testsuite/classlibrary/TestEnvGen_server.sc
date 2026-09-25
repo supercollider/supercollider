@@ -7,7 +7,7 @@ TestEnvGen_server : UnitTest {
 	}
 
 	tearDown {
-		if(server.serverRunning) { server.quit };
+		if(server.serverRunning) { server.quitSync };
 		server.remove;
 	}
 
@@ -26,6 +26,11 @@ TestEnvGen_server : UnitTest {
 			EnvGen.kr(Env([0, 1], [0.2]), gate: 0, doneAction: 1);
 			EnvGen.kr(Env([0, 1], [0.1]), doneAction: 2);
 		}.play(server);
+
+		// EnvGen is initialized by setting the state to the end of the Env,
+		// which fires the doneAction on initialization. So make sure that
+		// initialization has happened before adding these reponders.
+		server.sync;
 
 		n_off_resp = OSCFunc({
 			cleanup.value;
@@ -56,7 +61,7 @@ TestEnvGen_server : UnitTest {
 		var cleanup = {
 			tr_resp.free;
 			n_end_resp.free;
-			server.quit;
+			server.quitSync;
 			Server.scsynth;
 		};
 
@@ -87,8 +92,10 @@ TestEnvGen_server : UnitTest {
 			}, '/tr', server.addr, argTemplate: [synth.nodeID]);
 
 			n_end_resp = OSCFunc({ |msg|
-				cleanup.value;
-				cond.unhang;
+				fork{ // we need to for to wait for the server to quit with quitSync inside the cleanup function
+					cleanup.value;
+					cond.unhang;
+				}
 			}, '/n_end', server.addr, argTemplate: [synth.nodeID]);
 
 			cond.hang;
@@ -172,10 +179,11 @@ TestEnvGen_server : UnitTest {
 		var env = Env(curve: [\hold, \lin]);
 		var condvar = CondVar();
 		var result = [];
+		var timeScale = 0.01;
 
 		server.bootSync;
 
-		{ EnvGen.kr(env, timeScale: 0.01, doneAction:2) }.loadToFloatArray(0.01, server){ |values|
+		{ EnvGen.kr(env, timeScale: timeScale, doneAction:2) }.loadToFloatArray(env.duration * timeScale, server){ |values|
 			result = values;
 			condvar.signalOne;
 		};

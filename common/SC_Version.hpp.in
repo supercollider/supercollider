@@ -18,29 +18,51 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
+#pragma once
+
 #include <string>
 #include <sstream>
+#include <cstdint>
+#include <tuple>
 
-static const int SC_VersionMajor = @SC_VERSION_MAJOR@;
-static const int SC_VersionMinor = @SC_VERSION_MINOR@;
-static const int SC_VersionPatch = @SC_VERSION_PATCH@;
-static const char SC_VersionTweak[] = "@SC_VERSION_TWEAK@";
-static const char SC_RefType[] = "@GIT_REF_TYPE@";
-static const char SC_BranchOrTag[] = "@GIT_BRANCH_OR_TAG@";
-static const char SC_CommitHash[] = "@GIT_COMMIT_HASH@";
+// Does not support tweaks.
+// Useful for branches in the code as this inherits tuple's lexigraphical comparisons.
+// Initialise with {Major, Minor, Patch}.
+struct SemanticVersion : public std::tuple<uint32_t, uint32_t, uint32_t> {
+    using std::tuple<uint32_t, uint32_t, uint32_t>::tuple;
+
+    [[nodiscard]] constexpr uint32_t major() const { return std::get<0>(*this); } 
+    [[nodiscard]] constexpr uint32_t minor() const { return std::get<1>(*this); } 
+    [[nodiscard]] constexpr uint32_t patch() const { return std::get<2>(*this); } 
+
+    [[nodiscard]] std::string asString() const {
+        std::stringstream out;
+        out << major() << "." << minor() << "." << patch();
+        return out.str();
+    }
+ };
+
+static constexpr uint32_t SC_VersionMajor = @SC_VERSION_MAJOR@;
+static constexpr uint32_t SC_VersionMinor = @SC_VERSION_MINOR@;
+static constexpr uint32_t SC_VersionPatch = @SC_VERSION_PATCH@;
+static constexpr char SC_VersionTweak[] = "@SC_VERSION_TWEAK@";
+static constexpr char SC_RefType[] = "@GIT_REF_TYPE@";
+static constexpr char SC_BranchOrTag[] = "@GIT_BRANCH_OR_TAG@";
+static constexpr char SC_CommitHash[] = "@GIT_COMMIT_HASH@";
+
+static constexpr SemanticVersion SC_Version {SC_VersionMajor, SC_VersionMinor, SC_VersionPatch};
+
 
 // For backward compatibility in scsynth and supernova only.
-static const char SC_VersionPostfix[] = ".@SC_VERSION_PATCH@@SC_VERSION_TWEAK@";
+static constexpr char SC_VersionPostfix[] = ".@SC_VERSION_PATCH@@SC_VERSION_TWEAK@";
 
-static inline std::string SC_VersionString()
-{
+static inline std::string SC_VersionString() {
 	std::stringstream out;
 	out << SC_VersionMajor << "." << SC_VersionMinor << "." << SC_VersionPatch << SC_VersionTweak;
 	return out.str();
 }
 
-static inline std::string SC_BuildString()
-{
+static inline std::string SC_BuildString() {
     std::stringstream out;
     out << "Built from " << SC_RefType << " '" << SC_BranchOrTag << "' [" << SC_CommitHash << "]";
     return out.str();

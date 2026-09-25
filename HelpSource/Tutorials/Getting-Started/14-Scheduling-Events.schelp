@@ -35,7 +35,7 @@ TempoClock.default.schedAbs(timeNow + 5,
 )
 ::
 
-Note that we have moved to TempoClock, since this is the most commonly used. While there is only one SystemClock, there can be many TempoClocks all running at different speeds, if need be. One TempoClock is the default, accessed by code::TempoClock.default:: -- we will use this throughout. (To save typing, you may wish to assign a TempoClock to a variable, for instance, code::t = TempoClock.default ::.)
+Note that we have moved to TempoClock, since this is the most commonly used. While there is only one SystemClock, there can be many TempoClocks all running at different speeds, if need be. One TempoClock is the default, accessed by code::TempoClock.default:: — we will use this throughout. (To save typing, you may wish to assign a TempoClock to a variable, for instance, code::t = TempoClock.default ::.)
 
 For fun, change the tempo and run the last example again:
 
@@ -55,7 +55,7 @@ Notice that the 'Time is later' message shows up after a shorter delay, but the 
 
 section::What time is it?
 
-Inside a scheduled function, you might want to know which clock is running the function. code::thisThread.clock:: tells you this -- don't worry for now about how it knows, just know that you can use this to find out.
+Inside a scheduled function, you might want to know which clock is running the function. code::thisThread.clock:: tells you this — don't worry for now about how it knows, just know that you can use this to find out.
 
 Once you know the clock, you can find out what time it is using strong::beats:: :
 
@@ -74,7 +74,7 @@ code::
 TempoClock.default.sched(5, "hello");
 ::
 
-Nothing happens. That's because "hello" is just a value -- it doesn't do anything. The lesson is that it makes sense to schedule objects that will emphasis::take some action::.
+Nothing happens. That's because "hello" is just a value — it doesn't do anything. The lesson is that it makes sense to schedule objects that will emphasis::take some action::.
 
 code::
 Function
@@ -106,7 +106,7 @@ It's easy to return a number by mistake, and get an ongoing activity when you wa
 
 If that number happens to be 0, or negative, something worse happens. The function will run again immediately. And, if the number is always 0, it creates an infinite loop that can lock up SuperCollider.
 
-That shouldn't scare you off of scheduling -- this is less likely to happen with Routines and Tasks, which you will use more often. But you should be aware of it.
+That shouldn't scare you off of scheduling — this is less likely to happen with Routines and Tasks, which you will use more often. But you should be aware of it.
 
 For more: link::Classes/SystemClock::, link::Classes/TempoClock::, link::Classes/AppClock::, link::Classes/Function::
 

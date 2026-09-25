@@ -102,7 +102,7 @@
 // Disable forwarding constructors if first parameter type is the same
 // as the device type
 #if !defined(BOOST_NO_SFINAE) && \
-    !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x592))
+    !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x592))
 # define BOOST_IOSTREAMS_DISABLE_IF_SAME(device, param) \
     , typename boost::disable_if< boost::is_same<device, param> >::type* = 0 \
     /**/

@@ -89,6 +89,9 @@ public:
         ResetZoom,
         Evaluate,
         EvaluateRegion,
+        Back,
+        Forward,
+        Reload,
 
         ActionCount
     };

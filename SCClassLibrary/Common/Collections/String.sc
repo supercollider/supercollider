@@ -110,6 +110,23 @@ String[char] : RawArray {
 	isString { ^true }
 	asString { ^this }
 	asCompileString {
+		var out;
+		var safeLiteralSize = 81920 - 10; // leave some head room, see PyrLexer.h for where this is defined.
+		// The compiler limits literals (pertinently string literals) to 81920 characters,
+		//	 as defined in PyrLexer.h - MAXYYLEN
+		// 81910 leaves a little headroom
+		^if(this.size <= safeLiteralSize) {
+			this.prAsCompileString
+		} {
+			out = "[";
+			this.clump(safeLiteralSize).do { |substr, i|
+				if(i > 0) { out = out ++ ", " };
+				out = out ++ substr.prAsCompileString;
+			};
+			out ++ "].join"
+		}
+	}
+	prAsCompileString {
 		_String_AsCompileString
 		^this.primitiveFailed
 	}
@@ -130,6 +147,7 @@ String[char] : RawArray {
 	format { arg ... items; ^this.prFormat( items.collect(_.asString) ) }
 	prFormat { arg items; _String_Format ^this.primitiveFailed }
 	matchRegexp { arg string, start = 0, end; _String_Regexp ^this.primitiveFailed }
+	replaceRegexp { |regex, with| _String_ReplaceRegex ^this.primitiveFailed }
 
 	fformat { arg ... args;
 		var str, resArgs, val, func;
@@ -245,6 +263,25 @@ String[char] : RawArray {
 		_String_FindBackwards
 		^this.primitiveFailed
 	}
+	findSimilarIn { |array, maxEditDistance, minSimilarity, prioritizeCapitalization = true|
+		var names, editDistances, bestMatchIndices, searchFor;
+		if(prioritizeCapitalization) {
+			names = array.collect { |x| x.asString.toLower };
+			searchFor = this.toLower;
+		} {
+			names = array.collect { |x| x.asString };
+			searchFor = this;
+		};
+
+		editDistances = names.collect(editDistance(_, searchFor));
+		bestMatchIndices = editDistances.order;
+		bestMatchIndices = bestMatchIndices.select { |i|
+			maxEditDistance.isNil or: { editDistances[i] <= maxEditDistance }
+			and:
+			{ minSimilarity.isNil or: { similarity(names[i], searchFor) >= minSimilarity } }
+		}
+		^array[bestMatchIndices]
+	}
 	endsWith { arg string;
 		^this.contains(string, this.size - string.size)
 	}
@@ -344,10 +381,6 @@ String[char] : RawArray {
 
 	standardizePath {
 		_String_StandardizePath
-		^this.primitiveFailed
-	}
-	realPath {
-		_String_RealPath
 		^this.primitiveFailed
 	}
 
@@ -471,7 +504,6 @@ String[char] : RawArray {
 	}
 	asAbsolutePath {
 			// changed because there is no need to create a separate object
-			// when String already knows how to make an absolute path
 		^this.absolutePath;  // was ^PathName(this).asAbsolutePath
 	}
 
