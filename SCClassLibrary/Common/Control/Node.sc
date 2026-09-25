@@ -350,53 +350,59 @@ AbstractGroup : Node {
 		server.sendMsg("/g_dumpTree", nodeID, postControls.binaryValue)
 	}
 
-	queryTree { //|action|
-		var resp, done = false;
-		resp = OSCFunc({ arg msg;
-			var i = 2, tabs = 0, printControls = false, dumpFunc;
-			if(msg[1] != 0, { printControls = true });
-			("NODE TREE Group" + msg[2]).postln;
-			if(msg[3] > 0, {
-				dumpFunc = {|numChildren|
-					var j;
-					tabs = tabs + 1;
-					numChildren.do({
-						if(msg[i + 1] >=0, {i = i + 2}, {
-							i = i + 3 + if(printControls, { msg[i + 3] * 2 + 1 }, { 0 });
-						});
-						tabs.do({ "  ".post });
-						msg[i].post; // nodeID
-						if(msg[i + 1] >= 0, {
-							" group".postln;
-							if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });
-						}, {
-							(" " ++ msg[i + 2]).postln; // defname
-							if(printControls, {
-								if(msg[i + 3] > 0, {
-									" ".post;
-									tabs.do({ "  ".post });
-								});
-								j = 0;
-								msg[i + 3].do({
-									" ".post;
-									if(msg[i + 4 + j].isMemberOf(Symbol), {
-										(msg[i + 4 + j] ++ ": ").post;
+	queryTree { | action |
+		// FIXME: this only works in scsynth. in supernova, the handle_g_queryTree primitive fails
+		// it needs to be passed an endpoint arg, and this somehow doesn't happen.
+		
+		// when a custom action is provided,
+		// suppress server-failed-to-respond warning by setting done to true
+		var resp, done = action.notNil;
+		action = action ?? {
+			{ arg msg;
+				var i = 2, tabs = 0, printControls = false, dumpFunc;
+				if(msg[1] != 0, { printControls = true });
+				("NODE TREE Group" + msg[2]).postln;
+				if(msg[3] > 0, {
+					dumpFunc = {|numChildren|
+						var j;
+						tabs = tabs + 1;
+						numChildren.do({
+							if(msg[i + 1] >=0, {i = i + 2}, {
+								i = i + 3 + if(printControls, { msg[i + 3] * 2 + 1 }, { 0 });
+							});
+							tabs.do({ "  ".post });
+							msg[i].post; // nodeID
+							if(msg[i + 1] >= 0, {
+								" group".postln;
+								if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });
+							}, {
+								(" " ++ msg[i + 2]).postln; // defname
+								if(printControls, {
+									if(msg[i + 3] > 0, {
+										" ".post;
+										tabs.do({ "  ".post });
 									});
-									msg[i + 5 + j].post;
-									j = j + 2;
+									j = 0;
+									msg[i + 3].do({
+										" ".post;
+										if(msg[i + 4 + j].isMemberOf(Symbol), {
+											(msg[i + 4 + j] ++ ": ").post;
+										});
+										msg[i + 5 + j].post;
+										j = j + 2;
+									});
+									"\n".post;
 								});
-								"\n".post;
 							});
 						});
-					});
-					tabs = tabs - 1;
-				};
-				dumpFunc.value(msg[3]);
-			});
-
-			//				action.value(msg);
-			done = true;
-		}, '/g_queryTree.reply', server.addr).oneShot;
+						tabs = tabs - 1;
+					};
+					dumpFunc.value(msg[3]);
+				});
+				done = true;
+			}
+		};
+		resp = OSCFunc(action, '/g_queryTree.reply', server.addr).oneShot;
 
 		server.sendMsg("/g_queryTree", nodeID);
 

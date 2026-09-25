@@ -139,10 +139,20 @@ method:: deepFree, deepFreeMsg
 Free all Synths in the group, and all Synths in any enclosed groups, but do not free this group or any of its enclosed groups.
 
 method:: dumpTree
-Post a representation of this group's node subtree. (Sends a message of the type g_dumpTree.) If code::postControls:: is true, then the current Control (arg) values for any synths contained in this group will be posted as well. The default is false.
+Post a representation of this group's node subtree. (Sends a message of the type teletype::g_dumpTree::.)
+If code::postControls:: is true, then the current Control (arg) values for any synths contained in this group will be posted as well.
+The default is false.
 
 method:: queryTree
-Queries the server for a message describing this group's node subtree. (Sends a message of the type g_queryTree.) This reply is passed to the action function as an argument. See g_queryTree in link::Reference/Server-Command-Reference:: or the example below for information on how the reply is structured.
+Queries the server for a message describing this group's node subtree.
+Similar to to code::.dumpTree::, but with the difference that code::.queryTree:: permits
+custom handling of the server's reply message when an teletype::action:: argument is provided. 
+When no argument is provided to code::.queryTree::, the output resembles that of code::.dumpTree::.
+code::
+Group().queryTree; // default reply handler.
+Group().queryTree( { |msg| msg.postln }); // custom (but very boring) reply handler.
+::
+See teletype::/g_queryTree:: in the link::Reference/Server-Command-Reference#/g_queryTree#Server Command Reference::.
 
 
 Examples::
@@ -233,28 +243,11 @@ g.query;
 });
 )
 
-// now query my tree and post a graph of it (duplicates dumpTree)
-// msg format is ['/g_querytree.reply', node1-ID, numChildren, defName, child1-ID, numChildren, ...]
-(
-g.queryTree({ |msg|
-	var i = 1, tabs = 0, dumpFunc;
-	("NODE TREE Group" + msg[1]).postln;
-	if(msg[2] > 0, {
-		dumpFunc = { |numChildren|
-			tabs = tabs + 1;
-			numChildren.do({
-				i = i + 3;
-				tabs.do({ "   ".post });
-				msg[i].post;
-				(" " ++ msg[i + 2]).postln;
-				if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });
-			});
-			tabs = tabs - 1;
-		};
-		dumpFunc.value(msg[2]);
-	});
-});
-)
+// now query my tree and post a graph of it (mostly duplicates dumpTree)
+g.queryTree;
+
+// or if you prefer it unformatted:
+g.queryTree( { |msg| msg.postln });
 
 // kill me and my children
 g.free;
