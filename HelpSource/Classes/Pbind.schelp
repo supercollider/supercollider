@@ -33,6 +33,95 @@ code::
 Pbind([\note, \amp], Pseq([[0, 0.05],  [4, 0.5],  [7, 0.1]]), dur: 0.2).play
 ::
 
+discussion::
+The behavior of code::\degree:: differs from that of code::\note::.
+(See link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions#Pitch conversions:: and link::Reference/Literals#Scale Degrees::.)
+
+definitionlist::
+## Basic Examples:||
+code::
+/* The default scale: C major scale starting from MIDI note 60 */
+
+Pbind(\scale, Scale.major, \degree, Pseq((0..7), 1), \dur, 0.25).play;
+Pbind(\degree, Pseq([0,  1,  2,  3,  4,   5,  6,  7], 1), \dur, 0.25).play; // The same result as above.
+// \degree:          0,  1,  2,  3,  4,   5,  6,  7 (= octave higher than 0)
+// solmization:      do, re, mi, fa, sol, la, si, do
+// pitch class:      C,  D,  E,  F,  G,   A,  B,  C
+// \midinote:        60, 62, 64, 65, 67,  69, 71, 72 // 72 = 60 + 12
+// \note:            0,  2,  4,  5,  7,   9,  11, 12 // 12 = 0 + 12
+
+// Using \midinote, the code in the first line can be transcribed as:
+Pbind(\midinote, Pseq([0,  2,  4,  5,  7,  9,  11, 12] + 60)).play;
+
+// or as:
+Pbind(\midinote, Pseq([60, 62, 64, 65, 67, 69, 71, 72])).play;
+
+// Alternatively, using \note:
+Pbind(\note,     Pseq([0,  2,  4,  5,  7,  9,  11, 12])).play;
+
+// However, it should not be written as:
+Pbind(\note,     Pseq([0,  1,  2,  3,  4,  5,  6,  7])).play;
+
+
+/* Other scales starting from MIDI note 60 */
+
+Pbind(\scale, Scale.minor, \degree, Pseq((0..7), 1), \dur, 0.25).play;
+// \degree:          0,  1,  2,      3,  4,   5,      6,      7
+// solmization:      la, si, do,     re, mi,  fa,     sol,    la
+// pitch class:      C,  D,  E flat, F,  G,   A flat, B flat, C
+// \midinote:        60, 62, 63,     65, 67,  68,     70,     72
+// \note:            0,  2,  3,      5,  7,   8,      10,     12
+
+Pbind(\scale, Scale.harmonicMinor, \degree, Pseq((0..7), 1), \dur, 0.25).play;
+// \degree:          0,  1,  2,      3,  4,   5,      6,      7
+// solmization:      la, si, do,     re, mi,  fa,     sil,    la
+// pitch class:      C,  D,  E flat, F,  G,   A flat, B,      C
+// \midinote:        60, 62, 63,     65, 67,  68,     71,     72
+// \note:            0,  2,  3,      5,  7,   8,      11,     12
+::
+
+## More Examples:||
+code::
+Pbind(\degree, Pseq([2.1, 3])).play
+// 2 = E; 3 = F
+// 2.1 = 2s = degree 2 with a sharp (E sharp = F) = 3
+
+Pbind(\degree, Pseq([5, 5.1, 5.9, 6])).play
+// 5 = A; 6 = B
+// 5.1 = 5s = degree 5 with a sharp (A sharp)
+// 5.9 = 6b = degree 6 with a flat (B flat)
+// in 12 equal temperament: A sharp = B flat
+// 5.1 = 5.9
+
+Pbind(\degree, Pseq([5, 5.2, 6])).play
+// 5 = A; 6 = B
+// 5.2 = 5ss = degree 5 with a double sharp (A double sharp)
+// in 12 equal temperament: A double sharp = B
+// 5.2 = 6
+
+Pbind(\degree, Pseq([5, 5.8, 6])).play
+// 5 = A; 6 = B
+// 5.8 = 6bb = degree 6 with a double flat (B double flat)
+// in 12 equal temperament: A = B double flat
+// 5 = 5.8
+
+Pbind(\degree, Pseq([5, 5.7, 4.1, 4])).play
+// 4 = G; 5 = A; 6 = B
+// 5.7 = 6bbb = degree 6 with a triple flat (B triple flat)
+// 4.1 = 4s = degree 4 with a sharp
+// in 12 equal temperament: B triple flat = G sharp
+// 5.7 = 4.1
+
+Pbind(\degree, Pseq([0, 3, 3.1, 5.5, 5])).play
+// 3 = F; 4 = G; 5 = A; 6 = B
+// 5.5 = 6bbbbb = degree 6 with a quintuple flat (B, B flat, A, A flat, G, G flat)
+// Caution: bbbbb and sssss are not supported as literals. The maximum allowed is four.
+// 3.1 = 3s = degree 3 with a sharp
+// in 12 equal temperament: B with a quintuple flat = F sharp
+// 3.1 = 5.5
+::
+::
+
 InstanceMethods::
 
 method::patternpairs
