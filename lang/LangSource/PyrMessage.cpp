@@ -504,7 +504,7 @@ inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrBlock* block) {
     const PyrMethodRaw* methraw = METHRAW(block);
     const PyrObject* proto = slotRawObject(&block->prototypeFrame);
     auto frame =
-        reinterpret_cast<PyrFrame*>(g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext));
+        reinterpret_cast<PyrFrame*>(g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext, false));
     frame->classptr = class_frame;
     frame->size = FRAMESIZE + proto->size;
     SetObject(&frame->method, block);
@@ -513,6 +513,7 @@ inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrBlock* block) {
     frame->expected_stack_depth_after_return = PyrSlot {};
     if (PyrFrame* caller = g->frame; caller != nullptr) {
         SetPtr(&caller->ip, g->ip);
+        g->gc->increaseHeaplessFrameReference(caller);
         SetObject(&frame->caller, caller);
     } else {
         SetInt(&frame->caller, 0);
@@ -576,7 +577,7 @@ HOT void returnFromBlock(VMGlobals* g) {
         meth = slotRawMethod(&curframe->method);
         methraw = METHRAW(meth);
         if (!methraw->needsHeapContext) {
-            g->gc->Free(curframe);
+            g->gc->decreaseHeaplessFrameReference(curframe);
         } else {
             SetInt(&curframe->caller, 0);
         }
@@ -691,6 +692,7 @@ HOT void returnFromMethod(VMGlobals* g) {
                 PyrFrame* nextFrame = slotRawFrame(&tempFrame->caller);
                 if (!methraw->needsHeapContext) {
                     SetInt(&tempFrame->caller, 0);
+                    g->gc->decreaseHeaplessFrameReference(tempFrame);
                 } else {
                     if (tempFrame != homeContext)
                         SetInt(&tempFrame->caller, 0);

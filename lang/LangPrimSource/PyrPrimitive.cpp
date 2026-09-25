@@ -953,7 +953,8 @@ HOT std::tuple<PyrFrame*, PyrBlock*> buildFrameForBlockPrims(VMGlobals* g, PyrSl
     auto closure = (PyrClosure*)slotRawObject(args);
     auto block = slotRawBlock(&closure->block);
     auto methraw = METHRAW(block);
-    auto frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
+    auto frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext,
+                                            !methraw->needsHeapContext);
     {
         // setup frame
         auto context = slotRawFrame(&closure->context);
@@ -965,7 +966,8 @@ HOT std::tuple<PyrFrame*, PyrBlock*> buildFrameForBlockPrims(VMGlobals* g, PyrSl
         auto caller = g->frame;
         if (caller) {
             SetPtr(&caller->ip, g->ip);
-            SetObject(&frame->caller, g->frame);
+            g->gc->increaseHeaplessFrameReference(caller);
+            SetObject(&frame->caller, caller);
         } else {
             SetInt(&frame->caller, 0);
         }
