@@ -206,6 +206,7 @@ Function : AbstractFunction {
 		wasInProtectedFunc = Exception.inProtectedFunction;
 		thread.exceptionHandler = {|error|
 			thread.exceptionHandler = next; // pop
+			Exception.inProtectedFunction = wasInProtectedFunc;
 			^error
 		};
 		Exception.inProtectedFunction = true;
