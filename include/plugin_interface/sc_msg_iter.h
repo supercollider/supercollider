@@ -57,6 +57,20 @@ SC_INLINE float64 OSCdouble(const char* inData) {
     return slot.f;
 }
 
+struct sc_msg_blob {
+    const void* data;
+    size_t size;
+};
+
+/** @class Read the remaining OSC arguments from an OSC message.
+ *
+ *  This is used by bufgen, plugin command or unit command functions.
+ *
+ *  @attention Before SC 3.15, geti(), getf(), getd() and gets() would lead to
+ *  unexpected behavior if the OSC argument was anything other than 'i', 'f', 'd' or 's'.
+ *  Similarly, gett() and getb() did not correctly handle wrong argument types.
+ *  Since SC 3.15, these functions correctly handle all argument types.
+ */
 struct sc_msg_iter {
     const char* data;
     const char* rdpos;
@@ -68,19 +82,137 @@ struct sc_msg_iter {
 #ifdef __cplusplus
     sc_msg_iter();
     sc_msg_iter(int inSize, const char* inData);
-    void init(int inSize, const char* inData);
-    int64 gett(int64 defaultValue = 1);
-    int32 geti(int32 defaultValue = 0);
-    float32 getf(float32 defaultValue = 0.f);
-    float64 getd(float64 defaultValue = 0.f);
-    const char* gets(const char* defaultValue = 0);
-    int32* gets4(char* defaultValue = 0);
-    size_t getbsize();
-    void getb(char* outData, size_t inSize);
-    void skipb();
-    size_t remain() { return (size_t)(endpos - rdpos); }
 
-    char nextTag(char defaultTag = 'f') { return tags ? tags[count] : defaultTag; }
+    /** @brief (re)initialize the sc_msg_iter */
+    void init(int inSize, const char* inData);
+
+    /** @brief Returns a timetag argument ('t')
+     *
+     *  If the OSC argument has the wrong type or there are no more arguments,
+     *  the function returns `defaultValue`.
+     *
+     *  @note This will always consume an OSC argument (if any).
+     */
+    int64 gett(int64 defaultValue = 1);
+
+    /** @brief Returns a numeric argument ('i' or 'f') as an int32.
+     *
+     *  If the OSC argument has the wrong type or there are no more arguments,
+     *  the function returns `defaultValue`.
+     *
+     *  @note This will always consume an OSC argument (if any).
+     */
+    int32 geti(int32 defaultValue = 0);
+
+    /** @brief Returns a numeric argument ('i', 'f' or 'd') as a float32.
+     *
+     *  If the OSC argument has the wrong type or there are no more arguments,
+     *  the function returns `defaultValue`.
+     *
+     *  @note This will always consume an OSC argument (if any).
+     */
+    float32 getf(float32 defaultValue = 0.f);
+
+    /** @brief Returns a numeric argument ('i', 'f' or 'd') as a float32.
+     *
+     *  If the argument has the wrong type or there are no more arguments,
+     *  the function returns `defaultValue`.
+     *
+     *  @note This will always consume an OSC argument (if any).
+     */
+    float64 getd(float64 defaultValue = 0.0);
+
+    /** @brief Returns a string argument ('s').
+     *
+     *  If the argument has the wrong type or there are no more arguments,
+     *  the function returns `defaultValue`.
+     *
+     *  @note This will always consume an OSC argument (if any).
+     *
+     *  @attention Before SC 3.15 gets() returned `nullptr` if the end of
+     *  arguments has been reached. Since 3.15 it returns `defaultValue`.
+     */
+    const char* gets(const char* defaultValue = nullptr);
+
+    /** @brief Returns a string argument ('s') as a int32*.
+     *
+     *  If the argument has the wrong type or there are no more arguments,
+     *  the function returns `defaultValue`.
+     *
+     *  @note This will always consume an OSC argument (if any).
+     *
+     *  @attention Before SC 3.15 gets() returned `nullptr` if the end of
+     *  arguments has been reached. Since 3.15 it returns `defaultValue`.
+     */
+    int32* gets4(char* defaultValue = nullptr);
+
+    /** @brief Returns the size of a blob ('b') or MIDI ('m') argument.
+     *
+     *  If the argument is not 'b' or 'm' (or there are no more arguments),
+     *  the function returns 0.
+     *
+     *  This is typically used in conjunction with getb() below.
+     *
+     *  @note This does NOT consume the OSC argument. This is only done
+     *  by getb() resp. skipb().
+     */
+    size_t getbsize() const;
+
+    /** @brief Copies the blob or MIDI data into the given buffer and returns
+     *  the number of bytes it has written.
+     *
+     *  Typically, you would first call getbsize() to get the blob size so
+     *  you can allocate a suitably large buffer.
+     *
+     *  If the OSC argument is not 'b' or 'm' or there are no more arguments,
+     *  the function returns 0.
+     *
+     *  @note This will always consume an OSC argument (if any).
+     */
+    size_t getb(char* outData, size_t inSize);
+
+    /** @brief Returns a blob ('b') or MIDI ('m') argument as a sc_msg_blob.
+     *
+     *  If the OSC argument is not 'b' or 'm' or there are no more arguments,
+     *  an empty struct is returned.
+     *
+     *  sc_msg_blob is a read-only view of the data. No copy is made!
+     *
+     *  @note This will always consume an OSC argument (if any).
+     */
+    sc_msg_blob getb();
+
+    /** @brief Skips a blob ('b) or MIDI ('m') argument.
+     *
+     *  This function does the same as skiparg(). It is only kept for
+     *  backwards compatibility.
+     *
+     *  @note This will always consume an OSC argument (if any).
+     */
+    void skipb();
+
+    /** @brief Skips an OSC argument (if any).
+     *
+     *  This handles all OSC type tags described in the OSC 1.0 specification,
+     *  including the "non-standard" tags.
+     */
+    void skiparg();
+
+    /** @brief returns the number of remaining bytes.
+     *
+     *  @note If you want to check for remaining arguments, use hasArgs() instead!
+     *  Certain argument types (T, F, N, I) do not have data, so remain() might
+     *  return 0 even though there are still arguments left.
+     */
+    size_t remain() const { return (size_t)(endpos - rdpos); }
+
+    /** @brief returns whether there are remaining OSC arguments. */
+    bool hasArgs() const { return tags ? tags[count] != '\0' : false; }
+
+    /** @brief Returns the next tag, or '\0' if the end of tags is reached.
+     *  If the OSC message has not tags, `defaultTag` is returned.
+     */
+    char nextTag(char defaultTag = 'f') const { return tags ? tags[count] : defaultTag; }
 #endif
 };
 
@@ -99,24 +231,22 @@ inline void sc_msg_iter::init(int inSize, const char* inData) {
         tags = data + 1;
         rdpos = OSCstrskip(data);
     } else {
-        tags = 0;
+        tags = nullptr;
         rdpos = data;
     }
 }
 
 inline int64 sc_msg_iter::gett(int64 defaultValue) {
-    int64 value;
     if (remain() <= 0)
         return defaultValue;
+    int64 value;
     if (tags) {
         if (tags[count] == 't') {
             value = OSCtime(rdpos);
             rdpos += sizeof(int64);
         } else {
-            /* this is dangerous, as rdpos is not
-               advanced accordingly while count++ takes
-                 place */
-            value = defaultValue;
+            skiparg();
+            return defaultValue;
         }
     } else {
         value = OSCtime(rdpos);
@@ -127,9 +257,9 @@ inline int64 sc_msg_iter::gett(int64 defaultValue) {
 }
 
 inline int32 sc_msg_iter::geti(int32 defaultValue) {
-    int value;
     if (remain() <= 0)
         return defaultValue;
+    int32 value;
     if (tags) {
         if (tags[count] == 'i') {
             value = OSCint(rdpos);
@@ -137,21 +267,12 @@ inline int32 sc_msg_iter::geti(int32 defaultValue) {
         } else if (tags[count] == 'f') {
             value = (int32)OSCfloat(rdpos);
             rdpos += sizeof(float32);
-        } else if (tags[count] == 's') {
-            /*	value = atoi(rdpos); */
-            value = defaultValue;
-            rdpos = OSCstrskip(rdpos);
-        } else if (tags[count] == 'b') {
-            value = defaultValue;
-            skipb();
         } else {
-            /* this is dangerous, as rdpos is not
-               advanced accordingly while count++ takes
-               place */
-            value = defaultValue;
+            skiparg();
+            return defaultValue;
         }
     } else {
-        value = (int)OSCint(rdpos);
+        value = (int32)OSCint(rdpos);
         rdpos += sizeof(int32);
     }
     count++;
@@ -159,9 +280,9 @@ inline int32 sc_msg_iter::geti(int32 defaultValue) {
 }
 
 inline float32 sc_msg_iter::getf(float32 defaultValue) {
-    float32 value;
     if (remain() <= 0)
         return defaultValue;
+    float32 value;
     if (tags) {
         if (tags[count] == 'f') {
             value = OSCfloat(rdpos);
@@ -172,18 +293,9 @@ inline float32 sc_msg_iter::getf(float32 defaultValue) {
         } else if (tags[count] == 'i') {
             value = static_cast<float32>(OSCint(rdpos));
             rdpos += sizeof(int32);
-        } else if (tags[count] == 's') {
-            /*    value = atof(rdpos); */
-            value = defaultValue;
-            rdpos = OSCstrskip(rdpos);
-        } else if (tags[count] == 'b') {
-            value = defaultValue;
-            skipb();
         } else {
-            /* this is dangerous, as rdpos is not
-               advanced accordingly while count++ takes
-               place */
-            value = defaultValue;
+            skiparg();
+            return defaultValue;
         }
     } else {
         value = OSCfloat(rdpos);
@@ -194,9 +306,9 @@ inline float32 sc_msg_iter::getf(float32 defaultValue) {
 }
 
 inline float64 sc_msg_iter::getd(float64 defaultValue) {
-    float64 value;
     if (remain() <= 0)
         return defaultValue;
+    float64 value;
     if (tags) {
         if (tags[count] == 'f') {
             value = (float64)OSCfloat(rdpos);
@@ -207,18 +319,9 @@ inline float64 sc_msg_iter::getd(float64 defaultValue) {
         } else if (tags[count] == 'i') {
             value = (float64)OSCint(rdpos);
             rdpos += sizeof(int32);
-        } else if (tags[count] == 's') {
-            /*    value = atof(rdpos); */
-            value = defaultValue;
-            rdpos = OSCstrskip(rdpos);
-        } else if (tags[count] == 'b') {
-            value = defaultValue;
-            skipb();
         } else {
-            /* this is dangerous, as rdpos is not
-               advanced accordingly while count++ takes
-               place */
-            value = defaultValue;
+            skiparg();
+            return defaultValue;
         }
     } else {
         value = OSCdouble(rdpos);
@@ -228,17 +331,17 @@ inline float64 sc_msg_iter::getd(float64 defaultValue) {
     return value;
 }
 
-
 inline const char* sc_msg_iter::gets(const char* defaultValue) {
-    const char* value;
     if (remain() <= 0)
-        return 0;
+        return defaultValue;
+    const char* value;
     if (tags) {
-        if (tags[count] == 's') {
+        if (tags[count] == 's' || tags[count] == 'S') {
             value = rdpos;
             rdpos = OSCstrskip(rdpos);
         } else {
-            value = defaultValue;
+            skiparg();
+            return defaultValue;
         }
     } else {
         value = rdpos;
@@ -248,63 +351,110 @@ inline const char* sc_msg_iter::gets(const char* defaultValue) {
     return value;
 }
 
-inline int32* sc_msg_iter::gets4(char* defaultValue) {
-    int32* value;
-    if (remain() <= 0)
-        return 0;
-    if (tags) {
-        if (tags[count] == 's') {
-            value = (int32*)rdpos;
-            rdpos = OSCstrskip(rdpos);
-        } else {
-            value = (int32*)defaultValue;
-        }
-    } else {
-        value = (int32*)rdpos;
-        rdpos = OSCstrskip(rdpos);
-    }
-    count++;
-    return value;
-}
+inline int32* sc_msg_iter::gets4(char* defaultValue) { return (int32*)gets(defaultValue); }
 
-inline size_t sc_msg_iter::getbsize() {
-    size_t len = 0;
+inline size_t sc_msg_iter::getbsize() const {
     if (remain() <= 0)
         return 0;
+    size_t len = 0;
     if (tags) {
         if (tags[count] == 'b')
             len = (size_t)OSCint(rdpos);
         else if (tags[count] == 'm')
             len = 4;
+    } else {
+        // assume 'b'
+        len = (size_t)OSCint(rdpos);
     }
     return len;
 }
 
-inline void sc_msg_iter::getb(char* outArray, size_t arraySize) {
+inline size_t sc_msg_iter::getb(char* outArray, size_t arraySize) {
+    if (remain() <= 0)
+        return 0;
     size_t len = 0;
-    if (tags[count] == 'b') {
+    if (tags) {
+        if (tags[count] == 'b') {
+            len = (size_t)OSCint(rdpos);
+            rdpos += sizeof(int32);
+        } else if (tags[count] == 'm') {
+            len = 4;
+        } else {
+            skiparg();
+            return 0;
+        }
+    } else {
+        // assume 'b'
         len = (size_t)OSCint(rdpos);
-        if (arraySize < len)
-            return;
-        rdpos += sizeof(int32);
-    } else if (tags[count] == 'm') {
-        len = 4;
-        if (arraySize < len)
-            return;
     }
+    if (len > arraySize)
+        return 0;
+    memcpy(outArray, rdpos, len);
     size_t len4 = (len + 3) & (size_t)-4;
-    memcpy(outArray, rdpos, arraySize);
     rdpos += len4;
     count++;
+    return len;
 }
 
-inline void sc_msg_iter::skipb() {
+inline sc_msg_blob sc_msg_iter::getb() {
+    if (remain() <= 0)
+        return sc_msg_blob {};
+    const void* data = nullptr;
     size_t len = 0;
-    if (tags[count] == 'b') {
+    if (remain() > 0 && tags) {
+        if (tags[count] == 'b') {
+            len = (size_t)OSCint(rdpos);
+            data = rdpos + 4;
+            rdpos += sizeof(int32);
+        } else if (tags[count] == 'm') {
+            len = 4;
+            data = rdpos;
+        } else {
+            skiparg();
+            return sc_msg_blob {};
+        }
+    }
+    size_t len4 = (len + 3) & (size_t)-4;
+    rdpos += len4;
+    count++;
+    return sc_msg_blob { data, len };
+}
+
+inline void sc_msg_iter::skipb() { skiparg(); }
+
+inline void sc_msg_iter::skiparg() {
+    if (tags == nullptr)
+        return; // cannot skip arguments without tags...
+    auto t = tags[count];
+    if (t == '\0')
+        return; // no more arguments
+    size_t len;
+    switch (t) {
+    case 'i':
+    case 'f':
+    case 'c':
+    case 'm':
+    case 'r':
+        len = 4;
+        break;
+    case 'h':
+    case 'd':
+    case 't':
+        len = 8;
+        break;
+    case 's': // fallthrough
+    case 'S':
+        len = OSCstrlen(rdpos);
+        break;
+    case 'b':
         len = (size_t)OSCint(rdpos);
         rdpos += sizeof(int32);
-    } else if (tags[count] == 'm')
-        len = 4;
+        break;
+    default:
+        // all other types have no data
+        len = 0;
+        break;
+    }
     size_t len4 = (len + 3) & (size_t)-4;
     rdpos += len4;
     count++;
