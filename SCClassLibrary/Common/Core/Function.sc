@@ -1,7 +1,10 @@
 Function : AbstractFunction {
-	var <def, context;
-	// a Function is what you get when you write a FunctionDef in your code.
-	// it consists of the function's code and the variables in its defining context
+	// FunctionDef
+	var <def;
+
+	// This is a Frame, it is internal to the interpreter.
+	// A no point should the user EVER be able to access this or there will be gc bugs and supercollider will crash!
+	var context;
 
 	*new { ^this.shouldNotImplement(thisMethod) }
 
@@ -380,6 +383,12 @@ Function : AbstractFunction {
 		})
 	}
 
+
+	// This will return the frame, this can be useful when debugging and writing tests.
+	// Under no circumstance should the result of this be stored anywhere.
+	// It is NOT a part of the public API and is only here for internal use.
+	// DO NOT USE IN USER CODE
+	pr__unsafe__getFrame__ { ^context }
 }
 
 Thunk : AbstractFunction {

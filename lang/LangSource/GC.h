@@ -26,7 +26,9 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 
 #pragma once
 
+#include "PyrKernel.h"
 #include "PyrObject.h"
+#include "PyrObjectHdr.h"
 #include "VMGlobals.h"
 #include "AdvancingAllocPool.h"
 #include "function_attributes.h"
@@ -73,7 +75,8 @@ public:
     PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize);
 
     MALLOC PyrObject* New(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inCollect);
-    MALLOC PyrObject* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inAccount);
+    MALLOC PyrFrame* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool collect,
+                              bool referenceCounted = false);
 
     MALLOC static PyrObject* NewPermanent(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat);
 
@@ -189,7 +192,7 @@ public:
     int32 GetPartialScanIndex() const { return mPartialScanSlot; }
 
 private:
-    inline PyrObject* Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);
+    inline PyrObject* Allocate(size_t inNumBytesAfterHeader, int32 sizeclass, bool inCollect);
     static void throwMemfailed(size_t inNumBytes);
 
     void ScanSlots(PyrSlot* inSlots, std::int64_t inNumToScan);
@@ -328,7 +331,7 @@ inline void PyrGC::ToGrey2(PyrObjectHdr* obj) {
     mNumGrey++;
 }
 
-inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRunCollection) {
+inline PyrObject* PyrGC::Allocate(size_t inNumBytesAfterHeader, int32 sizeclass, bool inRunCollection) {
     if (inRunCollection && mNumToScan >= kScanThreshold) {
         Collect();
     } else {
@@ -351,16 +354,95 @@ inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRun
             // If the sizeclass has reached the cap, then allocSize (as calculated below) might not be large enough.
             SweepBigObjects();
             const size_t allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-            obj = (PyrObject*)mPool->Alloc(std::max(allocSize, inNumBytes));
+            obj = (PyrObject*)mPool->Alloc(std::max(allocSize, inNumBytesAfterHeader));
         } else {
             size_t allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-            assert(allocSize >= inNumBytes);
+            assert(allocSize >= inNumBytesAfterHeader);
             obj = (PyrObject*)mNewPool.Alloc(allocSize);
         }
         if (!obj)
-            throwMemfailed(inNumBytes);
+            throwMemfailed(inNumBytesAfterHeader);
         DLInsertAfter(&gcs->mWhite, obj);
         obj->obj_sizeclass = sizeclass;
     }
     return obj;
+}
+
+
+void PyrFrame::incrementReferenceCount() {
+    // This is set to an int in the allocator.
+    // If it isn't, something odd has happened (maybe already been free'd), but the gc will deal with it.
+    // If it is less than zero, we might have already free'd this.
+    if (!referenceCount.isInt() || referenceCount.getInt() < 0) {
+        assert(!referenceCount.isInt());
+        referenceCount = PyrSlot {};
+        return;
+    }
+
+    referenceCount = PyrSlot::make(referenceCount.getInt() + 1);
+}
+
+void PyrFrame::decrementReferenceCount(PyrGC* gc) {
+    // If it isn't an int, don't free it, it might have already been free'd.
+    // If we fail to free the frame, the gc will collect it later, so this is safest.
+    // If it is an int, it shouldn't already be zero (no owner), if it is less, we don't want to double free.
+    if (!referenceCount.isInt() || referenceCount.getInt() <= 0) {
+        assert(!referenceCount.isInt());
+        // Setting to nil means it will no longer be reference counted and the gc will deal with it.
+        referenceCount = PyrSlot {};
+        return;
+    }
+
+    referenceCount = PyrSlot::make(referenceCount.getInt() - 1);
+    if (referenceCount.getInt() == 0) {
+        if (caller.isObjectHdr()) {
+            auto* f = caller.getPyrObjType<PyrFrame>();
+            if (f != this)
+                f->decrementReferenceCount(gc);
+            caller = PyrSlot::make(0);
+        }
+
+
+#if 0 // This block of code is needed if we ever manage to make all frames reference counted
+         if (homeContext.isObjectHdr()) {
+             auto* f = homeContext.getPyrObjType<PyrFrame>();
+             if (f != this)
+                 f->decrementReferenceCount(gc);
+             homeContext = PyrSlot {};
+         }
+         if (context.isObjectHdr()) {
+             auto* f = context.getPyrObjType<PyrFrame>();
+             if (f != this)
+                 f->decrementReferenceCount(gc);
+             context = PyrSlot {};
+         }
+#endif
+
+        // Ensures it can't be double free'd.
+        // The allocator will set this back to zero.
+        referenceCount = PyrSlot::make(-1);
+        gc->Free(this);
+    }
+}
+
+void PyrFrame::storeCaller(struct PyrGC* gc, PyrFrame* other) {
+    caller = PyrSlot::make(other);
+    if (other != this)
+        other->incrementReferenceCount();
+}
+
+void PyrFrame::storeHomeContext(struct PyrGC* gc, PyrFrame* home) {
+    homeContext = PyrSlot::make(home);
+#if 0 // Needed if all frames are referenced counted
+     if (home != this)
+        home->incrementReferenceCount();
+#endif
+}
+
+void PyrFrame::storeContext(struct PyrGC* gc, PyrFrame* cxt) {
+    context = PyrSlot::make(cxt);
+#if 0 // Needed if all frames are referenced counted
+     if (cxt != this)
+        cxt->incrementReferenceCount();
+#endif
 }

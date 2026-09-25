@@ -166,11 +166,20 @@ int instVarAt(struct VMGlobals* g, int numArgsPushed) {
 
     PyrObject* obj = slotRawObject(a);
 
+    // Uses should never be able to access a frame.
+    const auto sanitizeFrames = [&](PyrSlot r) {
+        if (r.isObjectHdr() && r.getObjectHdr()->classptr == class_frame) {
+            return PyrSlot {};
+        } else {
+            return r;
+        }
+    };
+
     if (IsInt(b)) {
         index = slotRawInt(b);
         if (index < 0 || index >= obj->size)
             return errIndexOutOfRange;
-        slotCopy(a, &obj->slots[index]);
+        *a = sanitizeFrames(obj->slots[index]);
     } else if (IsSym(b)) {
         PyrSlot* instVarNamesSlot = &obj->classptr->instVarNames;
         if (!isKindOfSlot(instVarNamesSlot, class_symbolarray))
@@ -180,7 +189,7 @@ int instVarAt(struct VMGlobals* g, int numArgsPushed) {
         PyrSymbol* name = slotRawSymbol(b);
         for (int i = 0; i < instVarNames->size; ++i) {
             if (names[i] == name) {
-                slotCopy(a, &obj->slots[i]);
+                *a = sanitizeFrames(obj->slots[i]);
                 return errNone;
             }
         }
@@ -953,19 +962,23 @@ HOT std::tuple<PyrFrame*, PyrBlock*> buildFrameForBlockPrims(VMGlobals* g, PyrSl
     auto closure = (PyrClosure*)slotRawObject(args);
     auto block = slotRawBlock(&closure->block);
     auto methraw = METHRAW(block);
-    auto frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
+    auto frame =
+        g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext, !methraw->needsHeapContext);
     {
         // setup frame
         auto context = slotRawFrame(&closure->context);
         frame->classptr = class_frame;
         frame->size = FRAMESIZE + methraw->numSlots;
         SetObject(&frame->method, block);
-        slotCopy(&frame->homeContext, &context->homeContext);
-        slotCopy(&frame->context, &closure->context);
-        auto caller = g->frame;
-        if (caller) {
+
+        if (context->homeContext.isObjectHdr())
+            frame->storeHomeContext(g->gc, context->homeContext.getPyrObjType<PyrFrame>());
+
+        frame->storeContext(g->gc, context);
+
+        if (auto caller = g->frame) {
             SetPtr(&caller->ip, g->ip);
-            SetObject(&frame->caller, g->frame);
+            frame->storeCaller(g->gc, caller);
         } else {
             SetInt(&frame->caller, 0);
         }
@@ -996,7 +1009,7 @@ HOT int blockValueWithKeys(struct VMGlobals* g, int allArgsPushed, int numKeyArg
     g->sp = args - 1;
     g->ip = slotRawInt8Array(&block->code)->b - 1;
     g->frame = frame;
-    g->frame->expected_stack_depth_after_return = PyrSlot::make(static_cast<int>(g->gc->StackDepth() + 1));
+    g->frame->expectedStackDepthAfterReturn = PyrSlot::make(static_cast<int>(g->gc->StackDepth() + 1));
     g->block = block;
 
     return errNone;
@@ -1842,16 +1855,18 @@ private:
         } else
             SetNil(debugFrameObj->slots + 2);
 
-        if (slotRawFrame(&frame->caller)) {
-            WorkQueueItem newWork = std::make_pair(slotRawFrame(&frame->caller), debugFrameObj->slots + 3);
+        if (auto caller = frame->caller.getPyrObjType<PyrFrame>()) {
+            assert(caller->classptr == class_frame);
+            WorkQueueItem newWork = std::make_pair(caller, debugFrameObj->slots + 3);
             workQueue.push_back(newWork);
         } else
             SetNil(debugFrameObj->slots + 3);
 
         if (IsObj(&frame->context) && slotRawFrame(&frame->context) == frame)
             SetObject(debugFrameObj->slots + 4, debugFrameObj);
-        else if (NotNil(&frame->context)) {
-            WorkQueueItem newWork = std::make_pair(slotRawFrame(&frame->context), debugFrameObj->slots + 4);
+        else if (auto context = frame->context.getPyrObjType<PyrFrame>()) {
+            assert(context->classptr == class_frame);
+            WorkQueueItem newWork = std::make_pair(context, debugFrameObj->slots + 4);
             workQueue.push_back(newWork);
         } else
             SetNil(debugFrameObj->slots + 4);
