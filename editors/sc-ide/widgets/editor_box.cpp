@@ -20,6 +20,7 @@
 
 #include "editor_box.hpp"
 #include "code_editor/sc_editor.hpp"
+#include "code_editor/rich_editor.hpp"
 #include "../core/main.hpp"
 
 #include <QPainter>
@@ -114,23 +115,42 @@ void CodeEditorBox::setDocument(Document* doc, int pos, int selectionLength) {
     if (!doc)
         return;
 
-    GenericCodeEditor* editor = currentEditor();
-    bool switchEditor = !editor || editor->document() != doc;
+    QWidget* editor = currentEditor();
+    bool switchEditor = !editor || documentForEditor(editor) != doc;
 
     if (switchEditor) {
         editor = editorForDocument(doc);
         if (!editor) {
-            editor = doc->isPlainText() ? new GenericCodeEditor(doc) : new ScCodeEditor(doc);
-            editor->installEventFilter(this);
-            mHistory.prepend(editor);
-            mLayout->addWidget(editor);
-            connect(this, &CodeEditorBox::activeChanged, editor, &GenericCodeEditor::setActiveAppearance);
+            // Create appropriate editor type based on document type
+            if (doc->isRichText()) {
+                RichTextEditor* richEditor = new RichTextEditor(doc);
+                editor = richEditor;
+                editor->installEventFilter(this);
+                mHistory.prepend(editor);
+                mLayout->addWidget(editor);
+                connect(this, &CodeEditorBox::activeChanged, richEditor, &RichTextEditor::setActiveAppearance);
+            } else {
+                GenericCodeEditor* codeEditor = doc->isPlainText() ? new GenericCodeEditor(doc) : new ScCodeEditor(doc);
+                editor = codeEditor;
+                editor->installEventFilter(this);
+                mHistory.prepend(editor);
+                mLayout->addWidget(editor);
+                connect(this, &CodeEditorBox::activeChanged, codeEditor, &GenericCodeEditor::setActiveAppearance);
+            }
         } else {
             mHistory.removeOne(editor);
             mHistory.prepend(editor);
         }
-        editor->setActiveAppearance(this->isActive());
-        editor->setReadOnly(!doc->editable());
+
+        // Set active appearance and read-only state
+        if (GenericCodeEditor* codeEditor = qobject_cast<GenericCodeEditor*>(editor)) {
+            codeEditor->setActiveAppearance(this->isActive());
+            codeEditor->setReadOnly(!doc->editable());
+        } else if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(editor)) {
+            richEditor->setActiveAppearance(this->isActive());
+            richEditor->setReadOnly(!doc->editable());
+        }
+
         mLayout->setCurrentWidget(editor);
         setFocusProxy(editor);
         int modelIndex = doc->modelItem()->index().row();
@@ -145,15 +165,20 @@ void CodeEditorBox::setDocument(Document* doc, int pos, int selectionLength) {
         }
     }
 
-    if (pos != -1)
-        editor->showPosition(pos, selectionLength);
+    if (pos != -1) {
+        if (GenericCodeEditor* codeEditor = qobject_cast<GenericCodeEditor*>(editor)) {
+            codeEditor->showPosition(pos, selectionLength);
+        } else if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(editor)) {
+            richEditor->showPosition(pos, selectionLength);
+        }
+    }
 
     if (switchEditor)
         emit currentChanged(editor);
 }
 
 void CodeEditorBox::onDocumentClosed(Document* doc) {
-    GenericCodeEditor* editor = editorForDocument(doc);
+    QWidget* editor = editorForDocument(doc);
     if (editor) {
         bool wasCurrent = editor == currentEditor();
         mHistory.removeAll(editor);
@@ -176,60 +201,113 @@ void CodeEditorBox::onDocumentSaved(Document* doc) {
     if (history_idx == -1)
         return;
 
-    GenericCodeEditor* editor = mHistory[history_idx];
-    if (doc->isPlainText() == (qobject_cast<ScCodeEditor*>(editor) == 0))
+    QWidget* editorWidget = mHistory[history_idx];
+
+    // Check if editor type matches document type
+    bool needsReplacement = false;
+    if (doc->isRichText()) {
+        // Rich text document needs RichTextEditor
+        needsReplacement = (qobject_cast<RichTextEditor*>(editorWidget) == nullptr);
+    } else if (doc->isPlainText()) {
+        // Plain text needs GenericCodeEditor (not ScCodeEditor)
+        needsReplacement = (qobject_cast<ScCodeEditor*>(editorWidget) != nullptr)
+            || (qobject_cast<RichTextEditor*>(editorWidget) != nullptr);
+    } else {
+        // SuperCollider document needs ScCodeEditor
+        needsReplacement = (qobject_cast<ScCodeEditor*>(editorWidget) == nullptr);
+    }
+
+    if (!needsReplacement)
         return;
 
-    bool was_current = editor == currentEditor();
-    bool was_focused = editor->window()->focusWidget() == editor;
-    int cursor_position = editor->textCursor().position();
-    int scroll_position = editor->verticalScrollBar()->value();
+    bool was_current = editorWidget == currentEditor();
+    bool was_focused = editorWidget->window()->focusWidget() == editorWidget;
+
+    // Get cursor and scroll position from old editor
+    int cursor_position = 0;
+    int scroll_position = 0;
+    if (GenericCodeEditor* codeEditor = qobject_cast<GenericCodeEditor*>(editorWidget)) {
+        cursor_position = codeEditor->textCursor().position();
+        scroll_position = codeEditor->verticalScrollBar()->value();
+    } else if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(editorWidget)) {
+        cursor_position = richEditor->textCursor().position();
+        scroll_position = richEditor->verticalScrollBar()->value();
+    }
 
     mHistory.removeAt(history_idx);
-    delete editor;
+    delete editorWidget;
 
-    editor = doc->isPlainText() ? new GenericCodeEditor(doc) : new ScCodeEditor(doc);
-    editor->installEventFilter(this);
-    mHistory.insert(history_idx, editor);
-    mLayout->addWidget(editor);
+    // Create new editor of appropriate type
+    QWidget* newEditor = nullptr;
+    if (doc->isRichText()) {
+        RichTextEditor* richEditor = new RichTextEditor(doc);
+        newEditor = richEditor;
+        richEditor->installEventFilter(this);
+        mHistory.insert(history_idx, newEditor);
+        mLayout->addWidget(newEditor);
 
-    QTextCursor cursor(editor->textDocument());
-    cursor.setPosition(cursor_position);
-    editor->setTextCursor(cursor);
+        QTextCursor cursor(richEditor->textDocument());
+        cursor.setPosition(cursor_position);
+        richEditor->setTextCursor(cursor);
+        richEditor->verticalScrollBar()->setValue(scroll_position);
+    } else {
+        GenericCodeEditor* codeEditor = doc->isPlainText() ? new GenericCodeEditor(doc) : new ScCodeEditor(doc);
+        newEditor = codeEditor;
+        codeEditor->installEventFilter(this);
+        mHistory.insert(history_idx, newEditor);
+        mLayout->addWidget(newEditor);
 
-    editor->verticalScrollBar()->setValue(scroll_position);
+        QTextCursor cursor(codeEditor->textDocument());
+        cursor.setPosition(cursor_position);
+        codeEditor->setTextCursor(cursor);
+        codeEditor->verticalScrollBar()->setValue(scroll_position);
+    }
 
     if (was_current) {
-        mLayout->setCurrentWidget(editor);
-        setFocusProxy(editor);
+        mLayout->setCurrentWidget(newEditor);
+        setFocusProxy(newEditor);
     }
 
     if (was_focused)
-        editor->setFocus(Qt::OtherFocusReason);
+        newEditor->setFocus(Qt::OtherFocusReason);
 
-    emit currentChanged(editor);
+    emit currentChanged(newEditor);
 }
 
-GenericCodeEditor* CodeEditorBox::currentEditor() {
+QWidget* CodeEditorBox::currentEditor() {
     if (mHistory.count())
         return mHistory.first();
     else
-        return 0;
+        return nullptr;
+}
+
+GenericCodeEditor* CodeEditorBox::currentGenericEditor() { return qobject_cast<GenericCodeEditor*>(currentEditor()); }
+
+RichTextEditor* CodeEditorBox::currentRichTextEditor() { return qobject_cast<RichTextEditor*>(currentEditor()); }
+
+Document* CodeEditorBox::documentForEditor(QWidget* editor) {
+    if (GenericCodeEditor* codeEditor = qobject_cast<GenericCodeEditor*>(editor))
+        return codeEditor->document();
+    if (RichTextEditor* richEditor = qobject_cast<RichTextEditor*>(editor))
+        return richEditor->document();
+    return nullptr;
 }
 
 int CodeEditorBox::historyIndexOf(Document* doc) {
     int count = mHistory.count();
-    for (int idx = 0; idx < count; ++idx)
-        if (mHistory[idx]->document() == doc)
+    for (int idx = 0; idx < count; ++idx) {
+        if (documentForEditor(mHistory[idx]) == doc)
             return idx;
+    }
     return -1;
 }
 
-GenericCodeEditor* CodeEditorBox::editorForDocument(Document* doc) {
-    foreach (GenericCodeEditor* editor, mHistory)
-        if (editor->document() == doc)
+QWidget* CodeEditorBox::editorForDocument(Document* doc) {
+    foreach (QWidget* editor, mHistory) {
+        if (documentForEditor(editor) == doc)
             return editor;
-    return 0;
+    }
+    return nullptr;
 }
 
 bool CodeEditorBox::eventFilter(QObject* object, QEvent* event) {
@@ -244,10 +322,7 @@ bool CodeEditorBox::eventFilter(QObject* object, QEvent* event) {
 
 void CodeEditorBox::focusInEvent(QFocusEvent*) { setActive(); }
 
-Document* CodeEditorBox::currentDocument() {
-    GenericCodeEditor* editor = currentEditor();
-    return editor ? editor->document() : 0;
-}
+Document* CodeEditorBox::currentDocument() { return documentForEditor(currentEditor()); }
 
 void CodeEditorBox::paintEvent(QPaintEvent*) {
     if (mLayout->currentWidget() == 0) {

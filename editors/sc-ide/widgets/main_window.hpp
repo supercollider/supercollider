@@ -58,6 +58,7 @@ public:
         // File
         Quit = 0,
         DocNew,
+        DocNewRich,
         DocOpen,
         DocOpenStartup,
         DocOpenSupportDir,
@@ -147,6 +148,7 @@ public Q_SLOTS:
     void openSessionsDialog();
 
     void newDocument();
+    void newRichDocument();
     void openDocument();
     void saveDocument();
     void saveDocumentAs();

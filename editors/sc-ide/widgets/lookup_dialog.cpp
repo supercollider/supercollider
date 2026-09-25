@@ -50,7 +50,7 @@ GenericLookupDialog::GenericLookupDialog(QWidget* parent): QDialog(parent) {
     mResult->setHeaderHidden(true);
     mResult->header()->setStretchLastSection(false);
 
-    mPreviewDocument = new Document(false);
+    mPreviewDocument = new Document(Document::SuperCollider);
     mPreviewEditor = new ScCodeEditor(mPreviewDocument);
     mPreviewEditor->setReadOnly(true);
     mPreviewEditor->setVisible(false);

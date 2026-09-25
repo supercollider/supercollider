@@ -37,8 +37,9 @@
 
 using namespace ScIDE;
 
-Document::Document(bool isPlainText, const QByteArray& id, const QString& title, const QString& text):
+Document::Document(DocumentType docType, const QByteArray& id, const QString& title, const QString& text):
     mId(id),
+    mDocType(docType),
     mDoc(new QTextDocument(text, this)),
     mTitle(title),
     mIndentWidth(4),
@@ -63,9 +64,12 @@ Document::Document(bool isPlainText, const QByteArray& id, const QString& title,
     if (mTitle.isEmpty())
         mTitle = tr("Untitled");
 
-    mDoc->setDocumentLayout(new QPlainTextDocumentLayout(mDoc));
+    // Rich text documents use QTextDocumentLayout (default), others use QPlainTextDocumentLayout
+    if (docType != RichText)
+        mDoc->setDocumentLayout(new QPlainTextDocumentLayout(mDoc));
 
-    if (!isPlainText)
+    // Only SuperCollider documents get syntax highlighting
+    if (docType == SuperCollider)
         mHighlighter = new SyntaxHighlighter(mDoc);
 
     connect(Main::instance(), &Main::applySettingsRequest, this, &Document::applySettings);
@@ -73,14 +77,17 @@ Document::Document(bool isPlainText, const QByteArray& id, const QString& title,
     applySettings(Main::settings());
 }
 
-void Document::setPlainText(bool set_plain_text) {
-    if (isPlainText() == set_plain_text)
+void Document::setDocumentType(DocumentType docType) {
+    if (mDocType == docType)
         return;
+
+    mDocType = docType;
 
     delete mHighlighter;
     mHighlighter = 0;
 
-    if (!set_plain_text)
+    // Only SuperCollider documents get syntax highlighting
+    if (docType == SuperCollider)
         mHighlighter = new SyntaxHighlighter(mDoc);
 }
 
@@ -262,9 +269,9 @@ DocumentManager::DocumentManager(Main* main, Settings::Manager* settings):
     loadRecentDocuments(settings);
 }
 
-Document* DocumentManager::createDocument(bool isPlainText, const QByteArray& id, const QString& title,
+Document* DocumentManager::createDocument(Document::DocumentType docType, const QByteArray& id, const QString& title,
                                           const QString& text) {
-    Document* doc = new Document(isPlainText, id, title, text);
+    Document* doc = new Document(docType, id, title, text);
     mDocHash.insert(doc->id(), doc);
 
     QStandardItem* item = new QStandardItem(doc->title());
@@ -278,6 +285,14 @@ Document* DocumentManager::createDocument(bool isPlainText, const QByteArray& id
 
 void DocumentManager::create() {
     Document* doc = createDocument();
+
+    connect(doc->textDocument(), &QTextDocument::contentsChanged, doc, &Document::storeTmpFile);
+    syncLangDocument(doc);
+    Q_EMIT(opened(doc, 0, 0));
+}
+
+void DocumentManager::createRichDocument() {
+    Document* doc = createDocument(Document::RichText);
 
     connect(doc->textDocument(), &QTextDocument::contentsChanged, doc, &Document::storeTmpFile);
     syncLangDocument(doc);
@@ -330,11 +345,16 @@ Document* DocumentManager::open(const QString& path, int initialCursorPosition, 
 
     closeSingleUntitledIfUnmodified();
 
-    const bool fileIsPlainText = !(info.suffix() == QStringLiteral("sc") || (info.suffix() == QStringLiteral("scd"))
-                                   || (info.suffix() == QStringLiteral("schelp")));
+    auto docType = getDocumentTypeFromFileSuffix(info.suffix());
 
-    Document* doc = createDocument(fileIsPlainText, id);
-    doc->mDoc->setPlainText(decodeDocument(bytes));
+    Document* doc = createDocument(docType, id);
+
+    // Rich text documents are stored as HTML
+    if (docType == Document::RichText) {
+        doc->mDoc->setHtml(decodeDocument(bytes));
+    } else {
+        doc->mDoc->setPlainText(decodeDocument(bytes));
+    }
     doc->mDoc->setModified(false);
     doc->mFilePath = filePath;
     QString fileTitle = info.fileName();
@@ -405,7 +425,8 @@ void DocumentManager::restore() {
             MainWindow::instance()->showStatusMessage(tr("Cannot open file for reading: %1").arg(path));
         QByteArray bytes(file.readAll());
         file.close();
-        Document* doc = createDocument(false, QByteArray(), QFileInfo(path).baseName(), decodeDocument(bytes));
+        Document* doc =
+            createDocument(Document::SuperCollider, QByteArray(), QFileInfo(path).baseName(), decodeDocument(bytes));
         doc->mTmpFilePath = path;
         syncLangDocument(doc);
         Q_EMIT(opened(doc, 0, 0));
@@ -480,11 +501,22 @@ bool DocumentManager::saveAs(Document* doc, const QString& path) {
     return ok;
 }
 
+Document::DocumentType DocumentManager::getDocumentTypeFromFileSuffix(QString suffix) {
+    if (suffix == QStringLiteral("scr")) {
+        return Document::RichText;
+    }
+    if (suffix == QStringLiteral("sc") || suffix == QStringLiteral("scd") || suffix == QStringLiteral("schelp")) {
+        return Document::SuperCollider;
+    }
+    return Document::PlainText;
+}
+
 bool DocumentManager::doSaveAs(Document* doc, const QString& path) {
     Q_ASSERT(doc);
 
-    doc->deleteTrailingSpaces();
-
+    // Don't delete trailing spaces for rich text documents
+    if (!doc->isRichText())
+        doc->deleteTrailingSpaces();
 
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly)) {
@@ -499,15 +531,20 @@ bool DocumentManager::doSaveAs(Document* doc, const QString& path) {
     if (pathChanged)
         mFsWatcher.removePath(doc->filePath());
 
-    QString str = doc->textDocument()->toPlainText();
+    // Rich text documents are saved as HTML, others as plain text
+    QString str;
+    if (doc->isRichText()) {
+        str = doc->textDocument()->toHtml();
+    } else {
+        str = doc->textDocument()->toPlainText();
+    }
     file.write(str.toUtf8());
     file.flush();
     file.close();
 
     info.refresh();
 
-    const bool fileIsPlainText = !(info.suffix() == QStringLiteral("sc") || (info.suffix() == QStringLiteral("scd"))
-                                   || (info.suffix() == QStringLiteral("schelp")));
+    auto docType = getDocumentTypeFromFileSuffix(info.suffix());
 
     // It's possible the mod time has not been updated - if it looks like that is the case,
     // just set it one second in the future, so we don't trip the external modification alarm.
@@ -521,7 +558,7 @@ bool DocumentManager::doSaveAs(Document* doc, const QString& path) {
     QString fileTitle = info.fileName();
     doc->setTitle(fileTitle);
     doc->mDoc->setModified(false);
-    doc->setPlainText(fileIsPlainText);
+    doc->setDocumentType(docType);
     doc->removeTmpFile();
 
     // Always try to start watching, because the file could have been removed:
@@ -724,8 +761,8 @@ void DocumentManager::handleNewDocScRequest(const QString& data) {
             std::string text = doc[1].as<std::string>();
             std::string id = doc[2].as<std::string>();
 
-            Document* document =
-                createDocument(false, id.c_str(), QString::fromUtf8(title.c_str()), QString::fromUtf8(text.c_str()));
+            Document* document = createDocument(Document::SuperCollider, id.c_str(), QString::fromUtf8(title.c_str()),
+                                                QString::fromUtf8(text.c_str()));
             syncLangDocument(document);
             Q_EMIT(opened(document, 0, 0));
         }

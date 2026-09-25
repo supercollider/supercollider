@@ -37,6 +37,7 @@ namespace ScIDE {
 
 class Document;
 class GenericCodeEditor;
+class RichTextEditor;
 class MultiSplitter;
 
 /*
@@ -61,13 +62,15 @@ class CodeEditorBox : public QWidget {
     Q_OBJECT
 
 public:
-    typedef QList<GenericCodeEditor*> History;
+    typedef QList<QWidget*> History;
 
     CodeEditorBox(MultiSplitter* splitter, QWidget* parent = 0);
 
     void setDocument(Document*, int pos = -1, int selectionLength = 0);
 
-    GenericCodeEditor* currentEditor();
+    QWidget* currentEditor();
+    GenericCodeEditor* currentGenericEditor();
+    RichTextEditor* currentRichTextEditor();
     Document* currentDocument();
 
     const History& history() { return mHistory; }
@@ -98,7 +101,7 @@ public:
     void showComboBox(bool);
 
 signals:
-    void currentChanged(GenericCodeEditor*);
+    void currentChanged(QWidget*);
     void activated(CodeEditorBox* me);
     void activeChanged(bool active);
 
@@ -114,7 +117,8 @@ private slots:
 
 private:
     int historyIndexOf(Document*);
-    GenericCodeEditor* editorForDocument(Document*);
+    QWidget* editorForDocument(Document*);
+    Document* documentForEditor(QWidget* editor);
     bool eventFilter(QObject*, QEvent*);
     void focusInEvent(QFocusEvent*);
     void paintEvent(QPaintEvent*);

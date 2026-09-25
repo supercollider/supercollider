@@ -92,6 +92,8 @@ set ( ide_moc_hdr
     widgets/code_editor/overlay.hpp
     widgets/code_editor/autocompleter.hpp
     widgets/code_editor/completion_menu.hpp
+    widgets/code_editor/rich_editor.hpp
+    widgets/code_editor/rich_toolbar.hpp
     widgets/settings/dialog.hpp
     widgets/settings/general_page.hpp
     widgets/settings/sclang_page.hpp
@@ -144,6 +146,8 @@ set ( ide_src
     widgets/code_editor/overlay.cpp
     widgets/code_editor/autocompleter.cpp
     widgets/code_editor/completion_menu.cpp
+    widgets/code_editor/rich_editor.cpp
+    widgets/code_editor/rich_toolbar.cpp
     widgets/settings/dialog.cpp
     widgets/settings/general_page.cpp
     widgets/settings/sclang_page.cpp
