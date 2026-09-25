@@ -138,7 +138,11 @@ Recorder {
 	/* private implementation */
 
 	prRecord { |bus, node, dur|
-		recordNode = Synth.tail(node ? RootNode(server), synthDef.name, [\bufnum, recordBuf, \in, bus, \duration, dur ? -1]);
+		recordNode = Synth(synthDef.name, 
+						args: [\bufnum, recordBuf, \in, bus, \duration, dur ? -1],
+						target: node ? RootNode(server), 
+						addAction: if(node.isKindOf(Synth), \addAfter, \addToTail)
+		);
 		recordNode.register(true);
 		recordNode.onFree { this.stopRecording };
 		if(responder.isNil) {
