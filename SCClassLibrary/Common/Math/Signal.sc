@@ -235,6 +235,8 @@ Signal[float] : FloatArray {
 	//cpsmidi { _CPSMIDI; ^this.primitiveFailed }
 	//midiratio { _MIDIRatio; ^this.primitiveFailed }
 	//ratiomidi { _RatioMIDI; ^this.primitiveFailed }
+	//centratio { _MIDIRatio; ^this.primitiveFailed }
+	//ratiocent { _RatioMIDI; ^this.primitiveFailed }
 	//ampdb { _AmpDb; ^this.primitiveFailed }
 	//dbamp { _DbAmp; ^this.primitiveFailed }
 	//octcps { _OctCPS; ^this.primitiveFailed }
