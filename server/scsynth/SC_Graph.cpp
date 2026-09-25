@@ -267,69 +267,7 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
                 } while (loop);
             }
         }
-    }
-
-
-    //{
-    //	    while( msg->remain()>=8) {
-    //		int i = 0;
-    //		int loop = 0;
-    //		if (msg->nextTag('i') == 's') {
-    //		    int32* name = msg->gets4();
-    //		    int32 hash = Hash(name);
-    //		    if (msg->nextTag('f') == '[' ) {
-    //			    msg->count++;
-    //			    loop = 1;
-    //		    }
-    //		    do {
-    //			if (msg->nextTag('f') == 's' ) {
-    //			    const char* string = msg->gets();
-    //			    if ( *string == 'c') {
-    //				int bus = sc_atoi(string+1);
-    //				Graph_MapControl(graph, hash, name, i, bus);
-    //			    }
-    //			} else {
-    //			    if (msg->nextTag('f') == ']' ) {
-    //				msg->count++;
-    //				loop = 0;
-    //			    } else {
-    //				float32 value = msg->getf();
-    //				Graph_SetControl(graph, hash, name, i, value);
-    //			    }
-    //			}
-    //			++i;
-    //		    }
-    //		    while (loop);
-    //		} else {
-    //		    int32 index = msg->geti();
-    //		    if (msg->nextTag('f') == '[' ) {
-    //			msg->count++;
-    //			loop = 1;
-    //		    }
-    //		    do {
-    //			if (msg->nextTag('f') == 's') {
-    //			    const char* string = msg->gets();
-    //			    if (*string == 'c') {
-    //				int bus = sc_atoi(string+1);
-    //				Graph_MapControl(graph, index + i, bus);
-    //			    }
-    //			} else {
-    //			    if (msg->nextTag('f') == ']' ) {
-    //				msg->count++;
-    //				loop = 0;
-    //			    } else {
-    //				float32 value = msg->getf();
-    //				Graph_SetControl(graph, index + i, value);
-    //			    }
-    //			}
-    //			++i;
-    //		    }
-    //		    while (loop);
-    //		}
-    //	    }
-    //
-    //	}
-    else {
+    } else {
         while (msg->remain()) {
             if (msg->nextTag('i') == 's') {
                 int32* name = msg->gets4();
