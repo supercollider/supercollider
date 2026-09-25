@@ -55,7 +55,7 @@ public:
     uint32_t control_busses, audio_busses;
     uint32_t blocksize, samplerate;
     int32_t hardware_buffer_size;
-    uint32_t buffers, max_nodes, max_synthdefs;
+    uint32_t buffers, max_nodes, max_synthdefs, max_logins;
     uint16_t use_system_clock;
 
     uint32_t rt_pool_size;
