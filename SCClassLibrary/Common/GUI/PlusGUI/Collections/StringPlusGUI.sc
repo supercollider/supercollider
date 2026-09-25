@@ -76,10 +76,14 @@
 	}
 
 	help {
-		if (Platform.openHelpFileAction.notNil) {
-			Platform.openHelpFileAction.value(this)
+		if(".htm(|l)|http(|s)://".matchRegexp(this)) {
+			HelpBrowser.goTo(this)
 		} {
-			HelpBrowser.openHelpFor(this);
+			if (Platform.openHelpFileAction.notNil) {
+				Platform.openHelpFileAction.value(this)
+			} {
+				HelpBrowser.openHelpFor(this);
+			}
 		}
 	}
 }
