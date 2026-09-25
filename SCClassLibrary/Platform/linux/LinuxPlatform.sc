@@ -16,7 +16,7 @@ LinuxPlatform : UnixPlatform {
 
 		// Server setup. first looks for scsynth in the dir containing the sclang executable;
 		// if nothing is found, falls back to PATH
-		Server.program = "PATH=$(dirname $(readlink /proc/$PPID/exe)):$PATH; exec scsynth";
+		Server.program = Server.program ?? {"PATH=$(dirname $(readlink /proc/$PPID/exe)):$PATH; exec scsynth"};
 
 		// Score setup
 		Score.program = Server.program;
