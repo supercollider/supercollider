@@ -49,7 +49,7 @@ QuarksGui {
 				this.checkForUpdates({
 					treeView.enabled = true;
 					btnUpdateDirectory.value = 0;
-					this.update;
+					this.refreshDirectoryView;
 					this.setMsg("Directory has been updated.", \success);
 				}, {
 					treeView.enabled = true;
@@ -628,12 +628,31 @@ QuarkRowView {
 		isInstalled = quark.isInstalled;
 		btn.value = isInstalled.binaryValue;
 
-		// this column has invisible text
-		// its used to sort the rows so that installed quarks are at the top
 		treeItem.setString(0, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
-		// 1 is the install button. its not possible to sort by this column
 		treeItem.setString(2, quark.name ? "");
 		treeItem.setString(3, (quark.version ? "").asString);
 		treeItem.setString(4, (quark.summary ? "").replace(Char.nl.asString," ").replace(Char.tab.asString, ""));
 	}
+
+	refreshDirectoryView {
+	var selectedPath, newQuark;
+
+	selectedPath = detailView.model.notNil.if({ detailView.model.localPath }, { nil });
+
+	treeView.clear;
+	quarkRows = Dictionary.new;
+	initialized = false;
+
+	this.update;
+
+	if(selectedPath.notNil) {
+		newQuark = model.all.detect({ |q| q.localPath == selectedPath });
+		if(newQuark.notNil) {
+			detailView.model = newQuark; 
+		} {
+			detailView.model = nil;
+		};
+	};
+}
+
 }
