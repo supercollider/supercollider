@@ -265,12 +265,12 @@ PyrMultiAssignVarListNode::PyrMultiAssignVarListNode(Tag t, sc::lex::SourceCodeR
     mRest(reParent(*this, mRest)) {}
 
 PyrBlockNode::PyrBlockNode(Tag t, sc::lex::SourceCodeRange l, struct PyrArgListNode* mArglist,
-                           struct PyrVarListNode* mVarlist_in, PyrParseNode* mBody, bool mIsTopLevel):
+                           struct PyrVarListNode* mVarlist_in, PyrParseNode* mBody, bool mIsExplicitlyClosed):
     PyrParseNode(t, PyrParseNodeType::BlockNode, l),
     mArglist(reParent(*this, mArglist)),
     mVarlist(mVarlist_in),
     mBody(reParent(*this, mBody)),
-    mIsTopLevel(mIsTopLevel) {
+    mIsExplicitlyClosed(mIsExplicitlyClosed) {
     joinVarLists(mVarlist);
     mVarlist = reParent(*this, mVarlist);
 }
@@ -3682,6 +3682,12 @@ void PyrSlotNode::compileLiteral(CompilerContext& cxt, PyrSlot* result) {
 
 
 void PyrReturnNode::compile(CompilerContext& cxt, PyrSlot* result) {
+    if (cxt.functionIsExplicitlyClosed) {
+        cxt.postErrorInCurrentFile(location, "Function literals `#{...}` cannot use the return carat `^`.",
+                                   "Return carat (`^`) not allowed in a closed function.");
+        return;
+    }
+
     cxt.functionCantBeClosed = true;
     if (!mExpr) {
         ReturnSelf.emit(cxt.bytecodes, location);
@@ -4023,6 +4029,8 @@ void PyrBlockNode::compile(CompilerContext& cxt, PyrSlot* slotResult) {
     const auto prevFunctionCantBeClosed = cxt.functionCantBeClosed;
     cxt.functionHighestExternalRef = 0;
     cxt.functionCantBeClosed = false;
+    const auto prevFunctionIsExplicitlyClosed = cxt.functionIsExplicitlyClosed;
+    cxt.functionIsExplicitlyClosed = mIsExplicitlyClosed;
 
     const auto prevBlock = cxt.compilingBlock;
     cxt.compilingBlock = block;
@@ -4030,12 +4038,12 @@ void PyrBlockNode::compile(CompilerContext& cxt, PyrSlot* slotResult) {
     // This bit is a little subtle.
     // When compiling cmd code, we are always inside the method Interpreter:functionCompileContext.
     // The first block (main expr) of cmd code will set this to class_interpreter over in PyrPrimitive.cpp
-    // mIsTopLevel also gets set when you have a function like `#{...}`, essentially, jumping back to the top of the
-    // stack of classes and blocks. Confusingly this also requires us to set the block->contextDef (where we do the
+    // mIsExplicitlyClosed also gets set when you have a function like `#{...}`, essentially, jumping back to the top of
+    // the stack of classes and blocks. Confusingly this also requires us to set the block->contextDef (where we do the
     // lookup for the closure), but that can't be done until compiling is finished, as we want to set it to nil and
     // make the function closed automatically if possible.
     auto* const prevClass = cxt.compilingClass;
-    cxt.compilingClass = mIsTopLevel ? class_interpreter : cxt.compilingClass;
+    cxt.compilingClass = mIsExplicitlyClosed ? class_interpreter : cxt.compilingClass;
 
     auto* const prevPartiallyAppliedFunction = cxt.compilingPartiallyAppliedFunction;
     cxt.compilingPartiallyAppliedFunction = nullptr;
@@ -4047,6 +4055,7 @@ void PyrBlockNode::compile(CompilerContext& cxt, PyrSlot* slotResult) {
         cxt.compilingPartiallyAppliedFunction = prevPartiallyAppliedFunction;
         cxt.functionCantBeClosed = cxt.functionCantBeClosed || prevFunctionCantBeClosed;
         cxt.functionHighestExternalRef = std::max(cxt.functionHighestExternalRef - 1, prevFunctionHighestExternalRef);
+        cxt.functionIsExplicitlyClosed = prevFunctionIsExplicitlyClosed;
     } };
 
 
@@ -4086,8 +4095,8 @@ void PyrBlockNode::compile(CompilerContext& cxt, PyrSlot* slotResult) {
 
 
     // Here we set the context of the closure.
-    // Might remove this later if we don't use it (aka, the function is closed.)
-    block->contextDef = mIsTopLevel ? PyrSlot {} : PyrSlot::make(prevBlock);
+    // By doing this, we get variable lookup errors by default.
+    block->contextDef = mIsExplicitlyClosed ? PyrSlot {} : PyrSlot::make(prevBlock);
 
     // Contains all the default values (if constant expr else nil) of the arguments and variables.
     // Variadic args are set to the empty array.
@@ -4138,7 +4147,7 @@ void PyrBlockNode::compile(CompilerContext& cxt, PyrSlot* slotResult) {
         block->codeSizes = PyrSlot {};
     }
 
-    const auto isClosed = (!cxt.functionCantBeClosed && cxt.functionHighestExternalRef == 0) || mIsTopLevel;
+    const auto isClosed = (!cxt.functionCantBeClosed && cxt.functionHighestExternalRef == 0);
     // NOTE: this is odd, but we need to the context when doing identifier
     // If we haven't looked up any, then it is closed, and we can remove it.
     if (isClosed)

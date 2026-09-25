@@ -2429,7 +2429,7 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         // Should be only one top level block.
         assert(blockNode->mNext == nullptr);
 
-        blockNode->mIsTopLevel = true;
+        blockNode->mIsExplicitlyClosed = true;
 
         PyrSlot compileResult {};
         compileNode(cxt, blockNode, &compileResult, true);
