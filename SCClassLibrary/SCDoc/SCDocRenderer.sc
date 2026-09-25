@@ -726,6 +726,7 @@ SCDocHTMLRenderer {
 					currentClass !? {currentClass.class},
 					currentImplClass !? {currentImplClass.class}
 				);
+				stream << "<hr class='method-group'>";
 			},
 			\IMETHOD, {
 				this.renderMethod(
@@ -734,6 +735,7 @@ SCDocHTMLRenderer {
 					currentClass,
 					currentImplClass
 				);
+				stream << "<hr class='method-group'>";
 			},
 			\METHOD, {
 				this.renderMethod(
@@ -741,6 +743,7 @@ SCDocHTMLRenderer {
 					\genericMethod,
 					nil, nil
 				);
+				stream << "<hr class='method-group'>";
 			},
 			\CPRIVATE, {},
 			\IPRIVATE, {},
@@ -919,21 +922,21 @@ SCDocHTMLRenderer {
 						<< (n.children[0].children.collect{|m|
 							"<a href='#*"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
 						}.join(" "))
-						<< "</li>\n";
+						<< "</li>\n<hr class='method-group-toc'>\n";
 					},
 					\IMETHOD, {
 						stream << "<li class='toc3'>"
 						<< (n.children[0].children.collect{|m|
 							"<a href='#-"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
 						}.join(" "))
-						<< "</li>\n";
+						<< "</li>\n<hr class='method-group-toc'>\n";
 					},
 					\METHOD, {
 						stream << "<li class='toc3'>"
 						<< (n.children[0].children.collect{|m|
 							"<a href='#."++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
 						}.join(" "))
-						<< "</li>\n";
+						<< "</li>\n<hr class='method-group-toc'>\n";
 					},
 
 					\SECTION, {
