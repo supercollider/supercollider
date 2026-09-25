@@ -953,7 +953,7 @@ HOT std::tuple<PyrFrame*, PyrBlock*> buildFrameForBlockPrims(VMGlobals* g, PyrSl
     auto closure = (PyrClosure*)slotRawObject(args);
     auto block = slotRawBlock(&closure->block);
     auto methraw = METHRAW(block);
-    auto frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
+    auto frame = g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
     {
         // setup frame
         auto context = slotRawFrame(&closure->context);
@@ -962,10 +962,10 @@ HOT std::tuple<PyrFrame*, PyrBlock*> buildFrameForBlockPrims(VMGlobals* g, PyrSl
         SetObject(&frame->method, block);
         slotCopy(&frame->homeContext, &context->homeContext);
         slotCopy(&frame->context, &closure->context);
-        auto caller = g->frame;
-        if (caller) {
+        if (auto caller = g->frame) {
             SetPtr(&caller->ip, g->ip);
-            SetObject(&frame->caller, g->frame);
+            caller->incrementReferenceCount();
+            SetObject(&frame->caller, caller);
         } else {
             SetInt(&frame->caller, 0);
         }
@@ -996,7 +996,7 @@ HOT int blockValueWithKeys(struct VMGlobals* g, int allArgsPushed, int numKeyArg
     g->sp = args - 1;
     g->ip = slotRawInt8Array(&block->code)->b - 1;
     g->frame = frame;
-    g->frame->expected_stack_depth_after_return = PyrSlot::make(static_cast<int>(g->gc->StackDepth() + 1));
+    g->frame->expectedStackDepthAfterReturn = PyrSlot::make(static_cast<int>(g->gc->StackDepth() + 1));
     g->block = block;
 
     return errNone;
@@ -1842,16 +1842,18 @@ private:
         } else
             SetNil(debugFrameObj->slots + 2);
 
-        if (slotRawFrame(&frame->caller)) {
-            WorkQueueItem newWork = std::make_pair(slotRawFrame(&frame->caller), debugFrameObj->slots + 3);
+        if (auto caller = frame->caller.getPyrObjType<PyrFrame>()) {
+            assert(caller->classptr == class_frame);
+            WorkQueueItem newWork = std::make_pair(caller, debugFrameObj->slots + 3);
             workQueue.push_back(newWork);
         } else
             SetNil(debugFrameObj->slots + 3);
 
         if (IsObj(&frame->context) && slotRawFrame(&frame->context) == frame)
             SetObject(debugFrameObj->slots + 4, debugFrameObj);
-        else if (NotNil(&frame->context)) {
-            WorkQueueItem newWork = std::make_pair(slotRawFrame(&frame->context), debugFrameObj->slots + 4);
+        else if (auto context = frame->context.getPyrObjType<PyrFrame>()) {
+            assert(context->classptr == class_frame);
+            WorkQueueItem newWork = std::make_pair(context, debugFrameObj->slots + 4);
             workQueue.push_back(newWork);
         } else
             SetNil(debugFrameObj->slots + 4);

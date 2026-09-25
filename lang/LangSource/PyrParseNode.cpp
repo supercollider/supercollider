@@ -4439,6 +4439,8 @@ bool findNamedIdentifier(CompilerContext& cxt, PyrBlock* block, PyrClass** class
         return true;
     }
     if (name == s_curClosure) {
+        // This could create a loop in the reference counter, now the gc deals with it.
+        cxt.functionCantBeClosed = true;
         *varType = varPseudo;
         *index = opgFunction;
         return true;

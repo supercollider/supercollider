@@ -217,7 +217,7 @@ PyrProcess* newPyrProcess(VMGlobals* g, PyrClass* procclassobj) {
         proto = slotRawObject(&meth->prototypeFrame);
 
         methraw = METHRAW(meth);
-        frame = (PyrFrame*)gc->New(methraw->frameSize, 0, obj_slot, false);
+        frame = (PyrFrame*)gc->NewFrame(methraw->frameSize, 0, obj_slot, false);
         frame->classptr = class_frame;
         frame->size = FRAMESIZE + proto->size; /// <- IS THIS WRONG ??
         SetObject(&frame->method, meth);

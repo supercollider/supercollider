@@ -26,7 +26,9 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 
 #pragma once
 
+#include "PyrKernel.h"
 #include "PyrObject.h"
+#include "PyrObjectHdr.h"
 #include "VMGlobals.h"
 #include "AdvancingAllocPool.h"
 #include "function_attributes.h"
@@ -73,7 +75,8 @@ public:
     PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize);
 
     MALLOC PyrObject* New(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inCollect);
-    MALLOC PyrObject* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inAccount);
+    MALLOC [[nodiscard]] PyrFrame* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat,
+                                            bool collect);
 
     MALLOC static PyrObject* NewPermanent(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat);
 
@@ -189,7 +192,7 @@ public:
     int32 GetPartialScanIndex() const { return mPartialScanSlot; }
 
 private:
-    inline PyrObject* Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);
+    inline PyrObject* Allocate(size_t inNumBytesAfterHeader, int32 sizeclass, bool inCollect);
     static void throwMemfailed(size_t inNumBytes);
 
     void ScanSlots(PyrSlot* inSlots, std::int64_t inNumToScan);
@@ -328,7 +331,7 @@ inline void PyrGC::ToGrey2(PyrObjectHdr* obj) {
     mNumGrey++;
 }
 
-inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRunCollection) {
+inline PyrObject* PyrGC::Allocate(size_t inNumBytesAfterHeader, int32 sizeclass, bool inRunCollection) {
     if (inRunCollection && mNumToScan >= kScanThreshold) {
         Collect();
     } else {
@@ -351,14 +354,14 @@ inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRun
             // If the sizeclass has reached the cap, then allocSize (as calculated below) might not be large enough.
             SweepBigObjects();
             const size_t allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-            obj = (PyrObject*)mPool->Alloc(std::max(allocSize, inNumBytes));
+            obj = (PyrObject*)mPool->Alloc(std::max(allocSize, inNumBytesAfterHeader));
         } else {
             size_t allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-            assert(allocSize >= inNumBytes);
+            assert(allocSize >= inNumBytesAfterHeader);
             obj = (PyrObject*)mNewPool.Alloc(allocSize);
         }
         if (!obj)
-            throwMemfailed(inNumBytes);
+            throwMemfailed(inNumBytesAfterHeader);
         DLInsertAfter(&gcs->mWhite, obj);
         obj->obj_sizeclass = sizeclass;
     }

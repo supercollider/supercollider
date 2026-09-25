@@ -84,11 +84,26 @@ struct PyrFrame : public PyrObjectHdr {
     PyrSlot ip;
     // For non-local returns, sometimes we need to remove stuff from the stack.
     // This allows us to do that.
-    PyrSlot expected_stack_depth_after_return;
+    PyrSlot expectedStackDepthAfterReturn;
+
+    // Some frames are reference counted.
+    // This has two possible states:
+    //  an int which is zero on allocation and positive after taking ownership,
+    //  and nil, which means it has been free'd.
+    PyrSlot referenceCount;
+
     PyrSlot vars[1];
+
+    // Implemented in the gc source file.
+    void incrementReferenceCount();
+    // Not calling this is never an error, as the gc will handle it.
+    // It is only an optimisation.
+    void decrementReferenceCount(struct PyrGC* gc);
 };
 
-#define FRAMESIZE 6
+// Framesize refers to the minimum number of slots the frame object must allocate.
+// vars[1] doesn't have to exist.
+#define FRAMESIZE 7
 
 struct PyrProcess : public PyrObjectHdr {
     PyrSlot classVars;
@@ -144,6 +159,8 @@ struct PyrMethodRaw {
     unsigned char popSize; // Sometime different to the numSlots as this isn't always popped.
     unsigned char totalNumberArguments; // Sum of numNormalArguments and numVariableArguments.
 };
+
+static_assert(sizeof(PyrMethodRaw) == sizeof(PyrSlot) * 2);
 
 
 #define METHRAW(obj) ((PyrMethodRaw*)&(((PyrBlock*)obj)->rawData1))

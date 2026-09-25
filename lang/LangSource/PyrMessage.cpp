@@ -510,9 +510,10 @@ inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrBlock* block) {
     SetObject(&frame->method, block);
     SetObject(&frame->homeContext, frame);
     SetObject(&frame->context, frame);
-    frame->expected_stack_depth_after_return = PyrSlot {};
+    frame->expectedStackDepthAfterReturn = PyrSlot {};
     if (PyrFrame* caller = g->frame; caller != nullptr) {
         SetPtr(&caller->ip, g->ip);
+        caller->incrementReferenceCount();
         SetObject(&frame->caller, caller);
     } else {
         SetInt(&frame->caller, 0);
@@ -537,7 +538,7 @@ HOT void setupForMethod(VMGlobals* g, PyrBlock* meth, std::int64_t totalNumArgsP
     slotCopy(&g->receiver, callFrame->vars);
 
     // Here, we are expecting this method to return one value to the stack (as all methods do).
-    g->frame->expected_stack_depth_after_return = PyrSlot::make(static_cast<int>(g->gc->StackDepth() + 1));
+    g->frame->expectedStackDepthAfterReturn = PyrSlot::make(static_cast<int>(g->gc->StackDepth() + 1));
 }
 
 void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numArgsPushed);
@@ -576,7 +577,7 @@ HOT void returnFromBlock(VMGlobals* g) {
         meth = slotRawMethod(&curframe->method);
         methraw = METHRAW(meth);
         if (!methraw->needsHeapContext) {
-            g->gc->Free(curframe);
+            curframe->decrementReferenceCount(g->gc);
         } else {
             SetInt(&curframe->caller, 0);
         }
@@ -681,7 +682,7 @@ HOT void returnFromMethod(VMGlobals* g) {
         }
 
         std::uint32_t distance { 0 };
-        PyrFrame* one_before_return_frame { nullptr };
+        PyrFrame* oneBeforeReturnFrame { nullptr };
 
         {
             PyrFrame* tempFrame = curframe;
@@ -691,12 +692,13 @@ HOT void returnFromMethod(VMGlobals* g) {
                 PyrFrame* nextFrame = slotRawFrame(&tempFrame->caller);
                 if (!methraw->needsHeapContext) {
                     SetInt(&tempFrame->caller, 0);
+                    tempFrame->decrementReferenceCount(g->gc);
                 } else {
                     if (tempFrame != homeContext)
                         SetInt(&tempFrame->caller, 0);
                 }
                 ++distance;
-                one_before_return_frame = tempFrame;
+                oneBeforeReturnFrame = tempFrame;
                 tempFrame = nextFrame;
             }
         }
@@ -726,8 +728,8 @@ HOT void returnFromMethod(VMGlobals* g) {
         // We need to remove f, 1, 2, 3, 4, leaving the DoesNotUnderstandError.
         // Don't do this when doing a tail call, that isn't a true non-local return.
         // Don't do this if yielded to another thread.
-        if (g->tailCall == 0 && !yieled && distance > 1 && one_before_return_frame) {
-            const auto expected = one_before_return_frame->expected_stack_depth_after_return.getInt();
+        if (g->tailCall == 0 && !yieled && distance > 1 && oneBeforeReturnFrame) {
+            const auto expected = oneBeforeReturnFrame->expectedStackDepthAfterReturn.getInt();
             const auto current = g->gc->StackDepth();
             if (expected < current) {
                 g->sp = g->gc->Stack()->slots + std::max(0, expected - 1);
