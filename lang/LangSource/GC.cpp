@@ -331,6 +331,25 @@ void PyrGC::BecomePermanent(PyrObject* inObject) {
 
 void PyrGC::BecomeImmutable(PyrObject* inObject) { inObject->obj_flags |= obj_immutable; }
 
+// So because methods are NEVER reference counted, we might try to increment/decrement a count that doesn't exist.
+void PyrGC::increaseHeaplessFrameReference(PyrFrame* f) noexcept {
+    if (auto fnd = referenceCountedFrames.find(f); fnd != referenceCountedFrames.end()) {
+        fnd->second += 1;
+    }
+}
+
+void PyrGC::decreaseHeaplessFrameReference(PyrFrame* f) noexcept {
+    if (auto fnd = referenceCountedFrames.find(f); fnd != referenceCountedFrames.end()) {
+        assert(fnd->second > 0);
+        fnd->second -= 1;
+        if (fnd->second == 0) {
+            this->Free(f);
+        }
+        referenceCountedFrames.erase(fnd);
+    }
+}
+
+
 void DumpBackTrace(VMGlobals* g);
 
 HOT PyrObject* PyrGC::New(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inRunCollection) {
@@ -382,9 +401,8 @@ HOT PyrObject* PyrGC::New(size_t inNumBytes, std::int64_t inFlags, std::int64_t 
 }
 
 
-HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inAccount) {
-    PyrObject* obj = nullptr;
-
+HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool collect,
+                               bool registerWithReferenceCounter) {
 #ifdef GC_SANITYCHECK
     SanityCheck();
 #endif
@@ -413,13 +431,29 @@ HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int
     mNumToScan += credit;
     mNumAllocs++;
 
-    obj = Allocate(inNumBytes, sizeclass, inAccount);
+    auto* obj = Allocate(inNumBytes, sizeclass, collect);
 
     obj->obj_format = inFormat;
     obj->obj_flags = inFlags;
     obj->size = 0;
     obj->classptr = class_frame;
     obj->gc_color = mWhiteColor;
+
+    if (registerWithReferenceCounter) {
+        auto* frame = reinterpret_cast<PyrFrame*>(obj);
+        // Note, it might be the case that the frame was collected by the garbage collector.
+        // In this case, we actually have a dangling pointer, however...
+        // this is okay because we reuse memory (garbage collector would be called a recycling centre in the 21st
+        // century!). This means the map *should* not grow indefinitely, and will always be no larger than the
+        // allocator's internals book keeping.
+
+        // If we wanted to remove the frame that are garbage collected, we'd have to walk all free'd objecthdrs, this is
+        // very slow. Avoiding this is exactly why we use a linked list!
+
+        // For this reason, we can just write over what was already there.
+        referenceCountedFrames[frame] = 1;
+    }
+
 
 #ifdef GC_SANITYCHECK
     SanityCheck();

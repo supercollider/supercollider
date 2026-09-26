@@ -26,11 +26,13 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 
 #pragma once
 
+#include "PyrKernel.h"
 #include "PyrObject.h"
 #include "VMGlobals.h"
 #include "AdvancingAllocPool.h"
 #include "function_attributes.h"
 #include <cstdint>
+#include <unordered_map>
 
 void DumpSimpleBackTrace(VMGlobals* g);
 
@@ -73,7 +75,8 @@ public:
     PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize);
 
     MALLOC PyrObject* New(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inCollect);
-    MALLOC PyrObject* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inAccount);
+    MALLOC PyrObject* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool collect,
+                               bool registerWithReferenceCounter);
 
     MALLOC static PyrObject* NewPermanent(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat);
 
@@ -188,6 +191,11 @@ public:
     bool IsPartialScanObject(PyrObject* inObject) const { return inObject == mPartialScanObj; }
     int32 GetPartialScanIndex() const { return mPartialScanSlot; }
 
+
+    // These two functions are used when multiple frames have the same caller.
+    void increaseHeaplessFrameReference(PyrFrame* f) noexcept;
+    void decreaseHeaplessFrameReference(PyrFrame* f) noexcept;
+
 private:
     inline PyrObject* Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);
     static void throwMemfailed(size_t inNumBytes);
@@ -209,6 +217,9 @@ private:
     void beginPause();
     void endPause();
     void reportPause();
+
+    // Only used for frames that don't have a heap context.
+    std::unordered_map<PyrFrame*, std::uint32_t> referenceCountedFrames {};
 
     VMGlobals* mVMGlobals;
     AllocPool* mPool;
