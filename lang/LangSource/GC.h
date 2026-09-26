@@ -193,7 +193,6 @@ public:
 
 
     // These two functions are used when multiple frames have the same caller.
-    // I've marked this noexcept because if an except is throw then the gc is broken and we should crash.
     void increaseHeaplessFrameReference(PyrFrame* f) noexcept;
     void decreaseHeaplessFrameReference(PyrFrame* f) noexcept;
 
