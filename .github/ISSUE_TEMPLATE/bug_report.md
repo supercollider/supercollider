@@ -16,6 +16,8 @@ assignees: ''
 * Operating system:
 * Other details (Qt version, audio driver, etc.):
 
+When using SuperCollider >=3.14, you can post the output of `Platform.postBugReportInfo`.
+
 ## Steps to reproduce
 
 ```supercollider
