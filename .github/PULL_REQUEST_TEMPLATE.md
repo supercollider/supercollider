@@ -1,4 +1,5 @@
 <!-- For information about contributing see: https://github.com/supercollider/supercollider/wiki/Contributing-directory -->
+<!-- If you used AI for any part of the PR, please see https://github.com/supercollider/supercollider/blob/develop/CODE_OF_CONDUCT.md#usage-of-ai-tools -->
 
 ## Purpose and Motivation
 
