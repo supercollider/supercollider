@@ -36,5 +36,5 @@ returns:: The selector passed to new. Typically, the method name that was not un
 method:: args
 returns:: The args passed to new. Typically, an array of arguments passed to the unknown method.
 
-argument:: keywordArgumentPairs
+method:: keywordArgumentPairs
 returns:: The keyword arguments passed to new.

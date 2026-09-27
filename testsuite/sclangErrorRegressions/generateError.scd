@@ -53,6 +53,18 @@ var action = {|stream|
 		ErrorGenerator.primitiveErr
 	};
 
+	catch.value {
+		var f = {
+			var array = [1,2,3,4,5];
+			var dict = (a: 1, b: 2, array: array);
+			var recursive = [1, 2, 3];
+			recursive[0] = recursive;
+			Error("slot printing test").throw
+		};
+
+		f.();
+	};
+
 	stream
 };
 

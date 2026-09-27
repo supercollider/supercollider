@@ -26,7 +26,7 @@ Exception {
 	// Typically used to ignore all the interpreter stuff, or the stuff above a try/protect block.
 	var <>methodBacktraceEnd; // Function[Method -> Boolean]
 	
-	// Set when the exception is created, shows the call stack that led to this point.
+	// Set when the exception is thrown, shows the call stack that led to this point.
 	var <backtrace;
 
 	// This represents the nowExecutingPath, it doesn't represent what file the code was written in!
@@ -34,7 +34,7 @@ Exception {
 	var <>path;
 
 	*new { |what(""), callFrameAnnotations([]), methodBeforeBacktraceStart, methodBacktraceEnd|
-		var thisConstructor; // used to create the methodBeforeBacktraceStart
+		var thisThrow; // used to create the methodBeforeBacktraceStart
 
 		if (Exception.reporting) {
 			"Attempting to construct and error while reporting one. This is not allowed, please file a bug report.".error;
@@ -44,10 +44,9 @@ Exception {
 		^this.newCopyArgs(
 			what: what.asString, 
 			callFrameAnnotations: callFrameAnnotations,
-			backtrace: this.getBackTrace,
 			methodBeforeBacktraceStart: methodBeforeBacktraceStart ?? {
-				thisConstructor = this.class.findMethod(\new);
-				{ |method| method === thisConstructor }
+				thisThrow = this.class.findMethod(\throw);
+				{ |method| method === thisThrow or: { method === thisThrow } }
 			},
 			methodBacktraceEnd: methodBacktraceEnd ?? {
 				// Skip all the interpreter stuff, that isn't useful for this error (or if it is, there is an issue in the class library).
@@ -55,6 +54,11 @@ Exception {
 			},
 			path: thisProcess.nowExecutingPath // backwards compatible.
 		)
+	}
+
+	throw {
+		backtrace = this.getBackTrace;
+		super.throw;
 	}
 
 	
@@ -141,14 +145,14 @@ PrimitiveFailedError : MethodError {
 	var <>failedPrimitiveName;
 
 	*new { |receiver, failedPrimitive(thisThread.failedPrimitiveName), errorString(Thread.primitiveErrorString)|
-		var thisConstructor = this.class.findMethod(\new);
+		var thisThrow = this.class.findMethod(\new);
 		^super.new(
 			what: errorString 
 				!? { "Primitive '%' failed with message : '%'.".format(failedPrimitive, errorString) }
 				?? { "Primitive '%' failed.".format(failedPrimitive) },
 			receiver: receiver,
 			callFrameAnnotations: [nil, errorString],
-			methodBeforeBacktraceStart: { |m| m === thisConstructor or: { m.ownerClass === Object and: { m.name === 'primitiveFailed' } } }
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: { m.ownerClass === Object and: { m.name === 'primitiveFailed' } } }
 		)
 	}
 }
@@ -157,13 +161,13 @@ SubclassResponsibilityError : MethodError {
 	var <>method, <>class;
 
 	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
-		var thisConstructor = this.class.findMethod(\new);
+		var thisThrow = this.class.findMethod(\new);
 		^super.new(
 			what: "'%' should have been implemented by %.".format(method.name, class.name), 
 			receiver: receiver,
 			callFrameAnnotations: [nil, "Please implement this method for the class '%'".format(class.name)],
 			methodBeforeBacktraceStart: { |m| 
-				m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'subclassResponsibility'}} 
+				m === thisThrow or: {m.ownerClass === Object and: {m.name === 'subclassResponsibility'}} 
 			}
 		)
 			.method_(method)
@@ -175,12 +179,12 @@ ShouldNotImplementError : MethodError {
 	var <>method, <>class;
 
 	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
-		var thisConstructor = this.class.findMethod(\new);
+		var thisThrow = this.class.findMethod(\new);
 		^super.new(
 			what: "'%-%' is not a valid message for the subclass '%'".format(method.ownerClass.name, method.name, class.name), 
 			callFrameAnnotations: [nil, "'%' cannot respond to this message, please remove the call.".format(class.name)],
 			receiver: receiver, 
-			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'shouldNotImplement'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'shouldNotImplement'}} },
 		)
 			.method_(method)
 			.class_(class)
@@ -191,7 +195,7 @@ DoesNotUnderstandError : MethodError {
 	var <>selector, <>args, <>keywordArgumentPairs;
 
 	*new { |receiver, selector, args([]), keywordArgumentPairs([])|
-		var thisConstructor = this.class.findMethod(\new);
+		var thisThrow = this.class.findMethod(\new);
 		var msg = "% does not understand the message '%'.".format(receiver.class.name, selector);
 
 		// Note: is it okay to throw in the constructor of an exception, but not in reportError
@@ -201,7 +205,7 @@ DoesNotUnderstandError : MethodError {
 			what: msg,
 			callFrameAnnotations: [msg],
 			// We don't need to print Object.doesNotUnderstand.
-			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'doesNotUnderstand'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'doesNotUnderstand'}} },
 			receiver: receiver
 		)
 			.selector_(selector.asSymbol)
@@ -232,23 +236,23 @@ DoesNotUnderstandError : MethodError {
 
 MustBeBooleanError : MethodError {
 	*new { |receiver| 
-		var thisConstructor = this.class.findMethod(\new);
+		var thisThrow = this.class.findMethod(\throw);
 		^super.new( 
 			what: "Non boolean in test ", 
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'mustBeBoolean'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'mustBeBoolean'}} },
 		) 
 	}
 }
 
 NotYetImplementedError : MethodError {
 	*new { |receiver| 
-		var thisConstructor = this.class.findMethod(\new);
+		var thisThrow = this.class.findMethod(\throw);
 		^super.new( 
 			what: "Not yet implemented", 
 			callFrameAnnotations: ["This method has not yet been implemented."],
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'notYetImplemented'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'notYetImplemented'}} },
 		) 
 	}
 
@@ -257,7 +261,7 @@ NotYetImplementedError : MethodError {
 OutOfContextReturnError : MethodError {
 	var <>method, <>result;
 	*new { |receiver, method, result|
-		var thisConstructor = this.class.findMethod(\new);
+		var thisThrow = this.class.findMethod(\throw);
 		if (method.isKindOf(Method).not) {
 			Error("OutOfContextReturnError excepts a method").throw
 		};
@@ -265,7 +269,7 @@ OutOfContextReturnError : MethodError {
 			what: "'%-%' tried to return to a call frame that has expired with a value of: %".format(method.ownerClass),
 			callFrameAnnotations: ["Could not complete this return as the parent method is no longer active."],
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'outOfContextReturn'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'outOfContextReturn'}} },
 		)
 			.method_(method) 
 			.result_(result)
@@ -275,12 +279,12 @@ OutOfContextReturnError : MethodError {
 ImmutableError : MethodError {
 	var <>value;
 	*new { |receiver, value|
-		var thisConstructor = this.class.findMethod(\new);
+		var thisThrow = this.class.findMethod(\throw);
 		^super.new(
 			what: "Cannot mutate an immutable object",
 			callFrameAnnotations: ["Make a copy of this object before mutating it."],
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m.ownerClass === Object and: {m.name === 'immutableError'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'immutableError'}} },
 		)
 			.value_(value)
 	}
@@ -293,12 +297,12 @@ DeprecatedError : MethodError {
 	var <>method, <>alternateMethod;
 
 	*new { |receiver, method, alternateMethod|
-		var thisConstructor = this.class.findMethod(\new);
+		var thisThrow = this.class.findMethod(\throw);
 		^super.new(
 			what: "The method '%-%' is deprecated, instead use '%-%'.".format(method.ownerClass.name, method.name, alternateMethod.ownerClass.name, alternateMethod.name),
 			callFrameAnnotations: ["Replace this with '*.%".format(alternateMethod.name)],
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisConstructor or: {m == method} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m == method} },
 		)
 			.method_(method)
 			.alternateMethod_(alternateMethod)

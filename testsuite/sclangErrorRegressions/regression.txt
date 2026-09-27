@@ -1,15 +1,6 @@
 ──────────────────────────────────────────────────────────────────────────────────
 ERROR: Integer does not understand the message 'meow'.
 
-15  : Method Name: 'Function-prTry'
-		file:/
-		│ 		};
-		│ 		Exception.inProtectedFunction = true;
-		│ 		result = this.value;
-		┆ 		         ^^^^^^^^^^ 
-		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-		│ 		thread.exceptionHandler = next; // pop
-		│ 		^result
 14  : Anonymous Function
 		file:/
 		│ 	var catch = { |action|
@@ -46,7 +37,7 @@ ERROR: Integer does not understand the message 'meow'.
 5   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
 4   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
 3   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
-       args: this=, i=Integer(2), a=nil
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...), i=2, a=nil
        vars: var1=[]
 		file:/
 		│             1.meow(10, args: \woof)
@@ -57,7 +48,7 @@ ERROR: Integer does not understand the message 'meow'.
 		│     }
 		│ 
 2   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
-       args: this=, i=Integer(1), a=nil
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...), i=1, a=nil
        vars: var1=[]
 		file:/
 		│             1.meow(10, args: \woof)
@@ -68,7 +59,7 @@ ERROR: Integer does not understand the message 'meow'.
 		│     }
 		│ 
 1   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
-       args: this=, i=Integer(0), a=nil
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...), i=0, a=nil
        vars: var1=[]
 		file:/
 		│         var var1 = 100.0.rand;
@@ -88,15 +79,6 @@ Messages with a similar name understood by the receiver:
 ──────────────────────────────────────────────────────────────────────────────────
 ERROR: Integer does not understand the message 'meow'.
 
-15  : Method Name: 'Function-prTry'
-		file:/
-		│ 		};
-		│ 		Exception.inProtectedFunction = true;
-		│ 		result = this.value;
-		┆ 		         ^^^^^^^^^^ 
-		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-		│ 		thread.exceptionHandler = next; // pop
-		│ 		^result
 14  : Anonymous Function
 		file:/
 		│ 	var catch = { |action|
@@ -133,7 +115,7 @@ ERROR: Integer does not understand the message 'meow'.
 5   : Function Name: 'f'
 4   : Function Name: 'f'
 3   : Function Name: 'f'
-       args: i=Integer(2), a=nil
+       args: i=2, a=nil
        vars: var1=[]
 		file:/
 		│                 1.meow(10, args: \woof)
@@ -144,7 +126,7 @@ ERROR: Integer does not understand the message 'meow'.
 		│         };
 		│ 
 2   : Function Name: 'f'
-       args: i=Integer(1), a=nil
+       args: i=1, a=nil
        vars: var1=[]
 		file:/
 		│                 1.meow(10, args: \woof)
@@ -155,7 +137,7 @@ ERROR: Integer does not understand the message 'meow'.
 		│         };
 		│ 
 1   : Function Name: 'f'
-       args: i=Integer(0), a=nil
+       args: i=0, a=nil
        vars: var1=[]
 		file:/
 		│             var var1 = 100.0.rand;
@@ -175,15 +157,6 @@ Messages with a similar name understood by the receiver:
 ──────────────────────────────────────────────────────────────────────────────────
 ERROR: This is a test error
 
-4   : Method Name: 'Function-prTry'
-		file:/
-		│ 		};
-		│ 		Exception.inProtectedFunction = true;
-		│ 		result = this.value;
-		┆ 		         ^^^^^^^^^^ 
-		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-		│ 		thread.exceptionHandler = next; // pop
-		│ 		^result
 3   : Anonymous Function
 		file:/
 		│ 	var catch = { |action|
@@ -203,12 +176,12 @@ ERROR: This is a test error
 		│ 
 		│ 	catch.value {
 1   : Method Name: 'Meta_ErrorGenerator-error'
-       args: this=
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
 		file:/
 		│ 
 		│     *error {
 		│         Error("This is a test error").throw
-		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 		│     }
 		│ 
 		│     *errorWrapper {
@@ -219,35 +192,25 @@ ERROR: This is a test error
 ──────────────────────────────────────────────────────────────────────────────────
 ERROR: Wrapping some error
 
-Wrapped error:
-     2   : Method Name: 'Function-prTry'
-            args: this=
-            vars: result=nil, thread=, next=, wasInProtectedFunc=true
-		file:/
-		│ 		};
-		│ 		Exception.inProtectedFunction = true;
-		│ 		result = this.value;
-		┆ 		         ^^^^^^^^^^ 
-		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-		│ 		thread.exceptionHandler = next; // pop
-		│ 		^result
+Wrapped error: Wrapping some error
+
      1   : Anonymous Function
 		file:/
 		│     *errorWrapper {
 		│         try {
 		│             Error("some other error").throw;
-		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 		│         } { |er|
 		│             ErrorWrapper(er, "Wrapping some error").throw
 		│         }
-This error:
+Wrapping some error
 1   : Anonymous Function
-       args: er=
+       args: er=Error(what="some other error", callFrameAnnotations=[], ...)
 		file:/
 		│             Error("some other error").throw;
 		│         } { |er|
 		│             ErrorWrapper(er, "Wrapping some error").throw
-		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 		│         }
 		│     }
 		│ 
@@ -257,15 +220,6 @@ This error:
 ──────────────────────────────────────────────────────────────────────────────────
 ERROR: Not yet implemented
 
-4   : Method Name: 'Function-prTry'
-		file:/
-		│ 		};
-		│ 		Exception.inProtectedFunction = true;
-		│ 		result = this.value;
-		┆ 		         ^^^^^^^^^^ 
-		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-		│ 		thread.exceptionHandler = next; // pop
-		│ 		^result
 3   : Anonymous Function
 		file:/
 		│ 	var catch = { |action|
@@ -285,7 +239,7 @@ ERROR: Not yet implemented
 		│ 
 		│ 	catch.value {
 1   : Method Name: 'Meta_ErrorGenerator-notYetImplementedError'
-       args: this=
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
 		file:/
 		│ 
 		│     *notYetImplementedError {
@@ -302,15 +256,6 @@ RECEIVER: Nil
 ──────────────────────────────────────────────────────────────────────────────────
 ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
 
-5   : Method Name: 'Function-prTry'
-		file:/
-		│ 		};
-		│ 		Exception.inProtectedFunction = true;
-		│ 		result = this.value;
-		┆ 		         ^^^^^^^^^^ 
-		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-		│ 		thread.exceptionHandler = next; // pop
-		│ 		^result
 4   : Anonymous Function
 		file:/
 		│ 	var catch = { |action|
@@ -330,8 +275,8 @@ ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable
 		│ 
 		│ 	catch.value {
 2   : Method Name: 'Meta_ErrorGenerator-immutable'
-       args: this=
-       vars: a=[Integer(1)]
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+       vars: a=[1]
 		file:/
 		│     *immutable {
 		│         var a = #[1];
@@ -341,7 +286,7 @@ ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable
 		│ 
 		│     *subclassResponsibilityError {
 1   : Method Name: 'ArrayedCollection-put'
-       args: this=[Integer(1)], index=Integer(0), item=Integer(10)
+       args: this=[1], index=0, item=10
 		file:/
 		│ 	put { arg index, item;
 		│ 		_BasicPut;
@@ -358,15 +303,6 @@ RECEIVER: Array
 ──────────────────────────────────────────────────────────────────────────────────
 ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
 
-4   : Method Name: 'Function-prTry'
-		file:/
-		│ 		};
-		│ 		Exception.inProtectedFunction = true;
-		│ 		result = this.value;
-		┆ 		         ^^^^^^^^^^ 
-		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-		│ 		thread.exceptionHandler = next; // pop
-		│ 		^result
 3   : Anonymous Function
 		file:/
 		│ 	var catch = { |action|
@@ -386,7 +322,7 @@ ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorG
 		│ 
 		│ 	catch.value {
 1   : Method Name: 'Meta_ErrorGenerator-subclassResponsibilityError'
-       args: this=
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
 		file:/
 		│ 
 		│     *subclassResponsibilityError {
@@ -403,15 +339,6 @@ RECEIVER: Meta_ErrorGenerator
 ──────────────────────────────────────────────────────────────────────────────────
 ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
 
-4   : Method Name: 'Function-prTry'
-		file:/
-		│ 		};
-		│ 		Exception.inProtectedFunction = true;
-		│ 		result = this.value;
-		┆ 		         ^^^^^^^^^^ 
-		│ 		Exception.inProtectedFunction = wasInProtectedFunc;
-		│ 		thread.exceptionHandler = next; // pop
-		│ 		^result
 3   : Anonymous Function
 		file:/
 		│ 	var catch = { |action|
@@ -431,7 +358,7 @@ ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for 
 		│ 
 		│ 	catch.value {
 1   : Method Name: 'Meta_ErrorGenerator-shouldNotImplementError'
-       args: this=
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
 		file:/
 		│ 
 		│     *shouldNotImplementError {
@@ -442,6 +369,42 @@ ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for 
 		│     // leave these unset to throw an error
 
 RECEIVER: Meta_ErrorGenerator
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: slot printing test
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+       vars: f=Function(def=f: {\n			var array = [1,...}, ...)
+		file:/
+		│ 		};
+		│ 
+		│ 		f.();
+		┆ 		^^^^ 
+		│ 	};
+		│ 
+		│ 	stream
+1   : Function Name: 'f'
+       vars: array=[1, 2, 3, 4, 5], dict=Event(array=['a', 1, 'array', [1, 2, 3, ...], ...], ...), recursive=[#recursion#, 2, 3]
+		file:/
+		│ 			var recursive = [1, 2, 3];
+		│ 			recursive[0] = recursive;
+		│ 			Error("slot printing test").throw
+		┆ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 		};
+		│ 
+		│ 		f.();
+
 
 ──────────────────────────────────────────────────────────────────────────────────
 
