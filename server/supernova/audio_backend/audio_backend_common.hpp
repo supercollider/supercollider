@@ -60,12 +60,12 @@ public:
 
 protected:
     void clear_inputs(size_t frames_per_tick) {
-        for (uint16_t channel = 0; channel != input_samples.size(); ++channel)
+        for (size_t channel = 0; channel < input_samples.size(); ++channel)
             zerovec_simd(input_samples[channel].get(), frames_per_tick);
     }
 
     void clear_outputs(size_t frames_per_tick) {
-        for (uint16_t channel = 0; channel != output_samples.size(); ++channel)
+        for (size_t channel = 0; channel < output_samples.size(); ++channel)
             zerovec_simd(output_samples[channel].get(), frames_per_tick);
     }
 
@@ -80,7 +80,7 @@ protected:
 
     void fetch_inputs(const float** inputs, size_t frames, int input_channels) {
         if (is_multiple_of_vectorsize(frames)) {
-            for (uint16_t i = 0; i != input_channels; ++i) {
+            for (size_t i = 0; i < input_channels; ++i) {
                 if (is_aligned(inputs[i]))
                     nova::copyvec_simd(input_samples[i].get(), inputs[i], frames);
                 else
@@ -88,7 +88,7 @@ protected:
                 inputs[i] += frames;
             }
         } else {
-            for (uint16_t i = 0; i != input_channels; ++i) {
+            for (size_t i = 0; i < input_channels; ++i) {
                 nova::copyvec(input_samples[i].get(), inputs[i], frames);
                 inputs[i] += frames;
             }
@@ -97,7 +97,7 @@ protected:
 
     void deliver_outputs(float** outputs, size_t frames, int output_channels) {
         if (is_multiple_of_vectorsize(frames)) {
-            for (uint16_t i = 0; i != output_channels; ++i) {
+            for (size_t i = 0; i < output_channels; ++i) {
                 if (is_aligned(outputs[i]))
                     nova::copyvec_simd(outputs[i], output_samples[i].get(), frames);
                 else
@@ -105,7 +105,7 @@ protected:
                 outputs[i] += frames;
             }
         } else {
-            for (uint16_t i = 0; i != output_channels; ++i) {
+            for (size_t i = 0; i < output_channels; ++i) {
                 nova::copyvec(outputs[i], output_samples[i].get(), frames);
                 outputs[i] += frames;
             }

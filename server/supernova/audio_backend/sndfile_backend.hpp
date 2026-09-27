@@ -154,16 +154,17 @@ private:
                     assert(remaining % input_channels == 0);
                     assert(remaining_per_channel % input_channels == 0);
 
-                    for (uint16_t channel = 0; channel != input_channels; ++channel)
+                    for (size_t channel = 0; channel < input_channels; ++channel)
                         zerovec(super::input_samples[channel].get() + last_frame, remaining_per_channel);
 
                     break;
                 }
             } while (remaining);
 
-            const size_t frames = (total_samples - remaining) / input_channels;
-            for (size_t frame = 0; frame != frames; ++frame) {
-                for (uint16_t channel = 0; channel != input_channels; ++channel)
+            // interleaved -> deinterleaved
+            const size_t num_frames = (total_samples - remaining) / input_channels;
+            for (size_t frame = 0; frame < num_frames; ++frame) {
+                for (size_t channel = 0; channel < input_channels; ++channel)
                     super::input_samples[channel].get()[frame] = temp_buffer.get()[frame * input_channels + channel];
             }
         } else
@@ -206,8 +207,9 @@ private:
 
     /* write output fifo from rt context */
     void write_output_buffers(size_t frames_per_tick) {
-        for (size_t frame = 0; frame != frames_per_tick; ++frame) {
-            for (uint16_t channel = 0; channel != output_channels; ++channel)
+        // deinterleaved -> interleaved
+        for (size_t frame = 0; frame < frames_per_tick; ++frame) {
+            for (size_t channel = 0; channel < output_channels; ++channel)
                 temp_buffer.get()[frame * output_channels + channel] = super::output_samples[channel].get()[frame];
         }
 
@@ -269,8 +271,8 @@ private:
             if (written_frames == -1)
                 throw std::runtime_error(std::string("sndfile write failed: ") + output_file.strError());
 
-            for (size_t frame = 0; frame != frames_to_read; ++frame) {
-                for (size_t channel = 0; channel != output_channels; ++channel) {
+            for (size_t frame = 0; frame < frames_to_read; ++frame) {
+                for (size_t channel = 0; channel < output_channels; ++channel) {
                     const sample_type current_sample = data_to_write[frame * output_channels + channel];
 
                     sample_type current_peak = max_peaks[channel];
@@ -305,6 +307,7 @@ private:
     int block_size_;
     bool engine_initialized = false;
 
+    // tempary buffer for audio sample (de)interleaving
     aligned_storage_ptr<sample_type> temp_buffer;
 
     std::thread reader_thread, writer_thread;
