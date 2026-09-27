@@ -197,7 +197,11 @@ private:
                 size_t remaining = item_to_enqueue;
 
                 do {
-                    remaining -= read_frames.push(data_to_read.data(), remaining);
+                    size_t written = read_frames.push(data_to_read.data(), remaining);
+                    remaining -= written;
+                    // instead of spinning, sleep for a short time.
+                    if (!written)
+                        std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 } while (remaining);
                 read_semaphore.post();
             } else
