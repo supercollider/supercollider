@@ -125,16 +125,20 @@ struct non_realtime_synthesis_engine {
 
     done:
         backend.deactivate_audio();
+
         auto end_time = steady_clock::now();
         std::string elapsed_string = format_duration(end_time - start_time);
-
         log_printf("\nNon-rt synthesis finished in %s\n", elapsed_string.c_str());
 
-        auto peaks = backend.get_peaks();
+        auto total_time = instance->current_time().to_seconds();
+        auto total_duration = std::chrono::duration<double>(total_time);
+        log_printf("Output file duration: %s\n", format_duration(total_duration).c_str());
+
         log_printf("Peak summary:\n");
+        auto peaks = backend.get_peaks();
         for (size_t channel = 0; channel != peaks.size(); ++channel) {
             auto amplitude = peaks[channel];
-            log_printf("  Channel %zu: %gdB\n", channel, sc_ampdb(amplitude));
+            log_printf("  Channel %zu: %.3fdB\n", channel, sc_ampdb(amplitude));
         }
     }
 
