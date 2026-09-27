@@ -575,26 +575,26 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
     if (!inOptions->mNonRealTimeOutputFilename)
         throw std::runtime_error("Non real time output filename is NULL.\n");
 
-    SF_INFO inputFileInfo, outputFileInfo;
-    float* inputFileBuf = nullptr;
-    float* outputFileBuf = nullptr;
+    int numOutputChannels = world->mNumOutputs;
+    float* outputFileBuf = (float*)calloc(1, numOutputChannels * fileBufFrames * sizeof(float));
+    {
+        SF_INFO outputFileInfo;
+        outputFileInfo.channels = numOutputChannels;
+        outputFileInfo.samplerate = inOptions->mPreferredSampleRate;
+        sndfileFormatInfoFromStrings(&outputFileInfo, inOptions->mNonRealTimeOutputHeaderFormat,
+                                     inOptions->mNonRealTimeOutputSampleFormat);
+
+        world->hw->mNRTOutputFile = sndfileOpenFromCStr(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
+        if (!world->hw->mNRTOutputFile)
+            throw std::runtime_error("Couldn't open non real time output file.\n");
+
+        sf_command(world->hw->mNRTOutputFile, SFC_SET_CLIPPING, nullptr, SF_TRUE);
+    }
+
     int numInputChannels = 0;
-    int numOutputChannels;
-
-    outputFileInfo.samplerate = inOptions->mPreferredSampleRate;
-    numOutputChannels = outputFileInfo.channels = world->mNumOutputs;
-    sndfileFormatInfoFromStrings(&outputFileInfo, inOptions->mNonRealTimeOutputHeaderFormat,
-                                 inOptions->mNonRealTimeOutputSampleFormat);
-
-    world->hw->mNRTOutputFile = sndfileOpenFromCStr(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
-    sf_command(world->hw->mNRTOutputFile, SFC_SET_CLIPPING, nullptr, SF_TRUE);
-
-    if (!world->hw->mNRTOutputFile)
-        throw std::runtime_error("Couldn't open non real time output file.\n");
-
-    outputFileBuf = (float*)calloc(1, world->mNumOutputs * fileBufFrames * sizeof(float));
-
+    float* inputFileBuf = nullptr;
     if (inOptions->mNonRealTimeInputFilename) {
+        SF_INFO inputFileInfo;
         world->hw->mNRTInputFile = sndfileOpenFromCStr(inOptions->mNonRealTimeInputFilename, SFM_READ, &inputFileInfo);
         if (!world->hw->mNRTInputFile)
             throw std::runtime_error("Couldn't open non real time input file.\n");
@@ -608,7 +608,6 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
 
         if (inputFileInfo.samplerate != (int)inOptions->mPreferredSampleRate)
             scprintf("WARNING: input file sample rate does not equal output sample rate.\n");
-
     } else {
         world->hw->mNRTInputFile = nullptr;
     }
