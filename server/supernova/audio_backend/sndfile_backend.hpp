@@ -300,7 +300,6 @@ public:
     }
 
     void audio_fn(size_t frames_per_tick) {
-        super::clear_outputs(frames_per_tick);
         read_input_buffers(frames_per_tick);
         audio_fn_noinput(frames_per_tick);
     }
