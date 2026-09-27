@@ -577,25 +577,33 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
     int fileBufFrames = inOptions->mPreferredHardwareBufferFrameSize;
     if (fileBufFrames <= 0)
         fileBufFrames = 8192;
+    // round fileBufFrames to multiple of bufLength
     int bufMultiple = (fileBufFrames + bufLength - 1) / bufLength;
     fileBufFrames = bufMultiple * bufLength;
 
     // batch process non real time audio
     if (!inOptions->mNonRealTimeOutputFilename)
-        throw std::runtime_error("Non real time output filename is NULL.\n");
+        throw std::runtime_error("Non-real-time output filename is NULL.\n");
 
     int numOutputChannels = world->mNumOutputs;
     float* outputFileBuf = (float*)calloc(1, numOutputChannels * fileBufFrames * sizeof(float));
     {
-        SF_INFO outputFileInfo;
+        SF_INFO outputFileInfo {};
         outputFileInfo.channels = numOutputChannels;
         outputFileInfo.samplerate = inOptions->mPreferredSampleRate;
-        sndfileFormatInfoFromStrings(&outputFileInfo, inOptions->mNonRealTimeOutputHeaderFormat,
-                                     inOptions->mNonRealTimeOutputSampleFormat);
+        auto err = sndfileFormatInfoFromStrings(&outputFileInfo, inOptions->mNonRealTimeOutputHeaderFormat,
+                                                inOptions->mNonRealTimeOutputSampleFormat);
+        if (err != kSCErr_None) {
+            throw std::runtime_error("Bad header or sample format\n");
+        }
 
-        world->hw->mNRTOutputFile = sndfileOpenFromCStr(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
-        if (!world->hw->mNRTOutputFile)
-            throw std::runtime_error("Couldn't open non real time output file.\n");
+        const char* fileName = inOptions->mNonRealTimeOutputFilename;
+        world->hw->mNRTOutputFile = sndfileOpenFromCStr(fileName, SFM_WRITE, &outputFileInfo);
+        if (!world->hw->mNRTOutputFile) {
+            std::stringstream ss;
+            ss << "Couldn't open non-real-time output file '" << fileName << "': " << sf_strerror(nullptr) << "\n";
+            throw std::runtime_error(ss.str());
+        }
 
         sf_command(world->hw->mNRTOutputFile, SFC_SET_CLIPPING, nullptr, SF_TRUE);
     }
@@ -603,10 +611,14 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
     int numInputChannels = 0;
     float* inputFileBuf = nullptr;
     if (inOptions->mNonRealTimeInputFilename) {
-        SF_INFO inputFileInfo;
-        world->hw->mNRTInputFile = sndfileOpenFromCStr(inOptions->mNonRealTimeInputFilename, SFM_READ, &inputFileInfo);
-        if (!world->hw->mNRTInputFile)
-            throw std::runtime_error("Couldn't open non real time input file.\n");
+        SF_INFO inputFileInfo {};
+        const char* fileName = inOptions->mNonRealTimeInputFilename;
+        world->hw->mNRTInputFile = sndfileOpenFromCStr(fileName, SFM_READ, &inputFileInfo);
+        if (!world->hw->mNRTInputFile) {
+            std::stringstream ss;
+            ss << "Couldn't open non-real-time input file '" << fileName << "': " << sf_strerror(nullptr) << "\n";
+            throw std::runtime_error(ss.str());
+        }
 
         inputFileBuf = (float*)calloc(1, inputFileInfo.channels * fileBufFrames * sizeof(float));
 
@@ -622,18 +634,21 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
     }
 
     FILE* cmdFile;
-    if (inOptions->mNonRealTimeCmdFilename) {
+    if (auto fileName = inOptions->mNonRealTimeCmdFilename) {
 #    ifdef _WIN32
         cmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "rb");
 #    else
         cmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "r");
 #    endif
+        if (!cmdFile) {
+            std::stringstream ss;
+            ss << "Couldn't open non-real-time command file '" << cmdFile << "'\n";
+            throw std::runtime_error(ss.str());
+        }
     } else
         cmdFile = stdin;
 
     std::vector<char> buffer;
-    if (!cmdFile)
-        throw std::runtime_error("Couldn't open non real time command file.\n");
 
     OSC_Packet packet {};
     packet.mIsBundle = true;
