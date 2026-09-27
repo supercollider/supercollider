@@ -26,7 +26,6 @@
 #    include "../../common/SC_Apple.hpp"
 #endif
 
-
 #include "SC_World.h"
 #include "SC_WorldOptions.h"
 #include "SC_HiddenWorld.h"
@@ -39,7 +38,6 @@
 #include "SC_CoreAudio.h"
 #include "SC_Group.h"
 #include "SC_Errors.h"
-#include <stdio.h>
 #include "SC_Prototypes.h"
 #include "SC_Filesystem.hpp"
 #include "SC_Lock.h"
@@ -48,6 +46,10 @@
 #include "../../common/Samp.hpp"
 #include "SC_StringParser.h"
 #include "SC_fftlib.hpp"
+
+#include <vector>
+#include <stdio.h>
+
 #ifdef _WIN32
 #    include <direct.h>
 #else
@@ -531,30 +533,37 @@ int World_CopySndBuf(World* world, uint32 index, SndBuf* outBuf, bool onlyIfChan
     return kSCErr_None;
 }
 
-bool nextOSCPacket(FILE* file, OSC_Packet* packet, int64& outTime) {
+bool nextOSCPacket(FILE* file, std::vector<char>& buffer, OSC_Packet& packet, int64& outTime) {
     int32 msglen;
     if (fread(&msglen, 1, sizeof(int32), file) != sizeof(int32))
-        return true;
+        return false;
+
     // msglen is in network byte order
     msglen = OSCint((char*)&msglen);
-    if (msglen > 1073741824) {
-        throw std::runtime_error("OSC packet too long. > 2^30 bytes\n");
+    if (msglen < 0) {
+        std::stringstream ss;
+        ss << "nextOSCPacket: bad message size (" << msglen << ")\n";
+        throw std::runtime_error(ss.str());
     }
-    packet->mData = (char*)realloc((void*)packet->mData, (size_t)msglen);
-    if (!packet->mData)
-        throw std::runtime_error("nextOSCPacket: realloc failed...\n");
 
-    size_t read = fread(packet->mData, 1, msglen, file);
+    // grow buffer on demand
+    if (msglen > buffer.size()) {
+        buffer.resize(msglen);
+    }
+
+    size_t read = fread(buffer.data(), 1, msglen, file);
     if (read != msglen)
         throw std::runtime_error("nextOSCPacket: invalid read of OSC packet\n");
 
-    if (strcmp(packet->mData, "#bundle") != 0)
+    packet.mData = buffer.data();
+    packet.mSize = msglen;
+
+    if (strcmp(packet.mData, "#bundle") != 0)
         throw std::runtime_error("OSC packet not a bundle\n");
 
-    packet->mSize = msglen;
+    outTime = OSCtime(packet.mData + 8);
 
-    outTime = OSCtime(packet->mData + 8);
-    return false;
+    return true;
 }
 
 void PerformOSCBundle(World* inWorld, OSC_Packet* inPacket);
@@ -621,18 +630,20 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
 #    endif
     } else
         cmdFile = stdin;
+
+    std::vector<char> buffer;
     if (!cmdFile)
         throw std::runtime_error("Couldn't open non real time command file.\n");
 
-    OSC_Packet packet;
-    memset(&packet, 0, sizeof(packet));
-    packet.mData = (char*)malloc(8192);
+    OSC_Packet packet {};
     packet.mIsBundle = true;
     packet.mReplyAddr.mReplyFunc = null_reply_func;
 
-    int64 schedTime;
-    if (nextOSCPacket(cmdFile, &packet, schedTime))
+    int64 schedTime = 0;
+
+    if (!nextOSCPacket(cmdFile, buffer, packet, schedTime))
         throw std::runtime_error("command file empty.\n");
+
     int64 prevTime = schedTime;
 
     World_SetSampleRate(world, inOptions->mPreferredSampleRate);
@@ -654,7 +665,8 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
     float* outputBuses = world->mAudioBus;
     int32* inputTouched = world->mAudioBusTouched + world->mNumOutputs;
     int32* outputTouched = world->mAudioBusTouched;
-    for (; run;) {
+
+    while (run) {
         int bufFramesCalculated = 0;
         float* inBufPos = inputFileBuf;
         float* outBufPos = outputFileBuf;
@@ -697,12 +709,12 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
                 else if (world->mSampleOffset >= bufLength)
                     world->mSampleOffset = bufLength - 1;
 
-
                 PerformOSCBundle(world, &packet);
-                if (nextOSCPacket(cmdFile, &packet, schedTime)) {
+                if (!nextOSCPacket(cmdFile, buffer, packet, schedTime)) {
                     run = false;
                     break;
                 }
+
                 if (inOptions->mVerbosity >= 0) {
                     printf("nextOSCPacket %g\n", schedTime * oscToSeconds);
                 }
@@ -754,7 +766,6 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
         world->hw->mNRTInputFile = nullptr;
     }
 
-    free(packet.mData);
     World_Cleanup(world, true);
 }
 #endif // !NO_LIBSNDFILE
