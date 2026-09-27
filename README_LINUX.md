@@ -135,7 +135,7 @@ sudo apt-get install \
   qt6-base-dev-tools \
   qt6-tools-dev \
   qt6-tools-dev-tools \
-  libqt6websockets6-dev \
+  qt6-websockets-dev \
   libqt6webenginecore6 \
   qt6-webengine-dev \
   qt6-webengine-dev-tools \
