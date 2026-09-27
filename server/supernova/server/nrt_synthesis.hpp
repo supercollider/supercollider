@@ -28,7 +28,6 @@
 #include "server_args.hpp"
 #include "server.hpp"
 #include "audio_backend/sndfile_backend.hpp"
-#include "sc/sc_plugin_interface.hpp"
 
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "../../include/plugin_interface/SC_InlineUnaryOp.h"
@@ -45,14 +44,12 @@ struct non_rt_functor {
 };
 
 struct non_realtime_synthesis_engine {
-    typedef std::string string;
-
     non_realtime_synthesis_engine(server_arguments const& args) {
         int format =
             headerFormatFromString(args.header_format.c_str()) | sampleFormatFromString(args.sample_format.c_str());
 
-        string input_file = args.input_file;
-        if (input_file == string("_"))
+        std::string input_file = args.input_file;
+        if (input_file == "_")
             input_file.clear();
 
         backend.open_client(input_file, args.output_file, args.samplerate, format, args.output_channels,
