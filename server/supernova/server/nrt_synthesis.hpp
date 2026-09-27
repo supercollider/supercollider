@@ -67,6 +67,15 @@ struct non_realtime_synthesis_engine {
 
     void prepare_backend(int blocksize, int input_channels, int output_channels) {
         std::vector<sample*> inputs, outputs;
+
+        auto& world = sc_factory->world;
+        if (input_channels != world.mNumInputs) {
+            if (world.mNumInputs != input_channels) {
+                log_printf("WARNING: input file channels didn't match number of inputs specified in options.\n");
+                // bash to actual number of input channels
+                world.mNumInputs = input_channels;
+            }
+        }
         for (int channel = 0; channel < input_channels; ++channel)
             inputs.push_back(sc_factory->world.mAudioBus + (blocksize * (output_channels + channel)));
 
