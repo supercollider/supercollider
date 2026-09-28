@@ -68,7 +68,7 @@ public:
         return SlopeSignal<FloatType>(last, calcSlope(next, last));
     }
 
-    inline AudioSignal<float> makeSignal(int index) const {
+    inline AudioSignal<float> makeSignal(uint32 index) const {
         const float* input = in(index);
         return AudioSignal<float>(input);
     }
