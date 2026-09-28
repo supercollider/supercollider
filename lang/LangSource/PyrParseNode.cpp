@@ -3684,7 +3684,7 @@ void PyrSlotNode::compileLiteral(CompilerContext& cxt, PyrSlot* result) {
 void PyrReturnNode::compile(CompilerContext& cxt, PyrSlot* result) {
     if (cxt.functionIsExplicitlyClosed) {
         cxt.postErrorInCurrentFile(location, "Function literals `#{...}` cannot use the return carat `^`.",
-                                   "Return carat (`^`) not allowed in a closed function.");
+                                   "Please remove the hash '#'. '^' is incorrect in closed functions.");
         return;
     }
 
