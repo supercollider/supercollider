@@ -1749,6 +1749,7 @@ void handle_n_order(ReceivedMessage const& msg) {
         target_parent = static_cast<abstract_group*>(target);
     }
 
+    server_node* previous = nullptr;
     while (!args.Eos()) {
         osc::int32 node_id;
         args >> node_id;
@@ -1761,12 +1762,15 @@ void handle_n_order(ReceivedMessage const& msg) {
 
         /** TODO: this can be optimized if node_parent == target_parent */
         node_parent->remove_child(node);
-        if (action == before || action == after)
+        if (previous != nullptr)
+            target_parent->add_child(node, make_pair(previous, after));
+        else if (action == before || action == after)
             target_parent->add_child(node, make_pair(target, node_position(action)));
         else
             target_parent->add_child(node, node_position(action));
 
         instance->notification_node_moved(node);
+        previous = node;
     }
     instance->request_dsp_queue_update();
 }
