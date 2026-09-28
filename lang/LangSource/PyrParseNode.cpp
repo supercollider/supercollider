@@ -35,10 +35,12 @@
 #include "Opcodes.h"
 #include "PyrKernelProto.h"
 #include "PyrObjectProto.h"
+#include "PyrPrimitive.h"
 #include "GC.h"
 #include "PredefinedSymbols.h"
 #include "SC_LanguageConfig.hpp"
 #include "SpecialSelectorsOperatorsAndClasses.h"
+#include "sc_defer.hpp"
 #include "text_location.hpp"
 
 #include <algorithm>
@@ -54,11 +56,6 @@
 #include <cctype>
 #include <unordered_map>
 #include <variant>
-#include "PredefinedSymbols.h"
-#include "SC_LanguageConfig.hpp"
-#include "SpecialSelectorsOperatorsAndClasses.h"
-#include "text_location.hpp"
-#include "PyrPrimitive.h"
 
 
 class SetTailBranch {
@@ -1301,18 +1298,6 @@ struct CompiledBytecodeInfoForBlock {
 PyrMethod* initPyrMethod(PyrMethod* method);
 
 void compilePyrMethodNode(CompilerContext& cxt, PyrMethodNode* node, PyrSlot* result) { node->compile(cxt, result); }
-
-template <typename T> struct defer {
-    defer(T&& t): t(std::move(t)) {}
-    defer(defer&&) = delete;
-    defer(const defer&) = delete;
-    defer& operator=(defer&&) = delete;
-    defer& operator=(const defer&) = delete;
-    ~defer() { t(); }
-
-private:
-    T t;
-};
 
 void postDuplicateIdentifierError(CompilerContext& cxt, sc::lex::SourceCodeRange first,
                                   sc::lex::SourceCodeRange second) {
