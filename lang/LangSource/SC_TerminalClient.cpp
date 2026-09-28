@@ -28,6 +28,7 @@
 
 #include "SC_CLIOptions.hpp"
 #include "SC_LanguageClient.h"
+
 #include <cstdlib>
 
 #ifdef SC_QT
@@ -37,12 +38,7 @@
 #include <boost/bind/bind.hpp>
 
 #ifdef _WIN32
-#    define __GNU_LIBRARY__
-#    include "getopt.h"
-#    include "SC_Win32Utils.h"
-#    include <io.h>
 #    include <windows.h>
-#    include <ioapiset.h>
 #    include <iostream> // for cerr
 #endif
 
@@ -59,7 +55,6 @@
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
-#include "PyrLexer.h"
 #include "PyrSlot.h"
 #include "VMGlobals.h"
 #include "SC_Filesystem.hpp"
@@ -78,8 +73,6 @@ static UINT gOldCodePage; // for remembering the old codepage when we switch to 
 
 SC_TerminalClient::SC_TerminalClient(const std::string& name):
     SC_LanguageClient(name),
-    mReturnCode(0),
-    mUseReadline(false),
     mWork(boost::asio::make_work_guard(mIoContext)),
     mTimer(mIoContext),
 #ifndef _WIN32
@@ -141,11 +134,9 @@ int SC_TerminalClient::run(int argc, char** argv) {
     if (opt.mDaemon) {
         daemonLoop();
     } else {
-        initInput();
         startInput();
         commandLoop();
         endInput();
-        cleanupInput();
     }
 
     if (opt.mCallStop)
@@ -157,12 +148,10 @@ int SC_TerminalClient::run(int argc, char** argv) {
 
     shutdownRuntime();
 
-    return mReturnCode;
+    return mExitCode;
 }
 
-void SC_TerminalClient::recompileLibrary() { SC_LanguageClient::recompileLibrary(mOptions.mStandalone); }
-
-void SC_TerminalClient::quit(int code) { mReturnCode = code; }
+bool SC_TerminalClient::recompileLibrary() { return SC_LanguageClient::recompileLibrary(mOptions.mStandalone); }
 
 static PyrSymbol* resolveMethodSymbol(bool silent) {
     if (silent)
@@ -171,128 +160,27 @@ static PyrSymbol* resolveMethodSymbol(bool silent) {
         return s_interpretPrintCmdLine;
 }
 
-void SC_TerminalClient::interpretCmdLine(const char* cmdLine, bool silent) {
-    setCmdLine(cmdLine);
-    runLibrary(resolveMethodSymbol(silent));
-    flush();
-}
-
-
-void SC_TerminalClient::interpretCmdLine(const char* cmdLine, size_t size, bool silent) {
-    setCmdLine(cmdLine, size);
-    runLibrary(resolveMethodSymbol(silent));
-    flush();
-}
-
-// Note: called only if the input thread does not perform an asynchronous read operation
 void SC_TerminalClient::interpretInput() {
-    std::string_view startOfBody { mInputBuf.getData(), mInputBuf.getSize() };
-
-
-    if (startOfBody.empty())
-        return;
-
-    if (startOfBody[0] == SC_LanguageClient::RecompileLibrary) {
-        recompileLibrary();
+    CmdLine cmdLine;
+    if (!tryPopCmdLine(cmdLine)) {
+        postfl("ERROR: interpretInput() called with empty cmdline queue!\n");
         return;
     }
 
-    // While not empty and not a input header
-    auto rollingBody = startOfBody;
-    while (!rollingBody.empty()
-           && !(rollingBody[0] == SC_LanguageClient::InterpretCmdLine
-                || rollingBody[0] == SC_LanguageClient::InterpretPrintCmdLine
-                || rollingBody[0] == SC_LanguageClient::InterpretPrintCmdLineWithHeader)) {
-        rollingBody.remove_prefix(1);
-    }
+    const char* fileName = !cmdLine.fileName.empty() ? cmdLine.fileName.c_str() : nullptr;
+    const int lineNumber = !cmdLine.lineNumber.empty() ? std::atoi(cmdLine.lineNumber.c_str()) : 0;
+    const int column = !cmdLine.column.empty() ? std::atoi(cmdLine.column.c_str()) : 0;
 
-    const auto cleanUp = [&]() {
-        mInputBuf.reset();
-        if (mUseReadline)
-            mReadlineSem.post();
-        else
-            startInputRead();
-    };
+    setCmdLine(cmdLine.code.data(), cmdLine.code.size(), fileName, lineNumber, column);
 
-    const auto endOfBody = rollingBody;
+    runLibrary(resolveMethodSymbol(cmdLine.silent));
 
-    const auto executeIgnoreHeader = [&](bool silent = false) {
-        setCmdLine(startOfBody.data(), std::distance(startOfBody.begin(), endOfBody.begin()));
-        runLibrary(resolveMethodSymbol(silent));
-        flush();
-    };
-
-    if (endOfBody.empty()) {
-        executeIgnoreHeader();
-        cleanUp();
-        return;
-    }
-    const auto silent = rollingBody[0] == SC_LanguageClient::InterpretCmdLine;
-
-    auto rollingHeader = rollingBody.substr(1);
-
-    if (rollingHeader.empty() || rollingHeader[0] != SC_LanguageClient::StartOfHeader) {
-        executeIgnoreHeader(silent);
-        cleanUp();
-        return;
-    }
-
-    rollingHeader.remove_prefix(1);
-
-    if (rollingHeader.empty() || rollingHeader[0] != SC_LanguageClient::FileNameDelimiter) {
-        executeIgnoreHeader(silent);
-        cleanUp();
-        return;
-    }
-
-    auto rollingFileName = rollingHeader.substr(1);
-    const auto startOfFileName = rollingFileName;
-    while (true) {
-        if (rollingFileName.empty()) {
-            executeIgnoreHeader(silent);
-            cleanUp();
-            return;
-        } else if (rollingFileName[0] == SC_LanguageClient::FileNameDelimiter) {
-            break;
-        } else {
-            rollingFileName.remove_prefix(1);
-            continue;
-        }
-    }
-    const auto endOfFileName = rollingFileName;
-    rollingHeader = rollingFileName.substr(1); // skip delimiter
-
-    const auto startOfLineNumber = rollingHeader;
-    if (startOfLineNumber.empty()) {
-        executeIgnoreHeader(silent);
-        cleanUp();
-        return;
-    }
-    while (!rollingHeader.empty() && ('0' <= rollingHeader[0] && rollingHeader[0] <= '9')) {
-        rollingHeader.remove_prefix(1);
-    }
-    const auto endOfLineNumber = rollingHeader;
-    if (endOfLineNumber.empty() || endOfLineNumber[0] != ' ') {
-        executeIgnoreHeader(silent);
-        cleanUp();
-        return;
-    }
-
-    const auto startOfColumn = rollingHeader.substr(1);
-    while (!rollingHeader.empty() && ('0' <= rollingHeader[0] && rollingHeader[0] <= '9')) {
-        rollingHeader.remove_prefix(1);
-    }
-    const auto endOfColumn = rollingHeader;
-
-
-    const auto fileName = std::string { startOfFileName.begin(), endOfFileName.begin() };
-    const auto lineNumber = atoi(startOfLineNumber.data());
-    const auto column = atoi(startOfColumn.data());
-    setCmdLine(startOfBody.data(), std::distance(startOfBody.begin(), endOfBody.begin()), &fileName, lineNumber,
-               column);
-    runLibrary(resolveMethodSymbol(silent));
     flush();
-    cleanUp();
+
+#ifdef HAVE_READLINE
+    if (mUseReadline)
+        mReadlineSem.post();
+#endif
 }
 
 void SC_TerminalClient::onLibraryStartup() {
@@ -308,18 +196,22 @@ void SC_TerminalClient::onLibraryStartup() {
 void SC_TerminalClient::sendSignal(Signal sig) {
     switch (sig) {
     case sig_input:
+        // postfl("sig_input\n");
         boost::asio::post(mIoContext, [this] { this->interpretInput(); });
         break;
 
     case sig_recompile:
+        // postfl("sig_recompile\n");
         boost::asio::post(mIoContext, [this] { this->recompileLibrary(); });
         break;
 
     case sig_sched:
+        // postfl("sig_sched\n");
         boost::asio::post(mIoContext, [this] { this->tick(boost::system::error_code()); });
         break;
 
     case sig_stop:
+        // postfl("sig_stop\n");
         boost::asio::post(mIoContext, [this] { this->stopMain(); });
         break;
     }
@@ -327,7 +219,7 @@ void SC_TerminalClient::sendSignal(Signal sig) {
 
 void SC_TerminalClient::onQuit(int exitCode) {
     postfl("main: quit request %i\n", exitCode);
-    quit(exitCode);
+    mExitCode = exitCode;
     stop();
 }
 
@@ -451,11 +343,14 @@ void SC_TerminalClient::readlineCmdLine(char* cmdLine) {
     if (*cmdLine != 0) {
         // If line wasn't empty, store it so that uparrow retrieves it
         add_history(cmdLine);
-        int len = strlen(cmdLine);
 
-        client->mInputBuf.append(cmdLine, len);
-        client->mInputBuf.append(SC_TerminalClient::InterpretPrintCmdLine);
+        // push to queue and notify main thread
+        CmdLine cmd;
+        cmd.code = cmdLine;
+        client->pushCmdLine(std::move(cmd));
         client->sendSignal(sig_input);
+
+        // wait for cmdline to finish to avoid garbled console output. See interpretInput()
         client->mReadlineSem.wait();
     }
 }
@@ -490,16 +385,16 @@ void SC_TerminalClient::startInputRead() {
     if (mUseReadline)
         mStdIn.async_read_some(boost::asio::null_buffers(), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
     else
-        mStdIn.async_read_some(boost::asio::buffer(inputBuffer),
+        mStdIn.async_read_some(boost::asio::buffer(mInputBuffer),
                                boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
 #else
     mStdIn.async_wait([&](const boost::system::error_code& error) {
         if (error)
             onInputRead(error, 0);
         else {
-            if (!mUseReadline || WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), 0)) {
+            if (!mUseReadline) {
                 DWORD bytes_transferred;
-                ::ReadFile(GetStdHandle(STD_INPUT_HANDLE), inputBuffer.data(), inputBuffer.size(), &bytes_transferred,
+                ::ReadFile(GetStdHandle(STD_INPUT_HANDLE), mInputBuffer.data(), mInputBuffer.size(), &bytes_transferred,
                            nullptr);
                 onInputRead(error, bytes_transferred);
             } else {
@@ -530,13 +425,14 @@ void SC_TerminalClient::onInputRead(const boost::system::error_code& error, std:
 
     if (!error) {
 #if HAVE_READLINE
-        if (mUseReadline) {
+        if (mUseReadline)
             rl_callback_read_char();
-            startInputRead();
-            return;
-        }
+        else
 #endif
-        pushCmdLine(inputBuffer.data(), bytes_transferred);
+            handleInput(mInputBuffer.data(), bytes_transferred);
+
+        // read more input data
+        startInputRead();
     }
 }
 
@@ -546,68 +442,132 @@ void SC_TerminalClient::inputThreadFn() {
         readlineInit();
 #endif
 
-#ifdef _WIN32
-    if (!mUseReadline) {
-        // make sure there's nothing on stdin before we launch the service
-        // this fixes #4214
-        DWORD bytesRead = 0;
-        auto success =
-            ReadFile(GetStdHandle(STD_INPUT_HANDLE), inputBuffer.data(), inputBuffer.size(), &bytesRead, NULL);
-
-        if (success) {
-            pushCmdLine(inputBuffer.data(), bytesRead);
-        }
-    }
-#endif
-
     startInputRead();
 
-    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
-        boost::asio::make_work_guard(mInputContext);
+    auto work = boost::asio::make_work_guard(mInputContext);
     mInputContext.run();
 }
 
-
-void SC_TerminalClient::pushCmdLine(const char* newData, size_t size) {
-    bool signal = false;
-    while (size--) {
-        char c = *newData++;
-        switch (c) {
-        case RecompileLibrary:
-            recompileLibrary();
-            break;
-        case InterpretCmdLine:
-        case InterpretPrintCmdLine:
-            mInputBuf.append(mInputThrdBuf.getData(), mInputThrdBuf.getSize());
-            mInputBuf.append(c);
-            signal = true;
-            mInputThrdBuf.reset();
-            break;
-
-        default:
-            mInputThrdBuf.append(c);
+/** @brief parse and handle input data
+ *
+ *  This is called by \c onInputRead() when data has been received on the input
+ *  thread and no error has occurred. It handles special control characters
+ *  according to our protocol (see \c InputProtocol) and sends the appropriate
+ *  signals to the main thread.
+ */
+void SC_TerminalClient::handleInput(const char* newData, size_t size) {
+    // postfl("received %d bytes\n", size);
+    // postfl("%s", std::string(newData, size).c_str());
+    for (size_t i = 0; i < size; ++i) {
+        char c = newData[i];
+        if (c == RecompileLibrary) {
+            // postfl("input: RecompileLibrary\n");
+            // let's reset the input parser in case of a previous error
+            mNewCmdLine = {};
+            mParseState = ParseState::Done;
+            // notify main thread
+            sendSignal(sig_recompile);
+        } else if (c == StartOfHeader) {
+            // postfl("input: StartOfHeader\n");
+            if (mParseState == ParseState::Done) {
+                // receive file name
+                assert(mNewCmdLine.fileName.empty());
+                mParseState = ParseState::FileName;
+            } else {
+                mParseState = ParseState::Error;
+                postfl("ERROR: handleInput: StartOfText out of context.\n");
+            }
+        } else if (c == RecordDelimiter) {
+            // postfl("input: RecordDelimiter\n");
+            if (mParseState == ParseState::FileName) {
+                // -> continue with line number
+                mParseState = ParseState::LineNumber;
+            } else if (mParseState == ParseState::LineNumber) {
+                // -> continue with column
+                mParseState = ParseState::Column;
+            } else {
+                postfl("ERROR: handleInput: RecordDelimiter out of context.\n");
+                mParseState = ParseState::Error;
+            }
+        } else if (c == StartOfText) {
+            // postfl("input: StartOfText\n");
+            if (mParseState == ParseState::Column) {
+                // -> continue with text
+                assert(mNewCmdLine.code.empty());
+                mParseState = ParseState::Text;
+            } else {
+                postfl("ERROR: handleInput: StartOfText out of context.\n");
+                mParseState = ParseState::Error;
+            }
+        } else if (c == InterpretCmdLine || c == InterpretPrintCmdLine) {
+            const bool silent = (c == InterpretCmdLine);
+            // postfl("input: Interpret%sCmdLine\n", silent ? "" : "Print");
+            if (mParseState == ParseState::Text) {
+                mNewCmdLine.silent = silent;
+                // cmdline finished -> move to queue and notify main thread
+                pushCmdLine(std::move(mNewCmdLine));
+                sendSignal(sig_input);
+            } else {
+                // just drop the current cmdline
+                postfl("ERROR: handleInput: InterpretCmdLine out of context.\n");
+            }
+            // reset parser!
+            mNewCmdLine = {};
+            mParseState = ParseState::Done;
+        } else {
+            // normal character
+            switch (mParseState) {
+            case ParseState::FileName:
+                mNewCmdLine.fileName.push_back(c);
+                break;
+            case ParseState::LineNumber:
+                mNewCmdLine.lineNumber.push_back(c);
+                break;
+            case ParseState::Column:
+                mNewCmdLine.column.push_back(c);
+                break;
+            case ParseState::Text:
+                mNewCmdLine.code.push_back(c);
+                break;
+            case ParseState::Done:
+                // first character after Interpret(Print)CmdLine (without header)
+                // -> transition to Text!
+                mParseState = ParseState::Text;
+                mNewCmdLine.code.push_back(c);
+                break;
+            default:
+                // ignore
+                break;
+            }
         }
     }
-
-    if (signal)
-        sendSignal(sig_input);
-    else
-        startInputRead();
 }
 
+void SC_TerminalClient::pushCmdLine(CmdLine&& cmdLine) {
+    lock_guard lock(mCmdLineQueueMutex);
+    mCmdLineQueue.push_back(std::move(cmdLine));
+}
 
-void SC_TerminalClient::initInput() {
+bool SC_TerminalClient::tryPopCmdLine(CmdLine& cmdLine) {
+    lock_guard lock(mCmdLineQueueMutex);
+    if (!mCmdLineQueue.empty()) {
+        cmdLine = std::move(mCmdLineQueue.front());
+        mCmdLineQueue.erase(mCmdLineQueue.begin());
+        return true;
+    }
+    return false;
+}
+
+void SC_TerminalClient::startInput() {
 #ifdef HAVE_READLINE
     if (!SC_Filesystem::instance().usingIde()) {
         // Other clients (emacs, vim, ...) won't want to interact through rl
         mUseReadline = true;
-        return;
     }
 #endif
-}
 
+    mInputBuffer.resize(inputBufferSize);
 
-void SC_TerminalClient::startInput() {
     SC_Thread thread(std::bind(&SC_TerminalClient::inputThreadFn, this));
     mInputThread = std::move(thread);
 }
@@ -622,9 +582,7 @@ void SC_TerminalClient::endInput() {
     postfl("main: waiting for input thread to join...\n");
     mInputThread.join();
     postfl("main: quitting...\n");
-}
 
-void SC_TerminalClient::cleanupInput() {
 #ifdef HAVE_READLINE
     if (mUseReadline)
         rl_callback_handler_remove();
