@@ -271,24 +271,47 @@ void PyrFrame::decrementReferenceCount(PyrGC* gc) {
             caller = PyrSlot::make(0);
         }
 
-        if (homeContext.isObjectHdr()) {
-            auto* f = homeContext.getPyrObjType<PyrFrame>();
-            if (f != this)
-                f->decrementReferenceCount(gc);
-            homeContext = PyrSlot {};
-        }
-        if (context.isObjectHdr()) {
-            auto* f = context.getPyrObjType<PyrFrame>();
-            if (f != this)
-                f->decrementReferenceCount(gc);
-            context = PyrSlot {};
-        }
+        // This block of code is needed if we ever manage to make all frames reference counted
+        // if (homeContext.isObjectHdr()) {
+        //     auto* f = homeContext.getPyrObjType<PyrFrame>();
+        //     if (f != this)
+        //         f->decrementReferenceCount(gc);
+        //     homeContext = PyrSlot {};
+        // }
+        // if (context.isObjectHdr()) {
+        //     auto* f = context.getPyrObjType<PyrFrame>();
+        //     if (f != this)
+        //         f->decrementReferenceCount(gc);
+        //     context = PyrSlot {};
+        // }
+
         // Ensures it can't be double free'd.
         // The allocator will set this back to zero.
         referenceCount = PyrSlot::make(-1);
         gc->Free(this);
     }
 }
+
+void PyrFrame::storeCaller(struct PyrGC* gc, PyrFrame* other) {
+    caller = PyrSlot::make(other);
+    if (other != this)
+        other->incrementReferenceCount();
+}
+
+void PyrFrame::storeHomeContext(struct PyrGC* gc, PyrFrame* home) {
+    homeContext = PyrSlot::make(home);
+    // Needed if all frames are referenced counted
+    // if (home != this)
+    //    home->incrementReferenceCount();
+}
+
+void PyrFrame::storeContext(struct PyrGC* gc, PyrFrame* cxt) {
+    context = PyrSlot::make(cxt);
+    // Needed if all frames are referenced counted
+    // if (cxt != this)
+    //    cxt->incrementReferenceCount();
+}
+
 
 PyrGC::PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize) {
     mVMGlobals = g;

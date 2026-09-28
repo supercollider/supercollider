@@ -503,7 +503,8 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, s
 inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrBlock* block) {
     const PyrMethodRaw* methraw = METHRAW(block);
     const PyrObject* proto = slotRawObject(&block->prototypeFrame);
-    auto frame = g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext, false);
+    auto frame =
+        g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext, !methraw->needsHeapContext);
     frame->classptr = class_frame;
     frame->size = FRAMESIZE + proto->size;
     SetObject(&frame->method, block);

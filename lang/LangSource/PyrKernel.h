@@ -100,22 +100,9 @@ struct PyrFrame : public PyrObjectHdr {
     // It is only an optimisation.
     void decrementReferenceCount(struct PyrGC* gc);
 
-    void storeCaller(struct PyrGC* gc, PyrFrame* other) {
-        caller = PyrSlot::make(other);
-        if (other != this)
-            other->incrementReferenceCount();
-    }
-    void storeHomeContext(struct PyrGC* gc, PyrFrame* home) {
-        homeContext = PyrSlot::make(home);
-        //        if (home != this)
-        //           home->incrementReferenceCount();
-    }
-
-    void storeContext(struct PyrGC* gc, PyrFrame* cxt) {
-        context = PyrSlot::make(cxt);
-        //      if (cxt != this)
-        //         cxt->incrementReferenceCount();
-    }
+    void storeCaller(struct PyrGC* gc, PyrFrame* other);
+    void storeHomeContext(struct PyrGC* gc, PyrFrame* home);
+    void storeContext(struct PyrGC* gc, PyrFrame* cxt);
 };
 
 // Framesize refers to the minimum number of slots the frame object must allocate.
