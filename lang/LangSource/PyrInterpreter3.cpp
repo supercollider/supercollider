@@ -29,6 +29,7 @@
 #include "PyrMessage.h"
 #include "PyrParseNode.h"
 #include "PyrSched.h"
+#include "PyrSlot.h"
 #include "PyrSymbolTable.h"
 #include <math.h>
 #include <stdlib.h>
@@ -217,13 +218,13 @@ PyrProcess* newPyrProcess(VMGlobals* g, PyrClass* procclassobj) {
         proto = slotRawObject(&meth->prototypeFrame);
 
         methraw = METHRAW(meth);
-        frame = (PyrFrame*)gc->NewFrame(methraw->frameSize, 0, obj_slot, false);
+        frame = (PyrFrame*)gc->New(methraw->frameSize, 0, obj_slot, false);
         frame->classptr = class_frame;
         frame->size = FRAMESIZE + proto->size; /// <- IS THIS WRONG ??
         SetObject(&frame->method, meth);
-        SetObject(&frame->homeContext, frame);
-        SetInt(&frame->caller, 0);
-        SetNil(&frame->context);
+        frame->storeHomeContext(g->gc, frame);
+        frame->context = PyrSlot {};
+        frame->caller = PyrSlot::make(0);
         SetPtr(&frame->ip, nullptr);
         SetObject(&frame->vars[0], interpreter);
 

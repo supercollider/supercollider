@@ -75,7 +75,8 @@ public:
     PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize);
 
     MALLOC PyrObject* New(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inCollect);
-    MALLOC PyrFrame* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool collect);
+    MALLOC PyrFrame* NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool collect,
+                              bool referenceCounted = false);
 
     MALLOC static PyrObject* NewPermanent(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat);
 

@@ -503,18 +503,19 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, s
 inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrBlock* block) {
     const PyrMethodRaw* methraw = METHRAW(block);
     const PyrObject* proto = slotRawObject(&block->prototypeFrame);
-    auto frame =
-        reinterpret_cast<PyrFrame*>(g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext));
+    auto frame = g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext, false);
     frame->classptr = class_frame;
     frame->size = FRAMESIZE + proto->size;
     SetObject(&frame->method, block);
-    SetObject(&frame->homeContext, frame);
-    SetObject(&frame->context, frame);
+
+    frame->storeHomeContext(g->gc, frame);
+    frame->storeContext(g->gc, frame);
+
     frame->expectedStackDepthAfterReturn = PyrSlot {};
+
     if (PyrFrame* caller = g->frame; caller != nullptr) {
         SetPtr(&caller->ip, g->ip);
-        caller->incrementReferenceCount();
-        SetObject(&frame->caller, caller);
+        frame->storeCaller(g->gc, caller);
     } else {
         SetInt(&frame->caller, 0);
     }
@@ -571,7 +572,7 @@ HOT void returnFromBlock(VMGlobals* g) {
         homeContext = slotRawFrame(&returnFrame->homeContext);
         meth = slotRawMethod(&homeContext->method);
         methraw = METHRAW(meth);
-        slotCopy(&g->receiver, &homeContext->vars[0]); //??
+        slotCopy(&g->receiver, &homeContext->vars[0]); // home context is always a method, this is the 'this' argument.
         g->method = meth;
 
         meth = slotRawMethod(&curframe->method);
@@ -691,7 +692,6 @@ HOT void returnFromMethod(VMGlobals* g) {
                 methraw = METHRAW(meth);
                 PyrFrame* nextFrame = slotRawFrame(&tempFrame->caller);
                 if (!methraw->needsHeapContext) {
-                    SetInt(&tempFrame->caller, 0);
                     tempFrame->decrementReferenceCount(g->gc);
                 } else {
                     if (tempFrame != homeContext)

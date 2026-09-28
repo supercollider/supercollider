@@ -242,32 +242,50 @@ void PyrFrame::incrementReferenceCount() {
     // This is set to an int in the allocator.
     // If it isn't, something odd has happened (maybe already been free'd), but the gc will deal with it.
     // If it is less than zero, we might have already free'd this.
-    if (!expectedStackDepthAfterReturn.isInt() || expectedStackDepthAfterReturn.getInt() < 0) {
-        assert(false);
-        // If less than zero, we hopefully let the gc handle this, but it might have been double free'd.
-        expectedStackDepthAfterReturn = PyrSlot {};
+    if (!referenceCount.isInt() || referenceCount.getInt() < 0) {
+        assert(!referenceCount.isInt());
+        referenceCount = PyrSlot {};
         return;
     }
 
-    expectedStackDepthAfterReturn = PyrSlot::make(expectedStackDepthAfterReturn.getInt() + 1);
+    referenceCount = PyrSlot::make(referenceCount.getInt() + 1);
 }
 
 void PyrFrame::decrementReferenceCount(PyrGC* gc) {
     // If it isn't an int, don't free it, it might have already been free'd.
     // If we fail to free the frame, the gc will collect it later, so this is safest.
     // If it is an int, it shouldn't already be zero (no owner), if it is less, we don't want to double free.
-    if (!expectedStackDepthAfterReturn.isInt() || expectedStackDepthAfterReturn.getInt() <= 0) {
-        assert(false);
+    if (!referenceCount.isInt() || referenceCount.getInt() <= 0) {
+        assert(!referenceCount.isInt());
         // Setting to nil means it will no longer be reference counted and the gc will deal with it.
-        expectedStackDepthAfterReturn = PyrSlot {};
+        referenceCount = PyrSlot {};
         return;
     }
 
-    expectedStackDepthAfterReturn = PyrSlot::make(expectedStackDepthAfterReturn.getInt() - 1);
-    if (expectedStackDepthAfterReturn.getInt() == 0) {
+    referenceCount = PyrSlot::make(referenceCount.getInt() - 1);
+    if (referenceCount.getInt() == 0) {
+        if (caller.isObjectHdr()) {
+            auto* f = caller.getPyrObjType<PyrFrame>();
+            if (f != this)
+                f->decrementReferenceCount(gc);
+            caller = PyrSlot::make(0);
+        }
+
+        if (homeContext.isObjectHdr()) {
+            auto* f = homeContext.getPyrObjType<PyrFrame>();
+            if (f != this)
+                f->decrementReferenceCount(gc);
+            homeContext = PyrSlot {};
+        }
+        if (context.isObjectHdr()) {
+            auto* f = context.getPyrObjType<PyrFrame>();
+            if (f != this)
+                f->decrementReferenceCount(gc);
+            context = PyrSlot {};
+        }
         // Ensures it can't be double free'd.
         // The allocator will set this back to zero.
-        expectedStackDepthAfterReturn = PyrSlot {};
+        referenceCount = PyrSlot::make(-1);
         gc->Free(this);
     }
 }
@@ -419,7 +437,8 @@ HOT PyrObject* PyrGC::New(size_t inNumBytes, std::int64_t inFlags, std::int64_t 
 }
 
 
-HOT PyrFrame* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool collect) {
+HOT PyrFrame* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool collect,
+                              bool referenceCounted) {
 #ifdef GC_SANITYCHECK
     SanityCheck();
 #endif
@@ -457,7 +476,10 @@ HOT PyrFrame* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int6
     obj->classptr = class_frame;
     obj->gc_color = mWhiteColor;
 
-    obj->referenceCount = PyrSlot::make(0);
+    obj->referenceCount = referenceCounted ? PyrSlot::make(1) : PyrSlot {};
+    obj->caller = PyrSlot::make(0);
+    obj->context = PyrSlot {};
+    obj->homeContext = PyrSlot {};
 
 #ifdef GC_SANITYCHECK
     SanityCheck();
