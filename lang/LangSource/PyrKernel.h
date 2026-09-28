@@ -107,14 +107,14 @@ struct PyrFrame : public PyrObjectHdr {
     }
     void storeHomeContext(struct PyrGC* gc, PyrFrame* home) {
         homeContext = PyrSlot::make(home);
-        if (home != this)
-            home->incrementReferenceCount();
+        //        if (home != this)
+        //           home->incrementReferenceCount();
     }
 
     void storeContext(struct PyrGC* gc, PyrFrame* cxt) {
         context = PyrSlot::make(cxt);
-        if (cxt != this)
-            cxt->incrementReferenceCount();
+        //      if (cxt != this)
+        //         cxt->incrementReferenceCount();
     }
 };
 
