@@ -20,7 +20,6 @@
 
 #pragma once
 
-// TODO next time this is updated, change SC_PlugIn.hpp `in`, `zin`, etc. to take uint32s
 // TODO next time this is updated, change SC_PlugIn.hpp `numInputs`, `numOutputs` to have correct
 // return type
 // NOTE: The plugin API version has been temporarily bumped to avoid potential crashes
