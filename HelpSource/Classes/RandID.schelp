@@ -10,6 +10,7 @@ Choose which random number generator to use for this synth.
 All synths that use the same generator reproduce the same sequence
 of numbers when the same seed is set again.
 
+In SC 3.15.x and later, code::RandID.kr:: will set the random number generator ID on every control block. This is to support the use of different RNG IDs for different parts of the same SynthDef. See link::#Multiple random number generators:: below.
 
 classmethods::
 
@@ -17,13 +18,6 @@ method::kr, ir
 
 argument::id
 The random number generator ID.
-
-argument::force
-A Boolean flag. A positive value is 'true', and indicates that RandID should set the synth's random number generator ID on every evaluation, even if the input ID has not changed. Negative or zero is 'false', meaning that RandID should set the synth's random number generator ID only when the input ID changes. Default is 0 (false), for compatibility with versions prior to the addition of this feature.
-
-"Forcing" is useful in the special case where different parts of the same SynthDef graph need to use different random number generators. See examples below.
-
-note:: code::RandID.ir:: will always evaluate only once, at the start of the synth, so the code::force:: argument has no effect in that case. ::
 
 
 Examples::
@@ -60,22 +54,24 @@ x = Synth("help-RandSeed", [\id, 1]);
 x.set(\id, 2);
 ::
 
-subsection:: Multiple random number generators and 'force'
+subsection:: Multiple random number generators
 
 In most cases, randomized UGens in a SynthDef may all pull from the same random number generator. In this typical case, it's likely unnecessary to set the ID or re-seed at all.
 
-If, however, one is merging randomized signals from multiple synths into a single synth, and one wants to retain individual control over these separate streams, then the following sequence of evaluation is needed:
+If, however, one needs individual control over separate random-number streams, where each stream is obtained from a different random number generator, then the following sequence of evaluation is needed:
 
 numberedlist::
-## Set RNG ID (and re-seed).
+## Set RNG ID.
 ## Calculate some randomized UGens.
-## Set a different RNG ID (and re-seed).
+## Set a different RNG ID.
 ## Calculate some other randomized UGens.
 ::
 
 This entire sequence needs to be performed, in this order, on every control block.
 
-The original RandID implementation would set the ID only when the input changed. Here, even though the code looks like it should produce two identical pseudo-random sequences, they are different because both LFNoise0 units are using the same RNG (ID = 1).
+note:: code::RandID.ir:: will always evaluate only once, at the start of the synth. If you are using multiple random number generators in the same synth, you must use code::RandID.kr::. ::
+
+As of SC 3.15.x, RandID sets the ID on every control block, supporting the above case transparently. This example uses two identically seeded random number generators, ID 0 and ID 1, and subtracts them to demonstrate that both generators are producing equivalent results (as they should, if they are seeded with the same value). SC 3.14.x and earlier would set the ID only when it changed; this case was not supported in those earlier versions.
 
 code::
 (
@@ -85,23 +81,6 @@ code::
 	RandSeed.ir(1, 88372);
 	a = LFDNoise0.ar(440);
 	RandID.kr(1);
-	RandSeed.ir(1, 88372);
-	b = LFDNoise0.ar(440);
-	[a, b, a - b]
-}.plot;
-)
-::
-
-By "forcing" the RNG ID to be updated on every control block, then the random sequences do match.
-
-code::
-(
-{
-	var a, b;
-	RandID.kr(0, 1);
-	RandSeed.ir(1, 88372);
-	a = LFDNoise0.ar(440);
-	RandID.kr(1, 1);
 	RandSeed.ir(1, 88372);
 	b = LFDNoise0.ar(440);
 	[a, b, a - b]
@@ -142,3 +121,4 @@ SynthDef(\test, {
 ::
 
 ::
+

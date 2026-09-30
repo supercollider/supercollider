@@ -33,12 +33,12 @@ RandSeed : WidthFirstUGen {
 
 RandID : WidthFirstUGen {
 	// choose which random number generator to use for this synth .
-	*kr { arg id = 0, force = 0;
-		this.multiNew('control', id, force)
+	*kr { arg id = 0;
+		this.multiNew('control', id)
 		^0.0		// RandID has no output
 	}
-	*ir { arg id = 0, force = 0;
-		this.multiNew('scalar', id, force)
+	*ir { arg id = 0;
+		this.multiNew('scalar', id)
 		^0.0		// RandID has no output
 	}
 }

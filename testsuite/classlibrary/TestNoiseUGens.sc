@@ -65,7 +65,7 @@ TestNoiseUGens : UnitTest {
 		);
 	}
 
-	test_RandID_forceArgSetsIDForEveryBlock {
+	test_RandID_setsIDForEveryBlock {
 		var synth;
 		var cond = CondVar.new;
 		var ok = false;
@@ -82,7 +82,7 @@ TestNoiseUGens : UnitTest {
 			var seed = 36163;
 
 			#x, y = Array.fill(2, { |i|
-				RandID.kr(i, 1);
+				RandID.kr(i);
 				RandSeed.kr(1, seed);
 				WhiteNoise.ar
 			});
