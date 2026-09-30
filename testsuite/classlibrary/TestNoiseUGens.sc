@@ -41,10 +41,10 @@ TestNoiseUGens : UnitTest {
 			cond.waitFor(0.1, { ok });
 			if(ok.not) { Exception("synth timed out").throw };
 
-            ok = false;
+			ok = false;
 			buffer.getn(0, size, { |data|
 				serverValues = data;
-                ok = true;
+				ok = true;
 				cond.signalAll;
 			});
 			cond.waitFor(0.1, { ok });
