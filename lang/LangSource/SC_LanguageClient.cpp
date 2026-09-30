@@ -60,6 +60,7 @@ extern PyrString* newPyrStringN(class PyrGC* gc, std::int64_t length, std::int64
 
 SC_LanguageClient* gInstance = nullptr;
 SC_Lock gInstanceMutex;
+std::thread::id gMainThreadID;
 
 class HiddenLanguageClient {
 public:
@@ -84,6 +85,7 @@ SC_LanguageClient::SC_LanguageClient(const std::string& name) {
 
     mHiddenClient->mName = name;
     gInstance = this;
+    gMainThreadID = std::this_thread::get_id();
 
     unlockInstance();
 }
@@ -199,7 +201,7 @@ bool SC_LanguageClient::tickLocked(double* nextTime) {
         // thread but not the default thread for the wasm client.
         // We therefore have to pass runsInMainThread explicitly here, which is fine
         // b/c the AppClock is also scheduled from the main thread in wasm.
-        // See also DEFAULT_THREAD_IS_MAIN_THREAD
+        // See also LANG_THREAD_IS_MAIN_THREAD
         ::runLibrary(s_tick, true);
     }
 
@@ -319,6 +321,18 @@ void initGUI() { SC_LanguageClient::instance()->onInterpStartup(); }
 
 void initGUIPrimitives() { SC_LanguageClient::instance()->onLibraryStartup(); }
 
-std::int64_t scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
-std::int64_t scMIDIout(int port, int len, int statushi, int chan, int data1, int data2) { return 0; }
-// EOF
+// Declared in VMGlobals.h
+void setCanCallOS(VMGlobals* g, bool canCallOS) {
+    // Check that 'canCallOS' is only set to 'true' on the main thread and post an error otherwise.
+    // This helps to catch situations where functions like recompileLibrary() are called on the wrong
+    // thread, which can otherwise cause hard-to-debug Qt error messages.
+    // We only do this if the language thread is supposed to be the main thread, which is true for all
+    // desktop clients, but not for the WASM client. See the comment above LANG_THREAD_IS_MAIN_THREAD.
+    if (LANG_THREAD_IS_MAIN_THREAD && canCallOS) {
+        assert(gMainThreadID != std::thread::id {});
+        if (std::this_thread::get_id() != gMainThreadID) {
+            postfl("ERROR: attempting to set 'canCallOS' to 'true' on the wrong thread!\n");
+        }
+    }
+    g->canCallOS = canCallOS;
+}
