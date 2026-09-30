@@ -112,8 +112,7 @@ struct RandSeed : public Unit {
     float m_trig;
 };
 
-struct RandID : public Unit {
-};
+struct RandID : public Unit {};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
