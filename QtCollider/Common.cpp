@@ -29,7 +29,7 @@
 // WARNING: QtCollider::lockLang() must be called before
 void QtCollider::runLang(PyrObjectHdr* receiver, PyrSymbol* method, const QList<QVariant>& args, PyrSlot* result) {
     VMGlobals* g = gMainVMGlobals;
-    g->canCallOS = true;
+    setCanCallOS(g, true);
     ++g->sp;
     SetObject(g->sp, receiver);
     Q_FOREACH (QVariant var, args) {

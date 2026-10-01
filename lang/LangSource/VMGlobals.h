@@ -33,18 +33,6 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 #include <cstdint>
 
 
-typedef void (*FifoMsgFunc)(struct VMGlobals*, struct FifoMsg*);
-
-struct FifoMsg {
-    FifoMsg(): func(0), dataPtr(0) { dataWord[0] = dataWord[1] = 0; }
-    void Perform(struct VMGlobals* g);
-    void Free(struct VMGlobals* g);
-
-    FifoMsgFunc func;
-    void* dataPtr;
-    std::int64_t dataWord[2];
-};
-
 struct VMGlobals {
     // global context
     class AllocPool* allocPool {};
@@ -56,7 +44,7 @@ struct VMGlobals {
     // Information about the current running PyrProcess
     PyrObject* classvars {};
     int tailCall {}; // next byte code is a tail call.
-    bool canCallOS { false };
+    bool canCallOS { false }; // only set to 'true' with setCanCallOS()!
 
     // thread context
     struct PyrThread* thread {};
@@ -81,9 +69,9 @@ struct VMGlobals {
     std::map<PyrThread*, std::pair<std::exception_ptr, PyrMethod*>> lastExceptions {};
 };
 
-inline void FifoMsg::Perform(struct VMGlobals* g) { (func)(g, this); }
-
-inline void FifoMsg::Free(struct VMGlobals* g) { g->allocPool->Free(dataPtr); }
+// Use this for setting 'canCallOS' to 'true'! Prints an error if you are on the wrong thread.
+// Implemented in SC_LanguageClient.cpp
+void setCanCallOS(VMGlobals* g, bool canCallOS);
 
 extern VMGlobals gVMGlobals;
 extern VMGlobals* gMainVMGlobals;
