@@ -134,6 +134,7 @@ server_arguments::server_arguments(int argc, char* argv[]) {
         command_file = nrt_options[0];
         input_file = nrt_options[1];
         output_file = nrt_options[2];
+        // NOTE: the sample rate provided with -N beats the one provided with -S!
         samplerate = boost::lexical_cast<uint32_t>(nrt_options[3]);
         header_format = nrt_options[4];
         sample_format = nrt_options[5];
