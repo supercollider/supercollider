@@ -1,4 +1,4 @@
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 ERROR: Integer does not understand the message 'meow'.
 
 14  : Anonymous Function
@@ -74,9 +74,9 @@ Messages with a similar name understood by the receiver:
   geom
   mod
   pow
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 ERROR: Integer does not understand the message 'meow'.
 
 14  : Anonymous Function
@@ -152,9 +152,9 @@ Messages with a similar name understood by the receiver:
   geom
   mod
   pow
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 ERROR: This is a test error
 
 3   : Anonymous Function
@@ -186,11 +186,13 @@ ERROR: This is a test error
 		│ 
 		│     *errorWrapper {
 
+This is a test error
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 ERROR: Wrapping some error
+Wrapping some error
 
 Wrapped error: Wrapping some error
 
@@ -203,6 +205,7 @@ Wrapped error: Wrapping some error
 		│         } { |er|
 		│             ErrorWrapper(er, "Wrapping some error").throw
 		│         }
+     some other error
 Wrapping some error
 1   : Anonymous Function
        args: er=Error(what="some other error", callFrameAnnotations=[], ...)
@@ -215,9 +218,45 @@ Wrapping some error
 		│     }
 		│ 
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Non boolean in test 
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.mustBeBoolean
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-mustBeBoolean'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+		file:/
+		│ 
+		│     *mustBeBoolean {
+		│         if (\10) {1} {2}
+		┆             ^^^ Expected this to be either `true` or `false`, instead got Symbol(10).
+		│     }
+		│ 
+		│     *notYetImplementedError {
+
+Non boolean in test 
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
 ERROR: Not yet implemented
 
 3   : Anonymous Function
@@ -249,11 +288,11 @@ ERROR: Not yet implemented
 		│ 
 		│     *immutable {
 
-RECEIVER: Nil
+Not yet implemented
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
 
 4   : Anonymous Function
@@ -296,11 +335,11 @@ ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable
 		│ 	clipPut { arg index, item;
 		│ 		_BasicClipPut;
 
-RECEIVER: Array
+Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
 
 3   : Anonymous Function
@@ -332,11 +371,11 @@ ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorG
 		│ 
 		│     *shouldNotImplementError {
 
-RECEIVER: Meta_ErrorGenerator
+'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
 
 3   : Anonymous Function
@@ -368,11 +407,11 @@ ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for 
 		│ 
 		│     // leave these unset to throw an error
 
-RECEIVER: Meta_ErrorGenerator
+'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 ERROR: slot printing test
 
 3   : Anonymous Function
@@ -405,6 +444,7 @@ ERROR: slot printing test
 		│ 
 		│ 		f.();
 
+slot printing test
 
-──────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 

@@ -51,7 +51,6 @@ jobs:
           
       - name: Create File
         shell: bash
-        continue-on-error: false
         env:
           QTWEBENGINE_CHROMIUM_FLAGS: "--no-sandbox --disable-gpu"
           LIBGL_ALWAYS_SOFTWARE: "1"

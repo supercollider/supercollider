@@ -1,4 +1,3 @@
-
 class::ErrorWrapper
 summary:: Error used to wrap another error
 categories::Core

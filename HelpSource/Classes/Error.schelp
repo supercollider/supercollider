@@ -63,7 +63,7 @@ The constructor of code::Error:: takes 4 arguments.
 
 First, a string saying what went wrong, this should describe the type of error.
 
-Second, code::callFrameAnnotations::, this is an array of code::nil:: or strings. Working up the call stack, the text is shown text to the source code.
+Second, code::callFrameAnnotations::, this is an array of code::nil:: or strings. Working up the call stack, the text is shown next to the source code.
 This is best shown by example.
 
 code::
@@ -123,3 +123,57 @@ The default here will stop printing when we get to a code::try::, code::protect:
 When it comes to overriding methods, the two (and only two) that are allowed are code::reportStage1:: and code::reportStage2::. 
 These are responsible for printing the backtrace and adding any additional information.
 If you only want to add additionally information at the end of the report, you can just overload code::reportStage2::.
+See the definition below for more information on these.
+
+
+classmethods::
+method::new
+argument::what
+A link::Classes/String:: describing the error. 
+In some cases a subclass may alter this, appending information as needed.
+
+argument::callFrameAnnotations
+An link::Classes/Array:: containing either a link::Classes/Nil:: or a link::Classes/String::. 
+Working up the call stack, the text (if present) is printing next to the source code. 
+See the example above for an example.
+
+argument::methodBeforeBacktraceStart
+A link::Classes/Function:: that accepts a link::Classes/FunctionDef:: that returns a link::Classes/Boolean::.
+Internally, we walk up the call frame, if this function returns code::true::, it means we will skip all the previous frames and this one, starting the trace on the next method.
+This is often used to skip the creating and throwing of the error, and sometimes a helper function that is used to create it.
+
+argument::methodBacktraceEnd
+A link::Classes/Function:: that accepts a link::Classes/FunctionDef:: that returns a link::Classes/Boolean::.
+When walking up the call frame, if this returns true, we stop printing the backtrace.
+This is often used to skip printing above a try block and to stop printing the internal interpreter details.
+
+instancemethods::
+method::throw
+Throw the error, creating a backtrace. 
+This will not override the previous, if you would like to store where you rethrow the error or add additional information, see link::Classes/ErrorWrapper::.
+
+method::reportStage1
+This is used to print the backtrace, there is little reason to override this.
+argument::stream 
+The stream we are writing to
+argument::prefix
+The prefix that must be inserted after each new line.
+
+method::reportStage2
+This is used to print any custom message an exception might have.
+If you want to add some information to your own error, this is where you place it.
+argument::stream 
+The stream we are writing to
+argument::prefix
+The prefix that must be inserted after each new line.
+
+method::reportError
+warning::Do not override this! Instead see reportStage1 and reportStage2.::
+argument::stream
+The stream to write to, by default this is link::Classes/Post::
+argument::prefix
+The prefix that must be inserted after each new line.
+
+method::errorString
+This returns the code::what:: of the error. 
+See link::Classes/ErrorWrapper::.

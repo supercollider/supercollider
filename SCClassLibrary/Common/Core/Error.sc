@@ -4,36 +4,19 @@ Exception {
 	classvar <>debug = false;
 	classvar <>inProtectedFunction = false;
 
-	// Due to backwards compatibility we cannot make these members private...
-	// This means any one who sets these must ensure they follow the expected type.
-	// This is because when creating an error, we are not always allowed to throw another.
 
-	// A String.
-	// Describes the error.
 	var <>what; 
-
-	// An Array of (Strings or Nil).
-	// Text that is printed next to the backtrace depending on its index, if out of range of the array (or nil), nothing is printed.
 	var	<>callFrameAnnotations; 
-
-	// A function accepting a Method that returns a Boolean.
-	// A predicate deciding if the method at the bottom of the backtrace should be printed.
-	// Typically used to ignore methods like the constructor of this error, and Object.doesNotUnderstand.
 	var <>methodBeforeBacktraceStart;
-
-	// A function accepting a Method that returns a Boolean.
-	// A predicate deciding if we have reached the end of the backtrace we wish to print.
-	// Typically used to ignore all the interpreter stuff, or the stuff above a try/protect block.
-	var <>methodBacktraceEnd; // Function[Method -> Boolean]
+	var <>methodBacktraceEnd;
 	
-	// Set when the exception is thrown, shows the call stack that led to this point.
 	var <backtrace;
 
 	// This represents the nowExecutingPath, it doesn't represent what file the code was written in!
 	// It is kept only for backwards compatibility and should no longer be used, instead use the backtrace.
 	var <>path;
 
-	*new { |what(""), callFrameAnnotations([]), methodBeforeBacktraceStart, methodBacktraceEnd|
+	*new { |what(""), callFrameAnnotations(#[]), methodBeforeBacktraceStart, methodBacktraceEnd|
 		var thisThrow; // used to create the methodBeforeBacktraceStart
 
 		if (Exception.reporting) {
@@ -57,12 +40,11 @@ Exception {
 	}
 
 	throw {
-		backtrace = this.getBackTrace;
+		backtrace ?? { backtrace = this.getBackTrace };
 		super.throw;
 	}
 
 	
-	// These two report methods allow subclasses to inject their own printing behavior
 	reportStage1 { |stream, prefix| 
 		backtrace.backtracePrintOnto(
 			stream, 
@@ -73,7 +55,10 @@ Exception {
 			maxVerboseFrames: 3,
 		) 
 	}
-	reportStage2 { |stream, prefix| } 
+
+	reportStage2 { |stream, prefix| 
+		stream << prefix << what << $\n;
+	} 
 
 	// Just does what.error. 
 	// This probably shouldn't be used anymore.
@@ -87,14 +72,14 @@ Exception {
 
 		Exception.reporting = true;
 
-		stream << prefix << "──────────────────────────────────────────────────────────────────────────────────\n";
-		stream << prefix << "ERROR: " << this.what << "\n";
+		stream << prefix << "────────────────────────────────────────────────────────────────────────────────\n";
+		stream << prefix << "ERROR: " << this.what << $\n;
 		this.reportStage1(stream, prefix);
-		stream << "\n" << prefix;
+		stream << $\n << prefix;
 
 		this.reportStage2(stream, prefix);
 
-		stream << "\n" << prefix << "──────────────────────────────────────────────────────────────────────────────────\n";
+		stream << $\n << prefix << "────────────────────────────────────────────────────────────────────────────────\n";
 
 		Exception.reporting = oldReporting;
 		^stream;
@@ -121,7 +106,7 @@ ErrorWrapper : Error {
 	}
 
 	reportStage2{ |stream, prefix|
-		stream << prefix << "Wrapped error: " << what << "\n";
+		stream << prefix << "Wrapped error: " << what << $\n;
 		wrapped.reportStage1(stream, prefix ++ "     ");
 		wrapped.reportStage2(stream, prefix ++ "     ");
 		stream << prefix << what;
@@ -137,7 +122,7 @@ MethodError : Error {
 	}
 
 	reportStage2 { |stream, prefix|
-		stream << "RECEIVER: " << receiver.class.name << $\n;
+		stream << prefix << what << $\n;
 	}
 }
 
