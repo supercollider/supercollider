@@ -260,7 +260,7 @@ Process {
 
 			"An error was thrown while initializing the class library.\n"
 			"This means the class library is no longer in a valid state and cannot be used.\n"
-			"If you are reading this after updating SuperCollider, please:\n" 
+			"If you are reading this after updating SuperCollider, please:\n"
 			"   1. switch to a new, clean language configuration file,\n"
 			"   2. update all quarks (e.g. `Quarks.all.do(_.update)`),\n"
 			"   3. and reinstall them one at a time.\n"
@@ -506,7 +506,7 @@ FunctionDef {
 	var <prototypeFrame; // Array of arg and var default values
 	var <context; // where captured (closed over) variables live.
 	var <argNames;  // SymbolArray
-	var <varNames; // 
+	var <varNames; //
 	var <isClosed; // Boolean, true if context is nil or Interpreter:functionCompiler, otherwise false
 	var fileLocation; // either nil or an Array of: the line number, and the byte offset in line.
 	var <sourceCodeFileOrSnippet; // String. Might be the whole file, or could just be a code snippet (text within a file)
@@ -740,10 +740,10 @@ DebugFrame {
 
 	asString { ^"DebugFrame of " ++ functionDef.asString }
 
-	// Turns whole backtrace into string 
-	backtracePrintOnto { |stream, prefix(""), callFrameAnnotations(#[]), methodBeforeBacktraceStart, methodBacktraceEnd, maxVerboseFrames(3)|  
+	// Turns whole backtrace into string
+	backtracePrintOnto { |stream, prefix(""), callFrameAnnotations(#[]), methodBeforeBacktraceStart, methodBacktraceEnd, maxVerboseFrames(3)|
 		var stack = {
-			var f = this; 
+			var f = this;
 			while { f.notNil } {
 				f.yield;
 				f = f.caller;
@@ -785,7 +785,7 @@ DebugFrame {
 	 }
 
 	// Turns this frame into a formatted string
-	printOntoBacktrace { |stream, prefix(""), annotation, printArgsAndVars, printSource| 
+	printOntoBacktrace { |stream, prefix(""), annotation, printArgsAndVars, printSource|
 		stream << this.prAsErrorString(prefix, annotation, printArgsAndVars, printSource)
 	}
 
@@ -793,17 +793,17 @@ DebugFrame {
 
 	prLastIndexOf { |collection, predicate({})|
 		var last = 0;
-		collection.do{ 
-			|v,i| 
-			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { last = i } 
+		collection.do{
+			|v,i|
+			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { last = i }
 		};
 		^last
 	}
 	prFirstIndexOf { |collection, predicate({})|
 		var first = 0;
-		collection.reverseDo{ 
-			|v,i| 
-			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { first = i } 
+		collection.reverseDo{
+			|v,i|
+			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { first = i }
 		};
 		^(collection.size - first) - 1;
 	}

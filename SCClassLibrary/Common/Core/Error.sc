@@ -158,7 +158,8 @@ PrimitiveFailedError : MethodError {
 }
 
 SubclassResponsibilityError : MethodError {
-	var <>method, <>class;
+	var <>method; 
+	var <>class;
 
 	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
 		var thisThrow = this.class.findMethod(\new);
@@ -176,7 +177,8 @@ SubclassResponsibilityError : MethodError {
 }
 
 ShouldNotImplementError : MethodError {
-	var <>method, <>class;
+	var <>method; 
+	var <>class;
 
 	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
 		var thisThrow = this.class.findMethod(\new);
@@ -192,7 +194,9 @@ ShouldNotImplementError : MethodError {
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector, <>args, <>keywordArgumentPairs;
+	var <>selector; 
+	var <>args; 
+	var <>keywordArgumentPairs;
 
 	*new { |receiver, selector, args([]), keywordArgumentPairs([])|
 		var thisThrow = this.class.findMethod(\new);
@@ -235,21 +239,22 @@ DoesNotUnderstandError : MethodError {
 
 
 MustBeBooleanError : MethodError {
-	*new { |receiver| 
+	*new { |what, receiver| 
 		var thisThrow = this.class.findMethod(\throw);
 		^super.new( 
-			what: "Non boolean in test ", 
+			what: what ?? { "Non boolean in test "}, 
 			receiver: receiver,
+			callFrameAnnotations: ["Expected this to be either `true` or `false`, instead got %(%).".format(receiver.class, receiver)],
 			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'mustBeBoolean'}} },
 		) 
 	}
 }
 
 NotYetImplementedError : MethodError {
-	*new { |receiver| 
+	*new { |what, receiver| 
 		var thisThrow = this.class.findMethod(\throw);
 		^super.new( 
-			what: "Not yet implemented", 
+			what: what ?? {"Not yet implemented"}, 
 			callFrameAnnotations: ["This method has not yet been implemented."],
 			receiver: receiver,
 			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'notYetImplemented'}} },

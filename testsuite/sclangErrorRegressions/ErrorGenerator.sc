@@ -46,7 +46,7 @@ ErrorGenerator {
     *deprecatedAlternative {}
 
     *mustBeBoolean {
-        if (\10) {} {}
+        if (\10) {1} {2}
     }
 
     *notYetImplementedError {
