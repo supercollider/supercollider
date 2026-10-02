@@ -13,7 +13,6 @@ Platform {
 
 	initPlatform {
 		classLibraryDir = thisMethod.filenameSymbol.asString.dirname.dirname;
-		helpDir = thisMethod.filenameSymbol.asString.dirname.dirname.dirname ++ "/Help";
 		features = IdentityDictionary.new;
 		recordingsDir = this.userAppSupportDir +/+ "Recordings";
 	}
@@ -30,7 +29,7 @@ Platform {
 
 	// directories
 	*classLibraryDir { ^thisProcess.platform.classLibraryDir }
-	*helpDir { ^thisProcess.platform.helpDir }
+	*helpDir { ^this.classLibraryDir.dirname +/+ "HelpSource" }
 
 	userHomeDir {
 		_Platform_userHomeDir
