@@ -1389,13 +1389,9 @@ void initClasses() {
     addIntrinsicVar(class_method, "ownerClass", &o_nil);
     addIntrinsicVar(class_method, "primitiveName", &o_nil);
 
-    class_frame = makeIntrinsicClass(s_frame, s_object, 0, 0);
+    class_frame = makeIntrinsicClass(s_frame, s_abstract_object, 0, 0);
     SetInt(&class_frame->classFlags, slotRawInt(&class_frame->classFlags) | classHasIndexableInstances);
-    // addIntrinsicVar(class_frame, "method", &o_nil);
-    // addIntrinsicVar(class_frame, "caller", &o_nil);
-    // addIntrinsicVar(class_frame, "context", &o_nil);
-    // addIntrinsicVar(class_frame, "homeContext", &o_nil);
-    // addIntrinsicVar(class_frame, "ip", &o_nil);
+
 
     class_process = makeIntrinsicClass(s_process, s_object, 6, 1);
     addIntrinsicVar(class_process, "classVars", &o_nil);

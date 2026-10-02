@@ -2113,8 +2113,9 @@ void PyrCallNodeBase::compilePartialApplication(CompilerContext& cxt, unsigned c
 
         const auto isClosed = (!cxt.functionCantBeClosed && cxt.functionHighestExternalRef == 0);
 
+        block->isClosed = PyrSlot::make(isClosed);
         block->contextDef = isClosed ? PyrSlot {} : PyrSlot::make(prevBlock);
-        if (isClosed) {
+        if (!isClosed) {
             METHRAW(prevBlock)->needsHeapContext = 1;
         }
     } // exit the block, now back to the current compiling block/method
@@ -4439,6 +4440,8 @@ bool findNamedIdentifier(CompilerContext& cxt, PyrBlock* block, PyrClass** class
         return true;
     }
     if (name == s_curClosure) {
+        // This could create a loop in the reference counter, now the gc deals with it.
+        cxt.functionCantBeClosed = true;
         *varType = varPseudo;
         *index = opgFunction;
         return true;

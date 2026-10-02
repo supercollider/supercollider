@@ -21,7 +21,9 @@
 
 #include "GC.h"
 #include "PyrKernel.h"
+#include "PyrObject.h"
 #include "PyrObjectProto.h"
+#include "PyrSlot.h"
 #include "PyrSymbol.h"
 #include "InitAlloc.h"
 #include <limits>
@@ -236,6 +238,7 @@ void GCSet::MinorFlip() {
 
 PyrProcess* newPyrProcess(VMGlobals* g, PyrClass* procclassobj);
 
+
 PyrGC::PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize) {
     mVMGlobals = g;
     mPool = inPool;
@@ -382,9 +385,8 @@ HOT PyrObject* PyrGC::New(size_t inNumBytes, std::int64_t inFlags, std::int64_t 
 }
 
 
-HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool inAccount) {
-    PyrObject* obj = nullptr;
-
+HOT PyrFrame* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int64_t inFormat, bool collect,
+                              bool referenceCounted) {
 #ifdef GC_SANITYCHECK
     SanityCheck();
 #endif
@@ -413,13 +415,19 @@ HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int
     mNumToScan += credit;
     mNumAllocs++;
 
-    obj = Allocate(inNumBytes, sizeclass, inAccount);
+    auto* obj = reinterpret_cast<PyrFrame*>(Allocate(inNumBytes, sizeclass, collect));
+    assert(obj);
 
     obj->obj_format = inFormat;
     obj->obj_flags = inFlags;
     obj->size = 0;
     obj->classptr = class_frame;
     obj->gc_color = mWhiteColor;
+
+    obj->referenceCount = referenceCounted ? PyrSlot::make(1) : PyrSlot {};
+    obj->caller = PyrSlot::make(0);
+    obj->context = PyrSlot {};
+    obj->homeContext = PyrSlot {};
 
 #ifdef GC_SANITYCHECK
     SanityCheck();
