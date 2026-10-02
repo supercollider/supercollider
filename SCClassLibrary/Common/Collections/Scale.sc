@@ -163,7 +163,7 @@ Scale {
 	}
 
 	*directory {
-		^this.names.collect({ |k| "\\ %: %".format(k, all.at(k).name) }).join("\n")
+		^this.names.collect({ |k| $\\ ++ k.asString.padRight(26) ++ all.at(k).name } ).join("\n")
 	}
 
 	storeArgs { ^[degrees, pitchesPerOctave, tuning, name] }
@@ -290,7 +290,7 @@ Tuning {
 	}
 
 	*directory {
-		^this.names.collect({ |k| "\\ %: %".format(k, all.at(k).name) }).join("\n")
+		^this.names.collect({ |k| $\\ ++ k.asString.padRight(26) ++ all.at(k).name } ).join("\n")
 	}
 }
 
