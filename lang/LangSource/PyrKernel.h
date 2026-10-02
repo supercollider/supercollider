@@ -95,14 +95,14 @@ struct PyrFrame : public PyrObjectHdr {
     PyrSlot vars[1];
 
     // Implemented in the gc source file.
-    void incrementReferenceCount();
+    inline void incrementReferenceCount();
     // Not calling this is never an error, as the gc will handle it.
     // It is only an optimisation.
-    void decrementReferenceCount(struct PyrGC* gc);
+    inline void decrementReferenceCount(struct PyrGC* gc);
 
-    void storeCaller(struct PyrGC* gc, PyrFrame* other);
-    void storeHomeContext(struct PyrGC* gc, PyrFrame* home);
-    void storeContext(struct PyrGC* gc, PyrFrame* cxt);
+    inline void storeCaller(struct PyrGC* gc, PyrFrame* other);
+    inline void storeHomeContext(struct PyrGC* gc, PyrFrame* home);
+    inline void storeContext(struct PyrGC* gc, PyrFrame* cxt);
 };
 
 // Framesize refers to the minimum number of slots the frame object must allocate.
@@ -141,17 +141,11 @@ struct PyrThread : public PyrObjectHdr {
 
 
 struct PyrMethodRaw {
-#ifdef PYR_SLOTS_GENERIC
-    std::int64_t padding; // used for the tag in the generic pyrslot implementation
-#endif
     unsigned short unused1;
     unsigned short specialIndex;
     unsigned short methType;
     unsigned short frameSize;
 
-#ifdef PYR_SLOTS_GENERIC
-    std::int64_t padding2; // used for the tag in generic pyrslot implementation, second slot
-#endif
 
     unsigned char unused2;
     unsigned char numNormalArguments; // Does not include variable arguments (...args, kwargs)

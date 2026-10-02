@@ -238,80 +238,6 @@ void GCSet::MinorFlip() {
 
 PyrProcess* newPyrProcess(VMGlobals* g, PyrClass* procclassobj);
 
-void PyrFrame::incrementReferenceCount() {
-    // This is set to an int in the allocator.
-    // If it isn't, something odd has happened (maybe already been free'd), but the gc will deal with it.
-    // If it is less than zero, we might have already free'd this.
-    if (!referenceCount.isInt() || referenceCount.getInt() < 0) {
-        assert(!referenceCount.isInt());
-        referenceCount = PyrSlot {};
-        return;
-    }
-
-    referenceCount = PyrSlot::make(referenceCount.getInt() + 1);
-}
-
-void PyrFrame::decrementReferenceCount(PyrGC* gc) {
-    // If it isn't an int, don't free it, it might have already been free'd.
-    // If we fail to free the frame, the gc will collect it later, so this is safest.
-    // If it is an int, it shouldn't already be zero (no owner), if it is less, we don't want to double free.
-    if (!referenceCount.isInt() || referenceCount.getInt() <= 0) {
-        assert(!referenceCount.isInt());
-        // Setting to nil means it will no longer be reference counted and the gc will deal with it.
-        referenceCount = PyrSlot {};
-        return;
-    }
-
-    referenceCount = PyrSlot::make(referenceCount.getInt() - 1);
-    if (referenceCount.getInt() == 0) {
-        if (caller.isObjectHdr()) {
-            auto* f = caller.getPyrObjType<PyrFrame>();
-            if (f != this)
-                f->decrementReferenceCount(gc);
-            caller = PyrSlot::make(0);
-        }
-
-        // This block of code is needed if we ever manage to make all frames reference counted
-        // if (homeContext.isObjectHdr()) {
-        //     auto* f = homeContext.getPyrObjType<PyrFrame>();
-        //     if (f != this)
-        //         f->decrementReferenceCount(gc);
-        //     homeContext = PyrSlot {};
-        // }
-        // if (context.isObjectHdr()) {
-        //     auto* f = context.getPyrObjType<PyrFrame>();
-        //     if (f != this)
-        //         f->decrementReferenceCount(gc);
-        //     context = PyrSlot {};
-        // }
-
-        // Ensures it can't be double free'd.
-        // The allocator will set this back to zero.
-        referenceCount = PyrSlot::make(-1);
-        gc->Free(this);
-    }
-}
-
-void PyrFrame::storeCaller(struct PyrGC* gc, PyrFrame* other) {
-    caller = PyrSlot::make(other);
-    if (other != this)
-        other->incrementReferenceCount();
-}
-
-void PyrFrame::storeHomeContext(struct PyrGC* gc, PyrFrame* home) {
-    homeContext = PyrSlot::make(home);
-    // Needed if all frames are referenced counted
-    // if (home != this)
-    //    home->incrementReferenceCount();
-}
-
-void PyrFrame::storeContext(struct PyrGC* gc, PyrFrame* cxt) {
-    context = PyrSlot::make(cxt);
-    // Needed if all frames are referenced counted
-    // if (cxt != this)
-    //    cxt->incrementReferenceCount();
-}
-
 
 PyrGC::PyrGC(VMGlobals* g, AllocPool* inPool, PyrClass* mainProcessClass, std::int64_t poolSize) {
     mVMGlobals = g;
@@ -407,7 +333,6 @@ void PyrGC::BecomePermanent(PyrObject* inObject) {
 }
 
 void PyrGC::BecomeImmutable(PyrObject* inObject) { inObject->obj_flags |= obj_immutable; }
-
 
 void DumpBackTrace(VMGlobals* g);
 

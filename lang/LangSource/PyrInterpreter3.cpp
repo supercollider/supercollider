@@ -218,17 +218,14 @@ PyrProcess* newPyrProcess(VMGlobals* g, PyrClass* procclassobj) {
         proto = slotRawObject(&meth->prototypeFrame);
 
         methraw = METHRAW(meth);
-        frame = (PyrFrame*)gc->New(methraw->frameSize, 0, obj_slot, false);
-        frame->classptr = class_frame;
-        frame->size = FRAMESIZE + proto->size; /// <- IS THIS WRONG ??
-        SetObject(&frame->method, meth);
+        frame = (PyrFrame*)gc->NewFrame(methraw->frameSize, 0, obj_slot, false);
+        frame->method = PyrSlot::make(meth);
         frame->storeHomeContext(g->gc, frame);
         frame->context = PyrSlot {};
         frame->caller = PyrSlot::make(0);
-        SetPtr(&frame->ip, nullptr);
-        SetObject(&frame->vars[0], interpreter);
-
-        SetObject(&interpreter->context, frame);
+        frame->ip = PyrSlot::make((void*)nullptr);
+        frame->vars[0] = PyrSlot::make(interpreter);
+        interpreter->context = PyrSlot::make(frame);
     }
 
     return proc;
