@@ -2113,6 +2113,7 @@ void PyrCallNodeBase::compilePartialApplication(CompilerContext& cxt, unsigned c
 
         const auto isClosed = (!cxt.functionCantBeClosed && cxt.functionHighestExternalRef == 0);
 
+        block->isClosed = PyrSlot::make(isClosed);
         block->contextDef = isClosed ? PyrSlot {} : PyrSlot::make(prevBlock);
         if (!isClosed) {
             METHRAW(prevBlock)->needsHeapContext = 1;
