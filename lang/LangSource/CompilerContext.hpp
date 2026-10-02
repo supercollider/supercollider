@@ -128,6 +128,7 @@ struct CompilerContext {
     struct PyrBlock* compilingBlock {};
     struct PyrBlock* compilingPartiallyAppliedFunction {};
     int functionHighestExternalRef { 1 };
+    bool functionIsExplicitlyClosed { false };
     bool functionCantBeClosed { true };
 
     bool generateTailCallByteCodes { true }; // note, settings this to false, will always disable tail call
