@@ -360,7 +360,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 1px solid var(--color-fg-100);
+    border-bottom: 4px solid var(--color-fg-100);
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
@@ -462,6 +462,12 @@ a.method-name {
 .method {
     margin-left: 2em;
     margin-bottom: 2em;
+}
+
+.method-group {
+    border: 0;
+    border-top: 2px solid var(--color-fg-100);
+    margin: 1.5em 0;
 }
 
 .argstr {
@@ -604,9 +610,14 @@ ul.toc li a:hover {
     font-family: monospace;
     font-weight: normal;
 /*    font-size: 9.5pt;*/
+    border-left: 2px solid var(--color-fg-100);
 }
 .toc3 a {
     color: var(--color-fg-300);
+}
+.method-group-toc {
+    border: 0;
+    margin-bottom: 0;
 }
 
 ul.tree, ul.tree ul {
