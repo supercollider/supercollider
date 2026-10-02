@@ -105,9 +105,6 @@ ErrorWrapper : Error {
 
 	reportStage2{ |stream, prefix|
 		wrapped.reportError(stream, prefix ++ "    ");
-		//wrapped.reportStage1(stream, prefix ++ "     ");
-//		wrapped.reportStage2(stream, prefix ++ "     ");
-		//stream << prefix << what;
 		super.reportStage1(stream, prefix);
 		super.reportStage2(stream, prefix)
 	}
