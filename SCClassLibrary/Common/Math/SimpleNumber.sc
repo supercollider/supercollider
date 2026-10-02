@@ -25,6 +25,8 @@ SimpleNumber : Number {
 	cpsmidi { _CPSMIDI; ^this.primitiveFailed }
 	midiratio { _MIDIRatio; ^this.primitiveFailed }
 	ratiomidi { _RatioMIDI; ^this.primitiveFailed }
+	centratio { ^(this / 100).midiratio }
+	ratiocent { ^(this.ratiomidi * 100) }
 	ampdb { _AmpDb; ^this.primitiveFailed }
 	dbamp { _DbAmp; ^this.primitiveFailed }
 	octcps { _OctCPS; ^this.primitiveFailed }

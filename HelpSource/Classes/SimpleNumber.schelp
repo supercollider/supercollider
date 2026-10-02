@@ -953,6 +953,14 @@ method:: ratiomidi
 Convert a ratio to an interval in semitones.
 returns:: an interval in semitones
 
+method:: centratio
+Convert an interval in cents to a ratio.
+returns:: a ratio
+
+method:: ratiocent
+Convert a ratio to an interval in cents.
+returns:: an interval in cents
+
 method:: ampdb
 Convert a linear amplitude to decibels.
 
