@@ -139,10 +139,11 @@ You don't have to worry about memory here in this file, but when using the parse
 #include "PyrParseNode.h"
 #include "SC_Constants.h"
 #include "PredefinedSymbols.h"
-#include "SimpleStack.h"
 
 
-void yyerror(const char* s) { bison_cxt->logErrorInCurFile(yylloc, s); }
+void yyerror(const char* s) { 
+	bison_cxt->logErrorInCurrentFile(yylloc, "Parsing error", s); 
+}
 
 inline bool checkArraySubrangeSyntax(PyrParseNode* args, const size_t argLen) {
 	if(argLen <= 2) 
@@ -157,7 +158,7 @@ inline bool checkArraySubrangeSyntax(PyrParseNode* args, const size_t argLen) {
 			break;
 	}
 	const auto range = sc::lex::SourceCodeRange::range(first->location, last->location);
-	bison_cxt->postErrorInCurrentFile(range, "Invalid subrange", "expected 2 or less arguments, delete these.");
+	bison_cxt->logErrorInCurrentFile(range, "Invalid subrange", std::string{"expected 2 or less arguments, delete these."});
 	return false;
 }
 
@@ -575,8 +576,8 @@ valrangex1	: expr1 OPENSQUARE arglist1 DOTDOT CLOSESQUARE
 			{
 				auto* args = linkNodes(
 					$1, 
-					bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot{}, PyrParseNodeType::PushLitNode)
-					bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot{}, PyrParseNodeType::PushLitNode)
+					bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot{}, PyrParseNodeType::PushLitNode),
+					bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot{}, PyrParseNodeType::PushLitNode),
 					$4
 				);
 				auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot::make(s_copyseries));
@@ -728,7 +729,7 @@ valrange2	: exprseq DOTDOT
 				// if this is not used in a 'do' or list comprehension, then should return an error.
 				auto* args = linkNodes(
 					$1, 
-					bison_cxt->allocParseNode<PyrSlotNode>(@2, PyrSlot{}, PyrParseNodeType::PushLitNode)
+					bison_cxt->allocParseNode<PyrSlotNode>(@2, PyrSlot{}, PyrParseNodeType::PushLitNode),
 					bison_cxt->allocParseNode<PyrSlotNode>(@2, PyrSlot{}, PyrParseNodeType::PushLitNode)
 				);
 				auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot::make(s_series));
@@ -850,7 +851,7 @@ expr	: expr1
 		| name OPENPAREN arglist1 optkeyarglist CLOSEPAREN EQUALSSIGN expr
 			{
 				if ($4 != nullptr) {
-					bison_cxt->postErrorInCurrentFile($4->location, "Setter method call with keyword arguments", "delete these keyword arguments.");
+					bison_cxt->logErrorInCurrentFile($4->location, "Setter method call with keyword arguments", "delete these keyword arguments.");
 				}
 				$$ = bison_cxt->allocParseNode<PyrSetterNode>(@$, $1, $3, $7);
 			}

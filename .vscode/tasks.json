@@ -4,7 +4,8 @@
       {
         "label": "Generate Parser With Bison",
         "type": "shell",
-        "command": "tools/generate_parser_bison.sh"
+        "command": "tools/generate_parser_bison.sh",
+        "problemMatcher": []
       },
       {
         "label": "Update sclang error regression file",

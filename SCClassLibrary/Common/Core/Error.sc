@@ -32,8 +32,7 @@ Exception {
 				{ |method| method === thisThrow or: { method === thisThrow } }
 			},
 			methodBacktraceEnd: methodBacktraceEnd ?? {
-				// Skip all the interpreter stuff, that isn't useful for this error (or if it is, there is an issue in the class library).
-				{ |method| method.ownerClass === Interpreter or: {method.ownerClass == Function and: { method.name === 'protect' or: {method.name == 'try'} or: {method.name == 'prTry'} }} }
+				{ |method| method.ownerClass === Interpreter and: {method.name === 'interpretPrintCmdLine'} or: {method.ownerClass == Function and: { method.name === 'protect' or: {method.name == 'try'} or: {method.name == 'prTry'} }} }
 			},
 			path: thisProcess.nowExecutingPath // backwards compatible.
 		)
@@ -64,19 +63,14 @@ Exception {
 	// This probably shouldn't be used anymore.
 	errorString { ^what.error }
 
-	// Do not override this! Instead use reportStage1 and reportStage2.
-	// To change where we print (to a file perhaps?) set the stream argument.
-	// The prefix can be used to set the indentation if this is used as a part of some other text.
 	reportError { |stream(Post), prefix("")|
 		var oldReporting = Exception.reporting;
 
 		Exception.reporting = true;
 
 		stream << prefix << "────────────────────────────────────────────────────────────────────────────────\n";
-		stream << prefix << "ERROR: " << this.what << $\n;
+		stream << prefix << "ERROR: " << this.class.name << $\ << this.what << $\n;
 		this.reportStage1(stream, prefix);
-		stream << $\n << prefix;
-
 		this.reportStage2(stream, prefix);
 
 		stream << $\n << prefix << "────────────────────────────────────────────────────────────────────────────────\n";
@@ -90,6 +84,34 @@ Exception {
 }
 
 Error : Exception { }
+
+
+CompilerError : Error { 
+	var <>compilerError;
+	var <>showBacktrace = true;
+
+	*new {|compilerError|
+		^super.new(
+			"", 
+			nil, 
+			{|method| method.ownerClass === Interpreter and: {method.name === 'compile'} }, 
+		).compilerError_(compilerError)
+	}
+
+	reportError { |stream(Post), prefix("")|
+		var oldReporting = Exception.reporting;
+		Exception.reporting = true;
+		if (showBacktrace) {
+			stream << prefix << "────────────────────────────────────────────────────────────────────────────────\n";
+			stream << prefix << "ERROR: " << this.class.name << $\ << this.what << $\n;
+			super.reportStage1(stream, prefix)
+		};
+		stream << prefix << compilerError.replace("\n", "\n" ++ prefix);
+
+		Exception.reporting = oldReporting;
+		^stream;
+	}
+}
 
 // Is used to wrap an existing error, very useful when you want to append more information to an error inside a try catch, and then rethrow it.
 ErrorWrapper : Error {

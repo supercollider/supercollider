@@ -849,7 +849,13 @@ Interpreter {
 	interpretPrintCmdLine {
 		var res, func, code = cmdLine, doc, ideClass = \ScIDE.asClass;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
-		func = this.prCompileUsingMembers;
+		try {
+			func = this.prCompileUsingMembers;
+		} { |er|
+			er.showBacktrace = false;
+			er.reportError;
+			^this
+		};
 		if (ideClass.notNil) {
 			thisProcess.nowExecutingPath = ideClass.currentPath
 		} {
@@ -893,10 +899,9 @@ Interpreter {
 		^this.prCompile(cmdLine, filePath, lineNumber, column)
 	}
 
-	prCompile { |string, filePath, lineNumber, column|
-		_CompileExpression
-		// TODO: this is rather bad, returning nil if the compilation fails means we can't tell if it failed because returning nil is valid.
-		^nil
+	prCompile { |string, filePath, lineNumber, column, primitiveReturnedErrorText|
+		_CompileExpression;
+		CompilerError(primitiveReturnedErrorText).throw;
 	}
 
 	clearAll {

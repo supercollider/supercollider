@@ -98,6 +98,11 @@ var action = {|stream|
 		catcher.value({ catcher.value( { catcher.value(throwSight, 0) }, 1 ) }, 2)
 	};
 
+
+	catch.value { "var a".compile };
+	catch.value { "1 + 2()".compile };
+	catch.value { "[)".compile };
+
 	stream
 };
 

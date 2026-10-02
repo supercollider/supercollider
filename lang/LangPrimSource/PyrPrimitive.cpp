@@ -55,7 +55,6 @@
 #include <csetjmp>
 #include <memory>
 #include <sstream>
-#include <unordered_set>
 
 #ifdef _WIN32
 #    include <direct.h>
@@ -2537,12 +2536,13 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g, CompilerContext& cxt) {
 
 #if !SCPLAYER
 int prCompileString(struct VMGlobals* g, int numArgsPushed) {
-    auto stackStart = g->sp - 4;
+    auto stackStart = g->sp - 5;
     auto interpreter = stackStart[0];
     auto stringSlot = stackStart[1];
     auto fileName = stackStart[2];
     auto lineNumber = stackStart[3];
     auto column = stackStart[4];
+    auto& errorReturnSlot = stackStart[5];
 
     // check b is a string
     if (!stringSlot.isObjectHdr() || !isKindOf(stringSlot.getObjectHdr(), class_string))
@@ -2570,30 +2570,37 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
     // In the future we should consider removing this.
     cxt.generateTailCallByteCodes = gClassLibraryInfo.generateTailCalls;
 
-    const auto on_parse_failure = [&](const std::vector<CompilerContext::ParseErrorInCurFile>& errors,
-                                      int error_code) -> int {
-        for (const auto& er : errors) {
-            const auto hg = textInfo->createDiagnosticHighlight(er.location, std::string { er.msg });
-            const auto str = diagnosticToCompilerError(ErrorType::Error, "parsing error", &hg, 1);
-            cxt.postError(str);
+    const auto on_parse_failure = [&](CompilerContext& cxt) -> int {
+        std::string concat;
+        for (const auto& diagnostic : cxt.diagnostics) {
+            concat += "\n";
+            concat += diagnostic.text;
         }
-        stackStart[0] = PyrSlot {};
+        auto pyrStr = newPyrString(g->gc, concat.c_str(), 0, false);
+        errorReturnSlot = PyrSlot::make(pyrStr);
         return errFailed;
     };
 
-    const auto on_parse_sucess = [&](PyrRootNode& root) -> int {
+    const auto on_parse_sucess = [&](CompilerContext& cxt) -> int {
+        for (const auto& diagnostic : cxt.diagnostics) {
+            ::postText(diagnostic.text.c_str(), diagnostic.text.size());
+        }
         auto meth = GetFunctionCompileContext(g, cxt);
         assert(meth); // Should be impossible.
-        if (!meth)
+        if (!meth) {
+            errorReturnSlot = PyrSlot::make(newPyrString(g->gc, "Unknown error", 0, false));
             return errFailed;
+        }
 
-        auto& children = *root.children;
+        auto& children = *cxt.root->children;
         auto blockNode = nodeCast<PyrBlockNode>(&children);
 
         // All cmd line code should return a block.
         assert(blockNode);
-        if (!blockNode)
+        if (!blockNode) {
+            errorReturnSlot = PyrSlot::make(newPyrString(g->gc, "Unknown error", 0, false));
             return errFailed;
+        }
 
         // Should be only one top level block.
         assert(blockNode->mNext == nullptr);
@@ -2604,6 +2611,7 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         compileNode(cxt, blockNode, &compileResult, true);
 
         if (cxt.errors > 0) {
+            errorReturnSlot = PyrSlot::make(newPyrString(g->gc, "Unknown error", 0, false));
             stackStart[0] = PyrSlot {};
             return errFailed;
         }
@@ -4231,7 +4239,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_ObjectDeepCopy", prDeepCopy, 1, 0);
 
 #if !SCPLAYER
-    definePrimitive(base, index++, "_CompileExpression", prCompileString, 5, 0);
+    definePrimitive(base, index++, "_CompileExpression", prCompileString, 6, 0);
 #endif
     definePrimitive(base, index++, "_GetBackTrace", prGetBackTrace, 1, 0);
     definePrimitive(base, index++, "_DumpBackTrace", prDumpBackTrace, 1, 0);

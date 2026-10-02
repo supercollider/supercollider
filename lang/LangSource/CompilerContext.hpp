@@ -81,19 +81,16 @@ struct CompilerContext {
     CompilerContext& operator=(CompilerContext&&) = delete;
     CompilerContext& operator=(const CompilerContext&) = delete;
 
-    void postError(const std::string& str, std::optional<SemanticVersion> versionOfError = {});
-    void postWarning(const std::string& str, std::optional<SemanticVersion> versionOfError = {});
-
-    void postErrorInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription, std::string description,
-                                std::optional<SemanticVersion> versionOfError = {});
-
-    void postWarningInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
-                                  std::string description, std::optional<SemanticVersion> versionOfError = {});
 
     void assignRoot(struct PyrRootNode& ptr);
 
-    void logErrorInCurFile(sc::lex::SourceCodeRange loc, const char* msg,
-                           std::optional<SemanticVersion> versionOfError = {});
+    void logError(std::string str, std::optional<SemanticVersion> versionOfError = {});
+    void logErrorInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription, std::string description,
+                               std::optional<SemanticVersion> versionOfError = {});
+
+    void logWarning(std::string str);
+    void logWarningInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
+                                 std::string description);
 
     void pushToGenerator(struct PyrParseNode* node, intptr_t type);
 
@@ -105,17 +102,18 @@ struct CompilerContext {
 
     std::shared_ptr<TextInfo> textInfo;
 
-    struct ParseErrorInCurFile {
-        sc::lex::SourceCodeRange location;
-        std::string msg;
-        std::optional<SemanticVersion> versionOfError;
-    };
-    struct PyrRootNode* root { nullptr };
-    std::vector<ParseErrorInCurFile> errorsInCurFile {};
 
+    struct PyrRootNode* root { nullptr };
+    struct Diagnostic {
+        std::string text;
+        bool isWarning;
+    };
+
+    std::vector<Diagnostic> diagnostics {};
+    /// counts the errors and warnings in the diagnostics
     std::size_t errors {};
     std::size_t warnings {};
-    std::size_t thingsPosted {}; // count errors + warnings, but includes ones where the version requirement isn't met.
+
 
     LongStack generatorStack {};
     struct VMGlobals* vm_globals {};
@@ -144,9 +142,9 @@ template <typename Success, typename Failure> decltype(auto) parse(CompilerConte
     assert(cxt.root == nullptr);
     const auto err_code = yyparse();
 
-    if (cxt.errorsInCurFile.empty() && err_code == 0) {
-        return std::forward<Success>(s)(*cxt.root);
+    if (cxt.diagnostics.empty() && err_code == 0) {
+        return std::forward<Success>(s)(cxt);
     } else {
-        return std::forward<Failure>(f)(cxt.errorsInCurFile, err_code);
+        return std::forward<Failure>(f)(cxt);
     }
 }
