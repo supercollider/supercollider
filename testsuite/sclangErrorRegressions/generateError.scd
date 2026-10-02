@@ -65,6 +65,39 @@ var action = {|stream|
 		f.();
 	};
 
+
+	catch.value {
+		var throwSight = { 
+			1 + 2;
+			2 + 3;
+			Error("Here is an error").throw
+		};
+
+		var catcher = { |f|
+			try { f.() } { |er| er.throw }
+		};
+
+		catcher.value { catcher.value { catcher.(throwSight) } }
+	};
+
+
+	catch.value {
+		var throwSight = {
+			1 + 2;
+			2 + 3;
+			Error("Here is an error").throw
+		};
+
+
+		var catcher = {|f,i|
+			try {f.()} { |er|
+				ErrorWrapper(er, "rethrowing from %".format(i)).throw
+			}
+		};
+
+		catcher.value({ catcher.value( { catcher.value(throwSight, 0) }, 1 ) }, 2)
+	};
+
 	stream
 };
 
@@ -73,18 +106,19 @@ try {
 	ErrorGenerator()
 } { |er|
 	ErrorWrapper(er, "ErrorGenerator was not defined. You haven't included the correct class library file").throw;
+	1.exit;
 };
 
 try {
 
 	if (thisProcess.argv[0].notNil) {
 		var str = action.(CollStream()).collection;
-		str = str.split($\n).collect{ |line|
-			line
-				.replaceRegexp("(\\s*)[0-9]+ │", "\t\t│")
-				.replaceRegexp("(\\s*)┆", "\t\t┆")
-				.replaceRegexp("(\\s*)file:/.*$", "\t\tfile:/")
-		}.join($\n);
+		// str = str.split($\n).collect{ |line|
+		// 	line
+		// 		.replaceRegexp("(\\s*)[0-9]+ │", "\t\t│")
+		// 		.replaceRegexp("(\\s*)┆", "\t\t┆")
+		// 		.replaceRegexp("(\\s*)file:/.*$", "\t\tfile:/")
+		// }.join($\n);
 
 		File.use(thisProcess.argv[0], "w", {|f|
 			f << str
