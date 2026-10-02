@@ -241,31 +241,35 @@ void ScProcess::evaluateCode(QString const& commandString, bool silent, const QS
         return;
     }
 
-    QByteArray bytesToWrite = commandString.toUtf8();
+    // for protocol structure and control characters, see SC_TerminalClient::InputProtocol
+    QByteArray bytesToWrite;
 
+    if (filePath && !filePath->isEmpty()) {
+        // start header
+        bytesToWrite.append(SC_LanguageClient::StartOfHeader);
 
-    if (!filePath || filePath->isEmpty()) {
-        bytesToWrite.append(silent ? SC_LanguageClient::InterpretCmdLine : SC_LanguageClient::InterpretPrintCmdLine);
-        size_t writtenBytes = write(bytesToWrite);
-        if (writtenBytes != bytesToWrite.size())
-            emit statusMessage(tr("Error when passing data to interpreter!"));
-        return;
+        // file name
+        bytesToWrite.append(filePath->toUtf8());
+        bytesToWrite.append(SC_LanguageClient::RecordDelimiter);
+
+        // line number
+        const auto lineNumberString = QString::number(lineNumber);
+        bytesToWrite.append(lineNumberString.toUtf8());
+        bytesToWrite.append(SC_LanguageClient::RecordDelimiter);
+
+        // column number
+        const auto columnString = QString::number(column);
+        bytesToWrite.append(columnString.toUtf8());
+
+        // mark end of header resp. start of code
+        bytesToWrite.append(SC_LanguageClient::StartOfText);
     }
-    bytesToWrite.append(silent ? SC_LanguageClient::InterpretCmdLine
-                               : SC_LanguageClient::InterpretPrintCmdLineWithHeader);
 
-    // start of header
-    bytesToWrite.append(SC_LanguageClient::StartOfHeader);
+    // add code
+    bytesToWrite.append(commandString.toUtf8());
 
-    bytesToWrite.append(SC_LanguageClient::FileNameDelimiter);
-    bytesToWrite.append(filePath->toUtf8());
-    bytesToWrite.append(SC_LanguageClient::FileNameDelimiter);
-    const auto lineNumberString = QString::number(lineNumber);
-    const auto columnString = QString::number(column);
-    bytesToWrite.append(lineNumberString.toUtf8());
-    bytesToWrite.append(' ');
-    bytesToWrite.append(columnString.toUtf8());
-    bytesToWrite.append(SC_LanguageClient::InterpretPrintCmdLine); // form feed ends input.
+    // end of code
+    bytesToWrite.append(silent ? SC_LanguageClient::InterpretCmdLine : SC_LanguageClient::InterpretPrintCmdLine);
 
     size_t writtenBytes = write(bytesToWrite);
     if (writtenBytes != bytesToWrite.size())
