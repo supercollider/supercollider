@@ -444,7 +444,7 @@ std::optional<FindVarNameResult> findVarName(CompilerContext& cxt, PyrBlock* fun
 void compilePushVar(CompilerContext& cxt, PyrParseNode* node, PyrSymbol* varName) {
     if (std::isupper(varName->name[0])) {
         if (!cxt.textInfo->isClassFile && varName->u.classobj == nullptr) {
-            cxt.postErrorInCurrentFile(node->location, "Undefined class", "This class has not been defined.");
+            cxt.logErrorInCurrentFile(node->location, "Undefined class", "This class has not been defined.");
         } else if (const auto specialClass = findSpecialClassFromName(varName)) {
             PushSpecialClass.emit(cxt.bytecodes, node->location, Operands::SpecialClass { *specialClass });
         } else {
@@ -505,7 +505,7 @@ void compilePushVar(CompilerContext& cxt, PyrParseNode* node, PyrSymbol* varName
             break;
         }
     } else {
-        cxt.postErrorInCurrentFile(node->location, "Undefined variable", "This variable has not been defined.");
+        cxt.logErrorInCurrentFile(node->location, "Undefined variable", "This variable has not been defined.");
     }
 }
 
@@ -513,7 +513,7 @@ void PyrCurryArgNode::compile(CompilerContext& cxt, PyrSlot* result) {
     if (cxt.compilingPartiallyAppliedFunction) {
         PushTempZeroVar.emit(cxt.bytecodes, location, mArgNum);
     } else {
-        cxt.postErrorInCurrentFile(location, "In correct curry arg", "'_' is not allowed outside of a call.");
+        cxt.logErrorInCurrentFile(location, "In correct curry arg", "'_' is not allowed outside of a call.");
     }
 }
 
@@ -526,7 +526,7 @@ void PyrSlotNode::compile(CompilerContext& cxt, PyrSlot* result) {
     else if (mClassno == PyrParseNodeType::PushNameNode)
         compilePushVar(cxt, (PyrParseNode*)this, slotRawSymbol(&mSlot));
     else {
-        cxt.postErrorInCurrentFile(location, "Compiler Error, please report.", "");
+        cxt.logErrorInCurrentFile(location, "Compiler Error, please report.", "");
     }
 }
 
@@ -534,7 +534,7 @@ void PyrSlotNode::compile(CompilerContext& cxt, PyrSlot* result) {
 void PyrClassExtNode::compile(CompilerContext& cxt, PyrSlot* result) {
     PyrClass* classobj = slotRawSymbol(&mClassName->mSlot)->u.classobj;
     if (!classobj) {
-        cxt.postErrorInCurrentFile(location, "Undefined class.", "This class does not exist.");
+        cxt.logErrorInCurrentFile(location, "Undefined class.", "This class does not exist.");
         return;
     }
     cxt.currentClass = classobj;
@@ -598,8 +598,8 @@ bool compareVarDefs(CompilerContext& cxt, PyrClassNode* node, PyrClass* classobj
 
 differExit:
     if (isIntrinsic) {
-        cxt.postErrorInCurrentFile(errnode->location, "Attempting to redefine an intrinsic class",
-                                   "This class is defined by the compiler, you cannot change it.");
+        cxt.logErrorInCurrentFile(errnode->location, "Attempting to redefine an intrinsic class",
+                                  "This class is defined by the compiler, you cannot change it.");
     }
     return true;
 }
@@ -890,7 +890,7 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
 
 
         if (const auto r = std::get_if<PyrParseNode*>(&loc)) {
-            cxt.postErrorInCurrentFile(
+            cxt.logErrorInCurrentFile(
                 (*r)->location, "Duplicate identifier within a class hierarchy.",
                 "This identifier was also declared in a superclass, please rename it, or delete it.", { { 3, 16, 0 } });
             // TODO: how do we find the other duplicate?
@@ -917,8 +917,8 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
                 cxt.textInfo->createDiagnosticHighlight(f_vardef->mVarName->location, "Duplicate here..."),
                 cxt.textInfo->createDiagnosticHighlight(l_vardef->mVarName->location, "... and here.")
             };
-            const auto str = diagnosticToString(ErrorType::Error, msg.c_str(), hg, 2);
-            cxt.postError(str, { { 3, 16, 0 } });
+            const auto str = diagnosticToCompilerError(ErrorType::Error, msg.c_str(), hg, 2);
+            cxt.logError(str, { { 3, 16, 0 } });
         }
     };
 
@@ -947,8 +947,8 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
     { // assign to superclassobj, can produce errors and early return from the function.
         if (this->mClassName->mSlot.getSymbol() == s_abstract_object) {
             if (mSuperClassName) {
-                cxt.postErrorInCurrentFile(mSuperClassName->location, "Cannot change intrinsic class.",
-                                           "'AbstractObject' cannot have a superclass");
+                cxt.logErrorInCurrentFile(mSuperClassName->location, "Cannot change intrinsic class.",
+                                          "'AbstractObject' cannot have a superclass");
                 return;
             }
             // This is the acceptable case where superclassobject can be nullptr, Object truly does not have one.
@@ -956,16 +956,16 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
         } else if (mSuperClassName) {
             if (!mSuperClassName->mSlot.isSymbol()) {
                 assert(false); // this is a part of the grammar and should not happen.
-                cxt.postErrorInCurrentFile(mSuperClassName->location, "Compilation error",
-                                           "Expected a class name token here");
+                cxt.logErrorInCurrentFile(mSuperClassName->location, "Compilation error",
+                                          "Expected a class name token here");
                 return;
             }
             const auto super_name = mSuperClassName->mSlot.getSymbol();
             if (auto maybe_super_class = super_name->u.classobj) {
                 superclassobj = maybe_super_class;
             } else {
-                cxt.postErrorInCurrentFile(mSuperClassName->location, "Non existence class",
-                                           "This class does not exist.");
+                cxt.logErrorInCurrentFile(mSuperClassName->location, "Non existence class",
+                                          "This class does not exist.");
                 return;
             }
         } else {
@@ -995,8 +995,8 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
         else if (strcmp(name, "symbol") == 0)
             return obj_symbol;
         else {
-            cxt.postErrorInCurrentFile(mClassName->location, "Invalid index type.",
-                                       "Must be one of: slot, double, float, int8, int16, int32, or char.");
+            cxt.logErrorInCurrentFile(mClassName->location, "Invalid index type.",
+                                      "Must be one of: slot, double, float, int8, int16, int32, or char.");
             return obj_slot;
         }
     }();
@@ -1024,9 +1024,9 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
         varsDiffer = compareVarDefs(cxt, this, classobj);
         if (varsDiffer) {
             if (isIntrinsic) {
-                cxt.postErrorInCurrentFile(mClassName->location, "Attempt to change intrinsic class.",
-                                           "You cannot change the variables of an intrinsic class, the compiler is "
-                                           "expecting a certain layout.");
+                cxt.logErrorInCurrentFile(mClassName->location, "Attempt to change intrinsic class.",
+                                          "You cannot change the variables of an intrinsic class, the compiler is "
+                                          "expecting a certain layout.");
                 return;
             } else {
                 shouldRecompileSubclasses = true;
@@ -1044,18 +1044,18 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     msg += slotRawSymbol(&classobj->superclass)->name;
                     msg += "'.";
 
-                    cxt.postErrorInCurrentFile(mSuperClassName ? mSuperClassName->location : mClassName->location,
-                                               "Attempt to change intrinsic class.", msg.c_str());
+                    cxt.logErrorInCurrentFile(mSuperClassName ? mSuperClassName->location : mClassName->location,
+                                              "Attempt to change intrinsic class.", msg.c_str());
                 }
                 if (indexTypesDiffer) {
                     const auto t = indexType ? (PyrParseNode*)mIndexType : (PyrParseNode*)mClassName;
 
-                    cxt.postErrorInCurrentFile(
+                    cxt.logErrorInCurrentFile(
                         t->location, "Attempt to change intrinsic class.",
                         "This is an intrinsic class, you cannot change the index type (in square brackets).");
                 }
-                cxt.postErrorInCurrentFile(mClassName->location, "Attempt to change intrinsic class.",
-                                           "This class cannot be altered, it is required by the compiler.");
+                cxt.logErrorInCurrentFile(mClassName->location, "Attempt to change intrinsic class.",
+                                          "This class cannot be altered, it is required by the compiler.");
                 return;
             } else {
                 shouldRecompileSubclasses = true;
@@ -1320,16 +1320,16 @@ void postDuplicateIdentifierError(CompilerContext& cxt, sc::lex::SourceCodeRange
         cxt.textInfo->createDiagnosticHighlight(first, "This identifier is duplicated..."),
         cxt.textInfo->createDiagnosticHighlight(second, "...here. Names must be unique, rename one of these."),
     };
-    const auto str = diagnosticToString(ErrorType::Error, "Duplicate named identifier", hg, 2);
-    cxt.postError(str);
+    const auto str = diagnosticToCompilerError(ErrorType::Error, "Duplicate named identifier", hg, 2);
+    cxt.logError(str);
 }
 
 void checkRedefiningPseudo(CompilerContext& cxt, sc::lex::SourceCodeRange loc, PyrSymbol* name) {
     const std::array reserved { s_this, s_curProcess, s_curMethod, s_curBlock, s_curClosure, s_curThread, s_super };
     if (auto fnd = std::find(reserved.begin(), reserved.end(), name); fnd != reserved.end()) {
-        cxt.postErrorInCurrentFile(loc, "Redefining a special identifier.",
-                                   "please use a different name for this identifier as this is a reserved name.",
-                                   { { 3, 16, 0 } });
+        cxt.logErrorInCurrentFile(loc, "Redefining a special identifier.",
+                                  "please use a different name for this identifier as this is a reserved name.",
+                                  { { 3, 16, 0 } });
     }
 }
 
@@ -1474,11 +1474,11 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
     const bool hasPrimitive = mPrimitiveName != nullptr;
 
     if (numTotalArguments > 255)
-        cxt.postErrorInCurrentFile(mArglist->location, "Too many arguments.",
-                                   "Too many arguments, max of 255, use an IdentityDictionary instead.");
+        cxt.logErrorInCurrentFile(mArglist->location, "Too many arguments.",
+                                  "Too many arguments, max of 255, use an IdentityDictionary instead.");
     if (numVariables > 255)
-        cxt.postErrorInCurrentFile(mVarlist->location, "Too many variable.",
-                                   "Too many variables, max of 255, use an IdentityDictionary instead.");
+        cxt.logErrorInCurrentFile(mVarlist->location, "Too many variable.",
+                                  "Too many variables, max of 255, use an IdentityDictionary instead.");
 
     // If this isn't nullptr then we have a duplicate, that is okay if this is an extention.
     // TODO: (FUTURE) It is probably better to check this in a previous compiler pass.
@@ -1511,8 +1511,8 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                                                     "... was redclared here. Each method must have a unique name."),
         };
 
-        const auto str = diagnosticToString(ErrorType::Error, "Duplicate method.", hg, 2);
-        cxt.postError(str);
+        const auto str = diagnosticToCompilerError(ErrorType::Error, "Duplicate method.", hg, 2);
+        cxt.logError(str);
         return;
     }
 
@@ -1745,8 +1745,8 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     cxt.textInfo->createDiagnosticHighlight(mPrimitiveName->location,
                                                             "...should match the argument count of this primitive."),
                 };
-                const auto str = diagnosticToString(ErrorType::Error, "Primitive argument mismatch", hg, 2);
-                cxt.postError(str);
+                const auto str = diagnosticToCompilerError(ErrorType::Error, "Primitive argument mismatch", hg, 2);
+                cxt.logError(str);
             }
 
             if (prim.hasVariablePositionalArguments && methraw->numVariableArguments < 1) {
@@ -1756,8 +1756,8 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     cxt.textInfo->createDiagnosticHighlight(mPrimitiveName->location,
                                                             "... to match the definition of this primitive."),
                 };
-                const auto str = diagnosticToString(ErrorType::Error, "Primitive argument mismatch", hg, 2);
-                cxt.postError(str);
+                const auto str = diagnosticToCompilerError(ErrorType::Error, "Primitive argument mismatch", hg, 2);
+                cxt.logError(str);
             }
 
             if (prim.hasVariableKeywordArguments && methraw->numVariableArguments < 2) {
@@ -1767,8 +1767,8 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     cxt.textInfo->createDiagnosticHighlight(mPrimitiveName->location,
                                                             "... to match the definition of this primitive."),
                 };
-                const auto str = diagnosticToString(ErrorType::Error, "Primitive argument mismatch", hg, 2);
-                cxt.postError(str);
+                const auto str = diagnosticToCompilerError(ErrorType::Error, "Primitive argument mismatch", hg, 2);
+                cxt.logError(str);
             }
         }
     }
@@ -1794,7 +1794,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                         }
                     }
                 if (badArg) {
-                    cxt.postErrorInCurrentFile(
+                    cxt.logErrorInCurrentFile(
                         badArg->mDefVal->location, "Non simple arg in optimized method.",
                         "This method is optimized by the compiler, you cannot have non-literal arguments.");
                 }
@@ -1808,7 +1808,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                         }
                     }
                 if (badArg) {
-                    cxt.postErrorInCurrentFile(
+                    cxt.logErrorInCurrentFile(
                         badArg->mDefVal->location, "Non simple var in body.",
                         "This method is optimized by the compiler, you cannot have non-literal variable defaults.");
                 }
@@ -1818,14 +1818,14 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                 if (slotRawSymbolArray(&method->argNames)->size != numArgs) {
                     std::stringstream ss;
                     ss << "There should be " << numArgs - 1 << " arguments here.";
-                    cxt.postErrorInCurrentFile(mArglist ? mArglist->location : mMethodName->location,
-                                               "Incorrect number of arguments in optimized method.", ss.str());
+                    cxt.logErrorInCurrentFile(mArglist ? mArglist->location : mMethodName->location,
+                                              "Incorrect number of arguments in optimized method.", ss.str());
                 }
                 if (slotRawSymbolArray(&method->varNames)->size != numVars) {
                     std::stringstream ss;
                     ss << "There should be " << numVars << " variables here.";
-                    cxt.postErrorInCurrentFile(mVarlist ? mVarlist->location : mBody->location,
-                                               "Incorrect number of variables in optimized method.", ss.str());
+                    cxt.logErrorInCurrentFile(mVarlist ? mVarlist->location : mBody->location,
+                                              "Incorrect number of variables in optimized method.", ss.str());
                 }
             };
 
@@ -2537,12 +2537,12 @@ CompilingBytecodes compileBodyWithGoto(CompilerContext& cxt, PyrParseNode* body,
 
 void print_inline_warning(CompilerContext& cxt, PyrParseNode* args, PyrParseNode* vars) {
     if (args) {
-        cxt.postWarningInCurrentFile(args->location, "Function contains arguments, it cannot be inlined.",
-                                     "remove this to make the function inlinable.");
+        cxt.logWarningInCurrentFile(args->location, "Function contains arguments, it cannot be inlined.",
+                                    "remove this to make the function inlinable.");
     }
     if (vars) {
-        cxt.postWarningInCurrentFile(vars->location, "Function contains variables, it cannot be inlined.",
-                                     "remove this to make the function inlineable.");
+        cxt.logWarningInCurrentFile(vars->location, "Function contains variables, it cannot be inlined.",
+                                    "remove this to make the function inlineable.");
     }
 }
 
@@ -3076,11 +3076,11 @@ void compileSwitchMsg(CompilerContext& cxt, PyrCallNode* node) {
                 // This is actually impossible as per the grammar
                 assert(false);
             } else if (numArgs == 1) {
-                cxt.postErrorInCurrentFile(argnode->location, "Invalid switch statement.",
-                                           "please provide cases for this switch statement.");
+                cxt.logErrorInCurrentFile(argnode->location, "Invalid switch statement.",
+                                          "please provide cases for this switch statement.");
             } else if (numArgs == 2) {
-                cxt.postErrorInCurrentFile(argnode->mNext->location, "Invalid switch statement.",
-                                           "a switch statement must have more than 1 case.");
+                cxt.logErrorInCurrentFile(argnode->mNext->location, "Invalid switch statement.",
+                                          "a switch statement must have more than 1 case.");
             }
         };
 
@@ -3719,8 +3719,8 @@ bool isUnassignableSymbol(PyrSymbol* varName) {
 
 void compileAssignVar(CompilerContext& cxt, PyrParseNode* node, PyrSymbol* varName, bool drop) {
     if (isUnassignableSymbol(varName)) {
-        cxt.postErrorInCurrentFile(node->location, "Attempting to assign to a reserved name.",
-                                   "cannot assign as this is a special variable.");
+        cxt.logErrorInCurrentFile(node->location, "Attempting to assign to a reserved name.",
+                                  "cannot assign as this is a special variable.");
         return;
     }
     if (std::isupper(varName->name[0])) {
@@ -3728,7 +3728,7 @@ void compileAssignVar(CompilerContext& cxt, PyrParseNode* node, PyrSymbol* varNa
         msg += std::tolower(varName->name[0]);
         msg += (varName->name + 1);
         msg += "'?";
-        cxt.postErrorInCurrentFile(node->location, "Attempting to assign to a class name.", std::move(msg));
+        cxt.logErrorInCurrentFile(node->location, "Attempting to assign to a class name.", std::move(msg));
         return;
     }
 
@@ -3739,7 +3739,7 @@ void compileAssignVar(CompilerContext& cxt, PyrParseNode* node, PyrSymbol* varNa
         std::string msg { "This variable is not defined. Did you mean to declare it with 'var " };
         msg += varName->name;
         msg += "'?";
-        cxt.postErrorInCurrentFile(node->location, "Undefined variable.", std::move(msg));
+        cxt.logErrorInCurrentFile(node->location, "Undefined variable.", std::move(msg));
         return;
     }
 
@@ -3777,8 +3777,8 @@ void compileAssignVar(CompilerContext& cxt, PyrParseNode* node, PyrSymbol* varNa
     } break;
 
     case varConst: {
-        cxt.postErrorInCurrentFile(node->location, "Assigning to a constant.",
-                                   "this variable was declared as a constant, you cannot assign to it.");
+        cxt.logErrorInCurrentFile(node->location, "Assigning to a constant.",
+                                  "this variable was declared as a constant, you cannot assign to it.");
     } break;
 
     case varTemp: {
@@ -3800,7 +3800,7 @@ void compileAssignVar(CompilerContext& cxt, PyrParseNode* node, PyrSymbol* varNa
 
     default: {
         assert(false);
-        cxt.postErrorInCurrentFile(node->location, "Internal error.", "please report this error");
+        cxt.logErrorInCurrentFile(node->location, "Internal error.", "please report this error");
     } break;
     }
 }
@@ -3832,8 +3832,8 @@ void PyrSetterNode::compileCall(CompilerContext& cxt, PyrSlot* result) {
     char setterName[128];
 
     if (nodeListLength(mExpr1) > 1) {
-        cxt.postErrorInCurrentFile(mExpr1->location, "Invalid setter call.",
-                                   "setters should only be called with one argument.");
+        cxt.logErrorInCurrentFile(mExpr1->location, "Invalid setter call.",
+                                  "setters should only be called with one argument.");
         return;
     }
 
@@ -3959,8 +3959,8 @@ void PyrLitListNode::compile(CompilerContext& cxt, PyrSlot* result) {
     // postfl("->compilePyrLitListNode\n");
     if (mClassname && slotRawSymbol(&((PyrSlotNode*)mClassname)->mSlot) != s_array) {
         // TODO: this should error instead.
-        cxt.postWarningInCurrentFile(mClassname->location, "Invalid literal array.",
-                                     "only 'Array' is supported as a literal, continueing as-if this was an array.");
+        cxt.logWarningInCurrentFile(mClassname->location, "Invalid literal array.",
+                                    "only 'Array' is supported as a literal, continueing as-if this was an array.");
     }
     const auto numItems = mElems ? nodeListLength(mElems) : 0;
     const auto flags = allocationFlags(cxt);
@@ -3995,11 +3995,11 @@ void PyrBlockNode::compile(CompilerContext& cxt, PyrSlot* slotResult) {
     const std::size_t numSlots = numTotalArguments + numVariables;
 
     if (numTotalArguments > 255)
-        cxt.postErrorInCurrentFile(mArglist->location, "Too many arguments.",
-                                   "Too many arguments, max of 255, use an IdentityDictionary instead.");
+        cxt.logErrorInCurrentFile(mArglist->location, "Too many arguments.",
+                                  "Too many arguments, max of 255, use an IdentityDictionary instead.");
     if (numVariables > 255)
-        cxt.postErrorInCurrentFile(mVarlist->location, "Too many variable.",
-                                   "Too many variables, max of 255, use an IdentityDictionary instead.");
+        cxt.logErrorInCurrentFile(mVarlist->location, "Too many variable.",
+                                  "Too many variables, max of 255, use an IdentityDictionary instead.");
 
 
     // MUTABLE VARIABLES {
@@ -4245,7 +4245,7 @@ int conjureSelectorIndex(CompilerContext& cxt, PyrParseNode* node, PyrBlock* fun
     // otherwise add it to the selectors table
 
     if (selectors->size + 1 >= 256) {
-        cxt.postErrorInCurrentFile(
+        cxt.logErrorInCurrentFile(
             node->location, "Selector table too big",
             "this function has too many selectors, delete some variables, arguments or referenced class names");
         return 0;
@@ -4293,7 +4293,7 @@ Byte conjureLiteralSlotIndex(CompilerContext& cxt, PyrParseNode* node, PyrBlock*
     // otherwise add it to the selectors table
 
     if (selectors->size + 1 >= 256) {
-        cxt.postErrorInCurrentFile(
+        cxt.logErrorInCurrentFile(
             node->location, "Selector table too big",
             "this function has too many selectors, delete some variables, arguments or referenced class names");
         return 0;
