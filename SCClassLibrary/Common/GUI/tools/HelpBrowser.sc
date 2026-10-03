@@ -68,8 +68,32 @@ HelpBrowser {
 		}
 	}
 
-	*goTo {|url|
-		if(this.prShouldRedirect(url)) {
+	*goTo { |url|
+		var isExternalLocalHtml = false;
+		var path;
+
+		if(url.beginsWith("/") or: { url[1] == $: }) {
+			url = "file://" ++ url.replace(" ", "%20");
+		};
+
+		if(url.beginsWith("file://")) {
+			path = URI(url).path;
+			if(path.notNil) {
+				path = path.replace("%20", " ");
+
+				if(
+					(path.endsWith(".html") or: { path.endsWith(".htm") })
+					and: {
+					(path.beginsWith(SCDoc.helpTargetDir)
+							or: { path.beginsWith(Quarks.folder) }).not
+				}
+				) {
+					isExternalLocalHtml = true;
+				};
+			};
+		};
+
+		if(this.prShouldRedirect(url) or: { isExternalLocalHtml }) {
 			this.prOpenRedirectMenu(url)
 		} {
 			this.prOpenInIDEorHelpBrowser(url)
@@ -279,7 +303,7 @@ HelpBrowser {
 					#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 					};
-			
+
 					if(newPath != oldPath && openNewWin) {
 							HelpBrowser.new(newWin:openNewWin).goTo(url);
 					} {
