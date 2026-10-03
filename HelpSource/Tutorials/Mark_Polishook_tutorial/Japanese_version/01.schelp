@@ -54,7 +54,7 @@ code::
 s = Server("thisMachine", NetAddr("... an ip number ...", 57110));
 
 // 第2に、シンセシスのプロセスを定義する ... 前の例の二番目のステップと全く同じ
-SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).send(s);
+SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).add;
 
 // 第3に、シンセシスのプロセスをスケジュ−リングする .... 前の例の三番目のステップと全く同じ
 s.sendMsg("s_new", "sine", 1000, 1, 0);
@@ -67,7 +67,7 @@ s.sendMsg("s_new", "sine", 1000, 1, 0);
 code::
 // ローカル・サーバー
 s = Server("thisMachine", NetAddr("localhost", 57110));
-SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).send(s);
+SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).add;
 s.sendMsg("s_new", "sine", 1000, 1, 0);
 
 vs.
@@ -75,7 +75,7 @@ vs.
 // リモート・サーバー
 s = Server("thisMachine", NetAddr("... an ip number ...", 57110));
 // この行を評価する前にリモート・マシンでサーバーが起動している様にする
-SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).send(s);
+SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).add;
 s.sendMsg("s_new", "sine", 1000, 1, 0);
 ::
 
