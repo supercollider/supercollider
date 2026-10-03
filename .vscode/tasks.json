@@ -5,12 +5,6 @@
         "label": "Generate Parser With Bison",
         "type": "shell",
         "command": "tools/generate_parser_bison.sh"
-      },
-      {
-        "label": "Update sclang error regression file",
-        "type": "shell",
-        "command": "build/lang/sclang -a --include-path SCClassLibrary/ --include-path testsuite/sclangErrorRegressions testsuite/sclangErrorRegressions/generateError.scd testsuite/sclangErrorRegressions/regression.txt",
-        "problemMatcher": []
       }
     ]
 }

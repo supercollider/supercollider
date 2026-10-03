@@ -1,6 +1,4 @@
-// This is how you should invoke this file.
-// sclang -a --include-path SCClassLibrary/ --include-path testsuite/sclangErrorRegressions testsuite/sclangErrorRegressions/generateError.scd testsuite/sclangErrorRegressions/regression.txt
-
+// There is a cmake target to invoke this file correctly.
 
 var action = {|stream|
 	var catch = { |action|
@@ -113,12 +111,12 @@ try {
 
 	if (thisProcess.argv[0].notNil) {
 		var str = action.(CollStream()).collection;
-		// str = str.split($\n).collect{ |line|
-		// 	line
-		// 		.replaceRegexp("(\\s*)[0-9]+ │", "\t\t│")
-		// 		.replaceRegexp("(\\s*)┆", "\t\t┆")
-		// 		.replaceRegexp("(\\s*)file:/.*$", "\t\tfile:/")
-		// }.join($\n);
+		str = str.split($\n).collect{ |line|
+			line
+				.replaceRegexp("(\\s*)[0-9]+ │", "\t\t│")
+				.replaceRegexp("(\\s*)┆", "\t\t┆")
+				.replaceRegexp("(\\s*)file:/.*$", "\t\tfile:/")
+		}.join($\n);
 
 		File.use(thisProcess.argv[0], "w", {|f|
 			f << str
