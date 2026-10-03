@@ -69,27 +69,31 @@ HelpBrowser {
 	}
 
 	*goTo { |url|
+		var isInLocal = false;
 		var isExternalLocalHtml = false;
-		var path;
+		var isHTMLFile, isInHelpTargetDir, isInQuarksFolder;
 
-		if(url.beginsWith("/") or: { url[1] == $: }) {
-			url = "file://" ++ url.replace(" ", "%20");
+		if(url.isNil) { ^"url is empty.".error };
+
+		if(url.beginsWith("/") or: { url[1] == $: };) {
+			isInLocal = true;
+			if(File.exists(url).not) {
+				^("The file (%) does not exist.".format(url)).error;
+			};
 		};
 
-		if(url.beginsWith("file://")) {
-			path = URI(url).path;
-			if(path.notNil) {
-				path = path.replace("%20", " ");
+		if(isInLocal == true) {
+			isHTMLFile = url.endsWith(".html") or: { url.endsWith(".htm") };
+			isInHelpTargetDir = url.beginsWith(SCDoc.helpTargetDir);
+			isInQuarksFolder = url.beginsWith(Quarks.folder);
+			url = Platform.case(
+				\osx,       { "file://" ++ url },
+				\linux,     { "file://" ++ url },
+				\windows,   { "file:///" ++ url.replace("\\", "/") }
+			);
 
-				if(
-					(path.endsWith(".html") or: { path.endsWith(".htm") })
-					and: {
-					(path.beginsWith(SCDoc.helpTargetDir)
-							or: { path.beginsWith(Quarks.folder) }).not
-				}
-				) {
-					isExternalLocalHtml = true;
-				};
+			if(isHTMLFile and: { (isInHelpTargetDir or: { isInQuarksFolder }).not }) {
+				isExternalLocalHtml = true;
 			};
 		};
 
