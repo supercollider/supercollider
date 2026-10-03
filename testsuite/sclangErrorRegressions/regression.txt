@@ -1,0 +1,557 @@
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Integer does not understand the message 'meow'.
+
+14  : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:8:13
+             6 │ 	var catch = { |action|
+             7 │ 		try {
+             8 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             9 │ 		} { |er|
+            10 │ 			er.reportError(stream);
+            11 │ 			stream << "\n";
+13  : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:16:46
+            14 │ 
+            15 │ 	catch.value {
+            16 │ 		ErrorGenerator.doesNotUnderstandErrorMethod
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            17 │ 	};
+            18 │ 
+            19 │ 	catch.value {
+12  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethod'
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:13:69
+            11 │ 
+            12 │     *doesNotUnderstandErrorMethod {
+            13 │         this.doesNotUnderstandErrorMethodImpl(10, 32, someThing: 10)
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            14 │     }
+            15 │ 
+            16 │     *doesNotUnderstandErrorFunction {
+11  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+10  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+9   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+8   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+7   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+6   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+5   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+4   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+3   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...), i=2, a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:8:81
+             6 │             1.meow(10, args: \woof)
+             7 │         } {
+             8 │             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+               ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+             9 │         }
+            10 │     }
+            11 │ 
+2   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...), i=1, a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:8:81
+             6 │             1.meow(10, args: \woof)
+             7 │         } {
+             8 │             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+               ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+             9 │         }
+            10 │     }
+            11 │ 
+1   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...), i=0, a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:6:36
+             4 │         var var1 = 100.0.rand;
+             5 │         if (i == 0) {
+             6 │             1.meow(10, args: \woof)
+               ┆             ^^^^^^^^^^^^^^^^^^^^^^^ Integer does not understand the message 'meow'.
+             7 │         } {
+             8 │             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+             9 │         }
+
+Messages with a similar name understood by the receiver:
+  geom
+  mod
+  pow
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Integer does not understand the message 'meow'.
+
+14  : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:8:13
+             6 │ 	var catch = { |action|
+             7 │ 		try {
+             8 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             9 │ 		} { |er|
+            10 │ 			er.reportError(stream);
+            11 │ 			stream << "\n";
+13  : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:20:48
+            18 │ 
+            19 │ 	catch.value {
+            20 │ 		ErrorGenerator.doesNotUnderstandErrorFunction
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            21 │ 	};
+            22 │ 
+            23 │ 	catch.value {
+12  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorFunction'
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:26:43
+            24 │         };
+            25 │ 
+            26 │         f.(10, \23423, 123, 32, foo: \bar)
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            27 │     }
+            28 │ 
+            29 │ 
+11  : Function Name: 'f'
+10  : Function Name: 'f'
+9   : Function Name: 'f'
+8   : Function Name: 'f'
+7   : Function Name: 'f'
+6   : Function Name: 'f'
+5   : Function Name: 'f'
+4   : Function Name: 'f'
+3   : Function Name: 'f'
+       args: i=2, a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:22:55
+            20 │                 1.meow(10, args: \woof)
+            21 │             } {
+            22 │                 f.performArgs(\value,[ i - 1], kwargs)
+               ┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            23 │             }
+            24 │         };
+            25 │ 
+2   : Function Name: 'f'
+       args: i=1, a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:22:55
+            20 │                 1.meow(10, args: \woof)
+            21 │             } {
+            22 │                 f.performArgs(\value,[ i - 1], kwargs)
+               ┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            23 │             }
+            24 │         };
+            25 │ 
+1   : Function Name: 'f'
+       args: i=0, a=nil
+       vars: var1=[]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:20:40
+            18 │             var var1 = 100.0.rand;
+            19 │             if (i == 0) {
+            20 │                 1.meow(10, args: \woof)
+               ┆                 ^^^^^^^^^^^^^^^^^^^^^^^ Integer does not understand the message 'meow'.
+            21 │             } {
+            22 │                 f.performArgs(\value,[ i - 1], kwargs)
+            23 │             }
+
+Messages with a similar name understood by the receiver:
+  geom
+  mod
+  pow
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: This is a test error
+
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:8:13
+             6 │ 	var catch = { |action|
+             7 │ 		try {
+             8 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             9 │ 		} { |er|
+            10 │ 			er.reportError(stream);
+            11 │ 			stream << "\n";
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:24:23
+            22 │ 
+            23 │ 	catch.value {
+            24 │ 		ErrorGenerator.error
+               ┆ 		^^^^^^^^^^^^^^^^^^^^ 
+            25 │ 	};
+            26 │ 
+            27 │ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-error'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:31:44
+            29 │ 
+            30 │     *error {
+            31 │         Error("This is a test error").throw
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            32 │     }
+            33 │ 
+            34 │     *errorWrapper {
+
+This is a test error
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Wrapping some error
+
+    ────────────────────────────────────────────────────────────────────────────────
+    ERROR: some other error
+
+    1   : Anonymous Function
+                  file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:36:44
+                34 │     *errorWrapper {
+                35 │         try {
+                36 │             Error("some other error").throw;
+                   ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+                37 │         } { |er|
+                38 │             ErrorWrapper(er, "Wrapping some error").throw
+                39 │         }
+
+        some other error
+
+    ────────────────────────────────────────────────────────────────────────────────
+
+1   : Anonymous Function
+       args: er=Error(what="some other error", callFrameAnnotations=[], ...)
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:38:58
+            36 │             Error("some other error").throw;
+            37 │         } { |er|
+            38 │             ErrorWrapper(er, "Wrapping some error").throw
+               ┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            39 │         }
+            40 │     }
+            41 │ 
+Wrapping some error
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Non boolean in test 
+
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:8:13
+             6 │ 	var catch = { |action|
+             7 │ 		try {
+             8 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             9 │ 		} { |er|
+            10 │ 			er.reportError(stream);
+            11 │ 			stream << "\n";
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:33:31
+            31 │ 
+            32 │ 	catch.value {
+            33 │ 		ErrorGenerator.mustBeBoolean
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            34 │ 	};
+            35 │ 
+            36 │ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-mustBeBoolean'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:49:16
+            47 │ 
+            48 │     *mustBeBoolean {
+            49 │         if (\10) {1} {2}
+               ┆             ^^^ Expected this to be either `true` or `false`, instead got Symbol(10).
+            50 │     }
+            51 │ 
+            52 │     *notYetImplementedError {
+
+Non boolean in test 
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Not yet implemented
+
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:8:13
+             6 │ 	var catch = { |action|
+             7 │ 		try {
+             8 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             9 │ 		} { |er|
+            10 │ 			er.reportError(stream);
+            11 │ 			stream << "\n";
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:37:40
+            35 │ 
+            36 │ 	catch.value {
+            37 │ 		ErrorGenerator.notYetImplementedError
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            38 │ 	};
+            39 │ 
+            40 │ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-notYetImplementedError'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:53:31
+            51 │ 
+            52 │     *notYetImplementedError {
+            53 │         this.notYetImplemented;
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^ This method has not yet been implemented.
+            54 │     }
+            55 │ 
+            56 │     *immutable {
+
+Not yet implemented
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
+
+4   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:8:13
+             6 │ 	var catch = { |action|
+             7 │ 		try {
+             8 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             9 │ 		} { |er|
+            10 │ 			er.reportError(stream);
+            11 │ 			stream << "\n";
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:41:27
+            39 │ 
+            40 │ 	catch.value {
+            41 │ 		ErrorGenerator.immutable
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^ 
+            42 │ 	};
+            43 │ 
+            44 │ 	catch.value {
+2   : Method Name: 'Meta_ErrorGenerator-immutable'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+       vars: a=[1]
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:58:18
+            56 │     *immutable {
+            57 │         var a = #[1];
+            58 │         a[0] = 10;
+               ┆         ^^^^^^^^^ Attempted write to immutable object.
+            59 │     }
+            60 │ 
+            61 │     *subclassResponsibilityError {
+1   : Method Name: 'ArrayedCollection-put'
+       args: this=[1], index=0, item=10
+          file://SCClassLibrary/Common/Collections/ArrayedCollection.sc:50:24
+            48 │ 	put { arg index, item;
+            49 │ 		_BasicPut;
+            50 │ 		^this.primitiveFailed;
+               ┆ 		 ^^^^^^^^^^^^^^^^^^^^ 
+            51 │ 	}
+            52 │ 	clipPut { arg index, item;
+            53 │ 		_BasicClipPut;
+
+Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
+
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:8:13
+             6 │ 	var catch = { |action|
+             7 │ 		try {
+             8 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             9 │ 		} { |er|
+            10 │ 			er.reportError(stream);
+            11 │ 			stream << "\n";
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:45:45
+            43 │ 
+            44 │ 	catch.value {
+            45 │ 		ErrorGenerator.subclassResponsibilityError
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Please implement this method for the class 'Meta_ErrorGenerator'
+            46 │ 	};
+            47 │ 
+            48 │ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-subclassResponsibilityError'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:62:48
+            60 │ 
+            61 │     *subclassResponsibilityError {
+            62 │         this.subclassResponsibility(thisMethod);
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            63 │     }
+            64 │ 
+            65 │     *shouldNotImplementError {
+
+'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
+
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:8:13
+             6 │ 	var catch = { |action|
+             7 │ 		try {
+             8 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             9 │ 		} { |er|
+            10 │ 			er.reportError(stream);
+            11 │ 			stream << "\n";
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:49:41
+            47 │ 
+            48 │ 	catch.value {
+            49 │ 		ErrorGenerator.shouldNotImplementError
+               ┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'Meta_ErrorGenerator' cannot respond to this message, please remove the call.
+            50 │ 	};
+            51 │ 
+            52 │ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-shouldNotImplementError'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+          file://testsuite/sclangErrorRegressions/ErrorGenerator.sc:66:44
+            64 │ 
+            65 │     *shouldNotImplementError {
+            66 │         this.shouldNotImplement(thisMethod);
+               ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            67 │     }
+            68 │ 
+            69 │     // leave these unset to throw an error
+
+'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: slot printing test
+
+3   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:8:13
+             6 │ 	var catch = { |action|
+             7 │ 		try {
+             8 │ 			action.()
+               ┆ 			^^^^^^^^^ 
+             9 │ 		} { |er|
+            10 │ 			er.reportError(stream);
+            11 │ 			stream << "\n";
+2   : Anonymous Function
+       vars: f=Function(def=f: {\n			var array = [1,...}, ...)
+          file://testsuite/sclangErrorRegressions/generateError.scd:65:7
+            63 │ 		};
+            64 │ 
+            65 │ 		f.();
+               ┆ 		^^^^ 
+            66 │ 	};
+            67 │ 
+            68 │ 
+1   : Function Name: 'f'
+       vars: array=[1, 2, 3, 4, 5], dict=Event(array=['a', 1, 'array', [1, 2, 3, ...], ...], ...), recursive=[#recursion#, 2, 3]
+          file://testsuite/sclangErrorRegressions/generateError.scd:62:37
+            60 │ 			var recursive = [1, 2, 3];
+            61 │ 			recursive[0] = recursive;
+            62 │ 			Error("slot printing test").throw
+               ┆ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            63 │ 		};
+            64 │ 
+            65 │ 		f.();
+
+slot printing test
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Here is an error
+
+2   : Anonymous Function
+          file://testsuite/sclangErrorRegressions/generateError.scd:77:14
+            75 │ 
+            76 │ 		var catcher = { |f|
+            77 │ 			try { f.() } { |er| er.throw }
+               ┆ 			      ^^^^ 
+            78 │ 		};
+            79 │ 
+            80 │ 		catcher.value { catcher.value { catcher.(throwSight) } }
+1   : Function Name: 'throwSight'
+          file://testsuite/sclangErrorRegressions/generateError.scd:73:35
+            71 │ 			1 + 2;
+            72 │ 			2 + 3;
+            73 │ 			Error("Here is an error").throw
+               ┆ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            74 │ 		};
+            75 │ 
+            76 │ 		var catcher = { |f|
+
+Here is an error
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: rethrowing from 2
+
+    ────────────────────────────────────────────────────────────────────────────────
+    ERROR: rethrowing from 1
+
+            ────────────────────────────────────────────────────────────────────────────────
+        ERROR: rethrowing from 0
+
+                    ────────────────────────────────────────────────────────────────────────────────
+            ERROR: Here is an error
+
+            2   : Anonymous Function
+                                  file://testsuite/sclangErrorRegressions/generateError.scd:93:13
+                        91 │ 
+                        92 │ 		var catcher = {|f,i|
+                        93 │ 			try {f.()} { |er|
+                           ┆ 			     ^^^^ 
+                        94 │ 				ErrorWrapper(er, "rethrowing from %".format(i)).throw
+                        95 │ 			}
+                        96 │ 		};
+            1   : Function Name: 'throwSight'
+                                  file://testsuite/sclangErrorRegressions/generateError.scd:88:35
+                        86 │ 			1 + 2;
+                        87 │ 			2 + 3;
+                        88 │ 			Error("Here is an error").throw
+                           ┆ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+                        89 │ 		};
+                        90 │ 
+                        91 │ 
+
+                        Here is an error
+
+            ────────────────────────────────────────────────────────────────────────────────
+
+        1   : Anonymous Function
+               args: er=Error(what="Here is an error", callFrameAnnotations=[], ...)
+                          file://testsuite/sclangErrorRegressions/generateError.scd:94:58
+                    92 │ 		var catcher = {|f,i|
+                    93 │ 			try {f.()} { |er|
+                    94 │ 				ErrorWrapper(er, "rethrowing from %".format(i)).throw
+                       ┆ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+                    95 │ 			}
+                    96 │ 		};
+                    97 │ 
+        rethrowing from 0
+
+        ────────────────────────────────────────────────────────────────────────────────
+
+    1   : Anonymous Function
+           args: er=ErrorWrapper(what="rethrowing from 0", callFrameAnnotations=[], ...)
+                  file://testsuite/sclangErrorRegressions/generateError.scd:94:58
+                92 │ 		var catcher = {|f,i|
+                93 │ 			try {f.()} { |er|
+                94 │ 				ErrorWrapper(er, "rethrowing from %".format(i)).throw
+                   ┆ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+                95 │ 			}
+                96 │ 		};
+                97 │ 
+    rethrowing from 1
+
+    ────────────────────────────────────────────────────────────────────────────────
+
+1   : Anonymous Function
+       args: er=ErrorWrapper(what="rethrowing from 1", callFrameAnnotations=[], ...)
+          file://testsuite/sclangErrorRegressions/generateError.scd:94:58
+            92 │ 		var catcher = {|f,i|
+            93 │ 			try {f.()} { |er|
+            94 │ 				ErrorWrapper(er, "rethrowing from %".format(i)).throw
+               ┆ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            95 │ 			}
+            96 │ 		};
+            97 │ 
+rethrowing from 2
+
+────────────────────────────────────────────────────────────────────────────────
+

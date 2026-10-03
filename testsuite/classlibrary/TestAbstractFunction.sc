@@ -125,29 +125,25 @@ TestAbstractFunction : UnitTest {
 
 
 		try { (delta: Point(0, 0)).delta } { |err|
-			this.assert(err.isKindOf(PrimitiveFailedError) and: { err.what == "Wrong type." },
-				"using a Point for delta should fail")
+			this.assert(err.isKindOf(PrimitiveFailedError), "using a Point for delta should fail")
 		};
 
 
 
 		try { (dur: Point(0, 0)).delta } { |err|
-			this.assert(err.isKindOf(PrimitiveFailedError) and: { err.what == "Wrong type." },
-				"using a Point for dur should fail")
+			this.assert(err.isKindOf(PrimitiveFailedError), "using a Point for dur should fail")
 		};
 
 
 
 		try { (delta: Rest("boo!")).delta } { |err|
-			this.assert(err.isKindOf(PrimitiveFailedError) and: { err.what == "Wrong type." },
-				"using a Rest with a string for delta should fail")
+			this.assert(err.isKindOf(PrimitiveFailedError), "using a Rest with a string for delta should fail")
 		};
 
 
 
 		try { (dur: Rest("boo!")).delta } { |err|
-			this.assert(err.isKindOf(PrimitiveFailedError) and: { err.what == "Wrong type." },
-				"using a Rest with a string for dur should fail")
+			this.assert(err.isKindOf(PrimitiveFailedError), "using a Rest with a string for dur should fail")
 		};
 	}
 

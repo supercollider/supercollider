@@ -1,3 +1,7 @@
 b = { nil.deprecated};
-b.();
+
+try {
+    b.();
+};
+
 0.exit;

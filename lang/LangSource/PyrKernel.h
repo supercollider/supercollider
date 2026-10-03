@@ -27,7 +27,9 @@ This file contains the definitions of the core objects that implement the class 
 
 #include "OpcodeOperands.h"
 #include "PyrObject.h"
+#include "PyrObjectHdr.h"
 #include "VMGlobals.h"
+#include <type_traits>
 
 #define classClassNumInstVars 19
 
@@ -286,7 +288,16 @@ extern SpecialNumberStruct gSpecialNumbers;
 
 extern PyrMethod* gNullMethod; // used to fill row table
 
-PyrObject* instantiateObject(class PyrGC* gc, PyrClass* classobj, int size, bool fill, bool collect);
+// The size parameter here is only used when creating an array-like object.
+// If you are creating a normal class, then the 'size' is ignored and the real size is deduced from the class instance
+// variable prototype.
+PyrObject* instantiateObject(class PyrGC* gc, PyrClass* classobj, int size = 0, bool fill = false, bool collect = true);
+
+template <typename T>
+T* instantiateObject(class PyrGC* gc, PyrClass* classobj, int size = 0, bool fill = false, bool collect = true) {
+    static_assert(std::is_base_of<PyrObjectHdr, T>::value);
+    return reinterpret_cast<T*>(instantiateObject(gc, classobj, size, fill, collect));
+}
 
 PyrObject* newPyrObject(class PyrGC* gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect);
 PyrString* newPyrString(class PyrGC* gc, const char* s, int flags, bool collect);

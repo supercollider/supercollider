@@ -11,14 +11,12 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <tuple>
 #include <vector>
 
-
-// Declare that this exists.
-int yyparse();
 
 enum struct ErrorType { Error, Warning };
 
@@ -31,8 +29,12 @@ struct DiagnosticHighlight {
     std::string description;
 };
 
-std::string diagnosticToString(ErrorType type, const char* generalDescription, const DiagnosticHighlight* linesToPrint,
-                               size_t numLinesToPrint);
+std::ostream& streamSourceCodeWithHighlight(std::ostream& ss, const DiagnosticHighlight& highlight,
+                                            bool printSource = true, const char* newlinePrefixPtr = "",
+                                            size_t newlinePrefixSz = 0);
+
+std::string diagnosticToCompilerError(ErrorType type, const char* generalDescription,
+                                      const DiagnosticHighlight* linesToPrint, size_t numLinesToPrint);
 
 
 // Used to represent a bit fo text to compile, this can be a classlibrary file, a runtime file or a snippet thereof.
