@@ -132,6 +132,12 @@ struct non_realtime_synthesis_engine {
             }
         }
 
+        // finish the very last block
+        if (has_inputs)
+            backend.audio_fn(samples_per_block);
+        else
+            backend.audio_fn_noinput(samples_per_block);
+
     done:
         backend.deactivate_audio();
 
