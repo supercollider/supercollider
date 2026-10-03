@@ -68,8 +68,36 @@ HelpBrowser {
 		}
 	}
 
-	*goTo {|url|
-		if(this.prShouldRedirect(url)) {
+	*goTo { |url|
+		var isInLocal = false;
+		var isExternalLocalHtml = false;
+		var isHTMLFile, isInHelpTargetDir, isInQuarksFolder;
+
+		if(url.isNil) { ^"url is empty.".error };
+
+		if(url.beginsWith("/") or: { url[1] == $: };) {
+			isInLocal = true;
+			if(File.exists(url).not) {
+				^("The file (%) does not exist.".format(url)).error;
+			};
+		};
+
+		if(isInLocal == true) {
+			isHTMLFile = url.endsWith(".html") or: { url.endsWith(".htm") };
+			isInHelpTargetDir = url.beginsWith(SCDoc.helpTargetDir);
+			isInQuarksFolder = url.beginsWith(Quarks.folder);
+			url = Platform.case(
+				\osx,       { "file://" ++ url },
+				\linux,     { "file://" ++ url },
+				\windows,   { "file:///" ++ url.replace("\\", "/") }
+			);
+
+			if(isHTMLFile and: { (isInHelpTargetDir or: { isInQuarksFolder }).not }) {
+				isExternalLocalHtml = true;
+			};
+		};
+
+		if(this.prShouldRedirect(url) or: { isExternalLocalHtml }) {
 			this.prOpenRedirectMenu(url)
 		} {
 			this.prOpenInIDEorHelpBrowser(url)
@@ -279,7 +307,7 @@ HelpBrowser {
 					#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 					};
-			
+
 					if(newPath != oldPath && openNewWin) {
 							HelpBrowser.new(newWin:openNewWin).goTo(url);
 					} {
