@@ -708,23 +708,6 @@ Method : FunctionDef {
 
 // Frames are an interpreter internal object. 
 // You should never have an instance of one, if you do, it is a bug, please report it (GitHub/forum... wherever)!
-//
-// The following information is for interpreter debugging ONLY, normal users should read no further.
-// There are exactly 5 methods you can call on a frame (you can't even print it to the post window!):
-//		f.pr__unsafe__getFrame === x
-//		f.pr__unsafe__getFrame !== xa
-//		f.pr__unsafe__getFrame.identityHash
-//		f.pr__unsafe__getFrame.pr__unsafe__isKindOf(Frame);
-//		f.pr__unsafe__getFrame.pr__unsafe__instVarAt(1);
-// 
-// You should NEVER store the frame as a named identifier (or in a collection). 
-// This includes adding methods to this class where the 'this' pointer is used (unless you are 100% certain they do NOT allocate).
-// Instead you are only permitted to use a frame object when it is a temporary value.
-//
-// This is because when the frame doesn't require a heap context, it is reference counted and deleted when it returns.
-// Having access to this object after it has been deleted means you have invalidated the gc graph as you now hold a free'd object — this may crash!
-// The interpreter is now free to recycle that memory, this means if you hold a frame, its class might magically change.
-// This applies to the 'this' pointer too, if you happen to allocate something exactly the same size as the frame, the memory might be reused and the class of 'this' mutated into something else.
 Frame : AbstractObjectExperimental /* !Never inherit from Frame!*/ {
 	*prThrow { Error("Attempting to use a Frame object, this will lead to gc bugs and eventually crash Supercollider").throw }
 
@@ -738,10 +721,6 @@ Frame : AbstractObjectExperimental /* !Never inherit from Frame!*/ {
 	?? { Frame.prThrow }
 	!? { Frame.prThrow }
 	doesNotUnderstand { Frame.prThrow }
-	
-	// These are technically safe because they don't allocate, still not allowed in normal code though!
-	pr__unsafe__instVarAt { |index(0)| _InstVarAt }
-	pr__unsafe__isKindOf {|class| ^this.sc_abstract_object_is_kind_of(class) }
 }
 
 DebugFrame {

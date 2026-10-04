@@ -382,13 +382,6 @@ Function : AbstractFunction {
 				})
 		})
 	}
-
-
-	// This will return the frame, this can be useful when debugging and writing tests.
-	// Under no circumstance should the result of this be stored anywhere.
-	// It is NOT a part of the public API and is only here for internal use.
-	// DO NOT USE IN USER CODE
-	pr__unsafe__getFrame__ { ^context }
 }
 
 Thunk : AbstractFunction {
