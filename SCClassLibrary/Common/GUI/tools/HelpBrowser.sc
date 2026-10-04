@@ -71,22 +71,39 @@ HelpBrowser {
 	*goTo { |url|
 		var isInLocal = false;
 		var isExternalLocalHtml = false;
-		var isHTMLFile, isInHelpTargetDir, isInQuarksFolder;
+		var isHTMLFile, isInHelpTargetDir, isInQuarksFolder, localPath;
 
 		if(url.isNil) { ^"url is empty.".error };
 
-		if(url.beginsWith("/") or: { url[1] == $: }) {
-			isInLocal = true;
-			if(File.exists(url).not) {
-				^("The file (%) does not exist.".format(url)).error;
+		if("(file|http|(s|))://".matchRegexp(url).not) {
+			^(
+				"'HelpBrowser.goTo' expects a URI."
+				"Please use:\n'URI.fromLocalPath(\"%\").asString'\nfor the url argument,\n"
+				"or prepend 'http://' or 'https://' for online documentation."
+			).format(url.replace("\\", "\\\\")).error;
+		};
+
+		if(url.beginsWith("file:")) {
+			var idx = 5;
+
+			while { (idx < url.size) and: { url[idx] == $/ } } {
+				idx = idx + 1;
 			};
+
+			url = "file:///" ++ url.copyToEnd(idx);
+			isInLocal = true;
+			url = URI(url).asString;
+			localPath = URI(url).asLocalPath;
 		};
 
 		if(isInLocal) {
-			isHTMLFile = url.endsWith(".html") or: { url.endsWith(".htm") };
-			isInHelpTargetDir = url.beginsWith(SCDoc.helpTargetDir);
-			isInQuarksFolder = url.beginsWith(Quarks.folder);
-			url = URI.fromLocalPath(url).asString;
+			isHTMLFile = localPath.endsWith(".html") or: { url.endsWith(".htm") };
+			isInHelpTargetDir = localPath.beginsWith(SCDoc.helpTargetDir);
+			isInQuarksFolder = localPath.beginsWith(Quarks.folder);
+
+			if((isInHelpTargetDir or: { isInQuarksFolder }).not and: { File.exists(localPath).not }) {
+				^("'%' does not exist.".format(url)).error;
+			};
 
 			if(isHTMLFile and: { (isInHelpTargetDir or: { isInQuarksFolder }).not }) {
 				isExternalLocalHtml = true;

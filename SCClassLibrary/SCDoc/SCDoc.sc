@@ -934,7 +934,7 @@ SCDoc {
 	*getOldWrapUrl {|url|
 		var urlString, className, newUrl, path;
 		urlString = url.asString;
-		path = url.asLocalPath ?? { urlString.replace("file://", "") };
+		path = URI(urlString).asLocalPath;
 
 		if(
 			path.beginsWith(SCDoc.helpTargetDir).not and: {
