@@ -95,14 +95,14 @@ struct PyrFrame : public PyrObjectHdr {
     PyrSlot vars[1];
 
     // Implemented in the gc source file.
-    inline void incrementReferenceCount();
+    void incrementReferenceCount();
     // Not calling this is never an error, as the gc will handle it.
     // It is only an optimisation.
-    inline void decrementReferenceCount(struct PyrGC* gc);
+    void decrementReferenceCount(struct PyrGC* gc);
 
-    inline void storeCaller(struct PyrGC* gc, PyrFrame* other);
-    inline void storeHomeContext(struct PyrGC* gc, PyrFrame* home);
-    inline void storeContext(struct PyrGC* gc, PyrFrame* cxt);
+    void storeCaller(struct PyrGC* gc, PyrFrame* other);
+    void storeHomeContext(struct PyrGC* gc, PyrFrame* home);
+    void storeContext(struct PyrGC* gc, PyrFrame* cxt);
 };
 
 // Framesize refers to the minimum number of slots the frame object must allocate.

@@ -369,7 +369,7 @@ inline PyrObject* PyrGC::Allocate(size_t inNumBytesAfterHeader, int32 sizeclass,
 }
 
 
-void PyrFrame::incrementReferenceCount() {
+inline void PyrFrame::incrementReferenceCount() {
     // This is set to an int in the allocator.
     // If it isn't, something odd has happened (maybe already been free'd), but the gc will deal with it.
     // If it is less than zero, we might have already free'd this.
@@ -382,7 +382,7 @@ void PyrFrame::incrementReferenceCount() {
     referenceCount = PyrSlot::make(referenceCount.getInt() + 1);
 }
 
-void PyrFrame::decrementReferenceCount(PyrGC* gc) {
+inline void PyrFrame::decrementReferenceCount(PyrGC* gc) {
     // If it isn't an int, don't free it, it might have already been free'd.
     // If we fail to free the frame, the gc will collect it later, so this is safest.
     // If it is an int, it shouldn't already be zero (no owner), if it is less, we don't want to double free.
@@ -425,13 +425,13 @@ void PyrFrame::decrementReferenceCount(PyrGC* gc) {
     }
 }
 
-void PyrFrame::storeCaller(struct PyrGC* gc, PyrFrame* other) {
+inline void PyrFrame::storeCaller(struct PyrGC* gc, PyrFrame* other) {
     caller = PyrSlot::make(other);
     if (other != this)
         other->incrementReferenceCount();
 }
 
-void PyrFrame::storeHomeContext(struct PyrGC* gc, PyrFrame* home) {
+inline void PyrFrame::storeHomeContext(struct PyrGC* gc, PyrFrame* home) {
     homeContext = PyrSlot::make(home);
 #if 0 // Needed if all frames are referenced counted
      if (home != this)
@@ -439,7 +439,7 @@ void PyrFrame::storeHomeContext(struct PyrGC* gc, PyrFrame* home) {
 #endif
 }
 
-void PyrFrame::storeContext(struct PyrGC* gc, PyrFrame* cxt) {
+inline void PyrFrame::storeContext(struct PyrGC* gc, PyrFrame* cxt) {
     context = PyrSlot::make(cxt);
 #if 0 // Needed if all frames are referenced counted
      if (cxt != this)
