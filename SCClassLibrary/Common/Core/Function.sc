@@ -1,7 +1,10 @@
 Function : AbstractFunction {
-	var <def, context;
-	// a Function is what you get when you write a FunctionDef in your code.
-	// it consists of the function's code and the variables in its defining context
+	// FunctionDef
+	var <def;
+
+	// This is a Frame, it is internal to the interpreter.
+	// A no point should the user EVER be able to access this or there will be gc bugs and supercollider will crash!
+	var context;
 
 	*new { ^this.shouldNotImplement(thisMethod) }
 
@@ -379,7 +382,6 @@ Function : AbstractFunction {
 				})
 		})
 	}
-
 }
 
 Thunk : AbstractFunction {

@@ -706,16 +706,21 @@ Method : FunctionDef {
 
 }
 
-Frame {
-	// frames contain the local variables, context and continuation of a function or method invocation.
-	// since some Frames are deleted instead of garbage collected, it is too
-	// dangerous to allow access to them. Dangling pointers could result.
-	shallowCopy { ^this }
-	inspectorClass { ^FrameInspector }
+// Frames are an interpreter internal object. 
+// You should never have an instance of one, if you do, it is a bug, please report it (GitHub/forum... wherever)!
+Frame : AbstractObjectExperimental /* !Never inherit from Frame!*/ {
+	*prThrow { Error("Attempting to use a Frame object, this will lead to gc bugs and eventually crash Supercollider").throw }
 
-	storeOn { arg stream; stream << "nil"; }
-	archiveAsCompileString { ^true }
-	checkCanArchive { "cannot archive Frames".warn }
+	*new { Frame.prThrow }
+	*newCopyArgs { Frame.prThrow }
+
+	mustBeBoolean { Frame.prThrow }
+	isNil { Frame.prThrow }
+	notNil { Frame.prThrow }
+	? { Frame.prThrow }
+	?? { Frame.prThrow }
+	!? { Frame.prThrow }
+	doesNotUnderstand { Frame.prThrow }
 }
 
 DebugFrame {
