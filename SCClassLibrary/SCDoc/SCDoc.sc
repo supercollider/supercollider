@@ -384,7 +384,7 @@ SCDocNode {
 SCDoc {
 
 	// Increment this whenever we make a change to the SCDoc system or its static files so that all help-files should be processed again
-	classvar version = 80;
+	classvar version = 81;
 
 	classvar <helpTargetDir;
 	classvar <helpTargetUrl;
@@ -932,15 +932,26 @@ SCDoc {
 	}
 
 	*getOldWrapUrl {|url|
-		var urlString, className, newUrl;
+		var urlString, className, newUrl, path;
 		urlString = url.asString;
+		path = url.asLocalPath ?? { urlString.replace("file://", "") };
+
+		if(
+			path.beginsWith(SCDoc.helpTargetDir).not and: {
+				path.beginsWith(Quarks.folder).not
+			 }
+		) {
+			^url;
+		};
+
 		newUrl = URI.fromLocalPath( SCDoc.helpTargetDir +/+ "OldHelpWrapper.html" );
 		newUrl.fragment = urlString;
 		newUrl.query =
 		SCDoc.helpTargetUrl
 		++ if((className=urlString.basename.split($.).first).asSymbol.asClass.notNil)
 		{"/Classes/" ++ className ++ ".html"}
-		{"/Guides/WritingHelp.html"}
+		{"/Guides/WritingHelp.html"};
+
 		^newUrl;
 	}
 }

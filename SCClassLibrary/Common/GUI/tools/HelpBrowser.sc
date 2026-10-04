@@ -75,22 +75,18 @@ HelpBrowser {
 
 		if(url.isNil) { ^"url is empty.".error };
 
-		if(url.beginsWith("/") or: { url[1] == $: };) {
+		if(url.beginsWith("/") or: { url[1] == $: }) {
 			isInLocal = true;
 			if(File.exists(url).not) {
 				^("The file (%) does not exist.".format(url)).error;
 			};
 		};
 
-		if(isInLocal == true) {
+		if(isInLocal) {
 			isHTMLFile = url.endsWith(".html") or: { url.endsWith(".htm") };
 			isInHelpTargetDir = url.beginsWith(SCDoc.helpTargetDir);
 			isInQuarksFolder = url.beginsWith(Quarks.folder);
-			url = Platform.case(
-				\osx,       { "file://" ++ url },
-				\linux,     { "file://" ++ url },
-				\windows,   { "file:///" ++ url.replace("\\", "/") }
-			);
+			url = URI.fromLocalPath(url).asString;
 
 			if(isHTMLFile and: { (isInHelpTargetDir or: { isInQuarksFolder }).not }) {
 				isExternalLocalHtml = true;
