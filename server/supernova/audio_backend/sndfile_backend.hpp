@@ -141,6 +141,7 @@ private:
         if (total_frames_read < input_file.frames()) {
             const size_t total_samples = input_channels * frames_per_tick;
             size_t remaining_samples = total_samples;
+            sample_type* buffer = temp_buffer.get();
 
             /* sndfile_read_thread() pushes samples in chunks of 'total_samples' (except for the
              * very last chunk), so we only need to wait for the semaphore once. The retry-loop
@@ -148,15 +149,14 @@ private:
             read_semaphore.wait();
 
             do {
-                const size_t sample_offset = total_samples - remaining_samples;
-                const size_t samples_read = read_frames.pop(temp_buffer.get() + sample_offset, remaining_samples);
+                const size_t samples_read = read_frames.pop(buffer, remaining_samples);
                 remaining_samples -= samples_read;
+                buffer += samples_read;
                 total_frames_read += samples_read / input_channels;
 
                 if (unlikely(total_frames_read >= input_file.frames())) {
                     /* at the end, we are not able to read a full sample block, clear the final parts */
-                    const size_t last_frame = total_samples - remaining_samples;
-                    zerovec(temp_buffer.get() + last_frame, remaining_samples);
+                    zerovec(buffer, remaining_samples);
                     break;
                 }
             } while (remaining_samples);
@@ -221,18 +221,17 @@ private:
         }
 
         const size_t total_samples = output_channels * frames_per_tick;
-        sample_type* buffer = temp_buffer.get();
-
-        size_t count = total_samples;
+        size_t remaining_samples = total_samples;
+        const sample_type* buffer = temp_buffer.get();
 
         do {
-            size_t consumed = write_frames.push(buffer, count);
-            count -= consumed;
-            buffer += consumed;
+            size_t samples_written = write_frames.push(buffer, remaining_samples);
+            remaining_samples -= samples_written;
+            buffer += samples_written;
             write_semaphore.post();
-            if (!consumed)
+            if (!samples_written)
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        } while (count);
+        } while (remaining_samples);
     }
 
     void sndfile_write_thread(void) {
