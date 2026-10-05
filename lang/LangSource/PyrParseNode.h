@@ -435,14 +435,14 @@ struct PyrMultiAssignVarListNode final : public PyrParseNode {
 struct PyrBlockNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::BlockNode };
     PyrBlockNode(Tag t, sc::lex::SourceCodeRange l, struct PyrArgListNode* mArglist, struct PyrVarListNode* mVarlist,
-                 PyrParseNode* mBody, bool mIsTopLevel);
+                 PyrParseNode* mBody, bool mIsExplicitlyClosed);
     virtual void compile(CompilerContext& cxt, PyrSlot* result);
     virtual void dump(int level);
 
     struct PyrArgListNode* mArglist;
     struct PyrVarListNode* mVarlist;
     PyrParseNode* mBody;
-    bool mIsTopLevel;
+    bool mIsExplicitlyClosed;
 };
 
 struct PyrArgListNode final : public PyrParseNode {
