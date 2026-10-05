@@ -33,20 +33,18 @@
 #include <atomic>
 #include <stdexcept>
 #include <sstream>
+#include <thread>
 
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
 #include "PyrSched.h"
 #include "SCBase.h"
-#include "SC_Lock.h"
 
 #include <boost/asio/use_future.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 
-using boost::uint8_t;
 using boost::asio::serial_port;
 
 extern boost::asio::io_context ioContext; // defined in SC_ComPort.cpp
@@ -115,7 +113,7 @@ public:
         setFlowControl(options.flow_control);
         setExclusive(options.exclusive);
 
-        m_readThread = SC_Thread { &SerialPort::doRead, this };
+        m_readThread = std::thread(&SerialPort::doRead, this);
     }
 
     ~SerialPort() { m_readThread.join(); }
@@ -167,7 +165,7 @@ private:
         gLangMutex.lock();
         if (m_obj) {
             VMGlobals* g = gMainVMGlobals;
-            setCanCallOS(g, true);
+            g->canCallOS = false;
             ++g->sp;
             SetObject(g->sp, m_obj);
             runInterpreter(g, cmd, 1);
@@ -333,7 +331,7 @@ static int prSerialPort_Open(struct VMGlobals* g, int numArgsPushed) {
         return err;
 
     SerialPort::Options options {};
-    SerialPort* port = nullptr;
+    std::unique_ptr<SerialPort> port;
 
     options.exclusive = IsTrue(args + 2);
 
@@ -364,21 +362,19 @@ static int prSerialPort_Open(struct VMGlobals* g, int numArgsPushed) {
     options.flow_control = asFlowControlType(useHardware, useSoftware);
 
     try {
-        port = new SerialPort(slotRawObject(self), portName, options);
+        port = std::make_unique<SerialPort>(slotRawObject(self), portName, options);
     } catch (boost::system::system_error& e) {
-        delete port;
         if (e.code().value() == boost::system::errc::no_such_file_or_directory) {
             throw std::runtime_error(std::string("SerialPort: port '") + portName + "' does not exist");
         } else {
             throw;
         }
     } catch (std::exception& e) {
-        delete port;
         // TODO: check error types to provide better messages, such as when port doesn't exist
         throw;
     }
 
-    SetPtr(slotRawObject(self)->slots + 0, port);
+    SetPtr(slotRawObject(self)->slots + 0, port.release());
 
     return errNone;
 }

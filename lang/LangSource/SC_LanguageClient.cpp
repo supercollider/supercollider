@@ -332,6 +332,10 @@ void setCanCallOS(VMGlobals* g, bool canCallOS) {
         assert(gMainThreadID != std::thread::id {});
         if (std::this_thread::get_id() != gMainThreadID) {
             postfl("ERROR: attempting to set 'canCallOS' to 'true' on the wrong thread!\n");
+            // Set to 'false' so that Qt primitives know that they are being called on the wrong thread
+            // and throw an exception.
+            g->canCallOS = false;
+            return;
         }
     }
     g->canCallOS = canCallOS;
