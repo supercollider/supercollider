@@ -167,7 +167,7 @@ private:
         gLangMutex.lock();
         if (m_obj) {
             VMGlobals* g = gMainVMGlobals;
-            setCanCallOS(g, true);
+            g->canCallOS = false;
             ++g->sp;
             SetObject(g->sp, m_obj);
             runInterpreter(g, cmd, 1);
