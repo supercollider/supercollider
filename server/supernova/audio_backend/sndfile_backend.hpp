@@ -189,7 +189,9 @@ private:
                 if (frames > frames_per_tick)
                     frames = frames_per_tick;
 
-                input_file.readf(data_to_read.data(), frames);
+                const size_t frames_read = input_file.readf(data_to_read.data(), frames);
+                if (frames_read != frames)
+                    throw std::runtime_error(std::string("sndfile read failed: ") + output_file.strError());
                 read_pos += frames;
 
                 /* read_input_buffers() consumes samples in chunks of 'frames_per_tick * input_channels',
@@ -240,19 +242,15 @@ private:
         const size_t deque_per_tick = output_channels * frames_per_tick * 64;
         aligned_storage_ptr<sample_type> data_to_write(deque_per_tick);
 
-        size_t pending_samples = 0;
-
-        for (;;) {
+        while (running.load(std::memory_order_acquire)) {
             write_semaphore.wait();
-            poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples);
-            if (unlikely(running.load(std::memory_order_acquire) == false))
-                break;
+            poll_writer_queue(data_to_write.get(), deque_per_tick);
         }
         /* flush queue */
-        while (poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples)) {}
+        while (poll_writer_queue(data_to_write.get(), deque_per_tick)) {}
     }
 
-    bool poll_writer_queue(sample_type* data_to_write, const size_t buffer_samples, size_t& pending_samples) {
+    bool poll_writer_queue(sample_type* data_to_write, const size_t buffer_samples) {
         bool consumed_item = false;
         for (;;) {
             const size_t available_samples = write_frames.read_available();
@@ -271,9 +269,8 @@ private:
 
             consumed_item = true;
 
-            const sf_count_t written_frames = output_file.writef(data_to_write, frames_to_read);
-            assert(frames_to_read == written_frames);
-            if (written_frames == -1)
+            const sf_count_t frames_written = output_file.writef(data_to_write, frames_to_read);
+            if (frames_written != frames_to_read)
                 throw std::runtime_error(std::string("sndfile write failed: ") + output_file.strError());
 
             for (size_t frame = 0; frame < frames_to_read; ++frame) {
