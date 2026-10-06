@@ -932,26 +932,15 @@ SCDoc {
 	}
 
 	*getOldWrapUrl {|url|
-		var urlString, className, newUrl, path;
+		var urlString, className, newUrl;
 		urlString = url.asString;
-		path = URI(urlString).asLocalPath;
-
-		if(
-			path.beginsWith(SCDoc.helpTargetDir).not and: {
-				path.beginsWith(Quarks.folder).not
-			 }
-		) {
-			^url;
-		};
-
 		newUrl = URI.fromLocalPath( SCDoc.helpTargetDir +/+ "OldHelpWrapper.html" );
 		newUrl.fragment = urlString;
 		newUrl.query =
 		SCDoc.helpTargetUrl
 		++ if((className=urlString.basename.split($.).first).asSymbol.asClass.notNil)
 		{"/Classes/" ++ className ++ ".html"}
-		{"/Guides/WritingHelp.html"};
-
+		{"/Guides/WritingHelp.html"}
 		^newUrl;
 	}
 }
