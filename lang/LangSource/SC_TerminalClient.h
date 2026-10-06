@@ -27,12 +27,15 @@
 #pragma once
 
 #include "SC_LanguageClient.h"
-#include "SC_StringBuffer.h"
-#include "SC_Lock.h"
 
-#include <boost/array.hpp>
 #include <boost/asio.hpp>
-#include <boost/sync/semaphore.hpp>
+#ifdef HAVE_READLINE
+#    include <boost/sync/semaphore.hpp>
+#endif
+
+#include <mutex>
+#include <thread>
+#include <vector>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
@@ -42,10 +45,10 @@
 class SCLANG_DLLEXPORT SC_TerminalClient : public SC_LanguageClient {
 public:
     enum Signal {
-        sig_input = 0x01, // there is new input
-        sig_sched = 0x02, // something has been scheduled
-        sig_recompile = 0x04, // class lib recompilation requested
-        sig_stop = 0x08 // call Main:-stop
+        sig_input = 0x01, /** there is new input */
+        sig_sched = 0x02, /** something has been scheduled */
+        sig_recompile = 0x04, /** class lib recompilation requested */
+        sig_stop = 0x08 /** call Main:-stop */
     };
 
     struct Options : public SC_LanguageClient::Options {
@@ -63,34 +66,42 @@ public:
     const Options& options() const { return mOptions; }
 
     int run(int argc, char** argv);
-    void quit(int code);
-    void recompileLibrary();
+
+    /** \brief recompile the Class Library
+     *
+     *  Always called on the main thread, typically after receiving
+     *  the \c sig_recompile signal.
+     */
+    bool recompileLibrary();
 
     virtual void postText(const char* str, size_t len);
     virtual void postFlush(const char* str, size_t len);
     virtual void postError(const char* str, size_t len);
     virtual void flush();
 
-    // Requests an action to be taken on the main thread.
-    // NOTE: It may be called from any thread, and with interpreter locked.
+    /** \brief Requests an action to be taken on the main thread.
+     *  \note It may be called from any thread, with the interpreter locked or unlocked.
+     */
     virtual void sendSignal(Signal code);
 
+    /** \brief stop the main loop */
     void stop() { mIoContext.stop(); }
 
-protected:
-    void interpretCmdLine(const char* cmdLine, bool silent);
-    void interpretCmdLine(const char* buf, size_t size, bool silent);
+    void setExitCode(int code) { mExitCode = code; }
 
+protected:
     // --------------------------------------------------------------
 
-    // NOTE: Subclasses should call from main thread
-    // after receiving sig_input
+    /** \brief interpret interactive code
+     *  \note subclasses should call this on the main thread after receiving sig_input.
+     */
     void interpretInput();
 
     // --------------------------------------------------------------
 
-    // Language requested the application to quit
-    // NOTE: It may be called from any thread, and with interpreter locked.
+    /** \brief Language requested the application to quit
+     *  \note It may be called from any thread, and with interpreter locked.
+     */
     virtual void onQuit(int exitCode);
 
     // See super class
@@ -112,6 +123,8 @@ protected:
     void tick(const boost::system::error_code& error);
 
 private:
+    static constexpr size_t inputBufferSize = 1024;
+
     // NOTE: called from input thread:
 #ifdef HAVE_READLINE
     static void readlineInit();
@@ -119,43 +132,46 @@ private:
     static int readlineRecompile(int, int);
     static void readlineCmdLine(char* cmdLine);
 #endif
-    static void* pipeFunc(void*);
-    void pushCmdLine(const char* newData, size_t size);
 
-    void initInput();
     void startInput();
     void endInput();
-    void cleanupInput();
 
-    int mReturnCode;
-    Options mOptions;
+    void inputThreadFn();
 
-    // app-clock io service
+    void startInputRead();
+    void onInputRead(const boost::system::error_code& error, std::size_t bytes_transferred);
+
+    void handleInput(const char* newData, size_t size);
+
+    void pushCmdLine(std::string&& cmdLine);
+    bool tryPopCmdLine(std::string& cmdLine);
+
 protected:
+    // app-clock io context
     boost::asio::io_context mIoContext;
 
 private:
+    int mExitCode = 0;
+    bool mUseReadline = false;
+    Options mOptions;
+
     boost::asio::executor_work_guard<boost::asio::io_context::executor_type> mWork;
     boost::asio::basic_waitable_timer<std::chrono::system_clock> mTimer;
 
     // input io service
     boost::asio::io_context mInputContext;
-    SC_Thread mInputThread;
-    void inputThreadFn();
+    std::thread mInputThread;
 
-    static const size_t inputBufferSize = 256;
-    boost::array<char, inputBufferSize> inputBuffer;
-    SC_StringBuffer mInputThrdBuf;
-    SC_StringBuffer mInputBuf;
+    std::vector<char> mInputBuffer;
+    std::string mNewCmdLine;
+    std::vector<std::string> mCmdLineQueue;
+    std::mutex mCmdLineQueueMutex;
 #ifndef _WIN32
     boost::asio::posix::stream_descriptor mStdIn;
 #else
     boost::asio::windows::object_handle mStdIn;
 #endif
-    void startInputRead();
-    void onInputRead(const boost::system::error_code& error, std::size_t bytes_transferred);
-
-    // command input
-    bool mUseReadline;
+#ifdef HAVE_READLINE
     boost::sync::semaphore mReadlineSem;
+#endif
 };

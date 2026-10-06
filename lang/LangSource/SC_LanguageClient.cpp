@@ -25,10 +25,15 @@
 
 #include "SC_LanguageClient.h"
 #include "ClassLibraryInfo.hpp"
-#include "SC_Lock.h"
-#include <cstring>
-#include <string>
+#include "PyrObject.h"
+#include "PyrSched.h"
+#include "SCBase.h"
+#include "SC_StringBuffer.h"
+
 #include <cerrno>
+#include <cstring>
+#include <mutex>
+#include <string>
 
 #ifdef _WIN32
 #    include <stdio.h>
@@ -40,36 +45,23 @@
 #    include <unistd.h>
 #endif
 
-#include "PyrObject.h"
-#include "PyrKernel.h"
-#include "PyrSched.h"
-#include "GC.h"
-#include "VMGlobals.h"
-#include "SCBase.h"
-#include "SC_StringBuffer.h"
-
 void closeAllGUIScreens();
 void initGUI();
 void initGUIPrimitives();
-
-extern PyrString* newPyrStringN(class PyrGC* gc, std::int64_t length, std::int64_t flags, std::int64_t collect);
 
 // =====================================================================
 // SC_LanguageClient
 // =====================================================================
 
 SC_LanguageClient* gInstance = nullptr;
-SC_Lock gInstanceMutex;
+std::mutex gInstanceMutex;
 std::thread::id gMainThreadID;
 
-class HiddenLanguageClient {
-public:
-    HiddenLanguageClient(): mPostFile(nullptr), mScratch(0), mRunning(false) {}
-
+struct HiddenLanguageClient {
     std::string mName;
-    FILE* mPostFile;
+    FILE* mPostFile = nullptr;
     SC_StringBuffer mScratch;
-    bool mRunning;
+    bool mRunning = false;
 };
 
 SC_LanguageClient::SC_LanguageClient(const std::string& name) {
@@ -120,42 +112,39 @@ void SC_LanguageClient::shutdownRuntime() {
 }
 
 bool SC_LanguageClient::compileLibrary(bool standalone) {
-    return compiledSuccessfully = ::compileLibrary(compiledSuccessfully, standalone);
+    return mCompiledSuccessfully = ::compileLibrary(mCompiledSuccessfully, standalone);
 }
 
 void SC_LanguageClient::shutdownLibrary() {
-    ::shutdownLibrary(compiledSuccessfully);
+    ::shutdownLibrary(mCompiledSuccessfully);
     flush();
 }
 
 bool SC_LanguageClient::recompileLibrary(bool standalone) {
-    return compiledSuccessfully = ::compileLibrary(compiledSuccessfully, standalone);
+    return mCompiledSuccessfully = ::compileLibrary(mCompiledSuccessfully, standalone);
 }
 
-void SC_LanguageClient::setCmdLine(const char* buf, size_t size, const std::string* const filePath, int lineNumber,
-                                   int column) {
+void SC_LanguageClient::setCmdLine(const char* buf, size_t size, const char* filePath, int lineNumber, int column) {
+    assert(buf != nullptr);
+    lock();
     if (isLibraryCompiled()) {
-        lock();
-        if (isLibraryCompiled()) {
-            setCommandLine(buf, size, filePath ? filePath->c_str() : nullptr, lineNumber, column);
-        }
-        unlock();
+        setCommandLine(buf, size, filePath, lineNumber, column);
     }
+    unlock();
 }
 
-void SC_LanguageClient::setCmdLine(const char* str, const std::string* const filePath, int lineNumber, int column) {
+void SC_LanguageClient::setCmdLine(const char* str, const char* filePath, int lineNumber, int column) {
     setCmdLine(str, strlen(str), filePath, lineNumber, column);
 }
 
-void SC_LanguageClient::setCmdLinef(const std::string* const filePath, int lineNumber, int column, const char* fmt,
-                                    ...) {
-    SC_StringBuffer& scratch = mHiddenClient->mScratch;
+void SC_LanguageClient::setCmdLinef(const char* filePath, int lineNumber, int column, const char* fmt, ...) {
+    auto& scratch = mHiddenClient->mScratch;
     va_list ap;
     va_start(ap, fmt);
     scratch.reset();
     scratch.vappendf(fmt, ap);
     va_end(ap);
-    setCmdLine(scratch.getData());
+    setCmdLine(scratch.getData(), filePath, lineNumber, column);
 }
 
 void SC_LanguageClient::runLibrary(PyrSymbol* symbol) {
@@ -179,7 +168,7 @@ void SC_LanguageClient::executeFile(const std::string& fileName) {
         ++i;
     }
 
-    setCmdLinef(&fileName, 0, 0, "thisProcess.interpreter.executeFile(\"%s\")", escaped_file_name.c_str());
+    setCmdLinef(fileName.c_str(), 0, 0, "thisProcess.interpreter.executeFile(\"%s\")", escaped_file_name.c_str());
     runLibrary(s_interpretCmdLine);
 }
 
@@ -240,7 +229,7 @@ void SC_LanguageClient::setPostFile(FILE* file) { mHiddenClient->mPostFile = fil
 
 extern ClassLibraryInfo gClassLibraryInfo;
 
-bool SC_LanguageClient::isLibraryCompiled() { return gClassLibraryInfo.acceptsInput(); }
+bool SC_LanguageClient::isLibraryCompiled() const { return gClassLibraryInfo.acceptsInput(); }
 
 int SC_LanguageClient::run(int argc, char** argv) {
     throw std::runtime_error("SC_LanguageClient::run only supported on terminal client");
