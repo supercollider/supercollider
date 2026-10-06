@@ -969,11 +969,12 @@ URI {
 		uri.authority = "";
 		uri.path = string;
 		if (thisProcess.platform.name === \windows) {
-			uri.path = uri.path.replace("\\","/");
-			if (uri.path.size >= 2 and: {uri.path[1] == $:})
-			{ uri.path = "/" ++ uri.path; }
-		}
-		^ uri;
+			uri.path = uri.path.replace("\\", "/");
+			if (uri.path.size >= 2 and: { uri.path[1] == $: }) {
+				uri.path = "/" ++ uri.path;
+			};
+		};
+		^uri;
 	}
 
 	*tolerant { |string|
@@ -982,7 +983,7 @@ URI {
 		if (thisProcess.platform.name === \windows
 			and: { string.size >= 2 and: { string[1] == $:} } )
 		{
-			^ this.fromLocalPath(string);
+			^this.fromLocalPath(string);
 		};
 
 		uri = this.new(string);
@@ -990,16 +991,43 @@ URI {
 			uri.scheme = "file";
 			if (uri.authority.isNil) { uri.authority = "" }
 		};
-		^ uri;
+		^uri;
 	}
 
 	init { |string|
-		var result;
+		var result, idx = 5;
 		if (string.notNil) {
-			string = string.replace("%20"," ");
-			result = string.findRegexp( parseRegexp ).flop[1];
+			if (string.beginsWith("file:")) {
+
+				var hasValidSlashes = string.beginsWith("file:///") and: {
+					string.size == 8 or: { string.size > 8 and: { string[8] != $/ } }
+				};
+				/*
+				// The posting warning might confuse users,
+				// since SCDoc.helpTargetDir, for example,
+				// returns a path that starts with / on macOS but not on Windows.
+				// Therefore, this part has been commented out:
+				if (hasValidSlashes.not) {
+					(
+						"URI: The standard format for local files is 'file:///'. "
+						" While 'file://' might seem correct on systems "
+						"where local paths start with '/', please use the standard. "
+						"sclang corrects this internally for cross-platform compatibility."
+						" (Input: '%')").format(string).warn;
+				};
+				*/
+				string = string.replace("\\", "/");
+
+				while { (idx < string.size) and: { string[idx] == $/ } } {
+					idx = idx + 1;
+				};
+				string = "file:///" ++ string.copyToEnd(idx);
+			};
+
+			string = string.replace("%20", " ");
+			result = string.findRegexp(parseRegexp).flop[1];
 			if (result[1].size > 0) { scheme = result[2] };
-			if (result[3].size>0) { authority = result[4] };
+			if (result[3].size > 0) { authority = result[4] };
 			path = result[5];
 			if (result[6].size > 0) { query = result[7] };
 			if (result[8].size > 0) { fragment = result[9] };
@@ -1012,10 +1040,9 @@ URI {
 		if (thisProcess.platform.name === \windows) {
 			localPath = path;
 			if (localPath.beginsWith("/")) { localPath = localPath.drop(1) };
-			localPath = localPath.replace("/","\\");
-			^localPath;
+			^localPath.replace("/","\\");
 		}
-		^ path.copy;
+		^path.copy;
 	}
 
 	asString {
