@@ -77,27 +77,19 @@ HelpBrowser {
 
 		if("(file|http|(s|))://".matchRegexp(url).not) {
 			^(
-				"'HelpBrowser.goTo' expects a URI."
-				"Please use:\n'URI.fromLocalPath(\"%\").asString'\nfor the url argument,\n"
-				"or prepend 'http://' or 'https://' for online documentation."
+				"'HelpBrowser.goTo' expects a URI. (Input: '%')\n"
+				"Please prepend 'file:///' for a local document,\n"
+				"or prepend 'http://' or 'https://' for an online document."
 			).format(url.replace("\\", "\\\\")).error;
 		};
 
 		if(url.beginsWith("file:")) {
-			var idx = 5;
-
-			while { (idx < url.size) and: { url[idx] == $/ } } {
-				idx = idx + 1;
-			};
-
-			url = "file:///" ++ url.copyToEnd(idx);
 			isInLocal = true;
-			url = URI(url).asString;
 			localPath = URI(url).asLocalPath;
 		};
 
 		if(isInLocal) {
-			isHTMLFile = localPath.endsWith(".html") or: { url.endsWith(".htm") };
+			isHTMLFile = localPath.endsWith(".html") or: { localPath.endsWith(".htm") };
 			isInHelpTargetDir = localPath.beginsWith(SCDoc.helpTargetDir);
 			isInQuarksFolder = localPath.beginsWith(Quarks.folder);
 
