@@ -38,7 +38,7 @@ LangClient::LangClient(const std::string& name): SC_TerminalClient(name) {}
 
 void LangClient::commandLoop() {
     int exit_code = QcApplication::instance()->exec();
-    SC_TerminalClient::quit(exit_code);
+    SC_TerminalClient::setExitCode(exit_code);
 }
 
 void LangClient::daemonLoop() { commandLoop(); }
