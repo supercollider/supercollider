@@ -28,6 +28,7 @@
 #include <cassert>
 #include <cstring>
 #include <cmath>
+#include <unordered_set>
 #include "PyrObjectHdr.h"
 #include "PyrErrors.h"
 #include "function_attributes.h"
@@ -382,6 +383,10 @@ public:
         static_assert(sizeof(uintptr_t) <= sizeof(uint64_t)); // probably always true?
         return { PrivateTag(), Tags::ptrTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
     }
+
+    // This is deleted because if you pass a const PyrObjectHdr*, it will decay into a boolean!
+    [[nodiscard]] inline static PyrSlot make(const void* o) noexcept = delete;
+
     [[nodiscard]] inline static PyrSlot make() noexcept { return {}; }
     [[nodiscard]] inline static PyrSlot make(PyrNil) noexcept { return {}; }
     [[nodiscard]] inline static PyrSlot make(bool b) noexcept {
@@ -503,6 +508,13 @@ public:
             return Hash(u.i[0] + Hash(u.i[1]));
         }
     }
+
+    /// Writes the slot to a string for the purpose of debugging in the language.
+    /// This is not a full pretty print, but is meant to provide some useful information for debugging.
+    /// It will format the output all on one line, even if there are newline characters
+    // We dont' use a ostream here because we want to set a write limit.
+    void appendToStringForDebug(std::string& stream, size_t sizeLimit = 40,
+                                std::unordered_set<PyrObjectHdr*> alreadyVisited = {}) const;
 };
 
 static_assert(sizeof(PyrSlot) == sizeof(double));

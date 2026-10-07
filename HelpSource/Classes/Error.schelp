@@ -32,6 +32,7 @@ The following error classes exist in the main library.
 
 list::
 ## link::Classes/Error::
+## link::Classes/ErrorWrapper:: : wraps an existing error in another.
 ## link::Classes/DeprecatedError:: : this method is no longer supported.
 ## link::Classes/MethodError:: : generic error occurring within a method.
 ## link::Classes/DoesNotUnderstandError:: : the receiver does not understand the method name.
@@ -47,3 +48,139 @@ list::
 
 The exact inheritance tree looks like this:
 classtree::Error
+
+
+subsection::Changing how a custom error is displayed
+
+The only reason you should ever need to write an new type of error is if you intend to catch it and do some custom recovery logic with it.
+Otherwise, you just should use link::Classes/Error::
+
+There are two places you can change how an error is displayed, when it is constructed, and through overloading two specific methods.
+
+If you only need to change the constructor arguments, consider using link::Classes/Error:: directly.
+
+The constructor of code::Error:: takes 4 arguments. 
+
+First, a string saying what went wrong, this should describe the type of error.
+
+Second, code::callFrameAnnotations::, this is an array of code::nil:: or strings. Working up the call stack, the text is shown next to the source code.
+This is best shown by example.
+
+code::
+MyError : Error {
+	*new { |what| 
+		^super.new(what, [
+			"Here is where we called throw on the error.",
+			"This is the call above that, in this case, it is where we invoked `g`!",
+			"And finally, this is where we invoked the function `f`.",
+		]);
+	}
+}
+
+g = { var foo = 10; MyError("what??").throw };
+f = { var bar = \meow; g.(); }; 
+f.()
+::
+
+This produced an error report like this... remember, in the post window, this is read bottom to top!
+
+code::
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: what??
+
+3   : Anonymous Function
+          file://interpreted_text:3:5
+             1 │ g = { var foo = 10; MyError("what??").throw };
+             2 │ f = { var bar = \meow; g.(); };
+             3 │ f.()
+               ┆ ^^^^ And finally, this is where we invoked the function `f`.
+2   : Function Name: 'f'
+       vars: bar='meow'
+          file://interpreted_text:2:28
+             1 │ g = { var foo = 10; MyError("what??").throw };
+             2 │ f = { var bar = \meow; g.(); };
+               ┆                        ^^^^ This is the call above that, in this case, it is where we invoked `g`!
+             3 │ f.()
+1   : Function Name: 'g'
+       vars: foo=10
+          file://interpreted_text:1:44
+             1 │ g = { var foo = 10; MyError("what??").throw };
+               ┆                     ^^^^^^^^^^^^^^^^^^^^^^^ Here is where we called throw on the error.
+             2 │ f = { var bar = \meow; g.(); };
+             3 │ f.()
+
+
+──────────────────────────────────────────────────────────────────────────────────
+::
+
+Third, code::methodBeforeBacktraceStart:: this is a function that returns true when encountering a method in the call trace which we would like to start printing after.
+The simplest example is skipping everything before the throw method of the exception (the default), but it the case of link::Classes/DoesNotUnderstandError:: it is also used to skip code::Object:doesNotUnderstand:: too.
+
+Fourth, code::MethodBacktraceEnd:: this is a function that return true when encountering the method one past the final backtrace we would like to print.
+The default here will stop printing when we get to a code::try::, code::protect::, or go up into the interpreter methods.
+
+
+When it comes to overriding methods, the two (and only two) that are allowed are code::reportStage1:: and code::reportStage2::. 
+These are responsible for printing the backtrace and adding any additional information.
+If you only want to add additionally information at the end of the report, you can just overload code::reportStage2::.
+See the definition below for more information on these.
+
+
+classmethods::
+method::new
+argument::what
+A link::Classes/String:: describing the error. 
+In some cases a subclass may alter this, appending information as needed.
+
+argument::callFrameAnnotations
+An link::Classes/Array:: containing either a link::Classes/Nil:: or a link::Classes/String::. 
+Working up the call stack, the text (if present) is printing next to the source code. 
+See the example above for an example.
+
+argument::methodBeforeBacktraceStart
+A link::Classes/Function:: that accepts a link::Classes/FunctionDef:: that returns a link::Classes/Boolean::.
+Internally, we walk up the call frame, if this function returns code::true::, it means we will skip all the previous frames and this one, starting the trace on the next method.
+This is often used to skip the creating and throwing of the error, and sometimes a helper function that is used to create it.
+
+argument::methodBacktraceEnd
+A link::Classes/Function:: that accepts a link::Classes/FunctionDef:: that returns a link::Classes/Boolean::.
+When walking up the call frame, if this returns true, we stop printing the backtrace.
+This is often used to skip printing above a try block and to stop printing the internal interpreter details.
+
+instancemethods::
+method::throw
+Throw the error, creating a backtrace. 
+This will not override the previous, if you would like to store where you rethrow the error or add additional information, see link::Classes/ErrorWrapper::.
+
+method::reportStage1
+This is used to print the backtrace, there is little reason to override this.
+argument::stream 
+The stream we are writing to
+argument::prefix
+The prefix that must be inserted after each new line.
+
+method::reportStage2
+This is used to print any custom message an exception might have.
+If you want to add some information to your own error, this is where you place it.
+argument::stream 
+The stream we are writing to
+argument::prefix
+The prefix that must be inserted after each new line.
+
+method::reportError
+warning::Do not override this! Instead see reportStage1 and reportStage2.::
+argument::stream
+The stream to write to, by default this is link::Classes/Post::
+argument::prefix
+The prefix that must be inserted after each new line.
+
+method::errorString
+This returns the code::what:: of the error. 
+See link::Classes/ErrorWrapper::.
+
+method::path
+Returns the result of code::thisProcess.nowExecutingPath:: as evaluated when the exception was created.
+Looking at the backtrace is a more reliable way to see where the exception was thrown from.
+
+method::backtrace
+Returns the underlying backtrace created when the exception was thrown. Returns code::nil:: if it was never thrown.

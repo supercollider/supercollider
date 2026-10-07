@@ -36,13 +36,5 @@ returns:: The selector passed to new. Typically, the method name that was not un
 method:: args
 returns:: The args passed to new. Typically, an array of arguments passed to the unknown method.
 
-method:: suggestedCorrection
-returns:: If there is a method that the receiver would understand that looks similar to the unknown method name, the
-the link::Classes/Method:: object that corresponds to it. Otherwise, code::nil::.
-
-method:: errorString
-returns:: Short-form representation of the error as a link::Classes/String::, with a suggested replacement if one was
-found.
-
-method:: reportError
-Print a long-form explanation of the error including backtrace and suggested replacement if one was found.
+method:: keywordArgumentPairs
+returns:: The keyword arguments passed to new.
