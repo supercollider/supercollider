@@ -359,7 +359,8 @@ Object : AbstractObjectExperimental {
 		if (Error.handling) {
 			error("throw during error handling!\n");
 			this.dump;
-			^this
+			// Don't call OnError.run. if it throws... then we get stuck in a cycle.
+			this.prHalt;
 		};
 		thisThread.handleError(this);
 	}

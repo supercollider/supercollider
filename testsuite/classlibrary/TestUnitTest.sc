@@ -61,7 +61,7 @@ TestUnitTest : UnitTest {
 	}
 
 	test_assertException_explicitThrow {
-		this.assertException({ BinaryOpFailureError("I prefer ternary").throw },
+		this.assertException({ BinaryOpFailureError("I prefer ternary", '+').throw },
 			BinaryOpFailureError,
 			"assertException should return true for specific error",
 		)

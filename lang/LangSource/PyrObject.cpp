@@ -25,6 +25,7 @@
 #include "PyrKernel.h"
 #include "PyrMessage.h"
 #include "PyrInterpreter.h"
+#include "PyrSlot.h"
 #include "PyrSymbolTable.h"
 #include "PyrObjectProto.h"
 #include "PyrKernelProto.h"
@@ -84,6 +85,7 @@ PyrClass* class_thread;
 PyrClass* class_routine;
 PyrClass* class_finalizer;
 PyrClass* class_server_shm_interface;
+PyrClass* class_debugFrame;
 
 PyrSymbol* s_none;
 PyrSymbol* s_abstract_object;
@@ -1529,6 +1531,17 @@ void initClasses() {
     class_server_shm_interface = makeIntrinsicClass(s_server_shm_interface, s_object, 2, 0);
     addIntrinsicVar(class_server_shm_interface, "ptr", &o_nil);
     addIntrinsicVar(class_server_shm_interface, "finalizer", &o_nil);
+
+    class_debugFrame = makeIntrinsicClass(getsym("DebugFrame"), s_object, 7, 0);
+
+    addIntrinsicVar(class_debugFrame, "functionDef", &o_nil);
+    addIntrinsicVar(class_debugFrame, "args", &o_nil);
+    addIntrinsicVar(class_debugFrame, "vars", &o_nil);
+    addIntrinsicVar(class_debugFrame, "caller", &o_nil);
+    addIntrinsicVar(class_debugFrame, "context", &o_nil);
+    addIntrinsicVar(class_debugFrame, "address", &o_nil);
+    addIntrinsicVar(class_debugFrame, "ipIndex", &o_nil);
+
 
     gTagClassTable[0] = nullptr;
     gTagClassTable[1] = nullptr;
