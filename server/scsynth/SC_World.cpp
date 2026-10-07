@@ -665,9 +665,9 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
     World_Start(world);
 
     int64 oscTime = 0;
-    double oscToSeconds = 1. / pow(2., 32.);
-    double oscToSamples = inOptions->mPreferredSampleRate * oscToSeconds;
-    int64 oscInc = (int64)((double)bufLength / oscToSamples);
+    const double oscToSeconds = 1. / pow(2., 32.);
+    const double oscToSamples = inOptions->mPreferredSampleRate * oscToSeconds;
+    const double samplesToOSC = std::pow(2, 32) / inOptions->mPreferredSampleRate;
 
     if (inOptions->mVerbosity >= 0) {
         printf("start time %g\n", schedTime * oscToSeconds);
@@ -682,7 +682,7 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
     int32* outputTouched = world->mAudioBusTouched;
 
     while (run) {
-        int bufFramesCalculated = 0;
+        sf_count_t bufFramesCalculated = 0;
         float* inBufPos = inputFileBuf;
         float* outBufPos = outputFileBuf;
 
@@ -695,7 +695,7 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
         }
 
         for (int i = 0; i < bufMultiple && run; ++i) {
-            int bufCounter = world->mBufCounter;
+            const int bufCounter = world->mBufCounter;
 
             // deinterleave input to input buses
             if (inputFileBuf) {
@@ -710,12 +710,14 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
                 }
             }
 
-            // execute ready commands
-            int64 nextTime = oscTime + oscInc;
+            // execute ready commands.
+            // NOTE: instead of incrementing OSC time very tick, we calculate it from the
+            // buffer counter to avoid cumulative errors.
+            const int64 nextTime = static_cast<int64>((bufCounter + 1) * bufLength * samplesToOSC);
 
             while (schedTime <= nextTime) {
-                float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
-                float diffTimeFloor = floor(diffTime);
+                const float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
+                const float diffTimeFloor = floor(diffTime);
                 world->mSampleOffset = (int)diffTimeFloor;
                 world->mSubsampleOffset = diffTime - diffTimeFloor;
 
@@ -744,7 +746,7 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
             World_Run(world);
 
             // interleave output to output buffer
-            float* outBus = outputBuses;
+            const float* outBus = outputBuses;
             for (int j = 0; j < numOutputChannels; ++j, outBus += bufLength) {
                 float* outFileBufPtr = outBufPos + j;
                 if (outputTouched[j] == bufCounter) {

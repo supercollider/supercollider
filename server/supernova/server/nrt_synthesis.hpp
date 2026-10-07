@@ -40,7 +40,7 @@ struct non_rt_functor {
 
     static inline void run_tick(void) {
         run_scheduler_tick();
-        instance->increment_logical_time();
+        instance->update_logical_time();
     }
 };
 
@@ -99,6 +99,7 @@ struct non_realtime_synthesis_engine {
         backend.activate_audio();
 
         auto start_time = steady_clock::now();
+        time_tag bundle_time;
 
         for (;;) {
             boost::endian::big_int32_t packet_size;
@@ -116,12 +117,15 @@ struct non_realtime_synthesis_engine {
                 break;
             }
 
-            time_tag bundle_time = instance->handle_bundle_nrt(packet_vector.data(), packet_size);
+            bundle_time = instance->handle_bundle_nrt(packet_vector.data(), packet_size);
 
             size_t seconds = bundle_time.get_secs();
             size_t nano_seconds = bundle_time.get_nanoseconds();
             log_printf("  Next OSC bundle: %zu.%09zu\n", seconds, nano_seconds);
 
+            // compute audio up to and excluding the control block that the current bundle timestamp
+            // falls into. This is because we first have to process all bundles for a given control
+            // block before we can compute audio for it.
             while (instance->next_time() < bundle_time) {
                 if (instance->quit_requested())
                     goto done;
@@ -133,11 +137,16 @@ struct non_realtime_synthesis_engine {
             }
         }
 
-        // finish the very last block
-        if (has_inputs)
-            backend.audio_fn(samples_per_block);
-        else
-            backend.audio_fn_noinput(samples_per_block);
+        // finish the very last block, but only if the last bundle does not fall directly on a
+        // block boundary. For example, if the last bundle is scheduled for 1.0 seconds @ 48 kHz,
+        // we do not want to compute samples 48000-48064, instead we want the sound file to be
+        // exactly 1 second long.
+        if (instance->now < bundle_time) {
+            if (has_inputs)
+                backend.audio_fn(samples_per_block);
+            else
+                backend.audio_fn_noinput(samples_per_block);
+        }
 
     done:
         backend.deactivate_audio();

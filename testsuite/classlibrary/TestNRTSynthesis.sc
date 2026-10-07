@@ -23,7 +23,6 @@ TestNRTSynthesis : UnitTest {
 		// we can already close the file here
 		inputFile.close;
 
-		// Server.supernova;
 		Server.perform(serverType);
 		Score.program = Server.program;
 
@@ -39,8 +38,7 @@ TestNRTSynthesis : UnitTest {
 					var in = SoundIn.ar(0);
 					Out.ar(0, in);
 				}).asBytes
-			]],
-			[0.0, Synth.basicNew(\pass, server).newMsg]
+			], Synth.basicNew(\pass, server).newMsg]
 		]);
 
 
@@ -107,5 +105,60 @@ TestNRTSynthesis : UnitTest {
 		var supernovaResult = this.performInputTest(\supernova);
 		this.assertEquals(scsynthResult.numFrames, supernovaResult.numFrames,
 			"The output file size must be the same for both Servers.");
+	}
+
+	// helper method
+	performOutputSizeTest { |serverType|
+		var server, score, condVar = CondVar(), done = false;
+		// At 48 kHz, a 1 second sound file should produce exactly 48000 samples.
+		// (48000 is a multiple of the Server block size.)
+		var sampleRate = 48000, duration = 1.0, numFrames = (sampleRate * duration).asInteger;
+		var outputFile, outputFilePath = Platform.defaultTempDir +/+ "nrt_test_%.wav".format(serverType);
+
+		Server.perform(serverType);
+		Score.program = Server.program;
+
+		server = Server(\nrt_ ++ serverType,
+			options: ServerOptions.new
+			.numOutputBusChannels_(2)
+		);
+
+		score = Score([
+			[0.0, ['/d_recv',
+				SynthDef(\sine, {
+					Out.ar(0, SinOsc.ar([440, 220]));
+				}).asBytes
+			], Synth.basicNew(\sine, server).newMsg]
+		]);
+
+
+		score.recordNRT(
+			outputFilePath: outputFilePath,
+			sampleRate: sampleRate,
+			headerFormat: "wav",
+			sampleFormat: "int16",
+			options: server.options,
+			duration: duration,
+			action: { done = true; condVar.signalAll }
+		);
+
+		if (condVar.waitFor(5, { done }).not) {
+			Error(serverType ++ ": NRT synthesis did not complete").throw;
+		};
+
+		outputFile = SoundFile.openRead(outputFilePath);
+		if (outputFile.numFrames == 0) {
+			Error("output file is empty").throw;
+		};
+
+		this.assertEquals(outputFile.numFrames, numFrames,
+			serverType ++ ": the output file has exactly % samples".format(numFrames));
+
+		server.remove;
+	}
+
+	test_nrtSynthesisProducesExactOutputSize {
+		var scsynthResult = this.performOutputSizeTest(\scsynth);
+		var supernovaResult = this.performOutputSizeTest(\supernova);
 	}
 }
