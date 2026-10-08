@@ -953,6 +953,9 @@ URI {
 	http://datatracker.ietf.org/doc/rfc3986/
 
 	If you intend to modify it, please consult the specification!
+
+	To construct a URI from a local file path, use 'URI.fromLocalPath(path)'
+	instead of manually prepending "file://" or "file:///" to ensure cross-platform compatibility.
 	*/
 
 	classvar parseRegexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?";
