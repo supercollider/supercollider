@@ -965,15 +965,21 @@ URI {
 
 	*fromLocalPath { |string|
 		var uri = super.new;
+		var isWinDrive = string.size >= 2 and: { string[1] == $: };
+		var isWinUNC = string.size >= 2 and: { string[0] == $\\ and: { string[1] == $\\ } };
+
 		uri.scheme = "file";
 		uri.authority = "";
-		uri.path = string;
-		if (thisProcess.platform.name === \windows) {
-			uri.path = uri.path.replace("\\", "/");
-			if (uri.path.size >= 2 and: { uri.path[1] == $: }) {
-				uri.path = "/" ++ uri.path;
-			};
+
+		if (thisProcess.platform.name === \windows or: { isWinDrive or: isWinUNC }) {
+			string = string.replace("\\", "/");
 		};
+
+		if (isWinDrive) {
+			string = "/" ++ string;
+		};
+
+		uri.path = string;
 		^uri;
 	}
 
@@ -995,37 +1001,10 @@ URI {
 	}
 
 	init { |string|
-		var result, idx = 5;
+		var result;
 		if (string.notNil) {
-			if (string.beginsWith("file:")) {
-
-				var hasValidSlashes = string.beginsWith("file:///") and: {
-					string.size == 8 or: { string.size > 8 and: { string[8] != $/ } }
-				};
-				/*
-				// The posting warning might confuse users,
-				// since SCDoc.helpTargetDir, for example,
-				// returns a path that starts with / on macOS but not on Windows.
-				// Therefore, this part has been commented out:
-				if (hasValidSlashes.not) {
-					(
-						"URI: The standard format for local files is 'file:///'. "
-						" While 'file://' might seem correct on systems "
-						"where local paths start with '/', please use the standard. "
-						"sclang corrects this internally for cross-platform compatibility."
-						" (Input: '%')").format(string).warn;
-				};
-				*/
-				string = string.replace("\\", "/");
-
-				while { (idx < string.size) and: { string[idx] == $/ } } {
-					idx = idx + 1;
-				};
-				string = "file:///" ++ string.copyToEnd(idx);
-			};
-
-			string = string.replace("%20", " ");
-			result = string.findRegexp(parseRegexp).flop[1];
+			string = string.replace("%20"," ");
+			result = string.findRegexp( parseRegexp ).flop[1];
 			if (result[1].size > 0) { scheme = result[2] };
 			if (result[3].size > 0) { authority = result[4] };
 			path = result[5];
@@ -1041,7 +1020,7 @@ URI {
 			localPath = path;
 			if (localPath.beginsWith("/")) { localPath = localPath.drop(1) };
 			^localPath.replace("/","\\");
-		}
+		};
 		^path.copy;
 	}
 
