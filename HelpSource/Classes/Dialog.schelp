@@ -21,8 +21,8 @@ METHOD:: openPanel
 	ARGUMENT:: multipleSelection
 		A Boolean indicating whether multiple files can be selected.
 	ARGUMENT:: path
-		A string. The dialog will initially display the contents of this path. The default is the current
-		user's home directory.
+		A link::Classes/String::. The dialog will initially display the contents of this path. The default is the current
+		user's home directory. For path handling and management, see link::Classes/File:: and link::Classes/PathName::.
 	DISCUSSION::
 	Example:
 code::
@@ -43,8 +43,8 @@ METHOD:: savePanel
 	ARGUMENT:: cancelFunc
 		An object to be evaluated when Cancel is pressed.
 	ARGUMENT:: path
-		A string. The dialog will initially display the contents of this path. The default is the current
-		user's home directory.
+		A link::Classes/String::. The dialog will initially display the contents of this path. The default is the current
+		user's home directory. For path handling and management, see link::Classes/File:: and link::Classes/PathName::.
 	DISCUSSION::
 	Example:
 code::
