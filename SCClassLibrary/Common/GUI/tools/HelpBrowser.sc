@@ -69,7 +69,7 @@ HelpBrowser {
 	}
 
 	*goTo {|url|
-		if(this.prShouldRedirect(url)) {
+		if(url.notNil and: { this.prShouldRedirect(url) }) {
 			this.prOpenRedirectMenu(url)
 		} {
 			this.prOpenInIDEorHelpBrowser(url)
