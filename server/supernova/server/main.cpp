@@ -284,9 +284,14 @@ void load_synthdefs(nova_server& server, server_arguments const& args) {
 }
 
 void drop_rt_scheduling() {
+    // Thread priorities are only inherited on Linux, BSD etc., but not on macOS or Windows!
+    // WARNING: on macOS, setting a thread priority of 0 would turn the main thread into
+    // a background thread and seriously degrade performance, especially on Apple Silicon!
+#if !defined(_WIN32) && !defined(__APPLE__)
     bool success = nova::thread_set_priority(0);
     if (!success)
         cout << "Warning: cannot drop rt priority" << endl;
+#endif
 }
 
 void enable_core_dumps(void) {
