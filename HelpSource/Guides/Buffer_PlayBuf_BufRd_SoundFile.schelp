@@ -1,0 +1,2959 @@
+title:: Short Sound-File Playback
+summary:: A practical guide to short sound-file playback, covering buffer loading and querying, UGen selection, looping, rate-controlled playback (including reverse), fade-based duration control, safe node cleanup, channel-mismatch handling, and folder-based bulk buffer loading.
+categories:: Guides
+related:: Classes/Buffer, Classes/UGen, Classes/PlayBuf, Classes/BufRd, Classes/BufRateScale, Classes/BufFrames, Classes/Line, Classes/Phasor, Classes/Delay1, Classes/Done, Classes/Env, Classes/EnvGen, Classes/Pan2, Classes/Balance2, Classes/Splay, Classes/SynthDef, Classes/Synth, Classes/SoundFile#*collectIntoBuffers, Classes/Node#-free, Classes/Node#-release, Classes/FreeSelf, Classes/Routine, Classes/Task, Classes/Server#-sync, Classes/BufDur, Classes/BufSampleRate, Guides/Non-Realtime-Synthesis
+
+note::
+list::
+## For long sound files,
+disk-based streaming is usually the better choice.
+See link::Classes/Buffer#*cueSoundFile::,
+link::Classes/DiskIn::,
+and link::Classes/VDiskIn::.
+## For granular synthesis,
+see link::Classes/GrainBuf::,
+link::Classes/GrainIn::,
+link::Classes/GrainFM::,
+link::Classes/GrainSin::,
+and link::Classes/TGrains::.
+::
+::
+
+description::
+
+This guide covers short sound-file playback in SuperCollider,
+using link::Classes/Buffer:: with link::Classes/PlayBuf:: and link::Classes/BufRd::, including:
+
+list::
+## Allocating link::Classes/Buffer::s using short sound sound files,
+with or without selecting,
+reordering
+or duplicating channels
+(code::Buffer.read:: vs code::Buffer.readChannel::).
+## inspecting buffer properties:
+bufnum, frames, channels, sample rate, path, and duration.
+## choosing the appropriate playback primitive:
+link::Classes/PlayBuf:: for higher-level playback,
+link::Classes/BufRd:: for explicit phase control.
+## implementing one-shot playback and looping,
+including correct code::doneAction:: behavior.
+## changing rate (playback speed and direction),
+while accounting for duration and buffer/server sample-rate differences.
+## reverse playback strategies,
+including negative rates and appropriate start positions.
+## applying fades and reliably freeing link::Classes/Synth:: instances
+(which exist as link::Classes/Node::s on the server) created via
+list::
+## link::Classes/Function#-play::: code::{ ... }.play::
+## link::Classes/Synth#*new::: code::Synth.new(...):: or the shorthand code::Synth(...)::
+::
+## handling channel-count mismatches between buffers and output link::Classes/UGen::s,
+including panning, balancing, and downmixing.
+## making buffer banks from folders,
+including recursive folder structures.
+::
+
+note::
+Except for the section link::#Practical Examples::,
+the code samples are intentionally minimal,
+so beginners can learn one concept at a time,
+and experts can scan quickly.
+::
+
+section:: Short Sound-File Buffer Setup: Allocating and Querying
+
+Allocating buffers on a server is asynchronous also when using short sound files. (See link::Guides/Sync-Async:: for basics and link::#Asynchronous Buffer Allocation:: for the cases in this guide.)
+For short sound files,
+the most common entry points are:
+
+list::
+## Class methods link::Classes/Buffer#*read:: and link::Classes/Buffer#*readChannel::,
+
+which allocates a new buffer and reads an entire sound file, or selected parts of it, into the buffer.
+## Instance methods link::Classes/Buffer#-read:: and link::Classes/Buffer#-readChannel::,
+
+which read an entire sound file, or selected parts of it, into an already allocated buffer.
+::
+
+table::
+##
+Terms for Beginners:
+
+definitionlist::
+## Class Methods
+|| Used to create instances of a class, or to manage all instances of that class.
+Prefixed with * when specified.
+
+For example link::Classes/Buffer#*read::
+## Instance Methods
+|| Used to operate on or control a specific existing instance of a class.
+Prefixed with - when specified.
+
+For example link::Classes/Buffer#-read::
+::
+
+See also:
+link::Reference/Classes#Class Methods:: and
+link::Reference/Classes#Instance Methods::
+::
+
+subsection:: Buffers: Buffer.read vs Buffer.readChannel
+
+definitionlist::
+## code::Buffer.read::
+|| Reads the entire file,
+preserving the file’s native channel count and channel order.
+## code::Buffer.readChannel::
+|| Reads only the specified channel(s).
+You can select channels using 0-based indices,
+reorder them by changing the index order,
+or duplicate them by repeating indices.
+note::
+Duplicating a mono channel into a stereo buffer uses roughly twice the memory
+of loading it as mono.
+::
+::
+
+subsubsection:: Arguments for Buffer.read and Buffer.readChannel
+
+note::
+The signatures below show positional argument order,
+but arguments can also be passed by keyword, regardless of positional order.
+::
+
+Both class methods accept the same core arguments,
+except that code::Buffer.readChannel:: adds the code::channels:: argument.
+
+table::
+## code::
+Buffer.read
+(server, path, startFrame: 0, numFrames: -1, action, bufnum)
+
+Buffer.readChannel
+(server, path, startFrame: 0, numFrames: -1, channels, action, bufnum)
+::
+::
+
+Instance methods have a different signature.
+They read into an existing Buffer instance,
+so there is no code::server:: argument,
+and they add code::bufStartFrame:: and code::leaveOpen::.
+
+Also, both instance methods accept the same core arguments,
+except that code::Buffer.readChannel:: adds the code::channels:: argument.
+
+table::
+## code::
+Buffer.read
+(argpath, fileStartFrame: 0, numFrames: -1, bufStartFrame: 0, leaveOpen: false, action)
+
+Buffer.readChannel
+(argpath, fileStartFrame: 0, numFrames: -1, bufStartFrame: 0, leaveOpen: false, channels, action)
+::
+::
+
+subsubsection:: Class method arguments (Buffer.read / Buffer.readChannel)
+
+list::
+## code::server:: (link::Classes/Server::)
+
+The server on which to allocate and load the buffer.
+Most examples use the default interpreter variable code::s::, which refers to the link::Classes/Server#*local#local (localhost)::, link::Classes/Server#*default#default server::.
+
+## code::path:: (link::Classes/String::)
+
+Path to the sound file.
+Folder should full path including file name and extension.
+
+## code::startFrame:: (link::Classes/Integer::)
+
+The first frame in the sound file to read.
+Frame indices are 0-based.
+Floating-point values are truncated to integers.
+
+## code::numFrames:: (link::Classes/Integer::)
+
+Number of 0-based frames to read.
+code::-1:: reads to the end of the file.
+Floating-point values are truncated to integers.
+## code::channels:: (link::Classes/Array:: of link::Classes/Integer::)
+⇦ Only for code::Buffer.readChannel::
+
+An array of channel indices to read,
+in the order provided.
+Indices start at 0.
+You may repeat indices to duplicate channels.
+
+The number of requested channels must match this buffer’s code::numChannels::.
+## code::action:: (link::Classes/Function::)
+
+A function evaluated after the client (sclang) receives the server’s completion (allocating a buffer on server and loading a sound file on the buffer) reply,
+and after the Buffer’s instance variables have been updated.
+It receives the Buffer as its argument.
+
+## code::bufnum:: (link::Classes/Integer::)
+
+An explicitly specified buffer number.
+Supplying a number bypasses the server’s buffer allocator,
+which can lead to conflicts.
+Best practice is to omit this argument,
+and let the allocator choose a free buffer number.
+::
+
+subsubsection:: Instance method arguments (Buffer:read / Buffer:readChannel)
+
+The instance methods read into an already allocated buffer,
+so there is no code::server:: argument.
+The order of code::startFrame:: and code::numFrames:: is reversed.
+They also have two arguments which are not present in class methodds:
+
+list::
+## code::argpath:: (link::Classes/String::)
+
+This corresponds to code::path:: argument in code::Buffer.read:: and code::Buffer.readChannel::.
+
+## code::fileStartFrame:: (link::Classes/Integer::)
+
+This corresponds to code::startFrame:: argument in code::Buffer.read:: and code::Buffer.readChannel::.
+
+## code::numFrames:: (link::Classes/Integer::)
+
+This corresponds to code::numFrames:: argument in code::Buffer.read:: and code::Buffer.readChannel::.
+
+## code::bufStartFrame:: (link::Classes/Integer::)
+
+The starting frame index in the buffer,
+where the sound file data will be placed when reading.
+Floating-point values are truncated to integers.
+
+## code::leaveOpen:: (link::Classes/Boolean::)
+
+Whether to leave the buffer open.
+This is mainly used for disk streaming use cases,
+for example with link::Classes/DiskIn::.
+The default is code::false::,
+which is correct for typical short-file playback.
+
+## code::channels:: (link::Classes/Array:: of link::Classes/Integer::)
+⇦ Only for code::.readChannel(... )::
+
+This corresponds to code::channels:: argument in code::Buffer.readChannel::.
+
+## code::action:: (link::Classes/Function::)
+
+This corresponds to code::action:: argument in code::Buffer.read:: and code::Buffer.readChannel::.
+
+## code::completionMessage:: (OSC message or link::Classes/Function::)
+
+An OSC completion message to run on the server,
+or a function that returns one.
+If a function is used,
+it is evaluated in the language with the Buffer as its argument.
+::
+
+subsubsection:: Asynchronous Buffer Allocation
+
+code::Buffer.read:: and code::Buffer.readChannel:: load sound files asynchronously.
+This means the buffer may not be ready immediately after the call returns,
+even if the Post window prints messages that look like loading has completed.
+
+For example:
+
+code::
+Buffer.read(s, ExampleFiles.apollo11);
+::
+
+Immediately after evaluating the line above,
+the Buffer’s printed representation may show only code::bufnum:: (the first value 0 below),
+while other fields are still unknown:
+
+teletype::
+-> Buffer(0, nil, nil, nil, path-to-sounds/a11wlk01-44_1.aiff)
+::
+
+To run code as soon as loading finishes,
+use one of the following approaches:
+list::
+## Use the code::action:: argument to run code after the buffer has finished loading. It should be a link::Classes/Function:: instance:
+code::
+(
+Buffer.read(
+	s,
+	ExampleFiles.apollo11,
+	action: { |buffer|
+		buffer.play  // plays the loaded buffer.
+	}
+);
+)
+::
+
+## If you load buffers inside a time-scheduled link::Classes/Routine::
+or link::Classes/Task::
+(or if you use related shortcuts such as code::fork { ... }:: and code::s.waitForBoot { ... }::),
+call code::s.sync:: before you play or query the buffer.
+This blocks the language
+until the server has processed pending load requests.
+code::
+(
+s.waitForBoot {
+	var buf = Buffer.read(s, ExampleFiles.apollo11);
+	s.sync;
+	buf.play;
+};
+)
+::
+## If you use instance methods, code::completonMessage:: could be also used:
+code::
+(
+fork {
+b = Buffer.read(s, ExampleFiles.apollo11, action: { |buf| buf.play; ("bufnum:" + buf;).postln });
+
+s.sync;
+
+b.read(ExampleFiles.child, completionMessage: { |buf| ("bufnum:" + buf).postln });
+}
+)
+::
+::
+
+subsubsection:: Loading Sound Files to Buffers Used in This Guide
+
+code::
+(
+~b_numCh1 = Buffer.read(s, ExampleFiles.apollo11);
+~b_numCh2 = Buffer.read(s, ExampleFiles.sinedPink);
+~b_mono = Buffer.readChannel(s, ExampleFiles.child, channels: [0]);
+~b_stereo_duped = Buffer.readChannel(s, ExampleFiles.child, channels: [0, 0]);
+)
+::
+
+subsection:: Querying Buffer Metadata
+
+A code::Buffer:: object lives in the language (sclang),
+but it represents a buffer allocated on the server.
+Internally,
+the language uses values such as code::bufnum::
+(the server-side buffer number)
+to address the correct server resource.
+
+In everyday code,
+you usually do not pass code::bufnum:: around directly.
+Instead,
+keep a language-side variable,
+for example, code::~b_numCh1::,
+and query properties via methods such as code::bufnum::,
+code::numChannels::,
+and code::numFrames::.
+
+subsubsection:: Querying Buffers Used in This Guide
+
+The following examples show how to query buffer properties
+and use code::.class:: to check their data types, as represented by link::Classes/Class::.
+
+code::
+~b_numCh1.query;             // Print a report.
+~b_numCh1.query.class;       // -> Buffer
+
+~b_numCh1.bufnum;            // Server buffer number (bufnum).
+~b_numCh1.bufnum.class;      // -> Integer
+
+~b_numCh1.numFrames;         // Number of frames.
+~b_numCh1.numFrames.class;   // -> Integer
+
+~b_numCh1.numChannels;       // Number of channels.
+~b_numCh1.numChannels.class; // -> Integer
+
+~b_numCh1.sampleRate;        // Sample rate.
+~b_numCh1.sampleRate.class;  // -> Float
+
+~b_numCh1.duration;          // Duration in seconds.
+~b_numCh1.duration.class;    // -> Float
+
+~b_numCh1.path;              // Path of the sound file loaded into the buffer.
+~b_numCh1.path.class;        // -> String
+::
+
+note::
+Duration in seconds:
+list::
+## In sclang: code::frames / buffer.sampleRate::
+## On the server: code::BufFrames.kr(bufnum) / BufSampleRate.kr(bufnum)::
+::
+::
+
+subsubsection:: Visual Comfirmation of Loaded Buffer by Plotting
+
+Overviewing the buffer's waveform is possible by link::Classes/Buffer#-plot:::
+code::
+~b_numCh1.plot;
+::
+
+note::
+link::Classes/Buffer#-plot:: is not exact.
+Resizing the window (especially horizontal scale) changes dynamically the wave form.
+This aliasing occurs
+because the display area needs to compress more sample points than available screen pixels,
+causing a mismatch between the positions calculated for display and the actual displayed points.
+To detailed wave form of a sound file use link::Classes/SoundFileView::.
+::
+
+section:: Using PlayBuf and BufRd
+
+subsection:: Characteristics of Both UGens
+
+definitionlist::
+## link::Classes/PlayBuf::
+|| A high-level playback link::Classes/UGen::.
+It handles triggering and looping internally.
+It provides a code::rate:: argument,
+which sets playback speed and direction,
+and a code::doneAction:: argument,
+which can free the Synth automatically at the end of playback.
+It is a good fit for straightforward one-shot playback and looping.
+## link::Classes/BufRd::
+|| A low-level buffer reader link::Classes/UGen::.
+It requires an explicit phase (read-index) signal,
+for example from link::Classes/Phasor::,
+link::Classes/LFSaw::,
+or link::Classes/Line::.
+It offers precise control over playback position,
+which is useful for scrubbing and phase-driven modulation.
+::
+
+subsection:: PlayBuf and BufRd Arguments
+
+This guide focuses on the code::.ar:: methods,
+because the examples produce audio output.
+The signatures below show positional argument order,
+but you can also pass later arguments by keyword.
+The number shown after an argument name,
+for example code::0:: after code::bufnum::,
+is the default value.
+
+code::
+PlayBuf.ar(
+	numChannels, bufnum: 0,
+	rate: 1.0, trigger: 1.0, startPos: 0.0, loop: 0.0, doneAction: 0
+)
+
+BufRd.ar(
+	numChannels, bufnum: 0,
+	phase: 0.0, loop: 1.0, interpolation: 2
+)
+::
+
+subsubsection:: Common Arguments
+
+list::
+## code::numChannels:: (link::Classes/Integer::)
+
+Output channel count.
+This value is fixed when the UGen graph is built. See link::#Compile-Time vs Run-Time: Fixed Channel Counts and bufnum::.
+## code::bufnum:: (link::Classes/Buffer:: or link::Classes/Integer::)
+
+The buffer to read from,
+either a link::Classes/Buffer:: instance,
+or its integer buffer index.
+::
+
+subsubsection:: PlayBuf Arguments
+
+list::
+## code::rate:: (link::Classes/Float:: or link::Classes/UGen::)
+
+Playback speed multiplier.
+Multiply by code::BufRateScale:: (code::.kr:: or code::.ir::)
+to compensate for buffer and server sample-rate differences.
+## code::trigger:: (link::Classes/Float:: or link::Classes/UGen::)
+
+Restarts playback when it transitions from <= 0 to > 0.
+## code::startPos:: (link::Classes/Float:: or link::Classes/UGen::)
+
+Start position in frames.
+## code::loop:: (link::Classes/Integer::, 0 or 1)
+
+Whether to loop.
+## code::doneAction:: (link::Classes/Integer::)
+
+Action to perform when playback reaches the end,
+for example code::Done.freeSelf::.
+Defaults to code::Done.none::.
+::
+
+subsubsection:: BufRd Arguments
+
+list::
+## code::phase:: (link::Classes/Float:: or link::Classes/UGen::)
+
+Read position in frames.
+## code::loop:: (link::Classes/Integer::, 0 or 1)
+
+Whether the read position wraps when it reaches the end.
+## code::interpolation:: (link::Classes/Integer::)
+
+Interpolation type.
+See the class help for details.
+::
+
+note::
+link::Classes/BufRd:: itself has no code::doneAction:: argument.
+Instead:
+list::
+## The link::Classes/UGen:: driving the phase signal,
+for example link::Classes/Line::,
+may provide code::doneAction::.
+Use that to free the server-side link::Classes/Synth::
+(a link::Classes/Node::).
+## If the link::Classes/UGen:: used for the code::phase:: argument does not support code::doneAction::,
+use a separate link::Classes/EnvGen:: to control the playback lifetime.
+::
+::
+
+subsection:: Compile-Time vs Run-Time: Fixed Channel Counts and bufnum
+
+subsubsection:: Symptoms you may see
+
+numberedlist::
+## You get unexpected channel behavior at runtime when you try to derive
+code::numChannels:: from a Synth argument:
+table::
+## code::
+(
+x = { |buf|
+    PlayBuf.ar(
+		buf.numChannels,
+		buf
+	)
+};
+)
+
+x.play(args: [buf: ~b_numCh2])
+::
+code::
+(
+x = { |buf|
+	var end = BufFrames.kr(buf) - 1;
+	var phaser = Line.ar(0, end, 1, doneAction: Done.freeSelf);
+	BufRd.ar(buf.numChannels, buf, phaser)
+};
+)
+
+x.play(args: [buf: ~b_numCh2])
+::
+::
+Both examples may play,
+but post an error such as:
+teletype::
+Buffer UGen channel mismatch: expected 1, yet buffer has 2 channels
+::
+## You try to derive code::numChannels:: from a buffer argument,
+and the link::Classes/SynthDef:: fails to build:
+table::
+## code::
+(
+SynthDef(\playBuf, { |out=0, numChannels=2, buf|
+    Out.ar(out, PlayBuf.ar(numChannels, buf))
+}).add;
+)
+::
+::
+
+Building the link::Classes/SynthDef:: instance fails with an error such as:
+
+teletype::
+ERROR: a PlayBuf: numChannels must be a nonzero positive integer, but received (an OutputProxy).
+::
+
+table::
+## code::
+(
+SynthDef(\bufRd, { |out=0, numChannels=2, buf|
+	var end = BufFrames.kr(buf) - 1;
+	var phaser = Line.ar(0, end, 1, doneAction: Done.freeSelf);
+	Out.ar(out, BufRd.ar(numChannels, buf, phaser))
+}).add;
+)
+::
+::
+
+Building the link::Classes/SynthDef:: instance fails with an error such as:
+
+teletype::
+ERROR: a BufRd: numChannels must be a nonzero positive integer, but received (an OutputProxy).
+::
+## You call a language-side link::Classes/Buffer#-bufnum:: on a Synth argument,
+and you see an error:
+table::
+## code::
+(
+x = { |buf|
+    PlayBuf.ar(buf.numChannels, buf.bufnum)
+};
+)
+
+x.play(args: [buf: ~b_numCh2])
+::
+code::
+(
+x = { |buf|
+	var end = BufFrames.kr(buf) - 1;
+	var phaser = Line.ar(0, end, 1, doneAction: Done.freeSelf);
+	BufRd.ar(buf.numChannels, buf.bufnum, phaser)
+};
+)
+
+x.play(args: [buf: ~b_numCh2])
+::
+::
+Both examples may play,
+but post an error such as:
+teletype::
+ERROR: Message 'bufnum' not understood.
+::
+::
+
+subsubsection:: Why this happens
+
+link::Classes/PlayBuf#*ar:: and link::Classes/BufRd#*ar:: require code::numChannels::
+to be fixed when the link::Classes/SynthDef#UGen Graph Functions and Special Argument Forms#UGen graph:: is built,
+that is, when the link::Classes/SynthDef:: is compiled and sent to the server.
+
+In practice,
+code::numChannels:: must be a literal positive integer,
+for example code::1:: or code::2::.
+
+table::
+## Terms for Beginners:
+definitionlist::
+## literal integer
+|| A number written directly into the graph,
+for example code::1:: or code::2::.
+## compile-time constant
+|| A value that must be known when the UGen graph is built,
+not computed later while the Synth is running.
+## UGen graph
+|| The fixed network of UGens and connections that defines a SynthDef.
+The server runs Synth instances by executing this prebuilt graph.
+::
+::
+
+When you build a link::Classes/SynthDef::
+(or use code::Function#-play::,
+which creates an implicit SynthDef),
+the language builds a link::Classes/SynthDef#UGen Graph Functions and Special Argument Forms#UGen graph:: and sends it to the server.
+
+At build time,
+the server must already know each link::Classes/UGen::’s channel layout,
+so it can allocate and connect audio buses correctly.
+
+That is why code::buf.numChannels:: fails when code::buf:: is a Synth argument.
+Inside the link::Classes/SynthDef#UGen Graph Functions and Special Argument Forms#UGen graph::,
+a Synth argument is a numeric control input (a proxy),
+not a language-side link::Classes/Buffer:: object.
+Proxy objects do not understand language messages like code::numChannels::
+or code::bufnum::,
+which produces the errors shown above.
+
+subsubsection:: Practical solutions
+
+Use this rule of thumb:
+list::
+## If the buffer is known before you build the graph,
+embed its channel count as a literal integer.
+## If the buffer must be chosen at runtime,
+use one SynthDef per channel count,
+and select the SynthDef in the language.
+::
+Based on that rule, use one of the following approaches:
+
+list::
+## Solution A: Known buffer, embed literals in the graph
+
+If you already have a specific buffer in the language,
+the language can read link::Classes/Buffer#-numChannels::
+(code::buf.numChannels:: in the example below) before building the graph,
+and embed a literal value.
+
+code::
+(
+var buf = ~b_numCh2;
+{ PlayBuf.ar(buf.numChannels, buf) }.play;
+)
+::
+
+note::
+This works in any case where the Buffer is known in the language
+before the UGen graph is built,
+including code::Function#-play:: and explicit code::SynthDef:: construction.
+It does not work when the buffer is supplied as a Synth argument.
+::
+
+## Solution B: Runtime buffer selection, use per-channel SynthDefs
+
+If the buffer must be chosen at runtime,
+prepare one link::Classes/SynthDef:: per channel count you want to support,
+and select the appropriate link::Classes/SynthDef:: in the language.
+
+code::
+(
+SynthDef(\playMono, { |out=0, bufnum|
+	Out.ar(out, PlayBuf.ar(1, bufnum));
+}).add;
+
+SynthDef(\playStereo, { |out=0, bufnum|
+	Out.ar(out, PlayBuf.ar(2, bufnum));
+}).add;
+
+~playBuf = { |buffer, out=0|
+	switch(buffer.numChannels,
+		1, { Synth(\playMono,   [out: out, bufnum: buffer.bufnum]) },
+		2, { Synth(\playStereo, [out: out, bufnum: buffer.bufnum]) },
+		{ "Unsupported channel count: %".format(buffer.numChannels).warn; }
+	);
+};
+)
+::
+
+note::
+list::
+## See link::#Strategy 1: Dynamic SynthDef Generation:: for writing multiple link::Classes/SynthDef:: with iteration using link::Classes/PlayBuf:: and link::Classes/BufRd::.
+## See link::#Strategy 2: Selecting SynthDefs with a Function:: for writing synth selection function with more arguments using link::Classes/PlayBuf:: and link::Classes/BufRd::.
+::
+::
+::
+
+note::
+Passing Buffer vs bufnum as an argument
+
+For server-side playback UGens,
+the meaningful value is the integer buffer index (code::bufnum::).
+In many common cases,
+passing a link::Classes/Buffer:: object as an argument is also accepted,
+because it can be converted to its code::bufnum::.
+
+However,
+inside a SynthDef you should treat the buffer argument as a numeric control value,
+not a language object.
+Do not call language messages like code::numChannels:: or code::bufnum:: on it.
+::
+
+section:: One-shot Playback
+
+From here,
+we apply the buffer and UGen basics to real playback patterns,
+including reliable cleanup using code::doneAction::.
+
+These examples emphasize server‑side link::Classes/Synth:: link::Classes/Node:: instance's lifetime management (code::doneAction::), which is a common source of confusion when learning one-shot buffer playback.
+
+subsection:: PlayBuf: One-shot
+
+A one-shot plays a buffer once and then finishes playback.
+
+subsubsection:: Automatic cleanup version (changed doneAction: Done.freeSelf)
+
+code::
+(
+{
+	var buf = ~b_numCh2; // Stereo buffer.
+	PlayBuf.ar(
+		numChannels: 2, // Fixed channel count (stereo) inside a Function.
+		bufnum: buf, // Pass the Buffer directly.
+		rate: BufRateScale.kr(buf), // Normal speed (compensates for buffer/server sample-rate differences).
+		doneAction: Done.freeSelf // Frees the server‑side Node instance when playback finishes.
+	)
+}.play;
+)
+::
+
+Argument keywords are shown here for clarity.
+In practice, you can omit keywords when passing arguments in documented order.
+Use keywords when you want to override later arguments without providing all earlier arguments (for example, code::doneAction:: below).
+code::
+(
+{
+	var buf = ~b_numCh2; // Stereo buffer.
+	PlayBuf.ar(2, buf, BufRateScale.kr(buf), doneAction: Done.freeSelf);
+}.play;
+)
+::
+
+subsubsection:: Manual cleanup version (default doneAction: Done.none)
+
+The argument code::doneAction:: defaults to code::Done.none::, so the server‑side link::Classes/Synth:: link::Classes/Node:: instance is not freed automatically when playback ends:
+
+code::
+/* Step 1. Optional: Press Cmd-. (or Ctrl-.) to stop any currently running nodes. */
+
+/* Step 2. Check the current activity on the server */
+s.queryAllNodes
+
+/* Step 3. Play the function defined above */
+y = { PlayBuf.ar(2, ~b_numCh2) }.play;
+// Evaluate this line and check the Post window output (for example):
+// -> Synth('temp__50' : 1067)
+
+/* Step 4. Check the current activity on the server */
+s.queryAllNodes
+// The node created in Step 3 (for example, 1067 temp__50) is still present in the node tree.
+
+/* Step 5. Free the node */
+y.free; // Frees the node immediately.
+
+/* Step 6. Check the current activity on the server */
+s.queryAllNodes // The node created in Step 3 has now been removed.
+::
+
+subsection:: BufRd: One-shot
+
+link::Classes/BufRd:: reads from a buffer at an explicit sample position (phase).
+For a one-shot, generate a phase ramp from the first frame to the last frame and free the node when the ramp ends.
+
+subsubsection:: Automatic cleanup version (using Line's doneAction: Done.freeSelf)
+
+code::
+(
+{
+	var buf = ~b_numCh2; // Stereo buffer.
+	var frames = BufFrames.kr(buf);
+	// One-shot forward ramp: 0 -> (frames - 1) over the buffer’s duration
+	var phase = Line.ar(
+		start: 0,
+		end: frames - 1,
+		dur: BufDur.kr(buf),
+		doneAction: Done.freeSelf
+	);
+
+	BufRd.ar(
+		numChannels: 2, // Fixed channel count (stereo) inside a Function.
+		bufnum: buf,
+		phase: phase,
+		loop: 0, // One-shot: do not wrap when phase exceeds the buffer range.
+		interpolation: 2 // Common choice for smoother playback.
+	)
+}.play;
+)
+::
+
+Argument keywords are shown here for clarity.
+You can omit keywords when passing arguments in documented order:
+
+code::
+(
+{
+	var buf = ~b_numCh2; // Stereo buffer.
+	var frames = BufFrames.kr(buf);
+	var phase = Line.ar(0, frames - 1, BufDur.kr(buf), doneAction: Done.freeSelf);
+	BufRd.ar(2, buf, phase, 0) // interpolation is omitted because the default value is used.
+}.play;
+)
+::
+
+subsubsection:: Manual cleanup version (using Line's default doneAction: Done.none)
+
+If you do not free the server‑side link::Classes/Synth:: link::Classes/Node:: instance automatically, you must free it manually.
+Without code::doneAction::, the phase generator stops at the end of the ramp, but the server‑side link::Classes/Synth:: link::Classes/Node:: instance keeps running (typically outputting the last sample value).
+
+code::
+(
+y = {
+	var buf = ~b_numCh2;
+	var frames = BufFrames.kr(buf);
+	var phase = Line.ar(0, frames - 1, BufDur.kr(buf)); // no doneAction
+	BufRd.ar(2, buf, phase, 0); // interpolation is omitted because the default value is used.
+}.play;
+)
+
+y.free;
+::
+
+section:: Looped Playback
+
+With link::Classes/PlayBuf:: and link::Classes/BufRd::, you can loop all or part of a link::Classes/Buffer:: instance.
+
+Both provide a code::loop:: argument, but because the meaning and behavior differ, the code required for looping differs.
+
+list::
+## In link::Classes/PlayBuf::, the code::loop:: argument determines whether playback runs once or loops continuously.
+## In link::Classes/BufRd::, the code::loop:: argument determines how the phase value is interpreted beyond the last frame index.
+::
+
+subsection:: PlayBuf: Looping
+
+list::
+## When using code::Done.none:: (code::doneAction: 0::):
+list::
+## Define a playback function:
+
+code::
+(
+x = { |loop = 0|
+	var buf = ~b_numCh2;
+	var rate = BufRateScale.kr(buf);
+	PlayBuf.ar(2, buf, rate, 1, 0, loop, Done.none);
+};
+::
+## Test 1: Call the function with loop enabled, then release/free it:
+
+When code::loop:: is set to code::1::, the corresponding server‑side link::Classes/Synth:: link::Classes/Node:: continues to run and produce sound.
+It must therefore be freed manually.
+
+code::
+(
+y = x.play(
+	// Argument keywords are shown here for clarity only.
+	// They are not required, since the code already uses the correct argument syntax.
+	// Also, explicitly writing default values is not required.
+	target: s,             // Target server for the synth.
+	// Default is nil, which refers to the local server 's'.
+
+	outbus: 0,
+	// Output bus index. Default is 0 (the first hardware output channel).
+	fadeTime: 2,           // Fade‑in/out time in seconds. Default: 0.02 (20 ms).
+
+	addAction: \addToHead, // Placement of the node in the target group.
+	// Default is \addToHead, which adds the node at the head of the group.
+
+	args: [loop: 1]        // Synth arguments; here loop is set to 1 (continuous looping).
+);
+)
+
+
+y.release; // Triggers a fade-out of applied fadeTime (2 seconds); y.free stops immediately.
+::
+
+## Test 2: Call the function with loop disabled, then release/free it:
+
+When code::loop:: is set to code::0::, the corresponding server‑side link::Classes/Synth:: link::Classes/Node:: may continue running even after playback becomes silent.
+It must therefore be freed manually.
+
+code::
+/* Step 1. Optional: Press Cmd-. (or Ctrl-.) to stop any currently running nodes. */
+
+/* Step 2. Check the current activity on the server. */
+s.queryAllNodes
+
+/* Step 3. Play the function defined above. */
+// Observe what the Post window displays when evaluating the code.
+y = x.play(args: [loop: 0]);
+// Only required arguments need to be specified; defaults are used for others.
+
+/* Step 4. Check the current activity on the server. */
+s.queryAllNodes // The node created in Step 3 is still present in the node tree.
+
+/* Step 5. Stop the node. */
+y.release; // y.free also works, but stops immediately (no fade-out).
+
+/* Step 6. Check the current activity on the server. */
+s.queryAllNodes // The node created in Step 3 has now been removed.
+::
+::
+
+## When using code::Done.freeSelf:: (code::doneAction: 2::):
+
+list::
+## Define a playback function:
+
+code::
+(
+x = { |loop = 0|
+	var buf = ~b_numCh2;
+	var rate = BufRateScale.kr(buf);
+	PlayBuf.ar(2, buf, rate, 1, 0, loop, Done.freeSelf);
+};
+)
+::
+## Test 1: Call the function with loop enabled:
+
+When code::loop:: is set to code::1::, the corresponding server‑side link::Classes/Synth:: link::Classes/Node:: continues to run and produce sound.
+It must therefore be freed manually.
+
+code::
+y = x.play(args: [loop:1])
+
+y.release // y.free also works, but stops immediately (no fade-out).
+::
+
+## Test 2: Call the function with loop disabled: anchor::PlayBuf_loop_Test2::
+
+When code::loop:: is set to code::0::, the corresponding server‑side link::Classes/Synth:: link::Classes/Node:: is automatically freed when link::Classes/PlayBuf:: reaches the last frame index, so there is no need to free it manually.
+
+code::
+/* Step 1. Optional: Press Cmd-. (or Ctrl-.) to stop any currently running nodes. */
+
+/* Step 2. Check the current activity on the server. */
+s.queryAllNodes
+
+/* Step 3. Play the function defined above. */
+fork { y = x.play(args: [loop: 0]); s.sync; s.queryAllNodes; }
+// Evaluate this line and check the Post window output.
+
+/* Step 4. Check the current activity on the server. */
+s.queryAllNodes // The node created in Step 3 has now been removed.
+::
+::
+::
+
+subsubsection:: Linear rate ramp with predicted stop
+
+When the rate modulation is defined in advance (for example, a simple envelope), you can estimate when one buffer pass will finish and schedule code::Done.freeSelf::.
+This is useful when code::loop:: is enabled but you still want to stop after exactly one pass.
+
+A buffer pass completes when the accumulated "speed multiplier" reaches one buffer duration.
+In continuous form:
+
+math::
+\int_{0}^{T} r(t)\,dt = D
+::
+
+where code::r(t):: is the playback speed multiplier over time, code::D:: is the buffer duration in seconds (code::BufDur::), and code::T:: is the wall-clock time when one pass completes.
+
+For a linear ramp from code::r0:: to code::r1:: over code::tRamp:: seconds:
+
+list::
+## If the buffer finishes during the ramp, solve the quadratic for code::T:: in: code::0.5*k*T^2 + r0*T = D::, where code::k = (r1 - r0) / tRamp::.
+## Otherwise, the total time is: code::tRamp + (D - areaRamp) / r1::, where code::areaRamp = 0.5*(r0 + r1)*tRamp::.
+::
+
+code::
+(
+{
+    var buf, r0, r1, tRamp, k, durBuf, areaRamp, finishesInRamp, tFinishInRamp, tTotal;
+    var rate, sig;
+
+    buf = ~b_numCh2;
+    durBuf = BufDur.kr(buf);
+
+    r0 = 0.25;
+    r1 = 2.0;
+    tRamp = 3.0;
+    k = (r1 - r0) / tRamp;
+
+    // Rate ramps from r0 to r1, then holds at r1.
+    rate = EnvGen.kr(Env([r0, r1, r1], [tRamp, 1e9], \lin));
+
+    // Buffer-time consumed during the ramp: average rate * time.
+    areaRamp = ((r0 + r1) * 0.5) * tRamp;
+
+    finishesInRamp = areaRamp >= durBuf;
+
+    // Solve: 0.5*k*T^2 + r0*T - durBuf = 0 (only when finishesInRamp is true).
+    tFinishInRamp = (
+        ((-1 * r0) + (r0.squared + (2 * k * durBuf)).sqrt)
+        / k.max(1e-9)
+    );
+
+    tTotal = Select.kr(finishesInRamp, [
+        // Finishes after the ramp: ramp time + remaining time at r1.
+        tRamp + ((durBuf - areaRamp).max(0) / r1.max(1e-9)),
+
+        // Finishes during the ramp.
+        tFinishInRamp
+    ]);
+
+    // Stop after one predicted buffer pass (even though loop is enabled).
+    Line.kr(0, 1, tTotal, doneAction: Done.freeSelf);
+
+    sig = PlayBuf.ar(
+        numChannels: 2,
+        bufnum: buf,
+        rate: rate * BufRateScale.kr(buf), // Use .ir when buf is constant.
+        loop: 1,
+        doneAction: Done.none
+    );
+
+    sig * 0.2;
+}.play;
+)
+::
+
+subsection:: BufRd: Looping
+
+list::
+## code::loop: 1::
+
+In the following example, in the second half—where the phase exceeds the last frame index—playback wraps to the beginning because code::loop: 1:: wraps indices beyond the last frame index.
+As a result, you hear the entire buffer twice.
+
+code::
+(
+x = {
+	var buf = ~b_numCh1;
+	var frames = BufFrames.kr(buf.bufnum);
+	var duration = frames / BufSampleRate.kr(buf.bufnum);
+	var phase = Line.ar(0, (frames - 1) * 2, duration * 2, doneAction: Done.freeSelf);
+	BufRd.ar(buf.numChannels, buf, phase, /*loop: */1) ! 2;
+}.play;
+)
+::
+
+## code::loop: 0::
+
+In the following example, the link::Classes/Node:: will be freed when link::Classes/Line:: reaches the end value, but in the second half—where its output value exceeds the last frame index—no sound is produced, since code::loop: 0:: does not wrap frame indices beyond the last frame index:
+
+code::
+(
+{
+	{
+		var buf = ~b_numCh1;
+		var frames = BufFrames.kr(buf.bufnum);
+		var duration = frames / BufSampleRate.kr(buf.bufnum);
+		var phase = Line.ar(0, (frames - 1) * 2, duration * 2, doneAction: Done.freeSelf);
+
+		/* Opens a Server window showing the node tree. Watch for when the node disappears. */
+		s.plotTree;
+
+		BufRd.ar(buf.numChannels, buf, phase, /* loop: */ 0) ! 2
+	}.play;
+}.fork(AppClock);
+)
+::
+::
+
+
+section:: Playback Rate: Pitch and Duration
+
+Playback rate affects both pitch and playback duration.
+For example, consider a sound file containing a one‑second 440 Hz sine wave:
+table::
+## Sound-file format || Playback rate (sample rate: 44,100 Hz; rate = 1, no scaling) || Length || Frequency
+## 44,100 Hz || 2 (reads 44,100 samples in 0.5 seconds; twice as many samples per unit time) || math::\frac{1}{2}:: sec || 880 Hz
+## 44,100 Hz || 1 (reads 44,100 samples in 1 second) || 1 sec || 440 Hz
+## 44,100 Hz || math::\frac{1}{2}:: (reads 44,100 samples in 2 seconds; half as many samples per unit time) || 2 sec || 220 Hz
+::
+When changing playback rate, you must also consider the sample rate of the sound file (the buffer’s sample rate) and the server’s sample rate.
+For example, consider a one‑second 440 Hz sine wave stored in a sound file at various sample rates:
+
+table::
+## Sound-file format || Playback rate (server sample rate: 44,100 Hz; rate = 1, no scaling) || Length || Frequency
+## 88,200 Hz || 1 (reads 44,100 buffer frames per second; half the original speed) || 2 sec || 220 Hz
+## 44,100 Hz || 1 (reads 44,100 buffer frames per second; original speed) || 1 sec || 440 Hz
+## 22,050 Hz || 1 (reads 44,100 buffer frames per second; twice the original speed) || math::\frac{1}{2}:: sec || 880 Hz
+::
+
+link::Classes/Buffer#-sampleRate:: (client-side) and link::Classes/BufRateScale:: (server-side) can be used to compensate for sample-rate differences between the buffer and the server.
+
+Another consideration is strong::aliasing:: (when speeding up) and strong::sub‑audible/low‑frequency artifacts:: (when slowing down):
+
+list::
+## When the playback rate increases, all frequency components shift upward by the same factor.
+Components that move above the Nyquist frequency fold back into the audible band.
+For example, at a 44.1 kHz sample rate (Nyquist = 22.05 kHz), an 8,525 Hz sinusoidal tone becomes 34,100 Hz when played at rate = 4.
+Since this exceeds Nyquist, it aliases to teletype::44,100 − 34,100 = 10,000 Hz::.
+As a result, instead of the intended 34.1 kHz component, you may hear an unintended ~10 kHz tone.
+## When the playback rate decreases, content is shifted toward lower frequencies.
+Very low‑frequency energy (including rumble or DC offset) can become more prominent and may be felt as vibration or cause modulation effects.
+For example, 38 Hz becomes 19 Hz at teletype::rate = 0.5::.
+::
+
+note::
+The examples in the following subsections focus on playback-rate scaling (including buffer/server sample-rate conversion) only.
+They intentionally omit artifact-mitigation techniques such as anti-alias filtering, oversampling, or DC/rumble removal.
+::
+
+subsection:: PlayBuf: Rate Control
+
+note::
+Negative rates (reverse playback) are covered in link::#Reverse Playback::.
+::
+
+link::Classes/PlayBuf:: provides a code::rate:: argument. Treat code::rate:: as a speed multiplier (code::1.0:: plays at normal speed).
+For correct pitch and timing when the buffer’s sample rate differs from the server’s sample rate, multiply by code::BufRateScale:: instance.
+
+subsubsection:: PlayBuf: Static Rate
+
+code::
+(
+{
+	var buf, rate;
+
+	buf = ~b_numCh2;
+
+	rate = 1;
+	// Change this to 16, 8, 4, 2, 1/2, 1/4, 1/8, or 1/16.
+	// Negative rates are covered in the reverse-playback section.
+
+	/* Convert "rate relative to the buffer" into "server-rate-corrected" playback speed. */
+	rate = rate * BufRateScale.kr(buf);
+
+	PlayBuf.ar(
+		// Argument keywords are shown here for clarity only.
+		// They are not required, since the code already uses the correct argument syntax.
+		numChannels: 2,           // Fixed channel count (stereo) inside a Function.
+		bufnum: buf,
+		rate: rate,               // Positive = forward playback.
+		trigger: 1,
+		// Starts immediately since trigger causes a jump to the startPos.
+		startPos: 0,              // Begins at the first frame.
+		loop: 0,                  // 0 = one-shot, 1 = loop.
+		doneAction: Done.freeSelf // Frees the synth when playback ends.
+	)
+}.play;
+)
+::
+
+subsubsection:: PlayBuf: Varying Rate
+
+To vary playback speed with link::Classes/PlayBuf::, modulate the code::rate:: argument.
+Typical modulators include link::Classes/SinOsc::, link::Classes/LFNoise0::, link::Classes/LFNoise1::, and link::Classes/LFNoise2::.
+
+list::
+## For one-shot playback (code::loop: 0::), code::PlayBuf:: can free the synth automatically when the end of the buffer is reached.
+This is robust even when the playback duration is not predictable in advance.
+
+list::
+## Keep the effective rate positive for forward one-shot playback.
+If the modulator can cross 0, clamp it (for example, code::.max(0.0001)::).
+## Use code::doneAction: Done.freeSelf:: for automatic cleanup.
+::
+
+code::
+(
+{
+    var buf, rate;
+
+    buf = ~b_stereo_duped;
+
+    // Buffer-relative rate modulated by a sine wave (always positive).
+    rate = SinOsc.kr(1/4).range(1/4, 1) * BufRateScale.kr(buf);
+
+    PlayBuf.ar(2, buf, rate, doneAction: Done.freeSelf) * 0.2;
+}.play;
+)
+::
+
+warning::
+If the buffer is too short, link::Classes/PlayBuf:: might not be so dramatic in changing pitch and duration:
+
+code::
+(
+{
+    var buf, rate;
+    buf = ~b_numCh2;
+    rate = SinOsc.kr(1/4).range(1/4, 1) * BufRateScale.kr(buf);
+    PlayBuf.ar(2, buf, rate, doneAction: Done.freeSelf) * 0.2;
+}.play;
+)
+::
+
+Use instead link::Classes/BufRd::.
+::
+
+## If the rate modulation is deterministic and you want to stop after exactly one buffer pass even while looping (code::loop: 1::), you can predict the end time from the integral of the rate and schedule code::Done.freeSelf::.
+This is mainly useful for modulation defined by an envelope (for example, a linear ramp), not for noise link::Classes/UGen::s .
+See an link::#Linear rate ramp with predicted stop::.
+::
+
+
+subsection:: BufRd: Rate Control
+
+Since link::Classes/BufRd:: reads from a buffer at an explicit frame index (code::phase::),  playback speed is therefore controlled by how quickly the phase value advances.
+
+In practice:
+
+list::
+## For a constant playback rate, use a phase ramp (for example, link::Classes/Phasor::) with a constant increment.
+## For a varying playback rate, modulate the increment (or otherwise generate a non-linear phase signal).
+## Use code::BufRateScale.kr(bufnum):: (or code::BufRateScale.ir(bufnum):: when
+## code::bufnum:: is constant) to compensate for buffer/server sample-rate differences.
+## Because code::BufRd:: has no built-in end detection, decide how the node will stop (for example, schedule code::Done.freeSelf::, or free on phase wrap/boundary crossing).
+::
+
+subsubsection:: BufRd: Static Rate
+
+code::
+(
+{
+	var buf, rate, increment, numFrames, phase;
+
+	buf = ~b_numCh2;
+
+	rate = 1;
+	// Change this to 16, 8, 4, 2, 1/2, 1/4, 1/8, or 1/16.
+	// Negative rates are covered in the reverse-playback section.
+
+	/* Convert "rate relative to the buffer" into "server-rate-corrected" playback speed. */
+	increment = rate * BufRateScale.kr(buf);
+	numFrames = BufFrames.kr(buf);
+
+	/* Buffer frame positions (phase). */
+	phase = Phasor.ar(
+		// Argument keywords are shown here for clarity only.
+		// They are not required, since the code already uses the correct argument syntax.
+		trig: 0,
+		// Reset position when triggered (resetPos = 0 starts at the first frame).
+		rate: increment,   // Playback increment in frames per sample (scaled).
+		start: 0,          // The start position of the ramp.
+		end: numFrames - 1 // The end point of the ramp.
+	);
+
+	/* Automatically free the server‑side Node instance when the phase reaches the last frame
+	   index. */
+	Line.ar(0, numFrames - 1, BufDur.kr(buf) / rate.abs.max(0.0001), 1, 0, Done.freeSelf);
+	// Used only to schedule Done.freeSelf; it does not need to be routed to audio.
+
+	BufRd.ar(
+		// Argument keywords are shown here for clarity only.
+		// They are not required, since the code already uses the correct argument syntax.
+		numChannels: 2, // Fixed channel count (stereo) inside a Function.
+		bufnum: buf,
+		phase: phase // Buffer frame index to read.
+	);
+}.play;
+)
+::
+
+subsubsection:: BufRd: Varying Rate
+
+To vary playback speed with link::Classes/BufRd::, modulate the phase increment.
+Typical modulators include link::Classes/SinOsc::, link::Classes/LFNoise0::, link::Classes/LFNoise1::, and link::Classes/LFNoise2::.
+
+There are two practical approaches:
+
+list::
+## Exact stop (recommended): free the node when the phase reaches (or wraps past) the last frame index.
+This works even when the playback duration is not predictable in advance.
+## Predicted stop (limited but useful): if the rate modulation is deterministic (for example, a known linear ramp), you can compute the total playback time from the integral of the rate and free the node at the predicted time.
+::
+
+list::
+## strong::Exact stop by detecting wrap::
+
+This example assumes a positive (forward) rate.
+It frees the node when the phase wraps from the last frame back to the start.
+
+code::
+(
+{
+    var buf, numFrames, rate, increment, phase, wrapped;
+
+    buf = ~b_numCh2;
+    numFrames = BufFrames.kr(buf);
+
+    // Buffer-relative rate, modulated by a sine wave.
+    // Keep it positive to avoid reverse playback in this example.
+    rate = (SinOsc.kr(1 / 10)).range(1/10, 1);
+
+    // Convert the speed multiplier into a per-sample phase increment (frames per sample).
+    increment = rate * BufRateScale.kr(buf);
+
+    phase = Phasor.ar(0, increment, 0, numFrames - 1);
+
+    // Detect wrap (phase jumps from end back to start).
+    wrapped = phase < Delay1.ar(phase);
+
+    // Free on the first wrap. (The wrapped signal is audio-rate, so convert it to
+    // control-rate.)
+    FreeSelf.kr(A2K.kr(wrapped));
+
+    BufRd.ar(2, buf, phase, 0);
+}.play;
+)
+::
+
+## strong::Predicted stop for a linear rate ramp::
+
+If the rate modulation is known in advance, you can predict when the read position will reach the end of the buffer and schedule code::Done.freeSelf::.
+
+Idea: code::rate(t):: tells you how fast you move through the buffer (in “buffer-seconds per second”).
+The buffer finishes when the accumulated buffer-time equals the buffer duration:
+
+math::
+\int_{0}^{T} r(t)\,dt = D
+::
+
+where code::D:: is the buffer duration (code::BufDur::) and code::T:: is the wall-clock time when playback ends.
+
+For a linear ramp from code::r0:: to code::r1:: over code::tRamp:: seconds (with code::k = (r1 - r0) / tRamp::):
+
+list::
+## If the buffer finishes during the ramp, solve the quadratic for code::T:::
+math::
+\tfrac{1}{2}kT^{2} + r_{0}T = D
+::
+## Otherwise, total time is:
+
+code::tRamp + (D - areaRamp) / r1::, where code::areaRamp = (r0 + r1) / 2 * tRamp::
+::
+
+code::
+(
+{
+    var buf,
+        frames,
+        r0,
+        r1,
+        tRamp,
+        rate,
+        durBuf,
+        areaRamp,
+        finishesInRamp,
+        tFinishInRamp,
+        tTotal;
+    var increment, phase;
+
+    buf = ~b_numCh2;
+    frames = BufFrames.kr(buf);
+    durBuf = BufDur.kr(buf);
+
+    // Define a deterministic rate ramp.
+    r0 = 0.25;
+    r1 = 2.0;
+    tRamp = 3.0;
+
+    // Rate envelope (speed multiplier), then hold at r1.
+    rate = EnvGen.kr(Env([r0, r1, r1], [tRamp, 1e9], \lin));
+
+    // Area under the ramp portion: average rate * time.
+    areaRamp = ((r0 + r1) * 0.5) * tRamp;
+
+    finishesInRamp = areaRamp >= durBuf;
+
+    // Solve: r0*t + 0.5*(r1-r0)/tRamp * t^2 = durBuf
+    // Only used when finishesInRamp is true.
+    tFinishInRamp = (
+        ((-1 * r0) + ((r0 * r0) + (2 * (r1 - r0) / tRamp * durBuf)).sqrt)
+        / ((r1 - r0) / tRamp).max(1e-9)
+    );
+
+    tTotal = Select.kr(finishesInRamp, [
+        // Finishes after the ramp: ramp time + remaining time at r1.
+        tRamp + ((durBuf - areaRamp).max(0) / r1.max(1e-9)),
+
+        // Finishes during the ramp.
+        tFinishInRamp
+    ]);
+
+    // Schedule node free at the predicted end time.
+    Line.kr(0, 1, tTotal, doneAction: Done.freeSelf);
+
+    // Drive phase with the varying rate.
+    increment = rate * BufRateScale.kr(buf);
+    phase = Phasor.ar(0, increment, 0, frames - 1);
+
+    BufRd.ar(2, buf, phase, loop: 0, interpolation: 2) * 0.2;
+}.play;
+)
+::
+::
+
+section:: Reverse Playback
+
+subsection:: PlayBuf: Reverse Playback
+
+To play in reverse, use a negative code::rate::.
+Playback behavior at buffer boundaries depends on code::loop:: and code::doneAction:::
+
+list::
+## code::loop: 0:: (loop off):
+
+code::startPos:: must be set near the end of the buffer;
+otherwise, playback may stop immediately when it reaches the end of the buffer frame index.
+
+list::
+## code::doneAction:: is set to code::Done.none:: (teletype::doneAction:: number: code::0::):
+
+The synth does not free itself automatically when playback reaches a boundary.
+In this case, you can start reverse playback at the last frame.
+However, you must manually call code::.free:: (or code::.release::) on the link::Classes/Node::, since it continues to run on the server.
+
+code::
+(
+x = {
+	var buf, rate, startPos;
+	buf = ~b_numCh1;
+	rate = -1 * BufRateScale.kr(buf.bufnum); // reverse
+	startPos = BufFrames.kr(buf.bufnum) - 1;
+	PlayBuf.ar(buf.numChannels, buf.bufnum, rate, 1, startPos) ! 2
+}.play;
+)
+
+x.free // Done.none does not free the synth automatically; free (or release) it manually.
+::
+
+note::
+link::Classes/BufFrames#*kr:: is used to compute positions inside link::Classes/SynthDef::s at control rate.
+code::BufFrames.kr(~b_numCh1.bufnum)::'s sclang-side equivalent is code::~b_numCh1.numFrames::.
+::
+
+## code::Done.freeSelf:: (code::doneAction:: number: code::2::):
+
+Choose a start position before the final frame so there is data to read when code::rate < 0::.
+code::
+(
+{
+	var buf = ~b_numCh1;
+	var rate = -1 * BufRateScale.kr(buf.bufnum); // reverse.
+	var startPos = BufFrames.kr(buf.bufnum) - 2;
+	// Use a safe offset (avoid reading past the end).
+	PlayBuf.ar(buf.numChannels, buf.bufnum, rate, 1, startPos, 0, Done.freeSelf) ! 2
+}.play;
+)
+::
+::
+## code::loop:: is code::1:: (on):
+
+Playback wraps at buffer boundaries and reverse playback continues indefinitely, so the teletype::startPos:: is less critical, but starting at the last frame is typical.
+Also, code::Done.freeSelf:: does not free at the buffer boundary.
+
+code::
+(
+x = {
+	var buf = ~b_mono;
+	var rate = -1 * BufRateScale.kr(buf.bufnum);   // reverse
+	var startPos =   BufFrames.kr(buf.bufnum) - 1; // or 0
+	PlayBuf.ar(buf.numChannels, buf.bufnum, rate, 1, startPos, 1,
+
+		/* doneAction does not affect: */
+		Done.freeSelf
+		// doneAction: Done.none
+	) ! 2
+}.play;
+)
+
+x.free
+::
+::
+
+subsection:: BufRd: Reverse Playback
+
+With link::Classes/BufRd::, the code::phase:: argument directly controls the playback direction and speed.
+
+list::
+## Using link::Classes/Line:: (One-shot Reverse):
+
+A simple way to play a buffer once in reverse:
+
+code::
+(
+{
+	var buf = ~b_numCh1;
+	var frames = BufFrames.kr(buf.bufnum);
+	var duration = frames / BufSampleRate.kr(buf.bufnum);
+	var phase = Line.ar(frames - 1, 0, duration, doneAction: Done.freeSelf);
+	BufRd.ar(buf.numChannels, buf.bufnum, phase) ! 2
+}.play;
+)
+::
+
+## Using link::Classes/Phasor:: (Continuous Looping):
+
+When the rate is negative, link::Classes/Phasor:: moves from code::end:: to code::start::.
+To start at the end immediately, set code::resetPos:: to the end value.
+
+code::
+(
+x = {
+	var buf = ~b_mono;
+	var rate = -1 * BufRateScale.kr(buf.bufnum);
+	var frames = BufFrames.kr(buf.bufnum);
+	var phase = Phasor.ar(0, rate, 0, frames - 1, frames - 1);
+	BufRd.ar(buf.numChannels, buf.bufnum, phase) ! 2
+}.play;
+)
+
+x.free // x.release also works.
+::
+
+table::
+## strong::Compare::
+list::
+## One-shot playback using link::Classes/Phasor:::
+code::
+(
+{
+	var buf = ~b_numCh1;
+	var bufRateScale = BufRateScale.kr(buf.bufnum);
+	var rate = -1 * bufRateScale;
+	var frames = BufFrames.kr(buf.bufnum);
+	var duration = (frames - 1) / (SampleRate.ir * rate.abs);
+	var end = BufFrames.kr(buf.bufnum) - 1;
+	var phase = Phasor.ar(0, rate, 0, end, end);
+
+	/* To free synth automatically: */
+	FreeSelfWhenDone.kr(Line.kr(0, 1, duration));
+	// FreeSelfWhenDone.kr could be replaced by:
+	// Line.kr(0, 1, duration, doneAction: Done.freeSelf)
+
+	BufRd.ar(buf.numChannels, buf.bufnum, phase, 0) ! 2
+}.play;
+)
+::
+
+## With link::Classes/Line::, changing the playback direction is not straightforward:
+
+code::
+(
+{
+	var rate = -1;
+	var buf = ~b_mono;
+	var frames = BufFrames.kr(buf.bufnum);
+
+	/* Additional logic to choose start and end positions based on playback direction: */
+	var start = if(rate >= 0) { 0 } { frames - 1 };
+	var end = if(rate >= 0) { frames - 1 } { 0 };
+	var duration = (frames - 1) / (SampleRate.ir * rate.abs * BufRateScale.kr(~b_numCh1));
+
+	var phase = Line.ar(start, end, duration, 1, 0, Done.freeSelf);
+	BufRd.ar(buf.numChannels, buf.bufnum, phase, 0 ) ! 2
+}.play;
+)
+::
+::
+::
+::
+
+section:: Controlling Duration and Fades
+
+In some cases, you may want playback to last for a specific amount of time, regardless of the buffer’s effective duration at the current rate.
+This section explains how to:
+list::
+## Define an arbitrary playback duration independent of buffer size and speed.
+## Use an in‑Synth (or in‑Function) envelope (for example: code::attackTime::, code::decayTime::, code::sustainLevel::, code::releaseTime::) to shape the sound itself and to guarantee the total playback time.
+## When triggering link::Classes/Function::s via link::Classes/Function#-play:: (code::{ ... }.play::), distinguish between:
+list::
+## Internal stop (self-terminating synth):
+Stop automatically from inside the synth by using an envelope plus code::doneAction::
+(for example, code::EnvGen(..., doneAction: Done.freeSelf)::).
+This is the most reliable way to guarantee a fixed total duration (including fades),
+because the synth controls its own lifetime.
+## External stop (caller-controlled):
+Keep a reference and call code::.release:: or code::.free::.
+If the function creates a strong::releasable:: (gate-controlled) SynthDef graph
+with a code::gate:: control used by link::Classes/EnvGen::,
+GraphBuilder will strong::not:: apply player-level code::fadeTime::.footnote::
+
+note::
+Here, “graph” means the SynthDef’s UGen graph,
+not a language-side object.
+::
+
+See code::UGen.buildSynthDef.canReleaseSynth.not:: in
+
+code::
+GraphBuilder {
+	...
+	*wrapOut { arg name, func, rates, prependArgs, outClass=\Out, fadeTime;
+		...
+		if(fadeTime.notNil and: { UGen.buildSynthDef.canReleaseSynth.not }) {
+			...
+		}
+	}
+}
+::
+
+in line 13 in:
+
+code::
+(Platform.resourceDir +/+ "/SCClassLibrary/Common/Control/GraphBuilder.sc").openDocument
+::
+
+code::
++ SynthDef {
+	canFreeSynth { ^children.canFreeSynth }
+	canReleaseSynth { ^this.hasGateControl and: { this.canFreeSynth } }
+}
+::
+
+See line 63 in
+
+code::
+(Platform.resourceDir +/+ "SCClassLibrary/Common/Audio/canFreeSynth.sc").openDocument
+::
+::
+In that case, the audible fade-out is governed by the synth’s own release stage (for example, code::releaseTime::), not by code::fadeTime::.
+::
+
+See the following example:
+list::
+## Gate-controlled graph:
+link::Classes/Node#-release:: is handled inside the link::Classes/Synth:: instance.
+The code::fadeTime:: argument passed to link::Classes/Function#-play:: is not used in this case (releasable, gate-controlled graph).
+
+code::
+(
+x = { |buf, gate=1, rel=3, amp=0.2|
+	var env = Env.asr(0.01, 1, rel);
+	var sig = PlayBuf.ar(2, buf, rate: BufRateScale.kr(buf), loop: 1);
+	env = EnvGen.kr(env, gate, doneAction: Done.freeSelf);
+	sig * env * amp
+}
+)
+
+x.class // -> Function
+y = x.play(fadeTime: 1.0, args: [buf: ~b_numCh2, rel: 4.0])
+y.class   // typically Synth
+
+y.release // fades according to rel (4.0), not fadeTime (1.0):
+// Because this graph is gated (releasable), Function:play does not apply player-level
+// fadeTime here.
+::
+
+## Fixed-duration playback:
+
+The synth releases itself at the exact duration, including attackTime and releaseTime (works regardless of link::Classes/Function#-play:: code::fadeTime:: argument).
+
+code::
+(
+{ |buf, dur = 3.0, attackTime = 0.5, releaseTime = 0.8, amp = 0.2|
+	var sustainLevel = (dur - attackTime - releaseTime).max(0);
+	var env = Env.linen(attackTime, sustainLevel, releaseTime);
+	var sig = PlayBuf.ar(2, buf, rate: BufRateScale.kr(buf), loop: 1);
+	env = EnvGen.kr(env, doneAction: Done.freeSelf);
+	sig * env * amp
+}.play(args:[buf: ~b_numCh2]);
+)
+::
+## Real-time performance (need a link::Classes/Env#Sustained Envelope Creation Methods::):
+
+the synth releases itself when code::gate:: becomes teletype::0:: (works regardless of fadeTime).
+
+code::
+(
+x = { |buf, attackTime=0.5, sustainLevel=1, releaseTime=2.0, gate=1, amp=0.2|
+	var env = Env.asr(attackTime, sustainLevel, releaseTime);
+	var sig = PlayBuf.ar(2, buf, rate: BufRateScale.kr(buf), loop: 1);
+	env = EnvGen.kr(env, gate, doneAction: Done.freeSelf);
+	sig * env * amp
+};
+)
+
+y = x.play(args: [buf: ~b_numCh2]);
+
+// Later (external control):
+y.release; // triggers gated release inside the synth
+// or:
+y.free;    // immediate stop
+::
+::
+::
+
+subsection:: PlayBuf: Fades and Duration Control
+
+numberedlist::
+## Define a link::Classes/Function:: to play a buffer with fades:
+code::
+(
+x = { |buf, dur, fadeTime, attackTime = 0.01, decayTime = 0, sustainLevel = 1, releaseTime =
+0.05, gate = 1, rate = 1, trig = 1, start = 0, loop = 0, amp = 1, pos = 0|
+	var envFixed, envGated, sig;
+	dur = Select.kr(
+		((dur |!=| 0) + ((loop |!=| 0) * 2)),
+		[
+			BufDur.kr(buf), // when dur = 0 and loop = 0
+
+			dur,            // when dur ≠ 0 and loop = 0
+
+			inf,            // when loop = 1;
+			// alternatively use a time string, e.g. "365:00:00:00".asSeconds
+
+			dur             // when dur ≠ 0 and loop = 1
+		]
+	);
+
+	/* Set Envelope */
+
+	// 1) Fixed-duration envelope (exact total time) when dur is finite.
+	//    If durTarget is infinite, we use a simple fade-in ramp and no auto-stop.
+	envFixed = Select.kr(
+		loop |==| 0,
+		[
+			Env.linen(attackTime, (dur - attackTime - decayTime - releaseTime).max(0), releaseTime)
+			.kr(Done.freeSelf), // dur: finite. Exact total duration.
+			Env([0, 1], [attackTime.max(0.0001)])
+			.kr(Done.none) // dur: infinite. Fade in once, then stay at 1.
+		]
+	);
+
+	// 2) Gate envelope (for stopping early from outside).
+	//    This is the ONLY thing that responds to y.release or \gate changes.
+	//    It also frees the synth after release completes.
+	envGated = Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, 1,
+	\welch).kr(Done.freeSelf, gate);
+
+	sig = PlayBuf.ar(
+		// Argument keywords are shown here for clarity only.
+		// They are not required, since the code already uses the correct argument syntax.
+
+		// When wrapping PlayBuf in a Function and calling it, numChannels must be fixed.
+		// So buf.numChannels cannot be used here:
+		numChannels: 2,
+
+		bufnum:     buf,                         // Use buf directly.
+		// buf.bufnum would cause an error
+		rate:       rate * BufRateScale.kr(buf),
+		// Supports reverse playback. Pass the Buffer directly.
+		trigger:    trig,
+		startPos:   start,                       // Use a safe offset.
+		loop:       loop,                        // 0 = one-shot, 1 = loop.
+		doneAction: Done.none
+		// No doneAction to prevent duplication with doneAction in Env.
+	);
+
+	sig = sig * envFixed * envGated;       // Apply the envelope.
+	Balance2.ar(sig[0], sig[1], pos, amp) // Stereo balance (pan) for a 2-channel signal.
+}
+)
+(
+x = { |buf, dur, fadeTime, attackTime = 0.1, decayTime = 0, sustainLevel = 1, releaseTime =
+0.05, gate = 1, rate = 1, trig = 1, start = 0, loop = 0, amp = 1, pos = 0|
+	var env, sig;
+	dur = Select.kr(
+		(dur |!=| 0) + ((loop |!=| 0) * 2),
+		[
+			BufDur.kr(buf), // when dur = 0 and loop = 0
+			dur, // when dur ≠ 0 and loop = 0
+			inf, // when loop = 1; alternatively use a time string, e.g. "365:00:00:00".asSeconds
+			dur // when dur ≠ 0 and loop = 1
+		]
+	);
+
+	/* Set Envelope */
+	env = Select.kr(
+		(dur |==| inf) * (loop |==| 0),
+		[
+			Env.linen(attackTime, (dur - attackTime - decayTime - releaseTime).max(0), releaseTime )
+			.kr(Done.freeSelf), // 1) dur: finite. Exact total duration with auto-free.
+
+			Env([0, 1], [attackTime.max(0.0001)])
+			.kr(Done.none)
+			// 2) dur: infinite. Fade-in once, then stay at 1. Gate ADSR handles early stop/free.
+		]
+	)
+	* Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, 1, \welch).kr(Done.freeSelf,
+	gate);
+	sig = PlayBuf.ar(2, buf, rate * BufRateScale.kr(buf), trig, start, loop, Done.none );
+	sig = sig * env;
+	Balance2.ar(sig[0], sig[1], pos, amp)
+}
+)
+::
+## Playback
+list::
+## Control in-synth (in-function) arguments:
+code::
+(
+x.play(s, /*outbus:*/ 0, args: [
+	buf: ~b_numCh2, dur: 6, attackTime: 3, releaseTime: 3,
+	rate: 1.1, trig: 1, start: 0, loop: 1, amp: 0.5
+]);
+)
+
+y = x.play(s, args: [buf: ~b_numCh2, loop: 1, attackTime: 3, releaseTime: 5, amp: 0.5]);
+y.release;
+// Release the synth, since loop = 1 without a duration runs indefinitely. y.free works
+// without respecting releaseTime.
+
+y = x.play(s, args: [buf: ~b_numCh2, loop: 1, attackTime: 3, releaseTime: 5, amp: 0.5]);
+y.free;
+// Free the synth without respecting releaseTime, since loop = 1 without a duration runs
+// indefinitely. y.release also works.
+::
+## Control link::Classes/Function#-play:: code::fadeTime:: argument:
+
+The code::fadeTime:: argument of link::Classes/Function#-play:: does not work when a link::Classes/Function:: instance has code::gate:: argument used in link::Classes/EnvGen::.
+
+code::
+y = x.play(s, fadeTime: 4, args: [buf: ~b_numCh2, loop: 1, amp: 0.5, attackTime: 1,
+releaseTime: 1]);
+y.release; // release the synth, since loop = 1 without a duration runs indefinitely.
+// Here, y.release does not respect fadeTime because the synth has gate. y.free also works,
+// but fadeTime also does not work.
+
+y = x.play(s, fadeTime: 4, args: [buf: ~b_numCh2, loop: 1, amp: 0.5]);
+y.set(\releaseTime, 2, \gate, 0);
+// It releases the synth with \releaseTime, but fadeTime does not work.
+::
+::
+::
+
+subsection:: BufRd: Fades and Duration Control
+
+numberedlist::
+## Define a link::Classes/Function:: to play a buffer with fades:
+
+code::
+(
+x = { |buf, dur, fadeIn = 0.01, fadeOut = 0.01, rate = 1, trig = 1, start = 0, loop = 0, amp
+= 1, pos = 0|
+	var env, frames, end, phase, sig;
+	dur = Select.kr(
+		((dur |!=| 0) + ((loop |!=| 0) * 2)),
+		[
+			BufDur.kr(buf), // when dur = 0 and loop = 0
+
+			dur,            // when dur ≠ 0 and loop = 0
+
+			inf,            // when loop = 1;
+			// alternatively use a time string, e.g. "365:00:00:00".asSeconds
+
+			dur             // when dur ≠ 0 and loop = 1
+		]
+	);
+
+	// Set an envelope
+	env = Env.linen(fadeIn, (dur - fadeIn - fadeOut).max(0), fadeOut).kr(Done.freeSelf);
+	rate = rate * BufRateScale.kr(buf);
+	frames = BufFrames.kr(buf);
+	end = frames - 1;
+	phase = Phasor.ar(0, rate, 0, end, end);
+	sig = BufRd.ar(
+		// Argument keywords are shown here for clarity only.
+		// They are not required, since the code already uses the correct argument syntax.
+
+		// When wrapping BufRd in a Function and calling it, numChannels must be fixed.
+		// So buf.numChannels does not work anymore:
+		numChannels: 1,
+		bufnum: buf,    // use buf directly;
+		// buf.bufnum would cause an error
+		phase: phase,
+		loop: 1
+	);
+	sig = sig * env; // apply envelope
+	Pan2.ar(sig, pos, amp) // convert mono signal to stereo (two identical channels)
+}
+)
+::
+
+## Playback
+code::
+(
+play(s, /*outbus:*/ 0,
+	args: [buf: ~b_numCh1, dur: 4, fadeIn: 0.02, fadeOut: 0.05, rate: 1.1, loop: 1, amp: 0.5]
+)
+)
+
+y = x.play(s, args: [buf: ~b_numCh1, dur: 10, fadeIn: 2, fadeOut: 2, loop: 1, amp: 0.5]);
+y.free; // Free the synth before the scheduled 10-second duration ends. y.release also works.
+::
+::
+
+section:: Handling Channel-Count Mismatches
+
+If the number of channels specified in code::PlayBuf.ar(numChannels, ...):: and code::BufRd.ar(numChannels, ...):: does not match the actual buffer, the server will post a message:
+teletype::
+Buffer link::Classes/UGen:: channel mismatch: expected 2, yet buffer has 1 channels
+::
+
+subsection:: Strategy 1: Dynamic SynthDef Generation
+
+A common approach is to create separate link::Classes/SynthDef::s for mono and stereo playback.
+This approach is effective when you have a collection of both mono and stereo files and want to handle them with specific link::Classes/SynthDef::s, knowing the channel count of each file in advance.
+
+note::
+In contrast to link::Classes/Function#-play::, link::Classes/SynthDef:: requires explicit code in order to use code::.release::.
+To avoid an overly long explanation, the use of code::.release:: is not covered here;
+see link::Classes/Node#-release:: for details.
+::
+
+subsubsection:: PlayBuf (Strategy 1)
+
+numberedlist::
+## Generate link::Classes/SynthDef:: with iteration:
+code::
+(
+[1, 2].do { |numCh|
+	var name = (\playBuf_ ++ numCh ++ \chBuf).asSymbol;
+	SynthDef(name, { |out = 0, buf, rate = 1, trig = 1, start = 0, loop = 0, dur, fadeIn = 0.01,
+	fadeOut = 0.01, pos = 0, amp = 1|
+		var sig = PlayBuf.ar(
+			numCh,
+			buf,
+			rate * BufRateScale.kr(buf),
+			trig,
+			start,
+			loop,
+			Done.freeSelf
+		);
+		var durAdapted = Select.kr(
+			((dur |!=| 0) + ((loop |!=| 0) * 2)),
+			[
+				BufDur.kr(buf),
+				dur,
+				inf, //"365: 00: 00: 00".asSeconds,
+				dur
+			]
+		);
+		var env = Env.linen(fadeIn,
+		    (durAdapted - fadeIn - fadeOut).max(0),
+		    fadeOut).kr(Done.freeSelf);
+		sig = if(numCh == 1) { sig ! 2 } { sig };
+		sig = Balance2.ar(sig[0], sig[1], pos, amp) * env;
+		Out.ar(out, sig);
+	}).add
+};
+)
+::
+## Playback
+code::
+Synth(\playBuf_1chBuf, [buf: ~b_numCh1]);
+
+Synth(\playBuf_1chBuf, [buf: ~b_mono]);
+
+Synth(\playBuf_1chBuf, [buf: ~b_numCh1, rate: 2, pos: -1]);
+
+x = Synth(\playBuf_2chBuf, [\buf, ~b_numCh2, \rate, -1/2, \start, ~b_numCh2.numFrames - 2,
+\dur, 5, \loop, 1, \pos, 1]);
+x.free;
+// Free the synth before the scheduled 5-second duration ends. x.release does not work.
+
+x = Synth(\playBuf_2chBuf, [\buf, ~b_numCh2, \rate, -1/2, \start, ~b_numCh2.numFrames - 2,
+\dur, 2, \fadeIn, 1, \fadeOut, 1, \loop, 1, \pos, 1]);
+
+x = Synth(\playBuf_2chBuf, [buf: ~b_stereo_duped, loop: 1]);
+x.free;
+// Free the synth, since loop = 1 without a duration will run indefinitely. x.release does
+// not work.
+::
+::
+
+subsubsection:: BufRd (Strategy 1)
+
+numberedlist::
+## Generate link::Classes/SynthDef:: with iteration:
+
+code::
+(
+2.do { |i|
+	var numCh = i + 1;
+	var name = (\bufrd_ ++ numCh ++ \chBuf).asSymbol;
+	SynthDef(name, { |out = 0, buf, rate = 1, dur = 2, fadeIn = 0.01, fadeOut = 0.01, pos = 0,
+	amp = 1|
+		var frames = BufFrames.kr(buf);
+		var step = BufRateScale.kr(buf) * rate;
+		var phase = Phasor.ar(0, step, 0, frames - 1);
+		var sig = BufRd.ar(numCh, buf, phase);
+		var env = Env.linen(fadeIn, (dur - fadeIn - fadeOut).max(0), fadeOut).kr(Done.freeSelf);
+		sig = if(numCh == 1) { sig ! 2 } { sig };
+		sig = Balance2.ar(sig[0], sig[1], pos, amp) * env;
+		Out.ar(out, sig);
+	}).add
+};
+)
+::
+
+## Playback
+code::
+Synth(\bufrd_1chBuf, [\buf, ~b_numCh1, \rate, 1, \dur, 4, \amp, 0.6]);
+Synth(\bufrd_1chBuf, [\buf, ~b_numCh1, \rate, 1, \dur, 4, \fadeIn, 0.1, \fadeOut, 0.5, \amp,
+0.6]);
+
+Synth(\bufrd_1chBuf, [\buf, ~b_mono, \rate, 1, \dur, 4, \amp, 0.6, \pos, -1]);
+
+Synth(\bufrd_2chBuf, [\buf, ~b_numCh2, \rate, 1, \dur, 2, \amp, 0.8]);
+Synth(\bufrd_2chBuf, [\buf, ~b_numCh2, \rate, 1, \dur, 2, \fadeIn, 1, \fadeOut, 1, \amp,
+0.8]);
+
+x = Synth(\bufrd_2chBuf, [buf: ~b_stereo_duped, rate: -2, dur: 10, \fadeIn, 1, \fadeOut, 1,
+amp: 0.2, \pos, 1]);
+x.free
+// Free the synth before the scheduled 10-second duration ends. x.release does not work.
+::
+::
+
+subsection:: Strategy 2: Selecting SynthDefs with a Function
+
+subsubsection:: PlayBuf (Strategy 2)
+
+code::
+(
+~playBuf = { |out = 0, buf, rate = 1, trig = 1, start = 0, loop = 0, dur, fadeIn = 0.01,
+fadeOut = 0.01, pos = 0, amp = 1|
+	var args = [
+		out: out, buf: buf, rate: rate, trig: trig, start: start, loop: loop, dur: dur, fadeIn:
+		fadeIn, fadeOut: fadeOut, pos: pos, amp: amp
+	];
+	Synth((\playBuf_ ++ buf.numChannels ++ "chBuf").asSymbol, args)
+}
+)
+
+~playBuf.(buf: ~b_numCh1, rate: 1)
+
+~playBuf.(buf: ~b_mono, rate: -1/2, start: ~b_numCh1.numFrames - 2, pos: -1, fadeIn: 1,
+fadeOut: 1)
+
+~playBuf.(buf: ~b_numCh1, rate: -2, start: ~b_numCh1.numFrames - 2, pos: 1)
+
+x = Synth(\playBuf_2chBuf, [buf: ~b_numCh2, loop: 1])
+x.free
+// Free the synth, since loop = 1 without a duration will run indefinitely. x.release does
+// not work.
+::
+
+subsubsection:: BufRd (Strategy 2)
+
+code::
+(
+~bufRd = { |out = 0, buf, rate = 1, dur, fadeIn = 0.01, fadeOut = 0.01, pos = 0, amp = 1|
+	var args = [
+		out: out, buf: buf, rate: rate, dur: dur, fadeIn: fadeIn, fadeOut: fadeOut, pos: pos, amp:
+		amp
+	];
+	Synth((\bufrd_ ++ buf.numChannels ++ "chBuf").asSymbol, args)
+}
+)
+
+~bufRd.(buf: ~b_numCh1, rate: 1, dur: 1.3, amp: 0.5)
+~bufRd.(buf: ~b_numCh1, rate: 1, dur: 1.3, fadeIn: 0.3, fadeOut: 0.3, amp: 0.5)
+
+~bufRd.(buf: ~b_mono, rate: -2, dur: 3, amp: 0.2, pos: -1)
+
+~bufRd.(buf: ~b_numCh2, rate: -2, dur: 3, amp: 0.2)
+
+~bufRd.(buf: ~b_stereo_duped, rate: -2, dur: 3, fadeIn: 1, fadeOut: 1, amp: 0.2, pos: 1)
+::
+
+subsection:: Strategy 3: Stereo Balancing with Buffer.readChannel and Balance2
+
+If the channel count is unknown,
+you can force all buffers to stereo at load time using link::Classes/Buffer#*readChannel:: (by duplicating, selecting, or reordering channels as needed).
+Instead of creating multiple SynthDefs, you can load buffers as stereo and use link::Classes/Balance2:: for consistent balancing.
+
+list::
+## For mono files:
+
+Duplicate the mono channel to create a two-channel (stereo) buffer.
+## For stereo files:
+
+Use the buffer as-is (or convert only if a different mapping is required).
+## For multichannel files (more than 2 channels):
+
+Read the first two channels, or explicitly select which two channels you need.
+::
+
+subsubsection:: PlayBuf (Strategy 3)
+
+numberedlist::
+## Write link::Classes/SynthDef:::
+code::
+(
+SynthDef(\playbuf_balance2, { |out = 0, buf, rate = 1, start = 0, loop = 0, pos = 0, amp = 1|
+	var sig = PlayBuf.ar(2, buf, rate * BufRateScale.kr(buf), 1, start, loop, Done.freeSelf);
+	sig = Balance2.ar(sig[0], sig[1], pos, amp);
+	Out.ar(out, sig);
+}).add
+);
+::
+## Playback
+code::
+Synth(\playbuf_balance2, [\buf, ~b_mono, \rate, 2, \pos, -0.5]); // warning
+
+Synth(\playbuf_balance2, [\buf, ~b_stereo_duped, \rate, 2, \pos, -0.5]); // no warning
+
+Synth(\playbuf_balance2, [\buf, ~b_numCh2, \rate, 2, \pos, -0.5]); // no warning
+
+(
+Synth(\playbuf_balance2, [
+	buf: ~b_stereo_duped, // no warning
+	rate: -1,
+	start: ~b_stereo_duped.numFrames - 2,
+	// loop: 1,
+	pos: 0.5
+])
+)
+::
+::
+
+subsubsection:: BufRd (Strategy 3)
+
+numberedlist::
+## Write link::Classes/SynthDef:::
+
+code::
+(
+SynthDef(\bufRd_balance2, { |out = 0, buf, rate = 1, dur = 2, pos = 0, amp = 1|
+	var frames = BufFrames.kr(buf);
+	var step = BufRateScale.kr(buf) * rate;
+	var phase = Phasor.ar(0, step, 0, frames);
+	var sig = BufRd.ar(2, buf, phase);
+	Line.ar(0, 1, dur, 1, 0, Done.freeSelf);
+	// used only to schedule Done.freeSelf (no need to multiply into audio)
+	sig = Balance2.ar(sig[0], sig[1], pos, amp);
+	Out.ar(out, sig);
+}).add
+)
+::
+
+## Playback
+code::
+Synth(\bufRd_balance2, [\buf, ~b_numCh1, \rate, 1, \dur, 4, \amp, 0.6]); // warning
+
+Synth(\bufRd_balance2, [\buf, ~b_stereo_duped, \rate, 2, \dur, 3, \amp, 0.2]); // no warning
+
+Synth(\bufRd_balance2, [\buf, ~b_numCh2, \rate, 1, \dur, 3, \amp, 0.8]); // no warning
+
+Synth(\bufRd_balance2, [
+    \buf,  ~b_stereo_duped,
+    \rate, -2,
+    \dur,  ~b_stereo_duped.duration / 2,
+    \amp,  0.2
+]);
+// no warning
+::
+::
+
+subsection:: Strategy 4: Downmixing Multichannel Output with Splay
+
+When link::Classes/PlayBuf:: or link::Classes/BufRd:: plays a buffer with more than 2 channels, it outputs a multichannel signal.
+Use link::Classes/Splay:: to downmix it to stereo.
+
+subsubsection:: Preparing a Test Sound File and Buffer
+
+numberedlist::
+## Preparing an 8-channel sound file:
+
+code::
+(
+var score;
+~path = Platform.userHomeDir +/+ "Downloads" +/+ "test.wav";
+
+score = Score([
+	[0.0, [\d_recv, SynthDef(\test, { |out = 0, amp=0.1|
+		var freqs = Array.geom(16, 55, 1.48).scramble.reshape(8, 2);
+		var env = Env.sine(5).kr(Done.freeSelf);
+		var amps = { ExpRand(amp / 4 , amp) / 4 } ! 8;
+		Out.ar(out, SinOsc.ar(freqs, 0, amps) * env);
+	}).asBytes]],
+	[0.0, [\s_new, \test, 1000, 0, 0]],
+	[5.1, [\c_set, 0, 0]]
+]);
+
+score.recordNRT(
+	outputFilePath: ~path,
+	sampleRate: 44100,
+	headerFormat: "WAV",
+	sampleFormat: "int16",
+	options: ServerOptions.new.numOutputBusChannels_(8)
+);
+)
+::
+
+## Allocating a 8-channel buffer from created file:
+
+code::
+~b_8chs = Buffer.read(s, ~path)
+::Plotting the 8-channel buffer ~b_8chs :
+
+## Plotting the 8-channel buffer code::~b_8chs:: to confirm the channel count:
+code::
+~b_8chs.plot
+::
+::
+
+subsubsection:: Downmixing with Splay (PlayBuf)
+
+code::
+(
+{
+	var sig = PlayBuf.ar(
+		~b_8chs.numChannels,
+		~b_8chs.bufnum,
+		1 * BufRateScale.kr(~b_8chs),
+		doneAction: Done.freeSelf
+	);
+	Splay.ar(sig) // Downmix 8 channels to stereo
+}.play
+)
+::
+
+subsubsection:: Downmixing with Splay (BufRd)
+
+code::
+(
+x = {
+	var phase = Phasor.ar(
+		0,
+		1 * BufRateScale.kr(~b_8chs),
+		0,
+		BufFrames.kr(~b_8chs) - 1
+	);
+	var sig = BufRd.ar(~b_8chs.numChannels, ~b_8chs.bufnum, phase, 0);
+	Splay.ar(sig) // Automatically spreads channels across the stereo field.
+
+}.play;
+)
+
+x.free
+::
+
+section:: Managing Buffer Banks
+
+To load an entire directory of sound files into an link::Classes/Array::, link::Classes/SoundFile#*collectIntoBuffers:: is efficient.
+To load an entire directory containing sound files into an link::Classes/IdentityDictionary::, there is currently no equivalent method, so you must write code to do this.
+
+To load sounds from a directory tree, recursive functions are effective.
+This approach helps you organize buffers by directory structure.
+
+subsection:: Creating Buffer Arrays from a Directory
+
+subsubsection:: Creating a Buffer Array from a Directory: Supported Formats
+
+code::
+(
+var path    = Platform.resourceDir +/+ "sounds";
+~bufsSnd    = SoundFile.collectIntoBuffers(path +/+ "*", s);
+)
+
+~bufsSnd.size // -> 3
+
+~bufsSnd[0].play
+~bufsSnd[1].play
+~bufsSnd[2].play
+::
+
+subsubsection:: Creating a Buffer Array from a Directory: Specific Formats
+
+code::
+(
+var path    = Platform.resourceDir +/+ "sounds";
+~bufsAIF    = SoundFile.collectIntoBuffers(path +/+ "*.aiff", s);
+)
+
+~bufsAIF.size // -> 2
+
+~bufsAIF[0].play
+~bufsAIF[1].play
+::
+
+code::
+(
+var path    = Platform.resourceDir +/+ "sounds";
+~bufsWAV    = SoundFile.collectIntoBuffers(path +/+ "*.wav", s);
+)
+
+~bufsWAV.size // -> 1
+
+~bufsWAV[0].play
+::
+
+subsection:: Creating a Buffer Bank from a Directory Tree
+
+subsubsection:: Preparing Test Sound Files
+
+code::
+(
+var baseDir = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+var sineDir = baseDir +/+ "sine";
+var sawDir  = baseDir +/+ "triangle";
+var renderNRT = { |defName, defFunc, outPath, dur, freq|
+	var score;
+
+	score = Score([
+		[0.0, [\d_recv, SynthDef(defName, defFunc).asBytes]],
+		[0.0, [\s_new, defName, 1000, 0, 0, \freq, freq, \dur, dur]],
+		[dur + 0.1, [\c_set, 0, 0]]
+	]);
+
+	score.recordNRT(
+		outputFilePath: outPath,
+		sampleRate: 44100,
+		headerFormat: "WAV",
+		sampleFormat: "int16",
+		options: ServerOptions.new.numOutputBusChannels_(2)
+	);
+};
+
+[baseDir, sineDir, sawDir].do { |path|
+	var file;
+	path.mkdir;
+	file = File((path +/+ "readme.txt").standardizePath, "w");
+	file.write("Test text file (used to check behavior with non-sound files).\n");
+	file.close;
+};
+
+(60..71).do { |midiNote|
+	var freq = midiNote.midicps;
+
+	// 1) sine/percussive, 1 second
+	renderNRT.(
+		\sinPerc,
+		{ |out = 0, amp=0.1, freq=440, dur=1|
+			var env = Env.perc(0.001, dur - 0.001, 1, curve: -4).kr(Done.freeSelf);
+			var sig = SinOsc.ar(freq) * amp * env;
+			Out.ar(out, sig ! 2);
+		},
+		sineDir +/+ ("sPerc" ++ m ++ ".wav"),
+		1.0,
+		freq
+	);
+
+	// 2) saw/pad (sine envelope), 2 seconds
+	renderNRT.(
+		\triPad,
+		{ |out = 0, amp=0.1, freq=440, dur=2|
+			var env = EnvGen.kr(Env.sine(dur), doneAction: Done.freeSelf);
+			var sig = LFTri.ar(freq) * amp * env;
+			Out.ar(out, sig ! 2);
+		},
+		sawDir +/+ ("tPad" ++ midiNote ++ ".wav"),
+		2.0,
+		freq
+	);
+}
+)
+::
+
+subsubsection:: Creating Buffer Arrays (Recursive Loading Examples)
+
+list::
+## Create buffer arrays using recursive loading (hierarchical)
+
+numberedlist::
+## Defining a function:
+
+code::
+(
+~loadBuffersToArray = { |path|
+	var array = [];
+	var files = SoundFile.collectIntoBuffers(path +/+ "*", s);
+	if(files.notEmpty) {
+		array = array.add(files)
+	};
+
+	(path +/+ "*").pathMatch.do { |subpath|
+		if(File.type(subpath) == \directory) {
+			array = array ++ ~loadBuffersToArray.(subpath);
+		};
+	};
+	array
+};
+)
+::
+## Test:
+code::
+~bufferArrayHierarchy = ~loadBuffersToArray.(Platform.userHomeDir +/+ "Downloads" +/+
+"soundSamples")
+
+/* Wait a while until buffers are allocated on server. There will be no compeleton
+   message. */
+
+~bufferArrayHierarchy[0] // -> [Buffer(...
+~bufferArrayHierarchy[1] // -> [Buffer(...
+
+~bufferArrayHierarchy[0][0].play
+~bufferArrayHierarchy[0][11].play
+
+fork { ~bufferArrayHierarchy[0].do { |buffer| buffer.play; 0.2.wait } }
+
+fork { ~bufferArrayHierarchy[1].do { |buffer| buffer.play; 0.1.wait } }
+::
+::
+## Create buffer arrays using recursive loading (flat)
+
+numberedlist::
+## Defining a function:
+
+code::
+(
+~makeBufferArray = { |path, array|
+	if(array.isNil) { array = [] };
+
+	array = array ++ SoundFile.collectIntoBuffers(path +/+ "*", s);
+
+	(path +/+ "*").pathMatch.do { |subpath|
+		if(File.type(subpath) == \directory) {
+			array = ~makeBufferArray.(subpath, array);
+		};
+	};
+
+	array
+};
+)
+::
+## Test:
+code::
+~bufferArray = ~makeBufferArray.(Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples")
+
+/* Wait a while until buffers are allocated on server. There will be no compeleton
+   message. */
+
+~bufferArray.size // -> 24
+
+fork { ~bufferArray[0..11].do {|buffer| buffer.play; 0.2.wait } }
+// a chromatic ascending scale
+
+fork { ~bufferArray[12..23].do {|buffer| buffer.play; 0.2.wait } }
+// a chromatic ascending scale
+::
+::
+::
+
+subsubsection:: Recursive Loading into an Event (or an IdentityDictionary)
+
+Organizing buffers into an link::Classes/Event:: or an link::Classes/IdentityDictionary:: allows descriptive access (for example, code::~bufferDic[\sine][\note60]::).
+This function loads sound files into link::Classes/Buffer::s and organizes them into an link::Classes/Event:: or link::Classes/IdentityDictionary:: that matches the directory structure.
+
+numberedlist::
+## Defining a function:
+code::
+(
+~loadBuffersToDict = { |path|
+	var dict = ();
+	// var dict = IdentityDictionary.new;
+
+	var entries = (path +/+ "*").pathMatch;
+
+	entries.do { |subPath|
+		var symName = subPath.basename.splitext[0].asSymbol;
+
+		if (File.type(subPath) == \directory) {
+			// If it's a directory: recursive call
+			var subDict = ~loadBuffersToDict.(subPath);
+			if (subDict.notEmpty) {
+				dict[symName] = subDict;
+			};
+		} {
+			// Filter by common audio extensions:
+			if (["wav", "aif", "aiff", "flac"].includesEqual(subPath.extension.toLower)) {
+				dict[symName] = Buffer.read(s, subPath);
+			};
+		};
+	};
+	dict
+}
+)
+::
+## Test
+code::
+(
+~rootPath = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+~bufferDic = ~loadBuffersToDict.(~rootPath);
+)
+
+/* Wait a while until buffers are allocated on server. There will be no compeleton
+   message. */
+
+~bufferDic.keys
+
+~bufferDic[\sine].keys
+~bufferDic[\sine][\sPerc60].play
+
+~bufferDic[\triangle].keys
+~bufferDic[\triangle][\tPad60].play
+
+fork { ~bufferDic[\sine].do {|buffer| buffer.play; 0.2.wait } }
+// not a chromatic ascending scale
+
+fork { ~bufferDic[\triangle].do {|buffer| buffer.play; 0.2.wait } }
+// not a chromatic ascending scale
+
+fork {
+    ~bufferDic[\sine].keys.asArray.sort.collect { |key|
+        ~bufferDic[\sine][key]
+    }.do { |buffer|
+        buffer.play;
+        0.2.wait;
+    }
+}
+// not a chromatic ascending scale
+
+fork {
+    ~bufferDic[\triangle].keys.asArray.sort.collect { |key|
+        ~bufferDic[\triangle][key]
+    }.do { |buffer|
+        buffer.play;
+        0.2.wait;
+    }
+}
+// not a chromatic ascending scale
+::
+::
+
+subsubsection:: Accessing Buffers: Arrays vs Events (or IdentityDictionaries)
+
+list::
+
+## link::Classes/Array:: instances are best for sequential access or when filenames follow a strict numerical order (for example, a chromatic scale).
+
+## link::Classes/Event:: (or link::Classes/IdentityDictionary::) instances are best for descriptive naming and organizing by category (for example, teletype::\kick::, teletype::\snare::, teletype::\lead::).
+::
+
+code::
+~invention_4_BWV775_motif = [0, 2, 3, 5, 7, 8, -1, 8, 7, 5, 3, 2, 3]
+::
+
+code::
+(
+fork {
+	~invention_4_BWV775_motif.do { |n|
+		var offset = 1;
+		~bufferArrayHierarchy[0][n + offset].play;
+		~bufferArrayHierarchy[1][n + offset].play;
+		0.2.wait
+	}
+}
+)
+::
+
+link::Classes/Event:: (or link::Classes/IdentityDictionary::) can also be convenient if buffer names include MIDI note number.
+However, it is often more useful to access buffers with human‑readable names, for example:
+
+code::
+(
+fork {
+	~invention_4_BWV775_motif.do { |pitch, index|
+		var offset = 61;
+		Synth(\playBuf_2chBuf, [
+			buf: ~bufferDic[\sine][(\sPerc ++ (pitch + offset)).asSymbol],
+			amp: 0.2
+		]);
+		Synth(\playBuf_2chBuf, [
+			buf: ~bufferDic[\triangle][(\tPad ++ (pitch + offset)).asSymbol],
+			amp: 0.1 / (index + 1)
+		]);
+		0.2.wait
+	}
+}
+)
+::
+
+section:: Practical Examples
+
+subsection:: Hierarchical Buffer Array
+subsubsection:: s.waitForBoot-based scheduling (Hierarchical Buffer Array)
+
+code::
+(
+~loadBuffersToArray = { |path|
+	var array = [];
+	var files = SoundFile.collectIntoBuffers(path +/+ "*", s);
+	if(files.notEmpty) {
+		array = array.add(files)
+	};
+
+	(path +/+ "*").pathMatch.do { |subpath|
+		if(File.type(subpath) == \directory) {
+			array = array ++ ~loadBuffersToArray.(subpath);
+		};
+	};
+	array
+};
+
+s.waitForBoot {
+	SynthDef(\playBuf_2chBuf, { |buf, out = 0, pan = 0, amp = 0.1|
+		var sig = PlayBuf.ar(2, buf, BufRateScale.kr(buf), doneAction: Done.freeSelf);
+		sig = Balance2.ar(sig[0], sig[1], pan, amp);
+		OffsetOut.ar(out, sig)
+	}).add;
+
+	~rootPath = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+	~bufferArray = ~loadBuffersToArray.(~rootPath);
+
+	s.sync;
+
+	~invention_4_BWV775_motif = [0, 2, 3, 5, 7, 8, -1, 8, 7, 5, 3, 2, 3];
+	~noteOffset = 62;
+	~arrayIndexOffset = 60;
+
+	~bufTri = ~invention_4_BWV775_motif.collect { |note| ~bufferArray[0][note + ~noteOffset -
+	~arrayIndexOffset] };
+	~bufSin = ~invention_4_BWV775_motif.collect { |note| ~bufferArray[1][note + ~noteOffset -
+	~arrayIndexOffset] };
+
+	[~bufTri, ~bufSin].flop.do { |buf|
+		[
+			Synth(\playBuf_2chBuf, [buf: buf[0], pan: -0.3, amp: 0.5]),
+			Synth(\playBuf_2chBuf, [buf: buf[1], pan: 0.3, amp: 1])
+		];
+		0.2.wait
+	}
+}
+)
+::
+
+subsubsection:: Event (Hierarchical Buffer Array)
+
+code::
+(
+~loadBuffersToArray = { |path|
+	var array = [];
+	var files = SoundFile.collectIntoBuffers(path +/+ "*", s);
+	if(files.notEmpty) {
+		array = array.add(files)
+	};
+
+	(path +/+ "*").pathMatch.do { |subpath|
+		if(File.type(subpath) == \directory) {
+			array = array ++ ~loadBuffersToArray.(subpath);
+		};
+	};
+	array
+};
+
+s.waitForBoot {
+	SynthDef(\playBuf_2chBuf, { |buf, out = 0, pan = 0, amp = 0.1|
+		var sig = PlayBuf.ar(2, buf, BufRateScale.kr(buf), doneAction: Done.freeSelf);
+		sig = Balance2.ar(sig[0], sig[1], pan, amp);
+		OffsetOut.ar(out, sig)
+	}).add;
+
+	~rootPath = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+	~bufferArray = ~loadBuffersToArray.(~rootPath);
+
+	s.sync;
+
+	~invention_4_BWV775_motif = [0, 2, 3, 5, 7, 8, -1, 8, 7, 5, 3, 2, 3];
+	~noteOffset = 62;
+	~arrayIndexOffset = 60;
+
+	~bufTri = ~invention_4_BWV775_motif.collect { |note| ~bufferArray[0][note + ~noteOffset -
+	~arrayIndexOffset] };
+	~bufSin = ~invention_4_BWV775_motif.collect { |note| ~bufferArray[1][note + ~noteOffset -
+	~arrayIndexOffset] };
+
+	[~bufTri, ~bufSin].flop.do { |buf|
+		(
+			instrument: \playBuf_2chBuf,
+			buf: buf[0],
+			dur: 0.2,
+			pan: -0.5,
+			amp: 0.5
+		).play;
+		(
+			instrument: \playBuf_2chBuf,
+			buf: buf[1],
+			dur: 0.2,
+			pan: 0.5,
+			amp: 1
+		).play;
+		0.2.wait
+	}
+}
+)
+::
+
+subsubsection:: Pattern: Pbind (Hierarchical Buffer Array)
+
+code::
+(
+~loadBuffersToArray = { |path|
+	var array = [];
+	var files = SoundFile.collectIntoBuffers(path +/+ "*", s);
+	if(files.notEmpty) {
+		array = array.add(files)
+	};
+
+	(path +/+ "*").pathMatch.do { |subpath|
+		if(File.type(subpath) == \directory) {
+			array = array ++ ~loadBuffersToArray.(subpath);
+		};
+	};
+	array
+};
+
+s.waitForBoot {
+	SynthDef(\playBuf_2chBuf, { |buf, out = 0, pan = 0, amp = 0.1|
+		var sig = PlayBuf.ar(2, buf, BufRateScale.kr(buf), doneAction: Done.freeSelf);
+		sig = Pan2.ar(sig, pan, amp);
+		OffsetOut.ar(out, sig)
+	}).add;
+
+	~rootPath = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+	~bufferArray = ~loadBuffersToArray.(~rootPath);
+
+	s.sync;
+
+	~invention_4_BWV775_motif = [0, 2, 3, 5, 7, 8, -1, 8, 7, 5, 3, 2, 3];
+	~noteOffset = 62;
+	~arrayIndexOffset = 60;
+
+	~bufTri = ~invention_4_BWV775_motif.collect { |note| ~bufferArray[0][note + ~noteOffset -
+	~arrayIndexOffset] };
+	~bufSin = ~invention_4_BWV775_motif.collect { |note| ~bufferArray[1][note + ~noteOffset -
+	~arrayIndexOffset] };
+
+	Pbind(
+		\instrument, \playBuf_2chBuf,
+		\buf, Pseq(~bufTri, 1),
+		\dur, 0.2,
+		\pos, -0.3,
+		\amp, 0.5
+	).play;
+	Pbind(
+		\instrument, \playBuf_2chBuf,
+		\buf, Pseq(~bufSin, 1),
+		\dur, 0.2,
+		\pos, 0.3,
+		\amp, 1
+	).play;
+}
+)
+::
+
+subsection:: Hierarchical Buffer Event
+subsubsection:: s.waitForBoot-based scheduling (Hierarchical Buffer Event)
+
+code::
+(
+~loadMonoBuffersToDict = { |path|
+	var dict = ();
+	var entries = (path +/+ "*").pathMatch;
+	entries.do { |subPath|
+		var symName = subPath.basename.splitext[0].asSymbol;
+		if (File.type(subPath) == \directory) {
+			var subDict = ~loadMonoBuffersToDict.(subPath);
+			if (subDict.notEmpty) {
+				dict[symName] = subDict;
+			}
+		} {
+			if (["wav", "aif", "aiff", "flac"].includesEqual(subPath.extension.toLower)) {
+				dict[symName] = Buffer.readChannel(s, subPath, 0, -1, [0]);
+			}
+		}
+	};
+	dict
+};
+
+s.waitForBoot {
+	SynthDef(\playBuf_1chBuf, { |buf, out = 0, pan = 0, amp = 0.1|
+		var sig = PlayBuf.ar(1, buf, BufRateScale.kr(buf), doneAction: Done.freeSelf);
+		sig = Pan2.ar(sig, pan, amp);
+		OffsetOut.ar(out, sig)
+	}).add;
+
+	~rootPath = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+	~bufferDic = ~loadMonoBuffersToDict.(~rootPath);
+
+	s.sync;
+
+	~invention_4_BWV775_motif = [0, 2, 3, 5, 7, 8, -1, 8, 7, 5, 3, 2, 3];
+	~offset = 62;
+
+	~bufTri = ~invention_4_BWV775_motif.collect { |note| ~bufferDic[\triangle][(\tPad ++ (note +
+	~offset)).asSymbol] };
+	~bufSin = ~invention_4_BWV775_motif.collect { |note| ~bufferDic[\sine][(\sPerc ++ (note +
+	~offset)).asSymbol] };
+
+	[~bufTri, ~bufSin].flop.do { |buf|
+		[
+			Synth(\playBuf_1chBuf, [buf: buf[0], pan: -0.3, amp: 0.5]),
+			Synth(\playBuf_1chBuf, [buf: buf[1], pan: 0.3, amp: 1])
+		];
+		0.2.wait
+	}
+}
+)
+::
+
+subsubsection:: Event (Hierarchical Buffer Event)
+
+code::
+(
+~loadMonoBuffersToDict = { |path|
+	var dict = ();
+	var entries = (path +/+ "*").pathMatch;
+	entries.do { |subPath|
+		var symName = subPath.basename.splitext[0].asSymbol;
+		if (File.type(subPath) == \directory) {
+			var subDict = ~loadMonoBuffersToDict.(subPath);
+			if (subDict.notEmpty) {
+				dict[symName] = subDict;
+			}
+		} {
+			if (["wav", "aif", "aiff", "flac"].includesEqual(subPath.extension.toLower)) {
+				dict[symName] = Buffer.readChannel(s, subPath, 0, -1, [0]);
+			}
+		}
+	};
+	dict
+};
+s.waitForBoot {
+	SynthDef(\playBuf_1chBuf, { |buf, out = 0, pan = 0, amp = 0.1|
+		var sig = PlayBuf.ar(1, buf, BufRateScale.kr(buf), doneAction: Done.freeSelf);
+		sig = Pan2.ar(sig, pan, amp);
+		OffsetOut.ar(out, sig)
+	}).add;
+
+	~rootPath = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+	~bufferDic = ~loadMonoBuffersToDict.(~rootPath);
+
+	s.sync;
+
+	~invention_4_BWV775_motif = [0, 2, 3, 5, 7, 8, -1, 8, 7, 5, 3, 2, 3];
+	~offset = 62;
+
+	~bufTri = ~invention_4_BWV775_motif.collect { |note| ~bufferDic[\triangle][(\tPad ++ (note +
+	~offset)).asSymbol] };
+	~bufSin = ~invention_4_BWV775_motif.collect { |note| ~bufferDic[\sine][(\sPerc ++ (note +
+	~offset)).asSymbol] };
+
+	[~bufTri, ~bufSin].flop.do { |buf|
+		(
+			instrument: \playBuf_1chBuf,
+			buf: buf[0],
+			dur: 0.2,
+			pan: -0.5,
+			amp: 0.5
+		).play;
+		(
+			instrument: \playBuf_1chBuf,
+			buf: buf[1],
+			dur: 0.2,
+			pan: 0.5,
+			amp: 1
+		).play;
+		0.2.wait
+	}
+}
+)
+::
+
+subsubsection:: Pattern: Pbind (Hierarchical Buffer Event)
+
+code::
+(
+~loadMonoBuffersToDict = { |path|
+	var dict = ();
+	var entries = (path +/+ "*").pathMatch;
+	entries.do { |subPath|
+		var symName = subPath.basename.splitext[0].asSymbol;
+		if (File.type(subPath) == \directory) {
+			var subDict = ~loadMonoBuffersToDict.(subPath);
+			if (subDict.notEmpty) {
+				dict[symName] = subDict;
+			}
+		} {
+			if (["wav", "aif", "aiff", "flac"].includesEqual(subPath.extension.toLower)) {
+				dict[symName] = Buffer.readChannel(s, subPath, 0, -1, [0]);
+			}
+		}
+	};
+	dict
+};
+
+s.waitForBoot {
+	SynthDef(\playBuf_1chBuf, { |buf, out = 0, pan = 0, amp = 0.1|
+		var sig = PlayBuf.ar(1, buf, BufRateScale.kr(buf), doneAction: Done.freeSelf);
+		sig = Pan2.ar(sig, pan, amp);
+		OffsetOut.ar(out, sig)
+	}).add;
+
+	~rootPath = Platform.userHomeDir +/+ "Downloads" +/+ "soundSamples";
+	~bufferDic = ~loadMonoBuffersToDict.(~rootPath);
+
+	s.sync;
+
+	~invention_4_BWV775_motif = [0, 2, 3, 5, 7, 8, -1, 8, 7, 5, 3, 2, 3];
+	~offset = 62;
+
+	~bufTri = ~invention_4_BWV775_motif.collect { |note| ~bufferDic[\triangle][(\tPad ++ (note +
+	~offset)).asSymbol] };
+	~bufSin = ~invention_4_BWV775_motif.collect { |note| ~bufferDic[\sine][(\sPerc ++ (note +
+	~offset)).asSymbol] };
+
+	Pbind(
+		\instrument, \playBuf_1chBuf,
+		\buf, Pseq(~bufTri, 1),
+		\dur, 0.2,
+		\pan, -0.3,
+		\amp, 0.5
+	).play;
+	Pbind(
+		\instrument, \playBuf_1chBuf,
+		\buf, Pseq(~bufSin, 1),
+		\dur, 0.2,
+		\pan, 0.3,
+		\amp, 1
+	).play;
+}
+)
+::
