@@ -125,7 +125,7 @@ HelpBrowser {
 			brokenUrl;
 		};
 
-		url = URI(urlString);
+		url = URI.tolerant(urlString);
 
 		rout = Routine {
 			try {
