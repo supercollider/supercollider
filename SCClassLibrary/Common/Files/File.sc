@@ -109,6 +109,10 @@ File : UnixFILE {
 		fileptr = nil;
 		openFiles.remove(this);
 	}
+	mtime {
+		_FileInstanceMTime
+		^this.primitiveFailed
+	}
 	length { // returns the length of the file
 		_FileLength;
 		^this.primitiveFailed;
