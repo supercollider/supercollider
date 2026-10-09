@@ -9,7 +9,7 @@ assignees: ''
 
 <!-- For information about contributing see: https://github.com/supercollider/supercollider/wiki/Contributing-directory -->
 <!-- Please check there isn't already an issue on this topic. -->
-<!-- Please don't use AI for any communication, see https://github.com/supercollider/supercollider/blob/develop/CODE_OF_CONDUCT.md#usage-of-ai-tools - If you have received any suggestions or possible fixes from an LLM, do not paste them directly into the issue description; instead feel free to add them in the details block below. If the output is very long, consider attaching it as a text file. In either case, the LLM output should only be complementary and not a substitute for a concise and human-friendly issue description. ->
+<!-- Please don't use AI for any communication, see https://github.com/supercollider/supercollider/blob/develop/CODE_OF_CONDUCT.md#usage-of-ai-tools - If you have received any suggestions or possible fixes from an LLM, do not paste them directly into the issue description; instead feel free to add them in the details block below. If the output is very long, consider attaching it as a text file. In either case, the LLM output should only be complementary and not a substitute for a concise and human-friendly issue description. -->
 
 ## Environment
 
