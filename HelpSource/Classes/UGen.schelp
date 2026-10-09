@@ -22,6 +22,41 @@ code::
 { Blip.ar(Blip.kr(4, 5, 500, 60), 59, 0.1) }.play;
 ::
 
+subsection:: Default argument values: Floats vs. Integers
+
+link::Guides/SCIde#Method call assistance#SuperCollider-IDE code editor's method call assistance:: 
+and method signatures in the help documentation often 
+display default values as floating-point numbers, 
+even when the corresponding documentation describes or 
+implies the argument is an integer. For example:
+
+list::
+## The default values for code::loop::, code::doneAction::, and code::startPos:: appear as floats in 
+the link::Guides/SCIde#Method call assistance#method call assistance:::
+
+table::
+## image::UGen_Method-call-assistance.png#Method call assistance showing float defaults::
+::
+
+## The default values for code::loop::, code::doneAction::, 
+and code::startPos:: appear as floats in the method signature, 
+while the documentation explicitly describes code::loop:: and code::doneAction:: as integers, 
+and implies code::startPos:: is an integer (frame index):
+
+table::
+## image::UGen_Method-signiture-description.png#Method signature showing float defaults contrasted with integer-based documentation::
+::
+::
+
+This reflects the underlying architecture of the audio server (scsynth and supernova), 
+where all link::Classes/UGen:: arguments are treated as 32-bit floating-point values during signal processing.
+Unlike the client-side language (sclang), where link::Classes/Integer:: and link::Classes/Float:: are distinct classes,
+the server does not distinguish between them for signal inputs.
+
+Consequently, code::0:: and code::0.0:: are functionally equivalent for UGen arguments. 
+The integer notation in the documentation indicates the strong::intended usage:: (such as a frame index or boolean flag), 
+while the float notation in the IDE reflects the strong::actual data type:: processed by the server.
+
 subsection:: Documentation of mul and add arguments
 
 A great number of UGens take arguments for code::mul:: and code::add:: in their code::*ar:: and code::*kr:: methods. Because these arguments are so ubiquitous, they are not general documented in the individual help files.
