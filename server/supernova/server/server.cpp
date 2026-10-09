@@ -296,27 +296,29 @@ static bool set_realtime_priority(int thread_index) {
 /* utilities/hardware_topology.cpp */
 int get_cpu_for_thread_index(int thread_index);
 
+static bool pin_thread_to_cpu(int thread_index) {
+    auto cpu = get_cpu_for_thread_index(thread_index);
+#if DEBUG_THREAD_PINNING
+    std::cout << "pin thread " << thread_index << " to CPU " << cpu << std::endl;
+#endif
+#ifdef _WIN32
+    // nova::thread_set_affinity() is not implemented for Windows
+    return win32_thread_set_affinity(cpu);
+#else
+    return thread_set_affinity(cpu);
+#endif
+}
+
 void thread_init_functor::operator()(int thread_index) {
     set_daz_ftz();
-    name_current_thread(thread_index);
 
     if (rt)
         set_realtime_priority(thread_index);
 
-    if (pin) {
-        auto cpu = get_cpu_for_thread_index(thread_index);
-#if DEBUG_THREAD_PINNING
-        std::cout << "pin thread " << thread_index << " to CPU " << cpu << std::endl;
-#endif
-#ifdef _WIN32
-        // nova::thread_set_affinity() is not implemented for Windows
-        bool result = win32_thread_set_affinity(cpu);
-#else
-        bool result = thread_set_affinity(cpu);
-#endif
-        if (!result)
-            std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
-    }
+    if (pin && !pin_thread_to_cpu(thread_index))
+        std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
+
+    name_current_thread(thread_index);
 
     // initialize thread local buffers
     scfft_thread_init();
@@ -339,23 +341,23 @@ void synth_definition_deleter::dispose(synth_definition* ptr) {
         delete ptr;
 }
 
+void non_rt_functor::init_thread(void) {
+    set_daz_ftz();
+
+    if (instance->pin_threads && !pin_thread_to_cpu(0))
+        std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+
+    name_current_thread(0);
+
+    // initialize thread local buffers
+    scfft_thread_init();
+}
+
 void realtime_engine_functor::init_thread(void) {
     set_daz_ftz();
 
-    if (instance->pin_threads) {
-        auto cpu = get_cpu_for_thread_index(0);
-#if DEBUG_THREAD_PINNING
-        std::cout << "pin thread 0 to CPU " << cpu << std::endl;
-#endif
-#ifdef _WIN32
-        // nova::thread_set_affinity() is not implemented for Windows
-        bool result = win32_thread_set_affinity(cpu);
-#else
-        bool result = thread_set_affinity(cpu);
-#endif
-        if (!result)
-            std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
-    }
+    if (instance->pin_threads && !pin_thread_to_cpu(0))
+        std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
 #ifdef JACK_BACKEND
     set_realtime_priority(0);
 #endif

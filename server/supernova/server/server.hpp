@@ -192,6 +192,14 @@ public:
 
     void increment_logical_time(void) { sc_osc_handler::increment_logical_time(time_per_tick); }
 
+    /** update the logical time based on the current buffer counter. This is used in NRT synthesis
+     *  instead of \c increment_logical_time() to avoid cumulative errors. */
+    void update_logical_time(void) {
+        auto& world = sc_factory->world;
+        auto next = time_tag::from_seconds((double)world.mBufCounter * world.mBufLength / world.mSampleRate);
+        set_last_now(now, next);
+    }
+
     void set_last_now(time_tag const& lasts, time_tag const& nows) { sc_osc_handler::set_last_now(lasts, nows); }
 
     void compensate_latency(void) {
@@ -220,7 +228,7 @@ public:
 private:
     void perform_node_add(server_node* node, node_position_constraint const& constraints, bool update_dsp_queue);
     void finalize_node(server_node& node);
-    std::atomic<bool> quit_requested_ = { false };
+    std::atomic<bool> quit_requested_ { false };
     bool dsp_queue_dirty = false;
 
     callback_interpreter<system_callback, false> system_interpreter; // rt to system thread
@@ -229,11 +237,9 @@ private:
 
 inline void run_scheduler_tick(void) {
     const int blocksize = sc_factory->world.mBufLength;
-    // FIXME/TODO
-    // server may have fewer input channels than sc_factory
-    const int input_channels = instance->audio_backend::get_input_count();
+    const int input_channels = sc_factory->world.mNumInputs;
     const int output_channels = sc_factory->world.mNumOutputs;
-    const int buf_counter = ++sc_factory->world.mBufCounter;
+    const int buf_counter = sc_factory->world.mBufCounter;
 
     /* touch all input buffers */
     for (int channel = 0; channel != input_channels; ++channel)
@@ -246,6 +252,8 @@ inline void run_scheduler_tick(void) {
         if (sc_factory->world.mAudioBusTouched[channel] != buf_counter)
             zerovec(sc_factory->world.mAudioBus + blocksize * channel, blocksize);
     }
+
+    sc_factory->world.mBufCounter++;
 }
 
 inline void realtime_engine_functor::sync_clock(void) {

@@ -54,14 +54,14 @@ class sndfile_backend : public detail::audio_backend_base<sample_type, float, bl
     static const size_t queue_size = 10 * 1024 * 1024; // 30 MB
 
 public:
-    sndfile_backend(void): read_frames(queue_size), write_frames(queue_size) {}
+    sndfile_backend(): read_frames(queue_size), write_frames(queue_size) {}
 
     ~sndfile_backend() {
         if (audio_is_active())
             deactivate_audio();
     }
 
-    size_t get_audio_blocksize(void) const { return block_size_; }
+    size_t get_audio_blocksize() const { return block_size_; }
 
     std::vector<sample_type> const& get_peaks() const { return max_peaks; }
 
@@ -75,7 +75,7 @@ public:
 
         if (!input_file_name.empty()) {
             input_file = makeSndfileHandle(input_file_name.c_str(), SFM_READ);
-            if (input_file.rawHandle() == nullptr)
+            if (!input_file)
                 throw std::runtime_error(std::string("input file: ") + input_file.strError());
 
             if (input_file.samplerate() != samplerate)
@@ -83,12 +83,12 @@ public:
 
             input_channels = input_file.channels();
             super::input_samples.resize(input_channels);
+            total_frames_read = 0;
         } else
             input_channels = 0;
-        read_position = 0;
 
         output_file = makeSndfileHandle(output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate);
-        if (output_file.rawHandle() == nullptr)
+        if (!output_file)
             throw std::runtime_error(std::string("output file: ") + output_file.strError());
 
         output_file.command(SFC_SET_CLIPPING, nullptr, SF_TRUE);
@@ -98,40 +98,37 @@ public:
         temp_buffer.reset(calloc_aligned<float>(std::max(input_channels, output_channels) * block_size));
     }
 
-    void close_client(void) {
+    void close_client() {
         output_file.writeSync();
         input_file = output_file = SndfileHandle();
     }
 
-    bool audio_is_opened(void) { return output_file; }
+    bool audio_is_opened() const { return output_file; }
 
-    bool audio_is_active(void) { return running.load(std::memory_order_acquire); }
+    bool audio_is_active() const { return running.load(std::memory_order_acquire); }
 
-    void activate_audio(void) {
+    void activate_audio() {
         assert(running.load() == false);
 
         running.store(true);
 
         if (input_file) {
-            reader_running.store(true);
             reader_thread = std::thread(std::bind(&sndfile_backend::sndfile_read_thread, this));
         }
 
-        writer_running.store(true);
         writer_thread = std::thread(std::bind(&sndfile_backend::sndfile_write_thread, this));
     }
 
-    void deactivate_audio(void) {
+    void deactivate_audio() {
         assert(running.load() == true);
 
+        /* notify and join threads */
         running.store(false);
 
-        if (input_file) {
-            reader_running.store(false);
+        if (reader_thread.joinable()) {
             reader_thread.join();
         }
 
-        writer_running.store(false);
         write_semaphore.post();
         writer_thread.join();
     }
@@ -139,113 +136,112 @@ public:
 private:
     /* read input fifo from the rt context */
     void read_input_buffers(size_t frames_per_tick) {
-        if (reader_running.load(std::memory_order_acquire)) {
-            const size_t total_samples = input_channels * frames_per_tick;
-            size_t remaining = total_samples;
+        assert(input_file);
 
-            read_semaphore.wait();
+        if (total_frames_read < input_file.frames()) {
+            size_t remaining_samples = input_channels * frames_per_tick;
+            sample_type* buffer = temp_buffer.get();
+
             do {
-                remaining -= read_frames.pop(temp_buffer.get(), remaining);
+                if (read_frames.read_available() == 0)
+                    read_semaphore.wait();
 
-                if (unlikely(read_frames.empty() && !reader_running.load(std::memory_order_acquire))) {
+                const size_t dequeued = read_frames.pop(buffer, remaining_samples);
+                remaining_samples -= dequeued;
+                buffer += dequeued;
+                total_frames_read += dequeued / input_channels;
+
+                if (unlikely(total_frames_read >= input_file.frames())) {
                     /* at the end, we are not able to read a full sample block, clear the final parts */
-                    const size_t last_frame = (total_samples - remaining) / input_channels;
-                    const size_t remaining_per_channel = remaining / input_channels;
-                    assert(remaining % input_channels == 0);
-                    assert(remaining_per_channel % input_channels == 0);
-
-                    for (uint16_t channel = 0; channel != input_channels; ++channel)
-                        zerovec(super::input_samples[channel].get() + last_frame, remaining_per_channel);
-
+                    zerovec(buffer, remaining_samples);
                     break;
                 }
-            } while (remaining);
+            } while (remaining_samples);
 
-            const size_t frames = (total_samples - remaining) / input_channels;
-            for (size_t frame = 0; frame != frames; ++frame) {
-                for (uint16_t channel = 0; channel != input_channels; ++channel)
+            // interleaved -> deinterleaved
+            for (size_t frame = 0; frame < frames_per_tick; ++frame) {
+                for (size_t channel = 0; channel < input_channels; ++channel)
                     super::input_samples[channel].get()[frame] = temp_buffer.get()[frame * input_channels + channel];
             }
-        } else
+        } else {
             super::clear_inputs(frames_per_tick);
+        }
     }
 
     void sndfile_read_thread(void) {
         nova::name_thread("sndfile reader");
         assert(input_file);
 
-        const size_t frames_per_tick = get_audio_blocksize();
+        const size_t max_frames_to_read = get_audio_blocksize() * 64;
+        const size_t read_buffer_size = input_channels * max_frames_to_read;
+        aligned_storage_ptr<sample_type> data_to_read(read_buffer_size);
+        size_t read_pos = 0;
 
-        // something like autobuffer might be good
-        std::vector<sample_type, boost::alignment::aligned_allocator<sample_type, 64>> data_to_read(
-            input_channels * frames_per_tick, 0.f);
+        while (running.load(std::memory_order_acquire)) {
+            const size_t remaining_frames = input_file.frames() - read_pos;
+            const size_t frames_to_read = std::min<size_t>(remaining_frames, max_frames_to_read);
 
-        for (;;) {
-            if (unlikely(reader_running.load(std::memory_order_acquire) == false))
-                return;
+            const size_t frames_read = input_file.readf(data_to_read.get(), frames_to_read);
+            if (frames_read != frames_to_read)
+                throw std::runtime_error(std::string("sndfile read failed: ") + output_file.strError());
+            read_pos += frames_read;
 
-            if (read_position < (size_t)input_file.frames()) {
-                size_t frames = input_file.frames() - read_position;
-                if (frames > frames_per_tick)
-                    frames = frames_per_tick;
+            const sample_type* buffer = data_to_read.get();
+            size_t remaining_samples = input_channels * frames_read;
 
-                input_file.readf(data_to_read.data(), frames);
-                read_position += frames;
+            do {
+                size_t enqueued = read_frames.push(buffer, remaining_samples);
+                remaining_samples -= enqueued;
+                buffer += enqueued;
+                if (enqueued)
+                    read_semaphore.post();
+                else /* instead of spinning, sleep for a short time. */
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            } while (remaining_samples && running.load(std::memory_order_acquire));
 
-                const size_t item_to_enqueue = input_channels * frames;
-                size_t remaining = item_to_enqueue;
-
-                do {
-                    remaining -= read_frames.push(data_to_read.data(), remaining);
-                } while (remaining);
-                read_semaphore.post();
-            } else
-                reader_running.store(false, std::memory_order_release);
+            if (read_pos >= (size_t)input_file.frames())
+                break; /* EOF */
         }
     }
 
     /* write output fifo from rt context */
     void write_output_buffers(size_t frames_per_tick) {
-        for (size_t frame = 0; frame != frames_per_tick; ++frame) {
-            for (uint16_t channel = 0; channel != output_channels; ++channel)
+        // deinterleaved -> interleaved
+        for (size_t frame = 0; frame < frames_per_tick; ++frame) {
+            for (size_t channel = 0; channel < output_channels; ++channel)
                 temp_buffer.get()[frame * output_channels + channel] = super::output_samples[channel].get()[frame];
         }
 
-        const size_t total_samples = output_channels * frames_per_tick;
-        sample_type* buffer = temp_buffer.get();
-
-        size_t count = total_samples;
+        size_t remaining_samples = output_channels * frames_per_tick;
+        const sample_type* buffer = temp_buffer.get();
 
         do {
-            size_t consumed = write_frames.push(buffer, count);
-            count -= consumed;
-            buffer += consumed;
-            write_semaphore.post();
-            if (!consumed)
+            size_t enqueued = write_frames.push(buffer, remaining_samples);
+            remaining_samples -= enqueued;
+            buffer += enqueued;
+            if (enqueued)
+                write_semaphore.post();
+            else
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        } while (count);
+        } while (remaining_samples);
     }
 
     void sndfile_write_thread(void) {
         nova::name_thread("sndfile writer");
+        assert(output_file);
 
-        const size_t frames_per_tick = get_audio_blocksize();
-        const size_t deque_per_tick = output_channels * frames_per_tick * 64;
-        aligned_storage_ptr<sample_type> data_to_write(deque_per_tick);
+        const size_t write_buffer_size = output_channels * get_audio_blocksize() * 64;
+        aligned_storage_ptr<sample_type> data_to_write(write_buffer_size);
 
-        size_t pending_samples = 0;
-
-        for (;;) {
+        while (running.load(std::memory_order_acquire)) {
             write_semaphore.wait();
-            poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples);
-            if (unlikely(writer_running.load(std::memory_order_acquire) == false))
-                break;
+            poll_writer_queue(data_to_write.get(), write_buffer_size);
         }
-
-        while (poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples)) {}
+        /* flush queue */
+        while (poll_writer_queue(data_to_write.get(), write_buffer_size)) {}
     }
 
-    bool poll_writer_queue(sample_type* data_to_write, const size_t buffer_samples, size_t& pending_samples) {
+    bool poll_writer_queue(sample_type* data_to_write, const size_t buffer_samples) {
         bool consumed_item = false;
         for (;;) {
             const size_t available_samples = write_frames.read_available();
@@ -264,13 +260,12 @@ private:
 
             consumed_item = true;
 
-            const sf_count_t written_frames = output_file.writef(data_to_write, frames_to_read);
-            assert(frames_to_read == written_frames);
-            if (written_frames == -1)
+            const sf_count_t frames_written = output_file.writef(data_to_write, frames_to_read);
+            if (frames_written != frames_to_read)
                 throw std::runtime_error(std::string("sndfile write failed: ") + output_file.strError());
 
-            for (size_t frame = 0; frame != frames_to_read; ++frame) {
-                for (size_t channel = 0; channel != output_channels; ++channel) {
+            for (size_t frame = 0; frame < frames_to_read; ++frame) {
+                for (size_t channel = 0; channel < output_channels; ++channel) {
                     const sample_type current_sample = data_to_write[frame * output_channels + channel];
 
                     sample_type current_peak = max_peaks[channel];
@@ -294,23 +289,23 @@ public:
     }
 
     void audio_fn(size_t frames_per_tick) {
-        super::clear_outputs(frames_per_tick);
         read_input_buffers(frames_per_tick);
         audio_fn_noinput(frames_per_tick);
     }
 
 private:
     SndfileHandle input_file, output_file;
-    std::size_t read_position;
-    int block_size_;
+    size_t total_frames_read = 0;
+    int block_size_ = 0;
     bool engine_initialized = false;
 
+    // tempary buffer for audio sample (de)interleaving
     aligned_storage_ptr<sample_type> temp_buffer;
 
     std::thread reader_thread, writer_thread;
     boost::lockfree::spsc_queue<sample_type> read_frames, write_frames;
     boost::sync::semaphore read_semaphore, write_semaphore;
-    std::atomic<bool> running { false }, reader_running { false }, writer_running { false };
+    std::atomic<bool> running { false };
     std::vector<sample_type> max_peaks;
 };
 

@@ -266,7 +266,10 @@ int scsynth_main(int argc, char** argv) {
             break;
         case 'S':
             checkNumArgs(2);
-            options.mPreferredSampleRate = (uint32)atof(argv[j + 1]);
+            // NOTE: ignore -S if the sample rate has already been
+            // provided via the -N option!
+            if (options.mRealTime)
+                options.mPreferredSampleRate = (uint32)atof(argv[j + 1]);
             break;
         case 'D':
             checkNumArgs(2);

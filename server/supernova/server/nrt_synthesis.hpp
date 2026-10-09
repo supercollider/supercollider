@@ -28,7 +28,6 @@
 #include "server_args.hpp"
 #include "server.hpp"
 #include "audio_backend/sndfile_backend.hpp"
-#include "sc/sc_plugin_interface.hpp"
 
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "../../include/plugin_interface/SC_InlineUnaryOp.h"
@@ -36,23 +35,22 @@
 namespace nova {
 
 struct non_rt_functor {
-    static inline void init_thread(void) { realtime_engine_functor::init_thread(); }
+    // implemented in server.cpp
+    static void init_thread(void);
 
     static inline void run_tick(void) {
         run_scheduler_tick();
-        instance->increment_logical_time();
+        instance->update_logical_time();
     }
 };
 
 struct non_realtime_synthesis_engine {
-    typedef std::string string;
-
     non_realtime_synthesis_engine(server_arguments const& args) {
         int format =
             headerFormatFromString(args.header_format.c_str()) | sampleFormatFromString(args.sample_format.c_str());
 
-        string input_file = args.input_file;
-        if (input_file == string("_"))
+        std::string input_file = args.input_file;
+        if (input_file == "_")
             input_file.clear();
 
         backend.open_client(input_file, args.output_file, args.samplerate, format, args.output_channels,
@@ -70,12 +68,21 @@ struct non_realtime_synthesis_engine {
 
     void prepare_backend(int blocksize, int input_channels, int output_channels) {
         std::vector<sample*> inputs, outputs;
-        for (int channel = 0; channel != input_channels; ++channel)
+
+        auto& world = sc_factory->world;
+        if (input_channels != world.mNumInputs) {
+            if (world.mNumInputs != input_channels) {
+                log_printf("WARNING: input file channels didn't match number of inputs specified in options.\n");
+                // bash to actual number of input channels
+                world.mNumInputs = input_channels;
+            }
+        }
+        for (int channel = 0; channel < input_channels; ++channel)
             inputs.push_back(sc_factory->world.mAudioBus + (blocksize * (output_channels + channel)));
 
         backend.input_mapping(inputs.begin(), inputs.end());
 
-        for (int channel = 0; channel != output_channels; ++channel)
+        for (int channel = 0; channel < output_channels; ++channel)
             outputs.push_back(sc_factory->world.mAudioBus + blocksize * channel);
 
         backend.output_mapping(outputs.begin(), outputs.end());
@@ -92,6 +99,7 @@ struct non_realtime_synthesis_engine {
         backend.activate_audio();
 
         auto start_time = steady_clock::now();
+        time_tag bundle_time;
 
         for (;;) {
             boost::endian::big_int32_t packet_size;
@@ -109,12 +117,15 @@ struct non_realtime_synthesis_engine {
                 break;
             }
 
-            time_tag bundle_time = instance->handle_bundle_nrt(packet_vector.data(), packet_size);
+            bundle_time = instance->handle_bundle_nrt(packet_vector.data(), packet_size);
 
             size_t seconds = bundle_time.get_secs();
             size_t nano_seconds = bundle_time.get_nanoseconds();
             log_printf("  Next OSC bundle: %zu.%09zu\n", seconds, nano_seconds);
 
+            // compute audio up to and excluding the control block that the current bundle timestamp
+            // falls into. This is because we first have to process all bundles for a given control
+            // block before we can compute audio for it.
             while (instance->next_time() < bundle_time) {
                 if (instance->quit_requested())
                     goto done;
@@ -126,18 +137,33 @@ struct non_realtime_synthesis_engine {
             }
         }
 
+        // finish the very last block, but only if the last bundle does not fall directly on a
+        // block boundary. For example, if the last bundle is scheduled for 1.0 seconds @ 48 kHz,
+        // we do not want to compute samples 48000-48064, instead we want the sound file to be
+        // exactly 1 second long.
+        if (instance->now < bundle_time) {
+            if (has_inputs)
+                backend.audio_fn(samples_per_block);
+            else
+                backend.audio_fn_noinput(samples_per_block);
+        }
+
     done:
         backend.deactivate_audio();
+
         auto end_time = steady_clock::now();
         std::string elapsed_string = format_duration(end_time - start_time);
-
         log_printf("\nNon-rt synthesis finished in %s\n", elapsed_string.c_str());
 
-        auto peaks = backend.get_peaks();
+        auto total_time = instance->current_time().to_seconds();
+        auto total_duration = std::chrono::duration<double>(total_time);
+        log_printf("Output file duration: %s\n", format_duration(total_duration).c_str());
+
         log_printf("Peak summary:\n");
+        auto peaks = backend.get_peaks();
         for (size_t channel = 0; channel != peaks.size(); ++channel) {
             auto amplitude = peaks[channel];
-            log_printf("  Channel %zu: %gdB\n", channel, sc_ampdb(amplitude));
+            log_printf("  Channel %zu: %.3fdB\n", channel, sc_ampdb(amplitude));
         }
     }
 
