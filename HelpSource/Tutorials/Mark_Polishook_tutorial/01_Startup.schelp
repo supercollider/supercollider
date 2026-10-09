@@ -36,7 +36,7 @@ booting 57110
 SC_AudioDriver: numSamples=512, sampleRate=44100.000000
 start   UseSeparateIO?: 0
 PublishPortToRendezvous 0 57110
-SuperCollider 3 server ready..
+SuperCollider 3 server (scsynth) ready..
 notification is on
 ::
 
