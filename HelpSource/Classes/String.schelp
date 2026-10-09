@@ -246,25 +246,25 @@ z.class.postln;
 )
 ::
 
-method::asInteger 
-Returns an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0. 
-code:: 
+method::asInteger
+Returns an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0.
+code::
 "4".asInteger
-:: 
-The method code::.asInteger:: does not understand scientific notation (e.g., teletype::2e3:: for teletype::2000::), 
-and simply ignores all characters in the string after its first nonnumeric character 
-(excepting signs teletype::+,-:: at the beginning of the string). 
+::
+The method code::.asInteger:: does not understand scientific notation (e.g., teletype::2e3:: for teletype::2000::),
+and simply ignores all characters in the string after its first nonnumeric character
+(excepting signs teletype::+,-:: at the beginning of the string).
 If you use scientific notation, use link::#-asFloat:: instead.
 
 code::
 "2e3".asInteger // -> 2
 ::
 
-method::asFloat 
-Returns a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0. 
-code:: 
+method::asFloat
+Returns a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0.
+code::
 "4.3".asFloat
-:: 
+::
 The method code::.asFloat:: understands scientific notation (e.g., teletype::2e3:: for teletype::2000::, teletype::2e-3:: for teletype::0.002::),
 and accepts uppercase teletype::E:: and lowercase teletype::e::.
 By contrast, the method link::#-asInteger:: does emphasis::not:: accept scientific notation.
@@ -371,6 +371,8 @@ subsection:: Regular expressions
 
 The String class provides access to the boost library's regular expression functions. Boost's default uses Perl settings. (Currently, there is no hook to override the regex style.) Syntax details may be found at link::https://www.boost.org/doc/libs/1_69_0/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html::.
 
+Regular expressions in SuperCollider use greedy matching by default. This means quantifiers like code::*:: and code::+:: will match as much text as possible while still allowing the overall pattern to succeed. This can lead to unexpected results when working with multi-line strings. See link::#Greedy_vs_Non-Greedy::.
+
 Note carefully the argument order:
 
 List::
@@ -428,6 +430,90 @@ code::
 // remove all capital letter unless at the start of a word
 "HelLO worLD! I weNT tO Paris yeSTErDay.".replaceRegexp("(\\\S)(\\\S*)", "$1\\\L$2")
 -> Hello world! I went to Paris yesterday.
+::
+
+discussion::
+strong::Greedy vs. Non-Greedy Matching::: anchor::Greedy_vs_Non-Greedy::
+
+To use non-greedy (or lazy) matching, append a code::?:: to the quantifier. For example, code::*?:: will match zero or more occurrences, but as few as possible.
+
+strong::Examples::
+
+code::
+(
+~code = "
+Line 2: remove // this comment
+Line 3: keep   // this
+"
+)
+::
+
+This returns:
+
+teletype::
+->
+Line 2: remove // this comment
+Line 3: keep   // this
+
+::
+
+Now, we try to remove the comments using two different patterns:
+
+list::
+## Greedy matching: code::"\/\/.*$":: matches from the first code::\/\/:: to the end of the string.
+code::
+~code.replaceRegexp("\/\/.*$", "")
+::
+
+returns:
+
+teletype::
+->
+Line 2: remove
+::
+
+## Non-greedy matching: code::"\/\/.*?$":: matches from the first code::\/\/:: to the end of the line.
+code::
+~code.replaceRegexp("\/\/.*?$", "")
+::
+
+returns:
+
+teletype::
+->
+Line 2: remove
+Line 3: keep
+
+::
+::
+
+Another example: replacing the last word character at the end of each line.
+
+code::
+~code.replaceRegexp("\\w$", "_EoL");
+::
+
+returns:
+
+teletype::
+->
+Line 2: remove // this commen_EoL
+Line 3: keep   // thi_EoL
+
+::
+
+And using a greedy pattern to replace from code::\/\/:: to the last word character at the end of the string:
+
+code::
+~code.replaceRegexp("\/\/.*\\w$", "_EoL");
+::
+
+returns:
+
+teletype::
+->
+Line 2: remove _EoL
+
 ::
 
 method::findRegexp
