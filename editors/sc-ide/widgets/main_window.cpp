@@ -1515,8 +1515,7 @@ void MainWindow::doBugReport() {
 
     if (useGitHubBugReport) {
         QString url("https://github.com/supercollider/supercollider/issues/new");
-        QString formData("?labels=bug&body=Bug%20description%3A%0A%0ASteps%20to%20reproduce%3A%0A1.%0A2.%0A3.%0A%"
-                         "0AActual%20result%3A%0A%0AExpected%20result%3A%0A");
+        QString formData("?template=bug_report.md");
         QDesktopServices::openUrl(url + formData);
     } else {
         QDesktopServices::openUrl(QStringLiteral("https://gitreports.com/issue/supercollider/supercollider"));
