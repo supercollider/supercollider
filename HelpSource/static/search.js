@@ -459,7 +459,7 @@ function doSearch() {
                 return strCmp(a,b);
             })]
         );
-        var order = { Classes:1, Reference:2, Overviews:3, Guides:4, Tutorials:5 };
+        var order = { Overviews:1, Reference:2, Guides:3, Tutorials:4, Classes:5 };
         docs = tmp.sort(function(a,b) {
             a = order[a[0]] || 10;
             b = order[b[0]] || 10;
