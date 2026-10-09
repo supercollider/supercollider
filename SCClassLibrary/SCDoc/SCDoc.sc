@@ -986,7 +986,7 @@ URI {
 		};
 
 		uri = this.new(string);
-		if (uri.scheme.isNil) {
+		if (uri.scheme.isNil && string.notNil) {
 			uri.scheme = "file";
 			if (uri.authority.isNil) { uri.authority = "" }
 		};

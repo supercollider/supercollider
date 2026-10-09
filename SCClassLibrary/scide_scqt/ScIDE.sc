@@ -323,7 +323,7 @@ ScIDE {
 			brokenUrl;
 		};
 
-		url = URI(urlString);
+		url = URI.tolerant(urlString);
 
 		if (docRoutine.notNil) { docRoutine.stop };
 		docRoutine = Routine {
