@@ -124,22 +124,23 @@ sudo ldconfig
 ### Step 6: Set up JACK
 
 ```shell
-echo /usr/bin/jackd -P75 -p16 -dalsa -dhw:0 -p1024 -n3 > ~/.jackdrc
+echo /usr/bin/jackd -P75 -p16 -dalsa -dhw:0 -p1024 -n3 > ~/.jackdrc # supply the right number or name for -dhw:
 sudo usermod -aG audio $USER
 sudo reboot
 ```
+The flag `dhw:` needs a value—either a name or a number—targeting your audio device. Run `aplay -l` to list available devices by number and name. On a Pi 4, there will be two devices for HDMI sound and one device (with 8 subdevices) for the built-in headphone jack. 
 
-Change to `-dhw:1` or `-dhw:2` for USB sound cards. `aplay -l` will list available devices.
+If you are using a USB sound card or an audio HAT, that device will have its own number (on a Pi 4, probably 3). You *could* use that number for the `-dhw:` flag. But because device numbers can change at boot time, the best practice is to use the *device name*, which will be listed immediately following the colon after its number in the output of `aplay -l`. If you need to target a subdevice by number, the syntax is `-dhw:x,y`, where `x` is the device and `y` is the subdevice.
 
-For GUI builds, another way to set up and start jack is to open a terminal and type `qjackctl`. Click 'setup' to
-select a sound card and set periods to 3 (recommended). Then start jack before the SC IDE by clicking the play icon.
+Alternatively, if you have a GUI, you can set up and start JACK by opening a terminal and typing `qjackctl`. In the GUI that opens up, click 'setup' to
+select a sound card and set periods to 3 (recommended). Then start JACK before the SC IDE by clicking the 'play' icon.
 
 ## Usage
 
 To use SuperCollider (GUI), open SuperCollider IDE from the Applications Menu or open a terminal and execute `scide`.  
 For GUI-less execute `sclang` from a terminal.
 
-When you boot the server jack should start automatically with the settings in `~/.jackdrc`.
+When you boot the server, JACK should start automatically with the settings in `~/.jackdrc`.
 
 **Done!** See below for other usage notes and tips.
 
