@@ -268,7 +268,7 @@ subsection:: \phrase
 
 instead of playing a single synth from a link::Classes/SynthDef:: with ~instrument, it looks up a link::Classes/Pdef:: and plays a cluster of sounds.
 
-subsection::Some event types are used internally, e.g.:
+subsection::Some event types are used internally
 
 subsection:: \monoNote
 
