@@ -99,6 +99,12 @@ struct RecordBuf : public Unit {
     float** mIn;
 };
 
+struct BufIn : public Unit {
+    float m_fbufnum;
+    float m_failedBufNum;
+    SndBuf* m_buf;
+};
+
 struct Pitch : public Unit {
     float m_values[kMAXMEDIANSIZE];
     int m_ages[kMAXMEDIANSIZE];
@@ -278,6 +284,9 @@ void RecordBuf_Ctor(RecordBuf* unit);
 void RecordBuf_Dtor(RecordBuf* unit);
 void RecordBuf_next(RecordBuf* unit, int inNumSamples);
 void RecordBuf_next_10(RecordBuf* unit, int inNumSamples);
+
+void BufIn_Ctor(BufIn* unit);
+void BufIn_next(BufIn* unit, int inNumSamples);
 
 void Pitch_Ctor(Pitch* unit);
 void Pitch_next_a(Pitch* unit, int inNumSamples);
@@ -1599,6 +1608,59 @@ void RecordBuf_next_10(RecordBuf* unit, int inNumSamples) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void BufIn_Ctor(BufIn* unit) {
+    unit->m_fbufnum = -1e9f;
+    unit->m_failedBufNum = -1e9f;
+
+    SETCALC(BufIn_next);
+    BufIn_next(unit, 1);
+}
+
+void BufIn_next(BufIn* unit, int inNumSamples) {
+    GET_BUF_SHARED
+    const uint32 numOutputs = unit->mNumOutputs;
+    const uint32 bufSize = buf->samples;
+    int channel = static_cast<int>(ZIN0(1));
+    int offset = static_cast<int>(ZIN0(2));
+    if (offset < 0)
+        offset = 0;
+
+    if (!bufData) {
+        if (unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) {
+            Print("BufIn: no buffer data\n");
+            unit->m_failedBufNum = fbufnum;
+        }
+        ClearUnitOutputs(unit, inNumSamples);
+        return;
+    }
+
+    if (channel > buf->channels) {
+        Print("BufIn: requested channel %d, but buffer %d has only %d channels\n", channel, static_cast<int>(fbufnum),
+              buf->channels);
+        ClearUnitOutputs(unit, inNumSamples);
+        return;
+    }
+
+    // channels < 0: output all channels interleaved
+    // channels >= 0: output only selected channel
+    const uint32 channelHop = channel < 0 ? 1 : buf->channels;
+
+    uint32 bufSamp = (offset * buf->channels) + (channel < 0 ? 0 : channel);
+    uint32 outCh = 0;
+    for (; outCh < numOutputs && bufSamp < bufSize; outCh++) {
+        const float val = bufData[bufSamp];
+        for (uint32 outSamp = 0; outSamp < inNumSamples; ++outSamp)
+            OUT(outCh)[outSamp] = val;
+        bufSamp += channelHop;
+    }
+
+    // zero eventual extra channels
+    for (; outCh < numOutputs; outCh++) {
+        for (uint32 outSamp = 0; outSamp < inNumSamples; ++outSamp)
+            OUT(outCh)[outSamp] = 0;
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -6928,6 +6990,7 @@ PluginLoad(Delay) {
     DefineDtorUnit(RecordBuf);
     DefineSimpleUnit(BufRd);
     DefineSimpleUnit(BufWr);
+    DefineSimpleUnit(BufIn);
     DefineDtorUnit(Pitch);
 
     DefineSimpleUnit(BufDelayN);
