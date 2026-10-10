@@ -53,7 +53,7 @@ SynthDef("help-OffsetOut",
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);
 		OffsetOut.ar(out, SinOsc.ar(freq, 0, env))
-}).send(s);
+}).add;
 
 SynthDef("help-Out",
 	{ |out = 0, freq = 440, dur = 0.05|
@@ -61,7 +61,7 @@ SynthDef("help-Out",
 		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);
 		// compare to Out:
 		Out.ar(out, SinOsc.ar(freq, 0, env))
-}).send(s);
+}).add;
 )
 
 

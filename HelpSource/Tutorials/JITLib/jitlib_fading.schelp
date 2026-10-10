@@ -29,7 +29,7 @@ p = ProxySpace.push(s.boot);
 
 // note that you can use this functionality also when using ProxySynthDef directly:
 
-d = ProxySynthDef("test", { arg freq=440; SinOsc.ar(freq) }).send(s);
+d = ProxySynthDef("test", { arg freq=440; SinOsc.ar(freq) }).add;
 s.sendMsg("/s_new", "test", 1980, 1, 1, \freq, 340);
 s.sendMsg("/n_set", 1980, \freq, 240);
 s.sendMsg("/n_set", 1980, \fadeTime, 4);
@@ -100,7 +100,7 @@ code::
 (
 SynthDef("test", { arg gate=1, out;
 	Out.ar(out, Formant.ar(300, 200, 10) * EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf))
-}).send(s);
+}).add;
 )
 
 // you can also provide a fadeTime arg, which is set by the proxy:
@@ -110,7 +110,7 @@ SynthDef("test", { arg gate=1, out, fadeTime=1;
 		Formant.ar(Rand(20,40), 600, 10, 0.2)
 		* EnvGen.kr(Env.asr(fadeTime,1,fadeTime), gate, doneAction: Done.freeSelf)
 	)
-}).send(s);
+}).add;
 )
 
 ~out = \test;
@@ -129,7 +129,7 @@ SynthDef("test", { arg gate=1, out;
 		Formant.ar(Rand(20,40), 600, 10, 0.6)
 		* EnvGen.kr(Env.perc, gate, doneAction: Done.freeSelf)
 	)
-}).send(s);
+}).add;
 )
 
 ~out = \test;
@@ -144,7 +144,7 @@ code::
 )
 ~out.group.set(\t_trig, 1); //end it
 
-~out.send; //start a new synth
+~out.add; //start a new synth
 ~out.group.set(\t_trig, 1); //end it again
 
 

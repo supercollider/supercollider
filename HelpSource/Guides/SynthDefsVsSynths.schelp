@@ -4,72 +4,233 @@ categories:: Language>SC3 vs SC2
 
 In SC2 code::Synth.play:: was the standard way to compile a emphasis::ugenGraphFunc:: and play it. Each time you executed code::Synth.play::, or Spawned a new event, that function was compiled anew. SC3 on the other hand, makes use of what are called SynthDefs. A link::Classes/SynthDef:: takes a emphasis::ugenGraphFunc:: and compiles it to a kind of bytecode (sort of like Java bytecode) which can be understood by the server app. The server reads the link::Classes/SynthDef:: and creates a synth node based upon it.
 
-SynthDefs can be precompiled and saved to disk. Any def saved in the synthdefs/ directory (or in any directory set in the environment variable SC_SYNTHDEF_PATH) will be loaded into memory by a local link::Classes/Server:: when it is booted. If the def being used in a new link::Classes/Synth:: is already compiled and loaded, there is much less of a CPU spike when creating a new link::Classes/Synth:: than there was in SC2.
+link::Classes/SynthDef::s can be precompiled and saved to disk.
+Any link::Classes/SynthDef:: files saved in the synthdefs/ directory (or in any directory set in the environment variable SC_SYNTHDEF_PATH) will be loaded into memory by a local link::Classes/Server:: when it is booted. 
+If the link::Classes/SynthDef:: being used in a new link::Classes/Synth:: is already compiled and loaded, there is much less of a CPU spike when creating a new link::Classes/Synth:: than there was in SC2.
 
-SynthDefs can also be compiled and loaded into the link::Classes/Server:: without writing them to disk. This can be done while performing.
+link::Classes/SynthDef::s can also be compiled and loaded into the link::Classes/Server:: without writing them to disk. This can be done while performing.
 
-The downside of this is that precompiled SynthDefs lack some of the programmatic flexibility that was one of SC2's great strengths. Much of this flexibility is gained back however, through the ability to set and change arguments (which you build into your emphasis::ugenGraphFunc::), and through new UGens such as link::Classes/Rand:: and link::Classes/TRand::.
+The downside of this is that precompiled link::Classes/SynthDef::s lack some of the programmatic flexibility that was one of SC2's great strengths.
+Much of this flexibility is gained back however, through the ability to set and change arguments (which you build into your emphasis::ugenGraphFunc::), and through new UGens such as link::Classes/Rand:: and link::Classes/TRand::.
 
 When maximum flexibility is required, it is still possible to compile and send SynthDefs 'on the fly', albeit with SC2-like CPU spikes and a small amount of messaging latency.
 
-It is important to understand that creating and sending SynthDefs is emphasis::asynchronous::. This means that it is impossible to determine precisely how long it will take to compile and send a link::Classes/SynthDef::, and thus when it will be available for creating new Synths. A simple way around this is to execute code in blocks, selecting them one at a time. More complicated is to use completion messages. code::SynthDef.play:: takes care of this for you, and returns a link::Classes/Synth:: object which you can then manipulate. See the example below
+It is important to understand that creating and sending SynthDefs is emphasis::asynchronous::. This means that it is impossible to determine precisely how long it will take to compile and send a link::Classes/SynthDef::, and thus when it will be available for creating new Synths. A simple way around this is to execute code in blocks, selecting them one at a time. More complicated is to use completion messages. code::SynthDef.play:: takes care of this for you, and returns a link::Classes/Synth:: object which you can then manipulate. See the example below.
 
-Another important distinction is between Synth in SC2 and link::Classes/Synth:: in SC3. The latter is a client-side object which represents a synth node on the server. Although it has some of the same methods, it does not function in the same way. There is no top level Synth in SC3, within which all scheduling and creation of other Synths occurs. There are only link::Classes/Synth:: objects which represent synth nodes on the server. These can be created at any time, within any scope.
+Another important distinction is between Synth in SC2 and link::Classes/Synth:: in SC3. The latter is a client-side object which represents a synth node on the server. Although it has some of the same methods, it does not function in the same way. There is no top level link::Classes/Synth:: in SC3, within which all scheduling and creation of other link::Classes/Synth::s occurs. There are only link::Classes/Synth:: objects which represent synth nodes on the server. These can be created at any time, within any scope.
 
 examples::
+
+subsection:: SynthDef created by .writeDefFile method
+
+Compiles a link::Classes/SynthDef:: and write it to disk:
 
 code::
 s.boot;
 
-// Compile a SynthDef and write it to disk
 (
-SynthDef("Help-SynthDef", { arg out = 0;
-	Out.ar(out, PinkNoise.ar(0.1))
+SynthDef(\synthDef_writeDefFile, { arg out = 0;
+    Out.ar(out, PinkNoise.ar(0.1) ! 2)
 }).writeDefFile;
 )
+::
 
-// Compile, write, and load it to the server
+link::Classes/SynthDef#-writeDefFile:: does not transmit the link::Classes/SynthDef:: to the server.
+Therefore, creating a link::Classes/Synth:: from this link::Classes/SynthDef:: will not produce sound, even if the server is already booted:
+
+code::
+Synth.new(\synthDef_writeDefFile) // Synth(\synthDef_writeDefFile)
+::
+
+Furthermore, the sclang interpreter will report an error:
+
+teletype::
+-> Synth('synthDef_writeDefFile' : 1001)
+*** ERROR: SynthDef synthDef_writeDefFile not found
+FAILURE IN SERVER /s_new SynthDef not found
+::
+
+To use this, the server should be (re)booted after defining it.
+However, redefining that link::Classes/SynthDef:: is not required, as explained in link::Classes/SynthDef#-writeDefFile:::
+
+code::
+s.reboot
+
+Synth(\synthDef_writeDefFile) // it now works!
+
+// To free the synth above, press . key while holding cmd/ctrl key.
+::
+
+subsection:: SynthDef created by .load method
+
+Compiles, writes, and loads a link::Classes/SynthDef:: to the server:
+
+code::
 (
-SynthDef("Help-SynthDef", { arg out = 0;
-	Out.ar(out, PinkNoise.ar(0.1))
+SynthDef(\synthDef_load, { |out = 0|
+	var signal = PinkNoise.ar(0.1) * Env.perc.ar(Done.freeSelf);
+    Out.ar(out, signal ! 2)
 }).load(s);
 )
+::
+Creating a link::Classes/Synth:: from this link::Classes/SynthDef:: will produce sound after it has finished loading:
 
-// Load it to the server without writing to disk
+code::
+Synth(\synthDef_load)
+::
+
+Like link::Classes/SynthDef::s created by the link::Classes/SynthDef#-writeDefFile:: method, the link::Classes/SynthDef::s created by the link::Classes/SynthDef#-load:: method do not need to be defined again.
+
+note::
+See link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind#Making SynthDefs Work with Pbind: Prefer .add and .store over .send and .load#Making SynthDefs Work with Pbind: Prefer .add and .store over .send and .load:: in link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind::.
+::
+
+subsection:: SynthDef created by .send method
+
+Loads a link::Classes/SynthDef:: to the server without writing to disk.
+
+code::
 (
-SynthDef("Help-SynthDef", { arg out = 0;
-	Out.ar(out, PinkNoise.ar(0.1))
+SynthDef(\synthDef_send, { |out = 0|
+	Out.ar(out, PinkNoise.ar(0.1) ! 2)
 }).send(s);
 )
+::
+Creating a link::Classes/Synth:: with it produces sound after it has finished loading:
+code::
+x = Synth.new(\synthDef_send, s); // x = Synth(\synthDef_send)
 
-// Create a Synth with it
-x = Synth.new("Help-SynthDef", s);
 x.free;
+::
 
-// Shorthand method to compile and write a SynthDef, and then play it in a Synth when done.
-// Look familiar?
+Note that any code parts involving link::Classes/SynthDef:: created by the link::Classes/SynthDef#-send:: method should always be re‑evaluated after each server boot before they can be used to produce sound:
+
+code::
+Synth(\synthDef_send) // This works.
+
+s.reboot;
+
+Synth(\synthDef_send) // This does not work and will throw the following error:
+//*** ERROR: SynthDef \synthDef_send not found
+::
+
+More importantly, the link::Classes/SynthDef#-send:: method does not register the link::Classes/SynthDef::’s control information in the link::Classes/SynthDescLib::.
+As a result, it is not possible for link::Classes/Event::s and link::Classes/Pbind::s to determine which event keys correspond to actual link::Classes/SynthDef:: arguments.
+For example, the following code will not work as expected:
+
+code::
+SynthDescLib.at(\synthDef_send).controlDict[\out].defaultValue
+::
+It returns the following error:
+teletype::
+ERROR: Message 'controlDict' not understood.
+::
+
+note::
+See the following relevant parts:
+list::
+## link::#SynthDef created by .add method::
+## link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind#Making SynthDefs Work with Pbind: Prefer .add and .store over .send and .load#Making SynthDefs Work with Pbind: Prefer .add and .store over .send and .load:: in link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind::.
+::
+::
+
+subsection:: SynthDef created by .play method
+
+A shorthand method to compile and write a link::Classes/Synth::, and then play it in a link::Classes/Synth:: when done:
+
+code::
+// This should look familiar to SC2 users:
 (
-x = SynthDef("Help-SynthDef", { arg out = 0;
+x = SynthDef(\synthDef_play, { |out = 0|
 	Out.ar(out, PinkNoise.ar(0.1))
 }).play(s);
 )
-// The above only starts the new Synth after the def has been sent to the server.
-// Note that SynthDef.play returns a Synth object!
+::
+The above only starts the new link::Classes/Synth:: after the link::Classes/SynthDef:: has been sent to the server.
+Note that link::Classes/SynthDef#-play:: returns a link::Classes/Synth:: object!
 
+code::
 x.set(\out, 1); // change one of the arguments
-x.free;
 
-// SynthDef with a parameter that will be randomly determined each time a new Synth is created
-// (try it several times to hear the differences)
+x.free;
+::
+
+link::Classes/SynthDef:: with a parameter that will be randomly determined each time a new link::Classes/Synth:: is created:
+code::
+// try it several times to hear the differences:
 (
-SynthDef("help-RandFreq", { arg out = 0;
-	Out.ar(
-		out,
-		FSinOsc.ar(
-			Rand(200.0, 400.0), // frequency between 200 and 400 Hz
-			0, Line.kr(0.2, 0, 1, doneAction: Done.freeSelf)
-		)
-	)
+SynthDef(\synthDef_randomness, { |out = 0|
+	var rand = Rand(200.0, 400.0); // frequency between 200 and 400 Hz
+	var line = Line.kr(0.2, 0, 1, doneAction: Done.freeSelf);
+	var signal = FSinOsc.ar(rand, 0, line);
+	Out.ar(out, signal)
 }).play(s);
 )
+::
+Also, note that like the link::Classes/SynthDef:: object created by the link::Classes/SynthDef#-send:: method, those created by the link::Classes/SynthDef#-play:: method are not valid after a server (re)boot:
+
+code::
+Synth(\synthDef_randomness) // This works.
+
+s.reboot;
+
+Synth(\synthDef_randomness) // This does not work and will throw the following error:
+//*** ERROR: SynthDef synthDef_randomness not found
+::
+
+
+subsection:: SynthDef created by .add method
+
+Compiles the link::Classes/SynthDef::, adds it to the link::Classes/SynthDescLib::—the library for descriptors (link::Classes/SynthDesc::) for link::Classes/SynthDef::s— and sends it to the server:
+
+code::
+(
+x = SynthDef(\synthDef_add, { |out = 0|
+	var envelope = Env.perc.ar(Done.freeSelf);
+    var signal = PinkNoise.ar(0.1) * envelope;
+    Out.ar(out, signal)
+}).add;
+)
+
+SynthDescLib.at(\synthDef_add).controlDict[\out].defaultValue
+
+(instrument: \synthDef_add).play
+
+(instrument: \synthDef_add, out: 1).play
+
+(
+Pbind(
+	\rand, Pwhite(0, 1, 8),
+    \instrument, \synthDef_add,
+    \out, Pkey(\rand),
+    \dur, Pkey(\rand) + 1 / 6
+)/*.trace*/.play
+)
+::
+
+Since link::Classes/SynthDef#-add:: keeps a link::Classes/SynthDef:: available as long as sclang interpreter is not recompiled, it remains usable even after the server is rebooted.
+
+code::
+Synth(\synthDef_add)
+
+Synth(\synthDef_add, [\out, 1]) // it works!
+
+s.reboot
+
+Synth(\synthDef_add, [out: 1]) // it works!
+
+(
+Pbind(
+	rand: Pwhite(0, 1, 8),
+    instrument: \synthDef_add,
+    out: Pkey(\rand),
+    dur: Pkey(\rand) + 1 / 6
+)/*.trace*/.play
+)
+::
+
+
+
+note::
+See link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind#Making SynthDefs Work with Pbind: Prefer .add and .store over .send and .load#Making SynthDefs Work with Pbind: Prefer .add and .store over .send and .load:: in link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind::.
 ::

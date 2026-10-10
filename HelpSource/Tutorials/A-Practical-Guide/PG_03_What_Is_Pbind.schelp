@@ -174,6 +174,8 @@ list::
 ## The default event prototype performs some automatic conversions. You might have noticed that the examples so far use code::'degree':: to specify pitch, but the default SynthDef being played does not have a degree argument. It works because the default event converts degree into code::'freq'::, which is an argument. The most important conversions are for pitch and timing. Timing is simple; pitch is more elaborate. See link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions:: for an explanation of these automatic calculations.
 ::
 
+subsection:: Making SynthDefs Work with Pbind: Prefer .add and .store over .send and .load
+
 strong::Don't send or load SynthDefs; use .add or .store instead::
 
 To send only the relevant values to the new Synth, the Event needs to know what controls exist in the SynthDef. This is done by a library of descriptors for SynthDefs; the descriptor is a link::Classes/SynthDesc::, and the library is a link::Classes/SynthDescLib::. The normal methods — code::.send(s)::, code::.load(s):: — to communicate a SynthDef to the server do not enter it into the library. As a result, SynthDefs sent this way will not work properly with Pbind. Instead, use different methods that emphasis::store:: the SynthDef into the library.
