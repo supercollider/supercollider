@@ -624,9 +624,12 @@ SCDocHTMLRenderer {
 				<< "</span>";
 			},
 			\IMAGE, {
+				var p;
 				f = node.text.split($#);
+				p = currDoc.fullPath.dirname +/+ f[0];
 				stream << "<div class='image'>";
 				img = "<img src='" ++ f[0] ++ "'/>";
+				if(File.exists(p).not) { "SCDoc: The file '%' does not exist.".format(p).warn };
 				if(f[2].isNil) {
 					stream << img;
 				} {
