@@ -334,9 +334,11 @@ SCDocHTMLRenderer {
 		if(doc.isClassDoc and: { currentClass.notNil } and: { currentClass != Object }) {
 			stream << "<span id='superclasses'>"
 			<< " : "
-			<< (currentClass.superclasses.collect {|c|
-				"<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
-			}.join(" : "))
+			<< (currentClass.superclasses !? { |sc|
+				sc.collect { |c|
+					"<a href=\"../Classes/" ++ c.name ++ ".html\">" ++ c.name ++ "</a>"
+				}.join(" : ")
+			} ?? { "" })
 			<< "</span>\n";
 		};
 		if(doc.isExtension) {
