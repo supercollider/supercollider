@@ -1059,7 +1059,7 @@ URI {
 			(this.filenameSymbol != class.filenameSymbol)
 			and:
 			if((class!=Object) and: (class!=Meta_Object),
-				{class.superclasses.includes(this.ownerClass).not},
+				{class.superclasses !? { |sc| sc.includes(this.ownerClass).not } ?? { true }},
 				{true})
 		);
 	}
