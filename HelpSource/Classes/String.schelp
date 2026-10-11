@@ -246,25 +246,25 @@ z.class.postln;
 )
 ::
 
-method::asInteger 
-Returns an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0. 
-code:: 
+method::asInteger
+Returns an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0.
+code::
 "4".asInteger
-:: 
-The method code::.asInteger:: does not understand scientific notation (e.g., teletype::2e3:: for teletype::2000::), 
-and simply ignores all characters in the string after its first nonnumeric character 
-(excepting signs teletype::+,-:: at the beginning of the string). 
+::
+The method code::.asInteger:: does not understand scientific notation (e.g., teletype::2e3:: for teletype::2000::),
+and simply ignores all characters in the string after its first nonnumeric character
+(excepting signs teletype::+,-:: at the beginning of the string).
 If you use scientific notation, use link::#-asFloat:: instead.
 
 code::
 "2e3".asInteger // -> 2
 ::
 
-method::asFloat 
-Returns a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0. 
-code:: 
+method::asFloat
+Returns a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0.
+code::
 "4.3".asFloat
-:: 
+::
 The method code::.asFloat:: understands scientific notation (e.g., teletype::2e3:: for teletype::2000::, teletype::2e-3:: for teletype::0.002::),
 and accepts uppercase teletype::E:: and lowercase teletype::e::.
 By contrast, the method link::#-asInteger:: does emphasis::not:: accept scientific notation.
@@ -821,17 +821,17 @@ Platform.userConfigDir.openOS;
 subsection:: Loading and executing .scd files
 
 method::load
-Load and link::Classes/Interpreter#-executeFile#execute:: the file at the path represented by the receiver, 
-and (optionally) pass positional and keyword arguments to the result. 
+Load and link::Classes/Interpreter#-executeFile#execute:: the file at the path represented by the receiver,
+and (optionally) pass positional and keyword arguments to the result.
 
 method::loadRelative
-Load and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. 
-Requires that the file has been saved. 
+Load and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file.
+Requires that the file has been saved.
 This can be used e.g. to load initialization code from files in the same folder.
-Additional positional and keyword arguments can also be supplied (but must be in arrays, as with link::Classes/Object.performArgs::). 
+Additional positional and keyword arguments can also be supplied (but must be in arrays, as with link::Classes/Object.performArgs::).
 
 method::loadPaths
-Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::. 
+Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
 Additional positional and keyword arguments can also be supplied (but must be in arrays, as with link::Classes/Object.performArgs::).
 
 argument::warn
@@ -851,7 +851,7 @@ code::
 // prepare a directory with files containing code:
 (
 ~dir = (Platform.defaultTempDir +/+ "loadPaths_exampleDir").mkdir;
-5.do { |i| 
+5.do { |i|
 	var filename = "example_0%.scd".format(i);
     var lo = i * 5;
     var hi = lo + 4;
@@ -862,10 +862,10 @@ code::
 	})
 }
 )
-// then load all five files using .loadPaths. 
-// notice the wildcard * at the end of the string, which permits all files in the folder to match: 
+// then load all five files using .loadPaths.
+// notice the wildcard * at the end of the string, which permits all files in the folder to match:
 (~dir +/+ "*").loadPaths
-// ... each file posts some text;  
+// ... each file posts some text;
 // the return value of loadPaths is an array of the return values of each file.
 
 // loadPaths can also used to load only a single file:
@@ -953,6 +953,35 @@ code::
 
 method::parseJSONFile
 This method is currently just an alias for link::#-parseYAMLFile::, in the future it will only accept valid JSON files.
+
+subsection:: Quarks Support
+
+method:: include
+Installs the link::Classes/Quark##quark:: specified by the receiver link::Classes/String:: (either a quark name or a repository URL), if it is not already installed.
+This process registers the quark in code::(Platform.userAppSupportDir +/+ "sclang_conf.yaml")::.
+If the quark is already downloaded to the local quark folder (i.e., code::Quarks.folder::) but not installed, this method only registers it in the configuration file.
+Recompiling the class library is required for newly installed classes to become available.
+
+code::
+// Example 1: Installing a quark directly from a remote repository URL.
+"https://github.com/supercollider-quarks/MathLib".include;
+
+// Example 2: Installing a known quark by name.
+"MathLib".include;
+::
+
+returns:: The receiver.
+
+method:: exclude
+Uninstalls the link::Classes/Quark##quark:: specified by the receiver link::Classes/String::, if it is currently installed.
+This process unregisters the quark from code::(Platform.userAppSupportDir +/+ "sclang_conf.yaml")::.
+Recompiling the class library is required after uninstalling a quark.
+
+code::
+"MathLib".exclude;
+::
+
+returns:: The receiver.
 
 subsection::Document Support
 
