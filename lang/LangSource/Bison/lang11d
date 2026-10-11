@@ -471,24 +471,23 @@ qual	: name LEFTARROW exprseq nextqual
 					$$ = bison_cxt->allocParseNode<PyrCallNode>(@$, selectornode, linkNodes($3, blocklit), nullptr);
 				}
 			}
-		| name name LEFTARROW exprseq nextqual
-			{
-				auto* call = nodeCast<PyrCallNode>($4);
-				const auto is_series = call ? (call->mSelector->mSlot.getSymbol() == s_series) : false;
 
-				auto* var1 = bison_cxt->allocParseNode<PyrVarDefNode>(@$, $1, nullptr, ReadWriteAccessor::Private);
-				auto* var2 = bison_cxt->allocParseNode<PyrVarDefNode>(@$, $2, nullptr, ReadWriteAccessor::Private);
-				auto* args = bison_cxt->allocParseNode<PyrArgListNode>(@$, linkNodes(var1, var2), nullptr, nullptr);
-				auto *block = bison_cxt->allocParseNode<PyrBlockNode>(@$, args, nullptr, $5, false);
+		// When calling 'do' or 'forSeries' the element is passed to the [elem] and the count to [count]
+		| name[elem] name[count] LEFTARROW exprseq[expr] nextqual[next]
+			{
+				auto* elem_var = bison_cxt->allocParseNode<PyrVarDefNode>(@$, $elem, nullptr, ReadWriteAccessor::Private);
+				auto* count_var = bison_cxt->allocParseNode<PyrVarDefNode>(@$, $count, nullptr, ReadWriteAccessor::Private);
+				auto* args = bison_cxt->allocParseNode<PyrArgListNode>(@$, linkNodes(elem_var, count_var), nullptr, nullptr);
+				auto *block = bison_cxt->allocParseNode<PyrBlockNode>(@$, args, nullptr, $next, false);
 				auto *blocklit = bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot::make(static_cast<void*>(block)), PyrParseNodeType::PushLitNode);
 
-				if (auto* call = nodeCast<PyrCallNode>($3); call && call->mSelector->mSlot.getSymbol() == s_series) {
+				if (auto* call = nodeCast<PyrCallNode>($expr); call && call->mSelector->mSlot.getSymbol() == s_series) {
 					call->mSelector->mSlot = PyrSlot::make(getsym("forSeries"));
 					call->mArglist = linkNodes(call->mArglist, blocklit);
 					$$ = call;
 				} else {
-					auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>(@3, PyrSlot::make(getsym("do")));
-					$$ = bison_cxt->allocParseNode<PyrCallNode>(@$, selectornode, linkNodes($4, blocklit), nullptr);
+					auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>(@expr, PyrSlot::make(getsym("do")));
+					$$ = bison_cxt->allocParseNode<PyrCallNode>(@$, selectornode, linkNodes($expr, blocklit), nullptr);
 				}
 			}
 		| VAR name EQUALSSIGN exprseq nextqual
@@ -575,8 +574,8 @@ valrangex1	: expr1 OPENSQUARE arglist1 DOTDOT CLOSESQUARE
 			{
 				auto* args = linkNodes(
 					$1, 
-					bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot{}, PyrParseNodeType::PushLitNode)
-					bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot{}, PyrParseNodeType::PushLitNode)
+					bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot{}, PyrParseNodeType::PushLitNode),
+					bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot{}, PyrParseNodeType::PushLitNode),
 					$4
 				);
 				auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot::make(s_copyseries));
@@ -728,7 +727,7 @@ valrange2	: exprseq DOTDOT
 				// if this is not used in a 'do' or list comprehension, then should return an error.
 				auto* args = linkNodes(
 					$1, 
-					bison_cxt->allocParseNode<PyrSlotNode>(@2, PyrSlot{}, PyrParseNodeType::PushLitNode)
+					bison_cxt->allocParseNode<PyrSlotNode>(@2, PyrSlot{}, PyrParseNodeType::PushLitNode),
 					bison_cxt->allocParseNode<PyrSlotNode>(@2, PyrSlot{}, PyrParseNodeType::PushLitNode)
 				);
 				auto* selectornode = bison_cxt->allocParseNode<PyrSlotNode>(@$, PyrSlot::make(s_series));
