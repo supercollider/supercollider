@@ -828,11 +828,11 @@ method::loadRelative
 Load and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. 
 Requires that the file has been saved. 
 This can be used e.g. to load initialization code from files in the same folder.
-Additional positional and keyword arguments can also be supplied (but must be in arrays, as with link::Classes/Object.performArgs::). 
+Additional positional and keyword arguments can also be supplied (but must be in arrays, as with link::Classes/Object#-performArgs::).
 
 method::loadPaths
-Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::. 
-Additional positional and keyword arguments can also be supplied (but must be in arrays, as with link::Classes/Object.performArgs::).
+Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
+Additional positional and keyword arguments can also be supplied (but must be in arrays, as with link::Classes/Object#-performArgs::).
 
 argument::warn
 Warn if a file is not found.
