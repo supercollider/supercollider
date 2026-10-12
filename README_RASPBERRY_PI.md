@@ -124,7 +124,7 @@ sudo ldconfig
 ### Step 6: Set up JACK
 
 ```shell
-echo /usr/bin/jackd -P75 -p16 -dalsa -dhw:0 -p1024 -n3 > ~/.jackdrc # supply the right number or name for -dhw:
+echo /usr/bin/jackd -P75 -p16 -dalsa -dhw:0 -p1024 -n3 > ~/.jackdrc # supply the correct number or name for -dhw:
 sudo usermod -aG audio $USER
 sudo reboot
 ```
