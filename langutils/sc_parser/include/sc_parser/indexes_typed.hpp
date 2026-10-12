@@ -37,6 +37,8 @@ enum struct NodeFlag {
     DictionaryEntry,
     Collection,
 
+    ImmediatelyEvaluatedBlock,
+
     //
     RWAccessor,
 
@@ -60,7 +62,15 @@ enum struct NodeFlag {
     ExprSeq,
 
     // expr stuff
-    MessageCall,
+
+    PrefixMessage,
+    PostfixMessage,
+    BinaryMessage,
+    ValueMessage,
+    NewMessage,
+    AtMessage,
+
+
     AdverbExpr,
     Reference,
     Assignment,
@@ -69,11 +79,13 @@ enum struct NodeFlag {
     NonLocalReturnExpr,
 
     Generator,
+    GeneratorFake,
     GeneratorQualList,
     GeneratorQualAssign,
     GeneratorQualDeclare,
     GeneratorQualIf,
     GeneratorQualSideEffect,
+    GeneratorQualGuard,
 
     // defining functions/methods
     DeclareArgumentVariadic,
@@ -169,6 +181,7 @@ using CollectionIndex = TypedIndex<NodeFlag::Collection>;
 using BlockIndex = TypedIndex<NodeFlag::BlockLiteral>;
 using BlockListIndex = TypedIndex<NodeFlag::BlockList>;
 
+using ImmediatelyEvaluatedBlockIndex = TypedIndex<NodeFlag::ImmediatelyEvaluatedBlock>;
 using AnyDefiniteLiteralIndex =
     join<ASCIIIndex, IntLitIndex, FloatProducingIndex, StringLitIndex, BooleanLitIndex, NilLitIndex, SymbolLitIndex>;
 
@@ -189,7 +202,6 @@ using SelectorWAdverbIndex = TypedIndex<NodeFlag::SelectorWAdverb>;
 
 using SelectorMaybeAdverbIndex = join<SelectorIndex, SelectorWAdverbIndex>;
 
-using MessageIndex = TypedIndex<NodeFlag::MessageCall>;
 
 using ReferenceIndex = TypedIndex<NodeFlag::Reference>;
 using AssignmentIndex = TypedIndex<NodeFlag::Assignment>;
@@ -203,6 +215,46 @@ using NonLocalReturnExprIndex = TypedIndex<NodeFlag::NonLocalReturnExpr>;
 //      save an extra node.
 using ExprSeqIndex = TypedIndex<NodeFlag::ExprSeq>;
 
+
+using GeneratorIndex = TypedIndex<NodeFlag::Generator>;
+using GeneratorFakeIndex = TypedIndex<NodeFlag::GeneratorFake>;
+
+using GeneratorAnyIndex = join<GeneratorIndex, GeneratorFakeIndex>;
+
+using GeneratorQualAssignIndex = TypedIndex<NodeFlag::GeneratorQualAssign>;
+using GeneratorQualDeclareIndex = TypedIndex<NodeFlag::GeneratorQualDeclare>;
+using GeneratorQualIfIndex = TypedIndex<NodeFlag::GeneratorQualIf>;
+using GeneratorQualSideEffectIndex = TypedIndex<NodeFlag::GeneratorQualSideEffect>;
+using GeneratorQualGuardIndex = TypedIndex<NodeFlag::GeneratorQualGuard>;
+
+using GeneratorQualAnyIndex = join< //
+    GeneratorQualAssignIndex, //
+    GeneratorQualDeclareIndex, //
+    GeneratorQualIfIndex, //
+    GeneratorQualSideEffectIndex, //
+    GeneratorQualGuardIndex //
+    >;
+
+using GeneratorQualListIndex = TypedIndex<NodeFlag::GeneratorQualList>;
+
+
+using PrefixMessageIndex = TypedIndex<NodeFlag::PrefixMessage>;
+using PostfixMessageIndex = TypedIndex<NodeFlag::PostfixMessage>;
+using BinaryMessageIndex = TypedIndex<NodeFlag::BinaryMessage>;
+using ValueMessageIndex = TypedIndex<NodeFlag::ValueMessage>;
+using NewMessageIndex = TypedIndex<NodeFlag::NewMessage>;
+using AtMessageIndex = TypedIndex<NodeFlag::AtMessage>;
+
+using AnyMessageIndex = join< //
+    PrefixMessageIndex, //
+    PostfixMessageIndex, //
+    BinaryMessageIndex, //
+    ValueMessageIndex, //
+    NewMessageIndex, //
+    AtMessageIndex //
+    >;
+
+
 using VariablePackIndex = TypedIndex<NodeFlag::VariablePack>;
 using AnyExprIndex = join< //
     ExprSeqIndex, //
@@ -210,13 +262,15 @@ using AnyExprIndex = join< //
     ClassNameIdentifierIndex, //
     EnvIdentifierIndex, //
     NamedIdentifierIndex, //
-    MessageIndex, //
+    AnyMessageIndex, //
     NonLocalReturnExprIndex, //
     ReferenceIndex, //
     AssignmentIndex, //
     AssignmentAtIndex, //
     SetterIndex, //
-    VariablePackIndex //
+    VariablePackIndex, //
+    GeneratorAnyIndex, //
+    ImmediatelyEvaluatedBlockIndex //
     >;
 
 

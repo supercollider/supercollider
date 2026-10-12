@@ -43,6 +43,7 @@ struct NodeBase : NodeBaseBase {
 template <typename ThisTypedIndex> struct TerminalNode : public NodeBase<ThisTypedIndex, NodeType::Terminal> {
     static constexpr auto number_of_children { 0 };
     using HeldType = void;
+    static constexpr std::optional<size_t> number_expected_args {};
 
     template <typename... ARGS> [[nodiscard]] static constexpr bool constructible_from() {
         return sizeof...(ARGS) == 0;
@@ -68,6 +69,7 @@ struct Node<ThisTypedIndex(CHILD_INDEXES...)> : public NodeBase<ThisTypedIndex, 
                   "TypedIndexs can only have constructors with other indexes in them, you have probably passed the "
                   "node type, not its index.");
     static constexpr auto number_of_children { sizeof...(CHILD_INDEXES) };
+    static constexpr std::optional<size_t> number_expected_args { sizeof...(CHILD_INDEXES) };
     using ChildrenIndexTupleType = std::tuple<CHILD_INDEXES...>;
     using HeldType = ChildrenIndexTupleType;
 
@@ -87,6 +89,7 @@ template <class ThisTypedIndex, typename ChildIndexT>
 struct ListNode : public NodeBase<ThisTypedIndex, NodeType::List> {
     using ChildIndex = ChildIndexT;
     using HeldType = ChildIndex;
+    static constexpr std::optional<size_t> number_expected_args {};
 
     template <typename... ARGS> [[nodiscard]] static constexpr bool constructible_from() {
         return sizeof...(ARGS) == 0 || (std::is_convertible_v<ARGS, ChildIndexT> && ...);

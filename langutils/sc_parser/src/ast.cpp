@@ -14,11 +14,13 @@ void ASTGraph::add_diagnostic(sc::diag::Diagnostic d) {
 [[nodiscard]] std::vector<sc::diag::Diagnostic> ASTGraph::diagnostics() && { return std::move(m_diagnostics); }
 
 RegionListIndex ASTGraph::assign_root(RegionListIndex i) {
+    assert(i);
     m_roots = i;
     return i;
 }
 
 ClassOrExtensionListIndex ASTGraph::assign_root(ClassOrExtensionListIndex i) {
+    assert(i);
     m_roots = i;
     return i;
 }

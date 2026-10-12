@@ -124,13 +124,17 @@ auto create_error(sc::ast::parser::ParserContext& cxt, sc::lex::SourceCodeRange 
 %type<BlockListIndex> block.opt_list block.list
 
 %type <AnyExprIndex> expr expr.base
-%type <AnyExprIndex> expr.seq expr.seq.base 
+%type <AnyExprIndex> expr_or_seq expr_or_seq.base 
 
 %type <NamedIdentifierIndex> name 
 
 %type <SelectorIndex> binary_op.no_adverb binary_op.raw
 %type <SelectorMaybeAdverbIndex> binary_op
 %type <AdverbIndex> adverb
+
+%type <GeneratorAnyIndex> generator
+%type <GeneratorQualAnyIndex> generator.qual
+%type <GeneratorQualListIndex> generator.qual.list
 
 // literals
 %type <AnyPossiblyLiteralIndex> literal literal.terminal 
@@ -184,28 +188,10 @@ go
 region.item
 	: expr
 		{ $$ = $expr; } 
-	| OPENPAREN argument_declarations[args] block.contents[content] CLOSEPAREN 
-		{ 
-			auto block = cxt.create(BlockNode{}, @$, $args, $content); 
-
-			$$ = cxt.create(
-				MessageNode{MessageNode::SelectorMode::Value}, 
-				@$, 
-				cxt.create(Missing{}, @$),
-				cxt.create(ArgumentList{}, @$, block)
-			);
-		}
+	| OPENPAREN argument_declarations[args] block.contents[contents] CLOSEPAREN 
+		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, $contents); }
 	| OPENPAREN argument_declarations[args] CLOSEPAREN 
-		{ 
-			auto block = cxt.create(BlockNode{}, @$, $args, cxt.create(BlockContentsList{}, @$));
-
-			$$ = cxt.create(
-				MessageNode{MessageNode::SelectorMode::Value}, 
-				@$, 
-				cxt.create(Missing{}, @$),
-				cxt.create(ArgumentList{}, @$, block)
-			);
-		}
+		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, cxt.create(BlockContentsList{}, @3)); }
 	;
 
 region
@@ -218,30 +204,17 @@ region
 			yyclearin;
 			$$ = cxt.create(RegionList{}, @$, create_error(cxt, @error));
 		}
-	| INTERPRET OPENPAREN argument_declarations[args] block.contents[content] semicolon.opt CLOSEPAREN 
+	| INTERPRET OPENPAREN argument_declarations[args] block.contents[contents] semicolon.opt CLOSEPAREN 
 		{ 
-			auto block = cxt.create(BlockNode{}, @$, $args, $content); 
-
-			auto msg = cxt.create(
-				MessageNode{MessageNode::SelectorMode::Value}, 
-				@$, 
-				cxt.create(Missing{}, @$),
-				cxt.create(ArgumentList{}, @$, block)
-			);
-			$$ = cxt.create(RegionList{}, @$, msg);
+			const auto ieb = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, $contents); 
+			$$ = cxt.create(RegionList{}, @$, ieb);
 		}
+
+	| INTERPRET OPENPAREN variable_declarations SEMICOLON block.contents CLOSEPAREN 
 	| INTERPRET OPENPAREN argument_declarations[args] CLOSEPAREN 
 		{ 
-			auto block = cxt.create(BlockNode{}, @$, $args, cxt.create(BlockContentsList{}, @$));
-
-			auto msg = cxt.create(
-				MessageNode{MessageNode::SelectorMode::Value}, 
-				@$, 
-				cxt.create(Missing{}, @$),
-				cxt.create(ArgumentList{}, @$, block)
-			);
-
-			$$ = cxt.create(RegionList{}, @$, msg);
+			const auto ieb = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, cxt.create(BlockContentsList{}, @4)); 
+			$$ = cxt.create(RegionList{}, @$, ieb);
 		}
 
 	| region[r] SEMICOLON region.item[item]
@@ -401,7 +374,7 @@ block
 	;
 
 block.opt_list	
-	: %empty { $$ = {}; } 
+	: %empty { $$ = cxt.create(BlockList{}, @$); } 
 	| block.list { $$ = $1; } 
 	;
 
@@ -443,7 +416,7 @@ block.contents.item
 adverb  
 	: DOT name { $$ = $2; }
 	| DOT integer { $$ = $2; }
-	| DOT OPENPAREN expr.seq CLOSEPAREN { $$ = cxt.create(AdverbExprNode{}, @$, $3);  };
+	| DOT OPENPAREN expr_or_seq CLOSEPAREN { $$ = cxt.create(AdverbExprNode{}, @$, $3);  };
 	;
 
 binary_op.raw	
@@ -471,65 +444,33 @@ binary_op
 
 msgsend 
 	: OPENPAREN binary_op.no_adverb[selector] CLOSEPAREN OPENPAREN arguments[args] CLOSEPAREN block.opt_list[blocks]
-		{
-			if ($blocks) {
-				cxt.graph.merge($args, $blocks);
-				cxt.graph.location(*$args) = @$; // spans arguments and block list
-			}
-			$$ = cxt.create(MessageNode{}, @$, $selector, $args);
-		}
+		{ $$ = cxt.create(PrefixMessage{}, @$, $selector, $args, $blocks); }
 
-	| OPENPAREN binary_op.no_adverb[args] CLOSEPAREN OPENPAREN CLOSEPAREN block.list[blocks]
-		{ $$ = cxt.create(MessageNode{}, @$, $args, $blocks); }
+	| OPENPAREN binary_op.no_adverb[selector] CLOSEPAREN OPENPAREN CLOSEPAREN block.list[blocks]
+		{ $$ = cxt.create(PrefixMessage{}, @$, $selector, cxt.create(ArgumentList{}, @4), $blocks); }
 
-	| OPENPAREN binary_op.no_adverb CLOSEPAREN block.list
-		{ $$ = cxt.create(MessageNode{}, @$, $2, cxt.create(ArgumentList{}, @$, $4)); }
+	| OPENPAREN binary_op.no_adverb[selector] CLOSEPAREN block.list[blocks]
+		{ $$ = cxt.create(PrefixMessage{}, @$, $selector, cxt.create(ArgumentList{}, @4), $blocks); }
 
 
-	| name OPENPAREN arguments CLOSEPAREN block.opt_list
-		{ 
-			if($5){
-				cxt.graph.merge($3, $5);
-				cxt.graph.location(*$3) = {@3.begin, @5.end}; // spans arguments and block list
-			}
-			$$ = cxt.create(MessageNode{}, @$, $1, $3); 
-		}
+	| name[selector] OPENPAREN arguments[args] CLOSEPAREN block.opt_list[blocks]
+		{ $$ = cxt.create(PrefixMessage{}, @$, $selector, $args, $blocks); }
 
-	| name OPENPAREN CLOSEPAREN block.list[blocks]
-		{ $$ = cxt.create(MessageNode{}, @$, $1, $blocks); }
+	| name[selector] OPENPAREN CLOSEPAREN block.list[blocks]
+		{ $$ = cxt.create(PrefixMessage{}, @$, $selector, cxt.create(ArgumentList{}, @2), $blocks); }
 
-	| name block.list 
-		{ $$ = cxt.create(MessageNode{}, @$, $1, cxt.create(ArgumentList{}, @2, $2)); }
+	| name[selector] block.list[blocks]
+		{ $$ = cxt.create(PrefixMessage{}, @$, $selector, cxt.create(ArgumentList{}, @2), $blocks); }
 	
-	| expr DOT name arguments.maybe_paren block.opt_list
-		{ 
-			if ($5) {
-				cxt.graph.merge($4, $5);
-				cxt.graph.location(*$4) = {@4.begin, @5.end}; // spans arguments and block list
-			}
-			cxt.graph.prepend($4, $1); // put the receiver in place
-			cxt.graph.location(*$4) = {@1.begin, @4.end}; // spans arguments and block list
-			$$ = cxt.create(MessageNode{}, @$, $3, $4);
-		}
+	| expr DOT name[selector] arguments.maybe_paren[args] block.opt_list[blocks]
+		{ $$ = cxt.create(PostfixMessage{}, @$, $expr, $selector, $args, $blocks); }
 
-	| expr DOT arguments.paren block.opt_list
-		{ 
-			if ($4) {
-				cxt.graph.merge($3, $4);
-				cxt.graph.location(*$3) = {@3.begin, @4.end}; // spans arguments and block list
-			}
-			cxt.graph.prepend($3, $1); // put the receiver in place
-			cxt.graph.location(*$3) = {@1.begin, @3.end}; // spans arguments and block list
-			$$ = cxt.create(MessageNode{MessageNode::SelectorMode::Value}, @$, cxt.create(Missing{}, @2), $3);
-		}
-	| expr[rec] DOT OPENPAREN CLOSEPAREN block.opt_list[blocks]
-		{
-			auto args = cxt.create(ArgumentList{}, @$, $rec);
-			if ($blocks) cxt.graph.merge(args, $blocks);
-			$$ = cxt.create(MessageNode{MessageNode::SelectorMode::Value}, @$, cxt.create(Missing{}, @2), args);
-		}
+	| expr DOT arguments.paren[args] block.opt_list[blocks]
+		{ $$ = cxt.create(ValueMessage{}, @$, $expr, $args, $blocks); }
+
+	| expr DOT OPENPAREN CLOSEPAREN block.opt_list[blocks]
+		{ $$ = cxt.create(ValueMessage{}, @$, $expr, cxt.create(ArgumentList{}, @3), $blocks); }
 		
-
 //	| expr DOT error 
 //		{
 //			auto unexpected = cxt.consume_error(); 
@@ -540,28 +481,21 @@ msgsend
 	| CLASSNAME OPENSQUARE literal.array.contents CLOSESQUARE
 		{  $$ = cxt.create(CollectionNode{}, @$, cxt.create(ClassNameIdentifier{}, @1), $3); }
 	
-	| CLASSNAME block.list
-		{
-			auto args = cxt.create(ArgumentList{}, @$, cxt.create(NamedIdentifier{}, @1));
-			cxt.graph.merge(args, $2);
-			$$ = cxt.create(MessageNode{}, @$, cxt.create(Missing{}, @1), args);
+	| CLASSNAME block.list[blocks]
+		{ 
+			auto class_name = cxt.create(ClassNameIdentifier{}, @1);
+			$$ = cxt.create(NewMessage{}, @$, class_name, cxt.create(ArgumentList{}, @1), $blocks);
 		}
-	| CLASSNAME OPENPAREN arguments[args] CLOSEPAREN block.opt_list[blocks]
-		{
-			if ($blocks) {
-				cxt.graph.merge($args, $blocks);
-				cxt.graph.location(*$args) = {@args.begin, @blocks.end}; // spans arguments and block list
-			}
-			cxt.graph.prepend($args, cxt.create(ClassNameIdentifier{}, @1)); // put the receiver in place
-			cxt.graph.location(*$args) = {@args.begin, @blocks.end}; // spans arguments and block list
-			$$ = cxt.create(MessageNode{MessageNode::SelectorMode::New}, @$, cxt.create(Missing{}, @1), $args);
+	| CLASSNAME arguments.paren[args] block.opt_list[blocks]
+		{ 
+			auto class_name = cxt.create(ClassNameIdentifier{}, @1);
+			$$ = cxt.create(NewMessage{}, @$, class_name, $args, $blocks);
 		}
 
 	| CLASSNAME OPENPAREN CLOSEPAREN block.opt_list[blocks]
-		{
-			auto args = cxt.create(ArgumentList{}, @$, $blocks);
-			cxt.graph.prepend(args, cxt.create(ClassNameIdentifier{}, @1)); // put the receiver in place
-			$$ = cxt.create(MessageNode{MessageNode::SelectorMode::New}, @$, cxt.create(Missing{}, @1), args);
+		{ 
+			auto class_name = cxt.create(ClassNameIdentifier{}, @1);
+			$$ = cxt.create(NewMessage{}, @$, class_name, cxt.create(ArgumentList{}, @1), $blocks);
 		}
 	;
 
@@ -575,57 +509,77 @@ expr.base
 	| name { $$ = $1; }
 	// | curry_arg { $$ = $1; }
 	| msgsend { $$ = $1; }
-	| OPENPAREN block.contents[contents] semicolon.opt CLOSEPAREN 
-		{ 
-			auto blk = cxt.create(BlockNode{}, @$, cxt.create(DeclareArgumentList{}, @$), $contents);
-			$$ = cxt.create(MessageNode{MessageNode::SelectorMode::Value}, @$.flatten(), cxt.create(Missing{}, @$.flatten()), cxt.create(ArgumentList{}, @$, blk));
-		}
+	| OPENPAREN expr_or_seq[contents] CLOSEPAREN 
+		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, cxt.create(ArgumentList{}, @1), $contents); }
 	| TILDE name { $$ = cxt.create(EnvIdentifierNode{}, @$, $2); }
 
-	// | OPENPAREN valrange2 CLOSEPAREN
-	// | OPENPAREN COLON valrange3 CLOSEPAREN
+	| expr.base[receiver] OPENSQUARE arguments[args] CLOSESQUARE
+		{ $$ = cxt.create(AtMessage{}, @$, $receiver, $args ); }
 
-	| expr.base OPENSQUARE arguments CLOSESQUARE
-		{ 
-			cxt.graph.prepend($3, $1); // put receiver in place.
-			cxt.graph.location(*$3) = @$;
-			$$ = cxt.create(MessageNode{MessageNode::SelectorMode::At}, @$, cxt.create(Missing{}, @2), $3); 
-		}
+	| expr.base[receiver] OPENSQUARE CLOSESQUARE
+		{ $$ = cxt.create(AtMessage{}, @$, $receiver, cxt.create(ArgumentList{}, @2)); }
 
-	| expr.base OPENSQUARE CLOSESQUARE
-		{ 
-			auto args = cxt.create(ArgumentList{}, @$, $1);
-			$$ = cxt.create(MessageNode{MessageNode::SelectorMode::At}, @$, cxt.create(Missing{}, @2), args); 
-		}
+	| expr.base OPENSQUARE arguments DOTDOT expr_or_seq CLOSESQUARE
+		{}
+	| expr.base OPENSQUARE DOTDOT expr_or_seq CLOSESQUARE
+		{}
 
-	// | valrangex1;
+
+	| OPENPAREN expr_or_seq DOTDOT CLOSEPAREN
+		{}
+	| OPENPAREN expr_or_seq DOTDOT expr_or_seq CLOSEPAREN
+		{}
+	| OPENPAREN expr_or_seq COMMA expr_or_seq DOTDOT expr_or_seq CLOSEPAREN
+		{}
+	| OPENPAREN DOTDOT expr_or_seq CLOSEPAREN
+		{}
+
+
+
+
+	| OPENPAREN COLON expr_or_seq DOTDOT expr_or_seq CLOSEPAREN
+		{}
+	| OPENPAREN COLON expr_or_seq COMMA expr_or_seq DOTDOT expr_or_seq CLOSEPAREN
+		{}
+	| OPENPAREN COLON DOTDOT expr_or_seq CLOSEPAREN
+		{}
+
+	| OPENPAREN COLON expr_or_seq DOTDOT CLOSEPAREN
+		{}
 	;
+
+	
+
 
 expr	
 	: expr.base { $$ = $1; }
-	// | valrangexd
-	// | valrangeassign
+	
+	| expr DOT OPENSQUARE arguments DOTDOT expr_or_seq CLOSESQUARE
+		{}
+
+	| expr DOT OPENSQUARE DOTDOT expr_or_seq CLOSESQUARE
+		{}
+
+	| expr DOT OPENSQUARE arguments DOTDOT expr_or_seq CLOSESQUARE EQUALSSIGN expr
+		{}
+
+	| expr DOT OPENSQUARE DOTDOT expr_or_seq CLOSESQUARE EQUALSSIGN expr
+		{}
+
+
 
 	| CLASSNAME { $$ = cxt.create(ClassNameIdentifier{}, @$); }
 
-	| expr DOT OPENSQUARE arguments CLOSESQUARE
-		{ 
-			cxt.graph.prepend($4, $1); // put receiver in place
-			$$ = cxt.create(MessageNode{MessageNode::SelectorMode::At}, @$, cxt.create(Missing{}, @$), $4);
-		} 
-	| expr DOT OPENSQUARE CLOSESQUARE
-		{ 
-			auto args = cxt.create(ArgumentList{}, @$, $1);
-			$$ = cxt.create(MessageNode{MessageNode::SelectorMode::At}, @$, cxt.create(Missing{}, @3), args);
-		} 
+	| expr[receiver] DOT OPENSQUARE arguments[args] CLOSESQUARE
+		{ $$ = cxt.create(AtMessage{}, @$, $receiver, $args ); }
+
+	| expr[receiver] DOT OPENSQUARE CLOSESQUARE
+		{ $$ = cxt.create(AtMessage{}, @$, $receiver, cxt.create(ArgumentList{}, @3) ); }
 
 	| BACKTICK expr { $$ = cxt.create(ReferenceNode{}, @$, $2); }
 
-	| expr binary_op expr %prec BINOP 
-		{ 
-			auto args = cxt.create(ArgumentList{}, @$, $1, $3);
-			$$ = cxt.create(MessageNode{}, @$, $2, args);
-		}
+	| expr[lhs] binary_op[selector] expr[rhs] %prec BINOP 
+		{ $$ = cxt.create(BinaryMessage{}, @$, $selector, $lhs, $rhs); }
 
 	| name EQUALSSIGN expr
 		{ $$ = cxt.create(AssignmentNode{}, @$, $1, $3); }
@@ -641,7 +595,7 @@ expr
 
 	| HASH name.list[names] comma.opt EQUALSSIGN expr[e]
 		{ $$ = cxt.create(VariablePack{}, @$, $names, $e); }
-	| HASH name.list[names] comma.opt OPENPAREN expr.seq[expr_seq] CLOSEPAREN
+	| HASH name.list[names] comma.opt OPENPAREN expr_or_seq[expr_seq] CLOSEPAREN
 		{ $$ = cxt.create(VariablePack{}, @$, $names, $expr_seq); }
 
 	// This is a slight change from the original. You used to be required to give an argument, even if the 'put' method had a default.
@@ -649,6 +603,7 @@ expr
 	// These might still be disabled in the compiler stage.
 	| expr.base OPENSQUARE arguments CLOSESQUARE EQUALSSIGN expr 
 		{ $$ = cxt.create(AssignmentAtNode{}, @$, $1, $3, $6); }
+
 	| expr.base OPENSQUARE CLOSESQUARE EQUALSSIGN expr[e] 
 		{ $$ = cxt.create(AssignmentAtNode{}, @$, $1, cxt.create(ArgumentList{}, @2), $e); }
 
@@ -659,36 +614,29 @@ expr
 		{ $$ = cxt.create(AssignmentAtNode{}, @$, $1, cxt.create(ArgumentList{}, @3), $e); }
 	;
 
-expr.seq.base  
+expr_or_seq.base  
 	: expr { $$ = $1; }		
-	| expr.seq.base SEMICOLON expr 
-		{
-			// This piece of logic is here because exprs can contain expr.seq, so we avoid creating the list node if we can.
-			if(auto expr_seq = cxt.graph.as_a<ExprSeqIndex>(*$1)) {
-				cxt.graph.append(*expr_seq, @$, $3);
-				$$ = $1;
-			} else {
-				$$ = cxt.create(ExprSeq{}, @$, $1, $3);
-			}
-		}
+	| expr_or_seq.base SEMICOLON expr { $$ = cxt.create(ExprSeq{}, @$, $1, $3); }
 	;
 
-expr.seq : expr.seq.base semicolon.opt { $$ = $1; };
+expr_or_seq : 
+	expr_or_seq.base semicolon.opt { $$ = $1; }
+	;
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // generators
 ////////////////////////////////////////////////////////////////////////////////
 generator 
-	: OPENCURLY COLON expr.seq COMMA generator.qual.list comma.opt CLOSECURLY
-		{}
-	| OPENCURLY SEMICOLON expr.seq COMMA generator.qual.list comma.opt CLOSECURLY
-		{}
-	;
+	//	These are turned into routines
+	: OPENCURLY COLON expr_or_seq[expr] COMMA generator.qual.list[list] comma.opt CLOSECURLY
+		{ $$ = cxt.create(GeneratorNode{}, @$, $expr, $list); }
 
-generator.next_qual
-	: %empty {}
-	| COMMA generator.qual {}
+	// These are just functions, they are quite limited and only return the first result, turning the rest into a side effect.
+	// Probably best not to use these as they aren't documented and are confusing.
+	// I've called them 'fake' generators until someone can come up with a better name.
+	| OPENCURLY SEMICOLON expr_or_seq[expr] COMMA generator.qual.list[list] comma.opt CLOSECURLY
+		{ $$ = cxt.create(GeneratorFakeNode{}, @$, $expr, $list); }
 	;
 
 generator.qual.list
@@ -699,26 +647,20 @@ generator.qual.list
 	;
 
 generator.qual
-	//	Assignment
-	: name[elem] LEFTARROW expr.seq[expr]  generator.next_qual[next]
-		{}
-	// Assignment 2
-	| name[elem] name[count] LEFTARROW expr.seq[expr] generator.next_qual[next]
-		{}
-	// Declare 1
-	| VAR name[name] EQUALSSIGN expr.seq[expr] generator.next_qual[next]
-		{}
-	// Declare 2
-	| VAR name OPENPAREN expr.seq CLOSEPAREN generator.next_qual
-		{}
-	// If
-	| expr.seq generator.next_qual
-		{}
-	// Side effect
-	| COLON COLON expr.seq generator.next_qual
-		{}
-	| COLON WHILE expr.seq generator.next_qual
-		{}
+	: name[elem] LEFTARROW expr_or_seq[expr]
+		{ $$ = cxt.create(GeneratorQualAssign{}, @$, $elem, cxt.create(Missing{}, @2), $expr); }
+	| name[elem] name[index] LEFTARROW expr_or_seq[expr]
+		{ $$ = cxt.create(GeneratorQualAssign{}, @$, $elem, $index, $expr); }
+	| VAR name EQUALSSIGN expr_or_seq[expr]
+		{ $$ = cxt.create(GeneratorQualDeclare{}, @$, $name, $expr); }
+	| VAR name OPENPAREN expr_or_seq[expr] CLOSEPAREN
+		{ $$ = cxt.create(GeneratorQualDeclare{}, @$, $name, $expr); }
+	| expr_or_seq[expr]
+		{ $$ = cxt.create(GeneratorQualIf{}, @$, $expr); }
+	| COLON COLON expr_or_seq[expr] 
+		{ $$ = cxt.create(GeneratorQualSideEffect{}, @$, $expr); }
+	| COLON WHILE expr_or_seq[expr]
+		{ $$ = cxt.create(GeneratorQualGuard{}, @$, $expr); }
 	;
 
 
@@ -734,17 +676,17 @@ argument_declarations.list
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, $1); }
 	| name EQUALSSIGN literal 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $1, $3)); }
-	| name OPENPAREN expr.seq CLOSEPAREN 
+	| name OPENPAREN expr_or_seq CLOSEPAREN 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $1, $3)); }
-	| name EQUALSSIGN OPENPAREN expr.seq CLOSEPAREN 
+	| name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $1, $4)); }
 	| argument_declarations.list COMMA name 
 		{ $$ = cxt.graph.append( $1, @$, $3); }
 	| argument_declarations.list COMMA name EQUALSSIGN literal 
 		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $5)); }
-	| argument_declarations.list COMMA name OPENPAREN expr.seq CLOSEPAREN
+	| argument_declarations.list COMMA name OPENPAREN expr_or_seq CLOSEPAREN
 		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $5)); }
-	| argument_declarations.list COMMA name EQUALSSIGN OPENPAREN expr.seq CLOSEPAREN
+	| argument_declarations.list COMMA name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN
 		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $6)); }
 	;
 
@@ -755,9 +697,9 @@ argument_declarations.pipelist
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, $1); }
 	| name EQUALSSIGN literal 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $1, $3)); }
-	| name OPENPAREN expr.seq CLOSEPAREN 
+	| name OPENPAREN expr_or_seq CLOSEPAREN 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $1, $3)); }
-	| name EQUALSSIGN OPENPAREN expr.seq CLOSEPAREN 
+	| name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $1, $4)); }
 	| argument_declarations.pipelist comma.opt name literal
 		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $4)); }
@@ -765,9 +707,9 @@ argument_declarations.pipelist
 		{ $$ = cxt.graph.append( $1, @$, $3); }
 	| argument_declarations.pipelist comma.opt name EQUALSSIGN literal
 		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $5)); }
-	| argument_declarations.pipelist comma.opt name OPENPAREN expr.seq CLOSEPAREN
+	| argument_declarations.pipelist comma.opt name OPENPAREN expr_or_seq CLOSEPAREN
 		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $5)); }
-	| argument_declarations.pipelist comma.opt name EQUALSSIGN OPENPAREN expr.seq CLOSEPAREN
+	| argument_declarations.pipelist comma.opt name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN
 		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $6)); }
 	;
 
@@ -822,9 +764,9 @@ argument_declarations.opt
 	;
 
 arguments.entries 	
-	: KEYBINOP expr.seq { $$ = cxt.create(KwArgNode{}, @$, cxt.create(SymbolNode{SymbolNode::Kind::KeyBinOp}, @1), $2); }
-	| MULTIPLY expr.seq { $$ = cxt.create(VariadicArgNode{}, @$, $2); }
-	| expr.seq { $$ = $1; }
+	: KEYBINOP expr_or_seq { $$ = cxt.create(KwArgNode{}, @$, cxt.create(SymbolNode{SymbolNode::Kind::KeyBinOp}, @1), $2); }
+	| MULTIPLY expr_or_seq { $$ = cxt.create(VariadicArgNode{}, @$, $2); }
+	| expr_or_seq { $$ = $1; }
 	;
 
 arguments.no_trailing
@@ -832,7 +774,7 @@ arguments.no_trailing
 	| arguments.no_trailing COMMA arguments.entries { $$ = cxt.graph.append($1, @$, $3); }
 	;
 
-arguments : arguments.no_trailing comma.opt {$$ = $1; };
+arguments : arguments.no_trailing comma.opt { $$ = $1; };
 
 arguments.paren : OPENPAREN arguments CLOSEPAREN { $$ = $2; }
 
@@ -840,7 +782,8 @@ arguments.maybe_paren
 	: %empty { $$ = cxt.create(ArgumentList{}, @$); }
 	| OPENPAREN CLOSEPAREN
 		{ $$ = cxt.create(ArgumentList{}, @$); }
-	| arguments.paren { $$ = $1; }
+	| OPENPAREN arguments CLOSEPAREN
+		{ $$ = $arguments; }
 	;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -852,11 +795,11 @@ variable_declarations.list.item
 		{ $$ = $1; }
 	| name EQUALSSIGN expr
 		{ $$ = cxt.create(DeclareVariableWithDefaultNode{}, @$, $1, $3); }
-	| name OPENPAREN expr.seq CLOSEPAREN
+	| name OPENPAREN expr_or_seq CLOSEPAREN
 		{ $$ = cxt.create(DeclareVariableWithDefaultNode{}, @$, $1, $3); }
 	| HASH name.list[names] comma.opt EQUALSSIGN expr
 		{ $$ = cxt.create(VariablePack{}, @$, $names, $expr); }
-	| HASH name.list[names] comma.opt OPENPAREN expr.seq[expr] CLOSEPAREN
+	| HASH name.list[names] comma.opt OPENPAREN expr_or_seq[expr] CLOSEPAREN
 		{ $$ = cxt.create(VariablePack{}, @$, $names, $expr); }
 	;
 
@@ -888,27 +831,27 @@ literal.terminal
 literal.array.contents 
 	: %empty 
 		{ $$ = cxt.create(ArrayNode{}, @$); }
-	| expr.seq 
+	| expr_or_seq 
 		{ $$ = cxt.create(ArrayNode{}, @$, $1); }
-	| expr.seq COLON expr.seq
+	| expr_or_seq COLON expr_or_seq
 		{ $$ = cxt.create(ArrayNode{}, @$, $1, $3); }
-	| KEYBINOP expr.seq
+	| KEYBINOP expr_or_seq
 		{ $$ = cxt.create(ArrayNode{}, @$, cxt.create(SymbolNode{SymbolNode::Kind::KeyBinOp}, @1), $2); }
-	| literal.array.contents COMMA expr.seq
+	| literal.array.contents COMMA expr_or_seq
 		{ $$ = cxt.graph.append($1, @$, $3); }
-	| literal.array.contents COMMA expr.seq COLON expr.seq
+	| literal.array.contents COMMA expr_or_seq COLON expr_or_seq
 		{ $$ = cxt.graph.append($1, @$, $3, $5); }
-	| literal.array.contents COMMA KEYBINOP expr.seq
+	| literal.array.contents COMMA KEYBINOP expr_or_seq
 		{ $$ = cxt.graph.append($1, @$, cxt.create(SymbolNode{SymbolNode::Kind::KeyBinOp}, @3), $4); }
 	;
 
 literal.dictionary.entry 
 	// This is a breaking change!
-	// Previously you could have ( 1;2;3;4;5;6; : 10). now the expr.seq is invalid, but you can have ((1;2;3;4): 10)
+	// Previously you could have ( 1;2;3;4;5;6; : 10). now the expr_or_seq is invalid, but you can have ((1;2;3;4): 10)
 	// This is necessary because of the scd format as (1;2;3;4;5;6;7;) is a valid file, and the parser would need infinite look ahead to figure out which is which.
-	: expr COLON expr.seq 
+	: expr COLON expr_or_seq 
 		{ $$ = cxt.create(DictionaryEntryNode{}, @$, $1, $3); }
-	| KEYBINOP expr.seq 
+	| KEYBINOP expr_or_seq 
 		{ $$ = cxt.create(DictionaryEntryNode{}, @$, cxt.create(SymbolNode{SymbolNode::Kind::KeyBinOp}, @1), $2); }
 	;
 

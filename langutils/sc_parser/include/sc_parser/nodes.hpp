@@ -223,12 +223,29 @@ struct AdverbExprNode : Node<AdverbExprIndex(AnyExprIndex)> {
     static constexpr auto name { "AdverbExprNode" };
 };
 
-struct MessageNode : Node<MessageIndex(maybe<SelectorMaybeAdverbIndex> selector, ArgumentListIndex args)> {
-    static constexpr auto name { "MessageNode" };
-    enum struct SelectorMode { SeeNode, Value, New, At } selector_mode;
-    constexpr MessageNode(SelectorMode n = SelectorMode::SeeNode): selector_mode(n) { }
+////////////////////////////////////////////////////////////////////////////////
+// Messages
+////////////////////////////////////////////////////////////////////////////////
+struct PrefixMessage : Node<PrefixMessageIndex(SelectorMaybeAdverbIndex, ArgumentListIndex, BlockListIndex blocks)> {
+    static constexpr auto name { "PrefixMessage" };
 };
-static_assert(MessageNode::number_of_children == 2);
+struct BinaryMessage : Node<PrefixMessageIndex(SelectorMaybeAdverbIndex, AnyExprIndex lhs, AnyExprIndex rhs)> {
+    static constexpr auto name { "BinaryMessage" };
+};
+struct PostfixMessage : Node<PrefixMessageIndex(AnyExprIndex receiver, SelectorMaybeAdverbIndex, ArgumentListIndex,
+                                                BlockListIndex blocks)> {
+    static constexpr auto name { "PostfixMessage" };
+};
+struct ValueMessage : Node<PrefixMessageIndex(AnyExprIndex receiver, ArgumentListIndex, BlockListIndex)> {
+    static constexpr auto name { "ValueMessage" };
+};
+struct NewMessage : Node<PrefixMessageIndex(ClassNameIdentifierIndex receiver, ArgumentListIndex, BlockListIndex)> {
+    static constexpr auto name { "NewMessage" };
+};
+struct AtMessage : Node<PrefixMessageIndex(AnyExprIndex receiver, ArgumentListIndex)> {
+    static constexpr auto name { "AtMessage" };
+};
+
 
 struct ReferenceNode : Node<ReferenceIndex(AnyExprIndex)> {
     static constexpr auto name { "ReferenceNode" };
@@ -250,6 +267,47 @@ struct SetterNode
     : Node<SetterIndex(join<ArgumentListIndex, AnyExprIndex> thing, NamedIdentifierIndex name, AnyExprIndex value)> {
     static constexpr auto name { "SetterNode" };
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Generators
+////////////////////////////////////////////////////////////////////////////////
+struct GeneratorNode : Node<GeneratorIndex(AnyExprIndex expr, GeneratorQualListIndex qualifiers)> {
+    static constexpr auto name { "GeneratorNode" };
+};
+
+struct GeneratorFakeNode : Node<GeneratorFakeIndex(AnyExprIndex expr, GeneratorQualListIndex qualifiers)> {
+    static constexpr auto name { "GeneratorFakeNode" };
+};
+
+struct GeneratorQualList : ListNode<GeneratorQualListIndex, GeneratorQualAnyIndex> {
+    static constexpr auto name { "GeneratorQualList" };
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Generator Qualifiers
+////////////////////////////////////////////////////////////////////////////////
+
+struct GeneratorQualAssign
+    : Node<GeneratorQualAssignIndex(NamedIdentifierIndex element, maybe<NamedIdentifierIndex> index, AnyExprIndex)> {
+    static constexpr auto name { "GeneratorQualAssign" };
+};
+
+struct GeneratorQualDeclare : Node<GeneratorQualDeclareIndex(NamedIdentifierIndex name, AnyExprIndex expr)> {
+    static constexpr auto name { "GeneratorQualDeclare" };
+};
+
+struct GeneratorQualIf : Node<GeneratorQualIfIndex(AnyExprIndex boolean_expr)> {
+    static constexpr auto name { "GeneratorQualIf" };
+};
+
+struct GeneratorQualSideEffect : Node<GeneratorQualSideEffectIndex(AnyExprIndex expr)> {
+    static constexpr auto name { "GeneratorQualSideEffect" };
+};
+struct GeneratorQualGuard : Node<GeneratorQualGuardIndex(AnyExprIndex clause)> {
+    static constexpr auto name { "GeneratorQualGuard" };
+};
+
 
 struct DeclareArgumentWithDefaultNode : Node<DeclareArgumentWithDefaultIndex(NamedIdentifierIndex, AnyExprIndex)> {
     static constexpr auto name { "DeclareArgumentWithDefaultNode" };
@@ -277,12 +335,21 @@ struct DeclareVariableList : ListNode<DeclareVariableListIndex, DeclareAnyVariab
     static constexpr auto name { "DeclareVariableList" };
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// Blocks
+////////////////////////////////////////////////////////////////////////////////
+
 struct BlockContentsList : ListNode<BlockContentsListIndex, BlockItemIndex> {
     static constexpr auto name { "BlockContentsList" };
 };
 
 struct BlockNode : Node<BlockIndex(DeclareArgumentListIndex, maybe<BlockContentsListIndex>)> {
     static constexpr auto name { "BlockNode" };
+};
+
+struct ImmediatelyEvaluatedBlock
+    : Node<ImmediatelyEvaluatedBlockIndex(DeclareArgumentListIndex, BlockContentsListIndex)> {
+    static constexpr auto name { "ImmediatelyEvaluatedBlock" };
 };
 
 struct NonLocalReturnExpr : Node<NonLocalReturnExprIndex(AnyExprIndex)> {
@@ -389,7 +456,14 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper< //
     KwArgNode, //
     ExprSeq, //
 
-    MessageNode, //
+    ImmediatelyEvaluatedBlock,
+
+    GeneratorNode, //
+    GeneratorFakeNode, GeneratorQualList, GeneratorQualAssign, GeneratorQualDeclare, GeneratorQualIf,
+    GeneratorQualSideEffect, GeneratorQualGuard,
+
+    PrefixMessage, PostfixMessage, BinaryMessage, ValueMessage, NewMessage, AtMessage,
+
     AdverbExprNode, //
     ReferenceNode, //
     AssignmentNode, //

@@ -230,6 +230,12 @@ public: // This is meant to be privately inherited from.
         static_assert(Helper::template has_node<typename Node::Index>(),
                       "You have either called create on a graph with the wrong type of node, or have failed to add the "
                       "node to the template argument.");
+        static constexpr auto expected_args = Node::number_expected_args;
+
+        static_assert(!expected_args || sizeof...(child_indexes) <= *expected_args,
+                      "Too many arguments have been passed to the constructor of a node.");
+        static_assert(!expected_args || sizeof...(child_indexes) >= *expected_args,
+                      "Too few arguments have been passed to the constructor of a node.");
         static_assert(Node::template constructible_from<ChildrenIndexes...>(),
                       "The children index types do not match the constructor");
         const typename Node::Index index = [&]() {

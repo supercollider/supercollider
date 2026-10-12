@@ -313,4 +313,7 @@ a.foo;
     tester("{ var #a, b, c = array; }", true);
     tester("{ var #a, b, c = array, d = 10; }", true);
     tester("#~foo, rest = array;", true);
+
+
+    tester("{: x + 1, x <- [1, 2, 3, 4], x.odd, ::x.postln, :while x < 3}", true);
 }

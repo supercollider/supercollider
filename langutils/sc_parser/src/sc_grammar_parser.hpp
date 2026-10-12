@@ -397,8 +397,8 @@ namespace sc { namespace ast { namespace parser {
       // msgsend
       // expr.base
       // expr
-      // expr.seq.base
-      // expr.seq
+      // expr_or_seq.base
+      // expr_or_seq
       char dummy4[sizeof (AnyExprIndex)];
 
       // method
@@ -492,8 +492,17 @@ namespace sc { namespace ast { namespace parser {
       // float
       char dummy30[sizeof (FloatProducingIndex)];
 
+      // generator
+      char dummy31[sizeof(GeneratorAnyIndex)];
+
+      // generator.qual
+      char dummy32[sizeof(GeneratorQualAnyIndex)];
+
+      // generator.qual.list
+      char dummy33[sizeof(GeneratorQualListIndex)];
+
       // integer
-      char dummy31[sizeof (IntLitIndex)];
+      char dummy34[sizeof(IntLitIndex)];
 
       // REGION_SEPARATOR
       // OPENCURLY
@@ -538,6 +547,7 @@ namespace sc { namespace ast { namespace parser {
       // BADTOKEN
       // INTERPRET
       // LEFTARROW
+      // WHILE
       // LEXER_ERROR
       // COLON
       // EQUALSSIGN
@@ -553,52 +563,52 @@ namespace sc { namespace ast { namespace parser {
       // DOT
       // BACKTICK
       // UMINUS
-      char dummy32[sizeof (LexerToken)];
+      char dummy35[sizeof(LexerToken)];
 
       // method.base
-      char dummy33[sizeof (MethodIndex)];
+      char dummy36[sizeof(MethodIndex)];
 
       // method.list
       // method.list.opt
-      char dummy34[sizeof (MethodListIndex)];
+      char dummy37[sizeof(MethodListIndex)];
 
       // name.list
-      char dummy35[sizeof(NameListIndex)];
+      char dummy38[sizeof(NameListIndex)];
 
       // name
-      char dummy36[sizeof(NamedIdentifierIndex)];
+      char dummy39[sizeof(NamedIdentifierIndex)];
 
       // nil
-      char dummy37[sizeof(NilLitIndex)];
+      char dummy40[sizeof(NilLitIndex)];
 
       // accessor
-      char dummy38[sizeof(RWAccessorIndex)];
+      char dummy41[sizeof(RWAccessorIndex)];
 
       // region
-      char dummy39[sizeof(RegionListIndex)];
+      char dummy42[sizeof(RegionListIndex)];
 
       // method.name
       // binary_op.raw
       // binary_op.no_adverb
-      char dummy40[sizeof(SelectorIndex)];
+      char dummy43[sizeof(SelectorIndex)];
 
       // binary_op
-      char dummy41[sizeof(SelectorMaybeAdverbIndex)];
+      char dummy44[sizeof(SelectorMaybeAdverbIndex)];
 
       // string
-      char dummy42[sizeof(StringLitIndex)];
+      char dummy45[sizeof(StringLitIndex)];
 
       // symbol
-      char dummy43[sizeof(SymbolLitIndex)];
+      char dummy46[sizeof(SymbolLitIndex)];
 
       // region.item
-      char dummy44[sizeof(error_index<AnyExprIndex>)];
+      char dummy47[sizeof(error_index<AnyExprIndex>)];
 
       // class.super.opt
-      char dummy45[sizeof(maybe<ClassNameIdentifierIndex>)];
+      char dummy48[sizeof(maybe<ClassNameIdentifierIndex>)];
 
       // class.slot.opt
-      char dummy46[sizeof(maybe<NamedIdentifierIndex>)];
+      char dummy49[sizeof(maybe<NamedIdentifierIndex>)];
     };
 
     /// The size of the largest semantic type.
@@ -642,73 +652,73 @@ namespace sc { namespace ast { namespace parser {
     /// Token kinds.
     struct token
     {
-      enum token_kind_type
-      {
-        TOKEN_YYEMPTY = -2,
-    TOKEN_YYEOF = 0,               // "end of file"
-    TOKEN_YYerror = 256,           // error
-    TOKEN_YYUNDEF = 257,           // "invalid token"
-    TOKEN_REGION_SEPARATOR = 258,  // REGION_SEPARATOR
-    TOKEN_OPENCURLY = 259,         // OPENCURLY
-    TOKEN_CLOSECURLY = 260,        // CLOSECURLY
-    TOKEN_OPENSQUARE = 261,        // OPENSQUARE
-    TOKEN_CLOSESQUARE = 262,       // CLOSESQUARE
-    TOKEN_OPENPAREN = 263,         // OPENPAREN
-    TOKEN_CLOSEPAREN = 264,        // CLOSEPAREN
-    TOKEN_SEMICOLON = 265,         // SEMICOLON
-    TOKEN_NONLOCALRETURN = 266,    // NONLOCALRETURN
-    TOKEN_COMMA = 267,             // COMMA
-    TOKEN_HASH = 268,              // HASH
-    TOKEN_TILDE = 269,             // TILDE
-    TOKEN_NAME = 270,              // NAME
-    TOKEN_INTEGER = 271,           // INTEGER
-    TOKEN_INTEGER_RADIX = 272,     // INTEGER_RADIX
-    TOKEN_HEXADECIMAL = 273,       // HEXADECIMAL
-    TOKEN_FLOAT = 274,             // FLOAT
-    TOKEN_FLOAT_RADIX = 275,       // FLOAT_RADIX
-    TOKEN_FLOAT_EXPONENT = 276,    // FLOAT_EXPONENT
-    TOKEN_FLOAT_INF = 277,         // FLOAT_INF
-    TOKEN_ACCIDENTAL_STEPS = 278,  // ACCIDENTAL_STEPS
-    TOKEN_ACCIDENTAL_CENTS = 279,  // ACCIDENTAL_CENTS
-    TOKEN_SYMBOL_QUOTE = 280,      // SYMBOL_QUOTE
-    TOKEN_SYMBOL_SLASH = 281,      // SYMBOL_SLASH
-    TOKEN_STRINGLINE = 282,        // STRINGLINE
-    TOKEN_ASCII = 283,             // ASCII
-    TOKEN_PRIMITIVENAME = 284,     // PRIMITIVENAME
-    TOKEN_CLASSNAME = 285,         // CLASSNAME
-    TOKEN_CURRYARG = 286,          // CURRYARG
-    TOKEN_VAR = 287,               // VAR
-    TOKEN_ARG = 288,               // ARG
-    TOKEN_CLASSVAR = 289,          // CLASSVAR
-    TOKEN_CONST = 290,             // CONST
-    TOKEN_NIL = 291,               // NIL
-    TOKEN_TRUE = 292,              // TRUE
-    TOKEN_FALSE = 293,             // FALSE
-    TOKEN_PI = 294,                // PI
-    TOKEN_ELLIPSIS = 295,          // ELLIPSIS
-    TOKEN_DOTDOT = 296,            // DOTDOT
-    TOKEN_BEGINCLOSEDFUNC = 297,   // BEGINCLOSEDFUNC
-    TOKEN_BADTOKEN = 298,          // BADTOKEN
-    TOKEN_INTERPRET = 299,         // INTERPRET
-    TOKEN_LEFTARROW = 300,         // LEFTARROW
-    TOKEN_LEXER_ERROR = 301,       // LEXER_ERROR
-    TOKEN_COLON = 302,             // COLON
-    TOKEN_EQUALSSIGN = 303,        // EQUALSSIGN
-    TOKEN_BINOP = 304,             // BINOP
-    TOKEN_KEYBINOP = 305,          // KEYBINOP
-    TOKEN_MINUS = 306,             // MINUS
-    TOKEN_LESSTHAN = 307,          // LESSTHAN
-    TOKEN_GREATERTHAN = 308,       // GREATERTHAN
-    TOKEN_MULTIPLY = 309,          // MULTIPLY
-    TOKEN_ADD = 310,               // ADD
-    TOKEN_PIPE = 311,              // PIPE
-    TOKEN_READWRITEVAR = 312,      // READWRITEVAR
-    TOKEN_DOT = 313,               // DOT
-    TOKEN_BACKTICK = 314,          // BACKTICK
-    TOKEN_UMINUS = 315             // UMINUS
-      };
-      /// Backward compatibility alias (Bison 3.6).
-      typedef token_kind_type yytokentype;
+        enum token_kind_type {
+            TOKEN_YYEMPTY = -2,
+            TOKEN_YYEOF = 0, // "end of file"
+            TOKEN_YYerror = 256, // error
+            TOKEN_YYUNDEF = 257, // "invalid token"
+            TOKEN_REGION_SEPARATOR = 258, // REGION_SEPARATOR
+            TOKEN_OPENCURLY = 259, // OPENCURLY
+            TOKEN_CLOSECURLY = 260, // CLOSECURLY
+            TOKEN_OPENSQUARE = 261, // OPENSQUARE
+            TOKEN_CLOSESQUARE = 262, // CLOSESQUARE
+            TOKEN_OPENPAREN = 263, // OPENPAREN
+            TOKEN_CLOSEPAREN = 264, // CLOSEPAREN
+            TOKEN_SEMICOLON = 265, // SEMICOLON
+            TOKEN_NONLOCALRETURN = 266, // NONLOCALRETURN
+            TOKEN_COMMA = 267, // COMMA
+            TOKEN_HASH = 268, // HASH
+            TOKEN_TILDE = 269, // TILDE
+            TOKEN_NAME = 270, // NAME
+            TOKEN_INTEGER = 271, // INTEGER
+            TOKEN_INTEGER_RADIX = 272, // INTEGER_RADIX
+            TOKEN_HEXADECIMAL = 273, // HEXADECIMAL
+            TOKEN_FLOAT = 274, // FLOAT
+            TOKEN_FLOAT_RADIX = 275, // FLOAT_RADIX
+            TOKEN_FLOAT_EXPONENT = 276, // FLOAT_EXPONENT
+            TOKEN_FLOAT_INF = 277, // FLOAT_INF
+            TOKEN_ACCIDENTAL_STEPS = 278, // ACCIDENTAL_STEPS
+            TOKEN_ACCIDENTAL_CENTS = 279, // ACCIDENTAL_CENTS
+            TOKEN_SYMBOL_QUOTE = 280, // SYMBOL_QUOTE
+            TOKEN_SYMBOL_SLASH = 281, // SYMBOL_SLASH
+            TOKEN_STRINGLINE = 282, // STRINGLINE
+            TOKEN_ASCII = 283, // ASCII
+            TOKEN_PRIMITIVENAME = 284, // PRIMITIVENAME
+            TOKEN_CLASSNAME = 285, // CLASSNAME
+            TOKEN_CURRYARG = 286, // CURRYARG
+            TOKEN_VAR = 287, // VAR
+            TOKEN_ARG = 288, // ARG
+            TOKEN_CLASSVAR = 289, // CLASSVAR
+            TOKEN_CONST = 290, // CONST
+            TOKEN_NIL = 291, // NIL
+            TOKEN_TRUE = 292, // TRUE
+            TOKEN_FALSE = 293, // FALSE
+            TOKEN_PI = 294, // PI
+            TOKEN_ELLIPSIS = 295, // ELLIPSIS
+            TOKEN_DOTDOT = 296, // DOTDOT
+            TOKEN_BEGINCLOSEDFUNC = 297, // BEGINCLOSEDFUNC
+            TOKEN_BADTOKEN = 298, // BADTOKEN
+            TOKEN_INTERPRET = 299, // INTERPRET
+            TOKEN_LEFTARROW = 300, // LEFTARROW
+            TOKEN_WHILE = 301, // WHILE
+            TOKEN_LEXER_ERROR = 302, // LEXER_ERROR
+            TOKEN_COLON = 303, // COLON
+            TOKEN_EQUALSSIGN = 304, // EQUALSSIGN
+            TOKEN_BINOP = 305, // BINOP
+            TOKEN_KEYBINOP = 306, // KEYBINOP
+            TOKEN_MINUS = 307, // MINUS
+            TOKEN_LESSTHAN = 308, // LESSTHAN
+            TOKEN_GREATERTHAN = 309, // GREATERTHAN
+            TOKEN_MULTIPLY = 310, // MULTIPLY
+            TOKEN_ADD = 311, // ADD
+            TOKEN_PIPE = 312, // PIPE
+            TOKEN_READWRITEVAR = 313, // READWRITEVAR
+            TOKEN_DOT = 314, // DOT
+            TOKEN_BACKTICK = 315, // BACKTICK
+            TOKEN_UMINUS = 316 // UMINUS
+        };
+        /// Backward compatibility alias (Bison 3.6).
+        typedef token_kind_type yytokentype;
     };
 
     /// Token kind, as returned by yylex.
@@ -721,7 +731,7 @@ namespace sc { namespace ast { namespace parser {
     struct symbol_kind
     {
         enum symbol_kind_type {
-            YYNTOKENS = 61, ///< Number of tokens.
+            YYNTOKENS = 62, ///< Number of tokens.
             S_YYEMPTY = -2,
             S_YYEOF = 0, // "end of file"
             S_YYerror = 1, // error
@@ -769,91 +779,95 @@ namespace sc { namespace ast { namespace parser {
             S_BADTOKEN = 43, // BADTOKEN
             S_INTERPRET = 44, // INTERPRET
             S_LEFTARROW = 45, // LEFTARROW
-            S_LEXER_ERROR = 46, // LEXER_ERROR
-            S_COLON = 47, // COLON
-            S_EQUALSSIGN = 48, // EQUALSSIGN
-            S_BINOP = 49, // BINOP
-            S_KEYBINOP = 50, // KEYBINOP
-            S_MINUS = 51, // MINUS
-            S_LESSTHAN = 52, // LESSTHAN
-            S_GREATERTHAN = 53, // GREATERTHAN
-            S_MULTIPLY = 54, // MULTIPLY
-            S_ADD = 55, // ADD
-            S_PIPE = 56, // PIPE
-            S_READWRITEVAR = 57, // READWRITEVAR
-            S_DOT = 58, // DOT
-            S_BACKTICK = 59, // BACKTICK
-            S_UMINUS = 60, // UMINUS
-            S_YYACCEPT = 61, // $accept
-            S_go = 62, // go
-            S_63_region_item = 63, // region.item
-            S_region = 64, // region
-            S_65_classOrExtList_list = 65, // classOrExtList.list
-            S_66_classOrExtList_item = 66, // classOrExtList.item
-            S_class = 67, // class
-            S_68_class_super_opt = 68, // class.super.opt
-            S_69_class_slot_opt = 69, // class.slot.opt
-            S_70_class_extension = 70, // class.extension
-            S_71_members_entry_item = 71, // members.entry.item
-            S_72_members_entry_list = 72, // members.entry.list
-            S_73_members_entry = 73, // members.entry
-            S_members = 74, // members
-            S_75_members_opt = 75, // members.opt
-            S_76_method_name = 76, // method.name
-            S_77_method_base = 77, // method.base
-            S_method = 78, // method
-            S_79_method_list = 79, // method.list
-            S_80_method_list_opt = 80, // method.list.opt
-            S_81_block_open = 81, // block.open
-            S_block = 82, // block
-            S_83_block_opt_list = 83, // block.opt_list
-            S_84_block_list = 84, // block.list
-            S_85_block_contents = 85, // block.contents
-            S_86_block_contents_item = 86, // block.contents.item
-            S_adverb = 87, // adverb
-            S_88_binary_op_raw = 88, // binary_op.raw
-            S_89_binary_op_no_adverb = 89, // binary_op.no_adverb
-            S_binary_op = 90, // binary_op
-            S_msgsend = 91, // msgsend
-            S_92_expr_base = 92, // expr.base
-            S_expr = 93, // expr
-            S_94_expr_seq_base = 94, // expr.seq.base
-            S_95_expr_seq = 95, // expr.seq
-            S_96_argument_declarations_list = 96, // argument_declarations.list
-            S_97_argument_declarations_pipelist = 97, // argument_declarations.pipelist
-            S_argument_declarations = 98, // argument_declarations
-            S_99_argument_declarations_opt = 99, // argument_declarations.opt
-            S_100_arguments_entries = 100, // arguments.entries
-            S_101_arguments_no_trailing = 101, // arguments.no_trailing
-            S_arguments = 102, // arguments
-            S_103_arguments_paren = 103, // arguments.paren
-            S_104_arguments_maybe_paren = 104, // arguments.maybe_paren
-            S_105_variable_declarations_list_item = 105, // variable_declarations.list.item
-            S_106_variable_declarations_list = 106, // variable_declarations.list
-            S_variable_declarations = 107, // variable_declarations
-            S_108_literal_terminal = 108, // literal.terminal
-            S_109_literal_array_contents = 109, // literal.array.contents
-            S_110_literal_dictionary_entry = 110, // literal.dictionary.entry
-            S_111_literal_dictionary_entries = 111, // literal.dictionary.entries
-            S_112_literal_dictionary = 112, // literal.dictionary
-            S_113_literal_array = 113, // literal.array
-            S_literal = 114, // literal
-            S_name = 115, // name
-            S_116_name_list = 116, // name.list
-            S_ascii = 117, // ascii
-            S_nil = 118, // nil
-            S_boolean = 119, // boolean
-            S_symbol = 120, // symbol
-            S_string = 121, // string
-            S_integer = 122, // integer
-            S_123_float_raw_unsigned = 123, // float.raw_unsigned
-            S_124_float_raw = 124, // float.raw
-            S_125_accidental_unsigned = 125, // accidental.unsigned
-            S_accidental = 126, // accidental
-            S_float = 127, // float
-            S_accessor = 128, // accessor
-            S_129_semicolon_opt = 129, // semicolon.opt
-            S_130_comma_opt = 130 // comma.opt
+            S_WHILE = 46, // WHILE
+            S_LEXER_ERROR = 47, // LEXER_ERROR
+            S_COLON = 48, // COLON
+            S_EQUALSSIGN = 49, // EQUALSSIGN
+            S_BINOP = 50, // BINOP
+            S_KEYBINOP = 51, // KEYBINOP
+            S_MINUS = 52, // MINUS
+            S_LESSTHAN = 53, // LESSTHAN
+            S_GREATERTHAN = 54, // GREATERTHAN
+            S_MULTIPLY = 55, // MULTIPLY
+            S_ADD = 56, // ADD
+            S_PIPE = 57, // PIPE
+            S_READWRITEVAR = 58, // READWRITEVAR
+            S_DOT = 59, // DOT
+            S_BACKTICK = 60, // BACKTICK
+            S_UMINUS = 61, // UMINUS
+            S_YYACCEPT = 62, // $accept
+            S_go = 63, // go
+            S_64_region_item = 64, // region.item
+            S_region = 65, // region
+            S_66_classOrExtList_list = 66, // classOrExtList.list
+            S_67_classOrExtList_item = 67, // classOrExtList.item
+            S_class = 68, // class
+            S_69_class_super_opt = 69, // class.super.opt
+            S_70_class_slot_opt = 70, // class.slot.opt
+            S_71_class_extension = 71, // class.extension
+            S_72_members_entry_item = 72, // members.entry.item
+            S_73_members_entry_list = 73, // members.entry.list
+            S_74_members_entry = 74, // members.entry
+            S_members = 75, // members
+            S_76_members_opt = 76, // members.opt
+            S_77_method_name = 77, // method.name
+            S_78_method_base = 78, // method.base
+            S_method = 79, // method
+            S_80_method_list = 80, // method.list
+            S_81_method_list_opt = 81, // method.list.opt
+            S_82_block_open = 82, // block.open
+            S_block = 83, // block
+            S_84_block_opt_list = 84, // block.opt_list
+            S_85_block_list = 85, // block.list
+            S_86_block_contents = 86, // block.contents
+            S_87_block_contents_item = 87, // block.contents.item
+            S_adverb = 88, // adverb
+            S_89_binary_op_raw = 89, // binary_op.raw
+            S_90_binary_op_no_adverb = 90, // binary_op.no_adverb
+            S_binary_op = 91, // binary_op
+            S_msgsend = 92, // msgsend
+            S_93_expr_base = 93, // expr.base
+            S_expr = 94, // expr
+            S_95_expr_or_seq_base = 95, // expr_or_seq.base
+            S_expr_or_seq = 96, // expr_or_seq
+            S_generator = 97, // generator
+            S_98_generator_qual_list = 98, // generator.qual.list
+            S_99_generator_qual = 99, // generator.qual
+            S_100_argument_declarations_list = 100, // argument_declarations.list
+            S_101_argument_declarations_pipelist = 101, // argument_declarations.pipelist
+            S_argument_declarations = 102, // argument_declarations
+            S_103_argument_declarations_opt = 103, // argument_declarations.opt
+            S_104_arguments_entries = 104, // arguments.entries
+            S_105_arguments_no_trailing = 105, // arguments.no_trailing
+            S_arguments = 106, // arguments
+            S_107_arguments_paren = 107, // arguments.paren
+            S_108_arguments_maybe_paren = 108, // arguments.maybe_paren
+            S_109_variable_declarations_list_item = 109, // variable_declarations.list.item
+            S_110_variable_declarations_list = 110, // variable_declarations.list
+            S_variable_declarations = 111, // variable_declarations
+            S_112_literal_terminal = 112, // literal.terminal
+            S_113_literal_array_contents = 113, // literal.array.contents
+            S_114_literal_dictionary_entry = 114, // literal.dictionary.entry
+            S_115_literal_dictionary_entries = 115, // literal.dictionary.entries
+            S_116_literal_dictionary = 116, // literal.dictionary
+            S_117_literal_array = 117, // literal.array
+            S_literal = 118, // literal
+            S_name = 119, // name
+            S_120_name_list = 120, // name.list
+            S_ascii = 121, // ascii
+            S_nil = 122, // nil
+            S_boolean = 123, // boolean
+            S_symbol = 124, // symbol
+            S_string = 125, // string
+            S_integer = 126, // integer
+            S_127_float_raw_unsigned = 127, // float.raw_unsigned
+            S_128_float_raw = 128, // float.raw
+            S_129_accidental_unsigned = 129, // accidental.unsigned
+            S_accidental = 130, // accidental
+            S_float = 131, // float
+            S_accessor = 132, // accessor
+            S_133_semicolon_opt = 133, // semicolon.opt
+            S_134_comma_opt = 134 // comma.opt
         };
     };
 
@@ -894,7 +908,7 @@ namespace sc { namespace ast { namespace parser {
         value.move< ASCIIIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_125_accidental_unsigned: // accidental.unsigned
+      case symbol_kind::S_129_accidental_unsigned: // accidental.unsigned
       case symbol_kind::S_accidental: // accidental
         value.move< AccidentalIndex > (std::move (that.value));
         break;
@@ -904,10 +918,10 @@ namespace sc { namespace ast { namespace parser {
         break;
 
       case symbol_kind::S_msgsend: // msgsend
-      case symbol_kind::S_92_expr_base: // expr.base
+      case symbol_kind::S_93_expr_base: // expr.base
       case symbol_kind::S_expr: // expr
-      case symbol_kind::S_94_expr_seq_base: // expr.seq.base
-      case symbol_kind::S_95_expr_seq: // expr.seq
+      case symbol_kind::S_95_expr_or_seq_base: // expr_or_seq.base
+      case symbol_kind::S_expr_or_seq: // expr_or_seq
           value.move<AnyExprIndex>(std::move(that.value));
           break;
 
@@ -915,33 +929,33 @@ namespace sc { namespace ast { namespace parser {
         value.move< AnyMethodIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_108_literal_terminal: // literal.terminal
+      case symbol_kind::S_112_literal_terminal: // literal.terminal
       case symbol_kind::S_literal: // literal
           value.move<AnyPossiblyLiteralIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_100_arguments_entries: // arguments.entries
+      case symbol_kind::S_104_arguments_entries: // arguments.entries
           value.move<ArgumentEntryIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_101_arguments_no_trailing: // arguments.no_trailing
+      case symbol_kind::S_105_arguments_no_trailing: // arguments.no_trailing
       case symbol_kind::S_arguments: // arguments
-      case symbol_kind::S_103_arguments_paren: // arguments.paren
-      case symbol_kind::S_104_arguments_maybe_paren: // arguments.maybe_paren
+      case symbol_kind::S_107_arguments_paren: // arguments.paren
+      case symbol_kind::S_108_arguments_maybe_paren: // arguments.maybe_paren
           value.move<ArgumentListIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_109_literal_array_contents: // literal.array.contents
-      case symbol_kind::S_113_literal_array: // literal.array
+      case symbol_kind::S_113_literal_array_contents: // literal.array.contents
+      case symbol_kind::S_117_literal_array: // literal.array
           value.move<ArrayIndex>(std::move(that.value));
           break;
 
       case symbol_kind::S_members: // members
-      case symbol_kind::S_75_members_opt: // members.opt
+      case symbol_kind::S_76_members_opt: // members.opt
           value.move<BigMemberListIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_85_block_contents: // block.contents
+      case symbol_kind::S_86_block_contents: // block.contents
           value.move<BlockContentsListIndex>(std::move(that.value));
           break;
 
@@ -949,22 +963,22 @@ namespace sc { namespace ast { namespace parser {
         value.move< BlockIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_86_block_contents_item: // block.contents.item
+      case symbol_kind::S_87_block_contents_item: // block.contents.item
           value.move<BlockItemIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_83_block_opt_list: // block.opt_list
-      case symbol_kind::S_84_block_list: // block.list
-        value.move< BlockListIndex > (std::move (that.value));
-        break;
+      case symbol_kind::S_84_block_opt_list: // block.opt_list
+      case symbol_kind::S_85_block_list: // block.list
+          value.move<BlockListIndex>(std::move(that.value));
+          break;
 
       case symbol_kind::S_boolean: // boolean
         value.move< BooleanLitIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_70_class_extension: // class.extension
-        value.move< ClassExtensionIndex > (std::move (that.value));
-        break;
+      case symbol_kind::S_71_class_extension: // class.extension
+          value.move<ClassExtensionIndex>(std::move(that.value));
+          break;
 
       case symbol_kind::S_class: // class
         value.move< ClassIndex > (std::move (that.value));
@@ -974,59 +988,71 @@ namespace sc { namespace ast { namespace parser {
         value.move< ClassListOrExprListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_66_classOrExtList_item: // classOrExtList.item
-        value.move< ClassOrExtensionIndex > (std::move (that.value));
-        break;
+      case symbol_kind::S_67_classOrExtList_item: // classOrExtList.item
+          value.move<ClassOrExtensionIndex>(std::move(that.value));
+          break;
 
-      case symbol_kind::S_65_classOrExtList_list: // classOrExtList.list
-        value.move< ClassOrExtensionListIndex > (std::move (that.value));
-        break;
+      case symbol_kind::S_66_classOrExtList_list: // classOrExtList.list
+          value.move<ClassOrExtensionListIndex>(std::move(that.value));
+          break;
 
-      case symbol_kind::S_73_members_entry: // members.entry
+      case symbol_kind::S_74_members_entry: // members.entry
           value.move<DeclareAnyMemberListIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_105_variable_declarations_list_item: // variable_declarations.list.item
+      case symbol_kind::S_109_variable_declarations_list_item: // variable_declarations.list.item
           value.move<DeclareAnyVariableIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_96_argument_declarations_list: // argument_declarations.list
-      case symbol_kind::S_97_argument_declarations_pipelist: // argument_declarations.pipelist
+      case symbol_kind::S_100_argument_declarations_list: // argument_declarations.list
+      case symbol_kind::S_101_argument_declarations_pipelist: // argument_declarations.pipelist
       case symbol_kind::S_argument_declarations: // argument_declarations
-      case symbol_kind::S_99_argument_declarations_opt: // argument_declarations.opt
+      case symbol_kind::S_103_argument_declarations_opt: // argument_declarations.opt
           value.move<DeclareArgumentListIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_71_members_entry_item: // members.entry.item
+      case symbol_kind::S_72_members_entry_item: // members.entry.item
           value.move<DeclareMemberIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_72_members_entry_list: // members.entry.list
+      case symbol_kind::S_73_members_entry_list: // members.entry.list
           value.move<DeclareMemberListIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_106_variable_declarations_list: // variable_declarations.list
+      case symbol_kind::S_110_variable_declarations_list: // variable_declarations.list
       case symbol_kind::S_variable_declarations: // variable_declarations
         value.move< DeclareVariableListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_110_literal_dictionary_entry: // literal.dictionary.entry
+      case symbol_kind::S_114_literal_dictionary_entry: // literal.dictionary.entry
           value.move<DictionaryEntryIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_111_literal_dictionary_entries: // literal.dictionary.entries
-      case symbol_kind::S_112_literal_dictionary: // literal.dictionary
+      case symbol_kind::S_115_literal_dictionary_entries: // literal.dictionary.entries
+      case symbol_kind::S_116_literal_dictionary: // literal.dictionary
           value.move<DictionaryIndex>(std::move(that.value));
           break;
 
-      case symbol_kind::S_123_float_raw_unsigned: // float.raw_unsigned
-      case symbol_kind::S_124_float_raw: // float.raw
+      case symbol_kind::S_127_float_raw_unsigned: // float.raw_unsigned
+      case symbol_kind::S_128_float_raw: // float.raw
           value.move<FloatLitIndex>(std::move(that.value));
           break;
 
       case symbol_kind::S_float: // float
         value.move< FloatProducingIndex > (std::move (that.value));
         break;
+
+      case symbol_kind::S_generator: // generator
+          value.move<GeneratorAnyIndex>(std::move(that.value));
+          break;
+
+      case symbol_kind::S_99_generator_qual: // generator.qual
+          value.move<GeneratorQualAnyIndex>(std::move(that.value));
+          break;
+
+      case symbol_kind::S_98_generator_qual_list: // generator.qual.list
+          value.move<GeneratorQualListIndex>(std::move(that.value));
+          break;
 
       case symbol_kind::S_integer: // integer
         value.move< IntLitIndex > (std::move (that.value));
@@ -1075,6 +1101,7 @@ namespace sc { namespace ast { namespace parser {
       case symbol_kind::S_BADTOKEN: // BADTOKEN
       case symbol_kind::S_INTERPRET: // INTERPRET
       case symbol_kind::S_LEFTARROW: // LEFTARROW
+      case symbol_kind::S_WHILE: // WHILE
       case symbol_kind::S_LEXER_ERROR: // LEXER_ERROR
       case symbol_kind::S_COLON: // COLON
       case symbol_kind::S_EQUALSSIGN: // EQUALSSIGN
@@ -1093,16 +1120,16 @@ namespace sc { namespace ast { namespace parser {
         value.move< LexerToken > (std::move (that.value));
         break;
 
-      case symbol_kind::S_77_method_base: // method.base
-        value.move< MethodIndex > (std::move (that.value));
-        break;
+      case symbol_kind::S_78_method_base: // method.base
+          value.move<MethodIndex>(std::move(that.value));
+          break;
 
-      case symbol_kind::S_79_method_list: // method.list
-      case symbol_kind::S_80_method_list_opt: // method.list.opt
-        value.move< MethodListIndex > (std::move (that.value));
-        break;
+      case symbol_kind::S_80_method_list: // method.list
+      case symbol_kind::S_81_method_list_opt: // method.list.opt
+          value.move<MethodListIndex>(std::move(that.value));
+          break;
 
-      case symbol_kind::S_116_name_list: // name.list
+      case symbol_kind::S_120_name_list: // name.list
           value.move<NameListIndex>(std::move(that.value));
           break;
 
@@ -1122,9 +1149,9 @@ namespace sc { namespace ast { namespace parser {
         value.move< RegionListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_76_method_name: // method.name
-      case symbol_kind::S_88_binary_op_raw: // binary_op.raw
-      case symbol_kind::S_89_binary_op_no_adverb: // binary_op.no_adverb
+      case symbol_kind::S_77_method_name: // method.name
+      case symbol_kind::S_89_binary_op_raw: // binary_op.raw
+      case symbol_kind::S_90_binary_op_no_adverb: // binary_op.no_adverb
           value.move<SelectorIndex>(std::move(that.value));
           break;
 
@@ -1140,17 +1167,17 @@ namespace sc { namespace ast { namespace parser {
         value.move< SymbolLitIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_63_region_item: // region.item
-        value.move< error_index<AnyExprIndex> > (std::move (that.value));
-        break;
+      case symbol_kind::S_64_region_item: // region.item
+          value.move<error_index<AnyExprIndex>>(std::move(that.value));
+          break;
 
-      case symbol_kind::S_68_class_super_opt: // class.super.opt
-        value.move< maybe<ClassNameIdentifierIndex> > (std::move (that.value));
-        break;
+      case symbol_kind::S_69_class_super_opt: // class.super.opt
+          value.move<maybe<ClassNameIdentifierIndex>>(std::move(that.value));
+          break;
 
-      case symbol_kind::S_69_class_slot_opt: // class.slot.opt
-        value.move< maybe<NamedIdentifierIndex> > (std::move (that.value));
-        break;
+      case symbol_kind::S_70_class_slot_opt: // class.slot.opt
+          value.move<maybe<NamedIdentifierIndex>>(std::move(that.value));
+          break;
 
       default:
         break;
@@ -1586,6 +1613,42 @@ namespace sc { namespace ast { namespace parser {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol(typename Base::kind_type t, GeneratorAnyIndex&& v, location_type&& l):
+          Base(t),
+          value(std::move(v)),
+          location(std::move(l)) {}
+#else
+      basic_symbol(typename Base::kind_type t, const GeneratorAnyIndex& v, const location_type& l):
+          Base(t),
+          value(v),
+          location(l) {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol(typename Base::kind_type t, GeneratorQualAnyIndex&& v, location_type&& l):
+          Base(t),
+          value(std::move(v)),
+          location(std::move(l)) {}
+#else
+      basic_symbol(typename Base::kind_type t, const GeneratorQualAnyIndex& v, const location_type& l):
+          Base(t),
+          value(v),
+          location(l) {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol(typename Base::kind_type t, GeneratorQualListIndex&& v, location_type&& l):
+          Base(t),
+          value(std::move(v)),
+          location(std::move(l)) {}
+#else
+      basic_symbol(typename Base::kind_type t, const GeneratorQualListIndex& v, const location_type& l):
+          Base(t),
+          value(v),
+          location(l) {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, IntLitIndex&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -1833,7 +1896,7 @@ switch (yykind)
         value.template destroy< ASCIIIndex > ();
         break;
 
-      case symbol_kind::S_125_accidental_unsigned: // accidental.unsigned
+      case symbol_kind::S_129_accidental_unsigned: // accidental.unsigned
       case symbol_kind::S_accidental: // accidental
         value.template destroy< AccidentalIndex > ();
         break;
@@ -1843,10 +1906,10 @@ switch (yykind)
         break;
 
       case symbol_kind::S_msgsend: // msgsend
-      case symbol_kind::S_92_expr_base: // expr.base
+      case symbol_kind::S_93_expr_base: // expr.base
       case symbol_kind::S_expr: // expr
-      case symbol_kind::S_94_expr_seq_base: // expr.seq.base
-      case symbol_kind::S_95_expr_seq: // expr.seq
+      case symbol_kind::S_95_expr_or_seq_base: // expr_or_seq.base
+      case symbol_kind::S_expr_or_seq: // expr_or_seq
           value.template destroy<AnyExprIndex>();
           break;
 
@@ -1854,33 +1917,33 @@ switch (yykind)
         value.template destroy< AnyMethodIndex > ();
         break;
 
-      case symbol_kind::S_108_literal_terminal: // literal.terminal
+      case symbol_kind::S_112_literal_terminal: // literal.terminal
       case symbol_kind::S_literal: // literal
           value.template destroy<AnyPossiblyLiteralIndex>();
           break;
 
-      case symbol_kind::S_100_arguments_entries: // arguments.entries
+      case symbol_kind::S_104_arguments_entries: // arguments.entries
           value.template destroy<ArgumentEntryIndex>();
           break;
 
-      case symbol_kind::S_101_arguments_no_trailing: // arguments.no_trailing
+      case symbol_kind::S_105_arguments_no_trailing: // arguments.no_trailing
       case symbol_kind::S_arguments: // arguments
-      case symbol_kind::S_103_arguments_paren: // arguments.paren
-      case symbol_kind::S_104_arguments_maybe_paren: // arguments.maybe_paren
+      case symbol_kind::S_107_arguments_paren: // arguments.paren
+      case symbol_kind::S_108_arguments_maybe_paren: // arguments.maybe_paren
           value.template destroy<ArgumentListIndex>();
           break;
 
-      case symbol_kind::S_109_literal_array_contents: // literal.array.contents
-      case symbol_kind::S_113_literal_array: // literal.array
+      case symbol_kind::S_113_literal_array_contents: // literal.array.contents
+      case symbol_kind::S_117_literal_array: // literal.array
           value.template destroy<ArrayIndex>();
           break;
 
       case symbol_kind::S_members: // members
-      case symbol_kind::S_75_members_opt: // members.opt
+      case symbol_kind::S_76_members_opt: // members.opt
           value.template destroy<BigMemberListIndex>();
           break;
 
-      case symbol_kind::S_85_block_contents: // block.contents
+      case symbol_kind::S_86_block_contents: // block.contents
           value.template destroy<BlockContentsListIndex>();
           break;
 
@@ -1888,22 +1951,22 @@ switch (yykind)
         value.template destroy< BlockIndex > ();
         break;
 
-      case symbol_kind::S_86_block_contents_item: // block.contents.item
+      case symbol_kind::S_87_block_contents_item: // block.contents.item
           value.template destroy<BlockItemIndex>();
           break;
 
-      case symbol_kind::S_83_block_opt_list: // block.opt_list
-      case symbol_kind::S_84_block_list: // block.list
-        value.template destroy< BlockListIndex > ();
-        break;
+      case symbol_kind::S_84_block_opt_list: // block.opt_list
+      case symbol_kind::S_85_block_list: // block.list
+          value.template destroy<BlockListIndex>();
+          break;
 
       case symbol_kind::S_boolean: // boolean
         value.template destroy< BooleanLitIndex > ();
         break;
 
-      case symbol_kind::S_70_class_extension: // class.extension
-        value.template destroy< ClassExtensionIndex > ();
-        break;
+      case symbol_kind::S_71_class_extension: // class.extension
+          value.template destroy<ClassExtensionIndex>();
+          break;
 
       case symbol_kind::S_class: // class
         value.template destroy< ClassIndex > ();
@@ -1913,59 +1976,71 @@ switch (yykind)
         value.template destroy< ClassListOrExprListIndex > ();
         break;
 
-      case symbol_kind::S_66_classOrExtList_item: // classOrExtList.item
-        value.template destroy< ClassOrExtensionIndex > ();
-        break;
+      case symbol_kind::S_67_classOrExtList_item: // classOrExtList.item
+          value.template destroy<ClassOrExtensionIndex>();
+          break;
 
-      case symbol_kind::S_65_classOrExtList_list: // classOrExtList.list
-        value.template destroy< ClassOrExtensionListIndex > ();
-        break;
+      case symbol_kind::S_66_classOrExtList_list: // classOrExtList.list
+          value.template destroy<ClassOrExtensionListIndex>();
+          break;
 
-      case symbol_kind::S_73_members_entry: // members.entry
+      case symbol_kind::S_74_members_entry: // members.entry
           value.template destroy<DeclareAnyMemberListIndex>();
           break;
 
-      case symbol_kind::S_105_variable_declarations_list_item: // variable_declarations.list.item
+      case symbol_kind::S_109_variable_declarations_list_item: // variable_declarations.list.item
           value.template destroy<DeclareAnyVariableIndex>();
           break;
 
-      case symbol_kind::S_96_argument_declarations_list: // argument_declarations.list
-      case symbol_kind::S_97_argument_declarations_pipelist: // argument_declarations.pipelist
+      case symbol_kind::S_100_argument_declarations_list: // argument_declarations.list
+      case symbol_kind::S_101_argument_declarations_pipelist: // argument_declarations.pipelist
       case symbol_kind::S_argument_declarations: // argument_declarations
-      case symbol_kind::S_99_argument_declarations_opt: // argument_declarations.opt
+      case symbol_kind::S_103_argument_declarations_opt: // argument_declarations.opt
           value.template destroy<DeclareArgumentListIndex>();
           break;
 
-      case symbol_kind::S_71_members_entry_item: // members.entry.item
+      case symbol_kind::S_72_members_entry_item: // members.entry.item
           value.template destroy<DeclareMemberIndex>();
           break;
 
-      case symbol_kind::S_72_members_entry_list: // members.entry.list
+      case symbol_kind::S_73_members_entry_list: // members.entry.list
           value.template destroy<DeclareMemberListIndex>();
           break;
 
-      case symbol_kind::S_106_variable_declarations_list: // variable_declarations.list
+      case symbol_kind::S_110_variable_declarations_list: // variable_declarations.list
       case symbol_kind::S_variable_declarations: // variable_declarations
         value.template destroy< DeclareVariableListIndex > ();
         break;
 
-      case symbol_kind::S_110_literal_dictionary_entry: // literal.dictionary.entry
+      case symbol_kind::S_114_literal_dictionary_entry: // literal.dictionary.entry
           value.template destroy<DictionaryEntryIndex>();
           break;
 
-      case symbol_kind::S_111_literal_dictionary_entries: // literal.dictionary.entries
-      case symbol_kind::S_112_literal_dictionary: // literal.dictionary
+      case symbol_kind::S_115_literal_dictionary_entries: // literal.dictionary.entries
+      case symbol_kind::S_116_literal_dictionary: // literal.dictionary
           value.template destroy<DictionaryIndex>();
           break;
 
-      case symbol_kind::S_123_float_raw_unsigned: // float.raw_unsigned
-      case symbol_kind::S_124_float_raw: // float.raw
+      case symbol_kind::S_127_float_raw_unsigned: // float.raw_unsigned
+      case symbol_kind::S_128_float_raw: // float.raw
           value.template destroy<FloatLitIndex>();
           break;
 
       case symbol_kind::S_float: // float
         value.template destroy< FloatProducingIndex > ();
         break;
+
+      case symbol_kind::S_generator: // generator
+          value.template destroy<GeneratorAnyIndex>();
+          break;
+
+      case symbol_kind::S_99_generator_qual: // generator.qual
+          value.template destroy<GeneratorQualAnyIndex>();
+          break;
+
+      case symbol_kind::S_98_generator_qual_list: // generator.qual.list
+          value.template destroy<GeneratorQualListIndex>();
+          break;
 
       case symbol_kind::S_integer: // integer
         value.template destroy< IntLitIndex > ();
@@ -2014,6 +2089,7 @@ switch (yykind)
       case symbol_kind::S_BADTOKEN: // BADTOKEN
       case symbol_kind::S_INTERPRET: // INTERPRET
       case symbol_kind::S_LEFTARROW: // LEFTARROW
+      case symbol_kind::S_WHILE: // WHILE
       case symbol_kind::S_LEXER_ERROR: // LEXER_ERROR
       case symbol_kind::S_COLON: // COLON
       case symbol_kind::S_EQUALSSIGN: // EQUALSSIGN
@@ -2032,16 +2108,16 @@ switch (yykind)
         value.template destroy< LexerToken > ();
         break;
 
-      case symbol_kind::S_77_method_base: // method.base
-        value.template destroy< MethodIndex > ();
-        break;
+      case symbol_kind::S_78_method_base: // method.base
+          value.template destroy<MethodIndex>();
+          break;
 
-      case symbol_kind::S_79_method_list: // method.list
-      case symbol_kind::S_80_method_list_opt: // method.list.opt
-        value.template destroy< MethodListIndex > ();
-        break;
+      case symbol_kind::S_80_method_list: // method.list
+      case symbol_kind::S_81_method_list_opt: // method.list.opt
+          value.template destroy<MethodListIndex>();
+          break;
 
-      case symbol_kind::S_116_name_list: // name.list
+      case symbol_kind::S_120_name_list: // name.list
           value.template destroy<NameListIndex>();
           break;
 
@@ -2061,9 +2137,9 @@ switch (yykind)
         value.template destroy< RegionListIndex > ();
         break;
 
-      case symbol_kind::S_76_method_name: // method.name
-      case symbol_kind::S_88_binary_op_raw: // binary_op.raw
-      case symbol_kind::S_89_binary_op_no_adverb: // binary_op.no_adverb
+      case symbol_kind::S_77_method_name: // method.name
+      case symbol_kind::S_89_binary_op_raw: // binary_op.raw
+      case symbol_kind::S_90_binary_op_no_adverb: // binary_op.no_adverb
           value.template destroy<SelectorIndex>();
           break;
 
@@ -2079,17 +2155,17 @@ switch (yykind)
         value.template destroy< SymbolLitIndex > ();
         break;
 
-      case symbol_kind::S_63_region_item: // region.item
-        value.template destroy< error_index<AnyExprIndex> > ();
-        break;
+      case symbol_kind::S_64_region_item: // region.item
+          value.template destroy<error_index<AnyExprIndex>>();
+          break;
 
-      case symbol_kind::S_68_class_super_opt: // class.super.opt
-        value.template destroy< maybe<ClassNameIdentifierIndex> > ();
-        break;
+      case symbol_kind::S_69_class_super_opt: // class.super.opt
+          value.template destroy<maybe<ClassNameIdentifierIndex>>();
+          break;
 
-      case symbol_kind::S_69_class_slot_opt: // class.slot.opt
-        value.template destroy< maybe<NamedIdentifierIndex> > ();
-        break;
+      case symbol_kind::S_70_class_slot_opt: // class.slot.opt
+          value.template destroy<maybe<NamedIdentifierIndex>>();
+          break;
 
       default:
         break;
@@ -2934,6 +3010,15 @@ switch (yykind)
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
+      static symbol_type make_WHILE(LexerToken v, location_type l) {
+          return symbol_type(token::TOKEN_WHILE, std::move(v), std::move(l));
+      }
+#else
+      static symbol_type make_WHILE(const LexerToken& v, const location_type& l) {
+          return symbol_type(token::TOKEN_WHILE, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
       make_LEXER_ERROR (LexerToken v, location_type l)
@@ -3224,7 +3309,7 @@ switch (yykind)
     // YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
     // Performed when YYTABLE does not specify something else to do.  Zero
     // means the default is an error.
-    static const unsigned char yydefact_[];
+    static const short yydefact_[];
 
     // YYPGOTO[NTERM-NUM].
     static const short yypgoto_[];
@@ -3478,9 +3563,9 @@ switch (yykind)
 
     /// Constants.
     enum {
-        yylast_ = 1763, ///< Last index in yytable_.
-        yynnts_ = 70, ///< Number of nonterminal symbols.
-        yyfinal_ = 62 ///< Termination state number.
+        yylast_ = 2211, ///< Last index in yytable_.
+        yynnts_ = 73, ///< Number of nonterminal symbols.
+        yyfinal_ = 63 ///< Termination state number.
     };
 
 
@@ -3492,7 +3577,7 @@ switch (yykind)
 
 #line 7 "langutils/sc_parser/src/sc_grammar.y"
 } } } // sc::ast::parser
-#line 3512 "langutils/sc_parser/src/sc_grammar_parser.hpp"
+#line 3610 "langutils/sc_parser/src/sc_grammar_parser.hpp"
 
 
 #endif // !YY_YY_LANGUTILS_SC_PARSER_SRC_SC_GRAMMAR_PARSER_HPP_INCLUDED
