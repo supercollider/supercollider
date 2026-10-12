@@ -143,7 +143,8 @@ jobs:
 
       - name: install homebrew packages
         if: matrix.homebrew-packages
-        run: brew install ${{ matrix.homebrew-packages }} --quiet
+        # coreutils provides timeout for the doc build
+        run: brew install coreutils ${{ matrix.homebrew-packages }} --quiet
 
       - name: uninstall homebrew packages
         if: matrix.homebrew-uninstall
@@ -221,7 +222,7 @@ jobs:
       - name: Build help
         if: matrix.build_help
         continue-on-error: false
-        run: cmake --build $BUILD_PATH --config Release --target Help
+        run: timeout 5m cmake --build $BUILD_PATH --config Release --target Help
 
       - name: create help archive
         if: matrix.build_help
