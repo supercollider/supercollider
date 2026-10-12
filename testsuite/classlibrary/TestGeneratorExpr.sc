@@ -27,4 +27,18 @@ TestGeneratorExpr : UnitTest {
 			[[10, 0], [11, 1], [12, 2], [13, 3], [14, 4], [15, 5]]
 		);
 	}
+
+	test_side_effect_and_exit {
+		var log = [];
+		var result = all {: z, x <- (1..20), var z = (x*x-x) div: 2,  :: log = log.add([x,z]), :while z < 50 };
+		this.assertEquals(
+			result,
+			[0, 1, 3, 6, 10, 15, 21, 28, 36, 45]
+		);
+
+		this.assertEquals(
+			log,
+			[[1, 0], [2, 1], [3, 3], [4, 6], [5, 10], [6, 15], [7, 21], [8, 28], [9, 36], [10, 45], [11, 55]]
+		);
+	}
 }
