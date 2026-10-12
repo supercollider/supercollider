@@ -142,7 +142,6 @@ jobs:
           fi
 
       - name: install homebrew packages
-        if: matrix.homebrew-packages
         # coreutils provides timeout for the doc build
         run: brew install coreutils ${{ matrix.homebrew-packages }} --quiet
 
