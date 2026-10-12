@@ -221,7 +221,7 @@ jobs:
       - name: Build help
         if: matrix.build_help
         continue-on-error: false
-        run: timeout 5m cmake --build $BUILD_PATH --config Release --target Help
+        run: cmake --build $BUILD_PATH --config Release --target Help
 
       - name: create help archive
         if: matrix.build_help
