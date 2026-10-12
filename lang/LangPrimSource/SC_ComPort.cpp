@@ -64,13 +64,15 @@ template <> struct MessageHandler<HandlerType::OSC> {
                               int replyPort, std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
         const double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
 
-        auto packet = std::make_unique<OSC_Packet>(OSC_Packet { std::move(data),
-                                                                dataSize,
-                                                                {
-                                                                    replyAddress, protocol, replyPort, replySocket,
-                                                                    nullptr, // mReplyFunc
-                                                                    nullptr // mReplyData
-                                                                } });
+        ReplyAddress addrObject;
+        addrObject.mProtocol = protocol;
+        addrObject.mAddress = replyAddress;
+        addrObject.mSocket = replySocket;
+        addrObject.mPort = replyPort;
+        addrObject.mReplyFunc = nullptr;
+        addrObject.mReplyData = nullptr;
+
+        auto packet = std::make_unique<OSC_Packet>(OSC_Packet { std::move(data), dataSize, std::move(addrObject) });
 
         ProcessOSCPacket(std::move(packet), localPort, timeReceived);
     }

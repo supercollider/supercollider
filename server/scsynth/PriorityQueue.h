@@ -20,13 +20,15 @@
 
 #pragma once
 
+#include "SC_Types.h"
+
 #include <stdio.h>
 #include <math.h>
 #include <limits>
 
 #define SANITYCHECK 0
 
-const int64 kMaxInt64 = std::numeric_limits<int64>::max();
+constexpr int64 kMaxInt64 = std::numeric_limits<int64>::max();
 
 template <class Event, int N> class PriorityQueueT {
 public:

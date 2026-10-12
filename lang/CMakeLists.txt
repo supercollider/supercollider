@@ -93,7 +93,6 @@ if(NOT EMSCRIPTEN)
         LangSource/SC_TerminalClient.cpp
         LangSource/SC_CLIOptions.cpp
         LangSource/cmdLineFuncs.cpp
-        ${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
     )
 else()
     list(APPEND sclang_sources

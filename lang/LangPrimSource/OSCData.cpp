@@ -29,9 +29,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdexcept>
-#include <new>
 #include <vector>
-#include <iostream>
 
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
@@ -261,15 +259,17 @@ static int makeSynthMsgWithTags(big_scpacket* packet, PyrSlot* slots, int size) 
 
 void PerformOSCBundle(int inSize, const char* inData, PyrObject* inReply, int inPortNum);
 void PerformOSCMessage(int inSize, const char* inData, PyrObject* inReply, int inPortNum, double time);
-static PyrObject* ConvertReplyAddress(ReplyAddress* inReply);
+static PyrObject* ConvertReplyAddress(const ReplyAddress& inReply);
 
-static void localServerReplyFunc(struct ReplyAddress* inReplyAddr, char* inBuf, int inSize) {
+static void localServerReplyFunc(const ReplyAddress* inReplyAddr, const char* inBuf, int inSize) {
+    assert(inReplyAddr != nullptr);
+
     double timeReceived = elapsedTime();
     bool isBundle = IsBundle(inBuf);
 
     gLangMutex.lock();
     if (gClassLibraryInfo.acceptsInput()) {
-        PyrObject* replyObj = ConvertReplyAddress(inReplyAddr);
+        PyrObject* replyObj = ConvertReplyAddress(*inReplyAddr);
         if (isBundle) {
             PerformOSCBundle(inSize, inBuf, replyObj, gUDPport->RealPortNum());
         } else {
@@ -770,7 +770,7 @@ static PyrObject* ConvertOSCBundle(int inSize, const char* inData) {
     return result;
 }
 
-static PyrObject* ConvertReplyAddress(ReplyAddress* inReply) {
+static PyrObject* ConvertReplyAddress(const ReplyAddress& inReply) {
     VMGlobals* g = gMainVMGlobals;
     PyrObject* obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
     PyrSlot* slots = obj->slots;
@@ -779,9 +779,9 @@ static PyrObject* ConvertReplyAddress(ReplyAddress* inReply) {
     // will not believe that the server is online
     SetInt(slots + 0, 0x7F000001);
 #else
-    SetInt(slots + 0, inReply->mAddress.to_v4().to_uint());
+    SetInt(slots + 0, inReply.mAddress.to_v4().to_uint());
 #endif
-    SetInt(slots + 1, inReply->mPort);
+    SetInt(slots + 1, inReply.mPort);
     return obj;
 }
 
@@ -844,7 +844,7 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
 
     gLangMutex.lock();
     if (gClassLibraryInfo.acceptsInput()) {
-        PyrObject* replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
+        PyrObject* replyObj = ConvertReplyAddress(inPacket->mReplyAddr);
         if (gClassLibraryInfo.acceptsInput()) {
             if (isBundle) {
                 PerformOSCBundle(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum);
@@ -872,7 +872,7 @@ void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddre
         ++g->sp;
         SetFloat<AssertDouble::CouldBeBadNan>(g->sp, time); // time
         ++g->sp;
-        SetObject(g->sp, ConvertReplyAddress(&replyAddress));
+        SetObject(g->sp, ConvertReplyAddress(replyAddress));
         ++g->sp;
         SetInt(g->sp, inPortNum);
         ++g->sp;

@@ -24,7 +24,6 @@
 #include "SC_SequencedCommand.h"
 #include "scsynthsend.h"
 #include <string.h>
-#include <ctype.h>
 #include "SC_Prototypes.h"
 #include "SC_Str4.h"
 #include "SC_WorldOptions.h"
@@ -179,7 +178,7 @@ void SC_NamedObj::SetName(const char* inName) {
 
 SC_LibCmd::SC_LibCmd(SC_CommandFunc inFunc): mFunc(inFunc) {}
 
-SCErr SC_LibCmd::Perform(World* inWorld, int inSize, const char* inData, ReplyAddress* inReply) {
+SCErr SC_LibCmd::Perform(World* inWorld, const char* inData, int inSize, const ReplyAddress* inReply) {
     SCErr err;
     //	int kSendError = 1;		// i.e., 0x01 | 0x02;
     try {

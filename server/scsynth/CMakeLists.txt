@@ -65,8 +65,6 @@ message(STATUS "Audio API (scsynth): ${AUDIOAPI}")
 
 set(scsynth_sources
         SC_BufGen.cpp
-
-        SC_ComPort.cpp
         SC_CoreAudio.cpp
         SC_Graph.cpp
         SC_GraphDef.cpp
@@ -76,6 +74,7 @@ set(scsynth_sources
         SC_Lib.cpp
         SC_MiscCmds.cpp
         SC_Node.cpp
+        SC_OSC.cpp
         SC_Rate.cpp
         SC_SequencedCommand.cpp
         SC_Str4.cpp
@@ -92,7 +91,6 @@ set(scsynth_sources
         ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_Errors.cpp
-        ${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
         ${CMAKE_SOURCE_DIR}/common/Samp.cpp
@@ -100,6 +98,10 @@ set(scsynth_sources
         ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp
 )
+
+if(NOT EMSCRIPTEN)
+    list(APPEND scsynth_sources SC_ComPort.cpp)
+endif()
 
 if(APPLE)
     set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
@@ -138,14 +140,7 @@ elseif (AUDIOAPI STREQUAL portaudio)
 elseif (AUDIOAPI STREQUAL bela)
     list(APPEND scsynth_sources SC_Bela.cpp)
 elseif (AUDIOAPI STREQUAL webaudio)
-    list(REMOVE_ITEM scsynth_sources
-            SC_ComPort.cpp
-            ${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
-    )
-    list(APPEND scsynth_sources
-            SC_WebAudio.cpp
-            ${CMAKE_SOURCE_DIR}/platform/wasm/SC_WebOsc.cpp
-    )
+    list(APPEND scsynth_sources SC_WebAudio.cpp)
 endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth

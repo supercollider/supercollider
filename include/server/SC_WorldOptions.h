@@ -71,7 +71,7 @@ struct WorldOptions {
 
     // networking options
     const char* mPassword = nullptr;
-    uint32 mMaxLogins = 64;
+    uint32 mMaxLogins = 32;
     bool mRendezvous = true;
 
     // NRT synthesis options
@@ -112,12 +112,14 @@ SCSYNTH_DLLEXPORT_C void SetPrintFunc(PrintFunc func);
 SCSYNTH_DLLEXPORT_C World* World_New(WorldOptions* inOptions);
 SCSYNTH_DLLEXPORT_C void World_Cleanup(World* inWorld, bool unloadPlugins = false);
 SCSYNTH_DLLEXPORT_C void World_NonRealTimeSynthesis(World* inWorld, struct WorldOptions* inOptions);
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(World* inWorld, const char* bindTo, int inPort);
-SCSYNTH_DLLEXPORT_C int World_OpenTCP(World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
-                                      int inBacklog);
+#ifndef __EMSCRIPTEN__
+SCSYNTH_DLLEXPORT_C bool World_OpenUDP(World* inWorld, const char* bindTo, int inPort);
+SCSYNTH_DLLEXPORT_C bool World_OpenTCP(World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
+                                       int inBacklog);
+#endif
 SCSYNTH_DLLEXPORT_C void World_WaitForQuit(World* inWorld, bool unloadPlugins = false);
-SCSYNTH_DLLEXPORT_C bool World_SendPacket(World* inWorld, int inSize, char* inData, ReplyFunc inFunc);
-SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize, char* inData, ReplyFunc inFunc,
+SCSYNTH_DLLEXPORT_C bool World_SendPacket(World* inWorld, int inSize, const char* inData, ReplyFunc inFunc);
+SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize, const char* inData, ReplyFunc inFunc,
                                                      void* inContext);
 SCSYNTH_DLLEXPORT_C int World_CopySndBuf(World* world, uint32 index, struct SndBuf* outBuf, bool onlyIfChanged,
                                          bool* didChange);

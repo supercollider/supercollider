@@ -60,9 +60,10 @@ SCBool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdF
 SCBool UnitDef_AddCmdEx(const char* inUnitDefName, const char* inCmdName, UnitCmdFuncEx inFunc);
 
 SCBool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData);
+SCErr PlugIn_DoCmd(World* inWorld, int inSize, const char* inArgs, const ReplyAddress* inReply);
 
-SCErr Unit_DoCmd(struct World* inWorld, int inSize, const char* inData, ReplyAddress* inReplyAddr);
-void Unit_RunCommand(const UnitCmd* cmd, Unit* unit, sc_msg_iter* msg, ReplyAddress* inReplyAddr);
+SCErr Unit_DoCmd(struct World* inWorld, int inSize, const char* inData, const ReplyAddress* inReplyAddr);
+void Unit_RunCommand(const UnitCmd* cmd, Unit* unit, sc_msg_iter* msg, const ReplyAddress* inReplyAddr);
 
 inline int32* GetKey(UnitCmd* inCmd) { return inCmd->mCmdName; }
 inline int32 GetHash(UnitCmd* inCmd) { return inCmd->mHash; }

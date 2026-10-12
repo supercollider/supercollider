@@ -59,12 +59,21 @@ constexpr size_t ERR_BUF_SIZE = 512;
         msg.geti(0);                                                                                                   \
     }
 
+static bool checkIfBundle(const char* data, int32 size) {
+    static constexpr auto bundleHeader = "#bundle";
+    auto header4 = reinterpret_cast<const int32*>(bundleHeader);
+    auto data4 = reinterpret_cast<const int32*>(data);
+    return size >= 8 && header4[0] == data4[0] && header4[1] == data4[1];
+}
+
+// If PerformCompletionMsg() returns PacketScheduled, ownership of the OSC data
+// has been transferred to the scheduler, so we must not attempt to free it ourselves.
 #define SEND_COMPLETION_MSG                                                                                            \
     if (mMsgSize) {                                                                                                    \
         OSC_Packet packet;                                                                                             \
         packet.mData = mMsgData;                                                                                       \
         packet.mSize = mMsgSize;                                                                                       \
-        packet.mIsBundle = false;                                                                                      \
+        packet.mIsBundle = checkIfBundle(mMsgData, mMsgSize);                                                          \
         packet.mReplyAddr = mReplyAddress;                                                                             \
         PacketStatus status = PerformCompletionMsg(mWorld, packet);                                                    \
         if (status == PacketScheduled) {                                                                               \
@@ -1143,37 +1152,30 @@ bool NotifyCmd::Stage2() {
                 // already in table - don't fail though..
                 int id = hw->mClientIDdict->at(mReplyAddress);
                 SendFailureWithIntValue("/notify", "already registered\n", id);
-                scprintf("/notify: already registered\n");
+                scprintf("WARNING: /notify: already registered\n");
                 return false;
             }
         }
 
         if (hw->mUsers->size() >= hw->mMaxUsers) {
             SendFailure("/notify", "too many users\n");
-            scprintf("/notify: too many users\n");
+            scprintf("WARNING: /notify: too many users\n");
             return false;
         }
 
-        int const clientID = popAvailableClientID(mID, *hw->mAvailableClientIDs);
+        const int clientID = popAvailableClientID(mID, *hw->mAvailableClientIDs);
 
         hw->mClientIDdict->emplace(mReplyAddress, clientID);
         hw->mUsers->insert(mReplyAddress);
+
         SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
-
     } else {
-        // keep this in sync w/ `World_RemoveClient` implementation for TCP de-registration via disconnect
-        auto const it = std::find(hw->mUsers->begin(), hw->mUsers->end(), mReplyAddress);
-        if (it != hw->mUsers->end()) {
-            // remove from list
-            hw->mAvailableClientIDs->push_back(hw->mClientIDdict->at(mReplyAddress)); // push the freed ID
-            hw->mClientIDdict->erase(mReplyAddress);
-            hw->mUsers->erase(it);
+        if (World_RemoveClient(mWorld, mReplyAddress)) {
             SendDone("/notify");
-            return false;
+        } else {
+            SendFailure("/notify", "not registered\n");
+            scprintf("WARNING: /notify: not registered\n");
         }
-
-        SendFailure("/notify", "not registered\n");
-        scprintf("/notify: not registered\n");
     }
     return false;
 }

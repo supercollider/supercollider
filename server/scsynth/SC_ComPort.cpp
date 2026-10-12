@@ -18,539 +18,409 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "SC_ComPort.h"
 #include "SC_Endian.h"
 #include "SC_HiddenWorld.h"
+#include "SC_Prototypes.h"
 #include "SC_WorldOptions.h"
-#include "sc_msg_iter.h"
+#include "SC_OSC.h"
 #include "SC_OscUtils.hpp"
 
-#include <array>
-#include <thread>
-
-#include <sys/types.h>
-#include "OSC_Packet.h"
-
-#include <boost/asio.hpp>
-
-#include "SC_CoreAudio.h"
-#include "SC_FifoMsg.h"
-
-#include "nova-tt/semaphore.hpp"
 #include "nova-tt/thread_priority.hpp"
 
 #ifdef USE_RENDEZVOUS
 #    include "Rendezvous.h"
 #endif
 
+#include <thread>
+
 using namespace std::placeholders;
-
-// forward declarations
-bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
-void World_RemoveClient(FifoMsg* msg);
-
-namespace scsynth {
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-static bool UnrollOSCPacket(World* inWorld, int inSize, char* inData, OSC_Packet* inPacket) {
-    if (!strcmp(inData, "#bundle")) { // is a bundle
-        char* data;
-        char* dataEnd = inData + inSize;
-        int len = 16;
-        bool hasNestedBundle = false;
-
-        // get len of nested messages only, without len of nested bundle(s)
-        data = inData + 16; // skip bundle header
-        while (data < dataEnd) {
-            int32 msgSize = OSCint(data);
-            data += sizeof(int32);
-            if (strcmp(data, "#bundle")) // is a message
-                len += sizeof(int32) + msgSize;
-            else
-                hasNestedBundle = true;
-            data += msgSize;
-        }
-
-        if (hasNestedBundle) {
-            if (len > 16) { // not an empty bundle
-                // add nested messages to bundle buffer
-                char* buf = (char*)malloc(len);
-                inPacket->mSize = len;
-                inPacket->mData = buf;
-
-                memcpy(buf, inData, 16); // copy bundle header
-                data = inData + 16; // skip bundle header
-                while (data < dataEnd) {
-                    int32 msgSize = OSCint(data);
-                    data += sizeof(int32);
-                    if (strcmp(data, "#bundle")) { // is a message
-                        memcpy(buf, data - sizeof(int32), sizeof(int32) + msgSize);
-                        buf += msgSize;
-                    }
-                    data += msgSize;
-                }
-
-                // process this packet without its nested bundle(s)
-                if (!ProcessOSCPacket(inWorld, inPacket)) {
-                    free(buf);
-                    return false;
-                }
-            }
-
-            // process nested bundle(s)
-            data = inData + 16; // skip bundle header
-            while (data < dataEnd) {
-                int32 msgSize = OSCint(data);
-                data += sizeof(int32);
-                if (!strcmp(data, "#bundle")) { // is a bundle
-                    OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-                    memcpy(packet, inPacket, sizeof(OSC_Packet)); // clone inPacket
-
-                    if (!UnrollOSCPacket(inWorld, msgSize, data, packet)) {
-                        free(packet);
-                        return false;
-                    }
-                }
-                data += msgSize;
-            }
-        } else { // !hasNestedBundle
-            char* buf = (char*)malloc(inSize);
-            inPacket->mSize = inSize;
-            inPacket->mData = buf;
-            memcpy(buf, inData, inSize);
-
-            if (!ProcessOSCPacket(inWorld, inPacket)) {
-                free(buf);
-                return false;
-            }
-        }
-    } else { // is a message
-        char* buf = (char*)malloc(inSize);
-        inPacket->mSize = inSize;
-        inPacket->mData = buf;
-        memcpy(buf, inData, inSize);
-
-        if (!ProcessOSCPacket(inWorld, inPacket)) {
-            free(buf);
-            return false;
-        }
-    }
-
-    return true;
-}
+using namespace boost;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+namespace scsynth {
+
+namespace {
+
 std::thread gAsioThread;
-boost::asio::io_context ioContext;
+asio::io_context gIoContext;
 
-const int kTextBufSize = 65536;
+// wrap the work guard in a std::unique_ptr so we can recreate it before we restart the ASIO thread.
+using WorkGuard = asio::executor_work_guard<asio::io_context::executor_type>;
+std::unique_ptr<WorkGuard> gIoWorkGuard;
 
-
-static void udp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
-    using namespace boost::asio;
-
-    ip::udp::socket* socket = reinterpret_cast<ip::udp::socket*>(addr->mReplyData);
-    ip::udp::endpoint endpoint(addr->mAddress, addr->mPort);
-
-    boost::system::error_code errc;
-    socket->send_to(buffer(msg, size), endpoint, 0, errc);
-
-    if (errc)
-        printf("%s\n", errc.message().c_str());
-}
-
-static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
-    // Write size as 32bit unsigned network-order integer
-    uint32 u = sc_htonl(size);
-
-    using namespace boost::asio;
-
-    // FIXME: connection could be destroyed!
-    ip::tcp::socket* socket = reinterpret_cast<ip::tcp::socket*>(addr->mReplyData);
-
-#if 0
-	ip::tcp::socket::message_flags flags = 0;
-#    ifdef MSG_NOSIGNAL
-	flags = MSG_NOSIGNAL;
-#    endif
-#endif
-
-    boost::system::error_code errc;
-    write(*socket, buffer(&u, sizeof(uint32)), errc);
-    if (errc)
-        printf("%s\n", errc.message().c_str());
-
-    write(*socket, buffer(msg, size), errc);
-    if (errc)
-        printf("%s\n", errc.message().c_str());
-}
-
-
-class SC_UdpInPort {
-    World* mWorld;
-    int mPortNum;
-    std::string mbindTo;
-    std::array<char, kTextBufSize> recvBuffer;
-
-    boost::asio::ip::udp::endpoint remoteEndpoint;
-
-#ifdef USE_RENDEZVOUS
-    std::thread mRendezvousThread;
-#endif
-
-    void handleReceivedUDP(const boost::system::error_code& error, std::size_t bytes_transferred) {
-        if (error == boost::asio::error::operation_aborted)
-            return; /* we're done */
-
-        if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset) {
-            // avoid windows error message
-            startReceiveUDP();
-            return;
-        }
-
-        if (error) {
-            printf("(scsynth) SC_UdpInPort: received error - %s\n", error.message().c_str());
-            startReceiveUDP();
-            return;
-        }
-
-        if (mWorld->mDumpOSC)
-            dumpOSC(mWorld->mDumpOSC, bytes_transferred, recvBuffer.data());
-
-        OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-
-        packet->mReplyAddr.mProtocol = kUDP;
-        packet->mReplyAddr.mAddress = remoteEndpoint.address();
-        packet->mReplyAddr.mPort = remoteEndpoint.port();
-        packet->mReplyAddr.mSocket = udpSocket.native_handle();
-        packet->mReplyAddr.mReplyFunc = udp_reply_func;
-        packet->mReplyAddr.mReplyData = (void*)&udpSocket;
-
-        packet->mSize = bytes_transferred;
-
-        if (!UnrollOSCPacket(mWorld, bytes_transferred, recvBuffer.data(), packet))
-            free(packet);
-
-        startReceiveUDP();
-    }
-
-    void startReceiveUDP() {
-        using namespace boost;
-        udpSocket.async_receive_from(asio::buffer(recvBuffer), remoteEndpoint,
-                                     std::bind(&SC_UdpInPort::handleReceivedUDP, this, _1, _2));
-    }
-
-    static constexpr int receiveBufferSize = 4 * 1024 * 1024;
-    static constexpr int sendBufferSize = 4 * 1024 * 1024;
-    static constexpr int fallbackBufferSize = 1 * 1024 * 1024;
-
-public:
-    boost::asio::ip::udp::socket udpSocket;
-
-    SC_UdpInPort(World* world, std::string bindTo, int inPortNum):
-        mWorld(world),
-        mPortNum(inPortNum),
-        mbindTo(bindTo),
-        udpSocket(ioContext) {
-        using namespace boost::asio;
-        udpSocket.open(ip::udp::v4());
-
-        udpSocket.bind(ip::udp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum));
-        if (inPortNum == 0)
-            mPortNum = udpSocket.local_endpoint().port();
-
-        try {
-            boost::asio::socket_base::send_buffer_size sendBufferSize;
-            udpSocket.get_option(sendBufferSize);
-            int defaultBufferSize = sendBufferSize.value();
-            if (defaultBufferSize < SC_UdpInPort::sendBufferSize) {
-                sendBufferSize = SC_UdpInPort::sendBufferSize;
-                boost::system::error_code ec;
-                udpSocket.set_option(sendBufferSize, ec);
-                if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
-                    sendBufferSize = SC_UdpInPort::fallbackBufferSize;
-                    udpSocket.set_option(sendBufferSize);
-                }
-            }
-        } catch (boost::system::system_error& e) { printf("WARNING: failed to set send buffer size (%s)\n", e.what()); }
-
-        try {
-            boost::asio::socket_base::receive_buffer_size receiveBufferSize;
-            udpSocket.get_option(receiveBufferSize);
-            int defaultBufferSize = receiveBufferSize.value();
-            if (defaultBufferSize < SC_UdpInPort::receiveBufferSize) {
-                receiveBufferSize = SC_UdpInPort::receiveBufferSize;
-                boost::system::error_code ec;
-                udpSocket.set_option(receiveBufferSize, ec);
-                if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
-                    receiveBufferSize = SC_UdpInPort::fallbackBufferSize;
-                    udpSocket.set_option(receiveBufferSize);
-                }
-            }
-        } catch (boost::system::system_error& e) {
-            printf("WARNING: failed to set receive buffer size (%s)\n", e.what());
-        }
-
-#ifdef USE_RENDEZVOUS
-        if (world->mRendezvous) {
-            mRendezvousThread = std::thread(&PublishPortToRendezvous, kSCRendezvous_UDP, mPortNum);
-        }
-#endif
-
-        startReceiveUDP();
-    }
-};
-
-
-class SC_TcpConnection : public std::enable_shared_from_this<SC_TcpConnection> {
-public:
-    using pointer = std::shared_ptr<SC_TcpConnection>;
-
-    World* mWorld;
-    boost::asio::ip::tcp::socket socket;
-
-    SC_TcpConnection(World* world, boost::asio::io_context& ioContext, class SC_TcpInPort* parent):
-        mWorld(world),
-        socket(ioContext),
-        mParent(parent) {}
-
-    ~SC_TcpConnection();
-
-    void start() {
-        const int kMaxPasswordLen = 32;
-        char buf[kMaxPasswordLen];
-        int32 size;
-        int32 msglen;
-
-        boost::system::error_code error;
-        boost::asio::ip::tcp::no_delay noDelayOption(true);
-        socket.set_option(noDelayOption, error);
-
-        mClientIdentification.mProtocol = kTCP;
-        mClientIdentification.mPort = socket.remote_endpoint().port();
-        mClientIdentification.mSocket = socket.native_handle();
-        mClientIdentification.mAddress = socket.remote_endpoint().address();
-
-        // first message must be the password. 4 tries.
-        bool validated = mWorld->hw->mPassword[0] == 0;
-        for (int i = 0; !validated && i < 4; ++i) {
-            // FIXME: error handling!
-            size = boost::asio::read(socket, boost::asio::buffer((void*)&msglen, sizeof(int32)));
-            if (size < 0)
-                return;
-
-            msglen = sc_ntohl(msglen);
-            if (msglen > kMaxPasswordLen)
-                break;
-
-            size = boost::asio::read(socket, boost::asio::buffer((void*)buf, msglen));
-            if (size < 0)
-                return;
-
-            validated = strcmp(buf, mWorld->hw->mPassword) == 0;
-
-            std::this_thread::sleep_for(std::chrono::seconds(i + 1)); // thwart cracking.
-        }
-
-        if (validated)
-            startReceiveMessage();
-    }
-
-private:
-    void startReceiveMessage() {
-        boost::asio::async_read(socket, boost::asio::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
-                                std::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(), _1, _2));
-    }
-
-    int32 OSCMsgLength;
-    char* data;
-    class SC_TcpInPort* mParent;
-
-    /** acts as the identification within SC world, which is necessary when deregistering upon disconnect. */
-    ReplyAddress mClientIdentification;
-
-    void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
-        if (error) {
-            if (error == boost::asio::error::eof)
-                return; // connection closed
-
-            printf("handleLengthReceived: error %s", error.message().c_str());
-            return;
-        }
-
-        // msglen is in network byte order
-        OSCMsgLength = sc_ntohl(OSCMsgLength);
-
-        data = (char*)malloc(OSCMsgLength);
-
-        boost::asio::async_read(socket, boost::asio::buffer(data, OSCMsgLength),
-                                std::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(), _1, _2));
-    }
-
-    void handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
-        if (error) {
-            free(data);
-            if (error == boost::asio::error::eof)
-                return; // connection closed
-
-            printf("handleMsgReceived: error %s", error.message().c_str());
-            return;
-        }
-
-        assert(bytes_transferred == OSCMsgLength);
-
-        if (mWorld->mDumpOSC)
-            dumpOSC(mWorld->mDumpOSC, bytes_transferred, data);
-
-        OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-
-        packet->mReplyAddr.mProtocol = kTCP;
-        packet->mReplyAddr.mReplyFunc = tcp_reply_func;
-        packet->mReplyAddr.mReplyData = (void*)&socket;
-        packet->mReplyAddr.mPort = socket.remote_endpoint().port();
-        packet->mReplyAddr.mSocket = socket.native_handle();
-        packet->mReplyAddr.mAddress = socket.remote_endpoint().address();
-
-        packet->mSize = OSCMsgLength;
-
-        if (!UnrollOSCPacket(mWorld, bytes_transferred, data, packet))
-            free(packet);
-
-        startReceiveMessage();
-    }
-};
-
-class SC_TcpInPort {
-    World* mWorld;
-    boost::asio::ip::tcp::acceptor acceptor;
-
-#ifdef USE_RENDEZVOUS
-    std::thread mRendezvousThread;
-#endif
-
-    std::atomic<int> mAvailableConnections;
-    friend class SC_TcpConnection;
-
-public:
-    SC_TcpInPort(World* world, const std::string& bindTo, int inPortNum, int inMaxConnections, int inBacklog):
-        mWorld(world),
-        acceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum)),
-        mAvailableConnections(inMaxConnections) {
-        // FIXME: backlog???
-
-#ifdef USE_RENDEZVOUS
-        if (world->mRendezvous) {
-            mRendezvousThread = std::thread(&PublishPortToRendezvous, kSCRendezvous_TCP,
-                                            inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum);
-        }
-#endif
-
-        startAccept();
-    }
-
-    void startAccept() {
-        if (mAvailableConnections > 0) {
-            --mAvailableConnections;
-            SC_TcpConnection::pointer newConnection(new SC_TcpConnection(mWorld, ioContext, this));
-
-            acceptor.async_accept(newConnection->socket,
-                                  std::bind(&SC_TcpInPort::handleAccept, this, newConnection, _1));
-        }
-    }
-
-    void handleAccept(SC_TcpConnection::pointer newConnection, const boost::system::error_code& error) {
-        if (!error)
-            newConnection->start();
-        startAccept();
-    }
-
-    void connectionDestroyed() {
-        if (!mWorld->mRunning)
-            return;
-        mAvailableConnections += 1;
-        startAccept();
-    }
-};
-
-SC_TcpConnection::~SC_TcpConnection() {
-    // we need to de-register our client. clients are matched by reply address.
-    // we use fifomsg to get access to the stage2 thread lock.
-    // the callback function removes its passed data, so we make a copy of our reply address.
-    FifoMsg msg;
-    msg.Set(mWorld, World_RemoveClient, nullptr, new ReplyAddress(mClientIdentification));
-    AudioDriver(mWorld)->SendMsgFromEngine(msg);
-
-    // now close the socket
-    try {
-        socket.close();
-    } catch (boost::system::system_error& e) { printf("ERROR: Could not close TCP socket: %s\n", e.what()); }
-    mParent->connectionDestroyed();
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-static void asioFunction() {
+void asioFunction() {
     /* NB: on macOS we just keep the default thread priority */
 #ifdef NOVA_TT_PRIORITY_RT
     int priority = nova::thread_priority_interval_rt().first;
     nova::thread_set_priority_rt(priority);
 #endif
 
-    auto work = boost::asio::make_work_guard(ioContext);
-    ioContext.run();
+    gIoContext.run();
 }
 
-void startAsioThread() { gAsioThread = std::thread(&asioFunction); }
+} // namespace
+
+void postAsioThread(std::function<void()> task) { asio::post(gIoContext, std::move(task)); }
+
+void startAsioThread() {
+    assert(!gAsioThread.joinable() && gIoWorkGuard == nullptr);
+    gIoContext.restart();
+    gIoWorkGuard = std::make_unique<WorkGuard>(asio::make_work_guard(gIoContext));
+    gAsioThread = std::thread(asioFunction);
+}
 
 void stopAsioThread() {
-    ioContext.stop();
+    // release the work guard
+    gIoWorkGuard.reset();
+    // let the ASIO thread finish all pending jobs
     gAsioThread.join();
 }
 
 bool asioThreadStarted() { return gAsioThread.joinable(); }
 
-}
-
-using namespace scsynth;
+} // namespace scsynth
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+static void udp_reply_func(const ReplyAddress* addr, const char* msg, int size) {
+    auto socket = reinterpret_cast<asio::ip::udp::socket*>(addr->mReplyData);
+    asio::ip::udp::endpoint endpoint(addr->mAddress, addr->mPort);
 
-SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize, char* inData, ReplyFunc inFunc,
-                                                     void* inContext) {
-    if (inSize > 0) {
-        if (inWorld->mDumpOSC)
-            dumpOSC(inWorld->mDumpOSC, inSize, inData);
+    system::error_code errc;
+    socket->send_to(asio::buffer(msg, size), endpoint, 0, errc);
 
-        OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+    if (errc && socket->is_open())
+        scprintf("UDP error: %s\n", errc.message().c_str());
+}
 
-        packet->mReplyAddr.mAddress = boost::asio::ip::address();
-        packet->mReplyAddr.mReplyFunc = inFunc;
-        packet->mReplyAddr.mReplyData = inContext;
-        packet->mReplyAddr.mSocket = 0;
-        packet->mReplyAddr.mProtocol = kUDP;
-        packet->mReplyAddr.mPort = 0;
+SC_UdpInPort::SC_UdpInPort(World* world, std::string_view bindTo, int inPortNum):
+    mWorld(world),
+    mPortNum(inPortNum),
+    mbindTo(bindTo),
+    mSocket(scsynth::gIoContext, asio::ip::udp::v4()) {
+    mSocket.bind(asio::ip::udp::endpoint(asio::ip::make_address(bindTo), inPortNum));
+    if (inPortNum == 0)
+        mPortNum = mSocket.local_endpoint().port();
 
-        if (!UnrollOSCPacket(inWorld, inSize, inData, packet)) {
-            free(packet);
+    try {
+        asio::socket_base::send_buffer_size sendBufferSize;
+        mSocket.get_option(sendBufferSize);
+        int defaultBufferSize = sendBufferSize.value();
+        if (defaultBufferSize < SC_UdpInPort::sendBufferSize) {
+            sendBufferSize = SC_UdpInPort::sendBufferSize;
+            system::error_code ec;
+            mSocket.set_option(sendBufferSize, ec);
+            if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
+                sendBufferSize = SC_UdpInPort::fallbackBufferSize;
+                mSocket.set_option(sendBufferSize);
+            }
+        }
+    } catch (const system::system_error& e) { scprintf("WARNING: failed to set send buffer size (%s)\n", e.what()); }
+
+    try {
+        asio::socket_base::receive_buffer_size receiveBufferSize;
+        mSocket.get_option(receiveBufferSize);
+        int defaultBufferSize = receiveBufferSize.value();
+        if (defaultBufferSize < SC_UdpInPort::receiveBufferSize) {
+            receiveBufferSize = SC_UdpInPort::receiveBufferSize;
+            system::error_code ec;
+            mSocket.set_option(receiveBufferSize, ec);
+            if (ec && defaultBufferSize < SC_UdpInPort::fallbackBufferSize) {
+                receiveBufferSize = SC_UdpInPort::fallbackBufferSize;
+                mSocket.set_option(receiveBufferSize);
+            }
+        }
+    } catch (const system::system_error& e) { scprintf("WARNING: failed to set receive buffer size (%s)\n", e.what()); }
+
+#ifdef USE_RENDEZVOUS
+    if (world->mRendezvous) {
+        mRendezvousThread = std::thread(PublishPortToRendezvous, kSCRendezvous_UDP, mPortNum);
+    }
+#endif
+
+    startReceiveUDP();
+}
+
+SC_UdpInPort::~SC_UdpInPort() {
+    close();
+#ifdef USE_RENDEZVOUS
+    mRendezvousThread.join();
+#endif
+}
+
+void SC_UdpInPort::close() {
+    if (mSocket.is_open()) {
+        try {
+            mSocket.close();
+        } catch (const system::system_error& e) { scprintf("ERROR: Could not close UDP socket: %s\n", e.what()); }
+    }
+}
+
+void SC_UdpInPort::handleReceivedUDP(const system::error_code& error, std::size_t bytesTransferred) {
+    if (error) {
+        if (error == asio::error::connection_refused || error == asio::error::connection_reset) {
+            // ignore windows error message
+            startReceiveUDP();
+        } else if (mSocket.is_open()) {
+            scprintf("(scsynth) SC_UdpInPort: received error - %s\n", error.message().c_str());
+#if 1
+            startReceiveUDP();
+#endif
+        }
+        // don't try to receive if the socket has been already closed!
+        return;
+    }
+
+    if (mWorld->mDumpOSC)
+        dumpOSC(mWorld->mDumpOSC, mRecvBuffer.data(), bytesTransferred);
+
+    auto packet = std::make_unique<OSC_Packet>();
+    packet->mReplyAddr.mProtocol = kUDP;
+    packet->mReplyAddr.mAddress = mRemoteEndpoint.address();
+    packet->mReplyAddr.mPort = mRemoteEndpoint.port();
+    packet->mReplyAddr.mSocket = mSocket.native_handle();
+    packet->mReplyAddr.mReplyFunc = udp_reply_func;
+    packet->mReplyAddr.mReplyData = (void*)&mSocket;
+
+    UnrollOSCPacket(mWorld, mRecvBuffer.data(), bytesTransferred, std::move(packet));
+
+    startReceiveUDP();
+}
+
+void SC_UdpInPort::startReceiveUDP() {
+    mSocket.async_receive_from(asio::buffer(mRecvBuffer), mRemoteEndpoint,
+                               std::bind(&SC_UdpInPort::handleReceivedUDP, this, _1, _2));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static void tcp_reply_func(const ReplyAddress* addr, const char* msg, int size) {
+    // Write size as 32bit unsigned network-order integer
+    uint32 u = sc_htonl(size);
+
+    // FIXME: connection could be destroyed!
+    auto socket = reinterpret_cast<asio::ip::tcp::socket*>(addr->mReplyData);
+
+#if 0
+    asio::ip::tcp::socket::message_flags flags = 0;
+#    ifdef MSG_NOSIGNAL
+    flags = MSG_NOSIGNAL;
+#    endif
+#endif
+
+    system::error_code errc;
+    asio::write(*socket, asio::buffer(&u, sizeof(uint32)), errc);
+    if (!errc) {
+        asio::write(*socket, asio::buffer(msg, size), errc);
+    }
+
+    if (errc && socket->is_open())
+        scprintf("TCP error: %s\n", errc.message().c_str());
+}
+
+SC_TcpConnection::SC_TcpConnection(World* world, asio::io_context& ioContext, class SC_TcpInPort* parent):
+    mWorld(world),
+    mParent(parent),
+    mSocket(ioContext) {}
+
+SC_TcpConnection::~SC_TcpConnection() { doClose(); }
+
+bool SC_TcpConnection::start() {
+    try {
+        // start() should only be called once the connection has been accepted,
+        // so the socket should be open.
+        assert(mSocket.is_open());
+        mReplyAddress.mProtocol = kTCP;
+        mReplyAddress.mPort = mSocket.remote_endpoint().port();
+        mReplyAddress.mSocket = mSocket.native_handle();
+        mReplyAddress.mAddress = mSocket.remote_endpoint().address();
+    } catch (const system::system_error& e) {
+        scprintf("ERROR: %s\n", e.what());
+        return false;
+    }
+
+    system::error_code error;
+    asio::ip::tcp::no_delay noDelayOption(true);
+    mSocket.set_option(noDelayOption, error);
+
+    // first message must be the password. 4 tries.
+    bool validated = mWorld->hw->mPassword[0] == 0;
+    for (int i = 0; !validated && i < 4; ++i) {
+        // FIXME: error handling!
+        int32 msglen = 0;
+        asio::read(mSocket, asio::buffer((void*)&msglen, sizeof(int32)), error);
+        if (error)
             return false;
+
+        msglen = sc_ntohl(msglen);
+        if (msglen > kMaxPasswordLen)
+            break;
+
+        char buf[kMaxPasswordLen];
+        asio::read(mSocket, asio::buffer((void*)buf, msglen), error);
+        if (error)
+            return false;
+
+        validated = strncmp(buf, mWorld->hw->mPassword, msglen) == 0;
+
+        std::this_thread::sleep_for(std::chrono::seconds(i + 1)); // thwart cracking.
+    }
+
+    if (validated) {
+        startReceiveMessage();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void SC_TcpConnection::close() {
+    doClose();
+    // if the parent closes the connection, it does not want to be notified!
+    mParent = nullptr;
+}
+
+void SC_TcpConnection::doClose() {
+    if (mSocket.is_open()) {
+        try {
+            mSocket.close();
+        } catch (const system::system_error& e) { scprintf("ERROR: Could not close TCP socket: %s\n", e.what()); }
+    }
+}
+
+void SC_TcpConnection::startReceiveMessage() {
+    async_read(mSocket, asio::buffer(&mOSCMsgLength, sizeof(mOSCMsgLength)),
+               std::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(), _1, _2));
+}
+
+void SC_TcpConnection::handleLengthReceived(const system::error_code& error, size_t bytesTransferred) {
+    if (error) {
+        if (mSocket.is_open()) {
+            if (error != asio::error::eof)
+                scprintf("handleLengthReceived: error %s", error.message().c_str());
+
+            doClose();
+
+            if (mParent)
+                mParent->connectionClosed(shared_from_this());
+        }
+        return;
+    }
+
+    // msglen is in network byte order
+    const auto msgLength = sc_ntohl(mOSCMsgLength);
+
+    mOSCMsgData.resize(msgLength);
+
+    async_read(mSocket, asio::buffer(mOSCMsgData.data(), msgLength),
+               std::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(), _1, _2));
+}
+
+void SC_TcpConnection::handleMsgReceived(const system::error_code& error, size_t bytesTransferred) {
+    if (error) {
+        if (mSocket.is_open()) {
+            if (error != asio::error::eof)
+                scprintf("handleMsgReceived: error %s", error.message().c_str());
+
+            doClose();
+
+            if (mParent)
+                mParent->connectionClosed(shared_from_this());
+        }
+        return;
+    }
+
+    assert(bytesTransferred == mOSCMsgData.size());
+
+    if (mWorld->mDumpOSC)
+        dumpOSC(mWorld->mDumpOSC, mOSCMsgData.data(), bytesTransferred);
+
+    auto packet = std::make_unique<OSC_Packet>();
+    packet->mReplyAddr.mAddress = mSocket.remote_endpoint().address();
+    packet->mReplyAddr.mProtocol = kTCP;
+    packet->mReplyAddr.mPort = mSocket.remote_endpoint().port();
+    packet->mReplyAddr.mSocket = mSocket.native_handle();
+    packet->mReplyAddr.mReplyFunc = tcp_reply_func;
+    packet->mReplyAddr.mReplyData = (void*)&mSocket;
+
+    UnrollOSCPacket(mWorld, mOSCMsgData.data(), bytesTransferred, std::move(packet));
+
+    startReceiveMessage();
+}
+
+
+SC_TcpInPort::SC_TcpInPort(World* world, std::string_view bindTo, int inPortNum, int inMaxConnections, int inBacklog):
+    mWorld(world),
+    mAcceptor(scsynth::gIoContext, asio::ip::tcp::endpoint(asio::ip::make_address(bindTo), inPortNum)),
+    mMaxNumConnections(inMaxConnections) {
+    // FIXME: backlog???
+
+#ifdef USE_RENDEZVOUS
+    if (world->mRendezvous) {
+        mRendezvousThread = std::thread(PublishPortToRendezvous, kSCRendezvous_TCP,
+                                        inPortNum == 0 ? mAcceptor.local_endpoint().port() : inPortNum);
+    }
+#endif
+
+    startAccept();
+}
+
+SC_TcpInPort::~SC_TcpInPort() {
+#ifdef USE_RENDEZVOUS
+    mRendezvousThread.join();
+#endif
+    close();
+}
+
+void SC_TcpInPort::close() {
+    if (mAcceptor.is_open()) {
+        try {
+            mAcceptor.close();
+        } catch (const system::system_error& e) { scprintf("ERROR: Could not close TCP acceptor: %s\n", e.what()); }
+        for (auto connection : mConnections) {
+            connection->close();
+        }
+        mConnections.clear();
+    }
+}
+
+void SC_TcpInPort::startAccept() {
+    if (mConnections.size() < mMaxNumConnections) {
+        auto newConnection = std::make_shared<SC_TcpConnection>(mWorld, scsynth::gIoContext, this);
+
+        mAcceptor.async_accept(newConnection->socket(),
+                               std::bind(&SC_TcpInPort::handleAccept, this, newConnection, _1));
+    }
+}
+
+void SC_TcpInPort::handleAccept(SC_TcpConnection::pointer newConnection, const system::error_code& error) {
+    if (!error) {
+        if (newConnection->start()) {
+            mConnections.emplace(newConnection);
+            assert(mConnections.size() <= mMaxNumConnections);
         }
     }
-    return true;
+    // wait for another connection (unless we have been closed)
+    if (mAcceptor.is_open())
+        startAccept();
 }
 
-SCSYNTH_DLLEXPORT_C bool World_SendPacket(World* inWorld, int inSize, char* inData, ReplyFunc inFunc) {
-    return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, nullptr);
+void SC_TcpInPort::connectionClosed(SC_TcpConnection::pointer connection) {
+    // TCP connections are closed on the ASIO thread, so we need to lock the NRT thread.
+    World_NRTLock(mWorld);
+    World_RemoveClient(mWorld, connection->replyAddress());
+    World_NRTUnlock(mWorld);
+    mConnections.erase(connection);
 }
 
-template <typename T, typename... Args> static bool protectedOpenPort(const char* socketType, Args&&... args) noexcept {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T, typename... Args> static T* protectedOpenPort(const char* socketType, Args&&... args) noexcept {
     try {
-        new T(std::forward<Args>(args)...);
-        return true;
-    } catch (const boost::system::system_error& exc) {
+        return new T(std::forward<Args>(args)...);
+    } catch (const system::system_error& exc) {
         // Special verbose message to help with common issue. Issue #3969
         if (exc.code() == boost::system::errc::address_in_use) {
             scprintf("\n*** ERROR: failed to open %s socket: address in use.\n"
@@ -561,19 +431,35 @@ template <typename T, typename... Args> static bool protectedOpenPort(const char
         } else {
             scprintf("\n*** ERROR: failed to open %s socket: %s\n", socketType, exc.what());
         }
-    } catch (const std::exception& exc) {
-        scprintf("\n*** ERROR: failed to open %s socket: %s\n", socketType, exc.what());
+    } catch (const std::exception& e) {
+        scprintf("\n*** ERROR: failed to open %s socket: %s\n", socketType, e.what());
     } catch (...) { scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType); }
+    return nullptr;
+}
+
+SCSYNTH_DLLEXPORT_C bool World_OpenUDP(World* inWorld, const char* bindTo, int inPort) {
+    if (inWorld->hw->mUdpInPort == nullptr) {
+        if (auto port = protectedOpenPort<SC_UdpInPort>("UDP", inWorld, bindTo, inPort)) {
+            inWorld->hw->mUdpInPort = port;
+            return true;
+        }
+    } else {
+        scprintf("\n*** ERROR: UDP port already opened.\n");
+    }
     return false;
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(World* inWorld, const char* bindTo, int inPort) {
-    return protectedOpenPort<SC_UdpInPort>("UDP", inWorld, bindTo, inPort);
-}
-
-SCSYNTH_DLLEXPORT_C int World_OpenTCP(World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
-                                      int inBacklog) {
-    return protectedOpenPort<SC_TcpInPort>("TCP", inWorld, bindTo, inPort, inMaxConnections, inBacklog);
+SCSYNTH_DLLEXPORT_C bool World_OpenTCP(World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
+                                       int inBacklog) {
+    if (inWorld->hw->mUdpInPort == nullptr) {
+        if (auto port = protectedOpenPort<SC_TcpInPort>("TCP", inWorld, bindTo, inPort, inMaxConnections, inBacklog)) {
+            inWorld->hw->mTcpInPort = port;
+            return true;
+        }
+    } else {
+        scprintf("\n*** ERROR: TCP port already opened.\n");
+    }
+    return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

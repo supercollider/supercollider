@@ -26,13 +26,13 @@
 
 struct World;
 
-typedef SCErr (*SC_CommandFunc)(World* inWorld, int inSize, const char* inData, ReplyAddress* inReply);
+typedef SCErr (*SC_CommandFunc)(World* inWorld, int32 inSize, const char* inData, const ReplyAddress* inReply);
 
 class SC_LibCmd : public SC_NamedObj {
 public:
     SC_LibCmd(SC_CommandFunc inFunc);
 
-    SCErr Perform(World* inWorld, int inSize, const char* inData, ReplyAddress* inReply);
+    SCErr Perform(World* inWorld, const char* inData, int32 inSize, const ReplyAddress* inReply);
 
 private:
     SC_CommandFunc mFunc;

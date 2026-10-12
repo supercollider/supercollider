@@ -20,7 +20,6 @@
 
 
 #include "SC_Lib_Cintf.h"
-#include "SC_CoreAudio.h"
 #include "SC_UnitDef.h"
 #include "SC_BufGen.h"
 #include "SC_World.h"
@@ -30,6 +29,7 @@
 #include "SC_Filesystem.hpp"
 #include "ErrorMessage.hpp" // for apiVersionMismatch, apiVersionMissing
 #include <iostream>
+#include <vector>
 
 #ifdef STATIC_PLUGINS
 #    include "../plugins/SC_StaticPlugins.h"

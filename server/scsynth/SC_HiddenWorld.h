@@ -41,6 +41,9 @@
 #    include <SC_SndFileHelpers.hpp> // includes sndfile.h with appropriate configuration
 #endif
 
+class SC_UdpInPort;
+class SC_TcpInPort;
+
 extern HashTable<struct UnitDef, Malloc>* gUnitDefLib;
 
 
@@ -103,13 +106,16 @@ struct HiddenWorld {
     class AllocPool* mAllocPool;
     IntHashTable<struct Node, AllocPool>* mNodeLib;
     GrafDefTable* mGraphDefLib;
+
+    SC_UdpInPort* mUdpInPort;
+    SC_TcpInPort* mTcpInPort;
     uint32 mMaxUsers;
     Clients* mUsers;
     ClientIDs* mAvailableClientIDs;
     ClientIDDict* mClientIDdict;
+    char mPassword[32];
 
     class SC_AudioDriver* mAudioDriver;
-    char mPassword[32];
 
     uint32 mMaxWireBufs;
     float* mWireBufSpace;

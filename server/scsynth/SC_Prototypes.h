@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <ctype.h> // for size_t
 #include <cstdlib>
 #include <cstring>
 
@@ -38,6 +37,7 @@ void zfree(void* ptr);
 
 ////////////////////////////////////////////////////////////////////////
 
+struct ReplyAddress;
 struct World;
 
 void World_Run(World* inWorld);
@@ -55,6 +55,7 @@ void World_NRTUnlock(World* world);
 size_t World_TotalFree(World* inWorld);
 size_t World_LargestFreeChunk(World* inWorld);
 
+bool World_RemoveClient(World* inWorld, const ReplyAddress& clientAddress);
 
 int32 GetKey(struct Node* inNode);
 int32 GetHash(struct Node* inNode);
@@ -85,7 +86,6 @@ int32 GetHash(struct PlugInCmd* inPlugInCmd);
 bool AddPlugInCmd(struct PlugInCmd* inPlugInCmd);
 bool RemovePlugInCmd(struct PlugInCmd* inPlugInCmd);
 struct PlugInCmd* GetPlugInCmd(int32* inKey);
-SCErr PlugIn_DoCmd(World* inWorld, int inSize, const char* inArgs, struct ReplyAddress* inReply);
 
 int32* GetKey(struct GraphDef* inGraphDef);
 int32 GetHash(struct GraphDef* inGraphDef);

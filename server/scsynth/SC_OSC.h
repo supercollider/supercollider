@@ -17,24 +17,26 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
-/*
- *  OSC_Packet.h
- *  SC3synth
- *
- *  Created by James McCartney on Sat Aug 24 2002.
- *  Copyright (c) 2001 __MyCompanyName__. All rights reserved.
- *
- */
 
 #pragma once
 
 #include "SC_ReplyImpl.hpp"
 #include "SC_Types.h"
 
-struct OSC_Packet {
-    char* mData;
-    int32 mSize;
-    bool mIsBundle;
+#include <memory>
 
-    ReplyAddress mReplyAddr;
+struct World;
+
+struct OSC_Packet {
+    // OSC_Packet does not necessarily own the data. Also, depending on how the packet was created,
+    // the data must be freed on the RT or NRT thread.
+    char* mData = nullptr;
+    int32 mSize = 0;
+    bool mIsBundle = false;
+    ReplyAddress mReplyAddr {};
 };
+
+/** @brief processes an OSC packet and unrolls nested bundles if necessary.
+ *  @note inPacket is already initialized, except for the actual OSC data
+ */
+bool UnrollOSCPacket(World* inWorld, const char* inData, int32 inSize, std::unique_ptr<OSC_Packet> inPacket);

@@ -41,12 +41,31 @@ struct ReplyAddress {
     void* mReplyData;
 };
 
-void null_reply_func(struct ReplyAddress* addr, char* msg, int size);
+inline void null_reply_func(const ReplyAddress* addr, const char* msg, int size) {}
 
-bool operator==(const ReplyAddress& a, const ReplyAddress& b);
+inline bool operator==(const ReplyAddress& a, const ReplyAddress& b) {
+#ifdef __EMSCRIPTEN__
+    return a.mProtocol == b.mProtocol && a.mPort == b.mPort && a.mSocket == b.mSocket;
+#else
+    return a.mAddress == b.mAddress && a.mProtocol == b.mProtocol && a.mPort == b.mPort && a.mSocket == b.mSocket;
+#endif
+}
 
-bool operator<(const ReplyAddress& a, const ReplyAddress& b);
+inline bool operator<(const ReplyAddress& a, const ReplyAddress& b) {
+#ifndef __EMSCRIPTEN__
+    if (a.mAddress != b.mAddress) {
+        return a.mAddress < b.mAddress;
+    }
+#endif
+    if (a.mPort != b.mPort) {
+        return a.mPort < b.mPort;
+    } else if (a.mSocket != b.mSocket) {
+        return a.mSocket < b.mSocket;
+    } else {
+        return a.mProtocol < b.mProtocol;
+    }
+}
 
-inline void SendReply(struct ReplyAddress* inReplyAddr, char* inBuf, int inSize) {
+inline void SendReply(const ReplyAddress* inReplyAddr, const char* inBuf, int inSize) {
     (inReplyAddr->mReplyFunc)(inReplyAddr, inBuf, inSize);
 }

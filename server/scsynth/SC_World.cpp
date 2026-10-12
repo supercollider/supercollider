@@ -31,6 +31,7 @@
 #include "SC_UnitDef.h"
 #include "SC_BufGen.h"
 #include "SC_Node.h"
+#include "SC_ComPort.h"
 #include "SC_CoreAudio.h"
 #include "SC_Group.h"
 #include "SC_Errors.h"
@@ -43,8 +44,8 @@
 #include "SC_StringParser.h"
 #include "SC_fftlib.hpp"
 
+#include <cstdio>
 #include <vector>
-#include <stdio.h>
 
 #ifdef _WIN32
 #    include <direct.h>
@@ -271,7 +272,7 @@ void World_LoadGraphDefs(World* world) {
         SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), SC_STRPARSE_PATHDELIMITER);
         while (!sp.AtEnd()) {
             GraphDef* list = nullptr;
-            char* path = const_cast<char*>(sp.NextToken());
+            const char* path = sp.NextToken();
             list = GraphDef_LoadDir(world, path, list);
             GraphDef_Define(world, list);
         }
@@ -284,12 +285,14 @@ void World_LoadGraphDefs(World* world) {
     }
 }
 
+#ifndef __EMSCRIPTEN__
 namespace scsynth {
 void startAsioThread();
 void stopAsioThread();
 bool asioThreadStarted();
+void postAsioThread(std::function<void()> task);
 }
-
+#endif
 
 World* World_New(WorldOptions* inOptions) {
 #if (_POSIX_MEMLOCK - 0) >= 200112L
@@ -346,7 +349,6 @@ World* World_New(WorldOptions* inOptions) {
         hw->mClientIDdict = new ClientIDDict();
         hw->mHiddenID = -8;
         hw->mRecentID = -8;
-
 
         world->mNumUnits = 0;
         world->mNumGraphs = 0;
@@ -468,15 +470,15 @@ World* World_New(WorldOptions* inOptions) {
 #ifdef __APPLE__
             SC::Apple::disableAppNap();
 #endif
-
-
         } else {
             hw->mAudioDriver = nullptr;
         }
 
+#ifndef __EMSCRIPTEN__
         if (!scsynth::asioThreadStarted()) {
             scsynth::startAsioThread();
         }
+#endif
 
     } catch (std::exception& exc) {
         scprintf("Exception in World_New: %s\n", exc.what());
@@ -569,7 +571,7 @@ bool nextOSCPacket(FILE* file, std::vector<char>& buffer, OSC_Packet& packet, in
     return true;
 }
 
-void PerformOSCBundle(World* inWorld, OSC_Packet* inPacket);
+void PerformOSCBundle(World* inWorld, const OSC_Packet& inPacket);
 
 #ifndef NO_LIBSNDFILE
 void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
@@ -736,7 +738,7 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
                 else if (world->mSampleOffset >= bufLength)
                     world->mSampleOffset = bufLength - 1;
 
-                PerformOSCBundle(world, &packet);
+                PerformOSCBundle(world, packet);
                 if (!nextOSCPacket(cmdFile, buffer, packet, schedTime)) {
                     run = false;
                     break;
@@ -988,12 +990,29 @@ void World_Cleanup(World* world, bool unloadPlugins) {
     if (!world)
         return;
 
-    if (scsynth::asioThreadStarted()) {
-        scsynth::stopAsioThread();
-    }
-
     HiddenWorld* hw = world->hw;
     assert(hw != nullptr);
+
+    hw->mTerminating = true;
+
+#ifndef __EMSCRIPTEN__
+    if (scsynth::asioThreadStarted()) {
+        if (world->mRealTime) {
+            // We close all open UDP and TCP ports on the ASIO thread and let any pending tasks
+            // finish gracefully. Note that we only actually destroy the ports *after* we have
+            // joined the ASIO thread because that's when we know there are no more pending tasks.
+            scsynth::postAsioThread([hw]() {
+                if (hw->mUdpInPort)
+                    hw->mUdpInPort->close();
+                if (hw->mTcpInPort)
+                    hw->mTcpInPort->close();
+            });
+        }
+
+        // let the ASIO thread finish/cancel all pending tasks and then join it.
+        scsynth::stopAsioThread();
+    }
+#endif
 
     if (world->mRealTime)
         hw->mAudioDriver->Stop();
@@ -1047,6 +1066,7 @@ void World_Cleanup(World* world, bool unloadPlugins) {
         free_alig(world->mControlBus);
     free_alig(world->mAudioBus);
     delete[] world->mRGen;
+
     if (hw) {
 #ifndef NO_LIBSNDFILE
         if (hw->mNRTInputFile)
@@ -1056,6 +1076,8 @@ void World_Cleanup(World* world, bool unloadPlugins) {
         if (hw->mNRTCmdFile)
             fclose(hw->mNRTCmdFile);
 #endif
+        delete hw->mUdpInPort;
+        delete hw->mTcpInPort;
         delete hw->mUsers;
         delete hw->mAvailableClientIDs;
         delete hw->mClientIDdict;
@@ -1068,40 +1090,39 @@ void World_Cleanup(World* world, bool unloadPlugins) {
     free_alig(world);
 }
 
-/** @brief Gets called when a TCP client disconnects. Since the client may have
- *  registered via `/notify`, we need to remove the client from this list as well because otherwise
- *  the notification will be still send to the now closed socket.
- *  This implementation is similar to `NotifyCmd::Stage2` which handles the
- *  removal of UDP clients by sending `/notify 0`.
- *
- *  @details Contrary to UDP, TCP is stateful - i.e. a socket can get closed
- *  and we should avoid writing into it after it has been closed.
- *  Since there is no way of knowing if a UDP connection got dropped, we keep
- *  all UDP clients alive and can be reclaimed by a client via the internal logic of `/notify`.
- */
-void World_RemoveClient(FifoMsg* msg) {
-    auto* world = msg->mWorld;
-    auto* address = static_cast<ReplyAddress*>(msg->mData);
-    auto* hw = world->hw;
-
-    auto const it = hw->mUsers->find(*address);
-    if (it != hw->mUsers->end()) {
-        // make client ID free to be picked up by others again
-        auto const clientId = hw->mClientIDdict->at(*address);
-        hw->mAvailableClientIDs->push_back(clientId);
-
-        // remove it elsewhere
-        hw->mClientIDdict->erase(*address);
-        hw->mUsers->erase(it);
-    }
-    // free msg
-    delete address;
-}
-
-
 void World_NRTLock(World* world) { reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock(); }
 
 void World_NRTUnlock(World* world) { reinterpret_cast<SC_Lock*>(world->mNRTLock)->unlock(); }
+
+////////////////////////////////////////////////////////////////////////////////
+
+/** @brief Remove a client from the client list.
+ *
+ *  @note Only call on the NRT thread resp. with the NRT thread locked.
+ *
+ *  @details This function is called in two places:
+ *  1. `NotifyCmd::Stage2` which handles the removal of UDP clients via `/notify 0`.
+ *  2. `~SC_TcpConnection` which is called when a TCP connection has been closed
+ *
+ *  Contrary to UDP, TCP is stateful, i.e. a socket can get closed and we should avoid writing into
+ *  it after it has been closed. Since there is no way of knowing if a UDP connection got dropped,
+ *  we keep all UDP clients alive and can be reclaimed by a client via the internal logic of `/notify`.
+ */
+bool World_RemoveClient(World* inWorld, const ReplyAddress& clientAddress) {
+    auto* hw = inWorld->hw;
+
+    if (const auto it = hw->mUsers->find(clientAddress); it != hw->mUsers->end()) {
+        // make client ID free to be picked up by others again
+        const auto clientId = hw->mClientIDdict->at(clientAddress);
+        hw->mAvailableClientIDs->push_back(clientId);
+        // remove it elsewhere
+        hw->mClientIDdict->erase(clientAddress);
+        hw->mUsers->erase(it);
+        return true;
+    }
+
+    return false;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1172,7 +1193,7 @@ void TriggerMsg::Perform() {
     packet.addi(mTriggerID);
     packet.addf(mValue);
 
-    for (auto addr : *mWorld->hw->mUsers)
+    for (const auto& addr : *mWorld->hw->mUsers)
         SendReply(&addr, packet.data(), packet.size());
 }
 
@@ -1195,7 +1216,7 @@ void NodeReplyMsg::Perform() {
         packet.addf(mValues[i]);
     }
 
-    for (auto addr : *mWorld->hw->mUsers)
+    for (const auto& addr : *mWorld->hw->mUsers)
         SendReply(&addr, packet.data(), packet.size());
 
     // Free memory in realtime thread
@@ -1259,7 +1280,7 @@ void NodeEndMsg::Perform() {
         packet.addi(mIsGroup);
     }
 
-    for (auto addr : *mWorld->hw->mUsers)
+    for (const auto& addr : *mWorld->hw->mUsers)
         SendReply(&addr, packet.data(), packet.size());
 }
 
@@ -1276,8 +1297,7 @@ void DeleteGraphDefMsg::Perform() {
         packet.adds((char*)def->mNodeDef.mName);
 
         for (const auto& addr : *mWorld->hw->mUsers) {
-            // TODO: fix signature of SendReply and ReplyFunc
-            SendReply(const_cast<ReplyAddress*>(&addr), packet.data(), packet.size());
+            SendReply(&addr, packet.data(), packet.size());
         }
 
         GraphDef_Free(def);
@@ -1290,7 +1310,7 @@ void NotifyNoArgs(World* inWorld, char* inString) {
     small_scpacket packet;
     packet.adds(inString);
 
-    for (auto addr : *inWorld->hw->mUsers)
+    for (const auto& addr : *inWorld->hw->mUsers)
         SendReply(&addr, packet.data(), packet.size());
 }
 
