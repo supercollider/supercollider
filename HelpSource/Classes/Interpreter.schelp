@@ -103,7 +103,7 @@ method::cmdLine_
 This method is being deprecated, please use the method interpret directly.
 
 method::cmdLine
-This method is being deprecated it is unreliable and the same information can be obtained from the debug backtrace.
+This method is being deprecated. It returns the previously interpreted code, but it is unreliable and the same information can be obtained from the debug backtrace.
 
 
 private::prExecuteFile
