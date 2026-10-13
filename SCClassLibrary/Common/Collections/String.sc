@@ -429,8 +429,31 @@ String[char] : RawArray {
 		if(path.basename == this) { Error("should not load a file from itself").throw };
 		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this).loadPaths(warn, action, args, kwargs)
 	}
+	resolveRelativeFolderRenderer { |path|
+		this.split.do { |pathPart|
+			if(pathPart == "..") {
+				path = path.dirname;
+			} {
+				path
+			}
+		};
+		if(thisProcess.platform.name == \windows) {
+			path = path.replace("/", "\\")
+		};
+		^path
+	}
+	cleanPathHierachyFormat {
+		var cleanedFormat;
+		cleanedFormat = if(this.beginsWith(".")) {
+			cleanedFormat = this.replaceRegexp("^\\.$", "")
+			.replaceRegexp("^(\\.(/|\\\\)|\\.\\.((/|\\\\)|))+", "")
+		} {
+			this
+		};
+		^cleanedFormat
+	}
 	resolveRelative {
-		var path, caller;
+		var path, caller, folder;
 		caller = thisMethod.getBackTrace.caller.functionDef;
 		if(caller.isKindOf(Method) && (caller != Interpreter.findMethod(\interpretPrintCmdLine))) {
 			path = caller.filenameSymbol.asString;
@@ -439,7 +462,8 @@ String[char] : RawArray {
 		};
 		if(this[0] == thisProcess.platform.pathSeparator) { ^this };
 		if(path.isNil) { Error("can't resolve relative to an unsaved file.\nPath to resolve: \"%\"\n".format(this)).throw };
-		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this)
+		folder = this.resolveRelativeFolderRenderer(path).dirname;
+		^(folder +/+ thisProcess.platform.pathSeparator +/+ this.cleanPathHierachyFormat)
 	}
 	include {
 		if(Quarks.isInstalled(this).not) {
