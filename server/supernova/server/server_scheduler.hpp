@@ -87,6 +87,7 @@ public:
     void terminate() {
         cbs.run_callbacks(); // audio backend must be closed by now
         threads.terminate_threads();
+        threads.release_queue();
     }
 
     void add_sync_callback(audio_sync_callback* cb) {
