@@ -29,6 +29,15 @@ struct TypedGraphHelper : TypedGraphHelperBase {
     using IndexSequence = std::make_index_sequence<sizeof...(Nodes)>;
     using UntypedStrongIndex = typename std::tuple_element_t<0, Tuple>::Index::UnderlyingIndex;
 
+    template <typename N> [[nodiscard]] static constexpr bool check_enum_appears_once() {
+        return ((N::Index::Possible[0] == Nodes::Index::Possible[0] ? 1 : 0) + ...) == 1;
+    }
+
+    static_assert(((Nodes::Index::size_of_set == 1) && ...),
+                  "Each node must have an index type that contains a single enum entry.");
+    // This is really slow O(N^2), but should be true.
+    // static_assert((check_enum_appears_once<Nodes>() && ...), "Some nodes produce the same typed index.");
+
     using UnderlyingEnum = ENUM;
     template <UnderlyingEnum... Es> using IndexCreator = INDEXCREATOR<Es...>;
 
@@ -171,7 +180,7 @@ template <typename OptIndex, //
 struct GraphImplementation {
 public: // This is meant to be privately inherited from.
     ////////////////////////////////////////////////////////////////////////////////
-    static_assert(HELPER::template all_node_types<IsTrivial>());
+    static_assert(HELPER::template all_node_types<IsTrivial>(), "Nodes should not allocate or require destructors.");
     static_assert(sc::util::is_a_pair<OptIndex, Index>(),
                   "Should have an optional and an non-optional strong index here. ");
     static_assert(std::is_convertible_v<OptIndex, bool>, "Probably got OptIndex and Index the wrong way around.");
@@ -324,6 +333,15 @@ public: // This is meant to be privately inherited from.
         return m_last_child[*i];
     }
 
+    [[nodiscard]] constexpr size_t num_children(UntypedNodeIndex i) const {
+        const Edges& edges = m_node_edges[*i];
+        size_t count { 0 };
+        for (auto c = edges.first_child; c; m_node_edges[*c].next_sibling) {
+            count += 1;
+        }
+        return count;
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////
     // Checks type of untyped node.
@@ -375,6 +393,17 @@ public: // This is meant to be privately inherited from.
         return std::visit(
             action,
             std::visit([&](const auto& node) { return GraphImplementation::as_variant(i, node); }, m_node_payload[*i]));
+    }
+
+    template <size_t N, typename TypedIndex> //
+    [[nodiscard]] std::optional<std::array<
+        typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type::HeldType, N>> //
+    list_unpack(TypedIndex i) const {
+        static_assert(TypedIndex::is_list());
+        using Held = typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type::HeldType;
+        if (num_children(i) != N)
+            return {};
+        return list_unpack_impl<Held>(i, std::make_index_sequence<N> {});
     }
 
 
@@ -541,6 +570,19 @@ public: // This is meant to be privately inherited from.
     }
 
 private:
+    template <typename I, size_t... Ns>
+    std::array<I, sizeof...(Ns)> list_unpack_impl(UntypedNodeIndex i, std::index_sequence<Ns...>) const {
+        auto c = m_node_edges[*i].first_child;
+        const auto next = [&](size_t) {
+            assert(c);
+            auto out = c;
+            c = m_node_edges[*c].next_sibling;
+            return out;
+        };
+
+        return { next(Ns)... };
+    }
+
     [[nodiscard]] bool not_dead(UntypedNodeIndex i) const {
         return std::find(m_dead_nodes.begin(), m_dead_nodes.end(), i) == m_dead_nodes.end();
     }

@@ -83,7 +83,7 @@ auto create_error(sc::ast::parser::ParserContext& cxt, sc::lex::SourceCodeRange 
 // types
 ////////////////////////////////////////////////////////////////////////////////
 
-%type <ClassListOrExprListIndex> go
+%type <GoIndex> go
 
 %type <RegionListIndex> region
 %type <error_index<AnyExprIndex>> region.item 
@@ -144,13 +144,14 @@ auto create_error(sc::ast::parser::ParserContext& cxt, sc::lex::SourceCodeRange 
 %type <DictionaryEntryIndex> literal.dictionary.entry
 
 %type <NameListIndex> name.list
+%type <NamePackIndex> name.pack
 
 %type <BlockItemIndex> block.contents.item
 %type <BlockContentsListIndex> block.contents 
 %type <BlockIndex> block 
 %type <NilLitIndex> nil
 %type <BooleanLitIndex> boolean
-%type <SymbolLitIndex> symbol
+%type <AnySymbolIndex> symbol
 %type <StringLitIndex> string
 %type <IntLitIndex> integer
 %type <FloatLitIndex> float.raw float.raw_unsigned
@@ -158,8 +159,16 @@ auto create_error(sc::ast::parser::ParserContext& cxt, sc::lex::SourceCodeRange 
 %type <FloatProducingIndex> float
 %type <ASCIIIndex> ascii
 
+%type <RangeIndex> range 
+%type <AtMessageIndex> expr.base.range expr.dotrange
+%type <RangeGeneratorIndex> range.generator
+%type <RangeAssignIndex> expr.dotrange.assign expr.base.range.assign
+
+
 // misc
 %type <RWAccessorIndex> accessor 
+
+%type <FileAsFunctionIndex> file_as_func
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -177,8 +186,25 @@ auto create_error(sc::ast::parser::ParserContext& cxt, sc::lex::SourceCodeRange 
 
 go 
 	: region semicolon.opt YYEOF { $$ = cxt.graph.assign_root($region); }
+	| INTERPRET YYEOF { $$ = cxt.graph.assign_root(cxt.create(RegionList{}, @$)); }
+	| file_as_func { $$ = cxt.graph.assign_root($1); }
 	| classOrExtList.list[classes] YYEOF  { $$ = cxt.graph.assign_root($classes); }
 	| %empty { $$ = cxt.graph.assign_root(cxt.create(ClassOrExtensionList{}, @$));}
+	;
+
+////////////////////////////////////////////////////////////////////////////////
+// file as function
+////////////////////////////////////////////////////////////////////////////////
+
+file_as_func 
+	: INTERPRET argument_declarations[args] block.contents[contents] semicolon.opt YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, $args, $contents); }
+
+	| INTERPRET variable_declarations[decls] SEMICOLON block.contents[contents] semicolon.opt YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(ArgumentList{}, @1), cxt.graph.prepend($contents, $decls)); }
+
+	| INTERPRET variable_declarations[decls] semicolon.opt YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(ArgumentList{}, @1), cxt.create(BlockContentsList{}, @3, $decls)); }
 	;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,33 +214,24 @@ go
 region.item
 	: expr
 		{ $$ = $expr; } 
-	| OPENPAREN argument_declarations[args] block.contents[contents] CLOSEPAREN 
+	| OPENPAREN argument_declarations[args] block.contents[contents] semicolon.opt CLOSEPAREN 
 		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, $contents); }
+
 	| OPENPAREN argument_declarations[args] CLOSEPAREN 
 		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, cxt.create(BlockContentsList{}, @3)); }
+
+	| OPENPAREN variable_declarations[decls] SEMICOLON block.contents[contents] semicolon.opt CLOSEPAREN  
+		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, cxt.create(ArgumentList{}, @1), cxt.graph.prepend($contents, $decls)); }
 	;
 
 region
-	: 
-	INTERPRET expr
-		{ $$ = cxt.create(RegionList{}, @$, $expr); } 
+	: INTERPRET region.item[item]
+		{ $$ = cxt.create(RegionList{}, @$, $item); }
+
 	| INTERPRET error
 		{
 			error_recovery::expr(cxt);
-			yyclearin;
 			$$ = cxt.create(RegionList{}, @$, create_error(cxt, @error));
-		}
-	| INTERPRET OPENPAREN argument_declarations[args] block.contents[contents] semicolon.opt CLOSEPAREN 
-		{ 
-			const auto ieb = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, $contents); 
-			$$ = cxt.create(RegionList{}, @$, ieb);
-		}
-
-	| INTERPRET OPENPAREN variable_declarations SEMICOLON block.contents CLOSEPAREN 
-	| INTERPRET OPENPAREN argument_declarations[args] CLOSEPAREN 
-		{ 
-			const auto ieb = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, cxt.create(BlockContentsList{}, @4)); 
-			$$ = cxt.create(RegionList{}, @$, ieb);
 		}
 
 	| region[r] SEMICOLON region.item[item]
@@ -279,6 +296,7 @@ class.super.opt
 class.slot.opt 
 	: %empty { $$ = cxt.create(Missing{}, @$); } 
 	| OPENSQUARE name CLOSESQUARE { $$ = $name; };
+	| OPENSQUARE CLOSESQUARE { $$ = cxt.create(Missing{}, @$); };
 	;
 
 class.extension 
@@ -335,10 +353,13 @@ method.name
 method.base
 	: method.name[name] OPENCURLY argument_declarations.opt[args] block.contents[block] semicolon.opt CLOSECURLY
 		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(Missing{},@2), $block); }
+
 	| method.name[name] OPENCURLY argument_declarations.opt[args] CLOSECURLY
 		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(Missing{},@2), cxt.create(BlockList{}, @4)); }
+
 	| method.name[name] OPENCURLY argument_declarations.opt[args] PRIMITIVENAME[prim] semicolon.opt block.contents[block] semicolon.opt CLOSECURLY
 		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(PrimitiveIdentifier{}, @prim), $block); }
+
 	| method.name[name] OPENCURLY argument_declarations.opt[args] PRIMITIVENAME[prim] semicolon.opt CLOSECURLY
 		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(PrimitiveIdentifier{}, @prim), cxt.create(BlockList{}, @5)); }
 	;
@@ -380,7 +401,9 @@ block.opt_list
 
 block.list 		
 	: block { $$ = cxt.create(BlockList{}, @$, $1); }
+	| generator { $$ = cxt.create(BlockList{}, @$, $1); }
 	| block.list block { $$ = cxt.graph.append($1, @$, $2); }
+	| block.list generator { $$ = cxt.graph.append($1, @$, $2); }
 	;
 
 block.contents
@@ -478,7 +501,7 @@ msgsend
 //			$$ = $1;
 //		}
 
-	| CLASSNAME OPENSQUARE literal.array.contents CLOSESQUARE
+	| CLASSNAME OPENSQUARE literal.array.contents comma.opt CLOSESQUARE
 		{  $$ = cxt.create(CollectionNode{}, @$, cxt.create(ClassNameIdentifier{}, @1), $3); }
 	
 	| CLASSNAME block.list[blocks]
@@ -500,18 +523,188 @@ msgsend
 	;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Ranges
+////////////////////////////////////////////////////////////////////////////////
+// This is a bit verbose to avoid conflicts in the grammar.
+// (1, 2...3) and (:1, 2 ... 3) explicitly state how many arguments go before the '...'.
+// The others use an argument pack and can have as many as needed.
+
+expr.dotrange
+	: expr[receiver] DOT OPENSQUARE[o] arguments[args] DOTDOT expr_or_seq[e] CLOSESQUARE[c]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, $args, $e);
+			$$ = cxt.create(AtMessage{}, @$, $receiver, r);
+		}
+
+	| expr[receiver] DOT OPENSQUARE[o] DOTDOT expr_or_seq[e] CLOSESQUARE[c]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, cxt.create(ArgumentList{}, @o),  $e);
+			$$ = cxt.create(AtMessage{}, @$, $receiver, r);
+		}
+
+	| expr[receiver] DOT OPENSQUARE[o] arguments[args] DOTDOT CLOSESQUARE[c]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, $args, cxt.create(Missing{}, @5));
+			$$ = cxt.create(AtMessage{}, @$, $receiver, r);
+		}
+	;
+
+expr.dotrange.assign
+	: expr[receiver] DOT OPENSQUARE[o] arguments[args] DOTDOT expr_or_seq[e] CLOSESQUARE[c] EQUALSSIGN expr[assign]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, $args, $e);
+			$$ = cxt.create(RangeAssign{}, @$, $receiver, r, $assign);
+		}
+
+	| expr[receiver] DOT OPENSQUARE[o] arguments[args] DOTDOT CLOSESQUARE[c] EQUALSSIGN expr[assign]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, $args, cxt.create(Missing{}, @5));
+			$$ = cxt.create(RangeAssign{}, @$, $receiver, r, $assign);
+		}
+
+	| expr[receiver] DOT OPENSQUARE[o] DOTDOT expr_or_seq[e] CLOSESQUARE[c] EQUALSSIGN expr[assign]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, cxt.create(ArgumentList{}, @o),  $e);
+			$$ = cxt.create(RangeAssign{}, @$, $receiver, r, $assign);
+		}
+	;
+
+
+expr.base.range
+	: expr.base[receiver] OPENSQUARE[o] arguments[args] DOTDOT expr_or_seq[e] CLOSESQUARE[c]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, $args, $e);
+			$$ = cxt.create(AtMessage{}, @$, $receiver, r);
+		}
+	| expr.base[receiver] OPENSQUARE[o] arguments[args] DOTDOT CLOSESQUARE[c]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, $args, cxt.create(Missing{}, @5));
+			$$ = cxt.create(AtMessage{}, @$, $receiver, r);	
+		}
+	| expr.base[receiver] OPENSQUARE[o] DOTDOT expr_or_seq[e] CLOSESQUARE[c]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, cxt.create(ArgumentList{}, @o),  $e);
+			$$ = cxt.create(AtMessage{}, @$, $receiver, r);	
+		}
+	;
+
+expr.base.range.assign
+	: expr.base[receiver] OPENSQUARE[o] arguments[args] DOTDOT expr_or_seq[e] CLOSESQUARE[c] EQUALSSIGN expr[assign]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, $args, $e);
+			$$ = cxt.create(RangeAssign{}, @$, $receiver, r, $assign);
+		}
+	| expr.base[receiver] OPENSQUARE[o] arguments[args] DOTDOT CLOSESQUARE[c] EQUALSSIGN expr[assign]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, $args, cxt.create(Missing{}, @4));
+			$$ = cxt.create(RangeAssign{}, @$, $receiver, r, $assign);
+		}
+	| expr.base[receiver] OPENSQUARE[o] DOTDOT expr_or_seq[e] CLOSESQUARE[c] EQUALSSIGN expr[assign]
+		{
+			const auto loc = range(@o, @c);
+			const auto r = cxt.create(Range{}, loc, cxt.create(ArgumentList{}, @o),  $e);
+			$$ = cxt.create(RangeAssign{}, @$, $receiver, r, $assign);
+		}
+	;
+
+range
+	: OPENPAREN[o] expr_or_seq[s] DOTDOT CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, @s, $s);
+			$$ = cxt.create(Range{}, range(@o, @c), args, cxt.create(Missing{}, @3));
+		}
+	| OPENPAREN[o] expr_or_seq[s] DOTDOT expr_or_seq[e] CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, @s, $s);
+			$$ = cxt.create(Range{}, range(@o, @c), args, $e);
+		}
+	| OPENPAREN[o] expr_or_seq[s] COMMA expr_or_seq[n] DOTDOT expr_or_seq[e] CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, range(@s, @n), $s, $n);
+			$$ = cxt.create(Range{}, range(@o, @c), args, $e);
+		}
+	| OPENPAREN[o] expr_or_seq[s] COMMA expr_or_seq[n] DOTDOT CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, range(@s, @n), $s, $n);
+			$$ = cxt.create(Range{}, range(@o, @c), args, cxt.create(Missing{}, @5));
+		}
+	| OPENPAREN[o] DOTDOT expr_or_seq[e] CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, @2);
+			$$ = cxt.create(Range{}, range(@o, @c), args, $e);
+		}
+	;
+
+range.generator
+	: OPENPAREN[o] COLON expr_or_seq[s] DOTDOT expr_or_seq[e] CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, @s, $s);
+			$$ = cxt.create(RangeGenerator{}, range(@o, @c), args, $e);
+		}
+	| OPENPAREN[o] COLON expr_or_seq[s] COMMA expr_or_seq[n] DOTDOT expr_or_seq[e] CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, range(@s, @n), $s, $n);
+			$$ = cxt.create(RangeGenerator{}, range(@o, @c), args, $e);
+		}
+
+	| OPENPAREN[o] COLON expr_or_seq[s] COMMA expr_or_seq[n] DOTDOT  CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, @s, $s, $n);
+			$$ = cxt.create(RangeGenerator{}, range(@o, @c), args, cxt.create(Missing{}, @6));
+		}
+	| OPENPAREN[o] COLON DOTDOT expr_or_seq[e] CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, @3);
+			$$ = cxt.create(RangeGenerator{}, range(@o, @c), args, $e);
+		}
+	| OPENPAREN[o] COLON expr_or_seq[s] DOTDOT CLOSEPAREN[c]
+		{
+			const auto args = cxt.create(ArgumentList{}, @s, $s);
+			$$ = cxt.create(RangeGenerator{}, range(@o, @c), args, cxt.create(Missing{}, @4));
+		}
+	;
+
+
+////////////////////////////////////////////////////////////////////////////////
 // expression and expression sequences
 ////////////////////////////////////////////////////////////////////////////////
 
 expr.base	
-	: literal { $$ = $1; }
-	| generator { $$ = $1; }
-	| name { $$ = $1; }
-	// | curry_arg { $$ = $1; }
-	| msgsend { $$ = $1; }
+	: literal 
+		{ $$ = $1; }
+
+	| generator 
+		{ $$ = $1; }
+
+	| name 
+		{ $$ = $1; }
+
+	| CURRYARG 
+		 { $$ = cxt.create(CurryNode{}, @1); }
+
+	| msgsend 
+		{ $$ = $1; }
+
 	| OPENPAREN expr_or_seq[contents] CLOSEPAREN 
-		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, cxt.create(ArgumentList{}, @1), $contents); }
-	| TILDE name { $$ = cxt.create(EnvIdentifierNode{}, @$, $2); }
+		{ 
+			// A nasty hack because of nil assignment.
+			cxt.graph.register_bracketed_expr($contents);
+			$$ = $contents;
+		}
+
+	| TILDE name 
+		{ $$ = cxt.create(EnvIdentifierNode{}, @$, $2); }
 
 	| expr.base[receiver] OPENSQUARE arguments[args] CLOSESQUARE
 		{ $$ = cxt.create(AtMessage{}, @$, $receiver, $args ); }
@@ -519,56 +712,22 @@ expr.base
 	| expr.base[receiver] OPENSQUARE CLOSESQUARE
 		{ $$ = cxt.create(AtMessage{}, @$, $receiver, cxt.create(ArgumentList{}, @2)); }
 
-	| expr.base OPENSQUARE arguments DOTDOT expr_or_seq CLOSESQUARE
-		{}
-	| expr.base OPENSQUARE DOTDOT expr_or_seq CLOSESQUARE
-		{}
+	| expr.base.range 
+		{ $$ = $1; }
 
+	| range 
+		{ $$ = $1; }
 
-	| OPENPAREN expr_or_seq DOTDOT CLOSEPAREN
-		{}
-	| OPENPAREN expr_or_seq DOTDOT expr_or_seq CLOSEPAREN
-		{}
-	| OPENPAREN expr_or_seq COMMA expr_or_seq DOTDOT expr_or_seq CLOSEPAREN
-		{}
-	| OPENPAREN DOTDOT expr_or_seq CLOSEPAREN
-		{}
-
-
-
-
-	| OPENPAREN COLON expr_or_seq DOTDOT expr_or_seq CLOSEPAREN
-		{}
-	| OPENPAREN COLON expr_or_seq COMMA expr_or_seq DOTDOT expr_or_seq CLOSEPAREN
-		{}
-	| OPENPAREN COLON DOTDOT expr_or_seq CLOSEPAREN
-		{}
-
-	| OPENPAREN COLON expr_or_seq DOTDOT CLOSEPAREN
-		{}
+	| range.generator 
+		{ $$ = $1; }
 	;
-
 	
-
 
 expr	
 	: expr.base { $$ = $1; }
-	
-	| expr DOT OPENSQUARE arguments DOTDOT expr_or_seq CLOSESQUARE
-		{}
-
-	| expr DOT OPENSQUARE DOTDOT expr_or_seq CLOSESQUARE
-		{}
-
-	| expr DOT OPENSQUARE arguments DOTDOT expr_or_seq CLOSESQUARE EQUALSSIGN expr
-		{}
-
-	| expr DOT OPENSQUARE DOTDOT expr_or_seq CLOSESQUARE EQUALSSIGN expr
-		{}
-
-
-
-	| CLASSNAME { $$ = cxt.create(ClassNameIdentifier{}, @$); }
+	| expr.base.range.assign { $$ = $1; }
+	| expr.dotrange { $$ = $1; }
+	| expr.dotrange.assign { $$ = $1; }
 
 	| expr[receiver] DOT OPENSQUARE arguments[args] CLOSESQUARE
 		{ $$ = cxt.create(AtMessage{}, @$, $receiver, $args ); }
@@ -576,27 +735,28 @@ expr
 	| expr[receiver] DOT OPENSQUARE CLOSESQUARE
 		{ $$ = cxt.create(AtMessage{}, @$, $receiver, cxt.create(ArgumentList{}, @3) ); }
 
-	| BACKTICK expr { $$ = cxt.create(ReferenceNode{}, @$, $2); }
-
 	| expr[lhs] binary_op[selector] expr[rhs] %prec BINOP 
 		{ $$ = cxt.create(BinaryMessage{}, @$, $selector, $lhs, $rhs); }
-
-	| name EQUALSSIGN expr
-		{ $$ = cxt.create(AssignmentNode{}, @$, $1, $3); }
-
-	| TILDE name EQUALSSIGN expr
-		{ $$ = cxt.create(AssignmentNode{AssignmentNode::Target::Environment}, @$, $2, $4); }
 
 	| expr DOT name EQUALSSIGN expr
 		{ $$ = cxt.create(SetterNode{}, @$, $1, $3, $5); }
 
+	| CLASSNAME { $$ = cxt.create(ClassNameIdentifier{}, @$); }
+	| BACKTICK expr { $$ = cxt.create(ReferenceNode{}, @$, $2); }
+
+	| name EQUALSSIGN expr { $$ = cxt.create(AssignmentNode{}, @$, $1, $3); }
+
+	| TILDE name EQUALSSIGN expr
+		{ $$ = cxt.create(AssignmentNode{AssignmentNode::Target::Environment}, @$, $2, $4); }
+
 	| name OPENPAREN arguments CLOSEPAREN EQUALSSIGN expr
 		{ $$ = cxt.create(SetterNode{}, @$, $3, $1, $6); }
 
-	| HASH name.list[names] comma.opt EQUALSSIGN expr[e]
-		{ $$ = cxt.create(VariablePack{}, @$, $names, $e); }
-	| HASH name.list[names] comma.opt OPENPAREN expr_or_seq[expr_seq] CLOSEPAREN
-		{ $$ = cxt.create(VariablePack{}, @$, $names, $expr_seq); }
+	| name.pack[names] EQUALSSIGN expr[e]
+		{ $$ = cxt.create(VariablePackAssign{}, @$, $names, $e); }
+
+	| name.pack[names] OPENPAREN expr_or_seq[expr_seq] CLOSEPAREN
+		{ $$ = cxt.create(VariablePackAssign{}, @$, $names, $expr_seq); }
 
 	// This is a slight change from the original. You used to be required to give an argument, even if the 'put' method had a default.
 	// Likewise you couldn't use variadic or keywords, even if the 'put' method supported these.
@@ -614,6 +774,9 @@ expr
 		{ $$ = cxt.create(AssignmentAtNode{}, @$, $1, cxt.create(ArgumentList{}, @3), $e); }
 	;
 
+
+
+
 expr_or_seq.base  
 	: expr { $$ = $1; }		
 	| expr_or_seq.base SEMICOLON expr { $$ = cxt.create(ExprSeq{}, @$, $1, $3); }
@@ -628,13 +791,9 @@ expr_or_seq :
 // generators
 ////////////////////////////////////////////////////////////////////////////////
 generator 
-	//	These are turned into routines
 	: OPENCURLY COLON expr_or_seq[expr] COMMA generator.qual.list[list] comma.opt CLOSECURLY
 		{ $$ = cxt.create(GeneratorNode{}, @$, $expr, $list); }
 
-	// These are just functions, they are quite limited and only return the first result, turning the rest into a side effect.
-	// Probably best not to use these as they aren't documented and are confusing.
-	// I've called them 'fake' generators until someone can come up with a better name.
 	| OPENCURLY SEMICOLON expr_or_seq[expr] COMMA generator.qual.list[list] comma.opt CLOSECURLY
 		{ $$ = cxt.create(GeneratorFakeNode{}, @$, $expr, $list); }
 	;
@@ -674,20 +833,25 @@ generator.qual
 argument_declarations.list 
 	: name 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, $1); }
-	| name EQUALSSIGN literal 
-		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $1, $3)); }
+	| name EQUALSSIGN expr 
+		{ 
+			const auto is_bracketed = cxt.graph.is_bracketed($expr);
+			$$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{!is_bracketed}, @$, $name, $expr)); 
+		}
 	| name OPENPAREN expr_or_seq CLOSEPAREN 
-		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $1, $3)); }
-	| name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN 
-		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $1, $4)); }
-	| argument_declarations.list COMMA name 
+		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $name, $expr_or_seq)); }
+
+	| argument_declarations.list[list] COMMA name 
 		{ $$ = cxt.graph.append( $1, @$, $3); }
-	| argument_declarations.list COMMA name EQUALSSIGN literal 
-		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $5)); }
-	| argument_declarations.list COMMA name OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $5)); }
-	| argument_declarations.list COMMA name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $6)); }
+
+	| argument_declarations.list[list] COMMA name EQUALSSIGN expr 
+		{ 
+			const auto is_bracketed = cxt.graph.is_bracketed($expr);
+			$$ = cxt.graph.append( $list, @$, cxt.create(DeclareArgumentWithDefaultNode{!is_bracketed}, @$, $name, $expr));
+		}
+	| argument_declarations.list[list] COMMA name OPENPAREN expr_or_seq CLOSEPAREN
+		{ $$ = cxt.graph.append($list, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $expr_or_seq, $name)); }
+
 	;
 
 argument_declarations.pipelist 
@@ -763,8 +927,9 @@ argument_declarations.opt
 	| argument_declarations { $$ = $1; }
 	;
 
+
 arguments.entries 	
-	: KEYBINOP expr_or_seq { $$ = cxt.create(KwArgNode{}, @$, cxt.create(SymbolNode{SymbolNode::Kind::KeyBinOp}, @1), $2); }
+	: KEYBINOP expr_or_seq { $$ = cxt.create(KwArgNode{}, @$, cxt.create(KeyBinOp{}, @1), $2); }
 	| MULTIPLY expr_or_seq { $$ = cxt.create(VariadicArgNode{}, @$, $2); }
 	| expr_or_seq { $$ = $1; }
 	;
@@ -797,10 +962,10 @@ variable_declarations.list.item
 		{ $$ = cxt.create(DeclareVariableWithDefaultNode{}, @$, $1, $3); }
 	| name OPENPAREN expr_or_seq CLOSEPAREN
 		{ $$ = cxt.create(DeclareVariableWithDefaultNode{}, @$, $1, $3); }
-	| HASH name.list[names] comma.opt EQUALSSIGN expr
-		{ $$ = cxt.create(VariablePack{}, @$, $names, $expr); }
-	| HASH name.list[names] comma.opt OPENPAREN expr_or_seq[expr] CLOSEPAREN
-		{ $$ = cxt.create(VariablePack{}, @$, $names, $expr); }
+	| name.pack[names] EQUALSSIGN expr
+		{ $$ = cxt.create(VariablePackAssign{}, @$, $names, $expr); }
+	| name.pack[names] OPENPAREN expr_or_seq[expr] CLOSEPAREN
+		{ $$ = cxt.create(VariablePackAssign{}, @$, $names, $expr); }
 	;
 
 variable_declarations.list
@@ -836,13 +1001,13 @@ literal.array.contents
 	| expr_or_seq COLON expr_or_seq
 		{ $$ = cxt.create(ArrayNode{}, @$, $1, $3); }
 	| KEYBINOP expr_or_seq
-		{ $$ = cxt.create(ArrayNode{}, @$, cxt.create(SymbolNode{SymbolNode::Kind::KeyBinOp}, @1), $2); }
+		{ $$ = cxt.create(ArrayNode{}, @$, cxt.create(KeyBinOp{}, @1), $2); }
 	| literal.array.contents COMMA expr_or_seq
 		{ $$ = cxt.graph.append($1, @$, $3); }
 	| literal.array.contents COMMA expr_or_seq COLON expr_or_seq
 		{ $$ = cxt.graph.append($1, @$, $3, $5); }
 	| literal.array.contents COMMA KEYBINOP expr_or_seq
-		{ $$ = cxt.graph.append($1, @$, cxt.create(SymbolNode{SymbolNode::Kind::KeyBinOp}, @3), $4); }
+		{ $$ = cxt.graph.append($1, @$, cxt.create(KeyBinOp{}, @3), $4); }
 	;
 
 literal.dictionary.entry 
@@ -852,7 +1017,7 @@ literal.dictionary.entry
 	: expr COLON expr_or_seq 
 		{ $$ = cxt.create(DictionaryEntryNode{}, @$, $1, $3); }
 	| KEYBINOP expr_or_seq 
-		{ $$ = cxt.create(DictionaryEntryNode{}, @$, cxt.create(SymbolNode{SymbolNode::Kind::KeyBinOp}, @1), $2); }
+		{ $$ = cxt.create(DictionaryEntryNode{}, @$, cxt.create(KeyBinOp{}, @1), $2); }
 	;
 
 literal.dictionary.entries 
@@ -890,18 +1055,29 @@ literal
 // Name terminal and name list
 ////////////////////////////////////////////////////////////////////////////////
 
-name : NAME { $$ = cxt.create(NamedIdentifier{}, @$); } ;
+name 
+	: NAME { $$ = cxt.create(NamedIdentifier{}, @$); } 
+	| WHILE { $$ = cxt.create(NamedIdentifier{}, @$); }
+	;
 
 // Used for destructuring
 name.list 
-	: name
+	: HASH name
 		{ $$ = cxt.create(NameList{}, @$, $name); }
-	| TILDE name 
+	| HASH TILDE name 
 		{ $$ = cxt.create(NameList{}, @$, cxt.create(EnvIdentifierNode{}, @$, $name)); }
 	| name.list[list] COMMA name
 		{ $$ = cxt.graph.append($list, @$, $name); }
 	| name.list[list] COMMA TILDE name
 		{ $$ = cxt.graph.append($list, @$, cxt.create(EnvIdentifierNode{},@$, $name)); }
+	;
+name.pack 
+	: name.list[list]
+		{ $$ = cxt.create(NamePack{}, @$, $list, cxt.create(Missing{}, @list)); }
+	| name.list[list] ELLIPSIS name
+		{ $$ = cxt.create(NamePack{}, @$, $list, $name); }
+	| name.list[list] ELLIPSIS TILDE[t] name
+		{ $$ = cxt.create(NamePack{}, @$, $list, cxt.create(EnvIdentifierNode{}, range(@t, @name), $name)); }
 	;
 
 
@@ -921,8 +1097,8 @@ boolean
 	;
 
 symbol 	
-	: SYMBOL_QUOTE { $$ = cxt.create(SymbolNode{SymbolNode::Kind::Quote}, @$); }
-	| SYMBOL_SLASH { $$ = cxt.create(SymbolNode{SymbolNode::Kind::Slash}, @$); }
+	: SYMBOL_QUOTE { $$ = cxt.create(SymbolQuote{}, @$); }
+	| SYMBOL_SLASH { $$ = cxt.create(SymbolSlash{}, @$); }
 	;
 
 string 	

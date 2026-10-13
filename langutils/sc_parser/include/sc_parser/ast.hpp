@@ -14,6 +14,7 @@
 #include <memory>
 #include <type_traits>
 #include <string_view>
+#include <unordered_set>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -98,24 +99,35 @@ public:
 
     [[nodiscard]] std::string_view string_view(UntypedNodeIndex i) const { return m_text_info->read(location(i)); }
 
+    void register_bracketed_expr(UntypedNodeIndex i) { m_bracketed_exprs.insert(i); }
+
+    [[nodiscard]] bool is_bracketed(UntypedNodeIndex i) const {
+        return m_bracketed_exprs.find(i) != m_bracketed_exprs.end();
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
     // Children. This is the type safe way to walk the graph.
     ////////////////////////////////////////////////////////////////////////////////
 
     using Base::children;
     using Base::index_to_variant;
+    using Base::list_unpack;
     using Base::visit;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Roots
     ////////////////////////////////////////////////////////////////////////////////
 
-    RegionListIndex assign_root(RegionListIndex i);
-    ClassOrExtensionListIndex assign_root(ClassOrExtensionListIndex i);
+    template <typename I> I assign_root(I i) {
+        assert(i);
+        m_roots = i;
+        return i;
+    }
 
     [[nodiscard]] std::optional<Index> root_any() const;
 
-    [[nodiscard]] std::optional<std::variant<RegionListIndex, ClassOrExtensionListIndex>> root() const;
+    [[nodiscard]] std::optional<std::variant<RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex>>
+    root() const;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Diagnostics
@@ -171,7 +183,9 @@ private:
 
     bool m_has_fatal_diagnostic { false };
 
-    std::variant<std::monostate, RegionListIndex, ClassOrExtensionListIndex> m_roots { };
+    std::variant<std::monostate, RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex> m_roots {};
+
+    std::unordered_set<UntypedNodeIndex> m_bracketed_exprs {};
 };
 
 

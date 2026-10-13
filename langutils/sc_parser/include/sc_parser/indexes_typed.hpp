@@ -25,7 +25,12 @@ enum struct NodeFlag {
     StringLiteral,
 
     ArrayLiteral,
-    SymbolLiteral,
+
+    // symbols
+    KeybinOp,
+    SymbolQuote,
+    SymbolSlash,
+
     SelectorLiteral,
     SelectorWAdverb,
     BooleanLiteral,
@@ -49,7 +54,8 @@ enum struct NodeFlag {
     NameIdentifier, // args, vars, consts (anything lowercase)
 
     //
-    NameList,
+    NameList, //
+    NamePack, //
 
     // argument calling
     KwArg,
@@ -70,6 +76,9 @@ enum struct NodeFlag {
     NewMessage,
     AtMessage,
 
+    Range,
+    RangeGenerator,
+    RangeAssign,
 
     AdverbExpr,
     Reference,
@@ -93,7 +102,7 @@ enum struct NodeFlag {
     DeclareArgumentList,
     //
     DeclareVariableWithDefault,
-    VariablePack,
+    VariablePackAssign,
 
     DeclareVariableList,
     //
@@ -122,6 +131,8 @@ enum struct NodeFlag {
     ClassExtension,
     //
     ClassOrExtensionList,
+
+    FileAsFunction,
 
     RegionList,
 
@@ -168,10 +179,19 @@ using FloatProducingIndex = join<FloatLitIndex, PiLitIndex, AccidentalIndex>;
 
 using StringLitIndex = TypedIndex<NodeFlag::StringLiteral>;
 
-using SymbolLitIndex = TypedIndex<NodeFlag::SymbolLiteral>;
+
+using KeyBinOpIndex = TypedIndex<NodeFlag::KeybinOp>;
+using SymbolQuoteIndex = TypedIndex<NodeFlag::SymbolQuote>;
+using SymbolSlashIndex = TypedIndex<NodeFlag::SymbolSlash>;
+
+using AnySymbolIndex = join<SymbolQuoteIndex, SymbolSlashIndex>;
 
 using BooleanLitIndex = TypedIndex<NodeFlag::BooleanLiteral>;
 using NilLitIndex = TypedIndex<NodeFlag::NilLiteral>;
+
+using RangeIndex = TypedIndex<NodeFlag::Range>;
+using RangeGeneratorIndex = TypedIndex<NodeFlag::RangeGenerator>;
+using RangeAssignIndex = TypedIndex<NodeFlag::RangeAssign>;
 
 using ArrayIndex = TypedIndex<NodeFlag::Array>;
 using DictionaryEntryIndex = TypedIndex<NodeFlag::DictionaryEntry>;
@@ -183,7 +203,7 @@ using BlockListIndex = TypedIndex<NodeFlag::BlockList>;
 
 using ImmediatelyEvaluatedBlockIndex = TypedIndex<NodeFlag::ImmediatelyEvaluatedBlock>;
 using AnyDefiniteLiteralIndex =
-    join<ASCIIIndex, IntLitIndex, FloatProducingIndex, StringLitIndex, BooleanLitIndex, NilLitIndex, SymbolLitIndex>;
+    join<ASCIIIndex, IntLitIndex, FloatProducingIndex, StringLitIndex, BooleanLitIndex, NilLitIndex, AnySymbolIndex>;
 
 using AnyPossiblyLiteralIndex = join<AnyDefiniteLiteralIndex, BlockIndex, ArrayIndex, DictionaryIndex, CollectionIndex>;
 
@@ -195,6 +215,7 @@ using PrimitiveIdentifierIndex = TypedIndex<NodeFlag::PrimitiveNameIdentifier>;
 using NameOrEnvNameIndex = join<NamedIdentifierIndex, EnvIdentifierIndex>;
 
 using NameListIndex = TypedIndex<NodeFlag::NameList>;
+using NamePackIndex = TypedIndex<NodeFlag::NamePack>;
 
 // TODO: remove SelectorLiteral
 using SelectorIndex = join<TypedIndex<NodeFlag::SelectorLiteral>, NamedIdentifierIndex>;
@@ -255,7 +276,7 @@ using AnyMessageIndex = join< //
     >;
 
 
-using VariablePackIndex = TypedIndex<NodeFlag::VariablePack>;
+using VariablePackAssignIndex = TypedIndex<NodeFlag::VariablePackAssign>;
 using AnyExprIndex = join< //
     ExprSeqIndex, //
     AnyPossiblyLiteralIndex, //
@@ -268,9 +289,13 @@ using AnyExprIndex = join< //
     AssignmentIndex, //
     AssignmentAtIndex, //
     SetterIndex, //
-    VariablePackIndex, //
+    VariablePackAssignIndex, //
     GeneratorAnyIndex, //
-    ImmediatelyEvaluatedBlockIndex //
+    ImmediatelyEvaluatedBlockIndex, //
+    RangeIndex, //
+    RangeGeneratorIndex, //
+    RangeAssignIndex, //
+    CurryIndex //
     >;
 
 
@@ -283,6 +308,9 @@ using VariadicArgIndex = TypedIndex<NodeFlag::VariadicArgument>;
 using ArgumentEntryIndex = join<AnyExprIndex, KwArgIndex, VariadicArgIndex, BlockListIndex>;
 
 using ArgumentListIndex = TypedIndex<NodeFlag::ArgumentList>;
+
+
+using AtMessageArgIndex = join<RangeIndex, ArgumentListIndex>;
 
 // Declare arguments
 
@@ -299,7 +327,7 @@ using DeclareArgumentListIndex = TypedIndex<NodeFlag::DeclareArgumentList>;
 
 using DeclareVariableWithDefaultIndex = TypedIndex<NodeFlag::DeclareVariableWithDefault>;
 
-using DeclareAnyVariableIndex = join<NamedIdentifierIndex, DeclareVariableWithDefaultIndex, VariablePackIndex>;
+using DeclareAnyVariableIndex = join<NamedIdentifierIndex, DeclareVariableWithDefaultIndex, VariablePackAssignIndex>;
 
 using DeclareVariableListIndex = TypedIndex<NodeFlag::DeclareVariableList>;
 
@@ -317,6 +345,7 @@ using DeclareMemberIndex = TypedIndex<NodeFlag::DeclareMember>;
 using DeclareConstMemberIndex = TypedIndex<NodeFlag::DeclareConst>;
 
 using RWAccessorIndex = TypedIndex<NodeFlag::RWAccessor>;
+using MaybeRWAccessorIndex = maybe<RWAccessorIndex>;
 
 using DeclareMemberListIndex = TypedIndex<NodeFlag::DeclareMemberList>;
 using DeclareClassMemberListIndex = TypedIndex<NodeFlag::DeclareClassMemberList>;
@@ -332,8 +361,11 @@ using ClassOrExtensionIndex = join<ClassIndex, ClassExtensionIndex>;
 
 using ClassOrExtensionListIndex = TypedIndex<NodeFlag::ClassOrExtensionList>;
 
+using FileAsFunctionIndex = TypedIndex<NodeFlag::FileAsFunction>;
+
 using RegionListIndex = TypedIndex<NodeFlag::RegionList>;
-using ClassListOrExprListIndex = join<RegionListIndex, ExprSeqIndex, ClassOrExtensionListIndex>;
+
+using GoIndex = join<RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex>;
 
 template <typename T> struct Wrapper {
     using Type = T;

@@ -4,6 +4,7 @@
 #include "sc_sema/const_expr.hpp"
 #include "sc_sema/symbols.hpp"
 #include "sc_sema/type_info.hpp"
+#include <algorithm>
 #include <mutex>
 #include <string>
 #include <string_view>
@@ -32,6 +33,16 @@ struct SymbolTable {
     template <typename T> T get(std::string_view s) { return get<T>(std::string { s }); }
 
     template <typename T> T get(const char* str) { return get<T>(std::string { str }); }
+
+    SymbolTable() = default;
+
+    SymbolTable(SymbolTable&& other) noexcept:
+        m_id_to_string_view(std::move(other.m_id_to_string_view)),
+        m_string_to_id(std::move(other.m_string_to_id)) {}
+
+    SymbolTable(const SymbolTable&) = delete;
+    SymbolTable& operator=(const SymbolTable&) = delete;
+    SymbolTable& operator=(SymbolTable&&) = delete;
 
 
     [[nodiscard]] std::string_view operator()(Symbol i) const noexcept {
@@ -69,6 +80,13 @@ struct ClassDeclaration {
 
     std::vector<SymSCSelector> consteval_methods { };
     bool poisoned { false };
+
+    [[nodiscard]] const Member* find_member(SymSCIdentifier i) const {
+        const auto fnd = std::find_if(members.begin(), members.end(), [=](const Member& m) { return m.name == i; });
+        if (fnd == members.end())
+            return nullptr;
+        return &*fnd;
+    }
 };
 
 
@@ -83,6 +101,8 @@ struct ClassDeclarations {
         std::scoped_lock lock { m_lock };
         return m_class_declarations.find(name) != m_class_declarations.end();
     }
+
+    [[nodiscard]] size_t size() const { return m_class_declarations.size(); }
 
     /// This will lock.
     /// Requires name be registered.
@@ -160,6 +180,7 @@ struct ConstantTable {
         std::scoped_lock lock { m_lock };
         return index_to_expr.at(index);
     }
+
 
 private:
     mutable std::mutex m_lock {};

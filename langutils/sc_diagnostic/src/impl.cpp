@@ -178,4 +178,8 @@ Diagnostic Diagnostic::regionMissingSemi(std::shared_ptr<const sc::lex::TextInfo
              } };
 }
 
+[[nodiscard]] Diagnostic Diagnostic::todo(std::shared_ptr<const sc::lex::TextInfo> info, sc::lex::SourceCodeRange loc) {
+    return { "TODO NOT IMPLEMENTED", Severity::Error,
+             std::vector<Location> { { std::move(info), loc, "diagnostic not implemented" } } };
+}
 }

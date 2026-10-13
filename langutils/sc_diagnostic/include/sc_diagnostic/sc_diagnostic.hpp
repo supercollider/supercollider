@@ -34,6 +34,7 @@ public:
                                                     sc::lex::SourceCodeRange first_loc,
                                                     std::shared_ptr<const sc::lex::TextInfo> second_text_info,
                                                     sc::lex::SourceCodeRange second_loc);
+    [[nodiscard]] static Diagnostic todo(std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange loc);
 
     Diagnostic() = delete;
     Diagnostic(Diagnostic&&) noexcept = default;

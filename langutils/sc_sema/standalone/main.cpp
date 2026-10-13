@@ -11,7 +11,7 @@
 #include "sc_lexer/text_location.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_parser/sc_parser.hpp"
-#include "sc_sema/create_graph.hpp"
+#include "sc_sema/compiler.hpp"
 
 #ifdef _MSC_VER
 // utility function to convert default Windows stdin encoding to UTF-8
@@ -30,7 +30,7 @@ int wmain(int argc, wchar_t* argv[]) {
 #else
 int main(int argc, char* argv[]) {
 #endif // _MSC_VER
-    if (argc != 2) {
+    if (argc < 2) {
         std::cerr
             << "ERROR: incorrect number of arguments to sc_sema_standalone, expected only supercollider source code.\n"
             << std::endl;
@@ -72,11 +72,11 @@ int main(int argc, char* argv[]) {
 
             auto [ast_graph, result] = sc::ast::parse(text_info);
             if (result != 0 || !ast_graph) {
-                std::cerr << "Failed to parse " << dir_entry.path()
-                          << " diagnostic count = " << ast_graph.diagnostics().size() << "\n";
-                for (const auto& d : ast_graph.diagnostics()) {
-                    std::cerr << d;
-                }
+                // std::cerr << "Failed to parse " << dir_entry.path()
+                //           << " diagnostic count = " << ast_graph.diagnostics().size() << "\n";
+                // for (const auto& d : ast_graph.diagnostics()) {
+                //     std::cerr << d;
+                // }
                 continue;
             }
 
@@ -94,20 +94,21 @@ int main(int argc, char* argv[]) {
             ast_and_index.push_back({ std::move(ast_graph), class_list_index });
         }
 
-    std::cout << ast_and_index.size() << "\n";
 
     sc::ir::IRCompiler comp {};
 
-    const auto diags = comp.compile_class_library({}, std::move(ast_and_index));
+    // const auto diags = comp.compile_class_library({}, std::move(ast_and_index));
 
-    if (!diags.empty()) {
-        for (const auto& d : diags)
-            std::cerr << d;
-    }
+    // if (!diags.empty()) {
+    //     for (const auto& d : diags)
+    //         std::cerr << d;
+    // }
 
-    comp.context()->class_declarations.for_all([&](sc::ir::Symbol name, const sc::ir::ClassDeclaration& d) {
-        std::cout << comp.context()->symbol_table(name) << "\n";
-    });
+    std::cout << "Successfully compiled " << comp.context()->class_declarations.size() << " classes." << std::endl;
+
+    // comp.context()->class_declarations.for_all([&](sc::ir::Symbol name, const sc::ir::ClassDeclaration& d) {
+    //     std::cout << comp.context()->symbol_table(name) << "\n";
+    // });
 
     return 0;
 }

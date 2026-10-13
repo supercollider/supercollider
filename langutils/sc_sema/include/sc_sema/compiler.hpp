@@ -38,7 +38,7 @@ private:
 };
 
 struct CommonClasses {
-    SymSCClassName root_object, object, class_;
+    SymSCClassName root_object, object, class_, string, true_, false_, nil, float_, int_, char_, symbol, array;
 };
 
 
@@ -47,13 +47,17 @@ using GraphAndIndex = std::pair<ast::ASTGraph, ast::ClassOrExtensionListIndex>;
 // It is all the class library information, and the symbol and constant tables.
 // When a irnode compiler pass needs to know something about the rest of the world, it goes through this.
 struct Context {
-    Context(std::vector<GraphAndIndex> lib): m_ast_of_class_library(std::move(lib)) {}
+    Context(SymbolTable sym_table, CommonClasses com, std::vector<GraphAndIndex> lib):
+        symbol_table(std::move(sym_table)),
+        common_classes(com),
+        m_ast_of_class_library(std::move(lib)) {}
 
 
-    SymbolTable symbol_table { };
+    SymbolTable symbol_table;
     ClassDeclarations class_declarations { };
     ConstantTable constant_table { };
     CurrentDiagnostics diagnostics { };
+    CommonClasses common_classes;
     [[nodiscard]] const std::vector<GraphAndIndex>& ast_of_class_library() const { return m_ast_of_class_library; }
 
 private:
@@ -91,11 +95,11 @@ private:
 
     struct ClassData {
         SymSCClassName name;
-        SymSCClassName super;
+        std::optional<SymSCClassName> super;
         std::vector<SymSCClassName> sub_classes;
         IRGraph ir_graph;
         SCClass_I class_index;
-        std::unordered_map<SymSCSelector, MethodData, std::hash<Symbol>> method_lookup;
+        std::unordered_map<SymSCSelector, MethodData, std::hash<Symbol>> method_lookup {};
         bool poisoned { false };
     };
 

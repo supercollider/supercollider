@@ -1,5 +1,6 @@
 // Copyright Jordan Henderson 2026
 #include "sc_parser/ast.hpp"
+#include "sc_parser/indexes_typed.hpp"
 #include <ostream>
 
 namespace sc::ast {
@@ -13,17 +14,6 @@ void ASTGraph::add_diagnostic(sc::diag::Diagnostic d) {
 
 [[nodiscard]] std::vector<sc::diag::Diagnostic> ASTGraph::diagnostics() && { return std::move(m_diagnostics); }
 
-RegionListIndex ASTGraph::assign_root(RegionListIndex i) {
-    assert(i);
-    m_roots = i;
-    return i;
-}
-
-ClassOrExtensionListIndex ASTGraph::assign_root(ClassOrExtensionListIndex i) {
-    assert(i);
-    m_roots = i;
-    return i;
-}
 
 [[nodiscard]] std::optional<Index> ASTGraph::root_any() const {
     return std::visit(priv::overload {
@@ -38,8 +28,9 @@ template <typename... Ts> struct overload : Ts... {
 };
 template <typename... Ts> overload(Ts... ts) -> overload<Ts...>;
 
-[[nodiscard]] std::optional<std::variant<RegionListIndex, ClassOrExtensionListIndex>> ASTGraph::root() const {
-    using R = std::optional<std::variant<RegionListIndex, ClassOrExtensionListIndex>>;
+[[nodiscard]] std::optional<std::variant<RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex>>
+ASTGraph::root() const {
+    using R = std::optional<std::variant<RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex>>;
     return std::visit(overload {
                           [](std::monostate) -> R { return std::nullopt; },
                           [](auto i) -> R { return { i }; },

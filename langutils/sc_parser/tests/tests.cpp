@@ -39,8 +39,8 @@ const auto tester_base = [](const char* src, bool is_class_file, bool no_diags) 
 
     //    std::cout << "ROOT == " << **root << '\n';
 
-    // for (const auto& d : graph.diagnostics())
-    //     std::cout << d << std::endl;
+    for (const auto& d : graph.diagnostics())
+        std::cout << d << std::endl;
 
     graph.debug_df_print(std::cout);
 };
@@ -302,8 +302,8 @@ a.foo;
     tester(" 1 + 2 (\n\n 4 * 12 );", false);
 
 
-    tester("1 + \n(var x = 10; x * 2)", true);
-    tester("(var x = 10; x * 2)", true);
+    tester("1 + \n(var x = 10; x * 2)", false);
+    tester("(var x = 10; x * 2)", false);
 
     tester("(|a| var x = 10; x * 2)", true);
 
@@ -316,4 +316,63 @@ a.foo;
 
 
     tester("{: x + 1, x <- [1, 2, 3, 4], x.odd, ::x.postln, :while x < 3}", true);
+
+
+    tester("", true);
+    tester_class("", true);
+    tester("var a; 10", true);
+    // tester("var a;", true);
+    tester("|a| var a;", true);
+    tester("|a| 1 + a", true);
+
+
+    tester("1.[1,2,3 .. 30]", true);
+    tester("1.[1 .. 30]", true);
+
+    tester("1.[start: 1 .. 30]", true);
+    tester("1.[*a .. 30]", true);
+
+    tester("1[1, 2]", true);
+
+    tester("1[1, 2 .. 10]", true);
+    tester("1[.. 10]", true);
+    tester("1[1 .. 10]", true);
+    tester("1[1 .. ]", true);
+
+    // tester("(:..10)", true);
+
+
+    tester("_", true);
+
+    tester("_ + 1", true);
+
+    tester("a[1..] = 10", true);
+    tester("a[1, 2..] = 10", true);
+    tester("a[1, 2.. 20] = 10", true);
+    tester("a[1.. 20] = 10", true);
+    tester("a[.. 20] = 10", true);
+
+
+    tester_class(R"%(	
+Foo {
+    *new { arg addr, cmdPath, action;
+		var cmdName, path;
+		this.deprecated(thisMethod, OSCFunc.class.findMethod(\new));
+		#cmdName ...path = cmdPath;
+		^super.new(addr, cmdName, action).path_(path);
+    }
+}
+    )%",
+                 true);
+
+
+    tester("60.midicps", true);
+
+    tester_class(R"%(
+AmpComp  {
+	ir { arg freq = 60.midicps, fsdf = 20.midicps;
+	}
+}
+    )%",
+                 true);
 }

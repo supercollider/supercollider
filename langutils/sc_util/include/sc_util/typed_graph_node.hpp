@@ -40,7 +40,8 @@ struct NodeBase : NodeBaseBase {
 @brief A node with no children.
 @tparam ThisTypedIndex must be the type_set_index this node produces.
 */
-template <typename ThisTypedIndex> struct TerminalNode : public NodeBase<ThisTypedIndex, NodeType::Terminal> {
+template <typename ThisTypedIndex> //
+struct TerminalNode : public NodeBase<ThisTypedIndex, NodeType::Terminal> {
     static constexpr auto number_of_children { 0 };
     using HeldType = void;
     static constexpr std::optional<size_t> number_expected_args {};

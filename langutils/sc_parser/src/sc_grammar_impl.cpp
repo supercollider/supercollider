@@ -47,7 +47,7 @@ void region_separator(ParserContext& cxt, sc ::lex::SourceCodeRange last_valid) 
 
 void expr(ParserContext& cxt) {
     using Symbol = sc::ast::parser::parser::symbol_kind_type;
-    auto unexpected = *cxt.consume_error();
+    auto unexpected = cxt.consume_error().value();
     const auto got = static_cast<Symbol>(unexpected.got);
 
     const char* got_name = sc::ast::parser::parser::symbol_name(got);

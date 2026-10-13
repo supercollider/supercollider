@@ -18,11 +18,15 @@ struct ConstExpression;
 using ConstExprArray = std::vector<ConstExpression>;
 using ConstExprEvent = std::vector<std::pair<ConstExpression, ConstExpression>>;
 
+
+using Nil = std::monostate;
+
 using ConstStorage = std::variant< //
     double, //
     std::int32_t, //
     char, //
     bool, //
+    Nil,
     SymSCSymbol, //
     SymSCString, //
     SymSCClassName, //
@@ -42,6 +46,7 @@ struct ConstExpression {
     constexpr ConstExpression(SymSCSymbol d): storage(d) { }
     constexpr ConstExpression(SymSCString d): storage(d) { }
     constexpr ConstExpression(SymSCClassName d): storage(d) { }
+    constexpr ConstExpression(Nil n): storage(n) {}
     ConstExpression(ConstExprArray d) noexcept: storage(std::move(d)) { }
     ConstExpression(ConstExprEvent d) noexcept: storage(std::move(d)) { }
 
@@ -59,6 +64,7 @@ struct ConstExpression {
 
     template <typename F> decltype(auto) visit(F&& f) const { return std::visit(std::forward<F>(f), storage); }
 
+    template <typename T> [[nodiscard]] const T* get_if() const { return std::get_if<T>(storage); }
 
     friend struct std::hash<ConstExpression>;
 
@@ -78,7 +84,7 @@ template <> struct hash<sc::ir::ConstExpression> {
                 [](std::int32_t i) -> size_t { return std::hash<std::int32_t>()(i); },
                 [](double i) -> size_t { return std::hash<double>()(i); },
                 [](char i) -> size_t { return std::hash<char>()(i); },
-                [](bool i) -> size_t { return std::hash<bool>()(i); },
+                [](bool i) -> size_t { return std::hash<bool>()(i); }, [](std::monostate) -> size_t { return 0; },
                 [](sc::ir::Symbol i) -> size_t { return std::hash<sc::ir::Symbol>()(i); },
                 [](const sc::ir::ConstExprEvent& vec) -> size_t {
                     std::size_t seed = vec.size();
@@ -105,8 +111,7 @@ template <> struct hash<sc::ir::ConstExpression> {
                     return seed;
                 } //
             },
-            e.storage 
-        );
+            e.storage);
     }
 };
 }

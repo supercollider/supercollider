@@ -123,10 +123,15 @@ struct StringLineList : public ListNode<StringLitIndex, StringLineLitIndex> {
     static constexpr auto name { "StringLineList" };
 };
 
-struct SymbolNode : public TerminalNode<SymbolLitIndex> {
-    static constexpr auto name { "SymbolNode" };
-    enum struct Kind { Quote, Slash, KeyBinOp } kind;
-    constexpr SymbolNode(Kind k): kind(k) { }
+struct KeyBinOp : public TerminalNode<KeyBinOpIndex> {
+    static constexpr auto name { "KeyBinOp" };
+};
+
+struct SymbolSlash : public TerminalNode<SymbolSlashIndex> {
+    static constexpr auto name { "SymbolSlash" };
+};
+struct SymbolQuote : public TerminalNode<SymbolQuoteIndex> {
+    static constexpr auto name { "SymbolQuote" };
 };
 
 struct BooleanNode : public TerminalNode<BooleanLitIndex> {
@@ -148,7 +153,7 @@ struct CurryNode : public TerminalNode<CurryIndex> {
 };
 
 
-struct ArrayNode : public ListNode<ArrayIndex, AnyExprIndex> {
+struct ArrayNode : public ListNode<ArrayIndex, join<AnyExprIndex, KeyBinOpIndex>> {
     static constexpr auto name { "ArrayList" };
     // #[1, 2];
     // Previously, this would mean the compiler would create the array and you would just access it straight from the
@@ -170,7 +175,7 @@ struct DictionaryNode : public ListNode<DictionaryIndex, DictionaryEntryIndex> {
     static constexpr auto name { "DictionaryNode" };
 };
 
-struct BlockList : public ListNode<BlockListIndex, BlockIndex> {
+struct BlockList : public ListNode<BlockListIndex, join<BlockIndex, GeneratorAnyIndex>> {
     static constexpr auto name { "BlockList" };
 };
 
@@ -195,6 +200,9 @@ struct NameList : ListNode<NameListIndex, NameOrEnvNameIndex> {
     static constexpr auto name { "NameList" };
 };
 
+struct NamePack : Node<NamePackIndex(NameListIndex, join<MissingIndex, NamedIdentifierIndex, EnvIdentifierIndex>)> {
+    static constexpr auto name { "NamePack" };
+};
 
 struct SelectorNode : TerminalNode<TypedIndex<NodeFlag::SelectorLiteral>> {
     static constexpr auto name { "SelectorNode" };
@@ -215,7 +223,7 @@ struct ArgumentList : ListNode<ArgumentListIndex, ArgumentEntryIndex> {
     static constexpr auto name { "ArgumentList" };
 };
 
-struct KwArgNode : Node<KwArgIndex(SymbolLitIndex keyword, AnyExprIndex value)> {
+struct KwArgNode : Node<KwArgIndex(KeyBinOpIndex keyword, AnyExprIndex value)> {
     static constexpr auto name { "KwArgNode" };
 };
 
@@ -229,20 +237,20 @@ struct AdverbExprNode : Node<AdverbExprIndex(AnyExprIndex)> {
 struct PrefixMessage : Node<PrefixMessageIndex(SelectorMaybeAdverbIndex, ArgumentListIndex, BlockListIndex blocks)> {
     static constexpr auto name { "PrefixMessage" };
 };
-struct BinaryMessage : Node<PrefixMessageIndex(SelectorMaybeAdverbIndex, AnyExprIndex lhs, AnyExprIndex rhs)> {
+struct BinaryMessage : Node<BinaryMessageIndex(SelectorMaybeAdverbIndex, AnyExprIndex lhs, AnyExprIndex rhs)> {
     static constexpr auto name { "BinaryMessage" };
 };
-struct PostfixMessage : Node<PrefixMessageIndex(AnyExprIndex receiver, SelectorMaybeAdverbIndex, ArgumentListIndex,
-                                                BlockListIndex blocks)> {
+struct PostfixMessage : Node<PostfixMessageIndex(AnyExprIndex receiver, SelectorMaybeAdverbIndex, ArgumentListIndex,
+                                                 BlockListIndex blocks)> {
     static constexpr auto name { "PostfixMessage" };
 };
-struct ValueMessage : Node<PrefixMessageIndex(AnyExprIndex receiver, ArgumentListIndex, BlockListIndex)> {
+struct ValueMessage : Node<ValueMessageIndex(AnyExprIndex receiver, ArgumentListIndex, BlockListIndex)> {
     static constexpr auto name { "ValueMessage" };
 };
-struct NewMessage : Node<PrefixMessageIndex(ClassNameIdentifierIndex receiver, ArgumentListIndex, BlockListIndex)> {
+struct NewMessage : Node<NewMessageIndex(ClassNameIdentifierIndex receiver, ArgumentListIndex, BlockListIndex)> {
     static constexpr auto name { "NewMessage" };
 };
-struct AtMessage : Node<PrefixMessageIndex(AnyExprIndex receiver, ArgumentListIndex)> {
+struct AtMessage : Node<AtMessageIndex(AnyExprIndex receiver, AtMessageArgIndex)> {
     static constexpr auto name { "AtMessage" };
 };
 
@@ -308,6 +316,21 @@ struct GeneratorQualGuard : Node<GeneratorQualGuardIndex(AnyExprIndex clause)> {
     static constexpr auto name { "GeneratorQualGuard" };
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// Ranges
+////////////////////////////////////////////////////////////////////////////////
+
+struct Range : Node<RangeIndex(ArgumentListIndex args, maybe<AnyExprIndex> end)> {
+    static constexpr auto name { "Range" };
+};
+
+struct RangeGenerator : Node<RangeGeneratorIndex(ArgumentListIndex args, maybe<AnyExprIndex> end)> {
+    static constexpr auto name { "RangeGenerator" };
+};
+struct RangeAssign : Node<RangeAssignIndex(AnyExprIndex receiver, RangeIndex, AnyExprIndex)> {
+    static constexpr auto name { "RangeAssign" };
+};
+
 
 struct DeclareArgumentWithDefaultNode : Node<DeclareArgumentWithDefaultIndex(NamedIdentifierIndex, AnyExprIndex)> {
     static constexpr auto name { "DeclareArgumentWithDefaultNode" };
@@ -326,8 +349,8 @@ struct DeclareArgumentList : ListNode<DeclareArgumentListIndex, DeclareAnyArgume
 struct DeclareVariableWithDefaultNode : Node<DeclareVariableWithDefaultIndex(NamedIdentifierIndex, AnyExprIndex)> {
     static constexpr auto name { "DeclareVariableWithDefaultNode" };
 };
-struct VariablePack : Node<VariablePackIndex(NameListIndex, AnyExprIndex)> {
-    static constexpr auto name { "DeclareVarUnpack" };
+struct VariablePackAssign : Node<VariablePackAssignIndex(NamePackIndex, AnyExprIndex)> {
+    static constexpr auto name { "VariablePackAssign" };
 };
 
 
@@ -397,6 +420,11 @@ struct DeclareConstList : ListNode<DeclareConstListIndex, DeclareMemberIndex> {
 struct BigMemberList : ListNode<BigMemberListIndex, DeclareAnyMemberListIndex> {
     static constexpr auto name { "BigMemberList" };
 };
+
+struct FileAsFunction : Node<FileAsFunctionIndex(ArgumentListIndex, BlockContentsListIndex)> {
+    static constexpr auto name { "FileAsFunction" };
+};
+
 struct Class
     : Node<ClassIndex(NamedIdentifierIndex name, maybe<NamedIdentifierIndex> slot,
                       maybe<ClassNameIdentifierIndex> super, BigMemberListIndex members, MethodListIndex meths)> {
@@ -434,7 +462,11 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper< //
     AccidentalNode, //
     StringLineNode, //
     StringLineList, //
-    SymbolNode, //
+
+
+    KeyBinOp, //
+    SymbolSlash, //
+    SymbolQuote, //
 
     BooleanNode, //
     NilNode, //
@@ -446,6 +478,7 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper< //
     ClassNameIdentifier, //
 
     NameList, //
+    NamePack, //
 
     EnvIdentifierNode, //
     SelectorNode, //
@@ -456,13 +489,27 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper< //
     KwArgNode, //
     ExprSeq, //
 
-    ImmediatelyEvaluatedBlock,
+    Range, //
+    RangeGenerator, //
+    RangeAssign, //
+
+    ImmediatelyEvaluatedBlock, //
 
     GeneratorNode, //
-    GeneratorFakeNode, GeneratorQualList, GeneratorQualAssign, GeneratorQualDeclare, GeneratorQualIf,
-    GeneratorQualSideEffect, GeneratorQualGuard,
+    GeneratorFakeNode, //
+    GeneratorQualList, //
+    GeneratorQualAssign, //
+    GeneratorQualDeclare, //
+    GeneratorQualIf, //
+    GeneratorQualSideEffect, //
+    GeneratorQualGuard, //
 
-    PrefixMessage, PostfixMessage, BinaryMessage, ValueMessage, NewMessage, AtMessage,
+    PrefixMessage, //
+    PostfixMessage, //
+    BinaryMessage, //
+    ValueMessage, //
+    NewMessage, //
+    AtMessage, //
 
     AdverbExprNode, //
     ReferenceNode, //
@@ -479,7 +526,7 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper< //
     DeclareArgumentList, //
 
     DeclareVariableWithDefaultNode, //
-    VariablePack,
+    VariablePackAssign,
 
     DeclareVariableList, //
 
@@ -499,6 +546,7 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper< //
     DeclareMember, //
     MethodList, //
     ClassOrExtensionList, //
+    FileAsFunction, //
     RegionList, //
     Error //
     >;

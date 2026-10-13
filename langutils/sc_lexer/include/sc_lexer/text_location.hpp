@@ -65,6 +65,8 @@ struct SourceCodeRange {
     SourceCodeLocation begin {}, end {};
 };
 
+[[nodiscard]] inline SourceCodeRange range(SourceCodeRange from, SourceCodeRange to) { return { from.begin, to.end }; }
+
 // A range within an entire file
 struct FileCodeRange {
     FileCodeRange(FileCodeLocation b, FileCodeLocation e): begin(b), end(e) { assert(b <= e); }
