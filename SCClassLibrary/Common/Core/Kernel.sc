@@ -835,13 +835,6 @@ Interpreter {
 	var lineNumber;
 	var column;
 
-	cmdLine_ {
-		DeprecatedError(this, thisMethod, Interpreter.findMethod(\interpret)).throw;
-	}
-	cmdLine {
-		"cmdLine is being deprecated, consider trying debug backtrace to get similar information.".warn
-		^cmdLine
-	}
 
 	var context; // faked interpreter context frame. Don't mess with it.
 
@@ -855,6 +848,14 @@ Interpreter {
 	var <>codeDump, <>preProcessor;
 
 	*new { ^this.shouldNotImplement(thisMethod) }
+
+	cmdLine_ {
+		DeprecatedError(this, thisMethod, Interpreter.findMethod(\interpret)).throw;
+	}
+	cmdLine {
+		"cmdLine is being deprecated, consider trying debug backtrace to get similar information.".warn;
+		^cmdLine
+	}
 
 	interpretCmdLine {
 		^this.prCompileUsingMembers.()
