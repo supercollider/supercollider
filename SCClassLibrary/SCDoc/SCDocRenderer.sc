@@ -624,26 +624,12 @@ SCDocHTMLRenderer {
 				<< "</span>";
 			},
 			\IMAGE, {
-				var currentFolder, imagePath;
+				var imagePath;
 				f = node.text.split($#);
-				currentFolder = currDoc.fullPath.dirname;
-				imagePath = if(f[0].beginsWith(".")) {
-					f[0].resolveRelativeFolderRenderer(currentFolder)
-					++ thisProcess.platform.pathSeparator ++ f[0].cleanPathHierachyFormat
-				} {
-					currentFolder ++ thisProcess.platform.pathSeparator ++ f[0]
-				};/*
-				if(thisProcess.platform.name == \windows) {
-					imagePath = imagePath.replace("/", "\\")
-				};*/
-				if(File.exists(imagePath).not) {
-					"SCDoc: The file '%' does not exist."
-					.format(
-						imagePath.dirname ++ thisProcess.platform.pathSeparator ++ f[0].cleanPathHierachyFormat
-					).warn
-				};
+				imagePath = currDoc.fullPath.dirname +/+ f[0];
 				stream << "<div class='image'>";
 				img = "<img src='" ++ f[0] ++ "'/>";
+				if(File.exists(imagePath).not) { "SCDoc: The file '%' does not exist.".format(imagePath).warn };
 				if(f[2].isNil) {
 					stream << img;
 				} {
