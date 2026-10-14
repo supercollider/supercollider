@@ -93,8 +93,9 @@ CompilerError : Error {
 	*new {|compilerError|
 		^super.new(
 			"", 
-			nil, 
+			nil,
 			{|method| method.ownerClass === Interpreter and: {method.name === 'compile'} }, 
+			{}
 		).compilerError_(compilerError)
 	}
 
