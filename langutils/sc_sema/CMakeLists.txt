@@ -3,6 +3,8 @@ include(${CMAKE_SOURCE_DIR}/cmake_modules/CompilerWarnings.cmake)
 add_library(sc_sema STATIC 
 	#
 	src/compiler.cpp
+	src/tables.cpp
+	src/const_expr.cpp
 	src/ast2ir/expr.cpp
 	src/ast2ir/declare_classes.cpp
 	src/ast2ir/region.cpp
@@ -16,8 +18,9 @@ target_link_libraries(sc_sema PRIVATE sc_lexer sc_parser sc_util)
 set_property(TARGET sc_sema PROPERTY FOLDER Libs)
 
 if(ENABLE_TESTSUITE)
-	#add_subdirectory(tests)
+	add_subdirectory(test)
 endif()
 
 
-add_subdirectory(standalone)
+add_subdirectory(utils/standalone)
+add_subdirectory(utils/consteval)

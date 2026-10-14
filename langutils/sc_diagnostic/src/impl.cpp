@@ -1,12 +1,13 @@
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_lexer/source_utils.hpp"
 #include <filesystem>
+#include <sstream>
 
 
 namespace sc::diag {
 
 std::string diagnosticToString(Severity type, const char* generalDescription,
-                               const std::vector<Diagnostic::Location>& locations) {
+                               const std::vector<Diagnostic::Location>& locations, const std::string& extra) {
     std::stringstream ss;
 
     ss << "\n──────────────────────────────────────────────────────────────────────────────────\n";
@@ -124,13 +125,18 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
         ++i;
     }
 
+    if (!extra.empty()) {
+        ss << "\n" << extra;
+    }
+
     ss << "\n──────────────────────────────────────────────────────────────────────────────────\n";
     return ss.str();
 }
 
 
-Diagnostic::Diagnostic(const char* name, Severity severity, std::vector<Location> location) noexcept:
+Diagnostic::Diagnostic(const char* name, Severity severity, std::vector<Location> location, std::string extra) noexcept:
     m_locations(std::move(location)),
+    extra_info(std::move(extra)),
     m_name(name),
     m_severity(severity) {}
 
@@ -142,7 +148,7 @@ bool Diagnostic::fatal() const { return m_severity == Severity::Error; }
 
 [[nodiscard]] const char* Diagnostic::name() const { return m_name; }
 
-std::string Diagnostic::to_string() const { return diagnosticToString(severity(), name(), locations()); }
+std::string Diagnostic::to_string() const { return diagnosticToString(severity(), name(), locations(), extra_info); }
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -181,5 +187,19 @@ Diagnostic Diagnostic::regionMissingSemi(std::shared_ptr<const sc::lex::TextInfo
 [[nodiscard]] Diagnostic Diagnostic::todo(std::shared_ptr<const sc::lex::TextInfo> info, sc::lex::SourceCodeRange loc) {
     return { "TODO NOT IMPLEMENTED", Severity::Error,
              std::vector<Location> { { std::move(info), loc, "diagnostic not implemented" } } };
+}
+
+[[nodiscard]] Diagnostic Diagnostic::missing_intrinsic_class(std::string extra) {
+    return { "Missing intrinsic class", Severity::Error, {}, std::move(extra) };
+}
+
+[[nodiscard]] Diagnostic Diagnostic::intrinsic_class_wrong_member_name(std::shared_ptr<const sc::lex::TextInfo> t,
+                                                                       sc::lex::SourceCodeRange loc,
+                                                                       std::string_view expected) {
+    std::stringstream ss;
+    ss << "rename to \"" << expected << "\"";
+    return { "Intrinsic class has wrong member name.", //
+             Severity::Error, //
+             std::vector<Location> { { std::move(t), loc, std::move(ss).str() } } };
 }
 }

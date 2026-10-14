@@ -19,6 +19,7 @@ template <typename UNDERLYING, typename TAG>//
     }
 
     constexpr StrongIndex(Underlying u): m_value(u) {}
+
     constexpr StrongIndex(StrongIndex&&) noexcept = default;
     constexpr StrongIndex(const StrongIndex&) noexcept = default;
     constexpr StrongIndex& operator=(StrongIndex&&) noexcept = default;
@@ -64,7 +65,7 @@ template <typename UNDERLYING, typename TAG, UNDERLYING INVALID_VALUE = default_
 
     [[nodiscard]] constexpr Underlying operator*() const { return m_value; }
     [[nodiscard]] constexpr Underlying value() const { return m_value; }
-    [[nodiscard]] constexpr operator bool() const { return m_value != INVALID_VALUE; }
+    [[nodiscard]] constexpr explicit operator bool() const { return m_value != INVALID_VALUE; }
 
     [[nodiscard]] constexpr bool operator==(StrongOptionalIndex<UNDERLYING, TAG, INVALID_VALUE> other) const {
         return m_value == other.m_value;

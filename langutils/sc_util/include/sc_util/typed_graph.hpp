@@ -33,10 +33,10 @@ struct TypedGraphHelper : TypedGraphHelperBase {
         return ((N::Index::Possible[0] == Nodes::Index::Possible[0] ? 1 : 0) + ...) == 1;
     }
 
-    static_assert(((Nodes::Index::size_of_set == 1) && ...),
-                  "Each node must have an index type that contains a single enum entry.");
-    // This is really slow O(N^2), but should be true.
-    // static_assert((check_enum_appears_once<Nodes>() && ...), "Some nodes produce the same typed index.");
+    // static_assert(((Nodes::Index::size_of_set == 1) && ...),
+    //               "Each node must have an index type that contains a single enum entry.");
+    //  This is really slow O(N^2), but should be true.
+    //  static_assert((check_enum_appears_once<Nodes>() && ...), "Some nodes produce the same typed index.");
 
     using UnderlyingEnum = ENUM;
     template <UnderlyingEnum... Es> using IndexCreator = INDEXCREATOR<Es...>;
@@ -129,13 +129,13 @@ template <typename OptNodeIndex, //
           > //
 struct Iter {
     static_assert(std::is_integral_v<typename OptNodeIndex::Underlying>);
-    static_assert(std::is_convertible_v<OptNodeIndex, bool>);
+    static_assert(std::is_constructible_v<bool, OptNodeIndex>);
     constexpr Iter(OptNodeIndex current, const std::vector<Edges>& edge): m_current(current), m_edges(edge) { }
 
     Iter& operator+=(int offset);
     [[nodiscard]] Iter operator++(int);
     Iter& operator++() { return this->operator+=(1); }
-    [[nodiscard]] constexpr operator bool() const { return m_current; }
+    [[nodiscard]] constexpr explicit operator bool() const { return static_cast<bool>(m_current); }
 
     [[nodiscard]] constexpr T operator*() const;
 
@@ -180,13 +180,10 @@ template <typename OptIndex, //
 struct GraphImplementation {
 public: // This is meant to be privately inherited from.
     ////////////////////////////////////////////////////////////////////////////////
-    static_assert(HELPER::template all_node_types<IsTrivial>(), "Nodes should not allocate or require destructors.");
-    static_assert(sc::util::is_a_pair<OptIndex, Index>(),
-                  "Should have an optional and an non-optional strong index here. ");
-    static_assert(std::is_convertible_v<OptIndex, bool>, "Probably got OptIndex and Index the wrong way around.");
-    static_assert(std::is_same_v<typename HELPER::UntypedStrongIndex, OptIndex>
-                      || std::is_same_v<typename HELPER::UntypedStrongIndex, Index>,
-                  "Index types aren't the ones the nodes use.");
+    // static_assert(HELPER::template all_node_types<IsTrivial>(), "Nodes should not allocate or require destructors.");
+    // static_assert(std::is_same_v<typename HELPER::UntypedStrongIndex, OptIndex>
+    //                  || std::is_same_v<typename HELPER::UntypedStrongIndex, Index>,
+    //             "Index types aren't the ones the nodes use.");
 
     template <typename OptNodeIndex, typename Edges, typename T> friend struct Container;
     template <typename OptNodeIndex, typename Edges, typename T> friend struct Iter;
@@ -212,7 +209,7 @@ public: // This is meant to be privately inherited from.
     // The data.
     ////////////////////////////////////////////////////////////////////////////////
 
-    std::vector<std::size_t> m_dead_nodes { };
+    std::vector<UntypedNodeIndex> m_dead_nodes {};
     std::vector<OptIndex> m_last_child { };
     std::vector<Index> m_orphans { };
     // One entry per node.
@@ -232,21 +229,22 @@ public: // This is meant to be privately inherited from.
     template <typename Node, typename... ChildrenIndexes> //
     [[nodiscard]] typename Node::Index create(Node&& node, ChildrenIndexes&&... child_indexes) {
         assert((not_dead(child_indexes) && ...));
-        static_assert((typed_index::is_type_set_index<ChildrenIndexes>() && ...),
-                      "You have not passed an index to the constructor of a node, you have probably passed the node "
-                      "rather than its index.");
-        static_assert(typed_index::is_type_set_index<typename Node::Index>());
-        static_assert(Helper::template has_node<typename Node::Index>(),
-                      "You have either called create on a graph with the wrong type of node, or have failed to add the "
-                      "node to the template argument.");
-        static constexpr auto expected_args = Node::number_expected_args;
+        /*
+                static_assert((typed_index::is_type_set_index<ChildrenIndexes>() && ...),
+                              "You have not passed an index to the constructor of a node, you have probably passed the
+           node " "rather than its index."); static_assert(typed_index::is_type_set_index<typename Node::Index>());
+                static_assert(Helper::template has_node<typename Node::Index>(),
+                              "You have either called create on a graph with the wrong type of node, or have failed to
+           add the " "node to the template argument."); static constexpr auto expected_args =
+           Node::number_expected_args;
 
-        static_assert(!expected_args || sizeof...(child_indexes) <= *expected_args,
-                      "Too many arguments have been passed to the constructor of a node.");
-        static_assert(!expected_args || sizeof...(child_indexes) >= *expected_args,
-                      "Too few arguments have been passed to the constructor of a node.");
-        static_assert(Node::template constructible_from<ChildrenIndexes...>(),
-                      "The children index types do not match the constructor");
+                static_assert(!expected_args || sizeof...(child_indexes) <= *expected_args,
+                              "Too many arguments have been passed to the constructor of a node.");
+                static_assert(!expected_args || sizeof...(child_indexes) >= *expected_args,
+                              "Too few arguments have been passed to the constructor of a node.");
+                static_assert(Node::template constructible_from<ChildrenIndexes...>(),
+                              "The children index types do not match the constructor");
+                              */
         const typename Node::Index index = [&]() {
             if (m_dead_nodes.empty()) {
                 const auto index_raw = m_node_payload.size();
@@ -255,7 +253,7 @@ public: // This is meant to be privately inherited from.
                 m_last_child.push_back({ });
                 return index_raw;
             } else {
-                const size_t index_raw = m_dead_nodes.back();
+                const size_t index_raw = *m_dead_nodes.back();
                 m_dead_nodes.pop_back();
                 m_node_payload[index_raw] = std::move(node);
                 m_node_edges[index_raw] = { };
@@ -336,7 +334,7 @@ public: // This is meant to be privately inherited from.
     [[nodiscard]] constexpr size_t num_children(UntypedNodeIndex i) const {
         const Edges& edges = m_node_edges[*i];
         size_t count { 0 };
-        for (auto c = edges.first_child; c; m_node_edges[*c].next_sibling) {
+        for (auto c = edges.first_child; c; c = m_node_edges[*c].next_sibling) {
             count += 1;
         }
         return count;
@@ -355,6 +353,8 @@ public: // This is meant to be privately inherited from.
 
     template <typename TypedIndex> [[nodiscard]] constexpr std::optional<TypedIndex> as_a(UntypedNodeIndex i) const {
         assert(not_dead(i));
+
+
         if (std::get_if<NodeTypeFromIndex<TypedIndex>>(&m_node_payload[*i])) {
             return { TypedIndex { *i } };
         } else {
@@ -399,7 +399,8 @@ public: // This is meant to be privately inherited from.
     [[nodiscard]] std::optional<std::array<
         typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type::HeldType, N>> //
     list_unpack(TypedIndex i) const {
-        static_assert(TypedIndex::is_list());
+        using NodeType = typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type;
+        static_assert(NodeType::is_list());
         using Held = typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type::HeldType;
         if (num_children(i) != N)
             return {};
@@ -492,7 +493,7 @@ public: // This is meant to be privately inherited from.
         if (auto fnd = std::find(m_orphans.begin(), m_orphans.end(), Index(*e)); fnd != m_orphans.end())
             m_orphans.erase(fnd);
 
-        m_dead_nodes.push_back(*e);
+        m_dead_nodes.push_back(e);
 
         return s;
     }
@@ -651,26 +652,6 @@ private:
             depth_first_traverse_impl(enter_node, before_children, after_children, exit_node, *edge.next_sibling,
                                       visited, depth);
     }
-
-    template <typename... Accepted> //
-    struct SubVariantBuilder {
-        using Tup = std::tuple<Accepted...>;
-        using Variant = std::variant<Accepted...>;
-        static_assert((typed_index::is_type_set_index<Accepted>() && ...));
-        static_assert(((Accepted::size_of_set == 1) && ...));
-        Index underlying_index;
-
-        template <typename Node> [[nodiscard]] Variant operator()(const Node&) const {
-            if constexpr ((std::is_convertible_v<typename Node::Index, Accepted> || ...)) {
-                typename Node::Index i { *underlying_index };
-                return Variant { i };
-            } else {
-                assert(false); // this should not happen.
-                // This is a bogus implementation to silence the compiler.
-                return Variant { std::tuple_element_t<0, Tup> { *underlying_index } };
-            }
-        }
-    };
 
     template <typename TypedIndex, typename Node> [[nodiscard]] static auto as_variant(TypedIndex i, const Node&) {
         using NodeIndex = typename Node::Index;

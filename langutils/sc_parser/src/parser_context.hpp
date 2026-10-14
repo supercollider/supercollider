@@ -1,6 +1,7 @@
 // Copyright Jordan Henderson 2026
 #pragma once
 
+#include "sc_lexer/codepoint_stream.hpp"
 #include "sc_parser/ast.hpp"
 
 #include "sc_lexer/normalise_source.hpp"

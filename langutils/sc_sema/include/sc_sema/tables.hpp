@@ -1,14 +1,14 @@
 #pragma once
 #include "sc_parser/sc_grammar_shared.hpp"
-#include "sc_sema/ast_location.hpp"
 #include "sc_sema/const_expr.hpp"
+#include "sc_sema/ir.hpp"
 #include "sc_sema/symbols.hpp"
 #include "sc_sema/type_info.hpp"
-#include <algorithm>
 #include <mutex>
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <unordered_map>
 
 namespace sc::ir {
 
@@ -19,40 +19,23 @@ namespace sc::ir {
 struct SymbolTable {
     // TODO: use boost unordered flat map (when we can figure out how the includes work in sc...)
 
-    template <typename T> T get(std::string s) {
-        std::scoped_lock lock { m_lock };
-        if (const auto fnd = m_string_to_id.find(s); fnd != m_string_to_id.end()) {
-            return { *fnd->second };
-        }
-        T new_id = T::from(m_id_to_string_view.size());
-        m_string_to_id.insert({ s, static_cast<Symbol>(new_id) });
-        m_id_to_string_view.push_back(std::move(s));
-        return new_id;
-    }
+    [[nodiscard]] Symbol get(std::string_view s);
 
-    template <typename T> T get(std::string_view s) { return get<T>(std::string { s }); }
+    [[nodiscard]] SymSCSelector get_selector(std::string_view s);
+    [[nodiscard]] SymSCClassName get_class_name(std::string_view s);
+    [[nodiscard]] SymSCSymbol get_symbol(std::string_view s);
+    [[nodiscard]] SymSCIdentifier get_identifier(std::string_view s);
+    [[nodiscard]] SymSCString get_string(std::string_view s);
 
-    template <typename T> T get(const char* str) { return get<T>(std::string { str }); }
 
     SymbolTable() = default;
 
-    SymbolTable(SymbolTable&& other) noexcept:
-        m_id_to_string_view(std::move(other.m_id_to_string_view)),
-        m_string_to_id(std::move(other.m_string_to_id)) {}
 
-    SymbolTable(const SymbolTable&) = delete;
-    SymbolTable& operator=(const SymbolTable&) = delete;
-    SymbolTable& operator=(SymbolTable&&) = delete;
-
-
-    [[nodiscard]] std::string_view operator()(Symbol i) const noexcept {
-        std::scoped_lock lock { m_lock };
-        return m_id_to_string_view[*i];
-    }
+    [[nodiscard]] std::string_view operator()(Symbol i) const noexcept;
 
 private:
     mutable std::mutex m_lock { };
-    std::vector<std::string> m_id_to_string_view {};
+    std::vector<std::string> m_id_to_string {};
     std::unordered_map<std::string, Symbol> m_string_to_id { };
 };
 
@@ -60,49 +43,49 @@ private:
 // Class declarations
 ////////////////////////////////////////////////////////////////////////////////
 
+
 struct ClassDeclaration {
-    struct Member {
-        SymSCIdentifier name;
-        ast::ReadWriteAccessor accessor;
-        std::optional<ConstExprIndex> expr_index;
-        std::optional<TypeInfo> type_info;
-    };
-    struct Method {
-        SymSCSelector name;
-        bool compiler_known_implementation;
-    };
-    ASTLocation location;
-    SymSCClassName name;
-    std::optional<SymSCClassName> super { };
+    Locatable<SymSCClassName> name;
+    std::optional<Locatable<SymSCClassName>> super {};
+    std::optional<Locatable<SymSCIdentifier>> slot_def {};
     // Meta classes don't have meta classes.
     std::optional<SymSCClassName> meta_class {};
-    std::vector<Member> members { };
 
-    std::vector<SymSCSelector> consteval_methods { };
+    struct Member {
+        Locatable<SymSCIdentifier> name;
+        Locatable<ast::ReadWriteAccessor> accessor;
+        std::optional<Locatable<ConstExprIndex>> expr_index;
+        std::optional<TypeInfo> type_info;
+        bool poisoned { false };
+    };
+
+    std::vector<Member> members {};
+
+    struct Method {
+        Locatable<SymSCSelector> name;
+        bool compiler_known_implementation { false };
+        bool poisoned { false };
+    };
+    // Either the Method, or the method and its extention.
+    // It is an error to have multiple extention methods, we just taken a random one and produce a warning.
+    std::unordered_map<SymSCSelector, std::variant<Method, std::pair<Method, Method>>, std::hash<Symbol>> methods {};
+
     bool poisoned { false };
 
-    [[nodiscard]] const Member* find_member(SymSCIdentifier i) const {
-        const auto fnd = std::find_if(members.begin(), members.end(), [=](const Member& m) { return m.name == i; });
-        if (fnd == members.end())
-            return nullptr;
-        return &*fnd;
-    }
+    [[nodiscard]] const Member* find_member(SymSCIdentifier i) const;
+    [[nodiscard]] Member* find_member(SymSCIdentifier i);
+
+    [[nodiscard]] const std::variant<Method, std::pair<Method, Method>>* find_method(SymSCSelector i) const;
+    [[nodiscard]] std::variant<Method, std::pair<Method, Method>>* find_method(SymSCSelector i);
 };
 
 
 struct ClassDeclarations {
-    void register_class_declaration(ClassDeclaration decl) {
-        const auto name = decl.name;
-        std::scoped_lock lock { m_lock };
-        m_class_declarations.insert({ name, std::move(decl) });
-    }
+    void register_class_declaration(ClassDeclaration decl);
 
-    [[nodiscard]] bool exists(SymSCClassName name) const {
-        std::scoped_lock lock { m_lock };
-        return m_class_declarations.find(name) != m_class_declarations.end();
-    }
+    [[nodiscard]] bool exists(SymSCClassName name) const;
 
-    [[nodiscard]] size_t size() const { return m_class_declarations.size(); }
+    [[nodiscard]] size_t size() const;
 
     /// This will lock.
     /// Requires name be registered.
@@ -153,6 +136,16 @@ struct ClassDeclarations {
         }
     }
 
+    // This is not thread safe, and if you insert, it will invalidate the pointer.
+    // Should only be used while declaring the classes and you are sure there are no concurrent accesses to the same
+    // decl.
+    [[nodiscard]] ClassDeclaration* get_unsafe(SymSCClassName n);
+
+    // If you only access this as a const in all threads, this is safe.
+    // After the classes have been declared, this is okay to use.
+    [[nodiscard]] const ClassDeclaration* get_unsafe(SymSCClassName n) const;
+
+
 private:
     mutable std::mutex m_lock {};
     std::unordered_map<SymSCClassName, ClassDeclaration, std::hash<Symbol>> m_class_declarations { };
@@ -163,23 +156,10 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 
 struct ConstantTable {
-    [[nodiscard]] ConstExprIndex register_constexpr(ConstExpression&& expr) {
-        std::scoped_lock lock { m_lock };
-        if (const auto fnd = expr_to_index.find(expr); fnd != expr_to_index.end()) {
-            return fnd->second;
-        }
-        const auto index = m_rolling;
-        m_rolling += 1;
-        expr_to_index.insert({ expr, index });
-        index_to_expr.insert({ index, expr });
-        return index;
-    }
+    [[nodiscard]] ConstExprIndex register_constexpr(ConstExpression&& expr);
 
     // this is marked noexcept because you should never construct an index yourself.
-    [[nodiscard]] const ConstExpression& operator()(ConstExprIndex index) const noexcept {
-        std::scoped_lock lock { m_lock };
-        return index_to_expr.at(index);
-    }
+    [[nodiscard]] const ConstExpression& operator()(ConstExprIndex index) const noexcept;
 
 
 private:

@@ -401,6 +401,7 @@ namespace sc { namespace ast { namespace parser {
       // expr_or_seq
       char dummy4[sizeof (AnyExprIndex)];
 
+      // method.base
       // method
       char dummy5[sizeof(AnyMethodIndex)];
 
@@ -575,60 +576,57 @@ namespace sc { namespace ast { namespace parser {
       // UMINUS
       char dummy38[sizeof(LexerToken)];
 
-      // method.base
-      char dummy39[sizeof(MethodIndex)];
-
       // method.list
       // method.list.opt
-      char dummy40[sizeof(MethodListIndex)];
+      char dummy39[sizeof(MethodListIndex)];
 
       // name.list
-      char dummy41[sizeof(NameListIndex)];
+      char dummy40[sizeof(NameListIndex)];
 
       // name.pack
-      char dummy42[sizeof(NamePackIndex)];
+      char dummy41[sizeof(NamePackIndex)];
 
       // name
-      char dummy43[sizeof(NamedIdentifierIndex)];
+      char dummy42[sizeof(NamedIdentifierIndex)];
 
       // nil
-      char dummy44[sizeof(NilLitIndex)];
+      char dummy43[sizeof(NilLitIndex)];
 
       // accessor
-      char dummy45[sizeof(RWAccessorIndex)];
+      char dummy44[sizeof(RWAccessorIndex)];
 
       // expr.dotrange.assign
       // expr.base.range.assign
-      char dummy46[sizeof(RangeAssignIndex)];
+      char dummy45[sizeof(RangeAssignIndex)];
 
       // range.generator
-      char dummy47[sizeof(RangeGeneratorIndex)];
+      char dummy46[sizeof(RangeGeneratorIndex)];
 
       // range
-      char dummy48[sizeof(RangeIndex)];
+      char dummy47[sizeof(RangeIndex)];
 
       // region
-      char dummy49[sizeof(RegionListIndex)];
+      char dummy48[sizeof(RegionListIndex)];
 
       // method.name
       // binary_op.raw
       // binary_op.no_adverb
-      char dummy50[sizeof(SelectorIndex)];
+      char dummy49[sizeof(SelectorIndex)];
 
       // binary_op
-      char dummy51[sizeof(SelectorMaybeAdverbIndex)];
+      char dummy50[sizeof(SelectorMaybeAdverbIndex)];
 
       // string
-      char dummy52[sizeof(StringLitIndex)];
+      char dummy51[sizeof(StringLitIndex)];
 
       // region.item
-      char dummy53[sizeof(error_index<AnyExprIndex>)];
+      char dummy52[sizeof(error_index<AnyExprIndex>)];
 
       // class.super.opt
-      char dummy54[sizeof(maybe<ClassNameIdentifierIndex>)];
+      char dummy53[sizeof(maybe<ClassNameIdentifierIndex>)];
 
       // class.slot.opt
-      char dummy55[sizeof(maybe<NamedIdentifierIndex>)];
+      char dummy54[sizeof(maybe<NamedIdentifierIndex>)];
     };
 
     /// The size of the largest semantic type.
@@ -953,6 +951,7 @@ namespace sc { namespace ast { namespace parser {
           value.move<AnyExprIndex>(std::move(that.value));
           break;
 
+      case symbol_kind::S_79_method_base: // method.base
       case symbol_kind::S_method: // method
         value.move< AnyMethodIndex > (std::move (that.value));
         break;
@@ -1160,10 +1159,6 @@ namespace sc { namespace ast { namespace parser {
       case symbol_kind::S_UMINUS: // UMINUS
         value.move< LexerToken > (std::move (that.value));
         break;
-
-      case symbol_kind::S_79_method_base: // method.base
-          value.move<MethodIndex>(std::move(that.value));
-          break;
 
       case symbol_kind::S_81_method_list: // method.list
       case symbol_kind::S_82_method_list_opt: // method.list.opt
@@ -1761,31 +1756,15 @@ namespace sc { namespace ast { namespace parser {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, MethodIndex&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
+      basic_symbol(typename Base::kind_type t, MethodListIndex&& v, location_type&& l):
+          Base(t),
+          value(std::move(v)),
+          location(std::move(l)) {}
 #else
-      basic_symbol (typename Base::kind_type t, const MethodIndex& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, MethodListIndex&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const MethodListIndex& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
+      basic_symbol(typename Base::kind_type t, const MethodListIndex& v, const location_type& l):
+          Base(t),
+          value(v),
+          location(l) {}
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
@@ -2023,6 +2002,7 @@ switch (yykind)
           value.template destroy<AnyExprIndex>();
           break;
 
+      case symbol_kind::S_79_method_base: // method.base
       case symbol_kind::S_method: // method
         value.template destroy< AnyMethodIndex > ();
         break;
@@ -2230,10 +2210,6 @@ switch (yykind)
       case symbol_kind::S_UMINUS: // UMINUS
         value.template destroy< LexerToken > ();
         break;
-
-      case symbol_kind::S_79_method_base: // method.base
-          value.template destroy<MethodIndex>();
-          break;
 
       case symbol_kind::S_81_method_list: // method.list
       case symbol_kind::S_82_method_list_opt: // method.list.opt
@@ -3699,7 +3675,7 @@ switch (yykind)
 
     /// Constants.
     enum {
-        yylast_ = 2293, ///< Last index in yytable_.
+        yylast_ = 2400, ///< Last index in yytable_.
         yynnts_ = 81, ///< Number of nonterminal symbols.
         yyfinal_ = 81 ///< Termination state number.
     };
@@ -3713,7 +3689,7 @@ switch (yykind)
 
 #line 7 "langutils/sc_parser/src/sc_grammar.y"
 } } } // sc::ast::parser
-#line 3774 "langutils/sc_parser/src/sc_grammar_parser.hpp"
+#line 3752 "langutils/sc_parser/src/sc_grammar_parser.hpp"
 
 
 #endif // !YY_YY_LANGUTILS_SC_PARSER_SRC_SC_GRAMMAR_PARSER_HPP_INCLUDED

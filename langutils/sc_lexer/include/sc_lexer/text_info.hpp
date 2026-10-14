@@ -1,8 +1,8 @@
 // Copyright Jordan Henderson 2026
 #pragma once
 
-#include "codepoint_stream.hpp"
 #include "normalise_source.hpp"
+#include "sc_lexer/text_location.hpp"
 #include <filesystem>
 #include <optional>
 
@@ -18,16 +18,6 @@ struct TextInfo {
         const char* str = source.as_string().c_str();
         assert(r.begin.absolute <= r.end.absolute);
         return { str + r.begin.absolute, r.size() };
-    }
-
-    [[nodiscard]] CodePointStream code_point_stream(SourceCodeRange scr) const noexcept {
-        return { source, source_start_in_file, scr };
-    }
-    [[nodiscard]] CodePointStream code_point_stream(SourceCodeLocation start) const noexcept {
-        return { source, source_start_in_file, start };
-    }
-    [[nodiscard]] CodePointStream code_point_stream() const noexcept {
-        return { source, source_start_in_file };
     }
 };
 

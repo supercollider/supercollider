@@ -52,15 +52,15 @@ ConstEval::Result ConstEval::operator()(ast::RangeAssignIndex i) {
 
 ConstEval::Result ConstEval::operator()(ast::ClassNameIdentifierIndex i) {
     const auto name = std::string { ast_graph.string_view(i) };
-    const auto class_index = cxt.symbol_table.get<SymSCClassName>(name);
-    const auto meta_class_index = cxt.symbol_table.get<SymSCClassName>(meta_prefix + name);
+    const auto class_index = cxt.symbol_table.get_class_name(name);
+    const auto meta_class_index = cxt.symbol_table.get_class_name(meta_prefix + name);
     const auto const_expr_i = cxt.constant_table.register_constexpr({ class_index });
     return Success { const_expr_i, TypeInfo { meta_class_index, TypeConfidence::Absolute } };
 }
 
 ConstEval::Result ConstEval::operator()(ast::NamedIdentifierIndex i) {
     if (encountered_immutable_array) {
-        const auto sym_i = cxt.symbol_table.get<SymSCSymbol>(ast_graph.string_view(i));
+        const auto sym_i = cxt.symbol_table.get_symbol(ast_graph.string_view(i));
         const auto const_i = cxt.constant_table.register_constexpr({ sym_i });
         return Success { const_i, TypeInfo { cxt.common_classes.symbol, TypeConfidence::Absolute } };
     }
@@ -69,10 +69,10 @@ ConstEval::Result ConstEval::operator()(ast::NamedIdentifierIndex i) {
         return { Diagnostic::todo(ast_graph.text_info(), ast_graph.location(i)) };
 
     const auto name = ast_graph.string_view(i);
-    const auto name_sym = cxt.symbol_table.get<SymSCIdentifier>(name);
+    const auto name_sym = cxt.symbol_table.get_identifier(name);
     if (auto member = class_decl->find_member(name_sym)) {
         if (member->expr_index && member->type_info && member->type_info->confidence == TypeConfidence::Absolute)
-            return Success { *member->expr_index, *member->type_info };
+            return Success { *member->expr_index->value, *member->type_info };
     }
     return { Diagnostic::todo(ast_graph.text_info(), ast_graph.location(i)) };
 }
@@ -149,8 +149,7 @@ ConstEval::Result ConstEval::operator()(ast::RangeIndex i) {
 
 
 ConstEval::Result ConstEval::operator()(ast::KeyBinOpIndex i) {
-    const auto sym_i =
-        cxt.symbol_table.get<SymSCSymbol>(synthesize_literal(ast_graph.payload(i), ast_graph.string_view(i)));
+    const auto sym_i = cxt.symbol_table.get_symbol(synthesize_literal(ast_graph.payload(i), ast_graph.string_view(i)));
     const auto const_i = cxt.constant_table.register_constexpr({ sym_i });
     return Success { const_i, TypeInfo { cxt.common_classes.symbol, TypeConfidence::Absolute } };
 }
@@ -182,7 +181,28 @@ ConstEval::Result ConstEval::operator()(ast::CollectionIndex i) {
 }
 
 ConstEval::Result ConstEval::operator()(ast::DictionaryIndex i) {
-    return { Diagnostic::todo(ast_graph.text_info(), ast_graph.location(i)) };
+    std::vector<std::pair<ConstExpression, ConstExpression>> out;
+    for (auto c = ast_graph.children(i).iter(); c; ++c) {
+        const auto [key, value] = ast_graph.children(*c);
+
+        Result key_r = std::visit(*this, ast_graph.index_to_variant(key));
+        if (key_r.success()) {
+            Result value_r = std::visit(*this, ast_graph.index_to_variant(value));
+
+            if (value_r.success()) {
+                out.push_back(
+                    { cxt.constant_table(key_r.success()->first), cxt.constant_table(value_r.success()->first) });
+            } else {
+                return *std::move(value_r).diagnostic();
+            }
+        } else {
+            return *std::move(key_r).diagnostic();
+        }
+    }
+
+
+    const auto const_i = cxt.constant_table.register_constexpr({ std::move(out) });
+    return Success { const_i, TypeInfo { cxt.common_classes.event, TypeConfidence::Absolute } };
 }
 
 ConstEval::Result ConstEval::operator()(ast::ASCIIIndex i) {
@@ -193,7 +213,7 @@ ConstEval::Result ConstEval::operator()(ast::ASCIIIndex i) {
 }
 
 ConstEval::Result ConstEval::operator()(ast::IntLitIndex i) {
-    const double r = synthesize_literal(ast_graph.payload(i), ast_graph.string_view(i));
+    const std::int32_t r = synthesize_literal(ast_graph.payload(i), ast_graph.string_view(i));
     const auto const_i = cxt.constant_table.register_constexpr({ r });
     return Success { const_i, TypeInfo { cxt.common_classes.int_, TypeConfidence::Absolute } };
 }
@@ -224,7 +244,7 @@ ConstEval::Result ConstEval::operator()(ast::AccidentalIndex i) {
 }
 
 ConstEval::Result ConstEval::operator()(ast::StringLitIndex i) {
-    const auto string_i = cxt.symbol_table.get<SymSCString>(synthesize_literal(i, ast_graph));
+    const auto string_i = cxt.symbol_table.get_string(synthesize_literal(i, ast_graph));
     const auto const_i = cxt.constant_table.register_constexpr({ string_i });
 
     return Success { const_i, TypeInfo { cxt.common_classes.string, TypeConfidence::Absolute } };
@@ -244,15 +264,13 @@ ConstEval::Result ConstEval::operator()(ast::NilLitIndex) {
 }
 
 ConstEval::Result ConstEval::operator()(ast::SymbolQuoteIndex i) {
-    const auto sym_i =
-        cxt.symbol_table.get<SymSCSymbol>(synthesize_literal(ast_graph.payload(i), ast_graph.string_view(i)));
+    const auto sym_i = cxt.symbol_table.get_symbol(synthesize_literal(ast_graph.payload(i), ast_graph.string_view(i)));
     const auto const_i = cxt.constant_table.register_constexpr({ sym_i });
     return Success { const_i, TypeInfo { cxt.common_classes.symbol, TypeConfidence::Absolute } };
 }
 
 ConstEval::Result ConstEval::operator()(ast::SymbolSlashIndex i) {
-    const auto sym_i =
-        cxt.symbol_table.get<SymSCSymbol>(synthesize_literal(ast_graph.payload(i), ast_graph.string_view(i)));
+    const auto sym_i = cxt.symbol_table.get_symbol(synthesize_literal(ast_graph.payload(i), ast_graph.string_view(i)));
     const auto const_i = cxt.constant_table.register_constexpr({ sym_i });
     return Success { const_i, TypeInfo { cxt.common_classes.symbol, TypeConfidence::Absolute } };
 }

@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "sc_grammar_parser.hpp"
+#include "sc_lexer/text_info.hpp"
+#include "sc_lexer/text_location.hpp"
 #include "sc_parser/ast.hpp"
 
 namespace sc::ast {
@@ -27,15 +29,16 @@ namespace sc::ast {
     return { std::move(cxt.graph), result };
 }
 
+
 std::tuple<ASTGraph, bool> parse(std::shared_ptr<const lex::TextInfo> text_info, sc::lex::SourceCodeRange r) {
-    return parse(text_info, text_info->code_point_stream(r));
+    return parse(text_info, sc::lex::CodePointStream { text_info->source, text_info->source_start_in_file, r });
 };
 
 std::tuple<ASTGraph, bool> parse(std::shared_ptr<const lex::TextInfo> text_info, sc::lex::SourceCodeLocation r) {
-    return parse(text_info, text_info->code_point_stream(r));
+    return parse(text_info, { text_info->source, text_info->source_start_in_file, r });
 };
 
 std::tuple<ASTGraph, bool> parse(std::shared_ptr<const sc::lex::TextInfo> text_info) {
-    return parse(text_info, text_info->code_point_stream());
+    return parse(text_info, { text_info->source, text_info->source_start_in_file });
 }
 }

@@ -12,6 +12,8 @@
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_parser/sc_parser.hpp"
 #include "sc_sema/compiler.hpp"
+#include "sc_sema/symbols.hpp"
+#include "sc_sema/tables.hpp"
 
 #ifdef _MSC_VER
 // utility function to convert default Windows stdin encoding to UTF-8
@@ -57,7 +59,7 @@ int main(int argc, char* argv[]) {
         if (dir_entry.is_regular_file() && dir_entry.path().extension() == ".sc") {
             std::ifstream file_stream { dir_entry.path() };
             if (!file_stream.is_open()) {
-                // std::cerr << "Could not open file" << dir_entry.path();
+                std::cerr << "Could not open file" << dir_entry.path();
                 continue;
             }
             std::stringstream ss {};
@@ -72,21 +74,20 @@ int main(int argc, char* argv[]) {
 
             auto [ast_graph, result] = sc::ast::parse(text_info);
             if (result != 0 || !ast_graph) {
-                // std::cerr << "Failed to parse " << dir_entry.path()
-                //           << " diagnostic count = " << ast_graph.diagnostics().size() << "\n";
-                // for (const auto& d : ast_graph.diagnostics()) {
-                //     std::cerr << d;
-                // }
-                continue;
+                std::cerr << "Failed to parse " << dir_entry.path()
+                          << " diagnostic count = " << ast_graph.diagnostics().size() << "\n";
+                for (const auto& d : ast_graph.diagnostics()) {
+                    std::cerr << d;
+                }
             }
 
             const auto roots = ast_graph.root();
             if (!roots) {
-                // std::cerr << "No roots  " << dir_entry.path() << "\n";
+                std::cerr << "No roots  " << dir_entry.path() << "\n";
                 continue;
             }
             if (!std::get_if<sc::ast::ClassOrExtensionListIndex>(&*roots)) {
-                // std::cerr << "Parser returned an scd file, not a class file.";
+                std::cerr << "Parser returned an scd file, not a class file.";
                 continue;
             }
 
@@ -95,14 +96,52 @@ int main(int argc, char* argv[]) {
         }
 
 
-    sc::ir::IRCompiler comp {};
+    sc::ir::SymbolTable symbol_table;
+    sc::ir::IRCompiler comp { symbol_table };
 
-    // const auto diags = comp.compile_class_library({}, std::move(ast_and_index));
 
-    // if (!diags.empty()) {
-    //     for (const auto& d : diags)
-    //         std::cerr << d;
-    // }
+    sc::ir::IntrinsicConstraints constraints;
+
+    const auto abstract_object = symbol_table.get_class_name("AbstractObjectExperimental");
+    constraints.insert({ abstract_object,
+                         sc::ir::IntrinsicConstraint {
+                             abstract_object, //
+                             {}, //
+                             {}, //
+                             {} //
+                         } });
+    const auto object = symbol_table.get_class_name("Object");
+    constraints.insert({ object,
+                         sc::ir::IntrinsicConstraint {
+                             object, //
+                             { abstract_object }, //
+                             {}, //
+                             {} //
+                         } });
+
+    const auto dframe = symbol_table.get_class_name("DebugFrame");
+    constraints.insert({ dframe,
+                         sc::ir::IntrinsicConstraint {
+                             dframe, //
+                             { object }, //
+                             {
+                                 symbol_table.get_identifier("functionDef"), //
+                                 symbol_table.get_identifier("args"), //
+                                 symbol_table.get_identifier("var"), //
+                                 symbol_table.get_identifier("caller"), //
+                                 symbol_table.get_identifier("context"), //
+                                 symbol_table.get_identifier("address"), //
+                             }, //
+                             {} //
+                         } });
+
+    const auto diags = comp.compile_class_library(
+        std::move(constraints), symbol_table.get_class_name("AbstractObjectExperimental"), std::move(ast_and_index));
+
+    if (!diags.empty()) {
+        for (const auto& d : diags)
+            std::cerr << d;
+    }
 
     std::cout << "Successfully compiled " << comp.context()->class_declarations.size() << " classes." << std::endl;
 

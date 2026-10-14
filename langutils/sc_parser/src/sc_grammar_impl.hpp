@@ -181,5 +181,5 @@ namespace sc::ast::parser::error_recovery {
 
 void region_separator(ParserContext&, sc ::lex::SourceCodeRange last_valid);
 void expr(ParserContext&);
-
+void method(ParserContext&, sc::lex::SourceCodeRange open_bracket);
 }

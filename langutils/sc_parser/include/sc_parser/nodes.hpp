@@ -167,7 +167,8 @@ struct CollectionNode : public Node<CollectionIndex(ClassNameIdentifierIndex, Ar
     static constexpr auto name { "CollectionNode" };
 };
 
-struct DictionaryEntryNode : public Node<DictionaryEntryIndex(AnyExprIndex key, AnyExprIndex value)> {
+struct DictionaryEntryNode
+    : public Node<DictionaryEntryIndex(join<AnyExprIndex, KeyBinOpIndex> key, AnyExprIndex value)> {
     static constexpr auto name { "DictionaryEntryNode" };
 };
 
@@ -421,17 +422,17 @@ struct BigMemberList : ListNode<BigMemberListIndex, DeclareAnyMemberListIndex> {
     static constexpr auto name { "BigMemberList" };
 };
 
-struct FileAsFunction : Node<FileAsFunctionIndex(ArgumentListIndex, BlockContentsListIndex)> {
+struct FileAsFunction : Node<FileAsFunctionIndex(DeclareArgumentListIndex, BlockContentsListIndex)> {
     static constexpr auto name { "FileAsFunction" };
 };
 
 struct Class
-    : Node<ClassIndex(NamedIdentifierIndex name, maybe<NamedIdentifierIndex> slot,
+    : Node<ClassIndex(ClassNameIdentifierIndex name, maybe<NamedIdentifierIndex> slot,
                       maybe<ClassNameIdentifierIndex> super, BigMemberListIndex members, MethodListIndex meths)> {
     static constexpr auto name { "Class" };
 };
 
-struct ClassExtension : Node<ClassExtensionIndex(NamedIdentifierIndex name, MethodListIndex meths)> {
+struct ClassExtension : Node<ClassExtensionIndex(ClassNameIdentifierIndex name, MethodListIndex meths)> {
     static constexpr auto name { "ClassExtension" };
 };
 

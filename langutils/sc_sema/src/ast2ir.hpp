@@ -47,9 +47,12 @@ struct DeclareClass {
     std::optional<Result> operator()(ast::ClassIndex);
 
 private:
-    void append_member_to_decl(ClassDeclaration&, ast::ReadWriteAccessor, ast::NamedIdentifierIndex);
-    void append_member_to_decl(ClassDeclaration&, ast::ReadWriteAccessor, ast::DeclareVariableWithDefaultIndex);
-    void append_member_to_decl(ClassDeclaration&, ast::ReadWriteAccessor, ast::VariablePackAssignIndex);
+    void append_member_to_decl(ClassDeclaration&, ast::UntypedIndex accessor_i, ast::ReadWriteAccessor,
+                               ast::NamedIdentifierIndex);
+    void append_member_to_decl(ClassDeclaration&, ast::UntypedIndex accessor_i, ast::ReadWriteAccessor,
+                               ast::DeclareVariableWithDefaultIndex);
+    void append_member_to_decl(ClassDeclaration&, ast::UntypedIndex accessor_i, ast::ReadWriteAccessor,
+                               ast::VariablePackAssignIndex);
 
     Context& cxt;
     const ast::ASTGraph& ast_graph;

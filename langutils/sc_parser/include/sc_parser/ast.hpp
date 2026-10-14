@@ -112,6 +112,7 @@ public:
     using Base::children;
     using Base::index_to_variant;
     using Base::list_unpack;
+    using Base::num_children;
     using Base::visit;
 
     ////////////////////////////////////////////////////////////////////////////////

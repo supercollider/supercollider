@@ -70,9 +70,35 @@
       "name": "sc_sema launch",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/langutils/sc_sema/standalone/sc_sema_standalone",
+      "program": "${workspaceFolder}/build/langutils/sc_sema/utils/standalone/sc_sema_standalone",
       "args": [
         "/home/jordan/.repo/sclang_corpus/corpus"
+        //"SCClassLibrary"
+      ],
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Set Disassembly Flavor to Intel",
+          "text": "-gdb-set disassembly-flavor intel",
+          "ignoreFailures": true
+        }
+      ]
+    },
+  {
+      "name": "sc_consteval launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/langutils/sc_sema/utils/consteval/sc_consteval",
+      "args": [
+        "1"
         //"SCClassLibrary"
       ],
       "cwd": "${workspaceFolder}",

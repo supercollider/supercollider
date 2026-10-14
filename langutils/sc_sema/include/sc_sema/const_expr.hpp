@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <ostream>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -49,6 +50,7 @@ struct ConstExpression {
     constexpr ConstExpression(Nil n): storage(n) {}
     ConstExpression(ConstExprArray d) noexcept: storage(std::move(d)) { }
     ConstExpression(ConstExprEvent d) noexcept: storage(std::move(d)) { }
+    template <typename T> ConstExpression(T) = delete;
 
     ConstExpression(ConstExpression&&) noexcept = default;
     ConstExpression(const ConstExpression&) = default;
@@ -67,6 +69,8 @@ struct ConstExpression {
     template <typename T> [[nodiscard]] const T* get_if() const { return std::get_if<T>(storage); }
 
     friend struct std::hash<ConstExpression>;
+
+    void to_json(std::ostream&, const struct SymbolTable&) const;
 
 private:
     ConstStorage storage;

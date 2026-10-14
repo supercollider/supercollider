@@ -148,6 +148,8 @@ using Def = sc::util::typed_index::QuicklyDefineTypesFromSpec<Spec>;
 using Index = details::Def::Index;
 using OptionalIndex = details::Def::OptionalIndex;
 
+using UntypedIndex = OptionalIndex;
+
 // Because bison requires that the indexs be default constructable, we must use the optional index type here.
 template <NodeFlag... Flags> using TypedIndex = details::Def::OptionalTypedIndex<Flags...>;
 
@@ -298,6 +300,7 @@ using AnyExprIndex = join< //
     CurryIndex //
     >;
 
+static_assert(!std::is_convertible_v<KeyBinOpIndex, AnyExprIndex>);
 
 using AdverbExprIndex = TypedIndex<NodeFlag::AdverbExpr>;
 using AdverbIndex = TypedIndex<NodeFlag::AdverbExpr, NodeFlag::IntegerLiteral, NodeFlag::NameIdentifier>;

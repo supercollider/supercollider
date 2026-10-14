@@ -35,6 +35,10 @@ public:
                                                     std::shared_ptr<const sc::lex::TextInfo> second_text_info,
                                                     sc::lex::SourceCodeRange second_loc);
     [[nodiscard]] static Diagnostic todo(std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange loc);
+    [[nodiscard]] static Diagnostic missing_intrinsic_class(std::string);
+    [[nodiscard]] static Diagnostic intrinsic_class_wrong_member_name(std::shared_ptr<const sc::lex::TextInfo>,
+                                                                      sc::lex::SourceCodeRange loc,
+                                                                      std::string_view expected);
 
     Diagnostic() = delete;
     Diagnostic(Diagnostic&&) noexcept = default;
@@ -55,8 +59,10 @@ public:
     std::string to_string() const;
 
 private:
-    Diagnostic(const char* name, Severity severity, std::vector<Location> locations = {}) noexcept;
+    Diagnostic(const char* name, Severity severity, std::vector<Location> locations = {},
+               std::string extra = {}) noexcept;
     std::vector<Location> m_locations;
+    std::string extra_info;
     const char* m_name;
     Severity m_severity;
 };

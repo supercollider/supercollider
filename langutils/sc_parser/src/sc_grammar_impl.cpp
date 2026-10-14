@@ -2,7 +2,10 @@
 
 #include "parser_context.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
+#include "sc_lexer/codepoint.hpp"
+#include "sc_lexer/codepoint_stream.hpp"
 #include "sc_lexer/text_location.hpp"
+#include "sc_lexer/tokens.hpp"
 
 void sc::ast::parser::parser::report_syntax_error(const context& symbol_cxt) const {
     std::vector<symbol_kind_type> expected(12);
@@ -65,4 +68,34 @@ void expr(ParserContext& cxt) {
     cxt.graph.add_diagnostic(diag::Diagnostic::unexpectedToken(cxt.text_info, unexpected.location, expected, got_name));
 }
 
+
+void method(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+    auto _ = cxt.consume_error();
+    if (cxt.previous) {
+        if (cxt.previous->token == sc::lex::TokenType::CloseCurly) {
+            return; // do nothing. Can't guess when brackets mismatch.
+        }
+    }
+
+    // copy
+    sc::lex::CodePointStream new_cps = cxt.cps;
+
+    while (true) {
+        sc::lex::CodePointStream peek_cps = new_cps;
+        const auto [lex_token, location, extra_location] = sc::lex::lexer(peek_cps, cxt.action);
+        if (lex_token == sc::lex::TokenType::CloseCurly) {
+            if (extra_location) {
+                if (*extra_location == open_bracket) {
+                    cxt.previous = { lex_token, location, extra_location };
+                    cxt.cps = peek_cps;
+                    return;
+                }
+            }
+        } else if (lex_token == sc::lex::TokenType::EndOfFile) {
+            cxt.cps = new_cps;
+            return;
+        }
+        new_cps = peek_cps;
+    }
+}
 }

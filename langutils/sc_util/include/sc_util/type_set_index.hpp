@@ -349,6 +349,7 @@ using C_Index = TypedIndex<Elements::C>;
 using D_Index = TypedIndex<Elements::D>;
 
 using AB_Index = join<A_Index, B_Index>;
+using CD_Index = join<C_Index, D_Index>;
 
 using AnyIndex = join<A_Index, B_Index, C_Index, D_Index>;
 
@@ -370,9 +371,13 @@ static_assert([]() -> bool {
 static_assert([]() -> bool {
     A_Index a { 0 };
     AB_Index b { a }; // a is a subset of ab, okay
-    // B_index bb{a}; // this is a compile time error
+    // B_Index bb{a}; // this is a compile time error
     return *b == 0;
 }());
+
+static_assert(std::is_constructible_v<AB_Index, A_Index>);
+static_assert(!std::is_constructible_v<A_Index, CD_Index>);
+static_assert(!std::is_convertible_v<A_Index, CD_Index>);
 }
 
 namespace details_both_types {

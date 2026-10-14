@@ -41,16 +41,6 @@
 
 using namespace sc::ast;
 
-template<typename... REJECTS>
-auto create_error(sc::ast::parser::ParserContext& cxt, sc::lex::SourceCodeRange loc, REJECTS...rejects) {
-	const auto orphans = cxt.graph.orphans();
-	auto er = cxt.create(Error{}, loc);
-	for(auto o : orphans){
-		if (!((*o == *rejects) || ...))
-			cxt.graph.append(er, sc::ast::AnyIndex{*o});
-	}
-	return er;
-}
 
 }
 
@@ -105,11 +95,8 @@ auto create_error(sc::ast::parser::ParserContext& cxt, sc::lex::SourceCodeRange 
 %type <DeclareMemberIndex> members.entry.item 
 
 %type <SelectorIndex> method.name
-%type <AnyMethodIndex> method 
-%type <MethodIndex> method.base
+%type <AnyMethodIndex> method  method.base
 %type <MethodListIndex> method.list method.list.opt
-
-%type<error_index<AnyExprIndex>> expr.error
 
 %type <AnyExprIndex> msgsend // not all msgsends result in a message node!
 
@@ -201,10 +188,10 @@ file_as_func
 		{ $$ = cxt.create(FileAsFunction{}, @$, $args, $contents); }
 
 	| INTERPRET variable_declarations[decls] SEMICOLON block.contents[contents] semicolon.opt YYEOF
-		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(ArgumentList{}, @1), cxt.graph.prepend($contents, $decls)); }
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.graph.prepend($contents, $decls)); }
 
 	| INTERPRET variable_declarations[decls] semicolon.opt YYEOF
-		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(ArgumentList{}, @1), cxt.create(BlockContentsList{}, @3, $decls)); }
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.create(BlockContentsList{}, @3, $decls)); }
 	;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -221,7 +208,7 @@ region.item
 		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, cxt.create(BlockContentsList{}, @3)); }
 
 	| OPENPAREN variable_declarations[decls] SEMICOLON block.contents[contents] semicolon.opt CLOSEPAREN  
-		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, cxt.create(ArgumentList{}, @1), cxt.graph.prepend($contents, $decls)); }
+		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.graph.prepend($contents, $decls)); }
 	;
 
 region
@@ -231,7 +218,7 @@ region
 	| INTERPRET error
 		{
 			error_recovery::expr(cxt);
-			$$ = cxt.create(RegionList{}, @$, create_error(cxt, @error));
+			$$ = cxt.create(RegionList{}, @$, cxt.create(Error{}, @$));
 		}
 
 	| region[r] SEMICOLON region.item[item]
@@ -254,16 +241,12 @@ region
 				$$ = $1;
 			} else {
 				error_recovery::expr(cxt);
-				$$ = cxt.graph.append($r, create_error(cxt, @e, $r));
+				$$ = cxt.graph.append($r, cxt.create(Error{}, @e));
 				yyclearin;
 			} 
 		}
 	;
 
-expr.error
-	: expr { $$ = $expr; }
-
-	;
 
 
 
@@ -355,19 +338,33 @@ method.base
 		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(Missing{},@2), $block); }
 
 	| method.name[name] OPENCURLY argument_declarations.opt[args] CLOSECURLY
-		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(Missing{},@2), cxt.create(BlockList{}, @4)); }
+		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(Missing{},@2), cxt.create(BlockContentsList{}, @4)); }
 
 	| method.name[name] OPENCURLY argument_declarations.opt[args] PRIMITIVENAME[prim] semicolon.opt block.contents[block] semicolon.opt CLOSECURLY
 		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(PrimitiveIdentifier{}, @prim), $block); }
 
 	| method.name[name] OPENCURLY argument_declarations.opt[args] PRIMITIVENAME[prim] semicolon.opt CLOSECURLY
-		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(PrimitiveIdentifier{}, @prim), cxt.create(BlockList{}, @5)); }
+		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(PrimitiveIdentifier{}, @prim), cxt.create(BlockContentsList{}, @5)); }
+	
+	| method.name[name] OPENCURLY[o] error[e] 
+		{
+			error_recovery::method(cxt, @o); // advance over the closing curly of function.
+			$$ = cxt.create(Error{}, @$);
+			yyclearin;
+		}
 	;
 
 method
 	: method.base { $$ = $1; }
 	| MULTIPLY method.base[meth] 
-		{ $$ = cxt.graph.cast<ClassMethod>($meth); }
+		{ 
+			if (auto c = cxt.graph.as_a<MethodIndex>($meth)) {
+				$$ = cxt.graph.cast<ClassMethod>(*c);
+			} 
+			// leaves as error
+			cxt.graph.location($meth) = @$; 
+			$$ = $meth; 
+		}
 	;
 
 method.list 		
@@ -850,7 +847,7 @@ argument_declarations.list
 			$$ = cxt.graph.append( $list, @$, cxt.create(DeclareArgumentWithDefaultNode{!is_bracketed}, @$, $name, $expr));
 		}
 	| argument_declarations.list[list] COMMA name OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.graph.append($list, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $expr_or_seq, $name)); }
+		{ $$ = cxt.graph.append($list, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $name, $expr_or_seq)); }
 
 	;
 

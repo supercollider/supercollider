@@ -375,4 +375,39 @@ AmpComp  {
 }
     )%",
                  true);
+
+    tester_class(
+        R"%(
+Foo {
+    bar { 1 + }
+}
+    )%",
+        false);
+
+    tester_class(
+        R"%(
+Foo {
+    bar { 1 + }
+    car { ^meow }
+}
+    )%",
+        false);
+
+    tester_class(
+        R"%(
+Foo {
+    bar { 1 + }
+    car { if(a) {^meow}; ^10 }
+}
+    )%",
+        false);
+
+    tester_class(
+        R"%(
+Foo {
+    bar { 1 + }
+    car { if(a) {^meow}
+}
+    )%",
+        false);
 }
