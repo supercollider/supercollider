@@ -972,7 +972,7 @@ code::
 
 method:: exclude
 Uninstalls the link::Classes/Quark##quark:: specified by the receiver link::Classes/String::, if it is currently installed.
-This process unregisters the quark from code::(Platform.userAppSupportDir +/+ "sclang_conf.yaml")::.
+This process removes the quark from link::Classes/LanguageConfig##language config file::.
 Recompiling the class library is required after uninstalling a quark.
 
 code::
