@@ -21,7 +21,7 @@ struct initialized_struct {
     double f;
 };
 
-template <typename T> void test_list(void) {
+template <typename T> void test_list() {
     list<T, tl_allocator<T>> vec;
 
     for (int i = 0; i != 8192; ++i)
@@ -29,14 +29,14 @@ template <typename T> void test_list(void) {
 }
 
 
-template <typename T> void test_vector(void) {
+template <typename T> void test_vector() {
     vector<T, tl_allocator<T>> vec;
 
     for (int i = 0; i != 8192; ++i)
         vec.push_back(T(i));
 }
 
-template <typename T> void test_set(void) {
+template <typename T> void test_set() {
     set<T, std::less<T>, tl_allocator<T>> set;
 
     for (int i = 0; i != 8192; ++i)

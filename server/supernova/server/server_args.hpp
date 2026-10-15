@@ -36,12 +36,12 @@ public:
         return instance();
     }
 
-    static server_arguments const& instance(void) { return *instance_; }
+    static server_arguments const& instance() { return *instance_; }
 
     /** set the sample rate (from the audio backend) */
     static void set_samplerate(uint32_t samplerate) { instance_->samplerate = samplerate; }
 
-    uint32_t port(void) const {
+    uint32_t port() const {
         if (udp_port)
             return udp_port;
         else

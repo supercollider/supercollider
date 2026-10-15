@@ -627,7 +627,7 @@ new clock:
 
 TempoClock* TempoClock::sAll = nullptr;
 
-void TempoClock_stopAll(void) {
+void TempoClock_stopAll() {
     // printf("->TempoClock_stopAll %p\n", TempoClock::sAll);
     auto* clock = TempoClock::GetAll();
     while (clock) {

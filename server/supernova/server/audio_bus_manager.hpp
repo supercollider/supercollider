@@ -30,7 +30,7 @@ class audio_bus_manager {
     typedef std::uint16_t uint16_t;
 
 public:
-    audio_bus_manager(void) = default;
+    audio_bus_manager() = default;
     audio_bus_manager(audio_bus_manager const&) = delete;
     audio_bus_manager& operator=(audio_bus_manager const&) = delete;
 
@@ -41,7 +41,7 @@ public:
         locks = new padded_rw_spinlock[count];
     }
 
-    ~audio_bus_manager(void) {
+    ~audio_bus_manager() {
         free_aligned(buffers);
         delete[] locks;
     }

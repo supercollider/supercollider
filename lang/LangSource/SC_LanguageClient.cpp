@@ -302,7 +302,7 @@ void error(const char* fmt, ...) {
     va_end(ap);
 }
 
-void flushPostBuf(void) { SC_LanguageClient::instance()->flush(); }
+void flushPostBuf() { SC_LanguageClient::instance()->flush(); }
 
 void closeAllGUIScreens() { SC_LanguageClient::instance()->onLibraryShutdown(); }
 

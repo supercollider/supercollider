@@ -40,7 +40,7 @@ struct audio_sync_callback
     : public static_pooled_class<audio_sync_callback, 1 << 20 /* 1mb pool of realtime memory */, true, 16> {
     virtual ~audio_sync_callback() = default;
 
-    virtual void run(void) = 0;
+    virtual void run() = 0;
 };
 
 /** scheduler class of the nova server
@@ -63,7 +63,7 @@ template <class thread_init_functor = nop_thread_init> class scheduler {
     public:
         reset_queue_cb(scheduler* sched, dsp_thread_queue_ptr& qptr): sched(sched), qptr(qptr) {}
 
-        void run(void) override {
+        void run() override {
             sched->reset_queue_sync(qptr);
             /** todo: later free the queue in a helper thread */
         }
@@ -82,7 +82,7 @@ public:
     scheduler(thread_count_t thread_count = 1, bool realtime = false, bool pin_threads = false):
         threads(thread_count, !realtime, thread_init_functor(realtime, pin_threads)) {}
 
-    void start_dsp_threads(void) { threads.start_threads(); }
+    void start_dsp_threads() { threads.start_threads(); }
 
     void terminate() {
         cbs.run_callbacks(); // audio backend must be closed by now

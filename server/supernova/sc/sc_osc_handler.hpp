@@ -161,7 +161,7 @@ public:
             data_(data),
             endpoint_(endpoint) {}
 
-        void run(void);
+        void run();
 
         const time_tag timeout_;
         const char* const data_;
@@ -180,7 +180,7 @@ public:
 
     void execute_bundles(time_tag const& last, time_tag const& now);
 
-    void clear_bundles(void) { bundle_q.clear_and_dispose(dispose_bundle); }
+    void clear_bundles() { bundle_q.clear_and_dispose(dispose_bundle); }
 
     static void dispose_bundle(bundle_node* node) {
         node->~bundle_node();
@@ -212,7 +212,7 @@ public:
         }
     }
 
-    void start_receive_thread(void) { detail::network_thread::start_receive(); }
+    void start_receive_thread() { detail::network_thread::start_receive(); }
 
     typedef osc::ReceivedPacket ReceivedPacket;
     typedef osc::ReceivedBundle ReceivedBundle;
@@ -229,7 +229,7 @@ public:
     public:
         static received_packet* alloc_packet(const char* data, size_t length, endpoint_ptr const& remote_endpoint);
 
-        void run(void) override final;
+        void run() override final;
 
         const char* const data;
         const size_t length;
@@ -278,7 +278,7 @@ public:
     };
 
 private:
-    void start_tcp_accept(void);
+    void start_tcp_accept();
     void handle_tcp_accept(tcp_connection::pointer new_connection, const boost::system::error_code& error);
     /* @} */
 
@@ -322,9 +322,9 @@ private:
     /* @{ */
     /** bundle scheduling */
 public:
-    void clear_scheduled_bundles(void) { scheduled_bundles.clear_bundles(); }
+    void clear_scheduled_bundles() { scheduled_bundles.clear_bundles(); }
 
-    void execute_scheduled_bundles(void) { scheduled_bundles.execute_bundles(last, now); }
+    void execute_scheduled_bundles() { scheduled_bundles.execute_bundles(last, now); }
 
     void increment_logical_time(time_tag const& diff) {
         last = now;
@@ -341,13 +341,13 @@ public:
         last += add;
     }
 
-    void update_time_from_system(void) {
+    void update_time_from_system() {
         now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
         last = now - time_per_tick;
     }
 
-    time_tag const& current_time(void) const { return now; }
-    time_tag next_time(void) const { return now + time_per_tick; }
+    time_tag const& current_time() const { return now; }
+    time_tag next_time() const { return now + time_per_tick; }
 
     sc_scheduled_bundles scheduled_bundles;
     time_tag now, last;

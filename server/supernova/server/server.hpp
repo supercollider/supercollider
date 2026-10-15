@@ -219,9 +219,9 @@ public:
         compute_audio();
     }
 
-    void rebuild_dsp_queue(void);
+    void rebuild_dsp_queue();
 
-    void request_dsp_queue_update(void) { dsp_queue_dirty = true; }
+    void request_dsp_queue_update() { dsp_queue_dirty = true; }
 
     bool quit_requested() { return quit_requested_.load(); }
 

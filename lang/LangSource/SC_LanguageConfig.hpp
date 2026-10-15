@@ -49,7 +49,7 @@ public:
     const DirVector& excludedDirectories() const { return mExcludedDirectories; }
     const DirVector& defaultClassLibraryDirectories() const { return mDefaultClassLibraryDirectories; }
 
-    void postExcludedDirectories(void) const;
+    void postExcludedDirectories() const;
 
     bool pathIsExcluded(const Path&) const; // true iff the path is in mExcludedDirectories
 

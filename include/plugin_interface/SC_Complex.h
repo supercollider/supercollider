@@ -56,7 +56,7 @@ float gMagLUT[kPolarLUTSize];
 float gPhaseLUT[kPolarLUTSize];
 float gSine[kSineSize + 1];
 
-static bool initTables(void) {
+static bool initTables() {
     double sineIndexToPhase = twopi / kSineSize;
     for (int i = 0; i <= kSineSize; ++i) {
         double phase = i * sineIndexToPhase;

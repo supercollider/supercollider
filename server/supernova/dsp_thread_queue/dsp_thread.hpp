@@ -35,7 +35,7 @@ namespace nova {
 using std::uint16_t;
 
 struct nop_thread_init {
-    nop_thread_init(void) {}
+    nop_thread_init() {}
 
     template <typename... Args> nop_thread_init(Args const&...) {}
 
@@ -78,7 +78,7 @@ public:
     dsp_thread(dsp_thread const&) = delete;
     dsp_thread& operator=(dsp_thread const&) = delete;
 
-    ~dsp_thread(void) {
+    ~dsp_thread() {
 #ifdef SUPERNOVA_USE_PTHREAD
         if (stack_)
             free_aligned(stack_);
@@ -118,12 +118,12 @@ public:
 #endif
     }
 
-    void wake_thread(void) { cycle_sem.post(); }
+    void wake_thread() { cycle_sem.post(); }
 
 private:
     /** thread function
      * */
-    void run(void) {
+    void run() {
         thread_init_functor::operator()(index);
 
         for (;;) {
@@ -180,7 +180,7 @@ public:
         set_dsp_thread_count(interpreter.get_thread_count(), init_functor);
     }
 
-    void run(void) {
+    void run() {
         const bool run_tick = interpreter.init_tick();
         if (likely(run_tick)) {
             wake_threads();
@@ -197,17 +197,17 @@ public:
         return std::move(ret);
     }
 
-    dsp_thread_queue_ptr release_queue(void) { return interpreter.release_queue(); }
+    dsp_thread_queue_ptr release_queue() { return interpreter.release_queue(); }
 
 public:
     /** thread handling */
     /* @{ */
-    void start_threads(void) {
+    void start_threads() {
         for (auto& thread : threads)
             thread->start();
     }
 
-    void terminate_threads(void) {
+    void terminate_threads() {
         for (auto& thread : threads)
             thread->join();
     }
@@ -220,7 +220,7 @@ private:
     }
 
     /** wake dsp threads */
-    void wake_threads(void) {
+    void wake_threads() {
         for (thread_count_t i = 0; i != interpreter.get_used_helper_threads(); ++i)
             threads[i]->wake_thread();
     }

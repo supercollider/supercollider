@@ -129,7 +129,7 @@ public:
         ++node_count;
     }
 
-    node_count_type size(void) const { return node_count + 1; }
+    node_count_type size() const { return node_count + 1; }
 
 private:
     queue_node_data first;

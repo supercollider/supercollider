@@ -31,7 +31,7 @@ extern void error(const char* fmt, ...); // for scdoc_parse_file
 
 DocNode* scdoc_parse_run(int partial);
 void scdocrestart(FILE* input_file);
-int scdoclex_destroy(void);
+int scdoclex_destroy();
 
 const char* scdoc_current_file = NULL;
 

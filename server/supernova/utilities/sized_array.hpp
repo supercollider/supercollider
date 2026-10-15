@@ -117,7 +117,7 @@ public:
         return *this;
     }
 
-    ~sized_array(void) {
+    ~sized_array() {
         for (size_type i = 0; i != size(); ++i)
             Allocator::destroy(data_ + i);
         if (size())

@@ -43,16 +43,16 @@ public:
     /** \brief ctor
      *
      * - initialize root node */
-    node_graph(void): node_set(node_set_type::bucket_traits(node_buckets, node_set_bucket_count)) {
+    node_graph(): node_set(node_set_type::bucket_traits(node_buckets, node_set_bucket_count)) {
         node_set.insert(root_group_);
         root_group_.add_ref();
     }
 
     ~node_graph() { assert(root_group_.child_count() == 0); }
 
-    uint32_t synth_count(void) const { return synth_count_; }
+    uint32_t synth_count() const { return synth_count_; }
 
-    uint32_t group_count(void) const { return group_count_; }
+    uint32_t group_count() const { return group_count_; }
 
     template <typename Functor>
     void add_node(server_node* node, node_position_constraint const& constraint, Functor const& doOnFree) {
@@ -142,11 +142,11 @@ public:
 
     void dump(std::string const& filename);
 
-    group* root_group(void) { return &root_group_; }
+    group* root_group() { return &root_group_; }
 
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
-    dsp_thread_queue_ptr generate_dsp_queue(void);
+    dsp_thread_queue_ptr generate_dsp_queue();
 
     server_node* find_node(int32_t node_id) {
         node_set_type::iterator it = node_set.find(node_id, hash_node(), equal_node());
@@ -163,7 +163,7 @@ public:
     void synth_reassign_id(int32_t node_id);
 
     /** generate new hidden (negative) node id  */
-    int32_t generate_node_id(void);
+    int32_t generate_node_id();
 
 private:
     int32_t generated_id = -2;

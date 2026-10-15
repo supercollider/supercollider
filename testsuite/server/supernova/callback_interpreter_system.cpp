@@ -11,7 +11,7 @@ namespace {
 int i = 0;
 
 struct dummy {
-    void run(void) { ++i; }
+    void run() { ++i; }
 };
 
 }

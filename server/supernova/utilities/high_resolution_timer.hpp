@@ -81,7 +81,7 @@ namespace boost {
 
 class high_resolution_timer {
 public:
-    high_resolution_timer(void) {
+    high_resolution_timer() {
         mach_timebase_info_data_t info;
 
         kern_return_t err = mach_timebase_info(&info);

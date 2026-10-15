@@ -43,7 +43,7 @@ public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
 
-    tl_allocator(void) throw() {
+    tl_allocator() throw() {
         if (likely(initialized))
             return;
 
@@ -79,12 +79,12 @@ template <std::size_t bytes> class tl_allocator {
     static const std::size_t poolsize = bytes / sizeof(long);
 
     struct pool_t {
-        pool_t(void) {
+        pool_t() {
             pool.assign(0);
             init_memory_pool(bytes, pool.begin());
         }
 
-        ~pool_t(void) { destroy_memory_pool(pool.begin()); }
+        ~pool_t() { destroy_memory_pool(pool.begin()); }
 
         std::array<long, poolsize> pool;
     };
@@ -93,7 +93,7 @@ public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
 
-    tl_allocator(void) throw() {
+    tl_allocator() throw() {
         if (likely(pool.get()))
             return;
         pool.reset(new pool_t());
@@ -146,7 +146,7 @@ public:
 
     template <class U> struct rebind { typedef tl_allocator<U, bytes> other; };
 
-    tl_allocator(void) throw() {}
+    tl_allocator() throw() {}
 
     template <class U, std::size_t bytes_> tl_allocator(tl_allocator<U, bytes_> const& rhs) throw() {}
 

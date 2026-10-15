@@ -44,7 +44,7 @@ template <std::size_t bytes, bool blocking = false> class static_pool {
         std::array<long, poolsize> pool;
     };
 
-    void lock_memory(void) { mlock(data_.pool.data(), poolsize * sizeof(long)); }
+    void lock_memory() { mlock(data_.pool.data(), poolsize * sizeof(long)); }
 
 public:
     static_pool(bool lock = false) throw() {
@@ -74,7 +74,7 @@ public:
         free_ex(p, data_.pool.data());
     }
 
-    std::size_t get_max_size(void) { return ::get_max_size(data_.pool.begin()); }
+    std::size_t get_max_size() const { return ::get_max_size(data_.pool.begin()); }
 
 private:
     data data_;

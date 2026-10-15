@@ -53,9 +53,9 @@ namespace nova {
 template <typename tag, std::size_t pool_size, bool pool_locking = false, unsigned int recover_count = 0>
 class static_pooled_class {
 protected:
-    static_pooled_class(void) = default;
+    static_pooled_class() = default;
     static_pooled_class(static_pooled_class const& rhs) = default;
-    ~static_pooled_class(void) = default;
+    ~static_pooled_class() = default;
 
 private:
     /** free one object from freelist
@@ -63,7 +63,7 @@ private:
      *  \return true if freelist is empty
      *
      * */
-    static inline bool free_one_disposed_object(void) {
+    static inline bool free_one_disposed_object() {
         void* chunk = disposed_objects.pop();
         if (chunk == nullptr)
             return true;
@@ -112,7 +112,7 @@ public:
 
     inline void* operator new(std::size_t size) { return allocate(size); }
 
-    static inline void free_disposed_objects(void) {
+    static inline void free_disposed_objects() {
         for (;;) {
             if (free_one_disposed_object())
                 return;

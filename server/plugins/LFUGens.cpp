@@ -1208,7 +1208,7 @@ void SyncSaw_Ctor(SyncSaw* unit) {
 struct K2A : SIMD_Unit {
     ControlRateInput<0> mLevel;
 
-    K2A(void) {
+    K2A() {
         mLevel.init(this);
         if (inRate(0) == calc_ScalarRate)
             set_unrolled_calc_function<K2A, &K2A::next_i<unrolled_64>, &K2A::next_i<unrolled>, &K2A::next_i<scalar>>();
@@ -1314,7 +1314,7 @@ void T2A_Ctor(T2A* unit) {
 struct DC : SIMD_Unit {
     float value;
 
-    DC(void) {
+    DC() {
         value = in0(0);
         if (value == 0)
             set_unrolled_calc_function<DC, &DC::next_i<unrolled_64, true>, &DC::next_i<unrolled, true>,

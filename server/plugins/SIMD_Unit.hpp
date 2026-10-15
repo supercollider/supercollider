@@ -38,7 +38,7 @@ using nova::slope_argument;
 struct SIMD_Unit : SCUnit {
     enum { scalar, unrolled, unrolled_64 };
 
-    bool canUseSIMD(void) const { return (mBufLength & (nova::vec<float>::objects_per_cacheline - 1)) == 0; }
+    bool canUseSIMD() const { return (mBufLength & (nova::vec<float>::objects_per_cacheline - 1)) == 0; }
 
     template <int index> struct ControlRateInput {
         float value;
@@ -60,12 +60,12 @@ struct SIMD_Unit : SCUnit {
             return slope_argument(current, slope);
         }
 
-        operator float(void) { return value; }
+        operator float() { return value; }
     };
 
     template <typename UnitType, void (UnitType::*UnrolledCalcFunc)(int), void (UnitType::*VectorCalcFunc)(int),
               void (UnitType::*ScalarCalcFunc)(int)>
-    void set_unrolled_calc_function(void) {
+    void set_unrolled_calc_function() {
         if (bufferSize() == 64)
             SCUnit::set_vector_calc_function<UnitType, UnrolledCalcFunc, ScalarCalcFunc>();
         else
@@ -73,7 +73,7 @@ struct SIMD_Unit : SCUnit {
     }
 
     template <typename UnitType, void (UnitType::*VectorCalcFunc)(int), void (UnitType::*ScalarCalcFunc)(int)>
-    void set_vector_calc_function(void) {
+    void set_vector_calc_function() {
         if (canUseSIMD())
             SCUnit::set_vector_calc_function<UnitType, VectorCalcFunc, ScalarCalcFunc>();
         else

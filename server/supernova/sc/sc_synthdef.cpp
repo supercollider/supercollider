@@ -333,14 +333,14 @@ public:
         return buffers.size() - 1;
     }
 
-    size_t buffer_count(void) const { return buffers.size(); }
+    size_t buffer_count() const { return buffers.size(); }
 
     void set_last_reference(int32_t buffer_id, size_t ugen_index) { buffers[buffer_id] = ugen_index; }
 };
 
 } /* namespace */
 
-void sc_synthdef::prepare(void) {
+void sc_synthdef::prepare() {
     // FIXME: this currently has quadratic complexity, as buffer_allocator::allocate has linear complexity
     memory_requirement_ = 0;
 
@@ -435,7 +435,7 @@ void sc_synthdef::prepare(void) {
 }
 
 
-std::string sc_synthdef::dump(void) const {
+std::string sc_synthdef::dump() const {
     using namespace std;
 
     stringstream stream;

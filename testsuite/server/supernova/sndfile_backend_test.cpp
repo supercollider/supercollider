@@ -13,14 +13,14 @@ aligned_storage_ptr<float> data(nova::calloc_aligned<float>(64));
 struct engine_functor;
 
 struct engine_functor {
-    void init_tick(void) {}
+    void init_tick() {}
 
-    void run_tick(void);
+    void run_tick();
 };
 
 sndfile_backend<engine_functor> be;
 
-void engine_functor::run_tick(void) {
+void engine_functor::run_tick() {
     float* data_ptr = data.get();
     be.output_mapping(&data_ptr, &data_ptr + 1);
 }

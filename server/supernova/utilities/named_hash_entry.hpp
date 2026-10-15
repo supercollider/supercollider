@@ -95,7 +95,7 @@ private:
         typedef std::pair<table_type::const_iterator, bool> lookup_result_type;
 
     public:
-        symbol_table(void) {}
+        symbol_table() {}
 
         symbol_data const& find(const char* str, size_t strlen) {
             mutex.lock_shared();
@@ -143,7 +143,7 @@ public:
     symbol(symbol const& rhs) = default;
     symbol& operator=(symbol const& rhs) = default;
 
-    const char* c_str(void) const { return data.str; }
+    const char* c_str() const { return data.str; }
 
     friend std::size_t hash_value(symbol const& value) { return value.data.hash; }
 
@@ -164,11 +164,11 @@ public:
 
     named_hash_entry(std::string const& name): name_(name.c_str(), name.size()) {}
 
-    const char* name(void) const { return name_.c_str(); }
+    const char* name() const { return name_.c_str(); }
 
     friend std::size_t hash_value(named_hash_entry const& that) { return that.hash(); }
 
-    std::size_t hash(void) const { return name_.data.hash; }
+    std::size_t hash() const { return name_.data.hash; }
 
     friend bool operator==(named_hash_entry const& a, named_hash_entry const& b) { return a.name_ == b.name_; }
 };

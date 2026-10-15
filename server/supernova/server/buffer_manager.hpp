@@ -36,16 +36,16 @@ struct buffer_wrapper {
     typedef float sample_t;
     typedef uint32_t uint;
 
-    buffer_wrapper(void) = default;
+    buffer_wrapper() = default;
 
-    ~buffer_wrapper(void) {
+    ~buffer_wrapper() {
         if (data)
             free_aligned(data);
     }
 
     void allocate(size_t frames, unsigned int channels, double samplerate);
 
-    void free(void) {
+    void free() {
         if (data) {
             free_aligned(data);
             data = nullptr;
@@ -54,7 +54,7 @@ struct buffer_wrapper {
         }
     }
 
-    void zero(void) {
+    void zero() {
         assert(data);
         zerovec(data, frames_);
     }

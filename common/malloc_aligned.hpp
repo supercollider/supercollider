@@ -61,7 +61,7 @@ public:
 
     explicit aligned_storage_ptr(size_t count): ptr(malloc_aligned<T>(count)) {}
 
-    ~aligned_storage_ptr(void) {
+    ~aligned_storage_ptr() {
         if (managed && ptr)
             free_aligned(ptr);
     }

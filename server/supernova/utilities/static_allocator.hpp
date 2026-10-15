@@ -51,7 +51,7 @@ template <class T, std::size_t count, bool blocking = false> class static_alloca
 
     struct data : mutex_type {
 #if 0
-        data(void){}
+        data() {}
 
         data(data const & rhs)
         {
@@ -73,7 +73,7 @@ public:
 
     template <class U> struct rebind { typedef static_allocator<U, count, blocking> other; };
 
-    static_allocator(void) throw() {
+    static_allocator() throw() {
         data_.pool.assign(0);
         init_memory_pool(bytes, data_.pool.begin());
     }

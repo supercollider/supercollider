@@ -50,19 +50,19 @@ protected:
     abstract_group(int node_id, bool is_parallel): server_node(node_id, false), group_is_parallel(is_parallel) {}
 
 public:
-    virtual ~abstract_group(void);
+    virtual ~abstract_group();
 
-    bool is_parallel(void) const { return group_is_parallel; }
+    bool is_parallel() const { return group_is_parallel; }
 
 
 public:
     /* count the tail nodes to get activation count */
-    virtual int tail_nodes(void) const = 0;
+    virtual int tail_nodes() const = 0;
 
     /* @{ */
     /** pause/resume handling (set pause/resume on children)  */
-    virtual void pause(void) override;
-    virtual void resume(void) override;
+    virtual void pause() override;
+    virtual void resume() override;
     /* @} */
 
     /* @{ */
@@ -74,10 +74,10 @@ public:
 
     bool has_child(const server_node* node) const;
 
-    bool empty(void) const { return child_nodes.empty(); }
+    bool empty() const { return child_nodes.empty(); }
 
     /* returns true, if this or any of the child group has synth children */
-    bool has_synth_children(void) const {
+    bool has_synth_children() const {
         if (child_synth_count)
             return true;
 
@@ -88,7 +88,7 @@ public:
         return false;
     }
 
-    bool has_parallel_group_children(void) const {
+    bool has_parallel_group_children() const {
         if (is_parallel())
             return true;
 
@@ -99,7 +99,7 @@ public:
         return false;
     }
 
-    std::size_t child_count(void) const {
+    std::size_t child_count() const {
         assert(child_group_count == child_groups.size());
         assert(child_synth_count + child_group_count == child_nodes.size());
         return child_synth_count + child_group_count;
@@ -127,9 +127,9 @@ public:
     /* @} */
 
     /* @{ */
-    void register_as_child(void) { parent_->child_groups.push_back(*this); }
+    void register_as_child() { parent_->child_groups.push_back(*this); }
 
-    void unregister_as_child(void) { group_list_hook::unlink(); }
+    void unregister_as_child() { group_list_hook::unlink(); }
     /* @} */
 
 
@@ -152,13 +152,13 @@ public:
             return &(*--it);
     }
 
-    void free_children(void) {
+    void free_children() {
         child_nodes.clear_and_dispose(std::mem_fn(&server_node::clear_parent));
         assert(child_synth_count == 0);
         assert(child_group_count == 0);
     }
 
-    void free_synths_deep(void) {
+    void free_synths_deep() {
         child_nodes.remove_and_dispose_if(std::mem_fn(&server_node::is_synth), std::mem_fn(&server_node::clear_parent));
 
         /* now there are only group classes */
@@ -257,7 +257,7 @@ public:
 };
 
 
-inline void server_node::clear_parent(void) {
+inline void server_node::clear_parent() {
     if (is_synth())
         --parent_->child_synth_count;
     else {
@@ -283,24 +283,22 @@ inline void server_node::set_parent(abstract_group* parent) {
 }
 
 
-inline server_node* server_node::previous_node(void) { return parent_->previous_node(this); }
+inline server_node* server_node::previous_node() { return parent_->previous_node(this); }
 
-inline server_node* server_node::next_node(void) { return parent_->next_node(this); }
+inline server_node* server_node::next_node() { return parent_->next_node(this); }
 
-inline const server_node* server_node::previous_node(void) const {
-    return const_cast<server_node*>(this)->previous_node();
-}
+inline const server_node* server_node::previous_node() const { return const_cast<server_node*>(this)->previous_node(); }
 
-inline const server_node* server_node::next_node(void) const { return const_cast<server_node*>(this)->next_node(); }
+inline const server_node* server_node::next_node() const { return const_cast<server_node*>(this)->next_node(); }
 
 
 class group : public abstract_group {
 public:
     group(int node_id): abstract_group(node_id, false) {}
 
-    const server_node* head_node(void) const { return &*child_nodes.begin(); }
+    const server_node* head_node() const { return &*child_nodes.begin(); }
 
-    const server_node* tail_node(void) const { return &*child_nodes.rbegin(); }
+    const server_node* tail_node() const { return &*child_nodes.rbegin(); }
 
 private:
     void add_child(server_node* node, node_position_constraint const& constraint) override;
@@ -308,7 +306,7 @@ private:
 
     friend class dependency_graph_generator;
 
-    virtual int tail_nodes(void) const override {
+    virtual int tail_nodes() const override {
         if (empty())
             return 0;
 
@@ -333,7 +331,7 @@ private:
     void add_child(server_node* node, node_position_constraint const& constraint) override;
     void add_child(server_node* node, node_position) override;
 
-    virtual int tail_nodes(void) const override;
+    virtual int tail_nodes() const override;
 
     friend class dependency_graph_generator;
 };
