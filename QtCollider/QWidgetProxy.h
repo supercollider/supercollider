@@ -62,18 +62,18 @@ public:
 
     void setLayout(QObjectProxy* layoutProxy);
 
-    virtual bool setParent(QObjectProxy* parent);
+    bool setParent(QObjectProxy* parent) override;
 
     void setDragData(QMimeData* data, const QString& label);
 
-    inline QWidget* widget() { return static_cast<QWidget*>(object()); }
+    QWidget* widget() { return static_cast<QWidget*>(object()); }
 
 protected:
-    virtual void customEvent(QEvent*);
+    void customEvent(QEvent*) override;
 
-    virtual bool preProcessEvent(QObject*, QEvent*, EventHandlerData&, QList<QVariant>& args);
+    bool preProcessEvent(QObject*, QEvent*, EventHandlerData&, QList<QVariant>& args) override;
 
-    virtual bool postProcessEvent(QObject*, QEvent*, bool handled);
+    bool postProcessEvent(QObject*, QEvent*, bool handled) override;
 
 private Q_SLOTS:
 

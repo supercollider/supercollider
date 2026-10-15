@@ -80,14 +80,14 @@ public slots:
     void evaluateDocument();
 
 protected:
-    virtual bool event(QEvent*);
-    virtual void keyPressEvent(QKeyEvent*);
-    virtual void mouseReleaseEvent(QMouseEvent*);
-    virtual void mouseDoubleClickEvent(QMouseEvent*);
-    virtual void mouseMoveEvent(QMouseEvent*);
-    virtual void dragEnterEvent(QDragEnterEvent*);
-    virtual bool canInsertFromMimeData(const QMimeData* data) const;
-    virtual void insertFromMimeData(const QMimeData* data);
+    bool event(QEvent*) override;
+    void keyPressEvent(QKeyEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
+    void mouseDoubleClickEvent(QMouseEvent*) override;
+    void mouseMoveEvent(QMouseEvent*) override;
+    void dragEnterEvent(QDragEnterEvent*) override;
+    bool canInsertFromMimeData(const QMimeData* data) const override;
+    void insertFromMimeData(const QMimeData* data) override;
 
 private slots:
     void matchBrackets();
@@ -100,8 +100,8 @@ private:
     void moveToNextToken(QTextCursor&, QTextCursor::MoveMode);
     void moveToPreviousToken(QTextCursor&, QTextCursor::MoveMode);
 
-    void updateExtraSelections();
-    void indentCurrentRegion();
+    void updateExtraSelections() override;
+    void indentCurrentRegion() override;
 
     void toggleCommentSingleLine(QTextCursor);
     void toggleCommentSingleLine();

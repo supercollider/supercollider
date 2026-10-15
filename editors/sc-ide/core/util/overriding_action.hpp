@@ -52,7 +52,7 @@ public:
     }
 
 protected:
-    virtual bool eventFilter(QObject* object, QEvent* event) {
+    bool eventFilter(QObject* object, QEvent* event) override {
         Q_UNUSED(object);
         switch (event->type()) {
         case QEvent::ShortcutOverride: {

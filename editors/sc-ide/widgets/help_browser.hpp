@@ -56,7 +56,7 @@ public slots:
     }
 
 protected:
-    virtual void timerEvent(QTimerEvent* event) {
+    void timerEvent(QTimerEvent* event) override {
         if (event->timerId() != mUpdateTimer.timerId())
             return;
 
@@ -98,8 +98,8 @@ public:
 
     HelpBrowser(QWidget* parent = 0);
 
-    QSize sizeHint() const { return mSizeHint; }
-    QSize minimumSizeHint() const { return QSize(50, 50); }
+    QSize sizeHint() const override { return mSizeHint; }
+    QSize minimumSizeHint() const override { return QSize(50, 50); }
 
     void gotoHelpFor(const QString&);
     void gotoHelpForMethod(const QString& className, const QString& methodName);
@@ -140,7 +140,7 @@ private:
     friend class HelpBrowserDocklet;
 
     void createActions();
-    bool eventFilter(QObject* object, QEvent* event);
+    bool eventFilter(QObject* object, QEvent* event) override;
     void sendRequest(const QString& code);
     QString symbolUnderCursor();
 
@@ -164,7 +164,7 @@ signals:
     void query(const QString& text, bool backwards = false);
 
 protected:
-    virtual bool event(QEvent* event);
+    bool event(QEvent* event) override;
 };
 
 class HelpBrowserDocklet : public Docklet {

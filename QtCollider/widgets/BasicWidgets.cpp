@@ -56,7 +56,7 @@ void QcSimpleWidget::paintEvent(QPaintEvent* e) {
 
 class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted> {
 protected:
-    virtual void initialize(QWidgetProxy* p, QcCustomPainted* w) {
+    void initialize(QWidgetProxy* p, QcCustomPainted* w) override {
         QObject::connect(w, SIGNAL(painting(QPainter*)), p, SLOT(customPaint(QPainter*)));
     }
 };

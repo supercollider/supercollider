@@ -39,8 +39,8 @@ public:
 
 public Q_SLOTS:
 
-    virtual void accept();
-    virtual void reject();
+    void accept() override;
+    void reject() override;
     virtual void reset();
     void apply();
 

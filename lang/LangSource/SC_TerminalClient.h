@@ -74,10 +74,10 @@ public:
      */
     bool recompileLibrary();
 
-    virtual void postText(const char* str, size_t len);
-    virtual void postFlush(const char* str, size_t len);
-    virtual void postError(const char* str, size_t len);
-    virtual void flush();
+    void postText(const char* str, size_t len) override;
+    void postFlush(const char* str, size_t len) override;
+    void postError(const char* str, size_t len) override;
+    void flush() override;
 
     /** \brief Requests an action to be taken on the main thread.
      *  \note It may be called from any thread, with the interpreter locked or unlocked.
@@ -105,7 +105,7 @@ protected:
     virtual void onQuit(int exitCode);
 
     // See super class
-    virtual void onLibraryStartup();
+    void onLibraryStartup() override;
 
     // --------------------------------------------------------------
 

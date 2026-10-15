@@ -76,9 +76,9 @@ class SC_PortAudioDriver : public SC_AudioDriver {
 #endif
 protected:
     // Driver interface methods
-    virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
-    virtual bool DriverStart();
-    virtual bool DriverStop();
+    bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate) override;
+    bool DriverStart() override;
+    bool DriverStop() override;
 
 public:
     SC_PortAudioDriver(World* inWorld);

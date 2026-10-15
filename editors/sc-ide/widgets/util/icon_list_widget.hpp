@@ -33,7 +33,7 @@ public:
     public:
         ItemDelegate(QObject* parent): QStyledItemDelegate(parent) {}
 
-        virtual QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const {
+        QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override {
             QIcon icon(index.data(Qt::DecorationRole).value<QIcon>());
             QSize iconSize = icon.actualSize(option.decorationSize);
 
@@ -47,7 +47,7 @@ public:
             return requiredSize + QSize(5, 5);
         }
 
-        virtual void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
+        void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override {
             painter->save();
 
             QStyle* style = QApplication::style();

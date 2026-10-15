@@ -34,10 +34,10 @@ public:
         _delegateReload(false),
         _delegateNavigation(false) {}
 
-    virtual void triggerAction(WebAction action, bool checked = false) override;
+    void triggerAction(WebAction action, bool checked = false) override;
 
-    virtual void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString& message, int lineNumber,
-                                          const QString& sourceID) override;
+    void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString& message, int lineNumber,
+                                  const QString& sourceID) override;
 
     bool delegateReload() const { return _delegateReload; }
     void setDelegateReload(bool flag) { _delegateReload = flag; }

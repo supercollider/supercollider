@@ -139,10 +139,10 @@ public:
         QcSignalSpy(proxy, sigName, conType),
         _handler(handler) {}
 
-    inline PyrSymbol* method() { return _handler; }
+    PyrSymbol* method() { return _handler; }
 
 protected:
-    virtual void react(QList<QVariant>& args) {
+    void react(QList<QVariant>& args) override {
         qcDebugMsg(1,
                    QString("SIGNAL: '%1' handled by method '%2'")
                        .arg(_proxy->object() ? QString(_proxy->object()->metaObject()->method(_sigId).methodSignature())
@@ -162,10 +162,10 @@ public:
         QcSignalSpy(proxy, sigName, conType),
         _handler(handler) {}
 
-    inline PyrObject* function() { return _handler; }
+    PyrObject* function() { return _handler; }
 
 protected:
-    virtual void react(QList<QVariant>& args) {
+    void react(QList<QVariant>& args) override {
         qcDebugMsg(1,
                    QString("SIGNAL: '%1' handled by a Function")
                        .arg(_proxy->object() ? QString(_proxy->object()->metaObject()->method(_sigId).methodSignature())

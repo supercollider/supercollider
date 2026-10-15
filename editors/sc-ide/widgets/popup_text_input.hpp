@@ -46,14 +46,14 @@ public:
     }
 
 private:
-    void paintEvent(QPaintEvent*) {
+    void paintEvent(QPaintEvent*) override {
         QPainter painter(this);
         painter.setBrush(Qt::NoBrush);
         painter.setPen(palette().color(QPalette::Dark));
         painter.drawRect(rect().adjusted(0, 0, -1, -1));
     }
 
-    virtual void keyPressEvent(QKeyEvent* event) {
+    void keyPressEvent(QKeyEvent* event) override {
         switch (event->key()) {
         case Qt::Key_Enter:
         case Qt::Key_Return:

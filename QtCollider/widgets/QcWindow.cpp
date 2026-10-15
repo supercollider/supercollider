@@ -30,7 +30,7 @@
 class QcWindowFactory : public QcObjectFactory<QcWindow> {
     // NOTE: use basic object contruction, but return widget proxy
 public:
-    virtual QObjectProxy* proxy(QcWindow* obj, PyrObject* sc_obj) {
+    QObjectProxy* proxy(QcWindow* obj, PyrObject* sc_obj) override {
         QObjectProxy* proxy = new QWidgetProxy(obj, sc_obj);
         QObject::connect(obj, SIGNAL(painting(QPainter*)), proxy, SLOT(customPaint(QPainter*)));
         return proxy;
@@ -41,7 +41,7 @@ class QcScrollWindowFactory : public QcObjectFactory<QcScrollWindow> {
     // NOTE: use basic object contruction, but return widget proxy
     // NOTE: painting will be performed by QcScrollWidget and its factory
 public:
-    virtual QObjectProxy* proxy(QcScrollWindow* obj, PyrObject* sc_obj) { return new QWidgetProxy(obj, sc_obj); }
+    QObjectProxy* proxy(QcScrollWindow* obj, PyrObject* sc_obj) override { return new QWidgetProxy(obj, sc_obj); }
 };
 
 QC_DECLARE_FACTORY(QcWindow, QcWindowFactory);

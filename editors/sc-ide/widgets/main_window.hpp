@@ -206,10 +206,10 @@ private Q_SLOTS:
     void cmdLineForCursor();
 
 protected:
-    virtual void closeEvent(QCloseEvent* event);
-    virtual void dragEnterEvent(QDragEnterEvent*);
-    virtual void dropEvent(QDropEvent*);
-    virtual bool eventFilter(QObject*, QEvent*);
+    void closeEvent(QCloseEvent* event) override;
+    void dragEnterEvent(QDragEnterEvent*) override;
+    void dropEvent(QDropEvent*) override;
+    bool eventFilter(QObject*, QEvent*) override;
 
 private:
     void createActions();
@@ -264,7 +264,7 @@ public:
     ~ClockStatusBox();
 
 private:
-    void timerEvent(QTimerEvent*);
+    void timerEvent(QTimerEvent*) override;
     void updateTime();
     int mTimerId;
 };

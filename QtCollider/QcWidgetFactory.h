@@ -29,7 +29,7 @@
 
 template <class QWIDGET> class QcWidgetFactory : public QcObjectFactory<QWIDGET> {
 public:
-    virtual QObjectProxy* newInstance(PyrObject* scObject, QtCollider::MetaValue arg[10]) {
+    QObjectProxy* newInstance(PyrObject* scObject, QtCollider::MetaValue arg[10]) override {
         // Omit the first two arguments - parent and bounds
 
         QWIDGET* w;
@@ -100,7 +100,7 @@ public:
     }
 
 protected:
-    virtual QObjectProxy* proxy(QWIDGET* w, PyrObject* sc_obj) {
+    QObjectProxy* proxy(QWIDGET* w, PyrObject* sc_obj) override {
         QWidgetProxy* prox(new QWidgetProxy(w, sc_obj));
         initialize(prox, w);
         return prox;

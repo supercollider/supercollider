@@ -61,7 +61,7 @@ signals:
     void colorPicked(const QColor&);
 
 protected:
-    virtual void mouseReleaseEvent(QMouseEvent*) {
+    void mouseReleaseEvent(QMouseEvent*) override {
         QColor c = QColorDialog::getColor(color(), this);
         if (c.isValid()) {
             setColor(c);
@@ -69,7 +69,7 @@ protected:
         }
     }
 
-    virtual void paintEvent(QPaintEvent*) {
+    void paintEvent(QPaintEvent*) override {
         QBrush brush = mBrush;
         if (brush.style() == Qt::NoBrush) {
             brush.setColor(palette().color(QPalette::WindowText));

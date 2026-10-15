@@ -63,13 +63,13 @@ private:
     }
 
 protected:
-    virtual void hideEvent(QHideEvent* e) {
+    void hideEvent(QHideEvent* e) override {
         quit();
         emit finished(mResult);
     }
 
-    virtual void keyPressEvent(QKeyEvent* ke);
-    virtual void showEvent(QShowEvent*);
+    void keyPressEvent(QKeyEvent* ke) override;
+    void showEvent(QShowEvent*) override;
 
 private:
     QEventLoop* mEventLoop;

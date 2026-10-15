@@ -30,7 +30,7 @@ public:
     StatusBoxMenu(QWidget* parent = 0): QMenu(parent) {}
 
 protected:
-    virtual void mouseReleaseEvent(QMouseEvent* e) {
+    void mouseReleaseEvent(QMouseEvent* e) override {
         QAction* action = activeAction();
         if (action && action->isEnabled() && !action->menu() && action->property("keep_menu_open").toBool()) {
             action->setEnabled(false);

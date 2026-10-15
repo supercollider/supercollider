@@ -30,7 +30,7 @@
 
 class QcScrollWidgetFactory : public QcWidgetFactory<QcScrollWidget> {
 protected:
-    virtual void initialize(QWidgetProxy* p, QcScrollWidget* w) {
+    void initialize(QWidgetProxy* p, QcScrollWidget* w) override {
         QObject::connect(w, SIGNAL(painting(QPainter*)), p, SLOT(customPaint(QPainter*)));
     }
 };

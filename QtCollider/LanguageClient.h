@@ -40,18 +40,18 @@ class LangClient : public QObject, public SC_TerminalClient {
     Q_OBJECT
 public:
     LangClient(const std::string& name);
-    virtual ~LangClient() {}
-    virtual void sendSignal(Signal);
+
+    void sendSignal(Signal) override;
 
 protected:
-    virtual void commandLoop();
-    virtual void daemonLoop();
+    void commandLoop() override;
+    void daemonLoop() override;
 
-    virtual void onQuit(int exitCode);
-    virtual void onLibraryShutdown();
+    void onQuit(int exitCode) override;
+    void onLibraryShutdown() override;
 
-    virtual void customEvent(QEvent*);
-    virtual void timerEvent(QTimerEvent*);
+    void customEvent(QEvent*) override;
+    void timerEvent(QTimerEvent*) override;
 
 private:
     void tick();

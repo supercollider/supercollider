@@ -35,9 +35,9 @@ public:
     public:
         ItemDelegate(QObject* parent);
 
-        virtual QSize sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const;
+        QSize sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const override;
 
-        virtual void paint(QPainter*, const QStyleOptionViewItem&, const QModelIndex&) const;
+        void paint(QPainter*, const QStyleOptionViewItem&, const QModelIndex&) const override;
     };
 
 public:
@@ -49,7 +49,7 @@ public:
 
     inline void removeFormat(int index) { standardModel()->removeRow(index); }
 
-    int currentIndex() {
+    int currentIndex() const {
         QModelIndex index(QAbstractItemView::currentIndex());
         if (index.isValid())
             return index.row();
@@ -61,7 +61,7 @@ public:
 
     QTextCharFormat format(int index);
 
-    inline int count() { return standardModel()->rowCount(); }
+    int count() { return standardModel()->rowCount(); }
 
 Q_SIGNALS:
     void clicked(int index);

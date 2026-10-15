@@ -84,7 +84,7 @@ public:
 
     /** set a slot */
     /* @{ */
-    virtual void set(slot_index_t slot_id, float val) override = 0;
+    void set(slot_index_t slot_id, float val) override = 0;
 
     void set(const char* slot_str, sample val) override { set(slot_str, string_hash(slot_str), val); }
 
@@ -107,9 +107,9 @@ public:
                 this->set(slot_id + i, val[i]);
     }
 
-    virtual void set_control_array(slot_index_t slot_id, size_t n, float* values) override = 0;
+    void set_control_array(slot_index_t slot_id, size_t n, float* values) override = 0;
 
-    virtual void set_control_array_element(slot_index_t slot_id, size_t index, float val) override {
+    void set_control_array_element(slot_index_t slot_id, size_t index, float val) override {
         this->set(slot_id + index, val);
     }
 

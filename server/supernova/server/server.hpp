@@ -76,7 +76,7 @@ public:
     delete_callback(T* ptr): ptr_(ptr) {}
 
 private:
-    virtual void run() override { delete ptr_; }
+    void run() override { delete ptr_; }
 
     const T* const ptr_;
 };

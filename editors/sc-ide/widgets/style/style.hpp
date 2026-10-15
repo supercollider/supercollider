@@ -29,22 +29,22 @@ class Style : public QProxyStyle {
 public:
     Style(QStyle* style = 0): QProxyStyle(style) {}
 
-    virtual void polish(QWidget* widget);
-    virtual void unpolish(QWidget* widget);
+    void polish(QWidget* widget) override;
+    void unpolish(QWidget* widget) override;
 
-    virtual void drawPrimitive(PrimitiveElement, const QStyleOption*, QPainter*, const QWidget* = 0) const;
+    void drawPrimitive(PrimitiveElement, const QStyleOption*, QPainter*, const QWidget* = 0) const override;
 
-    virtual void drawControl(ControlElement, const QStyleOption*, QPainter*, const QWidget* = 0) const;
+    void drawControl(ControlElement, const QStyleOption*, QPainter*, const QWidget* = 0) const override;
 
-    virtual void drawComplexControl(ComplexControl, const QStyleOptionComplex*, QPainter*, const QWidget* = 0) const;
+    void drawComplexControl(ComplexControl, const QStyleOptionComplex*, QPainter*, const QWidget* = 0) const override;
 
-    virtual QRect subElementRect(SubElement, const QStyleOption*, const QWidget* = 0) const;
+    QRect subElementRect(SubElement, const QStyleOption*, const QWidget* = 0) const override;
 
-    virtual QSize sizeFromContents(ContentsType, const QStyleOption*, const QSize&, const QWidget* = 0) const;
+    QSize sizeFromContents(ContentsType, const QStyleOption*, const QSize&, const QWidget* = 0) const override;
 
-    virtual int pixelMetric(PixelMetric, const QStyleOption* = 0, const QWidget* = 0) const;
+    int pixelMetric(PixelMetric, const QStyleOption* = 0, const QWidget* = 0) const override;
 
-    virtual int styleHint(StyleHint, const QStyleOption* = 0, const QWidget* = 0, QStyleHintReturn* = 0) const;
+    int styleHint(StyleHint, const QStyleOption* = 0, const QWidget* = 0, QStyleHintReturn* = 0) const override;
 
 private:
     bool shouldNotHandle(const QWidget* widget) const;

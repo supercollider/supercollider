@@ -132,7 +132,7 @@ private slots:
     void sendDumpingOSC(bool dumping);
 
 protected:
-    virtual void timerEvent(QTimerEvent* event);
+    void timerEvent(QTimerEvent* event) override;
 
 private:
     void createActions(Settings::Manager*);
