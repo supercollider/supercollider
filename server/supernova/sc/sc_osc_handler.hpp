@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <algorithm>
+#include <deque>
 #include <mutex>
 #include <vector>
 
@@ -77,6 +77,8 @@ public:
 private:
     void send(const char* data, size_t length) override final;
 
+    bool match(nova_endpoint const& other) const override final;
+
     udp::endpoint endpoint_;
 };
 
@@ -84,15 +86,28 @@ private:
  * observer to receive osc notifications
  * */
 class sc_notify_observers {
-    typedef std::vector<endpoint_ptr> observer_vector;
-
 public:
-    typedef enum { no_error = 0, already_registered = -1, not_registered = -2 } error_code;
+    enum error_code { no_error, already_registered, not_registered, too_many_users };
 
-    sc_notify_observers(boost::asio::io_context& io_context): udp_socket(io_context) {}
+    sc_notify_observers(boost::asio::io_context& io_context, size_t max_num_observers):
+        udp_socket(io_context),
+        max_num_observers_(max_num_observers) {
+        for (size_t i = 0; i < max_num_observers; ++i)
+            available_client_ids_.push_back(i);
+    }
 
-    int add_observer(endpoint_ptr const& ep);
-    int remove_observer(endpoint_ptr const& ep);
+    size_t max_num_observers() const { return max_num_observers_; }
+
+    /** @brief Adds an observer with the desired client ID.
+     *  If the client ID is -1 or outside the range of available IDs, the first available ID is returned.
+     *  @returns an error code followed by the client ID (only valid for \c no_error).
+     */
+    std::pair<error_code, int> add_observer(endpoint_ptr const& ep, int client_id);
+
+    /** @brief Removes the given observer.
+     *  @returns an error code.
+     */
+    error_code remove_observer(endpoint_ptr const& ep);
 
     /* @{ */
     /** notifications, should be called from the real-time thread */
@@ -112,20 +127,26 @@ public:
                          const float* values);
     /* @} */
 
-    /** send notifications, should not be called from the real-time thread */
+    /** send notifications. Only call from a non-RT thread. */
     void send_notification(const char* data, size_t length);
 
+    /** send a message to the given UDP endpoint. Only call from a non-RT thread. */
     void send_udp(const char* data, size_t size, udp::endpoint const& receiver);
 
     static const char* error_string(error_code);
 
 private:
-    observer_vector::iterator find(endpoint_ptr const& ep);
-
     void notify(const char* address_pattern, const server_node* node) const;
     void send_notification(const char* data, size_t length, nova_endpoint* endpoint);
 
-    observer_vector observers;
+    struct observer {
+        endpoint_ptr endpoint;
+        int client_id = 0;
+    };
+
+    std::vector<observer> observers_;
+    std::deque<int> available_client_ids_;
+    size_t max_num_observers_ = 0;
 
 protected:
     udp::socket udp_socket;
@@ -180,7 +201,7 @@ class sc_osc_handler : private detail::network_thread, public sc_notify_observer
 
 public:
     sc_osc_handler(server_arguments const& args):
-        sc_notify_observers(detail::network_thread::io_context_),
+        sc_notify_observers(detail::network_thread::io_context_, args.max_logins),
         tcp_acceptor_(detail::network_thread::io_context_),
         tcp_password_(args.server_password.size() ? args.server_password.c_str() : nullptr) {
         if (!args.non_rt) {
@@ -242,6 +263,8 @@ public:
         tcp_connection(const executor& executor): socket_(executor) {}
 
         void send(const char* data, size_t length) override final;
+
+        bool match(const nova_endpoint& other) const override final;
 
         void async_read_msg_size();
         void handle_message_size();

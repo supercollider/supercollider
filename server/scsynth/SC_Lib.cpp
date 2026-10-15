@@ -124,9 +124,9 @@ void SendFailureWithIntValue(ReplyAddress* inReply, const char* inCommandName, c
     packet.addtag(',');
     packet.addtag('s');
     packet.addtag('s');
+    packet.addtag('i');
     packet.adds(inCommandName);
     packet.adds(errString);
-    packet.addtag('i');
     packet.addi((int)index);
     SendReply(inReply, packet.data(), packet.size());
 }
