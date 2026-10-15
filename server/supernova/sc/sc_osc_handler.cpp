@@ -214,46 +214,27 @@ template <typename T> static inline void consume(T&& object) {
     T sink(std::forward<T>(object)); // move object here (and destroy)
 }
 
-void send_done_message(endpoint_ptr const& endpoint, const char* cmd) {
+template <typename... Args> void send_done_message(endpoint_ptr const& endpoint, const char* cmd, Args const&... args) {
     if (endpoint) {
-        char buffer[1024];
-        osc::OutboundPacketStream p(buffer, 1024);
-        p << osc::BeginMessage("/done") << cmd << osc::EndMessage;
+        std::array<char, 1024> buffer;
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
+        p << osc::BeginMessage("/done") << cmd;
+        (p << ... << args) << osc::EndMessage;
 
         endpoint->send(p.Data(), p.Size());
     }
 }
 
-void send_done_message(endpoint_ptr const& endpoint, const char* cmd, osc::int32 index) {
+template <typename... Args> void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, Args const&... args) {
     if (endpoint) {
-        char buffer[1024];
-        osc::OutboundPacketStream p(buffer, 1024);
-        p << osc::BeginMessage("/done") << cmd << index << osc::EndMessage;
+        std::array<char, 8192> buffer;
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
+        p << osc::BeginMessage("/fail") << cmd;
+        (p << ... << args) << osc::EndMessage;
 
         endpoint->send(p.Data(), p.Size());
     }
 }
-
-void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char* content) {
-    if (endpoint) {
-        char buffer[8192];
-        osc::OutboundPacketStream p(buffer, 8192);
-        p << osc::BeginMessage("/fail") << cmd << content << osc::EndMessage;
-
-        endpoint->send(p.Data(), p.Size());
-    }
-}
-
-void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char* content, int id) {
-    if (endpoint) {
-        char buffer[8192];
-        osc::OutboundPacketStream p(buffer, 8192);
-        p << osc::BeginMessage("/fail") << cmd << content << (osc::int32)id << osc::EndMessage;
-
-        endpoint->send(p.Data(), p.Size());
-    }
-}
-
 
 template <typename Functor> struct fn_system_callback : public system_callback {
     fn_system_callback(Functor const& fn): fn_(fn) {}
