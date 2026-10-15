@@ -67,8 +67,6 @@
 #    include "QtCollider.h"
 #endif
 
-#include "SCDocPrim.h"
-
 #include <filesystem>
 #include <optional>
 
@@ -4401,6 +4399,7 @@ void initPrimitives() {
     initScIDEPrimitives();
 #endif
 
+    void initSCDocPrimitives();
     initSCDocPrimitives();
 
     s_recvmsg = getsym("receiveMsg");
