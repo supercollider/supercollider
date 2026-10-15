@@ -970,7 +970,6 @@ code::
 "MathLib".include;
 ::
 
-returns:: The receiver.
 
 method:: exclude
 Uninstalls the link::Classes/Quark##quark:: specified by the receiver link::Classes/String::, if it is currently installed.
