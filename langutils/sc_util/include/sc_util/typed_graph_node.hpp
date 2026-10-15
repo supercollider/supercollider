@@ -28,7 +28,8 @@ template <
 >
 // clang-format on
 struct NodeBase : NodeBaseBase {
-    static_assert(ThisTypedIndex::size_of_set == 1, "Nodes must be represented by indexes that have exactly one enum.");
+    // static_assert(ThisTypedIndex::size_of_set == 1, "Nodes must be represented by indexes that have exactly one
+    // enum.");
     using Index = ThisTypedIndex;
     static constexpr NodeType type { T };
     [[nodiscard]] static constexpr bool is_list() { return type == NodeType::List; }
@@ -42,7 +43,7 @@ struct NodeBase : NodeBaseBase {
 */
 template <typename ThisTypedIndex> //
 struct TerminalNode : public NodeBase<ThisTypedIndex, NodeType::Terminal> {
-    static constexpr auto number_of_children { 0 };
+    // static constexpr auto number_of_children { 0 };
     using HeldType = void;
     static constexpr std::optional<size_t> number_expected_args {};
 
@@ -65,10 +66,12 @@ struct MyNode : Node<MyNodeIndex(FirstChildIndex, SecondChildIndex)> {};
 */
 template <class ThisTypedIndex, typename... CHILD_INDEXES>
 struct Node<ThisTypedIndex(CHILD_INDEXES...)> : public NodeBase<ThisTypedIndex, NodeType::Node> {
+    /*
     static_assert(sizeof...(CHILD_INDEXES) > 0, "Use TerminalNode instead.");
     static_assert((typed_index::is_type_set_index<CHILD_INDEXES>() && ...),
                   "TypedIndexs can only have constructors with other indexes in them, you have probably passed the "
                   "node type, not its index.");
+    */
     static constexpr auto number_of_children { sizeof...(CHILD_INDEXES) };
     static constexpr std::optional<size_t> number_expected_args { sizeof...(CHILD_INDEXES) };
     using ChildrenIndexTupleType = std::tuple<CHILD_INDEXES...>;

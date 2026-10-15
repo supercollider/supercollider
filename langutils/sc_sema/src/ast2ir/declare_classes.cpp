@@ -13,7 +13,7 @@ namespace sc::ir::ast2ir {
 
 void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::UntypedIndex accessor_i,
                                          ast::ReadWriteAccessor accessor, ast::NamedIdentifierIndex name_i) {
-    const auto name = cxt.symbol_table.get_identifier(ast_graph.string_view(name_i));
+    const auto name = cxt.symbol_table.get_identifier(ast_graph.string(name_i));
     decl.members.push_back(ClassDeclaration::Member {
         { { ast_index, *name_i }, name }, { { ast_index, *accessor_i }, accessor }, {}, {} });
 }
@@ -24,7 +24,7 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::UntypedInd
     const auto [name_i_t, expr_i_t] = ast_graph.children(name_with_expr_i);
     const ast::NamedIdentifierIndex name_i = name_i_t;
     ast::AnyExprIndex expr_i = expr_i_t;
-    const auto name = cxt.symbol_table.get_identifier(ast_graph.string_view(name_i));
+    const auto name = cxt.symbol_table.get_identifier(ast_graph.string(name_i));
 
     std::visit(ast2ir::ConstEval { cxt, ast_graph, ast_index }, ast_graph.index_to_variant(expr_i))
         .visit(
@@ -54,6 +54,11 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
     assert(!class_name_str.empty());
     const auto class_name = cxt.symbol_table.get_class_name(class_name_str);
 
+
+    if (ast_graph.string_view(class_name_i).substr(0, 5) == "Meta_") {
+        cxt.diagnostics(Diagnostic::todo(ast_graph.text_info(), ast_graph.location(class_name_i)));
+    }
+
     // the one class with no super.
     const bool is_root_class = class_name == cxt.common_classes.root_object;
 
@@ -67,17 +72,16 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
         cxt.diagnostics( //
             Diagnostic::duplicate_class( //
                 other_ast.text_info(), other_ast.location(loc->node_index), ast_graph.text_info(),
-                ast_graph.location(class_i)) //
+                ast_graph.location(class_name_i)) //
         );
         return {};
     }
 
-    auto meta_class_name_str = meta_prefix + class_name_str;
-    const auto meta_class_name = cxt.symbol_table.get_class_name(std::move(meta_class_name_str));
+    const auto meta_class_name = cxt.symbol_table.get_meta_class_name(class_name_str);
 
     // Create decls
     // These are the only mutable variables in this function, it is what we build.
-    const ASTLocation name_loc { ast_index, ast::Index { *class_i } };
+    const ASTLocation name_loc { ast_index, ast::Index { *class_name_i } };
     ClassDeclaration class_decl { { name_loc, class_name } };
 
     ClassDeclaration meta_class_decl { { name_loc, meta_class_name } };
@@ -85,13 +89,12 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
     class_decl.meta_class = meta_class_name;
 
     if (auto super = ast_graph.present(super_name_i)) {
-        const auto super_name_view = ast_graph.string_view(super_name_i);
-        const auto sym = cxt.symbol_table.get_class_name(super_name_view);
+        const auto sym = cxt.symbol_table.get_class_name(ast_graph.string(super_name_i));
         class_decl.super = { ASTLocation { ast_index, ast::Index { *super_name_i } }, sym };
 
         cxt.inheritance_edges.insert(sym, class_name);
     } else if (is_root_class) {
-        // do nothing
+        cxt.inheritance_edges.insert(class_name);
     } else {
         // Location here is just white space.
         class_decl.super = { ASTLocation { ast_index, ast::Index { *super_name_i } },
@@ -102,8 +105,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
 
     // aka, if this is not abstract object
     if (class_decl.super) {
-        std::string super_meta_class_name = meta_prefix + std::string { cxt.symbol_table(*class_decl.super->value) };
-        const auto super_meta_class_name_sym = cxt.symbol_table.get_class_name(super_meta_class_name);
+        const auto super_meta_class_name_sym = cxt.symbol_table.get_meta_class_name(*class_decl.super->value);
         meta_class_decl.super = { class_decl.super->location, super_meta_class_name_sym };
 
         cxt.inheritance_edges.insert(super_meta_class_name_sym, meta_class_name);
@@ -179,13 +181,13 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
         std::visit(util::overload {
                        [&](ast::MethodIndex i) {
                            const auto [name_i, args_i, maybe_prim_i, body_i] = ast_graph.children(i);
-                           const auto name = cxt.symbol_table.get_selector(ast_graph.string_view(name_i));
+                           const auto name = cxt.symbol_table.get_selector(ast_graph.string(name_i));
                            ClassDeclaration::Method m { { { ast_index, *name_i }, name } };
                            class_decl.methods.insert({ name, m });
                        },
                        [&](ast::ClassMethodIndex i) {
                            const auto [name_i, args_i, maybe_prim_i, body_i] = ast_graph.children(i);
-                           const auto name = cxt.symbol_table.get_selector(ast_graph.string_view(name_i));
+                           const auto name = cxt.symbol_table.get_selector(ast_graph.string(name_i));
                            ClassDeclaration::Method m { { { ast_index, *name_i }, name } };
                            meta_class_decl.methods.insert({ name, m });
                        },

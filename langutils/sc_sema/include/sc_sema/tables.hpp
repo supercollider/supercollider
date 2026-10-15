@@ -9,6 +9,7 @@
 #include <string_view>
 #include <type_traits>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace sc::ir {
 
@@ -19,14 +20,18 @@ namespace sc::ir {
 struct SymbolTable {
     // TODO: use boost unordered flat map (when we can figure out how the includes work in sc...)
 
-    [[nodiscard]] Symbol get(std::string_view s);
+    [[nodiscard]] Symbol get(std::string s);
 
-    [[nodiscard]] SymSCSelector get_selector(std::string_view s);
-    [[nodiscard]] SymSCClassName get_class_name(std::string_view s);
-    [[nodiscard]] SymSCSymbol get_symbol(std::string_view s);
-    [[nodiscard]] SymSCIdentifier get_identifier(std::string_view s);
-    [[nodiscard]] SymSCString get_string(std::string_view s);
+    [[nodiscard]] SymSCSelector get_selector(std::string s);
+    [[nodiscard]] SymSCClassName get_class_name(std::string s);
+    [[nodiscard]] SymSCClassName get_meta_class_name(std::string s);
+    [[nodiscard]] SymSCClassName get_meta_class_name(SymSCClassName);
 
+    [[nodiscard]] SymSCSymbol get_symbol(std::string s);
+    [[nodiscard]] SymSCIdentifier get_identifier(std::string s);
+    [[nodiscard]] SymSCString get_string(std::string s);
+
+    [[nodiscard]] bool is_meta(SymSCClassName n) const;
 
     SymbolTable() = default;
 
@@ -37,6 +42,7 @@ private:
     mutable std::mutex m_lock { };
     std::vector<std::string> m_id_to_string {};
     std::unordered_map<std::string, Symbol> m_string_to_id { };
+    std::unordered_set<Symbol> m_meta_classes {};
 };
 
 ////////////////////////////////////////////////////////////////////////////////

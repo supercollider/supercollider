@@ -18,7 +18,7 @@ target_link_libraries(sc_sema PRIVATE sc_lexer sc_parser sc_util)
 set_property(TARGET sc_sema PROPERTY FOLDER Libs)
 
 if(ENABLE_TESTSUITE)
-	add_subdirectory(test)
+	add_subdirectory(tests)
 endif()
 
 

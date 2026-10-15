@@ -1,4 +1,5 @@
 
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -12,8 +13,48 @@
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_parser/sc_parser.hpp"
 #include "sc_sema/compiler.hpp"
-#include "sc_sema/symbols.hpp"
 #include "sc_sema/tables.hpp"
+
+
+std::optional<sc::ir::GraphAndIndex> parse_file(std::filesystem::path dir_entry) {
+    std::ifstream file_stream { dir_entry };
+    if (!file_stream.is_open()) {
+        std::cout << "Could not open file" << dir_entry;
+        return { };
+    }
+    std::stringstream ss { };
+    ss << file_stream.rdbuf();
+    std::cout << ss.rdbuf();
+    auto text_info = std::shared_ptr<sc::lex::TextInfo>(new sc::lex::TextInfo {
+        sc::lex::NormalisedSource { std::move(ss).str() }, //
+        sc::lex::FileCodeLocation { }, //
+        dir_entry, //
+        true //
+    });
+
+    auto [ast_graph, result] = sc::ast::parse(text_info);
+    if (result != 0 || !ast_graph) {
+        std::cout << "Failed to parse " << dir_entry << " diagnostic count = " << ast_graph.diagnostics().size()
+                  << "\n";
+        for (const auto& d : ast_graph.diagnostics()) {
+            std::cout << d;
+        }
+    }
+
+    const auto roots = ast_graph.root();
+    if (!roots) {
+        std::cout << "No roots  " << dir_entry << "\n";
+        return { };
+    }
+    if (!std::get_if<sc::ast::ClassOrExtensionListIndex>(&*roots)) {
+        std::cout << "Parser returned an scd file, not a class file.";
+        return { };
+    }
+
+    const auto class_list_index = std::get<sc::ast::ClassOrExtensionListIndex>(*roots);
+    return { { std::move(ast_graph), class_list_index } };
+}
+
 
 #ifdef _MSC_VER
 // utility function to convert default Windows stdin encoding to UTF-8
@@ -32,9 +73,9 @@ int wmain(int argc, wchar_t* argv[]) {
 #else
 int main(int argc, char* argv[]) {
 #endif // _MSC_VER
-    if (argc < 2) {
-        std::cerr
-            << "ERROR: incorrect number of arguments to sc_sema_standalone, expected only supercollider source code.\n"
+    if (argc != 3) {
+        std::cout
+            << "ERROR: incorrect number of arguments to sc_sema_standalone, expected [dir|.sc file] [true or false]"
             << std::endl;
         return EXIT_FAILURE;
     }
@@ -51,103 +92,72 @@ int main(int argc, char* argv[]) {
     const auto* const dir = argv[1];
 #endif // _MSC_VER
 
+    const auto start_time = std::chrono::high_resolution_clock::now();
+
     std::filesystem::path dir_path { dir };
 
     std::vector<sc::ir::GraphAndIndex> ast_and_index;
 
-    for (auto const& dir_entry : std::filesystem::recursive_directory_iterator { dir_path })
-        if (dir_entry.is_regular_file() && dir_entry.path().extension() == ".sc") {
-            std::ifstream file_stream { dir_entry.path() };
-            if (!file_stream.is_open()) {
-                std::cerr << "Could not open file" << dir_entry.path();
-                continue;
-            }
-            std::stringstream ss {};
-            ss << file_stream.rdbuf();
-
-            auto text_info = std::shared_ptr<sc::lex::TextInfo>(new sc::lex::TextInfo {
-                sc::lex::NormalisedSource { std::move(ss).str() }, //
-                sc::lex::FileCodeLocation {}, //
-                dir_entry.path(), //
-                true //
-            });
-
-            auto [ast_graph, result] = sc::ast::parse(text_info);
-            if (result != 0 || !ast_graph) {
-                std::cerr << "Failed to parse " << dir_entry.path()
-                          << " diagnostic count = " << ast_graph.diagnostics().size() << "\n";
-                for (const auto& d : ast_graph.diagnostics()) {
-                    std::cerr << d;
+    std::error_code ec;
+    if (std::filesystem::is_directory(dir_path, ec)) {
+        for (auto const& dir_entry : std::filesystem::recursive_directory_iterator { dir_path })
+            if (dir_entry.is_regular_file() && dir_entry.path().extension() == ".sc") {
+                if (auto r = parse_file(dir_entry.path())) {
+                    ast_and_index.push_back(std::move(*r));
                 }
             }
-
-            const auto roots = ast_graph.root();
-            if (!roots) {
-                std::cerr << "No roots  " << dir_entry.path() << "\n";
-                continue;
+    } else if (std::filesystem::is_regular_file(dir_path)) {
+        if (dir_path.extension() == ".sc") {
+            if (auto r = parse_file(dir_path)) {
+                ast_and_index.push_back(std::move(*r));
             }
-            if (!std::get_if<sc::ast::ClassOrExtensionListIndex>(&*roots)) {
-                std::cerr << "Parser returned an scd file, not a class file.";
-                continue;
-            }
-
-            const auto class_list_index = std::get<sc::ast::ClassOrExtensionListIndex>(*roots);
-            ast_and_index.push_back({ std::move(ast_graph), class_list_index });
+        } else {
+            std::cout << "expected a directory of a .sc file, received : " << dir_path << "\n";
         }
+    }
 
 
     sc::ir::SymbolTable symbol_table;
+
+
+    sc::ir::IntrinsicConstraints constraints{};
+
+    const auto* const constraint_text = argv[2];
+    if (std::string_view { constraint_text } == "true") {
+        const auto abstract_object = symbol_table.get_class_name("AbstractObjectExperimental");
+        constraints.insert({ abstract_object,
+                             sc::ir::IntrinsicConstraint {
+                                 abstract_object, //
+                                 { }, //
+                                 { }, //
+                                 { } //
+                             } });
+        const auto object = symbol_table.get_class_name("Object");
+        constraints.insert({ object,
+                             sc::ir::IntrinsicConstraint {
+                                 object, //
+                                 { abstract_object }, //
+                                 { }, //
+                                 { } //
+                             } });
+    }
+
+
     sc::ir::IRCompiler comp { symbol_table };
-
-
-    sc::ir::IntrinsicConstraints constraints;
-
-    const auto abstract_object = symbol_table.get_class_name("AbstractObjectExperimental");
-    constraints.insert({ abstract_object,
-                         sc::ir::IntrinsicConstraint {
-                             abstract_object, //
-                             {}, //
-                             {}, //
-                             {} //
-                         } });
-    const auto object = symbol_table.get_class_name("Object");
-    constraints.insert({ object,
-                         sc::ir::IntrinsicConstraint {
-                             object, //
-                             { abstract_object }, //
-                             {}, //
-                             {} //
-                         } });
-
-    const auto dframe = symbol_table.get_class_name("DebugFrame");
-    constraints.insert({ dframe,
-                         sc::ir::IntrinsicConstraint {
-                             dframe, //
-                             { object }, //
-                             {
-                                 symbol_table.get_identifier("functionDef"), //
-                                 symbol_table.get_identifier("args"), //
-                                 symbol_table.get_identifier("var"), //
-                                 symbol_table.get_identifier("caller"), //
-                                 symbol_table.get_identifier("context"), //
-                                 symbol_table.get_identifier("address"), //
-                             }, //
-                             {} //
-                         } });
-
     const auto diags = comp.compile_class_library(
         std::move(constraints), symbol_table.get_class_name("AbstractObjectExperimental"), std::move(ast_and_index));
 
     if (!diags.empty()) {
         for (const auto& d : diags)
-            std::cerr << d;
+            std::cout << d;
     }
 
-    std::cout << "Successfully compiled " << comp.context()->class_declarations.size() << " classes." << std::endl;
+    std::cout << "Successfully compiled " << comp.context()->class_declarations.size() / 2 << " classes." << std::endl;
 
-    // comp.context()->class_declarations.for_all([&](sc::ir::Symbol name, const sc::ir::ClassDeclaration& d) {
-    //     std::cout << comp.context()->symbol_table(name) << "\n";
-    // });
+    const auto finish_time = std::chrono::high_resolution_clock::now();
+    const auto time_taken = std::chrono::duration_cast<std::chrono::milliseconds>(finish_time - start_time);
+
+    const auto seconds = static_cast<double>(time_taken.count()) / 1000.0;
 
     return 0;
 }

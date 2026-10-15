@@ -8,7 +8,7 @@
 #include <vector>
 
 namespace sc::diag {
-enum struct Severity { Error, ErrorButCanCompileClassLibrary, Warning };
+enum struct Severity { Error, Warning };
 
 enum struct DiagnosticKind {
     UnexpectedToken,
@@ -27,8 +27,8 @@ public:
     [[nodiscard]] static Diagnostic unexpectedToken(std::shared_ptr<const sc::lex::TextInfo> text_info,
                                                     sc::lex::SourceCodeRange loc, std::string expected,
                                                     const char* received);
-    [[nodiscard]] static Diagnostic regionMissingSemi(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                                      sc::lex::SourceCodeRange loc);
+    [[nodiscard]] static Diagnostic region_missing_semicolon(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                                             sc::lex::SourceCodeRange loc);
 
     [[nodiscard]] static Diagnostic duplicate_class(std::shared_ptr<const sc::lex::TextInfo> first_text_info,
                                                     sc::lex::SourceCodeRange first_loc,
@@ -39,6 +39,14 @@ public:
     [[nodiscard]] static Diagnostic intrinsic_class_wrong_member_name(std::shared_ptr<const sc::lex::TextInfo>,
                                                                       sc::lex::SourceCodeRange loc,
                                                                       std::string_view expected);
+
+    [[nodiscard]] static Diagnostic
+    super_class_not_defined(std::string name,
+                            std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>>);
+    [[nodiscard]] static Diagnostic
+        inheritance_cycle(std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>>);
+    [[nodiscard]] static Diagnostic self_inheritance(std::shared_ptr<const sc::lex::TextInfo>,
+                                                     sc::lex::SourceCodeRange);
 
     Diagnostic() = delete;
     Diagnostic(Diagnostic&&) noexcept = default;

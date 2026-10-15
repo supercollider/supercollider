@@ -1,0 +1,5 @@
+add_executable(sc_util_test main.cpp )
+target_link_libraries(sc_util_test boost_test sc_util)
+target_include_directories(sc_util_test PUBLIC ${boost_include_dirs})
+add_test(sc_util_test_run sc_util_test)
+set_property(TARGET sc_util_test PROPERTY FOLDER Test/LangUtils)

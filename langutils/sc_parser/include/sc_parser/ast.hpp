@@ -98,6 +98,9 @@ public:
     [[nodiscard]] std::shared_ptr<const lex::TextInfo> text_info() const { return m_text_info; }
 
     [[nodiscard]] std::string_view string_view(UntypedNodeIndex i) const { return m_text_info->read(location(i)); }
+    [[nodiscard]] std::string string(UntypedNodeIndex i) const {
+        return std::string { m_text_info->read(location(i)) };
+    }
 
     void register_bracketed_expr(UntypedNodeIndex i) { m_bracketed_exprs.insert(i); }
 

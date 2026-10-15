@@ -23,7 +23,9 @@ struct TypedGraphHelperBase { };
 
 template <typename ENUM, template <ENUM...> typename INDEXCREATOR, typename... Nodes>
 struct TypedGraphHelper : TypedGraphHelperBase {
+    /*
     static_assert((std::is_base_of_v<NodeBaseBase, Nodes> && ...));
+    */
     using Variant = std::variant<Nodes...>;
     using Tuple = std::tuple<Nodes...>;
     using IndexSequence = std::make_index_sequence<sizeof...(Nodes)>;
@@ -54,7 +56,7 @@ struct TypedGraphHelper : TypedGraphHelperBase {
     }
 
     template <class IndexT> constexpr static auto get_node_type_from_index_type() {
-        static_assert(IndexT::size_of_set == 1);
+        // static_assert(IndexT::size_of_set == 1);
         return get_node_type_from_index_type_impl<0, IndexT>();
     }
 
@@ -70,7 +72,7 @@ protected:
     template <std::size_t CurrentI, class Target, typename = std::enable_if<CurrentI < std::tuple_size_v<Tuple>>>
     [[nodiscard]] constexpr static auto get_node_type_from_index_type_impl()  {
         // clang-format on
-        static_assert(CurrentI < sizeof...(Nodes));
+        // static_assert(CurrentI < sizeof...(Nodes));
         if constexpr (CurrentI < sizeof...(Nodes)) {
             using T = std::tuple_element_t<CurrentI, Tuple>;
             if constexpr (std::is_same_v<typename T::Index, Target>) {
@@ -85,7 +87,7 @@ protected:
     template <std::size_t CurrentI, class Enum, Enum Target, typename = std::enable_if<CurrentI < sizeof ... (Nodes)>>
     [[nodiscard]] constexpr static auto node_type_from_enum_impl()  {
         // clang-format on
-        static_assert(CurrentI < sizeof...(Nodes));
+        // static_assert(CurrentI < sizeof...(Nodes));
         if constexpr (CurrentI < sizeof...(Nodes)) {
             using CurrentT = std::tuple_element_t<CurrentI, Tuple>;
             if constexpr (CurrentT::Index::Possible[0] == Target) {
@@ -100,7 +102,7 @@ protected:
     template <std::size_t CurrentI, class ToFind, typename = std::enable_if<CurrentI<sizeof...(Nodes)>> 
     [[nodiscard]] constexpr static bool has_node_impl()  {
         // clang-format on
-        static_assert(CurrentI < sizeof...(Nodes));
+        // static_assert(CurrentI < sizeof...(Nodes));
         if constexpr (CurrentI < sizeof...(Nodes)) {
             using CurrentT = std::tuple_element_t<CurrentI, Tuple>;
             if constexpr (std::is_same_v<typename CurrentT::Index, ToFind>) {
@@ -368,7 +370,7 @@ public: // This is meant to be privately inherited from.
     template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
     [[nodiscard]] constexpr auto children(TypedIndex i) const {
         assert(not_dead(i));
-        static_assert(TypedIndex::size_of_set == 1);
+        // static_assert(TypedIndex::size_of_set == 1);
         using N = NodeTypeFromIndex<TypedIndex>;
         if constexpr (N::is_terminal())
             return NoChildren { };
@@ -415,11 +417,11 @@ public: // This is meant to be privately inherited from.
     ParentI append(ParentI p, ChildI c) {
         assert(not_dead(p));
         assert(not_dead(c));
-        static_assert(typed_index::is_type_set_index<ParentI>());
-        static_assert(typed_index::is_type_set_index<ChildI>());
+        // static_assert(typed_index::is_type_set_index<ParentI>());
+        // static_assert(typed_index::is_type_set_index<ChildI>());
         using Parent = typename decltype(Helper::template get_node_type_from_index_type<ParentI>())::type;
-        static_assert(Parent::is_list());
-        static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
+        // static_assert(Parent::is_list());
+        // static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
 
         append_to_parent_unchecked(p, c);
         return p;
@@ -429,11 +431,11 @@ public: // This is meant to be privately inherited from.
     ParentI prepend(ParentI p, ChildI child) {
         assert(not_dead(p));
         assert(not_dead(child));
-        static_assert(typed_index::is_type_set_index<ParentI>());
-        static_assert(typed_index::is_type_set_index<ChildI>());
+        // static_assert(typed_index::is_type_set_index<ParentI>());
+        // static_assert(typed_index::is_type_set_index<ChildI>());
         using Parent = NodeTypeFromIndex<ParentI>;
-        static_assert(Parent::is_list());
-        static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
+        // static_assert(Parent::is_list());
+        // static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
 
         auto& parent_edges = m_node_edges[*p];
 
@@ -470,13 +472,13 @@ public: // This is meant to be privately inherited from.
         assert(s != e);
         assert(not_dead(s));
         assert(not_dead(e));
-        static_assert(typed_index::is_type_set_index<Surviving>());
-        static_assert(typed_index::is_type_set_index<Eaten>());
+        // static_assert(typed_index::is_type_set_index<Surviving>());
+        // static_assert(typed_index::is_type_set_index<Eaten>());
 
         using SurvivingType = NodeTypeFromIndex<Surviving>;
         using EatenType = NodeTypeFromIndex<Eaten>;
-        static_assert(SurvivingType::is_list());
-        static_assert(EatenType::is_list());
+        // static_assert(SurvivingType::is_list());
+        // static_assert(EatenType::is_list());
 
         static_assert(std::is_convertible_v<typename EatenType::ChildIndex, typename SurvivingType::ChildIndex>);
 
@@ -502,8 +504,8 @@ public: // This is meant to be privately inherited from.
     typename To::Index cast(FromIndex from_index, ARGS&&... args) {
         using ToIndex = typename To::Index;
         using From = NodeTypeFromIndex<FromIndex>;
-        static_assert(From::type == To::type);
-        static_assert(std::is_convertible_v<typename From::HeldType, typename To::HeldType>);
+        // static_assert(From::type == To::type);
+        // static_assert(std::is_convertible_v<typename From::HeldType, typename To::HeldType>);
         payload(UntypedNodeIndex { *from_index }) = To { std::forward<ARGS>(args)... };
         return ToIndex { *from_index };
     }

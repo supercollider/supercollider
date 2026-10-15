@@ -15,7 +15,6 @@
 
 namespace sc::ir::ast2ir {
 
-const static std::string meta_prefix = "Meta_";
 
 template <typename T> struct TypeWrapper {};
 

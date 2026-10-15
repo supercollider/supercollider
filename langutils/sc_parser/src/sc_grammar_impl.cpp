@@ -45,7 +45,7 @@ namespace sc::ast::parser::error_recovery {
 
 void region_separator(ParserContext& cxt, sc ::lex::SourceCodeRange last_valid) {
     auto _ = cxt.consume_error();
-    cxt.graph.add_diagnostic(diag::Diagnostic::regionMissingSemi(cxt.text_info, last_valid));
+    cxt.graph.add_diagnostic(diag::Diagnostic::region_missing_semicolon(cxt.text_info, last_valid));
 }
 
 void expr(ParserContext& cxt) {

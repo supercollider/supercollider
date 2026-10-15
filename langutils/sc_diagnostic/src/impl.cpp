@@ -14,7 +14,6 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
 
     switch (type) {
     case Severity::Error:
-    case Severity::ErrorButCanCompileClassLibrary:
         ss << "Error: ";
         break;
     case Severity::Warning:
@@ -163,8 +162,8 @@ Diagnostic Diagnostic::unexpectedToken(std::shared_ptr<const sc::lex::TextInfo> 
              } } };
 };
 
-Diagnostic Diagnostic::regionMissingSemi(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                         sc::lex::SourceCodeRange loc) {
+Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                                sc::lex::SourceCodeRange loc) {
     return { "Region missing semi-colon.", //
              Severity::Error, //
              std::vector<Location> { { std::move(text_info), //
@@ -185,8 +184,26 @@ Diagnostic Diagnostic::regionMissingSemi(std::shared_ptr<const sc::lex::TextInfo
 }
 
 [[nodiscard]] Diagnostic Diagnostic::todo(std::shared_ptr<const sc::lex::TextInfo> info, sc::lex::SourceCodeRange loc) {
-    return { "TODO NOT IMPLEMENTED", Severity::Error,
-             std::vector<Location> { { std::move(info), loc, "diagnostic not implemented" } } };
+    return {
+        "TODO NOT IMPLEMENTED", //
+        Severity::Error, //
+        std::vector<Location> {
+            { std::move(info), loc, "diagnostic not implemented" } //
+        } //
+    };
+}
+
+[[nodiscard]] Diagnostic Diagnostic::super_class_not_defined(
+    std::string name, std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>> v) {
+    std::vector<Location> locs;
+    for (auto& [ptr, range] : v) {
+        locs.push_back({ ptr, range, "super class not defined." });
+    }
+
+    return { "Super class not defined.", //
+             Severity::Error, //
+             std::move(locs), //
+             std::string { "The class " } + name + " was not defined." };
 }
 
 [[nodiscard]] Diagnostic Diagnostic::missing_intrinsic_class(std::string extra) {
@@ -201,5 +218,32 @@ Diagnostic Diagnostic::regionMissingSemi(std::shared_ptr<const sc::lex::TextInfo
     return { "Intrinsic class has wrong member name.", //
              Severity::Error, //
              std::vector<Location> { { std::move(t), loc, std::move(ss).str() } } };
+}
+
+
+[[nodiscard]] Diagnostic Diagnostic::inheritance_cycle(
+    std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>> m) {
+    std::vector<Location> locs {};
+
+    for (auto& [t, r] : m) {
+        locs.push_back({ std::move(t), r, "cycle detected" });
+    }
+    return {
+        "Inheritance cycle detected.", //
+        Severity::Error, //
+        std::move(locs) //
+    };
+}
+
+
+[[nodiscard]] Diagnostic Diagnostic::self_inheritance(std::shared_ptr<const sc::lex::TextInfo> t,
+                                                      sc::lex::SourceCodeRange loc) {
+    return {
+        "Self inheritance",
+        Severity::Error,
+        {
+            { std::move(t), loc, "Remove the super class here, classes cannot inherit from themselves." } //
+        } //
+    };
 }
 }
