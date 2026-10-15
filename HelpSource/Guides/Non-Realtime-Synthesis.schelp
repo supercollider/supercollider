@@ -150,16 +150,16 @@ a.recordNRT(
 ::
 
 definitionlist::
-## oscFilePath || Recommended to omit (leave as teletype::nil::). Score will generate a temporary filename  for you.
+## oscFilePath || Recommended to omit (leave as teletype::nil::). Score will generate a temporary filename for you.
 ## outputFilePath || The output audio file that you want (full path).
 ## inputFilePath || Optional. If you provide an existing audio file, its contents will stream to the NRT server's hardware input buses.
 ## sampleRate || Output file sample rate.
 ## headerFormat || See link::Classes/SoundFile#-headerFormat::.
 ## sampleFormat || See link::Classes/SoundFile#-sampleFormat::.
-## options || An instance of link::Classes/ServerOptions::. In particular, this is important to set the desired number of output channels, e.g. code::ServerOptions.new.numOutputBusChannels_(2)::.
-## completionString || Undocumented. No apparent purpose.
+## options || An instance of link::Classes/ServerOptions::. In particular, it is important to set the desired number of output channels, e.g. code::ServerOptions.new.numOutputBusChannels_(2)::. If you are using an input sound file, you also need to set the number of input channels.
+## completionString || No apparent purpose.
 ## duration || The desired total length of the output file, in seconds.
-## action || A function to evaluate when rendering is complete.
+## action || A function to evaluate when rendering is complete. The action receives the exit code of the Server process.
 ::
 
 Of these, teletype::outputFilePath::, teletype::options:: and teletype::duration:: are particularly important. Make sure you specify at least these.
@@ -306,30 +306,32 @@ server.remove;
 
 subsection:: NRT processing of an audio file
 
-Applying a custom effect to a very long audio file is an especially good use of NRT: create a Score that defines an effect SynthDef and runs it for the duration of of the input file. You can use teletype::recordNRT::'s input file parameter to pipe the source audio to the NRT server's hardware inputs, and read it with link::Classes/SoundIn::.
+Applying a custom effect to a very long audio file is an especially good use of NRT: create a Score that defines an effect SynthDef and runs it for the duration of the input file. You can use teletype::recordNRT::'s input file parameter to pipe the source audio to the NRT server's hardware inputs, and read it with link::Classes/SoundIn::.
 
 The example audio file is not very long, but processing here is almost instantaneous.
 
 code::
 (
-var server,
-inputFile = SoundFile.openRead(ExampleFiles.child);
-
+var server, numChannels;
+var inputFile = SoundFile.openRead(ExampleFiles.child);
+numChannels = inputFile.numChannels;
 inputFile.close;  // doesn't need to stay open; we just need the stats
 
 server = Server(\nrt,
 	options: ServerOptions.new
-	.numOutputBusChannels_(2)
-	.numInputBusChannels_(inputFile.numChannels)
+	.numOutputBusChannels_(numChannels)
+	.numInputBusChannels_(numChannels)
 );
 
 x = Score([
 	[0.0, ['/d_recv',
 		SynthDef(\fft, {
-			var in = SoundIn.ar([0]),
-			fft = FFT(LocalBuf(1024, 1), in);
+			// 'child' is a mono file, but this SynthDef works for any number of channels.
+			var channels = (0..(numChannels-1));
+			var in = SoundIn.ar(channels);
+			var fft = FFT(LocalBuf(1024, 1), in);
 			fft = PV_MagFreeze(fft, ToggleFF.kr(Dust.kr(12)));
-			Out.ar(0, IFFT(fft).dup)
+			Out.ar(0, IFFT(fft))
 		}).asBytes
 	]],
 	[0.0, Synth.basicNew(\fft, server).newMsg]
@@ -338,7 +340,8 @@ x = Score([
 x.recordNRT(
 	outputFilePath: "~/nrt.wav".standardizePath,
 	inputFilePath: inputFile.path,
-	sampleRate: 44100,
+	// make sure to use the same sample rate as the input file!
+	sampleRate: inputFile.sampleRate,
 	headerFormat: "wav",
 	sampleFormat: "int16",
 	options: server.options,

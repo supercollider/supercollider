@@ -29,6 +29,8 @@ private::initClass
 method::new
 returns a new Score object with the supplied list.
 
+The score is automatically sorted by ascending timestamps, so it is not necessary to call link::#-sort:: unless you modify the score afterwards.
+
 argument::list
 can be an link::Classes/Array::, a link::Classes/List::, or similar object.
 
@@ -78,35 +80,47 @@ method::recordNRT
 a convenience method to synthesize strong::list:: in non-realtime. This method writes an OSC file to strong::oscFilePath:: (you have to do your own cleanup if desired) and then starts a server app to synthesize it. For details on valid headerFormats and sampleFormats see link::Classes/SoundFile::. Use code::TempoClock.default:: as a tempo base. Does not return an instance.
 
 argument::list
-the list.
+the list. It is sorted automatically by timestamp.
 
 argument::oscFilePath
 the path to which the binary OSC file will be written.
 
+If code::nil:: (= default), Score will generate a temporary filename for you.
+
 argument::outputFilePath
-the path of the resultant soundfile.
+the path of the resulting soundfile.
 
 argument::inputFilePath
-an optional path for an input soundfile.
+an optional path for an input soundfile. Its contents will be streamed to the NRT server's hardware input buses.
+
+note::Make sure that code::numInputBusChannels:: in the Server options matches the channel count of the input soundfile, otherwise you will get a warning. In case of a mismatch, extra channels are ignored and missing channels are filled with silence.::
 
 argument::sampleRate
 the sample rate at which synthesis will occur.
 
+note::The code::sampleRate:: argument must match the sample rate of the input soundfile, if provided.::
+
 argument::headerFormat
-the header format of the output file. The default is 'AIFF'.
+the header format of the output file. The default is 'AIFF'. See link::Classes/SoundFile#-headerFormat:: for valid format strings.
 
 argument::sampleFormat
-the sample format of the output file. The default is 'int16'.
+the sample format of the output file. The default is 'int16'. See link::Classes/SoundFile#-sampleFormat:: for valid format strings.
 
 argument::options
 an instance of link::Classes/ServerOptions::. If not supplied the options of the default link::Classes/Server:: will be used.
 
+You should at least specify the number of output channels, e.g. code::ServerOptions.new.numOutputBusChannels_(4)::. If you use an input file, make sure to also specify code::numInputBusChannels::!
+
 argument::completionString
+a string that is appended to the Server program command line. (The purpose is not entirely clear.)
 
 argument::duration
+the score duration in seconds. If provided, a dummy command is automatically added to obtain the desired duration; score elements beyond the given duration are silently discarded. If code::nil:: (= default), the duration is automatically inferred from the score.
 
 argument::action
 A function to be evaluated once the NRT server has finished rendering its score.
+
+The action receives the exit code of the Server process as its first argument. 0 means that NRT synthesis has completed without errors. A non-zero exit code means that an error has occurred.
 
 InstanceMethods::
 
@@ -137,7 +151,11 @@ x.score
 
 
 method::sort
-sort the score time order. This is recommended to do strong::before recordNRT or write:: when you are not sure about the packet order.
+sort the score time order.
+
+The initial scored passed to the link::#*new:: method is sorted automatically. If you modify the score afterwards, it is recommended to sort it strong::before recordNRT or write:: when you are not sure about the packet order.
+
+note::The sorting is emphasis::not:: stable, i.e. bundles with the same timestamp might end up in a different order. If two or more messages (with the same timestamp) depend on a certain order, put them in the same bundle!::
 
 method::recordNRT
 synthesize the score in non-realtime. For details of the arguments see link::#*recordNRT:: above.
@@ -190,16 +208,17 @@ Score also provides methods to do all this more directly:
 
 code::
 (
-var f, o;
+var g, o;
 g = [
 	[0.1, [\s_new, \helpscore, 1000, 0, 0, \freq, 440]],
 	[0.2, [\s_new, \helpscore, 1001, 0, 0, \freq, 660],
 		[\s_new, \helpscore, 1002, 0, 0, \freq, 880]],
-	[0.3, [\s_new, \helpscore, 1003, 0, 0, \freq, 220]],
-	[1, [\c_set, 0, 0]] // finish
-	];
+	[0.3, [\s_new, \helpscore, 1003, 0, 0, \freq, 220]]
+	// unlike in the example above, we do not have to add a dummy command
+	// because Score.recordNRT allows us to directly specify the duration.
+];
 o = ServerOptions.new.numOutputBusChannels = 1; // mono output
-Score.recordNRT(g, Platform.defaultTempDir +/+ "help-oscFile", Platform.defaultTempDir +/+ "helpNRT.aiff", options: o); // synthesize
+Score.recordNRT(g, Platform.defaultTempDir +/+ "help-oscFile", Platform.defaultTempDir +/+ "helpNRT.aiff", options: o, duration: 1.0); // synthesize
 )
 ::
 

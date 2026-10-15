@@ -44,9 +44,9 @@
 namespace nova {
 
 struct realtime_engine_functor {
-    static inline void sync_clock(void);
-    static void init_thread(void);
-    static inline void run_tick(void);
+    static inline void sync_clock();
+    static void init_thread();
+    static inline void run_tick();
     static void log_(const char*);
     static void log_printf_(const char*, ...);
 };
@@ -63,9 +63,9 @@ extern class nova_server* instance;
 class system_callback : public static_pooled_class<system_callback, 1 << 20, /* 1mb pool of realtime memory */
                                                    false, 5> {
 public:
-    virtual ~system_callback(void) = default;
+    virtual ~system_callback() = default;
 
-    virtual void run(void) = 0;
+    virtual void run() = 0;
 };
 
 /** system_callback to delete object in the system thread. useful to avoid hitting the memory allocator
@@ -76,7 +76,7 @@ public:
     delete_callback(T* ptr): ptr_(ptr) {}
 
 private:
-    virtual void run(void) override { delete ptr_; }
+    virtual void run() override { delete ptr_; }
 
     const T* const ptr_;
 };
@@ -132,9 +132,9 @@ public:
     /* main nova_server function */
     nova_server(server_arguments const& args);
 
-    ~nova_server(void);
+    ~nova_server();
 
-    void prepare_backend(void);
+    void prepare_backend();
 
     /* @{ */
     /** io interpreter */
@@ -147,14 +147,14 @@ public:
      */
     void add_system_callback(system_callback* cb) { system_interpreter.add_callback(cb); }
 
-    void run(void) {
+    void run() {
         start_dsp_threads();
         system_interpreter.run();
     }
 
     void prepare_to_terminate() { server_shared_memory_creator::disconnect(); }
 
-    void terminate(void) {
+    void terminate() {
         system_interpreter.terminate();
         quit_requested_ = true;
     }
@@ -190,11 +190,19 @@ public:
 
     void cpu_load(float& peak, float& average) const { audio_backend::get_cpuload(peak, average); }
 
-    void increment_logical_time(void) { sc_osc_handler::increment_logical_time(time_per_tick); }
+    void increment_logical_time() { sc_osc_handler::increment_logical_time(time_per_tick); }
+
+    /** update the logical time based on the current buffer counter. This is used in NRT synthesis
+     *  instead of \c increment_logical_time() to avoid cumulative errors. */
+    void update_logical_time() {
+        auto& world = sc_factory->world;
+        auto next = time_tag::from_seconds((double)world.mBufCounter * world.mBufLength / world.mSampleRate);
+        set_last_now(now, next);
+    }
 
     void set_last_now(time_tag const& lasts, time_tag const& nows) { sc_osc_handler::set_last_now(lasts, nows); }
 
-    void compensate_latency(void) {
+    void compensate_latency() {
         sc_osc_handler::add_last_now(
             time_tag::from_samples(audio_backend::get_latency(), audio_backend::get_samplerate()));
     }
@@ -220,20 +228,18 @@ public:
 private:
     void perform_node_add(server_node* node, node_position_constraint const& constraints, bool update_dsp_queue);
     void finalize_node(server_node& node);
-    std::atomic<bool> quit_requested_ = { false };
+    std::atomic<bool> quit_requested_ { false };
     bool dsp_queue_dirty = false;
 
     callback_interpreter<system_callback, false> system_interpreter; // rt to system thread
     threaded_callback_interpreter<system_callback, io_thread_init_functor> io_interpreter; // for network IO
 };
 
-inline void run_scheduler_tick(void) {
+inline void run_scheduler_tick() {
     const int blocksize = sc_factory->world.mBufLength;
-    // FIXME/TODO
-    // server may have fewer input channels than sc_factory
-    const int input_channels = instance->audio_backend::get_input_count();
+    const int input_channels = sc_factory->world.mNumInputs;
     const int output_channels = sc_factory->world.mNumOutputs;
-    const int buf_counter = ++sc_factory->world.mBufCounter;
+    const int buf_counter = sc_factory->world.mBufCounter;
 
     /* touch all input buffers */
     for (int channel = 0; channel != input_channels; ++channel)
@@ -246,9 +252,11 @@ inline void run_scheduler_tick(void) {
         if (sc_factory->world.mAudioBusTouched[channel] != buf_counter)
             zerovec(sc_factory->world.mAudioBus + blocksize * channel, blocksize);
     }
+
+    sc_factory->world.mBufCounter++;
 }
 
-inline void realtime_engine_functor::sync_clock(void) {
+inline void realtime_engine_functor::sync_clock() {
     if (instance->use_system_clock) {
         double nows = (uint64)(OSCTime(std::chrono::system_clock::now())) * kOSCtoSecs;
         instance->mDLL.Reset(sc_factory->world.mSampleRate, sc_factory->world.mBufLength, SC_TIME_DLL_BW, nows);
@@ -263,7 +271,7 @@ inline void realtime_engine_functor::sync_clock(void) {
 }
 
 
-inline void realtime_engine_functor::run_tick(void) {
+inline void realtime_engine_functor::run_tick() {
     /* // debug timedll
     static int count = 0;
     if(count >= 44100/64){
