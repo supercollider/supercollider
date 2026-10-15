@@ -980,7 +980,6 @@ code::
 "MathLib".exclude;
 ::
 
-returns:: The receiver.
 
 subsection::Document Support
 
