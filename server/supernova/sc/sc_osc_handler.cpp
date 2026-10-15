@@ -1358,32 +1358,32 @@ void g_query_tree_fill_node(osc::OutboundPacketStream& p, bool flag, server_node
     }
 }
 
-template <bool realtime> void g_query_tree(int node_id, bool flag, endpoint_ptr const& endpoint) {
+template <bool realtime> void g_query_tree(int node_id, bool include_synth_controls, endpoint_ptr const& endpoint) {
     server_node* node = find_node(node_id);
     if (!node || node->is_synth())
         return;
 
     abstract_group* group = static_cast<abstract_group*>(node);
 
-    size_t max_msg_size = 1 << 16;
-    for (;;) {
-        try {
-            if (max_msg_size > 1 << 22)
-                return;
+    // Eventually, we need to come up with a better replacement for /g_queryTree
+    // that is not restricted by the UDP packet size limit.
+    std::array<char, 65536> buffer;
 
-            sized_array<char, rt_pool_allocator<char>> data(max_msg_size);
+    try {
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
+        p << osc::BeginMessage("/g_queryTree.reply") << (include_synth_controls ? 1 : 0) << node_id
+          << osc::int32(group->child_count());
 
-            osc::OutboundPacketStream p(data.c_array(), max_msg_size);
-            p << osc::BeginMessage("/g_queryTree.reply") << (flag ? 1 : 0) << node_id
-              << osc::int32(group->child_count());
+        group->apply_on_children(
+            [&](server_node const& node) { g_query_tree_fill_node(p, include_synth_controls, node); });
 
-            group->apply_on_children([&](server_node const& node) { g_query_tree_fill_node(p, flag, node); });
-            p << osc::EndMessage;
+        p << osc::EndMessage;
 
-            movable_array<char> message(p.Size(), data.c_array());
-            cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
-            return;
-        } catch (...) { max_msg_size *= 2; /* if we run out of memory, retry with doubled memory resources */ }
+        movable_array<char> message(p.Size(), p.Data());
+        cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
+    } catch (osc::Exception const& e) {
+        log_printf("ERROR: could not send /g_queryTree reply: message exceeds size limit of %d bytes.\n",
+                   (int)buffer.size());
     }
 }
 
