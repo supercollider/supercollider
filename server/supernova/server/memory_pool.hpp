@@ -37,11 +37,11 @@ public:
 
     template <class U> struct rebind { typedef rt_pool_allocator<U> other; };
 
-    rt_pool_allocator() throw() = default;
-    rt_pool_allocator(const rt_pool_allocator&) throw() = default;
-    ~rt_pool_allocator() throw() = default;
+    rt_pool_allocator() noexcept = default;
+    rt_pool_allocator(const rt_pool_allocator&) noexcept = default;
+    ~rt_pool_allocator() noexcept = default;
 
-    template <class U> rt_pool_allocator(const rt_pool_allocator<U>&) throw() {}
+    template <class U> rt_pool_allocator(const rt_pool_allocator<U>&) noexcept {}
 
 
     pointer address(reference x) const { return &x; }
@@ -62,7 +62,7 @@ public:
 
     void deallocate(pointer p, size_type n) { rt_pool.free(p); }
 
-    size_type max_size() const throw() { return rt_pool.get_max_size(); }
+    size_type max_size() const noexcept { return rt_pool.get_max_size(); }
 
     void construct(pointer p, const T& val = T()) { new (p) T(val); }
 

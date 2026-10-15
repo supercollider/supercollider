@@ -73,7 +73,7 @@ public:
 
     template <class U> struct rebind { typedef static_allocator<U, count, blocking> other; };
 
-    static_allocator() throw() {
+    static_allocator() noexcept {
         data_.pool.assign(0);
         init_memory_pool(bytes, data_.pool.begin());
     }
@@ -82,14 +82,13 @@ public:
 
 #if 0
     template <class U, std::size_t bytes_, bool b>
-    static_allocator(static_allocator<U, bytes_, b> const & rhs) throw()
-    {
+    static_allocator(static_allocator<U, bytes_, b> const & rhs) noexcept {
         data_.pool.assign(0);
         init_memory_pool(bytes, data_.pool.begin());
     }
 #endif
 
-    ~static_allocator() throw() { destroy_memory_pool(data_.pool.begin()); }
+    ~static_allocator() { destroy_memory_pool(data_.pool.begin()); }
 
     pointer address(reference x) const { return &x; }
 
@@ -110,7 +109,7 @@ public:
         free_ex(p, data_.pool.begin());
     }
 
-    size_type max_size() const throw() { return count; }
+    size_type max_size() const noexcept { return count; }
 
     void construct(pointer p, const T& val) { ::new (p) T(val); }
 

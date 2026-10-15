@@ -84,7 +84,7 @@ public:
 #endif
     }
 
-    ~simple_pool() throw() {}
+    ~simple_pool() {}
 
 #ifdef NOVA_MEMORY_DEBUGGING
     void* MALLOC malloc(std::size_t size) { return ::malloc(size); }

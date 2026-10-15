@@ -43,7 +43,7 @@ public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
 
-    tl_allocator() throw() {
+    tl_allocator() noexcept {
         if (likely(initialized))
             return;
 
@@ -62,7 +62,7 @@ public:
 
     void deallocate(void* p) { free_ex(p, pool); }
 
-    size_type max_size() const throw() { return bytes; }
+    size_type max_size() const noexcept { return bytes; }
 
     static __thread long pool[poolsize];
     static __thread bool initialized;
@@ -93,13 +93,13 @@ public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
 
-    tl_allocator() throw() {
+    tl_allocator() noexcept {
         if (likely(pool.get()))
             return;
         pool.reset(new pool_t());
     }
 
-    tl_allocator(tl_allocator const& rhs) throw() {}
+    tl_allocator(tl_allocator const& rhs) noexcept {}
 
     void* allocate(size_type n) {
         void* ret = malloc_ex(n, pool->pool.begin());
@@ -112,7 +112,7 @@ public:
 
     void deallocate(void* p) { free_ex(p, pool->pool.begin()); }
 
-    size_type max_size() const throw() { return bytes; }
+    size_type max_size() const noexcept { return bytes; }
 
     typedef boost::thread_specific_ptr<pool_t> pool_ptr;
     static pool_ptr pool;
@@ -146,9 +146,9 @@ public:
 
     template <class U> struct rebind { typedef tl_allocator<U, bytes> other; };
 
-    tl_allocator() throw() {}
+    tl_allocator() noexcept {}
 
-    template <class U, std::size_t bytes_> tl_allocator(tl_allocator<U, bytes_> const& rhs) throw() {}
+    template <class U, std::size_t bytes_> tl_allocator(tl_allocator<U, bytes_> const& rhs) noexcept {}
 
     pointer address(reference x) const { return &x; }
 
@@ -160,7 +160,7 @@ public:
 
     void deallocate(pointer p, size_type n) { allocator.deallocate(p); }
 
-    size_type max_size() const throw() { return bytes; }
+    size_type max_size() const noexcept { return bytes; }
 
     void construct(pointer p, const T& val) { ::new (p) T(val); }
 
