@@ -129,10 +129,10 @@ extern void FFT_UGens_Load(InterfaceTable* table);
 extern void iPhone_Load(InterfaceTable* table);
 
 #    ifndef NO_LIBSNDFILE
-extern void DiskIO_Unload(void);
+extern void DiskIO_Unload();
 #    endif
 #    ifndef NO_X11
-extern void UIUGens_Unload(void);
+extern void UIUGens_Unload();
 #    endif
 #endif // STATIC_PLUGINS
 

@@ -101,7 +101,7 @@ struct asynchronous_log : boost::noncopyable {
 
     size_t read(char* out_buffer, size_t size) { return buffer.pop(out_buffer, size); }
 
-    void interrrupt(void) { sem.post(); }
+    void interrrupt() { sem.post(); }
 
 private:
     boost::lockfree::spsc_queue<char, boost::lockfree::capacity<262144>> buffer;
@@ -110,15 +110,15 @@ private:
 
 struct asynchronous_log_thread : asynchronous_log {
 public:
-    asynchronous_log_thread(void): running_flag(true), thread_(std::bind(&asynchronous_log_thread::run, this)) {}
+    asynchronous_log_thread(): running_flag(true), thread_(std::bind(&asynchronous_log_thread::run, this)) {}
 
-    ~asynchronous_log_thread(void) {
+    ~asynchronous_log_thread() {
         running_flag = false;
         interrrupt();
         thread_.join();
     }
 
-    void run(void) {
+    void run() {
         while (running_flag.load()) {
             size_t read_chars = read_log_waiting(out_buffer.data(), out_buffer.size());
             post_outbuffer(read_chars);

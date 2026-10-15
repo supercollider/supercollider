@@ -47,19 +47,19 @@ class callback_interpreter : callback_system<callback_type, mpmc, callback_delet
     typedef boost::sync::semaphore semaphore;
 
 public:
-    callback_interpreter(void): sem(0), running(false) {}
+    callback_interpreter(): sem(0), running(false) {}
 
     void add_callback(callback_type* cb) {
         super_t::add_callback(cb);
         sem.post();
     }
 
-    void run(void) {
+    void run() {
         running.store(true, std::memory_order_relaxed);
         perform();
     }
 
-    void terminate(void) {
+    void terminate() {
         running.store(false, std::memory_order_relaxed);
         sem.post();
     }
@@ -72,7 +72,7 @@ protected:
     }
 
 private:
-    void perform(void) {
+    void perform() {
         do {
             sem.wait();
             super_t::run_callbacks();
@@ -94,14 +94,14 @@ class threaded_callback_interpreter : public callback_interpreter<callback_type,
     std::thread callback_thread;
 
 public:
-    threaded_callback_interpreter(void) {}
+    threaded_callback_interpreter() {}
 
-    ~threaded_callback_interpreter(void) {
+    ~threaded_callback_interpreter() {
         if (super::running.load())
             join_thread();
     }
 
-    void start_thread(void) {
+    void start_thread() {
         semaphore sync_sem;
         std::thread thr([&]() { this->run_thread(sync_sem); });
         callback_thread = move(thr);
@@ -113,7 +113,7 @@ public:
         super::run(sync_sem);
     }
 
-    void join_thread(void) {
+    void join_thread() {
         if (super::running.load()) {
             super::terminate();
             callback_thread.join();
@@ -143,12 +143,12 @@ public:
             sync_sem.wait();
     }
 
-    ~callback_interpreter_threadpool(void) {
+    ~callback_interpreter_threadpool() {
         if (super::running.load())
             join_threads();
     }
 
-    void join_threads(void) {
+    void join_threads() {
         super::running.store(false);
 
         for (uint16_t i = 0; i != worker_thread_count_; ++i)

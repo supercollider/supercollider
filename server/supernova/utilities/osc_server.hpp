@@ -46,7 +46,7 @@ using namespace boost::asio::ip;
 
 class network_thread {
 public:
-    void start_receive(void) {
+    void start_receive() {
         thread_ = std::thread([this] {
         /* NB: on macOS we just keep the default thread priority */
 #ifdef NOVA_TT_PRIORITY_RT
@@ -62,14 +62,14 @@ public:
         sem.wait();
     }
 
-    ~network_thread(void) {
+    ~network_thread() {
         if (!thread_.joinable())
             return;
         io_context_.stop();
         thread_.join();
     }
 
-    io_context& get_io_context(void) { return io_context_; }
+    io_context& get_io_context() { return io_context_; }
 
     void send_udp(const char* data, unsigned int size, udp::endpoint const& receiver) {
         udp::socket socket(io_context_);

@@ -80,9 +80,9 @@ using std::size_t;
 /** \brief base class for a callback function */
 template <typename t> class runnable {
 public:
-    virtual ~runnable(void) = default;
+    virtual ~runnable() = default;
 
-    virtual t run(void) = 0;
+    virtual t run() = 0;
 };
 
 
@@ -100,16 +100,16 @@ struct checked_deleter {
 
 
 template <typename deleter = checked_deleter> struct intrusive_refcountable : public deleter {
-    intrusive_refcountable(void): use_count_(0) {}
+    intrusive_refcountable(): use_count_(0) {}
 
     intrusive_refcountable(intrusive_refcountable const& rhs) = delete;
     intrusive_refcountable& operator=(intrusive_refcountable const& rhs) = delete;
 
-    virtual ~intrusive_refcountable(void) = default;
+    virtual ~intrusive_refcountable() = default;
 
-    void add_ref(void) { ++use_count_; }
+    void add_ref() { ++use_count_; }
 
-    void release(void) {
+    void release() {
         if (--use_count_ == 0)
             deleter::operator()(this);
     }

@@ -46,9 +46,9 @@ class portaudio_backend : public detail::audio_backend_base<sample_type, float, 
     typedef detail::audio_backend_base<sample_type, float, blocking, false> super;
 
 public:
-    portaudio_backend(void) = default;
+    portaudio_backend() = default;
 
-    ~portaudio_backend(void) {
+    ~portaudio_backend() {
         if (audio_is_active())
             deactivate_audio();
 
@@ -58,7 +58,7 @@ public:
         report_error(err);
     }
 
-    void initialize(void) {
+    void initialize() {
         int err = Pa_Initialize();
         report_error(err, true);
 
@@ -69,9 +69,9 @@ public:
 #endif
     }
 
-    uint32_t get_audio_blocksize(void) const { return blocksize_; }
+    uint32_t get_audio_blocksize() const { return blocksize_; }
 
-    uint32_t get_latency(void) const { return latency_; }
+    uint32_t get_latency() const { return latency_; }
 
 private:
     // this will be clipped to the number of available hardware outs
@@ -87,7 +87,7 @@ private:
     }
 
 public:
-    static void list_devices(void) {
+    static void list_devices() {
         int device_number = Pa_GetDeviceCount();
         if (device_number < 0)
             report_error(device_number);
@@ -228,7 +228,7 @@ public:
         return true;
     }
 
-    void close_stream(void) {
+    void close_stream() {
         if (stream == nullptr)
             return;
 
@@ -245,7 +245,7 @@ public:
         report_error(err);
     }
 
-    bool audio_is_active(void) {
+    bool audio_is_active() const {
         if (stream == nullptr)
             return false;
 
@@ -266,7 +266,7 @@ public:
         }
     }
 
-    bool audiostream_ready(void) { return stream; }
+    bool audiostream_ready() const { return stream; }
 
     void get_cpuload(float& peak, float& average) const { cpu_time_accumulator.get(peak, average); }
 

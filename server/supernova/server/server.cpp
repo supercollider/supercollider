@@ -80,7 +80,7 @@ nova_server::nova_server(server_arguments const& args):
         start_receive_thread();
 }
 
-void nova_server::prepare_backend(void) {
+void nova_server::prepare_backend() {
     /* register audio backend ports */
     const int blocksize = get_audio_blocksize();
     const int input_channels = get_input_count();
@@ -100,7 +100,7 @@ void nova_server::prepare_backend(void) {
     time_per_tick = time_tag::from_samples(blocksize, get_samplerate());
 }
 
-nova_server::~nova_server(void) {
+nova_server::~nova_server() {
     // we should delete but get chrashes at the moment on linux and macosx
 #if defined(JACK_BACKEND) || defined(PORTAUDIO_BACKEND)
     deactivate_audio();
@@ -207,7 +207,7 @@ void nova_server::run_nonrt_synthesis(server_arguments const& args) {
 #endif
 }
 
-void nova_server::rebuild_dsp_queue(void) {
+void nova_server::rebuild_dsp_queue() {
     assert(dsp_queue_dirty);
     node_graph::dsp_thread_queue_ptr new_queue = node_graph::generate_dsp_queue();
     scheduler<thread_init_functor>::reset_queue_sync(std::move(new_queue));
@@ -226,7 +226,7 @@ static void name_current_thread(int thread_index) {
 #endif
 }
 
-static void set_daz_ftz(void) {
+static void set_daz_ftz() {
 #if BOOST_HW_SIMD_X86 >= BOOST_HW_SIMD_X86_SSE_VERSION
     /* denormal handling */
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);

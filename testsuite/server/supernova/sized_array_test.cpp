@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(sized_array_test_1) {
 }
 
 
-template <typename Alloc1, typename Alloc2> void run_test_2(void) {
+template <typename Alloc1, typename Alloc2> void run_test_2() {
     int size = 1024;
 
     std::vector<int, typename Alloc1::template rebind<int>::other> vec;

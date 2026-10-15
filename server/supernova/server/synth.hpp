@@ -49,7 +49,7 @@ public:
         return class_ptr->resolve_slot_with_size(str, hashed_str, size_of_slot);
     }
 
-    const char* definition_name(void) const { return class_ptr->name(); }
+    const char* definition_name() const { return class_ptr->name(); }
 
     size_t number_of_slots() const { return class_ptr->number_of_slots(); }
 
@@ -74,7 +74,7 @@ protected:
         definition_instance(definition) {}
 
 public:
-    virtual void run(void) = 0;
+    virtual void run() = 0;
 
     virtual float get(slot_index_t slot_id) const = 0;
 

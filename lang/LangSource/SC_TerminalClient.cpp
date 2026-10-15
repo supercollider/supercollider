@@ -358,7 +358,7 @@ void SC_TerminalClient::daemonLoop() { commandLoop(); }
 
 #ifdef HAVE_READLINE
 
-static void sc_rl_cleanlf(void) {
+static void sc_rl_cleanlf() {
     rl_reset_line_state();
     rl_crlf();
     rl_redisplay();

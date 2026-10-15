@@ -30,7 +30,7 @@ public:
         value(value) {}
 
 private:
-    virtual void run(void) override { instance->set_node_slot(node_id, slot_id, value); }
+    virtual void run() override { instance->set_node_slot(node_id, slot_id, value); }
 
     const int node_id;
     const slot_index_t slot_id;
@@ -44,10 +44,10 @@ public:
         strcpy(slot_id, name);
     }
 
-    ~set_cmd_str(void) { deallocate(slot_id); }
+    ~set_cmd_str() { deallocate(slot_id); }
 
 private:
-    virtual void run(void) override { instance->set_node_slot(node_id, slot_id, value); }
+    virtual void run() override { instance->set_node_slot(node_id, slot_id, value); }
 
     const int node_id;
     char* slot_id;

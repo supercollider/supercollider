@@ -201,7 +201,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     assert((char*)mControls + alloc_size <= allocator.alloc<char>()); // ensure the memory boundaries
 }
 
-sc_synth::~sc_synth(void) { finalize(); }
+sc_synth::~sc_synth() { finalize(); }
 
 extern "C" {
 void* rt_free(World* dummy, void* ptr);
@@ -210,7 +210,7 @@ void* rt_free(World* dummy, void* ptr);
 // FIXME: for some reason, we cannot initialize multiple synths in parallel
 static spin_lock scsynth_preparation_lock;
 
-void sc_synth::prepare(void) {
+void sc_synth::prepare() {
     assert(!initialized);
 
     scsynth_preparation_lock.lock();
@@ -408,7 +408,7 @@ void sc_synth::queue_unit_cmd(sc_msg_iter* args, detail::endpoint_ptr const& end
 }
 
 
-void sc_synth::run(void) { perform(); }
+void sc_synth::run() { perform(); }
 
 extern spin_lock log_guard;
 
@@ -424,11 +424,11 @@ struct scratchpad_printer {
         va_end(vargs);
     }
 
-    const char* data(void) const { return string; }
+    const char* data() const { return string; }
 
-    bool shouldFlush(void) const { return position + 1024 > 32768; }
+    bool should_flush() const { return position + 1024 > 32768; }
 
-    void clear(void) {
+    void clear() {
         position = 0;
         string[0] = '\0'; // zero-terminated
     }
@@ -440,7 +440,7 @@ private:
     int position;
 };
 
-void sc_synth::run_traced(void) {
+void sc_synth::run_traced() {
     trace = 0;
 
     scratchpad_printer printer(trace_scratchpad.data());
@@ -466,7 +466,7 @@ void sc_synth::run_traced(void) {
             printer.printf("  unit %zd %s\n    in ", calc_unit_index, def->name());
             for (uint16_t j = 0; j != unit->mNumInputs; ++j) {
                 printer.printf(" %g", unit->mInBuf[j][0]);
-                if (printer.shouldFlush()) {
+                if (printer.should_flush()) {
                     spin_lock::scoped_lock lock(log_guard);
                     log(printer.data());
                     printer.clear();
@@ -480,7 +480,7 @@ void sc_synth::run_traced(void) {
             printer.printf("    out");
             for (int j = 0; j < unit->mNumOutputs; ++j) {
                 printer.printf(" %g", unit->mOutBuf[j][0]);
-                if (printer.shouldFlush()) {
+                if (printer.should_flush()) {
                     spin_lock::scoped_lock lock(log_guard);
                     log(printer.data());
                     printer.clear();

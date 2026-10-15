@@ -133,13 +133,13 @@ protected:
     uint16_t output_channels = 0;
 
 public:
-    audio_settings_basic(void) {}
+    audio_settings_basic() = default;
 
-    float get_samplerate(void) const { return samplerate_; }
+    float get_samplerate() const { return samplerate_; }
 
-    uint16_t get_input_count(void) const { return input_channels; }
+    uint16_t get_input_count() const { return input_channels; }
 
-    uint16_t get_output_count(void) const { return output_channels; }
+    uint16_t get_output_count() const { return output_channels; }
 };
 
 } /* namespace detail */ } /* namespace nova */

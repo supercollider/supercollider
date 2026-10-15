@@ -63,7 +63,7 @@ std::vector<cpu_info> cpu_info_vec;
 int core_count = 0;
 int package_count = 0;
 
-void print_cpu_info(void) {
+void print_cpu_info() {
     std::cout << "hardware topology:\n"
               << "\tlogical processors: " << cpu_info_vec.size() << "\n"
               << "\tCPU cores: " << core_count << "\n"
@@ -79,7 +79,7 @@ void print_cpu_info(void) {
 
 namespace nova {
 
-void parse_hardware_topology(void) {
+void parse_hardware_topology() {
 #if defined(_WIN32) /* Windows */
     typedef BOOL(WINAPI * func_type)(PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD);
 

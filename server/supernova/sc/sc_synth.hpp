@@ -51,9 +51,9 @@ class sc_synth : public abstract_synth, public Graph {
 public:
     sc_synth(int node_id, sc_synth_definition_ptr const& prototype);
 
-    ~sc_synth(void);
+    ~sc_synth();
 
-    HOT inline void perform(void) {
+    HOT inline void perform() {
         if (unlikely(!initialized))
             prepare();
 
@@ -121,9 +121,9 @@ private:
      *
      *  to be executed after preparing the synth and setting the controls
      */
-    void prepare(void);
+    void prepare();
 
-    void finalize(void);
+    void finalize();
 
     void prefetch(Unit* unit) {
         char* ptr = (char*)unit;
@@ -141,7 +141,7 @@ private:
     }
 
 public:
-    void run(void) override;
+    void run() override;
 
     void set(slot_index_t slot_index, sample val) override;
     float get(slot_index_t slot_index) const override;
@@ -204,7 +204,7 @@ public:
     }
     /* @} */
 
-    void enable_tracing(void) { trace = 1; }
+    void enable_tracing() { trace = 1; }
 
     void apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, sc_msg_iter* args,
                         detail::endpoint_ptr const& endpoint);
@@ -212,7 +212,7 @@ public:
 private:
     void queue_unit_cmd(sc_msg_iter* args, detail::endpoint_ptr const& endpoint);
 
-    void run_traced(void);
+    void run_traced();
 
     sample get_constant(size_t index) { return static_cast<sc_synth_definition*>(class_ptr.get())->constants[index]; }
 

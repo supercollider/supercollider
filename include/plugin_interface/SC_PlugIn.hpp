@@ -211,19 +211,19 @@ public:
         return CALCSLOPE(next, prev);
     }
 
-    template <typename UnitType, void (UnitType::*PointerToMember)(int)> static UnitCalcFunc make_calc_function(void) {
+    template <typename UnitType, void (UnitType::*PointerToMember)(int)> static UnitCalcFunc make_calc_function() {
         return &run_member_function<UnitType, PointerToMember>;
     }
 
     /// set calc function & compute initial sample
-    template <typename UnitType, void (UnitType::*PointerToMember)(int)> void set_calc_function(void) {
+    template <typename UnitType, void (UnitType::*PointerToMember)(int)> void set_calc_function() {
         mCalcFunc = make_calc_function<UnitType, PointerToMember>();
         (mCalcFunc)(this, 1);
     }
 
     /// set calc function & compute initial sample
     template <typename UnitType, void (UnitType::*VectorCalcFunc)(int), void (UnitType::*ScalarCalcFunc)(int)>
-    void set_vector_calc_function(void) {
+    void set_vector_calc_function() {
         mCalcFunc = make_calc_function<UnitType, VectorCalcFunc>();
         make_calc_function<UnitType, ScalarCalcFunc>()(this, 1);
     }

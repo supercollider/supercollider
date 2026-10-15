@@ -45,7 +45,7 @@ template <bool blocking = false> class simple_pool {
     typedef typename mutex_type::scoped_lock scoped_lock;
 
     struct data : mutex_type {
-        data(void): pool(nullptr) {}
+        data(): pool(nullptr) {}
 
         void init(std::size_t size, bool lock) {
             pool = (char*)operator new(size);
@@ -56,7 +56,7 @@ template <bool blocking = false> class simple_pool {
             pool_size = size;
         }
 
-        ~data(void) {
+        ~data() {
             scoped_lock lock(*this);
             if (pool) {
                 destroy_memory_pool(pool);
@@ -70,7 +70,7 @@ template <bool blocking = false> class simple_pool {
 
 
 public:
-    simple_pool(void) {}
+    simple_pool() {}
 
     simple_pool(simple_pool const& rhs) = delete;
     simple_pool& operator=(simple_pool const& rhs) = delete;
@@ -84,7 +84,7 @@ public:
 #endif
     }
 
-    ~simple_pool() throw() {}
+    ~simple_pool() {}
 
 #ifdef NOVA_MEMORY_DEBUGGING
     void* MALLOC malloc(std::size_t size) { return ::malloc(size); }
@@ -93,7 +93,7 @@ public:
 
     void free(void* p) { return ::free(p); }
 
-    std::size_t get_max_size(void) { return std::numeric_limits<std::size_t>::max(); }
+    std::size_t get_max_size() const { return std::numeric_limits<std::size_t>::max(); }
 #else
     void* MALLOC ASSUME_ALIGNED(32) malloc(std::size_t size) {
         scoped_lock lock(data_);
@@ -110,9 +110,9 @@ public:
         free_ex(p, data_.pool);
     }
 
-    std::size_t get_pool_size(void) { return data_.pool_size; }
-    std::size_t get_max_size(void) { return ::get_max_size(data_.pool); }
-    std::size_t get_used_size(void) { return ::get_used_size(data_.pool); }
+    std::size_t get_pool_size() const { return data_.pool_size; }
+    std::size_t get_max_size() const { return ::get_max_size(data_.pool); }
+    std::size_t get_used_size() const { return ::get_used_size(data_.pool); }
 #endif
 private:
     data data_;

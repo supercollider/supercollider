@@ -54,7 +54,7 @@ QMutex QcApplication::_mutex;
 
 
 /* on x11, we need to check, if we can actually connect to the X server */
-static bool QtColliderUseGui(void) {
+static bool QtColliderUseGui() {
 #ifdef Q_WS_X11
     Display* dpy = XOpenDisplay(NULL);
     if (!dpy)

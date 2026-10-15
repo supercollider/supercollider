@@ -38,7 +38,7 @@ void node_graph::add_node(server_node* n, node_position_constraint const& constr
 }
 
 
-node_graph::dsp_thread_queue_ptr node_graph::generate_dsp_queue(void) {
+node_graph::dsp_thread_queue_ptr node_graph::generate_dsp_queue() {
     dependency_graph_generator gen;
 
     node_graph::dsp_thread_queue* ret = gen(this);
@@ -68,7 +68,7 @@ void node_graph::synth_reassign_id(int32_t node_id) {
     node_set.insert(*node);
 }
 
-int32_t node_graph::generate_node_id(void) {
+int32_t node_graph::generate_node_id() {
     int32_t new_id;
     do {
         for (;;) {
@@ -85,19 +85,19 @@ int32_t node_graph::generate_node_id(void) {
 }
 
 
-abstract_group::~abstract_group(void) {
+abstract_group::~abstract_group() {
     while (!child_nodes.empty()) {
         server_node& node = child_nodes.front();
         remove_child(&node);
     }
 }
 
-void abstract_group::pause(void) {
+void abstract_group::pause() {
     for (server_node& child_node : child_nodes)
         child_node.pause();
 }
 
-void abstract_group::resume(void) {
+void abstract_group::resume() {
     for (server_node& child_node : child_nodes)
         child_node.resume();
 }
@@ -186,7 +186,7 @@ void abstract_group::set_control_array_element(slot_index_t slot_id, size_t inde
 }
 
 
-int parallel_group::tail_nodes(void) const {
+int parallel_group::tail_nodes() const {
     int ret = child_synth_count;
     for (const auto& elem : child_groups)
         ret += elem.tail_nodes();

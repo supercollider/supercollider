@@ -10,10 +10,10 @@
 using namespace nova;
 
 namespace {
-void tick(void) {}
+void tick() {}
 }
 
-template <typename backend> void test_backend(void) {
+template <typename backend> void test_backend() {
     backend be;
 
     BOOST_REQUIRE(!be.audiostream_ready());

@@ -85,9 +85,9 @@ public:
             (*dtor)(unit);
     }
 
-    bool cant_alias(void) const { return flags & kUnitDef_CantAliasInputsToOutputs; }
+    bool cant_alias() const { return flags & kUnitDef_CantAliasInputsToOutputs; }
 
-    std::size_t memory_requirement(void) const {
+    std::size_t memory_requirement() const {
         return alloc_size + 64; // overallocate to allow alignment
     }
 
@@ -148,12 +148,12 @@ class sc_plugin_container {
     cmdplugin_set_type cmdplugin_set;
 
 protected:
-    sc_plugin_container(void):
+    sc_plugin_container():
         ugen_set(ugen_set_type::bucket_traits(ugen_set_buckets, ugen_set_bucket_count)),
         bufgen_set(bufgen_set_type::bucket_traits(bufgen_set_buckets, bufgen_set_bucket_count)),
         cmdplugin_set(cmdplugin_set_type::bucket_traits(cmdplugin_set_buckets, cmdplugin_set_bucket_count)) {}
 
-    ~sc_plugin_container(void) {
+    ~sc_plugin_container() {
         ugen_set.clear_and_dispose(boost::checked_deleter<sc_ugen_def>());
         bufgen_set.clear_and_dispose(boost::checked_deleter<sc_bufgen_def>());
         cmdplugin_set.clear_and_dispose(boost::checked_deleter<sc_cmdplugin_def>());
@@ -191,7 +191,7 @@ class sc_ugen_factory : public sc_plugin_interface, public sc_plugin_container {
 public:
     sc_ugen_factory() = default;
 
-    ~sc_ugen_factory(void) { close_handles(); }
+    ~sc_ugen_factory() { close_handles(); }
 
     /* @{ */
     /** ugen count handling */
@@ -199,7 +199,7 @@ public:
 
     void free_ugens(uint32_t count) { ugen_count_ -= count; }
 
-    uint32_t ugen_count(void) const { return ugen_count_; }
+    uint32_t ugen_count() const { return ugen_count_; }
     /* @} */
 
     void load_plugin_folder(std::filesystem::path const& dir);
@@ -208,7 +208,7 @@ public:
 private:
     void load_plugin_folder(std::filesystem::path const& dir, bool is_top_level, bool found_scx_file);
 
-    void close_handles(void);
+    void close_handles();
 
     uint32_t ugen_count_ = 0;
     std::vector<void*> open_handles;

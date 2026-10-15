@@ -58,11 +58,11 @@ public:
         it->release();
     }
 
-    std::size_t definition_count(void) const { return definition_map.size(); }
+    std::size_t definition_count() const { return definition_map.size(); }
 
-    synth_factory(void): definition_map(prototype_map_type::bucket_traits(buckets, bucket_count)) {}
+    synth_factory(): definition_map(prototype_map_type::bucket_traits(buckets, bucket_count)) {}
 
-    ~synth_factory(void) {
+    ~synth_factory() {
         while (definition_map.begin() != definition_map.end()) {
             prototype_map_type::iterator it = definition_map.begin();
             definition_map.erase(it);

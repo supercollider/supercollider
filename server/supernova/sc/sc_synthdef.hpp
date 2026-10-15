@@ -79,7 +79,7 @@ public:
         char_vector output_specs; /* calculation rates */
         std::vector<int32_t, boost::alignment::aligned_allocator<int32_t, 64>> buffer_mapping;
 
-        std::size_t memory_requirement(void) const {
+        std::size_t memory_requirement() const {
             return input_specs.size() * (sizeof(Wire*) + sizeof(float*))
                 + output_specs.size() * (sizeof(Wire*) + sizeof(float*)) + output_specs.size() * sizeof(Wire);
         }
@@ -101,17 +101,17 @@ public:
     sc_synthdef(sc_synthdef const& rhs) = default;
     sc_synthdef& operator=(sc_synthdef const& rhs) = default;
 
-    std::string dump(void) const;
+    std::string dump() const;
 
-    symbol const& name(void) const { return name_; }
+    symbol const& name() const { return name_; }
 
-    std::size_t parameter_count(void) const { return parameters.size(); }
+    std::size_t parameter_count() const { return parameters.size(); }
 
-    std::size_t unit_count(void) const { return graph.size(); }
+    std::size_t unit_count() const { return graph.size(); }
 
-    std::size_t calc_unit_count(void) const { return calc_unit_indices.size(); }
+    std::size_t calc_unit_count() const { return calc_unit_indices.size(); }
 
-    std::size_t memory_requirement(void) const {
+    std::size_t memory_requirement() const {
         assert(memory_requirement_);
         return memory_requirement_;
     }
@@ -120,7 +120,7 @@ private:
     void read_synthdef(const char*& data, const char* end, int version);
 
     /** assign buffers, collect memory requirement & cache ugen prototype */
-    void prepare(void);
+    void prepare();
 
     symbol name_;
     float_vector constants;

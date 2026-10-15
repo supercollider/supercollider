@@ -37,7 +37,7 @@ struct MulAdd : SIMD_Unit {
         return;                                                                                                        \
     } while (0)
 
-    MulAdd(void) {
+    MulAdd() {
         mMul.init(this);
         mAdd.init(this);
 
@@ -132,23 +132,23 @@ struct MulAdd : SIMD_Unit {
         }
     }
 
-    inline bool mulChanged(void) const { return mMul.changed(this); }
+    inline bool mulChanged() const { return mMul.changed(this); }
 
-    inline bool addChanged(void) const { return mAdd.changed(this); }
+    inline bool addChanged() const { return mAdd.changed(this); }
 
 #if __cplusplus <= 199711L
-    nova::detail::scalar_ramp_argument<float> mulSlope(void)
+    nova::detail::scalar_ramp_argument<float> mulSlope()
 #else
-    decltype(nova::slope_argument(0.f, 0.f)) mulSlope(void)
+    decltype(nova::slope_argument(0.f, 0.f)) mulSlope()
 #endif
     {
         return mMul.slope(this);
     }
 
 #if __cplusplus <= 199711L
-    nova::detail::scalar_ramp_argument<float> addSlope(void)
+    nova::detail::scalar_ramp_argument<float> addSlope()
 #else
-    decltype(nova::slope_argument(0.f, 0.f)) addSlope(void)
+    decltype(nova::slope_argument(0.f, 0.f)) addSlope()
 #endif
     {
         return mAdd.slope(this);
@@ -289,7 +289,7 @@ struct Sum3 : SIMD_Unit {
     ControlRateInput<1> in1;
     ControlRateInput<2> in2;
 
-    Sum3(void) {
+    Sum3() {
         in1.init(this);
         in2.init(this);
 
@@ -389,7 +389,7 @@ struct Sum4 : SIMD_Unit {
     ControlRateInput<2> in2;
     ControlRateInput<3> in3;
 
-    Sum4(void) {
+    Sum4() {
         in1.init(this);
         in2.init(this);
         in3.init(this);

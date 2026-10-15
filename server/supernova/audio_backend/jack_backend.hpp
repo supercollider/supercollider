@@ -51,20 +51,20 @@ class jack_backend : public detail::audio_backend_base<sample_type, jack_default
     typedef detail::audio_backend_base<sample_type, jack_default_audio_sample_t, blocking, false> super;
 
 public:
-    jack_backend(void) = default;
+    jack_backend() = default;
 
-    ~jack_backend(void) {
+    ~jack_backend() {
         if (audio_is_active())
             deactivate_audio();
 
         close_client();
     }
 
-    void initialize(void) {}
+    void initialize() {}
 
-    uint32_t get_audio_blocksize(void) const { return blocksize_; }
+    uint32_t get_audio_blocksize() const { return blocksize_; }
 
-    uint32_t get_latency(void) const { return latency_; }
+    uint32_t get_latency() const { return latency_; }
 
 public:
     void open_client(std::string const& server_name, std::string const& name, uint32_t input_port_count,
@@ -153,23 +153,23 @@ public:
         cpu_time_accumulator.resize(samplerate_, jack_frames, 1);
     }
 
-    void close_client(void) {
+    void close_client() {
         if (client) {
             jack_client_close(client);
             client = nullptr;
         }
     }
 
-    bool audio_is_opened(void) { return client != nullptr; }
+    bool audio_is_opened() const { return client != nullptr; }
 
-    bool audio_is_active(void) { return is_active; }
+    bool audio_is_active() const { return is_active; }
 
-    void activate_audio(void) {
+    void activate_audio() {
         is_active = true;
         jack_activate(client);
     }
 
-    void deactivate_audio(void) {
+    void deactivate_audio() {
         if (is_active) {
             jack_deactivate(client);
             is_active = false;
@@ -232,9 +232,9 @@ public:
         return 0;
     }
 
-    int max_realtime_priority(void) const { return jack_client_max_real_time_priority(client); }
+    int max_realtime_priority() const { return jack_client_max_real_time_priority(client); }
 
-    int realtime_priority(void) const { return jack_client_real_time_priority(client); }
+    int realtime_priority() const { return jack_client_real_time_priority(client); }
 
 private:
     static void jack_thread_init_callback(void* arg) {
@@ -260,7 +260,7 @@ private:
 
     static int jack_graph_order_callback(void* arg) { return static_cast<jack_backend*>(arg)->graph_order_changed(); }
 
-    int handle_xrun(void) {
+    int handle_xrun() {
         time_is_synced = false;
         engine_functor::log_("Jack: xrun detected - resyncing clock\n");
         return 0;

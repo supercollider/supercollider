@@ -66,7 +66,7 @@ class Main : public QObject, public QAbstractNativeEventFilter {
     Q_OBJECT
 
 public:
-    static Main* instance(void) {
+    static Main* instance() {
         static Main* singleton = new Main;
         return singleton;
     }
@@ -114,7 +114,7 @@ Q_SIGNALS:
     void applySettingsRequest(Settings::Manager*);
 
 private:
-    Main(void);
+    Main();
     bool eventFilter(QObject* obj, QEvent* event);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     bool nativeEventFilter(const QByteArray&, void* message, long*);

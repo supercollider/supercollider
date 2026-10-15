@@ -90,9 +90,9 @@ public:
             return *this;
         }
 
-        std::size_t size(void) const { return data->size; }
+        std::size_t size() const { return data->size; }
 
-        bool empty(void) const { return size() == 0; }
+        bool empty() const { return size() == 0; }
 
         dsp_thread_queue_item*& operator[](std::size_t index) {
             assert(index < size());
@@ -104,7 +104,7 @@ public:
             return data->content[index];
         }
 
-        ~successor_list(void) {
+        ~successor_list() {
             if (--data->count == 0)
                 array_allocator().deallocate(data, 2 * sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*));
         }
@@ -129,17 +129,17 @@ public:
     }
 
     /** called from the run method or once, when dsp queue is initialized */
-    void reset_activation_count(void) {
+    void reset_activation_count() {
         assert(activation_count == 0);
         activation_count.store(activation_limit, std::memory_order_release);
     }
 
-    runnable const& get_job(void) const { return job; }
+    runnable const& get_job() const { return job; }
 
-    runnable& get_job(void) { return job; }
+    runnable& get_job() { return job; }
 
 #ifdef DEBUG_DSP_THREADS
-    void dump_item(void) {
+    void dump_item() {
         using namespace std;
         printf("\titem %p\n", this);
         printf("\tactivation limit %d\n", int(activation_limit));
@@ -247,7 +247,7 @@ template <typename runnable, typename Alloc = std::allocator<void*>> class dsp_t
 
 public:
 #ifdef DEBUG_DSP_THREADS
-    void dump_queue(void) {
+    void dump_queue() {
         using namespace std;
 
         printf("queue %p\n items:\n", this);
@@ -269,7 +269,7 @@ public:
         initially_runnable_items.reserve(node_count);
     }
 
-    ~dsp_thread_queue(void) = default;
+    ~dsp_thread_queue() = default;
 
     void add_initially_runnable(dsp_thread_queue_item* item) { initially_runnable_items.push_back(item); }
 
@@ -280,14 +280,14 @@ public:
         return items.emplace_back(job, successors, activation_limit);
     }
 
-    void reset_activation_counts(void) {
+    void reset_activation_counts() {
         for (dsp_thread_queue_item& item : items)
             item.reset_activation_count();
     }
 
     bool empty() const { return items.empty(); }
-    node_count_t total_node_count(void) const { return node_count_t(items.size()); }
-    bool has_parallelism(void) const { return has_parallelism_; }
+    node_count_t total_node_count() const { return node_count_t(items.size()); }
+    bool has_parallelism() const { return has_parallelism_; }
 
 private:
     item_vector_t initially_runnable_items; /* nodes without precedessor */
@@ -324,7 +324,7 @@ public:
      *  \return true, if dsp queue is valid
      *          false, if no dsp queue is available or queue is empty
      */
-    bool init_tick(void) {
+    bool init_tick() {
         if (unlikely(!queue || queue->empty()))
             return false;
 
@@ -339,7 +339,7 @@ public:
         return true;
     }
 
-    dsp_thread_queue_ptr release_queue(void) {
+    dsp_thread_queue_ptr release_queue() {
         dsp_thread_queue_ptr ret(queue.release());
         return ret;
     }
@@ -368,7 +368,7 @@ public:
         return ret;
     }
 
-    node_count_t total_node_count(void) const { return queue->total_node_count(); }
+    node_count_t total_node_count() const { return queue->total_node_count(); }
 
     void set_thread_count(thread_count_t i) {
         assert(i < std::numeric_limits<thread_count_t>::max());
@@ -376,9 +376,9 @@ public:
         thread_count = i;
     }
 
-    thread_count_t get_thread_count(void) const { return thread_count; }
+    thread_count_t get_thread_count() const { return thread_count; }
 
-    thread_count_t get_used_helper_threads(void) const { return used_helper_threads; }
+    thread_count_t get_used_helper_threads() const { return used_helper_threads; }
 
     void tick(thread_count_t thread_index) {
         if (yield_if_busy)
@@ -495,7 +495,7 @@ private:
     }
 
 public:
-    void tick_main(void) {
+    void tick_main() {
         if (yield_if_busy)
             run_item_main<true>();
         else
@@ -503,13 +503,13 @@ public:
     }
 
 private:
-    template <bool YieldBackoff> void run_item_main(void) {
+    template <bool YieldBackoff> void run_item_main() {
         run_item<YieldBackoff>(0);
         wait_for_end<YieldBackoff>();
         assert(runnable_items.empty());
     }
 
-    template <bool YieldBackoff> void wait_for_end(void) {
+    template <bool YieldBackoff> void wait_for_end() {
         typedef typename select_backoff<YieldBackoff>::type backoff_t;
 
         backoff_t b(8, max_backup_loops);

@@ -43,7 +43,7 @@ public:
     inline void add_callback(callback_type* cb) { callbacks.push(cb); }
 
     /** \brief run all callbacks */
-    inline void run_callbacks(void) {
+    inline void run_callbacks() {
         callbacks.consume_all([this](callback_type* cb) { run_callback(cb); });
     }
 
@@ -52,7 +52,7 @@ public:
      * assumes, that the queue contains at least one callback
      *
      * */
-    void run_callback(void) {
+    void run_callback() {
         callbacks.consume_one([this](callback_type* cb) { run_callback(cb); });
     }
 

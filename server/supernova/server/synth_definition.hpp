@@ -62,9 +62,9 @@ private:
     }
 
 protected:
-    slot_resolver(void): slot_resolver_map(slot_resolver_map_t::bucket_traits(buckets, resolver_map_bucket_count)) {}
+    slot_resolver(): slot_resolver_map(slot_resolver_map_t::bucket_traits(buckets, resolver_map_bucket_count)) {}
 
-    ~slot_resolver(void) { slot_resolver_map.clear_and_dispose(boost::checked_deleter<map_type>()); }
+    ~slot_resolver() { slot_resolver_map.clear_and_dispose(boost::checked_deleter<map_type>()); }
 
     void register_slot(symbol const& str, slot_index_t i, int number_of_values) {
         assert(!exists(str.c_str()));
@@ -147,11 +147,11 @@ class synth_definition : public aligned_class,
 public:
     explicit synth_definition(symbol const& name): named_hash_entry(name) {}
 
-    virtual ~synth_definition(void) = default;
+    virtual ~synth_definition() = default;
 
     virtual abstract_synth* create_instance(int node_id) = 0;
 
-    template <typename synth_t> static inline synth_t* allocate(void);
+    template <typename synth_t> static inline synth_t* allocate();
 };
 
 typedef boost::intrusive_ptr<synth_definition> synth_definition_ptr;

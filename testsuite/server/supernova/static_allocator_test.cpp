@@ -12,7 +12,7 @@ using namespace std;
 
 namespace {
 
-template <int size, bool b> void test_pool_instatiation(void) { static_allocator<int, size, b> alloc; }
+template <int size, bool b> void test_pool_instatiation() { static_allocator<int, size, b> alloc; }
 
 struct initialized_struct {
     initialized_struct(int i): i(i), f(0.2) {}
@@ -23,7 +23,7 @@ struct initialized_struct {
     double f;
 };
 
-template <typename T, bool b> void test_list(void) {
+template <typename T, bool b> void test_list() {
     list<T, static_allocator<T, 8192, b>> vec;
 
     for (int i = 0; i != 8192; ++i)
@@ -31,14 +31,14 @@ template <typename T, bool b> void test_list(void) {
 }
 
 
-template <typename T, bool b> void test_vector(void) {
+template <typename T, bool b> void test_vector() {
     vector<T, static_allocator<T, 8192, b>> vec;
 
     for (int i = 0; i != 8192; ++i)
         vec.push_back(T(i));
 }
 
-template <typename T, bool b> void test_set(void) {
+template <typename T, bool b> void test_set() {
     set<T, std::less<T>, static_allocator<T, 8192, b>> set;
 
     for (int i = 0; i != 8192; ++i)

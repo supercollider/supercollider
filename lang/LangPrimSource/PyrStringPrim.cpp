@@ -190,7 +190,7 @@ class regex_lru_cache {
     public:
         regex_node(const char* str, size_t size, int regex_flags): pattern(str, size, regex_flags) {}
 
-        boost::regex const& get(void) const { return pattern; }
+        boost::regex const& get() const { return pattern; }
 
     private:
         boost::regex pattern;

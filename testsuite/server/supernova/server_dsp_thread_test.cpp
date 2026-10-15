@@ -10,7 +10,7 @@ namespace {
 volatile int gint;
 
 struct dummy_runnable {
-    dummy_runnable(void): i(0) {}
+    dummy_runnable(): i(0) {}
 
     void operator()(uint dummy) {
         ++i;
@@ -28,7 +28,7 @@ struct dummy_runnable {
 dummy_runnable dummy;
 }
 
-template <typename Alloc> void run_test_1(void) {
+template <typename Alloc> void run_test_1() {
     nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> t(1);
 }
 
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(dsp_thread_test_1) {
     run_test_1<nova::rt_pool_allocator<void*>>();
 }
 
-template <typename Alloc> void run_test_2(void) {
+template <typename Alloc> void run_test_2() {
     nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> t(5);
     t.start_threads();
     t.terminate_threads();
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(dsp_thread_test_2) {
     run_test_2<nova::rt_pool_allocator<void*>>();
 }
 
-template <typename Alloc> void run_test_3(void) {
+template <typename Alloc> void run_test_3() {
     nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> t(2);
     t.start_threads();
     t.run();
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(dsp_thread_test_3) {
     run_test_3<nova::rt_pool_allocator<void*>>();
 }
 
-template <typename Alloc> void run_test_4(void) {
+template <typename Alloc> void run_test_4() {
     typedef typename nova::dsp_thread_queue_item<dummy_runnable, Alloc> dsp_thread_queue_item;
     typedef typename nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(dsp_thread_test_4) {
     run_test_4<nova::rt_pool_allocator<void*>>();
 }
 
-template <typename Alloc> void run_test_5(void) {
+template <typename Alloc> void run_test_5() {
     typedef nova::dsp_thread_queue_item<dummy_runnable, Alloc> dsp_thread_queue_item;
     typedef nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
     typedef nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> dsp_thread_pool;
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(dsp_thread_test_5) {
     run_test_5<nova::rt_pool_allocator<void*>>();
 }
 
-template <typename Alloc> void run_test_6(void) {
+template <typename Alloc> void run_test_6() {
     typedef nova::dsp_thread_queue_item<dummy_runnable, Alloc> dsp_thread_queue_item;
     typedef nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
     typedef nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> dsp_thread_pool;
