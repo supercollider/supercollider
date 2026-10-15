@@ -12,9 +12,17 @@ Main : Process {
 		// setup the platform first so that class initializers can call platform methods.
 		// create the platform, then intialize it so that initPlatform can call methods
 		// that depend on thisProcess.platform methods.
+
+		// These happen before the class library is initialized.
+		// This is potentially a *major* source of error if some platform starts accessing other classes that have an initClass method (like Event).
+		// However, other classes in the class library assume that this is setup before the initClass method is called so much go before.
 		platform = this.platformClass.new;
 		platform.initPlatform;
 
+		// This MUST be called first. It initializes the class library. You cannot make a class before calling this.
+		//  ** The exception here is only known to the compile, users of the class library must follow this rule.
+		//  ** Also the platform class ignores this — this could be a problem in the future.
+		// If this throws, the class library is invalid, this method will kill the interpreter.
 		super.startup;
 
 		// set the 's' interpreter variable to the default server.
@@ -73,8 +81,13 @@ Main : Process {
 	}
 
 	shutdown { // at recompile, quit
-		Server.quitAll;
-		this.platform.shutdown;
+		if (Process.initializedClassesOkay) {
+			try { Server.quitAll } { |er| er.reportError };
+			try { this.platform.shutdown } { |er| er.reportError };
+		} {
+			try { Server.quitAll };
+			try { this.platform.shutdown };
+		};
 		super.shutdown;
 	}
 

@@ -24,6 +24,7 @@
 
 */
 
+#include "ClassLibraryInfo.hpp"
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -44,7 +45,7 @@
 
 #include "SC_LanguageClient.h"
 
-extern bool gCompiledOK;
+extern ClassLibraryInfo gClassLibraryInfo;
 
 #ifdef HAVE_HIDAPI
 
@@ -377,7 +378,7 @@ void SC_HID_APIManager::deviceClosed(int joy_idx, struct hid_dev_desc* dd, std::
         trace("error when locking language (%d)\n", status);
         return;
     }
-    if (gCompiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
         ++g->sp;
@@ -400,7 +401,7 @@ void SC_HID_APIManager::handleElement(int joy_idx, struct hid_device_element* el
         return;
     }
 
-    if (gCompiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
         ++g->sp;
@@ -436,7 +437,7 @@ void SC_HID_APIManager::handleDevice(int joy_idx, struct hid_dev_desc* devd, std
         return;
     }
 
-    if (gCompiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         VMGlobals* g = gMainVMGlobals;
         g->canCallOS = false;
         ++g->sp;

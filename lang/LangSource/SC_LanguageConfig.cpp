@@ -75,23 +75,6 @@ void SC_LanguageConfig::postExcludedDirectories(void) const {
     }
 }
 
-bool SC_LanguageConfig::forEachIncludedDirectory(bool (*func)(const Path&)) const {
-    for (const auto& it : mDefaultClassLibraryDirectories) {
-        if (!pathIsExcluded(it)) {
-            if (!func(it))
-                return false;
-        }
-    }
-
-    for (const auto& it : mIncludedDirectories) {
-        if (!pathIsExcluded(it)) {
-            if (!func(it))
-                return false;
-        }
-    }
-
-    return true;
-}
 
 bool SC_LanguageConfig::pathIsExcluded(const Path& path) const { return findPath(mExcludedDirectories, path); }
 

@@ -21,17 +21,17 @@
 #pragma once
 
 #include "PyrObject.h"
+#include "PyrObjectHdr.h"
 
 void initSymbols();
 void initClasses();
-void buildClassTree();
 
 void freePyrSlot(PyrSlot* slot);
 void freePyrObject(PyrObject* obj);
 
 bool objAddIndexedSlot(PyrObject* obj, PyrSlot* slot);
 bool objAddIndexedSymbol(PyrSymbolArray* obj, PyrSymbol* symbol);
-bool objAddIndexedObject(PyrObject* obj, PyrObject* obj2);
+bool objAddIndexedObject(PyrObject* obj, PyrObjectHdr* obj2);
 
 void CallStackSanity(struct VMGlobals* g, const char* tagstr);
 bool FrameSanity(struct PyrFrame* frame, const char* tagstr);

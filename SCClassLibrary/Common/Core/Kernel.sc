@@ -44,6 +44,10 @@ Class {
 			});
 
 			if(aClass.subclasses.notNil,{
+				// If a class author has missed any Class.initClassTree(X) calls in their initClass methods,
+				//   you might get an error depending on the class ordering.
+				// The actual ordering is undefined, but is consistent for any given set of classes.
+				// This means if you add classes, the order might change and you might get errors when trying to start the class library.
 				aClass.subclasses.do({ arg class; this.initClassTree(class); });
 			});
 		});
@@ -233,20 +237,50 @@ Process {
 	var curThread, <mainThread;
 	var schedulerQueue;
 	var <>nowExecutingPath;
+	classvar <initializedClassesOkay = false;
 
 	startup {
 		var time;
 
-		Class.initClassTree(AppClock); // AppClock first in case of error
-		time = this.class.elapsedTime;
-		Class.initClassTree(Object);
-		Class.initClassTree(AbstractObjectExperimental);
-		("Class tree inited in" + (this.class.elapsedTime - time).round(0.01) + "seconds").postln;
-		Class.classesInited = nil;
+		try {
+			Class.initClassTree(AppClock); // AppClock first in case of error
+			time = this.class.elapsedTime;
+			// Object goes here as it creates the dependantsDictionary
+			Class.initClassTree(Object);
+			// AbstractObject doesn't have an initClass method, subclasses might.
+			Class.initClassTree(AbstractObjectExperimental);
+			("Class tree initialized in" + (this.class.elapsedTime - time).round(0.01) + "seconds").postln;
+			Class.classesInited = nil;
 
-		topEnvironment = Environment.new;
-		currentEnvironment = topEnvironment;
-		Archive.read;
+			topEnvironment = Environment.new;
+			currentEnvironment = topEnvironment;
+
+		} { |er|
+			er.reportError;
+
+			"An error was thrown while initializing the class library.\n"
+			"This means the class library is no longer in a valid state and cannot be used.\n"
+			"If you are reading this after updating SuperCollider, please:\n"
+			"   1. switch to a new, clean language configuration file,\n"
+			"   2. update all quarks (e.g. `Quarks.all.do(_.update)`),\n"
+			"   3. and reinstall them one at a time.\n"
+			"\n"
+			"If there are still errors, inspect the error message above and locate which class's `initClass` method is being called.\n"
+			"It is likely the class has failed to initialize another before using it.\n"
+			"This can be accomplished by placing `Class.initClassTree(NAME_OF_CLASS)` at the top of the method.\n"
+			"See the help documentation on `initClass` for some more information.\n\n\n"
+				.error;
+			1.exit; // Kills the interpreter, however it also calls Process.shutdown on the way.
+		};
+
+		initializedClassesOkay = true;
+
+		try {
+			Archive.read;
+		} { |er|
+			er.reportError;
+			"Archive.read in the main startup process has failed.".error
+		};
 
 		// This method is called automatically right after compiling.
 		// Override in class 'Main' to do initialization stuff,
@@ -263,12 +297,18 @@ Process {
 		// Override in class 'Main' to do whatever you want.
 	}
 	shutdown {
-		// This method is called before recompiling or quitting.
-		// Override in class 'Main' to do whatever you want.
-		ShutDown.run;
-		NetAddr.disconnectAll;
-		File.closeAll;
-		Archive.write;
+		if (initializedClassesOkay) {
+			try { ShutDown.run } { |er| er.reportError };
+			try { NetAddr.disconnectAll } { |er| er.reportError };
+			try { File.closeAll } { |er| er.reportError };
+			try { Archive.write } { |er| er.reportError };
+		} {
+			// Try to do them, but don't post any errors, we only care about the error above.
+			try { ShutDown.run };
+			try { NetAddr.disconnectAll };
+			try { File.closeAll };
+			try { Archive.write };
+		}
 	}
 	tick { // called repeatedly by SCVirtualMachine::doPeriodicTask
 		^AppClock.tick;
@@ -455,14 +495,32 @@ Process {
 	prSchedulerQueue { ^schedulerQueue }
 }
 
-
+// A FunctionDef is defined by a code within curly braces {} (when it isn't inlined)
+// When you use a FunctionDef in your code it gets pushed on the stack
+// as an instance of Function (PyrClosure)
 FunctionDef {
-	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
-	var <sourceCode;
+	var raw1, raw2;  // MethodRaw, stores lots of data with small sizes (chars and shorts).
+	var <code; // Int8Array (bytes)
+	var <selectors; // Array
+	var <constants; // Array
+	var <prototypeFrame; // Array of arg and var default values
+	var <context; // where captured (closed over) variables live.
+	var <argNames;  // SymbolArray
+	var <varNames; //
+	var <isClosed; // Boolean, true if context is nil or Interpreter:functionCompiler, otherwise false
+	var fileLocation; // either nil or an Array of: the line number, and the byte offset in line.
+	var <sourceCodeFileOrSnippet; // String. Might be the whole file, or could just be a code snippet (text within a file)
+	var <name; // Symbol. Method name, or if a function, an attempt to deduce the function name is made, example: (f = {}).def.name == 'f';
+	var filePath; // Symbol. can be nil if file hasn't been saved.
+	var <sourceCodeStartIndex, <sourceCodeEndIndex; // Integers. This are offsets into the sourceCodeFileOrSnippet.
+	var <byteCodeLocations; // IntArray location of each byte code as offsets into sourceCode [start0, end0, start1, end1... startn, endn]
+	var byteCodeSizes; // Int8Array size of each byte code in bytes. PyrInt8Array
 
-	// a FunctionDef is defined by a code within curly braces {}
-	// When you use a FunctionDef in your code it gets pushed on the stack
-	// as an instance of Function
+	filenameSymbol { ^filePath }
+
+	sourceCode {
+		^sourceCodeFileOrSnippet[sourceCodeStartIndex..(sourceCodeEndIndex - 1)]
+	}
 
 	dumpByteCodes {
 		_DumpByteCodes
@@ -606,9 +664,12 @@ FunctionDef {
 }
 
 Method : FunctionDef {
-	var <ownerClass, <name, <primitiveName;
-	var <filenameSymbol, <charPos;
+	var <ownerClass, <primitiveName;
 
+	charPos {
+		// Because methods are always compiled with a whole file, we can access this directly.
+		^sourceCodeStartIndex
+	 }
 	openCodeFile {
 		this.filenameSymbol.asString.openDocument(this.charPos, -1);
 	}
@@ -652,20 +713,25 @@ Method : FunctionDef {
 
 }
 
-Frame {
-	// frames contain the local variables, context and continuation of a function or method invocation.
-	// since some Frames are deleted instead of garbage collected, it is too
-	// dangerous to allow access to them. Dangling pointers could result.
-	shallowCopy { ^this }
-	inspectorClass { ^FrameInspector }
+// Frames are an interpreter internal object. 
+// You should never have an instance of one, if you do, it is a bug, please report it (GitHub/forum... wherever)!
+Frame : AbstractObjectExperimental /* !Never inherit from Frame!*/ {
+	*prThrow { Error("Attempting to use a Frame object, this will lead to gc bugs and eventually crash Supercollider").throw }
 
-	storeOn { arg stream; stream << "nil"; }
-	archiveAsCompileString { ^true }
-	checkCanArchive { "cannot archive Frames".warn }
+	*new { Frame.prThrow }
+	*newCopyArgs { Frame.prThrow }
+
+	mustBeBoolean { Frame.prThrow }
+	isNil { Frame.prThrow }
+	notNil { Frame.prThrow }
+	? { Frame.prThrow }
+	?? { Frame.prThrow }
+	!? { Frame.prThrow }
+	doesNotUnderstand { Frame.prThrow }
 }
 
 DebugFrame {
-	var <functionDef, <args, <vars, <caller, <context, <address;
+	var <functionDef, <args, <vars, <caller, <context, <address, <ipIndex;
 	// Object.getBackTrace returns one of these.
 	// 'functionDef' is the FunctionDef for this function or method.
 	// 'args' the values of the arguments to the function call.
@@ -673,7 +739,79 @@ DebugFrame {
 	// 'caller' points to another DebugFrame for the caller to this function.
 	// 'context' points to another DebugFrame for the frame lexically enclosing this one.
 	// 'address' memory address of the actual frame object.
+
+	*new { this.shouldNotImplement(thisMethod) }
+	*newCopyArgs { this.shouldNotImplement(thisMethod) }
+
 	asString { ^"DebugFrame of " ++ functionDef.asString }
+
+	// Turns whole backtrace into string
+	backtracePrintOnto { |stream, prefix(""), callFrameAnnotations(#[]), methodBeforeBacktraceStart, methodBacktraceEnd, maxVerboseFrames(3)|
+		var stack = {
+			var f = this;
+			while { f.notNil } {
+				f.yield;
+				f = f.caller;
+			};
+		}.r.all;
+		var newPrefix = prefix ++ thisPrefix;
+
+		var begin = methodBeforeBacktraceStart !? { this.prLastIndexOf(stack, methodBeforeBacktraceStart) } ?? { -1 } + 1;
+		var end = methodBacktraceEnd !? { this.prFirstIndexOf(stack, methodBacktraceEnd) } ?? { stack.size };
+		var thisPrefix = "     ";
+		var count = 0;
+
+		var stackToPrint = stack[begin..(end - 1)];
+
+		var dups=0;
+		var prevDef;
+		var stackSkipMask = stackToPrint.collect {|s|
+			if (s.functionDef === prevDef) {
+				dups = dups + 1
+			} {
+				dups = 0
+			};
+			prevDef = s.functionDef;
+			dups < 3
+		};
+
+		stream << "\n";
+
+		[stackToPrint, stackSkipMask].flop.reverseDo { |f, j|
+			var d = f[0];
+			var mask = f[1];
+			stream << prefix << (stackToPrint.size - j).asString.padRight(4) << ": ";
+			d.printOntoBacktrace(stream, newPrefix, callFrameAnnotations[stackToPrint.size - count - 1], (stackToPrint.size - j - 1) < maxVerboseFrames, mask);
+			count = count + 1;
+		};
+
+
+		^stream;
+	 }
+
+	// Turns this frame into a formatted string
+	printOntoBacktrace { |stream, prefix(""), annotation, printArgsAndVars, printSource|
+		stream << this.prAsErrorString(prefix, annotation, printArgsAndVars, printSource)
+	}
+
+	prAsErrorString {|prefix, annotation, printArgsAndVars, printSource| _DebugFrame_asErrorString }
+
+	prLastIndexOf { |collection, predicate({})|
+		var last = 0;
+		collection.do{
+			|v,i|
+			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { last = i }
+		};
+		^last
+	}
+	prFirstIndexOf { |collection, predicate({})|
+		var first = 0;
+		collection.reverseDo{
+			|v,i|
+			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { first = i }
+		};
+		^(collection.size - first) - 1;
+	}
 }
 
 RawPointer {
@@ -685,7 +823,17 @@ Interpreter {
 	// The interpreter defines a context in which interactive commands
 	// are compiled.
 
-	var <>cmdLine; // place holder for text executed from a worksheet
+
+	// NOTE: all instance variables defined here (or in Object) will be accessible from every single function evaluated in the repl,
+	// ... yes, even the members without a readwrite accessor, see method 'compile' for more information.
+
+	// These 3 members are provided by the language client.
+	// It reaches into the supercollider runtime and sets these.
+	var cmdLine;
+	var filePath;
+	var lineNumber;
+	var column;
+
 	var context; // faked interpreter context frame. Don't mess with it.
 
 	// a-z are predefined variables for use by the interactive context.
@@ -700,13 +848,13 @@ Interpreter {
 	*new { ^this.shouldNotImplement(thisMethod) }
 
 	interpretCmdLine {
-		^this.compile(cmdLine).value;
+		^this.prCompileUsingMembers.()
 	}
 
 	interpretPrintCmdLine {
 		var res, func, code = cmdLine, doc, ideClass = \ScIDE.asClass;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
-		func = this.compile(cmdLine);
+		func = this.prCompileUsingMembers;
 		if (ideClass.notNil) {
 			thisProcess.nowExecutingPath = ideClass.currentPath
 		} {
@@ -720,22 +868,39 @@ Interpreter {
 		("-> " ++ res).postln;
 	}
 
-	interpret { arg string ... args;
-		// compile, evaluate
-		cmdLine = string;
-		^this.compile(string).valueArray(args);
+	// compile, evaluate
+	interpret { |string ... args, kwargs|
+		kwargs = kwargs.asEvent;
+		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column]).valueArray(args);
 	}
-	interpretPrint { arg string ... args;
-		// compile, evaluate, print
-		cmdLine = string;
-		^this.compile(string).valueArray(args).postln;
+	// compile, evaluate, print
+	interpretPrint { arg string ... args, kwargs;
+		kwargs = kwargs.asEvent;
+		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column]).valueArray(args).postln;
 	}
-	compile { arg string;
+
+	// Compiles a string into Function object (closure).
+	// This is done *as-if* it was a function written inside of the method Interpreter:functionCompileContext,
+	// therefore, 'this' will return an instance of this class, and you can access all the instance variables.
+	// This is also true for *closed* functions. All valid code:  #{ context }, #{ a }, #{cmdLine}...
+	// This is also why you can access these straight from the repl... `context`, `cmdLine`, all valid!
+	// Yes, even the 'private' instance variables can be accessed this way.
+	// This also applied to everything inside object, e.g., `currentEnvironment` and `nl`.
+	compile  { |string, filePath_, lineNumber_, column_|
+		cmdLine = string;
+		filePath = filePath_;
+		lineNumber = lineNumber_;
+		column = column_;
+		^this.prCompileUsingMembers
+	}
+
+	prCompileUsingMembers {
+		^this.prCompile(cmdLine, filePath, lineNumber, column)
+	}
+
+	prCompile { |string, filePath, lineNumber, column|
 		_CompileExpression
-		// compiles string and returns a Function.
-		// the string must be a valid expression.
-		// You cannot compile a class definition this way.
-		// This method is not implemented in SCPlay.
+		// TODO: this is rather bad, returning nil if the compilation fails means we can't tell if it failed because returning nil is valid.
 		^nil
 	}
 
@@ -744,15 +909,20 @@ Interpreter {
 		n = o = p = q = r = s = t = u = v = w = x = y = z = nil;
 	}
 
-	executeFile { arg pathName ... args;
+	executeFile { | pathName ... args, kwargs |
+		^this.performArgs(\prExecuteFile, [pathName] ++ args, kwargs)
+	}
+
+	prExecuteFile { |... args, kwargs |
 		var	result, saveExecutingPath = thisProcess.nowExecutingPath;
+		var pathName = args[0];
 		if (File.exists(pathName).not) {
 			"file \"%\" does not exist.\n".postf(pathName);
 			^nil
 		};
 		thisProcess.nowExecutingPath = pathName;
 		protect {
-			result = this.compileFile(pathName).valueArray(args)
+			result = this.compileFile(pathName).valueArgs(args[1..], kwargs)
 		} { |exception|
 			exception !? { exception.path = pathName };
 			thisProcess.nowExecutingPath = saveExecutingPath
@@ -774,17 +944,15 @@ Interpreter {
 			// comment out shebang to preserve line count
 			text.overWrite("//");
 		});
-		^this.compile(text)
+		^this.compile(text, pathName.asSymbol, 0, 0);
 	}
+
+	shallowCopy { ^this }
 
 	// PRIVATE
-	functionCompileContext {
-		// compiler uses this method as a fake context in which to compile
-		// the user's function.
-		// Do not edit this method!
+	// All repl invocations and 'closed' functions `#{...}`} are evaluated *as-if* they were written inside this method during class compilation.
+	// Essentially, all 'top-level' non-class-library code takes place in here.
+	// This is how we 'magically' have access to the variables 'a', 'b', ... everywhere `#{ a }`
+	functionCompileContext { }
 
-		{}	// this forces the compiler to generate a heap allocated frame rather than
-		// a frame on the stack
-	}
-	shallowCopy { ^this }
 }

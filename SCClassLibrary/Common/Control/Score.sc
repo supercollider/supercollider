@@ -114,8 +114,8 @@ Score {
 		unixCmd(program + " -N" + oscFilePath.quote
 			+ if(inputFilePath.notNil, { inputFilePath.quote }, { "_" })
 			+ outputFilePath.quote
-			+ sampleRate + headerFormat + sampleFormat +
-			(options ? Score.options).asOptionsString
+			+ sampleRate + headerFormat + sampleFormat
+			+ (options ? Score.options).asOptionsString
 			+ completionString, action);
 	}
 

@@ -1,17 +1,20 @@
 Function : AbstractFunction {
-	var <def, context;
-	// a Function is what you get when you write a FunctionDef in your code.
-	// it consists of the function's code and the variables in its defining context
+	// FunctionDef
+	var <def;
+
+	// This is a Frame, it is internal to the interpreter.
+	// A no point should the user EVER be able to access this or there will be gc bugs and supercollider will crash!
+	var context;
 
 	*new { ^this.shouldNotImplement(thisMethod) }
 
 	isFunction { ^true }
-	isClosed { ^def.sourceCode.notNil }
+	isClosed { ^def.isClosed }
 
 
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
-	checkCanArchive { if (def.sourceCode.isNil) { "cannot archive open Functions".warn } }
+	checkCanArchive { if (this.isClosed.not) { "cannot archive open Functions".warn } }
 	storeOn { arg stream;
 		var args;
 		stream << (def.sourceCode ?? {
@@ -206,6 +209,7 @@ Function : AbstractFunction {
 		wasInProtectedFunc = Exception.inProtectedFunction;
 		thread.exceptionHandler = {|error|
 			thread.exceptionHandler = next; // pop
+			Exception.inProtectedFunction = wasInProtectedFunc;
 			^error
 		};
 		Exception.inProtectedFunction = true;
@@ -379,7 +383,6 @@ Function : AbstractFunction {
 				})
 		})
 	}
-
 }
 
 Thunk : AbstractFunction {

@@ -31,6 +31,7 @@ Primitives for Unix.
 #include <tuple>
 #include <vector>
 
+#include "ClassLibraryInfo.hpp"
 #include "PyrObject.h"
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
@@ -54,9 +55,9 @@ Primitives for Unix.
 #    include <libgen.h>
 #endif
 
+extern ClassLibraryInfo gClassLibraryInfo;
 namespace fs = std::filesystem;
 
-extern bool gCompiledOK;
 PyrSymbol* s_unixCmdAction;
 
 int prString_System(struct VMGlobals* g, int numArgsPushed) {
@@ -128,7 +129,7 @@ static void string_popen_thread_func(pid_t pid, FILE* stream, bool postOutput) {
     res = WEXITSTATUS(res);
 
     gLangMutex.lock();
-    if (gCompiledOK) {
+    if (gClassLibraryInfo.acceptsInput()) {
         VMGlobals* g = gMainVMGlobals;
         ++g->sp;
         SetObject(g->sp, class_string);

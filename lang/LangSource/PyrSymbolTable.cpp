@@ -80,7 +80,6 @@ PyrSymbol* SymbolSpace::NewSymbol(const char* inName, int inHash, int inLength) 
     if (inLength > 1 && inName[inLength - 1] == '_')
         sym->flags |= sym_Setter;
     sym->u.index = 0;
-    sym->classdep = nullptr;
     return sym;
 }
 
@@ -181,21 +180,4 @@ void SymbolTable::Grow() {
     Rehash(oldtable, oldsize);
 
     mPool->Free(oldtable);
-}
-
-void SymbolTable::CheckSymbols() {
-    for (int i = 0; i < TableSize(); ++i) {
-        PyrSymbol* symbol = Get(i);
-        if (symbol && symbol->u.index == 0) {
-            int c;
-            c = symbol->name[0];
-            if (c == '_') {
-                post("WARNING: Primitive '%s' used but not bound\n", symbol->name);
-            } else if (c >= 'A' && c <= 'Z') {
-                post("WARNING: Symbol '%s' used but not defined as a Class\n", symbol->name);
-            } else if ((symbol->flags & sym_Called) && !(symbol->flags & sym_Selector)) {
-                post("WARNING: Method '%s' called but not defined\n", symbol->name);
-            }
-        }
-    }
 }

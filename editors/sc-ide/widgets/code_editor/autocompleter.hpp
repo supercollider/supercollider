@@ -132,7 +132,14 @@ private:
     static QString findHelpClass(QString klass);
     static DocNode* parseHelpClass(QString file);
     static QString parseClassElement(DocNode* node, QString element);
+    QString getMethodDocs(const DocNode& node, QString methodName, bool isClassMethod) const;
     static void parseClassNode(DocNode* node, QString* str);
+
+    // fill info box w/ docs
+
+    QString fillClassHelp(DocNode* node) const;
+    QString fillMethodHelp(const DocNode& node, const QString& methodName, const QString& className) const;
+    QString fillClassMethodHelp(const DocNode& node, const QString& methodName, const QString& className) const;
 
     // data
 

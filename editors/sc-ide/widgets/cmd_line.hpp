@@ -56,7 +56,7 @@ public:
     void setText(const QString& text);
 
 signals:
-    void invoked(const QString&, bool silent);
+    void invoked(const QString&, bool silent, const QString* filePath = nullptr, int lineNumber = 0, int column = 0);
 
 private:
     bool eventFilter(QObject*, QEvent*);

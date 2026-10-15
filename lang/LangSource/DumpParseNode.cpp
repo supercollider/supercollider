@@ -20,10 +20,7 @@
 
 #include "SCBase.h"
 #include "PyrParseNode.h"
-#include "PyrLexer.h"
 #include "PyrKernel.h"
-#include "Opcodes.h"
-#include "PyrPrimitive.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -33,6 +30,11 @@
 #    define PATH_MAX _MAX_PATH
 #endif
 
+#define DUMPNODE(node, level)                                                                                          \
+    do {                                                                                                               \
+        if (node)                                                                                                      \
+            (node)->dump(level);                                                                                       \
+    } while (false);
 
 void dumpNodeList(PyrParseNode* node) {
     for (; node; node = node->mNext) {
@@ -43,11 +45,11 @@ void dumpNodeList(PyrParseNode* node) {
 void PyrCurryArgNode::dump(int level) { postfl("%2d CurryArg %d\n", level, mArgNum); }
 
 void PyrSlotNode::dump(int level) {
-    if (mClassno == pn_PushLitNode)
+    if (mClassno == PyrParseNodeType::PushLitNode)
         dumpPushLit(level);
-    else if (mClassno == pn_PushNameNode)
+    else if (mClassno == PyrParseNodeType::PushNameNode)
         postfl("%2d PushName '%s'\n", level, slotRawSymbol(&mSlot)->name);
-    else if (mClassno == pn_LiteralNode)
+    else if (mClassno == PyrParseNodeType::LiteralNode)
         dumpLiteral(level);
     else {
         postfl("%2d SlotNode\n", level);
@@ -590,8 +592,18 @@ void stringFromPyrString(PyrString* obj, char* str, int maxlength) {
     }
 }
 
-void pstrncpy(unsigned char* s1, unsigned char* s2, int n);
-
+void pstrncpy(unsigned char* s1, unsigned char* s2, int n) {
+    int i, m;
+    m = *s2++;
+    n = (n < m) ? n : m;
+    *s1 = n;
+    s1++;
+    for (i = 0; i < n; ++i) {
+        *s1 = *s2;
+        s1++;
+        s2++;
+    }
+}
 void pstringFromPyrString(PyrString* obj, unsigned char* str, int maxlength) {
     static const char not_a_string[] = "not a string";
     const char* src;

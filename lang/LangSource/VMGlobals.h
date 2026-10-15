@@ -32,59 +32,46 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 #include <map>
 #include <cstdint>
 
-#define TAILCALLOPTIMIZE 1
-
-typedef void (*FifoMsgFunc)(struct VMGlobals*, struct FifoMsg*);
-
-struct FifoMsg {
-    FifoMsg(): func(0), dataPtr(0) { dataWord[0] = dataWord[1] = 0; }
-    void Perform(struct VMGlobals* g);
-    void Free(struct VMGlobals* g);
-
-    FifoMsgFunc func;
-    void* dataPtr;
-    std::int64_t dataWord[2];
-};
 
 struct VMGlobals {
-    VMGlobals();
-
     // global context
-    class AllocPool* allocPool;
-    struct PyrProcess* process;
-    class SymbolTable* symbolTable;
-    class PyrGC* gc; // garbage collector for this process
-    PyrObject* classvars;
-    int tailCall; // next byte code is a tail call.
-    bool canCallOS;
+    class AllocPool* allocPool {};
+    struct PyrProcess* process {};
+    class SymbolTable* symbolTable {};
+    class PyrGC* gc {}; // garbage collector
+
+
+    // Information about the current running PyrProcess
+    PyrObject* classvars {};
+    int tailCall {}; // next byte code is a tail call.
+    bool canCallOS { false }; // only set to 'true' with setCanCallOS()!
 
     // thread context
-    struct PyrThread* thread;
-    struct PyrMethod* method;
-    struct PyrBlock* block;
-    struct PyrFrame* frame;
-    struct PyrMethod* primitiveMethod;
-    unsigned char* ip; // current instruction pointer
-    PyrSlot* sp; // current stack ptr
-    PyrSlot* args;
-    PyrSlot receiver; // the receiver
-    PyrSlot result;
-    int numpop; // number of args to pop for primitive
-    std::int64_t primitiveIndex;
-    RGen* rgen;
-    jmp_buf escapeInterpreter;
+    struct PyrThread* thread {};
+    struct PyrMethod* method {};
+    struct PyrBlock* block {};
+    struct PyrFrame* frame {};
+    struct PyrMethod* primitiveMethod {};
+    unsigned char* ip {}; // current instruction pointer
+    PyrSlot* sp {}; // current stack ptr
+    PyrSlot* args {};
+    PyrSlot receiver {}; // the receiver
+    PyrSlot result {};
+    int numpop {}; // number of args to pop for primitive
+    std::int64_t primitiveIndex {};
+    RGen* rgen {};
+    jmp_buf escapeInterpreter {};
 
     // scratch context
-    std::int64_t execMethod;
+    std::int64_t execMethod {};
 
     // primitive exceptions
-    std::map<PyrThread*, std::pair<std::exception_ptr, PyrMethod*>> lastExceptions;
+    std::map<PyrThread*, std::pair<std::exception_ptr, PyrMethod*>> lastExceptions {};
 };
 
-inline void FifoMsg::Perform(struct VMGlobals* g) { (func)(g, this); }
-
-inline void FifoMsg::Free(struct VMGlobals* g) { g->allocPool->Free(dataPtr); }
+// Use this for setting 'canCallOS' to 'true'! Prints an error if you are on the wrong thread.
+// Implemented in SC_LanguageClient.cpp
+void setCanCallOS(VMGlobals* g, bool canCallOS);
 
 extern VMGlobals gVMGlobals;
 extern VMGlobals* gMainVMGlobals;
-extern VMGlobals* gCompilingVMGlobals;

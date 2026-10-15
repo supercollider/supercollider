@@ -17,6 +17,9 @@ Plot {
 
 	*initClass {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
+		Class.initClassTree(QtGUI);
+		Class.initClassTree(GUI);
+		Class.initClassTree(Font);
 
 		initGuiSkin = {
 			var palette = QtGUI.palette;

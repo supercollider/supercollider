@@ -705,12 +705,15 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     sc_interface.fDoAsynchronousCommandEx = &do_asynchronous_command_ex;
     sc_interface.fDoAsyncUnitCommand = &do_async_unit_command;
 
+    world.ft = &sc_interface;
+
     /* initialize world */
     /* control busses */
     world.mControlBus = control_busses;
     world.mNumControlBusChannels = args.control_busses;
     world.mControlBusTouched = new int32[args.control_busses];
     std::fill(world.mControlBusTouched, world.mControlBusTouched + args.control_busses, -1);
+    world.mControlBusLock = new spin_lock();
 
     /* audio busses */
     audio_busses.initialize(args.audio_busses, args.blocksize);
@@ -718,9 +721,8 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     world.mAudioBus = audio_busses.buffers;
     world.mNumAudioBusChannels = args.audio_busses;
     world.mAudioBusTouched = new int32[args.audio_busses];
-    world.mAudioBusLocks = audio_busses.locks;
-    world.mControlBusLock = new spin_lock();
     std::fill(world.mAudioBusTouched, world.mAudioBusTouched + args.audio_busses, -1);
+    world.mAudioBusLocks = audio_busses.locks;
 
     /* audio buffers */
     world.mNumSndBufs = args.buffers;

@@ -845,66 +845,36 @@ SCErr meth_g_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
             if (!group)
                 return kSCErr_GroupNotFound;
             err = Group_New(inWorld, newGroupID, &newGroup);
-            if (err) {
-                if (err == kSCErr_DuplicateNodeID) {
-                    newGroup = World_GetGroup(inWorld, newGroupID);
-                    if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent != group)
-                        return err;
-                } else
-                    return err;
-            } else {
-                Group_AddHead(group, &newGroup->mNode);
-            }
+            if (err)
+                return err;
+            Group_AddHead(group, &newGroup->mNode);
         } break;
         case 1: {
             Group* group = Msg_GetGroup(inWorld, msg);
             if (!group)
                 return kSCErr_GroupNotFound;
             err = Group_New(inWorld, newGroupID, &newGroup);
-            if (err) {
-                if (err == kSCErr_DuplicateNodeID) {
-                    newGroup = World_GetGroup(inWorld, newGroupID);
-                    if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent != group)
-                        return err;
-                } else
-                    return err;
-            } else {
-                Group_AddTail(group, &newGroup->mNode);
-            }
+            if (err)
+                return err;
+            Group_AddTail(group, &newGroup->mNode);
         } break;
         case 2: {
             Node* beforeThisNode = Msg_GetNode(inWorld, msg);
             if (!beforeThisNode)
                 return kSCErr_TargetNodeNotFound;
             err = Group_New(inWorld, newGroupID, &newGroup);
-            if (err) {
-                if (err == kSCErr_DuplicateNodeID) {
-                    newGroup = World_GetGroup(inWorld, newGroupID);
-                    if (!newGroup || !newGroup->mNode.mParent
-                        || newGroup->mNode.mParent->mNode.mID != beforeThisNode->mParent->mNode.mID)
-                        return err;
-                } else
-                    return err;
-            } else {
-                Node_AddBefore(&newGroup->mNode, beforeThisNode);
-            }
+            if (err)
+                return err;
+            Node_AddBefore(&newGroup->mNode, beforeThisNode);
         } break;
         case 3: {
             Node* afterThisNode = Msg_GetNode(inWorld, msg);
             if (!afterThisNode)
                 return kSCErr_TargetNodeNotFound;
             err = Group_New(inWorld, newGroupID, &newGroup);
-            if (err) {
-                if (err == kSCErr_DuplicateNodeID) {
-                    newGroup = World_GetGroup(inWorld, newGroupID);
-                    if (!newGroup || !newGroup->mNode.mParent
-                        || newGroup->mNode.mParent->mNode.mID != afterThisNode->mParent->mNode.mID)
-                        return err;
-                } else
-                    return err;
-            } else {
-                Node_AddAfter(&newGroup->mNode, afterThisNode);
-            }
+            if (err)
+                return err;
+            Node_AddAfter(&newGroup->mNode, afterThisNode);
         } break;
         case 4: {
             Node* replaceThisNode = Msg_GetNode(inWorld, msg);
@@ -912,8 +882,6 @@ SCErr meth_g_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
                 return kSCErr_TargetNodeNotFound;
             if (replaceThisNode->mID == 0)
                 return kSCErr_ReplaceRootGroup;
-            Node_RemoveID(replaceThisNode);
-
             err = Group_New(inWorld, newGroupID, &newGroup);
             if (err)
                 return err;

@@ -55,8 +55,15 @@ if(APPLE)
         set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
     endforeach()
 
-    set( Icons ../../icons/sc_ide.icns)
-    set_source_files_properties(../../icons/sc_ide.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set( Icons
+            ../../icons/sc_ide_squircle/sc_ide.icns
+            ../../icons/sc_ide_squircle/Assets.car
+    )
+    set_source_files_properties(
+            ../../icons/sc_ide_squircle/sc_ide.icns
+            ../../icons/sc_ide_squircle/Assets.car
+            PROPERTIES MACOSX_PACKAGE_LOCATION Resources
+    )
 
     set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
 endif()
@@ -382,7 +389,7 @@ if(APPLE)
     endif()
 
     # set how it shows up in the Info.plist file
-    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
+    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide_squircle/sc_ide.icns)
     # ensure copyright in plist file always says current year as end date
     string(TIMESTAMP CURRENT_YEAR "%Y")
 

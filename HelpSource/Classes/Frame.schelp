@@ -17,3 +17,8 @@ For error handling routines, the relevant information from a Frame can be transf
 code::
 	this.getBackTrace.inspect
 ::
+
+
+In version <=3.14 it was possible to access the frame of a function object, since 3.15, this will no longer be possible as it can cause crashes.
+
+If you are working on the sclang interpreter, there are some debug methods provided, these are documented in the source code because they should only be used for development.

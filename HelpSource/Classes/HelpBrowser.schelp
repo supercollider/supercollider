@@ -69,6 +69,9 @@ method:: goTo
 When using the SCIDE, go to teletype::url:: in the built-in helpbrowser;
 otherwise, go to url with singleton code::HelpBrowser:: instance or a new window, depending on the code::openNewWindows:: setting.
 
+argument:: url
+A String representing a web address, a local address in the link::Classes/URI:: format (code::file:///path::), or a local path.
+
 method:: openHelpFor
 Open the relevant help page for given text in the singleton HelpBrowser instance.
 
@@ -101,7 +104,7 @@ HelpBrowser.instance.window.front;
 ::
 
 method:: goTo
-Go to specific URL. If the URL points to a file under link::Classes/SCDoc#*helpTargetDir:: it will be rendered on demand if needed.
+Go to specific URL. If the URL points to a file under link::Classes/SCDoc#*helpTargetDir:: it will be rendered on demand if needed. A URL can also be a local path.
 
 method:: goHome
 Go to the home URL.

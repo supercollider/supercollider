@@ -59,7 +59,24 @@ public:
     bool removeIncludedDirectory(const Path&); // false iff there was nothing to remove
     bool removeExcludedDirectory(const Path&);
 
-    bool forEachIncludedDirectory(bool (*)(const Path&)) const;
+
+    template <typename F> bool forEachIncludedDirectory(F&& f) const {
+        for (const auto& it : mDefaultClassLibraryDirectories) {
+            if (!pathIsExcluded(it)) {
+                if (!f(it))
+                    return false;
+            }
+        }
+
+        for (const auto& it : mIncludedDirectories) {
+            if (!pathIsExcluded(it)) {
+                if (!f(it))
+                    return false;
+            }
+        }
+
+        return true;
+    }
 
     bool getExcludeDefaultPaths() const { return mExcludeDefaultPaths; }
     void setExcludeDefaultPaths(bool value);

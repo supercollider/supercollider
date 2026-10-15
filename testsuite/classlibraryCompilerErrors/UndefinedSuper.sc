@@ -1,0 +1,1 @@
+UndefinedSuper : ThisIsUndefined {}

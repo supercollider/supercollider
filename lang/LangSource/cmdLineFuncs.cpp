@@ -21,10 +21,16 @@
 #include "SC_LanguageClient.h"
 
 int main(int argc, char** argv) {
+#ifndef __EMSCRIPTEN__
     SC_LanguageClient* client = createLanguageClient("sclang");
     if (!client)
         return 1;
     int returnCode = client->run(argc, argv);
     destroyLanguageClient(client);
     return returnCode;
+#else
+    // wasm build exposes bootInterpreter through function
+    // this is still part of the sclang build b/c of add_executable
+    return 0;
+#endif
 }

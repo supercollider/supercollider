@@ -84,7 +84,7 @@ Path SC_Filesystem::globNext(Glob* glob) {
 //============= PRIVATE METHODS ==============//
 
 bool SC_Filesystem::isNonHostPlatformDirectoryName(const std::string& s) {
-    return s == "linux" || s == "windows" || s == "osx";
+    return s == "linux" || s == "windows" || s == "osx" || s == "wasm";
 }
 
 Path SC_Filesystem::defaultSystemAppSupportDirectory() {

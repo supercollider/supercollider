@@ -40,6 +40,39 @@ SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient*);
 
 class SCLANG_DLLEXPORT SC_LanguageClient {
 public:
+    /**
+     * @brief special input control characters
+     *
+     * Protocol for transmitting interactive code:
+     *
+     * (optional header begin)
+     * \c StartOfHeader
+     * <file name>
+     * \c RecordDelimiter
+     * <line number string>
+     * \c RecordDelimiter
+     * <column string>
+     * \c StartOfText
+     * (optional header end)
+     * <code>
+     * \c InterpretCmdLine OR \c InterpretPrintCmdLine
+     *
+     * The input header allows for passing source code location and other information.
+     * It can be extended in the future simply by adding more records before \c StartOfText.
+     * If other editors want to support this feature, they will need to alter their output.
+     * In future this will need to change again to support an LSP as this is a bit haphazard
+     * at the moment. This is used in the terminal client, which despite being the only class
+     * to inherit from this, isn't publicly available.
+     */
+    enum InputProtocol : char {
+        InterpretCmdLine = 0x1b, // ESC = escape
+        InterpretPrintCmdLine = 0x0c, // FF = form feed
+        StartOfHeader = 0x01, // SOH = start of heading
+        StartOfText = 0x02, // STX = start of text
+        RecordDelimiter = 0x1e, // RS = record separator
+        RecompileLibrary = 0x18 // CAN = cancel
+    };
+
     struct Options {
         static constexpr int defaultMemSpace = 2 * 1024 * 1024;
         static constexpr int defaultMemGrow = 256 * 1024;
@@ -56,6 +89,8 @@ protected:
     SC_LanguageClient(const std::string& name);
     virtual ~SC_LanguageClient();
     friend void destroyLanguageClient(class SC_LanguageClient*);
+
+    bool mCompiledSuccessfully = false;
 
 public:
     // singleton instance access locking
@@ -77,10 +112,10 @@ public:
     const char* getName() const;
 
     // library startup/shutdown
-    bool isLibraryCompiled();
-    void compileLibrary(bool standalone);
+    bool isLibraryCompiled() const;
+    bool compileLibrary(bool standalone);
     void shutdownLibrary();
-    void recompileLibrary(bool standalone);
+    bool recompileLibrary(bool standalone);
 
     // interpreter access
     void lock();
@@ -89,13 +124,17 @@ public:
 
     struct VMGlobals* getVMGlobals();
 
-    void setCmdLine(const char* buf, size_t size);
-    void setCmdLine(const char* str);
-    void setCmdLinef(const char* fmt, ...);
+    void setCmdLine(const char* buf, size_t size, const char* filePath = nullptr, int lineNumber = 0, int column = 0);
+    void setCmdLine(const char* str, const char* filePath = nullptr, int lineNumber = 0, int column = 0);
+    void setCmdLinef(const char* filePath = nullptr, int lineNumber = 0, int column = 0, const char* fmt = nullptr,
+                     ...);
     void runLibrary(const char* methodName);
+
     void interpretCmdLine();
     void interpretPrintCmdLine();
+
     void executeFile(const std::string& fileName);
+
     void runMain();
     void stopMain();
 

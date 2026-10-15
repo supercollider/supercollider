@@ -36,6 +36,7 @@ Primitives for String.
 #include "PyrLexer.h"
 #include "SC_Filesystem.hpp"
 #include "SC_Codecvt.hpp" // path_to_utf8_str
+#include "SC_TextUtils.hpp"
 #ifdef _WIN32
 #    include <direct.h>
 #    include "SC_Win32Utils.h"

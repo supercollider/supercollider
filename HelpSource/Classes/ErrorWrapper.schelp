@@ -1,0 +1,104 @@
+class::ErrorWrapper
+summary:: Error used to wrap another error
+categories::Core
+related:: Classes/Error
+
+description::
+Used to wrap an existing error, providing more context through the code::what:: string while preserving the original backtrace.
+It can be nested.
+
+
+Here is an example using two functions code::f:: and code::g:: and a top level try that catches everything.
+
+code::
+(
+var f = { |a| 
+    if (a < 0 ) { 
+        Error("Negative values are not allowed", [nil, "a negative value was passed here"]).throw
+    } { 
+        f.(a - 1)
+    }
+};
+
+var g = { 
+    try { f.(3) } { |e| ErrorWrapper(e, "Thrown while calling f").throw }
+};
+
+try { g.() } { |e| ErrorWrapper(e, "Thrown at top level").throw }
+)
+::
+
+This produces a backtrace as follows.
+code::
+──────────────────────────────────────────────────────────────────────────────────
+ERROR: Thrown at top level
+
+Wrapped error: Thrown at top level
+     Wrapped error: Thrown while calling f
+
+          6   : Anonymous Function
+                              file://interpreted_text:13:14
+                      11 │ var g = { 
+                      12 │     try { 
+                      13 │         f.(3) 
+                         ┆         ^^^^^ 
+                      14 │     } { |e| 
+                      15 │         ErrorWrapper(e, "Thrown while calling f").throw
+                      16 │     }
+          5   : Function Name: 'f'
+          4   : Function Name: 'f'
+          3   : Function Name: 'f'
+                 args: a=Integer(1)
+                              file://interpreted_text:7:18
+                       5 │         Error("Negative values are not allowed", [nil, "a negative value was passed here"]).throw
+                       6 │     } { 
+                       7 │         f.(a - 1)
+                         ┆         ^^^^^^^^^ 
+                       8 │     }
+                       9 │ };
+                      10 │ 
+          2   : Function Name: 'f'
+                 args: a=Integer(0)
+                              file://interpreted_text:7:18
+                       5 │         Error("Negative values are not allowed", [nil, "a negative value was passed here"]).throw
+                       6 │     } { 
+                       7 │         f.(a - 1)
+                         ┆         ^^^^^^^^^ a negative value was passed here
+                       8 │     }
+                       9 │ };
+                      10 │ 
+          1   : Function Name: 'f'
+                 args: a=Integer(-1)
+                              file://interpreted_text:5:92
+                       3 │ var f = { |a| 
+                       4 │     if (a < 0 ) { 
+                       5 │         Error("Negative values are not allowed", [nil, "a negative value was passed here"]).throw
+                         ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+                       6 │     } { 
+                       7 │         f.(a - 1)
+                       8 │     }
+     Thrown while calling f
+     1   : Anonymous Function
+            args: e=
+                    file://interpreted_text:15:50
+                 13 │         f.(3) 
+                 14 │     } { |e| 
+                 15 │         ErrorWrapper(e, "Thrown while calling f").throw
+                    ┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+                 16 │     }
+                 17 │ };
+                 18 │ 
+Thrown at top level
+1   : Anonymous Function
+       args: e=
+          file://interpreted_text:22:43
+            20 │     g.()
+            21 │ } { |e|
+            22 │     ErrorWrapper(e, "Thrown at top level").throw
+               ┆     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+            23 │ }
+            24 │ 
+            25 │ )
+
+──────────────────────────────────────────────────────────────────────────────────
+::

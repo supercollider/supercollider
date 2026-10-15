@@ -331,7 +331,7 @@ SCDocHTMLRenderer {
 		if(thisIsTheMainHelpFile) {
 			stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
 		};
-		if(doc.isClassDoc and: { currentClass.notNil } and: { currentClass != Object }) {
+		if(doc.isClassDoc and: { currentClass.notNil } and: { currentClass != AbstractObjectExperimental }) {
 			stream << "<span id='superclasses'>"
 			<< " : "
 			<< (currentClass.superclasses.collect {|c|
@@ -1032,7 +1032,7 @@ SCDocHTMLRenderer {
 		if(doc.isClassDoc) {
 			currentClass = doc.klass;
 			currentImplClass = doc.implKlass;
-			if(currentClass != Object) {
+			if(currentClass != AbstractObjectExperimental) {
 				body.addDivAfter(\CLASSMETHODS,"inheritedclassmets","Inherited class methods");
 				body.addDivAfter(\INSTANCEMETHODS,"inheritedinstmets","Inherited instance methods");
 			};

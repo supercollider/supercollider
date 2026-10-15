@@ -19,25 +19,26 @@ struct SourceCodeLocation {
     // Offset as a byte index into the text.
     std::size_t absolute { 0 };
     // Zero indexed, first line is zero.
-    std::size_t lineNumber { 0 };
-    // Codepoint count, note, this is currently broken and doesn't work with multicodepoint graphemes.
+    std::size_t line_number { 0 };
+    // Byte offset in line.. NOT the visual column.
     std::size_t column { 0 };
 };
 
 // A location point inside an entire file
+struct FileCodeRange;
 struct FileCodeLocation {
-    [[nodiscard]] bool operator==(const SourceCodeLocation& o) const noexcept;
-    [[nodiscard]] bool operator!=(const SourceCodeLocation& o) const noexcept;
-    [[nodiscard]] bool operator<(const SourceCodeLocation& o) const noexcept;
-    [[nodiscard]] bool operator>(const SourceCodeLocation& o) const noexcept;
-    [[nodiscard]] bool operator<=(const SourceCodeLocation& o) const noexcept;
-    [[nodiscard]] bool operator>=(const SourceCodeLocation& o) const noexcept;
+    [[nodiscard]] bool operator==(const FileCodeLocation& o) const noexcept;
+    [[nodiscard]] bool operator!=(const FileCodeLocation& o) const noexcept;
+    [[nodiscard]] bool operator<(const FileCodeLocation& o) const noexcept;
+    [[nodiscard]] bool operator>(const FileCodeLocation& o) const noexcept;
+    [[nodiscard]] bool operator<=(const FileCodeLocation& o) const noexcept;
+    [[nodiscard]] bool operator>=(const FileCodeLocation& o) const noexcept;
 
     // Offset as a byte index into the text.
     std::size_t absolute { 0 };
     // Zero indexed, first line is zero.
-    std::size_t lineNumber { 0 };
-    // Codepoint count, note, this is currently broken and doesn't work with multicodepoint graphemes.
+    std::size_t line_number { 0 };
+    // Byte offset in line.. NOT the visual column.
     std::size_t column { 0 };
 };
 
@@ -47,6 +48,12 @@ struct SourceCodeRange {
     [[nodiscard]] static SourceCodeRange range(SourceCodeRange left, SourceCodeRange right);
     [[nodiscard]] std::size_t size() const;
     [[nodiscard]] std::size_t line_count() const;
+    [[nodiscard]] bool operator==(const SourceCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator!=(const SourceCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator<(const SourceCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator>(const SourceCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator<=(const SourceCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator>=(const SourceCodeRange& o) const noexcept;
 
     SourceCodeLocation begin, end;
 };
@@ -54,8 +61,15 @@ struct SourceCodeRange {
 // A range within an entire file
 struct FileCodeRange {
     [[nodiscard]] static FileCodeRange range(FileCodeRange left, FileCodeRange right);
+    [[nodiscard]] static FileCodeRange sourceToFile(FileCodeLocation start_of_source, SourceCodeRange src);
     [[nodiscard]] std::size_t size() const;
     [[nodiscard]] std::size_t line_count() const;
+    [[nodiscard]] bool operator==(const FileCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator!=(const FileCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator<(const FileCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator>(const FileCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator<=(const FileCodeRange& o) const noexcept;
+    [[nodiscard]] bool operator>=(const FileCodeRange& o) const noexcept;
 
     FileCodeLocation begin, end;
 };

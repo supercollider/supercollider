@@ -49,11 +49,9 @@ public:
 
     void CopyFrom(SymbolTable& inTable);
 
-    int NumItems() { return mNumItems; }
-    int TableSize() { return mMaxItems; }
-    PyrSymbol* Get(int inIndex) { return mTable[inIndex]; }
-
-    void CheckSymbols();
+    [[nodiscard]] int NumItems() const noexcept { return mNumItems; }
+    [[nodiscard]] int TableSize() const noexcept { return mMaxItems; }
+    [[nodiscard]] PyrSymbol* Get(int inIndex) const noexcept { return mTable[inIndex]; }
 
 private:
     friend PyrSymbol* getsym(const char* name);

@@ -166,7 +166,8 @@ public Q_SLOTS:
     void showSettings();
 
 signals:
-    void evaluateCode(const QString&, bool silent = true);
+    void evaluateCode(const QString&, bool silent = true, const QString* filePath = nullptr, int lineNumber = 0,
+                      int column = 0);
 
 public Q_SLOTS:
     void showStatusMessage(QString const& string);

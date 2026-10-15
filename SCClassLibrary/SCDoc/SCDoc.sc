@@ -986,7 +986,7 @@ URI {
 		};
 
 		uri = this.new(string);
-		if (uri.scheme.isNil) {
+		if (uri.scheme.isNil && string.notNil) {
 			uri.scheme = "file";
 			if (uri.authority.isNil) { uri.authority = "" }
 		};
@@ -1058,7 +1058,7 @@ URI {
 		^(
 			(this.filenameSymbol != class.filenameSymbol)
 			and:
-			if((class!=Object) and: (class!=Meta_Object),
+			if((class!=AbstractObjectExperimental) and: (class!=Meta_AbstractObjectExperimental),
 				{class.superclasses.includes(this.ownerClass).not},
 				{true})
 		);

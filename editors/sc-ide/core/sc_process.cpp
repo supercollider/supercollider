@@ -26,6 +26,7 @@
 
 #include <QtConcurrent>
 
+#include "include/lang/SC_LanguageClient.h"
 #include "main.hpp"
 #include "main_window.hpp"
 #include "sc_introspection.hpp"
@@ -35,6 +36,7 @@
 #include "util/standard_dirs.hpp"
 #include "../primitives/localsocket_utils.hpp"
 
+#include <qstringview.h>
 #include <yaml-cpp/node/node.h>
 #include <yaml-cpp/parser.h>
 
@@ -172,7 +174,8 @@ void ScProcess::recompileClassLibrary(void) {
         return;
     }
     mCompiled = false;
-    write("\x18");
+    const char recompileChar { SC_LanguageClient::RecompileLibrary };
+    write(&recompileChar, 1);
 }
 
 
@@ -231,22 +234,46 @@ void ScProcess::onReadAllStandardError(void) {
     emit scPost("ERROR: " + QString::fromUtf8(out));
 }
 
-void ScProcess::evaluateCode(QString const& commandString, bool silent) {
+void ScProcess::evaluateCode(QString const& commandString, bool silent, const QString* filePath, int lineNumber,
+                             int column) {
     if (state() != QProcess::Running) {
         emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
 
-    QByteArray bytesToWrite = commandString.toUtf8();
-    size_t writtenBytes = write(bytesToWrite);
-    if (writtenBytes != bytesToWrite.size()) {
-        emit statusMessage(tr("Error when passing data to interpreter!"));
-        return;
+    // for protocol structure and control characters, see SC_TerminalClient::InputProtocol
+    QByteArray bytesToWrite;
+
+    if (filePath && !filePath->isEmpty()) {
+        // start header
+        bytesToWrite.append(SC_LanguageClient::StartOfHeader);
+
+        // file name
+        bytesToWrite.append(filePath->toUtf8());
+        bytesToWrite.append(SC_LanguageClient::RecordDelimiter);
+
+        // line number
+        const auto lineNumberString = QString::number(lineNumber);
+        bytesToWrite.append(lineNumberString.toUtf8());
+        bytesToWrite.append(SC_LanguageClient::RecordDelimiter);
+
+        // column number
+        const auto columnString = QString::number(column);
+        bytesToWrite.append(columnString.toUtf8());
+
+        // mark end of header resp. start of code
+        bytesToWrite.append(SC_LanguageClient::StartOfText);
     }
 
-    char commandChar = silent ? '\x1b' : '\x0c';
+    // add code
+    bytesToWrite.append(commandString.toUtf8());
 
-    write(&commandChar, 1);
+    // end of code
+    bytesToWrite.append(silent ? SC_LanguageClient::InterpretCmdLine : SC_LanguageClient::InterpretPrintCmdLine);
+
+    size_t writtenBytes = write(bytesToWrite);
+    if (writtenBytes != bytesToWrite.size())
+        emit statusMessage(tr("Error when passing data to interpreter!"));
 }
 
 void ScProcess::onNewIpcConnection() {

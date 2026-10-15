@@ -426,9 +426,9 @@ Event : Environment {
 					ev.sendOSC([23, group, ev[\id]]);
 					ev[\group] = group; ev[\addAction] = 1;
 				},
-				isPlaying: #{ |ev| ^(ev[\isPlaying] == true) },
+				isPlaying: #{ |ev| (ev[\isPlaying] == true) },
 				isPlaying_: #{ | ev, flag | ev[\isPlaying] = flag; },
-				nodeID: #{ |ev| ^ev[\id].asArray.last },
+				nodeID: #{ |ev| ev[\id].asArray.last },
 
 
 				asEventStreamPlayer: #{|ev| ev }
@@ -612,9 +612,7 @@ Event : Environment {
 						// msgFunc gets the synth's control values from the Event
 						instr = ( ~synthLib ?? { SynthDescLib.global } ).at(~instrument);
 						if(instr.isNil) {
-							"Event: instrument % not found in SynthDescLib"
-							.format(~instrument).warn;
-							^this
+							Error("Event: instrument % not found in SynthDescLib".format(~instrument)).throw
 						};
 						msgFunc = instr.msgFunc;
 						instrumentName = ~synthDefName.valueEnvir;

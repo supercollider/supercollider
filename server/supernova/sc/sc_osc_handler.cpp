@@ -16,9 +16,6 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#include "server/memory_pool.hpp"
-#include <iostream>
-
 // AppleClang workaround
 #if defined(__apple_build_version__) && __apple_build_version__ > 10000000
 #    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
@@ -33,7 +30,6 @@
 #include <boost/asio/read.hpp>
 #include <boost/bind/bind.hpp>
 
-
 #include "osc/OscOutboundPacketStream.h"
 #include "osc/OscPrintReceivedElements.h"
 
@@ -45,6 +41,10 @@
 #include "SC_OSC_Commands.h"
 #include "SC_Version.hpp"
 #include "SC_FifoMsg.h"
+
+#include <algorithm>
+#include <cassert>
+#include <iostream>
 
 #ifdef _WIN32
 #    include "malloc.h" // for alloca
@@ -214,46 +214,27 @@ template <typename T> static inline void consume(T&& object) {
     T sink(std::forward<T>(object)); // move object here (and destroy)
 }
 
-void send_done_message(endpoint_ptr const& endpoint, const char* cmd) {
+template <typename... Args> void send_done_message(endpoint_ptr const& endpoint, const char* cmd, Args const&... args) {
     if (endpoint) {
-        char buffer[1024];
-        osc::OutboundPacketStream p(buffer, 1024);
-        p << osc::BeginMessage("/done") << cmd << osc::EndMessage;
+        std::array<char, 1024> buffer;
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
+        p << osc::BeginMessage("/done") << cmd;
+        (p << ... << args) << osc::EndMessage;
 
         endpoint->send(p.Data(), p.Size());
     }
 }
 
-void send_done_message(endpoint_ptr const& endpoint, const char* cmd, osc::int32 index) {
+template <typename... Args> void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, Args const&... args) {
     if (endpoint) {
-        char buffer[1024];
-        osc::OutboundPacketStream p(buffer, 1024);
-        p << osc::BeginMessage("/done") << cmd << index << osc::EndMessage;
+        std::array<char, 8192> buffer;
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
+        p << osc::BeginMessage("/fail") << cmd;
+        (p << ... << args) << osc::EndMessage;
 
         endpoint->send(p.Data(), p.Size());
     }
 }
-
-void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char* content) {
-    if (endpoint) {
-        char buffer[8192];
-        osc::OutboundPacketStream p(buffer, 8192);
-        p << osc::BeginMessage("/fail") << cmd << content << osc::EndMessage;
-
-        endpoint->send(p.Data(), p.Size());
-    }
-}
-
-void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char* content, int id) {
-    if (endpoint) {
-        char buffer[8192];
-        osc::OutboundPacketStream p(buffer, 8192);
-        p << osc::BeginMessage("/fail") << cmd << content << (osc::int32)id << osc::EndMessage;
-
-        endpoint->send(p.Data(), p.Size());
-    }
-}
-
 
 template <typename Functor> struct fn_system_callback : public system_callback {
     fn_system_callback(Functor const& fn): fn_(fn) {}
@@ -392,24 +373,67 @@ void report_failure(endpoint_ptr const& endpoint, std::exception const& error, c
 namespace detail {
 using nova::log;
 
-int sc_notify_observers::add_observer(endpoint_ptr const& ep) {
-    auto it = find(ep);
-    if (it != observers.end())
-        return already_registered;
-
-    observers.push_back(ep);
-    return observers.size() - 1;
+void udp_endpoint::send(const char* data, size_t length) {
+    instance->sc_notify_observers::send_udp(data, length, endpoint_);
 }
 
-int sc_notify_observers::remove_observer(endpoint_ptr const& ep) {
-    auto it = find(ep);
+bool udp_endpoint::match(nova_endpoint const& other) const {
+    if (auto ep = dynamic_cast<const udp_endpoint*>(&other)) {
+        return *this == *ep;
+    }
+    return false;
+}
 
-    if (it == observers.end())
+
+std::pair<sc_notify_observers::error_code, int> sc_notify_observers::add_observer(endpoint_ptr const& ep,
+                                                                                  int client_id) {
+    auto it =
+        std::find_if(observers_.begin(), observers_.end(), [&ep](const auto& o) { return o.endpoint->match(*ep); });
+    if (it != observers_.end())
+        return { already_registered, -1 };
+
+    if (observers_.size() >= max_num_observers_)
+        return { too_many_users, -1 };
+
+    if (client_id >= 0) {
+        auto it2 = std::find(available_client_ids_.begin(), available_client_ids_.end(), client_id);
+        if (it2 != available_client_ids_.end()) {
+            // take requested ID
+            available_client_ids_.erase(it2);
+        } else {
+            // requested ID not available -> pick free ID
+            assert(!available_client_ids_.empty());
+            client_id = available_client_ids_.front();
+            available_client_ids_.pop_front();
+        }
+    } else {
+        // no client ID requested -> pick free ID.
+        assert(!available_client_ids_.empty());
+        client_id = available_client_ids_.front();
+        available_client_ids_.pop_front();
+    }
+
+    observers_.push_back(observer { ep, client_id });
+
+    assert(observers_.size() + available_client_ids_.size() == max_num_observers_);
+
+    return { no_error, client_id };
+}
+
+sc_notify_observers::error_code sc_notify_observers::remove_observer(endpoint_ptr const& ep) {
+    auto it =
+        std::find_if(observers_.begin(), observers_.end(), [&ep](const auto& o) { return o.endpoint->match(*ep); });
+    if (it == observers_.end())
         return not_registered;
 
-    const int observerIndex = it - observers.begin();
-    observers.erase(it);
-    return observerIndex;
+    // return client ID
+    available_client_ids_.push_back(it->client_id);
+    // remove observer
+    observers_.erase(it);
+
+    assert(observers_.size() + available_client_ids_.size() == max_num_observers_);
+
+    return no_error;
 }
 
 const char* sc_notify_observers::error_string(error_code error) {
@@ -418,38 +442,19 @@ const char* sc_notify_observers::error_string(error_code error) {
         return "";
 
     case already_registered:
-        return "notify: already registered";
+        return "already registered";
 
     case not_registered:
-        return "notify: not registered";
+        return "not registered";
+
+    case too_many_users:
+        return "too many users";
 
     default:
         assert(false);
-        return "";
+        return "nknown error";
     }
 }
-
-sc_notify_observers::observer_vector::iterator sc_notify_observers::find(endpoint_ptr const& ep) {
-    for (auto it = observers.begin(); it != observers.end(); ++it) {
-        udp_endpoint* elemUDP = dynamic_cast<udp_endpoint*>(it->get());
-        udp_endpoint* testUDP = dynamic_cast<udp_endpoint*>(ep.get());
-        if (elemUDP && testUDP) {
-            if (*elemUDP == *testUDP)
-                return it;
-        }
-
-        typedef sc_osc_handler::tcp_connection tcp_connection;
-
-        tcp_connection* elemTCP = dynamic_cast<tcp_connection*>(it->get());
-        tcp_connection* testTCP = dynamic_cast<tcp_connection*>(ep.get());
-        if (elemTCP && testTCP) {
-            if (*elemTCP == *testTCP)
-                return it;
-        }
-    }
-    return observers.end();
-}
-
 
 void sc_notify_observers::notify(const char* address_pattern, const server_node* node) const {
     char buffer[128]; // 128 byte should be enough
@@ -459,11 +464,11 @@ void sc_notify_observers::notify(const char* address_pattern, const server_node*
 
     movable_array<char> message(p.Size(), p.Data());
 
-    cmd_dispatcher<true>::fire_io_callback([=, message = std::move(message)]() mutable {
+    cmd_dispatcher<true>::fire_io_callback([message = std::move(message)]() mutable {
         instance->send_notification(message.data(), message.size());
 
         cmd_dispatcher<true>::fire_rt_callback(
-            [=, message = std::move(message)]() mutable { consume(std::move(message)); });
+            [message = std::move(message)]() mutable { consume(std::move(message)); });
     });
 }
 
@@ -513,19 +518,14 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
 }
 
 void sc_notify_observers::send_notification(const char* data, size_t length) {
-    for (auto& observer : observers)
-        observer->send(data, length);
-}
-
-void udp_endpoint::send(const char* data, size_t length) {
-    instance->sc_notify_observers::send_udp(data, length, endpoint_);
+    for (auto& [ep, id] : observers_)
+        ep->send(data, length);
 }
 
 void sc_notify_observers::send_udp(const char* data, size_t size, udp::endpoint const& receiver) {
     std::lock_guard<std::mutex> lock(udp_mutex);
     sc_notify_observers::udp_socket.send_to(boost::asio::buffer(data, size), receiver);
 }
-
 
 void sc_scheduled_bundles::bundle_node::run(void) {
     typedef osc::ReceivedBundleElement bundle_element;
@@ -738,7 +738,6 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler* self) {
     async_read_msg_size();
 }
 
-
 void sc_osc_handler::tcp_connection::send(const char* data, size_t length) {
     std::lock_guard<std::mutex> lock(socket_mutex_);
     try {
@@ -750,6 +749,12 @@ void sc_osc_handler::tcp_connection::send(const char* data, size_t length) {
     } catch (std::exception const& err) { std::cout << "Exception when sending message over TCP: " << err.what(); }
 }
 
+bool sc_osc_handler::tcp_connection::match(const nova_endpoint& other) const {
+    if (auto ep = dynamic_cast<const sc_osc_handler::tcp_connection*>(&other)) {
+        return *this == *ep;
+    }
+    return false;
+}
 
 void sc_osc_handler::tcp_connection::async_read_msg_size() {
     namespace asio = boost::asio;
@@ -796,9 +801,8 @@ void sc_osc_handler::tcp_connection::handle_message() {
     async_read_msg_size();
 }
 
-
 void sc_osc_handler::start_tcp_accept(void) {
-    tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_executor());
+    auto new_connection = tcp_connection::create(tcp_acceptor_.get_executor());
 
     tcp_acceptor_.async_accept(
         new_connection->socket(),
@@ -811,7 +815,6 @@ void sc_osc_handler::handle_tcp_accept(tcp_connection::pointer new_connection, c
 
     start_tcp_accept();
 }
-
 
 void sc_osc_handler::handle_packet_async(const char* data, size_t length, endpoint_ptr const& endpoint) {
     received_packet* p = received_packet::alloc_packet(data, length, endpoint);
@@ -843,7 +846,6 @@ time_tag sc_osc_handler::handle_bundle_nrt(const char* data, size_t length) {
     handle_bundle<false>(bundle, nullptr);
     return bundle.TimeTag();
 }
-
 
 sc_osc_handler::received_packet* sc_osc_handler::received_packet::alloc_packet(const char* data, size_t length,
                                                                                endpoint_ptr const& remote_endpoint) {
@@ -942,26 +944,38 @@ template <bool realtime> void handle_quit(endpoint_ptr const& endpoint) {
 }
 
 template <bool realtime> void handle_notify(ReceivedMessage const& message, endpoint_ptr const& endpoint) {
-    int enable = first_arg_as_int(message);
+    osc::int32 enable = 0;
+    osc::int32 id = -1;
+    osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
+    args >> enable;
+    if (!args.Eos())
+        args >> id;
 
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint)]() {
-        int observer = 0;
-
+    cmd_dispatcher<realtime>::fire_io_callback([endpoint = endpoint_ptr(endpoint), enable, id]() {
         if (enable) {
-            observer = instance->add_observer(endpoint);
-
-            if (observer < 0)
-                send_fail_message(endpoint, "/notify",
-                                  sc_notify_observers::error_string((sc_notify_observers::error_code)observer));
+            const auto [error, client_id] = instance->add_observer(endpoint, id);
+            if (error == sc_notify_observers::no_error) {
+                send_done_message(endpoint, "/notify", (osc::int32)client_id,
+                                  (osc::int32)instance->max_num_observers());
+            } else {
+                auto msg = sc_notify_observers::error_string(error);
+                if (error == sc_notify_observers::already_registered)
+                    // matches the behavior of scsynth
+                    send_fail_message(endpoint, "/notify", msg, id);
+                else
+                    send_fail_message(endpoint, "/notify", msg);
+                log_printf("/notify: %s\n", msg);
+            }
         } else {
-            observer = instance->remove_observer(endpoint);
-            if (observer < 0)
-                send_fail_message(endpoint, "/notify",
-                                  sc_notify_observers::error_string((sc_notify_observers::error_code)observer));
+            const auto error = instance->remove_observer(endpoint);
+            if (error == sc_notify_observers::no_error) {
+                send_done_message(endpoint, "/notify");
+            } else {
+                auto msg = sc_notify_observers::error_string(error);
+                send_fail_message(endpoint, "/notify", msg);
+                log_printf("/notify: %s\n", msg);
+            }
         }
-
-        if (observer >= 0)
-            send_done_message(endpoint, "/notify", observer);
     });
 }
 
@@ -2748,7 +2762,7 @@ template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t ms
             printf("/b_gen handler: invalid buffer index type %c\n", nextTag);
             return;
         }
-        int index = msg.geti();
+        osc::int32 index = msg.geti();
 
         const char* generator = (const char*)msg.gets4();
         if (!generator) {

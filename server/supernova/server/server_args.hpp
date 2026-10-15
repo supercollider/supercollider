@@ -72,6 +72,7 @@ public:
     std::vector<std::string> ugen_paths, restrict_paths;
 
     uint16_t input_channels, output_channels;
+    uint32_t max_logins;
     std::string server_password;
 
 #ifdef __APPLE__

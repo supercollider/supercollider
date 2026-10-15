@@ -28,16 +28,16 @@ public:
     void jump_forward(CodePoint cp) noexcept { txt_iter += codepoint_size(cp); }
     void jump_backward(CodePoint cp) noexcept { txt_iter -= codepoint_size(cp); }
 
-    [[nodiscard]] auto current_codepoint() const noexcept {
-        return utf8_sequence_to_codepoint(txt_iter, static_cast<std::size_t>(txt_end - txt_iter));
-    }
+    [[nodiscard]] std::tuple<CodePoint, std::uint8_t> current_codepoint() const noexcept;
     [[nodiscard]] const char* current_location() const noexcept { return txt_iter; }
+
+
+    const char* const txt_start;
+    const char* const txt_end;
 
 private:
     CodePointIterator(const char* text_start, const char* text_end, const char* cur_location) noexcept;
 
-    const char* const txt_start;
-    const char* const txt_end;
 
     const char* txt_iter;
 };
@@ -71,7 +71,6 @@ private:
 
     CodePointIterator cp_iter;
     std::size_t current_line;
-    enum Dir { None, Backward, Forwards } previous_dir { None };
 };
 
 }

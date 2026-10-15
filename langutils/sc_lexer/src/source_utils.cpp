@@ -23,6 +23,8 @@ std::optional<CodePointIterator> CodePointIterator::make(const char* txt_start, 
 std::optional<CodePoint> CodePointIterator::forwards() noexcept {
     if (txt_iter >= txt_end)
         return std::nullopt;
+    if (txt_iter < txt_start)
+        txt_iter = txt_start;
     const auto [cp, sz] = utf8_sequence_to_codepoint(txt_iter, static_cast<std::size_t>(txt_end - txt_iter));
     if (cp == invalid_utf8_flag)
         return std::nullopt;
@@ -34,6 +36,8 @@ std::optional<CodePoint> CodePointIterator::forwards() noexcept {
 std::optional<CodePoint> CodePointIterator::backwards() noexcept {
     if (txt_iter <= txt_start)
         return std::nullopt;
+    if (txt_iter > txt_end)
+        txt_iter = txt_end;
     txt_iter -= 1; // enters previous codepoint. We were sat at the start of one.
     const auto [cp, sz] = utf8_sequence_to_codepoint_backwards(txt_start, txt_iter);
     if (cp == invalid_utf8_flag)
@@ -45,62 +49,75 @@ std::optional<CodePoint> CodePointIterator::backwards() noexcept {
 LineIter::LineIter(CodePointIterator it, std::size_t line_number) noexcept: cp_iter(it), current_line(line_number) {}
 
 std::optional<LineIter> LineIter::make(const char* txt_start, const char* txt_end, SourceCodeLocation loc) {
-    auto m_cp_it = CodePointIterator::make(txt_start, txt_end, txt_start + loc.absolute);
+    auto m_cp_it = CodePointIterator::make(txt_start, txt_end, txt_start + loc.absolute - loc.column);
     if (!m_cp_it)
         return std::nullopt;
-    return { { std::move(*m_cp_it), loc.lineNumber } };
+    return { { std::move(*m_cp_it), loc.line_number } };
 }
 
 std::optional<LineIter::Result> LineIter::forwards() noexcept {
-    if (previous_dir == Backward) {
-        const auto [cp, sz] = cp_iter.current_codepoint();
-        if (is_newline(cp)) {
-            cp_iter.forwards();
-            current_line += 1;
-        }
-    }
-    previous_dir = Forwards;
-
     const auto start = cp_iter.current_location();
+    const auto [cur_cp, cur_sz] = cp_iter.current_codepoint();
+    if (is_newline(cur_cp)) {
+        // This means we have a line of only a new line
+        cp_iter.forwards();
+        current_line += 1;
+        const auto end = cp_iter.current_location();
+        return { { start, static_cast<size_t>(end - start), current_line - 1, true } };
+    }
 
-    bool ends_in_newline_char = false;
     for (auto r = cp_iter.forwards(); r; r = cp_iter.forwards()) {
         if (is_newline(*r)) {
-            ends_in_newline_char = true;
-            break;
+            const auto end = cp_iter.current_location();
+            // cp_iter.forwards();
+            current_line += 1;
+            return { { start, static_cast<size_t>(end - start), current_line - 1, true } };
         }
     }
 
+    // hit the end of the file
     const auto end = cp_iter.current_location();
     const auto sz = static_cast<std::size_t>(end - start);
     if (sz == 0)
         return std::nullopt;
-    else {
-        current_line += 1; // assumming we don't overflow.
-        return { { start, sz, current_line - 1, ends_in_newline_char } };
-    }
+    return { { start, sz, current_line, false } };
 }
 
 std::optional<LineIter::Result> LineIter::backwards() noexcept {
-    if (previous_dir == Forwards) {}
-    previous_dir = Backward;
+    if (cp_iter.current_location() <= cp_iter.txt_start)
+        return std::nullopt;
+
     const auto end = cp_iter.current_location();
-    bool ends_in_newline_char = is_newline(std::get<0>(cp_iter.current_codepoint()));
-    for (auto r = cp_iter.backwards(); r; r = cp_iter.backwards()) {
-        if (is_newline(*r)) {
-            cp_iter.forwards(); // undo
-            break;
+
+    const auto new_line = cp_iter.backwards();
+    if (!new_line) {
+        if (current_line != 0)
+            current_line -= 1;
+        const auto start = cp_iter.current_location();
+        return { { start, static_cast<size_t>(end - start), current_line, true } };
+    }
+
+
+    for (auto b = cp_iter.backwards(); b; b = cp_iter.backwards()) {
+        if (is_newline(*b)) {
+            cp_iter.forwards();
+            current_line -= 1;
+            const auto start = cp_iter.current_location();
+            return { { start, static_cast<size_t>(end - start), current_line + 1, true } };
         }
     }
+
+    // start of file
     const auto start = cp_iter.current_location();
-    cp_iter.backwards();
-    const auto sz = static_cast<std::size_t>(end - start);
-    if (sz == 0)
-        return std::nullopt;
-    else {
-        if (current_line != 0)
-            current_line -= 1; // avoid underflow if we are on line zero already.
-        return { { start, sz, current_line + 1, ends_in_newline_char } };
-    }
+    if (current_line != 0)
+        current_line -= 1;
+    return { { start, static_cast<size_t>(end - start), current_line, true } };
+}
+
+
+[[nodiscard]] std::tuple<CodePoint, std::uint8_t> CodePointIterator::current_codepoint() const noexcept {
+    if (txt_iter >= txt_end)
+        return { 0, std::uint8_t { 0 } };
+    return utf8_sequence_to_codepoint(txt_iter, static_cast<std::size_t>(txt_end - txt_iter));
 }
 }

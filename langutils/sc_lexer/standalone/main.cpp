@@ -14,8 +14,8 @@
 using namespace sc::lex;
 
 template <typename Stream> void print(Stream& s, SourceCodeRange r) {
-    s << "{ \"Start\": [" << r.begin.lineNumber << ", " << r.begin.column << "], \"End\": [" << r.end.lineNumber << ","
-      << r.end.column << "]}";
+    s << "{ \"Start\": [" << r.begin.line_number << ", " << r.begin.column << "], \"End\": [" << r.end.line_number
+      << "," << r.end.column << "]}";
 }
 
 #ifdef _MSC_VER

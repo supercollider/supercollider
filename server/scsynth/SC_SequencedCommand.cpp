@@ -1248,22 +1248,22 @@ bool NotifyCmd::Stage2() {
         for (auto addr : *hw->mUsers) {
             if (mReplyAddress == addr) {
                 // already in table - don't fail though..
-                SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n",
+                SendFailureWithIntValue(&mReplyAddress, "/notify", "already registered\n",
                                         hw->mClientIDdict->at(mReplyAddress));
-                scprintf("/notify : already registered\n");
+                scprintf("/notify: already registered\n");
                 return false;
             }
         }
 
         if (hw->mUsers->size() >= hw->mMaxUsers) {
             SendFailure(&mReplyAddress, "/notify", "too many users\n");
-            scprintf("too many users\n");
+            scprintf("/notify: too many users\n");
             return false;
         }
 
         int const clientID = popAvailableClientID(mID, *hw->mAvailableClientIDs);
 
-        hw->mClientIDdict->insert(std::make_pair(mReplyAddress, clientID));
+        hw->mClientIDdict->emplace(mReplyAddress, clientID);
         hw->mUsers->insert(mReplyAddress);
         SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
 
@@ -1280,7 +1280,7 @@ bool NotifyCmd::Stage2() {
         }
 
         SendFailure(&mReplyAddress, "/notify", "not registered\n");
-        scprintf("not registered\n");
+        scprintf("/notify: not registered\n");
     }
     return false;
 }

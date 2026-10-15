@@ -24,10 +24,16 @@
 */
 
 #include "SC_LanguageClient.h"
-#include "SC_Lock.h"
-#include <cstring>
-#include <string>
+#include "ClassLibraryInfo.hpp"
+#include "PyrObject.h"
+#include "PyrSched.h"
+#include "SCBase.h"
+#include "SC_StringBuffer.h"
+
 #include <cerrno>
+#include <cstring>
+#include <mutex>
+#include <string>
 
 #ifdef _WIN32
 #    include <stdio.h>
@@ -39,36 +45,23 @@
 #    include <unistd.h>
 #endif
 
-#include "PyrObject.h"
-#include "PyrKernel.h"
-#include "PyrPrimitive.h"
-#include "PyrSched.h"
-#include "GC.h"
-#include "VMGlobals.h"
-#include "SCBase.h"
-#include "SC_StringBuffer.h"
-
 void closeAllGUIScreens();
 void initGUI();
 void initGUIPrimitives();
-
-extern PyrString* newPyrStringN(class PyrGC* gc, std::int64_t length, std::int64_t flags, std::int64_t collect);
 
 // =====================================================================
 // SC_LanguageClient
 // =====================================================================
 
 SC_LanguageClient* gInstance = nullptr;
-SC_Lock gInstanceMutex;
+std::mutex gInstanceMutex;
+std::thread::id gMainThreadID;
 
-class HiddenLanguageClient {
-public:
-    HiddenLanguageClient(): mPostFile(nullptr), mScratch(0), mRunning(false) {}
-
+struct HiddenLanguageClient {
     std::string mName;
-    FILE* mPostFile;
+    FILE* mPostFile = nullptr;
     SC_StringBuffer mScratch;
-    bool mRunning;
+    bool mRunning = false;
 };
 
 SC_LanguageClient::SC_LanguageClient(const std::string& name) {
@@ -84,6 +77,7 @@ SC_LanguageClient::SC_LanguageClient(const std::string& name) {
 
     mHiddenClient->mName = name;
     gInstance = this;
+    gMainThreadID = std::this_thread::get_id();
 
     unlockInstance();
 }
@@ -104,7 +98,9 @@ void SC_LanguageClient::initRuntime(const Options& opt) {
                 error("Cannot change to runtime directory: %s", strerror(errno));
         }
         pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
+#ifndef __EMSCRIPTEN__
         init_OSC(opt.mPort);
+#endif
         schedInit();
         onInitRuntime();
     }
@@ -115,43 +111,40 @@ void SC_LanguageClient::shutdownRuntime() {
     cleanup_OSC();
 }
 
-void SC_LanguageClient::compileLibrary(bool standalone) { ::compileLibrary(standalone); }
+bool SC_LanguageClient::compileLibrary(bool standalone) {
+    return mCompiledSuccessfully = ::compileLibrary(mCompiledSuccessfully, standalone);
+}
 
-extern void shutdownLibrary();
 void SC_LanguageClient::shutdownLibrary() {
-    ::shutdownLibrary();
+    ::shutdownLibrary(mCompiledSuccessfully);
     flush();
 }
 
-void SC_LanguageClient::recompileLibrary(bool standalone) { compileLibrary(standalone); }
-
-void SC_LanguageClient::setCmdLine(const char* buf, size_t size) {
-    if (isLibraryCompiled()) {
-        lock();
-        if (isLibraryCompiled()) {
-            VMGlobals* g = gMainVMGlobals;
-
-            PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
-            memcpy(strobj->s, buf, size);
-
-            SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
-            g->gc->GCWriteNew(slotRawObject(&g->process->interpreter),
-                              strobj); // we know strobj is white so we can use GCWriteNew
-        }
-        unlock();
-    }
+bool SC_LanguageClient::recompileLibrary(bool standalone) {
+    return mCompiledSuccessfully = ::compileLibrary(mCompiledSuccessfully, standalone);
 }
 
-void SC_LanguageClient::setCmdLine(const char* str) { setCmdLine(str, strlen(str)); }
+void SC_LanguageClient::setCmdLine(const char* buf, size_t size, const char* filePath, int lineNumber, int column) {
+    assert(buf != nullptr);
+    lock();
+    if (isLibraryCompiled()) {
+        setCommandLine(buf, size, filePath, lineNumber, column);
+    }
+    unlock();
+}
 
-void SC_LanguageClient::setCmdLinef(const char* fmt, ...) {
-    SC_StringBuffer& scratch = mHiddenClient->mScratch;
+void SC_LanguageClient::setCmdLine(const char* str, const char* filePath, int lineNumber, int column) {
+    setCmdLine(str, strlen(str), filePath, lineNumber, column);
+}
+
+void SC_LanguageClient::setCmdLinef(const char* filePath, int lineNumber, int column, const char* fmt, ...) {
+    auto& scratch = mHiddenClient->mScratch;
     va_list ap;
     va_start(ap, fmt);
     scratch.reset();
     scratch.vappendf(fmt, ap);
     va_end(ap);
-    setCmdLine(scratch.getData());
+    setCmdLine(scratch.getData(), filePath, lineNumber, column);
 }
 
 void SC_LanguageClient::runLibrary(PyrSymbol* symbol) {
@@ -175,14 +168,16 @@ void SC_LanguageClient::executeFile(const std::string& fileName) {
         ++i;
     }
 
-    setCmdLinef("thisProcess.interpreter.executeFile(\"%s\")", escaped_file_name.c_str());
+    setCmdLinef(fileName.c_str(), 0, 0, "thisProcess.interpreter.executeFile(\"%s\")", escaped_file_name.c_str());
     runLibrary(s_interpretCmdLine);
 }
 
 void SC_LanguageClient::tick() {
     if (trylock()) {
         if (isLibraryCompiled()) {
-            ::runLibrary(s_tick);
+            // see tickLocked - though wasm does not call tick, only tickLocked,
+            // but in order to keep both implementations in sync
+            ::runLibrary(s_tick, true);
         }
         unlock();
     }
@@ -191,7 +186,12 @@ void SC_LanguageClient::tick() {
 
 bool SC_LanguageClient::tickLocked(double* nextTime) {
     if (isLibraryCompiled()) {
-        ::runLibrary(s_tick);
+        // The AppClock tick should run in the main thread, which is the default
+        // thread but not the default thread for the wasm client.
+        // We therefore have to pass runsInMainThread explicitly here, which is fine
+        // b/c the AppClock is also scheduled from the main thread in wasm.
+        // See also LANG_THREAD_IS_MAIN_THREAD
+        ::runLibrary(s_tick, true);
     }
 
     return slotDoubleVal(&gMainVMGlobals->result, nextTime) == errNone;
@@ -221,14 +221,15 @@ SC_LanguageClient* SC_LanguageClient::instance() { return gInstance; }
 void SC_LanguageClient::lockInstance() { gInstanceMutex.lock(); }
 void SC_LanguageClient::unlockInstance() { gInstanceMutex.unlock(); }
 
-extern bool gCompiledOK;
 
 const char* SC_LanguageClient::getName() const { return mHiddenClient->mName.c_str(); }
 
 FILE* SC_LanguageClient::getPostFile() { return mHiddenClient->mPostFile; }
 void SC_LanguageClient::setPostFile(FILE* file) { mHiddenClient->mPostFile = file; }
 
-bool SC_LanguageClient::isLibraryCompiled() { return gCompiledOK; }
+extern ClassLibraryInfo gClassLibraryInfo;
+
+bool SC_LanguageClient::isLibraryCompiled() const { return gClassLibraryInfo.acceptsInput(); }
 
 int SC_LanguageClient::run(int argc, char** argv) {
     throw std::runtime_error("SC_LanguageClient::run only supported on terminal client");
@@ -309,6 +310,22 @@ void initGUI() { SC_LanguageClient::instance()->onInterpStartup(); }
 
 void initGUIPrimitives() { SC_LanguageClient::instance()->onLibraryStartup(); }
 
-std::int64_t scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
-std::int64_t scMIDIout(int port, int len, int statushi, int chan, int data1, int data2) { return 0; }
-// EOF
+// Declared in VMGlobals.h
+void setCanCallOS(VMGlobals* g, bool canCallOS) {
+    // Check that 'canCallOS' is only set to 'true' on the main thread and post an error otherwise.
+    // This helps to catch situations where functions like recompileLibrary() are called on the wrong
+    // thread, which can otherwise cause hard-to-debug Qt error messages.
+    // We only do this if the language thread is supposed to be the main thread, which is true for all
+    // desktop clients, but not for the WASM client. See the comment above LANG_THREAD_IS_MAIN_THREAD.
+    if (LANG_THREAD_IS_MAIN_THREAD && canCallOS) {
+        assert(gMainThreadID != std::thread::id {});
+        if (std::this_thread::get_id() != gMainThreadID) {
+            postfl("ERROR: attempting to set 'canCallOS' to 'true' on the wrong thread!\n");
+            // Set to 'false' so that Qt primitives know that they are being called on the wrong thread
+            // and throw an exception.
+            g->canCallOS = false;
+            return;
+        }
+    }
+    g->canCallOS = canCallOS;
+}
