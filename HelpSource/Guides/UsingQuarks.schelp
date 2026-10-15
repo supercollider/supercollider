@@ -141,7 +141,7 @@ code::
 Quarks.gui
 ::
 
-subsection:: Updating a Specific quark
+subsection:: Updating a single quark
 
 To update a specific installed quark, evaluate the following code:
 
