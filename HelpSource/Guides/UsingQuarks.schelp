@@ -141,7 +141,13 @@ code::
 Quarks.gui
 ::
 
+subsection:: Updating a single quark
 
+To update a specific installed quark, evaluate the following code:
+
+code::
+Quark("theNameOfaQuark").update;
+::
 
 section:: Saving and Loading sets of Quarks
 

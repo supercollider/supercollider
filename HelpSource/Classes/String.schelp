@@ -954,6 +954,31 @@ code::
 method::parseJSONFile
 This method is currently just an alias for link::#-parseYAMLFile::, in the future it will only accept valid JSON files.
 
+subsection:: Quarks Support
+
+method:: include
+Installs the link::Classes/Quark##quark:: specified by the receiver link::Classes/String:: (either a quark name or a repository URL), if it is not already installed.
+This process adds the quark path to the link::Classes/LanguageConfig##language config file::.
+If the quark is already downloaded to the local quark folder (i.e., code::Quarks.folder::) but not installed, this method only registers it in the configuration file.
+Recompiling the class library is required for newly installed classes to become available.
+
+code::
+// Example 1: Installing a quark directly from a remote repository URL.
+"https://github.com/supercollider-quarks/MathLib".include;
+
+// Example 2: Installing a known quark by name.
+"MathLib".include;
+::
+
+method:: exclude
+Uninstalls the link::Classes/Quark##quark:: specified by the receiver link::Classes/String::, if it is currently installed.
+This process removes the quark from link::Classes/LanguageConfig##language config file::.
+Recompiling the class library is required after uninstalling a quark.
+
+code::
+"MathLib".exclude;
+::
+
 subsection::Document Support
 
 method::newTextWindow
