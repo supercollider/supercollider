@@ -958,7 +958,10 @@ subsection:: Quarks Support
 
 method:: include
 Installs the link::Classes/Quark##quark:: specified by the receiver link::Classes/String:: (either a quark name or a repository URL), if it is not already installed.
-This process registers the quark in code::(Platform.userAppSupportDir +/+ "sclang_conf.yaml")::.
+This process adds the quark path to the language config file:
+code::
+(Platform.userAppSupportDir +/+ "sclang_conf.yaml").openOS
+::
 If the quark is already downloaded to the local quark folder (i.e., code::Quarks.folder::) but not installed, this method only registers it in the configuration file.
 Recompiling the class library is required for newly installed classes to become available.
 
