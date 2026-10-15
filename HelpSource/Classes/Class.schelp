@@ -43,7 +43,7 @@ Each class will be initialized once, thus each class' code::initClass:: is calle
 ::
 
 
-warn::
+warning::
 If a class throws an error during this method, the entire class library is invalid and cannot be used.
 ::
 
