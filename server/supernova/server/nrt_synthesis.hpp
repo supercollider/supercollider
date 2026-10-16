@@ -90,7 +90,6 @@ struct non_realtime_synthesis_engine {
     }
 
     void run() {
-        using namespace std;
         using namespace std::chrono;
 
         const int reserved_packet_size = 16384;

@@ -199,8 +199,6 @@ NOVA_SIMD_DEFINE_BINARY_WRAPPER(sc_sqrdif, sc_sqrdif_functor)
 
 #endif
 
-using namespace std; // for math functions
-
 static InterfaceTable* ft;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

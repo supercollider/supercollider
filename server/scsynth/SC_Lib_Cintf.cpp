@@ -290,7 +290,6 @@ void initialize_library(const char* uGensPluginPath) {
 typedef int (*InfoFunction)();
 
 bool checkAPIVersion(void* f, const char* filename) {
-    using namespace std;
     using namespace scsynth;
 
     if (f) {
@@ -299,9 +298,9 @@ bool checkAPIVersion(void* f, const char* filename) {
         if (pluginVersion == sc_api_version)
             return true;
         else
-            cout << ErrorMessage::apiVersionMismatch(filename, sc_api_version, pluginVersion) << endl;
+            std::cout << ErrorMessage::apiVersionMismatch(filename, sc_api_version, pluginVersion) << std::endl;
     } else {
-        cout << ErrorMessage::apiVersionNotFound(filename) << endl;
+        std::cout << ErrorMessage::apiVersionNotFound(filename) << std::endl;
     }
 
     return false;

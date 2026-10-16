@@ -134,7 +134,6 @@ public:
         priority(priority),
         rt(rt) {
         semaphore sync_sem;
-        using namespace std;
 
         for (uint16_t i = 0; i != worker_thread_count; ++i)
             threads.emplace_back([&]() { this->run(sync_sem); });

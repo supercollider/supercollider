@@ -27,11 +27,11 @@
 
 namespace nova {
 
-using std::filesystem::path;
+namespace fs = std::filesystem;
 
 /* read synthdefs from path pattern */
-std::vector<sc_synthdef> sc_read_synthdefs_file(path const& filename);
-std::vector<sc_synthdef> sc_read_synthdefs_dir(path const& dir);
+std::vector<sc_synthdef> sc_read_synthdefs_file(fs::path const& filename);
+std::vector<sc_synthdef> sc_read_synthdefs_dir(fs::path const& dir);
 
 class sc_synth_definition : public synth_definition, public sc_synthdef {
 public:

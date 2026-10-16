@@ -162,20 +162,18 @@ std::vector<sc_synthdef> read_synthdefs(const char* buffer, const char* buffer_e
 }
 
 std::vector<sc_synthdef> read_synthdef_file(std::filesystem::path const& filename) {
-    using namespace std;
-
-    ifstream stream;
+    std::ifstream stream;
     stream.open(filename.string().c_str(), std::ifstream::binary);
 
     if (!stream.is_open()) {
-        cout << "cannot open file " << filename << endl;
+        std::cout << "cannot open file " << filename << std::endl;
         return std::vector<sc_synthdef>();
     }
 
     /* get length of file */
-    stream.seekg(0, ios::end);
+    stream.seekg(0, std::ios::end);
     size_t length = stream.tellg();
-    stream.seekg(0, ios::beg);
+    stream.seekg(0, std::ios::beg);
 
     sized_array<char> buffer(length);
     stream.read(buffer.c_array(), length);
@@ -211,7 +209,6 @@ sc_synthdef::sc_synthdef(const char*& buffer, const char* buffer_end, int versio
 }
 
 void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int version) {
-    using namespace std;
     const int short_int_size = (version < 2) ? 16 : 32;
 
     /* read name */
@@ -436,30 +433,28 @@ void sc_synthdef::prepare() {
 
 
 std::string sc_synthdef::dump() const {
-    using namespace std;
+    std::stringstream stream;
 
-    stringstream stream;
+    stream << "name " << name().c_str() << std::endl;
 
-    stream << "name " << name().c_str() << endl;
-
-    stream << "constant: " << endl;
+    stream << "constant: " << std::endl;
     for (uint i = 0; i != constants.size(); ++i)
-        stream << "\t" << constants[i] << endl;
+        stream << "\t" << constants[i] << std::endl;
 
-    stream << "parameters: " << endl;
+    stream << "parameters: " << std::endl;
     for (uint i = 0; i != parameters.size(); ++i)
-        stream << "\t" << parameters[i] << endl;
+        stream << "\t" << parameters[i] << std::endl;
 
-    stream << "parameter names: " << endl;
+    stream << "parameter names: " << std::endl;
     for (const auto& elem : parameter_map)
-        stream << "\t" << elem.first.c_str() << " " << elem.second << endl;
+        stream << "\t" << elem.first.c_str() << " " << elem.second << std::endl;
 
-    stream << "ugens: " << endl;
+    stream << "ugens: " << std::endl;
     for (uint i = 0; i != graph.size(); ++i) {
-        stream << "\t" << graph[i].name.c_str() << ": rate " << graph[i].rate << endl;
-        stream << "\tinputs:" << endl;
+        stream << "\t" << graph[i].name.c_str() << ": rate " << graph[i].rate << std::endl;
+        stream << "\tinputs:" << std::endl;
         for (uint j = 0; j != graph[i].input_specs.size(); ++j) {
-            stream << "\t\t" << graph[i].input_specs[j].source << " " << graph[i].input_specs[j].index << endl;
+            stream << "\t\t" << graph[i].input_specs[j].source << " " << graph[i].input_specs[j].index << std::endl;
         }
     }
 

@@ -53,7 +53,6 @@ Primitives for String.
 
 #include <yaml-cpp/yaml.h>
 
-using namespace std;
 namespace fs = std::filesystem;
 
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
@@ -944,12 +943,12 @@ int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed) {
 
 static void yaml_traverse(struct VMGlobals* g, const YAML::Node& node, PyrObject* parent, PyrSlot* slot) {
     YAML::NodeType::value type = node.Type();
-    string out;
+    std::string out;
     PyrObject* result = nullptr;
 
     switch (type) {
     case YAML::NodeType::Scalar:
-        out = node.as<string>();
+        out = node.as<std::string>();
         result = (PyrObject*)newPyrString(g->gc, out.c_str(), 0, true);
         SetObject(slot, result);
         if (parent)
@@ -984,7 +983,7 @@ static void yaml_traverse(struct VMGlobals* g, const YAML::Node& node, PyrObject
         for (auto const& element : node) {
             const YAML::Node& key = element.first;
             const YAML::Node& value = element.second;
-            out = key.as<string>();
+            out = key.as<std::string>();
             PyrObject* pkey = (PyrObject*)newPyrString(g->gc, out.c_str(), 0, true);
             SetObject(array->slots + j, pkey);
             array->size++;
@@ -1014,7 +1013,7 @@ int prString_ParseYAML(struct VMGlobals* g, int numArgsPushed) {
     if (!isKindOfSlot(arg, class_string))
         return errWrongType;
 
-    string str((const char*)slotRawString(arg)->s, slotRawString(arg)->size);
+    std::string str((const char*)slotRawString(arg)->s, slotRawString(arg)->size);
 
     std::istringstream fin(str);
     YAML::Node doc = YAML::Load(fin);
@@ -1029,7 +1028,7 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed) {
     if (!isKindOfSlot(arg, class_string))
         return errWrongType;
 
-    string str((const char*)slotRawString(arg)->s, slotRawString(arg)->size);
+    std::string str((const char*)slotRawString(arg)->s, slotRawString(arg)->size);
 
     const fs::path& path = SC_Codecvt::utf8_str_to_path(str);
     std::ifstream fin(path);

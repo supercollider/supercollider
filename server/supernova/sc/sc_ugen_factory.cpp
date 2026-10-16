@@ -293,7 +293,6 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool 
 #endif // LINUX_PLUGIN_WORKAROUND
 
 static bool check_api_version(int (*api_version)(), std::string const& filename) {
-    using namespace std;
     using namespace scsynth;
 
     if (api_version) {
@@ -301,9 +300,9 @@ static bool check_api_version(int (*api_version)(), std::string const& filename)
         if (plugin_version == sc_api_version)
             return true;
         else
-            cout << ErrorMessage::apiVersionMismatch(filename, sc_api_version, plugin_version) << endl;
+            std::cout << ErrorMessage::apiVersionMismatch(filename, sc_api_version, plugin_version) << std::endl;
     } else {
-        cout << ErrorMessage::apiVersionNotFound(filename) << endl;
+        std::cout << ErrorMessage::apiVersionNotFound(filename) << std::endl;
     }
 
     return false;

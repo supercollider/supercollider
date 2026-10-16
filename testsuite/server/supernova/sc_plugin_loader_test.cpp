@@ -9,7 +9,6 @@
 #include "server/server_args.hpp"
 
 using namespace nova;
-using namespace std;
 
 std::filesystem::path base_path("/home/tim/workspace/nova-server/debug_plugins/");
 

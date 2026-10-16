@@ -8,7 +8,6 @@
 #include "utilities/static_allocator.hpp"
 
 using namespace nova;
-using namespace std;
 
 namespace {
 

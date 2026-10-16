@@ -5,7 +5,6 @@
 #include "utilities/simple_pool.hpp"
 
 using namespace nova;
-using namespace std;
 
 namespace {
 
