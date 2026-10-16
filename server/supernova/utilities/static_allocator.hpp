@@ -45,9 +45,9 @@ template <class T, std::size_t count, bool blocking = false> class static_alloca
 
     static const std::size_t poolsize = bytes / sizeof(long);
 
-    typedef typename boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type mutex_type;
+    using mutex_type = std::conditional_t<blocking, spin_lock, dummy_mutex>;
 
-    typedef typename mutex_type::scoped_lock scoped_lock;
+    using scoped_lock = std::lock_guard<mutex_type>;
 
     struct data : mutex_type {
 #if 0

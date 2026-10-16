@@ -40,9 +40,9 @@ namespace nova {
  *
  * */
 template <bool blocking = false> class simple_pool {
-    typedef typename boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type mutex_type;
+    using mutex_type = std::conditional_t<blocking, spin_lock, dummy_mutex>;
 
-    typedef typename mutex_type::scoped_lock scoped_lock;
+    using scoped_lock = std::lock_guard<mutex_type>;
 
     struct data : mutex_type {
         data(): pool(nullptr) {}

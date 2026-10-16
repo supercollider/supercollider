@@ -26,7 +26,6 @@
 
 
 #include <boost/lockfree/spsc_queue.hpp>
-#include <boost/mpl/if.hpp>
 #include <boost/sync/semaphore.hpp>
 
 namespace nova {
