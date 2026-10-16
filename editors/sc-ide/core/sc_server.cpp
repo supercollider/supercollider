@@ -32,8 +32,6 @@
 #include <osc/OscReceivedElements.h>
 #include <osc/OscOutboundPacketStream.h>
 
-using namespace std;
-
 namespace ScIDE {
 
 ScServer::ScServer(ScProcess* scLang, Settings::Manager* settings, QObject* parent):
@@ -324,11 +322,11 @@ void ScServer::updateRecordingAction() {
         int s = mRecordingSeconds % 60;
         int m = mRecordingSeconds / 60 % 60;
         int h = mRecordingSeconds / 3600;
-        ostringstream msg;
+        std::ostringstream msg;
         msg << "Recording: ";
-        msg << setw(2) << setfill('0') << h << ':';
-        msg << setw(2) << setfill('0') << m << ':';
-        msg << setw(2) << setfill('0') << s;
+        msg << std::setw(2) << std::setfill('0') << h << ':';
+        msg << std::setw(2) << std::setfill('0') << m << ':';
+        msg << std::setw(2) << std::setfill('0') << s;
         mActions[Record]->setText(msg.str().c_str());
     } else {
         mRecordingSeconds = 0;

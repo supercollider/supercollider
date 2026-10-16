@@ -5,7 +5,6 @@
 #include "test_synth.hpp"
 
 using namespace nova;
-using namespace std;
 
 namespace {
 struct test_synth_definition : public synth_definition {
@@ -22,7 +21,7 @@ BOOST_AUTO_TEST_CASE(synth_factory_test_1) {
 
     sf.register_definition(new test_synth_definition);
 
-    unique_ptr<abstract_synth> s(sf.create_instance("foo", 1));
+    std::unique_ptr<abstract_synth> s(sf.create_instance("foo", 1));
 
     BOOST_REQUIRE(s.get() != 0);
 }

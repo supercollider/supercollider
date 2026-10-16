@@ -29,7 +29,6 @@ namespace nova {
 
 server_arguments::server_arguments(int argc, char* argv[]) {
     using namespace boost::program_options;
-    using namespace std;
 
     /* prepare options */
     options_description options("general options");
@@ -62,28 +61,28 @@ server_arguments::server_arguments(int argc, char* argv[]) {
         ("load-synthdefs,D", value<uint16_t>(&load_synthdefs)->default_value(1), "load synthdefs? (1 or 0)")
         ("rendezvous,R", value<uint16_t>()->default_value(1), "publish to Rendezvous? (1 or 0)")
         ("max-logins,l", value<uint32_t>(&max_logins)->default_value(64), "maximum number of named return addresses")
-        ("password,p", value<string>(&server_password)->default_value(""),
+        ("password,p", value<std::string>(&server_password)->default_value(""),
                                                             "When using TCP, the session password must be the first command sent.\n"
                                                             "The default is no password.\n"
                                                             "UDP ports never require passwords, so for security use TCP.")
-        ("nrt,N", value<vector<string> >()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
+        ("nrt,N", value<std::vector<std::string> >()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
         ("memory-locking,L", "enable memory locking")
         ("version,v", "print the supercollider version and exit")
-        ("hardware-device-name,H", value<vector<string> >()->multitoken(), "hardware device name")
+        ("hardware-device-name,H", value<std::vector<std::string>>()->multitoken(), "hardware device name")
         ("verbose,V", value<int16_t>(&verbosity)->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
                                                             "-2 suppresses informational and many error messages, as well as\n"
                                                             "messages from Poll.")
 #ifdef _WIN32
-        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "A list of paths separated by `;`.\n"
+        ("ugen-search-path,U", value<std::vector<std::string>>(&ugen_paths), "A list of paths separated by `;`.\n"
                                                             "If specified, standard paths are NOT searched for plugins.\nMay be specified several times.")
 #else
-        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "A list of paths separated by `:`.\n"
+        ("ugen-search-path,U", value<std::vector<std::string>>(&ugen_paths), "A list of paths separated by `:`.\n"
                                                             "If specified, standard paths are NOT searched for plugins.\nMay be specified several times.")
 #endif
-        ("restricted-path,P", value<vector<string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
+        ("restricted-path,P", value<std::vector<std::string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
         ("threads,T", value<uint16_t>(&threads)->default_value(boost::thread::physical_concurrency()), "number of audio threads")
         ("thread-pinning,y", value<bool>(&thread_pinning)->default_value(def_thread_pinning), "pin threads to CPU cores")
-        ("socket-address,B", value<string>(&socket_address_str)->default_value("127.0.0.1"), "Bind the UDP or TCP socket to this address.\n"
+        ("socket-address,B", value<std::string>(&socket_address_str)->default_value("127.0.0.1"), "Bind the UDP or TCP socket to this address.\n"
                                                             "Set to 0.0.0.0 to listen on all interfaces.")
         ;
 
@@ -108,7 +107,7 @@ server_arguments::server_arguments(int argc, char* argv[]) {
     try {
         store(command_line_parser(argc, argv).options(cmdline_options).run(), vm);
     } catch (error const& e) {
-        cout << "Error when parsing command line arguments:" << endl << e.what() << endl << endl;
+        std::cout << "Error when parsing command line arguments:" << std::endl << e.what() << std::endl << std::endl;
         std::exit(EXIT_FAILURE);
     };
 
@@ -118,16 +117,16 @@ server_arguments::server_arguments(int argc, char* argv[]) {
     memory_locking = vm.count("memory-locking");
 
     if (vm.count("help")) {
-        cout << cmdline_options << endl;
+        std::cout << cmdline_options << std::endl;
         std::exit(EXIT_SUCCESS);
     }
 
     non_rt = vm.count("nrt");
 
     if (non_rt) {
-        std::vector<std::string> const& nrt_options = vm["nrt"].as<std::vector<std::string>>();
+        auto const& nrt_options = vm["nrt"].as<std::vector<std::string>>();
         if (nrt_options.size() != 6) {
-            cout << "Error when parsing command line:" << endl;
+            std::cout << "Error when parsing command line:" << std::endl;
             std::exit(EXIT_FAILURE);
         }
 
@@ -146,8 +145,8 @@ server_arguments::server_arguments(int argc, char* argv[]) {
     try {
         socket_address = boost::asio::ip::make_address(vm["socket-address"].as<std::string>());
     } catch (boost::exception const& e) {
-        cout << "Cannot parse `" << vm["socket-address"].as<std::string>() << "` as a valid IP address. Exiting."
-             << endl;
+        std::cout << "Cannot parse `" << vm["socket-address"].as<std::string>() << "` as a valid IP address. Exiting."
+                  << std::endl;
         std::exit(EXIT_FAILURE);
     };
 }

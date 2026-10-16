@@ -33,8 +33,6 @@ using nova::slope_argument;
 
 #include <boost/align/is_aligned.hpp>
 
-using namespace std; // for math functions
-
 static InterfaceTable* ft;
 
 struct LinPan2 : public Unit {

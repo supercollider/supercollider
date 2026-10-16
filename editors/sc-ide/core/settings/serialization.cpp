@@ -332,11 +332,9 @@ QSettings::Format serializationFormat() {
 }
 
 void printSettings(const QSettings* settings) {
-    using namespace std;
-
-    cout << "config filename: " << settings->fileName().toStdString() << endl;
+    std::cout << "config filename: " << settings->fileName().toStdString() << std::endl;
     QStringList keys = settings->allKeys();
-    cout << "num keys: " << keys.size() << endl;
+    std::cout << "num keys: " << keys.size() << std::endl;
     Q_FOREACH (QString key, keys) {
         QVariant var = settings->value(key);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -345,11 +343,11 @@ void printSettings(const QSettings* settings) {
         int typeId = var.typeId();
 #endif
         if (typeId == QMetaType::UnknownType)
-            cout << key.toStdString() << ": <null>" << endl;
+            std::cout << key.toStdString() << ": <null>" << std::endl;
         else if (typeId == QMetaType::QString)
-            cout << key.toStdString() << ": " << var.toString().toStdString() << endl;
+            std::cout << key.toStdString() << ": " << var.toString().toStdString() << std::endl;
         else
-            cout << key.toStdString() << ": <unknown value type>" << endl;
+            std::cout << key.toStdString() << ": <unknown value type>" << std::endl;
     }
 }
 

@@ -49,7 +49,7 @@
 #include <string>
 #include <cassert>
 #include <sstream>
-#include <map>
+#include <unordered_map>
 
 namespace scsynth { namespace ErrorMessage {
 
@@ -67,20 +67,19 @@ std::string const indent = "    ";
  * \returns A multiline string with info about how to correct the error.
  */
 std::string apiVersionMismatch(std::string const& utf8Filename, int const expectedVersion, int const actualVersion) {
-    using namespace std;
     assert(expectedVersion != actualVersion);
 
     // both 1 and 2 were introduced in 3.6
-    static map<int, string> const scVersionForAPIVersion = {
+    static std::unordered_map<int, std::string> const scVersionForAPIVersion = {
         { 1, "3.6.0" }, { 2, "3.6.0" }, { 3, "3.9.0" }, { 4, "3.15" }
     };
 
-    stringstream message;
+    std::stringstream message;
     message << "ERROR: API version mismatch: " << utf8Filename << "\n";
 
     try {
         // actualVersion+1: the version that broke compatibility
-        string const& scVersion = scVersionForAPIVersion.at(actualVersion + 1);
+        auto const& scVersion = scVersionForAPIVersion.at(actualVersion + 1);
         message << indent << "This plugin is not compatible with SuperCollider >=" << scVersion << "\n";
         message << indent << "The plugin has not been loaded; please find or compile a newer version.\n";
     } catch (std::out_of_range const& exception) {
@@ -89,7 +88,7 @@ std::string apiVersionMismatch(std::string const& utf8Filename, int const expect
     }
 
     // if it looks like sc3-plugins, give specific info to help
-    if (utf8Filename.find("SC3plugins") != string::npos) {
+    if (utf8Filename.find("SC3plugins") != std::string::npos) {
         message << indent << "Releases of sc3-plugins can be downloaded from "
                 << "https://github.com/supercollider/sc3-plugins/releases\n";
     }

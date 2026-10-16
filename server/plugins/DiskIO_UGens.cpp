@@ -167,10 +167,9 @@ struct DiskIOThread {
     }
 
     void launchThread() {
-        using namespace std;
         mRunning.store(true);
 
-        mThread = thread(bind(&DiskIOThread::ioThreadFunc, this));
+        mThread = std::thread(&DiskIOThread::ioThreadFunc, this);
     }
 
     bool Write(DiskIOMsg& data) {

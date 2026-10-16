@@ -27,8 +27,6 @@
 
 #include <boost/align/is_aligned.hpp>
 
-using namespace std; // for math functions
-
 
 const int kMAXMEDIANSIZE = 32;
 

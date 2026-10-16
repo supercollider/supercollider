@@ -8,7 +8,6 @@
 #include "utilities/tl_allocator.hpp"
 
 using namespace nova;
-using namespace std;
 
 namespace {
 
@@ -22,7 +21,7 @@ struct initialized_struct {
 };
 
 template <typename T> void test_list() {
-    list<T, tl_allocator<T>> vec;
+    std::list<T, tl_allocator<T>> vec;
 
     for (int i = 0; i != 8192; ++i)
         vec.push_back(T(i));
@@ -30,14 +29,14 @@ template <typename T> void test_list() {
 
 
 template <typename T> void test_vector() {
-    vector<T, tl_allocator<T>> vec;
+    std::vector<T, tl_allocator<T>> vec;
 
     for (int i = 0; i != 8192; ++i)
         vec.push_back(T(i));
 }
 
 template <typename T> void test_set() {
-    set<T, std::less<T>, tl_allocator<T>> set;
+    std::set<T, std::less<T>, tl_allocator<T>> set;
 
     for (int i = 0; i != 8192; ++i)
         set.insert(T(i));

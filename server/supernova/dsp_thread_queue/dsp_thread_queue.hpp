@@ -140,9 +140,8 @@ public:
 
 #ifdef DEBUG_DSP_THREADS
     void dump_item() {
-        using namespace std;
         printf("\titem %p\n", this);
-        printf("\tactivation limit %d\n", int(activation_limit));
+        printf("\tactivation limit %d\n", (int)activation_limit);
 
         if (!successors.empty()) {
             printf("\tsuccessors:\n");
@@ -248,8 +247,6 @@ template <typename runnable, typename Alloc = std::allocator<void*>> class dsp_t
 public:
 #ifdef DEBUG_DSP_THREADS
     void dump_queue() {
-        using namespace std;
-
         printf("queue %p\n items:\n", this);
         for (std::size_t i = 0; i != total_node_count; ++i)
             queue_items[i].dump_item();
@@ -419,12 +416,11 @@ private:
     };
 
     void calibrate_backoff(int timeout_in_seconds) {
-        using namespace std;
         using namespace std::chrono;
 
         const int backoff_iterations = 100;
 
-        vector<nanoseconds> measured_values;
+        std::vector<nanoseconds> measured_values;
         generate_n(back_inserter(measured_values), 16, [backoff_iterations] {
             backoff b(max_backup_loops, max_backup_loops);
             auto start = high_resolution_clock::now();

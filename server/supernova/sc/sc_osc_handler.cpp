@@ -52,7 +52,6 @@
 
 namespace nova {
 
-using namespace std;
 using nova::detail::endpoint_ptr;
 using nova::detail::nova_endpoint;
 
@@ -697,7 +696,7 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error, 
         return;
     }
 
-    handle_packet_async(recv_buffer_.data(), bytes_transferred, make_shared<udp_endpoint>(udp_remote_endpoint_));
+    handle_packet_async(recv_buffer_.data(), bytes_transferred, std::make_shared<udp_endpoint>(udp_remote_endpoint_));
 
     start_receive_udp();
     return;
@@ -766,7 +765,7 @@ void sc_osc_handler::tcp_connection::async_read_msg_size() {
                              return; // connection closed
 
                          if (error) {
-                             cout << "tcp_connection received error: " << error.message() << endl;
+                             std::cout << "tcp_connection received error: " << error.message() << std::endl;
                              return;
                          }
 
@@ -785,7 +784,7 @@ void sc_osc_handler::tcp_connection::handle_message_size() {
                              return; // connection closed
 
                          if (error) {
-                             cout << "tcp_connection received error: " << error.message() << endl;
+                             std::cout << "tcp_connection received error: " << error.message() << std::endl;
                              return;
                          }
                          assert(bytes_transferred == ptr->msg_size_);
@@ -829,9 +828,9 @@ void sc_osc_handler::handle_packet_async(const char* data, size_t length, endpoi
 
             const char* address = message.AddressPattern();
             if (strcmp(address, "/status") != 0) // we ignore /status messages
-                cout << "received osc message " << message << endl;
+                std::cout << "received osc message " << message << std::endl;
         } else
-            cout << "received osc bundle " << packet << endl;
+            std::cout << "received osc bundle " << packet << std::endl;
     }
 
     instance->add_sync_callback(p);
@@ -1111,7 +1110,7 @@ sc_synth* add_synth(const char* name, int node_id, int action, int target_id) {
     if (target == nullptr)
         return nullptr;
 
-    node_position_constraint pos = make_pair(target, node_position(action));
+    node_position_constraint pos(target, node_position(action));
     if (!node_position_sanity_check(pos))
         return nullptr;
 
@@ -1180,7 +1179,7 @@ void set_control_array(server_node* node, control_id_type control, osc::Received
                     break;
 
                 default:
-                    throw runtime_error("invalid name for control mapping");
+                    throw std::runtime_error("invalid name for control mapping");
                 }
             } else {
                 float value = extract_float_argument(it++);
@@ -1190,7 +1189,7 @@ void set_control_array(server_node* node, control_id_type control, osc::Received
     }
 
     if (!it->IsArrayEnd())
-        throw runtime_error("missing array end tag");
+        throw std::runtime_error("missing array end tag");
     ++it; // skip array end
 }
 
@@ -1217,7 +1216,7 @@ void set_control(server_node* node, ControlSpecifier const& control, osc::Receiv
             break;
 
         default:
-            throw runtime_error("invalid name for control mapping");
+            throw std::runtime_error("invalid name for control mapping");
         }
 
     } else {
@@ -1240,7 +1239,7 @@ void set_control(server_node* node, osc::ReceivedMessageArgumentIterator& it,
         ++it;
         set_control(node, str, it);
     } else
-        throw runtime_error("invalid argument");
+        throw std::runtime_error("invalid argument");
 }
 
 void handle_s_new(ReceivedMessage const& msg) {
@@ -1297,7 +1296,7 @@ void handle_g_new(ReceivedMessage const& msg) {
         if (!target)
             continue;
 
-        node_position_constraint pos = make_pair(target, node_position(action));
+        node_position_constraint pos(target, node_position(action));
         if (!node_position_sanity_check(pos))
             continue;
 
@@ -1432,7 +1431,7 @@ void dump_controls(rt_string_stream& stream, abstract_synth const& synth, int in
 
         if (name_of_slot) {
             if (eol_pending) {
-                stream << endl;
+                stream << std::endl;
                 eol_pending = false;
             }
 
@@ -1449,16 +1448,15 @@ void dump_controls(rt_string_stream& stream, abstract_synth const& synth, int in
             stream << synth.get(control_index);
     }
     if (eol_pending)
-        stream << endl;
+        stream << std::endl;
 }
 
 void g_dump_node(rt_string_stream& stream, server_node& node, bool flag, int level) {
-    using namespace std;
     fill_spaces(stream, level);
 
     if (node.is_synth()) {
         abstract_synth const& synth = static_cast<abstract_synth const&>(node);
-        stream << synth.id() << " " << synth.definition_name() << endl;
+        stream << synth.id() << " " << synth.definition_name() << std::endl;
 
         if (flag)
             dump_controls(stream, synth, level + 1);
@@ -1471,7 +1469,7 @@ void g_dump_node(rt_string_stream& stream, server_node& node, bool flag, int lev
             stream << " parallel group";
         else
             stream << " group";
-        stream << endl;
+        stream << std::endl;
 
         group.apply_on_children([&](server_node& node) { g_dump_node(stream, node, flag, level + 1); });
     }
@@ -1551,7 +1549,7 @@ void set_control(server_node* node, osc::ReceivedMessageArgumentIterator& it) {
         ++it;
         set_control(node, str, it);
     } else
-        throw runtime_error("invalid argument");
+        throw std::runtime_error("invalid argument");
 }
 
 
@@ -1578,7 +1576,7 @@ void set_control_n(server_node* node, osc::ReceivedMessageArgumentIterator& it) 
 
         node->set_control_array(str, count, values.c_array());
     } else
-        throw runtime_error("invalid argument");
+        throw std::runtime_error("invalid argument");
 }
 
 HANDLE_N_DECORATOR(setn, set_control_n)
@@ -1606,7 +1604,7 @@ void fill_control(server_node* node, osc::ReceivedMessageArgumentIterator& it) {
 
         node->set_control_array(str, count, values.c_array());
     } else
-        throw runtime_error("invalid argument");
+        throw std::runtime_error("invalid argument");
 }
 
 HANDLE_N_DECORATOR(fill, fill_control)
@@ -1647,7 +1645,7 @@ template <bool IsAudio> void map_control(server_node* node, osc::ReceivedMessage
 
         apply_control_bus_mapping<IsAudio>(*node, control_name, control_bus_index);
     } else
-        throw runtime_error("invalid argument");
+        throw std::runtime_error("invalid argument");
 }
 
 template <bool IsAudio> void mapn_control(server_node* node, osc::ReceivedMessageArgumentIterator& it) {
@@ -1670,7 +1668,7 @@ template <bool IsAudio> void mapn_control(server_node* node, osc::ReceivedMessag
 
         apply_control_busn_mapping<IsAudio>(*node, control_name, bus_index, count);
     } else
-        throw runtime_error("invalid argument");
+        throw std::runtime_error("invalid argument");
 }
 
 
@@ -1776,7 +1774,7 @@ void handle_n_order(ReceivedMessage const& msg) {
         /** TODO: this can be optimized if node_parent == target_parent */
         node_parent->remove_child(node);
         if (action == before || action == after)
-            target_parent->add_child(node, make_pair(target, node_position(action)));
+            target_parent->add_child(node, std::make_pair(target, node_position(action)));
         else
             target_parent->add_child(node, node_position(action));
 
@@ -3012,7 +3010,7 @@ void insert_parallel_group(int node_id, int action, int target_id) {
     if (!target)
         return;
 
-    node_position_constraint pos = make_pair(target, node_position(action));
+    node_position_constraint pos(target, node_position(action));
     if (!node_position_sanity_check(pos))
         return;
 

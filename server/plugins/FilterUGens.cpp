@@ -38,8 +38,6 @@ static const float uninitializedControl = std::numeric_limits<float>::quiet_NaN(
     unit->mRate->mFilterLoops = tmp_floops;                                                                            \
     unit->mRate->mFilterRemain = tmp_fremain;
 
-using namespace std; // for math functions
-
 static InterfaceTable* ft;
 
 struct Ramp : public Unit {

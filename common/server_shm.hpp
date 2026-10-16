@@ -30,9 +30,6 @@
 
 namespace detail_server_shm {
 
-using std::pair;
-using std::string;
-
 using boost::ref;
 
 namespace bi = boost::interprocess;
@@ -41,8 +38,8 @@ using bi::shared_memory_object;
 
 // FIXME: In case of multiple supernova instances on the same port (e.g. when running on
 // different interfaces), they can end up using the same shmem location.
-static inline string make_shmem_name(unsigned int port_number) {
-    return string("SuperColliderServer_") + boost::lexical_cast<string>(port_number);
+static inline std::string make_shmem_name(unsigned int port_number) {
+    return std::string("SuperColliderServer_") + boost::lexical_cast<std::string>(port_number);
 }
 
 class server_shared_memory {
@@ -87,7 +84,7 @@ public:
     }
 
 private:
-    string shmem_name;
+    std::string shmem_name;
     sh_float_ptr control_busses_; // control busses
     scope_buffer_vector scope_buffers;
 };
@@ -135,7 +132,7 @@ public:
     void release_scope_buffer_writer(scope_buffer_writer& writer) { writer.release(scope_pool); }
 
 private:
-    string shmem_name;
+    std::string shmem_name;
     managed_shared_memory segment;
     scope_buffer_pool scope_pool;
 
@@ -149,10 +146,10 @@ public:
     server_shared_memory_client(unsigned int port_number):
         shmem_name(detail_server_shm::make_shmem_name(port_number)),
         segment(bi::open_only, shmem_name.c_str()) {
-        pair<server_shared_memory*, size_t> res = segment.find<server_shared_memory>(shmem_name.c_str());
-        if (res.second != 1)
+        auto [buffer, count] = segment.find<server_shared_memory>(shmem_name.c_str());
+        if (count != 1)
             throw std::runtime_error("Cannot connect to shared memory");
-        shm = res.first;
+        shm = buffer;
     }
 
     float* get_control_busses(void) { return shm->get_control_busses(); }
@@ -163,7 +160,7 @@ public:
     }
 
 private:
-    string shmem_name;
+    std::string shmem_name;
     managed_shared_memory segment;
     server_shared_memory* shm;
 };

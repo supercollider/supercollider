@@ -20,7 +20,6 @@
 #include <future>
 
 #include <filesystem>
-#include <boost/range/iterator_range.hpp>
 
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
@@ -30,8 +29,6 @@
 
 namespace nova {
 
-using namespace std;
-
 void register_synthdefs(synth_factory& factory, std::vector<sc_synthdef>&& defs) {
     for (sc_synthdef& def : defs) {
         sc_synth_definition_ptr sp = new sc_synth_definition(std::move(def));
@@ -39,40 +36,38 @@ void register_synthdefs(synth_factory& factory, std::vector<sc_synthdef>&& defs)
     }
 }
 
-std::vector<sc_synthdef> sc_read_synthdefs_file(path const& file) {
+std::vector<sc_synthdef> sc_read_synthdefs_file(fs::path const& file) {
     try {
         return read_synthdef_file(file.string());
     } catch (std::exception const& e) {
-        cout << "Exception when parsing synthdef file " << file.string() << ": " << e.what() << endl;
+        std::cout << "Exception when parsing synthdef file " << file.string() << ": " << e.what() << std::endl;
         return std::vector<sc_synthdef>();
     }
 }
 
-std::vector<sc_synthdef> sc_read_synthdefs_dir(path const& dir) {
-    using namespace std::filesystem;
-    using namespace std;
+std::vector<sc_synthdef> sc_read_synthdefs_dir(fs::path const& dir) {
+    namespace fs = std::filesystem;
 
-    typedef vector<sc_synthdef> def_vector;
+    using def_vector = std::vector<sc_synthdef>;
     def_vector ret;
 
     if (!exists(dir))
         return ret;
 
     // FIXME: some kind of threadpool would be nice!
-    auto launch_policy = thread::hardware_concurrency() > 1 ? launch::async : launch::deferred;
+    auto launch_policy = std::thread::hardware_concurrency() > 1 ? std::launch::async : std::launch::deferred;
 
-    vector<future<def_vector>> futures;
+    std::vector<std::future<def_vector>> futures;
 
-    for (auto const& entry :
-         boost::make_iterator_range(recursive_directory_iterator(dir), recursive_directory_iterator())) {
+    for (auto const& entry : fs::recursive_directory_iterator(dir)) {
         if (!is_directory(entry.status())) {
             auto path_name = entry.path();
             if (path_name.extension() == ".scsyndef")
-                futures.emplace_back(async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name); }));
+                futures.emplace_back(std::async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name); }));
         }
     }
 
-    for (future<def_vector>& synthdef_future : futures) {
+    for (auto& synthdef_future : futures) {
         for (sc_synthdef& definition : synthdef_future.get())
             ret.emplace_back(std::move(definition));
     }

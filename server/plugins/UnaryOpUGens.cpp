@@ -104,8 +104,6 @@ NOVA_SIMD_DEFINE_UNARY_WRAPPER(scurve, sc_scurve_functor)
 }
 #endif
 
-using namespace std; // for math functions
-
 static InterfaceTable* ft;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1777,17 +1777,16 @@ static inline float Peak_unroll_body(Peak* unit, int inNumSamples, float& level)
     float* in = IN(0);
     float inlevel;
 
-    using namespace std;
     for (int i = 0; i != inNumSamples; i += 8, out += 8, in += 8) {
-        float level0 = max(abs(in[0]), level);
-        float level1 = max(abs(in[1]), level0);
-        float level2 = max(abs(in[2]), level1);
-        float level3 = max(abs(in[3]), level2);
-        float level4 = max(abs(in[4]), level3);
-        float level5 = max(abs(in[5]), level4);
-        float level6 = max(abs(in[6]), level5);
+        float level0 = std::max(abs(in[0]), level);
+        float level1 = std::max(abs(in[1]), level0);
+        float level2 = std::max(abs(in[2]), level1);
+        float level3 = std::max(abs(in[3]), level2);
+        float level4 = std::max(abs(in[4]), level3);
+        float level5 = std::max(abs(in[5]), level4);
+        float level6 = std::max(abs(in[6]), level5);
         inlevel = abs(in[7]);
-        float level7 = max(inlevel, level6);
+        float level7 = std::max(inlevel, level6);
         out[0] = level0;
         out[1] = level1;
         out[2] = level2;
