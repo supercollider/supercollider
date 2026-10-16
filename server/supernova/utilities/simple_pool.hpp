@@ -45,7 +45,7 @@ template <bool blocking = false> class simple_pool {
     using scoped_lock = std::lock_guard<mutex_type>;
 
     struct data : mutex_type {
-        data(): pool(nullptr) {}
+        data() = default;
 
         void init(std::size_t size, bool lock) {
             pool = (char*)operator new(size);
@@ -64,8 +64,8 @@ template <bool blocking = false> class simple_pool {
             }
         }
 
-        char* pool;
-        size_t pool_size;
+        char* pool = nullptr;
+        size_t pool_size = 0;
     };
 
 
@@ -79,7 +79,7 @@ public:
 
     void init(std::size_t size, bool lock = false) {
 #ifndef NOVA_MEMORY_DEBUGGING
-        assert(size % sizeof(long) == 0);
+        assert(size % sizeof(size_t) == 0);
         data_.init(size, lock);
 #endif
     }

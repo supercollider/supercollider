@@ -22,9 +22,8 @@ extern "C" {
 #include "tlsf.h"
 }
 
-#include <exception>
-
 #include <array>
+#include <stdexcept>
 
 #include "nova-tt/spin_lock.hpp"
 #include "nova-tt/dummy_mutex.hpp"
@@ -39,11 +38,11 @@ namespace nova {
  *
  *  */
 template <class T, std::size_t count, bool blocking = false> class static_allocator {
-    static const std::size_t bytes = 2 * count * sizeof(T) + 4096 * 2;
+    static constexpr std::size_t bytes = 2 * count * sizeof(T) + 4096 * 2;
 
-    static_assert(bytes % sizeof(long) == 0, "static_allocator: bytes not an integer mutiple of sizeof(long)");
+    static constexpr alignment = sizeof(std::size_t);
 
-    static const std::size_t poolsize = bytes / sizeof(long);
+    static_assert(bytes % alignment == 0, "static_allocator: bytes not an integer mutiple of alignment");
 
     using mutex_type = std::conditional_t<blocking, spin_lock, dummy_mutex>;
 
@@ -59,7 +58,7 @@ template <class T, std::size_t count, bool blocking = false> class static_alloca
         }
 #endif
 
-        std::array<long, poolsize> pool;
+        alignas(alignment) std::array<char, bytes> pool;
     };
 
 public:
@@ -75,7 +74,7 @@ public:
 
     static_allocator() noexcept {
         data_.pool.assign(0);
-        init_memory_pool(bytes, data_.pool.begin());
+        init_memory_pool(bytes, data_.pool.data());
     }
 
     static_allocator(static_allocator const&) = delete;
@@ -84,11 +83,11 @@ public:
     template <class U, std::size_t bytes_, bool b>
     static_allocator(static_allocator<U, bytes_, b> const & rhs) noexcept {
         data_.pool.assign(0);
-        init_memory_pool(bytes, data_.pool.begin());
+        init_memory_pool(bytes, data_.pool.data());
     }
 #endif
 
-    ~static_allocator() { destroy_memory_pool(data_.pool.begin()); }
+    ~static_allocator() { destroy_memory_pool(data_.pool.data()); }
 
     pointer address(reference x) const { return &x; }
 
@@ -96,7 +95,7 @@ public:
 
     pointer allocate(size_type n, const_pointer hint = 0) {
         scoped_lock lock(data_);
-        pointer ret = static_cast<pointer>(malloc_ex(n * sizeof(T), data_.pool.begin()));
+        value_type* ret = static_cast<value_type*>(malloc_ex(n * sizeof(T), data_.pool.data()));
 
         if (ret == 0)
             throw std::bad_alloc();
@@ -106,7 +105,7 @@ public:
 
     void deallocate(pointer p, size_type n) {
         scoped_lock lock(data_);
-        free_ex(p, data_.pool.begin());
+        free_ex(p, data_.pool.data());
     }
 
     size_type max_size() const noexcept { return count; }
