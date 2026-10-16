@@ -1494,12 +1494,11 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
                     break;
                 }
                 if (is_selector && has_write(it->accessor)) {
-                    char buf[128] {};
+                    char buf[256]; // not filled with zeros.
                     auto it_sym = it->mVarName->mSlot.getSymbol();
-                    assert(it_sym->length + 1 < 128);
                     std::memcpy(buf, it_sym->name, it_sym->length);
-                    buf[it_sym->length] = '_';
-                    buf[it_sym->length + 1] = '\0';
+                    buf[it_sym->length] = '_'; // overrides null terminator
+                    buf[it_sym->length + 1] = '\0'; // here we add the null terminator back
                     auto setter_sym = getsym(buf);
 
                     if (mMethodName->mSlot.getSymbol() == setter_sym) {
