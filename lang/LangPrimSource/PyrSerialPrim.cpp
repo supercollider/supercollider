@@ -32,7 +32,6 @@
 
 #include <atomic>
 #include <stdexcept>
-#include <sstream>
 #include <thread>
 
 #include "PyrKernel.h"
@@ -42,7 +41,6 @@
 
 #include <boost/asio/use_future.hpp>
 #include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 
 using boost::asio::serial_port;
