@@ -660,7 +660,6 @@ bool postString(PyrSlot* slot, char* str);
 [[nodiscard]] std::tuple<int, std::string> slotStdStrVal(PyrSlot* slot);
 [[nodiscard]] std::tuple<int, std::string> slotStrStdStrVal(PyrSlot* slot);
 [[nodiscard]] int slotStrLen(PyrSlot* slot) noexcept;
-[[nodiscard]] int slotPStrVal(PyrSlot* slot, unsigned char* str);
 
 template <typename numeric_type> inline void setSlotVal(PyrSlot* slot, numeric_type value) noexcept;
 template <> inline void setSlotVal<int>(PyrSlot* slot, int value) noexcept { SetInt(slot, value); }

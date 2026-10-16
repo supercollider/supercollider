@@ -25,10 +25,13 @@ A PyrSymbol is a unique string that resides in a global hash table.
 
 #pragma once
 
-#include "SC_Types.h"
 #include <cstdint>
+#include <limits>
 
 struct PyrSymbol {
+    // We take one as we need to store a null terminator.
+    static constexpr auto max_length = std::numeric_limits<std::uint8_t>::max() - 1;
+
     char* name;
     std::int64_t hash;
     short specialIndex;

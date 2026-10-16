@@ -18,9 +18,11 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "PyrSymbol.h"
 #include "SCBase.h"
 #include "PyrSymbolTable.h"
 #include "clz.h"
+#include <stdexcept>
 #include <stdlib.h>
 #include <string.h>
 #include "InitAlloc.h"
@@ -140,6 +142,9 @@ PyrSymbol* SymbolTable::MakeNew(const char* inName, int inHash, int inLength) {
 PyrSymbol* SymbolTable::Make(const char* inName) {
     size_t length;
     int hash = StrHash(inName, &length);
+    if (length > PyrSymbol::max_length) {
+        throw std::runtime_error { "Maximum length of a symbol exceeded." };
+    }
     PyrSymbol* symbol = Find(inName, hash);
     if (!symbol)
         symbol = MakeNew(inName, hash, length);
