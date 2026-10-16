@@ -37,13 +37,13 @@ public:
     bool checkPassword(const std::string& password) const { return mPassword ? password == *mPassword : true; }
 
     /// returns true if the server has set a password
-    bool hasPassword() const { return mPassword.has_value(); };
+    [[nodiscard]] bool hasPassword() const { return mPassword.has_value(); };
 
     /// set password for server login
     void setPassword(const std::optional<const std::string>& password) { mPassword = password; }
 
     /// returns maximum number of allowed users for this server
-    uint32 getMaxUsers() const { return mMaxUsers; }
+    [[nodiscard]] uint32 getMaxUsers() const { return mMaxUsers; }
 
     /**
      * @brief Returns the dict of all registered clients and their ID.
@@ -61,7 +61,7 @@ public:
      * @brief remove client from list of registered client by defering it via the message queue.
      * This can be called from any thread (though not RT thread!)
      */
-    static void removeClientDefer(World* world, const ReplyAddress& client);
+    static void removeClient(World* world, const ReplyAddress& client);
 
     /**
      * @brief returns a value iff client has an id and has therefore been registered
