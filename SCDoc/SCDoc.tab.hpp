@@ -117,7 +117,7 @@ extern int scdocdebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 55 "SCDoc.y"
+#line 56 "SCDoc.y"
 
     intptr_t i;
     const char *id;

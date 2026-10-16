@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <string>
+#include <vector>
 
 #define SCDOC_PARSE_FULL 0
 #define SCDOC_PARSE_PARTIAL 1
@@ -10,6 +11,9 @@
 
 extern const char* NODE_TEXT;
 extern const char* NODE_NL;
+
+
+extern std::vector<std::string> scdoc_errors;
 
 typedef struct DocNode {
     const char* id;
