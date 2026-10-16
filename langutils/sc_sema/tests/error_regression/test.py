@@ -6,41 +6,39 @@ import argparse;
 import sys
 import re
 
-def process_file(cmd, file, override):
+def process_file(cmd, sc_file, output_dir, override):
 
-    requires_intrinsics = "true" if "intrinsic" in file.absolute().as_posix() else "false"
+    requires_intrinsics = "true" if "intrinsic" in sc_file.name else "false"
 
-    cmd_result = subprocess.run([cmd, file, requires_intrinsics], capture_output=True, text=True, check=True)
+    cmd_result = subprocess.run([cmd, sc_file, requires_intrinsics], capture_output=True, text=True, check=True)
+
     # remove file path info
     cmd_result = re.sub(r'file:.*', 'file:', cmd_result.stdout)
 
-    expected_file = file.with_suffix('.txt')
-    got_file = file.with_suffix('.got')
-    diff_file = file.with_suffix('.diff')
+    expected_output_path = sc_file.with_suffix('.txt')
+    output_file_path = output_dir / Path(sc_file.name).with_suffix('.txt')
+    diff_file_path = output_dir / Path(sc_file.name).with_suffix('.diff')
 
-    if got_file.exists():
-        got_file.unlink()
-
-    if diff_file.exists():
-        diff_file.unlink()
-
-    if expected_file.exists():
-        expected = expected_file.read_text(encoding="utf-8")
-        result = expected == cmd_result
+    if not expected_output_path.exists():
+        print('expected output file does not exist, there is nothing to compare again, therefore, we will write to it')
+        expected_output_path.write_text(cmd_result)
+        return True
+    else:
+        expected_output = expected_output_path.read_text()
+        matching = expected_output == cmd_result
 
         if override:
-            expected_file.write_text(cmd_result, encoding="utf-8")
+            print('overriding output')
+            expected_output_path.write_text(cmd_result)
+        if not matching:
+            print(f"FAILED: {sc_file.name}. To update the output file, just delete {expected_output_path} and it will be regenerated.")
+            output_file_path.write_text(cmd_result)
+            diff = subprocess.run(['diff', expected_output_path, output_file_path, '--unified', '--color'], capture_output=True, text=True)
+            diff_file_path.write_text(diff.stdout)
 
-        if not result:
-            got_file.write_text(cmd_result, encoding="utf-8")
-            diff = subprocess.run(['diff', expected_file, got_file, '--unified', '--color'], capture_output=True, text=True)
-            got_file.unlink()
-            diff_file.write_text(diff.stdout, encoding='utf-8')
+            print(f"For the diff of the results see {diff_file_path}\n")
 
-        return result
-    else:
-        expected_file.write_text(cmd_result, encoding="utf-8")
-        return True
+        return matching
 
 def main():
     parser = argparse.ArgumentParser(
@@ -48,23 +46,18 @@ def main():
         description='Compiles each sc file in a directory, writes the output to a file, runs diff to see if there is any change.'
     )
     parser.add_argument('--cmd', help='path to compile cmd', required=True)
-    parser.add_argument('--dir', help='directory', required=True)
+    parser.add_argument('--inputSCFile', help='input sc file', required=True)
+    parser.add_argument('--outputDirectory', help='output directory used to store the new output and any dif.', required=True)
     parser.add_argument('--override', help='override exisiting files if present', type=bool, default=False)
 
     args = parser.parse_args()
-
-    results = {}
     
-    got_error = False;
-    for file in Path(args.dir).glob('*.sc'):
-        r = process_file(args.cmd, file, args.override)
-        got_error = got_error or r
-        results[file] = r
+    success = process_file(args.cmd, Path(args.inputSCFile), Path(args.outputDirectory), args.override)
 
-    if got_error:
-        sys.exit(1)
-    else:
+    if success:
         sys.exit(0)
+    else:
+        sys.exit(1)
 
 
 if __name__ == '__main__':

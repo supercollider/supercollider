@@ -12,17 +12,7 @@ Nil {}
 Float {}
 Integer {}
 Char {}
-Symbol {}declaring class AbstractObjectExperimental
-declaring class Object
-declaring class Class
-declaring class String
-declaring class True
-declaring class False
-declaring class Nil
-declaring class Float
-declaring class Integer
-declaring class Char
-declaring class Symbol
+Symbol {}
 
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Inheritance cycle detected.

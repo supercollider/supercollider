@@ -1,1 +1,3 @@
 add_subdirectory(consteval_test)
+add_subdirectory(error_regression)
+
