@@ -21,7 +21,6 @@
 #include <fstream>
 #include <sstream>
 
-#include <boost/format.hpp>
 #include <boost/endian/arithmetic.hpp>
 
 #include "sc_synthdef.hpp"
@@ -382,10 +381,11 @@ void sc_synthdef::prepare() {
         sc_ugen_def* ugen = sc_factory->find_ugen(current_ugen_spec.name);
         if (unlikely(ugen == nullptr)) {
             /* we cannot prepare the synthdef, if the ugens are not installed */
-            boost::format frmt("Cannot load synth %1%: Unit generator %2% not installed");
-            frmt % name_.c_str() % current_ugen_spec.name.c_str();
+            std::stringstream ss;
+            ss << "Cannot load synth " << name_.c_str() << ": Unit generator " << current_ugen_spec.name.c_str()
+               << " not installed";
 
-            throw std::runtime_error(frmt.str());
+            throw std::runtime_error(ss.str());
         }
 
         current_ugen_spec.prototype = ugen;

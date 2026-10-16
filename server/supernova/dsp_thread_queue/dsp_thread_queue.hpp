@@ -303,8 +303,8 @@ protected:
     typedef std::size_t size_t;
 
 public:
-    typedef boost::uint_fast8_t thread_count_t;
-    typedef boost::uint_fast16_t node_count_t;
+    typedef std::uint_fast8_t thread_count_t;
+    typedef std::uint_fast16_t node_count_t;
 
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
