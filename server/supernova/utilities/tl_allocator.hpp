@@ -22,11 +22,9 @@ extern "C" {
 #include "tlsf.h"
 }
 
-#include <exception>
 #include <cstring>
 #include <array>
-
-#include <boost/thread/tss.hpp>
+#include <stdexcept>
 
 #include "branch_hints.hpp"
 
@@ -34,25 +32,21 @@ namespace nova {
 
 namespace detail {
 
-#ifdef __GNUC__
 template <std::size_t bytes> class tl_allocator {
-    static_assert(bytes % sizeof(long) == 0, "tl_allocator: bytes not an integer mutiple of sizeof(long)");
+    static constexpr size_t alignment = sizeof(long);
+    static_assert(bytes % alignment == 0, "tl_allocator: bytes not an integer mutiple of alignment");
 
 public:
-    static const std::size_t poolsize = bytes / sizeof(long);
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
-
     tl_allocator() noexcept {
         if (likely(initialized))
             return;
 
-        memset(pool, bytes, 0);
-        init_memory_pool(bytes, pool);
+        memset(pool.data(), pool.size(), 0);
+        init_memory_pool(pool.size(), pool.data());
     }
 
-    void* allocate(size_type n) {
-        void* ret = malloc_ex(n, pool);
+    void* allocate(size_t n) {
+        void* ret = malloc_ex(n, pool.data());
 
         if (ret == 0)
             throw std::bad_alloc();
@@ -60,69 +54,15 @@ public:
         return ret;
     }
 
-    void deallocate(void* p) { free_ex(p, pool); }
+    void deallocate(void* p) { free_ex(p, pool.data()); }
 
-    size_type max_size() const noexcept { return bytes; }
+    size_t max_size() const noexcept { return bytes; }
 
-    static __thread long pool[poolsize];
-    static __thread bool initialized;
+    static thread_local alignas(alignment) std::array<char, bytes> pool;
+    static thread_local bool initialized = false;
 };
 
-template <std::size_t bytes> long __thread tl_allocator<bytes>::pool[];
-
-template <std::size_t bytes> bool __thread tl_allocator<bytes>::initialized = false;
-
-#else
-
-template <std::size_t bytes> class tl_allocator {
-    static_assert(bytes % sizeof(long) == 0, "tl_allocator: bytes not an integer mutiple of sizeof(long)");
-    static const std::size_t poolsize = bytes / sizeof(long);
-
-    struct pool_t {
-        pool_t() {
-            pool.assign(0);
-            init_memory_pool(bytes, pool.begin());
-        }
-
-        ~pool_t() { destroy_memory_pool(pool.begin()); }
-
-        std::array<long, poolsize> pool;
-    };
-
-public:
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
-
-    tl_allocator() noexcept {
-        if (likely(pool.get()))
-            return;
-        pool.reset(new pool_t());
-    }
-
-    tl_allocator(tl_allocator const& rhs) noexcept {}
-
-    void* allocate(size_type n) {
-        void* ret = malloc_ex(n, pool->pool.begin());
-
-        if (ret == 0)
-            throw std::bad_alloc();
-
-        return ret;
-    }
-
-    void deallocate(void* p) { free_ex(p, pool->pool.begin()); }
-
-    size_type max_size() const noexcept { return bytes; }
-
-    typedef boost::thread_specific_ptr<pool_t> pool_ptr;
-    static pool_ptr pool;
-};
-
-template <std::size_t bytes> typename tl_allocator<bytes>::pool_ptr tl_allocator<bytes>::pool;
-
-#endif
-
-}
+} /* detail */
 
 /**
  *
@@ -136,35 +76,15 @@ template <std::size_t bytes> typename tl_allocator<bytes>::pool_ptr tl_allocator
  * */
 template <typename T, std::size_t bytes = 8 * 1024 * 1024> class tl_allocator {
 public:
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
-    typedef T* pointer;
-    typedef const T* const_pointer;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef T value_type;
-
-    template <class U> struct rebind { typedef tl_allocator<U, bytes> other; };
-
     tl_allocator() noexcept {}
 
     template <class U, std::size_t bytes_> tl_allocator(tl_allocator<U, bytes_> const& rhs) noexcept {}
 
-    pointer address(reference x) const { return &x; }
+    T* allocate(size_t n) { return static_cast<pointer>(allocator.allocate(n * sizeof(T))); }
 
-    const_pointer address(const_reference x) const { return &x; }
+    void deallocate(T* p, size_t n) { allocator.deallocate(p); }
 
-    pointer allocate(size_type n, const_pointer hint = 0) {
-        return static_cast<pointer>(allocator.allocate(n * sizeof(T)));
-    }
-
-    void deallocate(pointer p, size_type n) { allocator.deallocate(p); }
-
-    size_type max_size() const noexcept { return bytes; }
-
-    void construct(pointer p, const T& val) { ::new (p) T(val); }
-
-    void destroy(pointer p) { p->~T(); }
+    size_t max_size() const noexcept { return bytes; }
 
 private:
     detail::tl_allocator<bytes> allocator;
