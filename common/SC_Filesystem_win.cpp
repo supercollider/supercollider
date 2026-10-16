@@ -110,7 +110,7 @@ Path SC_Filesystem::globNext(Glob* glob) {
     } while (glob->mFilename.filename() == "." || glob->mFilename.filename() == "..");
 
     // add preferred separator (L'\\') for directories on Windows, to match
-    // POSIX globbing. boost::filesystem::is_directory won't work for this because
+    // POSIX globbing. std::filesystem::is_directory won't work for this because
     // in the case of input '.' and '..', the filename here is just a single folder,
     // not a relative path, and so can't be correctly identified. Plus, it's faster
     // to check the attributes than to make another system call.

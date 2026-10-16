@@ -23,7 +23,6 @@
 #include "sc_synthdef.hpp"
 
 #include "server/synth_definition.hpp"
-#include "utilities/sized_array.hpp"
 
 namespace nova {
 

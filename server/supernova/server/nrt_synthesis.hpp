@@ -23,6 +23,7 @@
 #include <string>
 
 #include <boost/endian/arithmetic.hpp>
+// NOTE: replace with std::format once we switch to C++20
 #include <boost/format.hpp>
 
 #include "server_args.hpp"

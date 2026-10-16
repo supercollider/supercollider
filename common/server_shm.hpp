@@ -22,15 +22,11 @@
 #include "scope_buffer.hpp"
 
 #include <boost/version.hpp>
-#include <boost/foreach.hpp>
-#include <boost/ref.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/containers/vector.hpp>
 
 namespace detail_server_shm {
-
-using boost::ref;
 
 namespace bi = boost::interprocess;
 using bi::managed_shared_memory;
@@ -99,8 +95,7 @@ public:
         void* memory_for_scope_pool = segment.allocate(scope_pool_size);
         scope_pool.init(memory_for_scope_pool, scope_pool_size);
 
-        shm = segment.construct<server_shared_memory>(shmem_name.c_str())(ref(segment), control_busses,
-                                                                          num_scope_buffers);
+        shm = segment.construct<server_shared_memory>(shmem_name.c_str())(segment, control_busses, num_scope_buffers);
     }
 
     static void cleanup(unsigned int port_number) {
