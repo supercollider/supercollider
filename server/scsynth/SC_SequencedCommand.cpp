@@ -661,8 +661,6 @@ SC_BufReadCommand::SC_BufReadCommand(World* inWorld, ReplyAddress* inReplyAddres
     SC_SequencedCommand(inWorld, inReplyAddress),
     mNumChannels(0) {}
 
-SC_BufReadCommand::~SC_BufReadCommand() {}
-
 void SC_BufReadCommand::InitChannels(sc_msg_iter& msg) {
     mNumChannels = 0;
     while (msg.nextTag(0) == 'i') {

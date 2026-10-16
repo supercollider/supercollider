@@ -101,7 +101,7 @@ protected:
         }
     }
 
-    bool event(QEvent* e) {
+    bool event(QEvent* e) override {
         if (e->type() != QEvent::KeyPress)
             return QLineEdit::event(e);
 
@@ -143,16 +143,16 @@ protected:
         return true;
     }
 
-    virtual void timerEvent(QTimerEvent* e) {
+    void timerEvent(QTimerEvent* e) override {
         if (e->timerId() == mEditingTimer.timerId())
             finishEditing();
     }
 
-    void focusOutEvent(QFocusEvent* e) { finishEditing(); }
+    void focusOutEvent(QFocusEvent* e) override { finishEditing(); }
 
     //#endif
 private:
-    bool isModifier(int key) {
+    static bool isModifier(int key) {
         switch (key) {
         case Qt::Key_Shift:
         case Qt::Key_Control:

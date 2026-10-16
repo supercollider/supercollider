@@ -60,8 +60,8 @@ private Q_SLOTS:
 
 protected:
     QStandardItem* firstItemInLine(QModelIndex);
-    virtual bool event(QEvent*);
-    bool eventFilter(QObject*, QEvent*);
+    bool event(QEvent*) override;
+    bool eventFilter(QObject*, QEvent*) override;
     void focusResults();
 
     static QList<QStandardItem*> makeDialogItem(QString const& displayString, QString const& displayPath,
@@ -81,8 +81,8 @@ public:
     explicit LookupDialog(QWidget* parent = 0);
 
 private slots:
-    void performQuery();
-    void onAccepted(QModelIndex);
+    void performQuery() override;
+    void onAccepted(QModelIndex) override;
 
 private:
     QStandardItemModel* modelForClass(const QString& className, const QString& methodName = QString());
@@ -113,7 +113,7 @@ public:
 
 private slots:
     void requestCancelled();
-    void performQuery();
+    void performQuery() override;
     void onResposeFromLanguage(const QString& command, const QString& responseData);
     QStandardItemModel* parse(QString const& responseData);
 

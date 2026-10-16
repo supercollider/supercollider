@@ -31,7 +31,7 @@ public:
     QcTextField() {}
 
 protected:
-    virtual void keyPressEvent(QKeyEvent* e) {
+    void keyPressEvent(QKeyEvent* e) override {
         // NOTE: We could use the returnPressed() signal, but that would still
         // propagate the event to parent, which we want to avoid.
         if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)

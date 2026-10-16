@@ -61,8 +61,8 @@ public:
 
     /* @{ */
     /** pause/resume handling (set pause/resume on children)  */
-    virtual void pause() override;
-    virtual void resume() override;
+    void pause() override;
+    void resume() override;
     /* @} */
 
     /* @{ */
@@ -306,7 +306,7 @@ private:
 
     friend class dependency_graph_generator;
 
-    virtual int tail_nodes() const override {
+    int tail_nodes() const override {
         if (empty())
             return 0;
 
@@ -331,7 +331,7 @@ private:
     void add_child(server_node* node, node_position_constraint const& constraint) override;
     void add_child(server_node* node, node_position) override;
 
-    virtual int tail_nodes() const override;
+    int tail_nodes() const override;
 
     friend class dependency_graph_generator;
 };

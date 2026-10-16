@@ -50,7 +50,7 @@ public:
     QMenu* optionsMenu() { return mOptionsMenu; }
 
 protected:
-    virtual void paintEvent(QPaintEvent* event);
+    void paintEvent(QPaintEvent* event) override;
     QMenu* mOptionsMenu;
 };
 
@@ -114,7 +114,7 @@ private slots:
     void updateDockAction();
 
 protected:
-    virtual bool eventFilter(QObject* object, QEvent* event);
+    bool eventFilter(QObject* object, QEvent* event) override;
 
 private:
     enum ContainerType { DockableContainer, WindowContainer };

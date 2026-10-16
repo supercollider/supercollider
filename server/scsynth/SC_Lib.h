@@ -31,7 +31,6 @@
 class SC_NamedObj {
 public:
     SC_NamedObj();
-    virtual ~SC_NamedObj();
 
     const int32* Name() const { return mName; }
     void SetName(const char* inName);

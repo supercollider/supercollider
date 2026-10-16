@@ -71,19 +71,19 @@ public:
     static float clampFontSize(float newSize);
 
 protected:
-    virtual bool event(QEvent*);
-    virtual void keyPressEvent(QKeyEvent*);
-    virtual void keyReleaseEvent(QKeyEvent*);
+    bool event(QEvent*) override;
+    void keyPressEvent(QKeyEvent*) override;
+    void keyReleaseEvent(QKeyEvent*) override;
     void doKeyAction(QKeyEvent*);
-    virtual void mousePressEvent(QMouseEvent*);
-    virtual void mouseDoubleClickEvent(QMouseEvent*);
-    virtual void mouseReleaseEvent(QMouseEvent*);
-    virtual void wheelEvent(QWheelEvent*);
-    virtual void dragEnterEvent(QDragEnterEvent*);
-    virtual void focusInEvent(QFocusEvent*);
-    virtual void focusOutEvent(QFocusEvent*);
+    void mousePressEvent(QMouseEvent*) override;
+    void mouseDoubleClickEvent(QMouseEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
+    void wheelEvent(QWheelEvent*) override;
+    void dragEnterEvent(QDragEnterEvent*) override;
+    void focusInEvent(QFocusEvent*) override;
+    void focusOutEvent(QFocusEvent*) override;
     void hideMouseCursor(QKeyEvent*);
-    virtual QMimeData* createMimeDataFromSelection() const;
+    QMimeData* createMimeDataFromSelection() const override;
 
 public slots:
     void applySettings(Settings::Manager*);
@@ -112,9 +112,9 @@ protected slots:
     void onCursorPositionChanged();
 
 protected:
-    void resizeEvent(QResizeEvent*);
+    void resizeEvent(QResizeEvent*) override;
     void paintLineIndicator(QPaintEvent*);
-    virtual void paintEvent(QPaintEvent*);
+    void paintEvent(QPaintEvent*) override;
     virtual void updateExtraSelections();
     void updateCurrentLineHighlighting();
     virtual void indentCurrentRegion() {}

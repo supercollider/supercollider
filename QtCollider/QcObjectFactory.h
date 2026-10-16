@@ -70,9 +70,9 @@ static void qcNoConstructorMsg(const QMetaObject* metaObject, int argc, QtCollid
 
 template <class QOBJECT> class QcObjectFactory : public QcAbstractFactory {
 public:
-    const QMetaObject* metaObject() { return &QOBJECT::staticMetaObject; }
+    const QMetaObject* metaObject() override { return &QOBJECT::staticMetaObject; }
 
-    virtual QObjectProxy* newInstance(PyrObject* scObject, QtCollider::MetaValue arg[10]) {
+    QObjectProxy* newInstance(PyrObject* scObject, QtCollider::MetaValue arg[10]) override {
         QOBJECT* qObject;
 
         if (!arg[0].type()) {
@@ -101,7 +101,7 @@ protected:
         return prox;
     }
 
-    virtual void initialize(QObjectProxy* proxy, QOBJECT* obj) {};
+    virtual void initialize(QObjectProxy* proxy, QOBJECT* obj) {}
 };
 
 #define QC_DECLARE_FACTORY(QOBJECT, FACTORY)                                                                           \

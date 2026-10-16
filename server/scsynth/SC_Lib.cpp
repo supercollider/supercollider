@@ -163,8 +163,6 @@ void ReportLateness(ReplyAddress* inReply, float32 seconds) {
 
 SC_NamedObj::SC_NamedObj() { SetName("?"); }
 
-SC_NamedObj::~SC_NamedObj() {}
-
 void SC_NamedObj::SetName(const int32* inName) {
     if (str4len(inName) > (int)kSCNameLen)
         return;

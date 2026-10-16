@@ -64,7 +64,7 @@ public:
     QListView* view();
 
 protected:
-    virtual bool eventFilter(QObject* obj, QEvent* ev);
+    bool eventFilter(QObject* obj, QEvent* ev) override;
 
 private:
     QListView* mListView;

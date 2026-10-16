@@ -97,12 +97,12 @@ public:
 
     virtual int Init(char* inData, int inSize);
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
-    virtual void CallDestructor();
+    void CallDestructor() override;
     int mID;
 };
 
@@ -113,11 +113,11 @@ public:
     BufGenCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~BufGenCmd();
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
@@ -128,7 +128,7 @@ protected:
     SndBuf mSndBuf;
     float* mFreeData;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -137,11 +137,11 @@ class BufAllocCmd : public SC_SequencedCommand {
 public:
     BufAllocCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
@@ -150,7 +150,7 @@ protected:
     float mSampleRate;
     float* mFreeData;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -160,17 +160,17 @@ class BufFreeCmd : public SC_SequencedCommand {
 public:
     BufFreeCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
     float* mFreeData;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 
@@ -181,16 +181,16 @@ class BufCloseCmd : public SC_SequencedCommand {
 public:
     BufCloseCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 
@@ -201,16 +201,16 @@ class BufZeroCmd : public SC_SequencedCommand {
 public:
     BufZeroCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -220,11 +220,11 @@ public:
     BufAllocReadCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~BufAllocReadCmd();
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
@@ -233,7 +233,7 @@ protected:
     char* mFilename;
     int mFileOffset, mNumFrames;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -243,11 +243,11 @@ public:
     BufReadCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~BufReadCmd();
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
@@ -255,7 +255,8 @@ protected:
     int mFileOffset, mNumFrames, mBufOffset;
     bool mLeaveFileOpen;
     double mSampleRate;
-    virtual void CallDestructor();
+
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -265,7 +266,6 @@ public:
     enum { kMaxNumChannels = 32 };
 
     SC_BufReadCommand(World* inWorld, ReplyAddress* inReplyAddress);
-    virtual ~SC_BufReadCommand();
 
 protected:
     void InitChannels(sc_msg_iter& msg);
@@ -284,11 +284,11 @@ public:
     BufAllocReadChannelCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~BufAllocReadChannelCmd();
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
@@ -296,7 +296,8 @@ protected:
     SndBuf mSndBuf;
     char* mFilename;
     int mFileOffset, mNumFrames;
-    virtual void CallDestructor();
+
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -306,11 +307,11 @@ public:
     BufReadChannelCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~BufReadChannelCmd();
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
@@ -318,7 +319,8 @@ protected:
     int mFileOffset, mNumFrames, mBufOffset;
     bool mLeaveFileOpen;
     double mSampleRate;
-    virtual void CallDestructor();
+
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -328,11 +330,11 @@ public:
     BufWriteCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~BufWriteCmd();
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     int mBufIndex;
@@ -343,7 +345,7 @@ protected:
     int mNumFrames, mBufOffset;
     bool mLeaveFileOpen;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -352,12 +354,12 @@ class AudioQuitCmd : public SC_SequencedCommand {
 public:
     AudioQuitCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -366,10 +368,10 @@ class AudioStatusCmd : public SC_SequencedCommand {
 public:
     AudioStatusCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual bool Stage2(); // non real time
+    bool Stage2() override; // non real time
 
 protected:
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -378,10 +380,10 @@ class RTMemStatusCmd : public SC_SequencedCommand {
 public:
     RTMemStatusCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual bool Stage2(); // non real time
+    bool Stage2() override; // non real time
 
 protected:
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 ///////////////////////////////////////////////////////////////////////////
 
@@ -389,12 +391,12 @@ class NotifyCmd : public SC_SequencedCommand {
 public:
     NotifyCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
+    bool Stage2() override; // non real time
 
 protected:
-    virtual void CallDestructor();
+    void CallDestructor() override;
 
     int mOnOff;
     int mID;
@@ -421,9 +423,9 @@ public:
     SendFailureCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~SendFailureCmd();
 
-    virtual void InitSendFailureCmd(const char* inCmdName, const char* inErrString);
+    void InitSendFailureCmd(const char* inCmdName, const char* inErrString);
 
-    virtual bool Stage2(); // non real time
+    bool Stage2() override; // non real time
 
 protected:
     char *mCmdName, *mErrString;
@@ -438,17 +440,17 @@ public:
     LoadSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~LoadSynthDefCmd();
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     char* mFilename;
     GraphDef* mDefs;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -458,18 +460,18 @@ public:
     RecvSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~RecvSynthDefCmd();
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     char* mBuffer;
     size_t mSize;
     GraphDef* mDefs;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -479,17 +481,17 @@ public:
     LoadSynthDefDirCmd(World* inWorld, ReplyAddress* inReplyAddress);
     virtual ~LoadSynthDefDirCmd();
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     char* mFilename;
     GraphDef* mDefs;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -498,12 +500,12 @@ class SendReplyCmd : public SC_SequencedCommand {
 public:
     SendReplyCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
-    virtual bool Stage2(); // non real time
+    bool Stage2() override; // non real time
 
 protected:
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -519,9 +521,9 @@ public:
 
     virtual ~AsyncPlugInCmd_();
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     const char* mCmdName;
@@ -529,7 +531,7 @@ protected:
     StageFn mStage2, mStage3, mStage4;
     AsyncFreeFn mCleanup;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 using AsyncPlugInCmd = AsyncPlugInCmd_<AsyncStageFn>;
@@ -547,9 +549,9 @@ public:
 
     virtual ~AsyncUnitCmd();
 
-    virtual bool Stage2(); // non real time
-    virtual bool Stage3(); //     real time
-    virtual void Stage4(); // non real time
+    bool Stage2() override; // non real time
+    bool Stage3() override; //     real time
+    void Stage4() override; // non real time
 
 protected:
     Unit* mUnit;
@@ -559,5 +561,5 @@ protected:
     AsyncFreeFn mCleanup;
     bool mAlive;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };

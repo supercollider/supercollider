@@ -63,8 +63,8 @@ public Q_SLOTS:
     void onQuit();
 
 protected:
-    virtual bool event(QEvent*);
-    virtual bool notify(QObject*, QEvent*);
+    bool event(QEvent*) override;
+    bool notify(QObject*, QEvent*) override;
 
 private:
     QSharedPointer<QMenuBar> _mainMenu;

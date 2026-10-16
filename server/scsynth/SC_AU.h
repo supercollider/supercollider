@@ -28,9 +28,9 @@
 
 class SC_AUAudioDriver : public SC_CoreAudioDriver {
 protected:
-    virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
-    virtual bool DriverStart();
-    virtual bool DriverStop();
+    bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate) override;
+    bool DriverStart() override;
+    bool DriverStop() override;
 
 public:
     SC_AUAudioDriver(World* inWorld);

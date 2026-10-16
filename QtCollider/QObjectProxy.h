@@ -119,9 +119,9 @@ protected:
     void invokeScMethod(PyrSymbol* method, const QList<QVariant>& args = QList<QVariant>(), PyrSlot* result = 0,
                         bool locked = false);
 
-    virtual bool eventFilter(QObject* watched, QEvent* event);
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
-    virtual void customEvent(QEvent*);
+    void customEvent(QEvent*) override;
 
     virtual bool preProcessEvent(QObject*, QEvent*, EventHandlerData&, QList<QVariant>& args);
 

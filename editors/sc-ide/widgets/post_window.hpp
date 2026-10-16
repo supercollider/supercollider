@@ -58,14 +58,13 @@ public:
 
     QAction* action(ActionRole role) const { return mActions[role]; }
 
-    QSize sizeHint() const { return mSizeHint; }
-    QSize minimumSizeHint() const { return QSize(50, 50); }
+    QSize sizeHint() const override { return mSizeHint; }
+    QSize minimumSizeHint() const override { return QSize(50, 50); }
     QString symbolUnderCursor();
 
     void mousePressEvent(QMouseEvent* e) override;
 
     void mouseReleaseEvent(QMouseEvent* e) override;
-
 
 signals:
     void scrollToBottomRequest();
@@ -88,11 +87,11 @@ public slots:
     bool gestureEvent(QGestureEvent* event);
 
 protected:
-    virtual bool event(QEvent*);
-    virtual void wheelEvent(QWheelEvent*);
-    virtual void focusOutEvent(QFocusEvent* e);
-    virtual void mouseDoubleClickEvent(QMouseEvent* e);
-    virtual QMimeData* createMimeDataFromSelection() const;
+    bool event(QEvent*) override;
+    void wheelEvent(QWheelEvent*) override;
+    void focusOutEvent(QFocusEvent* e) override;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
+    QMimeData* createMimeDataFromSelection() const override;
 
 private slots:
     void onAutoScrollTriggered(bool);
