@@ -1472,16 +1472,46 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
 
     // Not an extension and oldmethod exist, we are redefining an already defined method. This is an error, bail.
     if (oldmethod && !mExtension) {
-        const PyrMethodNode* other;
+        const PyrParseNode* other {};
         // Because this is not an extention, we always have a class above us.
         // If it was, it would be a PyrClassExtNode
         auto classNode = nodeCast<PyrClassNode>(this->mParent);
+        assert(classNode);
+
+        // Check if we have collided with another method
         for (auto it = classNode->mMethods; it; it = static_cast<PyrMethodNode*>(it->mNext)) {
             if (it != this && it->mMethodName->mSlot == mMethodName->mSlot) {
                 other = it;
                 break;
             }
         }
+        // Check if we have collided with a getter or setter method.
+        if (!other) {
+            const bool is_selector = mMethodName->mSlot.getSymbol()->flags | sym_Setter;
+            for (auto it = classNode->mVarlists->mVarDefs; it; it = static_cast<PyrVarDefNode*>(it->mNext)) {
+                if (has_read(it->accessor) && it->mVarName->mSlot == mMethodName->mSlot) {
+                    other = it;
+                    break;
+                }
+                if (is_selector && has_write(it->accessor)) {
+                    char buf[256]; // not filled with zeros.
+                    auto it_sym = it->mVarName->mSlot.getSymbol();
+                    std::memcpy(buf, it_sym->name, it_sym->length);
+                    buf[it_sym->length] = '_'; // overrides null terminator
+                    buf[it_sym->length + 1] = '\0'; // here we add the null terminator back
+                    auto setter_sym = getsym(buf);
+
+                    if (mMethodName->mSlot.getSymbol() == setter_sym) {
+                        other = it;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Should not be possible as only method nodes, getters, or setters produce PyrMethods.
+        assert(other);
+
         const PyrParseNode *first, *last;
         if (other->location.begin.absolute < location.begin.absolute) {
             first = other;
