@@ -9,14 +9,14 @@
 struct World;
 
 using ClientID = uint32;
+using ClientMap = std::map<ReplyAddress, ClientID>;
 
 /**
  * @brief Manages client access of the server such as password check, client id issuing and handling tcp disconnects.
  */
 class ClientManager {
-    /// since this gets accessed in the real time thread, this should only be accessed via
-    /// in protected environments such as stage1, stage2, ... or in the real time thread.
-    std::map<ReplyAddress, ClientID> mClientDict;
+    /// Do not touch this from the RT thread
+    ClientMap mClientDict;
 
     /// the password necessary for login.
     std::optional<std::string> mPassword {};
@@ -49,7 +49,7 @@ public:
      * @brief Returns the dict of all registered clients and their ID.
      * Only access this in (N)RT locked environments!
      */
-    const std::map<ReplyAddress, ClientID>& getClients() const { return mClientDict; }
+    const ClientMap& getClients() const { return mClientDict; }
 
     /**
      * @brief returns true iff passed client was present and got removed
