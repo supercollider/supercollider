@@ -28,8 +28,7 @@
 
 #include <atomic>
 #include <new>
-#include <functional>
-#include <SC_Lock.h>
+#include <thread>
 
 #include <boost/lockfree/queue.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
@@ -154,7 +153,7 @@ struct DiskIOThread {
 #endif
 
     std::atomic<bool> mRunning;
-    SC_Thread mThread;
+    std::thread mThread;
 
     DiskIOThread(): mRunning(false) {}
 

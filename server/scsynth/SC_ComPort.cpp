@@ -24,10 +24,7 @@
 #include "sc_msg_iter.h"
 #include "SC_OscUtils.hpp"
 
-#include <ctype.h>
-#include <stdexcept>
-#include <stdarg.h>
-#include <cerrno>
+#include <thread>
 
 #include <sys/types.h>
 #include "OSC_Packet.h"
@@ -40,7 +37,6 @@
 
 #include "SC_CoreAudio.h"
 #include "SC_FifoMsg.h"
-#include "SC_Lock.h"
 
 #include "nova-tt/semaphore.hpp"
 #include "nova-tt/thread_priority.hpp"
@@ -148,7 +144,7 @@ static bool UnrollOSCPacket(World* inWorld, int inSize, char* inData, OSC_Packet
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_Thread gAsioThread;
+std::thread gAsioThread;
 boost::asio::io_context ioContext;
 
 const int kTextBufSize = 65536;
@@ -203,7 +199,7 @@ class SC_UdpInPort {
     boost::asio::ip::udp::endpoint remoteEndpoint;
 
 #ifdef USE_RENDEZVOUS
-    SC_Thread mRendezvousThread;
+    std::thread mRendezvousThread;
 #endif
 
     void handleReceivedUDP(const boost::system::error_code& error, std::size_t bytes_transferred) {
@@ -303,8 +299,7 @@ public:
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_UDP, mPortNum));
-            mRendezvousThread = std::move(thread);
+            mRendezvousThread = std::thread(&PublishPortToRendezvous, kSCRendezvous_UDP, mPortNum);
         }
 #endif
 
@@ -439,7 +434,7 @@ class SC_TcpInPort {
     boost::asio::ip::tcp::acceptor acceptor;
 
 #ifdef USE_RENDEZVOUS
-    SC_Thread mRendezvousThread;
+    std::thread mRendezvousThread;
 #endif
 
     std::atomic<int> mAvailableConnections;
@@ -454,10 +449,8 @@ public:
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_TCP,
-                                         inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum));
-
-            mRendezvousThread = std::move(thread);
+            mRendezvousThread = std::thread(&PublishPortToRendezvous, kSCRendezvous_TCP,
+                                            inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum);
         }
 #endif
 
@@ -519,10 +512,7 @@ static void asioFunction() {
     ioContext.run();
 }
 
-void startAsioThread() {
-    SC_Thread asioThread(&asioFunction);
-    gAsioThread = std::move(asioThread);
-}
+void startAsioThread() { gAsioThread = std::thread(&asioFunction); }
 
 void stopAsioThread() {
     ioContext.stop();

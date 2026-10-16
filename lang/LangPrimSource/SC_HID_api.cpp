@@ -42,6 +42,7 @@
 
 #include <atomic>
 #include <cstring>
+#include <thread>
 
 #include "SC_LanguageClient.h"
 

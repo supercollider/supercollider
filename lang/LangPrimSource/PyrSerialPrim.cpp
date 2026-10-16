@@ -210,7 +210,7 @@ private:
     PyrObject* m_obj; ///< Language object representing this port.
     boost::asio::serial_port m_port; ///< Port object.
     Options m_options; ///< Serial interface options.
-    SC_Thread m_readThread; ///< Polling thread.
+    std::thread m_readThread; ///< Polling thread.
 
     /// Count of read errors since last query
     std::atomic<int> m_rxErrors;

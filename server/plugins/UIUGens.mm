@@ -20,7 +20,7 @@
 
 // ********** this version for mac. for windows and linux see UIUGens.cpp
 
-#include <SC_Lock.h>
+#include <thread>
 
 #import <AppKit/AppKit.h>
 #include <unistd.h>
@@ -190,7 +190,7 @@ void MouseButton_Ctor(MouseInputUGen* unit) {
     MouseButton_next(unit, 1);
 }
 
-SC_Thread uiListenThread;
+std::thread uiListenThread;
 
 PluginLoad(UIUGens) {
     ft = inTable;

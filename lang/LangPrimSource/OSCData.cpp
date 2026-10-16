@@ -40,7 +40,6 @@
 
 #include "SC_ComPort.h"
 #include "SC_Endian.h"
-#include "SC_Lock.h"
 #include "SC_Msg.h"
 #include "SC_SndBuf.h"
 #include "SC_WorldOptions.h"
@@ -1352,7 +1351,7 @@ int prQuitInProcessServer(VMGlobals* g, int numArgsPushed) {
         World* world = gInternalSynthServer.mWorld;
         gInternalSynthServer.mWorld = nullptr;
 
-        SC_Thread thread(std::bind(World_WaitForQuit, world, false));
+        std::thread thread(World_WaitForQuit, world, false);
 
         thread.detach();
     }

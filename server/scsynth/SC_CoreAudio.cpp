@@ -19,7 +19,6 @@
 */
 
 #include "SC_CoreAudio.h"
-#include <stdarg.h>
 #include "SC_SequencedCommand.h"
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
@@ -29,8 +28,9 @@
 #include "SC_Lock.h"
 #include "SC_Time.hpp"
 #include "SC_InlineBinaryOp.h"
-#include <stdlib.h>
+
 #include <algorithm>
+#include <stdlib.h>
 
 #ifndef _WIN32
 #    include <sys/time.h>
@@ -124,7 +124,7 @@ static void resyncThreadFunc() {
 void initializeScheduler() {
     syncOSCOffsetWithTimeOfDay();
 
-    SC_Thread resyncThread(resyncThreadFunc);
+    std::thread resyncThread(resyncThreadFunc);
     resyncThread.detach();
 }
 #endif // SC_AUDIO_API_COREAUDIO
@@ -415,8 +415,7 @@ void SC_ScheduledEvent::Perform() {
 
 bool SC_AudioDriver::Setup() {
     mRunThreadFlag = true;
-    SC_Thread thread(std::bind(&SC_AudioDriver::RunThread, this));
-    mThread = std::move(thread);
+    mThread = std::thread(&SC_AudioDriver::RunThread, this);
 
     int numSamples;
     double sampleRate;
