@@ -143,6 +143,7 @@ jobs:
           fi
 
       - name: install homebrew packages
+        if: matrix.homebrew-packages
         run: brew install ${{ matrix.homebrew-packages }} --quiet
 
       - name: uninstall homebrew packages
