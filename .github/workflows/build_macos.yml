@@ -20,7 +20,8 @@ jobs:
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: "12"
             cmake-architectures: "x86_64;arm64"
-            homebrew-packages: ""
+            # coreutils provides timeout for the help build
+            homebrew-packages: "coreutils"
             homebrew-uninstall: "readline"
             vcpkg-packages: "readline libsndfile" # use only when building a universal binary; otherwise use vcpkg in manifest mode (no need to install packages separately)
             vcpkg-triplet: "arm64-osx-release-supercollider"
@@ -29,7 +30,7 @@ jobs:
             extra-cmake-flags: "-D VCPKG_MANIFEST_MODE=OFF" # we need to disable manifest mode for universal binaries
             artifact-suffix: "macOS-universal"
             ctest: true
-            build_help: true
+            build-help: true
 
           - job-name: "x64 legacy"
             os-version: "15-intel"
@@ -142,8 +143,7 @@ jobs:
           fi
 
       - name: install homebrew packages
-        # coreutils provides timeout for the doc build
-        run: brew install coreutils ${{ matrix.homebrew-packages }} --quiet
+        run: brew install ${{ matrix.homebrew-packages }} --quiet
 
       - name: uninstall homebrew packages
         if: matrix.homebrew-uninstall
