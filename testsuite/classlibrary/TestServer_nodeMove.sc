@@ -10,40 +10,56 @@ TestServer_nodeMove : UnitTest {
 
 	treeAfter { |program, moves|
 		var order = List[],
-			ip = "127.0.0.1",
-			port = 57110,
-			addr = NetAddr(ip, port),
-			line,
-			match;
-		pipe = Pipe.new(program ++ ServerOptions().bindAddress_(ip).asOptionsString(port), "r");
-		line = pipe.getLine;
-		while ({ line.notNil && line.contains("ready").not }) {
-			line = pipe.getLine;
-		};
+		oscPath = PathName.tmp +/+ "dumpTree_test.osc",
+		outPath = PathName.tmp +/+ "dummy_out.aiff",
+		stepDur = 0.1,
+		cmd, line, score, match, nodeTreeOutputDetected = false;
+
+		score = Score();
 		// build a known tree, then apply the moves and read back the resulting
 		// depth-first node order (root id 0 dropped). /g_new args are:
 		// new group id, add action (0 = head of target, 1 = tail of target), target id.
 		// the result is two sibling groups under the root, each holding two child groups:
 		//   1000 ( 2000 2001 )   1001 ( 3000 3001 )
-		addr.sendMsg("/g_new", 1000, 0, 0);
-		addr.sendMsg("/g_new", 1001, 1, 0);
-		addr.sendMsg("/g_new", 2000, 0, 1000);
-		addr.sendMsg("/g_new", 2001, 1, 1000);
-		addr.sendMsg("/g_new", 3000, 0, 1001);
-		addr.sendMsg("/g_new", 3001, 1, 1001);
-		moves.do { |m| addr.sendMsg(*m) };
-		addr.sendMsg("/g_dumpTree", 0, 0);
-		addr.sendMsg("/quit");
+		score.score = ([
+			[0.0,
+				['/g_new', 1000, 0, 0],
+				['/g_new', 1001, 1, 0],
+				['/g_new', 2000, 0, 1000],
+				['/g_new', 2001, 1, 1000],
+				['/g_new', 3000, 0, 1001],
+				['/g_new', 3001, 1, 1001]
+			],
+		]);
+		moves.do({ |m, i| score.add([stepDur * i, m])});
+		score.add([stepDur * (1 + moves.size), ['/g_dumpTree', 0, 0]]); // dump after moves
+		score.writeOSCFile(oscPath, 0, stepDur * (2 + moves.size));
+
+		// construct the nrt command
+		cmd = "% -N % _ % 44100 AIFF int16".format(program, oscPath.quote, outPath.quote);
+		// run it and capture stdout
+		pipe = Pipe.new(cmd, "r");
 		line = pipe.getLine;
 		while ({ line.notNil }) {
-			match = line.findRegexp("^\\s+([0-9]+) group");
-			if (match.notEmpty and: { match[1][1].asInteger != 0 }) {
-				order.add(match[1][1].asInteger);
+			// line.postln; // inspect output
+			// ignore output until we see matching start
+			if (line.beginsWith("NODE TREE")) {nodeTreeOutputDetected = true};
+			// once we see matching beginning, capture output
+			if (nodeTreeOutputDetected) {
+				// line.postln; // inspect output
+				match = line.findRegexp("^\\s+([0-9]+) group");
+				if (match.notEmpty and: { match[1][1].asInteger != 0 }) {
+					order.add(match[1][1].asInteger);
+				};
 			};
+			// stop capturing when we see matching end
+			if (line.beginsWith("END NODE")) {nodeTreeOutputDetected = false};
 			line = pipe.getLine;
 		};
 		pipe.close;
-		^ order
+		if (File.exists(oscPath)) { File.delete(oscPath)};
+		if (File.exists(outPath)) { File.delete(outPath)};
+		^order
 	}
 
 	// moving 2001 after 3000 should pull it out of group 1000 and place it
