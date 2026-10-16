@@ -23,8 +23,6 @@
 #include <memory> /* std::allocator */
 #include <type_traits>
 
-#include <boost/mpl/if.hpp>
-
 namespace nova {
 
 /** dynamically sized array
@@ -96,8 +94,7 @@ private:
 
 public:
     template <typename Constructor_arg> explicit sized_array(Constructor_arg const& arg) {
-        typedef
-            typename boost::mpl::if_<std::is_integral<Constructor_arg>, call_int_ctor, call_container_ctor>::type ctor;
+        using ctor = std::conditional_t<std::is_integral_v<Constructor_arg>, call_int_ctor, call_container_ctor>;
         ctor::init(*this, arg);
     }
 

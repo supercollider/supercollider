@@ -36,9 +36,9 @@ template <std::size_t bytes, bool blocking = false> class static_pool {
 
     static const std::size_t poolsize = bytes / sizeof(long);
 
-    typedef typename boost::mpl::if_c<blocking, std::mutex, dummy_mutex>::type mutex_type;
+    using mutex_type = std::conditional_t<blocking, std::mutex, dummy_mutex>;
 
-    typedef typename std::lock_guard<mutex_type> scoped_lock;
+    using scoped_lock = std::lock_guard<mutex_type>;
 
     struct data : mutex_type {
         std::array<long, poolsize> pool;

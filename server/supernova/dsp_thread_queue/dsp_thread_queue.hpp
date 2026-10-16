@@ -412,7 +412,7 @@ private:
     };
 
     template <bool YieldBackoff> struct select_backoff {
-        typedef typename boost::mpl::if_c<YieldBackoff, yield_backoff, backoff>::type type;
+        using type = std::conditional_t<YieldBackoff, yield_backoff, backoff>;
     };
 
     void calibrate_backoff(int timeout_in_seconds) {
