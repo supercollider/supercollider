@@ -56,11 +56,11 @@ BOOST_AUTO_TEST_CASE(sized_array_test_1) {
 template <typename Alloc1, typename Alloc2> void run_test_2() {
     int size = 1024;
 
-    std::vector<int, typename Alloc1::template rebind<int>::other> vec;
+    std::vector<int, typename std::allocator_traits<Alloc1>::template rebind_alloc<int>> vec;
     for (int i = 0; i != size; ++i)
         vec.push_back(-i);
 
-    sized_array<int, typename Alloc2::template rebind<int>::other> array(vec);
+    sized_array<int, typename std::allocator_traits<Alloc2>::template rebind_alloc<int>> array(vec);
 
     for (int i = 0; i != size; ++i)
         BOOST_REQUIRE_EQUAL(vec[i], array[i]);

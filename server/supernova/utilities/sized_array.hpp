@@ -35,8 +35,10 @@ namespace nova {
  *  functions are called.
  *
  * */
-template <typename T, class Alloc = std::allocator<T>> class sized_array : private Alloc::template rebind<T>::other {
-    typedef typename Alloc::template rebind<T>::other Allocator;
+template <typename T, class Alloc = std::allocator<T>>
+class sized_array : private std::allocator_traits<Alloc>::template rebind_alloc<T> {
+    using alloc_type = typename std::allocator_traits<Alloc>::template rebind_alloc<T>;
+    using alloc_traits = std::allocator_traits<alloc_type>;
 
 public:
     // types
@@ -52,10 +54,10 @@ public:
 
     // construct/copy/destruct
     explicit sized_array(size_type size = 0, T const& def = T()):
-        data_(size ? Allocator::allocate(size) : nullptr),
+        data_(size ? alloc_traits::allocate(*this, size) : nullptr),
         size_(size) {
         for (size_type i = 0; i != size; ++i)
-            Allocator::construct(data_ + i, def);
+            alloc_traits::construct(*this, data_ + i, def);
     }
 
     sized_array(sized_array& arg) = delete;
@@ -63,20 +65,20 @@ public:
 
 private:
     template <typename int_type> void init_from_int(int_type size) {
-        data_ = Allocator::allocate(size);
+        data_ = alloc_traits::allocate(*this, size);
         size_ = size;
         for (size_type i = 0; i != size_; ++i)
-            Alloc::construct(data_ + i, T());
+            alloc_traits::construct(*this, data_ + i, T());
     }
 
     template <typename Container> void init_from_container(Container const& container) {
-        data_ = Allocator::allocate(container.size());
+        data_ = alloc_traits::allocate(*this, container.size());
         size_ = container.size();
 
         size_type index = 0;
         typedef typename Container::const_iterator iterator;
         for (iterator it = container.begin(); it != container.end(); ++it)
-            Allocator::construct(data_ + index++, *it);
+            alloc_traits::construct(*this, data_ + index++, *it);
         assert(index == size());
     }
 
@@ -116,9 +118,9 @@ public:
 
     ~sized_array() {
         for (size_type i = 0; i != size(); ++i)
-            Allocator::destroy(data_ + i);
+            alloc_traits::destroy(*this, data_ + i);
         if (size())
-            Allocator::deallocate(data_, size());
+            alloc_traits::deallocate(*this, data_, size());
     }
 
     // iterator support
@@ -186,19 +188,19 @@ public:
     }
 
     void resize(size_type new_size, T const& t = T()) {
-        T* new_data = Allocator::allocate(new_size);
+        T* new_data = alloc_traits::allocate(*this, new_size);
 
         for (size_type i = 0; i != new_size; ++i)
-            Allocator::construct(new_data + i, t);
+            alloc_traits::construct(*this, new_data + i, t);
 
-        std::copy(data_, data_ + (std::min)(new_size, size_), new_data);
+        std::copy(data_, data_ + std::min(new_size, size_), new_data);
 
         T* old_data = data_;
         data_ = new_data;
         for (size_type i = 0; i != size_; ++i)
-            Allocator::destroy(old_data + i);
+            alloc_traits::destroy(*this, old_data + i);
         if (size_)
-            Allocator::deallocate(old_data, size_);
+            alloc_traits::deallocate(*this, old_data, size_);
         size_ = new_size;
     }
 
