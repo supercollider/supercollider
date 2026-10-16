@@ -62,15 +62,7 @@ template <class T, std::size_t count, bool blocking = false> class static_alloca
     };
 
 public:
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
-    typedef T* pointer;
-    typedef const T* const_pointer;
-    typedef T& reference;
-    typedef const T& const_reference;
     typedef T value_type;
-
-    template <class U> struct rebind { typedef static_allocator<U, count, blocking> other; };
 
     static_allocator() noexcept {
         data_.pool.assign(0);
@@ -89,11 +81,7 @@ public:
 
     ~static_allocator() { destroy_memory_pool(data_.pool.data()); }
 
-    pointer address(reference x) const { return &x; }
-
-    const_pointer address(const_reference x) const { return &x; }
-
-    pointer allocate(size_type n, const_pointer hint = 0) {
+    [[nodiscard]] value_type* allocate(size_t n) {
         scoped_lock lock(data_);
         value_type* ret = static_cast<value_type*>(malloc_ex(n * sizeof(T), data_.pool.data()));
 
@@ -103,16 +91,12 @@ public:
         return ret;
     }
 
-    void deallocate(pointer p, size_type n) {
+    void deallocate(value_type* p, size_t n) {
         scoped_lock lock(data_);
         free_ex(p, data_.pool.data());
     }
 
-    size_type max_size() const noexcept { return count; }
-
-    void construct(pointer p, const T& val) { ::new (p) T(val); }
-
-    void destroy(pointer p) { p->~T(); }
+    size_t max_size() const noexcept { return count; }
 
 private:
     data data_;
