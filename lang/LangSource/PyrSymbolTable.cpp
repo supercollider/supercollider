@@ -29,6 +29,7 @@
 #include "VMGlobals.h"
 #include "Hash.h"
 
+
 SCLANG_DLLEXPORT_C PyrSymbol* getsym(const char* name) {
     PyrSymbol* symbol = gMainVMGlobals->symbolTable->Make(name);
     if (!symbol) {
@@ -39,16 +40,22 @@ SCLANG_DLLEXPORT_C PyrSymbol* getsym(const char* name) {
 }
 
 SCLANG_DLLEXPORT_C PyrSymbol* getsymlen(const char* name, std::size_t len) {
-    char str[256];
+    if (len > PyrSymbol::maxLength) {
+        throw std::runtime_error { "Maximum length of a symbol exceeded." };
+    }
+    char str[PyrSymbol::maxLength + 1]; // must be able to store the null terminator after
     std::copy(name, name + len, str);
     str[len] = 0;
     return getsym(str);
 }
 
 SCLANG_DLLEXPORT_C PyrSymbol* getmetasym(const char* name) {
-    char str[256];
-    strcpy(str, "Meta_");
-    strncat(str, name, 250);
+    if (strlen(name) + metaClassPrefixLen > PyrSymbol::maxLength) {
+        throw std::runtime_error { "Maximum length of a symbol exceeded." };
+    }
+    char str[PyrSymbol::maxLength + 1]; // must be able to store the null terminator after
+    strcpy(str, metaClassPrefix);
+    strcpy(str + metaClassPrefixLen, name);
     return getsym(str);
 }
 
@@ -142,7 +149,7 @@ PyrSymbol* SymbolTable::MakeNew(const char* inName, int inHash, int inLength) {
 PyrSymbol* SymbolTable::Make(const char* inName) {
     size_t length;
     int hash = StrHash(inName, &length);
-    if (length > PyrSymbol::max_length) {
+    if (length > PyrSymbol::maxLength) {
         throw std::runtime_error { "Maximum length of a symbol exceeded." };
     }
     PyrSymbol* symbol = Find(inName, hash);

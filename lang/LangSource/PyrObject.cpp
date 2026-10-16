@@ -26,6 +26,7 @@
 #include "PyrMessage.h"
 #include "PyrInterpreter.h"
 #include "PyrSlot.h"
+#include "PyrSymbol.h"
 #include "PyrSymbolTable.h"
 #include "PyrObjectProto.h"
 #include "PyrKernelProto.h"
@@ -690,7 +691,7 @@ bool classFindClassVar(PyrClass** classobj, PyrSymbol* name, int* index) {
     // if this is a Metaclass then we need to search its normal Class for
     // the class vars
     classname = slotRawSymbol(&localclassobj->name)->name;
-    if (strncmp(classname, "Meta_", 5) == 0) {
+    if (strncmp(classname, metaClassPrefix, 5) == 0) {
         localclassobj = getsym(classname + 5)->u.classobj;
     }
     for (j = 0; localclassobj; ++j) {
@@ -725,7 +726,7 @@ bool classFindConst(PyrClass** classobj, PyrSymbol* name, int* index) {
     // if this is a Metaclass then we need to search its normal Class for
     // the class vars
     classname = slotRawSymbol(&localclassobj->name)->name;
-    if (strncmp(classname, "Meta_", 5) == 0) {
+    if (strncmp(classname, metaClassPrefix, 5) == 0) {
         localclassobj = getsym(classname + 5)->u.classobj;
     }
     for (j = 0; localclassobj; ++j) {
