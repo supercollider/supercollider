@@ -334,13 +334,8 @@ World* World_New(WorldOptions* inOptions) {
         HiddenWorld* hw = world->hw;
         hw->mGraphDefLib = new HashTable<struct GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
         hw->mNodeLib = new IntHashTable<Node, AllocPool>(hw->mAllocPool, inOptions->mMaxNodes, false);
-        hw->mUsers = new Clients();
-        hw->mMaxUsers = inOptions->mMaxLogins;
-        hw->mAvailableClientIDs = new ClientIDs();
-        for (int i = 0; i < hw->mMaxUsers; i++) {
-            hw->mAvailableClientIDs->push_back(i);
-        }
-        hw->mClientIDdict = new ClientIDDict();
+        hw->mClientManager = new ClientManager(inOptions->mMaxLogins);
+
         hw->mHiddenID = -8;
         hw->mRecentID = -8;
 
@@ -406,10 +401,9 @@ World* World_New(WorldOptions* inOptions) {
         world->mDriverLock = new SC_Lock();
 
         if (inOptions->mPassword) {
-            strncpy(world->hw->mPassword, inOptions->mPassword, 31);
-            world->hw->mPassword[31] = 0;
+            world->hw->mClientManager->setPassword(inOptions->mPassword);
         } else {
-            world->hw->mPassword[0] = 0;
+            world->hw->mClientManager->setPassword({});
         }
 #ifdef SC_BELA
         world->hw->mBelaAnalogInputChannels = inOptions->mBelaAnalogInputChannels;
@@ -1028,9 +1022,7 @@ void World_Cleanup(World* world, bool unload_plugins) {
         if (hw->mNRTCmdFile)
             fclose(hw->mNRTCmdFile);
 #endif
-        delete hw->mUsers;
-        delete hw->mAvailableClientIDs;
-        delete hw->mClientIDdict;
+        delete hw->mClientManager;
         delete hw->mNodeLib;
         delete hw->mGraphDefLib;
         delete hw->mQuitProgram;
@@ -1039,37 +1031,6 @@ void World_Cleanup(World* world, bool unload_plugins) {
     }
     free_alig(world);
 }
-
-/** @brief Gets called when a TCP client disconnects. Since the client may have
- *  registered via `/notify`, we need to remove the client from this list as well because otherwise
- *  the notification will be still send to the now closed socket.
- *  This implementation is similar to `NotifyCmd::Stage2` which handles the
- *  removal of UDP clients by sending `/notify 0`.
- *
- *  @details Contrary to UDP, TCP is stateful - i.e. a socket can get closed
- *  and we should avoid writing into it after it has been closed.
- *  Since there is no way of knowing if a UDP connection got dropped, we keep
- *  all UDP clients alive and can be reclaimed by a client via the internal logic of `/notify`.
- */
-void World_RemoveClient(FifoMsg* msg) {
-    auto* world = msg->mWorld;
-    auto* address = static_cast<ReplyAddress*>(msg->mData);
-    auto* hw = world->hw;
-
-    auto const it = hw->mUsers->find(*address);
-    if (it != hw->mUsers->end()) {
-        // make client ID free to be picked up by others again
-        auto const clientId = hw->mClientIDdict->at(*address);
-        hw->mAvailableClientIDs->push_back(clientId);
-
-        // remove it elsewhere
-        hw->mClientIDdict->erase(*address);
-        hw->mUsers->erase(it);
-    }
-    // free msg
-    delete address;
-}
-
 
 void World_NRTLock(World* world) { reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock(); }
 
@@ -1144,7 +1105,7 @@ void TriggerMsg::Perform() {
     packet.addi(mTriggerID);
     packet.addf(mValue);
 
-    for (auto addr : *mWorld->hw->mUsers)
+    for (const auto& [addr, clientID] : mWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 }
 
@@ -1167,7 +1128,7 @@ void NodeReplyMsg::Perform() {
         packet.addf(mValues[i]);
     }
 
-    for (auto addr : *mWorld->hw->mUsers)
+    for (const auto& [addr, clientID] : mWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 
     // Free memory in realtime thread
@@ -1231,7 +1192,7 @@ void NodeEndMsg::Perform() {
         packet.addi(mIsGroup);
     }
 
-    for (auto addr : *mWorld->hw->mUsers)
+    for (const auto& [addr, clientID] : mWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 }
 
@@ -1242,7 +1203,7 @@ void NotifyNoArgs(World* inWorld, char* inString) {
     small_scpacket packet;
     packet.adds(inString);
 
-    for (auto addr : *inWorld->hw->mUsers)
+    for (const auto& [addr, clientID] : inWorld->hw->mClientManager->getClients())
         SendReply(&addr, packet.data(), packet.size());
 }
 

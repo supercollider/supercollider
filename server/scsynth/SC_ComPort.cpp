@@ -44,6 +44,7 @@
 
 #include "nova-tt/semaphore.hpp"
 #include "nova-tt/thread_priority.hpp"
+#include "oscpack_1_1_0/osc/OscException.h"
 
 #ifdef USE_RENDEZVOUS
 #    include "Rendezvous.h"
@@ -52,7 +53,6 @@
 
 // forward declarations
 bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
-void World_RemoveClient(FifoMsg* msg);
 
 namespace scsynth {
 
@@ -154,7 +154,7 @@ boost::asio::io_context ioContext;
 const int kTextBufSize = 65536;
 
 
-static void udp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
+static void udp_reply_func(const ReplyAddress* addr, char* msg, int size) {
     using namespace boost::asio;
 
     ip::udp::socket* socket = reinterpret_cast<ip::udp::socket*>(addr->mReplyData);
@@ -167,7 +167,7 @@ static void udp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
         printf("%s\n", errc.message().c_str());
 }
 
-static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
+static void tcp_reply_func(const ReplyAddress* addr, char* msg, int size) {
     // Write size as 32bit unsigned network-order integer
     uint32 u = sc_htonl(size);
 
@@ -342,7 +342,7 @@ public:
         mClientIdentification.mAddress = socket.remote_endpoint().address();
 
         // first message must be the password. 4 tries.
-        bool validated = mWorld->hw->mPassword[0] == 0;
+        auto validated = !mWorld->hw->mClientManager->hasPassword();
         for (int i = 0; !validated && i < 4; ++i) {
             // FIXME: error handling!
             size = boost::asio::read(socket, boost::asio::buffer((void*)&msglen, sizeof(int32)));
@@ -357,7 +357,7 @@ public:
             if (size < 0)
                 return;
 
-            validated = strcmp(buf, mWorld->hw->mPassword) == 0;
+            validated = mWorld->hw->mClientManager->checkPassword(buf);
 
             std::this_thread::sleep_for(std::chrono::seconds(i + 1)); // thwart cracking.
         }
@@ -374,12 +374,13 @@ private:
                                ba::placeholders::bytes_transferred));
     }
 
+    /// acts as the identification within SC world, which is necessary when deregistering upon disconnect
+    ReplyAddress mClientIdentification;
+
     int32 OSCMsgLength;
     char* data;
     class SC_TcpInPort* mParent;
 
-    /** acts as the identification within SC world, which is necessary when deregistering upon disconnect. */
-    ReplyAddress mClientIdentification;
 
     void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
         if (error) {
@@ -490,12 +491,7 @@ public:
 };
 
 SC_TcpConnection::~SC_TcpConnection() {
-    // we need to de-register our client. clients are matched by reply address.
-    // we use fifomsg to get access to the stage2 thread lock.
-    // the callback function removes its passed data, so we make a copy of our reply address.
-    FifoMsg msg;
-    msg.Set(mWorld, World_RemoveClient, nullptr, new ReplyAddress(mClientIdentification));
-    AudioDriver(mWorld)->SendMsgFromEngine(msg);
+    ClientManager::removeClient(mWorld, mClientIdentification);
 
     // now close the socket
     try {

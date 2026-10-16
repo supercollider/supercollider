@@ -397,7 +397,7 @@ SCErr GraphDef_Remove(World* inWorld, int32* inName) {
     return kSCErr_None;
 }
 
-SCErr SendReplyCmd_d_removed(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+SCErr SendReplyCmd_d_removed(World* inWorld, int inSize, char* inData, const ReplyAddress* inReply) {
     void* space = World_Alloc(inWorld, sizeof(SendReplyCmd));
     if (!space)
         return kSCErr_OutOfRealTimeMemory;
@@ -429,7 +429,7 @@ SCErr GraphDef_DeleteMsg(World* inWorld, GraphDef* inDef) {
     packet.addtag('s');
     packet.adds((char*)inDef->mNodeDef.mName);
 
-    for (auto addr : *inWorld->hw->mUsers) {
+    for (const auto& [addr, clientID] : inWorld->hw->mClientManager->getClients()) {
         SCErr const err = SendReplyCmd_d_removed(inWorld, packet.size(), packet.data(), &addr);
         if (err != kSCErr_None)
             return err;
