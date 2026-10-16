@@ -143,7 +143,7 @@ server_arguments::server_arguments(int argc, char* argv[]) {
 
     try {
         socket_address = boost::asio::ip::make_address(vm["socket-address"].as<std::string>());
-    } catch (boost::exception const& e) {
+    } catch (boost::system::system_error const& e) {
         std::cout << "Cannot parse `" << vm["socket-address"].as<std::string>() << "` as a valid IP address. Exiting."
                   << std::endl;
         std::exit(EXIT_FAILURE);
