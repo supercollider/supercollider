@@ -55,8 +55,7 @@ public:
             name_thread("Network Receive");
 
             sem.post();
-            boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
-                boost::asio::make_work_guard(io_context_);
+            auto work = boost::asio::make_work_guard(io_context_);
             io_context_.run();
         });
         sem.wait();

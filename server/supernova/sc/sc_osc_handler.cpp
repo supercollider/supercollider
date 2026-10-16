@@ -26,9 +26,7 @@
 #    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
 #endif
 
-#include <boost/asio/placeholders.hpp>
 #include <boost/asio/read.hpp>
-#include <boost/bind/bind.hpp>
 
 #include "osc/OscOutboundPacketStream.h"
 #include "osc/OscPrintReceivedElements.h"
@@ -49,6 +47,8 @@
 #ifdef _WIN32
 #    include "malloc.h" // for alloca
 #endif
+
+using namespace std::placeholders;
 
 namespace nova {
 
@@ -679,11 +679,8 @@ bool sc_osc_handler::open_socket(int protocol, ip::address address, unsigned int
 }
 
 void sc_osc_handler::start_receive_udp() {
-    using namespace boost;
     sc_notify_observers::udp_socket.async_receive_from(buffer(recv_buffer_), udp_remote_endpoint_,
-                                                       bind(&sc_osc_handler::handle_receive_udp, this,
-                                                            asio::placeholders::error,
-                                                            asio::placeholders::bytes_transferred));
+                                                       std::bind(&sc_osc_handler::handle_receive_udp, this, _1, _2));
 }
 
 void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error, std::size_t bytes_transferred) {
@@ -703,9 +700,9 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error, 
 }
 
 void sc_osc_handler::tcp_connection::start(sc_osc_handler* self) {
-    using namespace boost;
+    namespace asio = boost::asio;
     typedef boost::endian::big_int32_t big_int32_t;
-    asio::ip::tcp::no_delay option(true);
+    ip::tcp::no_delay option(true);
     socket_.set_option(option);
 
     const bool check_password = self->tcp_password_;
@@ -803,9 +800,8 @@ void sc_osc_handler::tcp_connection::handle_message() {
 void sc_osc_handler::start_tcp_accept() {
     auto new_connection = tcp_connection::create(tcp_acceptor_.get_executor());
 
-    tcp_acceptor_.async_accept(
-        new_connection->socket(),
-        boost::bind(&sc_osc_handler::handle_tcp_accept, this, new_connection, boost::asio::placeholders::error));
+    tcp_acceptor_.async_accept(new_connection->socket(),
+                               std::bind(&sc_osc_handler::handle_tcp_accept, this, new_connection, _1));
 }
 
 void sc_osc_handler::handle_tcp_accept(tcp_connection::pointer new_connection, const boost::system::error_code& error) {

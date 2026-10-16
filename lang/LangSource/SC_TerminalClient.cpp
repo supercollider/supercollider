@@ -36,8 +36,6 @@
 #    include "../../QtCollider/LanguageClient.h"
 #endif
 
-#include <boost/bind/bind.hpp>
-
 #ifdef _WIN32
 #    include <windows.h>
 #    include <iostream> // for cerr
@@ -63,7 +61,7 @@
 
 #include <filesystem>
 
-using namespace boost::placeholders;
+using namespace std::placeholders;
 
 static FILE* gPostDest = stdout;
 
@@ -348,7 +346,7 @@ void SC_TerminalClient::tick(const boost::system::error_code& error) {
 
     if (haveNext) {
         mTimer.expires_at(nextAbsTime);
-        mTimer.async_wait(boost::bind(&SC_TerminalClient::tick, this, _1));
+        mTimer.async_wait(std::bind(&SC_TerminalClient::tick, this, _1));
     }
 }
 
@@ -449,10 +447,10 @@ void SC_TerminalClient::readlineInit() {
 void SC_TerminalClient::startInputRead() {
 #ifndef _WIN32
     if (mUseReadline)
-        mStdIn.async_read_some(boost::asio::null_buffers(), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
+        mStdIn.async_read_some(boost::asio::null_buffers(), std::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
     else
         mStdIn.async_read_some(boost::asio::buffer(mInputBuffer),
-                               boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
+                               std::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
 #else
     mStdIn.async_wait([&](const boost::system::error_code& error) {
         if (error)

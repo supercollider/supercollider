@@ -26,7 +26,6 @@
 #include "SC_ReplyImpl.hpp"
 
 #include <boost/asio.hpp>
-#include <boost/typeof/typeof.hpp>
 
 #include <stdexcept>
 #include <thread>
@@ -42,8 +41,7 @@ boost::asio::io_context ioContext;
 
 
 static void asioFunction() {
-    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
-        boost::asio::make_work_guard(ioContext);
+    auto work = boost::asio::make_work_guard(ioContext);
     ioContext.run();
 }
 
@@ -179,7 +177,7 @@ namespace InPort {
 UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inPortNum), mUdpSocket(ioContext) {
     using namespace boost::asio;
 
-    BOOST_AUTO(protocol, ip::udp::v4());
+    const auto protocol = ip::udp::v4();
 
     mUdpSocket.open(protocol);
 
