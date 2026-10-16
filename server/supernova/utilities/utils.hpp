@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <cstddef>
 #include <cassert>
 
@@ -26,7 +27,6 @@
 #include <boost/checked_delete.hpp>
 #include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/detail/atomic_count.hpp>
 
 #include "branch_hints.hpp"
 
@@ -107,10 +107,10 @@ template <typename deleter = checked_deleter> struct intrusive_refcountable : pu
 
     virtual ~intrusive_refcountable() = default;
 
-    void add_ref() { ++use_count_; }
+    void add_ref() { use_count_.fetch_add(1, std::memory_order_acq_rel); }
 
     void release() {
-        if (--use_count_ == 0)
+        if (use_count_.fetch_sub(1, std::memory_order_acq_rel) - 1 == 0)
             deleter::operator()(this);
     }
 
@@ -118,7 +118,7 @@ template <typename deleter = checked_deleter> struct intrusive_refcountable : pu
 
     inline friend void intrusive_ptr_release(intrusive_refcountable* p) { p->release(); }
 
-    boost::detail::atomic_count use_count_;
+    std::atomic<int32_t> use_count_;
 };
 
 template <class t, class compare = std::less<t>> struct compare_by_instance {
