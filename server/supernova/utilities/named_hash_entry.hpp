@@ -17,13 +17,13 @@
 
 #pragma once
 
+#include <shared_mutex>
 #include <string>
 
 #include <boost/intrusive/unordered_set_hook.hpp>
 #include <boost/unordered_set.hpp>
 
 #include "utils.hpp"
-#include "nova-tt/nova-tt/rw_mutex.hpp"
 
 #include "malloc_aligned.hpp"
 
@@ -91,45 +91,42 @@ private:
     };
 
     class symbol_table {
-        typedef boost::unordered_set<symbol_data> table_type;
-        typedef std::pair<table_type::const_iterator, bool> lookup_result_type;
+        static constexpr size_t initial_table_size = 16384;
 
-    public:
-        symbol_table() {}
+        boost::unordered_set<symbol_data> table;
+        std::shared_mutex mutex;
 
-        symbol_data const& find(const char* str, size_t strlen) {
-            mutex.lock_shared();
-            lookup_result_type lookup_result = symbol_lookup(str);
-            mutex.unlock_shared();
-            if (lookup_result.second)
-                return *lookup_result.first;
-
-            boost::unique_lock<nova::nonrecursive_rw_mutex> lock(mutex);
-            lookup_result = symbol_lookup(str);
-            if (lookup_result.second)
-                return *lookup_result.first;
-
-            std::pair<table_type::iterator, bool> inserted = table.insert(symbol_data(duplicate_string(str, strlen)));
-            assert(inserted.second);
-            return *inserted.first;
-        }
-
-    private:
-        lookup_result_type symbol_lookup(const char* str) const {
-            table_type::iterator it = table.find(str, hash_by_string(), equal_by_string());
+        auto symbol_lookup(const char* str) const {
+            auto it = table.find(str, hash_by_string(), equal_by_string());
             return std::make_pair(it, it != table.end());
         }
 
-        table_type table = table_type(16384);
-        nova::nonrecursive_rw_mutex mutex;
+    public:
+        symbol_table(): table(initial_table_size) {}
+
+        symbol_data const& find(const char* str, size_t strlen) {
+            // double-checked locking
+            {
+                std::shared_lock lock(mutex);
+                if (auto [it, success] = symbol_lookup(str); success)
+                    return *it;
+            }
+
+            std::lock_guard lock(mutex);
+            if (auto [it, success] = symbol_lookup(str); success)
+                return *it;
+
+            auto [it, inserted] = table.emplace(duplicate_string(str, strlen));
+            assert(inserted);
+            return *it;
+        }
     };
 
-    symbol_data lookup_string(const char* str, std::size_t length) {
-        static symbol_table table;
-        return table.find(str, length);
-    }
+    symbol_data lookup_string(const char* str, std::size_t length) { return table.find(str, length); }
 
     symbol_data lookup_string(const char* str) { return lookup_string(str, strlen(str)); }
+
+    inline static symbol_table table;
 
 public:
     symbol() {}

@@ -18,9 +18,6 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-
 #include "synth.hpp"
 #include "synth_definition.hpp"
 
