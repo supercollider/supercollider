@@ -74,7 +74,7 @@ public:
         // TODO: we need to set the control busses via a work queue
     }
 
-    float* get_control_busses(void) { return control_busses_.get(); }
+    float* get_control_busses() { return control_busses_.get(); }
 
     scope_buffer* get_scope_buffer(unsigned int index) {
         if (index < scope_buffers.size())
@@ -107,7 +107,7 @@ public:
         shared_memory_object::remove(detail_server_shm::make_shmem_name(port_number).c_str());
     }
 
-    ~server_shared_memory_creator(void) {
+    ~server_shared_memory_creator() {
         if (shm)
             disconnect();
     }
@@ -119,7 +119,7 @@ public:
         shm = NULL;
     }
 
-    float* get_control_busses(void) { return shm->get_control_busses(); }
+    float* get_control_busses() { return shm->get_control_busses(); }
 
     scope_buffer_writer get_scope_buffer_writer(unsigned int index, unsigned int channels, unsigned int size) {
         scope_buffer* buf = shm->get_scope_buffer(index);
@@ -152,7 +152,7 @@ public:
         shm = buffer;
     }
 
-    float* get_control_busses(void) { return shm->get_control_busses(); }
+    float* get_control_busses() { return shm->get_control_busses(); }
 
     scope_buffer_reader get_scope_buffer_reader(unsigned int index) {
         scope_buffer* buf = shm->get_scope_buffer(index);
