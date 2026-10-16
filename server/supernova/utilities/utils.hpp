@@ -21,7 +21,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cassert>
-
+#include <string_view>
 #include <type_traits>
 
 #include <boost/checked_delete.hpp>
@@ -130,12 +130,11 @@ template <class t, class compare = std::less<t>> struct compare_by_instance {
 };
 
 
-PURE inline std::size_t string_hash(const char* str) {
+PURE inline std::size_t string_hash(std::string_view str) {
     std::size_t ret = 0;
 
     // sdbm hash ... later try another function!
-    int c;
-    while ((c = *str++))
+    for (auto c : str)
         ret = c + (ret << 6) + (ret << 16) - ret;
 
     return ret;

@@ -17,52 +17,38 @@
 
 #pragma once
 
-#include <string>
+#include <shared_mutex>
+#include <string_view>
 
 #include <boost/intrusive/unordered_set_hook.hpp>
 #include <boost/unordered_set.hpp>
 
 #include "utils.hpp"
-#include "nova-tt/nova-tt/rw_mutex.hpp"
 
 #include "malloc_aligned.hpp"
 
 namespace nova {
 namespace bi = boost::intrusive;
 
-PURE inline bool strequal(const char* lhs, const char* rhs) {
-    for (;; ++lhs, ++rhs) {
-        if (*lhs == 0) {
-            if (*rhs == 0)
-                return true;
-            else
-                return false;
-        }
-        if (*rhs == 0)
-            return false;
-        if (*lhs != *rhs)
-            return false;
-    }
-}
-
 // thread-safe symbol
 // warning: don't use from different DSOs
 struct symbol {
 private:
-    static const char* duplicate_string(const char* str, std::size_t length) {
-        assert(strlen(str) == length);
+    static const char* duplicate_string(std::string_view str) {
+        // add null-terminator!
+        char* string = malloc_aligned<char>(str.size() + 1);
+        memcpy(string, str.data(), str.size());
+        string[str.size()] = '\0';
 
-        length += 1; // for terminating \0
-        char* string = malloc_aligned<char>(length);
-
-        strncpy(string, str, length);
         return string;
     }
 
     struct symbol_data {
-        explicit symbol_data(const char* str): str(str), hash(string_hash(str)) {}
+        symbol_data(): str(nullptr), size(0), hash(0) {}
 
-        explicit symbol_data(const char* str, size_t hash): str(str), hash(hash) {}
+        symbol_data(std::string_view str): symbol_data(str, string_hash(str)) {}
+
+        symbol_data(std::string_view str, size_t hash): str(str.data()), size(str.size()), hash(hash) {}
 
         symbol_data(symbol_data const& rhs) = default;
         symbol_data& operator=(symbol_data const& rhs) = default;
@@ -71,79 +57,80 @@ private:
 
         bool operator==(symbol_data const& rhs) const { return str == rhs.str; }
 
-        const char* str;
+        const char* str; // null-terminated!
+        size_t size;
         size_t hash;
     };
 
     struct hash_by_string {
-        size_t operator()(const char* str) const { return string_hash(str); }
+        size_t operator()(std::string_view str) const { return string_hash(str); }
         size_t operator()(symbol_data const& data) const { return data.hash; }
     };
 
     struct equal_by_string {
-        static const char* get_string(const char* arg) { return arg; }
-
-        static const char* get_string(symbol_data const& arg) { return arg.str; }
-
         template <typename T1, typename T2> bool operator()(T1 const& lhs, T2 const& rhs) const {
-            return strequal(get_string(lhs), get_string(rhs));
-        }
-    };
-
-    class symbol_table {
-        typedef boost::unordered_set<symbol_data> table_type;
-        typedef std::pair<table_type::const_iterator, bool> lookup_result_type;
-
-    public:
-        symbol_table() {}
-
-        symbol_data const& find(const char* str, size_t strlen) {
-            mutex.lock_shared();
-            lookup_result_type lookup_result = symbol_lookup(str);
-            mutex.unlock_shared();
-            if (lookup_result.second)
-                return *lookup_result.first;
-
-            boost::unique_lock<nova::nonrecursive_rw_mutex> lock(mutex);
-            lookup_result = symbol_lookup(str);
-            if (lookup_result.second)
-                return *lookup_result.first;
-
-            std::pair<table_type::iterator, bool> inserted = table.insert(symbol_data(duplicate_string(str, strlen)));
-            assert(inserted.second);
-            return *inserted.first;
+            return get_string(lhs) == get_string(rhs);
         }
 
     private:
-        lookup_result_type symbol_lookup(const char* str) const {
-            table_type::iterator it = table.find(str, hash_by_string(), equal_by_string());
+        static std::string_view get_string(std::string_view arg) { return arg; }
+
+        static std::string_view get_string(symbol_data const& arg) { return { arg.str, arg.size }; }
+    };
+
+    class symbol_table {
+        static constexpr size_t initial_table_size = 16384;
+
+        using table_type = boost::unordered_set<symbol_data>;
+        // with C++20 we can just use auto as the return type.
+        using lookup_result = std::pair<table_type::const_iterator, bool>;
+
+    public:
+        symbol_table(): table(initial_table_size) {}
+
+        symbol_data const& find(std::string_view str) {
+            // double-checked locking
+            {
+                std::shared_lock lock(mutex);
+                if (auto [it, success] = symbol_lookup(str); success)
+                    return *it;
+            }
+
+            std::lock_guard lock(mutex);
+            if (auto [it, success] = symbol_lookup(str); success)
+                return *it;
+
+            auto [it, inserted] = table.emplace(duplicate_string(str));
+            assert(inserted);
+            return *it;
+        }
+
+    private:
+        lookup_result symbol_lookup(std::string_view str) const {
+            auto it = table.find(str, hash_by_string(), equal_by_string());
             return std::make_pair(it, it != table.end());
         }
 
-        table_type table = table_type(16384);
-        nova::nonrecursive_rw_mutex mutex;
+        table_type table;
+        std::shared_mutex mutex;
     };
 
-    symbol_data lookup_string(const char* str, std::size_t length) {
+    symbol_data lookup_string(std::string_view str) const {
         static symbol_table table;
-        return table.find(str, length);
+        return table.find(str);
     }
-
-    symbol_data lookup_string(const char* str) { return lookup_string(str, strlen(str)); }
 
 public:
     symbol() {}
 
-    explicit symbol(const char* str): data(lookup_string(str)) {}
-
-    explicit symbol(std::string const& str): data(lookup_string(str.c_str(), str.size())) {}
-
-    symbol(const char* str, std::size_t length): data(lookup_string(str, length)) {}
+    explicit symbol(std::string_view str): data(lookup_string(str)) {}
 
     symbol(symbol const& rhs) = default;
     symbol& operator=(symbol const& rhs) = default;
 
     const char* c_str() const { return data.str; }
+
+    size_t size() const { return data.size; }
 
     friend std::size_t hash_value(symbol const& value) { return value.data.hash; }
 
@@ -151,62 +138,50 @@ public:
 
     friend bool operator<(symbol const& lhs, symbol const& rhs) { return lhs.data.str < rhs.data.str; }
 
-    symbol_data data = symbol_data(nullptr, 0);
+    symbol_data data;
 };
 
 class named_hash_entry : public bi::unordered_set_base_hook<> {
     const symbol name_;
 
 public:
-    named_hash_entry(const char* name): name_(name) {}
+    explicit named_hash_entry(symbol const& name): name_(name) {}
 
-    named_hash_entry(symbol const& name): name_(name) {}
-
-    named_hash_entry(std::string const& name): name_(name.c_str(), name.size()) {}
+    explicit named_hash_entry(std::string_view name): name_(name) {}
 
     const char* name() const { return name_.c_str(); }
+
+    const symbol& name_symbol() const { return name_; }
 
     friend std::size_t hash_value(named_hash_entry const& that) { return that.hash(); }
 
     std::size_t hash() const { return name_.data.hash; }
 
+    // compare by pointer equality!
     friend bool operator==(named_hash_entry const& a, named_hash_entry const& b) { return a.name_ == b.name_; }
 };
 
 struct named_hash_equal {
-    template <typename def> bool operator()(def const& lhs, std::string const& rhs) const {
-        return operator()(lhs.name(), rhs.c_str());
+    template <typename T1, typename T2> bool operator()(T1 const& lhs, T2 const& rhs) const {
+        return get_string(lhs) == get_string(rhs);
     }
 
-    template <typename def> bool operator()(std::string const& lhs, def const& rhs) const {
-        return operator()(lhs.c_str(), rhs.name());
-    }
+private:
+    static std::string_view get_string(symbol const& arg) { return { arg.c_str(), arg.size() }; }
 
-    template <typename def> bool operator()(def const& lhs, symbol const& rhs) const {
-        return operator()(lhs.name(), rhs.c_str());
-    }
+    static std::string_view get_string(named_hash_entry const& arg) { return get_string(arg.name_symbol()); }
 
-    template <typename def> bool operator()(symbol const& lhs, def const& rhs) const {
-        return operator()(lhs.c_str(), rhs.name());
-    }
-
-    template <typename def> bool operator()(const char* lhs, def const& rhs) const {
-        return operator()(lhs, rhs.name());
-    }
-
-    template <typename def> bool operator()(def const& lhs, const char* rhs) const {
-        return operator()(lhs.name(), rhs);
-    }
-
-    bool operator()(const char* lhs, const char* rhs) const { return strequal(rhs, lhs); }
+    static std::string_view get_string(std::string_view arg) { return arg; }
 };
 
 struct named_hash_hash {
+    // look up hash value via ADL
     template <typename def> std::size_t operator()(def const& arg) { return hash_value(arg); }
 
-    std::size_t operator()(const char* str) { return string_hash(str); }
+    std::size_t operator()(std::string_view str) { return string_hash(str); }
 
-    std::size_t operator()(std::string const& str) { return string_hash(str.c_str()); }
+    // need const char* overload
+    std::size_t operator()(const char* str) { return string_hash(str); }
 };
 
 }
