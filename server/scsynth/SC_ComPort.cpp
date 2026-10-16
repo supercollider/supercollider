@@ -491,7 +491,7 @@ public:
 };
 
 SC_TcpConnection::~SC_TcpConnection() {
-    ClientManager::removeClientDefer(mWorld, mClientIdentification);
+    ClientManager::removeClient(mWorld, mClientIdentification);
 
     // now close the socket
     try {

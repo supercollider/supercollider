@@ -58,8 +58,9 @@ public:
     bool removeClient(const ReplyAddress& client) { return mClientDict.erase(client); }
 
     /**
-     * @brief remove client from list of registered client by defering it via the message queue.
-     * This can be called from any thread (though not RT thread!)
+     * @brief remove client from list of registered client.
+     * Do NOT call this from the RT thread.
+     * Gets currently only called from the ASIO thread upon a disconnect.
      */
     static void removeClient(World* world, const ReplyAddress& client);
 
