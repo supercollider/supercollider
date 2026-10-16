@@ -17,11 +17,10 @@
 //  Boston, MA 02111-1307, USA.
 
 #include <iostream>
-#include <thread>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
-#include <boost/thread.hpp>
+#include <boost/thread.hpp> // for physical_concurrency()
 
 #include "server_args.hpp"
 

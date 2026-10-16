@@ -1,5 +1,4 @@
 #include <boost/test/unit_test.hpp>
-#include <boost/thread.hpp>
 
 #define protected public
 

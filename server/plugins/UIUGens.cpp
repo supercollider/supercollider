@@ -20,9 +20,8 @@
 
 // ********** this version for windows and linux. for mac see UIUGens.mm
 
-#include <SC_Lock.h>
-
 #include <atomic>
+#include <thread>
 
 #ifndef _WIN32
 #    include <X11/Intrinsic.h>
@@ -259,7 +258,7 @@ void MouseButton_Ctor(MouseInputUGen* unit) {
     MouseButton_next(unit, 1);
 }
 
-SC_Thread uiListenThread;
+std::thread uiListenThread;
 
 PluginLoad(UIUGens) {
     ft = inTable;

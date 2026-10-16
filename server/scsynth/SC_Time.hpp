@@ -21,8 +21,9 @@
 
 #pragma once
 
-#include "../../common/SC_Lock.h" // for chrono
 #include "SC_Types.h"
+
+#include <chrono>
 
 const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
 const double kOSCtoSecs = 2.328306436538696e-10;
