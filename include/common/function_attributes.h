@@ -78,11 +78,10 @@
 #    define ASSUME_ALIGNED(Alignment) /* assume aligned Alignment */
 #endif
 
-// provide c99-style __restrict__
-#if defined(__GNUC__) || defined(__clang__)
-// __restrict__ defined
+#if defined(__GNUC__) || defined(__clang__) || defined(_MSC_VER)
+#    define RESTRICT __restrict
 #else
-#    define __restrict__ /* __restrict */
+#    define RESTRICT
 #endif
 
 // force inlining in release mode

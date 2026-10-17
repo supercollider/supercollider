@@ -72,7 +72,7 @@ public:
         if (remaining == 0)
             return; // fast-path
 
-        queue_node_data* __restrict__ data = nodes.data();
+        queue_node_data* RESTRICT data = nodes.data();
 
         if (remaining & 1) {
             (*data)(thread_index);
