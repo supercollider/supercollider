@@ -2006,7 +2006,7 @@ void PyrVarDefNode::compileArg(CompilerContext& cxt, PyrSlot* result) {
     }
 }
 
-int PyrCallNode::isPartialApplication() {
+int PyrCallNode::isPartialApplication() const {
     int sum = 0;
     PyrParseNode* argnode = mArglist;
     for (; argnode; argnode = argnode->mNext) {
@@ -3369,7 +3369,7 @@ void compileLoopMsg(CompilerContext& cxt, PyrCallNodeBase2* node) {
 }
 
 
-int PyrBinopCallNode::isPartialApplication() {
+int PyrBinopCallNode::isPartialApplication() const {
     int sum = 0;
     PyrParseNode* argnode = mArglist;
     for (; argnode; argnode = argnode->mNext) {
@@ -3837,7 +3837,7 @@ void PyrAssignNode::compile(CompilerContext& cxt, PyrSlot* result) {
 }
 
 
-int PyrSetterNode::isPartialApplication() {
+int PyrSetterNode::isPartialApplication() const {
     int sum = 0;
     if (mExpr1->mClassno == PyrParseNodeType::CurryArgNode) {
         ((PyrCurryArgNode*)mExpr1)->mArgNum = sum;
@@ -3911,7 +3911,7 @@ void PyrMultiAssignVarListNode::compile(CompilerContext& cxt, PyrSlot* result) {
 }
 
 
-int PyrDynDictNode::isPartialApplication() {
+int PyrDynDictNode::isPartialApplication() const {
     int sum = 0;
     int numItems = nodeListLength(mElems);
     PyrParseNode* inode = mElems;
@@ -3948,7 +3948,7 @@ void PyrDynDictNode::compileCall(CompilerContext& cxt, PyrSlot* result) {
 }
 
 
-int PyrDynListNode::isPartialApplication() {
+int PyrDynListNode::isPartialApplication() const {
     int sum = 0;
     int numItems = nodeListLength(mElems);
     PyrParseNode* inode = mElems;

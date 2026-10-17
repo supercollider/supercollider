@@ -65,7 +65,7 @@ public:
 
     const Options& options() const { return mOptions; }
 
-    int run(int argc, char** argv);
+    int run(int argc, char** argv) override;
 
     /** \brief recompile the Class Library
      *
