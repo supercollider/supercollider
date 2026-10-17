@@ -38,6 +38,8 @@
 #include "SpecialSelectorsOperatorsAndClasses.h"
 #include "VMGlobals.h"
 
+#include "sc_assert.h"
+
 #include <float.h>
 #define kBigBigFloat DBL_MAX
 #define kSmallSmallFloat DBL_MIN
@@ -78,12 +80,7 @@ void debugf(char* fmt, ...);
 #define DEBUGINTERPRETER 0
 #define METHODMETER 0
 #define BCSTAT 0
-#define CHECK_MAX_STACK_USE 0
 
-
-#if CHECK_MAX_STACK_USE
-int gMaxStackDepth = 0;
-#endif
 
 unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned char* ip);
 void dumpSlotOneWord(const char* tagstr, PyrSlot* slot);
@@ -445,20 +442,11 @@ void StoreToImmutableB(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip) {
 
 void dumpByteCodes(PyrBlock* theBlock);
 
-static inline bool checkStackOverflow(VMGlobals* g, PyrSlot* sp) {
-    PyrObject* stack = g->gc->Stack();
-    int depth = sp - stack->slots;
-    return depth < slotRawInt(&g->thread->stackSize);
-}
 
-static inline void checkStackDepth(VMGlobals* g, PyrSlot* sp) {
-#if CHECK_MAX_STACK_USE
-    int stackDepth = sp - g->sp + 1;
-    if (stackDepth > gMaxStackDepth) {
-        gMaxStackDepth = stackDepth;
-        printf("gMaxStackDepth %d\n", gMaxStackDepth);
-    }
-#endif
+static inline void safetyCheckStack(VMGlobals* g, PyrSlot* sp) {
+    sc_assert(SCLANG_SAFETY_STACK_OVERFLOW, "Stack overflow",
+              (sp - g->gc->Stack()->slots) < g->thread->stackSize.getInt());
+    sc_assert(SCLANG_SAFETY_STACK_OVERFLOW, "Max stack depth of 1024 reached.", (sp - g->sp + 1) < 1024);
 }
 
 #if defined(__GNUC__) || defined(__INTEL_COMPILER)
@@ -469,8 +457,7 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot* sp) {
 #    define dispatch_opcode                                                                                            \
         op1 = ip[1];                                                                                                   \
         ++ip;                                                                                                          \
-        checkStackDepth(g, sp);                                                                                        \
-        assert(checkStackOverflow(g, sp));                                                                             \
+        safetyCheckStack(g, sp);                                                                                       \
         goto* opcode_labels[op1]
 #else
 #    define dispatch_opcode break
@@ -908,16 +895,14 @@ HOT void Interpret(VMGlobals* g) {
     while (true) {
 #endif
 
-        checkStackDepth(g, sp);
+        op1 = ip[1];
+        ++ip;
+        safetyCheckStack(g, sp);
 
 #if BCSTAT
         prevop = op1;
 #endif
 
-        op1 = ip[1];
-        ++ip;
-
-        assert(checkStackOverflow(g, sp));
 
 #if BCSTAT
         ++bcstat[op1];
