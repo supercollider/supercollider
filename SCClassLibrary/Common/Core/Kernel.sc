@@ -454,19 +454,20 @@ Process {
 		};
 	}
 
+	// This is private and should not be used by users.
 	interpretCmdLine {
-		// interpret some text from the command line
 		interpreter.interpretCmdLine;
 	}
 
+	// This is private and should not be used by users.
 	interpretPrintCmdLine {
-		// interpret some text from the command line and print result
 		interpreter.interpretPrintCmdLine;
 	}
 
+	interpret { |...a,k| interpreter.performArgs(\interpret, a, k) }
+
 	interpretPrintSelectedText {
-		interpreter.cmdLine = this.getCurrentSelection;
-		interpreter.interpretPrintCmdLine;
+		this.interpretPrint(this.getCurrentSelection);
 	}
 
 	showHelp {
@@ -834,6 +835,7 @@ Interpreter {
 	var lineNumber;
 	var column;
 
+
 	var context; // faked interpreter context frame. Don't mess with it.
 
 	// a-z are predefined variables for use by the interactive context.
@@ -846,6 +848,14 @@ Interpreter {
 	var <>codeDump, <>preProcessor;
 
 	*new { ^this.shouldNotImplement(thisMethod) }
+
+	cmdLine_ {
+		DeprecatedError(this, thisMethod, Interpreter.findMethod(\interpret)).throw;
+	}
+	cmdLine {
+		"cmdLine is being deprecated, consider trying debug backtrace to get similar information.".warn;
+		^cmdLine
+	}
 
 	interpretCmdLine {
 		^this.prCompileUsingMembers.()
