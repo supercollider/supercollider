@@ -1,0 +1,67 @@
+TITLE:: VersionConstraint
+summary:: Comparing dependency requirements when using Semantic Versioning
+categories:: Development
+related:: Classes/Version
+
+DESCRIPTION::
+VersionConstraint is a development tool designed to check dependency requirements when using SuperCollider's implementation of Semantic Versioning link::Classes/Version:: class.
+
+It allows you to specifiy a set of rules and to check a Semver string against those rules to see if the version meets the requirements. It will return a boolean.
+
+Rules are specified as a link::Classes/String::, which format is a set of substrings separated with empty spaces characters. Each of those substrings begin with an operand, directly followed by the semver string to compare the version with. See the example below for a practical example.
+
+Available operands are code::= ! === !== < <= > >=:: .
+
+Additionally, you can use code::noPreRelease:: to exclude versions which have a pre-release tag.
+
+note::This class does not support individual version components comparisons. There is no syntax to directly ask for a major version match. For example, to match version 1, you need to match superior or equal to version 1.0.0, and inferior to version 2.0.0 : code::VersionConstraint(">=1.0.0 <2.0.0"):: .::
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new link::Classes/VersionConstraint:: with the specified requirements.
+ARGUMENT:: requirements
+returns:: a link::Classes/VersionConstraint:: instance.
+
+
+INSTANCEMETHODS::
+
+METHOD:: setRequirements
+Update the instance's requirements.
+ARGUMENT:: requirements
+
+METHOD:: compatibleWith
+Given a Semver link::Classes/String::, checks if the associated link::Classes/Version:: matches the current requirements, and returns the result.
+ARGUMENT:: aSemverString
+returns:: aBoolean
+
+
+EXAMPLES::
+
+code::
+(
+// This set of rules specifies :
+// - superior or equal to version 1.0.0
+// - inferior to version 2.0.0
+// - different from version 1.3.7
+// - pre-release versions do not match
+
+var constraint =
+VersionConstraint(">=1.0.0 <2.0.0 !1.3.7 noPreRelease");
+
+var versionA = "1.0.0";
+var versionB = "3.0.7";
+var versionC = "1.3.7";
+var versionD = "1.1.0-alpha";
+var versionE = "1.2.3+2";
+var versionF = "1.7.22";
+
+constraint.compatibleWith(versionA).postln;
+constraint.compatibleWith(versionB).postln;
+constraint.compatibleWith(versionC).postln;
+constraint.compatibleWith(versionD).postln;
+constraint.compatibleWith(versionE).postln;
+constraint.compatibleWith(versionF).postln;
+)
+::
