@@ -219,6 +219,16 @@ x.play(
 
 If method call assistance is not shown, you can activate it using strong::Ctrl+Shift+Space:: with the cursor between parenthesis surrounding the arguments. You can always dismiss it by pressing strong::Escape::.
 
+note::
+When viewing assistance for link::Classes/UGen:: methods,
+you may see argument defaults displayed as floats (e.g., code::0.0::)
+even when the argument is intended as an integer (e.g., code::0::).
+This is because the audio server processes these strong::arguments::
+as 32-bit floating-point strong::inputs::.
+For a detailed explanation,
+see link::Classes/UGen#Default argument values: Floats vs. Integers::.
+::
+
 
 
 Section:: Tool panels
