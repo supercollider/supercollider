@@ -95,7 +95,7 @@ class SyncCmd : public SC_SequencedCommand {
 public:
     SyncCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
-    virtual int Init(char* inData, int inSize);
+    int Init(char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -430,7 +430,7 @@ public:
 protected:
     char *mCmdName, *mErrString;
 
-    virtual void CallDestructor();
+    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////

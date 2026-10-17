@@ -18,26 +18,17 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "SC_BoundsMacros.h"
 #include "SC_ComPort.h"
 #include "SC_Endian.h"
-#include <ctype.h>
-#include <stdexcept>
-#include <stdarg.h>
 #include "SCBase.h"
-#include <cerrno>
 #include "PyrSched.h"
-
-#include "SC_Lock.h"
 #include "SC_Msg.h"
 #include "SC_ReplyImpl.hpp"
 
 #include <boost/asio.hpp>
-#include <boost/typeof/typeof.hpp>
 
-#define scprintf printf
-#include "SC_OscUtils.hpp"
-#undef scprintf
+#include <stdexcept>
+#include <thread>
 
 void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time);
 void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddress& replyAddress, int inPortNum,
@@ -45,20 +36,16 @@ void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddre
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_Thread gAsioThread;
+std::thread gAsioThread;
 boost::asio::io_context ioContext;
 
 
 static void asioFunction() {
-    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
-        boost::asio::make_work_guard(ioContext);
+    auto work = boost::asio::make_work_guard(ioContext);
     ioContext.run();
 }
 
-void startAsioThread() {
-    SC_Thread asioThread(&asioFunction);
-    gAsioThread = std::move(asioThread);
-}
+void startAsioThread() { gAsioThread = std::thread(&asioFunction); }
 
 void stopAsioThread() {
     ioContext.stop();
@@ -190,7 +177,7 @@ namespace InPort {
 UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inPortNum), mUdpSocket(ioContext) {
     using namespace boost::asio;
 
-    BOOST_AUTO(protocol, ip::udp::v4());
+    const auto protocol = ip::udp::v4();
 
     mUdpSocket.open(protocol);
 

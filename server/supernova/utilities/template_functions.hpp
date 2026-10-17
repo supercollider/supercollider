@@ -21,8 +21,6 @@
 #include <cmath>
 #include <algorithm> // for std::min & std::max
 
-#include <boost/math/special_functions/fpclassify.hpp>
-
 #include "force_inline.hpp"
 
 namespace nova {
@@ -102,13 +100,7 @@ template <typename F> always_inline F rcp(F arg) { return F(1) / arg; }
 using std::abs;
 
 
-template <typename F> always_inline F isnormal(F arg) {
-#ifdef __INTEL_COMPILER /* intel compiler workaround */
-    return boost::math::isnormal(arg);
-#else
-    return std::isnormal(arg);
-#endif
-}
+template <typename F> always_inline F isnormal(F arg) { return std::isnormal(arg); }
 
 
 template <typename F1, typename F2, typename F3> always_inline F1 clip(F1 t, F2 low, F3 hi) {

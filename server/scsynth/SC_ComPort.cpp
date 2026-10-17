@@ -24,23 +24,16 @@
 #include "sc_msg_iter.h"
 #include "SC_OscUtils.hpp"
 
-#include <ctype.h>
-#include <stdexcept>
-#include <stdarg.h>
-#include <cerrno>
+#include <array>
+#include <thread>
 
 #include <sys/types.h>
 #include "OSC_Packet.h"
 
 #include <boost/asio.hpp>
-#include <boost/array.hpp>
-#include <boost/bind/bind.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/typeof/typeof.hpp>
 
 #include "SC_CoreAudio.h"
 #include "SC_FifoMsg.h"
-#include "SC_Lock.h"
 
 #include "nova-tt/semaphore.hpp"
 #include "nova-tt/thread_priority.hpp"
@@ -49,6 +42,7 @@
 #    include "Rendezvous.h"
 #endif
 
+using namespace std::placeholders;
 
 // forward declarations
 bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
@@ -148,7 +142,7 @@ static bool UnrollOSCPacket(World* inWorld, int inSize, char* inData, OSC_Packet
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_Thread gAsioThread;
+std::thread gAsioThread;
 boost::asio::io_context ioContext;
 
 const int kTextBufSize = 65536;
@@ -198,12 +192,12 @@ class SC_UdpInPort {
     World* mWorld;
     int mPortNum;
     std::string mbindTo;
-    boost::array<char, kTextBufSize> recvBuffer;
+    std::array<char, kTextBufSize> recvBuffer;
 
     boost::asio::ip::udp::endpoint remoteEndpoint;
 
 #ifdef USE_RENDEZVOUS
-    SC_Thread mRendezvousThread;
+    std::thread mRendezvousThread;
 #endif
 
     void handleReceivedUDP(const boost::system::error_code& error, std::size_t bytes_transferred) {
@@ -245,8 +239,7 @@ class SC_UdpInPort {
     void startReceiveUDP() {
         using namespace boost;
         udpSocket.async_receive_from(asio::buffer(recvBuffer), remoteEndpoint,
-                                     boost::bind(&SC_UdpInPort::handleReceivedUDP, this, asio::placeholders::error,
-                                                 asio::placeholders::bytes_transferred));
+                                     std::bind(&SC_UdpInPort::handleReceivedUDP, this, _1, _2));
     }
 
     static constexpr int receiveBufferSize = 4 * 1024 * 1024;
@@ -262,8 +255,7 @@ public:
         mbindTo(bindTo),
         udpSocket(ioContext) {
         using namespace boost::asio;
-        BOOST_AUTO(protocol, ip::udp::v4());
-        udpSocket.open(protocol);
+        udpSocket.open(ip::udp::v4());
 
         udpSocket.bind(ip::udp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum));
         if (inPortNum == 0)
@@ -303,8 +295,7 @@ public:
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_UDP, mPortNum));
-            mRendezvousThread = std::move(thread);
+            mRendezvousThread = std::thread(&PublishPortToRendezvous, kSCRendezvous_UDP, mPortNum);
         }
 #endif
 
@@ -313,10 +304,11 @@ public:
 };
 
 
-class SC_TcpConnection : public boost::enable_shared_from_this<SC_TcpConnection> {
+class SC_TcpConnection : public std::enable_shared_from_this<SC_TcpConnection> {
 public:
+    using pointer = std::shared_ptr<SC_TcpConnection>;
+
     World* mWorld;
-    typedef boost::shared_ptr<SC_TcpConnection> pointer;
     boost::asio::ip::tcp::socket socket;
 
     SC_TcpConnection(World* world, boost::asio::io_context& ioContext, class SC_TcpInPort* parent):
@@ -368,10 +360,8 @@ public:
 
 private:
     void startReceiveMessage() {
-        namespace ba = boost::asio;
-        async_read(socket, ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
-                   boost::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(), ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
+        boost::asio::async_read(socket, boost::asio::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
+                                std::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(), _1, _2));
     }
 
     int32 OSCMsgLength;
@@ -390,15 +380,13 @@ private:
             return;
         }
 
-        namespace ba = boost::asio;
         // msglen is in network byte order
         OSCMsgLength = sc_ntohl(OSCMsgLength);
 
         data = (char*)malloc(OSCMsgLength);
 
-        async_read(socket, ba::buffer(data, OSCMsgLength),
-                   boost::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(), ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
+        boost::asio::async_read(socket, boost::asio::buffer(data, OSCMsgLength),
+                                std::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(), _1, _2));
     }
 
     void handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
@@ -439,7 +427,7 @@ class SC_TcpInPort {
     boost::asio::ip::tcp::acceptor acceptor;
 
 #ifdef USE_RENDEZVOUS
-    SC_Thread mRendezvousThread;
+    std::thread mRendezvousThread;
 #endif
 
     std::atomic<int> mAvailableConnections;
@@ -454,10 +442,8 @@ public:
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_TCP,
-                                         inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum));
-
-            mRendezvousThread = std::move(thread);
+            mRendezvousThread = std::thread(&PublishPortToRendezvous, kSCRendezvous_TCP,
+                                            inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum);
         }
 #endif
 
@@ -469,9 +455,8 @@ public:
             --mAvailableConnections;
             SC_TcpConnection::pointer newConnection(new SC_TcpConnection(mWorld, ioContext, this));
 
-            acceptor.async_accept(
-                newConnection->socket,
-                boost::bind(&SC_TcpInPort::handleAccept, this, newConnection, boost::asio::placeholders::error));
+            acceptor.async_accept(newConnection->socket,
+                                  std::bind(&SC_TcpInPort::handleAccept, this, newConnection, _1));
         }
     }
 
@@ -514,15 +499,11 @@ static void asioFunction() {
     nova::thread_set_priority_rt(priority);
 #endif
 
-    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
-        boost::asio::make_work_guard(ioContext);
+    auto work = boost::asio::make_work_guard(ioContext);
     ioContext.run();
 }
 
-void startAsioThread() {
-    SC_Thread asioThread(&asioFunction);
-    gAsioThread = std::move(asioThread);
-}
+void startAsioThread() { gAsioThread = std::thread(&asioFunction); }
 
 void stopAsioThread() {
     ioContext.stop();

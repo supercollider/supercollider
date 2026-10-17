@@ -21,9 +21,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <new> // for std::bad_alloc
-#include <utility> // for std::forward
-
 #include <boost/align/aligned_alloc.hpp>
 
 #include "function_attributes.h"

@@ -203,6 +203,7 @@ class regex_lru_cache {
         }
     };
 
+    /** @todo this is actually copied from server/supernova/untilities/utils.hpp; move to a common header */
     static inline std::size_t string_hash(const char* str) {
         std::size_t ret = 0;
 

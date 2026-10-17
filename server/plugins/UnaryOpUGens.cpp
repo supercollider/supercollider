@@ -21,7 +21,6 @@
 
 #include "SC_PlugIn.h"
 
-#include <boost/utility/enable_if.hpp>
 #include <boost/align/is_aligned.hpp>
 
 #ifdef NOVA_SIMD
@@ -67,33 +66,28 @@ struct sc_scurve_functor {
         return perform(arg);
     }
 
-    template <typename VecType>
-    inline typename boost::disable_if_c<VecType::has_compare_bitmask, VecType>::type perform(VecType arg) const {
-        typedef VecType vec;
+    template <typename VecType> VecType perform(VecType arg) const {
+        if constexpr (VecType::has_compare_bitmask) {
+            VecType one(1.f);
+            VecType zero(0.f);
+            VecType two(2.f);
+            VecType three(3.f);
 
-        vec result;
-        for (int i = 0; i != result.size; ++i)
-            result.set(i, sc_scurve(arg.get(i)));
-        return result;
-    }
+            VecType result = (arg * arg) * (three - (two * arg));
 
-    template <typename VecType>
-    inline typename boost::enable_if_c<VecType::has_compare_bitmask, VecType>::type perform(VecType arg) const {
-        typedef VecType vec;
-        vec one(1.f);
-        vec zero(0.f);
-        vec two(2.f);
-        vec three(3.f);
+            VecType boundLow = mask_lt(arg, zero);
+            VecType boundHigh = mask_gt(arg, one);
 
-        vec result = (arg * arg) * (three - (two * arg));
+            result = select(result, zero, boundLow);
+            result = select(result, one, boundHigh);
 
-        vec boundLow = mask_lt(arg, zero);
-        vec boundHigh = mask_gt(arg, one);
-
-        result = select(result, zero, boundLow);
-        result = select(result, one, boundHigh);
-
-        return result;
+            return result;
+        } else {
+            VecType result;
+            for (int i = 0; i != result.size; ++i)
+                result.set(i, sc_scurve(arg.get(i)));
+            return result;
+        }
     }
 };
 

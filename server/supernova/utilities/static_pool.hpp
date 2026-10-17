@@ -32,19 +32,19 @@ extern "C" {
 namespace nova {
 
 template <std::size_t bytes, bool blocking = false> class static_pool {
-    static_assert(bytes % sizeof(long) == 0, "static_pool: bytes not an integer mutiple of sizeof(long)");
+    static constexpr size_t alignment = sizeof(size_t);
 
-    static const std::size_t poolsize = bytes / sizeof(long);
+    static_assert(bytes % alignment == 0, "static_pool: bytes not an integer mutiple of alignment");
 
-    typedef typename boost::mpl::if_c<blocking, std::mutex, dummy_mutex>::type mutex_type;
+    using mutex_type = std::conditional_t<blocking, std::mutex, dummy_mutex>;
 
-    typedef typename std::lock_guard<mutex_type> scoped_lock;
+    using scoped_lock = std::lock_guard<mutex_type>;
 
     struct data : mutex_type {
-        std::array<long, poolsize> pool;
+        alignas(alignment) std::array<char, bytes> pool;
     };
 
-    void lock_memory() { mlock(data_.pool.data(), poolsize * sizeof(long)); }
+    void lock_memory() { mlock(data_.pool.data(), bytes); }
 
 public:
     static_pool(bool lock = false) noexcept {

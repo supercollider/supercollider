@@ -172,7 +172,7 @@ public:
         using namespace boost::gregorian;
         using namespace boost::posix_time;
 
-        const date base(1970, Jan, 1);
+        static constexpr date base(1970, Jan, 1);
 #ifdef BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG
         time_duration offset = seconds(get_secs() - ntp_offset) + nanoseconds(get_nanoseconds());
 #else

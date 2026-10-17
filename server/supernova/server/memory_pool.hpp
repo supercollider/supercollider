@@ -20,6 +20,8 @@
 
 #include "../utilities/simple_pool.hpp"
 
+#include <stdexcept>
+
 namespace nova {
 
 extern simple_pool<false> rt_pool; /* real-time memory pool */
@@ -27,15 +29,7 @@ extern simple_pool<false> rt_pool; /* real-time memory pool */
 /** stl-compliant allocator class, using the rt_pool */
 template <class T> class rt_pool_allocator {
 public:
-    typedef size_t size_type;
-    typedef ptrdiff_t difference_type;
-    typedef T* pointer;
-    typedef const T* const_pointer;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef T value_type;
-
-    template <class U> struct rebind { typedef rt_pool_allocator<U> other; };
+    using value_type = T;
 
     rt_pool_allocator() noexcept = default;
     rt_pool_allocator(const rt_pool_allocator&) noexcept = default;
@@ -43,38 +37,25 @@ public:
 
     template <class U> rt_pool_allocator(const rt_pool_allocator<U>&) noexcept {}
 
-
-    pointer address(reference x) const { return &x; }
-
-    const_pointer address(const_reference x) const { return &x; }
-
-    pointer allocate(size_type size, const void* hint = nullptr) {
-        pointer ret = static_cast<pointer>(rt_pool.malloc(size * sizeof(T)));
+    T* allocate(size_t size) {
+        T* ret = static_cast<T*>(rt_pool.malloc(size * sizeof(T)));
         if (ret == nullptr)
             throw std::bad_alloc();
 
         return ret;
     }
 
-    pointer reallocate(pointer p, size_type size, void* hint = nullptr) {
-        return static_cast<pointer>(rt_pool.realloc(p, size));
+    T* reallocate(T* p, size_t size) {
+        T* ret = static_cast<T*>(rt_pool.realloc(p, size));
+        if (ret == nullptr)
+            throw std::bad_alloc();
+
+        return ret;
     }
 
-    void deallocate(pointer p, size_type n) { rt_pool.free(p); }
+    void deallocate(T* p, size_t n) { rt_pool.free(p); }
 
-    size_type max_size() const noexcept { return rt_pool.get_max_size(); }
-
-    void construct(pointer p, const T& val = T()) { new (p) T(val); }
-
-    template <class U, class... Args> void construct(U* p, Args&&... args) {
-        ::new ((void*)p) U(std::forward<Args>(args)...);
-    }
-
-    void destroy(pointer p) { p->~T(); }
-
-    bool operator==(rt_pool_allocator const& rhs) { return true; }
-
-    template <typename AllocatorType> bool operator==(AllocatorType const& rhs) { return false; }
+    size_t max_size() const noexcept { return rt_pool.get_max_size(); }
 };
 
 } /* namespace nova */

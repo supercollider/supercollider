@@ -27,6 +27,8 @@
 #include "PyrPrimitive.h"
 #include "PyrSymbol.h"
 
+#include <thread>
+
 // heaps use an integer timestamp to ensure stable heap order
 struct PyrHeap : PyrObjectHdr {
     PyrSlot count; // stability count
@@ -75,7 +77,7 @@ protected:
     double mBaseSeconds;
     double mBaseBeats;
     bool mRun;
-    SC_Thread mThread;
+    std::thread mThread;
     condition_variable_any mCondition;
 
 private:

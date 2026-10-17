@@ -35,7 +35,6 @@
 #include "malloc_aligned.hpp"
 #include "../utilities/sized_array.hpp"
 
-#include "SC_Prototypes.h"
 #include "SC_Unit.h"
 #include "clz.h"
 #include "SC_fftlib.hpp"
@@ -43,6 +42,7 @@
 #include "../../common/Samp.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"
 
+// NOTE: replace with <numbers> once we switch to C++20
 #include <boost/math/constants/constants.hpp>
 
 // undefine the shadowed scfft functions

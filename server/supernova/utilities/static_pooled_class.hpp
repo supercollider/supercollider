@@ -20,8 +20,6 @@
 
 #include <cstddef>
 
-#include <boost/mpl/if.hpp>
-
 #include "freelist.hpp"
 #include "static_pool.hpp"
 
@@ -97,8 +95,7 @@ private:
         }
     };
 
-    typedef
-        typename boost::mpl::if_c<(recover_count > 0), dispose_n_object_allocator, disposing_allocator>::type allocator;
+    using allocator = std::conditional_t<(recover_count > 0), dispose_n_object_allocator, disposing_allocator>;
 
 public:
     static inline void* allocate(std::size_t size) {

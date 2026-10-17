@@ -564,8 +564,7 @@ SCLANG_DLLEXPORT_C void schedRun() {
     // gLangMutex must be locked
     gRunSched = true;
 
-    SC_Thread thread(schedRunFunc);
-    gSchedThread = std::move(thread);
+    gSchedThread = std::thread(schedRunFunc);
 
 #ifdef __APPLE__
     int policy;
@@ -660,8 +659,7 @@ TempoClock::TempoClock(VMGlobals* inVMGlobals, PyrObject* inTempoClockObj, doubl
     mQueue->size = 1;
     SetInt(&mQueue->count, 0);
 
-    SC_Thread thread(std::bind(&TempoClock::Run, this));
-    mThread = std::move(thread);
+    mThread = std::thread(&TempoClock::Run, this);
 
 #ifdef __APPLE__
     int machprio;
@@ -687,7 +685,7 @@ TempoClock::TempoClock(VMGlobals* inVMGlobals, PyrObject* inTempoClockObj, doubl
 
 void TempoClock::StopReq() {
     // printf("->TempoClock::StopReq\n");
-    SC_Thread stopThread(std::bind(&TempoClock::StopAndDelete, this));
+    std::thread stopThread(&TempoClock::StopAndDelete, this);
     stopThread.detach();
 
     // printf("<-TempoClock::StopReq\n");

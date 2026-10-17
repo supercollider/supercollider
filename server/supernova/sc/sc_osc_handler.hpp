@@ -40,7 +40,6 @@
 
 #include <boost/asio/ip/tcp.hpp>
 
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/date_time/microsec_time_clock.hpp>
 #include <boost/intrusive/treap_set.hpp>
 
