@@ -1310,21 +1310,21 @@ TestNetAddr_Server : UnitTest {
 					79, 117, 116, 2, 0, 3, 0, 0, 0, 0, 0, 15, 0, 0, 0, 10, 0, 0, 0, 14, 0, 0, 0, 0
 				]
 			],
-			[ "/b_allocRead", 0, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 1, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 2, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 3, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 4, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 5, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 6, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 7, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 8, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 9, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 10, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 11, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 12, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 13, "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 14, "sounds/a11wlk01.wav", 0, -1, nil ]
+			[ "/b_allocRead", 0, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 1, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 2, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 3, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 4, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 5, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 6, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 7, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 8, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 9, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 10, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 11, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 12, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 13, ExampleFiles.apollo11, 0, -1, nil ],
+			[ "/b_allocRead", 14, ExampleFiles.apollo11, 0, -1, nil ]
 		];
 	}
 
