@@ -32,6 +32,12 @@ definitionList::
 
 subsection::Pitch conversions
 
+note::
+For additional examples and a detailed explanation of the
+code::\degree::, code::\note::, and code::\midinote:: pitch keys, see
+link::Overviews/Event_types#\note::.
+::
+
 Pitch handling in the default event is rich, with a large number of options. To use events, it is not necessary to understand all of those options. As the examples have shown, a note-playing pattern produces sensible results even specifying only code::\degree::. The other parameters allow you to control how the event gets from code::\degree:: to the frequency that is finally passed to the new synth. The default event prototype includes reasonable defaults for all of these.
 
 To go from the highest level of abstraction down:
