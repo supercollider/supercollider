@@ -15,14 +15,25 @@ ScIDE {
 		Class.initClassTree(PostWindowURLHandler);
 
 		PostWindowURLHandler.register(\scdoc, {|url|
-			var prefix = "scdoc://";
-			ScIDE.openHelpUrl("file://" ++ SCDoc.helpTargetDir +/+ url[prefix.size..])
+			var uri = URI(url);
+			uri.path = SCDoc.helpTargetDir +/+ uri.path;
+			uri.scheme = "file";
+			ScIDE.openHelpUrl(uri.asString)
 		});
 
+		// this method handles non-standard URIs extended with line and column number: file:///path/to/file.scd:line:column
 		PostWindowURLHandler.register(\file, {|url|
-			var prefix = "file://";
-			var parts = url[prefix.size..].split($:);
-			{ Document.openAtLine(if(parts[0][0] == $/) {parts[0]} {"/" ++ parts[0]}, parts[1] ?? { 0 }, parts[2] ?? [0]) }.fork(AppClock)
+			var lineAndColumn, localPath, colonIdxs, localPathWithLineCol = URI(url).asLocalPath;
+			colonIdxs = localPathWithLineCol.findAll(":");
+			if(colonIdxs[0] == 1) {colonIdxs = colonIdxs[1..]}; // drop colon after drive letter on Windows
+			if(colonIdxs.size > 0) {
+				localPath = localPathWithLineCol[0..(colonIdxs[0] - 1)];
+				lineAndColumn = localPathWithLineCol[(colonIdxs[0] + 1)..].split($:);
+			} {
+				localPath = localPathWithLineCol;
+				lineAndColumn = [];
+			}
+			{ Document.openAtLine(localPath, lineAndColumn[0] ?? { 0 }, lineAndColumn[1] ?? { 0 }) }.fork(AppClock)
 		});
 
 		PostWindowURLHandler.register(\http, {|url|
