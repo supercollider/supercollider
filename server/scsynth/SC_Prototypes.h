@@ -213,6 +213,7 @@ int32 server_timeseed();
 
 ////////////////////////////////////////////////////////////////////////
 
+/** @see AsyncPluginCmd */
 SCErr PerformAsynchronousCommand(
     World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncStageFn stage2, // stage2 is non real time
@@ -220,6 +221,7 @@ SCErr PerformAsynchronousCommand(
     AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
     AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
 
+/** @see AsyncPluginCmdEx */
 SCErr PerformAsynchronousCommandEx(
     World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncStageFnEx stage2, // stage2 is non real time
@@ -227,6 +229,7 @@ SCErr PerformAsynchronousCommandEx(
     AsyncStageFnEx stage4, // stage4 is non real time - sends done if stage4 returns true
     AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
 
+/** @see AsyncUnitCmd */
 SCErr PerformAsyncUnitCommand(
     Unit* inUnit, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncUnitStageFn stage2, // stage2 is non real time
