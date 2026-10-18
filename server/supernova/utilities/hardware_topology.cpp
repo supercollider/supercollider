@@ -27,7 +27,7 @@
 #    include <sys/sysinfo.h>
 #endif
 
-#include <boost/thread.hpp>
+#include <algorithm>
 #include <thread>
 #include <vector>
 #include <string>

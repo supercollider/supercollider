@@ -45,9 +45,8 @@ Primitives for Unix.
 #include "sc_popen.h"
 #include "SCBase.h"
 
-#include "SC_Lock.h"
-
 #include <filesystem>
+#include <thread>
 
 #ifdef _WIN32
 #    include "SC_Win32Utils.h"
@@ -157,7 +156,7 @@ int prString_POpen(struct VMGlobals* g, int numArgsPushed) {
 
     auto [pid, stream] = sc_popen_shell(std::move(cmdline), "r");
     if (stream != nullptr) {
-        SC_Thread thread(std::bind(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot)));
+        std::thread thread(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot));
         thread.detach();
         SetInt(callerSlot, pid);
         return errNone;
@@ -192,7 +191,7 @@ int prArrayPOpen(struct VMGlobals* g, int numArgsPushed) {
 
     auto [pid, stream] = sc_popen_argv(strings, "r");
     if (stream != nullptr) {
-        SC_Thread thread(std::bind(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot)));
+        std::thread thread(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot));
         thread.detach();
         SetInt(callerSlot, pid);
         return errNone;

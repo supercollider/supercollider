@@ -34,6 +34,7 @@
 #include <cstring>
 #include <mutex>
 #include <string>
+#include <thread>
 
 #ifdef _WIN32
 #    include <stdio.h>

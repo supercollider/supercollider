@@ -103,8 +103,7 @@ public:
 
     void start_thread() {
         semaphore sync_sem;
-        std::thread thr([&]() { this->run_thread(sync_sem); });
-        callback_thread = move(thr);
+        callback_thread = std::thread([&]() { this->run_thread(sync_sem); });
         sync_sem.wait();
     }
 

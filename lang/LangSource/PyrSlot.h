@@ -144,7 +144,7 @@ namespace details {
 static constexpr bool pointerNeedsPadding = POINTER_NEEDS_PADDING;
 }
 
-
+// emulation of C++23's std::unreachable()
 // https://stackoverflow.com/questions/60802864/emulating-gccs-builtin-unreachable-in-visual-studio
 #ifdef __GNUC__ // GCC 4.8+, Clang, Intel and other compilers compatible with GCC
 [[noreturn]] inline __attribute__((always_inline)) void unreachable() { __builtin_unreachable(); }

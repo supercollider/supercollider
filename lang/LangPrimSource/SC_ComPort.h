@@ -20,13 +20,9 @@
 
 #pragma once
 
-#include "SC_ReplyImpl.hpp"
 #include "SC_Types.h"
 
-#include <boost/array.hpp>
 #include <boost/asio.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/core/noncopyable.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,11 +36,17 @@ using HandleDataFunc = std::function<void(std::unique_ptr<char[]>, size_t)>;
 
 namespace Detail {
 
-class TCPConnection : public std::enable_shared_from_this<TCPConnection>, private boost::noncopyable {
+class TCPConnection : public std::enable_shared_from_this<TCPConnection> {
 public:
     using pointer = std::shared_ptr<TCPConnection>;
 
     TCPConnection(boost::asio::io_context& ioContext, int portNum, HandlerType);
+
+    TCPConnection(const TCPConnection&) = delete;
+    TCPConnection(TCPConnection&&) = delete;
+
+    TCPConnection& operator=(const TCPConnection&) = delete;
+    TCPConnection& operator=(TCPConnection&&) = delete;
 
     void start();
     auto& getSocket() { return mSocket; }
@@ -66,10 +68,16 @@ private:
 
 namespace InPort {
 
-class UDP : private boost::noncopyable {
+class UDP {
 public:
     UDP(int inPortNum, HandlerType, int portsToCheck = 10);
     ~UDP() = default;
+
+    UDP(const UDP&) = delete;
+    UDP(UDP&&) = delete;
+
+    UDP& operator=(const UDP&) = delete;
+    UDP& operator=(UDP&&) = delete;
 
     auto RealPortNum() const { return mPortNum; }
 #ifndef __EMSCRIPTEN__
@@ -100,9 +108,15 @@ public:
     ~UDPCustom() = default;
 };
 
-class TCP : private boost::noncopyable {
+class TCP {
 public:
     TCP(int inPortNum, int inMaxConnections, int inBacklog, HandlerType);
+
+    TCP(const TCP&) = delete;
+    TCP(TCP&&) = delete;
+
+    TCP& operator=(const TCP&) = delete;
+    TCP& operator=(TCP&&) = delete;
 
 private:
     void startAccept();
@@ -120,12 +134,19 @@ private:
 
 namespace OutPort {
 
-class TCP : private boost::noncopyable {
+class TCP {
 public:
     typedef void (*ClientNotifyFunc)(void* clientData);
 
 public:
     TCP(std::uint64_t inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = 0, void* clientData = 0);
+
+    TCP(const TCP&) = delete;
+    TCP(TCP&&) = delete;
+
+    TCP& operator=(const TCP&) = delete;
+    TCP& operator=(TCP&&) = delete;
+
     int Close();
 
 #ifndef __EMSCRIPTEN__

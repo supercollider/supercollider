@@ -66,7 +66,7 @@ private:
         Document* mDoc;
     };
 
-    virtual void dropEvent(QDropEvent*);
+    void dropEvent(QDropEvent*) override;
     QList<Document*> listDocuments();
 
     Item* addItemFor(Document*);

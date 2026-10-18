@@ -39,6 +39,7 @@
 
 #    include <boost/algorithm/string/predicate.hpp> // iequals
 
+// case-insensitive string comparison
 using boost::iequals;
 
 static inline int headerFormatFromString(const char* name) {

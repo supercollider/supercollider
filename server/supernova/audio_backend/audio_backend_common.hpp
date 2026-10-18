@@ -19,8 +19,8 @@
 #pragma once
 
 #include <vector>
+#include <type_traits>
 
-#include <boost/mpl/if.hpp>
 #include <boost/align/aligned_allocator.hpp>
 
 #include "nova-simd/simd_memory.hpp"
@@ -32,8 +32,8 @@
 namespace nova { namespace detail {
 
 template <typename sample_type, typename io_sample_type, bool blocking, bool managed_memory = true>
-class audio_backend_base : boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type {
-    typedef typename boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type lock_t;
+class audio_backend_base : std::conditional_t<blocking, spin_lock, dummy_mutex> {
+    typedef typename std::conditional_t<blocking, spin_lock, dummy_mutex> lock_t;
     typedef std::size_t size_t;
 
 public:
@@ -80,7 +80,7 @@ protected:
         std::generate(output_samples.begin(), output_samples.end(), std::bind(calloc_aligned<sample_type>, frames));
     }
 
-    void fetch_inputs(const float** inputs, size_t frames, int input_channels) {
+    void fetch_inputs(const sample_type** inputs, size_t frames, int input_channels) {
         if (is_multiple_of_vectorsize(frames)) {
             for (size_t i = 0; i < input_channels; ++i) {
                 if (is_aligned(inputs[i]))
@@ -97,7 +97,7 @@ protected:
         }
     }
 
-    void deliver_outputs(float** outputs, size_t frames, int output_channels) {
+    void deliver_outputs(sample_type** outputs, size_t frames, int output_channels) {
         if (is_multiple_of_vectorsize(frames)) {
             for (size_t i = 0; i < output_channels; ++i) {
                 if (is_aligned(outputs[i]))

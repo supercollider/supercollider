@@ -26,7 +26,6 @@
 
 
 #include <boost/lockfree/spsc_queue.hpp>
-#include <boost/mpl/if.hpp>
 #include <boost/sync/semaphore.hpp>
 
 namespace nova {
@@ -110,7 +109,7 @@ private:
 
 struct asynchronous_log_thread : asynchronous_log {
 public:
-    asynchronous_log_thread(): running_flag(true), thread_(std::bind(&asynchronous_log_thread::run, this)) {}
+    asynchronous_log_thread(): running_flag(true), thread_(&asynchronous_log_thread::run, this) {}
 
     ~asynchronous_log_thread() {
         running_flag = false;

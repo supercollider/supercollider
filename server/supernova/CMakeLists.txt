@@ -36,7 +36,6 @@ set(libsupernova_src
     ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
     server/buffer_manager.cpp
-    server/memory_pool.cpp
     server/node_graph.cpp
     server/server.cpp
     server/server_args.cpp

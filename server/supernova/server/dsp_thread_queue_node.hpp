@@ -52,7 +52,8 @@ private:
 
 /* implements runnable concept */
 template <typename Alloc = std::allocator<queue_node_data>> class dsp_queue_node {
-    typedef std::vector<queue_node_data, typename Alloc::template rebind<queue_node_data>::other> node_container;
+    using alloc_traits = std::allocator_traits<Alloc>;
+    typedef std::vector<queue_node_data, typename alloc_traits::template rebind_alloc<queue_node_data>> node_container;
 
     typedef std::uint_fast16_t node_count_type;
     typedef std::uint_fast8_t thread_count_type;
@@ -71,7 +72,7 @@ public:
         if (remaining == 0)
             return; // fast-path
 
-        queue_node_data* __restrict__ data = nodes.data();
+        queue_node_data* RESTRICT data = nodes.data();
 
         if (remaining & 1) {
             (*data)(thread_index);

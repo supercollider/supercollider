@@ -20,10 +20,8 @@
 
 #pragma once
 
-#include <chrono>
 #include <condition_variable>
 #include <mutex>
-#include <thread>
 
 #ifdef __COBALT__
 #    include <XenomaiLock.h>
@@ -34,7 +32,6 @@ using SC_Lock = std::mutex;
 using condition_variable_any = std::condition_variable_any;
 #endif // __COBALT__
 
-using SC_Thread = std::thread;
 using std::cv_status;
 using std::lock_guard;
 using std::timed_mutex;

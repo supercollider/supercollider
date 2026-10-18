@@ -10,7 +10,6 @@
 #    define BOOST_HIGH_RESOLUTION_TIMER_HPP
 
 #    include <boost/config.hpp>
-#    include <boost/throw_exception.hpp>
 
 #    if _POSIX_C_SOURCE >= 199309L
 
@@ -29,7 +28,7 @@ public:
         int status = clock_gettime(CLOCK_REALTIME, &start_time);
 
         if (status == -1)
-            boost::throw_exception(std::runtime_error("Couldn't initialize start_time"));
+            throw std::runtime_error("Couldn't initialize start_time");
     }
 
     double elapsed() const // return elapsed time in seconds
@@ -39,7 +38,7 @@ public:
         int status = clock_gettime(CLOCK_REALTIME, &now);
 
         if (status == -1)
-            boost::throw_exception(std::runtime_error("Couldn't get current time"));
+            throw std::runtime_error("Couldn't get current time");
 
         struct timespec diff;
 
@@ -141,21 +140,21 @@ public:
         frequency.QuadPart = 0;
 
         if (!QueryPerformanceFrequency(&frequency))
-            boost::throw_exception(std::runtime_error("Couldn't acquire frequency"));
+            throw std::runtime_error("Couldn't acquire frequency");
 
         restart();
     }
 
     void restart() {
         if (!QueryPerformanceCounter(&start_time))
-            boost::throw_exception(std::runtime_error("Couldn't initialize start_time"));
+            throw std::runtime_error("Couldn't initialize start_time");
     }
 
     double elapsed() const // return elapsed time in seconds
     {
         LARGE_INTEGER now;
         if (!QueryPerformanceCounter(&now))
-            boost::throw_exception(std::runtime_error("Couldn't get current time"));
+            throw std::runtime_error("Couldn't get current time");
 
         return double(now.QuadPart - start_time.QuadPart) / frequency.QuadPart;
     }

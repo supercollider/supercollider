@@ -32,7 +32,6 @@
 
 #include <atomic>
 #include <stdexcept>
-#include <sstream>
 #include <thread>
 
 #include "PyrKernel.h"
@@ -42,7 +41,6 @@
 
 #include <boost/asio/use_future.hpp>
 #include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 
 using boost::asio::serial_port;
@@ -210,7 +208,7 @@ private:
     PyrObject* m_obj; ///< Language object representing this port.
     boost::asio::serial_port m_port; ///< Port object.
     Options m_options; ///< Serial interface options.
-    SC_Thread m_readThread; ///< Polling thread.
+    std::thread m_readThread; ///< Polling thread.
 
     /// Count of read errors since last query
     std::atomic<int> m_rxErrors;

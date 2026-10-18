@@ -177,12 +177,12 @@ struct PyrSlotNode final : public PyrParseNode {
     PyrSlotNode(Tag t, sc::lex::SourceCodeRange loc, PyrSlot slot,
                 PyrParseNodeType subtype = PyrParseNodeType::SlotNode);
 
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void compileLiteral(CompilerContext& cxt, PyrSlot* result);
-    virtual void compilePushLit(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
-    virtual void dumpLiteral(int level);
-    virtual void dumpPushLit(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void compileLiteral(CompilerContext& cxt, PyrSlot* result);
+    void compilePushLit(CompilerContext& cxt, PyrSlot* result);
+    void dump(int level) override;
+    void dumpLiteral(int level);
+    void dumpPushLit(int level);
 
     // Changes the 'type' of the node. Only changes the type flag.
     template <PyrParseNodeType Target> PyrSlotNode* changeLiteralType() {
@@ -197,8 +197,8 @@ struct PyrSlotNode final : public PyrParseNode {
 struct PyrCurryArgNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::CurryArgNode };
     PyrCurryArgNode(Tag t, sc::lex::SourceCodeRange loc);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     int mArgNum { -1 };
 };
@@ -207,8 +207,8 @@ struct PyrCurryArgNode final : public PyrParseNode {
 struct PyrClassExtNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::ClassExtNode };
     PyrClassExtNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* classname, struct PyrMethodNode* methods);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     struct PyrSlotNode* mClassName;
     struct PyrMethodNode* mMethods;
@@ -219,8 +219,8 @@ struct PyrClassNode final : public PyrParseNode {
     PyrClassNode(Tag t, sc::lex::SourceCodeRange l, struct PyrSlotNode* mClassName, struct PyrSlotNode* mSuperClassName,
                  struct PyrSlotNode* mIndexType, struct PyrVarListNode* mVarlists, struct PyrMethodNode* mMethods);
 
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     struct PyrSlotNode* mClassName;
     struct PyrSlotNode* mSuperClassName;
@@ -242,8 +242,8 @@ struct PyrMethodNode final : public PyrParseNode {
                   struct PyrArgListNode* mArglist, struct PyrVarListNode* mVarlist, PyrParseNode* mBody,
                   bool mIsClassMethod, bool mExtension = false);
 
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     struct PyrSlotNode* mMethodName;
     struct PyrSlotNode* mPrimitiveName;
@@ -257,8 +257,8 @@ struct PyrMethodNode final : public PyrParseNode {
 struct PyrVarListNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::VarListNode };
     PyrVarListNode(Tag t, sc::lex::SourceCodeRange l, struct PyrVarDefNode* mVarDefs, int mFlags);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     struct PyrVarDefNode* mVarDefs;
     int mFlags;
@@ -269,9 +269,9 @@ struct PyrVarDefNode final : public PyrParseNode {
     PyrVarDefNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mVarName, PyrParseNode* mDefVal,
                   ReadWriteAccessor mFlags);
 
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
     virtual void compileArg(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void dump(int level) override;
     bool hasExpr(CompilerContext& cxt, PyrSlot* result);
 
     struct PyrSlotNode* mVarName;
@@ -283,11 +283,11 @@ struct PyrVarDefNode final : public PyrParseNode {
 struct PyrCallNodeBase : public PyrParseNode {
     PyrCallNodeBase(Tag t, sc::lex::SourceCodeRange l, PyrParseNodeType classno);
 
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
     virtual void compilePartialApplication(CompilerContext& cxt, unsigned char numCurryArgs, PyrSlot* result);
     virtual void compileCall(CompilerContext& cxt, PyrSlot* result) = 0;
 
-    virtual int isPartialApplication() = 0;
+    virtual int isPartialApplication() const = 0;
 };
 
 struct PyrCallNodeBase2 : public PyrCallNodeBase {
@@ -305,20 +305,20 @@ struct PyrCallNode final : public PyrCallNodeBase2 {
     PyrCallNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* mArglist,
                 PyrParseNode* mKeyarglist = nullptr);
 
-    virtual void compileCall(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compileCall(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
-    virtual int isPartialApplication();
+    int isPartialApplication() const override;
 };
 
 struct PyrBinopCallNode final : public PyrCallNodeBase2 {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::BinopCallNode };
     PyrBinopCallNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* arglist);
 
-    virtual void compileCall(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compileCall(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
-    virtual int isPartialApplication();
+    int isPartialApplication() const override;
 };
 
 struct PyrSetterNode final : public PyrCallNodeBase {
@@ -326,10 +326,10 @@ struct PyrSetterNode final : public PyrCallNodeBase {
     PyrSetterNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* mExpr1,
                   PyrParseNode* mExpr2);
 
-    virtual void compileCall(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compileCall(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
-    virtual int isPartialApplication();
+    int isPartialApplication() const override;
 
     PyrSlotNode* mSelector;
     PyrParseNode* mExpr1;
@@ -340,10 +340,10 @@ struct PyrSetterNode final : public PyrCallNodeBase {
 struct PyrDynListNode final : public PyrCallNodeBase {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::DynListNode };
     PyrDynListNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mClassname, PyrParseNode* mElems);
-    virtual void compileCall(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compileCall(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
-    virtual int isPartialApplication();
+    int isPartialApplication() const override;
 
     PyrParseNode* mClassname;
     PyrParseNode* mElems;
@@ -352,10 +352,10 @@ struct PyrDynListNode final : public PyrCallNodeBase {
 struct PyrDynDictNode final : public PyrCallNodeBase {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::DynDictNode };
     PyrDynDictNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mElems);
-    virtual void compileCall(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compileCall(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
-    virtual int isPartialApplication();
+    int isPartialApplication() const override;
 
     PyrParseNode* mElems;
 };
@@ -364,8 +364,8 @@ struct PyrDynDictNode final : public PyrCallNodeBase {
 struct PyrDropNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::DropNode };
     PyrDropNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* e1, PyrParseNode* e2);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     PyrParseNode* mExpr1;
     PyrParseNode* mExpr2;
@@ -374,8 +374,8 @@ struct PyrDropNode final : public PyrParseNode {
 struct PyrPushKeyArgNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::PushKeyArgNode };
     PyrPushKeyArgNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* mExpr);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     PyrSlotNode* mSelector;
     PyrParseNode* mExpr;
@@ -384,8 +384,8 @@ struct PyrPushKeyArgNode final : public PyrParseNode {
 struct PyrReturnNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::ReturnNode };
     PyrReturnNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mExpr);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     PyrParseNode* mExpr; // if null, return self
 };
@@ -393,8 +393,8 @@ struct PyrReturnNode final : public PyrParseNode {
 struct PyrBlockReturnNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::BlockReturnNode };
     PyrBlockReturnNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mExpr);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     PyrParseNode* mExpr; // if null, return self
 };
@@ -402,8 +402,8 @@ struct PyrBlockReturnNode final : public PyrParseNode {
 struct PyrAssignNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::AssignNode };
     PyrAssignNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mVarName, PyrParseNode* mExpr);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     PyrSlotNode* mVarName;
     PyrParseNode* mExpr;
@@ -414,8 +414,8 @@ struct PyrMultiAssignNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::MultiAssignNode };
     PyrMultiAssignNode(Tag t, sc::lex::SourceCodeRange l, struct PyrMultiAssignVarListNode* mVarList,
                        PyrParseNode* mExpr);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     struct PyrMultiAssignVarListNode* mVarList;
     PyrParseNode* mExpr;
@@ -425,8 +425,8 @@ struct PyrMultiAssignNode final : public PyrParseNode {
 struct PyrMultiAssignVarListNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::MultiAssignVarListNode };
     PyrMultiAssignVarListNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mVarNames, PyrSlotNode* mRest);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     PyrSlotNode* mVarNames;
     PyrSlotNode* mRest;
@@ -436,8 +436,8 @@ struct PyrBlockNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::BlockNode };
     PyrBlockNode(Tag t, sc::lex::SourceCodeRange l, struct PyrArgListNode* mArglist, struct PyrVarListNode* mVarlist,
                  PyrParseNode* mBody, bool mIsExplicitlyClosed);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     struct PyrArgListNode* mArglist;
     struct PyrVarListNode* mVarlist;
@@ -449,8 +449,8 @@ struct PyrArgListNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::ArgListNode };
     PyrArgListNode(Tag t, sc::lex::SourceCodeRange l, struct PyrVarDefNode* mVarDefs, PyrSlotNode* mRest,
                    PyrSlotNode* mKeywordArgs);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     struct PyrVarDefNode* mVarDefs;
     PyrSlotNode* mRest;
@@ -460,8 +460,8 @@ struct PyrArgListNode final : public PyrParseNode {
 struct PyrLitListNode final : public PyrParseNode {
     static constexpr std::array<PyrParseNodeType, 1> types { PyrParseNodeType::LitListNode };
     PyrLitListNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mClassname, PyrParseNode* mElems);
-    virtual void compile(CompilerContext& cxt, PyrSlot* result);
-    virtual void dump(int level);
+    void compile(CompilerContext& cxt, PyrSlot* result) override;
+    void dump(int level) override;
 
     PyrParseNode* mClassname;
     PyrParseNode* mElems;

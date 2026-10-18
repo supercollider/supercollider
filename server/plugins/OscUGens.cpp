@@ -1100,7 +1100,7 @@ void FSinOsc_next(FSinOsc* unit, int inNumSamples) {
 }
 
 void FSinOsc_next_i(FSinOsc* unit, int inNumSamples) {
-    float* __restrict__ out = ZOUT(0);
+    float* RESTRICT out = ZOUT(0);
     double b1 = unit->m_b1;
 
     double y0;

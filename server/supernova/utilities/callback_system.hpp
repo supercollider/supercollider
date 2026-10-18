@@ -33,8 +33,8 @@ namespace nova {
 /** \brief simple templated callback system, using a lockfree fifo */
 template <class callback_type, bool mpmc = true, class callback_deleter = boost::checked_deleter<callback_type>>
 class callback_system : private callback_deleter {
-    typedef typename boost::mpl::if_c<mpmc, boost::lockfree::queue<callback_type*>,
-                                      boost::lockfree::spsc_queue<callback_type*>>::type queue_type;
+    using queue_type =
+        std::conditional_t<mpmc, boost::lockfree::queue<callback_type*>, boost::lockfree::spsc_queue<callback_type*>>;
 
 public:
     callback_system(size_t element_count = 2048): callbacks(element_count) {}
