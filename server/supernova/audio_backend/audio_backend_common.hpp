@@ -80,7 +80,7 @@ protected:
         std::generate(output_samples.begin(), output_samples.end(), std::bind(calloc_aligned<sample_type>, frames));
     }
 
-    void fetch_inputs(const float** inputs, size_t frames, int input_channels) {
+    void fetch_inputs(const sample_type** inputs, size_t frames, int input_channels) {
         if (is_multiple_of_vectorsize(frames)) {
             for (size_t i = 0; i < input_channels; ++i) {
                 if (is_aligned(inputs[i]))
@@ -97,7 +97,7 @@ protected:
         }
     }
 
-    void deliver_outputs(float** outputs, size_t frames, int output_channels) {
+    void deliver_outputs(sample_type** outputs, size_t frames, int output_channels) {
         if (is_multiple_of_vectorsize(frames)) {
             for (size_t i = 0; i < output_channels; ++i) {
                 if (is_aligned(outputs[i]))

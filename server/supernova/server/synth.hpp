@@ -24,6 +24,7 @@
 #include <cstdint>
 
 #include "node_types.hpp"
+#include "sample_types.hpp"
 #include "synth_definition.hpp"
 #include "utilities/time_tag.hpp"
 
@@ -63,7 +64,6 @@ protected:
 
 class abstract_synth : public server_node, public detail::synth_definition_instance {
 public:
-    typedef float sample;
     typedef std::uint_fast16_t samplecount_t;
 
     typedef detail::synth_definition_instance definition_instance;
