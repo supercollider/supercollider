@@ -128,7 +128,7 @@ public:
     void CallNextStage();
 
     /** @brief initialize the command from the OSC message. */
-    virtual int Init(char* inData, int inSize);
+    virtual int Init(const char* inData, int inSize);
 
     /** @brief stage 1: RT thread. This function is a no-op, the actual work is done in Init(). */
     virtual bool Stage1();
@@ -157,9 +157,9 @@ protected:
 /** @brief implements the \c /sync command. */
 class SyncCmd : public SC_SequencedCommand {
 public:
-    SyncCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    SyncCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -174,10 +174,10 @@ protected:
 /** @brief implements the \c /b_gen command. */
 class BufGenCmd : public SC_SequencedCommand {
 public:
-    BufGenCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufGenCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~BufGenCmd();
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -198,9 +198,9 @@ protected:
 /** @brief implements the \c /b_alloc command. */
 class BufAllocCmd : public SC_SequencedCommand {
 public:
-    BufAllocCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufAllocCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -219,9 +219,9 @@ protected:
 /** @brief implements the \c /b_free command. */
 class BufFreeCmd : public SC_SequencedCommand {
 public:
-    BufFreeCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufFreeCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -238,9 +238,9 @@ protected:
 /** @brief implements the \c /b_close command. */
 class BufCloseCmd : public SC_SequencedCommand {
 public:
-    BufCloseCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufCloseCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -256,9 +256,9 @@ protected:
 /** @brief implements the \c /b_zero command. */
 class BufZeroCmd : public SC_SequencedCommand {
 public:
-    BufZeroCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufZeroCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -273,10 +273,10 @@ protected:
 /** @brief implements the \c /b_allocRead command. */
 class BufAllocReadCmd : public SC_SequencedCommand {
 public:
-    BufAllocReadCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufAllocReadCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~BufAllocReadCmd();
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -295,10 +295,10 @@ protected:
 /** @brief implements the \c /b_read command. */
 class BufReadCmd : public SC_SequencedCommand {
 public:
-    BufReadCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufReadCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~BufReadCmd();
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -319,14 +319,13 @@ class SC_BufReadCommand : public SC_SequencedCommand {
 public:
     enum { kMaxNumChannels = 32 };
 
-    SC_BufReadCommand(World* inWorld, ReplyAddress* inReplyAddress);
+    SC_BufReadCommand(World* inWorld, const ReplyAddress* inReplyAddress);
 
 protected:
     void InitChannels(sc_msg_iter& msg);
     bool CheckChannels(int inNumChannels);
     void CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames);
 
-protected:
     int mNumChannels;
     int mChannels[kMaxNumChannels];
 };
@@ -336,10 +335,10 @@ protected:
 /** @brief implements the \c /b_allocReadChannel command. */
 class BufAllocReadChannelCmd : public SC_BufReadCommand {
 public:
-    BufAllocReadChannelCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufAllocReadChannelCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~BufAllocReadChannelCmd();
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -358,10 +357,10 @@ protected:
 /** @brief implements the \c /b_readChannel command. */
 class BufReadChannelCmd : public SC_BufReadCommand {
 public:
-    BufReadChannelCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufReadChannelCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~BufReadChannelCmd();
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -380,10 +379,10 @@ protected:
 /** @brief implements the \c /b_write command. */
 class BufWriteCmd : public SC_SequencedCommand {
 public:
-    BufWriteCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    BufWriteCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~BufWriteCmd();
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -404,7 +403,7 @@ protected:
 /** @brief implements the \c /quit command. */
 class AudioQuitCmd : public SC_SequencedCommand {
 public:
-    AudioQuitCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    AudioQuitCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -415,7 +414,7 @@ public:
 
 class AudioStatusCmd : public SC_SequencedCommand {
 public:
-    AudioStatusCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    AudioStatusCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
     bool Stage2() override; // non real time
 };
@@ -424,7 +423,7 @@ public:
 
 class RTMemStatusCmd : public SC_SequencedCommand {
 public:
-    RTMemStatusCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    RTMemStatusCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
     bool Stage2() override; // non real time
 };
@@ -434,9 +433,9 @@ public:
 /** @brief implements the \c /notify command. */
 class NotifyCmd : public SC_SequencedCommand {
 public:
-    NotifyCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    NotifyCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
 
@@ -464,7 +463,7 @@ protected:
  *  message from the RT thread. */
 class SendFailureCmd : public SC_SequencedCommand {
 public:
-    SendFailureCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    SendFailureCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~SendFailureCmd();
 
     void InitSendFailureCmd(const char* inCmdName, const char* inErrString);
@@ -480,10 +479,10 @@ protected:
 /** @brief implements the \c /d_load command. */
 class LoadSynthDefCmd : public SC_SequencedCommand {
 public:
-    LoadSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    LoadSynthDefCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~LoadSynthDefCmd();
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -499,10 +498,10 @@ protected:
 /** @brief implements the \c /d_recv command. */
 class RecvSynthDefCmd : public SC_SequencedCommand {
 public:
-    RecvSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    RecvSynthDefCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~RecvSynthDefCmd();
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -519,10 +518,10 @@ protected:
 /** @brief implements the \c /d_loadDir command. */
 class LoadSynthDefDirCmd : public SC_SequencedCommand {
 public:
-    LoadSynthDefDirCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    LoadSynthDefDirCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~LoadSynthDefDirCmd();
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
@@ -538,9 +537,9 @@ protected:
 /** @brief send an OSC reply message from the RT thread. */
 class SendReplyCmd : public SC_SequencedCommand {
 public:
-    SendReplyCmd(World* inWorld, ReplyAddress* inReplyAddress);
+    SendReplyCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
-    int Init(char* inData, int inSize) override;
+    int Init(const char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
 };
@@ -585,7 +584,7 @@ public:
      *
      *  @param completionMsgData    the completion message data. Pass \c NULL if you want to omit it.
      */
-    AsyncPlugInCmd_(World* inWorld, ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
+    AsyncPlugInCmd_(World* inWorld, const ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
                     StageFn stage2, StageFn stage3, StageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
                     const void* completionMsgData);
 
@@ -643,7 +642,7 @@ public:
      *
      *  @param completionMsgData    the completion message data. Pass \c NULL if you want to omit it.
      */
-    AsyncUnitCmd(Unit* inUnit, ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
+    AsyncUnitCmd(Unit* inUnit, const ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
                  AsyncUnitStageFn stage2, AsyncUnitStageFn stage3, AsyncUnitStageFn stage4, AsyncFreeFn cleanup,
                  int completionMsgSize, const void* completionMsgData);
 

@@ -85,7 +85,7 @@ int32 GetHash(struct PlugInCmd* inPlugInCmd);
 bool AddPlugInCmd(struct PlugInCmd* inPlugInCmd);
 bool RemovePlugInCmd(struct PlugInCmd* inPlugInCmd);
 struct PlugInCmd* GetPlugInCmd(int32* inKey);
-SCErr PlugIn_DoCmd(World* inWorld, int inSize, char* inArgs, struct ReplyAddress* inReply);
+SCErr PlugIn_DoCmd(World* inWorld, int inSize, const char* inArgs, struct ReplyAddress* inReply);
 
 int32* GetKey(struct GraphDef* inGraphDef);
 int32 GetHash(struct GraphDef* inGraphDef);
