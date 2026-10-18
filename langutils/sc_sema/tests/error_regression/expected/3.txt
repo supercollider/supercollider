@@ -1,0 +1,29 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic has incorrect super class
+file:
+    5 │ 
+    6 │ AbstractObjectExperimental {}
+    7 │ Object : Class {}
+      ┆          ^^^^^ Should be 'Meta_AbstractObjectExperimental'.
+    8 │ Class {}
+    9 │ String {}
+   10 │ True {}
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic has incorrect super class
+file:
+    5 │ 
+    6 │ AbstractObjectExperimental {}
+    7 │ Object : Class {}
+      ┆          ^^^^^ Should be 'AbstractObjectExperimental'.
+    8 │ Class {}
+    9 │ String {}
+   10 │ True {}
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+Successfully compiled 0 classes.

@@ -1,7 +1,12 @@
 // Copyright Jordan Henderson 2026
 #include "sc_parser/ast.hpp"
 #include "sc_parser/indexes_typed.hpp"
+#include "sc_util/typed_graph.hpp"
 #include <ostream>
+namespace sc::util::typed_graph {
+template struct sc::util::typed_graph::GraphImplementation<sc::ast::OptionalIndex, sc::ast::Index,
+                                                           sc::ast::NodeCollectionHelper>;
+}
 
 namespace sc::ast {
 

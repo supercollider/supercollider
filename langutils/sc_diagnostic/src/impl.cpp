@@ -137,7 +137,7 @@ Diagnostic::Diagnostic(const char* name, Severity severity, std::vector<Location
     m_locations(std::move(location)),
     extra_info(std::move(extra)),
     m_name(name),
-    m_severity(severity) {}
+    m_severity(severity) { }
 
 const std::vector<Diagnostic::Location>& Diagnostic::locations() const { return m_locations; }
 
@@ -207,7 +207,11 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
 }
 
 [[nodiscard]] Diagnostic Diagnostic::missing_intrinsic_class(std::string extra) {
-    return { "Missing intrinsic class", Severity::Error, {}, std::move(extra) };
+    return { "Missing intrinsic class", Severity::Error, { }, std::move(extra) };
+}
+
+[[nodiscard]] Diagnostic Diagnostic::missing_common_class(std::string extra) {
+    return { "Missing common class", Severity::Error, { }, std::move(extra) };
 }
 
 [[nodiscard]] Diagnostic Diagnostic::intrinsic_class_wrong_member_name(std::shared_ptr<const sc::lex::TextInfo> t,
@@ -223,7 +227,7 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
 
 [[nodiscard]] Diagnostic Diagnostic::inheritance_cycle(
     std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>> m) {
-    std::vector<Location> locs {};
+    std::vector<Location> locs { };
 
     for (auto& [t, r] : m) {
         locs.push_back({ std::move(t), r, "cycle detected" });
@@ -245,5 +249,106 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
             { std::move(t), loc, "Remove the super class here, classes cannot inherit from themselves." } //
         } //
     };
+}
+
+
+[[nodiscard]] Diagnostic Diagnostic::duplicate_method_name(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                           TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+    return { "Duplicate method name.",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, "This method was duplicated..." },
+                 { std::move(second_t), second_l, "...here." },
+             } };
+}
+
+
+[[nodiscard]] Diagnostic Diagnostic::duplicate_extention(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                         TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+    return { "Duplicate extention.",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, "Overrideen here..." },
+                 { std::move(second_t), second_l, "... and also overrideen here." },
+             },
+             "The compile cannot determine which should implementation should be used, please delete one." };
+}
+[[nodiscard]] Diagnostic Diagnostic::default_inheritor_must_have_super(TextInfoPtr first_t,
+                                                                       sc::lex::SourceCodeRange first_l) {
+    return { "Default inheritor must inherit from a class.",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, "Should inherit from something." },
+             },
+             "The default inheritor class needs a specified super class (unless it is also the root object)." };
+}
+
+
+[[nodiscard]] Diagnostic Diagnostic::root_object_must_not_inherit(TextInfoPtr first_t,
+                                                                  sc::lex::SourceCodeRange first_l) {
+    return { "Root object must not inherit from something.",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, "Remove this super class." },
+             },
+             "The root objec is the highest node in the class heirachy, it should not inherit from another class or "
+             "there will be a cycle." };
+}
+
+Diagnostic Diagnostic::unexpected_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Invalid slot def",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l,
+                   "This is an internal implementation detail, remove this, or consult the interpreter source code." },
+             },
+             "Slot defs are an internal implementation detail of intrinsic classes, you should not use it unless you "
+             "are writing a core part of the interpreter." };
+}
+
+
+Diagnostic Diagnostic::incorrect_super_class(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                             std::string_view expected) {
+    std::string msg;
+    msg += "Should be '";
+    msg += expected;
+    msg += "'.";
+    return { "Intrinsic has incorrect super class",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, std::move(msg) },
+             },
+             "Intrinsic classes are a part of the compiler and cannot be changed." };
+}
+
+Diagnostic Diagnostic::incorrect_super_class(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Intrinsic has unexpected super class",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, "Delete this." },
+             },
+             "Intrinsic classes are a part of the compiler and cannot be changed." };
+}
+
+Diagnostic Diagnostic::incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                          std::string_view expected) {
+    std::string msg;
+    msg += "Should be '";
+    msg += expected;
+    msg += "'.";
+    return { "Intrinsic has incorrect slot def.",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, std::move(msg) },
+             },
+             "Intrinsic classes are a part of the compiler and cannot be changed." };
+}
+Diagnostic Diagnostic::incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Intrinsic has slot def when shouldn't",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, "Delete this." },
+             },
+             "Intrinsic classes are a part of the compiler and cannot be changed." };
 }
 }

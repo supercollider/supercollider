@@ -1,12 +1,11 @@
 #pragma once
 
-#include "sc_util/strong_index.hpp"
 #include "sc_util/overload.hpp"
-
+#include "const_expr_index.hpp"
 #include "symbols.hpp"
 
 #include <cstdint>
-#include <limits>
+#include <mutex>
 #include <ostream>
 #include <utility>
 #include <variant>
@@ -33,11 +32,6 @@ using ConstStorage = std::variant< //
     SymSCClassName, //
     ConstExprArray, //
     ConstExprEvent>;
-
-
-using ConstExprIndex = sc::util::StrongIndex<std::uint32_t, struct ConstantExpressionIndex__>;
-using OptionalConstExprIndex = sc::util::StrongOptionalIndex<std::uint32_t, struct ConstantExpressionIndex__,
-                                                             std::numeric_limits<std::uint32_t>::max()>;
 
 struct ConstExpression {
     constexpr ConstExpression(double d): storage(d) { }
@@ -118,4 +112,25 @@ template <> struct hash<sc::ir::ConstExpression> {
             e.storage);
     }
 };
+
+}
+
+
+namespace sc::ir {
+struct ConstantTable {
+    [[nodiscard]] ConstExprIndex register_constexpr(ConstExpression&& expr);
+
+    // this is marked noexcept because you should never construct an index yourself.
+    [[nodiscard]] const ConstExpression& operator()(ConstExprIndex index) const noexcept;
+
+
+private:
+    mutable std::mutex m_lock {};
+    ConstExprIndex::Underlying m_rolling { 0 };
+    // This means we duplicate the constexpr.
+    // This could probably be optimized.
+    std::unordered_map<ConstExprIndex, ConstExpression> index_to_expr { };
+    std::unordered_map<ConstExpression, ConstExprIndex> expr_to_index { };
+};
+
 }

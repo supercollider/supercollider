@@ -139,7 +139,7 @@ struct ParserContext {
     Mode mode;
 
     std::optional<Action::Output> previous { std::nullopt };
-    sc::ast::ASTGraph graph { text_info };
+    std::shared_ptr<sc::ast::ASTGraph> graph = std::make_shared<ASTGraph>(text_info);
 
     std::optional<UnexpectedToken> unexpected_token_error { };
 
@@ -154,7 +154,7 @@ struct ParserContext {
 
 
     template <class... ARGS> [[nodiscard]] auto create(ARGS&&... args) {
-        return graph.create(std::forward<ARGS>(args)...);
+        return graph->create(std::forward<ARGS>(args)...);
     }
 };
 

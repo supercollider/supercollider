@@ -8,14 +8,15 @@ import re
 
 def process_file(cmd, sc_file, output_dir, override):
 
-    requires_intrinsics = "true" if "intrinsic" in sc_file.name else "false"
-
-    cmd_result = subprocess.run([cmd, sc_file, requires_intrinsics], capture_output=True, text=True, check=True)
+    cmd_result = subprocess.run([cmd, sc_file], capture_output=True, text=True, check=True)
 
     # remove file path info
     cmd_result = re.sub(r'file:.*', 'file:', cmd_result.stdout)
 
-    expected_output_path = sc_file.with_suffix('.txt')
+    expected_dir = sc_file.parent / "expected"
+    expected_dir.mkdir(parents=True, exist_ok=True)
+
+    expected_output_path = sc_file.parent / "expected" / sc_file.with_suffix('.txt').name
     output_file_path = output_dir / Path(sc_file.name).with_suffix('.txt')
     diff_file_path = output_dir / Path(sc_file.name).with_suffix('.diff')
 

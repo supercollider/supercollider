@@ -4,8 +4,8 @@
 #include "indexes_typed.hpp"
 #include "sc_grammar_shared.hpp"
 
+#include "sc_util/typed_graph_helper.hpp"
 #include "sc_util/typed_graph_node.hpp"
-#include "sc_util/typed_graph.hpp"
 
 #include <cstdint>
 
@@ -17,7 +17,7 @@ This file should be read alongside the indexes_typed.hpp
 The typed indexs define conversions. This allows integers to become expression, for example.
 
 This file defines extra information ir nodes need, and what children they can have.
-
+a
 
 For example, say we have a basic language that has integers, float, expressions (nothing else), and functions which are
 just a list of expressions.
@@ -32,7 +32,7 @@ We would then have the following typed indexes:
     using ExpressionIndex = join<IntIndex, FloatIndex, FunctionIndex>;
 
     using ExpressionListIndex = TypedIndex<IRType::ExpressionList>;
-
+&,
 Then the nodes would look like this:
 
     struct IntLiteral : public priv::TerminalNode<IntLiteral, IntIndex> {};
@@ -451,106 +451,6 @@ struct Error : ListNode<ErrorIndex, AnyIndex> {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper< //
-    NodeFlag, //
-    TypedIndex, //
-    Missing, //
-    ASCIINode, //
-    IntNode, //
-    FloatNode, //
-    PiNode, //
-    AccidentalNode, //
-    StringLineNode, //
-    StringLineList, //
-
-
-    KeyBinOp, //
-    SymbolSlash, //
-    SymbolQuote, //
-
-    BooleanNode, //
-    NilNode, //
-    CurryNode, //
-    BlockList, //
-    ArrayNode, //
-    NamedIdentifier, //
-    PrimitiveIdentifier, //
-    ClassNameIdentifier, //
-
-    NameList, //
-    NamePack, //
-
-    EnvIdentifierNode, //
-    SelectorNode, //
-    SelectorWAdverb, //
-    VariadicArgNode, //
-    ArgumentList, //
-    BlockNode, //
-    KwArgNode, //
-    ExprSeq, //
-
-    Range, //
-    RangeGenerator, //
-    RangeAssign, //
-
-    ImmediatelyEvaluatedBlock, //
-
-    GeneratorNode, //
-    GeneratorFakeNode, //
-    GeneratorQualList, //
-    GeneratorQualAssign, //
-    GeneratorQualDeclare, //
-    GeneratorQualIf, //
-    GeneratorQualSideEffect, //
-    GeneratorQualGuard, //
-
-    PrefixMessage, //
-    PostfixMessage, //
-    BinaryMessage, //
-    ValueMessage, //
-    NewMessage, //
-    AtMessage, //
-
-    AdverbExprNode, //
-    ReferenceNode, //
-    AssignmentNode, //
-    AssignmentAtNode, //
-    SetterNode, //
-    DictionaryNode, //
-
-    DictionaryEntryNode, //
-    CollectionNode, //
-    DeclareArgumentWithDefaultNode, //
-    DeclareArgumentVariadicNode, //
-
-    DeclareArgumentList, //
-
-    DeclareVariableWithDefaultNode, //
-    VariablePackAssign,
-
-    DeclareVariableList, //
-
-    BlockContentsList, //
-    NonLocalReturnExpr, //
-
-    Method, //
-    ClassMethod, //
-    Class, //
-    ClassExtension, //
-    RWAccessor,
-    BigMemberList, //
-    DeclareMemberList, //
-    DeclareClassMemberList, //
-
-    DeclareConstList, //
-    DeclareMember, //
-    MethodList, //
-    ClassOrExtensionList, //
-    FileAsFunction, //
-    RegionList, //
-    Error //
-    >;
 
 
 } // sc::ast

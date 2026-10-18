@@ -1,3 +1,4 @@
+#include "sc_parser/ast.hpp"
 #include "sc_parser/nodes.hpp"
 #include "sc_lexer/normalise_source.hpp"
 #include "sc_parser/sc_parser.hpp"
@@ -31,18 +32,18 @@ const auto tester_base = [](const char* src, bool is_class_file, bool no_diags) 
     //     });
 
     if (no_diags) {
-        BOOST_TEST(graph.diagnostics().empty());
+        BOOST_TEST(graph->diagnostics().empty());
     }
 
-    const auto root = graph.root_any();
+    const auto root = graph->root_any();
     BOOST_TEST(root.has_value());
 
     //    std::cout << "ROOT == " << **root << '\n';
 
-    for (const auto& d : graph.diagnostics())
+    for (const auto& d : graph->diagnostics())
         std::cout << d << std::endl;
 
-    graph.debug_df_print(std::cout);
+    graph->debug_df_print(std::cout);
 };
 
 const auto tester = [](const char* src, bool no_diags) { tester_base(src, false, no_diags); };

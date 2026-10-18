@@ -1,6 +1,6 @@
 #include "sc_sema/const_expr.hpp"
+#include "sc_sema/symbol_table.hpp"
 #include "sc_sema/symbols.hpp"
-#include "sc_sema/tables.hpp"
 #include <cstddef>
 #include <iomanip>
 

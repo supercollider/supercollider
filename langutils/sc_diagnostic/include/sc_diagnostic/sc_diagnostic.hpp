@@ -18,35 +18,53 @@ enum struct DiagnosticKind {
 
 class Diagnostic {
 public:
+    using TextInfoPtr = std::shared_ptr<const sc::lex::TextInfo>;
     struct Location {
-        std::shared_ptr<const sc::lex::TextInfo> text_info;
+        TextInfoPtr text_info;
         sc::lex::SourceCodeRange range;
         std::string msg;
     };
 
-    [[nodiscard]] static Diagnostic unexpectedToken(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                                    sc::lex::SourceCodeRange loc, std::string expected,
-                                                    const char* received);
-    [[nodiscard]] static Diagnostic region_missing_semicolon(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                                             sc::lex::SourceCodeRange loc);
+    [[nodiscard]] static Diagnostic unexpectedToken(TextInfoPtr text_info, sc::lex::SourceCodeRange loc,
+                                                    std::string expected, const char* received);
+    [[nodiscard]] static Diagnostic region_missing_semicolon(TextInfoPtr text_info, sc::lex::SourceCodeRange loc);
 
-    [[nodiscard]] static Diagnostic duplicate_class(std::shared_ptr<const sc::lex::TextInfo> first_text_info,
-                                                    sc::lex::SourceCodeRange first_loc,
-                                                    std::shared_ptr<const sc::lex::TextInfo> second_text_info,
-                                                    sc::lex::SourceCodeRange second_loc);
-    [[nodiscard]] static Diagnostic todo(std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange loc);
+    [[nodiscard]] static Diagnostic duplicate_class(TextInfoPtr first_text_info, sc::lex::SourceCodeRange first_loc,
+                                                    TextInfoPtr second_text_info, sc::lex::SourceCodeRange second_loc);
+
+    [[nodiscard]] static Diagnostic todo(TextInfoPtr, sc::lex::SourceCodeRange loc);
+
     [[nodiscard]] static Diagnostic missing_intrinsic_class(std::string);
-    [[nodiscard]] static Diagnostic intrinsic_class_wrong_member_name(std::shared_ptr<const sc::lex::TextInfo>,
-                                                                      sc::lex::SourceCodeRange loc,
+    [[nodiscard]] static Diagnostic missing_common_class(std::string);
+
+    [[nodiscard]] static Diagnostic intrinsic_class_wrong_member_name(TextInfoPtr, sc::lex::SourceCodeRange loc,
                                                                       std::string_view expected);
 
-    [[nodiscard]] static Diagnostic
-    super_class_not_defined(std::string name,
-                            std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>>);
-    [[nodiscard]] static Diagnostic
-        inheritance_cycle(std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>>);
-    [[nodiscard]] static Diagnostic self_inheritance(std::shared_ptr<const sc::lex::TextInfo>,
-                                                     sc::lex::SourceCodeRange);
+    [[nodiscard]] static Diagnostic duplicate_extention(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                        TextInfoPtr second_t, sc::lex::SourceCodeRange second_l);
+
+    [[nodiscard]] static Diagnostic super_class_not_defined( //
+        std::string name, std::vector<std::pair<TextInfoPtr, sc::lex::SourceCodeRange>>);
+    [[nodiscard]] static Diagnostic inheritance_cycle(std::vector<std::pair<TextInfoPtr, sc::lex::SourceCodeRange>>);
+    [[nodiscard]] static Diagnostic self_inheritance(TextInfoPtr, sc::lex::SourceCodeRange);
+
+    [[nodiscard]] static Diagnostic duplicate_method_name(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                        TextInfoPtr second_t, sc::lex::SourceCodeRange second_l);
+
+    [[nodiscard]] static Diagnostic default_inheritor_must_have_super(TextInfoPtr first_t,
+                                                                      sc::lex::SourceCodeRange first_l);
+
+    [[nodiscard]] static Diagnostic root_object_must_not_inherit(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+    [[nodiscard]] static Diagnostic unexpected_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+
+    // intrinsic
+    [[nodiscard]] static Diagnostic incorrect_super_class(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                          std::string_view expected);
+    [[nodiscard]] static Diagnostic incorrect_super_class(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+    [[nodiscard]] static Diagnostic incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                       std::string_view expected);
+    [[nodiscard]] static Diagnostic incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+
 
     Diagnostic() = delete;
     Diagnostic(Diagnostic&&) noexcept = default;
@@ -67,8 +85,8 @@ public:
     std::string to_string() const;
 
 private:
-    Diagnostic(const char* name, Severity severity, std::vector<Location> locations = {},
-               std::string extra = {}) noexcept;
+    Diagnostic(const char* name, Severity severity, std::vector<Location> locations = { },
+               std::string extra = { }) noexcept;
     std::vector<Location> m_locations;
     std::string extra_info;
     const char* m_name;

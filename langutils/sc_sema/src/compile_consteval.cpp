@@ -1,0 +1,22 @@
+#include "ast2ir.hpp"
+#include "sc_sema/compiler.hpp"
+#include "sc_sema/symbol_table.hpp"
+
+namespace sc::ir {
+
+std::variant<ConstExpression, sc::diag::Diagnostic>
+compile_consteval(std::shared_ptr<const ast::ASTGraph> ast_graph, ast::AnyExprIndex expr_i, SymbolTable& sym_table) {
+    auto common_c = symbol_table_and_common_classes(sym_table, sym_table.get_class_name("AbstractObject"));
+    std::vector<std::pair<std::shared_ptr<const ast::ASTGraph>, ast::ClassOrExtensionListIndex>> class_lib {};
+
+    Context context { sym_table, std::move(common_c), class_lib };
+
+    using R = std::variant<ConstExpression, sc::diag::Diagnostic>;
+    auto r =
+        std::visit(ast2ir::ConstEval { context, ast_graph, ASTGraphIndex { 0 } }, ast_graph->index_to_variant(expr_i));
+
+    return std::move(r).visit([&](ast2ir::ConstEval::Success s) -> R { return { context.constant_table(s.first) }; },
+                              [&](sc::diag::Diagnostic d) -> R { return { std::move(d) }; });
+}
+
+}

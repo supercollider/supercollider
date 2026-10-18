@@ -5,14 +5,14 @@
 
 namespace sc::ir::ast2ir {
 
-Return Region::operator()(ast::ErrorIndex) {
+Return<NodeIndex> Region::operator()(ast::ErrorIndex) {
     assert(false);
     return Return { NodeIndex { 0 } };
 }
 
-Return Region::operator()(ast::AnyExprIndex expr) {
-    return std::visit(Expr { building_ir, ast_graph, ast_index, context }, ast_graph.index_to_variant(expr));
+Return<NodeIndex> Region::operator()(ast::AnyExprIndex expr) {
+    assert(false);
+    return { 0 }; // std::visit(Expr { ir, ast_graph, ctx }, ast_graph->index_to_variant(expr));
 }
-
 }
 

@@ -1,0 +1,22 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Duplicate extention.
+file:
+   22 │ 
+   23 │ +Foo {
+   24 │     bar {} 
+      ┆     ^^^ Overrideen here...
+   25 │ }
+
+file:
+   16 │ 
+   17 │ +Foo {
+   18 │     bar {} 
+      ┆     ^^^ ... and also overrideen here.
+   19 │ }
+   20 │ 
+   21 │ Foo { }
+
+The compile cannot determine which should implementation should be used, please delete one.
+──────────────────────────────────────────────────────────────────────────────────
+Successfully compiled 12 classes.

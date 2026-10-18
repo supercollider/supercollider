@@ -5,10 +5,15 @@ add_library(sc_sema STATIC
 	src/compiler.cpp
 	src/tables.cpp
 	src/const_expr.cpp
+	src/ir.cpp
+	src/common_class.cpp
+	src/intrinsic_constraint_checker.cpp
+	src/inheritance_edges.cpp
 	src/ast2ir/expr.cpp
 	src/ast2ir/declare_classes.cpp
 	src/ast2ir/region.cpp
 	src/ast2ir/consteval.cpp
+	src/ast2ir/method.cpp
 )
 
 target_include_directories(sc_sema PUBLIC include)

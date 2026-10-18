@@ -5,6 +5,7 @@ add_library(sc_util INTERFACE
 	include/sc_util/type_set_index.hpp
 	include/sc_util/typed_graph_node.hpp
 	include/sc_util/typed_graph.hpp
+	include/sc_util/typed_graph_helper.hpp
 	include/sc_util/overload.hpp
 )
 

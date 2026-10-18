@@ -12,7 +12,9 @@ enum struct TypeConfidence {
 };
 
 struct TypeInfo {
-    SymSCClassName class_name;
+    OptionalSymSCClassName class_name;
+    // If class name is invalid this is not useful.
+    // It still would have meaning, but would be how certain we are about not knowing the type, which is useless.
     TypeConfidence confidence; 
 };
 

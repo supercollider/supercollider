@@ -1,0 +1,81 @@
+#pragma once
+#include "sc_util/type_set_index.hpp"
+#include <cstdint>
+namespace sc::ir {
+enum struct SCNodeType {
+    Missing,
+    Message,
+    Assign,
+
+    KwArg,
+    VariableDeclare,
+    ExplicitReturn,
+
+    KwArgList,
+    PosArgList,
+    VariadicArgList,
+    Literal,
+    Collection, // a collection that can't be turned into a literal.
+
+    ArgumentDeclare,
+    ArgumentDeclareList,
+    Method,
+    Function,
+    MethodList,
+    Member,
+    MemberList,
+    Class,
+    Extention,
+
+    ExprList,
+    ClassOrExtentionList,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+using NodeSpec = sc::util::typed_index::Spec<std::uint32_t, SCNodeType, struct Graph__>;
+using NodeDef = util::typed_index::QuicklyDefineTypesFromSpec<NodeSpec>;
+using OptNodeIndex = NodeDef::OptionalIndex;
+using NodeIndex = NodeDef::Index;
+
+template <SCNodeType... ts> using TypedNodeIndex = NodeDef::TypedIndex<ts...>;
+
+template <typename... Ts> using join = sc::util::typed_index::join<Ts...>;
+template <typename T> using maybe = join<T, TypedNodeIndex<SCNodeType::Missing>>;
+
+////////////////////////////////////////////////////////////////////////////////
+
+using SCMissing_I = TypedNodeIndex<SCNodeType::Missing>;
+using SCLiteral_I = TypedNodeIndex<SCNodeType::Literal>;
+
+using SCMessage_I = TypedNodeIndex<SCNodeType::Message>;
+using SCAssign_I = TypedNodeIndex<SCNodeType::Assign>;
+
+using SCKwArgList_I = TypedNodeIndex<SCNodeType::KwArgList>;
+using SCPosArgList_I = TypedNodeIndex<SCNodeType::PosArgList>;
+using SCVariadicArgList_I = TypedNodeIndex<SCNodeType::VariadicArgList>;
+
+using SCKwArg_I = TypedNodeIndex<SCNodeType::KwArg>;
+using SCExplicitReturn_I = TypedNodeIndex<SCNodeType::ExplicitReturn>;
+
+using SCVariableDeclare_I = TypedNodeIndex<SCNodeType::VariableDeclare>;
+
+using SCCollection_I = TypedNodeIndex<SCNodeType::Collection>;
+using SCArgumentDeclare_I = TypedNodeIndex<SCNodeType::ArgumentDeclare>;
+using SCArgumentDeclareList_I = TypedNodeIndex<SCNodeType::ArgumentDeclareList>;
+using SCMethod_I = TypedNodeIndex<SCNodeType::Method>;
+using SCFunction_I = TypedNodeIndex<SCNodeType::Function>;
+using SCMethodList_I = TypedNodeIndex<SCNodeType::MethodList>;
+using SCMember_I = TypedNodeIndex<SCNodeType::Member>;
+using SCMemberList_I = TypedNodeIndex<SCNodeType::MemberList>;
+using SCClass_I = TypedNodeIndex<SCNodeType::Class>;
+using SCExtention_I = TypedNodeIndex<SCNodeType::Extention>;
+
+using SCExprList_I = TypedNodeIndex<SCNodeType::ExprList>;
+
+using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCVariableDeclare_I, SCAssign_I, SCExplicitReturn_I, SCLiteral_I>;
+
+using SCClassList_I = TypedNodeIndex<SCNodeType::ClassOrExtentionList>;
+
+
+}

@@ -30,7 +30,6 @@
 %code top
 {
 
-#include "sc_lexer/lexer.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_parser/nodes.hpp"
 
@@ -172,11 +171,11 @@ using namespace sc::ast;
 %%
 
 go 
-	: region semicolon.opt YYEOF { $$ = cxt.graph.assign_root($region); }
-	| INTERPRET YYEOF { $$ = cxt.graph.assign_root(cxt.create(RegionList{}, @$)); }
-	| file_as_func { $$ = cxt.graph.assign_root($1); }
-	| classOrExtList.list[classes] YYEOF  { $$ = cxt.graph.assign_root($classes); }
-	| %empty { $$ = cxt.graph.assign_root(cxt.create(ClassOrExtensionList{}, @$));}
+	: region semicolon.opt YYEOF { $$ = cxt.graph->assign_root($region); }
+	| INTERPRET YYEOF { $$ = cxt.graph->assign_root(cxt.create(RegionList{}, @$)); }
+	| file_as_func { $$ = cxt.graph->assign_root($1); }
+	| classOrExtList.list[classes] YYEOF  { $$ = cxt.graph->assign_root($classes); }
+	| %empty { $$ = cxt.graph->assign_root(cxt.create(ClassOrExtensionList{}, @$));}
 	;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +187,7 @@ file_as_func
 		{ $$ = cxt.create(FileAsFunction{}, @$, $args, $contents); }
 
 	| INTERPRET variable_declarations[decls] SEMICOLON block.contents[contents] semicolon.opt YYEOF
-		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.graph.prepend($contents, $decls)); }
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.graph->prepend($contents, $decls)); }
 
 	| INTERPRET variable_declarations[decls] semicolon.opt YYEOF
 		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.create(BlockContentsList{}, @3, $decls)); }
@@ -208,7 +207,7 @@ region.item
 		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, cxt.create(BlockContentsList{}, @3)); }
 
 	| OPENPAREN variable_declarations[decls] SEMICOLON block.contents[contents] semicolon.opt CLOSEPAREN  
-		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.graph.prepend($contents, $decls)); }
+		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.graph->prepend($contents, $decls)); }
 	;
 
 region
@@ -222,17 +221,17 @@ region
 		}
 
 	| region[r] SEMICOLON region.item[item]
-		{ $$ = cxt.graph.append($r, @$, $item); }
+		{ $$ = cxt.graph->append($r, @$, $item); }
 
 	| region[r] REGION_SEPARATOR region.item[item]
-		{ $$ = cxt.graph.append($r, @$, $item); }
+		{ $$ = cxt.graph->append($r, @$, $item); }
 
 	| region[r] error[e] 
 		{
 			if (@r.end.line_number != @e.begin.line_number){
-				auto first_child = cxt.graph.edges(*$r).first_child.value();
-				auto last_child = cxt.graph.last_child(*$r);
-				auto loc = cxt.graph.location(last_child ? Index{*last_child} : Index{first_child});
+				auto first_child = cxt.graph->edges(*$r).first_child.value();
+				auto last_child = cxt.graph->last_child(*$r);
+				auto loc = cxt.graph->location(last_child ? Index{*last_child} : Index{first_child});
 				error_recovery::region_separator(cxt, loc);
 				cxt.region_recovery = sc::ast::parser::ParserContext::RegionRecovery::EmitRegionSeparator;
 				static_assert(std::is_same_v<decltype(yyerrstatus_), int>);
@@ -241,7 +240,7 @@ region
 				$$ = $1;
 			} else {
 				error_recovery::expr(cxt);
-				$$ = cxt.graph.append($r, cxt.create(Error{}, @e));
+				$$ = cxt.graph->append($r, cxt.create(Error{}, @e));
 				yyclearin;
 			} 
 		}
@@ -258,7 +257,7 @@ classOrExtList.list
 	: classOrExtList.item[item]
 		{ $$ = cxt.create(ClassOrExtensionList{}, @$, $item); }
 	| classOrExtList.list[list] classOrExtList.item[item]
-		{ $$ = cxt.graph.append($list, $item); }
+		{ $$ = cxt.graph->append($list, $item); }
 	;
 
 classOrExtList.item
@@ -300,23 +299,23 @@ members.entry.list
 	: members.entry.item 
 		{ $$ = cxt.create(DeclareMemberList{}, @$, $1); }
 	| members.entry.list COMMA members.entry.item
-		{ $$ = cxt.graph.append($1, $3); }
+		{ $$ = cxt.graph->append($1, $3); }
 	;
 
 members.entry
 	: CLASSVAR members.entry.list[vars]
-		{ $$ = cxt.graph.cast<DeclareClassMemberList>($vars); }
+		{ $$ = cxt.graph->cast<DeclareClassMemberList>($vars); }
 	| VAR members.entry.list[vars]
-		{ $$ = cxt.graph.cast<DeclareMemberList>($vars); }
+		{ $$ = cxt.graph->cast<DeclareMemberList>($vars); }
 	| CONST members.entry.list[vars]
-		{ $$ = cxt.graph.cast<DeclareConstList>($vars); }
+		{ $$ = cxt.graph->cast<DeclareConstList>($vars); }
 	;
 
 members
 	: members.entry 
 		{ $$ = cxt.create(BigMemberList{}, @$, $1);}
 	| members SEMICOLON members.entry
-		{ $$ = cxt.graph.append($1, $3); }
+		{ $$ = cxt.graph->append($1, $3); }
 	;
 
 members.opt
@@ -358,18 +357,18 @@ method
 	: method.base { $$ = $1; }
 	| MULTIPLY method.base[meth] 
 		{ 
-			if (auto c = cxt.graph.as_a<MethodIndex>($meth)) {
-				$$ = cxt.graph.cast<ClassMethod>(*c);
+			if (auto c = cxt.graph->as_a<MethodIndex>($meth)) {
+				$$ = cxt.graph->cast<ClassMethod>(*c);
 			} 
 			// leaves as error
-			cxt.graph.location($meth) = @$; 
+			cxt.graph->location($meth) = @$; 
 			$$ = $meth; 
 		}
 	;
 
 method.list 		
 	: method { $$ = cxt.create(MethodList{}, @$, $1); }
-	| method.list method { $$ = cxt.graph.append($1, @$, $2); }
+	| method.list method { $$ = cxt.graph->append($1, @$, $2); }
 	;
 
 method.list.opt 
@@ -399,22 +398,22 @@ block.opt_list
 block.list 		
 	: block { $$ = cxt.create(BlockList{}, @$, $1); }
 	| generator { $$ = cxt.create(BlockList{}, @$, $1); }
-	| block.list block { $$ = cxt.graph.append($1, @$, $2); }
-	| block.list generator { $$ = cxt.graph.append($1, @$, $2); }
+	| block.list block { $$ = cxt.graph->append($1, @$, $2); }
+	| block.list generator { $$ = cxt.graph->append($1, @$, $2); }
 	;
 
 block.contents
 	: block.contents.item { $$ = cxt.create(BlockContentsList{}, @$, $1); }
-	| block.contents SEMICOLON block.contents.item { $$ = cxt.graph.append($1, @$, $3); }
+	| block.contents SEMICOLON block.contents.item { $$ = cxt.graph->append($1, @$, $3); }
 	| block.contents NONLOCALRETURN expr 
 		{ 
 			auto non_local = cxt.create(NonLocalReturnExpr{}, @expr, $expr);
-			$$ = cxt.graph.append($1, @$, non_local); 
+			$$ = cxt.graph->append($1, @$, non_local); 
 		}
 	| block.contents SEMICOLON NONLOCALRETURN expr 
 		{ 
 			auto non_local = cxt.create(NonLocalReturnExpr{}, @expr, $expr);
-			$$ = cxt.graph.append($1, @$, non_local); 
+			$$ = cxt.graph->append($1, @$, non_local); 
 		}
 	| NONLOCALRETURN expr 
 		{ 
@@ -696,7 +695,7 @@ expr.base
 	| OPENPAREN expr_or_seq[contents] CLOSEPAREN 
 		{ 
 			// A nasty hack because of nil assignment.
-			cxt.graph.register_bracketed_expr($contents);
+			cxt.graph->register_bracketed_expr($contents);
 			$$ = $contents;
 		}
 
@@ -799,7 +798,7 @@ generator.qual.list
 	: generator.qual[item]
 		{ $$ = cxt.create(GeneratorQualList{}, @$, $item); }
 	| generator.qual.list[list] COMMA generator.qual[item]
-		{ $$ = cxt.graph.append($list, @list, $item); }
+		{ $$ = cxt.graph->append($list, @list, $item); }
 	;
 
 generator.qual
@@ -832,22 +831,22 @@ argument_declarations.list
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, $1); }
 	| name EQUALSSIGN expr 
 		{ 
-			const auto is_bracketed = cxt.graph.is_bracketed($expr);
+			const auto is_bracketed = cxt.graph->is_bracketed($expr);
 			$$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{!is_bracketed}, @$, $name, $expr)); 
 		}
 	| name OPENPAREN expr_or_seq CLOSEPAREN 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $name, $expr_or_seq)); }
 
 	| argument_declarations.list[list] COMMA name 
-		{ $$ = cxt.graph.append( $1, @$, $3); }
+		{ $$ = cxt.graph->append( $1, @$, $3); }
 
 	| argument_declarations.list[list] COMMA name EQUALSSIGN expr 
 		{ 
-			const auto is_bracketed = cxt.graph.is_bracketed($expr);
-			$$ = cxt.graph.append( $list, @$, cxt.create(DeclareArgumentWithDefaultNode{!is_bracketed}, @$, $name, $expr));
+			const auto is_bracketed = cxt.graph->is_bracketed($expr);
+			$$ = cxt.graph->append( $list, @$, cxt.create(DeclareArgumentWithDefaultNode{!is_bracketed}, @$, $name, $expr));
 		}
 	| argument_declarations.list[list] COMMA name OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.graph.append($list, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $name, $expr_or_seq)); }
+		{ $$ = cxt.graph->append($list, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $name, $expr_or_seq)); }
 
 	;
 
@@ -863,33 +862,33 @@ argument_declarations.pipelist
 	| name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $1, $4)); }
 	| argument_declarations.pipelist comma.opt name literal
-		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $4)); }
+		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $4)); }
 	| argument_declarations.pipelist comma.opt name 
-		{ $$ = cxt.graph.append( $1, @$, $3); }
+		{ $$ = cxt.graph->append( $1, @$, $3); }
 	| argument_declarations.pipelist comma.opt name EQUALSSIGN literal
-		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $5)); }
+		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $5)); }
 	| argument_declarations.pipelist comma.opt name OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $5)); }
+		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $5)); }
 	| argument_declarations.pipelist comma.opt name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.graph.append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $6)); }
+		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $6)); }
 	;
 
 argument_declarations
 	: ARG SEMICOLON { $$ = cxt.create(DeclareArgumentList{}, @$); }
 	| ARG argument_declarations.list comma.opt SEMICOLON { $$ = $2; }
 	| ARG argument_declarations.list ELLIPSIS name SEMICOLON  
-		{ $$ = cxt.graph.append( $2, @$, cxt.create(DeclareArgumentVariadicNode{}, @4, $4)); }
+		{ $$ = cxt.graph->append( $2, @$, cxt.create(DeclareArgumentVariadicNode{}, @4, $4)); }
 	| ARG argument_declarations.list ELLIPSIS name COMMA name SEMICOLON 
-		{ $$ = cxt.graph.append( $2, @$, cxt.create(DeclareArgumentVariadicNode{}, @4, $4), cxt.create(DeclareArgumentVariadicNode{}, @6, $6)); }
+		{ $$ = cxt.graph->append( $2, @$, cxt.create(DeclareArgumentVariadicNode{}, @4, $4), cxt.create(DeclareArgumentVariadicNode{}, @6, $6)); }
 	| ARG ELLIPSIS name[args] SEMICOLON 
 		{ 
 			auto arg_list = cxt.create(DeclareArgumentList{}, @$);
-			$$ = cxt.graph.append(arg_list, @$, cxt.create(DeclareArgumentVariadicNode{}, @args, $args)); 
+			$$ = cxt.graph->append(arg_list, @$, cxt.create(DeclareArgumentVariadicNode{}, @args, $args)); 
 		}
 	| ARG ELLIPSIS name[args] COMMA name[vars] SEMICOLON 
 		{
 			auto arg_list = cxt.create(DeclareArgumentList{}, @$);
-			$$ = cxt.graph.append(
+			$$ = cxt.graph->append(
 				arg_list, @$,
 				cxt.create(DeclareArgumentVariadicNode{}, @args, $args),
 				cxt.create(DeclareArgumentVariadicNode{}, @vars, $vars)
@@ -900,18 +899,18 @@ argument_declarations
 	| PIPE argument_declarations.pipelist comma.opt PIPE 
 		{ $$ = $2; }
 	| PIPE argument_declarations.pipelist ELLIPSIS name PIPE 
-		{ $$ = cxt.graph.append($2, @2, cxt.create(DeclareArgumentVariadicNode{}, @4, $4)); }
+		{ $$ = cxt.graph->append($2, @2, cxt.create(DeclareArgumentVariadicNode{}, @4, $4)); }
 	| PIPE argument_declarations.pipelist ELLIPSIS name COMMA name PIPE 
-		{ $$ = cxt.graph.append($2, @$, cxt.create(DeclareArgumentVariadicNode{}, @4, $4), cxt.create(DeclareArgumentVariadicNode{}, @6, $6)); }
+		{ $$ = cxt.graph->append($2, @$, cxt.create(DeclareArgumentVariadicNode{}, @4, $4), cxt.create(DeclareArgumentVariadicNode{}, @6, $6)); }
 	| PIPE ELLIPSIS name[args] PIPE 
 		{ 
 			auto arg_list = cxt.create(DeclareArgumentList{}, @$);
-			$$ = cxt.graph.append(arg_list, @$, cxt.create(DeclareArgumentVariadicNode{}, @args, $args)); 
+			$$ = cxt.graph->append(arg_list, @$, cxt.create(DeclareArgumentVariadicNode{}, @args, $args)); 
 		}
 	| PIPE ELLIPSIS name[args] COMMA name[vars] PIPE 
 		{
 			auto arg_list = cxt.create(DeclareArgumentList{}, @$);
-			$$ = cxt.graph.append(
+			$$ = cxt.graph->append(
 				arg_list, @$,
 				cxt.create(DeclareArgumentVariadicNode{}, @args, $args),
 				cxt.create(DeclareArgumentVariadicNode{}, @vars, $vars)
@@ -933,7 +932,7 @@ arguments.entries
 
 arguments.no_trailing
 	: arguments.entries {  $$ = cxt.create(ArgumentList{}, @$, $1); }
-	| arguments.no_trailing COMMA arguments.entries { $$ = cxt.graph.append($1, @$, $3); }
+	| arguments.no_trailing COMMA arguments.entries { $$ = cxt.graph->append($1, @$, $3); }
 	;
 
 arguments : arguments.no_trailing comma.opt { $$ = $1; };
@@ -969,7 +968,7 @@ variable_declarations.list
 	: variable_declarations.list.item
 		{ $$ = cxt.create(DeclareVariableList{}, @$, $1); }
 	| variable_declarations.list COMMA variable_declarations.list.item
-		{$$ = cxt.graph.append($1, $3); }
+		{$$ = cxt.graph->append($1, $3); }
 	;
 
 variable_declarations : VAR variable_declarations.list { $$ = $2; };
@@ -1000,11 +999,11 @@ literal.array.contents
 	| KEYBINOP expr_or_seq
 		{ $$ = cxt.create(ArrayNode{}, @$, cxt.create(KeyBinOp{}, @1), $2); }
 	| literal.array.contents COMMA expr_or_seq
-		{ $$ = cxt.graph.append($1, @$, $3); }
+		{ $$ = cxt.graph->append($1, @$, $3); }
 	| literal.array.contents COMMA expr_or_seq COLON expr_or_seq
-		{ $$ = cxt.graph.append($1, @$, $3, $5); }
+		{ $$ = cxt.graph->append($1, @$, $3, $5); }
 	| literal.array.contents COMMA KEYBINOP expr_or_seq
-		{ $$ = cxt.graph.append($1, @$, cxt.create(KeyBinOp{}, @3), $4); }
+		{ $$ = cxt.graph->append($1, @$, cxt.create(KeyBinOp{}, @3), $4); }
 	;
 
 literal.dictionary.entry 
@@ -1023,21 +1022,21 @@ literal.dictionary.entries
 	| literal.dictionary.entry 
 		{ $$ = cxt.create(DictionaryNode{}, @$, $1); }
 	| literal.dictionary.entries COMMA literal.dictionary.entry
-		{ $$ = cxt.graph.append($1, @$,  $3); }
+		{ $$ = cxt.graph->append($1, @$,  $3); }
 	;
 
 literal.dictionary 
 	: OPENPAREN literal.dictionary.entries comma.opt CLOSEPAREN 
-		{ cxt.graph.location(*$2) = @$; $$ = $2; }
+		{ cxt.graph->location(*$2) = @$; $$ = $2; }
 	;
 
 literal.array	
 	: OPENSQUARE literal.array.contents comma.opt CLOSESQUARE 
-		{  cxt.graph.location(*$2) = @$; $$ = $2; }	
+		{  cxt.graph->location(*$2) = @$; $$ = $2; }	
 	| HASH OPENSQUARE literal.array.contents comma.opt CLOSESQUARE 
 		{  
-			cxt.graph.payload($3).is_immutable = true;
-			cxt.graph.location(*$3) = @$;
+			cxt.graph->payload($3).is_immutable = true;
+			cxt.graph->location(*$3) = @$;
 			$$ = $3;
 		}	
 	;
@@ -1064,9 +1063,9 @@ name.list
 	| HASH TILDE name 
 		{ $$ = cxt.create(NameList{}, @$, cxt.create(EnvIdentifierNode{}, @$, $name)); }
 	| name.list[list] COMMA name
-		{ $$ = cxt.graph.append($list, @$, $name); }
+		{ $$ = cxt.graph->append($list, @$, $name); }
 	| name.list[list] COMMA TILDE name
-		{ $$ = cxt.graph.append($list, @$, cxt.create(EnvIdentifierNode{},@$, $name)); }
+		{ $$ = cxt.graph->append($list, @$, cxt.create(EnvIdentifierNode{},@$, $name)); }
 	;
 name.pack 
 	: name.list[list]
@@ -1100,7 +1099,7 @@ symbol
 
 string 	
 	: STRINGLINE { $$ = cxt.create(StringLineList{}, @$, cxt.create(StringLineNode{}, @$)); }
-	| string STRINGLINE { $$ = cxt.graph.append($1, cxt.create(StringLineNode{}, @2)); }
+	| string STRINGLINE { $$ = cxt.graph->append($1, cxt.create(StringLineNode{}, @2)); }
 	;
 
 integer	
@@ -1110,7 +1109,7 @@ integer
 	| MINUS integer %prec UMINUS 
 		{
 			// Reaches into the previous integer and changes its sign.
-			cxt.graph.payload($2).sign = IntNode::Sign::Negative;
+			cxt.graph->payload($2).sign = IntNode::Sign::Negative;
 			$$ = $2;
 		}
 	;
@@ -1126,7 +1125,7 @@ float.raw
 	: float.raw_unsigned 
 		{ $$ = $1; }
 	| MINUS float.raw_unsigned %prec UMINUS 
-		{ cxt.graph.payload($2).sign = FloatNode::Sign::Negative; $$ = $2; }
+		{ cxt.graph->payload($2).sign = FloatNode::Sign::Negative; $$ = $2; }
 	;
 
 accidental.unsigned 
@@ -1140,7 +1139,7 @@ accidental
 	: accidental.unsigned 
 		{ $$ = $1; }
 	| MINUS accidental.unsigned %prec UMINUS 
-		{ cxt.graph.payload($2).sign = AccidentalNode::Sign::Negative; $$ = $2; }
+		{ cxt.graph->payload($2).sign = AccidentalNode::Sign::Negative; $$ = $2; }
 	;
 
 float	

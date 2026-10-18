@@ -1,2 +1,3 @@
-If:
-  PathMatch: .*\.hpp 
+Diagnostics:
+  ClangTidy:
+    Remove: [bugprone-*, performance-*, readability-*]
