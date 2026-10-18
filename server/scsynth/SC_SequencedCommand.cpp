@@ -40,6 +40,7 @@ const size_t ERR_BUF_SIZE(512);
 #define ReturnSCErrIfNil(ptr)                                                                                          \
     if (!ptr)                                                                                                          \
     return kSCErr_OutOfRealTimeMemory
+
 #define ThrowIfNil(ptr)                                                                                                \
     if (!ptr)                                                                                                          \
         throw std::runtime_error(                                                                                      \
@@ -55,8 +56,6 @@ const size_t ERR_BUF_SIZE(512);
         msg.geti(0);                                                                                                   \
     }
 
-void PerformCompletionMsg(World* inWorld, OSC_Packet* inPacket);
-
 #define SEND_COMPLETION_MSG                                                                                            \
     if (mMsgSize) {                                                                                                    \
         OSC_Packet packet;                                                                                             \
@@ -71,7 +70,6 @@ void PerformCompletionMsg(World* inWorld, OSC_Packet* inPacket);
         }                                                                                                              \
     }
 
-void SndBuf_Init(SndBuf* buf);
 void SndBuf_Init(SndBuf* buf) {
     buf->data = nullptr;
     buf->channels = 0;
@@ -83,7 +81,6 @@ void SndBuf_Init(SndBuf* buf) {
     buf->sndfile = nullptr;
 }
 
-char* allocAndRestrictPath(World* mWorld, const char* inPath, const char* restrictBase);
 char* allocAndRestrictPath(World* mWorld, const char* inPath, const char* restrictBase) {
     char strbuf[PATH_MAX];
     int offset = 0;
@@ -127,7 +124,7 @@ char* allocAndRestrictPath(World* mWorld, const char* inPath, const char* restri
     return saferPath;
 }
 
-SC_SequencedCommand::SC_SequencedCommand(World* inWorld, ReplyAddress* inReplyAddress):
+SC_SequencedCommand::SC_SequencedCommand(World* inWorld, const ReplyAddress* inReplyAddress):
     mNextStage(1),
     mWorld(inWorld),
     mMsgSize(0),
@@ -149,7 +146,7 @@ void SC_SequencedCommand::SendDone(const char* inCommandName) { ::SendDone(&mRep
 
 void SC_SequencedCommand::SendDoneWithIntValue(const char* inCommandName, int value) {
     ::SendDoneWithIntValue(&mReplyAddress, inCommandName, value);
-};
+}
 
 void SC_SequencedCommand::CallEveryStage() {
     switch (mNextStage) {
@@ -172,13 +169,11 @@ void SC_SequencedCommand::CallEveryStage() {
     Delete();
 }
 
-void DoSequencedCommand(FifoMsg* inMsg);
 void DoSequencedCommand(FifoMsg* inMsg) {
     SC_SequencedCommand* cmd = (SC_SequencedCommand*)inMsg->mData;
     cmd->CallNextStage();
 }
 
-void FreeSequencedCommand(FifoMsg* inMsg);
 void FreeSequencedCommand(FifoMsg* inMsg) {
     SC_SequencedCommand* cmd = (SC_SequencedCommand*)inMsg->mData;
     cmd->Delete();
@@ -228,8 +223,8 @@ void SC_SequencedCommand::CallNextStage() {
 }
 
 void SC_SequencedCommand::Delete() {
-    CallDestructor();
-    World_Free(mWorld, this);
+    std::destroy_at(this); // call (virtual) destructor
+    World_Free(mWorld, this); // free memory
 }
 
 bool SC_SequencedCommand::Stage1() { return true; }
@@ -253,8 +248,6 @@ int SyncCmd::Init(char* inData, int inSize) {
     mID = msg.geti();
     return kSCErr_None;
 }
-
-void SyncCmd::CallDestructor() { this->~SyncCmd(); }
 
 bool SyncCmd::Stage2() { return true; }
 
@@ -289,8 +282,6 @@ int BufAllocCmd::Init(char* inData, int inSize) {
 
     return kSCErr_None;
 }
-
-void BufAllocCmd::CallDestructor() { this->~BufAllocCmd(); }
 
 bool BufAllocCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -350,8 +341,6 @@ int BufGenCmd::Init(char* inData, int inSize) {
     return kSCErr_None;
 }
 
-void BufGenCmd::CallDestructor() { this->~BufGenCmd(); }
-
 bool BufGenCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
 
@@ -375,10 +364,6 @@ void BufGenCmd::Stage4() {
     SendDoneWithIntValue("/b_gen", mBufIndex);
 }
 
-
-///////////////////////////////////////////////////////////////////////////
-
-
 ///////////////////////////////////////////////////////////////////////////
 
 
@@ -392,8 +377,6 @@ int BufFreeCmd::Init(char* inData, int inSize) {
 
     return kSCErr_None;
 }
-
-void BufFreeCmd::CallDestructor() { this->~BufFreeCmd(); }
 
 bool BufFreeCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -433,8 +416,6 @@ int BufZeroCmd::Init(char* inData, int inSize) {
 
     return kSCErr_None;
 }
-
-void BufZeroCmd::CallDestructor() { this->~BufZeroCmd(); }
 
 bool BufZeroCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -482,8 +463,6 @@ int BufAllocReadCmd::Init(char* inData, int inSize) {
 }
 
 BufAllocReadCmd::~BufAllocReadCmd() { World_Free(mWorld, mFilename); }
-
-void BufAllocReadCmd::CallDestructor() { this->~BufAllocReadCmd(); }
 
 bool BufAllocReadCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
@@ -574,8 +553,6 @@ int BufReadCmd::Init(char* inData, int inSize) {
 }
 
 BufReadCmd::~BufReadCmd() { World_Free(mWorld, mFilename); }
-
-void BufReadCmd::CallDestructor() { this->~BufReadCmd(); }
 
 bool BufReadCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
@@ -730,8 +707,6 @@ int BufAllocReadChannelCmd::Init(char* inData, int inSize) {
 
 BufAllocReadChannelCmd::~BufAllocReadChannelCmd() { World_Free(mWorld, mFilename); }
 
-void BufAllocReadChannelCmd::CallDestructor() { this->~BufAllocReadChannelCmd(); }
-
 bool BufAllocReadChannelCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
     SendFailure(&mReplyAddress, "/b_allocReadChannel", "scsynth compiled without libsndfile\n");
@@ -851,8 +826,6 @@ int BufReadChannelCmd::Init(char* inData, int inSize) {
 }
 
 BufReadChannelCmd::~BufReadChannelCmd() { World_Free(mWorld, mFilename); }
-
-void BufReadChannelCmd::CallDestructor() { this->~BufReadChannelCmd(); }
 
 bool BufReadChannelCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
@@ -1005,8 +978,6 @@ int BufWriteCmd::Init(char* inData, int inSize) {
 
 BufWriteCmd::~BufWriteCmd() { World_Free(mWorld, mFilename); }
 
-void BufWriteCmd::CallDestructor() { this->~BufWriteCmd(); }
-
 bool BufWriteCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
     return false;
@@ -1075,8 +1046,6 @@ int BufCloseCmd::Init(char* inData, int inSize) {
     return kSCErr_None;
 }
 
-void BufCloseCmd::CallDestructor() { this->~BufCloseCmd(); }
-
 bool BufCloseCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
     SendFailure(&mReplyAddress, "/b_close", "scsynth compiled without libsndfile\n");
@@ -1104,8 +1073,6 @@ void BufCloseCmd::Stage4() { SendDoneWithIntValue("/b_close", mBufIndex); }
 AudioQuitCmd::AudioQuitCmd(World* inWorld, ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-void AudioQuitCmd::CallDestructor() { this->~AudioQuitCmd(); }
-
 bool AudioQuitCmd::Stage2() {
     mWorld->hw->mTerminating = true;
     return true;
@@ -1132,8 +1099,6 @@ void AudioQuitCmd::Stage4() {
 
 AudioStatusCmd::AudioStatusCmd(World* inWorld, ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
-
-void AudioStatusCmd::CallDestructor() { this->~AudioStatusCmd(); }
 
 bool AudioStatusCmd::Stage2() {
     // we stop replying to status requests after receiving /quit
@@ -1176,8 +1141,6 @@ bool AudioStatusCmd::Stage2() {
 RTMemStatusCmd::RTMemStatusCmd(World* inWorld, ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-void RTMemStatusCmd::CallDestructor() { this->~RTMemStatusCmd(); }
-
 bool RTMemStatusCmd::Stage2() {
     // we stop replying to status requests after receiving /quit
     if (mWorld->hw->mTerminating == true)
@@ -1209,8 +1172,6 @@ int NotifyCmd::Init(char* inData, int inSize) {
 
     return kSCErr_None;
 }
-
-void NotifyCmd::CallDestructor() { this->~NotifyCmd(); }
 
 /** \brief Attempts to find and remove the requested \c id from \c availableIDs.
  *
@@ -1306,8 +1267,6 @@ void SendFailureCmd::InitSendFailureCmd(const char* inCmdName, const char* inErr
     strcpy(mErrString, inErrString);
 }
 
-void SendFailureCmd::CallDestructor() { this->~SendFailureCmd(); }
-
 bool SendFailureCmd::Stage2() {
     SendFailure(&mReplyAddress, mCmdName, mErrString);
     return false;
@@ -1338,8 +1297,6 @@ int RecvSynthDefCmd::Init(char* inData, int inSize) {
 }
 
 RecvSynthDefCmd::~RecvSynthDefCmd() { World_Free(mWorld, mBuffer); }
-
-void RecvSynthDefCmd::CallDestructor() { this->~RecvSynthDefCmd(); }
 
 bool RecvSynthDefCmd::Stage2() {
     mDefs = GraphDef_Recv(mWorld, mBuffer, mSize, mDefs);
@@ -1383,8 +1340,6 @@ int LoadSynthDefCmd::Init(char* inData, int inSize) {
 }
 
 LoadSynthDefCmd::~LoadSynthDefCmd() { World_Free(mWorld, mFilename); }
-
-void LoadSynthDefCmd::CallDestructor() { this->~LoadSynthDefCmd(); }
 
 bool LoadSynthDefCmd::Stage2() {
     char* fname = mFilename;
@@ -1438,8 +1393,6 @@ int LoadSynthDefDirCmd::Init(char* inData, int inSize) {
 
 LoadSynthDefDirCmd::~LoadSynthDefDirCmd() { World_Free(mWorld, mFilename); }
 
-void LoadSynthDefDirCmd::CallDestructor() { this->~LoadSynthDefDirCmd(); }
-
 bool LoadSynthDefDirCmd::Stage2() {
     if (!std::filesystem::exists(mFilename)) {
         char str[ERR_BUF_SIZE];
@@ -1481,8 +1434,6 @@ int SendReplyCmd::Init(char* inData, int inSize) {
     memcpy(mMsgData, inData, inSize);
     return kSCErr_None;
 }
-
-void SendReplyCmd::CallDestructor() { this->~SendReplyCmd(); }
 
 bool SendReplyCmd::Stage2() {
     SendReply(&mReplyAddress, mMsgData, mMsgSize);
@@ -1561,8 +1512,6 @@ template <typename StageFn> AsyncPlugInCmd_<StageFn>::~AsyncPlugInCmd_() {
     if (mCleanup)
         mCleanup(mWorld, mCmdData);
 }
-
-template <typename StageFn> void AsyncPlugInCmd_<StageFn>::CallDestructor() { this->~AsyncPlugInCmd_(); }
 
 template <typename StageFn> bool AsyncPlugInCmd_<StageFn>::Stage2() {
     bool result;
@@ -1659,8 +1608,6 @@ AsyncUnitCmd::~AsyncUnitCmd() {
     // finally release the owning Graph
     Graph_Release(mUnit->mParent);
 }
-
-void AsyncUnitCmd::CallDestructor() { this->~AsyncUnitCmd(); }
 
 bool AsyncUnitCmd::Stage2() {
     bool result = !mStage2 || (mStage2)(mUnit, mCmdData, &mReplyAddress);
