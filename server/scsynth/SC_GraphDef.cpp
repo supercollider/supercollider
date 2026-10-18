@@ -407,7 +407,7 @@ SCErr GraphDef_Release(World* inWorld, GraphDef* inGraphDef) {
             // free on the NRT thread. This will also notify clients.
             DeleteGraphDefMsg msg;
             msg.mWorld = inWorld;
-            msg.mDef = inGraphDef;
+            msg.mDefList = inGraphDef;
             if (!inWorld->hw->mDeleteGraphDefs.Write(msg))
                 return kSCErr_CommandQueueFull;
         } else {

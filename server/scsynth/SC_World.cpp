@@ -853,15 +853,39 @@ void World_RemoveGraphDef(World* inWorld, GraphDef* inGraphDef) {
     inWorld->hw->mGraphDefLib->Remove(inGraphDef);
 }
 
+/** @brief implements the \c /d_freeAll command */
 void World_FreeAllGraphDefs(World* inWorld) {
     GrafDefTable* lib = inWorld->hw->mGraphDefLib;
     int size = lib->TableSize();
+    GraphDef* defList = nullptr;
+
     for (int i = 0; i < size; ++i) {
         GraphDef* def = lib->AtIndex(i);
-        if (def)
-            GraphDef_Free(def);
+        if (def) {
+            if (inWorld->mRealTime) {
+                assert(def->mRefCount > 0);
+                if (--def->mRefCount == 0) {
+                    // add to list
+                    assert(def->mNext == nullptr);
+                    def->mNext = defList;
+                    defList = def;
+                }
+            } else {
+                // release it immediately
+                GraphDef_Release(inWorld, def);
+            }
+        }
     }
+
     lib->MakeEmpty();
+
+    if (defList) {
+        // free all released GraphDefs with a single command
+        DeleteGraphDefMsg msg;
+        msg.mWorld = inWorld;
+        msg.mDefList = defList;
+        inWorld->hw->mDeleteGraphDefs.Write(msg);
+    }
 }
 
 GraphDef* World_GetGraphDef(World* inWorld, int32* inKey) { return inWorld->hw->mGraphDefLib->Get(inKey); }
@@ -1236,20 +1260,26 @@ void NodeEndMsg::Perform() {
 }
 
 void DeleteGraphDefMsg::Perform() {
-    // notify clients
-    small_scpacket packet;
-    packet.adds("/d_removed");
-    packet.maketags(2);
-    packet.addtag(',');
-    packet.addtag('s');
-    packet.adds((char*)mDef->mNodeDef.mName);
+    for (GraphDef* def = mDefList; def != nullptr;) {
+        GraphDef* next = def->mNext;
 
-    for (const auto& addr : *mWorld->hw->mUsers) {
-        // TODO: fix signature of SendReply and ReplyFunc
-        SendReply(const_cast<ReplyAddress*>(&addr), packet.data(), packet.size());
+        // notify clients
+        small_scpacket packet;
+        packet.adds("/d_removed");
+        packet.maketags(2);
+        packet.addtag(',');
+        packet.addtag('s');
+        packet.adds((char*)def->mNodeDef.mName);
+
+        for (const auto& addr : *mWorld->hw->mUsers) {
+            // TODO: fix signature of SendReply and ReplyFunc
+            SendReply(const_cast<ReplyAddress*>(&addr), packet.data(), packet.size());
+        }
+
+        GraphDef_Free(def);
+
+        def = next;
     }
-
-    GraphDef_Free(mDef);
 }
 
 void NotifyNoArgs(World* inWorld, char* inString) {
