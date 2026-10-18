@@ -24,7 +24,8 @@
 
 namespace nova {
 
-extern simple_pool<false> rt_pool; /* real-time memory pool */
+/* global real-time memory pool instance */
+inline simple_pool<false> rt_pool;
 
 /** stl-compliant allocator class, using the rt_pool */
 template <class T> class rt_pool_allocator {

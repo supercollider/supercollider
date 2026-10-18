@@ -5,10 +5,6 @@
 
 #include "server/memory_pool.hpp"
 
-namespace nova {
-simple_pool<false> rt_pool;
-} /* namespace nova */
-
 using namespace nova;
 
 BOOST_AUTO_TEST_CASE(init_pool) { rt_pool.init(1024 * 1024); }

@@ -4,10 +4,6 @@
 #include <iostream>
 #include <boost/test/unit_test.hpp>
 
-namespace nova {
-simple_pool<false> rt_pool;
-} /* namespace nova */
-
 using namespace nova;
 
 #ifdef BOOST_HAS_RVALUE_REFS
