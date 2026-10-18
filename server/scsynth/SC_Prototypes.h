@@ -95,7 +95,6 @@ struct GraphDef* World_GetGraphDef(World* inWorld, int32* inKey);
 void World_FreeAllGraphDefs(World* inWorld);
 void GraphDef_Free(GraphDef* inGraphDef);
 void GraphDef_Define(World* inWorld, GraphDef* inList);
-void GraphDef_FreeOverwritten(World* inWorld);
 
 SCErr bufAlloc(struct SndBuf* buf, int numChannels, int numFrames, double sampleRate);
 

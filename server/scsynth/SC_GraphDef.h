@@ -82,7 +82,7 @@ GraphDef* GraphDef_Load(World* inWorld, const std::filesystem::path& path, Graph
 GraphDef* GraphDef_LoadDir(World* inWorld, const std::filesystem::path& path, GraphDef* inList);
 GraphDef* GraphDef_LoadGlob(World* inWorld, const char* pattern, GraphDef* inList);
 SCErr GraphDef_Remove(World* inWorld, int32* inName);
-SCErr GraphDef_DeleteMsg(World* inWorld, GraphDef* inDef);
+SCErr GraphDef_Release(World* inWorld, GraphDef* inGraphDef);
 void GraphDef_Dump(GraphDef* inGraphDef);
 int32 GetHash(ParamSpec* inParamSpec);
 int32* GetKey(ParamSpec* inParamSpec);

@@ -82,6 +82,7 @@ struct NodeEndMsg {
 };
 
 struct DeleteGraphDefMsg {
+    World* mWorld;
     struct GraphDef* mDef;
 
     void Perform();
