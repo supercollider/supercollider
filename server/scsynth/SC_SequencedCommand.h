@@ -47,8 +47,7 @@ struct Unit;
         return kSCErr_Failed;                                                                                          \
     int err = cmd->Init(inData, inSize);                                                                               \
     if (err) {                                                                                                         \
-        cmd->~T();                                                                                                     \
-        World_Free(inWorld, space);                                                                                    \
+        cmd->Delete();                                                                                                 \
         return err;                                                                                                    \
     }                                                                                                                  \
     if (inWorld->mRealTime)                                                                                            \
@@ -59,9 +58,19 @@ struct Unit;
 
 class SC_SequencedCommand {
 public:
-    SC_SequencedCommand(World* inWorld, ReplyAddress* inReplyAddress);
+    SC_SequencedCommand(World* inWorld, const ReplyAddress* inReplyAddress);
+
+    /** @brief virtual destructor.
+     *  Frees any resources that have been allocated from the RT memory pool.
+     *  The base implementation only frees the completion message (if provided).
+     *  If a child class manages additional RT sources, it should free them
+     *  in its own (virtual) destructor.
+     */
     virtual ~SC_SequencedCommand();
 
+    /** @brief Destroy the command object.
+     *  Calls the (virtual) destructor and frees the underlying RT memory.
+     */
     void Delete();
 
     void CallEveryStage();
@@ -77,16 +86,14 @@ public:
     void SendDone(const char* inCommandName);
     void SendDoneWithIntValue(const char* inCommandName, int value);
 
-
 protected:
     int mNextStage;
     ReplyAddress mReplyAddress;
     World* mWorld;
 
+    // optional completion message data
     int mMsgSize;
     char* mMsgData;
-
-    virtual void CallDestructor() = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -102,7 +109,6 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    void CallDestructor() override;
     int mID;
 };
 
@@ -127,8 +133,6 @@ protected:
     int mSize;
     SndBuf mSndBuf;
     float* mFreeData;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -149,8 +153,6 @@ protected:
     int mNumChannels, mNumFrames;
     float mSampleRate;
     float* mFreeData;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -169,8 +171,6 @@ public:
 protected:
     int mBufIndex;
     float* mFreeData;
-
-    void CallDestructor() override;
 };
 
 
@@ -189,8 +189,6 @@ public:
 
 protected:
     int mBufIndex;
-
-    void CallDestructor() override;
 };
 
 
@@ -209,8 +207,6 @@ public:
 
 protected:
     int mBufIndex;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -232,8 +228,6 @@ protected:
     SndBuf mSndBuf;
     char* mFilename;
     int mFileOffset, mNumFrames;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -255,8 +249,6 @@ protected:
     int mFileOffset, mNumFrames, mBufOffset;
     bool mLeaveFileOpen;
     double mSampleRate;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -296,8 +288,6 @@ protected:
     SndBuf mSndBuf;
     char* mFilename;
     int mFileOffset, mNumFrames;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -319,8 +309,6 @@ protected:
     int mFileOffset, mNumFrames, mBufOffset;
     bool mLeaveFileOpen;
     double mSampleRate;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -344,8 +332,6 @@ protected:
 #endif
     int mNumFrames, mBufOffset;
     bool mLeaveFileOpen;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -357,9 +343,6 @@ public:
     bool Stage2() override; // non real time
     bool Stage3() override; //     real time
     void Stage4() override; // non real time
-
-protected:
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -369,9 +352,6 @@ public:
     AudioStatusCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
     bool Stage2() override; // non real time
-
-protected:
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -381,9 +361,6 @@ public:
     RTMemStatusCmd(World* inWorld, ReplyAddress* inReplyAddress);
 
     bool Stage2() override; // non real time
-
-protected:
-    void CallDestructor() override;
 };
 ///////////////////////////////////////////////////////////////////////////
 
@@ -396,8 +373,6 @@ public:
     bool Stage2() override; // non real time
 
 protected:
-    void CallDestructor() override;
-
     int mOnOff;
     int mID;
 };
@@ -429,8 +404,6 @@ public:
 
 protected:
     char *mCmdName, *mErrString;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -449,8 +422,6 @@ public:
 protected:
     char* mFilename;
     GraphDef* mDefs;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -470,8 +441,6 @@ protected:
     char* mBuffer;
     size_t mSize;
     GraphDef* mDefs;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -490,8 +459,6 @@ public:
 protected:
     char* mFilename;
     GraphDef* mDefs;
-
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -503,9 +470,6 @@ public:
     int Init(char* inData, int inSize) override;
 
     bool Stage2() override; // non real time
-
-protected:
-    void CallDestructor() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -530,8 +494,6 @@ protected:
     void* mCmdData;
     StageFn mStage2, mStage3, mStage4;
     AsyncFreeFn mCleanup;
-
-    void CallDestructor() override;
 };
 
 using AsyncPlugInCmd = AsyncPlugInCmd_<AsyncStageFn>;
@@ -560,6 +522,4 @@ protected:
     AsyncUnitStageFn mStage2, mStage3, mStage4;
     AsyncFreeFn mCleanup;
     bool mAlive;
-
-    void CallDestructor() override;
 };
