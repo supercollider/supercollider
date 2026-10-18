@@ -35,7 +35,6 @@
 #include "ReadWriteMacros.h"
 #include "SC_Prototypes.h"
 #include "SC_CoreAudio.h"
-#include "SC_SequencedCommand.h"
 #include "SC_Errors.h"
 #include "SC_Filesystem.hpp"
 
@@ -376,9 +375,7 @@ void GraphDef_Define(World* inWorld, GraphDef* inList) {
         GraphDef* previousDef = World_GetGraphDef(inWorld, graphDef->mNodeDef.mName);
         if (previousDef) {
             World_RemoveGraphDef(inWorld, previousDef);
-            if (--previousDef->mRefCount == 0) {
-                GraphDef_DeleteMsg(inWorld, previousDef);
-            }
+            GraphDef_Release(inWorld, previousDef);
         }
         World_AddGraphDef(inWorld, graphDef);
         graphDef->mNext = nullptr;
@@ -386,55 +383,38 @@ void GraphDef_Define(World* inWorld, GraphDef* inList) {
     }
 }
 
+/** @brief Remove a GraphDef.
+ *  Removes the GraphDef from the GraphDefLib and decrements its reference count.
+ *  Implements the \c /d_free command, see \c meth_d_free().
+ */
 SCErr GraphDef_Remove(World* inWorld, int32* inName) {
     GraphDef* graphDef = World_GetGraphDef(inWorld, inName);
     if (graphDef) {
         World_RemoveGraphDef(inWorld, graphDef);
-        if (--graphDef->mRefCount == 0) {
-            return GraphDef_DeleteMsg(inWorld, graphDef);
+        return GraphDef_Release(inWorld, graphDef);
+    }
+    return kSCErr_SynthDefNotFound;
+}
+
+/** @brief Release a GraphDef.
+ *  Decrements the GraphDef's reference count.
+ *  When the count reaches zero, the GraphDef is actually freed.
+ */
+SCErr GraphDef_Release(World* inWorld, GraphDef* inGraphDef) {
+    assert(inGraphDef->mRefCount > 0);
+    if (--inGraphDef->mRefCount == 0) {
+        if (inWorld->mRealTime) {
+            // free on the NRT thread. This will also notify clients.
+            DeleteGraphDefMsg msg;
+            msg.mWorld = inWorld;
+            msg.mDef = inGraphDef;
+            if (!inWorld->hw->mDeleteGraphDefs.Write(msg))
+                return kSCErr_CommandQueueFull;
+        } else {
+            // free immediately
+            GraphDef_Free(inGraphDef);
         }
     }
-    return kSCErr_None;
-}
-
-SCErr SendReplyCmd_d_removed(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
-    void* space = World_Alloc(inWorld, sizeof(SendReplyCmd));
-    if (!space)
-        return kSCErr_OutOfRealTimeMemory;
-    SendReplyCmd* cmd = new (space) SendReplyCmd(inWorld, inReply);
-    if (!cmd)
-        return kSCErr_Failed;
-    int err = cmd->Init(inData, inSize);
-    if (err) {
-        cmd->~SendReplyCmd();
-        World_Free(inWorld, space);
-        return err;
-    }
-    if (inWorld->mRealTime)
-        cmd->CallNextStage();
-    else
-        cmd->CallEveryStage();
-    return kSCErr_None;
-}
-
-SCErr GraphDef_DeleteMsg(World* inWorld, GraphDef* inDef) {
-    DeleteGraphDefMsg msg;
-    msg.mDef = inDef;
-    inWorld->hw->mDeleteGraphDefs.Write(msg);
-
-    small_scpacket packet;
-    packet.adds("/d_removed");
-    packet.maketags(2);
-    packet.addtag(',');
-    packet.addtag('s');
-    packet.adds((char*)inDef->mNodeDef.mName);
-
-    for (auto addr : *inWorld->hw->mUsers) {
-        SCErr const err = SendReplyCmd_d_removed(inWorld, packet.size(), packet.data(), &addr);
-        if (err != kSCErr_None)
-            return err;
-    }
-
     return kSCErr_None;
 }
 
@@ -527,7 +507,6 @@ GraphDef* GraphDef_LoadDir(World* inWorld, const fs::path& dirname, GraphDef* in
     return inList;
 }
 
-void UnitSpec_Free(UnitSpec* inUnitSpec);
 void UnitSpec_Free(UnitSpec* inUnitSpec) {
     delete[] inUnitSpec->mInputSpec;
     delete[] inUnitSpec->mOutputSpec;

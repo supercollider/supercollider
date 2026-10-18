@@ -1235,9 +1235,23 @@ void NodeEndMsg::Perform() {
         SendReply(&addr, packet.data(), packet.size());
 }
 
-void DeleteGraphDefMsg::Perform() { GraphDef_Free(mDef); }
+void DeleteGraphDefMsg::Perform() {
+    // notify clients
+    small_scpacket packet;
+    packet.adds("/d_removed");
+    packet.maketags(2);
+    packet.addtag(',');
+    packet.addtag('s');
+    packet.adds((char*)mDef->mNodeDef.mName);
 
-void NotifyNoArgs(World* inWorld, char* inString);
+    for (const auto& addr : *mWorld->hw->mUsers) {
+        // TODO: fix signature of SendReply and ReplyFunc
+        SendReply(const_cast<ReplyAddress*>(&addr), packet.data(), packet.size());
+    }
+
+    GraphDef_Free(mDef);
+}
+
 void NotifyNoArgs(World* inWorld, char* inString) {
     small_scpacket packet;
     packet.adds(inString);
