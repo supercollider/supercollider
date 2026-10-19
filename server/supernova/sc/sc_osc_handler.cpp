@@ -920,11 +920,17 @@ int first_arg_as_int(ReceivedMessage const& message) {
 }
 
 template <bool realtime> void handle_quit(endpoint_ptr const& endpoint) {
+    if (instance->quit_received) {
+        log_printf("/quit: already received\n");
+        cmd_dispatcher<realtime>::fire_io_callback([=]() { send_fail_message(endpoint, "/quit", "already received"); });
+        return;
+    }
+
     instance->quit_received = true;
+
     cmd_dispatcher<realtime>::fire_io_callback([=]() {
         instance->prepare_to_terminate();
-        if (endpoint)
-            send_done_message(endpoint, "/quit");
+        send_done_message(endpoint, "/quit");
         instance->terminate();
     });
 }
@@ -968,10 +974,10 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
 template <> void handle_notify<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) {}
 
 template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
-        if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
-            return;
+    if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
+        return;
 
+    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
         std::array<char, 1024> buffer;
         typedef osc::int32 i32;
 
@@ -1031,10 +1037,10 @@ void handle_error(ReceivedMessage const& message) {
 }
 
 template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
-        if (unlikely(instance->quit_received))
-            return;
+    if (unlikely(instance->quit_received))
+        return;
 
+    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
         std::array<char, 1024> buffer;
         typedef osc::int32 i32;
 
@@ -1048,10 +1054,10 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
 template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) {}
 
 template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint_ref) {
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
-        if (unlikely(instance->quit_received))
-            return;
+    if (unlikely(instance->quit_received))
+        return;
 
+    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
         std::array<char, 128> buffer;
         typedef osc::int32 i32;
 
