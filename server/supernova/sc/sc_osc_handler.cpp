@@ -1607,7 +1607,7 @@ void set_control_n(server_node* node, osc::ReceivedMessageArgumentIterator& it) 
         for (int i = 0; i != count; ++i)
             values[i] = extract_float_argument(it++);
 
-        node->set_control_array(str, count, values.c_array());
+        node->set_control_array(str, count, values.data());
     } else
         throw std::runtime_error("invalid argument");
 }
@@ -1635,7 +1635,7 @@ void fill_control(server_node* node, osc::ReceivedMessageArgumentIterator& it) {
         for (int i = 0; i != count; ++i)
             values[i] = value;
 
-        node->set_control_array(str, count, values.c_array());
+        node->set_control_array(str, count, values.data());
     } else
         throw std::runtime_error("invalid argument");
 }
@@ -1909,9 +1909,9 @@ template <bool realtime> void handle_s_get(ReceivedMessage const& msg, size_t ms
 
     size_t alloc_size = msg_size + sizeof(float) * (msg.ArgumentCount() - 1) + 128;
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/n_set") << node_id;
 
     while (it != msg.ArgumentsEnd()) {
@@ -1952,9 +1952,9 @@ template <bool realtime> void handle_s_getn(ReceivedMessage const& msg, size_t m
 
     size_t alloc_size = msg_size + sizeof(float) * (argument_count) + 128;
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/n_setn") << node_id;
 
     while (it != msg.ArgumentsEnd()) {
@@ -2430,8 +2430,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
     osc::int32 start_buffer = 0;
     osc::int32 leave_open = 0;
 
-    sized_array<uint32_t, rt_pool_allocator<uint32_t>> channel_mapping(
-        int32_t(msg.ArgumentCount())); /* larger than required */
+    sized_array<uint32_t, rt_pool_allocator<uint32_t>> channel_mapping(msg.ArgumentCount()); /* larger than required */
     uint32_t channel_count = 0;
 
     completion_message message;
@@ -2638,9 +2637,9 @@ template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoin
     size_t arg_count = msg.ArgumentCount();
 
     size_t size = elem_size * arg_count + 128; /* should be more than required */
-    sized_array<char, rt_pool_allocator<char>> data(size);
+    sized_array<char, rt_pool_allocator<char>> buffer(size);
 
-    osc::OutboundPacketStream p(data.c_array(), size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/b_info");
 
     while (!args.Eos()) {
@@ -2681,7 +2680,7 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
     const size_t index_count = msg.ArgumentCount() - 1;
     const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
     osc::int32 buffer_index;
     args >> buffer_index;
@@ -2695,7 +2694,7 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
 
     const int max_sample = buf->frames * buf->channels;
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/b_set") << buffer_index;
 
     while (!args.Eos()) {
@@ -2755,9 +2754,9 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
     for (size_t i = 0; i != return_data.size(); ++i)
         alloc_size += return_data[i].data_.size() * (sizeof(float) + sizeof(int)) + 2 * sizeof(int);
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/b_setn") << buffer_index;
 
     for (size_t i = 0; i != return_data.size(); ++i) {
@@ -2863,9 +2862,9 @@ template <bool realtime> void handle_c_get(ReceivedMessage const& msg, endpoint_
     const size_t index_count = msg.ArgumentCount();
     const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/c_set");
 
     while (!args.Eos()) {
@@ -2887,9 +2886,9 @@ template <bool realtime> void handle_c_getn(ReceivedMessage const& msg, endpoint
     /* we pessimize, but better to allocate too much than too little */
     const size_t alloc_size = 128 + (2 * sizeof(int) + 128 * sizeof(float)) * msg.ArgumentCount();
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/c_setn");
 
     while (!args.Eos()) {

@@ -179,7 +179,7 @@ public:
 
     const T* data() const { return data_; }
 
-    T* c_array() { return data_; }
+    T* data() { return data_; }
 
     // modifiers
     void assign(const T& t) {

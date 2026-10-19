@@ -97,7 +97,7 @@ void buffer_wrapper::read_file_channels(const char* file, size_t start_frame, si
     sized_array<sample_t> tmp_array(channels_);
 
     for (size_t i = 0; i != frame_count; ++i) {
-        size_t read = sndfile.readf(tmp_array.c_array(), 1);
+        size_t read = sndfile.readf(tmp_array.data(), 1);
         if (read != 1)
             throw std::runtime_error(std::string("could not from read file: ") + std::string(file));
         sample_t* data_frame = data + channel_count * i;
