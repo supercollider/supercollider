@@ -497,7 +497,7 @@ void sc_notify_observers::notify(const char* address_pattern, const server_node*
     p << osc::BeginMessage(address_pattern);
     fill_notification(node, p);
 
-    movable_array<char> message(p.Size(), p.Data());
+    movable_array<char> message(p.Data(), p.Size());
 
     cmd_dispatcher<true>::fire_io_callback([message = std::move(message)]() mutable {
         instance->send_notification(message.data(), message.size());
@@ -526,7 +526,7 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
     // called from rt helper threads, so we need to lock the memory pool
     spin_lock::scoped_lock lock(system_callback_allocator_lock);
     movable_string cmd(command_name);
-    movable_array<float> value_array(argument_count, values);
+    movable_array<float> value_array(values, argument_count);
 
     cmd_dispatcher<true>::fire_io_callback([=, value_array = std::move(value_array), cmd = std::move(cmd)]() mutable {
         size_t buffer_size = 1024 + strlen(cmd.c_str()) + value_array.size() * sizeof(float);
@@ -1425,7 +1425,7 @@ template <bool realtime> void g_query_tree(int node_id, bool include_synth_contr
 
         p << osc::EndMessage;
 
-        movable_array<char> message(p.Size(), p.Data());
+        movable_array<char> message(p.Data(), p.Size());
         cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
     } catch (osc::Exception const& e) {
         log_printf("ERROR: could not send /g_queryTree reply: message exceeds size limit of %d bytes.\n",
@@ -1769,7 +1769,7 @@ template <bool realtime> void handle_n_query(ReceivedMessage const& msg, endpoin
         p << osc::BeginMessage("/n_info");
         fill_notification(node, p);
 
-        movable_array<char> message(p.Size(), p.Data());
+        movable_array<char> message(p.Data(), p.Size());
         cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
     }
 }
@@ -1920,7 +1920,7 @@ template <bool realtime> void handle_s_get(ReceivedMessage const& msg, size_t ms
     }
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -1975,7 +1975,7 @@ template <bool realtime> void handle_s_getn(ReceivedMessage const& msg, size_t m
     }
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2212,7 +2212,7 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
     /* we reached the message blob */
     completion_message message = extract_completion_message(arg);
 
-    movable_array<uint32_t> channel_mapping(channel_count, channels.c_array());
+    movable_array<uint32_t> channel_mapping(channels.data(), channel_count);
     movable_string filename(filenameString);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message),
@@ -2482,7 +2482,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
 fire_callback:
     movable_string fname(filename);
 
-    movable_array<uint32_t> channel_map(channel_count, channel_mapping.c_array());
+    movable_array<uint32_t> channel_map(channel_mapping.data(), channel_count);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message), filename = std::move(fname),
                                                     channel_map = std::move(channel_map)]() mutable {
@@ -2654,7 +2654,7 @@ template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoin
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), data.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2711,7 +2711,7 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2769,14 +2769,14 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
 
 template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr const& endpoint) {
     int skip_bytes = addr_pattern_size(msg); // skip address pattern
-    movable_array<char> cmd(msg_size - skip_bytes, msg.AddressPattern() + skip_bytes);
+    movable_array<char> cmd(msg.AddressPattern() + skip_bytes, msg_size - skip_bytes);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(cmd)]() mutable {
         sc_msg_iter msg(message.size(), message.data());
@@ -2877,7 +2877,7 @@ template <bool realtime> void handle_c_get(ReceivedMessage const& msg, endpoint_
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2905,7 +2905,7 @@ template <bool realtime> void handle_c_getn(ReceivedMessage const& msg, endpoint
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2929,7 +2929,9 @@ template <bool realtime> void handle_d_recv(ReceivedMessage const& msg, endpoint
 
     args->AsBlob(synthdef_data, synthdef_size);
     ++args;
-    movable_array<char> def(synthdef_size, (const char*)synthdef_data);
+
+    movable_array<char> def((const char*)synthdef_data, synthdef_size);
+
     completion_message message = extract_completion_message(args);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, def = std::move(def), message = std::move(message)]() mutable {
