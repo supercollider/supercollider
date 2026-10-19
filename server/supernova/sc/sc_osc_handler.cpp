@@ -529,9 +529,13 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
     movable_array<float> value_array(values, argument_count);
 
     cmd_dispatcher<true>::fire_io_callback([=, value_array = std::move(value_array), cmd = std::move(cmd)]() mutable {
-        size_t buffer_size = 1024 + strlen(cmd.c_str()) + value_array.size() * sizeof(float);
+        const size_t pattern_size = cmd.size() + 4; // include padding
+        // include typetags, ',' tag and padding!
+        const size_t arg_size = 2 * (sizeof(osc::int32) + 1) + value_array.size() * (sizeof(float) + 1) + 8;
+        const size_t buffer_size = pattern_size + arg_size;
+        const size_t max_stack_size = 2048;
 
-        char* buffer = (buffer_size < 2048) ? (char*)alloca(buffer_size) : (char*)malloc(buffer_size);
+        char* buffer = (buffer_size > max_stack_size) ? (char*)malloc(buffer_size) : (char*)alloca(buffer_size);
 
         try {
             osc::OutboundPacketStream p(buffer, buffer_size);
@@ -547,7 +551,7 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
 
         cmd_dispatcher<true>::free_in_rt_thread(std::move(value_array), std::move(cmd));
 
-        if (buffer_size >= 2048)
+        if (buffer_size > max_stack_size)
             free(buffer);
     });
 }
