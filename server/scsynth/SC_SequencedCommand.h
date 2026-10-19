@@ -130,7 +130,9 @@ public:
     /** @brief initialize the command from the OSC message. */
     virtual int Init(const char* inData, int inSize);
 
-    /** @brief stage 1: RT thread. This function is a no-op, the actual work is done in Init(). */
+    /** @brief stage 1: RT thread.
+     *  In most commands, this function is a no-op and the actual work is done in Init().
+     */
     virtual bool Stage1();
     /** @brief stage 2: NRT thread. */
     virtual bool Stage2();
@@ -405,9 +407,12 @@ class AudioQuitCmd : public SC_SequencedCommand {
 public:
     AudioQuitCmd(World* inWorld, const ReplyAddress* inReplyAddress);
 
+    bool Stage1() override;
+
     bool Stage2() override; // non real time
-    bool Stage3() override; //     real time
-    void Stage4() override; // non real time
+
+private:
+    bool mDidQuit = false;
 };
 
 ///////////////////////////////////////////////////////////////////////////

@@ -1077,27 +1077,38 @@ void BufCloseCmd::Stage4() { SendDoneWithIntValue("/b_close", mBufIndex); }
 AudioQuitCmd::AudioQuitCmd(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-bool AudioQuitCmd::Stage2() {
-    mWorld->hw->mTerminating = true;
-    return true;
-}
-
-bool AudioQuitCmd::Stage3() {
 #if SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
+
+bool AudioQuitCmd::Stage1() { return true; }
+
+bool AudioQuitCmd::Stage2() {
     SendFailure(&mReplyAddress, "/quit", "not allowed in AU host\n");
     scprintf("/quit : quit not allowed in AU host\n");
     return false;
-#else
-    if (mWorld->hw->mShmem)
-        mWorld->hw->mShmem->disconnect();
-    return true;
-#endif
 }
 
-void AudioQuitCmd::Stage4() {
-    SendDone("/quit");
-    mWorld->hw->mQuitProgram->post();
+#else
+
+bool AudioQuitCmd::Stage1() {
+    if (!mWorld->hw->mTerminating) {
+        mWorld->hw->mTerminating = true;
+        mDidQuit = true;
+    }
+    return true;
 }
+
+bool AudioQuitCmd::Stage2() {
+    if (mDidQuit) {
+        SendDone("/quit");
+        mWorld->hw->mQuitProgram->post();
+    } else {
+        scprintf("/quit: already quitting\n");
+        SendFailure(&mReplyAddress, "/quit", "already quitting\n");
+    }
+    return false;
+}
+
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 
