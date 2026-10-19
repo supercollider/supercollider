@@ -306,22 +306,20 @@ template <typename DerivedClass> struct cmd_dispatcher_base {
     }
 
     /** @note `cmd` must be a string constant! */
-    static void fire_done_message(endpoint_ptr const& endpoint_ref, const char* cmd, osc::int32 index) {
-        if (endpoint_ref) {
-            DerivedClass::fire_io_callback(
-                [=, endpoint = endpoint_ptr(endpoint_ref)]() { send_done_message(endpoint, cmd, index); });
+    static void fire_done_message(endpoint_ptr const& endpoint, const char* cmd, osc::int32 index) {
+        if (endpoint) {
+            DerivedClass::fire_io_callback([=]() { send_done_message(endpoint, cmd, index); });
         }
     }
 
-    static void fire_message(endpoint_ptr const& endpoint_ref, movable_array<char>&& message) {
-        if (endpoint_ref) {
-            DerivedClass::fire_io_callback(
-                [=, message = std::move(message), endpoint = endpoint_ptr(endpoint_ref)]() mutable {
-                    endpoint->send(message.data(), message.size());
+    static void fire_message(endpoint_ptr const& endpoint, movable_array<char>&& message) {
+        if (endpoint) {
+            DerivedClass::fire_io_callback([=, message = std::move(message)]() mutable {
+                endpoint->send(message.data(), message.size());
 
-                    DerivedClass::fire_rt_callback(
-                        [=, message = std::move(message)]() mutable { consume(std::move(message)); });
-                });
+                DerivedClass::fire_rt_callback(
+                    [=, message = std::move(message)]() mutable { consume(std::move(message)); });
+            });
         }
     }
 };
@@ -944,7 +942,7 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
         args >> id;
 
     // IMPORTANT: observers must only be accessed on the IO thread!
-    cmd_dispatcher<realtime>::fire_io_callback([endpoint = endpoint_ptr(endpoint), enable, id]() {
+    cmd_dispatcher<realtime>::fire_io_callback([=]() {
         if (enable) {
             const auto [error, client_id] = instance->add_observer(endpoint, id);
             if (error == sc_notify_observers::no_error) {
@@ -1000,7 +998,7 @@ template <bool realtime> void handle_status(endpoint_ptr const& endpoint) {
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
-template <> void handle_status<false>(endpoint_ptr const& endpoint_ref) {}
+template <> void handle_status<false>(endpoint_ptr const& endpoint) {}
 
 void handle_dumpOSC(ReceivedMessage const& message) {
     int val = first_arg_as_int(message);
@@ -1013,9 +1011,9 @@ template <bool realtime> void handle_sync(ReceivedMessage const& message, endpoi
     int id = first_arg_as_int(message);
 
     // ping pong: we go through the nrt->rt channel to ensure that earlier messages have been completely dispatched
-    cmd_dispatcher<realtime>::fire_system_callback([=, endpoint = endpoint_ptr(endpoint)]() {
-        cmd_dispatcher<realtime>::fire_rt_callback([=, endpoint = endpoint_ptr(endpoint)]() {
-            cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint)]() {
+    cmd_dispatcher<realtime>::fire_system_callback([=]() {
+        cmd_dispatcher<realtime>::fire_rt_callback([=]() {
+            cmd_dispatcher<realtime>::fire_io_callback([=]() {
                 std::array<char, 128> buffer;
                 osc::OutboundPacketStream p(buffer.data(), buffer.size());
                 p << osc::BeginMessage("/synced") << id << osc::EndMessage;
@@ -1036,24 +1034,25 @@ void handle_error(ReceivedMessage const& message) {
     instance->set_error_posting(val); /* thread-safe */
 }
 
-template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
+template <bool realtime> void handle_version(endpoint_ptr const& endpoint) {
     if (unlikely(instance->quit_received))
         return;
 
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
+    cmd_dispatcher<realtime>::fire_io_callback([=]() {
         std::array<char, 1024> buffer;
         using i32 = osc::int32;
 
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
         p << osc::BeginMessage("/version.reply") << "supernova" << (i32)SC_VersionMajor << (i32)SC_VersionMinor
           << SC_VersionPostfix << SC_BranchOrTag << SC_CommitHash << osc::EndMessage;
+
         endpoint->send(p.Data(), p.Size());
     });
 }
 
-template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) {}
+template <> void handle_version<false>(endpoint_ptr const& endpoint) {}
 
-template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint_ref) {
+template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint) {
     if (unlikely(instance->quit_received))
         return;
 
@@ -1073,7 +1072,7 @@ template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
-template <> void handle_rtMemoryStatus<false>(endpoint_ptr const& endpoint_ref) {}
+template <> void handle_rtMemoryStatus<false>(endpoint_ptr const& endpoint) {}
 
 void handle_unhandled_message(ReceivedMessage const& msg) {
     log_printf("unhandled message: %s\n", msg.AddressPattern());
@@ -3735,50 +3734,48 @@ void handle_asynchronous_command(World* world, const char* cmd_name, void* cmd_d
     // seems to be safe because constructors are protected by a global lock and therefore never run in parallel.
     spin_lock::scoped_lock lock(system_callback_allocator_lock);
 
-    cmd_dispatcher<realtime>::fire_system_callback(
-        [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-            // stage 2 (NRT thread)
-            bool result2 = call_stage_fn(stage2, world, cmd_data, endpoint);
+    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
+        // stage 2 (NRT thread)
+        bool result2 = call_stage_fn(stage2, world, cmd_data, endpoint);
 
-            if (!result2) {
-                // free in RT thread!
-                cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
-                    if (cleanup)
-                        (cleanup)(world, cmd_data);
-                    consume(std::move(message));
-                });
+        if (!result2) {
+            // free in RT thread!
+            cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+                if (cleanup)
+                    (cleanup)(world, cmd_data);
+                consume(std::move(message));
+            });
+            return;
+        }
+
+        cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+            // stage 3 (RT thread)
+            bool result3 = call_stage_fn(stage3, world, cmd_data, endpoint);
+
+            if (!result3) {
+                if (cleanup)
+                    (cleanup)(world, cmd_data);
+                consume(std::move(message));
                 return;
             }
 
-            cmd_dispatcher<realtime>::fire_rt_callback(
-                [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-                    // stage 3 (RT thread)
-                    bool result3 = call_stage_fn(stage3, world, cmd_data, endpoint);
+            handle_completion_message(std::move(message), endpoint);
 
-                    if (!result3) {
-                        if (cleanup)
-                            (cleanup)(world, cmd_data);
-                        consume(std::move(message));
-                        return;
-                    }
+            cmd_dispatcher<realtime>::fire_io_callback([=] {
+                // stage 4 (NRT thread)
+                bool result4 = call_stage_fn(stage4, world, cmd_data, endpoint);
 
-                    handle_completion_message(std::move(message), endpoint);
+                if (result4 && cmd_name)
+                    send_done_message(endpoint, cmd_name);
 
-                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
-                        // stage 4 (NRT thread)
-                        bool result4 = call_stage_fn(stage4, world, cmd_data, endpoint);
-
-                        if (result4 && cmd_name)
-                            send_done_message(endpoint, cmd_name);
-
-                        // free in RT thread!
-                        cmd_dispatcher<realtime>::fire_rt_callback([=] {
-                            if (cleanup)
-                                (cleanup)(world, cmd_data);
-                        });
-                    });
+                // free in RT thread!
+                cmd_dispatcher<realtime>::fire_rt_callback([=] {
+                    if (cleanup)
+                        (cleanup)(world, cmd_data);
                 });
+            });
         });
+    });
 }
 
 template <typename StageFn>
@@ -3828,63 +3825,61 @@ void handle_async_unit_command(Unit* unit, const char* cmd_name, void* cmd_data,
     // This also means we can safely use the synth pointer inside the callbacks.
     synth->add_ref();
 
-    cmd_dispatcher<realtime>::fire_system_callback(
-        [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-            // stage 2 (NRT thread)
-            bool result2 = !stage2 || stage2(unit, cmd_data, endpoint.get());
+    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
+        // stage 2 (NRT thread)
+        bool result2 = !stage2 || stage2(unit, cmd_data, endpoint.get());
 
-            if (!result2) {
-                // free in RT thread!
-                cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
-                    if (cleanup)
-                        (cleanup)(unit->mWorld, cmd_data);
-                    consume(std::move(message));
-                    synth->release();
-                });
+        if (!result2) {
+            // free in RT thread!
+            cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+                if (cleanup)
+                    (cleanup)(unit->mWorld, cmd_data);
+                consume(std::move(message));
+                synth->release();
+            });
+            return;
+        }
+
+        cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+            // stage 3 (RT thread)
+            // Check whether the owning synth has been removed in the meantime. If yes, we pass
+            // nullptr as the Unit pointer so that the stage function can detect and properly
+            // handle the situation. For example, it may still have to release resources on stage4.
+            // If the node can't be found, it has been removed.
+            bool alive = synth->get_parent() != nullptr;
+            bool result3 = !stage3 || stage3(alive ? unit : nullptr, cmd_data, endpoint.get());
+
+            if (!result3) {
+                if (cleanup)
+                    (cleanup)(unit->mWorld, cmd_data);
+                consume(std::move(message));
+                synth->release();
                 return;
             }
 
-            cmd_dispatcher<realtime>::fire_rt_callback(
-                [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-                    // stage 3 (RT thread)
-                    // Check whether the owning synth has been removed in the meantime. If yes, we pass
-                    // nullptr as the Unit pointer so that the stage function can detect and properly
-                    // handle the situation. For example, it may still have to release resources on stage4.
-                    // If the node can't be found, it has been removed.
-                    bool alive = synth->get_parent() != nullptr;
-                    bool result3 = !stage3 || stage3(alive ? unit : nullptr, cmd_data, endpoint.get());
+            // only perform completion message if the synth is still alive!
+            if (alive)
+                handle_completion_message(std::move(message), endpoint);
+            else
+                consume(std::move(message));
 
-                    if (!result3) {
-                        if (cleanup)
-                            (cleanup)(unit->mWorld, cmd_data);
-                        consume(std::move(message));
-                        synth->release();
-                        return;
-                    }
+            cmd_dispatcher<realtime>::fire_io_callback([=] {
+                // stage 4 (NRT thread)
+                bool result4 = !stage4 || stage4(unit, cmd_data, endpoint.get());
 
-                    // only perform completion message if the synth is still alive!
-                    if (alive)
-                        handle_completion_message(std::move(message), endpoint);
-                    else
-                        consume(std::move(message));
+                // only send /done message if the synth has been alive in stage3.
+                if (result4 && alive && cmd_name)
+                    send_done_message(endpoint, cmd_name);
 
-                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
-                        // stage 4 (NRT thread)
-                        bool result4 = !stage4 || stage4(unit, cmd_data, endpoint.get());
-
-                        // only send /done message if the synth has been alive in stage3.
-                        if (result4 && alive && cmd_name)
-                            send_done_message(endpoint, cmd_name);
-
-                        // free in RT thread!
-                        cmd_dispatcher<realtime>::fire_rt_callback([=] {
-                            if (cleanup)
-                                (cleanup)(unit->mWorld, cmd_data);
-                            synth->release();
-                        });
-                    });
+                // free in RT thread!
+                cmd_dispatcher<realtime>::fire_rt_callback([=] {
+                    if (cleanup)
+                        (cleanup)(unit->mWorld, cmd_data);
+                    synth->release();
                 });
+            });
         });
+    });
 }
 
 void sc_osc_handler::do_async_unit_command(Unit* unit, void* replyAddr, const char* cmdName, void* cmdData,
