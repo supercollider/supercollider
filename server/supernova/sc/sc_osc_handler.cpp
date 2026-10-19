@@ -144,11 +144,13 @@ spin_lock system_callback_allocator_lock;
 
 struct movable_string {
     /** allocate new string, only allowed to be called from the rt context */
-    explicit movable_string(const char* str) {
-        size_t length = strlen(str) + 1; /* terminating \0 */
-        char* data = (char*)system_callback::allocate(length);
-        strcpy(data, str);
+    explicit movable_string(std::string_view str) {
+        char* data = (char*)system_callback::allocate(str.size() + 1); // make space for null-terminator
+        memcpy(data, str.data(), str.size());
+        data[str.size()] = '\0';
+
         data_ = data;
+        size_ = str.size();
     }
 
     movable_string(movable_string const& rhs) = delete;
@@ -156,18 +158,40 @@ struct movable_string {
 
     movable_string(movable_string&& rhs) {
         data_ = rhs.data_;
-        const_cast<movable_string&>(rhs).data_ = nullptr;
+        size_ = rhs.size_;
+        rhs.data_ = nullptr;
+        rhs.size_ = 0;
+    }
+
+    movable_string& operator=(movable_string&& rhs) {
+        if (&rhs != this) {
+            if (data_)
+                system_callback::deallocate(data_);
+
+            data_ = rhs.data_;
+            size_ = rhs.size_;
+
+            rhs.data_ = nullptr;
+            rhs.size_ = 0;
+        }
+        return *this;
     }
 
     ~movable_string() {
-        if (data_)
-            system_callback::deallocate((char*)data_);
+        if (data_) {
+            system_callback::deallocate(data_);
+            data_ = nullptr;
+        }
+        size_ = 0;
     }
 
     const char* c_str() const { return data_; }
 
+    size_t size() const { return size_; }
+
 private:
-    const char* data_ = nullptr;
+    char* data_ = nullptr;
+    size_t size_ = 0;
 };
 
 template <typename T> struct movable_array {
