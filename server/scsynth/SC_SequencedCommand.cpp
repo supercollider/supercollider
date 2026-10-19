@@ -1101,31 +1101,6 @@ void AudioQuitCmd::Stage4() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-RTMemStatusCmd::RTMemStatusCmd(World* inWorld, const ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress) {}
-
-bool RTMemStatusCmd::Stage2() {
-    // we stop replying to status requests after receiving /quit
-    if (mWorld->hw->mTerminating == true)
-        return false;
-
-    small_scpacket packet;
-    packet.adds("/rtMemoryStatus.reply");
-    packet.maketags(3);
-    packet.addtag(',');
-    packet.addtag('i');
-    packet.addtag('i');
-
-    packet.addi(World_TotalFree(mWorld));
-    packet.addi(World_LargestFreeChunk(mWorld));
-
-    SendReply(&mReplyAddress, packet.data(), packet.size());
-
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////
-
 NotifyCmd::NotifyCmd(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 

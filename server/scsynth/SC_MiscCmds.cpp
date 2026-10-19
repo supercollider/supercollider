@@ -1186,7 +1186,23 @@ SCErr meth_status(World* inWorld, int inSize, const char* inData, ReplyAddress* 
 }
 
 SCErr meth_rtMemoryStatus(World* inWorld, int inSize, const char* inData, ReplyAddress* inReply) {
-    CallSequencedCommand(RTMemStatusCmd, inWorld, inSize, inData, inReply);
+    // we stop replying to status requests after receiving /quit
+    if (inWorld->hw->mTerminating)
+        return false;
+
+    small_scpacket packet;
+
+    packet.adds("/rtMemoryStatus.reply");
+    packet.maketags(3);
+    packet.addtag(',');
+    packet.addtag('i');
+    packet.addtag('i');
+
+    packet.addi(World_TotalFree(inWorld));
+    packet.addi(World_LargestFreeChunk(inWorld));
+
+    CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+
     return kSCErr_None;
 }
 
