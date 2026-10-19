@@ -2055,7 +2055,6 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
         sampleRate = sc_factory->world.mSampleRate;
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
-        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufferIndex));
         try {
             sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
             sc_factory->allocate_buffer(bufferIndex, frames, channels, sampleRate);
@@ -2086,7 +2085,6 @@ template <bool realtime> void handle_b_free(ReceivedMessage const& msg, endpoint
     completion_message message = extract_completion_message(args);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
-        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
         sample* free_buf = sc_factory->get_nrt_mirror_buffer(index);
         sc_factory->free_buffer(index);
 
@@ -2126,7 +2124,6 @@ template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, end
 
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, filename = std::move(filename), message = std::move(message)]() mutable {
-            sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufferIndex));
             sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
             try {
                 sc_factory->buffer_read_alloc(bufferIndex, filename.c_str(), start, frames);
@@ -2189,7 +2186,6 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message),
                                                     channel_mapping = std::move(channel_mapping),
                                                     filename = std::move(filename)]() mutable {
-        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
         sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
 
         try {
@@ -2277,7 +2273,6 @@ fire_callback:
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, message = std::move(message), filenameString = std::move(filenameString),
          headerString = std::move(headerString), sampleString = std::move(sampleString)]() mutable {
-            sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
             try {
                 sc_factory->buffer_write(bufnum, filenameString.c_str(), headerString.c_str(), sampleString.c_str(),
                                          start, frames, leave_open);
@@ -2364,8 +2359,6 @@ fire_callback:
 
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, filename = std::move(fname), message = std::move(message)]() mutable {
-            sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
-
             try {
                 sc_factory->buffer_read(bufnum, filename.c_str(), start_file, frames, start_buffer, leave_open);
 
