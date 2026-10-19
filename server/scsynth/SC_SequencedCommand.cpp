@@ -1101,47 +1101,6 @@ void AudioQuitCmd::Stage4() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-AudioStatusCmd::AudioStatusCmd(World* inWorld, const ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress) {}
-
-bool AudioStatusCmd::Stage2() {
-    // we stop replying to status requests after receiving /quit
-    if (mWorld->hw->mTerminating == true)
-        return false;
-
-    small_scpacket packet;
-    packet.adds("/status.reply");
-    packet.maketags(10);
-    packet.addtag(',');
-    packet.addtag('i');
-    packet.addtag('i');
-    packet.addtag('i');
-    packet.addtag('i');
-    packet.addtag('i');
-    packet.addtag('f');
-    packet.addtag('f');
-    packet.addtag('d');
-    packet.addtag('d');
-
-    packet.addi(1); // audio is always active now.
-    packet.addi(mWorld->mNumUnits);
-    packet.addi(mWorld->mNumGraphs);
-    packet.addi(mWorld->mNumGroups);
-    packet.addi(mWorld->hw->mGraphDefLib->NumItems());
-
-    SC_AudioDriver* driver = mWorld->hw->mAudioDriver;
-    packet.addf(driver->GetAvgCPU());
-    packet.addf(driver->GetPeakCPU());
-    packet.addd(driver->GetSampleRate());
-    packet.addd(driver->GetActualSampleRate());
-
-    SendReply(&mReplyAddress, packet.data(), packet.size());
-
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////
-
 RTMemStatusCmd::RTMemStatusCmd(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 

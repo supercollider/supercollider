@@ -412,15 +412,6 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////
 
-class AudioStatusCmd : public SC_SequencedCommand {
-public:
-    AudioStatusCmd(World* inWorld, const ReplyAddress* inReplyAddress);
-
-    bool Stage2() override; // non real time
-};
-
-///////////////////////////////////////////////////////////////////////////
-
 class RTMemStatusCmd : public SC_SequencedCommand {
 public:
     RTMemStatusCmd(World* inWorld, const ReplyAddress* inReplyAddress);
