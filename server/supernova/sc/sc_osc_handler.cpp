@@ -352,6 +352,10 @@ void report_failure(endpoint_ptr const& endpoint, std::exception const& error, c
     send_fail_message(endpoint, command, error.what(), bufnum);
 }
 
+void fire_wrong_argument_exception(const char* cmd) {
+    throw std::runtime_error("wrong arguments for " + std::string(cmd));
+}
+
 } /* namespace */
 
 namespace detail {
@@ -2210,11 +2214,9 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
     });
 }
 
-const char* b_write = "/b_write";
-
-void fire_b_write_exception() { throw std::runtime_error("wrong arguments for /b_write"); }
-
 template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
+    static constexpr auto cmd_name = "/b_write";
+
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
@@ -2237,7 +2239,7 @@ template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoin
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         frames = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2245,7 +2247,7 @@ template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoin
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         start = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2253,7 +2255,7 @@ template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoin
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         leave_open = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2283,22 +2285,19 @@ fire_callback:
                         consume(std::move(headerString));
                         consume(std::move(sampleString));
 
-                        cmd_dispatcher<realtime>::fire_done_message(endpoint, b_write, bufnum);
+                        cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
                     });
             } catch (std::exception const& error) {
-                report_failure(endpoint, error, b_write, bufnum);
+                report_failure(endpoint, error, cmd_name, bufnum);
                 cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filenameString),
                                                             std::move(headerString), std::move(sampleString));
             }
         });
 }
 
-
-const char* b_read = "/b_read";
-
-void fire_b_read_exception() { throw std::runtime_error("wrong arguments for /b_read"); }
-
 template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
+    static constexpr auto cmd_name = "/b_read";
+
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
@@ -2318,7 +2317,7 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         start_file = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2326,7 +2325,7 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         frames = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2334,7 +2333,7 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         start_buffer = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2342,7 +2341,7 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         leave_open = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2366,20 +2365,18 @@ fire_callback:
                         handle_completion_message(std::move(message), endpoint);
                         consume(std::move(filename));
 
-                        cmd_dispatcher<realtime>::fire_done_message(endpoint, b_read, bufnum);
+                        cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
                     });
             } catch (std::exception const& error) {
-                report_failure(endpoint, error, b_read, bufnum);
+                report_failure(endpoint, error, cmd_name, bufnum);
                 cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filename));
             }
         });
 }
 
-const char* b_readChannel = "/b_readChannel";
-
-void fire_b_readChannel_exception() { throw std::runtime_error("wrong arguments for /b_readChannel"); }
-
 template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
+    static constexpr auto cmd_name = "/b_readChannel";
+
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
@@ -2402,7 +2399,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         start_file = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2410,7 +2407,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         frames = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2418,7 +2415,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         start_buffer = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2426,7 +2423,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         leave_open = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2440,7 +2437,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
             channel_mapping[channel_count++] = arg->AsInt32Unchecked();
             ++arg;
         } else
-            fire_b_readChannel_exception();
+            fire_wrong_argument_exception(cmd_name);
     }
 
 fire_callback:
@@ -2461,18 +2458,15 @@ fire_callback:
                 consume(std::move(filename));
                 consume(std::move(channel_map));
 
-                cmd_dispatcher<realtime>::fire_done_message(endpoint, b_readChannel, bufnum);
+                cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
             });
         } catch (std::exception const& error) {
-            report_failure(endpoint, error, b_readChannel, bufnum);
+            report_failure(endpoint, error, cmd_name, bufnum);
             cmd_dispatcher<realtime>::free_in_rt_thread(std::move(filename), std::move(channel_map),
                                                         std::move(message));
         }
     });
 }
-
-
-const char* b_zero = "/b_zero";
 
 template <bool realtime> void handle_b_zero(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -2486,7 +2480,7 @@ template <bool realtime> void handle_b_zero(ReceivedMessage const& msg, endpoint
         cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
             sc_factory->increment_write_updates(index);
             handle_completion_message(std::move(message), endpoint);
-            cmd_dispatcher<realtime>::fire_done_message(endpoint, b_zero, index);
+            cmd_dispatcher<realtime>::fire_done_message(endpoint, "/b_zero", index);
         });
     });
 }
