@@ -196,45 +196,53 @@ private:
 
 template <typename T> struct movable_array {
     /** allocate new array, only allowed to be called from the rt context */
-    movable_array(size_t length, const T* data, bool locked = false): length_(length) {
-        data_ = (T*)system_callback::allocate(length * sizeof(T));
-        for (size_t i = 0; i != length; ++i)
-            data_[i] = data[i];
+    movable_array(const T* data, size_t size): size_(size) {
+        data_ = (T*)system_callback::allocate(size * sizeof(T));
+        std::copy(data, data + size, data_);
     }
 
     movable_array& operator=(movable_array const& rhs) = delete;
     movable_array(movable_array const& rhs) = delete;
 
-    movable_array(movable_array&& rhs): length_(rhs.length_), data_(rhs.data_) { rhs.data_ = nullptr; }
+    movable_array(movable_array&& rhs): data_(rhs.data_), size_(rhs.size_) {
+        rhs.data_ = nullptr;
+        rhs.size_ = 0;
+    }
 
     movable_array& operator=(movable_array&& rhs) {
-        if (data_)
-            system_callback::deallocate(data_);
+        if (&rhs != this) {
+            if (data_)
+                system_callback::deallocate(data_);
 
-        length_ = rhs.length_;
-        data_ = rhs.data_;
+            data_ = rhs.data_;
+            size_ = rhs.size_;
 
-        rhs.data_ = nullptr;
-
+            rhs.data_ = nullptr;
+            rhs.size_ = 0;
+        }
         return *this;
     }
 
     ~movable_array() {
-        if (!data_)
-            return;
-        system_callback::deallocate(data_);
-        data_ = nullptr;
+        if (data_) {
+            system_callback::deallocate(data_);
+            data_ = nullptr;
+        }
+        size_ = 0;
     }
 
     const T* data() const { return data_; }
 
-    const T& operator[](size_t index) const { return data_[index]; }
+    const T& operator[](size_t index) const {
+        assert(index < size_);
+        return data_[index];
+    }
 
-    size_t size() const { return length_; }
+    size_t size() const { return size_; }
 
 private:
-    size_t length_ = 0;
     T* data_;
+    size_t size_ = 0;
 };
 
 template <typename T> static inline void consume(T&& object) {
