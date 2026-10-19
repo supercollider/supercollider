@@ -32,13 +32,13 @@ namespace QtCollider {
 
 class StackLayout : public QLayout {
     Q_OBJECT
-    Q_ENUMS(StackingMode)
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex)
     Q_PROPERTY(StackingMode stackingMode READ stackingMode WRITE setStackingMode)
     Q_PROPERTY(int count READ count)
 
 public:
     enum StackingMode { StackOne, StackAll };
+    Q_ENUM(StackLayout::StackingMode)
 
     StackLayout();
     ~StackLayout();
