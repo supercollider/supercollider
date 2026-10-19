@@ -943,6 +943,7 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
     if (!args.Eos())
         args >> id;
 
+    // IMPORTANT: observers must only be accessed on the IO thread!
     cmd_dispatcher<realtime>::fire_io_callback([endpoint = endpoint_ptr(endpoint), enable, id]() {
         if (enable) {
             const auto [error, client_id] = instance->add_observer(endpoint, id);
@@ -973,31 +974,30 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
 
 template <> void handle_notify<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) {}
 
-template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
+template <bool realtime> void handle_status(endpoint_ptr const& endpoint) {
     if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
         return;
 
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
-        std::array<char, 1024> buffer;
-        typedef osc::int32 i32;
+    std::array<char, 1024> buffer;
+    using i32 = osc::int32;
 
-        float peak_load, average_load;
-        instance->cpu_load(peak_load, average_load);
+    float peak_load, average_load;
+    instance->cpu_load(peak_load, average_load);
 
-        osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("/status.reply") << (i32)1 /* unused */
-          << (i32)sc_factory->ugen_count() /* ugens */
-          << (i32)instance->synth_count() /* synths */
-          << (i32)instance->group_count() /* groups */
-          << (i32)instance->definition_count() /* synthdefs */
-          << average_load /* average cpu % */
-          << peak_load /* peak cpu % */
-          << instance->get_samplerate() /* nominal samplerate */
-          << instance->smooth_samplerate /* actual samplerate */
-          << osc::EndMessage;
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
+    p << osc::BeginMessage("/status.reply") << (i32)1 /* unused */
+      << (i32)sc_factory->ugen_count() /* ugens */
+      << (i32)instance->synth_count() /* synths */
+      << (i32)instance->group_count() /* groups */
+      << (i32)instance->definition_count() /* synthdefs */
+      << average_load /* average cpu % */
+      << peak_load /* peak cpu % */
+      << instance->get_samplerate() /* nominal samplerate */
+      << instance->smooth_samplerate /* actual samplerate */
+      << osc::EndMessage;
 
-        endpoint->send(p.Data(), p.Size());
-    });
+    movable_array message(p.Data(), p.Size());
+    cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
 template <> void handle_status<false>(endpoint_ptr const& endpoint_ref) {}
@@ -1042,7 +1042,7 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
 
     cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
         std::array<char, 1024> buffer;
-        typedef osc::int32 i32;
+        using i32 = osc::int32;
 
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
         p << osc::BeginMessage("/version.reply") << "supernova" << (i32)SC_VersionMajor << (i32)SC_VersionMinor
