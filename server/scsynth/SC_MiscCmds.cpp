@@ -1149,7 +1149,39 @@ SCErr meth_g_deepFree(World* inWorld, int inSize, const char* inData, ReplyAddre
 
 
 SCErr meth_status(World* inWorld, int inSize, const char* inData, ReplyAddress* inReply) {
-    CallSequencedCommand(AudioStatusCmd, inWorld, inSize, inData, inReply);
+    // we stop replying to status requests after receiving /quit
+    if (inWorld->hw->mTerminating)
+        return false;
+
+    small_scpacket packet;
+
+    packet.adds("/status.reply");
+    packet.maketags(10);
+    packet.addtag(',');
+    packet.addtag('i');
+    packet.addtag('i');
+    packet.addtag('i');
+    packet.addtag('i');
+    packet.addtag('i');
+    packet.addtag('f');
+    packet.addtag('f');
+    packet.addtag('d');
+    packet.addtag('d');
+
+    packet.addi(1); // audio is always active now.
+    packet.addi(inWorld->mNumUnits);
+    packet.addi(inWorld->mNumGraphs);
+    packet.addi(inWorld->mNumGroups);
+    packet.addi(inWorld->hw->mGraphDefLib->NumItems());
+
+    SC_AudioDriver* driver = inWorld->hw->mAudioDriver;
+    packet.addf(driver->GetAvgCPU());
+    packet.addf(driver->GetPeakCPU());
+    packet.addd(driver->GetSampleRate());
+    packet.addd(driver->GetActualSampleRate());
+
+    CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+
     return kSCErr_None;
 }
 
