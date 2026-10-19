@@ -726,15 +726,10 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
 
     /* audio buffers */
     world.mNumSndBufs = args.buffers;
-    world.mSndBufs = new SndBuf[world.mNumSndBufs];
-    world.mSndBufsNonRealTimeMirror = new SndBuf[world.mNumSndBufs];
-    world.mSndBufUpdates = new SndBufUpdates[world.mNumSndBufs];
-    memset(world.mSndBufs, 0, world.mNumSndBufs * sizeof(SndBuf));
-    memset(world.mSndBufsNonRealTimeMirror, 0, world.mNumSndBufs * sizeof(SndBuf));
-    memset(world.mSndBufUpdates, 0, world.mNumSndBufs * sizeof(SndBufUpdates));
+    world.mSndBufs = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
+    world.mSndBufsNonRealTimeMirror = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
+    world.mSndBufUpdates = new SndBufUpdates[world.mNumSndBufs] {}; // zero-initialize
     world.mBufCounter = 0;
-
-    async_buffer_guards.reset(new std::mutex[world.mNumSndBufs]);
 
     /* audio settings */
     world.mBufLength = args.blocksize;
