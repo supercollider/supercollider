@@ -2476,7 +2476,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
             message = extract_completion_message(arg);
             goto fire_callback;
         } else if (arg->IsInt32()) {
-            channel_mapping[channel_count] = arg->AsInt32Unchecked();
+            channel_mapping[channel_count++] = arg->AsInt32Unchecked();
             ++arg;
         } else
             fire_b_readChannel_exception();
