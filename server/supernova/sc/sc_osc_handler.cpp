@@ -347,9 +347,10 @@ template <> struct cmd_dispatcher<false> : public cmd_dispatcher_base<cmd_dispat
     template <typename Functor> static void fire_io_callback(Functor&& f) { f(); }
 };
 
-void report_failure(endpoint_ptr const& endpoint, std::exception const& error, const char* command, int bufnum) {
-    std::cout << error.what() << std::endl;
-    send_fail_message(endpoint, command, error.what(), bufnum);
+template <typename... Args>
+void report_failure(endpoint_ptr const& endpoint, std::exception const& error, const char* command, Args&&... args) {
+    std::cout << command << ": " << error.what() << std::endl;
+    send_fail_message(endpoint, command, error.what(), std::forward<Args>(args)...);
 }
 
 void fire_wrong_argument_exception(const char* cmd) {
