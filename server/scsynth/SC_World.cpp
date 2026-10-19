@@ -990,8 +990,9 @@ void World_Cleanup(World* world, bool unload_plugins) {
     }
 
     HiddenWorld* hw = world->hw;
+    assert(hw != nullptr);
 
-    if (hw && world->mRealTime)
+    if (world->mRealTime)
         hw->mAudioDriver->Stop();
 
     world->mRunning = false;
@@ -1038,6 +1039,7 @@ void World_Cleanup(World* world, bool unload_plugins) {
     free_alig(world->mControlBusTouched);
     free_alig(world->mAudioBusTouched);
     if (hw->mShmem) {
+        hw->mShmem->disconnect();
         delete hw->mShmem;
     } else
         free_alig(world->mControlBus);

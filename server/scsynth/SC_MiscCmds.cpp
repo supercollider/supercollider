@@ -1226,6 +1226,7 @@ SCErr meth_dumpOSC(World* inWorld, int inSize, const char* inData, ReplyAddress*
 
 SCErr meth_version(World* inWorld, int /*inSize*/, const char* /*inData*/, ReplyAddress* inReply) {
     small_scpacket packet;
+
     packet.adds("/version.reply");
     packet.maketags(7);
     packet.addtag(',');
