@@ -492,8 +492,8 @@ const char* sc_notify_observers::error_string(error_code error) {
 }
 
 void sc_notify_observers::notify(const char* address_pattern, const server_node* node) const {
-    char buffer[128]; // 128 byte should be enough
-    osc::OutboundPacketStream p(buffer, 128);
+    std::array<char, 128> buffer; // 128 byte should be enough
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage(address_pattern);
     fill_notification(node, p);
 
@@ -508,8 +508,8 @@ void sc_notify_observers::notify(const char* address_pattern, const server_node*
 }
 
 void fire_trigger(int32_t node_id, int32_t trigger_id, float value) {
-    char buffer[128]; // 128 byte should be enough
-    osc::OutboundPacketStream p(buffer, 128);
+    std::array<char, 128> buffer; // 128 byte should be enough
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/tr") << osc::int32(node_id) << osc::int32(trigger_id) << value << osc::EndMessage;
 
     instance->send_notification(p.Data(), p.Size());
@@ -1017,13 +1017,13 @@ template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
         if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
             return;
 
-        char buffer[1024];
+        std::array<char, 1024> buffer;
         typedef osc::int32 i32;
 
         float peak_load, average_load;
         instance->cpu_load(peak_load, average_load);
 
-        osc::OutboundPacketStream p(buffer, 1024);
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
         p << osc::BeginMessage("/status.reply") << (i32)1 /* unused */
           << (i32)sc_factory->ugen_count() /* ugens */
           << (i32)instance->synth_count() /* synths */
@@ -1055,8 +1055,8 @@ template <bool realtime> void handle_sync(ReceivedMessage const& message, endpoi
     cmd_dispatcher<realtime>::fire_system_callback([=, endpoint = endpoint_ptr(endpoint)]() {
         cmd_dispatcher<realtime>::fire_rt_callback([=, endpoint = endpoint_ptr(endpoint)]() {
             cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint)]() {
-                char buffer[128];
-                osc::OutboundPacketStream p(buffer, 128);
+                std::array<char, 128> buffer;
+                osc::OutboundPacketStream p(buffer.data(), buffer.size());
                 p << osc::BeginMessage("/synced") << id << osc::EndMessage;
 
                 endpoint->send(p.Data(), p.Size());
@@ -1080,10 +1080,10 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
         if (unlikely(instance->quit_received))
             return;
 
-        char buffer[4096];
+        std::array<char, 1024> buffer;
         typedef osc::int32 i32;
 
-        osc::OutboundPacketStream p(buffer, 4096);
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
         p << osc::BeginMessage("/version.reply") << "supernova" << (i32)SC_VersionMajor << (i32)SC_VersionMinor
           << SC_VersionPostfix << SC_BranchOrTag << SC_CommitHash << osc::EndMessage;
         endpoint->send(p.Data(), p.Size());
@@ -1097,10 +1097,10 @@ template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint
         if (unlikely(instance->quit_received))
             return;
 
-        char buffer[4096];
+        std::array<char, 128> buffer;
         typedef osc::int32 i32;
 
-        osc::OutboundPacketStream p(buffer, 4096);
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
         p << osc::BeginMessage("/rtMemoryStatus.reply") << (i32)(rt_pool.get_pool_size() - rt_pool.get_used_size())
           << (i32)rt_pool.get_max_size() << osc::EndMessage;
         endpoint->send(p.Data(), p.Size());
@@ -1764,8 +1764,8 @@ template <bool realtime> void handle_n_query(ReceivedMessage const& msg, endpoin
         if (!node)
             continue;
 
-        char buffer[128]; // 128 byte should be enough
-        osc::OutboundPacketStream p(buffer, 128);
+        std::array<char, 128> buffer; // 128 byte should be enough
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
         p << osc::BeginMessage("/n_info");
         fill_notification(node, p);
 
