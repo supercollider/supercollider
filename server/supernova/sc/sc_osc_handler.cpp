@@ -1057,15 +1057,20 @@ template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint
     if (unlikely(instance->quit_received))
         return;
 
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
-        std::array<char, 128> buffer;
-        typedef osc::int32 i32;
+    std::array<char, 128> buffer;
+    using i32 = osc::int32;
 
-        osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("/rtMemoryStatus.reply") << (i32)(rt_pool.get_pool_size() - rt_pool.get_used_size())
-          << (i32)rt_pool.get_max_size() << osc::EndMessage;
-        endpoint->send(p.Data(), p.Size());
-    });
+    const i32 free_memory = rt_pool.get_pool_size() - rt_pool.get_used_size();
+    // Our version of TLSF does not provide an API function to query the largest free block.
+    // TODO: fix this once we switch to a more recent implementation, e.g. Matt Conte's TLSF v3.1.
+    const i32 largest_free_block = 0;
+
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
+    p << osc::BeginMessage("/rtMemoryStatus.reply") << free_memory << largest_free_block << osc::EndMessage;
+
+    movable_array message(p.Data(), p.Size());
+
+    cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
 template <> void handle_rtMemoryStatus<false>(endpoint_ptr const& endpoint_ref) {}
