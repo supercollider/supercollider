@@ -271,6 +271,7 @@ template <typename... Args> void send_fail_message(endpoint_ptr const& endpoint,
     }
 }
 
+/** functor for scheduling callbacks from the audio thread (= RT) to the system thread or IO thread (= NRT) */
 template <typename Functor> struct fn_system_callback : public system_callback {
     fn_system_callback(Functor const& fn): fn_(fn) {}
 
@@ -281,6 +282,7 @@ template <typename Functor> struct fn_system_callback : public system_callback {
     Functor fn_;
 };
 
+/** functor for scheduling callbacks from the system thread or IO thread (= NRT) to the audio thread (= RT) */
 template <typename Functor> struct fn_sync_callback : public audio_sync_callback {
     fn_sync_callback(Functor const& fn): fn_(fn) {}
 
@@ -293,40 +295,17 @@ template <typename Functor> struct fn_sync_callback : public audio_sync_callback
 
 /** helper class for dispatching real-time and non real-time osc command callbacks
  *
- *  uses template specialization to avoid unnecessary callback rescheduling
+ *  uses template specialization to avoid unnecessary callback rescheduling in NRT mode
  */
 template <typename DerivedClass> struct cmd_dispatcher_base {
-    template <typename A> static void free_in_rt_thread(A&& object) {
-        DerivedClass::fire_rt_callback([object = std::move(object)]() mutable { consume(std::move(object)); });
-    }
-
-    template <typename A, typename B> static void free_in_rt_thread(A&& object1, B&& object2) {
-        DerivedClass::fire_rt_callback([object1 = std::move(object1), object2 = std::move(object2)]() mutable {
-            consume(std::move(object1));
-            consume(std::move(object2));
+    /** free one or more (movable) objects on the RT thread */
+    template <typename... T> static void free_in_rt_thread(T&&... objects) {
+        DerivedClass::fire_rt_callback([objects = std::make_tuple(std::forward<T>(objects)...)]() mutable {
+            std::apply([](auto&... elems) { (consume(std::move(elems)), ...); }, objects);
         });
     }
 
-    template <typename A, typename B, typename C> static void free_in_rt_thread(A&& object1, B&& object2, C&& object3) {
-        DerivedClass::fire_rt_callback(
-            [object1 = std::move(object1), object2 = std::move(object2), object3 = std::move(object3)]() mutable {
-                consume(std::move(object1));
-                consume(std::move(object2));
-                consume(std::move(object3));
-            });
-    }
-
-    template <typename A, typename B, typename C, typename D>
-    static void free_in_rt_thread(A&& object1, B&& object2, C&& object3, D&& object4) {
-        DerivedClass::fire_rt_callback([object1 = std::move(object1), object2 = std::move(object2),
-                                        object3 = std::move(object3), object4 = std::move(object4)]() mutable {
-            consume(std::move(object1));
-            consume(std::move(object2));
-            consume(std::move(object3));
-            consume(std::move(object4));
-        });
-    }
-
+    /** @note `cmd` must be a string constant! */
     static void fire_done_message(endpoint_ptr const& endpoint_ref, const char* cmd, osc::int32 index) {
         if (endpoint_ref) {
             DerivedClass::fire_io_callback(
@@ -347,26 +326,13 @@ template <typename DerivedClass> struct cmd_dispatcher_base {
     }
 };
 
-
 template <bool realtime> struct cmd_dispatcher : public cmd_dispatcher_base<cmd_dispatcher<realtime>> {
-    template <typename Functor> static void fire_system_callback(Functor const& f) {
-        instance->add_system_callback(new fn_system_callback<Functor>(f));
-    }
-
     template <typename Functor> static void fire_system_callback(Functor&& f) {
         instance->add_system_callback(new fn_system_callback<Functor>(std::forward<Functor>(f)));
     }
 
-    template <typename Functor> static void fire_io_callback(Functor const& f) {
-        instance->add_io_callback(new fn_system_callback<Functor>(f));
-    }
-
     template <typename Functor> static void fire_io_callback(Functor&& f) {
         instance->add_io_callback(new fn_system_callback<Functor>(std::forward<Functor>(f)));
-    }
-
-    template <typename Functor> static void fire_rt_callback(Functor const& f) {
-        instance->add_sync_callback(new fn_sync_callback<Functor>(f));
     }
 
     template <typename Functor> static void fire_rt_callback(Functor&& f) {
@@ -374,28 +340,13 @@ template <bool realtime> struct cmd_dispatcher : public cmd_dispatcher_base<cmd_
     }
 };
 
-
+/** template specialization for NRT mode */
 template <> struct cmd_dispatcher<false> : public cmd_dispatcher_base<cmd_dispatcher<false>> {
-    template <typename Functor> static void fire_system_callback(Functor const& f) { f(); }
+    template <typename Functor> static void fire_system_callback(Functor&& f) { f(); }
 
-    template <typename Functor> static void fire_system_callback(Functor&& f) {
-        Functor fn(std::forward<Functor>(f));
-        fn();
-    }
+    template <typename Functor> static void fire_rt_callback(Functor&& f) { f(); }
 
-    template <typename Functor> static void fire_rt_callback(Functor const& f) { f(); }
-
-    template <typename Functor> static void fire_rt_callback(Functor&& f) {
-        Functor fn(std::forward<Functor>(f));
-        fn();
-    }
-
-    template <typename Functor> static void fire_io_callback(Functor const& f) { f(); }
-
-    template <typename Functor> static void fire_io_callback(Functor&& f) {
-        Functor fn(std::forward<Functor>(f));
-        fn();
-    }
+    template <typename Functor> static void fire_io_callback(Functor&& f) { f(); }
 };
 
 void report_failure(endpoint_ptr const& endpoint, std::exception const& error, const char* command, int bufnum) {
