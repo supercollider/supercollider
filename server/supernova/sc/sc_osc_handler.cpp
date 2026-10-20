@@ -57,6 +57,10 @@ using nova::detail::nova_endpoint;
 
 namespace {
 
+// max. UDP payload size = 65535 - 8 (UDP header) - 20 (IPv4 header) = 65507
+// -> round down to a multiple of 16 -> 65504
+constexpr size_t max_udp_payload_size = 65504;
+
 int32_t last_generated = 0;
 
 server_node* find_node(int32_t target_id) {

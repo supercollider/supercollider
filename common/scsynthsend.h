@@ -146,4 +146,6 @@ template <int MaxPacketSize = 8192> struct scpacket {
 };
 
 typedef scpacket<> small_scpacket;
-typedef scpacket<65516> big_scpacket;
+// max. UDP payload size = 65535 - 8 (UDP header) - 20 (IPv4 header) = 65507
+// -> round down to a multiple of 16 -> 65504
+typedef scpacket<65504> big_scpacket;
