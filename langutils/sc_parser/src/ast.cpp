@@ -20,6 +20,23 @@ void ASTGraph::add_diagnostic(sc::diag::Diagnostic d) {
 [[nodiscard]] std::vector<sc::diag::Diagnostic> ASTGraph::diagnostics() && { return std::move(m_diagnostics); }
 
 
+RegionListIndex ASTGraph::assign_root(RegionListIndex i) {
+    assert(i);
+    m_roots = i;
+    return i;
+}
+ClassOrExtensionListIndex ASTGraph::assign_root(ClassOrExtensionListIndex i) {
+    assert(i);
+    m_roots = i;
+    return i;
+}
+FileAsFunctionIndex ASTGraph::assign_root(FileAsFunctionIndex i) {
+    assert(i);
+    m_roots = i;
+    return i;
+}
+
+
 [[nodiscard]] std::optional<Index> ASTGraph::root_any() const {
     return std::visit(priv::overload {
                           [](std::monostate) -> std::optional<Index> { return std::nullopt; },
@@ -83,6 +100,22 @@ void ASTGraph::debug_flat_print(std::ostream& stream) const {
                << '\n';
     });
 }
+
+constexpr const char* ASTGraph::node_name(const Variant& variant) {
+    return std::visit(
+        [](const auto& v) -> const char* {
+            using V = std::remove_reference_t<std::remove_cv_t<decltype(v)>>;
+            return V::name;
+        },
+        variant);
+}
+const sc::lex::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) const { return m_node_locations[*i]; }
+sc::lex::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) { return m_node_locations[*i]; }
+std::shared_ptr<const lex::TextInfo> ASTGraph::text_info() const { return m_text_info; }
+std::string_view ASTGraph::string_view(UntypedNodeIndex i) const { return m_text_info->read(location(i)); }
+std::string ASTGraph::string(UntypedNodeIndex i) const { return std::string { m_text_info->read(location(i)) }; }
+void ASTGraph::register_bracketed_expr(UntypedNodeIndex i) { m_bracketed_exprs.insert(i); }
+bool ASTGraph::is_bracketed(UntypedNodeIndex i) const { return m_bracketed_exprs.find(i) != m_bracketed_exprs.end(); };
 
 
 } // sc::parser::graph

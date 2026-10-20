@@ -26,4 +26,10 @@ file:
 
 Intrinsic classes are a part of the compiler and cannot be changed.
 ──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
 Successfully compiled 0 classes.

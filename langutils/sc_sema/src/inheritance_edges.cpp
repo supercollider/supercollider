@@ -1,4 +1,6 @@
 #include "sc_sema/context.hpp"
+#include <algorithm>
+#include <unordered_set>
 
 namespace sc::ir {
 
@@ -13,8 +15,11 @@ void InheritanceEdges::insert(SymSCClassName parent, SymSCClassName child) {
     m_super_class.insert({ child, parent });
 }
 
-std::vector<std::vector<SymSCClassName>> InheritanceEdges::cycle_check(SymSCClassName root) const {
+std::vector<std::vector<SymSCClassName>> InheritanceEdges::cycle_check(SymSCClassName root, std::vector<SymSCClassName>& topo_order) const {
+    topo_order.clear();
+    assert(!m_sub_classes.empty());
     std::scoped_lock l { m_lock };
+
     // Because root is empty, and we have single inheritance, it is impossible to create cycles that are attached to
     // root.
     std::unordered_set<SymSCClassName, std::hash<Symbol>> not_visited, visited;
@@ -26,6 +31,7 @@ std::vector<std::vector<SymSCClassName>> InheritanceEdges::cycle_check(SymSCClas
 
         for (const SymSCClassName child : m_sub_classes.at(n))
             self(self, child);
+        topo_order.push_back(n);
     };
 
     for (const auto& [k, v] : m_sub_classes) {
@@ -33,6 +39,9 @@ std::vector<std::vector<SymSCClassName>> InheritanceEdges::cycle_check(SymSCClas
     }
 
     dfs(dfs, root);
+
+    std::reverse(topo_order.begin(), topo_order.end());
+    assert(topo_order.front() == root);
 
     std::vector<std::vector<SymSCClassName>> loops;
 

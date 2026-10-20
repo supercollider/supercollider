@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import subprocess;
-from pathlib import Path
 import argparse;
-import sys
 import re
+import subprocess;
+import sys
+from pathlib import Path
+
 
 def process_file(cmd, sc_file, output_dir, override):
 
@@ -13,10 +14,10 @@ def process_file(cmd, sc_file, output_dir, override):
     # remove file path info
     cmd_result = re.sub(r'file:.*', 'file:', cmd_result.stdout)
 
-    expected_dir = sc_file.parent / "expected"
+    expected_dir = sc_file.parent / "../expected"
     expected_dir.mkdir(parents=True, exist_ok=True)
 
-    expected_output_path = sc_file.parent / "expected" / sc_file.with_suffix('.txt').name
+    expected_output_path = sc_file.parent / "../expected" / sc_file.with_suffix('.txt').name
     output_file_path = output_dir / Path(sc_file.name).with_suffix('.txt')
     diff_file_path = output_dir / Path(sc_file.name).with_suffix('.diff')
 

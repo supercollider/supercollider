@@ -1,9 +1,10 @@
 #pragma once
 
-#include "sc_parser/ast.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_parser/nodes.hpp"
 #include "sc_parser/sc_grammar_shared.hpp"
+//#include "sc_parser/ast.hpp"
+
 #include <charconv>
 #include <cmath>
 #include <cstdlib>

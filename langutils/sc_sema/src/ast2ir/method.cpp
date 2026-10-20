@@ -1,4 +1,7 @@
-#include "../ast2ir.hpp"
+#include "method.hpp"
+#include "ast2ir/expr.hpp"
+#include "sc_parser/ast.hpp"
+#include "sc_sema/context.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
 
@@ -30,13 +33,13 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
     bool body_is_const_expr = true;
     std::optional<SCAnyExpr_I> last_index;
 
-    // // If all the body is const expr, then we can freely ignore everything bar the final expr.
-    // for (auto it = ast_graph->children(body).iter(); it; ++it) {
-    //     const auto r = std::visit(Expr { ir, ast_graph, ctx }, ast_graph->index_to_variant(*it));
-    //     body_is_const_expr = body_is_const_expr && static_cast<bool>(r.const_index);
-    //     ir.append(body_i, r.ir_node);
-    //     last_index = r.ir_node;
-    // }
+    // If all the body is const expr, then we can freely ignore everything bar the final expr.
+    for (auto it = ast_graph->children(body).iter(); it; ++it) {
+        const auto r = std::visit(Expr { ir, ast_graph, ctx }, ast_graph->index_to_variant(*it));
+        body_is_const_expr = body_is_const_expr && static_cast<bool>(r.const_index);
+        ir.append(body_i, r.ir_node);
+        last_index = r.ir_node;
+    }
 
     const auto method = ir.create(SCMethod { primitive }, { ast_graph, { *i } }, argument_list, variadic_args, body_i);
 

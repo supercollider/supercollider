@@ -1,0 +1,5 @@
+Time spent building sc_files = 0.05
+cpu time spent loading = 0 parsing = 0.274 ratio = 1:inf
+ real time spend loading & parsing  = 0.216
+Successfully compiled 5580 classes.
+TIME TAKEN = 0.297

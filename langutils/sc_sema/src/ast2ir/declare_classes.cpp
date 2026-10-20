@@ -1,10 +1,12 @@
 
+#include "declare_classes.hpp"
+
+#include "consteval.hpp"
 #include "ast2ir/literal_synthesis.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_sema/ast_location.hpp"
 #include "sc_sema/compiler.hpp"
-#include "ast2ir.hpp"
 #include "sc_sema/decls.hpp"
 #include "sc_sema/symbol_table.hpp"
 
@@ -15,9 +17,14 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::Index tota
                                          ast::ReadWriteAccessor accessor, ast::NamedIdentifierIndex name_i) {
     const auto name = cxt.symbol_table.get_identifier(ast_graph->string(name_i));
     const auto r =
-        decl.insert(ClassDeclaration::Member { total_index, name, { *name_i }, accessor, accessor_i, {}, {} });
+        decl.insert(ClassDeclaration::Member { total_index, name, { *name_i }, accessor, accessor_i, { }, { } });
     if (!r) {
-        cxt.diagnostics(diag::Diagnostic::todo(decl.ast_graph()->text_info(), decl.ast_graph()->location(name_i)));
+        const auto* mem = decl.find_member(name);
+        assert(mem);
+        cxt.diagnostics(diag::Diagnostic::duplicate_member(
+            decl.ast_graph()->text_info(), decl.ast_graph()->location(mem->total_index),
+            decl.ast_graph()->text_info(), decl.ast_graph()->location(total_index)
+        ));
     }
 }
 
@@ -70,7 +77,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
         cxt.diagnostics( //
             diag::Diagnostic::duplicate_class(g->text_info(), g->location(i), ast_graph->text_info(),
                                               ast_graph->location(class_name_i)));
-        return {};
+        return { };
     }
 
     // the one class with no super.
@@ -96,7 +103,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
             // the root object cannot inheirt from anything.
             cxt.diagnostics(diag::Diagnostic::root_object_must_not_inherit(ast_graph->text_info(),
                                                                            ast_graph->location(super_name_i)));
-            return {};
+            return { };
         }
     } else if (is_root_class) {
         cxt.inheritance_edges.insert(class_name);
@@ -104,7 +111,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
         // The default inheritor must inherit from something (unless it is also the root).
         cxt.diagnostics(diag::Diagnostic::default_inheritor_must_have_super(ast_graph->text_info(),
                                                                             ast_graph->location(class_name_i)));
-        return {};
+        return { };
     } else {
         // Location here is just white space.
         class_decl.super(cxt.common_classes.default_inheritor, { *super_name_i });
@@ -128,7 +135,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
     std::visit( //
         util::overload {
             //
-            [&](ast::MissingIndex) -> void {}, //
+            [&](ast::MissingIndex) -> void { }, //
             [&](ast::NamedIdentifierIndex i) -> void {
                 const auto slot_sym = cxt.symbol_table.get_identifier(ast_graph->string(i));
                 if (slot_sym == cxt.symbol_table.get_identifier("slot")

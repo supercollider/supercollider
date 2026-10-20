@@ -33,6 +33,13 @@ struct IRCompiler {
                           size_t num_threads = std::thread::hardware_concurrency() //
     );
 
+    template<typename F>
+    void depth_first_do(F&& f) const {
+        for(auto n : m_topological_ordering) {
+            std::invoke(f, *m_classes.at(n));
+        }
+    }
+
 private:
     Context& ctx;
 
@@ -40,6 +47,9 @@ private:
 
     mutable std::mutex m_classes_lock;
     std::unordered_map<SymSCClassName, std::shared_ptr<IRGraph>, std::hash<Symbol>> m_classes { };
+
+    // Topological ordering is only stable on a single threaded implementation, and only then, if the input files are in the same order.
+    std::vector<SymSCClassName> m_topological_ordering{};
 };
 
 

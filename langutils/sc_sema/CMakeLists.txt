@@ -18,7 +18,7 @@ add_library(sc_sema STATIC
 
 target_include_directories(sc_sema PUBLIC include)
 target_include_directories(sc_sema PRIVATE src)
-target_link_libraries(sc_sema PRIVATE sc_lexer sc_parser sc_util)
+target_link_libraries(sc_sema PRIVATE sc_lexer sc_parser sc_util Boost::thread)
 #set_target_compiler_strict_errors(sc_sema)
 set_property(TARGET sc_sema PROPERTY FOLDER Libs)
 

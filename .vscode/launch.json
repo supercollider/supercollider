@@ -72,7 +72,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/langutils/sc_sema/utils/standalone/sc_sema_standalone",
       "args": [
-        //"/home/jordan/.repo/SuperCollider.worktrees/topic/lang_refactor_before_parser_lib/langutils/sc_sema/tests/error_regression/5.sc",
+        //"/home/jordan/.repo/SuperCollider.worktrees/topic/lang_refactor_before_parser_lib/langutils/sc_sema/tests/error_regression/input/2.sc",
         "/home/jordan/.repo/sclang_corpus/corpus"
       ],
       "cwd": "${workspaceFolder}",

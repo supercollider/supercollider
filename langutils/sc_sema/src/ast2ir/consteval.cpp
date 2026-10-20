@@ -1,17 +1,13 @@
 
-#include "ast2ir.hpp"
+#include "consteval.hpp"
 #include "ast2ir/literal_synthesis.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_parser/nodes.hpp"
-#include "sc_sema/compiler.hpp"
-#include "sc_sema/const_expr.hpp"
-#include "sc_sema/symbols.hpp"
-#include "sc_sema/type_info.hpp"
-#include "sc_util/overload.hpp"
+#include "sc_sema/context.hpp"
 #include "sc_sema/symbol_table.hpp"
-#include <sstream>
+#include "sc_sema/type_info.hpp"
 
 namespace sc::ir::ast2ir {
     using Diagnostic = diag::Diagnostic;

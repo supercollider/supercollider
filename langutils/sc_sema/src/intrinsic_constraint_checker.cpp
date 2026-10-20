@@ -1,4 +1,5 @@
 
+#include "sc_parser/ast.hpp"
 #include "sc_sema/context.hpp"
 #include "sc_sema/decls.hpp"
 #include "sc_sema/intrinsic_constraint.hpp"

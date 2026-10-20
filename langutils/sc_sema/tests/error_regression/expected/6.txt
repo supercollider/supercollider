@@ -52,4 +52,10 @@ Error: Missing common class
 
 Symbol
 ──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
 Successfully compiled 0 classes.

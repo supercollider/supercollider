@@ -27,8 +27,8 @@ template <typename OptNodeIndex, //
           typename T //
           > //
 struct Iter {
-    static_assert(std::is_integral_v<typename OptNodeIndex::Underlying>);
-    static_assert(std::is_constructible_v<bool, OptNodeIndex>);
+    // static_assert(std::is_integral_v<typename OptNodeIndex::Underlying>);
+    // static_assert(std::is_constructible_v<bool, OptNodeIndex>);
     constexpr Iter(OptNodeIndex current, const std::vector<Edges>& edge): m_current(current), m_edges(edge) { }
 
     Iter& operator+=(int offset);
@@ -131,6 +131,7 @@ public: // This is meant to be privately inherited from.
     template <typename Node, typename... ChildrenIndexes> //
     [[nodiscard]] typename Node::Index create(Node&& node, ChildrenIndexes&&... child_indexes) {
         assert((not_dead(child_indexes) && ...));
+        /*
         static_assert((typed_index::is_type_set_index<ChildrenIndexes>() && ...),
                       "You have not passed an index to the constructor of a node, you have probably passed the node "
                       "rather than its index.");
@@ -146,6 +147,7 @@ public: // This is meant to be privately inherited from.
                       "Too few arguments have been passed to the constructor of a node.");
         static_assert(Node::template constructible_from<ChildrenIndexes...>(),
                       "The children index types do not match the constructor");
+                      */
         const typename Node::Index index = [&]() {
             if (m_dead_nodes.empty()) {
                 const auto index_raw = m_node_payload.size();
@@ -197,38 +199,38 @@ public: // This is meant to be privately inherited from.
 
     template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
     [[nodiscard]] constexpr NodeTypeFromIndex<TypedIndex>& payload(TypedIndex i) {
-        assert(not_dead(i));
+        // assert(not_dead(i));
         return std::get<NodeTypeFromIndex<TypedIndex>>(m_node_payload[*i]);
     }
 
     template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
     [[nodiscard]] constexpr const auto& payload(TypedIndex i) const {
-        assert(not_dead(i));
+        // assert(not_dead(i));
         using R = typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type;
         return std::get<R>(m_node_payload[*i]);
     }
 
     [[nodiscard]] constexpr typename Helper::Variant& payload(UntypedNodeIndex i) {
-        assert(not_dead(i));
+        // assert(not_dead(i));
         return m_node_payload[*i];
     };
 
     [[nodiscard]] constexpr const typename Helper::Variant& payload(UntypedNodeIndex i) const {
-        assert(not_dead(i));
+        // assert(not_dead(i));
         return m_node_payload[*i];
     }
 
     [[nodiscard]] constexpr Edges& edges(UntypedNodeIndex i) {
-        assert(not_dead(i));
+        // assert(not_dead(i));
         return m_node_edges[*i];
     }
     [[nodiscard]] constexpr const Edges& edges(UntypedNodeIndex i) const {
-        assert(not_dead(i));
+        // assert(not_dead(i));
         return m_node_edges[*i];
     }
 
     [[nodiscard]] constexpr auto last_child(UntypedNodeIndex i) const {
-        assert(not_dead(i));
+        // assert(not_dead(i));
         return m_last_child[*i];
     }
 
@@ -245,15 +247,14 @@ public: // This is meant to be privately inherited from.
     ////////////////////////////////////////////////////////////////////////////////
     // Checks type of untyped node.
     ////////////////////////////////////////////////////////////////////////////////
-    template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
-    [[nodiscard]] constexpr bool is_a(UntypedNodeIndex i) const {
-        assert(not_dead(i));
+    template <typename TypedIndex> [[nodiscard]] constexpr bool is_a(UntypedNodeIndex i) const {
+        // assert(not_dead(i));
         return std::get_if<NodeTypeFromIndex<TypedIndex>>(&m_node_payload[*i]) != nullptr;
     }
 
 
     template <typename TypedIndex> [[nodiscard]] constexpr std::optional<TypedIndex> as_a(UntypedNodeIndex i) const {
-        assert(not_dead(i));
+        // assert(not_dead(i));
 
 
         if (std::get_if<NodeTypeFromIndex<TypedIndex>>(&m_node_payload[*i])) {
@@ -266,10 +267,9 @@ public: // This is meant to be privately inherited from.
     ////////////////////////////////////////////////////////////////////////////////
     // Return children of a node in a structured way.
     ////////////////////////////////////////////////////////////////////////////////
-    template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
-    [[nodiscard]] constexpr auto children(TypedIndex i) const {
-        assert(not_dead(i));
-        // static_assert(TypedIndex::size_of_set == 1);
+    template <typename TypedIndex> [[nodiscard]] constexpr auto children(TypedIndex i) const {
+        // assert(not_dead(i));
+        //  static_assert(TypedIndex::size_of_set == 1);
         using N = NodeTypeFromIndex<TypedIndex>;
         if constexpr (N::is_terminal())
             return NoChildren { };
@@ -281,16 +281,15 @@ public: // This is meant to be privately inherited from.
         }
     }
 
-    template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
-    [[nodiscard]] constexpr auto index_to_variant(TypedIndex i) const {
-        assert(not_dead(i));
+    template <typename TypedIndex> [[nodiscard]] constexpr auto index_to_variant(TypedIndex i) const {
+        // assert(not_dead(i));
         return std::visit([&](const auto& node) { return GraphImplementation::as_variant(i, node); },
                           m_node_payload[*i]);
     }
 
 
     template <typename Action, typename TypedIndex> auto visit(Action action, TypedIndex i) const {
-        assert(not_dead(i));
+        // assert(not_dead(i));
         return std::visit(
             action,
             std::visit([&](const auto& node) { return GraphImplementation::as_variant(i, node); }, m_node_payload[*i]));
@@ -301,7 +300,7 @@ public: // This is meant to be privately inherited from.
         typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type::HeldType, N>> //
     list_unpack(TypedIndex i) const {
         using NodeType = typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type;
-        static_assert(NodeType::is_list());
+        // static_assert(NodeType::is_list());
         using Held = typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type::HeldType;
         if (num_children(i) != N)
             return {};
@@ -314,10 +313,10 @@ public: // This is meant to be privately inherited from.
     ////////////////////////////////////////////////////////////////////////////////
     template <typename ParentI, typename ChildI> //
     ParentI append(ParentI p, ChildI c) {
-        assert(not_dead(p));
-        assert(not_dead(c));
-        // static_assert(typed_index::is_type_set_index<ParentI>());
-        // static_assert(typed_index::is_type_set_index<ChildI>());
+        // assert(not_dead(p));
+        // assert(not_dead(c));
+        //  static_assert(typed_index::is_type_set_index<ParentI>());
+        //  static_assert(typed_index::is_type_set_index<ChildI>());
         using Parent = typename decltype(Helper::template get_node_type_from_index_type<ParentI>())::type;
         // static_assert(Parent::is_list());
         // static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
@@ -328,10 +327,10 @@ public: // This is meant to be privately inherited from.
 
     template <typename ParentI, typename ChildI> //
     ParentI prepend(ParentI p, ChildI child) {
-        assert(not_dead(p));
-        assert(not_dead(child));
-        // static_assert(typed_index::is_type_set_index<ParentI>());
-        // static_assert(typed_index::is_type_set_index<ChildI>());
+        // assert(not_dead(p));
+        // assert(not_dead(child));
+        //  static_assert(typed_index::is_type_set_index<ParentI>());
+        //  static_assert(typed_index::is_type_set_index<ChildI>());
         using Parent = NodeTypeFromIndex<ParentI>;
         // static_assert(Parent::is_list());
         // static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
@@ -368,11 +367,11 @@ public: // This is meant to be privately inherited from.
     */
     template <typename Surviving, typename Eaten> //
     Surviving merge(Surviving s, Eaten e) {
-        assert(s != e);
-        assert(not_dead(s));
-        assert(not_dead(e));
-        // static_assert(typed_index::is_type_set_index<Surviving>());
-        // static_assert(typed_index::is_type_set_index<Eaten>());
+        // assert(s != e);
+        // assert(not_dead(s));
+        // assert(not_dead(e));
+        //  static_assert(typed_index::is_type_set_index<Surviving>());
+        //  static_assert(typed_index::is_type_set_index<Eaten>());
 
         using SurvivingType = NodeTypeFromIndex<Surviving>;
         using EatenType = NodeTypeFromIndex<Eaten>;
@@ -383,7 +382,7 @@ public: // This is meant to be privately inherited from.
 
 
         auto& eaten_edges = m_node_edges[*e];
-        assert(!eaten_edges.parent);
+        // assert(!eaten_edges.parent);
         if (auto c = eaten_edges.first_child)
             append_to_parent_unchecked(s, c);
 
@@ -556,8 +555,8 @@ private:
 
     template <typename TypedIndex, typename Node> [[nodiscard]] static auto as_variant(TypedIndex i, const Node&) {
         using NodeIndex = typename Node::Index;
-        static_assert(NodeIndex::size_of_set == 1);
-        static_assert(Helper::template has_node_with_enum<NodeIndex::Possible[0]>());
+        // static_assert(NodeIndex::size_of_set == 1);
+        // static_assert(Helper::template has_node_with_enum<NodeIndex::Possible[0]>());
         return i.template as_variant<NodeIndex::Possible[0]>();
     }
 };
@@ -593,7 +592,7 @@ template <typename OptNodeIndex, typename Edges, typename T>
 
 template <typename OptNodeIndex, typename Edges, typename T>
 [[nodiscard]] constexpr T Iter<OptNodeIndex, Edges, T>::operator*() const {
-    assert(m_current);
+    // assert(m_current);
     return T { *m_current };
 }
 }

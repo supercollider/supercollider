@@ -82,4 +82,10 @@ Error: Missing intrinsic class
 
 AbstractObjectExperimental
 ──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
 Successfully compiled 0 classes.

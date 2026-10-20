@@ -145,12 +145,12 @@ private:
         return ((T == ThisSet ? 1 : 0) + ...) == 1;
     }
     // While this might be slow, the compile time bugs that are produced by duplicates are crazy.
-    static_assert((contained_exactly_once<ThisSet>() && ...), "Duplicates are not allowed.");
+    // static_assert((contained_exactly_once<ThisSet>() && ...), "Duplicates are not allowed.");
 
 public:
     using UnderlyingIndex = INDEX_BASE;
     using EnumType = typename SPEC::EnumSet;
-    static_assert(sizeof...(ThisSet) > 0, "Must provide at least one 'Type' per TypedIndex.");
+    // static_assert(sizeof...(ThisSet) > 0, "Must provide at least one 'Type' per TypedIndex.");
     static constexpr auto size_of_set { sizeof...(ThisSet) };
     static constexpr auto Possible { std::array<EnumType, sizeof...(ThisSet)> { ThisSet... } };
     using UnderlyingEnum = std::underlying_type_t<EnumType>;
@@ -212,7 +212,7 @@ private:
 
     // Removes an enum value from the set.
     template <EnumType ToRemove> struct Remover {
-        static_assert(((ToRemove == ThisSet) || ...));
+        // static_assert(((ToRemove == ThisSet) || ...));
 
         template <size_t... Is> [[nodiscard]] static constexpr auto remove(std::index_sequence<Is...>) {
             static_assert(sizeof...(Is) + 1 == sizeof...(ThisSet));

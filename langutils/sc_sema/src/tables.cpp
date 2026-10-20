@@ -32,11 +32,14 @@ const static std::string meta_prefix = "Meta_";
 
 [[nodiscard]] SymSCClassName SymbolTable::get_meta_class_name(std::string s) {
     auto m = get_class_name(meta_prefix + s);
+
+    std::scoped_lock lock { m_lock }; // ineffcient relocking.
     m_meta_classes.insert(m);
     return m;
 }
 [[nodiscard]] SymSCClassName SymbolTable::get_meta_class_name(SymSCClassName n) {
     auto m = get_class_name(meta_prefix + std::string { (*this)(n) });
+    std::scoped_lock lock { m_lock };
     m_meta_classes.insert(m);
     return m;
 }
@@ -130,18 +133,17 @@ bool ClassDeclaration::insert(Member m) {
 }
 
 
-bool ClassDeclarations::register_class_declaration(ClassDeclaration& decl) {
+void ClassDeclarations::register_class_declaration(ClassDeclaration decl) {
     SymSCClassName name = decl.name();
-    std::scoped_lock lock { m_lock };
-    if (m_class_declarations.find(name) != m_class_declarations.end()) {
-        return false;
-    }
+    std::scoped_lock lock { m_insert_lock };
+    assert(m_class_declarations.count(name) == 0);
     m_class_declarations.insert({ name, std::move(decl) });
-    return true;
+    assert(m_class_locks.count(name) == 0);
+    m_class_locks[name];
 }
 
 [[nodiscard]] bool ClassDeclarations::exists(SymSCClassName name) const {
-    std::scoped_lock lock { m_lock };
+    std::scoped_lock lock { m_insert_lock };
     return m_class_declarations.find(name) != m_class_declarations.end();
 }
 
@@ -170,7 +172,6 @@ bool ClassDeclarations::register_class_declaration(ClassDeclaration& decl) {
     }
 }
 void ClassDeclarations::poison_all() {
-    std::scoped_lock lk { m_lock };
     for (auto& [k, v] : m_class_declarations)
         v.poison();
 }

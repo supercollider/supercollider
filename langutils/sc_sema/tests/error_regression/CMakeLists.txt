@@ -1,4 +1,4 @@
-file(GLOB tests *.sc)
+file(GLOB tests input/*.sc)
 
 # This is how we make tests depends on executables
 add_test(NAME build_standalone

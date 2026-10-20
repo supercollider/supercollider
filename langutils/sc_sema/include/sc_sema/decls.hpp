@@ -46,13 +46,13 @@ public:
         module(mod),
         m_whole_index(index),
         m_name(name),
-        m_name_index(name_index) {}
+        m_name_index(name_index) { }
 
     [[nodiscard]] ast::Index index() const { return m_whole_index; }
     [[nodiscard]] SymSCClassName name() const { return m_name; }
     [[nodiscard]] ast::Index name_index() const { return m_name_index; }
     [[nodiscard]] std::shared_ptr<const ast::ASTGraph> ast_graph() const { return m_ast_graph_of_decl; }
-    
+
     void super(SymSCClassName n, ast::Index i) { m_super.emplace(n, i); };
     [[nodiscard]] std::optional<std::pair<SymSCClassName, ast::Index>> super() const { return m_super; }
     void slot_def(SymSCIdentifier sym, ast::Index i) { m_slot_def = { sym, i }; };
@@ -92,7 +92,7 @@ public:
     // The only reason a class should be poisoned is if there is a problem with its class heirachy (e.g., it is in a
     // cycle) These are thread safe because it is an atomic.
     void poison() { m_poisoned = true; }
-    [[nodiscard]] bool poisoned() const {return m_poisoned; }
+    [[nodiscard]] bool poisoned() const { return m_poisoned; }
 
 
 private:
@@ -129,34 +129,33 @@ private:
 
 
 struct ClassDeclarations {
-    // false if duplicate.
-    // Will move ONLY on success.
-    bool register_class_declaration(ClassDeclaration& decl);
-
+    // Locks container
+    void register_class_declaration(ClassDeclaration decl);
     [[nodiscard]] bool exists(SymSCClassName name) const;
 
-    [[nodiscard]] size_t size() const;
-    [[nodiscard]] size_t num_not_poisoned() const;
 
-    /// This will lock.
+    // Locks individual class decl, does not lock the container.
+
     /// Requires name be registered.
     template <typename F> auto with_decl(SymSCClassName name, F&& f) {
-        std::scoped_lock lock { m_lock };
         using R = std::invoke_result_t<F, ClassDeclaration&>;
         if constexpr (std::is_same_v<R, void>) {
-            if (const auto fnd = m_class_declarations.find(name); fnd != m_class_declarations.end())
+            if (const auto fnd = m_class_declarations.find(name); fnd != m_class_declarations.end()) {
+                std::scoped_lock lk { m_class_locks.at(name) };
                 std::invoke(std::forward<F>(f), m_class_declarations.find(name)->second);
-            else
+            } else
                 return;
         } else if constexpr (std::is_pointer_v<R>) {
-            if (const auto fnd = m_class_declarations.find(name); fnd != m_class_declarations.end())
+            if (const auto fnd = m_class_declarations.find(name); fnd != m_class_declarations.end()) {
+                std::scoped_lock lk { m_class_locks.at(name) };
                 std::invoke(std::forward<F>(f), m_class_declarations.find(name)->second);
-            else
+            } else
                 return nullptr;
         } else {
-            if (const auto fnd = m_class_declarations.find(name); fnd != m_class_declarations.end())
+            if (const auto fnd = m_class_declarations.find(name); fnd != m_class_declarations.end()) {
+                std::scoped_lock lk { m_class_locks.at(name) };
                 return std::optional<R> { std::invoke(std::forward<F>(f), m_class_declarations.find(name)->second) };
-            else
+            } else
                 return std::optional<R> { std::nullopt };
         }
     }
@@ -164,15 +163,16 @@ struct ClassDeclarations {
     /// This will lock.
     /// Requires name be registered.
     template <typename F> auto with_decl(SymSCClassName name, F&& f) const {
-        std::scoped_lock lock { m_lock };
         using R = std::invoke_result_t<F, const ClassDeclaration&>;
         if constexpr (std::is_same_v<R, void>) {
             if (const auto fnd = m_class_declarations.find(name); fnd != m_class_declarations.end()) {
+                std::scoped_lock lk { m_class_locks.at(name) };
                 std::invoke(std::forward<F>(f), m_class_declarations.find(name)->second);
             }
             return;
         } else {
             if (const auto fnd = m_class_declarations.find(name); fnd != m_class_declarations.end()) {
+                std::scoped_lock lk { m_class_locks.at(name) };
                 return std::optional<R> { std::invoke(std::forward<F>(f), m_class_declarations.find(name)->second) };
             } else {
                 return std::optional<R> { std::nullopt };
@@ -181,8 +181,8 @@ struct ClassDeclarations {
     }
 
     template <typename F> auto for_all(F f) const {
-        std::scoped_lock lock { m_lock };
         for (const auto& [name, decl] : m_class_declarations) {
+            std::scoped_lock lk { m_class_locks.at(name) };
             std::invoke(f, name, decl);
         }
     }
@@ -204,11 +204,15 @@ struct ClassDeclarations {
     [[nodiscard]] auto unsafe_begin() -> decltype(auto) { return m_class_declarations.begin(); }
     [[nodiscard]] auto unsafe_end() -> decltype(auto) { return m_class_declarations.end(); }
 
+    // Not thread safe.
+    [[nodiscard]] size_t size() const;
+    [[nodiscard]] size_t num_not_poisoned() const;
     void poison_all();
 
 private:
-    mutable std::mutex m_lock { };
+    mutable std::mutex m_insert_lock{};
     std::unordered_map<SymSCClassName, ClassDeclaration, std::hash<Symbol>> m_class_declarations { };
+    std::unordered_map<SymSCClassName, std::mutex, std::hash<Symbol>> m_class_locks { };
 };
 
 

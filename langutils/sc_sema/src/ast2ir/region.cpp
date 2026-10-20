@@ -1,7 +1,5 @@
 
-#include "../ast2ir.hpp"
-#include "sc_parser/indexes_typed.hpp"
-#include "sc_sema/ir.hpp"
+#include "region.hpp"
 
 namespace sc::ir::ast2ir {
 

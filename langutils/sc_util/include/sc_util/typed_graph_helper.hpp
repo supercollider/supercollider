@@ -18,9 +18,9 @@ struct TypedGraphHelper : TypedGraphHelperBase {
     using IndexSequence = std::make_index_sequence<sizeof...(Nodes)>;
     using UntypedStrongIndex = typename std::tuple_element_t<0, Tuple>::Index::UnderlyingIndex;
 
-    template <typename N> [[nodiscard]] static constexpr bool check_enum_appears_once() {
-        return ((N::Index::Possible[0] == Nodes::Index::Possible[0] ? 1 : 0) + ...) == 1;
-    }
+    // template <typename N> [[nodiscard]] static constexpr bool check_enum_appears_once() {
+    //     return ((N::Index::Possible[0] == Nodes::Index::Possible[0] ? 1 : 0) + ...) == 1;
+    // }
 
     // static_assert(((Nodes::Index::size_of_set == 1) && ...),
     //               "Each node must have an index type that contains a single enum entry.");

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "sc_diagnostic/sc_diagnostic.hpp"
-#include "sc_parser/ast.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_sema/common_classes.hpp"
 #include "sc_sema/const_expr.hpp"
@@ -50,10 +49,12 @@ struct InheritanceEdges {
     void insert(SymSCClassName parent, SymSCClassName child);
     void insert(SymSCClassName none) { m_sub_classes[none]; };
 
+
+
     /// Requires root has no parents.
     /// Returns inheritance cycles.
     /// If empty, no cycles.
-    std::vector<std::vector<SymSCClassName>> cycle_check(SymSCClassName root) const;
+    std::vector<std::vector<SymSCClassName>> cycle_check(SymSCClassName root, std::vector<SymSCClassName>& topo_ordering) const;
 
     // Not thread safe.
     const std::vector<SymSCClassName>& get_unsafe(SymSCClassName n) const;
@@ -92,7 +93,7 @@ struct SourceEntry {
 
 
 struct Context {
-    Context(SymbolTable& sym_table, CommonClasses com, ModuleTable& mod_t, std::vector<SourceEntry>& class_library):
+    Context(SymbolTable& sym_table, CommonClasses com, ModuleTable& mod_t, std::vector<std::optional<SourceEntry>>& class_library):
         symbol_table(sym_table),
         common_classes(com),
         modules(mod_t),
@@ -102,7 +103,7 @@ struct Context {
     CommonClasses common_classes;
     ModuleTable& modules;
     ClassDeclarations class_declarations { };
-    std::vector<SourceEntry>& class_library_ast;
+    std::vector<std::optional<SourceEntry>>& class_library_ast;
     ConstantTable constant_table { };
     CurrentDiagnostics diagnostics { };
     InheritanceEdges inheritance_edges { };

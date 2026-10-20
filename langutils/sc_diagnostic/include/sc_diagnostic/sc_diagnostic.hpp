@@ -51,6 +51,12 @@ public:
     [[nodiscard]] static Diagnostic duplicate_method_name(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                         TextInfoPtr second_t, sc::lex::SourceCodeRange second_l);
 
+    [[nodiscard]] static Diagnostic duplicate_member(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                        TextInfoPtr second_t, sc::lex::SourceCodeRange second_l);
+
+    [[nodiscard]] static Diagnostic duplicate_member_in_base(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                        TextInfoPtr second_t, sc::lex::SourceCodeRange second_l);
+
     [[nodiscard]] static Diagnostic default_inheritor_must_have_super(TextInfoPtr first_t,
                                                                       sc::lex::SourceCodeRange first_l);
 
@@ -64,6 +70,8 @@ public:
     [[nodiscard]] static Diagnostic incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                        std::string_view expected);
     [[nodiscard]] static Diagnostic incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+
+    [[nodiscard]] static Diagnostic non_terminating_return(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
 
 
     Diagnostic() = delete;
@@ -82,7 +90,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& s, const Diagnostic& d);
 
-    std::string to_string() const;
+    [[nodiscard]] std::string to_string() const;
 
 private:
     Diagnostic(const char* name, Severity severity, std::vector<Location> locations = { },
