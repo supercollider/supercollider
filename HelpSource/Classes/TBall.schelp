@@ -102,7 +102,7 @@ code::
 		);
 		in = Mix(in);
 		f = TBall.ar(in * 10, g, d, 0.001);
-		
+
 		in + Mix(Ringz.ar(f, u * Array.fill(4, { |i| (i+1) + 0.3.rand2 }) * 2, 0.1))
 	};
 	Splay.ar(z) * 0.8

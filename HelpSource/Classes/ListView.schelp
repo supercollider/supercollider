@@ -184,7 +184,7 @@ s.waitForBoot({
 			5, { try{ f.free }; f = { ReplaceOut.ar(0, MoogFF.ar(In.ar(0, 2), In.kr(0, 1), 1.5)) }.play(addAction: \addToTail) }
 		);
 	});
-	
+
 	ww = FreqScope.new(400, 200, 0);
 	w.bounds = Rect(50, Window.screenBounds.height-300, 200, 200);
 	ww.window.bounds = ww.window.bounds.moveTo(255, Window.screenBounds.height-328);

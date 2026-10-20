@@ -18,15 +18,15 @@ Please avoid 'forking' or creating another thread inside an code::initClass:: me
 
 If an code::initClass:: throws an error outside of itself, the class library will be in an invalid state and cannot be used.
 
-If you need to use access a different class you need to declare the class by using code::initClassTree::, 
-however, it is best to avoid situations where this is necessary. 
+If you need to use access a different class you need to declare the class by using code::initClassTree::,
+however, it is best to avoid situations where this is necessary.
 If you have resource as a classvar that needs initializing, instead create a getter method that checks for some uninitialized state then creates and assigns the resource if needed.
 
 code::
 A {
 	classvar prFoo = \uninitialized;
 
-	*foo { 
+	*foo {
 		if (prFoo === \uninitialized) {
 			prFoo = ....;
 		};
@@ -51,7 +51,7 @@ If a class throws an error during this method, the entire class library is inval
 
 method:: initClassTree
 
-used in link::#*initClass:: to assure the initialization of code::aClass:: before using it. 
+used in link::#*initClass:: to assure the initialization of code::aClass:: before using it.
 Wherever necessary, it recursively initializes all classes required by code::aClass::.
 
 

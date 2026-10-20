@@ -46,7 +46,7 @@ definitionList::
 
 ## install || If true, install the responder automatically so it is active and ready to respond. If false, then it will be inactive.
 
-## swallowEvent || If true, then if the midi event is matched, cease testing any further responders. eg. if a CCResponder matches port, chan and num, and swallowEvent is set to true, then no further CCResponders will be offered the chance to respond to the event. The event is "swallowed". By default this is false. Note that doing this will prevent any other responders of this type from responding, including ones added behind the scenes in classes. Note also that this functionality is sensitive to the order in which responders are added. 
+## swallowEvent || If true, then if the midi event is matched, cease testing any further responders. eg. if a CCResponder matches port, chan and num, and swallowEvent is set to true, then no further CCResponders will be offered the chance to respond to the event. The event is "swallowed". By default this is false. Note that doing this will prevent any other responders of this type from responding, including ones added behind the scenes in classes. Note also that this functionality is sensitive to the order in which responders are added.
 
 ::
 

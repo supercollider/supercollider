@@ -2,7 +2,7 @@ title:: News in 3.13
 summary:: A summary of news in SC 3.13
 categories:: News
 
-Welcome to the SuperCollider 3.13 release! 
+Welcome to the SuperCollider 3.13 release!
 
 NOTE:: In this version numerous UGens have been fixes so that they calculate their initial value as originally intended. In some cases this may create a different result than previously. See below for details ::
 
@@ -15,25 +15,25 @@ section::  General
 Countless improvements to help files and documentation (@elifieldsteel, @JaimeClover, @DoHITB, @jamshark70, @heretogo, @capital-G, @alexhughk, @chris75vie, @forrcaho, @paum3, @avdrd, @wolfgangschaltung, @telephon, @redFrik, @madskjeldgaard, @mxw, @dyfer, @tdug, @mtmccrea, @prko, @mjsyts, @grirgz, @chkworks, @balzss, @hectorgonzalezo, @michelestew, @mttvn, @pearcemerritt, @mlang)
 
 Updates and fixes for the test suite:
-@telephon in https://github.com/supercollider/supercollider/pull/5304, 
-@telephon in https://github.com/supercollider/supercollider/pull/5676, 
-@jamshark70 in https://github.com/supercollider/supercollider/pull/5666, 
-@elgiano in https://github.com/supercollider/supercollider/pull/5717, 
-@dyfer in https://github.com/supercollider/supercollider/pull/5702, 
-@dyfer in https://github.com/supercollider/supercollider/pull/5738, 
-@dyfer in https://github.com/supercollider/supercollider/pull/5792, 
-@telephon in https://github.com/supercollider/supercollider/pull/5801, 
-@dyfer in https://github.com/supercollider/supercollider/pull/5867, 
-@telephon in https://github.com/supercollider/supercollider/pull/5677, 
-@nuss in https://github.com/supercollider/supercollider/pull/5687 
+@telephon in https://github.com/supercollider/supercollider/pull/5304,
+@telephon in https://github.com/supercollider/supercollider/pull/5676,
+@jamshark70 in https://github.com/supercollider/supercollider/pull/5666,
+@elgiano in https://github.com/supercollider/supercollider/pull/5717,
+@dyfer in https://github.com/supercollider/supercollider/pull/5702,
+@dyfer in https://github.com/supercollider/supercollider/pull/5738,
+@dyfer in https://github.com/supercollider/supercollider/pull/5792,
+@telephon in https://github.com/supercollider/supercollider/pull/5801,
+@dyfer in https://github.com/supercollider/supercollider/pull/5867,
+@telephon in https://github.com/supercollider/supercollider/pull/5677,
+@nuss in https://github.com/supercollider/supercollider/pull/5687
 @elgiano in https://github.com/supercollider/supercollider/pull/5716.
 
 Updates and fixes for the automated build system (GitHub Actions):
-@dyfer in https://github.com/supercollider/supercollider/pull/5845, 
-@dyfer in https://github.com/supercollider/supercollider/pull/5783, 
-@dyfer in https://github.com/supercollider/supercollider/pull/5847, 
-@dyfer in https://github.com/supercollider/supercollider/pull/5875, 
-@dyfer in https://github.com/supercollider/supercollider/pull/5889, 
+@dyfer in https://github.com/supercollider/supercollider/pull/5845,
+@dyfer in https://github.com/supercollider/supercollider/pull/5783,
+@dyfer in https://github.com/supercollider/supercollider/pull/5847,
+@dyfer in https://github.com/supercollider/supercollider/pull/5875,
+@dyfer in https://github.com/supercollider/supercollider/pull/5889,
 @dyfer in https://github.com/supercollider/supercollider/pull/5776.
 
 section::  General: Added
@@ -83,7 +83,7 @@ UdpInPort error reporting by @jamshark70 in https://github.com/supercollider/sup
 
 Parsing block arguments by @nilninull in https://github.com/supercollider/supercollider/pull/5522
 
-3.13.1 fixes an allocation bug when using an HID on Linux by @dyfer, @bgola and @xunil-cloud in https://github.com/supercollider/hidapi/pull/17 
+3.13.1 fixes an allocation bug when using an HID on Linux by @dyfer, @bgola and @xunil-cloud in https://github.com/supercollider/hidapi/pull/17
 
 section::  Class library: Added
 
@@ -241,9 +241,9 @@ These are intended and documented behaviors, but which failed previously in cert
 
 For more details see https://github.com/supercollider/supercollider/pull/4150 by @mtmccrea
 
-Numerous UGens have been updated so that their initialization sample is set correctly by @mtmccrea: 
-code:: OscUGens :: in https://github.com/supercollider/supercollider/pull/5787, 
-code:: Klang :: and code:: Klank :: in https://github.com/supercollider/supercollider/pull/5817, 
+Numerous UGens have been updated so that their initialization sample is set correctly by @mtmccrea:
+code:: OscUGens :: in https://github.com/supercollider/supercollider/pull/5787,
+code:: Klang :: and code:: Klank :: in https://github.com/supercollider/supercollider/pull/5817,
 code:: TWindex :: in https://github.com/supercollider/supercollider/pull/5815,
 code:: Free :: and code:: PauseSelf :: in https://github.com/supercollider/supercollider/pull/5914,
 code::Poll:: in https://github.com/supercollider/supercollider/pull/5965

@@ -3,7 +3,7 @@ summary:: A summary of UGen changes across SuperCollider versions
 categories:: News, Server>Nodes
 
 This file documents changes affecting UGens in each SuperCollider version,
-starting from version 3.14. 
+starting from version 3.14.
 
 section:: Version 3.14
 

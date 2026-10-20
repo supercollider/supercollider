@@ -114,7 +114,7 @@ m = MIDIOut(0);  // Linux users: MIDIOut(0, MIDIClient.destinations[0].uid)
 a = Pbind(degree: Prand([1, 2, 3, [0, 5]], inf));
 
 // chain a \midi-type event into the pattern and play it (see link::Classes/Pchain::)
-// this will also take care of noteOffs. 
+// this will also take care of noteOffs.
 (a <> (type: \midi, midiout: m)).play;
 
 // a tidier way to do the same, where we specify the type of midi commands we want to send:
@@ -123,11 +123,11 @@ a = Pbind(midicmd: \noteOn, degree: Prand([1, 2, 3, [0, 5]], inf));
 //again, noteOffs are taken care off by default (but this can be turned off).
 
 //other selected midicmds:
-// for bend messages: 
+// for bend messages:
 b = Pbind(midicmd: \bend, val: Pwhite(0,16383));
 (b <> (type: \midi, midiout: m)).play;
 
-// for CC messages: 
+// for CC messages:
 c = Pbind(midicmd: \control, control: Pwhite(0,127), ctlNum: 0);
 (c <> (type: \midi, midiout: m)).play;
 ::

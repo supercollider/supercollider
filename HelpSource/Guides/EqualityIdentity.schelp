@@ -166,6 +166,6 @@ code::
 To understand this behavior, we must know two things:
 First, instances of link::Classes/Function:: do not have unique representations, that is, like link::Classes/String:: (mentioned above), each code::{1}:: expression in the code is assigned a separate instance.
 Thus code::{1} === {1}:: will return code::false::.
-Second, emphasis::unlike:: link::Classes/String::, link::Classes/Function:: does not implement a code::==:: method, and therefore its code::==:: defaults to code::===::. 
-code::{1} == {1}:: is thus really a question about whether the two functions designate the same object instance in memory, 
+Second, emphasis::unlike:: link::Classes/String::, link::Classes/Function:: does not implement a code::==:: method, and therefore its code::==:: defaults to code::===::.
+code::{1} == {1}:: is thus really a question about whether the two functions designate the same object instance in memory,
 i.e. whether code::{1} === {1}::---which, as we just learned, returns code::false::.

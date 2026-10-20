@@ -379,7 +379,7 @@ METHOD:: setBackgroundImage
 Sets an Image as a valid view background, with 16 different drawing modes and opacity support.
 
 	argument:: image
-	the Image to use. 
+	the Image to use.
 
 	argument:: tileMode
 	the mode to use. By default 1 (fixed to left, fixed to top).

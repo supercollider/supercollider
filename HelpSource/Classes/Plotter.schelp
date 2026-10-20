@@ -176,7 +176,7 @@ p.superpose_(true);
 ::
 
 warning::
-Plot modes  code::\levels::, code::\steps::, and their variants display data in a sample-and-hold manner, 
+Plot modes  code::\levels::, code::\steps::, and their variants display data in a sample-and-hold manner,
 so unless the link::#-domainSpecs:: has been set explicitly to extend beyond the last data point,
 the "step" of the last data point may not be visible.
 code::

@@ -4,7 +4,7 @@ categories:: Streams-Patterns-Events>Patterns>Data Sharing
 related:: Classes/Plambda, Classes/Plet
 
 DESCRIPTION::
-link::Classes/Pget:: retrieves the value of a link::Classes/Plet::. 
+link::Classes/Pget:: retrieves the value of a link::Classes/Plet::.
 link::Classes/Plet::/link::Classes/Pget:: are used to share data between patterns inside of a link::Classes/Plambda::
 
 CLASSMETHODS::
@@ -39,21 +39,21 @@ code::
 (
 	/*
 
-	Two patterns playing in parallel, 
+	Two patterns playing in parallel,
 	sharing data between eachother
 
 	*/
 
 	// a melody playing random scale degrees
 	a = Pbind(
-		\dur, 0.125, 
+		\dur, 0.125,
 		\octave, 4,
 		\degree, Plet(\melody, pattern: Pwhite(0, 7))
 	);
 
-	// the bass, scale degrees sampled from the \melody variable defined above 
+	// the bass, scale degrees sampled from the \melody variable defined above
 	b = Pbind(
-		\dur, 0.5, 
+		\dur, 0.5,
 		\octave, 3,
 		\degree, Pget(\melody, default: 1, repeats: inf).trace
 	);

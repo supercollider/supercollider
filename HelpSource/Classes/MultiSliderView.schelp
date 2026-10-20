@@ -303,7 +303,7 @@ f = {
 	m = MultiSliderView(w, Rect(0, 0, 580, 200)); // default thumbWidth is 13
 	m.value = Array.fill(n, { |v| 0.5+((0.3*v).sin*0.25) });
 	m.action = { |q|q.value.postln };
-	
+
 	StaticText(w, 380@18).string_("indexThumbSize or thumbSize");
 	Slider(w, 580@10).action_({ |sl| m.indexThumbSize = sl.value*24 }).value_(0.5);
 	StaticText(w, 380@18).string_("valueThumbSize");
@@ -312,7 +312,7 @@ f = {
 	Slider(w, 580@10).action_({ |sl| m.xOffset = sl.value*50 });
 	StaticText(w, 580@18).string_("startIndex");
 	Slider(w, 580@10).action_({ |sl| m.startIndex = sl.value *m.size });
-	
+
 	CompositeView(w, 580@10); // spacer
 	Button(w, 100@20).states_([["RESET", Color.red]])
 		.action_({ w.view.removeAll; f.value });
@@ -332,14 +332,14 @@ f = {
 	Button(w, 120@20).states_([["showIndex = false"], ["showIndex = true", Color.white]])
 		.action_({ |b| m.showIndex = b.value.booleanValue });
 	Button(w, 120@20).states_([["reference = nil"], ["reference filled", Color.white], ["reference random", Color.yellow]])
-		.action_({ |b| 
+		.action_({ |b|
 			b.value.booleanValue.if({
 				(b.value > 1).if(
 					{ m.reference = Array.fill(n, { 1.0.rand }) },
 					{ m.reference = Array.fill(m.size, { 0.5 }) }
 				);
-			}, { 
-				q = m.value; m.reference = []; h.string = "reference can't be returned to nil presently. please hit RESET." 
+			}, {
+				q = m.value; m.reference = []; h.string = "reference can't be returned to nil presently. please hit RESET."
 			})
 		});
 	Button(w, 180@20).states_([["fillColor = Color.rand"]]).action_({ m.fillColor = Color.rand });
@@ -429,7 +429,7 @@ var size;
 size = 12;
 s.waitForBoot({
 	n = { |freq = 330| SinOsc.ar(freq, 0, 0.2) }.play;
-	
+
 	w = Window("test", Rect(200, 450, 10 + (size * 17), 10 + (size * 17)));
 	w.view.decorator = FlowLayout(w.view.bounds);
 	b = MultiSliderView(w, Rect(0, 0, size * 17, size * 17));
@@ -442,16 +442,16 @@ s.waitForBoot({
 	b.showIndex = true; // cursor mode
 	b.readOnly = true;
 	w.front;
-	
+
 	r = Routine({
 		0.1.wait;
 		30.do({ |i|
 			b.index_(i%size);
-			
+
 			b.doAction;
 			0.1.wait;
 		});
-		
+
 		20.do({ |i|
 			b.index_(b.size.rand);
 			b.doAction;

@@ -189,7 +189,7 @@ If initialisation logic that prepares the arguments before assignment is require
 ideally, it should go before the call to code::super.newCopyArgs::.
 This way the final object never exists in an invalid state — an alternative is the use of an code::init:: method and shall be shown shortly.
 
-However, when there is a hierarchy of classes, code::newCopyArgs:: requires that all the base class arguments be passed in the order they are defined. 
+However, when there is a hierarchy of classes, code::newCopyArgs:: requires that all the base class arguments be passed in the order they are defined.
 This makes changing the base class difficult.
 Here is one way to mitigate this issue using variable keyword arguments link::Reference/Functions#Variable Arguments:: and link::Classes/Object#-superPerformArgs::.
 
@@ -227,7 +227,7 @@ One disadvantage here is that autocomplete in the IDE will not work.
 
 code::
 Foo {
-	*new { |... args, kwargs| 
+	*new { |... args, kwargs|
 		if(args.empty.not) { Error().throw };
 		^super.superPerformArgs(\newCopyArgs, #[], kwargs);
 	}
@@ -275,8 +275,8 @@ Derived : Base {
 }
 ::
 
-Warning:: 
-If both the code::Base:: and code::Derived:: class define an code::init:: method, the code::Derived:: class will override the code::Base::'s implementation, 
+Warning::
+If both the code::Base:: and code::Derived:: class define an code::init:: method, the code::Derived:: class will override the code::Base::'s implementation,
 meaning it will no longer be possible to call that implementation.
 In such cases, a unique method name like code::myclassInit:: should be used, or better yet, a specialised name that indicates what kind of initialization is performed.
 ::

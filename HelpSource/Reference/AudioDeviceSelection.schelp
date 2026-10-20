@@ -88,7 +88,7 @@ A code::nil:: device is equivalent to code::Server.default.options.device = "def
 subsection:: Jack Environment variables
 
 The JACK connections can be configured via the environment variables teletype::SC_JACK_DEFAULT_INPUTS:: and
-teletype::SC_JACK_DEFAULT_OUTPUTS::. These allow SuperCollider to detect system preferences for Jack inputs and outputs to/from the scsynth server. 
+teletype::SC_JACK_DEFAULT_OUTPUTS::. These allow SuperCollider to detect system preferences for Jack inputs and outputs to/from the scsynth server.
 
 These variables are written as a string that specifies another jack client or a comma-separated list of jack ports formatted as a string.
 
