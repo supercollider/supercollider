@@ -48,7 +48,7 @@ QObject {
 		^super.new.initQObject( className, argumentArray );
 	}
 
-	*newCopyArgs { |...args, kwargs| 
+	*newCopyArgs { |...args, kwargs|
 		Error("Please replace call to 'newCopyArgs' with a call to 'new'. All QObjects must call the 'new' method.").throw
 	}
 

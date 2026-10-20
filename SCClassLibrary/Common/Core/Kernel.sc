@@ -713,7 +713,7 @@ Method : FunctionDef {
 
 }
 
-// Frames are an interpreter internal object. 
+// Frames are an interpreter internal object.
 // You should never have an instance of one, if you do, it is a bug, please report it (GitHub/forum... wherever)!
 Frame : AbstractObjectExperimental /* !Never inherit from Frame!*/ {
 	*prThrow { Error("Attempting to use a Frame object, this will lead to gc bugs and eventually crash Supercollider").throw }

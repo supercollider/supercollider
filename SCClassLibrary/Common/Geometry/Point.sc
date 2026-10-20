@@ -90,7 +90,7 @@ Point {
 		thatPoint = that.asPoint;
 		^Point(this.x mod: thatPoint.x, this.y mod: thatPoint.y)
 	}
-	
+
 	modSeaside { |that|
 		var thatPoint;
 		thatPoint = that.asPoint;

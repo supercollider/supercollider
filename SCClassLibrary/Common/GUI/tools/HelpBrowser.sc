@@ -279,7 +279,7 @@ HelpBrowser {
 					#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 					};
-			
+
 					if(newPath != oldPath && openNewWin) {
 							HelpBrowser.new(newWin:openNewWin).goTo(url);
 					} {

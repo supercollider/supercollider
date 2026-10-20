@@ -5,11 +5,11 @@ Exception {
 	classvar <>inProtectedFunction = false;
 
 
-	var <>what; 
-	var	<>callFrameAnnotations; 
+	var <>what;
+	var	<>callFrameAnnotations;
 	var <>methodBeforeBacktraceStart;
 	var <>methodBacktraceEnd;
-	
+
 	var <backtrace;
 
 	// This represents the nowExecutingPath, it doesn't represent what file the code was written in!
@@ -22,10 +22,10 @@ Exception {
 		if (Exception.reporting) {
 			"Attempting to construct and error while reporting one. This is not allowed, please file a bug report.".error;
 			this.halt; // Just quit the thread here, we might get stuck in an infinite loop.
-		}; 
+		};
 
 		^this.newCopyArgs(
-			what: what.asString, 
+			what: what.asString,
 			callFrameAnnotations: callFrameAnnotations,
 			methodBeforeBacktraceStart: methodBeforeBacktraceStart ?? {
 				thisThrow = this.class.findMethod(\throw);
@@ -44,23 +44,23 @@ Exception {
 		super.throw;
 	}
 
-	
-	reportStage1 { |stream, prefix| 
+
+	reportStage1 { |stream, prefix|
 		backtrace.backtracePrintOnto(
-			stream, 
+			stream,
 			prefix: prefix,
 			callFrameAnnotations: callFrameAnnotations,
 			methodBeforeBacktraceStart: methodBeforeBacktraceStart,
 			methodBacktraceEnd: methodBacktraceEnd,
 			maxVerboseFrames: 3,
-		) 
+		)
 	}
 
-	reportStage2 { |stream, prefix| 
+	reportStage2 { |stream, prefix|
 		stream << prefix << what << $\n;
-	} 
+	}
 
-	// Just does what.error. 
+	// Just does what.error.
 	// This probably shouldn't be used anymore.
 	errorString { ^what.error }
 
@@ -110,7 +110,7 @@ ErrorWrapper : Error {
 MethodError : Error {
 	var <>receiver;
 
-	*new { |what, receiver, callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd| 
+	*new { |what, receiver, callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd|
 		^super.new(what, callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd).receiver_(receiver)
 	}
 
@@ -125,7 +125,7 @@ PrimitiveFailedError : MethodError {
 	*new { |receiver, failedPrimitive(thisThread.failedPrimitiveName), errorString(Thread.primitiveErrorString)|
 		var thisThrow = this.class.findMethod(\new);
 		^super.new(
-			what: errorString 
+			what: errorString
 				!? { "Primitive '%' failed with message : '%'.".format(failedPrimitive, errorString) }
 				?? { "Primitive '%' failed.".format(failedPrimitive) },
 			receiver: receiver,
@@ -136,17 +136,17 @@ PrimitiveFailedError : MethodError {
 }
 
 SubclassResponsibilityError : MethodError {
-	var <>method; 
+	var <>method;
 	var <>class;
 
 	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
 		var thisThrow = this.class.findMethod(\new);
 		^super.new(
-			what: "'%' should have been implemented by %.".format(method.name, class.name), 
+			what: "'%' should have been implemented by %.".format(method.name, class.name),
 			receiver: receiver,
 			callFrameAnnotations: [nil, "Please implement this method for the class '%'".format(class.name)],
-			methodBeforeBacktraceStart: { |m| 
-				m === thisThrow or: {m.ownerClass === Object and: {m.name === 'subclassResponsibility'}} 
+			methodBeforeBacktraceStart: { |m|
+				m === thisThrow or: {m.ownerClass === Object and: {m.name === 'subclassResponsibility'}}
 			}
 		)
 			.method_(method)
@@ -155,15 +155,15 @@ SubclassResponsibilityError : MethodError {
 }
 
 ShouldNotImplementError : MethodError {
-	var <>method; 
+	var <>method;
 	var <>class;
 
 	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
 		var thisThrow = this.class.findMethod(\new);
 		^super.new(
-			what: "'%-%' is not a valid message for the subclass '%'".format(method.ownerClass.name, method.name, class.name), 
+			what: "'%-%' is not a valid message for the subclass '%'".format(method.ownerClass.name, method.name, class.name),
 			callFrameAnnotations: [nil, "'%' cannot respond to this message, please remove the call.".format(class.name)],
-			receiver: receiver, 
+			receiver: receiver,
 			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'shouldNotImplement'}} },
 		)
 			.method_(method)
@@ -172,8 +172,8 @@ ShouldNotImplementError : MethodError {
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector; 
-	var <>args; 
+	var <>selector;
+	var <>args;
 	var <>keywordArgumentPairs;
 
 	*new { |receiver, selector, args([]), keywordArgumentPairs([])|
@@ -195,7 +195,7 @@ DoesNotUnderstandError : MethodError {
 			.keywordArgumentPairs_(keywordArgumentPairs)
 	}
 
-	reportStage2 { |stream, prefix| 
+	reportStage2 { |stream, prefix|
 		var methodSuggestions = receiver.class.findSimilarSelectors(selector, minSimilarity: 0.5, maxEditDistance: 2);
 		var classSuggestions = Object.findRespondingUpperSubclasses(selector).collect(_.name);
 		if(methodSuggestions.notEmpty) {
@@ -217,26 +217,26 @@ DoesNotUnderstandError : MethodError {
 
 
 MustBeBooleanError : MethodError {
-	*new { |what, receiver| 
+	*new { |what, receiver|
 		var thisThrow = this.class.findMethod(\throw);
-		^super.new( 
-			what: what ?? { "Non boolean in test "}, 
+		^super.new(
+			what: what ?? { "Non boolean in test "},
 			receiver: receiver,
 			callFrameAnnotations: ["Expected this to be either `true` or `false`, instead got %(%).".format(receiver.class, receiver)],
 			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'mustBeBoolean'}} },
-		) 
+		)
 	}
 }
 
 NotYetImplementedError : MethodError {
-	*new { |what, receiver| 
+	*new { |what, receiver|
 		var thisThrow = this.class.findMethod(\throw);
-		^super.new( 
-			what: what ?? {"Not yet implemented"}, 
+		^super.new(
+			what: what ?? {"Not yet implemented"},
 			callFrameAnnotations: ["This method has not yet been implemented."],
 			receiver: receiver,
 			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'notYetImplemented'}} },
-		) 
+		)
 	}
 
  }
@@ -254,7 +254,7 @@ OutOfContextReturnError : MethodError {
 			receiver: receiver,
 			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'outOfContextReturn'}} },
 		)
-			.method_(method) 
+			.method_(method)
 			.result_(result)
 	}
 }

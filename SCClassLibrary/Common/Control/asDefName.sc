@@ -55,7 +55,7 @@
 		var server, def, synth, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
-		
+
 		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		def = this.asSynthDef(
