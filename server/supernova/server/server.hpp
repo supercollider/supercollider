@@ -58,6 +58,13 @@ extern class nova_server* instance;
  *  the system_callback uses an internal memory pool for real-time safe
  *  memory management. objects are only allowed to be allocated from
  *  the real-time thread.
+ *
+ *  static_pooled_class declares its own new and delete operators
+ *  which are inherited by all child classes. This means that any
+ *  instance of system_callback that is allocated with a new-expression
+ *  is actually allocated from the static memory pool. Similarly,
+ *  if an instance is destroyed with a delete-expression, it is
+ *  returned to the memory pool.
  * */
 
 class system_callback : public static_pooled_class<system_callback, 1 << 20, /* 1mb pool of realtime memory */
@@ -68,8 +75,9 @@ public:
     virtual void run() = 0;
 };
 
-/** system_callback to delete object in the system thread. useful to avoid hitting the memory allocator
- *  from within the real-time threads
+/** system_callback to delete object in the system thread.
+ *  useful to avoid hitting the memory allocator from within the real-time threads
+ *  @see system_callback for more details.
  */
 template <typename T> class delete_callback : public system_callback {
 public:

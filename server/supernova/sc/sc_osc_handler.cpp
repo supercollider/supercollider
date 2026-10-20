@@ -271,22 +271,26 @@ template <typename... Args> void send_fail_message(endpoint_ptr const& endpoint,
     }
 }
 
-/** functor for scheduling callbacks from the audio thread (= RT) to the system thread or IO thread (= NRT) */
+/** functor for scheduling callbacks from the audio thread (= RT) to the system thread or IO thread (= NRT).
+ *  @see system_callback for more details.
+ */
 template <typename Functor> struct fn_system_callback : public system_callback {
     fn_system_callback(Functor const& fn): fn_(fn) {}
 
-    fn_system_callback(Functor&& fn): fn_(std::forward<Functor>(fn)) {}
+    fn_system_callback(Functor&& fn): fn_(std::move(fn)) {}
 
     void run() override { fn_(); }
 
     Functor fn_;
 };
 
-/** functor for scheduling callbacks from the system thread or IO thread (= NRT) to the audio thread (= RT) */
+/** functor for scheduling callbacks from the system thread or IO thread (= NRT) to the audio thread (= RT).
+ *  @see audio_sync_callback for more details.
+ */
 template <typename Functor> struct fn_sync_callback : public audio_sync_callback {
     fn_sync_callback(Functor const& fn): fn_(fn) {}
 
-    fn_sync_callback(Functor&& fn): fn_(std::forward<Functor>(fn)) {}
+    fn_sync_callback(Functor&& fn): fn_(std::move(fn)) {}
 
     void run() override { fn_(); }
 
@@ -326,15 +330,18 @@ template <typename DerivedClass> struct cmd_dispatcher_base {
 
 template <bool realtime> struct cmd_dispatcher : public cmd_dispatcher_base<cmd_dispatcher<realtime>> {
     template <typename Functor> static void fire_system_callback(Functor&& f) {
-        instance->add_system_callback(new fn_system_callback<Functor>(std::forward<Functor>(f)));
+        // NOTE: fn_system_callback overrides operator new.
+        instance->add_system_callback(new fn_system_callback(std::forward<Functor>(f)));
     }
 
     template <typename Functor> static void fire_io_callback(Functor&& f) {
-        instance->add_io_callback(new fn_system_callback<Functor>(std::forward<Functor>(f)));
+        // NOTE: fn_system_callback overrides operator new.
+        instance->add_io_callback(new fn_system_callback(std::forward<Functor>(f)));
     }
 
     template <typename Functor> static void fire_rt_callback(Functor&& f) {
-        instance->add_sync_callback(new fn_sync_callback<Functor>(std::forward<Functor>(f)));
+        // NOTE: fn_sync_callback overrides operator new.
+        instance->add_sync_callback(new fn_sync_callback(std::forward<Functor>(f)));
     }
 };
 
