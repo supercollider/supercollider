@@ -1,20 +1,20 @@
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
-                    ${CMAKE_SOURCE_DIR}/include/lang
-                    ${CMAKE_SOURCE_DIR}/include/plugin_interface
-                    ${CMAKE_SOURCE_DIR}/include/server
-                    ${CMAKE_SOURCE_DIR}/common
+    ${CMAKE_SOURCE_DIR}/include/lang
+    ${CMAKE_SOURCE_DIR}/include/plugin_interface
+    ${CMAKE_SOURCE_DIR}/include/server
+    ${CMAKE_SOURCE_DIR}/common
 
-                    LangSource
-                    LangPrimSource
+    LangSource
+    LangPrimSource
 
-                    ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
-                    LangSource/Bison
+    ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
+    LangSource/Bison
 )
 
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	find_package(ALSA)
+    find_package(ALSA)
 endif()
 
 find_package(Readline 5.0)
@@ -22,89 +22,89 @@ find_package(Readline 5.0)
 find_package(Sndfile)
 
 if (SC_QT OR SC_IDE)
-	set(LOCALSOCK_UTIL_FILE ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp)
+    set(LOCALSOCK_UTIL_FILE ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp)
 else ()
-	set(LOCALSOCK_UTIL_FILE)
+    set(LOCALSOCK_UTIL_FILE)
 endif ()
 
 set(sclang_sources
     LangPrimSource/SC_LinkClock.cpp
     LangPrimSource/SC_AudioDevicePrim.cpp
-	LangPrimSource/PyrSignalPrim.cpp
-	LangPrimSource/PyrSched.cpp
-	LangPrimSource/PyrPrimitive.cpp
-	LangPrimSource/PyrMathPrim.cpp
-	LangPrimSource/OSCData.cpp
-	LangPrimSource/PyrArchiver.cpp
-	LangPrimSource/PyrArrayPrimitives.cpp
-	LangPrimSource/PyrBitPrim.cpp
-	LangPrimSource/PyrCharPrim.cpp
-	LangPrimSource/PyrFilePrim.cpp
-	LangPrimSource/PyrListPrim.cpp
-	LangPrimSource/PyrPlatformPrim.cpp
-	LangPrimSource/PyrStringPrim.cpp
-	LangPrimSource/PyrSymbolPrim.cpp
-	LangPrimSource/PyrUnixPrim.cpp
-	LangSource/AdvancingAllocPool.cpp
-	LangSource/ByteCodeArray.cpp
-	LangSource/DumpParseNode.cpp
-	LangSource/GC.cpp
-	LangSource/InitAlloc.cpp
-	LangSource/PyrInterpreter3.cpp
-	LangSource/PyrLexer.cpp
-	LangSource/PyrMathOps.cpp
-	LangSource/PyrMathSupport.cpp
-	LangSource/PyrMessage.cpp
-	LangSource/PyrObject.cpp
-	LangSource/PyrParseNode.cpp
-	LangSource/PyrSignal.cpp
-	LangSource/PyrSlot.cpp
-	LangSource/PyrSymbolTable.cpp
-	LangSource/SC_LanguageClient.cpp
-	LangSource/SC_LanguageConfig.cpp
-	LangSource/SimpleStack.cpp
-	LangSource/dumpByteCodes.cpp
-	LangSource/CompilerContext.cpp
-	LangSource/ClassLibraryInfo.cpp
+    LangPrimSource/PyrSignalPrim.cpp
+    LangPrimSource/PyrSched.cpp
+    LangPrimSource/PyrPrimitive.cpp
+    LangPrimSource/PyrMathPrim.cpp
+    LangPrimSource/OSCData.cpp
+    LangPrimSource/PyrArchiver.cpp
+    LangPrimSource/PyrArrayPrimitives.cpp
+    LangPrimSource/PyrBitPrim.cpp
+    LangPrimSource/PyrCharPrim.cpp
+    LangPrimSource/PyrFilePrim.cpp
+    LangPrimSource/PyrListPrim.cpp
+    LangPrimSource/PyrPlatformPrim.cpp
+    LangPrimSource/PyrStringPrim.cpp
+    LangPrimSource/PyrSymbolPrim.cpp
+    LangPrimSource/PyrUnixPrim.cpp
+    LangSource/AdvancingAllocPool.cpp
+    LangSource/ByteCodeArray.cpp
+    LangSource/DumpParseNode.cpp
+    LangSource/GC.cpp
+    LangSource/InitAlloc.cpp
+    LangSource/PyrInterpreter3.cpp
+    LangSource/PyrLexer.cpp
+    LangSource/PyrMathOps.cpp
+    LangSource/PyrMathSupport.cpp
+    LangSource/PyrMessage.cpp
+    LangSource/PyrObject.cpp
+    LangSource/PyrParseNode.cpp
+    LangSource/PyrSignal.cpp
+    LangSource/PyrSlot.cpp
+    LangSource/PyrSymbolTable.cpp
+    LangSource/SC_LanguageClient.cpp
+    LangSource/SC_LanguageConfig.cpp
+    LangSource/SimpleStack.cpp
+    LangSource/dumpByteCodes.cpp
+    LangSource/CompilerContext.cpp
+    LangSource/ClassLibraryInfo.cpp
 
-	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
 
-	${CMAKE_SOURCE_DIR}/common/fftlib.c
-	${CMAKE_SOURCE_DIR}/common/Samp.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
-	${LOCALSOCK_UTIL_FILE}
+    ${CMAKE_SOURCE_DIR}/common/fftlib.c
+    ${CMAKE_SOURCE_DIR}/common/Samp.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+    ${LOCALSOCK_UTIL_FILE}
 
-	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
+    ${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
 
 # emscripten (wasm compiler) does not have network capabilities
 # and does not use the CLI, but uses its own JS bindings for interactions
 if(NOT EMSCRIPTEN)
-	LIST(APPEND sclang_sources
-		LangPrimSource/SC_ComPort.cpp
-		LangPrimSource/PyrSerialPrim.cpp
-		LangSource/SC_TerminalClient.cpp
-		LangSource/SC_CLIOptions.cpp
-		LangSource/cmdLineFuncs.cpp
-		${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
+    LIST(APPEND sclang_sources
+        LangPrimSource/SC_ComPort.cpp
+        LangPrimSource/PyrSerialPrim.cpp
+        LangSource/SC_TerminalClient.cpp
+        LangSource/SC_CLIOptions.cpp
+        LangSource/cmdLineFuncs.cpp
+        ${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
     )
 else()
-	list(APPEND sclang_sources
-		LangSource/SC_WasmClient.cpp
+    list(APPEND sclang_sources
+        LangSource/SC_WasmClient.cpp
     )
 endif()
 
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 
-	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm)
-	set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
+    list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 endif()
 
 file(GLOB_RECURSE headers ../include/*.h* )
@@ -141,24 +141,24 @@ elseif(AUDIOAPI STREQUAL bela)
 endif()
 
 if(UNIX)
-	if(APPLE)
-		list(APPEND sclang_sources
-			LangPrimSource/SC_CoreMIDI.cpp
-			)
-	else(APPLE)
-		if(ALSA_FOUND)
-			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
-		endif()
-		if(LINUX)
-			list(APPEND sclang_sources LangPrimSource/SC_LID.cpp)
-			add_definitions(-DHAVE_LID)
-		endif(LINUX)
-	endif(APPLE)
+    if(APPLE)
+        list(APPEND sclang_sources
+            LangPrimSource/SC_CoreMIDI.cpp
+            )
+    else(APPLE)
+        if(ALSA_FOUND)
+            list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
+        endif()
+        if(LINUX)
+            list(APPEND sclang_sources LangPrimSource/SC_LID.cpp)
+            add_definitions(-DHAVE_LID)
+        endif(LINUX)
+    endif(APPLE)
 endif(UNIX)
 
 if(WIN32)
         list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
-	include_directories (../platform/windows/compat_stuff)
+    include_directories (../platform/windows/compat_stuff)
         if(NOT MINGW)
                 # mingw-w64 provides getopt
                 list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt/getopt.c)
@@ -170,7 +170,7 @@ endif()
 
 # This sets up the exe icon for windows.
 if(WIN32)
- set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
+    set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
 endif(WIN32)
 
 if(SC_HIDAPI)
@@ -183,17 +183,17 @@ if(SC_HIDAPI)
 endif(SC_HIDAPI)
 
 if(SC_QT OR SC_IDE)
-	set(QT_COLLIDER_LANG_CLIENT ON)
-	include(../QtCollider/CMakeLists.txt)
-	list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
+    set(QT_COLLIDER_LANG_CLIENT ON)
+    include(../QtCollider/CMakeLists.txt)
+    list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
 endif()
 
 if(SC_IDE)
-	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
+    add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
 
-	qt_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
-	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
-	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
+    qt_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
+    list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
+    list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
 endif()
 
 include(../SCDoc/CMakeLists.txt)
@@ -202,11 +202,11 @@ list(APPEND sclang_sources ${SCDOC_SRCS})
 add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 
 if(FINAL_BUILD)
-	set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
-	set_target_properties(libsclang PROPERTIES 
-		UNITY_BUILD ON
-		UNITY_BUILD_BATCH_SIZE 16 
-	)
+    set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+    set_target_properties(libsclang PROPERTIES
+        UNITY_BUILD ON
+        UNITY_BUILD_BATCH_SIZE 16
+    )
 endif()
 
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
@@ -233,55 +233,55 @@ if(SC_QT OR SC_IDE)
 endif()
 
 if(FALSE) # libsclang is a shared library
-  target_compile_definitions(libsclang PRIVATE   BUILDING_SCLANG)
-  target_compile_definitions(libsclang INTERFACE BUILDING_SCLANG)
+    target_compile_definitions(libsclang PRIVATE   BUILDING_SCLANG)
+    target_compile_definitions(libsclang INTERFACE BUILDING_SCLANG)
 endif()
 
 if(SC_HIDAPI)
-  target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
-  target_link_libraries( libsclang hidapi hidapi_parser )
-  if(WIN32)
-    target_link_libraries(libsclang hid)
-  endif()
+    target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
+    target_link_libraries( libsclang hidapi hidapi_parser )
+    if(WIN32)
+        target_link_libraries(libsclang hid)
+    endif()
 
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
-    target_link_libraries( libsclang ${UDEV_LIBRARIES})
-  endif()
-  if(HID_LIBUSB)
-    target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES})
-  endif()
+    if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
+        target_link_libraries( libsclang ${UDEV_LIBRARIES})
+    endif()
+    if(HID_LIBUSB)
+        target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES})
+    endif()
 endif()
 
 target_link_libraries(
-  libsclang 
-  Boost::thread
-  Boost::program_options
-  Boost::regex
-  Boost::sync
+    libsclang
+    Boost::thread
+    Boost::program_options
+    Boost::regex
+    Boost::sync
 )
 
 if (SCLANG_SERVER)
-	target_link_libraries(libsclang libscsynth)
+    target_link_libraries(libsclang libscsynth)
 else()
-	target_compile_definitions(libsclang PUBLIC NO_INTERNAL_SERVER)
+    target_compile_definitions(libsclang PUBLIC NO_INTERNAL_SERVER)
 endif()
 
 if (NOT WIN32)
-	set_property(TARGET libsclang
-		PROPERTY OUTPUT_NAME sclang)
+    set_property(TARGET libsclang
+        PROPERTY OUTPUT_NAME sclang)
 endif()
 
 if (SC_ABLETON_LINK)
-	message(STATUS "Compiling with Ableton Link support")
-	if(SYSTEM_ABLETON_LINK)
-		find_package(AbletonLink NAMES AbletonLink ableton-link link REQUIRED)
-	else()
-		include(../external_libraries/link/AbletonLinkConfig.cmake)
-	endif()
+    message(STATUS "Compiling with Ableton Link support")
+    if(SYSTEM_ABLETON_LINK)
+        find_package(AbletonLink NAMES AbletonLink ableton-link link REQUIRED)
+    else()
+        include(../external_libraries/link/AbletonLinkConfig.cmake)
+    endif()
 
-	target_link_libraries(libsclang Ableton::Link)
+    target_link_libraries(libsclang Ableton::Link)
 
-	add_definitions(-DSC_ABLETON_LINK)
+    add_definitions(-DSC_ABLETON_LINK)
 endif()
 
 ## external libraries
@@ -302,18 +302,18 @@ endif(READLINE_FOUND)
 mark_as_advanced(READLINE_INCLUDE_DIR READLINE_LIBRARY)
 
 if (APPLE)
-	target_link_libraries(libsclang "-framework Carbon")
-	target_link_libraries(libsclang "-framework CoreAudio")
-	target_link_libraries(libsclang "-framework CoreMIDI")
-	target_link_libraries(libsclang "-framework CoreServices")
-	target_link_libraries(libsclang "-framework IOKit")
-	target_link_libraries(libsclang "-framework CoreFoundation")
+    target_link_libraries(libsclang "-framework Carbon")
+    target_link_libraries(libsclang "-framework CoreAudio")
+    target_link_libraries(libsclang "-framework CoreMIDI")
+    target_link_libraries(libsclang "-framework CoreServices")
+    target_link_libraries(libsclang "-framework IOKit")
+    target_link_libraries(libsclang "-framework CoreFoundation")
 endif()
 
 if(ALSA_FOUND)
-	message(STATUS "Compiling with ALSA midi support")
-	target_compile_definitions(libsclang PUBLIC HAVE_ALSA=1)
-	target_link_libraries(libsclang ${ALSA_LIBRARY})
+    message(STATUS "Compiling with ALSA midi support")
+    target_compile_definitions(libsclang PUBLIC HAVE_ALSA=1)
+    target_link_libraries(libsclang ${ALSA_LIBRARY})
 endif(ALSA_FOUND)
 
 if (AUDIOAPI STREQUAL portaudio)
@@ -321,33 +321,33 @@ if (AUDIOAPI STREQUAL portaudio)
 endif()
 
 if(SNDFILE_FOUND)
-	if(SNDFILE_HAS_VORBIS)
-		target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_VORBIS)
-	endif()
-	if(SNDFILE_HAS_OPUS)
-		target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_OPUS)
-	endif()
-	if(SNDFILE_HAS_MPEG)
-		target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_MPEG)
-	endif()
-	target_include_directories(libsclang SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
-	target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
+    if(SNDFILE_HAS_VORBIS)
+        target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_VORBIS)
+    endif()
+    if(SNDFILE_HAS_OPUS)
+        target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_OPUS)
+    endif()
+    if(SNDFILE_HAS_MPEG)
+        target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_MPEG)
+    endif()
+    target_include_directories(libsclang SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
+    target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
 elseif(NOT NO_LIBSNDFILE)
-	message(SEND_ERROR "Cannot find libsndfile")
+    message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
 if (FFTW3F_FOUND)
-	target_include_directories (libsclang ${FFTW3F_INCLUDE_DIR})
-	target_link_libraries(libsclang ${FFTW3F_LIBRARY})
+    target_include_directories (libsclang ${FFTW3F_INCLUDE_DIR})
+    target_link_libraries(libsclang ${FFTW3F_LIBRARY})
 endif()
 
 if(WIN32)
-	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
-	target_compile_definitions(libsclang PRIVATE HAVE_PORTMIDI)
+    target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
+    target_compile_definitions(libsclang PRIVATE HAVE_PORTMIDI)
 endif()
 
 if (GC_SANITYCHECK)
-	target_compile_definitions(libsclang PUBLIC GC_SANITYCHECK)
+    target_compile_definitions(libsclang PUBLIC GC_SANITYCHECK)
 endif()
 
 if(MSVC)
@@ -355,7 +355,7 @@ if(MSVC)
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	target_link_libraries(libsclang rt)
+    target_link_libraries(libsclang rt)
 endif()
 
 target_link_libraries(libsclang yaml-cpp)
@@ -367,13 +367,13 @@ target_link_libraries(sclang ${ICU_LIBRARIES})
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
 if(LTO)
-  set_property(TARGET sclang libsclang
+    set_property(TARGET sclang libsclang
         APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-  set_property(TARGET sclang
+    set_property(TARGET sclang
         APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 
-  set_property(TARGET libsclang
+    set_property(TARGET libsclang
         APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
@@ -400,24 +400,24 @@ elseif(EMSCRIPTEN)
     set(PTHREAD_POOL_SIZE "4" CACHE STRING "Number of threads to spawn sclang.wasm at call time")
 
     set_target_properties(sclang PROPERTIES LINK_FLAGS "\
-    	-sAUDIO_WORKLET \
-    	--bind \
-    	-sWASM_WORKERS \
-    	-sUSE_PTHREADS \
-    	-pthread \
-    	-sALLOW_MEMORY_GROWTH \
-    	-sINITIAL_MEMORY=${INITIAL_MEMORY_GROWTH} \
-    	-sEXIT_RUNTIME=0 \
-    	--pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/sclang.pre.js \
-    	-sEXPORT_ES6=1 \
-    	-sEXPORT_NAME='ScLang' \
-    	-sMODULARIZE=1 \
-    	-sEXPORTED_FUNCTIONS=['_webOscBindingAnchor','_main','_free','_scWasmBindingAnchor'] \
-    	-sPTHREAD_POOL_SIZE=${PTHREAD_POOL_SIZE} \
-    	--preload-file ${CMAKE_SOURCE_DIR}/SCClassLibrary@/sc/SCClassLibrary \
-    	-sSTACK_SIZE=1048576 \
-    	-sDEFAULT_PTHREAD_STACK_SIZE=1048576 \
-    	-sENVIRONMENT=web,worker,node \
+        -sAUDIO_WORKLET \
+        --bind \
+        -sWASM_WORKERS \
+        -sUSE_PTHREADS \
+        -pthread \
+        -sALLOW_MEMORY_GROWTH \
+        -sINITIAL_MEMORY=${INITIAL_MEMORY_GROWTH} \
+        -sEXIT_RUNTIME=0 \
+        --pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/sclang.pre.js \
+        -sEXPORT_ES6=1 \
+        -sEXPORT_NAME='ScLang' \
+        -sMODULARIZE=1 \
+        -sEXPORTED_FUNCTIONS=['_webOscBindingAnchor','_main','_free','_scWasmBindingAnchor'] \
+        -sPTHREAD_POOL_SIZE=${PTHREAD_POOL_SIZE} \
+        --preload-file ${CMAKE_SOURCE_DIR}/SCClassLibrary@/sc/SCClassLibrary \
+        -sSTACK_SIZE=1048576 \
+        -sDEFAULT_PTHREAD_STACK_SIZE=1048576 \
+        -sENVIRONMENT=web,worker,node \
     ")
     if(WASM_DEBUG)
         target_compile_options(libsclang PUBLIC -pthread -g)
@@ -458,41 +458,41 @@ elseif(WIN32)
 
     set(SC_WIN_DLL_DIRS)
     if(SNDFILE_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
+        list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
     endif(SNDFILE_LIBRARY_DIR)
     if(FFTW3F_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
+        list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
     endif(FFTW3F_LIBRARY_DIR)
     if(READLINE_LIBRARY_DIR)
-      file(GLOB READLINE_DLL "${READLINE_LIBRARY_DIR}/*readline*.dll")
-      list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
-      add_custom_command(TARGET sclang
-          POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different "${READLINE_DLL}" $<TARGET_FILE_DIR:sclang>
-      )
+        file(GLOB READLINE_DLL "${READLINE_LIBRARY_DIR}/*readline*.dll")
+        list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
+        add_custom_command(TARGET sclang
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${READLINE_DLL}" $<TARGET_FILE_DIR:sclang>
+        )
     endif(READLINE_LIBRARY_DIR)
     if(QT_BIN_PATH)
-      list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
+        list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
     endif(QT_BIN_PATH)
 
     if(SC_IDE)
-      if(MSYS)
-        add_custom_command(TARGET sclang
-          POST_BUILD
-          COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "remove" "$<TARGET_FILE_DIR:sclang>"
-          COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:sclang> $<TARGET_FILE_DIR:SuperCollider>
-          COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "create" "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:sclang>"
-          COMMENT "Copying files in target sclang to target SuperCollider (scide) and creating links to SCClassLibrary e.a."
-        )
-      else()
-        add_custom_command(TARGET sclang
-          POST_BUILD
-          COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" remove \"$<TARGET_FILE_DIR:sclang>\"\""
-          COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:sclang> $<TARGET_FILE_DIR:SuperCollider>
-          COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" create \"$<TARGET_FILE_DIR:sclang>\" \"${CMAKE_SOURCE_DIR}\"\""
-          COMMENT "Copying files in target sclang to target SuperCollider (scide) and creating links to SCClassLibrary e.a."
-        )
-      endif()
+        if(MSYS)
+            add_custom_command(TARGET sclang
+                POST_BUILD
+                COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "remove" "$<TARGET_FILE_DIR:sclang>"
+                COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:sclang> $<TARGET_FILE_DIR:SuperCollider>
+                COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "create" "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:sclang>"
+                COMMENT "Copying files in target sclang to target SuperCollider (scide) and creating links to SCClassLibrary e.a."
+            )
+        else()
+            add_custom_command(TARGET sclang
+                POST_BUILD
+                COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" remove \"$<TARGET_FILE_DIR:sclang>\"\""
+                COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:sclang> $<TARGET_FILE_DIR:SuperCollider>
+                COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" create \"$<TARGET_FILE_DIR:sclang>\" \"${CMAKE_SOURCE_DIR}\"\""
+                COMMENT "Copying files in target sclang to target SuperCollider (scide) and creating links to SCClassLibrary e.a."
+            )
+        endif()
     endif(SC_IDE)
 
     install(TARGETS sclang
