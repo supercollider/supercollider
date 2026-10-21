@@ -78,6 +78,9 @@ struct Expr : private Base {
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
     void add_symbol(Symbol, ScopeEntry);
+
+private:
+    Return<SCAnyExpr_I> unimplemented(ast::OptionalIndex i);
 };
 
 
