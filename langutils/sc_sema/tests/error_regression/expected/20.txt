@@ -156,20 +156,6 @@ Declare it with 'var', or use '~undefined_var' to refer to an environment variab
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Variable not defined
 file:
-   43 │ 
-   44 │     *good { ^1 + 2 }
-   45 │     *cannot_assign { instance_var = 3 }
-      ┆                      ^^^^^^^^^^^^ this is not defined.
-   46 │     *undefined { undefined_var = 4 }
-   47 │     *no_receiver { ^foo(bar: 1) }
-   48 │     *nested_error { ^1.foo(2.perform(3)) }
-
-Declare it with 'var', or use '~instance_var' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
    35 │     good { ^1 + 2 }
    36 │     good_assignment { instance_var = 3 }
    37 │     undefined { undefined_var = 4 }
@@ -179,6 +165,20 @@ file:
    40 │     error_in_array { ^#[1, 2.foo] }
 
 Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Variable not defined
+file:
+   43 │ 
+   44 │     *good { ^1 + 2 }
+   45 │     *cannot_assign { instance_var = 3 }
+      ┆                      ^^^^^^^^^^^^ this is not defined.
+   46 │     *undefined { undefined_var = 4 }
+   47 │     *no_receiver { ^foo(bar: 1) }
+   48 │     *nested_error { ^1.foo(2.perform(3)) }
+
+Declare it with 'var', or use '~instance_var' to refer to an environment variable.
 ──────────────────────────────────────────────────────────────────────────────────
 
 

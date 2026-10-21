@@ -81,4 +81,41 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ArrayIndex i) {
     return array(c, i, false);
 }
 
+// `(a: 1, b: 2)`, the children alternate between keys and values.
+Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) {
+    CollectionContext c { *this, ctx, ir, ast_graph };
+    const auto& g = *ast_graph;
+
+    const TypeInfo type { ctx.common_classes.event, TypeConfidence::Absolute };
+    const auto collection =
+        ir.create(SCCollection { { std::nullopt, ctx.common_classes.event } }, { ast_graph, { *i } });
+    ConstExprEvent values;
+    bool all_constant = true;
+
+    for (auto it = g.children(i).iter(); it; ++it) {
+        const auto [key, value] = g.children(*it);
+        const auto key_r = [&]() -> Return<SCAnyExpr_I> {
+            // `(a: 1)` is `(\a: 1)`.
+            if (const auto keyword = g.as_a<ast::KeyBinOpIndex>(key))
+                return symbol(c, *keyword, synthesize_literal(g.payload(*keyword), get_string_view(g, *keyword)));
+            return (*this)(ast::AnyExprIndex { *key });
+        }();
+        const auto value_r = (*this)(ast::AnyExprIndex { value });
+
+        ir.append(collection, key_r.ir_node);
+        ir.append(collection, value_r.ir_node);
+        ir.payload(collection).size += 2;
+        if (all_constant && key_r.const_index && value_r.const_index)
+            values.push_back({ ctx.constant_table(*key_r.const_index), ctx.constant_table(*value_r.const_index) });
+        else
+            all_constant = false;
+    }
+
+    if (!all_constant)
+        return { collection, type };
+
+    const auto const_i = ctx.constant_table.register_constexpr({ std::move(values) });
+    ir.register_node_as_consteval(collection, const_i);
+    return { collection, const_i, type };
+}
 }

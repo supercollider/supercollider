@@ -33,6 +33,20 @@ Return<SCAnyExpr_I> Expr::operator()(ast::EnvIdentifierIndex i) {
 }
 
 namespace {
+SCRead::Kind to_read_kind(ScopeEntry::Kind k) {
+    switch (k) {
+    case ScopeEntry::Kind::Local:
+    case ScopeEntry::Kind::Argument:
+        return SCRead::Kind::Local;
+    case ScopeEntry::Kind::Instance:
+        return SCRead::Kind::Instance;
+    case ScopeEntry::Kind::Class:
+        return SCRead::Kind::Class;
+    }
+    assert(false && "unhandled ScopeEntry::Kind");
+    return SCRead::Kind::Local;
+}
+
 SCAssign::Kind to_assign_kind(ScopeEntry::Kind k) {
     switch (k) {
     case ScopeEntry::Kind::Local:
@@ -46,6 +60,17 @@ SCAssign::Kind to_assign_kind(ScopeEntry::Kind k) {
     assert(false && "unhandled ScopeEntry::Kind");
     return SCAssign::Kind::Local;
 }
+}
+
+// Reads are never constant, even when the variable's initial value is, as it might have been assigned since.
+Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
+    const auto txt = get_string_view(*ast_graph, i);
+    const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
+    if (const auto entry = resolve_symbol(name_sym))
+        return { ir.create(SCRead { name_sym, to_read_kind(entry->kind) }, { ast_graph, { *i } }) };
+
+    sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, i), txt));
+    return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {

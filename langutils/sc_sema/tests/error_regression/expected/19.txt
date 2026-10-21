@@ -120,7 +120,7 @@ SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependant
 |  SCMethodList: Object
 SCClass: NotConstant: NotConstant {'\n'    const fine = 1;'\n'    classvar changes = 2;'\n'    var refers_to_const = fine;'\n'    classvar class_refers_to_const = fine;'\n'    var refers_to_classvar = changes;'\n'    var message = 1.foo;'\n'    var environment = ~env;'\n'    var reference = `1;'\n'    var unknown_name = other;'\n'    var curry = _;'\n''\n'    immutable_array { ^#[1, 2.foo, ~env] }'\n'}
 |  SCMemberList: NotConstant
-|  |  SCMember: refers_to_const
+|  |  SCMember: refers_to_const = {"int": 1}
 |  SCMethodList: NotConstant
 |  |  SCMethod: poisoned: immutable_array { ^#[1, 2.foo, ~env] }
 |  |  |  SCArgumentDeclareList: 
@@ -188,9 +188,9 @@ SCClass: Meta_NotConstant: NotConstant {'\n'    const fine = 1;'\n'    classvar 
 |  |  SCMember: currentEnvironment
 |  |  SCMember: topEnvironment
 |  |  SCMember: uniqueMethods
-|  |  SCMember: fine
-|  |  SCMember: changes
-|  |  SCMember: class_refers_to_const
+|  |  SCMember: fine = {"int": 1}
+|  |  SCMember: changes = {"int": 2}
+|  |  SCMember: class_refers_to_const = {"int": 1}
 |  SCMethodList: NotConstant
 SCClass: Meta_Event: Event {}
 |  SCMemberList: Event

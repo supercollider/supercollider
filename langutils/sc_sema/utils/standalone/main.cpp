@@ -313,6 +313,11 @@ int main(int argc, char* argv[]) {
                         std::cout << " = ";
                         ctx.constant_table(*const_i).to_json(std::cout, symbol_table);
                     }
+                    // A member's initial value, the member itself isn't constant.
+                    if (const auto member = std::get_if<sc::ir::SCMember>(&payload); member && member->expr) {
+                        std::cout << " = ";
+                        ctx.constant_table(*member->expr).to_json(std::cout, symbol_table);
+                    }
                     std::cout << "\n";
                 });
         }

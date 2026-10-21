@@ -14,10 +14,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentAtIndex i) { return unimplem
 Return<SCAnyExpr_I> Expr::operator()(ast::BlockIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::CollectionIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::CurryIndex i) { return unimplemented(ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::GeneratorAnyIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::ImmediatelyEvaluatedBlockIndex i) { return unimplemented(ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::RangeAssignIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::RangeGeneratorIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::RangeIndex i) { return unimplemented(ir, ast_graph, i); }
