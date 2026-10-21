@@ -156,14 +156,14 @@ struct movable_string {
     movable_string(movable_string const& rhs) = delete;
     movable_string operator=(movable_string const& rhs) = delete;
 
-    movable_string(movable_string&& rhs) {
+    movable_string(movable_string&& rhs) noexcept {
         data_ = rhs.data_;
         size_ = rhs.size_;
         rhs.data_ = nullptr;
         rhs.size_ = 0;
     }
 
-    movable_string& operator=(movable_string&& rhs) {
+    movable_string& operator=(movable_string&& rhs) noexcept {
         if (&rhs != this) {
             if (data_)
                 system_callback::deallocate(data_);
@@ -204,12 +204,12 @@ template <typename T> struct movable_array {
     movable_array& operator=(movable_array const& rhs) = delete;
     movable_array(movable_array const& rhs) = delete;
 
-    movable_array(movable_array&& rhs): data_(rhs.data_), size_(rhs.size_) {
+    movable_array(movable_array&& rhs) noexcept: data_(rhs.data_), size_(rhs.size_) {
         rhs.data_ = nullptr;
         rhs.size_ = 0;
     }
 
-    movable_array& operator=(movable_array&& rhs) {
+    movable_array& operator=(movable_array&& rhs) noexcept {
         if (&rhs != this) {
             if (data_)
                 system_callback::deallocate(data_);
