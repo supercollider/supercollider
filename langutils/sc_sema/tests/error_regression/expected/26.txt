@@ -1,0 +1,313 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Variable not defined
+file:
+   41 │     method_constant { |a = 1| ^1 }
+   42 │     method_instance_var { |a = (instance_var)| ^1 }
+   43 │     method_other_argument { |a, b = (a)| ^1 }
+      ┆                                      ^ this is not defined.
+   44 │ }
+
+Declare it with 'var', or use '~a' to refer to an environment variable.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Variable not defined
+file:
+   37 │     block_earlier_argument { ^{ |a, b = (a + 1)| b } }
+   38 │     block_later_argument { ^{ |a = (b), b| a } }
+   39 │     block_itself { ^{ |a = (a)| a } }
+      ┆                             ^ this is not defined.
+   40 │ 
+   41 │     method_constant { |a = 1| ^1 }
+   42 │     method_instance_var { |a = (instance_var)| ^1 }
+
+Declare it with 'var', or use '~a' to refer to an environment variable.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Variable not defined
+file:
+   36 │     block_bracketed { ^{ |a = (1.foo)| a } }
+   37 │     block_earlier_argument { ^{ |a, b = (a + 1)| b } }
+   38 │     block_later_argument { ^{ |a = (b), b| a } }
+      ┆                                     ^ this is not defined.
+   39 │     block_itself { ^{ |a = (a)| a } }
+   40 │ 
+   41 │     method_constant { |a = 1| ^1 }
+
+Declare it with 'var', or use '~b' to refer to an environment variable.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  SCMethodList: Object
+SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'    block_constant { ^{ |a = 1| a } }'\n'    block_constant_array { ^{ |a = #[1, 2], b = (c: 3)| a } }'\n'    block_bracketed { ^{ |a = (1.foo)| a } }'\n'    block_earlier_argument { ^{ |a, b = (a + 1)| b } }'\n'    block_later_argument { ^{ |a = (b), b| a } }'\n'    block_itself { ^{ |a = (a)| a } }'\n''\n'    method_constant { |a = 1| ^1 }'\n'    method_instance_var { |a = (instance_var)| ^1 }'\n'    method_other_argument { |a, b = (a)| ^1 }'\n'}
+|  SCMemberList: ArgumentDefaults
+|  |  SCMember: instance_var
+|  SCMethodList: ArgumentDefaults
+|  |  SCMethod: poisoned: method_other_argument { |a, b = (a)| ^1 }
+|  |  |  SCArgumentDeclareList: a, b = (a)
+|  |  |  |  SCArgumentDeclare: a
+|  |  |  |  |  SCMissing: a
+|  |  |  |  SCArgumentDeclare: a, b = (a)
+|  |  |  |  |  SCExprList: a
+|  |  |  SCArgumentDeclareList: a, b = (a)
+|  |  |  SCExprList: ^1
+|  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: method_instance_var { |a = (instance_var)| ^1 }
+|  |  |  SCArgumentDeclareList: a = (instance_var)
+|  |  |  |  SCArgumentDeclare: a = (instance_var)
+|  |  |  |  |  SCRead: instance_var
+|  |  |  SCArgumentDeclareList: a = (instance_var)
+|  |  |  SCExprList: ^1
+|  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: method_constant { |a = 1| ^1 }
+|  |  |  SCArgumentDeclareList: a = 1
+|  |  |  |  SCArgumentDeclare: a = 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  SCArgumentDeclareList: a = 1
+|  |  |  SCExprList: ^1
+|  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: poisoned: block_itself { ^{ |a = (a)| a } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^{ |a = (a)| a }
+|  |  |  |  SCExplicitReturn: { |a = (a)| a }
+|  |  |  |  |  SCFunction: { |a = (a)| a }
+|  |  |  |  |  |  SCArgumentDeclareList: a = (a)
+|  |  |  |  |  |  |  SCArgumentDeclare: a = (a)
+|  |  |  |  |  |  |  |  SCExprList: a
+|  |  |  |  |  |  SCArgumentDeclareList: a = (a)
+|  |  |  |  |  |  SCExprList: { |a = (a)| a }
+|  |  |  |  |  |  |  SCRead: a
+|  |  SCMethod: poisoned: block_later_argument { ^{ |a = (b), b| a } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^{ |a = (b), b| a }
+|  |  |  |  SCExplicitReturn: { |a = (b), b| a }
+|  |  |  |  |  SCFunction: { |a = (b), b| a }
+|  |  |  |  |  |  SCArgumentDeclareList: a = (b), b
+|  |  |  |  |  |  |  SCArgumentDeclare: a = (b)
+|  |  |  |  |  |  |  |  SCExprList: b
+|  |  |  |  |  |  |  SCArgumentDeclare: b
+|  |  |  |  |  |  |  |  SCMissing: b
+|  |  |  |  |  |  SCArgumentDeclareList: a = (b), b
+|  |  |  |  |  |  SCExprList: { |a = (b), b| a }
+|  |  |  |  |  |  |  SCRead: a
+|  |  SCMethod: block_earlier_argument { ^{ |a, b = (a + 1)| b } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^{ |a, b = (a + 1)| b }
+|  |  |  |  SCExplicitReturn: { |a, b = (a + 1)| b }
+|  |  |  |  |  SCFunction: { |a, b = (a + 1)| b }
+|  |  |  |  |  |  SCArgumentDeclareList: a, b = (a + 1)
+|  |  |  |  |  |  |  SCArgumentDeclare: a
+|  |  |  |  |  |  |  |  SCMissing: a
+|  |  |  |  |  |  |  SCArgumentDeclare: a, b = (a + 1)
+|  |  |  |  |  |  |  |  SCMessage: +: a + 1
+|  |  |  |  |  |  |  |  |  SCRead: a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs: a + 1
+|  |  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  |  SCKwArgs: a + 1
+|  |  |  |  |  |  |  |  |  SCVariadicArgs: a + 1
+|  |  |  |  |  |  |  |  |  SCMissing: a + 1
+|  |  |  |  |  |  SCArgumentDeclareList: a, b = (a + 1)
+|  |  |  |  |  |  SCExprList: { |a, b = (a + 1)| b }
+|  |  |  |  |  |  |  SCRead: b
+|  |  SCMethod: block_bracketed { ^{ |a = (1.foo)| a } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^{ |a = (1.foo)| a }
+|  |  |  |  SCExplicitReturn: { |a = (1.foo)| a }
+|  |  |  |  |  SCFunction: { |a = (1.foo)| a }
+|  |  |  |  |  |  SCArgumentDeclareList: a = (1.foo)
+|  |  |  |  |  |  |  SCArgumentDeclare: a = (1.foo)
+|  |  |  |  |  |  |  |  SCMessage: foo: 1.foo
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  |  SCPositionalArgs: 1.foo
+|  |  |  |  |  |  |  |  |  SCKwArgs: 1.foo
+|  |  |  |  |  |  |  |  |  SCVariadicArgs: 1.foo
+|  |  |  |  |  |  |  |  |  SCMissing: 1.foo
+|  |  |  |  |  |  SCArgumentDeclareList: a = (1.foo)
+|  |  |  |  |  |  SCExprList: { |a = (1.foo)| a }
+|  |  |  |  |  |  |  SCRead: a
+|  |  SCMethod: block_constant_array { ^{ |a = #[1, 2], b = (c: 3)| a } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^{ |a = #[1, 2], b = (c: 3)| a }
+|  |  |  |  SCExplicitReturn: { |a = #[1, 2], b = (c: 3)| a }
+|  |  |  |  |  SCFunction: { |a = #[1, 2], b = (c: 3)| a }
+|  |  |  |  |  |  SCArgumentDeclareList: a = #[1, 2], b = (c: 3)
+|  |  |  |  |  |  |  SCArgumentDeclare: a = #[1, 2]
+|  |  |  |  |  |  |  |  SCCollection: Array: #[1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCArgumentDeclare: a = #[1, 2], b = (c: 3)
+|  |  |  |  |  |  |  |  SCCollection: Event: (c: 3) = {"event": [{"key": {"symbol": "c"}, "value": {"int": 3}}]}
+|  |  |  |  |  |  |  |  |  SCLiteral: c: = {"symbol": "c"}
+|  |  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  |  |  |  |  SCArgumentDeclareList: a = #[1, 2], b = (c: 3)
+|  |  |  |  |  |  SCExprList: { |a = #[1, 2], b = (c: 3)| a }
+|  |  |  |  |  |  |  SCRead: a
+|  |  SCMethod: block_constant { ^{ |a = 1| a } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^{ |a = 1| a }
+|  |  |  |  SCExplicitReturn: { |a = 1| a }
+|  |  |  |  |  SCFunction: { |a = 1| a }
+|  |  |  |  |  |  SCArgumentDeclareList: a = 1
+|  |  |  |  |  |  |  SCArgumentDeclare: a = 1
+|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCArgumentDeclareList: a = 1
+|  |  |  |  |  |  SCExprList: { |a = 1| a }
+|  |  |  |  |  |  |  SCRead: a
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
+SCClass: Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  SCMethodList: Symbol
+SCClass: Char: Char {}
+|  SCMemberList: Char
+|  SCMethodList: Char
+SCClass: Integer: Integer {}
+|  SCMemberList: Integer
+|  SCMethodList: Integer
+SCClass: Float: Float {}
+|  SCMemberList: Float
+|  SCMethodList: Float
+SCClass: Nil: Nil {}
+|  SCMemberList: Nil
+|  SCMethodList: Nil
+SCClass: False: False {}
+|  SCMemberList: False
+|  SCMethodList: False
+SCClass: True: True {}
+|  SCMemberList: True
+|  SCMethodList: True
+SCClass: String: String {}
+|  SCMemberList: String
+|  SCMethodList: String
+SCClass: Class: Class {}
+|  SCMemberList: Class
+|  SCMethodList: Class
+SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Object
+SCClass: Meta_ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'    block_constant { ^{ |a = 1| a } }'\n'    block_constant_array { ^{ |a = #[1, 2], b = (c: 3)| a } }'\n'    block_bracketed { ^{ |a = (1.foo)| a } }'\n'    block_earlier_argument { ^{ |a, b = (a + 1)| b } }'\n'    block_later_argument { ^{ |a = (b), b| a } }'\n'    block_itself { ^{ |a = (a)| a } }'\n''\n'    method_constant { |a = 1| ^1 }'\n'    method_instance_var { |a = (instance_var)| ^1 }'\n'    method_other_argument { |a, b = (a)| ^1 }'\n'}
+|  SCMemberList: ArgumentDefaults
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: ArgumentDefaults
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Ref
+SCClass: Meta_Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Symbol
+SCClass: Meta_Char: Char {}
+|  SCMemberList: Char
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Char
+SCClass: Meta_Integer: Integer {}
+|  SCMemberList: Integer
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Integer
+SCClass: Meta_Float: Float {}
+|  SCMemberList: Float
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Float
+SCClass: Meta_Nil: Nil {}
+|  SCMemberList: Nil
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Nil
+SCClass: Meta_False: False {}
+|  SCMemberList: False
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: False
+SCClass: Meta_True: True {}
+|  SCMemberList: True
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: True
+SCClass: Meta_String: String {}
+|  SCMemberList: String
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: String
+SCClass: Meta_Class: Class {}
+|  SCMemberList: Class
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Class
+Successfully compiled 15 classes.

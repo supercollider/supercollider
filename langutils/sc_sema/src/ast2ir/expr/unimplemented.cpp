@@ -10,7 +10,6 @@ Return<SCAnyExpr_I> unimplemented(IRGraph& ir, const std::shared_ptr<const ast::
     return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
 }
 
-Return<SCAnyExpr_I> Expr::operator()(ast::BlockIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::CollectionIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::CurryIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::GeneratorAnyIndex i) { return unimplemented(ir, ast_graph, i); }

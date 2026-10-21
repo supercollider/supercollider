@@ -14,8 +14,9 @@ struct ScopeEntry {
     enum struct State { CurrentlyInitalising, Initalised };
     // The graph the indexes below are in, which might not be the one being compiled.
     // This happens when we are accessing a meta class entry, or when inlining.
+    // Null means the graph being compiled, e.g., for arguments, as Expr doesn't own its graph.
     std::shared_ptr<const IRGraph> graph;
-    join<SCFunction_I, SCMemberList_I> scope_index;
+    join<SCFunction_I, SCMethod_I, SCMemberList_I> scope_index;
     join<SCVariableDeclare_I, SCMember_I, SCArgumentDeclare_I> declare_index;
     std::optional<ConstExprIndex> const_expr;
     std::optional<TypeInfo> type_info;

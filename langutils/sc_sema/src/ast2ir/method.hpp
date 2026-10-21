@@ -19,8 +19,6 @@ struct Method : private Base {
     Return<SCMethod_I> operator()(ast::AnyValidMethodIndex);
 
 private:
-    void append_args(SCArgumentDeclareList_I args, SCArgumentDeclareList_I var_args, ast::DeclareArgumentListIndex);
-
     // Declared before expr, as expr refers to it.
     DiagnosticSink sink;
     Expr expr;
