@@ -63,7 +63,7 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
 
     // If all the body is const expr, then we can freely ignore everything bar the final expr.
     for (auto it = ast_graph->children(body).iter(); it; ++it) {
-        const auto r = std::visit(expr, ast_graph->index_to_variant(*it));
+        const auto r = expr(*it);
         body_is_const_expr = body_is_const_expr && static_cast<bool>(r.const_index);
         ir.append(body_i, r.ir_node);
         last_index = r.ir_node;

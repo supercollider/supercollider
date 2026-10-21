@@ -41,6 +41,10 @@ struct ConstEval {
         std::variant<Success, sc::diag::Diagnostic> v;
     };
 
+    // Dispatches to the overloads below. The dispatch is only instantiated in consteval.cpp, so use this rather than
+    // visiting yourself. Not an operator() overload, as that would make the conversions to the sets below ambiguous.
+    Result eval(ast::AnyExprIndex);
+
     // Hard nos
     Result operator()(ast::ExprSeqIndex);
     Result operator()(ast::EnvIdentifierIndex);

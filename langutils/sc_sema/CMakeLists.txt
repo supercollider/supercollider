@@ -10,7 +10,10 @@ add_library(sc_sema STATIC
 	src/compile_consteval.cpp
 	src/intrinsic_constraint_checker.cpp
 	src/inheritance_edges.cpp
-	src/ast2ir/expr.cpp
+	src/ast2ir/expr/dispatch.cpp
+	src/ast2ir/expr/literals.cpp
+	src/ast2ir/expr/structure.cpp
+	src/ast2ir/expr/variables.cpp
 	src/ast2ir/declare_classes.cpp
 	src/ast2ir/region.cpp
 	src/ast2ir/consteval.cpp

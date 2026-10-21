@@ -16,6 +16,7 @@ namespace sc::ast {
 [[nodiscard]] const FloatNode& payload(const ASTGraph& g, FloatLitIndex i) { return g.payload(i); }
 
 AnyExprIndex::Variant to_variant(const ASTGraph& g, AnyExprIndex i) { return g.index_to_variant(i); }
+BlockItemIndex::Variant to_variant(const ASTGraph& g, BlockItemIndex i) { return g.index_to_variant(i); }
 
 std::shared_ptr<const lex::TextInfo> get_text_info(const ASTGraph& graph) { return graph.text_info(); }
 

@@ -119,6 +119,21 @@ template <template <Elements...> typename IndexType> struct Tester {
                           },
                           v);
     }());
+
+    // Runtime enum, picks the alternative matching the enum and keeps the index's value.
+    static_assert([]() -> bool {
+        AB_Index ab { 3 };
+        const auto v = ab.as_variant(Elements::B);
+        return std::visit(o {
+                              [](A_Index) { return false; },
+                              [](B_Index b) { return *b == 3; },
+                          },
+                          v);
+    }());
+    static_assert([]() -> bool {
+        Any_Index any { 5 };
+        return any.as_variant(Elements::C).index() == 2 && any.as_variant(Elements::A).index() == 0;
+    }());
 };
 
 // This contains the definitions of the type erased index and optional index.

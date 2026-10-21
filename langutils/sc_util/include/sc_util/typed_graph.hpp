@@ -68,6 +68,11 @@ public: // This is meant to be privately inherited from.
     template <typename I>
     using NodeTypeFromIndex = typename decltype(Helper::template get_node_type_from_index_type<I>())::type;
 
+    // Accessing the payload variant by position rather than by type, as by type makes the variant search every
+    // alternative, which is slow to compile with this many nodes.
+    template <typename I> static constexpr std::size_t PayloadPosition = Helper::template position_of_index<I>();
+    template <typename I> static constexpr bool IsNodeIndex = PayloadPosition<I> < std::variant_size_v<Variant>;
+
     // Unfortunately, some times the node indexes need to be optional.
     static constexpr bool NodesAreOptional = std::is_same_v<UntypedNodeIndex, OptIndex>;
 
@@ -118,14 +123,15 @@ public: // This is meant to be privately inherited from.
         const typename Node::Index index = [&]() {
             if (m_dead_nodes.empty()) {
                 const auto index_raw = m_node_payload.size();
-                m_node_payload.push_back(std::move(node));
+                m_node_payload.emplace_back(std::in_place_index<PayloadPosition<typename Node::Index>>,
+                                            std::move(node));
                 m_node_edges.push_back({ });
                 m_last_child.push_back({ });
                 return index_raw;
             } else {
                 const size_t index_raw = *m_dead_nodes.back();
                 m_dead_nodes.pop_back();
-                m_node_payload[index_raw] = std::move(node);
+                m_node_payload[index_raw].template emplace<PayloadPosition<typename Node::Index>>(std::move(node));
                 m_node_edges[index_raw] = { };
                 m_last_child[index_raw] = { };
                 return index_raw;
@@ -167,14 +173,13 @@ public: // This is meant to be privately inherited from.
     template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
     [[nodiscard]] constexpr NodeTypeFromIndex<TypedIndex>& payload(TypedIndex i) {
         // assert(not_dead(i));
-        return std::get<NodeTypeFromIndex<TypedIndex>>(m_node_payload[*i]);
+        return std::get<PayloadPosition<TypedIndex>>(m_node_payload[*i]);
     }
 
     template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
     [[nodiscard]] constexpr const auto& payload(TypedIndex i) const {
         // assert(not_dead(i));
-        using R = typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type;
-        return std::get<R>(m_node_payload[*i]);
+        return std::get<PayloadPosition<TypedIndex>>(m_node_payload[*i]);
     }
 
     [[nodiscard]] constexpr typename Helper::Variant& payload(UntypedNodeIndex i) {
@@ -216,7 +221,8 @@ public: // This is meant to be privately inherited from.
     ////////////////////////////////////////////////////////////////////////////////
     template <typename TypedIndex> [[nodiscard]] constexpr bool is_a(UntypedNodeIndex i) const {
         // assert(not_dead(i));
-        return std::get_if<NodeTypeFromIndex<TypedIndex>>(&m_node_payload[*i]) != nullptr;
+        static_assert(IsNodeIndex<TypedIndex>, "Not the index of a single node in this graph.");
+        return m_node_payload[*i].index() == PayloadPosition<TypedIndex>;
     }
 
 
@@ -224,7 +230,8 @@ public: // This is meant to be privately inherited from.
         // assert(not_dead(i));
 
 
-        if (std::get_if<NodeTypeFromIndex<TypedIndex>>(&m_node_payload[*i])) {
+        static_assert(IsNodeIndex<TypedIndex>, "Not the index of a single node in this graph.");
+        if (m_node_payload[*i].index() == PayloadPosition<TypedIndex>) {
             return { TypedIndex { *i } };
         } else {
             return std::nullopt;
@@ -250,16 +257,14 @@ public: // This is meant to be privately inherited from.
 
     template <typename TypedIndex> [[nodiscard]] constexpr auto index_to_variant(TypedIndex i) const {
         // assert(not_dead(i));
-        return std::visit([&](const auto& node) { return GraphImplementation::as_variant(i, node); },
-                          m_node_payload[*i]);
+        // Visiting the payload would instantiate a branch for every node type in the graph, per index type.
+        return i.as_variant(Helper::node_enums[m_node_payload[*i].index()]);
     }
 
 
     template <typename Action, typename TypedIndex> auto visit(Action action, TypedIndex i) const {
         // assert(not_dead(i));
-        return std::visit(
-            action,
-            std::visit([&](const auto& node) { return GraphImplementation::as_variant(i, node); }, m_node_payload[*i]));
+        return std::visit(action, index_to_variant(i));
     }
 
     template <size_t N, typename TypedIndex> //
@@ -518,13 +523,6 @@ private:
         if (edge.next_sibling)
             depth_first_traverse_impl(enter_node, before_children, after_children, exit_node, *edge.next_sibling,
                                       visited, depth);
-    }
-
-    template <typename TypedIndex, typename Node> [[nodiscard]] static auto as_variant(TypedIndex i, const Node&) {
-        using NodeIndex = typename Node::Index;
-        // static_assert(NodeIndex::size_of_set == 1);
-        // static_assert(Helper::template has_node_with_enum<NodeIndex::Possible[0]>());
-        return i.template as_variant<NodeIndex::Possible[0]>();
     }
 };
 

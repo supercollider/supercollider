@@ -15,6 +15,12 @@ void Expr::add_symbol(Symbol n, ScopeEntry e) { scope.back().insert({ n, e }); }
 
 template struct Return<SCAnyExpr_I>;
 
+// The dispatch over every node type is only instantiated here, other translation units should call these.
+Return<SCAnyExpr_I> Expr::operator()(ast::AnyExprIndex i) { return std::visit(*this, to_variant(*ast_graph, i)); }
+Return<SCAnyExpr_I> Expr::operator()(ast::BlockItemIndex i) {
+    return std::visit(*this, ast_graph->index_to_variant(i));
+}
+
 Return<SCAnyExpr_I> Expr::operator()(ast::IntLitIndex i) {
     const auto& int_node = payload(*ast_graph, i);
     const auto str = get_text_info(*ast_graph)->read(get_location(*ast_graph, i));

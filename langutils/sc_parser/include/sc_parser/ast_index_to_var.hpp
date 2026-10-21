@@ -7,6 +7,7 @@ namespace sc::ast {
 struct ASTGraph;
 
 [[nodiscard]] AnyExprIndex::Variant to_variant(const ASTGraph&, AnyExprIndex);
+[[nodiscard]] BlockItemIndex::Variant to_variant(const ASTGraph&, BlockItemIndex);
 
 
 // If you have encountered this, you need to an another overload above with the specific type.

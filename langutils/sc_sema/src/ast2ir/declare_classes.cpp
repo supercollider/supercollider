@@ -37,7 +37,8 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::Index tota
     ast::AnyExprIndex expr_i = expr_i_t;
     const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
 
-    std::visit(ast2ir::ConstEval { cxt, ast_graph, ast_index }, ast_graph->index_to_variant(expr_i))
+    ast2ir::ConstEval { cxt, ast_graph, ast_index }
+        .eval(expr_i)
         .visit(
             [&](std::pair<ConstExprIndex, TypeInfo> p) {
                 const auto [const_expr_index, type_info] = p;

@@ -200,12 +200,35 @@ public:
         }
     }
 
-    template<EnumType ToRemove> 
-    [[nodiscard]] static constexpr auto remove_from_set() {
+    /**
+    Runtime version of the above, the enum is the one the index actually represents.
+    This only branches over this set, so it is much cheaper to compile than visiting every node type.
+     */
+    [[nodiscard]] constexpr Variant as_variant(EnumType e) const {
+        return as_variant_impl(e, std::make_index_sequence<sizeof...(ThisSet)> {});
+    }
+
+    template <EnumType ToRemove> [[nodiscard]] static constexpr auto remove_from_set() {
         return Remover<ToRemove>::remove(std::make_index_sequence<sizeof...(ThisSet) - 1>{});
     }
 
 private:
+    template <std::size_t I> [[nodiscard]] static constexpr Variant make_alternative(const TypedIndexHelper& i) {
+        return Variant { std::in_place_index<I>, *i };
+    }
+
+    // Flat rather than recursive, so this is one instantiation per set rather than one per element.
+    // variant::emplace isn't constexpr in c++17, so construct the alternative in place through a table.
+    template <std::size_t... Is>
+    [[nodiscard]] constexpr Variant as_variant_impl(EnumType e, std::index_sequence<Is...>) const {
+        std::size_t alternative = 0;
+        const bool found = ((e == Possible[Is] ? (alternative = Is, true) : false) || ...);
+        assert(found);
+        (void)found;
+        constexpr Variant (*make[])(const TypedIndexHelper&) = { &make_alternative<Is>... };
+        return make[alternative](*this);
+    }
+
     template <typename T> struct TypeWrapper {
         using type = T;
     };
