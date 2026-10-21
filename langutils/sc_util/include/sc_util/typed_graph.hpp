@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sc_util/typed_graph_iter.hpp"
 #include "type_set_index.hpp"
 #include <algorithm>
 #include <functional>
@@ -21,42 +22,9 @@ struct IsTrivial {
     }
 };
 
-
-template <typename OptNodeIndex, //
-          typename Edges, //
-          typename T //
-          > //
-struct Iter {
-    // static_assert(std::is_integral_v<typename OptNodeIndex::Underlying>);
-    // static_assert(std::is_constructible_v<bool, OptNodeIndex>);
-    constexpr Iter(OptNodeIndex current, const std::vector<Edges>& edge): m_current(current), m_edges(edge) { }
-
-    Iter& operator+=(int offset);
-    [[nodiscard]] Iter operator++(int);
-    Iter& operator++() { return this->operator+=(1); }
-    [[nodiscard]] constexpr explicit operator bool() const { return static_cast<bool>(m_current); }
-
-    [[nodiscard]] constexpr T operator*() const;
-
-private:
-    OptNodeIndex m_current;
-    const std::vector<Edges>& m_edges;
-};
-
-template <typename OptNodeIndex, typename Edges, typename T> //
-struct Container {
-    constexpr Container(const std::vector<Edges>& edges, OptNodeIndex first): m_edges(edges), m_first(first) { }
-    [[nodiscard]] Iter<OptNodeIndex, Edges, T> iter() const { return { m_first, m_edges }; }
-
-private:
-    const std::vector<Edges>& m_edges;
-    OptNodeIndex m_first;
-};
-
 // Used when destructing children from a node.
 struct NoChildren { };
 
-template <typename OptIndex> struct EdgesTemplate { OptIndex first_child, parent, next_sibling, prev_sibling; };
 
 /**
 @brief
@@ -87,8 +55,8 @@ public: // This is meant to be privately inherited from.
     //                  || std::is_same_v<typename HELPER::UntypedStrongIndex, Index>,
     //             "Index types aren't the ones the nodes use.");
 
-    template <typename OptNodeIndex, typename Edges, typename T> friend struct Container;
-    template <typename OptNodeIndex, typename Edges, typename T> friend struct Iter;
+    template <typename OptNodeIndex, typename T> friend struct Container;
+    template <typename OptNodeIndex, typename T> friend struct Iter;
 
     using Edges = EdgesTemplate<OptIndex>;
 
@@ -131,7 +99,6 @@ public: // This is meant to be privately inherited from.
     template <typename Node, typename... ChildrenIndexes> //
     [[nodiscard]] typename Node::Index create(Node&& node, ChildrenIndexes&&... child_indexes) {
         assert((not_dead(child_indexes) && ...));
-        /*
         static_assert((typed_index::is_type_set_index<ChildrenIndexes>() && ...),
                       "You have not passed an index to the constructor of a node, you have probably passed the node "
                       "rather than its index.");
@@ -139,6 +106,7 @@ public: // This is meant to be privately inherited from.
         static_assert(Helper::template has_node<typename Node::Index>(),
                       "You have either called create on a graph with the wrong type of node, or have failed to add the "
                       "node to the template argument.");
+
         static constexpr auto expected_args = Node::number_expected_args;
 
         static_assert(!expected_args || sizeof...(child_indexes) <= *expected_args,
@@ -147,7 +115,6 @@ public: // This is meant to be privately inherited from.
                       "Too few arguments have been passed to the constructor of a node.");
         static_assert(Node::template constructible_from<ChildrenIndexes...>(),
                       "The children index types do not match the constructor");
-                      */
         const typename Node::Index index = [&]() {
             if (m_dead_nodes.empty()) {
                 const auto index_raw = m_node_payload.size();
@@ -277,7 +244,7 @@ public: // This is meant to be privately inherited from.
             using Tup = typename N::ChildrenIndexTupleType;
             return build_node_children_tuple<Tup>(i, std::make_index_sequence<std::tuple_size_v<Tup>>());
         } else {
-            return Container<OptIndex, Edges, typename N::HeldType> { m_node_edges, m_node_edges[*i].first_child };
+            return Container<OptIndex, typename N::HeldType> { m_node_edges, m_node_edges[*i].first_child };
         }
     }
 
@@ -562,37 +529,4 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-template <typename OptNodeIndex, typename Edges, typename T>
-Iter<OptNodeIndex, Edges, T>& Iter<OptNodeIndex, Edges, T>::operator+=(int offset) {
-    if (offset >= 0) {
-        for (int i { 0 }; i < offset; ++i) {
-            if (!m_current)
-                break;
-            m_current = m_edges[*m_current].next_sibling;
-        }
-    } else {
-        for (int i { 0 }; i > offset; --i) {
-            if (!m_current)
-                break;
-            m_current = m_edges[*m_current].prev_sibling;
-        }
-    }
-    return *this;
-}
-
-
-template <typename OptNodeIndex, typename Edges, typename T>
-[[nodiscard]] Iter<OptNodeIndex, Edges, T> Iter<OptNodeIndex, Edges, T>::operator++(int) {
-    Iter copy = *this;
-    if (m_current) {
-        m_current = m_edges[*m_current].next_sibling;
-    }
-    return copy;
-}
-
-template <typename OptNodeIndex, typename Edges, typename T>
-[[nodiscard]] constexpr T Iter<OptNodeIndex, Edges, T>::operator*() const {
-    // assert(m_current);
-    return T { *m_current };
-}
 }

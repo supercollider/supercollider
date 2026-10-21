@@ -17,6 +17,7 @@ CommonClasses symbol_table_and_common_classes(SymbolTable& sym_table, SymSCClass
     const auto sym_sym = sym_table.get_class_name("Symbol");
     const auto array_sym = sym_table.get_class_name("Array");
     const auto event_sym = sym_table.get_class_name("Event");
+    const auto ref_sym = sym_table.get_class_name("Ref");
 
     return CommonClasses {
         //
@@ -32,7 +33,8 @@ CommonClasses symbol_table_and_common_classes(SymbolTable& sym_table, SymSCClass
         char_sym, //
         sym_sym, //
         array_sym, //
-        event_sym //
+        event_sym, //
+        ref_sym //
     };
 }
 }

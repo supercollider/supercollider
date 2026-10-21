@@ -2,6 +2,7 @@
 #include "sc_parser/ast.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_util/typed_graph.hpp"
+#include "sc_parser/ast_untyped.hpp"
 #include <ostream>
 namespace sc::util::typed_graph {
 template struct sc::util::typed_graph::GraphImplementation<sc::ast::OptionalIndex, sc::ast::Index,
@@ -9,6 +10,26 @@ template struct sc::util::typed_graph::GraphImplementation<sc::ast::OptionalInde
 }
 
 namespace sc::ast {
+
+[[nodiscard]] const IntNode& payload(const ASTGraph& g, IntLitIndex i) { return g.payload(i); }
+
+[[nodiscard]] const FloatNode& payload(const ASTGraph& g, FloatLitIndex i) { return g.payload(i); }
+
+AnyExprIndex::Variant to_variant(const ASTGraph& g, AnyExprIndex i) { return g.index_to_variant(i); }
+
+std::shared_ptr<const lex::TextInfo> get_text_info(const ASTGraph& graph) { return graph.text_info(); }
+
+sc::lex::SourceCodeRange get_location(const ASTGraph& graph, OptionalIndex i) { return graph.location(i); }
+
+std::string_view get_string_view(const ASTGraph& graph, OptionalIndex i) { return graph.string_view(i); }
+std::string get_string(const ASTGraph& graph, OptionalIndex i) { return std::string { graph.string_view(i) }; }
+
+
+[[nodiscard]] OptionalIndex next_sibling(const ASTGraph& g, OptionalIndex i) { return g.edges(i).next_sibling; }
+
+
+[[nodiscard]] Iter<OptionalIndex, AnyExprIndex> iter(const ASTGraph& g, ExprSeqIndex i) { return g.children(i).iter(); }
+
 
 void ASTGraph::add_diagnostic(sc::diag::Diagnostic d) {
     m_has_fatal_diagnostic |= d.fatal();

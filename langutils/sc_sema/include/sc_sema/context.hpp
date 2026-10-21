@@ -10,10 +10,6 @@
 
 #include <mutex>
 
-namespace sc::ast {
-struct ASTGraphAndValidIndex;
-}
-
 namespace sc::ir {
 struct CurrentDiagnostics {
     void operator()(sc::diag::Diagnostic diag) {

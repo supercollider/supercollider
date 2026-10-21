@@ -9,22 +9,23 @@
 #include "sc_sema/compiler.hpp"
 #include "sc_sema/decls.hpp"
 #include "sc_sema/symbol_table.hpp"
+#include "sc_parser/ast_untyped.hpp"
+#include "sc_parser/ast.hpp"
 
 
 namespace sc::ir::ast2ir {
 
 void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::Index total_index, ast::UntypedIndex accessor_i,
                                          ast::ReadWriteAccessor accessor, ast::NamedIdentifierIndex name_i) {
-    const auto name = cxt.symbol_table.get_identifier(ast_graph->string(name_i));
+    const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
     const auto r =
         decl.insert(ClassDeclaration::Member { total_index, name, { *name_i }, accessor, accessor_i, { }, { } });
     if (!r) {
         const auto* mem = decl.find_member(name);
         assert(mem);
         cxt.diagnostics(diag::Diagnostic::duplicate_member(
-            decl.ast_graph()->text_info(), decl.ast_graph()->location(mem->total_index),
-            decl.ast_graph()->text_info(), decl.ast_graph()->location(total_index)
-        ));
+            get_text_info(*decl.ast_graph()), get_location(*decl.ast_graph(), mem->total_index),
+            get_text_info(*decl.ast_graph()), get_location(*decl.ast_graph(), total_index)));
     }
 }
 
@@ -34,18 +35,18 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::Index tota
     const auto [name_i_t, expr_i_t] = ast_graph->children(name_with_expr_i);
     const ast::NamedIdentifierIndex name_i = name_i_t;
     ast::AnyExprIndex expr_i = expr_i_t;
-    const auto name = cxt.symbol_table.get_identifier(ast_graph->string(name_i));
+    const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
 
     std::visit(ast2ir::ConstEval { cxt, ast_graph, ast_index }, ast_graph->index_to_variant(expr_i))
         .visit(
             [&](std::pair<ConstExprIndex, TypeInfo> p) {
                 const auto [const_expr_index, type_info] = p;
-                const auto name = cxt.symbol_table.get_identifier(ast_graph->string(name_i));
+                const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
                 const auto r = decl.insert(ClassDeclaration::Member {
                     total, name, { *name_i }, accessor, accessor_i, { { const_expr_index, expr_i } }, { type_info } });
                 if (!r) {
-                    cxt.diagnostics(
-                        diag::Diagnostic::todo(decl.ast_graph()->text_info(), decl.ast_graph()->location(name_i)));
+                    cxt.diagnostics(diag::Diagnostic::todo(get_text_info(*decl.ast_graph()),
+                                                           get_location(*decl.ast_graph(), name_i)));
                 }
             },
             [&](diag::Diagnostic&& d) {
@@ -64,10 +65,10 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
     assert(ast_graph);
     const auto [class_name_i, backing_slot, super_name_i, members, methods] = ast_graph->children(class_i);
 
-    const auto class_name_str = std::string { ast_graph->string_view(class_name_i) };
+    const auto class_name_str = std::string { get_string_view(*ast_graph, class_name_i) };
     assert(!class_name_str.empty());
     if (class_name_str.substr(0, 5) == "Meta_") {
-        cxt.diagnostics(diag::Diagnostic::todo(ast_graph->text_info(), ast_graph->location(class_name_i)));
+        cxt.diagnostics(diag::Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, class_name_i)));
         return { }; // Hard error here, this class cannot exist.
     }
     const auto class_name = cxt.symbol_table.get_class_name(class_name_str);
@@ -75,8 +76,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
     if (auto before = cxt.class_names.encountered_class_before(class_name, ast_graph, class_name_i)) {
         const auto& [g, i] = *before;
         cxt.diagnostics( //
-            diag::Diagnostic::duplicate_class(g->text_info(), g->location(i), ast_graph->text_info(),
-                                              ast_graph->location(class_name_i)));
+            diag::Diagnostic::duplicate_class(g->text_info(), get_location(*g, i), get_text_info(*ast_graph),
+                                              get_location(*ast_graph, class_name_i)));
         return { };
     }
 
@@ -96,21 +97,21 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
 
     if (auto super = ast_graph->present(super_name_i)) {
         if (!is_root_class) {
-            const auto sym = cxt.symbol_table.get_class_name(ast_graph->string(super_name_i));
+            const auto sym = cxt.symbol_table.get_class_name(get_string(*ast_graph, super_name_i));
             class_decl.super(sym, { *super_name_i });
             cxt.inheritance_edges.insert(sym, class_name);
         } else {
             // the root object cannot inheirt from anything.
-            cxt.diagnostics(diag::Diagnostic::root_object_must_not_inherit(ast_graph->text_info(),
-                                                                           ast_graph->location(super_name_i)));
+            cxt.diagnostics(diag::Diagnostic::root_object_must_not_inherit(get_text_info(*ast_graph),
+                                                                           get_location(*ast_graph, super_name_i)));
             return { };
         }
     } else if (is_root_class) {
         cxt.inheritance_edges.insert(class_name);
     } else if (cxt.common_classes.default_inheritor == class_name) {
         // The default inheritor must inherit from something (unless it is also the root).
-        cxt.diagnostics(diag::Diagnostic::default_inheritor_must_have_super(ast_graph->text_info(),
-                                                                            ast_graph->location(class_name_i)));
+        cxt.diagnostics(diag::Diagnostic::default_inheritor_must_have_super(get_text_info(*ast_graph),
+                                                                            get_location(*ast_graph, class_name_i)));
         return { };
     } else {
         // Location here is just white space.
@@ -135,16 +136,16 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
     std::visit( //
         util::overload {
             //
-            [&](ast::MissingIndex) -> void { }, //
+            [&](ast::MissingIndex) -> void {}, //
             [&](ast::NamedIdentifierIndex i) -> void {
-                const auto slot_sym = cxt.symbol_table.get_identifier(ast_graph->string(i));
+                const auto slot_sym = cxt.symbol_table.get_identifier(get_string(*ast_graph, i));
                 if (slot_sym == cxt.symbol_table.get_identifier("slot")
                     || slot_sym == cxt.symbol_table.get_identifier("float")
                     || slot_sym == cxt.symbol_table.get_identifier("int")) {
                     class_decl.slot_def(slot_sym, { *i });
                 } else {
                     cxt.diagnostics(
-                        diag::Diagnostic::unexpected_slot_def(ast_graph->text_info(), ast_graph->location(i)));
+                        diag::Diagnostic::unexpected_slot_def(get_text_info(*ast_graph), get_location(*ast_graph, i)));
                     class_decl.poison();
                 }
             } //
@@ -225,7 +226,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
         std::visit(util::overload {
                        [&](ast::MethodIndex i) {
                            const auto [name_i, args_i, maybe_prim_i, body_i] = ast_graph->children(i);
-                           const auto name = cxt.symbol_table.get_selector(ast_graph->string(name_i));
+                           const auto name = cxt.symbol_table.get_selector(get_string(*ast_graph, name_i));
 
                            const auto r = class_decl.insert_no_ext(
                                ClassDeclaration::Method { ast_graph, module, i, name, { *name_i } });
@@ -238,8 +239,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                                assert(other->ast_graph == ast_graph);
 
                                cxt.diagnostics(diag::Diagnostic::duplicate_method_name(
-                                   ast_graph->text_info(), ast_graph->location(name_i), ast_graph->text_info(),
-                                   ast_graph->location(other->name_index)));
+                                   get_text_info(*ast_graph), get_location(*ast_graph, name_i),
+                                   get_text_info(*ast_graph), get_location(*ast_graph, other->name_index)));
                                break;
                            };
                            case ClassDeclaration::DuplicateLocation::Member: {
@@ -247,15 +248,15 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                                assert(other);
 
                                cxt.diagnostics(diag::Diagnostic::duplicate_method_name(
-                                   ast_graph->text_info(), ast_graph->location(name_i), ast_graph->text_info(),
-                                   ast_graph->location(other->name_index)));
+                                   get_text_info(*ast_graph), get_location(*ast_graph, name_i),
+                                   get_text_info(*ast_graph), get_location(*ast_graph, other->name_index)));
                                break;
                            }
                            }
                        },
                        [&](ast::ClassMethodIndex i) {
                            const auto [name_i, args_i, maybe_prim_i, body_i] = ast_graph->children(i);
-                           const auto name = cxt.symbol_table.get_selector(ast_graph->string(name_i));
+                           const auto name = cxt.symbol_table.get_selector(get_string(*ast_graph, name_i));
                            const auto r = meta_class_decl.insert_no_ext(
                                ClassDeclaration::Method { ast_graph, module, i, name, { *name_i } });
                            switch (r) {
@@ -267,8 +268,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                                assert(other->ast_graph == ast_graph);
 
                                cxt.diagnostics(diag::Diagnostic::duplicate_method_name(
-                                   ast_graph->text_info(), ast_graph->location(name_i), ast_graph->text_info(),
-                                   ast_graph->location(other->name_index)));
+                                   get_text_info(*ast_graph), get_location(*ast_graph, name_i),
+                                   get_text_info(*ast_graph), get_location(*ast_graph, other->name_index)));
                                break;
                            };
                            case ClassDeclaration::DuplicateLocation::Member: {
@@ -276,8 +277,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                                assert(other);
 
                                cxt.diagnostics(diag::Diagnostic::duplicate_method_name(
-                                   ast_graph->text_info(), ast_graph->location(name_i), ast_graph->text_info(),
-                                   ast_graph->location(other->name_index)));
+                                   get_text_info(*ast_graph), get_location(*ast_graph, name_i),
+                                   get_text_info(*ast_graph), get_location(*ast_graph, other->name_index)));
                                break;
                            }
                            }

@@ -138,7 +138,7 @@ enum struct NodeFlag {
 
 
 namespace details {
-using Spec = sc::util::typed_index::Spec<std::uint32_t, NodeFlag, struct ASTGraph>;
+using Spec = sc::util::typed_index::Spec<std::uint32_t, NodeFlag, struct ASTGraph___>;
 using Def = sc::util::typed_index::QuicklyDefineTypesFromSpec<Spec>;
 }
 

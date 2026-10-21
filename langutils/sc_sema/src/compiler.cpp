@@ -1,8 +1,8 @@
-#include "ast2ir/method.hpp"
 #include "boost/asio/post.hpp"
 #include "boost/asio/thread_pool.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 
+#include "ast2ir/method.hpp"
 #include "sc_parser/ast.hpp"
 
 #include "ast2ir/declare_classes.hpp"

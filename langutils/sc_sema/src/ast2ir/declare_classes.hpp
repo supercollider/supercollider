@@ -3,6 +3,10 @@
 #include "sc_sema/context.hpp"
 #include <memory>
 
+namespace sc::ast {
+struct ASTGraph;
+}
+
 namespace sc::ir {
 struct IRGraph;
 }

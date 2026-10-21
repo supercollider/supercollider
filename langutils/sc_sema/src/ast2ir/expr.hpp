@@ -17,6 +17,8 @@ struct ScopeEntry {
     State state;
 };
 
+extern template struct Return<SCAnyExpr_I>;
+
 struct Expr : private Base {
     using Base::Base;
     Return<SCAnyExpr_I> operator()(ast::IntLitIndex i);
@@ -24,14 +26,15 @@ struct Expr : private Base {
     Return<SCAnyExpr_I> operator()(ast::ExprSeqIndex);
     Return<SCAnyExpr_I> operator()(ast::EnvIdentifierIndex);
     Return<SCAnyExpr_I> operator()(ast::NonLocalReturnExprIndex);
-
     Return<SCAnyExpr_I> operator()(ast::ReferenceIndex);
+
     Return<SCAnyExpr_I> operator()(ast::AssignmentIndex);
     Return<SCAnyExpr_I> operator()(ast::AssignmentAtIndex);
     Return<SCAnyExpr_I> operator()(ast::SetterIndex);
     Return<SCAnyExpr_I> operator()(ast::VariablePackAssignIndex);
     Return<SCAnyExpr_I> operator()(ast::GeneratorAnyIndex);
     Return<SCAnyExpr_I> operator()(ast::ImmediatelyEvaluatedBlockIndex);
+    Return<SCAnyExpr_I> operator()(ast::RangeIndex);
     Return<SCAnyExpr_I> operator()(ast::RangeGeneratorIndex);
     Return<SCAnyExpr_I> operator()(ast::RangeAssignIndex);
     Return<SCAnyExpr_I> operator()(ast::ClassNameIdentifierIndex);
@@ -44,13 +47,24 @@ struct Expr : private Base {
     Return<SCAnyExpr_I> operator()(ast::SymbolQuoteIndex);
     Return<SCAnyExpr_I> operator()(ast::SymbolSlashIndex);
     Return<SCAnyExpr_I> operator()(ast::AnyMessageIndex);
-    Return<SCAnyExpr_I> operator()(ast::RangeIndex);
     Return<SCAnyExpr_I> operator()(ast::NamedIdentifierIndex);
     Return<SCAnyExpr_I> operator()(ast::CurryIndex);
     Return<SCAnyExpr_I> operator()(ast::ArrayIndex);
     Return<SCAnyExpr_I> operator()(ast::CollectionIndex);
     Return<SCAnyExpr_I> operator()(ast::DictionaryIndex);
+
+    Return<SCAnyExpr_I> operator()(ast::PrefixMessageIndex);
+    Return<SCAnyExpr_I> operator()(ast::PostfixMessageIndex);
+    Return<SCAnyExpr_I> operator()(ast::BinaryMessageIndex);
+    Return<SCAnyExpr_I> operator()(ast::ValueMessageIndex);
+    Return<SCAnyExpr_I> operator()(ast::NewMessageIndex);
+    Return<SCAnyExpr_I> operator()(ast::AtMessageIndex);
+
     Return<SCAnyExpr_I> operator()(ast::BlockIndex);
+
+    Return<SCAnyExpr_I> operator()(ast::AnyExprIndex);
+    Return<SCAnyExpr_I> operator()(ast::BlockItemIndex);
+    template <typename T> Return<SCAnyExpr_I> operator()(T);
 
     std::vector<std::unordered_map<Symbol, ScopeEntry>> scope;
 

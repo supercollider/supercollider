@@ -7,6 +7,7 @@ add_library(sc_sema STATIC
 	src/const_expr.cpp
 	src/ir.cpp
 	src/common_class.cpp
+	src/compile_consteval.cpp
 	src/intrinsic_constraint_checker.cpp
 	src/inheritance_edges.cpp
 	src/ast2ir/expr.cpp
@@ -14,6 +15,7 @@ add_library(sc_sema STATIC
 	src/ast2ir/region.cpp
 	src/ast2ir/consteval.cpp
 	src/ast2ir/method.cpp
+	src/ast2ir/literal_synthesis.cpp
 )
 
 target_include_directories(sc_sema PUBLIC include)

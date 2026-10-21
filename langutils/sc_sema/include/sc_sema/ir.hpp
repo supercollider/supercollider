@@ -23,7 +23,7 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper<SCNodeType,
                                                                      SCKwArg, //
                                                                      SCPositionalArgs, //
                                                                      SCAssign, //
-                                                                     SCRead,// 
+                                                                     SCRead, //
                                                                      SCMessage, //
                                                                      SCVariableDeclare, //
                                                                      SCExplicitReturn, //
@@ -36,6 +36,7 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper<SCNodeType,
                                                                      SCMember, //
                                                                      SCMemberList, //
                                                                      SCClass, //
+                                                                     SCRef,
                                                                      SCExprList //
                                                                      >;
 

@@ -17,20 +17,13 @@ struct CommonClasses {
     SymSCClassName symbol;
     SymSCClassName array;
     SymSCClassName event;
+    SymSCClassName ref;
 
     template <typename F> void for_each(F f) const {
-        // We could cast this into a SymSCClassName*... ?
-        f(root_object);
-        f(default_inheritor);
-        f(class_);
-        f(string);
-        f(true_);
-        f(false_);
-        f(nil);
-        f(float_);
-        f(int_);
-        f(char_);
-        f(symbol);
+        // Probably undefined behaviour, but should be okay?
+        const auto* ptr = reinterpret_cast<const SymSCClassName*>(this);
+        for (size_t i { 0 }; i < (sizeof(CommonClasses) / sizeof(SymSCClassName)); ++i)
+            f(ptr[i]);
     }
 };
 

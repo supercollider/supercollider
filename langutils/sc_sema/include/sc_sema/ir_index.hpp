@@ -9,6 +9,8 @@ enum struct SCNodeType {
     Assign,
     Read,
 
+    Ref,
+
     KwArg,
     VariableDeclare,
     ExplicitReturn,
@@ -50,6 +52,8 @@ template <typename T> using maybe = join<T, TypedNodeIndex<SCNodeType::Missing>>
 using SCMissing_I = TypedNodeIndex<SCNodeType::Missing>;
 using SCLiteral_I = TypedNodeIndex<SCNodeType::Literal>;
 
+using SCRef_I = TypedNodeIndex<SCNodeType::Ref>;
+
 using SCMessage_I = TypedNodeIndex<SCNodeType::Message>;
 using SCAssign_I = TypedNodeIndex<SCNodeType::Assign>;
 using SCRead_I = TypedNodeIndex<SCNodeType::Read>;
@@ -76,7 +80,7 @@ using SCExtention_I = TypedNodeIndex<SCNodeType::Extention>;
 
 using SCExprList_I = TypedNodeIndex<SCNodeType::ExprList>;
 
-using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCExplicitReturn_I, SCLiteral_I>;
+using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCExplicitReturn_I, SCLiteral_I, SCRef_I>;
 
 using SCClassList_I = TypedNodeIndex<SCNodeType::ClassOrExtentionList>;
 

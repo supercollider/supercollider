@@ -63,7 +63,12 @@ struct SCMessage : priv::Node<SCMessage_I(SCAnyExpr_I receiver, //
                                           maybe<SCAnyExpr_I> adverb //
                                           )> {
     static constexpr auto type_name { "SCMessage" };
-    Locatable<SymSCSelector> selector;
+    OptionallyLocatable<SymSCSelector> selector;
+    SCMessage(OptionallyLocatable<SymSCSelector> sel): selector(sel) {}
+};
+
+struct SCRef : priv::Node<SCRef_I(SCAnyExpr_I)> {
+    static constexpr auto type_name { "SCRef" };
 };
 
 struct SCVariableDeclare : priv::Node<SCVariableDeclare_I(SCAnyExpr_I value)> {
