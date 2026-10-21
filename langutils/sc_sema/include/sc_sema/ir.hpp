@@ -164,7 +164,7 @@ public:
 
     void register_node_as_consteval(NodeIndex node, ConstExprIndex expr) { nodes_to_constants.insert({ node, expr }); }
 
-    std::optional<ConstExprIndex> node_as_constexpr(NodeIndex node) {
+    [[nodiscard]] std::optional<ConstExprIndex> node_as_constexpr(NodeIndex node) const {
         if (const auto fnd = nodes_to_constants.find(node); fnd != nodes_to_constants.end())
             return { fnd->second };
         else

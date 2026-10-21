@@ -265,8 +265,6 @@ std::string synthesize_literal(ast::StringLitIndex i, const ast::ASTGraph& ast_g
                 out << *ch;
             }
         }
-
-        out << line;
     }
     return std::move(out).str();
 }

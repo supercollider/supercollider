@@ -68,11 +68,15 @@ parse_file(std::filesystem::path dir_entry) {
 #if DIAG_LOGGING
         std::cout << "Failed to parse " << dir_entry << " diagnostic count = " << ast_graph->diagnostics().size()
                   << "\n";
-        for (const auto& d : ast_graph->diagnostics()) {
-            std::cout << d;
-        }
 #endif
     }
+
+
+#if DIAG_LOGGING
+    for (const auto& d : ast_graph->diagnostics()) {
+        std::cout << d;
+    }
+#endif
 
 #if TIME_LOGGING
     {
@@ -295,6 +299,10 @@ int main(int argc, char* argv[]) {
                         } else {
                             std::cout.write(view.begin() + i, 1);
                         }
+                    }
+                    if (const auto const_i = g.node_as_constexpr(i)) {
+                        std::cout << " = ";
+                        ctx.constant_table(*const_i).to_json(std::cout, symbol_table);
                     }
                     std::cout << "\n";
                 });

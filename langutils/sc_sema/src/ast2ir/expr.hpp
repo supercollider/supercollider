@@ -81,6 +81,7 @@ struct Expr : private Base {
 
 private:
     Return<SCAnyExpr_I> unimplemented(ast::OptionalIndex i);
+    Return<SCAnyExpr_I> literal(ast::AnyDefiniteLiteralIndex i);
 };
 
 

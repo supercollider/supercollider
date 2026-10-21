@@ -1,35 +1,37 @@
 // Literals, these are evaluated at compile time.
 // Does not need the ast graph.
+#include "ast2ir/consteval.hpp"
 #include "ast2ir/expr.hpp"
-#include "ast2ir/literal_synthesis.hpp"
-#include "sc_parser/ast_index_to_var.hpp"
-#include "sc_parser/ast_untyped.hpp"
-#include "sc_sema/const_expr.hpp"
 #include "sc_sema/context.hpp"
 #include "sc_sema/ir.hpp"
 
 namespace sc::ir::ast2ir {
 
-Return<SCAnyExpr_I> Expr::operator()(ast::IntLitIndex i) {
-    const auto& int_node = payload(*ast_graph, i);
-    const auto str = get_text_info(*ast_graph)->read(get_location(*ast_graph, i));
-    const auto expr_index =
-        ctx.constant_table.register_constexpr(ConstExpression { synthesize_literal(int_node, str) });
-    const auto lit = ir.create(SCLiteral { expr_index }, ASTLocation { ast_graph, { *i } });
-    ir.register_node_as_consteval(lit, expr_index);
-    TypeInfo info { ctx.common_classes.int_, TypeConfidence::Absolute };
-    return { lit, expr_index, info };
+// ConstEval does the synthesis, so literals evaluate the same here and in constant expressions.
+// Its dispatch is already compiled in consteval.cpp, so this doesn't instantiate another.
+// The graph index is only needed when evaluating class members, not literals.
+Return<SCAnyExpr_I> Expr::literal(ast::AnyDefiniteLiteralIndex i) {
+    return ConstEval { ctx, ast_graph, ASTGraphIndex { 0 } }.eval(i).visit(
+        [&](ConstEval::Success s) -> Return<SCAnyExpr_I> {
+            const auto [expr_index, info] = s;
+            const auto lit = ir.create(SCLiteral { expr_index }, { ast_graph, { *i } });
+            ir.register_node_as_consteval(lit, expr_index);
+            return { lit, expr_index, info };
+        },
+        [&](sc::diag::Diagnostic&& d) -> Return<SCAnyExpr_I> {
+            ctx.diagnostics(std::move(d));
+            return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
+        });
 }
 
-Return<SCAnyExpr_I> Expr::operator()(ast::FloatLitIndex i) {
-    const ast::FloatNode& float_node = payload(*ast_graph, i);
-    const auto str = get_text_info(*ast_graph)->read(get_location(*ast_graph, i));
-    const auto expr_index =
-        ctx.constant_table.register_constexpr(ConstExpression { synthesize_literal(float_node, str) });
-    const auto lit = ir.create(SCLiteral { expr_index }, ASTLocation { ast_graph, { *i } });
-    ir.register_node_as_consteval(lit, expr_index);
-    TypeInfo info { ctx.common_classes.float_, TypeConfidence::Absolute };
-    return { lit, expr_index, info };
-}
-
+Return<SCAnyExpr_I> Expr::operator()(ast::IntLitIndex i) { return literal(i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::FloatLitIndex i) { return literal(i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::PiLitIndex i) { return literal(i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::AccidentalIndex i) { return literal(i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::ASCIIIndex i) { return literal(i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::StringLitIndex i) { return literal(i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::BooleanLitIndex i) { return literal(i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::NilLitIndex i) { return literal(i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::SymbolQuoteIndex i) { return literal(i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::SymbolSlashIndex i) { return literal(i); }
 }

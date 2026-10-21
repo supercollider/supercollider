@@ -1,0 +1,254 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: TODO NOT IMPLEMENTED
+file:
+   44 │     symbol_quote { ^'a symbol' }
+   45 │     symbol_slash { ^\symbol }
+   46 │     accidental { ^2s }
+      ┆                   ^^ diagnostic not implemented
+   47 │ }
+
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  SCMethodList: Object
+SCClass: Literals: Literals {'\n'    int { ^1 }'\n'    int_radix { ^2r101 }'\n'    float { ^2.5 }'\n'    float_exponent { ^1e3 }'\n'    pi_alone { ^pi }'\n'    pi_multiple { ^2pi }'\n'    char { ^$a }'\n'    string { ^"hello" }'\n'    string_concatenated { ^"hello" " world" }'\n'    boolean_true { ^true }'\n'    boolean_false { ^false }'\n'    nil_value { ^nil }'\n'    symbol_quote { ^'a symbol' }'\n'    symbol_slash { ^\symbol }'\n'    accidental { ^2s }'\n'}
+|  SCMemberList: Literals
+|  SCMethodList: Literals
+|  |  SCMethod: accidental { ^2s }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^2s
+|  |  |  |  SCExplicitReturn: 2s
+|  |  |  |  |  SCExprList: 2s
+|  |  SCMethod: symbol_slash { ^\symbol }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^\symbol
+|  |  |  |  SCExplicitReturn: \symbol
+|  |  |  |  |  SCLiteral: \symbol = {"symbol": "symbol"}
+|  |  SCMethod: int { ^1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^1
+|  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: int_radix { ^2r101 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^2r101
+|  |  |  |  SCExplicitReturn: 2r101
+|  |  |  |  |  SCLiteral: 2r101 = {"int": 5}
+|  |  SCMethod: float { ^2.5 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^2.5
+|  |  |  |  SCExplicitReturn: 2.5
+|  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
+|  |  SCMethod: float_exponent { ^1e3 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^1e3
+|  |  |  |  SCExplicitReturn: 1e3
+|  |  |  |  |  SCLiteral: 1e3 = {"float": 1000}
+|  |  SCMethod: pi_alone { ^pi }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^pi
+|  |  |  |  SCExplicitReturn: pi
+|  |  |  |  |  SCLiteral: pi = {"float": 3.1415927}
+|  |  SCMethod: pi_multiple { ^2pi }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^2pi
+|  |  |  |  SCExplicitReturn: 2pi
+|  |  |  |  |  SCLiteral: 2pi = {"float": 6.2831853}
+|  |  SCMethod: char { ^$a }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^$a
+|  |  |  |  SCExplicitReturn: $a
+|  |  |  |  |  SCLiteral: $a = {"char": "a"}
+|  |  SCMethod: string { ^"hello" }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^"hello"
+|  |  |  |  SCExplicitReturn: "hello"
+|  |  |  |  |  SCLiteral: "hello" = {"string": "hello"}
+|  |  SCMethod: string_concatenated { ^"hello" " world" }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^"hello" " world"
+|  |  |  |  SCExplicitReturn: "hello" " world"
+|  |  |  |  |  SCLiteral: "hello" = {"string": "hello world"}
+|  |  SCMethod: boolean_true { ^true }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^true
+|  |  |  |  SCExplicitReturn: true
+|  |  |  |  |  SCLiteral: true = {"bool": true}
+|  |  SCMethod: boolean_false { ^false }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^false
+|  |  |  |  SCExplicitReturn: false
+|  |  |  |  |  SCLiteral: false = {"bool": false}
+|  |  SCMethod: nil_value { ^nil }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^nil
+|  |  |  |  SCExplicitReturn: nil
+|  |  |  |  |  SCLiteral: nil = {"nil": {}}
+|  |  SCMethod: symbol_quote { ^'a symbol' }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^'a symbol'
+|  |  |  |  SCExplicitReturn: 'a symbol'
+|  |  |  |  |  SCLiteral: 'a symbol' = {"symbol": "a symbol"}
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
+SCClass: Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  SCMethodList: Symbol
+SCClass: Char: Char {}
+|  SCMemberList: Char
+|  SCMethodList: Char
+SCClass: Integer: Integer {}
+|  SCMemberList: Integer
+|  SCMethodList: Integer
+SCClass: Float: Float {}
+|  SCMemberList: Float
+|  SCMethodList: Float
+SCClass: Nil: Nil {}
+|  SCMemberList: Nil
+|  SCMethodList: Nil
+SCClass: False: False {}
+|  SCMemberList: False
+|  SCMethodList: False
+SCClass: True: True {}
+|  SCMemberList: True
+|  SCMethodList: True
+SCClass: String: String {}
+|  SCMemberList: String
+|  SCMethodList: String
+SCClass: Class: Class {}
+|  SCMemberList: Class
+|  SCMethodList: Class
+SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Object
+SCClass: Meta_Literals: Literals {'\n'    int { ^1 }'\n'    int_radix { ^2r101 }'\n'    float { ^2.5 }'\n'    float_exponent { ^1e3 }'\n'    pi_alone { ^pi }'\n'    pi_multiple { ^2pi }'\n'    char { ^$a }'\n'    string { ^"hello" }'\n'    string_concatenated { ^"hello" " world" }'\n'    boolean_true { ^true }'\n'    boolean_false { ^false }'\n'    nil_value { ^nil }'\n'    symbol_quote { ^'a symbol' }'\n'    symbol_slash { ^\symbol }'\n'    accidental { ^2s }'\n'}
+|  SCMemberList: Literals
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Literals
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Ref
+SCClass: Meta_Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Symbol
+SCClass: Meta_Char: Char {}
+|  SCMemberList: Char
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Char
+SCClass: Meta_Integer: Integer {}
+|  SCMemberList: Integer
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Integer
+SCClass: Meta_Float: Float {}
+|  SCMemberList: Float
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Float
+SCClass: Meta_Nil: Nil {}
+|  SCMemberList: Nil
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Nil
+SCClass: Meta_False: False {}
+|  SCMemberList: False
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: False
+SCClass: Meta_True: True {}
+|  SCMemberList: True
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: True
+SCClass: Meta_String: String {}
+|  SCMemberList: String
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: String
+SCClass: Meta_Class: Class {}
+|  SCMemberList: Class
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Class
+Successfully compiled 15 classes.

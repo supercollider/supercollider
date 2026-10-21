@@ -19,7 +19,7 @@ SCClass: Foo: Foo {'\n'    bar { |a| 10 }'\n'}
 |  |  |  |  |  SCMissing: a
 |  |  |  SCArgumentDeclareList: a
 |  |  |  SCExprList: 10
-|  |  |  |  SCLiteral: 10
+|  |  |  |  SCLiteral: 10 = {"int": 10}
 SCClass: Event: Event {}
 |  SCMemberList: Event
 |  SCMethodList: Event
