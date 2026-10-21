@@ -140,9 +140,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
             [&](ast::MissingIndex) -> void {}, //
             [&](ast::NamedIdentifierIndex i) -> void {
                 const auto slot_sym = cxt.symbol_table.get_identifier(get_string(*ast_graph, i));
-                if (slot_sym == cxt.symbol_table.get_identifier("slot")
-                    || slot_sym == cxt.symbol_table.get_identifier("float")
-                    || slot_sym == cxt.symbol_table.get_identifier("int")) {
+                if (slot_sym == cxt.common_symbols.slot || slot_sym == cxt.common_symbols.float_
+                    || slot_sym == cxt.common_symbols.int_) {
                     class_decl.slot_def(slot_sym, { *i });
                 } else {
                     cxt.diagnostics(

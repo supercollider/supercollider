@@ -3,6 +3,7 @@
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_sema/common_classes.hpp"
+#include "sc_sema/common_symbols.hpp"
 #include "sc_sema/const_expr.hpp"
 #include "sc_sema/decls.hpp"
 #include "sc_sema/module.hpp"
@@ -89,14 +90,17 @@ struct SourceEntry {
 
 
 struct Context {
-    Context(SymbolTable& sym_table, CommonClasses com, ModuleTable& mod_t, std::vector<std::optional<SourceEntry>>& class_library):
+    Context(SymbolTable& sym_table, CommonClasses com, ModuleTable& mod_t,
+            std::vector<std::optional<SourceEntry>>& class_library):
         symbol_table(sym_table),
         common_classes(com),
+        common_symbols(sym_table),
         modules(mod_t),
         class_library_ast(class_library) {}
 
     SymbolTable& symbol_table;
     CommonClasses common_classes;
+    CommonSymbols common_symbols;
     ModuleTable& modules;
     ClassDeclarations class_declarations { };
     std::vector<std::optional<SourceEntry>>& class_library_ast;

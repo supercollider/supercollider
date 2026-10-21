@@ -43,7 +43,7 @@ struct MessageArguments {
 MessageArguments make_arguments(MessageContext& msg_ctx, ast::OptionalIndex message_i, const Selector& selector,
                                 bool first_positional_is_receiver = false) {
     const ASTLocation location { msg_ctx.ast_graph, { *message_i } };
-    const bool is_perform = *selector.name == msg_ctx.ctx.symbol_table.get_selector("perform");
+    const bool is_perform = *selector.name == msg_ctx.ctx.common_symbols.perform;
     return { msg_ctx.ir.create(SCPositionalArgs {}, location),
              msg_ctx.ir.create(SCKwArgs {}, location),
              msg_ctx.ir.create(SCVariadicArgs {}, location),
@@ -144,9 +144,7 @@ Selector selector(MessageContext& msg_ctx, ast::SelectorMaybeAdverbIndex i) {
 }
 
 // For messages whose selector isn't written, e.g., `a.()` is `a.value()`.
-Selector implicit_selector(MessageContext& msg_ctx, const char* name) {
-    return { { std::nullopt, msg_ctx.ctx.symbol_table.get_selector(name) }, std::nullopt };
-}
+Selector implicit_selector(SymSCSelector name) { return { { std::nullopt, name }, std::nullopt }; }
 
 Return<SCAnyExpr_I> create_message(MessageContext& msg_ctx, ast::OptionalIndex message_i, SCAnyExpr_I receiver,
                                    const Selector& selector, const MessageArguments& args) {
@@ -204,7 +202,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ValueMessageIndex i) {
     MessageContext msg_ctx { *this, ctx, ir, ast_graph };
     const auto [receiver, arg_list, blocks] = ast_graph->children(i);
     const auto receiver_r = (*this)(ast::AnyExprIndex { receiver });
-    const auto sel = implicit_selector(msg_ctx, "value");
+    const auto sel = implicit_selector(ctx.common_symbols.value);
     auto args = make_arguments(msg_ctx, i, sel);
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
@@ -215,7 +213,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NewMessageIndex i) {
     MessageContext msg_ctx { *this, ctx, ir, ast_graph };
     const auto [class_name, arg_list, blocks] = ast_graph->children(i);
     const auto receiver_r = (*this)(class_name);
-    const auto sel = implicit_selector(msg_ctx, "new");
+    const auto sel = implicit_selector(ctx.common_symbols.new_);
     auto args = make_arguments(msg_ctx, i, sel);
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
@@ -233,7 +231,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
         return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
     }
 
-    const auto sel = implicit_selector(msg_ctx, "at");
+    const auto sel = implicit_selector(ctx.common_symbols.at);
     auto args = make_arguments(msg_ctx, i, sel);
     append_arguments(msg_ctx, args, ast::ArgumentListIndex { *arg });
     return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);

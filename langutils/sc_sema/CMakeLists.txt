@@ -7,6 +7,7 @@ add_library(sc_sema STATIC
 	src/const_expr.cpp
 	src/ir.cpp
 	src/common_class.cpp
+	src/common_symbols.cpp
 	src/compile_consteval.cpp
 	src/intrinsic_constraint_checker.cpp
 	src/inheritance_edges.cpp

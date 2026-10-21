@@ -472,11 +472,11 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 SCClass class_node { name };
                 if (auto slot = decl.slot_def()) {
                     const auto [n, i] = *slot;
-                    if (n == ctx.symbol_table.get_identifier("slot")) {
+                    if (n == ctx.common_symbols.slot) {
                         // already a slot
-                    } else if (n == ctx.symbol_table.get_identifier("float")) {
+                    } else if (n == ctx.common_symbols.float_) {
                         class_node.memory_layout = SCClass::MemoryLayout::Float;
-                    } else if (n == ctx.symbol_table.get_identifier("int")) {
+                    } else if (n == ctx.common_symbols.int_) {
                         class_node.memory_layout = SCClass::MemoryLayout::Int;
                     } else {
                         assert(false); // should be guarded in the declaration phase.
