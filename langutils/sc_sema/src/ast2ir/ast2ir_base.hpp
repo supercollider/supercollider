@@ -1,7 +1,9 @@
 #pragma once
+#include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_sema/const_expr_index.hpp"
 #include "sc_sema/type_info.hpp"
 #include <memory>
+#include <vector>
 
 namespace sc::ir {
 struct IRGraph;
@@ -22,6 +24,17 @@ struct Base {
     Context& ctx;
     IRGraph& ir;
     std::shared_ptr<const ast::ASTGraph> ast_graph;
+};
+
+// Collects the diagnostics of one unit of compilation, e.g., a method, so it knows whether it should be poisoned.
+// This is NOT thread safe.
+struct DiagnosticSink {
+    void operator()(sc::diag::Diagnostic d) {
+        fatal = fatal || d.fatal();
+        diagnostics.push_back(std::move(d));
+    }
+    std::vector<sc::diag::Diagnostic> diagnostics;
+    bool fatal { false };
 };
 
 template <typename I> struct Return {

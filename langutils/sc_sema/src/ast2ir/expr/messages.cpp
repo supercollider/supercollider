@@ -74,10 +74,10 @@ void append_positional(MessageContext& msg_ctx, MessageArguments& args, const Re
             const auto range = get_location(*location.graph_index, location.node_index);
             const auto& constant = msg_ctx.ctx.constant_table(*arg.const_index);
             if (const auto string = constant.get_if<SymSCString>()) {
-                msg_ctx.ctx.diagnostics(sc::diag::Diagnostic::perform_selector_not_symbol(
-                    text_info, range, msg_ctx.ctx.symbol_table(*string)));
+                msg_ctx.expr.sink(sc::diag::Diagnostic::perform_selector_not_symbol(text_info, range,
+                                                                                    msg_ctx.ctx.symbol_table(*string)));
             } else {
-                msg_ctx.ctx.diagnostics(sc::diag::Diagnostic::perform_selector_not_symbol(text_info, range));
+                msg_ctx.expr.sink(sc::diag::Diagnostic::perform_selector_not_symbol(text_info, range));
             }
         }
     }
@@ -194,8 +194,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::PrefixMessageIndex i) {
     append_blocks(msg_ctx, args, blocks);
 
     if (!args.receiver) {
-        ctx.diagnostics(
-            sc::diag::Diagnostic::message_without_receiver(get_text_info(*ast_graph), get_location(*ast_graph, i)));
+        sink(sc::diag::Diagnostic::message_without_receiver(get_text_info(*ast_graph), get_location(*ast_graph, i)));
         return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
     }
     return create_message(msg_ctx, i, *args.receiver, sel, args);
@@ -240,7 +239,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
 
     // e.g., `a[1..3]`, this is a different message, and ranges aren't implemented yet.
     if (const auto range = ast_graph->as_a<ast::RangeIndex>(arg)) {
-        ctx.diagnostics(sc::diag::Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, *range)));
+        sink(sc::diag::Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, *range)));
         return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
     }
 

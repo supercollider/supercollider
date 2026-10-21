@@ -117,6 +117,7 @@ struct SCMethod : priv::Node<SCMethod_I(SCArgumentDeclareList_I positional_argum
                                         SCArgumentDeclareList_I variadic_arguments, SCExprList_I body)> {
     static constexpr auto type_name { "SCMethod" };
     std::optional<Locatable<SymSCPrimitive>> primitive;
+    bool poisoned { false };
     SCMethod(std::optional<Locatable<SymSCPrimitive>> p): primitive(p) {}
 };
 struct SCFunction : priv::Node<SCFunction_I(SCArgumentDeclareList_I positional_arguments,

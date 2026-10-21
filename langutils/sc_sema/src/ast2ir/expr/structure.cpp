@@ -34,8 +34,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NonLocalReturnExprIndex i) {
     const auto expr_return = (*this)(ast::AnyExprIndex { expr });
 
     if (auto n = ast::next_sibling(*ast_graph, expr)) {
-        ctx.diagnostics(
-            sc::diag::Diagnostic::non_terminating_return(get_text_info(*ast_graph), get_location(*ast_graph, n)));
+        sink(sc::diag::Diagnostic::non_terminating_return(get_text_info(*ast_graph), get_location(*ast_graph, n)));
     }
 
     return { ir.create(SCExplicitReturn {}, { ast_graph, { *i } }, expr_return.ir_node) };

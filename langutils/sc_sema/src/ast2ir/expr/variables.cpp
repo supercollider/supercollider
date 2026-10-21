@@ -73,8 +73,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
     if (const auto entry = resolve_symbol(name_sym))
         return make_return(to_assign_kind(entry->kind));
 
-    ctx.diagnostics(
-        sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, name), txt));
+    sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, name), txt));
     return expr_r;
 }
 

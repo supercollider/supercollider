@@ -28,7 +28,11 @@ using Scope = std::unordered_map<Symbol, ScopeEntry>;
 extern template struct Return<SCAnyExpr_I>;
 
 struct Expr : private Base {
-    using Base::Base;
+    // Diagnostics are reported to the sink, so the owner (e.g., the method) can tell whether any were fatal.
+    Expr(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, DiagnosticSink& diagnostic_sink):
+        Base(ir, std::move(ast), cxt),
+        sink(diagnostic_sink) {}
+
     Return<SCAnyExpr_I> operator()(ast::IntLitIndex i);
     Return<SCAnyExpr_I> operator()(ast::FloatLitIndex i);
     Return<SCAnyExpr_I> operator()(ast::ExprSeqIndex);
@@ -74,6 +78,7 @@ struct Expr : private Base {
     template <typename T> Return<SCAnyExpr_I> operator()(T);
 
     std::vector<Scope> scope;
+    DiagnosticSink& sink;
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
     void add_symbol(Symbol, ScopeEntry);

@@ -62,7 +62,7 @@ SCClass: Messages: Messages {'\n'    postfix { ^1.foo }'\n'    postfix_args { ^1
 |  |  |  |  |  |  SCKwArgs: 1.foo(2.bar) + 3
 |  |  |  |  |  |  SCVariadicArgs: 1.foo(2.bar) + 3
 |  |  |  |  |  |  SCMissing: 1.foo(2.bar) + 3
-|  |  SCMethod: at_range { ^"abc"[0..1] }
+|  |  SCMethod: poisoned: at_range { ^"abc"[0..1] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^"abc"[0..1]
@@ -166,7 +166,7 @@ SCClass: Messages: Messages {'\n'    postfix { ^1.foo }'\n'    postfix_args { ^1
 |  |  |  |  |  |  SCKwArgs: foo(1, 2)
 |  |  |  |  |  |  SCVariadicArgs: foo(1, 2)
 |  |  |  |  |  |  SCMissing: foo(1, 2)
-|  |  SCMethod: prefix_no_receiver { ^foo(bar: 1) }
+|  |  SCMethod: poisoned: prefix_no_receiver { ^foo(bar: 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^foo(bar: 1)

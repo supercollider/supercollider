@@ -24,7 +24,7 @@ SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependant
 SCClass: Literals: Literals {'\n'    int { ^1 }'\n'    int_radix { ^2r101 }'\n'    float { ^2.5 }'\n'    float_exponent { ^1e3 }'\n'    pi_alone { ^pi }'\n'    pi_multiple { ^2pi }'\n'    char { ^$a }'\n'    string { ^"hello" }'\n'    string_concatenated { ^"hello" " world" }'\n'    boolean_true { ^true }'\n'    boolean_false { ^false }'\n'    nil_value { ^nil }'\n'    symbol_quote { ^'a symbol' }'\n'    symbol_slash { ^\symbol }'\n'    accidental { ^2s }'\n'}
 |  SCMemberList: Literals
 |  SCMethodList: Literals
-|  |  SCMethod: accidental { ^2s }
+|  |  SCMethod: poisoned: accidental { ^2s }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^2s

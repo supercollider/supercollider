@@ -291,6 +291,10 @@ int main(int argc, char* argv[]) {
                     std::visit(sc::util::overload {
                                    [](const auto&) {},
                                    [&](const sc::ir::SCClass& c) { std::cout << symbol_table(c.name) << ": "; },
+                                   [&](const sc::ir::SCMethod& m) {
+                                       if (m.poisoned)
+                                           std::cout << "poisoned: ";
+                                   },
                                    [&](const sc::ir::SCMessage& m) { std::cout << symbol_table(*m.selector) << ": "; },
                                    [&](const sc::ir::SCKwArg& k) { std::cout << symbol_table(*k.name) << ": "; },
                                    [&](const sc::ir::SCCollection& c) {

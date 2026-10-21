@@ -169,7 +169,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1.perform(2.bar)
 |  |  |  |  |  |  SCVariadicArgs: 1.perform(2.bar)
 |  |  |  |  |  |  SCMissing: 1.perform(2.bar)
-|  |  SCMethod: binary { ^1 perform: 2 }
+|  |  SCMethod: poisoned: binary { ^1 perform: 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1 perform: 2
@@ -181,7 +181,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1 perform: 2
 |  |  |  |  |  |  SCVariadicArgs: 1 perform: 2
 |  |  |  |  |  |  SCMissing: 1 perform: 2
-|  |  SCMethod: prefix { ^perform(1, 2) }
+|  |  SCMethod: poisoned: prefix { ^perform(1, 2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^perform(1, 2)
@@ -193,7 +193,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: perform(1, 2)
 |  |  |  |  |  |  SCVariadicArgs: perform(1, 2)
 |  |  |  |  |  |  SCMissing: perform(1, 2)
-|  |  SCMethod: nil_selector { ^1.perform(nil) }
+|  |  SCMethod: poisoned: nil_selector { ^1.perform(nil) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform(nil)
@@ -205,7 +205,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1.perform(nil)
 |  |  |  |  |  |  SCVariadicArgs: 1.perform(nil)
 |  |  |  |  |  |  SCMissing: 1.perform(nil)
-|  |  SCMethod: boolean { ^1.perform(true) }
+|  |  SCMethod: poisoned: boolean { ^1.perform(true) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform(true)
@@ -217,7 +217,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1.perform(true)
 |  |  |  |  |  |  SCVariadicArgs: 1.perform(true)
 |  |  |  |  |  |  SCMissing: 1.perform(true)
-|  |  SCMethod: char { ^1.perform($a) }
+|  |  SCMethod: poisoned: char { ^1.perform($a) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform($a)
@@ -229,7 +229,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1.perform($a)
 |  |  |  |  |  |  SCVariadicArgs: 1.perform($a)
 |  |  |  |  |  |  SCMissing: 1.perform($a)
-|  |  SCMethod: string_with_quote { ^1.perform("it's") }
+|  |  SCMethod: poisoned: string_with_quote { ^1.perform("it's") }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform("it's")
@@ -241,7 +241,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1.perform("it's")
 |  |  |  |  |  |  SCVariadicArgs: 1.perform("it's")
 |  |  |  |  |  |  SCMissing: 1.perform("it's")
-|  |  SCMethod: string { ^1.perform("foo") }
+|  |  SCMethod: poisoned: string { ^1.perform("foo") }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform("foo")
@@ -253,7 +253,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1.perform("foo")
 |  |  |  |  |  |  SCVariadicArgs: 1.perform("foo")
 |  |  |  |  |  |  SCMissing: 1.perform("foo")
-|  |  SCMethod: class_name { ^1.perform(Object) }
+|  |  SCMethod: poisoned: class_name { ^1.perform(Object) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform(Object)
@@ -265,7 +265,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1.perform(Object)
 |  |  |  |  |  |  SCVariadicArgs: 1.perform(Object)
 |  |  |  |  |  |  SCMissing: 1.perform(Object)
-|  |  SCMethod: float { ^1.perform(2.5, 3) }
+|  |  SCMethod: poisoned: float { ^1.perform(2.5, 3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform(2.5, 3)
@@ -278,7 +278,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1.perform(2.5, 3)
 |  |  |  |  |  |  SCVariadicArgs: 1.perform(2.5, 3)
 |  |  |  |  |  |  SCMissing: 1.perform(2.5, 3)
-|  |  SCMethod: integer { ^1.perform(2) }
+|  |  SCMethod: poisoned: integer { ^1.perform(2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform(2)

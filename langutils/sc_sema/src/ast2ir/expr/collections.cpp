@@ -56,7 +56,7 @@ Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immut
         }();
 
         if (is_immutable && !r.const_index)
-            c.ctx.diagnostics(sc::diag::Diagnostic::not_constant(get_text_info(g), get_location(g, element)));
+            c.expr.sink(sc::diag::Diagnostic::not_constant(get_text_info(g), get_location(g, element)));
 
         c.ir.append(collection, r.ir_node);
         ++c.ir.payload(collection).size;

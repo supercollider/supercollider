@@ -49,7 +49,7 @@ SCClass: Foo: Foo {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n' 
 |  |  |  |  SCAssign: instance_var = class_var = 5
 |  |  |  |  |  SCAssign: class_var = 5
 |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  SCMethod: assign_undefined { undefined_var = 4 }
+|  |  SCMethod: poisoned: assign_undefined { undefined_var = 4 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: undefined_var = 4
@@ -136,7 +136,7 @@ SCClass: Meta_Foo: Foo {'\n'    var instance_var;'\n'    classvar class_var;'\n'
 |  |  SCMember: uniqueMethods
 |  |  SCMember: class_var
 |  SCMethodList: Foo
-|  |  SCMethod: *class_method_assign_instance { instance_var = 7 }
+|  |  SCMethod: poisoned: *class_method_assign_instance { instance_var = 7 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: instance_var = 7

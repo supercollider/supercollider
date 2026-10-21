@@ -12,7 +12,7 @@ namespace {
 // Its dispatch is already compiled in consteval.cpp, so this doesn't instantiate another.
 // The graph index is only needed when evaluating class members, not literals.
 Return<SCAnyExpr_I> literal(Context& ctx, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
-                            ast::AnyDefiniteConstantIndex i) {
+                            DiagnosticSink& sink, ast::AnyDefiniteConstantIndex i) {
     return ConstEval { ctx, ast_graph, ASTGraphIndex { 0 } }.eval(i).visit(
         [&](ConstEval::Success s) -> Return<SCAnyExpr_I> {
             const auto [expr_index, info] = s;
@@ -21,23 +21,23 @@ Return<SCAnyExpr_I> literal(Context& ctx, IRGraph& ir, const std::shared_ptr<con
             return { lit, expr_index, info };
         },
         [&](sc::diag::Diagnostic&& d) -> Return<SCAnyExpr_I> {
-            ctx.diagnostics(std::move(d));
+            sink(std::move(d));
             return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
         });
 }
 }
 
-Return<SCAnyExpr_I> Expr::operator()(ast::IntLitIndex i) { return literal(ctx, ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::FloatLitIndex i) { return literal(ctx, ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::PiLitIndex i) { return literal(ctx, ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::AccidentalIndex i) { return literal(ctx, ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::ASCIIIndex i) { return literal(ctx, ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::StringLitIndex i) { return literal(ctx, ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::BooleanLitIndex i) { return literal(ctx, ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::NilLitIndex i) { return literal(ctx, ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::SymbolQuoteIndex i) { return literal(ctx, ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::SymbolSlashIndex i) { return literal(ctx, ir, ast_graph, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::IntLitIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::FloatLitIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::PiLitIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::AccidentalIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::ASCIIIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::StringLitIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::BooleanLitIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::NilLitIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::SymbolQuoteIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::SymbolSlashIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
 
 // The class, its type is the meta class.
-Return<SCAnyExpr_I> Expr::operator()(ast::ClassNameIdentifierIndex i) { return literal(ctx, ir, ast_graph, i); }
+Return<SCAnyExpr_I> Expr::operator()(ast::ClassNameIdentifierIndex i) { return literal(ctx, ir, ast_graph, sink, i); }
 }

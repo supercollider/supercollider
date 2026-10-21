@@ -122,7 +122,7 @@ SCClass: NotConstant: NotConstant {'\n'    const fine = 1;'\n'    classvar chang
 |  SCMemberList: NotConstant
 |  |  SCMember: refers_to_const
 |  SCMethodList: NotConstant
-|  |  SCMethod: immutable_array { ^#[1, 2.foo, ~env] }
+|  |  SCMethod: poisoned: immutable_array { ^#[1, 2.foo, ~env] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^#[1, 2.foo, ~env]

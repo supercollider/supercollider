@@ -53,7 +53,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  |  |  |  |  |  |  SCLiteral: \foo = {"symbol": "foo"}
 |  |  |  |  |  |  SCVariadicArgs: 1.perform(selector: \foo)
 |  |  |  |  |  |  SCMissing: 1.perform(selector: \foo)
-|  |  SCMethod: not_first_argument { ^1.perform(2, \foo) }
+|  |  SCMethod: poisoned: not_first_argument { ^1.perform(2, \foo) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform(2, \foo)
@@ -84,7 +84,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  |  |  |  |  SCKwArgs: 1.perform(\foo.bar, 2)
 |  |  |  |  |  |  SCVariadicArgs: 1.perform(\foo.bar, 2)
 |  |  |  |  |  |  SCMissing: 1.perform(\foo.bar, 2)
-|  |  SCMethod: not_a_symbol { ^1.perform(2, 3) }
+|  |  SCMethod: poisoned: not_a_symbol { ^1.perform(2, 3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: ^1.perform(2, 3)

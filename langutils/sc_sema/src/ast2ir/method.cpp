@@ -28,7 +28,7 @@ Scope member_scope(std::shared_ptr<const IRGraph> class_ir, SCMemberList_I membe
 Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, const Scope* meta_class_members,
                const Scope& class_members):
     Base(ir, ast, cxt),
-    expr(ir, std::move(ast), cxt) {
+    expr(ir, std::move(ast), cxt, sink) {
     if (meta_class_members) {
         // The meta class's instance variables are this class's class variables.
         Scope class_vars = *meta_class_members;
@@ -79,6 +79,11 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
     expr.scope.pop_back();
 
     const auto method = ir.create(SCMethod { primitive }, { ast_graph, { *i } }, argument_list, variadic_args, body_i);
+
+    // A fatal error anywhere in the method poisons all of it.
+    ir.payload(method).poisoned = sink.fatal;
+    ctx.diagnostics(std::move(sink.diagnostics));
+    sink = {};
 
     return { method };
 }
