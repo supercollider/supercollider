@@ -2,22 +2,22 @@
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Duplicate member in class
 file:
-   24 │ 
-   25 │ Dup1 {
-   26 │     var a, a;
+   30 │ 
+   31 │ Dup1 {
+   32 │     var a, a;
       ┆        ^^ 
-   27 │ }
-   28 │ 
-   29 │ Dup2B {
+   33 │ }
+   34 │ 
+   35 │ Dup2B {
 
 file:
-   24 │ 
-   25 │ Dup1 {
-   26 │     var a, a;
+   30 │ 
+   31 │ Dup1 {
+   32 │     var a, a;
       ┆           ^^ 
-   27 │ }
-   28 │ 
-   29 │ Dup2B {
+   33 │ }
+   34 │ 
+   35 │ Dup2B {
 
 Duplicate members are not allowed in a class definition. Please delete one.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -25,22 +25,22 @@ Duplicate members are not allowed in a class definition. Please delete one.
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Duplicate member with base class.
 file:
-   28 │ 
-   29 │ Dup2B {
-   30 │     var a;
+   34 │ 
+   35 │ Dup2B {
+   36 │     var a;
       ┆         ^ First declared here...
-   31 │ }
-   32 │ 
-   33 │ Dup2D : Dup2B {
+   37 │ }
+   38 │ 
+   39 │ Dup2D : Dup2B {
 
 file:
-   32 │ 
-   33 │ Dup2D : Dup2B {
-   34 │     var a;
+   38 │ 
+   39 │ Dup2D : Dup2B {
+   40 │     var a;
       ┆         ^  ...duplicated here.
-   35 │ }
+   41 │ }
 
-Duplicate members are not allowed within a class hierachy. Please delete one.
+Duplicate members are not allowed within a class hierarchy. Please delete one.
 ──────────────────────────────────────────────────────────────────────────────────
 
 
@@ -66,6 +66,15 @@ SCClass: Dup1: Dup1 {'\n'    var a, a;'\n'}
 |  SCMemberList: Dup1
 |  |  SCMember: a
 |  SCMethodList: Dup1
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
 SCClass: Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
@@ -124,6 +133,27 @@ SCClass: Meta_Dup1: Dup1 {'\n'    var a, a;'\n'}
 |  |  SCMember: topEnvironment
 |  |  SCMember: uniqueMethods
 |  SCMethodList: Dup1
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Ref
 SCClass: Meta_Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  |  SCMember: dependantsDictionary
@@ -187,4 +217,4 @@ SCClass: Meta_Class: Class {}
 |  |  SCMember: topEnvironment
 |  |  SCMember: uniqueMethods
 |  SCMethodList: Class
-Successfully compiled 14 classes.
+Successfully compiled 17 classes.

@@ -17,6 +17,15 @@ SCClass: Foo: Foo { }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: }
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
 SCClass: Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
@@ -57,6 +66,15 @@ SCClass: Meta_Foo: Foo { }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: }
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
 SCClass: Meta_Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
@@ -84,4 +102,4 @@ SCClass: Meta_String: String {}
 SCClass: Meta_Class: Class {}
 |  SCMemberList: Class
 |  SCMethodList: Class
-Successfully compiled 12 classes.
+Successfully compiled 15 classes.

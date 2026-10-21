@@ -24,6 +24,15 @@ SCClass: Foo2: Foo2 : Foo {'\n'    var foo2_a, foo2_b;'\n''\n'    classvar foo2_
 |  |  SCMember: foo2_a
 |  |  SCMember: foo2_b
 |  SCMethodList: Foo2
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
 SCClass: Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
@@ -80,6 +89,27 @@ SCClass: Meta_Foo2: Foo2 : Foo {'\n'    var foo2_a, foo2_b;'\n''\n'    classvar 
 |  |  SCMember: foo_const_2
 |  |  SCMember: foo2_class_var
 |  SCMethodList: Foo2
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Ref
 SCClass: Meta_Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  |  SCMember: dependantsDictionary
@@ -143,4 +173,4 @@ SCClass: Meta_Class: Class {}
 |  |  SCMember: topEnvironment
 |  |  SCMember: uniqueMethods
 |  SCMethodList: Class
-Successfully compiled 13 classes.
+Successfully compiled 16 classes.

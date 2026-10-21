@@ -2,20 +2,20 @@
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Duplicate extention.
 file:
-   22 │ 
-   23 │ +Foo {
-   24 │     bar {} 
+   23 │ 
+   24 │ +Foo {
+   25 │     bar {} 
       ┆     ^^^ Overrideen here...
-   25 │ }
+   26 │ }
 
 file:
-   16 │ 
-   17 │ +Foo {
-   18 │     bar {} 
+   17 │ 
+   18 │ +Foo {
+   19 │     bar {} 
       ┆     ^^^ ... and also overrideen here.
-   19 │ }
-   20 │ 
-   21 │ Foo { }
+   20 │ }
+   21 │ 
+   22 │ Foo { }
 
 The compile cannot determine which should implementation should be used, please delete one.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -38,6 +38,15 @@ SCClass: Foo: Foo { }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCExprList: }
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
 SCClass: Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
@@ -74,6 +83,15 @@ SCClass: Meta_Object: Object : AbstractObjectExperimental { }
 SCClass: Meta_Foo: Foo { }
 |  SCMemberList: Foo
 |  SCMethodList: Foo
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
 SCClass: Meta_Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
@@ -101,4 +119,4 @@ SCClass: Meta_String: String {}
 SCClass: Meta_Class: Class {}
 |  SCMemberList: Class
 |  SCMethodList: Class
-Successfully compiled 12 classes.
+Successfully compiled 15 classes.

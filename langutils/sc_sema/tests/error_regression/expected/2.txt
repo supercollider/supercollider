@@ -10,6 +10,15 @@ SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
 SCClass: Object: Object : AbstractObjectExperimental {}
 |  SCMemberList: Object
 |  SCMethodList: Object
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
 SCClass: Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
@@ -43,6 +52,15 @@ SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
 SCClass: Meta_Object: Object : AbstractObjectExperimental {}
 |  SCMemberList: Object
 |  SCMethodList: Object
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
 SCClass: Meta_Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
@@ -70,4 +88,4 @@ SCClass: Meta_String: String {}
 SCClass: Meta_Class: Class {}
 |  SCMemberList: Class
 |  SCMethodList: Class
-Successfully compiled 11 classes.
+Successfully compiled 14 classes.

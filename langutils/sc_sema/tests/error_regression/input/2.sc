@@ -14,3 +14,6 @@ Float {}
 Integer {}
 Char {}
 Symbol {}
+Ref {}
+Array {}
+Event {}

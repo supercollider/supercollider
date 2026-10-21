@@ -12,6 +12,9 @@ Float {}
 Integer {}
 Char {}
 Symbol {}
+Ref {}
+Array {}
+Event {}
 
 Foo {
     bar { |a| 10 }

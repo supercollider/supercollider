@@ -22,6 +22,12 @@ Char {}
 
 Symbol {}
 
+Ref {}
+
+Array {}
+
+Event {}
+
 Dup1 {
     var a, a;
 }

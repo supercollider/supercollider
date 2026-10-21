@@ -19,6 +19,16 @@ SCClass: Foo: Foo {'\n'    bar { |a| 10 }'\n'}
 |  |  |  |  |  SCMissing: a
 |  |  |  SCArgumentDeclareList: a
 |  |  |  SCExprList: 10
+|  |  |  |  SCLiteral: 10
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
 SCClass: Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
@@ -63,6 +73,27 @@ SCClass: Meta_Foo: Foo {'\n'    bar { |a| 10 }'\n'}
 |  |  SCMember: topEnvironment
 |  |  SCMember: uniqueMethods
 |  SCMethodList: Foo
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Ref
 SCClass: Meta_Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  |  SCMember: dependantsDictionary
@@ -126,4 +157,4 @@ SCClass: Meta_Class: Class {}
 |  |  SCMember: topEnvironment
 |  |  SCMember: uniqueMethods
 |  SCMethodList: Class
-Successfully compiled 12 classes.
+Successfully compiled 15 classes.
