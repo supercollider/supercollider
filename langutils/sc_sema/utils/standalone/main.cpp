@@ -289,8 +289,10 @@ int main(int argc, char* argv[]) {
                         std::cout << "|  ";
                     std::cout << sc::ir::IRGraph::node_name(payload) << ": ";
                     std::visit(sc::util::overload {
-                                   [](const auto&) { },
-                                   [&](const sc::ir::SCClass& c) { std::cout << symbol_table(c.name) << ": "; } },
+                                   [](const auto&) {},
+                                   [&](const sc::ir::SCClass& c) { std::cout << symbol_table(c.name) << ": "; },
+                                   [&](const sc::ir::SCMessage& m) { std::cout << symbol_table(*m.selector) << ": "; },
+                                   [&](const sc::ir::SCKwArg& k) { std::cout << symbol_table(*k.name) << ": "; } },
                                payload);
                     const auto view = loc.graph_index->text_info()->read(loc.graph_index->location(loc.node_index));
                     for (size_t i { 0 }; i < view.size(); ++i) {

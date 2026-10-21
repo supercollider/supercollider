@@ -22,6 +22,8 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper<SCNodeType,
                                                                      SCLiteral, //
                                                                      SCKwArg, //
                                                                      SCPositionalArgs, //
+                                                                     SCKwArgs, //
+                                                                     SCVariadicArgs, //
                                                                      SCAssign, //
                                                                      SCRead, //
                                                                      SCMessage, //

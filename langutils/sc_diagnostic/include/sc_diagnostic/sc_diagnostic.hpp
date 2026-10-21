@@ -75,6 +75,8 @@ public:
 
     [[nodiscard]] static Diagnostic non_terminating_return(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
 
+    [[nodiscard]] static Diagnostic message_without_receiver(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+
     [[nodiscard]] static Diagnostic undefined_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                        std::string_view name);
 

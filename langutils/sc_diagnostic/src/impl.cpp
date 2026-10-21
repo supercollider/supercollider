@@ -402,4 +402,18 @@ Diagnostic   Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::lex::
                                                                          + std::string { name }
                                                                          + "' to refer to an environment variable." };
                                                         }
+
+                                                        Diagnostic Diagnostic::message_without_receiver(
+                                                            TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+                                                            return {
+                                                                "Message has no receiver",
+                                                                Severity::Error,
+                                                                { { std::move(first_t), first_l,
+                                                                    "there is nothing to send this message to." } },
+                                                                "Functional notation sends the message to its first "
+                                                                "argument, `foo(a, b)` is the same as `a.foo(b)`. "
+                                                                "Add a positional argument, e.g., `foo(a)`, or use "
+                                                                "`a.foo`."
+                                                            };
+                                                        }
 }

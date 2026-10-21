@@ -32,6 +32,7 @@ struct SCLiteral : priv::Terminal<SCLiteral_I> {
 struct SCKwArg : priv::Node<SCKwArg_I(SCAnyExpr_I value)> {
     static constexpr auto type_name { "SCKwArg" };
     Locatable<SymSCIdentifier> name;
+    SCKwArg(Locatable<SymSCIdentifier> n): name(n) {}
 };
 
 struct SCRead : priv::Terminal<SCRead_I> {
@@ -53,7 +54,16 @@ struct SCAssign : priv::Node<SCAssign_I(SCAnyExpr_I)> {
 
 struct SCPositionalArgs : priv::List<SCPosArgList_I, SCAnyExpr_I> {
     static constexpr auto type_name { "SCPositionalArgs" };
-    std::uint32_t size;
+    std::uint32_t size {};
+};
+
+struct SCKwArgs : priv::List<SCKwArgList_I, SCKwArg_I> {
+    static constexpr auto type_name { "SCKwArgs" };
+};
+
+// The expressions passed with `*`, whose elements are appended to the positional arguments.
+struct SCVariadicArgs : priv::List<SCVariadicArgList_I, SCAnyExpr_I> {
+    static constexpr auto type_name { "SCVariadicArgs" };
 };
 
 struct SCMessage : priv::Node<SCMessage_I(SCAnyExpr_I receiver, //

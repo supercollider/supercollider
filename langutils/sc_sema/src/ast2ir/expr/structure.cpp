@@ -16,10 +16,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ExprSeqIndex i) {
     std::optional<Return<SCAnyExpr_I>> last_index;
     for (auto expr_i = iter(*ast_graph, i); expr_i; ++expr_i) {
         last_index = (*this)(ast::AnyExprIndex { *expr_i });
-        if (!last_index->const_index) {
-            assert(last_index->type);
+        if (!last_index->const_index)
             body_is_const_expr = false;
-        }
         ir.append(expr_list, last_index->ir_node);
     }
 

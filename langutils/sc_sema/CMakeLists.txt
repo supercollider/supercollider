@@ -12,6 +12,7 @@ add_library(sc_sema STATIC
 	src/inheritance_edges.cpp
 	src/ast2ir/expr/dispatch.cpp
 	src/ast2ir/expr/literals.cpp
+	src/ast2ir/expr/messages.cpp
 	src/ast2ir/expr/structure.cpp
 	src/ast2ir/expr/variables.cpp
 	src/ast2ir/expr/unimplemented.cpp

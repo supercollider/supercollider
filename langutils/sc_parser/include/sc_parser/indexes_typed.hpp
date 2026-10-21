@@ -69,6 +69,10 @@ using AnyDefiniteLiteralIndex =
 using AnyPossiblyLiteralIndex = join<AnyDefiniteLiteralIndex, BlockIndex, ArrayIndex, DictionaryIndex, CollectionIndex>;
 
 using ClassNameIdentifierIndex = TypedIndex<NodeFlag::ClassNameIdentifier>;
+
+// Expressions whose value is always known at compile time. Class names aren't literals, but are constants.
+using AnyDefiniteConstantIndex = join<AnyDefiniteLiteralIndex, ClassNameIdentifierIndex>;
+
 using NamedIdentifierIndex = TypedIndex<NodeFlag::NameIdentifier>;
 using EnvIdentifierIndex = TypedIndex<NodeFlag::EnvIdentifier>;
 using PrimitiveIdentifierIndex = TypedIndex<NodeFlag::PrimitiveNameIdentifier>;

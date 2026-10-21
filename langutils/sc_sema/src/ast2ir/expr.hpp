@@ -54,7 +54,6 @@ struct Expr : private Base {
     Return<SCAnyExpr_I> operator()(ast::NilLitIndex);
     Return<SCAnyExpr_I> operator()(ast::SymbolQuoteIndex);
     Return<SCAnyExpr_I> operator()(ast::SymbolSlashIndex);
-    Return<SCAnyExpr_I> operator()(ast::AnyMessageIndex);
     Return<SCAnyExpr_I> operator()(ast::NamedIdentifierIndex);
     Return<SCAnyExpr_I> operator()(ast::CurryIndex);
     Return<SCAnyExpr_I> operator()(ast::ArrayIndex);
@@ -78,10 +77,6 @@ struct Expr : private Base {
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
     void add_symbol(Symbol, ScopeEntry);
-
-private:
-    Return<SCAnyExpr_I> unimplemented(ast::OptionalIndex i);
-    Return<SCAnyExpr_I> literal(ast::AnyDefiniteLiteralIndex i);
 };
 
 
