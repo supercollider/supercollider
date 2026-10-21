@@ -15,3 +15,5 @@ d769495d25008dfd30b07a4128aa922d5e46dff6
 06e1ec73fc2061c5f2845a8fd02846b1036d7c3b
 # spaces to tabs in SCDoc.sc
 84c063e9bdcdf815becfa71e1a3743c837bfbeb5
+# re-indent cmake files w/ 4 spaces - adds consistency
+94229d30d2879b2c6b96c9e555246da2c0a72a8c
