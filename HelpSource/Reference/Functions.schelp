@@ -90,7 +90,7 @@ See link::Reference/Literals:: for more information.
 
 section:: Variable Arguments
 
-Variable arguments are how functions catch an unknown number of arguments or keyword arguments. 
+Variable arguments are how functions catch an unknown number of arguments or keyword arguments.
 There are two possible variable arguments, the first for positional arguments, and second for keyword arguments.
 They are marked by an ellipsis after any normal arguments and separated by a comma.
 

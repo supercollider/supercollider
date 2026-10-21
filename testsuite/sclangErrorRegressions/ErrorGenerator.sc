@@ -1,6 +1,6 @@
 ErrorGenerator {
 
-    *doesNotUnderstandErrorMethodImpl { |i, a...args, kwargs| 
+    *doesNotUnderstandErrorMethodImpl { |i, a...args, kwargs|
         var var1 = 100.0.rand;
         if (i == 0) {
             1.meow(10, args: \woof)
@@ -14,7 +14,7 @@ ErrorGenerator {
     }
 
     *doesNotUnderstandErrorFunction {
-        var f = { |i, a...args, kwargs| 
+        var f = { |i, a...args, kwargs|
             var var1 = 100.0.rand;
             if (i == 0) {
                 1.meow(10, args: \woof)

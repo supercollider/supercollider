@@ -250,9 +250,9 @@ c.scope;
 SUBSECTION:: Multi-channel Lissajou plots
 code::
 (
-{ 
+{
 	var f = { |l,h| SinOsc.kr(0.1, {pi.rand}).range(l, h) } ;
-	Pulse.ar({ f.(20, 1000) }!6, { f.(0.0, 1) }!6, { f.(0.0, 1.0) }!6) 
+	Pulse.ar({ f.(20, 1000) }!6, { f.(0.0, 1) }!6, { f.(0.0, 1.0) }!6)
 }.play;
 )
 

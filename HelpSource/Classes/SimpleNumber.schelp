@@ -1045,8 +1045,8 @@ code::
 ::
 
 method:: exprand
-Returns a link::Classes/Float:: in the range [this, aNumber), 
-i.e. between this and aNumber (including this, not including aNumber), 
+Returns a link::Classes/Float:: in the range [this, aNumber),
+i.e. between this and aNumber (including this, not including aNumber),
 drawn from a log-uniform distribution.
 Receiver (i.e., code::this::) must not be zero.
 Note that the value is emphasis::not:: drawn from an exponential distribution.

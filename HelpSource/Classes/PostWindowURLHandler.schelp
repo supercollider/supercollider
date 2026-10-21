@@ -23,9 +23,9 @@ PRIVATE:: prDefault
 
 method:: register
 
-argument:: name 
+argument:: name
 
-A link::Classes/Symbol:: representing the scheme of the URI. 
+A link::Classes/Symbol:: representing the scheme of the URI.
 For example, if the URL is code::bang://hello:: then the code::name:: should be code::\bang::.
 
 argument:: fn

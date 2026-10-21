@@ -9,7 +9,7 @@ The contents of a set are unordered; therefore, code must not rely on the order 
 For an ordered variant, see link::Classes/OrderedIdentitySet::; for multisets (i.e., sets in which distinct elements can be equal, but that remain unordered), see link::Classes/Bag::.
 
 note::
-Currently, a set cannot contain code::nil:: as an element. Attempting to add code::nil:: will result in a runtime error: 
+Currently, a set cannot contain code::nil:: as an element. Attempting to add code::nil:: will result in a runtime error:
 teletype::
 ERROR: A set cannot contain nil.
 ::

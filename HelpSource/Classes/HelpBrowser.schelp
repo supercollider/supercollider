@@ -21,7 +21,7 @@ table::
     ## soft::ctrl + u:: || scroll more lines up
     ## soft::h:: or soft::alt + left arrow:: || go back
     ## soft::l:: or soft::alt + right arrow:: || go forward
-    ## soft::G:: || go to bottom 
+    ## soft::G:: || go to bottom
     ## soft::g:: || go to top
     ## soft::shift + j:: or soft::ctrl + minus:: || zoom out
     ## soft::shift + k:: or soft::ctrl + equal:: || zoom in

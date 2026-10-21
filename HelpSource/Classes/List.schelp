@@ -20,14 +20,14 @@ Example:
 
 code::
 // Create a new empty collections with size 3:
-x = Array.new(3); 
-y = Array.new(3); 
+x = Array.new(3);
+y = Array.new(3);
 z = List.new(3);
 
 // Try to add 7 items to the array and list.
 // If the array exceeds maxSize, it will only
 // grow to an internally specified max size.
-( 
+(
 7.do { |i|
 	x.add(i);
 	y = y.add(i); // reassign array y on each add

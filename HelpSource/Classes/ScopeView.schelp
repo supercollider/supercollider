@@ -215,8 +215,8 @@ s.waitForBoot({
                 z = PMOsc.ar([300, 250], *SinOsc.ar([0.027, 0.017])*pi) * 0.1;
                 Out.ar(bus, z);
             }).play(s, [\bus, b.index]);
-        } { 
-            syn1.free; syn2.free 
+        } {
+            syn1.free; syn2.free
         };
    };
 

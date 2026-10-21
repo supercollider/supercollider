@@ -240,7 +240,7 @@ r = Routine {
 	// by addressing "this" clock,
 	// we are always changing meter in the right place
 	var clock = thisThread.clock;
-	
+
 	clock.beats.debug("start time");
 	clock.timeToNextBeat(-1).wait;
 	clock.beats.debug("barline");

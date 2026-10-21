@@ -213,7 +213,7 @@ Quarks {
 		quark.dependencies.do{ |dep|
 			var ok;
 			// check if dependency is already installing
-			if(installing.detect({ |q| q.name == dep.name }).isNil) {				
+			if(installing.detect({ |q| q.name == dep.name }).isNil) {
 				ok = dep.install();
 				if(ok.not) {
 					("Failed to install" + quark.name).error;

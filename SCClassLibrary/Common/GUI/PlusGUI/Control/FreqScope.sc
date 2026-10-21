@@ -321,13 +321,13 @@ FreqScope {
 	*getInstance {
 		^instance
 	}
-	
+
 	*new { arg width=522, height=300, busNum=0, scopeColor, bgColor, server;
 		var rect, scope, window, pad, font, freqLabel, freqLabelDist, dbLabel, dbLabelDist;
 		var setFreqLabelVals, setDBLabelVals;
 		var nyquistKHz;
 		busNum = busNum.asControlInput;
-		if(scopeOpen) { 
+		if(scopeOpen) {
 			warn(
 				"FreqScope is already open.\n"
 				"Only one instance of FreqScope can exist simultenously.\n"

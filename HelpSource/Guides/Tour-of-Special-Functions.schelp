@@ -6,14 +6,14 @@ KEYWORD:: special functions, boost
 
 section:: Boost library Special Functions: usage, bounds and plots
 
-Supercollider provides an array of special functions from mathematics (e.g., Bessel, Chebyshev, etc.) as supplied by the Boost library. 
+Supercollider provides an array of special functions from mathematics (e.g., Bessel, Chebyshev, etc.) as supplied by the Boost library.
 The library's LINK::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
 serves as the primary reference for the following functions.
 
-Many of the functions are only valid in certain numerical ranges. 
+Many of the functions are only valid in certain numerical ranges.
 The following tour will show you plots that illustrate the behavior of the functions, their ranges and asymptotes.
 
-Define the plotting functions in the next section, 
+Define the plotting functions in the next section,
 then you can use the Table of Contents menu to jump between function families.
 
 SECTION:: Before you get started...
@@ -36,14 +36,14 @@ getLayout = { |plot, text|
 	var txt = StaticText()
 	.string_(text).font_(Font.defaultMonoFace)
 	.maxHeight_(50).align_(\center);
-	
+
 	VLayout(plot, txt, 10)
 };
 
 ~multiPlot = { |func, data, txt, min, max|
 	var multiChan, params, samps, clumped, plotter;
 	var gridcol = Color.gray.alpha_(0.2);
-	
+
 	if(data.shape.size == 1) {
 		samps = data;
 		clumped = data.asList.flop;
@@ -58,11 +58,11 @@ getLayout = { |plot, text|
 			samps.collect([param, _, i])
 		}
 	};
-	
+
 	multiChan = clumped.collect({ |bundle, i|
 		bundle.collect(func.applyTo(*_)).select(_.notNil)
 	});
-	
+
 	plotter = multiChan.plot(txt, minval: min, maxval: max)
 	.superpose_(true)
 	.domainSpecs_([samps.minItem, samps.maxItem].asSpec)
@@ -70,13 +70,13 @@ getLayout = { |plot, text|
 		makeColors.(params !? params.size ?? 1, rrand(0, 1.0))
 	)
 	;
-	
+
 	plotter.plots[0]
 	.gridColorX_(gridcol)
 	.gridColorY_(gridcol)
 	.plotMode_(\lines)
 	;
-	
+
 	plotter
 };
 
@@ -87,7 +87,7 @@ getLayout = { |plot, text|
 	var cols, win, hl, paletteButton, widthScale;
 	var vl = VLayout();
 	var sb = Window.screenBounds;
-	
+
 	cols = numCols ?? { plotters.size.sqrt.ceil.asInteger };
 	widthScale = cols.linlin(1, 4, 0.5, 0.9);
 	win = Window(title,
@@ -96,21 +96,21 @@ getLayout = { |plot, text|
 		.height_(sb.height)
 		.center_(sb.center)
 	).view.layout_(vl).front;
-	
+
 	paletteButton = Button().states_([["Light Plots"], ["Dark Plots"]]).maxSize_(Size(80, 15));
 	vl.add(HLayout(nil, paletteButton));
-	
+
 	plotters.do { |plotter, i|
 		var plot = plotter.parent.view.children[0];
 		(i % cols == 0).if{ vl.add(hl = HLayout()) };
 		hl.add(getLayout.(plot, plotter.name.asString));
 		plotter.parent.close;
 	};
-	
+
 	if(plotters.size % cols > 0) {
 		(cols - plotters.size % cols).do{ hl.add(StaticText().string_("")) }
 	};
-	
+
 	paletteButton.action_({ |but|
         ~paletteBool = but.value.asBoolean;
         plotters.do{ |plotter|

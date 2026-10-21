@@ -9,7 +9,7 @@ OSXPlatform : UnixPlatform {
 	}
 
 	name { ^\osx }
-	version { 
+	version {
 		^"sw_vers -productVersion".unixCmdGetStdOut.replace($\n, "");
 	}
 

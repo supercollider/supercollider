@@ -111,7 +111,7 @@ TestSignal : UnitTest {
 
 		signal = Signal[1.5, 3.0, 2.0, -1.1];
 		array = FloatArray[1.5, 3.0, 2.0, -1.1];
-		expo = FloatArray[20.0, 70.1, -30.2, 22.1]; 
+		expo = FloatArray[20.0, 70.1, -30.2, 22.1];
 		arraysign = array.collect { |base| if (base.isPositive, {1}, {-1}) };
 
 		signalresult = signal.pow(expo.as(Signal));
@@ -136,7 +136,7 @@ TestSignal : UnitTest {
 
 		var signalresult = value.mod(signal);
 		var arrayresult = value.mod(array);
-		this.assertEquals(signalresult.as(FloatArray), arrayresult.as(FloatArray), "Float mod Signal should match 32-bit result of Float mod FloatArray"); 
+		this.assertEquals(signalresult.as(FloatArray), arrayresult.as(FloatArray), "Float mod Signal should match 32-bit result of Float mod FloatArray");
 	}
 
 	test_mod_xx {

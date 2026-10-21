@@ -27,7 +27,7 @@ method::free
 Free a previously allocated block starting at emphasis::address::.
 
 method::reserve
-Mark a specific range of addresses as used so that the alloc method will not return any addresses within that range. 
+Mark a specific range of addresses as used so that the alloc method will not return any addresses within that range.
 
 method::findAvailable
 Given an integer width of a desired block, find and return a code::ContiguousBlock:: object whose code::start:: is the beginning address of the block and whose code::size:: is the width. This method only queries the allocator; it does not change the state. If you obtain an address using code::findAvailable::, there is no guarantee that a later call will not return the same address. So, in general, use link::#-alloc:: to request an address. (code::alloc:: calls code::findAvailable:: and then code::reserve::.)

@@ -53,7 +53,7 @@ TestPrimitives : UnitTest {
 		);
 	}
 
-	with_var_args { |obj| 
+	with_var_args { |obj|
 		this.assertEquals(
 			obj.noKwargsWithVarArgs(1, 2, 3),
 			[obj, 1, 2, 3]

@@ -161,38 +161,38 @@ numberedlist::
 ## enclose the looping expression (code::100.do { ... }:: here) in another Function block that takes an argument
 (which we call teletype::break:: here, but which can be called anything);
 
-code:: 
-{ |break|   
+code::
+{ |break|
 	100.do { |i|  // the original expression
-	i.postln;     // from which we 
+	i.postln;     // from which we
 	}             // want to break.
-} 
+}
 ::
 
 ## inside the looped Function, call code::.value:: on that argument when the relevant condition is true;
 
-code:: 
-{ |break|  
-	100.do { |i| 
-	i.postln; 
+code::
+{ |break|
+	100.do { |i|
+	i.postln;
 	if (i == 7) {   // added lines
 		break.value // ...
 		}           // ...
-	} 
-} 
+	}
+}
 ::
 
 ##  on the enclosing Function, call  code::.block.::
 
-code:: 
+code::
 block { |break| // block goes at the beginning of this line
-		100.do { |i| 
-				i.postln; 
+		100.do { |i|
+				i.postln;
 				if (i == 7) {
 					break.value
-					} 
-		} 
-} 
+					}
+		}
+}
 // this is the complete expression, at last
 ::
 ::
@@ -200,15 +200,15 @@ block { |break| // block goes at the beginning of this line
 This will return nil once the break condition is reached,
 but if a specific return value is desired, this can be provided to the code::.value:: call:
 
-code:: 
-block { |break| 
-		100.do { |i| 
-				i.postln; 
+code::
+block { |break|
+		100.do { |i|
+				i.postln;
 				if (i == 7) {
 					break.value("return this")
-					} 
-		} 
-} 
+					}
+		}
+}
 //phew
 ::
 
@@ -253,7 +253,7 @@ To repeat indefinitely, use either code::.loop::, or use code::.repeat:: without
 Roughly, if teletype::pat:: is some Pattern, then code::pat.repeat(n):: will return code::Pn(pat, n)::.
 For most other classes, code::object.repeat(n):: will return a Routine equivalent to code::Pn(object, n).asStream::.
 
-Regarding code::Function.loop::, which should only be used strong::inside:: a Routine, 
+Regarding code::Function.loop::, which should only be used strong::inside:: a Routine,
 see link::#Apart from Function.loop, the .loop method is an alias for .repeat(inf)#below::.
 
 subsection:: .repeat

@@ -163,8 +163,8 @@ code::
 // Gendy1 into Gendy2 into Gendy3...with cartoon side effects
 (
 { Pan2.ar(
-	Gendy3.ar(1, 2, freq: Gendy2.ar(maxfreq: Gendy1.kr(5, 4, 0.3, 0.7, 0.1, MouseY.kr(0.1, 10), 1.0, 1.0, 5, 5, 25, 26), minfreq: 24, knum: MouseX.kr(1, 13), mul: 150, add: 200), durscale: 0.01, ampscale: 0.01, mul: 0.1), 
-	0.0) 
+	Gendy3.ar(1, 2, freq: Gendy2.ar(maxfreq: Gendy1.kr(5, 4, 0.3, 0.7, 0.1, MouseY.kr(0.1, 10), 1.0, 1.0, 5, 5, 25, 26), minfreq: 24, knum: MouseX.kr(1, 13), mul: 150, add: 200), durscale: 0.01, ampscale: 0.01, mul: 0.1),
+	0.0)
 }.play
 )
 
@@ -201,14 +201,14 @@ code::
 (
 {
 	var n = 15;
-	
+
 	0.5 * Mix.fill(n, {
 		var freq, numcps;
-		
+
 		freq = rrand(130, 160.3);
 		numcps = rrand(2, 20);
 		Pan2.ar(
-			Gendy3.ar(6.rand, 6.rand, 10.0.rand, 10.0.rand, freq*exprand(1.0, 2.0), 10.0.rand, 10.0.rand, numcps, SinOsc.kr(exprand(0.02, 0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 
+			Gendy3.ar(6.rand, 6.rand, 10.0.rand, 10.0.rand, freq*exprand(1.0, 2.0), 10.0.rand, 10.0.rand, numcps, SinOsc.kr(exprand(0.02, 0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)),
 			1.0.rand2
 		)
 	});
@@ -219,15 +219,15 @@ code::
 (
 {
 	var n = 10;
-	
+
 	Resonz.ar(
 		Mix.fill(n, {
 			var freq, numcps;
-			
+
 			freq = rrand(50, 560.3);
 			numcps = rrand(2, 20);
 			Pan2.ar(
-				Gendy3.ar(6.rand, 6.rand, 1.0.rand, 1.0.rand, freq, 1.0.rand, 1.0.rand, numcps, SinOsc.kr(exprand(0.02, 0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 
+				Gendy3.ar(6.rand, 6.rand, 1.0.rand, 1.0.rand, freq, 1.0.rand, 1.0.rand, numcps, SinOsc.kr(exprand(0.02, 0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)),
 				1.0.rand2
 			)
 		}),
