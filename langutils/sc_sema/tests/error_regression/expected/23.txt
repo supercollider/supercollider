@@ -1,0 +1,341 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Variable not defined
+file:
+   42 │     nested_value { instance_var[0] = instance_var[1] = 2 }
+   43 │     as_argument { ^3.bar(instance_var[0] = 1) }
+   44 │     undefined_value { instance_var[0] = undefined_var }
+      ┆                                         ^^^^^^^^^^^^^ this is not defined.
+   45 │ }
+
+Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Variadic argument is not last
+file:
+   38 │     multiple { instance_var[0, 1] = 2 }
+   39 │     keyword { instance_var[0, b: 1] = 2 }
+   40 │     variadic { instance_var[*0] = 1 }
+      ┆                             ^^ the elements of this are passed after...
+   41 │     expression_receiver { 1.foo[0] = 2 }
+   42 │     nested_value { instance_var[0] = instance_var[1] = 2 }
+   43 │     as_argument { ^3.bar(instance_var[0] = 1) }
+
+file:
+   38 │     multiple { instance_var[0, 1] = 2 }
+   39 │     keyword { instance_var[0, b: 1] = 2 }
+   40 │     variadic { instance_var[*0] = 1 }
+      ┆                                   ^ ...this argument, which is written after it.
+   41 │     expression_receiver { 1.foo[0] = 2 }
+   42 │     nested_value { instance_var[0] = instance_var[1] = 2 }
+   43 │     as_argument { ^3.bar(instance_var[0] = 1) }
+
+A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  SCMethodList: Object
+SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single { instance_var[0] = 1 }'\n'    empty { instance_var[] = 1 }'\n'    dot { instance_var.[0] = 1 }'\n'    dot_empty { instance_var.[] = 1 }'\n'    multiple { instance_var[0, 1] = 2 }'\n'    keyword { instance_var[0, b: 1] = 2 }'\n'    variadic { instance_var[*0] = 1 }'\n'    expression_receiver { 1.foo[0] = 2 }'\n'    nested_value { instance_var[0] = instance_var[1] = 2 }'\n'    as_argument { ^3.bar(instance_var[0] = 1) }'\n'    undefined_value { instance_var[0] = undefined_var }'\n'}
+|  SCMemberList: AssignmentAt
+|  |  SCMember: instance_var
+|  SCMethodList: AssignmentAt
+|  |  SCMethod: poisoned: undefined_value { instance_var[0] = undefined_var }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: instance_var[0] = undefined_var
+|  |  |  |  SCMessage: put: instance_var[0] = undefined_var
+|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCPositionalArgs: instance_var[0] = undefined_var
+|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
+|  |  |  |  |  |  SCExprList: undefined_var
+|  |  |  |  |  SCKwArgs: instance_var[0] = undefined_var
+|  |  |  |  |  SCVariadicArgs: instance_var[0] = undefined_var
+|  |  |  |  |  SCMissing: instance_var[0] = undefined_var
+|  |  SCMethod: as_argument { ^3.bar(instance_var[0] = 1) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^3.bar(instance_var[0] = 1)
+|  |  |  |  SCExplicitReturn: 3.bar(instance_var[0] = 1)
+|  |  |  |  |  SCMessage: bar: 3.bar(instance_var[0] = 1)
+|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  |  |  |  |  SCPositionalArgs: 3.bar(instance_var[0] = 1)
+|  |  |  |  |  |  |  SCMessage: put: instance_var[0] = 1
+|  |  |  |  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  |  |  |  SCPositionalArgs: instance_var[0] = 1
+|  |  |  |  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  SCKwArgs: instance_var[0] = 1
+|  |  |  |  |  |  |  |  SCVariadicArgs: instance_var[0] = 1
+|  |  |  |  |  |  |  |  SCMissing: instance_var[0] = 1
+|  |  |  |  |  |  SCKwArgs: 3.bar(instance_var[0] = 1)
+|  |  |  |  |  |  SCVariadicArgs: 3.bar(instance_var[0] = 1)
+|  |  |  |  |  |  SCMissing: 3.bar(instance_var[0] = 1)
+|  |  SCMethod: nested_value { instance_var[0] = instance_var[1] = 2 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: instance_var[0] = instance_var[1] = 2
+|  |  |  |  SCMessage: put: instance_var[0] = instance_var[1] = 2
+|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCPositionalArgs: instance_var[0] = instance_var[1] = 2
+|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
+|  |  |  |  |  |  SCMessage: put: instance_var[1] = 2
+|  |  |  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  |  |  SCPositionalArgs: instance_var[1] = 2
+|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCKwArgs: instance_var[1] = 2
+|  |  |  |  |  |  |  SCVariadicArgs: instance_var[1] = 2
+|  |  |  |  |  |  |  SCMissing: instance_var[1] = 2
+|  |  |  |  |  SCKwArgs: instance_var[0] = instance_var[1] = 2
+|  |  |  |  |  SCVariadicArgs: instance_var[0] = instance_var[1] = 2
+|  |  |  |  |  SCMissing: instance_var[0] = instance_var[1] = 2
+|  |  SCMethod: expression_receiver { 1.foo[0] = 2 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: 1.foo[0] = 2
+|  |  |  |  SCMessage: put: 1.foo[0] = 2
+|  |  |  |  |  SCMessage: foo: 1.foo
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.foo
+|  |  |  |  |  |  SCKwArgs: 1.foo
+|  |  |  |  |  |  SCVariadicArgs: 1.foo
+|  |  |  |  |  |  SCMissing: 1.foo
+|  |  |  |  |  SCPositionalArgs: 1.foo[0] = 2
+|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  SCKwArgs: 1.foo[0] = 2
+|  |  |  |  |  SCVariadicArgs: 1.foo[0] = 2
+|  |  |  |  |  SCMissing: 1.foo[0] = 2
+|  |  SCMethod: poisoned: variadic { instance_var[*0] = 1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: instance_var[*0] = 1
+|  |  |  |  SCMessage: put: instance_var[*0] = 1
+|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCPositionalArgs: instance_var[*0] = 1
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  SCKwArgs: instance_var[*0] = 1
+|  |  |  |  |  SCVariadicArgs: instance_var[*0] = 1
+|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
+|  |  |  |  |  SCMissing: instance_var[*0] = 1
+|  |  SCMethod: keyword { instance_var[0, b: 1] = 2 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: instance_var[0, b: 1] = 2
+|  |  |  |  SCMessage: put: instance_var[0, b: 1] = 2
+|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCPositionalArgs: instance_var[0, b: 1] = 2
+|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  SCKwArgs: instance_var[0, b: 1] = 2
+|  |  |  |  |  |  SCKwArg: b: b: 1
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  SCVariadicArgs: instance_var[0, b: 1] = 2
+|  |  |  |  |  SCMissing: instance_var[0, b: 1] = 2
+|  |  SCMethod: multiple { instance_var[0, 1] = 2 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: instance_var[0, 1] = 2
+|  |  |  |  SCMessage: put: instance_var[0, 1] = 2
+|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCPositionalArgs: instance_var[0, 1] = 2
+|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  SCKwArgs: instance_var[0, 1] = 2
+|  |  |  |  |  SCVariadicArgs: instance_var[0, 1] = 2
+|  |  |  |  |  SCMissing: instance_var[0, 1] = 2
+|  |  SCMethod: dot_empty { instance_var.[] = 1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: instance_var.[] = 1
+|  |  |  |  SCMessage: put: instance_var.[] = 1
+|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCPositionalArgs: instance_var.[] = 1
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  SCKwArgs: instance_var.[] = 1
+|  |  |  |  |  SCVariadicArgs: instance_var.[] = 1
+|  |  |  |  |  SCMissing: instance_var.[] = 1
+|  |  SCMethod: dot { instance_var.[0] = 1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: instance_var.[0] = 1
+|  |  |  |  SCMessage: put: instance_var.[0] = 1
+|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCPositionalArgs: instance_var.[0] = 1
+|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  SCKwArgs: instance_var.[0] = 1
+|  |  |  |  |  SCVariadicArgs: instance_var.[0] = 1
+|  |  |  |  |  SCMissing: instance_var.[0] = 1
+|  |  SCMethod: empty { instance_var[] = 1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: instance_var[] = 1
+|  |  |  |  SCMessage: put: instance_var[] = 1
+|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCPositionalArgs: instance_var[] = 1
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  SCKwArgs: instance_var[] = 1
+|  |  |  |  |  SCVariadicArgs: instance_var[] = 1
+|  |  |  |  |  SCMissing: instance_var[] = 1
+|  |  SCMethod: single { instance_var[0] = 1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: instance_var[0] = 1
+|  |  |  |  SCMessage: put: instance_var[0] = 1
+|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCPositionalArgs: instance_var[0] = 1
+|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  SCKwArgs: instance_var[0] = 1
+|  |  |  |  |  SCVariadicArgs: instance_var[0] = 1
+|  |  |  |  |  SCMissing: instance_var[0] = 1
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
+SCClass: Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  SCMethodList: Symbol
+SCClass: Char: Char {}
+|  SCMemberList: Char
+|  SCMethodList: Char
+SCClass: Integer: Integer {}
+|  SCMemberList: Integer
+|  SCMethodList: Integer
+SCClass: Float: Float {}
+|  SCMemberList: Float
+|  SCMethodList: Float
+SCClass: Nil: Nil {}
+|  SCMemberList: Nil
+|  SCMethodList: Nil
+SCClass: False: False {}
+|  SCMemberList: False
+|  SCMethodList: False
+SCClass: True: True {}
+|  SCMemberList: True
+|  SCMethodList: True
+SCClass: String: String {}
+|  SCMemberList: String
+|  SCMethodList: String
+SCClass: Class: Class {}
+|  SCMemberList: Class
+|  SCMethodList: Class
+SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Object
+SCClass: Meta_AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single { instance_var[0] = 1 }'\n'    empty { instance_var[] = 1 }'\n'    dot { instance_var.[0] = 1 }'\n'    dot_empty { instance_var.[] = 1 }'\n'    multiple { instance_var[0, 1] = 2 }'\n'    keyword { instance_var[0, b: 1] = 2 }'\n'    variadic { instance_var[*0] = 1 }'\n'    expression_receiver { 1.foo[0] = 2 }'\n'    nested_value { instance_var[0] = instance_var[1] = 2 }'\n'    as_argument { ^3.bar(instance_var[0] = 1) }'\n'    undefined_value { instance_var[0] = undefined_var }'\n'}
+|  SCMemberList: AssignmentAt
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: AssignmentAt
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Ref
+SCClass: Meta_Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Symbol
+SCClass: Meta_Char: Char {}
+|  SCMemberList: Char
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Char
+SCClass: Meta_Integer: Integer {}
+|  SCMemberList: Integer
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Integer
+SCClass: Meta_Float: Float {}
+|  SCMemberList: Float
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Float
+SCClass: Meta_Nil: Nil {}
+|  SCMemberList: Nil
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Nil
+SCClass: Meta_False: False {}
+|  SCMemberList: False
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: False
+SCClass: Meta_True: True {}
+|  SCMemberList: True
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: True
+SCClass: Meta_String: String {}
+|  SCMemberList: String
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: String
+SCClass: Meta_Class: Class {}
+|  SCMemberList: Class
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Class
+Successfully compiled 15 classes.

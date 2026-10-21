@@ -442,4 +442,16 @@ Diagnostic Diagnostic::not_constant(TextInfoPtr first_t, sc::lex::SourceCodeRang
              "This must be known when the class library is compiled, e.g., a variable's initial value, or an element "
              "of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used." };
 }
+
+Diagnostic Diagnostic::variadic_argument_not_last(TextInfoPtr variadic_t, sc::lex::SourceCodeRange variadic_l,
+                                                  TextInfoPtr positional_t, sc::lex::SourceCodeRange positional_l) {
+    return { "Variadic argument is not last",
+             Severity::Error,
+             {
+                 { std::move(variadic_t), variadic_l, "the elements of this are passed after..." },
+                 { std::move(positional_t), positional_l, "...this argument, which is written after it." },
+             },
+             "A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. "
+             "This includes the value of `a[*i] = v`, which is passed last." };
+}
 }

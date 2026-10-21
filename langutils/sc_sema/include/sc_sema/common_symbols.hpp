@@ -14,6 +14,8 @@ struct CommonSymbols {
     SymSCSelector value;
     SymSCSelector new_;
     SymSCSelector at;
+    // `a[i] = v` is `a.put(i, v)`.
+    SymSCSelector put;
     // `a.perform(\foo)` is `a.foo`.
     SymSCSelector perform;
 

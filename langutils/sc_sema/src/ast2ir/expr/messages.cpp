@@ -39,6 +39,9 @@ struct MessageArguments {
     /// This means the second argument (after receiver) is actually the selector.
     bool is_performing;
     std::optional<OptionallyLocatable<SymSCSelector>> performed_selector {};
+    // Positional arguments must come before any variadic argument, as that is the order they are passed in.
+    std::optional<ast::VariadicArgIndex> first_variadic {};
+    bool reported_variadic_not_last { false };
 };
 
 MessageArguments make_arguments(MessageContext& msg_ctx, ast::OptionalIndex message_i, const Selector& selector,
@@ -54,6 +57,14 @@ MessageArguments make_arguments(MessageContext& msg_ctx, ast::OptionalIndex mess
 }
 
 void append_positional(MessageContext& msg_ctx, MessageArguments& args, const Return<SCAnyExpr_I>& arg) {
+    if (args.first_variadic && !args.reported_variadic_not_last) {
+        args.reported_variadic_not_last = true;
+        const auto& g = *msg_ctx.ast_graph;
+        const auto arg_location = msg_ctx.ir.location(arg.ir_node);
+        msg_ctx.expr.sink(sc::diag::Diagnostic::variadic_argument_not_last(
+            get_text_info(g), get_location(g, *args.first_variadic), get_text_info(*arg_location.graph_index),
+            get_location(*arg_location.graph_index, arg_location.node_index)));
+    }
     if (args.first_positional_is_receiver && !args.receiver) {
         args.receiver = arg.ir_node;
         return;
@@ -104,6 +115,8 @@ void append_arguments(MessageContext& msg_ctx, MessageArguments& args, ast::Argu
                 args.keyword,
                 msg_ctx.ir.create(SCKwArg { located_name }, { msg_ctx.ast_graph, { *entry } }, value_r.ir_node));
         } else if (const auto variadic = g.as_a<ast::VariadicArgIndex>(entry)) {
+            if (!args.first_variadic)
+                args.first_variadic = *variadic;
             const auto [expr] = g.children(*variadic);
             msg_ctx.ir.append(args.variadic, msg_ctx.expr(ast::AnyExprIndex { expr }).ir_node);
         } else if (const auto blocks = g.as_a<ast::BlockListIndex>(entry)) {
@@ -249,4 +262,15 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
     return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
 }
 
+// `a[i] = v` is `a.put(i, v)`, the value is the last positional argument.
+Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentAtIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [receiver, arg_list, value] = ast_graph->children(i);
+    const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { receiver });
+    const auto sel = implicit_selector(ctx.common_symbols.put);
+    auto args = make_arguments(msg_ctx, i, sel);
+    append_arguments(msg_ctx, args, arg_list);
+    append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
+    return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
+}
 }

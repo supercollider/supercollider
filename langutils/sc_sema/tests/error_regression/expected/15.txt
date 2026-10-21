@@ -129,6 +129,18 @@ SCClass: Messages: Messages {'\n'    postfix { ^1.foo }'\n'    postfix_args { ^1
 |  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
 |  |  |  |  |  |  SCVariadicArgs: 1.foo(2, bar: 3)
 |  |  |  |  |  |  SCMissing: 1.foo(2, bar: 3)
+|  |  SCMethod: value { ^1.(2) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^1.(2)
+|  |  |  |  SCExplicitReturn: 1.(2)
+|  |  |  |  |  SCMessage: value: 1.(2)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.(2)
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCKwArgs: 1.(2)
+|  |  |  |  |  |  SCVariadicArgs: 1.(2)
+|  |  |  |  |  |  SCMissing: 1.(2)
 |  |  SCMethod: postfix_variadic { ^1.foo(2, *3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -142,18 +154,6 @@ SCClass: Messages: Messages {'\n'    postfix { ^1.foo }'\n'    postfix_args { ^1
 |  |  |  |  |  |  SCVariadicArgs: 1.foo(2, *3)
 |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
 |  |  |  |  |  |  SCMissing: 1.foo(2, *3)
-|  |  SCMethod: value { ^1.(2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.(2)
-|  |  |  |  SCExplicitReturn: 1.(2)
-|  |  |  |  |  SCMessage: value: 1.(2)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.(2)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1.(2)
-|  |  |  |  |  |  SCVariadicArgs: 1.(2)
-|  |  |  |  |  |  SCMissing: 1.(2)
 |  |  SCMethod: prefix { ^foo(1, 2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -166,12 +166,6 @@ SCClass: Messages: Messages {'\n'    postfix { ^1.foo }'\n'    postfix_args { ^1
 |  |  |  |  |  |  SCKwArgs: foo(1, 2)
 |  |  |  |  |  |  SCVariadicArgs: foo(1, 2)
 |  |  |  |  |  |  SCMissing: foo(1, 2)
-|  |  SCMethod: poisoned: prefix_no_receiver { ^foo(bar: 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^foo(bar: 1)
-|  |  |  |  SCExplicitReturn: foo(bar: 1)
-|  |  |  |  |  SCExprList: foo(bar: 1)
 |  |  SCMethod: at { ^"abc"[0] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -184,6 +178,12 @@ SCClass: Messages: Messages {'\n'    postfix { ^1.foo }'\n'    postfix_args { ^1
 |  |  |  |  |  |  SCKwArgs: "abc"[0]
 |  |  |  |  |  |  SCVariadicArgs: "abc"[0]
 |  |  |  |  |  |  SCMissing: "abc"[0]
+|  |  SCMethod: poisoned: prefix_no_receiver { ^foo(bar: 1) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^foo(bar: 1)
+|  |  |  |  SCExplicitReturn: foo(bar: 1)
+|  |  |  |  |  SCExprList: foo(bar: 1)
 |  |  SCMethod: binary { ^1 + 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
