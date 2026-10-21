@@ -425,7 +425,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 ref.expr_type_info = *mem->type_info;
             }
             ref.accessor = mem->accessor;
-            // ref.is_const = mem->
+            ref.is_const = mem->is_const;
             members.push_back({ std::move(ref), decl.ast_graph(), mem->name_index });
         }
         class_member_layout.insert({ decl.name(), std::move(members) });

@@ -93,7 +93,8 @@ struct SCExplicitReturn : priv::Node<SCExplicitReturn_I(SCAnyExpr_I value)> {
 struct SCCollection : priv::List<SCCollection_I, SCAnyExpr_I> {
     static constexpr auto type_name { "SCCollection" };
     OptionallyLocatable<SymSCClassName> collection_class;
-    std::uint32_t size;
+    std::uint32_t size {};
+    SCCollection(OptionallyLocatable<SymSCClassName> c): collection_class(c) {}
 };
 
 

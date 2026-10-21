@@ -26,6 +26,8 @@ public:
         ast::OptionalIndex accessor_index;
         std::optional<std::pair<ConstExprIndex, ast::AnyExprIndex>> expr_index;
         std::optional<TypeInfo> type_info;
+        // Declared with `const`, these are always in the meta class.
+        bool is_const { false };
     };
 
     struct Method {

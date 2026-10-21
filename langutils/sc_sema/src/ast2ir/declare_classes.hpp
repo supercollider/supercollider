@@ -26,12 +26,14 @@ struct DeclareClass {
     std::optional<Result> operator()(ast::ClassIndex);
 
 private:
-    void append_member_to_decl(ClassDeclaration&, ast::Index, ast::UntypedIndex accessor_i, ast::ReadWriteAccessor,
-                               ast::NamedIdentifierIndex);
-    void append_member_to_decl(ClassDeclaration&, ast::Index, ast::UntypedIndex accessor_i, ast::ReadWriteAccessor,
+    // `constants` is the declaration that holds the class's constants, which initial values can refer to.
+    void append_member_to_decl(ClassDeclaration&, ClassDeclaration& constants, bool is_const, ast::Index,
+                               ast::UntypedIndex accessor_i, ast::ReadWriteAccessor, ast::NamedIdentifierIndex);
+    void append_member_to_decl(ClassDeclaration&, ClassDeclaration& constants, bool is_const, ast::Index,
+                               ast::UntypedIndex accessor_i, ast::ReadWriteAccessor,
                                ast::DeclareVariableWithDefaultIndex);
-    void append_member_to_decl(ClassDeclaration&, ast::Index, ast::UntypedIndex accessor_i, ast::ReadWriteAccessor,
-                               ast::VariablePackAssignIndex);
+    void append_member_to_decl(ClassDeclaration&, ClassDeclaration& constants, bool is_const, ast::Index,
+                               ast::UntypedIndex accessor_i, ast::ReadWriteAccessor, ast::VariablePackAssignIndex);
 
     Context& cxt;
     std::shared_ptr<const ast::ASTGraph> ast_graph;

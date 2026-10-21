@@ -1,0 +1,261 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Not a constant
+file:
+   37 │     nested_not_constant { ^[1, [2.foo]] }
+   38 │     immutable { ^#[1, name, \symbol] }
+   39 │     immutable_not_literal { ^#[1, 2.foo] }
+      ┆                                   ^^^^^ this can't be evaluated when compiling.
+   40 │     immutable_nested { ^#[[a, 1], b] }
+   41 │ }
+
+This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  SCMethodList: Object
+SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { ^[] }'\n'    nested_constant { ^[[1, 2], [\a]] }'\n'    keyword_elements { ^[a: 1, b: 2] }'\n'    not_constant { ^[1, 2.foo] }'\n'    nested_not_constant { ^[1, [2.foo]] }'\n'    immutable { ^#[1, name, \symbol] }'\n'    immutable_not_literal { ^#[1, 2.foo] }'\n'    immutable_nested { ^#[[a, 1], b] }'\n'}
+|  SCMemberList: Arrays
+|  SCMethodList: Arrays
+|  |  SCMethod: immutable_nested { ^#[[a, 1], b] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^#[[a, 1], b]
+|  |  |  |  SCExplicitReturn: #[[a, 1], b]
+|  |  |  |  |  SCCollection: Array: #[[a, 1], b] = {"array": [{"array": [{"symbol": "a"}, {"int": 1}]}, {"symbol": "b"}]}
+|  |  |  |  |  |  SCCollection: Array: [a, 1] = {"array": [{"symbol": "a"}, {"int": 1}]}
+|  |  |  |  |  |  |  SCLiteral: a = {"symbol": "a"}
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: b = {"symbol": "b"}
+|  |  SCMethod: immutable_not_literal { ^#[1, 2.foo] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^#[1, 2.foo]
+|  |  |  |  SCExplicitReturn: #[1, 2.foo]
+|  |  |  |  |  SCCollection: Array: #[1, 2.foo]
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCMessage: foo: 2.foo
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCPositionalArgs: 2.foo
+|  |  |  |  |  |  |  SCKwArgs: 2.foo
+|  |  |  |  |  |  |  SCVariadicArgs: 2.foo
+|  |  |  |  |  |  |  SCMissing: 2.foo
+|  |  SCMethod: immutable { ^#[1, name, \symbol] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^#[1, name, \symbol]
+|  |  |  |  SCExplicitReturn: #[1, name, \symbol]
+|  |  |  |  |  SCCollection: Array: #[1, name, \symbol] = {"array": [{"int": 1}, {"symbol": "name"}, {"symbol": "symbol"}]}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: name = {"symbol": "name"}
+|  |  |  |  |  |  SCLiteral: \symbol = {"symbol": "symbol"}
+|  |  SCMethod: nested_not_constant { ^[1, [2.foo]] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^[1, [2.foo]]
+|  |  |  |  SCExplicitReturn: [1, [2.foo]]
+|  |  |  |  |  SCCollection: Array: [1, [2.foo]]
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCCollection: Array: [2.foo]
+|  |  |  |  |  |  |  SCMessage: foo: 2.foo
+|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  |  SCPositionalArgs: 2.foo
+|  |  |  |  |  |  |  |  SCKwArgs: 2.foo
+|  |  |  |  |  |  |  |  SCVariadicArgs: 2.foo
+|  |  |  |  |  |  |  |  SCMissing: 2.foo
+|  |  SCMethod: not_constant { ^[1, 2.foo] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^[1, 2.foo]
+|  |  |  |  SCExplicitReturn: [1, 2.foo]
+|  |  |  |  |  SCCollection: Array: [1, 2.foo]
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCMessage: foo: 2.foo
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCPositionalArgs: 2.foo
+|  |  |  |  |  |  |  SCKwArgs: 2.foo
+|  |  |  |  |  |  |  SCVariadicArgs: 2.foo
+|  |  |  |  |  |  |  SCMissing: 2.foo
+|  |  SCMethod: keyword_elements { ^[a: 1, b: 2] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^[a: 1, b: 2]
+|  |  |  |  SCExplicitReturn: [a: 1, b: 2]
+|  |  |  |  |  SCCollection: Array: [a: 1, b: 2] = {"array": [{"symbol": "a"}, {"int": 1}, {"symbol": "b"}, {"int": 2}]}
+|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  SCMethod: nested_constant { ^[[1, 2], [\a]] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^[[1, 2], [\a]]
+|  |  |  |  SCExplicitReturn: [[1, 2], [\a]]
+|  |  |  |  |  SCCollection: Array: [[1, 2], [\a]] = {"array": [{"array": [{"int": 1}, {"int": 2}]}, {"array": [{"symbol": "a"}]}]}
+|  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCCollection: Array: [\a] = {"array": [{"symbol": "a"}]}
+|  |  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
+|  |  SCMethod: empty { ^[] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^[]
+|  |  |  |  SCExplicitReturn: []
+|  |  |  |  |  SCCollection: Array: [] = {"array": []}
+|  |  SCMethod: constant { ^[1, 2.5, "three"] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^[1, 2.5, "three"]
+|  |  |  |  SCExplicitReturn: [1, 2.5, "three"]
+|  |  |  |  |  SCCollection: Array: [1, 2.5, "three"] = {"array": [{"int": 1}, {"float": 2.5}, {"string": "three"}]}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
+|  |  |  |  |  |  SCLiteral: "three" = {"string": "three"}
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
+SCClass: Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  SCMethodList: Symbol
+SCClass: Char: Char {}
+|  SCMemberList: Char
+|  SCMethodList: Char
+SCClass: Integer: Integer {}
+|  SCMemberList: Integer
+|  SCMethodList: Integer
+SCClass: Float: Float {}
+|  SCMemberList: Float
+|  SCMethodList: Float
+SCClass: Nil: Nil {}
+|  SCMemberList: Nil
+|  SCMethodList: Nil
+SCClass: False: False {}
+|  SCMemberList: False
+|  SCMethodList: False
+SCClass: True: True {}
+|  SCMemberList: True
+|  SCMethodList: True
+SCClass: String: String {}
+|  SCMemberList: String
+|  SCMethodList: String
+SCClass: Class: Class {}
+|  SCMemberList: Class
+|  SCMethodList: Class
+SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Object
+SCClass: Meta_Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { ^[] }'\n'    nested_constant { ^[[1, 2], [\a]] }'\n'    keyword_elements { ^[a: 1, b: 2] }'\n'    not_constant { ^[1, 2.foo] }'\n'    nested_not_constant { ^[1, [2.foo]] }'\n'    immutable { ^#[1, name, \symbol] }'\n'    immutable_not_literal { ^#[1, 2.foo] }'\n'    immutable_nested { ^#[[a, 1], b] }'\n'}
+|  SCMemberList: Arrays
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Arrays
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Ref
+SCClass: Meta_Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Symbol
+SCClass: Meta_Char: Char {}
+|  SCMemberList: Char
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Char
+SCClass: Meta_Integer: Integer {}
+|  SCMemberList: Integer
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Integer
+SCClass: Meta_Float: Float {}
+|  SCMemberList: Float
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Float
+SCClass: Meta_Nil: Nil {}
+|  SCMemberList: Nil
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Nil
+SCClass: Meta_False: False {}
+|  SCMemberList: False
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: False
+SCClass: Meta_True: True {}
+|  SCMemberList: True
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: True
+SCClass: Meta_String: String {}
+|  SCMemberList: String
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: String
+SCClass: Meta_Class: Class {}
+|  SCMemberList: Class
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Class
+Successfully compiled 15 classes.

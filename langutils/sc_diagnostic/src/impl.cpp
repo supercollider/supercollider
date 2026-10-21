@@ -358,16 +358,15 @@ Diagnostic Diagnostic::duplicate_member(TextInfoPtr first_t, sc::lex::SourceCode
     return { "Duplicate member in class",
              Severity::Error,
              {
-                 { std::move(first_t), first_l},
-                 { std::move(second_t), second_l},
+                 { std::move(first_t), first_l },
+                 { std::move(second_t), second_l },
              },
              "Duplicate members are not allowed in a class definition. Please delete one." };
+}
 
-                                         }
 
-
-Diagnostic   Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
-                                                        TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+Diagnostic Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
     return { "Duplicate member with base class.",
              Severity::Error,
              {
@@ -375,80 +374,72 @@ Diagnostic   Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::lex::
                  { std::move(second_t), second_l, " ...duplicated here." },
              },
              "Duplicate members are not allowed within a class hierarchy. Please delete one." };
-                                                        }
+}
 
-                                                        Diagnostic Diagnostic::non_terminating_return(
-                                                            TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
-                                                            return {
-                                                                "Return is not final expression",
-                                                                Severity::Error,
-                                                                { {
-                                                                    std::move(first_t),
-                                                                    first_l,
-                                                                } },
-                                                                "Returns should be the final expression in a function."
-                                                            };
-                                                        }
+Diagnostic Diagnostic::non_terminating_return(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Return is not final expression",
+             Severity::Error,
+             { {
+                 std::move(first_t),
+                 first_l,
+             } },
+             "Returns should be the final expression in a function." };
+}
 
-                                                        Diagnostic
-                                                        Diagnostic::undefined_variable(TextInfoPtr first_t,
-                                                                                       sc::lex::SourceCodeRange first_l,
-                                                                                       std::string_view name) {
-                                                            return { "Variable not defined",
-                                                                     Severity::Error,
-                                                                     { { std::move(first_t), first_l,
-                                                                         "this is not defined." } },
-                                                                     "Declare it with 'var', or use '~"
-                                                                         + std::string { name }
-                                                                         + "' to refer to an environment variable." };
-                                                        }
+Diagnostic Diagnostic::undefined_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                          std::string_view name) {
+    return { "Variable not defined",
+             Severity::Error,
+             { { std::move(first_t), first_l, "this is not defined." } },
+             "Declare it with 'var', or use '~" + std::string { name } + "' to refer to an environment variable." };
+}
 
-                                                        Diagnostic Diagnostic::message_without_receiver(
-                                                            TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
-                                                            return {
-                                                                "Message has no receiver",
-                                                                Severity::Error,
-                                                                { { std::move(first_t), first_l,
-                                                                    "there is nothing to send this message to." } },
-                                                                "Functional notation sends the message to its first "
-                                                                "argument, `foo(a, b)` is the same as `a.foo(b)`. "
-                                                                "Add a positional argument, e.g., `foo(a)`, or use "
-                                                                "`a.foo`."
-                                                            };
-                                                        }
+Diagnostic Diagnostic::message_without_receiver(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Message has no receiver",
+             Severity::Error,
+             { { std::move(first_t), first_l, "there is nothing to send this message to." } },
+             "Functional notation sends the message to its first "
+             "argument, `foo(a, b)` is the same as `a.foo(b)`. "
+             "Add a positional argument, e.g., `foo(a)`, or use "
+             "`a.foo`." };
+}
 
-                                                        Diagnostic Diagnostic::perform_selector_not_symbol(
-                                                            TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
-                                                            return { "Perform selector is not a symbol",
-                                                                     Severity::Error,
-                                                                     { { std::move(first_t), first_l,
-                                                                         "this is a constant, but not a symbol." } },
-                                                                     "`perform` sends the message named by its first "
-                                                                     "argument, e.g., `a.perform(\\foo)` is `a.foo`. "
-                                                                     "Use a symbol, e.g., `\\foo` or `'foo'`." };
-                                                        }
+Diagnostic Diagnostic::perform_selector_not_symbol(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Perform selector is not a symbol",
+             Severity::Error,
+             { { std::move(first_t), first_l, "this is a constant, but not a symbol." } },
+             "`perform` sends the message named by its first "
+             "argument, e.g., `a.perform(\\foo)` is `a.foo`. "
+             "Use a symbol, e.g., `\\foo` or `'foo'`." };
+}
 
-                                                        Diagnostic Diagnostic::perform_selector_not_symbol(
-                                                            TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
-                                                            std::string_view string) {
-                                                            // Written as a quoted symbol, so it can contain anything
-                                                            // the string can.
-                                                            std::string symbol;
-                                                            // The quotes, escapes are rare so aren't counted.
-                                                            symbol.reserve(string.size() + 2);
-                                                            symbol.push_back('\'');
-                                                            for (const char c : string) {
-                                                                if (c == '\'' || c == '\\')
-                                                                    symbol.push_back('\\');
-                                                                symbol.push_back(c);
-                                                            }
-                                                            symbol.push_back('\'');
+Diagnostic Diagnostic::perform_selector_not_symbol(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                   std::string_view string) {
+    // Written as a quoted symbol, so it can contain anything
+    // the string can.
+    std::string symbol;
+    // The quotes, escapes are rare so aren't counted.
+    symbol.reserve(string.size() + 2);
+    symbol.push_back('\'');
+    for (const char c : string) {
+        if (c == '\'' || c == '\\')
+            symbol.push_back('\\');
+        symbol.push_back(c);
+    }
+    symbol.push_back('\'');
 
-                                                            return { "Perform selector is not a symbol",
-                                                                     Severity::Error,
-                                                                     { { std::move(first_t), first_l,
-                                                                         "did you mean " + symbol + "?" } },
-                                                                     "`perform` sends the message named by its first "
-                                                                     "argument, e.g., `a.perform(\\foo)` is `a.foo`." };
-                                                        }
+    return { "Perform selector is not a symbol",
+             Severity::Error,
+             { { std::move(first_t), first_l, "did you mean " + symbol + "?" } },
+             "`perform` sends the message named by its first "
+             "argument, e.g., `a.perform(\\foo)` is `a.foo`." };
+}
+
+Diagnostic Diagnostic::not_constant(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Not a constant",
+             Severity::Error,
+             { { std::move(first_t), first_l, "this can't be evaluated when compiling." } },
+             "This must be known when the class library is compiled, e.g., a variable's initial value, or an element "
+             "of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used." };
+}
 }

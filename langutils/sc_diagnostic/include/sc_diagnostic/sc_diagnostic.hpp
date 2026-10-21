@@ -77,6 +77,8 @@ public:
 
     [[nodiscard]] static Diagnostic message_without_receiver(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
 
+    [[nodiscard]] static Diagnostic not_constant(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+
     [[nodiscard]] static Diagnostic perform_selector_not_symbol(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
     // When the selector is a string, the suggestion is the symbol with the same text.
     [[nodiscard]] static Diagnostic perform_selector_not_symbol(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,

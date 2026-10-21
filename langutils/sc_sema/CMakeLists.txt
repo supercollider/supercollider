@@ -12,6 +12,7 @@ add_library(sc_sema STATIC
 	src/intrinsic_constraint_checker.cpp
 	src/inheritance_edges.cpp
 	src/ast2ir/expr/dispatch.cpp
+	src/ast2ir/expr/collections.cpp
 	src/ast2ir/expr/literals.cpp
 	src/ast2ir/expr/messages.cpp
 	src/ast2ir/expr/structure.cpp

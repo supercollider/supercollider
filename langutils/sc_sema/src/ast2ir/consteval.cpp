@@ -17,40 +17,40 @@ namespace sc::ir::ast2ir {
     ConstEval::Result ConstEval::eval(ast::AnyExprIndex i) { return std::visit(*this, ast_graph->index_to_variant(i)); }
 
     ConstEval::Result ConstEval::operator()(ast::ExprSeqIndex i) {
-        return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+        return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
     }
 ConstEval::Result ConstEval::operator()(ast::EnvIdentifierIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::NonLocalReturnExprIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::ReferenceIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::AssignmentIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::AssignmentAtIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::SetterIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::VariablePackAssignIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::GeneratorAnyIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::ImmediatelyEvaluatedBlockIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::RangeGeneratorIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 ConstEval::Result ConstEval::operator()(ast::RangeAssignIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 
 ConstEval::Result ConstEval::operator()(ast::ClassNameIdentifierIndex i) {
@@ -69,19 +69,21 @@ ConstEval::Result ConstEval::operator()(ast::NamedIdentifierIndex i) {
     }
 
     if (!class_decl)
-        return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+        return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 
     const auto name = ast_graph->string(i);
     const auto name_sym = cxt.symbol_table.get_identifier(name);
     if (auto member = class_decl->find_member(name_sym)) {
-        if (member->expr_index && member->type_info && member->type_info->confidence == TypeConfidence::Absolute)
+        // Other members can change, so only constants can be used.
+        if (member->is_const && member->expr_index && member->type_info
+            && member->type_info->confidence == TypeConfidence::Absolute)
             return Success { member->expr_index->first, *member->type_info };
     }
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 
 ConstEval::Result ConstEval::operator()(ast::AnyMessageIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 
 ConstEval::Result ConstEval::operator()(ast::RangeIndex i) {
@@ -159,7 +161,7 @@ ConstEval::Result ConstEval::operator()(ast::KeyBinOpIndex i) {
 }
 
 ConstEval::Result ConstEval::operator()(ast::CurryIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 
 ConstEval::Result ConstEval::operator()(ast::ArrayIndex i) {

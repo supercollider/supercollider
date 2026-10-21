@@ -15,11 +15,12 @@
 
 namespace sc::ir::ast2ir {
 
-void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::Index total_index, ast::UntypedIndex accessor_i,
+void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaration&, bool is_const,
+                                         ast::Index total_index, ast::UntypedIndex accessor_i,
                                          ast::ReadWriteAccessor accessor, ast::NamedIdentifierIndex name_i) {
     const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
-    const auto r =
-        decl.insert(ClassDeclaration::Member { total_index, name, { *name_i }, accessor, accessor_i, { }, { } });
+    const auto r = decl.insert(
+        ClassDeclaration::Member { total_index, name, { *name_i }, accessor, accessor_i, {}, {}, is_const });
     if (!r) {
         const auto* mem = decl.find_member(name);
         assert(mem);
@@ -29,7 +30,8 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::Index tota
     }
 }
 
-void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::Index total, ast::UntypedIndex accessor_i,
+void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaration& constants, bool is_const,
+                                         ast::Index total, ast::UntypedIndex accessor_i,
                                          ast::ReadWriteAccessor accessor,
                                          ast::DeclareVariableWithDefaultIndex name_with_expr_i) {
     const auto [name_i_t, expr_i_t] = ast_graph->children(name_with_expr_i);
@@ -37,28 +39,32 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ast::Index tota
     ast::AnyExprIndex expr_i = expr_i_t;
     const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
 
-    ast2ir::ConstEval { cxt, ast_graph, ast_index }
-        .eval(expr_i)
-        .visit(
-            [&](std::pair<ConstExprIndex, TypeInfo> p) {
-                const auto [const_expr_index, type_info] = p;
-                const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
-                const auto r = decl.insert(ClassDeclaration::Member {
-                    total, name, { *name_i }, accessor, accessor_i, { { const_expr_index, expr_i } }, { type_info } });
-                if (!r) {
-                    cxt.diagnostics(diag::Diagnostic::todo(get_text_info(*decl.ast_graph()),
-                                                           get_location(*decl.ast_graph(), name_i)));
-                }
-            },
-            [&](diag::Diagnostic&& d) {
-                cxt.diagnostics(std::move(d));
-                // Right here, we don't create the member, this might be a mistake?
-                // Consider creating the member and then poisoning it.
-            });
+    ast2ir::ConstEval { cxt, ast_graph, ast_index, &constants }.eval(expr_i).visit(
+        [&](std::pair<ConstExprIndex, TypeInfo> p) {
+            const auto [const_expr_index, type_info] = p;
+            const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
+            const auto r = decl.insert(ClassDeclaration::Member { total,
+                                                                  name,
+                                                                  { *name_i },
+                                                                  accessor,
+                                                                  accessor_i,
+                                                                  { { const_expr_index, expr_i } },
+                                                                  { type_info },
+                                                                  is_const });
+            if (!r) {
+                cxt.diagnostics(
+                    diag::Diagnostic::todo(get_text_info(*decl.ast_graph()), get_location(*decl.ast_graph(), name_i)));
+            }
+        },
+        [&](diag::Diagnostic&& d) {
+            cxt.diagnostics(std::move(d));
+            // Right here, we don't create the member, this might be a mistake?
+            // Consider creating the member and then poisoning it.
+        });
 }
 
-void DeclareClass::append_member_to_decl(ClassDeclaration&, ast::Index, ast::UntypedIndex, ast::ReadWriteAccessor,
-                                         ast::VariablePackAssignIndex) {
+void DeclareClass::append_member_to_decl(ClassDeclaration&, ClassDeclaration&, bool, ast::Index, ast::UntypedIndex,
+                                         ast::ReadWriteAccessor, ast::VariablePackAssignIndex) {
     assert(false);
 }
 
@@ -173,8 +179,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
 
                         std::visit(
                             [&](auto i) {
-                                this->append_member_to_decl(meta_class_decl, { **class_var_it }, accessor_i, accessor,
-                                                            i);
+                                this->append_member_to_decl(meta_class_decl, meta_class_decl, true, { **class_var_it },
+                                                            accessor_i, accessor, i);
                             },
                             ast_graph->index_to_variant(member_node));
                     }
@@ -196,7 +202,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
 
                         std::visit(
                             [&](auto i) {
-                                this->append_member_to_decl(class_decl, { **class_var_it }, accessor_i, accessor, i);
+                                this->append_member_to_decl(class_decl, meta_class_decl, false, { **class_var_it },
+                                                            accessor_i, accessor, i);
                             },
                             ast_graph->index_to_variant(member_i));
                     }
@@ -209,8 +216,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
 
                         std::visit(
                             [&](auto i) {
-                                this->append_member_to_decl(meta_class_decl, { **class_var_it }, accessor_i, accessor,
-                                                            i);
+                                this->append_member_to_decl(meta_class_decl, meta_class_decl, false, { **class_var_it },
+                                                            accessor_i, accessor, i);
                             },
                             ast_graph->index_to_variant(member_i));
                     }
