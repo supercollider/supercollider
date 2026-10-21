@@ -389,4 +389,17 @@ Diagnostic   Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::lex::
                                                                 "Returns should be the final expression in a function."
                                                             };
                                                         }
+
+                                                        Diagnostic
+                                                        Diagnostic::undefined_variable(TextInfoPtr first_t,
+                                                                                       sc::lex::SourceCodeRange first_l,
+                                                                                       std::string_view name) {
+                                                            return { "Variable not defined",
+                                                                     Severity::Error,
+                                                                     { { std::move(first_t), first_l,
+                                                                         "this is not defined." } },
+                                                                     "Declare it with 'var', or use '~"
+                                                                         + std::string { name }
+                                                                         + "' to refer to an environment variable." };
+                                                        }
 }

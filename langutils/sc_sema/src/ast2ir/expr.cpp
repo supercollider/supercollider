@@ -11,6 +11,8 @@
 
 namespace sc::ir::ast2ir {
 
+void Expr::add_symbol(Symbol n, ScopeEgntry e) { scope.back().insert({ n, e }); }
+
 template struct Return<SCAnyExpr_I>;
 
 Return<SCAnyExpr_I> Expr::operator()(ast::IntLitIndex i) {
@@ -60,8 +62,9 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ExprSeqIndex i) {
 
 Return<SCAnyExpr_I> Expr::operator()(ast::EnvIdentifierIndex i) {
     const auto& t = get_text_info(*ast_graph);
-    const auto loc = get_location(*ast_graph, i);
-    const auto txt = get_string_view(*ast_graph, i);
+    const auto [child] = ast_graph->children(i);
+    const auto loc = get_location(*ast_graph, child);
+    const auto txt = get_string_view(*ast_graph, child);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
     const auto index = ir.create(SCRead { name_sym, SCRead::Kind::Environment }, { ast_graph, { *i } });
     return { index };
@@ -94,5 +97,51 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ReferenceIndex i) {
     const auto [expr] = ast_graph->children(i);
     const auto expr_r = std::visit(*this, to_variant(*ast_graph, expr));
     return { ir.create(SCRef {}, { ast_graph, { *i } }, expr_r.ir_node) };
+}
+
+namespace {
+SCAssign::Kind to_assign_kind(ScopeEntry::Kind k) {
+    switch (k) {
+    case ScopeEntry::Kind::Local:
+    case ScopeEntry::Kind::Argument:
+        return SCAssign::Kind::Local;
+    case ScopeEntry::Kind::Instance:
+        return SCAssign::Kind::Instance;
+    case ScopeEntry::Kind::Class:
+        return SCAssign::Kind::Class;
+    }
+    assert(false && "unhandled ScopeEntry::Kind");
+    return SCAssign::Kind::Local;
+}
+}
+
+Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
+    const auto [name, expr] = ast_graph->children(i);
+    const auto expr_r = std::visit(*this, to_variant(*ast_graph, expr));
+
+    const auto txt = get_string_view(*ast_graph, name);
+    const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
+    const Locatable<SymSCIdentifier> located_name { { ast_graph, { *name } }, name_sym };
+
+    const auto make_return = [&](SCAssign::Kind kind) -> Return<SCAnyExpr_I> {
+        // Assignment returns the assigned value, but is never a const expression as it has a side effect.
+        const auto index = ir.create(SCAssign { located_name, kind }, { ast_graph, { *i } }, expr_r.ir_node);
+        if (expr_r.type)
+            return { index, *expr_r.type };
+        return { index };
+    };
+
+    // Environment vars are not registered in the scope.
+    if (ast_graph->payload(i).target == ast::AssignmentNode::Target::Environment) {
+        return make_return(SCAssign::Kind::Environment);
+    }
+
+    // TODO: error when assigning to a const once ScopeEntry records const-ness.
+    if (const auto entry = resolve_symbol(name_sym))
+        return make_return(to_assign_kind(entry->kind));
+
+    ctx.diagnostics(
+        sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, name), txt));
+    return expr_r;
 }
 }

@@ -5,6 +5,8 @@
 
 #include <ostream>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <vector>
 
 namespace sc::diag {
@@ -72,6 +74,9 @@ public:
     [[nodiscard]] static Diagnostic incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
 
     [[nodiscard]] static Diagnostic non_terminating_return(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+
+    [[nodiscard]] static Diagnostic undefined_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                       std::string_view name);
 
 
     Diagnostic() = delete;

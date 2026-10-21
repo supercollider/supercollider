@@ -27,8 +27,8 @@ struct Expr : private Base {
     Return<SCAnyExpr_I> operator()(ast::EnvIdentifierIndex);
     Return<SCAnyExpr_I> operator()(ast::NonLocalReturnExprIndex);
     Return<SCAnyExpr_I> operator()(ast::ReferenceIndex);
-
     Return<SCAnyExpr_I> operator()(ast::AssignmentIndex);
+
     Return<SCAnyExpr_I> operator()(ast::AssignmentAtIndex);
     Return<SCAnyExpr_I> operator()(ast::SetterIndex);
     Return<SCAnyExpr_I> operator()(ast::VariablePackAssignIndex);
@@ -69,6 +69,7 @@ struct Expr : private Base {
     std::vector<std::unordered_map<Symbol, ScopeEntry>> scope;
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
+    void add_symbol(Symbol, ScopeEntry);
 };
 
 
