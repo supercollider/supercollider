@@ -1,4 +1,31 @@
 
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+   37 │     not_a_symbol { ^1.perform(2, 3) }
+   38 │     not_constant { ^1.perform(\foo.bar, 2) }
+   39 │     not_first_argument { ^1.perform(2, \foo) }
+      ┆                                     ^ this is a constant, but not a symbol.
+   40 │     keyword_argument { ^1.perform(selector: \foo) }
+   41 │ }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+   35 │     prefix { ^perform(1, \foo, 2) }
+   36 │     binary { ^1 perform: \foo }
+   37 │     not_a_symbol { ^1.perform(2, 3) }
+      ┆                               ^ this is a constant, but not a symbol.
+   38 │     not_constant { ^1.perform(\foo.bar, 2) }
+   39 │     not_first_argument { ^1.perform(2, \foo) }
+   40 │     keyword_argument { ^1.perform(selector: \foo) }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+──────────────────────────────────────────────────────────────────────────────────
+
 
 
 IR GRAPH DUMP 

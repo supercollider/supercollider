@@ -416,4 +416,39 @@ Diagnostic   Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::lex::
                                                                 "`a.foo`."
                                                             };
                                                         }
+
+                                                        Diagnostic Diagnostic::perform_selector_not_symbol(
+                                                            TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+                                                            return { "Perform selector is not a symbol",
+                                                                     Severity::Error,
+                                                                     { { std::move(first_t), first_l,
+                                                                         "this is a constant, but not a symbol." } },
+                                                                     "`perform` sends the message named by its first "
+                                                                     "argument, e.g., `a.perform(\\foo)` is `a.foo`. "
+                                                                     "Use a symbol, e.g., `\\foo` or `'foo'`." };
+                                                        }
+
+                                                        Diagnostic Diagnostic::perform_selector_not_symbol(
+                                                            TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                            std::string_view string) {
+                                                            // Written as a quoted symbol, so it can contain anything
+                                                            // the string can.
+                                                            std::string symbol;
+                                                            // The quotes, escapes are rare so aren't counted.
+                                                            symbol.reserve(string.size() + 2);
+                                                            symbol.push_back('\'');
+                                                            for (const char c : string) {
+                                                                if (c == '\'' || c == '\\')
+                                                                    symbol.push_back('\\');
+                                                                symbol.push_back(c);
+                                                            }
+                                                            symbol.push_back('\'');
+
+                                                            return { "Perform selector is not a symbol",
+                                                                     Severity::Error,
+                                                                     { { std::move(first_t), first_l,
+                                                                         "did you mean " + symbol + "?" } },
+                                                                     "`perform` sends the message named by its first "
+                                                                     "argument, e.g., `a.perform(\\foo)` is `a.foo`." };
+                                                        }
 }

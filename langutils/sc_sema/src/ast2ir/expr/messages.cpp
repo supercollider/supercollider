@@ -35,8 +35,9 @@ struct MessageArguments {
     // Functional notation, e.g., `foo(a, b)`, where the first positional argument is the receiver.
     bool first_positional_is_receiver;
     std::optional<SCAnyExpr_I> receiver {};
-    // `a.perform(\foo, b)` is `a.foo(b)` when the first argument is a constant symbol.
-    bool first_argument_may_be_selector;
+    /// f.perform(\a, 1) => a(f, 1).
+    /// This means the second argument (after receiver) is actually the selector.
+    bool is_performing;
     std::optional<OptionallyLocatable<SymSCSelector>> performed_selector {};
 };
 
@@ -57,14 +58,26 @@ void append_positional(MessageContext& msg_ctx, MessageArguments& args, const Re
         args.receiver = arg.ir_node;
         return;
     }
-    if (args.first_argument_may_be_selector) {
-        args.first_argument_may_be_selector = false;
+    if (args.is_performing) {
+        args.is_performing = false;
         if (arg.const_index) {
             if (const auto symbol = msg_ctx.ctx.constant_table(*arg.const_index).get_if<SymSCSymbol>()) {
                 const auto name = std::string { msg_ctx.ctx.symbol_table(*symbol) };
                 args.performed_selector = { msg_ctx.ir.location(arg.ir_node),
                                             msg_ctx.ctx.symbol_table.get_selector(name) };
                 return;
+            }
+            // Any other constant can never name a method. Something that isn't constant might evaluate to a symbol,
+            // so it is left for when the code runs.
+            const auto location = msg_ctx.ir.location(arg.ir_node);
+            const auto text_info = get_text_info(*location.graph_index);
+            const auto range = get_location(*location.graph_index, location.node_index);
+            const auto& constant = msg_ctx.ctx.constant_table(*arg.const_index);
+            if (const auto string = constant.get_if<SymSCString>()) {
+                msg_ctx.ctx.diagnostics(sc::diag::Diagnostic::perform_selector_not_symbol(
+                    text_info, range, msg_ctx.ctx.symbol_table(*string)));
+            } else {
+                msg_ctx.ctx.diagnostics(sc::diag::Diagnostic::perform_selector_not_symbol(text_info, range));
             }
         }
     }
