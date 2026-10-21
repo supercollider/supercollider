@@ -7,29 +7,36 @@
 
 namespace sc::ir::ast2ir {
 
-Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt,
-               std::optional<SCMemberList_I> meta_class_members, SCMemberList_I class_members):
-    Base(ir, ast, cxt),
-    expr(ir, std::move(ast), cxt) {
-    if (meta_class_members)
-        push_member_scope(*meta_class_members, ScopeEntry::Kind::Class);
-    push_member_scope(class_members, ScopeEntry::Kind::Instance);
-}
-
-void Method::push_member_scope(SCMemberList_I members, ScopeEntry::Kind kind) {
-    expr.scope.emplace_back();
-    for (auto it = ir.children(members).iter(); it; ++it) {
+Scope member_scope(std::shared_ptr<const IRGraph> class_ir, SCMemberList_I members) {
+    Scope scope;
+    for (auto it = class_ir->children(members).iter(); it; ++it) {
         const SCMember_I member_i = *it;
-        const SCMember& member = ir.payload(member_i);
+        const SCMember& member = class_ir->payload(member_i);
         std::optional<ConstExprIndex> const_expr;
         std::optional<TypeInfo> type_info;
         if (member.expr) {
             const_expr = *member.expr;
             type_info = member.expr_type_info;
         }
-        expr.add_symbol(member.name,
-                        ScopeEntry { members, member_i, const_expr, type_info, kind, ScopeEntry::State::Initalised });
+        scope.insert({ member.name,
+                       ScopeEntry { class_ir, members, member_i, const_expr, type_info, ScopeEntry::Kind::Instance,
+                                    ScopeEntry::State::Initalised } });
     }
+    return scope;
+}
+
+Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, const Scope* meta_class_members,
+               const Scope& class_members):
+    Base(ir, ast, cxt),
+    expr(ir, std::move(ast), cxt) {
+    if (meta_class_members) {
+        // The meta class's instance variables are this class's class variables.
+        Scope class_vars = *meta_class_members;
+        for (auto& [_, entry] : class_vars)
+            entry.kind = ScopeEntry::Kind::Class;
+        expr.scope.push_back(std::move(class_vars));
+    }
+    expr.scope.push_back(class_members);
 }
 
 Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {

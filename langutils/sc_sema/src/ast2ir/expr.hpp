@@ -3,12 +3,18 @@
 #include "ast2ir_base.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_sema/ir_index.hpp"
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
 namespace sc::ir::ast2ir {
 
 struct ScopeEntry {
     enum struct Kind { Local, Instance, Class, Argument };
     enum struct State { CurrentlyInitalising, Initalised };
+    // The graph the indexes below are in, which might not be the one being compiled.
+    // This happens when we are accessing a meta class entry, or when inlining.
+    std::shared_ptr<const IRGraph> graph;
     join<SCFunction_I, SCMemberList_I> scope_index;
     join<SCVariableDeclare_I, SCMember_I, SCArgumentDeclare_I> declare_index;
     std::optional<ConstExprIndex> const_expr;
@@ -16,6 +22,8 @@ struct ScopeEntry {
     Kind kind;
     State state;
 };
+
+using Scope = std::unordered_map<Symbol, ScopeEntry>;
 
 extern template struct Return<SCAnyExpr_I>;
 
@@ -66,7 +74,7 @@ struct Expr : private Base {
     Return<SCAnyExpr_I> operator()(ast::BlockItemIndex);
     template <typename T> Return<SCAnyExpr_I> operator()(T);
 
-    std::vector<std::unordered_map<Symbol, ScopeEntry>> scope;
+    std::vector<Scope> scope;
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
     void add_symbol(Symbol, ScopeEntry);

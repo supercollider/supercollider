@@ -432,10 +432,25 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     }
 
     // Step 4: Compile all ast class nodes.
+    // This is done in two passes so a class's methods can refer to its meta class's graph. In the first, every class
+    // ir graph is created along with its members, in the second the methods are compiled.
+    // In the first pass, we read declarations and create ir graphs.
+    // During the second, only one ir graph is accessed per thread.
 
     // There is exactly one thread that accesses each class declaration here.
-    // We do not insert or remove any.
-    // No need to lock when mutating (poisoning).
+
+    struct ClassBuild {
+        std::shared_ptr<IRGraph> ir;
+        SCMethodList_I method_list;
+        ast2ir::Scope members;
+    };
+    // Every class gets an entry before the passes start, so the threads only write their own entry.
+    std::unordered_map<SymSCClassName, std::optional<ClassBuild>, std::hash<Symbol>> class_builds;
+    for (auto class_it = ctx.class_declarations.unsafe_begin(); class_it != ctx.class_declarations.unsafe_end();
+         ++class_it)
+        class_builds[class_it->first];
+
+    // Step 4a: Create the class graphs and their members.
     {
         boost::asio::thread_pool pool { num_threads };
         for (auto class_it = ctx.class_declarations.unsafe_begin(); class_it != ctx.class_declarations.unsafe_end();
@@ -444,27 +459,13 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 std::shared_ptr<IRGraph> class_ir = std::make_shared<IRGraph>();
                 auto& [name, decl] = *class_it;
 
-                // Shared across threads, so must not insert. Poisoned classes have no layout.
-                const auto make_member_list = [&class_ir, &class_member_layout, decl_graph = decl.ast_graph(),
-                                               decl_name_i = decl.name_index()](SymSCClassName c) {
-                    const auto list_i = class_ir->create(SCMemberList {}, { decl_graph, decl_name_i });
-                    if (const auto fnd = class_member_layout.find(c); fnd != class_member_layout.end()) {
-                        for (const auto& [m, g, i] : fnd->second) {
-                            const auto member = class_ir->create(SCMember { m }, { g, i });
-                            class_ir->append(list_i, member);
-                        }
+                const auto member_list_i = class_ir->create(SCMemberList {}, { decl.ast_graph(), decl.name_index() });
+                if (const auto fnd = class_member_layout.find(name); fnd != class_member_layout.end()) {
+                    for (const auto& [m, g, i] : fnd->second) {
+                        const auto member = class_ir->create(SCMember { m }, { g, i });
+                        class_ir->append(member_list_i, member);
                     }
-                    return list_i;
-                };
-
-                const auto member_list_i = make_member_list(name);
-
-                // The meta class's members are compiled into its own graph, so the class's methods get a copy here
-                // to resolve class variables against.
-                std::optional<SCMemberList_I> meta_member_list_i;
-                if (const auto meta = decl.meta_class())
-                    meta_member_list_i = make_member_list(*meta);
-
+                }
 
                 const auto method_list_i = class_ir->create(SCMethodList { }, { decl.ast_graph(), decl.name_index() });
 
@@ -489,16 +490,41 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 
                 class_ir->add_root(class_i);
 
+                auto members = ast2ir::member_scope(class_ir, member_list_i);
+                class_builds.at(name).emplace(ClassBuild { std::move(class_ir), method_list_i, std::move(members) });
+            };
+
+            boost::asio::post(pool, process);
+        }
+
+        pool.join();
+    }
+
+    // Step 4b: Compile the methods.
+    {
+        boost::asio::thread_pool pool { num_threads };
+        for (auto class_it = ctx.class_declarations.unsafe_begin(); class_it != ctx.class_declarations.unsafe_end();
+             ++class_it) {
+            const auto process = [&, class_it]() {
+                auto& [name, decl] = *class_it;
+                ClassBuild& build = *class_builds.at(name);
+
+                const ast2ir::Scope* meta_members = nullptr;
+                if (const auto meta = decl.meta_class()) {
+                    if (const auto fnd = class_builds.find(*meta); fnd != class_builds.end())
+                        meta_members = &fnd->second->members;
+                }
+
                 for (auto meth_it = decl.unsafe_methods_begin(); meth_it != decl.unsafe_methods_end(); ++meth_it) {
-                    const auto r = ast2ir::Method { *class_ir, meth_it->second.ast_graph, ctx, meta_member_list_i,
-                                                    member_list_i }(meth_it->second.ast_node_index);
-                    class_ir->append(method_list_i, r.ir_node);
+                    const auto r = ast2ir::Method { *build.ir, meth_it->second.ast_graph, ctx, meta_members,
+                                                    build.members }(meth_it->second.ast_node_index);
+                    build.ir->append(build.method_list, r.ir_node);
                 }
 
                 {
                     std::scoped_lock lk { m_classes_lock };
                     assert(m_classes.count(name) == 0);
-                    m_classes.insert({ name, class_ir });
+                    m_classes.insert({ name, build.ir });
                 }
             };
 

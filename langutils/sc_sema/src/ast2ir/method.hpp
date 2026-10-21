@@ -6,15 +6,20 @@
 
 namespace sc::ir::ast2ir {
 
+[[nodiscard]] Scope member_scope(std::shared_ptr<const IRGraph> class_ir, SCMemberList_I members);
+
 struct Method : private Base {
-    Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt,
-           std::optional<SCMemberList_I> meta_class_members, SCMemberList_I class_members);
+    // The meta class's members (class variables) are put in the outer scope, and the class's own members in a child
+    // scope so they shadow them.
+    // The scope contains meta class membres (class vars), then the class instance variables.
+    // Meta classes don't have a meta class, so they have no meta_class_members.
+    Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, const Scope* meta_class_members,
+           const Scope& class_members);
 
     Return<SCMethod_I> operator()(ast::AnyValidMethodIndex);
 
 private:
     void append_args(SCArgumentDeclareList_I args, SCArgumentDeclareList_I var_args, ast::DeclareArgumentListIndex);
-    void push_member_scope(SCMemberList_I members, ScopeEntry::Kind kind);
 
     Expr expr;
 };
