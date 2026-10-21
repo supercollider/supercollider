@@ -22,6 +22,11 @@ struct MessageContext {
     const std::shared_ptr<const ast::ASTGraph>& ast_graph;
 };
 
+struct Selector {
+    OptionallyLocatable<SymSCSelector> name;
+    std::optional<SCAnyExpr_I> adverb;
+};
+
 // The argument lists are created up front, so arguments are appended to them as they are compiled.
 struct MessageArguments {
     SCPosArgList_I positional;
@@ -30,32 +35,46 @@ struct MessageArguments {
     // Functional notation, e.g., `foo(a, b)`, where the first positional argument is the receiver.
     bool first_positional_is_receiver;
     std::optional<SCAnyExpr_I> receiver {};
+    // `a.perform(\foo, b)` is `a.foo(b)` when the first argument is a constant symbol.
+    bool first_argument_may_be_selector;
+    std::optional<OptionallyLocatable<SymSCSelector>> performed_selector {};
 };
 
-MessageArguments make_arguments(MessageContext& msg_ctx, ast::OptionalIndex message_i,
+MessageArguments make_arguments(MessageContext& msg_ctx, ast::OptionalIndex message_i, const Selector& selector,
                                 bool first_positional_is_receiver = false) {
     const ASTLocation location { msg_ctx.ast_graph, { *message_i } };
-    return { msg_ctx.ir.create(SCPositionalArgs {}, location), msg_ctx.ir.create(SCKwArgs {}, location),
-             msg_ctx.ir.create(SCVariadicArgs {}, location), first_positional_is_receiver };
+    const bool is_perform = *selector.name == msg_ctx.ctx.symbol_table.get_selector("perform");
+    return { msg_ctx.ir.create(SCPositionalArgs {}, location),
+             msg_ctx.ir.create(SCKwArgs {}, location),
+             msg_ctx.ir.create(SCVariadicArgs {}, location),
+             first_positional_is_receiver,
+             {},
+             is_perform };
 }
 
-void append_positional(MessageContext& msg_ctx, MessageArguments& args, SCAnyExpr_I arg) {
+void append_positional(MessageContext& msg_ctx, MessageArguments& args, const Return<SCAnyExpr_I>& arg) {
     if (args.first_positional_is_receiver && !args.receiver) {
-        args.receiver = arg;
+        args.receiver = arg.ir_node;
         return;
     }
-    msg_ctx.ir.append(args.positional, arg);
+    if (args.first_argument_may_be_selector) {
+        args.first_argument_may_be_selector = false;
+        if (arg.const_index) {
+            if (const auto symbol = msg_ctx.ctx.constant_table(*arg.const_index).get_if<SymSCSymbol>()) {
+                const auto name = std::string { msg_ctx.ctx.symbol_table(*symbol) };
+                args.performed_selector = { msg_ctx.ir.location(arg.ir_node),
+                                            msg_ctx.ctx.symbol_table.get_selector(name) };
+                return;
+            }
+        }
+    }
+    msg_ctx.ir.append(args.positional, arg.ir_node);
     ++msg_ctx.ir.payload(args.positional).size;
 }
 
-struct Selector {
-    OptionallyLocatable<SymSCSelector> name;
-    std::optional<SCAnyExpr_I> adverb;
-};
-
 void append_blocks(MessageContext& msg_ctx, MessageArguments& args, ast::BlockListIndex i) {
     for (auto it = msg_ctx.ast_graph->children(i).iter(); it; ++it)
-        append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { *it }).ir_node);
+        append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { *it }));
 }
 
 void append_arguments(MessageContext& msg_ctx, MessageArguments& args, ast::ArgumentListIndex i) {
@@ -77,7 +96,7 @@ void append_arguments(MessageContext& msg_ctx, MessageArguments& args, ast::Argu
         } else if (const auto blocks = g.as_a<ast::BlockListIndex>(entry)) {
             append_blocks(msg_ctx, args, *blocks);
         } else {
-            append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { *entry }).ir_node);
+            append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { *entry }));
         }
     }
 }
@@ -136,8 +155,9 @@ Return<SCAnyExpr_I> create_message(MessageContext& msg_ctx, ast::OptionalIndex m
         ? maybe<SCAnyExpr_I> { *selector.adverb }
         : maybe<SCAnyExpr_I> { msg_ctx.ir.create(SCMissing {}, location) };
 
-    return { msg_ctx.ir.create(SCMessage { selector.name }, location, receiver, args.positional, args.keyword,
-                               args.variadic, adverb_i) };
+    const auto name = args.performed_selector.value_or(selector.name);
+    return { msg_ctx.ir.create(SCMessage { name }, location, receiver, args.positional, args.keyword, args.variadic,
+                               adverb_i) };
 }
 
 }
@@ -147,7 +167,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::PostfixMessageIndex i) {
     const auto [receiver, selector_i, arg_list, blocks] = ast_graph->children(i);
     const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { receiver });
     const auto sel = selector(msg_ctx, selector_i);
-    auto args = make_arguments(msg_ctx, i);
+    auto args = make_arguments(msg_ctx, i, sel);
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
     return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
@@ -158,7 +178,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::PrefixMessageIndex i) {
     const auto [selector_i, arg_list, blocks] = ast_graph->children(i);
     const auto sel = selector(msg_ctx, selector_i);
     // Functional notation, `foo(a, b)` is `a.foo(b)`.
-    auto args = make_arguments(msg_ctx, i, true);
+    auto args = make_arguments(msg_ctx, i, sel, true);
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
 
@@ -174,30 +194,32 @@ Return<SCAnyExpr_I> Expr::operator()(ast::BinaryMessageIndex i) {
     MessageContext msg_ctx { *this, ctx, ir, ast_graph };
     const auto [selector_i, lhs, rhs] = ast_graph->children(i);
     const auto lhs_r = msg_ctx.expr(ast::AnyExprIndex { lhs });
-    const auto rhs_r = msg_ctx.expr(ast::AnyExprIndex { rhs });
-    auto args = make_arguments(msg_ctx, i);
-    append_positional(msg_ctx, args, rhs_r.ir_node);
-    return create_message(msg_ctx, i, lhs_r.ir_node, selector(msg_ctx, selector_i), args);
+    const auto sel = selector(msg_ctx, selector_i);
+    auto args = make_arguments(msg_ctx, i, sel);
+    append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { rhs }));
+    return create_message(msg_ctx, i, lhs_r.ir_node, sel, args);
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::ValueMessageIndex i) {
     MessageContext msg_ctx { *this, ctx, ir, ast_graph };
     const auto [receiver, arg_list, blocks] = ast_graph->children(i);
     const auto receiver_r = (*this)(ast::AnyExprIndex { receiver });
-    auto args = make_arguments(msg_ctx, i);
+    const auto sel = implicit_selector(msg_ctx, "value");
+    auto args = make_arguments(msg_ctx, i, sel);
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
-    return create_message(msg_ctx, i, receiver_r.ir_node, implicit_selector(msg_ctx, "value"), args);
+    return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::NewMessageIndex i) {
     MessageContext msg_ctx { *this, ctx, ir, ast_graph };
     const auto [class_name, arg_list, blocks] = ast_graph->children(i);
     const auto receiver_r = (*this)(class_name);
-    auto args = make_arguments(msg_ctx, i);
+    const auto sel = implicit_selector(msg_ctx, "new");
+    auto args = make_arguments(msg_ctx, i, sel);
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
-    return create_message(msg_ctx, i, receiver_r.ir_node, implicit_selector(msg_ctx, "new"), args);
+    return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
@@ -211,9 +233,10 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
         return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
     }
 
-    auto args = make_arguments(msg_ctx, i);
+    const auto sel = implicit_selector(msg_ctx, "at");
+    auto args = make_arguments(msg_ctx, i, sel);
     append_arguments(msg_ctx, args, ast::ArgumentListIndex { *arg });
-    return create_message(msg_ctx, i, receiver_r.ir_node, implicit_selector(msg_ctx, "at"), args);
+    return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
 }
 
 }

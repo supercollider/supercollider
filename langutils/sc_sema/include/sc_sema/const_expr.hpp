@@ -60,7 +60,7 @@ struct ConstExpression {
 
     template <typename F> decltype(auto) visit(F&& f) const { return std::visit(std::forward<F>(f), storage); }
 
-    template <typename T> [[nodiscard]] const T* get_if() const { return std::get_if<T>(storage); }
+    template <typename T> [[nodiscard]] const T* get_if() const { return std::get_if<T>(&storage); }
 
     friend struct std::hash<ConstExpression>;
 
