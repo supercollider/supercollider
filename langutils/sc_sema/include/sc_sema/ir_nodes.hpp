@@ -136,7 +136,7 @@ struct SCMember : priv::Node<SCMember_I()> {
     bool is_const {};
 };
 
-struct SCMemberList : priv::List<SCMemberList_I, SCMember> {
+struct SCMemberList : priv::List<SCMemberList_I, SCMember_I> {
     static constexpr auto type_name { "SCMemberList" };
 };
 

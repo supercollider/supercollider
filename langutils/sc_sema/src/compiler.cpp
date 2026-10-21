@@ -444,11 +444,26 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 std::shared_ptr<IRGraph> class_ir = std::make_shared<IRGraph>();
                 auto& [name, decl] = *class_it;
 
-                const auto member_list_i = class_ir->create(SCMemberList { }, { decl.ast_graph(), decl.name_index() });
-                for (const auto& [m, g, i] : class_member_layout[name]) {
-                    const auto member = class_ir->create(std::move(m), { g, i });
-                    class_ir->append(member_list_i, member);
-                }
+                // Shared across threads, so must not insert. Poisoned classes have no layout.
+                const auto make_member_list = [&class_ir, &class_member_layout, decl_graph = decl.ast_graph(),
+                                               decl_name_i = decl.name_index()](SymSCClassName c) {
+                    const auto list_i = class_ir->create(SCMemberList {}, { decl_graph, decl_name_i });
+                    if (const auto fnd = class_member_layout.find(c); fnd != class_member_layout.end()) {
+                        for (const auto& [m, g, i] : fnd->second) {
+                            const auto member = class_ir->create(SCMember { m }, { g, i });
+                            class_ir->append(list_i, member);
+                        }
+                    }
+                    return list_i;
+                };
+
+                const auto member_list_i = make_member_list(name);
+
+                // The meta class's members are compiled into its own graph, so the class's methods get a copy here
+                // to resolve class variables against.
+                std::optional<SCMemberList_I> meta_member_list_i;
+                if (const auto meta = decl.meta_class())
+                    meta_member_list_i = make_member_list(*meta);
 
 
                 const auto method_list_i = class_ir->create(SCMethodList { }, { decl.ast_graph(), decl.name_index() });
@@ -475,8 +490,8 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 class_ir->add_root(class_i);
 
                 for (auto meth_it = decl.unsafe_methods_begin(); meth_it != decl.unsafe_methods_end(); ++meth_it) {
-                    const auto r =
-                        ast2ir::Method { *class_ir, meth_it->second.ast_graph, ctx }(meth_it->second.ast_node_index);
+                    const auto r = ast2ir::Method { *class_ir, meth_it->second.ast_graph, ctx, meta_member_list_i,
+                                                    member_list_i }(meth_it->second.ast_node_index);
                     class_ir->append(method_list_i, r.ir_node);
                 }
 

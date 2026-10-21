@@ -7,6 +7,31 @@
 
 namespace sc::ir::ast2ir {
 
+Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt,
+               std::optional<SCMemberList_I> meta_class_members, SCMemberList_I class_members):
+    Base(ir, ast, cxt),
+    expr(ir, std::move(ast), cxt) {
+    if (meta_class_members)
+        push_member_scope(*meta_class_members, ScopeEntry::Kind::Class);
+    push_member_scope(class_members, ScopeEntry::Kind::Instance);
+}
+
+void Method::push_member_scope(SCMemberList_I members, ScopeEntry::Kind kind) {
+    expr.scope.emplace_back();
+    for (auto it = ir.children(members).iter(); it; ++it) {
+        const SCMember_I member_i = *it;
+        const SCMember& member = ir.payload(member_i);
+        std::optional<ConstExprIndex> const_expr;
+        std::optional<TypeInfo> type_info;
+        if (member.expr) {
+            const_expr = *member.expr;
+            type_info = member.expr_type_info;
+        }
+        expr.add_symbol(member.name,
+                        ScopeEntry { members, member_i, const_expr, type_info, kind, ScopeEntry::State::Initalised });
+    }
+}
+
 Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
     const auto [name, arg_list, maybe_prim, body] =
         std::visit([&](auto i) { return ast_graph->children(i); }, ast_graph->index_to_variant(i));
@@ -33,13 +58,18 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
     bool body_is_const_expr = true;
     std::optional<SCAnyExpr_I> last_index;
 
+    // Methods have their own scope
+    expr.scope.emplace_back();
+
     // If all the body is const expr, then we can freely ignore everything bar the final expr.
     for (auto it = ast_graph->children(body).iter(); it; ++it) {
-        const auto r = std::visit(Expr { ir, ast_graph, ctx }, ast_graph->index_to_variant(*it));
+        const auto r = std::visit(expr, ast_graph->index_to_variant(*it));
         body_is_const_expr = body_is_const_expr && static_cast<bool>(r.const_index);
         ir.append(body_i, r.ir_node);
         last_index = r.ir_node;
     }
+
+    expr.scope.pop_back();
 
     const auto method = ir.create(SCMethod { primitive }, { ast_graph, { *i } }, argument_list, variadic_args, body_i);
 

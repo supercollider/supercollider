@@ -11,7 +11,7 @@
 
 namespace sc::ir::ast2ir {
 
-void Expr::add_symbol(Symbol n, ScopeEgntry e) { scope.back().insert({ n, e }); }
+void Expr::add_symbol(Symbol n, ScopeEntry e) { scope.back().insert({ n, e }); }
 
 template struct Return<SCAnyExpr_I>;
 
