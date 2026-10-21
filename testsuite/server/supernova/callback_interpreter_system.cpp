@@ -4,11 +4,13 @@
 #include "utilities/callback_interpreter.hpp"
 #include "nova-tt/thread_priority.hpp"
 
+#include <atomic>
+
 using namespace nova;
 
 namespace {
 
-int i = 0;
+std::atomic<int> i { 0 };
 
 struct dummy {
     void run() { ++i; }
