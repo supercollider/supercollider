@@ -11,7 +11,7 @@ In the current SuperCollider 3.15 development version, there are three versions 
 list::
 ## strong::SynthDef:: - The original SynthDef file format, backward compatible with .scsyndef files saved using earlier versions of SuperCollider.
 ## strong::SynthDef2:: - A revised version that extends SynthDef's capacity.
-## strong::SynthDef3:: - A another revision that adds new fields and makes the SynthDef format extendable.
+## strong::SynthDef3:: - Another revision that adds new fields and makes the SynthDef format extendable.
 ::
 
 This document describes SynthDef3's format. See link::#SynthDef2 format:: and link::#Original SynthDef format:: for the differences to the SynthDef2 resp. SynthDef1 format.
