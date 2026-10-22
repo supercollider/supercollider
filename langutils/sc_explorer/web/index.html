@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC Explorer</title>
+<link rel="stylesheet" href="explorer.css">
+</head>
+<body>
+<header>
+  <h1>SC Explorer</h1>
+  <label>Mode
+    <select id="mode">
+      <option value="interpreted">Interpreted</option>
+      <option value="class">Class library</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="show-ast" checked> AST</label>
+  <label><input type="checkbox" id="show-ir" checked> IR</label>
+  <span id="status" class="status"></span>
+</header>
+<main id="panes">
+  <section class="pane source-pane">
+    <div class="pane-title">Source</div>
+    <div class="editor">
+      <pre id="backdrop" class="backdrop" aria-hidden="true"></pre>
+      <textarea id="source" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+    </div>
+    <div class="pane-title">Diagnostics <span id="diag-count" class="count"></span></div>
+    <div id="diagnostics" class="diagnostics"></div>
+  </section>
+  <section class="pane tree-pane" id="ast-pane">
+    <div class="pane-title">AST
+      <span class="tools"><button data-expand="ast">Expand</button><button data-collapse="ast">Collapse</button></span>
+    </div>
+    <div id="ast" class="tree"></div>
+  </section>
+  <section class="pane tree-pane" id="ir-pane">
+    <div class="pane-title">IR
+      <span class="tools"><button data-expand="ir">Expand</button><button data-collapse="ir">Collapse</button></span>
+    </div>
+    <div id="ir" class="tree"></div>
+  </section>
+</main>
+<script src="explorer.js"></script>
+</body>
+</html>

@@ -45,3 +45,4 @@ __pycache__
 !.vscode/extensions.json
 !.vscode/launch.json
 !.vscode/c_cpp_properties.json
+langutils/CLAUDE.md

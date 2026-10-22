@@ -16,6 +16,7 @@
 #include <optional>
 #include <utility>
 
+#include "describe/describe.hpp"
 #include "boost/asio/post.hpp"
 #include "boost/asio/thread_pool.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
@@ -406,15 +407,8 @@ int main(int argc, char* argv[]) {
         if (in_prelude(file))
             return;
         const auto& c = g.payload(*class_i);
-        // A meta class with nothing of its own, no class variables or class methods, only repeats its class.
-        if (symbol_table.is_meta(c.name)) {
-            const auto [members, methods] = g.children(*class_i);
-            bool has_own_member = false;
-            for (auto it = g.children(members).iter(); it; ++it)
-                has_own_member = has_own_member || g.payload(*it).owning_class == c.name;
-            if (!has_own_member && !g.children(methods).iter())
-                return;
-        }
+        if (sc::ir::describe::repeats_class({ g, ctx }, *class_i))
+            return;
         classes.push_back({ &g, sc::ir::NodeIndex { **class_i }, c.name, file ? file->string() : std::string {},
                             sc::ir::IRGraph::range(loc).begin, symbol_table.is_meta(c.name) });
     });
@@ -498,217 +492,31 @@ int main(int argc, char* argv[]) {
         print_diagnostic(*d, "");
     std::cout << "\n\n\nIR GRAPH DUMP \n\n\n";
 
-    // Lines and columns count from one, as in the diagnostics.
-    const auto write_location = [](const sc::ir::SourceLocation& l) {
-        const auto r = sc::ir::IRGraph::range(l);
-        std::cout << "(" << r.begin.line_number + 1 << ":" << r.begin.column + 1 << ")";
-    };
-    const auto write_text = [](std::string_view view) {
-        for (const char c : view) {
-            if (c == '\n')
-                std::cout << "'\\n'";
-            else
-                std::cout << c;
-        }
-    };
-    const auto write_constant = [&](sc::ir::ConstExprIndex i) {
-        ctx.constant_table(i).to_literal(std::cout, symbol_table);
-    };
-    const auto kind_name = [](sc::ir::SCAssign::Kind k) {
-        switch (k) {
-        case sc::ir::SCAssign::Kind::Local:
-            return "local";
-        case sc::ir::SCAssign::Kind::Instance:
-            return "instance";
-        case sc::ir::SCAssign::Kind::Class:
-            return "class";
-        case sc::ir::SCAssign::Kind::Environment:
-            return "environment";
-        }
-        return "";
-    };
-    const auto read_kind_name = [&](sc::ir::SCRead::Kind k) {
-        return kind_name(static_cast<sc::ir::SCAssign::Kind>(static_cast<int>(k)));
-    };
-
-    // Each node is `Name (line:column): details`, followed by its constant value, ` = value`, and, for methods and
-    // functions, what calling them returns, ` -> value`. Only a method shows its source, the rest is found by location.
+    // Each node is `Name (line:column): details`, see describe::write_details.
     for (const auto& dumped : classes) {
         const auto& g = *dumped.graph;
-        const auto class_name = dumped.class_name;
-        // Where the variable is declared, shown by its source, so a read can be matched to its declaration.
-        const auto write_declaration = [&](const std::optional<sc::ir::SourceLocation>& declaration) {
-            if (!declaration)
-                return;
-            std::cout << ", declared ";
-            write_location(*declaration);
-            std::cout << ": ";
-            write_text(g.read(*declaration));
-        };
-        g.depth_first_traverse(
-            dumped.index,
-            [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
-                const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
-                // Inherited members are dumped with the class that declares them.
-                if (const auto member = std::get_if<sc::ir::SCMember>(&payload);
-                    member && member->owning_class != *class_name)
-                    return;
-                // Empty argument lists add nothing.
-                const bool is_argument_list = std::holds_alternative<sc::ir::SCArgumentDeclareList>(payload)
-                    || std::holds_alternative<sc::ir::SCPositionalArgs>(payload)
-                    || std::holds_alternative<sc::ir::SCKwArgs>(payload)
-                    || std::holds_alternative<sc::ir::SCVariadicArgs>(payload);
-                if (is_argument_list && !edges.first_child)
-                    return;
-                // A missing part only matters in a range, where it says which part is missing, e.g., `(1..)`.
-                if (std::holds_alternative<sc::ir::SCMissing>(payload)) {
-                    const sc::ir::NodeIndex parent { *edges.parent };
-                    if (!g.as_a<sc::ir::SCRange_I>(parent) && !g.as_a<sc::ir::SCRangeGenerator_I>(parent))
-                        return;
-                }
+        const sc::ir::describe::Describe describe { g, ctx, relative_to };
+        g.depth_first_traverse(dumped.index,
+                               [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
+                                   const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
+                                   if (sc::ir::describe::hidden(describe, edges, payload, dumped.class_name))
+                                       return;
 
-                for (size_t di { 0 }; di < depth; ++di)
-                    std::cout << "|  ";
-                std::cout << sc::ir::IRGraph::node_name(payload) << " ";
-                write_location(loc);
-                std::visit(
-                    sc::util::overload {
-                        [](const auto&) {},
-                        [&](const sc::ir::SCClass& c) {
-                            std::cout << ": " << symbol_table(c.name);
-                            // The slot type, e.g., `String[char]`.
-                            using Layout = sc::ir::SCClass::MemoryLayout;
-                            switch (c.memory_layout) {
-                            case Layout::NotIndexed:
-                                break;
-                            case Layout::Slot:
-                                std::cout << "[slot]";
-                                break;
-                            case Layout::Double:
-                                std::cout << "[double]";
-                                break;
-                            case Layout::Float:
-                                std::cout << "[float]";
-                                break;
-                            case Layout::Int32:
-                                std::cout << "[int32]";
-                                break;
-                            case Layout::Int16:
-                                std::cout << "[int16]";
-                                break;
-                            case Layout::Int8:
-                                std::cout << "[int8]";
-                                break;
-                            case Layout::Char:
-                                std::cout << "[char]";
-                                break;
-                            case Layout::Symbol:
-                                std::cout << "[symbol]";
-                                break;
-                            }
-                        },
-                        [&](const sc::ir::SCMethod& m) {
-                            std::cout << ": ";
-                            if (m.poisoned)
-                                std::cout << "poisoned: ";
-                            write_text(g.read(loc));
-                        },
-                        // Its file, as interpreted code isn't in a class.
-                        [&](const sc::ir::SCInterpreted& in) {
-                            std::cout << ": ";
-                            if (in.poisoned)
-                                std::cout << "poisoned: ";
-                            if (const auto& path = g.text_info(loc.source)->file_path)
-                                std::cout << (relative_to ? path->lexically_relative(*relative_to) : *path).string();
-                        },
-                        [&](const sc::ir::SCMessage& m) { std::cout << ": " << symbol_table(*m.selector); },
-                        [&](const sc::ir::SCKwArg& k) { std::cout << ": " << symbol_table(*k.name); },
-                        [&](const sc::ir::SCVariableDeclare& v) { std::cout << ": " << symbol_table(*v.name); },
-                        [&](const sc::ir::SCArgumentDeclare& a) { std::cout << ": " << symbol_table(a.name); },
-                        [&](const sc::ir::SCMember& m) { std::cout << ": " << symbol_table(m.name); },
-                        [&](const sc::ir::SCSpecial& special) {
-                            using Kind = sc::ir::SCSpecial::Kind;
-                            switch (special.kind) {
-                            case Kind::This:
-                                std::cout << ": this";
-                                break;
-                            case Kind::Super:
-                                std::cout << ": super";
-                                break;
-                            case Kind::Process:
-                                std::cout << ": thisProcess";
-                                break;
-                            case Kind::Thread:
-                                std::cout << ": thisThread";
-                                break;
-                            case Kind::Method:
-                                std::cout << ": thisMethod";
-                                break;
-                            case Kind::FunctionDef:
-                                std::cout << ": thisFunctionDef";
-                                break;
-                            case Kind::Function:
-                                std::cout << ": thisFunction";
-                                break;
-                            }
-                        },
-                        [&](const sc::ir::SCRead& r) {
-                            std::cout << ": " << read_kind_name(r.kind) << " " << symbol_table(r.name);
-                        },
-                        [&](const sc::ir::SCAssign& a) {
-                            std::cout << ": " << kind_name(a.kind) << " " << symbol_table(*a.name);
-                        },
-                        [&](const sc::ir::SCPackTarget& t) {
-                            std::cout << ": " << kind_name(t.kind) << " " << symbol_table(*t.name)
-                                      << (t.rest ? " rest from " : " at ") << t.index;
-                        },
-                        [&](const sc::ir::SCCollection& c) { std::cout << ": " << symbol_table(*c.collection_class); },
-                        [&](const sc::ir::SCGenerator& gen) {
-                            std::cout << (gen.kind == sc::ir::SCGenerator::Kind::Routine ? ": routine" : ": immediate");
-                        },
-                        [&](const sc::ir::SCGenQualIterate& q) {
-                            std::cout << ": " << symbol_table(*q.element);
-                            if (q.index)
-                                std::cout << ", " << symbol_table(**q.index);
-                        },
-                        [&](const sc::ir::SCGenQualDeclare& q) { std::cout << ": " << symbol_table(*q.name); } },
-                    payload);
+                                   for (size_t di { 0 }; di < depth; ++di)
+                                       std::cout << "|  ";
+                                   std::cout << sc::ir::IRGraph::node_name(payload) << " ";
+                                   sc::ir::describe::write_location(std::cout, loc);
+                                   sc::ir::describe::write_details(describe, std::cout, payload, loc, i);
+                                   std::cout << "\n";
 
-                if (const auto const_i = g.node_as_constexpr(i)) {
-                    std::cout << " = ";
-                    write_constant(*const_i);
-                }
-                // A member's initial value, the member itself isn't constant.
-                if (const auto member = std::get_if<sc::ir::SCMember>(&payload); member && member->expr) {
-                    std::cout << " = ";
-                    write_constant(*member->expr);
-                }
-                // What calling a method or function returns.
-                const auto constant_result =
-                    std::visit(sc::util::overload { [](const auto&) -> sc::ir::OptionalConstExprIndex { return {}; },
-                                                    [](const sc::ir::SCMethod& m) { return m.constant_result; },
-                                                    [](const sc::ir::SCFunction& f) { return f.constant_result; },
-                                                    [](const sc::ir::SCRegionList& l) { return l.constant_result; } },
-                               payload);
-                if (constant_result) {
-                    std::cout << " -> ";
-                    write_constant(*constant_result);
-                }
-                std::visit(sc::util::overload {
-                               [](const auto&) {}, [&](const sc::ir::SCRead& r) { write_declaration(r.declaration); },
-                               [&](const sc::ir::SCAssign& a) { write_declaration(a.declaration); },
-                               [&](const sc::ir::SCPackTarget& t) { write_declaration(t.declaration); } },
-                           payload);
-                std::cout << "\n";
-
-                if (const auto fnd = owned.find({ &g, *i }); fnd != owned.end()) {
-                    std::string indent;
-                    for (size_t di { 0 }; di <= depth; ++di)
-                        indent += "|  ";
-                    for (const auto* d : fnd->second)
-                        print_diagnostic(*d, indent);
-                }
-            });
+                                   if (const auto fnd = owned.find({ &g, *i }); fnd != owned.end()) {
+                                       std::string indent;
+                                       for (size_t di { 0 }; di <= depth; ++di)
+                                           indent += "|  ";
+                                       for (const auto* d : fnd->second)
+                                           print_diagnostic(*d, indent);
+                                   }
+                               });
     }
 #endif
 

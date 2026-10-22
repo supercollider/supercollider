@@ -1,0 +1,185 @@
+:root {
+  color-scheme: light dark;
+  --bg: #fbfbfa;
+  --panel: #ffffff;
+  --border: #dedcd6;
+  --text: #24231f;
+  --muted: #7a776e;
+  --accent: #2f6fd0;
+  --hover: rgba(47, 111, 208, 0.18);
+  --selected: rgba(230, 160, 20, 0.30);
+  --same: rgba(47, 111, 208, 0.10);
+  --error: #c8362b;
+  --warning: #b07a00;
+  --name: #6b3fa0;
+  --row-hover: #eef2fa;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1b1d;
+    --panel: #232326;
+    --border: #3a3a3f;
+    --text: #e6e4de;
+    --muted: #9a978f;
+    --accent: #7aa7ee;
+    --hover: rgba(122, 167, 238, 0.25);
+    --selected: rgba(240, 180, 60, 0.30);
+    --same: rgba(122, 167, 238, 0.12);
+    --error: #f07167;
+    --warning: #e0b040;
+    --name: #c39bf0;
+    --row-hover: #2d3240;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.4 system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+header select, button {
+  font: inherit;
+  color: inherit;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+button { cursor: pointer; font-size: 12px; }
+.status { margin-left: auto; color: var(--muted); font-size: 13px; }
+.status.crash { color: var(--error); font-weight: 600; }
+
+main {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 3), minmax(0, 1fr));
+}
+.pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  border-right: 1px solid var(--border);
+}
+.pane:last-child { border-right: none; }
+.pane.hidden { display: none; }
+.pane-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+.pane-title .tools { margin-left: auto; display: flex; gap: 4px; text-transform: none; letter-spacing: 0; }
+.count { font-weight: 400; }
+
+/* The textarea sits over a backdrop with the same text, which draws the highlights. */
+.editor {
+  position: relative;
+  flex: 3;
+  min-height: 0;
+  background: var(--panel);
+}
+.editor textarea, .backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 8px 12px;
+  border: none;
+  font: 13px/1.5 var(--font-mono);
+  white-space: pre;
+  overflow: auto;
+  tab-size: 4;
+}
+.editor textarea {
+  background: transparent;
+  color: var(--text);
+  caret-color: var(--text);
+  resize: none;
+  outline: none;
+}
+.backdrop { color: transparent; pointer-events: none; }
+.backdrop span { border-radius: 2px; }
+.backdrop .diag-error { text-decoration: wavy underline var(--error); text-decoration-skip-ink: none; }
+.backdrop .diag-warning { text-decoration: wavy underline var(--warning); text-decoration-skip-ink: none; }
+.backdrop .selected { background: var(--selected); }
+.backdrop .hover { background: var(--hover); }
+/* An empty range, e.g., an empty argument list, is drawn as a caret. */
+.backdrop .empty { box-shadow: -2px 0 0 var(--accent); }
+
+.diagnostics {
+  flex: 1;
+  min-height: 60px;
+  overflow: auto;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.diagnostic { border-bottom: 1px solid var(--border); padding: 4px 12px; cursor: pointer; }
+.diagnostic:hover { background: var(--row-hover); }
+.diagnostic .title { font-weight: 600; }
+.diagnostic.error .title { color: var(--error); }
+.diagnostic.warning .title { color: var(--warning); }
+.diagnostic .where { color: var(--muted); font-family: var(--font-mono); font-size: 12px; margin-left: 6px; }
+.diagnostic pre, .crash-text {
+  margin: 4px 0;
+  font: 12px/1.4 var(--font-mono);
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+.crash-text { padding: 4px 12px; color: var(--error); }
+
+.tree {
+  flex: 1;
+  overflow: auto;
+  padding: 4px 0 24px;
+  font: 12.5px/1.5 var(--font-mono);
+  background: var(--panel);
+}
+.tree.stale { opacity: 0.5; }
+.tree .section { padding: 8px 12px 2px; color: var(--muted); font: 600 11px system-ui, sans-serif; text-transform: uppercase; }
+.tree .empty-note { padding: 8px 12px; color: var(--muted); font-family: system-ui, sans-serif; }
+.kids { margin-left: 14px; border-left: 1px dotted var(--border); }
+.node.collapsed > .kids { display: none; }
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 0 8px 0 4px;
+  white-space: nowrap;
+  cursor: default;
+}
+.row:hover { background: var(--row-hover); }
+.row.same { background: var(--same); }
+.row.selected { background: var(--selected); }
+.toggle { width: 12px; flex: none; color: var(--muted); cursor: pointer; text-align: center; user-select: none; }
+.name { color: var(--name); flex: none; }
+.detail { color: var(--text); overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
+.where { color: var(--muted); flex: none; font-size: 11px; }
+.node.no-range > .row .name { font-style: italic; opacity: 0.7; }
+
+@media (max-width: 800px) {
+  main { grid-template-columns: minmax(0, 1fr); grid-auto-rows: minmax(300px, 1fr); overflow: auto; }
+  .pane { border-right: none; border-bottom: 1px solid var(--border); }
+}
