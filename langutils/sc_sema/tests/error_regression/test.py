@@ -30,10 +30,14 @@ def process_file(cmd, sc_file, output_dir, override):
         matching = expected_output == cmd_result
 
         if override:
-            print('overriding output')
-            expected_output_path.write_text(cmd_result)
+            # Nothing to compare against, as the output becomes the expected output.
+            print(f"overriding output: {sc_file.name} {'unchanged' if matching else 'updated'}")
+            if not matching:
+                expected_output_path.write_text(cmd_result)
+            return True
+
         if not matching:
-            print(f"FAILED: {sc_file.name}. To update the output file, just delete {expected_output_path} and it will be regenerated.")
+            print(f"FAILED: {sc_file.name}. To update the output file, run with --override.")
             output_file_path.write_text(cmd_result)
             diff = subprocess.run(['diff', expected_output_path, output_file_path, '--unified', '--color'], capture_output=True, text=True)
             diff_file_path.write_text(diff.stdout)
@@ -50,7 +54,7 @@ def main():
     parser.add_argument('--cmd', help='path to compile cmd', required=True)
     parser.add_argument('--inputSCFile', help='input sc file', required=True)
     parser.add_argument('--outputDirectory', help='output directory used to store the new output and any dif.', required=True)
-    parser.add_argument('--override', help='override exisiting files if present', type=bool, default=False)
+    parser.add_argument('--override', help='override existing files if present', action='store_true')
 
     args = parser.parse_args()
     
