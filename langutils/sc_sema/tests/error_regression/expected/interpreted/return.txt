@@ -1,0 +1,23 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: interpreted/return.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Return in interpreted code
+|  interpreted/return.scd:4:4
+|      2 │ // expect-error: Return in interpreted code
+|      3 │ // expect: poisoned
+|      4 │ 1; ^2
+|        ┆    ^^ there is no method to return from.
+|
+|  `^` returns from the method the code is written in, but interpreted code isn't in a method, so this includes the functions it defines. The value of interpreted code is its last expression, so remove the `^`.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCLiteral (4:1) = 1
+|  |  |  SCLiteral (4:5) = 2
+Successfully compiled 15 classes.

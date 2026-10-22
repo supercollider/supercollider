@@ -1,7 +1,8 @@
 add_subdirectory(find_assertions)
 
 # Tests are grouped by topic, e.g., input/literals/escapes.sc is the test sc_sema_regression__literals.escapes
-file(GLOB_RECURSE tests RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/input CONFIGURE_DEPENDS input/*.sc)
+# Interpreted code is in scd files, e.g., input/interpreted/regions.scd
+file(GLOB_RECURSE tests RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/input CONFIGURE_DEPENDS input/*.sc input/*.scd)
 
 # This is how we make tests depends on executables
 add_test(NAME build_ir_dump
@@ -9,7 +10,7 @@ add_test(NAME build_ir_dump
 set_tests_properties(build_ir_dump PROPERTIES FIXTURES_SETUP ir_dump_fixture)
 
 foreach(test ${tests})
-    string(REGEX REPLACE "\\.sc$" "" test_name ${test})
+    string(REGEX REPLACE "\\.scd?$" "" test_name ${test})
     string(REPLACE "/" "." test_name ${test_name})
     set(test_target sc_sema_regression__${test_name})
 

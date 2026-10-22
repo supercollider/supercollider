@@ -1,0 +1,43 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): interpreted/functions.scd
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCAssign (3:1): instance a, declared (36:11): a
+|  |  |  |  SCFunction (3:5)
+|  |  |  |  |  SCArgumentDeclareList (3:5)
+|  |  |  |  |  |  SCArgumentDeclare (3:5): _
+|  |  |  |  |  SCBody (3:5)
+|  |  |  |  |  |  SCMessage (3:5): +
+|  |  |  |  |  |  |  SCRead (3:5): local _, declared (3:5): _
+|  |  |  |  |  |  |  SCPositionalArgs (3:5)
+|  |  |  |  |  |  |  |  SCLiteral (3:9) = 1
+|  |  |  SCAssign (3:12): instance b, declared (36:16): b
+|  |  |  |  SCGenerator (3:16): routine
+|  |  |  |  |  SCGenQualList (3:22)
+|  |  |  |  |  |  SCGenQualIterate (3:22): x
+|  |  |  |  |  |  |  SCCollection (3:27): Array = [1, 2]
+|  |  |  |  |  |  |  |  SCLiteral (3:28) = 1
+|  |  |  |  |  |  |  |  SCLiteral (3:31) = 2
+|  |  |  |  |  SCRead (3:19): local x, declared (3:22): x <- [1, 2]
+|  |  |  SCAssign (3:37): instance c, declared (36:21): c
+|  |  |  |  SCFunction (3:41)
+|  |  |  |  |  SCArgumentDeclareList (3:44)
+|  |  |  |  |  |  SCArgumentDeclare (3:44): n
+|  |  |  |  |  SCBody (3:41)
+|  |  |  |  |  |  SCMessage (3:47): *
+|  |  |  |  |  |  |  SCRead (3:47): local n, declared (3:44): n
+|  |  |  |  |  |  |  SCPositionalArgs (3:47)
+|  |  |  |  |  |  |  |  SCMessage (3:51): value
+|  |  |  |  |  |  |  |  |  SCRead (3:51): instance a, declared (36:11): a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (3:51)
+|  |  |  |  |  |  |  |  |  |  SCRead (3:54): local n, declared (3:44): n
+|  |  |  SCMessage (3:60): value
+|  |  |  |  SCRead (3:60): instance c, declared (36:21): c
+|  |  |  |  SCPositionalArgs (3:60)
+|  |  |  |  |  SCLiteral (3:63) = 2
+Successfully compiled 15 classes.

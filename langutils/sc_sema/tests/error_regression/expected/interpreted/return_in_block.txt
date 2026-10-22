@@ -1,0 +1,26 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: interpreted/return_in_block.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Return in interpreted code
+|  interpreted/return_in_block.scd:2:13
+|      1 │ // expect-error: Return in interpreted code
+|      2 │ (var a = 1; ^a)
+|        ┆             ^^ there is no method to return from.
+|
+|  `^` returns from the method the code is written in, but interpreted code isn't in a method, so this includes the functions it defines. The value of interpreted code is its last expression, so remove the `^`.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCMessage (2:1): value
+|  |  |  |  SCFunction (2:1)
+|  |  |  |  |  SCBody (2:1)
+|  |  |  |  |  |  SCVariableDeclare (2:6): a
+|  |  |  |  |  |  |  SCLiteral (2:10) = 1
+|  |  |  |  |  |  SCRead (2:14): local a = 1, declared (2:6): a = 1
+Successfully compiled 15 classes.

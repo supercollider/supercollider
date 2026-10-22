@@ -1,0 +1,16 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): interpreted/file_variables.scd
+|  SCFunction (1:1) -> 3
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (3:5): k
+|  |  |  |  SCLiteral (3:9) = 2
+|  |  |  SCMessage (3:12): + = 3
+|  |  |  |  SCRead (3:12): local k = 2, declared (3:5): k = 2
+|  |  |  |  SCPositionalArgs (3:12)
+|  |  |  |  |  SCLiteral (3:16) = 1
+Successfully compiled 15 classes.

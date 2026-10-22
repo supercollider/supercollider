@@ -27,6 +27,10 @@ The assertions are
                                     `expect-reads: x -> x <- [1, 2]` in a generator, or `environment` for `~x`
     expect-reads: NAME -> DECLARATION; DECLARATION...
                                     the reads of NAME refer to these, in the order the reads are written
+An scd file is a test of interpreted code, compiled as if written inside Interpreter:functionCompileContext. Its
+assertions apply to all of it, wherever they are, as long as each is alone on its line, e.g.,
+    // expect: -> 2
+    a = 1; a + 1
 A test fails when an assertion doesn't hold, even when its output is overridden, so overriding can't hide a change
 the test was written to catch.
 
@@ -90,6 +94,10 @@ class Result:
 
 # A method in ir_dump's output, e.g., `|  |  SCMethod (5:5): poisoned: foo { ^1 } -> 1`.
 METHOD_LINE = re.compile(r'^(?P<indent>(?:\|  )*)SCMethod \((?P<line>\d+):\d+\): (?P<poisoned>poisoned: )?(?P<rest>.*)$')
+# Interpreted code, e.g., `SCInterpreted (1:1): poisoned: interpreted/region.scd`, which is checked like a method.
+INTERPRETED_LINE = re.compile(r'^(?P<indent>)SCInterpreted \((?P<line>\d+):\d+\): (?P<poisoned>poisoned: )?(?P<rest>.*)$')
+# The function interpreted code is compiled into, which says what the code returns, e.g., `|  SCFunction (1:1) -> 2`.
+INTERPRETED_FUNCTION_LINE = re.compile(r'^\|  SCFunction \(\d+:\d+\)(?: -> (?P<result>.*))?$')
 # Any node, which ends the block of a method at the same depth or shallower.
 NODE_LINE = re.compile(r'^(?P<indent>(?:\|  )*)SC\w+ \(\d+:\d+\)')
 # A read, e.g., `SCRead (5:48): local a = 1, declared (5:25): a = 1`, environment variables have no declaration.
@@ -109,6 +117,8 @@ class Method:
     diagnostics: list[tuple[str, str]]
     # (line, column, name, the declaration's source or None), in the order they are written.
     reads: list[tuple[int, int, str, str | None]]
+    # Interpreted code, rather than a method.
+    interpreted: bool = False
 
 
 def methods_in(output):
@@ -116,9 +126,10 @@ def methods_in(output):
     lines = output.split('\n')
     methods = []
     for i, line in enumerate(lines):
-        match = METHOD_LINE.match(line)
+        match = METHOD_LINE.match(line) or INTERPRETED_LINE.match(line)
         if not match:
             continue
+        interpreted = line.startswith('SCInterpreted')
         depth = len(match['indent'])
         diagnostics = []
         reads = []
@@ -131,10 +142,14 @@ def methods_in(output):
             if read := READ_LINE.match(inner):
                 reads.append((int(read['line']), int(read['column']), read['name'], read['declaration']))
         reads.sort()
-        # The source is written before the result, and always ends with the method's `}`.
-        result = re.match(r'^(.*\}) -> (.*)$', match['rest'])
-        methods.append(
-            Method(int(match['line']), bool(match['poisoned']), result[2] if result else None, diagnostics, reads))
+        if interpreted:
+            function = next(f for l in lines[i + 1:] if (f := INTERPRETED_FUNCTION_LINE.match(l)))
+            result = function['result']
+        else:
+            # The source is written before the result, and always ends with the method's `}`.
+            source_and_result = re.match(r'^(.*\}) -> (.*)$', match['rest'])
+            result = source_and_result[2] if source_and_result else None
+        methods.append(Method(int(match['line']), bool(match['poisoned']), result, diagnostics, reads, interpreted))
     return methods
 
 
@@ -187,19 +202,23 @@ def check_assertions(tools, sc_file, output):
         assertions.append((line, column, assertion))
     assertion_lines = {line for line, _, _ in assertions}
     source_lines = sc_file.read_text().split('\n')
-    methods = {m.line: m for m in reversed(methods_in(output))}
+    found_methods = methods_in(output)
+    methods = {m.line: m for m in reversed(found_methods)}
+    interpreted = next((m for m in found_methods if m.interpreted), None) if sc_file.suffix == '.scd' else None
 
     failures = []
     for line, column, assertion in assertions:
-        where = f"{test_name(sc_file)}.sc:{line}: '{assertion}'"
+        where = f"{test_name(sc_file)}{sc_file.suffix}:{line}: '{assertion}'"
         # Applies to the method below it, after any other assertions stacked between them.
         below = line + 1
         while below in assertion_lines:
             below += 1
-        method = methods.get(below)
+        method = interpreted if sc_file.suffix == '.scd' else methods.get(below)
         # Otherwise, `a { ^1 } // expect: -> 1` would apply to the method after `a`.
         if source_lines[line - 1][:column - 1].strip():
             failures.append(f"{where}, it must be alone on its line, above the method")
+        elif method is None and sc_file.suffix == '.scd':
+            failures.append(f"{where}, but the interpreted code wasn't compiled")
         elif method is None:
             failures.append(f"{where}, it must be on the line above a method, or above another assertion that is")
         elif reason := check_assertion(assertion, method):
@@ -258,17 +277,23 @@ def compare_output(sc_file, output, output_dir, override):
     return Result(FAILED, diff_file_path)
 
 
+def test_files_in(directory):
+    """The tests in directory, class files and interpreted code."""
+    return [*directory.rglob('*.sc'), *directory.rglob('*.scd')]
+
+
 def select_tests(selections):
     """The sc files named by selections, which are test names, topics, or paths. All of them when there are none."""
     if not selections:
-        return sorted(INPUT_DIR.rglob('*.sc'))
+        return sorted(test_files_in(INPUT_DIR))
     files = []
     for selection in selections:
-        candidates = [Path(selection), INPUT_DIR / selection, (INPUT_DIR / selection).with_suffix('.sc')]
+        candidates = [Path(selection), INPUT_DIR / selection, (INPUT_DIR / selection).with_suffix('.sc'),
+                      (INPUT_DIR / selection).with_suffix('.scd')]
         path = next((c for c in candidates if c.exists()), None)
         if path is None:
             sys.exit(f"no test or topic named '{selection}'")
-        found = sorted(path.rglob('*.sc')) if path.is_dir() else [path]
+        found = sorted(test_files_in(path)) if path.is_dir() else [path]
         files += [f for f in found if f not in files]
     return files
 

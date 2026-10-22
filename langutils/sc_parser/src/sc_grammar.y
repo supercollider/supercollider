@@ -200,6 +200,9 @@ file_as_func
 region.item
 	: expr
 		{ $$ = $expr; } 
+	// Parsed so it can be reported as a return in interpreted code, rather than an unexpected token.
+	| NONLOCALRETURN expr
+		{ $$ = cxt.create(NonLocalReturnExpr{}, range(@NONLOCALRETURN, @expr), $expr); }
 	| OPENPAREN argument_declarations[args] block.contents[contents] semicolon.opt CLOSEPAREN 
 		{ $$ = cxt.create(ImmediatelyEvaluatedBlock{}, @$, $args, $contents); }
 
@@ -228,7 +231,10 @@ region
 
 	| region[r] error[e] 
 		{
-			if (@r.end.line_number != @e.begin.line_number){
+			// A missing semicolon between lines is recovered by re-emitting the token after a separator. A lexer error,
+			// e.g., an unclosed comment, can't start an item, so re-emitting it would fail the same way forever.
+			const bool previous_is_lexer_error = cxt.previous && sc::lex::is_error(cxt.previous->token);
+			if (@r.end.line_number != @e.begin.line_number && !previous_is_lexer_error){
 				auto first_child = cxt.graph->edges(*$r).first_child.value();
 				auto last_child = cxt.graph->last_child(*$r);
 				auto loc = cxt.graph->location(last_child ? Index{*last_child} : Index{first_child});

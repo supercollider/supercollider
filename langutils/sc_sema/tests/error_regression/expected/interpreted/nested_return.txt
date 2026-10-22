@@ -1,0 +1,37 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: interpreted/nested_return.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Return in interpreted code
+|  interpreted/nested_return.scd:3:20
+|      1 │ // A function defined in interpreted code can't return either, as its home is the interpreted code.
+|      2 │ // expect-error: Return in interpreted code
+|      3 │ f = { |x| if (x) { ^1 }; 2 }; f.(true)
+|        ┆                    ^^ there is no method to return from.
+|
+|  `^` returns from the method the code is written in, but interpreted code isn't in a method, so this includes the functions it defines. The value of interpreted code is its last expression, so remove the `^`.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCAssign (3:1): instance f, declared (36:36): f
+|  |  |  |  SCFunction (3:5)
+|  |  |  |  |  SCArgumentDeclareList (3:8)
+|  |  |  |  |  |  SCArgumentDeclare (3:8): x
+|  |  |  |  |  SCBody (3:5)
+|  |  |  |  |  |  SCMessage (3:11): if
+|  |  |  |  |  |  |  SCRead (3:15): local x, declared (3:8): x
+|  |  |  |  |  |  |  SCPositionalArgs (3:11)
+|  |  |  |  |  |  |  |  SCFunction (3:18)
+|  |  |  |  |  |  |  |  |  SCBody (3:18)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (3:21) = 1
+|  |  |  |  |  |  SCLiteral (3:26) = 2
+|  |  |  SCMessage (3:31): value
+|  |  |  |  SCRead (3:31): instance f, declared (36:36): f
+|  |  |  |  SCPositionalArgs (3:31)
+|  |  |  |  |  SCLiteral (3:34) = true
+Successfully compiled 15 classes.

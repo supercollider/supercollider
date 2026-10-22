@@ -1,0 +1,13 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): interpreted/special_variables.scd
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCMessage (3:1): postln
+|  |  |  |  SCSpecial (3:1): this
+|  |  |  SCSpecial (3:14): thisMethod
+Successfully compiled 15 classes.

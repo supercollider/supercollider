@@ -1,0 +1,18 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): interpreted/file_as_function.scd
+|  SCFunction (1:1)
+|  |  SCArgumentDeclareList (5:2)
+|  |  |  SCArgumentDeclare (5:2): x
+|  |  |  |  SCLiteral (5:6) = 1
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (5:13): y
+|  |  |  |  SCRead (5:17): local x, declared (5:2): x = 1
+|  |  |  SCAssign (5:20): instance a, declared (36:11): a
+|  |  |  |  SCRead (5:24): local y, declared (5:13): y = x
+|  |  |  SCRead (5:27): instance a, declared (36:11): a
+Successfully compiled 15 classes.

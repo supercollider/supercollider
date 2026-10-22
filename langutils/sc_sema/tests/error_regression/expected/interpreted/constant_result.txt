@@ -1,0 +1,15 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): interpreted/constant_result.scd
+|  SCFunction (1:1) -> 5
+|  |  SCBody (1:1)
+|  |  |  SCLiteral (4:1) = 1
+|  |  |  SCMessage (4:4): + = 5
+|  |  |  |  SCLiteral (4:4) = 2
+|  |  |  |  SCPositionalArgs (4:4)
+|  |  |  |  |  SCLiteral (4:8) = 3
+Successfully compiled 15 classes.
