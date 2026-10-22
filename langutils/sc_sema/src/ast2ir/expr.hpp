@@ -17,7 +17,8 @@ struct ScopeEntry {
     // Null means the graph being compiled, e.g., for arguments, as Expr doesn't own its graph.
     std::shared_ptr<const IRGraph> graph;
     join<SCFunction_I, SCMethod_I, SCMemberList_I> scope_index;
-    join<SCVariableDeclare_I, SCMember_I, SCArgumentDeclare_I> declare_index;
+    // A variable declared in a pack, `var #a, b = c`, is its SCPackTarget.
+    join<SCVariableDeclare_I, SCPackTarget_I, SCMember_I, SCArgumentDeclare_I> declare_index;
     std::optional<ConstExprIndex> const_expr;
     std::optional<TypeInfo> type_info;
     Kind kind;

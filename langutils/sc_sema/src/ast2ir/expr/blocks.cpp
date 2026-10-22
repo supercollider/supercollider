@@ -12,11 +12,11 @@ namespace sc::ir::ast2ir {
 // A block captures its surroundings, so it is never constant.
 Return<SCAnyExpr_I> Expr::operator()(ast::BlockIndex i) {
     const auto [arg_list, maybe_contents] = ast_graph->children(i);
-    const auto here = location(i);
+    const auto here = location({ *i });
 
     // The function is created first, so its arguments can refer to it as their scope.
-    const auto positional = ir.create(SCArgumentDeclareList {}, location(arg_list));
-    const auto variadic = ir.create(SCArgumentDeclareList {}, location(arg_list));
+    const auto positional = ir.create(SCArgumentDeclareList {}, location({ *arg_list }));
+    const auto variadic = ir.create(SCArgumentDeclareList {}, location({ *arg_list }));
     const auto body = ir.create(SCBody {}, here);
     const auto function = ir.create(SCFunction {}, here, positional, variadic, body);
 

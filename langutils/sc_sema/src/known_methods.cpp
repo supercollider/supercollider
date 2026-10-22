@@ -38,6 +38,7 @@ void KnownMethods::check(ClassDeclarations& declarations, const CommonClasses& c
         { classes.int_, symbols.series, symbols.simple_number }, // ranges, `(1..5)`
         { classes.array, symbols.copy_series, symbols.arrayed_collection }, // slicing, `a[1..3]`
         { classes.string, symbols.copy_series, symbols.arrayed_collection },
+        { classes.array, symbols.at, symbols.arrayed_collection }, // pack assignment, `var #a, b = [1, 2]`
         { classes.array, symbols.add, symbols.arrayed_collection }, // `Array[1, 2]`
         { classes.event, symbols.add, symbols.dictionary }, // `Event[a: 1]`
     };

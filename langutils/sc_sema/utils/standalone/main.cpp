@@ -299,6 +299,9 @@ int main(int argc, char* argv[]) {
                             [&](const sc::ir::SCMessage& m) { std::cout << symbol_table(*m.selector) << ": "; },
                             [&](const sc::ir::SCKwArg& k) { std::cout << symbol_table(*k.name) << ": "; },
                             [&](const sc::ir::SCVariableDeclare& v) { std::cout << symbol_table(*v.name) << ": "; },
+                            [&](const sc::ir::SCPackTarget& t) {
+                                std::cout << (t.rest ? "rest from " : "at ") << t.index << ": ";
+                            },
                             [&](const sc::ir::SCCollection& c) {
                                 std::cout << symbol_table(*c.collection_class) << ": ";
                             } },

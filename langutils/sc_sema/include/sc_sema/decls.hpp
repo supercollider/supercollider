@@ -27,7 +27,8 @@ public:
         SymSCIdentifier name;
         ast::Index name_index;
         ast::ReadWriteAccessor accessor;
-        ast::OptionalIndex accessor_index;
+        // Can be a missing node.
+        ast::Index accessor_index;
         std::optional<std::pair<ConstExprIndex, ast::AnyExprIndex>> expr_index;
         std::optional<TypeInfo> type_info;
         // Declared with `const`, these are always in the meta class.

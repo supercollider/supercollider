@@ -44,7 +44,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::RangeIndex i) {
         second = (*this)(*parts.second);
     if (!first) {
         const auto zero = ctx.constant_table.register_constexpr({ std::int32_t { 0 } });
-        const auto lit = ir.create(SCLiteral { zero }, location(i));
+        const auto lit = ir.create(SCLiteral { zero }, location({ *i }));
         ir.register_node_as_consteval(lit, zero);
         first = Return<SCAnyExpr_I> { lit, zero, TypeInfo { ctx.common_classes.int_, TypeConfidence::Absolute } };
     }
@@ -55,10 +55,10 @@ Return<SCAnyExpr_I> Expr::operator()(ast::RangeIndex i) {
     else
         sink(sc::diag::Diagnostic::unbounded_range(get_text_info(*ast_graph), get_location(*ast_graph, i)));
 
-    const auto missing = [&]() { return ir.create(SCMissing {}, location(i)); };
+    const auto missing = [&]() { return ir.create(SCMissing {}, location({ *i })); };
     const maybe<SCAnyExpr_I> second_i = second ? maybe<SCAnyExpr_I> { second->ir_node } : missing();
     const maybe<SCAnyExpr_I> last_i = last ? maybe<SCAnyExpr_I> { last->ir_node } : missing();
-    const auto range = ir.create(SCRange {}, location(i), first->ir_node, second_i, last_i);
+    const auto range = ir.create(SCRange {}, location({ *i }), first->ir_node, second_i, last_i);
 
     const auto first_value = integer_constant(ctx, *first);
     const auto last_value = last ? integer_constant(ctx, *last) : std::nullopt;

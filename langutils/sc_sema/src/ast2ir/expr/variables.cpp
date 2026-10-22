@@ -28,7 +28,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::EnvIdentifierIndex i) {
     const auto loc = get_location(*ast_graph, child);
     const auto txt = get_string_view(*ast_graph, child);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
-    const auto index = ir.create(SCRead { name_sym, SCRead::Kind::Environment }, location(i));
+    const auto index = ir.create(SCRead { name_sym, SCRead::Kind::Environment }, location({ *i }));
     return { index };
 }
 
@@ -67,7 +67,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
     const auto txt = get_string_view(*ast_graph, i);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
     if (const auto entry = resolve_symbol(name_sym)) {
-        const auto read = ir.create(SCRead { name_sym, to_read_kind(entry->kind) }, location(i));
+        const auto read = ir.create(SCRead { name_sym, to_read_kind(entry->kind) }, location({ *i }));
         // Only locals can be constant, a member's initial value isn't, as the member can be assigned.
         if (entry->kind == ScopeEntry::Kind::Local && entry->const_expr) {
             ir.register_node_as_consteval(read, *entry->const_expr);
@@ -78,7 +78,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
     }
 
     sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, i), txt));
-    return { ir.create(SCExprList {}, location(i)) };
+    return { ir.create(SCExprList {}, location({ *i })) };
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
@@ -87,11 +87,11 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
 
     const auto txt = get_string_view(*ast_graph, name);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
-    const Locatable<SymSCIdentifier> located_name { location(name), name_sym };
+    const Locatable<SymSCIdentifier> located_name { location({ *name }), name_sym };
 
     const auto make_return = [&](SCAssign::Kind kind) -> Return<SCAnyExpr_I> {
         // Assignment returns the assigned value, but is never a const expression as it has a side effect.
-        const auto index = ir.create(SCAssign { located_name, kind }, location(i), expr_r.ir_node);
+        const auto index = ir.create(SCAssign { located_name, kind }, location({ *i }), expr_r.ir_node);
         if (expr_r.type)
             return { index, *expr_r.type };
         return { index };
@@ -110,4 +110,46 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
     return expr_r;
 }
 
+// `#a, ~b ...c = value`, see SCPackAssign.
+Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
+    const auto [names, value] = ast_graph->children(i);
+    const auto value_r = (*this)(ast::AnyExprIndex { value });
+    const auto [list, rest] = ast_graph->children(names);
+
+    const auto targets = ir.create(SCPackTargets {}, location({ *names }));
+    const auto add_target = [&](ast::Index target, std::uint32_t index, bool is_rest) {
+        if (const auto env = ast_graph->as_a<ast::EnvIdentifierIndex>(target)) {
+            const auto [env_name] = ast_graph->children(*env);
+            const auto sym = ctx.symbol_table.get_identifier(std::string { get_string_view(*ast_graph, env_name) });
+            ir.append(
+                targets,
+                ir.create(SCPackTarget { { location({ **env }), sym }, SCAssign::Kind::Environment, index, is_rest },
+                          location({ **env })));
+            return;
+        }
+        const auto name = ast_graph->as_a<ast::NamedIdentifierIndex>(target);
+        assert(name);
+        const auto txt = get_string_view(*ast_graph, *name);
+        const auto sym = ctx.symbol_table.get_identifier(std::string { txt });
+        if (const auto entry = resolve_symbol(sym)) {
+            ir.append(
+                targets,
+                ir.create(SCPackTarget { { location({ **name }), sym }, to_assign_kind(entry->kind), index, is_rest },
+                          location({ **name })));
+            return;
+        }
+        sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, *name), txt));
+    };
+
+    std::uint32_t index { 0 };
+    for (auto it = ast_graph->children(list).iter(); it; ++it, ++index)
+        add_target({ **it }, index, false);
+    if (!ast_graph->as_a<ast::MissingIndex>(rest))
+        add_target({ *rest }, index, true);
+
+    const auto pack = ir.create(SCPackAssign {}, location({ *i }), value_r.ir_node, targets);
+    if (value_r.type)
+        return { pack, *value_r.type };
+    return { pack };
+}
 }

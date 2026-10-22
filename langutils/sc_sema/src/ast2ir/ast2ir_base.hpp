@@ -19,7 +19,7 @@ struct ASTGraph;
 namespace sc::ir::ast2ir {
 
 // Where an ast node came from, in the IRGraph's own sources.
-[[nodiscard]] SourceLocation location_of(IRGraph& ir, const ast::ASTGraph& ast_graph, ast::OptionalIndex i);
+[[nodiscard]] SourceLocation location_of(IRGraph& ir, const ast::ASTGraph& ast_graph, ast::Index i);
 
 struct Base {
     Base(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt):
@@ -30,7 +30,7 @@ struct Base {
     IRGraph& ir;
     std::shared_ptr<const ast::ASTGraph> ast_graph;
 
-    [[nodiscard]] SourceLocation location(ast::OptionalIndex i) const { return location_of(ir, *ast_graph, i); }
+    [[nodiscard]] SourceLocation location(ast::Index i) const { return location_of(ir, *ast_graph, i); }
 };
 
 // Collects the diagnostics of one unit of compilation, e.g., a method, so it knows whether it should be poisoned.

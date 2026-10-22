@@ -104,6 +104,9 @@ public:
     [[nodiscard]] static Diagnostic undefined_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                        std::string_view name);
 
+    // `var #a, ~b = c`, an environment variable can't be declared.
+    [[nodiscard]] static Diagnostic declared_environment_variable(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
 
     Diagnostic() = delete;
     Diagnostic(Diagnostic&&) noexcept = default;

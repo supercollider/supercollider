@@ -16,8 +16,8 @@
 namespace sc::ir::ast2ir {
 
 void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaration&, bool is_const,
-                                         ast::Index total_index, ast::UntypedIndex accessor_i,
-                                         ast::ReadWriteAccessor accessor, ast::NamedIdentifierIndex name_i) {
+                                         ast::Index total_index, ast::Index accessor_i, ast::ReadWriteAccessor accessor,
+                                         ast::NamedIdentifierIndex name_i) {
     const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
     const auto r = decl.insert(
         ClassDeclaration::Member { total_index, name, { *name_i }, accessor, accessor_i, {}, {}, is_const });
@@ -31,8 +31,7 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
 }
 
 void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaration& constants, bool is_const,
-                                         ast::Index total, ast::UntypedIndex accessor_i,
-                                         ast::ReadWriteAccessor accessor,
+                                         ast::Index total, ast::Index accessor_i, ast::ReadWriteAccessor accessor,
                                          ast::DeclareVariableWithDefaultIndex name_with_expr_i) {
     const auto [name_i_t, expr_i_t] = ast_graph->children(name_with_expr_i);
     const ast::NamedIdentifierIndex name_i = name_i_t;
@@ -63,7 +62,7 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
         });
 }
 
-void DeclareClass::append_member_to_decl(ClassDeclaration&, ClassDeclaration&, bool, ast::Index, ast::UntypedIndex,
+void DeclareClass::append_member_to_decl(ClassDeclaration&, ClassDeclaration&, bool, ast::Index, ast::Index,
                                          ast::ReadWriteAccessor, ast::VariablePackAssignIndex) {
     assert(false);
 }
@@ -167,7 +166,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                 [&](ast::DeclareConstListIndex list_i) {
                     for (auto class_var_it = ast_graph->children(list_i).iter(); class_var_it; ++class_var_it) {
                         const auto [accessor_i_t, member_node] = ast_graph->children(*class_var_it);
-                        const ast::UntypedIndex accessor_i = accessor_i_t;
+                        const ast::Index accessor_i { *accessor_i_t };
                         auto accessor = synthesize_literal(accessor_i_t, *ast_graph);
 
 
@@ -197,7 +196,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                 [&](ast::DeclareMemberListIndex list_i) {
                     for (auto class_var_it = ast_graph->children(list_i).iter(); class_var_it; ++class_var_it) {
                         const auto [accessor_i_t, member_i] = ast_graph->children(*class_var_it);
-                        const ast::UntypedIndex accessor_i = accessor_i_t;
+                        const ast::Index accessor_i { *accessor_i_t };
                         const auto accessor = synthesize_literal(accessor_i_t, *ast_graph);
 
                         std::visit(
@@ -211,7 +210,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                 [&](ast::DeclareClassMemberListIndex list_i) {
                     for (auto class_var_it = ast_graph->children(list_i).iter(); class_var_it; ++class_var_it) {
                         const auto [accessor_i_t, member_i] = ast_graph->children(*class_var_it);
-                        const ast::UntypedIndex accessor_i = accessor_i_t;
+                        const ast::Index accessor_i { *accessor_i_t };
                         const auto accessor = synthesize_literal(accessor_i_t, *ast_graph);
 
                         std::visit(

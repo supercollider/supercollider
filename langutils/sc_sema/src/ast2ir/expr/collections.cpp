@@ -23,7 +23,7 @@ struct CollectionContext {
     const std::shared_ptr<const ast::ASTGraph>& ast_graph;
 };
 
-Return<SCAnyExpr_I> symbol(CollectionContext& c, ast::OptionalIndex i, std::string_view name) {
+Return<SCAnyExpr_I> symbol(CollectionContext& c, ast::Index i, std::string_view name) {
     const auto const_i =
         c.ctx.constant_table.register_constexpr({ c.ctx.symbol_table.get_symbol(std::string { name }) });
     const auto lit = c.ir.create(SCLiteral { const_i }, location_of(c.ir, *c.ast_graph, i));
@@ -50,12 +50,12 @@ std::optional<ConstExprArray> append_elements(CollectionContext& c, SCCollection
         const auto r = [&]() -> Return<SCAnyExpr_I> {
             // `[a: 1]` is `[\a, 1]`.
             if (const auto keyword = g.as_a<ast::KeyBinOpIndex>(element))
-                return symbol(c, *keyword, synthesize_literal(g.payload(*keyword), get_string_view(g, *keyword)));
+                return symbol(c, { **keyword }, synthesize_literal(g.payload(*keyword), get_string_view(g, *keyword)));
             if (const auto nested = g.as_a<ast::ArrayIndex>(element))
                 return array(c, *nested, is_immutable);
             if (is_immutable)
                 if (const auto name = g.as_a<ast::NamedIdentifierIndex>(element))
-                    return symbol(c, *name, get_string_view(g, *name));
+                    return symbol(c, { **name }, get_string_view(g, *name));
             return c.expr(ast::AnyExprIndex { *element });
         }();
 
@@ -79,8 +79,8 @@ Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immut
     is_immutable = is_immutable || c.ast_graph->payload(i).is_immutable;
 
     const TypeInfo type { c.ctx.common_classes.array, TypeConfidence::Absolute };
-    const auto collection =
-        c.ir.create(SCCollection { { std::nullopt, c.ctx.common_classes.array } }, location_of(c.ir, *c.ast_graph, i));
+    const auto collection = c.ir.create(SCCollection { { std::nullopt, c.ctx.common_classes.array } },
+                                        location_of(c.ir, *c.ast_graph, { *i }));
 
     auto values = append_elements(c, collection, i, is_immutable);
     if (!values)
@@ -132,7 +132,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::CollectionIndex i) {
     // The grammar only allows `Class[...]`, `Class#[...]` can't be written.
     assert(!ast_graph->payload(elements).is_immutable);
 
-    const auto collection = ir.create(SCCollection { { location(class_name), class_sym } }, location(i));
+    const auto collection = ir.create(SCCollection { { location({ *class_name }), class_sym } }, location({ *i }));
     auto values = append_elements(c, collection, elements, false);
 
     // The elements of an event are pairs, an odd number means the last key has no value.
@@ -158,7 +158,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) {
     const auto& g = *ast_graph;
 
     const TypeInfo type { ctx.common_classes.event, TypeConfidence::Absolute };
-    const auto collection = ir.create(SCCollection { { std::nullopt, ctx.common_classes.event } }, location(i));
+    const auto collection = ir.create(SCCollection { { std::nullopt, ctx.common_classes.event } }, location({ *i }));
     ConstExprEvent values;
     bool all_constant = true;
 
@@ -168,7 +168,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) {
         const auto key_r = [&]() -> Return<SCAnyExpr_I> {
             // `(a: 1)` is `(\a: 1)`.
             if (const auto keyword = g.as_a<ast::KeyBinOpIndex>(key))
-                return symbol(c, *keyword, synthesize_literal(g.payload(*keyword), get_string_view(g, *keyword)));
+                return symbol(c, { **keyword }, synthesize_literal(g.payload(*keyword), get_string_view(g, *keyword)));
             return (*this)(ast::AnyExprIndex { *key });
         }();
         const auto value_r = (*this)(ast::AnyExprIndex { value });

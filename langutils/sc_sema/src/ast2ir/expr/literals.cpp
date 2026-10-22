@@ -16,13 +16,13 @@ Return<SCAnyExpr_I> literal(Context& ctx, IRGraph& ir, const std::shared_ptr<con
     return ConstEval { ctx, ast_graph, ASTGraphIndex { 0 } }.eval(i).visit(
         [&](ConstEval::Success s) -> Return<SCAnyExpr_I> {
             const auto [expr_index, info] = s;
-            const auto lit = ir.create(SCLiteral { expr_index }, location_of(ir, *ast_graph, i));
+            const auto lit = ir.create(SCLiteral { expr_index }, location_of(ir, *ast_graph, { *i }));
             ir.register_node_as_consteval(lit, expr_index);
             return { lit, expr_index, info };
         },
         [&](sc::diag::Diagnostic&& d) -> Return<SCAnyExpr_I> {
             sink(std::move(d));
-            return { ir.create(SCExprList {}, location_of(ir, *ast_graph, i)) };
+            return { ir.create(SCExprList {}, location_of(ir, *ast_graph, { *i })) };
         });
 }
 }

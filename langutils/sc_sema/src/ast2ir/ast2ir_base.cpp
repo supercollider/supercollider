@@ -4,8 +4,7 @@
 
 namespace sc::ir::ast2ir {
 
-SourceLocation location_of(IRGraph& ir, const ast::ASTGraph& ast_graph, ast::OptionalIndex i) {
+SourceLocation location_of(IRGraph& ir, const ast::ASTGraph& ast_graph, ast::Index i) {
     return ir.make_location(get_text_info(ast_graph), get_location(ast_graph, i));
 }
-
 }

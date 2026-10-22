@@ -21,6 +21,10 @@ enum struct SCNodeType {
     Literal,
     Collection, // a collection that can't be turned into a literal.
     Range,
+    PackAssign,
+    PackDeclare,
+    PackTarget,
+    PackTargetList,
 
     ArgumentDeclare,
     ArgumentDeclareList,
@@ -71,6 +75,10 @@ using SCVariableDeclare_I = TypedNodeIndex<SCNodeType::VariableDeclare>;
 
 using SCCollection_I = TypedNodeIndex<SCNodeType::Collection>;
 using SCRange_I = TypedNodeIndex<SCNodeType::Range>;
+using SCPackAssign_I = TypedNodeIndex<SCNodeType::PackAssign>;
+using SCPackDeclare_I = TypedNodeIndex<SCNodeType::PackDeclare>;
+using SCPackTarget_I = TypedNodeIndex<SCNodeType::PackTarget>;
+using SCPackTargetList_I = TypedNodeIndex<SCNodeType::PackTargetList>;
 using SCArgumentDeclare_I = TypedNodeIndex<SCNodeType::ArgumentDeclare>;
 using SCArgumentDeclareList_I = TypedNodeIndex<SCNodeType::ArgumentDeclareList>;
 using SCMethod_I = TypedNodeIndex<SCNodeType::Method>;
@@ -85,7 +93,7 @@ using SCExprList_I = TypedNodeIndex<SCNodeType::ExprList>;
 using SCBody_I = TypedNodeIndex<SCNodeType::Body>;
 
 using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCExplicitReturn_I, SCLiteral_I, SCRef_I,
-                         SCMessage_I, SCCollection_I, SCRange_I>;
+                         SCMessage_I, SCCollection_I, SCRange_I, SCPackAssign_I>;
 
 using SCClassList_I = TypedNodeIndex<SCNodeType::ClassOrExtentionList>;
 

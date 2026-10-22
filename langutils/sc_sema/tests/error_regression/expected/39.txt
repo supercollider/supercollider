@@ -1,28 +1,5 @@
 
 ──────────────────────────────────────────────────────────────────────────────────
-Error: TODO NOT IMPLEMENTED
-file:
-   47 │     block_shadows_outer { var a = 1; ^{ var a = 2; a } }
-   48 │     block_reads_outer { var a = 1; ^{ a } }
-   49 │     pack { var #a, b = [1, 2]; ^a }
-      ┆                ^^^^^^^^^^^^^^ diagnostic not implemented
-   50 │ }
-
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-   47 │     block_shadows_outer { var a = 1; ^{ var a = 2; a } }
-   48 │     block_reads_outer { var a = 1; ^{ a } }
-   49 │     pack { var #a, b = [1, 2]; ^a }
-      ┆                                 ^ this is not defined.
-   50 │ }
-
-Declare it with 'var', or use '~a' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
 Error: Variable not defined
 file:
    37 │     uses_earlier { var a = 1, b = a + 1; ^b }
@@ -111,12 +88,19 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  SCMemberList: Variables
 |  |  SCMember: instance_var
 |  SCMethodList: Variables
-|  |  SCMethod: poisoned: pack { var #a, b = [1, 2]; ^a }
+|  |  SCMethod: pack { var #a, b = [1, 2]; ^a } -> {"int": 1}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: var #a, b = [1, 2]; ^a
+|  |  |  |  SCPackDeclare: #a, b = [1, 2]
+|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  SCPackTargets: #a, b
+|  |  |  |  |  |  SCPackTarget: at 0: a
+|  |  |  |  |  |  SCPackTarget: at 1: b
 |  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCExprList: a
+|  |  |  |  |  SCRead: a = {"int": 1}
 |  |  SCMethod: block_reads_outer { var a = 1; ^{ a } }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 

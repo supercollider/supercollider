@@ -89,7 +89,7 @@ struct SCVariableDeclare : priv::Node<SCVariableDeclare_I(maybe<SCAnyExpr_I> val
 };
 
 // The body of a method or function, its expressions and variable declarations in the order they are written.
-struct SCBody : priv::List<SCBody_I, join<SCAnyExpr_I, SCVariableDeclare_I>> {
+struct SCBody : priv::List<SCBody_I, join<SCAnyExpr_I, SCVariableDeclare_I, SCPackDeclare_I>> {
     static constexpr auto type_name { "SCBody" };
 };
 
@@ -111,6 +111,37 @@ struct SCCollection : priv::List<SCCollection_I, SCAnyExpr_I> {
 // This isn't a message, so later passes can choose how to lower it, e.g., iterating without creating the array.
 struct SCRange : priv::Node<SCRange_I(SCAnyExpr_I first, maybe<SCAnyExpr_I> second, maybe<SCAnyExpr_I> last)> {
     static constexpr auto type_name { "SCRange" };
+};
+
+// One name in a pack assignment or declaration, `#a, b ...c = value`. It is assigned value.at(index), or
+// value.copyToEnd(index) when it is the rest, `...c`. The node's location is the name.
+struct SCPackTarget : priv::Terminal<SCPackTarget_I> {
+    static constexpr auto type_name { "SCPackTarget" };
+    Locatable<SymSCIdentifier> name;
+    SCAssign::Kind kind;
+    std::uint32_t index;
+    bool rest;
+    SCPackTarget(Locatable<SymSCIdentifier> n, SCAssign::Kind k, std::uint32_t i, bool r):
+        name(n),
+        kind(k),
+        index(i),
+        rest(r) {}
+};
+
+struct SCPackTargets : priv::List<SCPackTargetList_I, SCPackTarget_I> {
+    static constexpr auto type_name { "SCPackTargets" };
+};
+
+// `#a, ~b ...c = value`, evaluates value once and assigns its parts to the targets, see SCPackTarget. Returns value.
+// This isn't lowered to messages, as that needs a temporary to hold value, later passes can choose how to lower it.
+struct SCPackAssign : priv::Node<SCPackAssign_I(SCAnyExpr_I value, SCPackTargetList_I targets)> {
+    static constexpr auto type_name { "SCPackAssign" };
+};
+
+// `var #a, b ...c = value`, declares each target as a local variable, then assigns it like SCPackAssign.
+// Every target's kind is Local. Like SCVariableDeclare, this isn't an expression.
+struct SCPackDeclare : priv::Node<SCPackDeclare_I(SCAnyExpr_I value, SCPackTargetList_I targets)> {
+    static constexpr auto type_name { "SCPackDeclare" };
 };
 
 enum struct DefaultBehaviour { NoDefault, PreserveNil, DontPreserveNil };

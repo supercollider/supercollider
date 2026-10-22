@@ -90,7 +90,7 @@ ConstEval::Result ConstEval::operator()(ast::AnyMessageIndex i) {
 
 namespace {
 // Evaluates e to an integer, or sets failure to the reason it isn't one.
-std::optional<std::int32_t> evaluate_integer(ConstEval& eval, ast::AnyExprIndex e, ast::OptionalIndex whole,
+std::optional<std::int32_t> evaluate_integer(ConstEval& eval, ast::AnyExprIndex e, ast::Index whole,
                                              std::optional<Diagnostic>& failure) {
     auto r = eval.eval(e);
     if (const auto s = r.success()) {
@@ -126,11 +126,11 @@ ConstEval::Result ConstEval::operator()(ast::AtMessageIndex i) {
     std::optional<std::int32_t> first;
     std::optional<std::int32_t> second;
     std::optional<std::int32_t> last;
-    if (parts.first && !(first = evaluate_integer(*this, *parts.first, i, failure)))
+    if (parts.first && !(first = evaluate_integer(*this, *parts.first, { *i }, failure)))
         return { *std::move(failure) };
-    if (parts.second && !(second = evaluate_integer(*this, *parts.second, i, failure)))
+    if (parts.second && !(second = evaluate_integer(*this, *parts.second, { *i }, failure)))
         return { *std::move(failure) };
-    if (parts.last && !(last = evaluate_integer(*this, *parts.last, i, failure)))
+    if (parts.last && !(last = evaluate_integer(*this, *parts.last, { *i }, failure)))
         return { *std::move(failure) };
 
     const auto& value = cxt.constant_table(receiver_s->first);

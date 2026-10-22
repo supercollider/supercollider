@@ -495,4 +495,12 @@ Diagnostic Diagnostic::duplicate_variable(TextInfoPtr first_t, sc::lex::SourceCo
              },
              "Arguments and variables in the same function or method must have different names. Rename one." };
 }
+
+Diagnostic Diagnostic::declared_environment_variable(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Environment variable declared",
+             Severity::Error,
+             { { std::move(t), l, "this can't be declared." } },
+             "Only local variables can be declared with 'var'. Remove the '~' to declare a variable, or assign the "
+             "environment variable after the declaration." };
+}
 }

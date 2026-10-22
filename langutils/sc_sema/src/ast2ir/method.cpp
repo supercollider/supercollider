@@ -45,24 +45,24 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
     const auto [name, arg_list, maybe_prim, body] =
         std::visit([&](auto i) { return ast_graph->children(i); }, ast_graph->index_to_variant(i));
 
-    const auto argument_list = ir.create(SCArgumentDeclareList {}, location(arg_list));
-    const auto variadic_args = ir.create(SCArgumentDeclareList {}, location(arg_list));
+    const auto argument_list = ir.create(SCArgumentDeclareList {}, location({ *arg_list }));
+    const auto variadic_args = ir.create(SCArgumentDeclareList {}, location({ *arg_list }));
 
     using PrimT = std::optional<Locatable<SymSCPrimitive>>;
     const PrimT primitive = std::visit(util::overload {
                                            [](ast::MissingIndex) -> PrimT { return {}; },
                                            [&](ast::PrimitiveIdentifierIndex i) -> PrimT {
                                                return { {
-                                                   location(i), //
+                                                   location({ *i }), //
                                                    ctx.symbol_table.get_primitive(ast_graph->string(i)) //
                                                } };
                                            },
                                        },
                                        ast_graph->index_to_variant(maybe_prim));
 
-    const auto body_i = ir.create(SCBody {}, location(body));
+    const auto body_i = ir.create(SCBody {}, location({ *body }));
     // The method is created first, so its arguments can refer to it as their scope.
-    const auto method = ir.create(SCMethod { primitive }, location(i), argument_list, variadic_args, body_i);
+    const auto method = ir.create(SCMethod { primitive }, location({ *i }), argument_list, variadic_args, body_i);
 
     // Methods have their own scope, holding the arguments and variables, inside the member scopes.
     expr.scope.emplace_back();
