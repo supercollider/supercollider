@@ -57,6 +57,8 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper<SCNodeType,
                                                                      SCMethod, //
                                                                      SCFunction,
                                                                      SCInterpreted, //
+                                                                     SCRegion, //
+                                                                     SCRegionList, //
                                                                      SCMethodList, //
                                                                      SCMember, //
                                                                      SCMemberList, //

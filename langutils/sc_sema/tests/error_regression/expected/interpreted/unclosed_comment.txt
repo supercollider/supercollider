@@ -16,7 +16,9 @@ IR GRAPH DUMP
 
 
 SCInterpreted (1:1): interpreted/unclosed_comment.scd
-|  SCFunction (1:1)
-|  |  SCBody (1:1)
-|  |  |  SCLiteral (3:1) = 1
+|  SCRegionList (1:1)
+|  |  SCRegion (3:1)
+|  |  |  SCFunction (3:1) -> 1
+|  |  |  |  SCBody (3:1)
+|  |  |  |  |  SCLiteral (3:1) = 1
 Successfully compiled 15 classes.

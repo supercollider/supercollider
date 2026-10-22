@@ -5,7 +5,9 @@ IR GRAPH DUMP
 
 
 SCInterpreted (1:1): interpreted/inherited_class_variable.scd
-|  SCFunction (1:1)
-|  |  SCBody (1:1)
-|  |  |  SCRead (4:1): class topEnvironment, declared (6:56): topEnvironment
+|  SCRegionList (1:1)
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCRead (4:1): class topEnvironment, declared (6:56): topEnvironment
 Successfully compiled 15 classes.

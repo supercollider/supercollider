@@ -5,18 +5,17 @@ IR GRAPH DUMP
 
 
 SCInterpreted (1:1): interpreted/several_blocks.scd
-|  SCFunction (1:1) -> 2
-|  |  SCBody (1:1)
-|  |  |  SCMessage (3:1): value = 1
-|  |  |  |  SCFunction (3:1) -> 1
-|  |  |  |  |  SCBody (3:1)
-|  |  |  |  |  |  SCVariableDeclare (3:6): a
-|  |  |  |  |  |  |  SCLiteral (3:10) = 1
-|  |  |  |  |  |  SCRead (3:13): local a = 1, declared (3:6): a = 1
-|  |  |  SCMessage (3:17): value = 2
-|  |  |  |  SCFunction (3:17) -> 2
-|  |  |  |  |  SCBody (3:17)
-|  |  |  |  |  |  SCVariableDeclare (3:22): a
-|  |  |  |  |  |  |  SCLiteral (3:26) = 2
-|  |  |  |  |  |  SCRead (3:29): local a = 2, declared (3:22): a = 2
+|  SCRegionList (1:1) -> 2
+|  |  SCRegion (3:1)
+|  |  |  SCFunction (3:1) -> 1
+|  |  |  |  SCBody (3:1)
+|  |  |  |  |  SCVariableDeclare (3:6): a
+|  |  |  |  |  |  SCLiteral (3:10) = 1
+|  |  |  |  |  SCRead (3:13): local a = 1, declared (3:6): a = 1
+|  |  SCRegion (3:17)
+|  |  |  SCFunction (3:17) -> 2
+|  |  |  |  SCBody (3:17)
+|  |  |  |  |  SCVariableDeclare (3:22): a
+|  |  |  |  |  |  SCLiteral (3:26) = 2
+|  |  |  |  |  SCRead (3:29): local a = 2, declared (3:22): a = 2
 Successfully compiled 15 classes.

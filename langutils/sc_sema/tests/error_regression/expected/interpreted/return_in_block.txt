@@ -15,12 +15,11 @@ SCInterpreted (1:1): poisoned: interpreted/return_in_block.scd
 |
 |  `^` returns from the method the code is written in, but interpreted code isn't in a method, so this includes the functions it defines. The value of interpreted code is its last expression, so remove the `^`.
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  SCFunction (1:1)
-|  |  SCBody (1:1)
-|  |  |  SCMessage (2:1): value
-|  |  |  |  SCFunction (2:1)
-|  |  |  |  |  SCBody (2:1)
-|  |  |  |  |  |  SCVariableDeclare (2:6): a
-|  |  |  |  |  |  |  SCLiteral (2:10) = 1
-|  |  |  |  |  |  SCRead (2:14): local a = 1, declared (2:6): a = 1
+|  SCRegionList (1:1)
+|  |  SCRegion (2:1)
+|  |  |  SCFunction (2:1)
+|  |  |  |  SCBody (2:1)
+|  |  |  |  |  SCVariableDeclare (2:6): a
+|  |  |  |  |  |  SCLiteral (2:10) = 1
+|  |  |  |  |  SCRead (2:14): local a = 1, declared (2:6): a = 1
 Successfully compiled 15 classes.

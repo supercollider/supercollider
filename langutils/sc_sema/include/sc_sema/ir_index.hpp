@@ -39,6 +39,8 @@ enum struct SCNodeType {
     Method,
     Function,
     Interpreted,
+    Region,
+    RegionList,
     MethodList,
     Member,
     MemberList,
@@ -101,6 +103,8 @@ using SCArgumentDeclareList_I = TypedNodeIndex<SCNodeType::ArgumentDeclareList>;
 using SCMethod_I = TypedNodeIndex<SCNodeType::Method>;
 using SCFunction_I = TypedNodeIndex<SCNodeType::Function>;
 using SCInterpreted_I = TypedNodeIndex<SCNodeType::Interpreted>;
+using SCRegion_I = TypedNodeIndex<SCNodeType::Region>;
+using SCRegionList_I = TypedNodeIndex<SCNodeType::RegionList>;
 using SCMethodList_I = TypedNodeIndex<SCNodeType::MethodList>;
 using SCMember_I = TypedNodeIndex<SCNodeType::Member>;
 using SCMemberList_I = TypedNodeIndex<SCNodeType::MemberList>;

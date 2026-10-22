@@ -16,10 +16,12 @@ SCInterpreted (1:1): poisoned: interpreted/undefined_variable.scd
 |
 |  Declare it with 'var', or use '~undefinedThing' to refer to an environment variable.
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  SCFunction (1:1)
-|  |  SCBody (1:1)
-|  |  |  SCMessage (3:1): +
-|  |  |  |  SCExprList (3:1)
-|  |  |  |  SCPositionalArgs (3:1)
-|  |  |  |  |  SCLiteral (3:18) = 1
+|  SCRegionList (1:1)
+|  |  SCRegion (3:1)
+|  |  |  SCFunction (3:1)
+|  |  |  |  SCBody (3:1)
+|  |  |  |  |  SCMessage (3:1): +
+|  |  |  |  |  |  SCExprList (3:1)
+|  |  |  |  |  |  SCPositionalArgs (3:1)
+|  |  |  |  |  |  |  SCLiteral (3:18) = 1
 Successfully compiled 15 classes.

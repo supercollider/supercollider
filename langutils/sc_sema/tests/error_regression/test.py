@@ -96,8 +96,9 @@ class Result:
 METHOD_LINE = re.compile(r'^(?P<indent>(?:\|  )*)SCMethod \((?P<line>\d+):\d+\): (?P<poisoned>poisoned: )?(?P<rest>.*)$')
 # Interpreted code, e.g., `SCInterpreted (1:1): poisoned: interpreted/region.scd`, which is checked like a method.
 INTERPRETED_LINE = re.compile(r'^(?P<indent>)SCInterpreted \((?P<line>\d+):\d+\): (?P<poisoned>poisoned: )?(?P<rest>.*)$')
-# The function interpreted code is compiled into, which says what the code returns, e.g., `|  SCFunction (1:1) -> 2`.
-INTERPRETED_FUNCTION_LINE = re.compile(r'^\|  SCFunction \(\d+:\d+\)(?: -> (?P<result>.*))?$')
+# What interpreted code is compiled into, a function for a file as a function, otherwise a list of regions, which says
+# what the code returns, e.g., `|  SCRegionList (1:1) -> 2`.
+INTERPRETED_FUNCTION_LINE = re.compile(r'^\|  SC(?:Function|RegionList) \(\d+:\d+\)(?: -> (?P<result>.*))?$')
 # Any node, which ends the block of a method at the same depth or shallower.
 NODE_LINE = re.compile(r'^(?P<indent>(?:\|  )*)SC\w+ \(\d+:\d+\)')
 # A read, e.g., `SCRead (5:48): local a = 1, declared (5:25): a = 1`, environment variables have no declaration.

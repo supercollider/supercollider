@@ -687,7 +687,8 @@ int main(int argc, char* argv[]) {
                 const auto constant_result =
                     std::visit(sc::util::overload { [](const auto&) -> sc::ir::OptionalConstExprIndex { return {}; },
                                                     [](const sc::ir::SCMethod& m) { return m.constant_result; },
-                                                    [](const sc::ir::SCFunction& f) { return f.constant_result; } },
+                                                    [](const sc::ir::SCFunction& f) { return f.constant_result; },
+                                                    [](const sc::ir::SCRegionList& l) { return l.constant_result; } },
                                payload);
                 if (constant_result) {
                     std::cout << " -> ";

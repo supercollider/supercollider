@@ -5,13 +5,12 @@ IR GRAPH DUMP
 
 
 SCInterpreted (1:1): interpreted/block_arguments.scd
-|  SCFunction (1:1)
-|  |  SCBody (1:1)
-|  |  |  SCMessage (5:1): value
-|  |  |  |  SCFunction (5:1)
-|  |  |  |  |  SCArgumentDeclareList (5:3)
-|  |  |  |  |  |  SCArgumentDeclare (5:3): w
-|  |  |  |  |  |  |  SCLiteral (5:7) = 3
-|  |  |  |  |  SCBody (5:1)
-|  |  |  |  |  |  SCRead (5:10): local w, declared (5:3): w = 3
+|  SCRegionList (1:1)
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1)
+|  |  |  |  SCArgumentDeclareList (5:3)
+|  |  |  |  |  SCArgumentDeclare (5:3): w
+|  |  |  |  |  |  SCLiteral (5:7) = 3
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCRead (5:10): local w, declared (5:3): w = 3
 Successfully compiled 15 classes.

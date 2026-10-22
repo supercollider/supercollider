@@ -265,9 +265,21 @@ struct SCFunction : priv::Node<SCFunction_I(SCArgumentDeclareList_I positional_a
     // constant. Only set without arguments, as their values aren't known until the function is called.
     OptionalConstExprIndex constant_result {};
 };
-// Code that isn't in the class library, e.g., a line evaluated in the IDE or an scd file, compiled into a function as
-// if it were written inside `Interpreter:functionCompileContext`, so it can use the Interpreter's members.
-struct SCInterpreted : priv::Node<SCInterpreted_I(SCFunction_I function)> {
+// One item of a region, e.g., `a = 1` or `( var b = 2; b )`, compiled into its own function, so each can be evaluated
+// on its own.
+struct SCRegion : priv::Node<SCRegion_I(SCFunction_I function)> {
+    static constexpr auto type_name { "SCRegion" };
+};
+// The items of a region, e.g., `a = 1; ( var b = 2; b )`, evaluated in turn.
+struct SCRegionList : priv::List<SCRegionList_I, SCRegion_I> {
+    static constexpr auto type_name { "SCRegionList" };
+    // What evaluating the regions returns, the last one's, when it is known.
+    OptionalConstExprIndex constant_result {};
+};
+// Code that isn't in the class library, e.g., a line evaluated in the IDE or an scd file, compiled as if it were
+// written inside `Interpreter:functionCompileContext`, so it can use the Interpreter's members. A file as a function,
+// e.g., `|x| x + 1`, is a function, otherwise it is a list of regions.
+struct SCInterpreted : priv::Node<SCInterpreted_I(join<SCFunction_I, SCRegionList_I> code)> {
     static constexpr auto type_name { "SCInterpreted" };
     bool poisoned { false };
 };

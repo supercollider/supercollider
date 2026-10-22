@@ -31,21 +31,26 @@ SCInterpreted (1:1): region_tests/many_regions.scd
 |     14 │ (
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  SCFunction (1:1)
-|  |  SCBody (1:1)
-|  |  |  SCMessage (3:5): +
-|  |  |  |  SCRead (3:5): instance a, declared (36:11): a
-|  |  |  |  SCPositionalArgs (3:5)
-|  |  |  |  |  SCLiteral (3:9) = 1
-|  |  |  SCMessage (7:1): value
-|  |  |  |  SCFunction (7:1)
-|  |  |  |  |  SCBody (7:1)
-|  |  |  |  |  |  SCVariableDeclare (9:9): a
-|  |  |  |  |  |  |  SCLiteral (9:13) = 10
-|  |  |  |  |  |  SCMessage (10:5): *
-|  |  |  |  |  |  |  SCRead (10:5): local a = 10, declared (9:9): a = 10
-|  |  |  |  |  |  |  SCPositionalArgs (10:5)
-|  |  |  |  |  |  |  |  SCRead (10:9): environment bar
-|  |  |  SCAssign (15:5): environment f
-|  |  |  |  SCLiteral (15:10) = 10
+|  SCRegionList (1:1)
+|  |  SCRegion (3:5)
+|  |  |  SCFunction (3:5)
+|  |  |  |  SCBody (3:5)
+|  |  |  |  |  SCMessage (3:5): +
+|  |  |  |  |  |  SCRead (3:5): instance a, declared (36:11): a
+|  |  |  |  |  |  SCPositionalArgs (3:5)
+|  |  |  |  |  |  |  SCLiteral (3:9) = 1
+|  |  SCRegion (7:1)
+|  |  |  SCFunction (7:1)
+|  |  |  |  SCBody (7:1)
+|  |  |  |  |  SCVariableDeclare (9:9): a
+|  |  |  |  |  |  SCLiteral (9:13) = 10
+|  |  |  |  |  SCMessage (10:5): *
+|  |  |  |  |  |  SCRead (10:5): local a = 10, declared (9:9): a = 10
+|  |  |  |  |  |  SCPositionalArgs (10:5)
+|  |  |  |  |  |  |  SCRead (10:9): environment bar
+|  |  SCRegion (15:5)
+|  |  |  SCFunction (15:5)
+|  |  |  |  SCBody (15:5)
+|  |  |  |  |  SCAssign (15:5): environment f
+|  |  |  |  |  |  SCLiteral (15:10) = 10
 Successfully compiled 15 classes.

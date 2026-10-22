@@ -81,32 +81,55 @@ SCInterpreted (1:1): parse_errors/missing_semicolon.scd
 |     23 │ a + b
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  SCFunction (1:1)
-|  |  SCBody (1:1)
-|  |  |  SCMessage (3:1): + = 3
-|  |  |  |  SCLiteral (3:1) = 1
-|  |  |  |  SCPositionalArgs (3:1)
-|  |  |  |  |  SCLiteral (3:5) = 2
-|  |  |  SCMessage (4:1): r
-|  |  |  |  SCFunction (4:3) -> 3
-|  |  |  |  |  SCBody (4:3)
-|  |  |  |  |  |  SCLiteral (4:5) = 3
-|  |  |  SCLiteral (6:2) = 4
-|  |  |  SCLiteral (9:2) = 5
-|  |  |  SCAssign (12:1): instance a, declared (36:11): a
-|  |  |  |  SCMessage (12:5): - = 5
-|  |  |  |  |  SCLiteral (12:5) = 6
-|  |  |  |  |  SCPositionalArgs (12:5)
-|  |  |  |  |  |  SCLiteral (13:3) = 1
-|  |  |  SCAssign (14:1): instance b, declared (36:16): b
-|  |  |  |  SCMessage (14:5): neg
-|  |  |  |  |  SCRead (14:5): instance a, declared (36:11): a
-|  |  |  SCAssign (16:1): instance c, declared (36:21): c
-|  |  |  |  SCCollection (16:5): Array = [7, 8]
-|  |  |  |  |  SCLiteral (16:6) = 7
-|  |  |  |  |  SCLiteral (17:2) = 8
-|  |  |  SCMessage (23:1): +
-|  |  |  |  SCRead (23:1): instance a, declared (36:11): a
-|  |  |  |  SCPositionalArgs (23:1)
-|  |  |  |  |  SCRead (23:5): instance b, declared (36:16): b
+|  SCRegionList (1:1)
+|  |  SCRegion (3:1)
+|  |  |  SCFunction (3:1) -> 3
+|  |  |  |  SCBody (3:1)
+|  |  |  |  |  SCMessage (3:1): + = 3
+|  |  |  |  |  |  SCLiteral (3:1) = 1
+|  |  |  |  |  |  SCPositionalArgs (3:1)
+|  |  |  |  |  |  |  SCLiteral (3:5) = 2
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCMessage (4:1): r
+|  |  |  |  |  |  SCFunction (4:3) -> 3
+|  |  |  |  |  |  |  SCBody (4:3)
+|  |  |  |  |  |  |  |  SCLiteral (4:5) = 3
+|  |  SCRegion (6:2)
+|  |  |  SCFunction (6:2) -> 4
+|  |  |  |  SCBody (6:2)
+|  |  |  |  |  SCLiteral (6:2) = 4
+|  |  SCRegion (9:2)
+|  |  |  SCFunction (9:2) -> 5
+|  |  |  |  SCBody (9:2)
+|  |  |  |  |  SCLiteral (9:2) = 5
+|  |  SCRegion (12:1)
+|  |  |  SCFunction (12:1)
+|  |  |  |  SCBody (12:1)
+|  |  |  |  |  SCAssign (12:1): instance a, declared (36:11): a
+|  |  |  |  |  |  SCMessage (12:5): - = 5
+|  |  |  |  |  |  |  SCLiteral (12:5) = 6
+|  |  |  |  |  |  |  SCPositionalArgs (12:5)
+|  |  |  |  |  |  |  |  SCLiteral (13:3) = 1
+|  |  SCRegion (14:1)
+|  |  |  SCFunction (14:1)
+|  |  |  |  SCBody (14:1)
+|  |  |  |  |  SCAssign (14:1): instance b, declared (36:16): b
+|  |  |  |  |  |  SCMessage (14:5): neg
+|  |  |  |  |  |  |  SCRead (14:5): instance a, declared (36:11): a
+|  |  SCRegion (16:1)
+|  |  |  SCFunction (16:1)
+|  |  |  |  SCBody (16:1)
+|  |  |  |  |  SCAssign (16:1): instance c, declared (36:21): c
+|  |  |  |  |  |  SCCollection (16:5): Array = [7, 8]
+|  |  |  |  |  |  |  SCLiteral (16:6) = 7
+|  |  |  |  |  |  |  SCLiteral (17:2) = 8
+|  |  SCRegion (23:1)
+|  |  |  SCFunction (23:1)
+|  |  |  |  SCBody (23:1)
+|  |  |  |  |  SCMessage (23:1): +
+|  |  |  |  |  |  SCRead (23:1): instance a, declared (36:11): a
+|  |  |  |  |  |  SCPositionalArgs (23:1)
+|  |  |  |  |  |  |  SCRead (23:5): instance b, declared (36:16): b
 Successfully compiled 15 classes.
