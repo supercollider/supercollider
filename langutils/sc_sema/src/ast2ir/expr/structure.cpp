@@ -1,4 +1,4 @@
-// Expressions that only contain other expressions: sequences, returns and references.
+// Expressions that only contain other expressions: sequences and returns.
 // Needs the ast graph for the children.
 #include "ast2ir/expr.hpp"
 #include "sc_parser/ast.hpp"
@@ -39,11 +39,4 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NonLocalReturnExprIndex i) {
 
     return { ir.create(SCExplicitReturn {}, location({ *i }), expr_return.ir_node) };
 }
-
-Return<SCAnyExpr_I> Expr::operator()(ast::ReferenceIndex i) {
-    const auto [expr] = ast_graph->children(i);
-    const auto expr_r = (*this)(ast::AnyExprIndex { expr });
-    return { ir.create(SCRef {}, location({ *i }), expr_r.ir_node) };
-}
-
 }

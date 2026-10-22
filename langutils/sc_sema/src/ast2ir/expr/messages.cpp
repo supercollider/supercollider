@@ -285,6 +285,19 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ValueMessageIndex i) {
     return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
 }
 
+// `` `x `` is `Ref.new(x)`, as in the old compiler. Ref is a common class, so it always exists.
+Return<SCAnyExpr_I> Expr::operator()(ast::ReferenceIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [expr] = ast_graph->children(i);
+    const auto ref_class = ctx.constant_table.register_constexpr({ ctx.common_classes.ref });
+    const auto receiver = ir.create(SCLiteral { ref_class }, location({ *i }));
+    ir.register_node_as_consteval(receiver, ref_class);
+    const auto sel = implicit_selector(ctx.common_symbols.new_);
+    auto args = make_arguments(msg_ctx, { *i }, sel);
+    append_positional(msg_ctx, args, (*this)(ast::AnyExprIndex { expr }));
+    return create_message(msg_ctx, { *i }, receiver, sel, args);
+}
+
 Return<SCAnyExpr_I> Expr::operator()(ast::NewMessageIndex i) {
     MessageContext msg_ctx { *this, ctx, ir, ast_graph };
     const auto [class_name, arg_list, blocks] = ast_graph->children(i);

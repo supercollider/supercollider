@@ -89,6 +89,9 @@ struct Expr : private Base {
 
     std::vector<Scope> scope;
     DiagnosticSink& sink;
+    // The `_` of the innermost call being partially applied, in order, see partially_apply. Each reads the function's
+    // argument at the same index.
+    std::vector<ast::CurryIndex> applied_curries;
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
     void add_symbol(Symbol, ScopeEntry);

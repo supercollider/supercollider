@@ -87,10 +87,6 @@ struct SCMessage : priv::Node<SCMessage_I(SCAnyExpr_I receiver, //
     SCMessage(OptionallyLocatable<SymSCSelector> sel): selector(sel) {}
 };
 
-struct SCRef : priv::Node<SCRef_I(SCAnyExpr_I)> {
-    static constexpr auto type_name { "SCRef" };
-};
-
 // `var a = 1`, value is missing for `var a`, which is nil.
 struct SCVariableDeclare : priv::Node<SCVariableDeclare_I(maybe<SCAnyExpr_I> value)> {
     static constexpr auto type_name { "SCVariableDeclare" };

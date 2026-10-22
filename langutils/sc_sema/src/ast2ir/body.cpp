@@ -1,4 +1,5 @@
 #include "ast2ir/body.hpp"
+#include "ast2ir/partial_application.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/ast_untyped.hpp"
 #include "sc_sema/context.hpp"
@@ -26,6 +27,7 @@ struct VariableUses {
     }
 };
 
+// This does another pass over the function body.
 class VariableScanner {
 public:
     VariableScanner(const ast::ASTGraph& g, SymbolTable& symbols, VariableUses& uses):
@@ -34,6 +36,13 @@ public:
         uses(uses) {}
 
     void scan(ast::Index node) {
+        // A partial application, `a + _`, is a function, so what it reads is captured.
+        if (!curry_arguments(g, node).empty()) {
+            hidden_names.emplace_back();
+            scan_children(node);
+            hidden_names.pop_back();
+            return;
+        }
         if (const auto assignment = g.as_a<ast::AssignmentIndex>(node);
             assignment && g.payload(*assignment).target == ast::AssignmentNode::Target::Normal) {
             const auto [name, value] = g.children(*assignment);

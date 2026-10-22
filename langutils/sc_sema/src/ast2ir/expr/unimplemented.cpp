@@ -8,6 +8,4 @@ Return<SCAnyExpr_I> unimplemented(IRGraph& ir, const std::shared_ptr<const ast::
     assert(false && "not implemented");
     return { ir.create(SCExprList {}, location_of(ir, *ast_graph, i)) };
 }
-
-Return<SCAnyExpr_I> Expr::operator()(ast::CurryIndex i) { return unimplemented(ir, ast_graph, { *i }); }
 }

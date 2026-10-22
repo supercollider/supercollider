@@ -513,4 +513,14 @@ Diagnostic Diagnostic::declared_environment_variable(TextInfoPtr t, sc::lex::Sou
              "Only local variables can be declared with 'var'. Remove the '~' to declare a variable, or assign the "
              "environment variable after the declaration." };
 }
+
+Diagnostic Diagnostic::curry_outside_call(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return {
+        "Partial application outside of a call",
+        Severity::Error,
+        { { std::move(t), l, "this isn't an argument of a call." } },
+        "`_` makes a function from the call it is in, e.g., `_ + 1` is `{ |x| x + 1 }`. It must be the receiver or an "
+        "argument of a message, or an element of an array or dictionary, not inside another expression."
+    };
+}
 }
