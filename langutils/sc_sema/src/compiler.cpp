@@ -8,10 +8,11 @@
 #include "ast2ir/declare_classes.hpp"
 
 #include "sc_sema/compiler.hpp"
-#include "sc_sema/ast_location.hpp"
+#include "sc_sema/source_location.hpp"
 #include "sc_sema/symbol_table.hpp"
 #include "sc_sema/symbols.hpp"
 #include "sc_sema/ir.hpp"
+#include "ast2ir/ast2ir_base.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -418,10 +419,9 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 // This avoids pushing the variable and the code should revert to the old behaviour.
                 continue;
             }
-            SCMember ref { mem->name, mem->name_index, decl.name() };
+            SCMember ref { mem->name, decl.name() };
             if (mem->expr_index) {
                 ref.expr = mem->expr_index->first;
-                ref.expr_i = mem->expr_index->second;
                 ref.expr_type_info = *mem->type_info;
             }
             ref.accessor = mem->accessor;
@@ -459,15 +459,17 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 std::shared_ptr<IRGraph> class_ir = std::make_shared<IRGraph>();
                 auto& [name, decl] = *class_it;
 
-                const auto member_list_i = class_ir->create(SCMemberList {}, { decl.ast_graph(), decl.name_index() });
+                const auto member_list_i = class_ir->create(
+                    SCMemberList {}, ast2ir::location_of(*class_ir, *decl.ast_graph(), decl.name_index()));
                 if (const auto fnd = class_member_layout.find(name); fnd != class_member_layout.end()) {
                     for (const auto& [m, g, i] : fnd->second) {
-                        const auto member = class_ir->create(SCMember { m }, { g, i });
+                        const auto member = class_ir->create(SCMember { m }, ast2ir::location_of(*class_ir, *g, i));
                         class_ir->append(member_list_i, member);
                     }
                 }
 
-                const auto method_list_i = class_ir->create(SCMethodList { }, { decl.ast_graph(), decl.name_index() });
+                const auto method_list_i = class_ir->create(
+                    SCMethodList {}, ast2ir::location_of(*class_ir, *decl.ast_graph(), decl.name_index()));
 
                 SCClass class_node { name };
                 if (auto slot = decl.slot_def()) {
@@ -485,7 +487,8 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 }
                 class_node.meta_class = decl.meta_class();
 
-                const auto class_i = class_ir->create(std::move(class_node), { decl.ast_graph(), decl.index() },
+                const auto class_i = class_ir->create(std::move(class_node),
+                                                      ast2ir::location_of(*class_ir, *decl.ast_graph(), decl.index()),
                                                       member_list_i, method_list_i);
 
                 class_ir->add_root(class_i);

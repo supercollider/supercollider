@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sc_parser/sc_grammar_shared.hpp"
-#include "sc_sema/ast_location.hpp"
+#include "sc_sema/source_location.hpp"
 #include "sc_sema/const_expr_index.hpp"
 #include "sc_sema/ir_index.hpp"
 #include "sc_sema/symbols.hpp"
@@ -132,16 +132,12 @@ struct SCMethodList : priv::List<SCMethodList_I, SCMethod_I> {
 struct SCMember : priv::Node<SCMember_I()> {
     static constexpr auto type_name { "SCMember" };
 
-    SCMember(SymSCIdentifier name, ast::Index name_index, SymSCClassName owning_class):
-        name(name),
-        name_index(name_index),
-        owning_class(owning_class) {}
+    // The node's location is the member's name.
+    SCMember(SymSCIdentifier name, SymSCClassName owning_class): name(name), owning_class(owning_class) {}
 
     SymSCIdentifier name;
-    ast::Index name_index;
     SymSCClassName owning_class;
     OptionalConstExprIndex expr {};
-    ast::OptionalIndex expr_i {};
     TypeInfo expr_type_info {};
 
     ast::ReadWriteAccessor accessor {};

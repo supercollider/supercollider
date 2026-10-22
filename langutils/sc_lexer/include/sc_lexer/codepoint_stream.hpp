@@ -38,10 +38,10 @@ template <std::size_t N> struct Peek {
 class CodePointStream {
     // Mutable, gets updated as we advance through the code.
     struct State {
-        std::size_t next_byte_offest { 0 };
-        std::size_t current_line_number { 0 };
+        std::uint32_t next_byte_offest { 0 };
+        std::uint32_t current_line_number { 0 };
         // Byte offset in line, not visual column.
-        std::size_t current_column_count { 0 };
+        std::uint32_t current_column_count { 0 };
         bool prev_was_newline { false };
         void update(CodePoint next, std::uint8_t sz) noexcept;
     } state {};

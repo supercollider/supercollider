@@ -28,34 +28,6 @@ Functional notation sends the message to its first argument, `foo(a, b)` is the 
 ──────────────────────────────────────────────────────────────────────────────────
 
 ──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-   39 │     nested_error { ^1.foo(2.perform(3)) }
-   40 │     error_in_array { ^#[1, 2.foo] }
-   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-      ┆                  ^^^^^^^^^^^^^ this is not defined.
-   42 │     after_errors { ^6 }
-   43 │ 
-   44 │     *good { ^1 + 2 }
-
-Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Message has no receiver
-file:
-   39 │     nested_error { ^1.foo(2.perform(3)) }
-   40 │     error_in_array { ^#[1, 2.foo] }
-   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-      ┆                                      ^^^^^^^^^^^ there is nothing to send this message to.
-   42 │     after_errors { ^6 }
-   43 │ 
-   44 │     *good { ^1 + 2 }
-
-Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
 Error: Not a constant
 file:
    47 │     *no_receiver { ^foo(bar: 1) }
@@ -65,20 +37,6 @@ file:
    50 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
    51 │     *after_errors { ^6 }
    52 │     *good_class_assignment { class_var = 3 }
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-   38 │     no_receiver { ^foo(bar: 1) }
-   39 │     nested_error { ^1.foo(2.perform(3)) }
-   40 │     error_in_array { ^#[1, 2.foo] }
-      ┆                            ^^^^^ this can't be evaluated when compiling.
-   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-   42 │     after_errors { ^6 }
-   43 │ 
 
 This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -95,34 +53,6 @@ file:
    51 │     *after_errors { ^6 }
 
 `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-   37 │     undefined { undefined_var = 4 }
-   38 │     no_receiver { ^foo(bar: 1) }
-   39 │     nested_error { ^1.foo(2.perform(3)) }
-      ┆                                     ^ this is a constant, but not a symbol.
-   40 │     error_in_array { ^#[1, 2.foo] }
-   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-   42 │     after_errors { ^6 }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Message has no receiver
-file:
-   36 │     good_assignment { instance_var = 3 }
-   37 │     undefined { undefined_var = 4 }
-   38 │     no_receiver { ^foo(bar: 1) }
-      ┆                    ^^^^^^^^^^^ there is nothing to send this message to.
-   39 │     nested_error { ^1.foo(2.perform(3)) }
-   40 │     error_in_array { ^#[1, 2.foo] }
-   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-
-Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
 ──────────────────────────────────────────────────────────────────────────────────
 
 ──────────────────────────────────────────────────────────────────────────────────
@@ -165,6 +95,76 @@ file:
    48 │     *nested_error { ^1.foo(2.perform(3)) }
 
 Declare it with 'var', or use '~instance_var' to refer to an environment variable.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Variable not defined
+file:
+   39 │     nested_error { ^1.foo(2.perform(3)) }
+   40 │     error_in_array { ^#[1, 2.foo] }
+   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+      ┆                  ^^^^^^^^^^^^^ this is not defined.
+   42 │     after_errors { ^6 }
+   43 │ 
+   44 │     *good { ^1 + 2 }
+
+Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Message has no receiver
+file:
+   39 │     nested_error { ^1.foo(2.perform(3)) }
+   40 │     error_in_array { ^#[1, 2.foo] }
+   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+      ┆                                      ^^^^^^^^^^^ there is nothing to send this message to.
+   42 │     after_errors { ^6 }
+   43 │ 
+   44 │     *good { ^1 + 2 }
+
+Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Not a constant
+file:
+   38 │     no_receiver { ^foo(bar: 1) }
+   39 │     nested_error { ^1.foo(2.perform(3)) }
+   40 │     error_in_array { ^#[1, 2.foo] }
+      ┆                            ^^^^^ this can't be evaluated when compiling.
+   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+   42 │     after_errors { ^6 }
+   43 │ 
+
+This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+   37 │     undefined { undefined_var = 4 }
+   38 │     no_receiver { ^foo(bar: 1) }
+   39 │     nested_error { ^1.foo(2.perform(3)) }
+      ┆                                     ^ this is a constant, but not a symbol.
+   40 │     error_in_array { ^#[1, 2.foo] }
+   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+   42 │     after_errors { ^6 }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Message has no receiver
+file:
+   36 │     good_assignment { instance_var = 3 }
+   37 │     undefined { undefined_var = 4 }
+   38 │     no_receiver { ^foo(bar: 1) }
+      ┆                    ^^^^^^^^^^^ there is nothing to send this message to.
+   39 │     nested_error { ^1.foo(2.perform(3)) }
+   40 │     error_in_array { ^#[1, 2.foo] }
+   41 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+
+Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
 ──────────────────────────────────────────────────────────────────────────────────
 
 ──────────────────────────────────────────────────────────────────────────────────

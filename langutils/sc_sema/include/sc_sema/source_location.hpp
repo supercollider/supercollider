@@ -1,27 +1,28 @@
 #pragma once
-#include "sc_parser/indexes_untyped.hpp"
+#include "sc_lexer/text_location.hpp"
 #include "sc_util/strong_index.hpp"
 #include <cstdint>
-#include <memory>
 #include <optional>
-namespace sc::ast {
-class ASTGraph;
-}
 
 namespace sc::ir {
 
 using ASTGraphIndex = util::StrongIndex<std::uint32_t, struct ASTGraphIndex__>;
-struct ASTLocation {
-    // Why not an index? That would work for the class library, but interpreted code might want to not store the ast
-    // graph forever. That means we need a way to keep the graph alive while the ir graph is alive.
-    // Why not store on ptr in the ir graph, we store all the information needed for a class in one ir graph, but
-    // extention methods might be stored in separate ast graphs as they might be in different files.
-    std::shared_ptr<const ast::ASTGraph> graph_index;
-    ast::Index node_index;
+
+// An index into an IRGraph's table of sources.
+using SourceIndex = util::StrongIndex<std::uint32_t, struct SourceIndex__>;
+
+// Where a node came from, as a range in one of the IRGraph's sources.
+// This is plain data so the graph can be serialised, and so the ast can be freed once it has been lowered. It is only
+// meaningful inside the IRGraph that owns it.
+// Create and read these through the IRGraph, so the representation can change, e.g., to record macro expansions.
+// The line and column are stored rather than recomputed, as the lexer's counting is subtle and would be duplicated.
+struct SourceLocation {
+    SourceIndex source;
+    lex::SourceCodeRange range;
 };
 
 template <typename T> struct Locatable {
-    ASTLocation location;
+    SourceLocation location;
     T value;
     [[nodiscard]] constexpr T& operator->() { return value; }
     [[nodiscard]] constexpr const T& operator->() const { return value; }
@@ -31,7 +32,7 @@ template <typename T> struct Locatable {
 };
 
 template <typename T> struct OptionallyLocatable {
-    std::optional<ASTLocation> location;
+    std::optional<SourceLocation> location;
     T value;
 
     [[nodiscard]] constexpr T& operator->() { return value; }

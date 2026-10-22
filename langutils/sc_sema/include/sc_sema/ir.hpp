@@ -6,8 +6,15 @@
 #include "sc_util/overload.hpp"
 #include "sc_util/typed_graph_helper.hpp"
 #include "sc_util/typed_graph.hpp"
+#include <memory>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
+#include <vector>
+
+namespace sc::lex {
+struct TextInfo;
+}
 
 
 namespace sc::ir {
@@ -74,7 +81,7 @@ public:
     // Create
     ////////////////////////////////////////////////////////////////////////////////
     template <typename Node, typename... ChildrenIndexes>
-    [[nodiscard]] typename Node::Index create(Node&& node, ASTLocation location, ChildrenIndexes&&... child_indexes);
+    [[nodiscard]] typename Node::Index create(Node&& node, SourceLocation location, ChildrenIndexes&&... child_indexes);
 
     ////////////////////////////////////////////////////////////////////////////////
     // Creating Edges
@@ -121,8 +128,18 @@ public:
     // accessors
     ////////////////////////////////////////////////////////////////////////////////
     using Base::payload;
-    const ASTLocation location(NodeIndex i) const { return m_node_locations[*i]; }
-    ASTLocation& location(NodeIndex i) { return m_node_locations[*i]; }
+    [[nodiscard]] SourceLocation location(NodeIndex i) const { return m_node_locations[*i]; }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Sources
+    // The text the locations refer to. Holding the text keeps it alive, the ast isn't needed once it is lowered.
+    ////////////////////////////////////////////////////////////////////////////////
+    // Adds the source to the table if it isn't already there.
+    [[nodiscard]] SourceIndex register_source(std::shared_ptr<const lex::TextInfo> text);
+    [[nodiscard]] SourceLocation make_location(std::shared_ptr<const lex::TextInfo> text, lex::SourceCodeRange range);
+    [[nodiscard]] const std::shared_ptr<const lex::TextInfo>& text_info(SourceIndex i) const;
+    [[nodiscard]] static lex::SourceCodeRange range(SourceLocation l);
+    [[nodiscard]] std::string_view read(SourceLocation l) const;
 
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -135,19 +152,19 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
 
     template <typename F> [[nodiscard]] static constexpr bool signature_check() {
-        return std::is_invocable_v<F, const Edges&, const Variant&, const ASTLocation&, NodeIndex>;
+        return std::is_invocable_v<F, const Edges&, const Variant&, const SourceLocation&, NodeIndex>;
     }
 
     template <typename F, typename = std::enable_if<signature_check<F>()>> //
     void flat_walk(F f);
 
     struct Default {
-        void operator()(const Edges&, const Variant&, const ASTLocation&, NodeIndex, size_t /**depth*/) { }
+        void operator()(const Edges&, const Variant&, const SourceLocation&, NodeIndex, size_t /**depth*/) {}
     };
 
     /**
        @brief Expects functions of the signature:
-        (const Edges& e, const Variant& v, const ASTLocation&, NodeIndex i, size_t depth)
+        (const Edges& e, const Variant& v, const SourceLocation&, NodeIndex i, size_t depth)
     */
     template <typename EnterNode, typename BeforeChildren = Default, typename AfterChildren = Default,
               typename ExitNode = Default,
@@ -175,7 +192,8 @@ public:
 
 
 private:
-    std::vector<ASTLocation> m_node_locations { };
+    std::vector<SourceLocation> m_node_locations {};
+    std::vector<std::shared_ptr<const lex::TextInfo>> m_sources {};
 
     std::unordered_map<NodeIndex, ConstExprIndex> nodes_to_constants { };
     std::variant<std::monostate, SCClass_I, SCAnyExpr_I> m_roots;
@@ -191,7 +209,7 @@ template <typename TypedIndex, typename> [[nodiscard]] constexpr const char* IRG
 };
 
 template <typename Node, typename... ChildrenIndexes>
-[[nodiscard]] typename Node::Index IRGraph::create(Node&& node, ASTLocation location,
+[[nodiscard]] typename Node::Index IRGraph::create(Node&& node, SourceLocation location,
                                                    ChildrenIndexes&&... child_indexes) {
     const auto index = Base::create(std::forward<Node>(node), std::forward<ChildrenIndexes>(child_indexes)...);
     if (*index < m_node_locations.size()) {

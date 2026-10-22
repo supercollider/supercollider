@@ -2,18 +2,6 @@
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Variable not defined
 file:
-   41 │     method_constant { |a = 1| ^1 }
-   42 │     method_instance_var { |a = (instance_var)| ^1 }
-   43 │     method_other_argument { |a, b = (a)| ^1 }
-      ┆                                      ^ this is not defined.
-   44 │ }
-
-Declare it with 'var', or use '~a' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
    37 │     block_earlier_argument { ^{ |a, b = (a + 1)| b } }
    38 │     block_later_argument { ^{ |a = (b), b| a } }
    39 │     block_itself { ^{ |a = (a)| a } }
@@ -54,12 +42,12 @@ SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'  
 |  SCMemberList: ArgumentDefaults
 |  |  SCMember: instance_var
 |  SCMethodList: ArgumentDefaults
-|  |  SCMethod: poisoned: method_other_argument { |a, b = (a)| ^1 }
+|  |  SCMethod: method_other_argument { |a, b = (a)| ^1 }
 |  |  |  SCArgumentDeclareList: a, b = (a)
 |  |  |  |  SCArgumentDeclare: a
 |  |  |  |  |  SCMissing: a
 |  |  |  |  SCArgumentDeclare: a, b = (a)
-|  |  |  |  |  SCExprList: a
+|  |  |  |  |  SCRead: a
 |  |  |  SCArgumentDeclareList: a, b = (a)
 |  |  |  SCExprList: ^1
 |  |  |  |  SCExplicitReturn: 1

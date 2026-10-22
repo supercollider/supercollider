@@ -7,7 +7,7 @@ namespace sc::ir::ast2ir {
 Return<SCAnyExpr_I> unimplemented(IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
                                   ast::OptionalIndex i) {
     assert(false && "not implemented");
-    return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
+    return { ir.create(SCExprList {}, location_of(ir, *ast_graph, i)) };
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::CollectionIndex i) { return unimplemented(ir, ast_graph, i); }

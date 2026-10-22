@@ -28,7 +28,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::EnvIdentifierIndex i) {
     const auto loc = get_location(*ast_graph, child);
     const auto txt = get_string_view(*ast_graph, child);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
-    const auto index = ir.create(SCRead { name_sym, SCRead::Kind::Environment }, { ast_graph, { *i } });
+    const auto index = ir.create(SCRead { name_sym, SCRead::Kind::Environment }, location(i));
     return { index };
 }
 
@@ -67,10 +67,10 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
     const auto txt = get_string_view(*ast_graph, i);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
     if (const auto entry = resolve_symbol(name_sym))
-        return { ir.create(SCRead { name_sym, to_read_kind(entry->kind) }, { ast_graph, { *i } }) };
+        return { ir.create(SCRead { name_sym, to_read_kind(entry->kind) }, location(i)) };
 
     sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, i), txt));
-    return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
+    return { ir.create(SCExprList {}, location(i)) };
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
@@ -79,11 +79,11 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
 
     const auto txt = get_string_view(*ast_graph, name);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
-    const Locatable<SymSCIdentifier> located_name { { ast_graph, { *name } }, name_sym };
+    const Locatable<SymSCIdentifier> located_name { location(name), name_sym };
 
     const auto make_return = [&](SCAssign::Kind kind) -> Return<SCAnyExpr_I> {
         // Assignment returns the assigned value, but is never a const expression as it has a side effect.
-        const auto index = ir.create(SCAssign { located_name, kind }, { ast_graph, { *i } }, expr_r.ir_node);
+        const auto index = ir.create(SCAssign { located_name, kind }, location(i), expr_r.ir_node);
         if (expr_r.type)
             return { index, *expr_r.type };
         return { index };

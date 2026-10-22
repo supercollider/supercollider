@@ -46,7 +46,7 @@ struct MessageArguments {
 
 MessageArguments make_arguments(MessageContext& msg_ctx, ast::OptionalIndex message_i, const Selector& selector,
                                 bool first_positional_is_receiver = false) {
-    const ASTLocation location { msg_ctx.ast_graph, { *message_i } };
+    const auto location = location_of(msg_ctx.ir, *msg_ctx.ast_graph, message_i);
     const bool is_perform = *selector.name == msg_ctx.ctx.common_symbols.perform;
     return { msg_ctx.ir.create(SCPositionalArgs {}, location),
              msg_ctx.ir.create(SCKwArgs {}, location),
@@ -62,8 +62,8 @@ void append_positional(MessageContext& msg_ctx, MessageArguments& args, const Re
         const auto& g = *msg_ctx.ast_graph;
         const auto arg_location = msg_ctx.ir.location(arg.ir_node);
         msg_ctx.expr.sink(sc::diag::Diagnostic::variadic_argument_not_last(
-            get_text_info(g), get_location(g, *args.first_variadic), get_text_info(*arg_location.graph_index),
-            get_location(*arg_location.graph_index, arg_location.node_index)));
+            get_text_info(g), get_location(g, *args.first_variadic), msg_ctx.ir.text_info(arg_location.source),
+            IRGraph::range(arg_location)));
     }
     if (args.first_positional_is_receiver && !args.receiver) {
         args.receiver = arg.ir_node;
@@ -81,8 +81,8 @@ void append_positional(MessageContext& msg_ctx, MessageArguments& args, const Re
             // Any other constant can never name a method. Something that isn't constant might evaluate to a symbol,
             // so it is left for when the code runs.
             const auto location = msg_ctx.ir.location(arg.ir_node);
-            const auto text_info = get_text_info(*location.graph_index);
-            const auto range = get_location(*location.graph_index, location.node_index);
+            const auto& text_info = msg_ctx.ir.text_info(location.source);
+            const auto range = IRGraph::range(location);
             const auto& constant = msg_ctx.ctx.constant_table(*arg.const_index);
             if (const auto string = constant.get_if<SymSCString>()) {
                 msg_ctx.expr.sink(sc::diag::Diagnostic::perform_selector_not_symbol(text_info, range,
@@ -110,10 +110,11 @@ void append_arguments(MessageContext& msg_ctx, MessageArguments& args, ast::Argu
             const auto name = msg_ctx.ctx.symbol_table.get_identifier(
                 std::string { synthesize_literal(g.payload(keyword), get_string_view(g, keyword)) });
             const auto value_r = msg_ctx.expr(ast::AnyExprIndex { value });
-            const Locatable<SymSCIdentifier> located_name { { msg_ctx.ast_graph, { *keyword } }, name };
-            msg_ctx.ir.append(
-                args.keyword,
-                msg_ctx.ir.create(SCKwArg { located_name }, { msg_ctx.ast_graph, { *entry } }, value_r.ir_node));
+            const Locatable<SymSCIdentifier> located_name { location_of(msg_ctx.ir, *msg_ctx.ast_graph, keyword),
+                                                            name };
+            msg_ctx.ir.append(args.keyword,
+                              msg_ctx.ir.create(SCKwArg { located_name },
+                                                location_of(msg_ctx.ir, *msg_ctx.ast_graph, entry), value_r.ir_node));
         } else if (const auto variadic = g.as_a<ast::VariadicArgIndex>(entry)) {
             if (!args.first_variadic)
                 args.first_variadic = *variadic;
@@ -139,7 +140,7 @@ SCAnyExpr_I adverb(MessageContext& msg_ctx, ast::AdverbIndex i) {
     // A name, e.g., `a +.x b`, is a symbol.
     const auto sym = msg_ctx.ctx.symbol_table.get_symbol(std::string { get_string_view(g, i) });
     const auto const_i = msg_ctx.ctx.constant_table.register_constexpr({ sym });
-    const auto lit = msg_ctx.ir.create(SCLiteral { const_i }, { msg_ctx.ast_graph, { *i } });
+    const auto lit = msg_ctx.ir.create(SCLiteral { const_i }, location_of(msg_ctx.ir, *msg_ctx.ast_graph, i));
     msg_ctx.ir.register_node_as_consteval(lit, const_i);
     return lit;
 }
@@ -165,7 +166,8 @@ Selector selector(MessageContext& msg_ctx, ast::SelectorMaybeAdverbIndex i) {
         name.pop_back();
     }
 
-    return { { ASTLocation { msg_ctx.ast_graph, { *name_i } }, msg_ctx.ctx.symbol_table.get_selector(std::move(name)) },
+    return { { location_of(msg_ctx.ir, *msg_ctx.ast_graph, name_i),
+               msg_ctx.ctx.symbol_table.get_selector(std::move(name)) },
              adverb_i };
 }
 
@@ -174,7 +176,7 @@ Selector implicit_selector(SymSCSelector name) { return { { std::nullopt, name }
 
 Return<SCAnyExpr_I> create_message(MessageContext& msg_ctx, ast::OptionalIndex message_i, SCAnyExpr_I receiver,
                                    const Selector& selector, const MessageArguments& args) {
-    const ASTLocation location { msg_ctx.ast_graph, { *message_i } };
+    const auto location = location_of(msg_ctx.ir, *msg_ctx.ast_graph, message_i);
     const maybe<SCAnyExpr_I> adverb_i = selector.adverb
         ? maybe<SCAnyExpr_I> { *selector.adverb }
         : maybe<SCAnyExpr_I> { msg_ctx.ir.create(SCMissing {}, location) };
@@ -208,7 +210,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::PrefixMessageIndex i) {
 
     if (!args.receiver) {
         sink(sc::diag::Diagnostic::message_without_receiver(get_text_info(*ast_graph), get_location(*ast_graph, i)));
-        return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
+        return { ir.create(SCExprList {}, location(i)) };
     }
     return create_message(msg_ctx, i, *args.receiver, sel, args);
 }
@@ -253,7 +255,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
     // e.g., `a[1..3]`, this is a different message, and ranges aren't implemented yet.
     if (const auto range = ast_graph->as_a<ast::RangeIndex>(arg)) {
         sink(sc::diag::Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, *range)));
-        return { ir.create(SCExprList {}, { ast_graph, { *i } }) };
+        return { ir.create(SCExprList {}, location(i)) };
     }
 
     const auto sel = implicit_selector(ctx.common_symbols.at);

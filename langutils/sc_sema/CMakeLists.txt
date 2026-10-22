@@ -22,6 +22,7 @@ add_library(sc_sema STATIC
 	src/ast2ir/declare_classes.cpp
 	src/ast2ir/region.cpp
 	src/ast2ir/consteval.cpp
+	src/ast2ir/ast2ir_base.cpp
 	src/ast2ir/method.cpp
 	src/ast2ir/arguments.cpp
 	src/ast2ir/literal_synthesis.cpp

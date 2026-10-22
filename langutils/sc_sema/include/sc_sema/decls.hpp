@@ -3,7 +3,7 @@
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_parser/sc_grammar_shared.hpp"
 
-#include "sc_sema/ast_location.hpp"
+#include "sc_sema/source_location.hpp"
 #include "sc_sema/const_expr_index.hpp"
 #include "sc_sema/module.hpp"
 #include "sc_sema/symbols.hpp"
@@ -12,6 +12,10 @@
 #include <memory>
 #include <mutex>
 #include <unordered_map>
+
+namespace sc::ast {
+struct ASTGraph;
+}
 
 namespace sc::ir {
 

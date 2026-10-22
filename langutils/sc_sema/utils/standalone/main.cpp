@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
     }
 #endif // _MSC_VER
 
-    const auto num_threads = 6; // std::thread::hardware_concurrency();
+    const auto num_threads = 1; // std::thread::hardware_concurrency();
 
     assert(argc > 0);
     const size_t num_mods = argc - 1;
@@ -284,7 +284,7 @@ int main(int argc, char* argv[]) {
             g.depth_first_traverse(
                 *class_i,
                 [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
-                    const sc::ir::ASTLocation& loc, sc::ir::NodeIndex i, size_t depth) {
+                    const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
                     for (size_t di { 0 }; di < depth; ++di)
                         std::cout << "|  ";
                     std::cout << sc::ir::IRGraph::node_name(payload) << ": ";
@@ -301,7 +301,7 @@ int main(int argc, char* argv[]) {
                                        std::cout << symbol_table(*c.collection_class) << ": ";
                                    } },
                                payload);
-                    const auto view = loc.graph_index->text_info()->read(loc.graph_index->location(loc.node_index));
+                    const auto view = g.read(loc);
                     for (size_t i { 0 }; i < view.size(); ++i) {
                         if (view[i] == '\n') {
                             std::cout << "'\\n'";

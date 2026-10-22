@@ -2,7 +2,7 @@
 #include "ast2ir_base.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_parser/indexes_typed.hpp"
-#include "sc_sema/ast_location.hpp"
+#include "sc_sema/source_location.hpp"
 #include "sc_util/overload.hpp"
 
 namespace sc::ir {

@@ -10,7 +10,7 @@
 namespace sc::ir::ast2ir {
 
 Return<SCAnyExpr_I> Expr::operator()(ast::ExprSeqIndex i) {
-    const auto expr_list = ir.create(SCExprList {}, { ast_graph, { *i } });
+    const auto expr_list = ir.create(SCExprList {}, location(i));
 
     bool body_is_const_expr = true;
     std::optional<Return<SCAnyExpr_I>> last_index;
@@ -37,13 +37,13 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NonLocalReturnExprIndex i) {
         sink(sc::diag::Diagnostic::non_terminating_return(get_text_info(*ast_graph), get_location(*ast_graph, n)));
     }
 
-    return { ir.create(SCExplicitReturn {}, { ast_graph, { *i } }, expr_return.ir_node) };
+    return { ir.create(SCExplicitReturn {}, location(i), expr_return.ir_node) };
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::ReferenceIndex i) {
     const auto [expr] = ast_graph->children(i);
     const auto expr_r = (*this)(ast::AnyExprIndex { expr });
-    return { ir.create(SCRef {}, { ast_graph, { *i } }, expr_r.ir_node) };
+    return { ir.create(SCRef {}, location(i), expr_r.ir_node) };
 }
 
 }

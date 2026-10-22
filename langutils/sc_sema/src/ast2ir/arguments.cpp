@@ -24,8 +24,9 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
             util::overload {
                 [&](ast::NamedIdentifierIndex i) {
                     const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(i));
-                    const auto missing_default = ir.create(SCMissing {}, { ast_graph, { *i } });
-                    const auto arg = ir.create(SCArgumentDeclare { sym }, { ast_graph, { *i } }, missing_default);
+                    const auto missing_default = ir.create(SCMissing {}, location_of(ir, *ast_graph, i));
+                    const auto arg =
+                        ir.create(SCArgumentDeclare { sym }, location_of(ir, *ast_graph, i), missing_default);
                     ir.append(args, arg);
                     declared(sym, arg);
                 },
@@ -38,15 +39,16 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                     const auto arg = ir.create(SCArgumentDeclare { sym,
                                                                    preseve_nil ? DefaultBehaviour::PreserveNil
                                                                                : DefaultBehaviour::DontPreserveNil },
-                                               { ast_graph, { *i } }, default_r.ir_node);
+                                               location_of(ir, *ast_graph, i), default_r.ir_node);
                     ir.append(args, arg);
                     declared(sym, arg);
                 },
                 [&](ast::DeclareArgumentVariadicIndex i) {
                     const auto [n] = ast_graph->children(i);
                     const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(n));
-                    const auto missing_default = ir.create(SCMissing {}, { ast_graph, { *n } });
-                    const auto arg = ir.create(SCArgumentDeclare { sym }, { ast_graph, { *n } }, missing_default);
+                    const auto missing_default = ir.create(SCMissing {}, location_of(ir, *ast_graph, n));
+                    const auto arg =
+                        ir.create(SCArgumentDeclare { sym }, location_of(ir, *ast_graph, n), missing_default);
                     ir.append(var_args, arg);
                     declared(sym, arg);
                 },

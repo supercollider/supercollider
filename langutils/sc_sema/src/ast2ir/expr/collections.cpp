@@ -24,7 +24,7 @@ struct CollectionContext {
 Return<SCAnyExpr_I> symbol(CollectionContext& c, ast::OptionalIndex i, std::string_view name) {
     const auto const_i =
         c.ctx.constant_table.register_constexpr({ c.ctx.symbol_table.get_symbol(std::string { name }) });
-    const auto lit = c.ir.create(SCLiteral { const_i }, { c.ast_graph, { *i } });
+    const auto lit = c.ir.create(SCLiteral { const_i }, location_of(c.ir, *c.ast_graph, i));
     c.ir.register_node_as_consteval(lit, const_i);
     return { lit, const_i, TypeInfo { c.ctx.common_classes.symbol, TypeConfidence::Absolute } };
 }
@@ -37,7 +37,7 @@ Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immut
 
     const TypeInfo type { c.ctx.common_classes.array, TypeConfidence::Absolute };
     const auto collection =
-        c.ir.create(SCCollection { { std::nullopt, c.ctx.common_classes.array } }, { c.ast_graph, { *i } });
+        c.ir.create(SCCollection { { std::nullopt, c.ctx.common_classes.array } }, location_of(c.ir, *c.ast_graph, i));
     ConstExprArray values;
     bool all_constant = true;
 
@@ -87,8 +87,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) {
     const auto& g = *ast_graph;
 
     const TypeInfo type { ctx.common_classes.event, TypeConfidence::Absolute };
-    const auto collection =
-        ir.create(SCCollection { { std::nullopt, ctx.common_classes.event } }, { ast_graph, { *i } });
+    const auto collection = ir.create(SCCollection { { std::nullopt, ctx.common_classes.event } }, location(i));
     ConstExprEvent values;
     bool all_constant = true;
 

@@ -114,7 +114,7 @@ SCClass: Blocks: Blocks {'\n'    var instance_var;'\n''\n'    empty { ^{} }'\n' 
 |  |  |  |  |  SCFunction: { |a = 1| a }
 |  |  |  |  |  |  SCArgumentDeclareList: a = 1
 |  |  |  |  |  |  |  SCArgumentDeclare: a = 1
-|  |  |  |  |  |  |  |  SCMissing: a = 1
+|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  |  SCArgumentDeclareList: a = 1
 |  |  |  |  |  |  SCExprList: { |a = 1| a }
 |  |  |  |  |  |  |  SCRead: a

@@ -1,6 +1,8 @@
 #pragma once
 #include "sc_diagnostic/sc_diagnostic.hpp"
+#include "sc_parser/indexes_untyped.hpp"
 #include "sc_sema/const_expr_index.hpp"
+#include "sc_sema/source_location.hpp"
 #include "sc_sema/type_info.hpp"
 #include <memory>
 #include <vector>
@@ -16,6 +18,9 @@ struct ASTGraph;
 
 namespace sc::ir::ast2ir {
 
+// Where an ast node came from, in the IRGraph's own sources.
+[[nodiscard]] SourceLocation location_of(IRGraph& ir, const ast::ASTGraph& ast_graph, ast::OptionalIndex i);
+
 struct Base {
     Base(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt):
         ctx(cxt),
@@ -24,6 +29,8 @@ struct Base {
     Context& ctx;
     IRGraph& ir;
     std::shared_ptr<const ast::ASTGraph> ast_graph;
+
+    [[nodiscard]] SourceLocation location(ast::OptionalIndex i) const { return location_of(ir, *ast_graph, i); }
 };
 
 // Collects the diagnostics of one unit of compilation, e.g., a method, so it knows whether it should be poisoned.
