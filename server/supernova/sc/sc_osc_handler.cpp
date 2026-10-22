@@ -2500,7 +2500,7 @@ void handle_b_set(ReceivedMessage const& msg) {
     osc::int32 buffer_index = it->AsInt32();
     ++it;
 
-    buffer_wrapper::sample_t* data = sc_factory->get_buffer(buffer_index);
+    auto data = sc_factory->get_buffer(buffer_index);
     if (!data) {
         log_printf("/b_set called on unallocated buffer\n");
         return;
@@ -2522,7 +2522,7 @@ void handle_b_setn(ReceivedMessage const& msg) {
     osc::int32 buffer_index = it->AsInt32();
     ++it;
 
-    buffer_wrapper::sample_t* data = sc_factory->get_buffer(buffer_index);
+    auto data = sc_factory->get_buffer(buffer_index);
     if (!data) {
         log_printf("/b_setn called on unallocated buffer\n");
         return;
@@ -2570,7 +2570,7 @@ void handle_b_fill(ReceivedMessage const& msg) {
     osc::int32 buffer_index = it->AsInt32();
     ++it;
 
-    buffer_wrapper::sample_t* data = sc_factory->get_buffer(buffer_index);
+    auto data = sc_factory->get_buffer(buffer_index);
     if (!data) {
         log_printf("/b_fill called on unallocated buffer\n");
         return;
