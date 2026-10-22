@@ -141,4 +141,4 @@ SCClass (44:1): Sub
 |  |  |  |  |  SCCollection (53:26): Array
 |  |  |  |  |  |  SCRead (53:27): instance sub_var, declared (45:9): sub_var
 |  |  |  |  |  |  SCRead (53:36): instance bar, declared (2:9): bar
-Successfully compiled 16 classes.
+Successfully compiled 17 classes.

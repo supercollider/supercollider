@@ -160,4 +160,4 @@ SCClass (1:1): Setters
 |  |  |  |  |  |  SCLiteral (15:59) = 2
 |  |  |  |  |  SCVariadicArgs (15:43)
 |  |  |  |  |  |  SCRead (15:54): instance x, declared (2:9): x
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

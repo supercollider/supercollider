@@ -44,6 +44,10 @@ struct CommonSymbols {
     SymSCClassName int16_array;
     SymSCClassName int8_array;
     SymSCClassName symbol_array;
+    // Interpreted code is compiled as if it were written inside `Interpreter:functionCompileContext`. Unlike the
+    // common classes, it is only needed to compile interpreted code, so a class library may omit it.
+    SymSCClassName interpreter;
+    SymSCSelector function_compile_context;
 
     // `this`, `super`, and the pseudo variables, see SCSpecial. They can't be declared or assigned.
     SymSCIdentifier this_;

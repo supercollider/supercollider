@@ -130,4 +130,4 @@ SCClass (1:1): Meta_NotConstant
 |  |  SCMember (3:14): changes = 2
 |  |  SCMember (5:14): class_refers_to_const = 1
 |  SCMethodList (1:1)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

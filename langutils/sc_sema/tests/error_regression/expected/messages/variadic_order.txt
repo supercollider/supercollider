@@ -254,4 +254,4 @@ SCClass (1:1): VariadicOrder
 |  |  |  SCBody (13:20)
 |  |  |  |  SCExplicitReturn (13:21)
 |  |  |  |  |  SCLiteral (13:21) = 5
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

@@ -125,4 +125,4 @@ SCClass (13:1): TypedArrays
 |  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (46:51) = 1
 |  |  |  |  |  |  |  SCCollection (46:57): SymbolArray = SymbolArray[\a]
 |  |  |  |  |  |  |  |  SCLiteral (46:69) = \a
-Successfully compiled 21 classes.
+Successfully compiled 22 classes.

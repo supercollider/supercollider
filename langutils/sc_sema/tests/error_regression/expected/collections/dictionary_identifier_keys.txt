@@ -89,4 +89,4 @@ SCClass (11:1): Meta_Initialisers
 |  |  SCMember (14:14): class_event = (a: 1)
 |  |  SCMember (17:14): class_array = [1, 2]
 |  SCMethodList (11:1)
-Successfully compiled 16 classes.
+Successfully compiled 17 classes.

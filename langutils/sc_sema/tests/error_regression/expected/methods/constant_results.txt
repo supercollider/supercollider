@@ -206,4 +206,4 @@ SCClass (1:1): Meta_ConstantResults
 |  |  |  SCBody (38:21)
 |  |  |  |  SCExplicitReturn (38:22)
 |  |  |  |  |  SCLiteral (38:22) = \a
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

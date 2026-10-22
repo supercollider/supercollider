@@ -35,4 +35,4 @@ SCClass (1:1): EscapedLiterals
 |  |  |  SCBody (8:28)
 |  |  |  |  SCExplicitReturn (8:29)
 |  |  |  |  |  SCLiteral (8:29) = 'it\'s'
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

@@ -416,4 +416,4 @@ SCClass (1:1): Meta_PackAssign
 |  SCMemberList (1:1)
 |  |  SCMember (3:14): class_var
 |  SCMethodList (1:1)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

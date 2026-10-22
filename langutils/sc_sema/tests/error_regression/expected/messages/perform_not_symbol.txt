@@ -224,4 +224,4 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  SCPositionalArgs (12:21)
 |  |  |  |  |  |  |  SCMessage (12:31): bar
 |  |  |  |  |  |  |  |  SCLiteral (12:31) = 2
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

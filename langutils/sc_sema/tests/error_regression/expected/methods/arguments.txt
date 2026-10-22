@@ -86,4 +86,4 @@ SCClass (1:1): Meta_MethodArguments
 |  |  |  SCBody (22:41)
 |  |  |  |  SCExplicitReturn (22:42)
 |  |  |  |  |  SCRead (22:42): local b, declared (22:32): b = (a)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

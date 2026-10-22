@@ -506,4 +506,4 @@ SCClass (4:1): SelfReference
 |  |  |  |  |  |  |  |  |  SCRead (87:41): local _, declared (87:41): _
 |  |  |  |  SCExplicitReturn (87:46)
 |  |  |  |  |  SCRead (87:46): local f, declared (87:31): f = f.foo(_)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

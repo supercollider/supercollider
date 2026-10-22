@@ -85,4 +85,4 @@ SCClass (1:1): Arrays
 |  |  |  |  |  |  |  SCLiteral (10:28) = \a
 |  |  |  |  |  |  |  SCLiteral (10:31) = 1
 |  |  |  |  |  |  SCLiteral (10:35) = \b
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

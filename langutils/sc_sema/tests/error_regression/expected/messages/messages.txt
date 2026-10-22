@@ -153,4 +153,4 @@ SCClass (1:1): Messages
 |  |  |  |  |  |  |  |  |  SCLiteral (19:21) = 2
 |  |  |  |  |  |  SCPositionalArgs (19:15)
 |  |  |  |  |  |  |  SCLiteral (19:30) = 3
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

@@ -107,4 +107,4 @@ SCClass (1:1): References
 |  |  |  |  |  |  SCLiteral (19:18) = Ref
 |  |  |  |  |  |  SCPositionalArgs (19:18)
 |  |  |  |  |  |  |  SCExprList (19:19)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

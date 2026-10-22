@@ -37,4 +37,4 @@ SCClass (14:1): SubOfFloat
 SCClass (15:1): RepeatsFloat[float]
 |  SCMemberList (15:1)
 |  SCMethodList (15:1)
-Successfully compiled 25 classes.
+Successfully compiled 26 classes.

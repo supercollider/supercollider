@@ -218,4 +218,4 @@ SCClass (1:1): Meta_SliceFolding
 |  SCMemberList (1:1)
 |  |  SCMember (9:11): const_array = [10, 20, 30, 40]
 |  SCMethodList (1:1)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

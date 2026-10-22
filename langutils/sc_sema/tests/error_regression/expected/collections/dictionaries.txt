@@ -76,4 +76,4 @@ SCClass (1:1): Dictionaries
 |  |  |  |  |  |  |  SCLiteral (11:33) = \b
 |  |  |  |  |  |  |  SCMessage (11:36): foo
 |  |  |  |  |  |  |  |  SCLiteral (11:36) = 1
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

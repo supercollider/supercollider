@@ -83,4 +83,4 @@ SCClass (1:1): EventKeyWithoutValue
 |  |  |  |  |  |  SCLiteral (6:32) = 1
 |  |  |  |  |  |  SCLiteral (6:35) = 2
 |  |  |  |  |  |  SCLiteral (6:38) = 3
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

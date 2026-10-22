@@ -147,4 +147,4 @@ SCClass (1:1): ConstantLocals
 |  |  |  SCBody (36:37)
 |  |  |  |  SCExplicitReturn (36:38)
 |  |  |  |  |  SCRead (36:38): local x, declared (36:30): x = 1
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

@@ -12,4 +12,4 @@ SCClass (1:1): Foo
 |  |  |  |  SCArgumentDeclare (2:12): a
 |  |  |  SCBody (2:15)
 |  |  |  |  SCLiteral (2:15) = 10
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

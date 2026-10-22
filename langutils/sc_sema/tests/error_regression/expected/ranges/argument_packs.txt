@@ -85,4 +85,4 @@ SCClass (1:1): RangeArgumentPacks
 |  |  |  |  |  |  |  SCLiteral (7:44) = 1
 |  |  |  |  |  |  |  SCLiteral (7:47) = 2
 |  |  |  |  |  |  |  SCLiteral (7:50) = 5
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

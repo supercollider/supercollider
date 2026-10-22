@@ -74,4 +74,4 @@ SCClass (20:1): Bar
 |  |  |  SCBody (22:24)
 |  |  |  |  SCAssign (22:24): instance instance_var, declared (2:9): instance_var
 |  |  |  |  |  SCLiteral (22:39) = 8
-Successfully compiled 16 classes.
+Successfully compiled 17 classes.

@@ -199,4 +199,4 @@ SCClass (3:1): Meta_Arithmetic
 |  |  SCMember (4:11): sum = 3
 |  |  SCMember (5:11): mixed = 3.0
 |  SCMethodList (3:1)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

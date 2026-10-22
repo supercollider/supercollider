@@ -57,4 +57,4 @@ SCClass (9:1): Dup2D
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (9:1)
 |  SCMethodList (9:1)
-Successfully compiled 17 classes.
+Successfully compiled 18 classes.

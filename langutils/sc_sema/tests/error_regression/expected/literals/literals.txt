@@ -78,4 +78,4 @@ SCClass (1:1): Literals
 |  |  |  SCBody (16:18)
 |  |  |  |  SCExplicitReturn (16:19)
 |  |  |  |  |  SCExprList (16:19)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

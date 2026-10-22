@@ -185,4 +185,4 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  SCLiteral (19:28) = 2
 |  |  |  |  |  |  SCLiteral (19:34) = 5
 |  |  |  |  |  |  SCLiteral (19:39) = 5
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

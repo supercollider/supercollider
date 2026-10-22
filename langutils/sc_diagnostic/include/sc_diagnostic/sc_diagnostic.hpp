@@ -120,6 +120,10 @@ public:
     // `var #a, ~b = c`, an environment variable can't be declared.
     [[nodiscard]] static Diagnostic declared_environment_variable(TextInfoPtr t, sc::lex::SourceCodeRange l);
 
+    // Interpreted code, at l, is compiled as if it were written inside `Interpreter:functionCompileContext`, but the
+    // class library doesn't define it, or it is poisoned.
+    [[nodiscard]] static Diagnostic missing_interpreter_context(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
 
     Diagnostic() = delete;
     Diagnostic(Diagnostic&&) noexcept = default;

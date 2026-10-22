@@ -150,4 +150,4 @@ SCClass (1:1): Ranges
 |  |  |  |  |  |  |  |  |  SCArgumentDeclare (16:30): x
 |  |  |  |  |  |  |  |  SCBody (16:27)
 |  |  |  |  |  |  |  |  |  SCRead (16:33): local x, declared (16:30): x
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

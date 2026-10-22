@@ -257,4 +257,4 @@ SCClass (3:1): MidBodyDeclarations
 |  |  |  |  |  |  |  SCVariableDeclare (59:76): a
 |  |  |  |  |  |  |  |  SCLiteral (59:80) = 2
 |  |  |  |  |  |  |  SCRead (59:83): local a = 2, declared (59:76): a = 2
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

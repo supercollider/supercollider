@@ -124,4 +124,4 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  SCBody (23:42)
 |  |  |  |  SCExplicitReturn (23:43)
 |  |  |  |  |  SCLiteral (23:43) = 1
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

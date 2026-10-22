@@ -396,4 +396,4 @@ SCClass (1:1): Generators
 |  |  |  |  |  |  SCLiteral (70:40) = 1
 |  |  |  |  |  |  SCMissing (70:37)
 |  |  |  |  |  |  SCRead (70:43): instance instance_var, declared (2:9): instance_var
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

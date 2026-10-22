@@ -34,4 +34,4 @@ SCClass (20:1): Fine
 |  |  |  SCBody (21:14)
 |  |  |  |  SCExplicitReturn (21:15)
 |  |  |  |  |  SCLiteral (21:15) = 1
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

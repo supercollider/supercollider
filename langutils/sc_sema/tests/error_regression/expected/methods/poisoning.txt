@@ -285,4 +285,4 @@ SCClass (1:1): Meta_Poisoning
 |  |  |  SCBody (22:30)
 |  |  |  |  SCAssign (22:30): instance class_var, declared (3:14): class_var
 |  |  |  |  |  SCLiteral (22:42) = 3
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

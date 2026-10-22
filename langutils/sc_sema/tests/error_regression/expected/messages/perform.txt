@@ -98,4 +98,4 @@ SCClass (1:1): Perform
 |  |  |  |  |  |  SCKwArgs (10:25)
 |  |  |  |  |  |  |  SCKwArg (10:35): selector
 |  |  |  |  |  |  |  |  SCLiteral (10:45) = \foo
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

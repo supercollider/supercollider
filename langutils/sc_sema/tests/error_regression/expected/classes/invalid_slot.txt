@@ -25,4 +25,4 @@ SCClass (16:1): FloatSlot[float]
 |  |  |  SCBody (18:14)
 |  |  |  |  SCExplicitReturn (18:15)
 |  |  |  |  |  SCLiteral (18:15) = 1
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

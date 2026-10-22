@@ -318,4 +318,4 @@ SCClass (58:1): SpecialMembers
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (58:1)
 |  SCMethodList (58:1)
-Successfully compiled 16 classes.
+Successfully compiled 17 classes.

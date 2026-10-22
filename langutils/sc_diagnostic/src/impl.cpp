@@ -515,6 +515,17 @@ Diagnostic Diagnostic::declared_environment_variable(TextInfoPtr t, sc::lex::Sou
              "environment variable after the declaration." };
 }
 
+Diagnostic Diagnostic::missing_interpreter_context(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return {
+        "Interpreter context missing",
+        Severity::Error,
+        { { std::move(t), l, "this code can't be compiled without it." } },
+        "Interpreted code is compiled as if it were written inside the method `Interpreter:functionCompileContext`, "
+        "so it can use the Interpreter's members, e.g., `a` to `z`. The class library must define it, and it must "
+        "compile without errors."
+    };
+}
+
 Diagnostic Diagnostic::curry_outside_call(TextInfoPtr t, sc::lex::SourceCodeRange l) {
     return {
         "Partial application outside of a call",

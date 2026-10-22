@@ -130,4 +130,4 @@ SCClass (1:1): MutableLocals
 |  |  |  |  SCExplicitReturn (14:30)
 |  |  |  |  |  SCMessage (14:30): not
 |  |  |  |  |  |  SCRead (14:30): local a = true, declared (14:19): a = true
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

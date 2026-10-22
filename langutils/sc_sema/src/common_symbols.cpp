@@ -27,6 +27,8 @@ CommonSymbols::CommonSymbols(SymbolTable& table):
     int16_array(table.get_class_name("Int16Array")),
     int8_array(table.get_class_name("Int8Array")),
     symbol_array(table.get_class_name("SymbolArray")),
+    interpreter(table.get_class_name("Interpreter")),
+    function_compile_context(table.get_selector("functionCompileContext")),
     this_(table.get_identifier("this")),
     super_(table.get_identifier("super")),
     this_process(table.get_identifier("thisProcess")),

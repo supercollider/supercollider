@@ -132,4 +132,4 @@ SCClass (1:1): AssignmentAt
 |  |  |  |  |  SCPositionalArgs (14:23)
 |  |  |  |  |  |  SCLiteral (14:36) = 0
 |  |  |  |  |  |  SCExprList (14:41)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

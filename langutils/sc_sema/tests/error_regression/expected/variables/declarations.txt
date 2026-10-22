@@ -201,4 +201,4 @@ SCClass (1:1): Variables
 |  |  |  |  |  |  SCPackTarget (43:20): local b at 1
 |  |  |  |  SCExplicitReturn (43:33)
 |  |  |  |  |  SCRead (43:33): local a = 1, declared (43:17): a
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.

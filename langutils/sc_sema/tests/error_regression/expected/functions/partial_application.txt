@@ -372,4 +372,4 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  SCFunction (42:43)
 |  |  |  |  |  |  |  |  SCBody (42:43)
 |  |  |  |  |  |  |  |  |  SCExprList (42:45)
-Successfully compiled 15 classes.
+Successfully compiled 16 classes.
