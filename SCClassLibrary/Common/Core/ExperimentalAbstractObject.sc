@@ -38,11 +38,11 @@ AbstractObjectExperimental {
 	// Note: Interpreter will segfault if this isn't provided so a default is given.
 	// You will need to override doesNotUnderstand to do anything useful with abstract objects,
 	//   hence it throws a SubclassResponsibilityError rather than a DoesNotUnderstandError.
-	// "AbstractObjectExperimental" is passed as a string here, rather than 'this', because 'this' may not support the 'toString' method, 	
+	// "AbstractObjectExperimental" is passed as a string here, rather than 'this', because 'this' may not support the 'toString' method,
 	// which would cause the error handling to get stuck in a loop.
-	
-	doesNotUnderstand { |selector ...args, kwargs| 
-		SubclassResponsibilityError("AbstractObjectExperimental", thisMethod, AbstractObjectExperimental).throw 
+
+	doesNotUnderstand { |selector ...args, kwargs|
+		SubclassResponsibilityError("AbstractObjectExperimental", thisMethod, AbstractObjectExperimental).throw
 	}
 
 

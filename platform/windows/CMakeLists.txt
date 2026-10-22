@@ -17,20 +17,20 @@ add_custom_target(install_server_only
 # installer for sced:
 
 if(MSVC)
-  SET(BUILD_ENV "VS")
-  # size for win 3.7 release build
-  SET(SC_WIN_INSTALL_SIZE "102298")
+    SET(BUILD_ENV "VS")
+    # size for win 3.7 release build
+    SET(SC_WIN_INSTALL_SIZE "102298")
 elseif(MSYS)
-  SET(BUILD_ENV "MSYS")
-  # size for win 3.7 release build
-  SET(SC_WIN_INSTALL_SIZE "")
+    SET(BUILD_ENV "MSYS")
+    # size for win 3.7 release build
+    SET(SC_WIN_INSTALL_SIZE "")
 elseif(MINGW)
-  set(BUILD_ENV "MinGW")
-  # size for win 3.7 release build
-  SET(SC_WIN_INSTALL_SIZE "121856")
+    set(BUILD_ENV "MinGW")
+    # size for win 3.7 release build
+    SET(SC_WIN_INSTALL_SIZE "121856")
 else()
-  set(BUILD_ENV "NN")
-  SET(SC_WIN_INSTALL_SIZE "")
+    set(BUILD_ENV "NN")
+    SET(SC_WIN_INSTALL_SIZE "")
 endif(MSVC)
 
 add_custom_target( installer

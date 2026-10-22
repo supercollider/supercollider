@@ -448,7 +448,7 @@ Stethoscope {
 			window.bounds_(rect)
 		};
 	}
-	
+
 	bounds { ^this.window.bounds }
 }
 

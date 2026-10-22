@@ -24,8 +24,8 @@ QtGUI {
 		_QtGUI_SetDebugLevel
 		^this.primitiveFailed;
 	}
-    
-    *version { 
+
+    *version {
         _Qt_Version
         ^this.primitiveFailed;
     }

@@ -237,7 +237,7 @@ code::
 a = Routine({ 20.do({ 33.rand.yield }) });
 b = Routine({ [-100, 00, 300, 400].do({ |v| v.yield }) });
 [
-	'+', '-', '*', '/', \div, '%', '**', 
+	'+', '-', '*', '/', \div, '%', '**',
 	'<', '<=', '>', '>=', '&', '|', \min, \max,
 	\bitXor, \lcm, \gcd, \round, \trunc, \atan2,
 	\hypot, '>>', '+>>', \ring1, \ring2, \ring3, \ring4,

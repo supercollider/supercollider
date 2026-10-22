@@ -121,7 +121,7 @@ To specify only input device and use default output, or only output device and u
 ## -N cmd-filename input-filename output-filename sample-rate header-format sample-format
 || Run in non-real-time mode.
 
-## -R publish to Rendezvous? 
+## -R publish to Rendezvous?
 || 0 or 1.
 
 ## -L enable memory locking

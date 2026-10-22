@@ -10,7 +10,7 @@ TestSourceCode : UnitTest {
 		f = {1+1};
 		this.assertEquals(f.def.sourceCode.quote, "{1+1}".quote);
 
-		f = {1+1} 
+		f = {1+1}
 		/* dont remove this comment */
 		;
 		this.assertEquals(f.def.sourceCode.quote, "{1+1}".quote);

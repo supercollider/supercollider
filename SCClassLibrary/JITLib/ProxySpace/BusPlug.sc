@@ -255,7 +255,7 @@ BusPlug : AbstractFunction {
 
 	play { | out, numChannels, group, multi=false, vol, fadeTime, addAction |
 		var bundle = MixedBundle.new;
-		
+
 		if(this.homeServer.warnIfNotRunning(thisMethod)) { ^this };
 
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };

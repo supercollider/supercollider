@@ -160,9 +160,9 @@ Function : AbstractFunction {
 	forkIfNeeded { arg clock, quant, stackSize;
 		// We should fork if the clocks don't match.
 		// We should also fork if the quants/stackSize don't match, but that doesn't seem possible.
-		if(thisThread.isKindOf(Routine) 
+		if(thisThread.isKindOf(Routine)
 			and: { clock.isNil or: { clock == thisThread.clock }},
-			this, 
+			this,
 			{ ^this.fork(clock, quant, stackSize) }
 		);
 		^thisThread;

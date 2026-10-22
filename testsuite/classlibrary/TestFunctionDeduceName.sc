@@ -2,8 +2,8 @@ TestFunctionDeduceName : UnitTest {
 	test_vardef {
 		var foo = {};
 		var boo = _ + 1;
-		this.assertEquals(foo.def.name, 'foo'); 
-		this.assertEquals(boo.def.name, 'boo'); 
+		this.assertEquals(foo.def.name, 'foo');
+		this.assertEquals(boo.def.name, 'boo');
 	}
 
 	test_assign {
