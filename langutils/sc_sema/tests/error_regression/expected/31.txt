@@ -2,13 +2,13 @@
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Not a constant
 file:
-   37 │     var nested = [(1..2), (a: (3..4))];
-   38 │     var immutable = #[(1..2)];
-   39 │     var float_range = (1.0..3);
+    7 │     var nested = [(1..2), (a: (3..4))];
+    8 │     var immutable = #[(1..2)];
+    9 │     var float_range = (1.0..3);
       ┆                       ^^^^^^^^ this can't be evaluated when compiling.
-   40 │     var unbounded = (1..);
-   41 │     var not_constant = (1..2.foo);
-   42 │     var too_large = (1..2000);
+   10 │     var unbounded = (1..);
+   11 │     var not_constant = (1..2.foo);
+   12 │     var too_large = (1..2000);
 
 This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -16,13 +16,13 @@ This must be known when the class library is compiled, e.g., a variable's initia
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Range has no end
 file:
-   38 │     var immutable = #[(1..2)];
-   39 │     var float_range = (1.0..3);
-   40 │     var unbounded = (1..);
+    8 │     var immutable = #[(1..2)];
+    9 │     var float_range = (1.0..3);
+   10 │     var unbounded = (1..);
       ┆                     ^^^^^ this would create an infinite array.
-   41 │     var not_constant = (1..2.foo);
-   42 │     var too_large = (1..2000);
-   43 │ }
+   11 │     var not_constant = (1..2.foo);
+   12 │     var too_large = (1..2000);
+   13 │ }
 
 A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -30,12 +30,12 @@ A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generato
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Not a constant
 file:
-   39 │     var float_range = (1.0..3);
-   40 │     var unbounded = (1..);
-   41 │     var not_constant = (1..2.foo);
+    9 │     var float_range = (1.0..3);
+   10 │     var unbounded = (1..);
+   11 │     var not_constant = (1..2.foo);
       ┆                            ^^^^^ this can't be evaluated when compiling.
-   42 │     var too_large = (1..2000);
-   43 │ }
+   12 │     var too_large = (1..2000);
+   13 │ }
 
 This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -43,11 +43,11 @@ This must be known when the class library is compiled, e.g., a variable's initia
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Not a constant
 file:
-   40 │     var unbounded = (1..);
-   41 │     var not_constant = (1..2.foo);
-   42 │     var too_large = (1..2000);
+   10 │     var unbounded = (1..);
+   11 │     var not_constant = (1..2.foo);
+   12 │     var too_large = (1..2000);
       ┆                     ^^^^^^^^^ this can't be evaluated when compiling.
-   43 │ }
+   13 │ }
 
 This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -57,12 +57,6 @@ This must be known when the class library is compiled, e.g., a variable's initia
 IR GRAPH DUMP 
 
 
-SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  SCMethodList: Object
 SCClass: RangeInitialisers: RangeInitialisers {'\n'    const bound = 3;'\n'    const constant_range = (1..3);'\n'    classvar class_range = (1, 3..9);'\n'    var instance_range = (..2);'\n'    var uses_const = (1..bound);'\n'    var nested = [(1..2), (a: (3..4))];'\n'    var immutable = #[(1..2)];'\n'    var float_range = (1.0..3);'\n'    var unbounded = (1..);'\n'    var not_constant = (1..2.foo);'\n'    var too_large = (1..2000);'\n'}
 |  SCMemberList: RangeInitialisers
 |  |  SCMember: instance_range = {"array": [{"int": 0}, {"int": 1}, {"int": 2}]}
@@ -70,144 +64,10 @@ SCClass: RangeInitialisers: RangeInitialisers {'\n'    const bound = 3;'\n'    c
 |  |  SCMember: nested = {"array": [{"array": [{"int": 1}, {"int": 2}]}, {"event": [{"key": {"symbol": "a"}, "value": {"array": [{"int": 3}, {"int": 4}]}}]}]}
 |  |  SCMember: immutable = {"array": [{"array": [{"int": 1}, {"int": 2}]}]}
 |  SCMethodList: RangeInitialisers
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Object
 SCClass: Meta_RangeInitialisers: RangeInitialisers {'\n'    const bound = 3;'\n'    const constant_range = (1..3);'\n'    classvar class_range = (1, 3..9);'\n'    var instance_range = (..2);'\n'    var uses_const = (1..bound);'\n'    var nested = [(1..2), (a: (3..4))];'\n'    var immutable = #[(1..2)];'\n'    var float_range = (1.0..3);'\n'    var unbounded = (1..);'\n'    var not_constant = (1..2.foo);'\n'    var too_large = (1..2000);'\n'}
 |  SCMemberList: RangeInitialisers
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
 |  |  SCMember: bound = {"int": 3}
 |  |  SCMember: constant_range = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
 |  |  SCMember: class_range = {"array": [{"int": 1}, {"int": 3}, {"int": 5}, {"int": 7}, {"int": 9}]}
 |  SCMethodList: RangeInitialisers
-SCClass: Meta_Event: Event {}
-|  SCMemberList: Event
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Event
-SCClass: Meta_Array: Array {}
-|  SCMemberList: Array
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Array
-SCClass: Meta_Ref: Ref {}
-|  SCMemberList: Ref
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Ref
-SCClass: Meta_Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Symbol
-SCClass: Meta_Char: Char {}
-|  SCMemberList: Char
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Char
-SCClass: Meta_Integer: Integer {}
-|  SCMemberList: Integer
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Integer
-SCClass: Meta_Float: Float {}
-|  SCMemberList: Float
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Float
-SCClass: Meta_Nil: Nil {}
-|  SCMemberList: Nil
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Nil
-SCClass: Meta_False: False {}
-|  SCMemberList: False
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: False
-SCClass: Meta_True: True {}
-|  SCMemberList: True
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: True
-SCClass: Meta_String: String {}
-|  SCMemberList: String
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: String
-SCClass: Meta_Class: Class {}
-|  SCMemberList: Class
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Class
 Successfully compiled 15 classes.

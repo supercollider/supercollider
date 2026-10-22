@@ -1,33 +1,3 @@
-AbstractObjectExperimental {}
-
-Object : AbstractObjectExperimental {
-    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;
-}
-
-Class {}
-
-String {}
-
-True {}
-
-False {}
-
-Nil {}
-
-Float {}
-
-Integer {}
-
-Char {}
-
-Symbol {}
-
-Ref {}
-
-Array {}
-
-Event {}
-
 MutableLocals {
     array { var a = [1, 2]; ^a }
     array_put { var a = [1, 2]; a[0] = 10; ^a }

@@ -1,33 +1,3 @@
-AbstractObjectExperimental {}
-
-Object : AbstractObjectExperimental {
-    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;
-}
-
-Class {}
-
-String {}
-
-True {}
-
-False {}
-
-Nil {}
-
-Float {}
-
-Integer {}
-
-Char {}
-
-Symbol {}
-
-Ref {}
-
-Array {}
-
-Event {}
-
 Literals {
     int { ^1 }
     int_radix { ^2r101 }

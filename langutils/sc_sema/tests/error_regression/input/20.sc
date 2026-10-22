@@ -1,33 +1,3 @@
-AbstractObjectExperimental {}
-
-Object : AbstractObjectExperimental {
-    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;
-}
-
-Class {}
-
-String {}
-
-True {}
-
-False {}
-
-Nil {}
-
-Float {}
-
-Integer {}
-
-Char {}
-
-Symbol {}
-
-Ref {}
-
-Array {}
-
-Event {}
-
 Poisoning {
     var instance_var;
     classvar class_var;

@@ -1,3 +1,4 @@
+// no-prelude
 AbstractObjectExperimental {}
 Object : AbstractObjectExperimental { }
 Class {}

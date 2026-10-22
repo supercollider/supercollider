@@ -1,33 +1,3 @@
-AbstractObjectExperimental {}
-
-Object : AbstractObjectExperimental {
-    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;
-}
-
-Class {}
-
-String {}
-
-True {}
-
-False {}
-
-Nil {}
-
-Float {}
-
-Integer {}
-
-Char {}
-
-Symbol {}
-
-Ref {}
-
-Array {}
-
-Event {}
-
 SliceFolding {
     var x;
     var initial_array = #[1, 2, 3][1..];

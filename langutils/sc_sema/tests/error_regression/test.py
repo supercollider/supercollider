@@ -7,9 +7,17 @@ import sys
 from pathlib import Path
 
 
+# The classes the compiler requires. Tests that define their own, e.g., to test the class hierarchy, start with this.
+PRELUDE = Path(__file__).parent / 'prelude.sc'
+NO_PRELUDE = '// no-prelude'
+
+
 def process_file(cmd, sc_file, output_dir, override):
 
-    cmd_result = subprocess.run([cmd, sc_file], capture_output=True, text=True, check=True)
+    with open(sc_file) as f:
+        uses_prelude = f.readline().strip() != NO_PRELUDE
+    args = [cmd, '--prelude', PRELUDE, sc_file] if uses_prelude else [cmd, sc_file]
+    cmd_result = subprocess.run(args, capture_output=True, text=True, check=True)
 
     # remove file path info
     cmd_result = re.sub(r'file:.*', 'file:', cmd_result.stdout)

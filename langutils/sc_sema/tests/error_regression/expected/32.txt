@@ -2,40 +2,40 @@
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Too many arguments in range
 file:
-   34 │     three_arguments { ^instance_var[1, 2, 3..5] }
-   35 │     four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
-   36 │     dot_form { ^instance_var.[1, 2, 3..5] }
-      ┆                                     ^ only the first, and optionally the second, can come before `..`.
-   37 │     two_arguments_are_fine { ^instance_var[1, 2..5] }
-   38 │ }
-
-A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Too many arguments in range
-file:
-   33 │ 
-   34 │     three_arguments { ^instance_var[1, 2, 3..5] }
-   35 │     four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
-      ┆                                                 ^^^^ only the first, and optionally the second, can come before `..`.
-   36 │     dot_form { ^instance_var.[1, 2, 3..5] }
-   37 │     two_arguments_are_fine { ^instance_var[1, 2..5] }
-   38 │ }
-
-A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Too many arguments in range
-file:
-   32 │     var instance_var;
-   33 │ 
-   34 │     three_arguments { ^instance_var[1, 2, 3..5] }
+    2 │     var instance_var;
+    3 │ 
+    4 │     three_arguments { ^instance_var[1, 2, 3..5] }
       ┆                                           ^ only the first, and optionally the second, can come before `..`.
-   35 │     four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
-   36 │     dot_form { ^instance_var.[1, 2, 3..5] }
-   37 │     two_arguments_are_fine { ^instance_var[1, 2..5] }
+    5 │     four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
+    6 │     dot_form { ^instance_var.[1, 2, 3..5] }
+    7 │     two_arguments_are_fine { ^instance_var[1, 2..5] }
+
+A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Too many arguments in range
+file:
+    3 │ 
+    4 │     three_arguments { ^instance_var[1, 2, 3..5] }
+    5 │     four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
+      ┆                                                 ^^^^ only the first, and optionally the second, can come before `..`.
+    6 │     dot_form { ^instance_var.[1, 2, 3..5] }
+    7 │     two_arguments_are_fine { ^instance_var[1, 2..5] }
+    8 │ }
+
+A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Too many arguments in range
+file:
+    4 │     three_arguments { ^instance_var[1, 2, 3..5] }
+    5 │     four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
+    6 │     dot_form { ^instance_var.[1, 2, 3..5] }
+      ┆                                     ^ only the first, and optionally the second, can come before `..`.
+    7 │     two_arguments_are_fine { ^instance_var[1, 2..5] }
+    8 │ }
 
 A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -45,58 +45,10 @@ A range is `first..last`, or `first, second..last` where second sets the step, e
 IR GRAPH DUMP 
 
 
-SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  SCMethodList: Object
 SCClass: RangeArgumentPacks: RangeArgumentPacks {'\n'    var instance_var;'\n''\n'    three_arguments { ^instance_var[1, 2, 3..5] }'\n'    four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }'\n'    dot_form { ^instance_var.[1, 2, 3..5] }'\n'    two_arguments_are_fine { ^instance_var[1, 2..5] }'\n'}
 |  SCMemberList: RangeArgumentPacks
 |  |  SCMember: instance_var
 |  SCMethodList: RangeArgumentPacks
-|  |  SCMethod: two_arguments_are_fine { ^instance_var[1, 2..5] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^instance_var[1, 2..5]
-|  |  |  |  SCExplicitReturn: instance_var[1, 2..5]
-|  |  |  |  |  SCMessage: copySeries: instance_var[1, 2..5]
-|  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  SCPositionalArgs: instance_var[1, 2..5]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  |  SCKwArgs: instance_var[1, 2..5]
-|  |  |  |  |  |  SCVariadicArgs: instance_var[1, 2..5]
-|  |  |  |  |  |  SCMissing: instance_var[1, 2..5]
-|  |  SCMethod: poisoned: dot_form { ^instance_var.[1, 2, 3..5] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^instance_var.[1, 2, 3..5]
-|  |  |  |  SCExplicitReturn: instance_var.[1, 2, 3..5]
-|  |  |  |  |  SCMessage: copySeries: instance_var.[1, 2, 3..5]
-|  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  SCPositionalArgs: instance_var.[1, 2, 3..5]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  |  SCKwArgs: instance_var.[1, 2, 3..5]
-|  |  |  |  |  |  SCVariadicArgs: instance_var.[1, 2, 3..5]
-|  |  |  |  |  |  SCMissing: instance_var.[1, 2, 3..5]
-|  |  SCMethod: poisoned: four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^instance_var[1, 2, 3, 4..]
-|  |  |  |  SCExplicitReturn: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  SCMessage: copySeries: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  SCPositionalArgs: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: [1, 2, 3, 4..] = {"nil": {}}
-|  |  |  |  |  |  SCKwArgs: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  |  SCVariadicArgs: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  |  SCMissing: instance_var[1, 2, 3, 4..]
 |  |  SCMethod: poisoned: three_arguments { ^instance_var[1, 2, 3..5] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -111,141 +63,46 @@ SCClass: RangeArgumentPacks: RangeArgumentPacks {'\n'    var instance_var;'\n''\
 |  |  |  |  |  |  SCKwArgs: instance_var[1, 2, 3..5]
 |  |  |  |  |  |  SCVariadicArgs: instance_var[1, 2, 3..5]
 |  |  |  |  |  |  SCMissing: instance_var[1, 2, 3..5]
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Object
-SCClass: Meta_RangeArgumentPacks: RangeArgumentPacks {'\n'    var instance_var;'\n''\n'    three_arguments { ^instance_var[1, 2, 3..5] }'\n'    four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }'\n'    dot_form { ^instance_var.[1, 2, 3..5] }'\n'    two_arguments_are_fine { ^instance_var[1, 2..5] }'\n'}
-|  SCMemberList: RangeArgumentPacks
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: RangeArgumentPacks
-SCClass: Meta_Event: Event {}
-|  SCMemberList: Event
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Event
-SCClass: Meta_Array: Array {}
-|  SCMemberList: Array
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Array
-SCClass: Meta_Ref: Ref {}
-|  SCMemberList: Ref
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Ref
-SCClass: Meta_Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Symbol
-SCClass: Meta_Char: Char {}
-|  SCMemberList: Char
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Char
-SCClass: Meta_Integer: Integer {}
-|  SCMemberList: Integer
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Integer
-SCClass: Meta_Float: Float {}
-|  SCMemberList: Float
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Float
-SCClass: Meta_Nil: Nil {}
-|  SCMemberList: Nil
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Nil
-SCClass: Meta_False: False {}
-|  SCMemberList: False
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: False
-SCClass: Meta_True: True {}
-|  SCMemberList: True
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: True
-SCClass: Meta_String: String {}
-|  SCMemberList: String
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: String
-SCClass: Meta_Class: Class {}
-|  SCMemberList: Class
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Class
+|  |  SCMethod: poisoned: four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^instance_var[1, 2, 3, 4..]
+|  |  |  |  SCExplicitReturn: instance_var[1, 2, 3, 4..]
+|  |  |  |  |  SCMessage: copySeries: instance_var[1, 2, 3, 4..]
+|  |  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  |  SCPositionalArgs: instance_var[1, 2, 3, 4..]
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCLiteral: [1, 2, 3, 4..] = {"nil": {}}
+|  |  |  |  |  |  SCKwArgs: instance_var[1, 2, 3, 4..]
+|  |  |  |  |  |  SCVariadicArgs: instance_var[1, 2, 3, 4..]
+|  |  |  |  |  |  SCMissing: instance_var[1, 2, 3, 4..]
+|  |  SCMethod: poisoned: dot_form { ^instance_var.[1, 2, 3..5] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^instance_var.[1, 2, 3..5]
+|  |  |  |  SCExplicitReturn: instance_var.[1, 2, 3..5]
+|  |  |  |  |  SCMessage: copySeries: instance_var.[1, 2, 3..5]
+|  |  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  |  SCPositionalArgs: instance_var.[1, 2, 3..5]
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
+|  |  |  |  |  |  SCKwArgs: instance_var.[1, 2, 3..5]
+|  |  |  |  |  |  SCVariadicArgs: instance_var.[1, 2, 3..5]
+|  |  |  |  |  |  SCMissing: instance_var.[1, 2, 3..5]
+|  |  SCMethod: two_arguments_are_fine { ^instance_var[1, 2..5] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^instance_var[1, 2..5]
+|  |  |  |  SCExplicitReturn: instance_var[1, 2..5]
+|  |  |  |  |  SCMessage: copySeries: instance_var[1, 2..5]
+|  |  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  |  SCPositionalArgs: instance_var[1, 2..5]
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
+|  |  |  |  |  |  SCKwArgs: instance_var[1, 2..5]
+|  |  |  |  |  |  SCVariadicArgs: instance_var[1, 2..5]
+|  |  |  |  |  |  SCMissing: instance_var[1, 2..5]
 Successfully compiled 15 classes.

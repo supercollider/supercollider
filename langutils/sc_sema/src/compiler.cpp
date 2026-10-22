@@ -14,8 +14,13 @@
 #include "sc_sema/ir.hpp"
 #include "ast2ir/ast2ir_base.hpp"
 
+#include "sc_parser/ast_untyped.hpp"
+#include <algorithm>
 #include <memory>
+#include <string>
+#include <tuple>
 #include <unordered_map>
+#include <vector>
 
 
 namespace sc::ir {
@@ -521,9 +526,22 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                         meta_members = &fnd->second->members;
                 }
 
-                for (auto meth_it = decl.unsafe_methods_begin(); meth_it != decl.unsafe_methods_end(); ++meth_it) {
-                    const auto r = ast2ir::Method { *build.ir, meth_it->second.ast_graph, ctx, meta_members,
-                                                    build.members }(meth_it->second.ast_node_index);
+                // Compiled in the order they are written, by file then position, so the IR and the diagnostics
+                // don't depend on how the methods are hashed. Extensions can be in other files.
+                std::vector<const ClassDeclaration::Method*> methods;
+                for (auto meth_it = decl.unsafe_methods_begin(); meth_it != decl.unsafe_methods_end(); ++meth_it)
+                    methods.push_back(&meth_it->second);
+                const auto source_order = [](const ClassDeclaration::Method* m) {
+                    const auto& path = get_text_info(*m->ast_graph)->file_path;
+                    return std::tuple { path ? path->string() : std::string {},
+                                        get_location(*m->ast_graph, m->ast_node_index).begin };
+                };
+                std::sort(methods.begin(), methods.end(),
+                          [&](const auto* l, const auto* r) { return source_order(l) < source_order(r); });
+
+                for (const auto* method : methods) {
+                    const auto r = ast2ir::Method { *build.ir, method->ast_graph, ctx, meta_members,
+                                                    build.members }(method->ast_node_index);
                     build.ir->append(build.method_list, r.ir_node);
                 }
 

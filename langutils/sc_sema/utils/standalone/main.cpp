@@ -5,6 +5,10 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <string>
+#include <tuple>
+#include <vector>
+#include <algorithm>
 
 #include "boost/asio/post.hpp"
 #include "boost/asio/thread_pool.hpp"
@@ -134,7 +138,8 @@ int wmain(int argc, wchar_t* argv[]) {
 int main(int argc, char* argv[]) {
 #endif // _MSC_VER
     if (argc <= 1) {
-        std::cout << "ERROR: incorrect number of arguments to sc_sema_standalone, expected [dir|.sc file] "
+        std::cout << "ERROR: incorrect number of arguments to sc_sema_standalone, expected "
+                     "[--prelude dir|.sc file]... [dir|.sc file]... "
                   << std::endl;
         return EXIT_FAILURE;
     }
@@ -148,8 +153,20 @@ int main(int argc, char* argv[]) {
 
     const auto num_threads = 1; // std::thread::hardware_concurrency();
 
-    assert(argc > 0);
-    const size_t num_mods = argc - 1;
+    // Each path is a module. A path after --prelude is compiled, but its classes aren't dumped, e.g., the class
+    // stubs shared by the regression tests.
+    std::vector<std::filesystem::path> module_paths;
+    std::vector<std::filesystem::path> prelude_paths;
+    for (int i { 1 }; i < argc; ++i) {
+        const auto arg = get_path(argv[i]);
+        if (arg == "--prelude" && i + 1 < argc) {
+            prelude_paths.push_back(get_path(argv[++i]));
+            module_paths.push_back(prelude_paths.back());
+        } else {
+            module_paths.push_back(arg);
+        }
+    }
+    const size_t num_mods = module_paths.size();
 
     const auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -167,7 +184,7 @@ int main(int argc, char* argv[]) {
         for (size_t i { 0 }; i < num_mods; ++i) {
             const auto module_index = sc::ir::ModuleIndex::from(i);
 
-            std::filesystem::path dir_path { get_path(argv[i + 1]) };
+            const std::filesystem::path& dir_path = module_paths[i];
 
             std::error_code ec;
             if (std::filesystem::is_directory(dir_path, ec)) {
@@ -277,77 +294,130 @@ int main(int argc, char* argv[]) {
 
     std::cout << "\n\n\nIR GRAPH DUMP \n\n\n";
 
-    comp.depth_first_do([&](const sc::ir::IRGraph& g) {
-        if (auto roots = g.root()) {
-            const auto class_i = std::get_if<sc::ir::SCClass_I>(&*roots);
-            assert(class_i);
-            g.depth_first_traverse(
-                *class_i,
-                [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
-                    const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
-                    for (size_t di { 0 }; di < depth; ++di)
-                        std::cout << "|  ";
-                    std::cout << sc::ir::IRGraph::node_name(payload) << ": ";
-                    std::visit(
-                        sc::util::overload {
-                            [](const auto&) {},
-                            [&](const sc::ir::SCClass& c) { std::cout << symbol_table(c.name) << ": "; },
-                            [&](const sc::ir::SCMethod& m) {
-                                if (m.poisoned)
-                                    std::cout << "poisoned: ";
-                            },
-                            [&](const sc::ir::SCMessage& m) { std::cout << symbol_table(*m.selector) << ": "; },
-                            [&](const sc::ir::SCKwArg& k) { std::cout << symbol_table(*k.name) << ": "; },
-                            [&](const sc::ir::SCVariableDeclare& v) { std::cout << symbol_table(*v.name) << ": "; },
-                            [&](const sc::ir::SCGenerator& gen) {
-                                std::cout
-                                    << (gen.kind == sc::ir::SCGenerator::Kind::Routine ? "routine: " : "immediate: ");
-                            },
-                            [&](const sc::ir::SCGenQualIterate& q) {
-                                std::cout << symbol_table(*q.element);
-                                if (q.index)
-                                    std::cout << ", " << symbol_table(**q.index);
-                                std::cout << ": ";
-                            },
-                            [&](const sc::ir::SCGenQualDeclare& q) { std::cout << symbol_table(*q.name) << ": "; },
-                            [&](const sc::ir::SCPackTarget& t) {
-                                std::cout << (t.rest ? "rest from " : "at ") << t.index << ": ";
-                            },
-                            [&](const sc::ir::SCCollection& c) {
-                                std::cout << symbol_table(*c.collection_class) << ": ";
-                            } },
-                        payload);
-                    const auto view = g.read(loc);
-                    for (size_t i { 0 }; i < view.size(); ++i) {
-                        if (view[i] == '\n') {
-                            std::cout << "'\\n'";
-                        } else {
-                            std::cout.write(view.begin() + i, 1);
-                        }
-                    }
-                    if (const auto const_i = g.node_as_constexpr(i)) {
-                        std::cout << " = ";
-                        ctx.constant_table(*const_i).to_json(std::cout, symbol_table);
-                    }
-                    // What calling a method or function returns.
-                    const auto constant_result = std::visit(
-                        sc::util::overload { [](const auto&) -> sc::ir::OptionalConstExprIndex { return {}; },
-                                             [](const sc::ir::SCMethod& m) { return m.constant_result; },
-                                             [](const sc::ir::SCFunction& f) { return f.constant_result; } },
-                        payload);
-                    if (constant_result) {
-                        std::cout << " -> ";
-                        ctx.constant_table(*constant_result).to_json(std::cout, symbol_table);
-                    }
-                    // A member's initial value, the member itself isn't constant.
-                    if (const auto member = std::get_if<sc::ir::SCMember>(&payload); member && member->expr) {
-                        std::cout << " = ";
-                        ctx.constant_table(*member->expr).to_json(std::cout, symbol_table);
-                    }
-                    std::cout << "\n";
-                });
+    // A class is in a prelude if its file is one of the prelude paths, or is inside one of the prelude directories.
+    const auto in_prelude = [&](const std::optional<std::filesystem::path>& file) {
+        if (!file)
+            return false;
+        const auto canonical = std::filesystem::weakly_canonical(*file);
+        for (const auto& prelude : prelude_paths) {
+            const auto p = std::filesystem::weakly_canonical(prelude);
+            const auto [end, _] = std::mismatch(p.begin(), p.end(), canonical.begin(), canonical.end());
+            if (end == p.end())
+                return true;
         }
+        return false;
+    };
+
+    // Classes are dumped in the order they are written, by file then position, each meta class after its class, so
+    // the dump doesn't depend on how the classes are hashed.
+    struct DumpedClass {
+        // Uses pointers because we are passed a reference and vectors don't like const refs.
+        const sc::ir::IRGraph* graph;
+        sc::ir::SCClass_I index;
+        std::string file;
+        sc::lex::SourceCodeLocation begin;
+        bool is_meta;
+    };
+    std::vector<DumpedClass> classes;
+    comp.depth_first_do([&](const sc::ir::IRGraph& g) {
+        const auto roots = g.root();
+        if (!roots)
+            return;
+        const auto class_i = std::get_if<sc::ir::SCClass_I>(&*roots);
+        assert(class_i);
+        const auto loc = g.location(*class_i);
+        const auto& file = g.text_info(loc.source)->file_path;
+        if (in_prelude(file))
+            return;
+        const auto& c = g.payload(*class_i);
+        // A meta class with nothing of its own, no class variables or class methods, only repeats its class.
+        if (symbol_table.is_meta(c.name)) {
+            const auto [members, methods] = g.children(*class_i);
+            bool has_own_member = false;
+            for (auto it = g.children(members).iter(); it; ++it)
+                has_own_member = has_own_member || g.payload(*it).owning_class == c.name;
+            if (!has_own_member && !g.children(methods).iter())
+                return;
+        }
+        classes.push_back({ &g, *class_i, file ? file->string() : std::string {}, sc::ir::IRGraph::range(loc).begin,
+                            symbol_table.is_meta(c.name) });
     });
+    std::sort(classes.begin(), classes.end(), [](const DumpedClass& l, const DumpedClass& r) {
+        return std::tie(l.file, l.begin, l.is_meta) < std::tie(r.file, r.begin, r.is_meta);
+    });
+
+    for (const auto& dumped : classes) {
+        const auto& g = *dumped.graph;
+        const auto class_name = g.payload(dumped.index).name;
+        g.depth_first_traverse(
+            dumped.index,
+            [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
+                const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
+                // Inherited members are dumped with the class that declares them.
+                if (const auto member = std::get_if<sc::ir::SCMember>(&payload);
+                    member && member->owning_class != class_name)
+                    return;
+                for (size_t di { 0 }; di < depth; ++di)
+                    std::cout << "|  ";
+                std::cout << sc::ir::IRGraph::node_name(payload) << ": ";
+                std::visit(sc::util::overload {
+                               [](const auto&) {},
+                               [&](const sc::ir::SCClass& c) { std::cout << symbol_table(c.name) << ": "; },
+                               [&](const sc::ir::SCMethod& m) {
+                                   if (m.poisoned)
+                                       std::cout << "poisoned: ";
+                               },
+                               [&](const sc::ir::SCMessage& m) { std::cout << symbol_table(*m.selector) << ": "; },
+                               [&](const sc::ir::SCKwArg& k) { std::cout << symbol_table(*k.name) << ": "; },
+                               [&](const sc::ir::SCVariableDeclare& v) { std::cout << symbol_table(*v.name) << ": "; },
+                               [&](const sc::ir::SCGenerator& gen) {
+                                   std::cout << (gen.kind == sc::ir::SCGenerator::Kind::Routine ? "routine: "
+                                                                                                : "immediate: ");
+                               },
+                               [&](const sc::ir::SCGenQualIterate& q) {
+                                   std::cout << symbol_table(*q.element);
+                                   if (q.index)
+                                       std::cout << ", " << symbol_table(**q.index);
+                                   std::cout << ": ";
+                               },
+                               [&](const sc::ir::SCGenQualDeclare& q) { std::cout << symbol_table(*q.name) << ": "; },
+                               [&](const sc::ir::SCPackTarget& t) {
+                                   std::cout << (t.rest ? "rest from " : "at ") << t.index << ": ";
+                               },
+                               [&](const sc::ir::SCCollection& c) {
+                                   std::cout << symbol_table(*c.collection_class) << ": ";
+                               } },
+                           payload);
+                const auto view = g.read(loc);
+                for (size_t i { 0 }; i < view.size(); ++i) {
+                    if (view[i] == '\n') {
+                        std::cout << "'\\n'";
+                    } else {
+                        std::cout.write(view.begin() + i, 1);
+                    }
+                }
+                if (const auto const_i = g.node_as_constexpr(i)) {
+                    std::cout << " = ";
+                    ctx.constant_table(*const_i).to_json(std::cout, symbol_table);
+                }
+                // What calling a method or function returns.
+                const auto constant_result =
+                    std::visit(sc::util::overload { [](const auto&) -> sc::ir::OptionalConstExprIndex { return {}; },
+                                                    [](const sc::ir::SCMethod& m) { return m.constant_result; },
+                                                    [](const sc::ir::SCFunction& f) { return f.constant_result; } },
+                               payload);
+                if (constant_result) {
+                    std::cout << " -> ";
+                    ctx.constant_table(*constant_result).to_json(std::cout, symbol_table);
+                }
+                // A member's initial value, the member itself isn't constant.
+                if (const auto member = std::get_if<sc::ir::SCMember>(&payload); member && member->expr) {
+                    std::cout << " = ";
+                    ctx.constant_table(*member->expr).to_json(std::cout, symbol_table);
+                }
+                std::cout << "\n";
+            });
+    }
 #endif
 
     std::cout << "Successfully compiled " << ctx.class_declarations.num_not_poisoned() / 2 << " classes." << std::endl;

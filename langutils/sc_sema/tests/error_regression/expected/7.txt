@@ -2,20 +2,20 @@
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Duplicate extention.
 file:
-   23 │ 
-   24 │ +Foo {
-   25 │     bar {} 
+   24 │ 
+   25 │ +Foo {
+   26 │     bar {} 
       ┆     ^^^ Overrideen here...
-   26 │ }
+   27 │ }
 
 file:
-   17 │ 
-   18 │ +Foo {
-   19 │     bar {} 
+   18 │ 
+   19 │ +Foo {
+   20 │     bar {} 
       ┆     ^^^ ... and also overrideen here.
-   20 │ }
-   21 │ 
-   22 │ Foo { }
+   21 │ }
+   22 │ 
+   23 │ Foo { }
 
 The compile cannot determine which should implementation should be used, please delete one.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -31,6 +31,42 @@ SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
 SCClass: Object: Object : AbstractObjectExperimental { }
 |  SCMemberList: Object
 |  SCMethodList: Object
+SCClass: Class: Class {}
+|  SCMemberList: Class
+|  SCMethodList: Class
+SCClass: String: String {}
+|  SCMemberList: String
+|  SCMethodList: String
+SCClass: True: True {}
+|  SCMemberList: True
+|  SCMethodList: True
+SCClass: False: False {}
+|  SCMemberList: False
+|  SCMethodList: False
+SCClass: Nil: Nil {}
+|  SCMemberList: Nil
+|  SCMethodList: Nil
+SCClass: Float: Float {}
+|  SCMemberList: Float
+|  SCMethodList: Float
+SCClass: Integer: Integer {}
+|  SCMemberList: Integer
+|  SCMethodList: Integer
+SCClass: Char: Char {}
+|  SCMemberList: Char
+|  SCMethodList: Char
+SCClass: Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  SCMethodList: Symbol
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
 SCClass: Foo: Foo { }
 |  SCMemberList: Foo
 |  SCMethodList: Foo
@@ -38,85 +74,4 @@ SCClass: Foo: Foo { }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: }
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Meta_Object: Object : AbstractObjectExperimental { }
-|  SCMemberList: Object
-|  SCMethodList: Object
-SCClass: Meta_Foo: Foo { }
-|  SCMemberList: Foo
-|  SCMethodList: Foo
-SCClass: Meta_Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Meta_Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Meta_Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Meta_Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Meta_Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Meta_Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Meta_Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Meta_Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: Meta_False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: Meta_True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: Meta_String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: Meta_Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
 Successfully compiled 15 classes.

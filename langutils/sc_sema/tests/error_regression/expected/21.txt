@@ -4,15 +4,95 @@
 IR GRAPH DUMP 
 
 
-SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  SCMethodList: Object
 SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'    empty { ^() }'\n'    symbol_key { ^(\a: 1) }'\n'    string_key { ^("a": 1) }'\n'    integer_key { ^(1: \one) }'\n'    nested_array { ^(a: [1, 2]) }'\n'    nested_event { ^(a: (b: 1)) }'\n'    value_not_constant { ^(a: 1.foo) }'\n'    key_not_constant { ^((1.foo): 2) }'\n'    nested_not_constant { ^(a: (b: 1.foo)) }'\n'}
 |  SCMemberList: Dictionaries
 |  SCMethodList: Dictionaries
+|  |  SCMethod: constant { ^(a: 1, b: 2.5) } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"float": 2.5}}]}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(a: 1, b: 2.5)
+|  |  |  |  SCExplicitReturn: (a: 1, b: 2.5)
+|  |  |  |  |  SCCollection: Event: (a: 1, b: 2.5) = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"float": 2.5}}]}
+|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
+|  |  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
+|  |  SCMethod: empty { ^() } -> {"event": []}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^()
+|  |  |  |  SCExplicitReturn: ()
+|  |  |  |  |  SCCollection: Event: () = {"event": []}
+|  |  SCMethod: symbol_key { ^(\a: 1) } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(\a: 1)
+|  |  |  |  SCExplicitReturn: (\a: 1)
+|  |  |  |  |  SCCollection: Event: (\a: 1) = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
+|  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: string_key { ^("a": 1) } -> {"event": [{"key": {"string": "a"}, "value": {"int": 1}}]}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^("a": 1)
+|  |  |  |  SCExplicitReturn: ("a": 1)
+|  |  |  |  |  SCCollection: Event: ("a": 1) = {"event": [{"key": {"string": "a"}, "value": {"int": 1}}]}
+|  |  |  |  |  |  SCLiteral: "a" = {"string": "a"}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: integer_key { ^(1: \one) } -> {"event": [{"key": {"int": 1}, "value": {"symbol": "one"}}]}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(1: \one)
+|  |  |  |  SCExplicitReturn: (1: \one)
+|  |  |  |  |  SCCollection: Event: (1: \one) = {"event": [{"key": {"int": 1}, "value": {"symbol": "one"}}]}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: \one = {"symbol": "one"}
+|  |  SCMethod: nested_array { ^(a: [1, 2]) } -> {"event": [{"key": {"symbol": "a"}, "value": {"array": [{"int": 1}, {"int": 2}]}}]}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(a: [1, 2])
+|  |  |  |  SCExplicitReturn: (a: [1, 2])
+|  |  |  |  |  SCCollection: Event: (a: [1, 2]) = {"event": [{"key": {"symbol": "a"}, "value": {"array": [{"int": 1}, {"int": 2}]}}]}
+|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
+|  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  SCMethod: nested_event { ^(a: (b: 1)) } -> {"event": [{"key": {"symbol": "a"}, "value": {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}}]}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(a: (b: 1))
+|  |  |  |  SCExplicitReturn: (a: (b: 1))
+|  |  |  |  |  SCCollection: Event: (a: (b: 1)) = {"event": [{"key": {"symbol": "a"}, "value": {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}}]}
+|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
+|  |  |  |  |  |  SCCollection: Event: (b: 1) = {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}
+|  |  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: value_not_constant { ^(a: 1.foo) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(a: 1.foo)
+|  |  |  |  SCExplicitReturn: (a: 1.foo)
+|  |  |  |  |  SCCollection: Event: (a: 1.foo)
+|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
+|  |  |  |  |  |  SCMessage: foo: 1.foo
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCPositionalArgs: 1.foo
+|  |  |  |  |  |  |  SCKwArgs: 1.foo
+|  |  |  |  |  |  |  SCVariadicArgs: 1.foo
+|  |  |  |  |  |  |  SCMissing: 1.foo
+|  |  SCMethod: key_not_constant { ^((1.foo): 2) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^((1.foo): 2)
+|  |  |  |  SCExplicitReturn: ((1.foo): 2)
+|  |  |  |  |  SCCollection: Event: ((1.foo): 2)
+|  |  |  |  |  |  SCMessage: foo: 1.foo
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCPositionalArgs: 1.foo
+|  |  |  |  |  |  |  SCKwArgs: 1.foo
+|  |  |  |  |  |  |  SCVariadicArgs: 1.foo
+|  |  |  |  |  |  |  SCMissing: 1.foo
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
 |  |  SCMethod: nested_not_constant { ^(a: (b: 1.foo)) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -28,227 +108,4 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  |  |  |  |  |  |  SCKwArgs: 1.foo
 |  |  |  |  |  |  |  |  SCVariadicArgs: 1.foo
 |  |  |  |  |  |  |  |  SCMissing: 1.foo
-|  |  SCMethod: key_not_constant { ^((1.foo): 2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^((1.foo): 2)
-|  |  |  |  SCExplicitReturn: ((1.foo): 2)
-|  |  |  |  |  SCCollection: Event: ((1.foo): 2)
-|  |  |  |  |  |  SCMessage: foo: 1.foo
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCPositionalArgs: 1.foo
-|  |  |  |  |  |  |  SCKwArgs: 1.foo
-|  |  |  |  |  |  |  SCVariadicArgs: 1.foo
-|  |  |  |  |  |  |  SCMissing: 1.foo
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: value_not_constant { ^(a: 1.foo) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(a: 1.foo)
-|  |  |  |  SCExplicitReturn: (a: 1.foo)
-|  |  |  |  |  SCCollection: Event: (a: 1.foo)
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCMessage: foo: 1.foo
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCPositionalArgs: 1.foo
-|  |  |  |  |  |  |  SCKwArgs: 1.foo
-|  |  |  |  |  |  |  SCVariadicArgs: 1.foo
-|  |  |  |  |  |  |  SCMissing: 1.foo
-|  |  SCMethod: nested_event { ^(a: (b: 1)) } -> {"event": [{"key": {"symbol": "a"}, "value": {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(a: (b: 1))
-|  |  |  |  SCExplicitReturn: (a: (b: 1))
-|  |  |  |  |  SCCollection: Event: (a: (b: 1)) = {"event": [{"key": {"symbol": "a"}, "value": {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}}]}
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCCollection: Event: (b: 1) = {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}
-|  |  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: nested_array { ^(a: [1, 2]) } -> {"event": [{"key": {"symbol": "a"}, "value": {"array": [{"int": 1}, {"int": 2}]}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(a: [1, 2])
-|  |  |  |  SCExplicitReturn: (a: [1, 2])
-|  |  |  |  |  SCCollection: Event: (a: [1, 2]) = {"event": [{"key": {"symbol": "a"}, "value": {"array": [{"int": 1}, {"int": 2}]}}]}
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: integer_key { ^(1: \one) } -> {"event": [{"key": {"int": 1}, "value": {"symbol": "one"}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1: \one)
-|  |  |  |  SCExplicitReturn: (1: \one)
-|  |  |  |  |  SCCollection: Event: (1: \one) = {"event": [{"key": {"int": 1}, "value": {"symbol": "one"}}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: \one = {"symbol": "one"}
-|  |  SCMethod: string_key { ^("a": 1) } -> {"event": [{"key": {"string": "a"}, "value": {"int": 1}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^("a": 1)
-|  |  |  |  SCExplicitReturn: ("a": 1)
-|  |  |  |  |  SCCollection: Event: ("a": 1) = {"event": [{"key": {"string": "a"}, "value": {"int": 1}}]}
-|  |  |  |  |  |  SCLiteral: "a" = {"string": "a"}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: symbol_key { ^(\a: 1) } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(\a: 1)
-|  |  |  |  SCExplicitReturn: (\a: 1)
-|  |  |  |  |  SCCollection: Event: (\a: 1) = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
-|  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: empty { ^() } -> {"event": []}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^()
-|  |  |  |  SCExplicitReturn: ()
-|  |  |  |  |  SCCollection: Event: () = {"event": []}
-|  |  SCMethod: constant { ^(a: 1, b: 2.5) } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"float": 2.5}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(a: 1, b: 2.5)
-|  |  |  |  SCExplicitReturn: (a: 1, b: 2.5)
-|  |  |  |  |  SCCollection: Event: (a: 1, b: 2.5) = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"float": 2.5}}]}
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
-|  |  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Object
-SCClass: Meta_Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'    empty { ^() }'\n'    symbol_key { ^(\a: 1) }'\n'    string_key { ^("a": 1) }'\n'    integer_key { ^(1: \one) }'\n'    nested_array { ^(a: [1, 2]) }'\n'    nested_event { ^(a: (b: 1)) }'\n'    value_not_constant { ^(a: 1.foo) }'\n'    key_not_constant { ^((1.foo): 2) }'\n'    nested_not_constant { ^(a: (b: 1.foo)) }'\n'}
-|  SCMemberList: Dictionaries
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Dictionaries
-SCClass: Meta_Event: Event {}
-|  SCMemberList: Event
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Event
-SCClass: Meta_Array: Array {}
-|  SCMemberList: Array
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Array
-SCClass: Meta_Ref: Ref {}
-|  SCMemberList: Ref
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Ref
-SCClass: Meta_Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Symbol
-SCClass: Meta_Char: Char {}
-|  SCMemberList: Char
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Char
-SCClass: Meta_Integer: Integer {}
-|  SCMemberList: Integer
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Integer
-SCClass: Meta_Float: Float {}
-|  SCMemberList: Float
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Float
-SCClass: Meta_Nil: Nil {}
-|  SCMemberList: Nil
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Nil
-SCClass: Meta_False: False {}
-|  SCMemberList: False
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: False
-SCClass: Meta_True: True {}
-|  SCMemberList: True
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: True
-SCClass: Meta_String: String {}
-|  SCMemberList: String
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: String
-SCClass: Meta_Class: Class {}
-|  SCMemberList: Class
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Class
 Successfully compiled 15 classes.

@@ -1,33 +1,3 @@
-AbstractObjectExperimental {}
-
-Object : AbstractObjectExperimental {
-    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;
-}
-
-Class {}
-
-String {}
-
-True {}
-
-False {}
-
-Nil {}
-
-Float {}
-
-Integer {}
-
-Char {}
-
-Symbol {}
-
-Ref {}
-
-Array {}
-
-Event {}
-
 Messages {
     postfix { ^1.foo }
     postfix_args { ^1.foo(2, 3) }

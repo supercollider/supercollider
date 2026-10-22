@@ -2,12 +2,12 @@
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Perform selector is not a symbol
 file:
-   39 │     class_name { ^1.perform(Object) }
-   40 │     prefix { ^perform(1, 2) }
-   41 │     binary { ^1 perform: 2 }
+    1 │ PerformNotSymbol {
+    2 │     integer { ^1.perform(2) }
       ┆                          ^ this is a constant, but not a symbol.
-   42 │     not_constant { ^1.perform(2.bar) }
-   43 │ }
+    3 │     float { ^1.perform(2.5, 3) }
+    4 │     string { ^1.perform("foo") }
+    5 │     string_with_quote { ^1.perform("it's") }
 
 `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -15,111 +15,13 @@ file:
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Perform selector is not a symbol
 file:
-   38 │     nil_selector { ^1.perform(nil) }
-   39 │     class_name { ^1.perform(Object) }
-   40 │     prefix { ^perform(1, 2) }
-      ┆                          ^ this is a constant, but not a symbol.
-   41 │     binary { ^1 perform: 2 }
-   42 │     not_constant { ^1.perform(2.bar) }
-   43 │ }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-   36 │     char { ^1.perform($a) }
-   37 │     boolean { ^1.perform(true) }
-   38 │     nil_selector { ^1.perform(nil) }
-      ┆                               ^^^ this is a constant, but not a symbol.
-   39 │     class_name { ^1.perform(Object) }
-   40 │     prefix { ^perform(1, 2) }
-   41 │     binary { ^1 perform: 2 }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-   35 │     string_with_quote { ^1.perform("it's") }
-   36 │     char { ^1.perform($a) }
-   37 │     boolean { ^1.perform(true) }
-      ┆                          ^^^^ this is a constant, but not a symbol.
-   38 │     nil_selector { ^1.perform(nil) }
-   39 │     class_name { ^1.perform(Object) }
-   40 │     prefix { ^perform(1, 2) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-   34 │     string { ^1.perform("foo") }
-   35 │     string_with_quote { ^1.perform("it's") }
-   36 │     char { ^1.perform($a) }
-      ┆                       ^^ this is a constant, but not a symbol.
-   37 │     boolean { ^1.perform(true) }
-   38 │     nil_selector { ^1.perform(nil) }
-   39 │     class_name { ^1.perform(Object) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-   33 │     float { ^1.perform(2.5, 3) }
-   34 │     string { ^1.perform("foo") }
-   35 │     string_with_quote { ^1.perform("it's") }
-      ┆                                    ^^^^^^ did you mean 'it\'s'?
-   36 │     char { ^1.perform($a) }
-   37 │     boolean { ^1.perform(true) }
-   38 │     nil_selector { ^1.perform(nil) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-   32 │     integer { ^1.perform(2) }
-   33 │     float { ^1.perform(2.5, 3) }
-   34 │     string { ^1.perform("foo") }
-      ┆                         ^^^^^ did you mean 'foo'?
-   35 │     string_with_quote { ^1.perform("it's") }
-   36 │     char { ^1.perform($a) }
-   37 │     boolean { ^1.perform(true) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-   37 │     boolean { ^1.perform(true) }
-   38 │     nil_selector { ^1.perform(nil) }
-   39 │     class_name { ^1.perform(Object) }
-      ┆                             ^^^^^^ this is a constant, but not a symbol.
-   40 │     prefix { ^perform(1, 2) }
-   41 │     binary { ^1 perform: 2 }
-   42 │     not_constant { ^1.perform(2.bar) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-   31 │ PerformNotSymbol {
-   32 │     integer { ^1.perform(2) }
-   33 │     float { ^1.perform(2.5, 3) }
+    1 │ PerformNotSymbol {
+    2 │     integer { ^1.perform(2) }
+    3 │     float { ^1.perform(2.5, 3) }
       ┆                        ^^^ this is a constant, but not a symbol.
-   34 │     string { ^1.perform("foo") }
-   35 │     string_with_quote { ^1.perform("it's") }
-   36 │     char { ^1.perform($a) }
+    4 │     string { ^1.perform("foo") }
+    5 │     string_with_quote { ^1.perform("it's") }
+    6 │     char { ^1.perform($a) }
 
 `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -127,13 +29,110 @@ file:
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Perform selector is not a symbol
 file:
-   30 │ 
-   31 │ PerformNotSymbol {
-   32 │     integer { ^1.perform(2) }
+    2 │     integer { ^1.perform(2) }
+    3 │     float { ^1.perform(2.5, 3) }
+    4 │     string { ^1.perform("foo") }
+      ┆                         ^^^^^ did you mean 'foo'?
+    5 │     string_with_quote { ^1.perform("it's") }
+    6 │     char { ^1.perform($a) }
+    7 │     boolean { ^1.perform(true) }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+    3 │     float { ^1.perform(2.5, 3) }
+    4 │     string { ^1.perform("foo") }
+    5 │     string_with_quote { ^1.perform("it's") }
+      ┆                                    ^^^^^^ did you mean 'it\'s'?
+    6 │     char { ^1.perform($a) }
+    7 │     boolean { ^1.perform(true) }
+    8 │     nil_selector { ^1.perform(nil) }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+    4 │     string { ^1.perform("foo") }
+    5 │     string_with_quote { ^1.perform("it's") }
+    6 │     char { ^1.perform($a) }
+      ┆                       ^^ this is a constant, but not a symbol.
+    7 │     boolean { ^1.perform(true) }
+    8 │     nil_selector { ^1.perform(nil) }
+    9 │     class_name { ^1.perform(Object) }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+    5 │     string_with_quote { ^1.perform("it's") }
+    6 │     char { ^1.perform($a) }
+    7 │     boolean { ^1.perform(true) }
+      ┆                          ^^^^ this is a constant, but not a symbol.
+    8 │     nil_selector { ^1.perform(nil) }
+    9 │     class_name { ^1.perform(Object) }
+   10 │     prefix { ^perform(1, 2) }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+    6 │     char { ^1.perform($a) }
+    7 │     boolean { ^1.perform(true) }
+    8 │     nil_selector { ^1.perform(nil) }
+      ┆                               ^^^ this is a constant, but not a symbol.
+    9 │     class_name { ^1.perform(Object) }
+   10 │     prefix { ^perform(1, 2) }
+   11 │     binary { ^1 perform: 2 }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+    7 │     boolean { ^1.perform(true) }
+    8 │     nil_selector { ^1.perform(nil) }
+    9 │     class_name { ^1.perform(Object) }
+      ┆                             ^^^^^^ this is a constant, but not a symbol.
+   10 │     prefix { ^perform(1, 2) }
+   11 │     binary { ^1 perform: 2 }
+   12 │     not_constant { ^1.perform(2.bar) }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+    8 │     nil_selector { ^1.perform(nil) }
+    9 │     class_name { ^1.perform(Object) }
+   10 │     prefix { ^perform(1, 2) }
       ┆                          ^ this is a constant, but not a symbol.
-   33 │     float { ^1.perform(2.5, 3) }
-   34 │     string { ^1.perform("foo") }
-   35 │     string_with_quote { ^1.perform("it's") }
+   11 │     binary { ^1 perform: 2 }
+   12 │     not_constant { ^1.perform(2.bar) }
+   13 │ }
+
+`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Perform selector is not a symbol
+file:
+    9 │     class_name { ^1.perform(Object) }
+   10 │     prefix { ^perform(1, 2) }
+   11 │     binary { ^1 perform: 2 }
+      ┆                          ^ this is a constant, but not a symbol.
+   12 │     not_constant { ^1.perform(2.bar) }
+   13 │ }
 
 `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -143,15 +142,130 @@ file:
 IR GRAPH DUMP 
 
 
-SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  SCMethodList: Object
 SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\n'    float { ^1.perform(2.5, 3) }'\n'    string { ^1.perform("foo") }'\n'    string_with_quote { ^1.perform("it's") }'\n'    char { ^1.perform($a) }'\n'    boolean { ^1.perform(true) }'\n'    nil_selector { ^1.perform(nil) }'\n'    class_name { ^1.perform(Object) }'\n'    prefix { ^perform(1, 2) }'\n'    binary { ^1 perform: 2 }'\n'    not_constant { ^1.perform(2.bar) }'\n'}
 |  SCMemberList: PerformNotSymbol
 |  SCMethodList: PerformNotSymbol
+|  |  SCMethod: poisoned: integer { ^1.perform(2) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1.perform(2)
+|  |  |  |  SCExplicitReturn: 1.perform(2)
+|  |  |  |  |  SCMessage: perform: 1.perform(2)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.perform(2)
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCKwArgs: 1.perform(2)
+|  |  |  |  |  |  SCVariadicArgs: 1.perform(2)
+|  |  |  |  |  |  SCMissing: 1.perform(2)
+|  |  SCMethod: poisoned: float { ^1.perform(2.5, 3) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1.perform(2.5, 3)
+|  |  |  |  SCExplicitReturn: 1.perform(2.5, 3)
+|  |  |  |  |  SCMessage: perform: 1.perform(2.5, 3)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.perform(2.5, 3)
+|  |  |  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
+|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  |  |  |  |  SCKwArgs: 1.perform(2.5, 3)
+|  |  |  |  |  |  SCVariadicArgs: 1.perform(2.5, 3)
+|  |  |  |  |  |  SCMissing: 1.perform(2.5, 3)
+|  |  SCMethod: poisoned: string { ^1.perform("foo") }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1.perform("foo")
+|  |  |  |  SCExplicitReturn: 1.perform("foo")
+|  |  |  |  |  SCMessage: perform: 1.perform("foo")
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.perform("foo")
+|  |  |  |  |  |  |  SCLiteral: "foo" = {"string": "foo"}
+|  |  |  |  |  |  SCKwArgs: 1.perform("foo")
+|  |  |  |  |  |  SCVariadicArgs: 1.perform("foo")
+|  |  |  |  |  |  SCMissing: 1.perform("foo")
+|  |  SCMethod: poisoned: string_with_quote { ^1.perform("it's") }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1.perform("it's")
+|  |  |  |  SCExplicitReturn: 1.perform("it's")
+|  |  |  |  |  SCMessage: perform: 1.perform("it's")
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.perform("it's")
+|  |  |  |  |  |  |  SCLiteral: "it's" = {"string": "it's"}
+|  |  |  |  |  |  SCKwArgs: 1.perform("it's")
+|  |  |  |  |  |  SCVariadicArgs: 1.perform("it's")
+|  |  |  |  |  |  SCMissing: 1.perform("it's")
+|  |  SCMethod: poisoned: char { ^1.perform($a) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1.perform($a)
+|  |  |  |  SCExplicitReturn: 1.perform($a)
+|  |  |  |  |  SCMessage: perform: 1.perform($a)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.perform($a)
+|  |  |  |  |  |  |  SCLiteral: $a = {"char": "a"}
+|  |  |  |  |  |  SCKwArgs: 1.perform($a)
+|  |  |  |  |  |  SCVariadicArgs: 1.perform($a)
+|  |  |  |  |  |  SCMissing: 1.perform($a)
+|  |  SCMethod: poisoned: boolean { ^1.perform(true) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1.perform(true)
+|  |  |  |  SCExplicitReturn: 1.perform(true)
+|  |  |  |  |  SCMessage: perform: 1.perform(true)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.perform(true)
+|  |  |  |  |  |  |  SCLiteral: true = {"bool": true}
+|  |  |  |  |  |  SCKwArgs: 1.perform(true)
+|  |  |  |  |  |  SCVariadicArgs: 1.perform(true)
+|  |  |  |  |  |  SCMissing: 1.perform(true)
+|  |  SCMethod: poisoned: nil_selector { ^1.perform(nil) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1.perform(nil)
+|  |  |  |  SCExplicitReturn: 1.perform(nil)
+|  |  |  |  |  SCMessage: perform: 1.perform(nil)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.perform(nil)
+|  |  |  |  |  |  |  SCLiteral: nil = {"nil": {}}
+|  |  |  |  |  |  SCKwArgs: 1.perform(nil)
+|  |  |  |  |  |  SCVariadicArgs: 1.perform(nil)
+|  |  |  |  |  |  SCMissing: 1.perform(nil)
+|  |  SCMethod: poisoned: class_name { ^1.perform(Object) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1.perform(Object)
+|  |  |  |  SCExplicitReturn: 1.perform(Object)
+|  |  |  |  |  SCMessage: perform: 1.perform(Object)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.perform(Object)
+|  |  |  |  |  |  |  SCLiteral: Object = {"classname": "Object"}
+|  |  |  |  |  |  SCKwArgs: 1.perform(Object)
+|  |  |  |  |  |  SCVariadicArgs: 1.perform(Object)
+|  |  |  |  |  |  SCMissing: 1.perform(Object)
+|  |  SCMethod: poisoned: prefix { ^perform(1, 2) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^perform(1, 2)
+|  |  |  |  SCExplicitReturn: perform(1, 2)
+|  |  |  |  |  SCMessage: perform: perform(1, 2)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: perform(1, 2)
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCKwArgs: perform(1, 2)
+|  |  |  |  |  |  SCVariadicArgs: perform(1, 2)
+|  |  |  |  |  |  SCMissing: perform(1, 2)
+|  |  SCMethod: poisoned: binary { ^1 perform: 2 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1 perform: 2
+|  |  |  |  SCExplicitReturn: 1 perform: 2
+|  |  |  |  |  SCMessage: perform: 1 perform: 2
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1 perform: 2
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCKwArgs: 1 perform: 2
+|  |  |  |  |  |  SCVariadicArgs: 1 perform: 2
+|  |  |  |  |  |  SCMissing: 1 perform: 2
 |  |  SCMethod: not_constant { ^1.perform(2.bar) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -169,262 +283,4 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  |  |  |  |  SCKwArgs: 1.perform(2.bar)
 |  |  |  |  |  |  SCVariadicArgs: 1.perform(2.bar)
 |  |  |  |  |  |  SCMissing: 1.perform(2.bar)
-|  |  SCMethod: poisoned: binary { ^1 perform: 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1 perform: 2
-|  |  |  |  SCExplicitReturn: 1 perform: 2
-|  |  |  |  |  SCMessage: perform: 1 perform: 2
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1 perform: 2
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1 perform: 2
-|  |  |  |  |  |  SCVariadicArgs: 1 perform: 2
-|  |  |  |  |  |  SCMissing: 1 perform: 2
-|  |  SCMethod: poisoned: prefix { ^perform(1, 2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^perform(1, 2)
-|  |  |  |  SCExplicitReturn: perform(1, 2)
-|  |  |  |  |  SCMessage: perform: perform(1, 2)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: perform(1, 2)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: perform(1, 2)
-|  |  |  |  |  |  SCVariadicArgs: perform(1, 2)
-|  |  |  |  |  |  SCMissing: perform(1, 2)
-|  |  SCMethod: poisoned: nil_selector { ^1.perform(nil) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(nil)
-|  |  |  |  SCExplicitReturn: 1.perform(nil)
-|  |  |  |  |  SCMessage: perform: 1.perform(nil)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(nil)
-|  |  |  |  |  |  |  SCLiteral: nil = {"nil": {}}
-|  |  |  |  |  |  SCKwArgs: 1.perform(nil)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(nil)
-|  |  |  |  |  |  SCMissing: 1.perform(nil)
-|  |  SCMethod: poisoned: boolean { ^1.perform(true) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(true)
-|  |  |  |  SCExplicitReturn: 1.perform(true)
-|  |  |  |  |  SCMessage: perform: 1.perform(true)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(true)
-|  |  |  |  |  |  |  SCLiteral: true = {"bool": true}
-|  |  |  |  |  |  SCKwArgs: 1.perform(true)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(true)
-|  |  |  |  |  |  SCMissing: 1.perform(true)
-|  |  SCMethod: poisoned: char { ^1.perform($a) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform($a)
-|  |  |  |  SCExplicitReturn: 1.perform($a)
-|  |  |  |  |  SCMessage: perform: 1.perform($a)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform($a)
-|  |  |  |  |  |  |  SCLiteral: $a = {"char": "a"}
-|  |  |  |  |  |  SCKwArgs: 1.perform($a)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform($a)
-|  |  |  |  |  |  SCMissing: 1.perform($a)
-|  |  SCMethod: poisoned: string_with_quote { ^1.perform("it's") }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform("it's")
-|  |  |  |  SCExplicitReturn: 1.perform("it's")
-|  |  |  |  |  SCMessage: perform: 1.perform("it's")
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform("it's")
-|  |  |  |  |  |  |  SCLiteral: "it's" = {"string": "it's"}
-|  |  |  |  |  |  SCKwArgs: 1.perform("it's")
-|  |  |  |  |  |  SCVariadicArgs: 1.perform("it's")
-|  |  |  |  |  |  SCMissing: 1.perform("it's")
-|  |  SCMethod: poisoned: string { ^1.perform("foo") }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform("foo")
-|  |  |  |  SCExplicitReturn: 1.perform("foo")
-|  |  |  |  |  SCMessage: perform: 1.perform("foo")
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform("foo")
-|  |  |  |  |  |  |  SCLiteral: "foo" = {"string": "foo"}
-|  |  |  |  |  |  SCKwArgs: 1.perform("foo")
-|  |  |  |  |  |  SCVariadicArgs: 1.perform("foo")
-|  |  |  |  |  |  SCMissing: 1.perform("foo")
-|  |  SCMethod: poisoned: class_name { ^1.perform(Object) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(Object)
-|  |  |  |  SCExplicitReturn: 1.perform(Object)
-|  |  |  |  |  SCMessage: perform: 1.perform(Object)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(Object)
-|  |  |  |  |  |  |  SCLiteral: Object = {"classname": "Object"}
-|  |  |  |  |  |  SCKwArgs: 1.perform(Object)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(Object)
-|  |  |  |  |  |  SCMissing: 1.perform(Object)
-|  |  SCMethod: poisoned: float { ^1.perform(2.5, 3) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(2.5, 3)
-|  |  |  |  SCExplicitReturn: 1.perform(2.5, 3)
-|  |  |  |  |  SCMessage: perform: 1.perform(2.5, 3)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(2.5, 3)
-|  |  |  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: 1.perform(2.5, 3)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(2.5, 3)
-|  |  |  |  |  |  SCMissing: 1.perform(2.5, 3)
-|  |  SCMethod: poisoned: integer { ^1.perform(2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(2)
-|  |  |  |  SCExplicitReturn: 1.perform(2)
-|  |  |  |  |  SCMessage: perform: 1.perform(2)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(2)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1.perform(2)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(2)
-|  |  |  |  |  |  SCMissing: 1.perform(2)
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Object
-SCClass: Meta_PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\n'    float { ^1.perform(2.5, 3) }'\n'    string { ^1.perform("foo") }'\n'    string_with_quote { ^1.perform("it's") }'\n'    char { ^1.perform($a) }'\n'    boolean { ^1.perform(true) }'\n'    nil_selector { ^1.perform(nil) }'\n'    class_name { ^1.perform(Object) }'\n'    prefix { ^perform(1, 2) }'\n'    binary { ^1 perform: 2 }'\n'    not_constant { ^1.perform(2.bar) }'\n'}
-|  SCMemberList: PerformNotSymbol
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: PerformNotSymbol
-SCClass: Meta_Event: Event {}
-|  SCMemberList: Event
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Event
-SCClass: Meta_Array: Array {}
-|  SCMemberList: Array
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Array
-SCClass: Meta_Ref: Ref {}
-|  SCMemberList: Ref
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Ref
-SCClass: Meta_Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Symbol
-SCClass: Meta_Char: Char {}
-|  SCMemberList: Char
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Char
-SCClass: Meta_Integer: Integer {}
-|  SCMemberList: Integer
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Integer
-SCClass: Meta_Float: Float {}
-|  SCMemberList: Float
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Float
-SCClass: Meta_Nil: Nil {}
-|  SCMemberList: Nil
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Nil
-SCClass: Meta_False: False {}
-|  SCMemberList: False
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: False
-SCClass: Meta_True: True {}
-|  SCMemberList: True
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: True
-SCClass: Meta_String: String {}
-|  SCMemberList: String
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: String
-SCClass: Meta_Class: Class {}
-|  SCMemberList: Class
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Class
 Successfully compiled 15 classes.

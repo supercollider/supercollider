@@ -2,41 +2,40 @@
 ──────────────────────────────────────────────────────────────────────────────────
 Warning: Event key without a value
 file:
-   32 │     odd_constant { ^Event[a: 1, \b] }
-   33 │     odd_not_constant { ^Event[a: 1.foo, \b] }
-   34 │     single { ^Event[\a] }
-      ┆                     ^^ this key has no value.
-   35 │     even { ^Event[a: 1, b: 2] }
-   36 │     array_odd_is_fine { ^Array[1, 2, 3] }
-   37 │ }
-
-The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Warning: Event key without a value
-file:
-   31 │ EventKeyWithoutValue {
-   32 │     odd_constant { ^Event[a: 1, \b] }
-   33 │     odd_not_constant { ^Event[a: 1.foo, \b] }
-      ┆                                         ^^ this key has no value.
-   34 │     single { ^Event[\a] }
-   35 │     even { ^Event[a: 1, b: 2] }
-   36 │     array_odd_is_fine { ^Array[1, 2, 3] }
-
-The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Warning: Event key without a value
-file:
-   30 │ 
-   31 │ EventKeyWithoutValue {
-   32 │     odd_constant { ^Event[a: 1, \b] }
+    1 │ EventKeyWithoutValue {
+    2 │     odd_constant { ^Event[a: 1, \b] }
       ┆                                 ^^ this key has no value.
-   33 │     odd_not_constant { ^Event[a: 1.foo, \b] }
-   34 │     single { ^Event[\a] }
-   35 │     even { ^Event[a: 1, b: 2] }
+    3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+    4 │     single { ^Event[\a] }
+    5 │     even { ^Event[a: 1, b: 2] }
+
+The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Warning: Event key without a value
+file:
+    1 │ EventKeyWithoutValue {
+    2 │     odd_constant { ^Event[a: 1, \b] }
+    3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+      ┆                                         ^^ this key has no value.
+    4 │     single { ^Event[\a] }
+    5 │     even { ^Event[a: 1, b: 2] }
+    6 │     array_odd_is_fine { ^Array[1, 2, 3] }
+
+The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Warning: Event key without a value
+file:
+    2 │     odd_constant { ^Event[a: 1, \b] }
+    3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+    4 │     single { ^Event[\a] }
+      ┆                     ^^ this key has no value.
+    5 │     even { ^Event[a: 1, b: 2] }
+    6 │     array_odd_is_fine { ^Array[1, 2, 3] }
+    7 │ }
 
 The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -46,41 +45,18 @@ The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b:
 IR GRAPH DUMP 
 
 
-SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  SCMethodList: Object
 SCClass: EventKeyWithoutValue: EventKeyWithoutValue {'\n'    odd_constant { ^Event[a: 1, \b] }'\n'    odd_not_constant { ^Event[a: 1.foo, \b] }'\n'    single { ^Event[\a] }'\n'    even { ^Event[a: 1, b: 2] }'\n'    array_odd_is_fine { ^Array[1, 2, 3] }'\n'}
 |  SCMemberList: EventKeyWithoutValue
 |  SCMethodList: EventKeyWithoutValue
-|  |  SCMethod: array_odd_is_fine { ^Array[1, 2, 3] } -> {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
+|  |  SCMethod: odd_constant { ^Event[a: 1, \b] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^Array[1, 2, 3]
-|  |  |  |  SCExplicitReturn: Array[1, 2, 3]
-|  |  |  |  |  SCCollection: Array: Array[1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  SCMethod: even { ^Event[a: 1, b: 2] } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"int": 2}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^Event[a: 1, b: 2]
-|  |  |  |  SCExplicitReturn: Event[a: 1, b: 2]
-|  |  |  |  |  SCCollection: Event: Event[a: 1, b: 2] = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"int": 2}}]}
+|  |  |  SCBody: ^Event[a: 1, \b]
+|  |  |  |  SCExplicitReturn: Event[a: 1, \b]
+|  |  |  |  |  SCCollection: Event: Event[a: 1, \b]
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: single { ^Event[\a] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^Event[\a]
-|  |  |  |  SCExplicitReturn: Event[\a]
-|  |  |  |  |  SCCollection: Event: Event[\a]
-|  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
+|  |  |  |  |  |  SCLiteral: \b = {"symbol": "b"}
 |  |  SCMethod: odd_not_constant { ^Event[a: 1.foo, \b] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -95,150 +71,30 @@ SCClass: EventKeyWithoutValue: EventKeyWithoutValue {'\n'    odd_constant { ^Eve
 |  |  |  |  |  |  |  SCVariadicArgs: 1.foo
 |  |  |  |  |  |  |  SCMissing: 1.foo
 |  |  |  |  |  |  SCLiteral: \b = {"symbol": "b"}
-|  |  SCMethod: odd_constant { ^Event[a: 1, \b] }
+|  |  SCMethod: single { ^Event[\a] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^Event[a: 1, \b]
-|  |  |  |  SCExplicitReturn: Event[a: 1, \b]
-|  |  |  |  |  SCCollection: Event: Event[a: 1, \b]
+|  |  |  SCBody: ^Event[\a]
+|  |  |  |  SCExplicitReturn: Event[\a]
+|  |  |  |  |  SCCollection: Event: Event[\a]
+|  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
+|  |  SCMethod: even { ^Event[a: 1, b: 2] } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"int": 2}}]}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^Event[a: 1, b: 2]
+|  |  |  |  SCExplicitReturn: Event[a: 1, b: 2]
+|  |  |  |  |  SCCollection: Event: Event[a: 1, b: 2] = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"int": 2}}]}
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: \b = {"symbol": "b"}
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Object
-SCClass: Meta_EventKeyWithoutValue: EventKeyWithoutValue {'\n'    odd_constant { ^Event[a: 1, \b] }'\n'    odd_not_constant { ^Event[a: 1.foo, \b] }'\n'    single { ^Event[\a] }'\n'    even { ^Event[a: 1, b: 2] }'\n'    array_odd_is_fine { ^Array[1, 2, 3] }'\n'}
-|  SCMemberList: EventKeyWithoutValue
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: EventKeyWithoutValue
-SCClass: Meta_Event: Event {}
-|  SCMemberList: Event
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Event
-SCClass: Meta_Array: Array {}
-|  SCMemberList: Array
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Array
-SCClass: Meta_Ref: Ref {}
-|  SCMemberList: Ref
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Ref
-SCClass: Meta_Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Symbol
-SCClass: Meta_Char: Char {}
-|  SCMemberList: Char
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Char
-SCClass: Meta_Integer: Integer {}
-|  SCMemberList: Integer
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Integer
-SCClass: Meta_Float: Float {}
-|  SCMemberList: Float
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Float
-SCClass: Meta_Nil: Nil {}
-|  SCMemberList: Nil
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Nil
-SCClass: Meta_False: False {}
-|  SCMemberList: False
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: False
-SCClass: Meta_True: True {}
-|  SCMemberList: True
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: True
-SCClass: Meta_String: String {}
-|  SCMemberList: String
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: String
-SCClass: Meta_Class: Class {}
-|  SCMemberList: Class
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Class
+|  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  SCMethod: array_odd_is_fine { ^Array[1, 2, 3] } -> {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^Array[1, 2, 3]
+|  |  |  |  SCExplicitReturn: Array[1, 2, 3]
+|  |  |  |  |  SCCollection: Array: Array[1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
 Successfully compiled 15 classes.

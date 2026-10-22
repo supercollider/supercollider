@@ -2,13 +2,13 @@
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Variable not defined
 file:
-   37 │     uses_earlier { var a = 1, b = a + 1; ^b }
-   38 │     bracketed_value { var a(1 + 2); ^a }
-   39 │     refers_to_itself { var a = a; ^a }
+    7 │     uses_earlier { var a = 1, b = a + 1; ^b }
+    8 │     bracketed_value { var a(1 + 2); ^a }
+    9 │     refers_to_itself { var a = a; ^a }
       ┆                                ^ this is not defined.
-   40 │     used_before_declared { a; var a = 1 }
-   41 │     declared_after_expression { 1; var a = 2; ^a }
-   42 │     duplicate { var a, a; ^a }
+   10 │     used_before_declared { a; var a = 1 }
+   11 │     declared_after_expression { 1; var a = 2; ^a }
+   12 │     duplicate { var a, a; ^a }
 
 Declare it with 'var', or use '~a' to refer to an environment variable.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -16,13 +16,13 @@ Declare it with 'var', or use '~a' to refer to an environment variable.
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Variable not defined
 file:
-   38 │     bracketed_value { var a(1 + 2); ^a }
-   39 │     refers_to_itself { var a = a; ^a }
-   40 │     used_before_declared { a; var a = 1 }
+    8 │     bracketed_value { var a(1 + 2); ^a }
+    9 │     refers_to_itself { var a = a; ^a }
+   10 │     used_before_declared { a; var a = 1 }
       ┆                            ^ this is not defined.
-   41 │     declared_after_expression { 1; var a = 2; ^a }
-   42 │     duplicate { var a, a; ^a }
-   43 │     duplicate_argument { |a| var a; ^a }
+   11 │     declared_after_expression { 1; var a = 2; ^a }
+   12 │     duplicate { var a, a; ^a }
+   13 │     duplicate_argument { |a| var a; ^a }
 
 Declare it with 'var', or use '~a' to refer to an environment variable.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -30,22 +30,22 @@ Declare it with 'var', or use '~a' to refer to an environment variable.
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Variable already declared
 file:
-   40 │     used_before_declared { a; var a = 1 }
-   41 │     declared_after_expression { 1; var a = 2; ^a }
-   42 │     duplicate { var a, a; ^a }
+   10 │     used_before_declared { a; var a = 1 }
+   11 │     declared_after_expression { 1; var a = 2; ^a }
+   12 │     duplicate { var a, a; ^a }
       ┆                     ^ First declared here...
-   43 │     duplicate_argument { |a| var a; ^a }
-   44 │     shadows_instance { var instance_var = 1; ^instance_var }
-   45 │     assign { var a; a = 2 }
+   13 │     duplicate_argument { |a| var a; ^a }
+   14 │     shadows_instance { var instance_var = 1; ^instance_var }
+   15 │     assign { var a; a = 2 }
 
 file:
-   40 │     used_before_declared { a; var a = 1 }
-   41 │     declared_after_expression { 1; var a = 2; ^a }
-   42 │     duplicate { var a, a; ^a }
+   10 │     used_before_declared { a; var a = 1 }
+   11 │     declared_after_expression { 1; var a = 2; ^a }
+   12 │     duplicate { var a, a; ^a }
       ┆                        ^ ...declared again here.
-   43 │     duplicate_argument { |a| var a; ^a }
-   44 │     shadows_instance { var instance_var = 1; ^instance_var }
-   45 │     assign { var a; a = 2 }
+   13 │     duplicate_argument { |a| var a; ^a }
+   14 │     shadows_instance { var instance_var = 1; ^instance_var }
+   15 │     assign { var a; a = 2 }
 
 Arguments and variables in the same function or method must have different names. Rename one.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -53,22 +53,22 @@ Arguments and variables in the same function or method must have different names
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Variable already declared
 file:
-   41 │     declared_after_expression { 1; var a = 2; ^a }
-   42 │     duplicate { var a, a; ^a }
-   43 │     duplicate_argument { |a| var a; ^a }
+   11 │     declared_after_expression { 1; var a = 2; ^a }
+   12 │     duplicate { var a, a; ^a }
+   13 │     duplicate_argument { |a| var a; ^a }
       ┆                           ^ First declared here...
-   44 │     shadows_instance { var instance_var = 1; ^instance_var }
-   45 │     assign { var a; a = 2 }
-   46 │     in_block { ^{ var a = 1; a } }
+   14 │     shadows_instance { var instance_var = 1; ^instance_var }
+   15 │     assign { var a; a = 2 }
+   16 │     in_block { ^{ var a = 1; a } }
 
 file:
-   41 │     declared_after_expression { 1; var a = 2; ^a }
-   42 │     duplicate { var a, a; ^a }
-   43 │     duplicate_argument { |a| var a; ^a }
+   11 │     declared_after_expression { 1; var a = 2; ^a }
+   12 │     duplicate { var a, a; ^a }
+   13 │     duplicate_argument { |a| var a; ^a }
       ┆                                  ^ ...declared again here.
-   44 │     shadows_instance { var instance_var = 1; ^instance_var }
-   45 │     assign { var a; a = 2 }
-   46 │     in_block { ^{ var a = 1; a } }
+   14 │     shadows_instance { var instance_var = 1; ^instance_var }
+   15 │     assign { var a; a = 2 }
+   16 │     in_block { ^{ var a = 1; a } }
 
 Arguments and variables in the same function or method must have different names. Rename one.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -78,55 +78,10 @@ Arguments and variables in the same function or method must have different names
 IR GRAPH DUMP 
 
 
-SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  SCMethodList: Object
 SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { var a; ^a }'\n'    declare_with_value { var a = 1; ^a }'\n'    declare_several { var a = 1, b, c = 3; ^b }'\n'    uses_earlier { var a = 1, b = a + 1; ^b }'\n'    bracketed_value { var a(1 + 2); ^a }'\n'    refers_to_itself { var a = a; ^a }'\n'    used_before_declared { a; var a = 1 }'\n'    declared_after_expression { 1; var a = 2; ^a }'\n'    duplicate { var a, a; ^a }'\n'    duplicate_argument { |a| var a; ^a }'\n'    shadows_instance { var instance_var = 1; ^instance_var }'\n'    assign { var a; a = 2 }'\n'    in_block { ^{ var a = 1; a } }'\n'    block_shadows_outer { var a = 1; ^{ var a = 2; a } }'\n'    block_reads_outer { var a = 1; ^{ a } }'\n'    pack { var #a, b = [1, 2]; ^a }'\n'}
 |  SCMemberList: Variables
 |  |  SCMember: instance_var
 |  SCMethodList: Variables
-|  |  SCMethod: pack { var #a, b = [1, 2]; ^a } -> {"int": 1}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, b = [1, 2]; ^a
-|  |  |  |  SCPackDeclare: #a, b = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: block_reads_outer { var a = 1; ^{ a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a = 1; ^{ a }
-|  |  |  |  SCVariableDeclare: a: a = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCExplicitReturn: { a }
-|  |  |  |  |  SCFunction: { a }
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCBody: { a }
-|  |  |  |  |  |  |  SCRead: a
-|  |  SCMethod: block_shadows_outer { var a = 1; ^{ var a = 2; a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a = 1; ^{ var a = 2; a }
-|  |  |  |  SCVariableDeclare: a: a = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCExplicitReturn: { var a = 2; a }
-|  |  |  |  |  SCFunction: { var a = 2; a } -> {"int": 2}
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCBody: { var a = 2; a }
-|  |  |  |  |  |  |  SCVariableDeclare: a: a = 2
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCRead: a = {"int": 2}
 |  |  SCMethod: declare { var a; ^a } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -257,141 +212,43 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  |  |  |  SCVariableDeclare: a: a = 1
 |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  |  |  SCRead: a = {"int": 1}
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Object
-SCClass: Meta_Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { var a; ^a }'\n'    declare_with_value { var a = 1; ^a }'\n'    declare_several { var a = 1, b, c = 3; ^b }'\n'    uses_earlier { var a = 1, b = a + 1; ^b }'\n'    bracketed_value { var a(1 + 2); ^a }'\n'    refers_to_itself { var a = a; ^a }'\n'    used_before_declared { a; var a = 1 }'\n'    declared_after_expression { 1; var a = 2; ^a }'\n'    duplicate { var a, a; ^a }'\n'    duplicate_argument { |a| var a; ^a }'\n'    shadows_instance { var instance_var = 1; ^instance_var }'\n'    assign { var a; a = 2 }'\n'    in_block { ^{ var a = 1; a } }'\n'    block_shadows_outer { var a = 1; ^{ var a = 2; a } }'\n'    block_reads_outer { var a = 1; ^{ a } }'\n'    pack { var #a, b = [1, 2]; ^a }'\n'}
-|  SCMemberList: Variables
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Variables
-SCClass: Meta_Event: Event {}
-|  SCMemberList: Event
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Event
-SCClass: Meta_Array: Array {}
-|  SCMemberList: Array
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Array
-SCClass: Meta_Ref: Ref {}
-|  SCMemberList: Ref
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Ref
-SCClass: Meta_Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Symbol
-SCClass: Meta_Char: Char {}
-|  SCMemberList: Char
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Char
-SCClass: Meta_Integer: Integer {}
-|  SCMemberList: Integer
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Integer
-SCClass: Meta_Float: Float {}
-|  SCMemberList: Float
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Float
-SCClass: Meta_Nil: Nil {}
-|  SCMemberList: Nil
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Nil
-SCClass: Meta_False: False {}
-|  SCMemberList: False
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: False
-SCClass: Meta_True: True {}
-|  SCMemberList: True
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: True
-SCClass: Meta_String: String {}
-|  SCMemberList: String
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: String
-SCClass: Meta_Class: Class {}
-|  SCMemberList: Class
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Class
+|  |  SCMethod: block_shadows_outer { var a = 1; ^{ var a = 2; a } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: var a = 1; ^{ var a = 2; a }
+|  |  |  |  SCVariableDeclare: a: a = 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  SCExplicitReturn: { var a = 2; a }
+|  |  |  |  |  SCFunction: { var a = 2; a } -> {"int": 2}
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { var a = 2; a }
+|  |  |  |  |  |  |  SCVariableDeclare: a: a = 2
+|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCRead: a = {"int": 2}
+|  |  SCMethod: block_reads_outer { var a = 1; ^{ a } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: var a = 1; ^{ a }
+|  |  |  |  SCVariableDeclare: a: a = 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  SCExplicitReturn: { a }
+|  |  |  |  |  SCFunction: { a }
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { a }
+|  |  |  |  |  |  |  SCRead: a
+|  |  SCMethod: pack { var #a, b = [1, 2]; ^a } -> {"int": 1}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: var #a, b = [1, 2]; ^a
+|  |  |  |  SCPackDeclare: #a, b = [1, 2]
+|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  SCPackTargets: #a, b
+|  |  |  |  |  |  SCPackTarget: at 0: a
+|  |  |  |  |  |  SCPackTarget: at 1: b
+|  |  |  |  SCExplicitReturn: a
+|  |  |  |  |  SCRead: a = {"int": 1}
 Successfully compiled 15 classes.

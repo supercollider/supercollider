@@ -1,37 +1,23 @@
 
 ──────────────────────────────────────────────────────────────────────────────────
-Error: Range has no end
-file:
-   47 │     unbounded_source { ^{: x, x <- (1..) } }
-   48 │     unbounded_source_step { ^{: x, x <- (1, 3..) } }
-   49 │     unbounded_range_outside { var x = (1..); ^x }
-      ┆                                       ^^^^^ this would create an infinite array.
-   50 │     reads_member { ^{: x + instance_var, x <- [1, 2] } }
-   51 │     captures_outer { var a = 1; ^{: a, x <- [1, 2] } }
-   52 │     shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }
-
-A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
 Error: Variable already declared
 file:
-   35 │     immediate { ^{; x.postln, x <- [1, 2, 3] } }
-   36 │     with_index { ^{: [x, i], x i <- [1, 2, 3] } }
-   37 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
+    5 │     immediate { ^{; x.postln, x <- [1, 2, 3] } }
+    6 │     with_index { ^{: [x, i], x i <- [1, 2, 3] } }
+    7 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
       ┆                              ^ First declared here...
-   38 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
-   39 │     declare { ^{: y, x <- [1, 2], var y = x * 2 } }
-   40 │     declare_bracketed { ^{: y, var y (2) } }
+    8 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
+    9 │     declare { ^{: y, x <- [1, 2], var y = x * 2 } }
+   10 │     declare_bracketed { ^{: y, var y (2) } }
 
 file:
-   35 │     immediate { ^{; x.postln, x <- [1, 2, 3] } }
-   36 │     with_index { ^{: [x, i], x i <- [1, 2, 3] } }
-   37 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
+    5 │     immediate { ^{; x.postln, x <- [1, 2, 3] } }
+    6 │     with_index { ^{: [x, i], x i <- [1, 2, 3] } }
+    7 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
       ┆                                ^ ...declared again here.
-   38 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
-   39 │     declare { ^{: y, x <- [1, 2], var y = x * 2 } }
-   40 │     declare_bracketed { ^{: y, var y (2) } }
+    8 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
+    9 │     declare { ^{: y, x <- [1, 2], var y = x * 2 } }
+   10 │     declare_bracketed { ^{: y, var y (2) } }
 
 Arguments and variables in the same function or method must have different names. Rename one.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -39,15 +25,29 @@ Arguments and variables in the same function or method must have different names
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Variable not defined
 file:
-   44 │     all_qualifiers { ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 } }
-   45 │     shadows_earlier { ^{: x, x <- [1, 2], x <- [x, 3] } }
-   46 │     source_cannot_see_element { ^{: x, x <- x } }
+   14 │     all_qualifiers { ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 } }
+   15 │     shadows_earlier { ^{: x, x <- [1, 2], x <- [x, 3] } }
+   16 │     source_cannot_see_element { ^{: x, x <- x } }
       ┆                                             ^ this is not defined.
-   47 │     unbounded_source { ^{: x, x <- (1..) } }
-   48 │     unbounded_source_step { ^{: x, x <- (1, 3..) } }
-   49 │     unbounded_range_outside { var x = (1..); ^x }
+   17 │     unbounded_source { ^{: x, x <- (1..) } }
+   18 │     unbounded_source_step { ^{: x, x <- (1, 3..) } }
+   19 │     unbounded_range_outside { var x = (1..); ^x }
 
 Declare it with 'var', or use '~x' to refer to an environment variable.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Range has no end
+file:
+   17 │     unbounded_source { ^{: x, x <- (1..) } }
+   18 │     unbounded_source_step { ^{: x, x <- (1, 3..) } }
+   19 │     unbounded_range_outside { var x = (1..); ^x }
+      ┆                                       ^^^^^ this would create an infinite array.
+   20 │     reads_member { ^{: x + instance_var, x <- [1, 2] } }
+   21 │     captures_outer { var a = 1; ^{: a, x <- [1, 2] } }
+   22 │     shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }
+
+A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
 ──────────────────────────────────────────────────────────────────────────────────
 
 
@@ -55,222 +55,10 @@ Declare it with 'var', or use '~x' to refer to an environment variable.
 IR GRAPH DUMP 
 
 
-SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  SCMethodList: Object
 SCClass: Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { ^{: x, x <- [1, 2, 3] } }'\n'    immediate { ^{; x.postln, x <- [1, 2, 3] } }'\n'    with_index { ^{: [x, i], x i <- [1, 2, 3] } }'\n'    duplicate_index { ^{: x, x x <- [1, 2, 3] } }'\n'    nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }'\n'    declare { ^{: y, x <- [1, 2], var y = x * 2 } }'\n'    declare_bracketed { ^{: y, var y (2) } }'\n'    condition { ^{: x, x <- (1..10), x.odd } }'\n'    side_effect { ^{: x, x <- [1, 2], :: x.postln } }'\n'    while_guard { ^{: x, x <- (1..), :while x < 5 } }'\n'    all_qualifiers { ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 } }'\n'    shadows_earlier { ^{: x, x <- [1, 2], x <- [x, 3] } }'\n'    source_cannot_see_element { ^{: x, x <- x } }'\n'    unbounded_source { ^{: x, x <- (1..) } }'\n'    unbounded_source_step { ^{: x, x <- (1, 3..) } }'\n'    unbounded_range_outside { var x = (1..); ^x }'\n'    reads_member { ^{: x + instance_var, x <- [1, 2] } }'\n'    captures_outer { var a = 1; ^{: a, x <- [1, 2] } }'\n'    shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }'\n'    source_reads_outer { var x = 1; { {: x, x <- [x] } }; ^x }'\n'    non_local_return_value { ^{: { ^x }.value, x <- [1, 2] } }'\n'    non_local_return_qualifier { {; x, x <- [1, 2], :: { ^x }.value }; ^1 }'\n''\n'    range_generator { ^(: 1..5) }'\n'    range_generator_step { ^(: 1, 3..9) }'\n'    range_generator_from_zero { ^(: ..3) }'\n'    range_generator_unbounded { ^(: 1..) }'\n'    range_generator_unbounded_step { ^(: 1, 3..) }'\n'    range_generator_not_constant { ^(: 1..instance_var) }'\n'}
 |  SCMemberList: Generators
 |  |  SCMember: instance_var
 |  SCMethodList: Generators
-|  |  SCMethod: range_generator_not_constant { ^(: 1..instance_var) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(: 1..instance_var)
-|  |  |  |  SCExplicitReturn: (: 1..instance_var)
-|  |  |  |  |  SCRangeGenerator: (: 1..instance_var)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMissing: (: 1..instance_var)
-|  |  |  |  |  |  SCRead: instance_var
-|  |  SCMethod: range_generator_unbounded_step { ^(: 1, 3..) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(: 1, 3..)
-|  |  |  |  SCExplicitReturn: (: 1, 3..)
-|  |  |  |  |  SCRangeGenerator: (: 1, 3..)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCMissing: (: 1, 3..)
-|  |  SCMethod: range_generator_unbounded { ^(: 1..) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(: 1..)
-|  |  |  |  SCExplicitReturn: (: 1..)
-|  |  |  |  |  SCRangeGenerator: (: 1..)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMissing: (: 1..)
-|  |  |  |  |  |  SCMissing: (: 1..)
-|  |  SCMethod: range_generator_from_zero { ^(: ..3) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(: ..3)
-|  |  |  |  SCExplicitReturn: (: ..3)
-|  |  |  |  |  SCRangeGenerator: (: ..3)
-|  |  |  |  |  |  SCLiteral: (: ..3) = {"int": 0}
-|  |  |  |  |  |  SCMissing: (: ..3)
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  SCMethod: range_generator_step { ^(: 1, 3..9) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(: 1, 3..9)
-|  |  |  |  SCExplicitReturn: (: 1, 3..9)
-|  |  |  |  |  SCRangeGenerator: (: 1, 3..9)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCLiteral: 9 = {"int": 9}
-|  |  SCMethod: range_generator { ^(: 1..5) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(: 1..5)
-|  |  |  |  SCExplicitReturn: (: 1..5)
-|  |  |  |  |  SCRangeGenerator: (: 1..5)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMissing: (: 1..5)
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  SCMethod: non_local_return_qualifier { {; x, x <- [1, 2], :: { ^x }.value }; ^1 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: {; x, x <- [1, 2], :: { ^x }.value }; ^1
-|  |  |  |  SCGenerator: immediate: {; x, x <- [1, 2], :: { ^x }.value }
-|  |  |  |  |  SCGenQualList: x <- [1, 2]
-|  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
-|  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCGenQualSideEffect: :: { ^x }.value
-|  |  |  |  |  |  |  SCMessage: value: { ^x }.value
-|  |  |  |  |  |  |  |  SCFunction: { ^x }
-|  |  |  |  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  |  |  |  SCBody: { ^x }
-|  |  |  |  |  |  |  |  |  |  SCExplicitReturn: x
-|  |  |  |  |  |  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  |  |  SCPositionalArgs: { ^x }.value
-|  |  |  |  |  |  |  |  SCKwArgs: { ^x }.value
-|  |  |  |  |  |  |  |  SCVariadicArgs: { ^x }.value
-|  |  |  |  |  |  |  |  SCMissing: { ^x }.value
-|  |  |  |  |  SCRead: x
-|  |  |  |  SCExplicitReturn: 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: non_local_return_value { ^{: { ^x }.value, x <- [1, 2] } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{: { ^x }.value, x <- [1, 2] }
-|  |  |  |  SCExplicitReturn: {: { ^x }.value, x <- [1, 2] }
-|  |  |  |  |  SCGenerator: routine: {: { ^x }.value, x <- [1, 2] }
-|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
-|  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
-|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCMessage: value: { ^x }.value
-|  |  |  |  |  |  |  SCFunction: { ^x }
-|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  |  |  SCBody: { ^x }
-|  |  |  |  |  |  |  |  |  SCExplicitReturn: x
-|  |  |  |  |  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  |  SCPositionalArgs: { ^x }.value
-|  |  |  |  |  |  |  SCKwArgs: { ^x }.value
-|  |  |  |  |  |  |  SCVariadicArgs: { ^x }.value
-|  |  |  |  |  |  |  SCMissing: { ^x }.value
-|  |  SCMethod: source_reads_outer { var x = 1; { {: x, x <- [x] } }; ^x }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var x = 1; { {: x, x <- [x] } }; ^x
-|  |  |  |  SCVariableDeclare: x: x = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCFunction: { {: x, x <- [x] } }
-|  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  SCBody: { {: x, x <- [x] } }
-|  |  |  |  |  |  SCGenerator: routine: {: x, x <- [x] }
-|  |  |  |  |  |  |  SCGenQualList: x <- [x]
-|  |  |  |  |  |  |  |  SCGenQualIterate: x: x <- [x]
-|  |  |  |  |  |  |  |  |  SCCollection: Array: [x]
-|  |  |  |  |  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  |  SCRead: x
-|  |  |  |  SCExplicitReturn: x
-|  |  |  |  |  SCRead: x
-|  |  SCMethod: shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var x = 1; { {: x, x <- [2] } }; ^x
-|  |  |  |  SCVariableDeclare: x: x = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCFunction: { {: x, x <- [2] } }
-|  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  SCBody: { {: x, x <- [2] } }
-|  |  |  |  |  |  SCGenerator: routine: {: x, x <- [2] }
-|  |  |  |  |  |  |  SCGenQualList: x <- [2]
-|  |  |  |  |  |  |  |  SCGenQualIterate: x: x <- [2]
-|  |  |  |  |  |  |  |  |  SCCollection: Array: [2] = {"array": [{"int": 2}]}
-|  |  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCRead: x
-|  |  |  |  SCExplicitReturn: x
-|  |  |  |  |  SCRead: x = {"int": 1}
-|  |  SCMethod: captures_outer { var a = 1; ^{: a, x <- [1, 2] } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a = 1; ^{: a, x <- [1, 2] }
-|  |  |  |  SCVariableDeclare: a: a = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCExplicitReturn: {: a, x <- [1, 2] }
-|  |  |  |  |  SCGenerator: routine: {: a, x <- [1, 2] }
-|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
-|  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
-|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCRead: a
-|  |  SCMethod: reads_member { ^{: x + instance_var, x <- [1, 2] } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{: x + instance_var, x <- [1, 2] }
-|  |  |  |  SCExplicitReturn: {: x + instance_var, x <- [1, 2] }
-|  |  |  |  |  SCGenerator: routine: {: x + instance_var, x <- [1, 2] }
-|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
-|  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
-|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCMessage: +: x + instance_var
-|  |  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  |  SCPositionalArgs: x + instance_var
-|  |  |  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  |  SCKwArgs: x + instance_var
-|  |  |  |  |  |  |  SCVariadicArgs: x + instance_var
-|  |  |  |  |  |  |  SCMissing: x + instance_var
-|  |  SCMethod: poisoned: unbounded_range_outside { var x = (1..); ^x }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var x = (1..); ^x
-|  |  |  |  SCVariableDeclare: x: x = (1..)
-|  |  |  |  |  SCRange: (1..)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMissing: (1..)
-|  |  |  |  |  |  SCMissing: (1..)
-|  |  |  |  SCExplicitReturn: x
-|  |  |  |  |  SCRead: x
-|  |  SCMethod: unbounded_source_step { ^{: x, x <- (1, 3..) } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{: x, x <- (1, 3..) }
-|  |  |  |  SCExplicitReturn: {: x, x <- (1, 3..) }
-|  |  |  |  |  SCGenerator: routine: {: x, x <- (1, 3..) }
-|  |  |  |  |  |  SCGenQualList: x <- (1, 3..)
-|  |  |  |  |  |  |  SCGenQualIterate: x: x <- (1, 3..)
-|  |  |  |  |  |  |  |  SCRange: (1, 3..)
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  |  |  SCMissing: (1, 3..)
-|  |  |  |  |  |  SCRead: x
-|  |  SCMethod: unbounded_source { ^{: x, x <- (1..) } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{: x, x <- (1..) }
-|  |  |  |  SCExplicitReturn: {: x, x <- (1..) }
-|  |  |  |  |  SCGenerator: routine: {: x, x <- (1..) }
-|  |  |  |  |  |  SCGenQualList: x <- (1..)
-|  |  |  |  |  |  |  SCGenQualIterate: x: x <- (1..)
-|  |  |  |  |  |  |  |  SCRange: (1..)
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCMissing: (1..)
-|  |  |  |  |  |  |  |  |  SCMissing: (1..)
-|  |  |  |  |  |  SCRead: x
 |  |  SCMethod: routine { ^{: x, x <- [1, 2, 3] } }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -336,7 +124,7 @@ SCClass: Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { 
 |  |  |  SCBody: ^{: [x, y], x <- [1, 2], y <- [x, 3] }
 |  |  |  |  SCExplicitReturn: {: [x, y], x <- [1, 2], y <- [x, 3] }
 |  |  |  |  |  SCGenerator: routine: {: [x, y], x <- [1, 2], y <- [x, 3] }
-|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
+|  |  |  |  |  |  SCGenQualList: x <- [1, 2], y <- [x, 3]
 |  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
 |  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -354,7 +142,7 @@ SCClass: Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { 
 |  |  |  SCBody: ^{: y, x <- [1, 2], var y = x * 2 }
 |  |  |  |  SCExplicitReturn: {: y, x <- [1, 2], var y = x * 2 }
 |  |  |  |  |  SCGenerator: routine: {: y, x <- [1, 2], var y = x * 2 }
-|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
+|  |  |  |  |  |  SCGenQualList: x <- [1, 2], var y = x * 2
 |  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
 |  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -384,7 +172,7 @@ SCClass: Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { 
 |  |  |  SCBody: ^{: x, x <- (1..10), x.odd }
 |  |  |  |  SCExplicitReturn: {: x, x <- (1..10), x.odd }
 |  |  |  |  |  SCGenerator: routine: {: x, x <- (1..10), x.odd }
-|  |  |  |  |  |  SCGenQualList: x <- (1..10)
+|  |  |  |  |  |  SCGenQualList: x <- (1..10), x.odd
 |  |  |  |  |  |  |  SCGenQualIterate: x: x <- (1..10)
 |  |  |  |  |  |  |  |  SCRange: (1..10) = {"array": [{"int": 1}, {"int": 2}, {"int": 3}, {"int": 4}, {"int": 5}, {"int": 6}, {"int": 7}, {"int": 8}, {"int": 9}, {"int": 10}]}
 |  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -404,7 +192,7 @@ SCClass: Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { 
 |  |  |  SCBody: ^{: x, x <- [1, 2], :: x.postln }
 |  |  |  |  SCExplicitReturn: {: x, x <- [1, 2], :: x.postln }
 |  |  |  |  |  SCGenerator: routine: {: x, x <- [1, 2], :: x.postln }
-|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
+|  |  |  |  |  |  SCGenQualList: x <- [1, 2], :: x.postln
 |  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
 |  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -423,7 +211,7 @@ SCClass: Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { 
 |  |  |  SCBody: ^{: x, x <- (1..), :while x < 5 }
 |  |  |  |  SCExplicitReturn: {: x, x <- (1..), :while x < 5 }
 |  |  |  |  |  SCGenerator: routine: {: x, x <- (1..), :while x < 5 }
-|  |  |  |  |  |  SCGenQualList: x <- (1..)
+|  |  |  |  |  |  SCGenQualList: x <- (1..), :while x < 5
 |  |  |  |  |  |  |  SCGenQualIterate: x: x <- (1..)
 |  |  |  |  |  |  |  |  SCRange: (1..)
 |  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -444,7 +232,7 @@ SCClass: Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { 
 |  |  |  SCBody: ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 }
 |  |  |  |  SCExplicitReturn: {: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 }
 |  |  |  |  |  SCGenerator: routine: {: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 }
-|  |  |  |  |  |  SCGenQualList: x <- (1..), x.even, var y = x + 1, :: y.postln
+|  |  |  |  |  |  SCGenQualList: x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20
 |  |  |  |  |  |  |  SCGenQualIterate: x: x <- (1..)
 |  |  |  |  |  |  |  |  SCRange: (1..)
 |  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -489,7 +277,7 @@ SCClass: Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { 
 |  |  |  SCBody: ^{: x, x <- [1, 2], x <- [x, 3] }
 |  |  |  |  SCExplicitReturn: {: x, x <- [1, 2], x <- [x, 3] }
 |  |  |  |  |  SCGenerator: routine: {: x, x <- [1, 2], x <- [x, 3] }
-|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
+|  |  |  |  |  |  SCGenQualList: x <- [1, 2], x <- [x, 3]
 |  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
 |  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -509,141 +297,210 @@ SCClass: Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { 
 |  |  |  |  |  |  |  SCGenQualIterate: x: x <- x
 |  |  |  |  |  |  |  |  SCExprList: x
 |  |  |  |  |  |  SCRead: x
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
-|  SCMemberList: Object
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Object
-SCClass: Meta_Generators: Generators {'\n'    var instance_var;'\n''\n'    routine { ^{: x, x <- [1, 2, 3] } }'\n'    immediate { ^{; x.postln, x <- [1, 2, 3] } }'\n'    with_index { ^{: [x, i], x i <- [1, 2, 3] } }'\n'    duplicate_index { ^{: x, x x <- [1, 2, 3] } }'\n'    nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }'\n'    declare { ^{: y, x <- [1, 2], var y = x * 2 } }'\n'    declare_bracketed { ^{: y, var y (2) } }'\n'    condition { ^{: x, x <- (1..10), x.odd } }'\n'    side_effect { ^{: x, x <- [1, 2], :: x.postln } }'\n'    while_guard { ^{: x, x <- (1..), :while x < 5 } }'\n'    all_qualifiers { ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 } }'\n'    shadows_earlier { ^{: x, x <- [1, 2], x <- [x, 3] } }'\n'    source_cannot_see_element { ^{: x, x <- x } }'\n'    unbounded_source { ^{: x, x <- (1..) } }'\n'    unbounded_source_step { ^{: x, x <- (1, 3..) } }'\n'    unbounded_range_outside { var x = (1..); ^x }'\n'    reads_member { ^{: x + instance_var, x <- [1, 2] } }'\n'    captures_outer { var a = 1; ^{: a, x <- [1, 2] } }'\n'    shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }'\n'    source_reads_outer { var x = 1; { {: x, x <- [x] } }; ^x }'\n'    non_local_return_value { ^{: { ^x }.value, x <- [1, 2] } }'\n'    non_local_return_qualifier { {; x, x <- [1, 2], :: { ^x }.value }; ^1 }'\n''\n'    range_generator { ^(: 1..5) }'\n'    range_generator_step { ^(: 1, 3..9) }'\n'    range_generator_from_zero { ^(: ..3) }'\n'    range_generator_unbounded { ^(: 1..) }'\n'    range_generator_unbounded_step { ^(: 1, 3..) }'\n'    range_generator_not_constant { ^(: 1..instance_var) }'\n'}
-|  SCMemberList: Generators
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Generators
-SCClass: Meta_Event: Event {}
-|  SCMemberList: Event
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Event
-SCClass: Meta_Array: Array {}
-|  SCMemberList: Array
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Array
-SCClass: Meta_Ref: Ref {}
-|  SCMemberList: Ref
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Ref
-SCClass: Meta_Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Symbol
-SCClass: Meta_Char: Char {}
-|  SCMemberList: Char
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Char
-SCClass: Meta_Integer: Integer {}
-|  SCMemberList: Integer
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Integer
-SCClass: Meta_Float: Float {}
-|  SCMemberList: Float
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Float
-SCClass: Meta_Nil: Nil {}
-|  SCMemberList: Nil
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Nil
-SCClass: Meta_False: False {}
-|  SCMemberList: False
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: False
-SCClass: Meta_True: True {}
-|  SCMemberList: True
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: True
-SCClass: Meta_String: String {}
-|  SCMemberList: String
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: String
-SCClass: Meta_Class: Class {}
-|  SCMemberList: Class
-|  |  SCMember: dependantsDictionary
-|  |  SCMember: currentEnvironment
-|  |  SCMember: topEnvironment
-|  |  SCMember: uniqueMethods
-|  SCMethodList: Class
+|  |  SCMethod: unbounded_source { ^{: x, x <- (1..) } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{: x, x <- (1..) }
+|  |  |  |  SCExplicitReturn: {: x, x <- (1..) }
+|  |  |  |  |  SCGenerator: routine: {: x, x <- (1..) }
+|  |  |  |  |  |  SCGenQualList: x <- (1..)
+|  |  |  |  |  |  |  SCGenQualIterate: x: x <- (1..)
+|  |  |  |  |  |  |  |  SCRange: (1..)
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  |  SCMissing: (1..)
+|  |  |  |  |  |  |  |  |  SCMissing: (1..)
+|  |  |  |  |  |  SCRead: x
+|  |  SCMethod: unbounded_source_step { ^{: x, x <- (1, 3..) } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{: x, x <- (1, 3..) }
+|  |  |  |  SCExplicitReturn: {: x, x <- (1, 3..) }
+|  |  |  |  |  SCGenerator: routine: {: x, x <- (1, 3..) }
+|  |  |  |  |  |  SCGenQualList: x <- (1, 3..)
+|  |  |  |  |  |  |  SCGenQualIterate: x: x <- (1, 3..)
+|  |  |  |  |  |  |  |  SCRange: (1, 3..)
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  |  |  |  |  |  |  |  SCMissing: (1, 3..)
+|  |  |  |  |  |  SCRead: x
+|  |  SCMethod: poisoned: unbounded_range_outside { var x = (1..); ^x }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: var x = (1..); ^x
+|  |  |  |  SCVariableDeclare: x: x = (1..)
+|  |  |  |  |  SCRange: (1..)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCMissing: (1..)
+|  |  |  |  |  |  SCMissing: (1..)
+|  |  |  |  SCExplicitReturn: x
+|  |  |  |  |  SCRead: x
+|  |  SCMethod: reads_member { ^{: x + instance_var, x <- [1, 2] } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{: x + instance_var, x <- [1, 2] }
+|  |  |  |  SCExplicitReturn: {: x + instance_var, x <- [1, 2] }
+|  |  |  |  |  SCGenerator: routine: {: x + instance_var, x <- [1, 2] }
+|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
+|  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
+|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCMessage: +: x + instance_var
+|  |  |  |  |  |  |  SCRead: x
+|  |  |  |  |  |  |  SCPositionalArgs: x + instance_var
+|  |  |  |  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  |  |  SCKwArgs: x + instance_var
+|  |  |  |  |  |  |  SCVariadicArgs: x + instance_var
+|  |  |  |  |  |  |  SCMissing: x + instance_var
+|  |  SCMethod: captures_outer { var a = 1; ^{: a, x <- [1, 2] } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: var a = 1; ^{: a, x <- [1, 2] }
+|  |  |  |  SCVariableDeclare: a: a = 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  SCExplicitReturn: {: a, x <- [1, 2] }
+|  |  |  |  |  SCGenerator: routine: {: a, x <- [1, 2] }
+|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
+|  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
+|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCRead: a
+|  |  SCMethod: shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: var x = 1; { {: x, x <- [2] } }; ^x
+|  |  |  |  SCVariableDeclare: x: x = 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  SCFunction: { {: x, x <- [2] } }
+|  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  SCBody: { {: x, x <- [2] } }
+|  |  |  |  |  |  SCGenerator: routine: {: x, x <- [2] }
+|  |  |  |  |  |  |  SCGenQualList: x <- [2]
+|  |  |  |  |  |  |  |  SCGenQualIterate: x: x <- [2]
+|  |  |  |  |  |  |  |  |  SCCollection: Array: [2] = {"array": [{"int": 2}]}
+|  |  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCRead: x
+|  |  |  |  SCExplicitReturn: x
+|  |  |  |  |  SCRead: x = {"int": 1}
+|  |  SCMethod: source_reads_outer { var x = 1; { {: x, x <- [x] } }; ^x }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: var x = 1; { {: x, x <- [x] } }; ^x
+|  |  |  |  SCVariableDeclare: x: x = 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  SCFunction: { {: x, x <- [x] } }
+|  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  SCBody: { {: x, x <- [x] } }
+|  |  |  |  |  |  SCGenerator: routine: {: x, x <- [x] }
+|  |  |  |  |  |  |  SCGenQualList: x <- [x]
+|  |  |  |  |  |  |  |  SCGenQualIterate: x: x <- [x]
+|  |  |  |  |  |  |  |  |  SCCollection: Array: [x]
+|  |  |  |  |  |  |  |  |  |  SCRead: x
+|  |  |  |  |  |  |  SCRead: x
+|  |  |  |  SCExplicitReturn: x
+|  |  |  |  |  SCRead: x
+|  |  SCMethod: non_local_return_value { ^{: { ^x }.value, x <- [1, 2] } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{: { ^x }.value, x <- [1, 2] }
+|  |  |  |  SCExplicitReturn: {: { ^x }.value, x <- [1, 2] }
+|  |  |  |  |  SCGenerator: routine: {: { ^x }.value, x <- [1, 2] }
+|  |  |  |  |  |  SCGenQualList: x <- [1, 2]
+|  |  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
+|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCMessage: value: { ^x }.value
+|  |  |  |  |  |  |  SCFunction: { ^x }
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCBody: { ^x }
+|  |  |  |  |  |  |  |  |  SCExplicitReturn: x
+|  |  |  |  |  |  |  |  |  |  SCRead: x
+|  |  |  |  |  |  |  SCPositionalArgs: { ^x }.value
+|  |  |  |  |  |  |  SCKwArgs: { ^x }.value
+|  |  |  |  |  |  |  SCVariadicArgs: { ^x }.value
+|  |  |  |  |  |  |  SCMissing: { ^x }.value
+|  |  SCMethod: non_local_return_qualifier { {; x, x <- [1, 2], :: { ^x }.value }; ^1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: {; x, x <- [1, 2], :: { ^x }.value }; ^1
+|  |  |  |  SCGenerator: immediate: {; x, x <- [1, 2], :: { ^x }.value }
+|  |  |  |  |  SCGenQualList: x <- [1, 2], :: { ^x }.value
+|  |  |  |  |  |  SCGenQualIterate: x: x <- [1, 2]
+|  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  SCGenQualSideEffect: :: { ^x }.value
+|  |  |  |  |  |  |  SCMessage: value: { ^x }.value
+|  |  |  |  |  |  |  |  SCFunction: { ^x }
+|  |  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  |  SCBody: { ^x }
+|  |  |  |  |  |  |  |  |  |  SCExplicitReturn: x
+|  |  |  |  |  |  |  |  |  |  |  SCRead: x
+|  |  |  |  |  |  |  |  SCPositionalArgs: { ^x }.value
+|  |  |  |  |  |  |  |  SCKwArgs: { ^x }.value
+|  |  |  |  |  |  |  |  SCVariadicArgs: { ^x }.value
+|  |  |  |  |  |  |  |  SCMissing: { ^x }.value
+|  |  |  |  |  SCRead: x
+|  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: range_generator { ^(: 1..5) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(: 1..5)
+|  |  |  |  SCExplicitReturn: (: 1..5)
+|  |  |  |  |  SCRangeGenerator: (: 1..5)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCMissing: (: 1..5)
+|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
+|  |  SCMethod: range_generator_step { ^(: 1, 3..9) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(: 1, 3..9)
+|  |  |  |  SCExplicitReturn: (: 1, 3..9)
+|  |  |  |  |  SCRangeGenerator: (: 1, 3..9)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  |  |  |  |  SCLiteral: 9 = {"int": 9}
+|  |  SCMethod: range_generator_from_zero { ^(: ..3) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(: ..3)
+|  |  |  |  SCExplicitReturn: (: ..3)
+|  |  |  |  |  SCRangeGenerator: (: ..3)
+|  |  |  |  |  |  SCLiteral: (: ..3) = {"int": 0}
+|  |  |  |  |  |  SCMissing: (: ..3)
+|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  SCMethod: range_generator_unbounded { ^(: 1..) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(: 1..)
+|  |  |  |  SCExplicitReturn: (: 1..)
+|  |  |  |  |  SCRangeGenerator: (: 1..)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCMissing: (: 1..)
+|  |  |  |  |  |  SCMissing: (: 1..)
+|  |  SCMethod: range_generator_unbounded_step { ^(: 1, 3..) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(: 1, 3..)
+|  |  |  |  SCExplicitReturn: (: 1, 3..)
+|  |  |  |  |  SCRangeGenerator: (: 1, 3..)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  |  |  |  |  SCMissing: (: 1, 3..)
+|  |  SCMethod: range_generator_not_constant { ^(: 1..instance_var) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^(: 1..instance_var)
+|  |  |  |  SCExplicitReturn: (: 1..instance_var)
+|  |  |  |  |  SCRangeGenerator: (: 1..instance_var)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCMissing: (: 1..instance_var)
+|  |  |  |  |  |  SCRead: instance_var
 Successfully compiled 15 classes.
