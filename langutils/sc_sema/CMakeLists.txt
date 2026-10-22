@@ -43,5 +43,5 @@ if(ENABLE_TESTSUITE)
 endif()
 
 
-add_subdirectory(utils/standalone)
+add_subdirectory(utils/ir_dump)
 add_subdirectory(utils/consteval)

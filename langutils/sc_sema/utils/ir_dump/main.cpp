@@ -138,7 +138,7 @@ int wmain(int argc, wchar_t* argv[]) {
 int main(int argc, char* argv[]) {
 #endif // _MSC_VER
     if (argc <= 1) {
-        std::cout << "ERROR: incorrect number of arguments to sc_sema_standalone, expected "
+        std::cout << "ERROR: incorrect number of arguments to ir_dump, expected "
                      "[--prelude dir|.sc file]... [dir|.sc file]... "
                   << std::endl;
         return EXIT_FAILURE;

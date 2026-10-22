@@ -11,6 +11,10 @@ from pathlib import Path
 PRELUDE = Path(__file__).parent / 'prelude.sc'
 NO_PRELUDE = '// no-prelude'
 
+# Tests are grouped by topic in directories under input, which are mirrored in expected and the output directory.
+INPUT_DIR = Path(__file__).parent / 'input'
+EXPECTED_DIR = Path(__file__).parent / 'expected'
+
 
 def process_file(cmd, sc_file, output_dir, override):
 
@@ -22,12 +26,13 @@ def process_file(cmd, sc_file, output_dir, override):
     # remove file path info
     cmd_result = re.sub(r'file:.*', 'file:', cmd_result.stdout)
 
-    expected_dir = sc_file.parent / "../expected"
-    expected_dir.mkdir(parents=True, exist_ok=True)
+    name = sc_file.resolve().relative_to(INPUT_DIR.resolve())
 
-    expected_output_path = sc_file.parent / "../expected" / sc_file.with_suffix('.txt').name
-    output_file_path = output_dir / Path(sc_file.name).with_suffix('.txt')
-    diff_file_path = output_dir / Path(sc_file.name).with_suffix('.diff')
+    expected_output_path = EXPECTED_DIR / name.with_suffix('.txt')
+    expected_output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_file_path = output_dir / name.with_suffix('.txt')
+    diff_file_path = output_dir / name.with_suffix('.diff')
+    output_file_path.parent.mkdir(parents=True, exist_ok=True)
 
     if not expected_output_path.exists():
         print('expected output file does not exist, there is nothing to compare again, therefore, we will write to it')
@@ -39,13 +44,13 @@ def process_file(cmd, sc_file, output_dir, override):
 
         if override:
             # Nothing to compare against, as the output becomes the expected output.
-            print(f"overriding output: {sc_file.name} {'unchanged' if matching else 'updated'}")
+            print(f"overriding output: {name} {'unchanged' if matching else 'updated'}")
             if not matching:
                 expected_output_path.write_text(cmd_result)
             return True
 
         if not matching:
-            print(f"FAILED: {sc_file.name}. To update the output file, run with --override.")
+            print(f"FAILED: {name}. To update the output file, run with --override.")
             output_file_path.write_text(cmd_result)
             diff = subprocess.run(['diff', expected_output_path, output_file_path, '--unified', '--color'], capture_output=True, text=True)
             diff_file_path.write_text(diff.stdout)
