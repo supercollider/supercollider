@@ -9,7 +9,7 @@ set_tests_properties(build_ir_dump PROPERTIES FIXTURES_SETUP ir_dump_fixture)
 foreach(test ${tests})
     string(REGEX REPLACE "\\.sc$" "" test_name ${test})
     string(REPLACE "/" "." test_name ${test_name})
-    set(test_target sc_sema_regression.${test_name})
+    set(test_target sc_sema_regression__${test_name})
 
     add_test(
         NAME ${test_target} 
