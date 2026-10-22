@@ -220,7 +220,7 @@ region
 	| INTERPRET error
 		{
 			error_recovery::expr(cxt);
-			$$ = cxt.create(RegionList{}, @$, cxt.create(Error{}, @$));
+			$$ = cxt.create(RegionList{}, @$, cxt.create_error(@$, @error));
 		}
 
 	| region[r] SEMICOLON region.item[item]
@@ -243,10 +243,11 @@ region
 				static_assert(std::is_same_v<decltype(yyerrstatus_), int>);
 				yyerrstatus_ = 0; // this is NOT in the api, but the only way to get errors to re-emit.
 				yyclearin;
-				$$ = $1;
+				// Only the token is re-emitted, so anything popped is lost from the region.
+				$$ = !cxt.discarded(@e).empty() ? cxt.graph->append($r, cxt.create_error(@e, @e)) : $1;
 			} else {
 				error_recovery::expr(cxt);
-				$$ = cxt.graph->append($r, cxt.create(Error{}, @e));
+				$$ = cxt.graph->append($r, cxt.create_error(@e, @e));
 				yyclearin;
 			} 
 		}
@@ -354,7 +355,8 @@ method.base
 	| method.name[name] OPENCURLY[o] error[e] 
 		{
 			error_recovery::method(cxt, @o); // advance over the closing curly of function.
-			$$ = cxt.create(Error{}, @$);
+			// The name is left on the stack, so isn't discarded.
+			$$ = cxt.graph->prepend(cxt.create_error(@$, @e), $name);
 			yyclearin;
 		}
 	;

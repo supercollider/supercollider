@@ -8,6 +8,7 @@
 #include "sc_lexer/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <optional>
@@ -155,6 +156,34 @@ struct ParserContext {
 
     template <class... ARGS> [[nodiscard]] auto create(ARGS&&... args) {
         return graph->create(std::forward<ARGS>(args)...);
+    }
+
+    // When an error is created, it isn't assigned a parent, leaving it in the orphan list.
+    // Here we use the error location to gather all nodes within the range.
+    // Assumes that there is a non-empty rule before it.
+    [[nodiscard]] std::vector<Index> discarded(sc::lex::SourceCodeRange error) const {
+        std::vector<Index> nodes;
+        for (const auto i : graph->orphans()) {
+            const auto& l = graph->location(i);
+            // Error rules must have a non-empty symbol before the error, e.g., a token, otherwise an empty value left
+            // on the stack, e.g., an empty list, could touch the error and be adopted.
+            const bool inside = error.begin <= l.begin && l.end <= error.end;
+            // Only the head of a sibling chain, as appending it takes the rest of the chain.
+            if (inside && !graph->edges(i).prev_sibling)
+                nodes.push_back(i);
+        }
+        std::sort(nodes.begin(), nodes.end(),
+                  [&](Index a, Index b) { return graph->location(a).begin < graph->location(b).begin; });
+        return nodes;
+    }
+
+    // An error node that adopts what error recovery discarded, so it isn't left as orphans, see discarded.
+    ErrorIndex create_error(sc::lex::SourceCodeRange location, sc::lex::SourceCodeRange error) {
+        const auto nodes = discarded(error);
+        const auto e = graph->create(Error {}, location);
+        for (const auto i : nodes)
+            graph->append(e, i);
+        return e;
     }
 };
 
