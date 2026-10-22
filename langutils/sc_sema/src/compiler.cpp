@@ -3,6 +3,7 @@
 #include "sc_diagnostic/sc_diagnostic.hpp"
 
 #include "ast2ir/method.hpp"
+#include "ast2ir/region.hpp"
 #include "sc_parser/ast.hpp"
 
 #include "ast2ir/declare_classes.hpp"
@@ -597,5 +598,43 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 
 
     return ctx.diagnostics.consume();
+}
+
+IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const ast::ASTGraph> ast_graph) {
+    assert(m_compile_has_been_called);
+    const auto root = ast_graph->root();
+    assert(root && !std::holds_alternative<ast::ClassOrExtensionListIndex>(*root));
+    const auto root_i = std::visit([](auto i) { return ast::Index { *i }; }, *root);
+
+    // The Interpreter's graphs, if it and functionCompileContext compiled.
+    const auto interpreter = ctx.common_symbols.interpreter;
+    const auto* decl = ctx.class_declarations.get_unsafe(interpreter);
+    std::shared_ptr<const IRGraph> class_ir;
+    std::shared_ptr<const IRGraph> meta_ir;
+    if (decl && !decl->poisoned() && decl->find_method(ctx.common_symbols.function_compile_context)) {
+        std::scoped_lock lk { m_classes_lock };
+        if (const auto fnd = m_classes.find(interpreter); fnd != m_classes.end())
+            class_ir = fnd->second;
+        if (const auto meta = decl->meta_class())
+            if (const auto fnd = m_classes.find(*meta); fnd != m_classes.end())
+                meta_ir = fnd->second;
+    }
+    if (!class_ir) {
+        ctx.diagnostics(sc::diag::Diagnostic::missing_interpreter_context(get_text_info(*ast_graph),
+                                                                          get_location(*ast_graph, root_i)));
+        return { nullptr, ctx.diagnostics.consume() };
+    }
+
+    const auto members = ast2ir::member_scope(class_ir);
+    const auto meta_members = meta_ir ? std::optional { ast2ir::member_scope(meta_ir) } : std::nullopt;
+    auto ir = std::make_shared<IRGraph>();
+    ast2ir::Interpreted interpreted { *ir, ast_graph, ctx, meta_members ? &*meta_members : nullptr, members };
+    const auto r = std::visit(
+        util::overload { [&](ast::RegionListIndex i) { return interpreted(i); },
+                         [&](ast::FileAsFunctionIndex i) { return interpreted(i); },
+                         [&](ast::ClassOrExtensionListIndex) -> ast2ir::Return<SCInterpreted_I> { std::abort(); } },
+        *root);
+    ir->add_root(r.ir_node);
+    return { std::move(ir), ctx.diagnostics.consume() };
 }
 }

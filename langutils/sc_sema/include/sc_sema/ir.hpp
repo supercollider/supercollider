@@ -56,6 +56,7 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper<SCNodeType,
                                                                      SCArgumentDeclareList, //
                                                                      SCMethod, //
                                                                      SCFunction,
+                                                                     SCInterpreted, //
                                                                      SCMethodList, //
                                                                      SCMember, //
                                                                      SCMemberList, //
@@ -128,12 +129,18 @@ public:
         m_roots = c;
     }
 
-    std::optional<std::variant<SCClass_I, SCAnyExpr_I>> root() const {
-        using R = std::optional<std::variant<SCClass_I, SCAnyExpr_I>>;
+    void add_root(SCInterpreted_I c) {
+        assert(std::get_if<std::monostate>(&m_roots) != nullptr);
+        m_roots = c;
+    }
+
+    std::optional<std::variant<SCClass_I, SCAnyExpr_I, SCInterpreted_I>> root() const {
+        using R = std::optional<std::variant<SCClass_I, SCAnyExpr_I, SCInterpreted_I>>;
         return std::visit(util::overload {
                               [&](SCClass_I i) -> R { return { i }; },
                               [&](SCAnyExpr_I i) -> R { return { i }; },
-                              [&](std::monostate) -> R { return { }; },
+                              [&](SCInterpreted_I i) -> R { return { i }; },
+                              [&](std::monostate) -> R { return {}; },
                           },
                           m_roots);
     }
@@ -211,7 +218,7 @@ private:
     std::vector<std::shared_ptr<const lex::TextInfo>> m_sources {};
 
     std::unordered_map<NodeIndex, ConstExprIndex> nodes_to_constants { };
-    std::variant<std::monostate, SCClass_I, SCAnyExpr_I> m_roots;
+    std::variant<std::monostate, SCClass_I, SCAnyExpr_I, SCInterpreted_I> m_roots;
 };
 
 

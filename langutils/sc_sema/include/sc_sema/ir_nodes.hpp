@@ -265,6 +265,12 @@ struct SCFunction : priv::Node<SCFunction_I(SCArgumentDeclareList_I positional_a
     // constant. Only set without arguments, as their values aren't known until the function is called.
     OptionalConstExprIndex constant_result {};
 };
+// Code that isn't in the class library, e.g., a line evaluated in the IDE or an scd file, compiled into a function as
+// if it were written inside `Interpreter:functionCompileContext`, so it can use the Interpreter's members.
+struct SCInterpreted : priv::Node<SCInterpreted_I(SCFunction_I function)> {
+    static constexpr auto type_name { "SCInterpreted" };
+    bool poisoned { false };
+};
 
 struct SCMethodList : priv::List<SCMethodList_I, SCMethod_I> {
     static constexpr auto type_name { "SCMethodList" };

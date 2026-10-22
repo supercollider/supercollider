@@ -113,6 +113,31 @@ parse_file(std::filesystem::path dir_entry, std::vector<sc::diag::Diagnostic>& d
 }
 
 
+// An scd file, parsed as interpreted code. Null if it can't be read, or is a class file.
+std::shared_ptr<const sc::ast::ASTGraph> parse_interpreted(const std::filesystem::path& path,
+                                                           std::vector<sc::diag::Diagnostic>& diagnostics) {
+    std::ifstream file_stream { path };
+    if (!file_stream.is_open())
+        return nullptr;
+    std::stringstream ss {};
+    ss << file_stream.rdbuf();
+    auto text_info = std::shared_ptr<sc::lex::TextInfo>(new sc::lex::TextInfo {
+        sc::lex::NormalisedSource { std::move(ss).str() }, //
+        sc::lex::FileCodeLocation {}, //
+        path, //
+        false //
+    });
+    auto [ast_graph, _] = sc::ast::parse(text_info);
+    if (!ast_graph)
+        return nullptr;
+    for (const auto& d : ast_graph->diagnostics())
+        diagnostics.push_back(d);
+    const auto root = ast_graph->root();
+    if (!root || std::holds_alternative<sc::ast::ClassOrExtensionListIndex>(*root))
+        return nullptr;
+    return ast_graph;
+}
+
 template <typename T> std::filesystem::path get_path(const T* c) {
 #ifdef _MSC_VER
     const std::string source_str = utf8_encode(std::wstring(c));
@@ -195,6 +220,9 @@ int main(int argc, char* argv[]) {
 
 
     std::vector<std::pair<std::filesystem::path, sc::ir::ModuleIndex>> sc_files;
+    // Compiled as interpreted code after the class library. Only scd files given as paths, not those in directories, as
+    // a class library's directories have many.
+    std::vector<std::filesystem::path> scd_files;
 
     {
         boost::asio::thread_pool pool { num_threads };
@@ -213,6 +241,8 @@ int main(int argc, char* argv[]) {
             } else if (std::filesystem::is_regular_file(dir_path)) {
                 if (dir_path.extension() == ".sc") {
                     sc_files.push_back({ dir_path, module_index });
+                } else if (dir_path.extension() == ".scd") {
+                    scd_files.push_back(dir_path);
                 }
             }
         }
@@ -305,6 +335,20 @@ int main(int argc, char* argv[]) {
 
     auto diags = comp.compile_class_library(constraints, num_threads);
 
+    // In path order, so the dump doesn't depend on how the directories are listed.
+    std::sort(scd_files.begin(), scd_files.end());
+    std::vector<std::shared_ptr<sc::ir::IRGraph>> interpreted_graphs;
+    for (const auto& path : scd_files) {
+        const auto ast_graph = parse_interpreted(path, diags);
+        if (!ast_graph)
+            continue;
+        auto r = comp.compile_interpreted(ast_graph);
+        for (auto& d : r.diagnostics)
+            diags.push_back(std::move(d));
+        if (r.ir)
+            interpreted_graphs.push_back(std::move(r.ir));
+    }
+
 #if DIAG_LOGGING
     std::vector<sc::diag::Diagnostic> all_diagnostics;
     for (auto& file : parse_diagnostics)
@@ -343,7 +387,9 @@ int main(int argc, char* argv[]) {
     struct DumpedClass {
         // Uses pointers because we are passed a reference and vectors don't like const refs.
         const sc::ir::IRGraph* graph;
-        sc::ir::SCClass_I index;
+        // The class, or interpreted code.
+        sc::ir::NodeIndex index;
+        std::optional<sc::ir::SymSCClassName> class_name;
         std::string file;
         sc::lex::SourceCodeLocation begin;
         bool is_meta;
@@ -369,9 +415,16 @@ int main(int argc, char* argv[]) {
             if (!has_own_member && !g.children(methods).iter())
                 return;
         }
-        classes.push_back({ &g, *class_i, file ? file->string() : std::string {}, sc::ir::IRGraph::range(loc).begin,
-                            symbol_table.is_meta(c.name) });
+        classes.push_back({ &g, sc::ir::NodeIndex { **class_i }, c.name, file ? file->string() : std::string {},
+                            sc::ir::IRGraph::range(loc).begin, symbol_table.is_meta(c.name) });
     });
+    for (const auto& g : interpreted_graphs) {
+        const auto interpreted_i = std::get<sc::ir::SCInterpreted_I>(*g->root());
+        const auto loc = g->location(sc::ir::NodeIndex { *interpreted_i });
+        const auto& file = g->text_info(loc.source)->file_path;
+        classes.push_back({ g.get(), sc::ir::NodeIndex { *interpreted_i }, std::nullopt,
+                            file ? file->string() : std::string {}, sc::ir::IRGraph::range(loc).begin, false });
+    }
     std::sort(classes.begin(), classes.end(), [](const DumpedClass& l, const DumpedClass& r) {
         return std::tie(l.file, l.begin, l.is_meta) < std::tie(r.file, r.begin, r.is_meta);
     });
@@ -393,8 +446,13 @@ int main(int argc, char* argv[]) {
             const auto loc = g.location(node);
             return Owner { &g, node, g.text_info(loc.source).get(), sc::ir::IRGraph::range(loc) };
         };
+        // Interpreted code is like a method.
+        if (!dumped.class_name) {
+            method_owners.push_back(owner(dumped.index));
+            continue;
+        }
         class_owners.push_back(owner(dumped.index));
-        const auto [members, methods] = g.children(dumped.index);
+        const auto [members, methods] = g.children(*g.as_a<sc::ir::SCClass_I>(dumped.index));
         for (auto it = g.children(methods).iter(); it; ++it)
             method_owners.push_back(owner(sc::ir::NodeIndex { **it }));
     }
@@ -477,7 +535,7 @@ int main(int argc, char* argv[]) {
     // functions, what calling them returns, ` -> value`. Only a method shows its source, the rest is found by location.
     for (const auto& dumped : classes) {
         const auto& g = *dumped.graph;
-        const auto class_name = g.payload(dumped.index).name;
+        const auto class_name = dumped.class_name;
         // Where the variable is declared, shown by its source, so a read can be matched to its declaration.
         const auto write_declaration = [&](const std::optional<sc::ir::SourceLocation>& declaration) {
             if (!declaration)
@@ -493,7 +551,7 @@ int main(int argc, char* argv[]) {
                 const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
                 // Inherited members are dumped with the class that declares them.
                 if (const auto member = std::get_if<sc::ir::SCMember>(&payload);
-                    member && member->owning_class != class_name)
+                    member && member->owning_class != *class_name)
                     return;
                 // Empty argument lists add nothing.
                 const bool is_argument_list = std::holds_alternative<sc::ir::SCArgumentDeclareList>(payload)
@@ -554,6 +612,14 @@ int main(int argc, char* argv[]) {
                             if (m.poisoned)
                                 std::cout << "poisoned: ";
                             write_text(g.read(loc));
+                        },
+                        // Its file, as interpreted code isn't in a class.
+                        [&](const sc::ir::SCInterpreted& in) {
+                            std::cout << ": ";
+                            if (in.poisoned)
+                                std::cout << "poisoned: ";
+                            if (const auto& path = g.text_info(loc.source)->file_path)
+                                std::cout << (relative_to ? path->lexically_relative(*relative_to) : *path).string();
                         },
                         [&](const sc::ir::SCMessage& m) { std::cout << ": " << symbol_table(*m.selector); },
                         [&](const sc::ir::SCKwArg& k) { std::cout << ": " << symbol_table(*k.name); },

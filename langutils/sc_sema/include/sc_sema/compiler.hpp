@@ -15,6 +15,13 @@ namespace sc::ir {
 struct Context;
 struct SymbolTable;
 struct IRGraph;
+}
+
+namespace sc::ast {
+struct ASTGraph;
+}
+
+namespace sc::ir {
 
 CommonClasses symbol_table_and_common_classes(SymbolTable& sym_table, SymSCClassName root_object);
 
@@ -32,6 +39,15 @@ struct IRCompiler {
     compile_class_library(const IntrinsicConstraints& intrinsic_constraints, //
                           size_t num_threads = std::thread::hardware_concurrency() //
     );
+
+    // Interpreted code, whose root is a region or a file as a function, compiled after the class library, as if it
+    // were written inside `Interpreter:functionCompileContext`. Without that method, or if Interpreter is poisoned, it
+    // isn't compiled, and ir is null.
+    struct Interpreted {
+        std::shared_ptr<IRGraph> ir;
+        std::vector<sc::diag::Diagnostic> diagnostics;
+    };
+    [[nodiscard]] Interpreted compile_interpreted(std::shared_ptr<const ast::ASTGraph> ast_graph);
 
     // Poisoned classes aren't compiled, so have no graph, and are skipped. Some are still in the hierarchy, e.g., one
     // declared with an invalid slot type, `Foo[bad] {}`.
@@ -54,7 +70,6 @@ private:
     // Topological ordering is only stable on a single threaded implementation, and only then, if the input files are in the same order.
     std::vector<SymSCClassName> m_topological_ordering{};
 };
-
 
 
 } // sc::ir

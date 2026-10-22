@@ -29,10 +29,14 @@ Scope member_scope(std::shared_ptr<const IRGraph> class_ir, SCMemberList_I membe
     return scope;
 }
 
-Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, const Scope* meta_class_members,
-               const Scope& class_members):
-    Base(ir, ast, cxt),
-    expr(ir, std::move(ast), cxt, sink) {
+Scope member_scope(std::shared_ptr<const IRGraph> class_ir) {
+    const auto root = class_ir->root();
+    assert(root);
+    const auto [members, _] = class_ir->children(std::get<SCClass_I>(*root));
+    return member_scope(std::move(class_ir), members);
+}
+
+void push_member_scopes(Expr& expr, const Scope* meta_class_members, const Scope& class_members) {
     if (meta_class_members) {
         // The meta class's instance variables are this class's class variables.
         Scope class_vars = *meta_class_members;
@@ -41,6 +45,13 @@ Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& c
         expr.scope.push_back(std::move(class_vars));
     }
     expr.scope.push_back(class_members);
+}
+
+Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, const Scope* meta_class_members,
+               const Scope& class_members):
+    Base(ir, ast, cxt),
+    expr(ir, std::move(ast), cxt, sink) {
+    push_member_scopes(expr, meta_class_members, class_members);
 }
 
 Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
