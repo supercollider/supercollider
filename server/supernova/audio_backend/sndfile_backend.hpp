@@ -75,7 +75,7 @@ public:
 
         if (!input_file_name.empty()) {
             input_file = makeSndfileHandle(input_file_name.c_str(), SFM_READ);
-            if (!input_file)
+            if (input_file.rawHandle() == nullptr)
                 throw std::runtime_error(std::string("input file: ") + input_file.strError());
 
             if (input_file.samplerate() != samplerate)
@@ -88,7 +88,7 @@ public:
             input_channels = 0;
 
         output_file = makeSndfileHandle(output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate);
-        if (!output_file)
+        if (output_file.rawHandle() == nullptr)
             throw std::runtime_error(std::string("output file: ") + output_file.strError());
 
         output_file.command(SFC_SET_CLIPPING, nullptr, SF_TRUE);

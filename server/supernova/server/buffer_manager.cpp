@@ -39,7 +39,7 @@ namespace {
 #ifndef NO_LIBSNDFILE
 SndfileHandle open_file(const char* file, std::size_t start_frame) {
     auto sndfile = makeSndfileHandle(file);
-    if (!sndfile)
+    if (sndfile.rawHandle() == nullptr)
         throw std::runtime_error(std::string("could not open file: ") + std::string(file));
 
     long seek = sndfile.seek(start_frame, SEEK_SET);
@@ -125,7 +125,7 @@ void buffer_wrapper::write_file(const char* file, const char* header_format, con
     format |= sample_format_tag;
 
     auto sndfile = makeSndfileHandle(file, SFM_WRITE, format, channels_, sample_rate_);
-    if (!sndfile)
+    if (sndfile.rawHandle() == nullptr)
         throw std::runtime_error(std::string("could not open file: ") + std::string(file));
 
     sndfile.command(SFC_SET_CLIPPING, nullptr, SF_TRUE);
