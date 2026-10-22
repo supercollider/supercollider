@@ -2065,11 +2065,15 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
         try {
-            sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
+            SndBuf* nrt_buf = sc_factory->get_nrt_buffer(bufnum);
+            assert(nrt_buf != nullptr);
+            sample* free_buf = nrt_buf->data; // cache old data!
+
             sc_factory->allocate_buffer(bufnum, frames, channels, samplerate);
 
             cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
                 sc_factory->buffer_sync(bufnum);
+
                 handle_completion_message(std::move(message), endpoint);
 
                 cmd_dispatcher<realtime>::fire_io_callback([=] {
@@ -2094,8 +2098,9 @@ template <bool realtime> void handle_b_free(ReceivedMessage const& msg, endpoint
     completion_message message = extract_completion_message(args);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
-        sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
-        sc_factory->free_buffer(bufnum);
+        sample* free_buf = sc_factory->get_nrt_buffer(bufnum)->data;
+
+        sc_factory->buffer_free(bufnum);
 
         cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
             sc_factory->buffer_sync(bufnum);
@@ -2135,15 +2140,17 @@ template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, end
 
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, filename = std::move(filename), message = std::move(message)]() mutable {
-            sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
+            sample* free_buf = sc_factory->get_nrt_buffer(bufnum)->data;
+
             try {
-                sc_factory->buffer_read_alloc(bufnum, filename.c_str(), start, frames);
+                sc_factory->buffer_alloc_read(bufnum, filename.c_str(), start, frames);
 
                 cmd_dispatcher<realtime>::fire_rt_callback(
                     [=, filename = std::move(filename), message = std::move(message)]() mutable {
                         sc_factory->buffer_sync(bufnum);
 
                         handle_completion_message(std::move(message), endpoint);
+
                         consume(std::move(filename));
 
                         cmd_dispatcher<realtime>::fire_io_callback([=] {
@@ -2209,7 +2216,7 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message),
                                                     channel_mapping = std::move(channel_mapping),
                                                     filename = std::move(filename)]() mutable {
-        sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
+        sample* free_buf = sc_factory->get_nrt_buffer(bufnum)->data;
 
         try {
             sc_factory->buffer_alloc_read_channels(bufnum, filename.c_str(), start, frames, channel_mapping.size(),
@@ -2219,9 +2226,11 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
                                                         channel_mapping = std::move(channel_mapping),
                                                         filename = std::move(filename)]() mutable {
                 sc_factory->buffer_sync(bufnum);
+
+                handle_completion_message(std::move(message), endpoint);
+
                 consume(std::move(channel_mapping));
                 consume(std::move(filename));
-                handle_completion_message(std::move(message), endpoint);
 
                 cmd_dispatcher<realtime>::fire_io_callback([=] {
                     free_aligned(free_buf);
@@ -2385,6 +2394,7 @@ fire_callback:
                         sc_factory->buffer_sync(bufnum);
 
                         handle_completion_message(std::move(message), endpoint);
+
                         consume(std::move(filename));
 
                         cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
@@ -2476,7 +2486,9 @@ fire_callback:
             cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message), filename = std::move(filename),
                                                         channel_map = std::move(channel_map)]() mutable {
                 sc_factory->buffer_sync(bufnum);
+
                 handle_completion_message(std::move(message), endpoint);
+
                 consume(std::move(filename));
                 consume(std::move(channel_map));
 
@@ -2514,8 +2526,9 @@ void handle_b_set(ReceivedMessage const& msg) {
     osc::int32 bufnum = it->AsInt32();
     ++it;
 
-    auto data = sc_factory->get_buffer(bufnum);
-    if (!data) {
+    SndBuf* buf = sc_factory->get_buffer(bufnum);
+    sample* data = buf->data;
+    if (data == nullptr) {
         log_printf("/b_set called on unallocated buffer\n");
         return;
     }
@@ -2536,8 +2549,9 @@ void handle_b_setn(ReceivedMessage const& msg) {
     osc::int32 bufnum = it->AsInt32();
     ++it;
 
-    auto data = sc_factory->get_buffer(bufnum);
-    if (!data) {
+    SndBuf* buf = sc_factory->get_buffer(bufnum);
+    sample* data = buf->data;
+    if (data == nullptr) {
         log_printf("/b_setn called on unallocated buffer\n");
         return;
     }
@@ -2564,9 +2578,9 @@ void handle_b_setSampleRate(ReceivedMessage const& msg) {
     osc::int32 bufnum = it->AsInt32();
     ++it;
 
-    SndBuf* buf = sc_factory->get_buffer_struct(bufnum);
-    SndBuf* nrt_buf = World_GetNRTBuf(&sc_factory->world, bufnum);
-    if (!buf || !nrt_buf) {
+    SndBuf* buf = sc_factory->get_buffer(bufnum);
+    SndBuf* nrt_buf = sc_factory->get_nrt_buffer(bufnum);
+    if (buf->data == nullptr) {
         log_printf("/b_setSampleRate called on unallocated buffer\n");
         return;
     }
@@ -2583,8 +2597,9 @@ void handle_b_fill(ReceivedMessage const& msg) {
     osc::int32 bufnum = it->AsInt32();
     ++it;
 
-    auto data = sc_factory->get_buffer(bufnum);
-    if (!data) {
+    SndBuf* buf = sc_factory->get_buffer(bufnum);
+    sample* data = buf->data;
+    if (data == nullptr) {
         log_printf("/b_fill called on unallocated buffer\n");
         return;
     }
@@ -2626,7 +2641,7 @@ template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoin
         osc::int32 bufnum;
         args >> bufnum;
 
-        SndBuf* buf = sc_factory->get_buffer_struct(bufnum);
+        SndBuf* buf = sc_factory->get_buffer(bufnum);
 
         p << bufnum << osc::int32(buf->frames) << osc::int32(buf->channels) << float(buf->samplerate);
     }
@@ -2665,9 +2680,9 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
     osc::int32 bufnum;
     args >> bufnum;
 
-    const SndBuf* buf = sc_factory->get_buffer_struct(bufnum);
+    const SndBuf* buf = sc_factory->get_buffer(bufnum);
     const sample* data = buf->data;
-    if (!data) {
+    if (data == nullptr) {
         log_printf("/b_get called on unallocated buffer\n");
         return;
     }
@@ -2714,9 +2729,9 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
     osc::int32 bufnum;
     args >> bufnum;
 
-    const SndBuf* buf = sc_factory->get_buffer_struct(bufnum);
+    const SndBuf* buf = sc_factory->get_buffer(bufnum);
     const sample* data = buf->data;
-    if (!data) {
+    if (data == nullptr) {
         log_printf("/b_getn called on unallocated buffer\n");
         return;
     }

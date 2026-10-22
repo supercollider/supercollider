@@ -524,8 +524,10 @@ void done_action(int done_action, struct Unit* unit) {
 }
 
 int buf_alloc(SndBuf* buf, int channels, int frames, double samplerate) {
+    assert(buf != nullptr);
+
     try {
-        nova::sc_factory->allocate_buffer(buf, channels, frames, samplerate);
+        nova::sc_factory->allocate_buffer(*buf, channels, frames, samplerate);
         return kSCErr_None;
     } catch (std::exception const& e) {
         std::cout << e.what() << std::endl;
@@ -818,32 +820,32 @@ sample* allocate_buffer(size_t samples) {
 
 inline int32 bufmask(int32 x) { return (1 << (31 - CLZ(x))) - 1; }
 
-inline void sndbuf_init(SndBuf* buf) {
-    buf->samplerate = 0;
-    buf->sampledur = 0;
-    buf->data = nullptr;
-    buf->channels = 0;
-    buf->samples = 0;
-    buf->frames = 0;
-    buf->mask = 0;
-    buf->mask1 = 0;
-    buf->coord = 0;
-    buf->sndfile = nullptr;
-    buf->isLocal = false;
+inline void sndbuf_init(SndBuf& buf) {
+    buf.samplerate = 0;
+    buf.sampledur = 0;
+    buf.data = nullptr;
+    buf.channels = 0;
+    buf.samples = 0;
+    buf.frames = 0;
+    buf.mask = 0;
+    buf.mask1 = 0;
+    buf.coord = 0;
+    buf.sndfile = nullptr;
+    buf.isLocal = false;
 }
 
-inline void sndbuf_copy(SndBuf* dest, const SndBuf* src) {
-    dest->samplerate = src->samplerate;
-    dest->sampledur = src->sampledur;
-    dest->data = src->data;
-    dest->channels = src->channels;
-    dest->samples = src->samples;
-    dest->frames = src->frames;
-    dest->mask = src->mask;
-    dest->mask1 = src->mask1;
-    dest->coord = src->coord;
-    dest->sndfile = src->sndfile;
-    dest->isLocal = src->isLocal;
+inline void sndbuf_copy(SndBuf& dest, const SndBuf& src) {
+    dest.samplerate = src.samplerate;
+    dest.sampledur = src.sampledur;
+    dest.data = src.data;
+    dest.channels = src.channels;
+    dest.samples = src.samples;
+    dest.frames = src.frames;
+    dest.mask = src.mask;
+    dest.mask1 = src.mask1;
+    dest.coord = src.coord;
+    dest.sndfile = src.sndfile;
+    dest.isLocal = src.isLocal;
 }
 
 static inline size_t compute_remaining_samples(size_t frames_per_read, size_t already_read, size_t total_frames) {
@@ -890,7 +892,7 @@ void read_channel(SndfileHandle& sf, uint32_t channel_count, const uint32_t* cha
 
 } /* namespace */
 
-void sc_plugin_interface::allocate_buffer(SndBuf* buf, uint32_t frames, uint32_t channels, double samplerate) {
+void sc_plugin_interface::allocate_buffer(SndBuf& buf, uint32_t frames, uint32_t channels, double samplerate) {
     const uint32_t samples = frames * channels;
     if (samples == 0)
         throw std::runtime_error("invalid buffer size");
@@ -899,24 +901,24 @@ void sc_plugin_interface::allocate_buffer(SndBuf* buf, uint32_t frames, uint32_t
     if (data == nullptr)
         throw std::runtime_error("could not allocate memory");
 
-    buf->data = data;
-    buf->channels = channels;
-    buf->frames = frames;
-    buf->samples = samples;
-    buf->mask = bufmask(samples); /* for delay lines */
-    buf->mask1 = buf->mask - 1; /* for oscillators */
-    buf->samplerate = samplerate;
-    buf->sampledur = 1.0 / samplerate;
-    buf->isLocal = false;
+    buf.data = data;
+    buf.channels = channels;
+    buf.frames = frames;
+    buf.samples = samples;
+    buf.mask = bufmask(samples); /* for delay lines */
+    buf.mask1 = buf.mask - 1; /* for oscillators */
+    buf.samplerate = samplerate;
+    buf.sampledur = 1.0 / samplerate;
+    buf.isLocal = false;
 }
 
 SndBuf* sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels, double samplerate) {
-    SndBuf* buf = World_GetNRTBuf(&world, index);
-    allocate_buffer(buf, frames, channels, samplerate);
+    SndBuf* buf = get_nrt_buffer(index);
+    allocate_buffer(*buf, frames, channels, samplerate);
     return buf;
 }
 
-void sc_plugin_interface::buffer_read_alloc(uint32_t index, const char* filename, uint32_t start, uint32_t frames) {
+void sc_plugin_interface::buffer_alloc_read(uint32_t index, const char* filename, uint32_t start, int32_t frames) {
 #ifndef NO_LIBSNDFILE
     auto f = makeSndfileHandle(filename);
     if (f.rawHandle() == nullptr)
@@ -927,11 +929,11 @@ void sc_plugin_interface::buffer_read_alloc(uint32_t index, const char* filename
     if (start > sf_frames)
         start = sf_frames;
 
-    if (frames == 0 || frames > sf_frames - start)
+    if (frames <= 0 || frames > sf_frames - start)
         frames = sf_frames - start;
 
-    SndBuf* buf = World_GetNRTBuf(&world, index);
-    allocate_buffer(buf, frames, f.channels(), f.samplerate());
+    SndBuf* buf = get_nrt_buffer(index);
+    allocate_buffer(*buf, frames, f.channels(), f.samplerate());
 
     f.seek(start, SEEK_SET);
     f.readf(buf->data, frames);
@@ -942,12 +944,12 @@ void sc_plugin_interface::buffer_read_alloc(uint32_t index, const char* filename
 
 
 void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char* filename, uint32_t start,
-                                                     uint32_t frames, uint32_t channel_count,
+                                                     int32_t frames, uint32_t channel_count,
                                                      const uint32_t* channel_data) {
 #ifndef NO_LIBSNDFILE
     // If no channel argument provided we read all channels.
     if (channel_count == 0) {
-        buffer_read_alloc(index, filename, start, frames);
+        buffer_alloc_read(index, filename, start, frames);
         return;
     }
 
@@ -965,11 +967,11 @@ void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char*
     if (start > sf_frames)
         start = sf_frames;
 
-    if (frames == 0 || frames > sf_frames - start)
+    if (frames <= 0 || frames > sf_frames - start)
         frames = sf_frames - start;
 
-    SndBuf* buf = World_GetNRTBuf(&world, index);
-    allocate_buffer(buf, frames, channel_count, f.samplerate());
+    SndBuf* buf = get_nrt_buffer(index);
+    allocate_buffer(*buf, frames, channel_count, f.samplerate());
 
     f.seek(start, SEEK_SET);
     read_channel(f, channel_count, channel_data, frames, buf->data);
@@ -981,88 +983,120 @@ void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char*
 
 
 void sc_plugin_interface::buffer_write(uint32_t index, const char* filename, const char* header_format,
-                                       const char* sample_format, uint32_t start, uint32_t frames, bool leave_open) {
+                                       const char* sample_format, uint32_t start, int32_t frames, bool leave_open) {
 #ifndef NO_LIBSNDFILE
-    SndBuf* buf = World_GetNRTBuf(&world, index);
+    SndBuf* buf = get_nrt_buffer(index);
+    if (buf->data == nullptr)
+        throw std::runtime_error("buffer not allocated");
+    assert(buf->frames > 0);
+
+    if (frames < 0)
+        frames = buf->frames;
+
+    if (start > buf->frames)
+        throw std::runtime_error("buffer start frame out of range!");
+
+    const uint32_t frames_to_write = std::min<uint32_t>(buf->frames - start, frames);
+    if (frames_to_write == 0)
+        return; // nothing to do
+
     int format = headerFormatFromString(header_format) | sampleFormatFromString(sample_format);
 
     auto sf = makeSndfileHandle(filename, SFM_WRITE, format, buf->channels, buf->samplerate);
-
     if (sf.rawHandle() == nullptr)
         throw std::runtime_error(sf.strError());
 
-    if (frames == 0xffffffff)
-        frames = buf->frames;
+    // choose clipping rather than wraparound for integer-format files
+    sf.command(SFC_SET_CLIPPING, nullptr, SF_TRUE);
 
-    const uint32_t remain = uint32_t(buf->frames) > start ? buf->frames - start : 0;
-    const uint32_t frames_to_write = std::min(remain, frames);
-
-    if (frames_to_write)
-        sf.writef(buf->data + start * buf->channels, frames_to_write);
+    sf.writef(buf->data + start * buf->channels, frames_to_write);
 
     if (leave_open && !buf->sndfile)
         buf->sndfile = sf.takeOwnership();
+    else
+        buf->sndfile = nullptr;
 #else
     throw std::runtime_error("cannot write to buffer as supernova was compiled without libsndfile");
 #endif
 }
 
-#ifndef NO_LIBSNDFILE
-static void buffer_read_verify(SndfileHandle& sf, size_t min_length, size_t samplerate, bool check_samplerate) {
-    if (sf.rawHandle() == nullptr)
-        throw std::runtime_error(sf.strError());
-    if (sf.frames() < min_length)
-        throw std::runtime_error("no more frames to read");
-
-    if (check_samplerate && (sf.samplerate() != samplerate))
-        throw std::runtime_error("sample rate mismatch");
-}
-#endif
-
-void sc_plugin_interface::buffer_read(uint32_t index, const char* filename, uint32_t start_file, uint32_t frames,
+void sc_plugin_interface::buffer_read(uint32_t index, const char* filename, uint32_t start_file, int32_t frames,
                                       uint32_t start_buffer, bool leave_open) {
 #ifndef NO_LIBSNDFILE
-    SndBuf* buf = World_GetNRTBuf(&world, index);
+    SndBuf* buf = get_nrt_buffer(index);
+    if (buf->frames == 0)
+        throw std::runtime_error("buffer not allocated");
+    assert(buf->frames > 0);
 
-    if (uint32_t(buf->frames) < start_buffer)
-        throw std::runtime_error("buffer already full");
+    if (frames < 0)
+        frames = buf->frames;
+
+    if (start_buffer > buf->frames)
+        throw std::runtime_error("buffer start frame out of range!");
 
     auto sf = makeSndfileHandle(filename, SFM_READ);
-    buffer_read_verify(sf, start_file, buf->samplerate, !leave_open);
+    if (sf.rawHandle() == nullptr)
+        throw std::runtime_error(sf.strError());
 
+    // the Server command reference does not say anything about the channel count,
+    // so we just follow the behavior of scsynth, see BufReadCmd in SC_SequencedCommand.cpp.
     if (sf.channels() != buf->channels)
         throw std::runtime_error("channel count mismatch");
 
+    if (start_file > sf.frames())
+        throw std::runtime_error("file start frame out of range");
+
+    // the Server command reference does not say anything about the sample rate,
+    // so we just follow the behavior of scsynth. Before SC 3.15, Supernova would
+    // throw an error if the sample rates did not match.
+
     const uint32_t buffer_remain = buf->frames - start_buffer;
     const uint32_t file_remain = sf.frames() - start_file;
-    const uint32_t frames_to_read = std::min(frames, std::min(buffer_remain, file_remain));
+    const uint32_t frames_to_read = std::min<uint32_t>(frames, std::min(buffer_remain, file_remain));
 
     sf.seek(start_file, SEEK_SET);
     sf.readf(buf->data + start_buffer * buf->channels, frames_to_read);
 
     if (leave_open)
         buf->sndfile = sf.takeOwnership();
+    else
+        buf->sndfile = nullptr;
 #else
     throw std::runtime_error("cannot read buffer as supernova was compiled without libsndfile");
 #endif
 }
 
-void sc_plugin_interface::buffer_read_channel(uint32_t index, const char* filename, uint32_t start_file,
-                                              uint32_t frames, uint32_t start_buffer, bool leave_open,
-                                              uint32_t channel_count, const uint32_t* channel_data) {
+void sc_plugin_interface::buffer_read_channel(uint32_t index, const char* filename, uint32_t start_file, int32_t frames,
+                                              uint32_t start_buffer, bool leave_open, uint32_t channel_count,
+                                              const uint32_t* channel_data) {
 #ifndef NO_LIBSNDFILE
-    SndBuf* buf = World_GetNRTBuf(&world, index);
+    SndBuf* buf = get_nrt_buffer(index);
+    if (buf->frames == 0)
+        throw std::runtime_error("buffer not allocated");
+    assert(buf->frames > 0);
+
+    if (frames < 0)
+        frames = buf->frames;
+
+    if (start_buffer > buf->frames)
+        throw std::runtime_error("buffer start frame out of range!");
 
     if (channel_count != uint32_t(buf->channels))
         throw std::runtime_error("channel count mismatch");
-
-    if (uint32_t(buf->frames) >= start_buffer)
-        throw std::runtime_error("buffer already full");
+    assert(channel_count != 0); // Buffer cannot be empty, see above
 
     auto sf = makeSndfileHandle(filename, SFM_READ);
-    buffer_read_verify(sf, start_file, buf->samplerate, !leave_open);
+    if (sf.rawHandle() == nullptr)
+        throw std::runtime_error(sf.strError());
 
-    uint32_t sf_channels = uint32_t(sf.channels());
+    if (start_file > sf.frames())
+        throw std::runtime_error("file start frame out of range");
+
+    // the Server command reference does not say anything about the sample rate,
+    // so we just follow the behavior of scsynth. Before SC 3.15, Supernova would
+    // throw an error if the sample rates did not match.
+
+    uint32_t sf_channels = static_cast<uint32_t>(sf.channels());
     const uint32_t* max_chan = std::max_element(channel_data, channel_data + channel_count);
     if (*max_chan >= sf_channels)
         throw std::runtime_error("channel count mismatch");
@@ -1070,20 +1104,22 @@ void sc_plugin_interface::buffer_read_channel(uint32_t index, const char* filena
     const uint32_t buffer_remain = buf->frames - start_buffer;
     const uint32_t file_remain = sf.frames() - start_file;
 
-    const uint32_t frames_to_read = std::min(frames, std::min(buffer_remain, file_remain));
+    const uint32_t frames_to_read = std::min<uint32_t>(frames, std::min(buffer_remain, file_remain));
 
     sf.seek(start_file, SEEK_SET);
-    read_channel(sf, channel_count, channel_data, frames_to_read, buf->data);
+    read_channel(sf, channel_count, channel_data, frames_to_read, buf->data + start_buffer * buf->channels);
 
     if (leave_open)
         buf->sndfile = sf.takeOwnership();
+    else
+        buf->sndfile = nullptr;
 #else
     throw std::runtime_error("cannot read buffer channel as supernova was compiled without libsndfile");
 #endif
 }
 
 void sc_plugin_interface::buffer_close(uint32_t index) {
-    SndBuf* buf = World_GetNRTBuf(&world, index);
+    SndBuf* buf = get_nrt_buffer(index);
 #ifndef NO_LIBSNDFILE
     if (buf->sndfile == nullptr)
         return;
@@ -1094,7 +1130,7 @@ void sc_plugin_interface::buffer_close(uint32_t index) {
 
 
 void sc_plugin_interface::buffer_zero(uint32_t index) {
-    SndBuf* buf = World_GetNRTBuf(&world, index);
+    SndBuf* buf = get_nrt_buffer(index);
 
     uint32_t length = buf->frames * buf->channels;
 
@@ -1110,17 +1146,19 @@ sample* sc_plugin_interface::buffer_generate(uint32_t buffer_index, const char* 
 }
 
 void sc_plugin_interface::buffer_sync(uint32_t index) noexcept {
-    sndbuf_copy(world.mSndBufs + index, world.mSndBufsNonRealTimeMirror + index);
+    if (index >= world.mNumSndBufs)
+        index = 0; // for compatibility with get_buffer() and get_nrt_buffer()
+    sndbuf_copy(world.mSndBufs[index], world.mSndBufsNonRealTimeMirror[index]);
     increment_write_updates(index);
 }
 
-void sc_plugin_interface::free_buffer(uint32_t index) {
-    SndBuf* buf = world.mSndBufsNonRealTimeMirror + index;
+void sc_plugin_interface::buffer_free(uint32_t index) {
+    SndBuf* buf = get_nrt_buffer(index);
 #ifndef NO_LIBSNDFILE
     if (buf->sndfile)
         sf_close(GETSNDFILE(buf));
 #endif
-    sndbuf_init(buf);
+    sndbuf_init(*buf);
 }
 
 } /* namespace nova */
