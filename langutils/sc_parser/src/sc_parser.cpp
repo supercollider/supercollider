@@ -24,6 +24,7 @@ namespace sc::ast {
     };
 
     parser::parser p { ctx };
+    ctx.owner = &p;
 
     const auto ret = p(); // if ret is false, some unknown error was encountered
     // The parse can end on an error without recovering from it.

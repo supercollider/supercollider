@@ -32,7 +32,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |      7 │     // expect: poisoned
 |  |  |      8 │     // expect-error: Unexpected Token.
 |  |  |      9 │     missing_operator { ^(1 2) }
-|  |  |        ┆                            ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |        ┆                            ^ Expected:  but received INTEGER
 |  |  |     10 │     // The nested brackets are skipped, recovery stops at the bracket matching the error's.
 |  |  |     11 │     // expect: poisoned
 |  |  |     12 │     // expect-error: Unexpected Token.
@@ -49,7 +49,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     11 │     // expect: poisoned
 |  |  |     12 │     // expect-error: Unexpected Token.
 |  |  |     13 │     nested { ^(1 + (2 3) * 4) }
-|  |  |        ┆                       ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |        ┆                       ^ Expected:  but received INTEGER
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     // expect-error: Unexpected Token.
 |  |  |     16 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
@@ -72,7 +72,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     // expect-error: Unexpected Token.
 |  |  |     16 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
-|  |  |        ┆                        ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |        ┆                        ^ Expected:  but received INTEGER
 |  |  |     17 │     // Each error is reported, as recovery resumes at the matching bracket.
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     // expect-error: Unexpected Token.
@@ -92,7 +92,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     // expect-error: Unexpected Token.
 |  |  |     20 │     two { ^[(1 2), (3 4)] }
-|  |  |        ┆                ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |        ┆                ^ Expected:  but received INTEGER
 |  |  |     21 │     // expect: poisoned
 |  |  |     22 │     // expect-error: Unexpected Token.
 |  |  |     23 │     as_receiver { ^(1 2).foo }
@@ -105,7 +105,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     // expect-error: Unexpected Token.
 |  |  |     20 │     two { ^[(1 2), (3 4)] }
-|  |  |        ┆                       ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |        ┆                       ^ Expected:  but received INTEGER
 |  |  |     21 │     // expect: poisoned
 |  |  |     22 │     // expect-error: Unexpected Token.
 |  |  |     23 │     as_receiver { ^(1 2).foo }
@@ -124,7 +124,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     21 │     // expect: poisoned
 |  |  |     22 │     // expect-error: Unexpected Token.
 |  |  |     23 │     as_receiver { ^(1 2).foo }
-|  |  |        ┆                       ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |        ┆                       ^ Expected:  but received INTEGER
 |  |  |     24 │     // expect: poisoned
 |  |  |     25 │     // expect-error: Unexpected Token.
 |  |  |     26 │     in_variable { var a = (1 2); ^a }
@@ -142,7 +142,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     24 │     // expect: poisoned
 |  |  |     25 │     // expect-error: Unexpected Token.
 |  |  |     26 │     in_variable { var a = (1 2); ^a }
-|  |  |        ┆                              ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |        ┆                              ^ Expected:  but received INTEGER
 |  |  |     27 │     // expect: poisoned
 |  |  |     28 │     // expect-error: Unexpected Token.
 |  |  |     29 │     in_range { ^(1..2 3) }
@@ -161,7 +161,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     27 │     // expect: poisoned
 |  |  |     28 │     // expect-error: Unexpected Token.
 |  |  |     29 │     in_range { ^(1..2 3) }
-|  |  |        ┆                       ^ Expected: CLOSEPAREN but received INTEGER
+|  |  |        ┆                       ^ Expected:  but received INTEGER
 |  |  |     30 │     // expect: poisoned
 |  |  |     31 │     // expect-error: Unexpected Token.
 |  |  |     32 │     in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
@@ -204,7 +204,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     33 │     // expect: poisoned
 |  |  |     34 │     // expect-error: Unexpected Token.
 |  |  |     35 │     in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
-|  |  |        ┆                                            ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |        ┆                                            ^ Expected:  but received INTEGER
 |  |  |     36 │ 
 |  |  |     37 │     // expect: -> 3
 |  |  |     38 │     // expect: not poisoned

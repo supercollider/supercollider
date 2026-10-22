@@ -1,0 +1,112 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): parse_errors/missing_semicolon.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Region missing semi-colon.
+|  parse_errors/missing_semicolon.scd:3:5
+|      1 │ // A line whose first token can't continue the previous line gets a semicolon inserted before it, and it is reported.
+|      2 │ // The lexer asks the parser whether it can take the token, so the expression on the previous line is kept.
+|      3 │ 1 + 2
+|        ┆     ^ Add a semi-colon after this.
+|      4 │ r { 3 }
+|      5 │ (
+|      6 │ 	4
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Region missing semi-colon.
+|  parse_errors/missing_semicolon.scd:4:7
+|      2 │ // The lexer asks the parser whether it can take the token, so the expression on the previous line is kept.
+|      3 │ 1 + 2
+|      4 │ r { 3 }
+|        ┆       ^ Add a semi-colon after this.
+|      5 │ (
+|      6 │ 	4
+|      7 │ )
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Region missing semi-colon.
+|  parse_errors/missing_semicolon.scd:7:1
+|      5 │ (
+|      6 │ 	4
+|      7 │ )
+|        ┆ ^ Add a semi-colon after this.
+|      8 │ (
+|      9 │ 	5
+|     10 │ )
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Region missing semi-colon.
+|  parse_errors/missing_semicolon.scd:10:1
+|      8 │ (
+|      9 │ 	5
+|     10 │ )
+|        ┆ ^ Add a semi-colon after this.
+|     11 │ // These continue the previous line, so nothing is inserted.
+|     12 │ a = 6
+|     13 │ - 1;
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/missing_semicolon.scd:20:1
+|     18 │ // A separator can only go between region items, inside brackets and functions these are errors.
+|     19 │ (9
+|     20 │ 10);
+|        ┆ ^^ Expected:  but received INTEGER
+|     21 │ { 11
+|     22 │ 12 };
+|     23 │ a + b
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/missing_semicolon.scd:22:1
+|     20 │ 10);
+|     21 │ { 11
+|     22 │ 12 };
+|        ┆ ^^ Expected:  but received INTEGER
+|     23 │ a + b
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCMessage (3:1): + = 3
+|  |  |  |  SCLiteral (3:1) = 1
+|  |  |  |  SCPositionalArgs (3:1)
+|  |  |  |  |  SCLiteral (3:5) = 2
+|  |  |  SCMessage (4:1): r
+|  |  |  |  SCFunction (4:3) -> 3
+|  |  |  |  |  SCBody (4:3)
+|  |  |  |  |  |  SCLiteral (4:5) = 3
+|  |  |  SCLiteral (6:2) = 4
+|  |  |  SCLiteral (9:2) = 5
+|  |  |  SCAssign (12:1): instance a, declared (36:11): a
+|  |  |  |  SCMessage (12:5): - = 5
+|  |  |  |  |  SCLiteral (12:5) = 6
+|  |  |  |  |  SCPositionalArgs (12:5)
+|  |  |  |  |  |  SCLiteral (13:3) = 1
+|  |  |  SCAssign (14:1): instance b, declared (36:16): b
+|  |  |  |  SCMessage (14:5): neg
+|  |  |  |  |  SCRead (14:5): instance a, declared (36:11): a
+|  |  |  SCAssign (16:1): instance c, declared (36:21): c
+|  |  |  |  SCCollection (16:5): Array = [7, 8]
+|  |  |  |  |  SCLiteral (16:6) = 7
+|  |  |  |  |  SCLiteral (17:2) = 8
+|  |  |  SCMessage (23:1): +
+|  |  |  |  SCRead (23:1): instance a, declared (36:11): a
+|  |  |  |  SCPositionalArgs (23:1)
+|  |  |  |  |  SCRead (23:5): instance b, declared (36:16): b
+Successfully compiled 15 classes.

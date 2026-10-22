@@ -6,6 +6,9 @@
 %define api.token.prefix {TOKEN_}
 %define api.namespace {sc::ast::parser}
 %define parse.error custom
+// Lookahead correction, so the expected tokens in an error are exact, despite default reductions. It also lets the lexer
+// ask whether the parser can accept a token, see yylex.
+%define parse.lac full
 
 %locations
 %define api.location.type { sc::lex::SourceCodeRange }
@@ -231,25 +234,10 @@ region
 
 	| region[r] error[e] 
 		{
-			// A missing semicolon between lines is recovered by re-emitting the token after a separator. A lexer error,
-			// e.g., an unclosed comment, can't start an item, so re-emitting it would fail the same way forever.
-			const bool previous_is_lexer_error = cxt.previous && sc::lex::is_error(cxt.previous->token);
-			if (@r.end.line_number != @e.begin.line_number && !previous_is_lexer_error){
-				auto first_child = cxt.graph->edges(*$r).first_child.value();
-				auto last_child = cxt.graph->last_child(*$r);
-				auto loc = cxt.graph->location(last_child ? Index{*last_child} : Index{first_child});
-				error_recovery::region_separator(cxt, loc);
-				cxt.region_recovery = sc::ast::parser::ParserContext::RegionRecovery::EmitRegionSeparator;
-				static_assert(std::is_same_v<decltype(yyerrstatus_), int>);
-				yyerrstatus_ = 0; // this is NOT in the api, but the only way to get errors to re-emit.
-				yyclearin;
-				// Only the token is re-emitted, so anything popped is lost from the region.
-				$$ = !cxt.discarded(@e, Index { *$r }).empty() ? cxt.graph->append($r, cxt.create_error(@e, @e, Index { *$r })) : $1;
-			} else {
-				error_recovery::expr(cxt);
-				$$ = cxt.graph->append($r, cxt.create_error(@e, @e, Index { *$r }));
-				yyclearin;
-			} 
+			// A missing semicolon between lines is inserted by the lexer, see yylex.
+			error_recovery::expr(cxt);
+			$$ = cxt.graph->append($r, cxt.create_error(@e, @e, Index { *$r }));
+			yyclearin;
 		}
 	;
 

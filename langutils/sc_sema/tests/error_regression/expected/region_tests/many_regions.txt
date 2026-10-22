@@ -1,0 +1,51 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): region_tests/many_regions.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Region missing semi-colon.
+|  region_tests/many_regions.scd:4:1
+|      2 │ (
+|      3 │     a + 1;
+|      4 │ )
+|        ┆ ^ Add a semi-colon after this.
+|      5 │ 
+|      6 │ 
+|      7 │ (
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Region missing semi-colon.
+|  region_tests/many_regions.scd:11:1
+|      9 │     var a = 10;
+|     10 │     a * ~bar
+|     11 │ )
+|        ┆ ^ Add a semi-colon after this.
+|     12 │ 
+|     13 │ 
+|     14 │ (
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCMessage (3:5): +
+|  |  |  |  SCRead (3:5): instance a, declared (36:11): a
+|  |  |  |  SCPositionalArgs (3:5)
+|  |  |  |  |  SCLiteral (3:9) = 1
+|  |  |  SCMessage (7:1): value
+|  |  |  |  SCFunction (7:1)
+|  |  |  |  |  SCBody (7:1)
+|  |  |  |  |  |  SCVariableDeclare (9:9): a
+|  |  |  |  |  |  |  SCLiteral (9:13) = 10
+|  |  |  |  |  |  SCMessage (10:5): *
+|  |  |  |  |  |  |  SCRead (10:5): local a = 10, declared (9:9): a = 10
+|  |  |  |  |  |  |  SCPositionalArgs (10:5)
+|  |  |  |  |  |  |  |  SCRead (10:9): environment bar
+|  |  |  SCAssign (15:5): environment f
+|  |  |  |  SCLiteral (15:10) = 10
+Successfully compiled 15 classes.

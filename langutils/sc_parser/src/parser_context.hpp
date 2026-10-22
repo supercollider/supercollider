@@ -132,6 +132,8 @@ struct UnexpectedToken {
     std::vector<int> expected;
     int got;
 };
+class parser;
+
 struct ParserContext {
     enum struct Mode { ClassLibrary, CommandInitial, CommandContinue };
     std::shared_ptr<const sc::lex::TextInfo> text_info;
@@ -148,11 +150,10 @@ struct ParserContext {
     std::optional<UnexpectedToken> consume_error() { return std::exchange(unexpected_token_error, std::nullopt); }
 
 
-    enum struct RegionRecovery {
-        EmitRegionSeparator,
-        EmitPrevious,
-        None,
-    } region_recovery { ParserContext::RegionRecovery::None };
+    // The parser this is the context of, so the lexer can ask what it can accept, see yylex.
+    const parser* owner { nullptr };
+    // A region separator was inserted before the previous token, so it is emitted next, see yylex.
+    bool emit_previous { false };
 
 
     template <class... ARGS> [[nodiscard]] auto create(ARGS&&... args) {

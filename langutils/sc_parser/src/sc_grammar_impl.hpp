@@ -1,5 +1,9 @@
 #pragma once
 
+#include <algorithm>
+#include <array>
+#include <cassert>
+
 #include "sc_lexer/lexer.hpp"
 
 #include "parser_context.hpp"
@@ -136,20 +140,34 @@ inline sc::ast::parser::parser::token_kind_type to_parser_token(sc::lex::TokenTy
     }
 }
 
-inline int yylex(sc::ast::parser::parser::value_type* v, sc::lex::SourceCodeRange* loc, sc::ast::parser::ParserContext& cxt) {
+namespace sc::ast::parser::error_recovery {
+
+// Reports the error the parser recorded, if it hasn't been, see report_syntax_error.
+void report(ParserContext&);
+// Reports a missing semicolon at the end of last_valid, see yylex.
+void region_separator(ParserContext&, sc ::lex::SourceCodeRange last_valid);
+void expr(ParserContext&);
+void method(ParserContext&, sc::lex::SourceCodeRange open_bracket);
+// Reports the error and skips to the bracket matching open_bracket, or the end of the file, returning where it stopped.
+sc::lex::SourceCodeRange bracket(ParserContext&, sc::lex::SourceCodeRange open_bracket);
+}
+
+// Whether the parser can take token next. It uses lookahead correction, so is exact.
+inline bool parser_accepts(const sc::ast::parser::parser& p, sc::ast::parser::parser::token_kind_type token) {
+    using P = sc::ast::parser::parser;
+    const auto kind = P::symbol_type { token, sc::ast::LexerToken {}, {} }.kind();
+    std::array<P::symbol_kind_type, P::symbol_kind::YYNTOKENS> expected {};
+    const auto count = P::context { p, P::symbol_type { P::token::TOKEN_YYEOF, {} } }.expected_tokens(
+        expected.data(), static_cast<int>(expected.size()));
+    return std::find(expected.begin(), expected.begin() + count, kind) != expected.begin() + count;
+}
+
+inline int yylex(sc::ast::parser::parser::value_type* v, sc::lex::SourceCodeRange* loc,
+                 sc::ast::parser::ParserContext& cxt) {
     using T = sc::ast::parser::parser::token_kind_type;
 
-    // Ugly hack for region detection recovery.
-    if (cxt.region_recovery == sc::ast::parser::ParserContext::RegionRecovery::EmitRegionSeparator) {
-        assert(cxt.previous);
-        cxt.region_recovery = sc::ast::parser::ParserContext::RegionRecovery::EmitPrevious;
-        return T::TOKEN_REGION_SEPARATOR;
-    }
-
-    else if (cxt.region_recovery == sc::ast::parser::ParserContext::RegionRecovery::EmitPrevious) {
-        assert(cxt.previous);
-        cxt.region_recovery = sc::ast::parser::ParserContext::RegionRecovery::None;
-
+    if (cxt.emit_previous) {
+        cxt.emit_previous = false;
         const auto [lex_token, location, extra_location] = *cxt.previous;
         *loc = location;
         v->emplace<sc::ast::LexerToken>();
@@ -164,6 +182,7 @@ inline int yylex(sc::ast::parser::parser::value_type* v, sc::lex::SourceCodeRang
     }
 
     // Normal path
+    const auto before = cxt.previous;
     cxt.previous = sc::lex::lexer(cxt.cps, cxt.action);
     const auto [lex_token, location, extra_location] = *cxt.previous;
     *loc = location;
@@ -174,17 +193,19 @@ inline int yylex(sc::ast::parser::parser::value_type* v, sc::lex::SourceCodeRang
         return T::TOKEN_LEXER_ERROR;
     }
 
-    return static_cast<int>(to_parser_token(lex_token));
-}
+    const auto token = to_parser_token(lex_token);
 
-namespace sc::ast::parser::error_recovery {
+    // In interpreted code, a missing semicolon at the end of a line is inserted, when the parser can't take the next
+    // line's first token, but can take a separator. The previous token is emitted after it.
+    const bool starts_line = before && before->range.end.line_number < location.begin.line_number;
+    if (cxt.mode == sc::ast::parser::ParserContext::Mode::CommandContinue && starts_line
+        && lex_token != sc::lex::TokenType::EndOfFile && !parser_accepts(*cxt.owner, token)
+        && parser_accepts(*cxt.owner, T::TOKEN_REGION_SEPARATOR)) {
+        sc::ast::parser::error_recovery::region_separator(cxt, before->range);
+        cxt.emit_previous = true;
+        *loc = { before->range.end, before->range.end };
+        return T::TOKEN_REGION_SEPARATOR;
+    }
 
-// Reports the error the parser recorded, if it hasn't been, see report_syntax_error.
-void report(ParserContext&);
-// Reports a missing semicolon instead of the error.
-void region_separator(ParserContext&, sc ::lex::SourceCodeRange last_valid);
-void expr(ParserContext&);
-void method(ParserContext&, sc::lex::SourceCodeRange open_bracket);
-// Reports the error and skips to the bracket matching open_bracket, or the end of the file, returning where it stopped.
-sc::lex::SourceCodeRange bracket(ParserContext&, sc::lex::SourceCodeRange open_bracket);
+    return static_cast<int>(token);
 }

@@ -178,7 +178,7 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
              Severity::Error, //
              std::vector<Location> { { std::move(text_info), //
                                        loc, //
-                                       "Insert semi-colon here." } } };
+                                       "Add a semi-colon after this." } } };
 }
 
 [[nodiscard]] Diagnostic Diagnostic::duplicate_class(std::shared_ptr<const sc::lex::TextInfo> first_text_info,

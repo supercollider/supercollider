@@ -33,7 +33,6 @@ void sc::ast::parser::parser::error(const sc::lex::SourceCodeRange&, const std::
 namespace sc::ast::parser::error_recovery {
 
 void region_separator(ParserContext& cxt, sc ::lex::SourceCodeRange last_valid) {
-    auto _ = cxt.consume_error();
     cxt.graph->add_diagnostic(diag::Diagnostic::region_missing_semicolon(cxt.text_info, last_valid));
 }
 

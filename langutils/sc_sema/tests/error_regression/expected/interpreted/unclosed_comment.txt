@@ -6,7 +6,7 @@ interpreted/unclosed_comment.scd:4:1
     3 │ 1;
     4*│ /* never
     5*│ closed
-     >│ ^ Expected: end of file but received LEXER_ERROR
+     >│ ^ Expected:  but received LEXER_ERROR
 
 ──────────────────────────────────────────────────────────────────────────────────
 
