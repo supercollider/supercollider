@@ -1,18 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-   12 │     nested { ^{ |a| { |b| a + b } } }
-   13 │     shadowing { ^{ |instance_var| instance_var } }
-   14 │     out_of_scope { ^{ |a| a }.value(1) + a }
-      ┆                                          ^ this is not defined.
-   15 │     trailing_block { ^1.do { |x| x } }
-   16 │     non_local_return { ^{ ^1 } }
-   17 │     multiple_expressions { ^{ 1; 2 } }
-
-Declare it with 'var', or use '~a' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -112,6 +98,20 @@ SCClass (1:1): Blocks
 |  |  |  |  |  |  SCBody (13:18)
 |  |  |  |  |  |  |  SCRead (13:35): local instance_var, declared (13:21): instance_var
 |  |  SCMethod (14:5): poisoned: out_of_scope { ^{ |a| a }.value(1) + a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  functions/blocks.sc:14:42
+|  |  |     12 │     nested { ^{ |a| { |b| a + b } } }
+|  |  |     13 │     shadowing { ^{ |instance_var| instance_var } }
+|  |  |     14 │     out_of_scope { ^{ |a| a }.value(1) + a }
+|  |  |        ┆                                          ^ this is not defined.
+|  |  |     15 │     trailing_block { ^1.do { |x| x } }
+|  |  |     16 │     non_local_return { ^{ ^1 } }
+|  |  |     17 │     multiple_expressions { ^{ 1; 2 } }
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:20)
 |  |  |  |  SCExplicitReturn (14:21)
 |  |  |  |  |  SCMessage (14:21): +

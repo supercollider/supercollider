@@ -1,45 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Warning: Event key without a value
-file:
-    1 │ EventKeyWithoutValue {
-    2 │     odd_constant { ^Event[a: 1, \b] }
-      ┆                                 ^^ this key has no value.
-    3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
-    4 │     single { ^Event[\a] }
-    5 │     even { ^Event[a: 1, b: 2] }
-
-The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Warning: Event key without a value
-file:
-    1 │ EventKeyWithoutValue {
-    2 │     odd_constant { ^Event[a: 1, \b] }
-    3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
-      ┆                                         ^^ this key has no value.
-    4 │     single { ^Event[\a] }
-    5 │     even { ^Event[a: 1, b: 2] }
-    6 │     array_odd_is_fine { ^Array[1, 2, 3] }
-
-The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Warning: Event key without a value
-file:
-    2 │     odd_constant { ^Event[a: 1, \b] }
-    3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
-    4 │     single { ^Event[\a] }
-      ┆                     ^^ this key has no value.
-    5 │     even { ^Event[a: 1, b: 2] }
-    6 │     array_odd_is_fine { ^Array[1, 2, 3] }
-    7 │ }
-
-The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -49,6 +8,19 @@ SCClass (1:1): EventKeyWithoutValue
 |  SCMemberList (1:1)
 |  SCMethodList (1:1)
 |  |  SCMethod (2:5): odd_constant { ^Event[a: 1, \b] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Event key without a value
+|  |  |  collections/event_odd_elements.sc:2:33
+|  |  |      1 │ EventKeyWithoutValue {
+|  |  |      2 │     odd_constant { ^Event[a: 1, \b] }
+|  |  |        ┆                                 ^^ this key has no value.
+|  |  |      3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |      4 │     single { ^Event[\a] }
+|  |  |      5 │     even { ^Event[a: 1, b: 2] }
+|  |  |
+|  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (2:20)
 |  |  |  |  SCExplicitReturn (2:21)
 |  |  |  |  |  SCCollection (2:21): Event
@@ -56,6 +28,20 @@ SCClass (1:1): EventKeyWithoutValue
 |  |  |  |  |  |  SCLiteral (2:30) = 1
 |  |  |  |  |  |  SCLiteral (2:33) = \b
 |  |  SCMethod (3:5): odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Event key without a value
+|  |  |  collections/event_odd_elements.sc:3:41
+|  |  |      1 │ EventKeyWithoutValue {
+|  |  |      2 │     odd_constant { ^Event[a: 1, \b] }
+|  |  |      3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |        ┆                                         ^^ this key has no value.
+|  |  |      4 │     single { ^Event[\a] }
+|  |  |      5 │     even { ^Event[a: 1, b: 2] }
+|  |  |      6 │     array_odd_is_fine { ^Array[1, 2, 3] }
+|  |  |
+|  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (3:24)
 |  |  |  |  SCExplicitReturn (3:25)
 |  |  |  |  |  SCCollection (3:25): Event
@@ -64,6 +50,20 @@ SCClass (1:1): EventKeyWithoutValue
 |  |  |  |  |  |  |  SCLiteral (3:34) = 1
 |  |  |  |  |  |  SCLiteral (3:41) = \b
 |  |  SCMethod (4:5): single { ^Event[\a] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Event key without a value
+|  |  |  collections/event_odd_elements.sc:4:21
+|  |  |      2 │     odd_constant { ^Event[a: 1, \b] }
+|  |  |      3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |      4 │     single { ^Event[\a] }
+|  |  |        ┆                     ^^ this key has no value.
+|  |  |      5 │     even { ^Event[a: 1, b: 2] }
+|  |  |      6 │     array_odd_is_fine { ^Array[1, 2, 3] }
+|  |  |      7 │ }
+|  |  |
+|  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (4:14)
 |  |  |  |  SCExplicitReturn (4:15)
 |  |  |  |  |  SCCollection (4:15): Event

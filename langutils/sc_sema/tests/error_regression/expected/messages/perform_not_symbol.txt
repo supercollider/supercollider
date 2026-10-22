@@ -1,142 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    1 │ PerformNotSymbol {
-    2 │     integer { ^1.perform(2) }
-      ┆                          ^ this is a constant, but not a symbol.
-    3 │     float { ^1.perform(2.5, 3) }
-    4 │     string { ^1.perform("foo") }
-    5 │     string_with_quote { ^1.perform("it's") }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    1 │ PerformNotSymbol {
-    2 │     integer { ^1.perform(2) }
-    3 │     float { ^1.perform(2.5, 3) }
-      ┆                        ^^^ this is a constant, but not a symbol.
-    4 │     string { ^1.perform("foo") }
-    5 │     string_with_quote { ^1.perform("it's") }
-    6 │     char { ^1.perform($a) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    2 │     integer { ^1.perform(2) }
-    3 │     float { ^1.perform(2.5, 3) }
-    4 │     string { ^1.perform("foo") }
-      ┆                         ^^^^^ did you mean 'foo'?
-    5 │     string_with_quote { ^1.perform("it's") }
-    6 │     char { ^1.perform($a) }
-    7 │     boolean { ^1.perform(true) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    3 │     float { ^1.perform(2.5, 3) }
-    4 │     string { ^1.perform("foo") }
-    5 │     string_with_quote { ^1.perform("it's") }
-      ┆                                    ^^^^^^ did you mean 'it\'s'?
-    6 │     char { ^1.perform($a) }
-    7 │     boolean { ^1.perform(true) }
-    8 │     nil_selector { ^1.perform(nil) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    4 │     string { ^1.perform("foo") }
-    5 │     string_with_quote { ^1.perform("it's") }
-    6 │     char { ^1.perform($a) }
-      ┆                       ^^ this is a constant, but not a symbol.
-    7 │     boolean { ^1.perform(true) }
-    8 │     nil_selector { ^1.perform(nil) }
-    9 │     class_name { ^1.perform(Object) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    5 │     string_with_quote { ^1.perform("it's") }
-    6 │     char { ^1.perform($a) }
-    7 │     boolean { ^1.perform(true) }
-      ┆                          ^^^^ this is a constant, but not a symbol.
-    8 │     nil_selector { ^1.perform(nil) }
-    9 │     class_name { ^1.perform(Object) }
-   10 │     prefix { ^perform(1, 2) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    6 │     char { ^1.perform($a) }
-    7 │     boolean { ^1.perform(true) }
-    8 │     nil_selector { ^1.perform(nil) }
-      ┆                               ^^^ this is a constant, but not a symbol.
-    9 │     class_name { ^1.perform(Object) }
-   10 │     prefix { ^perform(1, 2) }
-   11 │     binary { ^1 perform: 2 }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    7 │     boolean { ^1.perform(true) }
-    8 │     nil_selector { ^1.perform(nil) }
-    9 │     class_name { ^1.perform(Object) }
-      ┆                             ^^^^^^ this is a constant, but not a symbol.
-   10 │     prefix { ^perform(1, 2) }
-   11 │     binary { ^1 perform: 2 }
-   12 │     not_constant { ^1.perform(2.bar) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    8 │     nil_selector { ^1.perform(nil) }
-    9 │     class_name { ^1.perform(Object) }
-   10 │     prefix { ^perform(1, 2) }
-      ┆                          ^ this is a constant, but not a symbol.
-   11 │     binary { ^1 perform: 2 }
-   12 │     not_constant { ^1.perform(2.bar) }
-   13 │ }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    9 │     class_name { ^1.perform(Object) }
-   10 │     prefix { ^perform(1, 2) }
-   11 │     binary { ^1 perform: 2 }
-      ┆                          ^ this is a constant, but not a symbol.
-   12 │     not_constant { ^1.perform(2.bar) }
-   13 │ }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -146,6 +8,19 @@ SCClass (1:1): PerformNotSymbol
 |  SCMemberList (1:1)
 |  SCMethodList (1:1)
 |  |  SCMethod (2:5): poisoned: integer { ^1.perform(2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:2:26
+|  |  |      1 │ PerformNotSymbol {
+|  |  |      2 │     integer { ^1.perform(2) }
+|  |  |        ┆                          ^ this is a constant, but not a symbol.
+|  |  |      3 │     float { ^1.perform(2.5, 3) }
+|  |  |      4 │     string { ^1.perform("foo") }
+|  |  |      5 │     string_with_quote { ^1.perform("it's") }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (2:15)
 |  |  |  |  SCExplicitReturn (2:16)
 |  |  |  |  |  SCMessage (2:16): perform
@@ -153,6 +28,20 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  SCPositionalArgs (2:16)
 |  |  |  |  |  |  |  SCLiteral (2:26) = 2
 |  |  SCMethod (3:5): poisoned: float { ^1.perform(2.5, 3) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:3:24
+|  |  |      1 │ PerformNotSymbol {
+|  |  |      2 │     integer { ^1.perform(2) }
+|  |  |      3 │     float { ^1.perform(2.5, 3) }
+|  |  |        ┆                        ^^^ this is a constant, but not a symbol.
+|  |  |      4 │     string { ^1.perform("foo") }
+|  |  |      5 │     string_with_quote { ^1.perform("it's") }
+|  |  |      6 │     char { ^1.perform($a) }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (3:13)
 |  |  |  |  SCExplicitReturn (3:14)
 |  |  |  |  |  SCMessage (3:14): perform
@@ -161,6 +50,20 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  |  SCLiteral (3:24) = 2.5
 |  |  |  |  |  |  |  SCLiteral (3:29) = 3
 |  |  SCMethod (4:5): poisoned: string { ^1.perform("foo") }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:4:25
+|  |  |      2 │     integer { ^1.perform(2) }
+|  |  |      3 │     float { ^1.perform(2.5, 3) }
+|  |  |      4 │     string { ^1.perform("foo") }
+|  |  |        ┆                         ^^^^^ did you mean 'foo'?
+|  |  |      5 │     string_with_quote { ^1.perform("it's") }
+|  |  |      6 │     char { ^1.perform($a) }
+|  |  |      7 │     boolean { ^1.perform(true) }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (4:14)
 |  |  |  |  SCExplicitReturn (4:15)
 |  |  |  |  |  SCMessage (4:15): perform
@@ -168,6 +71,20 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  SCPositionalArgs (4:15)
 |  |  |  |  |  |  |  SCLiteral (4:25) = "foo"
 |  |  SCMethod (5:5): poisoned: string_with_quote { ^1.perform("it's") }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:5:36
+|  |  |      3 │     float { ^1.perform(2.5, 3) }
+|  |  |      4 │     string { ^1.perform("foo") }
+|  |  |      5 │     string_with_quote { ^1.perform("it's") }
+|  |  |        ┆                                    ^^^^^^ did you mean 'it\'s'?
+|  |  |      6 │     char { ^1.perform($a) }
+|  |  |      7 │     boolean { ^1.perform(true) }
+|  |  |      8 │     nil_selector { ^1.perform(nil) }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (5:25)
 |  |  |  |  SCExplicitReturn (5:26)
 |  |  |  |  |  SCMessage (5:26): perform
@@ -175,6 +92,20 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  SCPositionalArgs (5:26)
 |  |  |  |  |  |  |  SCLiteral (5:36) = "it's"
 |  |  SCMethod (6:5): poisoned: char { ^1.perform($a) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:6:23
+|  |  |      4 │     string { ^1.perform("foo") }
+|  |  |      5 │     string_with_quote { ^1.perform("it's") }
+|  |  |      6 │     char { ^1.perform($a) }
+|  |  |        ┆                       ^^ this is a constant, but not a symbol.
+|  |  |      7 │     boolean { ^1.perform(true) }
+|  |  |      8 │     nil_selector { ^1.perform(nil) }
+|  |  |      9 │     class_name { ^1.perform(Object) }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (6:12)
 |  |  |  |  SCExplicitReturn (6:13)
 |  |  |  |  |  SCMessage (6:13): perform
@@ -182,6 +113,20 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  SCPositionalArgs (6:13)
 |  |  |  |  |  |  |  SCLiteral (6:23) = $a
 |  |  SCMethod (7:5): poisoned: boolean { ^1.perform(true) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:7:26
+|  |  |      5 │     string_with_quote { ^1.perform("it's") }
+|  |  |      6 │     char { ^1.perform($a) }
+|  |  |      7 │     boolean { ^1.perform(true) }
+|  |  |        ┆                          ^^^^ this is a constant, but not a symbol.
+|  |  |      8 │     nil_selector { ^1.perform(nil) }
+|  |  |      9 │     class_name { ^1.perform(Object) }
+|  |  |     10 │     prefix { ^perform(1, 2) }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:15)
 |  |  |  |  SCExplicitReturn (7:16)
 |  |  |  |  |  SCMessage (7:16): perform
@@ -189,6 +134,20 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  SCPositionalArgs (7:16)
 |  |  |  |  |  |  |  SCLiteral (7:26) = true
 |  |  SCMethod (8:5): poisoned: nil_selector { ^1.perform(nil) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:8:31
+|  |  |      6 │     char { ^1.perform($a) }
+|  |  |      7 │     boolean { ^1.perform(true) }
+|  |  |      8 │     nil_selector { ^1.perform(nil) }
+|  |  |        ┆                               ^^^ this is a constant, but not a symbol.
+|  |  |      9 │     class_name { ^1.perform(Object) }
+|  |  |     10 │     prefix { ^perform(1, 2) }
+|  |  |     11 │     binary { ^1 perform: 2 }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (8:20)
 |  |  |  |  SCExplicitReturn (8:21)
 |  |  |  |  |  SCMessage (8:21): perform
@@ -196,6 +155,20 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  SCPositionalArgs (8:21)
 |  |  |  |  |  |  |  SCLiteral (8:31) = nil
 |  |  SCMethod (9:5): poisoned: class_name { ^1.perform(Object) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:9:29
+|  |  |      7 │     boolean { ^1.perform(true) }
+|  |  |      8 │     nil_selector { ^1.perform(nil) }
+|  |  |      9 │     class_name { ^1.perform(Object) }
+|  |  |        ┆                             ^^^^^^ this is a constant, but not a symbol.
+|  |  |     10 │     prefix { ^perform(1, 2) }
+|  |  |     11 │     binary { ^1 perform: 2 }
+|  |  |     12 │     not_constant { ^1.perform(2.bar) }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:18)
 |  |  |  |  SCExplicitReturn (9:19)
 |  |  |  |  |  SCMessage (9:19): perform
@@ -203,6 +176,20 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  SCPositionalArgs (9:19)
 |  |  |  |  |  |  |  SCLiteral (9:29) = Object
 |  |  SCMethod (10:5): poisoned: prefix { ^perform(1, 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:10:26
+|  |  |      8 │     nil_selector { ^1.perform(nil) }
+|  |  |      9 │     class_name { ^1.perform(Object) }
+|  |  |     10 │     prefix { ^perform(1, 2) }
+|  |  |        ┆                          ^ this is a constant, but not a symbol.
+|  |  |     11 │     binary { ^1 perform: 2 }
+|  |  |     12 │     not_constant { ^1.perform(2.bar) }
+|  |  |     13 │ }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:14)
 |  |  |  |  SCExplicitReturn (10:15)
 |  |  |  |  |  SCMessage (10:15): perform
@@ -210,6 +197,19 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  |  |  |  SCPositionalArgs (10:15)
 |  |  |  |  |  |  |  SCLiteral (10:26) = 2
 |  |  SCMethod (11:5): poisoned: binary { ^1 perform: 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform_not_symbol.sc:11:26
+|  |  |      9 │     class_name { ^1.perform(Object) }
+|  |  |     10 │     prefix { ^perform(1, 2) }
+|  |  |     11 │     binary { ^1 perform: 2 }
+|  |  |        ┆                          ^ this is a constant, but not a symbol.
+|  |  |     12 │     not_constant { ^1.perform(2.bar) }
+|  |  |     13 │ }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:14)
 |  |  |  |  SCExplicitReturn (11:15)
 |  |  |  |  |  SCMessage (11:15): perform

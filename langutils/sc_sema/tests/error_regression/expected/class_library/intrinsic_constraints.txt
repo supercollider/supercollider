@@ -1,7 +1,7 @@
 
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Intrinsic has incorrect super class
-file:
+class_library/intrinsic_constraints.sc:8:10
     6 │ 
     7 │ AbstractObjectExperimental {}
     8 │ Object : Class {}
@@ -15,7 +15,7 @@ Intrinsic classes are a part of the compiler and cannot be changed.
 
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Intrinsic has incorrect super class
-file:
+class_library/intrinsic_constraints.sc:8:10
     6 │ 
     7 │ AbstractObjectExperimental {}
     8 │ Object : Class {}

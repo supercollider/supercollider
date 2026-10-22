@@ -9,6 +9,10 @@
 #include <tuple>
 #include <vector>
 #include <algorithm>
+#include <cstdint>
+#include <map>
+#include <optional>
+#include <utility>
 
 #include "boost/asio/post.hpp"
 #include "boost/asio/thread_pool.hpp"
@@ -36,7 +40,7 @@ std::atomic<size_t> time_parsing { 0 };
 #endif
 
 std::optional<std::pair<std::shared_ptr<const sc::ast::ASTGraph>, sc::ast::ClassOrExtensionListIndex>>
-parse_file(std::filesystem::path dir_entry) {
+parse_file(std::filesystem::path dir_entry, std::vector<sc::diag::Diagnostic>& diagnostics) {
 #if TIME_LOGGING
     const auto start = std::chrono::high_resolution_clock::now();
 #endif
@@ -76,11 +80,9 @@ parse_file(std::filesystem::path dir_entry) {
     }
 
 
-#if DIAG_LOGGING
-    for (const auto& d : ast_graph->diagnostics()) {
-        std::cout << d;
-    }
-#endif
+    // Printed with the compiler's, see print_diagnostics.
+    for (const auto& d : ast_graph->diagnostics())
+        diagnostics.push_back(d);
 
 #if TIME_LOGGING
     {
@@ -155,11 +157,15 @@ int main(int argc, char* argv[]) {
 
     // Each path is a module. A path after --prelude is compiled, but its classes aren't dumped, e.g., the class
     // stubs shared by the regression tests.
+    // Diagnostics write their paths relative to the directory after --relative-to, rather than as absolute uris.
     std::vector<std::filesystem::path> module_paths;
     std::vector<std::filesystem::path> prelude_paths;
+    std::optional<std::filesystem::path> relative_to;
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
-        if (arg == "--prelude" && i + 1 < argc) {
+        if (arg == "--relative-to" && i + 1 < argc) {
+            relative_to = get_path(argv[++i]);
+        } else if (arg == "--prelude" && i + 1 < argc) {
             prelude_paths.push_back(get_path(argv[++i]));
             module_paths.push_back(prelude_paths.back());
         } else {
@@ -174,6 +180,8 @@ int main(int argc, char* argv[]) {
     std::vector<std::optional<sc::ir::SourceEntry>> entries { };
 
     sc::ir::ModuleTable module_table { };
+    // Per file, so each thread only writes its own.
+    std::vector<std::vector<sc::diag::Diagnostic>> parse_diagnostics;
 
 
     std::vector<std::pair<std::filesystem::path, sc::ir::ModuleIndex>> sc_files;
@@ -210,6 +218,7 @@ int main(int argc, char* argv[]) {
         std::atomic<size_t> sc_file_i { 0 };
 
         entries.resize(sc_files.size());
+        parse_diagnostics.resize(sc_files.size());
 
         const auto process_files = [&]() {
             while (true) {
@@ -217,7 +226,7 @@ int main(int argc, char* argv[]) {
                 if (file_index >= sc_files.size())
                     return;
                 const auto& [path, module_index] = sc_files[file_index];
-                if (auto r = parse_file(path)) {
+                if (auto r = parse_file(path, parse_diagnostics[file_index])) {
                     assert(!entries[file_index].has_value());
                     entries[file_index] = sc::ir::SourceEntry { std::move(r->first), r->second, module_index };
                 }
@@ -284,15 +293,26 @@ int main(int argc, char* argv[]) {
 
     sc::ir::IRCompiler comp { ctx };
 
-    const auto diags = comp.compile_class_library(constraints, num_threads);
+    auto diags = comp.compile_class_library(constraints, num_threads);
 
 #if DIAG_LOGGING
-    if (!diags.empty()) {
-        for (const auto& d : diags)
-            std::cout << d;
-    }
+    std::vector<sc::diag::Diagnostic> all_diagnostics;
+    for (auto& file : parse_diagnostics)
+        for (auto& d : file)
+            all_diagnostics.push_back(std::move(d));
+    for (auto& d : diags)
+        all_diagnostics.push_back(std::move(d));
 
-    std::cout << "\n\n\nIR GRAPH DUMP \n\n\n";
+    // Each line is prefixed by indent, so a diagnostic printed in the dump stays inside its node.
+    const auto print_diagnostic = [&](const sc::diag::Diagnostic& d, const std::string& indent) {
+        std::istringstream lines { relative_to ? d.to_string(*relative_to) : d.to_string() };
+        for (std::string line; std::getline(lines, line);) {
+            if (line.empty())
+                std::cout << indent.substr(0, indent.find_last_not_of(' ') + 1) << "\n";
+            else
+                std::cout << indent << line << "\n";
+        }
+    };
 
     // A class is in a prelude if its file is one of the prelude paths, or is inside one of the prelude directories.
     const auto in_prelude = [&](const std::optional<std::filesystem::path>& file) {
@@ -345,6 +365,70 @@ int main(int argc, char* argv[]) {
     std::sort(classes.begin(), classes.end(), [](const DumpedClass& l, const DumpedClass& r) {
         return std::tie(l.file, l.begin, l.is_meta) < std::tie(r.file, r.begin, r.is_meta);
     });
+
+    // Diagnostics are printed under the method whose source contains them, or else the class, so they are next to the
+    // ir they affect. A diagnostic's last location is where the problem is, earlier ones are context, e.g., where a
+    // duplicate was first declared. The rest, e.g., a missing class, are printed before the dump.
+    struct Owner {
+        const sc::ir::IRGraph* graph;
+        sc::ir::NodeIndex node;
+        const sc::lex::TextInfo* text;
+        sc::lex::SourceCodeRange range;
+    };
+    std::vector<Owner> method_owners;
+    std::vector<Owner> class_owners;
+    for (const auto& dumped : classes) {
+        const auto& g = *dumped.graph;
+        const auto owner = [&](sc::ir::NodeIndex node) {
+            const auto loc = g.location(node);
+            return Owner { &g, node, g.text_info(loc.source).get(), sc::ir::IRGraph::range(loc) };
+        };
+        class_owners.push_back(owner(dumped.index));
+        const auto [members, methods] = g.children(dumped.index);
+        for (auto it = g.children(methods).iter(); it; ++it)
+            method_owners.push_back(owner(sc::ir::NodeIndex { **it }));
+    }
+    const auto contains = [](const Owner& o, const sc::diag::Diagnostic::Location& l) {
+        return o.text == l.text_info.get() && o.range.begin.absolute <= l.range.begin.absolute
+            && l.range.end.absolute <= o.range.end.absolute;
+    };
+    std::map<std::pair<const sc::ir::IRGraph*, std::uint32_t>, std::vector<const sc::diag::Diagnostic*>> owned;
+    std::vector<const sc::diag::Diagnostic*> unowned;
+    for (const auto& d : all_diagnostics) {
+        const auto find_owner = [&](const std::vector<Owner>& owners) -> const Owner* {
+            if (d.locations().empty())
+                return nullptr;
+            for (const auto& o : owners)
+                if (contains(o, d.locations().back()))
+                    return &o;
+            return nullptr;
+        };
+        const auto* o = find_owner(method_owners);
+        if (!o)
+            o = find_owner(class_owners);
+        if (o)
+            owned[{ o->graph, *o->node }].push_back(&d);
+        else
+            unowned.push_back(&d);
+    }
+    // In source order, by file then position, those without a location first.
+    const auto source_order = [](const sc::diag::Diagnostic* l, const sc::diag::Diagnostic* r) {
+        const auto key = [](const sc::diag::Diagnostic* d) {
+            if (d->locations().empty())
+                return std::tuple { false, std::string {}, std::uint32_t { 0 } };
+            const auto& loc = d->locations().back();
+            const auto& path = loc.text_info->file_path;
+            return std::tuple { true, path ? path->string() : std::string {}, loc.range.begin.absolute };
+        };
+        return key(l) < key(r);
+    };
+    std::stable_sort(unowned.begin(), unowned.end(), source_order);
+    for (auto& [_, ds] : owned)
+        std::stable_sort(ds.begin(), ds.end(), source_order);
+
+    for (const auto* d : unowned)
+        print_diagnostic(*d, "");
+    std::cout << "\n\n\nIR GRAPH DUMP \n\n\n";
 
     // Lines and columns count from one, as in the diagnostics.
     const auto write_location = [](const sc::ir::SourceLocation& l) {
@@ -481,6 +565,14 @@ int main(int argc, char* argv[]) {
                                [&](const sc::ir::SCPackTarget& t) { write_declaration(t.declaration); } },
                            payload);
                 std::cout << "\n";
+
+                if (const auto fnd = owned.find({ &g, *i }); fnd != owned.end()) {
+                    std::string indent;
+                    for (size_t di { 0 }; di <= depth; ++di)
+                        indent += "|  ";
+                    for (const auto* d : fnd->second)
+                        print_diagnostic(*d, indent);
+                }
             });
     }
 #endif

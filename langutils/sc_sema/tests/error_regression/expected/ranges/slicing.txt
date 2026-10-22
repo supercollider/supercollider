@@ -1,44 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Range argument is not a value
-file:
-    9 │     dot_slice { ^x.[1..3] }
-   10 │     slice_expression_bounds { ^x[1.foo..2.bar] }
-   11 │     slice_keyword { ^x[a: 1..3] }
-      ┆                        ^^^^ keyword and variadic arguments can't be used in a range.
-   12 │     slice_variadic { ^x[*1..3] }
-   13 │ 
-   14 │     assign { x[1..3] = 5 }
-
-A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Range argument is not a value
-file:
-   10 │     slice_expression_bounds { ^x[1.foo..2.bar] }
-   11 │     slice_keyword { ^x[a: 1..3] }
-   12 │     slice_variadic { ^x[*1..3] }
-      ┆                         ^^ keyword and variadic arguments can't be used in a range.
-   13 │ 
-   14 │     assign { x[1..3] = 5 }
-   15 │     assign_step { x[1, 3..9] = 5 }
-
-A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Too many arguments in range
-file:
-   17 │     assign_to_end { x[1..] = 5 }
-   18 │     dot_assign { x.[1..3] = 5 }
-   19 │     assign_too_many { x[1, 2, 3..5] = 5 }
-      ┆                               ^ only the first, and optionally the second, can come before `..`.
-   20 │ }
-
-A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -114,6 +74,20 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  |  SCMessage (10:41): bar
 |  |  |  |  |  |  |  |  SCLiteral (10:41) = 2
 |  |  SCMethod (11:5): poisoned: slice_keyword { ^x[a: 1..3] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range argument is not a value
+|  |  |  ranges/slicing.sc:11:24
+|  |  |      9 │     dot_slice { ^x.[1..3] }
+|  |  |     10 │     slice_expression_bounds { ^x[1.foo..2.bar] }
+|  |  |     11 │     slice_keyword { ^x[a: 1..3] }
+|  |  |        ┆                        ^^^^ keyword and variadic arguments can't be used in a range.
+|  |  |     12 │     slice_variadic { ^x[*1..3] }
+|  |  |     13 │ 
+|  |  |     14 │     assign { x[1..3] = 5 }
+|  |  |
+|  |  |  A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:21)
 |  |  |  |  SCExplicitReturn (11:22)
 |  |  |  |  |  SCMessage (11:22): copySeries
@@ -123,6 +97,20 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  |  SCLiteral (11:23) = nil
 |  |  |  |  |  |  |  SCLiteral (11:30) = 3
 |  |  SCMethod (12:5): poisoned: slice_variadic { ^x[*1..3] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range argument is not a value
+|  |  |  ranges/slicing.sc:12:25
+|  |  |     10 │     slice_expression_bounds { ^x[1.foo..2.bar] }
+|  |  |     11 │     slice_keyword { ^x[a: 1..3] }
+|  |  |     12 │     slice_variadic { ^x[*1..3] }
+|  |  |        ┆                         ^^ keyword and variadic arguments can't be used in a range.
+|  |  |     13 │ 
+|  |  |     14 │     assign { x[1..3] = 5 }
+|  |  |     15 │     assign_step { x[1, 3..9] = 5 }
+|  |  |
+|  |  |  A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (12:22)
 |  |  |  |  SCExplicitReturn (12:23)
 |  |  |  |  |  SCMessage (12:23): copySeries
@@ -177,6 +165,18 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  SCLiteral (18:24) = 3
 |  |  |  |  |  |  SCLiteral (18:29) = 5
 |  |  SCMethod (19:5): poisoned: assign_too_many { x[1, 2, 3..5] = 5 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Too many arguments in range
+|  |  |  ranges/slicing.sc:19:31
+|  |  |     17 │     assign_to_end { x[1..] = 5 }
+|  |  |     18 │     dot_assign { x.[1..3] = 5 }
+|  |  |     19 │     assign_too_many { x[1, 2, 3..5] = 5 }
+|  |  |        ┆                               ^ only the first, and optionally the second, can come before `..`.
+|  |  |     20 │ }
+|  |  |
+|  |  |  A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (19:23)
 |  |  |  |  SCMessage (19:23): putSeries
 |  |  |  |  |  SCRead (19:23): instance x, declared (2:9): x

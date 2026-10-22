@@ -1,31 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    5 │     prefix { ^perform(1, \foo, 2) }
-    6 │     binary { ^1 perform: \foo }
-    7 │     not_a_symbol { ^1.perform(2, 3) }
-      ┆                               ^ this is a constant, but not a symbol.
-    8 │     not_constant { ^1.perform(\foo.bar, 2) }
-    9 │     not_first_argument { ^1.perform(2, \foo) }
-   10 │     keyword_argument { ^1.perform(selector: \foo) }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    7 │     not_a_symbol { ^1.perform(2, 3) }
-    8 │     not_constant { ^1.perform(\foo.bar, 2) }
-    9 │     not_first_argument { ^1.perform(2, \foo) }
-      ┆                                     ^ this is a constant, but not a symbol.
-   10 │     keyword_argument { ^1.perform(selector: \foo) }
-   11 │ }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -66,6 +39,20 @@ SCClass (1:1): Perform
 |  |  |  |  |  SCMessage (6:15): foo
 |  |  |  |  |  |  SCLiteral (6:15) = 1
 |  |  SCMethod (7:5): poisoned: not_a_symbol { ^1.perform(2, 3) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform.sc:7:31
+|  |  |      5 │     prefix { ^perform(1, \foo, 2) }
+|  |  |      6 │     binary { ^1 perform: \foo }
+|  |  |      7 │     not_a_symbol { ^1.perform(2, 3) }
+|  |  |        ┆                               ^ this is a constant, but not a symbol.
+|  |  |      8 │     not_constant { ^1.perform(\foo.bar, 2) }
+|  |  |      9 │     not_first_argument { ^1.perform(2, \foo) }
+|  |  |     10 │     keyword_argument { ^1.perform(selector: \foo) }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:20)
 |  |  |  |  SCExplicitReturn (7:21)
 |  |  |  |  |  SCMessage (7:21): perform
@@ -83,6 +70,19 @@ SCClass (1:1): Perform
 |  |  |  |  |  |  |  |  SCLiteral (8:31) = \foo
 |  |  |  |  |  |  |  SCLiteral (8:41) = 2
 |  |  SCMethod (9:5): poisoned: not_first_argument { ^1.perform(2, \foo) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  messages/perform.sc:9:37
+|  |  |      7 │     not_a_symbol { ^1.perform(2, 3) }
+|  |  |      8 │     not_constant { ^1.perform(\foo.bar, 2) }
+|  |  |      9 │     not_first_argument { ^1.perform(2, \foo) }
+|  |  |        ┆                                     ^ this is a constant, but not a symbol.
+|  |  |     10 │     keyword_argument { ^1.perform(selector: \foo) }
+|  |  |     11 │ }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:26)
 |  |  |  |  SCExplicitReturn (9:27)
 |  |  |  |  |  SCMessage (9:27): perform

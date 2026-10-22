@@ -3,6 +3,7 @@
 #include "sc_lexer/text_info.hpp"
 #include "sc_lexer/text_location.hpp"
 
+#include <filesystem>
 #include <ostream>
 #include <memory>
 #include <string>
@@ -125,6 +126,9 @@ public:
     friend std::ostream& operator<<(std::ostream& s, const Diagnostic& d);
 
     [[nodiscard]] std::string to_string() const;
+    // Paths are written relative to relative_to, rather than as absolute file uris, e.g., so test output doesn't
+    // depend on where the source is.
+    [[nodiscard]] std::string to_string(const std::filesystem::path& relative_to) const;
 
 private:
     Diagnostic(const char* name, Severity severity, std::vector<Location> locations = { },

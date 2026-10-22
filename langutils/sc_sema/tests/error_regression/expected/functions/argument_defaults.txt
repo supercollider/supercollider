@@ -1,32 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-    6 │     block_bracketed { ^{ |a = (1.foo)| a } }
-    7 │     block_earlier_argument { ^{ |a, b = (a + 1)| b } }
-    8 │     block_later_argument { ^{ |a = (b), b| a } }
-      ┆                                     ^ this is not defined.
-    9 │     block_itself { ^{ |a = (a)| a } }
-   10 │ 
-   11 │     method_constant { |a = 1| ^1 }
-
-Declare it with 'var', or use '~b' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-    7 │     block_earlier_argument { ^{ |a, b = (a + 1)| b } }
-    8 │     block_later_argument { ^{ |a = (b), b| a } }
-    9 │     block_itself { ^{ |a = (a)| a } }
-      ┆                             ^ this is not defined.
-   10 │ 
-   11 │     method_constant { |a = 1| ^1 }
-   12 │     method_instance_var { |a = (instance_var)| ^1 }
-
-Declare it with 'var', or use '~a' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -84,6 +56,20 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  |  |  |  SCBody (7:31)
 |  |  |  |  |  |  |  SCRead (7:50): local b, declared (7:34): a, b = (a + 1)
 |  |  SCMethod (8:5): poisoned: block_later_argument { ^{ |a = (b), b| a } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  functions/argument_defaults.sc:8:37
+|  |  |      6 │     block_bracketed { ^{ |a = (1.foo)| a } }
+|  |  |      7 │     block_earlier_argument { ^{ |a, b = (a + 1)| b } }
+|  |  |      8 │     block_later_argument { ^{ |a = (b), b| a } }
+|  |  |        ┆                                     ^ this is not defined.
+|  |  |      9 │     block_itself { ^{ |a = (a)| a } }
+|  |  |     10 │ 
+|  |  |     11 │     method_constant { |a = 1| ^1 }
+|  |  |
+|  |  |  Declare it with 'var', or use '~b' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (8:28)
 |  |  |  |  SCExplicitReturn (8:29)
 |  |  |  |  |  SCFunction (8:29)
@@ -94,6 +80,20 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  |  |  |  SCBody (8:29)
 |  |  |  |  |  |  |  SCRead (8:44): local a, declared (8:32): a = (b)
 |  |  SCMethod (9:5): poisoned: block_itself { ^{ |a = (a)| a } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  functions/argument_defaults.sc:9:29
+|  |  |      7 │     block_earlier_argument { ^{ |a, b = (a + 1)| b } }
+|  |  |      8 │     block_later_argument { ^{ |a = (b), b| a } }
+|  |  |      9 │     block_itself { ^{ |a = (a)| a } }
+|  |  |        ┆                             ^ this is not defined.
+|  |  |     10 │ 
+|  |  |     11 │     method_constant { |a = 1| ^1 }
+|  |  |     12 │     method_instance_var { |a = (instance_var)| ^1 }
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:20)
 |  |  |  |  SCExplicitReturn (9:21)
 |  |  |  |  |  SCFunction (9:21)

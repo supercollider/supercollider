@@ -1,18 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Message has no receiver
-file:
-    5 │     postfix_variadic { ^1.foo(2, *3) }
-    6 │     prefix { ^foo(1, 2) }
-    7 │     prefix_no_receiver { ^foo(bar: 1) }
-      ┆                           ^^^^^^^^^^^ there is nothing to send this message to.
-    8 │     binary { ^1 + 2 }
-    9 │     binary_keyword { ^1 max: 2 }
-   10 │     binary_adverb_name { ^1 +.x 2 }
-
-Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -61,6 +47,20 @@ SCClass (1:1): Messages
 |  |  |  |  |  |  SCPositionalArgs (6:15)
 |  |  |  |  |  |  |  SCLiteral (6:22) = 2
 |  |  SCMethod (7:5): poisoned: prefix_no_receiver { ^foo(bar: 1) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Message has no receiver
+|  |  |  messages/messages.sc:7:27
+|  |  |      5 │     postfix_variadic { ^1.foo(2, *3) }
+|  |  |      6 │     prefix { ^foo(1, 2) }
+|  |  |      7 │     prefix_no_receiver { ^foo(bar: 1) }
+|  |  |        ┆                           ^^^^^^^^^^^ there is nothing to send this message to.
+|  |  |      8 │     binary { ^1 + 2 }
+|  |  |      9 │     binary_keyword { ^1 max: 2 }
+|  |  |     10 │     binary_adverb_name { ^1 +.x 2 }
+|  |  |
+|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:26)
 |  |  |  |  SCExplicitReturn (7:27)
 |  |  |  |  |  SCExprList (7:27)

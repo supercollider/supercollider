@@ -1,69 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-   10 │     assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }
-   11 │     assign_result { var a, b; ^#a, b = [1, 2] }
-   12 │     assign_undefined { var a; #a, undefined = [1, 2] }
-      ┆                                   ^^^^^^^^^ this is not defined.
-   13 │     assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }
-   14 │     assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }
-   15 │ 
-
-Declare it with 'var', or use '~undefined' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Environment variable declared
-file:
-   21 │     declare_mutable_element { var #a, b = [[1], 2]; ^[a, b] }
-   22 │     declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
-   23 │     declare_environment { var #a, ~b = [1, 2]; ^a }
-      ┆                               ^^^^^^ this can't be declared.
-   24 │     declare_duplicate { var #a, a = [1, 2]; ^a }
-   25 │     declare_refers_to_itself { var #a, b = [a]; ^b }
-   26 │     declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }
-
-Only local variables can be declared with 'var'. Remove the '~' to declare a variable, or assign the environment variable after the declaration.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable already declared
-file:
-   22 │     declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
-   23 │     declare_environment { var #a, ~b = [1, 2]; ^a }
-   24 │     declare_duplicate { var #a, a = [1, 2]; ^a }
-      ┆                              ^ First declared here...
-   25 │     declare_refers_to_itself { var #a, b = [a]; ^b }
-   26 │     declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }
-   27 │     declare_in_function { ^{ var #a, b = [1, 2]; b } }
-
-file:
-   22 │     declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
-   23 │     declare_environment { var #a, ~b = [1, 2]; ^a }
-   24 │     declare_duplicate { var #a, a = [1, 2]; ^a }
-      ┆                                 ^ ...declared again here.
-   25 │     declare_refers_to_itself { var #a, b = [a]; ^b }
-   26 │     declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }
-   27 │     declare_in_function { ^{ var #a, b = [1, 2]; b } }
-
-Arguments and variables in the same function or method must have different names. Rename one.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-   23 │     declare_environment { var #a, ~b = [1, 2]; ^a }
-   24 │     declare_duplicate { var #a, a = [1, 2]; ^a }
-   25 │     declare_refers_to_itself { var #a, b = [a]; ^b }
-      ┆                                             ^ this is not defined.
-   26 │     declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }
-   27 │     declare_in_function { ^{ var #a, b = [1, 2]; b } }
-   28 │     declare_in_function_with_rest { ^{ var #a ...b = [1, 2]; a } }
-
-Declare it with 'var', or use '~a' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -160,6 +95,20 @@ SCClass (1:1): PackAssign
 |  |  |  |  |  |  |  SCPackTarget (11:33): local a at 0, declared (11:25): a
 |  |  |  |  |  |  |  SCPackTarget (11:36): local b at 1, declared (11:28): b
 |  |  SCMethod (12:5): poisoned: assign_undefined { var a; #a, undefined = [1, 2] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/pack_assignment.sc:12:35
+|  |  |     10 │     assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }
+|  |  |     11 │     assign_result { var a, b; ^#a, b = [1, 2] }
+|  |  |     12 │     assign_undefined { var a; #a, undefined = [1, 2] }
+|  |  |        ┆                                   ^^^^^^^^^ this is not defined.
+|  |  |     13 │     assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }
+|  |  |     14 │     assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }
+|  |  |     15 │ 
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (12:24)
 |  |  |  |  SCVariableDeclare (12:28): a
 |  |  |  |  SCPackAssign (12:31)
@@ -282,6 +231,20 @@ SCClass (1:1): PackAssign
 |  |  |  |  SCExplicitReturn (22:58)
 |  |  |  |  |  SCRead (22:58): local a, declared (22:35): a
 |  |  SCMethod (23:5): poisoned: declare_environment { var #a, ~b = [1, 2]; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Environment variable declared
+|  |  |  variables/pack_assignment.sc:23:31
+|  |  |     21 │     declare_mutable_element { var #a, b = [[1], 2]; ^[a, b] }
+|  |  |     22 │     declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
+|  |  |     23 │     declare_environment { var #a, ~b = [1, 2]; ^a }
+|  |  |        ┆                               ^^^^^^ this can't be declared.
+|  |  |     24 │     declare_duplicate { var #a, a = [1, 2]; ^a }
+|  |  |     25 │     declare_refers_to_itself { var #a, b = [a]; ^b }
+|  |  |     26 │     declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }
+|  |  |
+|  |  |  Only local variables can be declared with 'var'. Remove the '~' to declare a variable, or assign the environment variable after the declaration.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (23:27)
 |  |  |  |  SCPackDeclare (23:31)
 |  |  |  |  |  SCCollection (23:40): Array = [1, 2]
@@ -292,6 +255,29 @@ SCClass (1:1): PackAssign
 |  |  |  |  SCExplicitReturn (23:49)
 |  |  |  |  |  SCRead (23:49): local a = 1, declared (23:32): a
 |  |  SCMethod (24:5): poisoned: declare_duplicate { var #a, a = [1, 2]; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable already declared
+|  |  |  variables/pack_assignment.sc:24:30
+|  |  |     22 │     declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
+|  |  |     23 │     declare_environment { var #a, ~b = [1, 2]; ^a }
+|  |  |     24 │     declare_duplicate { var #a, a = [1, 2]; ^a }
+|  |  |        ┆                              ^ First declared here...
+|  |  |     25 │     declare_refers_to_itself { var #a, b = [a]; ^b }
+|  |  |     26 │     declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }
+|  |  |     27 │     declare_in_function { ^{ var #a, b = [1, 2]; b } }
+|  |  |
+|  |  |  variables/pack_assignment.sc:24:33
+|  |  |     22 │     declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
+|  |  |     23 │     declare_environment { var #a, ~b = [1, 2]; ^a }
+|  |  |     24 │     declare_duplicate { var #a, a = [1, 2]; ^a }
+|  |  |        ┆                                 ^ ...declared again here.
+|  |  |     25 │     declare_refers_to_itself { var #a, b = [a]; ^b }
+|  |  |     26 │     declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }
+|  |  |     27 │     declare_in_function { ^{ var #a, b = [1, 2]; b } }
+|  |  |
+|  |  |  Arguments and variables in the same function or method must have different names. Rename one.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (24:25)
 |  |  |  |  SCPackDeclare (24:29)
 |  |  |  |  |  SCCollection (24:37): Array = [1, 2]
@@ -303,6 +289,20 @@ SCClass (1:1): PackAssign
 |  |  |  |  SCExplicitReturn (24:46)
 |  |  |  |  |  SCRead (24:46): local a = 1, declared (24:30): a
 |  |  SCMethod (25:5): poisoned: declare_refers_to_itself { var #a, b = [a]; ^b }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/pack_assignment.sc:25:45
+|  |  |     23 │     declare_environment { var #a, ~b = [1, 2]; ^a }
+|  |  |     24 │     declare_duplicate { var #a, a = [1, 2]; ^a }
+|  |  |     25 │     declare_refers_to_itself { var #a, b = [a]; ^b }
+|  |  |        ┆                                             ^ this is not defined.
+|  |  |     26 │     declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }
+|  |  |     27 │     declare_in_function { ^{ var #a, b = [1, 2]; b } }
+|  |  |     28 │     declare_in_function_with_rest { ^{ var #a ...b = [1, 2]; a } }
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (25:32)
 |  |  |  |  SCPackDeclare (25:36)
 |  |  |  |  |  SCCollection (25:44): Array

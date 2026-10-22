@@ -1,24 +1,24 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-    5 │     var initial_array_3 = [1, 2, 3][-10..];
-    6 │     var initial_string = "hello"[..1];
-    7 │     var initial_not_constant = 1.foo[1..2];
-      ┆                                ^^^^^ this can't be evaluated when compiling.
-    8 │ 
-    9 │     const const_array = [10, 20, 30, 40];
-   10 │     var const_array_slice = const_array[2..];
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
 
 
 SCClass (1:1): SliceFolding
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  ranges/slice_folding.sc:7:32
+|      5 │     var initial_array_3 = [1, 2, 3][-10..];
+|      6 │     var initial_string = "hello"[..1];
+|      7 │     var initial_not_constant = 1.foo[1..2];
+|        ┆                                ^^^^^ this can't be evaluated when compiling.
+|      8 │ 
+|      9 │     const const_array = [10, 20, 30, 40];
+|     10 │     var const_array_slice = const_array[2..];
+|
+|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (1:1)
 |  |  SCMember (2:9): x
 |  |  SCMember (3:9): initial_array = [2, 3]

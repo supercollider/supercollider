@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse;
-import re
 import subprocess;
 import sys
 from pathlib import Path
@@ -20,11 +19,10 @@ def process_file(cmd, sc_file, output_dir, override):
 
     with open(sc_file) as f:
         uses_prelude = f.readline().strip() != NO_PRELUDE
-    args = [cmd, '--prelude', PRELUDE, sc_file] if uses_prelude else [cmd, sc_file]
-    cmd_result = subprocess.run(args, capture_output=True, text=True, check=True)
-
-    # remove file path info
-    cmd_result = re.sub(r'file:.*', 'file:', cmd_result.stdout)
+    # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
+    args = [cmd, '--relative-to', INPUT_DIR]
+    args += ['--prelude', PRELUDE, sc_file] if uses_prelude else [sc_file]
+    cmd_result = subprocess.run(args, capture_output=True, text=True, check=True).stdout
 
     name = sc_file.resolve().relative_to(INPUT_DIR.resolve())
 

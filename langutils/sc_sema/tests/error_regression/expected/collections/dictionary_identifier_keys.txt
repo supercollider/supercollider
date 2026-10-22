@@ -1,43 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-   18 │     var instance_array = #[x, y];
-   19 │     var identifier_key_const = (const_key : 1);
-   20 │     var identifier_key_not_const = (other : 1);
-      ┆                                     ^^^^^ this can't be evaluated when compiling.
-   21 │     var value_not_constant = (a: 1.foo);
-   22 │ }
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-   19 │     var identifier_key_const = (const_key : 1);
-   20 │     var identifier_key_not_const = (other : 1);
-   21 │     var value_not_constant = (a: 1.foo);
-      ┆                                  ^^^^^ this can't be evaluated when compiling.
-   22 │ }
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-    5 │     identifier_key { ^(instance_var : 1) }
-    6 │     keyword_key { ^(instance_var: 1) }
-    7 │     identifier_key_undefined { ^(undefined_var : 1) }
-      ┆                                  ^^^^^^^^^^^^^ this is not defined.
-    8 │     *class_identifier_key { ^(class_var : 1) }
-    9 │ }
-   10 │ 
-
-Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -60,6 +21,20 @@ SCClass (1:1): IdentifierKeys
 |  |  |  |  |  |  SCLiteral (6:21) = \instance_var
 |  |  |  |  |  |  SCLiteral (6:35) = 1
 |  |  SCMethod (7:5): poisoned: identifier_key_undefined { ^(undefined_var : 1) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  collections/dictionary_identifier_keys.sc:7:34
+|  |  |      5 │     identifier_key { ^(instance_var : 1) }
+|  |  |      6 │     keyword_key { ^(instance_var: 1) }
+|  |  |      7 │     identifier_key_undefined { ^(undefined_var : 1) }
+|  |  |        ┆                                  ^^^^^^^^^^^^^ this is not defined.
+|  |  |      8 │     *class_identifier_key { ^(class_var : 1) }
+|  |  |      9 │ }
+|  |  |     10 │ 
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:32)
 |  |  |  |  SCExplicitReturn (7:33)
 |  |  |  |  |  SCCollection (7:33): Event
@@ -76,6 +51,31 @@ SCClass (1:1): Meta_IdentifierKeys
 |  |  |  |  |  |  SCRead (8:31): instance class_var, declared (3:14): class_var
 |  |  |  |  |  |  SCLiteral (8:43) = 1
 SCClass (11:1): Initialisers
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  collections/dictionary_identifier_keys.sc:20:37
+|     18 │     var instance_array = #[x, y];
+|     19 │     var identifier_key_const = (const_key : 1);
+|     20 │     var identifier_key_not_const = (other : 1);
+|        ┆                                     ^^^^^ this can't be evaluated when compiling.
+|     21 │     var value_not_constant = (a: 1.foo);
+|     22 │ }
+|
+|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  collections/dictionary_identifier_keys.sc:21:34
+|     19 │     var identifier_key_const = (const_key : 1);
+|     20 │     var identifier_key_not_const = (other : 1);
+|     21 │     var value_not_constant = (a: 1.foo);
+|        ┆                                  ^^^^^ this can't be evaluated when compiling.
+|     22 │ }
+|
+|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (11:1)
 |  |  SCMember (15:9): instance_event = (a: (b: 2))
 |  |  SCMember (18:9): instance_array = [\x, \y]

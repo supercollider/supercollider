@@ -1,18 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-   26 │     method_non_constant_item { instance_var; ^1 }
-   27 │     method_primitive { _Primitive; ^1 }
-   28 │     method_poisoned { ^undefined_variable }
-      ┆                        ^^^^^^^^^^^^^^^^^^ this is not defined.
-   29 │     *class_method { ^\a }
-   30 │ 
-   31 │     function_not_constant {
-
-Declare it with 'var', or use '~undefined_variable' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -185,6 +171,20 @@ SCClass (1:1): ConstantResults
 |  |  |  |  SCExplicitReturn (27:37)
 |  |  |  |  |  SCLiteral (27:37) = 1
 |  |  SCMethod (28:5): poisoned: method_poisoned { ^undefined_variable }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  methods/constant_results.sc:28:24
+|  |  |     26 │     method_non_constant_item { instance_var; ^1 }
+|  |  |     27 │     method_primitive { _Primitive; ^1 }
+|  |  |     28 │     method_poisoned { ^undefined_variable }
+|  |  |        ┆                        ^^^^^^^^^^^^^^^^^^ this is not defined.
+|  |  |     29 │     *class_method { ^\a }
+|  |  |     30 │ 
+|  |  |     31 │     function_not_constant {
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined_variable' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (28:23)
 |  |  |  |  SCExplicitReturn (28:24)
 |  |  |  |  |  SCExprList (28:24)

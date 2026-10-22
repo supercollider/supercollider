@@ -1,186 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-   13 │ 
-   14 │     *good { ^1 + 2 }
-   15 │     *cannot_assign { instance_var = 3 }
-      ┆                      ^^^^^^^^^^^^ this is not defined.
-   16 │     *undefined { undefined_var = 4 }
-   17 │     *no_receiver { ^foo(bar: 1) }
-   18 │     *nested_error { ^1.foo(2.perform(3)) }
-
-Declare it with 'var', or use '~instance_var' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-   14 │     *good { ^1 + 2 }
-   15 │     *cannot_assign { instance_var = 3 }
-   16 │     *undefined { undefined_var = 4 }
-      ┆                  ^^^^^^^^^^^^^ this is not defined.
-   17 │     *no_receiver { ^foo(bar: 1) }
-   18 │     *nested_error { ^1.foo(2.perform(3)) }
-   19 │     *error_in_array { ^#[1, 2.foo] }
-
-Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Message has no receiver
-file:
-   15 │     *cannot_assign { instance_var = 3 }
-   16 │     *undefined { undefined_var = 4 }
-   17 │     *no_receiver { ^foo(bar: 1) }
-      ┆                     ^^^^^^^^^^^ there is nothing to send this message to.
-   18 │     *nested_error { ^1.foo(2.perform(3)) }
-   19 │     *error_in_array { ^#[1, 2.foo] }
-   20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
-
-Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-   16 │     *undefined { undefined_var = 4 }
-   17 │     *no_receiver { ^foo(bar: 1) }
-   18 │     *nested_error { ^1.foo(2.perform(3)) }
-      ┆                                      ^ this is a constant, but not a symbol.
-   19 │     *error_in_array { ^#[1, 2.foo] }
-   20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
-   21 │     *after_errors { ^6 }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-   17 │     *no_receiver { ^foo(bar: 1) }
-   18 │     *nested_error { ^1.foo(2.perform(3)) }
-   19 │     *error_in_array { ^#[1, 2.foo] }
-      ┆                             ^^^^^ this can't be evaluated when compiling.
-   20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
-   21 │     *after_errors { ^6 }
-   22 │     *good_class_assignment { class_var = 3 }
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-   18 │     *nested_error { ^1.foo(2.perform(3)) }
-   19 │     *error_in_array { ^#[1, 2.foo] }
-   20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
-      ┆                   ^^^^^^^^^^^^^ this is not defined.
-   21 │     *after_errors { ^6 }
-   22 │     *good_class_assignment { class_var = 3 }
-   23 │ }
-
-Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Message has no receiver
-file:
-   18 │     *nested_error { ^1.foo(2.perform(3)) }
-   19 │     *error_in_array { ^#[1, 2.foo] }
-   20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
-      ┆                                       ^^^^^^^^^^^ there is nothing to send this message to.
-   21 │     *after_errors { ^6 }
-   22 │     *good_class_assignment { class_var = 3 }
-   23 │ }
-
-Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-    5 │     good { ^1 + 2 }
-    6 │     good_assignment { instance_var = 3 }
-    7 │     undefined { undefined_var = 4 }
-      ┆                 ^^^^^^^^^^^^^ this is not defined.
-    8 │     no_receiver { ^foo(bar: 1) }
-    9 │     nested_error { ^1.foo(2.perform(3)) }
-   10 │     error_in_array { ^#[1, 2.foo] }
-
-Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Message has no receiver
-file:
-    6 │     good_assignment { instance_var = 3 }
-    7 │     undefined { undefined_var = 4 }
-    8 │     no_receiver { ^foo(bar: 1) }
-      ┆                    ^^^^^^^^^^^ there is nothing to send this message to.
-    9 │     nested_error { ^1.foo(2.perform(3)) }
-   10 │     error_in_array { ^#[1, 2.foo] }
-   11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-
-Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Perform selector is not a symbol
-file:
-    7 │     undefined { undefined_var = 4 }
-    8 │     no_receiver { ^foo(bar: 1) }
-    9 │     nested_error { ^1.foo(2.perform(3)) }
-      ┆                                     ^ this is a constant, but not a symbol.
-   10 │     error_in_array { ^#[1, 2.foo] }
-   11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-   12 │     after_errors { ^6 }
-
-`perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-    8 │     no_receiver { ^foo(bar: 1) }
-    9 │     nested_error { ^1.foo(2.perform(3)) }
-   10 │     error_in_array { ^#[1, 2.foo] }
-      ┆                            ^^^^^ this can't be evaluated when compiling.
-   11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-   12 │     after_errors { ^6 }
-   13 │ 
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-    9 │     nested_error { ^1.foo(2.perform(3)) }
-   10 │     error_in_array { ^#[1, 2.foo] }
-   11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-      ┆                  ^^^^^^^^^^^^^ this is not defined.
-   12 │     after_errors { ^6 }
-   13 │ 
-   14 │     *good { ^1 + 2 }
-
-Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Message has no receiver
-file:
-    9 │     nested_error { ^1.foo(2.perform(3)) }
-   10 │     error_in_array { ^#[1, 2.foo] }
-   11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
-      ┆                                      ^^^^^^^^^^^ there is nothing to send this message to.
-   12 │     after_errors { ^6 }
-   13 │ 
-   14 │     *good { ^1 + 2 }
-
-Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -202,13 +20,55 @@ SCClass (1:1): Poisoning
 |  |  |  |  SCAssign (6:23): instance instance_var, declared (2:9): instance_var
 |  |  |  |  |  SCLiteral (6:38) = 3
 |  |  SCMethod (7:5): poisoned: undefined { undefined_var = 4 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  methods/poisoning.sc:7:17
+|  |  |      5 │     good { ^1 + 2 }
+|  |  |      6 │     good_assignment { instance_var = 3 }
+|  |  |      7 │     undefined { undefined_var = 4 }
+|  |  |        ┆                 ^^^^^^^^^^^^^ this is not defined.
+|  |  |      8 │     no_receiver { ^foo(bar: 1) }
+|  |  |      9 │     nested_error { ^1.foo(2.perform(3)) }
+|  |  |     10 │     error_in_array { ^#[1, 2.foo] }
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:17)
 |  |  |  |  SCLiteral (7:33) = 4
 |  |  SCMethod (8:5): poisoned: no_receiver { ^foo(bar: 1) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Message has no receiver
+|  |  |  methods/poisoning.sc:8:20
+|  |  |      6 │     good_assignment { instance_var = 3 }
+|  |  |      7 │     undefined { undefined_var = 4 }
+|  |  |      8 │     no_receiver { ^foo(bar: 1) }
+|  |  |        ┆                    ^^^^^^^^^^^ there is nothing to send this message to.
+|  |  |      9 │     nested_error { ^1.foo(2.perform(3)) }
+|  |  |     10 │     error_in_array { ^#[1, 2.foo] }
+|  |  |     11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |
+|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (8:19)
 |  |  |  |  SCExplicitReturn (8:20)
 |  |  |  |  |  SCExprList (8:20)
 |  |  SCMethod (9:5): poisoned: nested_error { ^1.foo(2.perform(3)) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  methods/poisoning.sc:9:37
+|  |  |      7 │     undefined { undefined_var = 4 }
+|  |  |      8 │     no_receiver { ^foo(bar: 1) }
+|  |  |      9 │     nested_error { ^1.foo(2.perform(3)) }
+|  |  |        ┆                                     ^ this is a constant, but not a symbol.
+|  |  |     10 │     error_in_array { ^#[1, 2.foo] }
+|  |  |     11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |     12 │     after_errors { ^6 }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:20)
 |  |  |  |  SCExplicitReturn (9:21)
 |  |  |  |  |  SCMessage (9:21): foo
@@ -219,6 +79,20 @@ SCClass (1:1): Poisoning
 |  |  |  |  |  |  |  |  SCPositionalArgs (9:27)
 |  |  |  |  |  |  |  |  |  SCLiteral (9:37) = 3
 |  |  SCMethod (10:5): poisoned: error_in_array { ^#[1, 2.foo] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Not a constant
+|  |  |  methods/poisoning.sc:10:28
+|  |  |      8 │     no_receiver { ^foo(bar: 1) }
+|  |  |      9 │     nested_error { ^1.foo(2.perform(3)) }
+|  |  |     10 │     error_in_array { ^#[1, 2.foo] }
+|  |  |        ┆                            ^^^^^ this can't be evaluated when compiling.
+|  |  |     11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |     12 │     after_errors { ^6 }
+|  |  |     13 │ 
+|  |  |
+|  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:22)
 |  |  |  |  SCExplicitReturn (10:23)
 |  |  |  |  |  SCCollection (10:23): Array
@@ -226,6 +100,34 @@ SCClass (1:1): Poisoning
 |  |  |  |  |  |  SCMessage (10:28): foo
 |  |  |  |  |  |  |  SCLiteral (10:28) = 2
 |  |  SCMethod (11:5): poisoned: two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  methods/poisoning.sc:11:18
+|  |  |      9 │     nested_error { ^1.foo(2.perform(3)) }
+|  |  |     10 │     error_in_array { ^#[1, 2.foo] }
+|  |  |     11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |        ┆                  ^^^^^^^^^^^^^ this is not defined.
+|  |  |     12 │     after_errors { ^6 }
+|  |  |     13 │ 
+|  |  |     14 │     *good { ^1 + 2 }
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Message has no receiver
+|  |  |  methods/poisoning.sc:11:38
+|  |  |      9 │     nested_error { ^1.foo(2.perform(3)) }
+|  |  |     10 │     error_in_array { ^#[1, 2.foo] }
+|  |  |     11 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |        ┆                                      ^^^^^^^^^^^ there is nothing to send this message to.
+|  |  |     12 │     after_errors { ^6 }
+|  |  |     13 │ 
+|  |  |     14 │     *good { ^1 + 2 }
+|  |  |
+|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:18)
 |  |  |  |  SCLiteral (11:34) = 5
 |  |  |  |  SCExplicitReturn (11:38)
@@ -246,16 +148,72 @@ SCClass (1:1): Meta_Poisoning
 |  |  |  |  |  |  SCPositionalArgs (14:14)
 |  |  |  |  |  |  |  SCLiteral (14:18) = 2
 |  |  SCMethod (15:5): poisoned: *cannot_assign { instance_var = 3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  methods/poisoning.sc:15:22
+|  |  |     13 │ 
+|  |  |     14 │     *good { ^1 + 2 }
+|  |  |     15 │     *cannot_assign { instance_var = 3 }
+|  |  |        ┆                      ^^^^^^^^^^^^ this is not defined.
+|  |  |     16 │     *undefined { undefined_var = 4 }
+|  |  |     17 │     *no_receiver { ^foo(bar: 1) }
+|  |  |     18 │     *nested_error { ^1.foo(2.perform(3)) }
+|  |  |
+|  |  |  Declare it with 'var', or use '~instance_var' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (15:22)
 |  |  |  |  SCLiteral (15:37) = 3
 |  |  SCMethod (16:5): poisoned: *undefined { undefined_var = 4 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  methods/poisoning.sc:16:18
+|  |  |     14 │     *good { ^1 + 2 }
+|  |  |     15 │     *cannot_assign { instance_var = 3 }
+|  |  |     16 │     *undefined { undefined_var = 4 }
+|  |  |        ┆                  ^^^^^^^^^^^^^ this is not defined.
+|  |  |     17 │     *no_receiver { ^foo(bar: 1) }
+|  |  |     18 │     *nested_error { ^1.foo(2.perform(3)) }
+|  |  |     19 │     *error_in_array { ^#[1, 2.foo] }
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (16:18)
 |  |  |  |  SCLiteral (16:34) = 4
 |  |  SCMethod (17:5): poisoned: *no_receiver { ^foo(bar: 1) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Message has no receiver
+|  |  |  methods/poisoning.sc:17:21
+|  |  |     15 │     *cannot_assign { instance_var = 3 }
+|  |  |     16 │     *undefined { undefined_var = 4 }
+|  |  |     17 │     *no_receiver { ^foo(bar: 1) }
+|  |  |        ┆                     ^^^^^^^^^^^ there is nothing to send this message to.
+|  |  |     18 │     *nested_error { ^1.foo(2.perform(3)) }
+|  |  |     19 │     *error_in_array { ^#[1, 2.foo] }
+|  |  |     20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |
+|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (17:20)
 |  |  |  |  SCExplicitReturn (17:21)
 |  |  |  |  |  SCExprList (17:21)
 |  |  SCMethod (18:5): poisoned: *nested_error { ^1.foo(2.perform(3)) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Perform selector is not a symbol
+|  |  |  methods/poisoning.sc:18:38
+|  |  |     16 │     *undefined { undefined_var = 4 }
+|  |  |     17 │     *no_receiver { ^foo(bar: 1) }
+|  |  |     18 │     *nested_error { ^1.foo(2.perform(3)) }
+|  |  |        ┆                                      ^ this is a constant, but not a symbol.
+|  |  |     19 │     *error_in_array { ^#[1, 2.foo] }
+|  |  |     20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |     21 │     *after_errors { ^6 }
+|  |  |
+|  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (18:21)
 |  |  |  |  SCExplicitReturn (18:22)
 |  |  |  |  |  SCMessage (18:22): foo
@@ -266,6 +224,20 @@ SCClass (1:1): Meta_Poisoning
 |  |  |  |  |  |  |  |  SCPositionalArgs (18:28)
 |  |  |  |  |  |  |  |  |  SCLiteral (18:38) = 3
 |  |  SCMethod (19:5): poisoned: *error_in_array { ^#[1, 2.foo] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Not a constant
+|  |  |  methods/poisoning.sc:19:29
+|  |  |     17 │     *no_receiver { ^foo(bar: 1) }
+|  |  |     18 │     *nested_error { ^1.foo(2.perform(3)) }
+|  |  |     19 │     *error_in_array { ^#[1, 2.foo] }
+|  |  |        ┆                             ^^^^^ this can't be evaluated when compiling.
+|  |  |     20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |     21 │     *after_errors { ^6 }
+|  |  |     22 │     *good_class_assignment { class_var = 3 }
+|  |  |
+|  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (19:23)
 |  |  |  |  SCExplicitReturn (19:24)
 |  |  |  |  |  SCCollection (19:24): Array
@@ -273,6 +245,34 @@ SCClass (1:1): Meta_Poisoning
 |  |  |  |  |  |  SCMessage (19:29): foo
 |  |  |  |  |  |  |  SCLiteral (19:29) = 2
 |  |  SCMethod (20:5): poisoned: *two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  methods/poisoning.sc:20:19
+|  |  |     18 │     *nested_error { ^1.foo(2.perform(3)) }
+|  |  |     19 │     *error_in_array { ^#[1, 2.foo] }
+|  |  |     20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |        ┆                   ^^^^^^^^^^^^^ this is not defined.
+|  |  |     21 │     *after_errors { ^6 }
+|  |  |     22 │     *good_class_assignment { class_var = 3 }
+|  |  |     23 │ }
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Message has no receiver
+|  |  |  methods/poisoning.sc:20:39
+|  |  |     18 │     *nested_error { ^1.foo(2.perform(3)) }
+|  |  |     19 │     *error_in_array { ^#[1, 2.foo] }
+|  |  |     20 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |        ┆                                       ^^^^^^^^^^^ there is nothing to send this message to.
+|  |  |     21 │     *after_errors { ^6 }
+|  |  |     22 │     *good_class_assignment { class_var = 3 }
+|  |  |     23 │ }
+|  |  |
+|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (20:19)
 |  |  |  |  SCLiteral (20:35) = 5
 |  |  |  |  SCExplicitReturn (20:39)

@@ -1,73 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Message has no receiver
-file:
-   10 │     functional_receiver_only { foo(x) = 2 }
-   11 │     functional_keyword { foo(x, b: 1) = 2 }
-   12 │     functional_no_receiver { foo(b: 1) = 2 }
-      ┆                              ^^^^^^^^^^^^^ there is nothing to send this message to.
-   13 │     functional_variadic { foo(x, *x) = 2 }
-   14 │     functional_variadic_receiver { foo(*x) = 2 }
-   15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-
-Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variadic argument is not last
-file:
-   11 │     functional_keyword { foo(x, b: 1) = 2 }
-   12 │     functional_no_receiver { foo(b: 1) = 2 }
-   13 │     functional_variadic { foo(x, *x) = 2 }
-      ┆                                  ^^ the elements of this are passed after...
-   14 │     functional_variadic_receiver { foo(*x) = 2 }
-   15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-   16 │ }
-
-file:
-   11 │     functional_keyword { foo(x, b: 1) = 2 }
-   12 │     functional_no_receiver { foo(b: 1) = 2 }
-   13 │     functional_variadic { foo(x, *x) = 2 }
-      ┆                                        ^ ...this argument, which is written after it.
-   14 │     functional_variadic_receiver { foo(*x) = 2 }
-   15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-   16 │ }
-
-A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Message has no receiver
-file:
-   12 │     functional_no_receiver { foo(b: 1) = 2 }
-   13 │     functional_variadic { foo(x, *x) = 2 }
-   14 │     functional_variadic_receiver { foo(*x) = 2 }
-      ┆                                    ^^^^^^^^^^^ there is nothing to send this message to.
-   15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-   16 │ }
-
-Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variadic argument is not last
-file:
-   13 │     functional_variadic { foo(x, *x) = 2 }
-   14 │     functional_variadic_receiver { foo(*x) = 2 }
-   15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-      ┆                                                     ^^ the elements of this are passed after...
-   16 │ }
-
-file:
-   13 │     functional_variadic { foo(x, *x) = 2 }
-   14 │     functional_variadic_receiver { foo(*x) = 2 }
-   15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-      ┆                                                           ^ ...this argument, which is written after it.
-   16 │ }
-
-A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -138,9 +69,46 @@ SCClass (1:1): Setters
 |  |  |  |  |  |  SCKwArg (11:33): b
 |  |  |  |  |  |  |  SCLiteral (11:36) = 1
 |  |  SCMethod (12:5): poisoned: functional_no_receiver { foo(b: 1) = 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Message has no receiver
+|  |  |  messages/setters.sc:12:30
+|  |  |     10 │     functional_receiver_only { foo(x) = 2 }
+|  |  |     11 │     functional_keyword { foo(x, b: 1) = 2 }
+|  |  |     12 │     functional_no_receiver { foo(b: 1) = 2 }
+|  |  |        ┆                              ^^^^^^^^^^^^^ there is nothing to send this message to.
+|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |
+|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (12:30)
 |  |  |  |  SCExprList (12:30)
 |  |  SCMethod (13:5): poisoned: functional_variadic { foo(x, *x) = 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/setters.sc:13:34
+|  |  |     11 │     functional_keyword { foo(x, b: 1) = 2 }
+|  |  |     12 │     functional_no_receiver { foo(b: 1) = 2 }
+|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |        ┆                                  ^^ the elements of this are passed after...
+|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |     16 │ }
+|  |  |
+|  |  |  messages/setters.sc:13:40
+|  |  |     11 │     functional_keyword { foo(x, b: 1) = 2 }
+|  |  |     12 │     functional_no_receiver { foo(b: 1) = 2 }
+|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |        ┆                                        ^ ...this argument, which is written after it.
+|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |     16 │ }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (13:27)
 |  |  |  |  SCMessage (13:27): foo_
 |  |  |  |  |  SCRead (13:31): instance x, declared (2:9): x
@@ -149,9 +117,41 @@ SCClass (1:1): Setters
 |  |  |  |  |  SCVariadicArgs (13:27)
 |  |  |  |  |  |  SCRead (13:35): instance x, declared (2:9): x
 |  |  SCMethod (14:5): poisoned: functional_variadic_receiver { foo(*x) = 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Message has no receiver
+|  |  |  messages/setters.sc:14:36
+|  |  |     12 │     functional_no_receiver { foo(b: 1) = 2 }
+|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |        ┆                                    ^^^^^^^^^^^ there is nothing to send this message to.
+|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |     16 │ }
+|  |  |
+|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:36)
 |  |  |  |  SCExprList (14:36)
 |  |  SCMethod (15:5): poisoned: functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/setters.sc:15:53
+|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |        ┆                                                     ^^ the elements of this are passed after...
+|  |  |     16 │ }
+|  |  |
+|  |  |  messages/setters.sc:15:59
+|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |        ┆                                                           ^ ...this argument, which is written after it.
+|  |  |     16 │ }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (15:43)
 |  |  |  |  SCMessage (15:43): foo_
 |  |  |  |  |  SCRead (15:47): instance x, declared (2:9): x

@@ -1,78 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-    7 │     uses_earlier { var a = 1, b = a + 1; ^b }
-    8 │     bracketed_value { var a(1 + 2); ^a }
-    9 │     refers_to_itself { var a = a; ^a }
-      ┆                                ^ this is not defined.
-   10 │     used_before_declared { a; var a = 1 }
-   11 │     declared_after_expression { 1; var a = 2; ^a }
-   12 │     duplicate { var a, a; ^a }
-
-Declare it with 'var', or use '~a' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable not defined
-file:
-    8 │     bracketed_value { var a(1 + 2); ^a }
-    9 │     refers_to_itself { var a = a; ^a }
-   10 │     used_before_declared { a; var a = 1 }
-      ┆                            ^ this is not defined.
-   11 │     declared_after_expression { 1; var a = 2; ^a }
-   12 │     duplicate { var a, a; ^a }
-   13 │     duplicate_argument { |a| var a; ^a }
-
-Declare it with 'var', or use '~a' to refer to an environment variable.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable already declared
-file:
-   10 │     used_before_declared { a; var a = 1 }
-   11 │     declared_after_expression { 1; var a = 2; ^a }
-   12 │     duplicate { var a, a; ^a }
-      ┆                     ^ First declared here...
-   13 │     duplicate_argument { |a| var a; ^a }
-   14 │     shadows_instance { var instance_var = 1; ^instance_var }
-   15 │     assign { var a; a = 2 }
-
-file:
-   10 │     used_before_declared { a; var a = 1 }
-   11 │     declared_after_expression { 1; var a = 2; ^a }
-   12 │     duplicate { var a, a; ^a }
-      ┆                        ^ ...declared again here.
-   13 │     duplicate_argument { |a| var a; ^a }
-   14 │     shadows_instance { var instance_var = 1; ^instance_var }
-   15 │     assign { var a; a = 2 }
-
-Arguments and variables in the same function or method must have different names. Rename one.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variable already declared
-file:
-   11 │     declared_after_expression { 1; var a = 2; ^a }
-   12 │     duplicate { var a, a; ^a }
-   13 │     duplicate_argument { |a| var a; ^a }
-      ┆                           ^ First declared here...
-   14 │     shadows_instance { var instance_var = 1; ^instance_var }
-   15 │     assign { var a; a = 2 }
-   16 │     in_block { ^{ var a = 1; a } }
-
-file:
-   11 │     declared_after_expression { 1; var a = 2; ^a }
-   12 │     duplicate { var a, a; ^a }
-   13 │     duplicate_argument { |a| var a; ^a }
-      ┆                                  ^ ...declared again here.
-   14 │     shadows_instance { var instance_var = 1; ^instance_var }
-   15 │     assign { var a; a = 2 }
-   16 │     in_block { ^{ var a = 1; a } }
-
-Arguments and variables in the same function or method must have different names. Rename one.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -123,12 +49,40 @@ SCClass (1:1): Variables
 |  |  |  |  SCExplicitReturn (8:38)
 |  |  |  |  |  SCRead (8:38): local a, declared (8:27): a(1 + 2)
 |  |  SCMethod (9:5): poisoned: refers_to_itself { var a = a; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/declarations.sc:9:32
+|  |  |      7 │     uses_earlier { var a = 1, b = a + 1; ^b }
+|  |  |      8 │     bracketed_value { var a(1 + 2); ^a }
+|  |  |      9 │     refers_to_itself { var a = a; ^a }
+|  |  |        ┆                                ^ this is not defined.
+|  |  |     10 │     used_before_declared { a; var a = 1 }
+|  |  |     11 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |     12 │     duplicate { var a, a; ^a }
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:24)
 |  |  |  |  SCVariableDeclare (9:28): a
 |  |  |  |  |  SCExprList (9:32)
 |  |  |  |  SCExplicitReturn (9:36)
 |  |  |  |  |  SCRead (9:36): local a, declared (9:28): a = a
 |  |  SCMethod (10:5): poisoned: used_before_declared { a; var a = 1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/declarations.sc:10:28
+|  |  |      8 │     bracketed_value { var a(1 + 2); ^a }
+|  |  |      9 │     refers_to_itself { var a = a; ^a }
+|  |  |     10 │     used_before_declared { a; var a = 1 }
+|  |  |        ┆                            ^ this is not defined.
+|  |  |     11 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |     12 │     duplicate { var a, a; ^a }
+|  |  |     13 │     duplicate_argument { |a| var a; ^a }
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:28)
 |  |  |  |  SCExprList (10:28)
 |  |  |  |  SCVariableDeclare (10:35): a
@@ -141,12 +95,58 @@ SCClass (1:1): Variables
 |  |  |  |  SCExplicitReturn (11:48)
 |  |  |  |  |  SCRead (11:48): local a = 2, declared (11:40): a = 2
 |  |  SCMethod (12:5): poisoned: duplicate { var a, a; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable already declared
+|  |  |  variables/declarations.sc:12:21
+|  |  |     10 │     used_before_declared { a; var a = 1 }
+|  |  |     11 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |     12 │     duplicate { var a, a; ^a }
+|  |  |        ┆                     ^ First declared here...
+|  |  |     13 │     duplicate_argument { |a| var a; ^a }
+|  |  |     14 │     shadows_instance { var instance_var = 1; ^instance_var }
+|  |  |     15 │     assign { var a; a = 2 }
+|  |  |
+|  |  |  variables/declarations.sc:12:24
+|  |  |     10 │     used_before_declared { a; var a = 1 }
+|  |  |     11 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |     12 │     duplicate { var a, a; ^a }
+|  |  |        ┆                        ^ ...declared again here.
+|  |  |     13 │     duplicate_argument { |a| var a; ^a }
+|  |  |     14 │     shadows_instance { var instance_var = 1; ^instance_var }
+|  |  |     15 │     assign { var a; a = 2 }
+|  |  |
+|  |  |  Arguments and variables in the same function or method must have different names. Rename one.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (12:17)
 |  |  |  |  SCVariableDeclare (12:21): a
 |  |  |  |  SCVariableDeclare (12:24): a
 |  |  |  |  SCExplicitReturn (12:28)
 |  |  |  |  |  SCRead (12:28): local a = nil, declared (12:21): a
 |  |  SCMethod (13:5): poisoned: duplicate_argument { |a| var a; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable already declared
+|  |  |  variables/declarations.sc:13:27
+|  |  |     11 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |     12 │     duplicate { var a, a; ^a }
+|  |  |     13 │     duplicate_argument { |a| var a; ^a }
+|  |  |        ┆                           ^ First declared here...
+|  |  |     14 │     shadows_instance { var instance_var = 1; ^instance_var }
+|  |  |     15 │     assign { var a; a = 2 }
+|  |  |     16 │     in_block { ^{ var a = 1; a } }
+|  |  |
+|  |  |  variables/declarations.sc:13:34
+|  |  |     11 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |     12 │     duplicate { var a, a; ^a }
+|  |  |     13 │     duplicate_argument { |a| var a; ^a }
+|  |  |        ┆                                  ^ ...declared again here.
+|  |  |     14 │     shadows_instance { var instance_var = 1; ^instance_var }
+|  |  |     15 │     assign { var a; a = 2 }
+|  |  |     16 │     in_block { ^{ var a = 1; a } }
+|  |  |
+|  |  |  Arguments and variables in the same function or method must have different names. Rename one.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (13:27)
 |  |  |  |  SCArgumentDeclare (13:27): a
 |  |  |  SCBody (13:30)

@@ -1,163 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variadic argument is not last
-file:
-    3 │ 
-    4 │     variadic_last { ^1.foo(2, *3) }
-    5 │     variadic_first { ^1.foo(*2, 3) }
-      ┆                             ^^ the elements of this are passed after...
-    6 │     two_after { ^1.foo(*2, 3, 4) }
-    7 │     keyword_after { ^1.foo(*2, bar: 3) }
-    8 │     prefix { ^foo(1, *2, 3) }
-
-file:
-    3 │ 
-    4 │     variadic_last { ^1.foo(2, *3) }
-    5 │     variadic_first { ^1.foo(*2, 3) }
-      ┆                                 ^ ...this argument, which is written after it.
-    6 │     two_after { ^1.foo(*2, 3, 4) }
-    7 │     keyword_after { ^1.foo(*2, bar: 3) }
-    8 │     prefix { ^foo(1, *2, 3) }
-
-A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variadic argument is not last
-file:
-    4 │     variadic_last { ^1.foo(2, *3) }
-    5 │     variadic_first { ^1.foo(*2, 3) }
-    6 │     two_after { ^1.foo(*2, 3, 4) }
-      ┆                        ^^ the elements of this are passed after...
-    7 │     keyword_after { ^1.foo(*2, bar: 3) }
-    8 │     prefix { ^foo(1, *2, 3) }
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-
-file:
-    4 │     variadic_last { ^1.foo(2, *3) }
-    5 │     variadic_first { ^1.foo(*2, 3) }
-    6 │     two_after { ^1.foo(*2, 3, 4) }
-      ┆                            ^ ...this argument, which is written after it.
-    7 │     keyword_after { ^1.foo(*2, bar: 3) }
-    8 │     prefix { ^foo(1, *2, 3) }
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-
-A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variadic argument is not last
-file:
-    6 │     two_after { ^1.foo(*2, 3, 4) }
-    7 │     keyword_after { ^1.foo(*2, bar: 3) }
-    8 │     prefix { ^foo(1, *2, 3) }
-      ┆                      ^^ the elements of this are passed after...
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-   10 │     array_after { ^1.foo(*2, [3]) }
-   11 │     put_variadic { instance_var[*0] = 1 }
-
-file:
-    6 │     two_after { ^1.foo(*2, 3, 4) }
-    7 │     keyword_after { ^1.foo(*2, bar: 3) }
-    8 │     prefix { ^foo(1, *2, 3) }
-      ┆                          ^ ...this argument, which is written after it.
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-   10 │     array_after { ^1.foo(*2, [3]) }
-   11 │     put_variadic { instance_var[*0] = 1 }
-
-A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variadic argument is not last
-file:
-    7 │     keyword_after { ^1.foo(*2, bar: 3) }
-    8 │     prefix { ^foo(1, *2, 3) }
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-      ┆                                     ^^ the elements of this are passed after...
-   10 │     array_after { ^1.foo(*2, [3]) }
-   11 │     put_variadic { instance_var[*0] = 1 }
-   12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-
-file:
-    7 │     keyword_after { ^1.foo(*2, bar: 3) }
-    8 │     prefix { ^foo(1, *2, 3) }
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-      ┆                                         ^ ...this argument, which is written after it.
-   10 │     array_after { ^1.foo(*2, [3]) }
-   11 │     put_variadic { instance_var[*0] = 1 }
-   12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-
-A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variadic argument is not last
-file:
-    8 │     prefix { ^foo(1, *2, 3) }
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-   10 │     array_after { ^1.foo(*2, [3]) }
-      ┆                          ^^ the elements of this are passed after...
-   11 │     put_variadic { instance_var[*0] = 1 }
-   12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-   13 │     after_errors { ^5 }
-
-file:
-    8 │     prefix { ^foo(1, *2, 3) }
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-   10 │     array_after { ^1.foo(*2, [3]) }
-      ┆                              ^^^ ...this argument, which is written after it.
-   11 │     put_variadic { instance_var[*0] = 1 }
-   12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-   13 │     after_errors { ^5 }
-
-A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variadic argument is not last
-file:
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-   10 │     array_after { ^1.foo(*2, [3]) }
-   11 │     put_variadic { instance_var[*0] = 1 }
-      ┆                                 ^^ the elements of this are passed after...
-   12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-   13 │     after_errors { ^5 }
-   14 │ }
-
-file:
-    9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-   10 │     array_after { ^1.foo(*2, [3]) }
-   11 │     put_variadic { instance_var[*0] = 1 }
-      ┆                                       ^ ...this argument, which is written after it.
-   12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-   13 │     after_errors { ^5 }
-   14 │ }
-
-A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Variadic argument is not last
-file:
-   10 │     array_after { ^1.foo(*2, [3]) }
-   11 │     put_variadic { instance_var[*0] = 1 }
-   12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-      ┆                                         ^^ the elements of this are passed after...
-   13 │     after_errors { ^5 }
-   14 │ }
-
-file:
-   10 │     array_after { ^1.foo(*2, [3]) }
-   11 │     put_variadic { instance_var[*0] = 1 }
-   12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-      ┆                                                     ^ ...this argument, which is written after it.
-   13 │     after_errors { ^5 }
-   14 │ }
-
-A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -177,6 +18,29 @@ SCClass (1:1): VariadicOrder
 |  |  |  |  |  |  SCVariadicArgs (4:22)
 |  |  |  |  |  |  |  SCLiteral (4:32) = 3
 |  |  SCMethod (5:5): poisoned: variadic_first { ^1.foo(*2, 3) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/variadic_order.sc:5:29
+|  |  |      3 │ 
+|  |  |      4 │     variadic_last { ^1.foo(2, *3) }
+|  |  |      5 │     variadic_first { ^1.foo(*2, 3) }
+|  |  |        ┆                             ^^ the elements of this are passed after...
+|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |
+|  |  |  messages/variadic_order.sc:5:33
+|  |  |      3 │ 
+|  |  |      4 │     variadic_last { ^1.foo(2, *3) }
+|  |  |      5 │     variadic_first { ^1.foo(*2, 3) }
+|  |  |        ┆                                 ^ ...this argument, which is written after it.
+|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (5:22)
 |  |  |  |  SCExplicitReturn (5:23)
 |  |  |  |  |  SCMessage (5:23): foo
@@ -186,6 +50,29 @@ SCClass (1:1): VariadicOrder
 |  |  |  |  |  |  SCVariadicArgs (5:23)
 |  |  |  |  |  |  |  SCLiteral (5:30) = 2
 |  |  SCMethod (6:5): poisoned: two_after { ^1.foo(*2, 3, 4) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/variadic_order.sc:6:24
+|  |  |      4 │     variadic_last { ^1.foo(2, *3) }
+|  |  |      5 │     variadic_first { ^1.foo(*2, 3) }
+|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |        ┆                        ^^ the elements of this are passed after...
+|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |
+|  |  |  messages/variadic_order.sc:6:28
+|  |  |      4 │     variadic_last { ^1.foo(2, *3) }
+|  |  |      5 │     variadic_first { ^1.foo(*2, 3) }
+|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |        ┆                            ^ ...this argument, which is written after it.
+|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (6:17)
 |  |  |  |  SCExplicitReturn (6:18)
 |  |  |  |  |  SCMessage (6:18): foo
@@ -206,6 +93,29 @@ SCClass (1:1): VariadicOrder
 |  |  |  |  |  |  SCVariadicArgs (7:22)
 |  |  |  |  |  |  |  SCLiteral (7:29) = 2
 |  |  SCMethod (8:5): poisoned: prefix { ^foo(1, *2, 3) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/variadic_order.sc:8:22
+|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |        ┆                      ^^ the elements of this are passed after...
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |
+|  |  |  messages/variadic_order.sc:8:26
+|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |        ┆                          ^ ...this argument, which is written after it.
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (8:14)
 |  |  |  |  SCExplicitReturn (8:15)
 |  |  |  |  |  SCMessage (8:15): foo
@@ -215,6 +125,29 @@ SCClass (1:1): VariadicOrder
 |  |  |  |  |  |  SCVariadicArgs (8:15)
 |  |  |  |  |  |  |  SCLiteral (8:23) = 2
 |  |  SCMethod (9:5): poisoned: prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/variadic_order.sc:9:37
+|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |        ┆                                     ^^ the elements of this are passed after...
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |
+|  |  |  messages/variadic_order.sc:9:41
+|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |        ┆                                         ^ ...this argument, which is written after it.
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:32)
 |  |  |  |  SCExplicitReturn (9:33)
 |  |  |  |  |  SCMessage (9:33): foo
@@ -222,6 +155,29 @@ SCClass (1:1): VariadicOrder
 |  |  |  |  |  |  SCVariadicArgs (9:33)
 |  |  |  |  |  |  |  SCLiteral (9:38) = 1
 |  |  SCMethod (10:5): poisoned: array_after { ^1.foo(*2, [3]) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/variadic_order.sc:10:26
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |        ┆                          ^^ the elements of this are passed after...
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     13 │     after_errors { ^5 }
+|  |  |
+|  |  |  messages/variadic_order.sc:10:30
+|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |        ┆                              ^^^ ...this argument, which is written after it.
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     13 │     after_errors { ^5 }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:19)
 |  |  |  |  SCExplicitReturn (10:20)
 |  |  |  |  |  SCMessage (10:20): foo
@@ -232,6 +188,29 @@ SCClass (1:1): VariadicOrder
 |  |  |  |  |  |  SCVariadicArgs (10:20)
 |  |  |  |  |  |  |  SCLiteral (10:27) = 2
 |  |  SCMethod (11:5): poisoned: put_variadic { instance_var[*0] = 1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/variadic_order.sc:11:33
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |        ┆                                 ^^ the elements of this are passed after...
+|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     13 │     after_errors { ^5 }
+|  |  |     14 │ }
+|  |  |
+|  |  |  messages/variadic_order.sc:11:39
+|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |        ┆                                       ^ ...this argument, which is written after it.
+|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     13 │     after_errors { ^5 }
+|  |  |     14 │ }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:20)
 |  |  |  |  SCMessage (11:20): put
 |  |  |  |  |  SCRead (11:20): instance instance_var, declared (2:9): instance_var
@@ -240,6 +219,27 @@ SCClass (1:1): VariadicOrder
 |  |  |  |  |  SCVariadicArgs (11:20)
 |  |  |  |  |  |  SCLiteral (11:34) = 0
 |  |  SCMethod (12:5): poisoned: put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/variadic_order.sc:12:41
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |        ┆                                         ^^ the elements of this are passed after...
+|  |  |     13 │     after_errors { ^5 }
+|  |  |     14 │ }
+|  |  |
+|  |  |  messages/variadic_order.sc:12:53
+|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |        ┆                                                     ^ ...this argument, which is written after it.
+|  |  |     13 │     after_errors { ^5 }
+|  |  |     14 │ }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (12:28)
 |  |  |  |  SCMessage (12:28): put
 |  |  |  |  |  SCRead (12:28): instance instance_var, declared (2:9): instance_var

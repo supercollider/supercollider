@@ -1,61 +1,61 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Unexpected Token.
-file:
-    1 │ WhitespaceChars {
-    2 │     char_space { ^$  }
-    3 │     char_tab { ^$	 }
-      ┆                 ^ Expected:  but received LEXER_ERROR
-    4 │     char_newline { ^$
-    5 │  }
-    6 │     char_carriage_return { ^$
-
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Unexpected Token.
-file:
-    2 │     char_space { ^$  }
-    3 │     char_tab { ^$	 }
-    4 │     char_newline { ^$
-      ┆                     ^ Expected:  but received LEXER_ERROR
-    5 │  }
-    6 │     char_carriage_return { ^$
-    7 │  }
-
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Unexpected Token.
-file:
-    4 │     char_newline { ^$
-    5 │  }
-    6 │     char_carriage_return { ^$
-      ┆                             ^ Expected:  but received LEXER_ERROR
-    7 │  }
-    8 │     char_carriage_return_newline { ^$
-    9 │  }
-
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Unexpected Token.
-file:
-    6 │     char_carriage_return { ^$
-    7 │  }
-    8 │     char_carriage_return_newline { ^$
-      ┆                                     ^ Expected:  but received LEXER_ERROR
-    9 │  }
-   10 │ }
-
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
 
 
 SCClass (1:1): WhitespaceChars
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  literals/whitespace_chars.sc:3:17
+|      1 │ WhitespaceChars {
+|      2 │     char_space { ^$  }
+|      3 │     char_tab { ^$	 }
+|        ┆                 ^ Expected:  but received LEXER_ERROR
+|      4 │     char_newline { ^$
+|      5 │  }
+|      6 │     char_carriage_return { ^$
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  literals/whitespace_chars.sc:4:21
+|      2 │     char_space { ^$  }
+|      3 │     char_tab { ^$	 }
+|      4 │     char_newline { ^$
+|        ┆                     ^ Expected:  but received LEXER_ERROR
+|      5 │  }
+|      6 │     char_carriage_return { ^$
+|      7 │  }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  literals/whitespace_chars.sc:6:29
+|      4 │     char_newline { ^$
+|      5 │  }
+|      6 │     char_carriage_return { ^$
+|        ┆                             ^ Expected:  but received LEXER_ERROR
+|      7 │  }
+|      8 │     char_carriage_return_newline { ^$
+|      9 │  }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  literals/whitespace_chars.sc:8:37
+|      6 │     char_carriage_return { ^$
+|      7 │  }
+|      8 │     char_carriage_return_newline { ^$
+|        ┆                                     ^ Expected:  but received LEXER_ERROR
+|      9 │  }
+|     10 │ }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (1:1)
 |  SCMethodList (1:1)
 |  |  SCMethod (2:5): char_space { ^$  } -> $ 

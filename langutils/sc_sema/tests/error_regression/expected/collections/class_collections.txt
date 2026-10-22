@@ -1,18 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Warning: Event key without a value
-file:
-    7 │     array_nested { ^Array[[1], Array[2]] }
-    8 │     event_constant { ^Event[a: 1, b: 2] }
-    9 │     event_odd { ^Event[a: 1, \b] }
-      ┆                              ^^ this key has no value.
-   10 │     event_not_constant { ^Event[a: 1.foo] }
-   11 │     set_constant_elements { ^Set[1, 2] }
-   12 │     set_empty { ^Set[] }
-
-The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -58,6 +44,20 @@ SCClass (3:1): Collections
 |  |  |  |  |  |  SCLiteral (8:35) = \b
 |  |  |  |  |  |  SCLiteral (8:38) = 2
 |  |  SCMethod (9:5): event_odd { ^Event[a: 1, \b] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Event key without a value
+|  |  |  collections/class_collections.sc:9:30
+|  |  |      7 │     array_nested { ^Array[[1], Array[2]] }
+|  |  |      8 │     event_constant { ^Event[a: 1, b: 2] }
+|  |  |      9 │     event_odd { ^Event[a: 1, \b] }
+|  |  |        ┆                              ^^ this key has no value.
+|  |  |     10 │     event_not_constant { ^Event[a: 1.foo] }
+|  |  |     11 │     set_constant_elements { ^Set[1, 2] }
+|  |  |     12 │     set_empty { ^Set[] }
+|  |  |
+|  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:17)
 |  |  |  |  SCExplicitReturn (9:18)
 |  |  |  |  |  SCCollection (9:18): Event

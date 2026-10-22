@@ -1,25 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Duplicate extention.
-file:
-   24 │ 
-   25 │ +Foo {
-   26 │     bar {} 
-      ┆     ^^^ Overrideen here...
-   27 │ }
-
-file:
-   18 │ 
-   19 │ +Foo {
-   20 │     bar {} 
-      ┆     ^^^ ... and also overrideen here.
-   21 │ }
-   22 │ 
-   23 │ Foo { }
-
-The compile cannot determine which should implementation should be used, please delete one.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -71,5 +50,26 @@ SCClass (23:1): Foo
 |  SCMemberList (23:1)
 |  SCMethodList (23:1)
 |  |  SCMethod (20:5): bar {}
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Duplicate extention.
+|  |  |  classes/duplicate_extension.sc:26:5
+|  |  |     24 │ 
+|  |  |     25 │ +Foo {
+|  |  |     26 │     bar {} 
+|  |  |        ┆     ^^^ Overrideen here...
+|  |  |     27 │ }
+|  |  |
+|  |  |  classes/duplicate_extension.sc:20:5
+|  |  |     18 │ 
+|  |  |     19 │ +Foo {
+|  |  |     20 │     bar {} 
+|  |  |        ┆     ^^^ ... and also overrideen here.
+|  |  |     21 │ }
+|  |  |     22 │ 
+|  |  |     23 │ Foo { }
+|  |  |
+|  |  |  The compile cannot determine which should implementation should be used, please delete one.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (20:10)
 Successfully compiled 15 classes.

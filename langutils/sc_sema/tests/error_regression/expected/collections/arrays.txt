@@ -1,17 +1,4 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-    7 │     nested_not_constant { ^[1, [2.foo]] }
-    8 │     immutable { ^#[1, name, \symbol] }
-    9 │     immutable_not_literal { ^#[1, 2.foo] }
-      ┆                                   ^^^^^ this can't be evaluated when compiling.
-   10 │     immutable_nested { ^#[[a, 1], b] }
-   11 │ }
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
@@ -71,6 +58,19 @@ SCClass (1:1): Arrays
 |  |  |  |  |  |  SCLiteral (8:23) = \name
 |  |  |  |  |  |  SCLiteral (8:29) = \symbol
 |  |  SCMethod (9:5): poisoned: immutable_not_literal { ^#[1, 2.foo] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Not a constant
+|  |  |  collections/arrays.sc:9:35
+|  |  |      7 │     nested_not_constant { ^[1, [2.foo]] }
+|  |  |      8 │     immutable { ^#[1, name, \symbol] }
+|  |  |      9 │     immutable_not_literal { ^#[1, 2.foo] }
+|  |  |        ┆                                   ^^^^^ this can't be evaluated when compiling.
+|  |  |     10 │     immutable_nested { ^#[[a, 1], b] }
+|  |  |     11 │ }
+|  |  |
+|  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:29)
 |  |  |  |  SCExplicitReturn (9:30)
 |  |  |  |  |  SCCollection (9:30): Array

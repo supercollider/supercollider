@@ -7,7 +7,8 @@
 namespace sc::diag {
 
 std::string diagnosticToString(Severity type, const char* generalDescription,
-                               const std::vector<Diagnostic::Location>& locations, const std::string& extra) {
+                               const std::vector<Diagnostic::Location>& locations, const std::string& extra,
+                               const std::filesystem::path* relative_to = nullptr) {
     std::stringstream ss;
 
     ss << "\n──────────────────────────────────────────────────────────────────────────────────\n";
@@ -37,11 +38,16 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
         const auto& description = loc.msg;
 
         const auto starting_line = source_line + range.begin.line_number;
-        const auto start_column = source_column + range.end.column;
+        // Where the range starts, counting from zero. The text's start column only applies to its first line.
+        const auto start_column = (range.begin.line_number == 0 ? source_column : 0) + range.begin.column;
 
-        if (filepath) {
+        if (filepath && relative_to) {
+            const auto relative =
+                std::filesystem::absolute(*filepath).lexically_relative(std::filesystem::absolute(*relative_to));
+            ss << relative.generic_string() << ':' << starting_line + 1 << ':' << start_column + 1 << '\n';
+        } else if (filepath) {
             const auto abs = std::filesystem::absolute(*filepath);
-            ss << "file://" << abs.string() << ':' << starting_line + 1 << ':' << start_column << '\n';
+            ss << "file://" << abs.string() << ':' << starting_line + 1 << ':' << start_column + 1 << '\n';
         } else
             ss << "unknown file:" << starting_line + 1 << ':' << start_column + 1 << '\n';
 
@@ -148,6 +154,10 @@ bool Diagnostic::fatal() const { return m_severity == Severity::Error; }
 [[nodiscard]] const char* Diagnostic::name() const { return m_name; }
 
 std::string Diagnostic::to_string() const { return diagnosticToString(severity(), name(), locations(), extra_info); }
+
+std::string Diagnostic::to_string(const std::filesystem::path& relative_to) const {
+    return diagnosticToString(severity(), name(), locations(), extra_info, &relative_to);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

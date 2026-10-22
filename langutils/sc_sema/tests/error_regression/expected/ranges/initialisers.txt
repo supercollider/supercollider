@@ -1,63 +1,63 @@
 
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-    7 │     var nested = [(1..2), (a: (3..4))];
-    8 │     var immutable = #[(1..2)];
-    9 │     var float_range = (1.0..3);
-      ┆                       ^^^^^^^^ this can't be evaluated when compiling.
-   10 │     var unbounded = (1..);
-   11 │     var not_constant = (1..2.foo);
-   12 │     var too_large = (1..2000);
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Range has no end
-file:
-    8 │     var immutable = #[(1..2)];
-    9 │     var float_range = (1.0..3);
-   10 │     var unbounded = (1..);
-      ┆                     ^^^^^ this would create an infinite array.
-   11 │     var not_constant = (1..2.foo);
-   12 │     var too_large = (1..2000);
-   13 │ }
-
-A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-    9 │     var float_range = (1.0..3);
-   10 │     var unbounded = (1..);
-   11 │     var not_constant = (1..2.foo);
-      ┆                            ^^^^^ this can't be evaluated when compiling.
-   12 │     var too_large = (1..2000);
-   13 │ }
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Not a constant
-file:
-   10 │     var unbounded = (1..);
-   11 │     var not_constant = (1..2.foo);
-   12 │     var too_large = (1..2000);
-      ┆                     ^^^^^^^^^ this can't be evaluated when compiling.
-   13 │ }
-
-This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
-──────────────────────────────────────────────────────────────────────────────────
-
 
 
 IR GRAPH DUMP 
 
 
 SCClass (1:1): RangeInitialisers
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  ranges/initialisers.sc:9:23
+|      7 │     var nested = [(1..2), (a: (3..4))];
+|      8 │     var immutable = #[(1..2)];
+|      9 │     var float_range = (1.0..3);
+|        ┆                       ^^^^^^^^ this can't be evaluated when compiling.
+|     10 │     var unbounded = (1..);
+|     11 │     var not_constant = (1..2.foo);
+|     12 │     var too_large = (1..2000);
+|
+|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Range has no end
+|  ranges/initialisers.sc:10:21
+|      8 │     var immutable = #[(1..2)];
+|      9 │     var float_range = (1.0..3);
+|     10 │     var unbounded = (1..);
+|        ┆                     ^^^^^ this would create an infinite array.
+|     11 │     var not_constant = (1..2.foo);
+|     12 │     var too_large = (1..2000);
+|     13 │ }
+|
+|  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  ranges/initialisers.sc:11:28
+|      9 │     var float_range = (1.0..3);
+|     10 │     var unbounded = (1..);
+|     11 │     var not_constant = (1..2.foo);
+|        ┆                            ^^^^^ this can't be evaluated when compiling.
+|     12 │     var too_large = (1..2000);
+|     13 │ }
+|
+|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  ranges/initialisers.sc:12:21
+|     10 │     var unbounded = (1..);
+|     11 │     var not_constant = (1..2.foo);
+|     12 │     var too_large = (1..2000);
+|        ┆                     ^^^^^^^^^ this can't be evaluated when compiling.
+|     13 │ }
+|
+|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (1:1)
 |  |  SCMember (5:9): instance_range = [0, 1, 2]
 |  |  SCMember (6:9): uses_const = [1, 2, 3]
