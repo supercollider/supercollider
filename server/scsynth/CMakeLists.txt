@@ -66,6 +66,7 @@ message(STATUS "Audio API (scsynth): ${AUDIOAPI}")
 set(scsynth_sources
 	SC_BufGen.cpp
 
+	SC_ClientManager.cpp
 	SC_ComPort.cpp
 	SC_CoreAudio.cpp
 	SC_Graph.cpp
