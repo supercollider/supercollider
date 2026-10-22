@@ -1,0 +1,40 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): NotIndexed
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+SCClass (3:1): SlotArray[slot]
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+SCClass (4:1): DoubleSlots[double]
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+SCClass (5:1): FloatSlots[float]
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+SCClass (6:1): Int32Slots[int32]
+|  SCMemberList (6:1)
+|  SCMethodList (6:1)
+SCClass (7:1): Int16Slots[int16]
+|  SCMemberList (7:1)
+|  SCMethodList (7:1)
+SCClass (8:1): Int8Slots[int8]
+|  SCMemberList (8:1)
+|  SCMethodList (8:1)
+SCClass (9:1): CharSlots[char]
+|  SCMemberList (9:1)
+|  SCMethodList (9:1)
+SCClass (10:1): SymbolSlots[symbol]
+|  SCMemberList (10:1)
+|  SCMethodList (10:1)
+SCClass (14:1): SubOfFloat
+|  SCMemberList (14:1)
+|  SCMethodList (14:1)
+SCClass (15:1): RepeatsFloat[float]
+|  SCMemberList (15:1)
+|  SCMethodList (15:1)
+Successfully compiled 25 classes.

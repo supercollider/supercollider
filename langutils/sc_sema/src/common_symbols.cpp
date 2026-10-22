@@ -25,6 +25,11 @@ CommonSymbols::CommonSymbols(SymbolTable& table):
     this_function_def(table.get_identifier("thisFunctionDef")),
     this_function(table.get_identifier("thisFunction")),
     slot(table.get_identifier("slot")),
+    double_(table.get_identifier("double")),
     float_(table.get_identifier("float")),
-    int_(table.get_identifier("int")) {}
+    int32(table.get_identifier("int32")),
+    int16(table.get_identifier("int16")),
+    int8(table.get_identifier("int8")),
+    char_(table.get_identifier("char")),
+    symbol(table.get_identifier("symbol")) {}
 }

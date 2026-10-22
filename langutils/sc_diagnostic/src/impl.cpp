@@ -313,7 +313,8 @@ Diagnostic Diagnostic::unexpected_slot_def(TextInfoPtr first_t, sc::lex::SourceC
                    "This is an internal implementation detail, remove this, or consult the interpreter source code." },
              },
              "Slot defs are an internal implementation detail of intrinsic classes, you should not use it unless you "
-             "are writing a core part of the interpreter." };
+             "are writing a core part of the interpreter. They are slot, double, float, int32, int16, int8, char and "
+             "symbol." };
 }
 
 

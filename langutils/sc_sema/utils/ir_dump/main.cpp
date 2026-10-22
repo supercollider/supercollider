@@ -516,7 +516,39 @@ int main(int argc, char* argv[]) {
                 std::visit(
                     sc::util::overload {
                         [](const auto&) {},
-                        [&](const sc::ir::SCClass& c) { std::cout << ": " << symbol_table(c.name); },
+                        [&](const sc::ir::SCClass& c) {
+                            std::cout << ": " << symbol_table(c.name);
+                            // The slot type, e.g., `String[char]`.
+                            using Layout = sc::ir::SCClass::MemoryLayout;
+                            switch (c.memory_layout) {
+                            case Layout::NotIndexed:
+                                break;
+                            case Layout::Slot:
+                                std::cout << "[slot]";
+                                break;
+                            case Layout::Double:
+                                std::cout << "[double]";
+                                break;
+                            case Layout::Float:
+                                std::cout << "[float]";
+                                break;
+                            case Layout::Int32:
+                                std::cout << "[int32]";
+                                break;
+                            case Layout::Int16:
+                                std::cout << "[int16]";
+                                break;
+                            case Layout::Int8:
+                                std::cout << "[int8]";
+                                break;
+                            case Layout::Char:
+                                std::cout << "[char]";
+                                break;
+                            case Layout::Symbol:
+                                std::cout << "[symbol]";
+                                break;
+                            }
+                        },
                         [&](const sc::ir::SCMethod& m) {
                             std::cout << ": ";
                             if (m.poisoned)

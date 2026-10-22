@@ -33,10 +33,13 @@ struct IRCompiler {
                           size_t num_threads = std::thread::hardware_concurrency() //
     );
 
+    // Poisoned classes aren't compiled, so have no graph, and are skipped. Some are still in the hierarchy, e.g., one
+    // declared with an invalid slot type, `Foo[bad] {}`.
     template<typename F>
     void depth_first_do(F&& f) const {
         for(auto n : m_topological_ordering) {
-            std::invoke(f, *m_classes.at(n));
+            if (const auto fnd = m_classes.find(n); fnd != m_classes.end())
+                std::invoke(f, *fnd->second);
         }
     }
 

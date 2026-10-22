@@ -389,6 +389,23 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         pool.join();
     }
 
+    // A class inheriting from a poisoned class is poisoned too, e.g., from one with an invalid slot type,
+    // `Foo[bad] {}`, as is the meta class of a poisoned class. Nothing more is reported, the cause has been already.
+    // The topological ordering has parents before their children, so this reaches every descendant.
+    for (auto it = ctx.class_declarations.unsafe_begin(); it != ctx.class_declarations.unsafe_end(); ++it)
+        if (it->second.poisoned())
+            if (const auto meta = it->second.meta_class())
+                if (auto* meta_decl = ctx.class_declarations.get_unsafe(*meta))
+                    meta_decl->poison();
+    for (const auto c : m_topological_ordering) {
+        const auto* decl = ctx.class_declarations.get_unsafe(c);
+        if (!decl || !decl->poisoned())
+            continue;
+        for (const auto child : ctx.inheritance_edges.get_unsafe(c))
+            if (auto* child_decl = ctx.class_declarations.get_unsafe(child))
+                child_decl->poison();
+    }
+
     // The hierarchy is valid, so method lookups can be done.
     ctx.known_methods.check(ctx.class_declarations, ctx.common_classes, ctx.common_symbols);
 
@@ -464,8 +481,12 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         for (auto class_it = ctx.class_declarations.unsafe_begin(); class_it != ctx.class_declarations.unsafe_end();
              ++class_it) {
             const auto process = [&, class_it]() {
-                std::shared_ptr<IRGraph> class_ir = std::make_shared<IRGraph>();
                 auto& [name, decl] = *class_it;
+                // A poisoned class, e.g., one whose superclass isn't defined, has been reported already. Compiling it
+                // would only report what follows from that, e.g., every member being undefined.
+                if (decl.poisoned())
+                    return;
+                std::shared_ptr<IRGraph> class_ir = std::make_shared<IRGraph>();
 
                 const auto member_list_i = class_ir->create(
                     SCMemberList {}, ast2ir::location_of(*class_ir, *decl.ast_graph(), decl.name_index()));
@@ -482,12 +503,24 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 SCClass class_node { name };
                 if (auto slot = decl.slot_def()) {
                     const auto [n, i] = *slot;
-                    if (n == ctx.common_symbols.slot) {
-                        // already a slot
-                    } else if (n == ctx.common_symbols.float_) {
-                        class_node.memory_layout = SCClass::MemoryLayout::Float;
-                    } else if (n == ctx.common_symbols.int_) {
-                        class_node.memory_layout = SCClass::MemoryLayout::Int;
+                    const auto& s = ctx.common_symbols;
+                    using Layout = SCClass::MemoryLayout;
+                    if (n == s.slot) {
+                        class_node.memory_layout = Layout::Slot;
+                    } else if (n == s.double_) {
+                        class_node.memory_layout = Layout::Double;
+                    } else if (n == s.float_) {
+                        class_node.memory_layout = Layout::Float;
+                    } else if (n == s.int32) {
+                        class_node.memory_layout = Layout::Int32;
+                    } else if (n == s.int16) {
+                        class_node.memory_layout = Layout::Int16;
+                    } else if (n == s.int8) {
+                        class_node.memory_layout = Layout::Int8;
+                    } else if (n == s.char_) {
+                        class_node.memory_layout = Layout::Char;
+                    } else if (n == s.symbol) {
+                        class_node.memory_layout = Layout::Symbol;
                     } else {
                         assert(false); // should be guarded in the declaration phase.
                         decl.poison();
@@ -518,11 +551,15 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
              ++class_it) {
             const auto process = [&, class_it]() {
                 auto& [name, decl] = *class_it;
-                ClassBuild& build = *class_builds.at(name);
+                // Poisoned classes weren't built, see 4a.
+                auto& maybe_build = class_builds.at(name);
+                if (!maybe_build)
+                    return;
+                ClassBuild& build = *maybe_build;
 
                 const ast2ir::Scope* meta_members = nullptr;
                 if (const auto meta = decl.meta_class()) {
-                    if (const auto fnd = class_builds.find(*meta); fnd != class_builds.end())
+                    if (const auto fnd = class_builds.find(*meta); fnd != class_builds.end() && fnd->second)
                         meta_members = &fnd->second->members;
                 }
 

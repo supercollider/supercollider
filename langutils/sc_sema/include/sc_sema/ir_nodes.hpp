@@ -291,9 +291,11 @@ struct SCMemberList : priv::List<SCMemberList_I, SCMember_I> {
 
 struct SCClass : priv::Node<SCClass_I(SCMemberList_I members, SCMethodList_I methods)> {
     static constexpr auto type_name { "SCClass" };
-    enum struct MemoryLayout { Float, Slot, Int };
+    // How an instance's indexed slots, its elements, are stored, set by the class's slot type, e.g., `String[char]`.
+    // A class without one, NotIndexed, only has its instance variables.
+    enum struct MemoryLayout { NotIndexed, Slot, Double, Float, Int32, Int16, Int8, Char, Symbol };
     SymSCClassName name;
-    MemoryLayout memory_layout { MemoryLayout::Slot };
+    MemoryLayout memory_layout { MemoryLayout::NotIndexed };
     std::optional<SymSCClassName> meta_class {};
     SCClass(SymSCClassName n): name(n) {}
 };

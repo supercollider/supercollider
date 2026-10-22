@@ -48,8 +48,17 @@ struct CommonSymbols {
 
     // The slot types a class can be declared with, e.g., `Foo[float] {}`.
     SymSCIdentifier slot;
+    SymSCIdentifier double_;
     SymSCIdentifier float_;
-    SymSCIdentifier int_;
+    SymSCIdentifier int32;
+    SymSCIdentifier int16;
+    SymSCIdentifier int8;
+    SymSCIdentifier char_;
+    SymSCIdentifier symbol;
+    [[nodiscard]] bool is_slot_type(SymSCIdentifier name) const {
+        return name == slot || name == double_ || name == float_ || name == int32 || name == int16 || name == int8
+            || name == char_ || name == symbol;
+    }
 };
 
 }
