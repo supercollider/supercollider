@@ -146,6 +146,72 @@ ConstEval::Result ConstEval::operator()(ast::AtMessageIndex i) {
     return Success { const_i, TypeInfo { receiver_class, TypeConfidence::Absolute } };
 }
 
+ConstEval::Result ConstEval::operator()(ast::BinaryMessageIndex i) {
+    const auto [selector_i, lhs, rhs] = ast_graph->children(i);
+    const auto not_constant = [&]() -> Result {
+        return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    };
+    // An adverb changes what the operator does, e.g., `a +.x b`.
+    if (ast_graph->as_a<ast::SelectorWAdverbIndex>(selector_i))
+        return not_constant();
+
+    auto lhs_r = eval(ast::AnyExprIndex { lhs });
+    const auto lhs_s = lhs_r.success();
+    if (!lhs_s)
+        return lhs_r;
+    auto rhs_r = eval(ast::AnyExprIndex { rhs });
+    const auto rhs_s = rhs_r.success();
+    if (!rhs_s)
+        return rhs_r;
+
+    const auto selector = cxt.symbol_table.get_selector(std::string { get_string_view(*ast_graph, selector_i) });
+    auto folded = fold_arithmetic(cxt, selector, cxt.constant_table(lhs_s->first), cxt.constant_table(rhs_s->first));
+    if (!folded)
+        return not_constant();
+    const auto const_i = cxt.constant_table.register_constexpr(std::move(folded->first));
+    return Success { const_i, folded->second };
+}
+
+std::optional<std::pair<ConstExpression, TypeInfo>> ConstEval::fold_arithmetic(Context& cxt, SymSCSelector selector,
+                                                                               const ConstExpression& lhs,
+                                                                               const ConstExpression& rhs) {
+    const auto& symbols = cxt.common_symbols;
+    if (selector != symbols.plus && selector != symbols.minus && selector != symbols.multiply
+        && selector != symbols.divide)
+        return std::nullopt;
+
+    const auto* lhs_int = lhs.get_if<std::int32_t>();
+    const auto* rhs_int = rhs.get_if<std::int32_t>();
+    const auto* lhs_float = lhs.get_if<double>();
+    const auto* rhs_float = rhs.get_if<double>();
+    if ((!lhs_int && !lhs_float) || (!rhs_int && !rhs_float))
+        return std::nullopt;
+    if (!cxt.known_methods.is_known(lhs_int ? cxt.common_classes.int_ : cxt.common_classes.float_, selector))
+        return std::nullopt;
+
+    const TypeInfo integer { cxt.common_classes.int_, TypeConfidence::Absolute };
+    const TypeInfo float_ { cxt.common_classes.float_, TypeConfidence::Absolute };
+    if (lhs_int && rhs_int && selector != symbols.divide) {
+        // Unsigned, so overflow wraps rather than being undefined.
+        const auto l = static_cast<std::uint32_t>(*lhs_int);
+        const auto r = static_cast<std::uint32_t>(*rhs_int);
+        const auto result = selector == symbols.plus ? l + r : selector == symbols.minus ? l - r : l * r;
+        return std::pair { ConstExpression { static_cast<std::int32_t>(result) }, integer };
+    }
+
+    const double l = lhs_int ? *lhs_int : *lhs_float;
+    const double r = rhs_int ? *rhs_int : *rhs_float;
+    if (selector == symbols.plus)
+        return std::pair { ConstExpression { l + r }, float_ };
+    if (selector == symbols.minus)
+        return std::pair { ConstExpression { l - r }, float_ };
+    if (selector == symbols.multiply)
+        return std::pair { ConstExpression { l * r }, float_ };
+    if (r == 0)
+        return std::nullopt;
+    return std::pair { ConstExpression { l / r }, float_ };
+}
+
 // This is a slice.
 std::optional<ConstExpression> ConstEval::fold_copy_series(const ConstExpression& receiver,
                                                            std::optional<std::int32_t> first,

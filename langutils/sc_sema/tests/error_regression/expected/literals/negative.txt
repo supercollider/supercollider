@@ -48,10 +48,10 @@ SCClass (1:1): NegativeLiterals
 |  |  |  |  |  |  SCLiteral (12:19) = -2
 |  |  |  |  |  |  SCMissing (12:17)
 |  |  |  |  |  |  SCLiteral (12:22) = 2
-|  |  SCMethod (13:5): binary_minus { ^1 - 2 }
+|  |  SCMethod (13:5): binary_minus { ^1 - 2 } -> -1
 |  |  |  SCBody (13:20)
 |  |  |  |  SCExplicitReturn (13:21)
-|  |  |  |  |  SCMessage (13:21): -
+|  |  |  |  |  SCMessage (13:21): - = -1
 |  |  |  |  |  |  SCLiteral (13:21) = 1
 |  |  |  |  |  |  SCPositionalArgs (13:21)
 |  |  |  |  |  |  |  SCLiteral (13:25) = 2

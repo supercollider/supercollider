@@ -47,7 +47,7 @@ SCClass (1:1): References
 |  |  |  |  |  SCMessage (12:19): new
 |  |  |  |  |  |  SCLiteral (12:19) = Ref
 |  |  |  |  |  |  SCPositionalArgs (12:19)
-|  |  |  |  |  |  |  SCMessage (12:21): +
+|  |  |  |  |  |  |  SCMessage (12:21): + = 3
 |  |  |  |  |  |  |  |  SCLiteral (12:21) = 1
 |  |  |  |  |  |  |  |  SCPositionalArgs (12:21)
 |  |  |  |  |  |  |  |  |  SCLiteral (12:25) = 2

@@ -72,3 +72,21 @@ OverriddenMethods {
 + Symbol {
     perform { ^nil }
 }
+
+ArithmeticOverridden {
+    // expect: no result
+    integer_add { ^1 + 2 }
+    // expect: no result
+    float_divide { ^1.0 / 2 }
+    // Integer's `-` isn't replaced.
+    // expect: -> -1
+    integer_subtract { ^1 - 2 }
+}
+
++ Integer {
+    + { ^nil }
+}
+
++ Float {
+    / { ^nil }
+}

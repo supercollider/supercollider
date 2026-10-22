@@ -64,10 +64,10 @@ SCClass (1:1): Messages
 |  |  |  SCBody (7:26)
 |  |  |  |  SCExplicitReturn (7:27)
 |  |  |  |  |  SCExprList (7:27)
-|  |  SCMethod (8:5): binary { ^1 + 2 }
+|  |  SCMethod (8:5): binary { ^1 + 2 } -> 3
 |  |  |  SCBody (8:14)
 |  |  |  |  SCExplicitReturn (8:15)
-|  |  |  |  |  SCMessage (8:15): +
+|  |  |  |  |  SCMessage (8:15): + = 3
 |  |  |  |  |  |  SCLiteral (8:15) = 1
 |  |  |  |  |  |  SCPositionalArgs (8:15)
 |  |  |  |  |  |  |  SCLiteral (8:19) = 2

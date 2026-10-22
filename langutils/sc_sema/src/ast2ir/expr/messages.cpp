@@ -270,8 +270,19 @@ Return<SCAnyExpr_I> Expr::operator()(ast::BinaryMessageIndex i) {
     const auto lhs_r = msg_ctx.expr(ast::AnyExprIndex { lhs });
     const auto sel = selector(msg_ctx, selector_i);
     auto args = make_arguments(msg_ctx, { *i }, sel);
-    append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { rhs }));
-    return create_message(msg_ctx, { *i }, lhs_r.ir_node, sel, args);
+    const auto rhs_r = msg_ctx.expr(ast::AnyExprIndex { rhs });
+    append_positional(msg_ctx, args, rhs_r);
+    const auto message = create_message(msg_ctx, { *i }, lhs_r.ir_node, sel, args);
+    // Arithmetic on constant numbers is folded, unless an adverb changes what it does.
+    if (sel.adverb || !lhs_r.const_index || !rhs_r.const_index)
+        return message;
+    auto folded = ConstEval::fold_arithmetic(ctx, *sel.name, ctx.constant_table(*lhs_r.const_index),
+                                             ctx.constant_table(*rhs_r.const_index));
+    if (!folded)
+        return message;
+    const auto const_i = ctx.constant_table.register_constexpr(std::move(folded->first));
+    ir.register_node_as_consteval(message.ir_node, const_i);
+    return { message.ir_node, const_i, folded->second };
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::ValueMessageIndex i) {

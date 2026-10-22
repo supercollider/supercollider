@@ -41,6 +41,14 @@ void KnownMethods::check(ClassDeclarations& declarations, const CommonClasses& c
         { classes.array, symbols.at, symbols.arrayed_collection }, // pack assignment, `var #a, b = [1, 2]`
         { classes.array, symbols.add, symbols.arrayed_collection }, // `Array[1, 2]`
         { classes.event, symbols.add, symbols.dictionary }, // `Event[a: 1]`
+        { classes.int_, symbols.plus, classes.int_ }, // arithmetic, `1 + 2`
+        { classes.int_, symbols.minus, classes.int_ },
+        { classes.int_, symbols.multiply, classes.int_ },
+        { classes.int_, symbols.divide, symbols.simple_number },
+        { classes.float_, symbols.plus, classes.float_ },
+        { classes.float_, symbols.minus, classes.float_ },
+        { classes.float_, symbols.multiply, classes.float_ },
+        { classes.float_, symbols.divide, symbols.simple_number },
     };
 
     for (const auto& k : known_methods)

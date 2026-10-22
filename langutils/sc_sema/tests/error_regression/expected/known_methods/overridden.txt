@@ -50,6 +50,10 @@ SCClass (22:1): Nil
 SCClass (24:1): Float
 |  SCMemberList (24:1)
 |  SCMethodList (24:1)
+|  |  SCMethod (91:5): / { ^nil } -> nil
+|  |  |  SCBody (91:9)
+|  |  |  |  SCExplicitReturn (91:10)
+|  |  |  |  |  SCLiteral (91:10) = nil
 SCClass (26:1): SimpleNumber
 |  SCMemberList (26:1)
 |  SCMethodList (26:1)
@@ -64,6 +68,10 @@ SCClass (30:1): Integer
 |  |  |  SCBody (57:14)
 |  |  |  |  SCExplicitReturn (57:15)
 |  |  |  |  |  SCLiteral (57:15) = nil
+|  |  SCMethod (87:5): + { ^nil } -> nil
+|  |  |  SCBody (87:9)
+|  |  |  |  SCExplicitReturn (87:10)
+|  |  |  |  |  SCLiteral (87:10) = nil
 SCClass (32:1): Char
 |  SCMemberList (32:1)
 |  SCMethodList (32:1)
@@ -144,4 +152,28 @@ SCClass (46:1): OverriddenMethods
 |  |  |  |  |  |  SCLiteral (52:24) = 1
 |  |  |  |  |  |  SCPositionalArgs (52:24)
 |  |  |  |  |  |  |  SCLiteral (52:34) = \foo
-Successfully compiled 18 classes.
+SCClass (76:1): ArithmeticOverridden
+|  SCMemberList (76:1)
+|  SCMethodList (76:1)
+|  |  SCMethod (78:5): integer_add { ^1 + 2 }
+|  |  |  SCBody (78:19)
+|  |  |  |  SCExplicitReturn (78:20)
+|  |  |  |  |  SCMessage (78:20): +
+|  |  |  |  |  |  SCLiteral (78:20) = 1
+|  |  |  |  |  |  SCPositionalArgs (78:20)
+|  |  |  |  |  |  |  SCLiteral (78:24) = 2
+|  |  SCMethod (80:5): float_divide { ^1.0 / 2 }
+|  |  |  SCBody (80:20)
+|  |  |  |  SCExplicitReturn (80:21)
+|  |  |  |  |  SCMessage (80:21): /
+|  |  |  |  |  |  SCLiteral (80:21) = 1.0
+|  |  |  |  |  |  SCPositionalArgs (80:21)
+|  |  |  |  |  |  |  SCLiteral (80:27) = 2
+|  |  SCMethod (83:5): integer_subtract { ^1 - 2 } -> -1
+|  |  |  SCBody (83:24)
+|  |  |  |  SCExplicitReturn (83:25)
+|  |  |  |  |  SCMessage (83:25): - = -1
+|  |  |  |  |  |  SCLiteral (83:25) = 1
+|  |  |  |  |  |  SCPositionalArgs (83:25)
+|  |  |  |  |  |  |  SCLiteral (83:29) = 2
+Successfully compiled 19 classes.

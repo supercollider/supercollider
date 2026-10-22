@@ -28,26 +28,26 @@ SCClass (1:1): Variables
 |  |  |  |  |  SCLiteral (12:41) = 3
 |  |  |  |  SCExplicitReturn (12:45)
 |  |  |  |  |  SCRead (12:45): local b = nil, declared (12:34): b
-|  |  SCMethod (15:5): uses_earlier { var a = 1, b = a + 1; ^b }
+|  |  SCMethod (15:5): uses_earlier { var a = 1, b = a + 1; ^b } -> 2
 |  |  |  SCBody (15:20)
 |  |  |  |  SCVariableDeclare (15:24): a
 |  |  |  |  |  SCLiteral (15:28) = 1
 |  |  |  |  SCVariableDeclare (15:31): b
-|  |  |  |  |  SCMessage (15:35): +
+|  |  |  |  |  SCMessage (15:35): + = 2
 |  |  |  |  |  |  SCRead (15:35): local a = 1, declared (15:24): a = 1
 |  |  |  |  |  |  SCPositionalArgs (15:35)
 |  |  |  |  |  |  |  SCLiteral (15:39) = 1
 |  |  |  |  SCExplicitReturn (15:43)
-|  |  |  |  |  SCRead (15:43): local b, declared (15:31): b = a + 1
-|  |  SCMethod (17:5): bracketed_value { var a(1 + 2); ^a }
+|  |  |  |  |  SCRead (15:43): local b = 2, declared (15:31): b = a + 1
+|  |  SCMethod (17:5): bracketed_value { var a(1 + 2); ^a } -> 3
 |  |  |  SCBody (17:23)
 |  |  |  |  SCVariableDeclare (17:27): a
-|  |  |  |  |  SCMessage (17:29): +
+|  |  |  |  |  SCMessage (17:29): + = 3
 |  |  |  |  |  |  SCLiteral (17:29) = 1
 |  |  |  |  |  |  SCPositionalArgs (17:29)
 |  |  |  |  |  |  |  SCLiteral (17:33) = 2
 |  |  |  |  SCExplicitReturn (17:38)
-|  |  |  |  |  SCRead (17:38): local a, declared (17:27): a(1 + 2)
+|  |  |  |  |  SCRead (17:38): local a = 3, declared (17:27): a(1 + 2)
 |  |  SCMethod (20:5): poisoned: refers_to_itself { var a = a; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────

@@ -86,12 +86,12 @@ SCClass (1:1): MutableLocals
 |  |  |  |  |  SCLiteral (8:22) = "abc"
 |  |  |  |  SCExplicitReturn (8:30)
 |  |  |  |  |  SCRead (8:30): local a, declared (8:18): a = "abc"
-|  |  SCMethod (9:5): integer_receiver { var a = 1; ^a + 1 }
+|  |  SCMethod (9:5): integer_receiver { var a = 1; ^a + 1 } -> 2
 |  |  |  SCBody (9:24)
 |  |  |  |  SCVariableDeclare (9:28): a
 |  |  |  |  |  SCLiteral (9:32) = 1
 |  |  |  |  SCExplicitReturn (9:36)
-|  |  |  |  |  SCMessage (9:36): +
+|  |  |  |  |  SCMessage (9:36): + = 2
 |  |  |  |  |  |  SCRead (9:36): local a = 1, declared (9:28): a = 1
 |  |  |  |  |  |  SCPositionalArgs (9:36)
 |  |  |  |  |  |  |  SCLiteral (9:40) = 1

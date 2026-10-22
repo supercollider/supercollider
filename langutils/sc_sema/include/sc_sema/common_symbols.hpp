@@ -25,6 +25,11 @@ struct CommonSymbols {
     SymSCSelector add;
     // `a.perform(\foo)` is `a.foo`.
     SymSCSelector perform;
+    // Arithmetic on constant numbers is folded, e.g., `1 + 2` is `3`.
+    SymSCSelector plus;
+    SymSCSelector minus;
+    SymSCSelector multiply;
+    SymSCSelector divide;
 
     // Classes whose methods the compiler assumes the implementation of, see KnownMethods.
     SymSCClassName simple_number;

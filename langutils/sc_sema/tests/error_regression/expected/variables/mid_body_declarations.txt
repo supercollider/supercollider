@@ -56,7 +56,7 @@ SCClass (3:1): MidBodyDeclarations
 |  |  |  |  |  SCLiteral (20:35) = 2
 |  |  |  |  SCExplicitReturn (20:39)
 |  |  |  |  |  SCRead (20:39): local b, declared (20:28): b
-|  |  SCMethod (24:5): pack { 1; var #x, y = [1, 2]; ^x + y }
+|  |  SCMethod (24:5): pack { 1; var #x, y = [1, 2]; ^x + y } -> 3
 |  |  |  SCBody (24:12)
 |  |  |  |  SCLiteral (24:12) = 1
 |  |  |  |  SCPackDeclare (24:19)
@@ -67,7 +67,7 @@ SCClass (3:1): MidBodyDeclarations
 |  |  |  |  |  |  SCPackTarget (24:20): local x at 0
 |  |  |  |  |  |  SCPackTarget (24:23): local y at 1
 |  |  |  |  SCExplicitReturn (24:36)
-|  |  |  |  |  SCMessage (24:36): +
+|  |  |  |  |  SCMessage (24:36): + = 3
 |  |  |  |  |  |  SCRead (24:36): local x = 1, declared (24:20): x
 |  |  |  |  |  |  SCPositionalArgs (24:36)
 |  |  |  |  |  |  |  SCRead (24:40): local y = 2, declared (24:23): y

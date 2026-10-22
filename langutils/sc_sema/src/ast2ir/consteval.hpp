@@ -72,6 +72,12 @@ struct ConstEval {
     fold_copy_series(const ConstExpression& receiver, std::optional<std::int32_t> first,
                      std::optional<std::int32_t> second, std::optional<std::int32_t> last, SymbolTable& symbols);
 
+    // `lhs selector rhs` for a constant Integer or Float, if selector is `+`, `-`, `*` or `/` and the receiver's method
+    // is known. Integers wrap like the 32 bit integers they are, and `/` always returns a Float. Division by zero isn't
+    // folded.
+    [[nodiscard]] static std::optional<std::pair<ConstExpression, TypeInfo>>
+    fold_arithmetic(Context& cxt, SymSCSelector selector, const ConstExpression& lhs, const ConstExpression& rhs);
+
     // Dispatches to the overloads below. The dispatch is only instantiated in consteval.cpp, so use this rather than
     // visiting yourself. Not an operator() overload, as that would make the conversions to the sets below ambiguous.
     Result eval(ast::AnyExprIndex);
@@ -107,6 +113,8 @@ struct ConstEval {
     Result operator()(ast::AnyMessageIndex);
     // Slices, `a[1..3]`, can be folded.
     Result operator()(ast::AtMessageIndex);
+    // Arithmetic, `1 + 2`, can be folded.
+    Result operator()(ast::BinaryMessageIndex);
     Result operator()(ast::RangeIndex);
     Result operator()(ast::NamedIdentifierIndex);
     Result operator()(ast::CurryIndex);

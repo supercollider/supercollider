@@ -8,10 +8,10 @@ SCClass (1:1): Poisoning
 |  SCMemberList (1:1)
 |  |  SCMember (2:9): instance_var
 |  SCMethodList (1:1)
-|  |  SCMethod (5:5): good { ^1 + 2 }
+|  |  SCMethod (5:5): good { ^1 + 2 } -> 3
 |  |  |  SCBody (5:12)
 |  |  |  |  SCExplicitReturn (5:13)
-|  |  |  |  |  SCMessage (5:13): +
+|  |  |  |  |  SCMessage (5:13): + = 3
 |  |  |  |  |  |  SCLiteral (5:13) = 1
 |  |  |  |  |  |  SCPositionalArgs (5:13)
 |  |  |  |  |  |  |  SCLiteral (5:17) = 2
@@ -140,10 +140,10 @@ SCClass (1:1): Meta_Poisoning
 |  SCMemberList (1:1)
 |  |  SCMember (3:14): class_var
 |  SCMethodList (1:1)
-|  |  SCMethod (14:5): *good { ^1 + 2 }
+|  |  SCMethod (14:5): *good { ^1 + 2 } -> 3
 |  |  |  SCBody (14:13)
 |  |  |  |  SCExplicitReturn (14:14)
-|  |  |  |  |  SCMessage (14:14): +
+|  |  |  |  |  SCMessage (14:14): + = 3
 |  |  |  |  |  |  SCLiteral (14:14) = 1
 |  |  |  |  |  |  SCPositionalArgs (14:14)
 |  |  |  |  |  |  |  SCLiteral (14:18) = 2
