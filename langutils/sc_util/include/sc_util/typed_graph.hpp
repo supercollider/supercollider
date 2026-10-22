@@ -485,7 +485,9 @@ private:
 
     template <typename Tup, size_t... IS>
     Tup build_node_children_tuple(UntypedNodeIndex parent, std::index_sequence<IS...>) const {
-        std::array<UntypedNodeIndex, sizeof...(IS)> child_indexes;
+        // Optional, as the untyped index might not be default constructible.
+        // This is cast to the UntypedNodeIndex next.
+        std::array<OptIndex, sizeof...(IS)> child_indexes;
 
         OptIndex rolling = m_node_edges[*parent].first_child;
 
@@ -495,7 +497,7 @@ private:
             rolling = m_node_edges[*rolling].next_sibling;
         }
 
-        return { std::tuple_element_t<IS, Tup>::from(child_indexes[IS])... };
+        return { std::tuple_element_t<IS, Tup>::from(UntypedNodeIndex { *child_indexes[IS] })... };
     };
 
     template <typename EnterNode, typename BeforeChildren, typename AfterChildren, typename ExitNode,

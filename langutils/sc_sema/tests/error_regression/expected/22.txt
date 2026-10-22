@@ -67,7 +67,7 @@ SCClass: IdentifierKeys: IdentifierKeys {'\n'    var instance_var;'\n'    classv
 |  |  |  |  |  SCCollection: Event: (undefined_var : 1)
 |  |  |  |  |  |  SCExprList: undefined_var
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: keyword_key { ^(instance_var: 1) }
+|  |  SCMethod: keyword_key { ^(instance_var: 1) } -> {"event": [{"key": {"symbol": "instance_var"}, "value": {"int": 1}}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^(instance_var: 1)

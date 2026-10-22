@@ -33,7 +33,7 @@ SCClass: ConstantLocals: ConstantLocals {'\n'    var instance_var = 1;'\n''\n'  
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^{ var a = 1; a }
 |  |  |  |  SCExplicitReturn: { var a = 1; a }
-|  |  |  |  |  SCFunction: { var a = 1; a }
+|  |  |  |  |  SCFunction: { var a = 1; a } -> {"int": 1}
 |  |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  |  SCBody: { var a = 1; a }
@@ -55,7 +55,7 @@ SCClass: ConstantLocals: ConstantLocals {'\n'    var instance_var = 1;'\n''\n'  
 |  |  |  |  |  |  SCRead: b
 |  |  |  |  SCExplicitReturn: a
 |  |  |  |  |  SCRead: a
-|  |  SCMethod: constant { var a = 1; ^a }
+|  |  SCMethod: constant { var a = 1; ^a } -> {"int": 1}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: var a = 1; ^a
@@ -63,7 +63,7 @@ SCClass: ConstantLocals: ConstantLocals {'\n'    var instance_var = 1;'\n''\n'  
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  SCExplicitReturn: a
 |  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: nil_by_default { var a; ^a }
+|  |  SCMethod: nil_by_default { var a; ^a } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: var a; ^a
@@ -71,7 +71,7 @@ SCClass: ConstantLocals: ConstantLocals {'\n'    var instance_var = 1;'\n''\n'  
 |  |  |  |  |  SCMissing: a
 |  |  |  |  SCExplicitReturn: a
 |  |  |  |  |  SCRead: a = {"nil": {}}
-|  |  SCMethod: propagates { var a = 1; ^[a] }
+|  |  SCMethod: propagates { var a = 1; ^[a] } -> {"array": [{"int": 1}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: var a = 1; ^[a]
@@ -80,7 +80,7 @@ SCClass: ConstantLocals: ConstantLocals {'\n'    var instance_var = 1;'\n''\n'  
 |  |  |  |  SCExplicitReturn: [a]
 |  |  |  |  |  SCCollection: Array: [a] = {"array": [{"int": 1}]}
 |  |  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: through_another { var a = 1, b = a; ^b }
+|  |  SCMethod: through_another { var a = 1, b = a; ^b } -> {"int": 1}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: var a = 1, b = a; ^b
@@ -181,7 +181,7 @@ SCClass: ConstantLocals: ConstantLocals {'\n'    var instance_var = 1;'\n''\n'  
 |  |  |  SCBody: var a = 1; { var a = 2; a }; ^a
 |  |  |  |  SCVariableDeclare: a: a = 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCFunction: { var a = 2; a }
+|  |  |  |  SCFunction: { var a = 2; a } -> {"int": 2}
 |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  SCBody: { var a = 2; a }

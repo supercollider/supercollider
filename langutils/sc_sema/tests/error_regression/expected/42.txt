@@ -1,0 +1,449 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Variable not defined
+file:
+   56 │     method_non_constant_item { instance_var; ^1 }
+   57 │     method_primitive { _Primitive; ^1 }
+   58 │     method_poisoned { ^undefined_variable }
+      ┆                        ^^^^^^^^^^^^^^^^^^ this is not defined.
+   59 │     *class_method { ^\a }
+   60 │ 
+   61 │     function_not_constant {
+
+Declare it with 'var', or use '~undefined_variable' to refer to an environment variable.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  SCMethodList: Object
+SCClass: ConstantResults: ConstantResults {'\n'    var instance_var;'\n''\n'    function_integer { ^{ 1 } }'\n'    function_empty { ^{} }'\n'    function_symbol { ^{ \a } }'\n'    function_last_value { ^{ 1; 2; 3 } }'\n'    function_with_variable { ^{ var x = 2; x } }'\n'    function_mutable_result { ^{ [1, 2] } }'\n'    function_unused_mutable_variable { ^{ var x = [1, 2]; 3 } }'\n'    function_ends_with_declaration { ^{ var x = 1 } }'\n'    function_with_argument { ^{ |x| 1 } }'\n'    function_with_variadic_argument { ^{ |...x| 1 } }'\n'    function_non_constant_item { ^{ instance_var; 1 } }'\n'    function_non_constant_variable { ^{ var x = instance_var; 1 } }'\n'    function_returns { ^{ ^1 } }'\n'    function_reads_outer { var a = 1; ^{ a } }'\n'    function_nested { ^{ { 1 } } }'\n'    switch_cases { |a| ^switch(a) { 1 } { \one } { 2 } { \two } }'\n''\n'    method_explicit_return { ^1 }'\n'    method_variable_return { var x = 2; ^x }'\n'    method_implicit_return { 1 }'\n'    method_empty { }'\n'    method_with_argument { |x| ^1 }'\n'    method_non_constant_item { instance_var; ^1 }'\n'    method_primitive { _Primitive; ^1 }'\n'    method_poisoned { ^undefined_variable }'\n'    *class_method { ^\a }'\n''\n'    function_not_constant {'\n'        if (3) { ^1 };'\n'        ^2'\n'    }'\n''\n'}
+|  SCMemberList: ConstantResults
+|  |  SCMember: instance_var
+|  SCMethodList: ConstantResults
+|  |  SCMethod: function_not_constant {'\n'        if (3) { ^1 };'\n'        ^2'\n'    }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: if (3) { ^1 };'\n'        ^2
+|  |  |  |  SCMessage: if: if (3) { ^1 }
+|  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  |  |  |  SCPositionalArgs: if (3) { ^1 }
+|  |  |  |  |  |  SCFunction: { ^1 }
+|  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  SCBody: { ^1 }
+|  |  |  |  |  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  SCKwArgs: if (3) { ^1 }
+|  |  |  |  |  SCVariadicArgs: if (3) { ^1 }
+|  |  |  |  |  SCMissing: if (3) { ^1 }
+|  |  |  |  SCExplicitReturn: 2
+|  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  SCMethod: poisoned: method_poisoned { ^undefined_variable }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^undefined_variable
+|  |  |  |  SCExplicitReturn: undefined_variable
+|  |  |  |  |  SCExprList: undefined_variable
+|  |  SCMethod: method_primitive { _Primitive; ^1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1
+|  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: method_non_constant_item { instance_var; ^1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: instance_var; ^1
+|  |  |  |  SCRead: instance_var
+|  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: method_with_argument { |x| ^1 }
+|  |  |  SCArgumentDeclareList: x
+|  |  |  |  SCArgumentDeclare: x
+|  |  |  |  |  SCMissing: x
+|  |  |  SCArgumentDeclareList: x
+|  |  |  SCBody: ^1
+|  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: method_empty { }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: }
+|  |  SCMethod: method_implicit_return { 1 }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: 1
+|  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: method_variable_return { var x = 2; ^x } -> {"int": 2}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: var x = 2; ^x
+|  |  |  |  SCVariableDeclare: x: x = 2
+|  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  SCExplicitReturn: x
+|  |  |  |  |  SCRead: x = {"int": 2}
+|  |  SCMethod: method_explicit_return { ^1 } -> {"int": 1}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^1
+|  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: switch_cases { |a| ^switch(a) { 1 } { \one } { 2 } { \two } }
+|  |  |  SCArgumentDeclareList: a
+|  |  |  |  SCArgumentDeclare: a
+|  |  |  |  |  SCMissing: a
+|  |  |  SCArgumentDeclareList: a
+|  |  |  SCBody: ^switch(a) { 1 } { \one } { 2 } { \two }
+|  |  |  |  SCExplicitReturn: switch(a) { 1 } { \one } { 2 } { \two }
+|  |  |  |  |  SCMessage: switch: switch(a) { 1 } { \one } { 2 } { \two }
+|  |  |  |  |  |  SCRead: a
+|  |  |  |  |  |  SCPositionalArgs: switch(a) { 1 } { \one } { 2 } { \two }
+|  |  |  |  |  |  |  SCFunction: { 1 } -> {"int": 1}
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCBody: { 1 }
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCFunction: { \one } -> {"symbol": "one"}
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCBody: { \one }
+|  |  |  |  |  |  |  |  |  SCLiteral: \one = {"symbol": "one"}
+|  |  |  |  |  |  |  SCFunction: { 2 } -> {"int": 2}
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCBody: { 2 }
+|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCFunction: { \two } -> {"symbol": "two"}
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCBody: { \two }
+|  |  |  |  |  |  |  |  |  SCLiteral: \two = {"symbol": "two"}
+|  |  |  |  |  |  SCKwArgs: switch(a) { 1 } { \one } { 2 } { \two }
+|  |  |  |  |  |  SCVariadicArgs: switch(a) { 1 } { \one } { 2 } { \two }
+|  |  |  |  |  |  SCMissing: switch(a) { 1 } { \one } { 2 } { \two }
+|  |  SCMethod: function_nested { ^{ { 1 } } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ { 1 } }
+|  |  |  |  SCExplicitReturn: { { 1 } }
+|  |  |  |  |  SCFunction: { { 1 } }
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { { 1 } }
+|  |  |  |  |  |  |  SCFunction: { 1 } -> {"int": 1}
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  |  |  SCBody: { 1 }
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: function_reads_outer { var a = 1; ^{ a } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: var a = 1; ^{ a }
+|  |  |  |  SCVariableDeclare: a: a = 1
+|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  SCExplicitReturn: { a }
+|  |  |  |  |  SCFunction: { a }
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { a }
+|  |  |  |  |  |  |  SCRead: a
+|  |  SCMethod: function_integer { ^{ 1 } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ 1 }
+|  |  |  |  SCExplicitReturn: { 1 }
+|  |  |  |  |  SCFunction: { 1 } -> {"int": 1}
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { 1 }
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: function_empty { ^{} }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{}
+|  |  |  |  SCExplicitReturn: {}
+|  |  |  |  |  SCFunction: {} -> {"nil": {}}
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: {}
+|  |  SCMethod: function_symbol { ^{ \a } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ \a }
+|  |  |  |  SCExplicitReturn: { \a }
+|  |  |  |  |  SCFunction: { \a } -> {"symbol": "a"}
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { \a }
+|  |  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
+|  |  SCMethod: function_last_value { ^{ 1; 2; 3 } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ 1; 2; 3 }
+|  |  |  |  SCExplicitReturn: { 1; 2; 3 }
+|  |  |  |  |  SCFunction: { 1; 2; 3 } -> {"int": 3}
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { 1; 2; 3 }
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  SCMethod: function_with_variable { ^{ var x = 2; x } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ var x = 2; x }
+|  |  |  |  SCExplicitReturn: { var x = 2; x }
+|  |  |  |  |  SCFunction: { var x = 2; x } -> {"int": 2}
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { var x = 2; x }
+|  |  |  |  |  |  |  SCVariableDeclare: x: x = 2
+|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCRead: x = {"int": 2}
+|  |  SCMethod: function_mutable_result { ^{ [1, 2] } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ [1, 2] }
+|  |  |  |  SCExplicitReturn: { [1, 2] }
+|  |  |  |  |  SCFunction: { [1, 2] } -> {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { [1, 2] }
+|  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  SCMethod: function_unused_mutable_variable { ^{ var x = [1, 2]; 3 } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ var x = [1, 2]; 3 }
+|  |  |  |  SCExplicitReturn: { var x = [1, 2]; 3 }
+|  |  |  |  |  SCFunction: { var x = [1, 2]; 3 } -> {"int": 3}
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { var x = [1, 2]; 3 }
+|  |  |  |  |  |  |  SCVariableDeclare: x: x = [1, 2]
+|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
+|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  SCMethod: function_ends_with_declaration { ^{ var x = 1 } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ var x = 1 }
+|  |  |  |  SCExplicitReturn: { var x = 1 }
+|  |  |  |  |  SCFunction: { var x = 1 }
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { var x = 1 }
+|  |  |  |  |  |  |  SCVariableDeclare: x: x = 1
+|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: function_with_argument { ^{ |x| 1 } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ |x| 1 }
+|  |  |  |  SCExplicitReturn: { |x| 1 }
+|  |  |  |  |  SCFunction: { |x| 1 }
+|  |  |  |  |  |  SCArgumentDeclareList: x
+|  |  |  |  |  |  |  SCArgumentDeclare: x
+|  |  |  |  |  |  |  |  SCMissing: x
+|  |  |  |  |  |  SCArgumentDeclareList: x
+|  |  |  |  |  |  SCBody: { |x| 1 }
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: function_with_variadic_argument { ^{ |...x| 1 } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ |...x| 1 }
+|  |  |  |  SCExplicitReturn: { |...x| 1 }
+|  |  |  |  |  SCFunction: { |...x| 1 }
+|  |  |  |  |  |  SCArgumentDeclareList: |...x|
+|  |  |  |  |  |  SCArgumentDeclareList: |...x|
+|  |  |  |  |  |  |  SCArgumentDeclare: x
+|  |  |  |  |  |  |  |  SCMissing: x
+|  |  |  |  |  |  SCBody: { |...x| 1 }
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: function_non_constant_item { ^{ instance_var; 1 } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ instance_var; 1 }
+|  |  |  |  SCExplicitReturn: { instance_var; 1 }
+|  |  |  |  |  SCFunction: { instance_var; 1 }
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { instance_var; 1 }
+|  |  |  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: function_non_constant_variable { ^{ var x = instance_var; 1 } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ var x = instance_var; 1 }
+|  |  |  |  SCExplicitReturn: { var x = instance_var; 1 }
+|  |  |  |  |  SCFunction: { var x = instance_var; 1 }
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { var x = instance_var; 1 }
+|  |  |  |  |  |  |  SCVariableDeclare: x: x = instance_var
+|  |  |  |  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: function_returns { ^{ ^1 } }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^{ ^1 }
+|  |  |  |  SCExplicitReturn: { ^1 }
+|  |  |  |  |  SCFunction: { ^1 }
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCArgumentDeclareList: 
+|  |  |  |  |  |  SCBody: { ^1 }
+|  |  |  |  |  |  |  SCExplicitReturn: 1
+|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+SCClass: Event: Event {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Array: Array {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
+SCClass: Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  SCMethodList: Symbol
+SCClass: Char: Char {}
+|  SCMemberList: Char
+|  SCMethodList: Char
+SCClass: Integer: Integer {}
+|  SCMemberList: Integer
+|  SCMethodList: Integer
+SCClass: Float: Float {}
+|  SCMemberList: Float
+|  SCMethodList: Float
+SCClass: Nil: Nil {}
+|  SCMemberList: Nil
+|  SCMethodList: Nil
+SCClass: False: False {}
+|  SCMemberList: False
+|  SCMethodList: False
+SCClass: True: True {}
+|  SCMemberList: True
+|  SCMethodList: True
+SCClass: String: String {}
+|  SCMemberList: String
+|  SCMethodList: String
+SCClass: Class: Class {}
+|  SCMemberList: Class
+|  SCMethodList: Class
+SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'}
+|  SCMemberList: Object
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Object
+SCClass: Meta_ConstantResults: ConstantResults {'\n'    var instance_var;'\n''\n'    function_integer { ^{ 1 } }'\n'    function_empty { ^{} }'\n'    function_symbol { ^{ \a } }'\n'    function_last_value { ^{ 1; 2; 3 } }'\n'    function_with_variable { ^{ var x = 2; x } }'\n'    function_mutable_result { ^{ [1, 2] } }'\n'    function_unused_mutable_variable { ^{ var x = [1, 2]; 3 } }'\n'    function_ends_with_declaration { ^{ var x = 1 } }'\n'    function_with_argument { ^{ |x| 1 } }'\n'    function_with_variadic_argument { ^{ |...x| 1 } }'\n'    function_non_constant_item { ^{ instance_var; 1 } }'\n'    function_non_constant_variable { ^{ var x = instance_var; 1 } }'\n'    function_returns { ^{ ^1 } }'\n'    function_reads_outer { var a = 1; ^{ a } }'\n'    function_nested { ^{ { 1 } } }'\n'    switch_cases { |a| ^switch(a) { 1 } { \one } { 2 } { \two } }'\n''\n'    method_explicit_return { ^1 }'\n'    method_variable_return { var x = 2; ^x }'\n'    method_implicit_return { 1 }'\n'    method_empty { }'\n'    method_with_argument { |x| ^1 }'\n'    method_non_constant_item { instance_var; ^1 }'\n'    method_primitive { _Primitive; ^1 }'\n'    method_poisoned { ^undefined_variable }'\n'    *class_method { ^\a }'\n''\n'    function_not_constant {'\n'        if (3) { ^1 };'\n'        ^2'\n'    }'\n''\n'}
+|  SCMemberList: ConstantResults
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: ConstantResults
+|  |  SCMethod: *class_method { ^\a } -> {"symbol": "a"}
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCBody: ^\a
+|  |  |  |  SCExplicitReturn: \a
+|  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
+SCClass: Meta_Event: Event {}
+|  SCMemberList: Event
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Event
+SCClass: Meta_Array: Array {}
+|  SCMemberList: Array
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Array
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Ref
+SCClass: Meta_Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Symbol
+SCClass: Meta_Char: Char {}
+|  SCMemberList: Char
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Char
+SCClass: Meta_Integer: Integer {}
+|  SCMemberList: Integer
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Integer
+SCClass: Meta_Float: Float {}
+|  SCMemberList: Float
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Float
+SCClass: Meta_Nil: Nil {}
+|  SCMemberList: Nil
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Nil
+SCClass: Meta_False: False {}
+|  SCMemberList: False
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: False
+SCClass: Meta_True: True {}
+|  SCMemberList: True
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: True
+SCClass: Meta_String: String {}
+|  SCMemberList: String
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: String
+SCClass: Meta_Class: Class {}
+|  SCMemberList: Class
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Class
+Successfully compiled 15 classes.

@@ -80,7 +80,7 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  |  SCLiteral: \b = {"symbol": "b"}
-|  |  SCMethod: event_constant { ^Event[a: 1, b: 2] }
+|  |  SCMethod: event_constant { ^Event[a: 1, b: 2] } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"int": 2}}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^Event[a: 1, b: 2]
@@ -90,7 +90,7 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
 |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: array_nested { ^Array[[1], Array[2]] }
+|  |  SCMethod: array_nested { ^Array[[1], Array[2]] } -> {"array": [{"array": [{"int": 1}]}, {"array": [{"int": 2}]}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^Array[[1], Array[2]]
@@ -113,13 +113,13 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  |  |  |  |  |  SCKwArgs: 2.foo
 |  |  |  |  |  |  |  SCVariadicArgs: 2.foo
 |  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  SCMethod: array_empty { ^Array[] }
+|  |  SCMethod: array_empty { ^Array[] } -> {"array": []}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^Array[]
 |  |  |  |  SCExplicitReturn: Array[]
 |  |  |  |  |  SCCollection: Array: Array[] = {"array": []}
-|  |  SCMethod: array_constant { ^Array[1, 2.5] }
+|  |  SCMethod: array_constant { ^Array[1, 2.5] } -> {"array": [{"int": 1}, {"float": 2.5}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^Array[1, 2.5]

@@ -64,7 +64,7 @@ SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependant
 SCClass: WhitespaceChars: WhitespaceChars {'\n'    char_space { ^$  }'\n'    char_tab { ^$	 }'\n'    char_newline { ^$'\n' }'\n'    char_carriage_return { ^$'\n' }'\n'    char_carriage_return_newline { ^$'\n' }'\n'}
 |  SCMemberList: WhitespaceChars
 |  SCMethodList: WhitespaceChars
-|  |  SCMethod: char_space { ^$  }
+|  |  SCMethod: char_space { ^$  } -> {"char": " "}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^$ 

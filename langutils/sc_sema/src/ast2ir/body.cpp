@@ -156,7 +156,8 @@ struct BodyContext {
 };
 
 // `var a = 1`, or `var a` when value is missing.
-void declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::optional<ast::AnyExprIndex> value,
+// Returns whether the initial value is constant, so evaluating the declaration has no effects.
+bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::optional<ast::AnyExprIndex> value,
                       ast::OptionalIndex whole) {
     const auto& g = *b.ast_graph;
     // Compiled before the variable is declared, so it can't refer to itself.
@@ -178,7 +179,7 @@ void declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
         const auto previous = b.ir.location(fnd->second.declare_index);
         b.expr.sink(sc::diag::Diagnostic::duplicate_variable(b.ir.text_info(previous.source), IRGraph::range(previous),
                                                              get_text_info(g), get_location(g, name_i)));
-        return;
+        return false;
     }
     // Constant if its value is (`var a` is nil) and it is never assigned or used by an inner function.
     // Mutable values, e.g., arrays, are never constant, as any method could change them, through this variable or any
@@ -197,45 +198,67 @@ void declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
     b.expr.add_symbol(name,
                       ScopeEntry { nullptr, b.owner, declare, constant, type, ScopeEntry::Kind::Local,
                                    ScopeEntry::State::Initalised });
+    return !value_r || value_r->const_index;
 }
 
-void declare_variables(BodyContext& b, ast::DeclareVariableListIndex list) {
+// Returns whether every initial value is constant.
+bool declare_variables(BodyContext& b, ast::DeclareVariableListIndex list) {
     const auto& g = *b.ast_graph;
+    bool all_constant = true;
     for (auto it = g.children(list).iter(); it; ++it) {
         const ast::DeclareAnyVariableIndex item = *it;
         if (const auto name = g.as_a<ast::NamedIdentifierIndex>(item)) {
-            declare_variable(b, *name, std::nullopt, *name);
+            all_constant = declare_variable(b, *name, std::nullopt, *name) && all_constant;
         } else if (const auto with_default = g.as_a<ast::DeclareVariableWithDefaultIndex>(item)) {
             const auto [name_i, value] = g.children(*with_default);
-            declare_variable(b, name_i, value, *with_default);
+            all_constant = declare_variable(b, name_i, value, *with_default) && all_constant;
         } else {
             // `var #a, b = c`, not implemented yet.
             b.expr.sink(sc::diag::Diagnostic::todo(get_text_info(g), get_location(g, item)));
+            all_constant = false;
         }
     }
+    return all_constant;
+}
 }
 
-}
-
-std::optional<Return<SCAnyExpr_I>> compile_body(Expr& expr, IRGraph& ir,
-                                                const std::shared_ptr<const ast::ASTGraph>& ast_graph, Context& ctx,
-                                                join<SCFunction_I, SCMethod_I> owner, SCBody_I body,
-                                                ast::BlockContentsListIndex contents) {
+BodyResult compile_body(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph, Context& ctx,
+                        join<SCFunction_I, SCMethod_I> owner, SCBody_I body, ast::BlockContentsListIndex contents) {
     VariableUses uses;
     VariableScanner { *ast_graph, ctx.symbol_table, uses }.scan(contents);
     BodyContext b { expr, ir, ctx, ast_graph, owner, body, std::move(uses) };
-    std::optional<Return<SCAnyExpr_I>> last;
+
+    // Only the last item's value matters, the others only need to be constant.
+    bool all_constant = true;
+    std::optional<ConstExprIndex> last;
+    bool explicit_return = false;
     for (auto it = ast_graph->children(contents).iter(); it; ++it) {
         const ast::BlockItemIndex item = *it;
+        explicit_return = false;
         if (const auto declarations = ast_graph->as_a<ast::DeclareVariableListIndex>(item)) {
-            declare_variables(b, *declarations);
+            all_constant = declare_variables(b, *declarations) && all_constant;
             last = std::nullopt;
-        } else {
-            last = expr(ast::AnyExprIndex { *item });
-            ir.append(body, last->ir_node);
+            continue;
         }
+        const auto r = expr(ast::AnyExprIndex { *item });
+        ir.append(body, r.ir_node);
+        last = r.const_index;
+        // A return isn't a value, but what it returns can be constant.
+        if (const auto ret = ir.as_a<SCExplicitReturn_I>(r.ir_node)) {
+            const auto [value] = ir.children(*ret);
+            last = ir.node_as_constexpr(value);
+            explicit_return = true;
+        }
+        all_constant = all_constant && last;
     }
-    return last;
-}
 
+    if (!all_constant)
+        return {};
+    if (last)
+        return { last, explicit_return };
+    // Empty, a body ending in a declaration isn't a value.
+    if (ast_graph->children(contents).iter())
+        return {};
+    return { ctx.constant_table.register_constexpr({ Nil {} }), false };
+}
 }

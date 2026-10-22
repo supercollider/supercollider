@@ -10,7 +10,7 @@ SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
 SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'    perform { ^nil }'\n'}
 |  SCMemberList: Object
 |  SCMethodList: Object
-|  |  SCMethod: perform { ^nil }
+|  |  SCMethod: perform { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
@@ -30,7 +30,7 @@ SCClass: KnownMethods: KnownMethods {'\n'    range { ^(1..3) }'\n'    slice { ^[
 |  |  |  |  |  |  SCKwArgs: 1.perform(\foo)
 |  |  |  |  |  |  SCVariadicArgs: 1.perform(\foo)
 |  |  |  |  |  |  SCMissing: 1.perform(\foo)
-|  |  SCMethod: event_collection { ^Event[a: 1] }
+|  |  SCMethod: event_collection { ^Event[a: 1] } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^Event[a: 1]
@@ -38,7 +38,7 @@ SCClass: KnownMethods: KnownMethods {'\n'    range { ^(1..3) }'\n'    slice { ^[
 |  |  |  |  |  SCCollection: Event: Event[a: 1] = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: array_collection { ^Array[1, 2] }
+|  |  SCMethod: array_collection { ^Array[1, 2] } -> {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^Array[1, 2]
@@ -46,7 +46,7 @@ SCClass: KnownMethods: KnownMethods {'\n'    range { ^(1..3) }'\n'    slice { ^[
 |  |  |  |  |  SCCollection: Array: Array[1, 2] = {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: string_slice { ^"hello"[1..3] }
+|  |  SCMethod: string_slice { ^"hello"[1..3] } -> {"string": "ell"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^"hello"[1..3]
@@ -60,7 +60,7 @@ SCClass: KnownMethods: KnownMethods {'\n'    range { ^(1..3) }'\n'    slice { ^[
 |  |  |  |  |  |  SCKwArgs: "hello"[1..3]
 |  |  |  |  |  |  SCVariadicArgs: "hello"[1..3]
 |  |  |  |  |  |  SCMissing: "hello"[1..3]
-|  |  SCMethod: slice { ^[1, 2, 3][1..] }
+|  |  SCMethod: slice { ^[1, 2, 3][1..] } -> {"array": [{"int": 2}, {"int": 3}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[1, 2, 3][1..]
@@ -77,7 +77,7 @@ SCClass: KnownMethods: KnownMethods {'\n'    range { ^(1..3) }'\n'    slice { ^[
 |  |  |  |  |  |  SCKwArgs: [1, 2, 3][1..]
 |  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][1..]
 |  |  |  |  |  |  SCMissing: [1, 2, 3][1..]
-|  |  SCMethod: range { ^(1..3) }
+|  |  SCMethod: range { ^(1..3) } -> {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^(1..3)
@@ -89,7 +89,7 @@ SCClass: KnownMethods: KnownMethods {'\n'    range { ^(1..3) }'\n'    slice { ^[
 SCClass: Dictionary: Dictionary {'\n'    add { ^nil }'\n'}
 |  SCMemberList: Dictionary
 |  SCMethodList: Dictionary
-|  |  SCMethod: add { ^nil }
+|  |  SCMethod: add { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
@@ -110,7 +110,7 @@ SCClass: Char: Char {}
 SCClass: SimpleNumber: SimpleNumber {'\n'    series { ^nil }'\n'}
 |  SCMemberList: SimpleNumber
 |  SCMethodList: SimpleNumber
-|  |  SCMethod: series { ^nil }
+|  |  SCMethod: series { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
@@ -134,13 +134,13 @@ SCClass: True: True {}
 SCClass: ArrayedCollection: ArrayedCollection {'\n'    copySeries { ^nil }'\n'    add { ^nil }'\n'}
 |  SCMemberList: ArrayedCollection
 |  SCMethodList: ArrayedCollection
-|  |  SCMethod: add { ^nil }
+|  |  SCMethod: add { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
-|  |  SCMethod: copySeries { ^nil }
+|  |  SCMethod: copySeries { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil

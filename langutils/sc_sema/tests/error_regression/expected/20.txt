@@ -196,7 +196,7 @@ SCClass: Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar class_v
 |  SCMemberList: Poisoning
 |  |  SCMember: instance_var
 |  SCMethodList: Poisoning
-|  |  SCMethod: after_errors { ^6 }
+|  |  SCMethod: after_errors { ^6 } -> {"int": 6}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^6
@@ -329,7 +329,7 @@ SCClass: Meta_Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar cl
 |  |  |  SCBody: class_var = 3
 |  |  |  |  SCAssign: class_var = 3
 |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  SCMethod: *after_errors { ^6 }
+|  |  SCMethod: *after_errors { ^6 } -> {"int": 6}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^6

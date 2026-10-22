@@ -67,11 +67,17 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
     // Methods have their own scope, holding the arguments and variables, inside the member scopes.
     expr.scope.emplace_back();
     declare_arguments(expr, ir, ast_graph, ctx, argument_list, variadic_args, arg_list, method);
-    (void)compile_body(expr, ir, ast_graph, ctx, method, body_i, body);
+    const auto result = compile_body(expr, ir, ast_graph, ctx, method, body_i, body);
     expr.scope.pop_back();
 
     // A fatal error anywhere in the method poisons all of it.
     ir.payload(method).poisoned = sink.fatal;
+
+    // Without `^` a method returns `this`, which isn't constant.
+    // A primitive's body only runs when the primitive fails, so is never constant.
+    const bool has_arguments = ir.children(argument_list).iter() || ir.children(variadic_args).iter();
+    if (result.constant && result.explicit_return && !primitive && !has_arguments && !sink.fatal)
+        ir.payload(method).constant_result = *result.constant;
     ctx.diagnostics(std::move(sink.diagnostics));
     sink = {};
 

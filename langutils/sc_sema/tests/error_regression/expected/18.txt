@@ -26,7 +26,7 @@ SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependant
 SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { ^[] }'\n'    nested_constant { ^[[1, 2], [\a]] }'\n'    keyword_elements { ^[a: 1, b: 2] }'\n'    not_constant { ^[1, 2.foo] }'\n'    nested_not_constant { ^[1, [2.foo]] }'\n'    immutable { ^#[1, name, \symbol] }'\n'    immutable_not_literal { ^#[1, 2.foo] }'\n'    immutable_nested { ^#[[a, 1], b] }'\n'}
 |  SCMemberList: Arrays
 |  SCMethodList: Arrays
-|  |  SCMethod: immutable_nested { ^#[[a, 1], b] }
+|  |  SCMethod: immutable_nested { ^#[[a, 1], b] } -> {"array": [{"array": [{"symbol": "a"}, {"int": 1}]}, {"symbol": "b"}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^#[[a, 1], b]
@@ -49,7 +49,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  |  |  |  |  |  SCKwArgs: 2.foo
 |  |  |  |  |  |  |  SCVariadicArgs: 2.foo
 |  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  SCMethod: immutable { ^#[1, name, \symbol] }
+|  |  SCMethod: immutable { ^#[1, name, \symbol] } -> {"array": [{"int": 1}, {"symbol": "name"}, {"symbol": "symbol"}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^#[1, name, \symbol]
@@ -85,7 +85,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  |  |  |  |  |  SCKwArgs: 2.foo
 |  |  |  |  |  |  |  SCVariadicArgs: 2.foo
 |  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  SCMethod: keyword_elements { ^[a: 1, b: 2] }
+|  |  SCMethod: keyword_elements { ^[a: 1, b: 2] } -> {"array": [{"symbol": "a"}, {"int": 1}, {"symbol": "b"}, {"int": 2}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[a: 1, b: 2]
@@ -95,7 +95,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
 |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: nested_constant { ^[[1, 2], [\a]] }
+|  |  SCMethod: nested_constant { ^[[1, 2], [\a]] } -> {"array": [{"array": [{"int": 1}, {"int": 2}]}, {"array": [{"symbol": "a"}]}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[[1, 2], [\a]]
@@ -106,13 +106,13 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
 |  |  |  |  |  |  SCCollection: Array: [\a] = {"array": [{"symbol": "a"}]}
 |  |  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
-|  |  SCMethod: empty { ^[] }
+|  |  SCMethod: empty { ^[] } -> {"array": []}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[]
 |  |  |  |  SCExplicitReturn: []
 |  |  |  |  |  SCCollection: Array: [] = {"array": []}
-|  |  SCMethod: constant { ^[1, 2.5, "three"] }
+|  |  SCMethod: constant { ^[1, 2.5, "three"] } -> {"array": [{"int": 1}, {"float": 2.5}, {"string": "three"}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[1, 2.5, "three"]

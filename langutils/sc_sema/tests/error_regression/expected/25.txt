@@ -33,7 +33,7 @@ SCClass: Blocks: Blocks {'\n'    var instance_var;'\n''\n'    empty { ^{} }'\n' 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^{ 1; 2 }
 |  |  |  |  SCExplicitReturn: { 1; 2 }
-|  |  |  |  |  SCFunction: { 1; 2 }
+|  |  |  |  |  SCFunction: { 1; 2 } -> {"int": 2}
 |  |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  |  SCBody: { 1; 2 }
@@ -44,7 +44,7 @@ SCClass: Blocks: Blocks {'\n'    var instance_var;'\n''\n'    empty { ^{} }'\n' 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^{}
 |  |  |  |  SCExplicitReturn: {}
-|  |  |  |  |  SCFunction: {}
+|  |  |  |  |  SCFunction: {} -> {"nil": {}}
 |  |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  |  SCBody: {}
@@ -53,7 +53,7 @@ SCClass: Blocks: Blocks {'\n'    var instance_var;'\n''\n'    empty { ^{} }'\n' 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^{ 1 }
 |  |  |  |  SCExplicitReturn: { 1 }
-|  |  |  |  |  SCFunction: { 1 }
+|  |  |  |  |  SCFunction: { 1 } -> {"int": 1}
 |  |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  |  SCBody: { 1 }

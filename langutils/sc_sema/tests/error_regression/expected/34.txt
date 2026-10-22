@@ -87,7 +87,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: [1, 2, 3][2, 3..0]
 |  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][2, 3..0]
 |  |  |  |  |  |  SCMissing: [1, 2, 3][2, 3..0]
-|  |  SCMethod: array { ^[1, 2, 3, 4][1..2] }
+|  |  SCMethod: array { ^[1, 2, 3, 4][1..2] } -> {"array": [{"int": 2}, {"int": 3}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[1, 2, 3, 4][1..2]
@@ -105,7 +105,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: [1, 2, 3, 4][1..2]
 |  |  |  |  |  |  SCVariadicArgs: [1, 2, 3, 4][1..2]
 |  |  |  |  |  |  SCMissing: [1, 2, 3, 4][1..2]
-|  |  SCMethod: from_start { ^[1, 2, 3][..1] }
+|  |  SCMethod: from_start { ^[1, 2, 3][..1] } -> {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[1, 2, 3][..1]
@@ -122,7 +122,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: [1, 2, 3][..1]
 |  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][..1]
 |  |  |  |  |  |  SCMissing: [1, 2, 3][..1]
-|  |  SCMethod: to_end { ^[1, 2, 3][1..] }
+|  |  SCMethod: to_end { ^[1, 2, 3][1..] } -> {"array": [{"int": 2}, {"int": 3}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[1, 2, 3][1..]
@@ -139,7 +139,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: [1, 2, 3][1..]
 |  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][1..]
 |  |  |  |  |  |  SCMissing: [1, 2, 3][1..]
-|  |  SCMethod: step { ^[0, 1, 2, 3, 4, 5][0, 2..5] }
+|  |  SCMethod: step { ^[0, 1, 2, 3, 4, 5][0, 2..5] } -> {"array": [{"int": 0}, {"int": 2}, {"int": 4}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[0, 1, 2, 3, 4, 5][0, 2..5]
@@ -159,7 +159,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: [0, 1, 2, 3, 4, 5][0, 2..5]
 |  |  |  |  |  |  SCVariadicArgs: [0, 1, 2, 3, 4, 5][0, 2..5]
 |  |  |  |  |  |  SCMissing: [0, 1, 2, 3, 4, 5][0, 2..5]
-|  |  SCMethod: descending { ^[1, 2, 3][2..0] }
+|  |  SCMethod: descending { ^[1, 2, 3][2..0] } -> {"array": [{"int": 3}, {"int": 2}, {"int": 1}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[1, 2, 3][2..0]
@@ -176,7 +176,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: [1, 2, 3][2..0]
 |  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][2..0]
 |  |  |  |  |  |  SCMissing: [1, 2, 3][2..0]
-|  |  SCMethod: clipped_end { ^[1, 2, 3][1..10] }
+|  |  SCMethod: clipped_end { ^[1, 2, 3][1..10] } -> {"array": [{"int": 2}, {"int": 3}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[1, 2, 3][1..10]
@@ -193,7 +193,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: [1, 2, 3][1..10]
 |  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][1..10]
 |  |  |  |  |  |  SCMissing: [1, 2, 3][1..10]
-|  |  SCMethod: clipped_start { ^[1, 2, 3][-5..1] }
+|  |  SCMethod: clipped_start { ^[1, 2, 3][-5..1] } -> {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[1, 2, 3][-5..1]
@@ -210,7 +210,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: [1, 2, 3][-5..1]
 |  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][-5..1]
 |  |  |  |  |  |  SCMissing: [1, 2, 3][-5..1]
-|  |  SCMethod: empty { ^[][..3] }
+|  |  SCMethod: empty { ^[][..3] } -> {"array": []}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[][..3]
@@ -224,7 +224,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: [][..3]
 |  |  |  |  |  |  SCVariadicArgs: [][..3]
 |  |  |  |  |  |  SCMissing: [][..3]
-|  |  SCMethod: string { ^"hello"[1..3] }
+|  |  SCMethod: string { ^"hello"[1..3] } -> {"string": "ell"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^"hello"[1..3]
@@ -238,7 +238,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: "hello"[1..3]
 |  |  |  |  |  |  SCVariadicArgs: "hello"[1..3]
 |  |  |  |  |  |  SCMissing: "hello"[1..3]
-|  |  SCMethod: string_descending { ^"hello"[3..1] }
+|  |  SCMethod: string_descending { ^"hello"[3..1] } -> {"string": "lle"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^"hello"[3..1]
@@ -252,7 +252,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  |  |  |  |  SCKwArgs: "hello"[3..1]
 |  |  |  |  |  |  SCVariadicArgs: "hello"[3..1]
 |  |  |  |  |  |  SCMissing: "hello"[3..1]
-|  |  SCMethod: immutable { ^#[a, b, c][1..] }
+|  |  SCMethod: immutable { ^#[a, b, c][1..] } -> {"array": [{"symbol": "b"}, {"symbol": "c"}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^#[a, b, c][1..]

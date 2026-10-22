@@ -13,43 +13,43 @@ SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependant
 SCClass: EscapedLiterals: EscapedLiterals {'\n'    char_newline { ^$\n }'\n'    char_tab { ^$\t }'\n'    char_quote { ^$" }'\n'    char_backslash { ^$\\ }'\n'    string_escapes { ^"tab\there \"quoted\" back\\slash" }'\n'    string_newline { ^"line one\nline two" }'\n'    symbol_quote_escaped { ^'it\'s' }'\n'}
 |  SCMemberList: EscapedLiterals
 |  SCMethodList: EscapedLiterals
-|  |  SCMethod: symbol_quote_escaped { ^'it\'s' }
+|  |  SCMethod: symbol_quote_escaped { ^'it\'s' } -> {"symbol": "it's"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^'it\'s'
 |  |  |  |  SCExplicitReturn: 'it\'s'
 |  |  |  |  |  SCLiteral: 'it\'s' = {"symbol": "it's"}
-|  |  SCMethod: string_newline { ^"line one\nline two" }
+|  |  SCMethod: string_newline { ^"line one\nline two" } -> {"string": "line one\nline two"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^"line one\nline two"
 |  |  |  |  SCExplicitReturn: "line one\nline two"
 |  |  |  |  |  SCLiteral: "line one\nline two" = {"string": "line one\nline two"}
-|  |  SCMethod: string_escapes { ^"tab\there \"quoted\" back\\slash" }
+|  |  SCMethod: string_escapes { ^"tab\there \"quoted\" back\\slash" } -> {"string": "tab\there \"quoted\" back\\slash"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^"tab\there \"quoted\" back\\slash"
 |  |  |  |  SCExplicitReturn: "tab\there \"quoted\" back\\slash"
 |  |  |  |  |  SCLiteral: "tab\there \"quoted\" back\\slash" = {"string": "tab\there \"quoted\" back\\slash"}
-|  |  SCMethod: char_backslash { ^$\\ }
+|  |  SCMethod: char_backslash { ^$\\ } -> {"char": "\\"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^$\\
 |  |  |  |  SCExplicitReturn: $\\
 |  |  |  |  |  SCLiteral: $\\ = {"char": "\\"}
-|  |  SCMethod: char_quote { ^$" }
+|  |  SCMethod: char_quote { ^$" } -> {"char": "\""}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^$"
 |  |  |  |  SCExplicitReturn: $"
 |  |  |  |  |  SCLiteral: $" = {"char": "\""}
-|  |  SCMethod: char_tab { ^$\t }
+|  |  SCMethod: char_tab { ^$\t } -> {"char": "\t"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^$\t
 |  |  |  |  SCExplicitReturn: $\t
 |  |  |  |  |  SCLiteral: $\t = {"char": "\t"}
-|  |  SCMethod: char_newline { ^$\n }
+|  |  SCMethod: char_newline { ^$\n } -> {"char": "\n"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^$\n

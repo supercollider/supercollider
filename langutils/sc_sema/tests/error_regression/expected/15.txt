@@ -50,7 +50,7 @@ SCClass: Messages: Messages {'\n'    postfix { ^1.foo }'\n'    postfix_args { ^1
 |  |  |  |  |  |  SCKwArgs: 1.foo(2.bar) + 3
 |  |  |  |  |  |  SCVariadicArgs: 1.foo(2.bar) + 3
 |  |  |  |  |  |  SCMissing: 1.foo(2.bar) + 3
-|  |  SCMethod: at_range { ^"abc"[0..1] }
+|  |  SCMethod: at_range { ^"abc"[0..1] } -> {"string": "ab"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^"abc"[0..1]

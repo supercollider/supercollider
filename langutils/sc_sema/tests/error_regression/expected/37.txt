@@ -25,7 +25,7 @@ SCClass: NegativeLiterals: NegativeLiterals {'\n'    const negative_const = -3;'
 |  |  |  |  |  |  SCKwArgs: 1 - 2
 |  |  |  |  |  |  SCVariadicArgs: 1 - 2
 |  |  |  |  |  |  SCMissing: 1 - 2
-|  |  SCMethod: in_range { ^(-2..2) }
+|  |  SCMethod: in_range { ^(-2..2) } -> {"array": [{"int": -2}, {"int": -1}, {"int": 0}, {"int": 1}, {"int": 2}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^(-2..2)
@@ -34,7 +34,7 @@ SCClass: NegativeLiterals: NegativeLiterals {'\n'    const negative_const = -3;'
 |  |  |  |  |  |  SCLiteral: 2 = {"int": -2}
 |  |  |  |  |  |  SCMissing: (-2..2)
 |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: in_array { ^[-1, 2] }
+|  |  SCMethod: in_array { ^[-1, 2] } -> {"array": [{"int": -1}, {"int": 2}]}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^[-1, 2]
@@ -42,43 +42,43 @@ SCClass: NegativeLiterals: NegativeLiterals {'\n'    const negative_const = -3;'
 |  |  |  |  |  SCCollection: Array: [-1, 2] = {"array": [{"int": -1}, {"int": 2}]}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": -1}
 |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: pi_alone { ^-pi }
+|  |  SCMethod: pi_alone { ^-pi } -> {"float": -3.1415927}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^-pi
 |  |  |  |  SCExplicitReturn: -pi
 |  |  |  |  |  SCLiteral: -pi = {"float": -3.1415927}
-|  |  SCMethod: radix { ^-2r101 }
+|  |  SCMethod: radix { ^-2r101 } -> {"int": -5}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^-2r101
 |  |  |  |  SCExplicitReturn: -2r101
 |  |  |  |  |  SCLiteral: 2r101 = {"int": -5}
-|  |  SCMethod: hexadecimal { ^-0x10 }
+|  |  SCMethod: hexadecimal { ^-0x10 } -> {"int": -16}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^-0x10
 |  |  |  |  SCExplicitReturn: -0x10
 |  |  |  |  |  SCLiteral: 0x10 = {"int": -16}
-|  |  SCMethod: exponent { ^-1e3 }
+|  |  SCMethod: exponent { ^-1e3 } -> {"float": -1000}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^-1e3
 |  |  |  |  SCExplicitReturn: -1e3
 |  |  |  |  |  SCLiteral: 1e3 = {"float": -1000}
-|  |  SCMethod: pi_multiple { ^-2pi }
+|  |  SCMethod: pi_multiple { ^-2pi } -> {"float": -6.2831853}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^-2pi
 |  |  |  |  SCExplicitReturn: -2pi
 |  |  |  |  |  SCLiteral: -2pi = {"float": -6.2831853}
-|  |  SCMethod: float { ^-2.5 }
+|  |  SCMethod: float { ^-2.5 } -> {"float": -2.5}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^-2.5
 |  |  |  |  SCExplicitReturn: -2.5
 |  |  |  |  |  SCLiteral: 2.5 = {"float": -2.5}
-|  |  SCMethod: integer { ^-5 }
+|  |  SCMethod: integer { ^-5 } -> {"int": -5}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^-5

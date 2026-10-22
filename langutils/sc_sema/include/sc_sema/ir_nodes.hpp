@@ -133,11 +133,17 @@ struct SCMethod : priv::Node<SCMethod_I(SCArgumentDeclareList_I positional_argum
     static constexpr auto type_name { "SCMethod" };
     std::optional<Locatable<SymSCPrimitive>> primitive;
     bool poisoned { false };
+    // What calling the method returns, when it is known and has no effects. Only set without arguments, as their values
+    // aren't known until the method is called. Callers can't rely on it unless they know which method is dispatched.
+    OptionalConstExprIndex constant_result {};
     SCMethod(std::optional<Locatable<SymSCPrimitive>> p): primitive(p) {}
 };
 struct SCFunction : priv::Node<SCFunction_I(SCArgumentDeclareList_I positional_arguments,
                                             SCArgumentDeclareList_I variadic_arguments, SCBody_I body)> {
     static constexpr auto type_name { "SCFunction" };
+    // What calling the function returns, when it is known and has no effects, e.g., `{ 1 }`. The function itself isn't
+    // constant. Only set without arguments, as their values aren't known until the function is called.
+    OptionalConstExprIndex constant_result {};
 };
 
 struct SCMethodList : priv::List<SCMethodList_I, SCMethod_I> {

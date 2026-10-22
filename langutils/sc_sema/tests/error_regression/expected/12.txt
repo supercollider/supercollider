@@ -30,85 +30,85 @@ SCClass: Literals: Literals {'\n'    int { ^1 }'\n'    int_radix { ^2r101 }'\n' 
 |  |  |  SCBody: ^2s
 |  |  |  |  SCExplicitReturn: 2s
 |  |  |  |  |  SCExprList: 2s
-|  |  SCMethod: symbol_slash { ^\symbol }
+|  |  SCMethod: symbol_slash { ^\symbol } -> {"symbol": "symbol"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^\symbol
 |  |  |  |  SCExplicitReturn: \symbol
 |  |  |  |  |  SCLiteral: \symbol = {"symbol": "symbol"}
-|  |  SCMethod: boolean_true { ^true }
+|  |  SCMethod: boolean_true { ^true } -> {"bool": true}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^true
 |  |  |  |  SCExplicitReturn: true
 |  |  |  |  |  SCLiteral: true = {"bool": true}
-|  |  SCMethod: int_radix { ^2r101 }
+|  |  SCMethod: int_radix { ^2r101 } -> {"int": 5}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^2r101
 |  |  |  |  SCExplicitReturn: 2r101
 |  |  |  |  |  SCLiteral: 2r101 = {"int": 5}
-|  |  SCMethod: string_concatenated { ^"hello" " world" }
+|  |  SCMethod: string_concatenated { ^"hello" " world" } -> {"string": "hello world"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^"hello" " world"
 |  |  |  |  SCExplicitReturn: "hello" " world"
 |  |  |  |  |  SCLiteral: "hello" = {"string": "hello world"}
-|  |  SCMethod: float_exponent { ^1e3 }
+|  |  SCMethod: float_exponent { ^1e3 } -> {"float": 1000}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^1e3
 |  |  |  |  SCExplicitReturn: 1e3
 |  |  |  |  |  SCLiteral: 1e3 = {"float": 1000}
-|  |  SCMethod: pi_alone { ^pi }
+|  |  SCMethod: pi_alone { ^pi } -> {"float": 3.1415927}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^pi
 |  |  |  |  SCExplicitReturn: pi
 |  |  |  |  |  SCLiteral: pi = {"float": 3.1415927}
-|  |  SCMethod: pi_multiple { ^2pi }
+|  |  SCMethod: pi_multiple { ^2pi } -> {"float": 6.2831853}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^2pi
 |  |  |  |  SCExplicitReturn: 2pi
 |  |  |  |  |  SCLiteral: 2pi = {"float": 6.2831853}
-|  |  SCMethod: char { ^$a }
+|  |  SCMethod: char { ^$a } -> {"char": "a"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^$a
 |  |  |  |  SCExplicitReturn: $a
 |  |  |  |  |  SCLiteral: $a = {"char": "a"}
-|  |  SCMethod: string { ^"hello" }
+|  |  SCMethod: string { ^"hello" } -> {"string": "hello"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^"hello"
 |  |  |  |  SCExplicitReturn: "hello"
 |  |  |  |  |  SCLiteral: "hello" = {"string": "hello"}
-|  |  SCMethod: boolean_false { ^false }
+|  |  SCMethod: boolean_false { ^false } -> {"bool": false}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^false
 |  |  |  |  SCExplicitReturn: false
 |  |  |  |  |  SCLiteral: false = {"bool": false}
-|  |  SCMethod: float { ^2.5 }
+|  |  SCMethod: float { ^2.5 } -> {"float": 2.5}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^2.5
 |  |  |  |  SCExplicitReturn: 2.5
 |  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
-|  |  SCMethod: nil_value { ^nil }
+|  |  SCMethod: nil_value { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
-|  |  SCMethod: int { ^1 }
+|  |  SCMethod: int { ^1 } -> {"int": 1}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^1
 |  |  |  |  SCExplicitReturn: 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: symbol_quote { ^'a symbol' }
+|  |  SCMethod: symbol_quote { ^'a symbol' } -> {"symbol": "a symbol"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^'a symbol'

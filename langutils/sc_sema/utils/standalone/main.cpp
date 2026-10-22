@@ -315,6 +315,16 @@ int main(int argc, char* argv[]) {
                         std::cout << " = ";
                         ctx.constant_table(*const_i).to_json(std::cout, symbol_table);
                     }
+                    // What calling a method or function returns.
+                    const auto constant_result = std::visit(
+                        sc::util::overload { [](const auto&) -> sc::ir::OptionalConstExprIndex { return {}; },
+                                             [](const sc::ir::SCMethod& m) { return m.constant_result; },
+                                             [](const sc::ir::SCFunction& f) { return f.constant_result; } },
+                        payload);
+                    if (constant_result) {
+                        std::cout << " -> ";
+                        ctx.constant_table(*constant_result).to_json(std::cout, symbol_table);
+                    }
                     // A member's initial value, the member itself isn't constant.
                     if (const auto member = std::get_if<sc::ir::SCMember>(&payload); member && member->expr) {
                         std::cout << " = ";

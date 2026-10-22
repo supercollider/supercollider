@@ -173,7 +173,7 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  SCMemberList: VariadicOrder
 |  |  SCMember: instance_var
 |  SCMethodList: VariadicOrder
-|  |  SCMethod: after_errors { ^5 }
+|  |  SCMethod: after_errors { ^5 } -> {"int": 5}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^5

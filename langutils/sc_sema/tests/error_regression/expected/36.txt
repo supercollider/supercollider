@@ -10,7 +10,7 @@ SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
 SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'    perform { ^nil }'\n'}
 |  SCMemberList: Object
 |  SCMethodList: Object
-|  |  SCMethod: perform { ^nil }
+|  |  SCMethod: perform { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
@@ -47,7 +47,7 @@ SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    
 |  |  |  |  |  SCCollection: Array: Array[1, 2]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: string_slice { ^"hello"[1..3] }
+|  |  SCMethod: string_slice { ^"hello"[1..3] } -> {"string": "ell"}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^"hello"[1..3]
@@ -90,7 +90,7 @@ SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    
 SCClass: Dictionary: Dictionary {'\n'    add { ^nil }'\n'}
 |  SCMemberList: Dictionary
 |  SCMethodList: Dictionary
-|  |  SCMethod: add { ^nil }
+|  |  SCMethod: add { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
@@ -105,7 +105,7 @@ SCClass: Ref: Ref {}
 SCClass: Symbol: Symbol {}
 |  SCMemberList: Symbol
 |  SCMethodList: Symbol
-|  |  SCMethod: perform { ^nil }
+|  |  SCMethod: perform { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
@@ -117,7 +117,7 @@ SCClass: Char: Char {}
 SCClass: SimpleNumber: SimpleNumber {'\n'    series { ^nil }'\n'}
 |  SCMemberList: SimpleNumber
 |  SCMethodList: SimpleNumber
-|  |  SCMethod: series { ^nil }
+|  |  SCMethod: series { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
@@ -126,7 +126,7 @@ SCClass: SimpleNumber: SimpleNumber {'\n'    series { ^nil }'\n'}
 SCClass: Integer: Integer : SimpleNumber {}
 |  SCMemberList: Integer
 |  SCMethodList: Integer
-|  |  SCMethod: series { ^nil }
+|  |  SCMethod: series { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
@@ -147,13 +147,13 @@ SCClass: True: True {}
 SCClass: ArrayedCollection: ArrayedCollection {'\n'    copySeries { ^nil }'\n'    add { ^nil }'\n'}
 |  SCMemberList: ArrayedCollection
 |  SCMethodList: ArrayedCollection
-|  |  SCMethod: add { ^nil }
+|  |  SCMethod: add { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
-|  |  SCMethod: copySeries { ^nil }
+|  |  SCMethod: copySeries { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil
@@ -162,7 +162,7 @@ SCClass: ArrayedCollection: ArrayedCollection {'\n'    copySeries { ^nil }'\n'  
 SCClass: Array: Array : ArrayedCollection {}
 |  SCMemberList: Array
 |  SCMethodList: Array
-|  |  SCMethod: copySeries { ^nil }
+|  |  SCMethod: copySeries { ^nil } -> {"nil": {}}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCBody: ^nil

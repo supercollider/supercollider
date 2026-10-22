@@ -23,10 +23,17 @@ Return<SCAnyExpr_I> Expr::operator()(ast::BlockIndex i) {
     scope.emplace_back();
     declare_arguments(*this, ir, ast_graph, ctx, positional, variadic, arg_list, function);
 
+    BodyResult result;
     if (const auto contents = ast_graph->as_a<ast::BlockContentsListIndex>(maybe_contents))
-        (void)compile_body(*this, ir, ast_graph, ctx, function, body, *contents);
-
+        result = compile_body(*this, ir, ast_graph, ctx, function, body, *contents);
+    else
+        result.constant = ctx.constant_table.register_constexpr({ Nil {} });
     scope.pop_back();
+
+    // A return leaves the enclosing method, so calling the function doesn't produce a value.
+    const bool has_arguments = ir.children(positional).iter() || ir.children(variadic).iter();
+    if (result.constant && !result.explicit_return && !has_arguments && !sink.fatal)
+        ir.payload(function).constant_result = *result.constant;
     return { function };
 }
 
