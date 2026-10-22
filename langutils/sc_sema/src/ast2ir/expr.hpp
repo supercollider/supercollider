@@ -49,6 +49,7 @@ struct Expr : private Base {
         Base(ir, std::move(ast), cxt),
         sink(diagnostic_sink) {}
 
+    Return<SCAnyExpr_I> operator()(ast::ErrorIndex);
     Return<SCAnyExpr_I> operator()(ast::IntLitIndex i);
     Return<SCAnyExpr_I> operator()(ast::FloatLitIndex i);
     Return<SCAnyExpr_I> operator()(ast::ExprSeqIndex);

@@ -6,6 +6,7 @@
 #include "parser_context.hpp"
 #include <memory>
 
+#include "sc_grammar_impl.hpp"
 #include "sc_grammar_parser.hpp"
 #include "sc_lexer/text_info.hpp"
 #include "sc_lexer/text_location.hpp"
@@ -25,6 +26,8 @@ namespace sc::ast {
     parser::parser p { ctx };
 
     const auto ret = p(); // if ret is false, some unknown error was encountered
+    // The parse can end on an error without recovering from it.
+    parser::error_recovery::report(ctx);
     const bool result = ret && ctx.graph;
     return { std::move(ctx.graph), result };
 }

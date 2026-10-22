@@ -179,7 +179,12 @@ inline int yylex(sc::ast::parser::parser::value_type* v, sc::lex::SourceCodeRang
 
 namespace sc::ast::parser::error_recovery {
 
+// Reports the error the parser recorded, if it hasn't been, see report_syntax_error.
+void report(ParserContext&);
+// Reports a missing semicolon instead of the error.
 void region_separator(ParserContext&, sc ::lex::SourceCodeRange last_valid);
 void expr(ParserContext&);
 void method(ParserContext&, sc::lex::SourceCodeRange open_bracket);
+// Reports the error and skips to the bracket matching open_bracket, or the end of the file, returning where it stopped.
+sc::lex::SourceCodeRange bracket(ParserContext&, sc::lex::SourceCodeRange open_bracket);
 }

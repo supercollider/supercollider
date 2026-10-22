@@ -142,7 +142,9 @@ using AnyMessageIndex = join< //
 
 
 using VariablePackAssignIndex = TypedIndex<NodeFlag::VariablePackAssign>;
+// Includes errors, as the parser can recover from an error in an expression and carry on, e.g., `(1 +)`.
 using AnyExprIndex = join< //
+    ErrorIndex, //
     ExprSeqIndex, //
     AnyPossiblyLiteralIndex, //
     ClassNameIdentifierIndex, //

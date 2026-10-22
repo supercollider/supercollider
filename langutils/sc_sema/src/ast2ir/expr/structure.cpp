@@ -9,6 +9,12 @@
 
 namespace sc::ir::ast2ir {
 
+// The parser has reported it and recovered. The code can't run, so it is fatal, but has no diagnostic of its own.
+Return<SCAnyExpr_I> Expr::operator()(ast::ErrorIndex i) {
+    sink.fatal = true;
+    return { ir.create(SCExprList {}, location({ *i })) };
+}
+
 Return<SCAnyExpr_I> Expr::operator()(ast::ExprSeqIndex i) {
     const auto expr_list = ir.create(SCExprList {}, location({ *i }));
 

@@ -83,6 +83,8 @@ struct ConstEval {
     Result eval(ast::AnyExprIndex);
 
     // Hard nos
+    // The parser has reported it, but where a constant is required it isn't one.
+    Result operator()(ast::ErrorIndex);
     Result operator()(ast::ExprSeqIndex);
     Result operator()(ast::EnvIdentifierIndex);
     Result operator()(ast::NonLocalReturnExprIndex);

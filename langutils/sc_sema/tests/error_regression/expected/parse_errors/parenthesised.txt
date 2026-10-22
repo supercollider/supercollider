@@ -1,0 +1,234 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): ParenthesisedError
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (6:5): poisoned: missing_operand { ^(1 +) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:6:28
+|  |  |      4 │     // expect: poisoned
+|  |  |      5 │     // expect-error: Unexpected Token.
+|  |  |      6 │     missing_operand { ^(1 +) }
+|  |  |        ┆                            ^ Expected:  but received CLOSEPAREN
+|  |  |      7 │     // expect: poisoned
+|  |  |      8 │     // expect-error: Unexpected Token.
+|  |  |      9 │     missing_operator { ^(1 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (6:23)
+|  |  |  |  SCExplicitReturn (6:23)
+|  |  |  |  |  SCExprList (6:24)
+|  |  SCMethod (9:5): poisoned: missing_operator { ^(1 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:9:28
+|  |  |      7 │     // expect: poisoned
+|  |  |      8 │     // expect-error: Unexpected Token.
+|  |  |      9 │     missing_operator { ^(1 2) }
+|  |  |        ┆                            ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |     10 │     // The nested brackets are skipped, recovery stops at the bracket matching the error's.
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     // expect-error: Unexpected Token.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (9:24)
+|  |  |  |  SCExplicitReturn (9:24)
+|  |  |  |  |  SCExprList (9:25)
+|  |  SCMethod (13:5): poisoned: nested { ^(1 + (2 3) * 4) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:13:23
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     // expect-error: Unexpected Token.
+|  |  |     13 │     nested { ^(1 + (2 3) * 4) }
+|  |  |        ┆                       ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     // expect-error: Unexpected Token.
+|  |  |     16 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (13:14)
+|  |  |  |  SCExplicitReturn (13:14)
+|  |  |  |  |  SCMessage (13:16): *
+|  |  |  |  |  |  SCMessage (13:16): +
+|  |  |  |  |  |  |  SCLiteral (13:16) = 1
+|  |  |  |  |  |  |  SCPositionalArgs (13:16)
+|  |  |  |  |  |  |  |  SCExprList (13:20)
+|  |  |  |  |  |  SCPositionalArgs (13:16)
+|  |  |  |  |  |  |  SCLiteral (13:28) = 4
+|  |  SCMethod (16:5): poisoned: skips_nested { ^(1 2 (3 + 4)) + 5 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:16:24
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     // expect-error: Unexpected Token.
+|  |  |     16 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
+|  |  |        ┆                        ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |     17 │     // Each error is reported, as recovery resumes at the matching bracket.
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     // expect-error: Unexpected Token.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (16:20)
+|  |  |  |  SCExplicitReturn (16:20)
+|  |  |  |  |  SCMessage (16:21): +
+|  |  |  |  |  |  SCExprList (16:21)
+|  |  |  |  |  |  SCPositionalArgs (16:21)
+|  |  |  |  |  |  |  SCLiteral (16:37) = 5
+|  |  SCMethod (20:5): poisoned: two { ^[(1 2), (3 4)] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:20:16
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     // expect-error: Unexpected Token.
+|  |  |     20 │     two { ^[(1 2), (3 4)] }
+|  |  |        ┆                ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |     21 │     // expect: poisoned
+|  |  |     22 │     // expect-error: Unexpected Token.
+|  |  |     23 │     as_receiver { ^(1 2).foo }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:20:23
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     // expect-error: Unexpected Token.
+|  |  |     20 │     two { ^[(1 2), (3 4)] }
+|  |  |        ┆                       ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |     21 │     // expect: poisoned
+|  |  |     22 │     // expect-error: Unexpected Token.
+|  |  |     23 │     as_receiver { ^(1 2).foo }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (20:11)
+|  |  |  |  SCExplicitReturn (20:11)
+|  |  |  |  |  SCCollection (20:12): Array
+|  |  |  |  |  |  SCExprList (20:13)
+|  |  |  |  |  |  SCExprList (20:20)
+|  |  SCMethod (23:5): poisoned: as_receiver { ^(1 2).foo }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:23:23
+|  |  |     21 │     // expect: poisoned
+|  |  |     22 │     // expect-error: Unexpected Token.
+|  |  |     23 │     as_receiver { ^(1 2).foo }
+|  |  |        ┆                       ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |     24 │     // expect: poisoned
+|  |  |     25 │     // expect-error: Unexpected Token.
+|  |  |     26 │     in_variable { var a = (1 2); ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (23:19)
+|  |  |  |  SCExplicitReturn (23:19)
+|  |  |  |  |  SCMessage (23:20): foo
+|  |  |  |  |  |  SCExprList (23:20)
+|  |  SCMethod (26:5): poisoned: in_variable { var a = (1 2); ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:26:30
+|  |  |     24 │     // expect: poisoned
+|  |  |     25 │     // expect-error: Unexpected Token.
+|  |  |     26 │     in_variable { var a = (1 2); ^a }
+|  |  |        ┆                              ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |     27 │     // expect: poisoned
+|  |  |     28 │     // expect-error: Unexpected Token.
+|  |  |     29 │     in_range { ^(1..2 3) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (26:19)
+|  |  |  |  SCVariableDeclare (26:23): a
+|  |  |  |  |  SCExprList (26:27)
+|  |  |  |  SCExplicitReturn (26:34)
+|  |  |  |  |  SCRead (26:35): local a, declared (26:23): a = (1 2
+|  |  SCMethod (29:5): poisoned: in_range { ^(1..2 3) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:29:23
+|  |  |     27 │     // expect: poisoned
+|  |  |     28 │     // expect-error: Unexpected Token.
+|  |  |     29 │     in_range { ^(1..2 3) }
+|  |  |        ┆                       ^ Expected: CLOSEPAREN but received INTEGER
+|  |  |     30 │     // expect: poisoned
+|  |  |     31 │     // expect-error: Unexpected Token.
+|  |  |     32 │     in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (29:16)
+|  |  |  |  SCExplicitReturn (29:16)
+|  |  |  |  |  SCExprList (29:17)
+|  |  SCMethod (32:5): poisoned: in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:32:44
+|  |  |     30 │     // expect: poisoned
+|  |  |     31 │     // expect-error: Unexpected Token.
+|  |  |     32 │     in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
+|  |  |        ┆                                            ^ Expected:  but received CLOSEPAREN
+|  |  |     33 │     // expect: poisoned
+|  |  |     34 │     // expect-error: Unexpected Token.
+|  |  |     35 │     in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (32:27)
+|  |  |  |  SCArgumentDeclare (32:27): x
+|  |  |  SCBody (32:30)
+|  |  |  |  SCMessage (32:30): if
+|  |  |  |  |  SCRead (32:34): local x, declared (32:27): x
+|  |  |  |  |  SCPositionalArgs (32:30)
+|  |  |  |  |  |  SCFunction (32:37)
+|  |  |  |  |  |  |  SCBody (32:37)
+|  |  |  |  |  |  |  |  SCExplicitReturn (32:39)
+|  |  |  |  |  |  |  |  |  SCExprList (32:40)
+|  |  |  |  SCExplicitReturn (32:49)
+|  |  |  |  |  SCLiteral (32:50) = 2
+|  |  SCMethod (35:5): poisoned: in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/parenthesised.sc:35:44
+|  |  |     33 │     // expect: poisoned
+|  |  |     34 │     // expect-error: Unexpected Token.
+|  |  |     35 │     in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
+|  |  |        ┆                                            ^ Expected: CLOSEPAREN, COMMA, or DOTDOT but received INTEGER
+|  |  |     36 │ 
+|  |  |     37 │     // expect: -> 3
+|  |  |     38 │     // expect: not poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (35:25)
+|  |  |  |  SCArgumentDeclare (35:25): x
+|  |  |  SCBody (35:28)
+|  |  |  |  SCExplicitReturn (35:28)
+|  |  |  |  |  SCFunction (35:29)
+|  |  |  |  |  |  SCBody (35:29)
+|  |  |  |  |  |  |  SCMessage (35:31): if
+|  |  |  |  |  |  |  |  SCRead (35:35): local x, declared (35:25): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (35:31)
+|  |  |  |  |  |  |  |  |  SCFunction (35:38)
+|  |  |  |  |  |  |  |  |  |  SCBody (35:38)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (35:40)
+|  |  |  |  |  |  |  |  |  |  |  |  SCExprList (35:41)
+|  |  |  |  |  |  |  SCLiteral (35:50) = 3
+|  |  SCMethod (39:5): after_errors { ^1 + 2 } -> 3
+|  |  |  SCBody (39:20)
+|  |  |  |  SCExplicitReturn (39:20)
+|  |  |  |  |  SCMessage (39:21): + = 3
+|  |  |  |  |  |  SCLiteral (39:21) = 1
+|  |  |  |  |  |  SCPositionalArgs (39:21)
+|  |  |  |  |  |  |  SCLiteral (39:25) = 2
+Successfully compiled 16 classes.

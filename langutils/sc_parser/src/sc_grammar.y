@@ -244,10 +244,10 @@ region
 				yyerrstatus_ = 0; // this is NOT in the api, but the only way to get errors to re-emit.
 				yyclearin;
 				// Only the token is re-emitted, so anything popped is lost from the region.
-				$$ = !cxt.discarded(@e).empty() ? cxt.graph->append($r, cxt.create_error(@e, @e)) : $1;
+				$$ = !cxt.discarded(@e, Index { *$r }).empty() ? cxt.graph->append($r, cxt.create_error(@e, @e, Index { *$r })) : $1;
 			} else {
 				error_recovery::expr(cxt);
-				$$ = cxt.graph->append($r, cxt.create_error(@e, @e));
+				$$ = cxt.graph->append($r, cxt.create_error(@e, @e, Index { *$r }));
 				yyclearin;
 			} 
 		}
@@ -705,6 +705,14 @@ expr.base
 			// A nasty hack because of nil assignment.
 			cxt.graph->register_bracketed_expr($contents);
 			$$ = $contents;
+		}
+
+	| OPENPAREN[o] error[e]
+		{
+			const auto close = error_recovery::bracket(cxt, @o);
+			$$ = cxt.create_error(range(@o, close), @e);
+			yyclearin; // The lookahead was skipped.
+			yyerrok; // Recovered at the matching bracket, so report the next error.
 		}
 
 	| TILDE name 

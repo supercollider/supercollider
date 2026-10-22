@@ -7,7 +7,12 @@
 #include "sc_lexer/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
 
+// Only records the error, so error recovery can decide how to report it, e.g., as a missing semicolon, see
+// error_recovery::report.
 void sc::ast::parser::parser::report_syntax_error(const context& symbol_cxt) const {
+    // One that the recovery didn't report, e.g., when there wasn't a rule to recover with.
+    error_recovery::report(cxt);
+
     std::vector<symbol_kind_type> expected(12);
     expected.resize(static_cast<size_t>(symbol_cxt.expected_tokens(expected.data(), 12)));
 
@@ -17,22 +22,6 @@ void sc::ast::parser::parser::report_syntax_error(const context& symbol_cxt) con
 
     cxt.unexpected_token_error = UnexpectedToken { symbol_cxt.location(), std::move(expected_int),
                                                    static_cast<int>(symbol_cxt.lookahead().kind_) };
-
-    std::string expected_str;
-    const auto sz = expected_int.size();
-
-    using Symbol = sc::ast::parser::parser::symbol_kind_type;
-    for (size_t i { 0 }; i < sz; ++i) {
-        expected_str += sc::ast::parser::parser::symbol_name(static_cast<Symbol>(expected_int[i]));
-        if (i + 2 == sz)
-            expected_str += ", or ";
-        else if (i + 2 < sz)
-            expected_str += ", ";
-    }
-
-    const char* got_name = symbol_cxt.lookahead().name();
-    cxt.graph->add_diagnostic(
-        diag::Diagnostic::unexpectedToken(cxt.text_info, symbol_cxt.location(), expected_str, got_name));
 }
 
 void sc::ast::parser::parser::error(const sc::lex::SourceCodeRange&, const std::string&) {
@@ -48,9 +37,13 @@ void region_separator(ParserContext& cxt, sc ::lex::SourceCodeRange last_valid) 
     cxt.graph->add_diagnostic(diag::Diagnostic::region_missing_semicolon(cxt.text_info, last_valid));
 }
 
-void expr(ParserContext& cxt) {
+void report(ParserContext& cxt) {
     using Symbol = sc::ast::parser::parser::symbol_kind_type;
-    auto unexpected = cxt.consume_error().value();
+    // Errors bison doesn't report, e.g., at the same token as the last one, have nothing to report.
+    const auto error = cxt.consume_error();
+    if (!error)
+        return;
+    const auto& unexpected = *error;
     const auto got = static_cast<Symbol>(unexpected.got);
 
     const char* got_name = sc::ast::parser::parser::symbol_name(got);
@@ -68,9 +61,24 @@ void expr(ParserContext& cxt) {
     cxt.graph->add_diagnostic(diag::Diagnostic::unexpectedToken(cxt.text_info, unexpected.location, expected, got_name));
 }
 
+void expr(ParserContext& cxt) { report(cxt); }
+
+
+sc::lex::SourceCodeRange bracket(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+    report(cxt);
+    // The lookahead, which caused the error, might be the match itself.
+    if (cxt.previous && cxt.previous->extra == open_bracket)
+        return cxt.previous->range;
+
+    while (true) {
+        cxt.previous = sc::lex::lexer(cxt.cps, cxt.action);
+        if (cxt.previous->extra == open_bracket || cxt.previous->token == sc::lex::TokenType::EndOfFile)
+            return cxt.previous->range;
+    }
+}
 
 void method(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
-    auto _ = cxt.consume_error();
+    report(cxt);
     if (cxt.previous) {
         if (cxt.previous->token == sc::lex::TokenType::CloseCurly) {
             return; // do nothing. Can't guess when brackets mismatch.

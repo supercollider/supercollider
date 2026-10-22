@@ -6,17 +6,6 @@ interpreted/unclosed_comment.scd:4:1
     3 │ 1;
     4*│ /* never
     5*│ closed
-     >│ ^ Expected:  but received LEXER_ERROR
-
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Unexpected Token.
-interpreted/unclosed_comment.scd:4:1
-    2 │ // The errors are reported before the dump, as they are after the region.
-    3 │ 1;
-    4*│ /* never
-    5*│ closed
      >│ ^ Expected: end of file but received LEXER_ERROR
 
 ──────────────────────────────────────────────────────────────────────────────────

@@ -144,7 +144,8 @@ struct ParserContext {
 
     std::optional<UnexpectedToken> unexpected_token_error { };
 
-    std::optional<UnexpectedToken> consume_error() { return std::move(unexpected_token_error); }
+    // Empties it, so it is reported once, see error_recovery::report.
+    std::optional<UnexpectedToken> consume_error() { return std::exchange(unexpected_token_error, std::nullopt); }
 
 
     enum struct RegionRecovery {
@@ -161,7 +162,9 @@ struct ParserContext {
     // When an error is created, it isn't assigned a parent, leaving it in the orphan list.
     // Here we use the error location to gather all nodes within the range.
     // Assumes that there is a non-empty rule before it.
-    [[nodiscard]] std::vector<Index> discarded(sc::lex::SourceCodeRange error) const {
+    // The error rule's own value can still end inside it, e.g., a region that is only an error at the same token, so
+    // the rule passes it as kept.
+    [[nodiscard]] std::vector<Index> discarded(sc::lex::SourceCodeRange error, std::optional<Index> kept = {}) const {
         std::vector<Index> nodes;
         for (const auto i : graph->orphans()) {
             const auto& l = graph->location(i);
@@ -169,7 +172,7 @@ struct ParserContext {
             // on the stack, e.g., an empty list, could touch the error and be adopted.
             const bool inside = error.begin <= l.begin && l.end <= error.end;
             // Only the head of a sibling chain, as appending it takes the rest of the chain.
-            if (inside && !graph->edges(i).prev_sibling)
+            if (inside && i != kept && !graph->edges(i).prev_sibling)
                 nodes.push_back(i);
         }
         std::sort(nodes.begin(), nodes.end(),
@@ -178,8 +181,9 @@ struct ParserContext {
     }
 
     // An error node that adopts what error recovery discarded, so it isn't left as orphans, see discarded.
-    ErrorIndex create_error(sc::lex::SourceCodeRange location, sc::lex::SourceCodeRange error) {
-        const auto nodes = discarded(error);
+    ErrorIndex create_error(sc::lex::SourceCodeRange location, sc::lex::SourceCodeRange error,
+                            std::optional<Index> kept = {}) {
+        const auto nodes = discarded(error, kept);
         const auto e = graph->create(Error {}, location);
         for (const auto i : nodes)
             graph->append(e, i);

@@ -18,6 +18,9 @@ namespace sc::ir::ast2ir {
 
     ConstEval::Result ConstEval::eval(ast::AnyExprIndex i) { return std::visit(*this, ast_graph->index_to_variant(i)); }
 
+    ConstEval::Result ConstEval::operator()(ast::ErrorIndex i) {
+        return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    }
     ConstEval::Result ConstEval::operator()(ast::ExprSeqIndex i) {
         return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
     }
