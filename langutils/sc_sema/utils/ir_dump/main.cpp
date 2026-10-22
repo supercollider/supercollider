@@ -9,6 +9,8 @@
 #include <tuple>
 #include <vector>
 #include <algorithm>
+#include <charconv>
+#include <thread>
 #include <cstdint>
 #include <map>
 #include <optional>
@@ -141,7 +143,7 @@ int main(int argc, char* argv[]) {
 #endif // _MSC_VER
     if (argc <= 1) {
         std::cout << "ERROR: incorrect number of arguments to ir_dump, expected "
-                     "[--prelude dir|.sc file]... [dir|.sc file]... "
+                     "[--threads n] [--relative-to dir] [--prelude dir|.sc file]... [dir|.sc file]... "
                   << std::endl;
         return EXIT_FAILURE;
     }
@@ -153,17 +155,25 @@ int main(int argc, char* argv[]) {
     }
 #endif // _MSC_VER
 
-    const auto num_threads = 1; // std::thread::hardware_concurrency();
-
     // Each path is a module. A path after --prelude is compiled, but its classes aren't dumped, e.g., the class
     // stubs shared by the regression tests.
     // Diagnostics write their paths relative to the directory after --relative-to, rather than as absolute uris.
+    // The output is in source order, so it is the same however many threads compile it, --threads sets how many, all
+    // of them by default.
     std::vector<std::filesystem::path> module_paths;
     std::vector<std::filesystem::path> prelude_paths;
     std::optional<std::filesystem::path> relative_to;
+    size_t num_threads = std::max(1u, std::thread::hardware_concurrency());
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
-        if (arg == "--relative-to" && i + 1 < argc) {
+        if (arg == "--threads" && i + 1 < argc) {
+            const std::string count = get_path(argv[++i]).string();
+            const auto [end, error] = std::from_chars(count.data(), count.data() + count.size(), num_threads);
+            if (error != std::errc {} || end != count.data() + count.size() || num_threads == 0) {
+                std::cout << "ERROR: --threads expects a positive number, not '" << count << "'" << std::endl;
+                return EXIT_FAILURE;
+            }
+        } else if (arg == "--relative-to" && i + 1 < argc) {
             relative_to = get_path(argv[++i]);
         } else if (arg == "--prelude" && i + 1 < argc) {
             prelude_paths.push_back(get_path(argv[++i]));

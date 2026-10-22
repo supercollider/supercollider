@@ -216,7 +216,8 @@ def run_ir_dump(cmd, sc_file):
     with open(sc_file) as f:
         uses_prelude = f.readline().strip() != NO_PRELUDE
     # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
-    args = [cmd, '--relative-to', INPUT_DIR]
+    # The output is the same however many threads compile it, two checks that, while leaving cpus for other tests.
+    args = [cmd, '--threads', '2', '--relative-to', INPUT_DIR]
     args += ['--prelude', PRELUDE, sc_file] if uses_prelude else [sc_file]
     return subprocess.run(args, capture_output=True, text=True, check=True).stdout
 

@@ -45,8 +45,8 @@ private:
 
 struct InheritanceEdges {
     void insert(SymSCClassName parent, SymSCClassName child);
-    void insert(SymSCClassName none) { m_sub_classes[none]; };
-
+    // A class with no parent, e.g., the root.
+    void insert(SymSCClassName none);
 
 
     /// Requires root has no parents.

@@ -15,6 +15,12 @@ void InheritanceEdges::insert(SymSCClassName parent, SymSCClassName child) {
     m_super_class.insert({ child, parent });
 }
 
+void InheritanceEdges::insert(SymSCClassName none) {
+    // Classes are declared on several threads, so this locks too.
+    std::scoped_lock l { m_lock };
+    m_sub_classes[none];
+}
+
 std::vector<std::vector<SymSCClassName>> InheritanceEdges::cycle_check(SymSCClassName root, std::vector<SymSCClassName>& topo_order) const {
     topo_order.clear();
     assert(!m_sub_classes.empty());
