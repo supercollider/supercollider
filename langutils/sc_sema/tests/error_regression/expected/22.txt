@@ -43,58 +43,50 @@ Declare it with 'var', or use '~undefined_var' to refer to an environment variab
 IR GRAPH DUMP 
 
 
-SCClass: IdentifierKeys: IdentifierKeys {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n'    identifier_key { ^(instance_var : 1) }'\n'    keyword_key { ^(instance_var: 1) }'\n'    identifier_key_undefined { ^(undefined_var : 1) }'\n'    *class_identifier_key { ^(class_var : 1) }'\n'}
-|  SCMemberList: IdentifierKeys
-|  |  SCMember: instance_var
-|  SCMethodList: IdentifierKeys
-|  |  SCMethod: identifier_key { ^(instance_var : 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(instance_var : 1)
-|  |  |  |  SCExplicitReturn: (instance_var : 1)
-|  |  |  |  |  SCCollection: Event: (instance_var : 1)
-|  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: keyword_key { ^(instance_var: 1) } -> {"event": [{"key": {"symbol": "instance_var"}, "value": {"int": 1}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(instance_var: 1)
-|  |  |  |  SCExplicitReturn: (instance_var: 1)
-|  |  |  |  |  SCCollection: Event: (instance_var: 1) = {"event": [{"key": {"symbol": "instance_var"}, "value": {"int": 1}}]}
-|  |  |  |  |  |  SCLiteral: instance_var: = {"symbol": "instance_var"}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: poisoned: identifier_key_undefined { ^(undefined_var : 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(undefined_var : 1)
-|  |  |  |  SCExplicitReturn: (undefined_var : 1)
-|  |  |  |  |  SCCollection: Event: (undefined_var : 1)
-|  |  |  |  |  |  SCExprList: undefined_var
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-SCClass: Meta_IdentifierKeys: IdentifierKeys {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n'    identifier_key { ^(instance_var : 1) }'\n'    keyword_key { ^(instance_var: 1) }'\n'    identifier_key_undefined { ^(undefined_var : 1) }'\n'    *class_identifier_key { ^(class_var : 1) }'\n'}
-|  SCMemberList: IdentifierKeys
-|  |  SCMember: class_var
-|  SCMethodList: IdentifierKeys
-|  |  SCMethod: *class_identifier_key { ^(class_var : 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(class_var : 1)
-|  |  |  |  SCExplicitReturn: (class_var : 1)
-|  |  |  |  |  SCCollection: Event: (class_var : 1)
-|  |  |  |  |  |  SCRead: class_var
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-SCClass: Initialisers: Initialisers {'\n'    const const_key = \k;'\n'    const constant_event = (a: 1, b: [2, 3]);'\n'    classvar class_event = (a: 1);'\n'    var instance_event = (a: (b: 2));'\n'    const constant_array = [1, (a: 2)];'\n'    classvar class_array = [1, 2];'\n'    var instance_array = #[x, y];'\n'    var identifier_key_const = (const_key : 1);'\n'    var identifier_key_not_const = (other : 1);'\n'    var value_not_constant = (a: 1.foo);'\n'}
-|  SCMemberList: Initialisers
-|  |  SCMember: instance_event = {"event": [{"key": {"symbol": "a"}, "value": {"event": [{"key": {"symbol": "b"}, "value": {"int": 2}}]}}]}
-|  |  SCMember: instance_array = {"array": [{"symbol": "x"}, {"symbol": "y"}]}
-|  |  SCMember: identifier_key_const = {"event": [{"key": {"symbol": "k"}, "value": {"int": 1}}]}
-|  SCMethodList: Initialisers
-SCClass: Meta_Initialisers: Initialisers {'\n'    const const_key = \k;'\n'    const constant_event = (a: 1, b: [2, 3]);'\n'    classvar class_event = (a: 1);'\n'    var instance_event = (a: (b: 2));'\n'    const constant_array = [1, (a: 2)];'\n'    classvar class_array = [1, 2];'\n'    var instance_array = #[x, y];'\n'    var identifier_key_const = (const_key : 1);'\n'    var identifier_key_not_const = (other : 1);'\n'    var value_not_constant = (a: 1.foo);'\n'}
-|  SCMemberList: Initialisers
-|  |  SCMember: const_key = {"symbol": "k"}
-|  |  SCMember: constant_event = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"array": [{"int": 2}, {"int": 3}]}}]}
-|  |  SCMember: constant_array = {"array": [{"int": 1}, {"event": [{"key": {"symbol": "a"}, "value": {"int": 2}}]}]}
-|  |  SCMember: class_event = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
-|  |  SCMember: class_array = {"array": [{"int": 1}, {"int": 2}]}
-|  SCMethodList: Initialisers
+SCClass (1:1): IdentifierKeys
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): instance_var
+|  SCMethodList (1:1)
+|  |  SCMethod (5:5): identifier_key { ^(instance_var : 1) }
+|  |  |  SCBody (5:22)
+|  |  |  |  SCExplicitReturn (5:23)
+|  |  |  |  |  SCCollection (5:23): Event
+|  |  |  |  |  |  SCRead (5:24): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  |  SCLiteral (5:39) = 1
+|  |  SCMethod (6:5): keyword_key { ^(instance_var: 1) } -> (instance_var: 1)
+|  |  |  SCBody (6:19)
+|  |  |  |  SCExplicitReturn (6:20)
+|  |  |  |  |  SCCollection (6:20): Event = (instance_var: 1)
+|  |  |  |  |  |  SCLiteral (6:21) = \instance_var
+|  |  |  |  |  |  SCLiteral (6:35) = 1
+|  |  SCMethod (7:5): poisoned: identifier_key_undefined { ^(undefined_var : 1) }
+|  |  |  SCBody (7:32)
+|  |  |  |  SCExplicitReturn (7:33)
+|  |  |  |  |  SCCollection (7:33): Event
+|  |  |  |  |  |  SCExprList (7:34)
+|  |  |  |  |  |  SCLiteral (7:50) = 1
+SCClass (1:1): Meta_IdentifierKeys
+|  SCMemberList (1:1)
+|  |  SCMember (3:14): class_var
+|  SCMethodList (1:1)
+|  |  SCMethod (8:5): *class_identifier_key { ^(class_var : 1) }
+|  |  |  SCBody (8:29)
+|  |  |  |  SCExplicitReturn (8:30)
+|  |  |  |  |  SCCollection (8:30): Event
+|  |  |  |  |  |  SCRead (8:31): instance class_var, declared (3:14): class_var
+|  |  |  |  |  |  SCLiteral (8:43) = 1
+SCClass (11:1): Initialisers
+|  SCMemberList (11:1)
+|  |  SCMember (15:9): instance_event = (a: (b: 2))
+|  |  SCMember (18:9): instance_array = [\x, \y]
+|  |  SCMember (19:9): identifier_key_const = (k: 1)
+|  SCMethodList (11:1)
+SCClass (11:1): Meta_Initialisers
+|  SCMemberList (11:1)
+|  |  SCMember (12:11): const_key = \k
+|  |  SCMember (13:11): constant_event = (a: 1, b: [2, 3])
+|  |  SCMember (16:11): constant_array = [1, (a: 2)]
+|  |  SCMember (14:14): class_event = (a: 1)
+|  |  SCMember (17:14): class_array = [1, 2]
+|  SCMethodList (11:1)
 Successfully compiled 16 classes.

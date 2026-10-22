@@ -40,7 +40,12 @@ struct SCRead : priv::Terminal<SCRead_I> {
     enum struct Kind { Local, Instance, Class, Environment };
     SymSCIdentifier name;
     Kind kind;
-    SCRead(SymSCIdentifier n, Kind k): name(n), kind(k) {}
+    // Where the variable is declared, environment variables aren't.
+    std::optional<SourceLocation> declaration;
+    SCRead(SymSCIdentifier n, Kind k, std::optional<SourceLocation> d = std::nullopt):
+        name(n),
+        kind(k),
+        declaration(d) {}
 };
 
 struct SCAssign : priv::Node<SCAssign_I(SCAnyExpr_I)> {
@@ -48,7 +53,12 @@ struct SCAssign : priv::Node<SCAssign_I(SCAnyExpr_I)> {
     enum struct Kind { Local, Instance, Class, Environment };
     Locatable<SymSCIdentifier> name;
     Kind kind;
-    SCAssign(Locatable<SymSCIdentifier> n, Kind k): name(n), kind(k) {}
+    // Where the variable is declared, environment variables aren't.
+    std::optional<SourceLocation> declaration;
+    SCAssign(Locatable<SymSCIdentifier> n, Kind k, std::optional<SourceLocation> d = std::nullopt):
+        name(n),
+        kind(k),
+        declaration(d) {}
 };
 
 
@@ -121,11 +131,15 @@ struct SCPackTarget : priv::Terminal<SCPackTarget_I> {
     SCAssign::Kind kind;
     std::uint32_t index;
     bool rest;
-    SCPackTarget(Locatable<SymSCIdentifier> n, SCAssign::Kind k, std::uint32_t i, bool r):
+    // Where the variable is declared, when assigning. In SCPackDeclare the target is the declaration.
+    std::optional<SourceLocation> declaration;
+    SCPackTarget(Locatable<SymSCIdentifier> n, SCAssign::Kind k, std::uint32_t i, bool r,
+                 std::optional<SourceLocation> d = std::nullopt):
         name(n),
         kind(k),
         index(i),
-        rest(r) {}
+        rest(r),
+        declaration(d) {}
 };
 
 struct SCPackTargets : priv::List<SCPackTargetList_I, SCPackTarget_I> {

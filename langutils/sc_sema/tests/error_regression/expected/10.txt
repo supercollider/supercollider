@@ -46,15 +46,15 @@ Duplicate members are not allowed within a class hierarchy. Please delete one.
 IR GRAPH DUMP 
 
 
-SCClass: Dup1: Dup1 {'\n'    var a, a;'\n'}
-|  SCMemberList: Dup1
-|  |  SCMember: a
-|  SCMethodList: Dup1
-SCClass: Dup2B: Dup2B {'\n'    var a;'\n'}
-|  SCMemberList: Dup2B
-|  |  SCMember: a
-|  SCMethodList: Dup2B
-SCClass: Dup2D: Dup2D : Dup2B {'\n'    var a;'\n'}
-|  SCMemberList: Dup2D
-|  SCMethodList: Dup2D
+SCClass (1:1): Dup1
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): a
+|  SCMethodList (1:1)
+SCClass (5:1): Dup2B
+|  SCMemberList (5:1)
+|  |  SCMember (6:9): a
+|  SCMethodList (5:1)
+SCClass (9:1): Dup2D
+|  SCMemberList (9:1)
+|  SCMethodList (9:1)
 Successfully compiled 17 classes.

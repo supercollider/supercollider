@@ -163,133 +163,95 @@ A variadic argument, e.g., `*a`, must come after all the positional arguments, e
 IR GRAPH DUMP 
 
 
-SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    variadic_last { ^1.foo(2, *3) }'\n'    variadic_first { ^1.foo(*2, 3) }'\n'    two_after { ^1.foo(*2, 3, 4) }'\n'    keyword_after { ^1.foo(*2, bar: 3) }'\n'    prefix { ^foo(1, *2, 3) }'\n'    prefix_variadic_receiver { ^foo(*1, 2) }'\n'    array_after { ^1.foo(*2, [3]) }'\n'    put_variadic { instance_var[*0] = 1 }'\n'    put_variadic_keyword { instance_var[*0, b: 1] = 2 }'\n'    after_errors { ^5 }'\n'}
-|  SCMemberList: VariadicOrder
-|  |  SCMember: instance_var
-|  SCMethodList: VariadicOrder
-|  |  SCMethod: variadic_last { ^1.foo(2, *3) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.foo(2, *3)
-|  |  |  |  SCExplicitReturn: 1.foo(2, *3)
-|  |  |  |  |  SCMessage: foo: 1.foo(2, *3)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.foo(2, *3)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1.foo(2, *3)
-|  |  |  |  |  |  SCVariadicArgs: 1.foo(2, *3)
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCMissing: 1.foo(2, *3)
-|  |  SCMethod: poisoned: variadic_first { ^1.foo(*2, 3) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.foo(*2, 3)
-|  |  |  |  SCExplicitReturn: 1.foo(*2, 3)
-|  |  |  |  |  SCMessage: foo: 1.foo(*2, 3)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.foo(*2, 3)
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: 1.foo(*2, 3)
-|  |  |  |  |  |  SCVariadicArgs: 1.foo(*2, 3)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCMissing: 1.foo(*2, 3)
-|  |  SCMethod: poisoned: two_after { ^1.foo(*2, 3, 4) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.foo(*2, 3, 4)
-|  |  |  |  SCExplicitReturn: 1.foo(*2, 3, 4)
-|  |  |  |  |  SCMessage: foo: 1.foo(*2, 3, 4)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.foo(*2, 3, 4)
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  SCLiteral: 4 = {"int": 4}
-|  |  |  |  |  |  SCKwArgs: 1.foo(*2, 3, 4)
-|  |  |  |  |  |  SCVariadicArgs: 1.foo(*2, 3, 4)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCMissing: 1.foo(*2, 3, 4)
-|  |  SCMethod: keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.foo(*2, bar: 3)
-|  |  |  |  SCExplicitReturn: 1.foo(*2, bar: 3)
-|  |  |  |  |  SCMessage: foo: 1.foo(*2, bar: 3)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.foo(*2, bar: 3)
-|  |  |  |  |  |  SCKwArgs: 1.foo(*2, bar: 3)
-|  |  |  |  |  |  |  SCKwArg: bar: bar: 3
-|  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCVariadicArgs: 1.foo(*2, bar: 3)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCMissing: 1.foo(*2, bar: 3)
-|  |  SCMethod: poisoned: prefix { ^foo(1, *2, 3) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^foo(1, *2, 3)
-|  |  |  |  SCExplicitReturn: foo(1, *2, 3)
-|  |  |  |  |  SCMessage: foo: foo(1, *2, 3)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: foo(1, *2, 3)
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: foo(1, *2, 3)
-|  |  |  |  |  |  SCVariadicArgs: foo(1, *2, 3)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCMissing: foo(1, *2, 3)
-|  |  SCMethod: poisoned: prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^foo(*1, 2)
-|  |  |  |  SCExplicitReturn: foo(*1, 2)
-|  |  |  |  |  SCMessage: foo: foo(*1, 2)
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCPositionalArgs: foo(*1, 2)
-|  |  |  |  |  |  SCKwArgs: foo(*1, 2)
-|  |  |  |  |  |  SCVariadicArgs: foo(*1, 2)
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMissing: foo(*1, 2)
-|  |  SCMethod: poisoned: array_after { ^1.foo(*2, [3]) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.foo(*2, [3])
-|  |  |  |  SCExplicitReturn: 1.foo(*2, [3])
-|  |  |  |  |  SCMessage: foo: 1.foo(*2, [3])
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.foo(*2, [3])
-|  |  |  |  |  |  |  SCCollection: Array: [3] = {"array": [{"int": 3}]}
-|  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: 1.foo(*2, [3])
-|  |  |  |  |  |  SCVariadicArgs: 1.foo(*2, [3])
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCMissing: 1.foo(*2, [3])
-|  |  SCMethod: poisoned: put_variadic { instance_var[*0] = 1 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var[*0] = 1
-|  |  |  |  SCMessage: put: instance_var[*0] = 1
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var[*0] = 1
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCKwArgs: instance_var[*0] = 1
-|  |  |  |  |  SCVariadicArgs: instance_var[*0] = 1
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  SCMissing: instance_var[*0] = 1
-|  |  SCMethod: poisoned: put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var[*0, b: 1] = 2
-|  |  |  |  SCMessage: put: instance_var[*0, b: 1] = 2
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var[*0, b: 1] = 2
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: instance_var[*0, b: 1] = 2
-|  |  |  |  |  |  SCKwArg: b: b: 1
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCVariadicArgs: instance_var[*0, b: 1] = 2
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  SCMissing: instance_var[*0, b: 1] = 2
-|  |  SCMethod: after_errors { ^5 } -> {"int": 5}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^5
-|  |  |  |  SCExplicitReturn: 5
-|  |  |  |  |  SCLiteral: 5 = {"int": 5}
+SCClass (1:1): VariadicOrder
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): instance_var
+|  SCMethodList (1:1)
+|  |  SCMethod (4:5): variadic_last { ^1.foo(2, *3) }
+|  |  |  SCBody (4:21)
+|  |  |  |  SCExplicitReturn (4:22)
+|  |  |  |  |  SCMessage (4:22): foo
+|  |  |  |  |  |  SCLiteral (4:22) = 1
+|  |  |  |  |  |  SCPositionalArgs (4:22)
+|  |  |  |  |  |  |  SCLiteral (4:28) = 2
+|  |  |  |  |  |  SCVariadicArgs (4:22)
+|  |  |  |  |  |  |  SCLiteral (4:32) = 3
+|  |  SCMethod (5:5): poisoned: variadic_first { ^1.foo(*2, 3) }
+|  |  |  SCBody (5:22)
+|  |  |  |  SCExplicitReturn (5:23)
+|  |  |  |  |  SCMessage (5:23): foo
+|  |  |  |  |  |  SCLiteral (5:23) = 1
+|  |  |  |  |  |  SCPositionalArgs (5:23)
+|  |  |  |  |  |  |  SCLiteral (5:33) = 3
+|  |  |  |  |  |  SCVariadicArgs (5:23)
+|  |  |  |  |  |  |  SCLiteral (5:30) = 2
+|  |  SCMethod (6:5): poisoned: two_after { ^1.foo(*2, 3, 4) }
+|  |  |  SCBody (6:17)
+|  |  |  |  SCExplicitReturn (6:18)
+|  |  |  |  |  SCMessage (6:18): foo
+|  |  |  |  |  |  SCLiteral (6:18) = 1
+|  |  |  |  |  |  SCPositionalArgs (6:18)
+|  |  |  |  |  |  |  SCLiteral (6:28) = 3
+|  |  |  |  |  |  |  SCLiteral (6:31) = 4
+|  |  |  |  |  |  SCVariadicArgs (6:18)
+|  |  |  |  |  |  |  SCLiteral (6:25) = 2
+|  |  SCMethod (7:5): keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |  SCBody (7:21)
+|  |  |  |  SCExplicitReturn (7:22)
+|  |  |  |  |  SCMessage (7:22): foo
+|  |  |  |  |  |  SCLiteral (7:22) = 1
+|  |  |  |  |  |  SCKwArgs (7:22)
+|  |  |  |  |  |  |  SCKwArg (7:32): bar
+|  |  |  |  |  |  |  |  SCLiteral (7:37) = 3
+|  |  |  |  |  |  SCVariadicArgs (7:22)
+|  |  |  |  |  |  |  SCLiteral (7:29) = 2
+|  |  SCMethod (8:5): poisoned: prefix { ^foo(1, *2, 3) }
+|  |  |  SCBody (8:14)
+|  |  |  |  SCExplicitReturn (8:15)
+|  |  |  |  |  SCMessage (8:15): foo
+|  |  |  |  |  |  SCLiteral (8:19) = 1
+|  |  |  |  |  |  SCPositionalArgs (8:15)
+|  |  |  |  |  |  |  SCLiteral (8:26) = 3
+|  |  |  |  |  |  SCVariadicArgs (8:15)
+|  |  |  |  |  |  |  SCLiteral (8:23) = 2
+|  |  SCMethod (9:5): poisoned: prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |  SCBody (9:32)
+|  |  |  |  SCExplicitReturn (9:33)
+|  |  |  |  |  SCMessage (9:33): foo
+|  |  |  |  |  |  SCLiteral (9:41) = 2
+|  |  |  |  |  |  SCVariadicArgs (9:33)
+|  |  |  |  |  |  |  SCLiteral (9:38) = 1
+|  |  SCMethod (10:5): poisoned: array_after { ^1.foo(*2, [3]) }
+|  |  |  SCBody (10:19)
+|  |  |  |  SCExplicitReturn (10:20)
+|  |  |  |  |  SCMessage (10:20): foo
+|  |  |  |  |  |  SCLiteral (10:20) = 1
+|  |  |  |  |  |  SCPositionalArgs (10:20)
+|  |  |  |  |  |  |  SCCollection (10:30): Array = [3]
+|  |  |  |  |  |  |  |  SCLiteral (10:31) = 3
+|  |  |  |  |  |  SCVariadicArgs (10:20)
+|  |  |  |  |  |  |  SCLiteral (10:27) = 2
+|  |  SCMethod (11:5): poisoned: put_variadic { instance_var[*0] = 1 }
+|  |  |  SCBody (11:20)
+|  |  |  |  SCMessage (11:20): put
+|  |  |  |  |  SCRead (11:20): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (11:20)
+|  |  |  |  |  |  SCLiteral (11:39) = 1
+|  |  |  |  |  SCVariadicArgs (11:20)
+|  |  |  |  |  |  SCLiteral (11:34) = 0
+|  |  SCMethod (12:5): poisoned: put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |  SCBody (12:28)
+|  |  |  |  SCMessage (12:28): put
+|  |  |  |  |  SCRead (12:28): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (12:28)
+|  |  |  |  |  |  SCLiteral (12:53) = 2
+|  |  |  |  |  SCKwArgs (12:28)
+|  |  |  |  |  |  SCKwArg (12:45): b
+|  |  |  |  |  |  |  SCLiteral (12:48) = 1
+|  |  |  |  |  SCVariadicArgs (12:28)
+|  |  |  |  |  |  SCLiteral (12:42) = 0
+|  |  SCMethod (13:5): after_errors { ^5 } -> 5
+|  |  |  SCBody (13:20)
+|  |  |  |  SCExplicitReturn (13:21)
+|  |  |  |  |  SCLiteral (13:21) = 5
 Successfully compiled 15 classes.

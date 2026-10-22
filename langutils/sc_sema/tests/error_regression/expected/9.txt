@@ -4,24 +4,24 @@
 IR GRAPH DUMP 
 
 
-SCClass: Foo: Foo {'\n'    var bar, car, tar;'\n'    const foo_const1, foo_const_2;'\n'}
-|  SCMemberList: Foo
-|  |  SCMember: bar
-|  |  SCMember: car
-|  |  SCMember: tar
-|  SCMethodList: Foo
-SCClass: Meta_Foo: Foo {'\n'    var bar, car, tar;'\n'    const foo_const1, foo_const_2;'\n'}
-|  SCMemberList: Foo
-|  |  SCMember: foo_const1
-|  |  SCMember: foo_const_2
-|  SCMethodList: Foo
-SCClass: Foo2: Foo2 : Foo {'\n'    var foo2_a, foo2_b;'\n''\n'    classvar foo2_class_var;'\n''\n'}
-|  SCMemberList: Foo2
-|  |  SCMember: foo2_a
-|  |  SCMember: foo2_b
-|  SCMethodList: Foo2
-SCClass: Meta_Foo2: Foo2 : Foo {'\n'    var foo2_a, foo2_b;'\n''\n'    classvar foo2_class_var;'\n''\n'}
-|  SCMemberList: Foo2
-|  |  SCMember: foo2_class_var
-|  SCMethodList: Foo2
+SCClass (1:1): Foo
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): bar
+|  |  SCMember (2:14): car
+|  |  SCMember (2:19): tar
+|  SCMethodList (1:1)
+SCClass (1:1): Meta_Foo
+|  SCMemberList (1:1)
+|  |  SCMember (3:11): foo_const1
+|  |  SCMember (3:23): foo_const_2
+|  SCMethodList (1:1)
+SCClass (8:1): Foo2
+|  SCMemberList (8:1)
+|  |  SCMember (9:9): foo2_a
+|  |  SCMember (9:17): foo2_b
+|  SCMethodList (8:1)
+SCClass (8:1): Meta_Foo2
+|  SCMemberList (8:1)
+|  |  SCMember (11:14): foo2_class_var
+|  SCMethodList (8:1)
 Successfully compiled 16 classes.

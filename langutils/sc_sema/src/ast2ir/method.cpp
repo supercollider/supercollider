@@ -20,9 +20,11 @@ Scope member_scope(std::shared_ptr<const IRGraph> class_ir, SCMemberList_I membe
             const_expr = *member.expr;
             type_info = member.expr_type_info;
         }
-        scope.insert({ member.name,
-                       ScopeEntry { class_ir, members, member_i, const_expr, type_info, ScopeEntry::Kind::Instance,
-                                    ScopeEntry::State::Initalised } });
+        const auto loc = class_ir->location(member_i);
+        scope.insert(
+            { member.name,
+              ScopeEntry { class_ir, members, member_i, const_expr, type_info, ScopeEntry::Kind::Instance,
+                           ScopeEntry::State::Initalised, class_ir->text_info(loc.source), IRGraph::range(loc) } });
     }
     return scope;
 }

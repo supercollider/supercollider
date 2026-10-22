@@ -39,160 +39,97 @@ Declare it with 'var', or use '~undefined_var' to refer to an environment variab
 IR GRAPH DUMP 
 
 
-SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single { instance_var[0] = 1 }'\n'    empty { instance_var[] = 1 }'\n'    dot { instance_var.[0] = 1 }'\n'    dot_empty { instance_var.[] = 1 }'\n'    multiple { instance_var[0, 1] = 2 }'\n'    keyword { instance_var[0, b: 1] = 2 }'\n'    variadic { instance_var[*0] = 1 }'\n'    expression_receiver { 1.foo[0] = 2 }'\n'    nested_value { instance_var[0] = instance_var[1] = 2 }'\n'    as_argument { ^3.bar(instance_var[0] = 1) }'\n'    undefined_value { instance_var[0] = undefined_var }'\n'}
-|  SCMemberList: AssignmentAt
-|  |  SCMember: instance_var
-|  SCMethodList: AssignmentAt
-|  |  SCMethod: single { instance_var[0] = 1 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var[0] = 1
-|  |  |  |  SCMessage: put: instance_var[0] = 1
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var[0] = 1
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCKwArgs: instance_var[0] = 1
-|  |  |  |  |  SCVariadicArgs: instance_var[0] = 1
-|  |  |  |  |  SCMissing: instance_var[0] = 1
-|  |  SCMethod: empty { instance_var[] = 1 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var[] = 1
-|  |  |  |  SCMessage: put: instance_var[] = 1
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var[] = 1
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCKwArgs: instance_var[] = 1
-|  |  |  |  |  SCVariadicArgs: instance_var[] = 1
-|  |  |  |  |  SCMissing: instance_var[] = 1
-|  |  SCMethod: dot { instance_var.[0] = 1 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var.[0] = 1
-|  |  |  |  SCMessage: put: instance_var.[0] = 1
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var.[0] = 1
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCKwArgs: instance_var.[0] = 1
-|  |  |  |  |  SCVariadicArgs: instance_var.[0] = 1
-|  |  |  |  |  SCMissing: instance_var.[0] = 1
-|  |  SCMethod: dot_empty { instance_var.[] = 1 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var.[] = 1
-|  |  |  |  SCMessage: put: instance_var.[] = 1
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var.[] = 1
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCKwArgs: instance_var.[] = 1
-|  |  |  |  |  SCVariadicArgs: instance_var.[] = 1
-|  |  |  |  |  SCMissing: instance_var.[] = 1
-|  |  SCMethod: multiple { instance_var[0, 1] = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var[0, 1] = 2
-|  |  |  |  SCMessage: put: instance_var[0, 1] = 2
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var[0, 1] = 2
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: instance_var[0, 1] = 2
-|  |  |  |  |  SCVariadicArgs: instance_var[0, 1] = 2
-|  |  |  |  |  SCMissing: instance_var[0, 1] = 2
-|  |  SCMethod: keyword { instance_var[0, b: 1] = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var[0, b: 1] = 2
-|  |  |  |  SCMessage: put: instance_var[0, b: 1] = 2
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var[0, b: 1] = 2
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: instance_var[0, b: 1] = 2
-|  |  |  |  |  |  SCKwArg: b: b: 1
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCVariadicArgs: instance_var[0, b: 1] = 2
-|  |  |  |  |  SCMissing: instance_var[0, b: 1] = 2
-|  |  SCMethod: poisoned: variadic { instance_var[*0] = 1 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var[*0] = 1
-|  |  |  |  SCMessage: put: instance_var[*0] = 1
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var[*0] = 1
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCKwArgs: instance_var[*0] = 1
-|  |  |  |  |  SCVariadicArgs: instance_var[*0] = 1
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  SCMissing: instance_var[*0] = 1
-|  |  SCMethod: expression_receiver { 1.foo[0] = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: 1.foo[0] = 2
-|  |  |  |  SCMessage: put: 1.foo[0] = 2
-|  |  |  |  |  SCMessage: foo: 1.foo
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.foo
-|  |  |  |  |  |  SCKwArgs: 1.foo
-|  |  |  |  |  |  SCVariadicArgs: 1.foo
-|  |  |  |  |  |  SCMissing: 1.foo
-|  |  |  |  |  SCPositionalArgs: 1.foo[0] = 2
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: 1.foo[0] = 2
-|  |  |  |  |  SCVariadicArgs: 1.foo[0] = 2
-|  |  |  |  |  SCMissing: 1.foo[0] = 2
-|  |  SCMethod: nested_value { instance_var[0] = instance_var[1] = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var[0] = instance_var[1] = 2
-|  |  |  |  SCMessage: put: instance_var[0] = instance_var[1] = 2
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var[0] = instance_var[1] = 2
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  SCMessage: put: instance_var[1] = 2
-|  |  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  |  SCPositionalArgs: instance_var[1] = 2
-|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCKwArgs: instance_var[1] = 2
-|  |  |  |  |  |  |  SCVariadicArgs: instance_var[1] = 2
-|  |  |  |  |  |  |  SCMissing: instance_var[1] = 2
-|  |  |  |  |  SCKwArgs: instance_var[0] = instance_var[1] = 2
-|  |  |  |  |  SCVariadicArgs: instance_var[0] = instance_var[1] = 2
-|  |  |  |  |  SCMissing: instance_var[0] = instance_var[1] = 2
-|  |  SCMethod: as_argument { ^3.bar(instance_var[0] = 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^3.bar(instance_var[0] = 1)
-|  |  |  |  SCExplicitReturn: 3.bar(instance_var[0] = 1)
-|  |  |  |  |  SCMessage: bar: 3.bar(instance_var[0] = 1)
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: 3.bar(instance_var[0] = 1)
-|  |  |  |  |  |  |  SCMessage: put: instance_var[0] = 1
-|  |  |  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  |  |  SCPositionalArgs: instance_var[0] = 1
-|  |  |  |  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  SCKwArgs: instance_var[0] = 1
-|  |  |  |  |  |  |  |  SCVariadicArgs: instance_var[0] = 1
-|  |  |  |  |  |  |  |  SCMissing: instance_var[0] = 1
-|  |  |  |  |  |  SCKwArgs: 3.bar(instance_var[0] = 1)
-|  |  |  |  |  |  SCVariadicArgs: 3.bar(instance_var[0] = 1)
-|  |  |  |  |  |  SCMissing: 3.bar(instance_var[0] = 1)
-|  |  SCMethod: poisoned: undefined_value { instance_var[0] = undefined_var }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var[0] = undefined_var
-|  |  |  |  SCMessage: put: instance_var[0] = undefined_var
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPositionalArgs: instance_var[0] = undefined_var
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  SCExprList: undefined_var
-|  |  |  |  |  SCKwArgs: instance_var[0] = undefined_var
-|  |  |  |  |  SCVariadicArgs: instance_var[0] = undefined_var
-|  |  |  |  |  SCMissing: instance_var[0] = undefined_var
+SCClass (1:1): AssignmentAt
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): instance_var
+|  SCMethodList (1:1)
+|  |  SCMethod (4:5): single { instance_var[0] = 1 }
+|  |  |  SCBody (4:14)
+|  |  |  |  SCMessage (4:14): put
+|  |  |  |  |  SCRead (4:14): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (4:14)
+|  |  |  |  |  |  SCLiteral (4:27) = 0
+|  |  |  |  |  |  SCLiteral (4:32) = 1
+|  |  SCMethod (5:5): empty { instance_var[] = 1 }
+|  |  |  SCBody (5:13)
+|  |  |  |  SCMessage (5:13): put
+|  |  |  |  |  SCRead (5:13): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (5:13)
+|  |  |  |  |  |  SCLiteral (5:30) = 1
+|  |  SCMethod (6:5): dot { instance_var.[0] = 1 }
+|  |  |  SCBody (6:11)
+|  |  |  |  SCMessage (6:11): put
+|  |  |  |  |  SCRead (6:11): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (6:11)
+|  |  |  |  |  |  SCLiteral (6:25) = 0
+|  |  |  |  |  |  SCLiteral (6:30) = 1
+|  |  SCMethod (7:5): dot_empty { instance_var.[] = 1 }
+|  |  |  SCBody (7:17)
+|  |  |  |  SCMessage (7:17): put
+|  |  |  |  |  SCRead (7:17): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (7:17)
+|  |  |  |  |  |  SCLiteral (7:35) = 1
+|  |  SCMethod (8:5): multiple { instance_var[0, 1] = 2 }
+|  |  |  SCBody (8:16)
+|  |  |  |  SCMessage (8:16): put
+|  |  |  |  |  SCRead (8:16): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (8:16)
+|  |  |  |  |  |  SCLiteral (8:29) = 0
+|  |  |  |  |  |  SCLiteral (8:32) = 1
+|  |  |  |  |  |  SCLiteral (8:37) = 2
+|  |  SCMethod (9:5): keyword { instance_var[0, b: 1] = 2 }
+|  |  |  SCBody (9:15)
+|  |  |  |  SCMessage (9:15): put
+|  |  |  |  |  SCRead (9:15): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (9:15)
+|  |  |  |  |  |  SCLiteral (9:28) = 0
+|  |  |  |  |  |  SCLiteral (9:39) = 2
+|  |  |  |  |  SCKwArgs (9:15)
+|  |  |  |  |  |  SCKwArg (9:31): b
+|  |  |  |  |  |  |  SCLiteral (9:34) = 1
+|  |  SCMethod (10:5): poisoned: variadic { instance_var[*0] = 1 }
+|  |  |  SCBody (10:16)
+|  |  |  |  SCMessage (10:16): put
+|  |  |  |  |  SCRead (10:16): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (10:16)
+|  |  |  |  |  |  SCLiteral (10:35) = 1
+|  |  |  |  |  SCVariadicArgs (10:16)
+|  |  |  |  |  |  SCLiteral (10:30) = 0
+|  |  SCMethod (11:5): expression_receiver { 1.foo[0] = 2 }
+|  |  |  SCBody (11:27)
+|  |  |  |  SCMessage (11:27): put
+|  |  |  |  |  SCMessage (11:27): foo
+|  |  |  |  |  |  SCLiteral (11:27) = 1
+|  |  |  |  |  SCPositionalArgs (11:27)
+|  |  |  |  |  |  SCLiteral (11:33) = 0
+|  |  |  |  |  |  SCLiteral (11:38) = 2
+|  |  SCMethod (12:5): nested_value { instance_var[0] = instance_var[1] = 2 }
+|  |  |  SCBody (12:20)
+|  |  |  |  SCMessage (12:20): put
+|  |  |  |  |  SCRead (12:20): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (12:20)
+|  |  |  |  |  |  SCLiteral (12:33) = 0
+|  |  |  |  |  |  SCMessage (12:38): put
+|  |  |  |  |  |  |  SCRead (12:38): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  |  |  SCPositionalArgs (12:38)
+|  |  |  |  |  |  |  |  SCLiteral (12:51) = 1
+|  |  |  |  |  |  |  |  SCLiteral (12:56) = 2
+|  |  SCMethod (13:5): as_argument { ^3.bar(instance_var[0] = 1) }
+|  |  |  SCBody (13:19)
+|  |  |  |  SCExplicitReturn (13:20)
+|  |  |  |  |  SCMessage (13:20): bar
+|  |  |  |  |  |  SCLiteral (13:20) = 3
+|  |  |  |  |  |  SCPositionalArgs (13:20)
+|  |  |  |  |  |  |  SCMessage (13:26): put
+|  |  |  |  |  |  |  |  SCRead (13:26): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  |  |  |  SCPositionalArgs (13:26)
+|  |  |  |  |  |  |  |  |  SCLiteral (13:39) = 0
+|  |  |  |  |  |  |  |  |  SCLiteral (13:44) = 1
+|  |  SCMethod (14:5): poisoned: undefined_value { instance_var[0] = undefined_var }
+|  |  |  SCBody (14:23)
+|  |  |  |  SCMessage (14:23): put
+|  |  |  |  |  SCRead (14:23): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPositionalArgs (14:23)
+|  |  |  |  |  |  SCLiteral (14:36) = 0
+|  |  |  |  |  |  SCExprList (14:41)
 Successfully compiled 15 classes.

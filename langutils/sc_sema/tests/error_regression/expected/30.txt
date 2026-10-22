@@ -32,161 +32,122 @@ A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generato
 IR GRAPH DUMP 
 
 
-SCClass: Ranges: Ranges {'\n'    ascending { ^(1..5) }'\n'    descending { ^(5..1) }'\n'    step { ^(1, 3..9) }'\n'    step_uneven { ^(1, 3..8) }'\n'    from_zero { ^(..3) }'\n'    single { ^(2..2) }'\n'    step_away_from_end { ^(1, 2..0) }'\n'    zero_step { ^(1, 1..5) }'\n'    floats { ^(1.0..3) }'\n'    not_constant { ^(1..2.foo) }'\n'    too_large { ^(1..2000) }'\n'    unbounded { ^(1..) }'\n'    unbounded_step { ^(1, 3..) }'\n'    in_array { ^[(1..3), 4] }'\n'    receiver { ^(1..3).do { |x| x } }'\n'}
-|  SCMemberList: Ranges
-|  SCMethodList: Ranges
-|  |  SCMethod: ascending { ^(1..5) } -> {"array": [{"int": 1}, {"int": 2}, {"int": 3}, {"int": 4}, {"int": 5}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1..5)
-|  |  |  |  SCExplicitReturn: (1..5)
-|  |  |  |  |  SCRange: (1..5) = {"array": [{"int": 1}, {"int": 2}, {"int": 3}, {"int": 4}, {"int": 5}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMissing: (1..5)
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  SCMethod: descending { ^(5..1) } -> {"array": [{"int": 5}, {"int": 4}, {"int": 3}, {"int": 2}, {"int": 1}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(5..1)
-|  |  |  |  SCExplicitReturn: (5..1)
-|  |  |  |  |  SCRange: (5..1) = {"array": [{"int": 5}, {"int": 4}, {"int": 3}, {"int": 2}, {"int": 1}]}
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  |  SCMissing: (5..1)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: step { ^(1, 3..9) } -> {"array": [{"int": 1}, {"int": 3}, {"int": 5}, {"int": 7}, {"int": 9}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1, 3..9)
-|  |  |  |  SCExplicitReturn: (1, 3..9)
-|  |  |  |  |  SCRange: (1, 3..9) = {"array": [{"int": 1}, {"int": 3}, {"int": 5}, {"int": 7}, {"int": 9}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCLiteral: 9 = {"int": 9}
-|  |  SCMethod: step_uneven { ^(1, 3..8) } -> {"array": [{"int": 1}, {"int": 3}, {"int": 5}, {"int": 7}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1, 3..8)
-|  |  |  |  SCExplicitReturn: (1, 3..8)
-|  |  |  |  |  SCRange: (1, 3..8) = {"array": [{"int": 1}, {"int": 3}, {"int": 5}, {"int": 7}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCLiteral: 8 = {"int": 8}
-|  |  SCMethod: from_zero { ^(..3) } -> {"array": [{"int": 0}, {"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(..3)
-|  |  |  |  SCExplicitReturn: (..3)
-|  |  |  |  |  SCRange: (..3) = {"array": [{"int": 0}, {"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCLiteral: (..3) = {"int": 0}
-|  |  |  |  |  |  SCMissing: (..3)
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  SCMethod: single { ^(2..2) } -> {"array": [{"int": 2}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(2..2)
-|  |  |  |  SCExplicitReturn: (2..2)
-|  |  |  |  |  SCRange: (2..2) = {"array": [{"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCMissing: (2..2)
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: step_away_from_end { ^(1, 2..0) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1, 2..0)
-|  |  |  |  SCExplicitReturn: (1, 2..0)
-|  |  |  |  |  SCRange: (1, 2..0)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  SCMethod: zero_step { ^(1, 1..5) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1, 1..5)
-|  |  |  |  SCExplicitReturn: (1, 1..5)
-|  |  |  |  |  SCRange: (1, 1..5)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  SCMethod: floats { ^(1.0..3) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1.0..3)
-|  |  |  |  SCExplicitReturn: (1.0..3)
-|  |  |  |  |  SCRange: (1.0..3)
-|  |  |  |  |  |  SCLiteral: 1.0 = {"float": 1}
-|  |  |  |  |  |  SCMissing: (1.0..3)
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  SCMethod: not_constant { ^(1..2.foo) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1..2.foo)
-|  |  |  |  SCExplicitReturn: (1..2.foo)
-|  |  |  |  |  SCRange: (1..2.foo)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMissing: (1..2.foo)
-|  |  |  |  |  |  SCMessage: foo: 2.foo
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCPositionalArgs: 2.foo
-|  |  |  |  |  |  |  SCKwArgs: 2.foo
-|  |  |  |  |  |  |  SCVariadicArgs: 2.foo
-|  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  SCMethod: too_large { ^(1..2000) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1..2000)
-|  |  |  |  SCExplicitReturn: (1..2000)
-|  |  |  |  |  SCRange: (1..2000)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMissing: (1..2000)
-|  |  |  |  |  |  SCLiteral: 2000 = {"int": 2000}
-|  |  SCMethod: poisoned: unbounded { ^(1..) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1..)
-|  |  |  |  SCExplicitReturn: (1..)
-|  |  |  |  |  SCRange: (1..)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMissing: (1..)
-|  |  |  |  |  |  SCMissing: (1..)
-|  |  SCMethod: poisoned: unbounded_step { ^(1, 3..) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1, 3..)
-|  |  |  |  SCExplicitReturn: (1, 3..)
-|  |  |  |  |  SCRange: (1, 3..)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCMissing: (1, 3..)
-|  |  SCMethod: in_array { ^[(1..3), 4] } -> {"array": [{"array": [{"int": 1}, {"int": 2}, {"int": 3}]}, {"int": 4}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[(1..3), 4]
-|  |  |  |  SCExplicitReturn: [(1..3), 4]
-|  |  |  |  |  SCCollection: Array: [(1..3), 4] = {"array": [{"array": [{"int": 1}, {"int": 2}, {"int": 3}]}, {"int": 4}]}
-|  |  |  |  |  |  SCRange: (1..3) = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCMissing: (1..3)
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCLiteral: 4 = {"int": 4}
-|  |  SCMethod: receiver { ^(1..3).do { |x| x } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1..3).do { |x| x }
-|  |  |  |  SCExplicitReturn: (1..3).do { |x| x }
-|  |  |  |  |  SCMessage: do: (1..3).do { |x| x }
-|  |  |  |  |  |  SCRange: (1..3) = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCMissing: (1..3)
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: (1..3).do { |x| x }
-|  |  |  |  |  |  |  SCFunction: { |x| x }
-|  |  |  |  |  |  |  |  SCArgumentDeclareList: x
-|  |  |  |  |  |  |  |  |  SCArgumentDeclare: x
-|  |  |  |  |  |  |  |  |  |  SCMissing: x
-|  |  |  |  |  |  |  |  SCArgumentDeclareList: x
-|  |  |  |  |  |  |  |  SCBody: { |x| x }
-|  |  |  |  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCKwArgs: (1..3).do { |x| x }
-|  |  |  |  |  |  SCVariadicArgs: (1..3).do { |x| x }
-|  |  |  |  |  |  SCMissing: (1..3).do { |x| x }
+SCClass (1:1): Ranges
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (2:5): ascending { ^(1..5) } -> [1, 2, 3, 4, 5]
+|  |  |  SCBody (2:17)
+|  |  |  |  SCExplicitReturn (2:18)
+|  |  |  |  |  SCRange (2:18) = [1, 2, 3, 4, 5]
+|  |  |  |  |  |  SCLiteral (2:19) = 1
+|  |  |  |  |  |  SCMissing (2:18)
+|  |  |  |  |  |  SCLiteral (2:22) = 5
+|  |  SCMethod (3:5): descending { ^(5..1) } -> [5, 4, 3, 2, 1]
+|  |  |  SCBody (3:18)
+|  |  |  |  SCExplicitReturn (3:19)
+|  |  |  |  |  SCRange (3:19) = [5, 4, 3, 2, 1]
+|  |  |  |  |  |  SCLiteral (3:20) = 5
+|  |  |  |  |  |  SCMissing (3:19)
+|  |  |  |  |  |  SCLiteral (3:23) = 1
+|  |  SCMethod (4:5): step { ^(1, 3..9) } -> [1, 3, 5, 7, 9]
+|  |  |  SCBody (4:12)
+|  |  |  |  SCExplicitReturn (4:13)
+|  |  |  |  |  SCRange (4:13) = [1, 3, 5, 7, 9]
+|  |  |  |  |  |  SCLiteral (4:14) = 1
+|  |  |  |  |  |  SCLiteral (4:17) = 3
+|  |  |  |  |  |  SCLiteral (4:20) = 9
+|  |  SCMethod (5:5): step_uneven { ^(1, 3..8) } -> [1, 3, 5, 7]
+|  |  |  SCBody (5:19)
+|  |  |  |  SCExplicitReturn (5:20)
+|  |  |  |  |  SCRange (5:20) = [1, 3, 5, 7]
+|  |  |  |  |  |  SCLiteral (5:21) = 1
+|  |  |  |  |  |  SCLiteral (5:24) = 3
+|  |  |  |  |  |  SCLiteral (5:27) = 8
+|  |  SCMethod (6:5): from_zero { ^(..3) } -> [0, 1, 2, 3]
+|  |  |  SCBody (6:17)
+|  |  |  |  SCExplicitReturn (6:18)
+|  |  |  |  |  SCRange (6:18) = [0, 1, 2, 3]
+|  |  |  |  |  |  SCLiteral (6:18) = 0
+|  |  |  |  |  |  SCMissing (6:18)
+|  |  |  |  |  |  SCLiteral (6:21) = 3
+|  |  SCMethod (7:5): single { ^(2..2) } -> [2]
+|  |  |  SCBody (7:14)
+|  |  |  |  SCExplicitReturn (7:15)
+|  |  |  |  |  SCRange (7:15) = [2]
+|  |  |  |  |  |  SCLiteral (7:16) = 2
+|  |  |  |  |  |  SCMissing (7:15)
+|  |  |  |  |  |  SCLiteral (7:19) = 2
+|  |  SCMethod (8:5): step_away_from_end { ^(1, 2..0) }
+|  |  |  SCBody (8:26)
+|  |  |  |  SCExplicitReturn (8:27)
+|  |  |  |  |  SCRange (8:27)
+|  |  |  |  |  |  SCLiteral (8:28) = 1
+|  |  |  |  |  |  SCLiteral (8:31) = 2
+|  |  |  |  |  |  SCLiteral (8:34) = 0
+|  |  SCMethod (9:5): zero_step { ^(1, 1..5) }
+|  |  |  SCBody (9:17)
+|  |  |  |  SCExplicitReturn (9:18)
+|  |  |  |  |  SCRange (9:18)
+|  |  |  |  |  |  SCLiteral (9:19) = 1
+|  |  |  |  |  |  SCLiteral (9:22) = 1
+|  |  |  |  |  |  SCLiteral (9:25) = 5
+|  |  SCMethod (10:5): floats { ^(1.0..3) }
+|  |  |  SCBody (10:14)
+|  |  |  |  SCExplicitReturn (10:15)
+|  |  |  |  |  SCRange (10:15)
+|  |  |  |  |  |  SCLiteral (10:16) = 1.0
+|  |  |  |  |  |  SCMissing (10:15)
+|  |  |  |  |  |  SCLiteral (10:21) = 3
+|  |  SCMethod (11:5): not_constant { ^(1..2.foo) }
+|  |  |  SCBody (11:20)
+|  |  |  |  SCExplicitReturn (11:21)
+|  |  |  |  |  SCRange (11:21)
+|  |  |  |  |  |  SCLiteral (11:22) = 1
+|  |  |  |  |  |  SCMissing (11:21)
+|  |  |  |  |  |  SCMessage (11:25): foo
+|  |  |  |  |  |  |  SCLiteral (11:25) = 2
+|  |  SCMethod (12:5): too_large { ^(1..2000) }
+|  |  |  SCBody (12:17)
+|  |  |  |  SCExplicitReturn (12:18)
+|  |  |  |  |  SCRange (12:18)
+|  |  |  |  |  |  SCLiteral (12:19) = 1
+|  |  |  |  |  |  SCMissing (12:18)
+|  |  |  |  |  |  SCLiteral (12:22) = 2000
+|  |  SCMethod (13:5): poisoned: unbounded { ^(1..) }
+|  |  |  SCBody (13:17)
+|  |  |  |  SCExplicitReturn (13:18)
+|  |  |  |  |  SCRange (13:18)
+|  |  |  |  |  |  SCLiteral (13:19) = 1
+|  |  |  |  |  |  SCMissing (13:18)
+|  |  |  |  |  |  SCMissing (13:18)
+|  |  SCMethod (14:5): poisoned: unbounded_step { ^(1, 3..) }
+|  |  |  SCBody (14:22)
+|  |  |  |  SCExplicitReturn (14:23)
+|  |  |  |  |  SCRange (14:23)
+|  |  |  |  |  |  SCLiteral (14:24) = 1
+|  |  |  |  |  |  SCLiteral (14:27) = 3
+|  |  |  |  |  |  SCMissing (14:23)
+|  |  SCMethod (15:5): in_array { ^[(1..3), 4] } -> [[1, 2, 3], 4]
+|  |  |  SCBody (15:16)
+|  |  |  |  SCExplicitReturn (15:17)
+|  |  |  |  |  SCCollection (15:17): Array = [[1, 2, 3], 4]
+|  |  |  |  |  |  SCRange (15:18) = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (15:19) = 1
+|  |  |  |  |  |  |  SCMissing (15:18)
+|  |  |  |  |  |  |  SCLiteral (15:22) = 3
+|  |  |  |  |  |  SCLiteral (15:26) = 4
+|  |  SCMethod (16:5): receiver { ^(1..3).do { |x| x } }
+|  |  |  SCBody (16:16)
+|  |  |  |  SCExplicitReturn (16:17)
+|  |  |  |  |  SCMessage (16:17): do
+|  |  |  |  |  |  SCRange (16:17) = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (16:18) = 1
+|  |  |  |  |  |  |  SCMissing (16:17)
+|  |  |  |  |  |  |  SCLiteral (16:21) = 3
+|  |  |  |  |  |  SCPositionalArgs (16:17)
+|  |  |  |  |  |  |  SCFunction (16:27)
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (16:30)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (16:30): x
+|  |  |  |  |  |  |  |  SCBody (16:27)
+|  |  |  |  |  |  |  |  |  SCRead (16:33): local x, declared (16:30): x
 Successfully compiled 15 classes.

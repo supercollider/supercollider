@@ -1,8 +1,13 @@
 #include "sc_sema/const_expr.hpp"
 #include "sc_sema/symbol_table.hpp"
 #include "sc_sema/symbols.hpp"
+#include <algorithm>
+#include <cctype>
+#include <cmath>
 #include <cstddef>
 #include <iomanip>
+#include <optional>
+#include <sstream>
 #include <string_view>
 
 namespace sc::ir {
@@ -46,6 +51,50 @@ void write_json_string(std::ostream& o, std::string_view s) {
         }
     }
     o << '"';
+}
+
+// The escape for c inside a SuperCollider string, symbol or char literal, if it needs one.
+std::optional<char> sc_escape(char c) {
+    switch (c) {
+    case '\n':
+        return 'n';
+    case '\r':
+        return 'r';
+    case '\t':
+        return 't';
+    case '\f':
+        return 'f';
+    case '\v':
+        return 'v';
+    case '\0':
+        return '0';
+    case '\\':
+        return '\\';
+    default:
+        return std::nullopt;
+    }
+}
+
+// Writes s between quotes, escaping the quote, so it stays on one line.
+void write_sc_quoted(std::ostream& o, std::string_view s, char quote) {
+    o << quote;
+    for (const char c : s) {
+        if (const auto e = sc_escape(c))
+            o << '\\' << *e;
+        else if (c == quote)
+            o << '\\' << c;
+        else
+            o << c;
+    }
+    o << quote;
+}
+
+// Whether a symbol can be written as `\name`, or used as an event key, `name: 1`.
+bool is_identifier(std::string_view s) {
+    if (s.empty() || !(std::isalpha(static_cast<unsigned char>(s.front())) || s.front() == '_'))
+        return false;
+    return std::all_of(s.begin(), s.end(),
+                       [](char c) { return std::isalnum(static_cast<unsigned char>(c)) || c == '_'; });
 }
 }
 
@@ -113,4 +162,66 @@ void ConstExpression::to_json(std::ostream& o, const SymbolTable& t) const {
     });
 }
 
+void ConstExpression::to_literal(std::ostream& o, const SymbolTable& t) const {
+    visit(util::overload {
+        [&](std::int32_t i) { o << i; },
+        [&](double d) {
+            if (std::isinf(d)) {
+                o << (d < 0 ? "-inf" : "inf");
+                return;
+            }
+            if (std::isnan(d)) {
+                o << "nan";
+                return;
+            }
+            static constexpr auto p { 8 };
+            std::ostringstream s;
+            s << std::setprecision(p) << d;
+            const auto text = std::move(s).str();
+            // Always looks like a float, `1.0` rather than `1`.
+            o << text << (text.find_first_of(".e") == std::string::npos ? ".0" : "");
+        },
+        [&](char c) {
+            o << '$';
+            if (const auto e = sc_escape(c))
+                o << '\\' << *e;
+            else
+                o << c;
+        },
+        [&](bool b) { o << (b ? "true" : "false"); }, [&](std::monostate) { o << "nil"; },
+        [&](sc::ir::SymSCSymbol i) {
+            const auto s = t(i);
+            if (is_identifier(s))
+                o << '\\' << s;
+            else
+                write_sc_quoted(o, s, '\'');
+        },
+        [&](sc::ir::SymSCClassName i) { o << t(i); }, [&](sc::ir::SymSCString i) { write_sc_quoted(o, t(i), '"'); },
+        [&](const sc::ir::ConstExprEvent& vec) {
+            o << '(';
+            for (size_t i { 0 }; i < vec.size(); ++i) {
+                const auto& [key, value] = vec[i];
+                const auto* symbol = key.get_if<SymSCSymbol>();
+                if (symbol && is_identifier(t(*symbol)))
+                    o << t(*symbol);
+                else
+                    key.to_literal(o, t);
+                o << ": ";
+                value.to_literal(o, t);
+                if (i + 1 != vec.size())
+                    o << ", ";
+            }
+            o << ')';
+        },
+        [&](const sc::ir::ConstExprArray& vec) {
+            o << '[';
+            for (size_t i { 0 }; i < vec.size(); ++i) {
+                vec[i].to_literal(o, t);
+                if (i + 1 != vec.size())
+                    o << ", ";
+            }
+            o << ']';
+        } //
+    });
+}
 }

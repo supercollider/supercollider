@@ -57,17 +57,17 @@ This must be known when the class library is compiled, e.g., a variable's initia
 IR GRAPH DUMP 
 
 
-SCClass: RangeInitialisers: RangeInitialisers {'\n'    const bound = 3;'\n'    const constant_range = (1..3);'\n'    classvar class_range = (1, 3..9);'\n'    var instance_range = (..2);'\n'    var uses_const = (1..bound);'\n'    var nested = [(1..2), (a: (3..4))];'\n'    var immutable = #[(1..2)];'\n'    var float_range = (1.0..3);'\n'    var unbounded = (1..);'\n'    var not_constant = (1..2.foo);'\n'    var too_large = (1..2000);'\n'}
-|  SCMemberList: RangeInitialisers
-|  |  SCMember: instance_range = {"array": [{"int": 0}, {"int": 1}, {"int": 2}]}
-|  |  SCMember: uses_const = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  SCMember: nested = {"array": [{"array": [{"int": 1}, {"int": 2}]}, {"event": [{"key": {"symbol": "a"}, "value": {"array": [{"int": 3}, {"int": 4}]}}]}]}
-|  |  SCMember: immutable = {"array": [{"array": [{"int": 1}, {"int": 2}]}]}
-|  SCMethodList: RangeInitialisers
-SCClass: Meta_RangeInitialisers: RangeInitialisers {'\n'    const bound = 3;'\n'    const constant_range = (1..3);'\n'    classvar class_range = (1, 3..9);'\n'    var instance_range = (..2);'\n'    var uses_const = (1..bound);'\n'    var nested = [(1..2), (a: (3..4))];'\n'    var immutable = #[(1..2)];'\n'    var float_range = (1.0..3);'\n'    var unbounded = (1..);'\n'    var not_constant = (1..2.foo);'\n'    var too_large = (1..2000);'\n'}
-|  SCMemberList: RangeInitialisers
-|  |  SCMember: bound = {"int": 3}
-|  |  SCMember: constant_range = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  SCMember: class_range = {"array": [{"int": 1}, {"int": 3}, {"int": 5}, {"int": 7}, {"int": 9}]}
-|  SCMethodList: RangeInitialisers
+SCClass (1:1): RangeInitialisers
+|  SCMemberList (1:1)
+|  |  SCMember (5:9): instance_range = [0, 1, 2]
+|  |  SCMember (6:9): uses_const = [1, 2, 3]
+|  |  SCMember (7:9): nested = [[1, 2], (a: [3, 4])]
+|  |  SCMember (8:9): immutable = [[1, 2]]
+|  SCMethodList (1:1)
+SCClass (1:1): Meta_RangeInitialisers
+|  SCMemberList (1:1)
+|  |  SCMember (2:11): bound = 3
+|  |  SCMember (3:11): constant_range = [1, 2, 3]
+|  |  SCMember (4:14): class_range = [1, 3, 5, 7, 9]
+|  SCMethodList (1:1)
 Successfully compiled 15 classes.

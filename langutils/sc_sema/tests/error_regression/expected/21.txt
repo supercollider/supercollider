@@ -4,108 +4,76 @@
 IR GRAPH DUMP 
 
 
-SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'    empty { ^() }'\n'    symbol_key { ^(\a: 1) }'\n'    string_key { ^("a": 1) }'\n'    integer_key { ^(1: \one) }'\n'    nested_array { ^(a: [1, 2]) }'\n'    nested_event { ^(a: (b: 1)) }'\n'    value_not_constant { ^(a: 1.foo) }'\n'    key_not_constant { ^((1.foo): 2) }'\n'    nested_not_constant { ^(a: (b: 1.foo)) }'\n'}
-|  SCMemberList: Dictionaries
-|  SCMethodList: Dictionaries
-|  |  SCMethod: constant { ^(a: 1, b: 2.5) } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"float": 2.5}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(a: 1, b: 2.5)
-|  |  |  |  SCExplicitReturn: (a: 1, b: 2.5)
-|  |  |  |  |  SCCollection: Event: (a: 1, b: 2.5) = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"float": 2.5}}]}
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
-|  |  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
-|  |  SCMethod: empty { ^() } -> {"event": []}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^()
-|  |  |  |  SCExplicitReturn: ()
-|  |  |  |  |  SCCollection: Event: () = {"event": []}
-|  |  SCMethod: symbol_key { ^(\a: 1) } -> {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(\a: 1)
-|  |  |  |  SCExplicitReturn: (\a: 1)
-|  |  |  |  |  SCCollection: Event: (\a: 1) = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
-|  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: string_key { ^("a": 1) } -> {"event": [{"key": {"string": "a"}, "value": {"int": 1}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^("a": 1)
-|  |  |  |  SCExplicitReturn: ("a": 1)
-|  |  |  |  |  SCCollection: Event: ("a": 1) = {"event": [{"key": {"string": "a"}, "value": {"int": 1}}]}
-|  |  |  |  |  |  SCLiteral: "a" = {"string": "a"}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: integer_key { ^(1: \one) } -> {"event": [{"key": {"int": 1}, "value": {"symbol": "one"}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(1: \one)
-|  |  |  |  SCExplicitReturn: (1: \one)
-|  |  |  |  |  SCCollection: Event: (1: \one) = {"event": [{"key": {"int": 1}, "value": {"symbol": "one"}}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: \one = {"symbol": "one"}
-|  |  SCMethod: nested_array { ^(a: [1, 2]) } -> {"event": [{"key": {"symbol": "a"}, "value": {"array": [{"int": 1}, {"int": 2}]}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(a: [1, 2])
-|  |  |  |  SCExplicitReturn: (a: [1, 2])
-|  |  |  |  |  SCCollection: Event: (a: [1, 2]) = {"event": [{"key": {"symbol": "a"}, "value": {"array": [{"int": 1}, {"int": 2}]}}]}
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: nested_event { ^(a: (b: 1)) } -> {"event": [{"key": {"symbol": "a"}, "value": {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(a: (b: 1))
-|  |  |  |  SCExplicitReturn: (a: (b: 1))
-|  |  |  |  |  SCCollection: Event: (a: (b: 1)) = {"event": [{"key": {"symbol": "a"}, "value": {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}}]}
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCCollection: Event: (b: 1) = {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}
-|  |  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: value_not_constant { ^(a: 1.foo) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(a: 1.foo)
-|  |  |  |  SCExplicitReturn: (a: 1.foo)
-|  |  |  |  |  SCCollection: Event: (a: 1.foo)
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCMessage: foo: 1.foo
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCPositionalArgs: 1.foo
-|  |  |  |  |  |  |  SCKwArgs: 1.foo
-|  |  |  |  |  |  |  SCVariadicArgs: 1.foo
-|  |  |  |  |  |  |  SCMissing: 1.foo
-|  |  SCMethod: key_not_constant { ^((1.foo): 2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^((1.foo): 2)
-|  |  |  |  SCExplicitReturn: ((1.foo): 2)
-|  |  |  |  |  SCCollection: Event: ((1.foo): 2)
-|  |  |  |  |  |  SCMessage: foo: 1.foo
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCPositionalArgs: 1.foo
-|  |  |  |  |  |  |  SCKwArgs: 1.foo
-|  |  |  |  |  |  |  SCVariadicArgs: 1.foo
-|  |  |  |  |  |  |  SCMissing: 1.foo
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: nested_not_constant { ^(a: (b: 1.foo)) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(a: (b: 1.foo))
-|  |  |  |  SCExplicitReturn: (a: (b: 1.foo))
-|  |  |  |  |  SCCollection: Event: (a: (b: 1.foo))
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCCollection: Event: (b: 1.foo)
-|  |  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
-|  |  |  |  |  |  |  SCMessage: foo: 1.foo
-|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  SCPositionalArgs: 1.foo
-|  |  |  |  |  |  |  |  SCKwArgs: 1.foo
-|  |  |  |  |  |  |  |  SCVariadicArgs: 1.foo
-|  |  |  |  |  |  |  |  SCMissing: 1.foo
+SCClass (1:1): Dictionaries
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (2:5): constant { ^(a: 1, b: 2.5) } -> (a: 1, b: 2.5)
+|  |  |  SCBody (2:16)
+|  |  |  |  SCExplicitReturn (2:17)
+|  |  |  |  |  SCCollection (2:17): Event = (a: 1, b: 2.5)
+|  |  |  |  |  |  SCLiteral (2:18) = \a
+|  |  |  |  |  |  SCLiteral (2:21) = 1
+|  |  |  |  |  |  SCLiteral (2:24) = \b
+|  |  |  |  |  |  SCLiteral (2:27) = 2.5
+|  |  SCMethod (3:5): empty { ^() } -> ()
+|  |  |  SCBody (3:13)
+|  |  |  |  SCExplicitReturn (3:14)
+|  |  |  |  |  SCCollection (3:14): Event = ()
+|  |  SCMethod (4:5): symbol_key { ^(\a: 1) } -> (a: 1)
+|  |  |  SCBody (4:18)
+|  |  |  |  SCExplicitReturn (4:19)
+|  |  |  |  |  SCCollection (4:19): Event = (a: 1)
+|  |  |  |  |  |  SCLiteral (4:20) = \a
+|  |  |  |  |  |  SCLiteral (4:24) = 1
+|  |  SCMethod (5:5): string_key { ^("a": 1) } -> ("a": 1)
+|  |  |  SCBody (5:18)
+|  |  |  |  SCExplicitReturn (5:19)
+|  |  |  |  |  SCCollection (5:19): Event = ("a": 1)
+|  |  |  |  |  |  SCLiteral (5:20) = "a"
+|  |  |  |  |  |  SCLiteral (5:25) = 1
+|  |  SCMethod (6:5): integer_key { ^(1: \one) } -> (1: \one)
+|  |  |  SCBody (6:19)
+|  |  |  |  SCExplicitReturn (6:20)
+|  |  |  |  |  SCCollection (6:20): Event = (1: \one)
+|  |  |  |  |  |  SCLiteral (6:21) = 1
+|  |  |  |  |  |  SCLiteral (6:24) = \one
+|  |  SCMethod (7:5): nested_array { ^(a: [1, 2]) } -> (a: [1, 2])
+|  |  |  SCBody (7:20)
+|  |  |  |  SCExplicitReturn (7:21)
+|  |  |  |  |  SCCollection (7:21): Event = (a: [1, 2])
+|  |  |  |  |  |  SCLiteral (7:22) = \a
+|  |  |  |  |  |  SCCollection (7:25): Array = [1, 2]
+|  |  |  |  |  |  |  SCLiteral (7:26) = 1
+|  |  |  |  |  |  |  SCLiteral (7:29) = 2
+|  |  SCMethod (8:5): nested_event { ^(a: (b: 1)) } -> (a: (b: 1))
+|  |  |  SCBody (8:20)
+|  |  |  |  SCExplicitReturn (8:21)
+|  |  |  |  |  SCCollection (8:21): Event = (a: (b: 1))
+|  |  |  |  |  |  SCLiteral (8:22) = \a
+|  |  |  |  |  |  SCCollection (8:25): Event = (b: 1)
+|  |  |  |  |  |  |  SCLiteral (8:26) = \b
+|  |  |  |  |  |  |  SCLiteral (8:29) = 1
+|  |  SCMethod (9:5): value_not_constant { ^(a: 1.foo) }
+|  |  |  SCBody (9:26)
+|  |  |  |  SCExplicitReturn (9:27)
+|  |  |  |  |  SCCollection (9:27): Event
+|  |  |  |  |  |  SCLiteral (9:28) = \a
+|  |  |  |  |  |  SCMessage (9:31): foo
+|  |  |  |  |  |  |  SCLiteral (9:31) = 1
+|  |  SCMethod (10:5): key_not_constant { ^((1.foo): 2) }
+|  |  |  SCBody (10:24)
+|  |  |  |  SCExplicitReturn (10:25)
+|  |  |  |  |  SCCollection (10:25): Event
+|  |  |  |  |  |  SCMessage (10:27): foo
+|  |  |  |  |  |  |  SCLiteral (10:27) = 1
+|  |  |  |  |  |  SCLiteral (10:35) = 2
+|  |  SCMethod (11:5): nested_not_constant { ^(a: (b: 1.foo)) }
+|  |  |  SCBody (11:27)
+|  |  |  |  SCExplicitReturn (11:28)
+|  |  |  |  |  SCCollection (11:28): Event
+|  |  |  |  |  |  SCLiteral (11:29) = \a
+|  |  |  |  |  |  SCCollection (11:32): Event
+|  |  |  |  |  |  |  SCLiteral (11:33) = \b
+|  |  |  |  |  |  |  SCMessage (11:36): foo
+|  |  |  |  |  |  |  |  SCLiteral (11:36) = 1
 Successfully compiled 15 classes.

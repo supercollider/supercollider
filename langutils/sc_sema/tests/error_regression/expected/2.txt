@@ -4,46 +4,46 @@
 IR GRAPH DUMP 
 
 
-SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Object: Object : AbstractObjectExperimental {}
-|  SCMemberList: Object
-|  SCMethodList: Object
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
+SCClass (7:1): AbstractObjectExperimental
+|  SCMemberList (7:1)
+|  SCMethodList (7:1)
+SCClass (8:1): Object
+|  SCMemberList (8:1)
+|  SCMethodList (8:1)
+SCClass (9:1): Class
+|  SCMemberList (9:1)
+|  SCMethodList (9:1)
+SCClass (10:1): String
+|  SCMemberList (10:1)
+|  SCMethodList (10:1)
+SCClass (11:1): True
+|  SCMemberList (11:1)
+|  SCMethodList (11:1)
+SCClass (12:1): False
+|  SCMemberList (12:1)
+|  SCMethodList (12:1)
+SCClass (13:1): Nil
+|  SCMemberList (13:1)
+|  SCMethodList (13:1)
+SCClass (14:1): Float
+|  SCMemberList (14:1)
+|  SCMethodList (14:1)
+SCClass (15:1): Integer
+|  SCMemberList (15:1)
+|  SCMethodList (15:1)
+SCClass (16:1): Char
+|  SCMemberList (16:1)
+|  SCMethodList (16:1)
+SCClass (17:1): Symbol
+|  SCMemberList (17:1)
+|  SCMethodList (17:1)
+SCClass (18:1): Ref
+|  SCMemberList (18:1)
+|  SCMethodList (18:1)
+SCClass (19:1): Array
+|  SCMemberList (19:1)
+|  SCMethodList (19:1)
+SCClass (20:1): Event
+|  SCMemberList (20:1)
+|  SCMethodList (20:1)
 Successfully compiled 14 classes.

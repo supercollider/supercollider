@@ -4,14 +4,12 @@
 IR GRAPH DUMP 
 
 
-SCClass: Foo: Foo {'\n'    bar { |a| 10 }'\n'}
-|  SCMemberList: Foo
-|  SCMethodList: Foo
-|  |  SCMethod: bar { |a| 10 }
-|  |  |  SCArgumentDeclareList: a
-|  |  |  |  SCArgumentDeclare: a
-|  |  |  |  |  SCMissing: a
-|  |  |  SCArgumentDeclareList: a
-|  |  |  SCBody: 10
-|  |  |  |  SCLiteral: 10 = {"int": 10}
+SCClass (1:1): Foo
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (2:5): bar { |a| 10 }
+|  |  |  SCArgumentDeclareList (2:12)
+|  |  |  |  SCArgumentDeclare (2:12): a
+|  |  |  SCBody (2:15)
+|  |  |  |  SCLiteral (2:15) = 10
 Successfully compiled 15 classes.

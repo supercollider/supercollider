@@ -15,97 +15,67 @@ file:
 IR GRAPH DUMP 
 
 
-SCClass: Literals: Literals {'\n'    int { ^1 }'\n'    int_radix { ^2r101 }'\n'    float { ^2.5 }'\n'    float_exponent { ^1e3 }'\n'    pi_alone { ^pi }'\n'    pi_multiple { ^2pi }'\n'    char { ^$a }'\n'    string { ^"hello" }'\n'    string_concatenated { ^"hello" " world" }'\n'    boolean_true { ^true }'\n'    boolean_false { ^false }'\n'    nil_value { ^nil }'\n'    symbol_quote { ^'a symbol' }'\n'    symbol_slash { ^\symbol }'\n'    accidental { ^2s }'\n'}
-|  SCMemberList: Literals
-|  SCMethodList: Literals
-|  |  SCMethod: int { ^1 } -> {"int": 1}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1
-|  |  |  |  SCExplicitReturn: 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: int_radix { ^2r101 } -> {"int": 5}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^2r101
-|  |  |  |  SCExplicitReturn: 2r101
-|  |  |  |  |  SCLiteral: 2r101 = {"int": 5}
-|  |  SCMethod: float { ^2.5 } -> {"float": 2.5}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^2.5
-|  |  |  |  SCExplicitReturn: 2.5
-|  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
-|  |  SCMethod: float_exponent { ^1e3 } -> {"float": 1000}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1e3
-|  |  |  |  SCExplicitReturn: 1e3
-|  |  |  |  |  SCLiteral: 1e3 = {"float": 1000}
-|  |  SCMethod: pi_alone { ^pi } -> {"float": 3.1415927}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^pi
-|  |  |  |  SCExplicitReturn: pi
-|  |  |  |  |  SCLiteral: pi = {"float": 3.1415927}
-|  |  SCMethod: pi_multiple { ^2pi } -> {"float": 6.2831853}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^2pi
-|  |  |  |  SCExplicitReturn: 2pi
-|  |  |  |  |  SCLiteral: 2pi = {"float": 6.2831853}
-|  |  SCMethod: char { ^$a } -> {"char": "a"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^$a
-|  |  |  |  SCExplicitReturn: $a
-|  |  |  |  |  SCLiteral: $a = {"char": "a"}
-|  |  SCMethod: string { ^"hello" } -> {"string": "hello"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^"hello"
-|  |  |  |  SCExplicitReturn: "hello"
-|  |  |  |  |  SCLiteral: "hello" = {"string": "hello"}
-|  |  SCMethod: string_concatenated { ^"hello" " world" } -> {"string": "hello world"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^"hello" " world"
-|  |  |  |  SCExplicitReturn: "hello" " world"
-|  |  |  |  |  SCLiteral: "hello" = {"string": "hello world"}
-|  |  SCMethod: boolean_true { ^true } -> {"bool": true}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^true
-|  |  |  |  SCExplicitReturn: true
-|  |  |  |  |  SCLiteral: true = {"bool": true}
-|  |  SCMethod: boolean_false { ^false } -> {"bool": false}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^false
-|  |  |  |  SCExplicitReturn: false
-|  |  |  |  |  SCLiteral: false = {"bool": false}
-|  |  SCMethod: nil_value { ^nil } -> {"nil": {}}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^nil
-|  |  |  |  SCExplicitReturn: nil
-|  |  |  |  |  SCLiteral: nil = {"nil": {}}
-|  |  SCMethod: symbol_quote { ^'a symbol' } -> {"symbol": "a symbol"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^'a symbol'
-|  |  |  |  SCExplicitReturn: 'a symbol'
-|  |  |  |  |  SCLiteral: 'a symbol' = {"symbol": "a symbol"}
-|  |  SCMethod: symbol_slash { ^\symbol } -> {"symbol": "symbol"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^\symbol
-|  |  |  |  SCExplicitReturn: \symbol
-|  |  |  |  |  SCLiteral: \symbol = {"symbol": "symbol"}
-|  |  SCMethod: poisoned: accidental { ^2s }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^2s
-|  |  |  |  SCExplicitReturn: 2s
-|  |  |  |  |  SCExprList: 2s
+SCClass (1:1): Literals
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (2:5): int { ^1 } -> 1
+|  |  |  SCBody (2:11)
+|  |  |  |  SCExplicitReturn (2:12)
+|  |  |  |  |  SCLiteral (2:12) = 1
+|  |  SCMethod (3:5): int_radix { ^2r101 } -> 5
+|  |  |  SCBody (3:17)
+|  |  |  |  SCExplicitReturn (3:18)
+|  |  |  |  |  SCLiteral (3:18) = 5
+|  |  SCMethod (4:5): float { ^2.5 } -> 2.5
+|  |  |  SCBody (4:13)
+|  |  |  |  SCExplicitReturn (4:14)
+|  |  |  |  |  SCLiteral (4:14) = 2.5
+|  |  SCMethod (5:5): float_exponent { ^1e3 } -> 1000.0
+|  |  |  SCBody (5:22)
+|  |  |  |  SCExplicitReturn (5:23)
+|  |  |  |  |  SCLiteral (5:23) = 1000.0
+|  |  SCMethod (6:5): pi_alone { ^pi } -> 3.1415927
+|  |  |  SCBody (6:16)
+|  |  |  |  SCExplicitReturn (6:17)
+|  |  |  |  |  SCLiteral (6:17) = 3.1415927
+|  |  SCMethod (7:5): pi_multiple { ^2pi } -> 6.2831853
+|  |  |  SCBody (7:19)
+|  |  |  |  SCExplicitReturn (7:20)
+|  |  |  |  |  SCLiteral (7:20) = 6.2831853
+|  |  SCMethod (8:5): char { ^$a } -> $a
+|  |  |  SCBody (8:12)
+|  |  |  |  SCExplicitReturn (8:13)
+|  |  |  |  |  SCLiteral (8:13) = $a
+|  |  SCMethod (9:5): string { ^"hello" } -> "hello"
+|  |  |  SCBody (9:14)
+|  |  |  |  SCExplicitReturn (9:15)
+|  |  |  |  |  SCLiteral (9:15) = "hello"
+|  |  SCMethod (10:5): string_concatenated { ^"hello" " world" } -> "hello world"
+|  |  |  SCBody (10:27)
+|  |  |  |  SCExplicitReturn (10:28)
+|  |  |  |  |  SCLiteral (10:28) = "hello world"
+|  |  SCMethod (11:5): boolean_true { ^true } -> true
+|  |  |  SCBody (11:20)
+|  |  |  |  SCExplicitReturn (11:21)
+|  |  |  |  |  SCLiteral (11:21) = true
+|  |  SCMethod (12:5): boolean_false { ^false } -> false
+|  |  |  SCBody (12:21)
+|  |  |  |  SCExplicitReturn (12:22)
+|  |  |  |  |  SCLiteral (12:22) = false
+|  |  SCMethod (13:5): nil_value { ^nil } -> nil
+|  |  |  SCBody (13:17)
+|  |  |  |  SCExplicitReturn (13:18)
+|  |  |  |  |  SCLiteral (13:18) = nil
+|  |  SCMethod (14:5): symbol_quote { ^'a symbol' } -> 'a symbol'
+|  |  |  SCBody (14:20)
+|  |  |  |  SCExplicitReturn (14:21)
+|  |  |  |  |  SCLiteral (14:21) = 'a symbol'
+|  |  SCMethod (15:5): symbol_slash { ^\symbol } -> \symbol
+|  |  |  SCBody (15:20)
+|  |  |  |  SCExplicitReturn (15:21)
+|  |  |  |  |  SCLiteral (15:21) = \symbol
+|  |  SCMethod (16:5): poisoned: accidental { ^2s }
+|  |  |  SCBody (16:18)
+|  |  |  |  SCExplicitReturn (16:19)
+|  |  |  |  |  SCExprList (16:19)
 Successfully compiled 15 classes.

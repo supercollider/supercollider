@@ -11,6 +11,12 @@ namespace sc::ir::ast2ir {
 
 void Expr::add_symbol(Symbol n, ScopeEntry e) { scope.back().insert({ n, e }); }
 
+SourceLocation declaration_location(IRGraph& ir, const ScopeEntry& entry) {
+    if (!entry.graph)
+        return ir.location(entry.declare_index);
+    return ir.make_location(entry.declaration_text, entry.declaration_range);
+}
+
 std::optional<ScopeEntry> Expr::resolve_symbol(Symbol i, bool get_uninitalised) const {
     for (auto it = scope.rbegin(); it != scope.rend(); ++it) {
         if (auto fnd = it->find(i); fnd != it->end()) {
@@ -67,7 +73,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
     const auto txt = get_string_view(*ast_graph, i);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
     if (const auto entry = resolve_symbol(name_sym)) {
-        const auto read = ir.create(SCRead { name_sym, to_read_kind(entry->kind) }, location({ *i }));
+        const auto read = ir.create(SCRead { name_sym, to_read_kind(entry->kind), declaration_location(ir, *entry) },
+                                    location({ *i }));
         // Only locals can be constant, a member's initial value isn't, as the member can be assigned.
         if (entry->kind == ScopeEntry::Kind::Local && entry->const_expr) {
             ir.register_node_as_consteval(read, *entry->const_expr);
@@ -89,9 +96,10 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
     const Locatable<SymSCIdentifier> located_name { location({ *name }), name_sym };
 
-    const auto make_return = [&](SCAssign::Kind kind) -> Return<SCAnyExpr_I> {
+    const auto make_return = [&](SCAssign::Kind kind,
+                                 std::optional<SourceLocation> declaration) -> Return<SCAnyExpr_I> {
         // Assignment returns the assigned value, but is never a const expression as it has a side effect.
-        const auto index = ir.create(SCAssign { located_name, kind }, location({ *i }), expr_r.ir_node);
+        const auto index = ir.create(SCAssign { located_name, kind, declaration }, location({ *i }), expr_r.ir_node);
         if (expr_r.type)
             return { index, *expr_r.type };
         return { index };
@@ -99,12 +107,12 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
 
     // Environment vars are not registered in the scope.
     if (ast_graph->payload(i).target == ast::AssignmentNode::Target::Environment) {
-        return make_return(SCAssign::Kind::Environment);
+        return make_return(SCAssign::Kind::Environment, std::nullopt);
     }
 
     // TODO: error when assigning to a const once ScopeEntry records const-ness.
     if (const auto entry = resolve_symbol(name_sym))
-        return make_return(to_assign_kind(entry->kind));
+        return make_return(to_assign_kind(entry->kind), declaration_location(ir, *entry));
 
     sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, name), txt));
     return expr_r;
@@ -132,10 +140,13 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
         const auto txt = get_string_view(*ast_graph, *name);
         const auto sym = ctx.symbol_table.get_identifier(std::string { txt });
         if (const auto entry = resolve_symbol(sym)) {
-            ir.append(
-                targets,
-                ir.create(SCPackTarget { { location({ **name }), sym }, to_assign_kind(entry->kind), index, is_rest },
-                          location({ **name })));
+            ir.append(targets,
+                      ir.create(SCPackTarget { { location({ **name }), sym },
+                                               to_assign_kind(entry->kind),
+                                               index,
+                                               is_rest,
+                                               declaration_location(ir, *entry) },
+                                location({ **name })));
             return;
         }
         sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, *name), txt));

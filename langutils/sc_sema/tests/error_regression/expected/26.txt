@@ -32,127 +32,96 @@ Declare it with 'var', or use '~a' to refer to an environment variable.
 IR GRAPH DUMP 
 
 
-SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'    block_constant { ^{ |a = 1| a } }'\n'    block_constant_array { ^{ |a = #[1, 2], b = (c: 3)| a } }'\n'    block_bracketed { ^{ |a = (1.foo)| a } }'\n'    block_earlier_argument { ^{ |a, b = (a + 1)| b } }'\n'    block_later_argument { ^{ |a = (b), b| a } }'\n'    block_itself { ^{ |a = (a)| a } }'\n''\n'    method_constant { |a = 1| ^1 }'\n'    method_instance_var { |a = (instance_var)| ^1 }'\n'    method_other_argument { |a, b = (a)| ^1 }'\n'}
-|  SCMemberList: ArgumentDefaults
-|  |  SCMember: instance_var
-|  SCMethodList: ArgumentDefaults
-|  |  SCMethod: block_constant { ^{ |a = 1| a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{ |a = 1| a }
-|  |  |  |  SCExplicitReturn: { |a = 1| a }
-|  |  |  |  |  SCFunction: { |a = 1| a }
-|  |  |  |  |  |  SCArgumentDeclareList: a = 1
-|  |  |  |  |  |  |  SCArgumentDeclare: a = 1
-|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCArgumentDeclareList: a = 1
-|  |  |  |  |  |  SCBody: { |a = 1| a }
-|  |  |  |  |  |  |  SCRead: a
-|  |  SCMethod: block_constant_array { ^{ |a = #[1, 2], b = (c: 3)| a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{ |a = #[1, 2], b = (c: 3)| a }
-|  |  |  |  SCExplicitReturn: { |a = #[1, 2], b = (c: 3)| a }
-|  |  |  |  |  SCFunction: { |a = #[1, 2], b = (c: 3)| a }
-|  |  |  |  |  |  SCArgumentDeclareList: a = #[1, 2], b = (c: 3)
-|  |  |  |  |  |  |  SCArgumentDeclare: a = #[1, 2]
-|  |  |  |  |  |  |  |  SCCollection: Array: #[1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCArgumentDeclare: a = #[1, 2], b = (c: 3)
-|  |  |  |  |  |  |  |  SCCollection: Event: (c: 3) = {"event": [{"key": {"symbol": "c"}, "value": {"int": 3}}]}
-|  |  |  |  |  |  |  |  |  SCLiteral: c: = {"symbol": "c"}
-|  |  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCArgumentDeclareList: a = #[1, 2], b = (c: 3)
-|  |  |  |  |  |  SCBody: { |a = #[1, 2], b = (c: 3)| a }
-|  |  |  |  |  |  |  SCRead: a
-|  |  SCMethod: block_bracketed { ^{ |a = (1.foo)| a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{ |a = (1.foo)| a }
-|  |  |  |  SCExplicitReturn: { |a = (1.foo)| a }
-|  |  |  |  |  SCFunction: { |a = (1.foo)| a }
-|  |  |  |  |  |  SCArgumentDeclareList: a = (1.foo)
-|  |  |  |  |  |  |  SCArgumentDeclare: a = (1.foo)
-|  |  |  |  |  |  |  |  SCMessage: foo: 1.foo
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCPositionalArgs: 1.foo
-|  |  |  |  |  |  |  |  |  SCKwArgs: 1.foo
-|  |  |  |  |  |  |  |  |  SCVariadicArgs: 1.foo
-|  |  |  |  |  |  |  |  |  SCMissing: 1.foo
-|  |  |  |  |  |  SCArgumentDeclareList: a = (1.foo)
-|  |  |  |  |  |  SCBody: { |a = (1.foo)| a }
-|  |  |  |  |  |  |  SCRead: a
-|  |  SCMethod: block_earlier_argument { ^{ |a, b = (a + 1)| b } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{ |a, b = (a + 1)| b }
-|  |  |  |  SCExplicitReturn: { |a, b = (a + 1)| b }
-|  |  |  |  |  SCFunction: { |a, b = (a + 1)| b }
-|  |  |  |  |  |  SCArgumentDeclareList: a, b = (a + 1)
-|  |  |  |  |  |  |  SCArgumentDeclare: a
-|  |  |  |  |  |  |  |  SCMissing: a
-|  |  |  |  |  |  |  SCArgumentDeclare: a, b = (a + 1)
-|  |  |  |  |  |  |  |  SCMessage: +: a + 1
-|  |  |  |  |  |  |  |  |  SCRead: a
-|  |  |  |  |  |  |  |  |  SCPositionalArgs: a + 1
-|  |  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCKwArgs: a + 1
-|  |  |  |  |  |  |  |  |  SCVariadicArgs: a + 1
-|  |  |  |  |  |  |  |  |  SCMissing: a + 1
-|  |  |  |  |  |  SCArgumentDeclareList: a, b = (a + 1)
-|  |  |  |  |  |  SCBody: { |a, b = (a + 1)| b }
-|  |  |  |  |  |  |  SCRead: b
-|  |  SCMethod: poisoned: block_later_argument { ^{ |a = (b), b| a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{ |a = (b), b| a }
-|  |  |  |  SCExplicitReturn: { |a = (b), b| a }
-|  |  |  |  |  SCFunction: { |a = (b), b| a }
-|  |  |  |  |  |  SCArgumentDeclareList: a = (b), b
-|  |  |  |  |  |  |  SCArgumentDeclare: a = (b)
-|  |  |  |  |  |  |  |  SCExprList: b
-|  |  |  |  |  |  |  SCArgumentDeclare: b
-|  |  |  |  |  |  |  |  SCMissing: b
-|  |  |  |  |  |  SCArgumentDeclareList: a = (b), b
-|  |  |  |  |  |  SCBody: { |a = (b), b| a }
-|  |  |  |  |  |  |  SCRead: a
-|  |  SCMethod: poisoned: block_itself { ^{ |a = (a)| a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{ |a = (a)| a }
-|  |  |  |  SCExplicitReturn: { |a = (a)| a }
-|  |  |  |  |  SCFunction: { |a = (a)| a }
-|  |  |  |  |  |  SCArgumentDeclareList: a = (a)
-|  |  |  |  |  |  |  SCArgumentDeclare: a = (a)
-|  |  |  |  |  |  |  |  SCExprList: a
-|  |  |  |  |  |  SCArgumentDeclareList: a = (a)
-|  |  |  |  |  |  SCBody: { |a = (a)| a }
-|  |  |  |  |  |  |  SCRead: a
-|  |  SCMethod: method_constant { |a = 1| ^1 }
-|  |  |  SCArgumentDeclareList: a = 1
-|  |  |  |  SCArgumentDeclare: a = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  SCArgumentDeclareList: a = 1
-|  |  |  SCBody: ^1
-|  |  |  |  SCExplicitReturn: 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: method_instance_var { |a = (instance_var)| ^1 }
-|  |  |  SCArgumentDeclareList: a = (instance_var)
-|  |  |  |  SCArgumentDeclare: a = (instance_var)
-|  |  |  |  |  SCRead: instance_var
-|  |  |  SCArgumentDeclareList: a = (instance_var)
-|  |  |  SCBody: ^1
-|  |  |  |  SCExplicitReturn: 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: method_other_argument { |a, b = (a)| ^1 }
-|  |  |  SCArgumentDeclareList: a, b = (a)
-|  |  |  |  SCArgumentDeclare: a
-|  |  |  |  |  SCMissing: a
-|  |  |  |  SCArgumentDeclare: a, b = (a)
-|  |  |  |  |  SCRead: a
-|  |  |  SCArgumentDeclareList: a, b = (a)
-|  |  |  SCBody: ^1
-|  |  |  |  SCExplicitReturn: 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
+SCClass (1:1): ArgumentDefaults
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): instance_var
+|  SCMethodList (1:1)
+|  |  SCMethod (4:5): block_constant { ^{ |a = 1| a } }
+|  |  |  SCBody (4:22)
+|  |  |  |  SCExplicitReturn (4:23)
+|  |  |  |  |  SCFunction (4:23)
+|  |  |  |  |  |  SCArgumentDeclareList (4:26)
+|  |  |  |  |  |  |  SCArgumentDeclare (4:26): a
+|  |  |  |  |  |  |  |  SCLiteral (4:30) = 1
+|  |  |  |  |  |  SCBody (4:23)
+|  |  |  |  |  |  |  SCRead (4:33): local a, declared (4:26): a = 1
+|  |  SCMethod (5:5): block_constant_array { ^{ |a = #[1, 2], b = (c: 3)| a } }
+|  |  |  SCBody (5:28)
+|  |  |  |  SCExplicitReturn (5:29)
+|  |  |  |  |  SCFunction (5:29)
+|  |  |  |  |  |  SCArgumentDeclareList (5:32)
+|  |  |  |  |  |  |  SCArgumentDeclare (5:32): a
+|  |  |  |  |  |  |  |  SCCollection (5:36): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (5:38) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (5:41) = 2
+|  |  |  |  |  |  |  SCArgumentDeclare (5:32): b
+|  |  |  |  |  |  |  |  SCCollection (5:49): Event = (c: 3)
+|  |  |  |  |  |  |  |  |  SCLiteral (5:50) = \c
+|  |  |  |  |  |  |  |  |  SCLiteral (5:53) = 3
+|  |  |  |  |  |  SCBody (5:29)
+|  |  |  |  |  |  |  SCRead (5:57): local a, declared (5:32): a = #[1, 2]
+|  |  SCMethod (6:5): block_bracketed { ^{ |a = (1.foo)| a } }
+|  |  |  SCBody (6:23)
+|  |  |  |  SCExplicitReturn (6:24)
+|  |  |  |  |  SCFunction (6:24)
+|  |  |  |  |  |  SCArgumentDeclareList (6:27)
+|  |  |  |  |  |  |  SCArgumentDeclare (6:27): a
+|  |  |  |  |  |  |  |  SCMessage (6:32): foo
+|  |  |  |  |  |  |  |  |  SCLiteral (6:32) = 1
+|  |  |  |  |  |  SCBody (6:24)
+|  |  |  |  |  |  |  SCRead (6:40): local a, declared (6:27): a = (1.foo)
+|  |  SCMethod (7:5): block_earlier_argument { ^{ |a, b = (a + 1)| b } }
+|  |  |  SCBody (7:30)
+|  |  |  |  SCExplicitReturn (7:31)
+|  |  |  |  |  SCFunction (7:31)
+|  |  |  |  |  |  SCArgumentDeclareList (7:34)
+|  |  |  |  |  |  |  SCArgumentDeclare (7:34): a
+|  |  |  |  |  |  |  SCArgumentDeclare (7:34): b
+|  |  |  |  |  |  |  |  SCMessage (7:42): +
+|  |  |  |  |  |  |  |  |  SCRead (7:42): local a, declared (7:34): a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (7:42)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (7:46) = 1
+|  |  |  |  |  |  SCBody (7:31)
+|  |  |  |  |  |  |  SCRead (7:50): local b, declared (7:34): a, b = (a + 1)
+|  |  SCMethod (8:5): poisoned: block_later_argument { ^{ |a = (b), b| a } }
+|  |  |  SCBody (8:28)
+|  |  |  |  SCExplicitReturn (8:29)
+|  |  |  |  |  SCFunction (8:29)
+|  |  |  |  |  |  SCArgumentDeclareList (8:32)
+|  |  |  |  |  |  |  SCArgumentDeclare (8:32): a
+|  |  |  |  |  |  |  |  SCExprList (8:37)
+|  |  |  |  |  |  |  SCArgumentDeclare (8:41): b
+|  |  |  |  |  |  SCBody (8:29)
+|  |  |  |  |  |  |  SCRead (8:44): local a, declared (8:32): a = (b)
+|  |  SCMethod (9:5): poisoned: block_itself { ^{ |a = (a)| a } }
+|  |  |  SCBody (9:20)
+|  |  |  |  SCExplicitReturn (9:21)
+|  |  |  |  |  SCFunction (9:21)
+|  |  |  |  |  |  SCArgumentDeclareList (9:24)
+|  |  |  |  |  |  |  SCArgumentDeclare (9:24): a
+|  |  |  |  |  |  |  |  SCExprList (9:29)
+|  |  |  |  |  |  SCBody (9:21)
+|  |  |  |  |  |  |  SCRead (9:33): local a, declared (9:24): a = (a)
+|  |  SCMethod (11:5): method_constant { |a = 1| ^1 }
+|  |  |  SCArgumentDeclareList (11:24)
+|  |  |  |  SCArgumentDeclare (11:24): a
+|  |  |  |  |  SCLiteral (11:28) = 1
+|  |  |  SCBody (11:31)
+|  |  |  |  SCExplicitReturn (11:32)
+|  |  |  |  |  SCLiteral (11:32) = 1
+|  |  SCMethod (12:5): method_instance_var { |a = (instance_var)| ^1 }
+|  |  |  SCArgumentDeclareList (12:28)
+|  |  |  |  SCArgumentDeclare (12:28): a
+|  |  |  |  |  SCRead (12:33): instance instance_var, declared (2:9): instance_var
+|  |  |  SCBody (12:48)
+|  |  |  |  SCExplicitReturn (12:49)
+|  |  |  |  |  SCLiteral (12:49) = 1
+|  |  SCMethod (13:5): method_other_argument { |a, b = (a)| ^1 }
+|  |  |  SCArgumentDeclareList (13:30)
+|  |  |  |  SCArgumentDeclare (13:30): a
+|  |  |  |  SCArgumentDeclare (13:30): b
+|  |  |  |  |  SCRead (13:38): local a, declared (13:30): a
+|  |  |  SCBody (13:42)
+|  |  |  |  SCExplicitReturn (13:43)
+|  |  |  |  |  SCLiteral (13:43) = 1
 Successfully compiled 15 classes.

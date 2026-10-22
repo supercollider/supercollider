@@ -31,122 +31,71 @@ file:
 IR GRAPH DUMP 
 
 
-SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfix_selector_only { ^1.perform(\foo) }'\n'    postfix_quoted_symbol { ^1.perform('foo', 2) }'\n'    prefix { ^perform(1, \foo, 2) }'\n'    binary { ^1 perform: \foo }'\n'    not_a_symbol { ^1.perform(2, 3) }'\n'    not_constant { ^1.perform(\foo.bar, 2) }'\n'    not_first_argument { ^1.perform(2, \foo) }'\n'    keyword_argument { ^1.perform(selector: \foo) }'\n'}
-|  SCMemberList: Perform
-|  SCMethodList: Perform
-|  |  SCMethod: postfix { ^1.perform(\foo, 2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(\foo, 2)
-|  |  |  |  SCExplicitReturn: 1.perform(\foo, 2)
-|  |  |  |  |  SCMessage: foo: 1.perform(\foo, 2)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(\foo, 2)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1.perform(\foo, 2)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(\foo, 2)
-|  |  |  |  |  |  SCMissing: 1.perform(\foo, 2)
-|  |  SCMethod: postfix_selector_only { ^1.perform(\foo) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(\foo)
-|  |  |  |  SCExplicitReturn: 1.perform(\foo)
-|  |  |  |  |  SCMessage: foo: 1.perform(\foo)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(\foo)
-|  |  |  |  |  |  SCKwArgs: 1.perform(\foo)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(\foo)
-|  |  |  |  |  |  SCMissing: 1.perform(\foo)
-|  |  SCMethod: postfix_quoted_symbol { ^1.perform('foo', 2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform('foo', 2)
-|  |  |  |  SCExplicitReturn: 1.perform('foo', 2)
-|  |  |  |  |  SCMessage: foo: 1.perform('foo', 2)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform('foo', 2)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1.perform('foo', 2)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform('foo', 2)
-|  |  |  |  |  |  SCMissing: 1.perform('foo', 2)
-|  |  SCMethod: prefix { ^perform(1, \foo, 2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^perform(1, \foo, 2)
-|  |  |  |  SCExplicitReturn: perform(1, \foo, 2)
-|  |  |  |  |  SCMessage: foo: perform(1, \foo, 2)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: perform(1, \foo, 2)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: perform(1, \foo, 2)
-|  |  |  |  |  |  SCVariadicArgs: perform(1, \foo, 2)
-|  |  |  |  |  |  SCMissing: perform(1, \foo, 2)
-|  |  SCMethod: binary { ^1 perform: \foo }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1 perform: \foo
-|  |  |  |  SCExplicitReturn: 1 perform: \foo
-|  |  |  |  |  SCMessage: foo: 1 perform: \foo
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1 perform: \foo
-|  |  |  |  |  |  SCKwArgs: 1 perform: \foo
-|  |  |  |  |  |  SCVariadicArgs: 1 perform: \foo
-|  |  |  |  |  |  SCMissing: 1 perform: \foo
-|  |  SCMethod: poisoned: not_a_symbol { ^1.perform(2, 3) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(2, 3)
-|  |  |  |  SCExplicitReturn: 1.perform(2, 3)
-|  |  |  |  |  SCMessage: perform: 1.perform(2, 3)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(2, 3)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: 1.perform(2, 3)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(2, 3)
-|  |  |  |  |  |  SCMissing: 1.perform(2, 3)
-|  |  SCMethod: not_constant { ^1.perform(\foo.bar, 2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(\foo.bar, 2)
-|  |  |  |  SCExplicitReturn: 1.perform(\foo.bar, 2)
-|  |  |  |  |  SCMessage: perform: 1.perform(\foo.bar, 2)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(\foo.bar, 2)
-|  |  |  |  |  |  |  SCMessage: bar: \foo.bar
-|  |  |  |  |  |  |  |  SCLiteral: \foo = {"symbol": "foo"}
-|  |  |  |  |  |  |  |  SCPositionalArgs: \foo.bar
-|  |  |  |  |  |  |  |  SCKwArgs: \foo.bar
-|  |  |  |  |  |  |  |  SCVariadicArgs: \foo.bar
-|  |  |  |  |  |  |  |  SCMissing: \foo.bar
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1.perform(\foo.bar, 2)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(\foo.bar, 2)
-|  |  |  |  |  |  SCMissing: 1.perform(\foo.bar, 2)
-|  |  SCMethod: poisoned: not_first_argument { ^1.perform(2, \foo) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(2, \foo)
-|  |  |  |  SCExplicitReturn: 1.perform(2, \foo)
-|  |  |  |  |  SCMessage: perform: 1.perform(2, \foo)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(2, \foo)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: \foo = {"symbol": "foo"}
-|  |  |  |  |  |  SCKwArgs: 1.perform(2, \foo)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(2, \foo)
-|  |  |  |  |  |  SCMissing: 1.perform(2, \foo)
-|  |  SCMethod: keyword_argument { ^1.perform(selector: \foo) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(selector: \foo)
-|  |  |  |  SCExplicitReturn: 1.perform(selector: \foo)
-|  |  |  |  |  SCMessage: perform: 1.perform(selector: \foo)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(selector: \foo)
-|  |  |  |  |  |  SCKwArgs: 1.perform(selector: \foo)
-|  |  |  |  |  |  |  SCKwArg: selector: selector: \foo
-|  |  |  |  |  |  |  |  SCLiteral: \foo = {"symbol": "foo"}
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(selector: \foo)
-|  |  |  |  |  |  SCMissing: 1.perform(selector: \foo)
+SCClass (1:1): Perform
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (2:5): postfix { ^1.perform(\foo, 2) }
+|  |  |  SCBody (2:15)
+|  |  |  |  SCExplicitReturn (2:16)
+|  |  |  |  |  SCMessage (2:16): foo
+|  |  |  |  |  |  SCLiteral (2:16) = 1
+|  |  |  |  |  |  SCPositionalArgs (2:16)
+|  |  |  |  |  |  |  SCLiteral (2:32) = 2
+|  |  SCMethod (3:5): postfix_selector_only { ^1.perform(\foo) }
+|  |  |  SCBody (3:29)
+|  |  |  |  SCExplicitReturn (3:30)
+|  |  |  |  |  SCMessage (3:30): foo
+|  |  |  |  |  |  SCLiteral (3:30) = 1
+|  |  SCMethod (4:5): postfix_quoted_symbol { ^1.perform('foo', 2) }
+|  |  |  SCBody (4:29)
+|  |  |  |  SCExplicitReturn (4:30)
+|  |  |  |  |  SCMessage (4:30): foo
+|  |  |  |  |  |  SCLiteral (4:30) = 1
+|  |  |  |  |  |  SCPositionalArgs (4:30)
+|  |  |  |  |  |  |  SCLiteral (4:47) = 2
+|  |  SCMethod (5:5): prefix { ^perform(1, \foo, 2) }
+|  |  |  SCBody (5:14)
+|  |  |  |  SCExplicitReturn (5:15)
+|  |  |  |  |  SCMessage (5:15): foo
+|  |  |  |  |  |  SCLiteral (5:23) = 1
+|  |  |  |  |  |  SCPositionalArgs (5:15)
+|  |  |  |  |  |  |  SCLiteral (5:32) = 2
+|  |  SCMethod (6:5): binary { ^1 perform: \foo }
+|  |  |  SCBody (6:14)
+|  |  |  |  SCExplicitReturn (6:15)
+|  |  |  |  |  SCMessage (6:15): foo
+|  |  |  |  |  |  SCLiteral (6:15) = 1
+|  |  SCMethod (7:5): poisoned: not_a_symbol { ^1.perform(2, 3) }
+|  |  |  SCBody (7:20)
+|  |  |  |  SCExplicitReturn (7:21)
+|  |  |  |  |  SCMessage (7:21): perform
+|  |  |  |  |  |  SCLiteral (7:21) = 1
+|  |  |  |  |  |  SCPositionalArgs (7:21)
+|  |  |  |  |  |  |  SCLiteral (7:31) = 2
+|  |  |  |  |  |  |  SCLiteral (7:34) = 3
+|  |  SCMethod (8:5): not_constant { ^1.perform(\foo.bar, 2) }
+|  |  |  SCBody (8:20)
+|  |  |  |  SCExplicitReturn (8:21)
+|  |  |  |  |  SCMessage (8:21): perform
+|  |  |  |  |  |  SCLiteral (8:21) = 1
+|  |  |  |  |  |  SCPositionalArgs (8:21)
+|  |  |  |  |  |  |  SCMessage (8:31): bar
+|  |  |  |  |  |  |  |  SCLiteral (8:31) = \foo
+|  |  |  |  |  |  |  SCLiteral (8:41) = 2
+|  |  SCMethod (9:5): poisoned: not_first_argument { ^1.perform(2, \foo) }
+|  |  |  SCBody (9:26)
+|  |  |  |  SCExplicitReturn (9:27)
+|  |  |  |  |  SCMessage (9:27): perform
+|  |  |  |  |  |  SCLiteral (9:27) = 1
+|  |  |  |  |  |  SCPositionalArgs (9:27)
+|  |  |  |  |  |  |  SCLiteral (9:37) = 2
+|  |  |  |  |  |  |  SCLiteral (9:40) = \foo
+|  |  SCMethod (10:5): keyword_argument { ^1.perform(selector: \foo) }
+|  |  |  SCBody (10:24)
+|  |  |  |  SCExplicitReturn (10:25)
+|  |  |  |  |  SCMessage (10:25): perform
+|  |  |  |  |  |  SCLiteral (10:25) = 1
+|  |  |  |  |  |  SCKwArgs (10:25)
+|  |  |  |  |  |  |  SCKwArg (10:35): selector
+|  |  |  |  |  |  |  |  SCLiteral (10:45) = \foo
 Successfully compiled 15 classes.

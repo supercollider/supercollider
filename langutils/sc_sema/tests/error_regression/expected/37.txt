@@ -4,82 +4,59 @@
 IR GRAPH DUMP 
 
 
-SCClass: NegativeLiterals: NegativeLiterals {'\n'    const negative_const = -3;'\n''\n'    integer { ^-5 }'\n'    float { ^-2.5 }'\n'    exponent { ^-1e3 }'\n'    hexadecimal { ^-0x10 }'\n'    radix { ^-2r101 }'\n'    pi_alone { ^-pi }'\n'    pi_multiple { ^-2pi }'\n'    in_array { ^[-1, 2] }'\n'    in_range { ^(-2..2) }'\n'    binary_minus { ^1 - 2 }'\n'}
-|  SCMemberList: NegativeLiterals
-|  SCMethodList: NegativeLiterals
-|  |  SCMethod: integer { ^-5 } -> {"int": -5}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^-5
-|  |  |  |  SCExplicitReturn: -5
-|  |  |  |  |  SCLiteral: 5 = {"int": -5}
-|  |  SCMethod: float { ^-2.5 } -> {"float": -2.5}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^-2.5
-|  |  |  |  SCExplicitReturn: -2.5
-|  |  |  |  |  SCLiteral: 2.5 = {"float": -2.5}
-|  |  SCMethod: exponent { ^-1e3 } -> {"float": -1000}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^-1e3
-|  |  |  |  SCExplicitReturn: -1e3
-|  |  |  |  |  SCLiteral: 1e3 = {"float": -1000}
-|  |  SCMethod: hexadecimal { ^-0x10 } -> {"int": -16}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^-0x10
-|  |  |  |  SCExplicitReturn: -0x10
-|  |  |  |  |  SCLiteral: 0x10 = {"int": -16}
-|  |  SCMethod: radix { ^-2r101 } -> {"int": -5}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^-2r101
-|  |  |  |  SCExplicitReturn: -2r101
-|  |  |  |  |  SCLiteral: 2r101 = {"int": -5}
-|  |  SCMethod: pi_alone { ^-pi } -> {"float": -3.1415927}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^-pi
-|  |  |  |  SCExplicitReturn: -pi
-|  |  |  |  |  SCLiteral: -pi = {"float": -3.1415927}
-|  |  SCMethod: pi_multiple { ^-2pi } -> {"float": -6.2831853}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^-2pi
-|  |  |  |  SCExplicitReturn: -2pi
-|  |  |  |  |  SCLiteral: -2pi = {"float": -6.2831853}
-|  |  SCMethod: in_array { ^[-1, 2] } -> {"array": [{"int": -1}, {"int": 2}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[-1, 2]
-|  |  |  |  SCExplicitReturn: [-1, 2]
-|  |  |  |  |  SCCollection: Array: [-1, 2] = {"array": [{"int": -1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": -1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: in_range { ^(-2..2) } -> {"array": [{"int": -2}, {"int": -1}, {"int": 0}, {"int": 1}, {"int": 2}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^(-2..2)
-|  |  |  |  SCExplicitReturn: (-2..2)
-|  |  |  |  |  SCRange: (-2..2) = {"array": [{"int": -2}, {"int": -1}, {"int": 0}, {"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": -2}
-|  |  |  |  |  |  SCMissing: (-2..2)
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: binary_minus { ^1 - 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1 - 2
-|  |  |  |  SCExplicitReturn: 1 - 2
-|  |  |  |  |  SCMessage: -: 1 - 2
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1 - 2
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1 - 2
-|  |  |  |  |  |  SCVariadicArgs: 1 - 2
-|  |  |  |  |  |  SCMissing: 1 - 2
-SCClass: Meta_NegativeLiterals: NegativeLiterals {'\n'    const negative_const = -3;'\n''\n'    integer { ^-5 }'\n'    float { ^-2.5 }'\n'    exponent { ^-1e3 }'\n'    hexadecimal { ^-0x10 }'\n'    radix { ^-2r101 }'\n'    pi_alone { ^-pi }'\n'    pi_multiple { ^-2pi }'\n'    in_array { ^[-1, 2] }'\n'    in_range { ^(-2..2) }'\n'    binary_minus { ^1 - 2 }'\n'}
-|  SCMemberList: NegativeLiterals
-|  |  SCMember: negative_const = {"int": -3}
-|  SCMethodList: NegativeLiterals
+SCClass (1:1): NegativeLiterals
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (4:5): integer { ^-5 } -> -5
+|  |  |  SCBody (4:15)
+|  |  |  |  SCExplicitReturn (4:16)
+|  |  |  |  |  SCLiteral (4:17) = -5
+|  |  SCMethod (5:5): float { ^-2.5 } -> -2.5
+|  |  |  SCBody (5:13)
+|  |  |  |  SCExplicitReturn (5:14)
+|  |  |  |  |  SCLiteral (5:15) = -2.5
+|  |  SCMethod (6:5): exponent { ^-1e3 } -> -1000.0
+|  |  |  SCBody (6:16)
+|  |  |  |  SCExplicitReturn (6:17)
+|  |  |  |  |  SCLiteral (6:18) = -1000.0
+|  |  SCMethod (7:5): hexadecimal { ^-0x10 } -> -16
+|  |  |  SCBody (7:19)
+|  |  |  |  SCExplicitReturn (7:20)
+|  |  |  |  |  SCLiteral (7:21) = -16
+|  |  SCMethod (8:5): radix { ^-2r101 } -> -5
+|  |  |  SCBody (8:13)
+|  |  |  |  SCExplicitReturn (8:14)
+|  |  |  |  |  SCLiteral (8:15) = -5
+|  |  SCMethod (9:5): pi_alone { ^-pi } -> -3.1415927
+|  |  |  SCBody (9:16)
+|  |  |  |  SCExplicitReturn (9:17)
+|  |  |  |  |  SCLiteral (9:17) = -3.1415927
+|  |  SCMethod (10:5): pi_multiple { ^-2pi } -> -6.2831853
+|  |  |  SCBody (10:19)
+|  |  |  |  SCExplicitReturn (10:20)
+|  |  |  |  |  SCLiteral (10:20) = -6.2831853
+|  |  SCMethod (11:5): in_array { ^[-1, 2] } -> [-1, 2]
+|  |  |  SCBody (11:16)
+|  |  |  |  SCExplicitReturn (11:17)
+|  |  |  |  |  SCCollection (11:17): Array = [-1, 2]
+|  |  |  |  |  |  SCLiteral (11:19) = -1
+|  |  |  |  |  |  SCLiteral (11:22) = 2
+|  |  SCMethod (12:5): in_range { ^(-2..2) } -> [-2, -1, 0, 1, 2]
+|  |  |  SCBody (12:16)
+|  |  |  |  SCExplicitReturn (12:17)
+|  |  |  |  |  SCRange (12:17) = [-2, -1, 0, 1, 2]
+|  |  |  |  |  |  SCLiteral (12:19) = -2
+|  |  |  |  |  |  SCMissing (12:17)
+|  |  |  |  |  |  SCLiteral (12:22) = 2
+|  |  SCMethod (13:5): binary_minus { ^1 - 2 }
+|  |  |  SCBody (13:20)
+|  |  |  |  SCExplicitReturn (13:21)
+|  |  |  |  |  SCMessage (13:21): -
+|  |  |  |  |  |  SCLiteral (13:21) = 1
+|  |  |  |  |  |  SCPositionalArgs (13:21)
+|  |  |  |  |  |  |  SCLiteral (13:25) = 2
+SCClass (1:1): Meta_NegativeLiterals
+|  SCMemberList (1:1)
+|  |  SCMember (2:11): negative_const = -3
+|  SCMethodList (1:1)
 Successfully compiled 15 classes.

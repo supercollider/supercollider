@@ -32,62 +32,46 @@ Declare it with 'var', or use '~undefined_var' to refer to an environment variab
 IR GRAPH DUMP 
 
 
-SCClass: Foo: Foo {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n'    assign_instance { instance_var = 1 }'\n'    assign_class { class_var = 2.0 }'\n'    assign_env { ~env_var = 3 }'\n'    assign_undefined { undefined_var = 4 }'\n'    assign_chain { instance_var = class_var = 5 }'\n''\n'    *class_method_assign_class { class_var = 6 }'\n'    *class_method_assign_instance { instance_var = 7 }'\n'}
-|  SCMemberList: Foo
-|  |  SCMember: instance_var
-|  SCMethodList: Foo
-|  |  SCMethod: assign_instance { instance_var = 1 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var = 1
-|  |  |  |  SCAssign: instance_var = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  SCMethod: assign_class { class_var = 2.0 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: class_var = 2.0
-|  |  |  |  SCAssign: class_var = 2.0
-|  |  |  |  |  SCLiteral: 2.0 = {"float": 2}
-|  |  SCMethod: assign_env { ~env_var = 3 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ~env_var = 3
-|  |  |  |  SCAssign: ~env_var = 3
-|  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  SCMethod: poisoned: assign_undefined { undefined_var = 4 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: undefined_var = 4
-|  |  |  |  SCLiteral: 4 = {"int": 4}
-|  |  SCMethod: assign_chain { instance_var = class_var = 5 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var = class_var = 5
-|  |  |  |  SCAssign: instance_var = class_var = 5
-|  |  |  |  |  SCAssign: class_var = 5
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-SCClass: Meta_Foo: Foo {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n'    assign_instance { instance_var = 1 }'\n'    assign_class { class_var = 2.0 }'\n'    assign_env { ~env_var = 3 }'\n'    assign_undefined { undefined_var = 4 }'\n'    assign_chain { instance_var = class_var = 5 }'\n''\n'    *class_method_assign_class { class_var = 6 }'\n'    *class_method_assign_instance { instance_var = 7 }'\n'}
-|  SCMemberList: Foo
-|  |  SCMember: class_var
-|  SCMethodList: Foo
-|  |  SCMethod: *class_method_assign_class { class_var = 6 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: class_var = 6
-|  |  |  |  SCAssign: class_var = 6
-|  |  |  |  |  SCLiteral: 6 = {"int": 6}
-|  |  SCMethod: poisoned: *class_method_assign_instance { instance_var = 7 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var = 7
-|  |  |  |  SCLiteral: 7 = {"int": 7}
-SCClass: Bar: Bar : Foo {'\n'    assign_inherited { instance_var = 8 }'\n'}
-|  SCMemberList: Bar
-|  SCMethodList: Bar
-|  |  SCMethod: assign_inherited { instance_var = 8 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var = 8
-|  |  |  |  SCAssign: instance_var = 8
-|  |  |  |  |  SCLiteral: 8 = {"int": 8}
+SCClass (1:1): Foo
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): instance_var
+|  SCMethodList (1:1)
+|  |  SCMethod (5:5): assign_instance { instance_var = 1 }
+|  |  |  SCBody (5:23)
+|  |  |  |  SCAssign (5:23): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCLiteral (5:38) = 1
+|  |  SCMethod (6:5): assign_class { class_var = 2.0 }
+|  |  |  SCBody (6:20)
+|  |  |  |  SCAssign (6:20): class class_var, declared (3:14): class_var
+|  |  |  |  |  SCLiteral (6:32) = 2.0
+|  |  SCMethod (7:5): assign_env { ~env_var = 3 }
+|  |  |  SCBody (7:18)
+|  |  |  |  SCAssign (7:18): environment env_var
+|  |  |  |  |  SCLiteral (7:29) = 3
+|  |  SCMethod (8:5): poisoned: assign_undefined { undefined_var = 4 }
+|  |  |  SCBody (8:24)
+|  |  |  |  SCLiteral (8:40) = 4
+|  |  SCMethod (9:5): assign_chain { instance_var = class_var = 5 }
+|  |  |  SCBody (9:20)
+|  |  |  |  SCAssign (9:20): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCAssign (9:35): class class_var, declared (3:14): class_var
+|  |  |  |  |  |  SCLiteral (9:47) = 5
+SCClass (1:1): Meta_Foo
+|  SCMemberList (1:1)
+|  |  SCMember (3:14): class_var
+|  SCMethodList (1:1)
+|  |  SCMethod (11:5): *class_method_assign_class { class_var = 6 }
+|  |  |  SCBody (11:34)
+|  |  |  |  SCAssign (11:34): instance class_var, declared (3:14): class_var
+|  |  |  |  |  SCLiteral (11:46) = 6
+|  |  SCMethod (12:5): poisoned: *class_method_assign_instance { instance_var = 7 }
+|  |  |  SCBody (12:37)
+|  |  |  |  SCLiteral (12:52) = 7
+SCClass (15:1): Bar
+|  SCMemberList (15:1)
+|  SCMethodList (15:1)
+|  |  SCMethod (16:5): assign_inherited { instance_var = 8 }
+|  |  |  SCBody (16:24)
+|  |  |  |  SCAssign (16:24): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCLiteral (16:39) = 8
 Successfully compiled 16 classes.

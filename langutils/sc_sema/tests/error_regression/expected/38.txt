@@ -73,152 +73,91 @@ A variadic argument, e.g., `*a`, must come after all the positional arguments, e
 IR GRAPH DUMP 
 
 
-SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'    expression_receiver { 1.bar.foo = 10 }'\n'    literal_receiver { 1.foo = 2 }'\n'    chained_value { x.foo = x.bar = 2 }'\n'    as_argument { ^3.baz(x.foo = 1) }'\n'    functional { foo(x, 1) = 2 }'\n'    functional_receiver_only { foo(x) = 2 }'\n'    functional_keyword { foo(x, b: 1) = 2 }'\n'    functional_no_receiver { foo(b: 1) = 2 }'\n'    functional_variadic { foo(x, *x) = 2 }'\n'    functional_variadic_receiver { foo(*x) = 2 }'\n'    functional_variadic_after_arguments { foo(x, 1, *x) = 2 }'\n'}
-|  SCMemberList: Setters
-|  |  SCMember: x
-|  SCMethodList: Setters
-|  |  SCMethod: simple { x.foo = 10 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: x.foo = 10
-|  |  |  |  SCMessage: foo_: x.foo = 10
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: x.foo = 10
-|  |  |  |  |  |  SCLiteral: 10 = {"int": 10}
-|  |  |  |  |  SCKwArgs: x.foo = 10
-|  |  |  |  |  SCVariadicArgs: x.foo = 10
-|  |  |  |  |  SCMissing: x.foo = 10
-|  |  SCMethod: expression_receiver { 1.bar.foo = 10 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: 1.bar.foo = 10
-|  |  |  |  SCMessage: foo_: 1.bar.foo = 10
-|  |  |  |  |  SCMessage: bar: 1.bar
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.bar
-|  |  |  |  |  |  SCKwArgs: 1.bar
-|  |  |  |  |  |  SCVariadicArgs: 1.bar
-|  |  |  |  |  |  SCMissing: 1.bar
-|  |  |  |  |  SCPositionalArgs: 1.bar.foo = 10
-|  |  |  |  |  |  SCLiteral: 10 = {"int": 10}
-|  |  |  |  |  SCKwArgs: 1.bar.foo = 10
-|  |  |  |  |  SCVariadicArgs: 1.bar.foo = 10
-|  |  |  |  |  SCMissing: 1.bar.foo = 10
-|  |  SCMethod: literal_receiver { 1.foo = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: 1.foo = 2
-|  |  |  |  SCMessage: foo_: 1.foo = 2
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCPositionalArgs: 1.foo = 2
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: 1.foo = 2
-|  |  |  |  |  SCVariadicArgs: 1.foo = 2
-|  |  |  |  |  SCMissing: 1.foo = 2
-|  |  SCMethod: chained_value { x.foo = x.bar = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: x.foo = x.bar = 2
-|  |  |  |  SCMessage: foo_: x.foo = x.bar = 2
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: x.foo = x.bar = 2
-|  |  |  |  |  |  SCMessage: bar_: x.bar = 2
-|  |  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  |  SCPositionalArgs: x.bar = 2
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCKwArgs: x.bar = 2
-|  |  |  |  |  |  |  SCVariadicArgs: x.bar = 2
-|  |  |  |  |  |  |  SCMissing: x.bar = 2
-|  |  |  |  |  SCKwArgs: x.foo = x.bar = 2
-|  |  |  |  |  SCVariadicArgs: x.foo = x.bar = 2
-|  |  |  |  |  SCMissing: x.foo = x.bar = 2
-|  |  SCMethod: as_argument { ^3.baz(x.foo = 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^3.baz(x.foo = 1)
-|  |  |  |  SCExplicitReturn: 3.baz(x.foo = 1)
-|  |  |  |  |  SCMessage: baz: 3.baz(x.foo = 1)
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: 3.baz(x.foo = 1)
-|  |  |  |  |  |  |  SCMessage: foo_: x.foo = 1
-|  |  |  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  |  |  SCPositionalArgs: x.foo = 1
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  SCKwArgs: x.foo = 1
-|  |  |  |  |  |  |  |  SCVariadicArgs: x.foo = 1
-|  |  |  |  |  |  |  |  SCMissing: x.foo = 1
-|  |  |  |  |  |  SCKwArgs: 3.baz(x.foo = 1)
-|  |  |  |  |  |  SCVariadicArgs: 3.baz(x.foo = 1)
-|  |  |  |  |  |  SCMissing: 3.baz(x.foo = 1)
-|  |  SCMethod: functional { foo(x, 1) = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: foo(x, 1) = 2
-|  |  |  |  SCMessage: foo_: foo(x, 1) = 2
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: foo(x, 1) = 2
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: foo(x, 1) = 2
-|  |  |  |  |  SCVariadicArgs: foo(x, 1) = 2
-|  |  |  |  |  SCMissing: foo(x, 1) = 2
-|  |  SCMethod: functional_receiver_only { foo(x) = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: foo(x) = 2
-|  |  |  |  SCMessage: foo_: foo(x) = 2
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: foo(x) = 2
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: foo(x) = 2
-|  |  |  |  |  SCVariadicArgs: foo(x) = 2
-|  |  |  |  |  SCMissing: foo(x) = 2
-|  |  SCMethod: functional_keyword { foo(x, b: 1) = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: foo(x, b: 1) = 2
-|  |  |  |  SCMessage: foo_: foo(x, b: 1) = 2
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: foo(x, b: 1) = 2
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: foo(x, b: 1) = 2
-|  |  |  |  |  |  SCKwArg: b: b: 1
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCVariadicArgs: foo(x, b: 1) = 2
-|  |  |  |  |  SCMissing: foo(x, b: 1) = 2
-|  |  SCMethod: poisoned: functional_no_receiver { foo(b: 1) = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: foo(b: 1) = 2
-|  |  |  |  SCExprList: foo(b: 1) = 2
-|  |  SCMethod: poisoned: functional_variadic { foo(x, *x) = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: foo(x, *x) = 2
-|  |  |  |  SCMessage: foo_: foo(x, *x) = 2
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: foo(x, *x) = 2
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: foo(x, *x) = 2
-|  |  |  |  |  SCVariadicArgs: foo(x, *x) = 2
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  SCMissing: foo(x, *x) = 2
-|  |  SCMethod: poisoned: functional_variadic_receiver { foo(*x) = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: foo(*x) = 2
-|  |  |  |  SCExprList: foo(*x) = 2
-|  |  SCMethod: poisoned: functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: foo(x, 1, *x) = 2
-|  |  |  |  SCMessage: foo_: foo(x, 1, *x) = 2
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: foo(x, 1, *x) = 2
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCKwArgs: foo(x, 1, *x) = 2
-|  |  |  |  |  SCVariadicArgs: foo(x, 1, *x) = 2
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  SCMissing: foo(x, 1, *x) = 2
+SCClass (1:1): Setters
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): x
+|  SCMethodList (1:1)
+|  |  SCMethod (4:5): simple { x.foo = 10 }
+|  |  |  SCBody (4:14)
+|  |  |  |  SCMessage (4:14): foo_
+|  |  |  |  |  SCRead (4:14): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (4:14)
+|  |  |  |  |  |  SCLiteral (4:22) = 10
+|  |  SCMethod (5:5): expression_receiver { 1.bar.foo = 10 }
+|  |  |  SCBody (5:27)
+|  |  |  |  SCMessage (5:27): foo_
+|  |  |  |  |  SCMessage (5:27): bar
+|  |  |  |  |  |  SCLiteral (5:27) = 1
+|  |  |  |  |  SCPositionalArgs (5:27)
+|  |  |  |  |  |  SCLiteral (5:39) = 10
+|  |  SCMethod (6:5): literal_receiver { 1.foo = 2 }
+|  |  |  SCBody (6:24)
+|  |  |  |  SCMessage (6:24): foo_
+|  |  |  |  |  SCLiteral (6:24) = 1
+|  |  |  |  |  SCPositionalArgs (6:24)
+|  |  |  |  |  |  SCLiteral (6:32) = 2
+|  |  SCMethod (7:5): chained_value { x.foo = x.bar = 2 }
+|  |  |  SCBody (7:21)
+|  |  |  |  SCMessage (7:21): foo_
+|  |  |  |  |  SCRead (7:21): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (7:21)
+|  |  |  |  |  |  SCMessage (7:29): bar_
+|  |  |  |  |  |  |  SCRead (7:29): instance x, declared (2:9): x
+|  |  |  |  |  |  |  SCPositionalArgs (7:29)
+|  |  |  |  |  |  |  |  SCLiteral (7:37) = 2
+|  |  SCMethod (8:5): as_argument { ^3.baz(x.foo = 1) }
+|  |  |  SCBody (8:19)
+|  |  |  |  SCExplicitReturn (8:20)
+|  |  |  |  |  SCMessage (8:20): baz
+|  |  |  |  |  |  SCLiteral (8:20) = 3
+|  |  |  |  |  |  SCPositionalArgs (8:20)
+|  |  |  |  |  |  |  SCMessage (8:26): foo_
+|  |  |  |  |  |  |  |  SCRead (8:26): instance x, declared (2:9): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (8:26)
+|  |  |  |  |  |  |  |  |  SCLiteral (8:34) = 1
+|  |  SCMethod (9:5): functional { foo(x, 1) = 2 }
+|  |  |  SCBody (9:18)
+|  |  |  |  SCMessage (9:18): foo_
+|  |  |  |  |  SCRead (9:22): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (9:18)
+|  |  |  |  |  |  SCLiteral (9:25) = 1
+|  |  |  |  |  |  SCLiteral (9:30) = 2
+|  |  SCMethod (10:5): functional_receiver_only { foo(x) = 2 }
+|  |  |  SCBody (10:32)
+|  |  |  |  SCMessage (10:32): foo_
+|  |  |  |  |  SCRead (10:36): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (10:32)
+|  |  |  |  |  |  SCLiteral (10:41) = 2
+|  |  SCMethod (11:5): functional_keyword { foo(x, b: 1) = 2 }
+|  |  |  SCBody (11:26)
+|  |  |  |  SCMessage (11:26): foo_
+|  |  |  |  |  SCRead (11:30): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (11:26)
+|  |  |  |  |  |  SCLiteral (11:41) = 2
+|  |  |  |  |  SCKwArgs (11:26)
+|  |  |  |  |  |  SCKwArg (11:33): b
+|  |  |  |  |  |  |  SCLiteral (11:36) = 1
+|  |  SCMethod (12:5): poisoned: functional_no_receiver { foo(b: 1) = 2 }
+|  |  |  SCBody (12:30)
+|  |  |  |  SCExprList (12:30)
+|  |  SCMethod (13:5): poisoned: functional_variadic { foo(x, *x) = 2 }
+|  |  |  SCBody (13:27)
+|  |  |  |  SCMessage (13:27): foo_
+|  |  |  |  |  SCRead (13:31): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (13:27)
+|  |  |  |  |  |  SCLiteral (13:40) = 2
+|  |  |  |  |  SCVariadicArgs (13:27)
+|  |  |  |  |  |  SCRead (13:35): instance x, declared (2:9): x
+|  |  SCMethod (14:5): poisoned: functional_variadic_receiver { foo(*x) = 2 }
+|  |  |  SCBody (14:36)
+|  |  |  |  SCExprList (14:36)
+|  |  SCMethod (15:5): poisoned: functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |  SCBody (15:43)
+|  |  |  |  SCMessage (15:43): foo_
+|  |  |  |  |  SCRead (15:47): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (15:43)
+|  |  |  |  |  |  SCLiteral (15:50) = 1
+|  |  |  |  |  |  SCLiteral (15:59) = 2
+|  |  |  |  |  SCVariadicArgs (15:43)
+|  |  |  |  |  |  SCRead (15:54): instance x, declared (2:9): x
 Successfully compiled 15 classes.

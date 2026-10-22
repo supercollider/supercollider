@@ -186,163 +186,103 @@ Functional notation sends the message to its first argument, `foo(a, b)` is the 
 IR GRAPH DUMP 
 
 
-SCClass: Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n'    good { ^1 + 2 }'\n'    good_assignment { instance_var = 3 }'\n'    undefined { undefined_var = 4 }'\n'    no_receiver { ^foo(bar: 1) }'\n'    nested_error { ^1.foo(2.perform(3)) }'\n'    error_in_array { ^#[1, 2.foo] }'\n'    two_errors { undefined_var = 5; ^foo(bar: 1) }'\n'    after_errors { ^6 }'\n''\n'    *good { ^1 + 2 }'\n'    *cannot_assign { instance_var = 3 }'\n'    *undefined { undefined_var = 4 }'\n'    *no_receiver { ^foo(bar: 1) }'\n'    *nested_error { ^1.foo(2.perform(3)) }'\n'    *error_in_array { ^#[1, 2.foo] }'\n'    *two_errors { undefined_var = 5; ^foo(bar: 1) }'\n'    *after_errors { ^6 }'\n'    *good_class_assignment { class_var = 3 }'\n'}
-|  SCMemberList: Poisoning
-|  |  SCMember: instance_var
-|  SCMethodList: Poisoning
-|  |  SCMethod: good { ^1 + 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1 + 2
-|  |  |  |  SCExplicitReturn: 1 + 2
-|  |  |  |  |  SCMessage: +: 1 + 2
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1 + 2
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1 + 2
-|  |  |  |  |  |  SCVariadicArgs: 1 + 2
-|  |  |  |  |  |  SCMissing: 1 + 2
-|  |  SCMethod: good_assignment { instance_var = 3 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var = 3
-|  |  |  |  SCAssign: instance_var = 3
-|  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  SCMethod: poisoned: undefined { undefined_var = 4 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: undefined_var = 4
-|  |  |  |  SCLiteral: 4 = {"int": 4}
-|  |  SCMethod: poisoned: no_receiver { ^foo(bar: 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^foo(bar: 1)
-|  |  |  |  SCExplicitReturn: foo(bar: 1)
-|  |  |  |  |  SCExprList: foo(bar: 1)
-|  |  SCMethod: poisoned: nested_error { ^1.foo(2.perform(3)) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.foo(2.perform(3))
-|  |  |  |  SCExplicitReturn: 1.foo(2.perform(3))
-|  |  |  |  |  SCMessage: foo: 1.foo(2.perform(3))
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.foo(2.perform(3))
-|  |  |  |  |  |  |  SCMessage: perform: 2.perform(3)
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCPositionalArgs: 2.perform(3)
-|  |  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  |  SCKwArgs: 2.perform(3)
-|  |  |  |  |  |  |  |  SCVariadicArgs: 2.perform(3)
-|  |  |  |  |  |  |  |  SCMissing: 2.perform(3)
-|  |  |  |  |  |  SCKwArgs: 1.foo(2.perform(3))
-|  |  |  |  |  |  SCVariadicArgs: 1.foo(2.perform(3))
-|  |  |  |  |  |  SCMissing: 1.foo(2.perform(3))
-|  |  SCMethod: poisoned: error_in_array { ^#[1, 2.foo] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^#[1, 2.foo]
-|  |  |  |  SCExplicitReturn: #[1, 2.foo]
-|  |  |  |  |  SCCollection: Array: #[1, 2.foo]
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMessage: foo: 2.foo
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCPositionalArgs: 2.foo
-|  |  |  |  |  |  |  SCKwArgs: 2.foo
-|  |  |  |  |  |  |  SCVariadicArgs: 2.foo
-|  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  SCMethod: poisoned: two_errors { undefined_var = 5; ^foo(bar: 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: undefined_var = 5; ^foo(bar: 1)
-|  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  SCExplicitReturn: foo(bar: 1)
-|  |  |  |  |  SCExprList: foo(bar: 1)
-|  |  SCMethod: after_errors { ^6 } -> {"int": 6}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^6
-|  |  |  |  SCExplicitReturn: 6
-|  |  |  |  |  SCLiteral: 6 = {"int": 6}
-SCClass: Meta_Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n'    good { ^1 + 2 }'\n'    good_assignment { instance_var = 3 }'\n'    undefined { undefined_var = 4 }'\n'    no_receiver { ^foo(bar: 1) }'\n'    nested_error { ^1.foo(2.perform(3)) }'\n'    error_in_array { ^#[1, 2.foo] }'\n'    two_errors { undefined_var = 5; ^foo(bar: 1) }'\n'    after_errors { ^6 }'\n''\n'    *good { ^1 + 2 }'\n'    *cannot_assign { instance_var = 3 }'\n'    *undefined { undefined_var = 4 }'\n'    *no_receiver { ^foo(bar: 1) }'\n'    *nested_error { ^1.foo(2.perform(3)) }'\n'    *error_in_array { ^#[1, 2.foo] }'\n'    *two_errors { undefined_var = 5; ^foo(bar: 1) }'\n'    *after_errors { ^6 }'\n'    *good_class_assignment { class_var = 3 }'\n'}
-|  SCMemberList: Poisoning
-|  |  SCMember: class_var
-|  SCMethodList: Poisoning
-|  |  SCMethod: *good { ^1 + 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1 + 2
-|  |  |  |  SCExplicitReturn: 1 + 2
-|  |  |  |  |  SCMessage: +: 1 + 2
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1 + 2
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1 + 2
-|  |  |  |  |  |  SCVariadicArgs: 1 + 2
-|  |  |  |  |  |  SCMissing: 1 + 2
-|  |  SCMethod: poisoned: *cannot_assign { instance_var = 3 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: instance_var = 3
-|  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  SCMethod: poisoned: *undefined { undefined_var = 4 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: undefined_var = 4
-|  |  |  |  SCLiteral: 4 = {"int": 4}
-|  |  SCMethod: poisoned: *no_receiver { ^foo(bar: 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^foo(bar: 1)
-|  |  |  |  SCExplicitReturn: foo(bar: 1)
-|  |  |  |  |  SCExprList: foo(bar: 1)
-|  |  SCMethod: poisoned: *nested_error { ^1.foo(2.perform(3)) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.foo(2.perform(3))
-|  |  |  |  SCExplicitReturn: 1.foo(2.perform(3))
-|  |  |  |  |  SCMessage: foo: 1.foo(2.perform(3))
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.foo(2.perform(3))
-|  |  |  |  |  |  |  SCMessage: perform: 2.perform(3)
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCPositionalArgs: 2.perform(3)
-|  |  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  |  SCKwArgs: 2.perform(3)
-|  |  |  |  |  |  |  |  SCVariadicArgs: 2.perform(3)
-|  |  |  |  |  |  |  |  SCMissing: 2.perform(3)
-|  |  |  |  |  |  SCKwArgs: 1.foo(2.perform(3))
-|  |  |  |  |  |  SCVariadicArgs: 1.foo(2.perform(3))
-|  |  |  |  |  |  SCMissing: 1.foo(2.perform(3))
-|  |  SCMethod: poisoned: *error_in_array { ^#[1, 2.foo] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^#[1, 2.foo]
-|  |  |  |  SCExplicitReturn: #[1, 2.foo]
-|  |  |  |  |  SCCollection: Array: #[1, 2.foo]
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMessage: foo: 2.foo
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCPositionalArgs: 2.foo
-|  |  |  |  |  |  |  SCKwArgs: 2.foo
-|  |  |  |  |  |  |  SCVariadicArgs: 2.foo
-|  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  SCMethod: poisoned: *two_errors { undefined_var = 5; ^foo(bar: 1) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: undefined_var = 5; ^foo(bar: 1)
-|  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  SCExplicitReturn: foo(bar: 1)
-|  |  |  |  |  SCExprList: foo(bar: 1)
-|  |  SCMethod: *after_errors { ^6 } -> {"int": 6}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^6
-|  |  |  |  SCExplicitReturn: 6
-|  |  |  |  |  SCLiteral: 6 = {"int": 6}
-|  |  SCMethod: *good_class_assignment { class_var = 3 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: class_var = 3
-|  |  |  |  SCAssign: class_var = 3
-|  |  |  |  |  SCLiteral: 3 = {"int": 3}
+SCClass (1:1): Poisoning
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): instance_var
+|  SCMethodList (1:1)
+|  |  SCMethod (5:5): good { ^1 + 2 }
+|  |  |  SCBody (5:12)
+|  |  |  |  SCExplicitReturn (5:13)
+|  |  |  |  |  SCMessage (5:13): +
+|  |  |  |  |  |  SCLiteral (5:13) = 1
+|  |  |  |  |  |  SCPositionalArgs (5:13)
+|  |  |  |  |  |  |  SCLiteral (5:17) = 2
+|  |  SCMethod (6:5): good_assignment { instance_var = 3 }
+|  |  |  SCBody (6:23)
+|  |  |  |  SCAssign (6:23): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCLiteral (6:38) = 3
+|  |  SCMethod (7:5): poisoned: undefined { undefined_var = 4 }
+|  |  |  SCBody (7:17)
+|  |  |  |  SCLiteral (7:33) = 4
+|  |  SCMethod (8:5): poisoned: no_receiver { ^foo(bar: 1) }
+|  |  |  SCBody (8:19)
+|  |  |  |  SCExplicitReturn (8:20)
+|  |  |  |  |  SCExprList (8:20)
+|  |  SCMethod (9:5): poisoned: nested_error { ^1.foo(2.perform(3)) }
+|  |  |  SCBody (9:20)
+|  |  |  |  SCExplicitReturn (9:21)
+|  |  |  |  |  SCMessage (9:21): foo
+|  |  |  |  |  |  SCLiteral (9:21) = 1
+|  |  |  |  |  |  SCPositionalArgs (9:21)
+|  |  |  |  |  |  |  SCMessage (9:27): perform
+|  |  |  |  |  |  |  |  SCLiteral (9:27) = 2
+|  |  |  |  |  |  |  |  SCPositionalArgs (9:27)
+|  |  |  |  |  |  |  |  |  SCLiteral (9:37) = 3
+|  |  SCMethod (10:5): poisoned: error_in_array { ^#[1, 2.foo] }
+|  |  |  SCBody (10:22)
+|  |  |  |  SCExplicitReturn (10:23)
+|  |  |  |  |  SCCollection (10:23): Array
+|  |  |  |  |  |  SCLiteral (10:25) = 1
+|  |  |  |  |  |  SCMessage (10:28): foo
+|  |  |  |  |  |  |  SCLiteral (10:28) = 2
+|  |  SCMethod (11:5): poisoned: two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |  SCBody (11:18)
+|  |  |  |  SCLiteral (11:34) = 5
+|  |  |  |  SCExplicitReturn (11:38)
+|  |  |  |  |  SCExprList (11:38)
+|  |  SCMethod (12:5): after_errors { ^6 } -> 6
+|  |  |  SCBody (12:20)
+|  |  |  |  SCExplicitReturn (12:21)
+|  |  |  |  |  SCLiteral (12:21) = 6
+SCClass (1:1): Meta_Poisoning
+|  SCMemberList (1:1)
+|  |  SCMember (3:14): class_var
+|  SCMethodList (1:1)
+|  |  SCMethod (14:5): *good { ^1 + 2 }
+|  |  |  SCBody (14:13)
+|  |  |  |  SCExplicitReturn (14:14)
+|  |  |  |  |  SCMessage (14:14): +
+|  |  |  |  |  |  SCLiteral (14:14) = 1
+|  |  |  |  |  |  SCPositionalArgs (14:14)
+|  |  |  |  |  |  |  SCLiteral (14:18) = 2
+|  |  SCMethod (15:5): poisoned: *cannot_assign { instance_var = 3 }
+|  |  |  SCBody (15:22)
+|  |  |  |  SCLiteral (15:37) = 3
+|  |  SCMethod (16:5): poisoned: *undefined { undefined_var = 4 }
+|  |  |  SCBody (16:18)
+|  |  |  |  SCLiteral (16:34) = 4
+|  |  SCMethod (17:5): poisoned: *no_receiver { ^foo(bar: 1) }
+|  |  |  SCBody (17:20)
+|  |  |  |  SCExplicitReturn (17:21)
+|  |  |  |  |  SCExprList (17:21)
+|  |  SCMethod (18:5): poisoned: *nested_error { ^1.foo(2.perform(3)) }
+|  |  |  SCBody (18:21)
+|  |  |  |  SCExplicitReturn (18:22)
+|  |  |  |  |  SCMessage (18:22): foo
+|  |  |  |  |  |  SCLiteral (18:22) = 1
+|  |  |  |  |  |  SCPositionalArgs (18:22)
+|  |  |  |  |  |  |  SCMessage (18:28): perform
+|  |  |  |  |  |  |  |  SCLiteral (18:28) = 2
+|  |  |  |  |  |  |  |  SCPositionalArgs (18:28)
+|  |  |  |  |  |  |  |  |  SCLiteral (18:38) = 3
+|  |  SCMethod (19:5): poisoned: *error_in_array { ^#[1, 2.foo] }
+|  |  |  SCBody (19:23)
+|  |  |  |  SCExplicitReturn (19:24)
+|  |  |  |  |  SCCollection (19:24): Array
+|  |  |  |  |  |  SCLiteral (19:26) = 1
+|  |  |  |  |  |  SCMessage (19:29): foo
+|  |  |  |  |  |  |  SCLiteral (19:29) = 2
+|  |  SCMethod (20:5): poisoned: *two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  |  SCBody (20:19)
+|  |  |  |  SCLiteral (20:35) = 5
+|  |  |  |  SCExplicitReturn (20:39)
+|  |  |  |  |  SCExprList (20:39)
+|  |  SCMethod (21:5): *after_errors { ^6 } -> 6
+|  |  |  SCBody (21:21)
+|  |  |  |  SCExplicitReturn (21:22)
+|  |  |  |  |  SCLiteral (21:22) = 6
+|  |  SCMethod (22:5): *good_class_assignment { class_var = 3 }
+|  |  |  SCBody (22:30)
+|  |  |  |  SCAssign (22:30): instance class_var, declared (3:14): class_var
+|  |  |  |  |  SCLiteral (22:42) = 3
 Successfully compiled 15 classes.

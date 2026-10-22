@@ -142,145 +142,86 @@ file:
 IR GRAPH DUMP 
 
 
-SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\n'    float { ^1.perform(2.5, 3) }'\n'    string { ^1.perform("foo") }'\n'    string_with_quote { ^1.perform("it's") }'\n'    char { ^1.perform($a) }'\n'    boolean { ^1.perform(true) }'\n'    nil_selector { ^1.perform(nil) }'\n'    class_name { ^1.perform(Object) }'\n'    prefix { ^perform(1, 2) }'\n'    binary { ^1 perform: 2 }'\n'    not_constant { ^1.perform(2.bar) }'\n'}
-|  SCMemberList: PerformNotSymbol
-|  SCMethodList: PerformNotSymbol
-|  |  SCMethod: poisoned: integer { ^1.perform(2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(2)
-|  |  |  |  SCExplicitReturn: 1.perform(2)
-|  |  |  |  |  SCMessage: perform: 1.perform(2)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(2)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1.perform(2)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(2)
-|  |  |  |  |  |  SCMissing: 1.perform(2)
-|  |  SCMethod: poisoned: float { ^1.perform(2.5, 3) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(2.5, 3)
-|  |  |  |  SCExplicitReturn: 1.perform(2.5, 3)
-|  |  |  |  |  SCMessage: perform: 1.perform(2.5, 3)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(2.5, 3)
-|  |  |  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: 1.perform(2.5, 3)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(2.5, 3)
-|  |  |  |  |  |  SCMissing: 1.perform(2.5, 3)
-|  |  SCMethod: poisoned: string { ^1.perform("foo") }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform("foo")
-|  |  |  |  SCExplicitReturn: 1.perform("foo")
-|  |  |  |  |  SCMessage: perform: 1.perform("foo")
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform("foo")
-|  |  |  |  |  |  |  SCLiteral: "foo" = {"string": "foo"}
-|  |  |  |  |  |  SCKwArgs: 1.perform("foo")
-|  |  |  |  |  |  SCVariadicArgs: 1.perform("foo")
-|  |  |  |  |  |  SCMissing: 1.perform("foo")
-|  |  SCMethod: poisoned: string_with_quote { ^1.perform("it's") }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform("it's")
-|  |  |  |  SCExplicitReturn: 1.perform("it's")
-|  |  |  |  |  SCMessage: perform: 1.perform("it's")
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform("it's")
-|  |  |  |  |  |  |  SCLiteral: "it's" = {"string": "it's"}
-|  |  |  |  |  |  SCKwArgs: 1.perform("it's")
-|  |  |  |  |  |  SCVariadicArgs: 1.perform("it's")
-|  |  |  |  |  |  SCMissing: 1.perform("it's")
-|  |  SCMethod: poisoned: char { ^1.perform($a) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform($a)
-|  |  |  |  SCExplicitReturn: 1.perform($a)
-|  |  |  |  |  SCMessage: perform: 1.perform($a)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform($a)
-|  |  |  |  |  |  |  SCLiteral: $a = {"char": "a"}
-|  |  |  |  |  |  SCKwArgs: 1.perform($a)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform($a)
-|  |  |  |  |  |  SCMissing: 1.perform($a)
-|  |  SCMethod: poisoned: boolean { ^1.perform(true) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(true)
-|  |  |  |  SCExplicitReturn: 1.perform(true)
-|  |  |  |  |  SCMessage: perform: 1.perform(true)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(true)
-|  |  |  |  |  |  |  SCLiteral: true = {"bool": true}
-|  |  |  |  |  |  SCKwArgs: 1.perform(true)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(true)
-|  |  |  |  |  |  SCMissing: 1.perform(true)
-|  |  SCMethod: poisoned: nil_selector { ^1.perform(nil) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(nil)
-|  |  |  |  SCExplicitReturn: 1.perform(nil)
-|  |  |  |  |  SCMessage: perform: 1.perform(nil)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(nil)
-|  |  |  |  |  |  |  SCLiteral: nil = {"nil": {}}
-|  |  |  |  |  |  SCKwArgs: 1.perform(nil)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(nil)
-|  |  |  |  |  |  SCMissing: 1.perform(nil)
-|  |  SCMethod: poisoned: class_name { ^1.perform(Object) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(Object)
-|  |  |  |  SCExplicitReturn: 1.perform(Object)
-|  |  |  |  |  SCMessage: perform: 1.perform(Object)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(Object)
-|  |  |  |  |  |  |  SCLiteral: Object = {"classname": "Object"}
-|  |  |  |  |  |  SCKwArgs: 1.perform(Object)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(Object)
-|  |  |  |  |  |  SCMissing: 1.perform(Object)
-|  |  SCMethod: poisoned: prefix { ^perform(1, 2) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^perform(1, 2)
-|  |  |  |  SCExplicitReturn: perform(1, 2)
-|  |  |  |  |  SCMessage: perform: perform(1, 2)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: perform(1, 2)
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: perform(1, 2)
-|  |  |  |  |  |  SCVariadicArgs: perform(1, 2)
-|  |  |  |  |  |  SCMissing: perform(1, 2)
-|  |  SCMethod: poisoned: binary { ^1 perform: 2 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1 perform: 2
-|  |  |  |  SCExplicitReturn: 1 perform: 2
-|  |  |  |  |  SCMessage: perform: 1 perform: 2
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1 perform: 2
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: 1 perform: 2
-|  |  |  |  |  |  SCVariadicArgs: 1 perform: 2
-|  |  |  |  |  |  SCMissing: 1 perform: 2
-|  |  SCMethod: not_constant { ^1.perform(2.bar) }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^1.perform(2.bar)
-|  |  |  |  SCExplicitReturn: 1.perform(2.bar)
-|  |  |  |  |  SCMessage: perform: 1.perform(2.bar)
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCPositionalArgs: 1.perform(2.bar)
-|  |  |  |  |  |  |  SCMessage: bar: 2.bar
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCPositionalArgs: 2.bar
-|  |  |  |  |  |  |  |  SCKwArgs: 2.bar
-|  |  |  |  |  |  |  |  SCVariadicArgs: 2.bar
-|  |  |  |  |  |  |  |  SCMissing: 2.bar
-|  |  |  |  |  |  SCKwArgs: 1.perform(2.bar)
-|  |  |  |  |  |  SCVariadicArgs: 1.perform(2.bar)
-|  |  |  |  |  |  SCMissing: 1.perform(2.bar)
+SCClass (1:1): PerformNotSymbol
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (2:5): poisoned: integer { ^1.perform(2) }
+|  |  |  SCBody (2:15)
+|  |  |  |  SCExplicitReturn (2:16)
+|  |  |  |  |  SCMessage (2:16): perform
+|  |  |  |  |  |  SCLiteral (2:16) = 1
+|  |  |  |  |  |  SCPositionalArgs (2:16)
+|  |  |  |  |  |  |  SCLiteral (2:26) = 2
+|  |  SCMethod (3:5): poisoned: float { ^1.perform(2.5, 3) }
+|  |  |  SCBody (3:13)
+|  |  |  |  SCExplicitReturn (3:14)
+|  |  |  |  |  SCMessage (3:14): perform
+|  |  |  |  |  |  SCLiteral (3:14) = 1
+|  |  |  |  |  |  SCPositionalArgs (3:14)
+|  |  |  |  |  |  |  SCLiteral (3:24) = 2.5
+|  |  |  |  |  |  |  SCLiteral (3:29) = 3
+|  |  SCMethod (4:5): poisoned: string { ^1.perform("foo") }
+|  |  |  SCBody (4:14)
+|  |  |  |  SCExplicitReturn (4:15)
+|  |  |  |  |  SCMessage (4:15): perform
+|  |  |  |  |  |  SCLiteral (4:15) = 1
+|  |  |  |  |  |  SCPositionalArgs (4:15)
+|  |  |  |  |  |  |  SCLiteral (4:25) = "foo"
+|  |  SCMethod (5:5): poisoned: string_with_quote { ^1.perform("it's") }
+|  |  |  SCBody (5:25)
+|  |  |  |  SCExplicitReturn (5:26)
+|  |  |  |  |  SCMessage (5:26): perform
+|  |  |  |  |  |  SCLiteral (5:26) = 1
+|  |  |  |  |  |  SCPositionalArgs (5:26)
+|  |  |  |  |  |  |  SCLiteral (5:36) = "it's"
+|  |  SCMethod (6:5): poisoned: char { ^1.perform($a) }
+|  |  |  SCBody (6:12)
+|  |  |  |  SCExplicitReturn (6:13)
+|  |  |  |  |  SCMessage (6:13): perform
+|  |  |  |  |  |  SCLiteral (6:13) = 1
+|  |  |  |  |  |  SCPositionalArgs (6:13)
+|  |  |  |  |  |  |  SCLiteral (6:23) = $a
+|  |  SCMethod (7:5): poisoned: boolean { ^1.perform(true) }
+|  |  |  SCBody (7:15)
+|  |  |  |  SCExplicitReturn (7:16)
+|  |  |  |  |  SCMessage (7:16): perform
+|  |  |  |  |  |  SCLiteral (7:16) = 1
+|  |  |  |  |  |  SCPositionalArgs (7:16)
+|  |  |  |  |  |  |  SCLiteral (7:26) = true
+|  |  SCMethod (8:5): poisoned: nil_selector { ^1.perform(nil) }
+|  |  |  SCBody (8:20)
+|  |  |  |  SCExplicitReturn (8:21)
+|  |  |  |  |  SCMessage (8:21): perform
+|  |  |  |  |  |  SCLiteral (8:21) = 1
+|  |  |  |  |  |  SCPositionalArgs (8:21)
+|  |  |  |  |  |  |  SCLiteral (8:31) = nil
+|  |  SCMethod (9:5): poisoned: class_name { ^1.perform(Object) }
+|  |  |  SCBody (9:18)
+|  |  |  |  SCExplicitReturn (9:19)
+|  |  |  |  |  SCMessage (9:19): perform
+|  |  |  |  |  |  SCLiteral (9:19) = 1
+|  |  |  |  |  |  SCPositionalArgs (9:19)
+|  |  |  |  |  |  |  SCLiteral (9:29) = Object
+|  |  SCMethod (10:5): poisoned: prefix { ^perform(1, 2) }
+|  |  |  SCBody (10:14)
+|  |  |  |  SCExplicitReturn (10:15)
+|  |  |  |  |  SCMessage (10:15): perform
+|  |  |  |  |  |  SCLiteral (10:23) = 1
+|  |  |  |  |  |  SCPositionalArgs (10:15)
+|  |  |  |  |  |  |  SCLiteral (10:26) = 2
+|  |  SCMethod (11:5): poisoned: binary { ^1 perform: 2 }
+|  |  |  SCBody (11:14)
+|  |  |  |  SCExplicitReturn (11:15)
+|  |  |  |  |  SCMessage (11:15): perform
+|  |  |  |  |  |  SCLiteral (11:15) = 1
+|  |  |  |  |  |  SCPositionalArgs (11:15)
+|  |  |  |  |  |  |  SCLiteral (11:26) = 2
+|  |  SCMethod (12:5): not_constant { ^1.perform(2.bar) }
+|  |  |  SCBody (12:20)
+|  |  |  |  SCExplicitReturn (12:21)
+|  |  |  |  |  SCMessage (12:21): perform
+|  |  |  |  |  |  SCLiteral (12:21) = 1
+|  |  |  |  |  |  SCPositionalArgs (12:21)
+|  |  |  |  |  |  |  SCMessage (12:31): bar
+|  |  |  |  |  |  |  |  SCLiteral (12:31) = 2
 Successfully compiled 15 classes.

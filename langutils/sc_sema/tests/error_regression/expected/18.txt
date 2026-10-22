@@ -17,102 +17,72 @@ This must be known when the class library is compiled, e.g., a variable's initia
 IR GRAPH DUMP 
 
 
-SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { ^[] }'\n'    nested_constant { ^[[1, 2], [\a]] }'\n'    keyword_elements { ^[a: 1, b: 2] }'\n'    not_constant { ^[1, 2.foo] }'\n'    nested_not_constant { ^[1, [2.foo]] }'\n'    immutable { ^#[1, name, \symbol] }'\n'    immutable_not_literal { ^#[1, 2.foo] }'\n'    immutable_nested { ^#[[a, 1], b] }'\n'}
-|  SCMemberList: Arrays
-|  SCMethodList: Arrays
-|  |  SCMethod: constant { ^[1, 2.5, "three"] } -> {"array": [{"int": 1}, {"float": 2.5}, {"string": "three"}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2.5, "three"]
-|  |  |  |  SCExplicitReturn: [1, 2.5, "three"]
-|  |  |  |  |  SCCollection: Array: [1, 2.5, "three"] = {"array": [{"int": 1}, {"float": 2.5}, {"string": "three"}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2.5 = {"float": 2.5}
-|  |  |  |  |  |  SCLiteral: "three" = {"string": "three"}
-|  |  SCMethod: empty { ^[] } -> {"array": []}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[]
-|  |  |  |  SCExplicitReturn: []
-|  |  |  |  |  SCCollection: Array: [] = {"array": []}
-|  |  SCMethod: nested_constant { ^[[1, 2], [\a]] } -> {"array": [{"array": [{"int": 1}, {"int": 2}]}, {"array": [{"symbol": "a"}]}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[[1, 2], [\a]]
-|  |  |  |  SCExplicitReturn: [[1, 2], [\a]]
-|  |  |  |  |  SCCollection: Array: [[1, 2], [\a]] = {"array": [{"array": [{"int": 1}, {"int": 2}]}, {"array": [{"symbol": "a"}]}]}
-|  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCCollection: Array: [\a] = {"array": [{"symbol": "a"}]}
-|  |  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
-|  |  SCMethod: keyword_elements { ^[a: 1, b: 2] } -> {"array": [{"symbol": "a"}, {"int": 1}, {"symbol": "b"}, {"int": 2}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[a: 1, b: 2]
-|  |  |  |  SCExplicitReturn: [a: 1, b: 2]
-|  |  |  |  |  SCCollection: Array: [a: 1, b: 2] = {"array": [{"symbol": "a"}, {"int": 1}, {"symbol": "b"}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: b: = {"symbol": "b"}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  SCMethod: not_constant { ^[1, 2.foo] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2.foo]
-|  |  |  |  SCExplicitReturn: [1, 2.foo]
-|  |  |  |  |  SCCollection: Array: [1, 2.foo]
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMessage: foo: 2.foo
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCPositionalArgs: 2.foo
-|  |  |  |  |  |  |  SCKwArgs: 2.foo
-|  |  |  |  |  |  |  SCVariadicArgs: 2.foo
-|  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  SCMethod: nested_not_constant { ^[1, [2.foo]] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, [2.foo]]
-|  |  |  |  SCExplicitReturn: [1, [2.foo]]
-|  |  |  |  |  SCCollection: Array: [1, [2.foo]]
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCCollection: Array: [2.foo]
-|  |  |  |  |  |  |  SCMessage: foo: 2.foo
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCPositionalArgs: 2.foo
-|  |  |  |  |  |  |  |  SCKwArgs: 2.foo
-|  |  |  |  |  |  |  |  SCVariadicArgs: 2.foo
-|  |  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  SCMethod: immutable { ^#[1, name, \symbol] } -> {"array": [{"int": 1}, {"symbol": "name"}, {"symbol": "symbol"}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^#[1, name, \symbol]
-|  |  |  |  SCExplicitReturn: #[1, name, \symbol]
-|  |  |  |  |  SCCollection: Array: #[1, name, \symbol] = {"array": [{"int": 1}, {"symbol": "name"}, {"symbol": "symbol"}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: name = {"symbol": "name"}
-|  |  |  |  |  |  SCLiteral: \symbol = {"symbol": "symbol"}
-|  |  SCMethod: poisoned: immutable_not_literal { ^#[1, 2.foo] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^#[1, 2.foo]
-|  |  |  |  SCExplicitReturn: #[1, 2.foo]
-|  |  |  |  |  SCCollection: Array: #[1, 2.foo]
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCMessage: foo: 2.foo
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCPositionalArgs: 2.foo
-|  |  |  |  |  |  |  SCKwArgs: 2.foo
-|  |  |  |  |  |  |  SCVariadicArgs: 2.foo
-|  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  SCMethod: immutable_nested { ^#[[a, 1], b] } -> {"array": [{"array": [{"symbol": "a"}, {"int": 1}]}, {"symbol": "b"}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^#[[a, 1], b]
-|  |  |  |  SCExplicitReturn: #[[a, 1], b]
-|  |  |  |  |  SCCollection: Array: #[[a, 1], b] = {"array": [{"array": [{"symbol": "a"}, {"int": 1}]}, {"symbol": "b"}]}
-|  |  |  |  |  |  SCCollection: Array: [a, 1] = {"array": [{"symbol": "a"}, {"int": 1}]}
-|  |  |  |  |  |  |  SCLiteral: a = {"symbol": "a"}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: b = {"symbol": "b"}
+SCClass (1:1): Arrays
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (2:5): constant { ^[1, 2.5, "three"] } -> [1, 2.5, "three"]
+|  |  |  SCBody (2:16)
+|  |  |  |  SCExplicitReturn (2:17)
+|  |  |  |  |  SCCollection (2:17): Array = [1, 2.5, "three"]
+|  |  |  |  |  |  SCLiteral (2:18) = 1
+|  |  |  |  |  |  SCLiteral (2:21) = 2.5
+|  |  |  |  |  |  SCLiteral (2:26) = "three"
+|  |  SCMethod (3:5): empty { ^[] } -> []
+|  |  |  SCBody (3:13)
+|  |  |  |  SCExplicitReturn (3:14)
+|  |  |  |  |  SCCollection (3:14): Array = []
+|  |  SCMethod (4:5): nested_constant { ^[[1, 2], [\a]] } -> [[1, 2], [\a]]
+|  |  |  SCBody (4:23)
+|  |  |  |  SCExplicitReturn (4:24)
+|  |  |  |  |  SCCollection (4:24): Array = [[1, 2], [\a]]
+|  |  |  |  |  |  SCCollection (4:25): Array = [1, 2]
+|  |  |  |  |  |  |  SCLiteral (4:26) = 1
+|  |  |  |  |  |  |  SCLiteral (4:29) = 2
+|  |  |  |  |  |  SCCollection (4:33): Array = [\a]
+|  |  |  |  |  |  |  SCLiteral (4:34) = \a
+|  |  SCMethod (5:5): keyword_elements { ^[a: 1, b: 2] } -> [\a, 1, \b, 2]
+|  |  |  SCBody (5:24)
+|  |  |  |  SCExplicitReturn (5:25)
+|  |  |  |  |  SCCollection (5:25): Array = [\a, 1, \b, 2]
+|  |  |  |  |  |  SCLiteral (5:26) = \a
+|  |  |  |  |  |  SCLiteral (5:29) = 1
+|  |  |  |  |  |  SCLiteral (5:32) = \b
+|  |  |  |  |  |  SCLiteral (5:35) = 2
+|  |  SCMethod (6:5): not_constant { ^[1, 2.foo] }
+|  |  |  SCBody (6:20)
+|  |  |  |  SCExplicitReturn (6:21)
+|  |  |  |  |  SCCollection (6:21): Array
+|  |  |  |  |  |  SCLiteral (6:22) = 1
+|  |  |  |  |  |  SCMessage (6:25): foo
+|  |  |  |  |  |  |  SCLiteral (6:25) = 2
+|  |  SCMethod (7:5): nested_not_constant { ^[1, [2.foo]] }
+|  |  |  SCBody (7:27)
+|  |  |  |  SCExplicitReturn (7:28)
+|  |  |  |  |  SCCollection (7:28): Array
+|  |  |  |  |  |  SCLiteral (7:29) = 1
+|  |  |  |  |  |  SCCollection (7:32): Array
+|  |  |  |  |  |  |  SCMessage (7:33): foo
+|  |  |  |  |  |  |  |  SCLiteral (7:33) = 2
+|  |  SCMethod (8:5): immutable { ^#[1, name, \symbol] } -> [1, \name, \symbol]
+|  |  |  SCBody (8:17)
+|  |  |  |  SCExplicitReturn (8:18)
+|  |  |  |  |  SCCollection (8:18): Array = [1, \name, \symbol]
+|  |  |  |  |  |  SCLiteral (8:20) = 1
+|  |  |  |  |  |  SCLiteral (8:23) = \name
+|  |  |  |  |  |  SCLiteral (8:29) = \symbol
+|  |  SCMethod (9:5): poisoned: immutable_not_literal { ^#[1, 2.foo] }
+|  |  |  SCBody (9:29)
+|  |  |  |  SCExplicitReturn (9:30)
+|  |  |  |  |  SCCollection (9:30): Array
+|  |  |  |  |  |  SCLiteral (9:32) = 1
+|  |  |  |  |  |  SCMessage (9:35): foo
+|  |  |  |  |  |  |  SCLiteral (9:35) = 2
+|  |  SCMethod (10:5): immutable_nested { ^#[[a, 1], b] } -> [[\a, 1], \b]
+|  |  |  SCBody (10:24)
+|  |  |  |  SCExplicitReturn (10:25)
+|  |  |  |  |  SCCollection (10:25): Array = [[\a, 1], \b]
+|  |  |  |  |  |  SCCollection (10:27): Array = [\a, 1]
+|  |  |  |  |  |  |  SCLiteral (10:28) = \a
+|  |  |  |  |  |  |  SCLiteral (10:31) = 1
+|  |  |  |  |  |  SCLiteral (10:35) = \b
 Successfully compiled 15 classes.

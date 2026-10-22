@@ -4,49 +4,35 @@
 IR GRAPH DUMP 
 
 
-SCClass: EscapedLiterals: EscapedLiterals {'\n'    char_newline { ^$\n }'\n'    char_tab { ^$\t }'\n'    char_quote { ^$" }'\n'    char_backslash { ^$\\ }'\n'    string_escapes { ^"tab\there \"quoted\" back\\slash" }'\n'    string_newline { ^"line one\nline two" }'\n'    symbol_quote_escaped { ^'it\'s' }'\n'}
-|  SCMemberList: EscapedLiterals
-|  SCMethodList: EscapedLiterals
-|  |  SCMethod: char_newline { ^$\n } -> {"char": "\n"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^$\n
-|  |  |  |  SCExplicitReturn: $\n
-|  |  |  |  |  SCLiteral: $\n = {"char": "\n"}
-|  |  SCMethod: char_tab { ^$\t } -> {"char": "\t"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^$\t
-|  |  |  |  SCExplicitReturn: $\t
-|  |  |  |  |  SCLiteral: $\t = {"char": "\t"}
-|  |  SCMethod: char_quote { ^$" } -> {"char": "\""}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^$"
-|  |  |  |  SCExplicitReturn: $"
-|  |  |  |  |  SCLiteral: $" = {"char": "\""}
-|  |  SCMethod: char_backslash { ^$\\ } -> {"char": "\\"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^$\\
-|  |  |  |  SCExplicitReturn: $\\
-|  |  |  |  |  SCLiteral: $\\ = {"char": "\\"}
-|  |  SCMethod: string_escapes { ^"tab\there \"quoted\" back\\slash" } -> {"string": "tab\there \"quoted\" back\\slash"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^"tab\there \"quoted\" back\\slash"
-|  |  |  |  SCExplicitReturn: "tab\there \"quoted\" back\\slash"
-|  |  |  |  |  SCLiteral: "tab\there \"quoted\" back\\slash" = {"string": "tab\there \"quoted\" back\\slash"}
-|  |  SCMethod: string_newline { ^"line one\nline two" } -> {"string": "line one\nline two"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^"line one\nline two"
-|  |  |  |  SCExplicitReturn: "line one\nline two"
-|  |  |  |  |  SCLiteral: "line one\nline two" = {"string": "line one\nline two"}
-|  |  SCMethod: symbol_quote_escaped { ^'it\'s' } -> {"symbol": "it's"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^'it\'s'
-|  |  |  |  SCExplicitReturn: 'it\'s'
-|  |  |  |  |  SCLiteral: 'it\'s' = {"symbol": "it's"}
+SCClass (1:1): EscapedLiterals
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (2:5): char_newline { ^$\n } -> $\n
+|  |  |  SCBody (2:20)
+|  |  |  |  SCExplicitReturn (2:21)
+|  |  |  |  |  SCLiteral (2:21) = $\n
+|  |  SCMethod (3:5): char_tab { ^$\t } -> $\t
+|  |  |  SCBody (3:16)
+|  |  |  |  SCExplicitReturn (3:17)
+|  |  |  |  |  SCLiteral (3:17) = $\t
+|  |  SCMethod (4:5): char_quote { ^$" } -> $"
+|  |  |  SCBody (4:18)
+|  |  |  |  SCExplicitReturn (4:19)
+|  |  |  |  |  SCLiteral (4:19) = $"
+|  |  SCMethod (5:5): char_backslash { ^$\\ } -> $\\
+|  |  |  SCBody (5:22)
+|  |  |  |  SCExplicitReturn (5:23)
+|  |  |  |  |  SCLiteral (5:23) = $\\
+|  |  SCMethod (6:5): string_escapes { ^"tab\there \"quoted\" back\\slash" } -> "tab\there \"quoted\" back\\slash"
+|  |  |  SCBody (6:22)
+|  |  |  |  SCExplicitReturn (6:23)
+|  |  |  |  |  SCLiteral (6:23) = "tab\there \"quoted\" back\\slash"
+|  |  SCMethod (7:5): string_newline { ^"line one\nline two" } -> "line one\nline two"
+|  |  |  SCBody (7:22)
+|  |  |  |  SCExplicitReturn (7:23)
+|  |  |  |  |  SCLiteral (7:23) = "line one\nline two"
+|  |  SCMethod (8:5): symbol_quote_escaped { ^'it\'s' } -> 'it\'s'
+|  |  |  SCBody (8:28)
+|  |  |  |  SCExplicitReturn (8:29)
+|  |  |  |  |  SCLiteral (8:29) = 'it\'s'
 Successfully compiled 15 classes.

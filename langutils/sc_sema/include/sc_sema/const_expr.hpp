@@ -69,6 +69,8 @@ struct ConstExpression {
     friend struct std::hash<ConstExpression>;
 
     void to_json(std::ostream&, const struct SymbolTable&) const;
+    // As SuperCollider source, e.g., `[1, \a, "b"]`, kept on one line.
+    void to_literal(std::ostream&, const struct SymbolTable&) const;
 
 private:
     ConstStorage storage;

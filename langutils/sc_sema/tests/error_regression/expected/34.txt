@@ -18,288 +18,204 @@ This must be known when the class library is compiled, e.g., a variable's initia
 IR GRAPH DUMP 
 
 
-SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #[1, 2, 3][1..];'\n'    var initial_array_2 = [1, 2, 3][1..];'\n'    var initial_array_3 = [1, 2, 3][-10..];'\n'    var initial_string = "hello"[..1];'\n'    var initial_not_constant = 1.foo[1..2];'\n''\n'    const const_array = [10, 20, 30, 40];'\n'    var const_array_slice = const_array[2..];'\n'    var const_array_slice_neg = const_array[-10..];'\n''\n'    array { ^[1, 2, 3, 4][1..2] }'\n'    from_start { ^[1, 2, 3][..1] }'\n'    to_end { ^[1, 2, 3][1..] }'\n'    step { ^[0, 1, 2, 3, 4, 5][0, 2..5] }'\n'    descending { ^[1, 2, 3][2..0] }'\n'    clipped_end { ^[1, 2, 3][1..10] }'\n'    clipped_start { ^[1, 2, 3][-5..1] }'\n'    empty { ^[][..3] }'\n'    string { ^"hello"[1..3] }'\n'    string_descending { ^"hello"[3..1] }'\n'    immutable { ^#[a, b, c][1..] }'\n'    step_with_start_outside { ^[1, 2, 3, 4][-1, 1..3] }'\n'    zero_step { ^[1, 2, 3][1, 1..2] }'\n'    step_away { ^[1, 2, 3][2, 3..0] }'\n'    receiver_not_constant { ^x[1..2] }'\n'    bound_not_constant { ^[1, 2, 3][1..2.foo] }'\n'}
-|  SCMemberList: SliceFolding
-|  |  SCMember: x
-|  |  SCMember: initial_array = {"array": [{"int": 2}, {"int": 3}]}
-|  |  SCMember: initial_array_2 = {"array": [{"int": 2}, {"int": 3}]}
-|  |  SCMember: initial_array_3 = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  SCMember: initial_string = {"string": "he"}
-|  |  SCMember: const_array_slice = {"array": [{"int": 30}, {"int": 40}]}
-|  |  SCMember: const_array_slice_neg = {"array": [{"int": 10}, {"int": 20}, {"int": 30}, {"int": 40}]}
-|  SCMethodList: SliceFolding
-|  |  SCMethod: array { ^[1, 2, 3, 4][1..2] } -> {"array": [{"int": 2}, {"int": 3}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3, 4][1..2]
-|  |  |  |  SCExplicitReturn: [1, 2, 3, 4][1..2]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3, 4][1..2] = {"array": [{"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3, 4] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}, {"int": 4}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  SCLiteral: 4 = {"int": 4}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3, 4][1..2]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..2] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3, 4][1..2]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3, 4][1..2]
-|  |  |  |  |  |  SCMissing: [1, 2, 3, 4][1..2]
-|  |  SCMethod: from_start { ^[1, 2, 3][..1] } -> {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3][..1]
-|  |  |  |  SCExplicitReturn: [1, 2, 3][..1]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3][..1] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3][..1]
-|  |  |  |  |  |  |  SCLiteral: [..1] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: [..1] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3][..1]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][..1]
-|  |  |  |  |  |  SCMissing: [1, 2, 3][..1]
-|  |  SCMethod: to_end { ^[1, 2, 3][1..] } -> {"array": [{"int": 2}, {"int": 3}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3][1..]
-|  |  |  |  SCExplicitReturn: [1, 2, 3][1..]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1..] = {"array": [{"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3][1..]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3][1..]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][1..]
-|  |  |  |  |  |  SCMissing: [1, 2, 3][1..]
-|  |  SCMethod: step { ^[0, 1, 2, 3, 4, 5][0, 2..5] } -> {"array": [{"int": 0}, {"int": 2}, {"int": 4}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[0, 1, 2, 3, 4, 5][0, 2..5]
-|  |  |  |  SCExplicitReturn: [0, 1, 2, 3, 4, 5][0, 2..5]
-|  |  |  |  |  SCMessage: copySeries: [0, 1, 2, 3, 4, 5][0, 2..5] = {"array": [{"int": 0}, {"int": 2}, {"int": 4}]}
-|  |  |  |  |  |  SCCollection: Array: [0, 1, 2, 3, 4, 5] = {"array": [{"int": 0}, {"int": 1}, {"int": 2}, {"int": 3}, {"int": 4}, {"int": 5}]}
-|  |  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  SCLiteral: 4 = {"int": 4}
-|  |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  |  SCPositionalArgs: [0, 1, 2, 3, 4, 5][0, 2..5]
-|  |  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  |  SCKwArgs: [0, 1, 2, 3, 4, 5][0, 2..5]
-|  |  |  |  |  |  SCVariadicArgs: [0, 1, 2, 3, 4, 5][0, 2..5]
-|  |  |  |  |  |  SCMissing: [0, 1, 2, 3, 4, 5][0, 2..5]
-|  |  SCMethod: descending { ^[1, 2, 3][2..0] } -> {"array": [{"int": 3}, {"int": 2}, {"int": 1}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3][2..0]
-|  |  |  |  SCExplicitReturn: [1, 2, 3][2..0]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3][2..0] = {"array": [{"int": 3}, {"int": 2}, {"int": 1}]}
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3][2..0]
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: [2..0] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3][2..0]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][2..0]
-|  |  |  |  |  |  SCMissing: [1, 2, 3][2..0]
-|  |  SCMethod: clipped_end { ^[1, 2, 3][1..10] } -> {"array": [{"int": 2}, {"int": 3}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3][1..10]
-|  |  |  |  SCExplicitReturn: [1, 2, 3][1..10]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1..10] = {"array": [{"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3][1..10]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..10] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 10 = {"int": 10}
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3][1..10]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][1..10]
-|  |  |  |  |  |  SCMissing: [1, 2, 3][1..10]
-|  |  SCMethod: clipped_start { ^[1, 2, 3][-5..1] } -> {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3][-5..1]
-|  |  |  |  SCExplicitReturn: [1, 2, 3][-5..1]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3][-5..1] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3][-5..1]
-|  |  |  |  |  |  |  SCLiteral: 5 = {"int": -5}
-|  |  |  |  |  |  |  SCLiteral: [-5..1] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3][-5..1]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][-5..1]
-|  |  |  |  |  |  SCMissing: [1, 2, 3][-5..1]
-|  |  SCMethod: empty { ^[][..3] } -> {"array": []}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[][..3]
-|  |  |  |  SCExplicitReturn: [][..3]
-|  |  |  |  |  SCMessage: copySeries: [][..3] = {"array": []}
-|  |  |  |  |  |  SCCollection: Array: [] = {"array": []}
-|  |  |  |  |  |  SCPositionalArgs: [][..3]
-|  |  |  |  |  |  |  SCLiteral: [..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: [..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: [][..3]
-|  |  |  |  |  |  SCVariadicArgs: [][..3]
-|  |  |  |  |  |  SCMissing: [][..3]
-|  |  SCMethod: string { ^"hello"[1..3] } -> {"string": "ell"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^"hello"[1..3]
-|  |  |  |  SCExplicitReturn: "hello"[1..3]
-|  |  |  |  |  SCMessage: copySeries: "hello"[1..3] = {"string": "ell"}
-|  |  |  |  |  |  SCLiteral: "hello" = {"string": "hello"}
-|  |  |  |  |  |  SCPositionalArgs: "hello"[1..3]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: "hello"[1..3]
-|  |  |  |  |  |  SCVariadicArgs: "hello"[1..3]
-|  |  |  |  |  |  SCMissing: "hello"[1..3]
-|  |  SCMethod: string_descending { ^"hello"[3..1] } -> {"string": "lle"}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^"hello"[3..1]
-|  |  |  |  SCExplicitReturn: "hello"[3..1]
-|  |  |  |  |  SCMessage: copySeries: "hello"[3..1] = {"string": "lle"}
-|  |  |  |  |  |  SCLiteral: "hello" = {"string": "hello"}
-|  |  |  |  |  |  SCPositionalArgs: "hello"[3..1]
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  SCLiteral: [3..1] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCKwArgs: "hello"[3..1]
-|  |  |  |  |  |  SCVariadicArgs: "hello"[3..1]
-|  |  |  |  |  |  SCMissing: "hello"[3..1]
-|  |  SCMethod: immutable { ^#[a, b, c][1..] } -> {"array": [{"symbol": "b"}, {"symbol": "c"}]}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^#[a, b, c][1..]
-|  |  |  |  SCExplicitReturn: #[a, b, c][1..]
-|  |  |  |  |  SCMessage: copySeries: #[a, b, c][1..] = {"array": [{"symbol": "b"}, {"symbol": "c"}]}
-|  |  |  |  |  |  SCCollection: Array: #[a, b, c] = {"array": [{"symbol": "a"}, {"symbol": "b"}, {"symbol": "c"}]}
-|  |  |  |  |  |  |  SCLiteral: a = {"symbol": "a"}
-|  |  |  |  |  |  |  SCLiteral: b = {"symbol": "b"}
-|  |  |  |  |  |  |  SCLiteral: c = {"symbol": "c"}
-|  |  |  |  |  |  SCPositionalArgs: #[a, b, c][1..]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
-|  |  |  |  |  |  SCKwArgs: #[a, b, c][1..]
-|  |  |  |  |  |  SCVariadicArgs: #[a, b, c][1..]
-|  |  |  |  |  |  SCMissing: #[a, b, c][1..]
-|  |  SCMethod: step_with_start_outside { ^[1, 2, 3, 4][-1, 1..3] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3, 4][-1, 1..3]
-|  |  |  |  SCExplicitReturn: [1, 2, 3, 4][-1, 1..3]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3, 4][-1, 1..3]
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3, 4] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}, {"int": 4}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  SCLiteral: 4 = {"int": 4}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3, 4][-1, 1..3]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": -1}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3, 4][-1, 1..3]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3, 4][-1, 1..3]
-|  |  |  |  |  |  SCMissing: [1, 2, 3, 4][-1, 1..3]
-|  |  SCMethod: zero_step { ^[1, 2, 3][1, 1..2] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3][1, 1..2]
-|  |  |  |  SCExplicitReturn: [1, 2, 3][1, 1..2]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1, 1..2]
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3][1, 1..2]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3][1, 1..2]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][1, 1..2]
-|  |  |  |  |  |  SCMissing: [1, 2, 3][1, 1..2]
-|  |  SCMethod: step_away { ^[1, 2, 3][2, 3..0] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3][2, 3..0]
-|  |  |  |  SCExplicitReturn: [1, 2, 3][2, 3..0]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3][2, 3..0]
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3][2, 3..0]
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  SCLiteral: 0 = {"int": 0}
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3][2, 3..0]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][2, 3..0]
-|  |  |  |  |  |  SCMissing: [1, 2, 3][2, 3..0]
-|  |  SCMethod: receiver_not_constant { ^x[1..2] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x[1..2]
-|  |  |  |  SCExplicitReturn: x[1..2]
-|  |  |  |  |  SCMessage: copySeries: x[1..2]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x[1..2]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..2] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCKwArgs: x[1..2]
-|  |  |  |  |  |  SCVariadicArgs: x[1..2]
-|  |  |  |  |  |  SCMissing: x[1..2]
-|  |  SCMethod: bound_not_constant { ^[1, 2, 3][1..2.foo] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^[1, 2, 3][1..2.foo]
-|  |  |  |  SCExplicitReturn: [1, 2, 3][1..2.foo]
-|  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1..2.foo]
-|  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3][1..2.foo]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..2.foo] = {"nil": {}}
-|  |  |  |  |  |  |  SCMessage: foo: 2.foo
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCPositionalArgs: 2.foo
-|  |  |  |  |  |  |  |  SCKwArgs: 2.foo
-|  |  |  |  |  |  |  |  SCVariadicArgs: 2.foo
-|  |  |  |  |  |  |  |  SCMissing: 2.foo
-|  |  |  |  |  |  SCKwArgs: [1, 2, 3][1..2.foo]
-|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][1..2.foo]
-|  |  |  |  |  |  SCMissing: [1, 2, 3][1..2.foo]
-SCClass: Meta_SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #[1, 2, 3][1..];'\n'    var initial_array_2 = [1, 2, 3][1..];'\n'    var initial_array_3 = [1, 2, 3][-10..];'\n'    var initial_string = "hello"[..1];'\n'    var initial_not_constant = 1.foo[1..2];'\n''\n'    const const_array = [10, 20, 30, 40];'\n'    var const_array_slice = const_array[2..];'\n'    var const_array_slice_neg = const_array[-10..];'\n''\n'    array { ^[1, 2, 3, 4][1..2] }'\n'    from_start { ^[1, 2, 3][..1] }'\n'    to_end { ^[1, 2, 3][1..] }'\n'    step { ^[0, 1, 2, 3, 4, 5][0, 2..5] }'\n'    descending { ^[1, 2, 3][2..0] }'\n'    clipped_end { ^[1, 2, 3][1..10] }'\n'    clipped_start { ^[1, 2, 3][-5..1] }'\n'    empty { ^[][..3] }'\n'    string { ^"hello"[1..3] }'\n'    string_descending { ^"hello"[3..1] }'\n'    immutable { ^#[a, b, c][1..] }'\n'    step_with_start_outside { ^[1, 2, 3, 4][-1, 1..3] }'\n'    zero_step { ^[1, 2, 3][1, 1..2] }'\n'    step_away { ^[1, 2, 3][2, 3..0] }'\n'    receiver_not_constant { ^x[1..2] }'\n'    bound_not_constant { ^[1, 2, 3][1..2.foo] }'\n'}
-|  SCMemberList: SliceFolding
-|  |  SCMember: const_array = {"array": [{"int": 10}, {"int": 20}, {"int": 30}, {"int": 40}]}
-|  SCMethodList: SliceFolding
+SCClass (1:1): SliceFolding
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): x
+|  |  SCMember (3:9): initial_array = [2, 3]
+|  |  SCMember (4:9): initial_array_2 = [2, 3]
+|  |  SCMember (5:9): initial_array_3 = [1, 2, 3]
+|  |  SCMember (6:9): initial_string = "he"
+|  |  SCMember (10:9): const_array_slice = [30, 40]
+|  |  SCMember (11:9): const_array_slice_neg = [10, 20, 30, 40]
+|  SCMethodList (1:1)
+|  |  SCMethod (13:5): array { ^[1, 2, 3, 4][1..2] } -> [2, 3]
+|  |  |  SCBody (13:13)
+|  |  |  |  SCExplicitReturn (13:14)
+|  |  |  |  |  SCMessage (13:14): copySeries = [2, 3]
+|  |  |  |  |  |  SCCollection (13:14): Array = [1, 2, 3, 4]
+|  |  |  |  |  |  |  SCLiteral (13:15) = 1
+|  |  |  |  |  |  |  SCLiteral (13:18) = 2
+|  |  |  |  |  |  |  SCLiteral (13:21) = 3
+|  |  |  |  |  |  |  SCLiteral (13:24) = 4
+|  |  |  |  |  |  SCPositionalArgs (13:14)
+|  |  |  |  |  |  |  SCLiteral (13:27) = 1
+|  |  |  |  |  |  |  SCLiteral (13:26) = nil
+|  |  |  |  |  |  |  SCLiteral (13:30) = 2
+|  |  SCMethod (14:5): from_start { ^[1, 2, 3][..1] } -> [1, 2]
+|  |  |  SCBody (14:18)
+|  |  |  |  SCExplicitReturn (14:19)
+|  |  |  |  |  SCMessage (14:19): copySeries = [1, 2]
+|  |  |  |  |  |  SCCollection (14:19): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (14:20) = 1
+|  |  |  |  |  |  |  SCLiteral (14:23) = 2
+|  |  |  |  |  |  |  SCLiteral (14:26) = 3
+|  |  |  |  |  |  SCPositionalArgs (14:19)
+|  |  |  |  |  |  |  SCLiteral (14:28) = nil
+|  |  |  |  |  |  |  SCLiteral (14:28) = nil
+|  |  |  |  |  |  |  SCLiteral (14:31) = 1
+|  |  SCMethod (15:5): to_end { ^[1, 2, 3][1..] } -> [2, 3]
+|  |  |  SCBody (15:14)
+|  |  |  |  SCExplicitReturn (15:15)
+|  |  |  |  |  SCMessage (15:15): copySeries = [2, 3]
+|  |  |  |  |  |  SCCollection (15:15): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (15:16) = 1
+|  |  |  |  |  |  |  SCLiteral (15:19) = 2
+|  |  |  |  |  |  |  SCLiteral (15:22) = 3
+|  |  |  |  |  |  SCPositionalArgs (15:15)
+|  |  |  |  |  |  |  SCLiteral (15:25) = 1
+|  |  |  |  |  |  |  SCLiteral (15:24) = nil
+|  |  |  |  |  |  |  SCLiteral (15:24) = nil
+|  |  SCMethod (16:5): step { ^[0, 1, 2, 3, 4, 5][0, 2..5] } -> [0, 2, 4]
+|  |  |  SCBody (16:12)
+|  |  |  |  SCExplicitReturn (16:13)
+|  |  |  |  |  SCMessage (16:13): copySeries = [0, 2, 4]
+|  |  |  |  |  |  SCCollection (16:13): Array = [0, 1, 2, 3, 4, 5]
+|  |  |  |  |  |  |  SCLiteral (16:14) = 0
+|  |  |  |  |  |  |  SCLiteral (16:17) = 1
+|  |  |  |  |  |  |  SCLiteral (16:20) = 2
+|  |  |  |  |  |  |  SCLiteral (16:23) = 3
+|  |  |  |  |  |  |  SCLiteral (16:26) = 4
+|  |  |  |  |  |  |  SCLiteral (16:29) = 5
+|  |  |  |  |  |  SCPositionalArgs (16:13)
+|  |  |  |  |  |  |  SCLiteral (16:32) = 0
+|  |  |  |  |  |  |  SCLiteral (16:35) = 2
+|  |  |  |  |  |  |  SCLiteral (16:38) = 5
+|  |  SCMethod (17:5): descending { ^[1, 2, 3][2..0] } -> [3, 2, 1]
+|  |  |  SCBody (17:18)
+|  |  |  |  SCExplicitReturn (17:19)
+|  |  |  |  |  SCMessage (17:19): copySeries = [3, 2, 1]
+|  |  |  |  |  |  SCCollection (17:19): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (17:20) = 1
+|  |  |  |  |  |  |  SCLiteral (17:23) = 2
+|  |  |  |  |  |  |  SCLiteral (17:26) = 3
+|  |  |  |  |  |  SCPositionalArgs (17:19)
+|  |  |  |  |  |  |  SCLiteral (17:29) = 2
+|  |  |  |  |  |  |  SCLiteral (17:28) = nil
+|  |  |  |  |  |  |  SCLiteral (17:32) = 0
+|  |  SCMethod (18:5): clipped_end { ^[1, 2, 3][1..10] } -> [2, 3]
+|  |  |  SCBody (18:19)
+|  |  |  |  SCExplicitReturn (18:20)
+|  |  |  |  |  SCMessage (18:20): copySeries = [2, 3]
+|  |  |  |  |  |  SCCollection (18:20): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (18:21) = 1
+|  |  |  |  |  |  |  SCLiteral (18:24) = 2
+|  |  |  |  |  |  |  SCLiteral (18:27) = 3
+|  |  |  |  |  |  SCPositionalArgs (18:20)
+|  |  |  |  |  |  |  SCLiteral (18:30) = 1
+|  |  |  |  |  |  |  SCLiteral (18:29) = nil
+|  |  |  |  |  |  |  SCLiteral (18:33) = 10
+|  |  SCMethod (19:5): clipped_start { ^[1, 2, 3][-5..1] } -> [1, 2]
+|  |  |  SCBody (19:21)
+|  |  |  |  SCExplicitReturn (19:22)
+|  |  |  |  |  SCMessage (19:22): copySeries = [1, 2]
+|  |  |  |  |  |  SCCollection (19:22): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (19:23) = 1
+|  |  |  |  |  |  |  SCLiteral (19:26) = 2
+|  |  |  |  |  |  |  SCLiteral (19:29) = 3
+|  |  |  |  |  |  SCPositionalArgs (19:22)
+|  |  |  |  |  |  |  SCLiteral (19:33) = -5
+|  |  |  |  |  |  |  SCLiteral (19:31) = nil
+|  |  |  |  |  |  |  SCLiteral (19:36) = 1
+|  |  SCMethod (20:5): empty { ^[][..3] } -> []
+|  |  |  SCBody (20:13)
+|  |  |  |  SCExplicitReturn (20:14)
+|  |  |  |  |  SCMessage (20:14): copySeries = []
+|  |  |  |  |  |  SCCollection (20:14): Array = []
+|  |  |  |  |  |  SCPositionalArgs (20:14)
+|  |  |  |  |  |  |  SCLiteral (20:16) = nil
+|  |  |  |  |  |  |  SCLiteral (20:16) = nil
+|  |  |  |  |  |  |  SCLiteral (20:19) = 3
+|  |  SCMethod (21:5): string { ^"hello"[1..3] } -> "ell"
+|  |  |  SCBody (21:14)
+|  |  |  |  SCExplicitReturn (21:15)
+|  |  |  |  |  SCMessage (21:15): copySeries = "ell"
+|  |  |  |  |  |  SCLiteral (21:15) = "hello"
+|  |  |  |  |  |  SCPositionalArgs (21:15)
+|  |  |  |  |  |  |  SCLiteral (21:23) = 1
+|  |  |  |  |  |  |  SCLiteral (21:22) = nil
+|  |  |  |  |  |  |  SCLiteral (21:26) = 3
+|  |  SCMethod (22:5): string_descending { ^"hello"[3..1] } -> "lle"
+|  |  |  SCBody (22:25)
+|  |  |  |  SCExplicitReturn (22:26)
+|  |  |  |  |  SCMessage (22:26): copySeries = "lle"
+|  |  |  |  |  |  SCLiteral (22:26) = "hello"
+|  |  |  |  |  |  SCPositionalArgs (22:26)
+|  |  |  |  |  |  |  SCLiteral (22:34) = 3
+|  |  |  |  |  |  |  SCLiteral (22:33) = nil
+|  |  |  |  |  |  |  SCLiteral (22:37) = 1
+|  |  SCMethod (23:5): immutable { ^#[a, b, c][1..] } -> [\b, \c]
+|  |  |  SCBody (23:17)
+|  |  |  |  SCExplicitReturn (23:18)
+|  |  |  |  |  SCMessage (23:18): copySeries = [\b, \c]
+|  |  |  |  |  |  SCCollection (23:18): Array = [\a, \b, \c]
+|  |  |  |  |  |  |  SCLiteral (23:20) = \a
+|  |  |  |  |  |  |  SCLiteral (23:23) = \b
+|  |  |  |  |  |  |  SCLiteral (23:26) = \c
+|  |  |  |  |  |  SCPositionalArgs (23:18)
+|  |  |  |  |  |  |  SCLiteral (23:29) = 1
+|  |  |  |  |  |  |  SCLiteral (23:28) = nil
+|  |  |  |  |  |  |  SCLiteral (23:28) = nil
+|  |  SCMethod (24:5): step_with_start_outside { ^[1, 2, 3, 4][-1, 1..3] }
+|  |  |  SCBody (24:31)
+|  |  |  |  SCExplicitReturn (24:32)
+|  |  |  |  |  SCMessage (24:32): copySeries
+|  |  |  |  |  |  SCCollection (24:32): Array = [1, 2, 3, 4]
+|  |  |  |  |  |  |  SCLiteral (24:33) = 1
+|  |  |  |  |  |  |  SCLiteral (24:36) = 2
+|  |  |  |  |  |  |  SCLiteral (24:39) = 3
+|  |  |  |  |  |  |  SCLiteral (24:42) = 4
+|  |  |  |  |  |  SCPositionalArgs (24:32)
+|  |  |  |  |  |  |  SCLiteral (24:46) = -1
+|  |  |  |  |  |  |  SCLiteral (24:49) = 1
+|  |  |  |  |  |  |  SCLiteral (24:52) = 3
+|  |  SCMethod (25:5): zero_step { ^[1, 2, 3][1, 1..2] }
+|  |  |  SCBody (25:17)
+|  |  |  |  SCExplicitReturn (25:18)
+|  |  |  |  |  SCMessage (25:18): copySeries
+|  |  |  |  |  |  SCCollection (25:18): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (25:19) = 1
+|  |  |  |  |  |  |  SCLiteral (25:22) = 2
+|  |  |  |  |  |  |  SCLiteral (25:25) = 3
+|  |  |  |  |  |  SCPositionalArgs (25:18)
+|  |  |  |  |  |  |  SCLiteral (25:28) = 1
+|  |  |  |  |  |  |  SCLiteral (25:31) = 1
+|  |  |  |  |  |  |  SCLiteral (25:34) = 2
+|  |  SCMethod (26:5): step_away { ^[1, 2, 3][2, 3..0] }
+|  |  |  SCBody (26:17)
+|  |  |  |  SCExplicitReturn (26:18)
+|  |  |  |  |  SCMessage (26:18): copySeries
+|  |  |  |  |  |  SCCollection (26:18): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (26:19) = 1
+|  |  |  |  |  |  |  SCLiteral (26:22) = 2
+|  |  |  |  |  |  |  SCLiteral (26:25) = 3
+|  |  |  |  |  |  SCPositionalArgs (26:18)
+|  |  |  |  |  |  |  SCLiteral (26:28) = 2
+|  |  |  |  |  |  |  SCLiteral (26:31) = 3
+|  |  |  |  |  |  |  SCLiteral (26:34) = 0
+|  |  SCMethod (27:5): receiver_not_constant { ^x[1..2] }
+|  |  |  SCBody (27:29)
+|  |  |  |  SCExplicitReturn (27:30)
+|  |  |  |  |  SCMessage (27:30): copySeries
+|  |  |  |  |  |  SCRead (27:30): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (27:30)
+|  |  |  |  |  |  |  SCLiteral (27:32) = 1
+|  |  |  |  |  |  |  SCLiteral (27:31) = nil
+|  |  |  |  |  |  |  SCLiteral (27:35) = 2
+|  |  SCMethod (28:5): bound_not_constant { ^[1, 2, 3][1..2.foo] }
+|  |  |  SCBody (28:26)
+|  |  |  |  SCExplicitReturn (28:27)
+|  |  |  |  |  SCMessage (28:27): copySeries
+|  |  |  |  |  |  SCCollection (28:27): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (28:28) = 1
+|  |  |  |  |  |  |  SCLiteral (28:31) = 2
+|  |  |  |  |  |  |  SCLiteral (28:34) = 3
+|  |  |  |  |  |  SCPositionalArgs (28:27)
+|  |  |  |  |  |  |  SCLiteral (28:37) = 1
+|  |  |  |  |  |  |  SCLiteral (28:36) = nil
+|  |  |  |  |  |  |  SCMessage (28:40): foo
+|  |  |  |  |  |  |  |  SCLiteral (28:40) = 2
+SCClass (1:1): Meta_SliceFolding
+|  SCMemberList (1:1)
+|  |  SCMember (9:11): const_array = [10, 20, 30, 40]
+|  SCMethodList (1:1)
 Successfully compiled 15 classes.

@@ -44,228 +44,145 @@ A range is `first..last`, or `first, second..last` where second sets the step, e
 IR GRAPH DUMP 
 
 
-SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    slice_step { ^x[1, 3..9] }'\n'    slice_from_start { ^x[..3] }'\n'    slice_to_end { ^x[1..] }'\n'    slice_step_to_end { ^x[1, 3..] }'\n'    dot_slice { ^x.[1..3] }'\n'    slice_expression_bounds { ^x[1.foo..2.bar] }'\n'    slice_keyword { ^x[a: 1..3] }'\n'    slice_variadic { ^x[*1..3] }'\n''\n'    assign { x[1..3] = 5 }'\n'    assign_step { x[1, 3..9] = 5 }'\n'    assign_from_start { x[..3] = 5 }'\n'    assign_to_end { x[1..] = 5 }'\n'    dot_assign { x.[1..3] = 5 }'\n'    assign_too_many { x[1, 2, 3..5] = 5 }'\n'}
-|  SCMemberList: Slicing
-|  |  SCMember: x
-|  SCMethodList: Slicing
-|  |  SCMethod: slice { ^x[1..3] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x[1..3]
-|  |  |  |  SCExplicitReturn: x[1..3]
-|  |  |  |  |  SCMessage: copySeries: x[1..3]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x[1..3]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: x[1..3]
-|  |  |  |  |  |  SCVariadicArgs: x[1..3]
-|  |  |  |  |  |  SCMissing: x[1..3]
-|  |  SCMethod: slice_step { ^x[1, 3..9] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x[1, 3..9]
-|  |  |  |  SCExplicitReturn: x[1, 3..9]
-|  |  |  |  |  SCMessage: copySeries: x[1, 3..9]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x[1, 3..9]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  SCLiteral: 9 = {"int": 9}
-|  |  |  |  |  |  SCKwArgs: x[1, 3..9]
-|  |  |  |  |  |  SCVariadicArgs: x[1, 3..9]
-|  |  |  |  |  |  SCMissing: x[1, 3..9]
-|  |  SCMethod: slice_from_start { ^x[..3] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x[..3]
-|  |  |  |  SCExplicitReturn: x[..3]
-|  |  |  |  |  SCMessage: copySeries: x[..3]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x[..3]
-|  |  |  |  |  |  |  SCLiteral: [..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: [..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: x[..3]
-|  |  |  |  |  |  SCVariadicArgs: x[..3]
-|  |  |  |  |  |  SCMissing: x[..3]
-|  |  SCMethod: slice_to_end { ^x[1..] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x[1..]
-|  |  |  |  SCExplicitReturn: x[1..]
-|  |  |  |  |  SCMessage: copySeries: x[1..]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x[1..]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
-|  |  |  |  |  |  SCKwArgs: x[1..]
-|  |  |  |  |  |  SCVariadicArgs: x[1..]
-|  |  |  |  |  |  SCMissing: x[1..]
-|  |  SCMethod: slice_step_to_end { ^x[1, 3..] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x[1, 3..]
-|  |  |  |  SCExplicitReturn: x[1, 3..]
-|  |  |  |  |  SCMessage: copySeries: x[1, 3..]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x[1, 3..]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  SCLiteral: [1, 3..] = {"nil": {}}
-|  |  |  |  |  |  SCKwArgs: x[1, 3..]
-|  |  |  |  |  |  SCVariadicArgs: x[1, 3..]
-|  |  |  |  |  |  SCMissing: x[1, 3..]
-|  |  SCMethod: dot_slice { ^x.[1..3] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x.[1..3]
-|  |  |  |  SCExplicitReturn: x.[1..3]
-|  |  |  |  |  SCMessage: copySeries: x.[1..3]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x.[1..3]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: [1..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: x.[1..3]
-|  |  |  |  |  |  SCVariadicArgs: x.[1..3]
-|  |  |  |  |  |  SCMissing: x.[1..3]
-|  |  SCMethod: slice_expression_bounds { ^x[1.foo..2.bar] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x[1.foo..2.bar]
-|  |  |  |  SCExplicitReturn: x[1.foo..2.bar]
-|  |  |  |  |  SCMessage: copySeries: x[1.foo..2.bar]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x[1.foo..2.bar]
-|  |  |  |  |  |  |  SCMessage: foo: 1.foo
-|  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  SCPositionalArgs: 1.foo
-|  |  |  |  |  |  |  |  SCKwArgs: 1.foo
-|  |  |  |  |  |  |  |  SCVariadicArgs: 1.foo
-|  |  |  |  |  |  |  |  SCMissing: 1.foo
-|  |  |  |  |  |  |  SCLiteral: [1.foo..2.bar] = {"nil": {}}
-|  |  |  |  |  |  |  SCMessage: bar: 2.bar
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCPositionalArgs: 2.bar
-|  |  |  |  |  |  |  |  SCKwArgs: 2.bar
-|  |  |  |  |  |  |  |  SCVariadicArgs: 2.bar
-|  |  |  |  |  |  |  |  SCMissing: 2.bar
-|  |  |  |  |  |  SCKwArgs: x[1.foo..2.bar]
-|  |  |  |  |  |  SCVariadicArgs: x[1.foo..2.bar]
-|  |  |  |  |  |  SCMissing: x[1.foo..2.bar]
-|  |  SCMethod: poisoned: slice_keyword { ^x[a: 1..3] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x[a: 1..3]
-|  |  |  |  SCExplicitReturn: x[a: 1..3]
-|  |  |  |  |  SCMessage: copySeries: x[a: 1..3]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x[a: 1..3]
-|  |  |  |  |  |  |  SCLiteral: [a: 1..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: [a: 1..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: x[a: 1..3]
-|  |  |  |  |  |  SCVariadicArgs: x[a: 1..3]
-|  |  |  |  |  |  SCMissing: x[a: 1..3]
-|  |  SCMethod: poisoned: slice_variadic { ^x[*1..3] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^x[*1..3]
-|  |  |  |  SCExplicitReturn: x[*1..3]
-|  |  |  |  |  SCMessage: copySeries: x[*1..3]
-|  |  |  |  |  |  SCRead: x
-|  |  |  |  |  |  SCPositionalArgs: x[*1..3]
-|  |  |  |  |  |  |  SCLiteral: [*1..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: [*1..3] = {"nil": {}}
-|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCKwArgs: x[*1..3]
-|  |  |  |  |  |  SCVariadicArgs: x[*1..3]
-|  |  |  |  |  |  SCMissing: x[*1..3]
-|  |  SCMethod: assign { x[1..3] = 5 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: x[1..3] = 5
-|  |  |  |  SCMessage: putSeries: x[1..3] = 5
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: x[1..3] = 5
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: [1..3] = {"nil": {}}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  SCKwArgs: x[1..3] = 5
-|  |  |  |  |  SCVariadicArgs: x[1..3] = 5
-|  |  |  |  |  SCMissing: x[1..3] = 5
-|  |  SCMethod: assign_step { x[1, 3..9] = 5 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: x[1, 3..9] = 5
-|  |  |  |  SCMessage: putSeries: x[1, 3..9] = 5
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: x[1, 3..9] = 5
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCLiteral: 9 = {"int": 9}
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  SCKwArgs: x[1, 3..9] = 5
-|  |  |  |  |  SCVariadicArgs: x[1, 3..9] = 5
-|  |  |  |  |  SCMissing: x[1, 3..9] = 5
-|  |  SCMethod: assign_from_start { x[..3] = 5 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: x[..3] = 5
-|  |  |  |  SCMessage: putSeries: x[..3] = 5
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: x[..3] = 5
-|  |  |  |  |  |  SCLiteral: [..3] = {"nil": {}}
-|  |  |  |  |  |  SCLiteral: [..3] = {"nil": {}}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  SCKwArgs: x[..3] = 5
-|  |  |  |  |  SCVariadicArgs: x[..3] = 5
-|  |  |  |  |  SCMissing: x[..3] = 5
-|  |  SCMethod: assign_to_end { x[1..] = 5 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: x[1..] = 5
-|  |  |  |  SCMessage: putSeries: x[1..] = 5
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: x[1..] = 5
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
-|  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  SCKwArgs: x[1..] = 5
-|  |  |  |  |  SCVariadicArgs: x[1..] = 5
-|  |  |  |  |  SCMissing: x[1..] = 5
-|  |  SCMethod: dot_assign { x.[1..3] = 5 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: x.[1..3] = 5
-|  |  |  |  SCMessage: putSeries: x.[1..3] = 5
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: x.[1..3] = 5
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: [1..3] = {"nil": {}}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  SCKwArgs: x.[1..3] = 5
-|  |  |  |  |  SCVariadicArgs: x.[1..3] = 5
-|  |  |  |  |  SCMissing: x.[1..3] = 5
-|  |  SCMethod: poisoned: assign_too_many { x[1, 2, 3..5] = 5 }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: x[1, 2, 3..5] = 5
-|  |  |  |  SCMessage: putSeries: x[1, 2, 3..5] = 5
-|  |  |  |  |  SCRead: x
-|  |  |  |  |  SCPositionalArgs: x[1, 2, 3..5] = 5
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  SCKwArgs: x[1, 2, 3..5] = 5
-|  |  |  |  |  SCVariadicArgs: x[1, 2, 3..5] = 5
-|  |  |  |  |  SCMissing: x[1, 2, 3..5] = 5
+SCClass (1:1): Slicing
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): x
+|  SCMethodList (1:1)
+|  |  SCMethod (4:5): slice { ^x[1..3] }
+|  |  |  SCBody (4:13)
+|  |  |  |  SCExplicitReturn (4:14)
+|  |  |  |  |  SCMessage (4:14): copySeries
+|  |  |  |  |  |  SCRead (4:14): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (4:14)
+|  |  |  |  |  |  |  SCLiteral (4:16) = 1
+|  |  |  |  |  |  |  SCLiteral (4:15) = nil
+|  |  |  |  |  |  |  SCLiteral (4:19) = 3
+|  |  SCMethod (5:5): slice_step { ^x[1, 3..9] }
+|  |  |  SCBody (5:18)
+|  |  |  |  SCExplicitReturn (5:19)
+|  |  |  |  |  SCMessage (5:19): copySeries
+|  |  |  |  |  |  SCRead (5:19): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (5:19)
+|  |  |  |  |  |  |  SCLiteral (5:21) = 1
+|  |  |  |  |  |  |  SCLiteral (5:24) = 3
+|  |  |  |  |  |  |  SCLiteral (5:27) = 9
+|  |  SCMethod (6:5): slice_from_start { ^x[..3] }
+|  |  |  SCBody (6:24)
+|  |  |  |  SCExplicitReturn (6:25)
+|  |  |  |  |  SCMessage (6:25): copySeries
+|  |  |  |  |  |  SCRead (6:25): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (6:25)
+|  |  |  |  |  |  |  SCLiteral (6:26) = nil
+|  |  |  |  |  |  |  SCLiteral (6:26) = nil
+|  |  |  |  |  |  |  SCLiteral (6:29) = 3
+|  |  SCMethod (7:5): slice_to_end { ^x[1..] }
+|  |  |  SCBody (7:20)
+|  |  |  |  SCExplicitReturn (7:21)
+|  |  |  |  |  SCMessage (7:21): copySeries
+|  |  |  |  |  |  SCRead (7:21): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (7:21)
+|  |  |  |  |  |  |  SCLiteral (7:23) = 1
+|  |  |  |  |  |  |  SCLiteral (7:22) = nil
+|  |  |  |  |  |  |  SCLiteral (7:22) = nil
+|  |  SCMethod (8:5): slice_step_to_end { ^x[1, 3..] }
+|  |  |  SCBody (8:25)
+|  |  |  |  SCExplicitReturn (8:26)
+|  |  |  |  |  SCMessage (8:26): copySeries
+|  |  |  |  |  |  SCRead (8:26): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (8:26)
+|  |  |  |  |  |  |  SCLiteral (8:28) = 1
+|  |  |  |  |  |  |  SCLiteral (8:31) = 3
+|  |  |  |  |  |  |  SCLiteral (8:27) = nil
+|  |  SCMethod (9:5): dot_slice { ^x.[1..3] }
+|  |  |  SCBody (9:17)
+|  |  |  |  SCExplicitReturn (9:18)
+|  |  |  |  |  SCMessage (9:18): copySeries
+|  |  |  |  |  |  SCRead (9:18): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (9:18)
+|  |  |  |  |  |  |  SCLiteral (9:21) = 1
+|  |  |  |  |  |  |  SCLiteral (9:20) = nil
+|  |  |  |  |  |  |  SCLiteral (9:24) = 3
+|  |  SCMethod (10:5): slice_expression_bounds { ^x[1.foo..2.bar] }
+|  |  |  SCBody (10:31)
+|  |  |  |  SCExplicitReturn (10:32)
+|  |  |  |  |  SCMessage (10:32): copySeries
+|  |  |  |  |  |  SCRead (10:32): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (10:32)
+|  |  |  |  |  |  |  SCMessage (10:34): foo
+|  |  |  |  |  |  |  |  SCLiteral (10:34) = 1
+|  |  |  |  |  |  |  SCLiteral (10:33) = nil
+|  |  |  |  |  |  |  SCMessage (10:41): bar
+|  |  |  |  |  |  |  |  SCLiteral (10:41) = 2
+|  |  SCMethod (11:5): poisoned: slice_keyword { ^x[a: 1..3] }
+|  |  |  SCBody (11:21)
+|  |  |  |  SCExplicitReturn (11:22)
+|  |  |  |  |  SCMessage (11:22): copySeries
+|  |  |  |  |  |  SCRead (11:22): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (11:22)
+|  |  |  |  |  |  |  SCLiteral (11:23) = nil
+|  |  |  |  |  |  |  SCLiteral (11:23) = nil
+|  |  |  |  |  |  |  SCLiteral (11:30) = 3
+|  |  SCMethod (12:5): poisoned: slice_variadic { ^x[*1..3] }
+|  |  |  SCBody (12:22)
+|  |  |  |  SCExplicitReturn (12:23)
+|  |  |  |  |  SCMessage (12:23): copySeries
+|  |  |  |  |  |  SCRead (12:23): instance x, declared (2:9): x
+|  |  |  |  |  |  SCPositionalArgs (12:23)
+|  |  |  |  |  |  |  SCLiteral (12:24) = nil
+|  |  |  |  |  |  |  SCLiteral (12:24) = nil
+|  |  |  |  |  |  |  SCLiteral (12:29) = 3
+|  |  SCMethod (14:5): assign { x[1..3] = 5 }
+|  |  |  SCBody (14:14)
+|  |  |  |  SCMessage (14:14): putSeries
+|  |  |  |  |  SCRead (14:14): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (14:14)
+|  |  |  |  |  |  SCLiteral (14:16) = 1
+|  |  |  |  |  |  SCLiteral (14:15) = nil
+|  |  |  |  |  |  SCLiteral (14:19) = 3
+|  |  |  |  |  |  SCLiteral (14:24) = 5
+|  |  SCMethod (15:5): assign_step { x[1, 3..9] = 5 }
+|  |  |  SCBody (15:19)
+|  |  |  |  SCMessage (15:19): putSeries
+|  |  |  |  |  SCRead (15:19): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (15:19)
+|  |  |  |  |  |  SCLiteral (15:21) = 1
+|  |  |  |  |  |  SCLiteral (15:24) = 3
+|  |  |  |  |  |  SCLiteral (15:27) = 9
+|  |  |  |  |  |  SCLiteral (15:32) = 5
+|  |  SCMethod (16:5): assign_from_start { x[..3] = 5 }
+|  |  |  SCBody (16:25)
+|  |  |  |  SCMessage (16:25): putSeries
+|  |  |  |  |  SCRead (16:25): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (16:25)
+|  |  |  |  |  |  SCLiteral (16:26) = nil
+|  |  |  |  |  |  SCLiteral (16:26) = nil
+|  |  |  |  |  |  SCLiteral (16:29) = 3
+|  |  |  |  |  |  SCLiteral (16:34) = 5
+|  |  SCMethod (17:5): assign_to_end { x[1..] = 5 }
+|  |  |  SCBody (17:21)
+|  |  |  |  SCMessage (17:21): putSeries
+|  |  |  |  |  SCRead (17:21): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (17:21)
+|  |  |  |  |  |  SCLiteral (17:23) = 1
+|  |  |  |  |  |  SCLiteral (17:22) = nil
+|  |  |  |  |  |  SCLiteral (17:22) = nil
+|  |  |  |  |  |  SCLiteral (17:30) = 5
+|  |  SCMethod (18:5): dot_assign { x.[1..3] = 5 }
+|  |  |  SCBody (18:18)
+|  |  |  |  SCMessage (18:18): putSeries
+|  |  |  |  |  SCRead (18:18): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (18:18)
+|  |  |  |  |  |  SCLiteral (18:21) = 1
+|  |  |  |  |  |  SCLiteral (18:20) = nil
+|  |  |  |  |  |  SCLiteral (18:24) = 3
+|  |  |  |  |  |  SCLiteral (18:29) = 5
+|  |  SCMethod (19:5): poisoned: assign_too_many { x[1, 2, 3..5] = 5 }
+|  |  |  SCBody (19:23)
+|  |  |  |  SCMessage (19:23): putSeries
+|  |  |  |  |  SCRead (19:23): instance x, declared (2:9): x
+|  |  |  |  |  SCPositionalArgs (19:23)
+|  |  |  |  |  |  SCLiteral (19:25) = 1
+|  |  |  |  |  |  SCLiteral (19:28) = 2
+|  |  |  |  |  |  SCLiteral (19:34) = 5
+|  |  |  |  |  |  SCLiteral (19:39) = 5
 Successfully compiled 15 classes.

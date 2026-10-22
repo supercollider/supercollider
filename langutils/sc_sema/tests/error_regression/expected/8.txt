@@ -4,60 +4,56 @@
 IR GRAPH DUMP 
 
 
-SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
-|  SCMemberList: AbstractObjectExperimental
-|  SCMethodList: AbstractObjectExperimental
-SCClass: Object: Object : AbstractObjectExperimental { }
-|  SCMemberList: Object
-|  SCMethodList: Object
-SCClass: Class: Class {}
-|  SCMemberList: Class
-|  SCMethodList: Class
-SCClass: String: String {}
-|  SCMemberList: String
-|  SCMethodList: String
-SCClass: True: True {}
-|  SCMemberList: True
-|  SCMethodList: True
-SCClass: False: False {}
-|  SCMemberList: False
-|  SCMethodList: False
-SCClass: Nil: Nil {}
-|  SCMemberList: Nil
-|  SCMethodList: Nil
-SCClass: Float: Float {}
-|  SCMemberList: Float
-|  SCMethodList: Float
-SCClass: Integer: Integer {}
-|  SCMemberList: Integer
-|  SCMethodList: Integer
-SCClass: Char: Char {}
-|  SCMemberList: Char
-|  SCMethodList: Char
-SCClass: Symbol: Symbol {}
-|  SCMemberList: Symbol
-|  SCMethodList: Symbol
-SCClass: Ref: Ref {}
-|  SCMemberList: Ref
-|  SCMethodList: Ref
-SCClass: Array: Array {}
-|  SCMemberList: Array
-|  SCMethodList: Array
-SCClass: Event: Event {}
-|  SCMemberList: Event
-|  SCMethodList: Event
-SCClass: Foo: Foo { }
-|  SCMemberList: Foo
-|  SCMethodList: Foo
-|  |  SCMethod: bar {}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: }
-SCClass: Meta_Foo: Foo { }
-|  SCMemberList: Foo
-|  SCMethodList: Foo
-|  |  SCMethod: *bar {}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: }
+SCClass (3:1): AbstractObjectExperimental
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+SCClass (4:1): Object
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+SCClass (5:1): Class
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+SCClass (6:1): String
+|  SCMemberList (6:1)
+|  SCMethodList (6:1)
+SCClass (7:1): True
+|  SCMemberList (7:1)
+|  SCMethodList (7:1)
+SCClass (8:1): False
+|  SCMemberList (8:1)
+|  SCMethodList (8:1)
+SCClass (9:1): Nil
+|  SCMemberList (9:1)
+|  SCMethodList (9:1)
+SCClass (10:1): Float
+|  SCMemberList (10:1)
+|  SCMethodList (10:1)
+SCClass (11:1): Integer
+|  SCMemberList (11:1)
+|  SCMethodList (11:1)
+SCClass (12:1): Char
+|  SCMemberList (12:1)
+|  SCMethodList (12:1)
+SCClass (13:1): Symbol
+|  SCMemberList (13:1)
+|  SCMethodList (13:1)
+SCClass (14:1): Ref
+|  SCMemberList (14:1)
+|  SCMethodList (14:1)
+SCClass (15:1): Array
+|  SCMemberList (15:1)
+|  SCMethodList (15:1)
+SCClass (16:1): Event
+|  SCMemberList (16:1)
+|  SCMethodList (16:1)
+SCClass (23:1): Foo
+|  SCMemberList (23:1)
+|  SCMethodList (23:1)
+|  |  SCMethod (20:5): bar {}
+|  |  |  SCBody (20:10)
+SCClass (23:1): Meta_Foo
+|  SCMemberList (23:1)
+|  SCMethodList (23:1)
+|  |  SCMethod (26:5): *bar {}
+|  |  |  SCBody (26:11)
 Successfully compiled 15 classes.

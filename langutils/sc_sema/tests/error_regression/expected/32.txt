@@ -45,64 +45,44 @@ A range is `first..last`, or `first, second..last` where second sets the step, e
 IR GRAPH DUMP 
 
 
-SCClass: RangeArgumentPacks: RangeArgumentPacks {'\n'    var instance_var;'\n''\n'    three_arguments { ^instance_var[1, 2, 3..5] }'\n'    four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }'\n'    dot_form { ^instance_var.[1, 2, 3..5] }'\n'    two_arguments_are_fine { ^instance_var[1, 2..5] }'\n'}
-|  SCMemberList: RangeArgumentPacks
-|  |  SCMember: instance_var
-|  SCMethodList: RangeArgumentPacks
-|  |  SCMethod: poisoned: three_arguments { ^instance_var[1, 2, 3..5] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^instance_var[1, 2, 3..5]
-|  |  |  |  SCExplicitReturn: instance_var[1, 2, 3..5]
-|  |  |  |  |  SCMessage: copySeries: instance_var[1, 2, 3..5]
-|  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  SCPositionalArgs: instance_var[1, 2, 3..5]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  |  SCKwArgs: instance_var[1, 2, 3..5]
-|  |  |  |  |  |  SCVariadicArgs: instance_var[1, 2, 3..5]
-|  |  |  |  |  |  SCMissing: instance_var[1, 2, 3..5]
-|  |  SCMethod: poisoned: four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^instance_var[1, 2, 3, 4..]
-|  |  |  |  SCExplicitReturn: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  SCMessage: copySeries: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  SCPositionalArgs: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: [1, 2, 3, 4..] = {"nil": {}}
-|  |  |  |  |  |  SCKwArgs: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  |  SCVariadicArgs: instance_var[1, 2, 3, 4..]
-|  |  |  |  |  |  SCMissing: instance_var[1, 2, 3, 4..]
-|  |  SCMethod: poisoned: dot_form { ^instance_var.[1, 2, 3..5] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^instance_var.[1, 2, 3..5]
-|  |  |  |  SCExplicitReturn: instance_var.[1, 2, 3..5]
-|  |  |  |  |  SCMessage: copySeries: instance_var.[1, 2, 3..5]
-|  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  SCPositionalArgs: instance_var.[1, 2, 3..5]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  |  SCKwArgs: instance_var.[1, 2, 3..5]
-|  |  |  |  |  |  SCVariadicArgs: instance_var.[1, 2, 3..5]
-|  |  |  |  |  |  SCMissing: instance_var.[1, 2, 3..5]
-|  |  SCMethod: two_arguments_are_fine { ^instance_var[1, 2..5] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^instance_var[1, 2..5]
-|  |  |  |  SCExplicitReturn: instance_var[1, 2..5]
-|  |  |  |  |  SCMessage: copySeries: instance_var[1, 2..5]
-|  |  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  |  SCPositionalArgs: instance_var[1, 2..5]
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
-|  |  |  |  |  |  SCKwArgs: instance_var[1, 2..5]
-|  |  |  |  |  |  SCVariadicArgs: instance_var[1, 2..5]
-|  |  |  |  |  |  SCMissing: instance_var[1, 2..5]
+SCClass (1:1): RangeArgumentPacks
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): instance_var
+|  SCMethodList (1:1)
+|  |  SCMethod (4:5): poisoned: three_arguments { ^instance_var[1, 2, 3..5] }
+|  |  |  SCBody (4:23)
+|  |  |  |  SCExplicitReturn (4:24)
+|  |  |  |  |  SCMessage (4:24): copySeries
+|  |  |  |  |  |  SCRead (4:24): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  |  SCPositionalArgs (4:24)
+|  |  |  |  |  |  |  SCLiteral (4:37) = 1
+|  |  |  |  |  |  |  SCLiteral (4:40) = 2
+|  |  |  |  |  |  |  SCLiteral (4:46) = 5
+|  |  SCMethod (5:5): poisoned: four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
+|  |  |  SCBody (5:29)
+|  |  |  |  SCExplicitReturn (5:30)
+|  |  |  |  |  SCMessage (5:30): copySeries
+|  |  |  |  |  |  SCRead (5:30): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  |  SCPositionalArgs (5:30)
+|  |  |  |  |  |  |  SCLiteral (5:43) = 1
+|  |  |  |  |  |  |  SCLiteral (5:46) = 2
+|  |  |  |  |  |  |  SCLiteral (5:42) = nil
+|  |  SCMethod (6:5): poisoned: dot_form { ^instance_var.[1, 2, 3..5] }
+|  |  |  SCBody (6:16)
+|  |  |  |  SCExplicitReturn (6:17)
+|  |  |  |  |  SCMessage (6:17): copySeries
+|  |  |  |  |  |  SCRead (6:17): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  |  SCPositionalArgs (6:17)
+|  |  |  |  |  |  |  SCLiteral (6:31) = 1
+|  |  |  |  |  |  |  SCLiteral (6:34) = 2
+|  |  |  |  |  |  |  SCLiteral (6:40) = 5
+|  |  SCMethod (7:5): two_arguments_are_fine { ^instance_var[1, 2..5] }
+|  |  |  SCBody (7:30)
+|  |  |  |  SCExplicitReturn (7:31)
+|  |  |  |  |  SCMessage (7:31): copySeries
+|  |  |  |  |  |  SCRead (7:31): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  |  SCPositionalArgs (7:31)
+|  |  |  |  |  |  |  SCLiteral (7:44) = 1
+|  |  |  |  |  |  |  SCLiteral (7:47) = 2
+|  |  |  |  |  |  |  SCLiteral (7:50) = 5
 Successfully compiled 15 classes.

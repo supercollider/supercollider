@@ -69,442 +69,351 @@ Declare it with 'var', or use '~a' to refer to an environment variable.
 IR GRAPH DUMP 
 
 
-SCClass: PackAssign: PackAssign {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n'    assign_locals { var a, b; #a, b = [1, 2]; ^a }'\n'    assign_rest { var a, b, c; #a, b ...c = [1, 2, 3]; ^c }'\n'    assign_members { #instance_var, class_var = [1, 2] }'\n'    assign_argument { |x| #x = [1]; ^x }'\n'    assign_environment { var a; #~e, a ...~rest = [1, 2, 3] }'\n'    assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }'\n'    assign_result { var a, b; ^#a, b = [1, 2] }'\n'    assign_undefined { var a; #a, undefined = [1, 2] }'\n'    assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }'\n'    assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }'\n''\n'    declare { var #a, b = [1, 2]; ^a }'\n'    declare_past_end { var #a, b, c = [1, 2]; ^c }'\n'    declare_rest { var #a ...b = [1, 2, 3]; ^b }'\n'    declare_rest_first_constant { var #a ...b = [1, 2, 3]; ^a }'\n'    declare_not_constant { var #a, b = instance_var; ^a }'\n'    declare_mutable_element { var #a, b = [[1], 2]; ^[a, b] }'\n'    declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }'\n'    declare_environment { var #a, ~b = [1, 2]; ^a }'\n'    declare_duplicate { var #a, a = [1, 2]; ^a }'\n'    declare_refers_to_itself { var #a, b = [a]; ^b }'\n'    declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }'\n'    declare_in_function { ^{ var #a, b = [1, 2]; b } }'\n'    declare_in_function_with_rest { ^{ var #a ...b = [1, 2]; a } }'\n'    declare_hides_outer { var a = 1; { var #a = [2]; a }; ^a }'\n'    declare_captured { var #a, b = [1, 2]; ^{ a } }'\n'    declare_with_non_local_return { var #a, b = [1, 2]; { ^a }.value; ^b }'\n'    declare_with_nested_non_local_return { ^{ var #a, b = [1, 2]; { ^b }.value; a } }'\n'}
-|  SCMemberList: PackAssign
-|  |  SCMember: instance_var
-|  SCMethodList: PackAssign
-|  |  SCMethod: assign_locals { var a, b; #a, b = [1, 2]; ^a }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a, b; #a, b = [1, 2]; ^a
-|  |  |  |  SCVariableDeclare: a: a
-|  |  |  |  |  SCMissing: a
-|  |  |  |  SCVariableDeclare: b: b
-|  |  |  |  |  SCMissing: b
-|  |  |  |  SCPackAssign: #a, b = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a
-|  |  SCMethod: assign_rest { var a, b, c; #a, b ...c = [1, 2, 3]; ^c }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a, b, c; #a, b ...c = [1, 2, 3]; ^c
-|  |  |  |  SCVariableDeclare: a: a
-|  |  |  |  |  SCMissing: a
-|  |  |  |  SCVariableDeclare: b: b
-|  |  |  |  |  SCMissing: b
-|  |  |  |  SCVariableDeclare: c: c
-|  |  |  |  |  SCMissing: c
-|  |  |  |  SCPackAssign: #a, b ...c = [1, 2, 3]
-|  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  SCPackTargets: #a, b ...c
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  |  |  SCPackTarget: rest from 2: c
-|  |  |  |  SCExplicitReturn: c
-|  |  |  |  |  SCRead: c
-|  |  SCMethod: assign_members { #instance_var, class_var = [1, 2] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: #instance_var, class_var = [1, 2]
-|  |  |  |  SCPackAssign: #instance_var, class_var = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #instance_var, class_var
-|  |  |  |  |  |  SCPackTarget: at 0: instance_var
-|  |  |  |  |  |  SCPackTarget: at 1: class_var
-|  |  SCMethod: assign_argument { |x| #x = [1]; ^x }
-|  |  |  SCArgumentDeclareList: x
-|  |  |  |  SCArgumentDeclare: x
-|  |  |  |  |  SCMissing: x
-|  |  |  SCArgumentDeclareList: x
-|  |  |  SCBody: #x = [1]; ^x
-|  |  |  |  SCPackAssign: #x = [1]
-|  |  |  |  |  SCCollection: Array: [1] = {"array": [{"int": 1}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  SCPackTargets: #x
-|  |  |  |  |  |  SCPackTarget: at 0: x
-|  |  |  |  SCExplicitReturn: x
-|  |  |  |  |  SCRead: x
-|  |  SCMethod: assign_environment { var a; #~e, a ...~rest = [1, 2, 3] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a; #~e, a ...~rest = [1, 2, 3]
-|  |  |  |  SCVariableDeclare: a: a
-|  |  |  |  |  SCMissing: a
-|  |  |  |  SCPackAssign: #~e, a ...~rest = [1, 2, 3]
-|  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  SCPackTargets: #~e, a ...~rest
-|  |  |  |  |  |  SCPackTarget: at 0: #~e
-|  |  |  |  |  |  SCPackTarget: at 1: a
-|  |  |  |  |  |  SCPackTarget: rest from 2: ~rest
-|  |  SCMethod: assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a, b; #a, b ([1, 2]); ^b
-|  |  |  |  SCVariableDeclare: a: a
-|  |  |  |  |  SCMissing: a
-|  |  |  |  SCVariableDeclare: b: b
-|  |  |  |  |  SCMissing: b
-|  |  |  |  SCPackAssign: #a, b ([1, 2])
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: b
-|  |  |  |  |  SCRead: b
-|  |  SCMethod: assign_result { var a, b; ^#a, b = [1, 2] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a, b; ^#a, b = [1, 2]
-|  |  |  |  SCVariableDeclare: a: a
-|  |  |  |  |  SCMissing: a
-|  |  |  |  SCVariableDeclare: b: b
-|  |  |  |  |  SCMissing: b
-|  |  |  |  SCExplicitReturn: #a, b = [1, 2]
-|  |  |  |  |  SCPackAssign: #a, b = [1, 2]
-|  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  SCMethod: poisoned: assign_undefined { var a; #a, undefined = [1, 2] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a; #a, undefined = [1, 2]
-|  |  |  |  SCVariableDeclare: a: a
-|  |  |  |  |  SCMissing: a
-|  |  |  |  SCPackAssign: #a, undefined = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, undefined
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  SCMethod: assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a = 1, b; #a, b = [2, 3]; ^a
-|  |  |  |  SCVariableDeclare: a: a = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCVariableDeclare: b: b
-|  |  |  |  |  SCMissing: b
-|  |  |  |  SCPackAssign: #a, b = [2, 3]
-|  |  |  |  |  SCCollection: Array: [2, 3] = {"array": [{"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a
-|  |  SCMethod: assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a = 1, b; { #a, b = [2, 3] }; ^a
-|  |  |  |  SCVariableDeclare: a: a = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCVariableDeclare: b: b
-|  |  |  |  |  SCMissing: b
-|  |  |  |  SCFunction: { #a, b = [2, 3] }
-|  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  SCBody: { #a, b = [2, 3] }
-|  |  |  |  |  |  SCPackAssign: #a, b = [2, 3]
-|  |  |  |  |  |  |  SCCollection: Array: [2, 3] = {"array": [{"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a
-|  |  SCMethod: declare { var #a, b = [1, 2]; ^a } -> {"int": 1}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, b = [1, 2]; ^a
-|  |  |  |  SCPackDeclare: #a, b = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: declare_past_end { var #a, b, c = [1, 2]; ^c } -> {"nil": {}}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, b, c = [1, 2]; ^c
-|  |  |  |  SCPackDeclare: #a, b, c = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b, c
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  |  |  SCPackTarget: at 2: c
-|  |  |  |  SCExplicitReturn: c
-|  |  |  |  |  SCRead: c = {"nil": {}}
-|  |  SCMethod: declare_rest { var #a ...b = [1, 2, 3]; ^b }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a ...b = [1, 2, 3]; ^b
-|  |  |  |  SCPackDeclare: #a ...b = [1, 2, 3]
-|  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  SCPackTargets: #a ...b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: rest from 1: b
-|  |  |  |  SCExplicitReturn: b
-|  |  |  |  |  SCRead: b
-|  |  SCMethod: declare_rest_first_constant { var #a ...b = [1, 2, 3]; ^a }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a ...b = [1, 2, 3]; ^a
-|  |  |  |  SCPackDeclare: #a ...b = [1, 2, 3]
-|  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  |  SCPackTargets: #a ...b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: rest from 1: b
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: declare_not_constant { var #a, b = instance_var; ^a }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, b = instance_var; ^a
-|  |  |  |  SCPackDeclare: #a, b = instance_var
-|  |  |  |  |  SCRead: instance_var
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a
-|  |  SCMethod: declare_mutable_element { var #a, b = [[1], 2]; ^[a, b] }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, b = [[1], 2]; ^[a, b]
-|  |  |  |  SCPackDeclare: #a, b = [[1], 2]
-|  |  |  |  |  SCCollection: Array: [[1], 2] = {"array": [{"array": [{"int": 1}]}, {"int": 2}]}
-|  |  |  |  |  |  SCCollection: Array: [1] = {"array": [{"int": 1}]}
-|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: [a, b]
-|  |  |  |  |  SCCollection: Array: [a, b]
-|  |  |  |  |  |  SCRead: a
-|  |  |  |  |  |  SCRead: b = {"int": 2}
-|  |  SCMethod: declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, b = [1, 2]; a = 3; ^a
-|  |  |  |  SCPackDeclare: #a, b = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCAssign: a = 3
-|  |  |  |  |  SCLiteral: 3 = {"int": 3}
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a
-|  |  SCMethod: poisoned: declare_environment { var #a, ~b = [1, 2]; ^a }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, ~b = [1, 2]; ^a
-|  |  |  |  SCPackDeclare: #a, ~b = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, ~b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: poisoned: declare_duplicate { var #a, a = [1, 2]; ^a }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, a = [1, 2]; ^a
-|  |  |  |  SCPackDeclare: #a, a = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, a
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: a
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: poisoned: declare_refers_to_itself { var #a, b = [a]; ^b }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, b = [a]; ^b
-|  |  |  |  SCPackDeclare: #a, b = [a]
-|  |  |  |  |  SCCollection: Array: [a]
-|  |  |  |  |  |  SCExprList: a
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: b
-|  |  |  |  |  SCRead: b
-|  |  SCMethod: declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a } -> {"int": 1}
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var x = 1, #a, b = [x, 2]; ^a
-|  |  |  |  SCVariableDeclare: x: x = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCPackDeclare: #a, b = [x, 2]
-|  |  |  |  |  SCCollection: Array: [x, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCRead: x = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: declare_in_function { ^{ var #a, b = [1, 2]; b } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{ var #a, b = [1, 2]; b }
-|  |  |  |  SCExplicitReturn: { var #a, b = [1, 2]; b }
-|  |  |  |  |  SCFunction: { var #a, b = [1, 2]; b } -> {"int": 2}
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCBody: { var #a, b = [1, 2]; b }
-|  |  |  |  |  |  |  SCPackDeclare: #a, b = [1, 2]
-|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  |  |  |  SCRead: b = {"int": 2}
-|  |  SCMethod: declare_in_function_with_rest { ^{ var #a ...b = [1, 2]; a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{ var #a ...b = [1, 2]; a }
-|  |  |  |  SCExplicitReturn: { var #a ...b = [1, 2]; a }
-|  |  |  |  |  SCFunction: { var #a ...b = [1, 2]; a }
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCBody: { var #a ...b = [1, 2]; a }
-|  |  |  |  |  |  |  SCPackDeclare: #a ...b = [1, 2]
-|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCPackTargets: #a ...b
-|  |  |  |  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  |  |  |  SCPackTarget: rest from 1: b
-|  |  |  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: declare_hides_outer { var a = 1; { var #a = [2]; a }; ^a }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var a = 1; { var #a = [2]; a }; ^a
-|  |  |  |  SCVariableDeclare: a: a = 1
-|  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  SCFunction: { var #a = [2]; a } -> {"int": 2}
-|  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  SCBody: { var #a = [2]; a }
-|  |  |  |  |  |  SCPackDeclare: #a = [2]
-|  |  |  |  |  |  |  SCCollection: Array: [2] = {"array": [{"int": 2}]}
-|  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCPackTargets: #a
-|  |  |  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCRead: a = {"int": 2}
-|  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a = {"int": 1}
-|  |  SCMethod: declare_captured { var #a, b = [1, 2]; ^{ a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, b = [1, 2]; ^{ a }
-|  |  |  |  SCPackDeclare: #a, b = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCExplicitReturn: { a }
-|  |  |  |  |  SCFunction: { a }
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCBody: { a }
-|  |  |  |  |  |  |  SCRead: a
-|  |  SCMethod: declare_with_non_local_return { var #a, b = [1, 2]; { ^a }.value; ^b }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: var #a, b = [1, 2]; { ^a }.value; ^b
-|  |  |  |  SCPackDeclare: #a, b = [1, 2]
-|  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  SCMessage: value: { ^a }.value
-|  |  |  |  |  SCFunction: { ^a }
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCBody: { ^a }
-|  |  |  |  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  |  |  |  SCRead: a
-|  |  |  |  |  SCPositionalArgs: { ^a }.value
-|  |  |  |  |  SCKwArgs: { ^a }.value
-|  |  |  |  |  SCVariadicArgs: { ^a }.value
-|  |  |  |  |  SCMissing: { ^a }.value
-|  |  |  |  SCExplicitReturn: b
-|  |  |  |  |  SCRead: b = {"int": 2}
-|  |  SCMethod: declare_with_nested_non_local_return { ^{ var #a, b = [1, 2]; { ^b }.value; a } }
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCArgumentDeclareList: 
-|  |  |  SCBody: ^{ var #a, b = [1, 2]; { ^b }.value; a }
-|  |  |  |  SCExplicitReturn: { var #a, b = [1, 2]; { ^b }.value; a }
-|  |  |  |  |  SCFunction: { var #a, b = [1, 2]; { ^b }.value; a }
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCBody: { var #a, b = [1, 2]; { ^b }.value; a }
-|  |  |  |  |  |  |  SCPackDeclare: #a, b = [1, 2]
-|  |  |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
-|  |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  |  SCPackTargets: #a, b
-|  |  |  |  |  |  |  |  |  SCPackTarget: at 0: a
-|  |  |  |  |  |  |  |  |  SCPackTarget: at 1: b
-|  |  |  |  |  |  |  SCMessage: value: { ^b }.value
-|  |  |  |  |  |  |  |  SCFunction: { ^b }
-|  |  |  |  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  |  |  |  SCBody: { ^b }
-|  |  |  |  |  |  |  |  |  |  SCExplicitReturn: b
-|  |  |  |  |  |  |  |  |  |  |  SCRead: b
-|  |  |  |  |  |  |  |  SCPositionalArgs: { ^b }.value
-|  |  |  |  |  |  |  |  SCKwArgs: { ^b }.value
-|  |  |  |  |  |  |  |  SCVariadicArgs: { ^b }.value
-|  |  |  |  |  |  |  |  SCMissing: { ^b }.value
-|  |  |  |  |  |  |  SCRead: a = {"int": 1}
-SCClass: Meta_PackAssign: PackAssign {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n'    assign_locals { var a, b; #a, b = [1, 2]; ^a }'\n'    assign_rest { var a, b, c; #a, b ...c = [1, 2, 3]; ^c }'\n'    assign_members { #instance_var, class_var = [1, 2] }'\n'    assign_argument { |x| #x = [1]; ^x }'\n'    assign_environment { var a; #~e, a ...~rest = [1, 2, 3] }'\n'    assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }'\n'    assign_result { var a, b; ^#a, b = [1, 2] }'\n'    assign_undefined { var a; #a, undefined = [1, 2] }'\n'    assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }'\n'    assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }'\n''\n'    declare { var #a, b = [1, 2]; ^a }'\n'    declare_past_end { var #a, b, c = [1, 2]; ^c }'\n'    declare_rest { var #a ...b = [1, 2, 3]; ^b }'\n'    declare_rest_first_constant { var #a ...b = [1, 2, 3]; ^a }'\n'    declare_not_constant { var #a, b = instance_var; ^a }'\n'    declare_mutable_element { var #a, b = [[1], 2]; ^[a, b] }'\n'    declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }'\n'    declare_environment { var #a, ~b = [1, 2]; ^a }'\n'    declare_duplicate { var #a, a = [1, 2]; ^a }'\n'    declare_refers_to_itself { var #a, b = [a]; ^b }'\n'    declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a }'\n'    declare_in_function { ^{ var #a, b = [1, 2]; b } }'\n'    declare_in_function_with_rest { ^{ var #a ...b = [1, 2]; a } }'\n'    declare_hides_outer { var a = 1; { var #a = [2]; a }; ^a }'\n'    declare_captured { var #a, b = [1, 2]; ^{ a } }'\n'    declare_with_non_local_return { var #a, b = [1, 2]; { ^a }.value; ^b }'\n'    declare_with_nested_non_local_return { ^{ var #a, b = [1, 2]; { ^b }.value; a } }'\n'}
-|  SCMemberList: PackAssign
-|  |  SCMember: class_var
-|  SCMethodList: PackAssign
+SCClass (1:1): PackAssign
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): instance_var
+|  SCMethodList (1:1)
+|  |  SCMethod (5:5): assign_locals { var a, b; #a, b = [1, 2]; ^a }
+|  |  |  SCBody (5:21)
+|  |  |  |  SCVariableDeclare (5:25): a
+|  |  |  |  SCVariableDeclare (5:28): b
+|  |  |  |  SCPackAssign (5:31)
+|  |  |  |  |  SCCollection (5:39): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (5:40) = 1
+|  |  |  |  |  |  SCLiteral (5:43) = 2
+|  |  |  |  |  SCPackTargets (5:31)
+|  |  |  |  |  |  SCPackTarget (5:32): local a at 0, declared (5:25): a
+|  |  |  |  |  |  SCPackTarget (5:35): local b at 1, declared (5:28): b
+|  |  |  |  SCExplicitReturn (5:48)
+|  |  |  |  |  SCRead (5:48): local a, declared (5:25): a
+|  |  SCMethod (6:5): assign_rest { var a, b, c; #a, b ...c = [1, 2, 3]; ^c }
+|  |  |  SCBody (6:19)
+|  |  |  |  SCVariableDeclare (6:23): a
+|  |  |  |  SCVariableDeclare (6:26): b
+|  |  |  |  SCVariableDeclare (6:29): c
+|  |  |  |  SCPackAssign (6:32)
+|  |  |  |  |  SCCollection (6:45): Array = [1, 2, 3]
+|  |  |  |  |  |  SCLiteral (6:46) = 1
+|  |  |  |  |  |  SCLiteral (6:49) = 2
+|  |  |  |  |  |  SCLiteral (6:52) = 3
+|  |  |  |  |  SCPackTargets (6:32)
+|  |  |  |  |  |  SCPackTarget (6:33): local a at 0, declared (6:23): a
+|  |  |  |  |  |  SCPackTarget (6:36): local b at 1, declared (6:26): b
+|  |  |  |  |  |  SCPackTarget (6:41): local c rest from 2, declared (6:29): c
+|  |  |  |  SCExplicitReturn (6:57)
+|  |  |  |  |  SCRead (6:57): local c, declared (6:29): c
+|  |  SCMethod (7:5): assign_members { #instance_var, class_var = [1, 2] }
+|  |  |  SCBody (7:22)
+|  |  |  |  SCPackAssign (7:22)
+|  |  |  |  |  SCCollection (7:49): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (7:50) = 1
+|  |  |  |  |  |  SCLiteral (7:53) = 2
+|  |  |  |  |  SCPackTargets (7:22)
+|  |  |  |  |  |  SCPackTarget (7:23): instance instance_var at 0, declared (2:9): instance_var
+|  |  |  |  |  |  SCPackTarget (7:37): class class_var at 1, declared (3:14): class_var
+|  |  SCMethod (8:5): assign_argument { |x| #x = [1]; ^x }
+|  |  |  SCArgumentDeclareList (8:24)
+|  |  |  |  SCArgumentDeclare (8:24): x
+|  |  |  SCBody (8:27)
+|  |  |  |  SCPackAssign (8:27)
+|  |  |  |  |  SCCollection (8:32): Array = [1]
+|  |  |  |  |  |  SCLiteral (8:33) = 1
+|  |  |  |  |  SCPackTargets (8:27)
+|  |  |  |  |  |  SCPackTarget (8:28): local x at 0, declared (8:24): x
+|  |  |  |  SCExplicitReturn (8:38)
+|  |  |  |  |  SCRead (8:38): local x, declared (8:24): x
+|  |  SCMethod (9:5): assign_environment { var a; #~e, a ...~rest = [1, 2, 3] }
+|  |  |  SCBody (9:26)
+|  |  |  |  SCVariableDeclare (9:30): a
+|  |  |  |  SCPackAssign (9:33)
+|  |  |  |  |  SCCollection (9:51): Array = [1, 2, 3]
+|  |  |  |  |  |  SCLiteral (9:52) = 1
+|  |  |  |  |  |  SCLiteral (9:55) = 2
+|  |  |  |  |  |  SCLiteral (9:58) = 3
+|  |  |  |  |  SCPackTargets (9:33)
+|  |  |  |  |  |  SCPackTarget (9:33): environment e at 0
+|  |  |  |  |  |  SCPackTarget (9:38): local a at 1, declared (9:30): a
+|  |  |  |  |  |  SCPackTarget (9:43): environment rest rest from 2
+|  |  SCMethod (10:5): assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }
+|  |  |  SCBody (10:28)
+|  |  |  |  SCVariableDeclare (10:32): a
+|  |  |  |  SCVariableDeclare (10:35): b
+|  |  |  |  SCPackAssign (10:38)
+|  |  |  |  |  SCCollection (10:45): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (10:46) = 1
+|  |  |  |  |  |  SCLiteral (10:49) = 2
+|  |  |  |  |  SCPackTargets (10:38)
+|  |  |  |  |  |  SCPackTarget (10:39): local a at 0, declared (10:32): a
+|  |  |  |  |  |  SCPackTarget (10:42): local b at 1, declared (10:35): b
+|  |  |  |  SCExplicitReturn (10:55)
+|  |  |  |  |  SCRead (10:55): local b, declared (10:35): b
+|  |  SCMethod (11:5): assign_result { var a, b; ^#a, b = [1, 2] }
+|  |  |  SCBody (11:21)
+|  |  |  |  SCVariableDeclare (11:25): a
+|  |  |  |  SCVariableDeclare (11:28): b
+|  |  |  |  SCExplicitReturn (11:32)
+|  |  |  |  |  SCPackAssign (11:32)
+|  |  |  |  |  |  SCCollection (11:40): Array = [1, 2]
+|  |  |  |  |  |  |  SCLiteral (11:41) = 1
+|  |  |  |  |  |  |  SCLiteral (11:44) = 2
+|  |  |  |  |  |  SCPackTargets (11:32)
+|  |  |  |  |  |  |  SCPackTarget (11:33): local a at 0, declared (11:25): a
+|  |  |  |  |  |  |  SCPackTarget (11:36): local b at 1, declared (11:28): b
+|  |  SCMethod (12:5): poisoned: assign_undefined { var a; #a, undefined = [1, 2] }
+|  |  |  SCBody (12:24)
+|  |  |  |  SCVariableDeclare (12:28): a
+|  |  |  |  SCPackAssign (12:31)
+|  |  |  |  |  SCCollection (12:47): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (12:48) = 1
+|  |  |  |  |  |  SCLiteral (12:51) = 2
+|  |  |  |  |  SCPackTargets (12:31)
+|  |  |  |  |  |  SCPackTarget (12:32): local a at 0, declared (12:28): a
+|  |  SCMethod (13:5): assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }
+|  |  |  SCBody (13:33)
+|  |  |  |  SCVariableDeclare (13:37): a
+|  |  |  |  |  SCLiteral (13:41) = 1
+|  |  |  |  SCVariableDeclare (13:44): b
+|  |  |  |  SCPackAssign (13:47)
+|  |  |  |  |  SCCollection (13:55): Array = [2, 3]
+|  |  |  |  |  |  SCLiteral (13:56) = 2
+|  |  |  |  |  |  SCLiteral (13:59) = 3
+|  |  |  |  |  SCPackTargets (13:47)
+|  |  |  |  |  |  SCPackTarget (13:48): local a at 0, declared (13:37): a = 1
+|  |  |  |  |  |  SCPackTarget (13:51): local b at 1, declared (13:44): b
+|  |  |  |  SCExplicitReturn (13:64)
+|  |  |  |  |  SCRead (13:64): local a, declared (13:37): a = 1
+|  |  SCMethod (14:5): assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }
+|  |  |  SCBody (14:23)
+|  |  |  |  SCVariableDeclare (14:27): a
+|  |  |  |  |  SCLiteral (14:31) = 1
+|  |  |  |  SCVariableDeclare (14:34): b
+|  |  |  |  SCFunction (14:37)
+|  |  |  |  |  SCBody (14:37)
+|  |  |  |  |  |  SCPackAssign (14:39)
+|  |  |  |  |  |  |  SCCollection (14:47): Array = [2, 3]
+|  |  |  |  |  |  |  |  SCLiteral (14:48) = 2
+|  |  |  |  |  |  |  |  SCLiteral (14:51) = 3
+|  |  |  |  |  |  |  SCPackTargets (14:39)
+|  |  |  |  |  |  |  |  SCPackTarget (14:40): local a at 0, declared (14:27): a = 1
+|  |  |  |  |  |  |  |  SCPackTarget (14:43): local b at 1, declared (14:34): b
+|  |  |  |  SCExplicitReturn (14:58)
+|  |  |  |  |  SCRead (14:58): local a, declared (14:27): a = 1
+|  |  SCMethod (16:5): declare { var #a, b = [1, 2]; ^a } -> 1
+|  |  |  SCBody (16:15)
+|  |  |  |  SCPackDeclare (16:19)
+|  |  |  |  |  SCCollection (16:27): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (16:28) = 1
+|  |  |  |  |  |  SCLiteral (16:31) = 2
+|  |  |  |  |  SCPackTargets (16:19)
+|  |  |  |  |  |  SCPackTarget (16:20): local a at 0
+|  |  |  |  |  |  SCPackTarget (16:23): local b at 1
+|  |  |  |  SCExplicitReturn (16:36)
+|  |  |  |  |  SCRead (16:36): local a = 1, declared (16:20): a
+|  |  SCMethod (17:5): declare_past_end { var #a, b, c = [1, 2]; ^c } -> nil
+|  |  |  SCBody (17:24)
+|  |  |  |  SCPackDeclare (17:28)
+|  |  |  |  |  SCCollection (17:39): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (17:40) = 1
+|  |  |  |  |  |  SCLiteral (17:43) = 2
+|  |  |  |  |  SCPackTargets (17:28)
+|  |  |  |  |  |  SCPackTarget (17:29): local a at 0
+|  |  |  |  |  |  SCPackTarget (17:32): local b at 1
+|  |  |  |  |  |  SCPackTarget (17:35): local c at 2
+|  |  |  |  SCExplicitReturn (17:48)
+|  |  |  |  |  SCRead (17:48): local c = nil, declared (17:35): c
+|  |  SCMethod (18:5): declare_rest { var #a ...b = [1, 2, 3]; ^b }
+|  |  |  SCBody (18:20)
+|  |  |  |  SCPackDeclare (18:24)
+|  |  |  |  |  SCCollection (18:34): Array = [1, 2, 3]
+|  |  |  |  |  |  SCLiteral (18:35) = 1
+|  |  |  |  |  |  SCLiteral (18:38) = 2
+|  |  |  |  |  |  SCLiteral (18:41) = 3
+|  |  |  |  |  SCPackTargets (18:24)
+|  |  |  |  |  |  SCPackTarget (18:25): local a at 0
+|  |  |  |  |  |  SCPackTarget (18:30): local b rest from 1
+|  |  |  |  SCExplicitReturn (18:46)
+|  |  |  |  |  SCRead (18:46): local b, declared (18:30): b
+|  |  SCMethod (19:5): declare_rest_first_constant { var #a ...b = [1, 2, 3]; ^a }
+|  |  |  SCBody (19:35)
+|  |  |  |  SCPackDeclare (19:39)
+|  |  |  |  |  SCCollection (19:49): Array = [1, 2, 3]
+|  |  |  |  |  |  SCLiteral (19:50) = 1
+|  |  |  |  |  |  SCLiteral (19:53) = 2
+|  |  |  |  |  |  SCLiteral (19:56) = 3
+|  |  |  |  |  SCPackTargets (19:39)
+|  |  |  |  |  |  SCPackTarget (19:40): local a at 0
+|  |  |  |  |  |  SCPackTarget (19:45): local b rest from 1
+|  |  |  |  SCExplicitReturn (19:61)
+|  |  |  |  |  SCRead (19:61): local a = 1, declared (19:40): a
+|  |  SCMethod (20:5): declare_not_constant { var #a, b = instance_var; ^a }
+|  |  |  SCBody (20:28)
+|  |  |  |  SCPackDeclare (20:32)
+|  |  |  |  |  SCRead (20:40): instance instance_var, declared (2:9): instance_var
+|  |  |  |  |  SCPackTargets (20:32)
+|  |  |  |  |  |  SCPackTarget (20:33): local a at 0
+|  |  |  |  |  |  SCPackTarget (20:36): local b at 1
+|  |  |  |  SCExplicitReturn (20:55)
+|  |  |  |  |  SCRead (20:55): local a, declared (20:33): a
+|  |  SCMethod (21:5): declare_mutable_element { var #a, b = [[1], 2]; ^[a, b] }
+|  |  |  SCBody (21:31)
+|  |  |  |  SCPackDeclare (21:35)
+|  |  |  |  |  SCCollection (21:43): Array = [[1], 2]
+|  |  |  |  |  |  SCCollection (21:44): Array = [1]
+|  |  |  |  |  |  |  SCLiteral (21:45) = 1
+|  |  |  |  |  |  SCLiteral (21:49) = 2
+|  |  |  |  |  SCPackTargets (21:35)
+|  |  |  |  |  |  SCPackTarget (21:36): local a at 0
+|  |  |  |  |  |  SCPackTarget (21:39): local b at 1
+|  |  |  |  SCExplicitReturn (21:54)
+|  |  |  |  |  SCCollection (21:54): Array
+|  |  |  |  |  |  SCRead (21:55): local a, declared (21:36): a
+|  |  |  |  |  |  SCRead (21:58): local b = 2, declared (21:39): b
+|  |  SCMethod (22:5): declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
+|  |  |  SCBody (22:30)
+|  |  |  |  SCPackDeclare (22:34)
+|  |  |  |  |  SCCollection (22:42): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (22:43) = 1
+|  |  |  |  |  |  SCLiteral (22:46) = 2
+|  |  |  |  |  SCPackTargets (22:34)
+|  |  |  |  |  |  SCPackTarget (22:35): local a at 0
+|  |  |  |  |  |  SCPackTarget (22:38): local b at 1
+|  |  |  |  SCAssign (22:50): local a, declared (22:35): a
+|  |  |  |  |  SCLiteral (22:54) = 3
+|  |  |  |  SCExplicitReturn (22:58)
+|  |  |  |  |  SCRead (22:58): local a, declared (22:35): a
+|  |  SCMethod (23:5): poisoned: declare_environment { var #a, ~b = [1, 2]; ^a }
+|  |  |  SCBody (23:27)
+|  |  |  |  SCPackDeclare (23:31)
+|  |  |  |  |  SCCollection (23:40): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (23:41) = 1
+|  |  |  |  |  |  SCLiteral (23:44) = 2
+|  |  |  |  |  SCPackTargets (23:31)
+|  |  |  |  |  |  SCPackTarget (23:32): local a at 0
+|  |  |  |  SCExplicitReturn (23:49)
+|  |  |  |  |  SCRead (23:49): local a = 1, declared (23:32): a
+|  |  SCMethod (24:5): poisoned: declare_duplicate { var #a, a = [1, 2]; ^a }
+|  |  |  SCBody (24:25)
+|  |  |  |  SCPackDeclare (24:29)
+|  |  |  |  |  SCCollection (24:37): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (24:38) = 1
+|  |  |  |  |  |  SCLiteral (24:41) = 2
+|  |  |  |  |  SCPackTargets (24:29)
+|  |  |  |  |  |  SCPackTarget (24:30): local a at 0
+|  |  |  |  |  |  SCPackTarget (24:33): local a at 1
+|  |  |  |  SCExplicitReturn (24:46)
+|  |  |  |  |  SCRead (24:46): local a = 1, declared (24:30): a
+|  |  SCMethod (25:5): poisoned: declare_refers_to_itself { var #a, b = [a]; ^b }
+|  |  |  SCBody (25:32)
+|  |  |  |  SCPackDeclare (25:36)
+|  |  |  |  |  SCCollection (25:44): Array
+|  |  |  |  |  |  SCExprList (25:45)
+|  |  |  |  |  SCPackTargets (25:36)
+|  |  |  |  |  |  SCPackTarget (25:37): local a at 0
+|  |  |  |  |  |  SCPackTarget (25:40): local b at 1
+|  |  |  |  SCExplicitReturn (25:50)
+|  |  |  |  |  SCRead (25:50): local b, declared (25:40): b
+|  |  SCMethod (26:5): declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a } -> 1
+|  |  |  SCBody (26:28)
+|  |  |  |  SCVariableDeclare (26:32): x
+|  |  |  |  |  SCLiteral (26:36) = 1
+|  |  |  |  SCPackDeclare (26:39)
+|  |  |  |  |  SCCollection (26:47): Array = [1, 2]
+|  |  |  |  |  |  SCRead (26:48): local x = 1, declared (26:32): x = 1
+|  |  |  |  |  |  SCLiteral (26:51) = 2
+|  |  |  |  |  SCPackTargets (26:39)
+|  |  |  |  |  |  SCPackTarget (26:40): local a at 0
+|  |  |  |  |  |  SCPackTarget (26:43): local b at 1
+|  |  |  |  SCExplicitReturn (26:56)
+|  |  |  |  |  SCRead (26:56): local a = 1, declared (26:40): a
+|  |  SCMethod (27:5): declare_in_function { ^{ var #a, b = [1, 2]; b } }
+|  |  |  SCBody (27:27)
+|  |  |  |  SCExplicitReturn (27:28)
+|  |  |  |  |  SCFunction (27:28) -> 2
+|  |  |  |  |  |  SCBody (27:28)
+|  |  |  |  |  |  |  SCPackDeclare (27:34)
+|  |  |  |  |  |  |  |  SCCollection (27:42): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (27:43) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (27:46) = 2
+|  |  |  |  |  |  |  |  SCPackTargets (27:34)
+|  |  |  |  |  |  |  |  |  SCPackTarget (27:35): local a at 0
+|  |  |  |  |  |  |  |  |  SCPackTarget (27:38): local b at 1
+|  |  |  |  |  |  |  SCRead (27:50): local b = 2, declared (27:38): b
+|  |  SCMethod (28:5): declare_in_function_with_rest { ^{ var #a ...b = [1, 2]; a } }
+|  |  |  SCBody (28:37)
+|  |  |  |  SCExplicitReturn (28:38)
+|  |  |  |  |  SCFunction (28:38)
+|  |  |  |  |  |  SCBody (28:38)
+|  |  |  |  |  |  |  SCPackDeclare (28:44)
+|  |  |  |  |  |  |  |  SCCollection (28:54): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (28:55) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (28:58) = 2
+|  |  |  |  |  |  |  |  SCPackTargets (28:44)
+|  |  |  |  |  |  |  |  |  SCPackTarget (28:45): local a at 0
+|  |  |  |  |  |  |  |  |  SCPackTarget (28:50): local b rest from 1
+|  |  |  |  |  |  |  SCRead (28:62): local a = 1, declared (28:45): a
+|  |  SCMethod (29:5): declare_hides_outer { var a = 1; { var #a = [2]; a }; ^a }
+|  |  |  SCBody (29:27)
+|  |  |  |  SCVariableDeclare (29:31): a
+|  |  |  |  |  SCLiteral (29:35) = 1
+|  |  |  |  SCFunction (29:38) -> 2
+|  |  |  |  |  SCBody (29:38)
+|  |  |  |  |  |  SCPackDeclare (29:44)
+|  |  |  |  |  |  |  SCCollection (29:49): Array = [2]
+|  |  |  |  |  |  |  |  SCLiteral (29:50) = 2
+|  |  |  |  |  |  |  SCPackTargets (29:44)
+|  |  |  |  |  |  |  |  SCPackTarget (29:45): local a at 0
+|  |  |  |  |  |  SCRead (29:54): local a = 2, declared (29:45): a
+|  |  |  |  SCExplicitReturn (29:60)
+|  |  |  |  |  SCRead (29:60): local a = 1, declared (29:31): a = 1
+|  |  SCMethod (30:5): declare_captured { var #a, b = [1, 2]; ^{ a } }
+|  |  |  SCBody (30:24)
+|  |  |  |  SCPackDeclare (30:28)
+|  |  |  |  |  SCCollection (30:36): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (30:37) = 1
+|  |  |  |  |  |  SCLiteral (30:40) = 2
+|  |  |  |  |  SCPackTargets (30:28)
+|  |  |  |  |  |  SCPackTarget (30:29): local a at 0
+|  |  |  |  |  |  SCPackTarget (30:32): local b at 1
+|  |  |  |  SCExplicitReturn (30:45)
+|  |  |  |  |  SCFunction (30:45)
+|  |  |  |  |  |  SCBody (30:45)
+|  |  |  |  |  |  |  SCRead (30:47): local a, declared (30:29): a
+|  |  SCMethod (31:5): declare_with_non_local_return { var #a, b = [1, 2]; { ^a }.value; ^b }
+|  |  |  SCBody (31:37)
+|  |  |  |  SCPackDeclare (31:41)
+|  |  |  |  |  SCCollection (31:49): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (31:50) = 1
+|  |  |  |  |  |  SCLiteral (31:53) = 2
+|  |  |  |  |  SCPackTargets (31:41)
+|  |  |  |  |  |  SCPackTarget (31:42): local a at 0
+|  |  |  |  |  |  SCPackTarget (31:45): local b at 1
+|  |  |  |  SCMessage (31:57): value
+|  |  |  |  |  SCFunction (31:57)
+|  |  |  |  |  |  SCBody (31:57)
+|  |  |  |  |  |  |  SCExplicitReturn (31:60)
+|  |  |  |  |  |  |  |  SCRead (31:60): local a, declared (31:42): a
+|  |  |  |  SCExplicitReturn (31:72)
+|  |  |  |  |  SCRead (31:72): local b = 2, declared (31:45): b
+|  |  SCMethod (32:5): declare_with_nested_non_local_return { ^{ var #a, b = [1, 2]; { ^b }.value; a } }
+|  |  |  SCBody (32:44)
+|  |  |  |  SCExplicitReturn (32:45)
+|  |  |  |  |  SCFunction (32:45)
+|  |  |  |  |  |  SCBody (32:45)
+|  |  |  |  |  |  |  SCPackDeclare (32:51)
+|  |  |  |  |  |  |  |  SCCollection (32:59): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (32:60) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (32:63) = 2
+|  |  |  |  |  |  |  |  SCPackTargets (32:51)
+|  |  |  |  |  |  |  |  |  SCPackTarget (32:52): local a at 0
+|  |  |  |  |  |  |  |  |  SCPackTarget (32:55): local b at 1
+|  |  |  |  |  |  |  SCMessage (32:67): value
+|  |  |  |  |  |  |  |  SCFunction (32:67)
+|  |  |  |  |  |  |  |  |  SCBody (32:67)
+|  |  |  |  |  |  |  |  |  |  SCExplicitReturn (32:70)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (32:70): local b, declared (32:55): b
+|  |  |  |  |  |  |  SCRead (32:81): local a = 1, declared (32:52): a
+SCClass (1:1): Meta_PackAssign
+|  SCMemberList (1:1)
+|  |  SCMember (3:14): class_var
+|  SCMethodList (1:1)
 Successfully compiled 15 classes.
