@@ -843,10 +843,10 @@ argument_declarations.list
 	| argument_declarations.list[list] COMMA name EQUALSSIGN expr 
 		{ 
 			const auto is_bracketed = cxt.graph->is_bracketed($expr);
-			$$ = cxt.graph->append( $list, @$, cxt.create(DeclareArgumentWithDefaultNode{!is_bracketed}, @$, $name, $expr));
+			$$ = cxt.graph->append( $list, @$, cxt.create(DeclareArgumentWithDefaultNode{!is_bracketed}, range(@name, @expr), $name, $expr));
 		}
 	| argument_declarations.list[list] COMMA name OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.graph->append($list, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $name, $expr_or_seq)); }
+		{ $$ = cxt.graph->append($list, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, range(@name, @6), $name, $expr_or_seq)); }
 
 	;
 
@@ -862,15 +862,15 @@ argument_declarations.pipelist
 	| name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $1, $4)); }
 	| argument_declarations.pipelist comma.opt name literal
-		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $4)); }
+		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, range(@3, @4), $3, $4)); }
 	| argument_declarations.pipelist comma.opt name 
 		{ $$ = cxt.graph->append( $1, @$, $3); }
 	| argument_declarations.pipelist comma.opt name EQUALSSIGN literal
-		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, @$, $3, $5)); }
+		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{true}, range(@3, @5), $3, $5)); }
 	| argument_declarations.pipelist comma.opt name OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $5)); }
+		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, range(@3, @6), $3, $5)); }
 	| argument_declarations.pipelist comma.opt name EQUALSSIGN OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, @$, $3, $6)); }
+		{ $$ = cxt.graph->append( $1, @$, cxt.create(DeclareArgumentWithDefaultNode{false}, range(@3, @7), $3, $6)); }
 	;
 
 argument_declarations
@@ -1061,11 +1061,11 @@ name.list
 	: HASH name
 		{ $$ = cxt.create(NameList{}, @$, $name); }
 	| HASH TILDE name 
-		{ $$ = cxt.create(NameList{}, @$, cxt.create(EnvIdentifierNode{}, @$, $name)); }
+		{ $$ = cxt.create(NameList{}, @$, cxt.create(EnvIdentifierNode{}, range(@2, @3), $name)); }
 	| name.list[list] COMMA name
 		{ $$ = cxt.graph->append($list, @$, $name); }
 	| name.list[list] COMMA TILDE name
-		{ $$ = cxt.graph->append($list, @$, cxt.create(EnvIdentifierNode{},@$, $name)); }
+		{ $$ = cxt.graph->append($list, @$, cxt.create(EnvIdentifierNode{}, range(@3, @4), $name)); }
 	;
 name.pack 
 	: name.list[list]

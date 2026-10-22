@@ -23,14 +23,14 @@ SCClass (1:1): MethodArguments
 |  |  SCMethod (10:5): earlier_argument { |a, b = (a + 1)| ^b }
 |  |  |  SCArgumentDeclareList (10:25)
 |  |  |  |  SCArgumentDeclare (10:25): a
-|  |  |  |  SCArgumentDeclare (10:25): b
+|  |  |  |  SCArgumentDeclare (10:28): b
 |  |  |  |  |  SCMessage (10:33): +
 |  |  |  |  |  |  SCRead (10:33): local a, declared (10:25): a
 |  |  |  |  |  |  SCPositionalArgs (10:33)
 |  |  |  |  |  |  |  SCLiteral (10:37) = 1
 |  |  |  SCBody (10:41)
 |  |  |  |  SCExplicitReturn (10:42)
-|  |  |  |  |  SCRead (10:42): local b, declared (10:25): a, b = (a + 1)
+|  |  |  |  |  SCRead (10:42): local b, declared (10:28): b = (a + 1)
 |  |  SCMethod (12:5): poisoned: later_argument { |a = (b), b| ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -81,9 +81,9 @@ SCClass (1:1): Meta_MethodArguments
 |  |  SCMethod (22:5): *class_read_argument { |a, b = (a)| ^b }
 |  |  |  SCArgumentDeclareList (22:29)
 |  |  |  |  SCArgumentDeclare (22:29): a
-|  |  |  |  SCArgumentDeclare (22:29): b
+|  |  |  |  SCArgumentDeclare (22:32): b
 |  |  |  |  |  SCRead (22:37): local a, declared (22:29): a
 |  |  |  SCBody (22:41)
 |  |  |  |  SCExplicitReturn (22:42)
-|  |  |  |  |  SCRead (22:42): local b, declared (22:29): a, b = (a)
+|  |  |  |  |  SCRead (22:42): local b, declared (22:32): b = (a)
 Successfully compiled 15 classes.

@@ -66,7 +66,7 @@ SCClass (1:1): PackAssign
 |  |  |  |  |  |  SCLiteral (13:55) = 2
 |  |  |  |  |  |  SCLiteral (13:58) = 3
 |  |  |  |  |  SCPackTargets (13:33)
-|  |  |  |  |  |  SCPackTarget (13:33): environment e at 0
+|  |  |  |  |  |  SCPackTarget (13:34): environment e at 0
 |  |  |  |  |  |  SCPackTarget (13:38): local a at 1, declared (13:30): a
 |  |  |  |  |  |  SCPackTarget (13:43): environment rest rest from 2
 |  |  SCMethod (15:5): assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }
@@ -234,11 +234,11 @@ SCClass (1:1): PackAssign
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Environment variable declared
-|  |  |  variables/pack_assignment.sc:44:31
+|  |  |  variables/pack_assignment.sc:44:35
 |  |  |     42 │     declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
 |  |  |     43 │     // expect-error: Environment variable declared
 |  |  |     44 │     declare_environment { var #a, ~b = [1, 2]; ^a }
-|  |  |        ┆                               ^^^^^^ this can't be declared.
+|  |  |        ┆                                   ^^ this can't be declared.
 |  |  |     45 │     // expect-error: Variable already declared
 |  |  |     46 │     declare_duplicate { var #a, a = [1, 2]; ^a }
 |  |  |     47 │     // expect-error: Variable not defined

@@ -125,7 +125,7 @@ CLANG_FORMAT_ACCEPTED_VERSION_STRING = "14.y.z"
 CLANG_FORMAT_FILES_REGEX = re.compile('\\.(cpp|hpp|h|c|m|mm)$')
 
 # autogen'd files, don't touch
-AUTOGEN_FILES_REGEX = re.compile('(SCDoc\\.tab\\..pp|lex\\.scdoc\\.cpp|lang11d_tab\\..*)$')
+AUTOGEN_FILES_REGEX = re.compile('(SCDoc\\.tab\\..pp|lex\\.scdoc\\.cpp|lang11d_tab\\..*|sc_grammar_parser\\..pp)$')
 
 # the destination filename for a git diff
 DIFF_FILENAME_REGEX = re.compile('^\\+\\+\\+ b/(.*)$', re.MULTILINE)
