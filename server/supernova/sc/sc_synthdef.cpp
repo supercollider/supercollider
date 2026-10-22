@@ -175,7 +175,7 @@ std::vector<sc_synthdef> read_synthdef_file(std::filesystem::path const& filenam
     stream.seekg(0, std::ios::beg);
 
     sized_array<char> buffer(length);
-    stream.read(buffer.c_array(), length);
+    stream.read(buffer.data(), buffer.size());
     stream.close();
 
     return read_synthdefs(buffer.begin(), buffer.end());

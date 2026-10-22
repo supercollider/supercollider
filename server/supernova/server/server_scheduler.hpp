@@ -33,9 +33,15 @@ namespace nova {
  *
  *  callback for non-rt to rt thread synchronization. since it is using
  *  a locked internal memory pool, instances should not be allocated
- *  from the real-time thread
+ *  from the real-time thread.
  *
- * */
+ *  static_pooled_class declares its own new and delete operators which
+ *  are inherited by all child classes. This means that any instance
+ *  of audio_sync_callback that is allocated with a new-expression
+ *  is actually allocated from the static memory pool. Similarly,
+ *  if an instance is destroyed with a delete-expression, it is
+ *  returned to the memory pool.
+ */
 struct audio_sync_callback
     : public static_pooled_class<audio_sync_callback, 1 << 20 /* 1mb pool of realtime memory */, true, 16> {
     virtual ~audio_sync_callback() = default;

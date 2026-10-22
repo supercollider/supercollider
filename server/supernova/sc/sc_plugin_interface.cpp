@@ -726,15 +726,10 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
 
     /* audio buffers */
     world.mNumSndBufs = args.buffers;
-    world.mSndBufs = new SndBuf[world.mNumSndBufs];
-    world.mSndBufsNonRealTimeMirror = new SndBuf[world.mNumSndBufs];
-    world.mSndBufUpdates = new SndBufUpdates[world.mNumSndBufs];
-    memset(world.mSndBufs, 0, world.mNumSndBufs * sizeof(SndBuf));
-    memset(world.mSndBufsNonRealTimeMirror, 0, world.mNumSndBufs * sizeof(SndBuf));
-    memset(world.mSndBufUpdates, 0, world.mNumSndBufs * sizeof(SndBufUpdates));
+    world.mSndBufs = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
+    world.mSndBufsNonRealTimeMirror = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
+    world.mSndBufUpdates = new SndBufUpdates[world.mNumSndBufs] {}; // zero-initialize
     world.mBufCounter = 0;
-
-    async_buffer_guards.reset(new std::mutex[world.mNumSndBufs]);
 
     /* audio settings */
     world.mBufLength = args.blocksize;
@@ -868,7 +863,7 @@ void read_channel(SndfileHandle& sf, uint32_t channel_count, const uint32_t* cha
         // fast-path for single-channel read
         for (size_t i = 0; i < total_frames; i += frames_per_read) {
             int remaining_samples = compute_remaining_samples(frames_per_read, i, total_frames);
-            size_t read = sf.readf(read_frame.c_array(), remaining_samples);
+            size_t read = sf.readf(read_frame.data(), remaining_samples);
 
             size_t channel_mapping = channel_data[0];
             for (size_t frame = 0; frame != read; ++frame) {
@@ -879,7 +874,7 @@ void read_channel(SndfileHandle& sf, uint32_t channel_count, const uint32_t* cha
     } else {
         for (size_t i = 0; i < total_frames; i += frames_per_read) {
             int remaining_samples = compute_remaining_samples(frames_per_read, i, total_frames);
-            size_t read = sf.readf(read_frame.c_array(), remaining_samples);
+            size_t read = sf.readf(read_frame.data(), remaining_samples);
 
             for (size_t frame = 0; frame != read; ++frame) {
                 for (size_t c = 0; c != channel_count; ++c) {

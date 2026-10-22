@@ -56,7 +56,7 @@ public:
     explicit sized_array(size_type size = 0, T const& def = T()):
         data_(size ? alloc_traits::allocate(*this, size) : nullptr),
         size_(size) {
-        for (size_type i = 0; i != size; ++i)
+        for (size_type i = 0; i < size; ++i)
             alloc_traits::construct(*this, data_ + i, def);
     }
 
@@ -67,7 +67,7 @@ private:
     template <typename int_type> void init_from_int(int_type size) {
         data_ = alloc_traits::allocate(*this, size);
         size_ = size;
-        for (size_type i = 0; i != size_; ++i)
+        for (size_type i = 0; i < size_; ++i)
             alloc_traits::construct(*this, data_ + i, T());
     }
 
@@ -100,27 +100,29 @@ public:
         ctor::init(*this, arg);
     }
 
-    explicit sized_array(sized_array&& arg) {
+    explicit sized_array(sized_array&& arg) noexcept {
         data_ = arg.data_;
-        size_ = arg.size();
+        size_ = arg.size_;
         arg.data_ = 0;
         arg.size_ = 0;
     }
 
     /** move assignment */
-    sized_array& operator=(sized_array&& arg) {
-        data_ = arg.data_;
-        size_ = arg.size();
-        arg.data_ = 0;
-        arg.size_ = 0;
+    sized_array& operator=(sized_array&& arg) noexcept {
+        if (&arg != this) {
+            data_ = arg.data_;
+            size_ = arg.size_;
+            arg.data_ = 0;
+            arg.size_ = 0;
+        }
         return *this;
     }
 
     ~sized_array() {
-        for (size_type i = 0; i != size(); ++i)
+        for (size_type i = 0; i < size_; ++i)
             alloc_traits::destroy(*this, data_ + i);
-        if (size())
-            alloc_traits::deallocate(*this, data_, size());
+        if (size_)
+            alloc_traits::deallocate(*this, data_, size_);
     }
 
     // iterator support
@@ -128,14 +130,14 @@ public:
 
     const_iterator begin() const { return data_; }
 
-    iterator end() { return data_ + size(); }
+    iterator end() { return data_ + size_; }
 
-    const_iterator end() const { return data_ + size(); }
+    const_iterator end() const { return data_ + size_; }
 
     // reverse iterator support
-    reverse_iterator rbegin() { return reverse_iterator(data_ + size()); }
+    reverse_iterator rbegin() { return reverse_iterator(data_ + size_); }
 
-    const_reverse_iterator rbegin() const { return const_reverse_iterator(data_ + size()); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(data_ + size_); }
 
     reverse_iterator rend() { return reverse_iterator(data_); }
 
@@ -179,25 +181,25 @@ public:
 
     const T* data() const { return data_; }
 
-    T* c_array() { return data_; }
+    T* data() { return data_; }
 
     // modifiers
     void assign(const T& t) {
-        for (size_type i = 0; i != size_; ++i)
+        for (size_type i = 0; i < size_; ++i)
             data_[i] = t;
     }
 
     void resize(size_type new_size, T const& value = T()) {
         T* new_data = alloc_traits::allocate(*this, new_size);
 
-        for (size_type i = 0; i != new_size; ++i)
+        for (size_type i = 0; i < new_size; ++i)
             alloc_traits::construct(*this, new_data + i, value);
 
         std::copy(data_, data_ + std::min(new_size, size_), new_data);
 
         T* old_data = data_;
         data_ = new_data;
-        for (size_type i = 0; i != size_; ++i)
+        for (size_type i = 0; i < size_; ++i)
             alloc_traits::destroy(*this, old_data + i);
         if (size_)
             alloc_traits::deallocate(*this, old_data, size_);

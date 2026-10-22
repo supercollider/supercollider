@@ -98,6 +98,11 @@ private:
     using allocator = std::conditional_t<(recover_count > 0), dispose_n_object_allocator, disposing_allocator>;
 
 public:
+    /** allocate memory from the static memory pool.
+     *
+     *  @note if pool_locking is \c false, this function must only be called from a single thread!
+     *  This is also used externally, see movable_array or movable_string.
+     */
     static inline void* allocate(std::size_t size) {
 #ifndef NOVA_MEMORY_DEBUGGING
         size = std::max(2 * sizeof(void*), size); /* size requirement for lockfree freelist */
@@ -107,6 +112,10 @@ public:
 #endif
     }
 
+    /** custom operator new
+     *
+     *  This is called when a derived class is created with a new-expression.
+     */
     inline void* operator new(std::size_t size) { return allocate(size); }
 
     static inline void free_disposed_objects() {
@@ -116,6 +125,11 @@ public:
         }
     }
 
+    /** return memory to the static memory pool.
+     *
+     *  @note this can be called from any thread!
+     *  This is also used externally, see movable_array or movable_string.
+     */
     static inline void deallocate(void* p) {
 #ifndef NOVA_MEMORY_DEBUGGING
         disposed_objects.push(p);
@@ -124,6 +138,10 @@ public:
 #endif
     }
 
+    /** custom operator delete
+     *
+     *  This is called when a derived class is destroyed with a delete-expression.
+     */
     inline void operator delete(void* p) { deallocate(p); }
 
     typedef static_pool<pool_size, pool_locking> object_pool_type;

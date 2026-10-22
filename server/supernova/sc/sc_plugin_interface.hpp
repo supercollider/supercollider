@@ -127,14 +127,9 @@ public:
 
     void free_buffer(uint32_t index);
 
-    typedef std::lock_guard<std::mutex> buffer_lock_t;
-
-    std::mutex& buffer_guard(size_t index) { return async_buffer_guards[index]; }
-
     bool is_realtime_synthesis() const { return world.mRealTime; }
 
 private:
-    std::unique_ptr<std::mutex[]> async_buffer_guards;
     /* @} */
 
 public:

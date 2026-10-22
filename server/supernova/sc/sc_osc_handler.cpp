@@ -144,73 +144,105 @@ spin_lock system_callback_allocator_lock;
 
 struct movable_string {
     /** allocate new string, only allowed to be called from the rt context */
-    explicit movable_string(const char* str) {
-        size_t length = strlen(str) + 1; /* terminating \0 */
-        char* data = (char*)system_callback::allocate(length);
-        strcpy(data, str);
+    explicit movable_string(std::string_view str) {
+        char* data = (char*)system_callback::allocate(str.size() + 1); // make space for null-terminator
+        memcpy(data, str.data(), str.size());
+        data[str.size()] = '\0';
+
         data_ = data;
+        size_ = str.size();
     }
 
     movable_string(movable_string const& rhs) = delete;
     movable_string operator=(movable_string const& rhs) = delete;
 
-    movable_string(movable_string&& rhs) {
+    movable_string(movable_string&& rhs) noexcept {
         data_ = rhs.data_;
-        const_cast<movable_string&>(rhs).data_ = nullptr;
+        size_ = rhs.size_;
+        rhs.data_ = nullptr;
+        rhs.size_ = 0;
+    }
+
+    movable_string& operator=(movable_string&& rhs) noexcept {
+        if (&rhs != this) {
+            if (data_)
+                system_callback::deallocate(data_);
+
+            data_ = rhs.data_;
+            size_ = rhs.size_;
+
+            rhs.data_ = nullptr;
+            rhs.size_ = 0;
+        }
+        return *this;
     }
 
     ~movable_string() {
-        if (data_)
-            system_callback::deallocate((char*)data_);
+        if (data_) {
+            system_callback::deallocate(data_);
+            data_ = nullptr;
+        }
+        size_ = 0;
     }
 
     const char* c_str() const { return data_; }
 
+    size_t size() const { return size_; }
+
 private:
-    const char* data_ = nullptr;
+    char* data_ = nullptr;
+    size_t size_ = 0;
 };
 
 template <typename T> struct movable_array {
     /** allocate new array, only allowed to be called from the rt context */
-    movable_array(size_t length, const T* data, bool locked = false): length_(length) {
-        data_ = (T*)system_callback::allocate(length * sizeof(T));
-        for (size_t i = 0; i != length; ++i)
-            data_[i] = data[i];
+    movable_array(const T* data, size_t size): size_(size) {
+        data_ = (T*)system_callback::allocate(size * sizeof(T));
+        std::copy(data, data + size, data_);
     }
 
     movable_array& operator=(movable_array const& rhs) = delete;
     movable_array(movable_array const& rhs) = delete;
 
-    movable_array(movable_array&& rhs): length_(rhs.length_), data_(rhs.data_) { rhs.data_ = nullptr; }
-
-    movable_array& operator=(movable_array&& rhs) {
-        if (data_)
-            system_callback::deallocate(data_);
-
-        length_ = rhs.length_;
-        data_ = rhs.data_;
-
+    movable_array(movable_array&& rhs) noexcept: data_(rhs.data_), size_(rhs.size_) {
         rhs.data_ = nullptr;
+        rhs.size_ = 0;
+    }
 
+    movable_array& operator=(movable_array&& rhs) noexcept {
+        if (&rhs != this) {
+            if (data_)
+                system_callback::deallocate(data_);
+
+            data_ = rhs.data_;
+            size_ = rhs.size_;
+
+            rhs.data_ = nullptr;
+            rhs.size_ = 0;
+        }
         return *this;
     }
 
     ~movable_array() {
-        if (!data_)
-            return;
-        system_callback::deallocate(data_);
-        data_ = nullptr;
+        if (data_) {
+            system_callback::deallocate(data_);
+            data_ = nullptr;
+        }
+        size_ = 0;
     }
 
     const T* data() const { return data_; }
 
-    const T& operator[](size_t index) const { return data_[index]; }
+    const T& operator[](size_t index) const {
+        assert(index < size_);
+        return data_[index];
+    }
 
-    size_t size() const { return length_; }
+    size_t size() const { return size_; }
 
 private:
-    size_t length_ = 0;
     T* data_;
+    size_t size_ = 0;
 };
 
 template <typename T> static inline void consume(T&& object) {
@@ -239,20 +271,26 @@ template <typename... Args> void send_fail_message(endpoint_ptr const& endpoint,
     }
 }
 
+/** functor for scheduling callbacks from the audio thread (= RT) to the system thread or IO thread (= NRT).
+ *  @see system_callback for more details.
+ */
 template <typename Functor> struct fn_system_callback : public system_callback {
     fn_system_callback(Functor const& fn): fn_(fn) {}
 
-    fn_system_callback(Functor&& fn): fn_(std::forward<Functor>(fn)) {}
+    fn_system_callback(Functor&& fn): fn_(std::move(fn)) {}
 
     void run() override { fn_(); }
 
     Functor fn_;
 };
 
+/** functor for scheduling callbacks from the system thread or IO thread (= NRT) to the audio thread (= RT).
+ *  @see audio_sync_callback for more details.
+ */
 template <typename Functor> struct fn_sync_callback : public audio_sync_callback {
     fn_sync_callback(Functor const& fn): fn_(fn) {}
 
-    fn_sync_callback(Functor&& fn): fn_(std::forward<Functor>(fn)) {}
+    fn_sync_callback(Functor&& fn): fn_(std::move(fn)) {}
 
     void run() override { fn_(); }
 
@@ -261,114 +299,69 @@ template <typename Functor> struct fn_sync_callback : public audio_sync_callback
 
 /** helper class for dispatching real-time and non real-time osc command callbacks
  *
- *  uses template specialization to avoid unnecessary callback rescheduling
+ *  uses template specialization to avoid unnecessary callback rescheduling in NRT mode
  */
 template <typename DerivedClass> struct cmd_dispatcher_base {
-    template <typename A> static void free_in_rt_thread(A&& object) {
-        DerivedClass::fire_rt_callback([object = std::move(object)]() mutable { consume(std::move(object)); });
-    }
-
-    template <typename A, typename B> static void free_in_rt_thread(A&& object1, B&& object2) {
-        DerivedClass::fire_rt_callback([object1 = std::move(object1), object2 = std::move(object2)]() mutable {
-            consume(std::move(object1));
-            consume(std::move(object2));
+    /** free one or more (movable) objects on the RT thread */
+    template <typename... T> static void free_in_rt_thread(T&&... objects) {
+        DerivedClass::fire_rt_callback([objects = std::make_tuple(std::forward<T>(objects)...)]() mutable {
+            std::apply([](auto&... elems) { (consume(std::move(elems)), ...); }, objects);
         });
     }
 
-    template <typename A, typename B, typename C> static void free_in_rt_thread(A&& object1, B&& object2, C&& object3) {
-        DerivedClass::fire_rt_callback(
-            [object1 = std::move(object1), object2 = std::move(object2), object3 = std::move(object3)]() mutable {
-                consume(std::move(object1));
-                consume(std::move(object2));
-                consume(std::move(object3));
-            });
-    }
-
-    template <typename A, typename B, typename C, typename D>
-    static void free_in_rt_thread(A&& object1, B&& object2, C&& object3, D&& object4) {
-        DerivedClass::fire_rt_callback([object1 = std::move(object1), object2 = std::move(object2),
-                                        object3 = std::move(object3), object4 = std::move(object4)]() mutable {
-            consume(std::move(object1));
-            consume(std::move(object2));
-            consume(std::move(object3));
-            consume(std::move(object4));
-        });
-    }
-
-    static void fire_done_message(endpoint_ptr const& endpoint_ref, const char* cmd, osc::int32 index) {
-        if (endpoint_ref) {
-            DerivedClass::fire_io_callback(
-                [=, endpoint = endpoint_ptr(endpoint_ref)]() { send_done_message(endpoint, cmd, index); });
+    /** @note `cmd` must be a string constant! */
+    static void fire_done_message(endpoint_ptr const& endpoint, const char* cmd, osc::int32 index) {
+        if (endpoint) {
+            DerivedClass::fire_io_callback([=]() { send_done_message(endpoint, cmd, index); });
         }
     }
 
-    static void fire_message(endpoint_ptr const& endpoint_ref, movable_array<char>&& message) {
-        if (endpoint_ref) {
-            DerivedClass::fire_io_callback(
-                [=, message = std::move(message), endpoint = endpoint_ptr(endpoint_ref)]() mutable {
-                    endpoint->send(message.data(), message.size());
+    static void fire_message(endpoint_ptr const& endpoint, movable_array<char>&& message) {
+        if (endpoint) {
+            DerivedClass::fire_io_callback([=, message = std::move(message)]() mutable {
+                endpoint->send(message.data(), message.size());
 
-                    DerivedClass::fire_rt_callback(
-                        [=, message = std::move(message)]() mutable { consume(std::move(message)); });
-                });
+                DerivedClass::fire_rt_callback(
+                    [=, message = std::move(message)]() mutable { consume(std::move(message)); });
+            });
         }
     }
 };
-
 
 template <bool realtime> struct cmd_dispatcher : public cmd_dispatcher_base<cmd_dispatcher<realtime>> {
-    template <typename Functor> static void fire_system_callback(Functor const& f) {
-        instance->add_system_callback(new fn_system_callback<Functor>(f));
-    }
-
     template <typename Functor> static void fire_system_callback(Functor&& f) {
-        instance->add_system_callback(new fn_system_callback<Functor>(std::forward<Functor>(f)));
-    }
-
-    template <typename Functor> static void fire_io_callback(Functor const& f) {
-        instance->add_io_callback(new fn_system_callback<Functor>(f));
+        // NOTE: fn_system_callback overrides operator new.
+        instance->add_system_callback(new fn_system_callback(std::forward<Functor>(f)));
     }
 
     template <typename Functor> static void fire_io_callback(Functor&& f) {
-        instance->add_io_callback(new fn_system_callback<Functor>(std::forward<Functor>(f)));
-    }
-
-    template <typename Functor> static void fire_rt_callback(Functor const& f) {
-        instance->add_sync_callback(new fn_sync_callback<Functor>(f));
+        // NOTE: fn_system_callback overrides operator new.
+        instance->add_io_callback(new fn_system_callback(std::forward<Functor>(f)));
     }
 
     template <typename Functor> static void fire_rt_callback(Functor&& f) {
-        instance->add_sync_callback(new fn_sync_callback<Functor>(std::forward<Functor>(f)));
+        // NOTE: fn_sync_callback overrides operator new.
+        instance->add_sync_callback(new fn_sync_callback(std::forward<Functor>(f)));
     }
 };
 
-
+/** template specialization for NRT mode */
 template <> struct cmd_dispatcher<false> : public cmd_dispatcher_base<cmd_dispatcher<false>> {
-    template <typename Functor> static void fire_system_callback(Functor const& f) { f(); }
+    template <typename Functor> static void fire_system_callback(Functor&& f) { f(); }
 
-    template <typename Functor> static void fire_system_callback(Functor&& f) {
-        Functor fn(std::forward<Functor>(f));
-        fn();
-    }
+    template <typename Functor> static void fire_rt_callback(Functor&& f) { f(); }
 
-    template <typename Functor> static void fire_rt_callback(Functor const& f) { f(); }
-
-    template <typename Functor> static void fire_rt_callback(Functor&& f) {
-        Functor fn(std::forward<Functor>(f));
-        fn();
-    }
-
-    template <typename Functor> static void fire_io_callback(Functor const& f) { f(); }
-
-    template <typename Functor> static void fire_io_callback(Functor&& f) {
-        Functor fn(std::forward<Functor>(f));
-        fn();
-    }
+    template <typename Functor> static void fire_io_callback(Functor&& f) { f(); }
 };
 
-void report_failure(endpoint_ptr const& endpoint, std::exception const& error, const char* command, int bufnum) {
-    std::cout << error.what() << std::endl;
-    send_fail_message(endpoint, command, error.what(), bufnum);
+template <typename... Args>
+void report_failure(endpoint_ptr const& endpoint, std::exception const& error, const char* command, Args&&... args) {
+    std::cout << command << ": " << error.what() << std::endl;
+    send_fail_message(endpoint, command, error.what(), std::forward<Args>(args)...);
+}
+
+void fire_wrong_argument_exception(const char* cmd) {
+    throw std::runtime_error("wrong arguments for " + std::string(cmd));
 }
 
 } /* namespace */
@@ -460,12 +453,12 @@ const char* sc_notify_observers::error_string(error_code error) {
 }
 
 void sc_notify_observers::notify(const char* address_pattern, const server_node* node) const {
-    char buffer[128]; // 128 byte should be enough
-    osc::OutboundPacketStream p(buffer, 128);
+    std::array<char, 128> buffer; // 128 byte should be enough
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage(address_pattern);
     fill_notification(node, p);
 
-    movable_array<char> message(p.Size(), p.Data());
+    movable_array<char> message(p.Data(), p.Size());
 
     cmd_dispatcher<true>::fire_io_callback([message = std::move(message)]() mutable {
         instance->send_notification(message.data(), message.size());
@@ -476,8 +469,8 @@ void sc_notify_observers::notify(const char* address_pattern, const server_node*
 }
 
 void fire_trigger(int32_t node_id, int32_t trigger_id, float value) {
-    char buffer[128]; // 128 byte should be enough
-    osc::OutboundPacketStream p(buffer, 128);
+    std::array<char, 128> buffer; // 128 byte should be enough
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/tr") << osc::int32(node_id) << osc::int32(trigger_id) << value << osc::EndMessage;
 
     instance->send_notification(p.Data(), p.Size());
@@ -494,12 +487,16 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
     // called from rt helper threads, so we need to lock the memory pool
     spin_lock::scoped_lock lock(system_callback_allocator_lock);
     movable_string cmd(command_name);
-    movable_array<float> value_array(argument_count, values);
+    movable_array<float> value_array(values, argument_count);
 
     cmd_dispatcher<true>::fire_io_callback([=, value_array = std::move(value_array), cmd = std::move(cmd)]() mutable {
-        size_t buffer_size = 1024 + strlen(cmd.c_str()) + value_array.size() * sizeof(float);
+        const size_t pattern_size = cmd.size() + 4; // include padding
+        // include typetags, ',' tag and padding!
+        const size_t arg_size = 2 * (sizeof(osc::int32) + 1) + value_array.size() * (sizeof(float) + 1) + 8;
+        const size_t buffer_size = pattern_size + arg_size;
+        const size_t max_stack_size = 2048;
 
-        char* buffer = (buffer_size < 2048) ? (char*)alloca(buffer_size) : (char*)malloc(buffer_size);
+        char* buffer = (buffer_size > max_stack_size) ? (char*)malloc(buffer_size) : (char*)alloca(buffer_size);
 
         try {
             osc::OutboundPacketStream p(buffer, buffer_size);
@@ -515,7 +512,7 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
 
         cmd_dispatcher<true>::free_in_rt_thread(std::move(value_array), std::move(cmd));
 
-        if (buffer_size >= 2048)
+        if (buffer_size > max_stack_size)
             free(buffer);
     });
 }
@@ -933,11 +930,17 @@ int first_arg_as_int(ReceivedMessage const& message) {
 }
 
 template <bool realtime> void handle_quit(endpoint_ptr const& endpoint) {
+    if (instance->quit_received) {
+        log_printf("/quit: already received\n");
+        cmd_dispatcher<realtime>::fire_io_callback([=]() { send_fail_message(endpoint, "/quit", "already received"); });
+        return;
+    }
+
     instance->quit_received = true;
+
     cmd_dispatcher<realtime>::fire_io_callback([=]() {
         instance->prepare_to_terminate();
-        if (endpoint)
-            send_done_message(endpoint, "/quit");
+        send_done_message(endpoint, "/quit");
         instance->terminate();
     });
 }
@@ -950,7 +953,8 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
     if (!args.Eos())
         args >> id;
 
-    cmd_dispatcher<realtime>::fire_io_callback([endpoint = endpoint_ptr(endpoint), enable, id]() {
+    // IMPORTANT: observers must only be accessed on the IO thread!
+    cmd_dispatcher<realtime>::fire_io_callback([=]() {
         if (enable) {
             const auto [error, client_id] = instance->add_observer(endpoint, id);
             if (error == sc_notify_observers::no_error) {
@@ -980,34 +984,33 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
 
 template <> void handle_notify<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) {}
 
-template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
-        if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
-            return;
+template <bool realtime> void handle_status(endpoint_ptr const& endpoint) {
+    if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
+        return;
 
-        char buffer[1024];
-        typedef osc::int32 i32;
+    std::array<char, 1024> buffer;
+    using i32 = osc::int32;
 
-        float peak_load, average_load;
-        instance->cpu_load(peak_load, average_load);
+    float peak_load, average_load;
+    instance->cpu_load(peak_load, average_load);
 
-        osc::OutboundPacketStream p(buffer, 1024);
-        p << osc::BeginMessage("/status.reply") << (i32)1 /* unused */
-          << (i32)sc_factory->ugen_count() /* ugens */
-          << (i32)instance->synth_count() /* synths */
-          << (i32)instance->group_count() /* groups */
-          << (i32)instance->definition_count() /* synthdefs */
-          << average_load /* average cpu % */
-          << peak_load /* peak cpu % */
-          << instance->get_samplerate() /* nominal samplerate */
-          << instance->smooth_samplerate /* actual samplerate */
-          << osc::EndMessage;
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
+    p << osc::BeginMessage("/status.reply") << (i32)1 /* unused */
+      << (i32)sc_factory->ugen_count() /* ugens */
+      << (i32)instance->synth_count() /* synths */
+      << (i32)instance->group_count() /* groups */
+      << (i32)instance->definition_count() /* synthdefs */
+      << average_load /* average cpu % */
+      << peak_load /* peak cpu % */
+      << instance->get_samplerate() /* nominal samplerate */
+      << instance->smooth_samplerate /* actual samplerate */
+      << osc::EndMessage;
 
-        endpoint->send(p.Data(), p.Size());
-    });
+    movable_array message(p.Data(), p.Size());
+    cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
-template <> void handle_status<false>(endpoint_ptr const& endpoint_ref) {}
+template <> void handle_status<false>(endpoint_ptr const& endpoint) {}
 
 void handle_dumpOSC(ReceivedMessage const& message) {
     int val = first_arg_as_int(message);
@@ -1020,11 +1023,11 @@ template <bool realtime> void handle_sync(ReceivedMessage const& message, endpoi
     int id = first_arg_as_int(message);
 
     // ping pong: we go through the nrt->rt channel to ensure that earlier messages have been completely dispatched
-    cmd_dispatcher<realtime>::fire_system_callback([=, endpoint = endpoint_ptr(endpoint)]() {
-        cmd_dispatcher<realtime>::fire_rt_callback([=, endpoint = endpoint_ptr(endpoint)]() {
-            cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint)]() {
-                char buffer[128];
-                osc::OutboundPacketStream p(buffer, 128);
+    cmd_dispatcher<realtime>::fire_system_callback([=]() {
+        cmd_dispatcher<realtime>::fire_rt_callback([=]() {
+            cmd_dispatcher<realtime>::fire_io_callback([=]() {
+                std::array<char, 128> buffer;
+                osc::OutboundPacketStream p(buffer.data(), buffer.size());
                 p << osc::BeginMessage("/synced") << id << osc::EndMessage;
 
                 endpoint->send(p.Data(), p.Size());
@@ -1043,39 +1046,45 @@ void handle_error(ReceivedMessage const& message) {
     instance->set_error_posting(val); /* thread-safe */
 }
 
-template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
-        if (unlikely(instance->quit_received))
-            return;
+template <bool realtime> void handle_version(endpoint_ptr const& endpoint) {
+    if (unlikely(instance->quit_received))
+        return;
 
-        char buffer[4096];
-        typedef osc::int32 i32;
+    cmd_dispatcher<realtime>::fire_io_callback([=]() {
+        std::array<char, 1024> buffer;
+        using i32 = osc::int32;
 
-        osc::OutboundPacketStream p(buffer, 4096);
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
         p << osc::BeginMessage("/version.reply") << "supernova" << (i32)SC_VersionMajor << (i32)SC_VersionMinor
           << SC_VersionPostfix << SC_BranchOrTag << SC_CommitHash << osc::EndMessage;
+
         endpoint->send(p.Data(), p.Size());
     });
 }
 
-template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) {}
+template <> void handle_version<false>(endpoint_ptr const& endpoint) {}
 
-template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint_ref) {
-    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
-        if (unlikely(instance->quit_received))
-            return;
+template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint) {
+    if (unlikely(instance->quit_received))
+        return;
 
-        char buffer[4096];
-        typedef osc::int32 i32;
+    std::array<char, 128> buffer;
+    using i32 = osc::int32;
 
-        osc::OutboundPacketStream p(buffer, 4096);
-        p << osc::BeginMessage("/rtMemoryStatus.reply") << (i32)(rt_pool.get_pool_size() - rt_pool.get_used_size())
-          << (i32)rt_pool.get_max_size() << osc::EndMessage;
-        endpoint->send(p.Data(), p.Size());
-    });
+    const i32 free_memory = rt_pool.get_pool_size() - rt_pool.get_used_size();
+    // Our version of TLSF does not provide an API function to query the largest free block.
+    // TODO: fix this once we switch to a more recent implementation, e.g. Matt Conte's TLSF v3.1.
+    const i32 largest_free_block = 0;
+
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
+    p << osc::BeginMessage("/rtMemoryStatus.reply") << free_memory << largest_free_block << osc::EndMessage;
+
+    movable_array message(p.Data(), p.Size());
+
+    cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
-template <> void handle_rtMemoryStatus<false>(endpoint_ptr const& endpoint_ref) {}
+template <> void handle_rtMemoryStatus<false>(endpoint_ptr const& endpoint) {}
 
 void handle_unhandled_message(ReceivedMessage const& msg) {
     log_printf("unhandled message: %s\n", msg.AddressPattern());
@@ -1393,7 +1402,7 @@ template <bool realtime> void g_query_tree(int node_id, bool include_synth_contr
 
         p << osc::EndMessage;
 
-        movable_array<char> message(p.Size(), p.Data());
+        movable_array<char> message(p.Data(), p.Size());
         cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
     } catch (osc::Exception const& e) {
         log_printf("ERROR: could not send /g_queryTree reply: message exceeds size limit of %d bytes.\n",
@@ -1575,7 +1584,7 @@ void set_control_n(server_node* node, osc::ReceivedMessageArgumentIterator& it) 
         for (int i = 0; i != count; ++i)
             values[i] = extract_float_argument(it++);
 
-        node->set_control_array(str, count, values.c_array());
+        node->set_control_array(str, count, values.data());
     } else
         throw std::runtime_error("invalid argument");
 }
@@ -1603,7 +1612,7 @@ void fill_control(server_node* node, osc::ReceivedMessageArgumentIterator& it) {
         for (int i = 0; i != count; ++i)
             values[i] = value;
 
-        node->set_control_array(str, count, values.c_array());
+        node->set_control_array(str, count, values.data());
     } else
         throw std::runtime_error("invalid argument");
 }
@@ -1732,12 +1741,12 @@ template <bool realtime> void handle_n_query(ReceivedMessage const& msg, endpoin
         if (!node)
             continue;
 
-        char buffer[128]; // 128 byte should be enough
-        osc::OutboundPacketStream p(buffer, 128);
+        std::array<char, 128> buffer; // 128 byte should be enough
+        osc::OutboundPacketStream p(buffer.data(), buffer.size());
         p << osc::BeginMessage("/n_info");
         fill_notification(node, p);
 
-        movable_array<char> message(p.Size(), p.Data());
+        movable_array<char> message(p.Data(), p.Size());
         cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
     }
 }
@@ -1877,9 +1886,9 @@ template <bool realtime> void handle_s_get(ReceivedMessage const& msg, size_t ms
 
     size_t alloc_size = msg_size + sizeof(float) * (msg.ArgumentCount() - 1) + 128;
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/n_set") << node_id;
 
     while (it != msg.ArgumentsEnd()) {
@@ -1888,7 +1897,7 @@ template <bool realtime> void handle_s_get(ReceivedMessage const& msg, size_t ms
     }
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -1920,9 +1929,9 @@ template <bool realtime> void handle_s_getn(ReceivedMessage const& msg, size_t m
 
     size_t alloc_size = msg_size + sizeof(float) * (argument_count) + 128;
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/n_setn") << node_id;
 
     while (it != msg.ArgumentsEnd()) {
@@ -1943,7 +1952,7 @@ template <bool realtime> void handle_s_getn(ReceivedMessage const& msg, size_t m
     }
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2055,7 +2064,6 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
         sampleRate = sc_factory->world.mSampleRate;
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
-        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufferIndex));
         try {
             sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
             sc_factory->allocate_buffer(bufferIndex, frames, channels, sampleRate);
@@ -2086,7 +2094,6 @@ template <bool realtime> void handle_b_free(ReceivedMessage const& msg, endpoint
     completion_message message = extract_completion_message(args);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
-        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
         sample* free_buf = sc_factory->get_nrt_mirror_buffer(index);
         sc_factory->free_buffer(index);
 
@@ -2126,7 +2133,6 @@ template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, end
 
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, filename = std::move(filename), message = std::move(message)]() mutable {
-            sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufferIndex));
             sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
             try {
                 sc_factory->buffer_read_alloc(bufferIndex, filename.c_str(), start, frames);
@@ -2183,13 +2189,12 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
     /* we reached the message blob */
     completion_message message = extract_completion_message(arg);
 
-    movable_array<uint32_t> channel_mapping(channel_count, channels.c_array());
+    movable_array<uint32_t> channel_mapping(channels.data(), channel_count);
     movable_string filename(filenameString);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message),
                                                     channel_mapping = std::move(channel_mapping),
                                                     filename = std::move(filename)]() mutable {
-        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
         sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
 
         try {
@@ -2217,11 +2222,9 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
     });
 }
 
-const char* b_write = "/b_write";
-
-void fire_b_write_exception() { throw std::runtime_error("wrong arguments for /b_write"); }
-
 template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
+    static constexpr auto cmd_name = "/b_write";
+
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
@@ -2244,7 +2247,7 @@ template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoin
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         frames = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2252,7 +2255,7 @@ template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoin
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         start = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2260,7 +2263,7 @@ template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoin
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         leave_open = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2277,7 +2280,6 @@ fire_callback:
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, message = std::move(message), filenameString = std::move(filenameString),
          headerString = std::move(headerString), sampleString = std::move(sampleString)]() mutable {
-            sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
             try {
                 sc_factory->buffer_write(bufnum, filenameString.c_str(), headerString.c_str(), sampleString.c_str(),
                                          start, frames, leave_open);
@@ -2291,22 +2293,19 @@ fire_callback:
                         consume(std::move(headerString));
                         consume(std::move(sampleString));
 
-                        cmd_dispatcher<realtime>::fire_done_message(endpoint, b_write, bufnum);
+                        cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
                     });
             } catch (std::exception const& error) {
-                report_failure(endpoint, error, b_write, bufnum);
+                report_failure(endpoint, error, cmd_name, bufnum);
                 cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filenameString),
                                                             std::move(headerString), std::move(sampleString));
             }
         });
 }
 
-
-const char* b_read = "/b_read";
-
-void fire_b_read_exception() { throw std::runtime_error("wrong arguments for /b_read"); }
-
 template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
+    static constexpr auto cmd_name = "/b_read";
+
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
@@ -2326,7 +2325,7 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         start_file = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2334,7 +2333,7 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         frames = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2342,7 +2341,7 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         start_buffer = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2350,7 +2349,7 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         leave_open = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2364,8 +2363,6 @@ fire_callback:
 
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, filename = std::move(fname), message = std::move(message)]() mutable {
-            sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
-
             try {
                 sc_factory->buffer_read(bufnum, filename.c_str(), start_file, frames, start_buffer, leave_open);
 
@@ -2376,20 +2373,18 @@ fire_callback:
                         handle_completion_message(std::move(message), endpoint);
                         consume(std::move(filename));
 
-                        cmd_dispatcher<realtime>::fire_done_message(endpoint, b_read, bufnum);
+                        cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
                     });
             } catch (std::exception const& error) {
-                report_failure(endpoint, error, b_read, bufnum);
+                report_failure(endpoint, error, cmd_name, bufnum);
                 cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filename));
             }
         });
 }
 
-const char* b_readChannel = "/b_readChannel";
-
-void fire_b_readChannel_exception() { throw std::runtime_error("wrong arguments for /b_readChannel"); }
-
 template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
+    static constexpr auto cmd_name = "/b_readChannel";
+
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
@@ -2405,15 +2400,14 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
     osc::int32 start_buffer = 0;
     osc::int32 leave_open = 0;
 
-    sized_array<uint32_t, rt_pool_allocator<uint32_t>> channel_mapping(
-        int32_t(msg.ArgumentCount())); /* larger than required */
+    sized_array<uint32_t, rt_pool_allocator<uint32_t>> channel_mapping(msg.ArgumentCount()); /* larger than required */
     uint32_t channel_count = 0;
 
     completion_message message;
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         start_file = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2421,7 +2415,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_read_exception();
+            fire_wrong_argument_exception(cmd_name);
         frames = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2429,7 +2423,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         start_buffer = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2437,7 +2431,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
 
     if (arg != end) {
         if (!arg->IsInt32())
-            fire_b_write_exception();
+            fire_wrong_argument_exception(cmd_name);
         leave_open = arg->AsInt32Unchecked();
         arg++;
     } else
@@ -2448,16 +2442,16 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
             message = extract_completion_message(arg);
             goto fire_callback;
         } else if (arg->IsInt32()) {
-            channel_mapping[channel_count] = arg->AsInt32Unchecked();
+            channel_mapping[channel_count++] = arg->AsInt32Unchecked();
             ++arg;
         } else
-            fire_b_readChannel_exception();
+            fire_wrong_argument_exception(cmd_name);
     }
 
 fire_callback:
     movable_string fname(filename);
 
-    movable_array<uint32_t> channel_map(channel_count, channel_mapping.c_array());
+    movable_array<uint32_t> channel_map(channel_mapping.data(), channel_count);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message), filename = std::move(fname),
                                                     channel_map = std::move(channel_map)]() mutable {
@@ -2472,18 +2466,15 @@ fire_callback:
                 consume(std::move(filename));
                 consume(std::move(channel_map));
 
-                cmd_dispatcher<realtime>::fire_done_message(endpoint, b_readChannel, bufnum);
+                cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
             });
         } catch (std::exception const& error) {
-            report_failure(endpoint, error, b_readChannel, bufnum);
+            report_failure(endpoint, error, cmd_name, bufnum);
             cmd_dispatcher<realtime>::free_in_rt_thread(std::move(filename), std::move(channel_map),
                                                         std::move(message));
         }
     });
 }
-
-
-const char* b_zero = "/b_zero";
 
 template <bool realtime> void handle_b_zero(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -2497,7 +2488,7 @@ template <bool realtime> void handle_b_zero(ReceivedMessage const& msg, endpoint
         cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
             sc_factory->increment_write_updates(index);
             handle_completion_message(std::move(message), endpoint);
-            cmd_dispatcher<realtime>::fire_done_message(endpoint, b_zero, index);
+            cmd_dispatcher<realtime>::fire_done_message(endpoint, "/b_zero", index);
         });
     });
 }
@@ -2613,9 +2604,9 @@ template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoin
     size_t arg_count = msg.ArgumentCount();
 
     size_t size = elem_size * arg_count + 128; /* should be more than required */
-    sized_array<char, rt_pool_allocator<char>> data(size);
+    sized_array<char, rt_pool_allocator<char>> buffer(size);
 
-    osc::OutboundPacketStream p(data.c_array(), size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/b_info");
 
     while (!args.Eos()) {
@@ -2629,7 +2620,7 @@ template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoin
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), data.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2656,7 +2647,7 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
     const size_t index_count = msg.ArgumentCount() - 1;
     const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
     osc::int32 buffer_index;
     args >> buffer_index;
@@ -2670,7 +2661,7 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
 
     const int max_sample = buf->frames * buf->channels;
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/b_set") << buffer_index;
 
     while (!args.Eos()) {
@@ -2686,7 +2677,7 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2730,9 +2721,9 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
     for (size_t i = 0; i != return_data.size(); ++i)
         alloc_size += return_data[i].data_.size() * (sizeof(float) + sizeof(int)) + 2 * sizeof(int);
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/b_setn") << buffer_index;
 
     for (size_t i = 0; i != return_data.size(); ++i) {
@@ -2744,14 +2735,14 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
 
 template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr const& endpoint) {
     int skip_bytes = addr_pattern_size(msg); // skip address pattern
-    movable_array<char> cmd(msg_size - skip_bytes, msg.AddressPattern() + skip_bytes);
+    movable_array<char> cmd(msg.AddressPattern() + skip_bytes, msg_size - skip_bytes);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(cmd)]() mutable {
         sc_msg_iter msg(message.size(), message.data());
@@ -2838,9 +2829,9 @@ template <bool realtime> void handle_c_get(ReceivedMessage const& msg, endpoint_
     const size_t index_count = msg.ArgumentCount();
     const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/c_set");
 
     while (!args.Eos()) {
@@ -2852,7 +2843,7 @@ template <bool realtime> void handle_c_get(ReceivedMessage const& msg, endpoint_
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2862,9 +2853,9 @@ template <bool realtime> void handle_c_getn(ReceivedMessage const& msg, endpoint
     /* we pessimize, but better to allocate too much than too little */
     const size_t alloc_size = 128 + (2 * sizeof(int) + 128 * sizeof(float)) * msg.ArgumentCount();
 
-    sized_array<char, rt_pool_allocator<char>> return_message(alloc_size);
+    sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/c_setn");
 
     while (!args.Eos()) {
@@ -2880,7 +2871,7 @@ template <bool realtime> void handle_c_getn(ReceivedMessage const& msg, endpoint
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), return_message.c_array());
+    movable_array<char> message(p.Data(), p.Size());
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
@@ -2904,7 +2895,9 @@ template <bool realtime> void handle_d_recv(ReceivedMessage const& msg, endpoint
 
     args->AsBlob(synthdef_data, synthdef_size);
     ++args;
-    movable_array<char> def(synthdef_size, (const char*)synthdef_data);
+
+    movable_array<char> def((const char*)synthdef_data, synthdef_size);
+
     completion_message message = extract_completion_message(args);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, def = std::move(def), message = std::move(message)]() mutable {
@@ -3743,50 +3736,48 @@ void handle_asynchronous_command(World* world, const char* cmd_name, void* cmd_d
     // seems to be safe because constructors are protected by a global lock and therefore never run in parallel.
     spin_lock::scoped_lock lock(system_callback_allocator_lock);
 
-    cmd_dispatcher<realtime>::fire_system_callback(
-        [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-            // stage 2 (NRT thread)
-            bool result2 = call_stage_fn(stage2, world, cmd_data, endpoint);
+    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
+        // stage 2 (NRT thread)
+        bool result2 = call_stage_fn(stage2, world, cmd_data, endpoint);
 
-            if (!result2) {
-                // free in RT thread!
-                cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
-                    if (cleanup)
-                        (cleanup)(world, cmd_data);
-                    consume(std::move(message));
-                });
+        if (!result2) {
+            // free in RT thread!
+            cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+                if (cleanup)
+                    (cleanup)(world, cmd_data);
+                consume(std::move(message));
+            });
+            return;
+        }
+
+        cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+            // stage 3 (RT thread)
+            bool result3 = call_stage_fn(stage3, world, cmd_data, endpoint);
+
+            if (!result3) {
+                if (cleanup)
+                    (cleanup)(world, cmd_data);
+                consume(std::move(message));
                 return;
             }
 
-            cmd_dispatcher<realtime>::fire_rt_callback(
-                [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-                    // stage 3 (RT thread)
-                    bool result3 = call_stage_fn(stage3, world, cmd_data, endpoint);
+            handle_completion_message(std::move(message), endpoint);
 
-                    if (!result3) {
-                        if (cleanup)
-                            (cleanup)(world, cmd_data);
-                        consume(std::move(message));
-                        return;
-                    }
+            cmd_dispatcher<realtime>::fire_io_callback([=] {
+                // stage 4 (NRT thread)
+                bool result4 = call_stage_fn(stage4, world, cmd_data, endpoint);
 
-                    handle_completion_message(std::move(message), endpoint);
+                if (result4 && cmd_name)
+                    send_done_message(endpoint, cmd_name);
 
-                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
-                        // stage 4 (NRT thread)
-                        bool result4 = call_stage_fn(stage4, world, cmd_data, endpoint);
-
-                        if (result4 && cmd_name)
-                            send_done_message(endpoint, cmd_name);
-
-                        // free in RT thread!
-                        cmd_dispatcher<realtime>::fire_rt_callback([=] {
-                            if (cleanup)
-                                (cleanup)(world, cmd_data);
-                        });
-                    });
+                // free in RT thread!
+                cmd_dispatcher<realtime>::fire_rt_callback([=] {
+                    if (cleanup)
+                        (cleanup)(world, cmd_data);
                 });
+            });
         });
+    });
 }
 
 template <typename StageFn>
@@ -3836,63 +3827,61 @@ void handle_async_unit_command(Unit* unit, const char* cmd_name, void* cmd_data,
     // This also means we can safely use the synth pointer inside the callbacks.
     synth->add_ref();
 
-    cmd_dispatcher<realtime>::fire_system_callback(
-        [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-            // stage 2 (NRT thread)
-            bool result2 = !stage2 || stage2(unit, cmd_data, endpoint.get());
+    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
+        // stage 2 (NRT thread)
+        bool result2 = !stage2 || stage2(unit, cmd_data, endpoint.get());
 
-            if (!result2) {
-                // free in RT thread!
-                cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
-                    if (cleanup)
-                        (cleanup)(unit->mWorld, cmd_data);
-                    consume(std::move(message));
-                    synth->release();
-                });
+        if (!result2) {
+            // free in RT thread!
+            cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+                if (cleanup)
+                    (cleanup)(unit->mWorld, cmd_data);
+                consume(std::move(message));
+                synth->release();
+            });
+            return;
+        }
+
+        cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
+            // stage 3 (RT thread)
+            // Check whether the owning synth has been removed in the meantime. If yes, we pass
+            // nullptr as the Unit pointer so that the stage function can detect and properly
+            // handle the situation. For example, it may still have to release resources on stage4.
+            // If the node can't be found, it has been removed.
+            bool alive = synth->get_parent() != nullptr;
+            bool result3 = !stage3 || stage3(alive ? unit : nullptr, cmd_data, endpoint.get());
+
+            if (!result3) {
+                if (cleanup)
+                    (cleanup)(unit->mWorld, cmd_data);
+                consume(std::move(message));
+                synth->release();
                 return;
             }
 
-            cmd_dispatcher<realtime>::fire_rt_callback(
-                [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-                    // stage 3 (RT thread)
-                    // Check whether the owning synth has been removed in the meantime. If yes, we pass
-                    // nullptr as the Unit pointer so that the stage function can detect and properly
-                    // handle the situation. For example, it may still have to release resources on stage4.
-                    // If the node can't be found, it has been removed.
-                    bool alive = synth->get_parent() != nullptr;
-                    bool result3 = !stage3 || stage3(alive ? unit : nullptr, cmd_data, endpoint.get());
+            // only perform completion message if the synth is still alive!
+            if (alive)
+                handle_completion_message(std::move(message), endpoint);
+            else
+                consume(std::move(message));
 
-                    if (!result3) {
-                        if (cleanup)
-                            (cleanup)(unit->mWorld, cmd_data);
-                        consume(std::move(message));
-                        synth->release();
-                        return;
-                    }
+            cmd_dispatcher<realtime>::fire_io_callback([=] {
+                // stage 4 (NRT thread)
+                bool result4 = !stage4 || stage4(unit, cmd_data, endpoint.get());
 
-                    // only perform completion message if the synth is still alive!
-                    if (alive)
-                        handle_completion_message(std::move(message), endpoint);
-                    else
-                        consume(std::move(message));
+                // only send /done message if the synth has been alive in stage3.
+                if (result4 && alive && cmd_name)
+                    send_done_message(endpoint, cmd_name);
 
-                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
-                        // stage 4 (NRT thread)
-                        bool result4 = !stage4 || stage4(unit, cmd_data, endpoint.get());
-
-                        // only send /done message if the synth has been alive in stage3.
-                        if (result4 && alive && cmd_name)
-                            send_done_message(endpoint, cmd_name);
-
-                        // free in RT thread!
-                        cmd_dispatcher<realtime>::fire_rt_callback([=] {
-                            if (cleanup)
-                                (cleanup)(unit->mWorld, cmd_data);
-                            synth->release();
-                        });
-                    });
+                // free in RT thread!
+                cmd_dispatcher<realtime>::fire_rt_callback([=] {
+                    if (cleanup)
+                        (cleanup)(unit->mWorld, cmd_data);
+                    synth->release();
                 });
+            });
         });
+    });
 }
 
 void sc_osc_handler::do_async_unit_command(Unit* unit, void* replyAddr, const char* cmdName, void* cmdData,
