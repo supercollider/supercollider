@@ -14,6 +14,5 @@ Return<SCAnyExpr_I> Expr::operator()(ast::CurryIndex i) { return unimplemented(i
 Return<SCAnyExpr_I> Expr::operator()(ast::GeneratorAnyIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::ImmediatelyEvaluatedBlockIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::RangeGeneratorIndex i) { return unimplemented(ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::SetterIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) { return unimplemented(ir, ast_graph, i); }
 }

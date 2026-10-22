@@ -352,4 +352,30 @@ Return<SCAnyExpr_I> Expr::operator()(ast::RangeAssignIndex i) {
     append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
     return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
 }
+
+// `a.foo = v` is `a.foo_(v)`, and the functional form `foo(a, b) = v` is `a.foo_(b, v)`.
+Return<SCAnyExpr_I> Expr::operator()(ast::SetterIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [thing, name, value] = ast_graph->children(i);
+    const auto setter_name = std::string { get_string_view(*ast_graph, name) } + "_";
+    const Selector sel { { location(name), ctx.symbol_table.get_selector(setter_name) }, std::nullopt };
+
+    if (const auto arg_list = ast_graph->as_a<ast::ArgumentListIndex>(thing)) {
+        auto args = make_arguments(msg_ctx, i, sel, true);
+        append_arguments(msg_ctx, args, *arg_list);
+        // Checked before the value is appended, so the value can't become the receiver.
+        if (!args.receiver) {
+            sink(
+                sc::diag::Diagnostic::message_without_receiver(get_text_info(*ast_graph), get_location(*ast_graph, i)));
+            return { ir.create(SCExprList {}, location(i)) };
+        }
+        append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
+        return create_message(msg_ctx, i, *args.receiver, sel, args);
+    }
+
+    const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { *thing });
+    auto args = make_arguments(msg_ctx, i, sel);
+    append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
+    return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
+}
 }
