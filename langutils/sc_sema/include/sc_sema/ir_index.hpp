@@ -25,6 +25,14 @@ enum struct SCNodeType {
     PackDeclare,
     PackTarget,
     PackTargetList,
+    Generator,
+    GenQualIterate,
+    GenQualDeclare,
+    GenQualIf,
+    GenQualSideEffect,
+    GenQualWhile,
+    GenQualList,
+    RangeGenerator,
 
     ArgumentDeclare,
     ArgumentDeclareList,
@@ -79,6 +87,14 @@ using SCPackAssign_I = TypedNodeIndex<SCNodeType::PackAssign>;
 using SCPackDeclare_I = TypedNodeIndex<SCNodeType::PackDeclare>;
 using SCPackTarget_I = TypedNodeIndex<SCNodeType::PackTarget>;
 using SCPackTargetList_I = TypedNodeIndex<SCNodeType::PackTargetList>;
+using SCGenerator_I = TypedNodeIndex<SCNodeType::Generator>;
+using SCGenQualIterate_I = TypedNodeIndex<SCNodeType::GenQualIterate>;
+using SCGenQualDeclare_I = TypedNodeIndex<SCNodeType::GenQualDeclare>;
+using SCGenQualIf_I = TypedNodeIndex<SCNodeType::GenQualIf>;
+using SCGenQualSideEffect_I = TypedNodeIndex<SCNodeType::GenQualSideEffect>;
+using SCGenQualWhile_I = TypedNodeIndex<SCNodeType::GenQualWhile>;
+using SCGenQualList_I = TypedNodeIndex<SCNodeType::GenQualList>;
+using SCRangeGenerator_I = TypedNodeIndex<SCNodeType::RangeGenerator>;
 using SCArgumentDeclare_I = TypedNodeIndex<SCNodeType::ArgumentDeclare>;
 using SCArgumentDeclareList_I = TypedNodeIndex<SCNodeType::ArgumentDeclareList>;
 using SCMethod_I = TypedNodeIndex<SCNodeType::Method>;
@@ -93,7 +109,7 @@ using SCExprList_I = TypedNodeIndex<SCNodeType::ExprList>;
 using SCBody_I = TypedNodeIndex<SCNodeType::Body>;
 
 using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCExplicitReturn_I, SCLiteral_I, SCRef_I,
-                         SCMessage_I, SCCollection_I, SCRange_I, SCPackAssign_I>;
+                         SCMessage_I, SCCollection_I, SCRange_I, SCPackAssign_I, SCGenerator_I, SCRangeGenerator_I>;
 
 using SCClassList_I = TypedNodeIndex<SCNodeType::ClassOrExtentionList>;
 

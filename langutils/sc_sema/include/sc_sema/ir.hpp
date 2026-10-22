@@ -42,6 +42,14 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper<SCNodeType,
                                                                      SCPackTargets, //
                                                                      SCPackAssign, //
                                                                      SCPackDeclare, //
+                                                                     SCGenQualIterate, //
+                                                                     SCGenQualDeclare, //
+                                                                     SCGenQualIf, //
+                                                                     SCGenQualSideEffect, //
+                                                                     SCGenQualWhile, //
+                                                                     SCGenQualList, //
+                                                                     SCGenerator, //
+                                                                     SCRangeGenerator, //
                                                                      SCBody, //
                                                                      SCArgumentDeclare, //
                                                                      SCArgumentDeclareList, //

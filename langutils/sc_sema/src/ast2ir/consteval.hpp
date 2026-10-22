@@ -54,6 +54,8 @@ struct ConstEval {
         std::optional<sc::diag::Diagnostic> error;
     };
     [[nodiscard]] static RangeParts range_parts(const ast::ASTGraph& ast_graph, ast::RangeIndex i);
+    // `(: first, second..last)`, which has the same parts.
+    [[nodiscard]] static RangeParts range_parts(const ast::ASTGraph& ast_graph, ast::RangeGeneratorIndex i);
 
     // The largest range that is folded into a constant array, larger ones are created when the code runs.
     static constexpr std::size_t max_constant_range_size = 1024;

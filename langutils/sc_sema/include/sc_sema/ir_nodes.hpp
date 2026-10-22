@@ -144,6 +144,67 @@ struct SCPackDeclare : priv::Node<SCPackDeclare_I(SCAnyExpr_I value, SCPackTarge
     static constexpr auto type_name { "SCPackDeclare" };
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// Generators, `{: value, qualifiers }`. Each qualifier nests inside the previous one, as blocks did in the old
+// compiler, but they are kept in a flat list in the order they are written. Lowering them, e.g., into a Routine, can
+// rebuild the nesting.
+////////////////////////////////////////////////////////////////////////////////
+
+// `x <- source` or `x i <- source`, iterates source with do (forSeries for a range), declaring the element, and the
+// index when given. source can be an unbounded range, e.g., `x <- (1..)`.
+struct SCGenQualIterate : priv::Node<SCGenQualIterate_I(SCAnyExpr_I source)> {
+    static constexpr auto type_name { "SCGenQualIterate" };
+    Locatable<SymSCIdentifier> element;
+    std::optional<Locatable<SymSCIdentifier>> index;
+    SCGenQualIterate(Locatable<SymSCIdentifier> e, std::optional<Locatable<SymSCIdentifier>> i): element(e), index(i) {}
+};
+
+// `var x = value`, declares x for the qualifiers after it.
+struct SCGenQualDeclare : priv::Node<SCGenQualDeclare_I(SCAnyExpr_I value)> {
+    static constexpr auto type_name { "SCGenQualDeclare" };
+    Locatable<SymSCIdentifier> name;
+    SCGenQualDeclare(Locatable<SymSCIdentifier> n): name(n) {}
+};
+
+// `condition`, the qualifiers after it only run when it is true.
+struct SCGenQualIf : priv::Node<SCGenQualIf_I(SCAnyExpr_I condition)> {
+    static constexpr auto type_name { "SCGenQualIf" };
+};
+
+// `:: expr`, evaluated for its effects, then the qualifiers after it run.
+struct SCGenQualSideEffect : priv::Node<SCGenQualSideEffect_I(SCAnyExpr_I expr)> {
+    static constexpr auto type_name { "SCGenQualSideEffect" };
+};
+
+// `:while condition`, ends the whole generator when it is false.
+struct SCGenQualWhile : priv::Node<SCGenQualWhile_I(SCAnyExpr_I condition)> {
+    static constexpr auto type_name { "SCGenQualWhile" };
+};
+
+struct SCGenQualList
+    : priv::List<SCGenQualList_I,
+                 join<SCGenQualIterate_I, SCGenQualDeclare_I, SCGenQualIf_I, SCGenQualSideEffect_I, SCGenQualWhile_I>> {
+    static constexpr auto type_name { "SCGenQualList" };
+};
+
+// `{: value, qualifiers }` makes a Routine, which yields value each time the qualifiers reach it.
+// `{; value, qualifiers }` is Immediate, the qualifiers run straight away, evaluating value for its effects. It isn't a
+// Routine, and returns what the outermost qualifier does, e.g., the source of `x <- source`.
+// value is compiled after the qualifiers, so it can use what they declare.
+struct SCGenerator : priv::Node<SCGenerator_I(SCGenQualList_I qualifiers, SCAnyExpr_I value)> {
+    static constexpr auto type_name { "SCGenerator" };
+    enum struct Kind { Routine, Immediate };
+    Kind kind;
+    SCGenerator(Kind k): kind(k) {}
+};
+
+// `(: first, second..last)`, a Routine yielding the series, the old compiler's `first.seriesIter(second, last)`.
+// Like SCRange, but a missing last is allowed, which means it never ends.
+struct SCRangeGenerator
+    : priv::Node<SCRangeGenerator_I(SCAnyExpr_I first, maybe<SCAnyExpr_I> second, maybe<SCAnyExpr_I> last)> {
+    static constexpr auto type_name { "SCRangeGenerator" };
+};
+
 enum struct DefaultBehaviour { NoDefault, PreserveNil, DontPreserveNil };
 struct SCArgumentDeclare : priv::Node<SCArgumentDeclare_I(maybe<SCAnyExpr_I>)> {
     static constexpr auto type_name { "SCArgumentDeclare" };

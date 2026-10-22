@@ -188,9 +188,10 @@ std::optional<ConstExpression> ConstEval::fold_copy_series(const ConstExpression
     return ConstExpression { symbols.get_string(std::move(chars)) };
 }
 
-ConstEval::RangeParts ConstEval::range_parts(const ast::ASTGraph& ast_graph, ast::RangeIndex i) {
-    const auto [args, maybe_last] = ast_graph.children(i);
-    RangeParts parts;
+namespace {
+ConstEval::RangeParts range_parts_of(const ast::ASTGraph& ast_graph, ast::ArgumentListIndex args,
+                                     ast::maybe<ast::AnyExprIndex> maybe_last) {
+    ConstEval::RangeParts parts;
     if (!ast_graph.as_a<ast::MissingIndex>(maybe_last))
         parts.last = ast::AnyExprIndex { *maybe_last };
 
@@ -220,6 +221,17 @@ ConstEval::RangeParts ConstEval::range_parts(const ast::ASTGraph& ast_graph, ast
     if (extra && !parts.error)
         parts.error = Diagnostic::range_too_many_arguments(get_text_info(ast_graph), *extra);
     return parts;
+}
+}
+
+ConstEval::RangeParts ConstEval::range_parts(const ast::ASTGraph& ast_graph, ast::RangeIndex i) {
+    const auto [args, maybe_last] = ast_graph.children(i);
+    return range_parts_of(ast_graph, args, maybe_last);
+}
+
+ConstEval::RangeParts ConstEval::range_parts(const ast::ASTGraph& ast_graph, ast::RangeGeneratorIndex i) {
+    const auto [args, maybe_last] = ast_graph.children(i);
+    return range_parts_of(ast_graph, args, maybe_last);
 }
 
 std::optional<ConstExprArray> ConstEval::fold_series(std::int32_t first, std::optional<std::int32_t> second,

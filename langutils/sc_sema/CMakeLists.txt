@@ -15,6 +15,7 @@ add_library(sc_sema STATIC
 	src/ast2ir/expr/dispatch.cpp
 	src/ast2ir/expr/blocks.cpp
 	src/ast2ir/expr/collections.cpp
+	src/ast2ir/expr/generators.cpp
 	src/ast2ir/expr/literals.cpp
 	src/ast2ir/expr/messages.cpp
 	src/ast2ir/expr/ranges.cpp

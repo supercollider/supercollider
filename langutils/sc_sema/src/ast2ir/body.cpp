@@ -58,11 +58,14 @@ public:
             scan_function(args, { *contents });
             return;
         }
-        if (g.as_a<ast::GeneratorIndex>(node) || g.as_a<ast::GeneratorFakeIndex>(node)) {
-            // Generators are functions too, their declarations aren't tracked, which is cautious.
-            hidden_names.emplace_back();
-            scan_children(node);
-            hidden_names.pop_back();
+        if (const auto generator = g.as_a<ast::GeneratorIndex>(node)) {
+            const auto [value, qualifiers] = g.children(*generator);
+            scan_generator(value, qualifiers);
+            return;
+        }
+        if (const auto generator = g.as_a<ast::GeneratorFakeIndex>(node)) {
+            const auto [value, qualifiers] = g.children(*generator);
+            scan_generator(value, qualifiers);
             return;
         }
         if (const auto declarations = g.as_a<ast::DeclareVariableListIndex>(node)) {
@@ -156,6 +159,29 @@ private:
             }
         }
         scan(contents);
+        hidden_names.pop_back();
+    }
+
+    // Generators are functions too, each qualifier hides outer names from the qualifiers after it, and from the value.
+    void scan_generator(ast::AnyExprIndex value, ast::GeneratorQualListIndex qualifiers) {
+        hidden_names.emplace_back();
+        for (auto it = g.children(qualifiers).iter(); it; ++it) {
+            const ast::GeneratorQualAnyIndex qualifier = *it;
+            if (const auto assign = g.as_a<ast::GeneratorQualAssignIndex>(qualifier)) {
+                const auto [element, index, source] = g.children(*assign);
+                scan({ *source });
+                hide(element);
+                if (const auto index_name = g.as_a<ast::NamedIdentifierIndex>(index))
+                    hide(*index_name);
+            } else if (const auto declaration = g.as_a<ast::GeneratorQualDeclareIndex>(qualifier)) {
+                const auto [name, declared] = g.children(*declaration);
+                scan({ *declared });
+                hide(name);
+            } else {
+                scan_children({ *qualifier });
+            }
+        }
+        scan({ *value });
         hidden_names.pop_back();
     }
 

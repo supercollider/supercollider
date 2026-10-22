@@ -299,6 +299,17 @@ int main(int argc, char* argv[]) {
                             [&](const sc::ir::SCMessage& m) { std::cout << symbol_table(*m.selector) << ": "; },
                             [&](const sc::ir::SCKwArg& k) { std::cout << symbol_table(*k.name) << ": "; },
                             [&](const sc::ir::SCVariableDeclare& v) { std::cout << symbol_table(*v.name) << ": "; },
+                            [&](const sc::ir::SCGenerator& gen) {
+                                std::cout
+                                    << (gen.kind == sc::ir::SCGenerator::Kind::Routine ? "routine: " : "immediate: ");
+                            },
+                            [&](const sc::ir::SCGenQualIterate& q) {
+                                std::cout << symbol_table(*q.element);
+                                if (q.index)
+                                    std::cout << ", " << symbol_table(**q.index);
+                                std::cout << ": ";
+                            },
+                            [&](const sc::ir::SCGenQualDeclare& q) { std::cout << symbol_table(*q.name) << ": "; },
                             [&](const sc::ir::SCPackTarget& t) {
                                 std::cout << (t.rest ? "rest from " : "at ") << t.index << ": ";
                             },
