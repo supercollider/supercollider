@@ -96,6 +96,47 @@ bool is_identifier(std::string_view s) {
     return std::all_of(s.begin(), s.end(),
                        [](char c) { return std::isalnum(static_cast<unsigned char>(c)) || c == '_'; });
 }
+
+// The class a typed array is an instance of, and how to write it in json.
+struct TypedArrayName {
+    std::string_view class_name;
+    std::string_view json;
+};
+TypedArrayName typed_array_name(const ConstExprDoubleArray&) { return { "DoubleArray", "doublearray" }; }
+TypedArrayName typed_array_name(const ConstExprFloatArray&) { return { "FloatArray", "floatarray" }; }
+TypedArrayName typed_array_name(const ConstExprInt32Array&) { return { "Int32Array", "int32array" }; }
+TypedArrayName typed_array_name(const ConstExprInt16Array&) { return { "Int16Array", "int16array" }; }
+TypedArrayName typed_array_name(const ConstExprInt8Array&) { return { "Int8Array", "int8array" }; }
+TypedArrayName typed_array_name(const ConstExprSymbolArray&) { return { "SymbolArray", "symbolarray" }; }
+
+// An element of a typed array as the value sclang reads from it, e.g., an Int8Array's elements are Integers.
+ConstExpression element(double d) { return d; }
+ConstExpression element(float f) { return double { f }; }
+ConstExpression element(std::int32_t i) { return i; }
+ConstExpression element(std::int16_t i) { return std::int32_t { i }; }
+ConstExpression element(std::int8_t i) { return std::int32_t { i }; }
+ConstExpression element(SymSCSymbol s) { return s; }
+
+// Typed arrays are written like a collection of their elements, e.g., `FloatArray[1.0, 2.5]`.
+template <typename Vec> void typed_array_to_json(std::ostream& o, const Vec& vec, const SymbolTable& t) {
+    o << "{\"" << typed_array_name(vec).json << "\": [";
+    for (size_t i { 0 }; i < vec.size(); ++i) {
+        element(vec[i]).to_json(o, t);
+        if (i + 1 != vec.size())
+            o << ", ";
+    }
+    o << "]}";
+}
+
+template <typename Vec> void typed_array_to_literal(std::ostream& o, const Vec& vec, const SymbolTable& t) {
+    o << typed_array_name(vec).class_name << '[';
+    for (size_t i { 0 }; i < vec.size(); ++i) {
+        element(vec[i]).to_literal(o, t);
+        if (i + 1 != vec.size())
+            o << ", ";
+    }
+    o << ']';
+}
 }
 
 void ConstExpression::to_json(std::ostream& o, const SymbolTable& t) const {
@@ -158,7 +199,13 @@ void ConstExpression::to_json(std::ostream& o, const SymbolTable& t) const {
                     o << ", ";
             }
             o << "]}";
-        } //
+        },
+        [&](const sc::ir::ConstExprDoubleArray& vec) { typed_array_to_json(o, vec, t); },
+        [&](const sc::ir::ConstExprFloatArray& vec) { typed_array_to_json(o, vec, t); },
+        [&](const sc::ir::ConstExprInt32Array& vec) { typed_array_to_json(o, vec, t); },
+        [&](const sc::ir::ConstExprInt16Array& vec) { typed_array_to_json(o, vec, t); },
+        [&](const sc::ir::ConstExprInt8Array& vec) { typed_array_to_json(o, vec, t); },
+        [&](const sc::ir::ConstExprSymbolArray& vec) { typed_array_to_json(o, vec, t); } //
     });
 }
 
@@ -221,7 +268,13 @@ void ConstExpression::to_literal(std::ostream& o, const SymbolTable& t) const {
                     o << ", ";
             }
             o << ']';
-        } //
+        },
+        [&](const sc::ir::ConstExprDoubleArray& vec) { typed_array_to_literal(o, vec, t); },
+        [&](const sc::ir::ConstExprFloatArray& vec) { typed_array_to_literal(o, vec, t); },
+        [&](const sc::ir::ConstExprInt32Array& vec) { typed_array_to_literal(o, vec, t); },
+        [&](const sc::ir::ConstExprInt16Array& vec) { typed_array_to_literal(o, vec, t); },
+        [&](const sc::ir::ConstExprInt8Array& vec) { typed_array_to_literal(o, vec, t); },
+        [&](const sc::ir::ConstExprSymbolArray& vec) { typed_array_to_literal(o, vec, t); } //
     });
 }
 }

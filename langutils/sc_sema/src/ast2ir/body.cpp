@@ -204,6 +204,7 @@ private:
 // The class of a constant, e.g., an element of a constant array.
 TypeInfo type_of_constant(Context& ctx, const ConstExpression& c) {
     const auto& classes = ctx.common_classes;
+    const auto& symbols = ctx.common_symbols;
     const OptionalSymSCClassName name = c.visit(util::overload {
         [&](double) -> OptionalSymSCClassName { return classes.float_; },
         [&](std::int32_t) -> OptionalSymSCClassName { return classes.int_; },
@@ -215,6 +216,12 @@ TypeInfo type_of_constant(Context& ctx, const ConstExpression& c) {
         [&](SymSCClassName n) -> OptionalSymSCClassName { return ctx.symbol_table.get_meta_class_name(n); },
         [&](const ConstExprArray&) -> OptionalSymSCClassName { return classes.array; },
         [&](const ConstExprEvent&) -> OptionalSymSCClassName { return classes.event; },
+        [&](const ConstExprDoubleArray&) -> OptionalSymSCClassName { return symbols.double_array; },
+        [&](const ConstExprFloatArray&) -> OptionalSymSCClassName { return symbols.float_array; },
+        [&](const ConstExprInt32Array&) -> OptionalSymSCClassName { return symbols.int32_array; },
+        [&](const ConstExprInt16Array&) -> OptionalSymSCClassName { return symbols.int16_array; },
+        [&](const ConstExprInt8Array&) -> OptionalSymSCClassName { return symbols.int8_array; },
+        [&](const ConstExprSymbolArray&) -> OptionalSymSCClassName { return symbols.symbol_array; },
     });
     return TypeInfo { name, TypeConfidence::Absolute };
 }

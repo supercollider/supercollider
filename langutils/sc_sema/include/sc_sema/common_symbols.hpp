@@ -37,6 +37,13 @@ struct CommonSymbols {
     SymSCClassName dictionary;
     // Where perform is defined. This is the class named Object, not the default inheritor, which can change.
     SymSCClassName object;
+    // The classes of the typed arrays a constant can be, e.g., `FloatArray[1, 2]`.
+    SymSCClassName double_array;
+    SymSCClassName float_array;
+    SymSCClassName int32_array;
+    SymSCClassName int16_array;
+    SymSCClassName int8_array;
+    SymSCClassName symbol_array;
 
     // `this`, `super`, and the pseudo variables, see SCSpecial. They can't be declared or assigned.
     SymSCIdentifier this_;

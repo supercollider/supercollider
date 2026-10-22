@@ -9,7 +9,10 @@
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
 #include <cassert>
+#include <cmath>
+#include <limits>
 #include <optional>
+#include <type_traits>
 
 namespace sc::ir::ast2ir {
 
@@ -91,6 +94,44 @@ Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immut
     return { collection, const_i, type };
 }
 
+// An element of a typed array.
+// Integer arrays take Integers, and Floats truncated towards zero, then keep the low bits, e.g., `Int8Array[200]` is
+// `Int8Array[-56]`. Float arrays take Integers and Floats, and Symbol arrays only Symbols.
+template <typename T> std::optional<T> typed_element(const ConstExpression& value) {
+    if constexpr (std::is_same_v<T, SymSCSymbol>) {
+        if (const auto* s = value.get_if<SymSCSymbol>())
+            return *s;
+        return std::nullopt;
+    } else {
+        if (const auto* i = value.get_if<std::int32_t>())
+            return static_cast<T>(*i);
+        const auto* d = value.get_if<double>();
+        if (!d)
+            return std::nullopt;
+        if constexpr (std::is_floating_point_v<T>) {
+            return static_cast<T>(*d);
+        } else {
+            // Outside of an int32, the truncation is undefined.
+            if (!(*d > std::numeric_limits<std::int32_t>::min() - 1.0
+                  && *d < std::numeric_limits<std::int32_t>::max() + 1.0))
+                return std::nullopt;
+            return static_cast<T>(static_cast<std::int32_t>(*d));
+        }
+    }
+}
+
+template <typename T> std::optional<ConstExpression> typed_array(const ConstExprArray& values) {
+    std::vector<T> elements;
+    elements.reserve(values.size());
+    for (const auto& value : values) {
+        const auto element = typed_element<T>(value);
+        if (!element)
+            return std::nullopt;
+        elements.push_back(*element);
+    }
+    return ConstExpression { std::move(elements) };
+}
+
 // The value of `Class[...]` when its elements are all constant, only some classes can be constants.
 std::optional<ConstExpression> collection_constant(const Context& ctx, SymSCClassName class_name,
                                                    ConstExprArray values) {
@@ -113,6 +154,19 @@ std::optional<ConstExpression> collection_constant(const Context& ctx, SymSCClas
         return ConstExpression { std::move(pairs) };
     }
 
+    const auto& symbols = ctx.common_symbols;
+    if (class_name == symbols.double_array)
+        return typed_array<double>(values);
+    if (class_name == symbols.float_array)
+        return typed_array<float>(values);
+    if (class_name == symbols.int32_array)
+        return typed_array<std::int32_t>(values);
+    if (class_name == symbols.int16_array)
+        return typed_array<std::int16_t>(values);
+    if (class_name == symbols.int8_array)
+        return typed_array<std::int8_t>(values);
+    if (class_name == symbols.symbol_array)
+        return typed_array<SymSCSymbol>(values);
     return std::nullopt;
 }
 }

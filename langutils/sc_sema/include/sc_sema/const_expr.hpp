@@ -17,6 +17,14 @@ struct ConstExpression;
 
 using ConstExprArray = std::vector<ConstExpression>;
 using ConstExprEvent = std::vector<std::pair<ConstExpression, ConstExpression>>;
+// The arrays whose elements are stored unboxed, like PyrDoubleArray and friends, e.g., `FloatArray[1, 2]`.
+// The integers are signed, as that is how sclang reads their elements.
+using ConstExprDoubleArray = std::vector<double>;
+using ConstExprFloatArray = std::vector<float>;
+using ConstExprInt32Array = std::vector<std::int32_t>;
+using ConstExprInt16Array = std::vector<std::int16_t>;
+using ConstExprInt8Array = std::vector<std::int8_t>;
+using ConstExprSymbolArray = std::vector<SymSCSymbol>;
 
 
 using Nil = std::monostate;
@@ -31,7 +39,13 @@ using ConstStorage = std::variant< //
     SymSCString, //
     SymSCClassName, //
     ConstExprArray, //
-    ConstExprEvent>;
+    ConstExprEvent, //
+    ConstExprDoubleArray, //
+    ConstExprFloatArray, //
+    ConstExprInt32Array, //
+    ConstExprInt16Array, //
+    ConstExprInt8Array, //
+    ConstExprSymbolArray>;
 
 struct ConstExpression {
     constexpr ConstExpression(double d): storage(d) { }
@@ -44,6 +58,12 @@ struct ConstExpression {
     constexpr ConstExpression(Nil n): storage(n) {}
     ConstExpression(ConstExprArray d) noexcept: storage(std::move(d)) { }
     ConstExpression(ConstExprEvent d) noexcept: storage(std::move(d)) { }
+    ConstExpression(ConstExprDoubleArray d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprFloatArray d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprInt32Array d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprInt16Array d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprInt8Array d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprSymbolArray d) noexcept: storage(std::move(d)) {}
     template <typename T> ConstExpression(T) = delete;
 
     ConstExpression(ConstExpression&&) noexcept = default;
@@ -63,7 +83,8 @@ struct ConstExpression {
     template <typename T> [[nodiscard]] const T* get_if() const { return std::get_if<T>(&storage); }
 
     [[nodiscard]] bool is_mutable() const {
-        return get_if<ConstExprArray>() || get_if<ConstExprEvent>() || get_if<SymSCString>();
+        return !get_if<double>() && !get_if<std::int32_t>() && !get_if<char>() && !get_if<bool>() && !get_if<Nil>()
+            && !get_if<SymSCSymbol>() && !get_if<SymSCClassName>();
     }
 
     friend struct std::hash<ConstExpression>;
@@ -77,6 +98,21 @@ private:
 };
 
 
+}
+
+namespace sc::ir::detail {
+// Combines the hashes of a sequence's elements.
+template <typename T> std::size_t hash_elements(const std::vector<T>& vec) {
+    std::size_t seed = vec.size();
+    for (const auto& val : vec) {
+        auto x = std::hash<T>()(val);
+        x = ((x >> 16) ^ x) * 0x45d9f3b;
+        x = ((x >> 16) ^ x) * 0x45d9f3b;
+        x = (x >> 16) ^ x;
+        seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+    return seed;
+}
 }
 
 namespace std {
@@ -103,15 +139,16 @@ template <> struct hash<sc::ir::ConstExpression> {
                     }
                     return seed;
                 },
-                [](const sc::ir::ConstExprArray& vec) -> size_t {
+                [](const sc::ir::ConstExprArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprDoubleArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprFloatArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprInt32Array& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprInt16Array& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprInt8Array& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprSymbolArray& vec) -> size_t {
                     std::size_t seed = vec.size();
-                    for (const auto& val : vec) {
-                        auto x = std::hash<sc::ir::ConstExpression>()(val);
-                        x = ((x >> 16) ^ x) * 0x45d9f3b;
-                        x = ((x >> 16) ^ x) * 0x45d9f3b;
-                        x = (x >> 16) ^ x;
-                        seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-                    }
+                    for (const sc::ir::Symbol val : vec)
+                        seed ^= std::hash<sc::ir::Symbol>()(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
                     return seed;
                 } //
             },
