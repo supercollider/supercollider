@@ -98,6 +98,14 @@ struct SCCollection : priv::List<SCCollection_I, SCAnyExpr_I> {
 };
 
 
+// `(first..last)` or `(first, second..last)`, a missing second means a step of one or minus one.
+// A missing last means the range is unbounded (to inf), which is only allowed where the range is iterated rather than
+// created, e.g., in a generator.
+// This isn't a message, so later passes can choose how to lower it, e.g., iterating without creating the array.
+struct SCRange : priv::Node<SCRange_I(SCAnyExpr_I first, maybe<SCAnyExpr_I> second, maybe<SCAnyExpr_I> last)> {
+    static constexpr auto type_name { "SCRange" };
+};
+
 enum struct DefaultBehaviour { NoDefault, PreserveNil, DontPreserveNil };
 struct SCArgumentDeclare : priv::Node<SCArgumentDeclare_I(maybe<SCAnyExpr_I>)> {
     static constexpr auto type_name { "SCArgumentDeclare" };

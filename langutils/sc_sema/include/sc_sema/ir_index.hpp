@@ -20,6 +20,7 @@ enum struct SCNodeType {
     VariadicArgList,
     Literal,
     Collection, // a collection that can't be turned into a literal.
+    Range,
 
     ArgumentDeclare,
     ArgumentDeclareList,
@@ -68,6 +69,7 @@ using SCExplicitReturn_I = TypedNodeIndex<SCNodeType::ExplicitReturn>;
 using SCVariableDeclare_I = TypedNodeIndex<SCNodeType::VariableDeclare>;
 
 using SCCollection_I = TypedNodeIndex<SCNodeType::Collection>;
+using SCRange_I = TypedNodeIndex<SCNodeType::Range>;
 using SCArgumentDeclare_I = TypedNodeIndex<SCNodeType::ArgumentDeclare>;
 using SCArgumentDeclareList_I = TypedNodeIndex<SCNodeType::ArgumentDeclareList>;
 using SCMethod_I = TypedNodeIndex<SCNodeType::Method>;
@@ -81,7 +83,7 @@ using SCExtention_I = TypedNodeIndex<SCNodeType::Extention>;
 using SCExprList_I = TypedNodeIndex<SCNodeType::ExprList>;
 
 using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCExplicitReturn_I, SCLiteral_I, SCRef_I,
-                         SCMessage_I, SCCollection_I>;
+                         SCMessage_I, SCCollection_I, SCRange_I>;
 
 using SCClassList_I = TypedNodeIndex<SCNodeType::ClassOrExtentionList>;
 

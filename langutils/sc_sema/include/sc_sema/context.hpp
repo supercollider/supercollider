@@ -4,6 +4,7 @@
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_sema/common_classes.hpp"
 #include "sc_sema/common_symbols.hpp"
+#include "sc_sema/known_methods.hpp"
 #include "sc_sema/const_expr.hpp"
 #include "sc_sema/decls.hpp"
 #include "sc_sema/module.hpp"
@@ -108,6 +109,8 @@ struct Context {
     CurrentDiagnostics diagnostics { };
     InheritanceEdges inheritance_edges { };
     ClassNames class_names {};
+    // Filled in once the class library is declared, before compiling it.
+    KnownMethods known_methods {};
 };
 
 }

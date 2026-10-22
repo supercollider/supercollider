@@ -8,6 +8,7 @@ add_library(sc_sema STATIC
 	src/ir.cpp
 	src/common_class.cpp
 	src/common_symbols.cpp
+	src/known_methods.cpp
 	src/compile_consteval.cpp
 	src/intrinsic_constraint_checker.cpp
 	src/inheritance_edges.cpp
@@ -16,6 +17,7 @@ add_library(sc_sema STATIC
 	src/ast2ir/expr/collections.cpp
 	src/ast2ir/expr/literals.cpp
 	src/ast2ir/expr/messages.cpp
+	src/ast2ir/expr/ranges.cpp
 	src/ast2ir/expr/structure.cpp
 	src/ast2ir/expr/variables.cpp
 	src/ast2ir/expr/unimplemented.cpp

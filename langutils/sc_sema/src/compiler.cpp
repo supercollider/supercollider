@@ -384,6 +384,9 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         pool.join();
     }
 
+    // The hierarchy is valid, so method lookups can be done.
+    ctx.known_methods.check(ctx.class_declarations, ctx.symbol_table);
+
     // Step 3: build class member layout
     // Must be done in order, cannot multithread.
     using MemberEntry = std::tuple<SCMember, std::shared_ptr<const ast::ASTGraph>, ast::Index>;

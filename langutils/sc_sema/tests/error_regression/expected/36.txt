@@ -1,0 +1,299 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass: AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'    perform { ^nil }'\n'}
+|  SCMemberList: Object
+|  SCMethodList: Object
+|  |  SCMethod: perform { ^nil }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^nil
+|  |  |  |  SCExplicitReturn: nil
+|  |  |  |  |  SCLiteral: nil = {"nil": {}}
+SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    slice { ^[1, 2, 3][1..] }'\n'    string_slice { ^"hello"[1..3] }'\n'    array_collection { ^Array[1, 2] }'\n'    event_collection { ^Event[a: 1] }'\n'    perform_rewrite { ^1.perform(\foo) }'\n'}
+|  SCMemberList: OverriddenMethods
+|  SCMethodList: OverriddenMethods
+|  |  SCMethod: perform_rewrite { ^1.perform(\foo) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^1.perform(\foo)
+|  |  |  |  SCExplicitReturn: 1.perform(\foo)
+|  |  |  |  |  SCMessage: perform: 1.perform(\foo)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCPositionalArgs: 1.perform(\foo)
+|  |  |  |  |  |  |  SCLiteral: \foo = {"symbol": "foo"}
+|  |  |  |  |  |  SCKwArgs: 1.perform(\foo)
+|  |  |  |  |  |  SCVariadicArgs: 1.perform(\foo)
+|  |  |  |  |  |  SCMissing: 1.perform(\foo)
+|  |  SCMethod: event_collection { ^Event[a: 1] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^Event[a: 1]
+|  |  |  |  SCExplicitReturn: Event[a: 1]
+|  |  |  |  |  SCCollection: Event: Event[a: 1]
+|  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  SCMethod: array_collection { ^Array[1, 2] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^Array[1, 2]
+|  |  |  |  SCExplicitReturn: Array[1, 2]
+|  |  |  |  |  SCCollection: Array: Array[1, 2]
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  SCMethod: string_slice { ^"hello"[1..3] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^"hello"[1..3]
+|  |  |  |  SCExplicitReturn: "hello"[1..3]
+|  |  |  |  |  SCMessage: copySeries: "hello"[1..3] = {"string": "ell"}
+|  |  |  |  |  |  SCLiteral: "hello" = {"string": "hello"}
+|  |  |  |  |  |  SCPositionalArgs: "hello"[1..3]
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCLiteral: [1..3] = {"nil": {}}
+|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  |  |  |  |  SCKwArgs: "hello"[1..3]
+|  |  |  |  |  |  SCVariadicArgs: "hello"[1..3]
+|  |  |  |  |  |  SCMissing: "hello"[1..3]
+|  |  SCMethod: slice { ^[1, 2, 3][1..] }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^[1, 2, 3][1..]
+|  |  |  |  SCExplicitReturn: [1, 2, 3][1..]
+|  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1..]
+|  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
+|  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+|  |  |  |  |  |  SCPositionalArgs: [1, 2, 3][1..]
+|  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
+|  |  |  |  |  |  |  SCLiteral: [1..] = {"nil": {}}
+|  |  |  |  |  |  SCKwArgs: [1, 2, 3][1..]
+|  |  |  |  |  |  SCVariadicArgs: [1, 2, 3][1..]
+|  |  |  |  |  |  SCMissing: [1, 2, 3][1..]
+|  |  SCMethod: range { ^(1..3) }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^(1..3)
+|  |  |  |  SCExplicitReturn: (1..3)
+|  |  |  |  |  SCRange: (1..3)
+|  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
+|  |  |  |  |  |  SCMissing: (1..3)
+|  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
+SCClass: Dictionary: Dictionary {'\n'    add { ^nil }'\n'}
+|  SCMemberList: Dictionary
+|  SCMethodList: Dictionary
+|  |  SCMethod: add { ^nil }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^nil
+|  |  |  |  SCExplicitReturn: nil
+|  |  |  |  |  SCLiteral: nil = {"nil": {}}
+SCClass: Event: Event : Dictionary {}
+|  SCMemberList: Event
+|  SCMethodList: Event
+SCClass: Ref: Ref {}
+|  SCMemberList: Ref
+|  SCMethodList: Ref
+SCClass: Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  SCMethodList: Symbol
+|  |  SCMethod: perform { ^nil }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^nil
+|  |  |  |  SCExplicitReturn: nil
+|  |  |  |  |  SCLiteral: nil = {"nil": {}}
+SCClass: Char: Char {}
+|  SCMemberList: Char
+|  SCMethodList: Char
+SCClass: SimpleNumber: SimpleNumber {'\n'    series { ^nil }'\n'}
+|  SCMemberList: SimpleNumber
+|  SCMethodList: SimpleNumber
+|  |  SCMethod: series { ^nil }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^nil
+|  |  |  |  SCExplicitReturn: nil
+|  |  |  |  |  SCLiteral: nil = {"nil": {}}
+SCClass: Integer: Integer : SimpleNumber {}
+|  SCMemberList: Integer
+|  SCMethodList: Integer
+|  |  SCMethod: series { ^nil }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^nil
+|  |  |  |  SCExplicitReturn: nil
+|  |  |  |  |  SCLiteral: nil = {"nil": {}}
+SCClass: Float: Float {}
+|  SCMemberList: Float
+|  SCMethodList: Float
+SCClass: Nil: Nil {}
+|  SCMemberList: Nil
+|  SCMethodList: Nil
+SCClass: False: False {}
+|  SCMemberList: False
+|  SCMethodList: False
+SCClass: True: True {}
+|  SCMemberList: True
+|  SCMethodList: True
+SCClass: ArrayedCollection: ArrayedCollection {'\n'    copySeries { ^nil }'\n'    add { ^nil }'\n'}
+|  SCMemberList: ArrayedCollection
+|  SCMethodList: ArrayedCollection
+|  |  SCMethod: add { ^nil }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^nil
+|  |  |  |  SCExplicitReturn: nil
+|  |  |  |  |  SCLiteral: nil = {"nil": {}}
+|  |  SCMethod: copySeries { ^nil }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^nil
+|  |  |  |  SCExplicitReturn: nil
+|  |  |  |  |  SCLiteral: nil = {"nil": {}}
+SCClass: Array: Array : ArrayedCollection {}
+|  SCMemberList: Array
+|  SCMethodList: Array
+|  |  SCMethod: copySeries { ^nil }
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCArgumentDeclareList: 
+|  |  |  SCExprList: ^nil
+|  |  |  |  SCExplicitReturn: nil
+|  |  |  |  |  SCLiteral: nil = {"nil": {}}
+SCClass: String: String : ArrayedCollection {}
+|  SCMemberList: String
+|  SCMethodList: String
+SCClass: Class: Class {}
+|  SCMemberList: Class
+|  SCMethodList: Class
+SCClass: Meta_AbstractObjectExperimental: AbstractObjectExperimental {}
+|  SCMemberList: AbstractObjectExperimental
+|  SCMethodList: AbstractObjectExperimental
+SCClass: Meta_Object: Object : AbstractObjectExperimental {'\n'    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;'\n'    perform { ^nil }'\n'}
+|  SCMemberList: Object
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Object
+SCClass: Meta_OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    slice { ^[1, 2, 3][1..] }'\n'    string_slice { ^"hello"[1..3] }'\n'    array_collection { ^Array[1, 2] }'\n'    event_collection { ^Event[a: 1] }'\n'    perform_rewrite { ^1.perform(\foo) }'\n'}
+|  SCMemberList: OverriddenMethods
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: OverriddenMethods
+SCClass: Meta_Dictionary: Dictionary {'\n'    add { ^nil }'\n'}
+|  SCMemberList: Dictionary
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Dictionary
+SCClass: Meta_Event: Event : Dictionary {}
+|  SCMemberList: Event
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Event
+SCClass: Meta_Ref: Ref {}
+|  SCMemberList: Ref
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Ref
+SCClass: Meta_Symbol: Symbol {}
+|  SCMemberList: Symbol
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Symbol
+SCClass: Meta_Char: Char {}
+|  SCMemberList: Char
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Char
+SCClass: Meta_SimpleNumber: SimpleNumber {'\n'    series { ^nil }'\n'}
+|  SCMemberList: SimpleNumber
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: SimpleNumber
+SCClass: Meta_Integer: Integer : SimpleNumber {}
+|  SCMemberList: Integer
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Integer
+SCClass: Meta_Float: Float {}
+|  SCMemberList: Float
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Float
+SCClass: Meta_Nil: Nil {}
+|  SCMemberList: Nil
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Nil
+SCClass: Meta_False: False {}
+|  SCMemberList: False
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: False
+SCClass: Meta_True: True {}
+|  SCMemberList: True
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: True
+SCClass: Meta_ArrayedCollection: ArrayedCollection {'\n'    copySeries { ^nil }'\n'    add { ^nil }'\n'}
+|  SCMemberList: ArrayedCollection
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: ArrayedCollection
+SCClass: Meta_Array: Array : ArrayedCollection {}
+|  SCMemberList: Array
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Array
+SCClass: Meta_String: String : ArrayedCollection {}
+|  SCMemberList: String
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: String
+SCClass: Meta_Class: Class {}
+|  SCMemberList: Class
+|  |  SCMember: dependantsDictionary
+|  |  SCMember: currentEnvironment
+|  |  SCMember: topEnvironment
+|  |  SCMember: uniqueMethods
+|  SCMethodList: Class
+Successfully compiled 18 classes.

@@ -462,4 +462,26 @@ Diagnostic Diagnostic::event_key_without_value(TextInfoPtr first_t, sc::lex::Sou
              "The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or "
              "remove the key." };
 }
+
+Diagnostic Diagnostic::unbounded_range(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Range has no end",
+             Severity::Error,
+             { { std::move(first_t), first_l, "this would create an infinite array." } },
+             "A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., "
+             "`(1..10)`." };
+}
+
+Diagnostic Diagnostic::range_too_many_arguments(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Too many arguments in range",
+             Severity::Error,
+             { { std::move(first_t), first_l, "only the first, and optionally the second, can come before `..`." } },
+             "A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`." };
+}
+
+Diagnostic Diagnostic::range_argument_not_value(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Range argument is not a value",
+             Severity::Error,
+             { { std::move(first_t), first_l, "keyword and variadic arguments can't be used in a range." } },
+             "A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`." };
+}
 }

@@ -92,8 +92,13 @@ Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immut
 }
 
 // The value of `Class[...]` when its elements are all constant, only some classes can be constants.
-std::optional<ConstExpression> collection_constant(const CommonClasses& classes, SymSCClassName class_name,
+std::optional<ConstExpression> collection_constant(const Context& ctx, SymSCClassName class_name,
                                                    ConstExprArray values) {
+    const auto& classes = ctx.common_classes;
+    // `Class[...]` adds each element, so folding assumes what add does.
+    if (!ctx.known_methods.is_known(class_name, ctx.common_symbols.add))
+        return std::nullopt;
+
     if (class_name == classes.array)
         return ConstExpression { std::move(values) };
 
@@ -138,7 +143,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::CollectionIndex i) {
     if (!values)
         return { collection, type };
 
-    auto constant = collection_constant(ctx.common_classes, class_sym, std::move(*values));
+    auto constant = collection_constant(ctx, class_sym, std::move(*values));
     if (!constant)
         return { collection, type };
 

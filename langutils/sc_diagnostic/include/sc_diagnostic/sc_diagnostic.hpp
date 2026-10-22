@@ -79,6 +79,12 @@ public:
 
     [[nodiscard]] static Diagnostic not_constant(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
 
+    [[nodiscard]] static Diagnostic unbounded_range(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+
+    [[nodiscard]] static Diagnostic range_too_many_arguments(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+
+    [[nodiscard]] static Diagnostic range_argument_not_value(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
+
     // A warning, the last element of `Event[...]` has no value.
     [[nodiscard]] static Diagnostic event_key_without_value(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
 

@@ -2,11 +2,15 @@
 #include "ast2ir_base.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_parser/indexes_typed.hpp"
+#include "sc_sema/const_expr.hpp"
 #include "sc_sema/source_location.hpp"
 #include "sc_util/overload.hpp"
+#include <optional>
+#include <cstdint>
 
 namespace sc::ir {
 struct ClassDeclaration;
+struct SymbolTable;
 }
 namespace sc::ir::ast2ir {
 
@@ -41,6 +45,31 @@ struct ConstEval {
         std::variant<Success, sc::diag::Diagnostic> v;
     };
 
+    // The parts of a range, those that are missing are nullopt. Some forms in the grammar allow any number of arguments
+    // before the `..`, but only two are meaningful, so error holds the reason when there are more.
+    struct RangeParts {
+        std::optional<ast::AnyExprIndex> first;
+        std::optional<ast::AnyExprIndex> second;
+        std::optional<ast::AnyExprIndex> last;
+        std::optional<sc::diag::Diagnostic> error;
+    };
+    [[nodiscard]] static RangeParts range_parts(const ast::ASTGraph& ast_graph, ast::RangeIndex i);
+
+    // The largest range that is folded into a constant array, larger ones are created when the code runs.
+    static constexpr std::size_t max_constant_range_size = 1024;
+
+    // `first.series(second, last)` for integers, if it can be folded.
+    // Only folds when the step isn't zero and goes towards last, as those cases are unambiguous.
+    [[nodiscard]] static std::optional<ConstExprArray>
+    fold_series(std::int32_t first, std::optional<std::int32_t> second, std::int32_t last);
+
+    // `receiver.copySeries(first, second, last)` for a constant array or string, if it can be folded. Missing first and
+    // last are the ends, and indices outside the receiver are clipped. Like fold_series, it is only folded when the
+    // step isn't zero and goes towards last, and when clipping is unambiguous. Doesn't check the method is known.
+    [[nodiscard]] static std::optional<ConstExpression>
+    fold_copy_series(const ConstExpression& receiver, std::optional<std::int32_t> first,
+                     std::optional<std::int32_t> second, std::optional<std::int32_t> last, SymbolTable& symbols);
+
     // Dispatches to the overloads below. The dispatch is only instantiated in consteval.cpp, so use this rather than
     // visiting yourself. Not an operator() overload, as that would make the conversions to the sets below ambiguous.
     Result eval(ast::AnyExprIndex);
@@ -74,6 +103,8 @@ struct ConstEval {
 
     // Sometimes
     Result operator()(ast::AnyMessageIndex);
+    // Slices, `a[1..3]`, can be folded.
+    Result operator()(ast::AtMessageIndex);
     Result operator()(ast::RangeIndex);
     Result operator()(ast::NamedIdentifierIndex);
     Result operator()(ast::CurryIndex);

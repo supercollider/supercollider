@@ -73,7 +73,9 @@ template <typename T> std::optional<T> from(const char* begin, const char* end) 
 }
 template <typename T> std::optional<T> from(std::string_view v) { return from<T>(v.begin(), v.end()); }
 
-int synthesize_literal(const ast::IntNode& node, std::string_view str) {
+namespace {
+// The value without its sign, as the sign isn't part of the literal's text.
+int unsigned_literal(const ast::IntNode& node, std::string_view str) {
     static constexpr size_t len { 128 };
     char buf[len] {};
     assert(str.size() < len);
@@ -124,6 +126,13 @@ int synthesize_literal(const ast::IntNode& node, std::string_view str) {
         return 0;
     }
 }
+}
+
+int synthesize_literal(const ast::IntNode& node, std::string_view str) {
+    const auto value = unsigned_literal(node, str);
+    return node.sign == ast::IntNode::Sign::Negative ? -value : value;
+}
+
 char synthesize_literal(const ast::ASCIINode&, std::string_view str) {
     assert(str.front() == '$');
     assert(str.size() == 2 || str.size() == 3);
@@ -150,7 +159,9 @@ char synthesize_literal(const ast::ASCIINode&, std::string_view str) {
         }
     }
 }
-double synthesize_literal(const ast::FloatNode& node, std::string_view str) {
+namespace {
+// The value without its sign, as the sign isn't part of the literal's text.
+double unsigned_literal(const ast::FloatNode& node, std::string_view str) {
     static constexpr size_t len { 128 };
     char buf[len] {};
     // This would be a floating point number with 128 characters.
@@ -188,6 +199,13 @@ double synthesize_literal(const ast::FloatNode& node, std::string_view str) {
         return 0;
     }
 }
+}
+
+double synthesize_literal(const ast::FloatNode& node, std::string_view str) {
+    const auto value = unsigned_literal(node, str);
+    return node.sign == ast::FloatNode::Sign::Negative ? -value : value;
+}
+
 std::string synthesize_literal(const ast::SymbolQuote&, std::string_view str) {
     // See github issue: #7783
     // '\n' === 'n'

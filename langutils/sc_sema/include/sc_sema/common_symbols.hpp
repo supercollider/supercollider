@@ -16,6 +16,13 @@ struct CommonSymbols {
     SymSCSelector at;
     // `a[i] = v` is `a.put(i, v)`.
     SymSCSelector put;
+    // `a[1..3]` is `a.copySeries(1, nil, 3)`, and `a[1..3] = v` is `a.putSeries(1, nil, 3, v)`.
+    SymSCSelector copy_series;
+    SymSCSelector put_series;
+    // `(1..5)` is `1.series(nil, 5)`.
+    SymSCSelector series;
+    // `Array[1, 2]` adds each element.
+    SymSCSelector add;
     // `a.perform(\foo)` is `a.foo`.
     SymSCSelector perform;
 

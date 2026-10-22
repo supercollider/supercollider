@@ -1,6 +1,7 @@
 // Messages. Every form is lowered to a single SCMessage, receiver.selector(positional, keyword: value, *variadic).
 // Trailing blocks are appended to the positional arguments.
 // Needs the ast graph for the children and payloads, and the symbol table for the selectors.
+#include "ast2ir/consteval.hpp"
 #include "ast2ir/expr.hpp"
 #include "ast2ir/literal_synthesis.hpp"
 #include "sc_parser/ast.hpp"
@@ -47,7 +48,9 @@ struct MessageArguments {
 MessageArguments make_arguments(MessageContext& msg_ctx, ast::OptionalIndex message_i, const Selector& selector,
                                 bool first_positional_is_receiver = false) {
     const auto location = location_of(msg_ctx.ir, *msg_ctx.ast_graph, message_i);
-    const bool is_perform = *selector.name == msg_ctx.ctx.common_symbols.perform;
+    // The rewrite assumes what perform does, so it is skipped if any class implements it differently.
+    const bool is_perform =
+        *selector.name == msg_ctx.ctx.common_symbols.perform && msg_ctx.ctx.known_methods.perform_is_known();
     return { msg_ctx.ir.create(SCPositionalArgs {}, location),
              msg_ctx.ir.create(SCKwArgs {}, location),
              msg_ctx.ir.create(SCVariadicArgs {}, location),
@@ -174,6 +177,52 @@ Selector selector(MessageContext& msg_ctx, ast::SelectorMaybeAdverbIndex i) {
 // For messages whose selector isn't written, e.g., `a.()` is `a.value()`.
 Selector implicit_selector(SymSCSelector name) { return { { std::nullopt, name }, std::nullopt }; }
 
+Return<SCAnyExpr_I> nil_literal(MessageContext& msg_ctx, ast::OptionalIndex at) {
+    const auto const_i = msg_ctx.ctx.constant_table.register_constexpr({ Nil {} });
+    const auto lit = msg_ctx.ir.create(SCLiteral { const_i }, location_of(msg_ctx.ir, *msg_ctx.ast_graph, at));
+    msg_ctx.ir.register_node_as_consteval(lit, const_i);
+    return { lit, const_i, TypeInfo { msg_ctx.ctx.common_classes.nil, TypeConfidence::Absolute } };
+}
+
+// A range's first, second and last, when the ones given are all integer constants. Missing ones are nullopt.
+struct RangeConstants {
+    std::optional<std::int32_t> first;
+    std::optional<std::int32_t> second;
+    std::optional<std::int32_t> last;
+};
+
+// Appends a range's first, second and last as positional arguments, missing ones are nil.
+// e.g., `a[1..3]` is `a.copySeries(1, nil, 3)`, and `a[..3]` is `a.copySeries(nil, nil, 3)`.
+// Returns their values if they can be used for folding.
+std::optional<RangeConstants> append_range(MessageContext& msg_ctx, MessageArguments& args, ast::RangeIndex range) {
+    auto parts = ConstEval::range_parts(*msg_ctx.ast_graph, range);
+    if (parts.error)
+        msg_ctx.expr.sink(*std::move(parts.error));
+
+    RangeConstants constants;
+    bool all_integers = !parts.error;
+    const auto append = [&](const std::optional<ast::AnyExprIndex>& part, std::optional<std::int32_t>& value) {
+        if (!part) {
+            append_positional(msg_ctx, args, nil_literal(msg_ctx, range));
+            return;
+        }
+        const auto r = msg_ctx.expr(*part);
+        const auto* v = r.const_index ? msg_ctx.ctx.constant_table(*r.const_index).get_if<std::int32_t>() : nullptr;
+        if (v)
+            value = *v;
+        else
+            all_integers = false;
+        append_positional(msg_ctx, args, r);
+    };
+    append(parts.first, constants.first);
+    append(parts.second, constants.second);
+    append(parts.last, constants.last);
+
+    if (!all_integers)
+        return std::nullopt;
+    return constants;
+}
+
 Return<SCAnyExpr_I> create_message(MessageContext& msg_ctx, ast::OptionalIndex message_i, SCAnyExpr_I receiver,
                                    const Selector& selector, const MessageArguments& args) {
     const auto location = location_of(msg_ctx.ir, *msg_ctx.ast_graph, message_i);
@@ -252,10 +301,27 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
     const auto [receiver, arg] = ast_graph->children(i);
     const auto receiver_r = (*this)(ast::AnyExprIndex { receiver });
 
-    // e.g., `a[1..3]`, this is a different message, and ranges aren't implemented yet.
+    // `a[1..3]` is a slice, `a.copySeries(1, nil, 3)`.
+    // TODO: later this should be rewritten as a visitor using the index type set.
     if (const auto range = ast_graph->as_a<ast::RangeIndex>(arg)) {
-        sink(sc::diag::Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, *range)));
-        return { ir.create(SCExprList {}, location(i)) };
+        const auto sel = implicit_selector(ctx.common_symbols.copy_series);
+        auto args = make_arguments(msg_ctx, i, sel);
+        const auto bounds = append_range(msg_ctx, args, *range);
+        const auto message = create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
+        if (!bounds || !receiver_r.const_index)
+            return message;
+
+        // A constant array or string sliced with constant bounds is folded, if copySeries is known.
+        const auto& value = ctx.constant_table(*receiver_r.const_index);
+        const auto receiver_class = value.get_if<SymSCString>() ? ctx.common_classes.string : ctx.common_classes.array;
+        if (!ctx.known_methods.is_known(receiver_class, ctx.common_symbols.copy_series))
+            return message;
+        auto folded = ConstEval::fold_copy_series(value, bounds->first, bounds->second, bounds->last, ctx.symbol_table);
+        if (!folded)
+            return message;
+        const auto const_i = ctx.constant_table.register_constexpr(std::move(*folded));
+        ir.register_node_as_consteval(message.ir_node, const_i);
+        return { message.ir_node, const_i, TypeInfo { receiver_class, TypeConfidence::Absolute } };
     }
 
     const auto sel = implicit_selector(ctx.common_symbols.at);
@@ -272,6 +338,17 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentAtIndex i) {
     const auto sel = implicit_selector(ctx.common_symbols.put);
     auto args = make_arguments(msg_ctx, i, sel);
     append_arguments(msg_ctx, args, arg_list);
+    append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
+    return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
+}
+// `a[1..3] = v` is `a.putSeries(1, nil, 3, v)`.
+Return<SCAnyExpr_I> Expr::operator()(ast::RangeAssignIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [receiver, range, value] = ast_graph->children(i);
+    const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { receiver });
+    const auto sel = implicit_selector(ctx.common_symbols.put_series);
+    auto args = make_arguments(msg_ctx, i, sel);
+    append_range(msg_ctx, args, range);
     append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
     return create_message(msg_ctx, i, receiver_r.ir_node, sel, args);
 }
