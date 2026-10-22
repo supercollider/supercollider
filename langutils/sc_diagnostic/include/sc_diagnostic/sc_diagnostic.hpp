@@ -105,6 +105,12 @@ public:
     [[nodiscard]] static Diagnostic undefined_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                        std::string_view name);
 
+    // `this = 1` or `#this = a`, see declared_special_variable.
+    [[nodiscard]] static Diagnostic assigned_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l);
+    // `var this`, `|thisProcess|`, ..., `this`, `super` and the pseudo variables, e.g., `thisProcess`, are set by the
+    // language.
+    [[nodiscard]] static Diagnostic declared_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
     // `_` that isn't the receiver, an argument, or an element of a call, so isn't partially applied.
     [[nodiscard]] static Diagnostic curry_outside_call(TextInfoPtr t, sc::lex::SourceCodeRange l);
 

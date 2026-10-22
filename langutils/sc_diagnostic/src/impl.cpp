@@ -523,4 +523,24 @@ Diagnostic Diagnostic::curry_outside_call(TextInfoPtr t, sc::lex::SourceCodeRang
         "argument of a message, or an element of an array or dictionary, not inside another expression."
     };
 }
+
+namespace {
+constexpr auto special_variables =
+    "`this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the "
+    "language";
+}
+
+Diagnostic Diagnostic::assigned_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Special variable assigned",
+             Severity::Error,
+             { { std::move(t), l, "this can't be assigned." } },
+             std::string { special_variables } + ", so can't be assigned." };
+}
+
+Diagnostic Diagnostic::declared_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Special variable declared",
+             Severity::Error,
+             { { std::move(t), l, "this name is reserved." } },
+             std::string { special_variables } + ". Use a different name." };
+}
 }

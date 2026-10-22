@@ -48,6 +48,24 @@ struct SCRead : priv::Terminal<SCRead_I> {
         declaration(d) {}
 };
 
+// `this`, `super`, and the pseudo variables, e.g., `thisProcess`. These aren't variables: the language sets them,
+// nothing declares them, and they can't be assigned.
+struct SCSpecial : priv::Terminal<SCSpecial_I> {
+    static constexpr auto type_name { "SCSpecial" };
+    enum struct Kind {
+        This,
+        // `this`, but a message sent to it is looked up from the superclass of the class the method is defined in.
+        Super,
+        Process,
+        Thread,
+        Method,
+        FunctionDef,
+        Function,
+    };
+    Kind kind;
+    SCSpecial(Kind k): kind(k) {}
+};
+
 struct SCAssign : priv::Node<SCAssign_I(SCAnyExpr_I)> {
     static constexpr auto type_name { "SCAssign" };
     enum struct Kind { Local, Instance, Class, Environment };

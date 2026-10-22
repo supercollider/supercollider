@@ -3,6 +3,7 @@
 #include "ast2ir/expr.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/ast_untyped.hpp"
+#include "sc_sema/common_symbols.hpp"
 #include "sc_sema/context.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
@@ -69,9 +70,32 @@ SCAssign::Kind to_assign_kind(ScopeEntry::Kind k) {
 }
 
 // Reads are constant when the variable is, see compile_body.
+namespace {
+std::optional<SCSpecial::Kind> special_kind(const CommonSymbols& s, SymSCIdentifier name) {
+    if (name == s.this_)
+        return SCSpecial::Kind::This;
+    if (name == s.super_)
+        return SCSpecial::Kind::Super;
+    if (name == s.this_process)
+        return SCSpecial::Kind::Process;
+    if (name == s.this_thread)
+        return SCSpecial::Kind::Thread;
+    if (name == s.this_method)
+        return SCSpecial::Kind::Method;
+    if (name == s.this_function_def)
+        return SCSpecial::Kind::FunctionDef;
+    if (name == s.this_function)
+        return SCSpecial::Kind::Function;
+    return std::nullopt;
+}
+}
+
 Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
     const auto txt = get_string_view(*ast_graph, i);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
+    // These can't be declared, so can't be hidden by a variable.
+    if (const auto kind = special_kind(ctx.common_symbols, name_sym))
+        return { ir.create(SCSpecial { *kind }, location({ *i })) };
     if (const auto entry = resolve_symbol(name_sym)) {
         const auto read = ir.create(SCRead { name_sym, to_read_kind(entry->kind), declaration_location(ir, *entry) },
                                     location({ *i }));
@@ -110,6 +134,12 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
         return make_return(SCAssign::Kind::Environment, std::nullopt);
     }
 
+    if (ctx.common_symbols.is_special(name_sym)) {
+        sink(
+            sc::diag::Diagnostic::assigned_special_variable(get_text_info(*ast_graph), get_location(*ast_graph, name)));
+        return expr_r;
+    }
+
     // TODO: error when assigning to a const once ScopeEntry records const-ness.
     if (const auto entry = resolve_symbol(name_sym))
         return make_return(to_assign_kind(entry->kind), declaration_location(ir, *entry));
@@ -139,6 +169,11 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
         assert(name);
         const auto txt = get_string_view(*ast_graph, *name);
         const auto sym = ctx.symbol_table.get_identifier(std::string { txt });
+        if (ctx.common_symbols.is_special(sym)) {
+            sink(sc::diag::Diagnostic::assigned_special_variable(get_text_info(*ast_graph),
+                                                                 get_location(*ast_graph, *name)));
+            return;
+        }
         if (const auto entry = resolve_symbol(sym)) {
             ir.append(targets,
                       ir.create(SCPackTarget { { location({ **name }), sym },

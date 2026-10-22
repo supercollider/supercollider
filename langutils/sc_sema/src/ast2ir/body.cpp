@@ -236,6 +236,11 @@ bool add_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, SymSCIdentif
                   std::optional<TypeInfo> type) {
     const auto& g = *b.ast_graph;
 
+    if (b.ctx.common_symbols.is_special(name)) {
+        b.expr.sink(sc::diag::Diagnostic::declared_special_variable(get_text_info(g), get_location(g, name_i)));
+        return false;
+    }
+
     // Arguments and variables of the same function share a scope, so a name can't be declared twice.
     auto& current = b.expr.scope.back();
     if (const auto fnd = current.find(name); fnd != current.end()) {

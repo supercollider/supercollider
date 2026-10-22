@@ -8,6 +8,7 @@ enum struct SCNodeType {
 
     Assign,
     Read,
+    Special,
 
 
     KwArg,
@@ -69,6 +70,7 @@ using SCLiteral_I = TypedNodeIndex<SCNodeType::Literal>;
 using SCMessage_I = TypedNodeIndex<SCNodeType::Message>;
 using SCAssign_I = TypedNodeIndex<SCNodeType::Assign>;
 using SCRead_I = TypedNodeIndex<SCNodeType::Read>;
+using SCSpecial_I = TypedNodeIndex<SCNodeType::Special>;
 
 using SCKwArgList_I = TypedNodeIndex<SCNodeType::KwArgList>;
 using SCPosArgList_I = TypedNodeIndex<SCNodeType::PosArgList>;
@@ -106,8 +108,8 @@ using SCExtention_I = TypedNodeIndex<SCNodeType::Extention>;
 using SCExprList_I = TypedNodeIndex<SCNodeType::ExprList>;
 using SCBody_I = TypedNodeIndex<SCNodeType::Body>;
 
-using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCExplicitReturn_I, SCLiteral_I, SCMessage_I,
-                         SCCollection_I, SCRange_I, SCPackAssign_I, SCGenerator_I, SCRangeGenerator_I>;
+using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCSpecial_I, SCExplicitReturn_I, SCLiteral_I,
+                         SCMessage_I, SCCollection_I, SCRange_I, SCPackAssign_I, SCGenerator_I, SCRangeGenerator_I>;
 
 using SCClassList_I = TypedNodeIndex<SCNodeType::ClassOrExtentionList>;
 

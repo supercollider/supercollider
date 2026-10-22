@@ -33,6 +33,19 @@ struct CommonSymbols {
     // Where perform is defined. This is the class named Object, not the default inheritor, which can change.
     SymSCClassName object;
 
+    // `this`, `super`, and the pseudo variables, see SCSpecial. They can't be declared or assigned.
+    SymSCIdentifier this_;
+    SymSCIdentifier super_;
+    SymSCIdentifier this_process;
+    SymSCIdentifier this_thread;
+    SymSCIdentifier this_method;
+    SymSCIdentifier this_function_def;
+    SymSCIdentifier this_function;
+    [[nodiscard]] bool is_special(SymSCIdentifier name) const {
+        return name == this_ || name == super_ || name == this_process || name == this_thread || name == this_method
+            || name == this_function_def || name == this_function;
+    }
+
     // The slot types a class can be declared with, e.g., `Foo[float] {}`.
     SymSCIdentifier slot;
     SymSCIdentifier float_;

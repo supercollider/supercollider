@@ -17,6 +17,13 @@ CommonSymbols::CommonSymbols(SymbolTable& table):
     arrayed_collection(table.get_class_name("ArrayedCollection")),
     dictionary(table.get_class_name("Dictionary")),
     object(table.get_class_name("Object")),
+    this_(table.get_identifier("this")),
+    super_(table.get_identifier("super")),
+    this_process(table.get_identifier("thisProcess")),
+    this_thread(table.get_identifier("thisThread")),
+    this_method(table.get_identifier("thisMethod")),
+    this_function_def(table.get_identifier("thisFunctionDef")),
+    this_function(table.get_identifier("thisFunction")),
     slot(table.get_identifier("slot")),
     float_(table.get_identifier("float")),
     int_(table.get_identifier("int")) {}

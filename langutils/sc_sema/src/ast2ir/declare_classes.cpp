@@ -5,6 +5,7 @@
 #include "ast2ir/literal_synthesis.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_parser/indexes_typed.hpp"
+#include "sc_sema/common_symbols.hpp"
 #include "sc_sema/source_location.hpp"
 #include "sc_sema/compiler.hpp"
 #include "sc_sema/decls.hpp"
@@ -19,6 +20,11 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
                                          ast::Index total_index, ast::Index accessor_i, ast::ReadWriteAccessor accessor,
                                          ast::NamedIdentifierIndex name_i) {
     const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
+    if (cxt.common_symbols.is_special(name)) {
+        cxt.diagnostics(
+            diag::Diagnostic::declared_special_variable(get_text_info(*ast_graph), get_location(*ast_graph, name_i)));
+        return;
+    }
     const auto r = decl.insert(
         ClassDeclaration::Member { total_index, name, { *name_i }, accessor, accessor_i, {}, {}, is_const });
     if (!r) {
@@ -37,6 +43,11 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
     const ast::NamedIdentifierIndex name_i = name_i_t;
     ast::AnyExprIndex expr_i = expr_i_t;
     const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
+    if (cxt.common_symbols.is_special(name)) {
+        cxt.diagnostics(
+            diag::Diagnostic::declared_special_variable(get_text_info(*ast_graph), get_location(*ast_graph, name_i)));
+        return;
+    }
 
     ast2ir::ConstEval { cxt, ast_graph, ast_index, &constants }.eval(expr_i).visit(
         [&](std::pair<ConstExprIndex, TypeInfo> p) {

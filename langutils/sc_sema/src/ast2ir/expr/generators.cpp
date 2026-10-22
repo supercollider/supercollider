@@ -54,9 +54,15 @@ Locatable<SymSCIdentifier> name_of(GeneratorContext& c, ast::NamedIdentifierInde
 // an earlier one's names. The variables change each iteration, so are never constant.
 void open_scope(GeneratorContext& c) { c.scopes.open(); }
 
-void declare(GeneratorContext& c, SymSCIdentifier name, join<SCGenQualIterate_I, SCGenQualDeclare_I> declare) {
+void declare(GeneratorContext& c, Locatable<SymSCIdentifier> name,
+             join<SCGenQualIterate_I, SCGenQualDeclare_I> declare) {
+    if (c.ctx.common_symbols.is_special(*name)) {
+        c.expr.sink(sc::diag::Diagnostic::declared_special_variable(c.ir.text_info(name.location.source),
+                                                                    IRGraph::range(name.location)));
+        return;
+    }
     c.expr.add_symbol(
-        name,
+        *name,
         ScopeEntry { nullptr, c.qualifiers, declare, {}, {}, ScopeEntry::Kind::Local, ScopeEntry::State::Initalised });
 }
 
@@ -83,7 +89,7 @@ void iterate(GeneratorContext& c, ast::GeneratorQualAssignIndex q) {
     c.ir.append(c.qualifiers, node);
 
     open_scope(c);
-    declare(c, *element, node);
+    declare(c, element, node);
     if (!index)
         return;
     // `x x <- source`, the old compiler made these the arguments of a block, which can't share a name.
@@ -92,7 +98,7 @@ void iterate(GeneratorContext& c, ast::GeneratorQualAssignIndex q) {
                                                              get_text_info(g), get_location(g, *index_i)));
         return;
     }
-    declare(c, **index, node);
+    declare(c, *index, node);
 }
 
 // `var x = value`. The value can't use the name it declares.
@@ -103,7 +109,7 @@ void declare_variable(GeneratorContext& c, ast::GeneratorQualDeclareIndex q) {
     const auto node = c.ir.create(SCGenQualDeclare { name }, location_of(c.ir, *c.ast_graph, { *q }), value_r.ir_node);
     c.ir.append(c.qualifiers, node);
     open_scope(c);
-    declare(c, *name, node);
+    declare(c, name, node);
 }
 
 void qualifier(GeneratorContext& c, ast::GeneratorQualAnyIndex q) {

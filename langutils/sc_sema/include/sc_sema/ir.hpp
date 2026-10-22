@@ -33,6 +33,7 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper<SCNodeType,
                                                                      SCVariadicArgs, //
                                                                      SCAssign, //
                                                                      SCRead, //
+                                                                     SCSpecial, //
                                                                      SCMessage, //
                                                                      SCVariableDeclare, //
                                                                      SCExplicitReturn, //

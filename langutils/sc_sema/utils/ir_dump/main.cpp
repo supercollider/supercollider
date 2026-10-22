@@ -528,6 +528,32 @@ int main(int argc, char* argv[]) {
                         [&](const sc::ir::SCVariableDeclare& v) { std::cout << ": " << symbol_table(*v.name); },
                         [&](const sc::ir::SCArgumentDeclare& a) { std::cout << ": " << symbol_table(a.name); },
                         [&](const sc::ir::SCMember& m) { std::cout << ": " << symbol_table(m.name); },
+                        [&](const sc::ir::SCSpecial& special) {
+                            using Kind = sc::ir::SCSpecial::Kind;
+                            switch (special.kind) {
+                            case Kind::This:
+                                std::cout << ": this";
+                                break;
+                            case Kind::Super:
+                                std::cout << ": super";
+                                break;
+                            case Kind::Process:
+                                std::cout << ": thisProcess";
+                                break;
+                            case Kind::Thread:
+                                std::cout << ": thisThread";
+                                break;
+                            case Kind::Method:
+                                std::cout << ": thisMethod";
+                                break;
+                            case Kind::FunctionDef:
+                                std::cout << ": thisFunctionDef";
+                                break;
+                            case Kind::Function:
+                                std::cout << ": thisFunction";
+                                break;
+                            }
+                        },
                         [&](const sc::ir::SCRead& r) {
                             std::cout << ": " << read_kind_name(r.kind) << " " << symbol_table(r.name);
                         },

@@ -1,0 +1,321 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (1:1): SpecialVariables
+|  SCMemberList (1:1)
+|  |  SCMember (2:9): member
+|  SCMethodList (1:1)
+|  |  SCMethod (5:5): this_alone { ^this }
+|  |  |  SCBody (5:18)
+|  |  |  |  SCExplicitReturn (5:19)
+|  |  |  |  |  SCSpecial (5:19): this
+|  |  SCMethod (7:5): this_receiver { ^this.foo }
+|  |  |  SCBody (7:21)
+|  |  |  |  SCExplicitReturn (7:22)
+|  |  |  |  |  SCMessage (7:22): foo
+|  |  |  |  |  |  SCSpecial (7:22): this
+|  |  SCMethod (9:5): super_receiver { ^super.foo(1) }
+|  |  |  SCBody (9:22)
+|  |  |  |  SCExplicitReturn (9:23)
+|  |  |  |  |  SCMessage (9:23): foo
+|  |  |  |  |  |  SCSpecial (9:23): super
+|  |  |  |  |  |  SCPositionalArgs (9:23)
+|  |  |  |  |  |  |  SCLiteral (9:33) = 1
+|  |  SCMethod (11:5): super_binary { ^super + 1 }
+|  |  |  SCBody (11:20)
+|  |  |  |  SCExplicitReturn (11:21)
+|  |  |  |  |  SCMessage (11:21): +
+|  |  |  |  |  |  SCSpecial (11:21): super
+|  |  |  |  |  |  SCPositionalArgs (11:21)
+|  |  |  |  |  |  |  SCLiteral (11:29) = 1
+|  |  SCMethod (13:5): super_setter { super.member = 1 }
+|  |  |  SCBody (13:20)
+|  |  |  |  SCMessage (13:20): member_
+|  |  |  |  |  SCSpecial (13:20): super
+|  |  |  |  |  SCPositionalArgs (13:20)
+|  |  |  |  |  |  SCLiteral (13:35) = 1
+|  |  SCMethod (15:5): super_functional { ^foo(super, 1) }
+|  |  |  SCBody (15:24)
+|  |  |  |  SCExplicitReturn (15:25)
+|  |  |  |  |  SCMessage (15:25): foo
+|  |  |  |  |  |  SCSpecial (15:29): super
+|  |  |  |  |  |  SCPositionalArgs (15:25)
+|  |  |  |  |  |  |  SCLiteral (15:36) = 1
+|  |  SCMethod (17:5): super_as_value { ^[super] }
+|  |  |  SCBody (17:22)
+|  |  |  |  SCExplicitReturn (17:23)
+|  |  |  |  |  SCCollection (17:23): Array
+|  |  |  |  |  |  SCSpecial (17:24): super
+|  |  SCMethod (19:5): process { ^thisProcess }
+|  |  |  SCBody (19:15)
+|  |  |  |  SCExplicitReturn (19:16)
+|  |  |  |  |  SCSpecial (19:16): thisProcess
+|  |  SCMethod (21:5): thread { ^thisThread }
+|  |  |  SCBody (21:14)
+|  |  |  |  SCExplicitReturn (21:15)
+|  |  |  |  |  SCSpecial (21:15): thisThread
+|  |  SCMethod (23:5): method { ^thisMethod }
+|  |  |  SCBody (23:14)
+|  |  |  |  SCExplicitReturn (23:15)
+|  |  |  |  |  SCSpecial (23:15): thisMethod
+|  |  SCMethod (25:5): function_def { ^thisFunctionDef }
+|  |  |  SCBody (25:20)
+|  |  |  |  SCExplicitReturn (25:21)
+|  |  |  |  |  SCSpecial (25:21): thisFunctionDef
+|  |  SCMethod (27:5): function { ^{ thisFunction } }
+|  |  |  SCBody (27:16)
+|  |  |  |  SCExplicitReturn (27:17)
+|  |  |  |  |  SCFunction (27:17)
+|  |  |  |  |  |  SCBody (27:17)
+|  |  |  |  |  |  |  SCSpecial (27:19): thisFunction
+|  |  SCMethod (31:5): in_generator { ^{: this, x <- [1] } }
+|  |  |  SCBody (31:20)
+|  |  |  |  SCExplicitReturn (31:21)
+|  |  |  |  |  SCGenerator (31:21): routine
+|  |  |  |  |  |  SCGenQualList (31:30)
+|  |  |  |  |  |  |  SCGenQualIterate (31:30): x
+|  |  |  |  |  |  |  |  SCCollection (31:35): Array = [1]
+|  |  |  |  |  |  |  |  |  SCLiteral (31:36) = 1
+|  |  |  |  |  |  SCSpecial (31:24): this
+|  |  SCMethod (33:5): curried { ^this.foo(_) }
+|  |  |  SCBody (33:15)
+|  |  |  |  SCExplicitReturn (33:16)
+|  |  |  |  |  SCFunction (33:16)
+|  |  |  |  |  |  SCArgumentDeclareList (33:16)
+|  |  |  |  |  |  |  SCArgumentDeclare (33:25): _
+|  |  |  |  |  |  SCBody (33:16)
+|  |  |  |  |  |  |  SCMessage (33:16): foo
+|  |  |  |  |  |  |  |  SCSpecial (33:16): this
+|  |  |  |  |  |  |  |  SCPositionalArgs (33:16)
+|  |  |  |  |  |  |  |  |  SCRead (33:25): local _, declared (33:25): _
+|  |  SCMethod (35:5): not_constant { ^this }
+|  |  |  SCBody (35:20)
+|  |  |  |  SCExplicitReturn (35:21)
+|  |  |  |  |  SCSpecial (35:21): this
+|  |  SCMethod (39:5): poisoned: assign_this { this = 1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Special variable assigned
+|  |  |  variables/special_variables.sc:39:19
+|  |  |     37 │     // expect-error: Special variable assigned
+|  |  |     38 │     // expect: poisoned
+|  |  |     39 │     assign_this { this = 1 }
+|  |  |        ┆                   ^^^^ this can't be assigned.
+|  |  |     40 │     // expect-error: Special variable assigned
+|  |  |     41 │     assign_process { thisProcess = 2 }
+|  |  |     42 │     // expect-error: Special variable assigned
+|  |  |
+|  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language, so can't be assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (39:19)
+|  |  |  |  SCLiteral (39:26) = 1
+|  |  SCMethod (41:5): poisoned: assign_process { thisProcess = 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Special variable assigned
+|  |  |  variables/special_variables.sc:41:22
+|  |  |     39 │     assign_this { this = 1 }
+|  |  |     40 │     // expect-error: Special variable assigned
+|  |  |     41 │     assign_process { thisProcess = 2 }
+|  |  |        ┆                      ^^^^^^^^^^^ this can't be assigned.
+|  |  |     42 │     // expect-error: Special variable assigned
+|  |  |     43 │     pack_assign { #this, member = [1, 2] }
+|  |  |     44 │     // expect-error: Special variable declared
+|  |  |
+|  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language, so can't be assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (41:22)
+|  |  |  |  SCLiteral (41:36) = 2
+|  |  SCMethod (43:5): poisoned: pack_assign { #this, member = [1, 2] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Special variable assigned
+|  |  |  variables/special_variables.sc:43:20
+|  |  |     41 │     assign_process { thisProcess = 2 }
+|  |  |     42 │     // expect-error: Special variable assigned
+|  |  |     43 │     pack_assign { #this, member = [1, 2] }
+|  |  |        ┆                    ^^^^ this can't be assigned.
+|  |  |     44 │     // expect-error: Special variable declared
+|  |  |     45 │     declare_variable { var this = 1; ^this }
+|  |  |     46 │     // expect-error: Special variable declared
+|  |  |
+|  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language, so can't be assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (43:19)
+|  |  |  |  SCPackAssign (43:19)
+|  |  |  |  |  SCCollection (43:35): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (43:36) = 1
+|  |  |  |  |  |  SCLiteral (43:39) = 2
+|  |  |  |  |  SCPackTargets (43:19)
+|  |  |  |  |  |  SCPackTarget (43:26): instance member at 1, declared (2:9): member
+|  |  SCMethod (45:5): poisoned: declare_variable { var this = 1; ^this }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Special variable declared
+|  |  |  variables/special_variables.sc:45:28
+|  |  |     43 │     pack_assign { #this, member = [1, 2] }
+|  |  |     44 │     // expect-error: Special variable declared
+|  |  |     45 │     declare_variable { var this = 1; ^this }
+|  |  |        ┆                            ^^^^ this name is reserved.
+|  |  |     46 │     // expect-error: Special variable declared
+|  |  |     47 │     declare_argument { |thisProcess| ^1 }
+|  |  |     48 │     // expect-error: Special variable declared
+|  |  |
+|  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (45:24)
+|  |  |  |  SCVariableDeclare (45:28): this
+|  |  |  |  |  SCLiteral (45:35) = 1
+|  |  |  |  SCExplicitReturn (45:39)
+|  |  |  |  |  SCSpecial (45:39): this
+|  |  SCMethod (47:5): poisoned: declare_argument { |thisProcess| ^1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Special variable declared
+|  |  |  variables/special_variables.sc:47:25
+|  |  |     45 │     declare_variable { var this = 1; ^this }
+|  |  |     46 │     // expect-error: Special variable declared
+|  |  |     47 │     declare_argument { |thisProcess| ^1 }
+|  |  |        ┆                         ^^^^^^^^^^^ this name is reserved.
+|  |  |     48 │     // expect-error: Special variable declared
+|  |  |     49 │     declare_block_argument { ^{ |super| 1 } }
+|  |  |     50 │     // expect-error: Special variable declared
+|  |  |
+|  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (47:25)
+|  |  |  |  SCArgumentDeclare (47:25): thisProcess
+|  |  |  SCBody (47:38)
+|  |  |  |  SCExplicitReturn (47:39)
+|  |  |  |  |  SCLiteral (47:39) = 1
+|  |  SCMethod (49:5): poisoned: declare_block_argument { ^{ |super| 1 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Special variable declared
+|  |  |  variables/special_variables.sc:49:34
+|  |  |     47 │     declare_argument { |thisProcess| ^1 }
+|  |  |     48 │     // expect-error: Special variable declared
+|  |  |     49 │     declare_block_argument { ^{ |super| 1 } }
+|  |  |        ┆                                  ^^^^^ this name is reserved.
+|  |  |     50 │     // expect-error: Special variable declared
+|  |  |     51 │     declare_pack { var #a, thisThread = [1, 2]; ^a }
+|  |  |     52 │     // expect-error: Special variable declared
+|  |  |
+|  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (49:30)
+|  |  |  |  SCExplicitReturn (49:31)
+|  |  |  |  |  SCFunction (49:31)
+|  |  |  |  |  |  SCArgumentDeclareList (49:34)
+|  |  |  |  |  |  |  SCArgumentDeclare (49:34): super
+|  |  |  |  |  |  SCBody (49:31)
+|  |  |  |  |  |  |  SCLiteral (49:41) = 1
+|  |  SCMethod (51:5): poisoned: declare_pack { var #a, thisThread = [1, 2]; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Special variable declared
+|  |  |  variables/special_variables.sc:51:28
+|  |  |     49 │     declare_block_argument { ^{ |super| 1 } }
+|  |  |     50 │     // expect-error: Special variable declared
+|  |  |     51 │     declare_pack { var #a, thisThread = [1, 2]; ^a }
+|  |  |        ┆                            ^^^^^^^^^^ this name is reserved.
+|  |  |     52 │     // expect-error: Special variable declared
+|  |  |     53 │     declare_generator_element { ^{: 1, thisMethod <- [1] } }
+|  |  |     54 │     // expect-error: Special variable declared
+|  |  |
+|  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (51:20)
+|  |  |  |  SCPackDeclare (51:24)
+|  |  |  |  |  SCCollection (51:41): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (51:42) = 1
+|  |  |  |  |  |  SCLiteral (51:45) = 2
+|  |  |  |  |  SCPackTargets (51:24)
+|  |  |  |  |  |  SCPackTarget (51:25): local a at 0
+|  |  |  |  |  |  SCPackTarget (51:28): local thisThread at 1
+|  |  |  |  SCExplicitReturn (51:50)
+|  |  |  |  |  SCRead (51:50): local a = 1, declared (51:25): a
+|  |  SCMethod (53:5): poisoned: declare_generator_element { ^{: 1, thisMethod <- [1] } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Special variable declared
+|  |  |  variables/special_variables.sc:53:40
+|  |  |     51 │     declare_pack { var #a, thisThread = [1, 2]; ^a }
+|  |  |     52 │     // expect-error: Special variable declared
+|  |  |     53 │     declare_generator_element { ^{: 1, thisMethod <- [1] } }
+|  |  |        ┆                                        ^^^^^^^^^^ this name is reserved.
+|  |  |     54 │     // expect-error: Special variable declared
+|  |  |     55 │     declare_generator_variable { ^{: 1, var thisFunction = 1 } }
+|  |  |     56 │ }
+|  |  |
+|  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (53:33)
+|  |  |  |  SCExplicitReturn (53:34)
+|  |  |  |  |  SCGenerator (53:34): routine
+|  |  |  |  |  |  SCGenQualList (53:40)
+|  |  |  |  |  |  |  SCGenQualIterate (53:40): thisMethod
+|  |  |  |  |  |  |  |  SCCollection (53:54): Array = [1]
+|  |  |  |  |  |  |  |  |  SCLiteral (53:55) = 1
+|  |  |  |  |  |  SCLiteral (53:37) = 1
+|  |  SCMethod (55:5): poisoned: declare_generator_variable { ^{: 1, var thisFunction = 1 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Special variable declared
+|  |  |  variables/special_variables.sc:55:45
+|  |  |     53 │     declare_generator_element { ^{: 1, thisMethod <- [1] } }
+|  |  |     54 │     // expect-error: Special variable declared
+|  |  |     55 │     declare_generator_variable { ^{: 1, var thisFunction = 1 } }
+|  |  |        ┆                                             ^^^^^^^^^^^^ this name is reserved.
+|  |  |     56 │ }
+|  |  |     57 │ 
+|  |  |     58 │ SpecialMembers {
+|  |  |
+|  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (55:34)
+|  |  |  |  SCExplicitReturn (55:35)
+|  |  |  |  |  SCGenerator (55:35): routine
+|  |  |  |  |  |  SCGenQualList (55:41)
+|  |  |  |  |  |  |  SCGenQualDeclare (55:41): thisFunction
+|  |  |  |  |  |  |  |  SCLiteral (55:60) = 1
+|  |  |  |  |  |  SCLiteral (55:38) = 1
+SCClass (1:1): Meta_SpecialVariables
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (29:5): *class_this { ^this }
+|  |  |  SCBody (29:19)
+|  |  |  |  SCExplicitReturn (29:20)
+|  |  |  |  |  SCSpecial (29:20): this
+SCClass (58:1): SpecialMembers
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Special variable declared
+|  variables/special_variables.sc:59:9
+|     57 │ 
+|     58 │ SpecialMembers {
+|     59 │     var this;
+|        ┆         ^^^^ this name is reserved.
+|     60 │     classvar thisFunctionDef = 1;
+|     61 │ }
+|
+|  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Special variable declared
+|  variables/special_variables.sc:60:14
+|     58 │ SpecialMembers {
+|     59 │     var this;
+|     60 │     classvar thisFunctionDef = 1;
+|        ┆              ^^^^^^^^^^^^^^^ this name is reserved.
+|     61 │ }
+|
+|  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (58:1)
+|  SCMethodList (58:1)
+Successfully compiled 16 classes.

@@ -12,6 +12,11 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                        SCArgumentDeclareList_I args, SCArgumentDeclareList_I var_args, ast::DeclareArgumentListIndex i,
                        std::optional<join<SCFunction_I, SCMethod_I>> scope_owner) {
     const auto declared = [&](SymSCIdentifier name, SCArgumentDeclare_I arg) {
+        if (ctx.common_symbols.is_special(name)) {
+            const auto loc = ir.location(arg);
+            expr.sink(sc::diag::Diagnostic::declared_special_variable(ir.text_info(loc.source), IRGraph::range(loc)));
+            return;
+        }
         if (scope_owner)
             expr.add_symbol(
                 name,
