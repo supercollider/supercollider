@@ -2273,30 +2273,41 @@ void LinExp_next_kk(LinExp* unit, int inNumSamples) {
     LOOP1(inNumSamples, ZXP(out) = dstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo););
 }
 
+// The _aa, _ak and _ka variants are selected when at least one input of a pair is audio rate,
+// but the other input of the pair may still be scalar or control rate. Those inputs only have a
+// single sample, so only audio-rate inputs may be advanced per sample.
+static inline int LinExp_inputStep(LinExp* unit, int index) { return INRATE(index) == calc_FullRate ? 1 : 0; }
+
 void LinExp_next_aa(LinExp* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float* in = ZIN(0);
-    float* srclo = ZIN(1);
-    float* srchi = ZIN(2);
-    float* dstlo = ZIN(3);
-    float* dsthi = ZIN(4);
+    const float* srclo = IN(1);
+    const float* srchi = IN(2);
+    const float* dstlo = IN(3);
+    const float* dsthi = IN(4);
+    const int srcloStep = LinExp_inputStep(unit, 1);
+    const int srchiStep = LinExp_inputStep(unit, 2);
+    const int dstloStep = LinExp_inputStep(unit, 3);
+    const int dsthiStep = LinExp_inputStep(unit, 4);
 
-
-    LOOP1(inNumSamples, float zdsthi = ZXP(dsthi); float zdstlo = ZXP(dstlo); float zsrchi = ZXP(srchi);
-          float zsrclo = ZXP(srclo); float dstratio = zdsthi / zdstlo; float rsrcrange = sc_reciprocal(zsrchi - zsrclo);
+    LOOP1(inNumSamples, float zdsthi = *dsthi; float zdstlo = *dstlo; float zsrchi = *srchi; float zsrclo = *srclo;
+          dsthi += dsthiStep; dstlo += dstloStep; srchi += srchiStep; srclo += srcloStep;
+          float dstratio = zdsthi / zdstlo; float rsrcrange = sc_reciprocal(zsrchi - zsrclo);
           float rrminuslo = rsrcrange * -zsrclo; ZXP(out) = zdstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo););
 }
 
 void LinExp_next_ak(LinExp* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float* in = ZIN(0);
-    float* srclo = ZIN(1);
-    float* srchi = ZIN(2);
+    const float* srclo = IN(1);
+    const float* srchi = IN(2);
+    const int srcloStep = LinExp_inputStep(unit, 1);
+    const int srchiStep = LinExp_inputStep(unit, 2);
     float dstlo = ZIN0(3);
     float dsthi = ZIN0(4);
     float dstratio = dsthi / dstlo;
 
-    LOOP1(inNumSamples, float zsrchi = ZXP(srchi); float zsrclo = ZXP(srclo);
+    LOOP1(inNumSamples, float zsrchi = *srchi; float zsrclo = *srclo; srchi += srchiStep; srclo += srcloStep;
 
           float rsrcrange = sc_reciprocal(zsrchi - zsrclo); float rrminuslo = rsrcrange * -zsrclo;
           ZXP(out) = dstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo););
@@ -2307,13 +2318,15 @@ void LinExp_next_ka(LinExp* unit, int inNumSamples) {
     float* in = ZIN(0);
     float srclo = ZIN0(1);
     float srchi = ZIN0(2);
-    float* dstlo = ZIN(3);
-    float* dsthi = ZIN(4);
+    const float* dstlo = IN(3);
+    const float* dsthi = IN(4);
+    const int dstloStep = LinExp_inputStep(unit, 3);
+    const int dsthiStep = LinExp_inputStep(unit, 4);
     float rsrcrange = sc_reciprocal(srchi - srclo);
     float rrminuslo = rsrcrange * -srclo;
 
-    LOOP1(inNumSamples, float zdsthi = ZXP(dsthi); float zdstlo = ZXP(dstlo); float dstratio = zdsthi / zdstlo;
-          ZXP(out) = zdstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo););
+    LOOP1(inNumSamples, float zdsthi = *dsthi; float zdstlo = *dstlo; dsthi += dsthiStep; dstlo += dstloStep;
+          float dstratio = zdsthi / zdstlo; ZXP(out) = zdstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo););
 }
 
 

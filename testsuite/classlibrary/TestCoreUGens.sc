@@ -873,6 +873,45 @@ TestCoreUGens : UnitTest {
 		};
 	}
 
+	// LinExp.ar must handle any mix of scalar, control and audio rate range inputs (#7556)
+	test_linexp_mixedRateInputs {
+		var cond = CondVar();
+		var completed = 0;
+		var testDur, testsFinished;
+		var in = 0.5, params = [-1, 1, 1, 2]; // srclo, srchi, dstlo, dsthi
+		var expected = in.linexp(*params);
+		var rates = [\scalar, \control, \audio];
+		var wrap = { |val, rate|
+			switch(rate,
+				\scalar, { val },
+				\control, { DC.kr(val) },
+				\audio, { DC.ar(val) }
+			)
+		};
+		var combos = rates.dup(params.size).allTuples;
+
+		server.bootSync;
+		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
+
+		combos.do { |paramRates|
+			{
+				LinExp.ar(DC.ar(in), *params.collect { |val, i| wrap.(val, paramRates[i]) })
+			}.loadToFloatArray(testDur, server, { |data|
+				this.assertArrayFloatEquals(data, expected,
+					"LinExp.ar(DC.ar(%), %) with srclo, srchi, dstlo, dsthi rates % should output %"
+					.format(in, params, paramRates, expected),
+					within: 1e-5, report: false
+				);
+				completed = completed + 1;
+				cond.signalOne;
+			});
+			server.sync;
+		};
+
+		testsFinished = cond.waitFor((1.5 * combos.size * testDur).max(minTimeOut), { completed == combos.size });
+		this.assert(testsFinished, "TIMEOUT: linexp_mixedRateInputs tests", report: false);
+	}
+
 	// Test for correct arrival time of Envs with numerous stages
 	test_env_endsOnTime {
 		var shapes = [\sin, \lin, \exp, \sqr, \cub, \welch, -2.2, \step, \hold];
