@@ -454,4 +454,12 @@ Diagnostic Diagnostic::variadic_argument_not_last(TextInfoPtr variadic_t, sc::le
              "A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. "
              "This includes the value of `a[*i] = v`, which is passed last." };
 }
+
+Diagnostic Diagnostic::event_key_without_value(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+    return { "Event key without a value",
+             Severity::Warning,
+             { { std::move(first_t), first_l, "this key has no value." } },
+             "The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or "
+             "remove the key." };
+}
 }

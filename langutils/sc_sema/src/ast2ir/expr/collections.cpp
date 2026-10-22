@@ -8,6 +8,8 @@
 #include "sc_sema/context.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
+#include <cassert>
+#include <optional>
 
 namespace sc::ir::ast2ir {
 
@@ -29,15 +31,17 @@ Return<SCAnyExpr_I> symbol(CollectionContext& c, ast::OptionalIndex i, std::stri
     return { lit, const_i, TypeInfo { c.ctx.common_classes.symbol, TypeConfidence::Absolute } };
 }
 
+// Compiles the elements of an array literal into the collection.
+// If all constant, and the collection is known, return a constexpr index
+Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immutable);
+
+// Compiles the elements of an array literal into the collection.
+// Returns the elements' values if they are all constant.
 // `#[a, b]` is immutable, its names are symbols and all its elements must be constant. This applies to the arrays
 // inside it too.
-Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immutable) {
+std::optional<ConstExprArray> append_elements(CollectionContext& c, SCCollection_I collection, ast::ArrayIndex i,
+                                              bool is_immutable) {
     const auto& g = *c.ast_graph;
-    is_immutable = is_immutable || g.payload(i).is_immutable;
-
-    const TypeInfo type { c.ctx.common_classes.array, TypeConfidence::Absolute };
-    const auto collection =
-        c.ir.create(SCCollection { { std::nullopt, c.ctx.common_classes.array } }, location_of(c.ir, *c.ast_graph, i));
     ConstExprArray values;
     bool all_constant = true;
 
@@ -67,18 +71,80 @@ Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immut
     }
 
     if (!all_constant)
+        return std::nullopt;
+    return values;
+}
+
+Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immutable) {
+    is_immutable = is_immutable || c.ast_graph->payload(i).is_immutable;
+
+    const TypeInfo type { c.ctx.common_classes.array, TypeConfidence::Absolute };
+    const auto collection =
+        c.ir.create(SCCollection { { std::nullopt, c.ctx.common_classes.array } }, location_of(c.ir, *c.ast_graph, i));
+
+    auto values = append_elements(c, collection, i, is_immutable);
+    if (!values)
         return { collection, type };
 
-    const auto const_i = c.ctx.constant_table.register_constexpr({ std::move(values) });
+    const auto const_i = c.ctx.constant_table.register_constexpr({ std::move(*values) });
     c.ir.register_node_as_consteval(collection, const_i);
     return { collection, const_i, type };
 }
 
+// The value of `Class[...]` when its elements are all constant, only some classes can be constants.
+std::optional<ConstExpression> collection_constant(const CommonClasses& classes, SymSCClassName class_name,
+                                                   ConstExprArray values) {
+    if (class_name == classes.array)
+        return ConstExpression { std::move(values) };
+
+    // `Event[a: 1, b: 2]` is `(a: 1, b: 2)`, the elements are keys and values.
+    if (class_name == classes.event) {
+        if (values.size() % 2 != 0)
+            return std::nullopt;
+        ConstExprEvent pairs;
+        pairs.reserve(values.size() / 2);
+        for (std::size_t k { 0 }; k < values.size(); k += 2)
+            pairs.push_back({ std::move(values[k]), std::move(values[k + 1]) });
+        return ConstExpression { std::move(pairs) };
+    }
+
+    return std::nullopt;
+}
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::ArrayIndex i) {
     CollectionContext c { *this, ctx, ir, ast_graph };
     return array(c, i, false);
+}
+
+// `Set[1, 2]` is a collection of that class.
+Return<SCAnyExpr_I> Expr::operator()(ast::CollectionIndex i) {
+    CollectionContext c { *this, ctx, ir, ast_graph };
+    const auto [class_name, elements] = ast_graph->children(i);
+    const auto class_sym = ctx.symbol_table.get_class_name(std::string { get_string_view(*ast_graph, class_name) });
+    const TypeInfo type { class_sym, TypeConfidence::Absolute };
+
+    // The grammar only allows `Class[...]`, `Class#[...]` can't be written.
+    assert(!ast_graph->payload(elements).is_immutable);
+
+    const auto collection = ir.create(SCCollection { { location(class_name), class_sym } }, location(i));
+    auto values = append_elements(c, collection, elements, false);
+
+    // The elements of an event are pairs, an odd number means the last key has no value.
+    if (class_sym == ctx.common_classes.event && ir.payload(collection).size % 2 != 0)
+        sink(sc::diag::Diagnostic::event_key_without_value(get_text_info(*ast_graph),
+                                                           get_location(*ast_graph, ast_graph->last_child(elements))));
+
+    if (!values)
+        return { collection, type };
+
+    auto constant = collection_constant(ctx.common_classes, class_sym, std::move(*values));
+    if (!constant)
+        return { collection, type };
+
+    const auto const_i = ctx.constant_table.register_constexpr(std::move(*constant));
+    ir.register_node_as_consteval(collection, const_i);
+    return { collection, const_i, type };
 }
 
 // `(a: 1, b: 2)`, the children alternate between keys and values.
@@ -92,7 +158,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) {
     bool all_constant = true;
 
     for (auto it = g.children(i).iter(); it; ++it) {
-        const auto [key, value] = g.children(*it);
+        const auto [key_t, value] = g.children(*it);
+        const auto key = key_t;
         const auto key_r = [&]() -> Return<SCAnyExpr_I> {
             // `(a: 1)` is `(\a: 1)`.
             if (const auto keyword = g.as_a<ast::KeyBinOpIndex>(key))
