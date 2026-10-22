@@ -35,7 +35,11 @@ struct ScopeEntry {
 // Where entry is declared, as a location in ir.
 [[nodiscard]] SourceLocation declaration_location(IRGraph& ir, const ScopeEntry& entry);
 
-using Scope = std::unordered_map<Symbol, ScopeEntry>;
+struct Scope : std::unordered_map<Symbol, ScopeEntry> {
+    // The first scope of a function, e.g., a block. Code in a function runs when it is called, so it can refer to a
+    // variable whose initial value it is in, see Expr::initialising.
+    bool starts_function { false };
+};
 
 extern template struct Return<SCAnyExpr_I>;
 
@@ -89,6 +93,17 @@ struct Expr : private Base {
 
     std::vector<Scope> scope;
     DiagnosticSink& sink;
+
+    // A variable or argument whose initial value is being compiled, it is only added to its scope afterwards. A
+    // function in the initial value can refer to it, as the function is called after the variable is assigned, e.g.,
+    // `var f = { f.value }`, but nothing else can, e.g., `var f = f`.
+    struct Initialising {
+        Symbol name;
+        // The index of the scope it will be in.
+        std::size_t scope;
+        SourceLocation declaration;
+    };
+    std::vector<Initialising> initialising;
     // The `_` of the innermost call being partially applied, in order, see partially_apply. Each reads the function's
     // argument at the same index.
     std::vector<ast::CurryIndex> applied_curries;

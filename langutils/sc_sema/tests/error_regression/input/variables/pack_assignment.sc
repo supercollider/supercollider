@@ -44,7 +44,7 @@ PackAssign {
     declare_environment { var #a, ~b = [1, 2]; ^a }
     // expect-error: Variable already declared
     declare_duplicate { var #a, a = [1, 2]; ^a }
-    // expect-error: Variable not defined
+    // expect-error: Variable used in its own initial value
     declare_refers_to_itself { var #a, b = [a]; ^b }
     // expect-reads: x -> x = 1
     // expect-reads: a -> a

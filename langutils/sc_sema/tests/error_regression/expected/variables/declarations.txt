@@ -51,17 +51,17 @@ SCClass (1:1): Variables
 |  |  SCMethod (20:5): poisoned: refers_to_itself { var a = a; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Variable not defined
+|  |  |  Error: Variable used in its own initial value
 |  |  |  variables/declarations.sc:20:32
-|  |  |     18 │     // expect-error: Variable not defined
+|  |  |     18 │     // expect-error: Variable used in its own initial value
 |  |  |     19 │     // expect: poisoned
 |  |  |     20 │     refers_to_itself { var a = a; ^a }
-|  |  |        ┆                                ^ this is not defined.
+|  |  |        ┆                                ^ this hasn't been assigned yet.
 |  |  |     21 │     // expect-error: Variable not defined
 |  |  |     22 │     used_before_declared { a; var a = 1 }
 |  |  |     23 │     // expect-reads: a -> a = 2
 |  |  |
-|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (20:24)
 |  |  |  |  SCVariableDeclare (20:28): a

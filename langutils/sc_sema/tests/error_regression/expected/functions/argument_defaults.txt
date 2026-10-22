@@ -64,7 +64,7 @@ SCClass (1:1): ArgumentDefaults
 |  |  |     13 │     // expect-error: Variable not defined
 |  |  |     14 │     block_later_argument { ^{ |a = (b), b| a } }
 |  |  |        ┆                                     ^ this is not defined.
-|  |  |     15 │     // expect-error: Variable not defined
+|  |  |     15 │     // expect-error: Variable used in its own initial value
 |  |  |     16 │     block_itself { ^{ |a = (a)| a } }
 |  |  |     17 │ 
 |  |  |
@@ -82,17 +82,17 @@ SCClass (1:1): ArgumentDefaults
 |  |  SCMethod (16:5): poisoned: block_itself { ^{ |a = (a)| a } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Variable not defined
+|  |  |  Error: Variable used in its own initial value
 |  |  |  functions/argument_defaults.sc:16:29
 |  |  |     14 │     block_later_argument { ^{ |a = (b), b| a } }
-|  |  |     15 │     // expect-error: Variable not defined
+|  |  |     15 │     // expect-error: Variable used in its own initial value
 |  |  |     16 │     block_itself { ^{ |a = (a)| a } }
-|  |  |        ┆                             ^ this is not defined.
+|  |  |        ┆                             ^ this hasn't been assigned yet.
 |  |  |     17 │ 
 |  |  |     18 │     // expect: no result
 |  |  |     19 │     method_constant { |a = 1| ^1 }
 |  |  |
-|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (16:20)
 |  |  |  |  SCExplicitReturn (16:21)

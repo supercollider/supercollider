@@ -90,12 +90,43 @@ std::optional<SCSpecial::Kind> special_kind(const CommonSymbols& s, SymSCIdentif
 }
 }
 
+namespace {
+// A use of a variable whose initial value is being compiled, see Expr::initialising.
+struct InitialisingUse {
+    const Expr::Initialising* variable;
+    // Whether the use is in a function in the initial value, which is all that is allowed.
+    bool in_function;
+};
+
+// Whether name refers to a variable being initialised, rather than one already declared, which it would hide.
+std::optional<InitialisingUse> find_initialising(const Expr& expr, Symbol name) {
+    bool in_function = false;
+    for (std::size_t k = expr.scope.size(); k-- > 0;) {
+        for (const auto& variable : expr.initialising)
+            if (variable.scope == k && variable.name == name)
+                return InitialisingUse { &variable, in_function };
+        if (expr.scope[k].count(name))
+            return std::nullopt;
+        if (expr.scope[k].starts_function)
+            in_function = true;
+    }
+    return std::nullopt;
+}
+}
+
 Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
     const auto txt = get_string_view(*ast_graph, i);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
     // These can't be declared, so can't be hidden by a variable.
     if (const auto kind = special_kind(ctx.common_symbols, name_sym))
         return { ir.create(SCSpecial { *kind }, location({ *i })) };
+    if (const auto use = find_initialising(*this, name_sym)) {
+        if (use->in_function)
+            return { ir.create(SCRead { name_sym, SCRead::Kind::Local, use->variable->declaration },
+                               location({ *i })) };
+        sink(sc::diag::Diagnostic::used_in_own_initial_value(get_text_info(*ast_graph), get_location(*ast_graph, i)));
+        return { ir.create(SCExprList {}, location({ *i })) };
+    }
     if (const auto entry = resolve_symbol(name_sym)) {
         const auto read = ir.create(SCRead { name_sym, to_read_kind(entry->kind), declaration_location(ir, *entry) },
                                     location({ *i }));
@@ -139,6 +170,13 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
             sc::diag::Diagnostic::assigned_special_variable(get_text_info(*ast_graph), get_location(*ast_graph, name)));
         return expr_r;
     }
+    if (const auto use = find_initialising(*this, name_sym)) {
+        if (use->in_function)
+            return make_return(SCAssign::Kind::Local, use->variable->declaration);
+        sink(
+            sc::diag::Diagnostic::used_in_own_initial_value(get_text_info(*ast_graph), get_location(*ast_graph, name)));
+        return expr_r;
+    }
 
     // TODO: error when assigning to a const once ScopeEntry records const-ness.
     if (const auto entry = resolve_symbol(name_sym))
@@ -172,6 +210,20 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
         if (ctx.common_symbols.is_special(sym)) {
             sink(sc::diag::Diagnostic::assigned_special_variable(get_text_info(*ast_graph),
                                                                  get_location(*ast_graph, *name)));
+            return;
+        }
+        if (const auto use = find_initialising(*this, sym)) {
+            if (use->in_function)
+                ir.append(targets,
+                          ir.create(SCPackTarget { { location({ **name }), sym },
+                                                   SCAssign::Kind::Local,
+                                                   index,
+                                                   is_rest,
+                                                   use->variable->declaration },
+                                    location({ **name })));
+            else
+                sink(sc::diag::Diagnostic::used_in_own_initial_value(get_text_info(*ast_graph),
+                                                                     get_location(*ast_graph, *name)));
             return;
         }
         if (const auto entry = resolve_symbol(sym)) {

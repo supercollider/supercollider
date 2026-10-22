@@ -21,6 +21,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::BlockIndex i) {
     const auto function = ir.create(SCFunction {}, here, positional, variadic, body);
 
     scope.emplace_back();
+    scope.back().starts_function = true;
     declare_arguments(*this, ir, ast_graph, ctx, positional, variadic, arg_list, function);
 
     BodyResult result;

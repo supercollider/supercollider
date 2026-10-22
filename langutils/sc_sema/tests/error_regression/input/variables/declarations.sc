@@ -15,7 +15,7 @@ Variables {
     uses_earlier { var a = 1, b = a + 1; ^b }
     // expect-reads: a -> a(1 + 2)
     bracketed_value { var a(1 + 2); ^a }
-    // expect-error: Variable not defined
+    // expect-error: Variable used in its own initial value
     // expect: poisoned
     refers_to_itself { var a = a; ^a }
     // expect-error: Variable not defined

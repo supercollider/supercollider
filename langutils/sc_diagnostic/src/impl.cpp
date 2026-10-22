@@ -544,4 +544,14 @@ Diagnostic Diagnostic::declared_special_variable(TextInfoPtr t, sc::lex::SourceC
              { { std::move(t), l, "this name is reserved." } },
              std::string { special_variables } + ". Use a different name." };
 }
+
+Diagnostic Diagnostic::used_in_own_initial_value(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return {
+        "Variable used in its own initial value",
+        Severity::Error,
+        { { std::move(t), l, "this hasn't been assigned yet." } },
+        "A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as "
+        "the function is called after the variable is assigned."
+    };
+}
 }

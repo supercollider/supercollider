@@ -12,7 +12,7 @@ ArgumentDefaults {
     block_earlier_argument { ^{ |a, b = (a + 1)| b } }
     // expect-error: Variable not defined
     block_later_argument { ^{ |a = (b), b| a } }
-    // expect-error: Variable not defined
+    // expect-error: Variable used in its own initial value
     block_itself { ^{ |a = (a)| a } }
 
     // expect: no result

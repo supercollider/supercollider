@@ -280,8 +280,10 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
                            TypeInfo { b.ctx.common_classes.nil, TypeConfidence::Absolute });
         return true;
     }
-    // Compiled before the variable is declared, so it can't refer to itself.
+    // Compiled before the variable is declared, a function in it can still refer to it, see Expr::initialising.
+    b.expr.initialising.push_back({ name, b.expr.scope.size() - 1, location_of(b.ir, g, whole) });
     const auto value_r = b.expr(*value);
+    b.expr.initialising.pop_back();
     (void)add_variable(b, name_i, name, declare_node(value_r.ir_node), value_r.const_index, value_r.type);
     return value_r.const_index.has_value();
 }
@@ -292,9 +294,21 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
 bool declare_pack(BodyContext& b, ast::VariablePackAssignIndex pack) {
     const auto& g = *b.ast_graph;
     const auto [names, value] = g.children(pack);
-    // Compiled before the variables are declared, so it can't refer to them.
-    const auto value_r = b.expr(value);
     const auto [list, rest] = g.children(names);
+
+    // Compiled before the variables are declared, a function in it can still refer to them, see Expr::initialising.
+    const auto initialising = b.expr.initialising.size();
+    const auto mark_initialising = [&](ast::Index target) {
+        if (const auto name = g.as_a<ast::NamedIdentifierIndex>(target))
+            b.expr.initialising.push_back(
+                { b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, *name) }), b.expr.scope.size() - 1,
+                  location_of(b.ir, g, { **name }) });
+    };
+    for (auto it = g.children(list).iter(); it; ++it)
+        mark_initialising({ **it });
+    mark_initialising({ *rest });
+    const auto value_r = b.expr(value);
+    b.expr.initialising.erase(b.expr.initialising.begin() + initialising, b.expr.initialising.end());
 
     const ConstExprArray* elements = nullptr;
     if (value_r.const_index && b.ctx.known_methods.is_known(b.ctx.common_classes.array, b.ctx.common_symbols.at))

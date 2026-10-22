@@ -1,0 +1,509 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): SelfReference
+|  SCMemberList (4:1)
+|  |  SCMember (5:9): member
+|  SCMethodList (4:1)
+|  |  SCMethod (9:5): poisoned: direct { var f = f; ^f }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:9:22
+|  |  |      7 │     // expect-error: Variable used in its own initial value
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     direct { var f = f; ^f }
+|  |  |        ┆                      ^ this hasn't been assigned yet.
+|  |  |     10 │     // expect-error: Variable used in its own initial value
+|  |  |     11 │     in_expression { var f = f + 1; ^f }
+|  |  |     12 │     // expect-error: Variable used in its own initial value
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (9:14)
+|  |  |  |  SCVariableDeclare (9:18): f
+|  |  |  |  |  SCExprList (9:22)
+|  |  |  |  SCExplicitReturn (9:26)
+|  |  |  |  |  SCRead (9:26): local f, declared (9:18): f = f
+|  |  SCMethod (11:5): poisoned: in_expression { var f = f + 1; ^f }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:11:29
+|  |  |      9 │     direct { var f = f; ^f }
+|  |  |     10 │     // expect-error: Variable used in its own initial value
+|  |  |     11 │     in_expression { var f = f + 1; ^f }
+|  |  |        ┆                             ^ this hasn't been assigned yet.
+|  |  |     12 │     // expect-error: Variable used in its own initial value
+|  |  |     13 │     assigned_directly { var f = (f = 1); ^f }
+|  |  |     14 │ 
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (11:21)
+|  |  |  |  SCVariableDeclare (11:25): f
+|  |  |  |  |  SCMessage (11:29): +
+|  |  |  |  |  |  SCExprList (11:29)
+|  |  |  |  |  |  SCPositionalArgs (11:29)
+|  |  |  |  |  |  |  SCLiteral (11:33) = 1
+|  |  |  |  SCExplicitReturn (11:37)
+|  |  |  |  |  SCRead (11:37): local f, declared (11:25): f = f + 1
+|  |  SCMethod (13:5): poisoned: assigned_directly { var f = (f = 1); ^f }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:13:34
+|  |  |     11 │     in_expression { var f = f + 1; ^f }
+|  |  |     12 │     // expect-error: Variable used in its own initial value
+|  |  |     13 │     assigned_directly { var f = (f = 1); ^f }
+|  |  |        ┆                                  ^ this hasn't been assigned yet.
+|  |  |     14 │ 
+|  |  |     15 │     // expect: no diagnostics
+|  |  |     16 │     // expect-reads: f -> f = { f }
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (13:25)
+|  |  |  |  SCVariableDeclare (13:29): f
+|  |  |  |  |  SCLiteral (13:38) = 1
+|  |  |  |  SCExplicitReturn (13:43)
+|  |  |  |  |  SCRead (13:43): local f, declared (13:29): f = (f = 1)
+|  |  SCMethod (17:5): in_function { var f = { f }; ^f }
+|  |  |  SCBody (17:19)
+|  |  |  |  SCVariableDeclare (17:23): f
+|  |  |  |  |  SCFunction (17:27)
+|  |  |  |  |  |  SCBody (17:27)
+|  |  |  |  |  |  |  SCRead (17:29): local f, declared (17:23): f = { f }
+|  |  |  |  SCExplicitReturn (17:35)
+|  |  |  |  |  SCRead (17:35): local f, declared (17:23): f = { f }
+|  |  SCMethod (20:5): in_nested_function { var f = { { f } }; ^f }
+|  |  |  SCBody (20:26)
+|  |  |  |  SCVariableDeclare (20:30): f
+|  |  |  |  |  SCFunction (20:34)
+|  |  |  |  |  |  SCBody (20:34)
+|  |  |  |  |  |  |  SCFunction (20:36)
+|  |  |  |  |  |  |  |  SCBody (20:36)
+|  |  |  |  |  |  |  |  |  SCRead (20:38): local f, declared (20:30): f = { { f } }
+|  |  |  |  SCExplicitReturn (20:46)
+|  |  |  |  |  SCRead (20:46): local f, declared (20:30): f = { { f } }
+|  |  SCMethod (23:5): recursion { var fact = { |n| if (n <= 1) { 1 } { n * fact.(n - 1) } }; ^fact.(5) }
+|  |  |  SCBody (23:17)
+|  |  |  |  SCVariableDeclare (23:21): fact
+|  |  |  |  |  SCFunction (23:28)
+|  |  |  |  |  |  SCArgumentDeclareList (23:31)
+|  |  |  |  |  |  |  SCArgumentDeclare (23:31): n
+|  |  |  |  |  |  SCBody (23:28)
+|  |  |  |  |  |  |  SCMessage (23:34): if
+|  |  |  |  |  |  |  |  SCMessage (23:38): <=
+|  |  |  |  |  |  |  |  |  SCRead (23:38): local n, declared (23:31): n
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (23:38)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (23:43) = 1
+|  |  |  |  |  |  |  |  SCPositionalArgs (23:34)
+|  |  |  |  |  |  |  |  |  SCFunction (23:46) -> 1
+|  |  |  |  |  |  |  |  |  |  SCBody (23:46)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (23:48) = 1
+|  |  |  |  |  |  |  |  |  SCFunction (23:52)
+|  |  |  |  |  |  |  |  |  |  SCBody (23:52)
+|  |  |  |  |  |  |  |  |  |  |  SCMessage (23:54): *
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (23:54): local n, declared (23:31): n
+|  |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (23:54)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCMessage (23:58): value
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (23:58): local fact, declared (23:21): fact = { |n| if (n <= 1) { 1 } { n * fact.(n - 1) } }
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (23:58)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCMessage (23:64): -
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (23:64): local n, declared (23:31): n
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (23:64)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (23:68) = 1
+|  |  |  |  SCExplicitReturn (23:77)
+|  |  |  |  |  SCMessage (23:77): value
+|  |  |  |  |  |  SCRead (23:77): local fact, declared (23:21): fact = { |n| if (n <= 1) { 1 } { n * fact.(n - 1) } }
+|  |  |  |  |  |  SCPositionalArgs (23:77)
+|  |  |  |  |  |  |  SCLiteral (23:83) = 5
+|  |  SCMethod (25:5): assigned_in_function { var f = { f = nil }; ^f }
+|  |  |  SCBody (25:28)
+|  |  |  |  SCVariableDeclare (25:32): f
+|  |  |  |  |  SCFunction (25:36)
+|  |  |  |  |  |  SCBody (25:36)
+|  |  |  |  |  |  |  SCAssign (25:38): local f, declared (25:32): f = { f = nil }
+|  |  |  |  |  |  |  |  SCLiteral (25:42) = nil
+|  |  |  |  SCExplicitReturn (25:50)
+|  |  |  |  |  SCRead (25:50): local f, declared (25:32): f = { f = nil }
+|  |  SCMethod (27:5): not_constant { var f = { f }; ^f }
+|  |  |  SCBody (27:20)
+|  |  |  |  SCVariableDeclare (27:24): f
+|  |  |  |  |  SCFunction (27:28)
+|  |  |  |  |  |  SCBody (27:28)
+|  |  |  |  |  |  |  SCRead (27:30): local f, declared (27:24): f = { f }
+|  |  |  |  SCExplicitReturn (27:36)
+|  |  |  |  |  SCRead (27:36): local f, declared (27:24): f = { f }
+|  |  SCMethod (31:5): after_expressions { 1; member.postln; var f = { f }; ^f }
+|  |  |  SCBody (31:25)
+|  |  |  |  SCLiteral (31:25) = 1
+|  |  |  |  SCMessage (31:28): postln
+|  |  |  |  |  SCRead (31:28): instance member, declared (5:9): member
+|  |  |  |  SCVariableDeclare (31:47): f
+|  |  |  |  |  SCFunction (31:51)
+|  |  |  |  |  |  SCBody (31:51)
+|  |  |  |  |  |  |  SCRead (31:53): local f, declared (31:47): f = { f }
+|  |  |  |  SCExplicitReturn (31:59)
+|  |  |  |  |  SCRead (31:59): local f, declared (31:47): f = { f }
+|  |  SCMethod (33:5): poisoned: after_expressions_direct { 1; var f = f; ^f }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:33:43
+|  |  |     31 │     after_expressions { 1; member.postln; var f = { f }; ^f }
+|  |  |     32 │     // expect-error: Variable used in its own initial value
+|  |  |     33 │     after_expressions_direct { 1; var f = f; ^f }
+|  |  |        ┆                                           ^ this hasn't been assigned yet.
+|  |  |     34 │     // expect: no diagnostics
+|  |  |     35 │     // expect-reads: g -> g = { g }
+|  |  |     36 │     declared_in_nested_body { ^{ 1; var g = { g }; g } }
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (33:32)
+|  |  |  |  SCLiteral (33:32) = 1
+|  |  |  |  SCVariableDeclare (33:39): f
+|  |  |  |  |  SCExprList (33:43)
+|  |  |  |  SCExplicitReturn (33:47)
+|  |  |  |  |  SCRead (33:47): local f, declared (33:39): f = f
+|  |  SCMethod (36:5): declared_in_nested_body { ^{ 1; var g = { g }; g } }
+|  |  |  SCBody (36:31)
+|  |  |  |  SCExplicitReturn (36:32)
+|  |  |  |  |  SCFunction (36:32)
+|  |  |  |  |  |  SCBody (36:32)
+|  |  |  |  |  |  |  SCLiteral (36:34) = 1
+|  |  |  |  |  |  |  SCVariableDeclare (36:41): g
+|  |  |  |  |  |  |  |  SCFunction (36:45)
+|  |  |  |  |  |  |  |  |  SCBody (36:45)
+|  |  |  |  |  |  |  |  |  |  SCRead (36:47): local g, declared (36:41): g = { g }
+|  |  |  |  |  |  |  SCRead (36:52): local g, declared (36:41): g = { g }
+|  |  SCMethod (38:5): poisoned: declared_in_nested_body_direct { ^{ 1; var g = g; g } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:38:52
+|  |  |     36 │     declared_in_nested_body { ^{ 1; var g = { g }; g } }
+|  |  |     37 │     // expect-error: Variable used in its own initial value
+|  |  |     38 │     declared_in_nested_body_direct { ^{ 1; var g = g; g } }
+|  |  |        ┆                                                    ^ this hasn't been assigned yet.
+|  |  |     39 │     // expect: no diagnostics
+|  |  |     40 │     // expect-reads: g -> g = { { g } }
+|  |  |     41 │     deeply_nested { ^{ { var g = { { g } }; g } } }
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (38:38)
+|  |  |  |  SCExplicitReturn (38:39)
+|  |  |  |  |  SCFunction (38:39)
+|  |  |  |  |  |  SCBody (38:39)
+|  |  |  |  |  |  |  SCLiteral (38:41) = 1
+|  |  |  |  |  |  |  SCVariableDeclare (38:48): g
+|  |  |  |  |  |  |  |  SCExprList (38:52)
+|  |  |  |  |  |  |  SCRead (38:55): local g, declared (38:48): g = g
+|  |  SCMethod (41:5): deeply_nested { ^{ { var g = { { g } }; g } } }
+|  |  |  SCBody (41:21)
+|  |  |  |  SCExplicitReturn (41:22)
+|  |  |  |  |  SCFunction (41:22)
+|  |  |  |  |  |  SCBody (41:22)
+|  |  |  |  |  |  |  SCFunction (41:24)
+|  |  |  |  |  |  |  |  SCBody (41:24)
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (41:30): g
+|  |  |  |  |  |  |  |  |  |  SCFunction (41:34)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (41:34)
+|  |  |  |  |  |  |  |  |  |  |  |  SCFunction (41:36)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (41:36)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (41:38): local g, declared (41:30): g = { { g } }
+|  |  |  |  |  |  |  |  |  SCRead (41:45): local g, declared (41:30): g = { { g } }
+|  |  SCMethod (44:5): poisoned: forward_reference { var a = { b }; var b = 1; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/self_reference.sc:44:35
+|  |  |     42 │ 
+|  |  |     43 │     // expect-error: Variable not defined
+|  |  |     44 │     forward_reference { var a = { b }; var b = 1; ^a }
+|  |  |        ┆                                   ^ this is not defined.
+|  |  |     45 │     // expect-error: Variable not defined
+|  |  |     46 │     forward_in_same_declaration { var a = { b }, b = 1; ^a }
+|  |  |     47 │     // expect-error: Variable not defined
+|  |  |
+|  |  |  Declare it with 'var', or use '~b' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (44:25)
+|  |  |  |  SCVariableDeclare (44:29): a
+|  |  |  |  |  SCFunction (44:33)
+|  |  |  |  |  |  SCBody (44:33)
+|  |  |  |  |  |  |  SCExprList (44:35)
+|  |  |  |  SCVariableDeclare (44:44): b
+|  |  |  |  |  SCLiteral (44:48) = 1
+|  |  |  |  SCExplicitReturn (44:52)
+|  |  |  |  |  SCRead (44:52): local a, declared (44:29): a = { b }
+|  |  SCMethod (46:5): poisoned: forward_in_same_declaration { var a = { b }, b = 1; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/self_reference.sc:46:45
+|  |  |     44 │     forward_reference { var a = { b }; var b = 1; ^a }
+|  |  |     45 │     // expect-error: Variable not defined
+|  |  |     46 │     forward_in_same_declaration { var a = { b }, b = 1; ^a }
+|  |  |        ┆                                             ^ this is not defined.
+|  |  |     47 │     // expect-error: Variable not defined
+|  |  |     48 │     used_before_declaration { var a = b; var b = 1; ^a }
+|  |  |     49 │ 
+|  |  |
+|  |  |  Declare it with 'var', or use '~b' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (46:35)
+|  |  |  |  SCVariableDeclare (46:39): a
+|  |  |  |  |  SCFunction (46:43)
+|  |  |  |  |  |  SCBody (46:43)
+|  |  |  |  |  |  |  SCExprList (46:45)
+|  |  |  |  SCVariableDeclare (46:50): b
+|  |  |  |  |  SCLiteral (46:54) = 1
+|  |  |  |  SCExplicitReturn (46:58)
+|  |  |  |  |  SCRead (46:58): local a, declared (46:39): a = { b }
+|  |  SCMethod (48:5): poisoned: used_before_declaration { var a = b; var b = 1; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/self_reference.sc:48:39
+|  |  |     46 │     forward_in_same_declaration { var a = { b }, b = 1; ^a }
+|  |  |     47 │     // expect-error: Variable not defined
+|  |  |     48 │     used_before_declaration { var a = b; var b = 1; ^a }
+|  |  |        ┆                                       ^ this is not defined.
+|  |  |     49 │ 
+|  |  |     50 │     // The new variable hides the one it shares a name with, even in its own initial value.
+|  |  |     51 │     // expect-reads: f -> f = { f }
+|  |  |
+|  |  |  Declare it with 'var', or use '~b' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (48:31)
+|  |  |  |  SCVariableDeclare (48:35): a
+|  |  |  |  |  SCExprList (48:39)
+|  |  |  |  SCVariableDeclare (48:46): b
+|  |  |  |  |  SCLiteral (48:50) = 1
+|  |  |  |  SCExplicitReturn (48:54)
+|  |  |  |  |  SCRead (48:54): local a, declared (48:35): a = b
+|  |  SCMethod (52:5): shadows_outer { var f = 1; ^{ var f = { f }; f } }
+|  |  |  SCBody (52:21)
+|  |  |  |  SCVariableDeclare (52:25): f
+|  |  |  |  |  SCLiteral (52:29) = 1
+|  |  |  |  SCExplicitReturn (52:33)
+|  |  |  |  |  SCFunction (52:33)
+|  |  |  |  |  |  SCBody (52:33)
+|  |  |  |  |  |  |  SCVariableDeclare (52:39): f
+|  |  |  |  |  |  |  |  SCFunction (52:43)
+|  |  |  |  |  |  |  |  |  SCBody (52:43)
+|  |  |  |  |  |  |  |  |  |  SCRead (52:45): local f, declared (52:39): f = { f }
+|  |  |  |  |  |  |  SCRead (52:50): local f, declared (52:39): f = { f }
+|  |  SCMethod (54:5): poisoned: shadows_outer_direct { var f = 1; ^{ var f = f; f } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:54:50
+|  |  |     52 │     shadows_outer { var f = 1; ^{ var f = { f }; f } }
+|  |  |     53 │     // expect-error: Variable used in its own initial value
+|  |  |     54 │     shadows_outer_direct { var f = 1; ^{ var f = f; f } }
+|  |  |        ┆                                                  ^ this hasn't been assigned yet.
+|  |  |     55 │     // expect-error: Variable used in its own initial value
+|  |  |     56 │     shadows_member_direct { var member = member; ^member }
+|  |  |     57 │ 
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (54:28)
+|  |  |  |  SCVariableDeclare (54:32): f
+|  |  |  |  |  SCLiteral (54:36) = 1
+|  |  |  |  SCExplicitReturn (54:40)
+|  |  |  |  |  SCFunction (54:40)
+|  |  |  |  |  |  SCBody (54:40)
+|  |  |  |  |  |  |  SCVariableDeclare (54:46): f
+|  |  |  |  |  |  |  |  SCExprList (54:50)
+|  |  |  |  |  |  |  SCRead (54:53): local f, declared (54:46): f = f
+|  |  SCMethod (56:5): poisoned: shadows_member_direct { var member = member; ^member }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:56:42
+|  |  |     54 │     shadows_outer_direct { var f = 1; ^{ var f = f; f } }
+|  |  |     55 │     // expect-error: Variable used in its own initial value
+|  |  |     56 │     shadows_member_direct { var member = member; ^member }
+|  |  |        ┆                                          ^^^^^^ this hasn't been assigned yet.
+|  |  |     57 │ 
+|  |  |     58 │     // expect: no diagnostics
+|  |  |     59 │     // expect-reads: f -> f = { f }
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (56:29)
+|  |  |  |  SCVariableDeclare (56:33): member
+|  |  |  |  |  SCExprList (56:42)
+|  |  |  |  SCExplicitReturn (56:51)
+|  |  |  |  |  SCRead (56:51): local member, declared (56:33): member = member
+|  |  SCMethod (60:5): argument { |f = { f }| ^f }
+|  |  |  SCArgumentDeclareList (60:17)
+|  |  |  |  SCArgumentDeclare (60:17): f
+|  |  |  |  |  SCFunction (60:21)
+|  |  |  |  |  |  SCBody (60:21)
+|  |  |  |  |  |  |  SCRead (60:23): local f, declared (60:17): f = { f }
+|  |  |  SCBody (60:28)
+|  |  |  |  SCExplicitReturn (60:29)
+|  |  |  |  |  SCRead (60:29): local f, declared (60:17): f = { f }
+|  |  SCMethod (62:5): poisoned: argument_direct { |f = (f)| ^f }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:62:29
+|  |  |     60 │     argument { |f = { f }| ^f }
+|  |  |     61 │     // expect-error: Variable used in its own initial value
+|  |  |     62 │     argument_direct { |f = (f)| ^f }
+|  |  |        ┆                             ^ this hasn't been assigned yet.
+|  |  |     63 │     // expect: no diagnostics
+|  |  |     64 │     // expect-reads: f -> f = { f }
+|  |  |     65 │     block_argument { ^{ |f = { f }| f } }
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (62:24)
+|  |  |  |  SCArgumentDeclare (62:24): f
+|  |  |  |  |  SCExprList (62:29)
+|  |  |  SCBody (62:33)
+|  |  |  |  SCExplicitReturn (62:34)
+|  |  |  |  |  SCRead (62:34): local f, declared (62:24): f = (f)
+|  |  SCMethod (65:5): block_argument { ^{ |f = { f }| f } }
+|  |  |  SCBody (65:22)
+|  |  |  |  SCExplicitReturn (65:23)
+|  |  |  |  |  SCFunction (65:23)
+|  |  |  |  |  |  SCArgumentDeclareList (65:26)
+|  |  |  |  |  |  |  SCArgumentDeclare (65:26): f
+|  |  |  |  |  |  |  |  SCFunction (65:30)
+|  |  |  |  |  |  |  |  |  SCBody (65:30)
+|  |  |  |  |  |  |  |  |  |  SCRead (65:32): local f, declared (65:26): f = { f }
+|  |  |  |  |  |  SCBody (65:23)
+|  |  |  |  |  |  |  SCRead (65:37): local f, declared (65:26): f = { f }
+|  |  SCMethod (70:5): pack { var #a, b = [{ a }, { b }]; ^a }
+|  |  |  SCBody (70:12)
+|  |  |  |  SCPackDeclare (70:16)
+|  |  |  |  |  SCCollection (70:24): Array
+|  |  |  |  |  |  SCFunction (70:25)
+|  |  |  |  |  |  |  SCBody (70:25)
+|  |  |  |  |  |  |  |  SCRead (70:27): local a, declared (70:17): a
+|  |  |  |  |  |  SCFunction (70:32)
+|  |  |  |  |  |  |  SCBody (70:32)
+|  |  |  |  |  |  |  |  SCRead (70:34): local b, declared (70:20): b
+|  |  |  |  |  SCPackTargets (70:16)
+|  |  |  |  |  |  SCPackTarget (70:17): local a at 0
+|  |  |  |  |  |  SCPackTarget (70:20): local b at 1
+|  |  |  |  SCExplicitReturn (70:41)
+|  |  |  |  |  SCRead (70:41): local a, declared (70:17): a
+|  |  SCMethod (72:5): poisoned: pack_direct { var #a, b = [a]; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:72:32
+|  |  |     70 │     pack { var #a, b = [{ a }, { b }]; ^a }
+|  |  |     71 │     // expect-error: Variable used in its own initial value
+|  |  |     72 │     pack_direct { var #a, b = [a]; ^a }
+|  |  |        ┆                                ^ this hasn't been assigned yet.
+|  |  |     73 │ 
+|  |  |     74 │     // A Routine runs later, so it is a function, an immediate generator runs now.
+|  |  |     75 │     // expect: no diagnostics
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (72:19)
+|  |  |  |  SCPackDeclare (72:23)
+|  |  |  |  |  SCCollection (72:31): Array
+|  |  |  |  |  |  SCExprList (72:32)
+|  |  |  |  |  SCPackTargets (72:23)
+|  |  |  |  |  |  SCPackTarget (72:24): local a at 0
+|  |  |  |  |  |  SCPackTarget (72:27): local b at 1
+|  |  |  |  SCExplicitReturn (72:37)
+|  |  |  |  |  SCRead (72:37): local a, declared (72:24): a
+|  |  SCMethod (76:5): routine_generator { var r = {: r, x <- [1] }; ^r }
+|  |  |  SCBody (76:25)
+|  |  |  |  SCVariableDeclare (76:29): r
+|  |  |  |  |  SCGenerator (76:33): routine
+|  |  |  |  |  |  SCGenQualList (76:39)
+|  |  |  |  |  |  |  SCGenQualIterate (76:39): x
+|  |  |  |  |  |  |  |  SCCollection (76:44): Array = [1]
+|  |  |  |  |  |  |  |  |  SCLiteral (76:45) = 1
+|  |  |  |  |  |  SCRead (76:36): local r, declared (76:29): r = {: r, x <- [1] }
+|  |  |  |  SCExplicitReturn (76:52)
+|  |  |  |  |  SCRead (76:52): local r, declared (76:29): r = {: r, x <- [1] }
+|  |  SCMethod (78:5): poisoned: immediate_generator { var r = {; r, x <- [1] }; ^r }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:78:38
+|  |  |     76 │     routine_generator { var r = {: r, x <- [1] }; ^r }
+|  |  |     77 │     // expect-error: Variable used in its own initial value
+|  |  |     78 │     immediate_generator { var r = {; r, x <- [1] }; ^r }
+|  |  |        ┆                                      ^ this hasn't been assigned yet.
+|  |  |     79 │     // expect: no diagnostics
+|  |  |     80 │     // expect-reads: y -> var y = { y }
+|  |  |     81 │     generator_qualifier { ^{: y, var y = { y } } }
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (78:27)
+|  |  |  |  SCVariableDeclare (78:31): r
+|  |  |  |  |  SCGenerator (78:35): immediate
+|  |  |  |  |  |  SCGenQualList (78:41)
+|  |  |  |  |  |  |  SCGenQualIterate (78:41): x
+|  |  |  |  |  |  |  |  SCCollection (78:46): Array = [1]
+|  |  |  |  |  |  |  |  |  SCLiteral (78:47) = 1
+|  |  |  |  |  |  SCExprList (78:38)
+|  |  |  |  SCExplicitReturn (78:54)
+|  |  |  |  |  SCRead (78:54): local r, declared (78:31): r = {; r, x <- [1] }
+|  |  SCMethod (81:5): generator_qualifier { ^{: y, var y = { y } } }
+|  |  |  SCBody (81:27)
+|  |  |  |  SCExplicitReturn (81:28)
+|  |  |  |  |  SCGenerator (81:28): routine
+|  |  |  |  |  |  SCGenQualList (81:34)
+|  |  |  |  |  |  |  SCGenQualDeclare (81:34): y
+|  |  |  |  |  |  |  |  SCFunction (81:42)
+|  |  |  |  |  |  |  |  |  SCBody (81:42)
+|  |  |  |  |  |  |  |  |  |  SCRead (81:44): local y, declared (81:34): var y = { y }
+|  |  |  |  |  |  SCRead (81:31): local y, declared (81:34): var y = { y }
+|  |  SCMethod (83:5): poisoned: generator_qualifier_direct { ^{: y, var y = y } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable used in its own initial value
+|  |  |  variables/self_reference.sc:83:49
+|  |  |     81 │     generator_qualifier { ^{: y, var y = { y } } }
+|  |  |     82 │     // expect-error: Variable used in its own initial value
+|  |  |     83 │     generator_qualifier_direct { ^{: y, var y = y } }
+|  |  |        ┆                                                 ^ this hasn't been assigned yet.
+|  |  |     84 │ 
+|  |  |     85 │     // `f.foo(_)` is `{ |_| f.foo(_) }`, so f is read later.
+|  |  |     86 │     // expect: no diagnostics
+|  |  |
+|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (83:34)
+|  |  |  |  SCExplicitReturn (83:35)
+|  |  |  |  |  SCGenerator (83:35): routine
+|  |  |  |  |  |  SCGenQualList (83:41)
+|  |  |  |  |  |  |  SCGenQualDeclare (83:41): y
+|  |  |  |  |  |  |  |  SCExprList (83:49)
+|  |  |  |  |  |  SCRead (83:38): local y, declared (83:41): var y = y
+|  |  SCMethod (87:5): partial_application { var f = f.foo(_); ^f }
+|  |  |  SCBody (87:27)
+|  |  |  |  SCVariableDeclare (87:31): f
+|  |  |  |  |  SCFunction (87:35)
+|  |  |  |  |  |  SCArgumentDeclareList (87:35)
+|  |  |  |  |  |  |  SCArgumentDeclare (87:41): _
+|  |  |  |  |  |  SCBody (87:35)
+|  |  |  |  |  |  |  SCMessage (87:35): foo
+|  |  |  |  |  |  |  |  SCRead (87:35): local f, declared (87:31): f = f.foo(_)
+|  |  |  |  |  |  |  |  SCPositionalArgs (87:35)
+|  |  |  |  |  |  |  |  |  SCRead (87:41): local _, declared (87:41): _
+|  |  |  |  SCExplicitReturn (87:46)
+|  |  |  |  |  SCRead (87:46): local f, declared (87:31): f = f.foo(_)
+Successfully compiled 15 classes.

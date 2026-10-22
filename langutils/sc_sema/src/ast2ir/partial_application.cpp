@@ -124,6 +124,7 @@ Return<SCAnyExpr_I> partially_apply(Expr& expr, IRGraph& ir, const std::shared_p
     const auto function = ir.create(SCFunction {}, here, positional, variadic, body);
 
     expr.scope.emplace_back();
+    expr.scope.back().starts_function = true;
     for (std::size_t n { 0 }; n < curries.size(); ++n) {
         const auto name = curry_argument_name(ctx, n, curries.size());
         const auto curry_location = location_of(ir, *ast_graph, { *curries[n] });

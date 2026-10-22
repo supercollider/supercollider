@@ -101,14 +101,19 @@ void iterate(GeneratorContext& c, ast::GeneratorQualAssignIndex q) {
     declare(c, *index, node);
 }
 
-// `var x = value`. The value can't use the name it declares.
+// `var x = value`. Only a function in the value can use the name it declares.
 void declare_variable(GeneratorContext& c, ast::GeneratorQualDeclareIndex q) {
     const auto [name_i, value] = c.ast_graph->children(q);
-    const auto value_r = c.expr(value);
     const auto name = name_of(c, name_i);
-    const auto node = c.ir.create(SCGenQualDeclare { name }, location_of(c.ir, *c.ast_graph, { *q }), value_r.ir_node);
-    c.ir.append(c.qualifiers, node);
+    // Its scope is opened first, but it is only declared after the value is compiled. A function in the value can
+    // still refer to it, see Expr::initialising.
     open_scope(c);
+    const auto here = location_of(c.ir, *c.ast_graph, { *q });
+    c.expr.initialising.push_back({ *name, c.expr.scope.size() - 1, here });
+    const auto value_r = c.expr(value);
+    c.expr.initialising.pop_back();
+    const auto node = c.ir.create(SCGenQualDeclare { name }, here, value_r.ir_node);
+    c.ir.append(c.qualifiers, node);
     declare(c, name, node);
 }
 
@@ -141,6 +146,12 @@ Return<SCAnyExpr_I> generator(Expr& expr, IRGraph& ir, const std::shared_ptr<con
     // The value is compiled while the qualifiers' scopes are open, c closes them.
     const auto value_r = [&] {
         GeneratorContext c { expr, ir, ctx, ast_graph, qualifiers, OpenScopes { expr } };
+        // A Routine runs when it is resumed, so it can refer to a variable whose initial value it is in, an Immediate
+        // generator runs now, so can't.
+        if (kind == SCGenerator::Kind::Routine) {
+            c.scopes.open();
+            expr.scope.back().starts_function = true;
+        }
         for (auto it = ast_graph->children(list).iter(); it; ++it)
             qualifier(c, *it);
         return expr(value);

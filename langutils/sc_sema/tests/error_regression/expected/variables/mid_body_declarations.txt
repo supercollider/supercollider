@@ -1,0 +1,260 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): MidBodyDeclarations
+|  SCMemberList (3:1)
+|  |  SCMember (4:9): member
+|  SCMethodList (3:1)
+|  |  SCMethod (8:5): after_expression { 1; var a = 2; ^a } -> 2
+|  |  |  SCBody (8:24)
+|  |  |  |  SCLiteral (8:24) = 1
+|  |  |  |  SCVariableDeclare (8:31): a
+|  |  |  |  |  SCLiteral (8:35) = 2
+|  |  |  |  SCExplicitReturn (8:39)
+|  |  |  |  |  SCRead (8:39): local a = 2, declared (8:31): a = 2
+|  |  SCMethod (11:5): interleaved { var a = 1; 10; var b = a; 20; var c = b; ^c } -> 1
+|  |  |  SCBody (11:19)
+|  |  |  |  SCVariableDeclare (11:23): a
+|  |  |  |  |  SCLiteral (11:27) = 1
+|  |  |  |  SCLiteral (11:30) = 10
+|  |  |  |  SCVariableDeclare (11:38): b
+|  |  |  |  |  SCRead (11:42): local a = 1, declared (11:23): a = 1
+|  |  |  |  SCLiteral (11:45) = 20
+|  |  |  |  SCVariableDeclare (11:53): c
+|  |  |  |  |  SCRead (11:57): local b = 1, declared (11:38): b = a
+|  |  |  |  SCExplicitReturn (11:61)
+|  |  |  |  |  SCRead (11:61): local c = 1, declared (11:53): c = b
+|  |  SCMethod (14:5): after_message { member.postln; var a = member; ^a }
+|  |  |  SCBody (14:21)
+|  |  |  |  SCMessage (14:21): postln
+|  |  |  |  |  SCRead (14:21): instance member, declared (4:9): member
+|  |  |  |  SCVariableDeclare (14:40): a
+|  |  |  |  |  SCRead (14:44): instance member, declared (4:9): member
+|  |  |  |  SCExplicitReturn (14:53)
+|  |  |  |  |  SCRead (14:53): local a, declared (14:40): a = member
+|  |  SCMethod (17:5): after_assignment { var a = 1; a = a + 1; var b = a; ^b }
+|  |  |  SCBody (17:24)
+|  |  |  |  SCVariableDeclare (17:28): a
+|  |  |  |  |  SCLiteral (17:32) = 1
+|  |  |  |  SCAssign (17:35): local a, declared (17:28): a = 1
+|  |  |  |  |  SCMessage (17:39): +
+|  |  |  |  |  |  SCRead (17:39): local a, declared (17:28): a = 1
+|  |  |  |  |  |  SCPositionalArgs (17:39)
+|  |  |  |  |  |  |  SCLiteral (17:43) = 1
+|  |  |  |  SCVariableDeclare (17:50): b
+|  |  |  |  |  SCRead (17:54): local a, declared (17:28): a = 1
+|  |  |  |  SCExplicitReturn (17:58)
+|  |  |  |  |  SCRead (17:58): local b, declared (17:50): b = a
+|  |  SCMethod (20:5): without_value { 1; var b; b = 2; ^b }
+|  |  |  SCBody (20:21)
+|  |  |  |  SCLiteral (20:21) = 1
+|  |  |  |  SCVariableDeclare (20:28): b
+|  |  |  |  SCAssign (20:31): local b, declared (20:28): b
+|  |  |  |  |  SCLiteral (20:35) = 2
+|  |  |  |  SCExplicitReturn (20:39)
+|  |  |  |  |  SCRead (20:39): local b, declared (20:28): b
+|  |  SCMethod (24:5): pack { 1; var #x, y = [1, 2]; ^x + y }
+|  |  |  SCBody (24:12)
+|  |  |  |  SCLiteral (24:12) = 1
+|  |  |  |  SCPackDeclare (24:19)
+|  |  |  |  |  SCCollection (24:27): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (24:28) = 1
+|  |  |  |  |  |  SCLiteral (24:31) = 2
+|  |  |  |  |  SCPackTargets (24:19)
+|  |  |  |  |  |  SCPackTarget (24:20): local x at 0
+|  |  |  |  |  |  SCPackTarget (24:23): local y at 1
+|  |  |  |  SCExplicitReturn (24:36)
+|  |  |  |  |  SCMessage (24:36): +
+|  |  |  |  |  |  SCRead (24:36): local x = 1, declared (24:20): x
+|  |  |  |  |  |  SCPositionalArgs (24:36)
+|  |  |  |  |  |  |  SCRead (24:40): local y = 2, declared (24:23): y
+|  |  SCMethod (27:5): poisoned: used_before_declaration { a.postln; var a = 1; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/mid_body_declarations.sc:27:31
+|  |  |     25 │ 
+|  |  |     26 │     // expect-error: Variable not defined
+|  |  |     27 │     used_before_declaration { a.postln; var a = 1; ^a }
+|  |  |        ┆                               ^ this is not defined.
+|  |  |     28 │     // expect-error: Variable not defined
+|  |  |     29 │     assigned_before_declaration { a = 2; var a = 1; ^a }
+|  |  |     30 │     // expect-error: Variable already declared
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (27:31)
+|  |  |  |  SCMessage (27:31): postln
+|  |  |  |  |  SCExprList (27:31)
+|  |  |  |  SCVariableDeclare (27:45): a
+|  |  |  |  |  SCLiteral (27:49) = 1
+|  |  |  |  SCExplicitReturn (27:53)
+|  |  |  |  |  SCRead (27:53): local a = 1, declared (27:45): a = 1
+|  |  SCMethod (29:5): poisoned: assigned_before_declaration { a = 2; var a = 1; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/mid_body_declarations.sc:29:35
+|  |  |     27 │     used_before_declaration { a.postln; var a = 1; ^a }
+|  |  |     28 │     // expect-error: Variable not defined
+|  |  |     29 │     assigned_before_declaration { a = 2; var a = 1; ^a }
+|  |  |        ┆                                   ^ this is not defined.
+|  |  |     30 │     // expect-error: Variable already declared
+|  |  |     31 │     redeclared_later { var a = 1; 1; var a = 2; ^a }
+|  |  |     32 │ 
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (29:35)
+|  |  |  |  SCLiteral (29:39) = 2
+|  |  |  |  SCVariableDeclare (29:46): a
+|  |  |  |  |  SCLiteral (29:50) = 1
+|  |  |  |  SCExplicitReturn (29:54)
+|  |  |  |  |  SCRead (29:54): local a, declared (29:46): a = 1
+|  |  SCMethod (31:5): poisoned: redeclared_later { var a = 1; 1; var a = 2; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable already declared
+|  |  |  variables/mid_body_declarations.sc:31:28
+|  |  |     29 │     assigned_before_declaration { a = 2; var a = 1; ^a }
+|  |  |     30 │     // expect-error: Variable already declared
+|  |  |     31 │     redeclared_later { var a = 1; 1; var a = 2; ^a }
+|  |  |        ┆                            ^^^^^ First declared here...
+|  |  |     32 │ 
+|  |  |     33 │     // Before its declaration a name reads the variable it will hide.
+|  |  |     34 │     // expect-reads: x -> x = 1; x = 2
+|  |  |
+|  |  |  variables/mid_body_declarations.sc:31:42
+|  |  |     29 │     assigned_before_declaration { a = 2; var a = 1; ^a }
+|  |  |     30 │     // expect-error: Variable already declared
+|  |  |     31 │     redeclared_later { var a = 1; 1; var a = 2; ^a }
+|  |  |        ┆                                          ^ ...declared again here.
+|  |  |     32 │ 
+|  |  |     33 │     // Before its declaration a name reads the variable it will hide.
+|  |  |     34 │     // expect-reads: x -> x = 1; x = 2
+|  |  |
+|  |  |  Arguments and variables in the same function or method must have different names. Rename one.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (31:24)
+|  |  |  |  SCVariableDeclare (31:28): a
+|  |  |  |  |  SCLiteral (31:32) = 1
+|  |  |  |  SCLiteral (31:35) = 1
+|  |  |  |  SCVariableDeclare (31:42): a
+|  |  |  |  |  SCLiteral (31:46) = 2
+|  |  |  |  SCExplicitReturn (31:50)
+|  |  |  |  |  SCRead (31:50): local a = 1, declared (31:28): a = 1
+|  |  SCMethod (35:5): hides_outer_after_read { var x = 1; ^{ x.postln; var x = 2; x } }
+|  |  |  SCBody (35:30)
+|  |  |  |  SCVariableDeclare (35:34): x
+|  |  |  |  |  SCLiteral (35:38) = 1
+|  |  |  |  SCExplicitReturn (35:42)
+|  |  |  |  |  SCFunction (35:42)
+|  |  |  |  |  |  SCBody (35:42)
+|  |  |  |  |  |  |  SCMessage (35:44): postln
+|  |  |  |  |  |  |  |  SCRead (35:44): local x, declared (35:34): x = 1
+|  |  |  |  |  |  |  SCVariableDeclare (35:58): x
+|  |  |  |  |  |  |  |  SCLiteral (35:62) = 2
+|  |  |  |  |  |  |  SCRead (35:65): local x = 2, declared (35:58): x = 2
+|  |  SCMethod (37:5): hides_member_after_read { member.postln; var member = 2; ^member }
+|  |  |  SCBody (37:31)
+|  |  |  |  SCMessage (37:31): postln
+|  |  |  |  |  SCRead (37:31): instance member, declared (4:9): member
+|  |  |  |  SCVariableDeclare (37:50): member
+|  |  |  |  |  SCLiteral (37:59) = 2
+|  |  |  |  SCExplicitReturn (37:63)
+|  |  |  |  |  SCRead (37:63): local member = 2, declared (37:50): member = 2
+|  |  SCMethod (41:5): in_nested_function { ^{ 1; var g = 2; g } }
+|  |  |  SCBody (41:26)
+|  |  |  |  SCExplicitReturn (41:27)
+|  |  |  |  |  SCFunction (41:27) -> 2
+|  |  |  |  |  |  SCBody (41:27)
+|  |  |  |  |  |  |  SCLiteral (41:29) = 1
+|  |  |  |  |  |  |  SCVariableDeclare (41:36): g
+|  |  |  |  |  |  |  |  SCLiteral (41:40) = 2
+|  |  |  |  |  |  |  SCRead (41:43): local g = 2, declared (41:36): g = 2
+|  |  SCMethod (45:5): in_deeply_nested_function { ^{ 1; { 2; var g = 1; 3; var h = g; h } } }
+|  |  |  SCBody (45:33)
+|  |  |  |  SCExplicitReturn (45:34)
+|  |  |  |  |  SCFunction (45:34)
+|  |  |  |  |  |  SCBody (45:34)
+|  |  |  |  |  |  |  SCLiteral (45:36) = 1
+|  |  |  |  |  |  |  SCFunction (45:39) -> 1
+|  |  |  |  |  |  |  |  SCBody (45:39)
+|  |  |  |  |  |  |  |  |  SCLiteral (45:41) = 2
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (45:48): g
+|  |  |  |  |  |  |  |  |  |  SCLiteral (45:52) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (45:55) = 3
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (45:62): h
+|  |  |  |  |  |  |  |  |  |  SCRead (45:66): local g = 1, declared (45:48): g = 1
+|  |  |  |  |  |  |  |  |  SCRead (45:69): local h = 1, declared (45:62): h = g
+|  |  SCMethod (48:5): captured_by_later_function { 1; var g = 1; var f = { g }; ^f }
+|  |  |  SCBody (48:34)
+|  |  |  |  SCLiteral (48:34) = 1
+|  |  |  |  SCVariableDeclare (48:41): g
+|  |  |  |  |  SCLiteral (48:45) = 1
+|  |  |  |  SCVariableDeclare (48:52): f
+|  |  |  |  |  SCFunction (48:56)
+|  |  |  |  |  |  SCBody (48:56)
+|  |  |  |  |  |  |  SCRead (48:58): local g, declared (48:41): g = 1
+|  |  |  |  SCExplicitReturn (48:64)
+|  |  |  |  |  SCRead (48:64): local f, declared (48:52): f = { g }
+|  |  SCMethod (50:5): after_argument { |a| a.postln; var b = a; ^b }
+|  |  |  SCArgumentDeclareList (50:23)
+|  |  |  |  SCArgumentDeclare (50:23): a
+|  |  |  SCBody (50:26)
+|  |  |  |  SCMessage (50:26): postln
+|  |  |  |  |  SCRead (50:26): local a, declared (50:23): a
+|  |  |  |  SCVariableDeclare (50:40): b
+|  |  |  |  |  SCRead (50:44): local a, declared (50:23): a
+|  |  |  |  SCExplicitReturn (50:48)
+|  |  |  |  |  SCRead (50:48): local b, declared (50:40): b = a
+|  |  SCMethod (52:5): in_block_after_argument { ^{ |a| a.postln; var b = a; b } }
+|  |  |  SCBody (52:31)
+|  |  |  |  SCExplicitReturn (52:32)
+|  |  |  |  |  SCFunction (52:32)
+|  |  |  |  |  |  SCArgumentDeclareList (52:35)
+|  |  |  |  |  |  |  SCArgumentDeclare (52:35): a
+|  |  |  |  |  |  SCBody (52:32)
+|  |  |  |  |  |  |  SCMessage (52:38): postln
+|  |  |  |  |  |  |  |  SCRead (52:38): local a, declared (52:35): a
+|  |  |  |  |  |  |  SCVariableDeclare (52:52): b
+|  |  |  |  |  |  |  |  SCRead (52:56): local a, declared (52:35): a
+|  |  |  |  |  |  |  SCRead (52:59): local b, declared (52:52): b = a
+|  |  SCMethod (56:5): after_non_local_return { |x| if (x) { ^1 }; var a = 1; ^a }
+|  |  |  SCArgumentDeclareList (56:31)
+|  |  |  |  SCArgumentDeclare (56:31): x
+|  |  |  SCBody (56:34)
+|  |  |  |  SCMessage (56:34): if
+|  |  |  |  |  SCRead (56:38): local x, declared (56:31): x
+|  |  |  |  |  SCPositionalArgs (56:34)
+|  |  |  |  |  |  SCFunction (56:41)
+|  |  |  |  |  |  |  SCBody (56:41)
+|  |  |  |  |  |  |  |  SCExplicitReturn (56:44)
+|  |  |  |  |  |  |  |  |  SCLiteral (56:44) = 1
+|  |  |  |  SCVariableDeclare (56:53): a
+|  |  |  |  |  SCLiteral (56:57) = 1
+|  |  |  |  SCExplicitReturn (56:61)
+|  |  |  |  |  SCRead (56:61): local a = 1, declared (56:53): a = 1
+|  |  SCMethod (59:5): non_local_return_in_nested_body { |x| ^{ if (x) { var a = 1; ^a }; var a = 2; a } }
+|  |  |  SCArgumentDeclareList (59:40)
+|  |  |  |  SCArgumentDeclare (59:40): x
+|  |  |  SCBody (59:43)
+|  |  |  |  SCExplicitReturn (59:44)
+|  |  |  |  |  SCFunction (59:44)
+|  |  |  |  |  |  SCBody (59:44)
+|  |  |  |  |  |  |  SCMessage (59:46): if
+|  |  |  |  |  |  |  |  SCRead (59:50): local x, declared (59:40): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (59:46)
+|  |  |  |  |  |  |  |  |  SCFunction (59:53)
+|  |  |  |  |  |  |  |  |  |  SCBody (59:53)
+|  |  |  |  |  |  |  |  |  |  |  SCVariableDeclare (59:59): a
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (59:63) = 1
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (59:67)
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (59:67): local a = 1, declared (59:59): a = 1
+|  |  |  |  |  |  |  SCVariableDeclare (59:76): a
+|  |  |  |  |  |  |  |  SCLiteral (59:80) = 2
+|  |  |  |  |  |  |  SCRead (59:83): local a = 2, declared (59:76): a = 2
+Successfully compiled 15 classes.

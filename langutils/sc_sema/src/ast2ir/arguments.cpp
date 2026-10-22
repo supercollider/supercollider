@@ -39,8 +39,11 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                     const auto preseve_nil = ast_graph->payload(i).preserve_nil;
                     const auto [name, default_i] = ast_graph->children(i);
                     const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(name));
-                    // Compiled before this argument is declared, so it can't refer to itself.
+                    // Compiled before this argument is declared, a function in it can still refer to it, see
+                    // Expr::initialising.
+                    expr.initialising.push_back({ sym, expr.scope.size() - 1, location_of(ir, *ast_graph, { *i }) });
                     const auto default_r = expr(ast::AnyExprIndex { default_i });
+                    expr.initialising.pop_back();
                     const auto arg = ir.create(SCArgumentDeclare { sym,
                                                                    preseve_nil ? DefaultBehaviour::PreserveNil
                                                                                : DefaultBehaviour::DontPreserveNil },
