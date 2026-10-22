@@ -1,5 +1,6 @@
-#include <boost/test/included/unit_test.hpp>
+// Must be defined before the include, so the header provides main.
 #define BOOST_TEST_MODULE sc_util_test
+#include <boost/test/included/unit_test.hpp>
 
 #include "sc_util/type_set_index.hpp"
 
