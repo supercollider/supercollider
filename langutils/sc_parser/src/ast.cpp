@@ -123,14 +123,6 @@ void ASTGraph::debug_flat_print(std::ostream& stream) const {
     });
 }
 
-constexpr const char* ASTGraph::node_name(const Variant& variant) {
-    return std::visit(
-        [](const auto& v) -> const char* {
-            using V = std::remove_reference_t<std::remove_cv_t<decltype(v)>>;
-            return V::name;
-        },
-        variant);
-}
 const sc::lex::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) const { return m_node_locations[*i]; }
 sc::lex::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) { return m_node_locations[*i]; }
 std::shared_ptr<const lex::TextInfo> ASTGraph::text_info() const { return m_text_info; }

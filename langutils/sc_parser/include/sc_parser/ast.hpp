@@ -315,6 +315,15 @@ template <typename TypedIndex, typename> //
     return NodeType::name;
 }
 
+constexpr const char* ASTGraph::node_name(const Variant& variant) {
+    return std::visit(
+        [](const auto& v) -> const char* {
+            using V = std::remove_reference_t<std::remove_cv_t<decltype(v)>>;
+            return V::name;
+        },
+        variant);
+}
+
 template <typename I, typename... Children>
 inline auto ASTGraph::append(I p, lex::SourceCodeRange range, Children... children) {
     (Base::append(p, children), ...);
