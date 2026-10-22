@@ -38,6 +38,7 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper<SCNodeType,
                                                                      SCExplicitReturn, //
                                                                      SCCollection, //
                                                                      SCRange, //
+                                                                     SCBody, //
                                                                      SCArgumentDeclare, //
                                                                      SCArgumentDeclareList, //
                                                                      SCMethod, //

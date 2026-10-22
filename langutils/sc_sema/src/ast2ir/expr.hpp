@@ -45,7 +45,8 @@ struct Expr : private Base {
     Return<SCAnyExpr_I> operator()(ast::AssignmentAtIndex);
     Return<SCAnyExpr_I> operator()(ast::SetterIndex);
     Return<SCAnyExpr_I> operator()(ast::VariablePackAssignIndex);
-    Return<SCAnyExpr_I> operator()(ast::GeneratorAnyIndex);
+    Return<SCAnyExpr_I> operator()(ast::GeneratorIndex);
+    Return<SCAnyExpr_I> operator()(ast::GeneratorFakeIndex);
     Return<SCAnyExpr_I> operator()(ast::ImmediatelyEvaluatedBlockIndex);
     Return<SCAnyExpr_I> operator()(ast::RangeIndex);
     Return<SCAnyExpr_I> operator()(ast::RangeGeneratorIndex);
@@ -75,8 +76,6 @@ struct Expr : private Base {
     Return<SCAnyExpr_I> operator()(ast::BlockIndex);
 
     Return<SCAnyExpr_I> operator()(ast::AnyExprIndex);
-    Return<SCAnyExpr_I> operator()(ast::BlockItemIndex);
-    template <typename T> Return<SCAnyExpr_I> operator()(T);
 
     std::vector<Scope> scope;
     DiagnosticSink& sink;

@@ -37,7 +37,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: bound_not_constant { ^[1, 2, 3][1..2.foo] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3][1..2.foo]
+|  |  |  SCBody: ^[1, 2, 3][1..2.foo]
 |  |  |  |  SCExplicitReturn: [1, 2, 3][1..2.foo]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1..2.foo]
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
@@ -59,7 +59,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: receiver_not_constant { ^x[1..2] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x[1..2]
+|  |  |  SCBody: ^x[1..2]
 |  |  |  |  SCExplicitReturn: x[1..2]
 |  |  |  |  |  SCMessage: copySeries: x[1..2]
 |  |  |  |  |  |  SCRead: x
@@ -73,7 +73,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: step_away { ^[1, 2, 3][2, 3..0] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3][2, 3..0]
+|  |  |  SCBody: ^[1, 2, 3][2, 3..0]
 |  |  |  |  SCExplicitReturn: [1, 2, 3][2, 3..0]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3][2, 3..0]
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
@@ -90,7 +90,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: array { ^[1, 2, 3, 4][1..2] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3, 4][1..2]
+|  |  |  SCBody: ^[1, 2, 3, 4][1..2]
 |  |  |  |  SCExplicitReturn: [1, 2, 3, 4][1..2]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3, 4][1..2] = {"array": [{"int": 2}, {"int": 3}]}
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3, 4] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}, {"int": 4}]}
@@ -108,7 +108,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: from_start { ^[1, 2, 3][..1] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3][..1]
+|  |  |  SCBody: ^[1, 2, 3][..1]
 |  |  |  |  SCExplicitReturn: [1, 2, 3][..1]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3][..1] = {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
@@ -125,7 +125,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: to_end { ^[1, 2, 3][1..] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3][1..]
+|  |  |  SCBody: ^[1, 2, 3][1..]
 |  |  |  |  SCExplicitReturn: [1, 2, 3][1..]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1..] = {"array": [{"int": 2}, {"int": 3}]}
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
@@ -142,7 +142,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: step { ^[0, 1, 2, 3, 4, 5][0, 2..5] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[0, 1, 2, 3, 4, 5][0, 2..5]
+|  |  |  SCBody: ^[0, 1, 2, 3, 4, 5][0, 2..5]
 |  |  |  |  SCExplicitReturn: [0, 1, 2, 3, 4, 5][0, 2..5]
 |  |  |  |  |  SCMessage: copySeries: [0, 1, 2, 3, 4, 5][0, 2..5] = {"array": [{"int": 0}, {"int": 2}, {"int": 4}]}
 |  |  |  |  |  |  SCCollection: Array: [0, 1, 2, 3, 4, 5] = {"array": [{"int": 0}, {"int": 1}, {"int": 2}, {"int": 3}, {"int": 4}, {"int": 5}]}
@@ -162,7 +162,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: descending { ^[1, 2, 3][2..0] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3][2..0]
+|  |  |  SCBody: ^[1, 2, 3][2..0]
 |  |  |  |  SCExplicitReturn: [1, 2, 3][2..0]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3][2..0] = {"array": [{"int": 3}, {"int": 2}, {"int": 1}]}
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
@@ -179,7 +179,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: clipped_end { ^[1, 2, 3][1..10] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3][1..10]
+|  |  |  SCBody: ^[1, 2, 3][1..10]
 |  |  |  |  SCExplicitReturn: [1, 2, 3][1..10]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1..10] = {"array": [{"int": 2}, {"int": 3}]}
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
@@ -196,7 +196,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: clipped_start { ^[1, 2, 3][-5..1] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3][-5..1]
+|  |  |  SCBody: ^[1, 2, 3][-5..1]
 |  |  |  |  SCExplicitReturn: [1, 2, 3][-5..1]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3][-5..1] = {"array": [{"int": 1}, {"int": 2}]}
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
@@ -213,7 +213,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: empty { ^[][..3] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[][..3]
+|  |  |  SCBody: ^[][..3]
 |  |  |  |  SCExplicitReturn: [][..3]
 |  |  |  |  |  SCMessage: copySeries: [][..3] = {"array": []}
 |  |  |  |  |  |  SCCollection: Array: [] = {"array": []}
@@ -227,7 +227,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: string { ^"hello"[1..3] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^"hello"[1..3]
+|  |  |  SCBody: ^"hello"[1..3]
 |  |  |  |  SCExplicitReturn: "hello"[1..3]
 |  |  |  |  |  SCMessage: copySeries: "hello"[1..3] = {"string": "ell"}
 |  |  |  |  |  |  SCLiteral: "hello" = {"string": "hello"}
@@ -241,7 +241,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: string_descending { ^"hello"[3..1] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^"hello"[3..1]
+|  |  |  SCBody: ^"hello"[3..1]
 |  |  |  |  SCExplicitReturn: "hello"[3..1]
 |  |  |  |  |  SCMessage: copySeries: "hello"[3..1] = {"string": "lle"}
 |  |  |  |  |  |  SCLiteral: "hello" = {"string": "hello"}
@@ -255,7 +255,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: immutable { ^#[a, b, c][1..] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^#[a, b, c][1..]
+|  |  |  SCBody: ^#[a, b, c][1..]
 |  |  |  |  SCExplicitReturn: #[a, b, c][1..]
 |  |  |  |  |  SCMessage: copySeries: #[a, b, c][1..] = {"array": [{"symbol": "b"}, {"symbol": "c"}]}
 |  |  |  |  |  |  SCCollection: Array: #[a, b, c] = {"array": [{"symbol": "a"}, {"symbol": "b"}, {"symbol": "c"}]}
@@ -272,7 +272,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: step_with_start_outside { ^[1, 2, 3, 4][-1, 1..3] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3, 4][-1, 1..3]
+|  |  |  SCBody: ^[1, 2, 3, 4][-1, 1..3]
 |  |  |  |  SCExplicitReturn: [1, 2, 3, 4][-1, 1..3]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3, 4][-1, 1..3]
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3, 4] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}, {"int": 4}]}
@@ -290,7 +290,7 @@ SCClass: SliceFolding: SliceFolding {'\n'    var x;'\n'    var initial_array = #
 |  |  SCMethod: zero_step { ^[1, 2, 3][1, 1..2] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3][1, 1..2]
+|  |  |  SCBody: ^[1, 2, 3][1, 1..2]
 |  |  |  |  SCExplicitReturn: [1, 2, 3][1, 1..2]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1, 1..2]
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}

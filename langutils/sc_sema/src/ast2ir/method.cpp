@@ -1,5 +1,6 @@
 #include "method.hpp"
 #include "ast2ir/arguments.hpp"
+#include "ast2ir/body.hpp"
 #include "ast2ir/expr.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_sema/context.hpp"
@@ -59,25 +60,14 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
                                        },
                                        ast_graph->index_to_variant(maybe_prim));
 
-    const auto body_i = ir.create(SCExprList {}, location(body));
+    const auto body_i = ir.create(SCBody {}, location(body));
     // The method is created first, so its arguments can refer to it as their scope.
     const auto method = ir.create(SCMethod { primitive }, location(i), argument_list, variadic_args, body_i);
 
-    bool body_is_const_expr = true;
-    std::optional<SCAnyExpr_I> last_index;
-
-    // Methods have their own scope, holding the arguments, inside the member scopes.
+    // Methods have their own scope, holding the arguments and variables, inside the member scopes.
     expr.scope.emplace_back();
     declare_arguments(expr, ir, ast_graph, ctx, argument_list, variadic_args, arg_list, method);
-
-    // If all the body is const expr, then we can freely ignore everything bar the final expr.
-    for (auto it = ast_graph->children(body).iter(); it; ++it) {
-        const auto r = expr(*it);
-        body_is_const_expr = body_is_const_expr && static_cast<bool>(r.const_index);
-        ir.append(body_i, r.ir_node);
-        last_index = r.ir_node;
-    }
-
+    (void)compile_body(expr, ir, ast_graph, ctx, method, body_i, body);
     expr.scope.pop_back();
 
     // A fatal error anywhere in the method poisons all of it.

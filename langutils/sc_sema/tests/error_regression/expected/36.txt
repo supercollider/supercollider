@@ -13,7 +13,7 @@ SCClass: Object: Object : AbstractObjectExperimental {'\n'    classvar dependant
 |  |  SCMethod: perform { ^nil }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^nil
+|  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
 SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    slice { ^[1, 2, 3][1..] }'\n'    string_slice { ^"hello"[1..3] }'\n'    array_collection { ^Array[1, 2] }'\n'    event_collection { ^Event[a: 1] }'\n'    perform_rewrite { ^1.perform(\foo) }'\n'}
@@ -22,7 +22,7 @@ SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    
 |  |  SCMethod: perform_rewrite { ^1.perform(\foo) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(\foo)
+|  |  |  SCBody: ^1.perform(\foo)
 |  |  |  |  SCExplicitReturn: 1.perform(\foo)
 |  |  |  |  |  SCMessage: perform: 1.perform(\foo)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -34,7 +34,7 @@ SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    
 |  |  SCMethod: event_collection { ^Event[a: 1] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Event[a: 1]
+|  |  |  SCBody: ^Event[a: 1]
 |  |  |  |  SCExplicitReturn: Event[a: 1]
 |  |  |  |  |  SCCollection: Event: Event[a: 1]
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
@@ -42,7 +42,7 @@ SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    
 |  |  SCMethod: array_collection { ^Array[1, 2] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Array[1, 2]
+|  |  |  SCBody: ^Array[1, 2]
 |  |  |  |  SCExplicitReturn: Array[1, 2]
 |  |  |  |  |  SCCollection: Array: Array[1, 2]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -50,7 +50,7 @@ SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    
 |  |  SCMethod: string_slice { ^"hello"[1..3] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^"hello"[1..3]
+|  |  |  SCBody: ^"hello"[1..3]
 |  |  |  |  SCExplicitReturn: "hello"[1..3]
 |  |  |  |  |  SCMessage: copySeries: "hello"[1..3] = {"string": "ell"}
 |  |  |  |  |  |  SCLiteral: "hello" = {"string": "hello"}
@@ -64,7 +64,7 @@ SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    
 |  |  SCMethod: slice { ^[1, 2, 3][1..] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2, 3][1..]
+|  |  |  SCBody: ^[1, 2, 3][1..]
 |  |  |  |  SCExplicitReturn: [1, 2, 3][1..]
 |  |  |  |  |  SCMessage: copySeries: [1, 2, 3][1..]
 |  |  |  |  |  |  SCCollection: Array: [1, 2, 3] = {"array": [{"int": 1}, {"int": 2}, {"int": 3}]}
@@ -81,7 +81,7 @@ SCClass: OverriddenMethods: OverriddenMethods {'\n'    range { ^(1..3) }'\n'    
 |  |  SCMethod: range { ^(1..3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(1..3)
+|  |  |  SCBody: ^(1..3)
 |  |  |  |  SCExplicitReturn: (1..3)
 |  |  |  |  |  SCRange: (1..3)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -93,7 +93,7 @@ SCClass: Dictionary: Dictionary {'\n'    add { ^nil }'\n'}
 |  |  SCMethod: add { ^nil }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^nil
+|  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
 SCClass: Event: Event : Dictionary {}
@@ -108,7 +108,7 @@ SCClass: Symbol: Symbol {}
 |  |  SCMethod: perform { ^nil }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^nil
+|  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
 SCClass: Char: Char {}
@@ -120,7 +120,7 @@ SCClass: SimpleNumber: SimpleNumber {'\n'    series { ^nil }'\n'}
 |  |  SCMethod: series { ^nil }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^nil
+|  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
 SCClass: Integer: Integer : SimpleNumber {}
@@ -129,7 +129,7 @@ SCClass: Integer: Integer : SimpleNumber {}
 |  |  SCMethod: series { ^nil }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^nil
+|  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
 SCClass: Float: Float {}
@@ -150,13 +150,13 @@ SCClass: ArrayedCollection: ArrayedCollection {'\n'    copySeries { ^nil }'\n'  
 |  |  SCMethod: add { ^nil }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^nil
+|  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
 |  |  SCMethod: copySeries { ^nil }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^nil
+|  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
 SCClass: Array: Array : ArrayedCollection {}
@@ -165,7 +165,7 @@ SCClass: Array: Array : ArrayedCollection {}
 |  |  SCMethod: copySeries { ^nil }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^nil
+|  |  |  SCBody: ^nil
 |  |  |  |  SCExplicitReturn: nil
 |  |  |  |  |  SCLiteral: nil = {"nil": {}}
 SCClass: String: String : ArrayedCollection {}

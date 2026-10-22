@@ -155,7 +155,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: not_constant { ^1.perform(2.bar) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(2.bar)
+|  |  |  SCBody: ^1.perform(2.bar)
 |  |  |  |  SCExplicitReturn: 1.perform(2.bar)
 |  |  |  |  |  SCMessage: perform: 1.perform(2.bar)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -172,7 +172,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: binary { ^1 perform: 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1 perform: 2
+|  |  |  SCBody: ^1 perform: 2
 |  |  |  |  SCExplicitReturn: 1 perform: 2
 |  |  |  |  |  SCMessage: perform: 1 perform: 2
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -184,7 +184,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: prefix { ^perform(1, 2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^perform(1, 2)
+|  |  |  SCBody: ^perform(1, 2)
 |  |  |  |  SCExplicitReturn: perform(1, 2)
 |  |  |  |  |  SCMessage: perform: perform(1, 2)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -196,7 +196,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: nil_selector { ^1.perform(nil) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(nil)
+|  |  |  SCBody: ^1.perform(nil)
 |  |  |  |  SCExplicitReturn: 1.perform(nil)
 |  |  |  |  |  SCMessage: perform: 1.perform(nil)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -208,7 +208,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: boolean { ^1.perform(true) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(true)
+|  |  |  SCBody: ^1.perform(true)
 |  |  |  |  SCExplicitReturn: 1.perform(true)
 |  |  |  |  |  SCMessage: perform: 1.perform(true)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -220,7 +220,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: char { ^1.perform($a) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform($a)
+|  |  |  SCBody: ^1.perform($a)
 |  |  |  |  SCExplicitReturn: 1.perform($a)
 |  |  |  |  |  SCMessage: perform: 1.perform($a)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -232,7 +232,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: string_with_quote { ^1.perform("it's") }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform("it's")
+|  |  |  SCBody: ^1.perform("it's")
 |  |  |  |  SCExplicitReturn: 1.perform("it's")
 |  |  |  |  |  SCMessage: perform: 1.perform("it's")
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -244,7 +244,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: string { ^1.perform("foo") }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform("foo")
+|  |  |  SCBody: ^1.perform("foo")
 |  |  |  |  SCExplicitReturn: 1.perform("foo")
 |  |  |  |  |  SCMessage: perform: 1.perform("foo")
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -256,7 +256,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: class_name { ^1.perform(Object) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(Object)
+|  |  |  SCBody: ^1.perform(Object)
 |  |  |  |  SCExplicitReturn: 1.perform(Object)
 |  |  |  |  |  SCMessage: perform: 1.perform(Object)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -268,7 +268,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: float { ^1.perform(2.5, 3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(2.5, 3)
+|  |  |  SCBody: ^1.perform(2.5, 3)
 |  |  |  |  SCExplicitReturn: 1.perform(2.5, 3)
 |  |  |  |  |  SCMessage: perform: 1.perform(2.5, 3)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -281,7 +281,7 @@ SCClass: PerformNotSymbol: PerformNotSymbol {'\n'    integer { ^1.perform(2) }'\
 |  |  SCMethod: poisoned: integer { ^1.perform(2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(2)
+|  |  |  SCBody: ^1.perform(2)
 |  |  |  |  SCExplicitReturn: 1.perform(2)
 |  |  |  |  |  SCMessage: perform: 1.perform(2)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}

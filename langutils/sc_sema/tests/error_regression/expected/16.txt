@@ -43,7 +43,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  SCMethod: keyword_argument { ^1.perform(selector: \foo) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(selector: \foo)
+|  |  |  SCBody: ^1.perform(selector: \foo)
 |  |  |  |  SCExplicitReturn: 1.perform(selector: \foo)
 |  |  |  |  |  SCMessage: perform: 1.perform(selector: \foo)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -56,7 +56,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  SCMethod: poisoned: not_first_argument { ^1.perform(2, \foo) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(2, \foo)
+|  |  |  SCBody: ^1.perform(2, \foo)
 |  |  |  |  SCExplicitReturn: 1.perform(2, \foo)
 |  |  |  |  |  SCMessage: perform: 1.perform(2, \foo)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -69,7 +69,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  SCMethod: not_constant { ^1.perform(\foo.bar, 2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(\foo.bar, 2)
+|  |  |  SCBody: ^1.perform(\foo.bar, 2)
 |  |  |  |  SCExplicitReturn: 1.perform(\foo.bar, 2)
 |  |  |  |  |  SCMessage: perform: 1.perform(\foo.bar, 2)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -87,7 +87,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  SCMethod: poisoned: not_a_symbol { ^1.perform(2, 3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(2, 3)
+|  |  |  SCBody: ^1.perform(2, 3)
 |  |  |  |  SCExplicitReturn: 1.perform(2, 3)
 |  |  |  |  |  SCMessage: perform: 1.perform(2, 3)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -100,7 +100,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  SCMethod: binary { ^1 perform: \foo }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1 perform: \foo
+|  |  |  SCBody: ^1 perform: \foo
 |  |  |  |  SCExplicitReturn: 1 perform: \foo
 |  |  |  |  |  SCMessage: foo: 1 perform: \foo
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -111,7 +111,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  SCMethod: prefix { ^perform(1, \foo, 2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^perform(1, \foo, 2)
+|  |  |  SCBody: ^perform(1, \foo, 2)
 |  |  |  |  SCExplicitReturn: perform(1, \foo, 2)
 |  |  |  |  |  SCMessage: foo: perform(1, \foo, 2)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -123,7 +123,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  SCMethod: postfix_quoted_symbol { ^1.perform('foo', 2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform('foo', 2)
+|  |  |  SCBody: ^1.perform('foo', 2)
 |  |  |  |  SCExplicitReturn: 1.perform('foo', 2)
 |  |  |  |  |  SCMessage: foo: 1.perform('foo', 2)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -135,7 +135,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  SCMethod: postfix_selector_only { ^1.perform(\foo) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(\foo)
+|  |  |  SCBody: ^1.perform(\foo)
 |  |  |  |  SCExplicitReturn: 1.perform(\foo)
 |  |  |  |  |  SCMessage: foo: 1.perform(\foo)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -146,7 +146,7 @@ SCClass: Perform: Perform {'\n'    postfix { ^1.perform(\foo, 2) }'\n'    postfi
 |  |  SCMethod: postfix { ^1.perform(\foo, 2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.perform(\foo, 2)
+|  |  |  SCBody: ^1.perform(\foo, 2)
 |  |  |  |  SCExplicitReturn: 1.perform(\foo, 2)
 |  |  |  |  |  SCMessage: foo: 1.perform(\foo, 2)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}

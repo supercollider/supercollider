@@ -67,7 +67,7 @@ SCClass: WhitespaceChars: WhitespaceChars {'\n'    char_space { ^$  }'\n'    cha
 |  |  SCMethod: char_space { ^$  }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^$ 
+|  |  |  SCBody: ^$ 
 |  |  |  |  SCExplicitReturn: $ 
 |  |  |  |  |  SCLiteral: $  = {"char": " "}
 SCClass: Event: Event {}

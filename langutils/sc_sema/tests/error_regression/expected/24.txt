@@ -176,13 +176,13 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  |  SCMethod: after_errors { ^5 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^5
+|  |  |  SCBody: ^5
 |  |  |  |  SCExplicitReturn: 5
 |  |  |  |  |  SCLiteral: 5 = {"int": 5}
 |  |  SCMethod: poisoned: put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var[*0, b: 1] = 2
+|  |  |  SCBody: instance_var[*0, b: 1] = 2
 |  |  |  |  SCMessage: put: instance_var[*0, b: 1] = 2
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var[*0, b: 1] = 2
@@ -196,7 +196,7 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  |  SCMethod: poisoned: put_variadic { instance_var[*0] = 1 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var[*0] = 1
+|  |  |  SCBody: instance_var[*0] = 1
 |  |  |  |  SCMessage: put: instance_var[*0] = 1
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var[*0] = 1
@@ -208,7 +208,7 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  |  SCMethod: poisoned: array_after { ^1.foo(*2, [3]) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.foo(*2, [3])
+|  |  |  SCBody: ^1.foo(*2, [3])
 |  |  |  |  SCExplicitReturn: 1.foo(*2, [3])
 |  |  |  |  |  SCMessage: foo: 1.foo(*2, [3])
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -222,7 +222,7 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  |  SCMethod: poisoned: prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^foo(*1, 2)
+|  |  |  SCBody: ^foo(*1, 2)
 |  |  |  |  SCExplicitReturn: foo(*1, 2)
 |  |  |  |  |  SCMessage: foo: foo(*1, 2)
 |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
@@ -234,7 +234,7 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  |  SCMethod: poisoned: prefix { ^foo(1, *2, 3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^foo(1, *2, 3)
+|  |  |  SCBody: ^foo(1, *2, 3)
 |  |  |  |  SCExplicitReturn: foo(1, *2, 3)
 |  |  |  |  |  SCMessage: foo: foo(1, *2, 3)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -247,7 +247,7 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  |  SCMethod: keyword_after { ^1.foo(*2, bar: 3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.foo(*2, bar: 3)
+|  |  |  SCBody: ^1.foo(*2, bar: 3)
 |  |  |  |  SCExplicitReturn: 1.foo(*2, bar: 3)
 |  |  |  |  |  SCMessage: foo: 1.foo(*2, bar: 3)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -261,7 +261,7 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  |  SCMethod: poisoned: two_after { ^1.foo(*2, 3, 4) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.foo(*2, 3, 4)
+|  |  |  SCBody: ^1.foo(*2, 3, 4)
 |  |  |  |  SCExplicitReturn: 1.foo(*2, 3, 4)
 |  |  |  |  |  SCMessage: foo: 1.foo(*2, 3, 4)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -275,7 +275,7 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  |  SCMethod: poisoned: variadic_first { ^1.foo(*2, 3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.foo(*2, 3)
+|  |  |  SCBody: ^1.foo(*2, 3)
 |  |  |  |  SCExplicitReturn: 1.foo(*2, 3)
 |  |  |  |  |  SCMessage: foo: 1.foo(*2, 3)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -288,7 +288,7 @@ SCClass: VariadicOrder: VariadicOrder {'\n'    var instance_var;'\n''\n'    vari
 |  |  SCMethod: variadic_last { ^1.foo(2, *3) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.foo(2, *3)
+|  |  |  SCBody: ^1.foo(2, *3)
 |  |  |  |  SCExplicitReturn: 1.foo(2, *3)
 |  |  |  |  |  SCMessage: foo: 1.foo(2, *3)
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}

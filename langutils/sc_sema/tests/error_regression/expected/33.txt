@@ -57,7 +57,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: poisoned: assign_too_many { x[1, 2, 3..5] = 5 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: x[1, 2, 3..5] = 5
+|  |  |  SCBody: x[1, 2, 3..5] = 5
 |  |  |  |  SCMessage: putSeries: x[1, 2, 3..5] = 5
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: x[1, 2, 3..5] = 5
@@ -71,7 +71,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: dot_assign { x.[1..3] = 5 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: x.[1..3] = 5
+|  |  |  SCBody: x.[1..3] = 5
 |  |  |  |  SCMessage: putSeries: x.[1..3] = 5
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: x.[1..3] = 5
@@ -85,7 +85,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: slice { ^x[1..3] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x[1..3]
+|  |  |  SCBody: ^x[1..3]
 |  |  |  |  SCExplicitReturn: x[1..3]
 |  |  |  |  |  SCMessage: copySeries: x[1..3]
 |  |  |  |  |  |  SCRead: x
@@ -99,7 +99,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: slice_step { ^x[1, 3..9] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x[1, 3..9]
+|  |  |  SCBody: ^x[1, 3..9]
 |  |  |  |  SCExplicitReturn: x[1, 3..9]
 |  |  |  |  |  SCMessage: copySeries: x[1, 3..9]
 |  |  |  |  |  |  SCRead: x
@@ -113,7 +113,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: slice_from_start { ^x[..3] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x[..3]
+|  |  |  SCBody: ^x[..3]
 |  |  |  |  SCExplicitReturn: x[..3]
 |  |  |  |  |  SCMessage: copySeries: x[..3]
 |  |  |  |  |  |  SCRead: x
@@ -127,7 +127,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: slice_to_end { ^x[1..] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x[1..]
+|  |  |  SCBody: ^x[1..]
 |  |  |  |  SCExplicitReturn: x[1..]
 |  |  |  |  |  SCMessage: copySeries: x[1..]
 |  |  |  |  |  |  SCRead: x
@@ -141,7 +141,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: slice_step_to_end { ^x[1, 3..] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x[1, 3..]
+|  |  |  SCBody: ^x[1, 3..]
 |  |  |  |  SCExplicitReturn: x[1, 3..]
 |  |  |  |  |  SCMessage: copySeries: x[1, 3..]
 |  |  |  |  |  |  SCRead: x
@@ -155,7 +155,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: dot_slice { ^x.[1..3] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x.[1..3]
+|  |  |  SCBody: ^x.[1..3]
 |  |  |  |  SCExplicitReturn: x.[1..3]
 |  |  |  |  |  SCMessage: copySeries: x.[1..3]
 |  |  |  |  |  |  SCRead: x
@@ -169,7 +169,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: slice_expression_bounds { ^x[1.foo..2.bar] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x[1.foo..2.bar]
+|  |  |  SCBody: ^x[1.foo..2.bar]
 |  |  |  |  SCExplicitReturn: x[1.foo..2.bar]
 |  |  |  |  |  SCMessage: copySeries: x[1.foo..2.bar]
 |  |  |  |  |  |  SCRead: x
@@ -193,7 +193,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: poisoned: slice_keyword { ^x[a: 1..3] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x[a: 1..3]
+|  |  |  SCBody: ^x[a: 1..3]
 |  |  |  |  SCExplicitReturn: x[a: 1..3]
 |  |  |  |  |  SCMessage: copySeries: x[a: 1..3]
 |  |  |  |  |  |  SCRead: x
@@ -207,7 +207,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: poisoned: slice_variadic { ^x[*1..3] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^x[*1..3]
+|  |  |  SCBody: ^x[*1..3]
 |  |  |  |  SCExplicitReturn: x[*1..3]
 |  |  |  |  |  SCMessage: copySeries: x[*1..3]
 |  |  |  |  |  |  SCRead: x
@@ -221,7 +221,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: assign { x[1..3] = 5 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: x[1..3] = 5
+|  |  |  SCBody: x[1..3] = 5
 |  |  |  |  SCMessage: putSeries: x[1..3] = 5
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: x[1..3] = 5
@@ -235,7 +235,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: assign_step { x[1, 3..9] = 5 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: x[1, 3..9] = 5
+|  |  |  SCBody: x[1, 3..9] = 5
 |  |  |  |  SCMessage: putSeries: x[1, 3..9] = 5
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: x[1, 3..9] = 5
@@ -249,7 +249,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: assign_from_start { x[..3] = 5 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: x[..3] = 5
+|  |  |  SCBody: x[..3] = 5
 |  |  |  |  SCMessage: putSeries: x[..3] = 5
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: x[..3] = 5
@@ -263,7 +263,7 @@ SCClass: Slicing: Slicing {'\n'    var x;'\n''\n'    slice { ^x[1..3] }'\n'    s
 |  |  SCMethod: assign_to_end { x[1..] = 5 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: x[1..] = 5
+|  |  |  SCBody: x[1..] = 5
 |  |  |  |  SCMessage: putSeries: x[1..] = 5
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: x[1..] = 5

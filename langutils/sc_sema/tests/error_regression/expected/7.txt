@@ -37,7 +37,7 @@ SCClass: Foo: Foo { }
 |  |  SCMethod: bar {}
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: }
+|  |  |  SCBody: }
 SCClass: Event: Event {}
 |  SCMemberList: Event
 |  SCMethodList: Event

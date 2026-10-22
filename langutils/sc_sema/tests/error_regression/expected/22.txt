@@ -62,7 +62,7 @@ SCClass: IdentifierKeys: IdentifierKeys {'\n'    var instance_var;'\n'    classv
 |  |  SCMethod: poisoned: identifier_key_undefined { ^(undefined_var : 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(undefined_var : 1)
+|  |  |  SCBody: ^(undefined_var : 1)
 |  |  |  |  SCExplicitReturn: (undefined_var : 1)
 |  |  |  |  |  SCCollection: Event: (undefined_var : 1)
 |  |  |  |  |  |  SCExprList: undefined_var
@@ -70,7 +70,7 @@ SCClass: IdentifierKeys: IdentifierKeys {'\n'    var instance_var;'\n'    classv
 |  |  SCMethod: keyword_key { ^(instance_var: 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(instance_var: 1)
+|  |  |  SCBody: ^(instance_var: 1)
 |  |  |  |  SCExplicitReturn: (instance_var: 1)
 |  |  |  |  |  SCCollection: Event: (instance_var: 1) = {"event": [{"key": {"symbol": "instance_var"}, "value": {"int": 1}}]}
 |  |  |  |  |  |  SCLiteral: instance_var: = {"symbol": "instance_var"}
@@ -78,7 +78,7 @@ SCClass: IdentifierKeys: IdentifierKeys {'\n'    var instance_var;'\n'    classv
 |  |  SCMethod: identifier_key { ^(instance_var : 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(instance_var : 1)
+|  |  |  SCBody: ^(instance_var : 1)
 |  |  |  |  SCExplicitReturn: (instance_var : 1)
 |  |  |  |  |  SCCollection: Event: (instance_var : 1)
 |  |  |  |  |  |  SCRead: instance_var
@@ -152,7 +152,7 @@ SCClass: Meta_IdentifierKeys: IdentifierKeys {'\n'    var instance_var;'\n'    c
 |  |  SCMethod: *class_identifier_key { ^(class_var : 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(class_var : 1)
+|  |  |  SCBody: ^(class_var : 1)
 |  |  |  |  SCExplicitReturn: (class_var : 1)
 |  |  |  |  |  SCCollection: Event: (class_var : 1)
 |  |  |  |  |  |  SCRead: class_var

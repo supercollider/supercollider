@@ -45,31 +45,31 @@ SCClass: Foo: Foo {'\n'    var instance_var;'\n'    classvar class_var;'\n''\n' 
 |  |  SCMethod: assign_chain { instance_var = class_var = 5 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var = class_var = 5
+|  |  |  SCBody: instance_var = class_var = 5
 |  |  |  |  SCAssign: instance_var = class_var = 5
 |  |  |  |  |  SCAssign: class_var = 5
 |  |  |  |  |  |  SCLiteral: 5 = {"int": 5}
 |  |  SCMethod: poisoned: assign_undefined { undefined_var = 4 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: undefined_var = 4
+|  |  |  SCBody: undefined_var = 4
 |  |  |  |  SCLiteral: 4 = {"int": 4}
 |  |  SCMethod: assign_env { ~env_var = 3 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ~env_var = 3
+|  |  |  SCBody: ~env_var = 3
 |  |  |  |  SCAssign: ~env_var = 3
 |  |  |  |  |  SCLiteral: 3 = {"int": 3}
 |  |  SCMethod: assign_class { class_var = 2.0 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: class_var = 2.0
+|  |  |  SCBody: class_var = 2.0
 |  |  |  |  SCAssign: class_var = 2.0
 |  |  |  |  |  SCLiteral: 2.0 = {"float": 2}
 |  |  SCMethod: assign_instance { instance_var = 1 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var = 1
+|  |  |  SCBody: instance_var = 1
 |  |  |  |  SCAssign: instance_var = 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 SCClass: Bar: Bar : Foo {'\n'    assign_inherited { instance_var = 8 }'\n'}
@@ -79,7 +79,7 @@ SCClass: Bar: Bar : Foo {'\n'    assign_inherited { instance_var = 8 }'\n'}
 |  |  SCMethod: assign_inherited { instance_var = 8 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var = 8
+|  |  |  SCBody: instance_var = 8
 |  |  |  |  SCAssign: instance_var = 8
 |  |  |  |  |  SCLiteral: 8 = {"int": 8}
 SCClass: Event: Event {}
@@ -139,12 +139,12 @@ SCClass: Meta_Foo: Foo {'\n'    var instance_var;'\n'    classvar class_var;'\n'
 |  |  SCMethod: poisoned: *class_method_assign_instance { instance_var = 7 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var = 7
+|  |  |  SCBody: instance_var = 7
 |  |  |  |  SCLiteral: 7 = {"int": 7}
 |  |  SCMethod: *class_method_assign_class { class_var = 6 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: class_var = 6
+|  |  |  SCBody: class_var = 6
 |  |  |  |  SCAssign: class_var = 6
 |  |  |  |  |  SCLiteral: 6 = {"int": 6}
 SCClass: Meta_Bar: Bar : Foo {'\n'    assign_inherited { instance_var = 8 }'\n'}

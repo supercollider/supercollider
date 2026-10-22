@@ -125,7 +125,7 @@ SCClass: NotConstant: NotConstant {'\n'    const fine = 1;'\n'    classvar chang
 |  |  SCMethod: poisoned: immutable_array { ^#[1, 2.foo, ~env] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^#[1, 2.foo, ~env]
+|  |  |  SCBody: ^#[1, 2.foo, ~env]
 |  |  |  |  SCExplicitReturn: #[1, 2.foo, ~env]
 |  |  |  |  |  SCCollection: Array: #[1, 2.foo, ~env]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}

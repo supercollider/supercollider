@@ -30,14 +30,14 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  SCMethod: undefined_class { ^NotAClass[1] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^NotAClass[1]
+|  |  |  SCBody: ^NotAClass[1]
 |  |  |  |  SCExplicitReturn: NotAClass[1]
 |  |  |  |  |  SCCollection: NotAClass: NotAClass[1]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  SCMethod: nested_in_array { ^[Array[1], Set[2]] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[Array[1], Set[2]]
+|  |  |  SCBody: ^[Array[1], Set[2]]
 |  |  |  |  SCExplicitReturn: [Array[1], Set[2]]
 |  |  |  |  |  SCCollection: Array: [Array[1], Set[2]]
 |  |  |  |  |  |  SCCollection: Array: Array[1] = {"array": [{"int": 1}]}
@@ -47,13 +47,13 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  SCMethod: set_empty { ^Set[] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Set[]
+|  |  |  SCBody: ^Set[]
 |  |  |  |  SCExplicitReturn: Set[]
 |  |  |  |  |  SCCollection: Set: Set[]
 |  |  SCMethod: set_constant_elements { ^Set[1, 2] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Set[1, 2]
+|  |  |  SCBody: ^Set[1, 2]
 |  |  |  |  SCExplicitReturn: Set[1, 2]
 |  |  |  |  |  SCCollection: Set: Set[1, 2]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -61,7 +61,7 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  SCMethod: event_not_constant { ^Event[a: 1.foo] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Event[a: 1.foo]
+|  |  |  SCBody: ^Event[a: 1.foo]
 |  |  |  |  SCExplicitReturn: Event[a: 1.foo]
 |  |  |  |  |  SCCollection: Event: Event[a: 1.foo]
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
@@ -74,7 +74,7 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  SCMethod: event_odd { ^Event[a: 1, \b] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Event[a: 1, \b]
+|  |  |  SCBody: ^Event[a: 1, \b]
 |  |  |  |  SCExplicitReturn: Event[a: 1, \b]
 |  |  |  |  |  SCCollection: Event: Event[a: 1, \b]
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
@@ -83,7 +83,7 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  SCMethod: event_constant { ^Event[a: 1, b: 2] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Event[a: 1, b: 2]
+|  |  |  SCBody: ^Event[a: 1, b: 2]
 |  |  |  |  SCExplicitReturn: Event[a: 1, b: 2]
 |  |  |  |  |  SCCollection: Event: Event[a: 1, b: 2] = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"int": 2}}]}
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
@@ -93,7 +93,7 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  SCMethod: array_nested { ^Array[[1], Array[2]] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Array[[1], Array[2]]
+|  |  |  SCBody: ^Array[[1], Array[2]]
 |  |  |  |  SCExplicitReturn: Array[[1], Array[2]]
 |  |  |  |  |  SCCollection: Array: Array[[1], Array[2]] = {"array": [{"array": [{"int": 1}]}, {"array": [{"int": 2}]}]}
 |  |  |  |  |  |  SCCollection: Array: [1] = {"array": [{"int": 1}]}
@@ -103,7 +103,7 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  SCMethod: array_not_constant { ^Array[1, 2.foo] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Array[1, 2.foo]
+|  |  |  SCBody: ^Array[1, 2.foo]
 |  |  |  |  SCExplicitReturn: Array[1, 2.foo]
 |  |  |  |  |  SCCollection: Array: Array[1, 2.foo]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -116,13 +116,13 @@ SCClass: Collections: Collections {'\n'    array_constant { ^Array[1, 2.5] }'\n'
 |  |  SCMethod: array_empty { ^Array[] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Array[]
+|  |  |  SCBody: ^Array[]
 |  |  |  |  SCExplicitReturn: Array[]
 |  |  |  |  |  SCCollection: Array: Array[] = {"array": []}
 |  |  SCMethod: array_constant { ^Array[1, 2.5] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^Array[1, 2.5]
+|  |  |  SCBody: ^Array[1, 2.5]
 |  |  |  |  SCExplicitReturn: Array[1, 2.5]
 |  |  |  |  |  SCCollection: Array: Array[1, 2.5] = {"array": [{"int": 1}, {"float": 2.5}]}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}

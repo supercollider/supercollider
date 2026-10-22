@@ -16,43 +16,43 @@ SCClass: EscapedLiterals: EscapedLiterals {'\n'    char_newline { ^$\n }'\n'    
 |  |  SCMethod: symbol_quote_escaped { ^'it\'s' }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^'it\'s'
+|  |  |  SCBody: ^'it\'s'
 |  |  |  |  SCExplicitReturn: 'it\'s'
 |  |  |  |  |  SCLiteral: 'it\'s' = {"symbol": "it's"}
 |  |  SCMethod: string_newline { ^"line one\nline two" }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^"line one\nline two"
+|  |  |  SCBody: ^"line one\nline two"
 |  |  |  |  SCExplicitReturn: "line one\nline two"
 |  |  |  |  |  SCLiteral: "line one\nline two" = {"string": "line one\nline two"}
 |  |  SCMethod: string_escapes { ^"tab\there \"quoted\" back\\slash" }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^"tab\there \"quoted\" back\\slash"
+|  |  |  SCBody: ^"tab\there \"quoted\" back\\slash"
 |  |  |  |  SCExplicitReturn: "tab\there \"quoted\" back\\slash"
 |  |  |  |  |  SCLiteral: "tab\there \"quoted\" back\\slash" = {"string": "tab\there \"quoted\" back\\slash"}
 |  |  SCMethod: char_backslash { ^$\\ }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^$\\
+|  |  |  SCBody: ^$\\
 |  |  |  |  SCExplicitReturn: $\\
 |  |  |  |  |  SCLiteral: $\\ = {"char": "\\"}
 |  |  SCMethod: char_quote { ^$" }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^$"
+|  |  |  SCBody: ^$"
 |  |  |  |  SCExplicitReturn: $"
 |  |  |  |  |  SCLiteral: $" = {"char": "\""}
 |  |  SCMethod: char_tab { ^$\t }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^$\t
+|  |  |  SCBody: ^$\t
 |  |  |  |  SCExplicitReturn: $\t
 |  |  |  |  |  SCLiteral: $\t = {"char": "\t"}
 |  |  SCMethod: char_newline { ^$\n }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^$\n
+|  |  |  SCBody: ^$\n
 |  |  |  |  SCExplicitReturn: $\n
 |  |  |  |  |  SCLiteral: $\n = {"char": "\n"}
 SCClass: Event: Event {}

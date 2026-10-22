@@ -52,7 +52,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: poisoned: undefined_value { instance_var[0] = undefined_var }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var[0] = undefined_var
+|  |  |  SCBody: instance_var[0] = undefined_var
 |  |  |  |  SCMessage: put: instance_var[0] = undefined_var
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var[0] = undefined_var
@@ -64,7 +64,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: as_argument { ^3.bar(instance_var[0] = 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^3.bar(instance_var[0] = 1)
+|  |  |  SCBody: ^3.bar(instance_var[0] = 1)
 |  |  |  |  SCExplicitReturn: 3.bar(instance_var[0] = 1)
 |  |  |  |  |  SCMessage: bar: 3.bar(instance_var[0] = 1)
 |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
@@ -83,7 +83,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: nested_value { instance_var[0] = instance_var[1] = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var[0] = instance_var[1] = 2
+|  |  |  SCBody: instance_var[0] = instance_var[1] = 2
 |  |  |  |  SCMessage: put: instance_var[0] = instance_var[1] = 2
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var[0] = instance_var[1] = 2
@@ -102,7 +102,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: expression_receiver { 1.foo[0] = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: 1.foo[0] = 2
+|  |  |  SCBody: 1.foo[0] = 2
 |  |  |  |  SCMessage: put: 1.foo[0] = 2
 |  |  |  |  |  SCMessage: foo: 1.foo
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -119,7 +119,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: poisoned: variadic { instance_var[*0] = 1 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var[*0] = 1
+|  |  |  SCBody: instance_var[*0] = 1
 |  |  |  |  SCMessage: put: instance_var[*0] = 1
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var[*0] = 1
@@ -131,7 +131,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: keyword { instance_var[0, b: 1] = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var[0, b: 1] = 2
+|  |  |  SCBody: instance_var[0, b: 1] = 2
 |  |  |  |  SCMessage: put: instance_var[0, b: 1] = 2
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var[0, b: 1] = 2
@@ -145,7 +145,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: multiple { instance_var[0, 1] = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var[0, 1] = 2
+|  |  |  SCBody: instance_var[0, 1] = 2
 |  |  |  |  SCMessage: put: instance_var[0, 1] = 2
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var[0, 1] = 2
@@ -158,7 +158,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: dot_empty { instance_var.[] = 1 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var.[] = 1
+|  |  |  SCBody: instance_var.[] = 1
 |  |  |  |  SCMessage: put: instance_var.[] = 1
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var.[] = 1
@@ -169,7 +169,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: dot { instance_var.[0] = 1 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var.[0] = 1
+|  |  |  SCBody: instance_var.[0] = 1
 |  |  |  |  SCMessage: put: instance_var.[0] = 1
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var.[0] = 1
@@ -181,7 +181,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: empty { instance_var[] = 1 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var[] = 1
+|  |  |  SCBody: instance_var[] = 1
 |  |  |  |  SCMessage: put: instance_var[] = 1
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var[] = 1
@@ -192,7 +192,7 @@ SCClass: AssignmentAt: AssignmentAt {'\n'    var instance_var;'\n''\n'    single
 |  |  SCMethod: single { instance_var[0] = 1 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var[0] = 1
+|  |  |  SCBody: instance_var[0] = 1
 |  |  |  |  SCMessage: put: instance_var[0] = 1
 |  |  |  |  |  SCRead: instance_var
 |  |  |  |  |  SCPositionalArgs: instance_var[0] = 1

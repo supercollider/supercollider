@@ -58,7 +58,7 @@ SCClass: RangeArgumentPacks: RangeArgumentPacks {'\n'    var instance_var;'\n''\
 |  |  SCMethod: two_arguments_are_fine { ^instance_var[1, 2..5] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^instance_var[1, 2..5]
+|  |  |  SCBody: ^instance_var[1, 2..5]
 |  |  |  |  SCExplicitReturn: instance_var[1, 2..5]
 |  |  |  |  |  SCMessage: copySeries: instance_var[1, 2..5]
 |  |  |  |  |  |  SCRead: instance_var
@@ -72,7 +72,7 @@ SCClass: RangeArgumentPacks: RangeArgumentPacks {'\n'    var instance_var;'\n''\
 |  |  SCMethod: poisoned: dot_form { ^instance_var.[1, 2, 3..5] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^instance_var.[1, 2, 3..5]
+|  |  |  SCBody: ^instance_var.[1, 2, 3..5]
 |  |  |  |  SCExplicitReturn: instance_var.[1, 2, 3..5]
 |  |  |  |  |  SCMessage: copySeries: instance_var.[1, 2, 3..5]
 |  |  |  |  |  |  SCRead: instance_var
@@ -86,7 +86,7 @@ SCClass: RangeArgumentPacks: RangeArgumentPacks {'\n'    var instance_var;'\n''\
 |  |  SCMethod: poisoned: four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^instance_var[1, 2, 3, 4..]
+|  |  |  SCBody: ^instance_var[1, 2, 3, 4..]
 |  |  |  |  SCExplicitReturn: instance_var[1, 2, 3, 4..]
 |  |  |  |  |  SCMessage: copySeries: instance_var[1, 2, 3, 4..]
 |  |  |  |  |  |  SCRead: instance_var
@@ -100,7 +100,7 @@ SCClass: RangeArgumentPacks: RangeArgumentPacks {'\n'    var instance_var;'\n''\
 |  |  SCMethod: poisoned: three_arguments { ^instance_var[1, 2, 3..5] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^instance_var[1, 2, 3..5]
+|  |  |  SCBody: ^instance_var[1, 2, 3..5]
 |  |  |  |  SCExplicitReturn: instance_var[1, 2, 3..5]
 |  |  |  |  |  SCMessage: copySeries: instance_var[1, 2, 3..5]
 |  |  |  |  |  |  SCRead: instance_var

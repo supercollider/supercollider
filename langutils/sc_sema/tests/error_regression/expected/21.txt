@@ -16,7 +16,7 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  SCMethod: nested_not_constant { ^(a: (b: 1.foo)) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(a: (b: 1.foo))
+|  |  |  SCBody: ^(a: (b: 1.foo))
 |  |  |  |  SCExplicitReturn: (a: (b: 1.foo))
 |  |  |  |  |  SCCollection: Event: (a: (b: 1.foo))
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
@@ -31,7 +31,7 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  SCMethod: key_not_constant { ^((1.foo): 2) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^((1.foo): 2)
+|  |  |  SCBody: ^((1.foo): 2)
 |  |  |  |  SCExplicitReturn: ((1.foo): 2)
 |  |  |  |  |  SCCollection: Event: ((1.foo): 2)
 |  |  |  |  |  |  SCMessage: foo: 1.foo
@@ -44,7 +44,7 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  SCMethod: value_not_constant { ^(a: 1.foo) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(a: 1.foo)
+|  |  |  SCBody: ^(a: 1.foo)
 |  |  |  |  SCExplicitReturn: (a: 1.foo)
 |  |  |  |  |  SCCollection: Event: (a: 1.foo)
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
@@ -57,7 +57,7 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  SCMethod: nested_event { ^(a: (b: 1)) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(a: (b: 1))
+|  |  |  SCBody: ^(a: (b: 1))
 |  |  |  |  SCExplicitReturn: (a: (b: 1))
 |  |  |  |  |  SCCollection: Event: (a: (b: 1)) = {"event": [{"key": {"symbol": "a"}, "value": {"event": [{"key": {"symbol": "b"}, "value": {"int": 1}}]}}]}
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
@@ -67,7 +67,7 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  SCMethod: nested_array { ^(a: [1, 2]) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(a: [1, 2])
+|  |  |  SCBody: ^(a: [1, 2])
 |  |  |  |  SCExplicitReturn: (a: [1, 2])
 |  |  |  |  |  SCCollection: Event: (a: [1, 2]) = {"event": [{"key": {"symbol": "a"}, "value": {"array": [{"int": 1}, {"int": 2}]}}]}
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
@@ -77,7 +77,7 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  SCMethod: integer_key { ^(1: \one) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(1: \one)
+|  |  |  SCBody: ^(1: \one)
 |  |  |  |  SCExplicitReturn: (1: \one)
 |  |  |  |  |  SCCollection: Event: (1: \one) = {"event": [{"key": {"int": 1}, "value": {"symbol": "one"}}]}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -85,7 +85,7 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  SCMethod: string_key { ^("a": 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^("a": 1)
+|  |  |  SCBody: ^("a": 1)
 |  |  |  |  SCExplicitReturn: ("a": 1)
 |  |  |  |  |  SCCollection: Event: ("a": 1) = {"event": [{"key": {"string": "a"}, "value": {"int": 1}}]}
 |  |  |  |  |  |  SCLiteral: "a" = {"string": "a"}
@@ -93,7 +93,7 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  SCMethod: symbol_key { ^(\a: 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(\a: 1)
+|  |  |  SCBody: ^(\a: 1)
 |  |  |  |  SCExplicitReturn: (\a: 1)
 |  |  |  |  |  SCCollection: Event: (\a: 1) = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}]}
 |  |  |  |  |  |  SCLiteral: \a = {"symbol": "a"}
@@ -101,13 +101,13 @@ SCClass: Dictionaries: Dictionaries {'\n'    constant { ^(a: 1, b: 2.5) }'\n'   
 |  |  SCMethod: empty { ^() }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^()
+|  |  |  SCBody: ^()
 |  |  |  |  SCExplicitReturn: ()
 |  |  |  |  |  SCCollection: Event: () = {"event": []}
 |  |  SCMethod: constant { ^(a: 1, b: 2.5) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^(a: 1, b: 2.5)
+|  |  |  SCBody: ^(a: 1, b: 2.5)
 |  |  |  |  SCExplicitReturn: (a: 1, b: 2.5)
 |  |  |  |  |  SCCollection: Event: (a: 1, b: 2.5) = {"event": [{"key": {"symbol": "a"}, "value": {"int": 1}}, {"key": {"symbol": "b"}, "value": {"float": 2.5}}]}
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}

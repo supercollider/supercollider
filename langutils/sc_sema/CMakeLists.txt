@@ -27,6 +27,7 @@ add_library(sc_sema STATIC
 	src/ast2ir/ast2ir_base.cpp
 	src/ast2ir/method.cpp
 	src/ast2ir/arguments.cpp
+	src/ast2ir/body.cpp
 	src/ast2ir/literal_synthesis.cpp
 )
 

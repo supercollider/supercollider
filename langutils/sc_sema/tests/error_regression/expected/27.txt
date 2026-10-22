@@ -33,12 +33,12 @@ SCClass: MethodArguments: MethodArguments {'\n'    var instance_var;'\n''\n'    
 |  |  |  |  SCArgumentDeclare: a
 |  |  |  |  |  SCMissing: a
 |  |  |  SCArgumentDeclareList: a
-|  |  |  SCExprList: ^{ a }
+|  |  |  SCBody: ^{ a }
 |  |  |  |  SCExplicitReturn: { a }
 |  |  |  |  |  SCFunction: { a }
 |  |  |  |  |  |  SCArgumentDeclareList: 
 |  |  |  |  |  |  SCArgumentDeclareList: 
-|  |  |  |  |  |  SCExprList: { a }
+|  |  |  |  |  |  SCBody: { a }
 |  |  |  |  |  |  |  SCRead: a
 |  |  SCMethod: variadic { |a ... rest| ^rest }
 |  |  |  SCArgumentDeclareList: a
@@ -47,7 +47,7 @@ SCClass: MethodArguments: MethodArguments {'\n'    var instance_var;'\n''\n'    
 |  |  |  SCArgumentDeclareList: a
 |  |  |  |  SCArgumentDeclare: rest
 |  |  |  |  |  SCMissing: rest
-|  |  |  SCExprList: ^rest
+|  |  |  SCBody: ^rest
 |  |  |  |  SCExplicitReturn: rest
 |  |  |  |  |  SCRead: rest
 |  |  SCMethod: shadows_instance { |instance_var| ^instance_var }
@@ -55,7 +55,7 @@ SCClass: MethodArguments: MethodArguments {'\n'    var instance_var;'\n''\n'    
 |  |  |  |  SCArgumentDeclare: instance_var
 |  |  |  |  |  SCMissing: instance_var
 |  |  |  SCArgumentDeclareList: instance_var
-|  |  |  SCExprList: ^instance_var
+|  |  |  SCBody: ^instance_var
 |  |  |  |  SCExplicitReturn: instance_var
 |  |  |  |  |  SCRead: instance_var
 |  |  SCMethod: poisoned: later_argument { |a = (b), b| ^a }
@@ -65,7 +65,7 @@ SCClass: MethodArguments: MethodArguments {'\n'    var instance_var;'\n''\n'    
 |  |  |  |  SCArgumentDeclare: b
 |  |  |  |  |  SCMissing: b
 |  |  |  SCArgumentDeclareList: a = (b), b
-|  |  |  SCExprList: ^a
+|  |  |  SCBody: ^a
 |  |  |  |  SCExplicitReturn: a
 |  |  |  |  |  SCRead: a
 |  |  SCMethod: earlier_argument { |a, b = (a + 1)| ^b }
@@ -81,7 +81,7 @@ SCClass: MethodArguments: MethodArguments {'\n'    var instance_var;'\n''\n'    
 |  |  |  |  |  |  SCVariadicArgs: a + 1
 |  |  |  |  |  |  SCMissing: a + 1
 |  |  |  SCArgumentDeclareList: a, b = (a + 1)
-|  |  |  SCExprList: ^b
+|  |  |  SCBody: ^b
 |  |  |  |  SCExplicitReturn: b
 |  |  |  |  |  SCRead: b
 |  |  SCMethod: assign_argument { |a| a = 1 }
@@ -89,7 +89,7 @@ SCClass: MethodArguments: MethodArguments {'\n'    var instance_var;'\n''\n'    
 |  |  |  |  SCArgumentDeclare: a
 |  |  |  |  |  SCMissing: a
 |  |  |  SCArgumentDeclareList: a
-|  |  |  SCExprList: a = 1
+|  |  |  SCBody: a = 1
 |  |  |  |  SCAssign: a = 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  SCMethod: read_argument { |a| ^a }
@@ -97,7 +97,7 @@ SCClass: MethodArguments: MethodArguments {'\n'    var instance_var;'\n''\n'    
 |  |  |  |  SCArgumentDeclare: a
 |  |  |  |  |  SCMissing: a
 |  |  |  SCArgumentDeclareList: a
-|  |  |  SCExprList: ^a
+|  |  |  SCBody: ^a
 |  |  |  |  SCExplicitReturn: a
 |  |  |  |  |  SCRead: a
 SCClass: Event: Event {}
@@ -160,7 +160,7 @@ SCClass: Meta_MethodArguments: MethodArguments {'\n'    var instance_var;'\n''\n
 |  |  |  |  SCArgumentDeclare: a, b = (a)
 |  |  |  |  |  SCRead: a
 |  |  |  SCArgumentDeclareList: a, b = (a)
-|  |  |  SCExprList: ^b
+|  |  |  SCBody: ^b
 |  |  |  |  SCExplicitReturn: b
 |  |  |  |  |  SCRead: b
 SCClass: Meta_Event: Event {}

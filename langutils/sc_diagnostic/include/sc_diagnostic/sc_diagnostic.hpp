@@ -98,6 +98,9 @@ public:
     [[nodiscard]] static Diagnostic perform_selector_not_symbol(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                                 std::string_view string);
 
+    [[nodiscard]] static Diagnostic duplicate_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                       TextInfoPtr second_t, sc::lex::SourceCodeRange second_l);
+
     [[nodiscard]] static Diagnostic undefined_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                        std::string_view name);
 

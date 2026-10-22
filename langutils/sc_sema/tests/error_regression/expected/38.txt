@@ -86,7 +86,7 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: poisoned: functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: foo(x, 1, *x) = 2
+|  |  |  SCBody: foo(x, 1, *x) = 2
 |  |  |  |  SCMessage: foo_: foo(x, 1, *x) = 2
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: foo(x, 1, *x) = 2
@@ -99,12 +99,12 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: poisoned: functional_variadic_receiver { foo(*x) = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: foo(*x) = 2
+|  |  |  SCBody: foo(*x) = 2
 |  |  |  |  SCExprList: foo(*x) = 2
 |  |  SCMethod: poisoned: functional_variadic { foo(x, *x) = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: foo(x, *x) = 2
+|  |  |  SCBody: foo(x, *x) = 2
 |  |  |  |  SCMessage: foo_: foo(x, *x) = 2
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: foo(x, *x) = 2
@@ -116,12 +116,12 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: poisoned: functional_no_receiver { foo(b: 1) = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: foo(b: 1) = 2
+|  |  |  SCBody: foo(b: 1) = 2
 |  |  |  |  SCExprList: foo(b: 1) = 2
 |  |  SCMethod: functional_keyword { foo(x, b: 1) = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: foo(x, b: 1) = 2
+|  |  |  SCBody: foo(x, b: 1) = 2
 |  |  |  |  SCMessage: foo_: foo(x, b: 1) = 2
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: foo(x, b: 1) = 2
@@ -134,7 +134,7 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: functional_receiver_only { foo(x) = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: foo(x) = 2
+|  |  |  SCBody: foo(x) = 2
 |  |  |  |  SCMessage: foo_: foo(x) = 2
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: foo(x) = 2
@@ -145,7 +145,7 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: functional { foo(x, 1) = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: foo(x, 1) = 2
+|  |  |  SCBody: foo(x, 1) = 2
 |  |  |  |  SCMessage: foo_: foo(x, 1) = 2
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: foo(x, 1) = 2
@@ -157,7 +157,7 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: as_argument { ^3.baz(x.foo = 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^3.baz(x.foo = 1)
+|  |  |  SCBody: ^3.baz(x.foo = 1)
 |  |  |  |  SCExplicitReturn: 3.baz(x.foo = 1)
 |  |  |  |  |  SCMessage: baz: 3.baz(x.foo = 1)
 |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
@@ -175,7 +175,7 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: chained_value { x.foo = x.bar = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: x.foo = x.bar = 2
+|  |  |  SCBody: x.foo = x.bar = 2
 |  |  |  |  SCMessage: foo_: x.foo = x.bar = 2
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: x.foo = x.bar = 2
@@ -192,7 +192,7 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: literal_receiver { 1.foo = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: 1.foo = 2
+|  |  |  SCBody: 1.foo = 2
 |  |  |  |  SCMessage: foo_: 1.foo = 2
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  SCPositionalArgs: 1.foo = 2
@@ -203,7 +203,7 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: expression_receiver { 1.bar.foo = 10 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: 1.bar.foo = 10
+|  |  |  SCBody: 1.bar.foo = 10
 |  |  |  |  SCMessage: foo_: 1.bar.foo = 10
 |  |  |  |  |  SCMessage: bar: 1.bar
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -219,7 +219,7 @@ SCClass: Setters: Setters {'\n'    var x;'\n''\n'    simple { x.foo = 10 }'\n'  
 |  |  SCMethod: simple { x.foo = 10 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: x.foo = 10
+|  |  |  SCBody: x.foo = 10
 |  |  |  |  SCMessage: foo_: x.foo = 10
 |  |  |  |  |  SCRead: x
 |  |  |  |  |  SCPositionalArgs: x.foo = 10

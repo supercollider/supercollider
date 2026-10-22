@@ -484,4 +484,15 @@ Diagnostic Diagnostic::range_argument_not_value(TextInfoPtr first_t, sc::lex::So
              { { std::move(first_t), first_l, "keyword and variadic arguments can't be used in a range." } },
              "A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`." };
 }
+
+Diagnostic Diagnostic::duplicate_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l, TextInfoPtr second_t,
+                                          sc::lex::SourceCodeRange second_l) {
+    return { "Variable already declared",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, "First declared here..." },
+                 { std::move(second_t), second_l, "...declared again here." },
+             },
+             "Arguments and variables in the same function or method must have different names. Rename one." };
+}
 }

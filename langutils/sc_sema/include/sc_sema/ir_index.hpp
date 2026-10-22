@@ -33,6 +33,7 @@ enum struct SCNodeType {
     Extention,
 
     ExprList,
+    Body,
     ClassOrExtentionList,
 };
 
@@ -81,6 +82,7 @@ using SCClass_I = TypedNodeIndex<SCNodeType::Class>;
 using SCExtention_I = TypedNodeIndex<SCNodeType::Extention>;
 
 using SCExprList_I = TypedNodeIndex<SCNodeType::ExprList>;
+using SCBody_I = TypedNodeIndex<SCNodeType::Body>;
 
 using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCExplicitReturn_I, SCLiteral_I, SCRef_I,
                          SCMessage_I, SCCollection_I, SCRange_I>;

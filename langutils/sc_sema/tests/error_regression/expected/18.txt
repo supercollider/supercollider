@@ -29,7 +29,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  SCMethod: immutable_nested { ^#[[a, 1], b] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^#[[a, 1], b]
+|  |  |  SCBody: ^#[[a, 1], b]
 |  |  |  |  SCExplicitReturn: #[[a, 1], b]
 |  |  |  |  |  SCCollection: Array: #[[a, 1], b] = {"array": [{"array": [{"symbol": "a"}, {"int": 1}]}, {"symbol": "b"}]}
 |  |  |  |  |  |  SCCollection: Array: [a, 1] = {"array": [{"symbol": "a"}, {"int": 1}]}
@@ -39,7 +39,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  SCMethod: poisoned: immutable_not_literal { ^#[1, 2.foo] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^#[1, 2.foo]
+|  |  |  SCBody: ^#[1, 2.foo]
 |  |  |  |  SCExplicitReturn: #[1, 2.foo]
 |  |  |  |  |  SCCollection: Array: #[1, 2.foo]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -52,7 +52,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  SCMethod: immutable { ^#[1, name, \symbol] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^#[1, name, \symbol]
+|  |  |  SCBody: ^#[1, name, \symbol]
 |  |  |  |  SCExplicitReturn: #[1, name, \symbol]
 |  |  |  |  |  SCCollection: Array: #[1, name, \symbol] = {"array": [{"int": 1}, {"symbol": "name"}, {"symbol": "symbol"}]}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -61,7 +61,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  SCMethod: nested_not_constant { ^[1, [2.foo]] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, [2.foo]]
+|  |  |  SCBody: ^[1, [2.foo]]
 |  |  |  |  SCExplicitReturn: [1, [2.foo]]
 |  |  |  |  |  SCCollection: Array: [1, [2.foo]]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -75,7 +75,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  SCMethod: not_constant { ^[1, 2.foo] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2.foo]
+|  |  |  SCBody: ^[1, 2.foo]
 |  |  |  |  SCExplicitReturn: [1, 2.foo]
 |  |  |  |  |  SCCollection: Array: [1, 2.foo]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -88,7 +88,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  SCMethod: keyword_elements { ^[a: 1, b: 2] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[a: 1, b: 2]
+|  |  |  SCBody: ^[a: 1, b: 2]
 |  |  |  |  SCExplicitReturn: [a: 1, b: 2]
 |  |  |  |  |  SCCollection: Array: [a: 1, b: 2] = {"array": [{"symbol": "a"}, {"int": 1}, {"symbol": "b"}, {"int": 2}]}
 |  |  |  |  |  |  SCLiteral: a: = {"symbol": "a"}
@@ -98,7 +98,7 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  SCMethod: nested_constant { ^[[1, 2], [\a]] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[[1, 2], [\a]]
+|  |  |  SCBody: ^[[1, 2], [\a]]
 |  |  |  |  SCExplicitReturn: [[1, 2], [\a]]
 |  |  |  |  |  SCCollection: Array: [[1, 2], [\a]] = {"array": [{"array": [{"int": 1}, {"int": 2}]}, {"array": [{"symbol": "a"}]}]}
 |  |  |  |  |  |  SCCollection: Array: [1, 2] = {"array": [{"int": 1}, {"int": 2}]}
@@ -109,13 +109,13 @@ SCClass: Arrays: Arrays {'\n'    constant { ^[1, 2.5, "three"] }'\n'    empty { 
 |  |  SCMethod: empty { ^[] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[]
+|  |  |  SCBody: ^[]
 |  |  |  |  SCExplicitReturn: []
 |  |  |  |  |  SCCollection: Array: [] = {"array": []}
 |  |  SCMethod: constant { ^[1, 2.5, "three"] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^[1, 2.5, "three"]
+|  |  |  SCBody: ^[1, 2.5, "three"]
 |  |  |  |  SCExplicitReturn: [1, 2.5, "three"]
 |  |  |  |  |  SCCollection: Array: [1, 2.5, "three"] = {"array": [{"int": 1}, {"float": 2.5}, {"string": "three"}]}
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}

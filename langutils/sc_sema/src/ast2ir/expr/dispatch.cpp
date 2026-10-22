@@ -9,7 +9,4 @@ namespace sc::ir::ast2ir {
 template struct Return<SCAnyExpr_I>;
 
 Return<SCAnyExpr_I> Expr::operator()(ast::AnyExprIndex i) { return std::visit(*this, to_variant(*ast_graph, i)); }
-template <typename T> Return<SCAnyExpr_I> Expr::operator()(T i) { return unimplemented(ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::BlockItemIndex i) { return std::visit(*this, to_variant(*ast_graph, i)); }
-
 }

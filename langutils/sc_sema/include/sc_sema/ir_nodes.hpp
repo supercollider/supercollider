@@ -81,9 +81,16 @@ struct SCRef : priv::Node<SCRef_I(SCAnyExpr_I)> {
     static constexpr auto type_name { "SCRef" };
 };
 
-struct SCVariableDeclare : priv::Node<SCVariableDeclare_I(SCAnyExpr_I value)> {
+// `var a = 1`, value is missing for `var a`, which is nil.
+struct SCVariableDeclare : priv::Node<SCVariableDeclare_I(maybe<SCAnyExpr_I> value)> {
     static constexpr auto type_name { "SCVariableDeclare" };
     Locatable<SymSCIdentifier> name;
+    SCVariableDeclare(Locatable<SymSCIdentifier> n): name(n) {}
+};
+
+// The body of a method or function, its expressions and variable declarations in the order they are written.
+struct SCBody : priv::List<SCBody_I, join<SCAnyExpr_I, SCVariableDeclare_I>> {
+    static constexpr auto type_name { "SCBody" };
 };
 
 struct SCExplicitReturn : priv::Node<SCExplicitReturn_I(SCAnyExpr_I value)> {
@@ -122,14 +129,14 @@ struct SCArgumentDeclareList : priv::List<SCArgumentDeclareList_I, SCArgumentDec
 };
 
 struct SCMethod : priv::Node<SCMethod_I(SCArgumentDeclareList_I positional_arguments,
-                                        SCArgumentDeclareList_I variadic_arguments, SCExprList_I body)> {
+                                        SCArgumentDeclareList_I variadic_arguments, SCBody_I body)> {
     static constexpr auto type_name { "SCMethod" };
     std::optional<Locatable<SymSCPrimitive>> primitive;
     bool poisoned { false };
     SCMethod(std::optional<Locatable<SymSCPrimitive>> p): primitive(p) {}
 };
 struct SCFunction : priv::Node<SCFunction_I(SCArgumentDeclareList_I positional_arguments,
-                                            SCArgumentDeclareList_I variadic_arguments, SCExprList_I body)> {
+                                            SCArgumentDeclareList_I variadic_arguments, SCBody_I body)> {
     static constexpr auto type_name { "SCFunction" };
 };
 

@@ -199,20 +199,20 @@ SCClass: Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar class_v
 |  |  SCMethod: after_errors { ^6 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^6
+|  |  |  SCBody: ^6
 |  |  |  |  SCExplicitReturn: 6
 |  |  |  |  |  SCLiteral: 6 = {"int": 6}
 |  |  SCMethod: poisoned: two_errors { undefined_var = 5; ^foo(bar: 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: undefined_var = 5; ^foo(bar: 1)
+|  |  |  SCBody: undefined_var = 5; ^foo(bar: 1)
 |  |  |  |  SCLiteral: 5 = {"int": 5}
 |  |  |  |  SCExplicitReturn: foo(bar: 1)
 |  |  |  |  |  SCExprList: foo(bar: 1)
 |  |  SCMethod: poisoned: error_in_array { ^#[1, 2.foo] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^#[1, 2.foo]
+|  |  |  SCBody: ^#[1, 2.foo]
 |  |  |  |  SCExplicitReturn: #[1, 2.foo]
 |  |  |  |  |  SCCollection: Array: #[1, 2.foo]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -225,7 +225,7 @@ SCClass: Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar class_v
 |  |  SCMethod: poisoned: nested_error { ^1.foo(2.perform(3)) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.foo(2.perform(3))
+|  |  |  SCBody: ^1.foo(2.perform(3))
 |  |  |  |  SCExplicitReturn: 1.foo(2.perform(3))
 |  |  |  |  |  SCMessage: foo: 1.foo(2.perform(3))
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -243,24 +243,24 @@ SCClass: Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar class_v
 |  |  SCMethod: poisoned: no_receiver { ^foo(bar: 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^foo(bar: 1)
+|  |  |  SCBody: ^foo(bar: 1)
 |  |  |  |  SCExplicitReturn: foo(bar: 1)
 |  |  |  |  |  SCExprList: foo(bar: 1)
 |  |  SCMethod: poisoned: undefined { undefined_var = 4 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: undefined_var = 4
+|  |  |  SCBody: undefined_var = 4
 |  |  |  |  SCLiteral: 4 = {"int": 4}
 |  |  SCMethod: good_assignment { instance_var = 3 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var = 3
+|  |  |  SCBody: instance_var = 3
 |  |  |  |  SCAssign: instance_var = 3
 |  |  |  |  |  SCLiteral: 3 = {"int": 3}
 |  |  SCMethod: good { ^1 + 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1 + 2
+|  |  |  SCBody: ^1 + 2
 |  |  |  |  SCExplicitReturn: 1 + 2
 |  |  |  |  |  SCMessage: +: 1 + 2
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -326,26 +326,26 @@ SCClass: Meta_Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar cl
 |  |  SCMethod: *good_class_assignment { class_var = 3 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: class_var = 3
+|  |  |  SCBody: class_var = 3
 |  |  |  |  SCAssign: class_var = 3
 |  |  |  |  |  SCLiteral: 3 = {"int": 3}
 |  |  SCMethod: *after_errors { ^6 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^6
+|  |  |  SCBody: ^6
 |  |  |  |  SCExplicitReturn: 6
 |  |  |  |  |  SCLiteral: 6 = {"int": 6}
 |  |  SCMethod: poisoned: *two_errors { undefined_var = 5; ^foo(bar: 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: undefined_var = 5; ^foo(bar: 1)
+|  |  |  SCBody: undefined_var = 5; ^foo(bar: 1)
 |  |  |  |  SCLiteral: 5 = {"int": 5}
 |  |  |  |  SCExplicitReturn: foo(bar: 1)
 |  |  |  |  |  SCExprList: foo(bar: 1)
 |  |  SCMethod: poisoned: *error_in_array { ^#[1, 2.foo] }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^#[1, 2.foo]
+|  |  |  SCBody: ^#[1, 2.foo]
 |  |  |  |  SCExplicitReturn: #[1, 2.foo]
 |  |  |  |  |  SCCollection: Array: #[1, 2.foo]
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -358,7 +358,7 @@ SCClass: Meta_Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar cl
 |  |  SCMethod: poisoned: *nested_error { ^1.foo(2.perform(3)) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1.foo(2.perform(3))
+|  |  |  SCBody: ^1.foo(2.perform(3))
 |  |  |  |  SCExplicitReturn: 1.foo(2.perform(3))
 |  |  |  |  |  SCMessage: foo: 1.foo(2.perform(3))
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
@@ -376,23 +376,23 @@ SCClass: Meta_Poisoning: Poisoning {'\n'    var instance_var;'\n'    classvar cl
 |  |  SCMethod: poisoned: *no_receiver { ^foo(bar: 1) }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^foo(bar: 1)
+|  |  |  SCBody: ^foo(bar: 1)
 |  |  |  |  SCExplicitReturn: foo(bar: 1)
 |  |  |  |  |  SCExprList: foo(bar: 1)
 |  |  SCMethod: poisoned: *undefined { undefined_var = 4 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: undefined_var = 4
+|  |  |  SCBody: undefined_var = 4
 |  |  |  |  SCLiteral: 4 = {"int": 4}
 |  |  SCMethod: poisoned: *cannot_assign { instance_var = 3 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: instance_var = 3
+|  |  |  SCBody: instance_var = 3
 |  |  |  |  SCLiteral: 3 = {"int": 3}
 |  |  SCMethod: *good { ^1 + 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^1 + 2
+|  |  |  SCBody: ^1 + 2
 |  |  |  |  SCExplicitReturn: 1 + 2
 |  |  |  |  |  SCMessage: +: 1 + 2
 |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}

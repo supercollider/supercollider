@@ -49,7 +49,7 @@ SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'  
 |  |  |  |  SCArgumentDeclare: a, b = (a)
 |  |  |  |  |  SCRead: a
 |  |  |  SCArgumentDeclareList: a, b = (a)
-|  |  |  SCExprList: ^1
+|  |  |  SCBody: ^1
 |  |  |  |  SCExplicitReturn: 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  SCMethod: method_instance_var { |a = (instance_var)| ^1 }
@@ -57,7 +57,7 @@ SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'  
 |  |  |  |  SCArgumentDeclare: a = (instance_var)
 |  |  |  |  |  SCRead: instance_var
 |  |  |  SCArgumentDeclareList: a = (instance_var)
-|  |  |  SCExprList: ^1
+|  |  |  SCBody: ^1
 |  |  |  |  SCExplicitReturn: 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  SCMethod: method_constant { |a = 1| ^1 }
@@ -65,25 +65,25 @@ SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'  
 |  |  |  |  SCArgumentDeclare: a = 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  SCArgumentDeclareList: a = 1
-|  |  |  SCExprList: ^1
+|  |  |  SCBody: ^1
 |  |  |  |  SCExplicitReturn: 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  SCMethod: poisoned: block_itself { ^{ |a = (a)| a } }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^{ |a = (a)| a }
+|  |  |  SCBody: ^{ |a = (a)| a }
 |  |  |  |  SCExplicitReturn: { |a = (a)| a }
 |  |  |  |  |  SCFunction: { |a = (a)| a }
 |  |  |  |  |  |  SCArgumentDeclareList: a = (a)
 |  |  |  |  |  |  |  SCArgumentDeclare: a = (a)
 |  |  |  |  |  |  |  |  SCExprList: a
 |  |  |  |  |  |  SCArgumentDeclareList: a = (a)
-|  |  |  |  |  |  SCExprList: { |a = (a)| a }
+|  |  |  |  |  |  SCBody: { |a = (a)| a }
 |  |  |  |  |  |  |  SCRead: a
 |  |  SCMethod: poisoned: block_later_argument { ^{ |a = (b), b| a } }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^{ |a = (b), b| a }
+|  |  |  SCBody: ^{ |a = (b), b| a }
 |  |  |  |  SCExplicitReturn: { |a = (b), b| a }
 |  |  |  |  |  SCFunction: { |a = (b), b| a }
 |  |  |  |  |  |  SCArgumentDeclareList: a = (b), b
@@ -92,12 +92,12 @@ SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'  
 |  |  |  |  |  |  |  SCArgumentDeclare: b
 |  |  |  |  |  |  |  |  SCMissing: b
 |  |  |  |  |  |  SCArgumentDeclareList: a = (b), b
-|  |  |  |  |  |  SCExprList: { |a = (b), b| a }
+|  |  |  |  |  |  SCBody: { |a = (b), b| a }
 |  |  |  |  |  |  |  SCRead: a
 |  |  SCMethod: block_earlier_argument { ^{ |a, b = (a + 1)| b } }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^{ |a, b = (a + 1)| b }
+|  |  |  SCBody: ^{ |a, b = (a + 1)| b }
 |  |  |  |  SCExplicitReturn: { |a, b = (a + 1)| b }
 |  |  |  |  |  SCFunction: { |a, b = (a + 1)| b }
 |  |  |  |  |  |  SCArgumentDeclareList: a, b = (a + 1)
@@ -112,12 +112,12 @@ SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'  
 |  |  |  |  |  |  |  |  |  SCVariadicArgs: a + 1
 |  |  |  |  |  |  |  |  |  SCMissing: a + 1
 |  |  |  |  |  |  SCArgumentDeclareList: a, b = (a + 1)
-|  |  |  |  |  |  SCExprList: { |a, b = (a + 1)| b }
+|  |  |  |  |  |  SCBody: { |a, b = (a + 1)| b }
 |  |  |  |  |  |  |  SCRead: b
 |  |  SCMethod: block_bracketed { ^{ |a = (1.foo)| a } }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^{ |a = (1.foo)| a }
+|  |  |  SCBody: ^{ |a = (1.foo)| a }
 |  |  |  |  SCExplicitReturn: { |a = (1.foo)| a }
 |  |  |  |  |  SCFunction: { |a = (1.foo)| a }
 |  |  |  |  |  |  SCArgumentDeclareList: a = (1.foo)
@@ -129,12 +129,12 @@ SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'  
 |  |  |  |  |  |  |  |  |  SCVariadicArgs: 1.foo
 |  |  |  |  |  |  |  |  |  SCMissing: 1.foo
 |  |  |  |  |  |  SCArgumentDeclareList: a = (1.foo)
-|  |  |  |  |  |  SCExprList: { |a = (1.foo)| a }
+|  |  |  |  |  |  SCBody: { |a = (1.foo)| a }
 |  |  |  |  |  |  |  SCRead: a
 |  |  SCMethod: block_constant_array { ^{ |a = #[1, 2], b = (c: 3)| a } }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^{ |a = #[1, 2], b = (c: 3)| a }
+|  |  |  SCBody: ^{ |a = #[1, 2], b = (c: 3)| a }
 |  |  |  |  SCExplicitReturn: { |a = #[1, 2], b = (c: 3)| a }
 |  |  |  |  |  SCFunction: { |a = #[1, 2], b = (c: 3)| a }
 |  |  |  |  |  |  SCArgumentDeclareList: a = #[1, 2], b = (c: 3)
@@ -147,19 +147,19 @@ SCClass: ArgumentDefaults: ArgumentDefaults {'\n'    var instance_var;'\n''\n'  
 |  |  |  |  |  |  |  |  |  SCLiteral: c: = {"symbol": "c"}
 |  |  |  |  |  |  |  |  |  SCLiteral: 3 = {"int": 3}
 |  |  |  |  |  |  SCArgumentDeclareList: a = #[1, 2], b = (c: 3)
-|  |  |  |  |  |  SCExprList: { |a = #[1, 2], b = (c: 3)| a }
+|  |  |  |  |  |  SCBody: { |a = #[1, 2], b = (c: 3)| a }
 |  |  |  |  |  |  |  SCRead: a
 |  |  SCMethod: block_constant { ^{ |a = 1| a } }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
-|  |  |  SCExprList: ^{ |a = 1| a }
+|  |  |  SCBody: ^{ |a = 1| a }
 |  |  |  |  SCExplicitReturn: { |a = 1| a }
 |  |  |  |  |  SCFunction: { |a = 1| a }
 |  |  |  |  |  |  SCArgumentDeclareList: a = 1
 |  |  |  |  |  |  |  SCArgumentDeclare: a = 1
 |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  |  SCArgumentDeclareList: a = 1
-|  |  |  |  |  |  SCExprList: { |a = 1| a }
+|  |  |  |  |  |  SCBody: { |a = 1| a }
 |  |  |  |  |  |  |  SCRead: a
 SCClass: Event: Event {}
 |  SCMemberList: Event

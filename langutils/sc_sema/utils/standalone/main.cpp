@@ -288,19 +288,21 @@ int main(int argc, char* argv[]) {
                     for (size_t di { 0 }; di < depth; ++di)
                         std::cout << "|  ";
                     std::cout << sc::ir::IRGraph::node_name(payload) << ": ";
-                    std::visit(sc::util::overload {
-                                   [](const auto&) {},
-                                   [&](const sc::ir::SCClass& c) { std::cout << symbol_table(c.name) << ": "; },
-                                   [&](const sc::ir::SCMethod& m) {
-                                       if (m.poisoned)
-                                           std::cout << "poisoned: ";
-                                   },
-                                   [&](const sc::ir::SCMessage& m) { std::cout << symbol_table(*m.selector) << ": "; },
-                                   [&](const sc::ir::SCKwArg& k) { std::cout << symbol_table(*k.name) << ": "; },
-                                   [&](const sc::ir::SCCollection& c) {
-                                       std::cout << symbol_table(*c.collection_class) << ": ";
-                                   } },
-                               payload);
+                    std::visit(
+                        sc::util::overload {
+                            [](const auto&) {},
+                            [&](const sc::ir::SCClass& c) { std::cout << symbol_table(c.name) << ": "; },
+                            [&](const sc::ir::SCMethod& m) {
+                                if (m.poisoned)
+                                    std::cout << "poisoned: ";
+                            },
+                            [&](const sc::ir::SCMessage& m) { std::cout << symbol_table(*m.selector) << ": "; },
+                            [&](const sc::ir::SCKwArg& k) { std::cout << symbol_table(*k.name) << ": "; },
+                            [&](const sc::ir::SCVariableDeclare& v) { std::cout << symbol_table(*v.name) << ": "; },
+                            [&](const sc::ir::SCCollection& c) {
+                                std::cout << symbol_table(*c.collection_class) << ": ";
+                            } },
+                        payload);
                     const auto view = g.read(loc);
                     for (size_t i { 0 }; i < view.size(); ++i) {
                         if (view[i] == '\n') {
