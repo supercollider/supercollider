@@ -8,16 +8,19 @@
 namespace sc::ir {
 
 struct ClassDeclarations;
-struct SymbolTable;
+struct CommonClasses;
+struct CommonSymbols;
 
 // Constant folding and some rewrites assume what a method does, e.g., that `copySeries` on an Array slices it.
 // Extensions can replace these methods, so before compiling, each assumption is checked by looking the method up from
-// the receiver's class: it must find the original implementation, rather than an extension or an override.
-// This is read only once the class library is declared, so it is safe to use while compiling in parallel.
+// the receiver's class: it must find the original implementation, rather than an extension or an override to be able to
+// do the rewrite. This is create after declaring the classes, but before compiling classes, making it safe for
+// multithread access during compilation.
+//
 struct KnownMethods {
     // Marks the methods the compiler knows, and records the assumptions that no longer hold.
     // This stands in for a pragma on the methods, until that is parsed.
-    void check(ClassDeclarations& declarations, SymbolTable& symbols);
+    void check(ClassDeclarations& declarations, const CommonClasses& classes, const CommonSymbols& symbols);
 
     // Whether sending selector to an instance of receiver runs the implementation the compiler knows.
     // A method that isn't declared at all is assumed to be known.

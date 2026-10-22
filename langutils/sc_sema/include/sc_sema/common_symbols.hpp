@@ -26,6 +26,13 @@ struct CommonSymbols {
     // `a.perform(\foo)` is `a.foo`.
     SymSCSelector perform;
 
+    // Classes whose methods the compiler assumes the implementation of, see KnownMethods.
+    SymSCClassName simple_number;
+    SymSCClassName arrayed_collection;
+    SymSCClassName dictionary;
+    // Where perform is defined. This is the class named Object, not the default inheritor, which can change.
+    SymSCClassName object;
+
     // The slot types a class can be declared with, e.g., `Foo[float] {}`.
     SymSCIdentifier slot;
     SymSCIdentifier float_;

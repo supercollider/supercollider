@@ -1,32 +1,16 @@
 #include "sc_sema/known_methods.hpp"
 #include "sc_sema/decls.hpp"
-#include "sc_sema/symbol_table.hpp"
+#include "sc_sema/common_classes.hpp"
+#include "sc_sema/common_symbols.hpp"
 
 namespace sc::ir {
 
 namespace {
 
-// The methods the compiler assumes the implementation of.
-// receiver is the class the assumption is about, defined_in is the class whose original method is assumed.
-// These will become a pragma on the methods.
-struct KnownMethod {
-    const char* receiver;
-    const char* selector;
-    const char* defined_in;
-};
-
-constexpr KnownMethod known_methods[] = {
-    { "Integer", "series", "SimpleNumber" }, // ranges, `(1..5)`
-    { "Array", "copySeries", "ArrayedCollection" }, // slicing, `a[1..3]`
-    { "String", "copySeries", "ArrayedCollection" },
-    { "Array", "add", "ArrayedCollection" }, // `Array[1, 2]`
-    { "Event", "add", "Dictionary" }, // `Event[a: 1]`
-};
-
 // The method found by sending selector to an instance of name, or nullptr if there isn't one.
 const ClassDeclaration::Method* lookup(ClassDeclarations& declarations, SymSCClassName name, SymSCSelector selector) {
-    std::size_t depth { 0 };
-    while (true) {
+    // Bounded, so a broken hierarchy can't loop forever, those classes are poisoned anyway.
+    for (std::size_t depth { 0 }; depth < 1024; ++depth) {
         const auto* decl = declarations.get_unsafe(name);
         if (!decl || decl->poisoned())
             return nullptr;
@@ -36,43 +20,45 @@ const ClassDeclaration::Method* lookup(ClassDeclarations& declarations, SymSCCla
         if (!super)
             return nullptr;
         name = super->first;
-
-        depth += 1;
-        // The depth is here just in case.
-        // The only way a loop can occur is if loops haven't been poisoned.
-        // This is done while compileing the class library, so should never happen.
-        assert(depth < 1024);
     }
     return nullptr;
 }
 
 }
 
-void KnownMethods::check(ClassDeclarations& declarations, SymbolTable& symbols) {
-    for (const auto& k : known_methods) {
-        const auto selector = symbols.get_selector(k.selector);
-        if (auto* decl = declarations.get_unsafe(symbols.get_class_name(k.defined_in)))
-            if (auto* method = decl->find_method(selector); method && !method->is_extention)
+void KnownMethods::check(ClassDeclarations& declarations, const CommonClasses& classes, const CommonSymbols& symbols) {
+    // The methods the compiler assumes the implementation of. receiver is the class the assumption is about,
+    // defined_in is the class whose original method is assumed. These will become a pragma on the methods.
+    struct KnownMethod {
+        SymSCClassName receiver;
+        SymSCSelector selector;
+        SymSCClassName defined_in;
+    };
+    const KnownMethod known_methods[] = {
+        { classes.int_, symbols.series, symbols.simple_number }, // ranges, `(1..5)`
+        { classes.array, symbols.copy_series, symbols.arrayed_collection }, // slicing, `a[1..3]`
+        { classes.string, symbols.copy_series, symbols.arrayed_collection },
+        { classes.array, symbols.add, symbols.arrayed_collection }, // `Array[1, 2]`
+        { classes.event, symbols.add, symbols.dictionary }, // `Event[a: 1]`
+    };
+
+    for (const auto& k : known_methods)
+        if (auto* decl = declarations.get_unsafe(k.defined_in))
+            if (auto* method = decl->find_method(k.selector); method && !method->is_extention)
                 method->compiler_known_implementation = true;
-    }
 
-    for (const auto& k : known_methods) {
-        const auto receiver = symbols.get_class_name(k.receiver);
-        const auto selector = symbols.get_selector(k.selector);
-        if (const auto* method = lookup(declarations, receiver, selector);
+    for (const auto& k : known_methods)
+        if (const auto* method = lookup(declarations, k.receiver, k.selector);
             method && !method->compiler_known_implementation)
-            m_overridden.push_back({ receiver, selector });
-    }
+            m_overridden.push_back({ k.receiver, k.selector });
 
-    // Only Object's perform may exist.
-    const auto perform = symbols.get_selector("perform");
-    const auto object = symbols.get_class_name("Object");
-    if (auto* decl = declarations.get_unsafe(object))
-        if (auto* method = decl->find_method(perform); method && !method->is_extention)
+    // perform can be sent to anything, so only Object's may exist.
+    if (auto* decl = declarations.get_unsafe(symbols.object))
+        if (auto* method = decl->find_method(symbols.perform); method && !method->is_extention)
             method->compiler_known_implementation = true;
     for (auto it = declarations.unsafe_begin(); it != declarations.unsafe_end(); ++it)
-        if (const auto* method = it->second.find_method(perform); method && !method->compiler_known_implementation)
+        if (const auto* method = it->second.find_method(symbols.perform);
+            method && !method->compiler_known_implementation)
             m_perform_is_known = false;
 }
-
 }

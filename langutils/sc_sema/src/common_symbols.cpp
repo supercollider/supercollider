@@ -13,6 +13,10 @@ CommonSymbols::CommonSymbols(SymbolTable& table):
     series(table.get_selector("series")),
     add(table.get_selector("add")),
     perform(table.get_selector("perform")),
+    simple_number(table.get_class_name("SimpleNumber")),
+    arrayed_collection(table.get_class_name("ArrayedCollection")),
+    dictionary(table.get_class_name("Dictionary")),
+    object(table.get_class_name("Object")),
     slot(table.get_identifier("slot")),
     float_(table.get_identifier("float")),
     int_(table.get_identifier("int")) {}

@@ -385,7 +385,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     }
 
     // The hierarchy is valid, so method lookups can be done.
-    ctx.known_methods.check(ctx.class_declarations, ctx.symbol_table);
+    ctx.known_methods.check(ctx.class_declarations, ctx.common_classes, ctx.common_symbols);
 
     // Step 3: build class member layout
     // Must be done in order, cannot multithread.
