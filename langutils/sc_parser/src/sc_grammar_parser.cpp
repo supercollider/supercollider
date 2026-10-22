@@ -450,6 +450,10 @@ namespace sc { namespace ast { namespace parser {
         value.copy< RangeIndex > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_65_region_item: // region.item
+          value.copy<RegionItemIndex>(YY_MOVE(that.value));
+          break;
+
       case symbol_kind::S_region: // region
         value.copy< RegionListIndex > (YY_MOVE (that.value));
         break;
@@ -466,10 +470,6 @@ namespace sc { namespace ast { namespace parser {
 
       case symbol_kind::S_string: // string
         value.copy< StringLitIndex > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_65_region_item: // region.item
-        value.copy< error_index<AnyExprIndex> > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -779,6 +779,10 @@ namespace sc { namespace ast { namespace parser {
         value.move< RangeIndex > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_65_region_item: // region.item
+          value.move<RegionItemIndex>(YY_MOVE(s.value));
+          break;
+
       case symbol_kind::S_region: // region
         value.move< RegionListIndex > (YY_MOVE (s.value));
         break;
@@ -795,10 +799,6 @@ namespace sc { namespace ast { namespace parser {
 
       case symbol_kind::S_string: // string
         value.move< StringLitIndex > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_65_region_item: // region.item
-        value.move< error_index<AnyExprIndex> > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -1178,6 +1178,10 @@ namespace sc { namespace ast { namespace parser {
         value.YY_MOVE_OR_COPY< RangeIndex > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_65_region_item: // region.item
+          value.YY_MOVE_OR_COPY<RegionItemIndex>(YY_MOVE(that.value));
+          break;
+
       case symbol_kind::S_region: // region
         value.YY_MOVE_OR_COPY< RegionListIndex > (YY_MOVE (that.value));
         break;
@@ -1194,10 +1198,6 @@ namespace sc { namespace ast { namespace parser {
 
       case symbol_kind::S_string: // string
         value.YY_MOVE_OR_COPY< StringLitIndex > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_65_region_item: // region.item
-        value.YY_MOVE_OR_COPY< error_index<AnyExprIndex> > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -1491,6 +1491,10 @@ namespace sc { namespace ast { namespace parser {
         value.move< RangeIndex > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_65_region_item: // region.item
+          value.move<RegionItemIndex>(YY_MOVE(that.value));
+          break;
+
       case symbol_kind::S_region: // region
         value.move< RegionListIndex > (YY_MOVE (that.value));
         break;
@@ -1507,10 +1511,6 @@ namespace sc { namespace ast { namespace parser {
 
       case symbol_kind::S_string: // string
         value.move< StringLitIndex > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_65_region_item: // region.item
-        value.move< error_index<AnyExprIndex> > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -1804,6 +1804,10 @@ namespace sc { namespace ast { namespace parser {
         value.copy< RangeIndex > (that.value);
         break;
 
+      case symbol_kind::S_65_region_item: // region.item
+          value.copy<RegionItemIndex>(that.value);
+          break;
+
       case symbol_kind::S_region: // region
         value.copy< RegionListIndex > (that.value);
         break;
@@ -1820,10 +1824,6 @@ namespace sc { namespace ast { namespace parser {
 
       case symbol_kind::S_string: // string
         value.copy< StringLitIndex > (that.value);
-        break;
-
-      case symbol_kind::S_65_region_item: // region.item
-        value.copy< error_index<AnyExprIndex> > (that.value);
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -2116,6 +2116,10 @@ namespace sc { namespace ast { namespace parser {
         value.move< RangeIndex > (that.value);
         break;
 
+      case symbol_kind::S_65_region_item: // region.item
+          value.move<RegionItemIndex>(that.value);
+          break;
+
       case symbol_kind::S_region: // region
         value.move< RegionListIndex > (that.value);
         break;
@@ -2132,10 +2136,6 @@ namespace sc { namespace ast { namespace parser {
 
       case symbol_kind::S_string: // string
         value.move< StringLitIndex > (that.value);
-        break;
-
-      case symbol_kind::S_65_region_item: // region.item
-        value.move< error_index<AnyExprIndex> > (that.value);
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -2672,6 +2672,10 @@ namespace sc { namespace ast { namespace parser {
         yylhs.value.emplace< RangeIndex > ();
         break;
 
+      case symbol_kind::S_65_region_item: // region.item
+          yylhs.value.emplace<RegionItemIndex>();
+          break;
+
       case symbol_kind::S_region: // region
         yylhs.value.emplace< RegionListIndex > ();
         break;
@@ -2688,10 +2692,6 @@ namespace sc { namespace ast { namespace parser {
 
       case symbol_kind::S_string: // string
         yylhs.value.emplace< StringLitIndex > ();
-        break;
-
-      case symbol_kind::S_65_region_item: // region.item
-        yylhs.value.emplace< error_index<AnyExprIndex> > ();
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -2772,33 +2772,51 @@ namespace sc { namespace ast { namespace parser {
 
   case 10: // region.item: expr
 #line 202 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < error_index<AnyExprIndex> > () = yystack_[0].value.as < AnyExprIndex > (); }
+  {
+      yylhs.value.as<RegionItemIndex>() = yystack_[0].value.as<AnyExprIndex>();
+  }
 #line 2777 "langutils/sc_parser/src/sc_grammar_parser.cpp"
-    break;
+  break;
 
   case 11: // region.item: OPENPAREN argument_declarations block.contents semicolon.opt CLOSEPAREN
 #line 204 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < error_index<AnyExprIndex> > () = cxt.create(ImmediatelyEvaluatedBlock{}, yylhs.location, yystack_[3].value.as < DeclareArgumentListIndex > (), yystack_[2].value.as < BlockContentsListIndex > ()); }
+  {
+      yylhs.value.as<RegionItemIndex>() =
+          cxt.create(ImmediatelyEvaluatedBlock {}, yylhs.location, yystack_[3].value.as<DeclareArgumentListIndex>(),
+                     yystack_[2].value.as<BlockContentsListIndex>());
+  }
 #line 2783 "langutils/sc_parser/src/sc_grammar_parser.cpp"
-    break;
+  break;
 
   case 12: // region.item: OPENPAREN argument_declarations CLOSEPAREN
 #line 207 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < error_index<AnyExprIndex> > () = cxt.create(ImmediatelyEvaluatedBlock{}, yylhs.location, yystack_[1].value.as < DeclareArgumentListIndex > (), cxt.create(BlockContentsList{}, yystack_[0].location)); }
+  {
+      yylhs.value.as<RegionItemIndex>() =
+          cxt.create(ImmediatelyEvaluatedBlock {}, yylhs.location, yystack_[1].value.as<DeclareArgumentListIndex>(),
+                     cxt.create(BlockContentsList {}, yystack_[0].location));
+  }
 #line 2789 "langutils/sc_parser/src/sc_grammar_parser.cpp"
-    break;
+  break;
 
   case 13: // region.item: OPENPAREN variable_declarations SEMICOLON block.contents semicolon.opt CLOSEPAREN
 #line 210 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < error_index<AnyExprIndex> > () = cxt.create(ImmediatelyEvaluatedBlock{}, yylhs.location, cxt.create(DeclareArgumentList{}, yystack_[5].location), cxt.graph->prepend(yystack_[2].value.as < BlockContentsListIndex > (), yystack_[4].value.as < DeclareVariableListIndex > ())); }
+  {
+      yylhs.value.as<RegionItemIndex>() = cxt.create(
+          ImmediatelyEvaluatedBlock {}, yylhs.location, cxt.create(DeclareArgumentList {}, yystack_[5].location),
+          cxt.graph->prepend(yystack_[2].value.as<BlockContentsListIndex>(),
+                             yystack_[4].value.as<DeclareVariableListIndex>()));
+  }
 #line 2795 "langutils/sc_parser/src/sc_grammar_parser.cpp"
-    break;
+  break;
 
   case 14: // region: INTERPRET region.item
 #line 215 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < RegionListIndex > () = cxt.create(RegionList{}, yylhs.location, yystack_[0].value.as < error_index<AnyExprIndex> > ()); }
+  {
+      yylhs.value.as<RegionListIndex>() =
+          cxt.create(RegionList {}, yylhs.location, yystack_[0].value.as<RegionItemIndex>());
+  }
 #line 2801 "langutils/sc_parser/src/sc_grammar_parser.cpp"
-    break;
+  break;
 
   case 15: // region: INTERPRET error
 #line 218 "langutils/sc_parser/src/sc_grammar.y"
@@ -2809,17 +2827,23 @@ namespace sc { namespace ast { namespace parser {
 #line 2810 "langutils/sc_parser/src/sc_grammar_parser.cpp"
     break;
 
-  case 16: // region: region SEMICOLON region.item
+        case 16: // region: region SEMICOLON region.item
 #line 224 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < RegionListIndex > () = cxt.graph->append(yystack_[2].value.as < RegionListIndex > (), yylhs.location, yystack_[0].value.as < error_index<AnyExprIndex> > ()); }
+        {
+            yylhs.value.as<RegionListIndex>() = cxt.graph->append(
+                yystack_[2].value.as<RegionListIndex>(), yylhs.location, yystack_[0].value.as<RegionItemIndex>());
+        }
 #line 2816 "langutils/sc_parser/src/sc_grammar_parser.cpp"
-    break;
+        break;
 
-  case 17: // region: region REGION_SEPARATOR region.item
+        case 17: // region: region REGION_SEPARATOR region.item
 #line 227 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < RegionListIndex > () = cxt.graph->append(yystack_[2].value.as < RegionListIndex > (), yylhs.location, yystack_[0].value.as < error_index<AnyExprIndex> > ()); }
+        {
+            yylhs.value.as<RegionListIndex>() = cxt.graph->append(
+                yystack_[2].value.as<RegionListIndex>(), yylhs.location, yystack_[0].value.as<RegionItemIndex>());
+        }
 #line 2822 "langutils/sc_parser/src/sc_grammar_parser.cpp"
-    break;
+        break;
 
   case 18: // region: region error
 #line 230 "langutils/sc_parser/src/sc_grammar.y"
@@ -3772,9 +3796,13 @@ namespace sc { namespace ast { namespace parser {
 
   case 157: // generator.qual.list: generator.qual.list COMMA generator.qual
 #line 801 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < GeneratorQualListIndex > () = cxt.graph->append(yystack_[2].value.as < GeneratorQualListIndex > (), yystack_[2].location, yystack_[0].value.as < GeneratorQualAnyIndex > ()); }
+  {
+      yylhs.value.as<GeneratorQualListIndex>() =
+          cxt.graph->append(yystack_[2].value.as<GeneratorQualListIndex>(), yylhs.location,
+                            yystack_[0].value.as<GeneratorQualAnyIndex>());
+  }
 #line 3777 "langutils/sc_parser/src/sc_grammar_parser.cpp"
-    break;
+  break;
 
   case 158: // generator.qual: name LEFTARROW expr_or_seq
 #line 806 "langutils/sc_parser/src/sc_grammar.y"

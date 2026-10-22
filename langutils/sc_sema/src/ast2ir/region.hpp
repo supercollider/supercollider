@@ -10,8 +10,8 @@ struct Region : private Base {
     using Base::Base;
     Return<NodeIndex> operator()(ast::ErrorIndex);
     Return<NodeIndex> operator()(ast::AnyExprIndex expr);
+    Return<NodeIndex> operator()(ast::ImmediatelyEvaluatedBlockIndex expr);
 };
 
-static_assert(callable_with<Region, ast::AnyExprIndex>());
-static_assert(callable_with<Region, ast::ErrorIndex>());
+static_assert(callable_with<Region, ast::RegionItemIndex>());
 }

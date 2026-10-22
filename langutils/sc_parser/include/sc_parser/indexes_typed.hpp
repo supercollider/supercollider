@@ -156,7 +156,6 @@ using AnyExprIndex = join< //
     SetterIndex, //
     VariablePackAssignIndex, //
     GeneratorAnyIndex, //
-    ImmediatelyEvaluatedBlockIndex, //
     RangeIndex, //
     RangeGeneratorIndex, //
     RangeAssignIndex, //
@@ -230,6 +229,7 @@ using ClassOrExtensionListIndex = TypedIndex<NodeFlag::ClassOrExtensionList>;
 
 using FileAsFunctionIndex = TypedIndex<NodeFlag::FileAsFunction>;
 
+using RegionItemIndex = join<ErrorIndex, AnyExprIndex, ImmediatelyEvaluatedBlockIndex>;
 using RegionListIndex = TypedIndex<NodeFlag::RegionList>;
 
 using GoIndex = join<RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex>;

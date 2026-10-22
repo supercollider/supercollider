@@ -446,7 +446,7 @@ Nonterminals, with rules where they appear
     file_as_func <FileAsFunctionIndex> (64)
         on left: 6 7 8
         on right: 3
-    region.item <error_index<AnyExprIndex>> (65)
+    region.item <RegionItemIndex> (65)
         on left: 9 10 11 12
         on right: 13 15 16
     region <RegionListIndex> (66)

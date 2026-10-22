@@ -440,7 +440,7 @@ struct ClassOrExtensionList : ListNode<ClassOrExtensionListIndex, ClassOrExtensi
     static constexpr auto name { "ClassOrExtensionList" };
 };
 
-struct RegionList : ListNode<RegionListIndex, error_index<AnyExprIndex>> {
+struct RegionList : ListNode<RegionListIndex, RegionItemIndex> {
     static constexpr auto name { "RegionList" };
 };
 

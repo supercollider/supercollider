@@ -75,7 +75,7 @@ using namespace sc::ast;
 %type <GoIndex> go
 
 %type <RegionListIndex> region
-%type <error_index<AnyExprIndex>> region.item 
+%type <RegionItemIndex> region.item 
 
 %type <ClassOrExtensionListIndex> classOrExtList.list
 %type <ClassOrExtensionIndex> classOrExtList.item
@@ -798,7 +798,7 @@ generator.qual.list
 	: generator.qual[item]
 		{ $$ = cxt.create(GeneratorQualList{}, @$, $item); }
 	| generator.qual.list[list] COMMA generator.qual[item]
-		{ $$ = cxt.graph->append($list, @list, $item); }
+		{ $$ = cxt.graph->append($list, @$, $item); }
 	;
 
 generator.qual

@@ -605,22 +605,22 @@ namespace sc { namespace ast { namespace parser {
       // range
       char dummy47[sizeof (RangeIndex)];
 
+      // region.item
+      char dummy48[sizeof(RegionItemIndex)];
+
       // region
-      char dummy48[sizeof (RegionListIndex)];
+      char dummy49[sizeof(RegionListIndex)];
 
       // method.name
       // binary_op.raw
       // binary_op.no_adverb
-      char dummy49[sizeof (SelectorIndex)];
+      char dummy50[sizeof(SelectorIndex)];
 
       // binary_op
-      char dummy50[sizeof (SelectorMaybeAdverbIndex)];
+      char dummy51[sizeof(SelectorMaybeAdverbIndex)];
 
       // string
-      char dummy51[sizeof (StringLitIndex)];
-
-      // region.item
-      char dummy52[sizeof (error_index<AnyExprIndex>)];
+      char dummy52[sizeof(StringLitIndex)];
 
       // class.super.opt
       char dummy53[sizeof (maybe<ClassNameIdentifierIndex>)];
@@ -1200,6 +1200,10 @@ namespace sc { namespace ast { namespace parser {
         value.move< RangeIndex > (std::move (that.value));
         break;
 
+      case symbol_kind::S_65_region_item: // region.item
+          value.move<RegionItemIndex>(std::move(that.value));
+          break;
+
       case symbol_kind::S_region: // region
         value.move< RegionListIndex > (std::move (that.value));
         break;
@@ -1216,10 +1220,6 @@ namespace sc { namespace ast { namespace parser {
 
       case symbol_kind::S_string: // string
         value.move< StringLitIndex > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_65_region_item: // region.item
-        value.move< error_index<AnyExprIndex> > (std::move (that.value));
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -1912,73 +1912,63 @@ namespace sc { namespace ast { namespace parser {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, RegionListIndex&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
+      basic_symbol(typename Base::kind_type t, RegionItemIndex&& v, location_type&& l):
+          Base(t),
+          value(std::move(v)),
+          location(std::move(l)) {}
 #else
-      basic_symbol (typename Base::kind_type t, const RegionListIndex& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
+      basic_symbol(typename Base::kind_type t, const RegionItemIndex& v, const location_type& l):
+          Base(t),
+          value(v),
+          location(l) {}
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, SelectorIndex&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
+      basic_symbol(typename Base::kind_type t, RegionListIndex&& v, location_type&& l):
+          Base(t),
+          value(std::move(v)),
+          location(std::move(l)) {}
 #else
-      basic_symbol (typename Base::kind_type t, const SelectorIndex& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
+      basic_symbol(typename Base::kind_type t, const RegionListIndex& v, const location_type& l):
+          Base(t),
+          value(v),
+          location(l) {}
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, SelectorMaybeAdverbIndex&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
+      basic_symbol(typename Base::kind_type t, SelectorIndex&& v, location_type&& l):
+          Base(t),
+          value(std::move(v)),
+          location(std::move(l)) {}
 #else
-      basic_symbol (typename Base::kind_type t, const SelectorMaybeAdverbIndex& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
+      basic_symbol(typename Base::kind_type t, const SelectorIndex& v, const location_type& l):
+          Base(t),
+          value(v),
+          location(l) {}
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, StringLitIndex&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
+      basic_symbol(typename Base::kind_type t, SelectorMaybeAdverbIndex&& v, location_type&& l):
+          Base(t),
+          value(std::move(v)),
+          location(std::move(l)) {}
 #else
-      basic_symbol (typename Base::kind_type t, const StringLitIndex& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
+      basic_symbol(typename Base::kind_type t, const SelectorMaybeAdverbIndex& v, const location_type& l):
+          Base(t),
+          value(v),
+          location(l) {}
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, error_index<AnyExprIndex>&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
+      basic_symbol(typename Base::kind_type t, StringLitIndex&& v, location_type&& l):
+          Base(t),
+          value(std::move(v)),
+          location(std::move(l)) {}
 #else
-      basic_symbol (typename Base::kind_type t, const error_index<AnyExprIndex>& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
+      basic_symbol(typename Base::kind_type t, const StringLitIndex& v, const location_type& l):
+          Base(t),
+          value(v),
+          location(l) {}
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
@@ -2301,6 +2291,10 @@ switch (yykind)
         value.template destroy< RangeIndex > ();
         break;
 
+      case symbol_kind::S_65_region_item: // region.item
+          value.template destroy<RegionItemIndex>();
+          break;
+
       case symbol_kind::S_region: // region
         value.template destroy< RegionListIndex > ();
         break;
@@ -2317,10 +2311,6 @@ switch (yykind)
 
       case symbol_kind::S_string: // string
         value.template destroy< StringLitIndex > ();
-        break;
-
-      case symbol_kind::S_65_region_item: // region.item
-        value.template destroy< error_index<AnyExprIndex> > ();
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt

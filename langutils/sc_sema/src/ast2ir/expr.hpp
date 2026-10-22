@@ -47,7 +47,6 @@ struct Expr : private Base {
     Return<SCAnyExpr_I> operator()(ast::VariablePackAssignIndex);
     Return<SCAnyExpr_I> operator()(ast::GeneratorIndex);
     Return<SCAnyExpr_I> operator()(ast::GeneratorFakeIndex);
-    Return<SCAnyExpr_I> operator()(ast::ImmediatelyEvaluatedBlockIndex);
     Return<SCAnyExpr_I> operator()(ast::RangeIndex);
     Return<SCAnyExpr_I> operator()(ast::RangeGeneratorIndex);
     Return<SCAnyExpr_I> operator()(ast::RangeAssignIndex);

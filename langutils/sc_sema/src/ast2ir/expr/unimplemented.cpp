@@ -13,7 +13,6 @@ Return<SCAnyExpr_I> unimplemented(IRGraph& ir, const std::shared_ptr<const ast::
 Return<SCAnyExpr_I> Expr::operator()(ast::CurryIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::GeneratorIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::GeneratorFakeIndex i) { return unimplemented(ir, ast_graph, i); }
-Return<SCAnyExpr_I> Expr::operator()(ast::ImmediatelyEvaluatedBlockIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::RangeGeneratorIndex i) { return unimplemented(ir, ast_graph, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) { return unimplemented(ir, ast_graph, i); }
 }
