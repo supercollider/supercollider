@@ -2122,7 +2122,7 @@ template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, end
 
     /* optional args */
     osc::int32 start = 0;
-    osc::int32 frames = 0;
+    osc::int32 frames = 0; // read until the end
 
     if (!args.Eos())
         args >> start;
@@ -2162,23 +2162,35 @@ template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, end
 
 template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
+    /* required args */
     osc::int32 bufnum = arg->AsInt32();
     arg++;
     const char* filename_str = arg->AsString();
     arg++;
 
-    osc::int32 start = arg->AsInt32();
-    arg++;
-    size_t frames = arg->AsInt32();
-    arg++;
+    /* optional args */
+    osc::int32 start = 0;
+    if (arg != end) {
+        start = arg->AsInt32();
+        arg++;
+    }
+    osc::int32 frames = 0; // read until the end
+    if (arg != end) {
+        frames = arg->AsInt32();
+        arg++;
+    }
 
-    size_t channel_args = msg.ArgumentCount() - 4; /* we already consumed 4 elements */
+    size_t channel_args = 0;
+    if (arg != end) {
+        channel_args = msg.ArgumentCount() - 4; /* we already consumed 4 elements */
+    }
 
     size_t channel_count = 0;
     sized_array<uint, rt_pool_allocator<uint>> channels(channel_args);
 
-    // Any remaining Int arguments are channels, followed by an optional
+    // Any remaining int arguments are channels, followed by an optional
     // completion message.
     for (uint i = 0; i < channel_args; ++i) {
         if (arg->IsInt32()) {
