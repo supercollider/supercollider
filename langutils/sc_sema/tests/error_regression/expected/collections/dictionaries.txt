@@ -9,7 +9,7 @@ SCClass (1:1): Dictionaries
 |  SCMethodList (1:1)
 |  |  SCMethod (2:5): constant { ^(a: 1, b: 2.5) } -> (a: 1, b: 2.5)
 |  |  |  SCBody (2:16)
-|  |  |  |  SCExplicitReturn (2:17)
+|  |  |  |  SCExplicitReturn (2:16)
 |  |  |  |  |  SCCollection (2:17): Event = (a: 1, b: 2.5)
 |  |  |  |  |  |  SCLiteral (2:18) = \a
 |  |  |  |  |  |  SCLiteral (2:21) = 1
@@ -17,29 +17,29 @@ SCClass (1:1): Dictionaries
 |  |  |  |  |  |  SCLiteral (2:27) = 2.5
 |  |  SCMethod (3:5): empty { ^() } -> ()
 |  |  |  SCBody (3:13)
-|  |  |  |  SCExplicitReturn (3:14)
+|  |  |  |  SCExplicitReturn (3:13)
 |  |  |  |  |  SCCollection (3:14): Event = ()
 |  |  SCMethod (4:5): symbol_key { ^(\a: 1) } -> (a: 1)
 |  |  |  SCBody (4:18)
-|  |  |  |  SCExplicitReturn (4:19)
+|  |  |  |  SCExplicitReturn (4:18)
 |  |  |  |  |  SCCollection (4:19): Event = (a: 1)
 |  |  |  |  |  |  SCLiteral (4:20) = \a
 |  |  |  |  |  |  SCLiteral (4:24) = 1
 |  |  SCMethod (5:5): string_key { ^("a": 1) } -> ("a": 1)
 |  |  |  SCBody (5:18)
-|  |  |  |  SCExplicitReturn (5:19)
+|  |  |  |  SCExplicitReturn (5:18)
 |  |  |  |  |  SCCollection (5:19): Event = ("a": 1)
 |  |  |  |  |  |  SCLiteral (5:20) = "a"
 |  |  |  |  |  |  SCLiteral (5:25) = 1
 |  |  SCMethod (6:5): integer_key { ^(1: \one) } -> (1: \one)
 |  |  |  SCBody (6:19)
-|  |  |  |  SCExplicitReturn (6:20)
+|  |  |  |  SCExplicitReturn (6:19)
 |  |  |  |  |  SCCollection (6:20): Event = (1: \one)
 |  |  |  |  |  |  SCLiteral (6:21) = 1
 |  |  |  |  |  |  SCLiteral (6:24) = \one
 |  |  SCMethod (7:5): nested_array { ^(a: [1, 2]) } -> (a: [1, 2])
 |  |  |  SCBody (7:20)
-|  |  |  |  SCExplicitReturn (7:21)
+|  |  |  |  SCExplicitReturn (7:20)
 |  |  |  |  |  SCCollection (7:21): Event = (a: [1, 2])
 |  |  |  |  |  |  SCLiteral (7:22) = \a
 |  |  |  |  |  |  SCCollection (7:25): Array = [1, 2]
@@ -47,7 +47,7 @@ SCClass (1:1): Dictionaries
 |  |  |  |  |  |  |  SCLiteral (7:29) = 2
 |  |  SCMethod (8:5): nested_event { ^(a: (b: 1)) } -> (a: (b: 1))
 |  |  |  SCBody (8:20)
-|  |  |  |  SCExplicitReturn (8:21)
+|  |  |  |  SCExplicitReturn (8:20)
 |  |  |  |  |  SCCollection (8:21): Event = (a: (b: 1))
 |  |  |  |  |  |  SCLiteral (8:22) = \a
 |  |  |  |  |  |  SCCollection (8:25): Event = (b: 1)
@@ -55,21 +55,21 @@ SCClass (1:1): Dictionaries
 |  |  |  |  |  |  |  SCLiteral (8:29) = 1
 |  |  SCMethod (9:5): value_not_constant { ^(a: 1.foo) }
 |  |  |  SCBody (9:26)
-|  |  |  |  SCExplicitReturn (9:27)
+|  |  |  |  SCExplicitReturn (9:26)
 |  |  |  |  |  SCCollection (9:27): Event
 |  |  |  |  |  |  SCLiteral (9:28) = \a
 |  |  |  |  |  |  SCMessage (9:31): foo
 |  |  |  |  |  |  |  SCLiteral (9:31) = 1
 |  |  SCMethod (10:5): key_not_constant { ^((1.foo): 2) }
 |  |  |  SCBody (10:24)
-|  |  |  |  SCExplicitReturn (10:25)
+|  |  |  |  SCExplicitReturn (10:24)
 |  |  |  |  |  SCCollection (10:25): Event
 |  |  |  |  |  |  SCMessage (10:27): foo
 |  |  |  |  |  |  |  SCLiteral (10:27) = 1
 |  |  |  |  |  |  SCLiteral (10:35) = 2
 |  |  SCMethod (11:5): nested_not_constant { ^(a: (b: 1.foo)) }
 |  |  |  SCBody (11:27)
-|  |  |  |  SCExplicitReturn (11:28)
+|  |  |  |  SCExplicitReturn (11:27)
 |  |  |  |  |  SCCollection (11:28): Event
 |  |  |  |  |  |  SCLiteral (11:29) = \a
 |  |  |  |  |  |  SCCollection (11:32): Event

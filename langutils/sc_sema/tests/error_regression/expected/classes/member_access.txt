@@ -12,31 +12,31 @@ SCClass (1:1): Foo
 |  SCMethodList (1:1)
 |  |  SCMethod (9:5): a_method { ^bar }
 |  |  |  SCBody (9:16)
-|  |  |  |  SCExplicitReturn (9:17)
+|  |  |  |  SCExplicitReturn (9:16)
 |  |  |  |  |  SCRead (9:17): instance bar, declared (2:9): bar
 |  |  SCMethod (12:5): not_constant { ^bar }
 |  |  |  SCBody (12:20)
-|  |  |  |  SCExplicitReturn (12:21)
+|  |  |  |  SCExplicitReturn (12:20)
 |  |  |  |  |  SCRead (12:21): instance bar, declared (2:9): bar
 |  |  SCMethod (14:5): with_getter { ^getter }
 |  |  |  SCBody (14:19)
-|  |  |  |  SCExplicitReturn (14:20)
+|  |  |  |  SCExplicitReturn (14:19)
 |  |  |  |  |  SCRead (14:20): instance getter, declared (3:10): getter
 |  |  SCMethod (16:5): with_setter { ^setter }
 |  |  |  SCBody (16:19)
-|  |  |  |  SCExplicitReturn (16:20)
+|  |  |  |  SCExplicitReturn (16:19)
 |  |  |  |  |  SCRead (16:20): instance setter, declared (3:19): setter
 |  |  SCMethod (18:5): class_variable { ^class_var }
 |  |  |  SCBody (18:22)
-|  |  |  |  SCExplicitReturn (18:23)
+|  |  |  |  SCExplicitReturn (18:22)
 |  |  |  |  |  SCRead (18:23): class class_var, declared (4:14): class_var
 |  |  SCMethod (20:5): constant_member { ^constant }
 |  |  |  SCBody (20:23)
-|  |  |  |  SCExplicitReturn (20:24)
+|  |  |  |  SCExplicitReturn (20:23)
 |  |  |  |  |  SCRead (20:24): class constant, declared (5:11): constant
 |  |  SCMethod (22:5): in_expression { ^bar + 1 }
 |  |  |  SCBody (22:21)
-|  |  |  |  SCExplicitReturn (22:22)
+|  |  |  |  SCExplicitReturn (22:21)
 |  |  |  |  |  SCMessage (22:22): +
 |  |  |  |  |  |  SCRead (22:22): instance bar, declared (2:9): bar
 |  |  |  |  |  |  SCPositionalArgs (22:22)
@@ -45,17 +45,17 @@ SCClass (1:1): Foo
 |  |  |  SCBody (24:23)
 |  |  |  |  SCAssign (24:23): instance bar, declared (2:9): bar
 |  |  |  |  |  SCLiteral (24:29) = 1
-|  |  |  |  SCExplicitReturn (24:33)
+|  |  |  |  SCExplicitReturn (24:32)
 |  |  |  |  |  SCRead (24:33): instance bar, declared (2:9): bar
 |  |  SCMethod (26:5): in_block { ^{ bar } }
 |  |  |  SCBody (26:16)
-|  |  |  |  SCExplicitReturn (26:17)
+|  |  |  |  SCExplicitReturn (26:16)
 |  |  |  |  |  SCFunction (26:17)
 |  |  |  |  |  |  SCBody (26:17)
 |  |  |  |  |  |  |  SCRead (26:19): instance bar, declared (2:9): bar
 |  |  SCMethod (28:5): in_nested_block { ^{ { bar } } }
 |  |  |  SCBody (28:23)
-|  |  |  |  SCExplicitReturn (28:24)
+|  |  |  |  SCExplicitReturn (28:23)
 |  |  |  |  |  SCFunction (28:24)
 |  |  |  |  |  |  SCBody (28:24)
 |  |  |  |  |  |  |  SCFunction (28:26)
@@ -63,7 +63,7 @@ SCClass (1:1): Foo
 |  |  |  |  |  |  |  |  |  SCRead (28:28): instance bar, declared (2:9): bar
 |  |  SCMethod (30:5): in_generator { ^{: bar + x, x <- [1, 2] } }
 |  |  |  SCBody (30:20)
-|  |  |  |  SCExplicitReturn (30:21)
+|  |  |  |  SCExplicitReturn (30:20)
 |  |  |  |  |  SCGenerator (30:21): routine
 |  |  |  |  |  |  SCGenQualList (30:33)
 |  |  |  |  |  |  |  SCGenQualIterate (30:33): x
@@ -78,17 +78,17 @@ SCClass (1:1): Foo
 |  |  |  SCBody (32:26)
 |  |  |  |  SCVariableDeclare (32:30): bar
 |  |  |  |  |  SCLiteral (32:36) = 1
-|  |  |  |  SCExplicitReturn (32:40)
+|  |  |  |  SCExplicitReturn (32:39)
 |  |  |  |  |  SCRead (32:40): local bar = 1, declared (32:30): bar = 1
 |  |  SCMethod (34:5): hidden_by_argument { |bar| ^bar }
 |  |  |  SCArgumentDeclareList (34:27)
 |  |  |  |  SCArgumentDeclare (34:27): bar
 |  |  |  SCBody (34:32)
-|  |  |  |  SCExplicitReturn (34:33)
+|  |  |  |  SCExplicitReturn (34:32)
 |  |  |  |  |  SCRead (34:33): local bar, declared (34:27): bar
 |  |  SCMethod (36:5): hidden_in_block_only { ^[{ var bar = 1; bar }, bar] }
 |  |  |  SCBody (36:28)
-|  |  |  |  SCExplicitReturn (36:29)
+|  |  |  |  SCExplicitReturn (36:28)
 |  |  |  |  |  SCCollection (36:29): Array
 |  |  |  |  |  |  SCFunction (36:30) -> 1
 |  |  |  |  |  |  |  SCBody (36:30)
@@ -103,7 +103,7 @@ SCClass (1:1): Meta_Foo
 |  SCMethodList (1:1)
 |  |  SCMethod (39:5): *class_method { ^class_var }
 |  |  |  SCBody (39:21)
-|  |  |  |  SCExplicitReturn (39:22)
+|  |  |  |  SCExplicitReturn (39:21)
 |  |  |  |  |  SCRead (39:22): instance class_var, declared (4:14): class_var
 |  |  SCMethod (41:5): poisoned: *instance_variable_in_class_method { ^bar }
 |  |  |
@@ -121,7 +121,7 @@ SCClass (1:1): Meta_Foo
 |  |  |  Declare it with 'var', or use '~bar' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (41:42)
-|  |  |  |  SCExplicitReturn (41:43)
+|  |  |  |  SCExplicitReturn (41:42)
 |  |  |  |  |  SCExprList (41:43)
 SCClass (44:1): Sub
 |  SCMemberList (44:1)
@@ -129,15 +129,15 @@ SCClass (44:1): Sub
 |  SCMethodList (44:1)
 |  |  SCMethod (48:5): inherited { ^bar }
 |  |  |  SCBody (48:17)
-|  |  |  |  SCExplicitReturn (48:18)
+|  |  |  |  SCExplicitReturn (48:17)
 |  |  |  |  |  SCRead (48:18): instance bar, declared (2:9): bar
 |  |  SCMethod (50:5): inherited_class_variable { ^class_var }
 |  |  |  SCBody (50:32)
-|  |  |  |  SCExplicitReturn (50:33)
+|  |  |  |  SCExplicitReturn (50:32)
 |  |  |  |  |  SCRead (50:33): class class_var, declared (4:14): class_var
 |  |  SCMethod (53:5): own_and_inherited { ^[sub_var, bar] }
 |  |  |  SCBody (53:25)
-|  |  |  |  SCExplicitReturn (53:26)
+|  |  |  |  SCExplicitReturn (53:25)
 |  |  |  |  |  SCCollection (53:26): Array
 |  |  |  |  |  |  SCRead (53:27): instance sub_var, declared (45:9): sub_var
 |  |  |  |  |  |  SCRead (53:36): instance bar, declared (2:9): bar

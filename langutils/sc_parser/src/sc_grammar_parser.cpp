@@ -3121,7 +3121,7 @@ namespace sc { namespace ast { namespace parser {
   case 65: // block.contents: block.contents NONLOCALRETURN expr
 #line 409 "langutils/sc_parser/src/sc_grammar.y"
                 { 
-			auto non_local = cxt.create(NonLocalReturnExpr{}, yystack_[0].location, yystack_[0].value.as < AnyExprIndex > ());
+			auto non_local = cxt.create(NonLocalReturnExpr{}, range(yystack_[1].location, yystack_[0].location), yystack_[0].value.as < AnyExprIndex > ());
 			yylhs.value.as < BlockContentsListIndex > () = cxt.graph->append(yystack_[2].value.as < BlockContentsListIndex > (), yylhs.location, non_local); 
 		}
 #line 3128 "langutils/sc_parser/src/sc_grammar_parser.cpp"
@@ -3130,7 +3130,7 @@ namespace sc { namespace ast { namespace parser {
   case 66: // block.contents: block.contents SEMICOLON NONLOCALRETURN expr
 #line 414 "langutils/sc_parser/src/sc_grammar.y"
                 { 
-			auto non_local = cxt.create(NonLocalReturnExpr{}, yystack_[0].location, yystack_[0].value.as < AnyExprIndex > ());
+			auto non_local = cxt.create(NonLocalReturnExpr{}, range(yystack_[1].location, yystack_[0].location), yystack_[0].value.as < AnyExprIndex > ());
 			yylhs.value.as < BlockContentsListIndex > () = cxt.graph->append(yystack_[3].value.as < BlockContentsListIndex > (), yylhs.location, non_local); 
 		}
 #line 3137 "langutils/sc_parser/src/sc_grammar_parser.cpp"
@@ -3139,7 +3139,7 @@ namespace sc { namespace ast { namespace parser {
   case 67: // block.contents: NONLOCALRETURN expr
 #line 419 "langutils/sc_parser/src/sc_grammar.y"
                 { 
-			auto non_local = cxt.create(NonLocalReturnExpr{}, yystack_[0].location, yystack_[0].value.as < AnyExprIndex > ());
+			auto non_local = cxt.create(NonLocalReturnExpr{}, range(yystack_[1].location, yystack_[0].location), yystack_[0].value.as < AnyExprIndex > ());
 			yylhs.value.as < BlockContentsListIndex > () = cxt.create(BlockContentsList{}, yylhs.location, non_local);
 		}
 #line 3146 "langutils/sc_parser/src/sc_grammar_parser.cpp"

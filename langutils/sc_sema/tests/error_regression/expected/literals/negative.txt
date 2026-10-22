@@ -9,48 +9,48 @@ SCClass (1:1): NegativeLiterals
 |  SCMethodList (1:1)
 |  |  SCMethod (4:5): integer { ^-5 } -> -5
 |  |  |  SCBody (4:15)
-|  |  |  |  SCExplicitReturn (4:16)
+|  |  |  |  SCExplicitReturn (4:15)
 |  |  |  |  |  SCLiteral (4:17) = -5
 |  |  SCMethod (5:5): float { ^-2.5 } -> -2.5
 |  |  |  SCBody (5:13)
-|  |  |  |  SCExplicitReturn (5:14)
+|  |  |  |  SCExplicitReturn (5:13)
 |  |  |  |  |  SCLiteral (5:15) = -2.5
 |  |  SCMethod (6:5): exponent { ^-1e3 } -> -1000.0
 |  |  |  SCBody (6:16)
-|  |  |  |  SCExplicitReturn (6:17)
+|  |  |  |  SCExplicitReturn (6:16)
 |  |  |  |  |  SCLiteral (6:18) = -1000.0
 |  |  SCMethod (7:5): hexadecimal { ^-0x10 } -> -16
 |  |  |  SCBody (7:19)
-|  |  |  |  SCExplicitReturn (7:20)
+|  |  |  |  SCExplicitReturn (7:19)
 |  |  |  |  |  SCLiteral (7:21) = -16
 |  |  SCMethod (8:5): radix { ^-2r101 } -> -5
 |  |  |  SCBody (8:13)
-|  |  |  |  SCExplicitReturn (8:14)
+|  |  |  |  SCExplicitReturn (8:13)
 |  |  |  |  |  SCLiteral (8:15) = -5
 |  |  SCMethod (9:5): pi_alone { ^-pi } -> -3.1415927
 |  |  |  SCBody (9:16)
-|  |  |  |  SCExplicitReturn (9:17)
+|  |  |  |  SCExplicitReturn (9:16)
 |  |  |  |  |  SCLiteral (9:17) = -3.1415927
 |  |  SCMethod (10:5): pi_multiple { ^-2pi } -> -6.2831853
 |  |  |  SCBody (10:19)
-|  |  |  |  SCExplicitReturn (10:20)
+|  |  |  |  SCExplicitReturn (10:19)
 |  |  |  |  |  SCLiteral (10:20) = -6.2831853
 |  |  SCMethod (11:5): in_array { ^[-1, 2] } -> [-1, 2]
 |  |  |  SCBody (11:16)
-|  |  |  |  SCExplicitReturn (11:17)
+|  |  |  |  SCExplicitReturn (11:16)
 |  |  |  |  |  SCCollection (11:17): Array = [-1, 2]
 |  |  |  |  |  |  SCLiteral (11:19) = -1
 |  |  |  |  |  |  SCLiteral (11:22) = 2
 |  |  SCMethod (12:5): in_range { ^(-2..2) } -> [-2, -1, 0, 1, 2]
 |  |  |  SCBody (12:16)
-|  |  |  |  SCExplicitReturn (12:17)
+|  |  |  |  SCExplicitReturn (12:16)
 |  |  |  |  |  SCRange (12:17) = [-2, -1, 0, 1, 2]
 |  |  |  |  |  |  SCLiteral (12:19) = -2
 |  |  |  |  |  |  SCMissing (12:17)
 |  |  |  |  |  |  SCLiteral (12:22) = 2
 |  |  SCMethod (13:5): binary_minus { ^1 - 2 } -> -1
 |  |  |  SCBody (13:20)
-|  |  |  |  SCExplicitReturn (13:21)
+|  |  |  |  SCExplicitReturn (13:20)
 |  |  |  |  |  SCMessage (13:21): - = -1
 |  |  |  |  |  |  SCLiteral (13:21) = 1
 |  |  |  |  |  |  SCPositionalArgs (13:21)

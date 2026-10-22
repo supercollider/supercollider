@@ -9,18 +9,18 @@ SCClass (1:1): Arrays
 |  SCMethodList (1:1)
 |  |  SCMethod (2:5): constant { ^[1, 2.5, "three"] } -> [1, 2.5, "three"]
 |  |  |  SCBody (2:16)
-|  |  |  |  SCExplicitReturn (2:17)
+|  |  |  |  SCExplicitReturn (2:16)
 |  |  |  |  |  SCCollection (2:17): Array = [1, 2.5, "three"]
 |  |  |  |  |  |  SCLiteral (2:18) = 1
 |  |  |  |  |  |  SCLiteral (2:21) = 2.5
 |  |  |  |  |  |  SCLiteral (2:26) = "three"
 |  |  SCMethod (3:5): empty { ^[] } -> []
 |  |  |  SCBody (3:13)
-|  |  |  |  SCExplicitReturn (3:14)
+|  |  |  |  SCExplicitReturn (3:13)
 |  |  |  |  |  SCCollection (3:14): Array = []
 |  |  SCMethod (4:5): nested_constant { ^[[1, 2], [\a]] } -> [[1, 2], [\a]]
 |  |  |  SCBody (4:23)
-|  |  |  |  SCExplicitReturn (4:24)
+|  |  |  |  SCExplicitReturn (4:23)
 |  |  |  |  |  SCCollection (4:24): Array = [[1, 2], [\a]]
 |  |  |  |  |  |  SCCollection (4:25): Array = [1, 2]
 |  |  |  |  |  |  |  SCLiteral (4:26) = 1
@@ -29,7 +29,7 @@ SCClass (1:1): Arrays
 |  |  |  |  |  |  |  SCLiteral (4:34) = \a
 |  |  SCMethod (5:5): keyword_elements { ^[a: 1, b: 2] } -> [\a, 1, \b, 2]
 |  |  |  SCBody (5:24)
-|  |  |  |  SCExplicitReturn (5:25)
+|  |  |  |  SCExplicitReturn (5:24)
 |  |  |  |  |  SCCollection (5:25): Array = [\a, 1, \b, 2]
 |  |  |  |  |  |  SCLiteral (5:26) = \a
 |  |  |  |  |  |  SCLiteral (5:29) = 1
@@ -37,14 +37,14 @@ SCClass (1:1): Arrays
 |  |  |  |  |  |  SCLiteral (5:35) = 2
 |  |  SCMethod (6:5): not_constant { ^[1, 2.foo] }
 |  |  |  SCBody (6:20)
-|  |  |  |  SCExplicitReturn (6:21)
+|  |  |  |  SCExplicitReturn (6:20)
 |  |  |  |  |  SCCollection (6:21): Array
 |  |  |  |  |  |  SCLiteral (6:22) = 1
 |  |  |  |  |  |  SCMessage (6:25): foo
 |  |  |  |  |  |  |  SCLiteral (6:25) = 2
 |  |  SCMethod (7:5): nested_not_constant { ^[1, [2.foo]] }
 |  |  |  SCBody (7:27)
-|  |  |  |  SCExplicitReturn (7:28)
+|  |  |  |  SCExplicitReturn (7:27)
 |  |  |  |  |  SCCollection (7:28): Array
 |  |  |  |  |  |  SCLiteral (7:29) = 1
 |  |  |  |  |  |  SCCollection (7:32): Array
@@ -52,7 +52,7 @@ SCClass (1:1): Arrays
 |  |  |  |  |  |  |  |  SCLiteral (7:33) = 2
 |  |  SCMethod (8:5): immutable { ^#[1, name, \symbol] } -> [1, \name, \symbol]
 |  |  |  SCBody (8:17)
-|  |  |  |  SCExplicitReturn (8:18)
+|  |  |  |  SCExplicitReturn (8:17)
 |  |  |  |  |  SCCollection (8:18): Array = [1, \name, \symbol]
 |  |  |  |  |  |  SCLiteral (8:20) = 1
 |  |  |  |  |  |  SCLiteral (8:23) = \name
@@ -72,14 +72,14 @@ SCClass (1:1): Arrays
 |  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:29)
-|  |  |  |  SCExplicitReturn (9:30)
+|  |  |  |  SCExplicitReturn (9:29)
 |  |  |  |  |  SCCollection (9:30): Array
 |  |  |  |  |  |  SCLiteral (9:32) = 1
 |  |  |  |  |  |  SCMessage (9:35): foo
 |  |  |  |  |  |  |  SCLiteral (9:35) = 2
 |  |  SCMethod (10:5): immutable_nested { ^#[[a, 1], b] } -> [[\a, 1], \b]
 |  |  |  SCBody (10:24)
-|  |  |  |  SCExplicitReturn (10:25)
+|  |  |  |  SCExplicitReturn (10:24)
 |  |  |  |  |  SCCollection (10:25): Array = [[\a, 1], \b]
 |  |  |  |  |  |  SCCollection (10:27): Array = [\a, 1]
 |  |  |  |  |  |  |  SCLiteral (10:28) = \a

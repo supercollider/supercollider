@@ -30,7 +30,7 @@ SCClass (1:1): SliceFolding
 |  SCMethodList (1:1)
 |  |  SCMethod (13:5): array { ^[1, 2, 3, 4][1..2] } -> [2, 3]
 |  |  |  SCBody (13:13)
-|  |  |  |  SCExplicitReturn (13:14)
+|  |  |  |  SCExplicitReturn (13:13)
 |  |  |  |  |  SCMessage (13:14): copySeries = [2, 3]
 |  |  |  |  |  |  SCCollection (13:14): Array = [1, 2, 3, 4]
 |  |  |  |  |  |  |  SCLiteral (13:15) = 1
@@ -43,7 +43,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (13:30) = 2
 |  |  SCMethod (14:5): from_start { ^[1, 2, 3][..1] } -> [1, 2]
 |  |  |  SCBody (14:18)
-|  |  |  |  SCExplicitReturn (14:19)
+|  |  |  |  SCExplicitReturn (14:18)
 |  |  |  |  |  SCMessage (14:19): copySeries = [1, 2]
 |  |  |  |  |  |  SCCollection (14:19): Array = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (14:20) = 1
@@ -55,7 +55,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (14:31) = 1
 |  |  SCMethod (15:5): to_end { ^[1, 2, 3][1..] } -> [2, 3]
 |  |  |  SCBody (15:14)
-|  |  |  |  SCExplicitReturn (15:15)
+|  |  |  |  SCExplicitReturn (15:14)
 |  |  |  |  |  SCMessage (15:15): copySeries = [2, 3]
 |  |  |  |  |  |  SCCollection (15:15): Array = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (15:16) = 1
@@ -67,7 +67,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (15:24) = nil
 |  |  SCMethod (16:5): step { ^[0, 1, 2, 3, 4, 5][0, 2..5] } -> [0, 2, 4]
 |  |  |  SCBody (16:12)
-|  |  |  |  SCExplicitReturn (16:13)
+|  |  |  |  SCExplicitReturn (16:12)
 |  |  |  |  |  SCMessage (16:13): copySeries = [0, 2, 4]
 |  |  |  |  |  |  SCCollection (16:13): Array = [0, 1, 2, 3, 4, 5]
 |  |  |  |  |  |  |  SCLiteral (16:14) = 0
@@ -82,7 +82,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (16:38) = 5
 |  |  SCMethod (17:5): descending { ^[1, 2, 3][2..0] } -> [3, 2, 1]
 |  |  |  SCBody (17:18)
-|  |  |  |  SCExplicitReturn (17:19)
+|  |  |  |  SCExplicitReturn (17:18)
 |  |  |  |  |  SCMessage (17:19): copySeries = [3, 2, 1]
 |  |  |  |  |  |  SCCollection (17:19): Array = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (17:20) = 1
@@ -94,7 +94,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (17:32) = 0
 |  |  SCMethod (18:5): clipped_end { ^[1, 2, 3][1..10] } -> [2, 3]
 |  |  |  SCBody (18:19)
-|  |  |  |  SCExplicitReturn (18:20)
+|  |  |  |  SCExplicitReturn (18:19)
 |  |  |  |  |  SCMessage (18:20): copySeries = [2, 3]
 |  |  |  |  |  |  SCCollection (18:20): Array = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (18:21) = 1
@@ -106,7 +106,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (18:33) = 10
 |  |  SCMethod (19:5): clipped_start { ^[1, 2, 3][-5..1] } -> [1, 2]
 |  |  |  SCBody (19:21)
-|  |  |  |  SCExplicitReturn (19:22)
+|  |  |  |  SCExplicitReturn (19:21)
 |  |  |  |  |  SCMessage (19:22): copySeries = [1, 2]
 |  |  |  |  |  |  SCCollection (19:22): Array = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (19:23) = 1
@@ -118,7 +118,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (19:36) = 1
 |  |  SCMethod (20:5): empty { ^[][..3] } -> []
 |  |  |  SCBody (20:13)
-|  |  |  |  SCExplicitReturn (20:14)
+|  |  |  |  SCExplicitReturn (20:13)
 |  |  |  |  |  SCMessage (20:14): copySeries = []
 |  |  |  |  |  |  SCCollection (20:14): Array = []
 |  |  |  |  |  |  SCPositionalArgs (20:14)
@@ -127,7 +127,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (20:19) = 3
 |  |  SCMethod (21:5): string { ^"hello"[1..3] } -> "ell"
 |  |  |  SCBody (21:14)
-|  |  |  |  SCExplicitReturn (21:15)
+|  |  |  |  SCExplicitReturn (21:14)
 |  |  |  |  |  SCMessage (21:15): copySeries = "ell"
 |  |  |  |  |  |  SCLiteral (21:15) = "hello"
 |  |  |  |  |  |  SCPositionalArgs (21:15)
@@ -136,7 +136,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (21:26) = 3
 |  |  SCMethod (22:5): string_descending { ^"hello"[3..1] } -> "lle"
 |  |  |  SCBody (22:25)
-|  |  |  |  SCExplicitReturn (22:26)
+|  |  |  |  SCExplicitReturn (22:25)
 |  |  |  |  |  SCMessage (22:26): copySeries = "lle"
 |  |  |  |  |  |  SCLiteral (22:26) = "hello"
 |  |  |  |  |  |  SCPositionalArgs (22:26)
@@ -145,7 +145,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (22:37) = 1
 |  |  SCMethod (23:5): immutable { ^#[a, b, c][1..] } -> [\b, \c]
 |  |  |  SCBody (23:17)
-|  |  |  |  SCExplicitReturn (23:18)
+|  |  |  |  SCExplicitReturn (23:17)
 |  |  |  |  |  SCMessage (23:18): copySeries = [\b, \c]
 |  |  |  |  |  |  SCCollection (23:18): Array = [\a, \b, \c]
 |  |  |  |  |  |  |  SCLiteral (23:20) = \a
@@ -157,7 +157,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (23:28) = nil
 |  |  SCMethod (24:5): step_with_start_outside { ^[1, 2, 3, 4][-1, 1..3] }
 |  |  |  SCBody (24:31)
-|  |  |  |  SCExplicitReturn (24:32)
+|  |  |  |  SCExplicitReturn (24:31)
 |  |  |  |  |  SCMessage (24:32): copySeries
 |  |  |  |  |  |  SCCollection (24:32): Array = [1, 2, 3, 4]
 |  |  |  |  |  |  |  SCLiteral (24:33) = 1
@@ -170,7 +170,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (24:52) = 3
 |  |  SCMethod (25:5): zero_step { ^[1, 2, 3][1, 1..2] }
 |  |  |  SCBody (25:17)
-|  |  |  |  SCExplicitReturn (25:18)
+|  |  |  |  SCExplicitReturn (25:17)
 |  |  |  |  |  SCMessage (25:18): copySeries
 |  |  |  |  |  |  SCCollection (25:18): Array = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (25:19) = 1
@@ -182,7 +182,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (25:34) = 2
 |  |  SCMethod (26:5): step_away { ^[1, 2, 3][2, 3..0] }
 |  |  |  SCBody (26:17)
-|  |  |  |  SCExplicitReturn (26:18)
+|  |  |  |  SCExplicitReturn (26:17)
 |  |  |  |  |  SCMessage (26:18): copySeries
 |  |  |  |  |  |  SCCollection (26:18): Array = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (26:19) = 1
@@ -194,7 +194,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (26:34) = 0
 |  |  SCMethod (27:5): receiver_not_constant { ^x[1..2] }
 |  |  |  SCBody (27:29)
-|  |  |  |  SCExplicitReturn (27:30)
+|  |  |  |  SCExplicitReturn (27:29)
 |  |  |  |  |  SCMessage (27:30): copySeries
 |  |  |  |  |  |  SCRead (27:30): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (27:30)
@@ -203,7 +203,7 @@ SCClass (1:1): SliceFolding
 |  |  |  |  |  |  |  SCLiteral (27:35) = 2
 |  |  SCMethod (28:5): bound_not_constant { ^[1, 2, 3][1..2.foo] }
 |  |  |  SCBody (28:26)
-|  |  |  |  SCExplicitReturn (28:27)
+|  |  |  |  SCExplicitReturn (28:26)
 |  |  |  |  |  SCMessage (28:27): copySeries
 |  |  |  |  |  |  SCCollection (28:27): Array = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (28:28) = 1

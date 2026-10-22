@@ -526,6 +526,16 @@ Diagnostic Diagnostic::missing_interpreter_context(TextInfoPtr t, sc::lex::Sourc
     };
 }
 
+Diagnostic Diagnostic::return_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return {
+        "Return in interpreted code",
+        Severity::Error,
+        { { std::move(t), l, "there is no method to return from." } },
+        "`^` returns from the method the code is written in, but interpreted code isn't in a method, so this includes "
+        "the functions it defines. The value of interpreted code is its last expression, so remove the `^`."
+    };
+}
+
 Diagnostic Diagnostic::curry_outside_call(TextInfoPtr t, sc::lex::SourceCodeRange l) {
     return {
         "Partial application outside of a call",

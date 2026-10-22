@@ -17,6 +17,11 @@ struct BodyResult {
     bool explicit_return { false };
 };
 
+// A function, e.g., `{ |a| a }`, whose arguments are arg_list and whose body is contents, empty if there aren't any.
+Return<SCAnyExpr_I> compile_function(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
+                                     Context& ctx, ast::Index whole, ast::DeclareArgumentListIndex arg_list,
+                                     std::optional<ast::BlockContentsListIndex> contents);
+
 BodyResult compile_body(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph, Context& ctx,
                         join<SCFunction_I, SCMethod_I> owner, SCBody_I body, ast::BlockContentsListIndex contents);
 }

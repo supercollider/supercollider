@@ -22,7 +22,7 @@ SCClass (1:1): EventKeyWithoutValue
 |  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (2:20)
-|  |  |  |  SCExplicitReturn (2:21)
+|  |  |  |  SCExplicitReturn (2:20)
 |  |  |  |  |  SCCollection (2:21): Event
 |  |  |  |  |  |  SCLiteral (2:27) = \a
 |  |  |  |  |  |  SCLiteral (2:30) = 1
@@ -43,7 +43,7 @@ SCClass (1:1): EventKeyWithoutValue
 |  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (3:24)
-|  |  |  |  SCExplicitReturn (3:25)
+|  |  |  |  SCExplicitReturn (3:24)
 |  |  |  |  |  SCCollection (3:25): Event
 |  |  |  |  |  |  SCLiteral (3:31) = \a
 |  |  |  |  |  |  SCMessage (3:34): foo
@@ -65,12 +65,12 @@ SCClass (1:1): EventKeyWithoutValue
 |  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (4:14)
-|  |  |  |  SCExplicitReturn (4:15)
+|  |  |  |  SCExplicitReturn (4:14)
 |  |  |  |  |  SCCollection (4:15): Event
 |  |  |  |  |  |  SCLiteral (4:21) = \a
 |  |  SCMethod (5:5): even { ^Event[a: 1, b: 2] } -> (a: 1, b: 2)
 |  |  |  SCBody (5:12)
-|  |  |  |  SCExplicitReturn (5:13)
+|  |  |  |  SCExplicitReturn (5:12)
 |  |  |  |  |  SCCollection (5:13): Event = (a: 1, b: 2)
 |  |  |  |  |  |  SCLiteral (5:19) = \a
 |  |  |  |  |  |  SCLiteral (5:22) = 1
@@ -78,7 +78,7 @@ SCClass (1:1): EventKeyWithoutValue
 |  |  |  |  |  |  SCLiteral (5:28) = 2
 |  |  SCMethod (6:5): array_odd_is_fine { ^Array[1, 2, 3] } -> [1, 2, 3]
 |  |  |  SCBody (6:25)
-|  |  |  |  SCExplicitReturn (6:26)
+|  |  |  |  SCExplicitReturn (6:25)
 |  |  |  |  |  SCCollection (6:26): Array = [1, 2, 3]
 |  |  |  |  |  |  SCLiteral (6:32) = 1
 |  |  |  |  |  |  SCLiteral (6:35) = 2

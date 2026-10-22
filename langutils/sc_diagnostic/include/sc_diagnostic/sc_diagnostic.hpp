@@ -124,6 +124,9 @@ public:
     // class library doesn't define it, or it is poisoned.
     [[nodiscard]] static Diagnostic missing_interpreter_context(TextInfoPtr t, sc::lex::SourceCodeRange l);
 
+    // `^1` in interpreted code, including inside its functions, there is no method to return from.
+    [[nodiscard]] static Diagnostic return_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
 
     Diagnostic() = delete;
     Diagnostic(Diagnostic&&) noexcept = default;

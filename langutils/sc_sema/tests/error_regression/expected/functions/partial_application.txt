@@ -10,7 +10,7 @@ SCClass (1:1): PartialApplication
 |  SCMethodList (1:1)
 |  |  SCMethod (5:5): binary_one { ^_ + 1 }
 |  |  |  SCBody (5:18)
-|  |  |  |  SCExplicitReturn (5:19)
+|  |  |  |  SCExplicitReturn (5:18)
 |  |  |  |  |  SCFunction (5:19)
 |  |  |  |  |  |  SCArgumentDeclareList (5:19)
 |  |  |  |  |  |  |  SCArgumentDeclare (5:19): _
@@ -21,7 +21,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCLiteral (5:23) = 1
 |  |  SCMethod (6:5): binary_two { ^_ + _ }
 |  |  |  SCBody (6:18)
-|  |  |  |  SCExplicitReturn (6:19)
+|  |  |  |  SCExplicitReturn (6:18)
 |  |  |  |  |  SCFunction (6:19)
 |  |  |  |  |  |  SCArgumentDeclareList (6:19)
 |  |  |  |  |  |  |  SCArgumentDeclare (6:19): _1
@@ -33,7 +33,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (6:23): local _2, declared (6:23): _
 |  |  SCMethod (7:5): receiver { ^_.foo }
 |  |  |  SCBody (7:16)
-|  |  |  |  SCExplicitReturn (7:17)
+|  |  |  |  SCExplicitReturn (7:16)
 |  |  |  |  |  SCFunction (7:17)
 |  |  |  |  |  |  SCArgumentDeclareList (7:17)
 |  |  |  |  |  |  |  SCArgumentDeclare (7:17): _
@@ -42,7 +42,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  SCRead (7:17): local _, declared (7:17): _
 |  |  SCMethod (8:5): arguments { ^member.foo(_, _, _) }
 |  |  |  SCBody (8:17)
-|  |  |  |  SCExplicitReturn (8:18)
+|  |  |  |  SCExplicitReturn (8:17)
 |  |  |  |  |  SCFunction (8:18)
 |  |  |  |  |  |  SCArgumentDeclareList (8:18)
 |  |  |  |  |  |  |  SCArgumentDeclare (8:29): _1
@@ -57,7 +57,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (8:35): local _3, declared (8:35): _
 |  |  SCMethod (9:5): receiver_and_arguments { ^_.foo(_) }
 |  |  |  SCBody (9:30)
-|  |  |  |  SCExplicitReturn (9:31)
+|  |  |  |  SCExplicitReturn (9:30)
 |  |  |  |  |  SCFunction (9:31)
 |  |  |  |  |  |  SCArgumentDeclareList (9:31)
 |  |  |  |  |  |  |  SCArgumentDeclare (9:31): _1
@@ -69,7 +69,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (9:37): local _2, declared (9:37): _
 |  |  SCMethod (10:5): prefix { ^foo(_, 1) }
 |  |  |  SCBody (10:14)
-|  |  |  |  SCExplicitReturn (10:15)
+|  |  |  |  SCExplicitReturn (10:14)
 |  |  |  |  |  SCFunction (10:15)
 |  |  |  |  |  |  SCArgumentDeclareList (10:15)
 |  |  |  |  |  |  |  SCArgumentDeclare (10:19): _
@@ -80,7 +80,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCLiteral (10:22) = 1
 |  |  SCMethod (11:5): keyword { ^member.foo(1, a: _) }
 |  |  |  SCBody (11:15)
-|  |  |  |  SCExplicitReturn (11:16)
+|  |  |  |  SCExplicitReturn (11:15)
 |  |  |  |  |  SCFunction (11:16)
 |  |  |  |  |  |  SCArgumentDeclareList (11:16)
 |  |  |  |  |  |  |  SCArgumentDeclare (11:33): _
@@ -94,7 +94,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  |  SCRead (11:33): local _, declared (11:33): _
 |  |  SCMethod (12:5): variadic { ^member.foo(*_) }
 |  |  |  SCBody (12:16)
-|  |  |  |  SCExplicitReturn (12:17)
+|  |  |  |  SCExplicitReturn (12:16)
 |  |  |  |  |  SCFunction (12:17)
 |  |  |  |  |  |  SCArgumentDeclareList (12:17)
 |  |  |  |  |  |  |  SCArgumentDeclare (12:29): _
@@ -105,7 +105,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (12:29): local _, declared (12:29): _
 |  |  SCMethod (13:5): value_message { ^_.(1) }
 |  |  |  SCBody (13:21)
-|  |  |  |  SCExplicitReturn (13:22)
+|  |  |  |  SCExplicitReturn (13:21)
 |  |  |  |  |  SCFunction (13:22)
 |  |  |  |  |  |  SCArgumentDeclareList (13:22)
 |  |  |  |  |  |  |  SCArgumentDeclare (13:22): _
@@ -116,7 +116,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCLiteral (13:25) = 1
 |  |  SCMethod (14:5): new_message { ^Array(_) }
 |  |  |  SCBody (14:19)
-|  |  |  |  SCExplicitReturn (14:20)
+|  |  |  |  SCExplicitReturn (14:19)
 |  |  |  |  |  SCFunction (14:20)
 |  |  |  |  |  |  SCArgumentDeclareList (14:20)
 |  |  |  |  |  |  |  SCArgumentDeclare (14:26): _
@@ -127,7 +127,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (14:26): local _, declared (14:26): _
 |  |  SCMethod (15:5): at { ^member[_] }
 |  |  |  SCBody (15:10)
-|  |  |  |  SCExplicitReturn (15:11)
+|  |  |  |  SCExplicitReturn (15:10)
 |  |  |  |  |  SCFunction (15:11)
 |  |  |  |  |  |  SCArgumentDeclareList (15:11)
 |  |  |  |  |  |  |  SCArgumentDeclare (15:18): _
@@ -138,7 +138,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (15:18): local _, declared (15:18): _
 |  |  SCMethod (16:5): at_receiver { ^_[0] }
 |  |  |  SCBody (16:19)
-|  |  |  |  SCExplicitReturn (16:20)
+|  |  |  |  SCExplicitReturn (16:19)
 |  |  |  |  |  SCFunction (16:20)
 |  |  |  |  |  |  SCArgumentDeclareList (16:20)
 |  |  |  |  |  |  |  SCArgumentDeclare (16:20): _
@@ -149,7 +149,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCLiteral (16:22) = 0
 |  |  SCMethod (17:5): slice { ^member[1.._] }
 |  |  |  SCBody (17:13)
-|  |  |  |  SCExplicitReturn (17:14)
+|  |  |  |  SCExplicitReturn (17:13)
 |  |  |  |  |  SCFunction (17:14)
 |  |  |  |  |  |  SCArgumentDeclareList (17:14)
 |  |  |  |  |  |  |  SCArgumentDeclare (17:24): _
@@ -162,7 +162,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (17:24): local _, declared (17:24): _
 |  |  SCMethod (18:5): put { ^member[_] = _ }
 |  |  |  SCBody (18:11)
-|  |  |  |  SCExplicitReturn (18:12)
+|  |  |  |  SCExplicitReturn (18:11)
 |  |  |  |  |  SCFunction (18:12)
 |  |  |  |  |  |  SCArgumentDeclareList (18:12)
 |  |  |  |  |  |  |  SCArgumentDeclare (18:19): _1
@@ -175,7 +175,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (18:24): local _2, declared (18:24): _
 |  |  SCMethod (19:5): setter { ^_.foo = 1 }
 |  |  |  SCBody (19:14)
-|  |  |  |  SCExplicitReturn (19:15)
+|  |  |  |  SCExplicitReturn (19:14)
 |  |  |  |  |  SCFunction (19:15)
 |  |  |  |  |  |  SCArgumentDeclareList (19:15)
 |  |  |  |  |  |  |  SCArgumentDeclare (19:15): _
@@ -186,7 +186,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCLiteral (19:23) = 1
 |  |  SCMethod (20:5): range { ^(1.._) }
 |  |  |  SCBody (20:13)
-|  |  |  |  SCExplicitReturn (20:14)
+|  |  |  |  SCExplicitReturn (20:13)
 |  |  |  |  |  SCFunction (20:14)
 |  |  |  |  |  |  SCArgumentDeclareList (20:14)
 |  |  |  |  |  |  |  SCArgumentDeclare (20:18): _
@@ -197,7 +197,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  SCRead (20:18): local _, declared (20:18): _
 |  |  SCMethod (21:5): array { ^[_, 1] }
 |  |  |  SCBody (21:13)
-|  |  |  |  SCExplicitReturn (21:14)
+|  |  |  |  SCExplicitReturn (21:13)
 |  |  |  |  |  SCFunction (21:14)
 |  |  |  |  |  |  SCArgumentDeclareList (21:14)
 |  |  |  |  |  |  |  SCArgumentDeclare (21:15): _
@@ -207,7 +207,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  SCLiteral (21:18) = 1
 |  |  SCMethod (22:5): collection { ^Array[_, 2] }
 |  |  |  SCBody (22:18)
-|  |  |  |  SCExplicitReturn (22:19)
+|  |  |  |  SCExplicitReturn (22:18)
 |  |  |  |  |  SCFunction (22:19)
 |  |  |  |  |  |  SCArgumentDeclareList (22:19)
 |  |  |  |  |  |  |  SCArgumentDeclare (22:25): _
@@ -217,7 +217,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  SCLiteral (22:28) = 2
 |  |  SCMethod (23:5): dictionary { ^(a: _) }
 |  |  |  SCBody (23:18)
-|  |  |  |  SCExplicitReturn (23:19)
+|  |  |  |  SCExplicitReturn (23:18)
 |  |  |  |  |  SCFunction (23:19)
 |  |  |  |  |  |  SCArgumentDeclareList (23:19)
 |  |  |  |  |  |  |  SCArgumentDeclare (23:23): _
@@ -227,7 +227,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  SCRead (23:23): local _, declared (23:23): _
 |  |  SCMethod (25:5): reference { ^`_ }
 |  |  |  SCBody (25:17)
-|  |  |  |  SCExplicitReturn (25:18)
+|  |  |  |  SCExplicitReturn (25:17)
 |  |  |  |  |  SCFunction (25:18)
 |  |  |  |  |  |  SCArgumentDeclareList (25:18)
 |  |  |  |  |  |  |  SCArgumentDeclare (25:19): _
@@ -238,7 +238,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (25:19): local _, declared (25:19): _
 |  |  SCMethod (27:5): nested_calls_are_separate { ^member.foo(_, member.bar(_)) }
 |  |  |  SCBody (27:33)
-|  |  |  |  SCExplicitReturn (27:34)
+|  |  |  |  SCExplicitReturn (27:33)
 |  |  |  |  |  SCFunction (27:34)
 |  |  |  |  |  |  SCArgumentDeclareList (27:34)
 |  |  |  |  |  |  |  SCArgumentDeclare (27:45): _
@@ -257,7 +257,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (27:59): local _, declared (27:59): _
 |  |  SCMethod (28:5): brackets_end_it { ^(_ + 1) * 2 }
 |  |  |  SCBody (28:23)
-|  |  |  |  SCExplicitReturn (28:24)
+|  |  |  |  SCExplicitReturn (28:23)
 |  |  |  |  |  SCMessage (28:24): *
 |  |  |  |  |  |  SCFunction (28:25)
 |  |  |  |  |  |  |  SCArgumentDeclareList (28:25)
@@ -273,7 +273,7 @@ SCClass (1:1): PartialApplication
 |  |  |  SCBody (31:22)
 |  |  |  |  SCVariableDeclare (31:26): a
 |  |  |  |  |  SCLiteral (31:30) = 1
-|  |  |  |  SCExplicitReturn (31:34)
+|  |  |  |  SCExplicitReturn (31:33)
 |  |  |  |  |  SCFunction (31:34)
 |  |  |  |  |  |  SCArgumentDeclareList (31:34)
 |  |  |  |  |  |  |  SCArgumentDeclare (31:38): _
@@ -284,7 +284,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  SCRead (31:38): local _, declared (31:38): _
 |  |  SCMethod (33:5): in_block { ^{ |x| x + _ } }
 |  |  |  SCBody (33:16)
-|  |  |  |  SCExplicitReturn (33:17)
+|  |  |  |  SCExplicitReturn (33:16)
 |  |  |  |  |  SCFunction (33:17)
 |  |  |  |  |  |  SCArgumentDeclareList (33:20)
 |  |  |  |  |  |  |  SCArgumentDeclare (33:20): x
@@ -299,7 +299,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  |  |  SCRead (33:27): local _, declared (33:27): _
 |  |  SCMethod (34:5): nested_non_local_return { ^_.collect { |x| ^x } }
 |  |  |  SCBody (34:31)
-|  |  |  |  SCExplicitReturn (34:32)
+|  |  |  |  SCExplicitReturn (34:31)
 |  |  |  |  |  SCFunction (34:32)
 |  |  |  |  |  |  SCArgumentDeclareList (34:32)
 |  |  |  |  |  |  |  SCArgumentDeclare (34:32): _
@@ -311,7 +311,7 @@ SCClass (1:1): PartialApplication
 |  |  |  |  |  |  |  |  |  |  SCArgumentDeclareList (34:45)
 |  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (34:45): x
 |  |  |  |  |  |  |  |  |  |  SCBody (34:42)
-|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (34:49)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (34:48)
 |  |  |  |  |  |  |  |  |  |  |  |  SCRead (34:49): local x, declared (34:45): x
 |  |  SCMethod (38:5): poisoned: alone { ^_ }
 |  |  |
@@ -329,7 +329,7 @@ SCClass (1:1): PartialApplication
 |  |  |  `_` makes a function from the call it is in, e.g., `_ + 1` is `{ |x| x + 1 }`. It must be the receiver or an argument of a message, or an element of an array or dictionary, not inside another expression.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (38:13)
-|  |  |  |  SCExplicitReturn (38:14)
+|  |  |  |  SCExplicitReturn (38:13)
 |  |  |  |  |  SCExprList (38:14)
 |  |  SCMethod (40:5): poisoned: assigned { var a = _; ^a }
 |  |  |
@@ -349,7 +349,7 @@ SCClass (1:1): PartialApplication
 |  |  |  SCBody (40:16)
 |  |  |  |  SCVariableDeclare (40:20): a
 |  |  |  |  |  SCExprList (40:24)
-|  |  |  |  SCExplicitReturn (40:28)
+|  |  |  |  SCExplicitReturn (40:27)
 |  |  |  |  |  SCRead (40:28): local a, declared (40:20): a = _
 |  |  SCMethod (42:5): poisoned: inside_other_expression { ^member.foo({ _ }) }
 |  |  |
@@ -365,7 +365,7 @@ SCClass (1:1): PartialApplication
 |  |  |  `_` makes a function from the call it is in, e.g., `_ + 1` is `{ |x| x + 1 }`. It must be the receiver or an argument of a message, or an element of an array or dictionary, not inside another expression.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (42:31)
-|  |  |  |  SCExplicitReturn (42:32)
+|  |  |  |  SCExplicitReturn (42:31)
 |  |  |  |  |  SCMessage (42:32): foo
 |  |  |  |  |  |  SCRead (42:32): instance member, declared (2:9): member
 |  |  |  |  |  |  SCPositionalArgs (42:32)

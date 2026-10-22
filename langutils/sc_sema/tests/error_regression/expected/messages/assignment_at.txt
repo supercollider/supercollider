@@ -104,7 +104,7 @@ SCClass (1:1): AssignmentAt
 |  |  |  |  |  |  |  |  SCLiteral (12:56) = 2
 |  |  SCMethod (13:5): as_argument { ^3.bar(instance_var[0] = 1) }
 |  |  |  SCBody (13:19)
-|  |  |  |  SCExplicitReturn (13:20)
+|  |  |  |  SCExplicitReturn (13:19)
 |  |  |  |  |  SCMessage (13:20): bar
 |  |  |  |  |  |  SCLiteral (13:20) = 3
 |  |  |  |  |  |  SCPositionalArgs (13:20)

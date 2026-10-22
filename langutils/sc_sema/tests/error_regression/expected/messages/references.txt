@@ -10,7 +10,7 @@ SCClass (1:1): References
 |  SCMethodList (1:1)
 |  |  SCMethod (6:5): literal { ^`1 }
 |  |  |  SCBody (6:15)
-|  |  |  |  SCExplicitReturn (6:16)
+|  |  |  |  SCExplicitReturn (6:15)
 |  |  |  |  |  SCMessage (6:16): new
 |  |  |  |  |  |  SCLiteral (6:16) = Ref
 |  |  |  |  |  |  SCPositionalArgs (6:16)
@@ -19,21 +19,21 @@ SCClass (1:1): References
 |  |  |  SCBody (8:13)
 |  |  |  |  SCVariableDeclare (8:17): a
 |  |  |  |  |  SCLiteral (8:21) = 1
-|  |  |  |  SCExplicitReturn (8:25)
+|  |  |  |  SCExplicitReturn (8:24)
 |  |  |  |  |  SCMessage (8:25): new
 |  |  |  |  |  |  SCLiteral (8:25) = Ref
 |  |  |  |  |  |  SCPositionalArgs (8:25)
 |  |  |  |  |  |  |  SCRead (8:26): local a = 1, declared (8:17): a = 1
 |  |  SCMethod (10:5): member { ^`member }
 |  |  |  SCBody (10:14)
-|  |  |  |  SCExplicitReturn (10:15)
+|  |  |  |  SCExplicitReturn (10:14)
 |  |  |  |  |  SCMessage (10:15): new
 |  |  |  |  |  |  SCLiteral (10:15) = Ref
 |  |  |  |  |  |  SCPositionalArgs (10:15)
 |  |  |  |  |  |  |  SCRead (10:16): instance member, declared (2:9): member
 |  |  SCMethod (11:5): nested { ^``1 }
 |  |  |  SCBody (11:14)
-|  |  |  |  SCExplicitReturn (11:15)
+|  |  |  |  SCExplicitReturn (11:14)
 |  |  |  |  |  SCMessage (11:15): new
 |  |  |  |  |  |  SCLiteral (11:15) = Ref
 |  |  |  |  |  |  SCPositionalArgs (11:15)
@@ -43,7 +43,7 @@ SCClass (1:1): References
 |  |  |  |  |  |  |  |  |  SCLiteral (11:17) = 1
 |  |  SCMethod (12:5): expression { ^`(1 + 2) }
 |  |  |  SCBody (12:18)
-|  |  |  |  SCExplicitReturn (12:19)
+|  |  |  |  SCExplicitReturn (12:18)
 |  |  |  |  |  SCMessage (12:19): new
 |  |  |  |  |  |  SCLiteral (12:19) = Ref
 |  |  |  |  |  |  SCPositionalArgs (12:19)
@@ -53,7 +53,7 @@ SCClass (1:1): References
 |  |  |  |  |  |  |  |  |  SCLiteral (12:25) = 2
 |  |  SCMethod (13:5): in_array { ^[`1, `2] }
 |  |  |  SCBody (13:16)
-|  |  |  |  SCExplicitReturn (13:17)
+|  |  |  |  SCExplicitReturn (13:16)
 |  |  |  |  |  SCCollection (13:17): Array
 |  |  |  |  |  |  SCMessage (13:18): new
 |  |  |  |  |  |  |  SCLiteral (13:18) = Ref
@@ -65,7 +65,7 @@ SCClass (1:1): References
 |  |  |  |  |  |  |  |  SCLiteral (13:23) = 2
 |  |  SCMethod (15:5): curried { ^`_ }
 |  |  |  SCBody (15:15)
-|  |  |  |  SCExplicitReturn (15:16)
+|  |  |  |  SCExplicitReturn (15:15)
 |  |  |  |  |  SCFunction (15:16)
 |  |  |  |  |  |  SCArgumentDeclareList (15:16)
 |  |  |  |  |  |  |  SCArgumentDeclare (15:17): _
@@ -76,7 +76,7 @@ SCClass (1:1): References
 |  |  |  |  |  |  |  |  |  SCRead (15:17): local _, declared (15:17): _
 |  |  SCMethod (17:5): curried_inside { ^`(_ + 1) }
 |  |  |  SCBody (17:22)
-|  |  |  |  SCExplicitReturn (17:23)
+|  |  |  |  SCExplicitReturn (17:22)
 |  |  |  |  |  SCMessage (17:23): new
 |  |  |  |  |  |  SCLiteral (17:23) = Ref
 |  |  |  |  |  |  SCPositionalArgs (17:23)
@@ -102,7 +102,7 @@ SCClass (1:1): References
 |  |  |  Declare it with 'var', or use '~undefined' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (19:17)
-|  |  |  |  SCExplicitReturn (19:18)
+|  |  |  |  SCExplicitReturn (19:17)
 |  |  |  |  |  SCMessage (19:18): new
 |  |  |  |  |  |  SCLiteral (19:18) = Ref
 |  |  |  |  |  |  SCPositionalArgs (19:18)

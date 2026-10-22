@@ -60,6 +60,6 @@ SCClass (1:1): WhitespaceChars
 |  SCMethodList (1:1)
 |  |  SCMethod (2:5): char_space { ^$  } -> $ 
 |  |  |  SCBody (2:18)
-|  |  |  |  SCExplicitReturn (2:19)
+|  |  |  |  SCExplicitReturn (2:18)
 |  |  |  |  |  SCLiteral (2:19) = $ 
 Successfully compiled 16 classes.

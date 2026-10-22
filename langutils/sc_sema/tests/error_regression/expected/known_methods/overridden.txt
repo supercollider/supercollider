@@ -12,7 +12,7 @@ SCClass (4:1): Object
 |  SCMethodList (4:1)
 |  |  SCMethod (6:5): perform { ^nil } -> nil
 |  |  |  SCBody (6:15)
-|  |  |  |  SCExplicitReturn (6:16)
+|  |  |  |  SCExplicitReturn (6:15)
 |  |  |  |  |  SCLiteral (6:16) = nil
 SCClass (4:1): Meta_Object
 |  SCMemberList (4:1)
@@ -29,11 +29,11 @@ SCClass (11:1): ArrayedCollection
 |  SCMethodList (11:1)
 |  |  SCMethod (12:5): copySeries { ^nil } -> nil
 |  |  |  SCBody (12:18)
-|  |  |  |  SCExplicitReturn (12:19)
+|  |  |  |  SCExplicitReturn (12:18)
 |  |  |  |  |  SCLiteral (12:19) = nil
 |  |  SCMethod (65:5): add { ^nil } -> nil
 |  |  |  SCBody (65:11)
-|  |  |  |  SCExplicitReturn (65:12)
+|  |  |  |  SCExplicitReturn (65:11)
 |  |  |  |  |  SCLiteral (65:12) = nil
 SCClass (16:1): String
 |  SCMemberList (16:1)
@@ -52,25 +52,25 @@ SCClass (24:1): Float
 |  SCMethodList (24:1)
 |  |  SCMethod (91:5): / { ^nil } -> nil
 |  |  |  SCBody (91:9)
-|  |  |  |  SCExplicitReturn (91:10)
+|  |  |  |  SCExplicitReturn (91:9)
 |  |  |  |  |  SCLiteral (91:10) = nil
 SCClass (26:1): SimpleNumber
 |  SCMemberList (26:1)
 |  SCMethodList (26:1)
 |  |  SCMethod (27:5): series { ^nil } -> nil
 |  |  |  SCBody (27:14)
-|  |  |  |  SCExplicitReturn (27:15)
+|  |  |  |  SCExplicitReturn (27:14)
 |  |  |  |  |  SCLiteral (27:15) = nil
 SCClass (30:1): Integer
 |  SCMemberList (30:1)
 |  SCMethodList (30:1)
 |  |  SCMethod (57:5): series { ^nil } -> nil
 |  |  |  SCBody (57:14)
-|  |  |  |  SCExplicitReturn (57:15)
+|  |  |  |  SCExplicitReturn (57:14)
 |  |  |  |  |  SCLiteral (57:15) = nil
 |  |  SCMethod (87:5): + { ^nil } -> nil
 |  |  |  SCBody (87:9)
-|  |  |  |  SCExplicitReturn (87:10)
+|  |  |  |  SCExplicitReturn (87:9)
 |  |  |  |  |  SCLiteral (87:10) = nil
 SCClass (32:1): Char
 |  SCMemberList (32:1)
@@ -80,7 +80,7 @@ SCClass (34:1): Symbol
 |  SCMethodList (34:1)
 |  |  SCMethod (73:5): perform { ^nil } -> nil
 |  |  |  SCBody (73:15)
-|  |  |  |  SCExplicitReturn (73:16)
+|  |  |  |  SCExplicitReturn (73:15)
 |  |  |  |  |  SCLiteral (73:16) = nil
 SCClass (36:1): Ref
 |  SCMemberList (36:1)
@@ -90,14 +90,14 @@ SCClass (38:1): Array
 |  SCMethodList (38:1)
 |  |  SCMethod (61:5): copySeries { ^nil } -> nil
 |  |  |  SCBody (61:18)
-|  |  |  |  SCExplicitReturn (61:19)
+|  |  |  |  SCExplicitReturn (61:18)
 |  |  |  |  |  SCLiteral (61:19) = nil
 SCClass (40:1): Dictionary
 |  SCMemberList (40:1)
 |  SCMethodList (40:1)
 |  |  SCMethod (69:5): add { ^nil } -> nil
 |  |  |  SCBody (69:11)
-|  |  |  |  SCExplicitReturn (69:12)
+|  |  |  |  SCExplicitReturn (69:11)
 |  |  |  |  |  SCLiteral (69:12) = nil
 SCClass (44:1): Event
 |  SCMemberList (44:1)
@@ -107,14 +107,14 @@ SCClass (46:1): OverriddenMethods
 |  SCMethodList (46:1)
 |  |  SCMethod (47:5): range { ^(1..3) }
 |  |  |  SCBody (47:13)
-|  |  |  |  SCExplicitReturn (47:14)
+|  |  |  |  SCExplicitReturn (47:13)
 |  |  |  |  |  SCRange (47:14)
 |  |  |  |  |  |  SCLiteral (47:15) = 1
 |  |  |  |  |  |  SCMissing (47:14)
 |  |  |  |  |  |  SCLiteral (47:18) = 3
 |  |  SCMethod (48:5): slice { ^[1, 2, 3][1..] }
 |  |  |  SCBody (48:13)
-|  |  |  |  SCExplicitReturn (48:14)
+|  |  |  |  SCExplicitReturn (48:13)
 |  |  |  |  |  SCMessage (48:14): copySeries
 |  |  |  |  |  |  SCCollection (48:14): Array = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (48:15) = 1
@@ -126,7 +126,7 @@ SCClass (46:1): OverriddenMethods
 |  |  |  |  |  |  |  SCLiteral (48:23) = nil
 |  |  SCMethod (49:5): string_slice { ^"hello"[1..3] } -> "ell"
 |  |  |  SCBody (49:20)
-|  |  |  |  SCExplicitReturn (49:21)
+|  |  |  |  SCExplicitReturn (49:20)
 |  |  |  |  |  SCMessage (49:21): copySeries = "ell"
 |  |  |  |  |  |  SCLiteral (49:21) = "hello"
 |  |  |  |  |  |  SCPositionalArgs (49:21)
@@ -135,19 +135,19 @@ SCClass (46:1): OverriddenMethods
 |  |  |  |  |  |  |  SCLiteral (49:32) = 3
 |  |  SCMethod (50:5): array_collection { ^Array[1, 2] }
 |  |  |  SCBody (50:24)
-|  |  |  |  SCExplicitReturn (50:25)
+|  |  |  |  SCExplicitReturn (50:24)
 |  |  |  |  |  SCCollection (50:25): Array
 |  |  |  |  |  |  SCLiteral (50:31) = 1
 |  |  |  |  |  |  SCLiteral (50:34) = 2
 |  |  SCMethod (51:5): event_collection { ^Event[a: 1] }
 |  |  |  SCBody (51:24)
-|  |  |  |  SCExplicitReturn (51:25)
+|  |  |  |  SCExplicitReturn (51:24)
 |  |  |  |  |  SCCollection (51:25): Event
 |  |  |  |  |  |  SCLiteral (51:31) = \a
 |  |  |  |  |  |  SCLiteral (51:34) = 1
 |  |  SCMethod (52:5): perform_rewrite { ^1.perform(\foo) }
 |  |  |  SCBody (52:23)
-|  |  |  |  SCExplicitReturn (52:24)
+|  |  |  |  SCExplicitReturn (52:23)
 |  |  |  |  |  SCMessage (52:24): perform
 |  |  |  |  |  |  SCLiteral (52:24) = 1
 |  |  |  |  |  |  SCPositionalArgs (52:24)
@@ -157,21 +157,21 @@ SCClass (76:1): ArithmeticOverridden
 |  SCMethodList (76:1)
 |  |  SCMethod (78:5): integer_add { ^1 + 2 }
 |  |  |  SCBody (78:19)
-|  |  |  |  SCExplicitReturn (78:20)
+|  |  |  |  SCExplicitReturn (78:19)
 |  |  |  |  |  SCMessage (78:20): +
 |  |  |  |  |  |  SCLiteral (78:20) = 1
 |  |  |  |  |  |  SCPositionalArgs (78:20)
 |  |  |  |  |  |  |  SCLiteral (78:24) = 2
 |  |  SCMethod (80:5): float_divide { ^1.0 / 2 }
 |  |  |  SCBody (80:20)
-|  |  |  |  SCExplicitReturn (80:21)
+|  |  |  |  SCExplicitReturn (80:20)
 |  |  |  |  |  SCMessage (80:21): /
 |  |  |  |  |  |  SCLiteral (80:21) = 1.0
 |  |  |  |  |  |  SCPositionalArgs (80:21)
 |  |  |  |  |  |  |  SCLiteral (80:27) = 2
 |  |  SCMethod (83:5): integer_subtract { ^1 - 2 } -> -1
 |  |  |  SCBody (83:24)
-|  |  |  |  SCExplicitReturn (83:25)
+|  |  |  |  SCExplicitReturn (83:24)
 |  |  |  |  |  SCMessage (83:25): - = -1
 |  |  |  |  |  |  SCLiteral (83:25) = 1
 |  |  |  |  |  |  SCPositionalArgs (83:25)

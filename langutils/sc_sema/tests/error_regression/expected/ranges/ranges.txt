@@ -9,70 +9,70 @@ SCClass (1:1): Ranges
 |  SCMethodList (1:1)
 |  |  SCMethod (2:5): ascending { ^(1..5) } -> [1, 2, 3, 4, 5]
 |  |  |  SCBody (2:17)
-|  |  |  |  SCExplicitReturn (2:18)
+|  |  |  |  SCExplicitReturn (2:17)
 |  |  |  |  |  SCRange (2:18) = [1, 2, 3, 4, 5]
 |  |  |  |  |  |  SCLiteral (2:19) = 1
 |  |  |  |  |  |  SCMissing (2:18)
 |  |  |  |  |  |  SCLiteral (2:22) = 5
 |  |  SCMethod (3:5): descending { ^(5..1) } -> [5, 4, 3, 2, 1]
 |  |  |  SCBody (3:18)
-|  |  |  |  SCExplicitReturn (3:19)
+|  |  |  |  SCExplicitReturn (3:18)
 |  |  |  |  |  SCRange (3:19) = [5, 4, 3, 2, 1]
 |  |  |  |  |  |  SCLiteral (3:20) = 5
 |  |  |  |  |  |  SCMissing (3:19)
 |  |  |  |  |  |  SCLiteral (3:23) = 1
 |  |  SCMethod (4:5): step { ^(1, 3..9) } -> [1, 3, 5, 7, 9]
 |  |  |  SCBody (4:12)
-|  |  |  |  SCExplicitReturn (4:13)
+|  |  |  |  SCExplicitReturn (4:12)
 |  |  |  |  |  SCRange (4:13) = [1, 3, 5, 7, 9]
 |  |  |  |  |  |  SCLiteral (4:14) = 1
 |  |  |  |  |  |  SCLiteral (4:17) = 3
 |  |  |  |  |  |  SCLiteral (4:20) = 9
 |  |  SCMethod (5:5): step_uneven { ^(1, 3..8) } -> [1, 3, 5, 7]
 |  |  |  SCBody (5:19)
-|  |  |  |  SCExplicitReturn (5:20)
+|  |  |  |  SCExplicitReturn (5:19)
 |  |  |  |  |  SCRange (5:20) = [1, 3, 5, 7]
 |  |  |  |  |  |  SCLiteral (5:21) = 1
 |  |  |  |  |  |  SCLiteral (5:24) = 3
 |  |  |  |  |  |  SCLiteral (5:27) = 8
 |  |  SCMethod (6:5): from_zero { ^(..3) } -> [0, 1, 2, 3]
 |  |  |  SCBody (6:17)
-|  |  |  |  SCExplicitReturn (6:18)
+|  |  |  |  SCExplicitReturn (6:17)
 |  |  |  |  |  SCRange (6:18) = [0, 1, 2, 3]
 |  |  |  |  |  |  SCLiteral (6:18) = 0
 |  |  |  |  |  |  SCMissing (6:18)
 |  |  |  |  |  |  SCLiteral (6:21) = 3
 |  |  SCMethod (7:5): single { ^(2..2) } -> [2]
 |  |  |  SCBody (7:14)
-|  |  |  |  SCExplicitReturn (7:15)
+|  |  |  |  SCExplicitReturn (7:14)
 |  |  |  |  |  SCRange (7:15) = [2]
 |  |  |  |  |  |  SCLiteral (7:16) = 2
 |  |  |  |  |  |  SCMissing (7:15)
 |  |  |  |  |  |  SCLiteral (7:19) = 2
 |  |  SCMethod (8:5): step_away_from_end { ^(1, 2..0) }
 |  |  |  SCBody (8:26)
-|  |  |  |  SCExplicitReturn (8:27)
+|  |  |  |  SCExplicitReturn (8:26)
 |  |  |  |  |  SCRange (8:27)
 |  |  |  |  |  |  SCLiteral (8:28) = 1
 |  |  |  |  |  |  SCLiteral (8:31) = 2
 |  |  |  |  |  |  SCLiteral (8:34) = 0
 |  |  SCMethod (9:5): zero_step { ^(1, 1..5) }
 |  |  |  SCBody (9:17)
-|  |  |  |  SCExplicitReturn (9:18)
+|  |  |  |  SCExplicitReturn (9:17)
 |  |  |  |  |  SCRange (9:18)
 |  |  |  |  |  |  SCLiteral (9:19) = 1
 |  |  |  |  |  |  SCLiteral (9:22) = 1
 |  |  |  |  |  |  SCLiteral (9:25) = 5
 |  |  SCMethod (10:5): floats { ^(1.0..3) }
 |  |  |  SCBody (10:14)
-|  |  |  |  SCExplicitReturn (10:15)
+|  |  |  |  SCExplicitReturn (10:14)
 |  |  |  |  |  SCRange (10:15)
 |  |  |  |  |  |  SCLiteral (10:16) = 1.0
 |  |  |  |  |  |  SCMissing (10:15)
 |  |  |  |  |  |  SCLiteral (10:21) = 3
 |  |  SCMethod (11:5): not_constant { ^(1..2.foo) }
 |  |  |  SCBody (11:20)
-|  |  |  |  SCExplicitReturn (11:21)
+|  |  |  |  SCExplicitReturn (11:20)
 |  |  |  |  |  SCRange (11:21)
 |  |  |  |  |  |  SCLiteral (11:22) = 1
 |  |  |  |  |  |  SCMissing (11:21)
@@ -80,7 +80,7 @@ SCClass (1:1): Ranges
 |  |  |  |  |  |  |  SCLiteral (11:25) = 2
 |  |  SCMethod (12:5): too_large { ^(1..2000) }
 |  |  |  SCBody (12:17)
-|  |  |  |  SCExplicitReturn (12:18)
+|  |  |  |  SCExplicitReturn (12:17)
 |  |  |  |  |  SCRange (12:18)
 |  |  |  |  |  |  SCLiteral (12:19) = 1
 |  |  |  |  |  |  SCMissing (12:18)
@@ -101,7 +101,7 @@ SCClass (1:1): Ranges
 |  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (13:17)
-|  |  |  |  SCExplicitReturn (13:18)
+|  |  |  |  SCExplicitReturn (13:17)
 |  |  |  |  |  SCRange (13:18)
 |  |  |  |  |  |  SCLiteral (13:19) = 1
 |  |  |  |  |  |  SCMissing (13:18)
@@ -122,14 +122,14 @@ SCClass (1:1): Ranges
 |  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:22)
-|  |  |  |  SCExplicitReturn (14:23)
+|  |  |  |  SCExplicitReturn (14:22)
 |  |  |  |  |  SCRange (14:23)
 |  |  |  |  |  |  SCLiteral (14:24) = 1
 |  |  |  |  |  |  SCLiteral (14:27) = 3
 |  |  |  |  |  |  SCMissing (14:23)
 |  |  SCMethod (15:5): in_array { ^[(1..3), 4] } -> [[1, 2, 3], 4]
 |  |  |  SCBody (15:16)
-|  |  |  |  SCExplicitReturn (15:17)
+|  |  |  |  SCExplicitReturn (15:16)
 |  |  |  |  |  SCCollection (15:17): Array = [[1, 2, 3], 4]
 |  |  |  |  |  |  SCRange (15:18) = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (15:19) = 1
@@ -138,7 +138,7 @@ SCClass (1:1): Ranges
 |  |  |  |  |  |  SCLiteral (15:26) = 4
 |  |  SCMethod (16:5): receiver { ^(1..3).do { |x| x } }
 |  |  |  SCBody (16:16)
-|  |  |  |  SCExplicitReturn (16:17)
+|  |  |  |  SCExplicitReturn (16:16)
 |  |  |  |  |  SCMessage (16:17): do
 |  |  |  |  |  |  SCRange (16:17) = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (16:18) = 1

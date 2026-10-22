@@ -10,7 +10,7 @@ SCClass (1:1): Slicing
 |  SCMethodList (1:1)
 |  |  SCMethod (4:5): slice { ^x[1..3] }
 |  |  |  SCBody (4:13)
-|  |  |  |  SCExplicitReturn (4:14)
+|  |  |  |  SCExplicitReturn (4:13)
 |  |  |  |  |  SCMessage (4:14): copySeries
 |  |  |  |  |  |  SCRead (4:14): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (4:14)
@@ -19,7 +19,7 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  |  SCLiteral (4:19) = 3
 |  |  SCMethod (5:5): slice_step { ^x[1, 3..9] }
 |  |  |  SCBody (5:18)
-|  |  |  |  SCExplicitReturn (5:19)
+|  |  |  |  SCExplicitReturn (5:18)
 |  |  |  |  |  SCMessage (5:19): copySeries
 |  |  |  |  |  |  SCRead (5:19): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (5:19)
@@ -28,7 +28,7 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  |  SCLiteral (5:27) = 9
 |  |  SCMethod (6:5): slice_from_start { ^x[..3] }
 |  |  |  SCBody (6:24)
-|  |  |  |  SCExplicitReturn (6:25)
+|  |  |  |  SCExplicitReturn (6:24)
 |  |  |  |  |  SCMessage (6:25): copySeries
 |  |  |  |  |  |  SCRead (6:25): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (6:25)
@@ -37,7 +37,7 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  |  SCLiteral (6:29) = 3
 |  |  SCMethod (7:5): slice_to_end { ^x[1..] }
 |  |  |  SCBody (7:20)
-|  |  |  |  SCExplicitReturn (7:21)
+|  |  |  |  SCExplicitReturn (7:20)
 |  |  |  |  |  SCMessage (7:21): copySeries
 |  |  |  |  |  |  SCRead (7:21): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (7:21)
@@ -46,7 +46,7 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  |  SCLiteral (7:22) = nil
 |  |  SCMethod (8:5): slice_step_to_end { ^x[1, 3..] }
 |  |  |  SCBody (8:25)
-|  |  |  |  SCExplicitReturn (8:26)
+|  |  |  |  SCExplicitReturn (8:25)
 |  |  |  |  |  SCMessage (8:26): copySeries
 |  |  |  |  |  |  SCRead (8:26): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (8:26)
@@ -55,7 +55,7 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  |  SCLiteral (8:27) = nil
 |  |  SCMethod (9:5): dot_slice { ^x.[1..3] }
 |  |  |  SCBody (9:17)
-|  |  |  |  SCExplicitReturn (9:18)
+|  |  |  |  SCExplicitReturn (9:17)
 |  |  |  |  |  SCMessage (9:18): copySeries
 |  |  |  |  |  |  SCRead (9:18): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (9:18)
@@ -64,7 +64,7 @@ SCClass (1:1): Slicing
 |  |  |  |  |  |  |  SCLiteral (9:24) = 3
 |  |  SCMethod (10:5): slice_expression_bounds { ^x[1.foo..2.bar] }
 |  |  |  SCBody (10:31)
-|  |  |  |  SCExplicitReturn (10:32)
+|  |  |  |  SCExplicitReturn (10:31)
 |  |  |  |  |  SCMessage (10:32): copySeries
 |  |  |  |  |  |  SCRead (10:32): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (10:32)
@@ -89,7 +89,7 @@ SCClass (1:1): Slicing
 |  |  |  A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:21)
-|  |  |  |  SCExplicitReturn (11:22)
+|  |  |  |  SCExplicitReturn (11:21)
 |  |  |  |  |  SCMessage (11:22): copySeries
 |  |  |  |  |  |  SCRead (11:22): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (11:22)
@@ -112,7 +112,7 @@ SCClass (1:1): Slicing
 |  |  |  A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (12:22)
-|  |  |  |  SCExplicitReturn (12:23)
+|  |  |  |  SCExplicitReturn (12:22)
 |  |  |  |  |  SCMessage (12:23): copySeries
 |  |  |  |  |  |  SCRead (12:23): instance x, declared (2:9): x
 |  |  |  |  |  |  SCPositionalArgs (12:23)

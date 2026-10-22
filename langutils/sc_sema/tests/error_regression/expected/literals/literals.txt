@@ -9,59 +9,59 @@ SCClass (1:1): Literals
 |  SCMethodList (1:1)
 |  |  SCMethod (2:5): int { ^1 } -> 1
 |  |  |  SCBody (2:11)
-|  |  |  |  SCExplicitReturn (2:12)
+|  |  |  |  SCExplicitReturn (2:11)
 |  |  |  |  |  SCLiteral (2:12) = 1
 |  |  SCMethod (3:5): int_radix { ^2r101 } -> 5
 |  |  |  SCBody (3:17)
-|  |  |  |  SCExplicitReturn (3:18)
+|  |  |  |  SCExplicitReturn (3:17)
 |  |  |  |  |  SCLiteral (3:18) = 5
 |  |  SCMethod (4:5): float { ^2.5 } -> 2.5
 |  |  |  SCBody (4:13)
-|  |  |  |  SCExplicitReturn (4:14)
+|  |  |  |  SCExplicitReturn (4:13)
 |  |  |  |  |  SCLiteral (4:14) = 2.5
 |  |  SCMethod (5:5): float_exponent { ^1e3 } -> 1000.0
 |  |  |  SCBody (5:22)
-|  |  |  |  SCExplicitReturn (5:23)
+|  |  |  |  SCExplicitReturn (5:22)
 |  |  |  |  |  SCLiteral (5:23) = 1000.0
 |  |  SCMethod (6:5): pi_alone { ^pi } -> 3.1415927
 |  |  |  SCBody (6:16)
-|  |  |  |  SCExplicitReturn (6:17)
+|  |  |  |  SCExplicitReturn (6:16)
 |  |  |  |  |  SCLiteral (6:17) = 3.1415927
 |  |  SCMethod (7:5): pi_multiple { ^2pi } -> 6.2831853
 |  |  |  SCBody (7:19)
-|  |  |  |  SCExplicitReturn (7:20)
+|  |  |  |  SCExplicitReturn (7:19)
 |  |  |  |  |  SCLiteral (7:20) = 6.2831853
 |  |  SCMethod (8:5): char { ^$a } -> $a
 |  |  |  SCBody (8:12)
-|  |  |  |  SCExplicitReturn (8:13)
+|  |  |  |  SCExplicitReturn (8:12)
 |  |  |  |  |  SCLiteral (8:13) = $a
 |  |  SCMethod (9:5): string { ^"hello" } -> "hello"
 |  |  |  SCBody (9:14)
-|  |  |  |  SCExplicitReturn (9:15)
+|  |  |  |  SCExplicitReturn (9:14)
 |  |  |  |  |  SCLiteral (9:15) = "hello"
 |  |  SCMethod (10:5): string_concatenated { ^"hello" " world" } -> "hello world"
 |  |  |  SCBody (10:27)
-|  |  |  |  SCExplicitReturn (10:28)
+|  |  |  |  SCExplicitReturn (10:27)
 |  |  |  |  |  SCLiteral (10:28) = "hello world"
 |  |  SCMethod (11:5): boolean_true { ^true } -> true
 |  |  |  SCBody (11:20)
-|  |  |  |  SCExplicitReturn (11:21)
+|  |  |  |  SCExplicitReturn (11:20)
 |  |  |  |  |  SCLiteral (11:21) = true
 |  |  SCMethod (12:5): boolean_false { ^false } -> false
 |  |  |  SCBody (12:21)
-|  |  |  |  SCExplicitReturn (12:22)
+|  |  |  |  SCExplicitReturn (12:21)
 |  |  |  |  |  SCLiteral (12:22) = false
 |  |  SCMethod (13:5): nil_value { ^nil } -> nil
 |  |  |  SCBody (13:17)
-|  |  |  |  SCExplicitReturn (13:18)
+|  |  |  |  SCExplicitReturn (13:17)
 |  |  |  |  |  SCLiteral (13:18) = nil
 |  |  SCMethod (14:5): symbol_quote { ^'a symbol' } -> 'a symbol'
 |  |  |  SCBody (14:20)
-|  |  |  |  SCExplicitReturn (14:21)
+|  |  |  |  SCExplicitReturn (14:20)
 |  |  |  |  |  SCLiteral (14:21) = 'a symbol'
 |  |  SCMethod (15:5): symbol_slash { ^\symbol } -> \symbol
 |  |  |  SCBody (15:20)
-|  |  |  |  SCExplicitReturn (15:21)
+|  |  |  |  SCExplicitReturn (15:20)
 |  |  |  |  |  SCLiteral (15:21) = \symbol
 |  |  SCMethod (16:5): poisoned: accidental { ^2s }
 |  |  |
@@ -76,6 +76,6 @@ SCClass (1:1): Literals
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (16:18)
-|  |  |  |  SCExplicitReturn (16:19)
+|  |  |  |  SCExplicitReturn (16:18)
 |  |  |  |  |  SCExprList (16:19)
 Successfully compiled 16 classes.

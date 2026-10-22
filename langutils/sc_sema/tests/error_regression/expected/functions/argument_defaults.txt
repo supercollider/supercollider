@@ -10,7 +10,7 @@ SCClass (1:1): ArgumentDefaults
 |  SCMethodList (1:1)
 |  |  SCMethod (5:5): block_constant { ^{ |a = 1| a } }
 |  |  |  SCBody (5:22)
-|  |  |  |  SCExplicitReturn (5:23)
+|  |  |  |  SCExplicitReturn (5:22)
 |  |  |  |  |  SCFunction (5:23)
 |  |  |  |  |  |  SCArgumentDeclareList (5:26)
 |  |  |  |  |  |  |  SCArgumentDeclare (5:26): a
@@ -19,7 +19,7 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  |  |  |  |  SCRead (5:33): local a, declared (5:26): a = 1
 |  |  SCMethod (7:5): block_constant_array { ^{ |a = #[1, 2], b = (c: 3)| a } }
 |  |  |  SCBody (7:28)
-|  |  |  |  SCExplicitReturn (7:29)
+|  |  |  |  SCExplicitReturn (7:28)
 |  |  |  |  |  SCFunction (7:29)
 |  |  |  |  |  |  SCArgumentDeclareList (7:32)
 |  |  |  |  |  |  |  SCArgumentDeclare (7:32): a
@@ -34,7 +34,7 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  |  |  |  |  SCRead (7:57): local a, declared (7:32): a = #[1, 2]
 |  |  SCMethod (9:5): block_bracketed { ^{ |a = (1.foo)| a } }
 |  |  |  SCBody (9:23)
-|  |  |  |  SCExplicitReturn (9:24)
+|  |  |  |  SCExplicitReturn (9:23)
 |  |  |  |  |  SCFunction (9:24)
 |  |  |  |  |  |  SCArgumentDeclareList (9:27)
 |  |  |  |  |  |  |  SCArgumentDeclare (9:27): a
@@ -44,7 +44,7 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  |  |  |  |  SCRead (9:40): local a, declared (9:27): a = (1.foo)
 |  |  SCMethod (12:5): block_earlier_argument { ^{ |a, b = (a + 1)| b } }
 |  |  |  SCBody (12:30)
-|  |  |  |  SCExplicitReturn (12:31)
+|  |  |  |  SCExplicitReturn (12:30)
 |  |  |  |  |  SCFunction (12:31)
 |  |  |  |  |  |  SCArgumentDeclareList (12:34)
 |  |  |  |  |  |  |  SCArgumentDeclare (12:34): a
@@ -71,7 +71,7 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  Declare it with 'var', or use '~b' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:28)
-|  |  |  |  SCExplicitReturn (14:29)
+|  |  |  |  SCExplicitReturn (14:28)
 |  |  |  |  |  SCFunction (14:29)
 |  |  |  |  |  |  SCArgumentDeclareList (14:32)
 |  |  |  |  |  |  |  SCArgumentDeclare (14:32): a
@@ -95,7 +95,7 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (16:20)
-|  |  |  |  SCExplicitReturn (16:21)
+|  |  |  |  SCExplicitReturn (16:20)
 |  |  |  |  |  SCFunction (16:21)
 |  |  |  |  |  |  SCArgumentDeclareList (16:24)
 |  |  |  |  |  |  |  SCArgumentDeclare (16:24): a
@@ -107,14 +107,14 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  |  SCArgumentDeclare (19:24): a
 |  |  |  |  |  SCLiteral (19:28) = 1
 |  |  |  SCBody (19:31)
-|  |  |  |  SCExplicitReturn (19:32)
+|  |  |  |  SCExplicitReturn (19:31)
 |  |  |  |  |  SCLiteral (19:32) = 1
 |  |  SCMethod (21:5): method_instance_var { |a = (instance_var)| ^1 }
 |  |  |  SCArgumentDeclareList (21:28)
 |  |  |  |  SCArgumentDeclare (21:28): a
 |  |  |  |  |  SCRead (21:33): instance instance_var, declared (2:9): instance_var
 |  |  |  SCBody (21:48)
-|  |  |  |  SCExplicitReturn (21:49)
+|  |  |  |  SCExplicitReturn (21:48)
 |  |  |  |  |  SCLiteral (21:49) = 1
 |  |  SCMethod (23:5): method_other_argument { |a, b = (a)| ^1 }
 |  |  |  SCArgumentDeclareList (23:30)
@@ -122,6 +122,6 @@ SCClass (1:1): ArgumentDefaults
 |  |  |  |  SCArgumentDeclare (23:33): b
 |  |  |  |  |  SCRead (23:38): local a, declared (23:30): a
 |  |  |  SCBody (23:42)
-|  |  |  |  SCExplicitReturn (23:43)
+|  |  |  |  SCExplicitReturn (23:42)
 |  |  |  |  |  SCLiteral (23:43) = 1
 Successfully compiled 16 classes.

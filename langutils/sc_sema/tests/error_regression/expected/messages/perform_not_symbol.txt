@@ -22,7 +22,7 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (2:15)
-|  |  |  |  SCExplicitReturn (2:16)
+|  |  |  |  SCExplicitReturn (2:15)
 |  |  |  |  |  SCMessage (2:16): perform
 |  |  |  |  |  |  SCLiteral (2:16) = 1
 |  |  |  |  |  |  SCPositionalArgs (2:16)
@@ -43,7 +43,7 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (3:13)
-|  |  |  |  SCExplicitReturn (3:14)
+|  |  |  |  SCExplicitReturn (3:13)
 |  |  |  |  |  SCMessage (3:14): perform
 |  |  |  |  |  |  SCLiteral (3:14) = 1
 |  |  |  |  |  |  SCPositionalArgs (3:14)
@@ -65,7 +65,7 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (4:14)
-|  |  |  |  SCExplicitReturn (4:15)
+|  |  |  |  SCExplicitReturn (4:14)
 |  |  |  |  |  SCMessage (4:15): perform
 |  |  |  |  |  |  SCLiteral (4:15) = 1
 |  |  |  |  |  |  SCPositionalArgs (4:15)
@@ -86,7 +86,7 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (5:25)
-|  |  |  |  SCExplicitReturn (5:26)
+|  |  |  |  SCExplicitReturn (5:25)
 |  |  |  |  |  SCMessage (5:26): perform
 |  |  |  |  |  |  SCLiteral (5:26) = 1
 |  |  |  |  |  |  SCPositionalArgs (5:26)
@@ -107,7 +107,7 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (6:12)
-|  |  |  |  SCExplicitReturn (6:13)
+|  |  |  |  SCExplicitReturn (6:12)
 |  |  |  |  |  SCMessage (6:13): perform
 |  |  |  |  |  |  SCLiteral (6:13) = 1
 |  |  |  |  |  |  SCPositionalArgs (6:13)
@@ -128,7 +128,7 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:15)
-|  |  |  |  SCExplicitReturn (7:16)
+|  |  |  |  SCExplicitReturn (7:15)
 |  |  |  |  |  SCMessage (7:16): perform
 |  |  |  |  |  |  SCLiteral (7:16) = 1
 |  |  |  |  |  |  SCPositionalArgs (7:16)
@@ -149,7 +149,7 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (8:20)
-|  |  |  |  SCExplicitReturn (8:21)
+|  |  |  |  SCExplicitReturn (8:20)
 |  |  |  |  |  SCMessage (8:21): perform
 |  |  |  |  |  |  SCLiteral (8:21) = 1
 |  |  |  |  |  |  SCPositionalArgs (8:21)
@@ -170,7 +170,7 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:18)
-|  |  |  |  SCExplicitReturn (9:19)
+|  |  |  |  SCExplicitReturn (9:18)
 |  |  |  |  |  SCMessage (9:19): perform
 |  |  |  |  |  |  SCLiteral (9:19) = 1
 |  |  |  |  |  |  SCPositionalArgs (9:19)
@@ -191,7 +191,7 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:14)
-|  |  |  |  SCExplicitReturn (10:15)
+|  |  |  |  SCExplicitReturn (10:14)
 |  |  |  |  |  SCMessage (10:15): perform
 |  |  |  |  |  |  SCLiteral (10:23) = 1
 |  |  |  |  |  |  SCPositionalArgs (10:15)
@@ -211,14 +211,14 @@ SCClass (1:1): PerformNotSymbol
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:14)
-|  |  |  |  SCExplicitReturn (11:15)
+|  |  |  |  SCExplicitReturn (11:14)
 |  |  |  |  |  SCMessage (11:15): perform
 |  |  |  |  |  |  SCLiteral (11:15) = 1
 |  |  |  |  |  |  SCPositionalArgs (11:15)
 |  |  |  |  |  |  |  SCLiteral (11:26) = 2
 |  |  SCMethod (12:5): not_constant { ^1.perform(2.bar) }
 |  |  |  SCBody (12:20)
-|  |  |  |  SCExplicitReturn (12:21)
+|  |  |  |  SCExplicitReturn (12:20)
 |  |  |  |  |  SCMessage (12:21): perform
 |  |  |  |  |  |  SCLiteral (12:21) = 1
 |  |  |  |  |  |  SCPositionalArgs (12:21)

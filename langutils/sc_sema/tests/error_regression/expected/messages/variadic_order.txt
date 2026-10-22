@@ -10,7 +10,7 @@ SCClass (1:1): VariadicOrder
 |  SCMethodList (1:1)
 |  |  SCMethod (4:5): variadic_last { ^1.foo(2, *3) }
 |  |  |  SCBody (4:21)
-|  |  |  |  SCExplicitReturn (4:22)
+|  |  |  |  SCExplicitReturn (4:21)
 |  |  |  |  |  SCMessage (4:22): foo
 |  |  |  |  |  |  SCLiteral (4:22) = 1
 |  |  |  |  |  |  SCPositionalArgs (4:22)
@@ -42,7 +42,7 @@ SCClass (1:1): VariadicOrder
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (5:22)
-|  |  |  |  SCExplicitReturn (5:23)
+|  |  |  |  SCExplicitReturn (5:22)
 |  |  |  |  |  SCMessage (5:23): foo
 |  |  |  |  |  |  SCLiteral (5:23) = 1
 |  |  |  |  |  |  SCPositionalArgs (5:23)
@@ -74,7 +74,7 @@ SCClass (1:1): VariadicOrder
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (6:17)
-|  |  |  |  SCExplicitReturn (6:18)
+|  |  |  |  SCExplicitReturn (6:17)
 |  |  |  |  |  SCMessage (6:18): foo
 |  |  |  |  |  |  SCLiteral (6:18) = 1
 |  |  |  |  |  |  SCPositionalArgs (6:18)
@@ -84,7 +84,7 @@ SCClass (1:1): VariadicOrder
 |  |  |  |  |  |  |  SCLiteral (6:25) = 2
 |  |  SCMethod (7:5): keyword_after { ^1.foo(*2, bar: 3) }
 |  |  |  SCBody (7:21)
-|  |  |  |  SCExplicitReturn (7:22)
+|  |  |  |  SCExplicitReturn (7:21)
 |  |  |  |  |  SCMessage (7:22): foo
 |  |  |  |  |  |  SCLiteral (7:22) = 1
 |  |  |  |  |  |  SCKwArgs (7:22)
@@ -117,7 +117,7 @@ SCClass (1:1): VariadicOrder
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (8:14)
-|  |  |  |  SCExplicitReturn (8:15)
+|  |  |  |  SCExplicitReturn (8:14)
 |  |  |  |  |  SCMessage (8:15): foo
 |  |  |  |  |  |  SCLiteral (8:19) = 1
 |  |  |  |  |  |  SCPositionalArgs (8:15)
@@ -149,7 +149,7 @@ SCClass (1:1): VariadicOrder
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:32)
-|  |  |  |  SCExplicitReturn (9:33)
+|  |  |  |  SCExplicitReturn (9:32)
 |  |  |  |  |  SCMessage (9:33): foo
 |  |  |  |  |  |  SCLiteral (9:41) = 2
 |  |  |  |  |  |  SCVariadicArgs (9:33)
@@ -179,7 +179,7 @@ SCClass (1:1): VariadicOrder
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:19)
-|  |  |  |  SCExplicitReturn (10:20)
+|  |  |  |  SCExplicitReturn (10:19)
 |  |  |  |  |  SCMessage (10:20): foo
 |  |  |  |  |  |  SCLiteral (10:20) = 1
 |  |  |  |  |  |  SCPositionalArgs (10:20)
@@ -252,6 +252,6 @@ SCClass (1:1): VariadicOrder
 |  |  |  |  |  |  SCLiteral (12:42) = 0
 |  |  SCMethod (13:5): after_errors { ^5 } -> 5
 |  |  |  SCBody (13:20)
-|  |  |  |  SCExplicitReturn (13:21)
+|  |  |  |  SCExplicitReturn (13:20)
 |  |  |  |  |  SCLiteral (13:21) = 5
 Successfully compiled 16 classes.

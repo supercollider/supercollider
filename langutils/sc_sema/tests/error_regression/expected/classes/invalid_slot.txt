@@ -23,6 +23,6 @@ SCClass (16:1): FloatSlot[float]
 |  SCMethodList (16:1)
 |  |  SCMethod (18:5): method { ^1 } -> 1
 |  |  |  SCBody (18:14)
-|  |  |  |  SCExplicitReturn (18:15)
+|  |  |  |  SCExplicitReturn (18:14)
 |  |  |  |  |  SCLiteral (18:15) = 1
 Successfully compiled 16 classes.

@@ -118,7 +118,7 @@ SCClass (1:1): NotConstant
 |  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (13:23)
-|  |  |  |  SCExplicitReturn (13:24)
+|  |  |  |  SCExplicitReturn (13:23)
 |  |  |  |  |  SCCollection (13:24): Array
 |  |  |  |  |  |  SCLiteral (13:26) = 1
 |  |  |  |  |  |  SCMessage (13:29): foo

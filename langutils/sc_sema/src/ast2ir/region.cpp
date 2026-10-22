@@ -14,10 +14,11 @@ Interpreted::Interpreted(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, 
     Base(ir, ast, cxt),
     expr(ir, std::move(ast), cxt, sink) {
     push_member_scopes(expr, meta_class_members, class_members);
+    expr.returns_allowed = false;
 }
 
-// Each item is evaluated in turn, and the last's value is the result. Items share the function's scope, so `a = 1`
-// assigns the Interpreter's member.
+// Each item is evaluated in turn, and the last's value is the result. Each has its own scope, an expression can't
+// declare a variable, so `a = 1` assigns the Interpreter's member, but `(var a = 1; a)` declares its own.
 Return<SCInterpreted_I> Interpreted::operator()(ast::RegionListIndex i) {
     const auto here = location({ *i });
     const auto positional = ir.create(SCArgumentDeclareList {}, here);
@@ -36,12 +37,13 @@ Return<SCInterpreted_I> Interpreted::operator()(ast::RegionListIndex i) {
             result = std::nullopt;
             continue;
         }
-        if (const auto block = ast_graph->as_a<ast::ImmediatelyEvaluatedBlockIndex>(item)) {
-            sink(sc::diag::Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, *block)));
-            result = std::nullopt;
-            continue;
-        }
-        const auto r = expr(ast::AnyExprIndex { *item });
+        expr.scope.emplace_back();
+        const auto r = [&]() -> Return<SCAnyExpr_I> {
+            if (const auto block = ast_graph->as_a<ast::ImmediatelyEvaluatedBlockIndex>(item))
+                return immediately_evaluated(*block);
+            return expr(ast::AnyExprIndex { *item });
+        }();
+        expr.scope.pop_back();
         ir.append(body, r.ir_node);
         result = r.const_index;
     }
@@ -66,6 +68,24 @@ Return<SCInterpreted_I> Interpreted::operator()(ast::FileAsFunctionIndex i) {
 
     const bool has_arguments = ir.children(positional).iter() || ir.children(variadic).iter();
     return finish(function, result.explicit_return ? std::nullopt : result.constant, has_arguments);
+}
+
+// `(var a = 1; a + 1)` is a function that is called straight away, `{ var a = 1; a + 1 }.value`, so its arguments
+// are their defaults. Its value is known if the function's result is.
+Return<SCAnyExpr_I> Interpreted::immediately_evaluated(ast::ImmediatelyEvaluatedBlockIndex i) {
+    const auto [arg_list, contents] = ast_graph->children(i);
+    const auto function = compile_function(expr, ir, ast_graph, ctx, { *i }, arg_list, contents);
+    const auto here = location({ *i });
+    const auto message = ir.create(SCMessage { { std::nullopt, ctx.common_symbols.value } }, here, function.ir_node,
+                                   ir.create(SCPositionalArgs {}, here), ir.create(SCKwArgs {}, here),
+                                   ir.create(SCVariadicArgs {}, here), ir.create(SCMissing {}, here));
+    const auto result = ir.payload(*ir.as_a<SCFunction_I>(NodeIndex { *function.ir_node })).constant_result;
+    if (!result)
+        return { message };
+    ir.register_node_as_consteval(message, *result);
+    Return<SCAnyExpr_I> r { message };
+    r.const_index = *result;
+    return r;
 }
 
 Return<SCInterpreted_I> Interpreted::finish(SCFunction_I function, std::optional<ConstExprIndex> result,

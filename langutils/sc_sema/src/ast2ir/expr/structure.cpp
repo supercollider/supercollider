@@ -32,6 +32,10 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ExprSeqIndex i) {
 Return<SCAnyExpr_I> Expr::operator()(ast::NonLocalReturnExprIndex i) {
     const auto [expr] = ast_graph->children(i);
     const auto expr_return = (*this)(ast::AnyExprIndex { expr });
+    if (!returns_allowed) {
+        sink(sc::diag::Diagnostic::return_in_interpreted_code(get_text_info(*ast_graph), get_location(*ast_graph, i)));
+        return expr_return;
+    }
 
     if (auto n = ast::next_sibling(*ast_graph, expr)) {
         sink(sc::diag::Diagnostic::non_terminating_return(get_text_info(*ast_graph), get_location(*ast_graph, n)));

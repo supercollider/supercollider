@@ -18,6 +18,7 @@ struct Interpreted : private Base {
     Return<SCInterpreted_I> operator()(ast::FileAsFunctionIndex);
 
 private:
+    Return<SCAnyExpr_I> immediately_evaluated(ast::ImmediatelyEvaluatedBlockIndex);
     // Puts the function in an SCInterpreted, and passes on the diagnostics.
     Return<SCInterpreted_I> finish(SCFunction_I function, std::optional<ConstExprIndex> result, bool has_arguments);
 

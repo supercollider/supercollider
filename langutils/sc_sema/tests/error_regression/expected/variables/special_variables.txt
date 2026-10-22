@@ -10,23 +10,23 @@ SCClass (1:1): SpecialVariables
 |  SCMethodList (1:1)
 |  |  SCMethod (5:5): this_alone { ^this }
 |  |  |  SCBody (5:18)
-|  |  |  |  SCExplicitReturn (5:19)
+|  |  |  |  SCExplicitReturn (5:18)
 |  |  |  |  |  SCSpecial (5:19): this
 |  |  SCMethod (7:5): this_receiver { ^this.foo }
 |  |  |  SCBody (7:21)
-|  |  |  |  SCExplicitReturn (7:22)
+|  |  |  |  SCExplicitReturn (7:21)
 |  |  |  |  |  SCMessage (7:22): foo
 |  |  |  |  |  |  SCSpecial (7:22): this
 |  |  SCMethod (9:5): super_receiver { ^super.foo(1) }
 |  |  |  SCBody (9:22)
-|  |  |  |  SCExplicitReturn (9:23)
+|  |  |  |  SCExplicitReturn (9:22)
 |  |  |  |  |  SCMessage (9:23): foo
 |  |  |  |  |  |  SCSpecial (9:23): super
 |  |  |  |  |  |  SCPositionalArgs (9:23)
 |  |  |  |  |  |  |  SCLiteral (9:33) = 1
 |  |  SCMethod (11:5): super_binary { ^super + 1 }
 |  |  |  SCBody (11:20)
-|  |  |  |  SCExplicitReturn (11:21)
+|  |  |  |  SCExplicitReturn (11:20)
 |  |  |  |  |  SCMessage (11:21): +
 |  |  |  |  |  |  SCSpecial (11:21): super
 |  |  |  |  |  |  SCPositionalArgs (11:21)
@@ -39,41 +39,41 @@ SCClass (1:1): SpecialVariables
 |  |  |  |  |  |  SCLiteral (13:35) = 1
 |  |  SCMethod (15:5): super_functional { ^foo(super, 1) }
 |  |  |  SCBody (15:24)
-|  |  |  |  SCExplicitReturn (15:25)
+|  |  |  |  SCExplicitReturn (15:24)
 |  |  |  |  |  SCMessage (15:25): foo
 |  |  |  |  |  |  SCSpecial (15:29): super
 |  |  |  |  |  |  SCPositionalArgs (15:25)
 |  |  |  |  |  |  |  SCLiteral (15:36) = 1
 |  |  SCMethod (17:5): super_as_value { ^[super] }
 |  |  |  SCBody (17:22)
-|  |  |  |  SCExplicitReturn (17:23)
+|  |  |  |  SCExplicitReturn (17:22)
 |  |  |  |  |  SCCollection (17:23): Array
 |  |  |  |  |  |  SCSpecial (17:24): super
 |  |  SCMethod (19:5): process { ^thisProcess }
 |  |  |  SCBody (19:15)
-|  |  |  |  SCExplicitReturn (19:16)
+|  |  |  |  SCExplicitReturn (19:15)
 |  |  |  |  |  SCSpecial (19:16): thisProcess
 |  |  SCMethod (21:5): thread { ^thisThread }
 |  |  |  SCBody (21:14)
-|  |  |  |  SCExplicitReturn (21:15)
+|  |  |  |  SCExplicitReturn (21:14)
 |  |  |  |  |  SCSpecial (21:15): thisThread
 |  |  SCMethod (23:5): method { ^thisMethod }
 |  |  |  SCBody (23:14)
-|  |  |  |  SCExplicitReturn (23:15)
+|  |  |  |  SCExplicitReturn (23:14)
 |  |  |  |  |  SCSpecial (23:15): thisMethod
 |  |  SCMethod (25:5): function_def { ^thisFunctionDef }
 |  |  |  SCBody (25:20)
-|  |  |  |  SCExplicitReturn (25:21)
+|  |  |  |  SCExplicitReturn (25:20)
 |  |  |  |  |  SCSpecial (25:21): thisFunctionDef
 |  |  SCMethod (27:5): function { ^{ thisFunction } }
 |  |  |  SCBody (27:16)
-|  |  |  |  SCExplicitReturn (27:17)
+|  |  |  |  SCExplicitReturn (27:16)
 |  |  |  |  |  SCFunction (27:17)
 |  |  |  |  |  |  SCBody (27:17)
 |  |  |  |  |  |  |  SCSpecial (27:19): thisFunction
 |  |  SCMethod (31:5): in_generator { ^{: this, x <- [1] } }
 |  |  |  SCBody (31:20)
-|  |  |  |  SCExplicitReturn (31:21)
+|  |  |  |  SCExplicitReturn (31:20)
 |  |  |  |  |  SCGenerator (31:21): routine
 |  |  |  |  |  |  SCGenQualList (31:30)
 |  |  |  |  |  |  |  SCGenQualIterate (31:30): x
@@ -82,7 +82,7 @@ SCClass (1:1): SpecialVariables
 |  |  |  |  |  |  SCSpecial (31:24): this
 |  |  SCMethod (33:5): curried { ^this.foo(_) }
 |  |  |  SCBody (33:15)
-|  |  |  |  SCExplicitReturn (33:16)
+|  |  |  |  SCExplicitReturn (33:15)
 |  |  |  |  |  SCFunction (33:16)
 |  |  |  |  |  |  SCArgumentDeclareList (33:16)
 |  |  |  |  |  |  |  SCArgumentDeclare (33:25): _
@@ -93,7 +93,7 @@ SCClass (1:1): SpecialVariables
 |  |  |  |  |  |  |  |  |  SCRead (33:25): local _, declared (33:25): _
 |  |  SCMethod (35:5): not_constant { ^this }
 |  |  |  SCBody (35:20)
-|  |  |  |  SCExplicitReturn (35:21)
+|  |  |  |  SCExplicitReturn (35:20)
 |  |  |  |  |  SCSpecial (35:21): this
 |  |  SCMethod (39:5): poisoned: assign_this { this = 1 }
 |  |  |
@@ -169,7 +169,7 @@ SCClass (1:1): SpecialVariables
 |  |  |  SCBody (45:24)
 |  |  |  |  SCVariableDeclare (45:28): this
 |  |  |  |  |  SCLiteral (45:35) = 1
-|  |  |  |  SCExplicitReturn (45:39)
+|  |  |  |  SCExplicitReturn (45:38)
 |  |  |  |  |  SCSpecial (45:39): this
 |  |  SCMethod (47:5): poisoned: declare_argument { |thisProcess| ^1 }
 |  |  |
@@ -189,7 +189,7 @@ SCClass (1:1): SpecialVariables
 |  |  |  SCArgumentDeclareList (47:25)
 |  |  |  |  SCArgumentDeclare (47:25): thisProcess
 |  |  |  SCBody (47:38)
-|  |  |  |  SCExplicitReturn (47:39)
+|  |  |  |  SCExplicitReturn (47:38)
 |  |  |  |  |  SCLiteral (47:39) = 1
 |  |  SCMethod (49:5): poisoned: declare_block_argument { ^{ |super| 1 } }
 |  |  |
@@ -207,7 +207,7 @@ SCClass (1:1): SpecialVariables
 |  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (49:30)
-|  |  |  |  SCExplicitReturn (49:31)
+|  |  |  |  SCExplicitReturn (49:30)
 |  |  |  |  |  SCFunction (49:31)
 |  |  |  |  |  |  SCArgumentDeclareList (49:34)
 |  |  |  |  |  |  |  SCArgumentDeclare (49:34): super
@@ -236,7 +236,7 @@ SCClass (1:1): SpecialVariables
 |  |  |  |  |  SCPackTargets (51:24)
 |  |  |  |  |  |  SCPackTarget (51:25): local a at 0
 |  |  |  |  |  |  SCPackTarget (51:28): local thisThread at 1
-|  |  |  |  SCExplicitReturn (51:50)
+|  |  |  |  SCExplicitReturn (51:49)
 |  |  |  |  |  SCRead (51:50): local a = 1, declared (51:25): a
 |  |  SCMethod (53:5): poisoned: declare_generator_element { ^{: 1, thisMethod <- [1] } }
 |  |  |
@@ -254,7 +254,7 @@ SCClass (1:1): SpecialVariables
 |  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (53:33)
-|  |  |  |  SCExplicitReturn (53:34)
+|  |  |  |  SCExplicitReturn (53:33)
 |  |  |  |  |  SCGenerator (53:34): routine
 |  |  |  |  |  |  SCGenQualList (53:40)
 |  |  |  |  |  |  |  SCGenQualIterate (53:40): thisMethod
@@ -277,7 +277,7 @@ SCClass (1:1): SpecialVariables
 |  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (55:34)
-|  |  |  |  SCExplicitReturn (55:35)
+|  |  |  |  SCExplicitReturn (55:34)
 |  |  |  |  |  SCGenerator (55:35): routine
 |  |  |  |  |  |  SCGenQualList (55:41)
 |  |  |  |  |  |  |  SCGenQualDeclare (55:41): thisFunction
@@ -288,7 +288,7 @@ SCClass (1:1): Meta_SpecialVariables
 |  SCMethodList (1:1)
 |  |  SCMethod (29:5): *class_this { ^this }
 |  |  |  SCBody (29:19)
-|  |  |  |  SCExplicitReturn (29:20)
+|  |  |  |  SCExplicitReturn (29:19)
 |  |  |  |  |  SCSpecial (29:20): this
 SCClass (58:1): SpecialMembers
 |

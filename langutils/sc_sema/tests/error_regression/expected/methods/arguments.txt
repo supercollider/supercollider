@@ -12,7 +12,7 @@ SCClass (1:1): MethodArguments
 |  |  |  SCArgumentDeclareList (6:22)
 |  |  |  |  SCArgumentDeclare (6:22): a
 |  |  |  SCBody (6:25)
-|  |  |  |  SCExplicitReturn (6:26)
+|  |  |  |  SCExplicitReturn (6:25)
 |  |  |  |  |  SCRead (6:26): local a, declared (6:22): a
 |  |  SCMethod (7:5): assign_argument { |a| a = 1 }
 |  |  |  SCArgumentDeclareList (7:24)
@@ -29,7 +29,7 @@ SCClass (1:1): MethodArguments
 |  |  |  |  |  |  SCPositionalArgs (10:33)
 |  |  |  |  |  |  |  SCLiteral (10:37) = 1
 |  |  |  SCBody (10:41)
-|  |  |  |  SCExplicitReturn (10:42)
+|  |  |  |  SCExplicitReturn (10:41)
 |  |  |  |  |  SCRead (10:42): local b, declared (10:28): b = (a + 1)
 |  |  SCMethod (12:5): poisoned: later_argument { |a = (b), b| ^a }
 |  |  |
@@ -51,13 +51,13 @@ SCClass (1:1): MethodArguments
 |  |  |  |  |  SCExprList (12:28)
 |  |  |  |  SCArgumentDeclare (12:32): b
 |  |  |  SCBody (12:35)
-|  |  |  |  SCExplicitReturn (12:36)
+|  |  |  |  SCExplicitReturn (12:35)
 |  |  |  |  |  SCRead (12:36): local a, declared (12:23): a = (b)
 |  |  SCMethod (14:5): shadows_instance { |instance_var| ^instance_var }
 |  |  |  SCArgumentDeclareList (14:25)
 |  |  |  |  SCArgumentDeclare (14:25): instance_var
 |  |  |  SCBody (14:39)
-|  |  |  |  SCExplicitReturn (14:40)
+|  |  |  |  SCExplicitReturn (14:39)
 |  |  |  |  |  SCRead (14:40): local instance_var, declared (14:25): instance_var
 |  |  SCMethod (16:5): variadic { |a ... rest| ^rest }
 |  |  |  SCArgumentDeclareList (16:17)
@@ -65,13 +65,13 @@ SCClass (1:1): MethodArguments
 |  |  |  SCArgumentDeclareList (16:17)
 |  |  |  |  SCArgumentDeclare (16:23): rest
 |  |  |  SCBody (16:29)
-|  |  |  |  SCExplicitReturn (16:30)
+|  |  |  |  SCExplicitReturn (16:29)
 |  |  |  |  |  SCRead (16:30): local rest, declared (16:23): rest
 |  |  SCMethod (18:5): block_uses_argument { |a| ^{ a } }
 |  |  |  SCArgumentDeclareList (18:28)
 |  |  |  |  SCArgumentDeclare (18:28): a
 |  |  |  SCBody (18:31)
-|  |  |  |  SCExplicitReturn (18:32)
+|  |  |  |  SCExplicitReturn (18:31)
 |  |  |  |  |  SCFunction (18:32)
 |  |  |  |  |  |  SCBody (18:32)
 |  |  |  |  |  |  |  SCRead (18:34): local a, declared (18:28): a
@@ -84,6 +84,6 @@ SCClass (1:1): Meta_MethodArguments
 |  |  |  |  SCArgumentDeclare (22:32): b
 |  |  |  |  |  SCRead (22:37): local a, declared (22:29): a
 |  |  |  SCBody (22:41)
-|  |  |  |  SCExplicitReturn (22:42)
+|  |  |  |  SCExplicitReturn (22:41)
 |  |  |  |  |  SCRead (22:42): local b, declared (22:32): b = (a)
 Successfully compiled 16 classes.

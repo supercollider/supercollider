@@ -10,32 +10,40 @@
 namespace sc::ir::ast2ir {
 
 // A block captures its surroundings, so it is never constant.
-Return<SCAnyExpr_I> Expr::operator()(ast::BlockIndex i) {
-    const auto [arg_list, maybe_contents] = ast_graph->children(i);
-    const auto here = location({ *i });
+Return<SCAnyExpr_I> compile_function(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
+                                     Context& ctx, ast::Index whole, ast::DeclareArgumentListIndex arg_list,
+                                     std::optional<ast::BlockContentsListIndex> contents) {
+    const auto here = location_of(ir, *ast_graph, whole);
 
     // The function is created first, so its arguments can refer to it as their scope.
-    const auto positional = ir.create(SCArgumentDeclareList {}, location({ *arg_list }));
-    const auto variadic = ir.create(SCArgumentDeclareList {}, location({ *arg_list }));
+    const auto positional = ir.create(SCArgumentDeclareList {}, location_of(ir, *ast_graph, { *arg_list }));
+    const auto variadic = ir.create(SCArgumentDeclareList {}, location_of(ir, *ast_graph, { *arg_list }));
     const auto body = ir.create(SCBody {}, here);
     const auto function = ir.create(SCFunction {}, here, positional, variadic, body);
 
-    scope.emplace_back();
-    scope.back().starts_function = true;
-    declare_arguments(*this, ir, ast_graph, ctx, positional, variadic, arg_list, function);
+    expr.scope.emplace_back();
+    expr.scope.back().starts_function = true;
+    declare_arguments(expr, ir, ast_graph, ctx, positional, variadic, arg_list, function);
 
     BodyResult result;
-    if (const auto contents = ast_graph->as_a<ast::BlockContentsListIndex>(maybe_contents))
-        result = compile_body(*this, ir, ast_graph, ctx, function, body, *contents);
+    if (contents)
+        result = compile_body(expr, ir, ast_graph, ctx, function, body, *contents);
     else
         result.constant = ctx.constant_table.register_constexpr({ Nil {} });
-    scope.pop_back();
+    expr.scope.pop_back();
 
     // A return leaves the enclosing method, so calling the function doesn't produce a value.
     const bool has_arguments = ir.children(positional).iter() || ir.children(variadic).iter();
-    if (result.constant && !result.explicit_return && !has_arguments && !sink.fatal)
+    if (result.constant && !result.explicit_return && !has_arguments && !expr.sink.fatal)
         ir.payload(function).constant_result = *result.constant;
     return { function };
 }
 
+Return<SCAnyExpr_I> Expr::operator()(ast::BlockIndex i) {
+    const auto [arg_list, maybe_contents] = ast_graph->children(i);
+    std::optional<ast::BlockContentsListIndex> contents;
+    if (const auto c = ast_graph->as_a<ast::BlockContentsListIndex>(maybe_contents))
+        contents = *c;
+    return compile_function(*this, ir, ast_graph, ctx, { *i }, arg_list, contents);
+}
 }

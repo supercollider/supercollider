@@ -32,6 +32,6 @@ SCClass (20:1): Fine
 |  SCMethodList (20:1)
 |  |  SCMethod (21:5): method { ^1 } -> 1
 |  |  |  SCBody (21:14)
-|  |  |  |  SCExplicitReturn (21:15)
+|  |  |  |  SCExplicitReturn (21:14)
 |  |  |  |  |  SCLiteral (21:15) = 1
 Successfully compiled 16 classes.

@@ -107,6 +107,8 @@ struct Expr : private Base {
     // The `_` of the innermost call being partially applied, in order, see partially_apply. Each reads the function's
     // argument at the same index.
     std::vector<ast::CurryIndex> applied_curries;
+    // Interpreted code isn't in a method, so `^` has nothing to return from, even in its functions.
+    bool returns_allowed { true };
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
     void add_symbol(Symbol, ScopeEntry);

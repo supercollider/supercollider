@@ -407,17 +407,17 @@ block.contents
 	| block.contents SEMICOLON block.contents.item { $$ = cxt.graph->append($1, @$, $3); }
 	| block.contents NONLOCALRETURN expr 
 		{ 
-			auto non_local = cxt.create(NonLocalReturnExpr{}, @expr, $expr);
+			auto non_local = cxt.create(NonLocalReturnExpr{}, range(@NONLOCALRETURN, @expr), $expr);
 			$$ = cxt.graph->append($1, @$, non_local); 
 		}
 	| block.contents SEMICOLON NONLOCALRETURN expr 
 		{ 
-			auto non_local = cxt.create(NonLocalReturnExpr{}, @expr, $expr);
+			auto non_local = cxt.create(NonLocalReturnExpr{}, range(@NONLOCALRETURN, @expr), $expr);
 			$$ = cxt.graph->append($1, @$, non_local); 
 		}
 	| NONLOCALRETURN expr 
 		{ 
-			auto non_local = cxt.create(NonLocalReturnExpr{}, @expr, $expr);
+			auto non_local = cxt.create(NonLocalReturnExpr{}, range(@NONLOCALRETURN, @expr), $expr);
 			$$ = cxt.create(BlockContentsList{}, @$, non_local);
 		}
 	;

@@ -38,7 +38,7 @@ SCClass (1:1): Setters
 |  |  |  |  |  |  |  |  SCLiteral (7:37) = 2
 |  |  SCMethod (8:5): as_argument { ^3.baz(x.foo = 1) }
 |  |  |  SCBody (8:19)
-|  |  |  |  SCExplicitReturn (8:20)
+|  |  |  |  SCExplicitReturn (8:19)
 |  |  |  |  |  SCMessage (8:20): baz
 |  |  |  |  |  |  SCLiteral (8:20) = 3
 |  |  |  |  |  |  SCPositionalArgs (8:20)

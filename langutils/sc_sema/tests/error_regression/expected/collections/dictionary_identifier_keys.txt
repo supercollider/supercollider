@@ -10,13 +10,13 @@ SCClass (1:1): IdentifierKeys
 |  SCMethodList (1:1)
 |  |  SCMethod (5:5): identifier_key { ^(instance_var : 1) }
 |  |  |  SCBody (5:22)
-|  |  |  |  SCExplicitReturn (5:23)
+|  |  |  |  SCExplicitReturn (5:22)
 |  |  |  |  |  SCCollection (5:23): Event
 |  |  |  |  |  |  SCRead (5:24): instance instance_var, declared (2:9): instance_var
 |  |  |  |  |  |  SCLiteral (5:39) = 1
 |  |  SCMethod (6:5): keyword_key { ^(instance_var: 1) } -> (instance_var: 1)
 |  |  |  SCBody (6:19)
-|  |  |  |  SCExplicitReturn (6:20)
+|  |  |  |  SCExplicitReturn (6:19)
 |  |  |  |  |  SCCollection (6:20): Event = (instance_var: 1)
 |  |  |  |  |  |  SCLiteral (6:21) = \instance_var
 |  |  |  |  |  |  SCLiteral (6:35) = 1
@@ -36,7 +36,7 @@ SCClass (1:1): IdentifierKeys
 |  |  |  Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:32)
-|  |  |  |  SCExplicitReturn (7:33)
+|  |  |  |  SCExplicitReturn (7:32)
 |  |  |  |  |  SCCollection (7:33): Event
 |  |  |  |  |  |  SCExprList (7:34)
 |  |  |  |  |  |  SCLiteral (7:50) = 1
@@ -46,7 +46,7 @@ SCClass (1:1): Meta_IdentifierKeys
 |  SCMethodList (1:1)
 |  |  SCMethod (8:5): *class_identifier_key { ^(class_var : 1) }
 |  |  |  SCBody (8:29)
-|  |  |  |  SCExplicitReturn (8:30)
+|  |  |  |  SCExplicitReturn (8:29)
 |  |  |  |  |  SCCollection (8:30): Event
 |  |  |  |  |  |  SCRead (8:31): instance class_var, declared (3:14): class_var
 |  |  |  |  |  |  SCLiteral (8:43) = 1
