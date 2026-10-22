@@ -142,7 +142,7 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  |  |  SCBody: { var a = 2; a }
 |  |  |  |  |  |  |  SCVariableDeclare: a: a = 2
 |  |  |  |  |  |  |  |  SCLiteral: 2 = {"int": 2}
-|  |  |  |  |  |  |  SCRead: a
+|  |  |  |  |  |  |  SCRead: a = {"int": 2}
 |  |  SCMethod: declare { var a; ^a }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -150,7 +150,7 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  SCVariableDeclare: a: a
 |  |  |  |  |  SCMissing: a
 |  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a
+|  |  |  |  |  SCRead: a = {"nil": {}}
 |  |  SCMethod: declare_with_value { var a = 1; ^a }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -158,7 +158,7 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  SCVariableDeclare: a: a = 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a
+|  |  |  |  |  SCRead: a = {"int": 1}
 |  |  SCMethod: declare_several { var a = 1, b, c = 3; ^b }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -170,7 +170,7 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  SCVariableDeclare: c: c = 3
 |  |  |  |  |  SCLiteral: 3 = {"int": 3}
 |  |  |  |  SCExplicitReturn: b
-|  |  |  |  |  SCRead: b
+|  |  |  |  |  SCRead: b = {"nil": {}}
 |  |  SCMethod: uses_earlier { var a = 1, b = a + 1; ^b }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -179,7 +179,7 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  SCVariableDeclare: b: b = a + 1
 |  |  |  |  |  SCMessage: +: a + 1
-|  |  |  |  |  |  SCRead: a
+|  |  |  |  |  |  SCRead: a = {"int": 1}
 |  |  |  |  |  |  SCPositionalArgs: a + 1
 |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  |  |  SCKwArgs: a + 1
@@ -224,7 +224,7 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  SCVariableDeclare: a: a = 2
 |  |  |  |  |  SCLiteral: 2 = {"int": 2}
 |  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a
+|  |  |  |  |  SCRead: a = {"int": 2}
 |  |  SCMethod: poisoned: duplicate { var a, a; ^a }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -234,7 +234,7 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  SCVariableDeclare: a: a
 |  |  |  |  |  SCMissing: a
 |  |  |  |  SCExplicitReturn: a
-|  |  |  |  |  SCRead: a
+|  |  |  |  |  SCRead: a = {"nil": {}}
 |  |  SCMethod: poisoned: duplicate_argument { |a| var a; ^a }
 |  |  |  SCArgumentDeclareList: a
 |  |  |  |  SCArgumentDeclare: a
@@ -252,7 +252,7 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  SCVariableDeclare: instance_var: instance_var = 1
 |  |  |  |  |  SCLiteral: 1 = {"int": 1}
 |  |  |  |  SCExplicitReturn: instance_var
-|  |  |  |  |  SCRead: instance_var
+|  |  |  |  |  SCRead: instance_var = {"int": 1}
 |  |  SCMethod: assign { var a; a = 2 }
 |  |  |  SCArgumentDeclareList: 
 |  |  |  SCArgumentDeclareList: 
@@ -272,7 +272,7 @@ SCClass: Variables: Variables {'\n'    var instance_var;'\n''\n'    declare { va
 |  |  |  |  |  |  SCBody: { var a = 1; a }
 |  |  |  |  |  |  |  SCVariableDeclare: a: a = 1
 |  |  |  |  |  |  |  |  SCLiteral: 1 = {"int": 1}
-|  |  |  |  |  |  |  SCRead: a
+|  |  |  |  |  |  |  SCRead: a = {"int": 1}
 SCClass: Event: Event {}
 |  SCMemberList: Event
 |  SCMethodList: Event

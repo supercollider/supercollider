@@ -62,6 +62,10 @@ struct ConstExpression {
 
     template <typename T> [[nodiscard]] const T* get_if() const { return std::get_if<T>(&storage); }
 
+    [[nodiscard]] bool is_mutable() const {
+        return get_if<ConstExprArray>() || get_if<ConstExprEvent>() || get_if<SymSCString>();
+    }
+
     friend struct std::hash<ConstExpression>;
 
     void to_json(std::ostream&, const struct SymbolTable&) const;

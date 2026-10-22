@@ -62,12 +62,20 @@ SCAssign::Kind to_assign_kind(ScopeEntry::Kind k) {
 }
 }
 
-// Reads are never constant, even when the variable's initial value is, as it might have been assigned since.
+// Reads are constant when the variable is, see compile_body.
 Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
     const auto txt = get_string_view(*ast_graph, i);
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
-    if (const auto entry = resolve_symbol(name_sym))
-        return { ir.create(SCRead { name_sym, to_read_kind(entry->kind) }, location(i)) };
+    if (const auto entry = resolve_symbol(name_sym)) {
+        const auto read = ir.create(SCRead { name_sym, to_read_kind(entry->kind) }, location(i));
+        // Only locals can be constant, a member's initial value isn't, as the member can be assigned.
+        if (entry->kind == ScopeEntry::Kind::Local && entry->const_expr) {
+            ir.register_node_as_consteval(read, *entry->const_expr);
+            if (entry->type_info)
+                return { read, *entry->const_expr, *entry->type_info };
+        }
+        return { read };
+    }
 
     sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, i), txt));
     return { ir.create(SCExprList {}, location(i)) };
