@@ -140,70 +140,70 @@ SCClass (1:1): ConstantResults
 |  |  |  |  |  |  |  SCFunction (19:56) -> \two
 |  |  |  |  |  |  |  |  SCBody (19:56)
 |  |  |  |  |  |  |  |  |  SCLiteral (19:58) = \two
-|  |  SCMethod (21:5): method_explicit_return { ^1 } -> 1
-|  |  |  SCBody (21:30)
-|  |  |  |  SCExplicitReturn (21:31)
-|  |  |  |  |  SCLiteral (21:31) = 1
-|  |  SCMethod (22:5): method_variable_return { var x = 2; ^x } -> 2
+|  |  SCMethod (22:5): method_explicit_return { ^1 } -> 1
 |  |  |  SCBody (22:30)
-|  |  |  |  SCVariableDeclare (22:34): x
-|  |  |  |  |  SCLiteral (22:38) = 2
-|  |  |  |  SCExplicitReturn (22:42)
-|  |  |  |  |  SCRead (22:42): local x = 2, declared (22:34): x = 2
-|  |  SCMethod (23:5): method_implicit_return { 1 }
-|  |  |  SCBody (23:30)
-|  |  |  |  SCLiteral (23:30) = 1
-|  |  SCMethod (24:5): method_empty { }
-|  |  |  SCBody (24:20)
-|  |  SCMethod (25:5): method_with_argument { |x| ^1 }
-|  |  |  SCArgumentDeclareList (25:29)
-|  |  |  |  SCArgumentDeclare (25:29): x
-|  |  |  SCBody (25:32)
-|  |  |  |  SCExplicitReturn (25:33)
-|  |  |  |  |  SCLiteral (25:33) = 1
-|  |  SCMethod (26:5): method_non_constant_item { instance_var; ^1 }
-|  |  |  SCBody (26:32)
-|  |  |  |  SCRead (26:32): instance instance_var, declared (2:9): instance_var
-|  |  |  |  SCExplicitReturn (26:47)
-|  |  |  |  |  SCLiteral (26:47) = 1
-|  |  SCMethod (27:5): method_primitive { _Primitive; ^1 }
-|  |  |  SCBody (27:36)
-|  |  |  |  SCExplicitReturn (27:37)
-|  |  |  |  |  SCLiteral (27:37) = 1
-|  |  SCMethod (28:5): poisoned: method_poisoned { ^undefined_variable }
+|  |  |  |  SCExplicitReturn (22:31)
+|  |  |  |  |  SCLiteral (22:31) = 1
+|  |  SCMethod (24:5): method_variable_return { var x = 2; ^x } -> 2
+|  |  |  SCBody (24:30)
+|  |  |  |  SCVariableDeclare (24:34): x
+|  |  |  |  |  SCLiteral (24:38) = 2
+|  |  |  |  SCExplicitReturn (24:42)
+|  |  |  |  |  SCRead (24:42): local x = 2, declared (24:34): x = 2
+|  |  SCMethod (26:5): method_implicit_return { 1 }
+|  |  |  SCBody (26:30)
+|  |  |  |  SCLiteral (26:30) = 1
+|  |  SCMethod (28:5): method_empty { }
+|  |  |  SCBody (28:20)
+|  |  SCMethod (30:5): method_with_argument { |x| ^1 }
+|  |  |  SCArgumentDeclareList (30:29)
+|  |  |  |  SCArgumentDeclare (30:29): x
+|  |  |  SCBody (30:32)
+|  |  |  |  SCExplicitReturn (30:33)
+|  |  |  |  |  SCLiteral (30:33) = 1
+|  |  SCMethod (32:5): method_non_constant_item { instance_var; ^1 }
+|  |  |  SCBody (32:32)
+|  |  |  |  SCRead (32:32): instance instance_var, declared (2:9): instance_var
+|  |  |  |  SCExplicitReturn (32:47)
+|  |  |  |  |  SCLiteral (32:47) = 1
+|  |  SCMethod (34:5): method_primitive { _Primitive; ^1 }
+|  |  |  SCBody (34:36)
+|  |  |  |  SCExplicitReturn (34:37)
+|  |  |  |  |  SCLiteral (34:37) = 1
+|  |  SCMethod (36:5): poisoned: method_poisoned { ^undefined_variable }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
-|  |  |  methods/constant_results.sc:28:24
-|  |  |     26 │     method_non_constant_item { instance_var; ^1 }
-|  |  |     27 │     method_primitive { _Primitive; ^1 }
-|  |  |     28 │     method_poisoned { ^undefined_variable }
+|  |  |  methods/constant_results.sc:36:24
+|  |  |     34 │     method_primitive { _Primitive; ^1 }
+|  |  |     35 │     // expect-error: Variable not defined
+|  |  |     36 │     method_poisoned { ^undefined_variable }
 |  |  |        ┆                        ^^^^^^^^^^^^^^^^^^ this is not defined.
-|  |  |     29 │     *class_method { ^\a }
-|  |  |     30 │ 
-|  |  |     31 │     function_not_constant {
+|  |  |     37 │     // expect: -> \a
+|  |  |     38 │     *class_method { ^\a }
+|  |  |     39 │ 
 |  |  |
 |  |  |  Declare it with 'var', or use '~undefined_variable' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (28:23)
-|  |  |  |  SCExplicitReturn (28:24)
-|  |  |  |  |  SCExprList (28:24)
-|  |  SCMethod (31:5): function_not_constant {'\n'        if (3) { ^1 };'\n'        ^2'\n'    }
-|  |  |  SCBody (32:9)
-|  |  |  |  SCMessage (32:9): if
-|  |  |  |  |  SCLiteral (32:13) = 3
-|  |  |  |  |  SCPositionalArgs (32:9)
-|  |  |  |  |  |  SCFunction (32:16)
-|  |  |  |  |  |  |  SCBody (32:16)
-|  |  |  |  |  |  |  |  SCExplicitReturn (32:19)
-|  |  |  |  |  |  |  |  |  SCLiteral (32:19) = 1
-|  |  |  |  SCExplicitReturn (33:10)
-|  |  |  |  |  SCLiteral (33:10) = 2
+|  |  |  SCBody (36:23)
+|  |  |  |  SCExplicitReturn (36:24)
+|  |  |  |  |  SCExprList (36:24)
+|  |  SCMethod (41:5): function_not_constant {'\n'        if (3) { ^1 };'\n'        ^2'\n'    }
+|  |  |  SCBody (42:9)
+|  |  |  |  SCMessage (42:9): if
+|  |  |  |  |  SCLiteral (42:13) = 3
+|  |  |  |  |  SCPositionalArgs (42:9)
+|  |  |  |  |  |  SCFunction (42:16)
+|  |  |  |  |  |  |  SCBody (42:16)
+|  |  |  |  |  |  |  |  SCExplicitReturn (42:19)
+|  |  |  |  |  |  |  |  |  SCLiteral (42:19) = 1
+|  |  |  |  SCExplicitReturn (43:10)
+|  |  |  |  |  SCLiteral (43:10) = 2
 SCClass (1:1): Meta_ConstantResults
 |  SCMemberList (1:1)
 |  SCMethodList (1:1)
-|  |  SCMethod (29:5): *class_method { ^\a } -> \a
-|  |  |  SCBody (29:21)
-|  |  |  |  SCExplicitReturn (29:22)
-|  |  |  |  |  SCLiteral (29:22) = \a
+|  |  SCMethod (38:5): *class_method { ^\a } -> \a
+|  |  |  SCBody (38:21)
+|  |  |  |  SCExplicitReturn (38:22)
+|  |  |  |  |  SCLiteral (38:22) = \a
 Successfully compiled 15 classes.

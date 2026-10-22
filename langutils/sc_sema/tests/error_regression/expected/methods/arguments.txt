@@ -8,82 +8,82 @@ SCClass (1:1): MethodArguments
 |  SCMemberList (1:1)
 |  |  SCMember (2:9): instance_var
 |  SCMethodList (1:1)
-|  |  SCMethod (4:5): read_argument { |a| ^a }
-|  |  |  SCArgumentDeclareList (4:22)
-|  |  |  |  SCArgumentDeclare (4:22): a
-|  |  |  SCBody (4:25)
-|  |  |  |  SCExplicitReturn (4:26)
-|  |  |  |  |  SCRead (4:26): local a, declared (4:22): a
-|  |  SCMethod (5:5): assign_argument { |a| a = 1 }
-|  |  |  SCArgumentDeclareList (5:24)
-|  |  |  |  SCArgumentDeclare (5:24): a
-|  |  |  SCBody (5:27)
-|  |  |  |  SCAssign (5:27): local a, declared (5:24): a
-|  |  |  |  |  SCLiteral (5:31) = 1
-|  |  SCMethod (6:5): earlier_argument { |a, b = (a + 1)| ^b }
-|  |  |  SCArgumentDeclareList (6:25)
-|  |  |  |  SCArgumentDeclare (6:25): a
-|  |  |  |  SCArgumentDeclare (6:25): b
-|  |  |  |  |  SCMessage (6:33): +
-|  |  |  |  |  |  SCRead (6:33): local a, declared (6:25): a
-|  |  |  |  |  |  SCPositionalArgs (6:33)
-|  |  |  |  |  |  |  SCLiteral (6:37) = 1
-|  |  |  SCBody (6:41)
-|  |  |  |  SCExplicitReturn (6:42)
-|  |  |  |  |  SCRead (6:42): local b, declared (6:25): a, b = (a + 1)
-|  |  SCMethod (7:5): poisoned: later_argument { |a = (b), b| ^a }
+|  |  SCMethod (6:5): read_argument { |a| ^a }
+|  |  |  SCArgumentDeclareList (6:22)
+|  |  |  |  SCArgumentDeclare (6:22): a
+|  |  |  SCBody (6:25)
+|  |  |  |  SCExplicitReturn (6:26)
+|  |  |  |  |  SCRead (6:26): local a, declared (6:22): a
+|  |  SCMethod (7:5): assign_argument { |a| a = 1 }
+|  |  |  SCArgumentDeclareList (7:24)
+|  |  |  |  SCArgumentDeclare (7:24): a
+|  |  |  SCBody (7:27)
+|  |  |  |  SCAssign (7:27): local a, declared (7:24): a
+|  |  |  |  |  SCLiteral (7:31) = 1
+|  |  SCMethod (10:5): earlier_argument { |a, b = (a + 1)| ^b }
+|  |  |  SCArgumentDeclareList (10:25)
+|  |  |  |  SCArgumentDeclare (10:25): a
+|  |  |  |  SCArgumentDeclare (10:25): b
+|  |  |  |  |  SCMessage (10:33): +
+|  |  |  |  |  |  SCRead (10:33): local a, declared (10:25): a
+|  |  |  |  |  |  SCPositionalArgs (10:33)
+|  |  |  |  |  |  |  SCLiteral (10:37) = 1
+|  |  |  SCBody (10:41)
+|  |  |  |  SCExplicitReturn (10:42)
+|  |  |  |  |  SCRead (10:42): local b, declared (10:25): a, b = (a + 1)
+|  |  SCMethod (12:5): poisoned: later_argument { |a = (b), b| ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
-|  |  |  methods/arguments.sc:7:28
-|  |  |      5 │     assign_argument { |a| a = 1 }
-|  |  |      6 │     earlier_argument { |a, b = (a + 1)| ^b }
-|  |  |      7 │     later_argument { |a = (b), b| ^a }
+|  |  |  methods/arguments.sc:12:28
+|  |  |     10 │     earlier_argument { |a, b = (a + 1)| ^b }
+|  |  |     11 │     // expect-error: Variable not defined
+|  |  |     12 │     later_argument { |a = (b), b| ^a }
 |  |  |        ┆                            ^ this is not defined.
-|  |  |      8 │     shadows_instance { |instance_var| ^instance_var }
-|  |  |      9 │     variadic { |a ... rest| ^rest }
-|  |  |     10 │     block_uses_argument { |a| ^{ a } }
+|  |  |     13 │     // expect-reads: instance_var -> instance_var
+|  |  |     14 │     shadows_instance { |instance_var| ^instance_var }
+|  |  |     15 │     // expect-reads: rest -> rest
 |  |  |
 |  |  |  Declare it with 'var', or use '~b' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCArgumentDeclareList (7:23)
-|  |  |  |  SCArgumentDeclare (7:23): a
-|  |  |  |  |  SCExprList (7:28)
-|  |  |  |  SCArgumentDeclare (7:32): b
-|  |  |  SCBody (7:35)
-|  |  |  |  SCExplicitReturn (7:36)
-|  |  |  |  |  SCRead (7:36): local a, declared (7:23): a = (b)
-|  |  SCMethod (8:5): shadows_instance { |instance_var| ^instance_var }
-|  |  |  SCArgumentDeclareList (8:25)
-|  |  |  |  SCArgumentDeclare (8:25): instance_var
-|  |  |  SCBody (8:39)
-|  |  |  |  SCExplicitReturn (8:40)
-|  |  |  |  |  SCRead (8:40): local instance_var, declared (8:25): instance_var
-|  |  SCMethod (9:5): variadic { |a ... rest| ^rest }
-|  |  |  SCArgumentDeclareList (9:17)
-|  |  |  |  SCArgumentDeclare (9:17): a
-|  |  |  SCArgumentDeclareList (9:17)
-|  |  |  |  SCArgumentDeclare (9:23): rest
-|  |  |  SCBody (9:29)
-|  |  |  |  SCExplicitReturn (9:30)
-|  |  |  |  |  SCRead (9:30): local rest, declared (9:23): rest
-|  |  SCMethod (10:5): block_uses_argument { |a| ^{ a } }
-|  |  |  SCArgumentDeclareList (10:28)
-|  |  |  |  SCArgumentDeclare (10:28): a
-|  |  |  SCBody (10:31)
-|  |  |  |  SCExplicitReturn (10:32)
-|  |  |  |  |  SCFunction (10:32)
-|  |  |  |  |  |  SCBody (10:32)
-|  |  |  |  |  |  |  SCRead (10:34): local a, declared (10:28): a
+|  |  |  SCArgumentDeclareList (12:23)
+|  |  |  |  SCArgumentDeclare (12:23): a
+|  |  |  |  |  SCExprList (12:28)
+|  |  |  |  SCArgumentDeclare (12:32): b
+|  |  |  SCBody (12:35)
+|  |  |  |  SCExplicitReturn (12:36)
+|  |  |  |  |  SCRead (12:36): local a, declared (12:23): a = (b)
+|  |  SCMethod (14:5): shadows_instance { |instance_var| ^instance_var }
+|  |  |  SCArgumentDeclareList (14:25)
+|  |  |  |  SCArgumentDeclare (14:25): instance_var
+|  |  |  SCBody (14:39)
+|  |  |  |  SCExplicitReturn (14:40)
+|  |  |  |  |  SCRead (14:40): local instance_var, declared (14:25): instance_var
+|  |  SCMethod (16:5): variadic { |a ... rest| ^rest }
+|  |  |  SCArgumentDeclareList (16:17)
+|  |  |  |  SCArgumentDeclare (16:17): a
+|  |  |  SCArgumentDeclareList (16:17)
+|  |  |  |  SCArgumentDeclare (16:23): rest
+|  |  |  SCBody (16:29)
+|  |  |  |  SCExplicitReturn (16:30)
+|  |  |  |  |  SCRead (16:30): local rest, declared (16:23): rest
+|  |  SCMethod (18:5): block_uses_argument { |a| ^{ a } }
+|  |  |  SCArgumentDeclareList (18:28)
+|  |  |  |  SCArgumentDeclare (18:28): a
+|  |  |  SCBody (18:31)
+|  |  |  |  SCExplicitReturn (18:32)
+|  |  |  |  |  SCFunction (18:32)
+|  |  |  |  |  |  SCBody (18:32)
+|  |  |  |  |  |  |  SCRead (18:34): local a, declared (18:28): a
 SCClass (1:1): Meta_MethodArguments
 |  SCMemberList (1:1)
 |  SCMethodList (1:1)
-|  |  SCMethod (12:5): *class_read_argument { |a, b = (a)| ^b }
-|  |  |  SCArgumentDeclareList (12:29)
-|  |  |  |  SCArgumentDeclare (12:29): a
-|  |  |  |  SCArgumentDeclare (12:29): b
-|  |  |  |  |  SCRead (12:37): local a, declared (12:29): a
-|  |  |  SCBody (12:41)
-|  |  |  |  SCExplicitReturn (12:42)
-|  |  |  |  |  SCRead (12:42): local b, declared (12:29): a, b = (a)
+|  |  SCMethod (22:5): *class_read_argument { |a, b = (a)| ^b }
+|  |  |  SCArgumentDeclareList (22:29)
+|  |  |  |  SCArgumentDeclare (22:29): a
+|  |  |  |  SCArgumentDeclare (22:29): b
+|  |  |  |  |  SCRead (22:37): local a, declared (22:29): a
+|  |  |  SCBody (22:41)
+|  |  |  |  SCExplicitReturn (22:42)
+|  |  |  |  |  SCRead (22:42): local b, declared (22:29): a, b = (a)
 Successfully compiled 15 classes.
