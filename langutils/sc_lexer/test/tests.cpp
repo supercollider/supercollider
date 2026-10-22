@@ -1,11 +1,11 @@
-#include "text_location.hpp"
+#include "sc_lexer/text_location.hpp"
 #define BOOST_TEST_MODULE sc_lexer_tests
-#include "tokens.hpp"
+#include "sc_lexer/tokens.hpp"
 #include <boost/test/included/unit_test.hpp>
 #include <cstddef>
-#include <source_utils.hpp>
-#include <lexer.hpp>
-#include <normalise_source.hpp>
+#include "sc_lexer/source_utils.hpp"
+#include "sc_lexer/lexer.hpp"
+#include "sc_lexer/normalise_source.hpp"
 
 using namespace sc::lex;
 // MSVC needs this.
