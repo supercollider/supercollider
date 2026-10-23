@@ -256,20 +256,23 @@ void ClassDeclarations::poison_all() {
 
 
 [[nodiscard]] ConstExprIndex ConstantTable::register_constexpr(ConstExpression&& expr) {
+    const ConstExprHash hash { std::hash<ConstExpression>()(expr) };
+
     std::scoped_lock lock { m_lock };
-    if (const auto fnd = expr_to_index.find(expr); fnd != expr_to_index.end()) {
-        return fnd->second;
-    }
-    const auto index = m_rolling;
-    m_rolling += 1;
-    expr_to_index.insert({ expr, index });
-    index_to_expr.insert({ index, expr });
+    const auto [begin, end] = m_index_hash_conversion.equal_range(hash);
+    for (auto it = begin; it != end; ++it)
+        if (m_constants[*it->second] == expr)
+            return it->second;
+    const auto index = ConstExprIndex { static_cast<ConstExprIndex::Underlying>(m_constants.size()) };
+    m_constants.push_back(std::move(expr));
+    m_index_hash_conversion.insert({ hash, index });
     return index;
 }
 
 [[nodiscard]] const ConstExpression& ConstantTable::operator()(ConstExprIndex index) const noexcept {
     std::scoped_lock lock { m_lock };
-    return index_to_expr.at(index);
+    assert(*index < m_constants.size());
+    return m_constants[*index];
 }
 
 } // sc::ir

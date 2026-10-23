@@ -5,8 +5,10 @@
 #include "symbols.hpp"
 
 #include <cstdint>
+#include <deque>
 #include <mutex>
 #include <ostream>
+#include <unordered_map>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -175,11 +177,10 @@ struct ConstantTable {
 
 private:
     mutable std::mutex m_lock {};
-    ConstExprIndex::Underlying m_rolling { 0 };
-    // This means we duplicate the constexpr.
-    // This could probably be optimized.
-    std::unordered_map<ConstExprIndex, ConstExpression> index_to_expr { };
-    std::unordered_map<ConstExpression, ConstExprIndex> expr_to_index { };
+    // Keep pointer stability. These are never removed.
+    std::deque<ConstExpression> m_constants {};
+    using ConstExprHash = std::size_t;
+    std::unordered_multimap<ConstExprHash, ConstExprIndex> m_index_hash_conversion {};
 };
 
 }
