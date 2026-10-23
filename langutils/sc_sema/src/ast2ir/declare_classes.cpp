@@ -57,7 +57,7 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
     }
 
     // Legacy code only allows a literal, as the old compiler's grammar did, see ConstEval::is_legacy_literal.
-    auto result = !folds_constants(decl.version()) && !ast2ir::ConstEval::is_legacy_literal(*ast_graph, expr_i)
+    auto result = !can_fold_constants(decl.version()) && !ast2ir::ConstEval::is_legacy_literal(*ast_graph, expr_i)
         ? ast2ir::ConstEval::Result { diag::Diagnostic::not_constant(get_text_info(*ast_graph),
                                                                      get_location(*ast_graph, expr_i)) }
         : ast2ir::ConstEval { cxt, ast_graph, ast_index, decl.version(), &constants }.eval(expr_i);

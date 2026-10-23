@@ -123,8 +123,11 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
     const auto write_constant = [&](ConstExprIndex c) {
         d.ctx.constant_table(c).to_literal(out, symbol_table, d.ctx.constant_table);
     };
-    // Where the variable is declared, shown by its source, so a read can be matched to its declaration.
-    const auto write_declaration = [&](const std::optional<SourceLocation>& declaration) {
+    // Where the variable is declared, shown by its source, so a read can be matched to its declaration. A local's is in
+    // the graph's table.
+    const auto write_declaration = [&](OptionalLocalIndex local, std::optional<SourceLocation> declaration) {
+        if (local)
+            declaration = g.local(LocalIndex { *local }).declaration;
         if (!declaration)
             return;
         out << ", declared ";
@@ -206,9 +209,14 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
         out << " -> ";
         write_constant(*constant_result);
     }
-    std::visit(sc::util::overload { [](const auto&) {}, [&](const SCRead& r) { write_declaration(r.declaration); },
-                                    [&](const SCAssign& a) { write_declaration(a.declaration); },
-                                    [&](const SCPackTarget& t) { write_declaration(t.declaration); } },
+    std::visit(sc::util::overload { [](const auto&) {},
+                                    [&](const SCRead& r) { write_declaration(r.local, r.declaration); },
+                                    [&](const SCAssign& a) { write_declaration(a.local, a.declaration); },
+                                    [&](const SCPackTarget& t) {
+                                        // A declaring target is its own declaration.
+                                        if (!t.declares)
+                                            write_declaration(t.local, t.declaration);
+                                    } },
                payload);
 }
 

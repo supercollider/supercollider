@@ -25,7 +25,7 @@ Return<SCAnyExpr_I> compile_function(Expr& expr, IRGraph& ir, const std::shared_
     expr.scope.back().starts_function = true;
     // This only does something if the version is legacy.
     // Legacy code uses something call 'frame' scope, rather than the modern lexical scope.
-    declare_frame(expr, ir, ast_graph, ctx, arg_list, contents);
+    expr.predeclare_legacy_frame(function, arg_list, contents);
     declare_arguments(expr, ir, ast_graph, ctx, positional, variadic, arg_list, function);
 
     BodyResult result;
@@ -33,7 +33,7 @@ Return<SCAnyExpr_I> compile_function(Expr& expr, IRGraph& ir, const std::shared_
         result = compile_body(expr, ir, ast_graph, ctx, function, body, *contents);
     else
         result.constant = ctx.constant_table.register_constexpr({ Nil {} });
-    expr.close_frame();
+    expr.close_legacy_frame();
     expr.scope.pop_back();
 
     // A return leaves the enclosing method, so calling the function doesn't produce a value.

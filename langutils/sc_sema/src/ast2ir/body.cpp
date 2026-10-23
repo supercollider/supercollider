@@ -240,8 +240,8 @@ struct BodyContext {
 // Adds the variable declared by declare to the scope. constant is its initial value, if it is known.
 // Returns false if the name was already declared.
 bool add_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, SymSCIdentifier name,
-                  join<SCVariableDeclare_I, SCPackTarget_I> declare, std::optional<ConstExprIndex> constant,
-                  std::optional<TypeInfo> type) {
+                  join<SCVariableDeclare_I, SCPackTarget_I> declare, LocalIndex local,
+                  std::optional<ConstExprIndex> constant, std::optional<TypeInfo> type) {
     const auto& g = *b.ast_graph;
     // Used before its declaration in legacy code, e.g., assigned by an argument's default, which isn't in the body.
     const bool escaped = b.expr.declared(name);
@@ -266,9 +266,11 @@ bool add_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, SymSCIdentif
         constant = std::nullopt;
         type = std::nullopt;
     }
-    b.expr.add_symbol(name,
-                      ScopeEntry { nullptr, b.owner, declare, constant, type, ScopeEntry::Kind::Local,
-                                   ScopeEntry::State::Initalised });
+    ScopeEntry entry {
+        nullptr, b.owner, declare, constant, type, ScopeEntry::Kind::Local, ScopeEntry::State::Initalised
+    };
+    entry.local = local;
+    b.expr.add_symbol(name, entry);
     return true;
 }
 
@@ -278,28 +280,29 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
                       ast::Index whole) {
     const auto& g = *b.ast_graph;
     const auto name = b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, name_i) });
+    const auto local = b.expr.local_for_declaration(name, location_of(b.ir, g, whole), b.owner);
     const auto declare_node = [&](maybe<SCAnyExpr_I> value_i) {
-        const auto declare = b.ir.create(SCVariableDeclare { { location_of(b.ir, g, { *name_i }), name } },
+        const auto declare = b.ir.create(SCVariableDeclare { { location_of(b.ir, g, { *name_i }), name }, local },
                                          location_of(b.ir, g, whole), value_i);
         b.ir.append(b.body, declare);
         return declare;
     };
     if (!value) {
         const auto declare = declare_node(b.ir.create(SCMissing {}, location_of(b.ir, g, whole)));
-        (void)add_variable(b, name_i, name, declare, b.ctx.constant_table.register_constexpr({ Nil {} }),
+        (void)add_variable(b, name_i, name, declare, local, b.ctx.constant_table.register_constexpr({ Nil {} }),
                            TypeInfo { b.ctx.common_classes.nil, TypeConfidence::Absolute });
         return true;
     }
     // Compiled before the variable is declared, a function in it can still refer to it, see Expr::initialising.
-    Expr::Initialising variable { name, b.expr.scope.size() - 1, location_of(b.ir, g, whole) };
+    Expr::Initialising variable { name, b.expr.scope.size() - 1, location_of(b.ir, g, whole), local };
     variable.in_frame = true;
     b.expr.initialising.push_back(variable);
     const auto value_r = b.expr(*value);
     b.expr.initialising.pop_back();
     // Legacy code only knows a literal, as the old compiler computed any other initial value when the code ran.
     const auto constant =
-        folds_constants(b.expr) || ConstEval::is_legacy_literal(g, *value) ? value_r.const_index : std::nullopt;
-    (void)add_variable(b, name_i, name, declare_node(value_r.ir_node), constant, value_r.type);
+        b.expr.can_fold_constants() || ConstEval::is_legacy_literal(g, *value) ? value_r.const_index : std::nullopt;
+    (void)add_variable(b, name_i, name, declare_node(value_r.ir_node), local, constant, value_r.type);
     return value_r.const_index.has_value();
 }
 
@@ -312,13 +315,17 @@ bool declare_pack(BodyContext& b, ast::VariablePackAssignIndex pack) {
     const auto [list, rest] = g.children(names);
 
     // Compiled before the variables are declared, a function in it can still refer to them, see Expr::initialising.
+    // Each name's variable, in the order they are written, environment variables aren't variables.
+    std::vector<LocalIndex> locals;
     const auto initialising = b.expr.initialising.size();
     const auto mark_initialising = [&](ast::Index target) {
         const auto name = g.as_a<ast::NamedIdentifierIndex>(target);
         if (!name)
             return;
-        Expr::Initialising variable { b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, *name) }),
-                                      b.expr.scope.size() - 1, location_of(b.ir, g, { **name }) };
+        const auto sym = b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, *name) });
+        const auto loc = location_of(b.ir, g, { **name });
+        locals.push_back(b.expr.local_for_declaration(sym, loc, b.owner));
+        Expr::Initialising variable { sym, b.expr.scope.size() - 1, loc, locals.back() };
         variable.in_frame = true;
         b.expr.initialising.push_back(variable);
     };
@@ -333,6 +340,7 @@ bool declare_pack(BodyContext& b, ast::VariablePackAssignIndex pack) {
         elements = b.ctx.constant_table(*value_r.const_index).get_if<ConstExprArray>();
 
     const auto targets = b.ir.create(SCPackTargets {}, location_of(b.ir, g, { *names }));
+    auto next_local = locals.begin();
     const auto add_target = [&](ast::Index target, std::uint32_t index, bool is_rest) {
         if (const auto env = g.as_a<ast::EnvIdentifierIndex>(target)) {
             b.expr.sink(sc::diag::Diagnostic::declared_environment_variable(get_text_info(g), get_location(g, *env)));
@@ -343,17 +351,20 @@ bool declare_pack(BodyContext& b, ast::VariablePackAssignIndex pack) {
         // `at` past the end is nil, the rest is a new array, so is never constant.
         std::optional<ConstExprIndex> constant;
         std::optional<TypeInfo> type;
-        // Legacy code computes them when it runs, see folds_constants.
-        if (elements && !is_rest && folds_constants(b.expr)) {
+        // Legacy code computes them when it runs, see can_fold_constants.
+        if (elements && !is_rest && b.expr.can_fold_constants()) {
             constant =
                 index < elements->size() ? (*elements)[index] : b.ctx.constant_table.register_constexpr({ Nil {} });
             type = type_of_constant(b.ctx, b.ctx.constant_table(*constant));
         }
         const auto sym = b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, *name) });
         const auto loc = location_of(b.ir, g, { **name });
-        const auto declare = b.ir.create(SCPackTarget { { loc, sym }, SCAssign::Kind::Local, index, is_rest }, loc);
+        const auto local = *next_local++;
+        SCPackTarget node { { loc, sym }, SCAssign::Kind::Local, index, is_rest, local };
+        node.declares = true;
+        const auto declare = b.ir.create(std::move(node), loc);
         b.ir.append(targets, declare);
-        (void)add_variable(b, *name, sym, declare, constant, type);
+        (void)add_variable(b, *name, sym, declare, local, constant, type);
     };
 
     std::uint32_t index { 0 };
@@ -425,58 +436,5 @@ BodyResult compile_body(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast
     if (ast_graph->children(contents).iter())
         return {};
     return { ctx.constant_table.register_constexpr({ Nil {} }), false };
-}
-
-void declare_frame(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph, Context& ctx,
-                   ast::DeclareArgumentListIndex args, std::optional<ast::BlockContentsListIndex> contents) {
-    if (!frame_scoped(expr.version))
-        return;
-    const auto& g = *ast_graph;
-    // The locations are those the declarations get, so a read before one refers to the same place.
-    const auto later = [&](ast::NamedIdentifierIndex name, ast::Index whole) {
-        Expr::Initialising variable { ctx.symbol_table.get_identifier(std::string { get_string_view(g, name) }),
-                                      expr.scope.size() - 1, location_of(ir, g, whole) };
-        variable.in_frame = true;
-        variable.later = true;
-        expr.initialising.push_back(variable);
-    };
-
-    for (auto it = g.children(args).iter(); it; ++it) {
-        const ast::Index arg { **it };
-        if (const auto name = g.as_a<ast::NamedIdentifierIndex>(arg)) {
-            later(*name, arg);
-        } else if (const auto with_default = g.as_a<ast::DeclareArgumentWithDefaultIndex>(arg)) {
-            const auto [name, value] = g.children(*with_default);
-            later(name, arg);
-        } else if (const auto variadic = g.as_a<ast::DeclareArgumentVariadicIndex>(arg)) {
-            const auto [name] = g.children(*variadic);
-            later(name, { *name });
-        }
-    }
-
-    if (!contents)
-        return;
-    for (auto it = g.children(*contents).iter(); it; ++it) {
-        const auto declarations = g.as_a<ast::DeclareVariableListIndex>(ast::Index { **it });
-        if (!declarations)
-            return;
-        for (auto item = g.children(*declarations).iter(); item; ++item) {
-            const ast::Index declaration { **item };
-            if (const auto name = g.as_a<ast::NamedIdentifierIndex>(declaration)) {
-                later(*name, declaration);
-            } else if (const auto with_default = g.as_a<ast::DeclareVariableWithDefaultIndex>(declaration)) {
-                const auto [name, value] = g.children(*with_default);
-                later(name, declaration);
-            } else if (const auto pack = g.as_a<ast::VariablePackAssignIndex>(declaration)) {
-                const auto [names, value] = g.children(*pack);
-                const auto [list, rest] = g.children(names);
-                for (auto target = g.children(list).iter(); target; ++target)
-                    if (const auto name = g.as_a<ast::NamedIdentifierIndex>(ast::Index { **target }))
-                        later(*name, { **name });
-                if (const auto name = g.as_a<ast::NamedIdentifierIndex>(ast::Index { *rest }))
-                    later(*name, { **name });
-            }
-        }
-    }
 }
 }

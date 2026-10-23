@@ -1,6 +1,8 @@
 #pragma once
+#include "sc_util/strong_index.hpp"
 #include "sc_util/type_set_index.hpp"
 #include <cstdint>
+#include <limits>
 namespace sc::ir {
 enum struct SCNodeType {
     Missing,
@@ -119,5 +121,12 @@ using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCSpe
 
 using SCClassList_I = TypedNodeIndex<SCNodeType::ClassOrExtentionList>;
 
+// Owns a local variable.
+using SCLocalOwner_I = join<SCFunction_I, SCMethod_I, SCGenQualList_I>;
 
+// A local variable, an index into its IRGraph's table of them, see LocalVariable.
+using LocalIndex = util::StrongIndex<std::uint32_t, struct LocalIndex__>;
+using OptionalLocalIndex =
+    util::StrongOptionalIndex<std::uint32_t, struct LocalIndex__, std::numeric_limits<std::uint32_t>::max()>;
+// What holds a local variable in its frame.
 }

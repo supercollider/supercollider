@@ -41,7 +41,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::SymbolSlashIndex i) { return literal(c
 // The class, its type is the meta class. Legacy code doesn't know it is constant, as the old compiler didn't treat it
 // as a literal.
 Return<SCAnyExpr_I> Expr::operator()(ast::ClassNameIdentifierIndex i) {
-    if (folds_constants(*this))
+    if (can_fold_constants())
         return literal(ctx, ir, ast_graph, version, sink, i);
     const auto r = ConstEval { ctx, ast_graph, ASTGraphIndex { 0 }, version }(i).success();
     assert(r);

@@ -40,11 +40,12 @@ struct SCRead : priv::Terminal<SCRead_I> {
     enum struct Kind { Local, Instance, Class, Environment };
     SymSCIdentifier name;
     Kind kind;
-    // Where the variable is declared, environment variables aren't.
+    OptionalLocalIndex local;
     std::optional<SourceLocation> declaration;
-    SCRead(SymSCIdentifier n, Kind k, std::optional<SourceLocation> d = std::nullopt):
+    SCRead(SymSCIdentifier n, Kind k, OptionalLocalIndex l = {}, std::optional<SourceLocation> d = std::nullopt):
         name(n),
         kind(k),
+        local(l),
         declaration(d) {}
 };
 
@@ -71,11 +72,13 @@ struct SCAssign : priv::Node<SCAssign_I(SCAnyExpr_I)> {
     enum struct Kind { Local, Instance, Class, Environment };
     Locatable<SymSCIdentifier> name;
     Kind kind;
-    // Where the variable is declared, environment variables aren't.
+    OptionalLocalIndex local;
     std::optional<SourceLocation> declaration;
-    SCAssign(Locatable<SymSCIdentifier> n, Kind k, std::optional<SourceLocation> d = std::nullopt):
+    SCAssign(Locatable<SymSCIdentifier> n, Kind k, OptionalLocalIndex l = {},
+             std::optional<SourceLocation> d = std::nullopt):
         name(n),
         kind(k),
+        local(l),
         declaration(d) {}
 };
 
@@ -109,7 +112,8 @@ struct SCMessage : priv::Node<SCMessage_I(SCAnyExpr_I receiver, //
 struct SCVariableDeclare : priv::Node<SCVariableDeclare_I(maybe<SCAnyExpr_I> value)> {
     static constexpr auto type_name { "SCVariableDeclare" };
     Locatable<SymSCIdentifier> name;
-    SCVariableDeclare(Locatable<SymSCIdentifier> n): name(n) {}
+    LocalIndex local;
+    SCVariableDeclare(Locatable<SymSCIdentifier> n, LocalIndex l): name(n), local(l) {}
 };
 
 // The body of a method or function, its expressions and variable declarations in the order they are written.
@@ -145,14 +149,18 @@ struct SCPackTarget : priv::Terminal<SCPackTarget_I> {
     SCAssign::Kind kind;
     std::uint32_t index;
     bool rest;
-    // Where the variable is declared, when assigning. In SCPackDeclare the target is the declaration.
+    // Whether it declares a local in SCPackDeclare or assigns it.
+    bool declares { false };
+    OptionalLocalIndex local;
+    // Where a member is declared, see SCRead::declaration.
     std::optional<SourceLocation> declaration;
-    SCPackTarget(Locatable<SymSCIdentifier> n, SCAssign::Kind k, std::uint32_t i, bool r,
+    SCPackTarget(Locatable<SymSCIdentifier> n, SCAssign::Kind k, std::uint32_t i, bool r, OptionalLocalIndex l = {},
                  std::optional<SourceLocation> d = std::nullopt):
         name(n),
         kind(k),
         index(i),
         rest(r),
+        local(l),
         declaration(d) {}
 };
 
@@ -184,15 +192,25 @@ struct SCPackDeclare : priv::Node<SCPackDeclare_I(SCAnyExpr_I value, SCPackTarge
 struct SCGenQualIterate : priv::Node<SCGenQualIterate_I(SCAnyExpr_I source)> {
     static constexpr auto type_name { "SCGenQualIterate" };
     Locatable<SymSCIdentifier> element;
+    LocalIndex element_local;
+
     std::optional<Locatable<SymSCIdentifier>> index;
-    SCGenQualIterate(Locatable<SymSCIdentifier> e, std::optional<Locatable<SymSCIdentifier>> i): element(e), index(i) {}
+    OptionalLocalIndex index_local;
+
+    SCGenQualIterate(Locatable<SymSCIdentifier> e, std::optional<Locatable<SymSCIdentifier>> i, LocalIndex el,
+                     OptionalLocalIndex il):
+        element(e),
+        index(i),
+        element_local(el),
+        index_local(il) {}
 };
 
 // `var x = value`, declares x for the qualifiers after it, a new binding each time it runs.
 struct SCGenQualDeclare : priv::Node<SCGenQualDeclare_I(SCAnyExpr_I value)> {
     static constexpr auto type_name { "SCGenQualDeclare" };
     Locatable<SymSCIdentifier> name;
-    SCGenQualDeclare(Locatable<SymSCIdentifier> n): name(n) {}
+    LocalIndex local;
+    SCGenQualDeclare(Locatable<SymSCIdentifier> n, LocalIndex l): name(n), local(l) {}
 };
 
 // `condition`, the qualifiers after it only run when it is true.
@@ -238,9 +256,11 @@ enum struct DefaultBehaviour { NoDefault, PreserveNil, DontPreserveNil };
 struct SCArgumentDeclare : priv::Node<SCArgumentDeclare_I(maybe<SCAnyExpr_I>)> {
     static constexpr auto type_name { "SCArgumentDeclare" };
     SymSCIdentifier name;
+    LocalIndex local;
     DefaultBehaviour default_behaviour;
-    SCArgumentDeclare(SymSCIdentifier n, DefaultBehaviour db = DefaultBehaviour::NoDefault):
+    SCArgumentDeclare(SymSCIdentifier n, LocalIndex l, DefaultBehaviour db = DefaultBehaviour::NoDefault):
         name(n),
+        local(l),
         default_behaviour(db) {}
 };
 

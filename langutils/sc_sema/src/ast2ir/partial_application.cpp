@@ -129,11 +129,12 @@ Return<SCAnyExpr_I> partially_apply(Expr& expr, IRGraph& ir, const std::shared_p
         const auto name = curry_argument_name(ctx, n, curries.size());
         const auto curry_location = location_of(ir, *ast_graph, { *curries[n] });
         const auto missing_default = ir.create(SCMissing {}, curry_location);
-        const auto arg = ir.create(SCArgumentDeclare { name }, curry_location, missing_default);
+        const auto local = expr.create_local(name, curry_location, function);
+        const auto arg = ir.create(SCArgumentDeclare { name, local }, curry_location, missing_default);
         ir.append(positional, arg);
-        expr.add_symbol(
-            name,
-            ScopeEntry { nullptr, function, arg, {}, {}, ScopeEntry::Kind::Argument, ScopeEntry::State::Initalised });
+        ScopeEntry entry { nullptr, function, arg, {}, {}, ScopeEntry::Kind::Argument, ScopeEntry::State::Initalised };
+        entry.local = local;
+        expr.add_symbol(name, entry);
     }
 
     // Now that its `_` are being applied, node compiles as normal. A `_` is always compiled while its own call is the
@@ -154,7 +155,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::CurryIndex i) {
         const auto name = curry_argument_name(ctx, fnd - applied_curries.begin(), applied_curries.size());
         const auto entry = resolve_symbol(name);
         assert(entry);
-        return { ir.create(SCRead { name, SCRead::Kind::Local, declaration_location(ir, *entry) }, location({ *i })) };
+        return { ir.create(SCRead { name, SCRead::Kind::Local, entry->local }, location({ *i })) };
     }
     sink(sc::diag::Diagnostic::curry_outside_call(get_text_info(*ast_graph), get_location(*ast_graph, i)));
     return { ir.create(SCExprList {}, location({ *i })) };

@@ -30,6 +30,7 @@ struct ScopeEntry {
     // on another thread while this one compiles. See declaration_location.
     std::shared_ptr<const lex::TextInfo> declaration_text {};
     lex::SourceCodeRange declaration_range {};
+    OptionalLocalIndex local {};
 };
 
 // Where entry is declared, as a location in ir.
@@ -104,12 +105,12 @@ struct Expr : private Base {
     // `var f = { f.value }`. Elsewhere in the initial value its name refers to what it hides, e.g., `var x = x + 1`
     // reads the outer `x`.
     // Legacy code's frame also holds the function's arguments and leading variables that aren't declared yet, so they
-    // can be used before their declarations, see declare_frame.
+    // can be used before their declarations, see predeclare_legacy_frame.
     struct Initialising {
         Symbol name;
-        // The index of the scope it will be in.
         std::size_t scope;
         SourceLocation declaration;
+        LocalIndex local;
         // Assigned, or used in a function, before it is declared, so it can't be constant.
         bool escaped { false };
 
@@ -123,26 +124,40 @@ struct Expr : private Base {
         // can't refer to it, even in a function, see find_initialising.
         bool outside_value { false };
     };
+
     std::vector<Initialising> initialising;
-    // The `_` of the innermost call being partially applied, in order, see partially_apply. Each reads the function's
-    // argument at the same index.
     std::vector<ast::CurryIndex> applied_curries;
-    // Interpreted code isn't in a method, so `^` has nothing to return from, even in its functions.
+
+    // Interpreted code should not use the '^'.
     bool returns_allowed { true };
-    // An argument's default is only folded when it is bracketed, `arg a = (1 + 1)` or `a(1 + 1)`, not `arg a = 1 + 1`.
-    // Set while compiling one that isn't, see folds_constants(const Expr&).
-    bool unbracketed_default { false };
+
+    bool in_unbracketed_argument_default { false };
+
+    // Legacy code does not do constant folding.
+    // We never fold when in an unbracketed argument default.
+    [[nodiscard]] bool can_fold_constants() const {
+        return ast2ir::can_fold_constants(version) && !in_unbracketed_argument_default;
+    }
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
     void add_symbol(Symbol, ScopeEntry);
+
     // Removes name from legacy code's frame, as it is declared in the current scope. Returns whether it escaped.
     bool declared(Symbol name);
-    // Removes what is left of the current scope's frame, e.g., a name declared twice.
-    void close_frame();
-};
 
-// Whether the code being compiled folds constants, its version's rule, except in an unbracketed argument default.
-[[nodiscard]] inline bool folds_constants(const Expr& e) {
-    return folds_constants(e.version) && !e.unbracketed_default;
-}
+
+    // Old code has unique rules regarding lookup.
+    void predeclare_legacy_frame(join<SCFunction_I, SCMethod_I> owner, ast::DeclareArgumentListIndex args,
+                                 std::optional<ast::BlockContentsListIndex> contents);
+    // Removes what is left of the current scope's frame, e.g., a name declared twice.
+    void close_legacy_frame();
+
+    // Always adds a new variable to the table.
+    [[nodiscard]] LocalIndex create_local(SymSCIdentifier name, SourceLocation declaration, SCLocalOwner_I owner);
+
+    // The variable a declaration in the current scope declares. In legacy code predeclare_legacy_frame has already
+    // created it, so uses before the declaration refer to it, and that one is returned, otherwise it is created.
+    [[nodiscard]] LocalIndex local_for_declaration(SymSCIdentifier name, SourceLocation declaration,
+                                                   SCLocalOwner_I owner);
+};
 }

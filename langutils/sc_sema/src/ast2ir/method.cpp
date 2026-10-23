@@ -89,10 +89,10 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
 
     // Methods have their own scope, holding the arguments and variables, inside the member scopes.
     expr.scope.emplace_back();
-    declare_frame(expr, ir, ast_graph, ctx, arg_list, body);
+    expr.predeclare_legacy_frame(method, arg_list, body);
     declare_arguments(expr, ir, ast_graph, ctx, argument_list, variadic_args, arg_list, method);
     const auto result = compile_body(expr, ir, ast_graph, ctx, method, body_i, body);
-    expr.close_frame();
+    expr.close_legacy_frame();
     expr.scope.pop_back();
 
     // A fatal error anywhere in the method poisons all of it.

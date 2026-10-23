@@ -76,10 +76,10 @@ Return<SCInterpreted_I> Interpreted::operator()(ast::FileAsFunctionIndex i) {
     expr.scope.emplace_back();
     expr.scope.back().starts_function = true;
     // Only does something in legacy code.
-    declare_frame(expr, ir, ast_graph, ctx, arg_list, contents);
+    expr.predeclare_legacy_frame(function, arg_list, contents);
     declare_arguments(expr, ir, ast_graph, ctx, positional, variadic, arg_list, function);
     const auto result = compile_body(expr, ir, ast_graph, ctx, function, body, contents);
-    expr.close_frame();
+    expr.close_legacy_frame();
     expr.scope.pop_back();
     sink.fatal = sink.fatal || parse_error_inside(*ast_graph, ast_graph->location({ *i }));
 

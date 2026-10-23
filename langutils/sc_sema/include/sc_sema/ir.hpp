@@ -79,6 +79,14 @@ extern template struct sc::util::typed_graph::GraphImplementation<sc::ir::OptNod
 
 
 namespace sc::ir {
+
+// Argument or variable (including in generators).
+struct LocalVariable {
+    SymSCIdentifier name;
+    SCLocalOwner_I owner;
+    SourceLocation declaration;
+};
+
 struct IRGraph : private sc::util::typed_graph::GraphImplementation<OptNodeIndex, NodeIndex, NodeCollectionHelper> {
     using Base = sc::util::typed_graph::GraphImplementation<OptNodeIndex, NodeIndex, NodeCollectionHelper>;
 
@@ -202,6 +210,16 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////////
+    // Local variables, see LocalVariable.
+    ////////////////////////////////////////////////////////////////////////////////
+    [[nodiscard]] LocalIndex add_local(LocalVariable v) {
+        m_locals.push_back(v);
+        return LocalIndex { static_cast<std::uint32_t>(m_locals.size() - 1) };
+    }
+    [[nodiscard]] const LocalVariable& local(LocalIndex i) const { return m_locals[*i]; }
+    [[nodiscard]] const std::vector<LocalVariable>& locals() const { return m_locals; }
+
+    ////////////////////////////////////////////////////////////////////////////////
     // Constexprs
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -218,6 +236,7 @@ public:
 private:
     std::vector<SourceLocation> m_node_locations {};
     std::vector<std::shared_ptr<const lex::TextInfo>> m_sources {};
+    std::vector<LocalVariable> m_locals {};
 
     std::unordered_map<NodeIndex, ConstExprIndex> nodes_to_constants { };
     std::variant<std::monostate, SCClass_I, SCAnyExpr_I, SCInterpreted_I> m_roots;

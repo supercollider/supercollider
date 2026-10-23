@@ -77,7 +77,7 @@ Return<SCAnyExpr_I> compile_range(Expr& expr, IRGraph& ir, const std::shared_ptr
     const auto first_value = integer_constant(ctx, r.first);
     const auto last_value = r.last ? integer_constant(ctx, *r.last) : std::nullopt;
     const auto second_value = r.second ? integer_constant(ctx, *r.second) : std::nullopt;
-    if (!folds_constants(expr) || !first_value || !last_value || (r.second && !second_value))
+    if (!expr.can_fold_constants() || !first_value || !last_value || (r.second && !second_value))
         return { range, type };
     // Folding assumes what series does.
     if (!ctx.known_methods.is_known(ctx.common_classes.int_, ctx.common_symbols.series))

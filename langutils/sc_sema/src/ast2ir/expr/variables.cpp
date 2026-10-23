@@ -23,7 +23,75 @@ bool Expr::declared(Symbol name) {
     return escaped;
 }
 
-void Expr::close_frame() {
+void Expr::predeclare_legacy_frame(join<SCFunction_I, SCMethod_I> owner, ast::DeclareArgumentListIndex args,
+                                   std::optional<ast::BlockContentsListIndex> contents) {
+    if (!is_frame_scoped(version))
+        return;
+    const auto& g = *ast_graph;
+    // The locations are those the declarations get, so a read before one refers to the same place.
+    // Each is a new variable, a name declared twice is two, see local_for_declaration.
+    const auto later = [&](ast::NamedIdentifierIndex name, ast::Index whole) {
+        const auto sym = ctx.symbol_table.get_identifier(std::string { get_string_view(g, name) });
+        const auto loc = location_of(ir, g, whole);
+        Initialising variable { sym, scope.size() - 1, loc, create_local(sym, loc, owner) };
+        variable.in_frame = true;
+        variable.later = true;
+        initialising.push_back(variable);
+    };
+
+    for (auto it = g.children(args).iter(); it; ++it) {
+        const ast::Index arg { **it };
+        if (const auto name = g.as_a<ast::NamedIdentifierIndex>(arg)) {
+            later(*name, arg);
+        } else if (const auto with_default = g.as_a<ast::DeclareArgumentWithDefaultIndex>(arg)) {
+            const auto [name, value] = g.children(*with_default);
+            later(name, arg);
+        } else if (const auto variadic = g.as_a<ast::DeclareArgumentVariadicIndex>(arg)) {
+            const auto [name] = g.children(*variadic);
+            later(name, { *name });
+        }
+    }
+
+    if (!contents)
+        return;
+    for (auto it = g.children(*contents).iter(); it; ++it) {
+        const auto declarations = g.as_a<ast::DeclareVariableListIndex>(ast::Index { **it });
+        if (!declarations)
+            return;
+        for (auto item = g.children(*declarations).iter(); item; ++item) {
+            const ast::Index declaration { **item };
+            if (const auto name = g.as_a<ast::NamedIdentifierIndex>(declaration)) {
+                later(*name, declaration);
+            } else if (const auto with_default = g.as_a<ast::DeclareVariableWithDefaultIndex>(declaration)) {
+                const auto [name, value] = g.children(*with_default);
+                later(name, declaration);
+            } else if (const auto pack = g.as_a<ast::VariablePackAssignIndex>(declaration)) {
+                const auto [names, value] = g.children(*pack);
+                const auto [list, rest] = g.children(names);
+                for (auto target = g.children(list).iter(); target; ++target)
+                    if (const auto name = g.as_a<ast::NamedIdentifierIndex>(ast::Index { **target }))
+                        later(*name, { **name });
+                if (const auto name = g.as_a<ast::NamedIdentifierIndex>(ast::Index { *rest }))
+                    later(*name, { **name });
+            }
+        }
+    }
+}
+
+LocalIndex Expr::create_local(SymSCIdentifier name, SourceLocation declaration, SCLocalOwner_I owner) {
+    return ir.add_local({ name, owner, declaration });
+}
+
+LocalIndex Expr::local_for_declaration(SymSCIdentifier name, SourceLocation declaration, SCLocalOwner_I owner) {
+    const auto k = scope.size() - 1;
+    const auto fnd = std::find_if(initialising.begin(), initialising.end(),
+                                  [&](const auto& v) { return v.later && v.scope == k && v.name == name; });
+    if (fnd != initialising.end())
+        return fnd->local;
+    return create_local(name, declaration, owner);
+}
+
+void Expr::close_legacy_frame() {
     const auto k = scope.size() - 1;
     initialising.erase(std::remove_if(initialising.begin(), initialising.end(),
                                       [&](const auto& v) { return v.later && v.scope == k; }),
@@ -31,6 +99,8 @@ void Expr::close_frame() {
 }
 
 SourceLocation declaration_location(IRGraph& ir, const ScopeEntry& entry) {
+    if (entry.local)
+        return ir.local(*entry.local).declaration;
     if (!entry.graph)
         return ir.location(entry.declare_index);
     return ir.make_location(entry.declaration_text, entry.declaration_range);
@@ -122,7 +192,7 @@ struct InitialisingUse {
 // can be used anywhere in its leading declarations. Otherwise the use refers to the name it hides, e.g., `var x = x +
 // 1` reads the outer `x`.
 bool visible(const Expr::Initialising& variable, bool in_function, ast::LanguageVersion version) {
-    return variable.later || in_function || (variable.in_frame && frame_scoped(version));
+    return variable.later || in_function || (variable.in_frame && is_frame_scoped(version));
 }
 
 // Whether name refers to a variable being initialised, rather than one already declared, which it would hide. The one
@@ -149,11 +219,11 @@ std::optional<InitialisingUse> find_initialising(Expr& expr, Symbol name, const 
     return std::nullopt;
 }
 
-// The declaration a use of an initialising variable refers to. Legacy code using one before its declaration refers to
+// The variable a use of an initialising variable refers to. Legacy code using one before its declaration refers to
 // the variable in its frame, which is nil until its initial value runs, unless that is a literal, but 3.16 doesn't,
 // so it warns.
-SourceLocation resolve_initialising(InitialisingUse use, bool assigns, DiagnosticSink& sink, IRGraph& ir,
-                                    const ast::ASTGraph& g, ast::Index at) {
+LocalIndex resolve_initialising(InitialisingUse use, bool assigns, DiagnosticSink& sink, IRGraph& ir,
+                                const ast::ASTGraph& g, ast::Index at) {
     auto& variable = *use.variable;
     if (variable.later || !use.in_function) {
         sink(sc::diag::Diagnostic::used_before_declaration(ir.text_info(variable.declaration.source),
@@ -161,7 +231,14 @@ SourceLocation resolve_initialising(InitialisingUse use, bool assigns, Diagnosti
                                                            get_location(g, at)));
         variable.escaped = variable.escaped || assigns || use.in_function;
     }
-    return variable.declaration;
+    return variable.local;
+}
+
+// A local is found by its index, a member by where it is declared.
+std::optional<SourceLocation> member_declaration(IRGraph& ir, const ScopeEntry& entry) {
+    if (entry.local)
+        return std::nullopt;
+    return declaration_location(ir, entry);
 }
 }
 
@@ -176,8 +253,9 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
             SCRead { name_sym, SCRead::Kind::Local, resolve_initialising(*use, false, sink, ir, *ast_graph, { *i }) },
             location({ *i })) };
     if (const auto entry = resolve_symbol(name_sym)) {
-        const auto read = ir.create(SCRead { name_sym, to_read_kind(entry->kind), declaration_location(ir, *entry) },
-                                    location({ *i }));
+        const auto read =
+            ir.create(SCRead { name_sym, to_read_kind(entry->kind), entry->local, member_declaration(ir, *entry) },
+                      location({ *i }));
         // Only locals can be constant, a member's initial value isn't, as the member can be assigned.
         if (entry->kind == ScopeEntry::Kind::Local && entry->const_expr) {
             ir.register_node_as_consteval(read, *entry->const_expr);
@@ -199,10 +277,11 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
     const auto name_sym = ctx.symbol_table.get_identifier(std::string { txt });
     const Locatable<SymSCIdentifier> located_name { location({ *name }), name_sym };
 
-    const auto make_return = [&](SCAssign::Kind kind,
+    const auto make_return = [&](SCAssign::Kind kind, OptionalLocalIndex local,
                                  std::optional<SourceLocation> declaration) -> Return<SCAnyExpr_I> {
         // Assignment returns the assigned value, but is never a const expression as it has a side effect.
-        const auto index = ir.create(SCAssign { located_name, kind, declaration }, location({ *i }), expr_r.ir_node);
+        const auto index =
+            ir.create(SCAssign { located_name, kind, local, declaration }, location({ *i }), expr_r.ir_node);
         if (expr_r.type)
             return { index, *expr_r.type };
         return { index };
@@ -210,7 +289,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
 
     // Environment vars are not registered in the scope.
     if (ast_graph->payload(i).target == ast::AssignmentNode::Target::Environment) {
-        return make_return(SCAssign::Kind::Environment, std::nullopt);
+        return make_return(SCAssign::Kind::Environment, {}, std::nullopt);
     }
 
     if (ctx.common_symbols.is_special(name_sym)) {
@@ -219,11 +298,12 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
         return expr_r;
     }
     if (const auto use = find_initialising(*this, name_sym, *ast_graph, { *name }))
-        return make_return(SCAssign::Kind::Local, resolve_initialising(*use, true, sink, ir, *ast_graph, { *name }));
+        return make_return(SCAssign::Kind::Local, resolve_initialising(*use, true, sink, ir, *ast_graph, { *name }),
+                           std::nullopt);
 
     // TODO: error when assigning to a const once ScopeEntry records const-ness.
     if (const auto entry = resolve_symbol(name_sym))
-        return make_return(to_assign_kind(entry->kind), declaration_location(ir, *entry));
+        return make_return(to_assign_kind(entry->kind), entry->local, member_declaration(ir, *entry));
 
     sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, name), txt));
     return expr_r;
@@ -271,7 +351,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
                                                to_assign_kind(entry->kind),
                                                index,
                                                is_rest,
-                                               declaration_location(ir, *entry) },
+                                               entry->local,
+                                               member_declaration(ir, *entry) },
                                 location({ **name })));
             return;
         }

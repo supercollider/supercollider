@@ -28,7 +28,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ExprSeqIndex i) {
     }
 
     // Brackets aren't a literal, so legacy code doesn't know the value.
-    if (folds_constants(*this) && body_is_const_expr && last_index) {
+    if (can_fold_constants() && body_is_const_expr && last_index) {
         return { expr_list, *last_index->const_index, *last_index->type };
     }
     if (last_index->type)

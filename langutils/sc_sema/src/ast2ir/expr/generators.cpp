@@ -54,16 +54,16 @@ Locatable<SymSCIdentifier> name_of(GeneratorContext& c, ast::NamedIdentifierInde
 // an earlier one's names. The variables change each iteration, so are never constant.
 void open_scope(GeneratorContext& c) { c.scopes.open(); }
 
-void declare(GeneratorContext& c, Locatable<SymSCIdentifier> name,
-             join<SCGenQualIterate_I, SCGenQualDeclare_I> declare) {
+void declare(GeneratorContext& c, Locatable<SymSCIdentifier> name, join<SCGenQualIterate_I, SCGenQualDeclare_I> declare,
+             LocalIndex local) {
     if (c.ctx.common_symbols.is_special(*name)) {
         c.expr.sink(sc::diag::Diagnostic::declared_special_variable(c.ir.text_info(name.location.source),
                                                                     IRGraph::range(name.location)));
         return;
     }
-    c.expr.add_symbol(
-        *name,
-        ScopeEntry { nullptr, c.qualifiers, declare, {}, {}, ScopeEntry::Kind::Local, ScopeEntry::State::Initalised });
+    ScopeEntry entry { nullptr, c.qualifiers, declare, {}, {}, ScopeEntry::Kind::Local, ScopeEntry::State::Initalised };
+    entry.local = local;
+    c.expr.add_symbol(*name, entry);
 }
 
 // The collection being iterated. It is only iterated, so a range can be unbounded, e.g., `x <- (1..)`.
@@ -85,11 +85,17 @@ void iterate(GeneratorContext& c, ast::GeneratorQualAssignIndex q) {
     if (index_i)
         index = name_of(c, *index_i);
 
-    const auto node = c.ir.create(SCGenQualIterate { element, index }, location_of(c.ir, g, { *q }), source_i);
+    // The qualifiers own them, both are declared by the qualifier, so are where it is.
+    const auto here = location_of(c.ir, g, { *q });
+    const auto element_local = c.expr.create_local(*element, here, c.qualifiers);
+    OptionalLocalIndex index_local;
+    if (index)
+        index_local = c.expr.create_local(**index, here, c.qualifiers);
+    const auto node = c.ir.create(SCGenQualIterate { element, index, element_local, index_local }, here, source_i);
     c.ir.append(c.qualifiers, node);
 
     open_scope(c);
-    declare(c, element, node);
+    declare(c, element, node, element_local);
     if (!index)
         return;
     // `x x <- source`, the old compiler made these the arguments of a block, which can't share a name.
@@ -98,7 +104,7 @@ void iterate(GeneratorContext& c, ast::GeneratorQualAssignIndex q) {
                                                              get_text_info(g), get_location(g, *index_i)));
         return;
     }
-    declare(c, *index, node);
+    declare(c, *index, node, *index_local);
 }
 
 
@@ -119,14 +125,15 @@ void declare_variable(GeneratorContext& c, ast::GeneratorQualDeclareIndex q) {
     // still refer to it, see Expr::initialising.
     open_scope(c);
     const auto here = location_of(c.ir, *c.ast_graph, { *q });
-    Expr::Initialising variable { *name, c.expr.scope.size() - 1, here };
-    variable.outside_value = frame_scoped(c.expr.version);
+    const auto local = c.expr.create_local(*name, here, c.qualifiers);
+    Expr::Initialising variable { *name, c.expr.scope.size() - 1, here, local };
+    variable.outside_value = is_frame_scoped(c.expr.version);
     c.expr.initialising.push_back(variable);
     const auto value_r = c.expr(value);
     c.expr.initialising.pop_back();
-    const auto node = c.ir.create(SCGenQualDeclare { name }, here, value_r.ir_node);
+    const auto node = c.ir.create(SCGenQualDeclare { name, local }, here, value_r.ir_node);
     c.ir.append(c.qualifiers, node);
-    declare(c, name, node);
+    declare(c, name, node, local);
 }
 
 void qualifier(GeneratorContext& c, ast::GeneratorQualAnyIndex q) {
