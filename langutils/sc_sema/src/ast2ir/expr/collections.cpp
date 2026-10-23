@@ -68,7 +68,7 @@ std::optional<ConstExprArray> append_elements(CollectionContext& c, SCCollection
         c.ir.append(collection, r.ir_node);
         ++c.ir.payload(collection).size;
         if (all_constant && r.const_index)
-            values.push_back(c.ctx.constant_table(*r.const_index));
+            values.push_back(*r.const_index);
         else
             all_constant = false;
     }
@@ -121,11 +121,12 @@ template <typename T> std::optional<T> typed_element(const ConstExpression& valu
     }
 }
 
-template <typename T> std::optional<ConstExpression> typed_array(const ConstExprArray& values) {
+template <typename T>
+std::optional<ConstExpression> typed_array(const ConstantTable& constants, const ConstExprArray& values) {
     std::vector<T> elements;
     elements.reserve(values.size());
-    for (const auto& value : values) {
-        const auto element = typed_element<T>(value);
+    for (const auto value : values) {
+        const auto element = typed_element<T>(constants(value));
         if (!element)
             return std::nullopt;
         elements.push_back(*element);
@@ -157,17 +158,17 @@ std::optional<ConstExpression> collection_constant(const Context& ctx, SymSCClas
 
     const auto& symbols = ctx.common_symbols;
     if (class_name == symbols.double_array)
-        return typed_array<double>(values);
+        return typed_array<double>(ctx.constant_table, values);
     if (class_name == symbols.float_array)
-        return typed_array<float>(values);
+        return typed_array<float>(ctx.constant_table, values);
     if (class_name == symbols.int32_array)
-        return typed_array<std::int32_t>(values);
+        return typed_array<std::int32_t>(ctx.constant_table, values);
     if (class_name == symbols.int16_array)
-        return typed_array<std::int16_t>(values);
+        return typed_array<std::int16_t>(ctx.constant_table, values);
     if (class_name == symbols.int8_array)
-        return typed_array<std::int8_t>(values);
+        return typed_array<std::int8_t>(ctx.constant_table, values);
     if (class_name == symbols.symbol_array)
-        return typed_array<SymSCSymbol>(values);
+        return typed_array<SymSCSymbol>(ctx.constant_table, values);
     return std::nullopt;
 }
 }
@@ -232,7 +233,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) {
         ir.append(collection, value_r.ir_node);
         ir.payload(collection).size += 2;
         if (all_constant && key_r.const_index && value_r.const_index)
-            values.push_back({ ctx.constant_table(*key_r.const_index), ctx.constant_table(*value_r.const_index) });
+            values.push_back({ *key_r.const_index, *value_r.const_index });
         else
             all_constant = false;
     }

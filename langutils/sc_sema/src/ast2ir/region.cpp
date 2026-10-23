@@ -31,6 +31,13 @@ Return<SCInterpreted_I> Interpreted::operator()(ast::RegionListIndex i) {
             result = {};
             continue;
         }
+        // Not compiled, as it would overflow the stack, like an error, it has no region.
+        if (const auto deep = nested_too_deeply(*ast_graph, { *item })) {
+            sink(sc::diag::Diagnostic::nested_too_deeply(get_text_info(*ast_graph), get_location(*ast_graph, *deep),
+                                                         max_nesting_depth));
+            result = {};
+            continue;
+        }
         // Whether this region is fatal, rather than an earlier one.
         const bool earlier_fatal = std::exchange(sink.fatal, false);
         const auto function = [&]() -> SCFunction_I {
@@ -58,6 +65,13 @@ Return<SCInterpreted_I> Interpreted::operator()(ast::FileAsFunctionIndex i) {
     const auto variadic = ir.create(SCArgumentDeclareList {}, location({ *arg_list }));
     const auto body = ir.create(SCBody {}, here);
     const auto function = ir.create(SCFunction {}, here, positional, variadic, body);
+
+    // Not compiled, as it would overflow the stack, so it is an empty function.
+    if (const auto deep = nested_too_deeply(*ast_graph, { *i })) {
+        sink(sc::diag::Diagnostic::nested_too_deeply(get_text_info(*ast_graph), get_location(*ast_graph, *deep),
+                                                     max_nesting_depth));
+        return finish(function);
+    }
 
     expr.scope.emplace_back();
     expr.scope.back().starts_function = true;

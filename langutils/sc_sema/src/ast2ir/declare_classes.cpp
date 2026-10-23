@@ -49,6 +49,13 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
         return;
     }
 
+    // Not evaluated, as it would overflow the stack, so there is no member, as for any other error.
+    if (const auto deep = ast2ir::nested_too_deeply(*ast_graph, { *expr_i })) {
+        cxt.diagnostics(diag::Diagnostic::nested_too_deeply(get_text_info(*ast_graph), get_location(*ast_graph, *deep),
+                                                            ast2ir::max_nesting_depth));
+        return;
+    }
+
     // Legacy code only allows a literal, as the old compiler's grammar did, see ConstEval::is_legacy_literal.
     auto result = !folds_constants(decl.version()) && !ast2ir::ConstEval::is_legacy_literal(*ast_graph, expr_i)
         ? ast2ir::ConstEval::Result { diag::Diagnostic::not_constant(get_text_info(*ast_graph),

@@ -340,7 +340,7 @@ ConstEval::RangeParts ConstEval::range_parts(const ast::ASTGraph& ast_graph, ast
 }
 
 std::optional<ConstExprArray> ConstEval::fold_series(std::int32_t first, std::optional<std::int32_t> second,
-                                                     std::int32_t last) {
+                                                     std::int32_t last, ConstantTable& constants) {
     const std::int64_t span = std::int64_t { last } - first;
     const std::int64_t step = second ? std::int64_t { *second } - first : (span >= 0 ? 1 : -1);
     if (step == 0 || (span > 0 && step < 0) || (span < 0 && step > 0))
@@ -353,7 +353,7 @@ std::optional<ConstExprArray> ConstEval::fold_series(std::int32_t first, std::op
     ConstExprArray values;
     values.reserve(static_cast<std::size_t>(count));
     for (std::int64_t k { 0 }; k < count; ++k)
-        values.push_back(ConstExpression { static_cast<std::int32_t>(first + k * step) });
+        values.push_back(constants.register_constexpr({ static_cast<std::int32_t>(first + k * step) }));
     return values;
 }
 
@@ -398,7 +398,7 @@ ConstEval::Result ConstEval::operator()(ast::RangeIndex i) {
     // Folding assumes what series does.
     if (!cxt.known_methods.is_known(cxt.common_classes.int_, cxt.common_symbols.series))
         return not_constant();
-    auto values = fold_series(*first, second, *last);
+    auto values = fold_series(*first, second, *last, cxt.constant_table);
     if (!values)
         return not_constant();
 
@@ -421,12 +421,11 @@ ConstEval::Result ConstEval::operator()(ast::CurryIndex i) {
 ConstEval::Result ConstEval::operator()(ast::ArrayIndex i) {
     const auto p = ast_graph->payload(i);
     encountered_immutable_array |= p.is_immutable;
-    std::vector<ConstExpression> out;
+    ConstExprArray out;
     for (auto it = ast_graph->children(i).iter(); it; ++it) {
         Result r = std::visit(*this, ast_graph->index_to_variant(*it));
         if (auto s = r.success()) {
-            const auto const_i = s->first;
-            out.push_back(cxt.constant_table(const_i));
+            out.push_back(s->first);
         } else {
             return *std::move(r).diagnostic();
         }
@@ -441,7 +440,7 @@ ConstEval::Result ConstEval::operator()(ast::CollectionIndex i) {
 }
 
 ConstEval::Result ConstEval::operator()(ast::DictionaryIndex i) {
-    std::vector<std::pair<ConstExpression, ConstExpression>> out;
+    ConstExprEvent out;
     for (auto c = ast_graph->children(i).iter(); c; ++c) {
         const auto [key, value] = ast_graph->children(*c);
 
@@ -450,8 +449,7 @@ ConstEval::Result ConstEval::operator()(ast::DictionaryIndex i) {
             Result value_r = std::visit(*this, ast_graph->index_to_variant(value));
 
             if (value_r.success()) {
-                out.push_back(
-                    { cxt.constant_table(key_r.success()->first), cxt.constant_table(value_r.success()->first) });
+                out.push_back({ key_r.success()->first, value_r.success()->first });
             } else {
                 return *std::move(value_r).diagnostic();
             }

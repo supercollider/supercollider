@@ -120,7 +120,9 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                    NodeIndex i) {
     const auto& g = d.graph;
     const auto& symbol_table = d.ctx.symbol_table;
-    const auto write_constant = [&](ConstExprIndex c) { d.ctx.constant_table(c).to_literal(out, symbol_table); };
+    const auto write_constant = [&](ConstExprIndex c) {
+        d.ctx.constant_table(c).to_literal(out, symbol_table, d.ctx.constant_table);
+    };
     // Where the variable is declared, shown by its source, so a read can be matched to its declaration.
     const auto write_declaration = [&](const std::optional<SourceLocation>& declaration) {
         if (!declaration)

@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Not a constant.\n";
         return EXIT_FAILURE;
     }
-    ctx.constant_table(*result).to_json(std::cout, symbol_table);
+    ctx.constant_table(*result).to_json(std::cout, symbol_table, ctx.constant_table);
     std::cout << std::endl;
     return 0;
 }

@@ -59,6 +59,15 @@ struct DiagnosticSink {
     bool fatal { false };
 };
 
+// The passes over the ast, e.g., Expr and ConstEval, recurse once for each level of nesting, so code nested deeper than
+// this isn't compiled, as it could overflow the stack. Real code is rarely more than a hundred deep, but a long chain
+// of binary operators, e.g., generated `a + b + c ...`, is as deep as it is long.
+inline constexpr std::size_t max_nesting_depth { 4096 };
+
+// The innermost node of i nested deeper than max_nesting_depth, if any is, found without recursing. Checked before
+// compiling a method, a region of interpreted code, or a member's initial value, so the passes after can recurse.
+[[nodiscard]] std::optional<ast::Index> nested_too_deeply(const ast::ASTGraph& ast, ast::Index i);
+
 // Whether the parser reported an error inside the range, e.g., a bracket it repaired, so what was parsed isn't what was
 // written, even without an error node.
 [[nodiscard]] inline bool parse_error_inside(const ast::ASTGraph& ast, sc::lex::SourceCodeRange r) {

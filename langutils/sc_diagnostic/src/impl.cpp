@@ -595,6 +595,14 @@ Diagnostic Diagnostic::not_constant(TextInfoPtr first_t, sc::lex::SourceCodeRang
              "of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used." };
 }
 
+Diagnostic Diagnostic::nested_too_deeply(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t limit) {
+    return { "Nested too deeply",
+             Severity::Error,
+             { { std::move(t), l, "this is nested more than " + std::to_string(limit) + " deep." } },
+             "The compiler can't compile code nested this deeply, e.g., brackets inside brackets, or a long chain of "
+             "binary operators, `a + b + c ...`, which is as deep as it is long. Split it up, e.g., into variables." };
+}
+
 Diagnostic Diagnostic::literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRange l, bool is_float) {
     if (is_float)
         return { "Literal out of range",

@@ -118,20 +118,22 @@ ConstExpression element(std::int8_t i) { return std::int32_t { i }; }
 ConstExpression element(SymSCSymbol s) { return s; }
 
 // Typed arrays are written like a collection of their elements, e.g., `FloatArray[1.0, 2.5]`.
-template <typename Vec> void typed_array_to_json(std::ostream& o, const Vec& vec, const SymbolTable& t) {
+template <typename Vec>
+void typed_array_to_json(std::ostream& o, const Vec& vec, const SymbolTable& t, const ConstantTable& c) {
     o << "{\"" << typed_array_name(vec).json << "\": [";
     for (size_t i { 0 }; i < vec.size(); ++i) {
-        element(vec[i]).to_json(o, t);
+        element(vec[i]).to_json(o, t, c);
         if (i + 1 != vec.size())
             o << ", ";
     }
     o << "]}";
 }
 
-template <typename Vec> void typed_array_to_literal(std::ostream& o, const Vec& vec, const SymbolTable& t) {
+template <typename Vec>
+void typed_array_to_literal(std::ostream& o, const Vec& vec, const SymbolTable& t, const ConstantTable& c) {
     o << typed_array_name(vec).class_name << '[';
     for (size_t i { 0 }; i < vec.size(); ++i) {
-        element(vec[i]).to_literal(o, t);
+        element(vec[i]).to_literal(o, t, c);
         if (i + 1 != vec.size())
             o << ", ";
     }
@@ -139,7 +141,7 @@ template <typename Vec> void typed_array_to_literal(std::ostream& o, const Vec& 
 }
 }
 
-void ConstExpression::to_json(std::ostream& o, const SymbolTable& t) const {
+void ConstExpression::to_json(std::ostream& o, const SymbolTable& t, const ConstantTable& c) const {
     visit(util::overload {
         [&](std::int32_t i) { o << "{\"int\": " << i << "}"; },
         [&](double i) {
@@ -183,10 +185,10 @@ void ConstExpression::to_json(std::ostream& o, const SymbolTable& t) const {
                 const auto [key, value] = vec[i];
 
                 o << "{\"key\": ";
-                key.to_json(o, t);
+                c(key).to_json(o, t, c);
                 o << ", ";
                 o << "\"value\": ";
-                value.to_json(o, t);
+                c(value).to_json(o, t, c);
                 o << "}";
 
                 if (i + 1 != vec.size())
@@ -197,25 +199,23 @@ void ConstExpression::to_json(std::ostream& o, const SymbolTable& t) const {
         [&](const sc::ir::ConstExprArray& vec) {
             o << "{\"array\": [";
             for (size_t i { 0 }; i < vec.size(); ++i) {
-                const auto value = vec[i];
-
-                value.to_json(o, t);
+                c(vec[i]).to_json(o, t, c);
 
                 if (i + 1 != vec.size())
                     o << ", ";
             }
             o << "]}";
         },
-        [&](const sc::ir::ConstExprDoubleArray& vec) { typed_array_to_json(o, vec, t); },
-        [&](const sc::ir::ConstExprFloatArray& vec) { typed_array_to_json(o, vec, t); },
-        [&](const sc::ir::ConstExprInt32Array& vec) { typed_array_to_json(o, vec, t); },
-        [&](const sc::ir::ConstExprInt16Array& vec) { typed_array_to_json(o, vec, t); },
-        [&](const sc::ir::ConstExprInt8Array& vec) { typed_array_to_json(o, vec, t); },
-        [&](const sc::ir::ConstExprSymbolArray& vec) { typed_array_to_json(o, vec, t); } //
+        [&](const sc::ir::ConstExprDoubleArray& vec) { typed_array_to_json(o, vec, t, c); },
+        [&](const sc::ir::ConstExprFloatArray& vec) { typed_array_to_json(o, vec, t, c); },
+        [&](const sc::ir::ConstExprInt32Array& vec) { typed_array_to_json(o, vec, t, c); },
+        [&](const sc::ir::ConstExprInt16Array& vec) { typed_array_to_json(o, vec, t, c); },
+        [&](const sc::ir::ConstExprInt8Array& vec) { typed_array_to_json(o, vec, t, c); },
+        [&](const sc::ir::ConstExprSymbolArray& vec) { typed_array_to_json(o, vec, t, c); } //
     });
 }
 
-void ConstExpression::to_literal(std::ostream& o, const SymbolTable& t) const {
+void ConstExpression::to_literal(std::ostream& o, const SymbolTable& t, const ConstantTable& c) const {
     visit(util::overload {
         [&](std::int32_t i) { o << i; },
         [&](double d) {
@@ -253,14 +253,14 @@ void ConstExpression::to_literal(std::ostream& o, const SymbolTable& t) const {
         [&](const sc::ir::ConstExprEvent& vec) {
             o << '(';
             for (size_t i { 0 }; i < vec.size(); ++i) {
-                const auto& [key, value] = vec[i];
+                const auto& key = c(vec[i].first);
                 const auto* symbol = key.get_if<SymSCSymbol>();
                 if (symbol && is_identifier(t(*symbol)))
                     o << t(*symbol);
                 else
-                    key.to_literal(o, t);
+                    key.to_literal(o, t, c);
                 o << ": ";
-                value.to_literal(o, t);
+                c(vec[i].second).to_literal(o, t, c);
                 if (i + 1 != vec.size())
                     o << ", ";
             }
@@ -269,18 +269,18 @@ void ConstExpression::to_literal(std::ostream& o, const SymbolTable& t) const {
         [&](const sc::ir::ConstExprArray& vec) {
             o << '[';
             for (size_t i { 0 }; i < vec.size(); ++i) {
-                vec[i].to_literal(o, t);
+                c(vec[i]).to_literal(o, t, c);
                 if (i + 1 != vec.size())
                     o << ", ";
             }
             o << ']';
         },
-        [&](const sc::ir::ConstExprDoubleArray& vec) { typed_array_to_literal(o, vec, t); },
-        [&](const sc::ir::ConstExprFloatArray& vec) { typed_array_to_literal(o, vec, t); },
-        [&](const sc::ir::ConstExprInt32Array& vec) { typed_array_to_literal(o, vec, t); },
-        [&](const sc::ir::ConstExprInt16Array& vec) { typed_array_to_literal(o, vec, t); },
-        [&](const sc::ir::ConstExprInt8Array& vec) { typed_array_to_literal(o, vec, t); },
-        [&](const sc::ir::ConstExprSymbolArray& vec) { typed_array_to_literal(o, vec, t); } //
+        [&](const sc::ir::ConstExprDoubleArray& vec) { typed_array_to_literal(o, vec, t, c); },
+        [&](const sc::ir::ConstExprFloatArray& vec) { typed_array_to_literal(o, vec, t, c); },
+        [&](const sc::ir::ConstExprInt32Array& vec) { typed_array_to_literal(o, vec, t, c); },
+        [&](const sc::ir::ConstExprInt16Array& vec) { typed_array_to_literal(o, vec, t, c); },
+        [&](const sc::ir::ConstExprInt8Array& vec) { typed_array_to_literal(o, vec, t, c); },
+        [&](const sc::ir::ConstExprSymbolArray& vec) { typed_array_to_literal(o, vec, t, c); } //
     });
 }
 }

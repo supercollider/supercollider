@@ -345,9 +345,9 @@ bool declare_pack(BodyContext& b, ast::VariablePackAssignIndex pack) {
         std::optional<TypeInfo> type;
         // Legacy code computes them when it runs, see folds_constants.
         if (elements && !is_rest && folds_constants(b.expr.version)) {
-            ConstExpression element = index < elements->size() ? (*elements)[index] : ConstExpression { Nil {} };
-            type = type_of_constant(b.ctx, element);
-            constant = b.ctx.constant_table.register_constexpr(std::move(element));
+            constant =
+                index < elements->size() ? (*elements)[index] : b.ctx.constant_table.register_constexpr({ Nil {} });
+            type = type_of_constant(b.ctx, b.ctx.constant_table(*constant));
         }
         const auto sym = b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, *name) });
         const auto loc = location_of(b.ir, g, { **name });

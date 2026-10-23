@@ -83,7 +83,7 @@ Return<SCAnyExpr_I> compile_range(Expr& expr, IRGraph& ir, const std::shared_ptr
     if (!ctx.known_methods.is_known(ctx.common_classes.int_, ctx.common_symbols.series))
         return { range, type };
 
-    auto values = ConstEval::fold_series(*first_value, second_value, *last_value);
+    auto values = ConstEval::fold_series(*first_value, second_value, *last_value, ctx.constant_table);
     if (!values)
         return { range, type };
 

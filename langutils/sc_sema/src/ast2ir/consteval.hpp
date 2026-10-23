@@ -62,9 +62,10 @@ struct ConstEval {
     static constexpr std::size_t max_constant_range_size = 1024;
 
     // `first.series(second, last)` for integers, if it can be folded.
-    // Only folds when the step isn't zero and goes towards last, as those cases are unambiguous.
+    // Only folds when the step isn't zero and goes towards last, as those cases are unambiguous. The elements are
+    // registered in constants.
     [[nodiscard]] static std::optional<ConstExprArray>
-    fold_series(std::int32_t first, std::optional<std::int32_t> second, std::int32_t last);
+    fold_series(std::int32_t first, std::optional<std::int32_t> second, std::int32_t last, ConstantTable& constants);
 
     // `receiver.copySeries(first, second, last)` for a constant array or string, if it can be folded. Missing first and
     // last are the ends, and indices outside the receiver are clipped. Like fold_series, it is only folded when the

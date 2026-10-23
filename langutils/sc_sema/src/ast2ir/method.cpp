@@ -3,6 +3,7 @@
 #include "ast2ir/body.hpp"
 #include "ast2ir/expr.hpp"
 #include "sc_parser/ast.hpp"
+#include "sc_parser/ast_untyped.hpp"
 #include "sc_sema/context.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
@@ -77,6 +78,14 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
     // The method is created first, so its arguments can refer to it as their scope.
     const auto method =
         ir.create(SCMethod { primitive, version }, location({ *i }), argument_list, variadic_args, body_i);
+
+    // Not compiled, as it would overflow the stack, so it is an empty, poisoned method.
+    if (const auto deep = nested_too_deeply(*ast_graph, { *i })) {
+        ctx.diagnostics(sc::diag::Diagnostic::nested_too_deeply(get_text_info(*ast_graph),
+                                                                get_location(*ast_graph, *deep), max_nesting_depth));
+        ir.payload(method).poisoned = true;
+        return { method };
+    }
 
     // Methods have their own scope, holding the arguments and variables, inside the member scopes.
     expr.scope.emplace_back();

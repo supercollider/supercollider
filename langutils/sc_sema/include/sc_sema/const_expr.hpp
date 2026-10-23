@@ -14,9 +14,13 @@
 namespace sc::ir {
 
 struct ConstExpression;
+struct ConstantTable;
+struct SymbolTable;
 
-using ConstExprArray = std::vector<ConstExpression>;
-using ConstExprEvent = std::vector<std::pair<ConstExpression, ConstExpression>>;
+// The elements are constants in the same ConstantTable, so nesting costs an index per element rather than a copy, and
+// as every constant is only in the table once, two arrays are equal exactly when their elements' indexes are.
+using ConstExprArray = std::vector<ConstExprIndex>;
+using ConstExprEvent = std::vector<std::pair<ConstExprIndex, ConstExprIndex>>;
 // The arrays whose elements are stored unboxed, like PyrDoubleArray and friends, e.g., `FloatArray[1, 2]`.
 // The integers are signed, as that is how sclang reads their elements.
 using ConstExprDoubleArray = std::vector<double>;
@@ -89,9 +93,10 @@ struct ConstExpression {
 
     friend struct std::hash<ConstExpression>;
 
-    void to_json(std::ostream&, const struct SymbolTable&) const;
+    // The table holds the elements of arrays and events.
+    void to_json(std::ostream&, const SymbolTable&, const ConstantTable&) const;
     // As SuperCollider source, e.g., `[1, \a, "b"]`, kept on one line.
-    void to_literal(std::ostream&, const struct SymbolTable&) const;
+    void to_literal(std::ostream&, const SymbolTable&, const ConstantTable&) const;
 
 private:
     ConstStorage storage;
@@ -129,9 +134,10 @@ template <> struct hash<sc::ir::ConstExpression> {
                 [](const sc::ir::ConstExprEvent& vec) -> size_t {
                     std::size_t seed = vec.size();
                     for (const auto& pair : vec) {
-                        const auto key_hash = std::hash<sc::ir::ConstExpression>()(pair.first);
-                        const auto value_hash = std::hash<sc::ir::ConstExpression>()(pair.second);
-                        auto x = key_hash ^ value_hash;
+                        const auto key_hash = std::hash<sc::ir::ConstExprIndex>()(pair.first);
+                        const auto value_hash = std::hash<sc::ir::ConstExprIndex>()(pair.second);
+                        // Mixed, so swapping a key and its value changes the hash.
+                        auto x = key_hash ^ (value_hash * 0x9e3779b97f4a7c15ull);
                         x = ((x >> 16) ^ x) * 0x45d9f3b;
                         x = ((x >> 16) ^ x) * 0x45d9f3b;
                         x = (x >> 16) ^ x;
