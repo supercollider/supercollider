@@ -1,12 +1,15 @@
-#include "codepoint_stream.hpp"
-#include "normalise_source.hpp"
-#include "text_location.hpp"
+#include "sc_lexer/codepoint_stream.hpp"
+#include "sc_lexer/lexer.hpp"
+#include "sc_lexer/normalise_source.hpp"
+#include "sc_lexer/text_location.hpp"
+#include "sc_lexer/tokens.hpp"
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ios>
 #include <iostream>
-#include <lexer.hpp>
 #include <sstream>
+#include <string_view>
 #ifdef _MSC_VER
 #    include <windows.h>
 #endif // _MSC_VER
@@ -15,7 +18,24 @@ using namespace sc::lex;
 
 template <typename Stream> void print(Stream& s, SourceCodeRange r) {
     s << "{ \"Start\": [" << r.begin.line_number << ", " << r.begin.column << "], \"End\": [" << r.end.line_number
-      << "," << r.end.column << "]}";
+      << ", " << r.end.column << "] }";
+}
+
+// As a json string, with quotes, control characters and backslashes escaped.
+template <typename Stream> void print(Stream& s, std::string_view text) {
+    s << '"';
+    for (const char c : text) {
+        if (c == '"' || c == '\\') {
+            s << '\\' << c;
+        } else if (static_cast<unsigned char>(c) < 0x20) {
+            char escaped[7];
+            std::snprintf(escaped, sizeof(escaped), "\\u%04x", static_cast<unsigned>(c));
+            s << escaped;
+        } else {
+            s << c;
+        }
+    }
+    s << '"';
 }
 
 #ifdef _MSC_VER
@@ -62,21 +82,20 @@ int main(int argc, char* argv[]) {
 
     std::stringstream ss {};
 
-    ss << "{\n";
+    // An array of the tokens, in order, without the end of the file.
+    ss << "[";
+    const char* separator = "\n";
     for (auto r = lexer(stream, action); r.type != TokenType::EndOfFile; r = lexer(stream, action)) {
         const auto [ptr, sz] = stream.source_code_range_to_text(r.range);
 
-        ss << "\t{ \"Type\": "
-           << "\"" << to_string(r.type) << "\", ";
-        ss << "\"Location\": ";
+        ss << separator << "\t{ \"Type\": \"" << to_string(r.type) << "\", \"Location\": ";
         print(ss, r.range);
-        ss << ", ";
-        ss << "\"Text\": ";
-        ss << "\"";
-        ss.write(ptr, static_cast<std::streamsize>(sz));
-        ss << "\"},\n";
+        ss << ", \"Text\": ";
+        print(ss, std::string_view { ptr, sz });
+        ss << " }";
+        separator = ",\n";
     }
-    ss << "}\n";
+    ss << "\n]\n";
 
     const auto string = std::move(ss).str();
     std::cout << string;
