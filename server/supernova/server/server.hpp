@@ -20,7 +20,6 @@
 
 #include <atomic>
 
-#include "buffer_manager.hpp"
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
 #include "../sc/sc_osc_handler.hpp"
@@ -126,7 +125,6 @@ class nova_server : public asynchronous_log_thread,
                     public scheduler<thread_init_functor>,
                     public detail::audio_backend,
                     public synth_factory,
-                    public buffer_manager,
                     public sc_osc_handler {
 public:
     SC_TimeDLL mDLL;

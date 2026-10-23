@@ -1,5 +1,4 @@
 set(simple_tests
-    buffer_manager_test.cpp
     callback_interpreter_system.cpp
     memory-pool_test.cpp
     server_dsp_thread_queue_test.cpp
@@ -43,7 +42,7 @@ foreach(test ${simple_tests})
 endforeach(test)
 
 if(NOT NO_LIBSNDFILE)
-    foreach(test_target sndfile_backend_test buffer_manager_test)
+    foreach(test_target sndfile_backend_test)
         target_link_libraries(${test_target} PRIVATE ${SNDFILE_LIBRARIES})
         target_include_directories(${test_target} SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
     endforeach()
