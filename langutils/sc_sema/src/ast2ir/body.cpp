@@ -430,14 +430,20 @@ BodyResult compile_body(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast
     bool all_constant = true;
     std::optional<ConstExprIndex> last;
     bool explicit_return = false;
+    bool encountered_first_expression = false;
     for (auto it = ast_graph->children(contents).iter(); it; ++it) {
         const ast::BlockItemIndex item = *it;
         explicit_return = false;
         if (const auto declarations = ast_graph->as_a<ast::DeclareVariableListIndex>(item)) {
+            // Still declared, so its uses aren't reported as undefined too.
+            if (encountered_first_expression && requires_predeclared_variables(expr.version))
+                expr.sink(sc::diag::Diagnostic::declaration_after_expression(
+                    get_text_info(*ast_graph), get_location(*ast_graph, { **declarations })));
             all_constant = declare_variables(b, *declarations) && all_constant;
             last = std::nullopt;
             continue;
         }
+        encountered_first_expression = true;
         const auto r = expr(ast::AnyExprIndex { *item });
         ir.append(body, r.ir_node);
         last = r.const_index;

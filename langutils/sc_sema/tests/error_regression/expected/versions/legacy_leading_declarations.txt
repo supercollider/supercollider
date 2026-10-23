@@ -1,0 +1,152 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): LegacyLeadingDeclarations
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): leading { var a = 1; var b = 2; ^a + b }
+|  |  |  SCBody (5:15)
+|  |  |  |  SCVariableDeclare (5:19): a, prototype
+|  |  |  |  |  SCLiteral (5:23) = 1
+|  |  |  |  SCVariableDeclare (5:30): b, prototype
+|  |  |  |  |  SCLiteral (5:34) = 2
+|  |  |  |  SCExplicitReturn (5:37)
+|  |  |  |  |  SCMessage (5:38): +
+|  |  |  |  |  |  SCRead (5:38): local a = 1, declared (5:19): a = 1
+|  |  |  |  |  |  SCPositionalArgs (5:38)
+|  |  |  |  |  |  |  SCRead (5:42): local b = 2, declared (5:30): b = 2
+|  |  SCMethod (7:5): only_declarations { var a; }
+|  |  |  SCBody (7:25)
+|  |  |  |  SCVariableDeclare (7:29): a
+|  |  SCMethod (9:5): poisoned: after_expression { 1; var a = 2; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable declared after an expression
+|  |  |  versions/legacy_leading_declarations.sc:9:31
+|  |  |      7 │     only_declarations { var a; }
+|  |  |      8 │     // expect-error: Variable declared after an expression
+|  |  |      9 │     after_expression { 1; var a = 2; ^a }
+|  |  |        ┆                               ^^^^^ this isn't at the start of the body.
+|  |  |     10 │     // expect-error: Variable declared after an expression
+|  |  |     11 │     in_function { ^{ 1; var a = 2; a } }
+|  |  |     12 │     // expect-error: Variable declared after an expression
+|  |  |
+|  |  |  In the legacy version, as in the old compiler, a function's or method's variables must be declared at the start of its body, before any other expression. From 3.16 they can be declared anywhere. Move the declaration to the start, or add `//# VERSION 3.16`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (9:24)
+|  |  |  |  SCLiteral (9:24) = 1
+|  |  |  |  SCVariableDeclare (9:31): a, prototype
+|  |  |  |  |  SCLiteral (9:35) = 2
+|  |  |  |  SCExplicitReturn (9:38)
+|  |  |  |  |  SCRead (9:39): local a = 2, declared (9:31): a = 2
+|  |  SCMethod (11:5): poisoned: in_function { ^{ 1; var a = 2; a } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable declared after an expression
+|  |  |  versions/legacy_leading_declarations.sc:11:29
+|  |  |      9 │     after_expression { 1; var a = 2; ^a }
+|  |  |     10 │     // expect-error: Variable declared after an expression
+|  |  |     11 │     in_function { ^{ 1; var a = 2; a } }
+|  |  |        ┆                             ^^^^^ this isn't at the start of the body.
+|  |  |     12 │     // expect-error: Variable declared after an expression
+|  |  |     13 │     nested_with_return { |x| ^{ if (x) { ^1 }; var a = 2; a } }
+|  |  |     14 │     // A function's own leading declarations are fine after the method's expressions.
+|  |  |
+|  |  |  In the legacy version, as in the old compiler, a function's or method's variables must be declared at the start of its body, before any other expression. From 3.16 they can be declared anywhere. Move the declaration to the start, or add `//# VERSION 3.16`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (11:19)
+|  |  |  |  SCExplicitReturn (11:19)
+|  |  |  |  |  SCFunction (11:20)
+|  |  |  |  |  |  SCBody (11:20)
+|  |  |  |  |  |  |  SCLiteral (11:22) = 1
+|  |  |  |  |  |  |  SCVariableDeclare (11:29): a, prototype
+|  |  |  |  |  |  |  |  SCLiteral (11:33) = 2
+|  |  |  |  |  |  |  SCRead (11:36): local a = 2, declared (11:29): a = 2
+|  |  SCMethod (13:5): poisoned: nested_with_return { |x| ^{ if (x) { ^1 }; var a = 2; a } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable declared after an expression
+|  |  |  versions/legacy_leading_declarations.sc:13:52
+|  |  |     11 │     in_function { ^{ 1; var a = 2; a } }
+|  |  |     12 │     // expect-error: Variable declared after an expression
+|  |  |     13 │     nested_with_return { |x| ^{ if (x) { ^1 }; var a = 2; a } }
+|  |  |        ┆                                                    ^^^^^ this isn't at the start of the body.
+|  |  |     14 │     // A function's own leading declarations are fine after the method's expressions.
+|  |  |     15 │     // expect: no diagnostics
+|  |  |     16 │     function_after_expression { 1; ^{ var a = 2; a } }
+|  |  |
+|  |  |  In the legacy version, as in the old compiler, a function's or method's variables must be declared at the start of its body, before any other expression. From 3.16 they can be declared anywhere. Move the declaration to the start, or add `//# VERSION 3.16`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (13:27)
+|  |  |  |  SCArgumentDeclare (13:27): x (captured)
+|  |  |  SCBody (13:30)
+|  |  |  |  SCExplicitReturn (13:30)
+|  |  |  |  |  SCFunction (13:31)
+|  |  |  |  |  |  SCBody (13:31)
+|  |  |  |  |  |  |  SCMessage (13:33): if
+|  |  |  |  |  |  |  |  SCRead (13:37): local x, declared (13:27): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (13:33)
+|  |  |  |  |  |  |  |  |  SCFunction (13:40)
+|  |  |  |  |  |  |  |  |  |  SCBody (13:40)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (13:42)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (13:43) = 1
+|  |  |  |  |  |  |  SCVariableDeclare (13:52): a, prototype
+|  |  |  |  |  |  |  |  SCLiteral (13:56) = 2
+|  |  |  |  |  |  |  SCRead (13:59): local a = 2, declared (13:52): a = 2
+|  |  SCMethod (16:5): function_after_expression { 1; ^{ var a = 2; a } }
+|  |  |  SCBody (16:33)
+|  |  |  |  SCLiteral (16:33) = 1
+|  |  |  |  SCExplicitReturn (16:36)
+|  |  |  |  |  SCFunction (16:37) -> 2
+|  |  |  |  |  |  SCBody (16:37)
+|  |  |  |  |  |  |  SCVariableDeclare (16:43): a, prototype
+|  |  |  |  |  |  |  |  SCLiteral (16:47) = 2
+|  |  |  |  |  |  |  SCRead (16:50): local a = 2, declared (16:43): a = 2
+|  |  SCMethod (19:5): primitive { |x| _BasicSwap var a = x; ^a }
+|  |  |  SCArgumentDeclareList (19:18)
+|  |  |  |  SCArgumentDeclare (19:18): x
+|  |  |  SCBody (19:32)
+|  |  |  |  SCVariableDeclare (19:36): a, computed
+|  |  |  |  |  SCRead (19:40): local x, declared (19:18): x
+|  |  |  |  SCExplicitReturn (19:43)
+|  |  |  |  |  SCRead (19:44): local a, declared (19:36): a = x
+SCClass (22:1): LeadingDeclarations316, version 3.16
+|  SCMemberList (22:1)
+|  SCMethodList (22:1)
+|  |  SCMethod (25:5): version 3.16: after_expression { 1; var a = 2; ^a } -> 2
+|  |  |  SCBody (25:24)
+|  |  |  |  SCLiteral (25:24) = 1
+|  |  |  |  SCVariableDeclare (25:31): a, prototype
+|  |  |  |  |  SCLiteral (25:35) = 2
+|  |  |  |  SCExplicitReturn (25:38)
+|  |  |  |  |  SCRead (25:39): local a = 2, declared (25:31): a = 2
+|  |  SCMethod (27:5): version 3.16: in_function { ^{ 1; var a = 2; a } }
+|  |  |  SCBody (27:19)
+|  |  |  |  SCExplicitReturn (27:19)
+|  |  |  |  |  SCFunction (27:20) -> 2
+|  |  |  |  |  |  SCBody (27:20)
+|  |  |  |  |  |  |  SCLiteral (27:22) = 1
+|  |  |  |  |  |  |  SCVariableDeclare (27:29): a, prototype
+|  |  |  |  |  |  |  |  SCLiteral (27:33) = 2
+|  |  |  |  |  |  |  SCRead (27:36): local a = 2, declared (27:29): a = 2
+|  |  SCMethod (29:5): version 3.16: nested_with_return { |x| ^{ if (x) { ^1 }; var a = 2; a } }
+|  |  |  SCArgumentDeclareList (29:27)
+|  |  |  |  SCArgumentDeclare (29:27): x (captured)
+|  |  |  SCBody (29:30)
+|  |  |  |  SCExplicitReturn (29:30)
+|  |  |  |  |  SCFunction (29:31)
+|  |  |  |  |  |  SCBody (29:31)
+|  |  |  |  |  |  |  SCMessage (29:33): if
+|  |  |  |  |  |  |  |  SCRead (29:37): local x, declared (29:27): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (29:33)
+|  |  |  |  |  |  |  |  |  SCFunction (29:40)
+|  |  |  |  |  |  |  |  |  |  SCBody (29:40)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (29:42)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (29:43) = 1
+|  |  |  |  |  |  |  SCVariableDeclare (29:52): a, prototype
+|  |  |  |  |  |  |  |  SCLiteral (29:56) = 2
+|  |  |  |  |  |  |  SCRead (29:59): local a = 2, declared (29:52): a = 2
+Successfully compiled 17 classes.

@@ -65,7 +65,9 @@ LegacyLookup {
     // expect-warning: Variable used before its declaration
     // expect-reads: x -> x = 1
     argument_captures_variable { |a = { x }| var x = 1; ^x }
-    // A declaration after an expression isn't in the frame, the old compiler didn't allow one, so 3.16's rules apply.
+    // A declaration after an expression isn't in the frame, the old compiler didn't allow one, so it is an error, and
+    // 3.16's rules apply.
+    // expect-error: Variable declared after an expression
     // expect-error: Variable not defined
     after_expression { 1; var a = b; var b = 2; ^a }
     // A generator's qualifiers aren't in the frame either, so the name is what it hides, as in the old compiler.

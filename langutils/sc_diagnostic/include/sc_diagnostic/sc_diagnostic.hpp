@@ -21,6 +21,12 @@ enum struct DiagnosticKind {
 };
 
 
+// Right now this file needs cleaning.
+// AI has litered it with obvious comments and the messages are unreadable by a human.
+// Do this later because as long as the diagnostic is emitted in the correct place, highlight the code correctly,
+//   it is trivial to change.
+
+
 class Diagnostic {
 public:
     using TextInfoPtr = std::shared_ptr<const sc::lex::TextInfo>;
@@ -165,6 +171,10 @@ public:
     // A closed function, `#{ }`, at l, is compiled as if it were written inside the Interpreter, but the class library
     // doesn't define it, or it is poisoned.
     [[nodiscard]] static Diagnostic missing_interpreter_class(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
+    // Legacy code declaring variables after an expression, e.g., `{ 1; var a }`, which the old compiler's grammar
+    // doesn't allow, as a function's variables are declared at the start of its body.
+    [[nodiscard]] static Diagnostic declaration_after_expression(TextInfoPtr t, sc::lex::SourceCodeRange l);
 
     // `^1` in a closed function, `#{ ^1 }`, including inside its functions, there is no method to return from. A
     // warning in legacy code, which the old compiler compiled, an error from 3.16.

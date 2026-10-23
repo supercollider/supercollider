@@ -701,6 +701,15 @@ Diagnostic Diagnostic::missing_interpreter_class(TextInfoPtr t, sc::lex::SourceC
     };
 }
 
+Diagnostic Diagnostic::declaration_after_expression(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Variable declared after an expression",
+             Severity::Error,
+             { { std::move(t), l, "this isn't at the start of the body." } },
+             "In the legacy version, as in the old compiler, a function's or method's variables must be declared at "
+             "the start of its body, before any other expression. From 3.16 they can be declared anywhere. Move the "
+             "declaration to the start, or add `//# VERSION 3.16`." };
+}
+
 Diagnostic Diagnostic::return_in_closed_function(TextInfoPtr t, sc::lex::SourceCodeRange l, bool legacy) {
     const std::string why = "`^` returns from the method the code is written in, but a closed function, `#{ }`, isn't "
                             "in one, even when it is written in a method";
