@@ -507,24 +507,24 @@ private:
               typename = std::enable_if<signature<ExitNode>()>>
     void depth_first_traverse_impl(EnterNode enter_node, BeforeChildren before_children, AfterChildren after_children,
                                    ExitNode exit_node, size_t i, size_t& visited, size_t depth = 0) const {
-        assert(visited < 999'999'999);
-        visited += 1;
-        const auto call = [&](auto& f) { f(m_node_edges[i], m_node_payload[i], Index(i), depth); };
+        // Recurses for children, but loops over siblings, so a long list, e.g., a large array, doesn't use the stack.
+        for (OptIndex sibling = Index(i); sibling; sibling = m_node_edges[i].next_sibling) {
+            i = *sibling;
+            assert(visited < 999'999'999);
+            visited += 1;
+            const auto call = [&](auto& f) { f(m_node_edges[i], m_node_payload[i], Index(i), depth); };
 
-        const auto& edge = m_node_edges[i];
+            const auto& edge = m_node_edges[i];
 
-        call(enter_node);
-        if (edge.first_child) {
-            call(before_children);
-            depth_first_traverse_impl(enter_node, before_children, after_children, exit_node, *edge.first_child,
-                                      visited, depth + 1);
-            call(after_children);
+            call(enter_node);
+            if (edge.first_child) {
+                call(before_children);
+                depth_first_traverse_impl(enter_node, before_children, after_children, exit_node, *edge.first_child,
+                                          visited, depth + 1);
+                call(after_children);
+            }
+            call(exit_node);
         }
-        call(exit_node);
-
-        if (edge.next_sibling)
-            depth_first_traverse_impl(enter_node, before_children, after_children, exit_node, *edge.next_sibling,
-                                      visited, depth);
     }
 };
 
