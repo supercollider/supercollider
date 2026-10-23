@@ -37,12 +37,14 @@ struct Token {
     sc::lex::TokenType token;
     sc::lex::SourceCodeRange range;
 
-    // The index of the bracket matching this one, every bracket has one, see tokenise.
-    [[nodiscard]] std::optional<std::uint32_t> match() const {
+    // When brackets, matching return the other one in a pair.
+    [[nodiscard]] std::optional<std::uint32_t> matching() const {
         const auto m = bits & ~inserted_bit;
         return m == no_match ? std::nullopt : std::optional { m };
     }
-    void set_match(std::uint32_t i) { bits = (bits & inserted_bit) | i; }
+
+    // Sets the other one in a pair.
+    void set_matching_index(std::uint32_t i) { bits = (bits & inserted_bit) | i; }
 
     // Inserted to close an unclosed bracket, so isn't in the source and has an empty range at the token before it.
     [[nodiscard]] bool inserted() const { return bits & inserted_bit; }

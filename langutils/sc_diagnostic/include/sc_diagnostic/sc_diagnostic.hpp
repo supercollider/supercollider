@@ -64,6 +64,10 @@ public:
     // An opening bracket without a closing one, before the closing bracket of the one around it, or the end.
     [[nodiscard]] static Diagnostic unclosed_bracket(TextInfoPtr text_info, sc::lex::SourceCodeRange open,
                                                      std::optional<sc::lex::SourceCodeRange> outer_close);
+    // An opening bracket that, judging by the indentation, ends at end, before the next line, as that is indented no
+    // further than the line the bracket is on. end is inside what the bracket encloses, so poisons it.
+    [[nodiscard]] static Diagnostic
+    unclosed_bracket_by_indentation(TextInfoPtr text_info, sc::lex::SourceCodeRange open, sc::lex::SourceCodeRange end);
     // A warning, as the inserted semicolon only separates interpreted regions, so the code is still as written.
     [[nodiscard]] static Diagnostic region_missing_semicolon(TextInfoPtr text_info, sc::lex::SourceCodeRange loc);
 

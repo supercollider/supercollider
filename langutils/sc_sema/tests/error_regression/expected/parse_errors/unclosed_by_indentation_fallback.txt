@@ -1,0 +1,31 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): UnclosedByIndentationFallback, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unclosed Bracket.
+|  parse_errors/unclosed_by_indentation_fallback.sc:5:31
+|      3 │ // isn't indented, so going by the indentation would close it early and leave its `}` unmatched, so the brackets are
+|      4 │ // paired as written, and the class's `{` is reported.
+|      5 │ UnclosedByIndentationFallback {
+|        ┆                               ^ This `{` is never closed.
+|      6 │     unindented {
+|      7 │     ^1
+|      8 │     }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (6:5): version 3.16: unindented {'\n'    ^1'\n'    } -> 1
+|  |  |  SCBody (7:5)
+|  |  |  |  SCExplicitReturn (7:5)
+|  |  |  |  |  SCLiteral (7:6) = 1
+|  |  SCMethod (9:5): version 3.16: missing_close {'\n'        ^2'\n'} -> 2
+|  |  |  SCBody (10:9)
+|  |  |  |  SCExplicitReturn (10:9)
+|  |  |  |  |  SCLiteral (10:10) = 2
+Successfully compiled 16 classes.

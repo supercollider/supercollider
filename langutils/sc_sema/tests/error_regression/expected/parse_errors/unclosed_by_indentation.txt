@@ -1,0 +1,81 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): UnclosedByIndentation, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): version 3.16: before { ^1 } -> 1
+|  |  |  SCBody (6:14)
+|  |  |  |  SCExplicitReturn (6:14)
+|  |  |  |  |  SCLiteral (6:15) = 1
+|  |  SCMethod (9:5): poisoned: version 3.16: missing_close {'\n'        ^2
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unclosed Bracket.
+|  |  |  parse_errors/unclosed_by_indentation.sc:9:19
+|  |  |      7 │     // expect: poisoned
+|  |  |      8 │     // expect-error: Unclosed Bracket.
+|  |  |      9 │     missing_close {
+|  |  |        ┆                   ^ This `{` isn't closed...
+|  |  |     10 │         ^2
+|  |  |     11 │ 
+|  |  |     12 │     // expect: -> 3
+|  |  |
+|  |  |  parse_errors/unclosed_by_indentation.sc:10:11
+|  |  |      8 │     // expect-error: Unclosed Bracket.
+|  |  |      9 │     missing_close {
+|  |  |     10 │         ^2
+|  |  |        ┆            ...judging by the indentation, it ends here, as the next line is indented no further than the line it is on. Add `}`.
+|  |  |     11 │ 
+|  |  |     12 │     // expect: -> 3
+|  |  |     13 │     after { ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:9)
+|  |  |  |  SCExplicitReturn (10:9)
+|  |  |  |  |  SCLiteral (10:10) = 2
+|  |  SCMethod (13:5): version 3.16: after { ^3 } -> 3
+|  |  |  SCBody (13:13)
+|  |  |  |  SCExplicitReturn (13:13)
+|  |  |  |  |  SCLiteral (13:14) = 3
+|  |  SCMethod (16:5): poisoned: version 3.16: missing_nested_close { |x|'\n'        if (x) {'\n'            ^4'\n'        // The method's own `}` is next.'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unclosed Bracket.
+|  |  |  parse_errors/unclosed_by_indentation.sc:17:16
+|  |  |     15 │     // expect-error: Unclosed Bracket.
+|  |  |     16 │     missing_nested_close { |x|
+|  |  |     17 │         if (x) {
+|  |  |        ┆                ^ This `{` isn't closed...
+|  |  |     18 │             ^4
+|  |  |     19 │         // The method's own `}` is next.
+|  |  |     20 │     }
+|  |  |
+|  |  |  parse_errors/unclosed_by_indentation.sc:18:15
+|  |  |     16 │     missing_nested_close { |x|
+|  |  |     17 │         if (x) {
+|  |  |     18 │             ^4
+|  |  |        ┆                ...judging by the indentation, it ends here, as the next line is indented no further than the line it is on. Add `}`.
+|  |  |     19 │         // The method's own `}` is next.
+|  |  |     20 │     }
+|  |  |     21 │     // expect: -> 5
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (16:29)
+|  |  |  |  SCArgumentDeclare (16:29): x
+|  |  |  SCBody (17:9)
+|  |  |  |  SCMessage (17:9): if
+|  |  |  |  |  SCRead (17:13): local x, declared (16:29): x
+|  |  |  |  |  SCPositionalArgs (17:9)
+|  |  |  |  |  |  SCFunction (17:16)
+|  |  |  |  |  |  |  SCBody (17:16)
+|  |  |  |  |  |  |  |  SCExplicitReturn (18:13)
+|  |  |  |  |  |  |  |  |  SCLiteral (18:14) = 4
+|  |  SCMethod (22:5): version 3.16: last { ^5 } -> 5
+|  |  |  SCBody (22:12)
+|  |  |  |  SCExplicitReturn (22:12)
+|  |  |  |  |  SCLiteral (22:13) = 5
+Successfully compiled 16 classes.

@@ -148,7 +148,7 @@ std::string_view separator_inside(const ParserContext& cxt, std::uint32_t i) {
         const auto& token = cxt.tokens[static_cast<std::size_t>(j)];
         // Skips a bracketed part, continuing before its opening bracket.
         if (sc::lex::is_close_bracket(token.token)) {
-            if (const auto m = token.match())
+            if (const auto m = token.matching())
                 j = *m;
             continue;
         }
@@ -377,18 +377,17 @@ void expr(ParserContext& cxt) { report(cxt); }
 
 
 namespace {
-// The bracket matching the opening one at open_bracket, which is at or before the lookahead.
-std::uint32_t matching(const ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+std::uint32_t matching_bracket(const ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
     auto i = cxt.lookahead.value_or(cxt.next);
     while (i > 0 && !(cxt.tokens[i].range == open_bracket && sc::lex::is_open_bracket(cxt.tokens[i].token)))
         --i;
-    assert(cxt.tokens[i].match());
-    return *cxt.tokens[i].match();
+    assert(cxt.tokens[i].matching());
+    return *cxt.tokens[i].matching();
 }
 
 // Skips past the bracket matching the opening one, which the lookahead might be.
 sc::lex::SourceCodeRange skip_to_match(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
-    const auto close = matching(cxt, open_bracket);
+    const auto close = matching_bracket(cxt, open_bracket);
     cxt.next = close + 1;
     cxt.separator_inserted = false;
     return cxt.tokens[close].range;

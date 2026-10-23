@@ -288,6 +288,20 @@ Diagnostic Diagnostic::unclosed_bracket(std::shared_ptr<const sc::lex::TextInfo>
              } };
 }
 
+Diagnostic Diagnostic::unclosed_bracket_by_indentation(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                                       sc::lex::SourceCodeRange open, sc::lex::SourceCodeRange end) {
+    const auto open_text = text_info->read(open);
+    return { "Unclosed Bracket.", //
+             Severity::Error, //
+             std::vector<Location> {
+                 { text_info, open, "This " + quoted(open_text) + " isn't closed..." },
+                 { text_info, end,
+                   "...judging by the indentation, it ends here, as the next line is indented no further than the "
+                   "line it is on. Add "
+                       + quoted(closing(open_text)) + "." },
+             } };
+}
+
 Diagnostic Diagnostic::missing_operator(std::shared_ptr<const sc::lex::TextInfo> text_info,
                                         sc::lex::SourceCodeRange before, sc::lex::SourceCodeRange found,
                                         std::string_view found_text, std::optional<std::string_view> separator) {
