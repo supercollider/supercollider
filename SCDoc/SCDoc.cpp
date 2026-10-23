@@ -38,6 +38,8 @@ const char* scdoc_current_file = NULL;
 const char* NODE_TEXT = "TEXT";
 const char* NODE_NL = "NL";
 
+std::vector<std::string> scdoc_errors;
+
 // merge a+b and free b
 char* strmerge(char* a, char* b) {
     if (a == NULL)
@@ -197,6 +199,8 @@ DocNode* scdoc_parse_file(const std::string& fn, int mode) {
 #else
     fp = fopen(fn.c_str(), "r");
 #endif // _WIN32
+
+    scdoc_errors.clear();
 
     if (!fp) {
         error("scdoc_parse_file: could not open '%s'\n", fn.c_str());

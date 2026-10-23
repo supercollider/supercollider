@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sstream>
 #include "SCDoc.h"
 
 //#define YYLEX_PARAM &yylval, &yylloc
@@ -434,7 +435,14 @@ DocNode * scdoc_parse_run(int mode) {
 
 void scdocerror(const char *str)
 {
-    error("In %s:\n  At line %d: %s\n\n",scdoc_current_file,scdoclineno,str);
+
+    error("In %s:\n  At line %d: %s\n\n", scdoc_current_file, scdoclineno, str);
+
+    std::stringstream ss{};
+
+    ss << "In " << scdoc_current_file << "\nAt line " <<  scdoclineno << ": " << str << "\n\n";
+    scdoc_errors.push_back(ss.str());
+
 
 /*  FIXME: this does not work well, since the reported linenumber is often *after* the actual error line
     fseek(scdocin, 0, SEEK_SET);
