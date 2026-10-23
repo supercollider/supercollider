@@ -2042,22 +2042,29 @@ void handle_completion_message(completion_message&& message, endpoint_ptr const&
 
 
 template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
-    osc::int32 bufnum, frames, channels;
+    /* required args */
+    osc::int32 bufnum = it->AsInt32();
+    ++it;
+    osc::int32 frames = it->AsInt32();
+    ++it;
+
+    /* optional args */
+    osc::int32 channels = 1;
+    if (it != end) {
+        channels = it->AsInt32();
+        ++it;
+    }
+
+    completion_message message;
+    if (it != end)
+        message = extract_completion_message(it);
+
     float samplerate;
-
-    args >> bufnum >> frames;
-
-    if (!args.Eos())
-        args >> channels;
-    else
-        channels = 1;
-
-    completion_message message = extract_completion_message(args);
-
-    if (!args.Eos()) {
-        args >> samplerate;
+    if (it != end) {
+        samplerate = extract_float_argument(it);
         if (samplerate <= 0.0)
             samplerate = sc_factory->world.mSampleRate;
     } else
