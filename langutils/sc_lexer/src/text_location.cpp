@@ -54,7 +54,7 @@ using namespace sc::lex;
 }
 
 [[nodiscard]] SourceCodeRange SourceCodeRange::range(SourceCodeRange left, SourceCodeRange right) {
-    assert(left.begin < right.end);
+    assert(left.begin <= right.end);
     return { left.begin, right.end };
 }
 

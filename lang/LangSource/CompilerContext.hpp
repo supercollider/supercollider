@@ -4,8 +4,8 @@
 #include "PyrSymbol.h"
 #include "SC_Version.hpp"
 #include "SimpleStack.h"
-#include "normalise_source.hpp"
-#include "text_location.hpp"
+#include "sc_lexer/normalise_source.hpp"
+#include "sc_lexer/text_location.hpp"
 #include "ByteCodeArray.h"
 #include <cassert>
 #include <cstdint>

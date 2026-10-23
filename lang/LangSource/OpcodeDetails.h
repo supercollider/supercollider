@@ -1,5 +1,5 @@
 #pragma once
-#include "text_location.hpp"
+#include "sc_lexer/text_location.hpp"
 #include "ByteCodeArray.h"
 #include <cassert>
 #include <tuple>

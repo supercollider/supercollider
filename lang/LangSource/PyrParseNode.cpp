@@ -41,7 +41,7 @@
 #include "SC_LanguageConfig.hpp"
 #include "SpecialSelectorsOperatorsAndClasses.h"
 #include "sc_defer.hpp"
-#include "text_location.hpp"
+#include "sc_lexer/text_location.hpp"
 
 #include <algorithm>
 #include <cassert>

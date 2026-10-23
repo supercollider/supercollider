@@ -19,7 +19,7 @@
 */
 
 #pragma once
-#include "text_location.hpp"
+#include "sc_lexer/text_location.hpp"
 #include <cassert>
 #include <cstdint>
 #include <limits>

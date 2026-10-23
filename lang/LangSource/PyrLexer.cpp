@@ -41,12 +41,12 @@
 #include "PyrSlot.h"
 
 #include "BisonHeaderInclude.hpp"
-#include "codepoint_stream.hpp"
-#include "normalise_source.hpp"
+#include "sc_lexer/codepoint_stream.hpp"
+#include "sc_lexer/normalise_source.hpp"
 #include "lang11d_tab.h"
 
-#include "text_location.hpp"
-#include "tokens.hpp"
+#include "sc_lexer/text_location.hpp"
+#include "sc_lexer/tokens.hpp"
 
 #include <algorithm>
 #include <exception>
@@ -93,7 +93,7 @@
 #include "SC_Filesystem.hpp" // getDirectory, resolveIfAlias, isStandalone
 #include "SC_Codecvt.hpp" // path_to_utf8_str
 
-#include <lexer.hpp>
+#include "sc_lexer/lexer.hpp"
 
 extern ClassLibraryInfo gClassLibraryInfo;
 
@@ -1911,6 +1911,7 @@ CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, sc::lex::FileCodeL
         ParserState { textInfo, BisonLexerAction { textInfo },
                       sc::lex::CodePointStream { textInfo->normalisedSource, fileLoc, loc },
                       textInfo->isClassFile ? ParserState::Mode::ClassLibrary : ParserState::Mode::CMDInitial };
+    yylloc = { loc, loc };
 }
 
 constexpr size_t compPoolInitSize { 32000 };
@@ -1931,6 +1932,7 @@ CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, sc::lex::FileCodeL
         ParserState { textInfo, BisonLexerAction { textInfo },
                       sc::lex::CodePointStream { textInfo->normalisedSource, fileLoc, range },
                       textInfo->isClassFile ? ParserState::Mode::ClassLibrary : ParserState::Mode::CMDInitial };
+    yylloc = { range.begin, range.begin }; // See above.
 }
 
 CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, struct VMGlobals* vm):
@@ -1946,6 +1948,7 @@ CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, struct VMGlobals* 
     gParserState =
         ParserState { textInfo, BisonLexerAction { textInfo }, sc::lex::CodePointStream { textInfo->normalisedSource },
                       textInfo->isClassFile ? ParserState::Mode::ClassLibrary : ParserState::Mode::CMDInitial };
+    yylloc = {};
 }
 
 CompilerContext::~CompilerContext() {

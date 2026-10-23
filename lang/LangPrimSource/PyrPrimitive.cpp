@@ -44,8 +44,8 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "VMGlobals.h"
-#include "normalise_source.hpp"
-#include "text_location.hpp"
+#include "sc_lexer/normalise_source.hpp"
+#include "sc_lexer/text_location.hpp"
 
 #include <cstddef>
 #include <iterator>
@@ -2569,8 +2569,8 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
 
     const auto offset = sc::lex::FileCodeLocation {
         0,
-        static_cast<size_t>(lineNumber.isInt() ? lineNumber.getInt() : 0),
-        static_cast<size_t>(column.isInt() ? column.getInt() : 0),
+        static_cast<std::uint32_t>(lineNumber.isInt() ? lineNumber.getInt() : 0),
+        static_cast<std::uint32_t>(column.isInt() ? column.getInt() : 0),
     };
 
 

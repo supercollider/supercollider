@@ -1,10 +1,10 @@
 #include "CompilerContext.hpp"
 #include "PyrSymbol.h"
 #include "SC_LanguageClient.h"
-#include "codepoint.hpp"
-#include "source_utils.hpp"
+#include "sc_lexer/codepoint.hpp"
+#include "sc_lexer/source_utils.hpp"
 #include "SCBase.h"
-#include "text_location.hpp"
+#include "sc_lexer/text_location.hpp"
 #include <cstring>
 #include <iomanip>
 #include <sstream>

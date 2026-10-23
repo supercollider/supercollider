@@ -1,6 +1,6 @@
 #pragma once
 #include "CompilerContext.hpp"
-#include "text_location.hpp"
+#include "sc_lexer/text_location.hpp"
 
 namespace {
 using SourceCodeRange = sc::lex::SourceCodeRange;

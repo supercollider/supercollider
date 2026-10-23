@@ -27,7 +27,7 @@
 #include "AdvancingAllocPool.h"
 #include "SpecialSelectorsOperatorsAndClasses.h"
 #include "BisonHeaderInclude.hpp"
-#include "text_location.hpp"
+#include "sc_lexer/text_location.hpp"
 
 #include <array>
 
