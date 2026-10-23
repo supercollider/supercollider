@@ -502,7 +502,7 @@ Nonterminals, with rules where they appear
     method.list.opt <MethodListIndex> (82)
         on left: 51 52
         on right: 23 29
-    block.open (83)
+    block.open <bool> (83)
         on left: 53 54
         on right: 55 56
     block <BlockIndex> (84)

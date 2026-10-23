@@ -622,11 +622,14 @@ namespace sc { namespace ast { namespace parser {
       // string
       char dummy52[sizeof (StringLitIndex)];
 
+      // block.open
+      char dummy53[sizeof (bool)];
+
       // class.super.opt
-      char dummy53[sizeof (maybe<ClassNameIdentifierIndex>)];
+      char dummy54[sizeof (maybe<ClassNameIdentifierIndex>)];
 
       // class.slot.opt
-      char dummy54[sizeof (maybe<NamedIdentifierIndex>)];
+      char dummy55[sizeof (maybe<NamedIdentifierIndex>)];
     };
 
     /// The size of the largest semantic type.
@@ -1220,6 +1223,10 @@ namespace sc { namespace ast { namespace parser {
 
       case symbol_kind::S_string: // string
         value.move< StringLitIndex > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_83_block_open: // block.open
+        value.move< bool > (std::move (that.value));
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -1982,6 +1989,20 @@ namespace sc { namespace ast { namespace parser {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, bool&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const bool& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, maybe<ClassNameIdentifierIndex>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -2321,6 +2342,10 @@ switch (yykind)
 
       case symbol_kind::S_string: // string
         value.template destroy< StringLitIndex > ();
+        break;
+
+      case symbol_kind::S_83_block_open: // block.open
+        value.template destroy< bool > ();
         break;
 
       case symbol_kind::S_70_class_super_opt: // class.super.opt
@@ -3767,7 +3792,7 @@ switch (yykind)
 
 #line 7 "langutils/sc_parser/src/sc_grammar.y"
 } } } // sc::ast::parser
-#line 3771 "langutils/sc_parser/src/sc_grammar_parser.hpp"
+#line 3796 "langutils/sc_parser/src/sc_grammar_parser.hpp"
 
 
 

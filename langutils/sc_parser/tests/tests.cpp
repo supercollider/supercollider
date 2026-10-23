@@ -509,3 +509,25 @@ BOOST_AUTO_TEST_CASE(versions_interpreted) {
     check_versions("//# VERSION 3.16\n1 + 1", {}, { "Version in interpreted code" }, false);
     check_versions("(\n//# VERSION 3.16\n1 + 1\n)", {}, { "Version in interpreted code" }, false);
 }
+
+// Each block's closed flag, in source order, `#{ }` is closed, `{ }` isn't.
+BOOST_AUTO_TEST_CASE(closed_blocks) {
+    auto text_info =
+        std::make_shared<sc::lex::TextInfo>(sc::lex::NormalisedSource("#{ |a| { a } }; { #{ } }; f(#{ 1 }) { 2 }"),
+                                            sc::lex::FileCodeLocation {}, "test_file", false);
+    auto [graph, result] = P::parse(text_info);
+    BOOST_TEST(result);
+    BOOST_TEST(graph->diagnostics().empty());
+
+    std::vector<std::pair<std::size_t, bool>> blocks;
+    graph->flat_walk([&](const auto&, const auto& payload, const sc::lex::SourceCodeRange& loc, size_t) {
+        if (const auto block = std::get_if<P::BlockNode>(&payload))
+            blocks.emplace_back(loc.begin.absolute, block->closed);
+    });
+    std::sort(blocks.begin(), blocks.end());
+    std::vector<bool> closed;
+    for (const auto& [_, c] : blocks)
+        closed.push_back(c);
+    BOOST_TEST(closed == (std::vector<bool> { true, false, false, true, true, false }),
+               boost::test_tools::per_element());
+}

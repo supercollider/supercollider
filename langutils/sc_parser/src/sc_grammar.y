@@ -138,6 +138,7 @@ using namespace sc::ast;
 %type <BlockItemIndex> block.contents.item
 %type <BlockContentsListIndex> block.contents 
 %type <BlockIndex> block 
+%type <bool> block.open
 %type <NilLitIndex> nil
 %type <BooleanLitIndex> boolean
 %type <AnySymbolIndex> symbol
@@ -377,13 +378,16 @@ method.list.opt
 // block and block lists
 ////////////////////////////////////////////////////////////////////////////////
 
-block.open : OPENCURLY | BEGINCLOSEDFUNC;
+block.open 
+	: OPENCURLY { $$ = false; } 
+	| BEGINCLOSEDFUNC { $$ = true; } 
+	;
 
 block	
-	: block.open argument_declarations.opt[args] block.contents[content] semicolon.opt CLOSECURLY 
-		{ $$ = cxt.create(BlockNode{}, @$, $args, $content); }
-	| block.open argument_declarations.opt[args] CLOSECURLY 
-		{ $$ = cxt.create(BlockNode{}, @$, $args, cxt.create(BlockContentsList{}, @$)); }
+	: block.open[closed] argument_declarations.opt[args] block.contents[content] semicolon.opt CLOSECURLY 
+		{ $$ = cxt.create(BlockNode{ $closed }, @$, $args, $content); }
+	| block.open[closed] argument_declarations.opt[args] CLOSECURLY 
+		{ $$ = cxt.create(BlockNode{ $closed }, @$, $args, cxt.create(BlockContentsList{}, @$)); }
 	;
 
 block.opt_list	

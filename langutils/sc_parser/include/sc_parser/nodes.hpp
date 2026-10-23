@@ -371,6 +371,8 @@ struct BlockContentsList : ListNode<BlockContentsListIndex, BlockItemIndex> {
 
 struct BlockNode : Node<BlockIndex(DeclareArgumentListIndex, maybe<BlockContentsListIndex>)> {
     static constexpr auto name { "BlockNode" };
+    bool closed;
+    constexpr BlockNode(bool c = false): closed(c) {}
 };
 
 struct ImmediatelyEvaluatedBlock
