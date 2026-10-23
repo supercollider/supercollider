@@ -1,9 +1,11 @@
 #pragma once
 #include "sc_diagnostic/sc_diagnostic.hpp"
+#include "sc_parser/ast.hpp"
 #include "sc_parser/indexes_untyped.hpp"
 #include "sc_sema/const_expr_index.hpp"
 #include "sc_sema/source_location.hpp"
 #include "sc_sema/type_info.hpp"
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -43,6 +45,13 @@ struct DiagnosticSink {
     std::vector<sc::diag::Diagnostic> diagnostics;
     bool fatal { false };
 };
+
+// Whether the parser reported an error inside the range, e.g., a bracket it repaired, so what was parsed isn't what was
+// written, even without an error node.
+[[nodiscard]] inline bool parse_error_inside(const ast::ASTGraph& ast, sc::lex::SourceCodeRange r) {
+    return std::any_of(ast.diagnostics().begin(), ast.diagnostics().end(),
+                       [&](const sc::diag::Diagnostic& d) { return d.fatal() && d.within(ast.text_info(), r); });
+}
 
 template <typename I> struct Return {
     constexpr Return(I i): ir_node(i) {}

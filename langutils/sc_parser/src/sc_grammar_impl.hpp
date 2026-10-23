@@ -4,10 +4,9 @@
 #include <array>
 #include <cassert>
 
-#include "sc_lexer/lexer.hpp"
+#include "sc_lexer/tokens.hpp"
 
 #include "parser_context.hpp"
-#include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_grammar_parser.hpp"
 #include "sc_parser/sc_grammar_shared.hpp"
 #include "sc_lexer/text_location.hpp"
@@ -148,8 +147,9 @@ void report(ParserContext&);
 // Reports a missing semicolon at the end of last_valid, see yylex.
 void region_separator(ParserContext&, sc ::lex::SourceCodeRange last_valid);
 void expr(ParserContext&);
+// Reports the error and skips past the curly bracket closing the method, matching open_bracket.
 void method(ParserContext&, sc::lex::SourceCodeRange open_bracket);
-// Reports the error and skips to the bracket matching open_bracket, or the end of the file, returning where it stopped.
+// Reports the error and skips past the bracket matching open_bracket, returning where it is.
 sc::lex::SourceCodeRange bracket(ParserContext&, sc::lex::SourceCodeRange open_bracket);
 }
 
@@ -166,51 +166,41 @@ inline bool parser_accepts(const sc::ast::parser::parser& p, sc::ast::parser::pa
 inline int yylex(sc::ast::parser::parser::value_type* v, sc::lex::SourceCodeRange* loc,
                  sc::ast::parser::ParserContext& cxt) {
     using T = sc::ast::parser::parser::token_kind_type;
-
-    if (cxt.emit_previous) {
-        cxt.emit_previous = false;
-        const auto [lex_token, location, extra_location] = *cxt.previous;
-        *loc = location;
-        v->emplace<sc::ast::LexerToken>();
-        return static_cast<int>(to_parser_token(lex_token));
-    }
+    v->emplace<sc::ast::LexerToken>();
 
     if (cxt.mode == sc::ast::parser::ParserContext::Mode::CommandInitial) {
         cxt.mode = sc::ast::parser::ParserContext::Mode::CommandContinue;
-        v->emplace<sc::ast::LexerToken>();
         *loc = {};
         return T::TOKEN_INTERPRET;
     }
 
-    // Normal path
-    const auto before = cxt.previous;
-    cxt.previous = sc::lex::lexer(cxt.cps, cxt.action);
-    const auto [lex_token, location, extra_location] = *cxt.previous;
-    *loc = location;
-    v->emplace<sc::ast::LexerToken>();
+    const auto& current = cxt.tokens[cxt.next];
+    *loc = current.range;
 
-    // Reported here, as the lexer knows what is wrong, the parser's error at it is then dropped, see
-    // error_recovery::report. The bracket errors, see Action::process, are left to the parser.
-    if (lex_token >= sc::lex::TokenType::START_OF_USER_DEFINED_ERRORS && sc::lex::is_error(lex_token))
-        return T::TOKEN_BADTOKEN;
-    if (sc::lex::is_error(lex_token)) {
-        cxt.graph->add_diagnostic(sc::diag::Diagnostic::lexer_error(cxt.text_info, lex_token, location));
+    // The lexer has reported it, see tokenise.
+    if (sc::lex::is_error(current.token)) {
+        cxt.lookahead = cxt.next++;
         return T::TOKEN_LEXER_ERROR;
     }
 
-    const auto token = to_parser_token(lex_token);
+    const auto token = to_parser_token(current.token);
 
-    // In interpreted code, a missing semicolon at the end of a line is inserted, when the parser can't take the next
-    // line's first token, but can take a separator. The previous token is emitted after it.
-    const bool starts_line = before && before->range.end.line_number < location.begin.line_number;
-    if (cxt.mode == sc::ast::parser::ParserContext::Mode::CommandContinue && starts_line
-        && lex_token != sc::lex::TokenType::EndOfFile && !parser_accepts(*cxt.owner, token)
+    // Region recovery. Since scd files aren't valid sclang code, this tries to guess where the semicolons should go.
+    const auto* before = cxt.next > 0 ? &cxt.tokens[cxt.next - 1] : nullptr;
+    const bool starts_line = before && before->range.end.line_number < current.range.begin.line_number;
+    if (cxt.mode == sc::ast::parser::ParserContext::Mode::CommandContinue && starts_line && !cxt.separator_inserted
+        && current.token != sc::lex::TokenType::EndOfFile && !parser_accepts(*cxt.owner, token)
         && parser_accepts(*cxt.owner, T::TOKEN_REGION_SEPARATOR)) {
         sc::ast::parser::error_recovery::region_separator(cxt, before->range);
-        cxt.emit_previous = true;
+        cxt.separator_inserted = true;
         *loc = { before->range.end, before->range.end };
         return T::TOKEN_REGION_SEPARATOR;
     }
+    cxt.separator_inserted = false;
 
+    // The end of file is emitted again if asked, e.g., by error recovery.
+    cxt.lookahead = cxt.next;
+    if (current.token != sc::lex::TokenType::EndOfFile)
+        ++cxt.next;
     return static_cast<int>(token);
 }

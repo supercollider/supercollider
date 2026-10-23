@@ -18,10 +18,10 @@ namespace sc::ast {
                                                        ::sc::lex::CodePointStream cps) {
     parser::ParserContext ctx {
         text_info,
-        cps,
-        parser::Action {},
-        text_info->is_class_file ? parser::ParserContext::Mode::ClassLibrary : parser::ParserContext::Mode::CommandInitial,
+        text_info->is_class_file ? parser::ParserContext::Mode::ClassLibrary
+                                 : parser::ParserContext::Mode::CommandInitial,
     };
+    ctx.tokens = parser::tokenise(text_info, std::move(cps), *ctx.graph);
 
     parser::parser p { ctx };
     ctx.owner = &p;

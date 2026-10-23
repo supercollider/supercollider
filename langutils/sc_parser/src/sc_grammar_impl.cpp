@@ -2,8 +2,6 @@
 
 #include "parser_context.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
-#include "sc_lexer/codepoint.hpp"
-#include "sc_lexer/codepoint_stream.hpp"
 #include "sc_lexer/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
 
@@ -21,8 +19,9 @@ void sc::ast::parser::parser::report_syntax_error(const context& symbol_cxt) con
     std::transform(expected.begin(), expected.end(), expected_int.begin(),
                    [](symbol_kind_type r) -> int { return static_cast<int>(r); });
 
+    const bool at_inserted = cxt.lookahead && cxt.tokens[*cxt.lookahead].inserted();
     cxt.unexpected_token_error = UnexpectedToken { symbol_cxt.location(), std::move(expected_int),
-                                                   static_cast<int>(symbol_cxt.lookahead().kind_) };
+                                                   static_cast<int>(symbol_cxt.lookahead().kind_), at_inserted };
 }
 
 void sc::ast::parser::parser::error(const sc::lex::SourceCodeRange&, const std::string&) {
@@ -250,8 +249,8 @@ void report(ParserContext& cxt) {
         return;
     const auto& unexpected = *error;
     const auto got = static_cast<Symbol>(unexpected.got);
-    // The lexer has reported it, see yylex.
-    if (got == S::S_LEXER_ERROR)
+    // The lexer has reported it, or the bracket was unclosed, see tokenise.
+    if (got == S::S_LEXER_ERROR || unexpected.at_inserted)
         return;
 
     std::vector<Symbol> expected(unexpected.expected.size());
@@ -266,46 +265,32 @@ void report(ParserContext& cxt) {
 void expr(ParserContext& cxt) { report(cxt); }
 
 
+namespace {
+// The bracket matching the opening one at open_bracket, which is at or before the lookahead.
+std::uint32_t matching(const ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+    auto i = cxt.lookahead.value_or(cxt.next);
+    while (i > 0 && !(cxt.tokens[i].range == open_bracket && sc::lex::is_open_bracket(cxt.tokens[i].token)))
+        --i;
+    assert(cxt.tokens[i].match());
+    return *cxt.tokens[i].match();
+}
+
+// Skips past the bracket matching the opening one, which the lookahead might be.
+sc::lex::SourceCodeRange skip_to_match(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+    const auto close = matching(cxt, open_bracket);
+    cxt.next = close + 1;
+    cxt.separator_inserted = false;
+    return cxt.tokens[close].range;
+}
+}
+
 sc::lex::SourceCodeRange bracket(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
     report(cxt);
-    // The lookahead, which caused the error, might be the match itself.
-    if (cxt.previous && cxt.previous->extra == open_bracket)
-        return cxt.previous->range;
-
-    while (true) {
-        cxt.previous = sc::lex::lexer(cxt.cps, cxt.action);
-        if (cxt.previous->extra == open_bracket || cxt.previous->token == sc::lex::TokenType::EndOfFile)
-            return cxt.previous->range;
-    }
+    return skip_to_match(cxt, open_bracket);
 }
 
 void method(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
     report(cxt);
-    if (cxt.previous) {
-        if (cxt.previous->token == sc::lex::TokenType::CloseCurly) {
-            return; // do nothing. Can't guess when brackets mismatch.
-        }
-    }
-
-    // copy
-    sc::lex::CodePointStream new_cps = cxt.cps;
-
-    while (true) {
-        sc::lex::CodePointStream peek_cps = new_cps;
-        const auto [lex_token, location, extra_location] = sc::lex::lexer(peek_cps, cxt.action);
-        if (lex_token == sc::lex::TokenType::CloseCurly) {
-            if (extra_location) {
-                if (*extra_location == open_bracket) {
-                    cxt.previous = { lex_token, location, extra_location };
-                    cxt.cps = peek_cps;
-                    return;
-                }
-            }
-        } else if (lex_token == sc::lex::TokenType::EndOfFile) {
-            cxt.cps = new_cps;
-            return;
-        }
-        new_cps = peek_cps;
-    }
+    skip_to_match(cxt, open_bracket);
 }
 }

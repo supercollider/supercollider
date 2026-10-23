@@ -4,6 +4,7 @@ add_library(sc_parser STATIC
 	src/sc_parser.cpp
 	src/sc_grammar_parser.cpp
 	src/sc_grammar_impl.cpp
+	src/tokenise.cpp
 )
 
 

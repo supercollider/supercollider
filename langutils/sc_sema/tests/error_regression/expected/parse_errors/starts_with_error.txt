@@ -7,20 +7,10 @@ IR GRAPH DUMP
 SCInterpreted (1:1): parse_errors/starts_with_error.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Unmatched Bracket.
 |  parse_errors/starts_with_error.scd:1:1
 |      1 │ )
-|        ┆ ^ Expected an expression, the end of the file, `^`, `var`, `arg`, or `|`, but found `)`.
-|      2 │ (1 +);
-|      3 │ 1 + 2
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Region missing semi-colon.
-|  parse_errors/starts_with_error.scd:1:1
-|      1 │ )
-|        ┆ ^ Add a semi-colon after this.
+|        ┆ ^ This `)` has no opening bracket.
 |      2 │ (1 +);
 |      3 │ 1 + 2
 |

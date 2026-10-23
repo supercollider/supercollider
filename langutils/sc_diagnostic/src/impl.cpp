@@ -151,6 +151,14 @@ Severity Diagnostic::severity() const { return m_severity; }
 
 bool Diagnostic::fatal() const { return m_severity == Severity::Error; }
 
+bool Diagnostic::within(const TextInfoPtr& text, sc::lex::SourceCodeRange range) const {
+    if (m_locations.empty())
+        return false;
+    const auto& l = m_locations.back();
+    return l.text_info == text && range.begin.absolute <= l.range.begin.absolute
+        && l.range.end.absolute <= range.end.absolute;
+}
+
 [[nodiscard]] const char* Diagnostic::name() const { return m_name; }
 
 std::string Diagnostic::to_string() const { return diagnosticToString(severity(), name(), locations(), extra_info); }
@@ -212,17 +220,78 @@ Diagnostic Diagnostic::lexer_error(std::shared_ptr<const sc::lex::TextInfo> text
         return make("Invalid Character.", "`$` must be followed by an ASCII character.", loc);
     case T::ErMissingExponent:
         return make("Missing Exponent.", "The exponent has no digits.", loc);
-    case T::ErInvalidUTF8:
-        return make("Invalid UTF-8.", "This isn't valid UTF-8.", loc);
     default:
         return make("Invalid Token.", "This isn't a valid token.", loc);
     }
 }
 
+namespace {
+// The bracket that closes the opening one, e.g., `}` for `#{`.
+std::string_view closing(std::string_view open) {
+    switch (open.back()) {
+    case '(':
+        return ")";
+    case '[':
+        return "]";
+    default:
+        return "}";
+    }
+}
+
+std::string quoted(std::string_view s) { return "`" + std::string { s } + "`"; }
+}
+
+Diagnostic Diagnostic::invalid_utf8(std::shared_ptr<const sc::lex::TextInfo> text_info, sc::lex::SourceCodeRange first,
+                                    std::size_t others) {
+    auto msg = others == 0 ? std::string { "This isn't valid UTF-8." }
+                           : "This isn't valid UTF-8, nor are " + std::to_string(others)
+            + " more characters in the file, which may be in another encoding.";
+    return { "Invalid UTF-8.", Severity::Error, std::vector<Location> { { std::move(text_info), first, msg } } };
+}
+
+Diagnostic Diagnostic::unmatched_bracket(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                         sc::lex::SourceCodeRange close) {
+    auto msg = "This " + quoted(text_info->read(close)) + " has no opening bracket.";
+    return { "Unmatched Bracket.", Severity::Error, std::vector<Location> { { std::move(text_info), close, msg } } };
+}
+
+Diagnostic Diagnostic::mismatched_bracket(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                          sc::lex::SourceCodeRange open, sc::lex::SourceCodeRange close) {
+    const auto open_text = text_info->read(open);
+    return { "Mismatched Bracket.", //
+             Severity::Error, //
+             std::vector<Location> {
+                 { text_info, open, "This " + quoted(open_text) + "..." },
+                 { text_info, close,
+                   "...is closed with " + quoted(text_info->read(close)) + ", rather than " + quoted(closing(open_text))
+                       + "." },
+             } };
+}
+
+Diagnostic Diagnostic::unclosed_bracket(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                        sc::lex::SourceCodeRange open,
+                                        std::optional<sc::lex::SourceCodeRange> outer_close) {
+    const auto open_text = text_info->read(open);
+    if (!outer_close)
+        return { "Unclosed Bracket.", //
+                 Severity::Error, //
+                 std::vector<Location> {
+                     { text_info, open, "This " + quoted(open_text) + " is never closed." },
+                 } };
+    return { "Unclosed Bracket.", //
+             Severity::Error, //
+             std::vector<Location> {
+                 { text_info, open, "This " + quoted(open_text) + " isn't closed..." },
+                 { text_info, *outer_close,
+                   "...before this " + quoted(text_info->read(*outer_close))
+                       + ", which closes the bracket around it." },
+             } };
+}
+
 Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::TextInfo> text_info,
                                                 sc::lex::SourceCodeRange loc) {
     return { "Region missing semi-colon.", //
-             Severity::Error, //
+             Severity::Warning, //
              std::vector<Location> { { std::move(text_info), //
                                        loc, //
                                        "Add a semi-colon after this." } } };

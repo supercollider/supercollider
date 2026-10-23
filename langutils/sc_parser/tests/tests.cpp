@@ -412,3 +412,17 @@ Foo {
     )%",
         false);
 }
+
+// A file in another encoding, here Mac Roman non-breaking spaces, is reported once at its first invalid byte.
+BOOST_AUTO_TEST_CASE(invalid_utf8_reported_once) {
+    auto text_info = std::make_shared<sc::lex::TextInfo>(sc::lex::NormalisedSource("a = 1;\n\xca\xca"
+                                                                                   "b = 2;\nc = \xca"
+                                                                                   "3;\n"),
+                                                         sc::lex::FileCodeLocation {}, "test_file", false);
+    auto [graph, result] = P::parse(text_info);
+    BOOST_TEST_REQUIRE(graph->diagnostics().size() == 1);
+    const auto& d = graph->diagnostics()[0];
+    BOOST_TEST(std::string { d.name() } == "Invalid UTF-8.");
+    BOOST_TEST(d.locations()[0].range.begin.line_number == 1);
+    BOOST_TEST(d.locations()[0].msg.find("nor are 2 more") != std::string::npos);
+}

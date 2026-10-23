@@ -84,6 +84,7 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
     expr.scope.pop_back();
 
     // A fatal error anywhere in the method poisons all of it.
+    sink.fatal = sink.fatal || parse_error_inside(*ast_graph, ast_graph->location({ *i }));
     ir.payload(method).poisoned = sink.fatal;
 
     // Without `^` a method returns `this`, which isn't constant.

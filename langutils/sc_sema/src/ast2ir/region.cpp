@@ -38,6 +38,7 @@ Return<SCInterpreted_I> Interpreted::operator()(ast::RegionListIndex i) {
                 return immediately_evaluated(*block);
             return expression(ast::AnyExprIndex { *item });
         }();
+        sink.fatal = sink.fatal || parse_error_inside(*ast_graph, ast_graph->location({ *item }));
         if (sink.fatal)
             ir.payload(function).constant_result = {};
         sink.fatal = sink.fatal || earlier_fatal;
@@ -63,6 +64,7 @@ Return<SCInterpreted_I> Interpreted::operator()(ast::FileAsFunctionIndex i) {
     declare_arguments(expr, ir, ast_graph, ctx, positional, variadic, arg_list, function);
     const auto result = compile_body(expr, ir, ast_graph, ctx, function, body, contents);
     expr.scope.pop_back();
+    sink.fatal = sink.fatal || parse_error_inside(*ast_graph, ast_graph->location({ *i }));
 
     // Like a block, only known without arguments.
     const bool has_arguments = ir.children(positional).iter() || ir.children(variadic).iter();

@@ -7,7 +7,7 @@ IR GRAPH DUMP
 SCInterpreted (1:1): region_tests/region_1.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Region missing semi-colon.
+|  Warning: Region missing semi-colon.
 |  region_tests/region_1.scd:1:5
 |      1 │ 1 + 2
 |        ┆     ^ Add a semi-colon after this.
@@ -18,7 +18,7 @@ SCInterpreted (1:1): region_tests/region_1.scd
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Region missing semi-colon.
+|  Warning: Region missing semi-colon.
 |  region_tests/region_1.scd:8:1
 |      6 │ 
 |      7 │     a + 1
@@ -44,7 +44,7 @@ SCInterpreted (1:1): region_tests/region_1.scd
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Region missing semi-colon.
+|  Warning: Region missing semi-colon.
 |  region_tests/region_1.scd:17:1
 |     15 │ (
 |     16 │     var a;
@@ -57,7 +57,7 @@ SCInterpreted (1:1): region_tests/region_1.scd
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Region missing semi-colon.
+|  Warning: Region missing semi-colon.
 |  region_tests/region_1.scd:20:8
 |     18 │ 
 |     19 │ 

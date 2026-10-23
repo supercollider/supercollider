@@ -7,7 +7,7 @@ IR GRAPH DUMP
 SCInterpreted (1:1): parse_errors/missing_semicolon.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Region missing semi-colon.
+|  Warning: Region missing semi-colon.
 |  parse_errors/missing_semicolon.scd:3:5
 |      1 │ // A line whose first token can't continue the previous line gets a semicolon inserted before it, and it is reported.
 |      2 │ // The lexer asks the parser whether it can take the token, so the expression on the previous line is kept.
@@ -20,7 +20,7 @@ SCInterpreted (1:1): parse_errors/missing_semicolon.scd
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Region missing semi-colon.
+|  Warning: Region missing semi-colon.
 |  parse_errors/missing_semicolon.scd:4:7
 |      2 │ // The lexer asks the parser whether it can take the token, so the expression on the previous line is kept.
 |      3 │ 1 + 2
@@ -33,7 +33,7 @@ SCInterpreted (1:1): parse_errors/missing_semicolon.scd
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Region missing semi-colon.
+|  Warning: Region missing semi-colon.
 |  parse_errors/missing_semicolon.scd:7:1
 |      5 │ (
 |      6 │ 	4
@@ -46,7 +46,7 @@ SCInterpreted (1:1): parse_errors/missing_semicolon.scd
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Region missing semi-colon.
+|  Warning: Region missing semi-colon.
 |  parse_errors/missing_semicolon.scd:10:1
 |      8 │ (
 |      9 │ 	5

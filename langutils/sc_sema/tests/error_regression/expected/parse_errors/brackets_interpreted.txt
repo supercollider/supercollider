@@ -1,0 +1,99 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: parse_errors/brackets_interpreted.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unmatched Bracket.
+|  parse_errors/brackets_interpreted.scd:2:10
+|      1 │ // The repaired brackets in interpreted code.
+|      2 │ a = 1 + 2]);
+|        ┆          ^ This `]` has no opening bracket.
+|      3 │ b = (3 + 4];
+|      4 │ c = { (5 };
+|      5 │ d = 6;
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unmatched Bracket.
+|  parse_errors/brackets_interpreted.scd:2:11
+|      1 │ // The repaired brackets in interpreted code.
+|      2 │ a = 1 + 2]);
+|        ┆           ^ This `)` has no opening bracket.
+|      3 │ b = (3 + 4];
+|      4 │ c = { (5 };
+|      5 │ d = 6;
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Mismatched Bracket.
+|  parse_errors/brackets_interpreted.scd:3:5
+|      1 │ // The repaired brackets in interpreted code.
+|      2 │ a = 1 + 2]);
+|      3 │ b = (3 + 4];
+|        ┆     ^ This `(`...
+|      4 │ c = { (5 };
+|      5 │ d = 6;
+|
+|  parse_errors/brackets_interpreted.scd:3:11
+|      1 │ // The repaired brackets in interpreted code.
+|      2 │ a = 1 + 2]);
+|      3 │ b = (3 + 4];
+|        ┆           ^ ...is closed with `]`, rather than `)`.
+|      4 │ c = { (5 };
+|      5 │ d = 6;
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unclosed Bracket.
+|  parse_errors/brackets_interpreted.scd:4:7
+|      2 │ a = 1 + 2]);
+|      3 │ b = (3 + 4];
+|      4 │ c = { (5 };
+|        ┆       ^ This `(` isn't closed...
+|      5 │ d = 6;
+|
+|  parse_errors/brackets_interpreted.scd:4:10
+|      2 │ a = 1 + 2]);
+|      3 │ b = (3 + 4];
+|      4 │ c = { (5 };
+|        ┆          ^ ...before this `}`, which closes the bracket around it.
+|      5 │ d = 6;
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCRegionList (1:1)
+|  |  SCRegion (2:1)
+|  |  |  SCFunction (2:1)
+|  |  |  |  SCBody (2:1)
+|  |  |  |  |  SCAssign (2:1): instance a, declared (36:11): a
+|  |  |  |  |  |  SCMessage (2:5): + = 3
+|  |  |  |  |  |  |  SCLiteral (2:5) = 1
+|  |  |  |  |  |  |  SCPositionalArgs (2:5)
+|  |  |  |  |  |  |  |  SCLiteral (2:9) = 2
+|  |  SCRegion (3:1)
+|  |  |  SCFunction (3:1)
+|  |  |  |  SCBody (3:1)
+|  |  |  |  |  SCAssign (3:1): instance b, declared (36:16): b
+|  |  |  |  |  |  SCMessage (3:6): + = 7
+|  |  |  |  |  |  |  SCLiteral (3:6) = 3
+|  |  |  |  |  |  |  SCPositionalArgs (3:6)
+|  |  |  |  |  |  |  |  SCLiteral (3:10) = 4
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCAssign (4:1): instance c, declared (36:21): c
+|  |  |  |  |  |  SCFunction (4:5) -> 5
+|  |  |  |  |  |  |  SCBody (4:5)
+|  |  |  |  |  |  |  |  SCLiteral (4:8) = 5
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1)
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCAssign (5:1): instance d, declared (36:26): d
+|  |  |  |  |  |  SCLiteral (5:5) = 6
+Successfully compiled 15 classes.

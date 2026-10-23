@@ -5,10 +5,12 @@
 #include "sc_parser/ast.hpp"
 
 #include "sc_lexer/normalise_source.hpp"
+#include "sc_lexer/text_info.hpp"
 #include "sc_lexer/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include <optional>
@@ -17,113 +19,44 @@
 namespace sc::ast::parser {
 
 
-using UnderlyingTokenType = std::underlying_type_t<sc::lex::TokenType>;
+// Stores the token type, source code range.
+// Secondarily, it store an index where the matching parenthesis is (if the token is a parenthesis).
+// Additionally, the tokeniser is going to insert brackets when it thinks they are missing.
+// This is stored as a single bit (inserted bit) which is set at the top of the match index (together stored in 'bits').
+struct Token {
+    static constexpr std::uint32_t inserted_bit = std::uint32_t { 1 } << 31;
+    static constexpr std::uint32_t no_match = inserted_bit - 1;
 
-enum struct ExtendedTokenType : std::underlying_type_t<sc::lex::TokenType> {
-    ExtraClosingParenBracket = static_cast<UnderlyingTokenType>(sc::lex::TokenType::START_OF_USER_DEFINED_ERRORS),
-    ExtraClosingSquareBracket,
-    ExtraClosingCurlyBracket,
+    // The most tokens there can be, as the index of a match must fit below the inserted bit.
+    // Since we have a file size limit of 2^32, this seems unlikely to ever be hit.
+    static constexpr std::uint32_t max_tokens = no_match;
 
-    GotParenExpectedSquare,
-    GotParenExpectedCurly,
+    Token(sc::lex::TokenType t, sc::lex::SourceCodeRange r): token(t), range(r) {}
 
-    GotCurlyExpectedParen,
-    GotCurlyExpectedSquare,
+    sc::lex::TokenType token;
+    sc::lex::SourceCodeRange range;
 
-    GotSquareExpectedParen,
-    GotSquareExpectedCurly,
-};
-
-struct Action {
-private:
-    using TokenType = sc::lex::TokenType;
-    using SourceCodeRange = sc::lex::SourceCodeRange;
-    using NormalisedSource = sc::lex::NormalisedSource;
-
-public:
-    // Returned by sc::lex::lexer(...);
-    struct Output {
-        Output(ExtendedTokenType t, SourceCodeRange r, std::optional<SourceCodeRange> e = std::nullopt) noexcept:
-            token(static_cast<TokenType>(t)),
-            range(r),
-            extra(e) {}
-        Output(TokenType t, SourceCodeRange r, std::optional<SourceCodeRange> e = std::nullopt) noexcept:
-            token(t),
-            range(r),
-            extra(e) {}
-
-        TokenType token;
-        SourceCodeRange range;
-        std::optional<SourceCodeRange> extra { };
-    };
-
-
-    template <TokenType T> [[nodiscard]] std::optional<Output> process(SourceCodeRange loc) {
-        if constexpr (sc::lex::is_whitespace(T) || sc::lex::is_comment(T))
-            return std::nullopt;
-        else if constexpr (sc::lex::is_open_bracket(T)) {
-            closing_bracket_stack.push_back({ get_closing_bracket<T>(), loc });
-            return { { T, loc } };
-        } else if constexpr (sc::lex::is_close_bracket(T)) {
-            if (closing_bracket_stack.empty()) {
-                if constexpr (T == TokenType::CloseParen)
-                    return { { ExtendedTokenType::ExtraClosingParenBracket, loc } };
-                else if constexpr (T == TokenType::CloseSquare)
-                    return { { ExtendedTokenType::ExtraClosingSquareBracket, loc } };
-                else if constexpr (T == TokenType::CloseCurly)
-                    return { { ExtendedTokenType::ExtraClosingCurlyBracket, loc } };
-                else {
-                    return { { TokenType::ErUnknown, loc } };
-                }
-            } else {
-                if (const auto expected = closing_bracket_stack.back(); expected.first == T) {
-                    closing_bracket_stack.pop_back();
-                    return { { T, loc, { expected.second } } };
-                } else if (expected.first == TokenType::CloseParen) {
-                    if (T == TokenType::CloseSquare)
-                        return { { ExtendedTokenType::GotSquareExpectedParen, loc,
-                                   closing_bracket_stack.back().second } };
-                    if (T == TokenType::CloseCurly)
-                        return { { ExtendedTokenType::GotCurlyExpectedParen, loc,
-                                   closing_bracket_stack.back().second } };
-                } else if (expected.first == TokenType::CloseSquare) {
-                    if (T == TokenType::CloseParen)
-                        return { { ExtendedTokenType::GotParenExpectedSquare, loc,
-                                   closing_bracket_stack.back().second } };
-                    if (T == TokenType::CloseCurly)
-                        return { { ExtendedTokenType::GotCurlyExpectedSquare, loc,
-                                   closing_bracket_stack.back().second } };
-                } else if (expected.first == TokenType::CloseCurly) {
-                    if (T == TokenType::CloseParen)
-                        return { { ExtendedTokenType::GotParenExpectedCurly, loc,
-                                   closing_bracket_stack.back().second } };
-                    if (T == TokenType::CloseSquare)
-                        return { { ExtendedTokenType::GotSquareExpectedCurly, loc,
-                                   closing_bracket_stack.back().second } };
-                } else {
-                    // This only happens if someone adds a new type of bracket and doesn't update the checks above.
-                    return { { TokenType::ErUnknown, loc } };
-                }
-            }
-        }
-
-        return { { T, loc } };
+    // The index of the bracket matching this one, every bracket has one, see tokenise.
+    [[nodiscard]] std::optional<std::uint32_t> match() const {
+        const auto m = bits & ~inserted_bit;
+        return m == no_match ? std::nullopt : std::optional { m };
     }
+    void set_match(std::uint32_t i) { bits = (bits & inserted_bit) | i; }
+
+    // Inserted to close an unclosed bracket, so isn't in the source and has an empty range at the token before it.
+    [[nodiscard]] bool inserted() const { return bits & inserted_bit; }
+    void set_inserted() { bits |= inserted_bit; }
 
 private:
-    std::vector<std::pair<TokenType, SourceCodeRange>> closing_bracket_stack { };
-
-    template <TokenType T> constexpr TokenType get_closing_bracket() const {
-        static_assert(sc::lex::matches(T, TokenType::OpenParen, TokenType::OpenSquare, TokenType::OpenCurly,
-                                       TokenType::BeginClosedFunction));
-        if constexpr (T == TokenType::OpenParen)
-            return TokenType::CloseParen;
-        else if constexpr (T == TokenType::OpenSquare)
-            return TokenType::CloseSquare;
-        else
-            return TokenType::CloseCurly;
-    }
+    // The match's index, or no_match, with the inserted bit at the top.
+    std::uint32_t bits { no_match };
 };
+static_assert(sizeof(Token) == 32);
+
+// Lexes all of the stream, reporting the lexer's errors, then pairs the brackets.
+// Attempt to repair any mismatched brackets.
+[[nodiscard]] std::vector<Token> tokenise(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                          sc::lex::CodePointStream cps, ASTGraph& graph);
 
 struct UnexpectedToken {
     sc::lex::SourceCodeRange location;
@@ -131,18 +64,29 @@ struct UnexpectedToken {
     // This is implemented in the file sc_grammar_impl.
     std::vector<int> expected;
     int got;
+    // At a bracket inserted to close an unclosed one, which has been reported, see tokenise.
+    bool at_inserted { false };
 };
 class parser;
 
 struct ParserContext {
     enum struct Mode { ClassLibrary, CommandInitial, CommandContinue };
     std::shared_ptr<const sc::lex::TextInfo> text_info;
-    sc::lex::CodePointStream cps;
-    Action action;
+    // Used to emit the specical interpret token.
     Mode mode;
 
-    std::optional<Action::Output> previous { std::nullopt };
     std::shared_ptr<sc::ast::ASTGraph> graph = std::make_shared<ASTGraph>(text_info);
+
+    std::vector<Token> tokens {};
+
+    // The next token to emit, see yylex.
+    std::uint32_t next { 0 };
+
+    // The token last emitted, which an error is at.
+    std::optional<std::uint32_t> lookahead {};
+
+    // A region separator was inserted before the next token
+    bool separator_inserted { false };
 
     std::optional<UnexpectedToken> unexpected_token_error { };
 
@@ -151,9 +95,9 @@ struct ParserContext {
 
 
     // The parser this is the context of, so the lexer can ask what it can accept, see yylex.
+    // Must be initalised afterwards because the parser owns the context.
+    // A little hacky, but useful.
     const parser* owner { nullptr };
-    // A region separator was inserted before the previous token, so it is emitted next, see yylex.
-    bool emit_previous { false };
 
 
     template <class... ARGS> [[nodiscard]] auto create(ARGS&&... args) {

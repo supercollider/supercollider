@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <ostream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -23,6 +24,8 @@ enum struct DiagnosticKind {
 class Diagnostic {
 public:
     using TextInfoPtr = std::shared_ptr<const sc::lex::TextInfo>;
+
+    /// When adding multiple locations to the diagnostic, the final location added is considered the true location.
     struct Location {
         TextInfoPtr text_info;
         sc::lex::SourceCodeRange range;
@@ -34,6 +37,18 @@ public:
     // The lexer's error tokens, e.g., an unclosed string, at the token's range.
     [[nodiscard]] static Diagnostic lexer_error(TextInfoPtr text_info, sc::lex::TokenType,
                                                 sc::lex::SourceCodeRange loc);
+    // The first character that isn't valid UTF-8, with how many others in the file aren't either.
+    [[nodiscard]] static Diagnostic invalid_utf8(TextInfoPtr text_info, sc::lex::SourceCodeRange first,
+                                                 std::size_t others);
+    // A closing bracket without an opening one.
+    [[nodiscard]] static Diagnostic unmatched_bracket(TextInfoPtr text_info, sc::lex::SourceCodeRange close);
+    // A closing bracket of the wrong kind, e.g., `(1]`.
+    [[nodiscard]] static Diagnostic mismatched_bracket(TextInfoPtr text_info, sc::lex::SourceCodeRange open,
+                                                       sc::lex::SourceCodeRange close);
+    // An opening bracket without a closing one, before the closing bracket of the one around it, or the end.
+    [[nodiscard]] static Diagnostic unclosed_bracket(TextInfoPtr text_info, sc::lex::SourceCodeRange open,
+                                                     std::optional<sc::lex::SourceCodeRange> outer_close);
+    // A warning, as the inserted semicolon only separates interpreted regions, so the code is still as written.
     [[nodiscard]] static Diagnostic region_missing_semicolon(TextInfoPtr text_info, sc::lex::SourceCodeRange loc);
 
     [[nodiscard]] static Diagnostic duplicate_class(TextInfoPtr first_text_info, sc::lex::SourceCodeRange first_loc,
@@ -142,6 +157,7 @@ public:
     [[nodiscard]] const std::vector<Location>& locations() const;
     [[nodiscard]] Severity severity() const;
     [[nodiscard]] bool fatal() const;
+    [[nodiscard]] bool within(const TextInfoPtr& text, sc::lex::SourceCodeRange range) const;
     [[nodiscard]] const std::vector<Location>& extra_locations() const;
     [[nodiscard]] bool has_extra_locations() const;
     [[nodiscard]] const char* name() const;

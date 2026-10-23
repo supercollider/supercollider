@@ -429,7 +429,7 @@ int main(int argc, char* argv[]) {
     struct Owner {
         const sc::ir::IRGraph* graph;
         sc::ir::NodeIndex node;
-        const sc::lex::TextInfo* text;
+        std::shared_ptr<const sc::lex::TextInfo> text;
         sc::lex::SourceCodeRange range;
     };
     std::vector<Owner> method_owners;
@@ -438,7 +438,7 @@ int main(int argc, char* argv[]) {
         const auto& g = *dumped.graph;
         const auto owner = [&](sc::ir::NodeIndex node) {
             const auto loc = g.location(node);
-            return Owner { &g, node, g.text_info(loc.source).get(), sc::ir::IRGraph::range(loc) };
+            return Owner { &g, node, g.text_info(loc.source), sc::ir::IRGraph::range(loc) };
         };
         // Interpreted code is like a method.
         if (!dumped.class_name) {
@@ -450,18 +450,12 @@ int main(int argc, char* argv[]) {
         for (auto it = g.children(methods).iter(); it; ++it)
             method_owners.push_back(owner(sc::ir::NodeIndex { **it }));
     }
-    const auto contains = [](const Owner& o, const sc::diag::Diagnostic::Location& l) {
-        return o.text == l.text_info.get() && o.range.begin.absolute <= l.range.begin.absolute
-            && l.range.end.absolute <= o.range.end.absolute;
-    };
     std::map<std::pair<const sc::ir::IRGraph*, std::uint32_t>, std::vector<const sc::diag::Diagnostic*>> owned;
     std::vector<const sc::diag::Diagnostic*> unowned;
     for (const auto& d : all_diagnostics) {
         const auto find_owner = [&](const std::vector<Owner>& owners) -> const Owner* {
-            if (d.locations().empty())
-                return nullptr;
             for (const auto& o : owners)
-                if (contains(o, d.locations().back()))
+                if (d.within(o.text, o.range))
                     return &o;
             return nullptr;
         };
