@@ -9,7 +9,7 @@ SCInterpreted (1:1): version 3.16: interpreted/block_constant.scd
 |  |  SCRegion (4:1)
 |  |  |  SCFunction (4:1) -> 6
 |  |  |  |  SCBody (4:1)
-|  |  |  |  |  SCVariableDeclare (4:6): q
+|  |  |  |  |  SCVariableDeclare (4:6): q, prototype
 |  |  |  |  |  |  SCLiteral (4:10) = 2
 |  |  |  |  |  SCMessage (4:13): * = 6
 |  |  |  |  |  |  SCRead (4:13): local q = 2, declared (4:6): q = 2

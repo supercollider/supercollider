@@ -42,7 +42,7 @@ SCInterpreted (1:1): version 3.16: region_tests/many_regions.scd
 |  |  SCRegion (8:1)
 |  |  |  SCFunction (8:1)
 |  |  |  |  SCBody (8:1)
-|  |  |  |  |  SCVariableDeclare (10:9): a
+|  |  |  |  |  SCVariableDeclare (10:9): a, prototype
 |  |  |  |  |  |  SCLiteral (10:13) = 10
 |  |  |  |  |  SCMessage (11:5): *
 |  |  |  |  |  |  SCRead (11:5): local a = 10, declared (10:9): a = 10

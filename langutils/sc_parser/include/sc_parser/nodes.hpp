@@ -335,8 +335,10 @@ struct RangeAssign : Node<RangeAssignIndex(AnyExprIndex receiver, RangeIndex, An
 
 struct DeclareArgumentWithDefaultNode : Node<DeclareArgumentWithDefaultIndex(NamedIdentifierIndex, AnyExprIndex)> {
     static constexpr auto name { "DeclareArgumentWithDefaultNode" };
-    bool preserve_nil { false };
-    constexpr DeclareArgumentWithDefaultNode(bool nil = false): preserve_nil(nil) { }
+    // Whether the default is in brackets, `a = (1)`, `a(1)` or `|a = (1)|`. The latter two's brackets are the
+    // declaration's, so the default node itself isn't bracketed.
+    bool bracketed { false };
+    constexpr DeclareArgumentWithDefaultNode(bool b = false): bracketed(b) {}
 };
 
 struct DeclareArgumentVariadicNode : Node<DeclareArgumentVariadicIndex(NamedIdentifierIndex)> {

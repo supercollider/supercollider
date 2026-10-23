@@ -46,9 +46,9 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/parenthesised_interpre
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCFunction (1:1)
 |  |  SCBody (1:1)
-|  |  |  SCVariableDeclare (3:5): a
+|  |  |  SCVariableDeclare (3:5): a, computed
 |  |  |  |  SCExprList (3:9)
-|  |  |  SCVariableDeclare (4:5): b
+|  |  |  SCVariableDeclare (4:5): b, computed
 |  |  |  |  SCCollection (4:9): Array
 |  |  |  |  |  SCExprList (4:10)
 |  |  |  |  |  SCMessage (4:18): + = 7

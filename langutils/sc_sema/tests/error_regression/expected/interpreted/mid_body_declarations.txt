@@ -7,11 +7,11 @@ IR GRAPH DUMP
 SCInterpreted (1:1): version 3.16: interpreted/mid_body_declarations.scd
 |  SCFunction (1:1)
 |  |  SCBody (1:1)
-|  |  |  SCVariableDeclare (6:5): c
+|  |  |  SCVariableDeclare (6:5): c, prototype
 |  |  |  |  SCLiteral (6:9) = 1
 |  |  |  SCMessage (6:12): postln
 |  |  |  |  SCRead (6:12): local c, declared (6:5): c = 1
-|  |  |  SCVariableDeclare (6:26): f
+|  |  |  SCVariableDeclare (6:26): f, computed
 |  |  |  |  SCFunction (6:30)
 |  |  |  |  |  SCBody (6:30)
 |  |  |  |  |  |  SCRead (6:32): local c, declared (6:5): c = 1

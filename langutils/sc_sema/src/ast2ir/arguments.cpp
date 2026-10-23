@@ -1,6 +1,8 @@
 #include "ast2ir/arguments.hpp"
+#include "ast2ir/body.hpp"
 #include "ast2ir/expr.hpp"
 #include "sc_parser/ast.hpp"
+#include "sc_sema/const_expr.hpp"
 #include "sc_sema/context.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
@@ -32,13 +34,14 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                 [&](ast::NamedIdentifierIndex i) {
                     const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(i));
                     const auto missing_default = ir.create(SCMissing {}, location_of(ir, *ast_graph, { *i }));
-                    const auto arg = ir.create(SCArgumentDeclare { sym, local(sym, { *i }) },
+                    const auto nil = ctx.constant_table.register_constexpr({ Nil {} });
+                    const auto arg = ir.create(SCArgumentDeclare { sym, local(sym, { *i }), nil },
                                                location_of(ir, *ast_graph, { *i }), missing_default);
                     ir.append(args, arg);
                     declared(sym, arg);
                 },
                 [&](ast::DeclareArgumentWithDefaultIndex i) {
-                    const auto preseve_nil = ast_graph->payload(i).preserve_nil;
+                    const auto bracketed = ast_graph->payload(i).bracketed;
                     const auto [name, default_i] = ast_graph->children(i);
                     const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(name));
                     // Compiled before this argument is declared, a function in it can still refer to it, see
@@ -48,16 +51,14 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                                                   variable_local };
                     variable.in_frame = true;
                     expr.initialising.push_back(variable);
-                    // The parser records whether it is bracketed as preserve_nil, see
-                    // Expr::in_unbracketed_argument_default.
+                    // See Expr::in_unbracketed_argument_default.
                     const bool outer = expr.in_unbracketed_argument_default;
-                    expr.in_unbracketed_argument_default = outer || preseve_nil;
+                    expr.in_unbracketed_argument_default = outer || !bracketed;
                     const auto default_r = expr(ast::AnyExprIndex { default_i });
                     expr.in_unbracketed_argument_default = outer;
                     expr.initialising.pop_back();
-                    const auto arg = ir.create(SCArgumentDeclare { sym, variable_local,
-                                                                   preseve_nil ? DefaultBehaviour::PreserveNil
-                                                                               : DefaultBehaviour::DontPreserveNil },
+                    const auto prototype = can_be_prototyped(*ast_graph, i, default_r.const_index);
+                    const auto arg = ir.create(SCArgumentDeclare { sym, variable_local, prototype },
                                                location_of(ir, *ast_graph, { *i }), default_r.ir_node);
                     ir.append(args, arg);
                     declared(sym, arg);
@@ -66,7 +67,7 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                     const auto [n] = ast_graph->children(i);
                     const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(n));
                     const auto missing_default = ir.create(SCMissing {}, location_of(ir, *ast_graph, { *n }));
-                    const auto arg = ir.create(SCArgumentDeclare { sym, local(sym, { *n }) },
+                    const auto arg = ir.create(SCArgumentDeclare { sym, local(sym, { *n }), {} },
                                                location_of(ir, *ast_graph, { *n }), missing_default);
                     ir.append(var_args, arg);
                     declared(sym, arg);

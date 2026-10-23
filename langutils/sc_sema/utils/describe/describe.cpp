@@ -139,6 +139,14 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
         write_text(out, g.read(*declaration));
     };
 
+    // How a declaration with an initial value starts, see SCVariableDeclare::prototype.
+    const auto write_initial = [&](auto declare, OptionalConstExprIndex prototype) {
+        const auto [value] = g.children(declare);
+        if (g.as_a<SCMissing_I>(NodeIndex { *value }))
+            return;
+        out << (prototype ? ", prototype" : ", computed");
+    };
+
     // Only when it isn't Legacy, which almost all code is.
     const auto write_version = [&](sc::ast::LanguageVersion v, const char* before, const char* after) {
         if (v != sc::ast::LanguageVersion::Legacy)
@@ -170,8 +178,14 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                    },
                    [&](const SCMessage& m) { out << ": " << symbol_table(*m.selector); },
                    [&](const SCKwArg& k) { out << ": " << symbol_table(*k.name); },
-                   [&](const SCVariableDeclare& v) { out << ": " << symbol_table(*v.name); },
-                   [&](const SCArgumentDeclare& a) { out << ": " << symbol_table(a.name); },
+                   [&](const SCVariableDeclare& v) {
+                       out << ": " << symbol_table(*v.name);
+                       write_initial(*g.as_a<SCVariableDeclare_I>(i), v.prototype);
+                   },
+                   [&](const SCArgumentDeclare& a) {
+                       out << ": " << symbol_table(a.name);
+                       write_initial(*g.as_a<SCArgumentDeclare_I>(i), a.prototype);
+                   },
                    [&](const SCMember& m) { out << ": " << symbol_table(m.name); },
                    [&](const SCSpecial& special) { out << ": " << special_name(special.kind); },
                    [&](const SCRead& r) { out << ": " << read_kind_name(r.kind) << " " << symbol_table(r.name); },

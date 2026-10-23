@@ -17,7 +17,7 @@ SCClass (2:1): References, version 3.16
 |  |  |  |  |  |  |  SCLiteral (7:17) = 1
 |  |  SCMethod (9:5): version 3.16: local { var a = 1; ^`a }
 |  |  |  SCBody (9:13)
-|  |  |  |  SCVariableDeclare (9:17): a
+|  |  |  |  SCVariableDeclare (9:17): a, prototype
 |  |  |  |  |  SCLiteral (9:21) = 1
 |  |  |  |  SCExplicitReturn (9:24)
 |  |  |  |  |  SCMessage (9:25): new

@@ -23,7 +23,7 @@ SCClass (2:1): MethodArguments, version 3.16
 |  |  SCMethod (11:5): version 3.16: earlier_argument { |a, b = (a + 1)| ^b }
 |  |  |  SCArgumentDeclareList (11:25)
 |  |  |  |  SCArgumentDeclare (11:25): a
-|  |  |  |  SCArgumentDeclare (11:28): b
+|  |  |  |  SCArgumentDeclare (11:28): b, computed
 |  |  |  |  |  SCMessage (11:33): +
 |  |  |  |  |  |  SCRead (11:33): local a, declared (11:25): a
 |  |  |  |  |  |  SCPositionalArgs (11:33)
@@ -47,7 +47,7 @@ SCClass (2:1): MethodArguments, version 3.16
 |  |  |  Declare it with 'var', or use '~b' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (13:23)
-|  |  |  |  SCArgumentDeclare (13:23): a
+|  |  |  |  SCArgumentDeclare (13:23): a, computed
 |  |  |  |  |  SCExprList (13:28)
 |  |  |  |  SCArgumentDeclare (13:32): b
 |  |  |  SCBody (13:35)
@@ -81,7 +81,7 @@ SCClass (2:1): Meta_MethodArguments, version 3.16
 |  |  SCMethod (23:5): version 3.16: *class_read_argument { |a, b = (a)| ^b }
 |  |  |  SCArgumentDeclareList (23:29)
 |  |  |  |  SCArgumentDeclare (23:29): a
-|  |  |  |  SCArgumentDeclare (23:32): b
+|  |  |  |  SCArgumentDeclare (23:32): b, computed
 |  |  |  |  |  SCRead (23:37): local a, declared (23:29): a
 |  |  |  SCBody (23:41)
 |  |  |  |  SCExplicitReturn (23:41)

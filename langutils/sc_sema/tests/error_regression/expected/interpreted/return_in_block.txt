@@ -20,7 +20,7 @@ SCInterpreted (1:1): poisoned: version 3.16: interpreted/return_in_block.scd
 |  |  SCRegion (3:1)
 |  |  |  SCFunction (3:1)
 |  |  |  |  SCBody (3:1)
-|  |  |  |  |  SCVariableDeclare (3:6): a
+|  |  |  |  |  SCVariableDeclare (3:6): a, prototype
 |  |  |  |  |  |  SCLiteral (3:10) = 1
 |  |  |  |  |  SCRead (3:14): local a = 1, declared (3:6): a = 1
 Successfully compiled 15 classes.

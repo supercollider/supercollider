@@ -1,0 +1,127 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): InitialValues, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): version 3.16: literal_defaults { arg a = 1, b = -2, c = "s", d = \x, e = #[1, \y], f = $c, g = nil, h = pi, i = 2pi; ^a }
+|  |  |  SCArgumentDeclareList (5:28)
+|  |  |  |  SCArgumentDeclare (5:28): a, prototype
+|  |  |  |  |  SCLiteral (5:32) = 1
+|  |  |  |  SCArgumentDeclare (5:35): b, prototype
+|  |  |  |  |  SCLiteral (5:40) = -2
+|  |  |  |  SCArgumentDeclare (5:43): c, prototype
+|  |  |  |  |  SCLiteral (5:47) = "s"
+|  |  |  |  SCArgumentDeclare (5:52): d, prototype
+|  |  |  |  |  SCLiteral (5:56) = \x
+|  |  |  |  SCArgumentDeclare (5:60): e, prototype
+|  |  |  |  |  SCCollection (5:64): Array = [1, \y]
+|  |  |  |  |  |  SCLiteral (5:66) = 1
+|  |  |  |  |  |  SCLiteral (5:69) = \y
+|  |  |  |  SCArgumentDeclare (5:74): f, prototype
+|  |  |  |  |  SCLiteral (5:78) = $c
+|  |  |  |  SCArgumentDeclare (5:82): g, prototype
+|  |  |  |  |  SCLiteral (5:86) = nil
+|  |  |  |  SCArgumentDeclare (5:91): h, prototype
+|  |  |  |  |  SCLiteral (5:95) = 3.1415927
+|  |  |  |  SCArgumentDeclare (5:99): i, prototype
+|  |  |  |  |  SCLiteral (5:103) = 6.2831853
+|  |  |  SCBody (5:108)
+|  |  |  |  SCExplicitReturn (5:108)
+|  |  |  |  |  SCRead (5:109): local a, declared (5:28): a = 1
+|  |  SCMethod (7:5): version 3.16: computed_defaults { arg a = 1 + 1, b = (1), c(1), d = [1], e = (c: 3), f = { 1 }, g = Object; ^a }
+|  |  |  SCArgumentDeclareList (7:29)
+|  |  |  |  SCArgumentDeclare (7:29): a, computed
+|  |  |  |  |  SCMessage (7:33): +
+|  |  |  |  |  |  SCLiteral (7:33) = 1
+|  |  |  |  |  |  SCPositionalArgs (7:33)
+|  |  |  |  |  |  |  SCLiteral (7:37) = 1
+|  |  |  |  SCArgumentDeclare (7:40): b, computed
+|  |  |  |  |  SCLiteral (7:45) = 1
+|  |  |  |  SCArgumentDeclare (7:49): c, computed
+|  |  |  |  |  SCLiteral (7:51) = 1
+|  |  |  |  SCArgumentDeclare (7:55): d, computed
+|  |  |  |  |  SCCollection (7:59): Array
+|  |  |  |  |  |  SCLiteral (7:60) = 1
+|  |  |  |  SCArgumentDeclare (7:64): e, computed
+|  |  |  |  |  SCCollection (7:68): Event
+|  |  |  |  |  |  SCLiteral (7:69) = \c
+|  |  |  |  |  |  SCLiteral (7:72) = 3
+|  |  |  |  SCArgumentDeclare (7:76): f, computed
+|  |  |  |  |  SCFunction (7:80) -> 1
+|  |  |  |  |  |  SCBody (7:80)
+|  |  |  |  |  |  |  SCLiteral (7:82) = 1
+|  |  |  |  SCArgumentDeclare (7:87): g, computed
+|  |  |  |  |  SCLiteral (7:91)
+|  |  |  SCBody (7:99)
+|  |  |  |  SCExplicitReturn (7:99)
+|  |  |  |  |  SCRead (7:100): local a, declared (7:29): a = 1 + 1
+|  |  SCMethod (8:5): version 3.16: pipe_defaults { |a = 1, b(2), c = (3)| ^a }
+|  |  |  SCArgumentDeclareList (8:22)
+|  |  |  |  SCArgumentDeclare (8:22): a, prototype
+|  |  |  |  |  SCLiteral (8:26) = 1
+|  |  |  |  SCArgumentDeclare (8:29): b, computed
+|  |  |  |  |  SCLiteral (8:31) = 2
+|  |  |  |  SCArgumentDeclare (8:35): c, computed
+|  |  |  |  |  SCLiteral (8:40) = 3
+|  |  |  SCBody (8:44)
+|  |  |  |  SCExplicitReturn (8:44)
+|  |  |  |  |  SCRead (8:45): local a, declared (8:22): a = 1
+|  |  SCMethod (9:5): version 3.16: block_defaults { ^{ |a = 1, b = (1 + 1)| a } }
+|  |  |  SCBody (9:22)
+|  |  |  |  SCExplicitReturn (9:22)
+|  |  |  |  |  SCFunction (9:23)
+|  |  |  |  |  |  SCArgumentDeclareList (9:26)
+|  |  |  |  |  |  |  SCArgumentDeclare (9:26): a, prototype
+|  |  |  |  |  |  |  |  SCLiteral (9:30) = 1
+|  |  |  |  |  |  |  SCArgumentDeclare (9:33): b, computed
+|  |  |  |  |  |  |  |  SCMessage (9:38): + = 2
+|  |  |  |  |  |  |  |  |  SCLiteral (9:38) = 1
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (9:38)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (9:42) = 1
+|  |  |  |  |  |  SCBody (9:23)
+|  |  |  |  |  |  |  SCRead (9:46): local a, declared (9:26): a = 1
+|  |  SCMethod (11:5): version 3.16: variables { var a = 1, b = 1 + 1, c = (1), d = [1], e = #[1], f, g = "s"; ^a } -> 1
+|  |  |  SCBody (11:17)
+|  |  |  |  SCVariableDeclare (11:21): a, prototype
+|  |  |  |  |  SCLiteral (11:25) = 1
+|  |  |  |  SCVariableDeclare (11:28): b, computed
+|  |  |  |  |  SCMessage (11:32): + = 2
+|  |  |  |  |  |  SCLiteral (11:32) = 1
+|  |  |  |  |  |  SCPositionalArgs (11:32)
+|  |  |  |  |  |  |  SCLiteral (11:36) = 1
+|  |  |  |  SCVariableDeclare (11:39): c, computed
+|  |  |  |  |  SCLiteral (11:44) = 1
+|  |  |  |  SCVariableDeclare (11:48): d, computed
+|  |  |  |  |  SCCollection (11:52): Array = [1]
+|  |  |  |  |  |  SCLiteral (11:53) = 1
+|  |  |  |  SCVariableDeclare (11:57): e, prototype
+|  |  |  |  |  SCCollection (11:61): Array = [1]
+|  |  |  |  |  |  SCLiteral (11:63) = 1
+|  |  |  |  SCVariableDeclare (11:67): f
+|  |  |  |  SCVariableDeclare (11:70): g, prototype
+|  |  |  |  |  SCLiteral (11:74) = "s"
+|  |  |  |  SCExplicitReturn (11:79)
+|  |  |  |  |  SCRead (11:80): local a = 1, declared (11:21): a = 1
+|  |  SCMethod (12:5): version 3.16: nested_return { |x = 1, y = (2)| var z = 3; if (x) { ^y }; ^z }
+|  |  |  SCArgumentDeclareList (12:22)
+|  |  |  |  SCArgumentDeclare (12:22): x, prototype
+|  |  |  |  |  SCLiteral (12:26) = 1
+|  |  |  |  SCArgumentDeclare (12:29): y, computed
+|  |  |  |  |  SCLiteral (12:34) = 2
+|  |  |  SCBody (12:38)
+|  |  |  |  SCVariableDeclare (12:42): z, prototype
+|  |  |  |  |  SCLiteral (12:46) = 3
+|  |  |  |  SCMessage (12:49): if
+|  |  |  |  |  SCRead (12:53): local x, declared (12:22): x = 1
+|  |  |  |  |  SCPositionalArgs (12:49)
+|  |  |  |  |  |  SCFunction (12:56)
+|  |  |  |  |  |  |  SCBody (12:56)
+|  |  |  |  |  |  |  |  SCExplicitReturn (12:58)
+|  |  |  |  |  |  |  |  |  SCRead (12:59): local y, declared (12:29): y = (2)
+|  |  |  |  SCExplicitReturn (12:64)
+|  |  |  |  |  SCRead (12:65): local z = 3, declared (12:42): z = 3
+Successfully compiled 16 classes.

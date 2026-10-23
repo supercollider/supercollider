@@ -2,6 +2,7 @@
 #include "ast2ir/expr.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/ast_untyped.hpp"
+#include "sc_sema/const_expr.hpp"
 #include "sc_sema/context.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
@@ -130,7 +131,8 @@ Return<SCAnyExpr_I> partially_apply(Expr& expr, IRGraph& ir, const std::shared_p
         const auto curry_location = location_of(ir, *ast_graph, { *curries[n] });
         const auto missing_default = ir.create(SCMissing {}, curry_location);
         const auto local = expr.create_local(name, curry_location, function);
-        const auto arg = ir.create(SCArgumentDeclare { name, local }, curry_location, missing_default);
+        const auto arg = ir.create(SCArgumentDeclare { name, local, ctx.constant_table.register_constexpr({ Nil {} }) },
+                                   curry_location, missing_default);
         ir.append(positional, arg);
         ScopeEntry entry { nullptr, function, arg, {}, {}, ScopeEntry::Kind::Argument, ScopeEntry::State::Initalised };
         entry.local = local;

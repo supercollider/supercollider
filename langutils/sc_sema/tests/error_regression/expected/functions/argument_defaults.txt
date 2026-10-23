@@ -13,7 +13,7 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  |  |  SCExplicitReturn (6:22)
 |  |  |  |  |  SCFunction (6:23)
 |  |  |  |  |  |  SCArgumentDeclareList (6:26)
-|  |  |  |  |  |  |  SCArgumentDeclare (6:26): a
+|  |  |  |  |  |  |  SCArgumentDeclare (6:26): a, prototype
 |  |  |  |  |  |  |  |  SCLiteral (6:30) = 1
 |  |  |  |  |  |  SCBody (6:23)
 |  |  |  |  |  |  |  SCRead (6:33): local a, declared (6:26): a = 1
@@ -22,11 +22,11 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  |  |  SCExplicitReturn (8:28)
 |  |  |  |  |  SCFunction (8:29)
 |  |  |  |  |  |  SCArgumentDeclareList (8:32)
-|  |  |  |  |  |  |  SCArgumentDeclare (8:32): a
+|  |  |  |  |  |  |  SCArgumentDeclare (8:32): a, prototype
 |  |  |  |  |  |  |  |  SCCollection (8:36): Array = [1, 2]
 |  |  |  |  |  |  |  |  |  SCLiteral (8:38) = 1
 |  |  |  |  |  |  |  |  |  SCLiteral (8:41) = 2
-|  |  |  |  |  |  |  SCArgumentDeclare (8:45): b
+|  |  |  |  |  |  |  SCArgumentDeclare (8:45): b, computed
 |  |  |  |  |  |  |  |  SCCollection (8:49): Event
 |  |  |  |  |  |  |  |  |  SCLiteral (8:50) = \c
 |  |  |  |  |  |  |  |  |  SCLiteral (8:53) = 3
@@ -37,7 +37,7 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  |  |  SCExplicitReturn (10:23)
 |  |  |  |  |  SCFunction (10:24)
 |  |  |  |  |  |  SCArgumentDeclareList (10:27)
-|  |  |  |  |  |  |  SCArgumentDeclare (10:27): a
+|  |  |  |  |  |  |  SCArgumentDeclare (10:27): a, computed
 |  |  |  |  |  |  |  |  SCMessage (10:32): foo
 |  |  |  |  |  |  |  |  |  SCLiteral (10:32) = 1
 |  |  |  |  |  |  SCBody (10:24)
@@ -48,7 +48,7 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  |  |  |  SCFunction (13:31)
 |  |  |  |  |  |  SCArgumentDeclareList (13:34)
 |  |  |  |  |  |  |  SCArgumentDeclare (13:34): a
-|  |  |  |  |  |  |  SCArgumentDeclare (13:37): b
+|  |  |  |  |  |  |  SCArgumentDeclare (13:37): b, computed
 |  |  |  |  |  |  |  |  SCMessage (13:42): +
 |  |  |  |  |  |  |  |  |  SCRead (13:42): local a, declared (13:34): a
 |  |  |  |  |  |  |  |  |  SCPositionalArgs (13:42)
@@ -74,7 +74,7 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  |  |  SCExplicitReturn (15:28)
 |  |  |  |  |  SCFunction (15:29)
 |  |  |  |  |  |  SCArgumentDeclareList (15:32)
-|  |  |  |  |  |  |  SCArgumentDeclare (15:32): a
+|  |  |  |  |  |  |  SCArgumentDeclare (15:32): a, computed
 |  |  |  |  |  |  |  |  SCExprList (15:37)
 |  |  |  |  |  |  |  SCArgumentDeclare (15:41): b
 |  |  |  |  |  |  SCBody (15:29)
@@ -98,20 +98,20 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  |  |  SCExplicitReturn (18:20)
 |  |  |  |  |  SCFunction (18:21)
 |  |  |  |  |  |  SCArgumentDeclareList (18:24)
-|  |  |  |  |  |  |  SCArgumentDeclare (18:24): a
+|  |  |  |  |  |  |  SCArgumentDeclare (18:24): a, computed
 |  |  |  |  |  |  |  |  SCExprList (18:29)
 |  |  |  |  |  |  SCBody (18:21)
 |  |  |  |  |  |  |  SCRead (18:33): local a, declared (18:24): a = (a)
 |  |  SCMethod (21:5): version 3.16: method_constant { |a = 1| ^1 }
 |  |  |  SCArgumentDeclareList (21:24)
-|  |  |  |  SCArgumentDeclare (21:24): a
+|  |  |  |  SCArgumentDeclare (21:24): a, prototype
 |  |  |  |  |  SCLiteral (21:28) = 1
 |  |  |  SCBody (21:31)
 |  |  |  |  SCExplicitReturn (21:31)
 |  |  |  |  |  SCLiteral (21:32) = 1
 |  |  SCMethod (23:5): version 3.16: method_instance_var { |a = (instance_var)| ^1 }
 |  |  |  SCArgumentDeclareList (23:28)
-|  |  |  |  SCArgumentDeclare (23:28): a
+|  |  |  |  SCArgumentDeclare (23:28): a, computed
 |  |  |  |  |  SCRead (23:33): instance instance_var, declared (3:9): instance_var
 |  |  |  SCBody (23:48)
 |  |  |  |  SCExplicitReturn (23:48)
@@ -119,7 +119,7 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  SCMethod (25:5): version 3.16: method_other_argument { |a, b = (a)| ^1 }
 |  |  |  SCArgumentDeclareList (25:30)
 |  |  |  |  SCArgumentDeclare (25:30): a
-|  |  |  |  SCArgumentDeclare (25:33): b
+|  |  |  |  SCArgumentDeclare (25:33): b, computed
 |  |  |  |  |  SCRead (25:38): local a, declared (25:30): a
 |  |  |  SCBody (25:42)
 |  |  |  |  SCExplicitReturn (25:42)

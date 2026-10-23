@@ -9,13 +9,13 @@ SCInterpreted (1:1): version 3.16: interpreted/several_blocks.scd
 |  |  SCRegion (4:1)
 |  |  |  SCFunction (4:1) -> 1
 |  |  |  |  SCBody (4:1)
-|  |  |  |  |  SCVariableDeclare (4:6): a
+|  |  |  |  |  SCVariableDeclare (4:6): a, prototype
 |  |  |  |  |  |  SCLiteral (4:10) = 1
 |  |  |  |  |  SCRead (4:13): local a = 1, declared (4:6): a = 1
 |  |  SCRegion (4:17)
 |  |  |  SCFunction (4:17) -> 2
 |  |  |  |  SCBody (4:17)
-|  |  |  |  |  SCVariableDeclare (4:22): a
+|  |  |  |  |  SCVariableDeclare (4:22): a, prototype
 |  |  |  |  |  |  SCLiteral (4:26) = 2
 |  |  |  |  |  SCRead (4:29): local a = 2, declared (4:22): a = 2
 Successfully compiled 15 classes.

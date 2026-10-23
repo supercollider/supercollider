@@ -38,7 +38,7 @@ SCClass (2:1): ConstantResults, version 3.16
 |  |  |  |  SCExplicitReturn (9:30)
 |  |  |  |  |  SCFunction (9:31) -> 2
 |  |  |  |  |  |  SCBody (9:31)
-|  |  |  |  |  |  |  SCVariableDeclare (9:37): x
+|  |  |  |  |  |  |  SCVariableDeclare (9:37): x, prototype
 |  |  |  |  |  |  |  |  SCLiteral (9:41) = 2
 |  |  |  |  |  |  |  SCRead (9:44): local x = 2, declared (9:37): x = 2
 |  |  SCMethod (10:5): version 3.16: function_mutable_result { ^{ [1, 2] } }
@@ -54,7 +54,7 @@ SCClass (2:1): ConstantResults, version 3.16
 |  |  |  |  SCExplicitReturn (11:40)
 |  |  |  |  |  SCFunction (11:41) -> 3
 |  |  |  |  |  |  SCBody (11:41)
-|  |  |  |  |  |  |  SCVariableDeclare (11:47): x
+|  |  |  |  |  |  |  SCVariableDeclare (11:47): x, computed
 |  |  |  |  |  |  |  |  SCCollection (11:51): Array = [1, 2]
 |  |  |  |  |  |  |  |  |  SCLiteral (11:52) = 1
 |  |  |  |  |  |  |  |  |  SCLiteral (11:55) = 2
@@ -64,7 +64,7 @@ SCClass (2:1): ConstantResults, version 3.16
 |  |  |  |  SCExplicitReturn (12:38)
 |  |  |  |  |  SCFunction (12:39)
 |  |  |  |  |  |  SCBody (12:39)
-|  |  |  |  |  |  |  SCVariableDeclare (12:45): x
+|  |  |  |  |  |  |  SCVariableDeclare (12:45): x, prototype
 |  |  |  |  |  |  |  |  SCLiteral (12:49) = 1
 |  |  SCMethod (13:5): version 3.16: function_with_argument { ^{ |x| 1 } }
 |  |  |  SCBody (13:30)
@@ -94,7 +94,7 @@ SCClass (2:1): ConstantResults, version 3.16
 |  |  |  |  SCExplicitReturn (16:38)
 |  |  |  |  |  SCFunction (16:39)
 |  |  |  |  |  |  SCBody (16:39)
-|  |  |  |  |  |  |  SCVariableDeclare (16:45): x
+|  |  |  |  |  |  |  SCVariableDeclare (16:45): x, computed
 |  |  |  |  |  |  |  |  SCRead (16:49): instance instance_var, declared (3:9): instance_var
 |  |  |  |  |  |  |  SCLiteral (16:63) = 1
 |  |  SCMethod (17:5): version 3.16: function_returns { ^{ ^1 } }
@@ -106,7 +106,7 @@ SCClass (2:1): ConstantResults, version 3.16
 |  |  |  |  |  |  |  |  SCLiteral (17:28) = 1
 |  |  SCMethod (18:5): version 3.16: function_reads_outer { var a = 1; ^{ a } }
 |  |  |  SCBody (18:28)
-|  |  |  |  SCVariableDeclare (18:32): a
+|  |  |  |  SCVariableDeclare (18:32): a, prototype
 |  |  |  |  |  SCLiteral (18:36) = 1
 |  |  |  |  SCExplicitReturn (18:39)
 |  |  |  |  |  SCFunction (18:40)
@@ -146,7 +146,7 @@ SCClass (2:1): ConstantResults, version 3.16
 |  |  |  |  |  SCLiteral (23:31) = 1
 |  |  SCMethod (25:5): version 3.16: method_variable_return { var x = 2; ^x } -> 2
 |  |  |  SCBody (25:30)
-|  |  |  |  SCVariableDeclare (25:34): x
+|  |  |  |  SCVariableDeclare (25:34): x, prototype
 |  |  |  |  |  SCLiteral (25:38) = 2
 |  |  |  |  SCExplicitReturn (25:41)
 |  |  |  |  |  SCRead (25:42): local x = 2, declared (25:34): x = 2

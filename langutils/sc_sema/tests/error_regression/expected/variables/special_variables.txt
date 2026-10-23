@@ -167,7 +167,7 @@ SCClass (2:1): SpecialVariables, version 3.16
 |  |  |  `this`, `super`, `thisProcess`, `thisThread`, `thisMethod`, `thisFunctionDef` and `thisFunction` are set by the language. Use a different name.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (46:24)
-|  |  |  |  SCVariableDeclare (46:28): this
+|  |  |  |  SCVariableDeclare (46:28): this, prototype
 |  |  |  |  |  SCLiteral (46:35) = 1
 |  |  |  |  SCExplicitReturn (46:38)
 |  |  |  |  |  SCSpecial (46:39): this

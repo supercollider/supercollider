@@ -76,7 +76,7 @@ SCClass (2:1): Foo, version 3.16
 |  |  |  |  |  |  |  |  SCRead (31:30): local x, declared (31:33): x <- [1, 2]
 |  |  SCMethod (33:5): version 3.16: hidden_by_variable { var bar = 1; ^bar } -> 1
 |  |  |  SCBody (33:26)
-|  |  |  |  SCVariableDeclare (33:30): bar
+|  |  |  |  SCVariableDeclare (33:30): bar, prototype
 |  |  |  |  |  SCLiteral (33:36) = 1
 |  |  |  |  SCExplicitReturn (33:39)
 |  |  |  |  |  SCRead (33:40): local bar = 1, declared (33:30): bar = 1
@@ -92,7 +92,7 @@ SCClass (2:1): Foo, version 3.16
 |  |  |  |  |  SCCollection (37:29): Array
 |  |  |  |  |  |  SCFunction (37:30) -> 1
 |  |  |  |  |  |  |  SCBody (37:30)
-|  |  |  |  |  |  |  |  SCVariableDeclare (37:36): bar
+|  |  |  |  |  |  |  |  SCVariableDeclare (37:36): bar, prototype
 |  |  |  |  |  |  |  |  |  SCLiteral (37:42) = 1
 |  |  |  |  |  |  |  |  SCRead (37:45): local bar = 1, declared (37:36): bar = 1
 |  |  |  |  |  |  SCRead (37:52): instance bar, declared (3:9): bar

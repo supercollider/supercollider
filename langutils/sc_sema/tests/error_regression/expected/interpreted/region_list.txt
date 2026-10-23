@@ -16,7 +16,7 @@ SCInterpreted (1:1): version 3.16: interpreted/region_list.scd
 |  |  SCRegion (7:1)
 |  |  |  SCFunction (7:1) -> 4
 |  |  |  |  SCBody (7:1)
-|  |  |  |  |  SCVariableDeclare (8:6): b
+|  |  |  |  |  SCVariableDeclare (8:6): b, prototype
 |  |  |  |  |  |  SCLiteral (8:10) = 3
 |  |  |  |  |  SCMessage (9:2): + = 4
 |  |  |  |  |  |  SCRead (9:2): local b = 3, declared (8:6): b = 3
@@ -30,7 +30,7 @@ SCInterpreted (1:1): version 3.16: interpreted/region_list.scd
 |  |  SCRegion (12:1)
 |  |  |  SCFunction (12:1)
 |  |  |  |  SCArgumentDeclareList (12:3)
-|  |  |  |  |  SCArgumentDeclare (12:3): x
+|  |  |  |  |  SCArgumentDeclare (12:3): x, prototype
 |  |  |  |  |  |  SCLiteral (12:7) = 6
 |  |  |  |  SCBody (12:1)
 |  |  |  |  |  SCRead (12:10): local x, declared (12:3): x = 6

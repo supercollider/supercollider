@@ -9,7 +9,7 @@ SCInterpreted (1:1): version 3.16: interpreted/block_scope.scd
 |  |  SCRegion (5:1)
 |  |  |  SCFunction (5:1) -> 1
 |  |  |  |  SCBody (5:1)
-|  |  |  |  |  SCVariableDeclare (5:6): q
+|  |  |  |  |  SCVariableDeclare (5:6): q, prototype
 |  |  |  |  |  |  SCLiteral (5:10) = 1
 |  |  |  |  |  SCRead (5:13): local q = 1, declared (5:6): q = 1
 |  |  SCRegion (5:17)

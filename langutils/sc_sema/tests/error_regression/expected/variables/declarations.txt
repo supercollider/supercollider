@@ -15,24 +15,24 @@ SCClass (2:1): Variables, version 3.16
 |  |  |  |  |  SCRead (7:23): local a = nil, declared (7:19): a
 |  |  SCMethod (10:5): version 3.16: declare_with_value { var a = 1; ^a } -> 1
 |  |  |  SCBody (10:26)
-|  |  |  |  SCVariableDeclare (10:30): a
+|  |  |  |  SCVariableDeclare (10:30): a, prototype
 |  |  |  |  |  SCLiteral (10:34) = 1
 |  |  |  |  SCExplicitReturn (10:37)
 |  |  |  |  |  SCRead (10:38): local a = 1, declared (10:30): a = 1
 |  |  SCMethod (13:5): version 3.16: declare_several { var a = 1, b, c = 3; ^b } -> nil
 |  |  |  SCBody (13:23)
-|  |  |  |  SCVariableDeclare (13:27): a
+|  |  |  |  SCVariableDeclare (13:27): a, prototype
 |  |  |  |  |  SCLiteral (13:31) = 1
 |  |  |  |  SCVariableDeclare (13:34): b
-|  |  |  |  SCVariableDeclare (13:37): c
+|  |  |  |  SCVariableDeclare (13:37): c, prototype
 |  |  |  |  |  SCLiteral (13:41) = 3
 |  |  |  |  SCExplicitReturn (13:44)
 |  |  |  |  |  SCRead (13:45): local b = nil, declared (13:34): b
 |  |  SCMethod (16:5): version 3.16: uses_earlier { var a = 1, b = a + 1; ^b } -> 2
 |  |  |  SCBody (16:20)
-|  |  |  |  SCVariableDeclare (16:24): a
+|  |  |  |  SCVariableDeclare (16:24): a, prototype
 |  |  |  |  |  SCLiteral (16:28) = 1
-|  |  |  |  SCVariableDeclare (16:31): b
+|  |  |  |  SCVariableDeclare (16:31): b, computed
 |  |  |  |  |  SCMessage (16:35): + = 2
 |  |  |  |  |  |  SCRead (16:35): local a = 1, declared (16:24): a = 1
 |  |  |  |  |  |  SCPositionalArgs (16:35)
@@ -41,7 +41,7 @@ SCClass (2:1): Variables, version 3.16
 |  |  |  |  |  SCRead (16:43): local b = 2, declared (16:31): b = a + 1
 |  |  SCMethod (18:5): version 3.16: bracketed_value { var a(1 + 2); ^a } -> 3
 |  |  |  SCBody (18:23)
-|  |  |  |  SCVariableDeclare (18:27): a
+|  |  |  |  SCVariableDeclare (18:27): a, computed
 |  |  |  |  |  SCMessage (18:29): + = 3
 |  |  |  |  |  |  SCLiteral (18:29) = 1
 |  |  |  |  |  |  SCPositionalArgs (18:29)
@@ -64,7 +64,7 @@ SCClass (2:1): Variables, version 3.16
 |  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (22:24)
-|  |  |  |  SCVariableDeclare (22:28): a
+|  |  |  |  SCVariableDeclare (22:28): a, computed
 |  |  |  |  |  SCExprList (22:32)
 |  |  |  |  SCExplicitReturn (22:35)
 |  |  |  |  |  SCRead (22:36): local a, declared (22:28): a = a
@@ -85,12 +85,12 @@ SCClass (2:1): Variables, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (24:28)
 |  |  |  |  SCExprList (24:28)
-|  |  |  |  SCVariableDeclare (24:35): a
+|  |  |  |  SCVariableDeclare (24:35): a, prototype
 |  |  |  |  |  SCLiteral (24:39) = 1
 |  |  SCMethod (27:5): version 3.16: declared_after_expression { 1; var a = 2; ^a } -> 2
 |  |  |  SCBody (27:33)
 |  |  |  |  SCLiteral (27:33) = 1
-|  |  |  |  SCVariableDeclare (27:40): a
+|  |  |  |  SCVariableDeclare (27:40): a, prototype
 |  |  |  |  |  SCLiteral (27:44) = 2
 |  |  |  |  SCExplicitReturn (27:47)
 |  |  |  |  |  SCRead (27:48): local a = 2, declared (27:40): a = 2
@@ -155,7 +155,7 @@ SCClass (2:1): Variables, version 3.16
 |  |  |  |  |  SCRead (31:38): local a, declared (31:27): a
 |  |  SCMethod (34:5): version 3.16: shadows_instance { var instance_var = 1; ^instance_var } -> 1
 |  |  |  SCBody (34:24)
-|  |  |  |  SCVariableDeclare (34:28): instance_var
+|  |  |  |  SCVariableDeclare (34:28): instance_var, prototype
 |  |  |  |  |  SCLiteral (34:43) = 1
 |  |  |  |  SCExplicitReturn (34:46)
 |  |  |  |  |  SCRead (34:47): local instance_var = 1, declared (34:28): instance_var = 1
@@ -169,22 +169,22 @@ SCClass (2:1): Variables, version 3.16
 |  |  |  |  SCExplicitReturn (37:16)
 |  |  |  |  |  SCFunction (37:17) -> 1
 |  |  |  |  |  |  SCBody (37:17)
-|  |  |  |  |  |  |  SCVariableDeclare (37:23): a
+|  |  |  |  |  |  |  SCVariableDeclare (37:23): a, prototype
 |  |  |  |  |  |  |  |  SCLiteral (37:27) = 1
 |  |  |  |  |  |  |  SCRead (37:30): local a = 1, declared (37:23): a = 1
 |  |  SCMethod (39:5): version 3.16: block_shadows_outer { var a = 1; ^{ var a = 2; a } }
 |  |  |  SCBody (39:27)
-|  |  |  |  SCVariableDeclare (39:31): a
+|  |  |  |  SCVariableDeclare (39:31): a, prototype
 |  |  |  |  |  SCLiteral (39:35) = 1
 |  |  |  |  SCExplicitReturn (39:38)
 |  |  |  |  |  SCFunction (39:39) -> 2
 |  |  |  |  |  |  SCBody (39:39)
-|  |  |  |  |  |  |  SCVariableDeclare (39:45): a
+|  |  |  |  |  |  |  SCVariableDeclare (39:45): a, prototype
 |  |  |  |  |  |  |  |  SCLiteral (39:49) = 2
 |  |  |  |  |  |  |  SCRead (39:52): local a = 2, declared (39:45): a = 2
 |  |  SCMethod (42:5): version 3.16: block_reads_outer { var a = 1; ^{ a } }
 |  |  |  SCBody (42:25)
-|  |  |  |  SCVariableDeclare (42:29): a
+|  |  |  |  SCVariableDeclare (42:29): a, prototype
 |  |  |  |  |  SCLiteral (42:33) = 1
 |  |  |  |  SCExplicitReturn (42:36)
 |  |  |  |  |  SCFunction (42:37)

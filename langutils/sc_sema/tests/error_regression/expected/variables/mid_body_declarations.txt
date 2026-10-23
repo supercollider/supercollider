@@ -11,19 +11,19 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  SCMethod (9:5): version 3.16: after_expression { 1; var a = 2; ^a } -> 2
 |  |  |  SCBody (9:24)
 |  |  |  |  SCLiteral (9:24) = 1
-|  |  |  |  SCVariableDeclare (9:31): a
+|  |  |  |  SCVariableDeclare (9:31): a, prototype
 |  |  |  |  |  SCLiteral (9:35) = 2
 |  |  |  |  SCExplicitReturn (9:38)
 |  |  |  |  |  SCRead (9:39): local a = 2, declared (9:31): a = 2
 |  |  SCMethod (12:5): version 3.16: interleaved { var a = 1; 10; var b = a; 20; var c = b; ^c } -> 1
 |  |  |  SCBody (12:19)
-|  |  |  |  SCVariableDeclare (12:23): a
+|  |  |  |  SCVariableDeclare (12:23): a, prototype
 |  |  |  |  |  SCLiteral (12:27) = 1
 |  |  |  |  SCLiteral (12:30) = 10
-|  |  |  |  SCVariableDeclare (12:38): b
+|  |  |  |  SCVariableDeclare (12:38): b, computed
 |  |  |  |  |  SCRead (12:42): local a = 1, declared (12:23): a = 1
 |  |  |  |  SCLiteral (12:45) = 20
-|  |  |  |  SCVariableDeclare (12:53): c
+|  |  |  |  SCVariableDeclare (12:53): c, computed
 |  |  |  |  |  SCRead (12:57): local b = 1, declared (12:38): b = a
 |  |  |  |  SCExplicitReturn (12:60)
 |  |  |  |  |  SCRead (12:61): local c = 1, declared (12:53): c = b
@@ -31,20 +31,20 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  SCBody (15:21)
 |  |  |  |  SCMessage (15:21): postln
 |  |  |  |  |  SCRead (15:21): instance member, declared (5:9): member
-|  |  |  |  SCVariableDeclare (15:40): a
+|  |  |  |  SCVariableDeclare (15:40): a, computed
 |  |  |  |  |  SCRead (15:44): instance member, declared (5:9): member
 |  |  |  |  SCExplicitReturn (15:52)
 |  |  |  |  |  SCRead (15:53): local a, declared (15:40): a = member
 |  |  SCMethod (18:5): version 3.16: after_assignment { var a = 1; a = a + 1; var b = a; ^b }
 |  |  |  SCBody (18:24)
-|  |  |  |  SCVariableDeclare (18:28): a
+|  |  |  |  SCVariableDeclare (18:28): a, prototype
 |  |  |  |  |  SCLiteral (18:32) = 1
 |  |  |  |  SCAssign (18:35): local a, declared (18:28): a = 1
 |  |  |  |  |  SCMessage (18:39): +
 |  |  |  |  |  |  SCRead (18:39): local a, declared (18:28): a = 1
 |  |  |  |  |  |  SCPositionalArgs (18:39)
 |  |  |  |  |  |  |  SCLiteral (18:43) = 1
-|  |  |  |  SCVariableDeclare (18:50): b
+|  |  |  |  SCVariableDeclare (18:50): b, computed
 |  |  |  |  |  SCRead (18:54): local a, declared (18:28): a = 1
 |  |  |  |  SCExplicitReturn (18:57)
 |  |  |  |  |  SCRead (18:58): local b, declared (18:50): b = a
@@ -89,7 +89,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  SCBody (28:31)
 |  |  |  |  SCMessage (28:31): postln
 |  |  |  |  |  SCExprList (28:31)
-|  |  |  |  SCVariableDeclare (28:45): a
+|  |  |  |  SCVariableDeclare (28:45): a, prototype
 |  |  |  |  |  SCLiteral (28:49) = 1
 |  |  |  |  SCExplicitReturn (28:52)
 |  |  |  |  |  SCRead (28:53): local a = 1, declared (28:45): a = 1
@@ -110,7 +110,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (30:35)
 |  |  |  |  SCLiteral (30:39) = 2
-|  |  |  |  SCVariableDeclare (30:46): a
+|  |  |  |  SCVariableDeclare (30:46): a, prototype
 |  |  |  |  |  SCLiteral (30:50) = 1
 |  |  |  |  SCExplicitReturn (30:53)
 |  |  |  |  |  SCRead (30:54): local a, declared (30:46): a = 1
@@ -139,30 +139,30 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  Arguments and variables in the same function or method must have different names. Rename one.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (32:24)
-|  |  |  |  SCVariableDeclare (32:28): a
+|  |  |  |  SCVariableDeclare (32:28): a, prototype
 |  |  |  |  |  SCLiteral (32:32) = 1
 |  |  |  |  SCLiteral (32:35) = 1
-|  |  |  |  SCVariableDeclare (32:42): a
+|  |  |  |  SCVariableDeclare (32:42): a, prototype
 |  |  |  |  |  SCLiteral (32:46) = 2
 |  |  |  |  SCExplicitReturn (32:49)
 |  |  |  |  |  SCRead (32:50): local a = 1, declared (32:28): a = 1
 |  |  SCMethod (36:5): version 3.16: hides_outer_after_read { var x = 1; ^{ x.postln; var x = 2; x } }
 |  |  |  SCBody (36:30)
-|  |  |  |  SCVariableDeclare (36:34): x
+|  |  |  |  SCVariableDeclare (36:34): x, prototype
 |  |  |  |  |  SCLiteral (36:38) = 1
 |  |  |  |  SCExplicitReturn (36:41)
 |  |  |  |  |  SCFunction (36:42)
 |  |  |  |  |  |  SCBody (36:42)
 |  |  |  |  |  |  |  SCMessage (36:44): postln
 |  |  |  |  |  |  |  |  SCRead (36:44): local x, declared (36:34): x = 1
-|  |  |  |  |  |  |  SCVariableDeclare (36:58): x
+|  |  |  |  |  |  |  SCVariableDeclare (36:58): x, prototype
 |  |  |  |  |  |  |  |  SCLiteral (36:62) = 2
 |  |  |  |  |  |  |  SCRead (36:65): local x = 2, declared (36:58): x = 2
 |  |  SCMethod (38:5): version 3.16: hides_member_after_read { member.postln; var member = 2; ^member }
 |  |  |  SCBody (38:31)
 |  |  |  |  SCMessage (38:31): postln
 |  |  |  |  |  SCRead (38:31): instance member, declared (5:9): member
-|  |  |  |  SCVariableDeclare (38:50): member
+|  |  |  |  SCVariableDeclare (38:50): member, prototype
 |  |  |  |  |  SCLiteral (38:59) = 2
 |  |  |  |  SCExplicitReturn (38:62)
 |  |  |  |  |  SCRead (38:63): local member = 2, declared (38:50): member = 2
@@ -172,7 +172,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  |  |  SCFunction (42:27) -> 2
 |  |  |  |  |  |  SCBody (42:27)
 |  |  |  |  |  |  |  SCLiteral (42:29) = 1
-|  |  |  |  |  |  |  SCVariableDeclare (42:36): g
+|  |  |  |  |  |  |  SCVariableDeclare (42:36): g, prototype
 |  |  |  |  |  |  |  |  SCLiteral (42:40) = 2
 |  |  |  |  |  |  |  SCRead (42:43): local g = 2, declared (42:36): g = 2
 |  |  SCMethod (46:5): version 3.16: in_deeply_nested_function { ^{ 1; { 2; var g = 1; 3; var h = g; h } } }
@@ -184,18 +184,18 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  |  |  |  |  SCFunction (46:39) -> 1
 |  |  |  |  |  |  |  |  SCBody (46:39)
 |  |  |  |  |  |  |  |  |  SCLiteral (46:41) = 2
-|  |  |  |  |  |  |  |  |  SCVariableDeclare (46:48): g
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (46:48): g, prototype
 |  |  |  |  |  |  |  |  |  |  SCLiteral (46:52) = 1
 |  |  |  |  |  |  |  |  |  SCLiteral (46:55) = 3
-|  |  |  |  |  |  |  |  |  SCVariableDeclare (46:62): h
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (46:62): h, computed
 |  |  |  |  |  |  |  |  |  |  SCRead (46:66): local g = 1, declared (46:48): g = 1
 |  |  |  |  |  |  |  |  |  SCRead (46:69): local h = 1, declared (46:62): h = g
 |  |  SCMethod (49:5): version 3.16: captured_by_later_function { 1; var g = 1; var f = { g }; ^f }
 |  |  |  SCBody (49:34)
 |  |  |  |  SCLiteral (49:34) = 1
-|  |  |  |  SCVariableDeclare (49:41): g
+|  |  |  |  SCVariableDeclare (49:41): g, prototype
 |  |  |  |  |  SCLiteral (49:45) = 1
-|  |  |  |  SCVariableDeclare (49:52): f
+|  |  |  |  SCVariableDeclare (49:52): f, computed
 |  |  |  |  |  SCFunction (49:56)
 |  |  |  |  |  |  SCBody (49:56)
 |  |  |  |  |  |  |  SCRead (49:58): local g, declared (49:41): g = 1
@@ -207,7 +207,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  SCBody (51:26)
 |  |  |  |  SCMessage (51:26): postln
 |  |  |  |  |  SCRead (51:26): local a, declared (51:23): a
-|  |  |  |  SCVariableDeclare (51:40): b
+|  |  |  |  SCVariableDeclare (51:40): b, computed
 |  |  |  |  |  SCRead (51:44): local a, declared (51:23): a
 |  |  |  |  SCExplicitReturn (51:47)
 |  |  |  |  |  SCRead (51:48): local b, declared (51:40): b = a
@@ -220,7 +220,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  |  |  |  SCBody (53:32)
 |  |  |  |  |  |  |  SCMessage (53:38): postln
 |  |  |  |  |  |  |  |  SCRead (53:38): local a, declared (53:35): a
-|  |  |  |  |  |  |  SCVariableDeclare (53:52): b
+|  |  |  |  |  |  |  SCVariableDeclare (53:52): b, computed
 |  |  |  |  |  |  |  |  SCRead (53:56): local a, declared (53:35): a
 |  |  |  |  |  |  |  SCRead (53:59): local b, declared (53:52): b = a
 |  |  SCMethod (57:5): version 3.16: after_non_local_return { |x| if (x) { ^1 }; var a = 1; ^a }
@@ -234,7 +234,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  |  |  |  |  SCBody (57:41)
 |  |  |  |  |  |  |  |  SCExplicitReturn (57:43)
 |  |  |  |  |  |  |  |  |  SCLiteral (57:44) = 1
-|  |  |  |  SCVariableDeclare (57:53): a
+|  |  |  |  SCVariableDeclare (57:53): a, prototype
 |  |  |  |  |  SCLiteral (57:57) = 1
 |  |  |  |  SCExplicitReturn (57:60)
 |  |  |  |  |  SCRead (57:61): local a = 1, declared (57:53): a = 1
@@ -250,11 +250,11 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  |  |  |  |  |  SCPositionalArgs (60:46)
 |  |  |  |  |  |  |  |  |  SCFunction (60:53)
 |  |  |  |  |  |  |  |  |  |  SCBody (60:53)
-|  |  |  |  |  |  |  |  |  |  |  SCVariableDeclare (60:59): a
+|  |  |  |  |  |  |  |  |  |  |  SCVariableDeclare (60:59): a, prototype
 |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (60:63) = 1
 |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (60:66)
 |  |  |  |  |  |  |  |  |  |  |  |  SCRead (60:67): local a = 1, declared (60:59): a = 1
-|  |  |  |  |  |  |  SCVariableDeclare (60:76): a
+|  |  |  |  |  |  |  SCVariableDeclare (60:76): a, prototype
 |  |  |  |  |  |  |  |  SCLiteral (60:80) = 2
 |  |  |  |  |  |  |  SCRead (60:83): local a = 2, declared (60:76): a = 2
 Successfully compiled 16 classes.

@@ -9,7 +9,7 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  SCMethodList (3:1)
 |  |  SCMethod (4:5): version 3.16: unbracketed { arg a = 1 + 1; ^a }
 |  |  |  SCArgumentDeclareList (4:23)
-|  |  |  |  SCArgumentDeclare (4:23): a
+|  |  |  |  SCArgumentDeclare (4:23): a, computed
 |  |  |  |  |  SCMessage (4:27): +
 |  |  |  |  |  |  SCLiteral (4:27) = 1
 |  |  |  |  |  |  SCPositionalArgs (4:27)
@@ -19,7 +19,7 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  SCRead (4:35): local a, declared (4:23): a = 1 + 1
 |  |  SCMethod (5:5): version 3.16: bracketed { arg a = (1 + 1); ^a }
 |  |  |  SCArgumentDeclareList (5:21)
-|  |  |  |  SCArgumentDeclare (5:21): a
+|  |  |  |  SCArgumentDeclare (5:21): a, computed
 |  |  |  |  |  SCMessage (5:26): + = 2
 |  |  |  |  |  |  SCLiteral (5:26) = 1
 |  |  |  |  |  |  SCPositionalArgs (5:26)
@@ -29,7 +29,7 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  SCRead (5:35): local a, declared (5:21): a = (1 + 1)
 |  |  SCMethod (6:5): version 3.16: parenthesised { arg a(1 + 1); ^a }
 |  |  |  SCArgumentDeclareList (6:25)
-|  |  |  |  SCArgumentDeclare (6:25): a
+|  |  |  |  SCArgumentDeclare (6:25): a, computed
 |  |  |  |  |  SCMessage (6:27): + = 2
 |  |  |  |  |  |  SCLiteral (6:27) = 1
 |  |  |  |  |  |  SCPositionalArgs (6:27)
@@ -39,7 +39,7 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  SCRead (6:36): local a, declared (6:25): a(1 + 1)
 |  |  SCMethod (7:5): version 3.16: pipes_parenthesised { |a(1 + 1)| ^a }
 |  |  |  SCArgumentDeclareList (7:28)
-|  |  |  |  SCArgumentDeclare (7:28): a
+|  |  |  |  SCArgumentDeclare (7:28): a, computed
 |  |  |  |  |  SCMessage (7:30): + = 2
 |  |  |  |  |  |  SCLiteral (7:30) = 1
 |  |  |  |  |  |  SCPositionalArgs (7:30)
@@ -49,7 +49,7 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  SCRead (7:39): local a, declared (7:28): a(1 + 1)
 |  |  SCMethod (8:5): version 3.16: pipes_bracketed { |a = (1 + 1)| ^a }
 |  |  |  SCArgumentDeclareList (8:24)
-|  |  |  |  SCArgumentDeclare (8:24): a
+|  |  |  |  SCArgumentDeclare (8:24): a, computed
 |  |  |  |  |  SCMessage (8:29): + = 2
 |  |  |  |  |  |  SCLiteral (8:29) = 1
 |  |  |  |  |  |  SCPositionalArgs (8:29)
@@ -59,7 +59,7 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  SCRead (8:38): local a, declared (8:24): a = (1 + 1)
 |  |  SCMethod (11:5): version 3.16: unbracketed_collection { arg a = [1 + 1, (2 + 2)]; ^a }
 |  |  |  SCArgumentDeclareList (11:34)
-|  |  |  |  SCArgumentDeclare (11:34): a
+|  |  |  |  SCArgumentDeclare (11:34): a, computed
 |  |  |  |  |  SCCollection (11:38): Array
 |  |  |  |  |  |  SCMessage (11:39): +
 |  |  |  |  |  |  |  SCLiteral (11:39) = 1
@@ -74,16 +74,16 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  SCRead (11:57): local a, declared (11:34): a = [1 + 1, (2 + 2)]
 |  |  SCMethod (12:5): version 3.16: unbracketed_function { arg f = { |b = (1 + 1)| var c = 2 + 2; c }; ^f }
 |  |  |  SCArgumentDeclareList (12:32)
-|  |  |  |  SCArgumentDeclare (12:32): f
+|  |  |  |  SCArgumentDeclare (12:32): f, computed
 |  |  |  |  |  SCFunction (12:36)
 |  |  |  |  |  |  SCArgumentDeclareList (12:39)
-|  |  |  |  |  |  |  SCArgumentDeclare (12:39): b
+|  |  |  |  |  |  |  SCArgumentDeclare (12:39): b, computed
 |  |  |  |  |  |  |  |  SCMessage (12:44): +
 |  |  |  |  |  |  |  |  |  SCLiteral (12:44) = 1
 |  |  |  |  |  |  |  |  |  SCPositionalArgs (12:44)
 |  |  |  |  |  |  |  |  |  |  SCLiteral (12:48) = 1
 |  |  |  |  |  |  SCBody (12:36)
-|  |  |  |  |  |  |  SCVariableDeclare (12:56): c
+|  |  |  |  |  |  |  SCVariableDeclare (12:56): c, computed
 |  |  |  |  |  |  |  |  SCMessage (12:60): +
 |  |  |  |  |  |  |  |  |  SCLiteral (12:60) = 2
 |  |  |  |  |  |  |  |  |  SCPositionalArgs (12:60)
@@ -94,16 +94,16 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  SCRead (12:73): local f, declared (12:32): f = { |b = (1 + 1)| var c = 2 + 2; c }
 |  |  SCMethod (13:5): version 3.16: bracketed_function { arg f = ({ |b = (1 + 1)| var c = 2 + 2; c }); ^f }
 |  |  |  SCArgumentDeclareList (13:30)
-|  |  |  |  SCArgumentDeclare (13:30): f
+|  |  |  |  SCArgumentDeclare (13:30): f, computed
 |  |  |  |  |  SCFunction (13:35)
 |  |  |  |  |  |  SCArgumentDeclareList (13:38)
-|  |  |  |  |  |  |  SCArgumentDeclare (13:38): b
+|  |  |  |  |  |  |  SCArgumentDeclare (13:38): b, computed
 |  |  |  |  |  |  |  |  SCMessage (13:43): + = 2
 |  |  |  |  |  |  |  |  |  SCLiteral (13:43) = 1
 |  |  |  |  |  |  |  |  |  SCPositionalArgs (13:43)
 |  |  |  |  |  |  |  |  |  |  SCLiteral (13:47) = 1
 |  |  |  |  |  |  SCBody (13:35)
-|  |  |  |  |  |  |  SCVariableDeclare (13:55): c
+|  |  |  |  |  |  |  SCVariableDeclare (13:55): c, computed
 |  |  |  |  |  |  |  |  SCMessage (13:59): + = 4
 |  |  |  |  |  |  |  |  |  SCLiteral (13:59) = 2
 |  |  |  |  |  |  |  |  |  SCPositionalArgs (13:59)
@@ -114,7 +114,7 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  SCRead (13:73): local f, declared (13:30): f = ({ |b = (1 + 1)| var c = 2 + 2; c })
 |  |  SCMethod (16:5): version 3.16: body_folds { arg a = 1 + 1; ^2 + 2 }
 |  |  |  SCArgumentDeclareList (16:22)
-|  |  |  |  SCArgumentDeclare (16:22): a
+|  |  |  |  SCArgumentDeclare (16:22): a, computed
 |  |  |  |  |  SCMessage (16:26): +
 |  |  |  |  |  |  SCLiteral (16:26) = 1
 |  |  |  |  |  |  SCPositionalArgs (16:26)
@@ -127,12 +127,12 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  |  |  SCLiteral (16:38) = 2
 |  |  SCMethod (18:5): version 3.16: nested_return { arg a = 1 + 1, b = (2 + 2); if (a) { ^b }; ^a }
 |  |  |  SCArgumentDeclareList (18:25)
-|  |  |  |  SCArgumentDeclare (18:25): a
+|  |  |  |  SCArgumentDeclare (18:25): a, computed
 |  |  |  |  |  SCMessage (18:29): +
 |  |  |  |  |  |  SCLiteral (18:29) = 1
 |  |  |  |  |  |  SCPositionalArgs (18:29)
 |  |  |  |  |  |  |  SCLiteral (18:33) = 1
-|  |  |  |  SCArgumentDeclare (18:36): b
+|  |  |  |  SCArgumentDeclare (18:36): b, computed
 |  |  |  |  |  SCMessage (18:41): + = 4
 |  |  |  |  |  |  SCLiteral (18:41) = 2
 |  |  |  |  |  |  SCPositionalArgs (18:41)

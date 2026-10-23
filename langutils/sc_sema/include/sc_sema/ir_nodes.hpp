@@ -112,7 +112,11 @@ struct SCVariableDeclare : priv::Node<SCVariableDeclare_I(maybe<SCAnyExpr_I> val
     static constexpr auto type_name { "SCVariableDeclare" };
     Locatable<SymSCIdentifier> name;
     LocalIndex local;
-    SCVariableDeclare(Locatable<SymSCIdentifier> n, LocalIndex l): name(n), local(l) {}
+    OptionalConstExprIndex prototype;
+    SCVariableDeclare(Locatable<SymSCIdentifier> n, LocalIndex l, OptionalConstExprIndex p):
+        name(n),
+        local(l),
+        prototype(p) {}
 };
 
 // The body of a method or function, its expressions and variable declarations in the order they are written.
@@ -250,16 +254,12 @@ struct SCRangeGenerator
     static constexpr auto type_name { "SCRangeGenerator" };
 };
 
-enum struct DefaultBehaviour { NoDefault, PreserveNil, DontPreserveNil };
 struct SCArgumentDeclare : priv::Node<SCArgumentDeclare_I(maybe<SCAnyExpr_I>)> {
     static constexpr auto type_name { "SCArgumentDeclare" };
     SymSCIdentifier name;
     LocalIndex local;
-    DefaultBehaviour default_behaviour;
-    SCArgumentDeclare(SymSCIdentifier n, LocalIndex l, DefaultBehaviour db = DefaultBehaviour::NoDefault):
-        name(n),
-        local(l),
-        default_behaviour(db) {}
+    OptionalConstExprIndex prototype;
+    SCArgumentDeclare(SymSCIdentifier n, LocalIndex l, OptionalConstExprIndex p): name(n), local(l), prototype(p) {}
 };
 
 

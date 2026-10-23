@@ -9,7 +9,7 @@ SCInterpreted (1:1): version 3.16: interpreted/block_arguments.scd
 |  |  SCRegion (6:1)
 |  |  |  SCFunction (6:1)
 |  |  |  |  SCArgumentDeclareList (6:3)
-|  |  |  |  |  SCArgumentDeclare (6:3): w
+|  |  |  |  |  SCArgumentDeclare (6:3): w, prototype
 |  |  |  |  |  |  SCLiteral (6:7) = 3
 |  |  |  |  SCBody (6:1)
 |  |  |  |  |  SCRead (6:10): local w, declared (6:3): w = 3

@@ -80,7 +80,7 @@ SCInterpreted (1:1): version 3.16: region_tests/region_1.scd
 |  |  SCRegion (5:1)
 |  |  |  SCFunction (5:1) -> 11
 |  |  |  |  SCBody (5:1)
-|  |  |  |  |  SCVariableDeclare (6:9): a
+|  |  |  |  |  SCVariableDeclare (6:9): a, prototype
 |  |  |  |  |  |  SCLiteral (6:13) = 10
 |  |  |  |  |  SCMessage (8:5): + = 11
 |  |  |  |  |  |  SCRead (8:5): local a = 10, declared (6:9): a = 10

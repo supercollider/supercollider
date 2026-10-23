@@ -7,7 +7,7 @@ IR GRAPH DUMP
 SCInterpreted (1:1): version 3.16: interpreted/file_variables.scd
 |  SCFunction (1:1) -> 3
 |  |  SCBody (1:1)
-|  |  |  SCVariableDeclare (4:5): k
+|  |  |  SCVariableDeclare (4:5): k, prototype
 |  |  |  |  SCLiteral (4:9) = 2
 |  |  |  SCMessage (4:12): + = 3
 |  |  |  |  SCRead (4:12): local k = 2, declared (4:5): k = 2

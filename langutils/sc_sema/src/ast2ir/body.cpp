@@ -281,15 +281,17 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
     const auto& g = *b.ast_graph;
     const auto name = b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, name_i) });
     const auto local = b.expr.local_for_declaration(name, location_of(b.ir, g, whole), b.owner);
-    const auto declare_node = [&](maybe<SCAnyExpr_I> value_i) {
-        const auto declare = b.ir.create(SCVariableDeclare { { location_of(b.ir, g, { *name_i }), name }, local },
-                                         location_of(b.ir, g, whole), value_i);
+    const auto declare_node = [&](maybe<SCAnyExpr_I> value_i, OptionalConstExprIndex prototype) {
+        const auto declare =
+            b.ir.create(SCVariableDeclare { { location_of(b.ir, g, { *name_i }), name }, local, prototype },
+                        location_of(b.ir, g, whole), value_i);
         b.ir.append(b.body, declare);
         return declare;
     };
     if (!value) {
-        const auto declare = declare_node(b.ir.create(SCMissing {}, location_of(b.ir, g, whole)));
-        (void)add_variable(b, name_i, name, declare, local, b.ctx.constant_table.register_constexpr({ Nil {} }),
+        const auto nil = b.ctx.constant_table.register_constexpr({ Nil {} });
+        const auto declare = declare_node(b.ir.create(SCMissing {}, location_of(b.ir, g, whole)), nil);
+        (void)add_variable(b, name_i, name, declare, local, nil,
                            TypeInfo { b.ctx.common_classes.nil, TypeConfidence::Absolute });
         return true;
     }
@@ -302,7 +304,8 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
     // Legacy code only knows a literal, as the old compiler computed any other initial value when the code ran.
     const auto constant =
         b.expr.can_fold_constants() || ConstEval::is_legacy_literal(g, *value) ? value_r.const_index : std::nullopt;
-    (void)add_variable(b, name_i, name, declare_node(value_r.ir_node), local, constant, value_r.type);
+    const auto prototype = can_be_prototyped(g, *value, value_r.const_index);
+    (void)add_variable(b, name_i, name, declare_node(value_r.ir_node, prototype), local, constant, value_r.type);
     return value_r.const_index.has_value();
 }
 
@@ -396,6 +399,22 @@ bool declare_variables(BodyContext& b, ast::DeclareVariableListIndex list) {
     }
     return all_constant;
 }
+}
+
+OptionalConstExprIndex can_be_prototyped(const ast::ASTGraph& g, ast::AnyExprIndex value,
+                                         std::optional<ConstExprIndex> constant) {
+    // The old compiler's literals, which are never mutated, so every call can share them.
+    if (constant && ConstEval::is_legacy_literal(g, value))
+        return *constant;
+    return {};
+}
+
+OptionalConstExprIndex can_be_prototyped(const ast::ASTGraph& g, ast::DeclareArgumentWithDefaultIndex argument,
+                                         std::optional<ConstExprIndex> constant) {
+    if (g.payload(argument).bracketed)
+        return {};
+    const auto [name, value] = g.children(argument);
+    return can_be_prototyped(g, value, constant);
 }
 
 BodyResult compile_body(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph, Context& ctx,

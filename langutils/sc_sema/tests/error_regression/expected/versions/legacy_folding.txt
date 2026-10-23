@@ -66,7 +66,7 @@ SCClass (4:1): LegacyFolding
 |  |  |  |  |  SCRead (20:37): local a = nil, declared (20:33): a
 |  |  SCMethod (22:5): literal_variable { var a = 1; ^a } -> 1
 |  |  |  SCBody (22:24)
-|  |  |  |  SCVariableDeclare (22:28): a
+|  |  |  |  SCVariableDeclare (22:28): a, prototype
 |  |  |  |  |  SCLiteral (22:32) = 1
 |  |  |  |  SCExplicitReturn (22:35)
 |  |  |  |  |  SCRead (22:36): local a = 1, declared (22:28): a = 1
@@ -79,7 +79,7 @@ SCClass (4:1): LegacyFolding
 |  |  |  |  |  |  |  SCLiteral (25:23) = 1
 |  |  SCMethod (27:5): computed_variable { var a = 1 + 1; ^a }
 |  |  |  SCBody (27:25)
-|  |  |  |  SCVariableDeclare (27:29): a
+|  |  |  |  SCVariableDeclare (27:29): a, computed
 |  |  |  |  |  SCMessage (27:33): +
 |  |  |  |  |  |  SCLiteral (27:33) = 1
 |  |  |  |  |  |  SCPositionalArgs (27:33)
@@ -88,9 +88,9 @@ SCClass (4:1): LegacyFolding
 |  |  |  |  |  SCRead (27:41): local a, declared (27:29): a = 1 + 1
 |  |  SCMethod (29:5): from_variable { var a = 1, b = a; ^b }
 |  |  |  SCBody (29:21)
-|  |  |  |  SCVariableDeclare (29:25): a
+|  |  |  |  SCVariableDeclare (29:25): a, prototype
 |  |  |  |  |  SCLiteral (29:29) = 1
-|  |  |  |  SCVariableDeclare (29:32): b
+|  |  |  |  SCVariableDeclare (29:32): b, computed
 |  |  |  |  |  SCRead (29:36): local a = 1, declared (29:25): a = 1
 |  |  |  |  SCExplicitReturn (29:39)
 |  |  |  |  |  SCRead (29:40): local b, declared (29:32): b = a
@@ -106,13 +106,13 @@ SCClass (4:1): LegacyFolding
 |  |  |  |  |  |  SCLiteral (34:31) = 2
 |  |  SCMethod (36:5): bracketed_value { var a = (1); ^a }
 |  |  |  SCBody (36:23)
-|  |  |  |  SCVariableDeclare (36:27): a
+|  |  |  |  SCVariableDeclare (36:27): a, computed
 |  |  |  |  |  SCLiteral (36:32) = 1
 |  |  |  |  SCExplicitReturn (36:36)
 |  |  |  |  |  SCRead (36:37): local a, declared (36:27): a = (1)
 |  |  SCMethod (38:5): bracketed_variable { var a(1); ^a }
 |  |  |  SCBody (38:26)
-|  |  |  |  SCVariableDeclare (38:30): a
+|  |  |  |  SCVariableDeclare (38:30): a, computed
 |  |  |  |  |  SCLiteral (38:32) = 1
 |  |  |  |  SCExplicitReturn (38:36)
 |  |  |  |  |  SCRead (38:37): local a, declared (38:30): a(1)
@@ -192,7 +192,7 @@ SCClass (56:1): Folding, version 3.16
 |  |  |  |  |  |  |  SCLiteral (62:23) = 1
 |  |  SCMethod (64:5): version 3.16: computed_variable { var a = 1 + 1; ^a } -> 2
 |  |  |  SCBody (64:25)
-|  |  |  |  SCVariableDeclare (64:29): a
+|  |  |  |  SCVariableDeclare (64:29): a, computed
 |  |  |  |  |  SCMessage (64:33): + = 2
 |  |  |  |  |  |  SCLiteral (64:33) = 1
 |  |  |  |  |  |  SCPositionalArgs (64:33)
@@ -201,9 +201,9 @@ SCClass (56:1): Folding, version 3.16
 |  |  |  |  |  SCRead (64:41): local a = 2, declared (64:29): a = 1 + 1
 |  |  SCMethod (66:5): version 3.16: from_variable { var a = 1, b = a; ^b } -> 1
 |  |  |  SCBody (66:21)
-|  |  |  |  SCVariableDeclare (66:25): a
+|  |  |  |  SCVariableDeclare (66:25): a, prototype
 |  |  |  |  |  SCLiteral (66:29) = 1
-|  |  |  |  SCVariableDeclare (66:32): b
+|  |  |  |  SCVariableDeclare (66:32): b, computed
 |  |  |  |  |  SCRead (66:36): local a = 1, declared (66:25): a = 1
 |  |  |  |  SCExplicitReturn (66:39)
 |  |  |  |  |  SCRead (66:40): local b = 1, declared (66:32): b = a
@@ -213,7 +213,7 @@ SCClass (56:1): Folding, version 3.16
 |  |  |  |  |  SCLiteral (68:19) = 1
 |  |  SCMethod (70:5): version 3.16: bracketed_variable { var a(1); ^a } -> 1
 |  |  |  SCBody (70:26)
-|  |  |  |  SCVariableDeclare (70:30): a
+|  |  |  |  SCVariableDeclare (70:30): a, computed
 |  |  |  |  |  SCLiteral (70:32) = 1
 |  |  |  |  SCExplicitReturn (70:36)
 |  |  |  |  |  SCRead (70:37): local a = 1, declared (70:30): a(1)

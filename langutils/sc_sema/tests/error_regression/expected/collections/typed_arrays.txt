@@ -73,7 +73,7 @@ SCClass (14:1): TypedArrays, version 3.16
 |  |  |  |  |  SCCollection (29:14): FloatArray = FloatArray[]
 |  |  SCMethod (31:5): version 3.16: folded_elements { var a = 1; ^Int32Array[a + 2] } -> Int32Array[3]
 |  |  |  SCBody (31:23)
-|  |  |  |  SCVariableDeclare (31:27): a
+|  |  |  |  SCVariableDeclare (31:27): a, prototype
 |  |  |  |  |  SCLiteral (31:31) = 1
 |  |  |  |  SCExplicitReturn (31:34)
 |  |  |  |  |  SCCollection (31:35): Int32Array = Int32Array[3]

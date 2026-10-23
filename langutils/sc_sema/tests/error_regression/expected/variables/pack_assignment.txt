@@ -119,7 +119,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (19:32): local a at 0, declared (19:28): a
 |  |  SCMethod (22:5): version 3.16: assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }
 |  |  |  SCBody (22:33)
-|  |  |  |  SCVariableDeclare (22:37): a
+|  |  |  |  SCVariableDeclare (22:37): a, prototype
 |  |  |  |  |  SCLiteral (22:41) = 1
 |  |  |  |  SCVariableDeclare (22:44): b
 |  |  |  |  SCPackAssign (22:47)
@@ -133,7 +133,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCRead (22:64): local a, declared (22:37): a = 1
 |  |  SCMethod (25:5): version 3.16: assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }
 |  |  |  SCBody (25:23)
-|  |  |  |  SCVariableDeclare (25:27): a
+|  |  |  |  SCVariableDeclare (25:27): a, prototype
 |  |  |  |  |  SCLiteral (25:31) = 1
 |  |  |  |  SCVariableDeclare (25:34): b
 |  |  |  |  SCFunction (25:37)
@@ -314,7 +314,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCRead (49:50): local b, declared (49:40): b
 |  |  SCMethod (53:5): version 3.16: declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a } -> 1
 |  |  |  SCBody (53:28)
-|  |  |  |  SCVariableDeclare (53:32): x
+|  |  |  |  SCVariableDeclare (53:32): x, prototype
 |  |  |  |  |  SCLiteral (53:36) = 1
 |  |  |  |  SCPackDeclare (53:39)
 |  |  |  |  |  SCCollection (53:47): Array = [1, 2]
@@ -353,7 +353,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  |  SCRead (56:62): local a = 1, declared (56:45): a
 |  |  SCMethod (58:5): version 3.16: declare_hides_outer { var a = 1; { var #a = [2]; a }; ^a }
 |  |  |  SCBody (58:27)
-|  |  |  |  SCVariableDeclare (58:31): a
+|  |  |  |  SCVariableDeclare (58:31): a, prototype
 |  |  |  |  |  SCLiteral (58:35) = 1
 |  |  |  |  SCFunction (58:38) -> 2
 |  |  |  |  |  SCBody (58:38)

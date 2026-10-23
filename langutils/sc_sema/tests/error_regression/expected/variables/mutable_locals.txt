@@ -9,7 +9,7 @@ SCClass (2:1): MutableLocals, version 3.16
 |  SCMethodList (2:1)
 |  |  SCMethod (3:5): version 3.16: array { var a = [1, 2]; ^a }
 |  |  |  SCBody (3:13)
-|  |  |  |  SCVariableDeclare (3:17): a
+|  |  |  |  SCVariableDeclare (3:17): a, computed
 |  |  |  |  |  SCCollection (3:21): Array = [1, 2]
 |  |  |  |  |  |  SCLiteral (3:22) = 1
 |  |  |  |  |  |  SCLiteral (3:25) = 2
@@ -17,7 +17,7 @@ SCClass (2:1): MutableLocals, version 3.16
 |  |  |  |  |  SCRead (3:30): local a, declared (3:17): a = [1, 2]
 |  |  SCMethod (4:5): version 3.16: array_put { var a = [1, 2]; a[0] = 10; ^a }
 |  |  |  SCBody (4:17)
-|  |  |  |  SCVariableDeclare (4:21): a
+|  |  |  |  SCVariableDeclare (4:21): a, computed
 |  |  |  |  |  SCCollection (4:25): Array = [1, 2]
 |  |  |  |  |  |  SCLiteral (4:26) = 1
 |  |  |  |  |  |  SCLiteral (4:29) = 2
@@ -30,11 +30,11 @@ SCClass (2:1): MutableLocals, version 3.16
 |  |  |  |  |  SCRead (4:45): local a, declared (4:21): a = [1, 2]
 |  |  SCMethod (5:5): version 3.16: array_aliased { var a = [1, 2], b = a; b[0] = 10; ^a }
 |  |  |  SCBody (5:21)
-|  |  |  |  SCVariableDeclare (5:25): a
+|  |  |  |  SCVariableDeclare (5:25): a, computed
 |  |  |  |  |  SCCollection (5:29): Array = [1, 2]
 |  |  |  |  |  |  SCLiteral (5:30) = 1
 |  |  |  |  |  |  SCLiteral (5:33) = 2
-|  |  |  |  SCVariableDeclare (5:37): b
+|  |  |  |  SCVariableDeclare (5:37): b, computed
 |  |  |  |  |  SCRead (5:41): local a, declared (5:25): a = [1, 2]
 |  |  |  |  SCMessage (5:44): put
 |  |  |  |  |  SCRead (5:44): local b, declared (5:37): b = a
@@ -45,7 +45,7 @@ SCClass (2:1): MutableLocals, version 3.16
 |  |  |  |  |  SCRead (5:56): local a, declared (5:25): a = [1, 2]
 |  |  SCMethod (6:5): version 3.16: array_argument { var a = [1, 2]; { |x| x[0] = 10 }.value(a); ^a }
 |  |  |  SCBody (6:22)
-|  |  |  |  SCVariableDeclare (6:26): a
+|  |  |  |  SCVariableDeclare (6:26): a, computed
 |  |  |  |  |  SCCollection (6:30): Array = [1, 2]
 |  |  |  |  |  |  SCLiteral (6:31) = 1
 |  |  |  |  |  |  SCLiteral (6:34) = 2
@@ -65,7 +65,7 @@ SCClass (2:1): MutableLocals, version 3.16
 |  |  |  |  |  SCRead (6:67): local a, declared (6:26): a = [1, 2]
 |  |  SCMethod (7:5): version 3.16: array_in_collection { var a = [1, 2]; ^[a] }
 |  |  |  SCBody (7:27)
-|  |  |  |  SCVariableDeclare (7:31): a
+|  |  |  |  SCVariableDeclare (7:31): a, computed
 |  |  |  |  |  SCCollection (7:35): Array = [1, 2]
 |  |  |  |  |  |  SCLiteral (7:36) = 1
 |  |  |  |  |  |  SCLiteral (7:39) = 2
@@ -74,7 +74,7 @@ SCClass (2:1): MutableLocals, version 3.16
 |  |  |  |  |  |  SCRead (7:45): local a, declared (7:31): a = [1, 2]
 |  |  SCMethod (8:5): version 3.16: event { var a = (b: 1); ^a }
 |  |  |  SCBody (8:13)
-|  |  |  |  SCVariableDeclare (8:17): a
+|  |  |  |  SCVariableDeclare (8:17): a, computed
 |  |  |  |  |  SCCollection (8:21): Event = (b: 1)
 |  |  |  |  |  |  SCLiteral (8:22) = \b
 |  |  |  |  |  |  SCLiteral (8:25) = 1
@@ -82,13 +82,13 @@ SCClass (2:1): MutableLocals, version 3.16
 |  |  |  |  |  SCRead (8:30): local a, declared (8:17): a = (b: 1)
 |  |  SCMethod (9:5): version 3.16: string { var a = "abc"; ^a }
 |  |  |  SCBody (9:14)
-|  |  |  |  SCVariableDeclare (9:18): a
+|  |  |  |  SCVariableDeclare (9:18): a, prototype
 |  |  |  |  |  SCLiteral (9:22) = "abc"
 |  |  |  |  SCExplicitReturn (9:29)
 |  |  |  |  |  SCRead (9:30): local a, declared (9:18): a = "abc"
 |  |  SCMethod (10:5): version 3.16: integer_receiver { var a = 1; ^a + 1 } -> 2
 |  |  |  SCBody (10:24)
-|  |  |  |  SCVariableDeclare (10:28): a
+|  |  |  |  SCVariableDeclare (10:28): a, prototype
 |  |  |  |  |  SCLiteral (10:32) = 1
 |  |  |  |  SCExplicitReturn (10:35)
 |  |  |  |  |  SCMessage (10:36): + = 2
@@ -97,35 +97,35 @@ SCClass (2:1): MutableLocals, version 3.16
 |  |  |  |  |  |  |  SCLiteral (10:40) = 1
 |  |  SCMethod (11:5): version 3.16: float_receiver { var a = 1.5; ^a.floor }
 |  |  |  SCBody (11:22)
-|  |  |  |  SCVariableDeclare (11:26): a
+|  |  |  |  SCVariableDeclare (11:26): a, prototype
 |  |  |  |  |  SCLiteral (11:30) = 1.5
 |  |  |  |  SCExplicitReturn (11:35)
 |  |  |  |  |  SCMessage (11:36): floor
 |  |  |  |  |  |  SCRead (11:36): local a = 1.5, declared (11:26): a = 1.5
 |  |  SCMethod (12:5): version 3.16: char_receiver { var a = $a; ^a.isAlpha }
 |  |  |  SCBody (12:21)
-|  |  |  |  SCVariableDeclare (12:25): a
+|  |  |  |  SCVariableDeclare (12:25): a, prototype
 |  |  |  |  |  SCLiteral (12:29) = $a
 |  |  |  |  SCExplicitReturn (12:33)
 |  |  |  |  |  SCMessage (12:34): isAlpha
 |  |  |  |  |  |  SCRead (12:34): local a = $a, declared (12:25): a = $a
 |  |  SCMethod (13:5): version 3.16: symbol_receiver { var a = \abc; ^a.asString }
 |  |  |  SCBody (13:23)
-|  |  |  |  SCVariableDeclare (13:27): a
+|  |  |  |  SCVariableDeclare (13:27): a, prototype
 |  |  |  |  |  SCLiteral (13:31) = \abc
 |  |  |  |  SCExplicitReturn (13:37)
 |  |  |  |  |  SCMessage (13:38): asString
 |  |  |  |  |  |  SCRead (13:38): local a = \abc, declared (13:27): a = \abc
 |  |  SCMethod (14:5): version 3.16: class { var a = Array; ^a.new }
 |  |  |  SCBody (14:13)
-|  |  |  |  SCVariableDeclare (14:17): a
+|  |  |  |  SCVariableDeclare (14:17): a, computed
 |  |  |  |  |  SCLiteral (14:21) = Array
 |  |  |  |  SCExplicitReturn (14:28)
 |  |  |  |  |  SCMessage (14:29): new
 |  |  |  |  |  |  SCRead (14:29): local a = Array, declared (14:17): a = Array
 |  |  SCMethod (15:5): version 3.16: boolean { var a = true; ^a.not }
 |  |  |  SCBody (15:15)
-|  |  |  |  SCVariableDeclare (15:19): a
+|  |  |  |  SCVariableDeclare (15:19): a, prototype
 |  |  |  |  |  SCLiteral (15:23) = true
 |  |  |  |  SCExplicitReturn (15:29)
 |  |  |  |  |  SCMessage (15:30): not

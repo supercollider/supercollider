@@ -149,7 +149,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (27:19)
-|  |  |  |  SCVariableDeclare (27:23): a
+|  |  |  |  SCVariableDeclare (27:23): a, computed
 |  |  |  |  |  SCExprList (27:27)
 |  |  |  |  SCExplicitReturn (27:34)
 |  |  |  |  |  SCRead (27:35): local a, declared (27:23): a = (1 2

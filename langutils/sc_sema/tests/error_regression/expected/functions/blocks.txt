@@ -55,7 +55,7 @@ SCClass (2:1): Blocks, version 3.16
 |  |  |  |  SCExplicitReturn (15:24)
 |  |  |  |  |  SCFunction (15:25)
 |  |  |  |  |  |  SCArgumentDeclareList (15:28)
-|  |  |  |  |  |  |  SCArgumentDeclare (15:28): a
+|  |  |  |  |  |  |  SCArgumentDeclare (15:28): a, prototype
 |  |  |  |  |  |  |  |  SCLiteral (15:32) = 1
 |  |  |  |  |  |  SCBody (15:25)
 |  |  |  |  |  |  |  SCRead (15:35): local a, declared (15:28): a = 1

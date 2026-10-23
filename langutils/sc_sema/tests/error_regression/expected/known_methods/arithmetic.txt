@@ -106,9 +106,9 @@ SCClass (4:1): Arithmetic, version 3.16
 |  |  |  |  |  |  |  SCLiteral (35:31) = 65536
 |  |  SCMethod (38:5): version 3.16: constant_locals { var a = 1, b = 2; ^a + b } -> 3
 |  |  |  SCBody (38:23)
-|  |  |  |  SCVariableDeclare (38:27): a
+|  |  |  |  SCVariableDeclare (38:27): a, prototype
 |  |  |  |  |  SCLiteral (38:31) = 1
-|  |  |  |  SCVariableDeclare (38:34): b
+|  |  |  |  SCVariableDeclare (38:34): b, prototype
 |  |  |  |  |  SCLiteral (38:38) = 2
 |  |  |  |  SCExplicitReturn (38:41)
 |  |  |  |  |  SCMessage (38:42): + = 3
@@ -166,7 +166,7 @@ SCClass (4:1): Arithmetic, version 3.16
 |  |  |  |  |  |  |  SCLiteral (54:25) = 1
 |  |  SCMethod (56:5): version 3.16: mutable_local { var a = 1; a = 2; ^a + 1 }
 |  |  |  SCBody (56:21)
-|  |  |  |  SCVariableDeclare (56:25): a
+|  |  |  |  SCVariableDeclare (56:25): a, prototype
 |  |  |  |  |  SCLiteral (56:29) = 1
 |  |  |  |  SCAssign (56:32): local a, declared (56:25): a = 1
 |  |  |  |  |  SCLiteral (56:36) = 2
