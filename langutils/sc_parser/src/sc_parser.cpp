@@ -27,12 +27,13 @@ namespace sc::ast {
     parser::parser p { ctx };
     ctx.owner = &p;
 
-    const auto ret = p(); // if ret is false, some unknown error was encountered
+    // Bison's result, 0 if it accepted the input, otherwise it aborted or ran out of memory.
+    const auto ret = p();
     // The parse can end on an error without recovering from it.
     parser::error_recovery::report(ctx);
     ctx.report_misplaced_versions();
-    const bool result = ret && ctx.graph;
-    return { std::move(ctx.graph), result };
+    const bool accepted = ret == 0 && ctx.graph;
+    return { std::move(ctx.graph), accepted };
 }
 
 

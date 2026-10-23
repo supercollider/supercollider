@@ -74,13 +74,15 @@ parse_file(std::filesystem::path dir_entry, std::vector<sc::diag::Diagnostic>& d
     }
 #endif
 
-    auto [ast_graph, result] = sc::ast::parse(text_info);
-    if (result != 0 || !ast_graph) {
+    auto [ast_graph, accepted] = sc::ast::parse(text_info);
+    if (!accepted) {
 #if DIAG_LOGGING
-        std::cout << "Failed to parse " << dir_entry << " diagnostic count = " << ast_graph->diagnostics().size()
-                  << "\n";
+        std::cout << "Failed to parse " << dir_entry
+                  << " diagnostic count = " << (ast_graph ? ast_graph->diagnostics().size() : 0) << "\n";
 #endif
     }
+    if (!ast_graph)
+        return {};
 
 
     // Printed with the compiler's, see print_diagnostics.

@@ -20,8 +20,8 @@ const auto tester_base = [](const char* src, bool is_class_file, bool no_diags) 
         is_class_file,
     });
 
-    auto [graph, result] = P::parse(text_info);
-    BOOST_TEST(result == 0);
+    auto [graph, accepted] = P::parse(text_info);
+    BOOST_TEST(accepted);
 
     // graph.flat_walk(
     //     [&](const Graph::Edges& e, const Graph::Variant& payload, const sc::lex::SourceCodeRange& loc, size_t i) {
