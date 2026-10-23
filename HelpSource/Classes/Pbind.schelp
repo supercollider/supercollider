@@ -33,6 +33,9 @@ code::
 Pbind([\note, \amp], Pseq([[0, 0.05],  [4, 0.5],  [7, 0.1]]), dur: 0.2).play
 ::
 
+discussion::
+See link::Overviews/Event_types#\note::
+
 InstanceMethods::
 
 method::patternpairs
