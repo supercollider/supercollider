@@ -11,7 +11,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (7:5): routine, version 3.16: routine { ^{: x, x <- [1, 2, 3] } }
 |  |  |  SCBody (7:15)
 |  |  |  |  SCExplicitReturn (7:15)
-|  |  |  |  |  SCGenerator (7:16): routine
+|  |  |  |  |  SCRoutineGenerator (7:16)
 |  |  |  |  |  |  SCGenQualList (7:22)
 |  |  |  |  |  |  |  SCGenQualIterate (7:22): x
 |  |  |  |  |  |  |  |  SCCollection (7:27): Array = [1, 2, 3]
@@ -22,7 +22,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (9:5): immediate, version 3.16: immediate { ^{; x.postln, x <- [1, 2, 3] } }
 |  |  |  SCBody (9:17)
 |  |  |  |  SCExplicitReturn (9:17)
-|  |  |  |  |  SCGenerator (9:18): immediate
+|  |  |  |  |  SCImmediateGenerator (9:18)
 |  |  |  |  |  |  SCGenQualList (9:31)
 |  |  |  |  |  |  |  SCGenQualIterate (9:31): x
 |  |  |  |  |  |  |  |  SCCollection (9:36): Array = [1, 2, 3]
@@ -34,7 +34,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (12:5): with_index, version 3.16: with_index { ^{: [x, i], x i <- [1, 2, 3] } }
 |  |  |  SCBody (12:18)
 |  |  |  |  SCExplicitReturn (12:18)
-|  |  |  |  |  SCGenerator (12:19): routine
+|  |  |  |  |  SCRoutineGenerator (12:19)
 |  |  |  |  |  |  SCGenQualList (12:30)
 |  |  |  |  |  |  |  SCGenQualIterate (12:30): x, i
 |  |  |  |  |  |  |  |  SCCollection (12:37): Array = [1, 2, 3]
@@ -70,7 +70,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (15:23)
 |  |  |  |  SCExplicitReturn (15:23)
-|  |  |  |  |  SCGenerator (15:24): routine
+|  |  |  |  |  SCRoutineGenerator (15:24)
 |  |  |  |  |  |  SCGenQualList (15:30)
 |  |  |  |  |  |  |  SCGenQualIterate (15:30): x, x
 |  |  |  |  |  |  |  |  SCCollection (15:37): Array = [1, 2, 3]
@@ -81,7 +81,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (18:5): nested_iterate, version 3.16: nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
 |  |  |  SCBody (18:22)
 |  |  |  |  SCExplicitReturn (18:22)
-|  |  |  |  |  SCGenerator (18:23): routine
+|  |  |  |  |  SCRoutineGenerator (18:23)
 |  |  |  |  |  |  SCGenQualList (18:34)
 |  |  |  |  |  |  |  SCGenQualIterate (18:34): x
 |  |  |  |  |  |  |  |  SCCollection (18:39): Array = [1, 2]
@@ -97,7 +97,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (21:5): declare, version 3.16: declare { ^{: y, x <- [1, 2], var y = x * 2 } }
 |  |  |  SCBody (21:15)
 |  |  |  |  SCExplicitReturn (21:15)
-|  |  |  |  |  SCGenerator (21:16): routine
+|  |  |  |  |  SCRoutineGenerator (21:16)
 |  |  |  |  |  |  SCGenQualList (21:22)
 |  |  |  |  |  |  |  SCGenQualIterate (21:22): x
 |  |  |  |  |  |  |  |  SCCollection (21:27): Array = [1, 2]
@@ -112,7 +112,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (23:5): declare_bracketed, version 3.16: declare_bracketed { ^{: y, var y (2) } }
 |  |  |  SCBody (23:25)
 |  |  |  |  SCExplicitReturn (23:25)
-|  |  |  |  |  SCGenerator (23:26): routine
+|  |  |  |  |  SCRoutineGenerator (23:26)
 |  |  |  |  |  |  SCGenQualList (23:32)
 |  |  |  |  |  |  |  SCGenQualDeclare (23:32): y
 |  |  |  |  |  |  |  |  SCLiteral (23:39) = 2
@@ -120,7 +120,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (25:5): condition, version 3.16: condition { ^{: x, x <- (1..10), x.odd } }
 |  |  |  SCBody (25:17)
 |  |  |  |  SCExplicitReturn (25:17)
-|  |  |  |  |  SCGenerator (25:18): routine
+|  |  |  |  |  SCRoutineGenerator (25:18)
 |  |  |  |  |  |  SCGenQualList (25:24)
 |  |  |  |  |  |  |  SCGenQualIterate (25:24): x
 |  |  |  |  |  |  |  |  SCRange (25:29) = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -134,7 +134,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (27:5): side_effect, version 3.16: side_effect { ^{: x, x <- [1, 2], :: x.postln } }
 |  |  |  SCBody (27:19)
 |  |  |  |  SCExplicitReturn (27:19)
-|  |  |  |  |  SCGenerator (27:20): routine
+|  |  |  |  |  SCRoutineGenerator (27:20)
 |  |  |  |  |  |  SCGenQualList (27:26)
 |  |  |  |  |  |  |  SCGenQualIterate (27:26): x
 |  |  |  |  |  |  |  |  SCCollection (27:31): Array = [1, 2]
@@ -147,7 +147,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (30:5): while_guard, version 3.16: while_guard { ^{: x, x <- (1..), :while x < 5 } }
 |  |  |  SCBody (30:19)
 |  |  |  |  SCExplicitReturn (30:19)
-|  |  |  |  |  SCGenerator (30:20): routine
+|  |  |  |  |  SCRoutineGenerator (30:20)
 |  |  |  |  |  |  SCGenQualList (30:26)
 |  |  |  |  |  |  |  SCGenQualIterate (30:26): x
 |  |  |  |  |  |  |  |  SCRange (30:31)
@@ -163,7 +163,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (33:5): all_qualifiers, version 3.16: all_qualifiers { ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 } }
 |  |  |  SCBody (33:22)
 |  |  |  |  SCExplicitReturn (33:22)
-|  |  |  |  |  SCGenerator (33:23): routine
+|  |  |  |  |  SCRoutineGenerator (33:23)
 |  |  |  |  |  |  SCGenQualList (33:34)
 |  |  |  |  |  |  |  SCGenQualIterate (33:34): x
 |  |  |  |  |  |  |  |  SCRange (33:39)
@@ -192,7 +192,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (35:5): shadows_earlier, version 3.16: shadows_earlier { ^{: x, x <- [1, 2], x <- [x, 3] } }
 |  |  |  SCBody (35:23)
 |  |  |  |  SCExplicitReturn (35:23)
-|  |  |  |  |  SCGenerator (35:24): routine
+|  |  |  |  |  SCRoutineGenerator (35:24)
 |  |  |  |  |  |  SCGenQualList (35:30)
 |  |  |  |  |  |  |  SCGenQualIterate (35:30): x
 |  |  |  |  |  |  |  |  SCCollection (35:35): Array = [1, 2]
@@ -220,7 +220,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (38:33)
 |  |  |  |  SCExplicitReturn (38:33)
-|  |  |  |  |  SCGenerator (38:34): routine
+|  |  |  |  |  SCRoutineGenerator (38:34)
 |  |  |  |  |  |  SCGenQualList (38:40)
 |  |  |  |  |  |  |  SCGenQualIterate (38:40): x
 |  |  |  |  |  |  |  |  SCExprList (38:45)
@@ -228,7 +228,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (40:5): unbounded_source, version 3.16: unbounded_source { ^{: x, x <- (1..) } }
 |  |  |  SCBody (40:24)
 |  |  |  |  SCExplicitReturn (40:24)
-|  |  |  |  |  SCGenerator (40:25): routine
+|  |  |  |  |  SCRoutineGenerator (40:25)
 |  |  |  |  |  |  SCGenQualList (40:31)
 |  |  |  |  |  |  |  SCGenQualIterate (40:31): x
 |  |  |  |  |  |  |  |  SCRange (40:36)
@@ -239,7 +239,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (42:5): unbounded_source_step, version 3.16: unbounded_source_step { ^{: x, x <- (1, 3..) } }
 |  |  |  SCBody (42:29)
 |  |  |  |  SCExplicitReturn (42:29)
-|  |  |  |  |  SCGenerator (42:30): routine
+|  |  |  |  |  SCRoutineGenerator (42:30)
 |  |  |  |  |  |  SCGenQualList (42:36)
 |  |  |  |  |  |  |  SCGenQualIterate (42:36): x
 |  |  |  |  |  |  |  |  SCRange (42:41)
@@ -273,7 +273,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (47:5): reads_member, version 3.16: reads_member { ^{: x + instance_var, x <- [1, 2] } }
 |  |  |  SCBody (47:20)
 |  |  |  |  SCExplicitReturn (47:20)
-|  |  |  |  |  SCGenerator (47:21): routine
+|  |  |  |  |  SCRoutineGenerator (47:21)
 |  |  |  |  |  |  SCGenQualList (47:42)
 |  |  |  |  |  |  |  SCGenQualIterate (47:42): x
 |  |  |  |  |  |  |  |  SCCollection (47:47): Array = [1, 2]
@@ -288,7 +288,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  |  |  SCVariableDeclare (50:26): a (captured), prototype
 |  |  |  |  |  SCLiteral (50:30) = 1
 |  |  |  |  SCExplicitReturn (50:33)
-|  |  |  |  |  SCGenerator (50:34): routine
+|  |  |  |  |  SCRoutineGenerator (50:34)
 |  |  |  |  |  |  SCGenQualList (50:40)
 |  |  |  |  |  |  |  SCGenQualIterate (50:40): x
 |  |  |  |  |  |  |  |  SCCollection (50:45): Array = [1, 2]
@@ -301,7 +301,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  |  |  |  SCLiteral (52:29) = 1
 |  |  |  |  SCFunction (52:32)
 |  |  |  |  |  SCBody (52:32)
-|  |  |  |  |  |  SCGenerator (52:34): routine
+|  |  |  |  |  |  SCRoutineGenerator (52:34)
 |  |  |  |  |  |  |  SCGenQualList (52:40)
 |  |  |  |  |  |  |  |  SCGenQualIterate (52:40): x
 |  |  |  |  |  |  |  |  |  SCCollection (52:45): Array = [2]
@@ -315,7 +315,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  |  |  |  SCLiteral (55:34) = 1
 |  |  |  |  SCFunction (55:37)
 |  |  |  |  |  SCBody (55:37)
-|  |  |  |  |  |  SCGenerator (55:39): routine
+|  |  |  |  |  |  SCRoutineGenerator (55:39)
 |  |  |  |  |  |  |  SCGenQualList (55:45)
 |  |  |  |  |  |  |  |  SCGenQualIterate (55:45): x
 |  |  |  |  |  |  |  |  |  SCCollection (55:50): Array
@@ -326,7 +326,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  SCMethod (57:5): non_local_return_value, version 3.16: non_local_return_value { ^{: { ^x }.value, x <- [1, 2] } }
 |  |  |  SCBody (57:30)
 |  |  |  |  SCExplicitReturn (57:30)
-|  |  |  |  |  SCGenerator (57:31): routine
+|  |  |  |  |  SCRoutineGenerator (57:31)
 |  |  |  |  |  |  SCGenQualList (57:48)
 |  |  |  |  |  |  |  SCGenQualIterate (57:48): x (captured)
 |  |  |  |  |  |  |  |  SCCollection (57:53): Array = [1, 2]
@@ -339,7 +339,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  |  |  |  |  |  |  |  |  SCRead (57:37): local x, declared (57:48): x <- [1, 2]
 |  |  SCMethod (60:5): non_local_return_qualifier, version 3.16: non_local_return_qualifier { {; x, x <- [1, 2], :: { ^x }.value }; ^1 }
 |  |  |  SCBody (60:34)
-|  |  |  |  SCGenerator (60:34): immediate
+|  |  |  |  SCImmediateGenerator (60:34)
 |  |  |  |  |  SCGenQualList (60:40)
 |  |  |  |  |  |  SCGenQualIterate (60:40): x (captured)
 |  |  |  |  |  |  |  SCCollection (60:45): Array = [1, 2]

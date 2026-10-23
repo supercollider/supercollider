@@ -1,0 +1,56 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): FrameGenerators : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): routine, version 3.16: routine { |a| ^{: x + i + y + a, x i <- a, var y = x * 2, y > 1 } } [frame: this, a]
+|  |  |  SCArgumentDeclareList (6:16)
+|  |  |  |  SCArgumentDeclare (6:16): a (captured)
+|  |  |  SCBody (6:19)
+|  |  |  |  SCExplicitReturn (6:19)
+|  |  |  |  |  SCRoutineGenerator (6:20) [frame]
+|  |  |  |  |  |  SCGenQualList (6:38)
+|  |  |  |  |  |  |  SCGenQualIterate (6:38): x, i [frame: x, i]
+|  |  |  |  |  |  |  |  SCRead (6:45): local a, declared (6:16): a [depth 1, slot 1]
+|  |  |  |  |  |  |  SCGenQualDeclare (6:48): y [frame: y]
+|  |  |  |  |  |  |  |  SCMessage (6:56): *
+|  |  |  |  |  |  |  |  |  SCRead (6:56): local x, declared (6:38): x i <- a [depth 0, slot 0]
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (6:56)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (6:60) = 2
+|  |  |  |  |  |  |  SCGenQualIf (6:63)
+|  |  |  |  |  |  |  |  SCMessage (6:63): >
+|  |  |  |  |  |  |  |  |  SCRead (6:63): local y, declared (6:48): var y = x * 2 [depth 0, slot 0]
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (6:63)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (6:67) = 1
+|  |  |  |  |  |  SCMessage (6:23): +
+|  |  |  |  |  |  |  SCMessage (6:23): +
+|  |  |  |  |  |  |  |  SCMessage (6:23): +
+|  |  |  |  |  |  |  |  |  SCRead (6:23): local x, declared (6:38): x i <- a [depth 1, slot 0]
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (6:23)
+|  |  |  |  |  |  |  |  |  |  SCRead (6:27): local i, declared (6:38): x i <- a [depth 1, slot 1]
+|  |  |  |  |  |  |  |  SCPositionalArgs (6:23)
+|  |  |  |  |  |  |  |  |  SCRead (6:31): local y, declared (6:48): var y = x * 2 [depth 0, slot 0]
+|  |  |  |  |  |  |  SCPositionalArgs (6:23)
+|  |  |  |  |  |  |  |  SCRead (6:35): local a, declared (6:16): a [depth 3, slot 1]
+|  |  SCMethod (8:5): immediate, version 3.16: immediate { |a| var total = 0; {; total = total + x, x <- a }; ^total } [frame: this, a | total]
+|  |  |  SCArgumentDeclareList (8:18)
+|  |  |  |  SCArgumentDeclare (8:18): a
+|  |  |  SCBody (8:21)
+|  |  |  |  SCVariableDeclare (8:25): total (assigned), prototype
+|  |  |  |  |  SCLiteral (8:33) = 0
+|  |  |  |  SCImmediateGenerator (8:36)
+|  |  |  |  |  SCGenQualList (8:58)
+|  |  |  |  |  |  SCGenQualIterate (8:58): x [frame: x]
+|  |  |  |  |  |  |  SCRead (8:63): local a, declared (8:18): a [depth 0, slot 1]
+|  |  |  |  |  SCAssign (8:39): local total, declared (8:25): total = 0 [depth 1, slot 2]
+|  |  |  |  |  |  SCMessage (8:47): +
+|  |  |  |  |  |  |  SCRead (8:47): local total, declared (8:25): total = 0 [depth 1, slot 2]
+|  |  |  |  |  |  |  SCPositionalArgs (8:47)
+|  |  |  |  |  |  |  |  SCRead (8:55): local x, declared (8:58): x <- a [depth 0, slot 0]
+|  |  |  |  SCExplicitReturn (8:68)
+|  |  |  |  |  SCRead (8:69): local total, declared (8:25): total = 0 [depth 0, slot 2]
+Successfully compiled 16 classes.

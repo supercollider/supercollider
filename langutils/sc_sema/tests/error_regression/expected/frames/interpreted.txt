@@ -1,0 +1,32 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: frames/interpreted.scd
+|  SCRegionList (1:1)
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1) [frame: | x]
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCVariableDeclare (5:7): x, prototype
+|  |  |  |  |  |  SCLiteral (5:11) = 1
+|  |  |  |  |  SCAssign (5:14): instance a, declared (37:11): a [instance slot 5]
+|  |  |  |  |  |  SCRead (5:18): local x = 1, declared (5:7): x = 1 [depth 0, slot 0]
+|  |  SCRegion (6:1)
+|  |  |  SCFunction (6:1) [frame: | y]
+|  |  |  |  SCBody (6:1)
+|  |  |  |  |  SCVariableDeclare (6:7): y (captured), prototype
+|  |  |  |  |  |  SCLiteral (6:11) = 2
+|  |  |  |  |  SCFunction (6:14) [frame: z]
+|  |  |  |  |  |  SCArgumentDeclareList (6:17)
+|  |  |  |  |  |  |  SCArgumentDeclare (6:17): z
+|  |  |  |  |  |  SCBody (6:14)
+|  |  |  |  |  |  |  SCMessage (6:20): +
+|  |  |  |  |  |  |  |  SCMessage (6:20): +
+|  |  |  |  |  |  |  |  |  SCRead (6:20): local y, declared (6:7): y = 2 [depth 1, slot 0]
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (6:20)
+|  |  |  |  |  |  |  |  |  |  SCRead (6:24): local z, declared (6:17): z [depth 0, slot 0]
+|  |  |  |  |  |  |  |  SCPositionalArgs (6:20)
+|  |  |  |  |  |  |  |  |  SCRead (6:28): instance a, declared (37:11): a [instance slot 5]
+Successfully compiled 15 classes.

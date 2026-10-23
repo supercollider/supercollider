@@ -27,7 +27,8 @@ enum struct SCNodeType {
     PackDeclare,
     PackTarget,
     PackTargetList,
-    Generator,
+    RoutineGenerator,
+    ImmediateGenerator,
     GenQualIterate,
     GenQualDeclare,
     GenQualIf,
@@ -92,7 +93,9 @@ using SCPackAssign_I = TypedNodeIndex<SCNodeType::PackAssign>;
 using SCPackDeclare_I = TypedNodeIndex<SCNodeType::PackDeclare>;
 using SCPackTarget_I = TypedNodeIndex<SCNodeType::PackTarget>;
 using SCPackTargetList_I = TypedNodeIndex<SCNodeType::PackTargetList>;
-using SCGenerator_I = TypedNodeIndex<SCNodeType::Generator>;
+using SCRoutineGenerator_I = TypedNodeIndex<SCNodeType::RoutineGenerator>;
+using SCImmediateGenerator_I = TypedNodeIndex<SCNodeType::ImmediateGenerator>;
+using SCAnyGenerator_I = join<SCRoutineGenerator_I, SCImmediateGenerator_I>;
 using SCGenQualIterate_I = TypedNodeIndex<SCNodeType::GenQualIterate>;
 using SCGenQualDeclare_I = TypedNodeIndex<SCNodeType::GenQualDeclare>;
 using SCGenQualIf_I = TypedNodeIndex<SCNodeType::GenQualIf>;
@@ -116,8 +119,9 @@ using SCExtention_I = TypedNodeIndex<SCNodeType::Extention>;
 using SCExprList_I = TypedNodeIndex<SCNodeType::ExprList>;
 using SCBody_I = TypedNodeIndex<SCNodeType::Body>;
 
-using SCAnyExpr_I = join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCSpecial_I, SCExplicitReturn_I, SCLiteral_I,
-                         SCMessage_I, SCCollection_I, SCRange_I, SCPackAssign_I, SCGenerator_I, SCRangeGenerator_I>;
+using SCAnyExpr_I =
+    join<SCExprList_I, SCFunction_I, SCAssign_I, SCRead_I, SCSpecial_I, SCExplicitReturn_I, SCLiteral_I, SCMessage_I,
+         SCCollection_I, SCRange_I, SCPackAssign_I, SCRoutineGenerator_I, SCImmediateGenerator_I, SCRangeGenerator_I>;
 
 using SCClassList_I = TypedNodeIndex<SCNodeType::ClassOrExtentionList>;
 

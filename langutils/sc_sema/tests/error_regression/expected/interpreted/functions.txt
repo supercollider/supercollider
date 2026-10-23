@@ -22,7 +22,7 @@ SCInterpreted (1:1): version 3.16: interpreted/functions.scd
 |  |  |  SCFunction (4:12)
 |  |  |  |  SCBody (4:12)
 |  |  |  |  |  SCAssign (4:12): instance b, declared (37:16): b
-|  |  |  |  |  |  SCGenerator (4:16): routine
+|  |  |  |  |  |  SCRoutineGenerator (4:16)
 |  |  |  |  |  |  |  SCGenQualList (4:22)
 |  |  |  |  |  |  |  |  SCGenQualIterate (4:22): x
 |  |  |  |  |  |  |  |  |  SCCollection (4:27): Array = [1, 2]

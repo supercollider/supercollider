@@ -69,7 +69,7 @@ SCClass (3:1): LocalUses : Object, version 3.16
 |  |  |  |  SCVariableDeclare (12:19): a (captured), prototype
 |  |  |  |  |  SCLiteral (12:23) = 1
 |  |  |  |  SCExplicitReturn (12:26)
-|  |  |  |  |  SCGenerator (12:27): routine
+|  |  |  |  |  SCRoutineGenerator (12:27)
 |  |  |  |  |  |  SCGenQualList (12:37)
 |  |  |  |  |  |  |  SCGenQualIterate (12:37): x
 |  |  |  |  |  |  |  |  SCCollection (12:42): Array = [1, 2]
@@ -84,7 +84,7 @@ SCClass (3:1): LocalUses : Object, version 3.16
 |  |  |  |  SCVariableDeclare (13:21): a, prototype
 |  |  |  |  |  SCLiteral (13:25) = 1
 |  |  |  |  SCExplicitReturn (13:28)
-|  |  |  |  |  SCGenerator (13:29): immediate
+|  |  |  |  |  SCImmediateGenerator (13:29)
 |  |  |  |  |  |  SCGenQualList (13:39)
 |  |  |  |  |  |  |  SCGenQualIterate (13:39): x
 |  |  |  |  |  |  |  |  SCCollection (13:44): Array = [1, 2]

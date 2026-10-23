@@ -1,0 +1,111 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): FrameMembers : Object, version 3.16
+|  SCMemberList (5:1)
+|  |  SCMember (6:9): instance
+|  |  SCMember (6:19): other
+|  SCMethodList (5:1)
+|  |  SCMethod (11:5): arguments, version 3.16: arguments { |a, b ...rest| var x = a; var y = b; ^[x, y, rest] } [frame: this, a, b, ...rest | x, y]
+|  |  |  SCArgumentDeclareList (11:18)
+|  |  |  |  SCArgumentDeclare (11:18): a
+|  |  |  |  SCArgumentDeclare (11:21): b
+|  |  |  SCArgumentDeclareList (11:18)
+|  |  |  |  SCArgumentDeclare (11:26): rest
+|  |  |  SCBody (11:32)
+|  |  |  |  SCVariableDeclare (11:36): x, computed
+|  |  |  |  |  SCRead (11:40): local a, declared (11:18): a [depth 0, slot 1]
+|  |  |  |  SCVariableDeclare (11:47): y, computed
+|  |  |  |  |  SCRead (11:51): local b, declared (11:21): b [depth 0, slot 2]
+|  |  |  |  SCExplicitReturn (11:54)
+|  |  |  |  |  SCCollection (11:55): Array
+|  |  |  |  |  |  SCRead (11:56): local x, declared (11:36): x = a [depth 0, slot 4]
+|  |  |  |  |  |  SCRead (11:59): local y, declared (11:47): y = b [depth 0, slot 5]
+|  |  |  |  |  |  SCRead (11:62): local rest, declared (11:26): rest [depth 0, slot 3]
+|  |  SCMethod (13:5): nested, version 3.16: nested { |a| var x; ^{ |b| var y = a + b; { x = y } } } [frame: this, a | x]
+|  |  |  SCArgumentDeclareList (13:15)
+|  |  |  |  SCArgumentDeclare (13:15): a (captured)
+|  |  |  SCBody (13:18)
+|  |  |  |  SCVariableDeclare (13:22): x (assigned, captured)
+|  |  |  |  SCExplicitReturn (13:25)
+|  |  |  |  |  SCFunction (13:26) [frame: b | y]
+|  |  |  |  |  |  SCArgumentDeclareList (13:29)
+|  |  |  |  |  |  |  SCArgumentDeclare (13:29): b
+|  |  |  |  |  |  SCBody (13:26)
+|  |  |  |  |  |  |  SCVariableDeclare (13:36): y (captured), computed
+|  |  |  |  |  |  |  |  SCMessage (13:40): +
+|  |  |  |  |  |  |  |  |  SCRead (13:40): local a, declared (13:15): a [depth 1, slot 1]
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (13:40)
+|  |  |  |  |  |  |  |  |  |  SCRead (13:44): local b, declared (13:29): b [depth 0, slot 0]
+|  |  |  |  |  |  |  SCFunction (13:47) [frame]
+|  |  |  |  |  |  |  |  SCBody (13:47)
+|  |  |  |  |  |  |  |  |  SCAssign (13:49): local x, declared (13:22): x [depth 2, slot 2]
+|  |  |  |  |  |  |  |  |  |  SCRead (13:53): local y, declared (13:36): y = a + b [depth 1, slot 1]
+|  |  SCMethod (16:5): shadowing, version 3.16: shadowing { var x = 1; ^{ var x = x + 1; x } } [frame: this | x]
+|  |  |  SCBody (16:17)
+|  |  |  |  SCVariableDeclare (16:21): x (captured), prototype
+|  |  |  |  |  SCLiteral (16:25) = 1
+|  |  |  |  SCExplicitReturn (16:28)
+|  |  |  |  |  SCFunction (16:29) [frame: | x]
+|  |  |  |  |  |  SCBody (16:29)
+|  |  |  |  |  |  |  SCVariableDeclare (16:35): x, computed
+|  |  |  |  |  |  |  |  SCMessage (16:39): +
+|  |  |  |  |  |  |  |  |  SCRead (16:39): local x, declared (16:21): x = 1 [depth 1, slot 1]
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (16:39)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (16:43) = 1
+|  |  |  |  |  |  |  SCRead (16:46): local x, declared (16:35): x = x + 1 [depth 0, slot 0]
+|  |  SCMethod (18:5): pack, version 3.16: pack { var #p, q ...r = [1, 2, 3]; ^p + q } [frame: this | p, q, r]
+|  |  |  SCBody (18:12)
+|  |  |  |  SCPackDeclare (18:16)
+|  |  |  |  |  SCCollection (18:29): Array = [1, 2, 3]
+|  |  |  |  |  |  SCLiteral (18:30) = 1
+|  |  |  |  |  |  SCLiteral (18:33) = 2
+|  |  |  |  |  |  SCLiteral (18:36) = 3
+|  |  |  |  |  SCPackTargets (18:16)
+|  |  |  |  |  |  SCPackTarget (18:17): local p at 0 [depth 0, slot 1]
+|  |  |  |  |  |  SCPackTarget (18:20): local q at 1 [depth 0, slot 2]
+|  |  |  |  |  |  SCPackTarget (18:25): local r rest from 2 [depth 0, slot 3]
+|  |  |  |  SCExplicitReturn (18:40)
+|  |  |  |  |  SCMessage (18:41): + = 3
+|  |  |  |  |  |  SCRead (18:41): local p = 1, declared (18:17): p [depth 0, slot 1]
+|  |  |  |  |  |  SCPositionalArgs (18:41)
+|  |  |  |  |  |  |  SCRead (18:45): local q = 2, declared (18:20): q [depth 0, slot 2]
+|  |  SCMethod (20:5): members, version 3.16: members { instance = other; shared = instance; ^constant } [frame: this]
+|  |  |  SCBody (20:15)
+|  |  |  |  SCAssign (20:15): instance instance, declared (6:9): instance [instance slot 0]
+|  |  |  |  |  SCRead (20:26): instance other, declared (6:19): other [instance slot 1]
+|  |  |  |  SCAssign (20:33): class shared, declared (7:14): shared [class variable 0 of Meta_FrameMembers]
+|  |  |  |  |  SCRead (20:42): instance instance, declared (6:9): instance [instance slot 0]
+|  |  |  |  SCExplicitReturn (20:52)
+|  |  |  |  |  SCRead (20:53): class constant, declared (8:11): constant [constant]
+|  |  SCMethod (22:5): nested_return, version 3.16: nested_return { |x| if (x) { ^1 }; ^2 } [frame: this, x]
+|  |  |  SCArgumentDeclareList (22:22)
+|  |  |  |  SCArgumentDeclare (22:22): x
+|  |  |  SCBody (22:25)
+|  |  |  |  SCMessage (22:25): if
+|  |  |  |  |  SCRead (22:29): local x, declared (22:22): x [depth 0, slot 1]
+|  |  |  |  |  SCPositionalArgs (22:25)
+|  |  |  |  |  |  SCFunction (22:32) [frame]
+|  |  |  |  |  |  |  SCBody (22:32)
+|  |  |  |  |  |  |  |  SCExplicitReturn (22:34)
+|  |  |  |  |  |  |  |  |  SCLiteral (22:35) = 1
+|  |  |  |  SCExplicitReturn (22:40)
+|  |  |  |  |  SCLiteral (22:41) = 2
+SCClass (5:1): Meta_FrameMembers : Meta_Object, version 3.16
+|  SCMemberList (5:1)
+|  |  SCMember (8:11): constant = 1
+|  |  SCMember (7:14): shared
+|  SCMethodList (5:1)
+|  |  SCMethod (25:5): classMethod, version 3.16: *classMethod { |a| ^shared + a } [frame: this, a]
+|  |  |  SCArgumentDeclareList (25:21)
+|  |  |  |  SCArgumentDeclare (25:21): a
+|  |  |  SCBody (25:24)
+|  |  |  |  SCExplicitReturn (25:24)
+|  |  |  |  |  SCMessage (25:25): +
+|  |  |  |  |  |  SCRead (25:25): instance shared, declared (7:14): shared [class variable 0 of Meta_FrameMembers]
+|  |  |  |  |  |  SCPositionalArgs (25:25)
+|  |  |  |  |  |  |  SCRead (25:34): local a, declared (25:21): a [depth 0, slot 1]
+Successfully compiled 16 classes.

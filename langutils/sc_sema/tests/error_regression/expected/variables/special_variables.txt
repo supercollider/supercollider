@@ -74,7 +74,7 @@ SCClass (2:1): SpecialVariables : Object, version 3.16
 |  |  SCMethod (32:5): in_generator, version 3.16: in_generator { ^{: this, x <- [1] } }
 |  |  |  SCBody (32:20)
 |  |  |  |  SCExplicitReturn (32:20)
-|  |  |  |  |  SCGenerator (32:21): routine
+|  |  |  |  |  SCRoutineGenerator (32:21)
 |  |  |  |  |  |  SCGenQualList (32:30)
 |  |  |  |  |  |  |  SCGenQualIterate (32:30): x
 |  |  |  |  |  |  |  |  SCCollection (32:35): Array = [1]
@@ -255,7 +255,7 @@ SCClass (2:1): SpecialVariables : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (54:33)
 |  |  |  |  SCExplicitReturn (54:33)
-|  |  |  |  |  SCGenerator (54:34): routine
+|  |  |  |  |  SCRoutineGenerator (54:34)
 |  |  |  |  |  |  SCGenQualList (54:40)
 |  |  |  |  |  |  |  SCGenQualIterate (54:40): thisMethod
 |  |  |  |  |  |  |  |  SCCollection (54:54): Array = [1]
@@ -278,7 +278,7 @@ SCClass (2:1): SpecialVariables : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (56:34)
 |  |  |  |  SCExplicitReturn (56:34)
-|  |  |  |  |  SCGenerator (56:35): routine
+|  |  |  |  |  SCRoutineGenerator (56:35)
 |  |  |  |  |  |  SCGenQualList (56:41)
 |  |  |  |  |  |  |  SCGenQualDeclare (56:41): thisFunction
 |  |  |  |  |  |  |  |  SCLiteral (56:60) = 1

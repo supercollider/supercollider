@@ -1,0 +1,43 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): FrameLegacy : Object
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): method: method { |a, b = 2| var x, y = 3; ^{ |c| var z; x = a + c } } [frame: this, a, b | x, y]
+|  |  |  SCArgumentDeclareList (5:15)
+|  |  |  |  SCArgumentDeclare (5:15): a (captured)
+|  |  |  |  SCArgumentDeclare (5:18): b, prototype
+|  |  |  |  |  SCLiteral (5:22) = 2
+|  |  |  SCBody (5:25)
+|  |  |  |  SCVariableDeclare (5:29): x (assigned, captured)
+|  |  |  |  SCVariableDeclare (5:32): y, prototype
+|  |  |  |  |  SCLiteral (5:36) = 3
+|  |  |  |  SCExplicitReturn (5:39)
+|  |  |  |  |  SCFunction (5:40) [frame: c | z]
+|  |  |  |  |  |  SCArgumentDeclareList (5:43)
+|  |  |  |  |  |  |  SCArgumentDeclare (5:43): c
+|  |  |  |  |  |  SCBody (5:40)
+|  |  |  |  |  |  |  SCVariableDeclare (5:50): z
+|  |  |  |  |  |  |  SCAssign (5:53): local x, declared (5:29): x [depth 1, slot 3]
+|  |  |  |  |  |  |  |  SCMessage (5:57): +
+|  |  |  |  |  |  |  |  |  SCRead (5:57): local a, declared (5:15): a [depth 1, slot 1]
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (5:57)
+|  |  |  |  |  |  |  |  |  |  SCRead (5:61): local c, declared (5:43): c [depth 0, slot 0]
+|  |  SCMethod (7:5): nested_return: nested_return { |x| if (x) { ^1 }; ^2 } [frame: this, x]
+|  |  |  SCArgumentDeclareList (7:22)
+|  |  |  |  SCArgumentDeclare (7:22): x
+|  |  |  SCBody (7:25)
+|  |  |  |  SCMessage (7:25): if
+|  |  |  |  |  SCRead (7:29): local x, declared (7:22): x [depth 0, slot 1]
+|  |  |  |  |  SCPositionalArgs (7:25)
+|  |  |  |  |  |  SCFunction (7:32) [frame]
+|  |  |  |  |  |  |  SCBody (7:32)
+|  |  |  |  |  |  |  |  SCExplicitReturn (7:34)
+|  |  |  |  |  |  |  |  |  SCLiteral (7:35) = 1
+|  |  |  |  SCExplicitReturn (7:40)
+|  |  |  |  |  SCLiteral (7:41) = 2
+Successfully compiled 16 classes.

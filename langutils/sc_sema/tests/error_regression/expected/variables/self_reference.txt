@@ -427,7 +427,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (87:5): routine_generator, version 3.16: routine_generator { var r = {: r, x <- [1] }; ^r }
 |  |  |  SCBody (87:25)
 |  |  |  |  SCVariableDeclare (87:29): r (captured), computed
-|  |  |  |  |  SCGenerator (87:33): routine
+|  |  |  |  |  SCRoutineGenerator (87:33)
 |  |  |  |  |  |  SCGenQualList (87:39)
 |  |  |  |  |  |  |  SCGenQualIterate (87:39): x
 |  |  |  |  |  |  |  |  SCCollection (87:44): Array = [1]
@@ -452,7 +452,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (89:27)
 |  |  |  |  SCVariableDeclare (89:31): r, computed
-|  |  |  |  |  SCGenerator (89:35): immediate
+|  |  |  |  |  SCImmediateGenerator (89:35)
 |  |  |  |  |  |  SCGenQualList (89:41)
 |  |  |  |  |  |  |  SCGenQualIterate (89:41): x
 |  |  |  |  |  |  |  |  SCCollection (89:46): Array = [1]
@@ -463,7 +463,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (92:5): generator_qualifier, version 3.16: generator_qualifier { ^{: y, var y = { y } } }
 |  |  |  SCBody (92:27)
 |  |  |  |  SCExplicitReturn (92:27)
-|  |  |  |  |  SCGenerator (92:28): routine
+|  |  |  |  |  SCRoutineGenerator (92:28)
 |  |  |  |  |  |  SCGenQualList (92:34)
 |  |  |  |  |  |  |  SCGenQualDeclare (92:34): y (captured)
 |  |  |  |  |  |  |  |  SCFunction (92:42)
@@ -487,7 +487,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (94:34)
 |  |  |  |  SCExplicitReturn (94:34)
-|  |  |  |  |  SCGenerator (94:35): routine
+|  |  |  |  |  SCRoutineGenerator (94:35)
 |  |  |  |  |  |  SCGenQualList (94:41)
 |  |  |  |  |  |  |  SCGenQualDeclare (94:41): y
 |  |  |  |  |  |  |  |  SCExprList (94:49)
@@ -495,7 +495,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (98:5): generator_qualifier_rebinds, version 3.16: generator_qualifier_rebinds { ^{: y, y <- [1, 2], var y = y * 2 } }
 |  |  |  SCBody (98:35)
 |  |  |  |  SCExplicitReturn (98:35)
-|  |  |  |  |  SCGenerator (98:36): routine
+|  |  |  |  |  SCRoutineGenerator (98:36)
 |  |  |  |  |  |  SCGenQualList (98:42)
 |  |  |  |  |  |  |  SCGenQualIterate (98:42): y
 |  |  |  |  |  |  |  |  SCCollection (98:47): Array = [1, 2]

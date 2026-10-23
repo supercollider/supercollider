@@ -36,7 +36,8 @@ comment, e.g.,
     // interpreted-version: 3.16
 The first lines can also be `// no-prelude`, to compile it without the shared prelude.sc, and any number of
 `// module: NAME`, which compiles modules/NAME.sc as its own module, before the test, e.g., to test extensions in
-different modules. A module is a path given to the compiler.
+different modules. A module is a path given to the compiler. `// frames` adds the backend's frame layout to the
+output, see ir_dump's --frames.
 A test fails when an assertion doesn't hold, even when its output is overridden, so overriding can't hide a change
 the test was written to catch.
 
@@ -73,6 +74,8 @@ PRELUDE = Path(__file__).parent / 'prelude.sc'
 NO_PRELUDE = '// no-prelude'
 # The release interpreted code is compiled as, e.g., `// interpreted-version: 3.16`.
 INTERPRETED_VERSION = re.compile(r'^// interpreted-version: (?P<release>\S+)$')
+# Adds the backend's frames to the output, see ir_dump's --frames.
+FRAMES = '// frames'
 # Another module compiled before the test, e.g., `// module: other` is modules/other.sc.
 MODULE = re.compile(r'^// module: (?P<name>\S+)$')
 # Outside input, so the modules aren't tests themselves.
@@ -116,6 +119,8 @@ NODE_LINE = re.compile(r'^(?P<indent>(?:\|  )*)SC\w+ \(\d+:\d+\)')
 # A read, e.g., `SCRead (5:48): local a = 1, declared (5:25): a = 1`, environment variables have no declaration.
 READ_LINE = re.compile(r'^(?:\|  )*SCRead \((?P<line>\d+):(?P<column>\d+)\): \w+ (?P<name>\w+)'
                        r'(?: = .*?)?(?:, declared \(\d+:\d+\): (?P<declaration>.*))?$')
+# What --frames adds to the end of a line, e.g., ` [depth 1, slot 2]`, removed before the lines are read.
+FRAME_SUFFIX = re.compile(r' \[(?:frame|depth|instance slot|class variable|constant|member not found)[^\]]*\]$')
 # A diagnostic printed under a method.
 DIAGNOSTIC_LINE = re.compile(r'^(?:\|  )+(?P<severity>Error|Warning): (?P<title>.*)$')
 
@@ -136,7 +141,7 @@ class Method:
 
 def methods_in(output):
     """The methods in ir_dump's output."""
-    lines = output.split('\n')
+    lines = [FRAME_SUFFIX.sub('', line) for line in output.split('\n')]
     methods = []
     for i, line in enumerate(lines):
         match = METHOD_LINE.match(line) or INTERPRETED_LINE.match(line)
@@ -245,32 +250,37 @@ def test_name(sc_file):
 
 
 def headers(sc_file):
-    """Whether the test uses the prelude, the release its interpreted code is compiled as, and the modules compiled
-    before it, from its first lines."""
+    """Whether the test uses the prelude, the release its interpreted code is compiled as, the modules compiled before
+    it, and whether it shows the frames, from its first lines."""
     uses_prelude = True
     release = None
     modules = []
+    frames = False
     with open(sc_file) as f:
         for line in f:
             line = line.strip()
             if line == NO_PRELUDE:
                 uses_prelude = False
+            elif line == FRAMES:
+                frames = True
             elif version := INTERPRETED_VERSION.match(line):
                 release = version['release']
             elif module := MODULE.match(line):
                 modules.append(MODULES_DIR / f"{module['name']}.sc")
             else:
                 break
-    return uses_prelude, release, modules
+    return uses_prelude, release, modules, frames
 
 
 def run_ir_dump(cmd, sc_file):
-    uses_prelude, release, modules = headers(sc_file)
+    uses_prelude, release, modules, frames = headers(sc_file)
     # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
     # The output is the same however many threads compile it, two checks that, while leaving cpus for other tests.
     args = [cmd, '--threads', '2', '--relative-to', INPUT_DIR]
     if release:
         args += ['--interpreted-version', release]
+    if frames:
+        args += ['--frames']
     if uses_prelude:
         args += ['--prelude', PRELUDE]
     # Each path is its own module, in order, so the test is the last.

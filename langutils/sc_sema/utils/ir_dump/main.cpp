@@ -13,12 +13,15 @@
 #include <thread>
 #include <cstdint>
 #include <map>
+#include <unordered_map>
 #include <optional>
 #include <utility>
 
 #include "describe/describe.hpp"
 #include "boost/asio/post.hpp"
 #include "boost/asio/thread_pool.hpp"
+#include "sc_backend/frames.hpp"
+#include "sc_backend/members.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_lexer/normalise_source.hpp"
 #include "sc_lexer/text_info.hpp"
@@ -208,12 +211,14 @@ int main(int argc, char* argv[]) {
     // version comment, legacy by default.
     // --no-dump only compiles, printing how many diagnostics and classes there are, e.g., to time the compiler, as
     // writing the dump takes longer than compiling.
+    // --frames adds the backend's frame layout, each frame's slots, and where each variable read or assigned is.
     std::vector<std::filesystem::path> module_paths;
     std::vector<std::filesystem::path> prelude_paths;
     std::optional<std::filesystem::path> relative_to;
     size_t num_threads = std::max(1u, std::thread::hardware_concurrency());
     auto interpreted_version = sc::ast::LanguageVersion::Legacy;
     bool dump = true;
+    bool show_frames = false;
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
         if (arg == "--threads" && i + 1 < argc) {
@@ -234,6 +239,8 @@ int main(int argc, char* argv[]) {
             interpreted_version = *version;
         } else if (arg == "--no-dump") {
             dump = false;
+        } else if (arg == "--frames") {
+            show_frames = true;
         } else if (arg == "--relative-to" && i + 1 < argc) {
             relative_to = get_path(argv[++i]);
         } else if (arg == "--prelude" && i + 1 < argc) {
@@ -472,6 +479,110 @@ int main(int argc, char* argv[]) {
         return std::tie(l.file, l.begin, l.is_meta) < std::tie(r.file, r.begin, r.is_meta);
     });
 
+    // The backend's frames, by graph, and its diagnostics, printed with the others. Each frame's owner is written when
+    // the owner is, which for a qualifier is before its frame starts, so they are found by owner.
+    struct DumpFrames {
+        sc::backend::Frames layout;
+        std::unordered_map<std::uint32_t, sc::backend::FrameIndex> by_owner;
+    };
+    std::optional<sc::backend::MemberTable> member_table;
+    std::map<const sc::ir::IRGraph*, DumpFrames> frames;
+    if (show_frames) {
+        member_table.emplace(comp, symbol_table);
+        for (const auto& dumped : classes) {
+            const auto& g = *dumped.graph;
+            const auto root = [&]() -> sc::ir::join<sc::ir::SCClass_I, sc::ir::SCInterpreted_I> {
+                if (const auto c = g.as_a<sc::ir::SCClass_I>(dumped.index))
+                    return *c;
+                return *g.as_a<sc::ir::SCInterpreted_I>(dumped.index);
+            }();
+            DumpFrames f { sc::backend::layout_frames(g, root) };
+            for (auto& d : f.layout.diagnostics)
+                all_diagnostics.push_back(std::move(d));
+            for (std::uint32_t fi { 0 }; fi < f.layout.frames.size(); ++fi)
+                f.by_owner.insert(
+                    { *f.layout.frames[sc::backend::FrameIndex { fi }].owner, sc::backend::FrameIndex { fi } });
+            frames.insert({ dumped.graph, std::move(f) });
+        }
+    }
+
+    // `[frame: this, a, ...b | c]` for a frame's slots, its arguments, variadic arguments, then variables.
+    // `[depth 1, slot 2]` for a local, `[instance slot 3]`, `[class variable 0 of Meta_Foo]` or `[constant]` for a
+    // member. current is the frame the node is evaluated in, see FrameCursor.
+    const auto write_frame = [&](const sc::ir::IRGraph& g, const sc::ir::IRGraph::Variant& payload, sc::ir::NodeIndex i,
+                                 sc::backend::OptionalFrameIndex current) {
+        const auto fnd = frames.find(&g);
+        if (fnd == frames.end())
+            return;
+        const auto& f = fnd->second.layout;
+        const auto owner = [&](sc::backend::FrameOwner_I o) {
+            const auto owned = fnd->second.by_owner.find(*o);
+            if (owned == fnd->second.by_owner.end())
+                return;
+            const auto& frame = f.frames[owned->second];
+            std::cout << " [frame";
+            const char* separator = ": ";
+            if (frame.has_this) {
+                std::cout << separator << "this";
+                separator = ", ";
+            }
+            for (std::size_t l { 0 }; l < frame.locals.size(); ++l) {
+                if (l == frame.num_positional + frame.num_variadic())
+                    separator = l == 0 && !frame.has_this ? ": | " : " | ";
+                std::cout << separator;
+                if (l >= frame.num_positional && l < frame.num_positional + frame.num_variadic())
+                    std::cout << "...";
+                std::cout << symbol_table(g.local(frame.locals[l]).name);
+                separator = ", ";
+            }
+            std::cout << "]";
+        };
+        const auto local = [&](sc::ir::OptionalLocalIndex l) {
+            const auto& slot = f.locals[sc::ir::LocalIndex { *l }];
+            if (!current || !slot.frame)
+                return;
+            std::cout << " [depth " << f.depth(*current, *slot.frame) << ", slot " << slot.slot << "]";
+        };
+        const auto member = [&](sc::ir::OptionalMemberIndex m) {
+            const auto& variable = g.member(sc::ir::MemberIndex { *m });
+            const auto location = member_table->find(variable.owner, variable.name);
+            if (!location) {
+                std::cout << " [member not found]";
+                return;
+            }
+            // A class variable as its position among its class's own, so it doesn't depend on the other classes.
+            std::visit(sc::util::overload {
+                           [](sc::backend::InstanceSlot slot) { std::cout << " [instance slot " << *slot << "]"; },
+                           [&](sc::backend::ClassVariableIndex index) {
+                               std::cout << " [class variable "
+                                         << *index - *member_table->class_variable_base(variable.owner) << " of "
+                                         << symbol_table(variable.owner) << "]";
+                           },
+                           [](sc::ir::OptionalConstExprIndex) { std::cout << " [constant]"; },
+                       },
+                       *location);
+        };
+        const auto variable = [&](sc::ir::OptionalLocalIndex l, sc::ir::OptionalMemberIndex m) {
+            if (l)
+                local(l);
+            else if (m)
+                member(m);
+        };
+        using namespace sc::ir;
+        std::visit(sc::util::overload {
+                       [](const auto&) {},
+                       [&](const SCMethod&) { owner(*g.as_a<SCMethod_I>(i)); },
+                       [&](const SCFunction&) { owner(*g.as_a<SCFunction_I>(i)); },
+                       [&](const SCGenQualIterate&) { owner(*g.as_a<SCGenQualIterate_I>(i)); },
+                       [&](const SCGenQualDeclare&) { owner(*g.as_a<SCGenQualDeclare_I>(i)); },
+                       [&](const SCRoutineGenerator&) { owner(*g.as_a<SCRoutineGenerator_I>(i)); },
+                       [&](const SCRead& r) { variable(r.local, r.member); },
+                       [&](const SCAssign& a) { variable(a.local, a.member); },
+                       [&](const SCPackTarget& t) { variable(t.local, t.member); },
+                   },
+                   payload);
+    };
+
     // Diagnostics are printed under the method whose source contains them, or else the class, so they are next to the
     // ir they affect. A diagnostic's last location is where the problem is, earlier ones are context, e.g., where a
     // duplicate was first declared. The rest, e.g., a missing class, are printed before the dump.
@@ -539,27 +650,42 @@ int main(int argc, char* argv[]) {
     for (const auto& dumped : classes) {
         const auto& g = *dumped.graph;
         const sc::ir::describe::Describe describe { g, ctx, relative_to };
-        g.depth_first_traverse(dumped.index,
-                               [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
-                                   const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
-                                   if (sc::ir::describe::hidden(describe, edges, payload, dumped.class_name))
-                                       return;
+        // Every node is entered and exited, even those hidden, so it follows the frames.
+        std::optional<sc::backend::FrameCursor> cursor;
+        if (const auto fnd = frames.find(&g); fnd != frames.end())
+            cursor.emplace(fnd->second.layout);
+        g.depth_first_traverse(
+            dumped.index,
+            [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
+                const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
+                const auto current = cursor ? cursor->current() : sc::backend::OptionalFrameIndex {};
+                if (cursor)
+                    (void)cursor->enter(payload, i);
+                if (sc::ir::describe::hidden(describe, edges, payload, dumped.class_name))
+                    return;
 
-                                   for (size_t di { 0 }; di < depth; ++di)
-                                       std::cout << "|  ";
-                                   std::cout << sc::ir::IRGraph::node_name(payload) << " ";
-                                   sc::ir::describe::write_location(std::cout, loc);
-                                   sc::ir::describe::write_details(describe, std::cout, payload, loc, i);
-                                   std::cout << "\n";
+                for (size_t di { 0 }; di < depth; ++di)
+                    std::cout << "|  ";
+                std::cout << sc::ir::IRGraph::node_name(payload) << " ";
+                sc::ir::describe::write_location(std::cout, loc);
+                sc::ir::describe::write_details(describe, std::cout, payload, loc, i);
+                write_frame(g, payload, i, current);
+                std::cout << "\n";
 
-                                   if (const auto fnd = owned.find({ &g, *i }); fnd != owned.end()) {
-                                       std::string indent;
-                                       for (size_t di { 0 }; di <= depth; ++di)
-                                           indent += "|  ";
-                                       for (const auto* d : fnd->second)
-                                           print_diagnostic(*d, indent);
-                                   }
-                               });
+                if (const auto fnd = owned.find({ &g, *i }); fnd != owned.end()) {
+                    std::string indent;
+                    for (size_t di { 0 }; di <= depth; ++di)
+                        indent += "|  ";
+                    for (const auto* d : fnd->second)
+                        print_diagnostic(*d, indent);
+                }
+            },
+            sc::ir::IRGraph::Default {}, sc::ir::IRGraph::Default {},
+            [&](const sc::ir::IRGraph::Edges&, const sc::ir::IRGraph::Variant& payload, const sc::ir::SourceLocation&,
+                sc::ir::NodeIndex i, size_t) {
+                if (cursor)
+                    (void)cursor->exit(payload, i);
+            });
     }
 #endif
 

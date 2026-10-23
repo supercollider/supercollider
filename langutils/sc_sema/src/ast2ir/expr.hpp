@@ -16,7 +16,7 @@ struct ScopeEntry {
     // This happens when we are accessing a meta class entry, or when inlining.
     // Null means the graph being compiled, e.g., for arguments, as Expr doesn't own its graph.
     std::shared_ptr<const IRGraph> graph;
-    // A generator's qualifiers declare its variables, see SCGenerator.
+    // A generator's qualifiers declare its variables, see SCRoutineGenerator.
     join<SCFunction_I, SCMethod_I, SCMemberList_I, SCGenQualList_I> scope_index;
 
     // All of these can declare variables.

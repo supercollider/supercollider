@@ -64,7 +64,7 @@ SCClass (2:1): Foo : Object, version 3.16
 |  |  SCMethod (31:5): in_generator, version 3.16: in_generator { ^{: bar + x, x <- [1, 2] } }
 |  |  |  SCBody (31:20)
 |  |  |  |  SCExplicitReturn (31:20)
-|  |  |  |  |  SCGenerator (31:21): routine
+|  |  |  |  |  SCRoutineGenerator (31:21)
 |  |  |  |  |  |  SCGenQualList (31:33)
 |  |  |  |  |  |  |  SCGenQualIterate (31:33): x
 |  |  |  |  |  |  |  |  SCCollection (31:38): Array = [1, 2]

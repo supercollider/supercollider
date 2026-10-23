@@ -220,9 +220,6 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                        out << (t.rest ? " rest from " : " at ") << t.index;
                    },
                    [&](const SCCollection& c) { out << ": " << symbol_table(*c.collection_class); },
-                   [&](const SCGenerator& gen) {
-                       out << (gen.kind == SCGenerator::Kind::Routine ? ": routine" : ": immediate");
-                   },
                    [&](const SCGenQualIterate& q) {
                        out << ": " << symbol_table(*q.element);
                        write_uses(q.element_local);

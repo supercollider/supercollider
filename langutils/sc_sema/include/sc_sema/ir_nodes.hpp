@@ -236,18 +236,18 @@ struct SCGenQualList
     static constexpr auto type_name { "SCGenQualList" };
 };
 
+
 // `{: value, qualifiers }` makes a Routine, which yields value each time the qualifiers reach it.
-// `{; value, qualifiers }` is Immediate, the qualifiers run straight away, evaluating value for its effects. It isn't a
-// Routine, and returns what the outermost qualifier does, e.g., the source of `x <- source`.
-// value is compiled after the qualifiers, so it can use what they declare.
-struct SCGenerator : priv::Node<SCGenerator_I(SCGenQualList_I qualifiers, SCAnyExpr_I value)> {
-    static constexpr auto type_name { "SCGenerator" };
-    enum struct Kind { Routine, Immediate };
-    Kind kind;
-    SCGenerator(Kind k): kind(k) {}
+struct SCRoutineGenerator : priv::Node<SCRoutineGenerator_I(SCGenQualList_I qualifiers, SCAnyExpr_I value)> {
+    static constexpr auto type_name { "SCRoutineGenerator" };
 };
 
-// `(: first, second..last)`, a Routine yielding the series, the old compiler's `first.seriesIter(second, last)`.
+// `{; value, qualifiers }`, the qualifiers run straight away, evaluating value for its effects. It isn't a Routine and
+// has no function of its own, and returns what the outermost qualifier does, e.g., the source of `x <- source`.
+struct SCImmediateGenerator : priv::Node<SCImmediateGenerator_I(SCGenQualList_I qualifiers, SCAnyExpr_I value)> {
+    static constexpr auto type_name { "SCImmediateGenerator" };
+};
+
 // Like SCRange, but a missing last is allowed, which means it never ends.
 struct SCRangeGenerator
     : priv::Node<SCRangeGenerator_I(SCAnyExpr_I first, maybe<SCAnyExpr_I> second, maybe<SCAnyExpr_I> last)> {

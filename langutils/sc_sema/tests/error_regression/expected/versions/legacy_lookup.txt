@@ -417,7 +417,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (75:17)
 |  |  |  |  SCExplicitReturn (75:17)
-|  |  |  |  |  SCGenerator (75:18): routine
+|  |  |  |  |  SCRoutineGenerator (75:18)
 |  |  |  |  |  |  SCGenQualList (75:24)
 |  |  |  |  |  |  |  SCGenQualDeclare (75:24): y
 |  |  |  |  |  |  |  |  SCExprList (75:32)
@@ -425,7 +425,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  SCMethod (78:5): generator_rebinds: generator_rebinds { ^{: y, y <- [1, 2], var y = y * 2 } }
 |  |  |  SCBody (78:25)
 |  |  |  |  SCExplicitReturn (78:25)
-|  |  |  |  |  SCGenerator (78:26): routine
+|  |  |  |  |  SCRoutineGenerator (78:26)
 |  |  |  |  |  |  SCGenQualList (78:32)
 |  |  |  |  |  |  |  SCGenQualIterate (78:32): y
 |  |  |  |  |  |  |  |  SCCollection (78:37): Array
@@ -465,7 +465,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  SCVariableDeclare (83:39): y (captured), prototype
 |  |  |  |  |  SCLiteral (83:43) = \outer
 |  |  |  |  SCExplicitReturn (83:51)
-|  |  |  |  |  SCGenerator (83:52): routine
+|  |  |  |  |  SCRoutineGenerator (83:52)
 |  |  |  |  |  |  SCGenQualList (83:58)
 |  |  |  |  |  |  |  SCGenQualDeclare (83:58): y
 |  |  |  |  |  |  |  |  SCFunction (83:66)
@@ -512,7 +512,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (86:45)
 |  |  |  |  SCExplicitReturn (86:45)
-|  |  |  |  |  SCGenerator (86:46): routine
+|  |  |  |  |  SCRoutineGenerator (86:46)
 |  |  |  |  |  |  SCGenQualList (86:52)
 |  |  |  |  |  |  |  SCGenQualDeclare (86:52): y
 |  |  |  |  |  |  |  |  SCFunction (86:60)
@@ -757,7 +757,7 @@ SCClass (96:1): LookupThreeSixteen : Object, version 3.16
 |  |  |  |  SCVariableDeclare (132:39): y, prototype
 |  |  |  |  |  SCLiteral (132:43) = \outer
 |  |  |  |  SCExplicitReturn (132:51)
-|  |  |  |  |  SCGenerator (132:52): routine
+|  |  |  |  |  SCRoutineGenerator (132:52)
 |  |  |  |  |  |  SCGenQualList (132:58)
 |  |  |  |  |  |  |  SCGenQualDeclare (132:58): y (captured)
 |  |  |  |  |  |  |  |  SCFunction (132:66)

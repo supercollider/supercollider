@@ -50,7 +50,8 @@ using NodeCollectionHelper = sc::util::typed_graph::TypedGraphHelper<SCNodeType,
                                                                      SCGenQualSideEffect, //
                                                                      SCGenQualWhile, //
                                                                      SCGenQualList, //
-                                                                     SCGenerator, //
+                                                                     SCRoutineGenerator, //
+                                                                     SCImmediateGenerator, //
                                                                      SCRangeGenerator, //
                                                                      SCBody, //
                                                                      SCArgumentDeclare, //

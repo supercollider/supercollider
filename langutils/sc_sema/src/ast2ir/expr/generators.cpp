@@ -1,4 +1,4 @@
-// Generators, `{: value, qualifiers }` and `{; value, qualifiers }`, see SCGenerator.
+// Generators, `{: value, qualifiers }` and `{; value, qualifiers }`, see SCRoutineGenerator and SCImmediateGenerator.
 // Needs the ast graph for the children, and the symbol table for the declared names.
 #include "ast2ir/expr.hpp"
 #include "ast2ir/expr/ranges.hpp"
@@ -160,14 +160,14 @@ void qualifier(GeneratorContext& c, ast::GeneratorQualAnyIndex q) {
 // A generator is never constant, a Routine is made each time, and an Immediate one runs code.
 Return<SCAnyExpr_I> generator(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
                               Context& ctx, ast::Index whole, ast::AnyExprIndex value, ast::GeneratorQualListIndex list,
-                              SCGenerator::Kind kind) {
+                              bool routine) {
     const auto qualifiers = ir.create(SCGenQualList {}, location_of(ir, *ast_graph, { *list }));
     // The value is compiled while the qualifiers' scopes are open, c closes them.
     const auto value_r = [&] {
         GeneratorContext c { expr, ir, ctx, ast_graph, qualifiers, OpenScopes { expr } };
         // A Routine runs when it is resumed, so it can refer to a variable whose initial value it is in, an Immediate
         // generator runs now, so can't.
-        if (kind == SCGenerator::Kind::Routine) {
+        if (routine) {
             c.scopes.open();
             expr.scope.back().starts_function = true;
         }
@@ -176,19 +176,21 @@ Return<SCAnyExpr_I> generator(Expr& expr, IRGraph& ir, const std::shared_ptr<con
         return expr(value);
     }();
 
-    return { ir.create(SCGenerator { kind }, location_of(ir, *ast_graph, whole), qualifiers, value_r.ir_node) };
+    const auto location = location_of(ir, *ast_graph, whole);
+    if (routine)
+        return { ir.create(SCRoutineGenerator {}, location, qualifiers, value_r.ir_node) };
+    return { ir.create(SCImmediateGenerator {}, location, qualifiers, value_r.ir_node) };
 }
-
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::GeneratorIndex i) {
     const auto [value, list] = ast_graph->children(i);
-    return generator(*this, ir, ast_graph, ctx, { *i }, value, list, SCGenerator::Kind::Routine);
+    return generator(*this, ir, ast_graph, ctx, { *i }, value, list, true);
 }
 
 Return<SCAnyExpr_I> Expr::operator()(ast::GeneratorFakeIndex i) {
     const auto [value, list] = ast_graph->children(i);
-    return generator(*this, ir, ast_graph, ctx, { *i }, value, list, SCGenerator::Kind::Immediate);
+    return generator(*this, ir, ast_graph, ctx, { *i }, value, list, false);
 }
 
 }
