@@ -9,7 +9,6 @@ add_library(sc_sema STATIC
 	src/common_class.cpp
 	src/common_symbols.cpp
 	src/known_methods.cpp
-	src/compile_consteval.cpp
 	src/intrinsic_constraint_checker.cpp
 	src/inheritance_edges.cpp
 	src/ast2ir/expr/dispatch.cpp
