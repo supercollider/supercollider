@@ -2601,9 +2601,15 @@ void handle_b_setSampleRate(ReceivedMessage const& msg) {
         return;
     }
 
-    auto samplerate = it->AsFloat();
-    buf->samplerate = nrt_buf->samplerate = samplerate > 0.0 ? samplerate : sc_factory->world.mSampleRate;
-    buf->sampledur = nrt_buf->sampledur = 1.0 / buf->samplerate;
+    auto samplerate = extract_float_argument(it);
+    buf->samplerate = samplerate > 0.0 ? samplerate : sc_factory->world.mSampleRate;
+    buf->sampledur = 1.0 / buf->samplerate;
+    // NOTE: this is not really thread-safe! The only alternative would be not
+    // updating the NRT mirror. Currently, we don't really *use* the sample rate
+    // in NRT code, so this should be fine. On the other hand, it doesn't feel
+    // right not to keep the two structures in sync...
+    nrt_buf->samplerate = buf->samplerate;
+    nrt_buf->sampledur = buf->sampledur;
 }
 
 void handle_b_fill(ReceivedMessage const& msg) {
