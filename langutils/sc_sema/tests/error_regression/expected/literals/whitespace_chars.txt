@@ -7,12 +7,12 @@ IR GRAPH DUMP
 SCClass (1:1): WhitespaceChars
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Invalid Character.
 |  literals/whitespace_chars.sc:3:17
 |      1 │ WhitespaceChars {
 |      2 │     char_space { ^$  }
 |      3 │     char_tab { ^$	 }
-|        ┆                 ^ Expected:  but received LEXER_ERROR
+|        ┆                 ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
 |      4 │     char_newline { ^$
 |      5 │  }
 |      6 │     char_carriage_return { ^$
@@ -20,12 +20,12 @@ SCClass (1:1): WhitespaceChars
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Invalid Character.
 |  literals/whitespace_chars.sc:4:21
 |      2 │     char_space { ^$  }
 |      3 │     char_tab { ^$	 }
 |      4 │     char_newline { ^$
-|        ┆                     ^ Expected:  but received LEXER_ERROR
+|        ┆                     ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
 |      5 │  }
 |      6 │     char_carriage_return { ^$
 |      7 │  }
@@ -33,12 +33,12 @@ SCClass (1:1): WhitespaceChars
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Invalid Character.
 |  literals/whitespace_chars.sc:6:29
 |      4 │     char_newline { ^$
 |      5 │  }
 |      6 │     char_carriage_return { ^$
-|        ┆                             ^ Expected:  but received LEXER_ERROR
+|        ┆                             ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
 |      7 │  }
 |      8 │     char_carriage_return_newline { ^$
 |      9 │  }
@@ -46,12 +46,12 @@ SCClass (1:1): WhitespaceChars
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Invalid Character.
 |  literals/whitespace_chars.sc:8:37
 |      6 │     char_carriage_return { ^$
 |      7 │  }
 |      8 │     char_carriage_return_newline { ^$
-|        ┆                                     ^ Expected:  but received LEXER_ERROR
+|        ┆                                     ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
 |      9 │  }
 |     10 │ }
 |

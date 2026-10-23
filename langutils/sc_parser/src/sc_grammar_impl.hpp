@@ -7,6 +7,7 @@
 #include "sc_lexer/lexer.hpp"
 
 #include "parser_context.hpp"
+#include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_grammar_parser.hpp"
 #include "sc_parser/sc_grammar_shared.hpp"
 #include "sc_lexer/text_location.hpp"
@@ -188,8 +189,12 @@ inline int yylex(sc::ast::parser::parser::value_type* v, sc::lex::SourceCodeRang
     *loc = location;
     v->emplace<sc::ast::LexerToken>();
 
+    // Reported here, as the lexer knows what is wrong, the parser's error at it is then dropped, see
+    // error_recovery::report. The bracket errors, see Action::process, are left to the parser.
+    if (lex_token >= sc::lex::TokenType::START_OF_USER_DEFINED_ERRORS && sc::lex::is_error(lex_token))
+        return T::TOKEN_BADTOKEN;
     if (sc::lex::is_error(lex_token)) {
-        // cxt.error_handler->operator()(cxt.text_info, lex_token, location, extra_location);
+        cxt.graph->add_diagnostic(sc::diag::Diagnostic::lexer_error(cxt.text_info, lex_token, location));
         return T::TOKEN_LEXER_ERROR;
     }
 

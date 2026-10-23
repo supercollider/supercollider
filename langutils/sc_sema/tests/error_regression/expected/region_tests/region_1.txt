@@ -36,7 +36,7 @@ SCInterpreted (1:1): region_tests/region_1.scd
 |     14 │ 
 |     15 │ (
 |     16 │     var a;
-|        ┆     ^^^ Expected:  but received VAR
+|        ┆     ^^^ Expected an expression, `)`, a keyword binary operator, or `*`, but found `var`.
 |     17 │ )
 |     18 │ 
 |     19 │ 

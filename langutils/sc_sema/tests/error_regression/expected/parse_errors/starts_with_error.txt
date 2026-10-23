@@ -10,7 +10,7 @@ SCInterpreted (1:1): parse_errors/starts_with_error.scd
 |  Error: Unexpected Token.
 |  parse_errors/starts_with_error.scd:1:1
 |      1 │ )
-|        ┆ ^ Expected:  but received LEXER_ERROR
+|        ┆ ^ Expected an expression, the end of the file, `^`, `var`, `arg`, or `|`, but found `)`.
 |      2 │ (1 +);
 |      3 │ 1 + 2
 |
@@ -31,7 +31,7 @@ SCInterpreted (1:1): parse_errors/starts_with_error.scd
 |  parse_errors/starts_with_error.scd:2:5
 |      1 │ )
 |      2 │ (1 +);
-|        ┆     ^ Expected:  but received CLOSEPAREN
+|        ┆     ^ Expected an expression or `.`, but found `)`.
 |      3 │ 1 + 2
 |
 |  ──────────────────────────────────────────────────────────────────────────────────

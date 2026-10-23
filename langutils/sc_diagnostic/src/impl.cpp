@@ -162,15 +162,62 @@ std::string Diagnostic::to_string(const std::filesystem::path& relative_to) cons
 ////////////////////////////////////////////////////////////////////////////////
 
 Diagnostic Diagnostic::unexpectedToken(std::shared_ptr<const sc::lex::TextInfo> text_info, sc::lex::SourceCodeRange loc,
-                                       std::string expected, const char* received) {
+                                       std::string_view expected, std::string_view found) {
     return { "Unexpected Token.", //
              Severity::Error, //
              std::vector<Location> { {
                  std::move(text_info), //
                  loc, //
-                 std::string { "Expected: " } + std::move(expected) + " but received " + received //
+                 "Expected " + std::string { expected } + ", but found " + std::string { found } + "." //
              } } };
 };
+
+namespace {
+// The first count bytes of the range, e.g., the opening quote of an unclosed string, rather than the rest of the file.
+sc::lex::SourceCodeRange opening(sc::lex::SourceCodeRange loc, std::uint32_t count) {
+    auto end = loc.begin;
+    end.absolute += count;
+    end.column += count;
+    return { loc.begin, end };
+}
+}
+
+Diagnostic Diagnostic::lexer_error(std::shared_ptr<const sc::lex::TextInfo> text_info, sc::lex::TokenType token,
+                                   sc::lex::SourceCodeRange loc) {
+    using T = sc::lex::TokenType;
+    const auto make = [&](const char* title, std::string msg, sc::lex::SourceCodeRange range) -> Diagnostic {
+        return { title, Severity::Error, std::vector<Location> { { std::move(text_info), range, std::move(msg) } } };
+    };
+    switch (token) {
+    case T::ErUnexpected:
+        return make("Unexpected Character.", "`" + std::string { text_info->read(loc) } + "` can't start a token.",
+                    loc);
+    case T::ErUnexpectedUnicode:
+        return make("Unexpected Character.",
+                    "Only ASCII characters may be used outside of strings, symbols, and comments.", loc);
+    case T::ErSymbolQuoteUnclosed:
+        return make("Unclosed Symbol.", "This symbol is never closed with `'`.", opening(loc, 1));
+    case T::ErMultilineCommentUnclosed:
+        return make("Unclosed Comment.", "This comment is never closed with `*/`.", opening(loc, 2));
+    case T::ErStringUnclosed:
+        return make("Unclosed String.", "This string is never closed with `\"`.", opening(loc, 1));
+    case T::ErASCIIInvalidWhitespace:
+        return make("Invalid Character.",
+                    "The only whitespace `$` may be followed by is a space, write a tab or new line as `$\\t` or "
+                    "`$\\n`.",
+                    loc);
+    case T::ErASCIIEOF:
+        return make("Invalid Character.", "`$` must be followed by a character, but the file ends.", loc);
+    case T::ErASCIINotASCII:
+        return make("Invalid Character.", "`$` must be followed by an ASCII character.", loc);
+    case T::ErMissingExponent:
+        return make("Missing Exponent.", "The exponent has no digits.", loc);
+    case T::ErInvalidUTF8:
+        return make("Invalid UTF-8.", "This isn't valid UTF-8.", loc);
+    default:
+        return make("Invalid Token.", "This isn't a valid token.", loc);
+    }
+}
 
 Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::TextInfo> text_info,
                                                 sc::lex::SourceCodeRange loc) {

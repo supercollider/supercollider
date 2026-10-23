@@ -64,7 +64,7 @@ SCInterpreted (1:1): parse_errors/missing_semicolon.scd
 |     18 │ // A separator can only go between region items, inside brackets and functions these are errors.
 |     19 │ (9
 |     20 │ 10);
-|        ┆ ^^ Expected:  but received INTEGER
+|        ┆ ^^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `10`.
 |     21 │ { 11
 |     22 │ 12 };
 |     23 │ a + b
@@ -77,7 +77,7 @@ SCInterpreted (1:1): parse_errors/missing_semicolon.scd
 |     20 │ 10);
 |     21 │ { 11
 |     22 │ 12 };
-|        ┆ ^^ Expected:  but received INTEGER
+|        ┆ ^^ Expected a binary operator, `}`, `[`, `;`, `^`, or `.`, but found `12`.
 |     23 │ a + b
 |
 |  ──────────────────────────────────────────────────────────────────────────────────

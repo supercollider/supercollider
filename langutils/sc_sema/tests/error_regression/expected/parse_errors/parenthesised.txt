@@ -15,7 +15,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |      4 │     // expect: poisoned
 |  |  |      5 │     // expect-error: Unexpected Token.
 |  |  |      6 │     missing_operand { ^(1 +) }
-|  |  |        ┆                            ^ Expected:  but received CLOSEPAREN
+|  |  |        ┆                            ^ Expected an expression or `.`, but found `)`.
 |  |  |      7 │     // expect: poisoned
 |  |  |      8 │     // expect-error: Unexpected Token.
 |  |  |      9 │     missing_operator { ^(1 2) }
@@ -32,7 +32,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |      7 │     // expect: poisoned
 |  |  |      8 │     // expect-error: Unexpected Token.
 |  |  |      9 │     missing_operator { ^(1 2) }
-|  |  |        ┆                            ^ Expected:  but received INTEGER
+|  |  |        ┆                            ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
 |  |  |     10 │     // The nested brackets are skipped, recovery stops at the bracket matching the error's.
 |  |  |     11 │     // expect: poisoned
 |  |  |     12 │     // expect-error: Unexpected Token.
@@ -49,7 +49,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     11 │     // expect: poisoned
 |  |  |     12 │     // expect-error: Unexpected Token.
 |  |  |     13 │     nested { ^(1 + (2 3) * 4) }
-|  |  |        ┆                       ^ Expected:  but received INTEGER
+|  |  |        ┆                       ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `3`.
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     // expect-error: Unexpected Token.
 |  |  |     16 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
@@ -72,7 +72,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     // expect-error: Unexpected Token.
 |  |  |     16 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
-|  |  |        ┆                        ^ Expected:  but received INTEGER
+|  |  |        ┆                        ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
 |  |  |     17 │     // Each error is reported, as recovery resumes at the matching bracket.
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     // expect-error: Unexpected Token.
@@ -92,7 +92,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     // expect-error: Unexpected Token.
 |  |  |     20 │     two { ^[(1 2), (3 4)] }
-|  |  |        ┆                ^ Expected:  but received INTEGER
+|  |  |        ┆                ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
 |  |  |     21 │     // expect: poisoned
 |  |  |     22 │     // expect-error: Unexpected Token.
 |  |  |     23 │     as_receiver { ^(1 2).foo }
@@ -105,7 +105,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     // expect-error: Unexpected Token.
 |  |  |     20 │     two { ^[(1 2), (3 4)] }
-|  |  |        ┆                       ^ Expected:  but received INTEGER
+|  |  |        ┆                       ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `4`.
 |  |  |     21 │     // expect: poisoned
 |  |  |     22 │     // expect-error: Unexpected Token.
 |  |  |     23 │     as_receiver { ^(1 2).foo }
@@ -124,7 +124,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     21 │     // expect: poisoned
 |  |  |     22 │     // expect-error: Unexpected Token.
 |  |  |     23 │     as_receiver { ^(1 2).foo }
-|  |  |        ┆                       ^ Expected:  but received INTEGER
+|  |  |        ┆                       ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
 |  |  |     24 │     // expect: poisoned
 |  |  |     25 │     // expect-error: Unexpected Token.
 |  |  |     26 │     in_variable { var a = (1 2); ^a }
@@ -142,7 +142,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     24 │     // expect: poisoned
 |  |  |     25 │     // expect-error: Unexpected Token.
 |  |  |     26 │     in_variable { var a = (1 2); ^a }
-|  |  |        ┆                              ^ Expected:  but received INTEGER
+|  |  |        ┆                              ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
 |  |  |     27 │     // expect: poisoned
 |  |  |     28 │     // expect-error: Unexpected Token.
 |  |  |     29 │     in_range { ^(1..2 3) }
@@ -161,7 +161,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     27 │     // expect: poisoned
 |  |  |     28 │     // expect-error: Unexpected Token.
 |  |  |     29 │     in_range { ^(1..2 3) }
-|  |  |        ┆                       ^ Expected:  but received INTEGER
+|  |  |        ┆                       ^ Expected a binary operator, `[`, `)`, `;`, or `.`, but found `3`.
 |  |  |     30 │     // expect: poisoned
 |  |  |     31 │     // expect-error: Unexpected Token.
 |  |  |     32 │     in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
@@ -178,7 +178,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     30 │     // expect: poisoned
 |  |  |     31 │     // expect-error: Unexpected Token.
 |  |  |     32 │     in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
-|  |  |        ┆                                            ^ Expected:  but received CLOSEPAREN
+|  |  |        ┆                                            ^ Expected an expression or `.`, but found `)`.
 |  |  |     33 │     // expect: poisoned
 |  |  |     34 │     // expect-error: Unexpected Token.
 |  |  |     35 │     in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
@@ -204,7 +204,7 @@ SCClass (3:1): ParenthesisedError
 |  |  |     33 │     // expect: poisoned
 |  |  |     34 │     // expect-error: Unexpected Token.
 |  |  |     35 │     in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
-|  |  |        ┆                                            ^ Expected:  but received INTEGER
+|  |  |        ┆                                            ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
 |  |  |     36 │ 
 |  |  |     37 │     // expect: -> 3
 |  |  |     38 │     // expect: not poisoned

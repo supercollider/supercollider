@@ -2,6 +2,7 @@
 
 #include "sc_lexer/text_info.hpp"
 #include "sc_lexer/text_location.hpp"
+#include "sc_lexer/tokens.hpp"
 
 #include <filesystem>
 #include <ostream>
@@ -29,7 +30,10 @@ public:
     };
 
     [[nodiscard]] static Diagnostic unexpectedToken(TextInfoPtr text_info, sc::lex::SourceCodeRange loc,
-                                                    std::string expected, const char* received);
+                                                    std::string_view expected, std::string_view found);
+    // The lexer's error tokens, e.g., an unclosed string, at the token's range.
+    [[nodiscard]] static Diagnostic lexer_error(TextInfoPtr text_info, sc::lex::TokenType,
+                                                sc::lex::SourceCodeRange loc);
     [[nodiscard]] static Diagnostic region_missing_semicolon(TextInfoPtr text_info, sc::lex::SourceCodeRange loc);
 
     [[nodiscard]] static Diagnostic duplicate_class(TextInfoPtr first_text_info, sc::lex::SourceCodeRange first_loc,
