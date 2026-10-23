@@ -420,6 +420,8 @@ ConstEval::Result ConstEval::operator()(ast::CurryIndex i) {
 
 ConstEval::Result ConstEval::operator()(ast::ArrayIndex i) {
     const auto p = ast_graph->payload(i);
+    // Immutable array #[...] turn named identifier into symbols.
+    const bool outer_immutable = encountered_immutable_array;
     encountered_immutable_array |= p.is_immutable;
     ConstExprArray out;
     for (auto it = ast_graph->children(i).iter(); it; ++it) {
@@ -427,9 +429,11 @@ ConstEval::Result ConstEval::operator()(ast::ArrayIndex i) {
         if (auto s = r.success()) {
             out.push_back(s->first);
         } else {
+            encountered_immutable_array = outer_immutable;
             return *std::move(r).diagnostic();
         }
     }
+    encountered_immutable_array = outer_immutable;
 
     const auto const_i = cxt.constant_table.register_constexpr({ std::move(out) });
     return Success { const_i, TypeInfo { cxt.common_classes.array, TypeConfidence::Absolute } };

@@ -1,0 +1,39 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): ImmutableArrayScope, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  collections/immutable_array_scope.sc:7:40
+|      5 │     var inside = #[a, [b]];
+|      6 │     var after_is_constant = [#[a], c];
+|      7 │     var after_is_not_constant = [#[a], d];
+|        ┆                                        ^ this can't be evaluated when compiling.
+|      8 │     var nested_after = [[#[a]], c];
+|      9 │     var event_after = (x: #[a], y: c);
+|     10 │ 
+|
+|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (3:1)
+|  |  SCMember (5:9): inside = [\a, [\b]]
+|  |  SCMember (6:9): after_is_constant = [[\a], 1]
+|  |  SCMember (8:9): nested_after = [[[\a]], 1]
+|  |  SCMember (9:9): event_after = (x: [\a], y: 1)
+|  SCMethodList (3:1)
+|  |  SCMethod (12:5): version 3.16: method_after { ^[#[a], c] }
+|  |  |  SCBody (12:20)
+|  |  |  |  SCExplicitReturn (12:20)
+|  |  |  |  |  SCCollection (12:21): Array
+|  |  |  |  |  |  SCCollection (12:22): Array = [\a]
+|  |  |  |  |  |  |  SCLiteral (12:24) = \a
+|  |  |  |  |  |  SCRead (12:28): class c, declared (4:11): c
+SCClass (3:1): Meta_ImmutableArrayScope, version 3.16
+|  SCMemberList (3:1)
+|  |  SCMember (4:11): c = 1
+|  SCMethodList (3:1)
+Successfully compiled 16 classes.
