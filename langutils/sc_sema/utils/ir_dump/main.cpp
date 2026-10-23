@@ -184,10 +184,11 @@ int wmain(int argc, wchar_t* argv[]) {
 int main(int argc, char* argv[]) {
 #endif // _MSC_VER
     if (argc <= 1) {
-        std::cout << "ERROR: incorrect number of arguments to ir_dump, expected "
-                     "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--prelude dir|.sc file]... "
-                     "[dir|.sc file]... "
-                  << std::endl;
+        std::cout
+            << "ERROR: incorrect number of arguments to ir_dump, expected "
+               "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--no-dump] [--prelude dir|.sc file]... "
+               "[dir|.sc file]... "
+            << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -205,11 +206,14 @@ int main(int argc, char* argv[]) {
     // of them by default.
     // Interpreted code, the scd files, is compiled as the release after --interpreted-version, e.g., 3.16, as it has no
     // version comment, legacy by default.
+    // --no-dump only compiles, printing how many diagnostics and classes there are, e.g., to time the compiler, as
+    // writing the dump takes longer than compiling.
     std::vector<std::filesystem::path> module_paths;
     std::vector<std::filesystem::path> prelude_paths;
     std::optional<std::filesystem::path> relative_to;
     size_t num_threads = std::max(1u, std::thread::hardware_concurrency());
     auto interpreted_version = sc::ast::LanguageVersion::Legacy;
+    bool dump = true;
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
         if (arg == "--threads" && i + 1 < argc) {
@@ -228,6 +232,8 @@ int main(int argc, char* argv[]) {
                 return EXIT_FAILURE;
             }
             interpreted_version = *version;
+        } else if (arg == "--no-dump") {
+            dump = false;
         } else if (arg == "--relative-to" && i + 1 < argc) {
             relative_to = get_path(argv[++i]);
         } else if (arg == "--prelude" && i + 1 < argc) {
@@ -381,6 +387,16 @@ int main(int argc, char* argv[]) {
             diags.push_back(std::move(d));
         if (r.ir)
             interpreted_graphs.push_back(std::move(r.ir));
+    }
+
+    if (!dump) {
+        std::size_t count = diags.size();
+        for (const auto& file : parse_diagnostics)
+            count += file.size();
+        std::cout << count << " diagnostics.\n";
+        std::cout << "Successfully compiled " << ctx.class_declarations.num_not_poisoned() / 2 << " classes."
+                  << std::endl;
+        return 0;
     }
 
 #if DIAG_LOGGING

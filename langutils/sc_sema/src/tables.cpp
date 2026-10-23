@@ -2,59 +2,126 @@
 #include "sc_sema/symbols.hpp"
 #include "sc_sema/symbol_table.hpp"
 #include "sc_sema/decls.hpp"
+#include <algorithm>
+#include <mutex>
 #include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace sc::ir {
 
-const static std::string meta_prefix = "Meta_";
+constexpr std::string_view meta_prefix { "Meta_" };
 
-[[nodiscard]] Symbol SymbolTable::get(std::string s) {
-    std::scoped_lock lock { m_lock };
-    if (const auto fnd = m_string_to_id.find(s); fnd != m_string_to_id.end()) {
-        return { *fnd->second };
+namespace {
+// The position of the highest set bit, v isn't zero.
+std::size_t highest_bit(std::uint64_t v) {
+    std::size_t bit { 0 };
+    while (v >>= 1)
+        ++bit;
+    return bit;
+}
+
+// The chunk an id's entry is in, and where in it, see SymbolTable::m_chunks. Chunk k holds 2^(first_bits + k).
+std::pair<std::size_t, std::size_t> chunk_of(std::uint32_t id, std::size_t first_bits) {
+    const std::uint64_t v = std::uint64_t { id } + (std::uint64_t { 1 } << first_bits);
+    const auto k = highest_bit(v) - first_bits;
+    return { k, static_cast<std::size_t>(v - (std::uint64_t { 1 } << (first_bits + k))) };
+}
+}
+
+// A shard is just a map, but a portion of the larger map.
+// String_views hash then mod to a shard.
+// This means rather than have one lock shared between all Symbols, we have a bunch of locks but since symbols only lock
+// one, there is less contention.
+struct SymbolTable::Shard {
+    std::mutex lock;
+    // The keys are views into the arena.
+    std::unordered_map<std::string_view, Symbol> ids;
+
+
+    // This is the storage of the strings, they never move so pointer stability is preserved.
+    // If a string is longer than the block_size, it gets its own unique block.
+    static constexpr std::size_t block_size { 64 * 1024 };
+    std::vector<std::unique_ptr<char[]>> blocks;
+    char* free { nullptr };
+    std::size_t free_size { 0 };
+
+    std::string_view store(std::string_view s) {
+        if (s.size() > free_size) {
+            const auto size = std::max(block_size, s.size());
+            blocks.push_back(std::make_unique<char[]>(size));
+            free = blocks.back().get();
+            free_size = size;
+        }
+        std::copy(s.begin(), s.end(), free);
+        const std::string_view stored { free, s.size() };
+        free += s.size();
+        free_size -= s.size();
+        return stored;
     }
-    const auto new_id = Symbol::from(m_id_to_string.size());
-    m_string_to_id.insert({ s, new_id });
-    m_id_to_string.push_back(std::move(s));
-    return new_id;
+};
+
+SymbolTable::SymbolTable(): m_shards(std::make_unique<Shard[]>(shard_count)) {}
+
+SymbolTable::~SymbolTable() {
+    for (auto& chunk : m_chunks)
+        delete[] chunk.load();
 }
 
-[[nodiscard]] SymSCSelector SymbolTable::get_selector(std::string s) { return SymSCSelector::from(*get(std::move(s))); }
-[[nodiscard]] SymSCClassName SymbolTable::get_class_name(std::string s) {
-    return SymSCClassName::from(*get(std::move(s)));
+std::string_view& SymbolTable::entry(std::uint32_t id) {
+    const auto [k, offset] = chunk_of(id, first_chunk_bits);
+
+    // TODO: I am unsure about this. I think it is correct, but my knowledge of memory ordering is a bit limited.
+    auto* chunk = m_chunks[k].load(std::memory_order_acquire);
+    if (!chunk) {
+        // Two threads can make it at once, from different shards, the loser deletes its own.
+        auto* made = new std::string_view[std::size_t { 1 } << (first_chunk_bits + k)];
+        if (m_chunks[k].compare_exchange_strong(chunk, made, std::memory_order_acq_rel))
+            chunk = made;
+        else
+            delete[] made;
+    }
+    return chunk[offset];
 }
-[[nodiscard]] SymSCSymbol SymbolTable::get_symbol(std::string s) { return SymSCSymbol::from(*get(std::move(s))); }
-[[nodiscard]] SymSCIdentifier SymbolTable::get_identifier(std::string s) {
-    return SymSCIdentifier::from(*get(std::move(s)));
+
+[[nodiscard]] Symbol SymbolTable::get(std::string_view s) {
+    auto& shard = m_shards[std::hash<std::string_view> {}(s) % shard_count];
+    std::scoped_lock lock { shard.lock };
+    if (const auto fnd = shard.ids.find(s); fnd != shard.ids.end())
+        return fnd->second;
+    const auto stored = shard.store(s);
+    const auto id = m_count.fetch_add(1, std::memory_order_relaxed);
+    entry(id) = stored;
+    const auto symbol = Symbol::from(id);
+    shard.ids.insert({ stored, symbol });
+    return symbol;
 }
-[[nodiscard]] SymSCString SymbolTable::get_string(std::string s) { return SymSCString::from(*get(std::move(s))); }
+
+[[nodiscard]] SymSCSelector SymbolTable::get_selector(std::string_view s) { return SymSCSelector::from(*get(s)); }
+[[nodiscard]] SymSCClassName SymbolTable::get_class_name(std::string_view s) { return SymSCClassName::from(*get(s)); }
+[[nodiscard]] SymSCSymbol SymbolTable::get_symbol(std::string_view s) { return SymSCSymbol::from(*get(s)); }
+[[nodiscard]] SymSCIdentifier SymbolTable::get_identifier(std::string_view s) { return SymSCIdentifier::from(*get(s)); }
+[[nodiscard]] SymSCString SymbolTable::get_string(std::string_view s) { return SymSCString::from(*get(s)); }
 [[nodiscard]] bool SymbolTable::is_meta(SymSCClassName n) const {
-    std::scoped_lock lock { m_lock };
-    return m_meta_classes.count(n);
+    return (*this)(n).substr(0, meta_prefix.size()) == meta_prefix;
 }
 
-[[nodiscard]] SymSCClassName SymbolTable::get_meta_class_name(std::string s) {
-    auto m = get_class_name(meta_prefix + s);
-
-    std::scoped_lock lock { m_lock }; // ineffcient relocking.
-    m_meta_classes.insert(m);
-    return m;
+[[nodiscard]] SymSCClassName SymbolTable::get_meta_class_name(std::string_view s) {
+    std::string name { meta_prefix };
+    name += s;
+    return get_class_name(name);
 }
 [[nodiscard]] SymSCClassName SymbolTable::get_meta_class_name(SymSCClassName n) {
-    auto m = get_class_name(meta_prefix + std::string { (*this)(n) });
-    std::scoped_lock lock { m_lock };
-    m_meta_classes.insert(m);
-    return m;
+    return get_meta_class_name((*this)(n));
 }
 
 
-[[nodiscard]] SymSCPrimitive SymbolTable::get_primitive(std::string s) {
-    return SymSCPrimitive::from(*get(std::move(s)));
-}
+[[nodiscard]] SymSCPrimitive SymbolTable::get_primitive(std::string_view s) { return SymSCPrimitive::from(*get(s)); }
 
 std::string_view SymbolTable::operator()(Symbol i) const noexcept {
-    std::scoped_lock lock { m_lock };
-    return m_id_to_string[*i];
+    const auto [k, offset] = chunk_of(*i, first_chunk_bits);
+    return m_chunks[k].load(std::memory_order_acquire)[offset];
 }
 
 
@@ -123,11 +190,13 @@ ClassDeclaration::DuplicateLocation ClassDeclaration::insert_no_ext(Method m) {
     const auto name = m.name;
 
     if (m_names_in_scope.count(name) == 1) {
-        if (m_members_map.count(name) == 1) { return  DuplicateLocation::Member; }
-        else return DuplicateLocation::Method;
+        if (m_members_map.count(name) == 1) {
+            return DuplicateLocation::Member;
+        } else
+            return DuplicateLocation::Method;
     }
 
-    m_methods.insert({name, std::move(m)});
+    m_methods.insert({ name, std::move(m) });
     return DuplicateLocation::None;
 }
 
@@ -136,7 +205,7 @@ bool ClassDeclaration::insert(Member m) {
     if (auto fnd = m_members_map.find(name); fnd != m_members_map.end()) {
         return false;
     }
-    m_members_map.insert({name, std::move(m)});
+    m_members_map.insert({ name, std::move(m) });
     m_members_order.push_back(name);
     return true;
 }
@@ -158,9 +227,9 @@ void ClassDeclarations::register_class_declaration(ClassDeclaration decl) {
 
 [[nodiscard]] size_t ClassDeclarations::size() const { return m_class_declarations.size(); }
 
-[[nodiscard]] size_t  ClassDeclarations::num_not_poisoned() const {
-    size_t count {0};
-    for(auto& [k, v] : m_class_declarations) 
+[[nodiscard]] size_t ClassDeclarations::num_not_poisoned() const {
+    size_t count { 0 };
+    for (auto& [k, v] : m_class_declarations)
         count += v.poisoned() ? 0 : 1;
     return count;
 }
