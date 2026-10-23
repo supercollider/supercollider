@@ -4,14 +4,14 @@
 IR GRAPH DUMP 
 
 
-SCClass (3:1): FileDefault, version 3.16
+SCClass (3:1): FileDefault : Object, version 3.16
 |  SCMemberList (3:1)
 |  SCMethodList (3:1)
-|  |  SCMethod (6:5): version 3.16: one { ^1 } -> 1
+|  |  SCMethod (6:5): one, version 3.16: one { ^1 } -> 1
 |  |  |  SCBody (6:11)
 |  |  |  |  SCExplicitReturn (6:11)
 |  |  |  |  |  SCLiteral (6:12) = 1
-|  |  SCMethod (8:5): version 3.16: nested_return { |x| if (x) { ^1 }; ^2 }
+|  |  SCMethod (8:5): nested_return, version 3.16: nested_return { |x| if (x) { ^1 }; ^2 }
 |  |  |  SCArgumentDeclareList (8:22)
 |  |  |  |  SCArgumentDeclare (8:22): x
 |  |  |  SCBody (8:25)
@@ -24,10 +24,10 @@ SCClass (3:1): FileDefault, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (8:35) = 1
 |  |  |  |  SCExplicitReturn (8:40)
 |  |  |  |  |  SCLiteral (8:41) = 2
-SCClass (11:1): FileDefaultSecond, version 3.16
+SCClass (11:1): FileDefaultSecond : Object, version 3.16
 |  SCMemberList (11:1)
 |  SCMethodList (11:1)
-|  |  SCMethod (13:5): version 3.16: two { ^2 } -> 2
+|  |  SCMethod (13:5): two, version 3.16: two { ^2 } -> 2
 |  |  |  SCBody (13:11)
 |  |  |  |  SCExplicitReturn (13:11)
 |  |  |  |  |  SCLiteral (13:12) = 2

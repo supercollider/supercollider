@@ -4,11 +4,11 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): PackAssign, version 3.16
+SCClass (2:1): PackAssign : Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): instance_var
 |  SCMethodList (2:1)
-|  |  SCMethod (8:5): version 3.16: assign_locals { var a, b; #a, b = [1, 2]; ^a }
+|  |  SCMethod (8:5): assign_locals, version 3.16: assign_locals { var a, b; #a, b = [1, 2]; ^a }
 |  |  |  SCBody (8:21)
 |  |  |  |  SCVariableDeclare (8:25): a (assigned)
 |  |  |  |  SCVariableDeclare (8:28): b (assigned)
@@ -21,7 +21,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (8:35): local b at 1, declared (8:28): b
 |  |  |  |  SCExplicitReturn (8:47)
 |  |  |  |  |  SCRead (8:48): local a, declared (8:25): a
-|  |  SCMethod (10:5): version 3.16: assign_rest { var a, b, c; #a, b ...c = [1, 2, 3]; ^c }
+|  |  SCMethod (10:5): assign_rest, version 3.16: assign_rest { var a, b, c; #a, b ...c = [1, 2, 3]; ^c }
 |  |  |  SCBody (10:19)
 |  |  |  |  SCVariableDeclare (10:23): a (assigned)
 |  |  |  |  SCVariableDeclare (10:26): b (assigned)
@@ -37,7 +37,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (10:41): local c rest from 2, declared (10:29): c
 |  |  |  |  SCExplicitReturn (10:56)
 |  |  |  |  |  SCRead (10:57): local c, declared (10:29): c
-|  |  SCMethod (11:5): version 3.16: assign_members { #instance_var, class_var = [1, 2] }
+|  |  SCMethod (11:5): assign_members, version 3.16: assign_members { #instance_var, class_var = [1, 2] }
 |  |  |  SCBody (11:22)
 |  |  |  |  SCPackAssign (11:22)
 |  |  |  |  |  SCCollection (11:49): Array = [1, 2]
@@ -46,7 +46,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCPackTargets (11:22)
 |  |  |  |  |  |  SCPackTarget (11:23): instance instance_var at 0, declared (3:9): instance_var
 |  |  |  |  |  |  SCPackTarget (11:37): class class_var at 1, declared (4:14): class_var
-|  |  SCMethod (13:5): version 3.16: assign_argument { |x| #x = [1]; ^x }
+|  |  SCMethod (13:5): assign_argument, version 3.16: assign_argument { |x| #x = [1]; ^x }
 |  |  |  SCArgumentDeclareList (13:24)
 |  |  |  |  SCArgumentDeclare (13:24): x (assigned)
 |  |  |  SCBody (13:27)
@@ -57,7 +57,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (13:28): local x at 0, declared (13:24): x
 |  |  |  |  SCExplicitReturn (13:37)
 |  |  |  |  |  SCRead (13:38): local x, declared (13:24): x
-|  |  SCMethod (14:5): version 3.16: assign_environment { var a; #~e, a ...~rest = [1, 2, 3] }
+|  |  SCMethod (14:5): assign_environment, version 3.16: assign_environment { var a; #~e, a ...~rest = [1, 2, 3] }
 |  |  |  SCBody (14:26)
 |  |  |  |  SCVariableDeclare (14:30): a (assigned)
 |  |  |  |  SCPackAssign (14:33)
@@ -69,7 +69,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (14:34): environment e at 0
 |  |  |  |  |  |  SCPackTarget (14:38): local a at 1, declared (14:30): a
 |  |  |  |  |  |  SCPackTarget (14:43): environment rest rest from 2
-|  |  SCMethod (16:5): version 3.16: assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }
+|  |  SCMethod (16:5): assign_parenthesised, version 3.16: assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }
 |  |  |  SCBody (16:28)
 |  |  |  |  SCVariableDeclare (16:32): a (assigned)
 |  |  |  |  SCVariableDeclare (16:35): b (assigned)
@@ -82,7 +82,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (16:42): local b at 1, declared (16:35): b
 |  |  |  |  SCExplicitReturn (16:54)
 |  |  |  |  |  SCRead (16:55): local b, declared (16:35): b
-|  |  SCMethod (17:5): version 3.16: assign_result { var a, b; ^#a, b = [1, 2] }
+|  |  SCMethod (17:5): assign_result, version 3.16: assign_result { var a, b; ^#a, b = [1, 2] }
 |  |  |  SCBody (17:21)
 |  |  |  |  SCVariableDeclare (17:25): a (assigned)
 |  |  |  |  SCVariableDeclare (17:28): b (assigned)
@@ -94,7 +94,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTargets (17:32)
 |  |  |  |  |  |  |  SCPackTarget (17:33): local a at 0, declared (17:25): a
 |  |  |  |  |  |  |  SCPackTarget (17:36): local b at 1, declared (17:28): b
-|  |  SCMethod (19:5): poisoned: version 3.16: assign_undefined { var a; #a, undefined = [1, 2] }
+|  |  SCMethod (19:5): poisoned: assign_undefined, version 3.16: assign_undefined { var a; #a, undefined = [1, 2] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -117,7 +117,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCLiteral (19:51) = 2
 |  |  |  |  |  SCPackTargets (19:31)
 |  |  |  |  |  |  SCPackTarget (19:32): local a at 0, declared (19:28): a
-|  |  SCMethod (22:5): version 3.16: assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }
+|  |  SCMethod (22:5): assign_makes_not_constant, version 3.16: assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }
 |  |  |  SCBody (22:33)
 |  |  |  |  SCVariableDeclare (22:37): a (assigned), prototype
 |  |  |  |  |  SCLiteral (22:41) = 1
@@ -131,7 +131,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (22:51): local b at 1, declared (22:44): b
 |  |  |  |  SCExplicitReturn (22:63)
 |  |  |  |  |  SCRead (22:64): local a, declared (22:37): a = 1
-|  |  SCMethod (25:5): version 3.16: assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }
+|  |  SCMethod (25:5): assign_in_block, version 3.16: assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }
 |  |  |  SCBody (25:23)
 |  |  |  |  SCVariableDeclare (25:27): a (assigned, captured), prototype
 |  |  |  |  |  SCLiteral (25:31) = 1
@@ -147,7 +147,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  |  |  SCPackTarget (25:43): local b at 1, declared (25:34): b
 |  |  |  |  SCExplicitReturn (25:57)
 |  |  |  |  |  SCRead (25:58): local a, declared (25:27): a = 1
-|  |  SCMethod (29:5): version 3.16: declare { var #a, b = [1, 2]; ^a } -> 1
+|  |  SCMethod (29:5): declare, version 3.16: declare { var #a, b = [1, 2]; ^a } -> 1
 |  |  |  SCBody (29:15)
 |  |  |  |  SCPackDeclare (29:19)
 |  |  |  |  |  SCCollection (29:27): Array = [1, 2]
@@ -158,7 +158,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (29:23): local b at 1
 |  |  |  |  SCExplicitReturn (29:35)
 |  |  |  |  |  SCRead (29:36): local a = 1, declared (29:20): a
-|  |  SCMethod (32:5): version 3.16: declare_past_end { var #a, b, c = [1, 2]; ^c } -> nil
+|  |  SCMethod (32:5): declare_past_end, version 3.16: declare_past_end { var #a, b, c = [1, 2]; ^c } -> nil
 |  |  |  SCBody (32:24)
 |  |  |  |  SCPackDeclare (32:28)
 |  |  |  |  |  SCCollection (32:39): Array = [1, 2]
@@ -170,7 +170,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (32:35): local c at 2
 |  |  |  |  SCExplicitReturn (32:47)
 |  |  |  |  |  SCRead (32:48): local c = nil, declared (32:35): c
-|  |  SCMethod (35:5): version 3.16: declare_rest { var #a ...b = [1, 2, 3]; ^b }
+|  |  SCMethod (35:5): declare_rest, version 3.16: declare_rest { var #a ...b = [1, 2, 3]; ^b }
 |  |  |  SCBody (35:20)
 |  |  |  |  SCPackDeclare (35:24)
 |  |  |  |  |  SCCollection (35:34): Array = [1, 2, 3]
@@ -182,7 +182,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (35:30): local b rest from 1
 |  |  |  |  SCExplicitReturn (35:45)
 |  |  |  |  |  SCRead (35:46): local b, declared (35:30): b
-|  |  SCMethod (36:5): version 3.16: declare_rest_first_constant { var #a ...b = [1, 2, 3]; ^a }
+|  |  SCMethod (36:5): declare_rest_first_constant, version 3.16: declare_rest_first_constant { var #a ...b = [1, 2, 3]; ^a }
 |  |  |  SCBody (36:35)
 |  |  |  |  SCPackDeclare (36:39)
 |  |  |  |  |  SCCollection (36:49): Array = [1, 2, 3]
@@ -194,7 +194,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (36:45): local b rest from 1
 |  |  |  |  SCExplicitReturn (36:60)
 |  |  |  |  |  SCRead (36:61): local a = 1, declared (36:40): a
-|  |  SCMethod (39:5): version 3.16: declare_not_constant { var #a, b = instance_var; ^a }
+|  |  SCMethod (39:5): declare_not_constant, version 3.16: declare_not_constant { var #a, b = instance_var; ^a }
 |  |  |  SCBody (39:28)
 |  |  |  |  SCPackDeclare (39:32)
 |  |  |  |  |  SCRead (39:40): instance instance_var, declared (3:9): instance_var
@@ -203,7 +203,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (39:36): local b at 1
 |  |  |  |  SCExplicitReturn (39:54)
 |  |  |  |  |  SCRead (39:55): local a, declared (39:33): a
-|  |  SCMethod (41:5): version 3.16: declare_mutable_element { var #a, b = [[1], 2]; ^[a, b] }
+|  |  SCMethod (41:5): declare_mutable_element, version 3.16: declare_mutable_element { var #a, b = [[1], 2]; ^[a, b] }
 |  |  |  SCBody (41:31)
 |  |  |  |  SCPackDeclare (41:35)
 |  |  |  |  |  SCCollection (41:43): Array = [[1], 2]
@@ -217,7 +217,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCCollection (41:54): Array
 |  |  |  |  |  |  SCRead (41:55): local a, declared (41:36): a
 |  |  |  |  |  |  SCRead (41:58): local b = 2, declared (41:39): b
-|  |  SCMethod (43:5): version 3.16: declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
+|  |  SCMethod (43:5): declare_assigned_later, version 3.16: declare_assigned_later { var #a, b = [1, 2]; a = 3; ^a }
 |  |  |  SCBody (43:30)
 |  |  |  |  SCPackDeclare (43:34)
 |  |  |  |  |  SCCollection (43:42): Array = [1, 2]
@@ -230,7 +230,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCLiteral (43:54) = 3
 |  |  |  |  SCExplicitReturn (43:57)
 |  |  |  |  |  SCRead (43:58): local a, declared (43:35): a
-|  |  SCMethod (45:5): poisoned: version 3.16: declare_environment { var #a, ~b = [1, 2]; ^a }
+|  |  SCMethod (45:5): poisoned: declare_environment, version 3.16: declare_environment { var #a, ~b = [1, 2]; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Environment variable declared
@@ -254,7 +254,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (45:32): local a at 0
 |  |  |  |  SCExplicitReturn (45:48)
 |  |  |  |  |  SCRead (45:49): local a = 1, declared (45:32): a
-|  |  SCMethod (47:5): poisoned: version 3.16: declare_duplicate { var #a, a = [1, 2]; ^a }
+|  |  SCMethod (47:5): poisoned: declare_duplicate, version 3.16: declare_duplicate { var #a, a = [1, 2]; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable already declared
@@ -288,7 +288,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (47:33): local a at 1
 |  |  |  |  SCExplicitReturn (47:45)
 |  |  |  |  |  SCRead (47:46): local a = 1, declared (47:30): a
-|  |  SCMethod (49:5): poisoned: version 3.16: declare_refers_to_itself { var #a, b = [a]; ^b }
+|  |  SCMethod (49:5): poisoned: declare_refers_to_itself, version 3.16: declare_refers_to_itself { var #a, b = [a]; ^b }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -312,7 +312,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (49:40): local b at 1
 |  |  |  |  SCExplicitReturn (49:49)
 |  |  |  |  |  SCRead (49:50): local b, declared (49:40): b
-|  |  SCMethod (53:5): version 3.16: declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a } -> 1
+|  |  SCMethod (53:5): declare_uses_earlier, version 3.16: declare_uses_earlier { var x = 1, #a, b = [x, 2]; ^a } -> 1
 |  |  |  SCBody (53:28)
 |  |  |  |  SCVariableDeclare (53:32): x, prototype
 |  |  |  |  |  SCLiteral (53:36) = 1
@@ -325,7 +325,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (53:43): local b at 1
 |  |  |  |  SCExplicitReturn (53:55)
 |  |  |  |  |  SCRead (53:56): local a = 1, declared (53:40): a
-|  |  SCMethod (55:5): version 3.16: declare_in_function { ^{ var #a, b = [1, 2]; b } }
+|  |  SCMethod (55:5): declare_in_function, version 3.16: declare_in_function { ^{ var #a, b = [1, 2]; b } }
 |  |  |  SCBody (55:27)
 |  |  |  |  SCExplicitReturn (55:27)
 |  |  |  |  |  SCFunction (55:28) -> 2
@@ -338,7 +338,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  |  |  |  SCPackTarget (55:35): local a at 0
 |  |  |  |  |  |  |  |  |  SCPackTarget (55:38): local b at 1
 |  |  |  |  |  |  |  SCRead (55:50): local b = 2, declared (55:38): b
-|  |  SCMethod (56:5): version 3.16: declare_in_function_with_rest { ^{ var #a ...b = [1, 2]; a } }
+|  |  SCMethod (56:5): declare_in_function_with_rest, version 3.16: declare_in_function_with_rest { ^{ var #a ...b = [1, 2]; a } }
 |  |  |  SCBody (56:37)
 |  |  |  |  SCExplicitReturn (56:37)
 |  |  |  |  |  SCFunction (56:38)
@@ -351,7 +351,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  |  |  |  SCPackTarget (56:45): local a at 0
 |  |  |  |  |  |  |  |  |  SCPackTarget (56:50): local b rest from 1
 |  |  |  |  |  |  |  SCRead (56:62): local a = 1, declared (56:45): a
-|  |  SCMethod (58:5): version 3.16: declare_hides_outer { var a = 1; { var #a = [2]; a }; ^a }
+|  |  SCMethod (58:5): declare_hides_outer, version 3.16: declare_hides_outer { var a = 1; { var #a = [2]; a }; ^a }
 |  |  |  SCBody (58:27)
 |  |  |  |  SCVariableDeclare (58:31): a, prototype
 |  |  |  |  |  SCLiteral (58:35) = 1
@@ -365,7 +365,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCRead (58:54): local a = 2, declared (58:45): a
 |  |  |  |  SCExplicitReturn (58:59)
 |  |  |  |  |  SCRead (58:60): local a = 1, declared (58:31): a = 1
-|  |  SCMethod (61:5): version 3.16: declare_captured { var #a, b = [1, 2]; ^{ a } }
+|  |  SCMethod (61:5): declare_captured, version 3.16: declare_captured { var #a, b = [1, 2]; ^{ a } }
 |  |  |  SCBody (61:24)
 |  |  |  |  SCPackDeclare (61:28)
 |  |  |  |  |  SCCollection (61:36): Array = [1, 2]
@@ -378,7 +378,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCFunction (61:45)
 |  |  |  |  |  |  SCBody (61:45)
 |  |  |  |  |  |  |  SCRead (61:47): local a, declared (61:29): a
-|  |  SCMethod (65:5): version 3.16: declare_with_non_local_return { var #a, b = [1, 2]; { ^a }.value; ^b }
+|  |  SCMethod (65:5): declare_with_non_local_return, version 3.16: declare_with_non_local_return { var #a, b = [1, 2]; { ^a }.value; ^b }
 |  |  |  SCBody (65:37)
 |  |  |  |  SCPackDeclare (65:41)
 |  |  |  |  |  SCCollection (65:49): Array = [1, 2]
@@ -394,7 +394,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  |  |  SCRead (65:60): local a, declared (65:42): a
 |  |  |  |  SCExplicitReturn (65:71)
 |  |  |  |  |  SCRead (65:72): local b = 2, declared (65:45): b
-|  |  SCMethod (68:5): version 3.16: declare_with_nested_non_local_return { ^{ var #a, b = [1, 2]; { ^b }.value; a } }
+|  |  SCMethod (68:5): declare_with_nested_non_local_return, version 3.16: declare_with_nested_non_local_return { ^{ var #a, b = [1, 2]; { ^b }.value; a } }
 |  |  |  SCBody (68:44)
 |  |  |  |  SCExplicitReturn (68:44)
 |  |  |  |  |  SCFunction (68:45)
@@ -412,7 +412,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (68:69)
 |  |  |  |  |  |  |  |  |  |  |  SCRead (68:70): local b, declared (68:55): b
 |  |  |  |  |  |  |  SCRead (68:81): local a = 1, declared (68:52): a
-SCClass (2:1): Meta_PackAssign, version 3.16
+SCClass (2:1): Meta_PackAssign : Meta_Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (4:14): class_var
 |  SCMethodList (2:1)

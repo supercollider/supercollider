@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): Foo
+SCClass (2:1): Foo : Object
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (7:5): overwritten { ^2 } -> 2
+|  |  SCMethod (7:5): overwritten: overwritten { ^2 } -> 2
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Extension overwritten
@@ -34,7 +34,7 @@ SCClass (2:1): Foo
 |  |  |  SCBody (7:19)
 |  |  |  |  SCExplicitReturn (7:19)
 |  |  |  |  |  SCLiteral (7:20) = 2
-|  |  SCMethod (10:5): conflicting { ^2 } -> 2
+|  |  SCMethod (10:5): conflicting: conflicting { ^2 } -> 2
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Extension overwritten
@@ -60,11 +60,11 @@ SCClass (2:1): Foo
 |  |  |  SCBody (10:19)
 |  |  |  |  SCExplicitReturn (10:19)
 |  |  |  |  |  SCLiteral (10:20) = 2
-|  |  SCMethod (14:5): own { ^2 } -> 2
+|  |  SCMethod (14:5): own: own { ^2 } -> 2
 |  |  |  SCBody (14:11)
 |  |  |  |  SCExplicitReturn (14:11)
 |  |  |  |  |  SCLiteral (14:12) = 2
-|  |  SCMethod (22:5): poisoned: duplicated { ^1 }
+|  |  SCMethod (22:5): poisoned: duplicated: duplicated { ^1 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Duplicate extension
@@ -89,10 +89,10 @@ SCClass (2:1): Foo
 |  |  |  SCBody (22:18)
 |  |  |  |  SCExplicitReturn (22:18)
 |  |  |  |  |  SCLiteral (22:19) = 1
-SCClass (2:1): Meta_Foo
+SCClass (2:1): Meta_Foo : Meta_Object
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (17:5): *class_overwritten { ^2 } -> 2
+|  |  SCMethod (17:5): class_overwritten: *class_overwritten { ^2 } -> 2
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Extension overwritten

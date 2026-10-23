@@ -104,7 +104,7 @@ class Result:
         return self.status == FAILED or bool(self.failed_assertions)
 
 
-# A method in ir_dump's output, e.g., `|  |  SCMethod (5:5): poisoned: foo { ^1 } -> 1`.
+# A method in ir_dump's output, e.g., `|  |  SCMethod (5:5): poisoned: foo: foo { ^1 } -> 1`.
 METHOD_LINE = re.compile(r'^(?P<indent>(?:\|  )*)SCMethod \((?P<line>\d+):\d+\): (?P<poisoned>poisoned: )?(?P<rest>.*)$')
 # Interpreted code, e.g., `SCInterpreted (1:1): poisoned: interpreted/region.scd`, which is checked like a method.
 INTERPRETED_LINE = re.compile(r'^(?P<indent>)SCInterpreted \((?P<line>\d+):\d+\): (?P<poisoned>poisoned: )?(?P<rest>.*)$')

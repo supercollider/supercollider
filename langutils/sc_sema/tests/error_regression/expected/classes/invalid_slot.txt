@@ -18,10 +18,10 @@ Slot defs are an internal implementation detail of intrinsic classes, you should
 IR GRAPH DUMP 
 
 
-SCClass (17:1): FloatSlot[float], version 3.16
+SCClass (17:1): FloatSlot[float] : Object, version 3.16
 |  SCMemberList (17:1)
 |  SCMethodList (17:1)
-|  |  SCMethod (19:5): version 3.16: method { ^1 } -> 1
+|  |  SCMethod (19:5): method, version 3.16: method { ^1 } -> 1
 |  |  |  SCBody (19:14)
 |  |  |  |  SCExplicitReturn (19:14)
 |  |  |  |  |  SCLiteral (19:15) = 1

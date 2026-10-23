@@ -27,10 +27,10 @@ The class Undefined was not defined.
 IR GRAPH DUMP 
 
 
-SCClass (21:1): Fine, version 3.16
+SCClass (21:1): Fine : Object, version 3.16
 |  SCMemberList (21:1)
 |  SCMethodList (21:1)
-|  |  SCMethod (22:5): version 3.16: method { ^1 } -> 1
+|  |  SCMethod (22:5): method, version 3.16: method { ^1 } -> 1
 |  |  |  SCBody (22:14)
 |  |  |  |  SCExplicitReturn (22:14)
 |  |  |  |  |  SCLiteral (22:15) = 1

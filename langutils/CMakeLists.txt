@@ -1,4 +1,5 @@
 add_subdirectory(sc_lexer)
+add_subdirectory(sc_bytecode)
 add_subdirectory(sc_diagnostic)
 add_subdirectory(sc_parser)
 add_subdirectory(sc_sema)

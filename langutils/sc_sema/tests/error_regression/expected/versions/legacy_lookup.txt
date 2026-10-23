@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (5:1): LegacyLookup
+SCClass (5:1): LegacyLookup : Object
 |  SCMemberList (5:1)
 |  SCMethodList (5:1)
-|  |  SCMethod (11:5): argument_sees_computed_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 =2 + 2;'\n'            a1'\n'        }.()'\n'    }
+|  |  SCMethod (11:5): argument_sees_computed_variable: argument_sees_computed_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 =2 + 2;'\n'            a1'\n'        }.()'\n'    }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -45,7 +45,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (14:21)
 |  |  |  |  |  |  |  |  |  |  |  SCLiteral (14:25) = 2
 |  |  |  |  |  |  |  |  SCRead (15:13): local a1, declared (13:17): a1 = x1
-|  |  SCMethod (25:5): argument_sees_literal_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 = 4;'\n'            a1'\n'        }.()'\n'    }
+|  |  SCMethod (25:5): argument_sees_literal_variable: argument_sees_literal_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 = 4;'\n'            a1'\n'        }.()'\n'    }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -80,7 +80,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  |  SCVariableDeclare (28:17): x1, prototype
 |  |  |  |  |  |  |  |  |  SCLiteral (28:22) = 4
 |  |  |  |  |  |  |  |  SCRead (29:13): local a1, declared (27:17): a1 = x1
-|  |  SCMethod (38:5): self_reference { var f = f; ^f }
+|  |  SCMethod (38:5): self_reference: self_reference { var f = f; ^f }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -109,7 +109,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  SCRead (38:30): local f, declared (38:26): f = f
 |  |  |  |  SCExplicitReturn (38:33)
 |  |  |  |  |  SCRead (38:34): local f, declared (38:26): f = f
-|  |  SCMethod (42:5): self_reference_in_function { var f = { f }; ^f }
+|  |  SCMethod (42:5): self_reference_in_function: self_reference_in_function { var f = { f }; ^f }
 |  |  |  SCBody (42:34)
 |  |  |  |  SCVariableDeclare (42:38): f (captured), computed
 |  |  |  |  |  SCFunction (42:42)
@@ -117,7 +117,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  SCRead (42:44): local f, declared (42:38): f = { f }
 |  |  |  |  SCExplicitReturn (42:49)
 |  |  |  |  |  SCRead (42:50): local f, declared (42:38): f = { f }
-|  |  SCMethod (46:5): later_variable { var a = b, b = 1; ^a }
+|  |  SCMethod (46:5): later_variable: later_variable { var a = b, b = 1; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -148,7 +148,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  SCLiteral (46:37) = 1
 |  |  |  |  SCExplicitReturn (46:40)
 |  |  |  |  |  SCRead (46:41): local a, declared (46:26): a = b
-|  |  SCMethod (49:5): later_variable_statement { var a = b; var b = 1; ^a }
+|  |  SCMethod (49:5): later_variable_statement: later_variable_statement { var a = b; var b = 1; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -179,7 +179,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  SCLiteral (49:51) = 1
 |  |  |  |  SCExplicitReturn (49:54)
 |  |  |  |  |  SCRead (49:55): local a, declared (49:36): a = b
-|  |  SCMethod (53:5): hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
+|  |  SCMethod (53:5): hides_outer: hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -214,7 +214,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  SCVariableDeclare (53:44): x, prototype
 |  |  |  |  |  |  |  |  SCLiteral (53:48) = 2
 |  |  |  |  |  |  |  SCRead (53:51): local a, declared (53:37): a = x
-|  |  SCMethod (56:5): later_variable_in_function { var f = { g.() }, g = { 1 }; ^f }
+|  |  SCMethod (56:5): later_variable_in_function: later_variable_in_function { var f = { g.() }, g = { 1 }; ^f }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -250,7 +250,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  SCLiteral (56:58) = 1
 |  |  |  |  SCExplicitReturn (56:63)
 |  |  |  |  |  SCRead (56:64): local f, declared (56:38): f = { g.() }
-|  |  SCMethod (59:5): later_argument { arg a = b, b = 1; ^a }
+|  |  SCMethod (59:5): later_argument: later_argument { arg a = b, b = 1; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -282,7 +282,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  SCBody (59:40)
 |  |  |  |  SCExplicitReturn (59:40)
 |  |  |  |  |  SCRead (59:41): local a, declared (59:26): a = b
-|  |  SCMethod (64:5): argument_assigns_variable { |a = (x = 5)| var x = 1; ^x }
+|  |  SCMethod (64:5): argument_assigns_variable: argument_assigns_variable { |a = (x = 5)| var x = 1; ^x }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -315,7 +315,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  SCLiteral (64:55) = 1
 |  |  |  |  SCExplicitReturn (64:58)
 |  |  |  |  |  SCRead (64:59): local x, declared (64:51): x = 1
-|  |  SCMethod (67:5): argument_captures_variable { |a = { x }| var x = 1; ^x }
+|  |  SCMethod (67:5): argument_captures_variable: argument_captures_variable { |a = { x }| var x = 1; ^x }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -349,7 +349,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  SCLiteral (67:54) = 1
 |  |  |  |  SCExplicitReturn (67:57)
 |  |  |  |  |  SCRead (67:58): local x, declared (67:50): x = 1
-|  |  SCMethod (72:5): poisoned: after_expression { 1; var a = b; var b = 2; ^a }
+|  |  SCMethod (72:5): poisoned: after_expression: after_expression { 1; var a = b; var b = 2; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable declared after an expression
@@ -400,7 +400,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  SCLiteral (72:46) = 2
 |  |  |  |  SCExplicitReturn (72:49)
 |  |  |  |  |  SCRead (72:50): local a, declared (72:31): a = b
-|  |  SCMethod (75:5): poisoned: generator { ^{: y, var y = y } }
+|  |  SCMethod (75:5): poisoned: generator: generator { ^{: y, var y = y } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -422,7 +422,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  SCGenQualDeclare (75:24): y
 |  |  |  |  |  |  |  |  SCExprList (75:32)
 |  |  |  |  |  |  SCRead (75:21): local y, declared (75:24): var y = y
-|  |  SCMethod (78:5): generator_rebinds { ^{: y, y <- [1, 2], var y = y * 2 } }
+|  |  SCMethod (78:5): generator_rebinds: generator_rebinds { ^{: y, y <- [1, 2], var y = y * 2 } }
 |  |  |  SCBody (78:25)
 |  |  |  |  SCExplicitReturn (78:25)
 |  |  |  |  |  SCGenerator (78:26): routine
@@ -437,7 +437,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  |  |  SCPositionalArgs (78:53)
 |  |  |  |  |  |  |  |  |  |  SCLiteral (78:57) = 2
 |  |  |  |  |  |  SCRead (78:29): local y, declared (78:45): var y = y * 2
-|  |  SCMethod (83:5): generator_function_in_value { var y = \outer; ^{: y, var y = { y } } }
+|  |  SCMethod (83:5): generator_function_in_value: generator_function_in_value { var y = \outer; ^{: y, var y = { y } } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Qualifier's variable used in its own value
@@ -472,7 +472,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  |  |  SCBody (83:66)
 |  |  |  |  |  |  |  |  |  |  SCRead (83:68): local y, declared (83:39): y = \outer
 |  |  |  |  |  |  SCRead (83:55): local y, declared (83:58): var y = { y }
-|  |  SCMethod (86:5): poisoned: generator_function_in_value_undefined { ^{: y, var y = { y } } }
+|  |  SCMethod (86:5): poisoned: generator_function_in_value_undefined: generator_function_in_value_undefined { ^{: y, var y = { y } } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Qualifier's variable used in its own value
@@ -519,7 +519,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  |  |  SCBody (86:60)
 |  |  |  |  |  |  |  |  |  |  SCExprList (86:62)
 |  |  |  |  |  |  SCRead (86:49): local y, declared (86:52): var y = { y }
-|  |  SCMethod (90:5): shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
+|  |  SCMethod (90:5): shadows_outer_expression: shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -558,7 +558,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  |  SCRead (90:68): local foo, declared (90:53): foo = foo + 1
 |  |  |  |  |  |  |  |  SCPositionalArgs (90:68)
 |  |  |  |  |  |  |  |  |  SCLiteral (90:75) = 11
-|  |  SCMethod (93:5): nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
+|  |  SCMethod (93:5): nested_return: nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Variable used before its declaration
@@ -601,10 +601,10 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  SCLiteral (93:60) = 1
 |  |  |  |  SCExplicitReturn (93:63)
 |  |  |  |  |  SCRead (93:64): local a, declared (93:29): a = { if (x) { ^b }; ^2 }
-SCClass (96:1): LookupThreeSixteen, version 3.16
+SCClass (96:1): LookupThreeSixteen : Object, version 3.16
 |  SCMemberList (96:1)
 |  SCMethodList (96:1)
-|  |  SCMethod (101:5): poisoned: version 3.16: argument_sees_computed_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 =2 + 2;'\n'            a1'\n'        }.()'\n'    }
+|  |  SCMethod (101:5): poisoned: argument_sees_computed_variable, version 3.16: argument_sees_computed_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 =2 + 2;'\n'            a1'\n'        }.()'\n'    }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -633,7 +633,7 @@ SCClass (96:1): LookupThreeSixteen, version 3.16
 |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (104:21)
 |  |  |  |  |  |  |  |  |  |  |  SCLiteral (104:25) = 2
 |  |  |  |  |  |  |  |  SCRead (105:13): local a1, declared (103:17): a1 = x1
-|  |  SCMethod (111:5): poisoned: version 3.16: argument_sees_literal_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 = 4;'\n'            a1'\n'        }.()'\n'    }
+|  |  SCMethod (111:5): poisoned: argument_sees_literal_variable, version 3.16: argument_sees_literal_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 = 4;'\n'            a1'\n'        }.()'\n'    }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -659,7 +659,7 @@ SCClass (96:1): LookupThreeSixteen, version 3.16
 |  |  |  |  |  |  |  |  SCVariableDeclare (114:17): x1, prototype
 |  |  |  |  |  |  |  |  |  SCLiteral (114:22) = 4
 |  |  |  |  |  |  |  |  SCRead (115:13): local a1, declared (113:17): a1 = x1
-|  |  SCMethod (120:5): poisoned: version 3.16: self_reference { var f = f; ^f }
+|  |  SCMethod (120:5): poisoned: self_reference, version 3.16: self_reference { var f = f; ^f }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -679,7 +679,7 @@ SCClass (96:1): LookupThreeSixteen, version 3.16
 |  |  |  |  |  SCExprList (120:30)
 |  |  |  |  SCExplicitReturn (120:33)
 |  |  |  |  |  SCRead (120:34): local f, declared (120:26): f = f
-|  |  SCMethod (123:5): version 3.16: shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
+|  |  SCMethod (123:5): shadows_outer_expression, version 3.16: shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
 |  |  |  SCBody (123:32)
 |  |  |  |  SCVariableDeclare (123:36): foo (captured), prototype
 |  |  |  |  |  SCLiteral (123:42) = 10
@@ -695,7 +695,7 @@ SCClass (96:1): LookupThreeSixteen, version 3.16
 |  |  |  |  |  |  |  |  SCRead (123:68): local foo, declared (123:53): foo = foo + 1
 |  |  |  |  |  |  |  |  SCPositionalArgs (123:68)
 |  |  |  |  |  |  |  |  |  SCLiteral (123:75) = 11
-|  |  SCMethod (125:5): poisoned: version 3.16: later_variable { var a = b, b = 1; ^a }
+|  |  SCMethod (125:5): poisoned: later_variable, version 3.16: later_variable { var a = b, b = 1; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -717,7 +717,7 @@ SCClass (96:1): LookupThreeSixteen, version 3.16
 |  |  |  |  |  SCLiteral (125:37) = 1
 |  |  |  |  SCExplicitReturn (125:40)
 |  |  |  |  |  SCRead (125:41): local a, declared (125:26): a = b
-|  |  SCMethod (127:5): version 3.16: hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
+|  |  SCMethod (127:5): hides_outer, version 3.16: hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
 |  |  |  SCBody (127:19)
 |  |  |  |  SCVariableDeclare (127:23): x (captured), prototype
 |  |  |  |  |  SCLiteral (127:27) = 1
@@ -729,7 +729,7 @@ SCClass (96:1): LookupThreeSixteen, version 3.16
 |  |  |  |  |  |  |  SCVariableDeclare (127:44): x, prototype
 |  |  |  |  |  |  |  |  SCLiteral (127:48) = 2
 |  |  |  |  |  |  |  SCRead (127:51): local a, declared (127:37): a = x
-|  |  SCMethod (129:5): poisoned: version 3.16: later_argument { arg a = b, b = 1; ^a }
+|  |  SCMethod (129:5): poisoned: later_argument, version 3.16: later_argument { arg a = b, b = 1; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -752,7 +752,7 @@ SCClass (96:1): LookupThreeSixteen, version 3.16
 |  |  |  SCBody (129:40)
 |  |  |  |  SCExplicitReturn (129:40)
 |  |  |  |  |  SCRead (129:41): local a, declared (129:26): a = b
-|  |  SCMethod (132:5): version 3.16: generator_function_in_value { var y = \outer; ^{: y, var y = { y } } }
+|  |  SCMethod (132:5): generator_function_in_value, version 3.16: generator_function_in_value { var y = \outer; ^{: y, var y = { y } } }
 |  |  |  SCBody (132:35)
 |  |  |  |  SCVariableDeclare (132:39): y, prototype
 |  |  |  |  |  SCLiteral (132:43) = \outer

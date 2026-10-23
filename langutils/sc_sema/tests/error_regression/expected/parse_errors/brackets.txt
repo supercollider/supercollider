@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (4:1): Brackets, version 3.16
+SCClass (4:1): Brackets : Object, version 3.16
 |  SCMemberList (4:1)
 |  SCMethodList (4:1)
-|  |  SCMethod (8:5): poisoned: version 3.16: extra { ^(1 + 2]) }
+|  |  SCMethod (8:5): poisoned: extra, version 3.16: extra { ^(1 + 2]) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unmatched Bracket.
@@ -27,7 +27,7 @@ SCClass (4:1): Brackets, version 3.16
 |  |  |  |  |  |  SCLiteral (8:15) = 1
 |  |  |  |  |  |  SCPositionalArgs (8:15)
 |  |  |  |  |  |  |  SCLiteral (8:19) = 2
-|  |  SCMethod (12:5): poisoned: version 3.16: wrong_kind { ^(1 + 2] }
+|  |  SCMethod (12:5): poisoned: wrong_kind, version 3.16: wrong_kind { ^(1 + 2] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Mismatched Bracket.
@@ -56,7 +56,7 @@ SCClass (4:1): Brackets, version 3.16
 |  |  |  |  |  |  SCLiteral (12:20) = 1
 |  |  |  |  |  |  SCPositionalArgs (12:20)
 |  |  |  |  |  |  |  SCLiteral (12:24) = 2
-|  |  SCMethod (16:5): poisoned: version 3.16: unclosed { ^(1 + 2 }
+|  |  SCMethod (16:5): poisoned: unclosed, version 3.16: unclosed { ^(1 + 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unclosed Bracket.
@@ -85,7 +85,7 @@ SCClass (4:1): Brackets, version 3.16
 |  |  |  |  |  |  SCLiteral (16:18) = 1
 |  |  |  |  |  |  SCPositionalArgs (16:18)
 |  |  |  |  |  |  |  SCLiteral (16:22) = 2
-|  |  SCMethod (19:5): poisoned: version 3.16: unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
+|  |  SCMethod (19:5): poisoned: unclosed_nested, version 3.16: unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unclosed Bracket.
@@ -144,7 +144,7 @@ SCClass (4:1): Brackets, version 3.16
 |  |  |  |  |  |  |  |  |  |  SCLiteral (19:42) = 2
 |  |  |  |  SCExplicitReturn (19:47)
 |  |  |  |  |  SCLiteral (19:48) = 3
-|  |  SCMethod (22:5): poisoned: version 3.16: wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
+|  |  SCMethod (22:5): poisoned: wrong_kind_nested, version 3.16: wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Mismatched Bracket.
@@ -179,7 +179,7 @@ SCClass (4:1): Brackets, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (22:40) = 1
 |  |  |  |  SCExplicitReturn (22:46)
 |  |  |  |  |  SCLiteral (22:47) = 2
-|  |  SCMethod (27:5): poisoned: version 3.16: unclosed_with_error { ^(1 2 }
+|  |  SCMethod (27:5): poisoned: unclosed_with_error, version 3.16: unclosed_with_error { ^(1 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -227,7 +227,7 @@ SCClass (4:1): Brackets, version 3.16
 |  |  |  SCBody (27:27)
 |  |  |  |  SCExplicitReturn (27:27)
 |  |  |  |  |  SCExprList (27:28)
-|  |  SCMethod (30:5): version 3.16: after { ^3 } -> 3
+|  |  SCMethod (30:5): after, version 3.16: after { ^3 } -> 3
 |  |  |  SCBody (30:13)
 |  |  |  |  SCExplicitReturn (30:13)
 |  |  |  |  |  SCLiteral (30:14) = 3

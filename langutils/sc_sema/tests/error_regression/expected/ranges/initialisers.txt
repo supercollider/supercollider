@@ -4,7 +4,7 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): RangeInitialisers, version 3.16
+SCClass (2:1): RangeInitialisers : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
@@ -64,7 +64,7 @@ SCClass (2:1): RangeInitialisers, version 3.16
 |  |  SCMember (8:9): nested = [[1, 2], (a: [3, 4])]
 |  |  SCMember (9:9): immutable = [[1, 2]]
 |  SCMethodList (2:1)
-SCClass (2:1): Meta_RangeInitialisers, version 3.16
+SCClass (2:1): Meta_RangeInitialisers : Meta_Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:11): bound = 3
 |  |  SCMember (4:11): constant_range = [1, 2, 3]

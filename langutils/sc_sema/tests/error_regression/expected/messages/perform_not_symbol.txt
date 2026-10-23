@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): PerformNotSymbol, version 3.16
+SCClass (2:1): PerformNotSymbol : Object, version 3.16
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (3:5): poisoned: version 3.16: integer { ^1.perform(2) }
+|  |  SCMethod (3:5): poisoned: integer, version 3.16: integer { ^1.perform(2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -28,7 +28,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCLiteral (3:16) = 1
 |  |  |  |  |  |  SCPositionalArgs (3:16)
 |  |  |  |  |  |  |  SCLiteral (3:26) = 2
-|  |  SCMethod (4:5): poisoned: version 3.16: float { ^1.perform(2.5, 3) }
+|  |  SCMethod (4:5): poisoned: float, version 3.16: float { ^1.perform(2.5, 3) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -50,7 +50,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCPositionalArgs (4:14)
 |  |  |  |  |  |  |  SCLiteral (4:24) = 2.5
 |  |  |  |  |  |  |  SCLiteral (4:29) = 3
-|  |  SCMethod (5:5): poisoned: version 3.16: string { ^1.perform("foo") }
+|  |  SCMethod (5:5): poisoned: string, version 3.16: string { ^1.perform("foo") }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -71,7 +71,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCLiteral (5:15) = 1
 |  |  |  |  |  |  SCPositionalArgs (5:15)
 |  |  |  |  |  |  |  SCLiteral (5:25) = "foo"
-|  |  SCMethod (6:5): poisoned: version 3.16: string_with_quote { ^1.perform("it's") }
+|  |  SCMethod (6:5): poisoned: string_with_quote, version 3.16: string_with_quote { ^1.perform("it's") }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -92,7 +92,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCLiteral (6:26) = 1
 |  |  |  |  |  |  SCPositionalArgs (6:26)
 |  |  |  |  |  |  |  SCLiteral (6:36) = "it's"
-|  |  SCMethod (7:5): poisoned: version 3.16: char { ^1.perform($a) }
+|  |  SCMethod (7:5): poisoned: char, version 3.16: char { ^1.perform($a) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -113,7 +113,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCLiteral (7:13) = 1
 |  |  |  |  |  |  SCPositionalArgs (7:13)
 |  |  |  |  |  |  |  SCLiteral (7:23) = $a
-|  |  SCMethod (8:5): poisoned: version 3.16: boolean { ^1.perform(true) }
+|  |  SCMethod (8:5): poisoned: boolean, version 3.16: boolean { ^1.perform(true) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -134,7 +134,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCLiteral (8:16) = 1
 |  |  |  |  |  |  SCPositionalArgs (8:16)
 |  |  |  |  |  |  |  SCLiteral (8:26) = true
-|  |  SCMethod (9:5): poisoned: version 3.16: nil_selector { ^1.perform(nil) }
+|  |  SCMethod (9:5): poisoned: nil_selector, version 3.16: nil_selector { ^1.perform(nil) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -155,7 +155,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCLiteral (9:21) = 1
 |  |  |  |  |  |  SCPositionalArgs (9:21)
 |  |  |  |  |  |  |  SCLiteral (9:31) = nil
-|  |  SCMethod (10:5): poisoned: version 3.16: class_name { ^1.perform(Object) }
+|  |  SCMethod (10:5): poisoned: class_name, version 3.16: class_name { ^1.perform(Object) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -176,7 +176,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCLiteral (10:19) = 1
 |  |  |  |  |  |  SCPositionalArgs (10:19)
 |  |  |  |  |  |  |  SCLiteral (10:29) = Object
-|  |  SCMethod (11:5): poisoned: version 3.16: prefix { ^perform(1, 2) }
+|  |  SCMethod (11:5): poisoned: prefix, version 3.16: prefix { ^perform(1, 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -197,7 +197,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCLiteral (11:23) = 1
 |  |  |  |  |  |  SCPositionalArgs (11:15)
 |  |  |  |  |  |  |  SCLiteral (11:26) = 2
-|  |  SCMethod (12:5): poisoned: version 3.16: binary { ^1 perform: 2 }
+|  |  SCMethod (12:5): poisoned: binary, version 3.16: binary { ^1 perform: 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -217,7 +217,7 @@ SCClass (2:1): PerformNotSymbol, version 3.16
 |  |  |  |  |  |  SCLiteral (12:15) = 1
 |  |  |  |  |  |  SCPositionalArgs (12:15)
 |  |  |  |  |  |  |  SCLiteral (12:26) = 2
-|  |  SCMethod (13:5): version 3.16: not_constant { ^1.perform(2.bar) }
+|  |  SCMethod (13:5): not_constant, version 3.16: not_constant { ^1.perform(2.bar) }
 |  |  |  SCBody (13:20)
 |  |  |  |  SCExplicitReturn (13:20)
 |  |  |  |  |  SCMessage (13:21): perform

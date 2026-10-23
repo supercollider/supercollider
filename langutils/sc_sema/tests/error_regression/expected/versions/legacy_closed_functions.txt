@@ -4,17 +4,17 @@
 IR GRAPH DUMP 
 
 
-SCClass (3:1): LegacyClosedFunctions
+SCClass (3:1): LegacyClosedFunctions : Object
 |  SCMemberList (3:1)
 |  |  SCMember (4:9): instance_var
 |  SCMethodList (3:1)
-|  |  SCMethod (7:5): interpreter_member { ^#{ a } }
+|  |  SCMethod (7:5): interpreter_member: interpreter_member { ^#{ a } }
 |  |  |  SCBody (7:26)
 |  |  |  |  SCExplicitReturn (7:26)
 |  |  |  |  |  SCFunction (7:27): closed
 |  |  |  |  |  |  SCBody (7:27)
 |  |  |  |  |  |  |  SCRead (7:30): instance a, declared (37:11): a
-|  |  SCMethod (9:5): poisoned: outer_variable { var foo = 10; ^#{ foo } }
+|  |  SCMethod (9:5): poisoned: outer_variable: outer_variable { var foo = 10; ^#{ foo } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
@@ -45,7 +45,7 @@ SCClass (3:1): LegacyClosedFunctions
 |  |  |  |  |  SCFunction (9:37): closed
 |  |  |  |  |  |  SCBody (9:37)
 |  |  |  |  |  |  |  SCExprList (9:40)
-|  |  SCMethod (11:5): poisoned: instance_variable { ^#{ instance_var } }
+|  |  SCMethod (11:5): poisoned: instance_variable: instance_variable { ^#{ instance_var } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
@@ -74,7 +74,7 @@ SCClass (3:1): LegacyClosedFunctions
 |  |  |  |  |  SCFunction (11:26): closed
 |  |  |  |  |  |  SCBody (11:26)
 |  |  |  |  |  |  |  SCExprList (11:29)
-|  |  SCMethod (14:5): poisoned: frame_variable { var f = #{ later }, later = 1; ^f }
+|  |  SCMethod (14:5): poisoned: frame_variable: frame_variable { var f = #{ later }, later = 1; ^f }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
@@ -107,7 +107,7 @@ SCClass (3:1): LegacyClosedFunctions
 |  |  |  |  |  SCLiteral (14:50) = 1
 |  |  |  |  SCExplicitReturn (14:53)
 |  |  |  |  |  SCRead (14:54): local f, declared (14:26): f = #{ later }
-|  |  SCMethod (17:5): returns { ^#{ ^1 } }
+|  |  SCMethod (17:5): returns: returns { ^#{ ^1 } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Return in closed function
@@ -128,7 +128,7 @@ SCClass (3:1): LegacyClosedFunctions
 |  |  |  |  |  |  SCBody (17:16)
 |  |  |  |  |  |  |  SCExplicitReturn (17:19)
 |  |  |  |  |  |  |  |  SCLiteral (17:20) = 1
-|  |  SCMethod (20:5): nested { ^#{ |x| if (x) { ^1 }; 2 } }
+|  |  SCMethod (20:5): nested: nested { ^#{ |x| if (x) { ^1 }; 2 } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Return in closed function

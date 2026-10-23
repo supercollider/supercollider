@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (4:1): ParenthesisedError, version 3.16
+SCClass (4:1): ParenthesisedError : Object, version 3.16
 |  SCMemberList (4:1)
 |  SCMethodList (4:1)
-|  |  SCMethod (7:5): poisoned: version 3.16: missing_operand { ^(1 +) }
+|  |  SCMethod (7:5): poisoned: missing_operand, version 3.16: missing_operand { ^(1 +) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
@@ -33,7 +33,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  SCBody (7:23)
 |  |  |  |  SCExplicitReturn (7:23)
 |  |  |  |  |  SCExprList (7:24)
-|  |  SCMethod (10:5): poisoned: version 3.16: missing_operator { ^(1 2) }
+|  |  SCMethod (10:5): poisoned: missing_operator, version 3.16: missing_operator { ^(1 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -59,7 +59,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  SCBody (10:24)
 |  |  |  |  SCExplicitReturn (10:24)
 |  |  |  |  |  SCExprList (10:25)
-|  |  SCMethod (14:5): poisoned: version 3.16: nested { ^(1 + (2 3) * 4) }
+|  |  SCMethod (14:5): poisoned: nested, version 3.16: nested { ^(1 + (2 3) * 4) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -91,7 +91,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  |  |  |  |  |  SCExprList (14:20)
 |  |  |  |  |  |  SCPositionalArgs (14:16)
 |  |  |  |  |  |  |  SCLiteral (14:28) = 4
-|  |  SCMethod (17:5): poisoned: version 3.16: skips_nested { ^(1 2 (3 + 4)) + 5 }
+|  |  SCMethod (17:5): poisoned: skips_nested, version 3.16: skips_nested { ^(1 2 (3 + 4)) + 5 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -120,7 +120,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  |  |  |  SCExprList (17:21)
 |  |  |  |  |  |  SCPositionalArgs (17:21)
 |  |  |  |  |  |  |  SCLiteral (17:37) = 5
-|  |  SCMethod (21:5): poisoned: version 3.16: two { ^[(1 2), (3 4)] }
+|  |  SCMethod (21:5): poisoned: two, version 3.16: two { ^[(1 2), (3 4)] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -170,7 +170,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  |  |  SCCollection (21:12): Array
 |  |  |  |  |  |  SCExprList (21:13)
 |  |  |  |  |  |  SCExprList (21:20)
-|  |  SCMethod (24:5): poisoned: version 3.16: as_receiver { ^(1 2).foo }
+|  |  SCMethod (24:5): poisoned: as_receiver, version 3.16: as_receiver { ^(1 2).foo }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -197,7 +197,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  |  SCExplicitReturn (24:19)
 |  |  |  |  |  SCMessage (24:20): foo
 |  |  |  |  |  |  SCExprList (24:20)
-|  |  SCMethod (27:5): poisoned: version 3.16: in_variable { var a = (1 2); ^a }
+|  |  SCMethod (27:5): poisoned: in_variable, version 3.16: in_variable { var a = (1 2); ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -225,7 +225,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  |  |  SCExprList (27:27)
 |  |  |  |  SCExplicitReturn (27:34)
 |  |  |  |  |  SCRead (27:35): local a, declared (27:23): a = (1 2
-|  |  SCMethod (30:5): poisoned: version 3.16: in_range { ^(1..2 3) }
+|  |  SCMethod (30:5): poisoned: in_range, version 3.16: in_range { ^(1..2 3) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -251,7 +251,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  SCBody (30:16)
 |  |  |  |  SCExplicitReturn (30:16)
 |  |  |  |  |  SCExprList (30:17)
-|  |  SCMethod (33:5): poisoned: version 3.16: in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
+|  |  SCMethod (33:5): poisoned: in_nested_function, version 3.16: in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
@@ -286,7 +286,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  |  |  |  |  |  |  SCExprList (33:40)
 |  |  |  |  SCExplicitReturn (33:49)
 |  |  |  |  |  SCLiteral (33:50) = 2
-|  |  SCMethod (36:5): poisoned: version 3.16: in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
+|  |  SCMethod (36:5): poisoned: in_nested_return, version 3.16: in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -323,7 +323,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (36:40)
 |  |  |  |  |  |  |  |  |  |  |  |  SCExprList (36:41)
 |  |  |  |  |  |  |  SCLiteral (36:50) = 3
-|  |  SCMethod (40:5): version 3.16: after_errors { ^1 + 2 } -> 3
+|  |  SCMethod (40:5): after_errors, version 3.16: after_errors { ^1 + 2 } -> 3
 |  |  |  SCBody (40:20)
 |  |  |  |  SCExplicitReturn (40:20)
 |  |  |  |  |  SCMessage (40:21): + = 3

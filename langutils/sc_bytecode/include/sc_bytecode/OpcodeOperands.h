@@ -1,6 +1,6 @@
 #pragma once
-#include "ByteCodeArray.h"
-#include "OpcodeDetails.h"
+#include "sc_bytecode/ByteCodeArray.h"
+#include "sc_bytecode/OpcodeDetails.h"
 namespace Operands::details {
 
 // Types of Operand

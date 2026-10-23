@@ -4,56 +4,56 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): Foo, version 3.16
+SCClass (2:1): Foo : Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): bar = 10
 |  |  SCMember (4:10): getter
 |  |  SCMember (4:19): setter
 |  SCMethodList (2:1)
-|  |  SCMethod (10:5): version 3.16: a_method { ^bar }
+|  |  SCMethod (10:5): a_method, version 3.16: a_method { ^bar }
 |  |  |  SCBody (10:16)
 |  |  |  |  SCExplicitReturn (10:16)
 |  |  |  |  |  SCRead (10:17): instance bar, declared (3:9): bar
-|  |  SCMethod (13:5): version 3.16: not_constant { ^bar }
+|  |  SCMethod (13:5): not_constant, version 3.16: not_constant { ^bar }
 |  |  |  SCBody (13:20)
 |  |  |  |  SCExplicitReturn (13:20)
 |  |  |  |  |  SCRead (13:21): instance bar, declared (3:9): bar
-|  |  SCMethod (15:5): version 3.16: with_getter { ^getter }
+|  |  SCMethod (15:5): with_getter, version 3.16: with_getter { ^getter }
 |  |  |  SCBody (15:19)
 |  |  |  |  SCExplicitReturn (15:19)
 |  |  |  |  |  SCRead (15:20): instance getter, declared (4:10): getter
-|  |  SCMethod (17:5): version 3.16: with_setter { ^setter }
+|  |  SCMethod (17:5): with_setter, version 3.16: with_setter { ^setter }
 |  |  |  SCBody (17:19)
 |  |  |  |  SCExplicitReturn (17:19)
 |  |  |  |  |  SCRead (17:20): instance setter, declared (4:19): setter
-|  |  SCMethod (19:5): version 3.16: class_variable { ^class_var }
+|  |  SCMethod (19:5): class_variable, version 3.16: class_variable { ^class_var }
 |  |  |  SCBody (19:22)
 |  |  |  |  SCExplicitReturn (19:22)
 |  |  |  |  |  SCRead (19:23): class class_var, declared (5:14): class_var
-|  |  SCMethod (21:5): version 3.16: constant_member { ^constant }
+|  |  SCMethod (21:5): constant_member, version 3.16: constant_member { ^constant }
 |  |  |  SCBody (21:23)
 |  |  |  |  SCExplicitReturn (21:23)
 |  |  |  |  |  SCRead (21:24): class constant, declared (6:11): constant
-|  |  SCMethod (23:5): version 3.16: in_expression { ^bar + 1 }
+|  |  SCMethod (23:5): in_expression, version 3.16: in_expression { ^bar + 1 }
 |  |  |  SCBody (23:21)
 |  |  |  |  SCExplicitReturn (23:21)
 |  |  |  |  |  SCMessage (23:22): +
 |  |  |  |  |  |  SCRead (23:22): instance bar, declared (3:9): bar
 |  |  |  |  |  |  SCPositionalArgs (23:22)
 |  |  |  |  |  |  |  SCLiteral (23:28) = 1
-|  |  SCMethod (25:5): version 3.16: after_assigning { bar = 1; ^bar }
+|  |  SCMethod (25:5): after_assigning, version 3.16: after_assigning { bar = 1; ^bar }
 |  |  |  SCBody (25:23)
 |  |  |  |  SCAssign (25:23): instance bar, declared (3:9): bar
 |  |  |  |  |  SCLiteral (25:29) = 1
 |  |  |  |  SCExplicitReturn (25:32)
 |  |  |  |  |  SCRead (25:33): instance bar, declared (3:9): bar
-|  |  SCMethod (27:5): version 3.16: in_block { ^{ bar } }
+|  |  SCMethod (27:5): in_block, version 3.16: in_block { ^{ bar } }
 |  |  |  SCBody (27:16)
 |  |  |  |  SCExplicitReturn (27:16)
 |  |  |  |  |  SCFunction (27:17)
 |  |  |  |  |  |  SCBody (27:17)
 |  |  |  |  |  |  |  SCRead (27:19): instance bar, declared (3:9): bar
-|  |  SCMethod (29:5): version 3.16: in_nested_block { ^{ { bar } } }
+|  |  SCMethod (29:5): in_nested_block, version 3.16: in_nested_block { ^{ { bar } } }
 |  |  |  SCBody (29:23)
 |  |  |  |  SCExplicitReturn (29:23)
 |  |  |  |  |  SCFunction (29:24)
@@ -61,7 +61,7 @@ SCClass (2:1): Foo, version 3.16
 |  |  |  |  |  |  |  SCFunction (29:26)
 |  |  |  |  |  |  |  |  SCBody (29:26)
 |  |  |  |  |  |  |  |  |  SCRead (29:28): instance bar, declared (3:9): bar
-|  |  SCMethod (31:5): version 3.16: in_generator { ^{: bar + x, x <- [1, 2] } }
+|  |  SCMethod (31:5): in_generator, version 3.16: in_generator { ^{: bar + x, x <- [1, 2] } }
 |  |  |  SCBody (31:20)
 |  |  |  |  SCExplicitReturn (31:20)
 |  |  |  |  |  SCGenerator (31:21): routine
@@ -74,19 +74,19 @@ SCClass (2:1): Foo, version 3.16
 |  |  |  |  |  |  |  SCRead (31:24): instance bar, declared (3:9): bar
 |  |  |  |  |  |  |  SCPositionalArgs (31:24)
 |  |  |  |  |  |  |  |  SCRead (31:30): local x, declared (31:33): x <- [1, 2]
-|  |  SCMethod (33:5): version 3.16: hidden_by_variable { var bar = 1; ^bar } -> 1
+|  |  SCMethod (33:5): hidden_by_variable, version 3.16: hidden_by_variable { var bar = 1; ^bar } -> 1
 |  |  |  SCBody (33:26)
 |  |  |  |  SCVariableDeclare (33:30): bar, prototype
 |  |  |  |  |  SCLiteral (33:36) = 1
 |  |  |  |  SCExplicitReturn (33:39)
 |  |  |  |  |  SCRead (33:40): local bar = 1, declared (33:30): bar = 1
-|  |  SCMethod (35:5): version 3.16: hidden_by_argument { |bar| ^bar }
+|  |  SCMethod (35:5): hidden_by_argument, version 3.16: hidden_by_argument { |bar| ^bar }
 |  |  |  SCArgumentDeclareList (35:27)
 |  |  |  |  SCArgumentDeclare (35:27): bar
 |  |  |  SCBody (35:32)
 |  |  |  |  SCExplicitReturn (35:32)
 |  |  |  |  |  SCRead (35:33): local bar, declared (35:27): bar
-|  |  SCMethod (37:5): version 3.16: hidden_in_block_only { ^[{ var bar = 1; bar }, bar] }
+|  |  SCMethod (37:5): hidden_in_block_only, version 3.16: hidden_in_block_only { ^[{ var bar = 1; bar }, bar] }
 |  |  |  SCBody (37:28)
 |  |  |  |  SCExplicitReturn (37:28)
 |  |  |  |  |  SCCollection (37:29): Array
@@ -96,16 +96,16 @@ SCClass (2:1): Foo, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (37:42) = 1
 |  |  |  |  |  |  |  |  SCRead (37:45): local bar = 1, declared (37:36): bar = 1
 |  |  |  |  |  |  SCRead (37:52): instance bar, declared (3:9): bar
-SCClass (2:1): Meta_Foo, version 3.16
+SCClass (2:1): Meta_Foo : Meta_Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (6:11): constant = 30
 |  |  SCMember (5:14): class_var = 20
 |  SCMethodList (2:1)
-|  |  SCMethod (40:5): version 3.16: *class_method { ^class_var }
+|  |  SCMethod (40:5): class_method, version 3.16: *class_method { ^class_var }
 |  |  |  SCBody (40:21)
 |  |  |  |  SCExplicitReturn (40:21)
 |  |  |  |  |  SCRead (40:22): instance class_var, declared (5:14): class_var
-|  |  SCMethod (42:5): poisoned: version 3.16: *instance_variable_in_class_method { ^bar }
+|  |  SCMethod (42:5): poisoned: instance_variable_in_class_method, version 3.16: *instance_variable_in_class_method { ^bar }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -123,19 +123,19 @@ SCClass (2:1): Meta_Foo, version 3.16
 |  |  |  SCBody (42:42)
 |  |  |  |  SCExplicitReturn (42:42)
 |  |  |  |  |  SCExprList (42:43)
-SCClass (45:1): Sub, version 3.16
+SCClass (45:1): Sub : Foo, version 3.16
 |  SCMemberList (45:1)
 |  |  SCMember (46:9): sub_var = 40
 |  SCMethodList (45:1)
-|  |  SCMethod (49:5): version 3.16: inherited { ^bar }
+|  |  SCMethod (49:5): inherited, version 3.16: inherited { ^bar }
 |  |  |  SCBody (49:17)
 |  |  |  |  SCExplicitReturn (49:17)
 |  |  |  |  |  SCRead (49:18): instance bar, declared (3:9): bar
-|  |  SCMethod (51:5): version 3.16: inherited_class_variable { ^class_var }
+|  |  SCMethod (51:5): inherited_class_variable, version 3.16: inherited_class_variable { ^class_var }
 |  |  |  SCBody (51:32)
 |  |  |  |  SCExplicitReturn (51:32)
 |  |  |  |  |  SCRead (51:33): class class_var, declared (5:14): class_var
-|  |  SCMethod (54:5): version 3.16: own_and_inherited { ^[sub_var, bar] }
+|  |  SCMethod (54:5): own_and_inherited, version 3.16: own_and_inherited { ^[sub_var, bar] }
 |  |  |  SCBody (54:25)
 |  |  |  |  SCExplicitReturn (54:25)
 |  |  |  |  |  SCCollection (54:26): Array

@@ -4,7 +4,7 @@
 IR GRAPH DUMP 
 
 
-SCClass (3:1): BadMalformed
+SCClass (3:1): BadMalformed : Object
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Malformed version
@@ -21,11 +21,11 @@ SCClass (3:1): BadMalformed
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (3:1)
 |  SCMethodList (3:1)
-|  |  SCMethod (6:5): one { ^1 } -> 1
+|  |  SCMethod (6:5): one: one { ^1 } -> 1
 |  |  |  SCBody (6:11)
 |  |  |  |  SCExplicitReturn (6:11)
 |  |  |  |  |  SCLiteral (6:12) = 1
-SCClass (9:1): BadTrailing
+SCClass (9:1): BadTrailing : Object
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Malformed version
@@ -42,11 +42,11 @@ SCClass (9:1): BadTrailing
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (9:1)
 |  SCMethodList (9:1)
-|  |  SCMethod (11:5): one { ^1 } -> 1
+|  |  SCMethod (11:5): one: one { ^1 } -> 1
 |  |  |  SCBody (11:11)
 |  |  |  |  SCExplicitReturn (11:11)
 |  |  |  |  |  SCLiteral (11:12) = 1
-SCClass (14:1): BadUnknown
+SCClass (14:1): BadUnknown : Object
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unknown version
@@ -63,11 +63,11 @@ SCClass (14:1): BadUnknown
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (14:1)
 |  SCMethodList (14:1)
-|  |  SCMethod (16:5): one { ^1 } -> 1
+|  |  SCMethod (16:5): one: one { ^1 } -> 1
 |  |  |  SCBody (16:11)
 |  |  |  |  SCExplicitReturn (16:11)
 |  |  |  |  |  SCLiteral (16:12) = 1
-SCClass (20:1): BadDuplicate, version 3.16
+SCClass (20:1): BadDuplicate : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Duplicate version
@@ -92,14 +92,14 @@ SCClass (20:1): BadDuplicate, version 3.16
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (20:1)
 |  SCMethodList (20:1)
-|  |  SCMethod (23:5): version 3.16: one { ^1 } -> 1
+|  |  SCMethod (23:5): one, version 3.16: one { ^1 } -> 1
 |  |  |  SCBody (23:11)
 |  |  |  |  SCExplicitReturn (23:11)
 |  |  |  |  |  SCLiteral (23:12) = 1
-SCClass (26:1): NotAVersion
+SCClass (26:1): NotAVersion : Object
 |  SCMemberList (26:1)
 |  SCMethodList (26:1)
-|  |  SCMethod (31:5): one { ^1 } -> 1
+|  |  SCMethod (31:5): one: one { ^1 } -> 1
 |  |  |  SCBody (31:11)
 |  |  |  |  SCExplicitReturn (31:11)
 |  |  |  |  |  SCLiteral (31:12) = 1

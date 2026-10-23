@@ -20,7 +20,7 @@
 
 
 #include "GC.h"
-#include "Opcodes.h"
+#include "sc_bytecode/Opcodes.h"
 #include "PyrInterpreter.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrMathPrim.h"

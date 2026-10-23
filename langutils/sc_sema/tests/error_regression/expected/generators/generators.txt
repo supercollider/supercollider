@@ -4,11 +4,11 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): Generators, version 3.16
+SCClass (2:1): Generators : Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): instance_var
 |  SCMethodList (2:1)
-|  |  SCMethod (7:5): version 3.16: routine { ^{: x, x <- [1, 2, 3] } }
+|  |  SCMethod (7:5): routine, version 3.16: routine { ^{: x, x <- [1, 2, 3] } }
 |  |  |  SCBody (7:15)
 |  |  |  |  SCExplicitReturn (7:15)
 |  |  |  |  |  SCGenerator (7:16): routine
@@ -19,7 +19,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (7:31) = 2
 |  |  |  |  |  |  |  |  |  SCLiteral (7:34) = 3
 |  |  |  |  |  |  SCRead (7:19): local x, declared (7:22): x <- [1, 2, 3]
-|  |  SCMethod (9:5): version 3.16: immediate { ^{; x.postln, x <- [1, 2, 3] } }
+|  |  SCMethod (9:5): immediate, version 3.16: immediate { ^{; x.postln, x <- [1, 2, 3] } }
 |  |  |  SCBody (9:17)
 |  |  |  |  SCExplicitReturn (9:17)
 |  |  |  |  |  SCGenerator (9:18): immediate
@@ -31,7 +31,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (9:43) = 3
 |  |  |  |  |  |  SCMessage (9:21): postln
 |  |  |  |  |  |  |  SCRead (9:21): local x, declared (9:31): x <- [1, 2, 3]
-|  |  SCMethod (12:5): version 3.16: with_index { ^{: [x, i], x i <- [1, 2, 3] } }
+|  |  SCMethod (12:5): with_index, version 3.16: with_index { ^{: [x, i], x i <- [1, 2, 3] } }
 |  |  |  SCBody (12:18)
 |  |  |  |  SCExplicitReturn (12:18)
 |  |  |  |  |  SCGenerator (12:19): routine
@@ -44,7 +44,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  SCCollection (12:22): Array
 |  |  |  |  |  |  |  SCRead (12:23): local x, declared (12:30): x i <- [1, 2, 3]
 |  |  |  |  |  |  |  SCRead (12:26): local i, declared (12:30): x i <- [1, 2, 3]
-|  |  SCMethod (15:5): poisoned: version 3.16: duplicate_index { ^{: x, x x <- [1, 2, 3] } }
+|  |  SCMethod (15:5): poisoned: duplicate_index, version 3.16: duplicate_index { ^{: x, x x <- [1, 2, 3] } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable already declared
@@ -78,7 +78,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (15:41) = 2
 |  |  |  |  |  |  |  |  |  SCLiteral (15:44) = 3
 |  |  |  |  |  |  SCRead (15:27): local x, declared (15:30): x x <- [1, 2, 3]
-|  |  SCMethod (18:5): version 3.16: nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
+|  |  SCMethod (18:5): nested_iterate, version 3.16: nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
 |  |  |  SCBody (18:22)
 |  |  |  |  SCExplicitReturn (18:22)
 |  |  |  |  |  SCGenerator (18:23): routine
@@ -94,7 +94,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  SCCollection (18:26): Array
 |  |  |  |  |  |  |  SCRead (18:27): local x, declared (18:34): x <- [1, 2]
 |  |  |  |  |  |  |  SCRead (18:30): local y, declared (18:47): y <- [x, 3]
-|  |  SCMethod (21:5): version 3.16: declare { ^{: y, x <- [1, 2], var y = x * 2 } }
+|  |  SCMethod (21:5): declare, version 3.16: declare { ^{: y, x <- [1, 2], var y = x * 2 } }
 |  |  |  SCBody (21:15)
 |  |  |  |  SCExplicitReturn (21:15)
 |  |  |  |  |  SCGenerator (21:16): routine
@@ -109,7 +109,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  |  SCPositionalArgs (21:43)
 |  |  |  |  |  |  |  |  |  |  SCLiteral (21:47) = 2
 |  |  |  |  |  |  SCRead (21:19): local y, declared (21:35): var y = x * 2
-|  |  SCMethod (23:5): version 3.16: declare_bracketed { ^{: y, var y (2) } }
+|  |  SCMethod (23:5): declare_bracketed, version 3.16: declare_bracketed { ^{: y, var y (2) } }
 |  |  |  SCBody (23:25)
 |  |  |  |  SCExplicitReturn (23:25)
 |  |  |  |  |  SCGenerator (23:26): routine
@@ -117,7 +117,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  SCGenQualDeclare (23:32): y
 |  |  |  |  |  |  |  |  SCLiteral (23:39) = 2
 |  |  |  |  |  |  SCRead (23:29): local y, declared (23:32): var y (2)
-|  |  SCMethod (25:5): version 3.16: condition { ^{: x, x <- (1..10), x.odd } }
+|  |  SCMethod (25:5): condition, version 3.16: condition { ^{: x, x <- (1..10), x.odd } }
 |  |  |  SCBody (25:17)
 |  |  |  |  SCExplicitReturn (25:17)
 |  |  |  |  |  SCGenerator (25:18): routine
@@ -131,7 +131,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  SCMessage (25:38): odd
 |  |  |  |  |  |  |  |  |  SCRead (25:38): local x, declared (25:24): x <- (1..10)
 |  |  |  |  |  |  SCRead (25:21): local x, declared (25:24): x <- (1..10)
-|  |  SCMethod (27:5): version 3.16: side_effect { ^{: x, x <- [1, 2], :: x.postln } }
+|  |  SCMethod (27:5): side_effect, version 3.16: side_effect { ^{: x, x <- [1, 2], :: x.postln } }
 |  |  |  SCBody (27:19)
 |  |  |  |  SCExplicitReturn (27:19)
 |  |  |  |  |  SCGenerator (27:20): routine
@@ -144,7 +144,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  SCMessage (27:42): postln
 |  |  |  |  |  |  |  |  |  SCRead (27:42): local x, declared (27:26): x <- [1, 2]
 |  |  |  |  |  |  SCRead (27:23): local x, declared (27:26): x <- [1, 2]
-|  |  SCMethod (30:5): version 3.16: while_guard { ^{: x, x <- (1..), :while x < 5 } }
+|  |  SCMethod (30:5): while_guard, version 3.16: while_guard { ^{: x, x <- (1..), :while x < 5 } }
 |  |  |  SCBody (30:19)
 |  |  |  |  SCExplicitReturn (30:19)
 |  |  |  |  |  SCGenerator (30:20): routine
@@ -160,7 +160,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  |  SCPositionalArgs (30:45)
 |  |  |  |  |  |  |  |  |  |  SCLiteral (30:49) = 5
 |  |  |  |  |  |  SCRead (30:23): local x, declared (30:26): x <- (1..)
-|  |  SCMethod (33:5): version 3.16: all_qualifiers { ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 } }
+|  |  SCMethod (33:5): all_qualifiers, version 3.16: all_qualifiers { ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 } }
 |  |  |  SCBody (33:22)
 |  |  |  |  SCExplicitReturn (33:22)
 |  |  |  |  |  SCGenerator (33:23): routine
@@ -189,7 +189,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  SCCollection (33:26): Array
 |  |  |  |  |  |  |  SCRead (33:27): local x, declared (33:34): x <- (1..)
 |  |  |  |  |  |  |  SCRead (33:30): local y, declared (33:54): var y = x + 1
-|  |  SCMethod (35:5): version 3.16: shadows_earlier { ^{: x, x <- [1, 2], x <- [x, 3] } }
+|  |  SCMethod (35:5): shadows_earlier, version 3.16: shadows_earlier { ^{: x, x <- [1, 2], x <- [x, 3] } }
 |  |  |  SCBody (35:23)
 |  |  |  |  SCExplicitReturn (35:23)
 |  |  |  |  |  SCGenerator (35:24): routine
@@ -203,7 +203,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  |  SCRead (35:49): local x, declared (35:30): x <- [1, 2]
 |  |  |  |  |  |  |  |  |  SCLiteral (35:52) = 3
 |  |  |  |  |  |  SCRead (35:27): local x, declared (35:43): x <- [x, 3]
-|  |  SCMethod (38:5): poisoned: version 3.16: source_cannot_see_element { ^{: x, x <- x } }
+|  |  SCMethod (38:5): poisoned: source_cannot_see_element, version 3.16: source_cannot_see_element { ^{: x, x <- x } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -225,7 +225,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  SCGenQualIterate (38:40): x
 |  |  |  |  |  |  |  |  SCExprList (38:45)
 |  |  |  |  |  |  SCRead (38:37): local x, declared (38:40): x <- x
-|  |  SCMethod (40:5): version 3.16: unbounded_source { ^{: x, x <- (1..) } }
+|  |  SCMethod (40:5): unbounded_source, version 3.16: unbounded_source { ^{: x, x <- (1..) } }
 |  |  |  SCBody (40:24)
 |  |  |  |  SCExplicitReturn (40:24)
 |  |  |  |  |  SCGenerator (40:25): routine
@@ -236,7 +236,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  |  SCMissing (40:36)
 |  |  |  |  |  |  |  |  |  SCMissing (40:36)
 |  |  |  |  |  |  SCRead (40:28): local x, declared (40:31): x <- (1..)
-|  |  SCMethod (42:5): version 3.16: unbounded_source_step { ^{: x, x <- (1, 3..) } }
+|  |  SCMethod (42:5): unbounded_source_step, version 3.16: unbounded_source_step { ^{: x, x <- (1, 3..) } }
 |  |  |  SCBody (42:29)
 |  |  |  |  SCExplicitReturn (42:29)
 |  |  |  |  |  SCGenerator (42:30): routine
@@ -247,7 +247,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (42:45) = 3
 |  |  |  |  |  |  |  |  |  SCMissing (42:41)
 |  |  |  |  |  |  SCRead (42:33): local x, declared (42:36): x <- (1, 3..)
-|  |  SCMethod (44:5): poisoned: version 3.16: unbounded_range_outside { var x = (1..); ^x }
+|  |  SCMethod (44:5): poisoned: unbounded_range_outside, version 3.16: unbounded_range_outside { var x = (1..); ^x }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Range has no end
@@ -270,7 +270,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  SCMissing (44:39)
 |  |  |  |  SCExplicitReturn (44:46)
 |  |  |  |  |  SCRead (44:47): local x, declared (44:35): x = (1..)
-|  |  SCMethod (47:5): version 3.16: reads_member { ^{: x + instance_var, x <- [1, 2] } }
+|  |  SCMethod (47:5): reads_member, version 3.16: reads_member { ^{: x + instance_var, x <- [1, 2] } }
 |  |  |  SCBody (47:20)
 |  |  |  |  SCExplicitReturn (47:20)
 |  |  |  |  |  SCGenerator (47:21): routine
@@ -283,7 +283,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  SCRead (47:24): local x, declared (47:42): x <- [1, 2]
 |  |  |  |  |  |  |  SCPositionalArgs (47:24)
 |  |  |  |  |  |  |  |  SCRead (47:28): instance instance_var, declared (3:9): instance_var
-|  |  SCMethod (50:5): version 3.16: captures_outer { var a = 1; ^{: a, x <- [1, 2] } }
+|  |  SCMethod (50:5): captures_outer, version 3.16: captures_outer { var a = 1; ^{: a, x <- [1, 2] } }
 |  |  |  SCBody (50:22)
 |  |  |  |  SCVariableDeclare (50:26): a (captured), prototype
 |  |  |  |  |  SCLiteral (50:30) = 1
@@ -295,7 +295,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (50:46) = 1
 |  |  |  |  |  |  |  |  |  SCLiteral (50:49) = 2
 |  |  |  |  |  |  SCRead (50:37): local a, declared (50:26): a = 1
-|  |  SCMethod (52:5): version 3.16: shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }
+|  |  SCMethod (52:5): shadows_outer, version 3.16: shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }
 |  |  |  SCBody (52:21)
 |  |  |  |  SCVariableDeclare (52:25): x, prototype
 |  |  |  |  |  SCLiteral (52:29) = 1
@@ -309,7 +309,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  SCRead (52:37): local x, declared (52:40): x <- [2]
 |  |  |  |  SCExplicitReturn (52:54)
 |  |  |  |  |  SCRead (52:55): local x = 1, declared (52:25): x = 1
-|  |  SCMethod (55:5): version 3.16: source_reads_outer { var x = 1; { {: x, x <- [x] } }; ^x }
+|  |  SCMethod (55:5): source_reads_outer, version 3.16: source_reads_outer { var x = 1; { {: x, x <- [x] } }; ^x }
 |  |  |  SCBody (55:26)
 |  |  |  |  SCVariableDeclare (55:30): x (captured), prototype
 |  |  |  |  |  SCLiteral (55:34) = 1
@@ -323,7 +323,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  SCRead (55:42): local x, declared (55:45): x <- [x]
 |  |  |  |  SCExplicitReturn (55:59)
 |  |  |  |  |  SCRead (55:60): local x, declared (55:30): x = 1
-|  |  SCMethod (57:5): version 3.16: non_local_return_value { ^{: { ^x }.value, x <- [1, 2] } }
+|  |  SCMethod (57:5): non_local_return_value, version 3.16: non_local_return_value { ^{: { ^x }.value, x <- [1, 2] } }
 |  |  |  SCBody (57:30)
 |  |  |  |  SCExplicitReturn (57:30)
 |  |  |  |  |  SCGenerator (57:31): routine
@@ -337,7 +337,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  SCBody (57:34)
 |  |  |  |  |  |  |  |  |  SCExplicitReturn (57:36)
 |  |  |  |  |  |  |  |  |  |  SCRead (57:37): local x, declared (57:48): x <- [1, 2]
-|  |  SCMethod (60:5): version 3.16: non_local_return_qualifier { {; x, x <- [1, 2], :: { ^x }.value }; ^1 }
+|  |  SCMethod (60:5): non_local_return_qualifier, version 3.16: non_local_return_qualifier { {; x, x <- [1, 2], :: { ^x }.value }; ^1 }
 |  |  |  SCBody (60:34)
 |  |  |  |  SCGenerator (60:34): immediate
 |  |  |  |  |  SCGenQualList (60:40)
@@ -354,42 +354,42 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  SCRead (60:37): local x, declared (60:40): x <- [1, 2]
 |  |  |  |  SCExplicitReturn (60:72)
 |  |  |  |  |  SCLiteral (60:73) = 1
-|  |  SCMethod (63:5): version 3.16: range_generator { ^(: 1..5) }
+|  |  SCMethod (63:5): range_generator, version 3.16: range_generator { ^(: 1..5) }
 |  |  |  SCBody (63:23)
 |  |  |  |  SCExplicitReturn (63:23)
 |  |  |  |  |  SCRangeGenerator (63:24)
 |  |  |  |  |  |  SCLiteral (63:27) = 1
 |  |  |  |  |  |  SCMissing (63:24)
 |  |  |  |  |  |  SCLiteral (63:30) = 5
-|  |  SCMethod (64:5): version 3.16: range_generator_step { ^(: 1, 3..9) }
+|  |  SCMethod (64:5): range_generator_step, version 3.16: range_generator_step { ^(: 1, 3..9) }
 |  |  |  SCBody (64:28)
 |  |  |  |  SCExplicitReturn (64:28)
 |  |  |  |  |  SCRangeGenerator (64:29)
 |  |  |  |  |  |  SCLiteral (64:32) = 1
 |  |  |  |  |  |  SCLiteral (64:35) = 3
 |  |  |  |  |  |  SCLiteral (64:38) = 9
-|  |  SCMethod (65:5): version 3.16: range_generator_from_zero { ^(: ..3) }
+|  |  SCMethod (65:5): range_generator_from_zero, version 3.16: range_generator_from_zero { ^(: ..3) }
 |  |  |  SCBody (65:33)
 |  |  |  |  SCExplicitReturn (65:33)
 |  |  |  |  |  SCRangeGenerator (65:34)
 |  |  |  |  |  |  SCLiteral (65:34) = 0
 |  |  |  |  |  |  SCMissing (65:34)
 |  |  |  |  |  |  SCLiteral (65:39) = 3
-|  |  SCMethod (68:5): version 3.16: range_generator_unbounded { ^(: 1..) }
+|  |  SCMethod (68:5): range_generator_unbounded, version 3.16: range_generator_unbounded { ^(: 1..) }
 |  |  |  SCBody (68:33)
 |  |  |  |  SCExplicitReturn (68:33)
 |  |  |  |  |  SCRangeGenerator (68:34)
 |  |  |  |  |  |  SCLiteral (68:37) = 1
 |  |  |  |  |  |  SCMissing (68:34)
 |  |  |  |  |  |  SCMissing (68:34)
-|  |  SCMethod (69:5): version 3.16: range_generator_unbounded_step { ^(: 1, 3..) }
+|  |  SCMethod (69:5): range_generator_unbounded_step, version 3.16: range_generator_unbounded_step { ^(: 1, 3..) }
 |  |  |  SCBody (69:38)
 |  |  |  |  SCExplicitReturn (69:38)
 |  |  |  |  |  SCRangeGenerator (69:39)
 |  |  |  |  |  |  SCLiteral (69:42) = 1
 |  |  |  |  |  |  SCLiteral (69:45) = 3
 |  |  |  |  |  |  SCMissing (69:39)
-|  |  SCMethod (71:5): version 3.16: range_generator_not_constant { ^(: 1..instance_var) }
+|  |  SCMethod (71:5): range_generator_not_constant, version 3.16: range_generator_not_constant { ^(: 1..instance_var) }
 |  |  |  SCBody (71:36)
 |  |  |  |  SCExplicitReturn (71:36)
 |  |  |  |  |  SCRangeGenerator (71:37)

@@ -4,11 +4,11 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): RangeArgumentPacks, version 3.16
+SCClass (2:1): RangeArgumentPacks : Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): instance_var
 |  SCMethodList (2:1)
-|  |  SCMethod (5:5): poisoned: version 3.16: three_arguments { ^instance_var[1, 2, 3..5] }
+|  |  SCMethod (5:5): poisoned: three_arguments, version 3.16: three_arguments { ^instance_var[1, 2, 3..5] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Too many arguments in range
@@ -31,7 +31,7 @@ SCClass (2:1): RangeArgumentPacks, version 3.16
 |  |  |  |  |  |  |  SCLiteral (5:37) = 1
 |  |  |  |  |  |  |  SCLiteral (5:40) = 2
 |  |  |  |  |  |  |  SCLiteral (5:46) = 5
-|  |  SCMethod (6:5): poisoned: version 3.16: four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
+|  |  SCMethod (6:5): poisoned: four_arguments_no_end, version 3.16: four_arguments_no_end { ^instance_var[1, 2, 3, 4..] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Too many arguments in range
@@ -54,7 +54,7 @@ SCClass (2:1): RangeArgumentPacks, version 3.16
 |  |  |  |  |  |  |  SCLiteral (6:43) = 1
 |  |  |  |  |  |  |  SCLiteral (6:46) = 2
 |  |  |  |  |  |  |  SCLiteral (6:42) = nil
-|  |  SCMethod (7:5): poisoned: version 3.16: dot_form { ^instance_var.[1, 2, 3..5] }
+|  |  SCMethod (7:5): poisoned: dot_form, version 3.16: dot_form { ^instance_var.[1, 2, 3..5] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Too many arguments in range
@@ -76,7 +76,7 @@ SCClass (2:1): RangeArgumentPacks, version 3.16
 |  |  |  |  |  |  |  SCLiteral (7:31) = 1
 |  |  |  |  |  |  |  SCLiteral (7:34) = 2
 |  |  |  |  |  |  |  SCLiteral (7:40) = 5
-|  |  SCMethod (8:5): version 3.16: two_arguments_are_fine { ^instance_var[1, 2..5] }
+|  |  SCMethod (8:5): two_arguments_are_fine, version 3.16: two_arguments_are_fine { ^instance_var[1, 2..5] }
 |  |  |  SCBody (8:30)
 |  |  |  |  SCExplicitReturn (8:30)
 |  |  |  |  |  SCMessage (8:31): copySeries

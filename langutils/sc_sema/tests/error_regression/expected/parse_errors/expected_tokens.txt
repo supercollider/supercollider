@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (4:1): ExpectedTokens, version 3.16
+SCClass (4:1): ExpectedTokens : Object, version 3.16
 |  SCMemberList (4:1)
 |  SCMethodList (4:1)
-|  |  SCMethod (7:5): poisoned: version 3.16: not_an_expression { ^(1, ) }
+|  |  SCMethod (7:5): poisoned: not_an_expression, version 3.16: not_an_expression { ^(1, ) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.
@@ -24,7 +24,7 @@ SCClass (4:1): ExpectedTokens, version 3.16
 |  |  |  SCBody (7:25)
 |  |  |  |  SCExplicitReturn (7:25)
 |  |  |  |  |  SCExprList (7:26)
-|  |  SCMethod (10:5): poisoned: version 3.16: not_an_operator { ^(1 = 2) }
+|  |  SCMethod (10:5): poisoned: not_an_operator, version 3.16: not_an_operator { ^(1 = 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.
@@ -41,7 +41,7 @@ SCClass (4:1): ExpectedTokens, version 3.16
 |  |  |  SCBody (10:23)
 |  |  |  |  SCExplicitReturn (10:23)
 |  |  |  |  |  SCExprList (10:24)
-|  |  SCMethod (14:5): poisoned: version 3.16: multiline { var "first'\n'second"; ^1 }
+|  |  SCMethod (14:5): poisoned: multiline, version 3.16: multiline { var "first'\n'second"; ^1 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.
@@ -58,7 +58,7 @@ SCClass (4:1): ExpectedTokens, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:15)
 |  |  |  |  SCExprList (14:15)
-|  |  SCMethod (18:5): poisoned: version 3.16: in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
+|  |  SCMethod (18:5): poisoned: in_nested_function, version 3.16: in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.

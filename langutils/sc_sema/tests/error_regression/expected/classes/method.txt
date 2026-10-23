@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): Foo, version 3.16
+SCClass (2:1): Foo : Object, version 3.16
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (3:5): version 3.16: bar { |a| 10 }
+|  |  SCMethod (3:5): bar, version 3.16: bar { |a| 10 }
 |  |  |  SCArgumentDeclareList (3:12)
 |  |  |  |  SCArgumentDeclare (3:12): a
 |  |  |  SCBody (3:15)

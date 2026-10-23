@@ -4,22 +4,22 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): Poisoning, version 3.16
+SCClass (2:1): Poisoning : Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): instance_var
 |  SCMethodList (2:1)
-|  |  SCMethod (6:5): version 3.16: good { ^1 + 2 } -> 3
+|  |  SCMethod (6:5): good, version 3.16: good { ^1 + 2 } -> 3
 |  |  |  SCBody (6:12)
 |  |  |  |  SCExplicitReturn (6:12)
 |  |  |  |  |  SCMessage (6:13): + = 3
 |  |  |  |  |  |  SCLiteral (6:13) = 1
 |  |  |  |  |  |  SCPositionalArgs (6:13)
 |  |  |  |  |  |  |  SCLiteral (6:17) = 2
-|  |  SCMethod (7:5): version 3.16: good_assignment { instance_var = 3 }
+|  |  SCMethod (7:5): good_assignment, version 3.16: good_assignment { instance_var = 3 }
 |  |  |  SCBody (7:23)
 |  |  |  |  SCAssign (7:23): instance instance_var, declared (3:9): instance_var
 |  |  |  |  |  SCLiteral (7:38) = 3
-|  |  SCMethod (8:5): poisoned: version 3.16: undefined { undefined_var = 4 }
+|  |  SCMethod (8:5): poisoned: undefined, version 3.16: undefined { undefined_var = 4 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -36,7 +36,7 @@ SCClass (2:1): Poisoning, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (8:17)
 |  |  |  |  SCLiteral (8:33) = 4
-|  |  SCMethod (9:5): poisoned: version 3.16: no_receiver { ^foo(bar: 1) }
+|  |  SCMethod (9:5): poisoned: no_receiver, version 3.16: no_receiver { ^foo(bar: 1) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Message has no receiver
@@ -54,7 +54,7 @@ SCClass (2:1): Poisoning, version 3.16
 |  |  |  SCBody (9:19)
 |  |  |  |  SCExplicitReturn (9:19)
 |  |  |  |  |  SCExprList (9:20)
-|  |  SCMethod (10:5): poisoned: version 3.16: nested_error { ^1.foo(2.perform(3)) }
+|  |  SCMethod (10:5): poisoned: nested_error, version 3.16: nested_error { ^1.foo(2.perform(3)) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -78,7 +78,7 @@ SCClass (2:1): Poisoning, version 3.16
 |  |  |  |  |  |  |  |  SCLiteral (10:27) = 2
 |  |  |  |  |  |  |  |  SCPositionalArgs (10:27)
 |  |  |  |  |  |  |  |  |  SCLiteral (10:37) = 3
-|  |  SCMethod (11:5): poisoned: version 3.16: error_in_array { ^#[1, 2.foo] }
+|  |  SCMethod (11:5): poisoned: error_in_array, version 3.16: error_in_array { ^#[1, 2.foo] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Not a constant
@@ -99,7 +99,7 @@ SCClass (2:1): Poisoning, version 3.16
 |  |  |  |  |  |  SCLiteral (11:25) = 1
 |  |  |  |  |  |  SCMessage (11:28): foo
 |  |  |  |  |  |  |  SCLiteral (11:28) = 2
-|  |  SCMethod (12:5): poisoned: version 3.16: two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  SCMethod (12:5): poisoned: two_errors, version 3.16: two_errors { undefined_var = 5; ^foo(bar: 1) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -132,22 +132,22 @@ SCClass (2:1): Poisoning, version 3.16
 |  |  |  |  SCLiteral (12:34) = 5
 |  |  |  |  SCExplicitReturn (12:37)
 |  |  |  |  |  SCExprList (12:38)
-|  |  SCMethod (13:5): version 3.16: after_errors { ^6 } -> 6
+|  |  SCMethod (13:5): after_errors, version 3.16: after_errors { ^6 } -> 6
 |  |  |  SCBody (13:20)
 |  |  |  |  SCExplicitReturn (13:20)
 |  |  |  |  |  SCLiteral (13:21) = 6
-SCClass (2:1): Meta_Poisoning, version 3.16
+SCClass (2:1): Meta_Poisoning : Meta_Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (4:14): class_var
 |  SCMethodList (2:1)
-|  |  SCMethod (15:5): version 3.16: *good { ^1 + 2 } -> 3
+|  |  SCMethod (15:5): good, version 3.16: *good { ^1 + 2 } -> 3
 |  |  |  SCBody (15:13)
 |  |  |  |  SCExplicitReturn (15:13)
 |  |  |  |  |  SCMessage (15:14): + = 3
 |  |  |  |  |  |  SCLiteral (15:14) = 1
 |  |  |  |  |  |  SCPositionalArgs (15:14)
 |  |  |  |  |  |  |  SCLiteral (15:18) = 2
-|  |  SCMethod (16:5): poisoned: version 3.16: *cannot_assign { instance_var = 3 }
+|  |  SCMethod (16:5): poisoned: cannot_assign, version 3.16: *cannot_assign { instance_var = 3 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -164,7 +164,7 @@ SCClass (2:1): Meta_Poisoning, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (16:22)
 |  |  |  |  SCLiteral (16:37) = 3
-|  |  SCMethod (17:5): poisoned: version 3.16: *undefined { undefined_var = 4 }
+|  |  SCMethod (17:5): poisoned: undefined, version 3.16: *undefined { undefined_var = 4 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -181,7 +181,7 @@ SCClass (2:1): Meta_Poisoning, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (17:18)
 |  |  |  |  SCLiteral (17:34) = 4
-|  |  SCMethod (18:5): poisoned: version 3.16: *no_receiver { ^foo(bar: 1) }
+|  |  SCMethod (18:5): poisoned: no_receiver, version 3.16: *no_receiver { ^foo(bar: 1) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Message has no receiver
@@ -199,7 +199,7 @@ SCClass (2:1): Meta_Poisoning, version 3.16
 |  |  |  SCBody (18:20)
 |  |  |  |  SCExplicitReturn (18:20)
 |  |  |  |  |  SCExprList (18:21)
-|  |  SCMethod (19:5): poisoned: version 3.16: *nested_error { ^1.foo(2.perform(3)) }
+|  |  SCMethod (19:5): poisoned: nested_error, version 3.16: *nested_error { ^1.foo(2.perform(3)) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
@@ -223,7 +223,7 @@ SCClass (2:1): Meta_Poisoning, version 3.16
 |  |  |  |  |  |  |  |  SCLiteral (19:28) = 2
 |  |  |  |  |  |  |  |  SCPositionalArgs (19:28)
 |  |  |  |  |  |  |  |  |  SCLiteral (19:38) = 3
-|  |  SCMethod (20:5): poisoned: version 3.16: *error_in_array { ^#[1, 2.foo] }
+|  |  SCMethod (20:5): poisoned: error_in_array, version 3.16: *error_in_array { ^#[1, 2.foo] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Not a constant
@@ -244,7 +244,7 @@ SCClass (2:1): Meta_Poisoning, version 3.16
 |  |  |  |  |  |  SCLiteral (20:26) = 1
 |  |  |  |  |  |  SCMessage (20:29): foo
 |  |  |  |  |  |  |  SCLiteral (20:29) = 2
-|  |  SCMethod (21:5): poisoned: version 3.16: *two_errors { undefined_var = 5; ^foo(bar: 1) }
+|  |  SCMethod (21:5): poisoned: two_errors, version 3.16: *two_errors { undefined_var = 5; ^foo(bar: 1) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -277,11 +277,11 @@ SCClass (2:1): Meta_Poisoning, version 3.16
 |  |  |  |  SCLiteral (21:35) = 5
 |  |  |  |  SCExplicitReturn (21:38)
 |  |  |  |  |  SCExprList (21:39)
-|  |  SCMethod (22:5): version 3.16: *after_errors { ^6 } -> 6
+|  |  SCMethod (22:5): after_errors, version 3.16: *after_errors { ^6 } -> 6
 |  |  |  SCBody (22:21)
 |  |  |  |  SCExplicitReturn (22:21)
 |  |  |  |  |  SCLiteral (22:22) = 6
-|  |  SCMethod (23:5): version 3.16: *good_class_assignment { class_var = 3 }
+|  |  SCMethod (23:5): good_class_assignment, version 3.16: *good_class_assignment { class_var = 3 }
 |  |  |  SCBody (23:30)
 |  |  |  |  SCAssign (23:30): instance class_var, declared (4:14): class_var
 |  |  |  |  |  SCLiteral (23:42) = 3

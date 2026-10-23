@@ -417,6 +417,8 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                         decl.poison();
                     }
                 }
+                if (const auto super = decl.super())
+                    class_node.superclass = super->first;
                 class_node.meta_class = decl.meta_class();
                 class_node.version = decl.version();
 
@@ -480,14 +482,14 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                           [&](const auto* l, const auto* r) { return source_order(l) < source_order(r); });
 
                 for (const auto* method : methods) {
-                    const auto r =
-                        ast2ir::Method { *build.ir,
-                                         method->ast_graph,
-                                         ctx,
-                                         method->version,
-                                         meta_members,
-                                         build.members,
-                                         interpreter_scopes ? &*interpreter_scopes : nullptr }(method->ast_node_index);
+                    const auto r = ast2ir::Method { *build.ir,
+                                                    method->ast_graph,
+                                                    ctx,
+                                                    method->version,
+                                                    meta_members,
+                                                    build.members,
+                                                    interpreter_scopes ? &*interpreter_scopes : nullptr }(
+                        method->ast_node_index, method->name, method->name_index);
                     // Still compiled, so its own diagnostics are reported, e.g., an extension that clashes. Like any
                     // poisoned method, its result isn't known.
                     if (method->poisoned) {
@@ -512,6 +514,13 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 
 
     return ctx.diagnostics.consume();
+}
+
+std::shared_ptr<const IRGraph> IRCompiler::class_graph(SymSCClassName name) const {
+    std::scoped_lock lk { m_classes_lock };
+    if (const auto fnd = m_classes.find(name); fnd != m_classes.end())
+        return fnd->second;
+    return nullptr;
 }
 
 IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const ast::ASTGraph> ast_graph,

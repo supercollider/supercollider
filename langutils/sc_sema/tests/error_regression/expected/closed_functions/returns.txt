@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (3:1): ClosedReturns, version 3.16
+SCClass (3:1): ClosedReturns : Object, version 3.16
 |  SCMemberList (3:1)
 |  SCMethodList (3:1)
-|  |  SCMethod (5:5): poisoned: version 3.16: returns { ^#{ ^1 } }
+|  |  SCMethod (5:5): poisoned: returns, version 3.16: returns { ^#{ ^1 } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Return in closed function
@@ -27,7 +27,7 @@ SCClass (3:1): ClosedReturns, version 3.16
 |  |  |  |  |  SCFunction (5:16): closed
 |  |  |  |  |  |  SCBody (5:16)
 |  |  |  |  |  |  |  SCLiteral (5:20) = 1
-|  |  SCMethod (7:5): poisoned: version 3.16: nested { ^#{ |x| if (x) { ^1 }; 2 } }
+|  |  SCMethod (7:5): poisoned: nested, version 3.16: nested { ^#{ |x| if (x) { ^1 }; 2 } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Return in closed function
@@ -55,7 +55,7 @@ SCClass (3:1): ClosedReturns, version 3.16
 |  |  |  |  |  |  |  |  |  |  SCBody (7:29)
 |  |  |  |  |  |  |  |  |  |  |  SCLiteral (7:32) = 1
 |  |  |  |  |  |  |  SCLiteral (7:37) = 2
-|  |  SCMethod (10:5): version 3.16: after { |x| if (x) { ^1 }; #{ 3 }; ^2 }
+|  |  SCMethod (10:5): after, version 3.16: after { |x| if (x) { ^1 }; #{ 3 }; ^2 }
 |  |  |  SCArgumentDeclareList (10:14)
 |  |  |  |  SCArgumentDeclare (10:14): x
 |  |  |  SCBody (10:17)
@@ -71,7 +71,7 @@ SCClass (3:1): ClosedReturns, version 3.16
 |  |  |  |  |  |  SCLiteral (10:35) = 3
 |  |  |  |  SCExplicitReturn (10:40)
 |  |  |  |  |  SCLiteral (10:41) = 2
-|  |  SCMethod (12:5): version 3.16: open_inside_method { ^{ |x| if (x) { ^1 }; #{ 2 } } }
+|  |  SCMethod (12:5): open_inside_method, version 3.16: open_inside_method { ^{ |x| if (x) { ^1 }; #{ 2 } } }
 |  |  |  SCBody (12:26)
 |  |  |  |  SCExplicitReturn (12:26)
 |  |  |  |  |  SCFunction (12:27)

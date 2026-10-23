@@ -4,7 +4,7 @@
 IR GRAPH DUMP 
 
 
-SCClass (5:1): UnclosedByIndentationFallback, version 3.16
+SCClass (5:1): UnclosedByIndentationFallback : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unclosed Bracket.
@@ -20,11 +20,11 @@ SCClass (5:1): UnclosedByIndentationFallback, version 3.16
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (5:1)
 |  SCMethodList (5:1)
-|  |  SCMethod (6:5): version 3.16: unindented {'\n'    ^1'\n'    } -> 1
+|  |  SCMethod (6:5): unindented, version 3.16: unindented {'\n'    ^1'\n'    } -> 1
 |  |  |  SCBody (7:5)
 |  |  |  |  SCExplicitReturn (7:5)
 |  |  |  |  |  SCLiteral (7:6) = 1
-|  |  SCMethod (9:5): version 3.16: missing_close {'\n'        ^2'\n'} -> 2
+|  |  SCMethod (9:5): missing_close, version 3.16: missing_close {'\n'        ^2'\n'} -> 2
 |  |  |  SCBody (10:9)
 |  |  |  |  SCExplicitReturn (10:9)
 |  |  |  |  |  SCLiteral (10:10) = 2

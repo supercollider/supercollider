@@ -4,21 +4,21 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): Arrays, version 3.16
+SCClass (2:1): Arrays : Object, version 3.16
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (3:5): version 3.16: constant { ^[1, 2.5, "three"] } -> [1, 2.5, "three"]
+|  |  SCMethod (3:5): constant, version 3.16: constant { ^[1, 2.5, "three"] } -> [1, 2.5, "three"]
 |  |  |  SCBody (3:16)
 |  |  |  |  SCExplicitReturn (3:16)
 |  |  |  |  |  SCCollection (3:17): Array = [1, 2.5, "three"]
 |  |  |  |  |  |  SCLiteral (3:18) = 1
 |  |  |  |  |  |  SCLiteral (3:21) = 2.5
 |  |  |  |  |  |  SCLiteral (3:26) = "three"
-|  |  SCMethod (4:5): version 3.16: empty { ^[] } -> []
+|  |  SCMethod (4:5): empty, version 3.16: empty { ^[] } -> []
 |  |  |  SCBody (4:13)
 |  |  |  |  SCExplicitReturn (4:13)
 |  |  |  |  |  SCCollection (4:14): Array = []
-|  |  SCMethod (5:5): version 3.16: nested_constant { ^[[1, 2], [\a]] } -> [[1, 2], [\a]]
+|  |  SCMethod (5:5): nested_constant, version 3.16: nested_constant { ^[[1, 2], [\a]] } -> [[1, 2], [\a]]
 |  |  |  SCBody (5:23)
 |  |  |  |  SCExplicitReturn (5:23)
 |  |  |  |  |  SCCollection (5:24): Array = [[1, 2], [\a]]
@@ -27,7 +27,7 @@ SCClass (2:1): Arrays, version 3.16
 |  |  |  |  |  |  |  SCLiteral (5:29) = 2
 |  |  |  |  |  |  SCCollection (5:33): Array = [\a]
 |  |  |  |  |  |  |  SCLiteral (5:34) = \a
-|  |  SCMethod (6:5): version 3.16: keyword_elements { ^[a: 1, b: 2] } -> [\a, 1, \b, 2]
+|  |  SCMethod (6:5): keyword_elements, version 3.16: keyword_elements { ^[a: 1, b: 2] } -> [\a, 1, \b, 2]
 |  |  |  SCBody (6:24)
 |  |  |  |  SCExplicitReturn (6:24)
 |  |  |  |  |  SCCollection (6:25): Array = [\a, 1, \b, 2]
@@ -35,14 +35,14 @@ SCClass (2:1): Arrays, version 3.16
 |  |  |  |  |  |  SCLiteral (6:29) = 1
 |  |  |  |  |  |  SCLiteral (6:32) = \b
 |  |  |  |  |  |  SCLiteral (6:35) = 2
-|  |  SCMethod (7:5): version 3.16: not_constant { ^[1, 2.foo] }
+|  |  SCMethod (7:5): not_constant, version 3.16: not_constant { ^[1, 2.foo] }
 |  |  |  SCBody (7:20)
 |  |  |  |  SCExplicitReturn (7:20)
 |  |  |  |  |  SCCollection (7:21): Array
 |  |  |  |  |  |  SCLiteral (7:22) = 1
 |  |  |  |  |  |  SCMessage (7:25): foo
 |  |  |  |  |  |  |  SCLiteral (7:25) = 2
-|  |  SCMethod (8:5): version 3.16: nested_not_constant { ^[1, [2.foo]] }
+|  |  SCMethod (8:5): nested_not_constant, version 3.16: nested_not_constant { ^[1, [2.foo]] }
 |  |  |  SCBody (8:27)
 |  |  |  |  SCExplicitReturn (8:27)
 |  |  |  |  |  SCCollection (8:28): Array
@@ -50,14 +50,14 @@ SCClass (2:1): Arrays, version 3.16
 |  |  |  |  |  |  SCCollection (8:32): Array
 |  |  |  |  |  |  |  SCMessage (8:33): foo
 |  |  |  |  |  |  |  |  SCLiteral (8:33) = 2
-|  |  SCMethod (9:5): version 3.16: immutable { ^#[1, name, \symbol] } -> [1, \name, \symbol]
+|  |  SCMethod (9:5): immutable, version 3.16: immutable { ^#[1, name, \symbol] } -> [1, \name, \symbol]
 |  |  |  SCBody (9:17)
 |  |  |  |  SCExplicitReturn (9:17)
 |  |  |  |  |  SCCollection (9:18): Array = [1, \name, \symbol]
 |  |  |  |  |  |  SCLiteral (9:20) = 1
 |  |  |  |  |  |  SCLiteral (9:23) = \name
 |  |  |  |  |  |  SCLiteral (9:29) = \symbol
-|  |  SCMethod (10:5): poisoned: version 3.16: immutable_not_literal { ^#[1, 2.foo] }
+|  |  SCMethod (10:5): poisoned: immutable_not_literal, version 3.16: immutable_not_literal { ^#[1, 2.foo] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Not a constant
@@ -77,7 +77,7 @@ SCClass (2:1): Arrays, version 3.16
 |  |  |  |  |  |  SCLiteral (10:32) = 1
 |  |  |  |  |  |  SCMessage (10:35): foo
 |  |  |  |  |  |  |  SCLiteral (10:35) = 2
-|  |  SCMethod (11:5): version 3.16: immutable_nested { ^#[[a, 1], b] } -> [[\a, 1], \b]
+|  |  SCMethod (11:5): immutable_nested, version 3.16: immutable_nested { ^#[[a, 1], b] } -> [[\a, 1], \b]
 |  |  |  SCBody (11:24)
 |  |  |  |  SCExplicitReturn (11:24)
 |  |  |  |  |  SCCollection (11:25): Array = [[\a, 1], \b]

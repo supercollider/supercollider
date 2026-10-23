@@ -4,23 +4,23 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): MethodArguments, version 3.16
+SCClass (2:1): MethodArguments : Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): instance_var
 |  SCMethodList (2:1)
-|  |  SCMethod (7:5): version 3.16: read_argument { |a| ^a }
+|  |  SCMethod (7:5): read_argument, version 3.16: read_argument { |a| ^a }
 |  |  |  SCArgumentDeclareList (7:22)
 |  |  |  |  SCArgumentDeclare (7:22): a
 |  |  |  SCBody (7:25)
 |  |  |  |  SCExplicitReturn (7:25)
 |  |  |  |  |  SCRead (7:26): local a, declared (7:22): a
-|  |  SCMethod (8:5): version 3.16: assign_argument { |a| a = 1 }
+|  |  SCMethod (8:5): assign_argument, version 3.16: assign_argument { |a| a = 1 }
 |  |  |  SCArgumentDeclareList (8:24)
 |  |  |  |  SCArgumentDeclare (8:24): a (assigned)
 |  |  |  SCBody (8:27)
 |  |  |  |  SCAssign (8:27): local a, declared (8:24): a
 |  |  |  |  |  SCLiteral (8:31) = 1
-|  |  SCMethod (11:5): version 3.16: earlier_argument { |a, b = (a + 1)| ^b }
+|  |  SCMethod (11:5): earlier_argument, version 3.16: earlier_argument { |a, b = (a + 1)| ^b }
 |  |  |  SCArgumentDeclareList (11:25)
 |  |  |  |  SCArgumentDeclare (11:25): a
 |  |  |  |  SCArgumentDeclare (11:28): b, computed
@@ -31,7 +31,7 @@ SCClass (2:1): MethodArguments, version 3.16
 |  |  |  SCBody (11:41)
 |  |  |  |  SCExplicitReturn (11:41)
 |  |  |  |  |  SCRead (11:42): local b, declared (11:28): b = (a + 1)
-|  |  SCMethod (13:5): poisoned: version 3.16: later_argument { |a = (b), b| ^a }
+|  |  SCMethod (13:5): poisoned: later_argument, version 3.16: later_argument { |a = (b), b| ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
@@ -53,13 +53,13 @@ SCClass (2:1): MethodArguments, version 3.16
 |  |  |  SCBody (13:35)
 |  |  |  |  SCExplicitReturn (13:35)
 |  |  |  |  |  SCRead (13:36): local a, declared (13:23): a = (b)
-|  |  SCMethod (15:5): version 3.16: shadows_instance { |instance_var| ^instance_var }
+|  |  SCMethod (15:5): shadows_instance, version 3.16: shadows_instance { |instance_var| ^instance_var }
 |  |  |  SCArgumentDeclareList (15:25)
 |  |  |  |  SCArgumentDeclare (15:25): instance_var
 |  |  |  SCBody (15:39)
 |  |  |  |  SCExplicitReturn (15:39)
 |  |  |  |  |  SCRead (15:40): local instance_var, declared (15:25): instance_var
-|  |  SCMethod (17:5): version 3.16: variadic { |a ... rest| ^rest }
+|  |  SCMethod (17:5): variadic, version 3.16: variadic { |a ... rest| ^rest }
 |  |  |  SCArgumentDeclareList (17:17)
 |  |  |  |  SCArgumentDeclare (17:17): a
 |  |  |  SCArgumentDeclareList (17:17)
@@ -67,7 +67,7 @@ SCClass (2:1): MethodArguments, version 3.16
 |  |  |  SCBody (17:29)
 |  |  |  |  SCExplicitReturn (17:29)
 |  |  |  |  |  SCRead (17:30): local rest, declared (17:23): rest
-|  |  SCMethod (19:5): version 3.16: block_uses_argument { |a| ^{ a } }
+|  |  SCMethod (19:5): block_uses_argument, version 3.16: block_uses_argument { |a| ^{ a } }
 |  |  |  SCArgumentDeclareList (19:28)
 |  |  |  |  SCArgumentDeclare (19:28): a (captured)
 |  |  |  SCBody (19:31)
@@ -75,10 +75,10 @@ SCClass (2:1): MethodArguments, version 3.16
 |  |  |  |  |  SCFunction (19:32)
 |  |  |  |  |  |  SCBody (19:32)
 |  |  |  |  |  |  |  SCRead (19:34): local a, declared (19:28): a
-SCClass (2:1): Meta_MethodArguments, version 3.16
+SCClass (2:1): Meta_MethodArguments : Meta_Object, version 3.16
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (23:5): version 3.16: *class_read_argument { |a, b = (a)| ^b }
+|  |  SCMethod (23:5): class_read_argument, version 3.16: *class_read_argument { |a, b = (a)| ^b }
 |  |  |  SCArgumentDeclareList (23:29)
 |  |  |  |  SCArgumentDeclare (23:29): a
 |  |  |  |  SCArgumentDeclare (23:32): b, computed

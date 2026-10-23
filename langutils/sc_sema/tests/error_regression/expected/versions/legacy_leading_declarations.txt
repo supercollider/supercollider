@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (3:1): LegacyLeadingDeclarations
+SCClass (3:1): LegacyLeadingDeclarations : Object
 |  SCMemberList (3:1)
 |  SCMethodList (3:1)
-|  |  SCMethod (5:5): leading { var a = 1; var b = 2; ^a + b }
+|  |  SCMethod (5:5): leading: leading { var a = 1; var b = 2; ^a + b }
 |  |  |  SCBody (5:15)
 |  |  |  |  SCVariableDeclare (5:19): a, prototype
 |  |  |  |  |  SCLiteral (5:23) = 1
@@ -18,10 +18,10 @@ SCClass (3:1): LegacyLeadingDeclarations
 |  |  |  |  |  |  SCRead (5:38): local a = 1, declared (5:19): a = 1
 |  |  |  |  |  |  SCPositionalArgs (5:38)
 |  |  |  |  |  |  |  SCRead (5:42): local b = 2, declared (5:30): b = 2
-|  |  SCMethod (7:5): only_declarations { var a; }
+|  |  SCMethod (7:5): only_declarations: only_declarations { var a; }
 |  |  |  SCBody (7:25)
 |  |  |  |  SCVariableDeclare (7:29): a
-|  |  SCMethod (9:5): poisoned: after_expression { 1; var a = 2; ^a }
+|  |  SCMethod (9:5): poisoned: after_expression: after_expression { 1; var a = 2; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable declared after an expression
@@ -42,7 +42,7 @@ SCClass (3:1): LegacyLeadingDeclarations
 |  |  |  |  |  SCLiteral (9:35) = 2
 |  |  |  |  SCExplicitReturn (9:38)
 |  |  |  |  |  SCRead (9:39): local a = 2, declared (9:31): a = 2
-|  |  SCMethod (11:5): poisoned: in_function { ^{ 1; var a = 2; a } }
+|  |  SCMethod (11:5): poisoned: in_function: in_function { ^{ 1; var a = 2; a } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable declared after an expression
@@ -65,7 +65,7 @@ SCClass (3:1): LegacyLeadingDeclarations
 |  |  |  |  |  |  |  SCVariableDeclare (11:29): a, prototype
 |  |  |  |  |  |  |  |  SCLiteral (11:33) = 2
 |  |  |  |  |  |  |  SCRead (11:36): local a = 2, declared (11:29): a = 2
-|  |  SCMethod (13:5): poisoned: nested_with_return { |x| ^{ if (x) { ^1 }; var a = 2; a } }
+|  |  SCMethod (13:5): poisoned: nested_with_return: nested_with_return { |x| ^{ if (x) { ^1 }; var a = 2; a } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable declared after an expression
@@ -96,7 +96,7 @@ SCClass (3:1): LegacyLeadingDeclarations
 |  |  |  |  |  |  |  SCVariableDeclare (13:52): a, prototype
 |  |  |  |  |  |  |  |  SCLiteral (13:56) = 2
 |  |  |  |  |  |  |  SCRead (13:59): local a = 2, declared (13:52): a = 2
-|  |  SCMethod (16:5): function_after_expression { 1; ^{ var a = 2; a } }
+|  |  SCMethod (16:5): function_after_expression: function_after_expression { 1; ^{ var a = 2; a } }
 |  |  |  SCBody (16:33)
 |  |  |  |  SCLiteral (16:33) = 1
 |  |  |  |  SCExplicitReturn (16:36)
@@ -105,7 +105,7 @@ SCClass (3:1): LegacyLeadingDeclarations
 |  |  |  |  |  |  |  SCVariableDeclare (16:43): a, prototype
 |  |  |  |  |  |  |  |  SCLiteral (16:47) = 2
 |  |  |  |  |  |  |  SCRead (16:50): local a = 2, declared (16:43): a = 2
-|  |  SCMethod (19:5): primitive { |x| _BasicSwap var a = x; ^a }
+|  |  SCMethod (19:5): primitive: primitive { |x| _BasicSwap var a = x; ^a }
 |  |  |  SCArgumentDeclareList (19:18)
 |  |  |  |  SCArgumentDeclare (19:18): x
 |  |  |  SCBody (19:32)
@@ -113,17 +113,17 @@ SCClass (3:1): LegacyLeadingDeclarations
 |  |  |  |  |  SCRead (19:40): local x, declared (19:18): x
 |  |  |  |  SCExplicitReturn (19:43)
 |  |  |  |  |  SCRead (19:44): local a, declared (19:36): a = x
-SCClass (22:1): LeadingDeclarations316, version 3.16
+SCClass (22:1): LeadingDeclarations316 : Object, version 3.16
 |  SCMemberList (22:1)
 |  SCMethodList (22:1)
-|  |  SCMethod (25:5): version 3.16: after_expression { 1; var a = 2; ^a } -> 2
+|  |  SCMethod (25:5): after_expression, version 3.16: after_expression { 1; var a = 2; ^a } -> 2
 |  |  |  SCBody (25:24)
 |  |  |  |  SCLiteral (25:24) = 1
 |  |  |  |  SCVariableDeclare (25:31): a, prototype
 |  |  |  |  |  SCLiteral (25:35) = 2
 |  |  |  |  SCExplicitReturn (25:38)
 |  |  |  |  |  SCRead (25:39): local a = 2, declared (25:31): a = 2
-|  |  SCMethod (27:5): version 3.16: in_function { ^{ 1; var a = 2; a } }
+|  |  SCMethod (27:5): in_function, version 3.16: in_function { ^{ 1; var a = 2; a } }
 |  |  |  SCBody (27:19)
 |  |  |  |  SCExplicitReturn (27:19)
 |  |  |  |  |  SCFunction (27:20) -> 2
@@ -132,7 +132,7 @@ SCClass (22:1): LeadingDeclarations316, version 3.16
 |  |  |  |  |  |  |  SCVariableDeclare (27:29): a, prototype
 |  |  |  |  |  |  |  |  SCLiteral (27:33) = 2
 |  |  |  |  |  |  |  SCRead (27:36): local a = 2, declared (27:29): a = 2
-|  |  SCMethod (29:5): version 3.16: nested_with_return { |x| ^{ if (x) { ^1 }; var a = 2; a } }
+|  |  SCMethod (29:5): nested_with_return, version 3.16: nested_with_return { |x| ^{ if (x) { ^1 }; var a = 2; a } }
 |  |  |  SCArgumentDeclareList (29:27)
 |  |  |  |  SCArgumentDeclare (29:27): x (captured)
 |  |  |  SCBody (29:30)

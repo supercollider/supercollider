@@ -46,7 +46,6 @@ set(sclang_sources
     LangPrimSource/PyrSymbolPrim.cpp
     LangPrimSource/PyrUnixPrim.cpp
     LangSource/AdvancingAllocPool.cpp
-    LangSource/ByteCodeArray.cpp
     LangSource/DumpParseNode.cpp
     LangSource/GC.cpp
     LangSource/InitAlloc.cpp
@@ -212,7 +211,7 @@ endif()
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
-target_link_libraries(libsclang sc_lexer)
+target_link_libraries(libsclang sc_lexer sc_bytecode)
 
 if(SC_QT OR SC_IDE)
     get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)

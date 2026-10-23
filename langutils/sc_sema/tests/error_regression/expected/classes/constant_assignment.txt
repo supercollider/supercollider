@@ -4,7 +4,7 @@
 IR GRAPH DUMP 
 
 
-SCClass (3:1): ConstantAssignment, version 3.16
+SCClass (3:1): ConstantAssignment : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Constant with a setter
@@ -35,7 +35,7 @@ SCClass (3:1): ConstantAssignment, version 3.16
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (3:1)
 |  SCMethodList (3:1)
-|  |  SCMethod (10:5): poisoned: version 3.16: instance_method { a = 2; ^a }
+|  |  SCMethod (10:5): poisoned: instance_method, version 3.16: instance_method { a = 2; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Assigning to a constant
@@ -63,7 +63,7 @@ SCClass (3:1): ConstantAssignment, version 3.16
 |  |  |  |  SCLiteral (10:27) = 2
 |  |  |  |  SCExplicitReturn (10:30)
 |  |  |  |  |  SCRead (10:31): class a, declared (4:11): a
-|  |  SCMethod (14:5): poisoned: version 3.16: pack { #a, e = [1, 2]; ^e }
+|  |  SCMethod (14:5): poisoned: pack, version 3.16: pack { #a, e = [1, 2]; ^e }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Assigning to a constant
@@ -96,7 +96,7 @@ SCClass (3:1): ConstantAssignment, version 3.16
 |  |  |  |  |  |  SCPackTarget (14:16): class e at 1, declared (7:14): e
 |  |  |  |  SCExplicitReturn (14:28)
 |  |  |  |  |  SCRead (14:29): class e, declared (7:14): e
-|  |  SCMethod (16:5): poisoned: version 3.16: in_function { ^{ b = 3 } }
+|  |  SCMethod (16:5): poisoned: in_function, version 3.16: in_function { ^{ b = 3 } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Assigning to a constant
@@ -125,7 +125,7 @@ SCClass (3:1): ConstantAssignment, version 3.16
 |  |  |  |  |  SCFunction (16:20)
 |  |  |  |  |  |  SCBody (16:20)
 |  |  |  |  |  |  |  SCLiteral (16:26) = 3
-|  |  SCMethod (18:5): poisoned: version 3.16: nested_return { |x| if (x) { a = 2; ^1 }; ^2 }
+|  |  SCMethod (18:5): poisoned: nested_return, version 3.16: nested_return { |x| if (x) { a = 2; ^1 }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Assigning to a constant
@@ -162,20 +162,20 @@ SCClass (3:1): ConstantAssignment, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (18:42) = 1
 |  |  |  |  SCExplicitReturn (18:47)
 |  |  |  |  |  SCLiteral (18:48) = 2
-|  |  SCMethod (21:5): version 3.16: reads { ^a + b }
+|  |  SCMethod (21:5): reads, version 3.16: reads { ^a + b }
 |  |  |  SCBody (21:13)
 |  |  |  |  SCExplicitReturn (21:13)
 |  |  |  |  |  SCMessage (21:14): +
 |  |  |  |  |  |  SCRead (21:14): class a, declared (4:11): a
 |  |  |  |  |  |  SCPositionalArgs (21:14)
 |  |  |  |  |  |  |  SCRead (21:18): class b, declared (4:19): b
-|  |  SCMethod (23:5): version 3.16: class_variable { e = 1; ^e }
+|  |  SCMethod (23:5): class_variable, version 3.16: class_variable { e = 1; ^e }
 |  |  |  SCBody (23:22)
 |  |  |  |  SCAssign (23:22): class e, declared (7:14): e
 |  |  |  |  |  SCLiteral (23:26) = 1
 |  |  |  |  SCExplicitReturn (23:29)
 |  |  |  |  |  SCRead (23:30): class e, declared (7:14): e
-|  |  SCMethod (26:5): version 3.16: hidden { var a = 1; a = 2; ^a }
+|  |  SCMethod (26:5): hidden, version 3.16: hidden { var a = 1; a = 2; ^a }
 |  |  |  SCBody (26:14)
 |  |  |  |  SCVariableDeclare (26:18): a (assigned), prototype
 |  |  |  |  |  SCLiteral (26:22) = 1
@@ -183,7 +183,7 @@ SCClass (3:1): ConstantAssignment, version 3.16
 |  |  |  |  |  SCLiteral (26:29) = 2
 |  |  |  |  SCExplicitReturn (26:32)
 |  |  |  |  |  SCRead (26:33): local a, declared (26:18): a = 1
-SCClass (3:1): Meta_ConstantAssignment, version 3.16
+SCClass (3:1): Meta_ConstantAssignment : Meta_Object, version 3.16
 |  SCMemberList (3:1)
 |  |  SCMember (4:11): a = 1
 |  |  SCMember (4:19): b = 2
@@ -191,7 +191,7 @@ SCClass (3:1): Meta_ConstantAssignment, version 3.16
 |  |  SCMember (6:21): d = 4
 |  |  SCMember (7:14): e
 |  SCMethodList (3:1)
-|  |  SCMethod (12:5): poisoned: version 3.16: *class_method { a = 2; ^a }
+|  |  SCMethod (12:5): poisoned: class_method, version 3.16: *class_method { a = 2; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Assigning to a constant

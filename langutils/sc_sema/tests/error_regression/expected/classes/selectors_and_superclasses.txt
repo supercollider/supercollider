@@ -1,0 +1,53 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): SelectorBase : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): plain, version 3.16: plain { ^1 } -> 1
+|  |  |  SCBody (6:13)
+|  |  |  |  SCExplicitReturn (6:13)
+|  |  |  |  |  SCLiteral (6:14) = 1
+|  |  SCMethod (8:5): +, version 3.16: + { |other| ^other }
+|  |  |  SCArgumentDeclareList (8:10)
+|  |  |  |  SCArgumentDeclare (8:10): other
+|  |  |  SCBody (8:17)
+|  |  |  |  SCExplicitReturn (8:17)
+|  |  |  |  |  SCRead (8:18): local other, declared (8:10): other
+|  |  SCMethod (10:5): value_, version 3.16: value_ { |v| ^v }
+|  |  |  SCArgumentDeclareList (10:15)
+|  |  |  |  SCArgumentDeclare (10:15): v
+|  |  |  SCBody (10:18)
+|  |  |  |  SCExplicitReturn (10:18)
+|  |  |  |  |  SCRead (10:19): local v, declared (10:15): v
+SCClass (4:1): Meta_SelectorBase : Meta_Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (12:5): classMethod, version 3.16: *classMethod { ^2 } -> 2
+|  |  |  SCBody (12:20)
+|  |  |  |  SCExplicitReturn (12:20)
+|  |  |  |  |  SCLiteral (12:21) = 2
+SCClass (15:1): SelectorDerived : SelectorBase, version 3.16
+|  SCMemberList (15:1)
+|  SCMethodList (15:1)
+|  |  SCMethod (17:5): nested_return, version 3.16: nested_return { |x| if (x) { ^1 }; ^2 }
+|  |  |  SCArgumentDeclareList (17:22)
+|  |  |  |  SCArgumentDeclare (17:22): x
+|  |  |  SCBody (17:25)
+|  |  |  |  SCMessage (17:25): if
+|  |  |  |  |  SCRead (17:29): local x, declared (17:22): x
+|  |  |  |  |  SCPositionalArgs (17:25)
+|  |  |  |  |  |  SCFunction (17:32)
+|  |  |  |  |  |  |  SCBody (17:32)
+|  |  |  |  |  |  |  |  SCExplicitReturn (17:34)
+|  |  |  |  |  |  |  |  |  SCLiteral (17:35) = 1
+|  |  |  |  SCExplicitReturn (17:40)
+|  |  |  |  |  SCLiteral (17:41) = 2
+|  |  SCMethod (22:5): extended, version 3.16: extended { ^3 } -> 3
+|  |  |  SCBody (22:16)
+|  |  |  |  SCExplicitReturn (22:16)
+|  |  |  |  |  SCLiteral (22:17) = 3
+Successfully compiled 17 classes.

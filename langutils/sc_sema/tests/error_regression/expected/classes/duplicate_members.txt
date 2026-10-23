@@ -4,7 +4,7 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): Dup1, version 3.16
+SCClass (2:1): Dup1 : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member in class
@@ -31,11 +31,11 @@ SCClass (2:1): Dup1, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): a
 |  SCMethodList (2:1)
-SCClass (6:1): Dup2B, version 3.16
+SCClass (6:1): Dup2B : Object, version 3.16
 |  SCMemberList (6:1)
 |  |  SCMember (7:9): a
 |  SCMethodList (6:1)
-SCClass (10:1): Dup2D, version 3.16
+SCClass (10:1): Dup2D : Dup2B, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member with base class.
@@ -61,7 +61,7 @@ SCClass (10:1): Dup2D, version 3.16
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (10:1)
 |  SCMethodList (10:1)
-SCClass (15:1): DupWithValues, version 3.16
+SCClass (15:1): DupWithValues : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member in class
@@ -154,7 +154,7 @@ SCClass (15:1): DupWithValues, version 3.16
 |  |  SCMember (17:9): first
 |  |  SCMember (19:9): second = 1
 |  SCMethodList (15:1)
-SCClass (15:1): Meta_DupWithValues, version 3.16
+SCClass (15:1): Meta_DupWithValues : Meta_Object, version 3.16
 |  SCMemberList (15:1)
 |  |  SCMember (21:14): shared = 1
 |  SCMethodList (15:1)

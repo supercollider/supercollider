@@ -4,58 +4,58 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): NegativeLiterals, version 3.16
+SCClass (2:1): NegativeLiterals : Object, version 3.16
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (5:5): version 3.16: integer { ^-5 } -> -5
+|  |  SCMethod (5:5): integer, version 3.16: integer { ^-5 } -> -5
 |  |  |  SCBody (5:15)
 |  |  |  |  SCExplicitReturn (5:15)
 |  |  |  |  |  SCLiteral (5:17) = -5
-|  |  SCMethod (6:5): version 3.16: float { ^-2.5 } -> -2.5
+|  |  SCMethod (6:5): float, version 3.16: float { ^-2.5 } -> -2.5
 |  |  |  SCBody (6:13)
 |  |  |  |  SCExplicitReturn (6:13)
 |  |  |  |  |  SCLiteral (6:15) = -2.5
-|  |  SCMethod (7:5): version 3.16: exponent { ^-1e3 } -> -1000.0
+|  |  SCMethod (7:5): exponent, version 3.16: exponent { ^-1e3 } -> -1000.0
 |  |  |  SCBody (7:16)
 |  |  |  |  SCExplicitReturn (7:16)
 |  |  |  |  |  SCLiteral (7:18) = -1000.0
-|  |  SCMethod (8:5): version 3.16: hexadecimal { ^-0x10 } -> -16
+|  |  SCMethod (8:5): hexadecimal, version 3.16: hexadecimal { ^-0x10 } -> -16
 |  |  |  SCBody (8:19)
 |  |  |  |  SCExplicitReturn (8:19)
 |  |  |  |  |  SCLiteral (8:21) = -16
-|  |  SCMethod (9:5): version 3.16: radix { ^-2r101 } -> -5
+|  |  SCMethod (9:5): radix, version 3.16: radix { ^-2r101 } -> -5
 |  |  |  SCBody (9:13)
 |  |  |  |  SCExplicitReturn (9:13)
 |  |  |  |  |  SCLiteral (9:15) = -5
-|  |  SCMethod (10:5): version 3.16: pi_alone { ^-pi } -> -3.1415927
+|  |  SCMethod (10:5): pi_alone, version 3.16: pi_alone { ^-pi } -> -3.1415927
 |  |  |  SCBody (10:16)
 |  |  |  |  SCExplicitReturn (10:16)
 |  |  |  |  |  SCLiteral (10:17) = -3.1415927
-|  |  SCMethod (11:5): version 3.16: pi_multiple { ^-2pi } -> -6.2831853
+|  |  SCMethod (11:5): pi_multiple, version 3.16: pi_multiple { ^-2pi } -> -6.2831853
 |  |  |  SCBody (11:19)
 |  |  |  |  SCExplicitReturn (11:19)
 |  |  |  |  |  SCLiteral (11:20) = -6.2831853
-|  |  SCMethod (12:5): version 3.16: in_array { ^[-1, 2] } -> [-1, 2]
+|  |  SCMethod (12:5): in_array, version 3.16: in_array { ^[-1, 2] } -> [-1, 2]
 |  |  |  SCBody (12:16)
 |  |  |  |  SCExplicitReturn (12:16)
 |  |  |  |  |  SCCollection (12:17): Array = [-1, 2]
 |  |  |  |  |  |  SCLiteral (12:19) = -1
 |  |  |  |  |  |  SCLiteral (12:22) = 2
-|  |  SCMethod (13:5): version 3.16: in_range { ^(-2..2) } -> [-2, -1, 0, 1, 2]
+|  |  SCMethod (13:5): in_range, version 3.16: in_range { ^(-2..2) } -> [-2, -1, 0, 1, 2]
 |  |  |  SCBody (13:16)
 |  |  |  |  SCExplicitReturn (13:16)
 |  |  |  |  |  SCRange (13:17) = [-2, -1, 0, 1, 2]
 |  |  |  |  |  |  SCLiteral (13:19) = -2
 |  |  |  |  |  |  SCMissing (13:17)
 |  |  |  |  |  |  SCLiteral (13:22) = 2
-|  |  SCMethod (14:5): version 3.16: binary_minus { ^1 - 2 } -> -1
+|  |  SCMethod (14:5): binary_minus, version 3.16: binary_minus { ^1 - 2 } -> -1
 |  |  |  SCBody (14:20)
 |  |  |  |  SCExplicitReturn (14:20)
 |  |  |  |  |  SCMessage (14:21): - = -1
 |  |  |  |  |  |  SCLiteral (14:21) = 1
 |  |  |  |  |  |  SCPositionalArgs (14:21)
 |  |  |  |  |  |  |  SCLiteral (14:25) = 2
-SCClass (2:1): Meta_NegativeLiterals, version 3.16
+SCClass (2:1): Meta_NegativeLiterals : Meta_Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:11): negative_const = -3
 |  SCMethodList (2:1)

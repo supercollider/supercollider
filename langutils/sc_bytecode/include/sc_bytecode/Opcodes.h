@@ -46,8 +46,8 @@ Most opcodes are simple.
 
 
 #pragma once
-#include "OpcodeDetails.h"
-#include "OpcodeOperands.h"
+#include "sc_bytecode/OpcodeDetails.h"
+#include "sc_bytecode/OpcodeOperands.h"
 
 
 namespace Opcode {

@@ -4,18 +4,18 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): Foo
+SCClass (2:1): Foo : Object
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (12:5): version 3.16: own { ^2 } -> 2
+|  |  SCMethod (12:5): own, version 3.16: own { ^2 } -> 2
 |  |  |  SCBody (12:11)
 |  |  |  |  SCExplicitReturn (12:11)
 |  |  |  |  |  SCLiteral (12:12) = 2
-|  |  SCMethod (7:5): overwritten { ^1 } -> 1
+|  |  SCMethod (7:5): overwritten: overwritten { ^1 } -> 1
 |  |  |  SCBody (7:19)
 |  |  |  |  SCExplicitReturn (7:19)
 |  |  |  |  |  SCLiteral (7:20) = 1
-|  |  SCMethod (8:5): poisoned: conflicting { ^1 }
+|  |  SCMethod (8:5): poisoned: conflicting: conflicting { ^1 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Extensions conflict
@@ -41,10 +41,10 @@ SCClass (2:1): Foo
 |  |  |  SCBody (8:19)
 |  |  |  |  SCExplicitReturn (8:19)
 |  |  |  |  |  SCLiteral (8:20) = 1
-SCClass (2:1): Meta_Foo
+SCClass (2:1): Meta_Foo : Meta_Object
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (9:5): *class_overwritten { ^1 } -> 1
+|  |  SCMethod (9:5): class_overwritten: *class_overwritten { ^1 } -> 1
 |  |  |  SCBody (9:26)
 |  |  |  |  SCExplicitReturn (9:26)
 |  |  |  |  |  SCLiteral (9:27) = 1

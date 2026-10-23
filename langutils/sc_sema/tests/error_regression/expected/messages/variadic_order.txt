@@ -4,11 +4,11 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): VariadicOrder, version 3.16
+SCClass (2:1): VariadicOrder : Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): instance_var
 |  SCMethodList (2:1)
-|  |  SCMethod (5:5): version 3.16: variadic_last { ^1.foo(2, *3) }
+|  |  SCMethod (5:5): variadic_last, version 3.16: variadic_last { ^1.foo(2, *3) }
 |  |  |  SCBody (5:21)
 |  |  |  |  SCExplicitReturn (5:21)
 |  |  |  |  |  SCMessage (5:22): foo
@@ -17,7 +17,7 @@ SCClass (2:1): VariadicOrder, version 3.16
 |  |  |  |  |  |  |  SCLiteral (5:28) = 2
 |  |  |  |  |  |  SCVariadicArgs (5:22)
 |  |  |  |  |  |  |  SCLiteral (5:32) = 3
-|  |  SCMethod (6:5): poisoned: version 3.16: variadic_first { ^1.foo(*2, 3) }
+|  |  SCMethod (6:5): poisoned: variadic_first, version 3.16: variadic_first { ^1.foo(*2, 3) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
@@ -49,7 +49,7 @@ SCClass (2:1): VariadicOrder, version 3.16
 |  |  |  |  |  |  |  SCLiteral (6:33) = 3
 |  |  |  |  |  |  SCVariadicArgs (6:23)
 |  |  |  |  |  |  |  SCLiteral (6:30) = 2
-|  |  SCMethod (7:5): poisoned: version 3.16: two_after { ^1.foo(*2, 3, 4) }
+|  |  SCMethod (7:5): poisoned: two_after, version 3.16: two_after { ^1.foo(*2, 3, 4) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
@@ -82,7 +82,7 @@ SCClass (2:1): VariadicOrder, version 3.16
 |  |  |  |  |  |  |  SCLiteral (7:31) = 4
 |  |  |  |  |  |  SCVariadicArgs (7:18)
 |  |  |  |  |  |  |  SCLiteral (7:25) = 2
-|  |  SCMethod (8:5): version 3.16: keyword_after { ^1.foo(*2, bar: 3) }
+|  |  SCMethod (8:5): keyword_after, version 3.16: keyword_after { ^1.foo(*2, bar: 3) }
 |  |  |  SCBody (8:21)
 |  |  |  |  SCExplicitReturn (8:21)
 |  |  |  |  |  SCMessage (8:22): foo
@@ -92,7 +92,7 @@ SCClass (2:1): VariadicOrder, version 3.16
 |  |  |  |  |  |  |  |  SCLiteral (8:37) = 3
 |  |  |  |  |  |  SCVariadicArgs (8:22)
 |  |  |  |  |  |  |  SCLiteral (8:29) = 2
-|  |  SCMethod (9:5): poisoned: version 3.16: prefix { ^foo(1, *2, 3) }
+|  |  SCMethod (9:5): poisoned: prefix, version 3.16: prefix { ^foo(1, *2, 3) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
@@ -124,7 +124,7 @@ SCClass (2:1): VariadicOrder, version 3.16
 |  |  |  |  |  |  |  SCLiteral (9:26) = 3
 |  |  |  |  |  |  SCVariadicArgs (9:15)
 |  |  |  |  |  |  |  SCLiteral (9:23) = 2
-|  |  SCMethod (10:5): poisoned: version 3.16: prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  SCMethod (10:5): poisoned: prefix_variadic_receiver, version 3.16: prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
@@ -154,7 +154,7 @@ SCClass (2:1): VariadicOrder, version 3.16
 |  |  |  |  |  |  SCLiteral (10:41) = 2
 |  |  |  |  |  |  SCVariadicArgs (10:33)
 |  |  |  |  |  |  |  SCLiteral (10:38) = 1
-|  |  SCMethod (11:5): poisoned: version 3.16: array_after { ^1.foo(*2, [3]) }
+|  |  SCMethod (11:5): poisoned: array_after, version 3.16: array_after { ^1.foo(*2, [3]) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
@@ -187,7 +187,7 @@ SCClass (2:1): VariadicOrder, version 3.16
 |  |  |  |  |  |  |  |  SCLiteral (11:31) = 3
 |  |  |  |  |  |  SCVariadicArgs (11:20)
 |  |  |  |  |  |  |  SCLiteral (11:27) = 2
-|  |  SCMethod (12:5): poisoned: version 3.16: put_variadic { instance_var[*0] = 1 }
+|  |  SCMethod (12:5): poisoned: put_variadic, version 3.16: put_variadic { instance_var[*0] = 1 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
@@ -218,7 +218,7 @@ SCClass (2:1): VariadicOrder, version 3.16
 |  |  |  |  |  |  SCLiteral (12:39) = 1
 |  |  |  |  |  SCVariadicArgs (12:20)
 |  |  |  |  |  |  SCLiteral (12:34) = 0
-|  |  SCMethod (13:5): poisoned: version 3.16: put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  SCMethod (13:5): poisoned: put_variadic_keyword, version 3.16: put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
@@ -250,7 +250,7 @@ SCClass (2:1): VariadicOrder, version 3.16
 |  |  |  |  |  |  |  SCLiteral (13:48) = 1
 |  |  |  |  |  SCVariadicArgs (13:28)
 |  |  |  |  |  |  SCLiteral (13:42) = 0
-|  |  SCMethod (14:5): version 3.16: after_errors { ^5 } -> 5
+|  |  SCMethod (14:5): after_errors, version 3.16: after_errors { ^5 } -> 5
 |  |  |  SCBody (14:20)
 |  |  |  |  SCExplicitReturn (14:20)
 |  |  |  |  |  SCLiteral (14:21) = 5

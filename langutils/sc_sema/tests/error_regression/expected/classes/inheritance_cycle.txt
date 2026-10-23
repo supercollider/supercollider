@@ -62,10 +62,10 @@ The class NotDefined was not defined.
 IR GRAPH DUMP 
 
 
-SCClass (12:1): Fine, version 3.16
+SCClass (12:1): Fine : Object, version 3.16
 |  SCMemberList (12:1)
 |  SCMethodList (12:1)
-|  |  SCMethod (15:5): version 3.16: one { ^1 } -> 1
+|  |  SCMethod (15:5): one, version 3.16: one { ^1 } -> 1
 |  |  |  SCBody (15:11)
 |  |  |  |  SCExplicitReturn (15:11)
 |  |  |  |  |  SCLiteral (15:12) = 1

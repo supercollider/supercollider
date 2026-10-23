@@ -270,6 +270,7 @@ struct SCArgumentDeclareList : priv::List<SCArgumentDeclareList_I, SCArgumentDec
 struct SCMethod : priv::Node<SCMethod_I(SCArgumentDeclareList_I positional_arguments,
                                         SCArgumentDeclareList_I variadic_arguments, SCBody_I body)> {
     static constexpr auto type_name { "SCMethod" };
+    Locatable<SymSCSelector> selector;
     std::optional<Locatable<SymSCPrimitive>> primitive;
     bool poisoned { false };
     // Can differ from its class's, when it is in an extension.
@@ -277,7 +278,10 @@ struct SCMethod : priv::Node<SCMethod_I(SCArgumentDeclareList_I positional_argum
     // What calling the method returns, when it is known and has no effects. Only set without arguments, as their values
     // aren't known until the method is called. Callers can't rely on it unless they know which method is dispatched.
     OptionalConstExprIndex constant_result {};
-    SCMethod(std::optional<Locatable<SymSCPrimitive>> p, ast::LanguageVersion v): primitive(p), version(v) {}
+    SCMethod(Locatable<SymSCSelector> s, std::optional<Locatable<SymSCPrimitive>> p, ast::LanguageVersion v):
+        selector(s),
+        primitive(p),
+        version(v) {}
 };
 struct SCFunction : priv::Node<SCFunction_I(SCArgumentDeclareList_I positional_arguments,
                                             SCArgumentDeclareList_I variadic_arguments, SCBody_I body)> {
@@ -338,6 +342,8 @@ struct SCClass : priv::Node<SCClass_I(SCMemberList_I members, SCMethodList_I met
     // A class without one, NotIndexed, only has its instance variables.
     enum struct MemoryLayout { NotIndexed, Slot, Double, Float, Int32, Int16, Int8, Char, Symbol };
     SymSCClassName name;
+    // None for the root class. A meta class's is its superclass's meta class, or Class for the root's.
+    std::optional<SymSCClassName> superclass {};
     MemoryLayout memory_layout { MemoryLayout::NotIndexed };
     std::optional<SymSCClassName> meta_class {};
     // Of its own declaration, its extension methods have their own, see SCMethod::version.

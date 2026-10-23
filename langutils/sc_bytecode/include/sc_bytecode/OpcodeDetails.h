@@ -1,6 +1,6 @@
 #pragma once
 #include "sc_lexer/text_location.hpp"
-#include "ByteCodeArray.h"
+#include "sc_bytecode/ByteCodeArray.h"
 #include <cassert>
 #include <tuple>
 #include <cstring>

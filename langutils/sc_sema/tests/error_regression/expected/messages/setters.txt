@@ -4,30 +4,30 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): Setters, version 3.16
+SCClass (2:1): Setters : Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): x
 |  SCMethodList (2:1)
-|  |  SCMethod (5:5): version 3.16: simple { x.foo = 10 }
+|  |  SCMethod (5:5): simple, version 3.16: simple { x.foo = 10 }
 |  |  |  SCBody (5:14)
 |  |  |  |  SCMessage (5:14): foo_
 |  |  |  |  |  SCRead (5:14): instance x, declared (3:9): x
 |  |  |  |  |  SCPositionalArgs (5:14)
 |  |  |  |  |  |  SCLiteral (5:22) = 10
-|  |  SCMethod (6:5): version 3.16: expression_receiver { 1.bar.foo = 10 }
+|  |  SCMethod (6:5): expression_receiver, version 3.16: expression_receiver { 1.bar.foo = 10 }
 |  |  |  SCBody (6:27)
 |  |  |  |  SCMessage (6:27): foo_
 |  |  |  |  |  SCMessage (6:27): bar
 |  |  |  |  |  |  SCLiteral (6:27) = 1
 |  |  |  |  |  SCPositionalArgs (6:27)
 |  |  |  |  |  |  SCLiteral (6:39) = 10
-|  |  SCMethod (7:5): version 3.16: literal_receiver { 1.foo = 2 }
+|  |  SCMethod (7:5): literal_receiver, version 3.16: literal_receiver { 1.foo = 2 }
 |  |  |  SCBody (7:24)
 |  |  |  |  SCMessage (7:24): foo_
 |  |  |  |  |  SCLiteral (7:24) = 1
 |  |  |  |  |  SCPositionalArgs (7:24)
 |  |  |  |  |  |  SCLiteral (7:32) = 2
-|  |  SCMethod (8:5): version 3.16: chained_value { x.foo = x.bar = 2 }
+|  |  SCMethod (8:5): chained_value, version 3.16: chained_value { x.foo = x.bar = 2 }
 |  |  |  SCBody (8:21)
 |  |  |  |  SCMessage (8:21): foo_
 |  |  |  |  |  SCRead (8:21): instance x, declared (3:9): x
@@ -36,7 +36,7 @@ SCClass (2:1): Setters, version 3.16
 |  |  |  |  |  |  |  SCRead (8:29): instance x, declared (3:9): x
 |  |  |  |  |  |  |  SCPositionalArgs (8:29)
 |  |  |  |  |  |  |  |  SCLiteral (8:37) = 2
-|  |  SCMethod (9:5): version 3.16: as_argument { ^3.baz(x.foo = 1) }
+|  |  SCMethod (9:5): as_argument, version 3.16: as_argument { ^3.baz(x.foo = 1) }
 |  |  |  SCBody (9:19)
 |  |  |  |  SCExplicitReturn (9:19)
 |  |  |  |  |  SCMessage (9:20): baz
@@ -46,20 +46,20 @@ SCClass (2:1): Setters, version 3.16
 |  |  |  |  |  |  |  |  SCRead (9:26): instance x, declared (3:9): x
 |  |  |  |  |  |  |  |  SCPositionalArgs (9:26)
 |  |  |  |  |  |  |  |  |  SCLiteral (9:34) = 1
-|  |  SCMethod (10:5): version 3.16: functional { foo(x, 1) = 2 }
+|  |  SCMethod (10:5): functional, version 3.16: functional { foo(x, 1) = 2 }
 |  |  |  SCBody (10:18)
 |  |  |  |  SCMessage (10:18): foo_
 |  |  |  |  |  SCRead (10:22): instance x, declared (3:9): x
 |  |  |  |  |  SCPositionalArgs (10:18)
 |  |  |  |  |  |  SCLiteral (10:25) = 1
 |  |  |  |  |  |  SCLiteral (10:30) = 2
-|  |  SCMethod (11:5): version 3.16: functional_receiver_only { foo(x) = 2 }
+|  |  SCMethod (11:5): functional_receiver_only, version 3.16: functional_receiver_only { foo(x) = 2 }
 |  |  |  SCBody (11:32)
 |  |  |  |  SCMessage (11:32): foo_
 |  |  |  |  |  SCRead (11:36): instance x, declared (3:9): x
 |  |  |  |  |  SCPositionalArgs (11:32)
 |  |  |  |  |  |  SCLiteral (11:41) = 2
-|  |  SCMethod (12:5): version 3.16: functional_keyword { foo(x, b: 1) = 2 }
+|  |  SCMethod (12:5): functional_keyword, version 3.16: functional_keyword { foo(x, b: 1) = 2 }
 |  |  |  SCBody (12:26)
 |  |  |  |  SCMessage (12:26): foo_
 |  |  |  |  |  SCRead (12:30): instance x, declared (3:9): x
@@ -68,7 +68,7 @@ SCClass (2:1): Setters, version 3.16
 |  |  |  |  |  SCKwArgs (12:26)
 |  |  |  |  |  |  SCKwArg (12:33): b
 |  |  |  |  |  |  |  SCLiteral (12:36) = 1
-|  |  SCMethod (13:5): poisoned: version 3.16: functional_no_receiver { foo(b: 1) = 2 }
+|  |  SCMethod (13:5): poisoned: functional_no_receiver, version 3.16: functional_no_receiver { foo(b: 1) = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Message has no receiver
@@ -85,7 +85,7 @@ SCClass (2:1): Setters, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (13:30)
 |  |  |  |  SCExprList (13:30)
-|  |  SCMethod (14:5): poisoned: version 3.16: functional_variadic { foo(x, *x) = 2 }
+|  |  SCMethod (14:5): poisoned: functional_variadic, version 3.16: functional_variadic { foo(x, *x) = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
@@ -116,7 +116,7 @@ SCClass (2:1): Setters, version 3.16
 |  |  |  |  |  |  SCLiteral (14:40) = 2
 |  |  |  |  |  SCVariadicArgs (14:27)
 |  |  |  |  |  |  SCRead (14:35): instance x, declared (3:9): x
-|  |  SCMethod (15:5): poisoned: version 3.16: functional_variadic_receiver { foo(*x) = 2 }
+|  |  SCMethod (15:5): poisoned: functional_variadic_receiver, version 3.16: functional_variadic_receiver { foo(*x) = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Message has no receiver
@@ -132,7 +132,7 @@ SCClass (2:1): Setters, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (15:36)
 |  |  |  |  SCExprList (15:36)
-|  |  SCMethod (16:5): poisoned: version 3.16: functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  SCMethod (16:5): poisoned: functional_variadic_after_arguments, version 3.16: functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last

@@ -4,37 +4,37 @@
 IR GRAPH DUMP 
 
 
-SCClass (3:1): NotIndexed, version 3.16
+SCClass (3:1): NotIndexed : Object, version 3.16
 |  SCMemberList (3:1)
 |  SCMethodList (3:1)
-SCClass (4:1): SlotArray[slot], version 3.16
+SCClass (4:1): SlotArray[slot] : Object, version 3.16
 |  SCMemberList (4:1)
 |  SCMethodList (4:1)
-SCClass (5:1): DoubleSlots[double], version 3.16
+SCClass (5:1): DoubleSlots[double] : Object, version 3.16
 |  SCMemberList (5:1)
 |  SCMethodList (5:1)
-SCClass (6:1): FloatSlots[float], version 3.16
+SCClass (6:1): FloatSlots[float] : Object, version 3.16
 |  SCMemberList (6:1)
 |  SCMethodList (6:1)
-SCClass (7:1): Int32Slots[int32], version 3.16
+SCClass (7:1): Int32Slots[int32] : Object, version 3.16
 |  SCMemberList (7:1)
 |  SCMethodList (7:1)
-SCClass (8:1): Int16Slots[int16], version 3.16
+SCClass (8:1): Int16Slots[int16] : Object, version 3.16
 |  SCMemberList (8:1)
 |  SCMethodList (8:1)
-SCClass (9:1): Int8Slots[int8], version 3.16
+SCClass (9:1): Int8Slots[int8] : Object, version 3.16
 |  SCMemberList (9:1)
 |  SCMethodList (9:1)
-SCClass (10:1): CharSlots[char], version 3.16
+SCClass (10:1): CharSlots[char] : Object, version 3.16
 |  SCMemberList (10:1)
 |  SCMethodList (10:1)
-SCClass (11:1): SymbolSlots[symbol], version 3.16
+SCClass (11:1): SymbolSlots[symbol] : Object, version 3.16
 |  SCMemberList (11:1)
 |  SCMethodList (11:1)
-SCClass (15:1): SubOfFloat, version 3.16
+SCClass (15:1): SubOfFloat : FloatSlots, version 3.16
 |  SCMemberList (15:1)
 |  SCMethodList (15:1)
-SCClass (16:1): RepeatsFloat[float], version 3.16
+SCClass (16:1): RepeatsFloat[float] : FloatSlots, version 3.16
 |  SCMemberList (16:1)
 |  SCMethodList (16:1)
 Successfully compiled 26 classes.

@@ -4,14 +4,14 @@
 IR GRAPH DUMP 
 
 
-SCClass (4:1): OutOfRange, version 3.16
+SCClass (4:1): OutOfRange : Object, version 3.16
 |  SCMemberList (4:1)
 |  SCMethodList (4:1)
-|  |  SCMethod (6:5): version 3.16: int_largest { ^2147483647 } -> 2147483647
+|  |  SCMethod (6:5): int_largest, version 3.16: int_largest { ^2147483647 } -> 2147483647
 |  |  |  SCBody (6:19)
 |  |  |  |  SCExplicitReturn (6:19)
 |  |  |  |  |  SCLiteral (6:20) = 2147483647
-|  |  SCMethod (9:5): poisoned: version 3.16: int_too_large { ^2147483648 }
+|  |  SCMethod (9:5): poisoned: int_too_large, version 3.16: int_too_large { ^2147483648 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -29,11 +29,11 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (9:21)
 |  |  |  |  SCExplicitReturn (9:21)
 |  |  |  |  |  SCExprList (9:22)
-|  |  SCMethod (12:5): version 3.16: int_smallest { ^-2147483648 } -> -2147483648
+|  |  SCMethod (12:5): int_smallest, version 3.16: int_smallest { ^-2147483648 } -> -2147483648
 |  |  |  SCBody (12:20)
 |  |  |  |  SCExplicitReturn (12:20)
 |  |  |  |  |  SCLiteral (12:22) = -2147483648
-|  |  SCMethod (14:5): poisoned: version 3.16: int_too_small { ^-2147483649 }
+|  |  SCMethod (14:5): poisoned: int_too_small, version 3.16: int_too_small { ^-2147483649 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -51,7 +51,7 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (14:21)
 |  |  |  |  SCExplicitReturn (14:21)
 |  |  |  |  |  SCExprList (14:23)
-|  |  SCMethod (16:5): poisoned: version 3.16: int_many_digits { ^99999999999999999999 }
+|  |  SCMethod (16:5): poisoned: int_many_digits, version 3.16: int_many_digits { ^99999999999999999999 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -69,15 +69,15 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (16:23)
 |  |  |  |  SCExplicitReturn (16:23)
 |  |  |  |  |  SCExprList (16:24)
-|  |  SCMethod (19:5): version 3.16: hex_largest_positive { ^0x7FFFFFFF } -> 2147483647
+|  |  SCMethod (19:5): hex_largest_positive, version 3.16: hex_largest_positive { ^0x7FFFFFFF } -> 2147483647
 |  |  |  SCBody (19:28)
 |  |  |  |  SCExplicitReturn (19:28)
 |  |  |  |  |  SCLiteral (19:29) = 2147483647
-|  |  SCMethod (22:5): version 3.16: hex_all_bits { ^0xFFFFFFFF } -> -1
+|  |  SCMethod (22:5): hex_all_bits, version 3.16: hex_all_bits { ^0xFFFFFFFF } -> -1
 |  |  |  SCBody (22:20)
 |  |  |  |  SCExplicitReturn (22:20)
 |  |  |  |  |  SCLiteral (22:21) = -1
-|  |  SCMethod (24:5): poisoned: version 3.16: hex_too_many_bits { ^0x100000000 }
+|  |  SCMethod (24:5): poisoned: hex_too_many_bits, version 3.16: hex_too_many_bits { ^0x100000000 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -95,11 +95,11 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (24:25)
 |  |  |  |  SCExplicitReturn (24:25)
 |  |  |  |  |  SCExprList (24:26)
-|  |  SCMethod (27:5): version 3.16: radix_largest { ^16r7FFFFFFF } -> 2147483647
+|  |  SCMethod (27:5): radix_largest, version 3.16: radix_largest { ^16r7FFFFFFF } -> 2147483647
 |  |  |  SCBody (27:21)
 |  |  |  |  SCExplicitReturn (27:21)
 |  |  |  |  |  SCLiteral (27:22) = 2147483647
-|  |  SCMethod (30:5): poisoned: version 3.16: radix_too_large { ^16r80000000 }
+|  |  SCMethod (30:5): poisoned: radix_too_large, version 3.16: radix_too_large { ^16r80000000 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -117,7 +117,7 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (30:23)
 |  |  |  |  SCExplicitReturn (30:23)
 |  |  |  |  |  SCExprList (30:24)
-|  |  SCMethod (32:5): poisoned: version 3.16: radix_base_too_large { ^99999999999999999999999r1 }
+|  |  SCMethod (32:5): poisoned: radix_base_too_large, version 3.16: radix_base_too_large { ^99999999999999999999999r1 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -135,11 +135,11 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (32:28)
 |  |  |  |  SCExplicitReturn (32:28)
 |  |  |  |  |  SCExprList (32:29)
-|  |  SCMethod (35:5): version 3.16: float_large { ^1e308 } -> 1e+308
+|  |  SCMethod (35:5): float_large, version 3.16: float_large { ^1e308 } -> 1e+308
 |  |  |  SCBody (35:19)
 |  |  |  |  SCExplicitReturn (35:19)
 |  |  |  |  |  SCLiteral (35:20) = 1e+308
-|  |  SCMethod (37:5): poisoned: version 3.16: float_overflow { ^1e309 }
+|  |  SCMethod (37:5): poisoned: float_overflow, version 3.16: float_overflow { ^1e309 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -157,7 +157,7 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (37:22)
 |  |  |  |  SCExplicitReturn (37:22)
 |  |  |  |  |  SCExprList (37:23)
-|  |  SCMethod (39:5): poisoned: version 3.16: float_negative_overflow { ^-1e309 }
+|  |  SCMethod (39:5): poisoned: float_negative_overflow, version 3.16: float_negative_overflow { ^-1e309 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -175,11 +175,11 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (39:31)
 |  |  |  |  SCExplicitReturn (39:31)
 |  |  |  |  |  SCExprList (39:33)
-|  |  SCMethod (42:5): version 3.16: float_small { ^1e-310 } -> 1e-310
+|  |  SCMethod (42:5): float_small, version 3.16: float_small { ^1e-310 } -> 1e-310
 |  |  |  SCBody (42:19)
 |  |  |  |  SCExplicitReturn (42:19)
 |  |  |  |  |  SCLiteral (42:20) = 1e-310
-|  |  SCMethod (44:5): poisoned: version 3.16: float_underflow { ^1e-400 }
+|  |  SCMethod (44:5): poisoned: float_underflow, version 3.16: float_underflow { ^1e-400 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -197,27 +197,27 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (44:23)
 |  |  |  |  SCExplicitReturn (44:23)
 |  |  |  |  |  SCExprList (44:24)
-|  |  SCMethod (47:5): version 3.16: float_zero_exponent { ^0e5 } -> 0.0
+|  |  SCMethod (47:5): float_zero_exponent, version 3.16: float_zero_exponent { ^0e5 } -> 0.0
 |  |  |  SCBody (47:27)
 |  |  |  |  SCExplicitReturn (47:27)
 |  |  |  |  |  SCLiteral (47:28) = 0.0
-|  |  SCMethod (49:5): version 3.16: float_inf { ^inf } -> inf
+|  |  SCMethod (49:5): float_inf, version 3.16: float_inf { ^inf } -> inf
 |  |  |  SCBody (49:17)
 |  |  |  |  SCExplicitReturn (49:17)
 |  |  |  |  |  SCLiteral (49:18) = inf
-|  |  SCMethod (53:5): version 3.16: float_long { ^1.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 } -> 1.0
+|  |  SCMethod (53:5): float_long, version 3.16: float_long { ^1.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 } -> 1.0
 |  |  |  SCBody (53:18)
 |  |  |  |  SCExplicitReturn (53:18)
 |  |  |  |  |  SCLiteral (53:19) = 1.0
-|  |  SCMethod (55:5): version 3.16: radix_float { ^16rA.8 } -> 10.5
+|  |  SCMethod (55:5): radix_float, version 3.16: radix_float { ^16rA.8 } -> 10.5
 |  |  |  SCBody (55:19)
 |  |  |  |  SCExplicitReturn (55:19)
 |  |  |  |  |  SCLiteral (55:20) = 10.5
-|  |  SCMethod (57:5): version 3.16: radix_float_long { ^16r1.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 } -> 1.0
+|  |  SCMethod (57:5): radix_float_long, version 3.16: radix_float_long { ^16r1.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 } -> 1.0
 |  |  |  SCBody (57:24)
 |  |  |  |  SCExplicitReturn (57:24)
 |  |  |  |  |  SCLiteral (57:25) = 1.0
-|  |  SCMethod (60:5): poisoned: version 3.16: radix_float_overflow { ^16r1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0 }
+|  |  SCMethod (60:5): poisoned: radix_float_overflow, version 3.16: radix_float_overflow { ^16r1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -235,7 +235,7 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (60:28)
 |  |  |  |  SCExplicitReturn (60:28)
 |  |  |  |  |  SCExprList (60:29)
-|  |  SCMethod (64:5): poisoned: version 3.16: pi_overflow { ^1e308pi }
+|  |  SCMethod (64:5): poisoned: pi_overflow, version 3.16: pi_overflow { ^1e308pi }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -253,7 +253,7 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (64:19)
 |  |  |  |  SCExplicitReturn (64:19)
 |  |  |  |  |  SCExprList (64:20)
-|  |  SCMethod (66:5): poisoned: version 3.16: pi_multiplier_out_of_range { ^2147483648pi }
+|  |  SCMethod (66:5): poisoned: pi_multiplier_out_of_range, version 3.16: pi_multiplier_out_of_range { ^2147483648pi }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range
@@ -271,7 +271,7 @@ SCClass (4:1): OutOfRange, version 3.16
 |  |  |  SCBody (66:34)
 |  |  |  |  SCExplicitReturn (66:34)
 |  |  |  |  |  SCExprList (66:35)
-|  |  SCMethod (71:5): poisoned: version 3.16: in_array { |x| if (x) { ^[1, 1e999] }; ^2 }
+|  |  SCMethod (71:5): poisoned: in_array, version 3.16: in_array { |x| if (x) { ^[1, 1e999] }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Literal out of range

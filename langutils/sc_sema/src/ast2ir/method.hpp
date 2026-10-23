@@ -20,7 +20,7 @@ struct Method : private Base {
     Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion version,
            const Scope* meta_class_members, const Scope& class_members, const InterpreterScopes* interpreter);
 
-    Return<SCMethod_I> operator()(ast::AnyValidMethodIndex);
+    Return<SCMethod_I> operator()(ast::AnyValidMethodIndex, SymSCSelector selector, ast::Index name_index);
 
 private:
     // Declared before expr, as expr refers to it.

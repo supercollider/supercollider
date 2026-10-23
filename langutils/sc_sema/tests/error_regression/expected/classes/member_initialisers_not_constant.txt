@@ -4,7 +4,7 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): NotConstant, version 3.16
+SCClass (2:1): NotConstant : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
@@ -92,7 +92,7 @@ SCClass (2:1): NotConstant, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (5:9): refers_to_const = 1
 |  SCMethodList (2:1)
-|  |  SCMethod (14:5): poisoned: version 3.16: immutable_array { ^#[1, 2.foo, ~env] }
+|  |  SCMethod (14:5): poisoned: immutable_array, version 3.16: immutable_array { ^#[1, 2.foo, ~env] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Not a constant
@@ -124,7 +124,7 @@ SCClass (2:1): NotConstant, version 3.16
 |  |  |  |  |  |  SCMessage (14:29): foo
 |  |  |  |  |  |  |  SCLiteral (14:29) = 2
 |  |  |  |  |  |  SCRead (14:36): environment env
-SCClass (2:1): Meta_NotConstant, version 3.16
+SCClass (2:1): Meta_NotConstant : Meta_Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (3:11): fine = 1
 |  |  SCMember (4:14): changes = 2

@@ -46,17 +46,17 @@ classes/duplicate_class.sc:16:1
 IR GRAPH DUMP 
 
 
-SCClass (10:1): DefinedTwice, version 3.16
+SCClass (10:1): DefinedTwice : Object, version 3.16
 |  SCMemberList (10:1)
 |  SCMethodList (10:1)
-|  |  SCMethod (13:5): version 3.16: which { ^\first } -> \first
+|  |  SCMethod (13:5): which, version 3.16: which { ^\first } -> \first
 |  |  |  SCBody (13:13)
 |  |  |  |  SCExplicitReturn (13:13)
 |  |  |  |  |  SCLiteral (13:14) = \first
-SCClass (3:1): InEarlierModule, version 3.16
+SCClass (3:1): InEarlierModule : Object, version 3.16
 |  SCMemberList (3:1)
 |  SCMethodList (3:1)
-|  |  SCMethod (4:5): version 3.16: which { ^\earlier } -> \earlier
+|  |  SCMethod (4:5): which, version 3.16: which { ^\earlier } -> \earlier
 |  |  |  SCBody (4:13)
 |  |  |  |  SCExplicitReturn (4:13)
 |  |  |  |  |  SCLiteral (4:14) = \earlier

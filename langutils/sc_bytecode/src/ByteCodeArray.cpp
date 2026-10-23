@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "ByteCodeArray.h"
+#include "sc_bytecode/ByteCodeArray.h"
 
 void CompilingBytecodes::consume(CompilingBytecodes&& other) {
     m_data.codes.insert(m_data.codes.end(), other.m_data.codes.begin(), other.m_data.codes.end());

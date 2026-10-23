@@ -64,7 +64,7 @@ Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& c
     expr.interpreter = interpreter;
 }
 
-Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
+Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i, SymSCSelector selector, ast::Index name_index) {
     const auto [name, arg_list, maybe_prim, body] =
         std::visit([&](auto i) { return ast_graph->children(i); }, ast_graph->index_to_variant(i));
 
@@ -85,8 +85,8 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
 
     const auto body_i = ir.create(SCBody {}, location({ *body }));
     // The method is created first, so its arguments can refer to it as their scope.
-    const auto method =
-        ir.create(SCMethod { primitive, version }, location({ *i }), argument_list, variadic_args, body_i);
+    const auto method = ir.create(SCMethod { { location(name_index), selector }, primitive, version }, location({ *i }),
+                                  argument_list, variadic_args, body_i);
 
     // Not compiled, as it would overflow the stack, so it is an empty, poisoned method.
     if (const auto deep = nested_too_deeply(*ast_graph, { *i })) {

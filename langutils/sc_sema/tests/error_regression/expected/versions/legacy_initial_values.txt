@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): LegacyInitialValues
+SCClass (2:1): LegacyInitialValues : Object
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (4:5): literal_defaults { arg a = 1, b = -2, c = "s", d = \x, e = #[1, \y], f = $c, g = nil, h = pi, i = 2pi; ^a }
+|  |  SCMethod (4:5): literal_defaults: literal_defaults { arg a = 1, b = -2, c = "s", d = \x, e = #[1, \y], f = $c, g = nil, h = pi, i = 2pi; ^a }
 |  |  |  SCArgumentDeclareList (4:28)
 |  |  |  |  SCArgumentDeclare (4:28): a, prototype
 |  |  |  |  |  SCLiteral (4:32) = 1
@@ -32,7 +32,7 @@ SCClass (2:1): LegacyInitialValues
 |  |  |  SCBody (4:108)
 |  |  |  |  SCExplicitReturn (4:108)
 |  |  |  |  |  SCRead (4:109): local a, declared (4:28): a = 1
-|  |  SCMethod (6:5): computed_defaults { arg a = 1 + 1, b = (1), c(1), d = [1], e = (c: 3), f = { 1 }, g = Object; ^a }
+|  |  SCMethod (6:5): computed_defaults: computed_defaults { arg a = 1 + 1, b = (1), c(1), d = [1], e = (c: 3), f = { 1 }, g = Object; ^a }
 |  |  |  SCArgumentDeclareList (6:29)
 |  |  |  |  SCArgumentDeclare (6:29): a, computed
 |  |  |  |  |  SCMessage (6:33): +
@@ -59,7 +59,7 @@ SCClass (2:1): LegacyInitialValues
 |  |  |  SCBody (6:99)
 |  |  |  |  SCExplicitReturn (6:99)
 |  |  |  |  |  SCRead (6:100): local a, declared (6:29): a = 1 + 1
-|  |  SCMethod (7:5): pipe_defaults { |a = 1, b(2), c = (3)| ^a }
+|  |  SCMethod (7:5): pipe_defaults: pipe_defaults { |a = 1, b(2), c = (3)| ^a }
 |  |  |  SCArgumentDeclareList (7:22)
 |  |  |  |  SCArgumentDeclare (7:22): a, prototype
 |  |  |  |  |  SCLiteral (7:26) = 1
@@ -70,7 +70,7 @@ SCClass (2:1): LegacyInitialValues
 |  |  |  SCBody (7:44)
 |  |  |  |  SCExplicitReturn (7:44)
 |  |  |  |  |  SCRead (7:45): local a, declared (7:22): a = 1
-|  |  SCMethod (8:5): block_defaults { ^{ |a = 1, b = (1 + 1)| a } }
+|  |  SCMethod (8:5): block_defaults: block_defaults { ^{ |a = 1, b = (1 + 1)| a } }
 |  |  |  SCBody (8:22)
 |  |  |  |  SCExplicitReturn (8:22)
 |  |  |  |  |  SCFunction (8:23)
@@ -84,7 +84,7 @@ SCClass (2:1): LegacyInitialValues
 |  |  |  |  |  |  |  |  |  |  SCLiteral (8:42) = 1
 |  |  |  |  |  |  SCBody (8:23)
 |  |  |  |  |  |  |  SCRead (8:46): local a, declared (8:26): a = 1
-|  |  SCMethod (10:5): variables { var a = 1, b = 1 + 1, c = (1), d = [1], e = #[1], f, g = "s"; ^a }
+|  |  SCMethod (10:5): variables: variables { var a = 1, b = 1 + 1, c = (1), d = [1], e = #[1], f, g = "s"; ^a }
 |  |  |  SCBody (10:17)
 |  |  |  |  SCVariableDeclare (10:21): a, prototype
 |  |  |  |  |  SCLiteral (10:25) = 1
@@ -106,7 +106,7 @@ SCClass (2:1): LegacyInitialValues
 |  |  |  |  |  SCLiteral (10:74) = "s"
 |  |  |  |  SCExplicitReturn (10:79)
 |  |  |  |  |  SCRead (10:80): local a = 1, declared (10:21): a = 1
-|  |  SCMethod (11:5): nested_return { |x = 1, y = (2)| var z = 3; if (x) { ^y }; ^z }
+|  |  SCMethod (11:5): nested_return: nested_return { |x = 1, y = (2)| var z = 3; if (x) { ^y }; ^z }
 |  |  |  SCArgumentDeclareList (11:22)
 |  |  |  |  SCArgumentDeclare (11:22): x, prototype
 |  |  |  |  |  SCLiteral (11:26) = 1

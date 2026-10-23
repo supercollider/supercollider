@@ -26,7 +26,7 @@
 #include <vector>
 
 
-typedef unsigned char Byte;
+using Byte = unsigned char;
 class CompilingBytecodes {
 public:
     using Location = sc::lex::SourceCodeRange;

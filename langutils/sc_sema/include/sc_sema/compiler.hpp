@@ -51,6 +51,9 @@ struct IRCompiler {
     [[nodiscard]] Interpreted compile_interpreted(std::shared_ptr<const ast::ASTGraph> ast_graph,
                                                   ast::LanguageVersion version = ast::LanguageVersion::Legacy);
 
+    // The graph of a compiled class, null when it is poisoned or isn't declared.
+    [[nodiscard]] std::shared_ptr<const IRGraph> class_graph(SymSCClassName name) const;
+
     // Poisoned classes aren't compiled, so have no graph, and are skipped. Some are still in the hierarchy, e.g., one
     // declared with an invalid slot type, `Foo[bad] {}`.
     template<typename F>

@@ -4,14 +4,14 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): WhitespaceChars, version 3.16
+SCClass (2:1): WhitespaceChars : Object, version 3.16
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
-|  |  SCMethod (3:5): version 3.16: char_space { ^$  } -> $ 
+|  |  SCMethod (3:5): char_space, version 3.16: char_space { ^$  } -> $ 
 |  |  |  SCBody (3:18)
 |  |  |  |  SCExplicitReturn (3:18)
 |  |  |  |  |  SCLiteral (3:19) = $ 
-|  |  SCMethod (4:5): poisoned: version 3.16: char_tab { ^$	 }
+|  |  SCMethod (4:5): poisoned: char_tab, version 3.16: char_tab { ^$	 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Invalid Character.
@@ -27,7 +27,7 @@ SCClass (2:1): WhitespaceChars, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (4:14)
 |  |  |  |  SCExprList (4:14)
-|  |  SCMethod (5:5): poisoned: version 3.16: char_newline { ^$'\n' }
+|  |  SCMethod (5:5): poisoned: char_newline, version 3.16: char_newline { ^$'\n' }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Invalid Character.
@@ -43,7 +43,7 @@ SCClass (2:1): WhitespaceChars, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (5:18)
 |  |  |  |  SCExprList (5:18)
-|  |  SCMethod (7:5): poisoned: version 3.16: char_carriage_return { ^$'\n' }
+|  |  SCMethod (7:5): poisoned: char_carriage_return, version 3.16: char_carriage_return { ^$'\n' }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Invalid Character.
@@ -59,7 +59,7 @@ SCClass (2:1): WhitespaceChars, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:26)
 |  |  |  |  SCExprList (7:26)
-|  |  SCMethod (9:5): poisoned: version 3.16: char_carriage_return_newline { ^$'\n' }
+|  |  SCMethod (9:5): poisoned: char_carriage_return_newline, version 3.16: char_carriage_return_newline { ^$'\n' }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Invalid Character.

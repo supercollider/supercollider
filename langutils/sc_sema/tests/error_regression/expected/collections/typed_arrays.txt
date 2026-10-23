@@ -4,50 +4,50 @@
 IR GRAPH DUMP 
 
 
-SCClass (4:1): DoubleArray, version 3.16
+SCClass (4:1): DoubleArray : Object, version 3.16
 |  SCMemberList (4:1)
 |  SCMethodList (4:1)
-SCClass (5:1): FloatArray, version 3.16
+SCClass (5:1): FloatArray : Object, version 3.16
 |  SCMemberList (5:1)
 |  SCMethodList (5:1)
-SCClass (6:1): Int32Array, version 3.16
+SCClass (6:1): Int32Array : Object, version 3.16
 |  SCMemberList (6:1)
 |  SCMethodList (6:1)
-SCClass (7:1): Int8Array, version 3.16
+SCClass (7:1): Int8Array : Object, version 3.16
 |  SCMemberList (7:1)
 |  SCMethodList (7:1)
-SCClass (8:1): SymbolArray, version 3.16
+SCClass (8:1): SymbolArray : Object, version 3.16
 |  SCMemberList (8:1)
 |  SCMethodList (8:1)
-SCClass (10:1): Int16Array, version 3.16
+SCClass (10:1): Int16Array : Object, version 3.16
 |  SCMemberList (10:1)
 |  SCMethodList (10:1)
-|  |  SCMethod (11:5): version 3.16: add { ^nil } -> nil
+|  |  SCMethod (11:5): add, version 3.16: add { ^nil } -> nil
 |  |  |  SCBody (11:11)
 |  |  |  |  SCExplicitReturn (11:11)
 |  |  |  |  |  SCLiteral (11:12) = nil
-SCClass (14:1): TypedArrays, version 3.16
+SCClass (14:1): TypedArrays : Object, version 3.16
 |  SCMemberList (14:1)
 |  SCMethodList (14:1)
-|  |  SCMethod (16:5): version 3.16: double_array { ^DoubleArray[1, 2.5] } -> DoubleArray[1.0, 2.5]
+|  |  SCMethod (16:5): double_array, version 3.16: double_array { ^DoubleArray[1, 2.5] } -> DoubleArray[1.0, 2.5]
 |  |  |  SCBody (16:20)
 |  |  |  |  SCExplicitReturn (16:20)
 |  |  |  |  |  SCCollection (16:21): DoubleArray = DoubleArray[1.0, 2.5]
 |  |  |  |  |  |  SCLiteral (16:33) = 1
 |  |  |  |  |  |  SCLiteral (16:36) = 2.5
-|  |  SCMethod (18:5): version 3.16: float_array { ^FloatArray[1, 0.1] } -> FloatArray[1.0, 0.1]
+|  |  SCMethod (18:5): float_array, version 3.16: float_array { ^FloatArray[1, 0.1] } -> FloatArray[1.0, 0.1]
 |  |  |  SCBody (18:19)
 |  |  |  |  SCExplicitReturn (18:19)
 |  |  |  |  |  SCCollection (18:20): FloatArray = FloatArray[1.0, 0.1]
 |  |  |  |  |  |  SCLiteral (18:31) = 1
 |  |  |  |  |  |  SCLiteral (18:34) = 0.1
-|  |  SCMethod (20:5): version 3.16: int32_array { ^Int32Array[1, -2] } -> Int32Array[1, -2]
+|  |  SCMethod (20:5): int32_array, version 3.16: int32_array { ^Int32Array[1, -2] } -> Int32Array[1, -2]
 |  |  |  SCBody (20:19)
 |  |  |  |  SCExplicitReturn (20:19)
 |  |  |  |  |  SCCollection (20:20): Int32Array = Int32Array[1, -2]
 |  |  |  |  |  |  SCLiteral (20:31) = 1
 |  |  |  |  |  |  SCLiteral (20:35) = -2
-|  |  SCMethod (22:5): version 3.16: int8_array_wraps { ^Int8Array[1, 127, 128, 200] } -> Int8Array[1, 127, -128, -56]
+|  |  SCMethod (22:5): int8_array_wraps, version 3.16: int8_array_wraps { ^Int8Array[1, 127, 128, 200] } -> Int8Array[1, 127, -128, -56]
 |  |  |  SCBody (22:24)
 |  |  |  |  SCExplicitReturn (22:24)
 |  |  |  |  |  SCCollection (22:25): Int8Array = Int8Array[1, 127, -128, -56]
@@ -55,23 +55,23 @@ SCClass (14:1): TypedArrays, version 3.16
 |  |  |  |  |  |  SCLiteral (22:38) = 127
 |  |  |  |  |  |  SCLiteral (22:43) = 128
 |  |  |  |  |  |  SCLiteral (22:48) = 200
-|  |  SCMethod (25:5): version 3.16: int_array_truncates_floats { ^Int32Array[1.9, -1.9] } -> Int32Array[1, -1]
+|  |  SCMethod (25:5): int_array_truncates_floats, version 3.16: int_array_truncates_floats { ^Int32Array[1.9, -1.9] } -> Int32Array[1, -1]
 |  |  |  SCBody (25:34)
 |  |  |  |  SCExplicitReturn (25:34)
 |  |  |  |  |  SCCollection (25:35): Int32Array = Int32Array[1, -1]
 |  |  |  |  |  |  SCLiteral (25:46) = 1.9
 |  |  |  |  |  |  SCLiteral (25:52) = -1.9
-|  |  SCMethod (27:5): version 3.16: symbol_array { ^SymbolArray[\a, 'b c'] } -> SymbolArray[\a, 'b c']
+|  |  SCMethod (27:5): symbol_array, version 3.16: symbol_array { ^SymbolArray[\a, 'b c'] } -> SymbolArray[\a, 'b c']
 |  |  |  SCBody (27:20)
 |  |  |  |  SCExplicitReturn (27:20)
 |  |  |  |  |  SCCollection (27:21): SymbolArray = SymbolArray[\a, 'b c']
 |  |  |  |  |  |  SCLiteral (27:33) = \a
 |  |  |  |  |  |  SCLiteral (27:37) = 'b c'
-|  |  SCMethod (29:5): version 3.16: empty { ^FloatArray[] } -> FloatArray[]
+|  |  SCMethod (29:5): empty, version 3.16: empty { ^FloatArray[] } -> FloatArray[]
 |  |  |  SCBody (29:13)
 |  |  |  |  SCExplicitReturn (29:13)
 |  |  |  |  |  SCCollection (29:14): FloatArray = FloatArray[]
-|  |  SCMethod (31:5): version 3.16: folded_elements { var a = 1; ^Int32Array[a + 2] } -> Int32Array[3]
+|  |  SCMethod (31:5): folded_elements, version 3.16: folded_elements { var a = 1; ^Int32Array[a + 2] } -> Int32Array[3]
 |  |  |  SCBody (31:23)
 |  |  |  |  SCVariableDeclare (31:27): a, prototype
 |  |  |  |  |  SCLiteral (31:31) = 1
@@ -81,34 +81,34 @@ SCClass (14:1): TypedArrays, version 3.16
 |  |  |  |  |  |  |  SCRead (31:46): local a = 1, declared (31:27): a = 1
 |  |  |  |  |  |  |  SCPositionalArgs (31:46)
 |  |  |  |  |  |  |  |  SCLiteral (31:50) = 2
-|  |  SCMethod (36:5): version 3.16: symbol_in_float_array { ^FloatArray[\a] }
+|  |  SCMethod (36:5): symbol_in_float_array, version 3.16: symbol_in_float_array { ^FloatArray[\a] }
 |  |  |  SCBody (36:29)
 |  |  |  |  SCExplicitReturn (36:29)
 |  |  |  |  |  SCCollection (36:30): FloatArray
 |  |  |  |  |  |  SCLiteral (36:41) = \a
-|  |  SCMethod (38:5): version 3.16: integer_in_symbol_array { ^SymbolArray[1] }
+|  |  SCMethod (38:5): integer_in_symbol_array, version 3.16: integer_in_symbol_array { ^SymbolArray[1] }
 |  |  |  SCBody (38:31)
 |  |  |  |  SCExplicitReturn (38:31)
 |  |  |  |  |  SCCollection (38:32): SymbolArray
 |  |  |  |  |  |  SCLiteral (38:44) = 1
-|  |  SCMethod (40:5): version 3.16: float_too_large { ^Int32Array[1e10] }
+|  |  SCMethod (40:5): float_too_large, version 3.16: float_too_large { ^Int32Array[1e10] }
 |  |  |  SCBody (40:23)
 |  |  |  |  SCExplicitReturn (40:23)
 |  |  |  |  |  SCCollection (40:24): Int32Array
 |  |  |  |  |  |  SCLiteral (40:35) = 1e+10
-|  |  SCMethod (42:5): version 3.16: not_constant { |a| ^FloatArray[a] }
+|  |  SCMethod (42:5): not_constant, version 3.16: not_constant { |a| ^FloatArray[a] }
 |  |  |  SCArgumentDeclareList (42:21)
 |  |  |  |  SCArgumentDeclare (42:21): a
 |  |  |  SCBody (42:24)
 |  |  |  |  SCExplicitReturn (42:24)
 |  |  |  |  |  SCCollection (42:25): FloatArray
 |  |  |  |  |  |  SCRead (42:36): local a, declared (42:21): a
-|  |  SCMethod (44:5): version 3.16: overridden_add { ^Int16Array[1] }
+|  |  SCMethod (44:5): overridden_add, version 3.16: overridden_add { ^Int16Array[1] }
 |  |  |  SCBody (44:22)
 |  |  |  |  SCExplicitReturn (44:22)
 |  |  |  |  |  SCCollection (44:23): Int16Array
 |  |  |  |  |  |  SCLiteral (44:34) = 1
-|  |  SCMethod (47:5): version 3.16: non_local_return { |x| ^{ if (x) { ^Int8Array[1] }; SymbolArray[\a] } }
+|  |  SCMethod (47:5): non_local_return, version 3.16: non_local_return { |x| ^{ if (x) { ^Int8Array[1] }; SymbolArray[\a] } }
 |  |  |  SCArgumentDeclareList (47:25)
 |  |  |  |  SCArgumentDeclare (47:25): x (captured)
 |  |  |  SCBody (47:28)

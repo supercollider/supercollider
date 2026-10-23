@@ -29,7 +29,7 @@ A version must be the first thing in the file, for every class in it, or the fir
 IR GRAPH DUMP 
 
 
-SCClass (3:1): Misplaced
+SCClass (3:1): Misplaced : Object
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Misplaced version
@@ -47,7 +47,7 @@ SCClass (3:1): Misplaced
 |  SCMemberList (3:1)
 |  |  SCMember (4:9): a
 |  SCMethodList (3:1)
-|  |  SCMethod (9:5): in_method {'\n'        //# VERSION 3.16'\n'        if (a) { ^1 }; ^2'\n'    }
+|  |  SCMethod (9:5): in_method: in_method {'\n'        //# VERSION 3.16'\n'        if (a) { ^1 }; ^2'\n'    }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Misplaced version
@@ -72,7 +72,7 @@ SCClass (3:1): Misplaced
 |  |  |  |  |  |  |  |  |  SCLiteral (11:19) = 1
 |  |  |  |  SCExplicitReturn (11:24)
 |  |  |  |  |  SCLiteral (11:25) = 2
-|  |  SCMethod (16:5): in_nested_function { |x|'\n'        ^{'\n'            //# VERSION 3.16'\n'            if (x) { ^1 }; ^2'\n'        }'\n'    }
+|  |  SCMethod (16:5): in_nested_function: in_nested_function { |x|'\n'        ^{'\n'            //# VERSION 3.16'\n'            if (x) { ^1 }; ^2'\n'        }'\n'    }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Misplaced version
@@ -102,14 +102,14 @@ SCClass (3:1): Misplaced
 |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (19:23) = 1
 |  |  |  |  |  |  |  SCExplicitReturn (19:28)
 |  |  |  |  |  |  |  |  SCLiteral (19:29) = 2
-SCClass (25:1): MisplacedAfter
+SCClass (25:1): MisplacedAfter : Object
 |  SCMemberList (25:1)
 |  SCMethodList (25:1)
-|  |  SCMethod (26:5): one { ^1 } -> 1
+|  |  SCMethod (26:5): one: one { ^1 } -> 1
 |  |  |  SCBody (26:11)
 |  |  |  |  SCExplicitReturn (26:11)
 |  |  |  |  |  SCLiteral (26:12) = 1
-SCClass (30:1): MisplacedBeforeBody
+SCClass (30:1): MisplacedBeforeBody : Object
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Misplaced version
@@ -126,7 +126,7 @@ SCClass (30:1): MisplacedBeforeBody
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (30:1)
 |  SCMethodList (30:1)
-|  |  SCMethod (33:5): one { ^1 } -> 1
+|  |  SCMethod (33:5): one: one { ^1 } -> 1
 |  |  |  SCBody (33:11)
 |  |  |  |  SCExplicitReturn (33:11)
 |  |  |  |  |  SCLiteral (33:12) = 1

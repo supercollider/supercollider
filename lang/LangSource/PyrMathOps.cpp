@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Opcodes.h"
+#include "sc_bytecode/Opcodes.h"
 #include "PyrInterpreter.h"
 #include "PyrPrimitive.h"
 #include "PyrPrimitiveProto.h"

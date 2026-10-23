@@ -6,7 +6,7 @@
 #include "SimpleStack.h"
 #include "sc_lexer/normalise_source.hpp"
 #include "sc_lexer/text_location.hpp"
-#include "ByteCodeArray.h"
+#include "sc_bytecode/ByteCodeArray.h"
 #include <cassert>
 #include <cstdint>
 #include <memory>

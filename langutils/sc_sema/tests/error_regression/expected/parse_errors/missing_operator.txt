@@ -4,10 +4,10 @@
 IR GRAPH DUMP 
 
 
-SCClass (4:1): MissingOperator, version 3.16
+SCClass (4:1): MissingOperator : Object, version 3.16
 |  SCMemberList (4:1)
 |  SCMethodList (4:1)
-|  |  SCMethod (7:5): poisoned: version 3.16: numbers { ^1 2 }
+|  |  SCMethod (7:5): poisoned: numbers, version 3.16: numbers { ^1 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -32,7 +32,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:13)
 |  |  |  |  SCExprList (7:13)
-|  |  SCMethod (10:5): poisoned: version 3.16: names { |a, b| ^a b }
+|  |  SCMethod (10:5): poisoned: names, version 3.16: names { |a, b| ^a b }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -57,7 +57,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:11)
 |  |  |  |  SCExprList (10:11)
-|  |  SCMethod (13:5): poisoned: version 3.16: in_array { ^[1 2] }
+|  |  SCMethod (13:5): poisoned: in_array, version 3.16: in_array { ^[1 2] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -82,7 +82,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (13:14)
 |  |  |  |  SCExprList (13:14)
-|  |  SCMethod (16:5): poisoned: version 3.16: in_arguments { ^this.foo(1 2) }
+|  |  SCMethod (16:5): poisoned: in_arguments, version 3.16: in_arguments { ^this.foo(1 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -107,7 +107,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (16:18)
 |  |  |  |  SCExprList (16:18)
-|  |  SCMethod (19:5): poisoned: version 3.16: in_brackets { ^(1 2) }
+|  |  SCMethod (19:5): poisoned: in_brackets, version 3.16: in_brackets { ^(1 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -133,7 +133,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  SCBody (19:19)
 |  |  |  |  SCExplicitReturn (19:19)
 |  |  |  |  |  SCExprList (19:20)
-|  |  SCMethod (22:5): poisoned: version 3.16: in_brackets_in_array { ^[(1 2)] }
+|  |  SCMethod (22:5): poisoned: in_brackets_in_array, version 3.16: in_brackets_in_array { ^[(1 2)] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -160,7 +160,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  |  SCExplicitReturn (22:28)
 |  |  |  |  |  SCCollection (22:29): Array
 |  |  |  |  |  |  SCExprList (22:30)
-|  |  SCMethod (25:5): poisoned: version 3.16: after_call { ^1.foo(2) 3 }
+|  |  SCMethod (25:5): poisoned: after_call, version 3.16: after_call { ^1.foo(2) 3 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -185,7 +185,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (25:16)
 |  |  |  |  SCExprList (25:16)
-|  |  SCMethod (29:5): poisoned: version 3.16: multiline { ^1 "first'\n'second" }
+|  |  SCMethod (29:5): poisoned: multiline, version 3.16: multiline { ^1 "first'\n'second" }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -211,7 +211,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (29:15)
 |  |  |  |  SCExprList (29:15)
-|  |  SCMethod (33:5): poisoned: version 3.16: in_nested_function { |x| if (x) { ^1 2 }; ^2 }
+|  |  SCMethod (33:5): poisoned: in_nested_function, version 3.16: in_nested_function { |x| if (x) { ^1 2 }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
@@ -236,7 +236,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (33:24)
 |  |  |  |  SCExprList (33:24)
-|  |  SCMethod (37:5): poisoned: version 3.16: operand_at_end { ^1 + }
+|  |  SCMethod (37:5): poisoned: operand_at_end, version 3.16: operand_at_end { ^1 + }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
@@ -261,7 +261,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (37:20)
 |  |  |  |  SCExprList (37:20)
-|  |  SCMethod (40:5): poisoned: version 3.16: operand_in_brackets { ^(1 * ) }
+|  |  SCMethod (40:5): poisoned: operand_in_brackets, version 3.16: operand_in_brackets { ^(1 * ) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
@@ -287,7 +287,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  SCBody (40:27)
 |  |  |  |  SCExplicitReturn (40:27)
 |  |  |  |  |  SCExprList (40:28)
-|  |  SCMethod (43:5): poisoned: version 3.16: keyword_operator { ^1 max: ; }
+|  |  SCMethod (43:5): poisoned: keyword_operator, version 3.16: keyword_operator { ^1 max: ; }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
@@ -312,7 +312,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (43:22)
 |  |  |  |  SCExprList (43:22)
-|  |  SCMethod (47:5): poisoned: version 3.16: keyword_argument { ^this.foo(a: ) }
+|  |  SCMethod (47:5): poisoned: keyword_argument, version 3.16: keyword_argument { ^this.foo(a: ) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
@@ -337,7 +337,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (47:22)
 |  |  |  |  SCExprList (47:22)
-|  |  SCMethod (50:5): poisoned: version 3.16: operand_in_nested_function { |x| if (x) { ^1 - }; ^2 }
+|  |  SCMethod (50:5): poisoned: operand_in_nested_function, version 3.16: operand_in_nested_function { |x| if (x) { ^1 - }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
@@ -362,7 +362,7 @@ SCClass (4:1): MissingOperator, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (50:32)
 |  |  |  |  SCExprList (50:32)
-|  |  SCMethod (55:5): poisoned: version 3.16: after_arguments { ^{ |a| * } }
+|  |  SCMethod (55:5): poisoned: after_arguments, version 3.16: after_arguments { ^{ |a| * } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.

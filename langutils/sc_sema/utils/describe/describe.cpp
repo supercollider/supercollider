@@ -171,13 +171,17 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                    // The slot type, e.g., `String[char]`.
                    [&](const SCClass& c) {
                        out << ": " << symbol_table(c.name) << layout_name(c.memory_layout);
+                       if (c.superclass)
+                           out << " : " << symbol_table(*c.superclass);
                        write_version(c.version, ", ", "");
                    },
                    [&](const SCMethod& m) {
                        out << ": ";
                        if (m.poisoned)
                            out << "poisoned: ";
-                       write_version(m.version, "", ": ");
+                       out << symbol_table(*m.selector);
+                       write_version(m.version, ", ", "");
+                       out << ": ";
                        write_text(out, g.read(loc));
                    },
                    // Its file, as interpreted code isn't in a class.
