@@ -2716,22 +2716,8 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
-template <typename Alloc> struct getn_data {
-    getn_data(int start, int count, const float* data): start_index_(start), data_(count) {
-        data_.reserve(count);
-        for (int i = 0; i != count; ++i)
-            data_[i] = data[i];
-    }
-
-    int start_index_;
-    std::vector<float, Alloc> data_;
-};
-
 template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-
-    typedef getn_data<rt_pool_allocator<float>> getn_data;
-    std::vector<getn_data, rt_pool_allocator<getn_data>> return_data;
 
     osc::int32 bufnum;
     args >> bufnum;
@@ -2742,30 +2728,57 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
         log_printf("/b_getn called on unallocated buffer\n");
         return;
     }
-    const int max_sample = buf->frames * buf->channels;
+
+    const uint32_t buf_samples = buf->samples;
+
+    using getn_pair = std::pair<osc::int32, osc::int32>;
+    std::vector<getn_pair, rt_pool_allocator<getn_pair>> return_args;
+    return_args.reserve(4);
+    std::vector<float, rt_pool_allocator<sample>> return_samples;
+    return_samples.reserve(16);
 
     while (!args.Eos()) {
-        osc::int32 index, sample_count;
-        args >> index >> sample_count;
+        // use original (signed) value because we pass it to the reply
+        osc::int32 start, count;
+        args >> start >> count;
+        if (count < 0) {
+            log_printf("/b_getn: bad count argument (%d)\n", count);
+            return;
+        }
+        return_args.emplace_back(start, count);
 
-        if (index + sample_count <= max_sample)
-            return_data.push_back(getn_data(index, sample_count, data + index));
+        for (int32_t i = 0; i < count; ++i) {
+            uint32_t index = start + i;
+            if (index < buf_samples)
+                return_samples.push_back(data[index]);
+            else
+                return_samples.push_back(0.f);
+        }
     }
 
-    size_t alloc_size = 128;
-    for (size_t i = 0; i != return_data.size(); ++i)
-        alloc_size += return_data[i].data_.size() * (sizeof(float) + sizeof(int)) + 2 * sizeof(int);
+    size_t alloc_size = 128; // includes padding for typetag string
+    for (auto& [start, count] : return_args) {
+        assert(count >= 0);
+        // start (int32), count (int32), data (float)... + typetags
+        alloc_size += 2 * (sizeof(int) + 1) + count * (sizeof(float) + 1);
+    }
 
     sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/b_setn") << bufnum;
 
-    for (size_t i = 0; i != return_data.size(); ++i) {
-        p << osc::int32(return_data[i].start_index_) << osc::int32(return_data[i].data_.size());
+    const float* samples = return_samples.data();
+    for (auto& [start, count] : return_args) {
+        assert(count >= 0);
+        assert((samples + count - return_samples.data()) <= return_samples.size());
 
-        for (size_t j = 0; j != return_data[i].data_.size(); ++j)
-            p << return_data[i].data_[j];
+        p << osc::int32(start) << osc::int32(count);
+
+        for (int32_t i = 0; i < count; ++i)
+            p << samples[i];
+
+        samples += count;
     }
 
     p << osc::EndMessage;
