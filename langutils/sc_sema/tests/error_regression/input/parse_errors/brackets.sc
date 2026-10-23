@@ -23,7 +23,7 @@ Brackets {
     // A syntax error inside the repaired bracket is still reported.
     // expect: poisoned
     // expect-error: Unclosed Bracket.
-    // expect-error: Unexpected Token.
+    // expect-error: Missing Operator.
     unclosed_with_error { ^(1 2 }
     // Parsed as written.
     // expect: -> 3

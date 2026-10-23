@@ -18,12 +18,19 @@ SCInterpreted (1:1): version 3.16: parse_errors/starts_with_error.scd
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Missing Expression.
+|  parse_errors/starts_with_error.scd:3:4
+|      1 │ // interpreted-version: 3.16
+|      2 │ )
+|      3 │ (1 +);
+|        ┆    ^ This `+` needs an expression after it...
+|      4 │ 1 + 2
+|
 |  parse_errors/starts_with_error.scd:3:5
 |      1 │ // interpreted-version: 3.16
 |      2 │ )
 |      3 │ (1 +);
-|        ┆     ^ Expected an expression or `.`, but found `)`.
+|        ┆     ^ ...but found `)`.
 |      4 │ 1 + 2
 |
 |  ──────────────────────────────────────────────────────────────────────────────────

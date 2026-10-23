@@ -182,12 +182,21 @@ SCClass (4:1): Brackets, version 3.16
 |  |  SCMethod (27:5): poisoned: version 3.16: unclosed_with_error { ^(1 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/brackets.sc:27:29
+|  |  |     25 │     // expect-error: Unclosed Bracket.
+|  |  |     26 │     // expect-error: Missing Operator.
+|  |  |     27 │     unclosed_with_error { ^(1 2 }
+|  |  |        ┆                             ^ This ends an expression...
+|  |  |     28 │     // Parsed as written.
+|  |  |     29 │     // expect: -> 3
+|  |  |     30 │     after { ^3 }
+|  |  |
 |  |  |  parse_errors/brackets.sc:27:31
 |  |  |     25 │     // expect-error: Unclosed Bracket.
-|  |  |     26 │     // expect-error: Unexpected Token.
+|  |  |     26 │     // expect-error: Missing Operator.
 |  |  |     27 │     unclosed_with_error { ^(1 2 }
-|  |  |        ┆                               ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
+|  |  |        ┆                               ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |  |  |     28 │     // Parsed as written.
 |  |  |     29 │     // expect: -> 3
 |  |  |     30 │     after { ^3 }
@@ -198,7 +207,7 @@ SCClass (4:1): Brackets, version 3.16
 |  |  |  Error: Unclosed Bracket.
 |  |  |  parse_errors/brackets.sc:27:28
 |  |  |     25 │     // expect-error: Unclosed Bracket.
-|  |  |     26 │     // expect-error: Unexpected Token.
+|  |  |     26 │     // expect-error: Missing Operator.
 |  |  |     27 │     unclosed_with_error { ^(1 2 }
 |  |  |        ┆                            ^ This `(` isn't closed...
 |  |  |     28 │     // Parsed as written.
@@ -207,7 +216,7 @@ SCClass (4:1): Brackets, version 3.16
 |  |  |
 |  |  |  parse_errors/brackets.sc:27:33
 |  |  |     25 │     // expect-error: Unclosed Bracket.
-|  |  |     26 │     // expect-error: Unexpected Token.
+|  |  |     26 │     // expect-error: Missing Operator.
 |  |  |     27 │     unclosed_with_error { ^(1 2 }
 |  |  |        ┆                                 ^ ...before this `}`, which closes the bracket around it.
 |  |  |     28 │     // Parsed as written.

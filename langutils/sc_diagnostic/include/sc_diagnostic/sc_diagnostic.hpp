@@ -40,6 +40,16 @@ public:
 
     [[nodiscard]] static Diagnostic unexpectedToken(TextInfoPtr text_info, sc::lex::SourceCodeRange loc,
                                                     std::string_view expected, std::string_view found);
+    // Two expressions next to each other, e.g., `1 2`, where before ends the first and found starts the second.
+    // found_text is found as shown, and separator is what could go between them instead of an operator, e.g., `;`.
+    [[nodiscard]] static Diagnostic missing_operator(TextInfoPtr text_info, sc::lex::SourceCodeRange before,
+                                                     sc::lex::SourceCodeRange found, std::string_view found_text,
+                                                     std::optional<std::string_view> separator);
+    // A binary operator, or a keyword argument's name, as they are the same token, without an expression after it,
+    // e.g., `1 + }`, where found isn't one.
+    [[nodiscard]] static Diagnostic missing_expression_after(TextInfoPtr text_info, sc::lex::SourceCodeRange op,
+                                                             sc::lex::SourceCodeRange found,
+                                                             std::string_view found_text);
     // The lexer's error tokens, e.g., an unclosed string, at the token's range.
     [[nodiscard]] static Diagnostic lexer_error(TextInfoPtr text_info, sc::lex::TokenType,
                                                 sc::lex::SourceCodeRange loc);

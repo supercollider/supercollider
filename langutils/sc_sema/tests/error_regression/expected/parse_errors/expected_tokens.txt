@@ -7,67 +7,66 @@ IR GRAPH DUMP
 SCClass (4:1): ExpectedTokens, version 3.16
 |  SCMemberList (4:1)
 |  SCMethodList (4:1)
-|  |  SCMethod (7:5): poisoned: version 3.16: missing_operand { ^(1 + ) }
+|  |  SCMethod (7:5): poisoned: version 3.16: not_an_expression { ^(1, ) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.
-|  |  |  parse_errors/expected_tokens.sc:7:29
+|  |  |  parse_errors/expected_tokens.sc:7:30
 |  |  |      5 │     // expect: poisoned
 |  |  |      6 │     // expect-error: Unexpected Token.
-|  |  |      7 │     missing_operand { ^(1 + ) }
-|  |  |        ┆                             ^ Expected an expression or `.`, but found `)`.
+|  |  |      7 │     not_an_expression { ^(1, ) }
+|  |  |        ┆                              ^ Expected an expression, but found `)`.
 |  |  |      8 │     // expect: poisoned
 |  |  |      9 │     // expect-error: Unexpected Token.
-|  |  |     10 │     adjacent { ^(1 "a string") }
+|  |  |     10 │     not_an_operator { ^(1 = 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (7:23)
-|  |  |  |  SCExplicitReturn (7:23)
-|  |  |  |  |  SCExprList (7:24)
-|  |  SCMethod (10:5): poisoned: version 3.16: adjacent { ^(1 "a string") }
+|  |  |  SCBody (7:25)
+|  |  |  |  SCExplicitReturn (7:25)
+|  |  |  |  |  SCExprList (7:26)
+|  |  SCMethod (10:5): poisoned: version 3.16: not_an_operator { ^(1 = 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.
-|  |  |  parse_errors/expected_tokens.sc:10:20
+|  |  |  parse_errors/expected_tokens.sc:10:27
 |  |  |      8 │     // expect: poisoned
 |  |  |      9 │     // expect-error: Unexpected Token.
-|  |  |     10 │     adjacent { ^(1 "a string") }
-|  |  |        ┆                    ^^^^^^^^^^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `"a string"`.
+|  |  |     10 │     not_an_operator { ^(1 = 2) }
+|  |  |        ┆                           ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `=`.
 |  |  |     11 │     // A multiline token is shown up to its first line.
 |  |  |     12 │     // expect: poisoned
 |  |  |     13 │     // expect-error: Unexpected Token.
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (10:16)
-|  |  |  |  SCExplicitReturn (10:16)
-|  |  |  |  |  SCExprList (10:17)
-|  |  SCMethod (14:5): poisoned: version 3.16: multiline { ^(1 "first'\n'second") }
+|  |  |  SCBody (10:23)
+|  |  |  |  SCExplicitReturn (10:23)
+|  |  |  |  |  SCExprList (10:24)
+|  |  SCMethod (14:5): poisoned: version 3.16: multiline { var "first'\n'second"; ^1 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.
 |  |  |  parse_errors/expected_tokens.sc:14:21
 |  |  |     12 │     // expect: poisoned
 |  |  |     13 │     // expect-error: Unexpected Token.
-|  |  |     14*│     multiline { ^(1 "first
-|  |  |     15*│ second") }
-|  |  |       >│ ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `"first...`.
+|  |  |     14*│     multiline { var "first
+|  |  |     15*│ second"; ^1 }
+|  |  |       >│ ^ Expected `#`, a name, or `while`, but found `"first...`.
 |  |  |     16 │     // expect: poisoned
 |  |  |     17 │     // expect-error: Unexpected Token.
-|  |  |     18 │     in_nested_function { |x| if (x) { ^(x 1) }; ^2 }
+|  |  |     18 │     in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (14:17)
-|  |  |  |  SCExplicitReturn (14:17)
-|  |  |  |  |  SCExprList (14:18)
-|  |  SCMethod (18:5): poisoned: version 3.16: in_nested_function { |x| if (x) { ^(x 1) }; ^2 }
+|  |  |  SCBody (14:15)
+|  |  |  |  SCExprList (14:15)
+|  |  SCMethod (18:5): poisoned: version 3.16: in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.
 |  |  |  parse_errors/expected_tokens.sc:18:43
 |  |  |     16 │     // expect: poisoned
 |  |  |     17 │     // expect-error: Unexpected Token.
-|  |  |     18 │     in_nested_function { |x| if (x) { ^(x 1) }; ^2 }
-|  |  |        ┆                                           ^ Expected a binary operator, `{`, `[`, `(`, `)`, `;`, `,`, `..`, `#{`, `:`, `=`, or `.`, but found `1`.
+|  |  |     18 │     in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
+|  |  |        ┆                                           ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `=`.
 |  |  |     19 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -81,6 +80,6 @@ SCClass (4:1): ExpectedTokens, version 3.16
 |  |  |  |  |  |  |  SCBody (18:37)
 |  |  |  |  |  |  |  |  SCExplicitReturn (18:39)
 |  |  |  |  |  |  |  |  |  SCExprList (18:40)
-|  |  |  |  SCExplicitReturn (18:49)
-|  |  |  |  |  SCLiteral (18:50) = 2
+|  |  |  |  SCExplicitReturn (18:51)
+|  |  |  |  |  SCLiteral (18:52) = 2
 Successfully compiled 16 classes.

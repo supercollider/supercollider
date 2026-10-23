@@ -7,12 +7,21 @@ IR GRAPH DUMP
 SCInterpreted (1:1): poisoned: version 3.16: parse_errors/parenthesised_interpreted.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Missing Expression.
+|  parse_errors/parenthesised_interpreted.scd:3:12
+|      1 │ // interpreted-version: 3.16
+|      2 │ // expect: poisoned
+|      3 │ var a = (1 +);
+|        ┆            ^ This `+` needs an expression after it...
+|      4 │ var b = [(1 2), (3 + 4)];
+|      5 │ (
+|      6 │ 	var c = 1;
+|
 |  parse_errors/parenthesised_interpreted.scd:3:13
 |      1 │ // interpreted-version: 3.16
 |      2 │ // expect: poisoned
 |      3 │ var a = (1 +);
-|        ┆             ^ Expected an expression or `.`, but found `)`.
+|        ┆             ^ ...but found `)`.
 |      4 │ var b = [(1 2), (3 + 4)];
 |      5 │ (
 |      6 │ 	var c = 1;
@@ -20,12 +29,21 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/parenthesised_interpre
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Missing Operator.
+|  parse_errors/parenthesised_interpreted.scd:4:11
+|      2 │ // expect: poisoned
+|      3 │ var a = (1 +);
+|      4 │ var b = [(1 2), (3 + 4)];
+|        ┆           ^ This ends an expression...
+|      5 │ (
+|      6 │ 	var c = 1;
+|      7 │ 	c + (2 3)
+|
 |  parse_errors/parenthesised_interpreted.scd:4:13
 |      2 │ // expect: poisoned
 |      3 │ var a = (1 +);
 |      4 │ var b = [(1 2), (3 + 4)];
-|        ┆             ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
+|        ┆             ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |      5 │ (
 |      6 │ 	var c = 1;
 |      7 │ 	c + (2 3)

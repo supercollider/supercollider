@@ -288,6 +288,30 @@ Diagnostic Diagnostic::unclosed_bracket(std::shared_ptr<const sc::lex::TextInfo>
              } };
 }
 
+Diagnostic Diagnostic::missing_operator(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                        sc::lex::SourceCodeRange before, sc::lex::SourceCodeRange found,
+                                        std::string_view found_text, std::optional<std::string_view> separator) {
+    auto fix = std::string { "Put an operator between them, e.g., `+`" };
+    fix += separator ? ", or separate them with " + quoted(*separator) + "." : ".";
+    return { "Missing Operator.", //
+             Severity::Error, //
+             std::vector<Location> {
+                 { text_info, before, "This ends an expression..." },
+                 { text_info, found, "...and " + std::string { found_text } + " starts another. " + fix },
+             } };
+}
+
+Diagnostic Diagnostic::missing_expression_after(std::shared_ptr<const sc::lex::TextInfo> text_info,
+                                                sc::lex::SourceCodeRange op, sc::lex::SourceCodeRange found,
+                                                std::string_view found_text) {
+    return { "Missing Expression.", //
+             Severity::Error, //
+             std::vector<Location> {
+                 { text_info, op, "This " + quoted(text_info->read(op)) + " needs an expression after it..." },
+                 { text_info, found, "...but found " + std::string { found_text } + "." },
+             } };
+}
+
 Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::TextInfo> text_info,
                                                 sc::lex::SourceCodeRange loc) {
     return { "Region missing semi-colon.", //

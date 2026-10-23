@@ -78,6 +78,13 @@ struct UnexpectedToken {
     int got;
     // At a bracket inserted to close an unclosed one, which has been reported, see tokenise.
     bool at_inserted { false };
+    // The token written before it, as a type erased parser symbol, for messages when we want to suggest somethign
+    // between them.
+    struct Before {
+        int kind;
+        std::uint32_t index;
+    };
+    std::optional<Before> before {};
 };
 class parser;
 

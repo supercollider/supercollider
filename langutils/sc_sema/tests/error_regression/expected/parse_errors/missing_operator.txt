@@ -1,0 +1,379 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): MissingOperator, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (7:5): poisoned: version 3.16: numbers { ^1 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/missing_operator.sc:7:16
+|  |  |      5 │     // expect: poisoned
+|  |  |      6 │     // expect-error: Missing Operator.
+|  |  |      7 │     numbers { ^1 2 }
+|  |  |        ┆                ^ This ends an expression...
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     // expect-error: Missing Operator.
+|  |  |     10 │     names { |a, b| ^a b }
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:7:18
+|  |  |      5 │     // expect: poisoned
+|  |  |      6 │     // expect-error: Missing Operator.
+|  |  |      7 │     numbers { ^1 2 }
+|  |  |        ┆                  ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     // expect-error: Missing Operator.
+|  |  |     10 │     names { |a, b| ^a b }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (7:13)
+|  |  |  |  SCExprList (7:13)
+|  |  SCMethod (10:5): poisoned: version 3.16: names { |a, b| ^a b }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/missing_operator.sc:10:21
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     // expect-error: Missing Operator.
+|  |  |     10 │     names { |a, b| ^a b }
+|  |  |        ┆                     ^ This ends an expression...
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     // expect-error: Missing Operator.
+|  |  |     13 │     in_array { ^[1 2] }
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:10:23
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     // expect-error: Missing Operator.
+|  |  |     10 │     names { |a, b| ^a b }
+|  |  |        ┆                       ^ ...and `b` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     // expect-error: Missing Operator.
+|  |  |     13 │     in_array { ^[1 2] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:11)
+|  |  |  |  SCExprList (10:11)
+|  |  SCMethod (13:5): poisoned: version 3.16: in_array { ^[1 2] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/missing_operator.sc:13:18
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     // expect-error: Missing Operator.
+|  |  |     13 │     in_array { ^[1 2] }
+|  |  |        ┆                  ^ This ends an expression...
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     // expect-error: Missing Operator.
+|  |  |     16 │     in_arguments { ^this.foo(1 2) }
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:13:20
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     // expect-error: Missing Operator.
+|  |  |     13 │     in_array { ^[1 2] }
+|  |  |        ┆                    ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `,`.
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     // expect-error: Missing Operator.
+|  |  |     16 │     in_arguments { ^this.foo(1 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (13:14)
+|  |  |  |  SCExprList (13:14)
+|  |  SCMethod (16:5): poisoned: version 3.16: in_arguments { ^this.foo(1 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/missing_operator.sc:16:30
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     // expect-error: Missing Operator.
+|  |  |     16 │     in_arguments { ^this.foo(1 2) }
+|  |  |        ┆                              ^ This ends an expression...
+|  |  |     17 │     // expect: poisoned
+|  |  |     18 │     // expect-error: Missing Operator.
+|  |  |     19 │     in_brackets { ^(1 2) }
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:16:32
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     // expect-error: Missing Operator.
+|  |  |     16 │     in_arguments { ^this.foo(1 2) }
+|  |  |        ┆                                ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `,`.
+|  |  |     17 │     // expect: poisoned
+|  |  |     18 │     // expect-error: Missing Operator.
+|  |  |     19 │     in_brackets { ^(1 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (16:18)
+|  |  |  |  SCExprList (16:18)
+|  |  SCMethod (19:5): poisoned: version 3.16: in_brackets { ^(1 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/missing_operator.sc:19:21
+|  |  |     17 │     // expect: poisoned
+|  |  |     18 │     // expect-error: Missing Operator.
+|  |  |     19 │     in_brackets { ^(1 2) }
+|  |  |        ┆                     ^ This ends an expression...
+|  |  |     20 │     // expect: poisoned
+|  |  |     21 │     // expect-error: Missing Operator.
+|  |  |     22 │     in_brackets_in_array { ^[(1 2)] }
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:19:23
+|  |  |     17 │     // expect: poisoned
+|  |  |     18 │     // expect-error: Missing Operator.
+|  |  |     19 │     in_brackets { ^(1 2) }
+|  |  |        ┆                       ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |     20 │     // expect: poisoned
+|  |  |     21 │     // expect-error: Missing Operator.
+|  |  |     22 │     in_brackets_in_array { ^[(1 2)] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (19:19)
+|  |  |  |  SCExplicitReturn (19:19)
+|  |  |  |  |  SCExprList (19:20)
+|  |  SCMethod (22:5): poisoned: version 3.16: in_brackets_in_array { ^[(1 2)] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/missing_operator.sc:22:31
+|  |  |     20 │     // expect: poisoned
+|  |  |     21 │     // expect-error: Missing Operator.
+|  |  |     22 │     in_brackets_in_array { ^[(1 2)] }
+|  |  |        ┆                               ^ This ends an expression...
+|  |  |     23 │     // expect: poisoned
+|  |  |     24 │     // expect-error: Missing Operator.
+|  |  |     25 │     after_call { ^1.foo(2) 3 }
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:22:33
+|  |  |     20 │     // expect: poisoned
+|  |  |     21 │     // expect-error: Missing Operator.
+|  |  |     22 │     in_brackets_in_array { ^[(1 2)] }
+|  |  |        ┆                                 ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |     23 │     // expect: poisoned
+|  |  |     24 │     // expect-error: Missing Operator.
+|  |  |     25 │     after_call { ^1.foo(2) 3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (22:28)
+|  |  |  |  SCExplicitReturn (22:28)
+|  |  |  |  |  SCCollection (22:29): Array
+|  |  |  |  |  |  SCExprList (22:30)
+|  |  SCMethod (25:5): poisoned: version 3.16: after_call { ^1.foo(2) 3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/missing_operator.sc:25:26
+|  |  |     23 │     // expect: poisoned
+|  |  |     24 │     // expect-error: Missing Operator.
+|  |  |     25 │     after_call { ^1.foo(2) 3 }
+|  |  |        ┆                          ^ This ends an expression...
+|  |  |     26 │     // A multiline token is shown up to its first line.
+|  |  |     27 │     // expect: poisoned
+|  |  |     28 │     // expect-error: Missing Operator.
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:25:28
+|  |  |     23 │     // expect: poisoned
+|  |  |     24 │     // expect-error: Missing Operator.
+|  |  |     25 │     after_call { ^1.foo(2) 3 }
+|  |  |        ┆                            ^ ...and `3` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |     26 │     // A multiline token is shown up to its first line.
+|  |  |     27 │     // expect: poisoned
+|  |  |     28 │     // expect-error: Missing Operator.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (25:16)
+|  |  |  |  SCExprList (25:16)
+|  |  SCMethod (29:5): poisoned: version 3.16: multiline { ^1 "first'\n'second" }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/missing_operator.sc:29:18
+|  |  |     27 │     // expect: poisoned
+|  |  |     28 │     // expect-error: Missing Operator.
+|  |  |     29 │     multiline { ^1 "first
+|  |  |        ┆                  ^ This ends an expression...
+|  |  |     30 │ second" }
+|  |  |     31 │     // expect: poisoned
+|  |  |     32 │     // expect-error: Missing Operator.
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:29:20
+|  |  |     27 │     // expect: poisoned
+|  |  |     28 │     // expect-error: Missing Operator.
+|  |  |     29*│     multiline { ^1 "first
+|  |  |     30*│ second" }
+|  |  |       >│ ^ ...and `"first...` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |     31 │     // expect: poisoned
+|  |  |     32 │     // expect-error: Missing Operator.
+|  |  |     33 │     in_nested_function { |x| if (x) { ^1 2 }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (29:15)
+|  |  |  |  SCExprList (29:15)
+|  |  SCMethod (33:5): poisoned: version 3.16: in_nested_function { |x| if (x) { ^1 2 }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/missing_operator.sc:33:40
+|  |  |     31 │     // expect: poisoned
+|  |  |     32 │     // expect-error: Missing Operator.
+|  |  |     33 │     in_nested_function { |x| if (x) { ^1 2 }; ^2 }
+|  |  |        ┆                                        ^ This ends an expression...
+|  |  |     34 │ 
+|  |  |     35 │     // expect: poisoned
+|  |  |     36 │     // expect-error: Missing Expression.
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:33:42
+|  |  |     31 │     // expect: poisoned
+|  |  |     32 │     // expect-error: Missing Operator.
+|  |  |     33 │     in_nested_function { |x| if (x) { ^1 2 }; ^2 }
+|  |  |        ┆                                          ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |     34 │ 
+|  |  |     35 │     // expect: poisoned
+|  |  |     36 │     // expect-error: Missing Expression.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (33:24)
+|  |  |  |  SCExprList (33:24)
+|  |  SCMethod (37:5): poisoned: version 3.16: operand_at_end { ^1 + }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/missing_operator.sc:37:25
+|  |  |     35 │     // expect: poisoned
+|  |  |     36 │     // expect-error: Missing Expression.
+|  |  |     37 │     operand_at_end { ^1 + }
+|  |  |        ┆                         ^ This `+` needs an expression after it...
+|  |  |     38 │     // expect: poisoned
+|  |  |     39 │     // expect-error: Missing Expression.
+|  |  |     40 │     operand_in_brackets { ^(1 * ) }
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:37:27
+|  |  |     35 │     // expect: poisoned
+|  |  |     36 │     // expect-error: Missing Expression.
+|  |  |     37 │     operand_at_end { ^1 + }
+|  |  |        ┆                           ^ ...but found `}`.
+|  |  |     38 │     // expect: poisoned
+|  |  |     39 │     // expect-error: Missing Expression.
+|  |  |     40 │     operand_in_brackets { ^(1 * ) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (37:20)
+|  |  |  |  SCExprList (37:20)
+|  |  SCMethod (40:5): poisoned: version 3.16: operand_in_brackets { ^(1 * ) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/missing_operator.sc:40:31
+|  |  |     38 │     // expect: poisoned
+|  |  |     39 │     // expect-error: Missing Expression.
+|  |  |     40 │     operand_in_brackets { ^(1 * ) }
+|  |  |        ┆                               ^ This `*` needs an expression after it...
+|  |  |     41 │     // expect: poisoned
+|  |  |     42 │     // expect-error: Missing Expression.
+|  |  |     43 │     keyword_operator { ^1 max: ; }
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:40:33
+|  |  |     38 │     // expect: poisoned
+|  |  |     39 │     // expect-error: Missing Expression.
+|  |  |     40 │     operand_in_brackets { ^(1 * ) }
+|  |  |        ┆                                 ^ ...but found `)`.
+|  |  |     41 │     // expect: poisoned
+|  |  |     42 │     // expect-error: Missing Expression.
+|  |  |     43 │     keyword_operator { ^1 max: ; }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (40:27)
+|  |  |  |  SCExplicitReturn (40:27)
+|  |  |  |  |  SCExprList (40:28)
+|  |  SCMethod (43:5): poisoned: version 3.16: keyword_operator { ^1 max: ; }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/missing_operator.sc:43:27
+|  |  |     41 │     // expect: poisoned
+|  |  |     42 │     // expect-error: Missing Expression.
+|  |  |     43 │     keyword_operator { ^1 max: ; }
+|  |  |        ┆                           ^^^^ This `max:` needs an expression after it...
+|  |  |     44 │     // A keyword argument is the same token as a keyword binary operator.
+|  |  |     45 │     // expect: poisoned
+|  |  |     46 │     // expect-error: Missing Expression.
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:43:32
+|  |  |     41 │     // expect: poisoned
+|  |  |     42 │     // expect-error: Missing Expression.
+|  |  |     43 │     keyword_operator { ^1 max: ; }
+|  |  |        ┆                                ^ ...but found `;`.
+|  |  |     44 │     // A keyword argument is the same token as a keyword binary operator.
+|  |  |     45 │     // expect: poisoned
+|  |  |     46 │     // expect-error: Missing Expression.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (43:22)
+|  |  |  |  SCExprList (43:22)
+|  |  SCMethod (47:5): poisoned: version 3.16: keyword_argument { ^this.foo(a: ) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/missing_operator.sc:47:34
+|  |  |     45 │     // expect: poisoned
+|  |  |     46 │     // expect-error: Missing Expression.
+|  |  |     47 │     keyword_argument { ^this.foo(a: ) }
+|  |  |        ┆                                  ^^ This `a:` needs an expression after it...
+|  |  |     48 │     // expect: poisoned
+|  |  |     49 │     // expect-error: Missing Expression.
+|  |  |     50 │     operand_in_nested_function { |x| if (x) { ^1 - }; ^2 }
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:47:37
+|  |  |     45 │     // expect: poisoned
+|  |  |     46 │     // expect-error: Missing Expression.
+|  |  |     47 │     keyword_argument { ^this.foo(a: ) }
+|  |  |        ┆                                     ^ ...but found `)`.
+|  |  |     48 │     // expect: poisoned
+|  |  |     49 │     // expect-error: Missing Expression.
+|  |  |     50 │     operand_in_nested_function { |x| if (x) { ^1 - }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (47:22)
+|  |  |  |  SCExprList (47:22)
+|  |  SCMethod (50:5): poisoned: version 3.16: operand_in_nested_function { |x| if (x) { ^1 - }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/missing_operator.sc:50:50
+|  |  |     48 │     // expect: poisoned
+|  |  |     49 │     // expect-error: Missing Expression.
+|  |  |     50 │     operand_in_nested_function { |x| if (x) { ^1 - }; ^2 }
+|  |  |        ┆                                                  ^ This `-` needs an expression after it...
+|  |  |     51 │ 
+|  |  |     52 │     // An argument list's closing `|` isn't an operator.
+|  |  |     53 │     // expect: poisoned
+|  |  |
+|  |  |  parse_errors/missing_operator.sc:50:52
+|  |  |     48 │     // expect: poisoned
+|  |  |     49 │     // expect-error: Missing Expression.
+|  |  |     50 │     operand_in_nested_function { |x| if (x) { ^1 - }; ^2 }
+|  |  |        ┆                                                    ^ ...but found `}`.
+|  |  |     51 │ 
+|  |  |     52 │     // An argument list's closing `|` isn't an operator.
+|  |  |     53 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (50:32)
+|  |  |  |  SCExprList (50:32)
+|  |  SCMethod (55:5): poisoned: version 3.16: after_arguments { ^{ |a| * } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/missing_operator.sc:55:30
+|  |  |     53 │     // expect: poisoned
+|  |  |     54 │     // expect-error: Unexpected Token.
+|  |  |     55 │     after_arguments { ^{ |a| * } }
+|  |  |        ┆                              ^ Expected an expression, `}`, `^`, or `var`, but found `*`.
+|  |  |     56 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (55:21)
+|  |  |  |  SCExprList (55:21)
+Successfully compiled 16 classes.

@@ -10,14 +10,23 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (7:5): poisoned: version 3.16: missing_operand { ^(1 +) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/parenthesised.sc:7:27
+|  |  |      5 │     // expect: poisoned
+|  |  |      6 │     // expect-error: Missing Expression.
+|  |  |      7 │     missing_operand { ^(1 +) }
+|  |  |        ┆                           ^ This `+` needs an expression after it...
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     // expect-error: Missing Operator.
+|  |  |     10 │     missing_operator { ^(1 2) }
+|  |  |
 |  |  |  parse_errors/parenthesised.sc:7:28
 |  |  |      5 │     // expect: poisoned
-|  |  |      6 │     // expect-error: Unexpected Token.
+|  |  |      6 │     // expect-error: Missing Expression.
 |  |  |      7 │     missing_operand { ^(1 +) }
-|  |  |        ┆                            ^ Expected an expression or `.`, but found `)`.
+|  |  |        ┆                            ^ ...but found `)`.
 |  |  |      8 │     // expect: poisoned
-|  |  |      9 │     // expect-error: Unexpected Token.
+|  |  |      9 │     // expect-error: Missing Operator.
 |  |  |     10 │     missing_operator { ^(1 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -27,15 +36,24 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (10:5): poisoned: version 3.16: missing_operator { ^(1 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
-|  |  |  parse_errors/parenthesised.sc:10:28
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/parenthesised.sc:10:26
 |  |  |      8 │     // expect: poisoned
-|  |  |      9 │     // expect-error: Unexpected Token.
+|  |  |      9 │     // expect-error: Missing Operator.
 |  |  |     10 │     missing_operator { ^(1 2) }
-|  |  |        ┆                            ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
+|  |  |        ┆                          ^ This ends an expression...
 |  |  |     11 │     // The nested brackets are skipped, recovery stops at the bracket matching the error's.
 |  |  |     12 │     // expect: poisoned
-|  |  |     13 │     // expect-error: Unexpected Token.
+|  |  |     13 │     // expect-error: Missing Operator.
+|  |  |
+|  |  |  parse_errors/parenthesised.sc:10:28
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     // expect-error: Missing Operator.
+|  |  |     10 │     missing_operator { ^(1 2) }
+|  |  |        ┆                            ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |     11 │     // The nested brackets are skipped, recovery stops at the bracket matching the error's.
+|  |  |     12 │     // expect: poisoned
+|  |  |     13 │     // expect-error: Missing Operator.
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:24)
@@ -44,14 +62,23 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (14:5): poisoned: version 3.16: nested { ^(1 + (2 3) * 4) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/parenthesised.sc:14:21
+|  |  |     12 │     // expect: poisoned
+|  |  |     13 │     // expect-error: Missing Operator.
+|  |  |     14 │     nested { ^(1 + (2 3) * 4) }
+|  |  |        ┆                     ^ This ends an expression...
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     // expect-error: Missing Operator.
+|  |  |     17 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
+|  |  |
 |  |  |  parse_errors/parenthesised.sc:14:23
 |  |  |     12 │     // expect: poisoned
-|  |  |     13 │     // expect-error: Unexpected Token.
+|  |  |     13 │     // expect-error: Missing Operator.
 |  |  |     14 │     nested { ^(1 + (2 3) * 4) }
-|  |  |        ┆                       ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `3`.
+|  |  |        ┆                       ^ ...and `3` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |  |  |     15 │     // expect: poisoned
-|  |  |     16 │     // expect-error: Unexpected Token.
+|  |  |     16 │     // expect-error: Missing Operator.
 |  |  |     17 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -67,15 +94,24 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (17:5): poisoned: version 3.16: skips_nested { ^(1 2 (3 + 4)) + 5 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
-|  |  |  parse_errors/parenthesised.sc:17:24
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/parenthesised.sc:17:22
 |  |  |     15 │     // expect: poisoned
-|  |  |     16 │     // expect-error: Unexpected Token.
+|  |  |     16 │     // expect-error: Missing Operator.
 |  |  |     17 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
-|  |  |        ┆                        ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
+|  |  |        ┆                      ^ This ends an expression...
 |  |  |     18 │     // Each error is reported, as recovery resumes at the matching bracket.
 |  |  |     19 │     // expect: poisoned
-|  |  |     20 │     // expect-error: Unexpected Token.
+|  |  |     20 │     // expect-error: Missing Operator.
+|  |  |
+|  |  |  parse_errors/parenthesised.sc:17:24
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     // expect-error: Missing Operator.
+|  |  |     17 │     skips_nested { ^(1 2 (3 + 4)) + 5 }
+|  |  |        ┆                        ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |     18 │     // Each error is reported, as recovery resumes at the matching bracket.
+|  |  |     19 │     // expect: poisoned
+|  |  |     20 │     // expect-error: Missing Operator.
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (17:20)
@@ -87,27 +123,45 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (21:5): poisoned: version 3.16: two { ^[(1 2), (3 4)] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/parenthesised.sc:21:14
+|  |  |     19 │     // expect: poisoned
+|  |  |     20 │     // expect-error: Missing Operator.
+|  |  |     21 │     two { ^[(1 2), (3 4)] }
+|  |  |        ┆              ^ This ends an expression...
+|  |  |     22 │     // expect: poisoned
+|  |  |     23 │     // expect-error: Missing Operator.
+|  |  |     24 │     as_receiver { ^(1 2).foo }
+|  |  |
 |  |  |  parse_errors/parenthesised.sc:21:16
 |  |  |     19 │     // expect: poisoned
-|  |  |     20 │     // expect-error: Unexpected Token.
+|  |  |     20 │     // expect-error: Missing Operator.
 |  |  |     21 │     two { ^[(1 2), (3 4)] }
-|  |  |        ┆                ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
+|  |  |        ┆                ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |  |  |     22 │     // expect: poisoned
-|  |  |     23 │     // expect-error: Unexpected Token.
+|  |  |     23 │     // expect-error: Missing Operator.
 |  |  |     24 │     as_receiver { ^(1 2).foo }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/parenthesised.sc:21:21
+|  |  |     19 │     // expect: poisoned
+|  |  |     20 │     // expect-error: Missing Operator.
+|  |  |     21 │     two { ^[(1 2), (3 4)] }
+|  |  |        ┆                     ^ This ends an expression...
+|  |  |     22 │     // expect: poisoned
+|  |  |     23 │     // expect-error: Missing Operator.
+|  |  |     24 │     as_receiver { ^(1 2).foo }
+|  |  |
 |  |  |  parse_errors/parenthesised.sc:21:23
 |  |  |     19 │     // expect: poisoned
-|  |  |     20 │     // expect-error: Unexpected Token.
+|  |  |     20 │     // expect-error: Missing Operator.
 |  |  |     21 │     two { ^[(1 2), (3 4)] }
-|  |  |        ┆                       ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `4`.
+|  |  |        ┆                       ^ ...and `4` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |  |  |     22 │     // expect: poisoned
-|  |  |     23 │     // expect-error: Unexpected Token.
+|  |  |     23 │     // expect-error: Missing Operator.
 |  |  |     24 │     as_receiver { ^(1 2).foo }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -119,14 +173,23 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (24:5): poisoned: version 3.16: as_receiver { ^(1 2).foo }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/parenthesised.sc:24:21
+|  |  |     22 │     // expect: poisoned
+|  |  |     23 │     // expect-error: Missing Operator.
+|  |  |     24 │     as_receiver { ^(1 2).foo }
+|  |  |        ┆                     ^ This ends an expression...
+|  |  |     25 │     // expect: poisoned
+|  |  |     26 │     // expect-error: Missing Operator.
+|  |  |     27 │     in_variable { var a = (1 2); ^a }
+|  |  |
 |  |  |  parse_errors/parenthesised.sc:24:23
 |  |  |     22 │     // expect: poisoned
-|  |  |     23 │     // expect-error: Unexpected Token.
+|  |  |     23 │     // expect-error: Missing Operator.
 |  |  |     24 │     as_receiver { ^(1 2).foo }
-|  |  |        ┆                       ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
+|  |  |        ┆                       ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |  |  |     25 │     // expect: poisoned
-|  |  |     26 │     // expect-error: Unexpected Token.
+|  |  |     26 │     // expect-error: Missing Operator.
 |  |  |     27 │     in_variable { var a = (1 2); ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -137,14 +200,23 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (27:5): poisoned: version 3.16: in_variable { var a = (1 2); ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/parenthesised.sc:27:28
+|  |  |     25 │     // expect: poisoned
+|  |  |     26 │     // expect-error: Missing Operator.
+|  |  |     27 │     in_variable { var a = (1 2); ^a }
+|  |  |        ┆                            ^ This ends an expression...
+|  |  |     28 │     // expect: poisoned
+|  |  |     29 │     // expect-error: Missing Operator.
+|  |  |     30 │     in_range { ^(1..2 3) }
+|  |  |
 |  |  |  parse_errors/parenthesised.sc:27:30
 |  |  |     25 │     // expect: poisoned
-|  |  |     26 │     // expect-error: Unexpected Token.
+|  |  |     26 │     // expect-error: Missing Operator.
 |  |  |     27 │     in_variable { var a = (1 2); ^a }
-|  |  |        ┆                              ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
+|  |  |        ┆                              ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |  |  |     28 │     // expect: poisoned
-|  |  |     29 │     // expect-error: Unexpected Token.
+|  |  |     29 │     // expect-error: Missing Operator.
 |  |  |     30 │     in_range { ^(1..2 3) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -156,14 +228,23 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (30:5): poisoned: version 3.16: in_range { ^(1..2 3) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/parenthesised.sc:30:21
+|  |  |     28 │     // expect: poisoned
+|  |  |     29 │     // expect-error: Missing Operator.
+|  |  |     30 │     in_range { ^(1..2 3) }
+|  |  |        ┆                     ^ This ends an expression...
+|  |  |     31 │     // expect: poisoned
+|  |  |     32 │     // expect-error: Missing Expression.
+|  |  |     33 │     in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
+|  |  |
 |  |  |  parse_errors/parenthesised.sc:30:23
 |  |  |     28 │     // expect: poisoned
-|  |  |     29 │     // expect-error: Unexpected Token.
+|  |  |     29 │     // expect-error: Missing Operator.
 |  |  |     30 │     in_range { ^(1..2 3) }
-|  |  |        ┆                       ^ Expected a binary operator, `[`, `)`, `;`, or `.`, but found `3`.
+|  |  |        ┆                       ^ ...and `3` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |  |  |     31 │     // expect: poisoned
-|  |  |     32 │     // expect-error: Unexpected Token.
+|  |  |     32 │     // expect-error: Missing Expression.
 |  |  |     33 │     in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -173,14 +254,23 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (33:5): poisoned: version 3.16: in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/parenthesised.sc:33:43
+|  |  |     31 │     // expect: poisoned
+|  |  |     32 │     // expect-error: Missing Expression.
+|  |  |     33 │     in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
+|  |  |        ┆                                           ^ This `+` needs an expression after it...
+|  |  |     34 │     // expect: poisoned
+|  |  |     35 │     // expect-error: Missing Operator.
+|  |  |     36 │     in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
+|  |  |
 |  |  |  parse_errors/parenthesised.sc:33:44
 |  |  |     31 │     // expect: poisoned
-|  |  |     32 │     // expect-error: Unexpected Token.
+|  |  |     32 │     // expect-error: Missing Expression.
 |  |  |     33 │     in_nested_function { |x| if (x) { ^(1 +) }; ^2 }
-|  |  |        ┆                                            ^ Expected an expression or `.`, but found `)`.
+|  |  |        ┆                                            ^ ...but found `)`.
 |  |  |     34 │     // expect: poisoned
-|  |  |     35 │     // expect-error: Unexpected Token.
+|  |  |     35 │     // expect-error: Missing Operator.
 |  |  |     36 │     in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -199,12 +289,21 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  SCMethod (36:5): poisoned: version 3.16: in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Unexpected Token.
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/parenthesised.sc:36:42
+|  |  |     34 │     // expect: poisoned
+|  |  |     35 │     // expect-error: Missing Operator.
+|  |  |     36 │     in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
+|  |  |        ┆                                          ^ This ends an expression...
+|  |  |     37 │ 
+|  |  |     38 │     // expect: -> 3
+|  |  |     39 │     // expect: not poisoned
+|  |  |
 |  |  |  parse_errors/parenthesised.sc:36:44
 |  |  |     34 │     // expect: poisoned
-|  |  |     35 │     // expect-error: Unexpected Token.
+|  |  |     35 │     // expect-error: Missing Operator.
 |  |  |     36 │     in_nested_return { |x| ^{ if (x) { ^(1 2) }; 3 } }
-|  |  |        ┆                                            ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `2`.
+|  |  |        ┆                                            ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |  |  |     37 │ 
 |  |  |     38 │     // expect: -> 3
 |  |  |     39 │     // expect: not poisoned

@@ -20,8 +20,18 @@ void sc::ast::parser::parser::report_syntax_error(const context& symbol_cxt) con
                    [](symbol_kind_type r) -> int { return static_cast<int>(r); });
 
     const bool at_inserted = cxt.lookahead && cxt.tokens[*cxt.lookahead].inserted();
-    cxt.unexpected_token_error = UnexpectedToken { symbol_cxt.location(), std::move(expected_int),
-                                                   static_cast<int>(symbol_cxt.lookahead().kind_), at_inserted };
+    std::optional<UnexpectedToken::Before> before;
+    if (cxt.lookahead && *cxt.lookahead > 0) {
+        const auto& token = cxt.tokens[*cxt.lookahead - 1];
+        if (!token.inserted() && !sc::lex::is_error(token.token))
+            before = UnexpectedToken::Before {
+                static_cast<int>(symbol_type { to_parser_token(token.token), sc::ast::LexerToken {}, {} }.kind()),
+                *cxt.lookahead - 1
+            };
+    }
+    cxt.unexpected_token_error =
+        UnexpectedToken { symbol_cxt.location(), std::move(expected_int),
+                          static_cast<int>(symbol_cxt.lookahead().kind_), at_inserted, before };
 }
 
 void sc::ast::parser::parser::error(const sc::lex::SourceCodeRange&, const std::string&) {
@@ -125,6 +135,36 @@ constexpr std::array binary_operator {
     S::S_MULTIPLY, S::S_ADD,      S::S_PIPE,  S::S_READWRITEVAR,
 };
 constexpr std::array binary_operator_core { S::S_BINOP };
+
+template <typename Container> bool contains(const Container& c, Symbol s) {
+    return std::find(c.begin(), c.end(), s) != c.end();
+}
+
+// What separates the items in the innermost bracket around the token at i: `,` in an array or a call's arguments, `;`
+// elsewhere, e.g., in a function or brackets around expressions.
+std::string_view separator_inside(const ParserContext& cxt, std::uint32_t i) {
+    using T = sc::lex::TokenType;
+    for (auto j = static_cast<std::int64_t>(i); j >= 0; --j) {
+        const auto& token = cxt.tokens[static_cast<std::size_t>(j)];
+        // Skips a bracketed part, continuing before its opening bracket.
+        if (sc::lex::is_close_bracket(token.token)) {
+            if (const auto m = token.match())
+                j = *m;
+            continue;
+        }
+        if (!sc::lex::is_open_bracket(token.token))
+            continue;
+        if (token.token == T::OpenSquare)
+            return ",";
+        if (token.token == T::OpenParen && j > 0) {
+            const auto before = cxt.tokens[static_cast<std::size_t>(j - 1)].token;
+            if (before == T::Name || before == T::ClassName || before == T::Dot)
+                return ",";
+        }
+        return ";";
+    }
+    return ";";
+}
 
 // How the token is named in a message, or nothing for the parser's own tokens, which the user never writes.
 std::optional<std::string_view> token_name(Symbol s) {
@@ -302,6 +342,31 @@ void report(ParserContext& cxt) {
     std::vector<Symbol> expected(unexpected.expected.size());
     std::transform(unexpected.expected.begin(), unexpected.expected.end(), expected.begin(),
                    [](int i) { return static_cast<Symbol>(i); });
+
+    if (unexpected.before) {
+        const auto before = static_cast<Symbol>(unexpected.before->kind);
+        const auto before_location = cxt.tokens[unexpected.before->index].range;
+        const auto expects = [&](Symbol s) { return contains(expected, s); };
+        const bool expects_expression = std::all_of(expression_core.begin(), expression_core.end(), expects);
+        const bool got_expression = contains(expression_start, got) && !contains(binary_operator, got);
+
+        // E.g., `1 2`.
+        if (got_expression && !expects_expression && expects(S::S_BINOP)) {
+            const auto usual = separator_inside(cxt, unexpected.before->index);
+            const auto separator =
+                expects(usual == "," ? S::S_COMMA : S::S_SEMICOLON) ? std::optional { usual } : std::nullopt;
+            cxt.graph->add_diagnostic(
+                diag::Diagnostic::missing_operator(cxt.text_info, before_location, unexpected.location,
+                                                   found_text(cxt, got, unexpected.location), separator));
+            return;
+        }
+        // E.g., `1 + }`. Where a `var` could go, e.g., after an argument list's closing `|`, it isn't an operator.
+        if (!got_expression && expects_expression && !expects(S::S_VAR) && contains(binary_operator, before)) {
+            cxt.graph->add_diagnostic(diag::Diagnostic::missing_expression_after(
+                cxt.text_info, before_location, unexpected.location, found_text(cxt, got, unexpected.location)));
+            return;
+        }
+    }
 
     cxt.graph->add_diagnostic(diag::Diagnostic::unexpectedToken(cxt.text_info, unexpected.location,
                                                                 expected_list(std::move(expected)),

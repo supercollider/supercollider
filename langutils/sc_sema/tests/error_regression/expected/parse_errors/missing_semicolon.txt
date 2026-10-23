@@ -59,12 +59,21 @@ SCInterpreted (1:1): version 3.16: parse_errors/missing_semicolon.scd
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Missing Operator.
+|  parse_errors/missing_semicolon.scd:20:2
+|     18 │ 	8];
+|     19 │ // A separator can only go between region items, inside brackets and functions these are errors.
+|     20 │ (9
+|        ┆  ^ This ends an expression...
+|     21 │ 10);
+|     22 │ { 11
+|     23 │ 12 };
+|
 |  parse_errors/missing_semicolon.scd:21:1
 |     19 │ // A separator can only go between region items, inside brackets and functions these are errors.
 |     20 │ (9
 |     21 │ 10);
-|        ┆ ^^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `10`.
+|        ┆ ^^ ...and `10` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |     22 │ { 11
 |     23 │ 12 };
 |     24 │ a + b
@@ -72,12 +81,20 @@ SCInterpreted (1:1): version 3.16: parse_errors/missing_semicolon.scd
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Unexpected Token.
+|  Error: Missing Operator.
+|  parse_errors/missing_semicolon.scd:22:3
+|     20 │ (9
+|     21 │ 10);
+|     22 │ { 11
+|        ┆   ^^ This ends an expression...
+|     23 │ 12 };
+|     24 │ a + b
+|
 |  parse_errors/missing_semicolon.scd:23:1
 |     21 │ 10);
 |     22 │ { 11
 |     23 │ 12 };
-|        ┆ ^^ Expected a binary operator, `}`, `[`, `;`, `^`, or `.`, but found `12`.
+|        ┆ ^^ ...and `12` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
 |     24 │ a + b
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
