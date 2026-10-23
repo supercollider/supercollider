@@ -99,6 +99,9 @@ public:
 
     [[nodiscard]] static Diagnostic not_constant(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
 
+    // A number literal whose value can't be represented, e.g., `2147483648`, or `1e400`, a Float when is_float.
+    [[nodiscard]] static Diagnostic literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRange l, bool is_float);
+
     [[nodiscard]] static Diagnostic unbounded_range(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);
 
     [[nodiscard]] static Diagnostic range_too_many_arguments(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l);

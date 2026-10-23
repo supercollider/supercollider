@@ -28,7 +28,10 @@ const static std::string meta_prefix = "Meta_";
     return SymSCIdentifier::from(*get(std::move(s)));
 }
 [[nodiscard]] SymSCString SymbolTable::get_string(std::string s) { return SymSCString::from(*get(std::move(s))); }
-[[nodiscard]] bool SymbolTable::is_meta(SymSCClassName n) const { return m_meta_classes.count(n); }
+[[nodiscard]] bool SymbolTable::is_meta(SymSCClassName n) const {
+    std::scoped_lock lock { m_lock };
+    return m_meta_classes.count(n);
+}
 
 [[nodiscard]] SymSCClassName SymbolTable::get_meta_class_name(std::string s) {
     auto m = get_class_name(meta_prefix + s);

@@ -144,7 +144,13 @@ void ConstExpression::to_json(std::ostream& o, const SymbolTable& t) const {
         [&](std::int32_t i) { o << "{\"int\": " << i << "}"; },
         [&](double i) {
             static constexpr auto p { 8 };
-            o << "{\"float\": " << std::setprecision(p) << i << "}";
+            // Json has no infinity or nan, so they are strings.
+            if (std::isnan(i))
+                o << "{\"float\": \"nan\"}";
+            else if (std::isinf(i))
+                o << "{\"float\": \"" << (i < 0 ? "-inf" : "inf") << "\"}";
+            else
+                o << "{\"float\": " << std::setprecision(p) << i << "}";
         },
         [&](char i) {
             o << "{\"char\": ";

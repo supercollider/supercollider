@@ -1,5 +1,11 @@
 #include "literal_synthesis.hpp"
+#include <algorithm>
+#include <cassert>
 #include <charconv>
+#include <cstdint>
+#include <limits>
+#include <optional>
+#include <utility>
 #include <cmath>
 #include <cstdlib>
 #include <iterator>
@@ -10,45 +16,6 @@
 namespace sc::ir {
 
 namespace priv {
-// Copied from the original source
-inline double sc_strtof(const char* str, int n, int base) {
-    double z = 0.;
-    int decptpos = 0;
-    for (int i = 0; i < n; ++i) {
-        int c = *str++;
-        if (!c)
-            break;
-        if (c >= '0' && c <= '0' + std::min(10, base) - 1)
-            z = z * base + c - '0';
-        else if (c >= 'a' && c <= 'a' + std::min(36, base) - 11)
-            z = z * base + c - 'a' + 10;
-        else if (c >= 'A' && c <= 'A' + std::min(36, base) - 11)
-            z = z * base + c - 'A' + 10;
-        else if (c == '.')
-            decptpos = i;
-    }
-    // calculation previously included decimal point in count of columns (was n-decptpos); there are 1 less than n
-    // characters which are columns in the number contribution
-    z = z / std::pow(static_cast<double>(base), n - 1 - decptpos);
-    return z;
-}
-
-inline int sc_strtoi(const char* str, int n, int base) {
-    int z = 0;
-    for (int i = 0; i < n; ++i) {
-        int c = *str++;
-        if (!c)
-            break;
-        if (c >= '0' && c <= '0' + std::min(10, base) - 1)
-            z = z * base + c - '0';
-        else if (c >= 'a' && c <= 'a' + std::min(36, base) - 11)
-            z = z * base + c - 'a' + 10;
-        else if (c >= 'A' && c <= 'A' + std::min(36, base) - 11)
-            z = z * base + c - 'A' + 10;
-    }
-    return z;
-}
-
 // from cpp ref
 [[noreturn]] inline void unreachable() {
     // Uses compiler specific extensions if possible.
@@ -71,66 +38,71 @@ template <typename T> std::optional<T> from(const char* begin, const char* end) 
         return {};
     return { t };
 }
-template <typename T> std::optional<T> from(std::string_view v) { return from<T>(v.begin(), v.end()); }
+template <typename T> std::optional<T> from(std::string_view v) { return from<T>(v.data(), v.data() + v.size()); }
 
 namespace {
-// The value without its sign, as the sign isn't part of the literal's text.
-int unsigned_literal(const ast::IntNode& node, std::string_view str) {
-    static constexpr size_t len { 128 };
-    char buf[len] {};
-    assert(str.size() < len);
-    std::copy(str.begin(), str.end(), buf);
-    buf[str.size()] = 0;
+// A digit's value, the letters are 10 to 35 in either case. The lexer only accepts digits valid for the base.
+int digit_value(char c) {
+    if (c >= '0' && c <= '9')
+        return c - '0';
+    if (c >= 'a' && c <= 'z')
+        return c - 'a' + 10;
+    return c - 'A' + 10;
+}
 
+// The digits as a number in base, saturating at the largest uint64, so it can be checked against a limit.
+std::uint64_t integer_magnitude(std::string_view digits, std::uint64_t base) {
+    constexpr auto max = std::numeric_limits<std::uint64_t>::max();
+    std::uint64_t value { 0 };
+    for (const char c : digits) {
+        const auto d = static_cast<std::uint64_t>(digit_value(c));
+        if (base != 0 && value > (max - d) / base)
+            return max;
+        value = value * base + d;
+    }
+    return value;
+}
+
+// The base of a radix literal, e.g., 16 in `16rFF`, and its digits.
+std::pair<std::optional<std::uint64_t>, std::string_view> split_radix(std::string_view str) {
+    const auto r = str.find('r');
+    assert(r != std::string_view::npos); // The lexer ensures this.
+    return { from<std::uint64_t>(str.substr(0, r)), str.substr(r + 1) };
+}
+}
+
+std::optional<std::int32_t> synthesize_literal(const ast::IntNode& node, std::string_view str) {
+    const bool negative = node.sign == ast::IntNode::Sign::Negative;
+    // The most an unsigned value can be, a negative one can be one more, as -2147483648 is an Integer.
+    std::uint64_t limit = std::numeric_limits<std::int32_t>::max() + std::uint64_t { negative ? 1u : 0u };
+    std::uint64_t magnitude { 0 };
     switch (node.kind) {
-    case ast::IntNode::Kind::Normal: {
-        auto i = from<int>(str);
-        assert(i);
-        return *i;
-    }
+    case ast::IntNode::Kind::Normal:
+        magnitude = integer_magnitude(str, 10);
+        break;
     case ast::IntNode::Kind::Hexadecimal: {
-        auto it = str.begin();
-        const auto end = str.end();
-        while (*it != 'x' && *it != 'X') {
-            assert(it < str.end()); // lexer should ensure this.
-            ++it;
-        }
-        ++it; // skip x
-        int val = 0;
-        while (it < end) {
-            if (*it >= '0' && *it <= '9')
-                val = val * 16 + *it - '0';
-            else if (*it >= 'a' && *it <= 'z')
-                val = val * 16 + *it - 'a' + 10;
-            else if (*it >= 'A' && *it <= 'Z')
-                val = val * 16 + *it - 'A' + 10;
-            it++;
-        }
-        return val;
+        // The 32 bits, so `0xFFFFFFFF` is -1. The digits before the x are ignored, as the old compiler did.
+        const auto x = str.find_first_of("xX");
+        assert(x != std::string_view::npos); // The lexer ensures this.
+        magnitude = integer_magnitude(str.substr(x + 1), 16);
+        limit = std::numeric_limits<std::uint32_t>::max();
+        break;
     }
-
     case ast::IntNode::Kind::Radix: {
-        auto it = str.begin();
-        while (*it != 'r') {
-            assert(it < str.end()); // lexer should ensure this.
-            ++it;
-        }
-        auto radix = from<int>(str.begin(), it);
-        assert(radix);
-        ++it; // drop r
-        assert(it != str.end());
-        return priv::sc_strtoi(it, std::distance(it, str.end()), *radix);
+        const auto [base, digits] = split_radix(str);
+        if (!base)
+            return std::nullopt;
+        magnitude = integer_magnitude(digits, *base);
+        break;
     }
     default:
         priv::unreachable();
-        return 0;
     }
-}
-}
-
-int synthesize_literal(const ast::IntNode& node, std::string_view str) {
-    const auto value = unsigned_literal(node, str);
-    return node.sign == ast::IntNode::Sign::Negative ? -value : value;
+    if (magnitude > limit)
+        return std::nullopt;
+    // Unsigned, so the hexadecimal bits wrap and -2147483648 doesn't overflow, then reinterpreted as signed.
+    const auto bits = static_cast<std::uint32_t>(magnitude);
+    return static_cast<std::int32_t>(negative ? 0u - bits : bits);
 }
 
 char synthesize_literal(const ast::ASCIINode&, std::string_view str) {
@@ -160,50 +132,71 @@ char synthesize_literal(const ast::ASCIINode&, std::string_view str) {
     }
 }
 namespace {
-// The value without its sign, as the sign isn't part of the literal's text.
-double unsigned_literal(const ast::FloatNode& node, std::string_view str) {
-    static constexpr size_t len { 128 };
-    char buf[len] {};
-    // This would be a floating point number with 128 characters.
-    assert(str.size() < len);
-    std::copy(str.begin(), str.end(), buf);
-    buf[str.size()] = 0;
+// A radix float, e.g., `16rA.8`, as the old compiler computed it, the digits as one number divided by the base for each
+// digit after the point. Digits that are too small to change the value are dropped, and the division is split, so a
+// long literal whose value is representable still is. Nothing if base isn't known.
+std::optional<double> radix_float(std::string_view str) {
+    const auto [maybe_base, digits] = split_radix(str);
+    if (!maybe_base)
+        return std::nullopt;
+    const auto base = static_cast<double>(*maybe_base);
+    // Once the number is this large, a double can't hold more digits after the point.
+    constexpr double significant = 1e20;
+    double z { 0 };
+    // The power of the base to scale z by, positive for integer digits that were too small to add.
+    int exponent { 0 };
+    bool after_point = false;
+    for (const char c : digits) {
+        if (c == '.') {
+            after_point = true;
+            continue;
+        }
+        const bool fits = z < significant;
+        if (fits) {
+            z = z * base + digit_value(c);
+            if (after_point)
+                --exponent;
+        } else if (!after_point) {
+            ++exponent;
+        }
+    }
+    if (exponent >= 0)
+        return z * std::pow(base, exponent);
+    // Divided in two steps, as base to the power can overflow when z divided by it doesn't.
+    const int half = -exponent / 2;
+    return z / std::pow(base, half) / std::pow(base, -exponent - half);
+}
 
+// Whether the digits are all zero, so a value of zero is exact rather than an underflow.
+bool all_zero(std::string_view digits) {
+    return std::all_of(digits.begin(), digits.end(), [](char c) { return c == '0' || c == '.'; });
+}
+}
 
+std::optional<double> synthesize_literal(const ast::FloatNode& node, std::string_view str) {
+    std::optional<double> value;
     switch (node.kind) {
     case ast::FloatNode::Kind::Inf:
-        return std::numeric_limits<double>::infinity();
-
+        return node.sign == ast::FloatNode::Sign::Negative ? -std::numeric_limits<double>::infinity()
+                                                           : std::numeric_limits<double>::infinity();
     case ast::FloatNode::Kind::Exponent:
         [[fallthrough]];
-    case ast::FloatNode::Kind::Normal: {
-        auto r = from<double>(str.begin(), str.end());
-        assert(r);
-        return *r;
-    }
-
+    case ast::FloatNode::Kind::Normal:
+        // `inf` is lexed as a float. from_chars reports values that overflow or underflow as out of range.
+        value = from<double>(str);
+        break;
     case ast::FloatNode::Kind::Radix: {
-        auto it = str.begin();
-        while (*it != 'r') {
-            assert(it < str.end()); // lexer should ensure this.
-            ++it;
-        }
-        auto radix = from<int>(str.begin(), it);
-        assert(radix);
-        ++it; // drop r
-        assert(it != str.end());
-        return priv::sc_strtof(it, std::distance(it, str.end()), *radix);
+        value = radix_float(str);
+        if (value && *value == 0 && !all_zero(split_radix(str).second))
+            return std::nullopt;
+        break;
     }
     default:
         priv::unreachable();
-        return 0;
     }
-}
-}
-
-double synthesize_literal(const ast::FloatNode& node, std::string_view str) {
-    const auto value = unsigned_literal(node, str);
-    return node.sign == ast::FloatNode::Sign::Negative ? -value : value;
+    if (!value || (!std::isfinite(*value) && str != "inf"))
+        return std::nullopt;
+    return node.sign == ast::FloatNode::Sign::Negative ? -*value : *value;
 }
 
 std::string synthesize_literal(const ast::SymbolQuote&, std::string_view str) {

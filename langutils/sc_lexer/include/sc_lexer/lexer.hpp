@@ -47,6 +47,10 @@ namespace details {
 constexpr inline int str_to_int_for_radix(const char* str, std::size_t n, int base) {
     // TODO: in future it would be nice to remove this from the lexer, it means changing the language to accept
     // invalid radixs at the lexing stage, but makes things context independant.
+    // The radix only decides which characters are digits, those whose value, 0-9 then a-z or A-Z as 10-35, is less
+    // than it. There are only 36, so every radix from 36 up accepts the same digits. Stopping there means a huge radix
+    // can't overflow. Sema computes the value, and reports a radix it can't represent.
+    constexpr int max_radix { 36 };
     int out { 0 };
     for (std::size_t i { 0 }; i < n; ++i) {
         const char c = *str++;
@@ -56,6 +60,8 @@ constexpr inline int str_to_int_for_radix(const char* str, std::size_t n, int ba
             out = out * base + c - 'a' + 10;
         else if (c >= 'A' && c <= 'A' + std::min(36, base) - 11)
             out = out * base + c - 'A' + 10;
+        if (out >= max_radix)
+            return max_radix;
     }
     return out;
 }

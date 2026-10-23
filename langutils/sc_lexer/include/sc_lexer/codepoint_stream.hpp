@@ -128,7 +128,8 @@ public:
         // Copy state, don't update the main stream's state.
         State rolling_state { state };
         const auto get_next = [&]() {
-            const auto remaining = std::max<ptrdiff_t>(0, (snippet + snippet_len) - (source + state.next_byte_offest));
+            const auto remaining =
+                std::max<ptrdiff_t>(0, (snippet + snippet_len) - (source + rolling_state.next_byte_offest));
             const auto [cp, cp_size] = utf8_sequence_to_codepoint(source + rolling_state.next_byte_offest,
                                                                   static_cast<std::size_t>(remaining));
             rolling_state.update(cp, cp_size);

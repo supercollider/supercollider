@@ -1,0 +1,301 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): OutOfRange, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): version 3.16: int_largest { ^2147483647 } -> 2147483647
+|  |  |  SCBody (6:19)
+|  |  |  |  SCExplicitReturn (6:19)
+|  |  |  |  |  SCLiteral (6:20) = 2147483647
+|  |  SCMethod (9:5): poisoned: version 3.16: int_too_large { ^2147483648 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:9:22
+|  |  |      7 │     // expect-error: Literal out of range
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     int_too_large { ^2147483648 }
+|  |  |        ┆                      ^^^^^^^^^^ this is outside the range of a 32 bit Integer.
+|  |  |     10 │     // As the sign is part of the value, this fits.
+|  |  |     11 │     // expect: -> -2147483648
+|  |  |     12 │     int_smallest { ^-2147483648 }
+|  |  |
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (9:21)
+|  |  |  |  SCExplicitReturn (9:21)
+|  |  |  |  |  SCExprList (9:22)
+|  |  SCMethod (12:5): version 3.16: int_smallest { ^-2147483648 } -> -2147483648
+|  |  |  SCBody (12:20)
+|  |  |  |  SCExplicitReturn (12:20)
+|  |  |  |  |  SCLiteral (12:22) = -2147483648
+|  |  SCMethod (14:5): poisoned: version 3.16: int_too_small { ^-2147483649 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:14:23
+|  |  |     12 │     int_smallest { ^-2147483648 }
+|  |  |     13 │     // expect-error: Literal out of range
+|  |  |     14 │     int_too_small { ^-2147483649 }
+|  |  |        ┆                       ^^^^^^^^^^ this is outside the range of a 32 bit Integer.
+|  |  |     15 │     // expect-error: Literal out of range
+|  |  |     16 │     int_many_digits { ^99999999999999999999 }
+|  |  |     17 │ 
+|  |  |
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (14:21)
+|  |  |  |  SCExplicitReturn (14:21)
+|  |  |  |  |  SCExprList (14:23)
+|  |  SCMethod (16:5): poisoned: version 3.16: int_many_digits { ^99999999999999999999 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:16:24
+|  |  |     14 │     int_too_small { ^-2147483649 }
+|  |  |     15 │     // expect-error: Literal out of range
+|  |  |     16 │     int_many_digits { ^99999999999999999999 }
+|  |  |        ┆                        ^^^^^^^^^^^^^^^^^^^^ this is outside the range of a 32 bit Integer.
+|  |  |     17 │ 
+|  |  |     18 │     // expect: -> 2147483647
+|  |  |     19 │     hex_largest_positive { ^0x7FFFFFFF }
+|  |  |
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (16:23)
+|  |  |  |  SCExplicitReturn (16:23)
+|  |  |  |  |  SCExprList (16:24)
+|  |  SCMethod (19:5): version 3.16: hex_largest_positive { ^0x7FFFFFFF } -> 2147483647
+|  |  |  SCBody (19:28)
+|  |  |  |  SCExplicitReturn (19:28)
+|  |  |  |  |  SCLiteral (19:29) = 2147483647
+|  |  SCMethod (22:5): version 3.16: hex_all_bits { ^0xFFFFFFFF } -> -1
+|  |  |  SCBody (22:20)
+|  |  |  |  SCExplicitReturn (22:20)
+|  |  |  |  |  SCLiteral (22:21) = -1
+|  |  SCMethod (24:5): poisoned: version 3.16: hex_too_many_bits { ^0x100000000 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:24:26
+|  |  |     22 │     hex_all_bits { ^0xFFFFFFFF }
+|  |  |     23 │     // expect-error: Literal out of range
+|  |  |     24 │     hex_too_many_bits { ^0x100000000 }
+|  |  |        ┆                          ^^^^^^^^^^^ this is outside the range of a 32 bit Integer.
+|  |  |     25 │ 
+|  |  |     26 │     // expect: -> 2147483647
+|  |  |     27 │     radix_largest { ^16r7FFFFFFF }
+|  |  |
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (24:25)
+|  |  |  |  SCExplicitReturn (24:25)
+|  |  |  |  |  SCExprList (24:26)
+|  |  SCMethod (27:5): version 3.16: radix_largest { ^16r7FFFFFFF } -> 2147483647
+|  |  |  SCBody (27:21)
+|  |  |  |  SCExplicitReturn (27:21)
+|  |  |  |  |  SCLiteral (27:22) = 2147483647
+|  |  SCMethod (30:5): poisoned: version 3.16: radix_too_large { ^16r80000000 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:30:24
+|  |  |     28 │     // Unlike hexadecimal, a radix literal is a value.
+|  |  |     29 │     // expect-error: Literal out of range
+|  |  |     30 │     radix_too_large { ^16r80000000 }
+|  |  |        ┆                        ^^^^^^^^^^^ this is outside the range of a 32 bit Integer.
+|  |  |     31 │     // expect-error: Literal out of range
+|  |  |     32 │     radix_base_too_large { ^99999999999999999999999r1 }
+|  |  |     33 │ 
+|  |  |
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (30:23)
+|  |  |  |  SCExplicitReturn (30:23)
+|  |  |  |  |  SCExprList (30:24)
+|  |  SCMethod (32:5): poisoned: version 3.16: radix_base_too_large { ^99999999999999999999999r1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:32:29
+|  |  |     30 │     radix_too_large { ^16r80000000 }
+|  |  |     31 │     // expect-error: Literal out of range
+|  |  |     32 │     radix_base_too_large { ^99999999999999999999999r1 }
+|  |  |        ┆                             ^^^^^^^^^^^^^^^^^^^^^^^^^ this is outside the range of a 32 bit Integer.
+|  |  |     33 │ 
+|  |  |     34 │     // expect: no diagnostics
+|  |  |     35 │     float_large { ^1e308 }
+|  |  |
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (32:28)
+|  |  |  |  SCExplicitReturn (32:28)
+|  |  |  |  |  SCExprList (32:29)
+|  |  SCMethod (35:5): version 3.16: float_large { ^1e308 } -> 1e+308
+|  |  |  SCBody (35:19)
+|  |  |  |  SCExplicitReturn (35:19)
+|  |  |  |  |  SCLiteral (35:20) = 1e+308
+|  |  SCMethod (37:5): poisoned: version 3.16: float_overflow { ^1e309 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:37:23
+|  |  |     35 │     float_large { ^1e308 }
+|  |  |     36 │     // expect-error: Literal out of range
+|  |  |     37 │     float_overflow { ^1e309 }
+|  |  |        ┆                       ^^^^^ this Float is too large or too small to be represented.
+|  |  |     38 │     // expect-error: Literal out of range
+|  |  |     39 │     float_negative_overflow { ^-1e309 }
+|  |  |     40 │     // Subnormal, but not zero.
+|  |  |
+|  |  |  Floats are 64 bit, so other than zero, a Float literal's size must be between about 4.9e-324 and 1.8e308. Use `inf` for infinity.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (37:22)
+|  |  |  |  SCExplicitReturn (37:22)
+|  |  |  |  |  SCExprList (37:23)
+|  |  SCMethod (39:5): poisoned: version 3.16: float_negative_overflow { ^-1e309 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:39:33
+|  |  |     37 │     float_overflow { ^1e309 }
+|  |  |     38 │     // expect-error: Literal out of range
+|  |  |     39 │     float_negative_overflow { ^-1e309 }
+|  |  |        ┆                                 ^^^^^ this Float is too large or too small to be represented.
+|  |  |     40 │     // Subnormal, but not zero.
+|  |  |     41 │     // expect: no diagnostics
+|  |  |     42 │     float_small { ^1e-310 }
+|  |  |
+|  |  |  Floats are 64 bit, so other than zero, a Float literal's size must be between about 4.9e-324 and 1.8e308. Use `inf` for infinity.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (39:31)
+|  |  |  |  SCExplicitReturn (39:31)
+|  |  |  |  |  SCExprList (39:33)
+|  |  SCMethod (42:5): version 3.16: float_small { ^1e-310 } -> 1e-310
+|  |  |  SCBody (42:19)
+|  |  |  |  SCExplicitReturn (42:19)
+|  |  |  |  |  SCLiteral (42:20) = 1e-310
+|  |  SCMethod (44:5): poisoned: version 3.16: float_underflow { ^1e-400 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:44:24
+|  |  |     42 │     float_small { ^1e-310 }
+|  |  |     43 │     // expect-error: Literal out of range
+|  |  |     44 │     float_underflow { ^1e-400 }
+|  |  |        ┆                        ^^^^^^ this Float is too large or too small to be represented.
+|  |  |     45 │     // Zero is exact, not an underflow.
+|  |  |     46 │     // expect: -> 0.0
+|  |  |     47 │     float_zero_exponent { ^0e5 }
+|  |  |
+|  |  |  Floats are 64 bit, so other than zero, a Float literal's size must be between about 4.9e-324 and 1.8e308. Use `inf` for infinity.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (44:23)
+|  |  |  |  SCExplicitReturn (44:23)
+|  |  |  |  |  SCExprList (44:24)
+|  |  SCMethod (47:5): version 3.16: float_zero_exponent { ^0e5 } -> 0.0
+|  |  |  SCBody (47:27)
+|  |  |  |  SCExplicitReturn (47:27)
+|  |  |  |  |  SCLiteral (47:28) = 0.0
+|  |  SCMethod (49:5): version 3.16: float_inf { ^inf } -> inf
+|  |  |  SCBody (49:17)
+|  |  |  |  SCExplicitReturn (49:17)
+|  |  |  |  |  SCLiteral (49:18) = inf
+|  |  SCMethod (53:5): version 3.16: float_long { ^1.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 } -> 1.0
+|  |  |  SCBody (53:18)
+|  |  |  |  SCExplicitReturn (53:18)
+|  |  |  |  |  SCLiteral (53:19) = 1.0
+|  |  SCMethod (55:5): version 3.16: radix_float { ^16rA.8 } -> 10.5
+|  |  |  SCBody (55:19)
+|  |  |  |  SCExplicitReturn (55:19)
+|  |  |  |  |  SCLiteral (55:20) = 10.5
+|  |  SCMethod (57:5): version 3.16: radix_float_long { ^16r1.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 } -> 1.0
+|  |  |  SCBody (57:24)
+|  |  |  |  SCExplicitReturn (57:24)
+|  |  |  |  |  SCLiteral (57:25) = 1.0
+|  |  SCMethod (60:5): poisoned: version 3.16: radix_float_overflow { ^16r1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:60:29
+|  |  |     58 │     // 16 to the 300.
+|  |  |     59 │     // expect-error: Literal out of range
+|  |  |     60 │     radix_float_overflow { ^16r1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0 }
+|  |  |        ┆                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ this Float is too large or too small to be represented.
+|  |  |     61 │ 
+|  |  |     62 │     // The product with pi must be representable too.
+|  |  |     63 │     // expect-error: Literal out of range
+|  |  |
+|  |  |  Floats are 64 bit, so other than zero, a Float literal's size must be between about 4.9e-324 and 1.8e308. Use `inf` for infinity.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (60:28)
+|  |  |  |  SCExplicitReturn (60:28)
+|  |  |  |  |  SCExprList (60:29)
+|  |  SCMethod (64:5): poisoned: version 3.16: pi_overflow { ^1e308pi }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:64:20
+|  |  |     62 │     // The product with pi must be representable too.
+|  |  |     63 │     // expect-error: Literal out of range
+|  |  |     64 │     pi_overflow { ^1e308pi }
+|  |  |        ┆                    ^^^^^^^ this Float is too large or too small to be represented.
+|  |  |     65 │     // expect-error: Literal out of range
+|  |  |     66 │     pi_multiplier_out_of_range { ^2147483648pi }
+|  |  |     67 │ 
+|  |  |
+|  |  |  Floats are 64 bit, so other than zero, a Float literal's size must be between about 4.9e-324 and 1.8e308. Use `inf` for infinity.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (64:19)
+|  |  |  |  SCExplicitReturn (64:19)
+|  |  |  |  |  SCExprList (64:20)
+|  |  SCMethod (66:5): poisoned: version 3.16: pi_multiplier_out_of_range { ^2147483648pi }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:66:35
+|  |  |     64 │     pi_overflow { ^1e308pi }
+|  |  |     65 │     // expect-error: Literal out of range
+|  |  |     66 │     pi_multiplier_out_of_range { ^2147483648pi }
+|  |  |        ┆                                   ^^^^^^^^^^ this is outside the range of a 32 bit Integer.
+|  |  |     67 │ 
+|  |  |     68 │     // In an array, the method is poisoned. A nested return's literal is checked too.
+|  |  |     69 │     // expect-error: Literal out of range
+|  |  |
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (66:34)
+|  |  |  |  SCExplicitReturn (66:34)
+|  |  |  |  |  SCExprList (66:35)
+|  |  SCMethod (71:5): poisoned: version 3.16: in_array { |x| if (x) { ^[1, 1e999] }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/out_of_range.sc:71:34
+|  |  |     69 │     // expect-error: Literal out of range
+|  |  |     70 │     // expect: poisoned
+|  |  |     71 │     in_array { |x| if (x) { ^[1, 1e999] }; ^2 }
+|  |  |        ┆                                  ^^^^^ this Float is too large or too small to be represented.
+|  |  |     72 │ }
+|  |  |
+|  |  |  Floats are 64 bit, so other than zero, a Float literal's size must be between about 4.9e-324 and 1.8e308. Use `inf` for infinity.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (71:17)
+|  |  |  |  SCArgumentDeclare (71:17): x
+|  |  |  SCBody (71:20)
+|  |  |  |  SCMessage (71:20): if
+|  |  |  |  |  SCRead (71:24): local x, declared (71:17): x
+|  |  |  |  |  SCPositionalArgs (71:20)
+|  |  |  |  |  |  SCFunction (71:27)
+|  |  |  |  |  |  |  SCBody (71:27)
+|  |  |  |  |  |  |  |  SCExplicitReturn (71:29)
+|  |  |  |  |  |  |  |  |  SCCollection (71:30): Array
+|  |  |  |  |  |  |  |  |  |  SCLiteral (71:31) = 1
+|  |  |  |  |  |  |  |  |  |  SCExprList (71:34)
+|  |  |  |  SCExplicitReturn (71:44)
+|  |  |  |  |  SCLiteral (71:45) = 2
+Successfully compiled 16 classes.

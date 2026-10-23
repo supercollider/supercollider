@@ -570,6 +570,21 @@ Diagnostic Diagnostic::not_constant(TextInfoPtr first_t, sc::lex::SourceCodeRang
              "of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used." };
 }
 
+Diagnostic Diagnostic::literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRange l, bool is_float) {
+    if (is_float)
+        return { "Literal out of range",
+                 Severity::Error,
+                 { { std::move(t), l, "this Float is too large or too small to be represented." } },
+                 "Floats are 64 bit, so other than zero, a Float literal's size must be between about 4.9e-324 and "
+                 "1.8e308. Use `inf` for infinity." };
+    return { "Literal out of range",
+             Severity::Error,
+             { { std::move(t), l, "this is outside the range of a 32 bit Integer." } },
+             "Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to "
+             "0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., "
+             "`2147483648.0`." };
+}
+
 Diagnostic Diagnostic::variadic_argument_not_last(TextInfoPtr variadic_t, sc::lex::SourceCodeRange variadic_l,
                                                   TextInfoPtr positional_t, sc::lex::SourceCodeRange positional_l) {
     return { "Variadic argument is not last",

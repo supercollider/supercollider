@@ -469,33 +469,46 @@ ConstEval::Result ConstEval::operator()(ast::ASCIIIndex i) {
     const char r = synthesize_literal(ast_graph->payload(i), get_string_view(*ast_graph, i));
     const auto const_i = cxt.constant_table.register_constexpr({ r });
     return Success { const_i, TypeInfo { cxt.common_classes.char_, TypeConfidence::Absolute } };
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
 }
 
 ConstEval::Result ConstEval::operator()(ast::IntLitIndex i) {
-    const std::int32_t r = synthesize_literal(ast_graph->payload(i), get_string_view(*ast_graph, i));
-    const auto const_i = cxt.constant_table.register_constexpr({ r });
+    const auto r = synthesize_literal(ast_graph->payload(i), get_string_view(*ast_graph, i));
+    if (!r)
+        return { Diagnostic::literal_out_of_range(get_text_info(*ast_graph), get_location(*ast_graph, i), false) };
+    const auto const_i = cxt.constant_table.register_constexpr({ *r });
     return Success { const_i, TypeInfo { cxt.common_classes.int_, TypeConfidence::Absolute } };
 }
 
 ConstEval::Result ConstEval::operator()(ast::FloatLitIndex i) {
-    const double r = synthesize_literal(ast_graph->payload(i), get_string_view(*ast_graph, i));
-    const auto const_i = cxt.constant_table.register_constexpr({ r });
+    const auto r = synthesize_literal(ast_graph->payload(i), get_string_view(*ast_graph, i));
+    if (!r)
+        return { Diagnostic::literal_out_of_range(get_text_info(*ast_graph), get_location(*ast_graph, i), true) };
+    const auto const_i = cxt.constant_table.register_constexpr({ *r });
     return Success { const_i, TypeInfo { cxt.common_classes.float_, TypeConfidence::Absolute } };
 }
 
 ConstEval::Result ConstEval::operator()(ast::PiLitIndex pi_i) {
     const auto [maybe_num] = ast_graph->children(pi_i);
 
-    double d = std::visit(
+    // The multiplier, e.g., the 2 in `2pi`, which must be representable, as must the product.
+    const auto multiplier = std::visit(
         //
         util::overload {
-            [&](auto i) -> double {
-                return M_PI * synthesize_literal(ast_graph->payload(i), get_string_view(*ast_graph, i));
+            [&](auto i) -> std::optional<double> {
+                if (const auto m = synthesize_literal(ast_graph->payload(i), get_string_view(*ast_graph, i)))
+                    return static_cast<double>(*m);
+                return std::nullopt;
             },
-            [&](ast::MissingIndex) -> double { return M_PI; } //
+            [&](ast::MissingIndex) -> std::optional<double> { return 1.0; } //
         },
         ast_graph->index_to_variant(maybe_num));
+    const bool is_float = !ast_graph->as_a<ast::IntLitIndex>(maybe_num);
+    if (!multiplier)
+        return { Diagnostic::literal_out_of_range(get_text_info(*ast_graph), get_location(*ast_graph, maybe_num),
+                                                  is_float) };
+    double d = M_PI * *multiplier;
+    if (!std::isfinite(d) && std::isfinite(*multiplier))
+        return { Diagnostic::literal_out_of_range(get_text_info(*ast_graph), get_location(*ast_graph, pi_i), true) };
     // `-pi`, when there is a multiplier its own sign is used, e.g., `-2pi`.
     if (ast_graph->payload(pi_i).sign == ast::PiNode::Sign::Negative)
         d = -d;
