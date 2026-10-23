@@ -102,11 +102,19 @@ struct Expr : private Base {
     // A variable or argument whose initial value is being compiled, it is only added to its scope afterwards. A
     // function in the initial value can refer to it, as the function is called after the variable is assigned, e.g.,
     // `var f = { f.value }`, but nothing else can, e.g., `var f = f`.
+    // Legacy code's frame also holds the function's arguments and leading variables that aren't declared yet, so they
+    // can be used before their declarations, see declare_frame.
     struct Initialising {
         Symbol name;
         // The index of the scope it will be in.
         std::size_t scope;
         SourceLocation declaration;
+        // A function's argument or variable, which legacy code's frame holds, rather than, e.g., a generator's.
+        bool in_frame { false };
+        // In legacy code's frame, but its initial value isn't being compiled, it is declared later.
+        bool later { false };
+        // Assigned, or used in a function, before it is declared, so it can't be constant.
+        bool escaped { false };
     };
     std::vector<Initialising> initialising;
     // The `_` of the innermost call being partially applied, in order, see partially_apply. Each reads the function's
@@ -117,6 +125,10 @@ struct Expr : private Base {
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
     void add_symbol(Symbol, ScopeEntry);
+    // Removes name from legacy code's frame, as it is declared in the current scope. Returns whether it escaped.
+    bool declared(Symbol name);
+    // Removes what is left of the current scope's frame, e.g., a name declared twice.
+    void close_frame();
 };
 
 

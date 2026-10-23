@@ -146,6 +146,12 @@ public:
     // `^1` in interpreted code, including inside its functions, there is no method to return from.
     [[nodiscard]] static Diagnostic return_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l);
 
+    // A warning, legacy code using a function's argument or variable before its declaration, e.g., `var a = b, b = 1`,
+    // as the old compiler allowed. It reads the variable, which 3.16 doesn't.
+    [[nodiscard]] static Diagnostic used_before_declaration(TextInfoPtr declaration_t,
+                                                            sc::lex::SourceCodeRange declaration, TextInfoPtr use_t,
+                                                            sc::lex::SourceCodeRange use);
+
     // `//# VERSION` not followed by `major.minor`, e.g., `//# VERSION 3`.
     [[nodiscard]] static Diagnostic malformed_version(TextInfoPtr t, sc::lex::SourceCodeRange l);
 

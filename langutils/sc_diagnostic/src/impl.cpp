@@ -652,6 +652,17 @@ Diagnostic Diagnostic::return_in_interpreted_code(TextInfoPtr t, sc::lex::Source
     };
 }
 
+Diagnostic Diagnostic::used_before_declaration(TextInfoPtr declaration_t, sc::lex::SourceCodeRange declaration,
+                                               TextInfoPtr use_t, sc::lex::SourceCodeRange use) {
+    return { "Variable used before its declaration",
+             Severity::Warning,
+             { { std::move(declaration_t), declaration, "This is declared here..." },
+               { std::move(use_t), use, "...but used before its initial value has run." } },
+             "In the legacy version this is the variable, which is nil until its initial value runs, unless that is a "
+             "literal. From 3.16 a name can only be used after its declaration, so this would be an error, or a "
+             "different variable. Move the declaration first, or add `//# VERSION 3.16` once it is." };
+}
+
 Diagnostic Diagnostic::malformed_version(TextInfoPtr t, sc::lex::SourceCodeRange l) {
     return { "Malformed version",
              Severity::Error,

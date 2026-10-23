@@ -24,4 +24,11 @@ Return<SCAnyExpr_I> compile_function(Expr& expr, IRGraph& ir, const std::shared_
 
 BodyResult compile_body(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph, Context& ctx,
                         join<SCFunction_I, SCMethod_I> owner, SCBody_I body, ast::BlockContentsListIndex contents);
+
+// In legacy code, puts the function's arguments and the variables declared before its first expression in its frame,
+// as the old compiler did, so each can be used before its declaration, see Expr::initialising. Called after the
+// function's scope is opened, before its arguments are declared, and closed with Expr::close_frame. Does nothing in
+// 3.16, where `var` can be anywhere, so a name is only in scope after its declaration.
+void declare_frame(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph, Context& ctx,
+                   ast::DeclareArgumentListIndex args, std::optional<ast::BlockContentsListIndex> contents);
 }

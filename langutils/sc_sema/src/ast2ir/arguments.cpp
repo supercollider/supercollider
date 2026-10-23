@@ -12,6 +12,7 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                        SCArgumentDeclareList_I args, SCArgumentDeclareList_I var_args, ast::DeclareArgumentListIndex i,
                        std::optional<join<SCFunction_I, SCMethod_I>> scope_owner) {
     const auto declared = [&](SymSCIdentifier name, SCArgumentDeclare_I arg) {
+        (void)expr.declared(name);
         if (ctx.common_symbols.is_special(name)) {
             const auto loc = ir.location(arg);
             expr.sink(sc::diag::Diagnostic::declared_special_variable(ir.text_info(loc.source), IRGraph::range(loc)));
@@ -41,7 +42,9 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                     const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(name));
                     // Compiled before this argument is declared, a function in it can still refer to it, see
                     // Expr::initialising.
-                    expr.initialising.push_back({ sym, expr.scope.size() - 1, location_of(ir, *ast_graph, { *i }) });
+                    Expr::Initialising variable { sym, expr.scope.size() - 1, location_of(ir, *ast_graph, { *i }) };
+                    variable.in_frame = true;
+                    expr.initialising.push_back(variable);
                     const auto default_r = expr(ast::AnyExprIndex { default_i });
                     expr.initialising.pop_back();
                     const auto arg = ir.create(SCArgumentDeclare { sym,

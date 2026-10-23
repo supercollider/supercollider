@@ -44,6 +44,10 @@ struct Base {
 // the frame, everything else was computed when the code ran, see ConstEval::is_legacy_literal.
 [[nodiscard]] constexpr bool folds_constants(ast::LanguageVersion v) { return v >= ast::LanguageVersion::V3_16; }
 
+// Whether all of a function's arguments and leading variables are in scope from its start, as they were all in the old
+// compiler's frame, see declare_frame. Otherwise a name is only in scope after its declaration.
+[[nodiscard]] constexpr bool frame_scoped(ast::LanguageVersion v) { return v < ast::LanguageVersion::V3_16; }
+
 // Collects the diagnostics of one unit of compilation, e.g., a method, so it knows whether it should be poisoned.
 // This is NOT thread safe.
 struct DiagnosticSink {

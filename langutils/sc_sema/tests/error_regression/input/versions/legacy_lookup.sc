@@ -29,6 +29,51 @@ LegacyLookup {
             a1
         }.()
     }
+
+    // `f` is nil while its own initial value runs.
+    // expect-warning: Variable used before its declaration
+    // expect-reads: f -> f = f
+    // expect: not poisoned
+    // expect: no result
+    self_reference { var f = f; ^f }
+    // Allowed in 3.16 too, as the function runs after `f` is assigned.
+    // expect: no diagnostics
+    // expect-reads: f -> f = { f }
+    self_reference_in_function { var f = { f }; ^f }
+    // expect-warning: Variable used before its declaration
+    // expect-reads: b -> b = 1
+    // expect: no result
+    later_variable { var a = b, b = 1; ^a }
+    // expect-warning: Variable used before its declaration
+    // expect-reads: b -> b = 1
+    later_variable_statement { var a = b; var b = 1; ^a }
+    // The frame's `x` hides the outer one before it is declared, where 3.16 would read the outer one.
+    // expect-warning: Variable used before its declaration
+    // expect-reads: x -> x = 2
+    hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
+    // expect-warning: Variable used before its declaration
+    // expect-reads: g -> g = { 1 }
+    later_variable_in_function { var f = { g.() }, g = { 1 }; ^f }
+    // expect-warning: Variable used before its declaration
+    // expect-reads: b -> b = 1
+    later_argument { arg a = b, b = 1; ^a }
+    // Assigned by an argument's default before its declaration, so `x` isn't constant, though its initial value is a
+    // literal.
+    // expect-warning: Variable used before its declaration
+    // expect-reads: x -> x = 1
+    argument_assigns_variable { |a = (x = 5)| var x = 1; ^x }
+    // expect-warning: Variable used before its declaration
+    // expect-reads: x -> x = 1
+    argument_captures_variable { |a = { x }| var x = 1; ^x }
+    // A declaration after an expression isn't in the frame, the old compiler didn't allow one, so 3.16's rules apply.
+    // expect-error: Variable not defined
+    after_expression { 1; var a = b; var b = 2; ^a }
+    // A generator's qualifiers aren't in the frame either.
+    // expect-error: Variable used in its own initial value
+    generator { ^{: y, var y = y } }
+    // expect-warning: Variable used before its declaration
+    // expect: no result
+    nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
 }
 
 LookupThreeSixteen {
@@ -53,4 +98,13 @@ LookupThreeSixteen {
             a1
         }.()
     }
+
+    // expect-error: Variable used in its own initial value
+    self_reference { var f = f; ^f }
+    // expect-error: Variable not defined
+    later_variable { var a = b, b = 1; ^a }
+    // expect-reads: x -> x = 1
+    hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
+    // expect-error: Variable not defined
+    later_argument { arg a = b, b = 1; ^a }
 }

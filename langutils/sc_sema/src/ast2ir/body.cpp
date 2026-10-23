@@ -243,6 +243,8 @@ bool add_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, SymSCIdentif
                   join<SCVariableDeclare_I, SCPackTarget_I> declare, std::optional<ConstExprIndex> constant,
                   std::optional<TypeInfo> type) {
     const auto& g = *b.ast_graph;
+    // Used before its declaration in legacy code, e.g., assigned by an argument's default, which isn't in the body.
+    const bool escaped = b.expr.declared(name);
 
     if (b.ctx.common_symbols.is_special(name)) {
         b.expr.sink(sc::diag::Diagnostic::declared_special_variable(get_text_info(g), get_location(g, name_i)));
@@ -260,7 +262,7 @@ bool add_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, SymSCIdentif
     // Constant if its value is and it is never assigned or used by an inner function.
     // Mutable values, e.g., arrays, are never constant, as any method could change them, through this variable or any
     // other reference to the object.
-    if (!b.uses.can_be_constant(name) || (constant && b.ctx.constant_table(*constant).is_mutable())) {
+    if (escaped || !b.uses.can_be_constant(name) || (constant && b.ctx.constant_table(*constant).is_mutable())) {
         constant = std::nullopt;
         type = std::nullopt;
     }
@@ -289,7 +291,9 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
         return true;
     }
     // Compiled before the variable is declared, a function in it can still refer to it, see Expr::initialising.
-    b.expr.initialising.push_back({ name, b.expr.scope.size() - 1, location_of(b.ir, g, whole) });
+    Expr::Initialising variable { name, b.expr.scope.size() - 1, location_of(b.ir, g, whole) };
+    variable.in_frame = true;
+    b.expr.initialising.push_back(variable);
     const auto value_r = b.expr(*value);
     b.expr.initialising.pop_back();
     // Legacy code only knows a literal, as the old compiler computed any other initial value when the code ran.
@@ -310,10 +314,13 @@ bool declare_pack(BodyContext& b, ast::VariablePackAssignIndex pack) {
     // Compiled before the variables are declared, a function in it can still refer to them, see Expr::initialising.
     const auto initialising = b.expr.initialising.size();
     const auto mark_initialising = [&](ast::Index target) {
-        if (const auto name = g.as_a<ast::NamedIdentifierIndex>(target))
-            b.expr.initialising.push_back(
-                { b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, *name) }), b.expr.scope.size() - 1,
-                  location_of(b.ir, g, { **name }) });
+        const auto name = g.as_a<ast::NamedIdentifierIndex>(target);
+        if (!name)
+            return;
+        Expr::Initialising variable { b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, *name) }),
+                                      b.expr.scope.size() - 1, location_of(b.ir, g, { **name }) };
+        variable.in_frame = true;
+        b.expr.initialising.push_back(variable);
     };
     for (auto it = g.children(list).iter(); it; ++it)
         mark_initialising({ **it });
@@ -418,5 +425,58 @@ BodyResult compile_body(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast
     if (ast_graph->children(contents).iter())
         return {};
     return { ctx.constant_table.register_constexpr({ Nil {} }), false };
+}
+
+void declare_frame(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph, Context& ctx,
+                   ast::DeclareArgumentListIndex args, std::optional<ast::BlockContentsListIndex> contents) {
+    if (!frame_scoped(expr.version))
+        return;
+    const auto& g = *ast_graph;
+    // The locations are those the declarations get, so a read before one refers to the same place.
+    const auto later = [&](ast::NamedIdentifierIndex name, ast::Index whole) {
+        Expr::Initialising variable { ctx.symbol_table.get_identifier(std::string { get_string_view(g, name) }),
+                                      expr.scope.size() - 1, location_of(ir, g, whole) };
+        variable.in_frame = true;
+        variable.later = true;
+        expr.initialising.push_back(variable);
+    };
+
+    for (auto it = g.children(args).iter(); it; ++it) {
+        const ast::Index arg { **it };
+        if (const auto name = g.as_a<ast::NamedIdentifierIndex>(arg)) {
+            later(*name, arg);
+        } else if (const auto with_default = g.as_a<ast::DeclareArgumentWithDefaultIndex>(arg)) {
+            const auto [name, value] = g.children(*with_default);
+            later(name, arg);
+        } else if (const auto variadic = g.as_a<ast::DeclareArgumentVariadicIndex>(arg)) {
+            const auto [name] = g.children(*variadic);
+            later(name, { *name });
+        }
+    }
+
+    if (!contents)
+        return;
+    for (auto it = g.children(*contents).iter(); it; ++it) {
+        const auto declarations = g.as_a<ast::DeclareVariableListIndex>(ast::Index { **it });
+        if (!declarations)
+            return;
+        for (auto item = g.children(*declarations).iter(); item; ++item) {
+            const ast::Index declaration { **item };
+            if (const auto name = g.as_a<ast::NamedIdentifierIndex>(declaration)) {
+                later(*name, declaration);
+            } else if (const auto with_default = g.as_a<ast::DeclareVariableWithDefaultIndex>(declaration)) {
+                const auto [name, value] = g.children(*with_default);
+                later(name, declaration);
+            } else if (const auto pack = g.as_a<ast::VariablePackAssignIndex>(declaration)) {
+                const auto [names, value] = g.children(*pack);
+                const auto [list, rest] = g.children(names);
+                for (auto target = g.children(list).iter(); target; ++target)
+                    if (const auto name = g.as_a<ast::NamedIdentifierIndex>(ast::Index { **target }))
+                        later(*name, { **name });
+                if (const auto name = g.as_a<ast::NamedIdentifierIndex>(ast::Index { *rest }))
+                    later(*name, { **name });
+            }
+        }
+    }
 }
 }
