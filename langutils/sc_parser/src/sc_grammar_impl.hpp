@@ -147,8 +147,8 @@ void report(ParserContext&);
 // Reports a missing semicolon at the end of last_valid, see yylex.
 void region_separator(ParserContext&, sc ::lex::SourceCodeRange last_valid);
 void expr(ParserContext&);
-// Reports the error and skips past the curly bracket closing the method, matching open_bracket.
-void method(ParserContext&, sc::lex::SourceCodeRange open_bracket);
+// Reports the error and skips past the curly bracket closing the method, matching open_bracket, returning where it is.
+sc::lex::SourceCodeRange method(ParserContext&, sc::lex::SourceCodeRange open_bracket);
 // Reports the error and skips past the bracket matching open_bracket, returning where it is.
 sc::lex::SourceCodeRange bracket(ParserContext&, sc::lex::SourceCodeRange open_bracket);
 }

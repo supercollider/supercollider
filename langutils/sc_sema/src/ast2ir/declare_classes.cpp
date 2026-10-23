@@ -317,10 +317,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                            }
                        },
                        [](ast::ErrorIndex) {
-                           // This means a method cannot be compiled.
-                           // A diagnostic should have been produced by the parser.
-                           // In future, we should add a special error type for failed methods and then add it as a
-                           // posioned method.
+                           // The parser keeps a method with a syntax error as a Method with an Error body, so it is
+                           // poisoned, so this isn't expected. A diagnostic should have been produced by the parser.
                        },
                    },
                    ast_graph->index_to_variant(*method_it));

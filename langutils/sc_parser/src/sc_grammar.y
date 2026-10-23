@@ -343,10 +343,14 @@ method.base
 	
 	| method.name[name] OPENCURLY[o] error[e] 
 		{
-			error_recovery::method(cxt, @o); // advance over the closing curly of function.
-			// The name is left on the stack, so isn't discarded.
-			$$ = cxt.graph->prepend(cxt.create_error(@$, @e), $name);
+			// Skips past the method's closing curly. The method is kept, with the error as its body, so it is
+			// poisoned rather than lost. Its arguments, if any, were discarded with the error.
+			const auto close = error_recovery::method(cxt, @o);
+			@$ = range(@name, close);
+			const auto body = cxt.create(BlockContentsList{}, range(@o, close), cxt.create_error(range(@o, close), @e));
+			$$ = cxt.create(Method{}, @$, $name, cxt.create(DeclareArgumentList{}, @o), cxt.create(Missing{}, @o), body);
 			yyclearin;
+			yyerrok; // Recovered at the closing curly, so report the next error.
 		}
 	;
 

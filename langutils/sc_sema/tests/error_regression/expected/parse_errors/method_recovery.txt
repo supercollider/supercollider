@@ -1,0 +1,117 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): MethodRecovery, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): version 3.16: before { ^1 } -> 1
+|  |  |  SCBody (6:14)
+|  |  |  |  SCExplicitReturn (6:14)
+|  |  |  |  |  SCLiteral (6:15) = 1
+|  |  SCMethod (9:5): poisoned: version 3.16: missing_operator { ^1 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/method_recovery.sc:9:27
+|  |  |      7 │     // expect: poisoned
+|  |  |      8 │     // expect-error: Unexpected Token.
+|  |  |      9 │     missing_operator { ^1 2 }
+|  |  |        ┆                           ^ Expected a binary operator, `}`, `[`, `;`, `^`, or `.`, but found `2`.
+|  |  |     10 │     // expect: poisoned
+|  |  |     11 │     // expect-error: Unexpected Token.
+|  |  |     12 │     missing_operand { ^1 + }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (9:22)
+|  |  |  |  SCExprList (9:22)
+|  |  SCMethod (12:5): poisoned: version 3.16: missing_operand { ^1 + }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/method_recovery.sc:12:28
+|  |  |     10 │     // expect: poisoned
+|  |  |     11 │     // expect-error: Unexpected Token.
+|  |  |     12 │     missing_operand { ^1 + }
+|  |  |        ┆                            ^ Expected an expression or `.`, but found `}`.
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     // expect-error: Unexpected Token.
+|  |  |     15 │     with_arguments { |a, b| ^a b }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (12:21)
+|  |  |  |  SCExprList (12:21)
+|  |  SCMethod (15:5): poisoned: version 3.16: with_arguments { |a, b| ^a b }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/method_recovery.sc:15:32
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     // expect-error: Unexpected Token.
+|  |  |     15 │     with_arguments { |a, b| ^a b }
+|  |  |        ┆                                ^ Expected a binary operator, `{`, `}`, `[`, `(`, `;`, `^`, `#{`, `=`, or `.`, but found `b`.
+|  |  |     16 │     // expect: poisoned
+|  |  |     17 │     // expect-error: Unexpected Token.
+|  |  |     18 │     in_immutable_array { ^#[1, ^2] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (15:20)
+|  |  |  |  SCExprList (15:20)
+|  |  SCMethod (18:5): poisoned: version 3.16: in_immutable_array { ^#[1, ^2] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/method_recovery.sc:18:32
+|  |  |     16 │     // expect: poisoned
+|  |  |     17 │     // expect-error: Unexpected Token.
+|  |  |     18 │     in_immutable_array { ^#[1, ^2] }
+|  |  |        ┆                                ^ Expected an expression, `]`, or a keyword binary operator, but found `^`.
+|  |  |     19 │     // expect: poisoned
+|  |  |     20 │     // expect-error: Unexpected Token.
+|  |  |     21 │     in_nested_function { |x| if (x) { ^1 }; ^x 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (18:24)
+|  |  |  |  SCExprList (18:24)
+|  |  SCMethod (21:5): poisoned: version 3.16: in_nested_function { |x| if (x) { ^1 }; ^x 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/method_recovery.sc:21:48
+|  |  |     19 │     // expect: poisoned
+|  |  |     20 │     // expect-error: Unexpected Token.
+|  |  |     21 │     in_nested_function { |x| if (x) { ^1 }; ^x 2 }
+|  |  |        ┆                                                ^ Expected a binary operator, `{`, `}`, `[`, `(`, `;`, `^`, `#{`, `=`, or `.`, but found `2`.
+|  |  |     22 │     // expect: poisoned
+|  |  |     23 │     // expect-error: Unexpected Token.
+|  |  |     24 │     *class_method { ^1 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (21:24)
+|  |  |  |  SCExprList (21:24)
+|  |  SCMethod (26:5): version 3.16: after { ^3 } -> 3
+|  |  |  SCBody (26:13)
+|  |  |  |  SCExplicitReturn (26:13)
+|  |  |  |  |  SCLiteral (26:14) = 3
+SCClass (4:1): Meta_MethodRecovery, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (24:5): poisoned: version 3.16: *class_method { ^1 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/method_recovery.sc:24:24
+|  |  |     22 │     // expect: poisoned
+|  |  |     23 │     // expect-error: Unexpected Token.
+|  |  |     24 │     *class_method { ^1 2 }
+|  |  |        ┆                        ^ Expected a binary operator, `}`, `[`, `;`, `^`, or `.`, but found `2`.
+|  |  |     25 │     // expect: -> 3
+|  |  |     26 │     after { ^3 }
+|  |  |     27 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (24:19)
+|  |  |  |  SCExprList (24:19)
+Successfully compiled 16 classes.

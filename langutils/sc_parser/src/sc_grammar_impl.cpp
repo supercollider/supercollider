@@ -335,8 +335,8 @@ sc::lex::SourceCodeRange bracket(ParserContext& cxt, sc::lex::SourceCodeRange op
     return skip_to_match(cxt, open_bracket);
 }
 
-void method(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+sc::lex::SourceCodeRange method(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
     report(cxt);
-    skip_to_match(cxt, open_bracket);
+    return skip_to_match(cxt, open_bracket);
 }
 }

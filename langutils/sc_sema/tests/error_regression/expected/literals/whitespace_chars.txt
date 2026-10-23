@@ -5,61 +5,73 @@ IR GRAPH DUMP
 
 
 SCClass (2:1): WhitespaceChars, version 3.16
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Invalid Character.
-|  literals/whitespace_chars.sc:4:17
-|      2 │ WhitespaceChars {
-|      3 │     char_space { ^$  }
-|      4 │     char_tab { ^$	 }
-|        ┆                 ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
-|      5 │     char_newline { ^$
-|      6 │  }
-|      7 │     char_carriage_return { ^$
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Invalid Character.
-|  literals/whitespace_chars.sc:5:21
-|      3 │     char_space { ^$  }
-|      4 │     char_tab { ^$	 }
-|      5 │     char_newline { ^$
-|        ┆                     ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
-|      6 │  }
-|      7 │     char_carriage_return { ^$
-|      8 │  }
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Invalid Character.
-|  literals/whitespace_chars.sc:7:29
-|      5 │     char_newline { ^$
-|      6 │  }
-|      7 │     char_carriage_return { ^$
-|        ┆                             ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
-|      8 │  }
-|      9 │     char_carriage_return_newline { ^$
-|     10 │  }
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
-|  Error: Invalid Character.
-|  literals/whitespace_chars.sc:9:37
-|      7 │     char_carriage_return { ^$
-|      8 │  }
-|      9 │     char_carriage_return_newline { ^$
-|        ┆                                     ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
-|     10 │  }
-|     11 │ }
-|
-|  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (2:1)
 |  SCMethodList (2:1)
 |  |  SCMethod (3:5): version 3.16: char_space { ^$  } -> $ 
 |  |  |  SCBody (3:18)
 |  |  |  |  SCExplicitReturn (3:18)
 |  |  |  |  |  SCLiteral (3:19) = $ 
+|  |  SCMethod (4:5): poisoned: version 3.16: char_tab { ^$	 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Invalid Character.
+|  |  |  literals/whitespace_chars.sc:4:17
+|  |  |      2 │ WhitespaceChars {
+|  |  |      3 │     char_space { ^$  }
+|  |  |      4 │     char_tab { ^$	 }
+|  |  |        ┆                 ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
+|  |  |      5 │     char_newline { ^$
+|  |  |      6 │  }
+|  |  |      7 │     char_carriage_return { ^$
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (4:14)
+|  |  |  |  SCExprList (4:14)
+|  |  SCMethod (5:5): poisoned: version 3.16: char_newline { ^$'\n' }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Invalid Character.
+|  |  |  literals/whitespace_chars.sc:5:21
+|  |  |      3 │     char_space { ^$  }
+|  |  |      4 │     char_tab { ^$	 }
+|  |  |      5 │     char_newline { ^$
+|  |  |        ┆                     ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
+|  |  |      6 │  }
+|  |  |      7 │     char_carriage_return { ^$
+|  |  |      8 │  }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (5:18)
+|  |  |  |  SCExprList (5:18)
+|  |  SCMethod (7:5): poisoned: version 3.16: char_carriage_return { ^$'\n' }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Invalid Character.
+|  |  |  literals/whitespace_chars.sc:7:29
+|  |  |      5 │     char_newline { ^$
+|  |  |      6 │  }
+|  |  |      7 │     char_carriage_return { ^$
+|  |  |        ┆                             ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
+|  |  |      8 │  }
+|  |  |      9 │     char_carriage_return_newline { ^$
+|  |  |     10 │  }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (7:26)
+|  |  |  |  SCExprList (7:26)
+|  |  SCMethod (9:5): poisoned: version 3.16: char_carriage_return_newline { ^$'\n' }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Invalid Character.
+|  |  |  literals/whitespace_chars.sc:9:37
+|  |  |      7 │     char_carriage_return { ^$
+|  |  |      8 │  }
+|  |  |      9 │     char_carriage_return_newline { ^$
+|  |  |        ┆                                     ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
+|  |  |     10 │  }
+|  |  |     11 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (9:34)
+|  |  |  |  SCExprList (9:34)
 Successfully compiled 16 classes.
