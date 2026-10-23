@@ -42,6 +42,16 @@ The top-level link::Classes/Thread::, i.e the link::Classes/Thread#-parent#paren
 other Threads. This instance of Thread always exists and is created with the Process when
 SuperCollider starts.
 
+private::interpretCmdLine 
+
+private::interpretPrintCmdLine 
+
+method::interpret 
+Redirects to link::Classes/Interpreter#interpret::
+
+method::interpretPrintSelectedText
+Takes the currently selected text from the IDE and interprets it, printing the result.
+
 discussion::
 
 All SuperCollider code initially runs in the context of the main Thread:
